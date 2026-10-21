@@ -1,5 +1,4 @@
 import { describe, expect, it, vi } from 'vitest';
-import { CircuitBreaker } from './breaker.js';
 import { DailyBudget } from './budget.js';
 import { parseAddress, parseHex, parseInt53, parseObject, parseUint } from './codec.js';
 import { RelayerError, SimulationRevert, invalid } from './errors.js';
@@ -98,7 +97,9 @@ describe('limiter primitives', () => {
     t += 1000;
     expect(rl.take('a').ok).toBe(true);
     for (const k of ['b', 'c', 'd', 'e']) rl.take(k);
-    expect(rl.take('a').ok).toBe(true); // 'a' was evicted: fresh bucket, memory stayed bounded
+    // flood-proof: the key flood cannot evict (and thereby refill) the drained bucket of 'a'
+    expect(rl.take('a').ok).toBe(false);
+    expect(rl.take('e').overflow).toBe(true);
     t = 10_000; // salt rotation drops all state
     expect(rl.take('a').ok && rl.take('a').ok).toBe(true);
   });
@@ -175,42 +176,6 @@ describe('DailyBudget', () => {
     t = 86_400_000;
     expect(b.used).toBe(0n);
     expect(b.reserve(100n)).toBe(true);
-  });
-});
-
-describe('CircuitBreaker', () => {
-  const opts = { windowSize: 4, minSamples: 2, failureRatio: 0.5, cooldownMs: 100 };
-  it('opens at the failure ratio, probes after cooldown, closes on success', () => {
-    let t = 0;
-    const b = new CircuitBreaker(opts, () => t);
-    b.recordSuccess();
-    expect(b.allow()).toBe(true);
-    b.recordFailure();
-    expect(b.state).toBe('open');
-    expect(b.isBlocking()).toBe(true);
-    expect(b.allow()).toBe(false);
-    t = 100;
-    expect(b.isBlocking()).toBe(false);
-    expect(b.allow()).toBe(true);
-    expect(b.state).toBe('half_open');
-    expect(b.allow()).toBe(false); // only one probe at a time
-    b.recordSuccess();
-    expect(b.state).toBe('closed');
-  });
-  it('re-opens when the probe fails, supports trip(), and keeps a sliding window', () => {
-    let t = 0;
-    const b = new CircuitBreaker(opts, () => t);
-    b.trip();
-    t = 100;
-    b.allow();
-    b.recordFailure();
-    expect(b.state).toBe('open');
-    t = 200;
-    b.allow();
-    b.recordSuccess();
-    for (let i = 0; i < 8; i++) b.recordSuccess(); // window slides, old entries drop
-    b.recordFailure();
-    expect(b.state).toBe('closed');
   });
 });
 

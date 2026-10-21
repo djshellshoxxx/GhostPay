@@ -50,7 +50,11 @@ describe('parseConfig', () => {
     expect(c.minDeadlineSeconds).toBe(30);
     expect(c.maxDeadlineSeconds).toBe(1800);
     expect(c.queue).toEqual({ maxPending: 16, receiptTimeoutSeconds: 120 });
-    expect(c.breaker).toEqual({ windowSize: 20, minSamples: 5, failureRatio: 0.5, cooldownSeconds: 60 });
+    expect(c.breaker).toEqual({ windowSize: 20, minSamples: 5, failureRatio: 0.5, cooldownSeconds: 60, probeTimeoutSeconds: 60 });
+    expect(c.trustedProxies).toEqual([]);
+    expect(c.lossBudget).toEqual({ windowSeconds: 3600, perKeyWei: 5n * 10n ** 15n, globalWei: 5n * 10n ** 16n, maxKeys: 10_000 });
+    expect(c.metricsToken).toBeUndefined();
+    expect(c.alertWebhookUrl).toBeUndefined();
     const ch = c.chains[0];
     expect(ch?.feeTo).toBe(HOT_ADDRESS); // defaults to the hot-key address
     expect(ch?.nativeUsdMicro).toBe(3_000_500_000n);
@@ -62,7 +66,10 @@ describe('parseConfig', () => {
     const c = parse(
       good({
         listen: { host: '0.0.0.0', port: 9000 },
-        trustProxyHops: 1,
+        trustedProxies: ['10.0.0.0/8', '::1'],
+        lossBudget: { windowSeconds: 600, perKeyWei: '1000', globalWei: '5000', maxKeys: 32 },
+        metricsTokenEnv: 'M_TOK',
+        alertWebhookUrlEnv: 'A_HOOK',
         deadline: { minSeconds: 10, maxSeconds: 600 },
         rateLimit: { ipPerMinute: 5, ipBurst: 2, ownerPerMinute: 1, ownerBurst: 1, maxKeys: 64, saltRotationHours: 6 },
         breaker: { windowSize: 10, minSamples: 4, failureRatio: 0.7, cooldownSeconds: 5 },
@@ -77,9 +84,13 @@ describe('parseConfig', () => {
           }),
         ],
       }),
-      { env: { MY_RPC: 'https://rpc2.example' } },
+      { env: { MY_RPC: 'https://rpc2.example', M_TOK: 'm'.repeat(40), A_HOOK: 'https://hooks.example/x' } },
     );
     expect(c.port).toBe(9000);
+    expect(c.trustedProxies).toEqual(['10.0.0.0/8', '::1']);
+    expect(c.lossBudget).toEqual({ windowSeconds: 600, perKeyWei: 1000n, globalWei: 5000n, maxKeys: 32 });
+    expect(c.metricsToken).toBe('m'.repeat(40));
+    expect(c.alertWebhookUrl).toBe('https://hooks.example/x');
     expect(c.rateLimit.saltRotationHours).toBe(6);
     expect(c.chains[0]?.rpcUrl).toBe('https://rpc2.example/');
     expect(c.chains[0]?.feeTo).toBe(FEE_TO);
@@ -98,7 +109,19 @@ describe('parseConfig', () => {
     ['bad listen host', (c) => ({ ...c, listen: { host: '' } })],
     ['bad port', (c) => ({ ...c, listen: { port: 70000 } })],
     ['port float', (c) => ({ ...c, listen: { port: 1.5 } })],
-    ['trustProxyHops string', (c) => ({ ...c, trustProxyHops: '1' })],
+    ['trustProxyHops removed', (c) => ({ ...c, trustProxyHops: 1 })],
+    ['trustedProxies not array', (c) => ({ ...c, trustedProxies: '10.0.0.1' })],
+    ['trustedProxies bad entry', (c) => ({ ...c, trustedProxies: ['not-an-ip'] })],
+    ['trustedProxies non-string', (c) => ({ ...c, trustedProxies: [5] })],
+    ['lossBudget non-decimal', (c) => ({ ...c, lossBudget: { perKeyWei: '1e18' } })],
+    ['lossBudget number', (c) => ({ ...c, lossBudget: { globalWei: 5 } })],
+    ['metricsTokenEnv bad name', (c) => ({ ...c, metricsTokenEnv: 'lower' })],
+    ['metricsTokenEnv unset', (c) => ({ ...c, metricsTokenEnv: 'NOT_SET' })],
+    ['metricsTokenEnv too short', (c) => ({ ...c, metricsTokenEnv: 'SHORT' })],
+    ['alert webhook plain http', (c) => ({ ...c, alertWebhookUrlEnv: 'HOOK_HTTP' })],
+    ['alert webhook credentials', (c) => ({ ...c, alertWebhookUrlEnv: 'HOOK_CRED' })],
+    ['alert webhook unset', (c) => ({ ...c, alertWebhookUrlEnv: 'NOT_SET' })],
+    ['alert webhook unparseable', (c) => ({ ...c, alertWebhookUrlEnv: 'HOOK_BAD' })],
     ['allowDevChain not boolean', (c) => ({ ...c, allowDevChain: 'yes' })],
     ['deadline above spec max', (c) => ({ ...c, deadline: { maxSeconds: 1801 } })],
     ['deadline min >= max', (c) => ({ ...c, deadline: { minSeconds: 100, maxSeconds: 100 } })],
@@ -145,8 +168,9 @@ describe('parseConfig', () => {
   ];
   it.each(bad)('refuses %s', (_n, mutate, re) => {
     const raw = mutate(good());
-    expect(() => parse(raw)).toThrow(ConfigError);
-    if (re !== undefined) expect(() => parse(raw)).toThrow(re);
+    const env = { SHORT: 'abc', HOOK_HTTP: 'http://x.example/', HOOK_CRED: 'https://u:p@x.example/', HOOK_BAD: '::not a url' };
+    expect(() => parse(raw, { env })).toThrow(ConfigError);
+    if (re !== undefined) expect(() => parse(raw, { env })).toThrow(re);
   });
 
   it('allows the local dev chain only with the explicit flag', () => {

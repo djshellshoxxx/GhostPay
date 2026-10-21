@@ -157,7 +157,8 @@ export function SellerKeys(): ReactNode {
       )}
 
       <h3>Public registry</h3>
-      <p className="hint">Publishing your meta-address to the ERC-6538 registry would publicly associate it with your wallet address. This release does not publish; share the meta-address directly.</p>
+      <p className="hint">Publishing your meta-address to the ERC-6538 registry would publicly associate it with your wallet address. Publishing is optional and has its own page.</p>
+      <p><button type="button" className="btn" onClick={() => { app.setView('registry'); }}>Open public registry page</button></p>
     </section>
   );
 }

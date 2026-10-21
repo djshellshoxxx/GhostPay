@@ -4,7 +4,7 @@ import type { ScanMatch } from './lib/scanClient';
 import type { SessionPublic } from './lib/session';
 import type { Settings } from './lib/settings';
 
-export type ViewId = 'home' | 'seller' | 'create' | 'pay' | 'scan' | 'sweep' | 'btc' | 'settings' | 'about';
+export type ViewId = 'home' | 'seller' | 'create' | 'pay' | 'scan' | 'sweep' | 'btc' | 'registry' | 'settings' | 'about';
 
 export const VIEW_LABELS: Readonly<Record<ViewId, string>> = {
   home: 'Home',
@@ -14,6 +14,7 @@ export const VIEW_LABELS: Readonly<Record<ViewId, string>> = {
   scan: 'Scan and receive',
   sweep: 'Sweep',
   btc: 'Bitcoin (test)',
+  registry: 'Public registry',
   settings: 'Settings',
   about: 'About and privacy',
 };

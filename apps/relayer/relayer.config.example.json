@@ -1,11 +1,12 @@
 {
   "listen": { "host": "127.0.0.1", "port": 8787 },
   "allowedOrigins": ["https://app.example.org"],
-  "trustProxyHops": 1,
+  "trustedProxies": ["127.0.0.1", "::1"],
   "quoteTtlSeconds": 120,
   "deadline": { "minSeconds": 30, "maxSeconds": 1800 },
-  "rateLimit": { "ipPerMinute": 30, "ipBurst": 10, "ownerPerMinute": 6, "ownerBurst": 3, "maxKeys": 10000, "saltRotationHours": 24 },
-  "breaker": { "windowSize": 20, "minSamples": 5, "failureRatio": 0.5, "cooldownSeconds": 60 },
+  "rateLimit": { "ipPerMinute": 30, "ipBurst": 10, "ownerPerMinute": 6, "ownerBurst": 3, "maxKeys": 10000, "saltRotationHours": 24, "quoteGlobalPerMinute": 600, "quoteGlobalBurst": 100 },
+  "breaker": { "windowSize": 20, "minSamples": 5, "failureRatio": 0.5, "cooldownSeconds": 60, "probeTimeoutSeconds": 60 },
+  "lossBudget": { "windowSeconds": 3600, "perKeyWei": "5000000000000000", "globalWei": "50000000000000000", "maxKeys": 10000 },
   "queue": { "maxPending": 16, "receiptTimeoutSeconds": 120 },
   "shutdownGraceSeconds": 15,
   "chains": [

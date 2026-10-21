@@ -1,8 +1,10 @@
-import { randomUUID } from 'node:crypto';
+import { randomUUID, timingSafeEqual } from 'node:crypto';
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import type { AddressInfo } from 'node:net';
+import { TokenBucketLimiter, TrustedProxies, bucketKey, monotonicNow, resolveClientIp } from '@ghostpay/relayer-guard';
 import type { RelayerConfig } from './config.js';
 import { RelayerError, invalid } from './errors.js';
+import type { Metrics } from './metrics.js';
 import type { RateLimiter } from './limiter.js';
 import { nullLogger, type Logger } from './log.js';
 import type { RelayerService } from './service.js';
@@ -17,13 +19,17 @@ export interface HttpDeps {
   readonly service: RelayerService;
   readonly ipLimiter: RateLimiter;
   readonly logger?: Logger;
+  readonly metrics?: Metrics;
+  /** Monotonic ms clock for the global quote budget (default: `performance.now`). */
+  readonly monotonic?: () => number;
   /** Request id generator (tests). */
   readonly newRequestId?: () => string;
 }
 
-type Route = '/healthz' | '/v1/info' | '/v1/quote' | '/v1/sweep';
+type Route = '/healthz' | '/metrics' | '/v1/info' | '/v1/quote' | '/v1/sweep';
 const ROUTES: Readonly<Record<Route, 'GET' | 'POST'>> = {
   '/healthz': 'GET',
+  '/metrics': 'GET',
   '/v1/info': 'GET',
   '/v1/quote': 'POST',
   '/v1/sweep': 'POST',
@@ -102,11 +108,19 @@ export class RelayerHttpServer {
   private readonly server: Server;
   private readonly origins: ReadonlySet<string>;
   private readonly logger: Logger;
+  private readonly proxies: TrustedProxies;
+  private readonly quoteBudget: TokenBucketLimiter;
   private draining = false;
 
   public constructor(private readonly d: HttpDeps) {
     this.origins = new Set(d.config.allowedOrigins);
     this.logger = d.logger ?? nullLogger;
+    this.proxies = new TrustedProxies(d.config.trustedProxies);
+    const rl = d.config.rateLimit;
+    this.quoteBudget = new TokenBucketLimiter(
+      { ratePerSecond: rl.quoteGlobalPerMinute / 60, burst: rl.quoteGlobalBurst, maxKeys: 1 },
+      d.monotonic ?? monotonicNow,
+    );
     this.server = createServer({ maxHeaderSize: 8192 }, (req, res) => {
       void this.handle(req, res);
     });
@@ -164,15 +178,16 @@ export class RelayerHttpServer {
     c.res.end(payload);
   }
 
-  private clientIp(req: IncomingMessage): string {
-    const hops = this.d.config.trustProxyHops;
-    const xff = req.headers['x-forwarded-for'];
-    if (hops > 0 && typeof xff === 'string') {
-      const parts = xff.split(',').map((p) => p.trim());
-      const hit = parts[parts.length - hops];
-      if (hit !== undefined && hit !== '') return hit;
-    }
-    return req.socket.remoteAddress ?? 'unknown';
+  /**
+   * Canonical rate-limit bucket (IPv4 /32, IPv6 /64). `X-Forwarded-For` is honoured only when the
+   * socket peer is in `trustedProxies`; an unparseable peer or a broken forwarded chain is refused
+   * rather than collapsed into one shared bucket (S3-07).
+   */
+  private clientKey(req: IncomingMessage): string {
+    const peer = req.socket.remoteAddress;
+    const r = resolveClientIp({ peer, forwardedFor: req.headers['x-forwarded-for'], trusted: this.proxies });
+    if (r === null) throw new RelayerError(400, 'invalid_client_address');
+    return bucketKey(r.ip);
   }
 
   private async handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
@@ -194,6 +209,7 @@ export class RelayerHttpServer {
         this.send(c, 500, { error: { code: 'internal_error' } });
       }
     }
+    this.d.metrics?.inc('relayer_http_requests_total', { route: c.route, status: c.status });
     this.logger.log(c.status >= 500 ? 'error' : 'info', 'request', {
       requestId: c.requestId,
       route: c.route,
@@ -235,20 +251,38 @@ export class RelayerHttpServer {
         this.send(c, h.status === 'ok' ? 200 : 503, h);
         return;
       }
+      case '/metrics': {
+        const token = this.d.config.metricsToken;
+        const auth = req.headers.authorization;
+        if (token === undefined || this.d.metrics === undefined) throw new RelayerError(404, 'not_found');
+        const expected = Buffer.from(`Bearer ${token}`);
+        const given = Buffer.from(auth ?? '');
+        if (given.length !== expected.length || !timingSafeEqual(given, expected)) throw new RelayerError(401, 'unauthorized');
+        const text = this.d.metrics.render();
+        c.status = 200;
+        res.writeHead(200, { 'Content-Type': 'text/plain; version=0.0.4; charset=utf-8', 'Content-Length': Buffer.byteLength(text) });
+        res.end(text);
+        return;
+      }
       case '/v1/info':
         this.send(c, 200, this.d.service.info());
         return;
       case '/v1/quote':
       case '/v1/sweep': {
-        const limit = this.d.ipLimiter.take(this.clientIp(req));
+        const clientKey = this.clientKey(req);
+        const limit = this.d.ipLimiter.take(clientKey);
         if (!limit.ok) throw new RelayerError(429, 'rate_limited_ip', limit.retryAfterSeconds);
+        if (path === '/v1/quote') {
+          const g = this.quoteBudget.take('quote');
+          if (!g.ok) throw new RelayerError(429, 'rate_limited_global', Math.max(1, Math.ceil(g.retryAfterMs / 1000)));
+        }
         const ct = req.headers['content-type'];
         if (ct === undefined || !JSON_TYPE.test(ct)) throw new RelayerError(415, 'unsupported_media_type');
         const body = parseJson(await readBody(req, MAX_BODY_BYTES));
         if (path === '/v1/quote') {
           this.send(c, 200, await this.d.service.quote(parseQuoteRequest(body)));
         } else {
-          this.send(c, 200, await this.d.service.sweep(parseSweepRequest(body), { requestId: c.requestId }));
+          this.send(c, 200, await this.d.service.sweep(parseSweepRequest(body), { requestId: c.requestId, clientKey }));
         }
         return;
       }

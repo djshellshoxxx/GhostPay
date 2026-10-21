@@ -496,7 +496,7 @@ describe('policy gate', () => {
 
 describe('rate limiting', () => {
   it('limits per IP bucket with Retry-After', async () => {
-    const s = await start({ config: { rateLimit: { ipPerMinute: 1, ipBurst: 2, ownerPerMinute: 60, ownerBurst: 20, maxKeys: 100, saltRotationHours: 24 } } });
+    const s = await start({ config: { rateLimit: { ipPerMinute: 1, ipBurst: 2, ownerPerMinute: 60, ownerBurst: 20, maxKeys: 100, saltRotationHours: 24, quoteGlobalPerMinute: 6000, quoteGlobalBurst: 1000 } } });
     const q = { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '100000000' };
     expect((await call(s, 'POST', '/v1/quote', q)).status).toBe(200);
     expect((await call(s, 'POST', '/v1/quote', q)).status).toBe(200);
@@ -510,7 +510,7 @@ describe('rate limiting', () => {
   });
 
   it('limits per owner only after the signature is proven', async () => {
-    const s = await start({ config: { rateLimit: { ipPerMinute: 600, ipBurst: 100, ownerPerMinute: 1, ownerBurst: 1, maxKeys: 100, saltRotationHours: 24 } } });
+    const s = await start({ config: { rateLimit: { ipPerMinute: 600, ipBurst: 100, ownerPerMinute: 1, ownerBurst: 1, maxKeys: 100, saltRotationHours: 24, quoteGlobalPerMinute: 6000, quoteGlobalBurst: 1000 } } });
     // forged requests for the victim owner do not consume the victim's quota
     for (let i = 0; i < 3; i++) {
       const forged = await prepare(s, { signerKey: OTHER_KEY, nonce: BigInt(i + 100) });
@@ -523,20 +523,41 @@ describe('rate limiting', () => {
     expect(limited.headers.get('retry-after')).toBeTruthy();
   });
 
-  it('honours X-Forwarded-For only with trustProxyHops', async () => {
-    const lim = { ipPerMinute: 1, ipBurst: 1, ownerPerMinute: 60, ownerBurst: 20, maxKeys: 100, saltRotationHours: 24 };
+  it('honours X-Forwarded-For only from trusted proxies, walking right to left', async () => {
+    const lim = { ipPerMinute: 1, ipBurst: 1, ownerPerMinute: 60, ownerBurst: 20, maxKeys: 100, saltRotationHours: 24, quoteGlobalPerMinute: 6000, quoteGlobalBurst: 1000 };
     const q = { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '100000000' };
-    const s = await start({ config: { rateLimit: lim, trustProxyHops: 1 } });
-    expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '9.9.9.9, 1.1.1.1' })).status).toBe(200);
-    expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '8.8.8.8, 1.1.1.1' })).status).toBe(429);
-    expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '8.8.8.8, 2.2.2.2' })).status).toBe(200);
-    // no header / too few hops falls back to the socket address
-    expect((await call(s, 'POST', '/v1/quote', q)).status).toBe(200);
-    expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '' })).status).toBe(429);
+    const s = await start({ config: { rateLimit: lim, trustedProxies: ['127.0.0.1', '::1', '::ffff:127.0.0.1'] } });
+    expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '9.9.9.9' })).status).toBe(200);
+    expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '9.9.9.9' })).status).toBe(429);
+    // a forged leftmost entry does not pick a new bucket: the rightmost untrusted hop decides
+    expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '1.2.3.4, 9.9.9.9' })).status).toBe(429);
+    expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '9.9.9.9, 127.0.0.1' })).status).toBe(429);
+    expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '8.8.8.8' })).status).toBe(200);
+    // garbage in a trusted chain is refused, not collapsed into the proxy's bucket
+    const bad = await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': 'not-an-ip' });
+    expect(bad.status).toBe(400);
+    expect(errCode(bad)).toBe('invalid_client_address');
     await s.stop();
-    const t = await start({ config: { rateLimit: lim, trustProxyHops: 0 } });
+  });
+
+  it('ignores X-Forwarded-For from an untrusted peer and buckets IPv4 by socket address', async () => {
+    const lim = { ipPerMinute: 1, ipBurst: 1, ownerPerMinute: 60, ownerBurst: 20, maxKeys: 100, saltRotationHours: 24, quoteGlobalPerMinute: 6000, quoteGlobalBurst: 1000 };
+    const q = { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '100000000' };
+    const t = await start({ config: { rateLimit: lim, trustedProxies: [] } });
     expect((await call(t, 'POST', '/v1/quote', q, { 'x-forwarded-for': '3.3.3.3' })).status).toBe(200);
     expect((await call(t, 'POST', '/v1/quote', q, { 'x-forwarded-for': '4.4.4.4' })).status).toBe(429);
+    expect((await call(t, 'POST', '/v1/quote', q, { 'x-forwarded-for': '5.5.5.5, 6.6.6.6' })).status).toBe(429);
+  });
+
+  it('applies a process-wide quote budget on top of the per-client limit', async () => {
+    const lim = { ipPerMinute: 600, ipBurst: 100, ownerPerMinute: 60, ownerBurst: 20, maxKeys: 100, saltRotationHours: 24, quoteGlobalPerMinute: 1, quoteGlobalBurst: 2 };
+    const q = { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '100000000' };
+    const s = await start({ config: { rateLimit: lim, trustedProxies: ['127.0.0.1', '::1', '::ffff:127.0.0.1'] } });
+    expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '1.1.1.1' })).status).toBe(200);
+    expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '2.2.2.2' })).status).toBe(200);
+    const limited = await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '3.3.3.3' });
+    expect(errCode(limited)).toBe('rate_limited_global');
+    expect(limited.headers.get('retry-after')).toBeTruthy();
   });
 });
 
@@ -663,5 +684,114 @@ describe('logging redaction', () => {
       for (const k of Object.keys(JSON.parse(line) as object)) expect(allowed.has(k)).toBe(true);
     }
     expect(all).toContain('sweep_sent');
+  });
+});
+
+describe('S3-05/06 breaker integration', () => {
+  const trip = async (s: Harness): Promise<void> => {
+    s.fake.simulateError = new Error('rpc exploded');
+    for (let i = 0; i < 3; i++) await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: BigInt(i + 1) })).body);
+    s.fake.simulateError = undefined;
+  };
+
+  it('a half-open probe that ends in a user error cannot wedge the breaker (S3-05)', async () => {
+    const s = await start();
+    await trip(s);
+    s.clock.ms += 61_000;
+    s.fake.used.add(`${OWNER}:50`); // the probe will be a nonce_used simulation revert
+    expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 50n })).body))).toBe('nonce_used');
+    // the probe slot was released: the next request is admitted as the new probe and closes it
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 51n })).body)).status).toBe(200);
+    expect((await call(s, 'GET', '/healthz')).status).toBe(200);
+  });
+
+  it('healthz reports half_open as degraded, never ok', async () => {
+    const s = await start();
+    await trip(s);
+    s.clock.ms += 61_000;
+    s.fake.sendGate = new Promise<void>(() => undefined); // probe stays in flight
+    void call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 60n })).body);
+    await settle();
+    const h = await call(s, 'GET', '/healthz');
+    expect(h.status).toBe(503);
+    expect(h.json).toMatchObject({ status: 'degraded', chains: [{ breaker: 'half_open' }] });
+    expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 61n })).body))).toBe('breaker_open');
+  });
+
+  it('a probe that never settles expires and re-opens instead of wedging', async () => {
+    const s = await start({ config: { breaker: { windowSize: 10, minSamples: 3, failureRatio: 0.5, cooldownSeconds: 60, probeTimeoutSeconds: 5 } } });
+    await trip(s);
+    s.clock.ms += 61_000;
+    s.fake.sendGate = new Promise<void>(() => undefined);
+    void call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 70n })).body);
+    await settle();
+    s.clock.ms += 6_000;
+    expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ chains: [{ breaker: 'open' }] });
+    s.clock.ms += 61_000;
+    expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'degraded' }); // cooldown elapsed: probe due
+  });
+
+  it('attacker-induced user errors never open the breaker (S3-06)', async () => {
+    const s = await start();
+    for (let i = 0; i < 12; i++) {
+      s.fake.used.add(`${OWNER}:${String(100 + i)}`);
+      expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: BigInt(100 + i) })).body))).toBe('nonce_used');
+    }
+    expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'ok' });
+  });
+
+  it('mined reverts do not feed the breaker but exhaust the per-source loss budget', async () => {
+    const s = await start({ config: { lossBudget: { windowSeconds: 3600, perKeyWei: 200_000n * 1_000_000_000n, globalWei: 10n ** 18n, maxKeys: 100 } } });
+    s.fake.receipt = { status: 'reverted', gasUsed: 150_000n };
+    let denied = '';
+    for (let i = 0; i < 6 && denied === ''; i++) {
+      const r = await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: BigInt(200 + i), destination: DEST })).body);
+      await settle();
+      if (r.status !== 200) denied = errCode(r);
+    }
+    expect(denied).toBe('loss_budget_exhausted');
+    expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'ok' }); // breaker untouched
+    // a different network and destination is not collateral damage of the per-source key, but the destination key is shared:
+    const other = await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 300n, destination: STRANGER })).body);
+    expect(other.status).toBe(200);
+  });
+
+  it('serves authenticated Prometheus metrics and sends alerts without request data', async () => {
+    const alerts: { kind: string; chainId?: number }[] = [];
+    const token = 't'.repeat(40);
+    const s = await start({ config: { metricsToken: token }, alerts: { send: (e) => alerts.push(e) } });
+    await trip(s);
+    expect(alerts.map((a) => a.kind)).toContain('breaker_open');
+    expect((await call(s, 'GET', '/metrics')).status).toBe(401);
+    expect((await call(s, 'GET', '/metrics', undefined, { authorization: 'Bearer wrong' })).status).toBe(401);
+    const ok = await call(s, 'GET', '/metrics', undefined, { authorization: `Bearer ${token}` });
+    expect(ok.status).toBe(200);
+    const text = ok.json as string;
+    expect(text).toContain('relayer_breaker_state{chain_id="11155111"} 2');
+    expect(text).toContain('relayer_http_requests_total{route="/v1/sweep",status="503"}');
+    expect(text).not.toContain(OWNER);
+    expect(text).not.toContain(DEST);
+  });
+
+  it('keeps /metrics disabled without a configured token', async () => {
+    const s = await start();
+    const r = await call(s, 'GET', '/metrics', undefined, { authorization: 'Bearer x' });
+    expect(r.status).toBe(404);
+  });
+
+  it('serves repeated quotes from a short gas-price cache (S3-07)', async () => {
+    const s = await start();
+    const q = { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '100000000' };
+    let calls = 0;
+    const orig = s.fake.getGasPrice.bind(s.fake);
+    s.fake.getGasPrice = () => {
+      calls += 1;
+      return orig();
+    };
+    for (let i = 0; i < 5; i++) await call(s, 'POST', '/v1/quote', q);
+    expect(calls).toBe(1);
+    s.clock.ms += 4000;
+    await call(s, 'POST', '/v1/quote', q);
+    expect(calls).toBe(2);
   });
 });

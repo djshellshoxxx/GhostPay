@@ -20,3 +20,4 @@ export { chainlinkAggregatorAbi } from './abi/chainlinkAggregator.js';
 export * from './deploymentsSignature.js';
 export * from './deploymentsVerify.js';
 export * from './scanVerify.js';
+export * from './registry.js';

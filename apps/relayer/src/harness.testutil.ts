@@ -4,6 +4,7 @@ import { buildSweepTypedData } from '@ghostpay/chain-adapters';
 import type { ChainClient, ReceiptSummary, SendOptions, SweepCall } from './chain.js';
 import type { RelayerConfig } from './config.js';
 import { SimulationRevert } from './errors.js';
+import type { AlertSink } from './alerts.js';
 import { createLogger, type Logger } from './log.js';
 import type { PolicyGate } from './policy.js';
 import { buildRelayer, type Relayer } from './runtime.js';
@@ -90,12 +91,13 @@ export function testConfig(over: Partial<RelayerConfig> = {}): RelayerConfig {
     port: 0,
     allowedOrigins: [ORIGIN],
     allowInsecureLocalhostRpc: false,
-    trustProxyHops: 0,
+    trustedProxies: [],
     quoteTtlSeconds: 120,
     minDeadlineSeconds: 30,
     maxDeadlineSeconds: 1800,
-    rateLimit: { ipPerMinute: 600, ipBurst: 100, ownerPerMinute: 60, ownerBurst: 20, maxKeys: 100, saltRotationHours: 24 },
-    breaker: { windowSize: 10, minSamples: 3, failureRatio: 0.5, cooldownSeconds: 60 },
+    rateLimit: { ipPerMinute: 600, ipBurst: 100, ownerPerMinute: 60, ownerBurst: 20, maxKeys: 100, saltRotationHours: 24, quoteGlobalPerMinute: 6000, quoteGlobalBurst: 1000 },
+    breaker: { windowSize: 10, minSamples: 3, failureRatio: 0.5, cooldownSeconds: 60, probeTimeoutSeconds: 60 },
+    lossBudget: { windowSeconds: 3600, perKeyWei: 10n ** 16n, globalWei: 10n ** 17n, maxKeys: 100 },
     queue: { maxPending: 4, receiptTimeoutSeconds: 30 },
     shutdownGraceSeconds: 2,
     chains: [
@@ -134,6 +136,7 @@ export interface HarnessOptions {
   readonly config?: Partial<RelayerConfig>;
   readonly policy?: PolicyGate;
   readonly fake?: FakeChain;
+  readonly alerts?: AlertSink;
 }
 
 export async function startHarness(o: HarnessOptions = {}): Promise<Harness> {
@@ -149,6 +152,7 @@ export async function startHarness(o: HarnessOptions = {}): Promise<Harness> {
     clients: new Map([[CHAIN_ID, fake]]),
     now: () => clock.ms,
     ...(o.policy === undefined ? {} : { policy: o.policy }),
+    ...(o.alerts === undefined ? {} : { alerts: o.alerts }),
   });
   const addr = await relayer.server.listen();
   return {

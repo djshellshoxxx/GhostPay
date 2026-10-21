@@ -1,7 +1,10 @@
 import { createPublicClient, createWalletClient, defineChain, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
+import { monotonicNow, LossBudget } from '@ghostpay/relayer-guard';
 import { createClient, findChain, type ChainConfig } from '@ghostpay/chain-adapters';
 import { createViemChainClient, type ChainClient } from './chain.js';
+import { createWebhookAlerts, nullAlerts, type AlertSink } from './alerts.js';
+import { Metrics } from './metrics.js';
 import { DEV_CHAIN_ID, type RelayerConfig } from './config.js';
 import { KeyHasher, RateLimiter } from './limiter.js';
 import type { Logger } from './log.js';
@@ -24,12 +27,17 @@ export interface RuntimeDeps {
   /** Replaces the real chain clients (tests). */
   readonly clients?: ReadonlyMap<number, ChainClient>;
   readonly now?: () => number;
+  /** Monotonic ms clock for breaker, limiters and loss budget (default: `now` when given, else `performance.now`). */
+  readonly monotonic?: () => number;
+  /** Replaces the config-driven alert sink (tests). */
+  readonly alerts?: AlertSink;
 }
 
 /** A wired relayer. */
 export interface Relayer {
   readonly service: RelayerService;
   readonly server: RelayerHttpServer;
+  readonly metrics: Metrics;
 }
 
 function hex(b: Uint8Array): `0x${string}` {
@@ -71,10 +79,17 @@ export async function buildChainClients(config: RelayerConfig, hotKey: Uint8Arra
 export async function buildRelayer(d: RuntimeDeps): Promise<Relayer> {
   const now = d.now ?? Date.now;
   const clients = d.clients ?? (await buildChainClients(d.config, d.hotKey));
-  const hasher = new KeyHasher(d.config.rateLimit.saltRotationHours * 3_600_000, now);
+  const mono = d.monotonic ?? d.now ?? monotonicNow;
+  const hasher = new KeyHasher(d.config.rateLimit.saltRotationHours * 3_600_000, mono);
+  const metrics = new Metrics();
+  const alerts =
+    d.alerts ??
+    (d.config.alertWebhookUrl === undefined ? nullAlerts : createWebhookAlerts({ url: d.config.alertWebhookUrl, logger: d.logger, now: mono }));
+  const lb = d.config.lossBudget;
+  const lossBudget = new LossBudget({ windowMs: lb.windowSeconds * 1000, perKeyLimit: lb.perKeyWei, globalLimit: lb.globalWei, maxKeys: lb.maxKeys }, mono);
   const rl = d.config.rateLimit;
-  const ipLimiter = new RateLimiter({ perMinute: rl.ipPerMinute, burst: rl.ipBurst, maxKeys: rl.maxKeys }, hasher, now);
-  const ownerLimiter = new RateLimiter({ perMinute: rl.ownerPerMinute, burst: rl.ownerBurst, maxKeys: rl.maxKeys }, hasher, now);
+  const ipLimiter = new RateLimiter({ perMinute: rl.ipPerMinute, burst: rl.ipBurst, maxKeys: rl.maxKeys }, hasher, mono);
+  const ownerLimiter = new RateLimiter({ perMinute: rl.ownerPerMinute, burst: rl.ownerBurst, maxKeys: rl.maxKeys }, hasher, mono);
   const service = new RelayerService({
     config: d.config,
     clients,
@@ -85,8 +100,13 @@ export async function buildRelayer(d: RuntimeDeps): Promise<Relayer> {
     ...(d.policy === undefined ? {} : { policy: d.policy }),
     logger: d.logger,
     now,
+    monotonic: mono,
+    hasher,
+    lossBudget,
+    alerts,
+    metrics,
     version: RELAYER_VERSION,
   });
-  const server = new RelayerHttpServer({ config: d.config, service, ipLimiter, logger: d.logger });
-  return { service, server };
+  const server = new RelayerHttpServer({ config: d.config, service, ipLimiter, logger: d.logger, metrics, monotonic: mono });
+  return { service, server, metrics };
 }
