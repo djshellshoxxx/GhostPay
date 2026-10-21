@@ -15,7 +15,7 @@
 #   FEE_RECIPIENT      required (not the deployer; EOA/multisig able to receive ETH and the fee token)
 #   KEYSTORE_ACCOUNT   broadcast signer: name of a `cast wallet import` keystore (preferred; forge prompts for the password)
 #   PRIVATE_KEY        broadcast signer alternative, supplied by the human (visible in `ps` while forge runs: prefer keystore)
-#   DEPLOYER_ADDRESS   simulate only: sender address to simulate as (optional)
+#   DEPLOYER_ADDRESS   simulate: REQUIRED public address of your funded testnet deployer (forge needs a funded sender to estimate gas)
 #   CONFIRM_BROADCAST  must be exactly 1 for broadcast
 #   ANNOUNCER / ALLOW_CUSTOM_ANNOUNCER / EXPECTED_ANNOUNCER_CODEHASH : see packages/contracts/script/Deploy.s.sol
 #   SKIP_WEB_COPY=1    do not copy the manifest to apps/web/public/deployments/
@@ -48,12 +48,12 @@ BROADCAST_DIR="$CONTRACTS/broadcast/Deploy.s.sol/$chain_id"
 # ---------------------------------------------------------------- rehearse (local anvil, no network)
 if [[ "$mode" == rehearse ]]; then
   command -v anvil >/dev/null || die "anvil not on PATH"
-  [[ ! -e "$BROADCAST_DIR" ]] || die "$BROADCAST_DIR exists (a real deployment record?); move it away before a rehearsal"
+  [[ ! -e "$BROADCAST_DIR/run-latest.json" ]] || die "$BROADCAST_DIR/run-latest.json exists (a real deployment record?); move it away before a rehearsal"
   port="${REHEARSE_PORT:-18546}"
   tmp="$(mktemp -d)"
   anvil --host 127.0.0.1 --port "$port" --chain-id "$chain_id" --silent >"$tmp/anvil.log" 2>&1 &
   apid=$!
-  cleanup() { kill "$apid" 2>/dev/null || true; rm -rf "$BROADCAST_DIR" "$tmp"; }
+  cleanup() { kill "$apid" 2>/dev/null || true; find "$BROADCAST_DIR" -maxdepth 1 -type f -delete 2>/dev/null || true; rm -rf "$CONTRACTS/cache/Deploy.s.sol/$chain_id/run-latest.json" "$tmp"; }
   trap cleanup EXIT
   local_rpc="http://127.0.0.1:$port"
   for _ in $(seq 1 50); do cast chain-id --rpc-url "$local_rpc" >/dev/null 2>&1 && break; sleep 0.2; done
@@ -80,7 +80,8 @@ actual="$(cast chain-id --rpc-url "$RPC_URL" 2>/dev/null || true)"
 SENDER="${DEPLOYER_ADDRESS:-}" FEE_RECIPIENT="$FEE_RECIPIENT" RPC_URL="$RPC_URL" bash "$CONTRACTS/scripts/pre-deploy-check.sh" router
 
 if [[ "$mode" == simulate ]]; then
-  (cd "$CONTRACTS" && forge script script/Deploy.s.sol --rpc-url "$RPC_URL" ${DEPLOYER_ADDRESS:+--sender "$DEPLOYER_ADDRESS"})
+  [[ "${DEPLOYER_ADDRESS:-}" =~ ^0x[0-9a-fA-F]{40}$ ]] || die "simulate needs DEPLOYER_ADDRESS (public address of the funded deployer)"
+  (cd "$CONTRACTS" && forge script script/Deploy.s.sol --rpc-url "$RPC_URL" --sender "$DEPLOYER_ADDRESS")
   echo "SIMULATION ONLY: nothing was broadcast."
   exit 0
 fi

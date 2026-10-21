@@ -1,0 +1,11 @@
+# UNTESTED. Builds apps/web and serves it with `vite preview`. Build context = repo root.
+# The manifest for chain 31337 is read from the shared volume mounted at /shared (copy into dist/deployments at start).
+FROM node:22-bookworm-slim
+WORKDIR /repo
+COPY package.json package-lock.json tsconfig.base.json ./
+COPY packages ./packages
+COPY apps/web ./apps/web
+RUN npm ci --ignore-scripts && npm run build:libs && npm run build -w apps/web
+WORKDIR /repo/apps/web
+EXPOSE 4173
+CMD ["sh", "-c", "mkdir -p dist/deployments && cp /shared/deployments/*.json dist/deployments/ 2>/dev/null; exec npx vite preview --host 0.0.0.0 --port 4173"]
