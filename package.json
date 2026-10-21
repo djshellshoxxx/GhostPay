@@ -21,5 +21,9 @@
     "ci:check-actions": "bash scripts/check-actions-pinned.sh",
     "release:build": "bash scripts/release-build.sh",
     "release:repro": "bash scripts/repro-check.sh"
+  },
+  "overrides": {
+    "ws": "8.21.0",
+    "underscore": "1.13.8"
   }
 }
