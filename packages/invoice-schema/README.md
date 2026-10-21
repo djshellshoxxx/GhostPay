@@ -47,3 +47,5 @@ if (isTrustedSeller(parsed)) { /* only now may the UI say the seller key is pinn
 ## Scripts
 
 `npm run build | typecheck | test | lint` (from this directory).
+
+Status: used by `apps/web` and `chain-adapters`; no external audit. Deviations: [`DEVIATIONS.md`](./DEVIATIONS.md).

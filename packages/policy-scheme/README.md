@@ -30,3 +30,7 @@ No new crypto libraries: `@noble/curves`, `@noble/hashes`, `viem` and `@ghostpay
   **fails** when `REQUIRE_ANVIL=1`.
 
 `npm run gen-abi` regenerates `src/abi/*.ts` from forge output; `npm run gen-vectors` regenerates the vectors.
+
+## Status and deviations
+
+Experimental, not imported by `apps/web` or `apps/relayer`. [`docs/remote/STATUS.md`](../../docs/remote/STATUS.md) records 60 passed for this package in the 2026-10-21 run (the anvil tests skip when anvil or forge artifacts are missing). Deviations: [`DEVIATIONS.md`](./DEVIATIONS.md). Scripts: `build`, `typecheck`, `test`, `lint`, `gen-abi`, `gen-vectors`.
