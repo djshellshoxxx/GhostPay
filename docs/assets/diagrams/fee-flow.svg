@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="960" height="540" role="img" aria-labelledby="ttl dsc">
+<title id="ttl">Fee flow</title>
+<desc id="dsc">Where GhostPay fees apply. A routed payment of 100 USDC (made-up) pays 0.25 USDC to the fee recipient and 99.75 USDC to the one-time address. A direct payment bypasses the router and pays no fee. A relayer-sponsored sweep pays max(gas cost x 1.10, 0.50 percent) capped at 3 percent to the relayer fee address and the rest to the destination. Policy account creation has a flat stablecoin fee, contracts only. Bitcoin has no enforceable fee.</desc>
+<style>
+:root{--bg:#ffffff;--fg:#1b1f24;--mut:#4d5866;--box:#eef1f6;--line:#6b778a;--acc:#1f4fc4;--accbg:#dbe6ff;--warn:#8a4b00;--warnbg:#fff0d0;--bad:#a8200f;--badbg:#fde4e1;--ok:#13663a;--okbg:#dcf3e4}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1318;--fg:#e6e9ee;--mut:#a3aebd;--box:#1a212b;--line:#7d8a9d;--acc:#8fb2ff;--accbg:#1c2c52;--warn:#ffb454;--warnbg:#3a2a0e;--bad:#ff9b92;--badbg:#411a17;--ok:#74d9a0;--okbg:#12331f}}
+svg{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.bg{fill:var(--bg)}
+.t{fill:var(--fg);font-size:14px}.b{font-weight:700}.m{fill:var(--mut)}.s{font-size:12px}.h{font-size:20px;font-weight:700}
+.box{fill:var(--box);stroke:var(--line);stroke-width:1.5}
+.box.acc{fill:var(--accbg);stroke:var(--acc)}.box.warn{fill:var(--warnbg);stroke:var(--warn)}
+.box.bad{fill:var(--badbg);stroke:var(--bad)}.box.ok{fill:var(--okbg);stroke:var(--ok)}
+.dash{stroke-dasharray:6 4}
+.grp{fill:none;stroke:var(--line);stroke-width:1.3;stroke-dasharray:3 5}
+.ln{fill:none;stroke:var(--line);stroke-width:2}.ln.acc{stroke:var(--acc)}.ln.warn{stroke:var(--warn)}.ln.bad{stroke:var(--bad)}.ln.ok{stroke:var(--ok)}
+.ah{fill:var(--line)}
+.bdg{fill:var(--acc)}.bdgt{fill:var(--bg);font-size:12px;font-weight:700}
+.ta{text-anchor:middle}
+</style>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--line)"/></marker><marker id="ar-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--acc)"/></marker><marker id="ar-warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--warn)"/></marker><marker id="ar-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--bad)"/></marker><marker id="ar-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--ok)"/></marker></defs>
+<rect class="bg" width="960" height="540"/>
+<text class="t h" x="24" y="34">Fee flow</text>
+<text class="t m s" x="24" y="54">Example uses made-up numbers: 100.00 USDC. Nothing is deployed, so no fee is collected anywhere today.</text>
+<rect class="box acc" x="20" y="90" width="160" height="70" rx="8"/>
+<text class="t ta b" x="100.0" y="121.5">Payer</text>
+<text class="t ta m s" x="100.0" y="138.5">pays gross 100.00</text>
+<rect class="box ok" x="250" y="80" width="200" height="110" rx="8"/>
+<text class="t ta b" x="350.0" y="114.5">GhostPayRouter</text>
+<text class="t ta m s" x="350.0" y="131.5">FEE_BPS = 25</text>
+<text class="t ta m s" x="350.0" y="148.5">fee = gross x 25 / 10,000</text>
+<text class="t ta m s" x="350.0" y="165.5">rounded down</text>
+<rect class="box ok" x="680" y="90" width="240" height="90" rx="8"/>
+<text class="t ta b" x="800.0" y="123.0">One-time address</text>
+<text class="t ta m s" x="800.0" y="140.0">receives net 99.75 USDC</text>
+<text class="t ta m s" x="800.0" y="157.0">(seller's, per payment)</text>
+<rect class="box ok" x="230" y="240" width="190" height="60" rx="8"/>
+<text class="t ta b" x="325.0" y="266.5">Fee recipient</text>
+<text class="t ta m s" x="325.0" y="283.5">set at deployment</text>
+<rect class="box ok" x="680" y="250" width="240" height="80" rx="8"/>
+<text class="t ta b" x="800.0" y="286.5">GhostPaySweepRelayer</text>
+<text class="t ta m s" x="800.0" y="303.5">pays fee, then destination</text>
+<rect class="box warn" x="450" y="265" width="190" height="56" rx="8"/>
+<text class="t ta b" x="545.0" y="289.5">Relayer fee-to address</text>
+<text class="t ta m s" x="545.0" y="306.5">inside your signature</text>
+<rect class="box acc" x="680" y="400" width="240" height="60" rx="8"/>
+<text class="t ta b" x="800.0" y="426.5">Your destination</text>
+<text class="t ta m s" x="800.0" y="443.5">amount minus relayer fee</text>
+<rect class="box warn dash" x="20" y="360" width="380" height="90" rx="8"/>
+<text class="t ta b" x="210.0" y="393.0">Direct payment (bypasses router)</text>
+<text class="t ta m s" x="210.0" y="410.0">tokens sent straight to the one-time address:</text>
+<text class="t ta m s" x="210.0" y="427.0">no GhostPay fee and none of the router's checks</text>
+<rect class="box  dash" x="430" y="380" width="230" height="80" rx="8"/>
+<text class="t ta b" x="545.0" y="408.0">Policy account creation</text>
+<text class="t ta m s" x="545.0" y="425.0">flat stablecoin fee (planned,</text>
+<text class="t ta m s" x="545.0" y="442.0">contracts only, owner to confirm)</text>
+<path class="ln acc" d="M180 125 L250 125" marker-end="url(#ar-acc)"/>
+<path class="ln ok" d="M450 135 L680 135" marker-end="url(#ar-ok)"/>
+<path class="ln " d="M350 190 L350 240" marker-end="url(#ar)"/>
+<path class="ln ok" d="M800 180 L800 250" marker-end="url(#ar-ok)"/>
+<path class="ln warn" d="M680 293 L640 293" marker-end="url(#ar-warn)"/>
+<path class="ln ok" d="M800 330 L800 400" marker-end="url(#ar-ok)"/>
+<path class="ln warn" stroke-dasharray="6 4" d="M100 160 L100 360" marker-end="url(#ar-warn)"/>
+<text class="t m s" x="465" y="126">net 99.75</text>
+<text class="t m s" x="358" y="220">fee 0.25</text>
+<text class="t m s" x="808" y="220">sweep</text>
+<text class="t m s" x="24" y="490">Sweep fee = max(relayer gas cost x 1.10, 0.50% of amount), capped at 3%. Tokens without ERC-2612 permit cannot use the relayer path.</text>
+<text class="t m s" x="24" y="510">Bitcoin (silent payments): no enforceable fee; the payer's wallet builds the transaction. Forks of the client can remove the client-side parts.</text>
+</svg>

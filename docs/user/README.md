@@ -12,4 +12,8 @@
 | [Fees](fees.md) | Know exactly what you pay and when GhostPay's fee does not apply |
 | [Troubleshooting](troubleshooting.md) | Fix common problems |
 
+## Illustrated help guides
+
+Step-by-step guides with diagrams and animated explainers live in [docs/guides](../guides/README.md): [merchants](../guides/getting-started-merchants.md), [payers](../guides/getting-started-payers.md), [receivers and scanning](../guides/receivers-and-scanning.md), [sweeping safely](../guides/sweeping-safely.md), [policy accounts](../guides/policy-accounts.md) (experimental), [Bitcoin silent payments](../guides/bitcoin-silent-payments.md) (library only), [privacy checklist](../guides/privacy-checklist.md), [FAQ](../guides/faq.md), [glossary](../guides/glossary.md) and [troubleshooting by symptom](../guides/troubleshooting-by-symptom.md). Diagrams are in [docs/assets/diagrams](../assets/diagrams/), animations in [docs/assets/animations](../assets/animations/).
+
 If you only read one thing: **moving funds from your one-time address to a wallet you already use can reveal that the payer paid you.** See [Sweep funds and gas privacy](sweep-and-gas-privacy.md).
