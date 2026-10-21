@@ -192,3 +192,45 @@ the interface diamond `IGhostPayShieldedPoolERC20 is IGhostPayShieldedPool`).
   (`audit-pool-sdk.md` section 5) using this package's `out/`; not re-run by this agent.
 - Echidna's EVM is fixed at chain id 1, so the harness fuzzes a pool constructed on a local anvil through an RPC fork;
   the constructor itself is covered only by Foundry tests.
+
+---
+
+## Independent AI review (opus)
+
+Date 2026-10-21. **Second-pass review by a separate AI agent (Claude Opus), not a professional audit.** Scope: `src/**`,
+`script/DeployPool.s.sol`, tests, against spec `shielded-pool.md` and `packages/pool-circuits/INTERFACE.md`.
+
+**C-1 confirmed with a working exploit: the pool is forgeable by design with the dev-ceremony verifiers.**
+`test/ForgedProof.t.sol` [T, `forge test --match-path test/ForgedProof.t.sol`: 2 passed] recomputes the phase-2 delta
+from the public beacon (only delta is needed; see the circuits doc's independent section) and builds proofs on-chain:
+- `test_forgedWithdrawDrainsPool`: an address with no deposit withdraws the full balance of three honest deposits with an
+  invented nullifier hash and change commitment against `currentRoot()`.
+- `test_forgedRagequitDrainsPool`: the thief deposits 1 unit, then ragequits its own label with `value` = pool balance.
+  The contract only checks `depositorOf(label)`, `value <= MAX_VALUE` and leaf existence; value soundness is purely the
+  proof's. This is the cheapest drain path and needs no ASP or root-window cooperation.
+Mitigations remain the `WrongChain` guard and `MAX_DEPOSIT`; nothing on-chain can detect a forged proof.
+
+Checked, no new exploitable issue found (given a sound verifier) [R, existing tests T]:
+- Public-input binding: `context = keccak256(abi.encode(w, SCOPE)) % P` covers recipient, relayer, fee, feeTo, deadline,
+  aspPublisher, announce; `SCOPE` covers pool, chain id, asset; `withdrawnValue`, roots, ASP fields are public signals.
+  `pool-sdk/src/withdrawal.ts` encodes the same tuple. Label `keccak256(abi.encodePacked(SCOPE, n)) % P` matches spec.
+- ABI / signal order: `ProofLib` indices equal `INTERFACE.md` and the vkeys (`nPublic` 9 / 4); deploy script wires
+  `WITHDRAW_VERIFIER` / `RAGEQUIT_VERIFIER` into the matching typed slots and reads them back.
+- Non-canonical inputs: verifier `checkField` rejects `>= P`, so nullifier hashes, roots and labels used as mapping
+  keys are canonical; `context` and labels are reduced `% P`; precommitment and leaves checked `< P`.
+- Root history: `_rootSize` keyed by root with size stamp; window 64 inserts (L-1 stands). Size-1 root = leaf is
+  consistent with the circuit (depth 0). ASP: enabled must be exactly 0/1, publisher non-zero iff enabled, grace logic
+  correct including re-publication.
+- Ragequit authorization: `msg.sender == depositorOf(label)`, shared nullifier set with withdraw, leaf must exist.
+  Change notes inherit the label, so the original depositor (if it knows the change-note secrets) can ragequit them:
+  by design (0xbow).
+- Tokens / reentrancy: exact balance deltas on every pull and push, `nonReentrant` on every entry point, state before
+  transfers; fee-on-transfer and lying tokens revert (L-2 stands for negative rebases).
+- Deposit griefing: front-running a deposit with the victim's precommitment creates a note the attacker cannot spend
+  (shares the victim's nullifier); it only burns the attacker's funds. Duplicate change commitments cannot be planted
+  (label is contract-assigned).
+- Relayer fee: a proof with `relayer = address(0)` is publicly submittable and can be front-run by anyone, but payouts are
+  context-bound, so the only effect is the original submitter's reverted (gas-wasting) tx. Info; relayed proofs should
+  set `relayer`.
+- Nits (not changed): rule order differs slightly from spec 6 (value check before fee/context); harmless.
+No source file was modified by this review; only `test/ForgedProof.t.sol` was added (full suite: 84 passed, dev profile).

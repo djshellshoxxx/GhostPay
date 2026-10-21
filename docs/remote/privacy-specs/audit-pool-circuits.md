@@ -186,3 +186,42 @@ path and for making `stateTreeDepth` meaningful.
 - Browser proving time not measured.
 - `contract.*` values in `test-vectors/shielded-pool.json` computed with viem from the spec, not yet
   checked against Solidity.
+
+---
+
+## Independent AI review (opus)
+
+Date 2026-10-21. **Second-pass review by a separate AI agent (Claude Opus), not a professional audit and not a
+substitute for one.** Scope: `circuits/*.circom`, `circuits/main/*`, `INTERFACE.md`, `src/*.ts`, `scripts/ceremony-dev.sh`,
+vkeys, cross-checked against `packages/pool-contracts` (`ProofLib`, pool) and spec `shielded-pool.md`.
+
+**Headline: with the committed dev-ceremony keys the pool is forgeable by design, and this is now demonstrated, not just
+argued.** Forging needs only the phase-2 `delta`: `groth16 setup` starts at delta = 1 and the only phase-2 step is
+`zkey beacon` with the public hash in `ceremony-dev.sh`, so `delta = Fr.fromRng(rngFromBeaconParams(BEACON, 10))`
+(snarkjs' own `misc.js`; checked `delta * G2 == vk_delta_2` for both vkeys; snarkjs fixes `gamma = G2`). With
+`A = alpha1`, `B = beta2`, `C = -(1/delta) * vk_x` the Groth16 equation holds for **any** public signals. No knowledge of
+tau/alpha/beta is required, so supplying a real phase-1 file via `POOL_PTAU` does **not** help while phase 2 stays
+beacon-only. Evidence [T, this review]:
+- `test/forgery.test.ts`: derives delta from the beacon, forges a withdraw proof (withdrawnValue = 2^128 - 1, arbitrary
+  nullifier/root/context) and a ragequit proof; `snarkjs.groth16.verify` returns true for both.
+- `packages/pool-contracts/test/ForgedProof.t.sol`: same forgery computed on-chain with ecAdd/ecMul; drains a pool holding
+  three honest deposits through `withdraw` (no deposit by the thief) and through `ragequit` (thief deposits 1 unit, then
+  claims the whole balance for its own label).
+
+Other checks, no new soundness defect found [R unless noted]:
+- Under-constrained signals: none in the package's templates (no `<--`). Every private input reaches either a hash bound
+  to `stateRoot`/an output, or is deliberately free (`newNullifier`, `newSecret`). LeanIMT path: `Num2Bits(6)` before
+  `LessEqThan(6)`, siblings above depth forced 0, empty sibling forces bit 0; with `aspEnabled = 0` the ASP depth = 0
+  forces all ASP siblings and `ASPIndex` to 0. Agree with section 2.
+- Field overflow: `withdrawnValue`, `existingValue`, remainder each `Num2Bits(128)`; 128-bit operands cannot wrap a
+  254-bit field. Contract `MAX_VALUE = 2^128 - 1` matches.
+- Public-signal order: outputs (`newCommitmentHash`, `existingNullifierHash`) then inputs in declaration order;
+  `INTERFACE.md`, `ProofLib` indices 0..8 / 0..3, `IWithdrawVerifier uint256[9]`, `IRagequitVerifier uint256[4]` and
+  vkey `nPublic` 9 / 4 all agree.
+- Domain separation: agree with section 4. Note the soundness of "ASP leaf = raw label" and "state leaf is a t=4 output"
+  both depend on the contract assigning labels; any future user-chosen label breaks the ASP argument.
+- Ragequit circuit leaves `value` unbounded; safe only because the contract requires the commitment to be a leaf
+  (commitment binds value). With forgeable keys this is exactly the cheapest drain path (above).
+- `src/inputs.ts` / `leanImt.ts` pre-checks mirror the circuit constraints; `toVerifierCalldata` rejects `>= P`.
+
+Not done: circomspect / Picus / ecne, independent mutation run, review of circomlib internals.
