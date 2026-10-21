@@ -100,11 +100,10 @@ services:
       dockerfile: Dockerfile.solana
     image: ghostpay-it/solana-test-validator:v3.1.14
     command:
-      - solana-test-validator
+      # solana-entrypoint.sh prepends `solana-test-validator --bind-address <container ip>`.
       - --ledger=/ledger
       - --reset
       - --log
-      - --bind-address=0.0.0.0
       - --rpc-port=8899
       - --faucet-port=9900
       - --limit-ledger-size=50000

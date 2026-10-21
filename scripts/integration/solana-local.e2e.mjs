@@ -126,7 +126,7 @@ async function step(name, fn) {
 const s = {}; // shared state between steps
 
 await step('validator reachable and healthy', async () => {
-  await waitUntil('getHealth', async () => (await raw('getHealth').catch(() => null)) === 'ok', { timeoutMs: 120_000, everyMs: 1000 });
+  await waitUntil('getHealth', async () => (await raw('getHealth').catch(() => null)) === 'ok', { timeoutMs: 60_000, everyMs: 1000 });
   const ver = await raw('getVersion');
   return `solana-core ${ver['solana-core']}`;
 });

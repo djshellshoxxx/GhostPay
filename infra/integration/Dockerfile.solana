@@ -23,7 +23,9 @@ FROM ${DEBIAN_IMAGE}
 # libstdc++/libgcc/libm/libc are all the binary links against (checked with ldd on the extracted binary).
 RUN set -eux; apt-get update; apt-get install -y --no-install-recommends libstdc++6; rm -rf /var/lib/apt/lists/*
 COPY --from=fetch /out/solana-test-validator /usr/local/bin/solana-test-validator
+COPY --chmod=0755 solana-entrypoint.sh /usr/local/bin/solana-entrypoint.sh
 RUN solana-test-validator --version
 USER 10001:10001
+ENTRYPOINT ["/usr/local/bin/solana-entrypoint.sh"]
 WORKDIR /tmp
 EXPOSE 8899
