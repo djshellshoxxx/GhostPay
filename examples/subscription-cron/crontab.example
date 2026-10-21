@@ -1,0 +1,3 @@
+# Run hourly at minute 17; the job is idempotent (calling twice with the same time issues nothing new).
+# Keep the key file mode 600, owned by the cron user. Output goes to your own outbox file for your mailer to deliver.
+17 * * * * cd /opt/ghostpay-sub && /usr/bin/node run.mjs run --config sub.json --state state.json --key-file signing.key --outbox outbox.jsonl >> run.log 2>&1
