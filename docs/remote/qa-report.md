@@ -44,3 +44,12 @@ Coverage thresholds were not changed by this branch. Baseline at the start of th
 - Slither, Mythril, mutation testing (swarm 2), Echidna on final contracts, long fuzz campaigns beyond the above.
 - Nothing was run against a public testnet or mainnet, real price feeds, real BlindBit oracle or real Tor/proxy.
 - Mermaid diagrams and SVG animations were render-checked in Chromium only for SVGs; Mermaid rendering not checked.
+
+## Re-run after merging remote-extensions-1 and round-3b fixes (head 228a0ef)
+Run 2026-10-21 with the same tools. The merge added five packages from the base branch (address-safety, ops-monitor, relayer-guard, secret-box, tx-review); this swarm did not audit them.
+
+- typecheck, lint, `build:libs`, `forge fmt --check`: pass.
+- `REQUIRE_ANVIL=1 npm test` exit 0. Per workspace, in run order, tests passed: 71, 311, 277, 57, 177, 52, 70, 137, 31, 145, relayer 208 (+1 skipped), web 355. (Counts are from the log in workspace order; package names are not printed alongside each count in this summary.)
+- Forge: 391/391, 24 suites; `forge snapshot --check` exit 0 on the full 406-line snapshot (56 fuzz/invariant entries); Halmos 3/3 per the contracts agent (not re-run by me).
+- Failures found and fixed in this round: (1) `contracts-static` CI: my merge had dropped fuzz/invariant entries from `.gas-snapshot` (fixed 7ee28a6); (2) policy-scheme anvil test expected the old late failure after the new leaf/token binding (test updated, on-chain `LimitLeafMismatch` check kept); (3) chain-adapters schema-sync test failed after I applied a `schema.json` patch; that hunk was reverted (item open, see fixes-round3b.md).
+- Not re-run: Playwright e2e (last run 16/16 at 2789f78; apps unchanged since), Echidna, Slither, `forge coverage --ir-minimum` after the last contract changes.
