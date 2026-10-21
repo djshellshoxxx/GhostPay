@@ -78,9 +78,7 @@ describe('tx builders', () => {
     expect(() => decodeRawTx(fBytes(1, Uint8Array.of(1)))).toThrow(); // no contract
     expect(() => decodeRawTx(fBytes(99, Uint8Array.of(1)))).toThrow(); // unknown field
     const tx = buildTrc20Transfer({ ...base, contract: USDT, to: A, amount: 1n, feeLimitSun: 1n });
-    const bad = tx.rawData.slice();
-    bad[bad.length - 1] ^= 0; // keep valid
-    expect(() => decodeRawTx(bad.subarray(0, bad.length - 3))).toThrow(); // truncated
+    expect(() => decodeRawTx(tx.rawData.subarray(0, tx.rawData.length - 1))).toThrow(); // truncated
   });
 });
 
