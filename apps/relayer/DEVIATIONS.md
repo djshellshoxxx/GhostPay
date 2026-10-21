@@ -41,3 +41,12 @@ Contract code wins over docs. Items for the lead to confirm or reject.
     integration.
 16. **Coverage scope:** `src/main.ts` (process wiring, signal handlers) is excluded from coverage; its refuse-to-start paths
     were smoke-tested manually against a built `dist`, not by the test suite.
+
+## relayer-guard wiring (audit S3-05, S3-06, S3-07)
+
+- `trustProxyHops` was removed in favour of `trustedProxies` (CIDR list): a hop count cannot tell a real proxy from a client that reached the port directly. Operators must migrate their config; an unknown `trustProxyHops` key is rejected at startup.
+- A mined revert after a passing simulation is treated as attacker-attributable (neutral for the breaker) and charged to the loss budget. A genuine relayer-side revert (for example wrong gas) therefore no longer opens the breaker; it shows up as `relayer_mined_reverts_total` and as `mined_revert` alerts instead. There is no re-simulation at the inclusion block to tell the two apart.
+- Loss budget keys: client network bucket (IPv4 /32, IPv6 /64) and destination, hashed with the rotating salt. Rotation (default daily) forgets the accounting; the per-window default is 1 hour. Defaults (0.005 / 0.05 native units) are not tuned for any chain.
+- The challenge module of relayer-guard is not wired.
+- `/metrics` and the alert webhook have only been exercised with fakes (no Prometheus scrape, no real webhook receiver). `/healthz` now reports `degraded` for any non-closed breaker.
+- `getGasPrice` on the quote path is cached for 3 s (not on the sweep path).

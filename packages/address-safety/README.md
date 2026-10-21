@@ -10,7 +10,7 @@ Pure checks that an address or display text means what it appears to mean. Spec:
 - `payeeTrust`: `pinned`, `unpinned_valid_signature` (needs explicit confirmation) or `invalid`.
 - `sanitizeDisplayText`: rejects bidi controls, default-ignorable, private-use, tag characters, control characters and unpaired surrogates; marks Latin+Cyrillic/Greek tokens.
 
-Runtime dependency: `viem` (checksum only) plus Node `node:crypto`. **Not wired in** to any app or package. Nothing here has been run in a browser; the Playwright cross-engine check in the spec is not done.
+Runtime dependency: `viem` (checksum only) plus Node `node:crypto`. Wired into `apps/web`: `lib/sweep.ts` (strict destination parsing, lookalike refusal, destination classification) and `lib/displayText.ts` (invoice memo and line-item text, seller fingerprint on the Pay page). `payeeTrust` and the wallet-name sanitising are not wired. Nothing here has been run in a browser; the Playwright cross-engine check in the spec is not done.
 
 ```bash
 npm run typecheck && npm run lint && npm test   # from this directory
@@ -18,5 +18,5 @@ npm run typecheck && npm run lint && npm test   # from this directory
 
 ## Status and deviations
 
-Library only; not imported by any app or package; no external audit.
+Imported by `apps/web` (sweep destination, invoice display); no external audit.
 Differences from the spec and open items: [`DEVIATIONS.md`](./DEVIATIONS.md). Scripts (`package.json`): `build`, `typecheck`, `test` (`vitest run --coverage`), `lint`.

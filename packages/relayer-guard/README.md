@@ -9,7 +9,7 @@ Abuse and availability controls for the GhostPay sweep relayer. Spec: [`docs/rem
 - `TokenBucketLimiter`: monotonic, clamped refill; flood-proof bounded table (haiku L6).
 - `LossBudget`: per-key and global caps on gas the relayer paid without reimbursement (S3-06).
 
-Runtime dependencies: none (Node built-ins). **Not wired into `apps/relayer`.** Nothing here has run against a real proxy or network.
+Runtime dependencies: none (Node built-ins). Wired into `apps/relayer` (breaker, trusted proxies, /64 buckets, limiter, loss budget); the challenge module is not. Nothing here has run against a real proxy or network.
 
 ```bash
 npm run typecheck && npm run lint && npm test   # from this directory
@@ -21,5 +21,5 @@ npm run typecheck && npm run lint && npm test   # from this directory
 
 ## Status and deviations
 
-Library only (breaker, limiter, IP resolution, loss budget, challenge module); not imported by `apps/relayer`; no external audit.
+Imported by `apps/relayer` (all but the challenge module, which is unused); no external audit.
 Differences from the spec and open items: [`DEVIATIONS.md`](./DEVIATIONS.md). Scripts (`package.json`): `build`, `typecheck`, `test` (`vitest run --coverage`), `lint`.

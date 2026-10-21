@@ -6,7 +6,7 @@ Pre-sign decoder and reviewer: turns the exact bytes about to be signed (transac
 - `review(intent, expected, policy, now, ctx?)`: `{ ok: true }` or `{ ok: false, reasons }`. Every rule and every compared field has its own `ReasonCode`.
 - `assertReviewed(...)`: same, throws `ReviewRefusedError` carrying all reasons.
 
-Dependencies: `viem` and `@ghostpay/chain-adapters` (ABIs, `decodePaymentCalldata`, typed-data type tables). **Not wired into `apps/web`.** Nothing here has been checked against a real wallet or chain, and no signing call site calls `assertReviewed` yet.
+Dependencies: `viem` and `@ghostpay/chain-adapters` (ABIs, `decodePaymentCalldata`, typed-data type tables). Wired into `apps/web` through `lib/txGuard.ts`: `assertReviewed` runs before the direct sweep signature, both relayed-sweep typed-data signatures (sweep, permit), the ERC-20 approval and the router payment (not `payERC20WithBuffer`, which this package rejects by design). Nothing here has been checked against a real wallet or chain.
 
 ```bash
 npm run typecheck && npm run lint && npm test   # from this directory
@@ -14,5 +14,5 @@ npm run typecheck && npm run lint && npm test   # from this directory
 
 ## Status and deviations
 
-Library only; not imported by `apps/web`; no external audit.
+Imported by `apps/web` (`txGuard.ts`); no external audit.
 Differences from the spec and open items: [`DEVIATIONS.md`](./DEVIATIONS.md). Scripts (`package.json`): `build`, `typecheck`, `test` (`vitest run --coverage`), `lint`.

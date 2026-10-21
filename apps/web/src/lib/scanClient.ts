@@ -88,7 +88,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   let ready: ((m: FromWorker) => void) | undefined;
   let failed: ((e: Error) => void) | undefined;
   const timeoutMs = p.replyTimeoutMs ?? 60_000;
-  const ABORTED = Symbol('aborted');
+  const ABORTED = new Error('scan cancelled');
   // Settles on a reply, a worker error, the reply timeout, or Cancel: a hung worker can never block the caller.
   const wait = (register: (resolve: (m: FromWorker) => void) => void): Promise<FromWorker> =>
     new Promise<FromWorker>((resolve, reject) => {

@@ -7,7 +7,7 @@ Closure-held secret bytes for GhostPay key handling. Spec: [`docs/remote/specs/s
 - `assertNoSecretBox`: fail loudly before a payload containing a box leaves the context.
 - `wipe`: best-effort zeroization.
 
-Closes the leaks listed in audit 03 S3-08 for code that adopts it. **Guardrail, not a boundary**: same-realm code can still read secrets, JavaScript strings and bigints cannot be wiped, and engines may copy buffers. Zero runtime dependencies. **Not wired into `core-crypto` or `apps/web`.**
+Closes the leaks listed in audit 03 S3-08 for code that adopts it. **Guardrail, not a boundary**: same-realm code can still read secrets, JavaScript strings and bigints cannot be wiped, and engines may copy buffers. Zero runtime dependencies. Wired into `apps/web` `lib/session.ts` (long-lived seller keys are boxed; temporaries via `withSessionSecrets`). `core-crypto` `SecretScalar` is unchanged in type (still a `Uint8Array` subtype; `slice`/`subarray` now throw) so no dependent changes; re-basing it on `SecretBox` remains an ADR item.
 
 ```bash
 npm run typecheck && npm run lint && npm test   # from this directory
@@ -15,5 +15,5 @@ npm run typecheck && npm run lint && npm test   # from this directory
 
 ## Status and deviations
 
-Library only; not imported by any other workspace; no external audit.
+Imported by `apps/web` (`session.ts`); no external audit.
 Differences from the spec and open items: [`DEVIATIONS.md`](./DEVIATIONS.md). Scripts (`package.json`): `build`, `typecheck`, `test` (`vitest run --coverage`), `lint`.

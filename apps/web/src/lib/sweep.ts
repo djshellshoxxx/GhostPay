@@ -16,7 +16,7 @@ import {
 import { findLookalikes, parseStrictAddress, isReason, classifyDestination, type DestinationClass } from '@ghostpay/address-safety';
 import { deriveStealthSecret, zeroize, type PublicAnnouncement, type SecretScalar } from '@ghostpay/core-crypto';
 import type { TypedDataInput } from '@ghostpay/tx-review';
-import { encodeFunctionData, getAddress, keccak256, parseTransaction, serializeTransaction } from 'viem/utils';
+import { encodeFunctionData, keccak256, parseTransaction, serializeTransaction } from 'viem/utils';
 import { UserFacingError } from './errors';
 import { buildPermit } from './pay';
 import { requestQuote, submitSweep, type FetchFn, type RelayerQuote } from './relayerClient';
@@ -171,7 +171,7 @@ export async function relayedSweep(i: RelayedSweepInput): Promise<string> {
       deadline,
     });
     guardTypedData(
-      ptd as unknown as TypedDataInput,
+      ptd,
       {
         kind: 'permit_sig',
         chainId: i.target.chainId,

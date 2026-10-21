@@ -31,5 +31,5 @@ npm run typecheck && npm run lint && npm test   # from this directory
 
 ## Status and deviations
 
-Library only; not imported anywhere; no live network run; no external audit.
+Library plus the `ghostpay-ops-monitor` CLI runner (section Runner); no live network run; no external audit.
 Differences from the spec and open items: [`DEVIATIONS.md`](./DEVIATIONS.md). Scripts (`package.json`): `build`, `typecheck`, `test` (`vitest run --coverage`), `lint`.
