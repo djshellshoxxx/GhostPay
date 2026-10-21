@@ -40,7 +40,8 @@ export interface RelayerConfig {
   readonly port: number;
   readonly allowedOrigins: readonly string[];
   readonly allowInsecureLocalhostRpc: boolean;
-  readonly trustProxyHops: number;
+  /** Addresses or CIDR blocks of reverse proxies whose `X-Forwarded-For` is honoured (empty: ignore the header). */
+  readonly trustedProxies: readonly string[];
   readonly quoteTtlSeconds: number;
   readonly minDeadlineSeconds: number;
   readonly maxDeadlineSeconds: number;
@@ -51,8 +52,28 @@ export interface RelayerConfig {
     readonly ownerBurst: number;
     readonly maxKeys: number;
     readonly saltRotationHours: number;
+    /** Process-wide `/v1/quote` budget (anonymous RPC cost control, S3-07). */
+    readonly quoteGlobalPerMinute: number;
+    readonly quoteGlobalBurst: number;
   };
-  readonly breaker: { readonly windowSize: number; readonly minSamples: number; readonly failureRatio: number; readonly cooldownSeconds: number };
+  readonly breaker: {
+    readonly windowSize: number;
+    readonly minSamples: number;
+    readonly failureRatio: number;
+    readonly cooldownSeconds: number;
+    readonly probeTimeoutSeconds: number;
+  };
+  /** Caps gas paid without reimbursement (reverted or front-run sweeps, S3-06). */
+  readonly lossBudget: {
+    readonly windowSeconds: number;
+    readonly perKeyWei: bigint;
+    readonly globalWei: bigint;
+    readonly maxKeys: number;
+  };
+  /** Bearer token that enables `GET /metrics` (absent: route disabled). */
+  readonly metricsToken?: string;
+  /** https URL receiving alert JSON (absent: alerts are log-only). */
+  readonly alertWebhookUrl?: string;
   readonly queue: { readonly maxPending: number; readonly receiptTimeoutSeconds: number };
   readonly shutdownGraceSeconds: number;
   readonly chains: readonly ChainRuntimeConfig[];
@@ -235,6 +256,60 @@ function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; inse
   };
 }
 
+function bigOr(o: JsonObject, key: string, path: string, def: bigint): bigint {
+  const v = o[key];
+  if (v === undefined) return def;
+  if (typeof v !== 'string' || !/^(?:0|[1-9][0-9]{0,30})$/.test(v)) return bad(`${path}.${key}`, 'must be a decimal string of wei');
+  return BigInt(v);
+}
+
+function parseTrustedProxies(v: unknown): readonly string[] {
+  if (v === undefined) return [];
+  if (!Array.isArray(v) || v.length > 32) return bad('trustedProxies', 'must be an array of at most 32 addresses or CIDR blocks');
+  const out: string[] = [];
+  for (const e of v) {
+    if (typeof e !== 'string' || e.length > 64) return bad('trustedProxies', 'entries must be strings');
+    try {
+      new TrustedProxies([e]);
+    } catch {
+      return bad('trustedProxies', 'entry is not an IP address or CIDR block');
+    }
+    out.push(e);
+  }
+  return out;
+}
+
+function envNameOf(o: JsonObject, key: string): string | undefined {
+  const v = o[key];
+  if (v === undefined) return undefined;
+  if (typeof v !== 'string' || !/^[A-Z_][A-Z0-9_]{0,63}$/.test(v)) return bad(key, 'must be an env var name');
+  return v;
+}
+
+/** Resolves the metrics bearer token and the alert webhook URL from the environment (names only in the file). */
+function optionalSecrets(o: JsonObject, ctx: ConfigContext): { metricsToken?: string; alertWebhookUrl?: string } {
+  const out: { metricsToken?: string; alertWebhookUrl?: string } = {};
+  const tokenVar = envNameOf(o, 'metricsTokenEnv');
+  if (tokenVar !== undefined) {
+    const t = ctx.env[tokenVar];
+    if (typeof t !== 'string' || !/^[A-Za-z0-9._~+/=-]{32,256}$/.test(t)) return bad('metricsTokenEnv', 'variable must hold a token of 32..256 URL-safe characters');
+    out.metricsToken = t;
+  }
+  const hookVar = envNameOf(o, 'alertWebhookUrlEnv');
+  if (hookVar !== undefined) {
+    const raw = ctx.env[hookVar];
+    let u: URL | undefined;
+    try {
+      u = raw === undefined ? undefined : new URL(raw);
+    } catch {
+      u = undefined;
+    }
+    if (u === undefined || u.protocol !== 'https:' || u.username !== '' || u.password !== '') return bad('alertWebhookUrlEnv', 'variable must hold an https URL without credentials');
+    out.alertWebhookUrl = u.toString();
+  }
+  return out;
+}
+
 /**
  * Validates the raw configuration object strictly (unknown keys rejected, everything bounded).
  *
@@ -250,7 +325,7 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
         raw,
         'config',
         ['allowedOrigins', 'chains'],
-        ['listen', 'allowDevChain', 'allowInsecureLocalhostRpc', 'trustProxyHops', 'quoteTtlSeconds', 'deadline', 'rateLimit', 'breaker', 'queue', 'shutdownGraceSeconds'],
+        ['listen', 'allowDevChain', 'allowInsecureLocalhostRpc', 'trustedProxies', 'quoteTtlSeconds', 'deadline', 'rateLimit', 'breaker', 'lossBudget', 'queue', 'shutdownGraceSeconds', 'metricsTokenEnv', 'alertWebhookUrlEnv'],
       ),
     '$',
   );
@@ -261,8 +336,9 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
   const minDeadlineSeconds = numberOr(dl, 'minSeconds', 'deadline', 30, 1, MAX_DEADLINE_WINDOW_SECONDS);
   const maxDeadlineSeconds = numberOr(dl, 'maxSeconds', 'deadline', MAX_DEADLINE_WINDOW_SECONDS, 1, MAX_DEADLINE_WINDOW_SECONDS);
   if (minDeadlineSeconds >= maxDeadlineSeconds) return bad('deadline', 'minSeconds must be below maxSeconds');
-  const rl = sub(o, 'rateLimit', '$', ['ipPerMinute', 'ipBurst', 'ownerPerMinute', 'ownerBurst', 'maxKeys', 'saltRotationHours']);
-  const br = sub(o, 'breaker', '$', ['windowSize', 'minSamples', 'failureRatio', 'cooldownSeconds']);
+  const rl = sub(o, 'rateLimit', '$', ['ipPerMinute', 'ipBurst', 'ownerPerMinute', 'ownerBurst', 'maxKeys', 'saltRotationHours', 'quoteGlobalPerMinute', 'quoteGlobalBurst']);
+  const br = sub(o, 'breaker', '$', ['windowSize', 'minSamples', 'failureRatio', 'cooldownSeconds', 'probeTimeoutSeconds']);
+  const lb = sub(o, 'lossBudget', '$', ['windowSeconds', 'perKeyWei', 'globalWei', 'maxKeys']);
   const q = sub(o, 'queue', '$', ['maxPending', 'receiptTimeoutSeconds']);
   const allowDevChain = boolOr(o, 'allowDevChain', '$', false);
   const allowInsecureLocalhostRpc = boolOr(o, 'allowInsecureLocalhostRpc', '$', false);
@@ -278,7 +354,7 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
     port: numberOr(listen, 'port', 'listen', 8787, 0, 65535),
     allowedOrigins: parseOrigins(o['allowedOrigins']),
     allowInsecureLocalhostRpc,
-    trustProxyHops: numberOr(o, 'trustProxyHops', '$', 0, 0, 5),
+    trustedProxies: parseTrustedProxies(o['trustedProxies']),
     quoteTtlSeconds: numberOr(o, 'quoteTtlSeconds', '$', 120, 10, 600),
     minDeadlineSeconds,
     maxDeadlineSeconds,
@@ -289,13 +365,23 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
       ownerBurst: numberOr(rl, 'ownerBurst', 'rateLimit', 3, 1, 100_000, false),
       maxKeys: numberOr(rl, 'maxKeys', 'rateLimit', 10_000, 16, 1_000_000),
       saltRotationHours: numberOr(rl, 'saltRotationHours', 'rateLimit', 24, 1, 24),
+      quoteGlobalPerMinute: numberOr(rl, 'quoteGlobalPerMinute', 'rateLimit', 600, 1, 1_000_000, false),
+      quoteGlobalBurst: numberOr(rl, 'quoteGlobalBurst', 'rateLimit', 100, 1, 1_000_000, false),
     },
     breaker: {
       windowSize,
       minSamples: numberOr(br, 'minSamples', 'breaker', Math.min(5, windowSize), 1, windowSize),
       failureRatio: numberOr(br, 'failureRatio', 'breaker', 0.5, 0.01, 1, false),
       cooldownSeconds: numberOr(br, 'cooldownSeconds', 'breaker', 60, 1, 86_400),
+      probeTimeoutSeconds: numberOr(br, 'probeTimeoutSeconds', 'breaker', 60, 1, 3600),
     },
+    lossBudget: {
+      windowSeconds: numberOr(lb, 'windowSeconds', 'lossBudget', 3600, 60, 86_400),
+      perKeyWei: bigOr(lb, 'perKeyWei', 'lossBudget', 5n * 10n ** 15n),
+      globalWei: bigOr(lb, 'globalWei', 'lossBudget', 5n * 10n ** 16n),
+      maxKeys: numberOr(lb, 'maxKeys', 'lossBudget', 10_000, 16, 1_000_000),
+    },
+    ...optionalSecrets(o, ctx),
     queue: {
       maxPending: numberOr(q, 'maxPending', 'queue', 16, 1, 1024),
       receiptTimeoutSeconds: numberOr(q, 'receiptTimeoutSeconds', 'queue', 120, 5, 3600),

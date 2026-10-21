@@ -105,6 +105,7 @@ export function deriveStealthPayment(
  * @param spendPublicKey `S`.
  * @param ephemeralPublicKey `R` from the announcement.
  * @param viewTag Announced view tag, or `undefined` to skip the fast filter.
+ * @param expectedStealthPublicKey Optional `P` seen on chain; a different derived `P` returns `null`.
  * @returns Match, or `null`.
  * @throws {SolanaStealthError} `INVALID_POINT` for a malformed `R` or `S`.
  */
