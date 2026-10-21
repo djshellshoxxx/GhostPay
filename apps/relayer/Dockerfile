@@ -18,6 +18,8 @@ ENV NODE_ENV=production
 COPY --from=build --chown=nonroot:nonroot /repo/node_modules /repo/node_modules
 COPY --from=build --chown=nonroot:nonroot /repo/packages/chain-adapters/package.json /repo/packages/chain-adapters/package.json
 COPY --from=build --chown=nonroot:nonroot /repo/packages/chain-adapters/dist /repo/packages/chain-adapters/dist
+COPY --from=build --chown=nonroot:nonroot /repo/packages/relayer-guard/package.json /repo/packages/relayer-guard/package.json
+COPY --from=build --chown=nonroot:nonroot /repo/packages/relayer-guard/dist /repo/packages/relayer-guard/dist
 COPY --from=build --chown=nonroot:nonroot /repo/packages/core-crypto/package.json /repo/packages/core-crypto/package.json
 COPY --from=build --chown=nonroot:nonroot /repo/packages/core-crypto/dist /repo/packages/core-crypto/dist
 COPY --from=build --chown=nonroot:nonroot /repo/packages/invoice-schema/package.json /repo/packages/invoice-schema/package.json

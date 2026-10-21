@@ -710,7 +710,7 @@ describe('S3-05/06 breaker integration', () => {
     await trip(s);
     s.clock.ms += 61_000;
     s.fake.sendGate = new Promise<void>(() => undefined); // probe stays in flight
-    void call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 60n })).body);
+    void call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 60n })).body).catch(() => undefined);
     await settle();
     const h = await call(s, 'GET', '/healthz');
     expect(h.status).toBe(503);
@@ -722,7 +722,7 @@ describe('S3-05/06 breaker integration', () => {
     await trip(s);
     s.clock.ms += 61_000;
     s.fake.sendGate = new Promise<void>(() => undefined);
-    void call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 70n })).body);
+    void call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 70n })).body).catch(() => undefined);
     await settle();
     s.clock.ms += 6_000;
     expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ chains: [{ breaker: 'open' }] });

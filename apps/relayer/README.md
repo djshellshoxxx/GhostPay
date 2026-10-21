@@ -9,7 +9,7 @@ Node 22, ESM, strict TypeScript, `node:http`, `viem` plus workspace packages (`@
 sweep typed data, RPC URL and manifest validation). No other runtime dependency. Deviations from the spec are in
 [`DEVIATIONS.md`](./DEVIATIONS.md); what is stored is in [`PRIVACY.md`](./PRIVACY.md).
 
-Scripts (`package.json`): `build`, `typecheck`, `test`, `lint`, `start` (`node dist/main.js`). Wired packages: only `@ghostpay/chain-adapters`; `@ghostpay/relayer-guard` (breaker, limiter, challenge) is **not** used by this app.
+Scripts (`package.json`): `build`, `typecheck`, `test`, `lint`, `start` (`node dist/main.js`). Wired packages: `@ghostpay/chain-adapters` and `@ghostpay/relayer-guard` (non-wedging breaker, trusted-proxy client address, IPv6 /64 buckets, monotonic flood-proof limiter, loss budget). The challenge module of relayer-guard is **not** wired.
 
 ## API
 
@@ -18,7 +18,8 @@ Errors are `{"error":{"code":"<class>"}}` with a fixed class and nothing else.
 
 | Route | Purpose |
 |---|---|
-| `GET /healthz` | `{status, chains:[{chainId, breaker}]}`; 503 when every chain's breaker is open or during shutdown |
+| `GET /healthz` | `{status, chains:[{chainId, breaker}]}`; `degraded` (503) when any chain's breaker is open or half-open (S3-05), `shutting_down` during shutdown |
+| `GET /metrics` | Prometheus text; 404 unless `metricsTokenEnv` is configured, then requires `Authorization: Bearer <token>` |
 | `GET /v1/info` | version, fee policy (min 50 bps, cap 300 bps, gas x1.10), quote TTL, deadline window, per chain: `sweepRelayer`, `feeTo`, token allowlist |
 | `POST /v1/quote` | `{chainId, token, owner, destination, amount}` -> `{fee, feeTo, expiresAt, quoteToken}` (`fee` decimal string, `expiresAt` unix seconds) |
 | `POST /v1/sweep` | `{chainId, sweep:{token,owner,destination,feeTo,amount,fee,deadline,nonce}, sweepSig, permit?:{value,deadline,v,r,s}, quoteToken}` -> `{txHash}` |
@@ -117,3 +118,12 @@ local anvil and sweeps through the relayer (skipped when anvil or the artifacts 
 No test against a public testnet RPC; no load test; Docker image and systemd unit were not built or run in the authoring
 sandbox; mainnet behaviour (manifest + `ALLOW_MAINNET`) is covered by config tests only; gas units in the example config
 are placeholders.
+
+## Abuse controls and operations (relayer-guard wiring)
+
+- `trustedProxies` (CIDR list, default empty) replaces `trustProxyHops`. `X-Forwarded-For` is honoured only when the socket peer is listed, walked right to left; a broken chain gets `400 invalid_client_address`. Buckets are IPv4 /32 and IPv6 /64, hashed with the rotating salt (S3-07).
+- Breaker: every admission is a permit settled on every path; user-attributable results (simulation revert, nonce used, caps) are neutral; `breaker.probeTimeoutSeconds` expires a stuck probe (S3-05). A mined revert after a passing simulation is charged to `lossBudget` (per network bucket and per destination, plus global; `429 loss_budget_exhausted`) and does not feed the breaker (S3-06).
+- `rateLimit.quoteGlobalPerMinute/Burst`: process-wide `/v1/quote` budget (`429 rate_limited_global`); quote-path gas price is reused for 3 s.
+- Alerts: `alertWebhookUrlEnv` names an env var holding an https URL; JSON `{kind, chainId, text}` is posted on breaker open, low balance, loss/daily budget exhaustion and mined reverts (de-duplicated per kind and chain, 60 s). No request data is ever included.
+- Metrics (`/metrics`): `relayer_http_requests_total`, `relayer_sweeps_total`, `relayer_breaker_transitions_total`, `relayer_mined_reverts_total`, `relayer_loss_budget_denied_total`, gauges `relayer_breaker_state` (0 closed, 1 half_open, 2 open), `relayer_daily_budget_used_wei`, `relayer_queue_pending`.
+- Unverified: nothing here has run behind a real proxy, Prometheus or webhook receiver.

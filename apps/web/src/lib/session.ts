@@ -4,21 +4,22 @@ import {
   parseCompressedPoint,
   randomScalar,
   secretScalarFromBytes,
-  unsafeRevealSecret,
   zeroize,
   type CompressedPoint,
   type SecretScalar,
   type StealthKeySet,
 } from '@ghostpay/core-crypto';
+import { SecretBox, wipe } from '@ghostpay/secret-box';
 import { hexToBytes } from '@noble/hashes/utils.js';
 import { signerPublicKeyHex } from '@ghostpay/invoice-schema';
 import { decryptKeystore, encryptKeystore, type KeystoreOptions } from './keystore';
 import { UserFacingError } from './errors';
 
 /**
- * In-memory seller key holder. Secrets exist only as redacting `SecretScalar` values inside this module's closure:
- * they cannot be JSON-serialized, stringified or logged, and nothing here touches web storage. React state only ever
- * receives the public summary.
+ * In-memory seller key holder. The three private scalars are held as `SecretBox` values (closure/WeakMap storage, not
+ * `Uint8Array` subtypes), so spread, `structuredClone`/`postMessage`, `Array.from` and `slice` of the stored value see no
+ * key bytes (audit S3-08). Code that needs a scalar borrows a temporary `SecretScalar` through `withSessionSecrets`,
+ * which wipes it afterwards. Nothing here touches web storage. React state only ever receives the public summary.
  */
 export interface SessionPublic {
   readonly metaAddress: string;
@@ -32,7 +33,18 @@ export interface SessionSecrets {
   readonly signingKey: SecretScalar;
 }
 
-let current: SessionSecrets | undefined;
+interface Stored {
+  readonly spending: SecretBox;
+  readonly viewing: SecretBox;
+  readonly signing: SecretBox;
+  readonly spendingPublicKey: CompressedPoint;
+  readonly viewingPublicKey: CompressedPoint;
+}
+
+let current: Stored | undefined;
+/** Compatibility copies handed out by {@link requireSession}; wiped when the session clears (bounded). */
+let issued: SecretScalar[] = [];
+const MAX_ISSUED = 8;
 const listeners = new Set<() => void>();
 
 function emit(): void {
@@ -58,6 +70,32 @@ function summarize(s: SessionSecrets): SessionPublic {
   };
 }
 
+/** Moves freshly created scalars into boxes (wiping the scalars) and returns the stored form. */
+function box(next: SessionSecrets): Stored {
+  return {
+    spending: SecretBox.copyOf(next.keys.spendingSecret, { label: 'spending' }),
+    viewing: SecretBox.copyOf(next.keys.viewingSecret, { label: 'viewing' }),
+    signing: SecretBox.copyOf(next.signingKey, { label: 'signing' }),
+    spendingPublicKey: next.keys.spendingPublicKey,
+    viewingPublicKey: next.keys.viewingPublicKey,
+  };
+}
+
+function scalarOf(b: SecretBox): SecretScalar {
+  return b.use((bytes) => secretScalarFromBytes(bytes));
+}
+
+function open(s: Stored): SessionSecrets {
+  return {
+    keys: { spendingSecret: scalarOf(s.spending), viewingSecret: scalarOf(s.viewing), spendingPublicKey: s.spendingPublicKey, viewingPublicKey: s.viewingPublicKey },
+    signingKey: scalarOf(s.signing),
+  };
+}
+
+function wipeOpened(o: SessionSecrets): void {
+  zeroize(o.keys.spendingSecret, o.keys.viewingSecret, o.signingKey);
+}
+
 let publicSummary: SessionPublic | undefined;
 
 /** Snapshot for `useSyncExternalStore`; stable identity between changes. */
@@ -67,8 +105,9 @@ export function getSessionPublic(): SessionPublic | undefined {
 
 function install(next: SessionSecrets): SessionPublic {
   clearSession(false);
-  current = next;
+  // Summarize first: boxing wipes the scalars.
   publicSummary = summarize(next);
+  current = box(next);
   emit();
   return publicSummary;
 }
@@ -112,10 +151,51 @@ export function importSession(input: ImportedHex): SessionPublic {
   return install({ keys: keySetFromScalars(spending, viewing), signingKey: signing });
 }
 
-/** Secrets for an operation that needs them (sign, scan, sweep). Throws when no keys are loaded. */
+/**
+ * Runs `fn` with temporary scalars derived from the boxed keys and wipes them afterwards, also when `fn` throws.
+ *
+ * @param fn Must not keep the scalars or return them.
+ * @throws {UserFacingError} when no keys are loaded.
+ */
+export function withSessionSecrets<T>(fn: (s: SessionSecrets) => T): T {
+  if (current === undefined) throw new UserFacingError('Load or generate seller keys first (Seller keys).');
+  const opened = open(current);
+  try {
+    return fn(opened);
+  } finally {
+    wipeOpened(opened);
+  }
+}
+
+/** Async variant of {@link withSessionSecrets}: the temporaries are wiped when the promise settles. */
+export async function withSessionSecretsAsync<T>(fn: (s: SessionSecrets) => Promise<T>): Promise<T> {
+  if (current === undefined) throw new UserFacingError('Load or generate seller keys first (Seller keys).');
+  const opened = open(current);
+  try {
+    return await fn(opened);
+  } finally {
+    wipeOpened(opened);
+  }
+}
+
+/** A fresh plain copy of the viewing key for the scanner worker; the receiver must wipe it (runScan does). */
+export function revealViewingKey(): Uint8Array {
+  if (current === undefined) throw new UserFacingError('Load or generate seller keys first (Seller keys).');
+  return current.viewing.use((b) => b.slice());
+}
+
+/**
+ * Compatibility accessor: temporary scalars that live until the session is cleared (at most eight are kept; older
+ * copies are wiped). Prefer {@link withSessionSecrets}, which wipes immediately.
+ *
+ * @throws {UserFacingError} when no keys are loaded.
+ */
 export function requireSession(): SessionSecrets {
   if (current === undefined) throw new UserFacingError('Load or generate seller keys first (Seller keys).');
-  return current;
+  const opened = open(current);
+  issued.push(opened.keys.spendingSecret, opened.keys.viewingSecret, opened.signingKey);
+  while (issued.length > MAX_ISSUED * 3) zeroize(issued.shift() as SecretScalar);
+  return opened;
 }
 
 export function hasSession(): boolean {
@@ -125,8 +205,12 @@ export function hasSession(): boolean {
 /** Best-effort wipe and forget. */
 export function clearSession(notify = true): void {
   if (current !== undefined) {
-    zeroize(current.keys.spendingSecret, current.keys.viewingSecret, current.signingKey);
+    current.spending.dispose();
+    current.viewing.dispose();
+    current.signing.dispose();
   }
+  zeroize(...issued);
+  issued = [];
   current = undefined;
   publicSummary = undefined;
   if (notify) emit();
@@ -134,15 +218,16 @@ export function clearSession(notify = true): void {
 
 /** Encrypted backup text. Raw keys exist only for the duration of the call. */
 export async function exportKeystore(passphrase: string, options: KeystoreOptions = {}): Promise<string> {
-  const s = requireSession();
-  const pub = summarize(s);
-  const spendingKey = unsafeRevealSecret(s.keys.spendingSecret);
-  const viewingKey = unsafeRevealSecret(s.keys.viewingSecret);
-  const signingKey = unsafeRevealSecret(s.signingKey);
+  if (current === undefined) throw new UserFacingError('Load or generate seller keys first (Seller keys).');
+  const { spending, viewing, signing } = current;
+  const pub = publicSummary as SessionPublic;
+  const spendingKey = spending.use((b) => b.slice());
+  const viewingKey = viewing.use((b) => b.slice());
+  const signingKey = signing.use((b) => b.slice());
   try {
     return await encryptKeystore({ spendingKey, viewingKey, signingKey }, { metaAddress: pub.metaAddress, signer: pub.signerPublicKey }, passphrase, options);
   } finally {
-    zeroize(spendingKey, viewingKey, signingKey);
+    wipe(spendingKey, viewingKey, signingKey);
   }
 }
 
