@@ -44,7 +44,7 @@ const sellerDest = acct(6); // seller's cold destination for swept funds
 const sweepDest2 = acct(7);
 
 const chain = defineChain({ id: CHAIN_ID, name: 'devnet', nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 }, rpcUrls: { default: { http: [RPC] } } });
-const pub = createPublicClient({ chain, transport: http(RPC) });
+const pub = createPublicClient({ chain, transport: http(RPC), pollingInterval: 25 });
 const wallet = (account) => createWalletClient({ account, chain, transport: http(RPC) });
 
 const erc20 = parseAbi([

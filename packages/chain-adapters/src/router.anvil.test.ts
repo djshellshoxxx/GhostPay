@@ -72,7 +72,7 @@ describe('router fee differential vs compiled router (anvil)', () => {
     const payer = privateKeyToAccount(PAYER_KEY);
     const erc20 = parseAbi(['function balanceOf(address) view returns (uint256)', 'function mint(address,uint256)', 'function approve(address,uint256) returns (bool)']);
     const { meta } = recipient();
-    const pub = (): ReturnType<typeof createPublicClient> => createPublicClient({ transport: http(url) });
+    const pub = (): ReturnType<typeof createPublicClient> => createPublicClient({ transport: http(url), pollingInterval: 25 });
     const wallet = (key: Hex): ReturnType<typeof createWalletClient> => createWalletClient({ account: privateKeyToAccount(key), chain: defineChain({ id: 31337, name: 'anvil', nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 }, rpcUrls: { default: { http: [url] } } }), transport: http(url) });
 
     beforeAll(async () => {
