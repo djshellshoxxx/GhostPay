@@ -8,6 +8,7 @@ import type { AddressInfo } from 'node:net';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { defaultDeps, parseArgs, runCli, type CliDeps } from './cli.js';
+import type { FetchLike } from './types.js';
 import { A, CODE, FakeRpc, healthy } from './fixtures.testutil.js';
 
 const CHAIN = 84532;
@@ -182,7 +183,7 @@ describe('runCli', () => {
     const sum = createHash('sha256').update(index).digest('hex');
     const files = { '/cfg.json': CONFIG({ release: { mirrors: ['https://pay.example.org'], sha256sumsFile: '/SHA256SUMS', files: ['index.html'] } }), '/SHA256SUMS': `${sum}  index.html\n` };
     const ok = rig({ files });
-    const fetchOk = (body: string): CliDeps['fetchFile'] => (url) => Promise.resolve({ ok: true, status: 200, arrayBuffer: () => Promise.resolve(new TextEncoder().encode(url.includes('deployments') ? MANIFEST : body).buffer as ArrayBuffer) });
+    const fetchOk = (body: string): FetchLike => (url) => Promise.resolve({ ok: true, status: 200, arrayBuffer: () => Promise.resolve(new TextEncoder().encode(url.includes('deployments') ? MANIFEST : body).buffer) });
     expect(await runCli(['--config', '/cfg.json'], ENV, { ...ok.deps, fetchFile: fetchOk(index)  })).toBe(0);
     const tampered = rig({ files });
     expect(await runCli(['--config', '/cfg.json'], ENV, { ...tampered.deps, fetchFile: fetchOk('evil')  })).toBe(2);
