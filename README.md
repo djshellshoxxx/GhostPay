@@ -2,28 +2,21 @@
 
 GhostPay is an open-source project exploring client-side invoice creation and stealth-address payments for EVM-compatible networks.
 
-The project goal is to reduce address reuse and limit routine exposure of invoice details. Blockchain transactions and much of their metadata remain public, so GhostPay does not claim absolute anonymity or unlinkability. The architecture and its privacy limits are documented before implementation begins.
+The project goal is to reduce address reuse and limit routine exposure of invoice details. Blockchain transactions and much of their metadata remain public, so GhostPay does not claim absolute anonymity or unlinkability.
 
 ## Project status
 
-**Architecture phase.** No production contracts or application are implemented. The initial documentation includes the [Master Blueprint](docs/MASTER_BLUEPRINT.md), [Developer Specification](docs/DEVELOPER_SPECIFICATION.md), and [Security, QA, DevOps, and Feature Expansion Playbook](docs/SECURITY_QA_DEVOPS_PLAYBOOK.md).
+**Post-launch expansion planning.** This repository documents the architecture, developer requirements, security/QA process, and proposed post-launch features. Track deployed contract addresses, supported networks, and release state in a versioned deployment manifest and release notes.
 
 ## Starting points
 
+- [Post-Launch Feature Expansion and Advanced Security Roadmap](docs/POST_LAUNCH_FEATURES_SECURITY_ROADMAP.md)
 - [Security, QA, DevOps, and Feature Expansion Playbook](docs/SECURITY_QA_DEVOPS_PLAYBOOK.md)
 - [Developer Specification and Execution Blueprint](docs/DEVELOPER_SPECIFICATION.md)
 - [Master Blueprint](docs/MASTER_BLUEPRINT.md)
 - [EIP-5564: Stealth Addresses](https://eips.ethereum.org/EIPS/eip-5564)
 - [EIP-6538: Stealth Meta-Address Registry](https://eips.ethereum.org/EIPS/eip-6538)
 - [ERC-4337: Account Abstraction](https://eips.ethereum.org/EIPS/eip-4337)
-
-## Initial priorities
-
-1. Define supported chains, stealth scheme, invoice envelope, and privacy claims.
-2. Write cryptographic test vectors and a differential-tested stealth derivation package.
-3. Prototype and test the smallest possible announcement and settlement contracts.
-4. Build a static client with local invoice parsing and wallet-confirmed payments.
-5. Treat scanning services, RPCs, relayers, and paymasters as observable third-party components.
 
 ## Core design constraints
 
