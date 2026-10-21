@@ -79,8 +79,10 @@ The lead should confirm or reject each.
   conservative: after spending the full cap, the next spend can be delayed by up to two windows (a true sliding log would need unbounded storage and an
   attacker-controlled loop). Accounting is at `executeWithdraw`, not `requestWithdraw`, so several requests can be pending at once and each is checked when it matures.
   `amount > limit` is rejected at request time (it could never execute).
-- **P3. Signatures never contain the destination; payout goes to the destination at execution time.** Pending requests therefore follow a destination change
-  (a rotated-away cold wallet should not still receive funds). The EIP-712 domain (name `GhostPayPolicyAccount`, version `1`, chain id, clone address)
+- **P3. Signatures never contain the destination; payout goes to the destination at execution time, which must equal the destination at request time.**
+  *Changed in round 3b (R14):* pending requests used to follow a destination change; now `requestWithdraw` records the then-current destination and
+  `executeWithdraw` reverts `DestinationChangedSinceRequest(requested, current)` while they differ, so neither a rotated-away cold wallet nor a newly set
+  (possibly attacker-set) destination receives a request made before the change. The EIP-712 domain (name `GhostPayPolicyAccount`, version `1`, chain id, clone address)
   binds chain and account. Types: `Withdraw(address token,uint256 amount,uint256 deadline,uint256 nonce)`, `CancelWithdraw(bytes32 id)`,
   `ProposeDestination(address newDestination,uint256 deadline,uint256 nonce)`, `CancelDestination(bytes32 id)`. `id` = the struct hash of the signed
   {Withdraw}/{ProposeDestination}, so it is unique per nonce. Cancel signatures need no nonce (bound to a unique id, effect is idempotent) and a cancel
@@ -116,13 +118,15 @@ The lead should confirm or reject each.
 - **P13. `receive()` is empty** (no event) so that sends do not depend on logging. There is no `fallback`. No `delegatecall`, `selfdestruct`, `approve`, generic call or admin exists.
 - **P14. Native sends with a 2300-gas stipend (`transfer`/`send`) to a clone are expected to fail** because the EIP-1167 proxy `delegatecall`s a cold implementation
   (2600 gas under EIP-2929). The router sends native value with all gas and is unaffected. Not verified on a live network; only analysed.
-- **P15. Timestamps are stored as `uint64`.** `block.timestamp + 2 * 30 days` fits for any realistic date; casts carry `forge-lint` justifications.
+- **P15. Timestamps are stored as `uint64`.** `block.timestamp + 2 * 30 days` fits for any realistic date. Since round 3b (R15) `executeAfter` and
+  `pendingEffectiveAt` are narrowed with OpenZeppelin `SafeCast.toUint64`, so past `2^64 - 2 * delay` seconds the call reverts instead of wrapping to a small
+  value (which would have bypassed the timelock; unreachable in practice, about 5.8e11 years away). The `_consume` bucket cast keeps its justification.
 - **P16. `DeployPolicy.s.sol` reads configuration through a virtual `_env()`** so its test can inject values; the shared process environment cannot be used because
   `DeployTest` runs in parallel and expects `FEE_RECIPIENT` unset. `FEE_TOKEN` and `FEE_RECIPIENT` must be non-zero; `FLAT_FEE=0` is accepted only when set explicitly.
   `FEE_TOKEN` must have code on the target chain.
 - **P17. `deployments/schema.json` additions are optional and additive:** `policyImplementation`, `policyFactory`, `policyFeeToken`, `policyFlatFee` (decimal string),
   `policyFeeRecipient`, and optional `deployTx` / `bytecodeHashes` entries; `dependentRequired` makes the five policy fields all-or-nothing. Manifests without them validate as before.
-- **P18. `scripts/check-natspec.sh`** now checks the two new contracts and ignores two more third-party errors (`InsufficientBalance`, `FailedDeployment`, from OpenZeppelin `Clones`/`Create2`).
+- **P18. `scripts/check-natspec.sh`** now checks the two new contracts and ignores two more third-party errors (`InsufficientBalance`, `FailedDeployment`, from OpenZeppelin `Clones`/`Create2`), and since round 3b `SafeCastOverflowedUintDowncast` (OpenZeppelin `SafeCast`, R15).
 - **P19. Tests use `vm.getBlockTimestamp()`** instead of `block.timestamp` after `vm.warp` to keep `forge build` at zero lint warnings.
 
 ## Spec observations / possible spec bugs
@@ -244,3 +248,24 @@ argument on `GhostPayRouter` (the audit's other option) so the audited scheme-1 
   revert (or `code.length != 0`) as success. N-04: on chains whose native coin has an ERC-20 alias (for example Celo's `GoldToken`), a limits tree must not contain both
   `address(0)` and the alias, because that would double the cap. N-05: scheme id `0x47500002` and factory-clone recipients shrink the anonymity set to scheme-2 users (inherent).
 
+# Round-3b remediation (docs/remote/fixes-round3b-contracts.md)
+
+- **R14. Pending withdrawals are bound to the destination at request time (round audit C-02, review-policy F-03).** `PolicyAccount` stores the
+  current `destination` with each request, packed into the storage slot of `windowSeconds` (an internal `StoredRequest`; the external
+  `requests(id)` getter and the `Request` struct are unchanged). `executeWithdraw` reverts `DestinationChangedSinceRequest(requested, current)`
+  before any state change while the two differ; the request stays `Pending` and can be cancelled, or becomes executable again if the destination is
+  changed back. New view `requestDestination(id)`. No typehash, signature or `requests` ABI change; the ABI gains one error and one view
+  (regenerate `packages/policy-scheme/src/abi` with `scripts/gen-abi.sh`). Consequence for clients: after a destination change, pending requests
+  must be re-signed (one more `delay`). Gas: up to about +3k per `requestWithdraw` (the `windowSeconds` slot is now always non-zero), a few hundred on `executeWithdraw` (`.gas-snapshot` diff).
+  Tests: `test_attack_changeAppliesAfterTwiceDelay_pendingWithdrawalsDoNotFollowNewDestination`, `test_pendingWithdrawDoesNotFollowDestinationChange`,
+  invariant `invariant_pendingRequestsPayOnlyTheirBoundDestination` (kills the mutant that drops the check). This supersedes R13's N-02 note on the
+  destination; requests still never expire.
+- **R15. `SafeCast.toUint64` for timelock timestamps (stress F-3).** See P15. Test `test_item6_timestampNearUint64Max_revertsInsteadOfWrapping`.
+- **R16. Unsalted `policyHash` (round audit C-01): documented, not changed (owner decision).** A salted commitment
+  `keccak256(abi.encode(destination, delay, limitsRoot, policySalt))` would change `policyHashOf`, `deploy`, `initialize`, the CREATE2 salt input,
+  the CONTRACTS_SPEC section 4 formula and the `@ghostpay/policy-scheme` `computePolicyHash` vectors together; it also protects only until the first
+  deploy, whose calldata and getters publish the pre-image anyway. A no-contract-change mitigation exists: a limits tree with a secret random
+  blinding leaf (any unused token address) makes `limitsRoot` high entropy (`test_item1_blindingLeafWorkaround_defeatsDictionary_andStillWithdraws`);
+  it requires an explicit leaf for every token the owner wants to withdraw (P1). Design note in docs/remote/fixes-round3b-contracts.md.
+- **R17. Stolen-key wording.** The `PolicyAccount` NatSpec now states that a stolen key is only delayed (`2 * delay`) and that protection lasts only while
+  the honest owner cancels every hostile proposal in time (the contest is symmetric and unbounded; see "Spec observations").

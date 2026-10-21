@@ -8,6 +8,7 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
 import {IPolicyAccount} from "./interfaces/IPolicyAccount.sol";
 
@@ -16,7 +17,9 @@ import {IPolicyAccount} from "./interfaces/IPolicyAccount.sol";
 /// @notice Policy-guarded stealth account (scheme id 0x47500002). A stealth EOA (`owner`) controls an
 /// EIP-1167 clone of this contract; funds can only ever leave to `destination`, after a delay, within
 /// a per-token rolling-window cap. A stolen owner key therefore cannot redirect funds before
-/// `2 * delay` has elapsed, and the honest owner (holding the same key) can cancel in that window.
+/// `2 * delay` has elapsed. It is not prevented from redirecting them afterwards: the thief holds the
+/// same key as the owner, can cancel the owner's actions and re-propose without limit, so protection
+/// lasts only while the honest owner (or a watcher with the key) cancels every hostile proposal in time.
 /// @dev Security properties:
 /// - Deployed once as an implementation (which locks itself in its constructor) and cloned by
 ///   `PolicyAccountFactory` at a CREATE2 address derived from `(owner, policyHash)`. `initialize`
@@ -41,6 +44,10 @@ import {IPolicyAccount} from "./interfaces/IPolicyAccount.sol";
 ///   (`limitLeafHash`) and the supplied proof must use it, so the submitter cannot pick a different
 ///   leaf of the same tree. Merkle trees should still contain each token at most once.
 /// - The caller of `executeWithdraw`/`executeDestinationChange` is irrelevant; recipients are state.
+/// - A request is bound to the destination current when it was requested: if the destination changed
+///   since, `executeWithdraw` reverts `DestinationChangedSinceRequest` and the request can only be
+///   cancelled (round-3b; a pending request never pays a destination the owner did not have at signing).
+/// - Timestamps are narrowed to `uint64` with `SafeCast` (revert instead of wrap past year 2^64 s).
 /// - Storage is read from the clone; `ReentrancyGuard` starts at 0 in clones, which is accepted by it.
 contract PolicyAccount is IPolicyAccount, EIP712, ReentrancyGuard {
     using SafeERC20 for IERC20;
@@ -95,8 +102,20 @@ contract PolicyAccount is IPolicyAccount, EIP712, ReentrancyGuard {
         uint256 previous;
     }
 
+    /// @dev Storage form of a request: the interface `Request` plus the destination at request time,
+    /// packed into the slot of `windowSeconds` so that the binding costs no extra storage slot.
+    struct StoredRequest {
+        address token;
+        Status status;
+        uint64 executeAfter;
+        uint64 windowSeconds;
+        address destination;
+        uint256 amount;
+        uint256 limit;
+    }
+
     /// @dev Withdrawal requests by id.
-    mapping(bytes32 id => Request) private _requests;
+    mapping(bytes32 id => StoredRequest) private _requests;
     /// @dev Per-token window state.
     mapping(address token => WindowState) private _windows;
     /// @dev Word index (`nonce >> 8`) => bitmap of used nonces.
@@ -170,14 +189,13 @@ contract PolicyAccount is IPolicyAccount, EIP712, ReentrancyGuard {
             }
         }
 
-        // Bounded: timestamp + MAX_DELAY fits in 64 bits for any realistic timestamp.
-        // forge-lint: disable-next-line(unsafe-typecast)
-        uint64 executeAfter = uint64(block.timestamp + delay);
-        _requests[id] = Request({
+        uint64 executeAfter = SafeCast.toUint64(block.timestamp + delay);
+        _requests[id] = StoredRequest({
             token: w.token,
             status: Status.Pending,
             executeAfter: executeAfter,
             windowSeconds: window,
+            destination: destination,
             amount: w.amount,
             limit: limit
         });
@@ -188,14 +206,15 @@ contract PolicyAccount is IPolicyAccount, EIP712, ReentrancyGuard {
 
     /// @inheritdoc IPolicyAccount
     function executeWithdraw(bytes32 id) external nonReentrant {
-        Request memory r = _requests[id];
+        StoredRequest memory r = _requests[id];
         if (r.status != Status.Pending) revert NotPending();
         // forge-lint: disable-next-line(block-timestamp)
         if (block.timestamp < r.executeAfter) revert TimelockActive(r.executeAfter);
+        address to = destination;
+        if (to != r.destination) revert DestinationChangedSinceRequest(r.destination, to);
         _requests[id].status = Status.Executed;
         if (r.limit != type(uint256).max) _consume(r.token, r.amount, r.limit, r.windowSeconds);
 
-        address to = destination;
         if (r.token == address(0)) {
             // Destination is contract state controlled only by the owner's timelocked policy, not by the
             // caller. Assembly call: no return data is copied, so a hostile destination cannot inflate
@@ -251,9 +270,7 @@ contract PolicyAccount is IPolicyAccount, EIP712, ReentrancyGuard {
         _checkOwner(id, sig);
         _useNonce(nonce);
 
-        // Bounded: 2 * MAX_DELAY plus a timestamp fits in 64 bits.
-        // forge-lint: disable-next-line(unsafe-typecast)
-        uint64 effectiveAt = uint64(block.timestamp + 2 * uint256(delay));
+        uint64 effectiveAt = SafeCast.toUint64(block.timestamp + 2 * uint256(delay));
         pendingDestination = newDestination;
         pendingEffectiveAt = effectiveAt;
         pendingProposalId = id;
@@ -293,7 +310,24 @@ contract PolicyAccount is IPolicyAccount, EIP712, ReentrancyGuard {
     /// @param id The request id.
     /// @return request The request (status `None` if unknown).
     function requests(bytes32 id) external view returns (Request memory request) {
-        request = _requests[id];
+        StoredRequest memory r = _requests[id];
+        request = Request({
+            token: r.token,
+            status: r.status,
+            executeAfter: r.executeAfter,
+            windowSeconds: r.windowSeconds,
+            amount: r.amount,
+            limit: r.limit
+        });
+    }
+
+    /// @notice Destination a request is bound to (the destination when it was requested).
+    /// @dev `executeWithdraw` reverts `DestinationChangedSinceRequest` while this differs from
+    /// `destination`; such a request can only be cancelled. Zero for an unknown id.
+    /// @param id The request id.
+    /// @return boundDestination The destination at request time.
+    function requestDestination(bytes32 id) external view returns (address boundDestination) {
+        boundDestination = _requests[id].destination;
     }
 
     /// @notice Whether an unordered nonce was consumed.

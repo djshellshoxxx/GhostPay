@@ -1008,16 +1008,40 @@ contract PolicyAccountTest is PolicyBase {
         assertEq(token.balanceOf(thief), 0);
     }
 
-    function test_attack_changeAppliesAfterTwiceDelay_pendingWithdrawalsFollowNewDestination()
+    /// @dev Round-3b (round audit C-02): a request made before a destination change is bound to the old
+    /// destination. It never pays the (possibly attacker-set) new destination, nor the rotated-away one;
+    /// a fresh request pays the new destination; switching back makes the old request executable again.
+    function test_attack_changeAppliesAfterTwiceDelay_pendingWithdrawalsDoNotFollowNewDestination()
         public
     {
         bytes32 wid = _request(acct, address(token), 100e6, 1, 0);
-        _propose(newDest, 2);
+        bytes32 pid = _propose(newDest, 2);
+        vm.warp(vm.getBlockTimestamp() + 2 * DELAY);
+        vm.expectEmit(true, false, false, true, address(acct));
+        emit IPolicyAccount.DestinationChanged(pid, newDest);
+        acct.executeDestinationChange();
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IPolicyAccount.DestinationChangedSinceRequest.selector, destination, newDest
+            )
+        );
+        acct.executeWithdraw(wid);
+        assertEq(token.balanceOf(newDest), 0);
+        assertEq(token.balanceOf(destination), 0);
+        (,, uint256 cur,) = acct.windowState(address(token));
+        assertEq(cur, 0, "no window booked by the reverted execution");
+
+        bytes32 wid2 = _request(acct, address(token), 40e6, 3, 0);
+        assertEq(acct.requestDestination(wid2), newDest);
+        vm.warp(vm.getBlockTimestamp() + DELAY);
+        acct.executeWithdraw(wid2);
+        assertEq(token.balanceOf(newDest), 40e6);
+
+        _propose(destination, 4);
         vm.warp(vm.getBlockTimestamp() + 2 * DELAY);
         acct.executeDestinationChange();
         acct.executeWithdraw(wid);
-        assertEq(token.balanceOf(newDest), 100e6);
-        assertEq(token.balanceOf(destination), 0);
+        assertEq(token.balanceOf(destination), 100e6);
     }
 
     function test_attack_proposalSignatureReplayOnOtherClone_reverts() public {

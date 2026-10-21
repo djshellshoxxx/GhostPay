@@ -270,14 +270,25 @@ contract PolicyAuditTest is PolicyBase {
     }
 
     /// @dev Pending withdrawals are paid to the destination at EXECUTION time.
-    function test_pendingWithdrawFollowsDestinationChange() public {
+    /// @dev Round-3b: a pending request is bound to the destination at request time. After a destination
+    /// change it pays neither the old nor the new destination; it can only be cancelled.
+    function test_pendingWithdrawDoesNotFollowDestinationChange() public {
         bytes32 wid = _request(acct, address(tokenU), 100e6, 1, 2);
+        assertEq(acct.requestDestination(wid), destination);
         _propose(newDest, 2);
         vm.warp(block.timestamp + 2 * DELAY); // both mature; destination change executes first
         acct.executeDestinationChange();
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IPolicyAccount.DestinationChangedSinceRequest.selector, destination, newDest
+            )
+        );
         acct.executeWithdraw(wid);
-        assertEq(tokenU.balanceOf(newDest), 100e6);
+        assertEq(tokenU.balanceOf(newDest), 0);
         assertEq(tokenU.balanceOf(destination), 0);
+        assertEq(uint8(acct.requests(wid).status), uint8(IPolicyAccount.Status.Pending));
+        acct.cancel(wid, _sigCancel(ownerPk, address(acct), wid));
+        assertEq(uint8(acct.requests(wid).status), uint8(IPolicyAccount.Status.Cancelled));
     }
 
     // ---------------------------------------------------------------- P-08 windows

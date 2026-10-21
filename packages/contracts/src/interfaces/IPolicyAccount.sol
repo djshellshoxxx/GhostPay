@@ -15,7 +15,8 @@ interface IPolicyAccount {
     }
 
     /// @notice Owner-signed (EIP-712) withdrawal order. The destination is never part of the order:
-    /// funds can only ever move to the account's current `destination`.
+    /// funds can only ever move to the account's current `destination`, and only if it is still the
+    /// destination that was current when the request was accepted (`DestinationChangedSinceRequest`).
     /// @param token ERC-20 token to withdraw, or `address(0)` for the native coin.
     /// @param amount Amount in base units; must be non-zero.
     /// @param deadline Last timestamp (inclusive) at which the request may be submitted.
@@ -68,7 +69,7 @@ interface IPolicyAccount {
     event WithdrawRequested(bytes32 indexed id, address token, uint256 amount, uint64 executeAfter);
     /// @notice Emitted when a request has been paid out to the destination.
     /// @param id Request id.
-    /// @param destination Recipient (the destination at execution time).
+    /// @param destination Recipient (the destination at execution time, equal to the one at request time).
     /// @param token Token (or `address(0)` for native).
     /// @param amount Amount paid.
     event WithdrawExecuted(bytes32 indexed id, address destination, address token, uint256 amount);
@@ -133,6 +134,10 @@ interface IPolicyAccount {
     error NativeTransferFailed();
     /// @notice Token balances did not change by exactly the transferred amount.
     error UnexpectedBalanceDelta();
+    /// @notice The destination changed after the request was accepted; the request can only be cancelled.
+    /// @param requested Destination at request time.
+    /// @param current Destination now.
+    error DestinationChangedSinceRequest(address requested, address current);
 
     /// @notice One-time initialisation by the CREATE2 deployer.
     /// @param owner_ Stealth EOA that signs every action.
@@ -151,7 +156,8 @@ interface IPolicyAccount {
         external
         returns (bytes32 id);
 
-    /// @notice Pay a matured request to the destination. Anyone may call.
+    /// @notice Pay a matured request to the destination. Anyone may call. Reverts
+    /// `DestinationChangedSinceRequest` while the destination differs from the one at request time.
     /// @param id The request id.
     function executeWithdraw(bytes32 id) external;
 

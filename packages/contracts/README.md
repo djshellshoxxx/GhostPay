@@ -153,11 +153,12 @@ Normative text: `docs/CONTRACTS_SPEC.md` section 4, fee F-SECURE in `docs/FEE_SC
 - `factory.deploy(owner, destination, delay, limitsRoot)`: anyone, once per policy; pulls `FLAT_FEE` of `FEE_TOKEN` from the caller (needs approval) to `FEE_RECIPIENT`
   first (skipped when the fee is 0); `delay` in `[1 hour, 30 days]` (`MIN_DELAY`, `DelayTooShort`; the account itself still accepts `[1 s, 30 days]` when initialised by another deployer); no admin.
 - Account flow: owner signs `Withdraw` (including `limitLeafHash`, the merkle leaf of the limit; the proof must use it) -> anyone calls `requestWithdraw(w, limitProof, sig)` -> after `delay` anyone calls `executeWithdraw(id)` (funds go to
-  `destination` only) -> or anyone relays the owner's `cancel(id, sig)`. Destination change: `proposeDestination` (owner-signed) -> `executeDestinationChange()` after
+  `destination` only, and only if it is still the destination from request time; otherwise `DestinationChangedSinceRequest`, cancel and re-request) -> or anyone relays the owner's `cancel(id, sig)`. Destination change: `proposeDestination` (owner-signed) -> `executeDestinationChange()` after
   `2 * delay` -> or `cancelDestination(id, sig)`.
 - Limits: `limitsRoot` is a merkle root of `keccak256(bytes.concat(keccak256(abi.encode(token, limit, windowSeconds))))`; `0` = unlimited; a token without a leaf is not
   withdrawable (add an unlimited leaf, `limit = type(uint256).max`). The window is two fixed buckets (conservative, see P2).
-- Limitations: a stolen key still withdraws to the owner's destination after the delay and can fight destination changes (no guardian or recovery path exists; a lost key
+- Limitations: a stolen key is delayed, not neutralised: it can withdraw to the owner's destination after the delay, cancel the owner's actions, and redirect all funds
+  after `2 * delay` unless the honest owner cancels each of its destination proposals in time (no guardian or recovery path exists; a lost key
   means locked funds); ERC-777/fee-on-transfer/rebasing tokens cannot be withdrawn; 2300-gas native senders cannot pay a clone (P14); not wallet-interoperable.
 
 ```bash

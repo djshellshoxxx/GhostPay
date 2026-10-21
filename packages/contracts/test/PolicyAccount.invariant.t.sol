@@ -29,6 +29,9 @@ contract PolicyHandler is PolicyBase {
     uint256 public earliestViolation; // non-zero if a change was applied before 2x delay
     uint256 public badSigAccepted;
     uint256 public windowViolations;
+    /// @dev Executions that paid a destination other than the one current at request time (round-3b).
+    uint256 public boundDestinationViolations;
+    mapping(bytes32 id => address) internal destAtRequest;
 
     uint256 public totalInToken;
     uint256 public totalInTokenU;
@@ -119,6 +122,7 @@ contract PolicyHandler is PolicyBase {
             ids.push(id);
             requestedAt[id] = block.timestamp;
             idToken[id] = t;
+            destAtRequest[id] = acct.destination();
         } catch {}
     }
 
@@ -140,6 +144,7 @@ contract PolicyHandler is PolicyBase {
         vm.prank(by);
         try acct.executeWithdraw(id) {
             execCount[id]++;
+            if (acct.destination() != destAtRequest[id]) boundDestinationViolations++;
             executedAt[id] = block.timestamp;
             if (idToken[id] == address(token)) {
                 execTimes.push(block.timestamp);
@@ -298,6 +303,10 @@ contract PolicyAccountInvariantTest is StdInvariant, Test {
     }
 
     /// @dev No window-length interval ever saw more than the cap leave.
+    function invariant_pendingRequestsPayOnlyTheirBoundDestination() public view {
+        assertEq(h.boundDestinationViolations(), 0);
+    }
+
     function invariant_windowCapRespected() public view {
         assertEq(h.windowViolations(), 0);
     }
