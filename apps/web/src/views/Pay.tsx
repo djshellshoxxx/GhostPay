@@ -4,7 +4,7 @@ import type { BuiltPayment } from '@ghostpay/chain-adapters';
 import { CopyButton, Mono, Notice, downloadText } from '../components/Common';
 import { FeeDisclosure, useManifest } from '../components/Disclosure';
 import { extractFragment } from '../lib/fragment';
-import { formatCountdown, formatFiat, formatUnits, formatUnix, minutesLabel, shortHex } from '../lib/format';
+import { formatCountdown, formatFiat, formatUnits, formatUnix, minutesLabel, shortHex, visibleText } from '../lib/format';
 import { userMessage } from '../lib/errors';
 import { DelayScheduler, randomDelayMs, type ScheduleSnapshot } from '../lib/jitter';
 import {
@@ -405,7 +405,7 @@ export function Pay(): ReactNode {
             <tbody>
               {inv.lineItems.map((li, i) => (
                 <tr key={i}>
-                  <td className="wrap">{li.description}</td>
+                  <td className="wrap"><bdi>{visibleText(li.description)}</bdi></td>
                   <td>{li.quantity}</td>
                   <td>{formatFiat(BigInt(li.unitMinorUnits), inv.fiat.currency)}</td>
                 </tr>
@@ -417,7 +417,7 @@ export function Pay(): ReactNode {
       )}
       {inv.memo !== undefined && (
         <p className="wrap">
-          <strong>Memo:</strong> {inv.memo}
+          <strong>Memo:</strong> <bdi>{visibleText(inv.memo)}</bdi>
         </p>
       )}
 

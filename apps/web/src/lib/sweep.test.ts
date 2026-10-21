@@ -7,6 +7,7 @@ import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER, FAKE_SWEEP_RELAYER, fa
 import { mockRpc } from '../test/mockRpc';
 import { clearSession, generateSession, requireSession } from './session';
 import { checkDestination, deriveVerifiedSweepKey, directSweep, getSweepQuote, readBalance, relayedSweep, type SweepTarget } from './sweep';
+import * as chainAdapters from '@ghostpay/chain-adapters';
 import { erc20Abi } from '@ghostpay/chain-adapters';
 
 const TOKEN = '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as Address;
@@ -88,6 +89,22 @@ describe('getSweepQuote', () => {
 });
 
 describe('relayedSweep (EIP-712 sweep + ERC-2612 permit, signed in memory)', () => {
+  it('item4: refuses a non-allowlisted token before any RPC call, signing or submission', async () => {
+    const rpc = mockRpc(84532, () => {
+      throw new Error('must not be called');
+    });
+    const unlisted = '0x1234567890123456789012345678901234567890' as Address;
+    let submitted = false;
+    const fetchFn = (): Promise<Response> => {
+      submitted = true;
+      return Promise.resolve(new Response('{}'));
+    };
+    await expect(
+      relayedSweep({ target: { ...target, token: unlisted }, manifest, destination: DEST, amount: 1n, quote: { fee: 1n, feeTo: FEE_TO, expiresAt: NOW + 60, quoteToken: 't' }, relayerUrl: 'https://relay.test', rpc, nowSeconds: NOW, fetchFn }),
+    ).rejects.toThrow(/not on the allowlist/);
+    expect(rpc.calls.length).toBe(0);
+    expect(submitted).toBe(false);
+  });
   it('signs a sweep and a permit that recover to the stealth address and submits them', async () => {
     const rpc = mockRpc(84532, (_m, params) => {
       const data = (params[0] as { data: string }).data;
@@ -199,9 +216,23 @@ describe('directSweep (stealth address pays gas, signs a plain transfer)', () =>
     await expect(directSweep({ target: { ...target, token: 'native' }, destination: DEST, amount: 1n, rpc: rpcFor(1000n, {}) })).rejects.toThrow(/does not cover the network fee/);
   });
 
+  it('item4: refuses a non-allowlisted token before any RPC call or signing', async () => {
+    const rpc = rpcFor(10n ** 17n, {});
+    const unlisted = '0x1234567890123456789012345678901234567890' as Address;
+    await expect(directSweep({ target: { ...target, token: unlisted }, destination: DEST, amount: 1n, rpc })).rejects.toThrow(/not on the allowlist/);
+    expect(rpc.calls.length).toBe(0);
+  });
+
   it('rejects an RPC that returns a hash that does not match the signed transaction', async () => {
     const base = rpcFor(10n ** 17n, {});
     const rpc = { ...base, request: (m: string, p: readonly unknown[]) => (m === 'eth_sendRawTransaction' ? Promise.resolve(`0x${'aa'.repeat(32)}`) : base.request(m, p)) };
     await expect(directSweep({ target, destination: DEST, amount: 1n, rpc })).rejects.toThrow(/does not match the signed transaction/);
+  });
+});
+
+describe('item5: no raw digest signer is reachable from the web app', () => {
+  it('chain-adapters does not export signDigest, only typed signers', () => {
+    expect('signDigest' in chainAdapters).toBe(false);
+    expect(typeof chainAdapters.signTransactionHash).toBe('function');
   });
 });

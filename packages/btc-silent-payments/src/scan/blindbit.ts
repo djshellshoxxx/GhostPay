@@ -48,6 +48,7 @@ const MAX_VOUT = 0xffffffff;
 const MAX_SATS = 21_000_000n * 100_000_000n;
 const DEFAULT_TIMEOUT_MS = 30_000;
 const DEFAULT_MAX_BYTES = 32 * 1024 * 1024;
+const MAX_URL_LENGTH = 2048;
 const LOOPBACK = new Set(['localhost', '127.0.0.1', '[::1]']);
 
 function isRecord(v: unknown): v is Record<string, unknown> {
@@ -57,6 +58,12 @@ function isRecord(v: unknown): v is Record<string, unknown> {
 function uint(v: unknown): number {
   if (typeof v !== 'number' || !Number.isSafeInteger(v) || v < 0) return fail('INVALID_RESPONSE');
   return v;
+}
+
+/** A chain height reported by the oracle: u32, like the request side (a larger value only drives an endless scan). */
+function tipHeight(v: unknown): number {
+  const h = uint(v);
+  return h > MAX_HEIGHT ? fail('INVALID_RESPONSE') : h;
 }
 
 function hexString(v: unknown, bytes: number): string {
@@ -108,6 +115,7 @@ export class BlindBitClient implements TweakSource {
   }
 
   private static normalizeBase(baseUrl: string): string {
+    if (typeof baseUrl !== 'string' || baseUrl.length > MAX_URL_LENGTH) return fail('INVALID_INPUT');
     let url: URL;
     try {
       url = new URL(baseUrl);
@@ -119,7 +127,10 @@ export class BlindBitClient implements TweakSource {
     if (badProtocol || url.username !== '' || url.password !== '' || url.search !== '' || url.hash !== '') {
       return fail('INVALID_INPUT');
     }
-    return `${url.origin}${url.pathname.replace(/\/+$/, '')}`;
+    // Trailing-slash trim by loop: `/\/+$/` is quadratic on a long run of slashes.
+    let path = url.pathname;
+    while (path.endsWith('/')) path = path.slice(0, -1);
+    return `${url.origin}${path}`;
   }
 
   private async get(path: string, signal?: AbortSignal): Promise<unknown> {
@@ -196,7 +207,7 @@ export class BlindBitClient implements TweakSource {
   public async getTipHeight(signal?: AbortSignal): Promise<number> {
     const body = await this.get('/info', signal);
     if (!isRecord(body)) return fail('INVALID_RESPONSE');
-    return uint(body['height']);
+    return tipHeight(body['height']);
   }
 
   /**
@@ -217,7 +228,7 @@ export class BlindBitClient implements TweakSource {
       return fail('INVALID_RESPONSE');
     return {
       network,
-      height: uint(body['height']),
+      height: tipHeight(body['height']),
       tweaksOnly: flag('tweaks_only'),
       tweaksFullBasic: flag('tweaks_full_basic'),
       tweaksFullWithDustFilter: flag('tweaks_full_with_dust_filter'),

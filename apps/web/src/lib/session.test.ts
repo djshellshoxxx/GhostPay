@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { clearSession, exportKeystore, generateSession, getSessionPublic, hasSession, importKeystore, importSession, requireSession, subscribeSession } from './session';
+import { clearSession, exportKeystore, generateSession, getSessionPublic, hasSession, importKeystore, importSession, onSessionCleared, requireSession, subscribeSession } from './session';
 
 afterEach(() => {
   clearSession();
@@ -76,17 +76,53 @@ describe('session', () => {
     const { encryptKeystore } = await import('./keystore');
     const text = await encryptKeystore(
       { spendingKey: new Uint8Array(32).fill(1), viewingKey: new Uint8Array(32).fill(1), signingKey: new Uint8Array(32).fill(3) },
-      { metaAddress: 'x', signer: 'y' },
+      { metaAddress: 'st:eth:0xabc', signer: '02' + 'ab'.repeat(32) }, // round 4: import validates meta format
       'a long passphrase',
       { N: 1 << 14 },
     );
     await expect(importKeystore(text, 'a long passphrase')).rejects.toThrow(/must differ/);
     const zero = await encryptKeystore(
       { spendingKey: new Uint8Array(32), viewingKey: new Uint8Array(32).fill(1), signingKey: new Uint8Array(32).fill(3) },
-      { metaAddress: 'x', signer: 'y' },
+      { metaAddress: 'st:eth:0xabc', signer: '02' + 'ab'.repeat(32) }, // round 4: import validates meta format
       'a long passphrase',
       { N: 1 << 14 },
     );
     await expect(importKeystore(zero, 'a long passphrase')).rejects.toThrow(/invalid keys/);
+  });
+
+  it('notifies wipe listeners on clear and when one identity replaces another', () => {
+    const seen = vi.fn();
+    const off = onSessionCleared(seen);
+    generateSession();
+    expect(seen).toHaveBeenCalledTimes(1);
+    importSession({ spendingKeyHex: HEX_A, viewingKeyHex: HEX_B });
+    expect(seen).toHaveBeenCalledTimes(2);
+    clearSession();
+    expect(seen).toHaveBeenCalledTimes(3);
+    off();
+    clearSession();
+    expect(seen).toHaveBeenCalledTimes(3);
+  });
+
+  it('still wipes keys when a wipe listener throws', () => {
+    generateSession();
+    const s = requireSession();
+    const off = onSessionCleared(() => { throw new Error('listener bug'); });
+    expect(() => { clearSession(); }).toThrow(/listener bug/);
+    expect(hasSession()).toBe(false);
+    expect(s.keys.spendingSecret.every((b) => b === 0)).toBe(true);
+    off();
+  });
+
+  it('does not install new keys past a failing wipe listener', () => {
+    let calls = 0;
+    const off = onSessionCleared(() => {
+      calls++;
+      if (calls === 1) throw new Error('listener bug');
+    });
+    expect(() => generateSession()).toThrow(/listener bug/);
+    expect(hasSession()).toBe(false);
+    expect(getSessionPublic()).toBeUndefined();
+    off();
   });
 });

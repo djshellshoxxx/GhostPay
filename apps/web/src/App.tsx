@@ -3,7 +3,7 @@ import type { RpcClient } from '@ghostpay/chain-adapters';
 import { clearFragment, readInvoiceFragment } from './lib/fragment';
 import type { ScanMatch } from './lib/scanClient';
 import { useServices } from './lib/services';
-import { getSessionPublic, subscribeSession } from './lib/session';
+import { getSessionPublic, onSessionCleared, subscribeSession } from './lib/session';
 import { loadSettings, saveSettings, type Settings as SettingsData } from './lib/settings';
 import { AppContext, VIEW_LABELS, type AppState, type ViewId } from './state';
 import { About } from './views/About';
@@ -78,6 +78,17 @@ export function App(): ReactNode {
     if (settings.theme === 'system') root.removeAttribute('data-theme');
     else root.setAttribute('data-theme', settings.theme);
   }, [settings.theme]);
+
+  // Wiping keys (or loading another identity) also drops what was derived from them: the tag vault's keys and the
+  // scan matches (round-audit web M2). The sweep target is kept so the Sweep view can say the keys are gone.
+  useEffect(
+    () =>
+      onSessionCleared(() => {
+        services.vault.lock();
+        setMatches([]);
+      }),
+    [services],
+  );
 
   // Idle lock for local tags.
   useEffect(() => {

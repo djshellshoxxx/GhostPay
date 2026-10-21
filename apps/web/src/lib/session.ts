@@ -39,6 +39,18 @@ function emit(): void {
   for (const l of listeners) l();
 }
 
+const wipeListeners = new Set<() => void>();
+
+/**
+ * Registers a hook that runs every time the loaded keys are wiped: "Wipe keys", and also when another identity
+ * replaces the current one. Holders of session-derived state (the tag vault's derived keys, scan matches, a sweep
+ * target) use it to drop that state with the keys. Returns an unsubscribe function.
+ */
+export function onSessionCleared(listener: () => void): () => void {
+  wipeListeners.add(listener);
+  return () => wipeListeners.delete(listener);
+}
+
 /** Subscribes to session changes (used by `useSyncExternalStore`). */
 export function subscribeSession(listener: () => void): () => void {
   listeners.add(listener);
@@ -66,7 +78,14 @@ export function getSessionPublic(): SessionPublic | undefined {
 }
 
 function install(next: SessionSecrets): SessionPublic {
-  clearSession(false);
+  try {
+    clearSession(false);
+  } catch (e) {
+    // The old identity is gone; do not install the new one past a failed wipe hook.
+    zeroize(next.keys.spendingSecret, next.keys.viewingSecret, next.signingKey);
+    emit();
+    throw e;
+  }
   current = next;
   publicSummary = summarize(next);
   emit();
@@ -132,14 +151,28 @@ export function hasSession(): boolean {
   return current !== undefined;
 }
 
-/** Best-effort wipe and forget. */
+/**
+ * Best-effort wipe and forget. Keys are zeroized first; then every wipe listener runs (one failing listener does not
+ * stop the others), and the first listener error is rethrown after the change is published.
+ */
 export function clearSession(notify = true): void {
   if (current !== undefined) {
     zeroize(current.keys.spendingSecret, current.keys.viewingSecret, current.signingKey);
   }
   current = undefined;
   publicSummary = undefined;
+  let failure: unknown;
+  let failed = false;
+  for (const l of wipeListeners) {
+    try {
+      l();
+    } catch (e) {
+      if (!failed) failure = e;
+      failed = true;
+    }
+  }
   if (notify) emit();
+  if (failed) throw failure;
 }
 
 /** Encrypted backup text. Raw keys exist only for the duration of the call. */

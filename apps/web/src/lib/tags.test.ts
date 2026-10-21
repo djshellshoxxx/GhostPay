@@ -148,4 +148,55 @@ describe('TagVault (Feature 4)', () => {
     await vault.save(1, payload({ invoiceLabel: '', notes: '' }));
     expect(await vault.find(1, ADDR)).toMatchObject({ clientLabel: 'Acme Corp — invoice #42' });
   });
+
+  it('lock() during an in-flight unlock leaves the vault locked (wipe-keys race)', async () => {
+    const vault = new TagVault(new MemoryTagStore());
+    const pending = vault.unlock(key(7));
+    vault.lock();
+    await pending;
+    expect(vault.unlocked).toBe(false);
+    await expect(vault.list()).rejects.toThrow(/locked/);
+  });
+
+  it('wipe() during an in-flight unlock leaves the vault locked', async () => {
+    const vault = new TagVault(new MemoryTagStore());
+    const pending = vault.unlock(key(7));
+    const w = vault.wipe();
+    await Promise.all([pending, w]);
+    expect(vault.unlocked).toBe(false);
+  });
+
+  it('detects spliced records: ciphertexts swapped between two addresses do not decrypt as the other (S3-16)', async () => {
+    const { vault, store } = await unlocked();
+    const B = '0x' + 'bb'.repeat(20);
+    await vault.save(84532, payload({ clientLabel: 'Alice' }));
+    await vault.save(84532, payload({ stealthAddress: B, clientLabel: 'Bob' }));
+    const [r1, r2] = (await store.getAll()) as EncryptedTagRecord[];
+    await store.put({ ...r1!, iv: r2!.iv, ciphertext: r2!.ciphertext });
+    await store.put({ ...r2!, iv: r1!.iv, ciphertext: r1!.ciphertext });
+    await expect(vault.find(84532, ADDR)).rejects.toThrow(/could not be decrypted/);
+    await expect(vault.find(84532, B)).rejects.toThrow(/could not be decrypted/);
+    expect(await vault.listReport(84532)).toEqual({ tags: [], damaged: 2 });
+  });
+
+  it('listReport skips a damaged record, returns the rest and counts what it skipped', async () => {
+    const { vault, store } = await unlocked();
+    await vault.save(84532, payload({ clientLabel: 'Good' }));
+    await vault.save(84532, payload({ stealthAddress: '0x' + 'cc'.repeat(20), clientLabel: 'Bad' }));
+    const target = (await store.getAll())[1] as EncryptedTagRecord;
+    await store.put({ ...target, ciphertext: (target.ciphertext[0] === '0' ? '1' : '0') + target.ciphertext.slice(1) });
+    const rep = await vault.listReport(84532);
+    expect(rep.damaged).toBe(1);
+    expect(rep.tags).toHaveLength(1);
+    expect(await vault.listReport(1)).toEqual({ tags: [], damaged: 0 });
+    // The strict API is unchanged: list() still refuses to return a partial result.
+    await expect(vault.list()).rejects.toThrow(/could not be decrypted/);
+  });
+
+  it('listReport refuses (does not count as damage) when locked', async () => {
+    const { vault } = await unlocked();
+    await vault.save(84532, payload());
+    vault.lock();
+    await expect(vault.listReport()).rejects.toThrow(/locked/);
+  });
 });

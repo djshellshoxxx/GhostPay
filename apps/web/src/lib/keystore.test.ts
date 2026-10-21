@@ -88,3 +88,61 @@ describe('keystore', () => {
     await expect(decryptKeystore(text, 'correct horse battery')).rejects.toThrow(/not a valid|different length/i);
   });
 });
+
+describe('keystore import hardening (round 4)', () => {
+  const good = async (): Promise<Record<string, unknown>> => JSON.parse(await encryptKeystore(secrets(), META, 'correct horse battery', FAST)) as Record<string, unknown>;
+  const kp = (f: Record<string, unknown>): Record<string, unknown> => f['kdfParams'] as Record<string, unknown>;
+
+  it('rejects scrypt parameters outside the allowlist before running scrypt (KL-13, S3-13, F9)', async () => {
+    const f = await good();
+    for (const mut of [
+      (x: Record<string, unknown>) => { kp(x)['N'] = 1 << 20; },
+      (x: Record<string, unknown>) => { kp(x)['N'] = 1 << 19; },
+      (x: Record<string, unknown>) => { kp(x)['r'] = 16; },
+      (x: Record<string, unknown>) => { kp(x)['r'] = 9; },
+      (x: Record<string, unknown>) => { kp(x)['p'] = 2; },
+    ]) {
+      const c = structuredClone(f);
+      mut(c);
+      const t0 = Date.now();
+      await expect(decryptKeystore(JSON.stringify(c), 'correct horse battery')).rejects.toThrow(/not a valid/);
+      expect(Date.now() - t0).toBeLessThan(100);
+    }
+  });
+
+  it('refuses to write a keystore above the import cost cap', async () => {
+    await expect(encryptKeystore(secrets(), META, 'long enough passphrase', { N: 1 << 19 })).rejects.toThrow(/scrypt cost/);
+  });
+
+  it('accepts only the documented fields (allowlist), rejecting unknown keys at every level', async () => {
+    const f = await good();
+    for (const mut of [
+      (x: Record<string, unknown>) => { x['extra'] = 1; },
+      (x: Record<string, unknown>) => { kp(x)['dkLen'] = 64; },
+      (x: Record<string, unknown>) => { (x['meta'] as Record<string, unknown>)['note'] = 'x'; },
+      (x: Record<string, unknown>) => { (x['meta'] as Record<string, unknown>)['signer'] = '04' + 'ab'.repeat(32); },
+      (x: Record<string, unknown>) => { (x['meta'] as Record<string, unknown>)['metaAddress'] = 'st:eth:0xabc|x'; },
+    ]) {
+      const c = structuredClone(f);
+      mut(c);
+      await expect(decryptKeystore(JSON.stringify(c), 'correct horse battery')).rejects.toThrow(/not a valid/);
+    }
+    expect((await decryptKeystore(JSON.stringify(f), 'correct horse battery')).viewingKey[0]).toBe(2);
+  });
+
+  it('requires at least 12 code points and some variety for a new passphrase (KL-14, L2)', () => {
+    expect(passphraseProblem('elevenchars')).toMatch(/at least 12/);
+    expect(passphraseProblem('twelve chars')).toBeUndefined();
+    expect(passphraseProblem('\u{1F511}'.repeat(5) + 'abcdefg')).toBeUndefined();
+    expect(passphraseProblem('\u{1F511}'.repeat(6))).toMatch(/at least 12/);
+    expect(passphraseProblem('aaaaaaaaaaaaaaaa')).toMatch(/repetitive/);
+    expect(passphraseProblem('abababababababab')).toMatch(/repetitive/);
+  });
+
+  it('still imports a keystore whose passphrase predates the 12-character rule', async () => {
+    // The strength rule applies to new exports only; older files keep working.
+    const f = await good();
+    expect(f['v']).toBe(1);
+    await expect(decryptKeystore(JSON.stringify(f), 'short')).rejects.toThrow(/Wrong passphrase/);
+  });
+});

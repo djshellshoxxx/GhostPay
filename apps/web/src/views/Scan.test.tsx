@@ -1,8 +1,11 @@
 // @vitest-environment jsdom
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { act } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { clearSession, generateSession } from '../lib/session';
+import { unsafeRevealSecret } from '@ghostpay/core-crypto';
+import { clearSession, generateSession, requireSession } from '../lib/session';
+import { MemoryTagStore, TagVault } from '../lib/tags';
 import { SETTINGS_KEY } from '../lib/settings';
 import { FAKE_ANNOUNCER, FAKE_ROUTER, fakeManifest } from '../test/fakeManifest';
 import { InlineWorker } from '../test/inlineWorker';
@@ -107,6 +110,37 @@ describe('Scan and receive', () => {
     expect(screen.getByText(mine.stealthAddress)).toBeTruthy();
   });
 
+  it('item3: a match stays bound to the chain it was found on after the chain selector changes', async () => {
+    const pub = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 0, caller: FAKE_ROUTER });
+    const rpc = chainWithLogs(84532, 500, [mine.log]);
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(rpc), createScanWorker: () => new InlineWorker() }));
+    await user.type(screen.getByLabelText('Start block'), '100');
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    expect(await screen.findByText('Payments found')).toBeTruthy();
+    await user.selectOptions(screen.getByLabelText('Chain'), screen.getByRole('option', { name: 'Ethereum Sepolia' }));
+    expect(screen.getByText(/on Base Sepolia/)).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Sweep this payment' }));
+    const dl = screen.getByRole('heading', { level: 2, name: 'Sweep' }).parentElement!;
+    expect(within(dl).getByText('Base Sepolia')).toBeTruthy();
+    expect(within(dl).queryByText('Ethereum Sepolia')).toBeNull();
+  });
+
+  it('item2: shows a reorg notice and rescans from the rolled-back block when the checkpoint hash no longer matches', async () => {
+    const pub = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 250, index: 0, caller: FAKE_ROUTER });
+    const rpc = chainWithLogs(84532, 500, [mine.log]);
+    const checkpoints = memoryCheckpoints();
+    checkpoints.save(84532, { nextBlock: 300n, last: { number: 299n, hash: `0x${'ee'.repeat(32)}` } });
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(rpc), checkpoints, createScanWorker: () => new InlineWorker() }));
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    expect(await screen.findByText(/The chain reorganised\. Rescanning from block 200;/)).toBeTruthy();
+    await waitFor(() => { expect(screen.getByText(/1 payments found \(1 chain reorganisation\(s\) handled\)/)).toBeTruthy(); });
+    expect(screen.getByText(mine.stealthAddress)).toBeTruthy();
+  });
+
   it('can be cancelled while running', async () => {
     generateSession();
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
@@ -155,5 +189,40 @@ describe('Scan and receive', () => {
     const user = await openScan(services);
     await user.click(screen.getByRole('button', { name: 'Unlock tags' }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/different viewing key/);
+  });
+
+  it('round 4: one damaged tag record no longer hides the others; the list says how many were skipped', async () => {
+    generateSession();
+    const store = new MemoryTagStore();
+    const services = makeServices({ vault: new TagVault(store) });
+    await services.vault.unlock(unsafeRevealSecret(requireSession().keys.viewingSecret));
+    const tag = (addr: string, label: string) => ({ stealthAddress: addr, announcementId: `0x${'ab'.repeat(32)}:1`, logIndex: 1, clientLabel: label });
+    await services.vault.save(84532, tag('0x' + 'aa'.repeat(20), 'Readable client'));
+    await services.vault.save(84532, tag('0x' + 'bb'.repeat(20), 'Broken client'));
+    const bad = (await store.getAll())[1]!;
+    await store.put({ ...bad, ciphertext: (bad.ciphertext[0] === '0' ? '1' : '0') + bad.ciphertext.slice(1) });
+    services.vault.lock();
+    const user = await openScan(services);
+    await user.click(screen.getByRole('button', { name: 'Unlock tags' }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(/1 stored tag\(s\) could not be decrypted/);
+    expect(await screen.findByText('Readable client')).toBeTruthy();
+    expect(screen.queryByText('Broken client')).toBeNull();
+  });
+
+  it('round 4: wiping keys clears the scan matches and locks the tag vault (web M2)', async () => {
+    const pub = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 0, caller: FAKE_ROUTER, amount: 2_500_000n });
+    const rpc = chainWithLogs(84532, 500, [mine.log]);
+    const services = makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(rpc), createScanWorker: () => new InlineWorker() });
+    const user = await openScan(services);
+    await user.type(screen.getByLabelText('Start block'), '100');
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    expect(await screen.findByText(mine.stealthAddress)).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Unlock tags' }));
+    await waitFor(() => { expect(services.vault.unlocked).toBe(true); });
+    act(() => { clearSession(); });
+    await waitFor(() => { expect(screen.queryByText(mine.stealthAddress)).toBeNull(); });
+    expect(services.vault.unlocked).toBe(false);
   });
 });

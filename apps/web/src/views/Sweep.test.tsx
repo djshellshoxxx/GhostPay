@@ -50,10 +50,10 @@ function extra(balance: bigint, nativeBalance: bigint, rawSink: { raw?: string }
 }
 
 /** Scans one payment, then opens the Sweep view for it. */
-async function toSweep(opts: { balance?: bigint; native?: bigint; relayer?: boolean; fetchFn?: Services['fetchFn']; raw?: { raw?: string } } = {}): Promise<ReturnType<typeof userEvent.setup>> {
+async function toSweep(opts: { balance?: bigint; native?: bigint; relayer?: boolean; token?: string; fetchFn?: Services['fetchFn']; raw?: { raw?: string } } = {}): Promise<ReturnType<typeof userEvent.setup>> {
   const pub = generateSession();
   window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' }, ...(opts.relayer === true ? { relayerUrl: 'https://relay.test' } : {}) }));
-  const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 50, index: 0, caller: FAKE_ROUTER, amount: 5_000_000n });
+  const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 50, index: 0, caller: FAKE_ROUTER, amount: 5_000_000n, ...(opts.token === undefined ? {} : { token: opts.token }) });
   const rpc = chainWithLogs(84532, 100, [mine.log], extra(opts.balance ?? 5_000_000n, opts.native ?? 10n ** 17n, opts.raw ?? {}));
   const user = userEvent.setup();
   renderApp(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(rpc), ...(opts.fetchFn === undefined ? {} : { fetchFn: opts.fetchFn }) }));
@@ -66,6 +66,14 @@ async function toSweep(opts: { balance?: bigint; native?: bigint; relayer?: bool
 }
 
 describe('Sweep', () => {
+  it('item4: a non-allowlisted token cannot be swept directly (button disabled, library refuses)', async () => {
+    const user = await toSweep({ token: '0x1234567890123456789012345678901234567890' });
+    expect(await screen.findByText(/not on the allowlist/)).toBeTruthy();
+    await user.click(screen.getByLabelText(/Directly/));
+    const btn = screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' });
+    await waitFor(() => { expect(btn.disabled).toBe(true); });
+  });
+
   it('asks to choose a payment first', async () => {
     const user = userEvent.setup();
     renderApp(makeServices());

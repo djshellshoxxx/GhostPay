@@ -57,3 +57,22 @@ No coverage threshold lowered. Web and btc coverage dipped slightly (more code, 
 - Not owned (core-crypto / invoice-schema / contracts): BUG-03 date check is in chain-adapters (fixed); BUG-06 sparse lineItems, S3-12 bidi, M-1 unpinned payee, L-4 rng params: not touched.
 - Oracle metadata trust (security-btcapps M3): B1 removes ambiguity but outputs are still oracle-supplied.
 - `getSweepFunding` pre-lane check and e2e anvil test not exercised against a real chain.
+
+## Round 4b (second batch, from round-1 audits and assurance reports)
+
+Per-area detail with test names: `fixes-round4-relayer.md`, `fixes-round4-web.md`, `fixes-round4-webkeys.md`, `fixes-round4-adapters.md`. Each fixed item had a test that failed first (agent-reported; relayer: 22 of its 28 first-written tests failed on unfixed code). Real runs by the coordinator on the final tree:
+
+| Package | Tests (round 4 -> 4b) | Coverage stmts/br/funcs/lines | tsc/lint |
+|---|---|---|---|
+| apps/relayer (anvil e2e not run) | 209 -> 239 | 98.35 / 96.13 / 99.39 / 98.94 | clean |
+| apps/web | 331 -> 373 | 95.60 / 91.14 / 92.78 / 97.50 | clean |
+| packages/chain-adapters | 243 -> 274 | 98.85 / 98.31 / 96.61 / 99.73 | clean |
+| packages/btc-silent-payments | 313 -> 346 | 97.58 / 96.33 / 96.62 / 99.47 | clean |
+
+Web branch coverage is 0.10 below the previous baseline; no threshold was changed and vitest reports no threshold failure.
+
+Fixed: relayer breaker counts gas-price/quote/funding RPC failures (healthz degraded); front-run re-simulation; XFF rightmost-trusted parsing and `trustProxyHops` config check; per-client queue cap; budget reconcile after receipt timeout; `fee_below_gas` send-time check (R6 now implemented, characterization test changed 200 -> 422); high-S/bad-v rejected; log failures non-fatal; socket timeouts. Web: scan worker timeout and working cancel; reorg surfaced; `ScanMatch.chainId`; token allowlist on both sweep paths; `signTransactionHash` replaces exported `signDigest`; bidi marking; linear URL trimming; linear bundle-scan tokenizer; wipe-keys locks tag vault; keystore import allowlist and scrypt bounds; `listReport()` for damaged tag records. Chain-adapters/btc: hostile head checks, opt-in `historySize`, `verifyLogBlocks`, `verifyDeploymentOnChain`, optional signature hook, scanner `crossCheck`/`verifyOutput`, bounds.
+
+Behaviour changes to note: tests edited openly: R6 characterization (200 -> 422), one `session.test` fixture (malformed meta now rejected), SellerKeys label 10 -> 12, config literals gained `maxPerClient`.
+
+Not done / open: wiring `packages/secret-box` into web (needs `@ghostpay/secret-box` dependency in apps/web, `build:libs` change, a lockfile entry, and a product decision on idle auto-lock); manifest signature trust root; reorgs deeper than `finalityDepth` in the web scanner; BlindBit timeout does not abort the request; per-IP connection cap and IPv6 /64 bucketing; web handling of the relayer's `fee_below_gas` (no web code references it, so users see a generic error); `normalize-sbom.mjs` SBOM fix (outside my directories); donation feature (waiting for `packages/donation`). Not run: relayer anvil e2e, web Playwright e2e on this batch.

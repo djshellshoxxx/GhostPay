@@ -70,3 +70,19 @@ export function minutesLabel(seconds: number): string {
   const m = seconds / 60;
   return Number.isInteger(m) ? String(m) : m.toFixed(1);
 }
+
+/**
+ * Makes untrusted invoice text safe to show: control, bidirectional-override and other invisible format characters
+ * (Unicode categories Cc, Cf, Zl, Zp, except newline and the joiners ZWNJ/ZWJ that legitimate scripts and emoji need)
+ * are replaced by a visible `⟦U+XXXX⟧` marker, so text can neither reorder the surrounding display nor hide content.
+ * Single linear pass; render-layer only, the invoice data and its signature are untouched.
+ */
+export function visibleText(text: string): string {
+  let out = '';
+  for (const ch of text) {
+    const cp = ch.codePointAt(0) as number;
+    const risky = cp !== 0x0a && cp !== 0x200c && cp !== 0x200d && /^[\p{Cc}\p{Cf}\p{Zl}\p{Zp}]$/u.test(ch);
+    out += risky ? `⟦U+${cp.toString(16).toUpperCase().padStart(4, '0')}⟧` : ch;
+  }
+  return out;
+}

@@ -222,10 +222,11 @@ export const MAX_MANIFEST_BYTES = 16 * 1024;
  *
  * @param text Raw JSON, at most {@link MAX_MANIFEST_BYTES} bytes.
  * @param expectedChainId Chain the manifest must describe.
+ * @param opts Optional signature verifier hook.
  * @returns Validated manifest.
  * @throws {ChainAdapterError} `INVALID_MANIFEST` (oversize, bad JSON, duplicate keys, `__proto__` keys) or `CHAIN_MISMATCH`.
  */
-export function loadDeployment(text: string, expectedChainId: number): DeploymentManifest {
+export function loadDeployment(text: string, expectedChainId: number, opts: LoadOptions = {}): DeploymentManifest {
   if (typeof text !== 'string' || new TextEncoder().encode(text).length > MAX_MANIFEST_BYTES) return bad('size');
   let parsed: unknown;
   try {
@@ -234,5 +235,28 @@ export function loadDeployment(text: string, expectedChainId: number): Deploymen
     return bad('json');
   }
   assertNoDuplicateKeys(text);
-  return validateManifest(parsed, expectedChainId);
+  const m = validateManifest(parsed, expectedChainId);
+  if (opts.verifySignature !== undefined) {
+    const verify = opts.verifySignature;
+    const ok = ((): boolean => {
+      try {
+        return m.signature !== undefined && verify(m, m.signature) === true;
+      } catch {
+        return false;
+      }
+    })();
+    if (!ok) return bad('signature: not verified');
+  }
+  return m;
+}
+
+/** Options for {@link loadDeployment}. */
+export interface LoadOptions {
+  /**
+   * Optional signature verifier, OFF by default (no signature scheme or trust root is defined in this repo yet).
+   * When given, the manifest must carry a `signature` and the hook must return exactly `true`; a missing
+   * signature, a `false`/non-boolean result or a throw all reject with `INVALID_MANIFEST`. The hook decides the
+   * signed bytes (canonicalisation) and holds the trusted signer/key; this package invents neither.
+   */
+  readonly verifySignature?: (manifest: DeploymentManifest, signature: Hex) => boolean;
 }

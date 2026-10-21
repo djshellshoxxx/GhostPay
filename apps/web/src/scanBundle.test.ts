@@ -112,6 +112,31 @@ describe('scan-bundle', () => {
     expect(bad(GOOD_HTML.replace('<script type="module" src="./assets/a.js"></script>', '<script src="./a.js">alert(1)</script>'))).toMatch(/both src and inline/);
   });
 
+  it('item8: catches inline scripts closed with </script > variants and obfuscated tags', () => {
+    const bad = (html: string): string => scan(build({}, { html })).join('\n');
+    const withScript = (tag: string): string => GOOD_HTML.replace('<script type="module" src="./assets/a.js"></script>', tag);
+    expect(bad(withScript('<script>alert(1)</script >'))).toMatch(/inline <script>/);
+    expect(bad(withScript('<script>alert(1)</SCRIPT\n>'))).toMatch(/inline <script>/);
+    expect(bad(withScript('<script>alert(1)</script foo="bar">'))).toMatch(/inline <script>/);
+    expect(bad(withScript('<SCRIPT\t>alert(1)</script>'))).toMatch(/inline <script>/);
+    expect(bad(withScript('<script src="./a.js" >x</script >'))).toMatch(/both src and inline/);
+    expect(bad(withScript('<script src = "//cdn.example/a.js" ></script >'))).toMatch(/remote script/);
+    expect(bad(GOOD_HTML.replace('</body>', '<img src=x onerror = "x()"></body>'))).toMatch(/inline event handler/);
+    expect(bad(GOOD_HTML.replace('</body>', '<div STYLE = "a:b"></div></body>'))).toMatch(/inline style attribute/);
+    expect(bad(GOOD_HTML.replace('href="./assets/a.css"', "href = 'https://x.example/a.css'"))).toMatch(/remote <link>/);
+    // a '>' inside a quoted attribute must not end the tag early and hide a later attribute
+    expect(bad(GOOD_HTML.replace('</body>', '<a title="a>b" onclick="x()">t</a></body>'))).toMatch(/inline event handler/);
+    // an HTML comment containing script-like text is not a script
+    expect(bad(GOOD_HTML.replace('</body>', '<!-- <script>alert(1)</script> --></body>'))).toBe('');
+  });
+
+  it('item8: scanner time stays linear on hostile input', () => {
+    const t0 = performance.now();
+    const hostileHtml = GOOD_HTML.replace('</body>', `${'<link '.repeat(40_000)}${'<script '.repeat(40_000)}${'script-src '.repeat(20_000)}</body>`);
+    scan(build({ 'src/Many.ts': '/*'.repeat(100_000) }, { html: hostileHtml }));
+    expect(performance.now() - t0).toBeLessThan(3000);
+  });
+
   it('requires a hardened _headers file', () => {
     expect(scan(build({}, { headers: null })).join()).toMatch(/_headers missing/);
     expect(scan(build({}, { headers: '/*\n  X: y\n' })).join()).toMatch(/_headers: missing default-src/);

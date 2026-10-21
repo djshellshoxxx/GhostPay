@@ -2,13 +2,13 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { deriveStealthSecret, secretScalarFromBytes, type PublicAnnouncement } from '@ghostpay/core-crypto';
 import fc from 'fast-check';
-import { getAddress, keccak256, recoverAddress, toBytes, verifyTypedData } from 'viem/utils';
+import { getAddress, keccak256, recoverAddress, serializeTransaction, toBytes, verifyTypedData } from 'viem/utils';
 import { describe, expect, it } from 'vitest';
 import { ChainAdapterError } from './errors.js';
 import { FAKE, USDC_SEPOLIA, payment, recipient } from './fixtures.testutil.js';
 import {
   PERMIT_TYPES, SWEEP_DOMAIN_NAME, SWEEP_DOMAIN_VERSION, SWEEP_TYPES, SWEEP_TYPE_STRING, addressOfSecret, buildPermitTypedData,
-  buildSweepTypedData, eip712DomainSeparator, permitDigest, signDigest, signPermit, signSweep, sweepDigest, sweepDigestManual,
+  buildSweepTypedData, eip712DomainSeparator, permitDigest, signDigest, signPermit, signSweep, signTransactionHash, sweepDigest, sweepDigestManual,
   type PermitReader, type SweepOrder,
 } from './sweep.js';
 import type { Address, Hex } from './types.js';
@@ -148,6 +148,23 @@ describe('signing', () => {
   it('signDigest rejects non-32-byte digests', async () => {
     const { secret } = stealthKey();
     await expect(signDigest('0x1234', secret)).rejects.toThrow(ChainAdapterError);
+  });
+  it('signTransactionHash computes the hash itself and recovers to the key address', async () => {
+    const { secret, address } = stealthKey();
+    const tx = { type: 'eip1559' as const, chainId: 84532, nonce: 1, maxFeePerGas: 2n, maxPriorityFeePerGas: 1n, gas: 21_000n, to: FAKE.relayer, value: 1n, data: '0x' as const };
+    const sig = await signTransactionHash(tx, secret);
+    expect(await recoverAddress({ hash: keccak256(serializeTransaction(tx)), signature: sig.signature })).toBe(address);
+  });
+  it('signTransactionHash refuses non-1559 and already-signed transactions', async () => {
+    const { secret } = stealthKey();
+    const base = { chainId: 1, nonce: 0, gas: 21_000n, to: FAKE.relayer, value: 0n };
+    await expect(signTransactionHash({ ...base, type: 'legacy', gasPrice: 1n } as never, secret)).rejects.toThrow(/only unsigned EIP-1559/);
+    await expect(signTransactionHash({ ...base, type: 'eip1559', maxFeePerGas: 1n, r: '0x01', s: '0x01', yParity: 0 } as never, secret)).rejects.toThrow(/already signed/);
+  });
+  it('the package index does not export the raw signDigest', async () => {
+    const idx = await import('./index.js');
+    expect('signDigest' in idx).toBe(false);
+    expect(typeof idx.signTransactionHash).toBe('function');
   });
   it('signature does not recover to the owner under another chain id', async () => {
     const { secret, address } = stealthKey();

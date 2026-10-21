@@ -75,3 +75,22 @@ describe('persistence', () => {
     expect(Object.keys(DEFAULT_SETTINGS).sort()).toEqual(['autoClearFragment', 'delayMaxSec', 'delayMinSec', 'lockTimeoutMin', 'pinnedSigners', 'relayerUrl', 'rpcUrls', 'theme']);
   });
 });
+
+describe('item7: no quadratic work on hostile URL text', () => {
+  it('checkRelayerUrl and sanitizeSettings stay fast with 100k trailing slashes and a long URL is rejected', () => {
+    const hostile = `https://r.example/a${'/'.repeat(100_000)}x`;
+    const t0 = performance.now();
+    expect(() => checkRelayerUrl(hostile)).toThrow();
+    const trailing = `https://r.example/a${'/'.repeat(100_000)}`;
+    expect(() => checkRelayerUrl(trailing)).toThrow(/too long/);
+    sanitizeSettings({ relayerUrl: trailing, rpcUrls: { '1': trailing } });
+    expect(performance.now() - t0).toBeLessThan(500);
+  });
+  it('still trims ordinary trailing slashes', () => {
+    expect(checkRelayerUrl('https://r.example/a///')).toBe('https://r.example/a');
+    expect(checkRelayerUrl('https://r.example/')).toBe('https://r.example');
+  });
+  it('rejects URLs longer than 2048 characters', () => {
+    expect(() => checkRelayerUrl(`https://r.example/${'a'.repeat(2100)}`)).toThrow(/too long/);
+  });
+});

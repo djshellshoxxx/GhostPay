@@ -1,7 +1,8 @@
 import { secp256k1 } from '@noble/curves/secp256k1.js';
 import { keccak_256 } from '@noble/hashes/sha3.js';
 import type { SecretScalar } from '@ghostpay/core-crypto';
-import { bytesToHex, concatHex, getAddress, hashTypedData, hexToBytes, isAddress, keccak256, recoverAddress } from 'viem/utils';
+import { bytesToHex, concatHex, getAddress, hashTypedData, hexToBytes, isAddress, keccak256, recoverAddress, serializeTransaction } from 'viem/utils';
+import type { TransactionSerializableEIP1559 } from 'viem';
 import { fail } from './errors.js';
 import { MAX_UINT256, ZERO_ADDRESS, type Address, type Hex } from './types.js';
 
@@ -188,6 +189,7 @@ export function addressOfSecret(secret: SecretScalar): Address {
  * @param secret Stealth key verified by core-crypto `deriveStealthSecret`.
  * @returns Signature parts.
  * @throws {ChainAdapterError} `SIGNING_FAILED`.
+ * @internal Not part of the package API (excluded from index.ts): use signSweep, signPermit or signTransactionHash.
  */
 export async function signDigest(digest: Hex, secret: SecretScalar): Promise<SignedDigest> {
   if (!/^0x[0-9a-fA-F]{64}$/.test(digest)) return fail('SIGNING_FAILED', 'digest must be 32 bytes');
@@ -199,6 +201,22 @@ export async function signDigest(digest: Hex, secret: SecretScalar): Promise<Sig
   const recovered = await recoverAddress({ hash: digest, signature });
   if (recovered !== addressOfSecret(secret)) return fail('SIGNING_FAILED', 'self-check failed');
   return { signature, v, r, s };
+}
+
+/**
+ * Signs an unsigned EIP-1559 transaction for the stealth key. The hash is computed here from the transaction itself, so
+ * no caller can pass an arbitrary digest. The raw `signDigest` is deliberately not re-exported from the package index.
+ *
+ * @param tx Unsigned EIP-1559 transaction (no signature fields).
+ * @param secret Stealth key; `tx` is signed only as that key's own transaction.
+ * @returns Signature parts (`v` is 27/28; use `v - 27` as yParity).
+ * @throws {ChainAdapterError} `SIGNING_FAILED` when `tx` is not an unsigned type-2 transaction.
+ */
+export async function signTransactionHash(tx: TransactionSerializableEIP1559, secret: SecretScalar): Promise<SignedDigest> {
+  const t = tx;
+  if (t.type !== 'eip1559') return fail('SIGNING_FAILED', 'only unsigned EIP-1559 transactions can be signed');
+  if (t.r !== undefined || t.s !== undefined || t.v !== undefined || t.yParity !== undefined) return fail('SIGNING_FAILED', 'transaction is already signed');
+  return signDigest(keccak256(serializeTransaction(tx)), secret);
 }
 
 /**

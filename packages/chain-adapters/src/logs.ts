@@ -27,6 +27,12 @@ export interface ScanCursor {
   readonly nextBlock: bigint;
   /** Last fully processed block and its hash, used to detect reorgs. */
   readonly last?: { readonly number: bigint; readonly hash: Hex };
+  /**
+   * Optional older checkpoints (ascending by block number), recorded only when `FetchOptions.historySize > 0`.
+   * They let a resume find the deepest still-canonical checkpoint and so detect and roll back reorgs deeper
+   * than `finalityDepth`. Consumers that persist only `nextBlock`/`last` simply lose this extra protection.
+   */
+  readonly history?: readonly { readonly number: bigint; readonly hash: Hex }[];
 }
 
 /** Options for {@link fetchAnnouncements}. */
@@ -46,7 +52,26 @@ export interface FetchOptions {
   readonly maxLogs?: number;
   /** Smaller range cap than the chain default (never larger). */
   readonly maxRange?: number;
+  /**
+   * Cross-check the `blockHash` of every accepted log against the canonical block at that height
+   * (S3-14 / CA-14). Default `false` (opt-in: the cost is extra RPC load and a stricter provider contract); costs one `eth_getBlockByNumber` per distinct block that carries an
+   * accepted log (window end blocks are free). A mismatch throws `RPC_FAILURE`.
+   */
+  readonly verifyLogBlocks?: boolean;
+  /**
+   * Number of block-hash checkpoints (0..64) kept in `cursor.history`, default 0 (off). With a history a reorg
+   * deeper than `finalityDepth` is still detected and the cursor rewinds to the newest checkpoint that is
+   * still canonical (or below the oldest one when none is).
+   */
+  readonly historySize?: number;
 }
+
+/**
+ * Upper bound for a plausible chain head. 10^10 blocks is ~80 years at 4 blocks/s, so a larger value
+ * comes from a hostile or broken provider (it would otherwise drive an effectively endless scan).
+ */
+export const MAX_PLAUSIBLE_HEAD = 10_000_000_000n;
+const MAX_HISTORY = 64;
 
 /** Result of one {@link fetchAnnouncements} call. */
 export interface FetchResult {
@@ -181,17 +206,50 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
 
   let next = o.cursor.nextBlock;
   let reorg: FetchResult['reorg'];
+  /** Checkpoints still canonical after the resume check (only used to extend the history). */
+  let keptHistory: { number: bigint; hash: Hex }[] = [];
+  const histSize = Math.max(0, Math.min(Number.isInteger(o.historySize) ? (o.historySize as number) : 0, MAX_HISTORY));
   if (o.cursor.last !== undefined) {
-    const ref = await o.client.getBlock(o.cursor.last.number);
-    if (ref === null || ref.hash.toLowerCase() !== o.cursor.last.hash.toLowerCase()) {
-      next = o.cursor.last.number >= depth ? o.cursor.last.number - depth + 1n : 0n;
+    const stored = [...(o.cursor.history ?? []), o.cursor.last]
+      .filter((c, i, a) => a.findIndex((d) => d.number === c.number) === i)
+      .sort((a, b) => (a.number < b.number ? -1 : 1))
+      .slice(-(MAX_HISTORY + 1));
+    const newest = stored[stored.length - 1] as { number: bigint; hash: Hex };
+    const ref = await o.client.getBlock(newest.number);
+    if (ref !== null && ref.hash.toLowerCase() === newest.hash.toLowerCase()) {
+      keptHistory = stored;
+    } else {
+      // Newest checkpoint is gone: walk back to the deepest-known canonical one.
+      let matched: { number: bigint; hash: Hex } | undefined;
+      let idx = stored.length - 2;
+      for (; idx >= 0; idx--) {
+        const c = stored[idx] as { number: bigint; hash: Hex };
+        const r = await o.client.getBlock(c.number);
+        if (r !== null && r.hash.toLowerCase() === c.hash.toLowerCase()) {
+          matched = c;
+          break;
+        }
+      }
+      const oldest = stored[0] as { number: bigint; hash: Hex };
+      const base = matched === undefined ? oldest.number : newest.number;
+      const byDepth = base >= depth ? base - depth + 1n : 0n;
+      next = matched === undefined ? byDepth : matched.number + 1n < byDepth ? matched.number + 1n : byDepth;
       reorg = { rolledBackTo: next };
+      keptHistory = stored.filter((c) => c.number < next);
     }
   }
 
   const head = await o.client.blockNumber();
+  if (head > MAX_PLAUSIBLE_HEAD) return fail('RPC_FAILURE', 'implausible chain head');
+  // A canonical checkpoint above the reported head means the provider contradicts itself (or went backwards).
+  if (reorg === undefined && o.cursor.last !== undefined && head < o.cursor.last.number) {
+    return fail('RPC_FAILURE', 'chain head is behind the verified checkpoint');
+  }
   const headRef = await o.client.getBlock(head);
+  if (headRef === null) return fail('RPC_FAILURE', 'chain head block unavailable');
   const end = o.toBlock !== undefined && o.toBlock < head ? o.toBlock : head;
+  const verifyLogs = o.verifyLogBlocks === true;
+  const canonical = new Map<bigint, string>();
   const out: ScannedAnnouncement[] = [];
   const seen = new Set<string>();
   let skipped = 0;
@@ -210,9 +268,10 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
     }
     const to = next + window - 1n > end ? end : next + window - 1n;
     requests++;
-    const boundary = to === head && headRef !== null ? headRef : await o.client.getBlock(to);
+    const boundary = to === head ? headRef : await o.client.getBlock(to);
     if (boundary === null) return fail('RPC_FAILURE', 'window boundary block unavailable');
     windows.push({ from: next, to, hash: boundary.hash });
+    canonical.set(to, boundary.hash.toLowerCase());
     let logs: readonly RpcLog[];
     try {
       logs = await o.client.getLogs({ address: o.announcer, topics: [ANNOUNCEMENT_TOPIC, schemeTopic(schemeId)], fromBlock: next, toBlock: to });
@@ -229,6 +288,16 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
       if (a === undefined) {
         skipped++;
       } else if (!seen.has(a.id)) {
+        if (verifyLogs) {
+          let known = canonical.get(a.blockNumber);
+          if (known === undefined) {
+            const b = await o.client.getBlock(a.blockNumber);
+            if (b === null) return fail('RPC_FAILURE', 'log block unavailable');
+            known = b.hash.toLowerCase();
+            canonical.set(a.blockNumber, known);
+          }
+          if (known !== a.blockHash.toLowerCase()) return fail('RPC_FAILURE', 'log block hash differs from canonical block');
+        }
         seen.add(a.id);
         out.push(a);
       }
@@ -239,10 +308,11 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
   }
 
   let last = reorg === undefined ? o.cursor.last : undefined;
+  let newHistory: { number: bigint; hash: Hex }[] = [];
   if (processed) {
     const ref = await o.client.getBlock(doneThrough);
     if (ref === null) return fail('RPC_FAILURE', 'processed block vanished');
-    if (headRef !== null && doneThrough === head && ref.hash.toLowerCase() !== headRef.hash.toLowerCase()) {
+    if (doneThrough === head && ref.hash.toLowerCase() !== headRef.hash.toLowerCase()) {
       return fail('RPC_FAILURE', 'chain reorganised during scan; retry');
     }
     // Re-verify every window boundary: a reorg inside the span (including truncated, multi-request scans)
@@ -253,7 +323,12 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
       if (cur !== null && cur.hash.toLowerCase() === w.hash.toLowerCase()) continue;
       const prev = windows[i - 1];
       const lastOk = prev !== undefined ? { number: prev.to, hash: prev.hash } : reorg === undefined ? o.cursor.last : undefined;
-      const rc: ScanCursor = lastOk === undefined ? { nextBlock: w.from } : { nextBlock: w.from, last: lastOk };
+      const hist = histSize === 0 ? [] : mergeHistory(keptHistory, windows.slice(0, i).map((x) => ({ number: x.to, hash: x.hash })), histSize + 1);
+      const rc: ScanCursor = {
+        nextBlock: w.from,
+        ...(lastOk === undefined ? {} : { last: lastOk }),
+        ...(hist.length > 1 ? { history: hist.slice(0, -1) } : {}),
+      };
       return {
         announcements: out.filter((x) => x.blockNumber < w.from),
         cursor: rc,
@@ -263,9 +338,30 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
       };
     }
     last = { number: doneThrough, hash: ref.hash };
+    if (histSize > 0) {
+      newHistory = mergeHistory(keptHistory, windows.map((x) => ({ number: x.to, hash: x.hash })), histSize + 1);
+    }
   }
-  const cursor: ScanCursor = last === undefined ? { nextBlock: next } : { nextBlock: next, last };
+  if (histSize > 0 && !processed) newHistory = keptHistory.slice(-(histSize + 1));
+  // `history` excludes `last` itself (it is stored separately).
+  const olderThanLast = last === undefined ? [] : newHistory.filter((c) => c.number < last.number);
+  const cursor: ScanCursor = {
+    nextBlock: next,
+    ...(last === undefined ? {} : { last }),
+    ...(olderThanLast.length > 0 ? { history: olderThanLast } : {}),
+  };
   return finish({ announcements: out, cursor, truncated, skipped }, reorg);
+}
+
+/** Merges checkpoint lists, dedupes by block number (later wins), sorts ascending and keeps the newest `max`. */
+function mergeHistory(
+  a: readonly { number: bigint; hash: Hex }[],
+  b: readonly { number: bigint; hash: Hex }[],
+  max: number,
+): { number: bigint; hash: Hex }[] {
+  const m = new Map<bigint, { number: bigint; hash: Hex }>();
+  for (const c of [...a, ...b]) m.set(c.number, c);
+  return [...m.values()].sort((x, y) => (x.number < y.number ? -1 : 1)).slice(-max);
 }
 
 function finish(r: Omit<FetchResult, 'reorg'>, reorg: FetchResult['reorg']): FetchResult {

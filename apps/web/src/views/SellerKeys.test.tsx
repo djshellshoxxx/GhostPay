@@ -2,7 +2,8 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { clearSession, getSessionPublic } from '../lib/session';
+import { unsafeRevealSecret } from '@ghostpay/core-crypto';
+import { clearSession, getSessionPublic, importSession, requireSession } from '../lib/session';
 import { makeServices, renderApp } from '../test/render';
 
 beforeEach(() => {
@@ -62,12 +63,12 @@ describe('Seller keys', () => {
     };
     URL.revokeObjectURL = (): void => undefined;
     HTMLAnchorElement.prototype.click = click;
-    await user.type(screen.getByLabelText('Passphrase (at least 10 characters)'), 'short');
+    await user.type(screen.getByLabelText('Passphrase (at least 12 characters)'), 'short');
     await user.type(screen.getByLabelText('Repeat passphrase'), 'short');
     await user.click(screen.getByRole('button', { name: 'Download encrypted keystore' }));
-    expect(screen.getByRole('alert').textContent).toMatch(/at least 10/);
-    await user.clear(screen.getByLabelText('Passphrase (at least 10 characters)'));
-    await user.type(screen.getByLabelText('Passphrase (at least 10 characters)'), 'a long passphrase');
+    expect(screen.getByRole('alert').textContent).toMatch(/at least 12/);
+    await user.clear(screen.getByLabelText('Passphrase (at least 12 characters)'));
+    await user.type(screen.getByLabelText('Passphrase (at least 12 characters)'), 'a long passphrase');
     await user.clear(screen.getByLabelText('Repeat passphrase'));
     await user.type(screen.getByLabelText('Repeat passphrase'), 'different one!!');
     await user.click(screen.getByRole('button', { name: 'Download encrypted keystore' }));
@@ -111,5 +112,29 @@ describe('Seller keys', () => {
     await user.type(screen.getByLabelText('Passphrase'), 'whatever pass');
     await user.click(screen.getByRole('button', { name: 'Decrypt and load' }));
     expect(screen.getByRole('alert').textContent).toMatch(/not a GhostPay keystore/);
+  });
+
+  it('wiping keys also locks the tag vault (round-audit web M2)', async () => {
+    const user = userEvent.setup();
+    const services = makeServices();
+    renderApp(services);
+    await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Seller keys' }));
+    await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
+    await services.vault.unlock(unsafeRevealSecret(requireSession().keys.viewingSecret));
+    expect(services.vault.unlocked).toBe(true);
+    await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    expect(getSessionPublic()).toBeUndefined();
+    expect(services.vault.unlocked).toBe(false);
+  });
+
+  it('loading a different identity locks the previous identity\'s tag vault', async () => {
+    const user = userEvent.setup();
+    const services = makeServices();
+    renderApp(services);
+    await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Seller keys' }));
+    await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
+    await services.vault.unlock(unsafeRevealSecret(requireSession().keys.viewingSecret));
+    importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32) });
+    expect(services.vault.unlocked).toBe(false);
   });
 });

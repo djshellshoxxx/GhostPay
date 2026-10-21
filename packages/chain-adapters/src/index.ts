@@ -4,8 +4,15 @@ export * from './config/chains.js';
 export * from './config/tokens.js';
 export * from './fees.js';
 export * from './deployments.js';
+export * from './readback.js';
 export * from './router.js';
-export * from './sweep.js';
+// `signDigest` (raw 32-byte signer) is intentionally not exported: use signSweep, signPermit or signTransactionHash.
+export {
+  SWEEP_TYPE_STRING, SWEEP_DOMAIN_NAME, SWEEP_DOMAIN_VERSION, SWEEP_TYPES, PERMIT_TYPES,
+  buildSweepTypedData, sweepDigest, eip712DomainSeparator, sweepDigestManual, addressOfSecret,
+  signSweep, signTransactionHash, buildPermitTypedData, permitDigest, signPermit,
+} from './sweep.js';
+export type { SweepOrder, SweepTypedData, SignedDigest, PermitReader, PermitTypedData } from './sweep.js';
 export * from './rpc.js';
 export * from './logs.js';
 export * from './quote.js';

@@ -159,7 +159,7 @@ export function Sweep(): ReactNode {
             )}
           </>
         ) : (
-          <button type="button" className="btn btn-primary" onClick={onDirect} disabled={busy || balance === undefined || balance === 0n}>Sign and broadcast directly</button>
+          <button type="button" className="btn btn-primary" onClick={onDirect} disabled={busy || balance === undefined || balance === 0n || (tokenAddr !== 'native' && tokenCfg === undefined)}>Sign and broadcast directly</button>
         )}
       </div>
 

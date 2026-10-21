@@ -3,8 +3,9 @@ import {
   assertSponsorFeeAcceptable,
   buildSweepTypedData,
   erc20Abi,
+  findToken,
+  signTransactionHash,
   parseQuantity,
-  signDigest,
   signPermit,
   signSweep,
   type Address,
@@ -29,6 +30,13 @@ export interface SweepTarget {
 }
 
 type Rpc = Pick<RpcClient, 'request'>;
+
+/** Both sweep paths (relayed and direct) only move tokens on the chain's allowlist; native coin needs no entry. */
+export function assertSweepTokenAllowed(chainId: number, token: Address | 'native'): void {
+  if (token !== 'native' && findToken(chainId, token) === undefined) {
+    throw new UserFacingError('This token is not on the allowlist. It will not be swept from here.');
+  }
+}
 
 /** Derives the stealth key in memory and proves it controls `owner` before it is ever used. */
 export function deriveVerifiedSweepKey(target: SweepTarget): SecretScalar {
@@ -109,6 +117,7 @@ function defaultNonce(): bigint {
 
 /** Signs the EIP-712 Sweep and the ERC-2612 permit with the in-memory stealth key and hands them to the relayer. */
 export async function relayedSweep(i: RelayedSweepInput): Promise<string> {
+  assertSweepTokenAllowed(i.target.chainId, i.target.token);
   const secret = deriveVerifiedSweepKey(i.target);
   try {
     const deadline = BigInt(i.nowSeconds + 20 * 60);
@@ -165,6 +174,7 @@ export interface DirectSweepResult {
 
 /** Signs a plain EIP-1559 transfer with the stealth key (the stealth address pays gas) and broadcasts it. */
 export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResult> {
+  assertSweepTokenAllowed(i.target.chainId, i.target.token);
   const secret = deriveVerifiedSweepKey(i.target);
   try {
     const { owner, chainId, token } = i.target;
@@ -195,7 +205,7 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
       }
     }
     const unsigned = { type: 'eip1559' as const, chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value, data };
-    const sig = await signDigest(keccak256(serializeTransaction(unsigned)), secret);
+    const sig = await signTransactionHash(unsigned, secret);
     const raw = serializeTransaction(unsigned, { r: sig.r, s: sig.s, yParity: sig.v - 27 });
     const hash = await i.rpc.request('eth_sendRawTransaction', [raw]);
     if (typeof hash !== 'string' || hash.toLowerCase() !== keccak256(raw)) {

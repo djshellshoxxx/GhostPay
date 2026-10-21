@@ -41,6 +41,127 @@ const FORBIDDEN_JS = [
 
 const WORKER_FORBIDDEN = ['fetch(', 'XMLHttpRequest', 'WebSocket', 'EventSource', 'sendBeacon', 'importScripts', 'navigator.serviceWorker'];
 
+const isNameChar = (c) => (c >= 48 && c <= 58) || (c >= 65 && c <= 90) || (c >= 97 && c <= 122) || c === 45 || c === 95;
+const isSpace = (c) => c === 32 || c === 9 || c === 10 || c === 12 || c === 13;
+
+/**
+ * Parses an attribute string (the part of a start tag after the tag name) in one linear pass.
+ * Returns a Map of lower-cased names to values; quoted values may contain '>' (handled by the caller's tag scanner).
+ */
+function parseAttrs(text) {
+  const attrs = new Map();
+  let i = 0;
+  const n = text.length;
+  while (i < n) {
+    while (i < n && (isSpace(text.charCodeAt(i)) || text[i] === '/')) i++;
+    const start = i;
+    while (i < n && !isSpace(text.charCodeAt(i)) && text[i] !== '=' && text[i] !== '/') i++;
+    if (i === start) {
+      i++;
+      continue;
+    }
+    const name = text.slice(start, i).toLowerCase();
+    while (i < n && isSpace(text.charCodeAt(i))) i++;
+    let value = '';
+    if (text[i] === '=') {
+      i++;
+      while (i < n && isSpace(text.charCodeAt(i))) i++;
+      const q = text[i];
+      if (q === '"' || q === "'") {
+        const close = text.indexOf(q, i + 1);
+        const end = close === -1 ? n : close;
+        value = text.slice(i + 1, end);
+        i = end + 1;
+      } else {
+        const vs = i;
+        while (i < n && !isSpace(text.charCodeAt(i))) i++;
+        value = text.slice(vs, i);
+      }
+    }
+    if (!attrs.has(name)) attrs.set(name, value);
+  }
+  return attrs;
+}
+
+/**
+ * Minimal linear HTML tokenizer for the build gate: start tags with attributes (quote-aware), raw-text bodies of
+ * <script>/<style> up to a closing tag such as `</script >` / `</SCRIPT\n>` / `</script foo>`, and comments skipped.
+ * No backtracking regexes run over the file, so hostile input cannot cause quadratic work.
+ */
+export function tokenizeHtml(html) {
+  const tags = [];
+  const lower = html.toLowerCase();
+  const n = html.length;
+  let i = 0;
+  while (i < n) {
+    const lt = html.indexOf('<', i);
+    if (lt === -1) break;
+    if (html.startsWith('<!--', lt)) {
+      const end = html.indexOf('-->', lt + 4);
+      i = end === -1 ? n : end + 3;
+      continue;
+    }
+    let j = lt + 1;
+    if (html[j] === '/' || html[j] === '!' || html[j] === '?') {
+      const gt = html.indexOf('>', j);
+      i = gt === -1 ? n : gt + 1;
+      continue;
+    }
+    const nameStart = j;
+    while (j < n && isNameChar(html.charCodeAt(j))) j++;
+    if (j === nameStart) {
+      i = lt + 1;
+      continue;
+    }
+    const name = lower.slice(nameStart, j);
+    const attrStart = j;
+    let quote = '';
+    while (j < n) {
+      const c = html[j];
+      if (quote !== '') {
+        if (c === quote) quote = '';
+      } else if (c === '"' || c === "'") quote = c;
+      else if (c === '>') break;
+      j++;
+    }
+    const tag = { name, attrs: parseAttrs(html.slice(attrStart, j)), body: '' };
+    i = Math.min(j + 1, n);
+    if (name === 'script' || name === 'style') {
+      const closeAt = lower.indexOf(`</${name}`, i);
+      const bodyEnd = closeAt === -1 ? n : closeAt;
+      tag.body = html.slice(i, bodyEnd);
+      const gt = closeAt === -1 ? -1 : html.indexOf('>', closeAt);
+      i = gt === -1 ? n : gt + 1;
+    }
+    tags.push(tag);
+  }
+  return tags;
+}
+
+/** Removes `/* ... *\/` comments in one linear pass (an unterminated opener is left in place). */
+function stripBlockComments(text) {
+  let out = '';
+  let i = 0;
+  for (;;) {
+    const open = text.indexOf('/*', i);
+    if (open === -1) break;
+    const close = text.indexOf('*/', open + 2);
+    if (close === -1) break;
+    out += text.slice(i, open);
+    i = close + 2;
+  }
+  return out + text.slice(i);
+}
+
+/** True when a CSP directive list (`a; b c; d`) has the directive and it contains 'unsafe-inline' or 'unsafe-eval'. */
+function cspDirectiveUnsafe(csp, directive, tokens) {
+  for (const part of csp.split(';')) {
+    const words = part.trim().split(/\s+/);
+    if (words[0] === directive && words.some((w) => tokens.includes(w))) return true;
+  }
+  return false;
+}
+
 function walk(dir) {
   const out = [];
   for (const name of readdirSync(dir)) {
@@ -105,19 +226,26 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
   if (!existsSync(indexPath)) problems.push('index.html missing');
   else {
     const html = readFileSync(indexPath, 'utf8');
-    for (const m of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
-      if (!/\bsrc\s*=/.test(m[1])) problems.push('index.html: inline <script>');
-      else if (m[2].trim() !== '') problems.push('index.html: script with both src and inline body');
-      if (/\bsrc\s*=\s*["']?(?:https?:)?\/\//.test(m[1])) problems.push('index.html: remote script');
+    const tags = tokenizeHtml(html);
+    for (const t of tags) {
+      if (t.name === 'script') {
+        const src = t.attrs.get('src');
+        if (src === undefined) problems.push('index.html: inline <script>');
+        else if (t.body.trim() !== '') problems.push('index.html: script with both src and inline body');
+        if (src !== undefined && /^(?:https?:)?\/\//.test(src.trim())) problems.push('index.html: remote script');
+      }
+      if (t.name === 'style') problems.push('index.html: inline <style>');
+      if (t.attrs.has('style')) problems.push('index.html: inline style attribute');
+      for (const k of t.attrs.keys()) if (k.length > 2 && k.startsWith('on')) problems.push('index.html: inline event handler attribute');
+      if (t.name === 'link' && /^(?:https?:)?\/\//.test((t.attrs.get('href') ?? '').trim())) problems.push('index.html: remote <link>');
     }
-    if (/<style\b/i.test(html)) problems.push('index.html: inline <style>');
-    if (/\sstyle\s*=/i.test(html)) problems.push('index.html: inline style attribute');
-    if (/\son[a-z]+\s*=/i.test(html)) problems.push('index.html: inline event handler attribute');
-    if (/<link\b[^>]*\bhref\s*=\s*["']?(?:https?:)?\/\//i.test(html)) problems.push('index.html: remote <link>');
-    if (!/http-equiv="Content-Security-Policy"/.test(html)) problems.push('index.html: meta CSP missing');
-    if (!/name="referrer"\s+content="no-referrer"/.test(html)) problems.push('index.html: meta referrer no-referrer missing');
-    if (/script-src[^;"]*'unsafe-(?:inline|eval)'/.test(html)) problems.push("index.html: CSP allows unsafe-inline/eval scripts");
-    if (/style-src[^;"]*'unsafe-inline'/.test(html)) problems.push("index.html: CSP allows unsafe-inline styles");
+    const metas = tags.filter((t) => t.name === 'meta');
+    const csp = metas.find((t) => (t.attrs.get('http-equiv') ?? '').toLowerCase() === 'content-security-policy');
+    if (csp === undefined) problems.push('index.html: meta CSP missing');
+    if (!metas.some((t) => t.attrs.get('name') === 'referrer' && t.attrs.get('content') === 'no-referrer')) problems.push('index.html: meta referrer no-referrer missing');
+    const cspText = csp?.attrs.get('content') ?? '';
+    if (cspDirectiveUnsafe(cspText, 'script-src', ["'unsafe-inline'", "'unsafe-eval'"])) problems.push("index.html: CSP allows unsafe-inline/eval scripts");
+    if (cspDirectiveUnsafe(cspText, 'style-src', ["'unsafe-inline'"])) problems.push("index.html: CSP allows unsafe-inline styles");
     scanHosts(html, 'index.html', problems);
   }
 
@@ -146,7 +274,7 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
     for (const f of walk(srcDir)) {
       const r = relative(srcDir, f).split(sep).join('/');
       if (!/\.(ts|tsx)$/.test(r) || /\.test\.|\/test\//.test(r)) continue;
-      const text = readFileSync(f, 'utf8').replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
+      const text = stripBlockComments(readFileSync(f, 'utf8').replace(/\/\/.*$/gm, ''));
       if (/dangerouslySetInnerHTML/.test(text)) problems.push(`src/${r}: dangerouslySetInnerHTML`);
       if (/\.innerHTML\s*=(?!=)|\.outerHTML\s*=(?!=)/.test(text)) problems.push(`src/${r}: innerHTML/outerHTML assignment`);
       if (/(?<![.\w$])eval\s*\(|new\s+Function\s*\(/.test(text)) problems.push(`src/${r}: eval/new Function`);

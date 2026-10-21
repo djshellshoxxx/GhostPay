@@ -26,6 +26,7 @@ export const DEFAULT_SETTINGS: Settings = Object.freeze({
 
 export const SETTINGS_KEY = 'ghostpay.settings.v1';
 const MAX_DELAY_SEC = 24 * 3600;
+const MAX_URL_LENGTH = 2048;
 
 /** Validates a user-entered RPC URL (https only, no credentials, no fragment). Returns the normalized URL. */
 export function checkRpcUrl(raw: string): string {
@@ -40,6 +41,7 @@ export function checkRpcUrl(raw: string): string {
 export function checkRelayerUrl(raw: string): string {
   const trimmed = raw.trim();
   if (trimmed === '') return '';
+  if (trimmed.length > MAX_URL_LENGTH) throw new UserFacingError('Relayer URL is too long.');
   let u: URL;
   try {
     u = new URL(trimmed);
@@ -49,7 +51,10 @@ export function checkRelayerUrl(raw: string): string {
   if (u.protocol !== 'https:' || u.username !== '' || u.password !== '' || u.search !== '' || u.hash !== '') {
     throw new UserFacingError('Relayer URL must be https:// with no credentials, query or fragment.');
   }
-  return u.origin + u.pathname.replace(/\/+$/, '');
+  // Linear trailing-slash trim (a /\/+$/ regex is quadratic on long runs of slashes).
+  let end = u.pathname.length;
+  while (end > 0 && u.pathname.charCodeAt(end - 1) === 0x2f) end--;
+  return u.origin + u.pathname.slice(0, end);
 }
 
 /** Delay bounds must be whole seconds, 0 <= min <= max <= 24 h. */

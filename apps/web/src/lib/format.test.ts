@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fiatDecimals, formatCountdown, formatFiat, formatUnits, formatUnix, minutesLabel, parseUnits, shortHex, taxFor } from './format';
+import { fiatDecimals, formatCountdown, formatFiat, formatUnits, formatUnix, minutesLabel, parseUnits, shortHex, taxFor, visibleText } from './format';
 
 describe('formatUnits / parseUnits', () => {
   it('formats and trims', () => {
@@ -66,5 +66,22 @@ describe('minutesLabel', () => {
     expect(minutesLabel(900)).toBe('15');
     expect(minutesLabel(90)).toBe('1.5');
     expect(minutesLabel(30)).toBe('0.5');
+  });
+});
+
+describe('visibleText (item 6)', () => {
+  it('marks bidi, invisible and control characters but keeps normal text, newlines, ZWJ emoji and RTL letters', () => {
+    expect(visibleText('plain text')).toBe('plain text');
+    expect(visibleText('a‮b')).toBe('a⟦U+202E⟧b');
+    expect(visibleText('​﻿⁦⁩\u0000\u007F\u0085 ')).toBe('⟦U+200B⟧⟦U+FEFF⟧⟦U+2066⟧⟦U+2069⟧⟦U+0000⟧⟦U+007F⟧⟦U+0085⟧⟦U+2028⟧');
+    expect(visibleText('line1\nline2')).toBe('line1\nline2');
+    expect(visibleText('\u{1F468}‍\u{1F469}')).toBe('\u{1F468}‍\u{1F469}');
+    expect(visibleText('שלום')).toBe('שלום');
+    expect(visibleText('\u{E0041}')).toBe('⟦U+E0041⟧');
+  });
+  it('is linear on long input', () => {
+    const t0 = performance.now();
+    visibleText('‮'.repeat(200_000));
+    expect(performance.now() - t0).toBeLessThan(2000);
   });
 });

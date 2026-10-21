@@ -172,6 +172,94 @@ describe('runScan', () => {
   });
 });
 
+describe('runScan liveness and cancel (item 1)', () => {
+  const race = <T,>(pr: Promise<T>, ms = 2000): Promise<T> => Promise.race([pr, new Promise<T>((_r, rej) => setTimeout(() => rej(new Error('HANG')), ms))]);
+  const silent = (): InlineWorker => {
+    const w = new InlineWorker();
+    w.postMessage = (m): void => {
+      w.received.push(m);
+    };
+    return w;
+  };
+
+  it('fails with a clear error (and terminates) when the worker never answers start', async () => {
+    const s = setup();
+    const w = silent();
+    const key = unsafeRevealSecret(s.keys.viewingSecret);
+    const run = runScan({ chain, manifest, client: chainWith(10, []), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), viewingKey: key, createWorker: () => w, signal: new AbortController().signal, workerTimeoutMs: 50 });
+    await expect(race(run)).rejects.toThrow(/stopped responding/);
+    expect(w.terminated).toBe(true);
+    expect(key.every((b) => b === 0)).toBe(true);
+  });
+
+  it('fails when the worker stalls mid-batch', async () => {
+    const s = setup();
+    const w = new InlineWorker();
+    const orig = w.postMessage.bind(w);
+    w.postMessage = (m): void => {
+      if (m.type === 'batch') w.received.push(m);
+      else orig(m);
+    };
+    const run = runScan({ chain, manifest, client: chainWith(10_000, s.logs), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => w, signal: new AbortController().signal, workerTimeoutMs: 50 });
+    await expect(race(run)).rejects.toThrow(/stopped responding/);
+    expect(w.terminated).toBe(true);
+  });
+
+  it('Cancel unsticks a stalled worker wait and returns the partial result', async () => {
+    const s = setup();
+    const w = silent();
+    const ctl = new AbortController();
+    const run = runScan({ chain, manifest, client: chainWith(10, []), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => w, signal: ctl.signal });
+    setTimeout(() => ctl.abort(), 20);
+    const res = await race(run);
+    expect(res.matches).toEqual([]);
+    expect(w.terminated).toBe(true);
+    expect(w.received.some((m) => m.type === 'cancel')).toBe(true);
+  });
+
+  it('Cancel unsticks a hung RPC fetch', async () => {
+    const s = setup();
+    const w = new InlineWorker();
+    const hung = mockRpc(84532, () => new Promise(() => undefined));
+    const ctl = new AbortController();
+    const run = runScan({ chain, manifest, client: hung, cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => w, signal: ctl.signal });
+    setTimeout(() => ctl.abort(), 20);
+    await race(run);
+    expect(w.terminated).toBe(true);
+  });
+
+  it('an already-cancelled scan returns at once without waiting for the worker', async () => {
+    const s = setup();
+    const w = silent();
+    const ctl = new AbortController();
+    ctl.abort();
+    const res = await race(runScan({ chain, manifest, client: chainWith(10, []), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => w, signal: ctl.signal }));
+    expect(res.matches).toEqual([]);
+    expect(w.terminated).toBe(true);
+  });
+
+  it('still terminates when the worker throws on postMessage during shutdown', async () => {
+    const s = setup();
+    const w = new InlineWorker();
+    const orig = w.postMessage.bind(w);
+    w.postMessage = (m): void => {
+      if (m.type === 'end') throw new Error('dead worker');
+      orig(m);
+    };
+    await runScan({ chain, manifest, client: chainWith(10, []), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => w, signal: new AbortController().signal });
+    expect(w.terminated).toBe(true);
+  });
+});
+
+describe('runScan chain binding (item 3)', () => {
+  it('stamps every match with the chain it was found on', async () => {
+    const s = setup();
+    const res = await runScan({ chain, manifest, client: chainWith(2500, s.logs), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => new InlineWorker(), signal: new AbortController().signal });
+    expect(res.matches.length).toBeGreaterThan(0);
+    for (const m of res.matches) expect(m.chainId).toBe(84532);
+  });
+});
+
 describe('localCheckpointStore', () => {
   interface MemStorage {
     map: Map<string, string>;

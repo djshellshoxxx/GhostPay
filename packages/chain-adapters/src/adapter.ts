@@ -124,6 +124,8 @@ export interface EvmAdapterDeps {
   readonly chain: ChainConfig;
   readonly deployment: DeploymentManifest;
   readonly client: RpcClient;
+  /** Cross-check every accepted log's `blockHash` against the canonical block (see `FetchOptions.verifyLogBlocks`). Default off. */
+  readonly verifyLogBlocks?: boolean;
 }
 
 /**
@@ -211,6 +213,7 @@ export function createEvmAdapter(deps: EvmAdapterDeps): ChainAdapter {
           client,
           announcer: deployment.announcer,
           cursor,
+          ...(deps.verifyLogBlocks === true ? { verifyLogBlocks: true } : {}),
           ...(range.toBlock === undefined ? {} : { toBlock: range.toBlock }),
         });
         // Later pages carry the previous page's cursor hash. A mismatch means payments already yielded may

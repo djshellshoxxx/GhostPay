@@ -143,7 +143,7 @@ export function SellerKeys(): ReactNode {
 
           <h3>Back up (encrypted)</h3>
           <form onSubmit={onExport} className="stack" autoComplete="off">
-            <Field label="Passphrase (at least 10 characters)">{(id) => <input id={id} type="password" autoComplete="new-password" value={pass} onChange={(e) => { setPass(e.target.value); }} />}</Field>
+            <Field label="Passphrase (at least 12 characters)">{(id) => <input id={id} type="password" autoComplete="new-password" value={pass} onChange={(e) => { setPass(e.target.value); }} />}</Field>
             <Field label="Repeat passphrase">{(id) => <input id={id} type="password" autoComplete="new-password" value={pass2} onChange={(e) => { setPass2(e.target.value); }} />}</Field>
             <button type="submit" className="btn" disabled={busy}>Download encrypted keystore</button>
           </form>

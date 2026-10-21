@@ -21,6 +21,7 @@ export function Scan(): ReactNode {
   const [progress, setProgress] = useState<ScanProgress | undefined>(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
   const [done, setDone] = useState<string | undefined>(undefined);
+  const [reorgNote, setReorgNote] = useState<string | undefined>(undefined);
   const abort = useRef<AbortController | undefined>(undefined);
   const manifest = useManifest(chainId);
   const checkpoint = services.checkpoints.load(chainId);
@@ -45,6 +46,7 @@ export function Scan(): ReactNode {
   const begin = (): void => {
     setError(undefined);
     setDone(undefined);
+    setReorgNote(undefined);
     void (async () => {
       try {
         const chain = findChain(chainId);
@@ -84,8 +86,15 @@ export function Scan(): ReactNode {
             found.push(m);
             app.setMatches([...found]);
           },
+          onReorg: (r) => {
+            for (let i = found.length - 1; i >= 0; i--) {
+              if ((found[i] as ScanMatch).announcement.blockNumber >= r.rolledBackTo) found.splice(i, 1);
+            }
+            app.setMatches([...found]);
+            setReorgNote(`The chain reorganised. Rescanning from block ${r.rolledBackTo.toString()}; ${String(r.retracted.length)} payment(s) at or above that block were removed from the list and are re-checked.`);
+          },
         });
-        setDone(ctl.signal.aborted ? `Cancelled. ${String(res.scanned)} announcements checked.` : `Finished. ${String(res.scanned)} announcements checked, ${String(res.matches.length)} payments found.`);
+        setDone(ctl.signal.aborted ? `Cancelled. ${String(res.scanned)} announcements checked.` : `Finished. ${String(res.scanned)} announcements checked, ${String(res.matches.length)} payments found${res.reorgs > 0 ? ` (${String(res.reorgs)} chain reorganisation(s) handled)` : ''}.`);
         app.announce('Scan finished.');
       } catch (e) {
         setError(e instanceof Error && e.message === 'manifest' ? 'Payments are disabled on this chain: no deployment manifest is loaded, so the announcer address is unknown.' : userMessage(e));
@@ -99,7 +108,7 @@ export function Scan(): ReactNode {
     <section aria-labelledby="scan-h">
       <h2 id="scan-h">Scan and receive</h2>
       <p>
-        Announcements are downloaded from your RPC and checked inside a dedicated worker. The worker gets public logs and your viewing key for this scan only; it cannot reach the network.
+        Announcements are downloaded from your RPC and checked inside a dedicated worker. The worker gets public logs and your viewing key for this scan only; it cannot reach the network. Recent payments can disappear in a chain reorganisation: the scan re-checks the last blocks it saw, but a reorganisation deeper than the chain's finality depth is not detected, so confirm the balance before relying on a recent payment.
       </p>
       <div className="stack">
         <Field label="Chain">
@@ -135,10 +144,11 @@ export function Scan(): ReactNode {
         {progress !== undefined && `Scanned up to block ${progress.nextBlock.toString()}; ${String(progress.scanned)} announcements checked, ${String(progress.matches)} payments found${progress.skipped > 0 ? `, ${String(progress.skipped)} malformed logs skipped` : ''}.`}
         {running && progress === undefined && 'Starting…'}
       </div>
+      {reorgNote !== undefined && <Notice kind="warn">{reorgNote}</Notice>}
       {done !== undefined && <Notice kind="ok">{done}</Notice>}
       {error !== undefined && <Notice kind="error">{error}</Notice>}
 
-      <Matches chainId={chainId} />
+      <Matches />
       <Tags chainId={chainId} />
     </section>
   );
@@ -151,7 +161,7 @@ function describe(m: ScanMatch, chainId: number): string {
   return t === undefined ? `${m.metadata.netAmount.toString()} units of unlisted token ${m.metadata.token}` : `${formatUnits(m.metadata.netAmount, t.decimals)} ${t.symbol}`;
 }
 
-function Matches(props: { readonly chainId: number }): ReactNode {
+function Matches(): ReactNode {
   const app = useApp();
   const services = useServices();
   const [tags, setTags] = useState<Readonly<Record<string, string>>>({});
@@ -170,7 +180,7 @@ function Matches(props: { readonly chainId: number }): ReactNode {
       const next: Record<string, string> = {};
       for (const m of matches) {
         try {
-          const t = await services.vault.find(props.chainId, m.stealthAddress);
+          const t = await services.vault.find(m.chainId, m.stealthAddress);
           if (t !== undefined) next[m.announcement.id] = t.clientLabel;
         } catch {
           /* undecryptable tags are reported in the tag list */
@@ -181,7 +191,7 @@ function Matches(props: { readonly chainId: number }): ReactNode {
     return () => {
       live = false;
     };
-  }, [matches, unlocked, services, props.chainId]);
+  }, [matches, unlocked, services]);
 
   if (matches.length === 0) return <p className="hint">No payments found yet.</p>;
   return (
@@ -194,7 +204,7 @@ function Matches(props: { readonly chainId: number }): ReactNode {
           return (
             <li key={id} className="card">
               <p>
-                <strong>{describe(m, props.chainId)}</strong> in block {m.announcement.blockNumber.toString()}
+                <strong>{describe(m, m.chainId)}</strong> (amount as announced, not verified) on {findChain(m.chainId)?.name ?? `chain ${String(m.chainId)}`} in block {m.announcement.blockNumber.toString()}
                 {m.viaRouter ? '' : ' (paid directly, no GhostPay fee)'}
               </p>
               <p>One-time address: <Mono>{m.stealthAddress}</Mono></p>
@@ -210,7 +220,7 @@ function Matches(props: { readonly chainId: number }): ReactNode {
                     className="btn"
                     onClick={() => {
                       const payload: TagPayload = { stealthAddress: m.stealthAddress, announcementId: id, logIndex: m.announcement.logIndex, clientLabel: label[id] ?? '' };
-                      services.vault.save(props.chainId, payload).then(
+                      services.vault.save(m.chainId, payload).then(
                         () => {
                           setErr(undefined);
                           setTags({ ...tags, [id]: payload.clientLabel.trim() });
@@ -226,7 +236,7 @@ function Matches(props: { readonly chainId: number }): ReactNode {
                   </button>
                 </div>
               )}
-              <button type="button" className="btn btn-primary" onClick={() => { app.selectForSweep({ match: m, chainId: props.chainId }); app.setView('sweep'); }}>
+              <button type="button" className="btn btn-primary" onClick={() => { app.selectForSweep({ match: m, chainId: m.chainId }); app.setView('sweep'); }}>
                 Sweep this payment
               </button>
             </li>
@@ -246,9 +256,15 @@ function Tags(props: { readonly chainId: number }): ReactNode {
   const unlocked = services.vault.unlocked;
 
   const refresh = (): void => {
-    services.vault.list(props.chainId).then(setList, (e: unknown) => {
-      setErr(userMessage(e));
-    });
+    services.vault.listReport(props.chainId).then(
+      (r) => {
+        setList(r.tags);
+        setErr(r.damaged === 0 ? undefined : `${String(r.damaged)} stored tag(s) could not be decrypted (damaged or from another key) and are not shown.`);
+      },
+      (e: unknown) => {
+        setErr(userMessage(e));
+      },
+    );
   };
 
   return (

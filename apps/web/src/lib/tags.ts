@@ -89,9 +89,19 @@ function validatePayload(p: TagPayload): TagPayload {
   };
 }
 
+/** Result of a tolerant listing: readable tags plus how many stored records were skipped as damaged. */
+export interface TagListReport {
+  readonly tags: readonly TagPayload[];
+  readonly damaged: number;
+}
+
+const DAMAGED = 'A stored tag could not be decrypted (damaged or from another key).';
+
 export class TagVault {
   private aes: CryptoKey | undefined;
   private hmac: CryptoKey | undefined;
+  /** Bumped by every `lock()`, so an `unlock()` still awaiting storage cannot install keys after a lock or wipe. */
+  private epoch = 0;
 
   public constructor(
     private readonly store: TagStore,
@@ -104,6 +114,7 @@ export class TagVault {
 
   /** Derives keys from the viewing key (consumed and zeroized). Creates the profile on first use. */
   public async unlock(viewingKey: Uint8Array): Promise<void> {
+    const started = this.epoch;
     try {
       const meta = await this.store.getMeta();
       const salt = meta === undefined ? rand(32) : hexToBytes(meta.salt);
@@ -121,6 +132,8 @@ export class TagVault {
           throw new UserFacingError('These tags were created with a different viewing key.');
         }
       }
+      // A lock (wipe keys, idle timer, identity change, Delete all tags) won the race: discard the derived keys.
+      if (this.epoch !== started) return;
       this.aes = aes;
       this.hmac = hmac;
     } finally {
@@ -129,6 +142,7 @@ export class TagVault {
   }
 
   public lock(): void {
+    this.epoch++;
     this.aes = undefined;
     this.hmac = undefined;
   }
@@ -173,14 +187,22 @@ export class TagVault {
     });
   }
 
+  /**
+   * Decrypts one record. Besides the AEAD check, the payload's address must hash to the record's own lookup token,
+   * so ciphertexts swapped between records (audit S3-16) are reported as damaged instead of mislabelling a payment.
+   * A locked vault throws the "locked" error, never the "damaged" one.
+   */
   private async open(r: EncryptedTagRecord): Promise<TagPayload> {
     const { aes } = this.keys();
+    let payload: TagPayload;
     try {
       const plain = await subtle().decrypt({ name: 'AES-GCM', iv: hexToBytes(r.iv) as Uint8Array<ArrayBuffer>, additionalData: aad(r.chainId), tagLength: 128 }, aes, hexToBytes(r.ciphertext));
-      return validatePayload(JSON.parse(new TextDecoder().decode(plain)) as TagPayload);
+      payload = validatePayload(JSON.parse(new TextDecoder().decode(plain)) as TagPayload);
     } catch {
-      throw new UserFacingError('A stored tag could not be decrypted (damaged or from another key).');
+      throw new UserFacingError(DAMAGED);
     }
+    if ((await this.token(r.chainId, payload.stealthAddress)) !== r.lookupKey) throw new UserFacingError(DAMAGED);
+    return payload;
   }
 
   public async find(chainId: number, stealthAddress: string): Promise<TagPayload | undefined> {
@@ -188,7 +210,9 @@ export class TagVault {
     return rec === undefined ? undefined : this.open(rec);
   }
 
+  /** Strict listing: throws if any record is damaged (no partial result). */
   public async list(chainId?: number): Promise<readonly TagPayload[]> {
+    this.keys();
     const all = await this.store.getAll();
     const out: TagPayload[] = [];
     for (const r of all) {
@@ -196,6 +220,28 @@ export class TagVault {
       out.push(await this.open(r));
     }
     return out;
+  }
+
+  /**
+   * Tolerant listing for the UI: one damaged record (disk corruption, a record from another key, a spliced record)
+   * no longer hides every other tag. Damaged records are skipped and counted, never deleted.
+   */
+  public async listReport(chainId?: number): Promise<TagListReport> {
+    this.keys();
+    const all = await this.store.getAll();
+    const tags: TagPayload[] = [];
+    let damaged = 0;
+    for (const r of all) {
+      if (chainId !== undefined && r.chainId !== chainId) continue;
+      this.keys();
+      try {
+        tags.push(await this.open(r));
+      } catch (e) {
+        if (!this.unlocked) throw e;
+        damaged++;
+      }
+    }
+    return { tags, damaged };
   }
 
   public async remove(chainId: number, stealthAddress: string): Promise<boolean> {

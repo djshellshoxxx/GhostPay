@@ -91,6 +91,20 @@ describe('Pay: invoice reading and review', () => {
     expect(screen.getAllByText(evil).length).toBe(2);
   });
 
+  it('item6: bidi and invisible control characters in memo and line items are shown visibly, never raw', async () => {
+    // RLO reverses what follows; ZWSP/BOM/word-joiner/LRI are invisible; DEL and NUL are controls.
+    const sneaky = 'Pay \u202Eelbat\u202C \u200Bnow\uFEFF\u2060\u2066x';
+    generateSession();
+    const created = await buildInvoiceLink({ ...BASE_FORM, token: 'native', tokenAmount: '0.1', lineItems: [{ description: sneaky, quantity: '1', unitPrice: '1.00' }], memo: sneaky }, 'https://app.test/', NOW);
+    openWith(created.fragment, makeServices({ loadManifest: loaded(84532) }));
+    await screen.findByRole('heading', { name: 'Review payment' });
+    const main = document.querySelector('main')!;
+    expect(main.textContent).not.toMatch(/[\p{Cc}\p{Cf}\p{Zl}\p{Zp}]/u);
+    expect(main.textContent).toContain('U+202E');
+    expect(main.textContent).toContain('U+200B');
+    expect(screen.getAllByText(/Pay .*U\+202E.*elbat.*U\+202C/).length).toBe(2);
+  });
+
   it('fails closed on a tampered fragment (corrupted encoding)', async () => {
     const { fragment } = await makeParsed();
     const body = fragment.slice('#gpi=v1.'.length);
