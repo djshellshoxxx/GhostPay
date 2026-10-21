@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import fc from 'fast-check';
 import { BreakerOpenError, GuardError } from './errors.js';
-import { GuardedBreaker, classifyRelayOutcome, type GuardedBreakerOptions, type Outcome, type RelayResultClass } from './breaker.js';
+import {
+  GuardedBreaker,
+  classifyRelayOutcome,
+  type GuardedBreakerOptions,
+  type Outcome,
+  type RelayResultClass,
+} from './breaker.js';
 
 const OPTS: GuardedBreakerOptions = {
   windowSize: 10,
@@ -95,7 +101,7 @@ describe('GuardedBreaker half-open (S3-05 regression)', () => {
     expect(b.state).toBe('half_open');
     expect(b.health()).toBe('degraded');
     expect(b.tryAcquire()).toBeNull(); // only one probe in flight
-    expect(b.retryAfterMs()).toBe(0);
+    expect(b.retryAfterMs()).toBeGreaterThan(0); // M-4: nonzero floor while a probe is in flight
   });
 
   it('a neutral probe (user-class error) frees the slot instead of wedging', () => {
@@ -146,17 +152,20 @@ describe('GuardedBreaker half-open (S3-05 regression)', () => {
   it('property: no sequence of neutral/expired probes leaves it unable to admit after cooldown+timeout', () => {
     const outcome = fc.constantFrom<Outcome | 'drop'>('success', 'failure', 'neutral', 'drop');
     fc.assert(
-      fc.property(fc.array(fc.tuple(outcome, fc.integer({ min: 0, max: 200_000 })), { maxLength: 60 }), (steps) => {
-        const { b, clock } = make();
-        for (const [o, dt] of steps) {
-          clock.t += dt;
-          const p = b.tryAcquire();
-          if (p !== null && o !== 'drop') p.settle(o);
-        }
-        clock.t += OPTS.cooldownMs + OPTS.probeTimeoutMs + 1;
-        clock.t += OPTS.cooldownMs;
-        return b.tryAcquire() !== null;
-      }),
+      fc.property(
+        fc.array(fc.tuple(outcome, fc.integer({ min: 0, max: 200_000 })), { maxLength: 60 }),
+        (steps) => {
+          const { b, clock } = make();
+          for (const [o, dt] of steps) {
+            clock.t += dt;
+            const p = b.tryAcquire();
+            if (p !== null && o !== 'drop') p.settle(o);
+          }
+          clock.t += OPTS.cooldownMs + OPTS.probeTimeoutMs + 1;
+          clock.t += OPTS.cooldownMs;
+          return b.tryAcquire() !== null;
+        },
+      ),
       { numRuns: 500 },
     );
   });
@@ -165,14 +174,29 @@ describe('GuardedBreaker half-open (S3-05 regression)', () => {
 describe('GuardedBreaker.run', () => {
   it('returns the value and settles with the classifier', async () => {
     const { b } = make();
-    await expect(b.run(() => Promise.resolve(7), () => 'success')).resolves.toBe(7);
+    await expect(
+      b.run(
+        () => Promise.resolve(7),
+        () => 'success',
+      ),
+    ).resolves.toBe(7);
   });
 
   it('rethrows and classifies errors', async () => {
     const { b } = make({ minSamples: 1, windowSize: 1, failureRatio: 1 });
-    await expect(b.run(() => Promise.reject(new Error('rpc')), () => 'failure')).rejects.toThrow('rpc');
+    await expect(
+      b.run(
+        () => Promise.reject(new Error('rpc')),
+        () => 'failure',
+      ),
+    ).rejects.toThrow('rpc');
     expect(b.state).toBe('open');
-    const err = await b.run(() => Promise.resolve(1), () => 'success').catch((e: unknown) => e);
+    const err = await b
+      .run(
+        () => Promise.resolve(1),
+        () => 'success',
+      )
+      .catch((e: unknown) => e);
     expect(err).toBeInstanceOf(BreakerOpenError);
     expect((err as BreakerOpenError).code).toBe('BREAKER_OPEN');
     expect((err as BreakerOpenError).retryAfterMs).toBe(OPTS.cooldownMs);

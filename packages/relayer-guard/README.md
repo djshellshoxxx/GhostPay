@@ -23,3 +23,12 @@ npm run typecheck && npm run lint && npm test   # from this directory
 
 Library only (breaker, limiter, IP resolution, loss budget, challenge module); not imported by `apps/relayer`; no external audit.
 Differences from the spec and open items: [`DEVIATIONS.md`](./DEVIATIONS.md). Scripts (`package.json`): `build`, `typecheck`, `test` (`vitest run --coverage`), `lint`.
+
+## Hardening notes (round audit)
+
+- Challenge: pass `partition` (client bucket) to `verify()` and rate-limit `issue()` per client.
+- `LossBudget`: use `reserve` / `settle` / `release`; `allows()` is advisory.
+- `TokenBucketLimiter`: set `groupOf: groupOfBucketKey` and watch `stats().overflowHits`.
+- Breaker: acquire after cheap validation with `tryAcquire({ validated: true })`.
+
+See `docs/remote/specs/relayer-guard.md` section 9.

@@ -22,10 +22,11 @@ export interface ReplayStore {
    * Atomically marks `id` used.
    * @param id Challenge nonce (base64url).
    * @param expiresAt Wall-clock ms after which the entry may be forgotten.
+   * @param partition Caller's client bucket (optional, never logged), for per-client quotas.
    * @returns `true` if newly marked, `false` if already used. Throw (e.g. {@link ReplayStoreFullError})
    * when the mark cannot be recorded: the service then fails closed.
    */
-  markUsed(id: string, expiresAt: number): boolean | Promise<boolean>;
+  markUsed(id: string, expiresAt: number, partition?: string): boolean | Promise<boolean>;
 }
 
 /** Counts verification attempts per challenge id. */
@@ -34,10 +35,11 @@ export interface AttemptLimiter {
    * Atomically increments and returns the attempt count for `id` (first call returns 1).
    * @param id Challenge nonce (base64url).
    * @param expiresAt Wall-clock ms after which the entry may be forgotten.
+   * @param partition Caller's client bucket (optional, never logged), for per-client quotas.
    * @returns The new count. Return `Infinity` (or throw) when the count cannot be tracked: the
    * service then fails closed.
    */
-  increment(id: string, expiresAt: number): number | Promise<number>;
+  increment(id: string, expiresAt: number, partition?: string): number | Promise<number>;
 }
 
 /** Thrown by {@link MemoryReplayStore.markUsed} when every slot holds a live entry. */
@@ -48,41 +50,110 @@ export class ReplayStoreFullError extends Error {
   }
 }
 
-/** Bounded in-memory table of id to (expiry, value) that purges expired entries first and never evicts live ones. */
+/** Minimum ms between full expiry scans of a full table (L-7: bounds the O(n) work an attacker can force). */
+const SCAN_INTERVAL_MS = 1_000;
+
+interface Entry<V> {
+  readonly expiresAt: number;
+  readonly value: V;
+  readonly partition: string | undefined;
+}
+
+/**
+ * Bounded in-memory table of id to (expiry, value) with an optional per-partition quota.
+ * Expired entries are reclaimed from the front (insertion order approximates expiry order, O(1)
+ * amortised) and, at most once per {@link SCAN_INTERVAL_MS}, by a full scan for out-of-order expiry.
+ */
 class ExpiringTable<V> {
-  private readonly map = new Map<string, { expiresAt: number; value: V }>();
+  private readonly map = new Map<string, Entry<V>>();
+  private readonly parts = new Map<string, Set<string>>();
+  private lastScan = Number.NEGATIVE_INFINITY;
 
   public constructor(
     private readonly maxEntries: number,
+    private readonly maxPerPartition: number,
     private readonly now: () => number,
   ) {
     requireConfig(Number.isInteger(maxEntries) && maxEntries >= 1, 'maxEntries must be an integer >= 1');
+    requireConfig(
+      Number.isInteger(maxPerPartition) && maxPerPartition >= 1,
+      'maxPerPartition must be an integer >= 1',
+    );
   }
 
   public get size(): number {
     return this.map.size;
   }
 
+  private remove(id: string): void {
+    const e = this.map.get(id);
+    if (e === undefined) return;
+    this.map.delete(id);
+    if (e.partition === undefined) return;
+    const set = this.parts.get(e.partition);
+    set?.delete(id);
+    if (set?.size === 0) this.parts.delete(e.partition);
+  }
+
+  private purge(): void {
+    const t = this.now();
+    for (const [k, e] of this.map) {
+      if (e.expiresAt > t) break;
+      this.remove(k);
+    }
+    if (t - this.lastScan < SCAN_INTERVAL_MS) return;
+    this.lastScan = t;
+    for (const [k, e] of this.map) if (e.expiresAt <= t) this.remove(k);
+  }
+
   /** @returns The live entry for `id`, or undefined (an expired entry is dropped). */
-  public live(id: string): { expiresAt: number; value: V } | undefined {
+  public live(id: string): Entry<V> | undefined {
     const e = this.map.get(id);
     if (e === undefined) return undefined;
     if (e.expiresAt <= this.now()) {
-      this.map.delete(id);
+      this.remove(id);
       return undefined;
     }
     return e;
   }
 
-  /** @returns false if `id` is new and the table is full of live entries. */
-  public set(id: string, expiresAt: number, value: V): boolean {
-    if (!this.map.has(id) && this.map.size >= this.maxEntries) {
-      const t = this.now();
-      for (const [k, e] of this.map) if (e.expiresAt <= t) this.map.delete(k);
-      if (this.map.size >= this.maxEntries) return false;
-    }
-    this.map.set(id, { expiresAt, value });
+  private evictFromLargest(): boolean {
+    let best: Set<string> | undefined;
+    for (const s of this.parts.values()) if (best === undefined || s.size > best.size) best = s;
+    const oldest = best?.values().next().value;
+    if (oldest === undefined) return false;
+    this.remove(oldest);
     return true;
+  }
+
+  /**
+   * Inserts a new `id` (callers check {@link live} first).
+   * @param evict When the table is globally full, evict the oldest entry of the largest partition.
+   * @returns `ok`, `partition_full` (that partition is at its quota) or `full` (table full, nothing evictable).
+   */
+  public set(
+    id: string,
+    expiresAt: number,
+    value: V,
+    partition: string | undefined,
+    evict: boolean,
+  ): 'ok' | 'partition_full' | 'full' {
+    this.remove(id);
+    if (partition !== undefined && (this.parts.get(partition)?.size ?? 0) >= this.maxPerPartition) {
+      this.purge();
+      if ((this.parts.get(partition)?.size ?? 0) >= this.maxPerPartition) return 'partition_full';
+    }
+    if (this.map.size >= this.maxEntries) {
+      this.purge();
+      if (this.map.size >= this.maxEntries && !(evict && this.evictFromLargest())) return 'full';
+    }
+    this.map.set(id, { expiresAt, value, partition });
+    if (partition !== undefined) {
+      const set = this.parts.get(partition) ?? new Set<string>();
+      set.add(id);
+      this.parts.set(partition, set);
+    }
+    return 'ok';
   }
 }
 
@@ -90,20 +161,34 @@ class ExpiringTable<V> {
 export interface MemoryStoreOptions {
   /** Most live entries held, integer >= 1 (default 10_000). */
   readonly maxEntries?: number;
+  /**
+   * Most live entries one `partition` may hold, integer >= 1 (default `max(1, floor(maxEntries / 8))`).
+   * Entries stored without a partition are not subject to it.
+   */
+  readonly maxPerPartition?: number;
   /** Wall clock in ms (default `Date.now`). */
   readonly now?: () => number;
+}
+
+function makeTable<V>(opts: MemoryStoreOptions): ExpiringTable<V> {
+  const max = opts.maxEntries ?? 10_000;
+  const quota = opts.maxPerPartition ?? Math.max(1, Math.floor(max / 8));
+  return new ExpiringTable<V>(max, quota, opts.now ?? Date.now);
 }
 
 /**
  * Bounded in-memory {@link ReplayStore}.
  * @security Per-process only. With more than one relayer process a token can be replayed once per
- * process; production must supply a shared store.
+ * process; production must supply a shared store. A live entry is NEVER evicted (that would allow
+ * replay of a solved token): when a partition is at its quota, or the table is full, `markUsed`
+ * throws. The quota confines that failure to the offending partition until the whole table fills,
+ * which takes one solved challenge per slot across at least 8 partitions (default quota).
  */
 export class MemoryReplayStore implements ReplayStore {
   private readonly table: ExpiringTable<true>;
 
   public constructor(opts: MemoryStoreOptions = {}) {
-    this.table = new ExpiringTable<true>(opts.maxEntries ?? 10_000, opts.now ?? Date.now);
+    this.table = makeTable<true>(opts);
   }
 
   /** Number of entries currently held (including not yet purged expired ones). */
@@ -111,30 +196,33 @@ export class MemoryReplayStore implements ReplayStore {
     return this.table.size;
   }
 
-  /** @throws ReplayStoreFullError when full of live entries. */
-  public markUsed(id: string, expiresAt: number): boolean {
+  /** @throws ReplayStoreFullError when the partition is at quota or the table is full of live entries. */
+  public markUsed(id: string, expiresAt: number, partition?: string): boolean {
     if (this.table.live(id) !== undefined) return false;
-    if (!this.table.set(id, expiresAt, true)) throw new ReplayStoreFullError();
+    if (this.table.set(id, expiresAt, true, partition, false) !== 'ok') throw new ReplayStoreFullError();
     return true;
   }
 }
 
 /**
- * Bounded in-memory {@link AttemptLimiter}. When full of live entries it returns `Infinity`, so the
- * service rejects (fail closed).
- * @security Per-process only; production with several processes must supply a shared store.
+ * Bounded in-memory {@link AttemptLimiter}. A partition at its quota gets `Infinity` (fail closed,
+ * for that partition only). When the whole table is full, the oldest entry of the largest partition
+ * is evicted instead of failing for everyone.
+ * @security Per-process only. An evicted token simply gets a fresh attempt count; this only ever
+ * affects tokens of the partition that is flooding, and the quota bounds how many tokens a partition
+ * can hold. Production with several processes must supply a shared store.
  */
 export class MemoryAttemptLimiter implements AttemptLimiter {
   private readonly table: ExpiringTable<{ n: number }>;
 
   public constructor(opts: MemoryStoreOptions = {}) {
-    this.table = new ExpiringTable<{ n: number }>(opts.maxEntries ?? 10_000, opts.now ?? Date.now);
+    this.table = makeTable<{ n: number }>(opts);
   }
 
-  public increment(id: string, expiresAt: number): number {
+  public increment(id: string, expiresAt: number, partition?: string): number {
     const e = this.table.live(id);
     if (e !== undefined) return ++e.value.n;
-    return this.table.set(id, expiresAt, { n: 1 }) ? 1 : Number.POSITIVE_INFINITY;
+    return this.table.set(id, expiresAt, { n: 1 }, partition, true) === 'ok' ? 1 : Number.POSITIVE_INFINITY;
   }
 }
 
@@ -150,6 +238,19 @@ export type ChallengeFailure =
 
 /** Result of {@link ChallengeService.verify}. */
 export type VerifyResult = { readonly ok: true } | { readonly ok: false; readonly reason: ChallengeFailure };
+
+/** Input of {@link ChallengeService.verify}. */
+export interface VerifyInput {
+  readonly token: unknown;
+  readonly answer: unknown;
+  readonly context: unknown;
+  /**
+   * Caller's client bucket (for example {@link bucketKey} of the resolved IP), 1..256 chars. Scopes
+   * the store quotas so one client cannot fill the stores. Never logged. Omit only if the stores
+   * are otherwise protected: unpartitioned entries have no per-client quota.
+   */
+  readonly partition?: unknown;
+}
 
 /** An issued challenge. */
 export interface IssuedChallenge {
@@ -292,14 +393,23 @@ export class ChallengeService {
   public constructor(opts: ChallengeOptions) {
     requireConfig(Array.isArray(opts.secrets) && opts.secrets.length >= 1, 'at least one secret is required');
     for (const s of opts.secrets) {
-      requireConfig(s instanceof Uint8Array && s.length >= 32, 'each secret must be a Uint8Array of >= 32 bytes');
+      requireConfig(
+        s instanceof Uint8Array && s.length >= 32,
+        'each secret must be a Uint8Array of >= 32 bytes',
+      );
     }
     const ttl = opts.ttlMs ?? 120_000;
-    requireConfig(Number.isInteger(ttl) && ttl >= 1 && ttl <= 900_000, 'ttlMs must be an integer in 1..900000');
+    requireConfig(
+      Number.isInteger(ttl) && ttl >= 1 && ttl <= 900_000,
+      'ttlMs must be an integer in 1..900000',
+    );
     const diff = opts.difficulty ?? 1;
     requireConfig(diff === 1 || diff === 2 || diff === 3, 'difficulty must be 1, 2 or 3');
     const max = opts.maxAttempts ?? 3;
-    requireConfig(Number.isInteger(max) && max >= 1 && max <= 100, 'maxAttempts must be an integer in 1..100');
+    requireConfig(
+      Number.isInteger(max) && max >= 1 && max <= 100,
+      'maxAttempts must be an integer in 1..100',
+    );
     this.keys = opts.secrets.map((s) => {
       const copy = Uint8Array.from(s);
       return {
@@ -364,10 +474,12 @@ export class ChallengeService {
    * limiter yields `too_many_attempts`, and a failing or full replay store yields
    * `replay_store_full`: both fail closed.
    *
-   * @security Costs one HMAC per configured secret for unauthenticated input, bounded by the
+   * @security Callers MUST rate-limit {@link ChallengeService.issue} per client (it is stateless and
+   * unauthenticated) and pass `partition` so the store quotas confine a flood to that client.
+   * Costs one HMAC per configured secret for unauthenticated input, bounded by the
    * 200-char token cap; keep per-client rate limits in front.
    */
-  public async verify(input: { token: unknown; answer: unknown; context: unknown }): Promise<VerifyResult> {
+  public async verify(input: VerifyInput): Promise<VerifyResult> {
     try {
       return await this.verifyInner(input);
     } catch {
@@ -375,10 +487,21 @@ export class ChallengeService {
     }
   }
 
-  private async verifyInner(input: { token: unknown; answer: unknown; context: unknown }): Promise<VerifyResult> {
-    const { token, answer, context } = input;
+  private async verifyInner(input: VerifyInput): Promise<VerifyResult> {
+    const { token, answer, context, partition } = input;
     const p = parseToken(token);
-    if (p === null || typeof context !== 'string' || context.length < 1 || context.length > MAX_CONTEXT_LENGTH) {
+    if (
+      p === null ||
+      typeof context !== 'string' ||
+      context.length < 1 ||
+      context.length > MAX_CONTEXT_LENGTH
+    ) {
+      return { ok: false, reason: 'malformed' };
+    }
+    if (
+      partition !== undefined &&
+      (typeof partition !== 'string' || partition.length < 1 || partition.length > MAX_CONTEXT_LENGTH)
+    ) {
       return { ok: false, reason: 'malformed' };
     }
     let matched: KeyPair | undefined;
@@ -391,7 +514,7 @@ export class ChallengeService {
 
     let count: number;
     try {
-      count = await this.attempts.increment(p.nonce, p.expiresAt);
+      count = await this.attempts.increment(p.nonce, p.expiresAt, partition);
     } catch {
       return { ok: false, reason: 'too_many_attempts' };
     }
@@ -405,7 +528,7 @@ export class ChallengeService {
 
     let fresh: boolean;
     try {
-      fresh = await this.replay.markUsed(p.nonce, p.expiresAt);
+      fresh = await this.replay.markUsed(p.nonce, p.expiresAt, partition);
     } catch {
       return { ok: false, reason: 'replay_store_full' };
     }

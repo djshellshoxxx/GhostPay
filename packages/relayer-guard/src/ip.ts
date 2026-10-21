@@ -131,3 +131,19 @@ export function bucketKey(ip: ParsedIp, prefixes: BucketPrefixes = {}): string {
   requireConfig(Number.isInteger(v6) && v6 >= 1 && v6 <= 128, 'v6 prefix must be 1..128');
   return formatMasked(ip, ip.family === 4 ? v4 : v6);
 }
+
+/**
+ * Abuse-group key for an address: IPv6 /48 (the typical site allocation, 65 536 /64 buckets) or
+ * IPv4 /24. Use with {@link TokenBucketLimiter} `groupOf` so one allocation cannot exhaust the table.
+ */
+export function groupKey(ip: ParsedIp): string {
+  return bucketKey(ip, { v4: 24, v6: 48 });
+}
+
+/**
+ * Derives the {@link groupKey} from a string produced by {@link bucketKey}; any other key is its own group.
+ */
+export function groupOfBucketKey(key: string): string {
+  const ip = parseIp(key.slice(2).split('/')[0] ?? '');
+  return ip === null ? key : groupKey(ip);
+}

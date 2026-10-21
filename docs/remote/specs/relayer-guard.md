@@ -130,3 +130,30 @@ Purpose: raise the cost of scripted abuse of the sweep endpoint. **It is not a s
 4. Context is `chainId:owner`, never the client IP.
 5. Load secrets from the environment (>= 32 random bytes each); never commit them.
 6. Use a shared replay store and attempt limiter if more than one relayer process runs.
+
+## 9. Round-audit hardening (M-1..M-4, L-7, L-8)
+
+### 9.1 Design
+
+- **Challenge stores (M-1).** `verify({ token, answer, context, partition })`; `partition` is the caller's client bucket (for example `bucketKey` of the resolved IP, 1..256 chars, never logged). `ReplayStore.markUsed(id, expiresAt, partition?)` and `AttemptLimiter.increment(id, expiresAt, partition?)`. Memory stores keep a per-partition quota (`maxPerPartition`, default `maxEntries/8`). Attempt limiter: partition at quota -> `Infinity` for that partition only; table globally full -> evict the oldest entry of the largest partition (the evicted token only gets fresh attempts). Replay store: never evicts a live entry (that would permit replay of a solved token); throws `ReplayStoreFullError` for the over-quota partition, or for everyone only once the whole table is full of solved tokens. Expired entries are reclaimed from the front in O(1) amortised, with at most one full scan per second (L-7).
+- **LossBudget (M-2).** `reserve(key, estimate)` checks key and global limits and charges the estimate in one synchronous step (`key + estimate <= perKeyLimit`, `global + estimate <= globalLimit`), returning `null` when it would exceed. `settle(reservation, actual)` replaces the estimate by the actual cost (floored at 0, idempotent), `release` refunds fully. `allows()` is advisory only.
+- **TokenBucketLimiter (M-3, L-8).** Optional `groupOf` (see `groupOfBucketKey`: IPv6 /48, IPv4 /24), `maxPerGroup` (default `maxKeys/4`), `maxOverflowGroups` (1024). A group cannot exceed `maxPerGroup` slots; when a group is saturated or the table is full, newcomers use their own group's overflow bucket; the single global overflow bucket is the last resort. `stats()` returns `{ overflowHits, tableSize, overflowGroups }` for alerting. Eviction looks at the 8 oldest entries for an idle (refilled) one.
+- **Breaker (M-4).** `tryAcquire({ validated })`: in `half_open`, `validated: false` is refused without consuming the slot. `maxNeutralProbes` (default 5): after that many consecutive neutral probe settles in one half-open episode only `validated: true` callers may take the probe. `retryAfterMs()` returns a floor of 1..1000 ms while a probe is in flight. The S3-05 never-wedge guarantee (neutral frees the slot, unsettled probes expire and re-open) is unchanged.
+
+### 9.2 Threat notes
+
+| Threat | Handling / residual risk |
+|---|---|
+| Flood `issue()` and fail one answer each to fill the stores | Per-partition quota; victim in another partition verifies. Residual: an attacker with >= 8 partitions (default quota) can still fill the replay store by solving challenges, or force attempt-limiter evictions among their own partitions; cap `issue()` per client. |
+| Parallel sweeps overshoot the loss cap | `reserve` before sending. Residual: actual loss above the estimate is recorded after the fact; use worst-case estimates. |
+| Many-/64 attacker drains the shared overflow bucket | Group slots and per-group overflow. Residual: an attacker owning many /48 or /24 groups can still fill the table and share the global last-resort bucket once `maxOverflowGroups` groups overflow; alert on `stats().overflowHits`. |
+| Attacker-controlled neutral outcomes pin the half-open probe | Validated-only acquisition and the neutral bound. Residual: a legacy caller that never passes `validated` can lose the probe to unvalidated traffic after 5 neutral settles until a validated caller takes it (breaker stays half-open, degraded, not wedged). |
+
+### 9.3 Integration MUSTs
+
+1. Rate-limit `ChallengeService.issue()` per client (it is stateless and unauthenticated) and pass `partition` (the client bucket key) to every `verify()`.
+2. Use a shared store with per-client quotas if more than one process runs.
+3. Call `LossBudget.reserve` with a worst-case estimate before spending gas, then `settle` with the actual unreimbursed loss (0n if reimbursed) or `release`; do not rely on `allows()`.
+4. Build the per-client `TokenBucketLimiter` with `groupOf: groupOfBucketKey`, size `maxKeys` well above the expected concurrent honest clients, and alert on `stats().overflowHits`.
+5. Acquire a breaker permit only after cheap validation (schema, quote, signature, rate limit) and pass `{ validated: true }`.
+

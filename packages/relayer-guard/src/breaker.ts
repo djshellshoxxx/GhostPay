@@ -29,7 +29,27 @@ export interface GuardedBreakerOptions {
   readonly cooldownMs: number;
   /** A probe not settled within this time counts as a failure and re-opens the breaker, > 0. */
   readonly probeTimeoutMs: number;
+  /**
+   * Consecutive `neutral` probe settlements tolerated in one half-open episode before only callers
+   * passing `validated: true` may take the probe, integer >= 1 (default 5). Bounds how long
+   * attacker-controlled neutral outcomes can keep the probe slot cycling (audit M-4).
+   */
+  readonly maxNeutralProbes?: number;
 }
+
+/** Options of {@link GuardedBreaker.tryAcquire}. */
+export interface AcquireOptions {
+  /**
+   * Whether the request already passed cheap, attacker-independent validation (schema, signature,
+   * quote, rate limit). In `half_open`, `false` is refused without consuming the probe slot, so
+   * requests that will fail validation cannot take probe permits. `undefined` keeps the legacy
+   * behaviour (subject only to `maxNeutralProbes`).
+   */
+  readonly validated?: boolean;
+}
+
+/** Retry hint (ms) while a half-open probe is in flight: it settles or times out, so do not hammer. */
+const PROBE_RETRY_FLOOR_MS = 1_000;
 
 /** A single-use admission ticket. Exactly one {@link Permit.settle} call has an effect. */
 export interface Permit {
@@ -47,7 +67,8 @@ export interface Permit {
 }
 
 /** Result passed to a {@link GuardedBreaker.run} classifier. */
-export type RunResult<T> = { readonly ok: true; readonly value: T } | { readonly ok: false; readonly error: unknown };
+export type RunResult<T> =
+  { readonly ok: true; readonly value: T } | { readonly ok: false; readonly error: unknown };
 
 /**
  * Count-window circuit breaker whose half-open probe can never wedge.
@@ -68,6 +89,7 @@ export class GuardedBreaker {
   private openedAt = 0;
   private generation = 0;
   private probeIssuedAt: number | null = null;
+  private neutralProbes = 0;
 
   /**
    * @param opts Tunables (validated; throws `GuardError` INVALID_CONFIG).
@@ -77,14 +99,25 @@ export class GuardedBreaker {
     private readonly opts: GuardedBreakerOptions,
     private readonly now: Clock = monotonicNow,
   ) {
-    requireConfig(Number.isInteger(opts.minSamples) && opts.minSamples >= 1, 'minSamples must be an integer >= 1');
+    requireConfig(
+      Number.isInteger(opts.minSamples) && opts.minSamples >= 1,
+      'minSamples must be an integer >= 1',
+    );
     requireConfig(
       Number.isInteger(opts.windowSize) && opts.windowSize >= opts.minSamples,
       'windowSize must be an integer >= minSamples',
     );
     requireConfig(opts.failureRatio > 0 && opts.failureRatio <= 1, 'failureRatio must be in (0, 1]');
     requireConfig(Number.isFinite(opts.cooldownMs) && opts.cooldownMs > 0, 'cooldownMs must be > 0');
-    requireConfig(Number.isFinite(opts.probeTimeoutMs) && opts.probeTimeoutMs > 0, 'probeTimeoutMs must be > 0');
+    requireConfig(
+      Number.isFinite(opts.probeTimeoutMs) && opts.probeTimeoutMs > 0,
+      'probeTimeoutMs must be > 0',
+    );
+    requireConfig(
+      opts.maxNeutralProbes === undefined ||
+        (Number.isInteger(opts.maxNeutralProbes) && opts.maxNeutralProbes >= 1),
+      'maxNeutralProbes must be an integer >= 1',
+    );
   }
 
   /** Current state after applying any due probe expiry. */
@@ -101,9 +134,16 @@ export class GuardedBreaker {
     return this.now() - this.openedAt >= this.opts.cooldownMs ? 'degraded' : 'unhealthy';
   }
 
-  /** @returns Milliseconds until {@link tryAcquire} can succeed (0 when it can now or a probe is in flight). */
+  /**
+   * @returns Milliseconds until {@link tryAcquire} can succeed: 0 when it can now, and at least
+   *   {@link PROBE_RETRY_FLOOR_MS} (capped by the probe timeout) while a half-open probe is in flight.
+   */
   public retryAfterMs(): number {
     const s = this.state;
+    if (s === 'half_open' && this.probeIssuedAt !== null) {
+      const left = this.opts.probeTimeoutMs - (this.now() - this.probeIssuedAt);
+      return Math.max(1, Math.min(PROBE_RETRY_FLOOR_MS, left));
+    }
     if (s !== 'open') return 0;
     return Math.max(0, this.opts.cooldownMs - (this.now() - this.openedAt));
   }
@@ -111,10 +151,12 @@ export class GuardedBreaker {
   /**
    * Requests admission.
    *
-   * @returns A permit, or `null` when the breaker is open and cooling down, or half-open with a probe
-   *   already in flight.
+   * @param opts See {@link AcquireOptions}. The relayer MUST acquire only after cheap validation and
+   *   pass `validated: true`, otherwise requests that fail validation can occupy the probe slot.
+   * @returns A permit, or `null` when the breaker is open and cooling down, half-open with a probe
+   *   already in flight, or half-open and the caller is not validated (slot untouched).
    */
-  public tryAcquire(): Permit | null {
+  public tryAcquire(opts: AcquireOptions = {}): Permit | null {
     const s = this.state;
     if (s === 'closed') return this.permit(false);
     if (s === 'open') {
@@ -122,6 +164,8 @@ export class GuardedBreaker {
       this.transition('half_open');
     }
     if (this.probeIssuedAt !== null) return null;
+    if (opts.validated === false) return null;
+    if (opts.validated !== true && this.neutralProbes >= (this.opts.maxNeutralProbes ?? 5)) return null;
     this.probeIssuedAt = this.now();
     return this.permit(true);
   }
@@ -192,7 +236,10 @@ export class GuardedBreaker {
     if (probe) {
       if (outcome === 'success') this.transition('closed');
       else if (outcome === 'failure') this.transition('open');
-      else this.probeIssuedAt = null;
+      else {
+        this.probeIssuedAt = null;
+        this.neutralProbes++;
+      }
       return;
     }
     if (outcome === 'neutral') return;
@@ -218,6 +265,7 @@ export class GuardedBreaker {
     this.current = to;
     this.generation += 1;
     this.probeIssuedAt = null;
+    this.neutralProbes = 0;
     this.outcomes.length = 0;
     if (to === 'open') this.openedAt = this.now();
   }
