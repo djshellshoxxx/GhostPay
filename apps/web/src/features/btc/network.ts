@@ -25,7 +25,7 @@ export const BTC_NETWORKS: readonly BtcNetworkInfo[] = [
     spNetwork: 'testnet',
     regtest: false,
     genesisHash: '00000000da84f2bafbbc53dee25a72ae507ff4914b867c565be350b0da8bf043',
-    urlHint: 'https://your-esplora-server.example/api',
+    urlHint: 'your-esplora-server.example/api (add https://)',
   },
   {
     id: 'signet',
@@ -34,7 +34,7 @@ export const BTC_NETWORKS: readonly BtcNetworkInfo[] = [
     spNetwork: 'testnet',
     regtest: false,
     genesisHash: '00000008819873e925422c1ff0f99f7cc9bbb232af63a077a480a3633bee1ef6',
-    urlHint: 'https://your-esplora-server.example/api',
+    urlHint: 'your-esplora-server.example/api (add https://)',
   },
   {
     id: 'regtest',
@@ -43,7 +43,7 @@ export const BTC_NETWORKS: readonly BtcNetworkInfo[] = [
     spNetwork: 'testnet',
     regtest: true,
     genesisHash: '0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206',
-    urlHint: 'http://127.0.0.1:3002',
+    urlHint: '127.0.0.1:3002 (add http://)',
   },
   {
     id: 'mainnet',
