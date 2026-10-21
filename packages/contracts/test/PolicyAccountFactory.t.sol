@@ -125,11 +125,38 @@ contract PolicyAccountFactoryTest is PolicyBase {
         factory.deploy(owner, newDest, 0, root);
         vm.expectRevert(PolicyAccountFactory.InvalidDelay.selector);
         factory.deploy(owner, newDest, 30 days + 1, root);
-        address lo = factory.deploy(owner, newDest, 1, root);
+        address lo = factory.deploy(owner, newDest, 1 hours, root);
         address hi = factory.deploy(owner, newDest, 30 days, root);
         vm.stopPrank();
-        assertEq(PolicyAccount(payable(lo)).delay(), 1);
+        assertEq(PolicyAccount(payable(lo)).delay(), 1 hours);
         assertEq(PolicyAccount(payable(hi)).delay(), 30 days);
+    }
+
+    /// @dev I-02: delays below MIN_DELAY are rejected by the factory (zero keeps InvalidDelay).
+    function test_deploy_delayBelowMin_reverts() public {
+        assertEq(factory.MIN_DELAY(), 1 hours);
+        assertEq(factory.MAX_DELAY(), 30 days);
+        vm.startPrank(payer);
+        vm.expectRevert(abi.encodeWithSelector(PolicyAccountFactory.DelayTooShort.selector, 1));
+        factory.deploy(owner, newDest, 1, root);
+        vm.expectRevert(
+            abi.encodeWithSelector(PolicyAccountFactory.DelayTooShort.selector, 1 hours - 1)
+        );
+        factory.deploy(owner, newDest, 1 hours - 1, root);
+        vm.expectRevert(PolicyAccountFactory.InvalidDelay.selector);
+        factory.deploy(owner, newDest, 0, root);
+        // Exactly the minimum works and a rejected deploy took no fee.
+        uint256 before = feeToken.balanceOf(feeRecipient);
+        factory.deploy(owner, newDest, 1 hours, root);
+        vm.stopPrank();
+        assertEq(feeToken.balanceOf(feeRecipient), before + FLAT_FEE);
+    }
+
+    function testFuzz_deploy_delayBelowMin_reverts(uint256 delay) public {
+        delay = bound(delay, 1, 1 hours - 1);
+        vm.prank(payer);
+        vm.expectRevert(abi.encodeWithSelector(PolicyAccountFactory.DelayTooShort.selector, delay));
+        factory.deploy(owner, newDest, delay, root);
     }
 
     function test_deploy_noAllowance_reverts() public {
@@ -222,7 +249,7 @@ contract PolicyAccountFactoryTest is PolicyBase {
     ) public {
         vm.assume(o != address(0) && d != address(0) && d != address(impl));
         vm.assume(who != address(0) && who != address(factory) && who != feeRecipient);
-        delay = bound(delay, 1, 30 days);
+        delay = bound(delay, 1 hours, 30 days);
         address predicted = factory.predictAddress(o, factory.policyHashOf(d, delay, limitsRoot));
         vm.assume(d != predicted);
         feeToken.mint(who, FLAT_FEE);

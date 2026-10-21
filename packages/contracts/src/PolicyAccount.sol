@@ -37,7 +37,9 @@ import {IPolicyAccount} from "./interfaces/IPolicyAccount.sol";
 ///   The window is enforced with two fixed buckets of `windowSeconds`: the amount paid in the current
 ///   and the previous bucket never exceeds `limit`, which guarantees that no interval of
 ///   `windowSeconds` length ever sees more than `limit` leave (conservative: after a full spend the
-///   next spend can be delayed by up to two windows). Merkle trees MUST contain each token at most once.
+///   next spend can be delayed by up to two windows). The signed {Withdraw} commits to the exact leaf
+///   (`limitLeafHash`) and the supplied proof must use it, so the submitter cannot pick a different
+///   leaf of the same tree. Merkle trees should still contain each token at most once.
 /// - The caller of `executeWithdraw`/`executeDestinationChange` is irrelevant; recipients are state.
 /// - Storage is read from the clone; `ReentrancyGuard` starts at 0 in clones, which is accepted by it.
 contract PolicyAccount is IPolicyAccount, EIP712, ReentrancyGuard {
@@ -48,8 +50,9 @@ contract PolicyAccount is IPolicyAccount, EIP712, ReentrancyGuard {
 
     /// @notice EIP-712 type hash of {Withdraw}.
     /// @return The type hash.
-    bytes32 public constant WITHDRAW_TYPEHASH =
-        keccak256("Withdraw(address token,uint256 amount,uint256 deadline,uint256 nonce)");
+    bytes32 public constant WITHDRAW_TYPEHASH = keccak256(
+        "Withdraw(address token,uint256 amount,uint256 deadline,uint256 nonce,bytes32 limitLeafHash)"
+    );
     /// @notice EIP-712 type hash of {CancelWithdraw}.
     /// @return The type hash.
     bytes32 public constant CANCEL_WITHDRAW_TYPEHASH = keccak256("CancelWithdraw(bytes32 id)");
@@ -143,7 +146,9 @@ contract PolicyAccount is IPolicyAccount, EIP712, ReentrancyGuard {
         if (block.timestamp > w.deadline) revert Expired();
         if (w.amount == 0) revert ZeroAmount();
         if (w.token == address(this)) revert InvalidToken();
-        id = keccak256(abi.encode(WITHDRAW_TYPEHASH, w.token, w.amount, w.deadline, w.nonce));
+        id = keccak256(
+            abi.encode(WITHDRAW_TYPEHASH, w.token, w.amount, w.deadline, w.nonce, w.limitLeafHash)
+        );
         _checkOwner(id, sig);
         _useNonce(w.nonce);
 
@@ -152,6 +157,8 @@ contract PolicyAccount is IPolicyAccount, EIP712, ReentrancyGuard {
         if (limitsRoot != bytes32(0)) {
             bytes32 leaf =
                 keccak256(bytes.concat(keccak256(abi.encode(w.token, lp.limit, lp.windowSeconds))));
+            // The owner signed the exact leaf (L-04): a submitter cannot swap in another leaf of the tree.
+            if (leaf != w.limitLeafHash) revert LimitLeafMismatch();
             if (!MerkleProof.verifyCalldata(lp.proof, limitsRoot, leaf)) {
                 revert InvalidLimitProof();
             }
@@ -190,9 +197,15 @@ contract PolicyAccount is IPolicyAccount, EIP712, ReentrancyGuard {
 
         address to = destination;
         if (r.token == address(0)) {
-            // Destination is contract state controlled only by the owner's timelocked policy, not by the caller.
+            // Destination is contract state controlled only by the owner's timelocked policy, not by the
+            // caller. Assembly call: no return data is copied, so a hostile destination cannot inflate
+            // the executor's gas with a return-data bomb.
+            uint256 amount = r.amount;
+            bool ok;
             // forge-lint: disable-next-line(arbitrary-send-eth)
-            (bool ok,) = to.call{value: r.amount}("");
+            assembly ("memory-safe") {
+                ok := call(gas(), to, amount, 0, 0, 0, 0)
+            }
             if (!ok) revert NativeTransferFailed();
         } else {
             IERC20 token = IERC20(r.token);
@@ -334,6 +347,9 @@ contract PolicyAccount is IPolicyAccount, EIP712, ReentrancyGuard {
         // forge-lint: disable-next-line(unsafe-typecast)
         uint64 bucket = uint64(block.timestamp / window);
         if (bucket != s.bucket) {
+            // Slither: integer comparison of consecutive bucket indices (monotonic, `s.bucket + 1` cannot
+            // overflow for timestamps below 2^64 and window >= 1), not a balance equality.
+            // slither-disable-next-line incorrect-equality
             s.previous = bucket == s.bucket + 1 ? s.current : 0;
             s.current = 0;
             s.bucket = bucket;

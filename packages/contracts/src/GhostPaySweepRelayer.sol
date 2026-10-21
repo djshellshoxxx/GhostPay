@@ -123,9 +123,15 @@ contract GhostPaySweepRelayer is IGhostPaySweepRelayer, EIP712, ReentrancyGuard 
         uint256 feeBefore = token.balanceOf(s.feeTo);
 
         // `owner` is authenticated by its EIP-712 signature over exactly these parameters.
+        // Slither: `from` is not attacker-chosen; `_authorize` recovered it as the signer of the EIP-712
+        // order that fixes token, destination, feeTo, amount and fee, and the nonce is single-use.
         // forge-lint: disable-start(arbitrary-send-erc20)
+        // slither-disable-next-line arbitrary-send-erc20
         token.safeTransferFrom(s.owner, s.destination, net);
-        if (s.fee != 0) token.safeTransferFrom(s.owner, s.feeTo, s.fee);
+        if (s.fee != 0) {
+            // slither-disable-next-line arbitrary-send-erc20
+            token.safeTransferFrom(s.owner, s.feeTo, s.fee);
+        }
         // forge-lint: disable-end(arbitrary-send-erc20)
 
         // Exact deltas are the intended check: any deviation (fee-on-transfer, rebasing) must revert.

@@ -21,8 +21,10 @@ test/                unit, fuzz, invariant, deploy-script tests
 test/mocks/          standard / no-return / returns-false / fee-on-transfer / reentrant / permit / blacklist tokens, native receivers
 test/utils/          CC0 reference ERC5564Announcer (test only)
 script/Deploy.s.sol  deployment script (env driven, no keys or addresses in source)
+script/DeployBase.s.sol  shared env/chain-allowlist helpers of the deploy scripts
 script/DeployPolicy.s.sol  policy implementation + factory deployment (env driven)
 scripts/check-natspec.sh  NatSpec completeness check
+scripts/pre-deploy-check.sh  prints the effective deploy configuration and runs static/read-only checks (never broadcasts)
 lib/                 vendored openzeppelin-contracts 5.6.1 and forge-std (no git submodules)
 ```
 
@@ -49,25 +51,66 @@ compiler download host. **CI and developer machines should replace that line wit
 ### Deploy
 
 ```bash
+FEE_RECIPIENT=<multisig or hardware wallet> scripts/pre-deploy-check.sh router   # prints config, checks, never broadcasts
 FEE_RECIPIENT=<multisig or hardware wallet> \
 forge script script/Deploy.s.sol --rpc-url "$RPC" --broadcast --account <keystore>   # or --ledger
 ```
 
-`FEE_RECIPIENT` is mandatory (revert if unset or zero). `ANNOUNCER` defaults to the canonical
-`0x55649E01B5Df198D18D95b5cc5051630cfD45564` and must have code. The chain id must be a built-in testnet
-(Sepolia, Base/OP/Arbitrum Sepolia, Polygon Amoy, Hoodi, anvil) or listed in `ALLOWED_CHAIN_IDS=8453,10,...`.
+Guard rails (audit L-06), all enforced by the scripts and mirrored by `scripts/pre-deploy-check.sh`:
+
+- `FEE_RECIPIENT` is mandatory, non-zero and must differ from the broadcaster; a recipient with code only produces a warning
+  (it must accept plain ETH and, for `DeployPolicy`, the fee token, and should not be blacklistable, see M-01/M-03 below).
+- `ANNOUNCER` defaults to the canonical `0x55649E01B5Df198D18D95b5cc5051630cfD45564`. Any other address is rejected unless
+  `ALLOW_CUSTOM_ANNOUNCER=1` (testnets with a locally deployed announcer). It must have code; its `codehash` is printed and
+  can be pinned with `EXPECTED_ANNOUNCER_CODEHASH`.
+- The chain id must be a built-in testnet (Sepolia, Base/OP/Arbitrum Sepolia, Polygon Amoy, Hoodi) or listed in
+  `ALLOWED_CHAIN_IDS=8453,10,...` (spaces around entries are trimmed; empty or non-numeric entries abort with `InvalidChainIdEntry`).
+  Chain id 31337 (anvil, also reported by a forked anvil) is accepted only with `ALLOW_LOCAL=1`.
+- After deployment every immutable is read back and compared with the inputs (`require`), the relayer's `DOMAIN_SEPARATOR` must be non-zero.
+- `DeployPolicy` additionally requires `MAX_FLAT_FEE` (no default) and aborts if `FLAT_FEE > MAX_FLAT_FEE`; it prints the `FEE_TOKEN` `decimals()`
+  so the operator can check the unit (`3000000` is USD 3.00 only for 6 decimals).
+
 Record the result in `deployments/<chainId>.json` (see `deployments/README.md`).
 
 ## Verification status
 
-Latest local run (forge 1.8.5, solc 0.8.28, see the lead's report for exact numbers):
-122 tests across 6 suites pass; line coverage 100 % (114/114) and branch coverage 100 % (28/28) for the two
-production contracts (`--ir-minimum`, so the instrumented bytecode differs from the optimized release build).
-`.gas-snapshot` is committed. Static analysis: Slither, Mythril and Echidna were **not available** in the build
-sandbox and have **not** been run; the Playbook's `slither . --fail-high` gate remains open for CI. Forge's built-in linter
-reports no findings (justified inline `forge-lint: disable` comments only). No fork test against a live network was
-run; the "fork-style" requirement is met by compiling the CC0 reference announcer locally and asserting the
-`Announcement` event (emitter, indexed topics, caller == router, metadata layout).
+Latest local run (forge 1.8.5, solc 0.8.28, default profile: 10 000 fuzz runs, invariants 256 runs x depth 50): **274 tests in 14 suites pass**
+(includes the audit regression/PoC tests under `test/audit/`). `forge coverage --ir-minimum` (production sources only): lines 99.25 % (264/266),
+branches 100 % (39/39), functions 100 % (72/72); the two uncovered "lines" are the new assembly `call` statements, which the coverage instrumentation
+does not count although the tests execute them (verified by the gas-bound regression tests). Under `--ir-minimum` the instrumented bytecode differs from the
+release build and `Sweep.audit.t.sol::test_crossRelayerAndCrossChainReplayRejected` fails in coverage mode only (it switches `chainid`; the cause under instrumentation was not investigated and the contract it exercises, the sweep relayer, is unchanged apart from comments); it passes in the normal run. `.gas-snapshot` is committed.
+Static analysis: Slither 0 medium/high results with the CI exclusions and also **without** the `arbitrary-send-erc20,incorrect-equality` exclusions
+(both sites carry an inline `slither-disable-next-line` with rationale); Mythril was run once by the audit; Echidna was **not** run. Forge's built-in
+linter reports no findings (justified inline `forge-lint: disable` comments only). No fork test against a live network was run; the "fork-style"
+requirement is met by compiling the CC0 reference announcer locally and asserting the `Announcement` event.
+
+## Audit follow-ups (docs/audits/02-security-review-contracts.md)
+
+Fixed in code: L-01 (native sends use an assembly `call` that copies no return data), L-04 (the signed `Withdraw` commits to `limitLeafHash`),
+I-02 (`PolicyAccountFactory.MIN_DELAY = 1 hours`), L-06 (deploy scripts, see "Deploy"). See `DEVIATIONS.md` items A1-A6. Not fixable in-contract, and therefore
+documented here; the matching `test_EXPLOIT_*` tests keep asserting the residual behaviour:
+
+- **M-01 / M-03: the immutable fee recipient (and, for policy accounts, the fee token) is a single point of failure.** If the issuer blacklists or
+  pauses `FEE_RECIPIENT` for the token (or the recipient cannot receive ETH), every router payment with a non-zero fee reverts (payments below 400 base units
+  pay no fee and still work), and `PolicyAccountFactory.deploy` reverts, which freezes funds that were already sent to the not-yet-deployed counterfactual
+  account address (only this factory can create code there). Mitigations, all operational: choose a plain multisig/hardware recipient that is not exposed to
+  sanctions lists; monitor the recipient's blacklist/pause status per fee token; keep a "deprecated router" flag in the deployment manifest so clients switch to a
+  replacement router; clients should `eth_call`-simulate a payment before presenting it; deploy factories with `FLAT_FEE == 0` on chains whose fee token is freezable and
+  charge the fee elsewhere; clients should deploy the account before publishing a scheme-2 meta-address where the counterfactual UX is not essential.
+  **Owner decision (not implemented):** a *pull-vault* design in which the router/factory credits the fee to a vault that the recipient withdraws from later, so a bad
+  recipient can never block a payer. Cost: the contracts would hold balances (custody, an accounting surface, a withdrawal path) and the "no custody, no admin" property
+  of the router would be weakened. It is documented as a design alternative only.
+- **M-02: the router announces scheme id 1 only** (`SCHEME_ID = 1` is a constant). Payments to a `PolicyAccount` address (scheme `0x47500002`) through the
+  router are announced under scheme 1 and are therefore not discoverable by a scheme-2 scanner. **Policy accounts are experimental and must not be used with the router
+  until a router variant (or a `schemeId` argument restricted to `{1, 0x47500002}`, which is a public-contract change that needs `CONTRACTS_SPEC` first) exists** and
+  scanners/test vectors cover scheme 2. Funds are not lost: they sit at `A_acct`.
+- **L-02: announcements are unauthenticated.** The router checks only lengths, marker, asset, net, key length and prefix byte. Scanners must verify the actual balance delta at the stealth address,
+  apply a token allowlist / dust threshold, and never treat `caller == router` as proof of anything. Any token can be announced to any address; the view tag and ephemeral key are not verifiable on-chain; announcement flooding costs only the flooder's gas.
+- **L-03: sweep relayer economics.** After a successful simulation the owner can move the tokens away (the relayer loses gas, no fee), a hostile token's `permit()` can burn the supplied gas
+  inside the `try/catch`, and a searcher copying calldata only pays the original `feeTo`. Mitigations live in `apps/relayer`: token allowlist, per-transaction gas cap, simulate immediately before sending, per-owner quotas, circuit breaker. No contract change is planned.
+- **L-05: assets that can never leave a `PolicyAccount` (accepted, by design).** Lossy/rebasing tokens fail the exact balance-delta check, a token without a leaf under a non-zero `limitsRoot`
+  can never be withdrawn, NFTs cannot be safe-transferred in or moved out, and ETH sent to the implementation is lost. There is deliberately no rescue path. Every accepted token needs a leaf (an unlimited leaf, `limit = type(uint256).max`, if no cap is wanted); clients must warn.
+- **I-04: 2300-gas senders cannot fund clones.** `transfer()`/`send()` to a `PolicyAccount` clone reverts (the EIP-1167 `delegatecall` to a cold implementation exceeds the stipend). Funds are not lost (the call reverts); use a normal `call{value: ...}`.
 
 ## Known limitations
 
@@ -100,8 +143,8 @@ Normative text: `docs/CONTRACTS_SPEC.md` section 4, fee F-SECURE in `docs/FEE_SC
   `policyHash = keccak256(abi.encode(destination, delaySeconds, limitsRoot))` (`factory.policyHashOf`, `factory.predictAddress`). The address depends on
   chain, factory and implementation; pin all three in the deployment manifest.
 - `factory.deploy(owner, destination, delay, limitsRoot)`: anyone, once per policy; pulls `FLAT_FEE` of `FEE_TOKEN` from the caller (needs approval) to `FEE_RECIPIENT`
-  first (skipped when the fee is 0); `delay` in `[1 s, 30 days]`; no admin.
-- Account flow: owner signs `Withdraw` -> anyone calls `requestWithdraw(w, limitProof, sig)` -> after `delay` anyone calls `executeWithdraw(id)` (funds go to
+  first (skipped when the fee is 0); `delay` in `[1 hour, 30 days]` (`MIN_DELAY`, `DelayTooShort`; the account itself still accepts `[1 s, 30 days]` when initialised by another deployer); no admin.
+- Account flow: owner signs `Withdraw` (including `limitLeafHash`, the merkle leaf of the limit; the proof must use it) -> anyone calls `requestWithdraw(w, limitProof, sig)` -> after `delay` anyone calls `executeWithdraw(id)` (funds go to
   `destination` only) -> or anyone relays the owner's `cancel(id, sig)`. Destination change: `proposeDestination` (owner-signed) -> `executeDestinationChange()` after
   `2 * delay` -> or `cancelDestination(id, sig)`.
 - Limits: `limitsRoot` is a merkle root of `keccak256(bytes.concat(keccak256(abi.encode(token, limit, windowSeconds))))`; `0` = unlimited; a token without a leaf is not
@@ -114,8 +157,5 @@ FEE_RECIPIENT=<multisig> FEE_TOKEN=<stablecoin> FLAT_FEE=3000000 \
 forge script script/DeployPolicy.s.sol --rpc-url "$RPC" --broadcast --account <keystore>
 ```
 
-Verification (forge 1.8.5, solc 0.8.28, default profile: 10 000 fuzz runs, invariants 256 x 50): all 225 tests of the package pass; the policy contracts add 103 forge tests (73 account unit,
-22 factory, 6 account fuzz, 1 deploy script, 1 invariant suite with 7 invariants). `forge coverage --ir-minimum`: `PolicyAccount` 100 % lines (118/118), 100 % branches
-(35/35); `PolicyAccountFactory` 100 % lines (28/28), 100 % branches (7/7). Mutation spot checks (1x instead of 2x destination timelock, no cap, payout to caller, no delay) are caught by the suite.
-**Slither, Echidna and Mythril were not available and have not been run.** No fork test, no live deployment, no external audit, and no independent
+Verification: see "Verification status" above (the policy contracts are covered by the account unit/fuzz/invariant suites, the factory suite and the audit regression tests). No fork test, no live deployment, no external audit, and no independent
 review of the merkle-leaf format by a client implementation yet.

@@ -140,3 +140,30 @@ The lead should confirm or reject each.
 - **Section 4 says the announcement uses `stealthAddress = A_acct` but assigns no contract to emit it.** The existing router can announce for `A_acct` unchanged (it only requires a
   non-zero address); nothing in the new contracts announces.
 - **"Delay" is one number for both the withdrawal timer and (doubled) the destination timelock**, as specified; there is no separate configuration.
+
+# Audit remediation (docs/audits/02-security-review-contracts.md)
+
+Changes made after the independent review. Items A1-A6 change code; the remaining findings are documented in `README.md` ("Audit follow-ups").
+
+- **A1. L-01 (return-data bomb).** `GhostPayRouter._sendNative` and the native branch of `PolicyAccount.executeWithdraw` use `assembly { ok := call(gas(), to, amount, 0, 0, 0, 0) }`.
+  Behaviour is otherwise identical (all gas forwarded, `NativeTransferFailed` on failure). The old gas-overhead tests are now regression tests with gas bounds (a 1 MB-returning payee
+  costs the payee's own ~2.04M intrinsic gas, versus 4.17M before the fix).
+- **A2. L-04 (limit leaf bound by the signature).** *Public ABI change, listed in the remediation scope:* `IPolicyAccount.Withdraw` gained a last field `bytes32 limitLeafHash`, and
+  `WITHDRAW_TYPEHASH` is now `Withdraw(address token,uint256 amount,uint256 deadline,uint256 nonce,bytes32 limitLeafHash)`. `limitLeafHash` is exactly the merkle leaf
+  `keccak256(bytes.concat(keccak256(abi.encode(token, limit, windowSeconds))))`; when `limitsRoot != 0` the supplied `LimitProof` must produce that leaf, otherwise `requestWithdraw` reverts with the new error
+  `LimitLeafMismatch()` (before the merkle check, so a valid-but-different leaf of the same tree is rejected). The request id (struct hash) now also commits to the leaf. When `limitsRoot == 0` the field is signed but ignored
+  (clients should use zero). Duplicate-token trees remain a policy-author mistake, but a submitter can no longer pick the permissive leaf. The one-line `CONTRACTS_SPEC.md` section 4 edit
+  is limited to the `requestWithdraw`/typehash sentence. `packages/chain-adapters` ABIs and every client that builds `Withdraw` must be regenerated and sign the new field.
+- **A3. I-02 (minimum delay).** `PolicyAccountFactory.MIN_DELAY = 1 hours`; `deploy` reverts `DelayTooShort(delay)` for `0 < delay < MIN_DELAY` (`delay == 0` and `> MAX_DELAY` keep `InvalidDelay`). `MAX_DELAY` stays 30 days.
+  The minimum is enforced in the factory only, not in `PolicyAccount.initialize`, to keep the account's accepted range (and P8) unchanged; accounts cloned by a foreign deployer can still use shorter delays (I-08: they are not official accounts).
+- **A4. L-06 (deploy scripts).** New `script/DeployBase.s.sol` (shared helpers). `Deploy`: custom `ANNOUNCER` needs `ALLOW_CUSTOM_ANNOUNCER=1`; announcer codehash is printed and optionally pinned (`EXPECTED_ANNOUNCER_CODEHASH`);
+  `DeployPolicy` has no announcer input (the factory does not use one), so the announcer rule applies to `Deploy` only. Both: `FEE_RECIPIENT != broadcaster` (checked against `msg.sender` and the account reported by `vm.readCallers()` after `startBroadcast`),
+  warning when the recipient has code, post-deployment read-back `require`s for every immutable, strict `ALLOWED_CHAIN_IDS` parsing (whitespace trimmed, `InvalidChainIdEntry` for empty/non-numeric entries), chain id 31337 only with `ALLOW_LOCAL=1`.
+  `DeployPolicy`: required `MAX_FLAT_FEE` (no default; `FlatFeeAboveMax`), `FEE_TOKEN.decimals()` printed (a token without `decimals()` only warns). `Deploy` now uses the same virtual `_env()` as `DeployPolicy` (test injection).
+  `scripts/pre-deploy-check.sh router|policy` prints the effective configuration and runs the same static checks plus optional read-only `cast` queries (`RPC_URL`); `DRY_RUN=1` runs `forge script` without `--broadcast`. It never needs a key.
+  Not verified: the behaviour of `--account`/`--ledger` senders with `vm.readCallers()` on a real broadcast (only simulated in tests).
+- **A5. Slither.** The two CI exclusions (`arbitrary-send-erc20`, `incorrect-equality`) are replaced by inline `// slither-disable-next-line` comments with rationale at the three sites
+  (`GhostPaySweepRelayer._execute` x2, `PolicyAccount._consume`); Slither passes with `--fail-medium --exclude-informational --exclude-low` and no `--exclude`.
+- **A6. Audit tests.** `test_returnDataBomb_gasOverhead`/`..._destinationInflatesExecutorGas` became `test_returnDataBomb_*Bounded`; `test_EXPLOIT_duplicateLeafSubmitterPicksPermissiveLimit` became
+  `test_duplicateLeafSubmitterCannotPickPermissiveLimit`. All other `test_EXPLOIT_*` tests (M-01, M-03, L-02, L-03, L-05, I-03, I-04) are unchanged and document the residual behaviour.
+  The test helper `PolicyBase._w` fills `limitLeafHash` with the fixture tree leaf of the token; `_wFor` binds it to an explicit proof.

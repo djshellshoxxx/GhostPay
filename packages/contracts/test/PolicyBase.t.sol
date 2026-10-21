@@ -40,8 +40,9 @@ abstract contract PolicyBase is Test {
     bytes32 internal constant DOMAIN_TYPEHASH = keccak256(
         "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
     );
-    bytes32 internal constant WITHDRAW_TH =
-        keccak256("Withdraw(address token,uint256 amount,uint256 deadline,uint256 nonce)");
+    bytes32 internal constant WITHDRAW_TH = keccak256(
+        "Withdraw(address token,uint256 amount,uint256 deadline,uint256 nonce,bytes32 limitLeafHash)"
+    );
     bytes32 internal constant CANCEL_WITHDRAW_TH = keccak256("CancelWithdraw(bytes32 id)");
     bytes32 internal constant PROPOSE_TH =
         keccak256("ProposeDestination(address newDestination,uint256 deadline,uint256 nonce)");
@@ -140,12 +141,38 @@ abstract contract PolicyBase is Test {
         returns (IPolicyAccount.Withdraw memory)
     {
         return IPolicyAccount.Withdraw({
-            token: t, amount: amount, deadline: vm.getBlockTimestamp() + 1 hours, nonce: nonce
+            token: t,
+            amount: amount,
+            deadline: vm.getBlockTimestamp() + 1 hours,
+            nonce: nonce,
+            limitLeafHash: _fixtureLeaf(t)
         });
     }
 
+    /// @dev Leaf of the fixture tree for `t` (zero for tokens that have none).
+    function _fixtureLeaf(address t) internal view returns (bytes32) {
+        if (t == address(token)) return leaves[0];
+        if (t == address(0)) return leaves[1];
+        if (t == address(tokenU)) return leaves[2];
+        if (t == address(tokenBad)) return leaves[3];
+        return bytes32(0);
+    }
+
+    /// @dev Order whose signed `limitLeafHash` is the leaf of `lp` for `t` (for custom trees).
+    function _wFor(address t, uint256 amount, uint256 nonce, IPolicyAccount.LimitProof memory lp)
+        internal
+        view
+        returns (IPolicyAccount.Withdraw memory w)
+    {
+        w = _w(t, amount, nonce);
+        w.limitLeafHash = _leaf(t, lp.limit, lp.windowSeconds);
+    }
+
     function _wHash(IPolicyAccount.Withdraw memory w) internal pure returns (bytes32) {
-        return keccak256(abi.encode(WITHDRAW_TH, w.token, w.amount, w.deadline, w.nonce));
+        return
+            keccak256(
+                abi.encode(WITHDRAW_TH, w.token, w.amount, w.deadline, w.nonce, w.limitLeafHash)
+            );
     }
 
     function _sigW(uint256 pk, address a, IPolicyAccount.Withdraw memory w)

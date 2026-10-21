@@ -28,6 +28,9 @@ contract PolicyAccountFactory is ReentrancyGuard {
 
     /// @notice Longest allowed withdrawal delay (30 days), equal to `PolicyAccount.MAX_DELAY`.
     uint256 public constant MAX_DELAY = 30 days;
+    /// @notice Shortest delay the factory accepts (1 hour); a shorter timelock gives the owner no
+    /// realistic reaction window. The account itself only enforces `1 .. MAX_DELAY`.
+    uint256 public constant MIN_DELAY = 1 hours;
 
     /// @notice The `PolicyAccount` implementation that is cloned.
     address public immutable IMPLEMENTATION;
@@ -46,6 +49,9 @@ contract PolicyAccountFactory is ReentrancyGuard {
     error ZeroAddress();
     /// @notice The delay is zero or above `MAX_DELAY`.
     error InvalidDelay();
+    /// @notice The delay is non-zero but below `MIN_DELAY`.
+    /// @param delay The rejected delay.
+    error DelayTooShort(uint256 delay);
     /// @notice The implementation address has no code.
     error ImplementationHasNoCode();
     /// @notice An account with these parameters already exists.
@@ -81,7 +87,7 @@ contract PolicyAccountFactory is ReentrancyGuard {
     /// @notice Deploys and initialises the account for `(owner, destination, delay, limitsRoot)`.
     /// @param owner Stealth EOA that will sign for the account.
     /// @param destination Initial destination of all withdrawals.
-    /// @param delay Withdrawal timelock in seconds (1 to `MAX_DELAY`).
+    /// @param delay Withdrawal timelock in seconds (`MIN_DELAY` to `MAX_DELAY`).
     /// @param limitsRoot Merkle root of per-token limits, or zero for no limits.
     /// @return account The deployed account.
     function deploy(address owner, address destination, uint256 delay, bytes32 limitsRoot)
@@ -91,6 +97,7 @@ contract PolicyAccountFactory is ReentrancyGuard {
     {
         if (owner == address(0) || destination == address(0)) revert ZeroAddress();
         if (delay == 0 || delay > MAX_DELAY) revert InvalidDelay();
+        if (delay < MIN_DELAY) revert DelayTooShort(delay);
         bytes32 salt = keccak256(abi.encode(owner, policyHashOf(destination, delay, limitsRoot)));
         address predicted = Clones.predictDeterministicAddress(IMPLEMENTATION, salt);
         if (predicted.code.length != 0) revert AlreadyDeployed(predicted);

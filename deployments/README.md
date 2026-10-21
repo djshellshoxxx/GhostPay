@@ -26,9 +26,11 @@ source (see `docs/FEE_SCHEDULE.md`).
 
 ## Procedure
 
-1. Run `forge script script/Deploy.s.sol --rpc-url <rpc> --broadcast --account <keystore|--ledger>` with
-   `FEE_RECIPIENT` set (and `ALLOWED_CHAIN_IDS` for any non-testnet chain).
-2. Verify the sources on the block explorer; read back `FEE_RECIPIENT`, `FEE_BPS`, `ANNOUNCER` and the
+1. Run `packages/contracts/scripts/pre-deploy-check.sh router|policy` with the intended environment (prints the effective
+   configuration, never broadcasts). Then run `forge script script/Deploy.s.sol --rpc-url <rpc> --broadcast --account <keystore|--ledger>` with
+   `FEE_RECIPIENT` set (and `ALLOWED_CHAIN_IDS` for any non-testnet chain). The canonical announcer is mandatory unless
+   `ALLOW_CUSTOM_ANNOUNCER=1`; `DeployPolicy.s.sol` additionally needs `FEE_TOKEN`, `FLAT_FEE` and `MAX_FLAT_FEE`. Chain id 31337 needs `ALLOW_LOCAL=1`.
+2. The scripts already read back every immutable; additionally verify the sources on the block explorer and read back `FEE_RECIPIENT`, `FEE_BPS`, `ANNOUNCER` and the
    runtime code hashes from the chain.
 3. Write `deployments/<chainId>.json`, validate with `npx ajv-cli validate -s deployments/schema.json -d deployments/<chainId>.json`
    (or any 2020-12 validator), commit it in a reviewed pull request.

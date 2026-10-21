@@ -349,32 +349,83 @@ contract PolicyAccountTest is PolicyBase {
     // ---- limits proofs
 
     function test_request_invalidProof_reverts() public {
-        IPolicyAccount.Withdraw memory w = _w(address(token), 1, 1);
-        bytes memory sig = _sigW(ownerPk, address(acct), w);
         IPolicyAccount.LimitProof memory lp = _lp(0);
         lp.limit = LIMIT * 10; // claims a higher limit than committed
+        IPolicyAccount.Withdraw memory w = _wFor(address(token), 1, 1, lp);
+        bytes memory sig = _sigW(ownerPk, address(acct), w);
         vm.expectRevert(IPolicyAccount.InvalidLimitProof.selector);
         acct.requestWithdraw(w, lp, sig);
 
         lp = _lp(0);
         lp.windowSeconds = 10 days; // claims a longer... different window
+        w = _wFor(address(token), 1, 2, lp);
+        sig = _sigW(ownerPk, address(acct), w);
         vm.expectRevert(IPolicyAccount.InvalidLimitProof.selector);
         acct.requestWithdraw(w, lp, sig);
 
         // Proof of another token's leaf does not prove this token.
         lp = _lp(1);
+        w = _wFor(address(token), 1, 3, lp);
+        sig = _sigW(ownerPk, address(acct), w);
         vm.expectRevert(IPolicyAccount.InvalidLimitProof.selector);
         acct.requestWithdraw(w, lp, sig);
     }
 
-    function test_request_tokenNotInTree_reverts() public {
-        MockERC20 other = new MockERC20("Other", "OTH", 6);
-        IPolicyAccount.Withdraw memory w = _w(address(other), 1, 1);
+    /// @dev L-04: a proof whose leaf differs from the signed `limitLeafHash` is rejected, even if the
+    /// leaf is a valid member of the tree.
+    function test_request_leafNotMatchingSignedHash_reverts() public {
+        IPolicyAccount.Withdraw memory w = _w(address(token), 1, 1);
         bytes memory sig = _sigW(ownerPk, address(acct), w);
         IPolicyAccount.LimitProof memory lp = _lp(0);
+        lp.limit = LIMIT * 10;
+        vm.expectRevert(IPolicyAccount.LimitLeafMismatch.selector);
+        acct.requestWithdraw(w, lp, sig);
+        lp = _lp(0);
+        lp.windowSeconds = 10 days;
+        vm.expectRevert(IPolicyAccount.LimitLeafMismatch.selector);
+        acct.requestWithdraw(w, lp, sig);
+        // Another valid leaf of the same tree (the native one) is not accepted for this order.
+        vm.expectRevert(IPolicyAccount.LimitLeafMismatch.selector);
+        acct.requestWithdraw(w, _lp(1), sig);
+    }
+
+    /// @dev L-04: signature tamper test for the new field. Changing `limitLeafHash` after signing
+    /// invalidates the signature; a signature over another leaf does not authorise this one.
+    function test_request_tamperLimitLeafHash_reverts() public {
+        IPolicyAccount.Withdraw memory w = _w(address(token), 100e6, 5);
+        bytes memory sig = _sigW(ownerPk, address(acct), w);
+        IPolicyAccount.Withdraw memory t = _w(address(token), 100e6, 5);
+        t.limitLeafHash = leaves[2]; // unlimited leaf of tokenU
+        vm.expectRevert(IPolicyAccount.InvalidSignature.selector);
+        acct.requestWithdraw(t, _lp(0), sig);
+        t.limitLeafHash = bytes32(0);
+        vm.expectRevert(IPolicyAccount.InvalidSignature.selector);
+        acct.requestWithdraw(t, _lp(0), sig);
+        // Request id commits to the leaf: orders differing only in the leaf have different ids.
+        assertTrue(_wHash(w) != _wHash(t));
+        bytes32 id = acct.requestWithdraw(w, _lp(0), sig);
+        assertEq(id, _wHash(w));
+    }
+
+    /// @dev With `limitsRoot == 0` the leaf field is signed but not checked against any proof.
+    function test_request_noLimitsRoot_leafFieldIgnored() public {
+        PolicyAccount a = _deploy(owner, destination, DELAY, bytes32(0));
+        IPolicyAccount.Withdraw memory w = _w(address(token), 1, 1);
+        w.limitLeafHash = bytes32(uint256(0xdead));
+        bytes32 id = a.requestWithdraw(w, _emptyLp(), _sigW(ownerPk, address(a), w));
+        assertEq(id, _wHash(w));
+    }
+
+    function test_request_tokenNotInTree_reverts() public {
+        MockERC20 other = new MockERC20("Other", "OTH", 6);
+        IPolicyAccount.LimitProof memory lp = _lp(0);
+        IPolicyAccount.Withdraw memory w = _wFor(address(other), 1, 1, lp);
+        bytes memory sig = _sigW(ownerPk, address(acct), w);
         vm.expectRevert(IPolicyAccount.InvalidLimitProof.selector);
         acct.requestWithdraw(w, lp, sig);
         IPolicyAccount.LimitProof memory empty = _emptyLp();
+        w = _wFor(address(other), 1, 2, empty);
+        sig = _sigW(ownerPk, address(acct), w);
         vm.expectRevert(IPolicyAccount.InvalidLimitProof.selector);
         acct.requestWithdraw(w, empty, sig);
     }
@@ -700,8 +751,8 @@ contract PolicyAccountTest is PolicyBase {
             IPolicyAccount.LimitProof memory lp1,
             IPolicyAccount.LimitProof memory lp2
         ) = _dupAccount(LIMIT, 2 days);
-        IPolicyAccount.Withdraw memory w1 = _w(address(token), 1, 1);
-        IPolicyAccount.Withdraw memory w2 = _w(address(token), 1, 2);
+        IPolicyAccount.Withdraw memory w1 = _wFor(address(token), 1, 1, lp1);
+        IPolicyAccount.Withdraw memory w2 = _wFor(address(token), 1, 2, lp2);
         bytes32 id1 = a.requestWithdraw(w1, lp1, _sigW(ownerPk, address(a), w1));
         bytes32 id2 = a.requestWithdraw(w2, lp2, _sigW(ownerPk, address(a), w2));
         vm.warp(vm.getBlockTimestamp() + DELAY);
@@ -716,8 +767,8 @@ contract PolicyAccountTest is PolicyBase {
             IPolicyAccount.LimitProof memory lp1,
             IPolicyAccount.LimitProof memory lp2
         ) = _dupAccount(100, WINDOW);
-        IPolicyAccount.Withdraw memory w1 = _w(address(token), 500, 1);
-        IPolicyAccount.Withdraw memory w2 = _w(address(token), 50, 2);
+        IPolicyAccount.Withdraw memory w1 = _wFor(address(token), 500, 1, lp1);
+        IPolicyAccount.Withdraw memory w2 = _wFor(address(token), 50, 2, lp2);
         bytes32 id1 = a.requestWithdraw(w1, lp1, _sigW(ownerPk, address(a), w1));
         bytes32 id2 = a.requestWithdraw(w2, lp2, _sigW(ownerPk, address(a), w2));
         vm.warp(vm.getBlockTimestamp() + DELAY);

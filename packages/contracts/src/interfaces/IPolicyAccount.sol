@@ -20,11 +20,16 @@ interface IPolicyAccount {
     /// @param amount Amount in base units; must be non-zero.
     /// @param deadline Last timestamp (inclusive) at which the request may be submitted.
     /// @param nonce Unordered single-use nonce, scoped to this account.
+    /// @param limitLeafHash The merkle leaf `keccak256(bytes.concat(keccak256(abi.encode(token, limit,
+    /// windowSeconds))))` of the limit the owner authorises this withdrawal under. The supplied
+    /// {LimitProof} must produce exactly this leaf, so a submitter cannot choose another leaf of the
+    /// tree. Ignored (but still signed; use zero) when the account has `limitsRoot == bytes32(0)`.
     struct Withdraw {
         address token;
         uint256 amount;
         uint256 deadline;
         uint256 nonce;
+        bytes32 limitLeafHash;
     }
 
     /// @notice Per-token rolling-window cap together with its merkle proof against `limitsRoot`.
@@ -103,6 +108,8 @@ interface IPolicyAccount {
     error NonceAlreadyUsed();
     /// @notice The merkle proof does not prove the limit leaf against `limitsRoot`.
     error InvalidLimitProof();
+    /// @notice The leaf of the supplied {LimitProof} differs from the signed `limitLeafHash`.
+    error LimitLeafMismatch();
     /// @notice The limit is malformed (zero window with a finite limit).
     error InvalidLimit();
     /// @notice The requested amount exceeds the per-window limit, so it could never execute.

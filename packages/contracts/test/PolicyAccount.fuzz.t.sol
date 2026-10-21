@@ -65,7 +65,7 @@ contract PolicyAccountFuzzTest is PolicyBase {
 
     /// @dev A request can be executed iff `delay` has passed, for any delay in the allowed range.
     function testFuzz_timelockExact(uint256 delay, uint256 wait) public {
-        delay = bound(delay, 1, 30 days);
+        delay = bound(delay, 1 hours, 30 days);
         wait = bound(wait, 0, 31 days);
         PolicyAccount a = _deploy(owner, destination, delay, bytes32(0));
         token.mint(address(a), 100);
@@ -83,7 +83,7 @@ contract PolicyAccountFuzzTest is PolicyBase {
 
     /// @dev A destination change can be applied iff `2 * delay` has passed.
     function testFuzz_destinationTimelockExact(uint256 delay, uint256 wait) public {
-        delay = bound(delay, 1, 30 days);
+        delay = bound(delay, 1 hours, 30 days);
         wait = bound(wait, 0, 61 days);
         PolicyAccount a = _deploy(owner, destination, delay, bytes32(uint256(0xd357)));
         uint256 dl = vm.getBlockTimestamp() + 1 hours;

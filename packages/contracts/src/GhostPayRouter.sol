@@ -235,11 +235,16 @@ contract GhostPayRouter is IGhostPayRouter, ReentrancyGuard {
         ) revert InvalidMetadata();
     }
 
-    /// @dev Sends `amount` of the native asset with all remaining gas; reverts on failure.
+    /// @dev Sends `amount` of the native asset with all remaining gas; reverts on failure. The call is
+    /// written in assembly so that no return data is copied to memory: a payee that returns a huge
+    /// buffer (return-data bomb) cannot inflate the payer's gas cost.
     function _sendNative(address to, uint256 amount) private {
+        bool ok;
         // Destination is validated by every caller (stealth != 0/this/fee recipient) or immutable.
         // forge-lint: disable-next-line(arbitrary-send-eth)
-        (bool ok,) = to.call{value: amount}("");
+        assembly ("memory-safe") {
+            ok := call(gas(), to, amount, 0, 0, 0, 0)
+        }
         if (!ok) revert NativeTransferFailed();
     }
 }
