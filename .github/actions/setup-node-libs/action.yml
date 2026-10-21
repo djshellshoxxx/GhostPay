@@ -9,21 +9,14 @@ runs:
         cache: npm
     - run: npm ci --ignore-scripts
       shell: bash
-    # Workspace packages resolve each other through their built `dist`. The key covers the lockfile, the root
-    # tsconfig and every source/config file of the built libs, so a hit is byte-for-byte the same build.
+    # Workspace packages resolve each other through their built `dist`. Cache EVERY package's dist and key on every
+    # package's inputs: a hand-kept subset skipped build:libs on a hit and left e.g. address-safety, tx-review and
+    # btc-silent-payments unbuilt, so apps/web failed to typecheck (e2e webServer) depending on cache state.
     - id: libs
       uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       with:
-        path: |
-          packages/core-crypto/dist
-          packages/invoice-schema/dist
-          packages/chain-adapters/dist
-          packages/secret-box/dist
-          packages/relayer-guard/dist
-          packages/pool-prover/dist
-          packages/pool-sdk/dist
-          packages/external-pools/dist
-        key: libs-${{ runner.os }}-node22-${{ hashFiles('package-lock.json', 'tsconfig.base.json', 'packages/core-crypto/src/**', 'packages/core-crypto/package.json', 'packages/core-crypto/tsconfig*.json', 'packages/invoice-schema/src/**', 'packages/invoice-schema/package.json', 'packages/invoice-schema/tsconfig*.json', 'packages/chain-adapters/src/**', 'packages/chain-adapters/package.json', 'packages/chain-adapters/tsconfig*.json', 'packages/secret-box/src/**', 'packages/secret-box/package.json', 'packages/secret-box/tsconfig*.json', 'packages/relayer-guard/src/**', 'packages/relayer-guard/package.json', 'packages/relayer-guard/tsconfig*.json', 'packages/pool-prover/src/**', 'packages/pool-prover/package.json', 'packages/pool-prover/tsconfig*.json', 'packages/pool-sdk/src/**', 'packages/pool-sdk/package.json', 'packages/pool-sdk/tsconfig*.json', 'packages/external-pools/src/**', 'packages/external-pools/package.json', 'packages/external-pools/tsconfig*.json') }}
+        path: packages/*/dist
+        key: libs-${{ runner.os }}-node22-${{ hashFiles('package-lock.json', 'tsconfig.base.json', 'packages/*/src/**', 'packages/*/package.json', 'packages/*/tsconfig*.json') }}
     - if: steps.libs.outputs.cache-hit != 'true'
       run: npm run build:libs
       shell: bash

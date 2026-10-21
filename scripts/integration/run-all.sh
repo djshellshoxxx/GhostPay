@@ -77,15 +77,25 @@ load_env() { # generate=1|0
   export INTEGRATION_SUITES="$suites"
 }
 
+# retry <attempts> <command...>: registries rate-limit and flake; a real build/start error fails 3 times in a row.
+retry() {
+  local n="$1" i; shift
+  for i in $(seq 1 "$n"); do
+    "$@" && return 0
+    [ "$i" -lt "$n" ] && { log "attempt $i/$n failed: $*; retrying in 15s"; sleep 15; }
+  done
+  return 1
+}
+
 do_up() {
   preflight
   load_env 0
   "${COMPOSE[@]}" down -v --remove-orphans >/dev/null 2>&1 || true # fresh chains every run (old creds, if any)
   load_env 1
   log "building images (runner, solana-test-validator) ..."
-  "${COMPOSE[@]}" build
+  retry 3 "${COMPOSE[@]}" build
   log "starting anvil, bitcoind, solana and waiting for health (first start pulls images) ..."
-  "${COMPOSE[@]}" up -d --wait --wait-timeout 600 anvil bitcoind solana
+  retry 2 "${COMPOSE[@]}" up -d --wait --wait-timeout 600 anvil bitcoind solana
   "${COMPOSE[@]}" ps
 }
 

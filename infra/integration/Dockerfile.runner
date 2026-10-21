@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1
 # GhostPay integration "runner": Node 22 + Foundry (forge/cast/anvil) and nothing else. Used by
 #   - infra/integration/docker-compose.yml (service `runner`), and
 #   - .devcontainer/devcontainer.json (Codespaces), so both run the same toolchain.

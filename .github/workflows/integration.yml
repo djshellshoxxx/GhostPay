@@ -1,0 +1,80 @@
+name: Integration
+# Full-stack integration in Docker on a GitHub-hosted ubuntu runner: anvil (EVM), bitcoind regtest, solana-test-validator,
+# plus a Node 22 + Foundry runner container that executes the suites. Dev/test chains only: no secrets, no mainnet keys,
+# regtest RPC credentials are generated per run by scripts/integration/run-all.sh. See docs/operators/integration-testing.md.
+on:
+  workflow_dispatch:
+    inputs:
+      suites:
+        description: "Comma separated subset of: evm, btc, solana"
+        required: false
+        default: "evm,btc,solana"
+        type: string
+  schedule:
+    - cron: "41 4 * * *"
+  pull_request:
+    paths:
+      - ".github/workflows/integration.yml"
+      - ".devcontainer/**"
+      - "infra/integration/**"
+      - "scripts/integration/**"
+      - "scripts/devnet/**"
+      - "scripts/regtest/**"
+      - "packages/btc-silent-payments/**"
+      - "packages/solana-stealth/**"
+      - "packages/chain-adapters/**"
+      - "packages/contracts/script/**"
+      - "apps/relayer/**"
+
+permissions:
+  contents: read
+
+# One run per ref; a newer push to a PR cancels the superseded run. Scheduled / manual runs are never cancelled.
+concurrency:
+  group: integration-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  integration:
+    name: integration (anvil + bitcoind regtest + solana-test-validator)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    env:
+      SUITES: ${{ inputs.suites || 'evm,btc,solana' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Caches the runner container's $HOME: the Solidity compiler (svm) and npm downloads. Not the chains or secrets.
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ~/.cache/ghostpay-integration
+          key: integration-home-${{ runner.os }}-${{ hashFiles('package-lock.json', 'packages/contracts/foundry.toml') }}
+          restore-keys: |
+            integration-home-${{ runner.os }}-
+
+      - name: compose-up (build images, start services, wait for health)
+        run: bash scripts/integration/run-all.sh up
+
+      - name: run-all (EVM, Bitcoin regtest, Solana suites)
+        run: bash scripts/integration/run-all.sh test --suites "$SUITES"
+
+      - name: collect logs
+        if: always()
+        run: bash scripts/integration/run-all.sh logs
+
+      - name: upload logs
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: integration-logs
+          path: infra/integration/.state/logs
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: compose-down
+        if: always()
+        run: bash scripts/integration/run-all.sh down

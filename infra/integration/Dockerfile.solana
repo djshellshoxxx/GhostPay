@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1
 # solana-test-validator from the official Anza (Agave) GitHub release tarball, verified against a pinned SHA-256.
 # Why not an image: the Docker Hub `anzaxyz/agave` repository is marked SUNSETTING (no new tags; last is v3.1.14),
 # so the release asset is used instead. Provenance of the hash: computed 2026-10-21 by downloading
