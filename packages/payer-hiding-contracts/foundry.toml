@@ -1,0 +1,43 @@
+[profile.default]
+src = "src"
+test = "test"
+script = "script"
+out = "out"
+libs = ["../contracts/lib"]
+allow_paths = ["../contracts"]
+# Local sandbox override (NOT committed): FOUNDRY_SOLC=/home/user/tools/solc. CI/other machines use solc_version.
+solc_version = "0.8.28"
+# EIP-7702 (type-4 tx cheatcodes) needs the Prague EVM; solc 0.8.28 accepts `prague` (verified with `solc --evm-version prague`).
+evm_version = "prague"
+optimizer = true
+optimizer_runs = 200
+bytecode_hash = "none"
+cbor_metadata = false
+ffi = false
+# read-only access to the shared golden vectors produced by packages/payer-sponsor
+fs_permissions = [{ access = "read", path = "../payer-sponsor/test-vectors" }]
+deny = "warnings"
+
+[fuzz]
+runs = 10000
+
+[invariant]
+runs = 256
+depth = 50
+fail_on_revert = false
+
+[profile.dev.fuzz]
+runs = 256
+
+[profile.dev.invariant]
+runs = 64
+depth = 50
+
+[fmt]
+line_length = 100
+tab_width = 4
+bracket_spacing = false
+int_types = "long"
+multiline_func_header = "attributes_first"
+quote_style = "double"
+number_underscore = "thousands"

@@ -1,0 +1,8 @@
+out/
+cache/
+broadcast/
+# Test-only EntryPoint source fetched by scripts/fetch-entrypoint.sh (GPL-3.0 file headers; never committed).
+.vendor/
+crytic-export/
+echidna-corpus*/
+corpus*/
