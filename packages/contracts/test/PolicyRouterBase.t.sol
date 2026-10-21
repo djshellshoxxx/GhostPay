@@ -57,16 +57,13 @@ abstract contract PolicyRouterBase is Test {
         );
     }
 
-    function _ref() internal view returns (IGhostPayPolicyRouter.PolicyRef memory) {
-        return IGhostPayPolicyRouter.PolicyRef({owner: owner, policyHash: policyHash});
+    /// @dev Per-payment CREATE2 salt passed to the router (`keccak256(abi.encode(owner, policyHash))`).
+    function _ref() internal view returns (bytes32) {
+        return _ref(owner, policyHash);
     }
 
-    function _ref(address o, bytes32 h)
-        internal
-        pure
-        returns (IGhostPayPolicyRouter.PolicyRef memory)
-    {
-        return IGhostPayPolicyRouter.PolicyRef({owner: o, policyHash: h});
+    function _ref(address o, bytes32 h) internal pure returns (bytes32) {
+        return keccak256(abi.encode(o, h));
     }
 
     function _noPermit() internal pure returns (IGhostPayPolicyRouter.PermitSig memory) {

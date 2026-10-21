@@ -2,6 +2,8 @@ import { decodeFunctionData } from 'viem/utils';
 import { describe, expect, it } from 'vitest';
 import {
   MAX_POLICY_ROUTER_GROSS,
+  accountSalt,
+  predictAccountAddressFromSalt,
   PolicySchemeError,
   buildPolicyPaymentTx,
   decodePolicyPaymentCalldata,
@@ -50,9 +52,12 @@ describe('policy router calldata', () => {
     const d = decodeFunctionData({ abi: ghostPayPolicyRouterAbi, data: p.tx.data });
     expect(d.functionName).toBe('payERC20');
     expect(d.args?.[1]).toBe(A.accountAddress);
-    expect(d.args?.[2]).toEqual({ owner: A.ownerAddress, policyHash: A.policyHash });
+    const salt = accountSalt(A.ownerAddress, A.policyHash);
+    expect(d.args?.[2]).toBe(salt);
+    expect(predictAccountAddressFromSalt(dep, salt)).toBe(A.accountAddress);
     const dec = decodePolicyPaymentCalldata(p.tx.data, dep);
-    expect(dec).toEqual({ method: 'payERC20', stealth: A.accountAddress, owner: A.ownerAddress, policyHash: A.policyHash, ephemeralPublicKey: A.ephemeralPublicKey, metadata: p.metadata });
+    expect(dec).toEqual({ method: 'payERC20', stealth: A.accountAddress, salt, ephemeralPublicKey: A.ephemeralPublicKey, metadata: p.metadata });
+    expect(decodePolicyPaymentCalldata(p.tx.data, dep, { owner: A.ownerAddress, policyHash: A.policyHash })).toEqual(dec);
     expect(p.tx.value).toBe(0n);
   });
 
@@ -94,6 +99,22 @@ describe('policy router calldata', () => {
     expect(code(() => buildPolicyPaymentTx({ ...base, payment: { ...payment, ephemeralPublicKey: new Uint8Array(33) as never } }))).toBe('other:GhostPayCryptoError');
   });
 
+  it('calldata never carries the seller-constant policyHash (audit N-01)', () => {
+    const other = deriveScheme2Payment(A.metaAddress, dep, scriptedRng([new Uint8Array(32).fill(7)]));
+    expect(other.policyHash).toBe(payment.policyHash);
+    expect(other.ownerAddress).not.toBe(payment.ownerAddress);
+    const h = A.policyHash.slice(2).toLowerCase();
+    for (const pay of [payment, other]) {
+      for (const extra of [{}, { token: 'native' as const }, { buffer: { bufferWei: 1n } }, { permitSignature: `0x${'11'.repeat(64)}1b` as const }]) {
+        const p = buildPolicyPaymentTx({ ...base, ...extra, payment: pay });
+        expect(p.tx.data.toLowerCase()).not.toContain(h);
+      }
+    }
+    const s1 = decodePolicyPaymentCalldata(buildPolicyPaymentTx(base).tx.data, dep).salt;
+    const s2 = decodePolicyPaymentCalldata(buildPolicyPaymentTx({ ...base, payment: other }).tx.data, dep).salt;
+    expect(s1).not.toBe(s2);
+  });
+
   it('decoder rejects foreign calldata and a tampered stealth', () => {
     expect(code(() => decodePolicyPaymentCalldata('0x12345678', dep))).toBe('INVALID_INPUT');
     expect(code(() => decodePolicyPaymentCalldata(encodeExecuteWithdraw(A.accountAddress, A.policyHash).data, dep))).toBe('INVALID_INPUT');
@@ -101,6 +122,9 @@ describe('policy router calldata', () => {
     const p = buildPolicyPaymentTx(base);
     const tampered = p.tx.data.replace(A.accountAddress.slice(2).toLowerCase(), (vectors.accounts[1] as VectorAccount).accountAddress.slice(2).toLowerCase()) as `0x${string}`;
     expect(code(() => decodePolicyPaymentCalldata(tampered, dep))).toBe('INVALID_INPUT');
+    const other = vectors.accounts[1] as VectorAccount;
+    expect(code(() => decodePolicyPaymentCalldata(p.tx.data, dep, { owner: A.ownerAddress, policyHash: other.policyHash }))).toBe('INVALID_INPUT');
+    expect(code(() => decodePolicyPaymentCalldata(p.tx.data, dep, { owner: other.ownerAddress, policyHash: A.policyHash }))).toBe('INVALID_INPUT');
     // FEE_BPS() is in the router ABI but is not a payment method.
     expect(code(() => decodePolicyPaymentCalldata('0xbf333f2c', dep))).toBe('INVALID_INPUT');
   });

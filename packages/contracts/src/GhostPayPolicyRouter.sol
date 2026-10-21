@@ -4,6 +4,7 @@ pragma solidity 0.8.28;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import {IERC5564Announcer} from "./interfaces/IERC5564Announcer.sol";
@@ -14,20 +15,25 @@ import {PolicyAccountFactory} from "./PolicyAccountFactory.sol";
 /// @author GhostPay
 /// @notice Scheme-2 checkout router: like `GhostPayRouter` it splits a payment into the fixed protocol
 /// fee and a net amount and emits an ERC-5564 announcement whose metadata mirrors the transfer, but it
-/// only pays policy accounts. The caller names the account's `(owner, policyHash)` and the router
-/// requires `stealth == FACTORY.predictAddress(owner, policyHash)`; the announcement uses scheme id
-/// `0x47500002` (CONTRACTS_SPEC section 4, audit 02 finding M-02).
+/// only pays policy accounts. The caller passes the account's CREATE2 `salt`
+/// (`keccak256(abi.encode(owner, policyHash))`, unique per payment because `owner` is) and the router
+/// requires `stealth` to be the factory's clone address for that salt; the announcement uses scheme id
+/// `0x47500002` (CONTRACTS_SPEC section 4, audit 02 finding M-02). The seller-constant `policyHash`
+/// never appears in calldata (round-3 audit N-01).
 /// @dev Security properties:
 /// - No owner, no upgrade path, no pause, no delegatecall, no arbitrary external call; configuration
 ///   (announcer, fee recipient, factory) is immutable. The router never keeps funds: it only forwards.
 ///   Anything sent to it by other means (forced ETH, direct token transfers) is unrecoverable by design.
-/// - The policy binding guarantees that the paid address is a `PolicyAccount` clone of the immutable
-///   factory for the given `(owner, policyHash)`, deployed or counterfactual. It does not check that
-///   `policyHash` has a meaningful pre-image or that `owner` belongs to the payee: those come from the
-///   payee's scheme-2 meta-address and stealth derivation, which the contract cannot see.
+/// - The policy binding guarantees that the paid address is a `PolicyAccount` clone slot of the
+///   immutable factory and implementation, deployed or counterfactual. It does not check that the salt
+///   has a meaningful pre-image (non-zero `owner`, sensible `policyHash`) or that `owner` belongs to the
+///   payee: those come from the payee's scheme-2 meta-address and stealth derivation, which the
+///   contract cannot see. Publishing the salt reveals nothing the address does not: it is a per-payment
+///   hash whose pre-image contains the secret-until-used stealth owner.
 /// - Every entry point is `nonReentrant`. Native transfers forward all remaining gas, copy no return
-///   data, and are the only calls to untrusted code besides the token and the announcer; the factory
-///   call is a `staticcall` to an immutable, trusted address. The router modifies no state of its own.
+///   data, and are the only calls to untrusted code besides the token and the announcer; the factory's
+///   implementation is read once in the constructor and the clone address is computed locally. The
+///   router modifies no state of its own.
 /// - ERC-20 transfers use SafeERC20 and exact balance-delta checks on the stealth address and the fee
 ///   recipient, which rejects fee-on-transfer and other non-standard tokens.
 /// - `fee = gross * FEE_BPS / BPS` rounds down, so payments below 400 base units pay no fee. `gross`
@@ -72,6 +78,10 @@ contract GhostPayPolicyRouter is IGhostPayPolicyRouter, ReentrancyGuard {
     // Upper-case immutables follow the scheme-1 router's public ABI.
     // slither-disable-next-line naming-convention
     PolicyAccountFactory public immutable FACTORY;
+    /// @dev `FACTORY.IMPLEMENTATION()` (immutable in the factory), cached for the CREATE2 check.
+    // Upper-case like the other immutables of this contract.
+    // slither-disable-next-line naming-convention
+    address private immutable IMPLEMENTATION;
 
     /// @notice Deploys the router with immutable configuration.
     /// @param announcer The ERC-5564 announcer; must be non-zero.
@@ -87,20 +97,21 @@ contract GhostPayPolicyRouter is IGhostPayPolicyRouter, ReentrancyGuard {
         ANNOUNCER = announcer;
         FEE_RECIPIENT = feeRecipient;
         FACTORY = factory;
+        IMPLEMENTATION = factory.IMPLEMENTATION();
     }
 
     /// @inheritdoc IGhostPayPolicyRouter
     function payERC20(
         IERC20 token,
         address stealth,
-        PolicyRef calldata policy,
+        bytes32 salt,
         uint256 gross,
         uint256 minNet,
         uint256 deadline,
         bytes calldata ephemeralPubKey,
         bytes calldata metadata
     ) external nonReentrant {
-        _checkPolicyAccount(stealth, policy);
+        _checkPolicyAccount(stealth, salt);
         _payERC20(token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata);
         ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata);
     }
@@ -109,7 +120,7 @@ contract GhostPayPolicyRouter is IGhostPayPolicyRouter, ReentrancyGuard {
     function payERC20WithPermit(
         IERC20 token,
         address stealth,
-        PolicyRef calldata policy,
+        bytes32 salt,
         uint256 gross,
         uint256 minNet,
         uint256 deadline,
@@ -117,7 +128,7 @@ contract GhostPayPolicyRouter is IGhostPayPolicyRouter, ReentrancyGuard {
         bytes calldata metadata,
         PermitSig calldata permit
     ) external nonReentrant {
-        _checkPolicyAccount(stealth, policy);
+        _checkPolicyAccount(stealth, salt);
         if (address(token) == address(0)) revert ZeroAddress();
         // Deadline semantics are inherent to the product; second-level validator drift is acceptable.
         // slither-disable-start timestamp
@@ -136,13 +147,13 @@ contract GhostPayPolicyRouter is IGhostPayPolicyRouter, ReentrancyGuard {
     /// @inheritdoc IGhostPayPolicyRouter
     function payNative(
         address stealth,
-        PolicyRef calldata policy,
+        bytes32 salt,
         uint256 minNet,
         uint256 deadline,
         bytes calldata ephemeralPubKey,
         bytes calldata metadata
     ) external payable nonReentrant {
-        _checkPolicyAccount(stealth, policy);
+        _checkPolicyAccount(stealth, salt);
         (uint256 fee, uint256 net) =
             _validate(stealth, msg.value, minNet, deadline, ephemeralPubKey);
         _checkMetadata(metadata, NATIVE_MARKER, NATIVE, net);
@@ -161,7 +172,7 @@ contract GhostPayPolicyRouter is IGhostPayPolicyRouter, ReentrancyGuard {
     function payERC20WithBuffer(
         IERC20 token,
         address stealth,
-        PolicyRef calldata policy,
+        bytes32 salt,
         uint256 gross,
         uint256 minNet,
         uint256 deadline,
@@ -169,7 +180,7 @@ contract GhostPayPolicyRouter is IGhostPayPolicyRouter, ReentrancyGuard {
         bytes calldata ephemeralPubKey,
         bytes calldata metadata
     ) external payable nonReentrant {
-        _checkPolicyAccount(stealth, policy);
+        _checkPolicyAccount(stealth, salt);
         if (msg.value == 0) revert BufferRequired();
         if (msg.value > maxBufferWei) revert BufferTooLarge();
         _payERC20(token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata);
@@ -229,15 +240,13 @@ contract GhostPayPolicyRouter is IGhostPayPolicyRouter, ReentrancyGuard {
         }
     }
 
-    /// @dev Requires a non-zero `policy.owner` and
-    /// `stealth == FACTORY.predictAddress(policy.owner, policy.policyHash)`.
+    /// @dev Requires `stealth` to be the EIP-1167 clone address of `IMPLEMENTATION` that `FACTORY`
+    /// creates for `salt` (same derivation as `PolicyAccountFactory.predictAddress`).
     /// Runs first in every entry point, so an unrelated address is rejected before any other check or
     /// external call to the token.
-    function _checkPolicyAccount(address stealth, PolicyRef calldata policy) private view {
-        address owner = policy.owner;
-        // The factory rejects a zero owner, so such an account could never be deployed.
-        if (owner == address(0)) revert ZeroAddress();
-        address expected = FACTORY.predictAddress(owner, policy.policyHash);
+    function _checkPolicyAccount(address stealth, bytes32 salt) private view {
+        address expected =
+            Clones.predictDeterministicAddress(IMPLEMENTATION, salt, address(FACTORY));
         if (stealth != expected) revert NotPolicyAccount(expected);
     }
 

@@ -4,7 +4,7 @@ import { ghostPayPolicyRouterAbi } from './abi/policyRouter.js';
 import type { CallRequest } from './calldata.js';
 import type { Scheme2Payment } from './derive.js';
 import { fail } from './errors.js';
-import { predictAccountAddress, type PolicyDeployment } from './policy.js';
+import { accountSalt, predictAccountAddress, predictAccountAddressFromSalt, type PolicyDeployment } from './policy.js';
 import { MAX_UINT256, bytes32, hexBytes, nonZeroAddr, uint, type Address, type Hex } from './types.js';
 
 /** `GhostPayPolicyRouter.FEE_BPS` (25 bps). */
@@ -69,17 +69,19 @@ export function policyRouterFee(gross: bigint): bigint {
  * Builds calldata for `GhostPayPolicyRouter` (scheme `0x47500002` checkout).
  *
  * @remarks Method: native -> `payNative`; ERC-20 + permit -> `payERC20WithPermit`; ERC-20 + buffer ->
- * `payERC20WithBuffer`; else `payERC20`. Passes `PolicyRef(owner, policyHash)` and first re-predicts
- * the account from the deployment, so calldata whose `stealth` the router would reject
- * (`NotPolicyAccount`) is never built. Metadata is built by core-crypto (view tag | marker | asset | net),
+ * `payERC20WithBuffer`; else `payERC20`. Passes the per-payment CREATE2 salt
+ * `keccak256(abi.encode(owner, policyHash))` (never the seller-constant `policyHash`, round-3 audit N-01)
+ * and first re-predicts the account from the deployment, so calldata whose `stealth` the router would
+ * reject (`NotPolicyAccount`) is never built. Metadata is built by core-crypto (view tag | marker | asset | net),
  * with `net = gross - floor(gross * 25 / 10000)` exactly as the contract computes it.
  *
  * @param input See {@link PolicyPaymentInput}.
  * @returns Method, transaction, fee, net and metadata.
  * @throws {PolicySchemeError} `INVALID_INPUT`, `INVALID_ADDRESS`, `INVALID_HEX`. {@link GhostPayCryptoError} for bad R, tag or token.
  * @security The router binds the paid address to the factory, not to the payee: `owner` and `policyHash`
- * must come from the payee's authenticated scheme-2 meta-address. ABI generated from
- * GhostPayPolicyRouter as of commit 2058a57 and exercised on anvil (see DEVIATIONS.md S6).
+ * must come from the payee's authenticated scheme-2 meta-address. The router cannot see either (only the
+ * salt), so the zero-owner and policy checks here are the only ones. ABI regenerated from
+ * GhostPayPolicyRouter with the salt argument and exercised on anvil (see DEVIATIONS.md S6).
  */
 export function buildPolicyPaymentTx(input: PolicyPaymentInput): PolicyPayment {
   const router = nonZeroAddr(input.router, 'router');
@@ -100,12 +102,12 @@ export function buildPolicyPaymentTx(input: PolicyPaymentInput): PolicyPayment {
   if (input.now !== undefined && deadline <= input.now) return fail('INVALID_INPUT', 'deadline already passed');
   if (input.permitSignature !== undefined && input.buffer !== undefined) return fail('INVALID_INPUT', 'permit and buffer are mutually exclusive');
   const eph = bytesToHex(parseCompressedPoint(input.payment.ephemeralPublicKey));
-  const policy = { owner, policyHash };
+  const salt = accountSalt(owner, policyHash);
 
   if (input.token === 'native') {
     if (input.permitSignature !== undefined || input.buffer !== undefined) return fail('INVALID_INPUT', 'native payments take no permit or buffer');
     const metadata = bytesToHex(buildNativeMetadata(input.payment.viewTag, net));
-    const data = encodeFunctionData({ abi: ghostPayPolicyRouterAbi, functionName: 'payNative', args: [stealth, policy, minNet, deadline, eph, metadata] });
+    const data = encodeFunctionData({ abi: ghostPayPolicyRouterAbi, functionName: 'payNative', args: [stealth, salt, minNet, deadline, eph, metadata] });
     return Object.freeze({ method: 'payNative', tx: Object.freeze({ to: router, data, value: gross }), fee, net, metadata });
   }
   const token = nonZeroAddr(input.token, 'token');
@@ -121,7 +123,7 @@ export function buildPolicyPaymentTx(input: PolicyPaymentInput): PolicyPayment {
     const data = encodeFunctionData({
       abi: ghostPayPolicyRouterAbi,
       functionName: 'payERC20WithPermit',
-      args: [token, stealth, policy, gross, minNet, deadline, eph, metadata, permit],
+      args: [token, stealth, salt, gross, minNet, deadline, eph, metadata, permit],
     });
     return Object.freeze({ method: 'payERC20WithPermit', tx: Object.freeze({ to: router, data, value: 0n }), fee, net, metadata });
   }
@@ -132,11 +134,11 @@ export function buildPolicyPaymentTx(input: PolicyPaymentInput): PolicyPayment {
     const data = encodeFunctionData({
       abi: ghostPayPolicyRouterAbi,
       functionName: 'payERC20WithBuffer',
-      args: [token, stealth, policy, gross, minNet, deadline, maxBufferWei, eph, metadata],
+      args: [token, stealth, salt, gross, minNet, deadline, maxBufferWei, eph, metadata],
     });
     return Object.freeze({ method: 'payERC20WithBuffer', tx: Object.freeze({ to: router, data, value: bufferWei }), fee, net, metadata });
   }
-  const data = encodeFunctionData({ abi: ghostPayPolicyRouterAbi, functionName: 'payERC20', args: [token, stealth, policy, gross, minNet, deadline, eph, metadata] });
+  const data = encodeFunctionData({ abi: ghostPayPolicyRouterAbi, functionName: 'payERC20', args: [token, stealth, salt, gross, minNet, deadline, eph, metadata] });
   return Object.freeze({ method: 'payERC20', tx: Object.freeze({ to: router, data, value: 0n }), fee, net, metadata });
 }
 
@@ -144,22 +146,30 @@ export function buildPolicyPaymentTx(input: PolicyPaymentInput): PolicyPayment {
 export interface DecodedPolicyPayment {
   readonly method: PolicyRouterMethod;
   readonly stealth: Address;
-  readonly owner: Address;
-  readonly policyHash: Hex;
+  /** Per-payment CREATE2 salt `keccak256(abi.encode(owner, policyHash))`. */
+  readonly salt: Hex;
   readonly ephemeralPublicKey: Hex;
   readonly metadata: Hex;
+}
+
+/** Expected account inputs for {@link decodePolicyPaymentCalldata}. */
+export interface ExpectedPolicyRef {
+  readonly owner: Address;
+  readonly policyHash: Hex;
 }
 
 /**
  * Decodes policy-router calldata and re-checks the policy binding.
  *
  * @param data Calldata.
- * @param deployment Factory and implementation; `stealth` must equal the predicted account.
+ * @param deployment Factory and implementation; `stealth` must equal the account predicted from the salt.
+ * @param expected When given, the salt must equal `accountSalt(expected.owner, expected.policyHash)`.
  * @returns Method and the scheme-2 fields.
- * @throws {PolicySchemeError} `INVALID_INPUT` on unknown calldata or a stealth/policy mismatch.
- * @security Use before showing a wallet prompt: a tampered `stealth` or `owner` is detected here.
+ * @throws {PolicySchemeError} `INVALID_INPUT` on unknown calldata or a stealth/salt mismatch.
+ * @security Use before showing a wallet prompt: a tampered `stealth` or salt is detected here; pass
+ * `expected` (from the payee's meta-address and the payer's derivation) to also bind owner and policy.
  */
-export function decodePolicyPaymentCalldata(data: Hex, deployment: PolicyDeployment): DecodedPolicyPayment {
+export function decodePolicyPaymentCalldata(data: Hex, deployment: PolicyDeployment, expected?: ExpectedPolicyRef): DecodedPolicyPayment {
   let d: ReturnType<typeof decodeFunctionData<typeof ghostPayPolicyRouterAbi>>;
   try {
     d = decodeFunctionData({ abi: ghostPayPolicyRouterAbi, data: hexBytes(data, 'data') });
@@ -172,15 +182,17 @@ export function decodePolicyPaymentCalldata(data: Hex, deployment: PolicyDeploym
   const a = d.args as readonly unknown[];
   const native = method === 'payNative';
   const stealth = (native ? a[0] : a[1]) as Address;
-  const policy = (native ? a[1] : a[2]) as { owner: Address; policyHash: Hex };
-  if (predictAccountAddress(deployment, policy.owner, policy.policyHash) !== stealth) {
+  const salt = (native ? a[1] : a[2]) as Hex;
+  if (predictAccountAddressFromSalt(deployment, salt) !== stealth) {
     return fail('INVALID_INPUT', 'stealth is not the policy account');
+  }
+  if (expected !== undefined && accountSalt(nonZeroAddr(expected.owner, 'owner'), expected.policyHash) !== salt) {
+    return fail('INVALID_INPUT', 'salt does not match the expected owner and policy');
   }
   return Object.freeze({
     method: method as PolicyRouterMethod,
     stealth,
-    owner: policy.owner,
-    policyHash: policy.policyHash,
+    salt,
     ephemeralPublicKey: a[ephIdx] as Hex,
     metadata: a[ephIdx + 1] as Hex,
   });

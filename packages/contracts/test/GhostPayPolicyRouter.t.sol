@@ -163,11 +163,13 @@ contract GhostPayPolicyRouterTest is PolicyRouterBase {
         assertEq(policyHash, factory.policyHashOf(destination, DELAY, bytes32(0)));
     }
 
-    function test_policy_revertsZeroOwner() public {
+    /// @dev The router only sees the salt, so it cannot tell that its pre-image has a zero owner (an
+    /// account the factory can never deploy). Clients must refuse a zero owner (policy-scheme does);
+    /// this test pins the documented behaviour (DEVIATIONS R10).
+    function test_policy_zeroOwnerSaltNotDetectable() public {
         uint256 net = GROSS - _fee(GROSS);
         address zeroOwnerAcct = factory.predictAddress(address(0), policyHash);
         vm.prank(alice);
-        vm.expectRevert(IGhostPayPolicyRouter.ZeroAddress.selector);
         router.payERC20(
             IERC20(address(token)),
             zeroOwnerAcct,
@@ -178,6 +180,88 @@ contract GhostPayPolicyRouterTest is PolicyRouterBase {
             _eph(),
             _erc20Meta(address(token), net)
         );
+        assertEq(token.balanceOf(zeroOwnerAcct), net);
+    }
+
+    /// @dev Round-3 audit N-01 regression: two payments to the same seller (same policyHash, two
+    /// per-payment owners) carry no seller-constant word. The policyHash appears nowhere in either
+    /// calldata, the salts differ, and each salt is accepted only for its own account.
+    function test_policy_calldataDoesNotLinkPaymentsToSeller() public {
+        address ownerA = makeAddr("stealthOwnerA");
+        address ownerB = makeAddr("stealthOwnerB");
+        address acctA = _predict(ownerA, policyHash);
+        address acctB = _predict(ownerB, policyHash);
+        uint256 net = GROSS - _fee(GROSS);
+        bytes memory cdA = abi.encodeCall(
+            router.payERC20,
+            (
+                IERC20(address(token)),
+                acctA,
+                _ref(ownerA, policyHash),
+                GROSS,
+                net,
+                deadline,
+                _eph(),
+                _erc20Meta(address(token), net)
+            )
+        );
+        bytes memory cdB = abi.encodeCall(
+            router.payERC20,
+            (
+                IERC20(address(token)),
+                acctB,
+                _ref(ownerB, policyHash),
+                GROSS,
+                net,
+                deadline,
+                _eph(),
+                _erc20Meta(address(token), net)
+            )
+        );
+        vm.startPrank(alice);
+        (bool okA,) = address(router).call(cdA);
+        (bool okB,) = address(router).call(cdB);
+        vm.stopPrank();
+        assertTrue(okA && okB, "both payments succeed");
+        assertFalse(_containsWord(cdA, policyHash), "policyHash absent from calldata A");
+        assertFalse(_containsWord(cdB, policyHash), "policyHash absent from calldata B");
+        // Head word 2 is the salt: per-payment, so not a linking value.
+        assertTrue(_word(cdA, 2) != _word(cdB, 2), "salts differ");
+        // Cross-using a salt is rejected.
+        vm.prank(alice);
+        vm.expectRevert(
+            abi.encodeWithSelector(IGhostPayPolicyRouter.NotPolicyAccount.selector, acctB)
+        );
+        router.payERC20(
+            IERC20(address(token)),
+            acctA,
+            _ref(ownerB, policyHash),
+            GROSS,
+            net,
+            deadline,
+            _eph(),
+            _erc20Meta(address(token), net)
+        );
+    }
+
+    /// @dev True if `w` occurs at any byte offset of `data`.
+    function _containsWord(bytes memory data, bytes32 w) internal pure returns (bool) {
+        if (data.length < 32) return false;
+        for (uint256 i; i <= data.length - 32; i++) {
+            bytes32 x;
+            assembly {
+                x := mload(add(add(data, 32), i))
+            }
+            if (x == w) return true;
+        }
+        return false;
+    }
+
+    /// @dev Head word `i` of ABI calldata (after the selector).
+    function _word(bytes memory cd, uint256 i) internal pure returns (bytes32 w) {
+        assembly {
+            w := mload(add(add(cd, 36), mul(i, 32)))
+        }
     }
 
     function test_policy_revertsArbitraryStealth() public {
@@ -843,7 +927,11 @@ contract GhostPayPolicyRouterTest is PolicyRouterBase {
             _noPermit()
         );
         vm.prank(alice);
-        vm.expectRevert(IGhostPayPolicyRouter.ZeroAddress.selector);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IGhostPayPolicyRouter.NotPolicyAccount.selector, _predict(address(0), policyHash)
+            )
+        );
         router.payERC20WithPermit(
             IERC20(address(token)),
             stealth,
@@ -920,7 +1008,11 @@ contract GhostPayPolicyRouterTest is PolicyRouterBase {
         );
         router.payNative{value: 1 ether}(alice, _ref(), 0, deadline, _eph(), _nativeMeta(0));
         vm.prank(alice);
-        vm.expectRevert(IGhostPayPolicyRouter.ZeroAddress.selector);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IGhostPayPolicyRouter.NotPolicyAccount.selector, _predict(address(0), policyHash)
+            )
+        );
         router.payNative{value: 1 ether}(
             stealth, _ref(address(0), policyHash), 0, deadline, _eph(), _nativeMeta(0)
         );
@@ -1113,7 +1205,7 @@ contract GhostPayPolicyRouterTest is PolicyRouterBase {
     }
 
     function test_schemeOneSelectorsAreNotAccepted() public {
-        // The scheme-1 ABI (no PolicyRef) hits the reverting fallback, never a payment.
+        // The scheme-1 ABI (no salt) hits the reverting fallback, never a payment.
         uint256 net = GROSS - _fee(GROSS);
         vm.prank(alice);
         (bool ok, bytes memory ret) = address(router)
@@ -1157,28 +1249,26 @@ contract GhostPayPolicyRouterTest is PolicyRouterBase {
         assertEq(
             GhostPayPolicyRouter.payERC20.selector,
             bytes4(
-                keccak256(
-                    "payERC20(address,address,(address,bytes32),uint256,uint256,uint256,bytes,bytes)"
-                )
+                keccak256("payERC20(address,address,bytes32,uint256,uint256,uint256,bytes,bytes)")
             )
         );
         assertEq(
             GhostPayPolicyRouter.payERC20WithPermit.selector,
             bytes4(
                 keccak256(
-                    "payERC20WithPermit(address,address,(address,bytes32),uint256,uint256,uint256,bytes,bytes,(uint8,bytes32,bytes32))"
+                    "payERC20WithPermit(address,address,bytes32,uint256,uint256,uint256,bytes,bytes,(uint8,bytes32,bytes32))"
                 )
             )
         );
         assertEq(
             GhostPayPolicyRouter.payNative.selector,
-            bytes4(keccak256("payNative(address,(address,bytes32),uint256,uint256,bytes,bytes)"))
+            bytes4(keccak256("payNative(address,bytes32,uint256,uint256,bytes,bytes)"))
         );
         assertEq(
             GhostPayPolicyRouter.payERC20WithBuffer.selector,
             bytes4(
                 keccak256(
-                    "payERC20WithBuffer(address,address,(address,bytes32),uint256,uint256,uint256,uint256,bytes,bytes)"
+                    "payERC20WithBuffer(address,address,bytes32,uint256,uint256,uint256,uint256,bytes,bytes)"
                 )
             )
         );

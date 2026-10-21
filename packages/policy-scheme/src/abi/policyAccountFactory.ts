@@ -205,6 +205,19 @@ export const policyAccountFactoryAbi = [
     "anonymous": false
   },
   {
+    "type": "event",
+    "name": "FeeWaived",
+    "inputs": [
+      {
+        "name": "account",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
     "type": "error",
     "name": "AlreadyDeployed",
     "inputs": [
@@ -229,6 +242,11 @@ export const policyAccountFactoryAbi = [
   {
     "type": "error",
     "name": "FailedDeployment",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "FeeTransferFailed",
     "inputs": []
   },
   {
@@ -261,17 +279,6 @@ export const policyAccountFactoryAbi = [
     "type": "error",
     "name": "ReentrancyGuardReentrantCall",
     "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "SafeERC20FailedOperation",
-    "inputs": [
-      {
-        "name": "token",
-        "type": "address",
-        "internalType": "address"
-      }
-    ]
   },
   {
     "type": "error",

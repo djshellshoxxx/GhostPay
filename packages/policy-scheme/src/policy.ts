@@ -131,9 +131,26 @@ export function cloneInitCodeHash(implementation: Address): Hex {
  * @testVector policy-scheme.accounts
  */
 export function predictAccountAddress(deployment: PolicyDeployment, owner: Address, policyHash: Hex): Address {
+  return predictAccountAddressFromSalt(deployment, accountSalt(nonZeroAddr(owner, 'owner'), policyHash));
+}
+
+/**
+ * Predicts the account address from its CREATE2 salt, as `GhostPayPolicyRouter` checks it.
+ *
+ * @remarks `address(keccak256(0xff ++ factory ++ salt ++ keccak256(cloneInitCode(implementation)))[12:])`.
+ * The router receives only the salt (round-3 audit N-01), so it cannot see the owner or policy hash.
+ *
+ * @param deployment Factory and implementation of the chain.
+ * @param salt {@link accountSalt} output.
+ * @returns EIP-55 account address.
+ * @throws {PolicySchemeError} `INVALID_ADDRESS`, `INVALID_HEX`.
+ * @security Public data. A salt with a zero owner maps to an address no factory can deploy; build salts
+ * with {@link accountSalt} from a validated owner only.
+ * @testVector policy-scheme.accounts
+ */
+export function predictAccountAddressFromSalt(deployment: PolicyDeployment, salt: Hex): Address {
   const factory = nonZeroAddr(deployment.factory, 'factory');
   const initHash = cloneInitCodeHash(deployment.implementation);
-  const salt = accountSalt(nonZeroAddr(owner, 'owner'), policyHash);
-  const digest = keccak256(concatHex(['0xff', factory, salt, initHash]));
+  const digest = keccak256(concatHex(['0xff', factory, bytes32(salt, 'salt'), initHash]));
   return getAddress(`0x${digest.slice(26)}`);
 }

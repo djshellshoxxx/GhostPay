@@ -16,6 +16,7 @@ export {
   accountSalt,
   cloneInitCodeHash,
   predictAccountAddress,
+  predictAccountAddressFromSalt,
   CLONE_PREFIX,
   CLONE_SUFFIX,
   type Policy,
@@ -102,5 +103,6 @@ export {
   type PolicyPayment,
   type PolicyRouterMethod,
   type DecodedPolicyPayment,
+  type ExpectedPolicyRef,
 } from './router.js';
 export { ghostPayPolicyRouterAbi } from './abi/policyRouter.js';

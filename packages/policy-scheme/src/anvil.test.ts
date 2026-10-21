@@ -17,6 +17,7 @@ import {
   decodePolicyPaymentCalldata,
   deriveScheme2OwnerKey,
   deriveScheme2Payment,
+  accountSalt,
   buildCancelWithdrawTypedData,
   buildLimitsTree,
   buildProposeDestinationTypedData,
@@ -295,7 +296,7 @@ describe.skipIf(!available)('policy-scheme anvil cross-check (real PolicyAccount
     expect(await bal(pay.accountAddress)).toBe(erc.net);
     expect(await bal(FEE_RECIPIENT)).toBe(erc.fee);
     // Router rejects a stealth address that is not the policy account of (owner, policyHash).
-    const bad = encodeFunctionData({ abi: ghostPayPolicyRouterAbi, functionName: 'payNative', args: [a.policy.destination, { owner: pay.ownerAddress, policyHash: a.policyHash }, 1n, now + 600n, `0x${bytesToHex(pay.ephemeralPublicKey)}`, native.metadata] });
+    const bad = encodeFunctionData({ abi: ghostPayPolicyRouterAbi, functionName: 'payNative', args: [a.policy.destination, accountSalt(pay.ownerAddress, a.policyHash), 1n, now + 600n, `0x${bytesToHex(pay.ephemeralPublicKey)}`, native.metadata] });
     expect(await send({ to: router, data: `0x${bad.slice(2)}`, value: 10n ** 16n })).toBe('reverted');
 
     // Recover the owner key, deploy the account, withdraw the ERC-20 (tree-1 has only a native leaf,

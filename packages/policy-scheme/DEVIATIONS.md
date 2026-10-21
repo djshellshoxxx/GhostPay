@@ -14,12 +14,15 @@ Choices where the spec is silent. The lead should confirm or reject each.
 - **S4. The scanner accepts a list of policy hashes** so one viewing key can serve several published policies.
 - **S5. Test-vector deployment** is chain 31337 with factory/implementation at `CREATE(deployer, 1/0)` of a public test key; the anvil
   test reproduces exactly those addresses. There are no vectors for any real chain or deployed factory.
-- **S6. Router builders** use the `GhostPayPolicyRouter` ABI generated from commit `2058a57` (`PolicyRef(owner, policyHash)` argument,
-  scheme id `0x47500002`). The fee rule (`floor(gross * 25 / 10000)`) is mirrored, not read from the chain.
+- **S6. Router builders** use the `GhostPayPolicyRouter` ABI regenerated after the round-3 audit fix N-01 (contracts DEVIATIONS R10): each payment passes
+  the per-payment CREATE2 salt `accountSalt(owner, policyHash)` instead of `PolicyRef(owner, policyHash)`, so the seller-constant policy hash never appears in calldata.
+  The builder still requires and checks `owner` (non-zero) and `policyHash`, because the router can no longer see them. `decodePolicyPaymentCalldata` returns `salt` (not `owner`/`policyHash`), checks
+  `stealth` against `predictAccountAddressFromSalt`, and takes an optional `expected {owner, policyHash}` to bind the salt. Scheme id `0x47500002`. The fee rule
+  (`floor(gross * 25 / 10000)`) is mirrored, not read from the chain.
 
 ## Not verified
 
 - Nothing ran against a public network, a hardware wallet or a wallet's `eth_signTypedData_v4` UI (only noble/viem signers).
 - The merkle layout matches `@openzeppelin/merkle-tree`'s StandardMerkleTree algorithm by construction, but that library is not a
   dependency and was not run; on-chain `MerkleProof` acceptance was checked for the 1-, 2- and 5-leaf vector trees only.
-- No independent review or audit of this package; the scheme remains experimental (ADR-0014: no recovery path, M-03 fee-token freeze).
+- No independent review or audit of this package; the scheme remains experimental (ADR-0014: no recovery path; M-03 fee-token freeze mitigated by the factory fee waiver, contracts DEVIATIONS R11).

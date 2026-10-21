@@ -90,6 +90,9 @@ Fixed in code: L-01 (native sends use an assembly `call` that copies no return d
 I-02 (`PolicyAccountFactory.MIN_DELAY = 1 hours`), L-06 (deploy scripts, see "Deploy"). See `DEVIATIONS.md` items A1-A6. Not fixable in-contract, and therefore
 documented here; the matching `test_EXPLOIT_*` tests keep asserting the residual behaviour:
 
+- **M-03 is mitigated in code (DEVIATIONS R11):** when the fee token refuses the fee transfer although the caller holds and has approved the flat fee, `PolicyAccountFactory.deploy`
+  waives the fee (`FeeWaived`), so counterfactual funds are no longer frozen by a blacklisted or paused fee recipient. A fee token that turns lossy still blocks deployment.
+  The text below still applies to M-01 (routers) in full.
 - **M-01 / M-03: the immutable fee recipient (and, for policy accounts, the fee token) is a single point of failure.** If the issuer blacklists or
   pauses `FEE_RECIPIENT` for the token (or the recipient cannot receive ETH), every router payment with a non-zero fee reverts (payments below 400 base units
   pay no fee and still work), and `PolicyAccountFactory.deploy` reverts, which freezes funds that were already sent to the not-yet-deployed counterfactual

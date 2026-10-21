@@ -11,10 +11,12 @@ import {IPolicyAccount} from "../src/interfaces/IPolicyAccount.sol";
 import {PolicyAccountFactory} from "../src/PolicyAccountFactory.sol";
 import {FeeOnTransferToken} from "./mocks/FeeOnTransferToken.sol";
 import {ReentrantToken} from "./mocks/ReentrantToken.sol";
+import {BlacklistToken} from "./mocks/BlacklistToken.sol";
 
 /// @notice Unit and fuzz tests of `PolicyAccountFactory`.
 contract PolicyAccountFactoryTest is PolicyBase {
     event AccountDeployed(address indexed account);
+    event FeeWaived(address indexed account);
 
     // ------------------------------------------------------------------ constructor
 
@@ -161,11 +163,89 @@ contract PolicyAccountFactoryTest is PolicyBase {
 
     function test_deploy_noAllowance_reverts() public {
         vm.prank(relayer);
-        vm.expectRevert();
+        vm.expectRevert(PolicyAccountFactory.FeeTransferFailed.selector);
         factory.deploy(owner, newDest, DELAY, root);
         assertEq(
             factory.predictAddress(owner, factory.policyHashOf(newDest, DELAY, root)).code.length, 0
         );
+    }
+
+    function test_deploy_allowanceWithoutBalance_reverts() public {
+        address poor = makeAddr("poor");
+        vm.prank(poor);
+        feeToken.approve(address(factory), type(uint256).max);
+        vm.prank(poor);
+        vm.expectRevert(PolicyAccountFactory.FeeTransferFailed.selector);
+        factory.deploy(owner, newDest, DELAY, root);
+    }
+
+    // ------------------------------------------------------------------ M-03 fee waiver
+
+    function _blacklistFactory() internal returns (BlacklistToken t, PolicyAccountFactory f) {
+        t = new BlacklistToken();
+        f = new PolicyAccountFactory(address(impl), address(t), FLAT_FEE, feeRecipient);
+        t.mint(payer, FLAT_FEE);
+        vm.prank(payer);
+        t.approve(address(f), type(uint256).max);
+    }
+
+    function test_deploy_feeRecipientBlacklisted_waivesFeeAndDeploys() public {
+        (BlacklistToken t, PolicyAccountFactory f) = _blacklistFactory();
+        t.setBlacklisted(feeRecipient, true);
+        address predicted = f.predictAddress(owner, f.policyHashOf(newDest, DELAY, root));
+        vm.expectEmit(true, false, false, false, address(f));
+        emit FeeWaived(predicted);
+        vm.expectEmit(true, false, false, false, address(f));
+        emit AccountDeployed(predicted);
+        vm.prank(payer);
+        address a = f.deploy(owner, newDest, DELAY, root);
+        assertEq(a, predicted);
+        assertEq(PolicyAccount(payable(a)).owner(), owner);
+        assertEq(t.balanceOf(payer), FLAT_FEE, "no fee taken");
+        assertEq(t.balanceOf(feeRecipient), 0);
+    }
+
+    function test_deploy_feeTokenRefusesButCallerCannotPay_reverts() public {
+        (BlacklistToken t, PolicyAccountFactory f) = _blacklistFactory();
+        t.setBlacklisted(feeRecipient, true);
+        address poor = makeAddr("poor");
+        vm.prank(poor);
+        t.approve(address(f), type(uint256).max);
+        vm.prank(poor);
+        vm.expectRevert(PolicyAccountFactory.FeeTransferFailed.selector);
+        f.deploy(owner, newDest, DELAY, root);
+    }
+
+    function test_deploy_happyPath_emitsNoFeeWaived() public {
+        (BlacklistToken t, PolicyAccountFactory f) = _blacklistFactory();
+        vm.recordLogs();
+        vm.prank(payer);
+        f.deploy(owner, newDest, DELAY, root);
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+        for (uint256 i; i < logs.length; i++) {
+            assertTrue(logs[i].topics[0] != FeeWaived.selector, "no waiver");
+        }
+        assertEq(t.balanceOf(feeRecipient), FLAT_FEE);
+    }
+
+    /// @dev Starving the fee transfer of gas must never yield a fee-free deployment: every gas limit
+    /// either reverts or charges the fee.
+    function test_deploy_gasStarvationCannotTriggerWaiver() public {
+        uint256 before = feeToken.balanceOf(feeRecipient);
+        uint256 deployed;
+        for (uint256 g = 30_000; g < 400_000; g += 1500) {
+            uint256 snap = vm.snapshotState();
+            vm.prank(payer);
+            (bool ok,) = address(factory).call{gas: g}(
+                abi.encodeCall(factory.deploy, (owner, newDest, DELAY, root))
+            );
+            if (ok) {
+                deployed++;
+                assertEq(feeToken.balanceOf(feeRecipient), before + FLAT_FEE, "fee charged");
+            }
+            vm.revertToState(snap);
+        }
+        assertGt(deployed, 0, "range reaches a successful deployment");
     }
 
     function test_deploy_feeOnTransferFeeToken_reverts() public {

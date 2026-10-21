@@ -6,20 +6,13 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 /// @title IGhostPayPolicyRouter
 /// @notice External interface, events and errors of the GhostPay scheme-2 (policy account) checkout router.
 /// @dev Same fee, checks and metadata layout as `IGhostPayRouter`, but every payment names the policy
-/// account's `(owner, policyHash)` and the router requires `stealth` to be the CREATE2 address that the
-/// immutable `PolicyAccountFactory` predicts for them. Announcements use scheme id `0x47500002`.
+/// account's CREATE2 `salt = keccak256(abi.encode(owner, policyHash))` and the router requires `stealth`
+/// to be the clone address the immutable `PolicyAccountFactory` creates for it. The salt is unique per
+/// payment, so unlike `policyHash` it does not link payments to a seller (round-3 audit N-01).
+/// Announcements use scheme id `0x47500002`.
 /// Error names (and therefore selectors) shared with `IGhostPayRouter` are identical.
 /// See docs/CONTRACTS_SPEC.md section 4 and audit 02 finding M-02.
 interface IGhostPayPolicyRouter {
-    /// @notice Identifies a policy account by the inputs of its CREATE2 address.
-    /// @param owner The account's stealth owner (`A_owner`), the EOA that signs for it.
-    /// @param policyHash `keccak256(abi.encode(destination, delaySeconds, limitsRoot))`, see
-    /// `PolicyAccountFactory.policyHashOf`.
-    struct PolicyRef {
-        address owner;
-        bytes32 policyHash;
-    }
-
     /// @notice ERC-2612 permit signature of the caller (grouped to keep the ABI decoder within stack limits).
     /// @param v Permit signature recovery id.
     /// @param r Permit signature r.
@@ -36,7 +29,7 @@ interface IGhostPayPolicyRouter {
     /// @param amount The fee amount in base units of `token`.
     event FeeCollected(address indexed token, uint256 amount);
 
-    /// @notice A required address (constructor argument, token or policy owner) was the zero address.
+    /// @notice A required address (constructor argument or token) was the zero address.
     error ZeroAddress();
     /// @notice The stealth address is zero, the router itself or the fee recipient.
     error InvalidStealth();
@@ -62,14 +55,15 @@ interface IGhostPayPolicyRouter {
     error NoDirectETH();
     /// @notice The factory passed to the constructor has no code.
     error FactoryHasNoCode();
-    /// @notice `stealth` is not the policy account address the factory predicts for `(owner, policyHash)`.
+    /// @notice `stealth` is not the policy account address the factory creates for `salt`.
     /// @param expected The address predicted by the factory.
     error NotPolicyAccount(address expected);
 
     /// @notice Pay an ERC-20 token to a policy account, taking the protocol fee. Requires prior allowance.
     /// @param token The ERC-20 token being paid.
     /// @param stealth The policy account (`A_acct`) receiving the net amount; may be undeployed.
-    /// @param policy The policy account's `(owner, policyHash)`; `stealth` must be its predicted address.
+    /// @param salt The account's CREATE2 salt `keccak256(abi.encode(owner, policyHash))`; `stealth` must
+    /// be the factory's clone address for it.
     /// @param gross Total amount pulled from the caller, in base units.
     /// @param minNet Minimum acceptable net amount (`gross - fee`).
     /// @param deadline Last timestamp (inclusive) at which the call is valid.
@@ -78,7 +72,7 @@ interface IGhostPayPolicyRouter {
     function payERC20(
         IERC20 token,
         address stealth,
-        PolicyRef calldata policy,
+        bytes32 salt,
         uint256 gross,
         uint256 minNet,
         uint256 deadline,
@@ -91,7 +85,8 @@ interface IGhostPayPolicyRouter {
     /// allowance is then insufficient the token transfer reverts.
     /// @param token The ERC-20 token being paid (must implement ERC-2612).
     /// @param stealth The policy account (`A_acct`) receiving the net amount; may be undeployed.
-    /// @param policy The policy account's `(owner, policyHash)`; `stealth` must be its predicted address.
+    /// @param salt The account's CREATE2 salt `keccak256(abi.encode(owner, policyHash))`; `stealth` must
+    /// be the factory's clone address for it.
     /// @param gross Total amount pulled from the caller, also the permit value.
     /// @param minNet Minimum acceptable net amount (`gross - fee`).
     /// @param deadline Last timestamp (inclusive) for the payment and the permit.
@@ -101,7 +96,7 @@ interface IGhostPayPolicyRouter {
     function payERC20WithPermit(
         IERC20 token,
         address stealth,
-        PolicyRef calldata policy,
+        bytes32 salt,
         uint256 gross,
         uint256 minNet,
         uint256 deadline,
@@ -112,14 +107,15 @@ interface IGhostPayPolicyRouter {
 
     /// @notice Pay the native asset to a policy account, taking the protocol fee. `gross = msg.value`.
     /// @param stealth The policy account (`A_acct`) receiving the net amount; may be undeployed.
-    /// @param policy The policy account's `(owner, policyHash)`; `stealth` must be its predicted address.
+    /// @param salt The account's CREATE2 salt `keccak256(abi.encode(owner, policyHash))`; `stealth` must
+    /// be the factory's clone address for it.
     /// @param minNet Minimum acceptable net amount (`msg.value - fee`).
     /// @param deadline Last timestamp (inclusive) at which the call is valid.
     /// @param ephemeralPubKey 33-byte compressed ephemeral public key announced to the recipient.
     /// @param metadata 57-byte announcement metadata: view tag, `0xeeeeeeee`, native sentinel, net amount.
     function payNative(
         address stealth,
-        PolicyRef calldata policy,
+        bytes32 salt,
         uint256 minNet,
         uint256 deadline,
         bytes calldata ephemeralPubKey,
@@ -129,7 +125,8 @@ interface IGhostPayPolicyRouter {
     /// @notice Pay an ERC-20 token like {payERC20} and forward `msg.value` (a gas buffer, no fee) to `stealth`.
     /// @param token The ERC-20 token being paid.
     /// @param stealth The policy account (`A_acct`) receiving the net amount and the buffer.
-    /// @param policy The policy account's `(owner, policyHash)`; `stealth` must be its predicted address.
+    /// @param salt The account's CREATE2 salt `keccak256(abi.encode(owner, policyHash))`; `stealth` must
+    /// be the factory's clone address for it.
     /// @param gross Total token amount pulled from the caller.
     /// @param minNet Minimum acceptable net token amount.
     /// @param deadline Last timestamp (inclusive) at which the call is valid.
@@ -139,7 +136,7 @@ interface IGhostPayPolicyRouter {
     function payERC20WithBuffer(
         IERC20 token,
         address stealth,
-        PolicyRef calldata policy,
+        bytes32 salt,
         uint256 gross,
         uint256 minNet,
         uint256 deadline,

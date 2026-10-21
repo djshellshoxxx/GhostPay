@@ -200,3 +200,45 @@ argument on `GhostPayRouter` (the audit's other option) so the audited scheme-1 
   optional `EXPECTED_POLICY_FACTORY_CODEHASH`), the `Deploy` announcer rules duplicated (`ANNOUNCER`, `ALLOW_CUSTOM_ANNOUNCER=1`, `EXPECTED_ANNOUNCER_CODEHASH`) because they live in
   `Deploy` rather than `DeployBase`, chain allowlist, and read-back of every immutable plus `SCHEME_ID`. The `deployments/schema.json` manifest has no `policyRouter` field yet (not changed here).
   `.gas-snapshot` gained the new non-fuzz tests only (merged, sorted).
+
+# Round-3 audit remediation (docs/remote/audit-parts/contracts.md)
+
+- **R10. N-01: the policy router takes the per-payment CREATE2 `salt`, not `PolicyRef(owner, policyHash)`.** *Public ABI change of the
+  (experimental, not yet deployed) scheme-2 router.* Every payment used to carry the seller-constant `policyHash` in plaintext calldata, which linked all
+  payments to the seller's public scheme-2 meta-address (and, with `limitsRoot == 0`, revealed the destination by brute force over the delay range).
+  The struct is removed and each entry point takes `bytes32 salt` in its place, where `salt = keccak256(abi.encode(owner, policyHash))`; it is unique per payment
+  because `owner` is. The router checks `stealth == Clones.predictDeterministicAddress(IMPLEMENTATION, salt, FACTORY)`, with `IMPLEMENTATION = FACTORY.IMPLEMENTATION()`
+  cached as a private immutable in the constructor, so there is no external call per payment any more. The salt reveals nothing the address does not:
+  it is the CREATE2 pre-image of the address, and its own pre-image contains the stealth owner, which stays secret until it signs. New signatures:
+  `payERC20(address,address,bytes32,uint256,uint256,uint256,bytes,bytes)`, `payERC20WithPermit(address,address,bytes32,uint256,uint256,uint256,bytes,bytes,(uint8,bytes32,bytes32))`,
+  `payNative(address,bytes32,uint256,uint256,bytes,bytes)`, `payERC20WithBuffer(address,address,bytes32,uint256,uint256,uint256,uint256,bytes,bytes)` (supersedes R3's list).
+  Consequences: (a) the router can no longer reject a zero `owner` (R2): it sees only the salt. An account with a zero owner can never be deployed, so funds paid to it are stuck,
+  as with any wrong stealth address. `@ghostpay/policy-scheme` refuses a zero owner before it builds the salt. `test_policy_zeroOwnerSaltNotDetectable` pins this.
+  (b) R4's check order is unchanged (binding first); a zero-owner salt for another account now reports `NotPolicyAccount(expected)` instead of `ZeroAddress`.
+  (c) R5 still applies. Regression: `test_policy_calldataDoesNotLinkPaymentsToSeller` (the policyHash appears at no byte offset of two same-seller calldatas,
+  their salts differ, and a cross-used salt is rejected) and the policy-scheme unit test "calldata never carries the seller-constant policyHash".
+  **Residual (inherent, documented):** `PolicyAccountFactory.deploy(owner, destination, delay, limitsRoot)` calldata publishes the full policy pre-image. The first
+  deployment of any of a seller's accounts therefore reveals the `policyHash` (and the destination) of that meta-address, and links every *deployed* account of the
+  seller from then on (the `PolicyAccount.policyHash()` getter is public anyway). Undeployed, router-paid accounts stay unlinkable. CONTRACTS_SPEC section 4's
+  "does not reveal the destination" holds only before any deployment and only with a high-entropy `limitsRoot`: with `limitsRoot == 0` a candidate
+  destination is confirmed from the `policyHash` (which the meta-address carries) by trying the factory's 1 h .. 30 d delay range.
+- **R11. M-03: fee waiver in `PolicyAccountFactory.deploy`.** The fee is now pulled with `SafeERC20.trySafeTransferFrom`. If the transfer fails although
+  `balanceOf(msg.sender) >= FLAT_FEE` and `allowance(msg.sender, factory) >= FLAT_FEE`, the failure is attributable to the fee token or the recipient (issuer blacklist or pause of
+  `FEE_RECIPIENT`, token paused), and the account is deployed **without** the fee: new event `FeeWaived(address indexed account)`, emitted before `AccountDeployed`.
+  If either the balance or the allowance is short, it reverts with the new error `FeeTransferFailed()`. Previously that case bubbled the token's own error. A transfer that succeeds with a wrong recipient delta
+  still reverts `UnexpectedFeeDelta`, so a token upgraded to fee-on-transfer still freezes deployments. That case is not fixable without trusting the token. Gas starvation cannot buy a waiver:
+  after an out-of-gas fee call only 1/64 of the gas remains, far less than the clone and initialisation need (`test_deploy_gasStarvationCannotTriggerWaiver` sweeps gas
+  limits and asserts that every successful deployment paid). Accepted edge: a caller that the token itself blacklists, but that holds balance and allowance, deploys fee-free (a USD 3 loss
+  per account). This changes CONTRACTS_SPEC section 4's "pulls `flatFee`" into "pulls `flatFee`, or waives it when the token refuses a caller who can pay"; the spec line is updated.
+  The P7 order is unchanged: `AlreadyDeployed` is checked before any fee. The audit test `test_EXPLOIT_feeTokenBlacklistFreezesCounterfactualAccounts` became the regression test
+  `test_feeTokenBlacklistNoLongerFreezesCounterfactualAccounts`. Happy-path `deploy` costs about 230 more gas.
+- **R12. M-01 (fee recipient SPOF in both routers): not changed.** Any in-router waiver breaks the spec section 5 invariant `fee + net == gross`, which is pinned. A waiver would either
+  leave the fee with the payer, or forward it to the stealth address, which breaks the metadata `net` binding. A pull-vault breaks "the router never keeps funds".
+  Both need an owner decision. The operational mitigations stay in README "Audit follow-ups". The `test_EXPLOIT_feeRecipient*` tests keep asserting the residual behaviour.
+- **R13. Info items, documented only.** N-02: pending withdrawal requests never expire and pay the destination current at execution time (P3). An expiry
+  (`executeBefore`, or a signed execute deadline) would change the `Withdraw` typehash pinned in CONTRACTS_SPEC section 4 and P3's semantics, so it is not implemented.
+  Clients must list pending `WithdrawRequested` ids that are not yet executed or cancelled, and offer to cancel them before any destination change and after a suspected key leak.
+  N-03: `deploy` can be front-run with identical arguments; the victim's call reverts `AlreadyDeployed(predicted)` before any fee is taken, and clients must treat that
+  revert (or `code.length != 0`) as success. N-04: on chains whose native coin has an ERC-20 alias (for example Celo's `GoldToken`), a limits tree must not contain both
+  `address(0)` and the alias, because that would double the cap. N-05: scheme id `0x47500002` and factory-clone recipients shrink the anonymity set to scheme-2 users (inherent).
+

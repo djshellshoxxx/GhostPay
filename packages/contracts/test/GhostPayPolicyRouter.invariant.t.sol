@@ -88,14 +88,11 @@ contract PolicyRouterHandler is Test {
         return outsiders.length;
     }
 
-    function _ref(uint256 seed)
-        internal
-        view
-        returns (IGhostPayPolicyRouter.PolicyRef memory r, address acct)
-    {
-        r.owner = owners[seed % owners.length];
-        r.policyHash = hashes[(seed / owners.length) % hashes.length];
-        acct = FACTORY.predictAddress(r.owner, r.policyHash);
+    function _ref(uint256 seed) internal view returns (bytes32 r, address acct) {
+        address o = owners[seed % owners.length];
+        bytes32 h = hashes[(seed / owners.length) % hashes.length];
+        r = keccak256(abi.encode(o, h));
+        acct = FACTORY.predictAddress(o, h);
     }
 
     function _meta(address asset, uint256 net, bool native) internal pure returns (bytes memory) {
@@ -112,7 +109,7 @@ contract PolicyRouterHandler is Test {
         external
     {
         address t = tokens[tokenSeed % tokens.length];
-        (IGhostPayPolicyRouter.PolicyRef memory r, address acct) = _ref(refSeed);
+        (bytes32 r, address acct) = _ref(refSeed);
         gross = bound(gross, 1, 1e30);
         uint256 fee = gross * 25 / 10_000;
         uint256 net = gross - fee;
@@ -133,7 +130,7 @@ contract PolicyRouterHandler is Test {
         uint256 crossSeed,
         uint256 gross
     ) external {
-        (IGhostPayPolicyRouter.PolicyRef memory r,) = _ref(refSeed);
+        (bytes32 r, address acct) = _ref(refSeed);
         // Either an outsider or another valid account that does not match `r`.
         address target;
         if (crossSeed % 2 == 0) {
@@ -141,7 +138,7 @@ contract PolicyRouterHandler is Test {
         } else {
             (, target) = _ref(refSeed + 1 + outsiderSeed % 8);
         }
-        if (target == FACTORY.predictAddress(r.owner, r.policyHash)) return;
+        if (target == acct) return;
         gross = bound(gross, 1, 1000 ether);
         uint256 net = gross - gross * 25 / 10_000;
         address t = tokens[0];
@@ -160,7 +157,7 @@ contract PolicyRouterHandler is Test {
     }
 
     function payNative(uint256 payerSeed, uint256 refSeed, uint256 gross) external {
-        (IGhostPayPolicyRouter.PolicyRef memory r, address acct) = _ref(refSeed);
+        (bytes32 r, address acct) = _ref(refSeed);
         gross = bound(gross, 1, 1000 ether);
         uint256 fee = gross * 25 / 10_000;
         uint256 net = gross - fee;
@@ -176,7 +173,7 @@ contract PolicyRouterHandler is Test {
 
     function payBuffer(uint256 tokenSeed, uint256 refSeed, uint256 gross, uint256 buffer) external {
         address t = tokens[tokenSeed % tokens.length];
-        (IGhostPayPolicyRouter.PolicyRef memory r, address acct) = _ref(refSeed);
+        (bytes32 r, address acct) = _ref(refSeed);
         gross = bound(gross, 1, 1e30);
         buffer = bound(buffer, 1, 10 ether);
         uint256 net = gross - gross * 25 / 10_000;
@@ -195,10 +192,13 @@ contract PolicyRouterHandler is Test {
 
     /// @dev Deploys a paid-to account mid-run: payments must keep working once it has code.
     function deployAccount(uint256 refSeed) external {
-        (IGhostPayPolicyRouter.PolicyRef memory r, address acct) = _ref(refSeed);
+        (, address acct) = _ref(refSeed);
         if (acct.code.length != 0) return;
         address d = dests[(refSeed / owners.length) % hashes.length];
-        require(FACTORY.deploy(r.owner, d, 1 days, bytes32(0)) == acct, "predicted");
+        require(
+            FACTORY.deploy(owners[refSeed % owners.length], d, 1 days, bytes32(0)) == acct,
+            "predicted"
+        );
     }
 
     function warpTime(uint256 dt) external {

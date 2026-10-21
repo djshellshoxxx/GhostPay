@@ -376,9 +376,10 @@ contract PolicyAuditTest is PolicyBase {
         assertEq(address(bomb).balance, 1 ether);
     }
 
-    /// @dev Counterfactual funds depend on the factory being able to deploy. If the fee token blacklists/pauses the
-    /// immutable FEE_RECIPIENT, nobody can deploy the account any more and funds sent to its address are frozen.
-    function test_EXPLOIT_feeTokenBlacklistFreezesCounterfactualAccounts() public {
+    /// @dev M-03 regression. Counterfactual funds depend on the factory being able to deploy. If the fee token
+    /// blacklists/pauses the immutable FEE_RECIPIENT, the factory now waives the fee for a caller that could pay
+    /// (balance and allowance cover it), so the account is still deployable and its funds reachable.
+    function test_feeTokenBlacklistNoLongerFreezesCounterfactualAccounts() public {
         BlacklistToken usdc = new BlacklistToken();
         PolicyAccountFactory f =
             new PolicyAccountFactory(address(impl), address(usdc), 3e6, feeRecipient);
@@ -391,9 +392,11 @@ contract PolicyAuditTest is PolicyBase {
         usdc.approve(address(f), type(uint256).max);
         usdc.setBlacklisted(feeRecipient, true); // issuer action
         vm.prank(payer);
-        vm.expectRevert(abi.encodeWithSelector(BlacklistToken.Blacklisted.selector, feeRecipient));
-        f.deploy(o2, destination, 1 days, bytes32(0));
-        // No other path can create code at `predicted`: funds are frozen until the issuer reverses the action.
-        assertEq(predicted.code.length, 0);
+        address a = f.deploy(o2, destination, 1 days, bytes32(0));
+        assertEq(a, predicted);
+        assertGt(predicted.code.length, 0);
+        assertEq(PolicyAccount(payable(a)).owner(), o2);
+        assertEq(usdc.balanceOf(payer), 100e6, "fee waived");
+        assertEq(usdc.balanceOf(predicted), 1_000_000e6, "funds reachable by the account");
     }
 }

@@ -22,6 +22,13 @@ import {PolicyAccount} from "./PolicyAccount.sol";
 /// - The fee is pulled from `msg.sender` to `feeRecipient` before the clone is created; the recipient's
 ///   balance must rise by exactly `flatFee` (fee-on-transfer and rebasing tokens revert). Skipped when
 ///   `flatFee == 0`. An already deployed account reverts before any fee is taken.
+/// - Fee waiver (audit 02 M-03): if the fee transfer itself fails although the caller holds at least
+///   `flatFee` and has approved at least `flatFee` to the factory, the failure is attributable to the
+///   fee token or the fee recipient (issuer blacklist or pause of `feeRecipient`, token paused), and the
+///   account is deployed without the fee (`FeeWaived`). Otherwise funds already sent to counterfactual
+///   addresses would be frozen forever, because only this factory can ever initialise them. A caller
+///   cannot trigger the waiver by starving the transfer of gas: the clone and initialisation that follow
+///   need far more than the 1/64 of gas that remains after an out-of-gas fee call.
 /// - The event deliberately omits owner and policy data to avoid additional linkability.
 contract PolicyAccountFactory is ReentrancyGuard {
     using SafeERC20 for IERC20;
@@ -44,6 +51,10 @@ contract PolicyAccountFactory is ReentrancyGuard {
     /// @notice Emitted when an account is deployed. Carries no owner or policy data.
     /// @param account The deployed account.
     event AccountDeployed(address indexed account);
+    /// @notice Emitted when `account` was deployed without the flat fee because the fee transfer failed
+    /// although the caller had sufficient balance and allowance (see contract notes, audit 02 M-03).
+    /// @param account The deployed account.
+    event FeeWaived(address indexed account);
 
     /// @notice A required address was zero.
     error ZeroAddress();
@@ -59,6 +70,8 @@ contract PolicyAccountFactory is ReentrancyGuard {
     error AlreadyDeployed(address account);
     /// @notice The fee recipient's balance did not rise by exactly the flat fee.
     error UnexpectedFeeDelta();
+    /// @notice The fee transfer failed and the caller's balance or allowance was below the flat fee.
+    error FeeTransferFailed();
 
     /// @notice Configures the factory.
     /// @param implementation_ Deployed `PolicyAccount` implementation (must have code).
@@ -103,20 +116,13 @@ contract PolicyAccountFactory is ReentrancyGuard {
         if (predicted.code.length != 0) revert AlreadyDeployed(predicted);
 
         uint256 fee = FLAT_FEE;
-        if (fee != 0) {
-            IERC20 token = IERC20(FEE_TOKEN);
-            uint256 before = token.balanceOf(FEE_RECIPIENT);
-            // `msg.sender` pays its own tokens; it must have approved this factory.
-            // forge-lint: disable-next-line(arbitrary-send-erc20)
-            token.safeTransferFrom(msg.sender, FEE_RECIPIENT, fee);
-            // Exact delta is the intended check: fee-on-transfer tokens must revert.
-            // forge-lint: disable-next-line(incorrect-strict-equality)
-            if (token.balanceOf(FEE_RECIPIENT) != before + fee) revert UnexpectedFeeDelta();
-        }
+        bool waived = fee != 0 && !_collectFee(fee);
 
         account = Clones.cloneDeterministic(IMPLEMENTATION, salt);
         PolicyAccount(payable(account)).initialize(owner, destination, delay, limitsRoot);
         // Nonreentrant; the account is a fresh clone of the fixed implementation.
+        // forge-lint: disable-next-line(reentrancy-events)
+        if (waived) emit FeeWaived(account);
         // forge-lint: disable-next-line(reentrancy-events)
         emit AccountDeployed(account);
     }
@@ -133,6 +139,28 @@ contract PolicyAccountFactory is ReentrancyGuard {
         account = Clones.predictDeterministicAddress(
             IMPLEMENTATION, keccak256(abi.encode(owner, policyHash))
         );
+    }
+
+    /// @dev Pulls `fee` of `FEE_TOKEN` from `msg.sender` to `FEE_RECIPIENT` with an exact recipient
+    /// delta. Returns false (fee waived) only when the transfer fails although the caller's balance and
+    /// allowance both cover `fee`; reverts `FeeTransferFailed` when either does not.
+    function _collectFee(uint256 fee) private returns (bool collected) {
+        IERC20 token = IERC20(FEE_TOKEN);
+        address recipient = FEE_RECIPIENT;
+        uint256 before = token.balanceOf(recipient);
+        // `msg.sender` pays its own tokens; it must have approved this factory.
+        // forge-lint: disable-next-line(arbitrary-send-erc20)
+        if (token.trySafeTransferFrom(msg.sender, recipient, fee)) {
+            // Exact delta is the intended check: fee-on-transfer tokens must revert.
+            // forge-lint: disable-next-line(incorrect-strict-equality)
+            if (token.balanceOf(recipient) != before + fee) revert UnexpectedFeeDelta();
+            return true;
+        }
+        // The caller could pay, so the token or the recipient refuses the transfer (M-03 waiver).
+        if (token.balanceOf(msg.sender) < fee || token.allowance(msg.sender, address(this)) < fee) {
+            revert FeeTransferFailed();
+        }
+        return false;
     }
 
     /// @notice Policy hash committed to by the scheme-2 meta-address.

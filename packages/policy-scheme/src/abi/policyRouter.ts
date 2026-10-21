@@ -135,21 +135,9 @@ export const ghostPayPolicyRouterAbi = [
         "internalType": "address"
       },
       {
-        "name": "policy",
-        "type": "tuple",
-        "internalType": "struct IGhostPayPolicyRouter.PolicyRef",
-        "components": [
-          {
-            "name": "owner",
-            "type": "address",
-            "internalType": "address"
-          },
-          {
-            "name": "policyHash",
-            "type": "bytes32",
-            "internalType": "bytes32"
-          }
-        ]
+        "name": "salt",
+        "type": "bytes32",
+        "internalType": "bytes32"
       },
       {
         "name": "gross",
@@ -195,21 +183,9 @@ export const ghostPayPolicyRouterAbi = [
         "internalType": "address"
       },
       {
-        "name": "policy",
-        "type": "tuple",
-        "internalType": "struct IGhostPayPolicyRouter.PolicyRef",
-        "components": [
-          {
-            "name": "owner",
-            "type": "address",
-            "internalType": "address"
-          },
-          {
-            "name": "policyHash",
-            "type": "bytes32",
-            "internalType": "bytes32"
-          }
-        ]
+        "name": "salt",
+        "type": "bytes32",
+        "internalType": "bytes32"
       },
       {
         "name": "gross",
@@ -260,21 +236,9 @@ export const ghostPayPolicyRouterAbi = [
         "internalType": "address"
       },
       {
-        "name": "policy",
-        "type": "tuple",
-        "internalType": "struct IGhostPayPolicyRouter.PolicyRef",
-        "components": [
-          {
-            "name": "owner",
-            "type": "address",
-            "internalType": "address"
-          },
-          {
-            "name": "policyHash",
-            "type": "bytes32",
-            "internalType": "bytes32"
-          }
-        ]
+        "name": "salt",
+        "type": "bytes32",
+        "internalType": "bytes32"
       },
       {
         "name": "gross",
@@ -337,21 +301,9 @@ export const ghostPayPolicyRouterAbi = [
         "internalType": "address"
       },
       {
-        "name": "policy",
-        "type": "tuple",
-        "internalType": "struct IGhostPayPolicyRouter.PolicyRef",
-        "components": [
-          {
-            "name": "owner",
-            "type": "address",
-            "internalType": "address"
-          },
-          {
-            "name": "policyHash",
-            "type": "bytes32",
-            "internalType": "bytes32"
-          }
-        ]
+        "name": "salt",
+        "type": "bytes32",
+        "internalType": "bytes32"
       },
       {
         "name": "minNet",

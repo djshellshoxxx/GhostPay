@@ -69,8 +69,9 @@ contract EchidnaSweep {
                 dl
             )
         );
-        (uint8 v, bytes32 r, bytes32 s) =
-            HEVM.sign(OWNER_PK, keccak256(abi.encodePacked("\x19\x01", token.DOMAIN_SEPARATOR(), sh)));
+        (uint8 v, bytes32 r, bytes32 s) = HEVM.sign(
+            OWNER_PK, keccak256(abi.encodePacked("\x19\x01", token.DOMAIN_SEPARATOR(), sh))
+        );
         token.permit(owner, address(relayer), type(uint256).max, dl, v, r, s);
     }
 
@@ -83,7 +84,15 @@ contract EchidnaSweep {
     function _digest(IGhostPaySweepRelayer.Sweep memory s) internal view returns (bytes32) {
         bytes32 sh = keccak256(
             abi.encode(
-                TYPEHASH, s.token, s.owner, s.destination, s.feeTo, s.amount, s.fee, s.deadline, s.nonce
+                TYPEHASH,
+                s.token,
+                s.owner,
+                s.destination,
+                s.feeTo,
+                s.amount,
+                s.fee,
+                s.deadline,
+                s.nonce
             )
         );
         return keccak256(abi.encodePacked("\x19\x01", relayer.DOMAIN_SEPARATOR(), sh));
@@ -168,7 +177,7 @@ contract EchidnaSweep {
     /// @dev fee+net == amount: all minted funds are in owner/dest/fee sinks, nothing created/lost
     function echidna_token_conservation() external view returns (bool) {
         return token.balanceOf(owner) + token.balanceOf(D0) + token.balanceOf(D1)
-            + token.balanceOf(F0) + token.balanceOf(F1) == MINTED;
+                + token.balanceOf(F0) + token.balanceOf(F1) == MINTED;
     }
 
     // canaries: EXPECTED TO FAIL

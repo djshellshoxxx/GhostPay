@@ -57,6 +57,7 @@ contract EchidnaPolicy {
     }
 
     Rec[] internal recs;
+
     struct Exec {
         uint256 at;
         uint256 amount;
@@ -170,14 +171,16 @@ contract EchidnaPolicy {
         Rec storage r = recs[idx % recs.length];
         address dest = acct.destination();
         uint256 beforeD = r.token == address(0) ? dest.balance : token.balanceOf(dest);
-        uint256 beforeA = r.token == address(0) ? address(acct).balance : token.balanceOf(address(acct));
+        uint256 beforeA =
+            r.token == address(0) ? address(acct).balance : token.balanceOf(address(acct));
         uint256 beforeOthers = _others(r.token, dest);
         try acct.executeWithdraw(r.id) {
             if (r.executed) doubleExecuted = true;
             r.executed = true;
             if (block.timestamp < r.requestedAt + DELAY) earlyExec = true;
             uint256 afterD = r.token == address(0) ? dest.balance : token.balanceOf(dest);
-            uint256 afterA = r.token == address(0) ? address(acct).balance : token.balanceOf(address(acct));
+            uint256 afterA =
+                r.token == address(0) ? address(acct).balance : token.balanceOf(address(acct));
             if (afterD - beforeD != r.amount || beforeA - afterA != r.amount) payoutWrong = true;
             if (_others(r.token, dest) != beforeOthers) payoutWrong = true;
             if (r.token == address(0)) okExecNative++;
@@ -273,7 +276,7 @@ contract EchidnaPolicy {
     /// destinations; nothing can leave to any other address.
     function echidna_funds_only_to_destination() external view returns (bool) {
         bool tok = token.balanceOf(address(acct)) + token.balanceOf(D0) + token.balanceOf(D1)
-            + token.balanceOf(D2) == TOKEN_FUND;
+                + token.balanceOf(D2) == TOKEN_FUND;
         bool nat = address(acct).balance + D0.balance + D1.balance + D2.balance == NATIVE_FUND;
         return tok && nat && !payoutWrong && !unauthorizedSuccess;
     }
@@ -287,8 +290,11 @@ contract EchidnaPolicy {
         // pending proposal keeps exactly the effective time it was created with (never moves earlier)
         uint64 eff = acct.pendingEffectiveAt();
         if (eff != ghostEffectiveAt) return false;
-        if (eff != 0 && (acct.pendingDestination() != ghostPending || acct.pendingProposalId() != ghostProposal))
-        {
+        if (
+            eff != 0
+                && (acct.pendingDestination() != ghostPending
+                    || acct.pendingProposalId() != ghostProposal)
+        ) {
             return false;
         }
         // stored executeAfter of every request is immutable
