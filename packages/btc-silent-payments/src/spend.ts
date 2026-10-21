@@ -152,6 +152,56 @@ export function verifyKeyPathSpend(
   return true;
 }
 
+/** Parameters of {@link previewSweep}: everything {@link buildSpendTransaction} needs except secrets and outpoints. */
+export interface PreviewSweepParams {
+  /** Amounts of the outputs to sweep. */
+  readonly inputAmountsSats: readonly bigint[];
+  /** Regular address or silent payment address. */
+  readonly address: string;
+  readonly feeRate: number;
+  readonly network: SilentPaymentNetwork;
+  readonly regtest?: boolean;
+  readonly dustLimitSats?: bigint;
+}
+
+/** Result of {@link previewSweep}. */
+export interface SweepPreview {
+  readonly vsize: number;
+  readonly feeSats: bigint;
+  /** Amount the destination receives. */
+  readonly sendSats: bigint;
+  readonly destinationIsSilentPayment: boolean;
+}
+
+/**
+ * Pure, secret-free preview of a sweep (single destination, no change): the fee and amount that
+ * {@link buildSpendTransaction} will produce for the same inputs, so a UI can show them BEFORE any
+ * key is touched. Uses the same vsize and fee math and the same checks.
+ *
+ * @throws {SilentPaymentError} `INVALID_INPUT`, `INVALID_AMOUNT`, `INVALID_ADDRESS`, `FEE_TOO_HIGH`,
+ * `INSUFFICIENT_FUNDS`, `DUST_OUTPUT`.
+ * @security Public data only.
+ */
+export function previewSweep(p: PreviewSweepParams): SweepPreview {
+  const n = p.inputAmountsSats.length;
+  if (n === 0 || n > MAX_INPUTS) return fail('INVALID_INPUT');
+  if (!Number.isFinite(p.feeRate) || p.feeRate <= 0) return fail('INVALID_INPUT');
+  if (p.feeRate > MAX_FEE_RATE_SAT_PER_VB) return fail('FEE_TOO_HIGH');
+  const dust = p.dustLimitSats ?? DEFAULT_DUST;
+  if (dust < 0n) return fail('INVALID_INPUT');
+  let total = 0n;
+  for (const a of p.inputAmountsSats) total += amount(a);
+  const isSp = isSilentPaymentAddress(p.address);
+  const len = isSp ? P2TR_SCRIPT_LEN : scriptOf(p.address, p.network, p.regtest === true).length;
+  const vsize = estimateKeyPathVsize(n, [len]);
+  const feeSats = feeFor(p.feeRate, vsize);
+  const sendSats = total - feeSats;
+  if (sendSats <= 0n) return fail('INSUFFICIENT_FUNDS');
+  if (sendSats < dust) return fail('DUST_OUTPUT');
+  if (feeSats * 2n > total && feeSats > 10_000n) return fail('FEE_TOO_HIGH');
+  return { vsize, feeSats, sendSats, destinationIsSilentPayment: isSp };
+}
+
 /**
  * Builds, signs and verifies a transaction that sweeps detected silent-payment outputs by
  * BIP-341 key-path spends.
