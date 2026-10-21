@@ -7,15 +7,18 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -p tsconfig.json --noEmit && vite build",
+    "postbuild": "node scripts/scan-bundle.mjs",
+    "preview": "vite preview",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run --coverage",
     "test:e2e": "playwright test",
-    "lint": "eslint src"
+    "lint": "eslint --config ../../eslint.config.js src e2e"
   },
   "dependencies": {
     "@ghostpay/chain-adapters": "0.1.0",
     "@ghostpay/core-crypto": "0.1.0",
     "@ghostpay/invoice-schema": "0.1.0",
+    "@noble/hashes": "2.4.0",
     "qrcode-generator": "2.0.4",
     "react": "19.3.1",
     "react-dom": "19.3.1",

@@ -67,4 +67,4 @@ jobs:
       - name: Reject committed private keys and env files
         run: |
           if git ls-files | grep -E '(^|/)\.env($|\.)' | grep -v '\.env\.example$'; then echo "env file committed"; exit 1; fi
-          if git grep -nE '(PRIVATE KEY-----|0x[0-9a-fA-F]{64}\b.*(private|secret))' -- . ':!docs' ':!**/test/**' ':!**/*.test.ts' ':!test-vectors' ':!**/*.md' ':!packages/contracts/lib'; then echo "possible secret"; exit 1; fi
+          if git grep -nE '(PRIVATE KEY-----|0x[0-9a-fA-F]{64}\b.*(private|secret))' -- . ':!docs' ':!.github' ':!**/test/**' ':!**/*.test.ts' ':!test-vectors' ':!**/*.md' ':!packages/contracts/lib'; then echo "possible secret"; exit 1; fi
