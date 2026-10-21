@@ -78,8 +78,8 @@ export function policyRouterFee(gross: bigint): bigint {
  * @returns Method, transaction, fee, net and metadata.
  * @throws {PolicySchemeError} `INVALID_INPUT`, `INVALID_ADDRESS`, `INVALID_HEX`. {@link GhostPayCryptoError} for bad R, tag or token.
  * @security The router binds the paid address to the factory, not to the payee: `owner` and `policyHash`
- * must come from the payee's authenticated scheme-2 meta-address. Built against the uncommitted
- * GhostPayPolicyRouter source of 2026-10-21 (see DEVIATIONS.md S6).
+ * must come from the payee's authenticated scheme-2 meta-address. ABI generated from
+ * GhostPayPolicyRouter as of commit 2058a57 and exercised on anvil (see DEVIATIONS.md S6).
  */
 export function buildPolicyPaymentTx(input: PolicyPaymentInput): PolicyPayment {
   const router = nonZeroAddr(input.router, 'router');
