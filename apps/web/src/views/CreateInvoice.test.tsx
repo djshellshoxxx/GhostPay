@@ -16,7 +16,9 @@ beforeEach(() => {
 async function open(services = makeServices()): Promise<ReturnType<typeof userEvent.setup>> {
   const user = userEvent.setup();
   renderApp(services);
-  await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Create invoice' }));
+  await user.click(
+    within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Create invoice' }),
+  );
   return user;
 }
 
@@ -53,7 +55,7 @@ describe('Create invoice', () => {
     generateSession();
     const user = await open();
     await user.selectOptions(screen.getByLabelText('Token'), screen.getByRole('option', { name: 'USDC' }));
-    expect((screen.getByRole('option', { name: /Fiat price/ }) as HTMLOptionElement).disabled).toBe(true);
+    expect(screen.getByRole<HTMLOptionElement>('option', { name: /Fiat price/ }).disabled).toBe(true);
     await user.type(screen.getByLabelText('Token amount'), '3.3');
     await user.click(screen.getByRole('button', { name: 'Add item' }));
     await user.type(screen.getByLabelText('Item 1 description'), 'A');
@@ -95,15 +97,26 @@ describe('Create invoice', () => {
 
   it('does not warn when a manifest is loaded', async () => {
     generateSession();
-    await open(makeServices({ loadManifest: (id) => Promise.resolve({ status: 'loaded', manifest: JSON.parse(fakeManifestJson(id)) as never }) }));
-    await waitFor(() => { expect(screen.queryByText(/Payments disabled on this chain/)).toBeNull(); });
+    await open(
+      makeServices({
+        loadManifest: (id) =>
+          Promise.resolve({ status: 'loaded', manifest: JSON.parse(fakeManifestJson(id)) as never }),
+      }),
+    );
+    await waitFor(() => {
+      expect(screen.queryByText(/Payments disabled on this chain/)).toBeNull();
+    });
   });
 
-  it('switching chain resets the token and offers that chain\'s tokens', async () => {
+  it("switching chain resets the token and offers that chain's tokens", async () => {
     generateSession();
     const user = await open();
     const chain = screen.getByLabelText('Chain');
     await user.selectOptions(chain, screen.getByRole('option', { name: 'Ethereum Sepolia' }));
-    expect(within(screen.getByLabelText('Token')).getAllByRole('option').map((o) => o.textContent)).toEqual(['ETH', 'USDC', 'EURC']);
+    expect(
+      within(screen.getByLabelText('Token'))
+        .getAllByRole('option')
+        .map((o) => o.textContent),
+    ).toEqual(['ETH', 'USDC', 'EURC']);
   });
 });

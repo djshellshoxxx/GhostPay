@@ -1,11 +1,40 @@
 import { expect, test, type BrowserContext, type Page, type Route } from '@playwright/test';
 import { createServer, type Server } from 'node:http';
 import { makeLog } from '../src/test/announcements';
-import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER, fakeManifestJson } from '../src/test/fakeManifest';
+import {
+  FAKE_ANNOUNCER,
+  FAKE_FEE_RECIPIENT,
+  FAKE_ROUTER,
+  FAKE_SWEEP_RELAYER,
+  fakeManifestJson,
+} from '../src/test/fakeManifest';
+import { keccak256, toBytes } from 'viem';
+
+/** Tiny fake runtime code per contract; the served manifest carries their real keccak256 so the on-chain read-back passes. */
+const FAKE_CODE: Record<string, `0x${string}`> = {
+  [FAKE_ROUTER]: '0x60016000',
+  [FAKE_SWEEP_RELAYER]: '0x60026000',
+  [FAKE_ANNOUNCER]: '0x60036000',
+};
+const word = (hex: string): string => `0x${hex.replace(/^0x/, '').toLowerCase().padStart(64, '0')}`;
+const SEL = (sig: string): string => keccak256(toBytes(sig)).slice(0, 10);
+/** Manifest served to the app: bytecodeHashes match FAKE_CODE so the fail-closed on-chain verification succeeds. */
+function e2eManifestJson(chainId: number): string {
+  const m = JSON.parse(fakeManifestJson(chainId)) as { bytecodeHashes: Record<string, string> };
+  m.bytecodeHashes = {
+    router: keccak256(FAKE_CODE[FAKE_ROUTER] as `0x${string}`),
+    sweepRelayer: keccak256(FAKE_CODE[FAKE_SWEEP_RELAYER] as `0x${string}`),
+  };
+  return JSON.stringify(m);
+}
 import { ORIGIN, createInvoice, generateKeys, openFresh } from './helpers';
 
 const RPC = 'https://rpc.e2e.test';
-const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'POST, OPTIONS' };
+const CORS = {
+  'access-control-allow-origin': '*',
+  'access-control-allow-headers': '*',
+  'access-control-allow-methods': 'POST, OPTIONS',
+};
 
 interface SentTx {
   from: string;
@@ -15,9 +44,14 @@ interface SentTx {
 }
 
 /** Serves the (test-only, fake) manifest and a tiny JSON-RPC node; everything else off-origin stays blocked. */
-async function mockNetwork(context: BrowserContext, state: { sent?: SentTx; logs?: unknown[] }): Promise<{ requests: string[] }> {
+async function mockNetwork(
+  context: BrowserContext,
+  state: { sent?: SentTx; logs?: unknown[] },
+): Promise<{ requests: string[] }> {
   const requests: string[] = [];
-  await context.route('**/deployments/84532.json', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: fakeManifestJson(84532) }));
+  await context.route('**/deployments/84532.json', (route) =>
+    route.fulfill({ status: 200, contentType: 'application/json', body: e2eManifestJson(84532) }),
+  );
   await context.route(`${RPC}/**`, async (route: Route) => {
     const req = route.request();
     requests.push(req.url());
@@ -27,7 +61,11 @@ async function mockNetwork(context: BrowserContext, state: { sent?: SentTx; logs
     }
     const body = JSON.parse(req.postData() ?? '{}') as { id: number; method: string; params: unknown[] };
     const reply = (result: unknown): Promise<void> =>
-      route.fulfill({ status: 200, headers: { ...CORS, 'content-type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: body.id, result }) });
+      route.fulfill({
+        status: 200,
+        headers: { ...CORS, 'content-type': 'application/json' },
+        body: JSON.stringify({ jsonrpc: '2.0', id: body.id, result }),
+      });
     switch (body.method) {
       case 'eth_chainId':
         return reply('0x14a34');
@@ -42,14 +80,45 @@ async function mockNetwork(context: BrowserContext, state: { sent?: SentTx; logs
         const f = body.params[0] as { fromBlock: string; toBlock: string };
         const from = parseInt(f.fromBlock, 16);
         const to = parseInt(f.toBlock, 16);
-        return reply((state.logs ?? []).filter((l) => parseInt((l as { blockNumber: string }).blockNumber, 16) >= from && parseInt((l as { blockNumber: string }).blockNumber, 16) <= to));
+        return reply(
+          (state.logs ?? []).filter(
+            (l) =>
+              parseInt((l as { blockNumber: string }).blockNumber, 16) >= from &&
+              parseInt((l as { blockNumber: string }).blockNumber, 16) <= to,
+          ),
+        );
       }
       case 'eth_getTransactionByHash':
-        return reply(state.sent === undefined ? null : { hash: body.params[0], from: state.sent.from, to: state.sent.to, input: state.sent.data, value: state.sent.value, chainId: '0x14a34' });
+        return reply(
+          state.sent === undefined
+            ? null
+            : {
+                hash: body.params[0],
+                from: state.sent.from,
+                to: state.sent.to,
+                input: state.sent.data,
+                value: state.sent.value,
+                chainId: '0x14a34',
+              },
+        );
       case 'eth_getTransactionReceipt':
-        return reply(state.sent === undefined ? null : { status: '0x1', blockNumber: '0x1f5', to: state.sent.to });
+        return reply(
+          state.sent === undefined ? null : { status: '0x1', blockNumber: '0x1f5', to: state.sent.to },
+        );
       case 'eth_gasPrice':
         return reply('0x3b9aca00');
+      case 'eth_getCode':
+        return reply(FAKE_CODE[String(body.params[0]).toLowerCase()] ?? '0x');
+      case 'eth_call': {
+        const call = body.params[0] as { to: string; data: string };
+        const sel = call.data.slice(0, 10);
+        if (call.to.toLowerCase() === FAKE_ROUTER) {
+          if (sel === SEL('FEE_RECIPIENT()')) return reply(word(FAKE_FEE_RECIPIENT));
+          if (sel === SEL('ANNOUNCER()')) return reply(word(FAKE_ANNOUNCER));
+          if (sel === SEL('FEE_BPS()')) return reply(word((25).toString(16)));
+        }
+        return reply(null);
+      }
       default:
         return reply(null);
     }
@@ -87,7 +156,11 @@ async function injectWallet(page: Page, state: { sent?: SentTx }): Promise<void>
       },
     };
     window.addEventListener('eip6963:requestProvider', () => {
-      window.dispatchEvent(new CustomEvent('eip6963:announceProvider', { detail: { info: { uuid: 'e2e-wallet', name: 'E2E Wallet', icon: '', rdns: 'test.e2e' }, provider } }));
+      window.dispatchEvent(
+        new CustomEvent('eip6963:announceProvider', {
+          detail: { info: { uuid: 'e2e-wallet', name: 'E2E Wallet', icon: '', rdns: 'test.e2e' }, provider },
+        }),
+      );
     });
   });
 }
@@ -99,7 +172,10 @@ async function configureRpc(page: Page): Promise<void> {
 }
 
 test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC', () => {
-  test('pays a native invoice: preview equals calldata, the wallet gets exactly that, and the user RPC confirms it', async ({ page, context }) => {
+  test('pays a native invoice: preview equals calldata, the wallet gets exactly that, and the user RPC confirms it', async ({
+    page,
+    context,
+  }) => {
     const state: { sent?: SentTx } = {};
     await mockNetwork(context, state);
     await injectWallet(page, state);
@@ -113,7 +189,9 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await expect(page.getByText('You pay (gross)')).toBeVisible();
     await expect(page.getByText(FAKE_ROUTER).first()).toBeVisible();
     await expect(page.getByText(FAKE_FEE_RECIPIENT).first()).toBeVisible();
-    await expect(page.getByText(/GhostPay charges 0\.25 % on payments made through its checkout contract/)).toBeVisible();
+    await expect(
+      page.getByText(/GhostPay charges 0\.25 % on payments made through its checkout contract/),
+    ).toBeVisible();
 
     await page.getByRole('button', { name: 'Continue' }).click();
     await page.getByRole('button', { name: /Connect E2E Wallet/ }).click();
@@ -149,7 +227,10 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await expect(page.getByRole('heading', { name: 'Submitted' })).toHaveCount(0);
   });
 
-  test('scans in a real Web Worker under the CSP, finds my payment, and stores tags only as ciphertext', async ({ page, context }) => {
+  test('scans in a real Web Worker under the CSP, finds my payment, and stores tags only as ciphertext', async ({
+    page,
+    context,
+  }) => {
     const state: { logs?: unknown[] } = {};
     const net = await mockNetwork(context, state);
     const workers: string[] = [];
@@ -162,10 +243,19 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await configureRpc(page);
     await page.goto('/');
     const meta = await generateKeys(page);
-    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 120, index: 0, caller: FAKE_ROUTER });
+    const mine = makeLog({
+      announcer: FAKE_ANNOUNCER,
+      metaAddress: meta,
+      block: 120,
+      index: 0,
+      caller: FAKE_ROUTER,
+    });
     state.logs = [mine.log];
 
-    await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Scan and receive' }).click();
+    await page
+      .getByRole('navigation', { name: 'Main' })
+      .getByRole('button', { name: 'Scan and receive' })
+      .click();
     await page.getByLabel('Chain').selectOption({ label: 'Base Sepolia' });
     await page.getByLabel('Start block').fill('0');
     await page.getByRole('button', { name: 'Start scan' }).click();
@@ -199,7 +289,9 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     expect(idb).toContain('"ciphertext"');
     expect(idb).not.toContain('Acme');
     expect(idb.toLowerCase()).not.toContain(mine.stealthAddress.slice(2).toLowerCase());
-    expect(await page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }))).not.toContain('Acme');
+    expect(await page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }))).not.toContain(
+      'Acme',
+    );
 
     await page.getByRole('button', { name: 'Lock tags' }).click();
     await expect(page.locator('strong', { hasText: 'Acme Corp secret client' })).toHaveCount(0);
@@ -239,7 +331,10 @@ test.describe('embed SDK (popup mode only)', () => {
     await new Promise<void>((resolve) => server.close(() => resolve()));
   });
 
-  test('opens the checkout popup for a same-origin link; refuses other origins', async ({ page, context }) => {
+  test('opens the checkout popup for a same-origin link; refuses other origins', async ({
+    page,
+    context,
+  }) => {
     await page.goto('/');
     await generateKeys(page);
     const link = await createInvoice(page);

@@ -1,9 +1,12 @@
 # GhostPay user guides
 
-> **Pre-audit software, testnet only.** Nothing is deployed and GhostPay is not hosted anywhere. These guides describe how the app is designed to work so you can understand it; do not use it with real money. Examples use made-up values (for example `0x0000...0001`); never paste a real key or seed phrase into a document, chat or issue.
+> **Pre-audit software, testnet only.** Nothing is deployed and GhostPay is not hosted anywhere. Not independently audited. These guides describe how the code is designed to work so you can understand it; do not use it with real money. Examples use made-up values (for example `0x0000...0001`); never paste a real key or seed phrase into a document, chat or issue.
+
+## Start here
 
 | Guide | Read it to |
 |---|---|
+| [Testnet usage](testnet-usage.md) | See what works today, what is blocked, and how to run a safe local test |
 | [Set up a stealth meta-address](set-up-stealth-meta-address.md) | Create seller keys, back them up, and get an address to share |
 | [Review and pay an invoice](review-and-pay-an-invoice.md) | Check an invoice link and pay it safely |
 | [Receive and scan](receive-and-scan.md) | Find payments sent to you and keep private notes about them |
@@ -11,5 +14,15 @@
 | [Privacy limits](privacy-limits.md) | See who can learn what (observer table) |
 | [Fees](fees.md) | Know exactly what you pay and when GhostPay's fee does not apply |
 | [Troubleshooting](troubleshooting.md) | Fix common problems |
+
+## By asset and network
+
+| Guide | Status |
+|---|---|
+| [Ether and EVM native payments](ethereum-payments.md) | Experimental, testnet only; no manifest ships |
+| [Stablecoin payments (USDC, EURC)](stablecoin-payments.md) | Experimental, testnet only; allowlist of Circle testnet tokens |
+| [Bitcoin silent payments](bitcoin-silent-payments.md) | Experimental, testnet4 / signet / regtest; mainnet disabled |
+| [Solana payments](solana-payments.md) | Library proof of concept; not in the web app |
+| [TRON payments](tron-payments.md) | Library proof of concept; not in the web app; mainnet disabled |
 
 If you only read one thing: **moving funds from your one-time address to a wallet you already use can reveal that the payer paid you.** See [Sweep funds and gas privacy](sweep-and-gas-privacy.md).

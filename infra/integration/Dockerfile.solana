@@ -1,0 +1,29 @@
+# syntax=docker/dockerfile:1
+# solana-test-validator from the official Anza (Agave) GitHub release tarball, verified against a pinned SHA-256.
+# Why not an image: the Docker Hub `anzaxyz/agave` repository is marked SUNSETTING (no new tags; last is v3.1.14),
+# so the release asset is used instead. Provenance of the hash: computed 2026-10-21 by downloading
+#   https://github.com/anza-xyz/agave/releases/download/v3.1.14/solana-release-x86_64-unknown-linux-gnu.tar.bz2
+# over TLS (trust on first use; ~215 MB). Cross-check it against the release page before trusting it.
+# Bases: debian:bookworm-slim pinned by tag (bookworm-20261020-slim) and index digest (Docker Hub API, 2026-10-21).
+ARG DEBIAN_IMAGE=debian:bookworm-20261020-slim@sha256:7ff6ba31527b9e336162fa061746c366c4b2032f4d2cff2078bea43f78efe3f8
+
+FROM ${DEBIAN_IMAGE} AS fetch
+ARG AGAVE_VERSION=v3.1.14
+ARG AGAVE_SHA256=06f97c065cc977cbec2f13ffc9bc9d3b92fef485431fcb370a269de69532ef51
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends ca-certificates curl bzip2; \
+    curl -fsSL --retry 3 -o /tmp/agave.tar.bz2 \
+      "https://github.com/anza-xyz/agave/releases/download/${AGAVE_VERSION}/solana-release-x86_64-unknown-linux-gnu.tar.bz2"; \
+    echo "${AGAVE_SHA256}  /tmp/agave.tar.bz2" | sha256sum -c -; \
+    mkdir /out; \
+    tar -xjf /tmp/agave.tar.bz2 -C /out --strip-components=2 solana-release/bin/solana-test-validator
+
+FROM ${DEBIAN_IMAGE}
+# libstdc++/libgcc/libm/libc are all the binary links against (checked with ldd on the extracted binary).
+RUN set -eux; apt-get update; apt-get install -y --no-install-recommends libstdc++6; rm -rf /var/lib/apt/lists/*
+COPY --from=fetch /out/solana-test-validator /usr/local/bin/solana-test-validator
+RUN solana-test-validator --version
+USER 10001:10001
+WORKDIR /tmp
+EXPOSE 8899

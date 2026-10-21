@@ -21,7 +21,7 @@ Source: `packages/tron-adapter/src/adapter.ts`. The endpoint hints are documenta
 - **Payment.** The payer builds a TRX transfer or a TRC-20 `transfer` to a one-time TRON address derived from a fresh ephemeral key.
 - **Announcement.** A memo tagged with a GhostPay magic value carries the ephemeral key and view tag.
 - **Scanning.** `scanTron` reads the chain through your RPC and matches announcements to your view key. Only tokens listed in `trustedTokens` count as real value when scanning. Unlisted TRC-20 contracts are not trusted.
-- **Sweep.** The seller signs a transfer from the one-time key. Energy and bandwidth for the transfer must be covered by the one-time address or by the seller.
+- **Sweep.** The seller signs a transfer from the one-time key. Transaction resources (energy, bandwidth) are not covered by GhostPay; plan for them yourself.
 
 ## Fees
 

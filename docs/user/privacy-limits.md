@@ -37,3 +37,9 @@ All GhostPay payments go through one router address per chain with the same fee 
 8. **Direct payments bypass the router,** so no fee, but also none of the router's checks on the announcement shape.
 9. **A compromised website, browser extension or device defeats everything.** The app has had no external audit, no release is signed yet, and no official host exists.
 10. **The deployment manifest is not yet authenticated**; the contract and fee-recipient addresses shown in the app are as trustworthy as the host that served the manifest until the planned pinning and on-chain checks ship.
+
+## Other chains
+
+- **Bitcoin silent payments** (web app, testnet only): the Esplora server you choose sees block heights and the outputs you check. The payer sees the output they paid. No GhostPay router or relayer is involved. See [Bitcoin silent payments](bitcoin-silent-payments.md).
+- **Stablecoins and ETH** follow the EVM rules above: transfers, amounts and the router address are public. See [Stablecoin payments](stablecoin-payments.md) and [Ether and EVM native payments](ethereum-payments.md).
+- **Solana and TRON** are library proofs of concept with no UI. Their announcements, memos and transfers are public on-chain. See [Solana payments](solana-payments.md) and [TRON payments](tron-payments.md).

@@ -1,4 +1,5 @@
-import { createHash } from 'node:crypto';
+import { sha256 } from '@noble/hashes/sha2.js';
+import { bytesToHex, utf8ToBytes } from '@noble/hashes/utils.js';
 import { AddressSafetyError } from './errors.js';
 
 const MAX_META = 4096;
@@ -29,7 +30,7 @@ export function metaAddressFingerprint(meta: string): string {
   if (typeof meta !== 'string' || meta.length === 0 || meta.length > MAX_META) {
     throw new AddressSafetyError('meta-address must be 1..4096 characters');
   }
-  const hex = createHash('sha256').update(meta, 'utf8').digest('hex').slice(0, 20);
+  const hex = bytesToHex(sha256(utf8ToBytes(meta))).slice(0, 20);
   return hex.match(/.{4}/g)?.join('-') ?? hex;
 }
 

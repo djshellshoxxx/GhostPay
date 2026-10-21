@@ -151,11 +151,17 @@ Self-run, dated feature reviews by the documentation author. They are not indepe
 
 ## User guides (`docs/user/`)
 
-Pre-audit and testnet-only. Nothing is deployed.
+Pre-audit and testnet-only. Nothing is deployed. Chain-specific notes (not user guides) are indexed in [chains/README](chains/README.md).
 
 | File | Purpose | Type | Status |
 |---|---|---|---|
 | [user/README](user/README.md) | Index of the user guides | user guide | n/a |
+| [user/testnet-usage](user/testnet-usage.md) | What works today, what is blocked, and how to run a safe local test | user guide | n/a |
+| [user/ethereum-payments](user/ethereum-payments.md) | Native ETH and EVM payments; testnets enabled in code, mainnets disabled | user guide | n/a |
+| [user/stablecoin-payments](user/stablecoin-payments.md) | USDC and EURC payments from the allowlist; permit, blacklist and approve quirks | user guide | n/a |
+| [user/bitcoin-silent-payments](user/bitcoin-silent-payments.md) | Bitcoin silent payments in the web app (testnet4, signet, regtest); mainnet disabled | user guide | n/a |
+| [user/solana-payments](user/solana-payments.md) | Solana library proof of concept; not in the web app | user guide | n/a |
+| [user/tron-payments](user/tron-payments.md) | TRON library proof of concept (Nile, Shasta, local); not in the web app | user guide | n/a |
 | [user/set-up-stealth-meta-address](user/set-up-stealth-meta-address.md) | Creating seller keys, backing them up and getting the address to share | user guide | n/a |
 | [user/review-and-pay-an-invoice](user/review-and-pay-an-invoice.md) | Checking an invoice link before paying it | user guide | n/a |
 | [user/receive-and-scan](user/receive-and-scan.md) | How a seller scans for payments; sellers get no notification | user guide | n/a |
@@ -202,7 +208,7 @@ Each package has a README and, where present, a DEVIATIONS.md (choices where the
 | relayer | [README](../apps/relayer/README.md) | Gas-sponsorship relayer for GhostPaySweepRelayer: quote, check, simulate, broadcast; has an Unverified section | package doc | unverified (own Unverified section) |
 | relayer | [DEVIATIONS](../apps/relayer/DEVIATIONS.md) | Deviations from APP_AND_RELAYER_SPEC, e.g. chainId as a top-level field | package doc | n/a |
 | relayer | [PRIVACY](../apps/relayer/PRIVACY.md) | What the relayer necessarily sees and what it retains | spec | n/a |
-| web | [README](../apps/web/README.md) | Static React 19 and Vite app (keys, create, pay, scan, sweep, settings); wallet, RPC and relayer mocked in tests | package doc | unverified (mocked interactions, per file) |
+| web | [README](../apps/web/README.md) | Static React 19 and Vite app (keys, create, pay, scan, sweep, Bitcoin, registry, settings); wallet, RPC and relayer mocked in tests | package doc | unverified (mocked interactions, per file) |
 | web | [DEVIATIONS](../apps/web/DEVIATIONS.md) | Deviations from APP_AND_RELAYER_SPEC; wallets and RPC are mocks, Unverified section | package doc | unverified (own Unverified section) |
 | web | [public/deployments/README](../apps/web/public/deployments/README.md) | No deployment manifest is shipped; payments stay disabled until one is published | package doc | n/a |
 
