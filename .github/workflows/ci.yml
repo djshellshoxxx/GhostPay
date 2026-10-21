@@ -81,6 +81,10 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-node-libs
+      # anvil for the workspaces that have anvil integration tests (they otherwise skip). Pinned as in setup-forge.
+      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+        with:
+          version: v1.8.5
       - name: Unit tests
         env:
           GROUP: ${{ matrix.group }}

@@ -24,3 +24,7 @@ export { createW6Probe } from './w6.js';
 export type { W6Options } from './w6.js';
 export { toPrometheus, toWebhook, createDedupeState } from './output.js';
 export type { DedupeState } from './output.js';
+export { parseOpsConfig } from './config.js';
+export type { OpsConfig, OpsChainConfig, OpsRelayerConfig, Env } from './config.js';
+export { runCli, parseArgs } from './cli.js';
+export type { CliDeps, ExitCode } from './cli.js';

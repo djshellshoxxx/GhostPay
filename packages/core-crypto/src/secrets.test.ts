@@ -51,10 +51,14 @@ describe('secret redaction', () => {
     expect(out.join('\n')).not.toContain(viewHex);
   });
 
-  it('secrets survive typed-array-derived views only as plain arrays (species)', () => {
-    const sub = keys.spendingSecret.subarray(0, 4);
-    expect(sub.constructor).toBe(Uint8Array);
-    expect(() => JSON.stringify(Array.from(sub))).not.toThrow();
+  it('refuses slice and subarray, which used to hand out plain unprotected copies (S3-08)', () => {
+    expect(() => keys.spendingSecret.subarray(0, 4)).toThrow(TypeError);
+    expect(() => keys.spendingSecret.slice()).toThrow(TypeError);
+    expect(() => keys.viewingSecret.slice(0, 4)).toThrow(/must not be serialized/);
+    // the explicit export boundary still works and returns a plain copy
+    const copy = unsafeRevealSecret(keys.spendingSecret);
+    expect(copy.constructor).toBe(Uint8Array);
+    expect(copy.slice(0, 4)).toHaveLength(4);
   });
 
   it('error messages and serialized errors never contain key material', () => {

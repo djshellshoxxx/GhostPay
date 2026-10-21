@@ -63,7 +63,9 @@ contract DeployAnnouncerTest is Test {
 
     function test_expectedCodehashMatchPasses() public {
         script.setVar("ALLOW_NONCANONICAL_ANNOUNCER", "1");
-        script.setVar("EXPECTED_ANNOUNCER_CODEHASH", vm.toString(address(new ERC5564Announcer()).codehash));
+        script.setVar(
+            "EXPECTED_ANNOUNCER_CODEHASH", vm.toString(address(new ERC5564Announcer()).codehash)
+        );
         script.run();
     }
 

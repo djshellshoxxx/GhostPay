@@ -13,7 +13,17 @@ Read-only, operator-run chain-side anomaly probes. Spec: [`docs/remote/specs/ops
 
 Findings carry only configured addresses or mirror URLs as `subject` (tested). Holds no keys.
 
-Dependencies: `viem` (keccak256), `@ghostpay/chain-adapters` (types), Node built-ins. **Not wired in anywhere. No live network run**: all RPC is faked; W3 is tested against a local `node:http` server only.
+Dependencies: `viem` (keccak256), `@ghostpay/chain-adapters` (types, RPC client, manifest loader), Node built-ins. **No live network run**: all RPC is faked; W3 is tested against a local `node:http` server only.
+
+## Runner (CLI)
+
+`ghostpay-ops-monitor --config <file> [--dry-run] [--print]` (`dist/bin.js`) builds verified RPC clients from the env vars named in the config (URLs and API keys never appear in the file), loads the release manifests, runs W1 to W6 once and:
+
+- prints one line per finding (`<severity> <check> chain=<id> <subject> <detail>`),
+- writes the Prometheus text atomically to `output.prometheusFile` (node_exporter textfile collector),
+- posts new `warn`/`page` findings to the https webhook named by `output.webhookUrlEnv`, de-duplicated across runs through `output.stateFile`.
+
+Exit code: 0 healthy, 1 warn, 2 page, 3 the runner failed (bad config, RPC/chain mismatch, unwritable output, webhook failure). `--dry-run` writes and sends nothing. Config: [`ops-monitor.config.example.json`](./ops-monitor.config.example.json) (strict: unknown keys rejected). systemd: [`deploy/ghostpay-ops-monitor.service`](./deploy/ghostpay-ops-monitor.service) (oneshot, hardened) and [`deploy/ghostpay-ops-monitor.timer`](./deploy/ghostpay-ops-monitor.timer) (every 5 minutes). W4's `unreimbursedGasWeiToday` is not measured by the runner (reported as 0); watch `/metrics` of the relayer for loss-budget denials.
 
 ```bash
 npm run typecheck && npm run lint && npm test   # from this directory

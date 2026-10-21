@@ -9,3 +9,4 @@
 7. **W6** subject is the configured announcer (RpcClient has no printable identity; URLs may hold keys). Findings do not say which provider lied.
 8. **W5** uses `eth_getLogs` over a block window (limited to 5000 blocks); the baseline is operator-supplied and untuned. Scheme ids default to 0x47500001 and 0x47500002.
 9. Prometheus format retrieved from the spec's reference only by name; not re-fetched in this session. Runbook "Incident response" links per finding id were not written (outside scope).
+10. **CLI runner (added):** W4 `unreimbursedGasWeiToday` is always 0 (the runner has no access to the relayer's loss budget; the relayer enforces its own `lossBudget` and exposes denial counters on `/metrics`). The webhook payload shape is still the unaligned guess of item 3. Alert de-duplication across timer runs needs `output.stateFile`; a lost state file can re-send one alert. Not run against a live RPC or webhook receiver.
