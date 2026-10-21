@@ -46,3 +46,26 @@ Fetching a price from a vendor reveals IP and interest; default path uses RPC th
 3. **T-3** Rate older than maxAge -> isStale true and UI shows no fiat.
 4. **T-4** Network spy: zero fetches when source is manual/cache.
 Plus: package coverage thresholds 90/85/90/90 (as apps/web), `npm run typecheck`, `npm run lint`, bundle scan (`apps/web/scripts/scan-bundle.mjs`) still clean, no new network host in the e2e network log.
+
+
+## ux-fiat implementation addendum (packages/ux-fiat)
+## Requirements
+1. All math is BigInt. Rates are plain decimal strings (<=30 int digits, <=18 fraction digits); no sign/exponent/whitespace/leading zeros.
+2. `fiatMinor = round(amountBase * rate * 10^fiatDec / 10^assetDec)`; reverse is the exact algebraic inverse. Rounding mode is a required argument; there is no default.
+3. Quote = `{asset, fiat, rate, timestampMs, source}`. Validation rejects: zero, negative, malformed, above `maxRate` (default 1e12), below `minRate` (default 1e-12), non-ISO-looking fiat code, control/bidi chars in labels, non-integer/non-positive timestamps.
+4. Staleness against injected `nowMs`: fresh <= 60s, aging <= 600s, stale beyond, future if > 30s ahead (invalid). Policy overridable and validated.
+5. Offline: no quote -> `{state:'no-rate'}`. Stale -> value withheld unless `showStale`. Pair mismatch (asset/fiat) -> invalid.
+6. Formatting returns typed parts (sign, symbol, space, integer, group, decimal, fraction). Separators validated (not digits, distinct, no control/bidi). Supports 3-grouping and Indian grouping. Never rounds.
+7. User fiat input parsing is strict; excess precision is rejected, not rounded.
+8. Optional jump check between consecutive quotes in basis points.
+9. Amount magnitude bounded to < 10^78; decimals asset 0..36, fiat 0..18.
+
+## Acceptance tests (all in src/fiat.test.ts)
+- 1 ETH @ 2500.5 USD = 250050 cents; `$2,500.50`.
+- $25.00 @ 2500.5 -> floor 9998000399920015 wei, ceil ...016; ceil round-trips to >= $25.00.
+- Every rounding mode on +/- ties (table test); property tests: floor/ceil differ by <= 1, ceil reverse covers fiat, parse(format) round-trips for US/DE/IN, units round-trip.
+- Rate rejects: `0`, `-1`, `1e5`, `01`, `.5`, `5.`, `NaN`, 19 fraction digits, > max, < min.
+- Age boundaries at exactly 60_000 / 600_000 / +30_000 ms.
+- View: no-rate, ok, aging, stale withheld, showStale, mismatch, future, bad policy, overflow, bad format.
+
+Note: package is `@ghostpay/ux-fiat` (pure logic); the Rate type differs from the sketched `fiat-display` API (decimal-string quote + `ParsedRate`), and exponent tables are caller-supplied (not built in) -- deviation from FIATD-5. Stale values are withheld by default (FIATD-3); `showStale` is opt-in.
