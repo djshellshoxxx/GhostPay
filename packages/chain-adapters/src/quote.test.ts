@@ -2,7 +2,7 @@ import fc from 'fast-check';
 import { encodeAbiParameters, getAddress } from 'viem/utils';
 import { describe, expect, it } from 'vitest';
 import { ChainAdapterError } from './errors.js';
-import { FEEDS, createAggregatorReader, fiatToTokenAmount, findFeed, readPrice, type AggregatorReader, type RoundData } from './quote.js';
+import { DEFAULT_SEQUENCER_GRACE_SECONDS, FEEDS, assertSequencerUp, createAggregatorReader, effectiveMaxAge, withinSlippage, fiatToTokenAmount, findFeed, readPrice, type AggregatorReader, type RoundData } from './quote.js';
 import { createClient } from './rpc.js';
 import { fakeTransport, noSleep } from './rpc.testutil.js';
 import { SEPOLIA } from './fixtures.testutil.js';
@@ -137,5 +137,70 @@ describe('createAggregatorReader (ABI round trip through a fake node)', () => {
     const r2 = createAggregatorReader(await node('0x12', '0x'));
     await expect(r2.decimals(FEED)).rejects.toThrow();
     await expect(readPrice(r2, FEED, opts)).rejects.toThrow(/feed read failed/);
+  });
+});
+
+describe('TS-07 heartbeat bound, TS-13 sequencer uptime, slippage', () => {
+  const SEQ = getAddress('0x00000000000000000000000000000000000000f2');
+  const seq = (over: Partial<RoundData> = {}): RoundData => round({ answer: 0n, startedAt: NOW - 7200n, ...over });
+  const both = (price: RoundData, s: RoundData | Error): AggregatorReader => ({
+    decimals: () => Promise.resolve(8),
+    latestRoundData: (f) => (f === SEQ ? (s instanceof Error ? Promise.reject(s) : Promise.resolve(s)) : Promise.resolve(price)),
+  });
+
+  it('effectiveMaxAge caps the invoice bound by heartbeat + margin', () => {
+    expect(effectiveMaxAge(86_400n)).toBe(86_400n);
+    expect(effectiveMaxAge(86_400n, 3600n)).toBe(3900n);
+    expect(effectiveMaxAge(60n, 3600n)).toBe(60n);
+    expect(effectiveMaxAge(86_400n, 3600n, 0n)).toBe(3600n);
+  });
+
+  it('a seller-chosen 24 h window no longer admits a 23 h old answer when the heartbeat is 1 h', async () => {
+    const old = round({ updatedAt: NOW - 23n * 3600n });
+    const wide = { now: NOW, maxAgeSeconds: 86_400n };
+    await expect(readPrice(reader(old), FEED, wide)).resolves.toBeDefined(); // legacy behaviour without heartbeat
+    await expect(readPrice(reader(old), FEED, { ...wide, heartbeatSeconds: 3600n })).rejects.toThrow(/stale/);
+    await expect(readPrice(reader(round({ updatedAt: NOW - 3900n })), FEED, { ...wide, heartbeatSeconds: 3600n })).resolves.toBeDefined();
+    await expect(readPrice(reader(round({ updatedAt: NOW - 3901n })), FEED, { ...wide, heartbeatSeconds: 3600n })).rejects.toThrow(/stale/);
+    await expect(readPrice(reader(round()), FEED, { ...wide, heartbeatSeconds: 0n })).rejects.toThrow(/heartbeat/);
+  });
+
+  it('sequencer guard: up and past grace passes; down, recent restart, bad data and read errors fail closed', async () => {
+    const o = { ...opts, sequencerUptime: { feed: SEQ } };
+    await expect(readPrice(both(round(), seq()), FEED, o)).resolves.toBeDefined();
+    await expect(readPrice(both(round(), seq({ answer: 1n })), FEED, o)).rejects.toThrow(/sequencer down/);
+    await expect(readPrice(both(round(), seq({ startedAt: NOW - 3600n })), FEED, o)).rejects.toThrow(/grace/);
+    await expect(readPrice(both(round(), seq({ startedAt: NOW - 3601n })), FEED, o)).resolves.toBeDefined();
+    await expect(readPrice(both(round(), seq({ startedAt: 0n })), FEED, o)).rejects.toThrow(/status time/);
+    await expect(readPrice(both(round(), seq({ startedAt: NOW + 1n })), FEED, o)).rejects.toThrow(/status time/);
+    await expect(readPrice(both(round(), new Error('x')), FEED, o)).rejects.toThrow(/sequencer feed read failed/);
+    await expect(readPrice(both(round(), seq({ answer: 'x' as never })), FEED, o)).rejects.toThrow(/malformed sequencer/);
+    await expect(readPrice(both(round(), seq()), FEED, { ...opts, sequencerUptime: { feed: 'nope' } })).rejects.toThrow(/sequencer feed address/);
+    await expect(readPrice(both(round(), seq({ startedAt: NOW - 100n })), FEED, { ...opts, sequencerUptime: { feed: SEQ, gracePeriodSeconds: 50n } })).resolves.toBeDefined();
+    await expect(assertSequencerUp(both(round(), seq()), SEQ, { now: NOW, gracePeriodSeconds: -1n })).rejects.toThrow(/grace period/);
+    expect(DEFAULT_SEQUENCER_GRACE_SECONDS).toBe(3600n);
+  });
+
+  it('the sequencer check runs before the price read', async () => {
+    let priceReads = 0;
+    const r: AggregatorReader = {
+      decimals: () => Promise.resolve(8),
+      latestRoundData: (f) => { if (f !== SEQ) priceReads++; return Promise.resolve(f === SEQ ? seq({ answer: 1n }) : round()); },
+    };
+    await expect(readPrice(r, FEED, { ...opts, sequencerUptime: { feed: SEQ } })).rejects.toThrow(/sequencer down/);
+    expect(priceReads).toBe(0);
+  });
+
+  it('withinSlippage is exact at the boundary and validates inputs', () => {
+    expect(withinSlippage(10_000n, 10_050n, 50)).toBe(true);
+    expect(withinSlippage(10_000n, 10_051n, 50)).toBe(false);
+    expect(withinSlippage(10_000n, 9_950n, 50)).toBe(true);
+    expect(withinSlippage(10_000n, 9_949n, 50)).toBe(false);
+    expect(withinSlippage(7n, 7n, 0)).toBe(true);
+    expect(() => withinSlippage(0n, 1n, 10)).toThrow(/positive/);
+    expect(() => withinSlippage(1n, 0n, 10)).toThrow(/positive/);
+    expect(() => withinSlippage(1n, 1n, -1)).toThrow(/tolerance/);
+    expect(() => withinSlippage(1n, 1n, 10_001)).toThrow(/tolerance/);
+    expect(() => withinSlippage(1n, 1n, 1.5)).toThrow(/tolerance/);
   });
 });

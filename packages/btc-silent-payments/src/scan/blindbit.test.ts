@@ -79,7 +79,7 @@ describe('BlindBitClient (shape verified from the BlindBit-Oracle v2 server READ
       `${BASE}/tweaks/840000`,
       `${BASE}/utxos/840000`,
     ]);
-    for (const call of s.calls) expect(call.init).toEqual({ method: 'GET' }); // no body, no headers, no signal
+    for (const call of s.calls) expect(Object.keys(call.init).sort()).toEqual(['method', 'signal']); // no body, no headers
   });
 
   it('end to end: scanning through the client finds the payments and sends only heights (privacy)', async () => {
@@ -132,7 +132,7 @@ describe('BlindBitClient (shape verified from the BlindBit-Oracle v2 server READ
     };
     const c = new BlindBitClient({ baseUrl: BASE, fetch });
     await c.getTipHeight(ctl.signal);
-    expect(seen[0]).toBe(ctl.signal);
+    expect(seen[0]).toBeInstanceOf(AbortSignal);
     ctl.abort();
     await expect(c.getTipHeight(ctl.signal)).rejects.toSatisfy((e) => code(e) === 'ABORTED');
   });
@@ -275,10 +275,125 @@ describe('BlindBitClient (shape verified from the BlindBit-Oracle v2 server READ
     ]) {
       expect(() => new BlindBitClient({ baseUrl: bad, fetch: f }), bad).toThrow(SilentPaymentError);
     }
-    const c = new BlindBitClient({ baseUrl: 'http://localhost:8000', fetch: f });
+    const c = new BlindBitClient({ baseUrl: 'http://localhost:8000', fetch: f, allowInsecureLoopback: true });
     for (const h of [-1, 1.5, 2 ** 32, Number.NaN]) {
       await expect(c.getTweaks(h)).rejects.toSatisfy((e) => code(e) === 'INVALID_INPUT');
       await expect(c.getOutputs(h)).rejects.toSatisfy((e) => code(e) === 'INVALID_INPUT');
     }
+  });
+
+  it('TS-04: plain http is refused unless loopback is explicitly allowed', () => {
+    const f = server({}).fetch;
+    expect(() => new BlindBitClient({ baseUrl: 'http://oracle.example', fetch: f })).toThrow(
+      SilentPaymentError,
+    );
+    expect(() => new BlindBitClient({ baseUrl: 'http://localhost:8000', fetch: f })).toThrow(
+      SilentPaymentError,
+    );
+    expect(
+      () => new BlindBitClient({ baseUrl: 'http://oracle.example', fetch: f, allowInsecureLoopback: true }),
+    ).toThrow(SilentPaymentError);
+    for (const u of ['http://127.0.0.1:1', 'http://[::1]:1', 'http://localhost']) {
+      expect(() => new BlindBitClient({ baseUrl: u, fetch: f, allowInsecureLoopback: true })).not.toThrow();
+    }
+  });
+
+  it('TS-04: rejects an absurd tip height from /info and /getInfo', async () => {
+    const f = server({ '/info': { height: 4294967295 } }).fetch;
+    const c = new BlindBitClient({ baseUrl: BASE, fetch: f });
+    await expect(c.getTipHeight()).rejects.toSatisfy((e) => code(e) === 'INVALID_RESPONSE');
+    const ok = new BlindBitClient({ baseUrl: BASE, fetch: f, maxTipHeight: 4294967295 });
+    await expect(ok.getTipHeight()).resolves.toBe(4294967295);
+  });
+
+  it('TS-04: caps the streamed body and rejects an oversized content-length', async () => {
+    const chunk = new TextEncoder().encode('{"height":1,"pad":"' + 'a'.repeat(100) + '"}');
+    let cancelled = false;
+    const streaming =
+      (parts: Uint8Array[]): FetchLike =>
+      () => {
+        let i = 0;
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.reject(new Error('must not be used')),
+          body: {
+            getReader: () => ({
+              read: () =>
+                Promise.resolve(i < parts.length ? { done: false, value: parts[i++] } : { done: true }),
+              cancel: () => {
+                cancelled = true;
+                return Promise.resolve();
+              },
+            }),
+          },
+        });
+      };
+    const small = new BlindBitClient({ baseUrl: BASE, fetch: streaming([chunk]), maxBodyBytes: 50 });
+    await expect(small.getTipHeight()).rejects.toSatisfy((e) => code(e) === 'INVALID_RESPONSE');
+    expect(cancelled).toBe(true);
+    const fine = new BlindBitClient({
+      baseUrl: BASE,
+      fetch: streaming([chunk.slice(0, 40), chunk.slice(40)]),
+    });
+    await expect(fine.getTipHeight()).resolves.toBe(1);
+    const bad = new BlindBitClient({ baseUrl: BASE, fetch: streaming([new Uint8Array([0xff, 0xfe])]) });
+    await expect(bad.getTipHeight()).rejects.toSatisfy((e) => code(e) === 'INVALID_RESPONSE');
+    const failing: FetchLike = () =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({}),
+        body: {
+          getReader: () => ({ read: () => Promise.reject(new Error('x')), cancel: () => Promise.resolve() }),
+        },
+      });
+    await expect(new BlindBitClient({ baseUrl: BASE, fetch: failing }).getTipHeight()).rejects.toSatisfy(
+      (e) => code(e) === 'TRANSPORT_FAILURE',
+    );
+    const lying: FetchLike = () =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({ height: 1 }),
+        headers: { get: () => '999999999' },
+      });
+    await expect(new BlindBitClient({ baseUrl: BASE, fetch: lying }).getTipHeight()).rejects.toSatisfy(
+      (e) => code(e) === 'INVALID_RESPONSE',
+    );
+  });
+
+  it('TS-04: times out a hung request and honours a pre-aborted signal', async () => {
+    const hang: FetchLike = (_u, init) =>
+      new Promise((_res, rej) => {
+        init.signal?.addEventListener('abort', () => rej(new Error('aborted')));
+      });
+    const c = new BlindBitClient({ baseUrl: BASE, fetch: hang, timeoutMs: 20 });
+    await expect(c.getTipHeight()).rejects.toSatisfy((e) => code(e) === 'TRANSPORT_FAILURE');
+    const ctl = new AbortController();
+    ctl.abort();
+    await expect(c.getTipHeight(ctl.signal)).rejects.toSatisfy((e) => code(e) === 'ABORTED');
+    expect(() => new BlindBitClient({ baseUrl: BASE, fetch: hang, timeoutMs: 0 })).toThrow(
+      SilentPaymentError,
+    );
+    expect(() => new BlindBitClient({ baseUrl: BASE, fetch: hang, maxBodyBytes: 0 })).toThrow(
+      SilentPaymentError,
+    );
+    expect(() => new BlindBitClient({ baseUrl: BASE, fetch: hang, maxTipHeight: -1 })).toThrow(
+      SilentPaymentError,
+    );
+  });
+
+  it('TS-04: getInfo applies the same tip bound', async () => {
+    const info = {
+      network: 'signet',
+      height: 4294967295,
+      tweaks_only: false,
+      tweaks_full_basic: true,
+      tweaks_full_with_dust_filter: false,
+      tweaks_cut_through_with_dust_filter: false,
+    };
+    const c = new BlindBitClient({ baseUrl: BASE, fetch: server({ '/info': info }).fetch });
+    await expect(c.getInfo()).rejects.toSatisfy((e) => code(e) === 'INVALID_RESPONSE');
   });
 });

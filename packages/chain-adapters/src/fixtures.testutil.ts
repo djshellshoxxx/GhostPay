@@ -68,3 +68,18 @@ export function invoiceFor(meta: string, over: Partial<Invoice> = {}): Invoice {
 export function payment(meta: string): ReturnType<typeof deriveStealthPayment> {
   return deriveStealthPayment(meta);
 }
+
+/** Manifest JSON including the optional policy-account fields (flat fee configurable). */
+export function policyManifestJson(flatFee = '1000000', chainId = 11155111): Record<string, unknown> {
+  const j = manifestJson(chainId);
+  return {
+    ...j,
+    deployTx: { ...(j['deployTx'] as object), policyImplementation: `0x${'5'.repeat(64)}`, policyFactory: `0x${'6'.repeat(64)}` },
+    bytecodeHashes: { ...(j['bytecodeHashes'] as object), policyImplementation: `0x${'7'.repeat(64)}`, policyFactory: `0x${'8'.repeat(64)}` },
+    policyImplementation: '0x0000000000000000000000000000000000000e55',
+    policyFactory: '0x0000000000000000000000000000000000000f66',
+    policyFeeToken: USDC_SEPOLIA,
+    policyFlatFee: flatFee,
+    policyFeeRecipient: FAKE.feeRecipient,
+  };
+}

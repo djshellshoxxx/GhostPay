@@ -16,6 +16,9 @@ Crypto is reused from `@ghostpay/core-crypto`; no key material is created or exp
 | `logs.ts` | Paginated, reorg-safe `Announcement` fetch with strict validation |
 | `quote.ts` | Chainlink read + fiat-to-token conversion (payer rounds up) |
 | `adapter.ts` | `ChainAdapter` interface and `createEvmAdapter` |
+| `readback.ts` | `verifyManifest` / `assertManifestVerified`: manifest vs chain (fee recipient, announcer, fee bps, code hashes), fail closed |
+| `verify.ts` | `verifyAnnouncementAmount`: `verified` vs `claimed` amounts for detected payments |
+| `registry.ts`, `abi/erc6538.ts` | ERC-6538 registry ABI, `buildRegisterKeys` / `buildClearKeys` / `buildRegisterKeysOnBehalf` / `buildIncrementNonce`, `lookupMeta`, `assertRegistryAvailable` |
 
 ## Usage sketch
 
@@ -27,6 +30,27 @@ const req = adapter.buildPaymentRequest(invoice);
 const { tx, preview } = req.build({ deadline });
 assertPreviewMatchesCalldata(preview, tx, 84532);            // before the wallet prompt
 ```
+
+## New API (2026-10-21)
+
+```ts
+// 1. Manifest read-back: call before enabling payment, pass the result to the adapter.
+const rb = await verifyManifest(manifest, [primaryClient, secondClient], { requireTwoProviders: true });
+assertManifestVerified(rb);                       // throws MANIFEST_READBACK_FAILED naming the failed checks
+const adapter = createEvmAdapter({ chain, deployment: manifest, client: primaryClient, readback: rb,
+  secondaryClient: secondClient, minConfirmations: chain.finalityDepth, onReorg: (n) => dropMatchesFrom(n) });
+// 2. scan() yields DetectedPayment with: verification ('verified' | 'claimed' + reason), confirmations, final.
+//    Show an amount as received only when verification.status === 'verified'.
+// 3. ERC-6538: buildRegisterKeys(meta) -> TxRequest { to: REGISTRY_ADDRESS, data, value: 0n }; lookupMeta(client, addr).
+//    Gate the UI with assertRegistryAvailable(client, pinnedCodehash). Publishing is a public association.
+// 4. adapter.fees.flatSecurity now reflects manifest.policy.
+// 5. Quotes: readPrice(reader, feed, { now, maxAgeSeconds, heartbeatSeconds, sequencerUptime: { feed } }),
+//    assertSequencerUp, effectiveMaxAge, withinSlippage.
+// 6. fetchAnnouncements({ ..., minConfirmations, secondary }) -> also returns head, scanHead; announcements carry
+//    confirmations and transactionHash. requestWithFallbackCheck gained an optional projection argument.
+```
+
+New error codes: `MANIFEST_READBACK_FAILED`, `REGISTRY_UNAVAILABLE`. Known limits: DEVIATIONS 14-18.
 
 ## Safety rules enforced here
 

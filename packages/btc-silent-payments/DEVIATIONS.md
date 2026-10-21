@@ -95,6 +95,22 @@ Frigate (Sparrow) / Electrum Silent Payments protocol:
 - Fee policy: `fee = ceil(feerate * vsize)`; change below the dust limit (default 546) is folded into the fee; a leftover
   larger than that without a change address is refused instead of burned.
 
+## Audit fixes (TS-01, TS-02, TS-04), 2026-10-21
+
+- **TS-01 fixed.** `scanBlocks` indexes block outputs by x-only key to a LIST and yields every output with a matching
+  key (flag `duplicateKey: true` when more than one), instead of silently keeping the last. Callers must not assume the
+  first is the real one; with BlindBit `/tweaks` carrying no txid, only `verifier` can tie an output to its transaction.
+- **TS-02 mitigated, not solved.** Oracle data stays untrusted: every `ReceivedOutput` has `verified: false` unless the
+  optional `verifier` (own node `getrawtransaction` or a second oracle; the caller implements it) returned true; outputs
+  failing it are dropped. A repeated `(txid, vout)` across heights is reported once. An oracle can still omit tweaks
+  (silently missing payments) and the `/utxos` txid byte order is still undocumented. No verifier implementation ships.
+- **TS-04 fixed.** `BlindBitClient`: `https` only (`http` for loopback hosts only with `allowInsecureLoopback`; a
+  behaviour change for tests/local oracles), per-request timeout (15 s), streamed body cap (8 MiB) when the transport
+  exposes `Response.body`/`headers` (the structural `FetchResponseLike` falls back to `json()` otherwise, where the cap
+  cannot apply before parsing), tip height bounded (`maxTipHeight`, default 10 000 000). `scanBlocks` refuses ranges above
+  `maxBlocks` (default 200 000) before requesting any block. The client now always passes its own `AbortSignal` (linked to
+  the caller's) to the transport.
+
 ## Security statements
 
 - JavaScript gives **no constant-time guarantee**: bigint arithmetic and noble point multiplication branch on secret

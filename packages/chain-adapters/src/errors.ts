@@ -12,6 +12,8 @@ export type AdapterErrorCode =
   | 'RESPONSE_TOO_LARGE'
   | 'INVALID_LOG'
   | 'QUOTE_FAILED'
+  | 'MANIFEST_READBACK_FAILED'
+  | 'REGISTRY_UNAVAILABLE'
   | 'SIGNING_FAILED';
 
 /**

@@ -185,4 +185,81 @@ describe('privacy: the transport only ever receives block heights', () => {
       expect(serialized).not.toContain(toHex(pub));
     expect(mem.requests.every((r) => r.height === undefined || Number.isInteger(r.height))).toBe(true);
   });
+
+  describe('TS-01 / TS-02 / TS-04 regressions', () => {
+    function spoofed(): { src: InMemoryTweakSource; realTxid: string } {
+      const b = makeBlock(300, [{ inputs: [p2wpkhInput('spoof')], recipients: [aliceAddr] }]);
+      const real = b.outputs.outputs[0]!;
+      const evil = {
+        xOnlyPublicKey: real.xOnlyPublicKey,
+        txid: '22'.repeat(32),
+        vout: 3,
+        amountSats: 99_999_999n,
+      };
+      return {
+        realTxid: real.txid!,
+        src: new InMemoryTweakSource([
+          { tweaks: b.tweaks, outputs: { ...b.outputs, outputs: [real, evil] } },
+        ]),
+      };
+    }
+
+    it('returns BOTH outputs sharing a key, flagged duplicateKey, real one first-class (TS-01)', async () => {
+      const { src, realTxid } = spoofed();
+      const found = await collect(scanBlocks({ source: src, keys, fromHeight: 300, toHeight: 300 }));
+      expect(found.map((f) => f.txid)).toEqual([realTxid, '22'.repeat(32)]);
+      expect(found.every((f) => f.duplicateKey)).toBe(true);
+      expect(found.every((f) => !f.verified)).toBe(true);
+    });
+
+    it('a verifier can drop the spoofed output and marks the rest verified (TS-02)', async () => {
+      const { src, realTxid } = spoofed();
+      const seen: boolean[] = [];
+      const found = await collect(
+        scanBlocks({
+          source: src,
+          keys,
+          fromHeight: 300,
+          toHeight: 300,
+          verifier: (o, signal) => {
+            seen.push(signal === undefined);
+            return Promise.resolve(o.txid === realTxid);
+          },
+        }),
+      );
+      expect(found).toHaveLength(1);
+      expect(found[0]?.txid).toBe(realTxid);
+      expect(found[0]?.verified).toBe(true);
+      expect(seen).toHaveLength(2);
+    });
+
+    it('does not report the same outpoint twice across heights (TS-02)', async () => {
+      const b = makeBlock(400, [{ inputs: [p2wpkhInput('dup')], recipients: [aliceAddr] }]);
+      const at = (h: number): { tweaks: BlockTweaks; outputs: BlockOutputs } => ({
+        tweaks: { ...b.tweaks, height: h, blockHash: blockHashOf(h) },
+        outputs: { ...b.outputs, height: h, blockHash: blockHashOf(h) },
+      });
+      const src = new InMemoryTweakSource([at(400), at(401)]);
+      const found = await collect(scanBlocks({ source: src, keys, fromHeight: 400, toHeight: 401 }));
+      expect(found).toHaveLength(1);
+      expect(found[0]?.height).toBe(400);
+    });
+
+    it('refuses a range larger than maxBlocks before any block request (TS-04)', async () => {
+      const src = chain();
+      await expect(
+        collect(scanBlocks({ source: src, keys, fromHeight: 0, toHeight: 4_294_967_295 })),
+      ).rejects.toSatisfy((e) => codeOf(e) === 'INVALID_INPUT');
+      expect(src.requests.filter((r) => r.method !== 'getTipHeight')).toHaveLength(0);
+      await expect(
+        collect(scanBlocks({ source: src, keys, fromHeight: 100, toHeight: 102, maxBlocks: 2 })),
+      ).rejects.toSatisfy((e) => codeOf(e) === 'INVALID_INPUT');
+      await expect(
+        collect(scanBlocks({ source: src, keys, fromHeight: 100, toHeight: 102, maxBlocks: 0 })),
+      ).rejects.toSatisfy((e) => codeOf(e) === 'INVALID_INPUT');
+      await expect(
+        collect(scanBlocks({ source: src, keys, fromHeight: 100, toHeight: 102, maxBlocks: 3 })),
+      ).resolves.toBeDefined();
+    });
+  });
 });

@@ -100,6 +100,10 @@ export interface DetectedBitcoinPayment {
   readonly txid?: string;
   readonly vout?: number;
   readonly amountSats?: bigint;
+  /** More than one block output shares this key (possible spoof, TS-01); all are reported. */
+  readonly duplicateKey?: boolean;
+  /** True only if an independent `OutputVerifier` confirmed txid/vout/amount (TS-02); otherwise oracle-reported. */
+  readonly verified?: boolean;
   /** 32-byte x-only taproot output key. */
   readonly xOnlyPublicKey: Uint8Array;
   readonly k: number;

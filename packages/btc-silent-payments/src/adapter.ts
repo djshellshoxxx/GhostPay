@@ -123,6 +123,8 @@ export function createBitcoinAdapter(deps: BitcoinAdapterDeps): BitcoinChainAdap
           ...(r.txid === undefined ? {} : { txid: r.txid }),
           ...(r.vout === undefined ? {} : { vout: r.vout }),
           ...(r.amountSats === undefined ? {} : { amountSats: r.amountSats }),
+          duplicateKey: r.duplicateKey,
+          verified: r.verified,
           xOnlyPublicKey: r.xOnlyPublicKey,
           k: r.k,
           label: r.label,

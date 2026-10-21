@@ -59,6 +59,16 @@ for await (const hit of scanBlocks({ source, keys: { scanSecret: keys.scanSecret
 | `adapter.ts`, `adapter-types.ts` | Bitcoin `ChainAdapter`; copied interface with a drift test |
 | `units.ts`, `uri.ts` | sats <-> BTC decimal strings, `bitcoin:?sp=` builder and strict parser |
 
+## Scan hardening (audit TS-01/02/04)
+
+- `scanBlocks` yields EVERY output sharing a matched key (`duplicateKey: true` when >1) and de-duplicates `(txid, vout)`
+  across heights. `ReceivedOutput.verified` is `false` for all oracle-reported data; pass `verifier: (output, signal) =>
+  Promise<boolean>` (own node / second oracle) to drop unverifiable outputs and get `verified: true`.
+- `scanBlocks({ maxBlocks })` (default `DEFAULT_MAX_BLOCKS` = 200 000) bounds oracle requests.
+- `BlindBitClient` options: `allowInsecureLoopback` (plain `http` only for loopback), `timeoutMs` (15 000),
+  `maxBodyBytes` (8 MiB, needs a streaming `fetch` Response), `maxTipHeight` (`DEFAULT_MAX_TIP_HEIGHT`).
+- `DetectedBitcoinPayment` gained optional `duplicateKey` and `verified`.
+
 ## Spending
 
 ```ts

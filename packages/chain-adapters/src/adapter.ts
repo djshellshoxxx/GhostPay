@@ -14,6 +14,8 @@ import type { Invoice } from '@ghostpay/invoice-schema';
 import type { ChainConfig } from './config/chains.js';
 import { requireEnabledChain } from './config/chains.js';
 import type { DeploymentManifest } from './deployments.js';
+import { assertManifestVerified, type ReadbackResult } from './readback.js';
+import { verifyAnnouncementAmount, type AmountVerification } from './verify.js';
 import { fail } from './errors.js';
 import { FEE_SCHEDULE, grossForNet, routerSplit } from './fees.js';
 import { fetchAnnouncements, type ScanCursor, type ScannedAnnouncement } from './logs.js';
@@ -88,6 +90,15 @@ export interface DetectedPayment {
   readonly metadata: ParsedMetadata | undefined;
   /** True when the announce call came from this chain's GhostPay router. */
   readonly viaRouter: boolean;
+  /**
+   * Whether the amount may be shown as received. `claimed` means it comes from announcement metadata only
+   * (direct payers can write anything); never present a `claimed` amount as money received.
+   */
+  readonly verification: AmountVerification;
+  /** Confirmations at the head seen when it was found (1 = newest block). */
+  readonly confirmations: bigint;
+  /** True once `confirmations > chain.finalityDepth`; below that a reorg can still remove the payment. */
+  readonly final: boolean;
 }
 
 /** Status of a fee line on a chain. */
@@ -124,6 +135,23 @@ export interface EvmAdapterDeps {
   readonly chain: ChainConfig;
   readonly deployment: DeploymentManifest;
   readonly client: RpcClient;
+  /**
+   * Result of `verifyManifest` for this deployment. When provided, a failed result makes
+   * `createEvmAdapter` throw `MANIFEST_READBACK_FAILED` (fail closed). Omitting it keeps the legacy
+   * behaviour of trusting the manifest as-is; apps should always pass it.
+   */
+  readonly readback?: ReadbackResult;
+  /** Independent second provider: scan reads must agree across both (see `fetchAnnouncements`). */
+  readonly secondaryClient?: RpcClient;
+  /** Only report announcements with at least this many confirmations (default 1). */
+  readonly minConfirmations?: number;
+  /** Verify amounts of non-router announcements via ERC-20 Transfer logs (default true). */
+  readonly verifyAmounts?: boolean;
+  /**
+   * Called when a scan pass detects a reorg: payments already yielded with `blockNumber >= rolledBackTo`
+   * must be dropped by the consumer (they may be re-yielded if they survive on the new fork).
+   */
+  readonly onReorg?: (rolledBackTo: bigint) => void;
 }
 
 /**
@@ -145,6 +173,9 @@ export function createEvmAdapter(deps: EvmAdapterDeps): ChainAdapter {
     return fail('CHAIN_MISMATCH', 'chain, deployment and client must agree');
   }
   const { deployment, client } = deps;
+  if (deps.readback !== undefined) assertManifestVerified(deps.readback);
+  const policy = deployment.policy;
+  const flatSecurity: FeeStatus = policy === undefined ? 'not_deployed' : policy.flatFee > 0n ? 'enforced' : 'not_enforceable';
 
   return {
     family: 'evm',
@@ -153,7 +184,7 @@ export function createEvmAdapter(deps: EvmAdapterDeps): ChainAdapter {
       checkout: 'enforced',
       checkoutBps: Number(FEE_SCHEDULE.ROUTER_FEE_BPS),
       gasSponsorship: 'enforced',
-      flatSecurity: 'not_deployed',
+      flatSecurity,
     },
 
     parseRecipient(input) {
@@ -206,7 +237,15 @@ export function createEvmAdapter(deps: EvmAdapterDeps): ChainAdapter {
       let cursor: ScanCursor = { nextBlock: range.fromBlock };
       for (;;) {
         if (signal.aborted) return;
-        const res = await fetchAnnouncements({ chain, client, announcer: deployment.announcer, cursor });
+        const res = await fetchAnnouncements({
+          chain,
+          client,
+          announcer: deployment.announcer,
+          cursor,
+          ...(deps.minConfirmations === undefined ? {} : { minConfirmations: deps.minConfirmations }),
+          ...(deps.secondaryClient === undefined ? {} : { secondary: deps.secondaryClient }),
+        });
+        if (res.reorg !== undefined) deps.onReorg?.(res.reorg.rolledBackTo);
         for (const a of res.announcements) {
           if (signal.aborted) return;
           if (range.toBlock !== undefined && a.blockNumber > range.toBlock) continue;
@@ -218,11 +257,20 @@ export function createEvmAdapter(deps: EvmAdapterDeps): ChainAdapter {
           } catch {
             metadata = undefined;
           }
+          const viaRouter = a.caller.toLowerCase() === deployment.router.toLowerCase();
+          const verification: AmountVerification =
+            deps.verifyAmounts === false
+              ? { status: 'claimed', reason: 'not_checked' }
+              : await verifyAnnouncementAmount({ client, announcement: a, metadata, viaRouter });
+          const confirmations = a.confirmations ?? 1n;
           yield {
             stealthAddress: hit.stealthAddress,
             announcement: a,
             metadata,
-            viaRouter: a.caller.toLowerCase() === deployment.router.toLowerCase(),
+            viaRouter,
+            verification,
+            confirmations,
+            final: confirmations > BigInt(chain.finalityDepth),
           };
         }
         cursor = res.cursor;

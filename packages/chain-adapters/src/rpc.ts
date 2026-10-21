@@ -185,7 +185,8 @@ export function parseQuantity(v: unknown): bigint {
   return BigInt(v);
 }
 
-function toQuantity(n: bigint): string {
+/** Canonical JSON-RPC quantity (`0x` + lowercase hex, no leading zeros). */
+export function toQuantity(n: bigint): string {
   return `0x${n.toString(16)}`;
 }
 
@@ -314,6 +315,8 @@ function parseResponse(text: string, id: number): unknown {
  * @param b Secondary client (must be on the same chain id).
  * @param method JSON-RPC method.
  * @param params Params.
+ * @param project Optional projection applied to BOTH results before comparing (e.g. strip provider-specific
+ * fields from `eth_getLogs` entries). The unprojected primary result is returned.
  * @returns The agreed result.
  * @throws {ChainAdapterError} `CHAIN_MISMATCH` for different chains, `RPC_FAILURE` on disagreement.
  */
@@ -322,10 +325,11 @@ export async function requestWithFallbackCheck(
   b: RpcClient,
   method: string,
   params: readonly unknown[],
+  project: (result: unknown) => unknown = (r) => r,
 ): Promise<unknown> {
   if (a.chainId !== b.chainId) return fail('CHAIN_MISMATCH', 'clients target different chains');
   const [ra, rb] = await Promise.all([a.request(method, params), b.request(method, params)]);
-  if (stableStringify(ra) !== stableStringify(rb)) return fail('RPC_FAILURE', 'providers disagree');
+  if (stableStringify(project(ra)) !== stableStringify(project(rb))) return fail('RPC_FAILURE', 'providers disagree');
   return ra;
 }
 

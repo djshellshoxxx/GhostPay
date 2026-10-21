@@ -273,3 +273,94 @@ describe('fetchAnnouncements', () => {
     void (FAKE.router);
   });
 });
+
+describe('TS-03 confirmations / minConfirmations / secondary provider', () => {
+  it('annotates each announcement with confirmations and exposes head/scanHead', async () => {
+    const c = mkChain({ head: 20, logs: [mkLog({}, 20, 0), mkLog({}, 10, 1)] });
+    const r = await fetchWith(await client(c), { nextBlock: 0n });
+    expect(r.head).toBe(20n);
+    expect(r.scanHead).toBe(20n);
+    expect(r.announcements.map((a) => [a.blockNumber, a.confirmations])).toEqual([[10n, 11n], [20n, 1n]]);
+  });
+
+  it('minConfirmations stops short of the head and keeps unconfirmed logs for a later pass', async () => {
+    const c = mkChain({ head: 20, logs: [mkLog({}, 20, 0), mkLog({}, 10, 1)] });
+    const r = await fetchWith(await client(c), { nextBlock: 0n }, { minConfirmations: 6 });
+    expect(r.scanHead).toBe(15n);
+    expect(r.announcements.map((a) => a.blockNumber)).toEqual([10n]);
+    expect(r.announcements.every((a) => (a.confirmations ?? 0n) >= 6n)).toBe(true);
+    expect(r.cursor.nextBlock).toBe(16n);
+    expect(Math.max(...c.requests.map((q) => Number(q.to)))).toBe(15);
+    const later = mkChain({ head: 30, logs: c.logs });
+    const r2 = await fetchWith(await client(later), r.cursor, { minConfirmations: 6 });
+    expect(r2.announcements.map((a) => a.blockNumber)).toEqual([20n]);
+  });
+
+  it('a chain younger than minConfirmations yields nothing and an unchanged cursor', async () => {
+    const c = mkChain({ head: 2, logs: [mkLog({}, 1, 0)] });
+    const r = await fetchWith(await client(c), { nextBlock: 0n }, { minConfirmations: 10 });
+    expect(r.announcements).toHaveLength(0);
+    expect(r.cursor.nextBlock).toBe(0n);
+    expect(c.requests).toHaveLength(0);
+  });
+
+  it('rejects an invalid minConfirmations', async () => {
+    for (const bad of [0, -1, 1.5]) {
+      await expect(fetchWith(await client(mkChain()), { nextBlock: 0n }, { minConfirmations: bad })).rejects.toThrow(/minConfirmations/);
+    }
+  });
+
+  it('reports the reorg rollback so the consumer can drop matches at or above it', async () => {
+    const c = mkChain({ head: 20, logs: [mkLog({}, 18, 0)] });
+    const first = await fetchWith(await client(c), { nextBlock: 0n });
+    expect(first.announcements).toHaveLength(1);
+    c.fork = 1;
+    const second = await fetchWith(await client(c), first.cursor);
+    expect(second.reorg).toEqual({ rolledBackTo: 16n });
+    expect(second.reorg!.rolledBackTo <= first.announcements[0]!.blockNumber).toBe(true);
+  });
+
+  it('keeps the well-formed transaction hash only', () => {
+    const v = (l: RpcLog) => validateAnnouncementLog(l, ANN, 1n, 0n, 100n);
+    const h = `0x${'ab'.repeat(32)}`;
+    expect(v(mkLog({ transactionHash: h.toUpperCase().replace('0X', '0x') }))?.transactionHash).toBe(h);
+    expect(v(mkLog({ transactionHash: '0x12' }))?.transactionHash).toBeUndefined();
+    expect(v(mkLog({}))?.transactionHash).toBeUndefined();
+  });
+
+  describe('secondary provider (requestWithFallbackCheck)', () => {
+    it('accepts agreeing providers regardless of key order, case and extra fields', async () => {
+      const logs = [mkLog({}, 10, 1), mkLog({}, 5, 0)];
+      const a = await client(mkChain({ logs }));
+      const b = await client(mkChain({ logs: [...logs].reverse().map((l) => ({ ...l, address: l.address.toUpperCase().replace('0X', '0x'), extra: 1 } as RpcLog)) }));
+      const r = await fetchWith(a, { nextBlock: 0n }, { secondary: b });
+      expect(r.announcements).toHaveLength(2);
+    });
+
+    it('fails closed when the secondary omits or alters a log', async () => {
+      const logs = [mkLog({}, 5, 0), mkLog({}, 6, 0)];
+      const a = await client(mkChain({ logs }));
+      const omit = await client(mkChain({ logs: [logs[0]!] }));
+      await expect(fetchWith(a, { nextBlock: 0n }, { secondary: omit })).rejects.toThrow(/providers disagree/);
+      const alter = await client(mkChain({ logs: [logs[0]!, { ...logs[1]!, logIndex: '0x9' }] }));
+      await expect(fetchWith(a, { nextBlock: 0n }, { secondary: alter })).rejects.toThrow(/providers disagree/);
+    });
+
+    it('fails closed when the closing block hash differs or the chain differs', async () => {
+      const a = await client(mkChain());
+      const forked = await client(mkChain({ fork: 1 }));
+      await expect(fetchWith(a, { nextBlock: 0n }, { secondary: forked })).rejects.toThrow(/providers disagree/);
+      const missing = await client(mkChain(), { eth_getBlockByNumber: () => null });
+      await expect(fetchWith(a, { nextBlock: 0n }, { secondary: missing })).rejects.toThrow(/providers disagree/);
+      await expect(fetchWith(a, { nextBlock: 0n }, { secondary: { ...a, chainId: 1 } })).rejects.toThrow(/CHAIN_MISMATCH/);
+    });
+
+    it('still halves the window on a range error from the primary', async () => {
+      const logs = [mkLog({}, 5, 0)];
+      const a = await client(mkChain({ logs, providerMax: 4 }));
+      const b = await client(mkChain({ logs }));
+      const r = await fetchWith(a, { nextBlock: 0n }, { secondary: b });
+      expect(r.announcements).toHaveLength(1);
+    });
+  });
+});
