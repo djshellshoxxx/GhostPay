@@ -18,8 +18,10 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "npm run build -w @ghostpay/pir-two-server --if-present && tsc -p tsconfig.build.json",
+    "pretypecheck": "npm run build -w @ghostpay/pir-two-server --if-present",
     "typecheck": "tsc -p tsconfig.json --noEmit",
+    "pretest": "npm run build -w @ghostpay/pir-two-server --if-present",
     "test": "vitest run --coverage",
     "lint": "eslint --config ../../eslint.config.js src"
   },
