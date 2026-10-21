@@ -136,7 +136,12 @@ contract PolicyRouterHandler is Test {
         if (crossSeed % 2 == 0) {
             target = outsiders[outsiderSeed % outsiders.length];
         } else {
-            (, target) = _ref(refSeed + 1 + outsiderSeed % 8);
+            // Wrapping is intended (round-3b F-1): a seed near 2^256 must not panic the handler.
+            uint256 crossRef;
+            unchecked {
+                crossRef = refSeed + 1 + outsiderSeed % 8;
+            }
+            (, target) = _ref(crossRef);
         }
         if (target == acct) return;
         gross = bound(gross, 1, 1000 ether);
