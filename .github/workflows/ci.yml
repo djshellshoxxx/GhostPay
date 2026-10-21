@@ -1,0 +1,70 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Least privilege by default. No job here receives deployment, RPC, pinning, or signing secrets.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  typescript:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build --workspace @ghostpay/web
+      - run: npm audit --omit=dev --audit-level=high
+
+  contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: packages/contracts
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+        with:
+          version: v1.8.5
+      # The checked-in config points at a sandbox-only solc path; CI downloads the pinned compiler.
+      - run: sed -i 's|^solc = .*|solc_version = "0.8.28"|' foundry.toml
+      - run: forge fmt --check
+      - run: forge build --sizes
+      - run: forge test
+      - run: bash scripts/check-natspec.sh
+      - name: Slither
+        run: |
+          python3 -m pip install --quiet "slither-analyzer==0.11.6" "solc-select==1.2.0"
+          solc-select install 0.8.28 && solc-select use 0.8.28
+          slither . --filter-paths "lib|test|script" --fail-high --exclude-informational --exclude-low
+
+  secrets-and-egress:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Reject committed private keys and env files
+        run: |
+          if git ls-files | grep -E '(^|/)\.env($|\.)' | grep -v '\.env\.example$'; then echo "env file committed"; exit 1; fi
+          if git grep -nE '(PRIVATE KEY-----|0x[0-9a-fA-F]{64}\b.*(private|secret))' -- . ':!docs' ':!**/test/**' ':!**/*.test.ts' ':!test-vectors' ':!**/*.md' ':!packages/contracts/lib'; then echo "possible secret"; exit 1; fi
