@@ -43,11 +43,11 @@ forge build --sizes
 scripts/check-natspec.sh            # FORGE=/path/to/forge if forge is not on PATH
 ```
 
-### Compiler setting
+### Compiler
 
-`foundry.toml` sets `solc = "/home/user/tools/solc"` because the offline build sandbox has no access to the
-compiler download host. **CI and developer machines should replace that line with `solc_version = "0.8.28"`**
-(or override with `FOUNDRY_SOLC_VERSION=0.8.28`; remove the `solc` key first as the two are mutually exclusive).
+`foundry.toml` commits `solc_version = "0.8.28"`; CI and developer machines download it, nothing to edit. Offline
+sandbox without the download host: install a local 0.8.28 binary where svm looks, once:
+`mkdir -p ~/.svm/0.8.28 && cp /path/to/solc-0.8.28 ~/.svm/0.8.28/solc-0.8.28` (or `FOUNDRY_SOLC=/path/to/solc-0.8.28`).
 
 ### Deploy
 

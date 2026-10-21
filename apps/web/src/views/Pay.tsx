@@ -4,6 +4,7 @@ import type { BuiltPayment } from '@ghostpay/chain-adapters';
 import { CopyButton, Mono, Notice, downloadText } from '../components/Common';
 import { FeeDisclosure, useManifest } from '../components/Disclosure';
 import { extractFragment } from '../lib/fragment';
+import { safeText, payeeFingerprint } from '../lib/displayText';
 import { formatCountdown, formatFiat, formatUnits, formatUnix, shortHex } from '../lib/format';
 import { userMessage } from '../lib/errors';
 import { DelayScheduler, randomDelayMs, type ScheduleSnapshot } from '../lib/jitter';
@@ -391,6 +392,8 @@ export function Pay(): ReactNode {
         <dd>{formatUnix(inv.expiresAt)}</dd>
         <dt>Seller meta-address</dt>
         <dd><Mono>{shortHex(inv.metaAddress, 18, 8)}</Mono></dd>
+        <dt>Seller fingerprint</dt>
+        <dd><Mono>{payeeFingerprint(inv.metaAddress)}</Mono> (compare with the seller by another channel)</dd>
         <dt>Private part</dt>
         <dd>{parsed.encrypted ? 'Was encrypted in the link (decrypted here)' : 'Plain in the link'}</dd>
       </dl>
@@ -405,7 +408,7 @@ export function Pay(): ReactNode {
             <tbody>
               {inv.lineItems.map((li, i) => (
                 <tr key={i}>
-                  <td className="wrap">{li.description}</td>
+                  <td className="wrap">{safeText(li.description).text}</td>
                   <td>{li.quantity}</td>
                   <td>{formatFiat(BigInt(li.unitMinorUnits), inv.fiat.currency)}</td>
                 </tr>
@@ -417,7 +420,7 @@ export function Pay(): ReactNode {
       )}
       {inv.memo !== undefined && (
         <p className="wrap">
-          <strong>Memo:</strong> {inv.memo}
+          <strong>Memo:</strong> {safeText(inv.memo).text}{safeText(inv.memo).flagged ? ' (this text contained hidden or look-alike characters; they are shown as markers)' : ''}
         </p>
       )}
 

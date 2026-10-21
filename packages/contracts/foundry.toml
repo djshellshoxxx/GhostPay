@@ -4,8 +4,11 @@ test = "test"
 script = "script"
 out = "out"
 libs = ["lib"]
-# Offline sandbox uses a local static solc. CI uses `solc_version = "0.8.28"` instead (see README).
-solc = "/home/user/tools/solc"
+# Portable: CI and developer machines download this compiler. Offline sandbox without the download host: put a
+# local 0.8.28 binary where svm looks, once, and nothing in this file needs editing:
+#   mkdir -p ~/.svm/0.8.28 && cp /path/to/solc-0.8.28 ~/.svm/0.8.28/solc-0.8.28
+# (or set FOUNDRY_SOLC=/path/to/solc-0.8.28). See README "Compiler".
+solc_version = "0.8.28"
 evm_version = "cancun"
 optimizer = true
 optimizer_runs = 200

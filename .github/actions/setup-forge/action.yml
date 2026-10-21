@@ -10,9 +10,6 @@ runs:
     - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
       with:
         version: v1.8.5
-    # The checked-in config points at a sandbox-only solc path; CI downloads the pinned compiler.
-    - run: sed -i 's|^solc = .*|solc_version = "0.8.28"|' packages/contracts/foundry.toml
-      shell: bash
     - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       with:
         path: ~/.svm

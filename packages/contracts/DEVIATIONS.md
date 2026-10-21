@@ -36,7 +36,7 @@ differs from a literal one. The lead should confirm or reject each.
 
 - Profiles: the **default** profile already uses 10 000 fuzz runs (the spec's "ci" level) and invariants 256 runs x depth 50; the **dev** profile
   uses 256 fuzz runs. A separate `ci` profile name was not created because the default is what CI invokes.
-- `solc = "/home/user/tools/solc"` is a sandbox-only setting (see README); CI must use `solc_version = "0.8.28"`.
+- `foundry.toml` commits `solc_version = "0.8.28"`; the offline sandbox copies its local binary to `~/.svm/0.8.28/solc-0.8.28` (see README "Compiler"). No file edit needed in CI.
 - Coverage needs `--ir-minimum` (stack-too-deep in the unoptimized test build otherwise).
 - OpenZeppelin is vendored at **5.6.1** (latest 5.x at packaging time) by copying the npm package's `contracts/` tree; no git submodule.
 - forge-std vendored from `foundry-rs/forge-std` commit `b013eff2ac4fce26f34d789e6f5c49021c5ee817` with `.git` removed.

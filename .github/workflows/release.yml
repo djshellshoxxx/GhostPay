@@ -56,7 +56,6 @@ jobs:
       - name: Contract build, tests and anvil artifacts
         working-directory: packages/contracts
         run: |
-          sed -i 's|^solc = .*|solc_version = "0.8.28"|' foundry.toml
           forge fmt --check
           forge build --sizes
           forge test

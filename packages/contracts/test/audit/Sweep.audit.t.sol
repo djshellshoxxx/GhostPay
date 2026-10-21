@@ -133,7 +133,8 @@ contract SweepAuditTest is SweepBase {
         vm.expectRevert(IGhostPaySweepRelayer.InvalidSignature.selector);
         other.sweep(s, sig);
 
-        uint256 originalChain = vm.getChainId(); // not block.chainid: IR rematerialises it after vm.chainId (coverage)
+        // vm.getChainId: under --ir-minimum block.chainid is re-read after vm.chainId.
+        uint256 originalChain = vm.getChainId();
         vm.chainId(originalChain + 1);
         vm.prank(submitter);
         vm.expectRevert(IGhostPaySweepRelayer.InvalidSignature.selector);
