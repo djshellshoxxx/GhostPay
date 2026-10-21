@@ -1,0 +1,24 @@
+name: Setup Node and built libs
+description: Node 22 with the npm cache, `npm ci`, and the workspace libs built (or restored from a cache keyed on every input of the build).
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version: "22"
+        cache: npm
+    - run: npm ci --ignore-scripts
+      shell: bash
+    # Workspace packages resolve each other through their built `dist`. The key covers the lockfile, the root
+    # tsconfig and every source/config file of the three built libs, so a hit is byte-for-byte the same build.
+    - id: libs
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      with:
+        path: |
+          packages/core-crypto/dist
+          packages/invoice-schema/dist
+          packages/chain-adapters/dist
+        key: libs-${{ runner.os }}-node22-${{ hashFiles('package-lock.json', 'tsconfig.base.json', 'packages/core-crypto/src/**', 'packages/core-crypto/package.json', 'packages/core-crypto/tsconfig*.json', 'packages/invoice-schema/src/**', 'packages/invoice-schema/package.json', 'packages/invoice-schema/tsconfig*.json', 'packages/chain-adapters/src/**', 'packages/chain-adapters/package.json', 'packages/chain-adapters/tsconfig*.json') }}
+    - if: steps.libs.outputs.cache-hit != 'true'
+      run: npm run build:libs
+      shell: bash
