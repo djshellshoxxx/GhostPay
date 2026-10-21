@@ -22,12 +22,12 @@ const code = async (fn: () => unknown): Promise<string> => {
 };
 
 function fakeFetch(respond: (body: { id: number; method: string }) => { status?: number; text: string } | Error): typeof fetch {
-  return (async (_url: unknown, init?: RequestInit) => {
+  return ((_url: unknown, init?: RequestInit) => {
     const body = JSON.parse(init?.body as string) as { id: number; method: string };
     const r = respond(body);
-    if (r instanceof Error) throw r;
-    return new Response(r.text, { status: r.status ?? 200 });
-  }) as typeof fetch;
+    if (r instanceof Error) return Promise.reject(r);
+    return Promise.resolve(new Response(r.text, { status: r.status ?? 200 }));
+  });
 }
 
 describe('createHttpRpc', () => {
@@ -54,7 +54,7 @@ describe('createHttpRpc', () => {
     ['rpc error', (b: { id: number }) => ({ text: `{"id":${b.id},"error":{"code":-1}}` }), 'RPC_ERROR'],
     ['missing result', (b: { id: number }) => ({ text: `{"id":${b.id}}` }), 'INVALID_RESPONSE'],
   ] as const)('%s', async (_n, respond, expected) => {
-    const rpc = createHttpRpc({ url: 'https://rpc.invalid', fetch: fakeFetch(respond as never) });
+    const rpc = createHttpRpc({ url: 'https://rpc.invalid', fetch: fakeFetch(respond) });
     expect(await code(() => rpc.request('getSlot', []))).toBe(expected);
   });
   it('honours abort', async () => {

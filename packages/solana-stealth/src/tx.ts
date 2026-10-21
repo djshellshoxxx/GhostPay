@@ -127,7 +127,7 @@ export function addSignature(tx: SolanaTx, signer: Address, signature: Uint8Arra
     return fail('SIGNATURE_INVALID');
   }
   const signatures = { ...tx.transaction.signatures, [signer]: signature as SignatureBytes };
-  return { ...tx, transaction: { ...tx.transaction, signatures } as Transaction };
+  return { ...tx, transaction: { ...tx.transaction, signatures } };
 }
 
 /**

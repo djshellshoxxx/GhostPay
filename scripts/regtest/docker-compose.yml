@@ -1,0 +1,49 @@
+# Local Bitcoin Core REGTEST + Esplora shim for GhostPay. No real funds; ports bound to 127.0.0.1 only.
+#   export BITCOIN_VERSION=<x.y>  BITCOIN_SHA256=<sha256 of bitcoin-<x.y>-x86_64-linux-gnu.tar.gz>
+#   export BITCOIND_RPC_USER=ghostpay BITCOIND_RPC_PASSWORD=$(openssl rand -hex 16)
+#   docker compose -f scripts/regtest/docker-compose.yml up -d --build
+# The tarball hash must come from the signed SHA256SUMS on bitcoincore.org (verify the signatures yourself);
+# this repo does not pin a version or hash because they could not be verified from the build environment.
+services:
+  bitcoind:
+    build:
+      context: .
+      dockerfile: Dockerfile.bitcoind
+      args:
+        BITCOIN_VERSION: ${BITCOIN_VERSION:?set BITCOIN_VERSION}
+        BITCOIN_SHA256: ${BITCOIN_SHA256:?set BITCOIN_SHA256}
+    command:
+      - bitcoind
+      - -regtest=1
+      - -server=1
+      - -printtoconsole=1
+      - -fallbackfee=0.0002
+      - -rpcbind=0.0.0.0
+      - -rpcallowip=172.16.0.0/12
+      - -rpcallowip=192.168.0.0/16
+      - -rpcuser=${BITCOIND_RPC_USER:?set BITCOIND_RPC_USER}
+      - -rpcpassword=${BITCOIND_RPC_PASSWORD:?set BITCOIND_RPC_PASSWORD}
+    ports:
+      - "127.0.0.1:18443:18443"
+    volumes:
+      - bitcoind-regtest:/home/bitcoin/.bitcoin
+  esplora-shim:
+    image: node:22-slim
+    working_dir: /app
+    command: ["node", "esplora-shim.mjs"]
+    environment:
+      BITCOIND_RPC_URL: http://bitcoind:18443
+      BITCOIND_RPC_USER: ${BITCOIND_RPC_USER:?set BITCOIND_RPC_USER}
+      BITCOIND_RPC_PASSWORD: ${BITCOIND_RPC_PASSWORD:?set BITCOIND_RPC_PASSWORD}
+      SHIM_HOST: 0.0.0.0
+      SHIM_PORT: "3002"
+    volumes:
+      - ./esplora-shim.mjs:/app/esplora-shim.mjs:ro
+      - ./esplora-shim-lib.mjs:/app/esplora-shim-lib.mjs:ro
+    depends_on:
+      - bitcoind
+    ports:
+      - "127.0.0.1:3002:3002"
+    restart: on-failure
+volumes:
+  bitcoind-regtest: {}

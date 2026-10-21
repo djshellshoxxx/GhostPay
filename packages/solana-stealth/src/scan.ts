@@ -67,7 +67,7 @@ export async function* fetchAnnouncements(
   opts: FetchAnnouncementsOptions,
 ): AsyncGenerator<AnnouncementRecord> {
   const { signal } = opts;
-  const indexAddress = opts.indexAddress ?? (SCANNED_MEMO_PROGRAMS[0] as string);
+  const indexAddress = opts.indexAddress ?? (SCANNED_MEMO_PROGRAMS[0]);
   const limit = opts.pageLimit ?? 1000;
   const maxPages = opts.maxPages ?? 10_000;
   if (!Number.isInteger(limit) || limit < 1 || limit > 1000) fail('INVALID_INPUT');

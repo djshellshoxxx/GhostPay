@@ -31,12 +31,13 @@ export function legacyMessageToJson(m: Uint8Array): {
   accountKeys: string[];
   instructions: { programIdIndex: number; accounts: number[]; data: string }[];
 } {
-  let [n, i] = compactU16(m, 3);
+  const [n, i0] = compactU16(m, 3);
+  let i = i0;
   const accountKeys: string[] = [];
   for (let k = 0; k < n; k++) accountKeys.push(base58.encode(m.subarray(i + 32 * k, i + 32 * (k + 1))));
   i += 32 * n + 32;
-  let nix: number;
-  [nix, i] = compactU16(m, i);
+  const [nix, afterCount] = compactU16(m, i);
+  i = afterCount;
   const instructions = [];
   for (let k = 0; k < nix; k++) {
     const programIdIndex = m[i++] as number;

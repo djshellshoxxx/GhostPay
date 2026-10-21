@@ -28,7 +28,7 @@ describe('point validation', () => {
   it.each(Object.entries(V.invalidPoints).flatMap(([k, list]) => list.map((h) => [k, h])))(
     'rejects %s point %s',
     (_k, h) => {
-      expect(code(() => parsePublicPoint(hexToBytes(h as string)))).toBe('INVALID_POINT');
+      expect(code(() => parsePublicPoint(hexToBytes(h)))).toBe('INVALID_POINT');
     },
   );
   it('rejects wrong lengths and non-Uint8Array', () => {
