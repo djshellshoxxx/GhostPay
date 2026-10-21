@@ -1,5 +1,7 @@
 # GhostPay: Master Blueprint
 
+> **Update 2026-10-21:** Superseded where it conflicts with [SPEC_REVIEW.md](SPEC_REVIEW.md), [CONTRACTS_SPEC.md](CONTRACTS_SPEC.md) and [FEE_SCHEDULE.md](FEE_SCHEDULE.md) (no on-chain `invoiceId`, exact signatures, fee model, owner-wallet handling).
+
 > **Project status:** Concept and architecture baseline. No production protocol or security guarantees are implemented yet.
 >
 > GhostPay explores private invoice creation and stealth-address settlement on EVM chains. “Zero-server,” “zero-knowledge,” and “unlinkable” are design goals that must be evaluated per component; they are not automatic properties of EIP-5564, EIP-6538, ERC-4337, or static hosting.

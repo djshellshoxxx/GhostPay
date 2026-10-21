@@ -1,5 +1,7 @@
 # GhostPay Post-Launch Feature Expansion and Advanced Security Roadmap
 
+> **Update 2026-10-21:** Superseded where it conflicts with [SPEC_REVIEW.md](SPEC_REVIEW.md), [CONTRACTS_SPEC.md](CONTRACTS_SPEC.md) and [FEE_SCHEDULE.md](FEE_SCHEDULE.md) (no on-chain `invoiceId`, exact signatures, fee model, owner-wallet handling).
+
 **Status:** Proposed post-launch specifications.  
 **Scope assumption:** The core engine is deployed as stated in the request. Before implementing any item, reconcile this document with the actual deployment manifest, contract bytecode, supported chains/tokens, and existing security audit.
 

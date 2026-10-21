@@ -10,6 +10,13 @@ The project goal is to reduce address reuse and limit routine exposure of invoic
 
 ## Starting points
 
+- [Spec review and corrections](docs/SPEC_REVIEW.md) (read first; resolves conflicts between older documents)
+- [Fee schedule and revenue architecture](docs/FEE_SCHEDULE.md)
+- [Contracts specification](docs/CONTRACTS_SPEC.md)
+- [Web app and relayer specification](docs/APP_AND_RELAYER_SPEC.md)
+- [Multi-chain specification](docs/MULTICHAIN_SPEC.md)
+- [Architecture decision records](docs/adr/ADR-LOG.md)
+- [Threat model](docs/threat-model/THREAT_MODEL.md), [Security policy](SECURITY.md)
 - [Post-Launch Feature Expansion and Advanced Security Roadmap](docs/POST_LAUNCH_FEATURES_SECURITY_ROADMAP.md)
 - [Security, QA, DevOps, and Feature Expansion Playbook](docs/SECURITY_QA_DEVOPS_PLAYBOOK.md)
 - [Developer Specification and Execution Blueprint](docs/DEVELOPER_SPECIFICATION.md)

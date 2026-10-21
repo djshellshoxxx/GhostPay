@@ -1,5 +1,7 @@
 # GhostPay Supplementary Planning, Security, QA, and Feature Expansion Playbook
 
+> **Update 2026-10-21:** Superseded where it conflicts with [SPEC_REVIEW.md](SPEC_REVIEW.md), [CONTRACTS_SPEC.md](CONTRACTS_SPEC.md) and [FEE_SCHEDULE.md](FEE_SCHEDULE.md) (no on-chain `invoiceId`, exact signatures, fee model, owner-wallet handling).
+
 **Status:** Operational standard for development and release readiness.  
 **Research checked:** 2026-10-21. Recheck tool versions and upstream security guidance whenever workflows or dependencies change.
 
