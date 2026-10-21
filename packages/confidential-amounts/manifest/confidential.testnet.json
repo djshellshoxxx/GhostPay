@@ -1,0 +1,57 @@
+{
+  "backend": "ct1-zama",
+  "version": 1,
+  "chains": {
+    "11155111": {
+      "chainId": 11155111,
+      "name": "Ethereum Sepolia",
+      "relayerUrl": "https://relayer.testnet.zama.org",
+      "gatewayChainId": 10901,
+      "protocol": {
+        "acl": "0xf0Ffdc93b7E186bC2f8CB3dAA75D86d1930A433D",
+        "coprocessor": "0x92C920834Ec8941d2C77D188936E1f7A6f49c127",
+        "kmsVerifier": "0xbE0E383937d564D7FF0BC3b46c51f0bF8d5C311A",
+        "inputVerifier": "0xBBC1fFCdc7C316aAAd72E807D9b0272BE8F84DA0",
+        "wrappersRegistry": "0x2f0750Bbb0A246059d80e94c454586a7F27a128e"
+      },
+      "codeHashes": {
+        "acl": null,
+        "coprocessor": null,
+        "kmsVerifier": null,
+        "inputVerifier": null
+      },
+      "ghostpay": {
+        "router": null,
+        "tokens": []
+      }
+    },
+    "31337": {
+      "chainId": 31337,
+      "name": "Local Hardhat (fhEVM mock)",
+      "relayerUrl": "",
+      "gatewayChainId": 10901,
+      "protocol": {
+        "acl": "0x50157CFfD6bBFA2DECe204a89ec419c23ef5755D",
+        "coprocessor": "0xe3a9105a3a932253A70F126eb1E3b589C643dD24",
+        "kmsVerifier": "0x901F8942346f7AB3a01F6D7613119Bca447Bb030",
+        "inputVerifier": "0x36772142b74871f255CbD7A3e89B401d3e45825f",
+        "wrappersRegistry": null
+      },
+      "codeHashes": {
+        "acl": null,
+        "coprocessor": null,
+        "kmsVerifier": null,
+        "inputVerifier": null
+      },
+      "ghostpay": {
+        "router": null,
+        "tokens": []
+      }
+    }
+  },
+  "provenance": [
+    "@fhevm/solidity 0.11.1 config/ZamaConfig.sol (ACL, Coprocessor, KMSVerifier for 11155111 and 31337)",
+    "@zama-fhe/sdk 3.7.0 dist/esm/chains-*.js sepolia and hardhat presets (inputVerifier, gatewayChainId 10901, registry, relayerUrl)",
+    "codeHashes: not pinned, no RPC reachable from the build sandbox"
+  ]
+}

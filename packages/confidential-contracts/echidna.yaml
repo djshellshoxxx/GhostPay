@@ -1,0 +1,14 @@
+# Limited harness (no fhEVM host contracts in Echidna): see echidna/EchidnaConfidentialRouter.sol.
+# NOT RUNNABLE with Echidna 2.3.1: its EVM has chain id 1 (no config option) and the router constructor
+# correctly reverts UnsupportedChain. Compiles; unrun. Command for a build that can set chain id 31337:
+#   echidna echidna/EchidnaConfidentialRouter.sol --contract EchidnaConfidentialRouter --config echidna.yaml \
+#     --crytic-args "--solc /path/to/solc-0.8.28 --solc-remaps '@fhevm/solidity=../../node_modules/@fhevm/solidity @openzeppelin/contracts=../../node_modules/@openzeppelin/contracts @openzeppelin/confidential-contracts=../../node_modules/@openzeppelin/confidential-contracts encrypted-types=../../node_modules/encrypted-types' --solc-args '--allow-paths ../..'"
+testMode: property
+testLimit: 100000
+seqLen: 10
+shrinkLimit: 1000
+seed: 20261021
+sender: ["0x10000", "0x20000"]
+deployer: "0x40000"
+balanceContract: 1000000000000000000
+balanceAddr: 1000000000000000000
