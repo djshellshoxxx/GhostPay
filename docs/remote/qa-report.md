@@ -28,6 +28,7 @@ Coverage thresholds were not changed by this branch. Baseline at the start of th
 - `forge test` default profile (fuzz 10 000 runs, invariant 256x50): 374 passed, 0 failed, 18 suites, 31 s.
 - High-run: `FOUNDRY_FUZZ_RUNS=100000 FOUNDRY_INVARIANT_RUNS=1024 forge test`: 374 passed, 0 failed, 222 s.
 - `forge coverage --ir-minimum` (needed because of stack-too-deep without it; ir-minimum coverage is approximate): GhostPayRouter 98.6% lines, GhostPayPolicyRouter 98.8%, GhostPaySweepRelayer 100%, PolicyAccount 99.2%, PolicyAccountFactory 100%. The "Total" row (73%) includes test and script files and is not meaningful.
+- Correction (b20d49e): the `--ir-minimum` coverage run above had one failing test (`Sweep.audit.t.sol::test_crossRelayerAndCrossChainReplayRejected`: the optimizer re-evaluated `block.chainid` after `vm.chainId`, a test artifact, not a contract bug). I only read the summary rows then and did not notice. Fixed by using `vm.getChainId()`; `forge coverage --ir-minimum` (CI flags) now passes 374/374, `forge test` 374/374, `forge snapshot --check` shows no diffs for this test.
 - Echidna: not re-run by this swarm. Results in docs/remote/contracts-assurance.md predate the PolicyRouter salt change (50881e4) and the factory FeeWaived change, so they do NOT cover the final contracts.
 - `forge snapshot --check` exits 1 because fuzz/invariant tests have no snapshot entries (same as before this branch).
 
