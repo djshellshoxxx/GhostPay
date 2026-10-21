@@ -1,1 +1,13 @@
-export {};
+export { isLoopbackHost, assertLoopback } from './loopback.js';
+export type { Running } from './loopback.js';
+export { startSocks5Server } from './socks5Server.js';
+export type { Socks5Server, Socks5ServerOptions, SocksRecord, SocksMisbehaviour } from './socks5Server.js';
+export { startConnectProxy } from './connectProxy.js';
+export type { ConnectProxy, ConnectProxyOptions, ConnectRecord } from './connectProxy.js';
+export { startHttpEcho } from './httpEcho.js';
+export type { HttpEcho, HttpEchoOptions, HttpRecord } from './httpEcho.js';
+export { startOhttpGateway, startOhttpRelay, OHTTP_REQ_TYPE, OHTTP_RES_TYPE, OHTTP_KEYS_TYPE } from './ohttp.js';
+export type { OhttpGateway, OhttpGatewayOptions, OhttpRelay, OhttpRecord } from './ohttp.js';
+export { installPoisonedResolver } from './poisonedResolver.js';
+export type { PoisonedResolver } from './poisonedResolver.js';
+export { TEST_TLS_CERT, TEST_TLS_KEY, TEST_TLS_HOSTNAMES } from './tlsFixture.js';
