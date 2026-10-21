@@ -20,6 +20,7 @@ source (see `docs/FEE_SCHEDULE.md`).
 | `solcVersion` | string | Exact compiler, e.g. `0.8.28+commit.7893614a`. |
 | `commit` | string | 40-hex git commit the contracts were built from. |
 | `bytecodeHashes` | object | `{ "router": <bytes32>, "sweepRelayer": <bytes32> }`: `keccak256` of the **deployed (runtime) bytecode** read from the chain (`cast codehash`). |
+| `donationRecipient` | address, optional | Developer-donation recipient. Absent: no donation UI, nothing sent. |
 | `policyImplementation`, `policyFactory`, `policyFeeToken`, `policyFlatFee`, `policyFeeRecipient` | address / decimal string, optional | Policy-guarded account (scheme `0x47500002`, `docs/CONTRACTS_SPEC.md` section 4), written by `forge script script/DeployPolicy.s.sol`. All five are required together once `policyFactory` is present. `policyFlatFee` is a decimal string in `policyFeeToken` base units (F-SECURE; may exceed 2^53). `deployTx` and `bytecodeHashes` may carry matching optional `policyImplementation` / `policyFactory` entries. Manifests without these fields stay valid. |
 | `date` | string | RFC 3339 UTC deployment timestamp. |
 | `signature` | string, optional | Detached signature over the canonical manifest (release key); see the release process. |

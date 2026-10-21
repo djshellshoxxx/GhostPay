@@ -22,6 +22,7 @@ One JSON file per chain, named `<chainId>.json`, at most 16 KiB (`MAX_MANIFEST_B
 | `commit` | yes | 40-hex git commit the contracts were built from. |
 | `bytecodeHashes.router`, `.sweepRelayer` | yes | `keccak256` of the **runtime** bytecode read from the chain. Format-checked only today. |
 | `date` | yes | RFC 3339 UTC, must be a real date. |
+| `donationRecipient` | optional address | Developer-donation recipient. When absent the app shows no donation UI and sends no donation. Must differ from `announcer`, `router`, `sweepRelayer`. |
 | `policyImplementation`, `policyFactory`, `policyFeeToken`, `policyFlatFee`, `policyFeeRecipient` | optional, all-or-none | Policy account (experimental, ADR-0014). `policyFlatFee` is a decimal string. When present, `deployTx` and `bytecodeHashes` must carry `policyImplementation` and `policyFactory` too. |
 | `signature` | optional | `0x` + hex. Format-checked only; **never verified** today. |
 

@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { getAddress } from 'viem';
 import { describe, expect, it } from 'vitest';
 import { MAX_MANIFEST_BYTES, loadDeployment, validateManifest } from './deployments.js';
 import { ChainAdapterError } from './errors.js';
@@ -31,7 +32,7 @@ describe('validateManifest', () => {
     const keys = Object.keys(manifestJson()).sort();
     expect(keys).toEqual([...schema.required].sort());
     expect(Object.keys(schema.properties).sort()).toEqual(
-      [...keys, 'signature', 'policyImplementation', 'policyFactory', 'policyFeeToken', 'policyFlatFee', 'policyFeeRecipient'].sort(),
+      [...keys, 'signature', 'donationRecipient', 'policyImplementation', 'policyFactory', 'policyFeeToken', 'policyFlatFee', 'policyFeeRecipient'].sort(),
     );
   });
   it('rejects chainId mismatch with CHAIN_MISMATCH', () => {
@@ -51,6 +52,19 @@ describe('validateManifest', () => {
       rejects(mut((m) => (m[k] = '0xAbCdEf0000000000000000000000000000000001')));
       rejects(mut((m) => delete m[k]), /missing/);
     }
+  });
+  it('donationRecipient is optional: absent means undefined, present is checksummed', () => {
+    expect(validateManifest(manifestJson(), CHAIN).donationRecipient).toBeUndefined();
+    const don = '0x0000000000000000000000000000000000000e55';
+    const m = validateManifest({ ...manifestJson(), donationRecipient: don }, CHAIN);
+    expect(m.donationRecipient).toBe(getAddress(don));
+  });
+  it('rejects a bad donationRecipient (zero, malformed, wrong checksum, non-string, contract collision)', () => {
+    rejects(mut((m) => (m['donationRecipient'] = '0x0000000000000000000000000000000000000000')), /zero address/);
+    rejects(mut((m) => (m['donationRecipient'] = '0x12')));
+    rejects(mut((m) => (m['donationRecipient'] = 5)));
+    rejects(mut((m) => (m['donationRecipient'] = '0xAbCdEf0000000000000000000000000000000001')));
+    for (const k of ['router', 'sweepRelayer', 'announcer']) rejects(mut((m) => (m['donationRecipient'] = m[k])), /collides/);
   });
   it('rejects role collisions', () => {
     rejects(mut((m) => (m['router'] = m['sweepRelayer'])), /distinct/);

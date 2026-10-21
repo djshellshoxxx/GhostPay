@@ -11,6 +11,8 @@ export interface DeploymentManifest {
   readonly sweepRelayer: Address;
   /** Fee recipient: displayed to the payer from here, never hard-coded in source. */
   readonly feeRecipient: Address;
+  /** Optional developer-donation recipient; absent means no donation UI and nothing is sent. */
+  readonly donationRecipient?: Address;
   readonly feeBps: 25;
   readonly deployTx: { readonly router: Hex; readonly sweepRelayer: Hex };
   readonly solcVersion: string;
@@ -35,9 +37,10 @@ const TOP_KEYS = [
   'chainId', 'announcer', 'router', 'sweepRelayer', 'feeRecipient', 'feeBps', 'deployTx',
   'solcVersion', 'commit', 'bytecodeHashes', 'date', 'signature',
   'policyImplementation', 'policyFactory', 'policyFeeToken', 'policyFlatFee', 'policyFeeRecipient',
+  'donationRecipient',
 ] as const;
 const POLICY_KEYS = ['policyImplementation', 'policyFactory', 'policyFeeToken', 'policyFlatFee', 'policyFeeRecipient'] as const;
-const REQUIRED = TOP_KEYS.filter((k) => k !== 'signature' && !(POLICY_KEYS as readonly string[]).includes(k));
+const REQUIRED = TOP_KEYS.filter((k) => k !== 'signature' && k !== 'donationRecipient' && !(POLICY_KEYS as readonly string[]).includes(k));
 const UINT_DECIMAL = /^(0|[1-9][0-9]{0,77})$/;
 const BYTES32 = /^0x[0-9a-fA-F]{64}$/;
 const ZERO_BYTES32 = /^0x0{64}$/;
@@ -142,6 +145,10 @@ export function validateManifest(value: unknown, expectedChainId: number): Deplo
   const feeRecipient = addr(r['feeRecipient'], 'feeRecipient');
   if (new Set([announcer, router, sweepRelayer]).size !== 3) return bad('announcer/router/sweepRelayer must be distinct');
   if (feeRecipient === router || feeRecipient === sweepRelayer) return bad('feeRecipient collides with a contract');
+  const donationRecipient = r['donationRecipient'] === undefined ? undefined : addr(r['donationRecipient'], 'donationRecipient');
+  if (donationRecipient !== undefined && [announcer, router, sweepRelayer].includes(donationRecipient)) {
+    return bad('donationRecipient collides with a contract');
+  }
 
   const hasPolicy = POLICY_KEYS.some((k) => r[k] !== undefined);
   if (hasPolicy && POLICY_KEYS.some((k) => r[k] === undefined)) return bad('policy fields must be all present or all absent');
@@ -164,6 +171,7 @@ export function validateManifest(value: unknown, expectedChainId: number): Deplo
     router,
     sweepRelayer,
     feeRecipient,
+    ...(donationRecipient === undefined ? {} : { donationRecipient }),
     feeBps: 25,
     deployTx: { router: b32(dtx['router'], 'deployTx.router'), sweepRelayer: b32(dtx['sweepRelayer'], 'deployTx.sweepRelayer') },
     solcVersion: solc,

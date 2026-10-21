@@ -46,6 +46,10 @@
       "description": "Optional. Factory FEE_RECIPIENT (may differ from the router's).",
       "$ref": "#/$defs/address"
     },
+    "donationRecipient": {
+      "description": "Optional. Developer-donation recipient. When absent, the app shows no donation UI and sends nothing.",
+      "$ref": "#/$defs/address"
+    },
     "deployTx": {
       "type": "object",
       "additionalProperties": false,
