@@ -126,7 +126,7 @@ export async function getTransactionInfo(rpc: TronRpc, txID: string, signal?: Ab
     if (typeof o['address'] !== 'string' || !Array.isArray(topics) || topics.some((t) => typeof t !== 'string')) {
       return fail('INVALID_RESPONSE');
     }
-    return { address: o['address'].toLowerCase(), topics: (topics as string[]).map((t) => t.toLowerCase()), data: String(o['data'] ?? '').toLowerCase() };
+    return { address: o['address'].toLowerCase(), topics: (topics as string[]).map((t) => t.toLowerCase()), data: (typeof o['data'] === 'string' ? o['data'] : '').toLowerCase() };
   });
   return { id: txID, resultOk: result === undefined || result === 'SUCCESS', logs };
 }

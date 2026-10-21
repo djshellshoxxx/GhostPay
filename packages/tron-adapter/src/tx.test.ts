@@ -93,7 +93,7 @@ describe('protobuf', () => {
     expect(() => decodeFields(Uint8Array.of(0x0d, 1, 2, 3, 4))).toThrow(); // wire type 5
     expect(() => decodeFields(Uint8Array.of(0x00, 1))).toThrow(); // field 0
     expect(() => decodeFields(new Uint8Array(11).fill(0xff))).toThrow(); // overlong varint
-    expect(() => decodeFields(Uint8Array.from([0x08, ...Array(9).fill(0xff), 0x7f]))).toThrow(); // > 2^64
+    expect(() => decodeFields(Uint8Array.from([0x08, ...new Array<number>(9).fill(0xff), 0x7f]))).toThrow(); // > 2^64
   });
 });
 

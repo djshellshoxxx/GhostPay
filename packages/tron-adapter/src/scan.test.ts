@@ -61,15 +61,15 @@ function mockRpc(blocks: { number: number; transactions?: J[] }[], infos: Record
   });
   return {
     calls,
-    async post(path, body) {
+    post(path, body) {
       calls.push(path);
       const b = body as J;
-      if (path === '/wallet/getnowblock') return blk(blocks[blocks.length - 1] as (typeof blocks)[number]);
+      if (path === '/wallet/getnowblock') return Promise.resolve(blk(blocks[blocks.length - 1] as (typeof blocks)[number]));
       if (path === '/wallet/getblockbylimitnext') {
-        return { block: blocks.filter((x) => x.number >= (b['startNum'] as number) && x.number < (b['endNum'] as number)).map(blk) };
+        return Promise.resolve({ block: blocks.filter((x) => x.number >= (b['startNum'] as number) && x.number < (b['endNum'] as number)).map(blk) });
       }
-      if (path === '/wallet/gettransactioninfobyid') return infos[b['value'] as string] ?? { id: b['value'] };
-      throw new Error(`unexpected ${path}`);
+      if (path === '/wallet/gettransactioninfobyid') return Promise.resolve(infos[b['value'] as string] ?? { id: b['value'] });
+      return Promise.reject(new Error(`unexpected ${path}`));
     },
   };
 }
@@ -152,7 +152,7 @@ describe('scan with mock RPC', () => {
     await expect(collect(scanTron(rpc, { ...base, signal: ac.signal }))).rejects.toThrow();
   });
   it('rejects malformed node responses', async () => {
-    const bad = (resp: unknown): TronRpc => ({ post: async () => resp });
+    const bad = (resp: unknown): TronRpc => ({ post: () => Promise.resolve(resp) });
     const o = { fromBlock: 0n, toBlock: 1n, viewingSecret: keys.viewingSecret, spendingPublicKey: keys.spendingPublicKey, signal: sc.signal };
     await expect(collect(scanTron(bad({ block: 5 }), o))).rejects.toThrow();
     await expect(collect(scanTron(bad({ block: [{ blockID: 'x', block_header: { raw_data: { number: 0 } } }] }), o))).rejects.toThrow();
@@ -166,7 +166,7 @@ describe('scan with mock RPC', () => {
   it('rejects malformed tx info', async () => {
     const usdt = build('usdt', 9n, 'b');
     const run = (info: unknown): Promise<unknown[]> =>
-      collect(scanTron({ post: async (p) => (p.includes('info') ? info : { block: [{ blockID: BLOCK_ID, block_header: { raw_data: { number: 5 } }, transactions: [nodeTx(usdt)] }] }) }, { fromBlock: 5n, toBlock: 5n, viewingSecret: keys.viewingSecret, spendingPublicKey: keys.spendingPublicKey, signal: sc.signal }));
+      collect(scanTron({ post: (p) => Promise.resolve(p.includes('info') ? info : { block: [{ blockID: BLOCK_ID, block_header: { raw_data: { number: 5 } }, transactions: [nodeTx(usdt)] }] }) }, { fromBlock: 5n, toBlock: 5n, viewingSecret: keys.viewingSecret, spendingPublicKey: keys.spendingPublicKey, signal: sc.signal }));
     await expect(run({ id: 'other' })).rejects.toThrow();
     await expect(run({ id: usdt.tx.txID, log: 'x' })).rejects.toThrow();
     await expect(run({ id: usdt.tx.txID, log: [{ address: 5 }] })).rejects.toThrow();

@@ -59,7 +59,7 @@ describe('stealth derive / scan / spend', () => {
     const w = tronAddressFromEvm('0x' + '11'.repeat(20));
     expect(checkTronAnnouncement({ ...ann, stealthAddress: w }, keys.viewingSecret, keys.spendingPublicKey)).toBe(false);
     const bad = s.memo.slice();
-    bad[37] ^= 1;
+    bad[37] = (bad[37] as number) ^ 1;
     expect(checkTronAnnouncement({ ...ann, memo: bad }, keys.viewingSecret, keys.spendingPublicKey)).toBe(false);
     expect(checkTronAnnouncement({ ...ann, stealthAddress: 'garbage' }, keys.viewingSecret, keys.spendingPublicKey)).toBe(false);
     expect(() => deriveTronStealthKey({ ...ann, memo: bad }, keys)).toThrow();
