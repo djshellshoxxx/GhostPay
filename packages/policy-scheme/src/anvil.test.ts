@@ -310,13 +310,17 @@ describe.skipIf(!available)('policy-scheme anvil cross-check (real PolicyAccount
     const td = buildWithdrawTypedData({ chainId: vectors.deployment.chainId, account: key.accountAddress, token: ZERO_ADDRESS, amount: native.net, deadline: now + 3600n, nonce: 1n, limit: { limitsRoot: tree.root, proof } });
     const sig = await signPolicyTypedData(td, key.ownerSecret, key.ownerAddress);
     expect(await send(encodeRequestWithdraw(td, proof, sig))).toBe('success');
-    const tdToken = buildWithdrawTypedData({ chainId: vectors.deployment.chainId, account: key.accountAddress, token, amount: 1n, deadline: now + 3600n, nonce: 2n, limit: { limitsRoot: tree.root, proof } });
+    // The client refuses to build a withdraw for a token the proof does not cover (the leaf is recomputed
+    // from token, limit and window, audit round 3b).
+    expect(() => buildWithdrawTypedData({ chainId: vectors.deployment.chainId, account: key.accountAddress, token, amount: 1n, deadline: now + 3600n, nonce: 2n, limit: { limitsRoot: tree.root, proof } })).toThrow(/leaf does not match/);
+    // Hand-build the mismatched order (native leaf, ERC-20 token) to prove the encoder also refuses it.
+    const tdToken = { ...td, message: { ...td.message, token, amount: 1n, nonce: 2n } };
     expect(() => encodeRequestWithdraw(tdToken, proof, '0x')).toThrow(/limitLeafHash/);
     // Bypass the client check: the contract itself refuses the mismatched leaf (LimitLeafMismatch).
     const raw = encodeFunctionData({
       abi: policyAccountAbi,
       functionName: 'requestWithdraw',
-      args: [tdToken.message, { limit: proof.limit, windowSeconds: proof.windowSeconds, proof: [...proof.proof] }, (await signPolicyTypedData(tdToken, key.ownerSecret)).signature],
+      args: [tdToken.message, { limit: proof.limit, windowSeconds: proof.windowSeconds, proof: [...proof.proof] }, await privateKeyToAccount(`0x${bytesToHex(unsafeRevealSecret(key.ownerSecret))}`).signTypedData({ domain: tdToken.domain, types: tdToken.types, primaryType: tdToken.primaryType, message: tdToken.message })],
     });
     expect(await send({ to: key.accountAddress, data: raw, value: 0n })).toBe('reverted');
     const before = await pub.getBalance({ address: a.policy.destination });
