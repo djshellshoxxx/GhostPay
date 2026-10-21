@@ -1,0 +1,26 @@
+# Cloudflare Pages / Netlify header file. GitHub Pages cannot apply it (see DEVIATIONS.md, popup-only embed).
+# connect-src is broad (https: wss:) because user-chosen RPC and relayer origins are runtime data; the RPC adapter
+# validates every URL (https/wss only, no credentials) and verifies eth_chainId before use (APP_AND_RELAYER_SPEC section 1).
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https: wss:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; worker-src 'self'
+  Referrer-Policy: no-referrer
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Permissions-Policy: accelerometer=(), autoplay=(), bluetooth=(), camera=(), display-capture=(), geolocation=(), gyroscope=(), hid=(), magnetometer=(), microphone=(), midi=(), payment=(), serial=(), usb=(), xr-spatial-tracking=()
+  Cross-Origin-Opener-Policy: same-origin
+
+/index.html
+  Cache-Control: no-cache
+
+/assets/*
+  Cross-Origin-Resource-Policy: same-origin
+  Cache-Control: public, max-age=31536000, immutable
+
+/deployments/*
+  Cross-Origin-Resource-Policy: same-origin
+  Cache-Control: no-store
+
+# The embed SDK is loaded cross-origin by merchant pages by design; it is a static, dependency-free file.
+/ghostpay-embed-v1.js
+  Cross-Origin-Resource-Policy: cross-origin
+  Cache-Control: public, max-age=3600
