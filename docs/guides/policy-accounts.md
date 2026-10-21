@@ -10,7 +10,7 @@ A normal one-time address is a plain key: whoever holds the key can send the fun
 - every withdrawal waits a **delay** (1 second up to 30 days) before it can be executed;
 - optional **per-token caps** over a rolling window.
 
-A thief who steals the key cannot redirect the funds, and cannot drain them faster than the caps allow, before the delay passes. During the delay a key holder can cancel.
+A thief who steals the key cannot redirect the funds before twice the delay has passed, and cannot drain them faster than the caps allow. This is a delay, not protection forever: the thief holds the same key, can cancel your actions and can propose a new destination again and again. Your funds stay safe only while you (or a watcher you trust) cancel each of the thief's destination proposals in time, so watch the account and move future payments elsewhere.
 
 ![Policy account timelock: withdraw waits one delay, destination change waits twice the delay, owner can cancel in between](../assets/diagrams/policy-account-timelock.svg)
 
@@ -19,7 +19,7 @@ A thief who steals the key cannot redirect the funds, and cannot drain them fast
 | Action | What happens | Wait |
 |---|---|---|
 | `requestWithdraw` | Owner signs an EIP-712 message; anyone may submit it | Starts the delay |
-| `executeWithdraw` | Anyone may call; funds go only to the destination, within caps | After the delay |
+| `executeWithdraw` | Anyone may call; funds go only to the destination, within caps; a request made before a destination change cannot execute (cancel and request again) | After the delay |
 | `cancel` | Owner signature cancels the pending request | Before execution |
 | `proposeDestination` | Owner proposes a new destination | Starts a 2 x delay timer |
 | `executeDestinationChange` / `cancelDestination` | Apply or cancel the change | After 2 x delay / before |
