@@ -15,6 +15,7 @@
     "lint": "eslint --config ../../eslint.config.js src e2e"
   },
   "dependencies": {
+    "@ghostpay/btc-silent-payments": "0.1.0",
     "@ghostpay/chain-adapters": "0.1.0",
     "@ghostpay/core-crypto": "0.1.0",
     "@ghostpay/invoice-schema": "0.1.0",
