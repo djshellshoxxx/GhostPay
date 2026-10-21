@@ -61,6 +61,15 @@ describe('ERC-6538 helpers vs reference registry (anvil)', () => {
       return j.result;
     };
     const client = { request: rpc };
+    type Receipt = { status: string; logs: { address: string; topics: string[] }[] };
+    const receiptOf = async (hash: string): Promise<Receipt> => {
+      for (let i = 0; i < 100; i++) {
+        const r = (await rpc('eth_getTransactionReceipt', [hash])) as Receipt | null;
+        if (r !== null) return r;
+        await new Promise((res) => setTimeout(res, 50));
+      }
+      throw new Error('no receipt');
+    };
 
     beforeAll(async () => {
       const a = await startAnvil();
@@ -86,13 +95,7 @@ describe('ERC-6538 helpers vs reference registry (anvil)', () => {
       const meta = encodeMetaAddress(generateKeySet());
       const call = buildRegisterKeysCall(meta);
       const hash = (await rpc('eth_sendTransaction', [{ from, to: call.to, data: call.data }])) as string;
-      type Receipt = { status: string; logs: { address: string; topics: string[] }[] };
-      let receipt: Receipt | null = null;
-      for (let i = 0; i < 50 && receipt === null; i++) {
-        receipt = (await rpc('eth_getTransactionReceipt', [hash])) as Receipt | null;
-        if (receipt === null) await new Promise((r) => setTimeout(r, 50));
-      }
-      if (receipt === null) throw new Error('no receipt');
+      const receipt = await receiptOf(hash);
       expect(receipt.status).toBe('0x1');
       expect(receipt.logs).toHaveLength(1);
       expect(receipt.logs[0]?.address.toLowerCase()).toBe(ERC6538_REGISTRY_ADDRESS.toLowerCase());
@@ -105,7 +108,7 @@ describe('ERC-6538 helpers vs reference registry (anvil)', () => {
 
     it('rejects a malformed value the registry happily stores', async () => {
       const data = encodeFunctionData({ abi: erc6538RegistryAbi, functionName: 'registerKeys', args: [1n, `0x${'02'.repeat(66)}`] });
-      await rpc('eth_sendTransaction', [{ from, to: ERC6538_REGISTRY_ADDRESS, data }]);
+      await receiptOf((await rpc('eth_sendTransaction', [{ from, to: ERC6538_REGISTRY_ADDRESS, data }])) as string);
       await expect(lookupMetaAddress(client, from)).rejects.toThrow(/INVALID_INPUT/);
     });
   });
