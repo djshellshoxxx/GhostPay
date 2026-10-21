@@ -9,6 +9,8 @@ Node 22, ESM, strict TypeScript, `node:http`, `viem` plus workspace packages (`@
 sweep typed data, RPC URL and manifest validation). No other runtime dependency. Deviations from the spec are in
 [`DEVIATIONS.md`](./DEVIATIONS.md); what is stored is in [`PRIVACY.md`](./PRIVACY.md).
 
+Scripts (`package.json`): `build`, `typecheck`, `test`, `lint`, `start` (`node dist/main.js`). Wired packages: only `@ghostpay/chain-adapters`; `@ghostpay/relayer-guard` (breaker, limiter, challenge) is **not** used by this app.
+
 ## API
 
 All bodies are `application/json` (max 16 KiB), amounts/uints are decimal strings, unknown keys are rejected.
@@ -108,7 +110,7 @@ graceful shutdown: stop listening, refuse new work, let queued and in-flight tra
 use an injected fake chain client; `src/chain.test.ts` drives the real viem client against a fake JSON-RPC transport;
 `src/e2e.anvil.test.ts` deploys the compiled `GhostPaySweepRelayer` and `PermitToken` from `packages/contracts/out` on a
 local anvil and sweeps through the relayer (skipped when anvil or the artifacts are missing; `ANVIL_BIN` overrides
-`/home/user/tools/foundry/anvil`; run `forge build` first). The anvil test uses throwaway keys and `anvil_setBalance`.
+`/home/user/tools/foundry/anvil`; run `forge build` first). The anvil test uses throwaway keys and `anvil_setBalance`. CI sets `REQUIRE_ANVIL=1` for this workspace (`ts-test-relayer`), but `e2e.anvil.test.ts` does not read that variable yet (only `packages/policy-scheme` does), so a missing anvil still skips there.
 
 ## Unverified
 
