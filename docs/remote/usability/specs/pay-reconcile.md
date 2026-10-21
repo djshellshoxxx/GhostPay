@@ -1,49 +1,56 @@
 # Spec: pay-reconcile: Invoice-to-payment reconciliation via payer proof
-Impact 5/5 | Effort M | Score 2.5 | Build wave 1 | Depends on: local-store
+Impact 5/5 | Effort M | Score 2.5 | Wave 1 | Depends on: local-store (storage only; this module is pure)
+Built in: `packages/ux-flow` (`src/proof.ts`, `src/reconcile.ts`, `src/base64url.ts`). Supersedes the planned `packages/pay-reconcile` name; scaffold was `ux-flow`.
 
 ## Problem
-The chain carries no invoice id (SPEC_REVIEW A1; ADR-0003), so the seller sees "0.5 ETH from someone" and cannot tell which invoice was paid; single-use is enforced only off-chain.
+The chain carries no invoice id (SPEC_REVIEW A1; ADR-0003), so the seller sees "0.5 ETH from someone" and cannot tell which invoice was paid. Single-use is enforced off-chain only.
 
-## Exists today (verified in repo) vs missing
-- apps/web/src/lib/payExec.ts:142-160 payer receipt includes invoiceNonce, txHash, net amount.
-- apps/web/src/views/Scan.tsx:147-152 describe(match) shows amount only.
-- docs/SPEC_REVIEW.md:9 (A1) removed on-chain invoiceId deliberately.
-- Missing: everything described under Design.
+## Exists today vs missing
+- Payer receipt has invoiceNonce, txHash, net amount (apps/web/src/lib/payExec.ts:142-160); Scan.tsx shows amount only.
+- Missing: seller invoice ledger model, matching, proof code, partial/over/duplicate handling (all below).
 
-## Design
-(1) Seller ledger records each issued invoice (nonce, token, expected net amount, expiry, status). (2) Heuristic suggestions: unmatched scan matches proposed against open invoices by token + exact expected net within [issued, expiry] window; ambiguity shown, never auto-confirmed. (3) Exact path: payer "proof code" = base64url{nonce, chainId, txHash} (+ optional seller-signature challenge not needed); seller pastes it, the package verifies against a scanned match whose announcement tx equals txHash. Match status: open -> suggested -> confirmed -> swept. (4) Expiry/replay: a nonce already confirmed rejects second proof.
+## Data model (pure, no storage)
+- `Invoice {nonce (lowercase hex 16-64), chainId, token (lowercase string), expected: bigint > 0 (net after fee policy), issuedAt, expiresAt (unix s), status, paid: bigint, txs[], confirmedTx?, suggestedTx?, late?}`.
+- `Transfer {txHash (lowercase 0x+64 hex), chainId, token, amount: bigint > 0, observedAt}`.
+- `Tolerance {absolute: bigint >= 0, bps: int 0..10000}`; effective tolerance = max(absolute, floor(expected*bps/10000)), inclusive.
+- Statuses: open, suggested, partial, paid, overpaid, swept, expired, cancelled.
 
-## Privacy and security impact
-No new on-chain data. Proof code reveals tx hash and nonce to whoever receives it (the seller, over the user's chosen channel); UI warns. Does not link payer wallet beyond what chain already shows.
+## API (exported from `src/index.ts`)
+- `classifyAmount(expected, paid, tol) -> exact|tolerated|partial|over`
+- `transition(inv, event, tol) -> Invoice` (events: suggest, payment{transfer, confirmed?}, expire{now}, cancel, sweep). Throws `FlowError INVALID_TRANSITION`.
+- `reconcile(invoices, transfers, tol) -> {invoices, outcomes}`; outcomes: suggested | ambiguous | duplicate(repeat-tx|invoice-settled) | unmatched. Deterministic: transfers processed in (observedAt, chainId, txHash) order.
+- `encodeProof / decodeProof / MAX_PROOF_LENGTH` (512). Proof = unpadded base64url of canonical JSON `{"v":1,"n":nonce,"c":chainId,"t":txHash}`.
+- `confirm(invoices, proofOrCode, transfers, tol) -> {ok:true, invoices, nonce, amountClass, warnings} | {ok:false, error}` errors: BAD_PROOF, UNKNOWN_INVOICE, ALREADY_CONFIRMED, NOT_FOUND, MISMATCH, DUPLICATE_TX, INVALID_TRANSITION.
 
-## Build ownership
-- NEW package: `packages/pay-reconcile` (TypeScript, ESM, no UI, no DOM except where noted, no network unless stated; own README.md, DEVIATIONS.md, vitest tests, coverage thresholds like sibling packages). Name `@ghostpay/pay-reconcile`.
-- Public API (exports from `src/index.ts`):
-- `suggestMatches(open: IssuedInvoice[], matches: LedgerMatch[]): Suggestion[]`
-- `encodeProof(p: {nonce; chainId; txHash}): string; decodeProof(s): Proof (strict, size-bounded)`
-- `confirm(ledger, proof, matches): Result  // verifies txHash == match tx and token/amount within invoice`
-- `status machine: transition(inv, event)`
-- The package may import only: other `@ghostpay/*` packages named in Depends on, `@noble/*` already in the lockfile. New third-party dependencies need a THIRD_PARTY.md entry before merge.
-
-## UI wiring (apps/web; keep minimal, serialise in the single wiring session)
-- apps/web/src/views/Scan.tsx (suggestion chips, "Paste payment proof")
-- apps/web/src/views/Pay.tsx (show proof code after submit)
-- apps/web/src/lib/payExec.ts (receipt gains proof)
-- Add `@ghostpay/pay-reconcile` to `apps/web/package.json` dependencies. Shared hot files (`state.tsx`, `App.tsx`, `lib/services.ts`, `lib/defaultServices.ts`, `lib/settings.ts`) are touched by several specs: wire them one spec at a time in the order in README.md.
+## Transition table
+| from | event | to |
+|---|---|---|
+| open | suggest | suggested |
+| open, suggested, partial, expired, paid, overpaid | payment | partial / paid / overpaid by cumulative paid vs expected+tolerance (expired or observedAt > expiresAt sets `late`) |
+| open, suggested, partial | expire (now > expiresAt only) | expired |
+| open, suggested | cancel | cancelled |
+| paid, overpaid | sweep | swept |
+Everything else (payment on cancelled/swept, cancel of partial, ...) is INVALID_TRANSITION. A repeat of an already-applied txHash is a no-op.
 
 ## Requirements
-1. **PAYRE-1** MUST Never auto-confirm an ambiguous heuristic match.
-2. **PAYRE-2** MUST decodeProof rejects >512 bytes, non-canonical base64url, bad hex, and unknown versions.
-3. **PAYRE-3** MUST A nonce can be confirmed once; second proof returns ALREADY_CONFIRMED.
-4. **PAYRE-4** MUST Amount comparison uses bigint and the invoice net after fee policy.
-5. **PAYRE-5** MUST Match requires same chainId and token.
-6. **PAYRE-6** SHOULD Ledger shows partial/over payments distinctly.
-7. **PAYRE-7** SHOULD Warn when proof tx predates invoice issue time.
+1. **PAYRE-1** MUST Heuristic matching never applies money or confirms. A unique candidate becomes `suggested`; several candidates yield `ambiguous` and change nothing. Only exact/tolerated amounts are heuristically matched; partial/over need a proof.
+2. **PAYRE-2** MUST decodeProof rejects > 512 chars, non-canonical base64url (padding, wrong alphabet, trailing bits), invalid UTF-8/JSON, extra/missing keys, non-canonical JSON, bad hex/case, bad chain, unknown version; throws only `FlowError`.
+3. **PAYRE-3** MUST A nonce confirms once; any later proof for it returns ALREADY_CONFIRMED. A txHash applied to one invoice cannot be applied to another (DUPLICATE_TX).
+4. **PAYRE-4** MUST All amounts bigint; compare against invoice net amount; no float anywhere.
+5. **PAYRE-5** MUST Candidate/confirm requires same chainId and token; heuristic also requires observedAt in [issuedAt, expiresAt].
+6. **PAYRE-6** SHOULD partial and over (and `late`) statuses are distinct and reported by `confirm.amountClass`.
+7. **PAYRE-7** SHOULD `confirm` warns TX_BEFORE_ISSUE when the tx was observed before issuedAt.
 
-## Acceptance tests
-1. **T-1** Two open invoices with equal amounts -> both suggested, none confirmed.
-2. **T-2** Valid proof for match tx -> confirmed; replay -> ALREADY_CONFIRMED.
-3. **T-3** Proof with txHash not in matches -> NOT_FOUND.
-4. **T-4** Fuzz decodeProof: never throws non-ProofError.
-5. **T-5** Underpayment -> status "partial".
-Plus: package coverage thresholds 90/85/90/90 (as apps/web), `npm run typecheck`, `npm run lint`, bundle scan (`apps/web/scripts/scan-bundle.mjs`) still clean, no new network host in the e2e network log.
+## Acceptance tests (all implemented in `src/reconcile.test.ts`, `src/proof.test.ts`)
+1. **T-1** Two open invoices, equal amounts -> ambiguous, both stay open, inputs not mutated.
+2. **T-2** Valid proof -> confirmed/paid; replay (same or different tx) -> ALREADY_CONFIRMED.
+3. **T-3** Proof tx not in transfers -> NOT_FOUND.
+4. **T-4** fast-check fuzz of decodeProof (strings and bytes): never non-FlowError.
+5. **T-5** Underpayment -> partial; top-up -> paid; surplus -> overpaid.
+6. **T-6** Tolerance boundaries inclusive; > 2^53 amounts exact.
+7. **T-7** Duplicate: repeated tx, second tx onto settled invoice -> duplicate.
+8. **T-8** reconcile output independent of input order (property).
+Coverage thresholds (95/90/95/95) enforced by vitest config.
+
+## Privacy and security
+No network, no clock (times are inputs), no storage. Proof reveals nonce + tx hash to whoever receives it. Deviations: nonce charset is lowercase hex 16-64 (assumption, check against invoice-schema nonce format at wiring); invoices are identified by nonce; "confirmed" = `confirmedTx` set.

@@ -1,41 +1,27 @@
-# Spec: policy-undo: Cancel / undo UI for policy-account withdrawals
-Impact 2/5 | Effort L | Score 0.5 | Build wave 1 | Depends on: sweep-guide
+# Spec: policy-undo: Undo window for pending policy changes
+Impact 2/5 | Effort L | Score 0.5 | Wave 1 | Depends on: sweep-guide
+Built in: `packages/ux-flow` (`src/undo.ts`). Scope note: this module is the generic, chain-agnostic pending-change queue with a client-side undo window. The EIP-712 cancel typed-data / log decoding (`policy-ui-kit`, POLIC-1) is NOT built here: it needs contract fixtures from forge and a deployment manifest, and stays a follow-up.
 
 ## Problem
-Policy accounts allow a delayed withdrawal that the owner can cancel, but there is no client; the README says do not use them.
-
-## Exists today (verified in repo) vs missing
-- packages/contracts/src/PolicyAccount.sol:17-19,48-58 delay, MAX_DELAY, CancelWithdraw EIP-712.
-- packages/policy-scheme (scheme 0x47500002 helpers).
-- README: policy accounts contracts only, no client support, no recovery path.
-- Missing: everything described under Design.
+A user who changes a spending policy (limits, allowlist, delay) has no grace period to notice a mistake before it takes effect.
 
 ## Design
-Library for building/decoding Withdraw and CancelWithdraw typed data, computing the cancel window (delay, 2*delay) and listing pending withdrawals from logs; UI shows a countdown and a Cancel button producing the EIP-712 cancel signature. Build only after the contracts are audited and a deployment manifest exists.
+`UndoQueue` holds pending changes. Each has `activatesAt = createdAt + delayMs`. Cancel is allowed only while `now < activatesAt` (half-open: at the boundary it is closed). The clock is injected (`() => ms`) and clamped monotonic, so a clock rolled back cannot reopen or extend a window. After the window, caller calls `due()`, performs the real action, then `activate(id)`; once the on-chain effect lands, `markExecuted(id, ref)`. Activated and executed changes can never be cancelled by this queue.
 
-## Privacy and security impact
-Pending-withdrawal reads go to the user RPC; no new data. Cancel is a public transaction.
+States: pending -> cancelled | activated -> executed.
 
-## Build ownership
-- NEW package: `packages/policy-ui-kit` (TypeScript, ESM, no UI, no DOM except where noted, no network unless stated; own README.md, DEVIATIONS.md, vitest tests, coverage thresholds like sibling packages). Name `@ghostpay/policy-ui-kit`.
-- Public API (exports from `src/index.ts`):
-- `cancelWindow(w: Pending, delaySec): {opensAt; closesAt}`
-- `buildCancelTypedData(id, chain): TypedData`
-- `pendingFromLogs(logs): Pending[]`
-- The package may import only: other `@ghostpay/*` packages named in Depends on, `@noble/*` already in the lockfile. New third-party dependencies need a THIRD_PARTY.md entry before merge.
-
-## UI wiring (apps/web; keep minimal, serialise in the single wiring session)
-- apps/web/src/views/Sweep.tsx or new Policy view
-- Add `@ghostpay/policy-ui-kit` to `apps/web/package.json` dependencies. Shared hot files (`state.tsx`, `App.tsx`, `lib/services.ts`, `lib/defaultServices.ts`, `lib/settings.ts`) are touched by several specs: wire them one spec at a time in the order in README.md.
+## API
+`new UndoQueue(clock, {minDelayMs=1000, maxDelayMs=30d, maxPending=256})`; `submit({id, kind, summary, payload, delayMs})`, `cancel(id) -> {ok, change}|{ok:false, reason}`, `due()`, `activate(id)`, `markExecuted(id, ref)`, `remainingMs(id)`, `get`, `list`, `snapshot()`, `UndoQueue.restore(clock, data)`.
+Cancel refusals: NOT_FOUND, WINDOW_CLOSED, ALREADY_CANCELLED, ALREADY_ACTIVATED, EXECUTED_ON_CHAIN.
 
 ## Requirements
-1. **POLIC-1** MUST Typed data matches CANCEL_WITHDRAW_TYPEHASH in the contract (fixture test against forge output).
-2. **POLIC-2** MUST Never offered unless a manifest lists the factory.
-3. **POLIC-3** MUST Countdown uses block timestamps, not the local clock.
-4. **POLIC-4** SHOULD Explain that cancelling needs the same key.
+1. **POLIC-A** MUST cancel succeeds iff status pending and now < activatesAt.
+2. **POLIC-B** MUST Clock is injected; non-finite/negative clock values throw BAD_CLOCK; regression is clamped.
+3. **POLIC-C** MUST Executed (and activated) changes are never undone; refusal names the reason.
+4. **POLIC-D** MUST Input validation: id `[A-Za-z0-9_-]{1,64}`, kind `[a-z][a-z0-9._-]{0,63}`, summary 1..280, payload <= 4096, delay within bounds, unique id, pending cap.
+5. **POLIC-E** MUST `restore` validates untrusted stored data field by field and status invariants (BAD_SNAPSHOT).
+6. **POLIC-F** SHOULD UI states plainly that this is a local grace period, not an on-chain guarantee, and that cancelling an on-chain pending withdrawal needs the same key (POLIC-4 from original spec).
+7. **POLIC-G (deferred)** Typed-data parity with CANCEL_WITHDRAW_TYPEHASH, block-timestamp countdown, manifest gating (original POLIC-1..3) remain with `policy-ui-kit`.
 
-## Acceptance tests
-1. **T-1** Typed-data hash equals Solidity-computed fixture.
-2. **T-2** cancelWindow edge: exactly at closesAt -> closed.
-3. **T-3** Feature hidden with no manifest entry.
-Plus: package coverage thresholds 90/85/90/90 (as apps/web), `npm run typecheck`, `npm run lint`, bundle scan (`apps/web/scripts/scan-bundle.mjs`) still clean, no new network host in the e2e network log.
+## Acceptance tests (`src/undo.test.ts`)
+Boundary at activatesAt closed; cancel one ms before works; clock rollback cannot reopen; activate before due refused; executed -> EXECUTED_ON_CHAIN; snapshot round trip over all four states; 18 tampered snapshots rejected; property: `cancel.ok === (now < delay)`.

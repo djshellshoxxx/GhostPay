@@ -1,42 +1,21 @@
-# Spec: embed-snippet: Embed snippet generator and checkout SDK helpers
-Impact 3/5 | Effort S | Score 3 | Build wave 0 | Depends on: none
+# Spec: embed-snippet: Embed snippet generator
+Impact 3/5 | Effort S | Score 3 | Wave 0 | Depends on: none
+Built in: `packages/ux-flow` (`src/embed.ts`). Generic only: no POS/plugin/cart concepts (swarm 8 owns merchant POS/plugins).
 
 ## Problem
-Merchants hand-write the data-invoice attribute and script tag; the SDK is popup-only and takes only a full invoice link (DEVIATIONS item 6).
-
-## Exists today (verified in repo) vs missing
-- apps/web/public/ghostpay-embed-v1.js:1-40 usage and validLink rules (same-origin, https, fragment prefix, 22000 max).
-- apps/web/src/embed.test.ts.
-- Missing: everything described under Design.
+Merchants hand-write the `data-invoice` attribute and script tag.
 
 ## Design
-Generator builds a copy-paste HTML snippet (button, script tag, link) and a plain-link fallback; validates exactly the same rules as the embed script (shared validLink implemented in the package and imported by tests of both). Optional styled button variants (no inline style; class names + a tiny same-origin CSS file). Output HTML-escaped; a "test the button" preview opens the real popup.
-
-## Privacy and security impact
-Snippet contains the invoice link (bearer): warn that embedding a per-invoice link in public HTML publishes it. Recommend per-order generation, not a static page.
-
-## Build ownership
-- NEW package: `packages/embed-kit` (TypeScript, ESM, no UI, no DOM except where noted, no network unless stated; own README.md, DEVIATIONS.md, vitest tests, coverage thresholds like sibling packages). Name `@ghostpay/embed-kit`.
-- Public API (exports from `src/index.ts`):
-- `makeSnippet(link: string, appOrigin: string, opts: {label?: string}): string`
-- `validateEmbedLink(link, appOrigin): "ok"|Reason`
-- `escapeAttr(s): string`
-- The package may import only: other `@ghostpay/*` packages named in Depends on, `@noble/*` already in the lockfile. New third-party dependencies need a THIRD_PARTY.md entry before merge.
-
-## UI wiring (apps/web; keep minimal, serialise in the single wiring session)
-- apps/web/src/views/CreateInvoice.tsx (Embed tab after link creation)
-- Add `@ghostpay/embed-kit` to `apps/web/package.json` dependencies. Shared hot files (`state.tsx`, `App.tsx`, `lib/services.ts`, `lib/defaultServices.ts`, `lib/settings.ts`) are touched by several specs: wire them one spec at a time in the order in README.md.
+`makeSnippet(link, appOrigin, opts)` returns copy-paste HTML: one `<button class="ghostpay-btn ghostpay-btn--<variant>" data-ghostpay data-invoice="...">`, one `<script defer src="<appOrigin>/ghostpay-embed-v1.js">`, optional `<link rel=stylesheet>` to a same-origin `/ghostpay-embed-v1.css` (class names only, no inline style) and an optional `<noscript><a rel="noopener noreferrer">` fallback. `validateEmbedLink` replicates `validLink` from `apps/web/public/ghostpay-embed-v1.js` (https or http://localhost, same origin, no userinfo, `#gpi=v1.` fragment with non-empty body, <= 22000 chars) and returns `'ok'` or a Reason: type, length, app-origin, parse, scheme, origin, credentials, fragment.
 
 ## Requirements
-1. **EMBED-1** MUST validateEmbedLink equals the rules in ghostpay-embed-v1.js (cross-test with identical vectors).
-2. **EMBED-2** MUST Attribute and text output escapes & < > " '.
-3. **EMBED-3** MUST Refuses links on a different origin than appOrigin.
-4. **EMBED-4** MUST No inline style/script emitted (CSP-friendly).
-5. **EMBED-5** SHOULD Include SRI-free note: script served from same origin as app.
+1. **EMBED-1** MUST validateEmbedLink agrees with the embed script on shared vectors (22 vectors in `embed.test.ts`).
+2. **EMBED-2** MUST Text and attribute output escapes & < > " ' and backtick; the link is re-serialised from the parsed URL.
+3. **EMBED-3** MUST Different-origin link -> `BAD_LINK` (reason origin); non-canonical or non-https appOrigin -> `BAD_ORIGIN`.
+4. **EMBED-4** MUST No inline style, inline script, event-handler attribute, iframe, or third-party host in output.
+5. **EMBED-5** MUST Options allowlisted (label, variant in default|dark|outline, includeStylesheet, includeFallback); unknown keys -> BAD_OPTION; label 1..80 chars, no control characters.
+6. **EMBED-6** SHOULD UI warns the link is a bearer secret and public HTML publishes it; generate per order.
 
-## Acceptance tests
-1. **T-1** Label `"><script>` is escaped.
-2. **T-2** Link on other origin -> Reason "origin".
-3. **T-3** Vectors shared with embed.test.ts all agree.
-4. **T-4** Snippet round-trips through DOMParser with one button and one script.
-Plus: package coverage thresholds 90/85/90/90 (as apps/web), `npm run typecheck`, `npm run lint`, bundle scan (`apps/web/scripts/scan-bundle.mjs`) still clean, no new network host in the e2e network log.
+## Acceptance tests (`src/embed.test.ts`)
+T-1 hostile label escaped, exactly one script tag; T-2 other origin refused; T-3 vector table; T-4 structural check (one button, one script, no `style=`/`on*=`/`<iframe`) since no DOM in node (DOMParser round trip belongs to an apps/web e2e).
+Open item: cross-test against `apps/web/src/embed.test.ts` vectors once wired (script file itself cannot import the package).
