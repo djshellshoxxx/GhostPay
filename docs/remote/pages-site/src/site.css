@@ -1,0 +1,102 @@
+/* GhostPay Pages site: layout + diagram styling. Loaded AFTER ../theme.css (pages-theme). Everything is scoped to
+   body.site, .gp-strip or the diagram classes, so linking it from the app's index.html cannot restyle the app. */
+
+body.site { margin: 0; color: var(--text); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size: 1rem; line-height: 1.6; }
+body.site *, body.site *::before, body.site *::after { box-sizing: border-box; }
+body.site .wrap { max-width: 46rem; margin: 0 auto; padding: 0 16px; }
+body.site .skip { position: absolute; left: -999px; top: 0; padding: 8px 12px; z-index: 200; }
+body.site .skip:focus { left: 8px; top: 8px; }
+body.site header.site-header { padding-bottom: 8px; }
+body.site header.site-header .brand { display: inline-block; text-decoration: none; }
+body.site h1 { margin: 20px 0 4px; overflow-wrap: anywhere; }
+body.site h2 { margin: 28px 0 8px; overflow-wrap: anywhere; }
+body.site h3 { margin: 20px 0 6px; overflow-wrap: anywhere; }
+body.site p, body.site li, body.site dd { overflow-wrap: anywhere; }
+body.site .tagline { margin: 0 0 10px; color: var(--muted); }
+body.site .lead { font-size: 1.1rem; color: var(--text); }
+body.site .muted { color: var(--muted); }
+body.site ul.nav, body.site ul.crumbs { list-style: none; margin: 8px 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+body.site .nav a.nav-btn { display: inline-block; padding: 6px 10px; text-decoration: none; min-height: 36px; line-height: 1.6; }
+body.site main { padding-bottom: 32px; }
+body.site main:focus { outline: none; }
+body.site footer.site-footer { padding-bottom: 32px; color: var(--muted); font-size: 0.9rem; }
+body.site footer.site-footer a { color: var(--accent); }
+
+body.site .notice { border: 1px solid var(--border); padding: 10px 12px; margin: 14px 0; background: var(--info-bg); }
+body.site .notice-warn { background: var(--warn-bg); }
+body.site .notice-ok { background: var(--ok-bg); }
+body.site .notice > :first-child { margin-top: 0; }
+body.site .notice > :last-child { margin-bottom: 0; }
+
+body.site .cards { display: grid; gap: 12px; grid-template-columns: 1fr; margin: 12px 0; }
+body.site .card { padding: 12px 14px; min-width: 0; }
+body.site .card h3 { margin-top: 0; font-size: 0.95rem; }
+body.site .card p { margin: 6px 0; }
+body.site .card .where { font-size: 0.85rem; color: var(--muted); }
+body.site a.card-link { display: block; text-decoration: none; color: inherit; }
+body.site a.card-link:hover { border-color: var(--accent); }
+body.site a.card-link h3 { text-decoration: underline; }
+@media (min-width: 40rem) { body.site .cards.two { grid-template-columns: 1fr 1fr; } body.site .cards.three { grid-template-columns: repeat(3, 1fr); } }
+
+body.site .status { display: inline-block; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; padding: 1px 8px; border: 1px solid currentColor; border-radius: 10px; vertical-align: middle; }
+body.site .status.built { color: #5dffb2; }
+body.site .status.planned { color: #ffcf5e; }
+body.site .status.experimental { color: #d0b0ff; }
+body.site .legend { list-style: none; padding: 0; margin: 8px 0; }
+body.site .legend li { margin: 6px 0; }
+
+body.site .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+body.site a.btn { display: inline-block; padding: 9px 14px; text-decoration: none; min-height: 40px; }
+body.site a.btn-primary { color: var(--accent-text); }
+
+body.site .table-wrap { overflow-x: auto; margin: 12px 0; }
+body.site table { border-collapse: collapse; width: 100%; }
+body.site th, body.site td { text-align: left; vertical-align: top; padding: 8px 10px; border-top: 1px solid var(--border); }
+body.site caption { text-align: left; padding: 6px 10px; color: var(--muted); }
+@media (max-width: 39.99rem) {
+  body.site table, body.site thead, body.site tbody, body.site tr, body.site th, body.site td { display: block; }
+  body.site thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  body.site tr { border-top: 1px solid var(--border); padding: 6px 0; }
+  body.site td { border: 0; padding: 3px 10px; }
+  body.site td::before { content: attr(data-label) ": "; color: var(--accent); font-weight: 700; }
+}
+
+body.site dl.gloss dt { margin-top: 14px; color: var(--accent); font-weight: 700; }
+body.site dl.gloss dd { margin: 2px 0 0; }
+body.site details.faq { border: 1px solid var(--border); margin: 8px 0; padding: 0 12px; background: rgba(0, 229, 255, 0.03); }
+body.site details.faq summary { cursor: pointer; padding: 10px 0; font-weight: 700; }
+body.site details.faq[open] summary { border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+body.site code { overflow-wrap: anywhere; }
+body.site .pager { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+
+/* ---- diagrams ---- */
+body.site figure.diagram { margin: 16px auto; max-width: 30rem; padding: 0; border: 1px solid var(--border); background: #060d18; }
+body.site figure.diagram svg.dg { display: block; width: 100%; height: auto; }
+body.site figure.diagram figcaption { padding: 8px 12px; color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--border); }
+body.site details.textalt { padding: 0 12px 8px; border-top: 1px solid var(--border); }
+body.site details.textalt summary { cursor: pointer; padding: 8px 0; }
+body.site details.textalt ol { padding-left: 1.2em; margin: 4px 0; }
+body.site details.textalt li { margin: 6px 0; }
+.dg .bg { fill: #060d18; }
+.dg .box { fill: #0a1626; stroke: var(--c, #7fa3be); stroke-width: 1.5; }
+.dg .box.dashed { stroke: #7fa3be; stroke-dasharray: 5 4; }
+.dg .tone-warn .box { stroke: #ffcf5e; }
+.dg .a-seller { --c: #00e5ff; } .dg .a-payer { --c: #8fb4ff; } .dg .a-chain { --c: #ffcf5e; }
+.dg .a-relayer { --c: #d0a8ff; } .dg .a-observer { --c: #ff8fa0; } .dg .a-none { --c: #9fbdd3; }
+.dg .tag { fill: var(--c); font: 700 11px system-ui, sans-serif; letter-spacing: 0.08em; }
+.dg .d-title { fill: #f4f9ff; font: 700 14px system-ui, sans-serif; }
+.dg .d-text { fill: #c8dcec; font: 400 13px system-ui, sans-serif; }
+.dg .badge { fill: var(--c); } .dg .badge-n { fill: #001218; font: 700 11px system-ui, sans-serif; }
+.dg .arrow { stroke: #8bc4dc; stroke-width: 1.5; fill: none; } .dg .head { fill: #8bc4dc; }
+.dg .via { fill: #c8dcec; font: italic 400 12px system-ui, sans-serif; }
+.dg .sep { stroke: #173a52; stroke-width: 1; }
+.dg .chip rect { fill: #060d18; stroke: var(--s); stroke-width: 1.2; }
+.dg .chip text { fill: var(--s); font: 700 10px system-ui, sans-serif; letter-spacing: 0.05em; }
+.dg .s-built { --s: #5dffb2; } .dg .s-planned { --s: #ffcf5e; } .dg .s-exp { --s: #d0b0ff; }
+
+/* ---- thin link strip added to the app's own index.html (outside #root) ---- */
+.gp-strip { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; justify-content: flex-end; padding: 6px 16px; background: #09111f; border-bottom: 1px solid var(--border, #12708c); font: 0.85rem/1.4 system-ui, sans-serif; }
+.gp-strip a { color: #00e5ff; text-decoration: underline; padding: 4px 2px; min-height: 28px; display: inline-block; }
+.gp-strip a:first-child { font-weight: 700; }
+body.site .brand { font-family: var(--title); font-size: 1.15rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text); margin: 16px 0 0; text-shadow: 0 0 4px rgba(255,255,255,.5), 0 0 14px rgba(0,229,255,.7); }
+body.site .brand a { color: inherit; text-decoration: none; }

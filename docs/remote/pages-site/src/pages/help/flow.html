@@ -1,0 +1,11 @@
+<!--page title="The whole flow" desc="Flowchart from seller keys to destination wallet." prev="help/index.html" next="help/stealth.html" -->
+<p>This is the path of one payment. Colour and label both tell you who acts: seller, payer, relayer, or the public chain.</p>
+{{diagram:flow}}
+<h2>In plain words</h2>
+<ul>
+<li><strong>The link stays private to your browser.</strong> The invoice is stored after the <code>#</code>. Browsers do not send that part to the web server. Anyone who has the link can still read it, and your browser history may keep it.</li>
+<li><strong>Router or direct.</strong> Paying through the router costs 0.25 % and the router passes the rest on and posts the announcement. Paying the one-time address directly costs no GhostPay fee but skips the router&rsquo;s checks. The app&rsquo;s Pay page uses the router.</li>
+<li><strong>The announcement is public.</strong> It lets the seller find the payment, and it lets anyone list GhostPay payments.</li>
+<li><strong>Sweeping is where privacy is easiest to lose.</strong> The payer knows the one-time address and can see where you move the money. Use a fresh destination.</li>
+</ul>
+<div class="notice notice-warn" role="note"><p>Nothing is deployed, so the app refuses to pay without a deployment manifest. The flow above is the design, tested with mocks.</p></div>

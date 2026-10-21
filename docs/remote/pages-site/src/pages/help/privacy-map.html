@@ -1,0 +1,8 @@
+<!--page title="Privacy options map" desc="Pipeline of privacy options by stage, with chaining and network layers." prev="help/observers.html" next="help/bitcoin.html" -->
+<p>Privacy options sit at different stages of a payment. Some can be chained. This map shows where each belongs and whether it exists yet.</p>
+{{diagram:privacy-map}}
+<h2>Chaining</h2>
+<p>You can stack options from different stages: delay the payment, scan through your own node, sweep to a fresh destination, then optionally exit through a pool. Each step covers a different leak. Each one also costs time or fees, and a mistake in any step can undo the rest. Options at the same stage often conflict or overlap, which is why the full list is a menu, not a switch.</p>
+<h2>Network layers</h2>
+<p>Network tools such as Tor, I2P, Nym and Oblivious HTTP hide <em>who you are</em> from the servers you talk to (host, RPC, relayer). They do nothing about what is written on-chain. In GhostPay they are planned profiles, not a built feature.</p>
+<p>The full cards, with what each option does not hide, are on the <a href="{{root}}privacy-options.html">Privacy options</a> page.</p>
