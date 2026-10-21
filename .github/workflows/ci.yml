@@ -5,18 +5,60 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# Least privilege by default. No job here receives deployment, RPC, pinning, or signing secrets.
+# Least privilege by default; every job restates its own permissions.
+# No job here receives deployment, RPC, pinning, or signing secrets.
 permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   typescript:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+      # Foundry provides `anvil` and `forge` for the relayer's real-contract end-to-end test.
+      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+        with:
+          version: v1.8.5
+      - run: npm ci --ignore-scripts
+      # Workspace packages resolve each other through their built `dist`; build them before anything else.
+      - run: npm run build:libs
+      - name: Build contract artifacts for the relayer anvil e2e
+        working-directory: packages/contracts
+        run: |
+          # The checked-in config points at a sandbox-only solc path; CI downloads the pinned compiler.
+          sed -i 's|^solc = .*|solc_version = "0.8.28"|' foundry.toml
+          forge build
+      - name: Locate anvil
+        run: echo "ANVIL_BIN=$(command -v anvil)" >> "$GITHUB_ENV"
+      - run: npm run typecheck
+      - run: npm run lint
+      - name: Unit tests (relayer anvil e2e must run, not skip)
+        env:
+          # The relayer e2e must fail instead of silently skipping when anvil or artifacts are missing
+          # (audit G-09 / O-06). Honoured once apps/relayer/src/e2e.anvil.test.ts reads it.
+          REQUIRE_ANVIL: "1"
+        run: npm test
+      - run: npm run build --workspace @ghostpay/web
+      - run: npm audit --omit=dev --audit-level=high
+
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -26,17 +68,25 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci --ignore-scripts
-      # Workspace packages resolve each other through their built `dist`.
       - run: npm run build:libs
-      - run: npm run typecheck
-      - run: npm run lint
-      - run: npm test
-      - run: npm run build --workspace @ghostpay/web
-      - run: npm audit --omit=dev --audit-level=high
+      # Allowed in GitHub-hosted CI. apps/web/playwright.config.ts falls back to this managed Chromium when no
+      # GHOSTPAY_CHROMIUM / preinstalled browser path exists.
+      - run: npx playwright install --with-deps chromium
+      # The suite's webServer runs `npm run build` (with bundle scan) and `vite preview` itself.
+      - run: npm run test:e2e --workspace @ghostpay/web
+      - if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: playwright-test-results
+          path: apps/web/test-results
+          if-no-files-found: ignore
+          retention-days: 7
 
   contracts:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    permissions:
+      contents: read
     defaults:
       run:
         working-directory: packages/contracts
@@ -52,23 +102,33 @@ jobs:
       - run: forge fmt --check
       - run: forge build --sizes
       - run: forge test
+      - run: forge snapshot --check
+      - name: Coverage (summary + lcov)
+        run: forge coverage --ir-minimum --report summary --report lcov --report-file lcov.info
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: contracts-lcov
+          path: packages/contracts/lcov.info
+          if-no-files-found: error
+          retention-days: 14
       - run: bash scripts/check-natspec.sh
       - name: Slither
         run: |
           python3 -m pip install --quiet "slither-analyzer==0.11.6" "solc-select==1.2.0"
           solc-select install 0.8.28 && solc-select use 0.8.28
-          # Triaged by-design findings (see docs/audits/00-slither-triage.md); any other High/Medium fails the build.
-          slither . --filter-paths "lib|test|script" --fail-medium --exclude-informational --exclude-low \
-            --exclude arbitrary-send-erc20,incorrect-equality
+          # By-design findings carry inline slither-disable comments (see docs/audits/00-slither-triage.md).
+          slither . --filter-paths "lib|test|script" --fail-medium --exclude-informational --exclude-low
 
   secrets-and-egress:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Reject committed private keys and env files
-        run: |
-          if git ls-files | grep -E '(^|/)\.env($|\.)' | grep -v '\.env\.example$'; then echo "env file committed"; exit 1; fi
-          if git grep -nE '(PRIVATE KEY-----|0x[0-9a-fA-F]{64}\b.*(private|secret))' -- . ':!docs' ':!.github' ':!**/test/**' ':!**/*.test.ts' ':!test-vectors' ':!**/*.md' ':!packages/contracts/lib'; then echo "possible secret"; exit 1; fi
+        run: bash scripts/scan-secrets.sh
+      - name: Every action is pinned to a full SHA with a version comment
+        run: bash scripts/check-actions-pinned.sh

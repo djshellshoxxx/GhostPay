@@ -1,0 +1,156 @@
+name: Release
+# Runs on a pushed version tag. Produces a DRAFT GitHub release with a deterministic web-bundle tarball,
+# SHA256SUMS, CycloneDX SBOM, release-manifest.json and a build-provenance attestation.
+#
+# It does NOT publish anywhere: no IPFS, ENS, Tor or Pages (hosting is intentionally not enabled; see the
+# disabled stub at the bottom). A maintainer must approve the `release` environment (Settings > Environments >
+# release > Required reviewers) before the build and draft jobs run, and must publish the draft by hand.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Verify (tests on a clean checkout)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Tag must be an annotated tag carrying a signature block
+        env:
+          TAG: ${{ github.ref_name }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # actions/checkout may leave a lightweight ref; fetch the tag object itself (read-only token).
+          auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" \
+            fetch --force --no-tags origin "refs/tags/$TAG:refs/tags/$TAG"
+          type="$(git cat-file -t "refs/tags/$TAG")"
+          if [ "$type" != "tag" ]; then echo "::error::$TAG is not an annotated tag"; exit 1; fi
+          if ! git cat-file tag "refs/tags/$TAG" | grep -qE -- '-----BEGIN (PGP|SSH) SIGNATURE-----'; then
+            echo "::error::$TAG has no PGP/SSH signature block"; exit 1
+          fi
+          # This only proves a signature is PRESENT. Verifying it needs the maintainer public key and is a
+          # manual step for maintainers and users (docs/operators/release-and-verify.md).
+          echo "Signature block present on $TAG (not cryptographically verified in CI)."
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+        with:
+          version: v1.8.5
+      - run: npm ci --ignore-scripts
+      - run: npm run build:libs
+      - name: Contract build, tests and anvil artifacts
+        working-directory: packages/contracts
+        run: |
+          sed -i 's|^solc = .*|solc_version = "0.8.28"|' foundry.toml
+          forge fmt --check
+          forge build --sizes
+          forge test
+      - name: Locate anvil
+        run: echo "ANVIL_BIN=$(command -v anvil)" >> "$GITHUB_ENV"
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+        env:
+          REQUIRE_ANVIL: "1"
+      - run: bash scripts/scan-secrets.sh
+      - run: bash scripts/check-actions-pinned.sh
+      - run: npm audit --omit=dev --audit-level=high
+
+  build:
+    name: Build, attest (requires approval)
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: release
+    permissions:
+      contents: read
+      id-token: write       # sigstore signing identity for the attestation
+      attestations: write   # store the attestation
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+        with:
+          version: v1.8.5
+      - name: Deterministic release build
+        env:
+          VERSION: ${{ github.ref_name }}
+          OUT_DIR: ${{ github.workspace }}/release-out
+        run: bash scripts/release-build.sh
+      - name: Self-check the produced hashes
+        working-directory: release-out
+        run: sha256sum --check SHA256SUMS
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-checksums: release-out/SHA256SUMS
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-artifacts
+          path: release-out/
+          if-no-files-found: error
+          retention-days: 30
+
+  draft-release:
+    name: Draft GitHub release (requires approval)
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: release
+    permissions:
+      contents: write   # create the draft release only
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-artifacts
+          path: release-out
+      - name: Create DRAFT release (never published automatically)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          cd release-out
+          gh release create "$TAG" --repo "$REPO" --verify-tag --draft --title "$TAG" \
+            --notes "Draft. Verify before publishing: see docs/operators/release-and-verify.md. Hosting is not enabled for this release." \
+            ./*
+
+  # ---------------------------------------------------------------------------------------------------------
+  # DISABLED STUB - DO NOT ENABLE WITHOUT AN EXPLICIT OWNER DECISION.
+  # Static publication (IPFS pin / ENS update / Tor mirror / Pages) is intentionally not enabled. Enabling it
+  # needs: a written owner decision, protected environments (ipfs-publish, tor-publish), scoped pinning
+  # credentials (prefer OIDC), and the CSP/header checks in docs/SECURITY_QA_DEVOPS_PLAYBOOK.md section 2
+  # (stages 5-6 and the security notes). Hosting hosts that cannot set response headers weaken the CSP.
+  # See docs/operators/release-and-verify.md "Hosting is disabled".
+  #
+  # publish-static:
+  #   if: false   # remove only after the owner decision is recorded in docs/adr/
+  #   needs: [draft-release]
+  #   environment: ipfs-publish
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: read
+  #   steps:
+  #     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+  #     - run: ./scripts/verify-release.sh ...   # re-verify the artifact before any publication
+  #     # pin step intentionally absent: the owner chooses the provider and credentials.

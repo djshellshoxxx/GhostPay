@@ -1,0 +1,100 @@
+name: Nightly
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightly-${{ github.ref }}
+  cancel-in-progress: false
+
+# Deep checks that are too slow for pull requests. No secrets, read-only token.
+#
+# Open gaps, deliberately NOT faked here (docs/operators/release-and-verify.md "Open gaps"):
+#   - Echidna: no harness contract or echidna.yaml exists in packages/contracts yet.
+#   - Mythril: no symbolic-analysis configuration exists yet.
+#   - Mutation testing and mainnet-fork tests: no configuration exists yet.
+# Add the harness/config first, then add the job; never add a step that cannot fail meaningfully.
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: packages/contracts
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+        with:
+          version: v1.8.5
+      - run: sed -i 's|^solc = .*|solc_version = "0.8.28"|' foundry.toml
+      - name: Forge fuzz at 100k runs
+        run: forge test --fuzz-runs 100000
+
+  slither:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: packages/contracts
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+        with:
+          version: v1.8.5
+      - run: sed -i 's|^solc = .*|solc_version = "0.8.28"|' foundry.toml
+      - name: Slither (same exclusions as ci.yml)
+        run: |
+          python3 -m pip install --quiet "slither-analyzer==0.11.6" "solc-select==1.2.0"
+          solc-select install 0.8.28 && solc-select use 0.8.28
+          slither . --filter-paths "lib|test|script" --fail-medium --exclude-informational --exclude-low
+
+  dependency-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Production dependencies (gating)
+        run: npm audit --omit=dev --audit-level=high
+      - name: All dependencies incl. dev (reported, non-gating)
+        continue-on-error: true
+        run: npm audit --audit-level=high
+      - name: Signature and provenance check of installed packages
+        run: npm audit signatures
+
+  reproducibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Two clean builds in separate directories must be byte-identical
+        run: bash scripts/repro-check.sh --head
