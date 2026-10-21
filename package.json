@@ -4,12 +4,18 @@
   "private": true,
   "license": "UNLICENSED",
   "type": "module",
-  "workspaces": ["packages/*", "apps/*"],
-  "engines": { "node": ">=22" },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
-    "build": "npm run build --workspaces --if-present"
+    "build": "npm run build --workspaces --if-present",
+    "build:libs": "npm run build -w @ghostpay/core-crypto -w @ghostpay/invoice-schema && npm run build -w @ghostpay/chain-adapters"
   }
 }
