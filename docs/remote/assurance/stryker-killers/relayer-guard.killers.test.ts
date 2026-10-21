@@ -164,10 +164,10 @@ describe('killers: breaker.ts', () => {
     expect(b.retryAfterMs()).toBe(0);        // half-open, probe in flight
   });
   it('health uses now - openedAt (breaker.ts:101)', () => {
-    const { c, b } = mk({}, 1000);
-    b.trip(); c.t = 1500;
+    const { c, b } = mk({}, 6000);
+    b.trip(); c.t = 6500;                   // now + openedAt (12 500) >= cooldown (10 000) would wrongly read as elapsed
     expect(b.health()).toBe('unhealthy');
-    c.t = 11_000; expect(b.health()).toBe('degraded');
+    c.t = 16_000; expect(b.health()).toBe('degraded');
   });
   it('a probe that outlives probeTimeoutMs cannot close the breaker (breaker.ts:177)', () => {
     const { c, b } = mk();

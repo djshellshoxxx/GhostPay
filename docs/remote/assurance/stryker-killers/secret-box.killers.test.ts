@@ -60,14 +60,19 @@ describe('killers: secret-box', () => {
     expect(code(() => b.use(() => 0))).toBe('DISPOSED:secret has been disposed');
   });
 
-  it('assertNoSecretBox depth/size limits are exact (secretBox.ts:262-269)', () => {
+  it('assertNoSecretBox depth/size limits are exact and primitives/null are leaves (secretBox.ts:262-269)', () => {
     const nest = (n: number): unknown => { let o: unknown = {}; for (let i = 0; i < n; i++) o = { o }; return o; };
-    expect(() => assertNoSecretBox(nest(15))).not.toThrow();           // depth boundary (MAX_DEPTH = 16)
-    expect(code(() => assertNoSecretBox(nest(40)))).toMatch(/^INVALID_INPUT/);
+    expect(() => assertNoSecretBox(nest(16))).not.toThrow();           // deepest object at depth 16 == MAX_DEPTH
+    expect(code(() => assertNoSecretBox(nest(17)))).toMatch(/^INVALID_INPUT/);
+    expect(() => assertNoSecretBox({ a: null, b: 'str', c: 1, d: undefined, e: true, f: 5n, g: Symbol('s') })).not.toThrow();
     expect(code(() => assertNoSecretBox({ a: { b: [SecretBox.random(4)] } }))).toBe('SECRET_IN_PAYLOAD:payload contains a SecretBox');
     expect(code(() => assertNoSecretBox({ ok: new Uint8Array(100_000) }))).toBeUndefined(); // typed arrays are leaves
     expect(() => assertNoSecretBox(new ArrayBuffer(8))).not.toThrow();
     expect(code(() => assertNoSecretBox({ a: new Map([[1, SecretBox.random(4)]]) }))).toMatch(/^SECRET_IN_PAYLOAD/);
-    expect(code(() => assertNoSecretBox([...Array(10_001)].map(() => ({}))))).toMatch(/^INVALID_INPUT/);
+    expect(code(() => assertNoSecretBox(new Set([SecretBox.random(4)])))).toMatch(/^SECRET_IN_PAYLOAD/);
+    expect(() => assertNoSecretBox([...Array(9_999)].map(() => ({})))).not.toThrow();       // 10 000 objects incl. the array
+    expect(code(() => assertNoSecretBox([...Array(10_000)].map(() => ({}))))).toMatch(/^INVALID_INPUT/); // 10 001
+    const cyc: Record<string, unknown> = {}; cyc['self'] = cyc;
+    expect(() => assertNoSecretBox(cyc)).not.toThrow();
   });
 });
