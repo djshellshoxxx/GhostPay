@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { isIP } from 'node:net';
 import { join } from 'node:path';
 import type { Address } from 'viem';
 import { getAddress } from 'viem';
@@ -53,7 +54,7 @@ export interface RelayerConfig {
     readonly saltRotationHours: number;
   };
   readonly breaker: { readonly windowSize: number; readonly minSamples: number; readonly failureRatio: number; readonly cooldownSeconds: number };
-  readonly queue: { readonly maxPending: number; readonly receiptTimeoutSeconds: number };
+  readonly queue: { readonly maxPending: number; readonly maxPerClient: number; readonly receiptTimeoutSeconds: number };
   readonly shutdownGraceSeconds: number;
   readonly chains: readonly ChainRuntimeConfig[];
 }
@@ -78,6 +79,29 @@ function numberOr(o: JsonObject, key: string, path: string, def: number, min: nu
     return bad(`${path}.${key}`, `must be a number in ${String(min)}..${String(max)}`);
   }
   return v;
+}
+
+/** True for an IP literal outside loopback, private, link-local, CGNAT and unspecified ranges. Hostnames are not judged. */
+function isPublicIpLiteral(host: string): boolean {
+  const kind = isIP(host);
+  if (kind === 4) {
+    const [a = 0, b = 0] = host.split('.').map(Number);
+    const local = a === 0 || a === 10 || a === 127 || (a === 169 && b === 254) || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) || (a === 100 && b >= 64 && b <= 127);
+    return !local;
+  }
+  if (kind === 6) {
+    const canon = new URL(`http://[${host}]`).hostname.slice(1, -1);
+    if (canon === '::' || canon === '::1') return false;
+    const mapped = /^::ffff:(?<hi>[0-9a-f]{1,4}):(?<lo>[0-9a-f]{1,4})$/.exec(canon);
+    if (mapped?.groups !== undefined) {
+      const hi = Number.parseInt(mapped.groups['hi'] ?? '0', 16);
+      const lo = Number.parseInt(mapped.groups['lo'] ?? '0', 16);
+      return isPublicIpLiteral(`${String(hi >> 8)}.${String(hi & 255)}.${String(lo >> 8)}.${String(lo & 255)}`);
+    }
+    const first = Number.parseInt(canon.split(':')[0] ?? '', 16);
+    return !((first & 0xfe00) === 0xfc00 || (first & 0xffc0) === 0xfe80);
+  }
+  return false;
 }
 
 function boolOr(o: JsonObject, key: string, path: string, def: boolean): boolean {
@@ -277,7 +301,7 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
   if (minDeadlineSeconds >= maxDeadlineSeconds) return bad('deadline', 'minSeconds must be below maxSeconds');
   const rl = sub(o, 'rateLimit', '$', ['ipPerMinute', 'ipBurst', 'ownerPerMinute', 'ownerBurst', 'maxKeys', 'saltRotationHours']);
   const br = sub(o, 'breaker', '$', ['windowSize', 'minSamples', 'failureRatio', 'cooldownSeconds']);
-  const q = sub(o, 'queue', '$', ['maxPending', 'receiptTimeoutSeconds']);
+  const q = sub(o, 'queue', '$', ['maxPending', 'maxPerClient', 'receiptTimeoutSeconds']);
   const allowDevChain = boolOr(o, 'allowDevChain', '$', false);
   const allowInsecureLocalhostRpc = boolOr(o, 'allowInsecureLocalhostRpc', '$', false);
 
@@ -287,12 +311,17 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
   if (new Set(chains.map((c) => c.chainId)).size !== chains.length) return bad('chains', 'duplicate chainId');
 
   const windowSize = numberOr(br, 'windowSize', 'breaker', 20, 2, 1000);
+  const trustProxyHops = numberOr(o, 'trustProxyHops', '$', 0, 0, 5);
+  if (trustProxyHops > 0 && isPublicIpLiteral(host)) {
+    return bad('trustProxyHops', 'must be 0 when listen.host is a public IP address: no trusted proxy can sit in front, X-Forwarded-For would be attacker controlled');
+  }
+  const maxPending = numberOr(q, 'maxPending', 'queue', 16, 1, 1024);
   return {
     host,
     port: numberOr(listen, 'port', 'listen', 8787, 0, 65535),
     allowedOrigins: parseOrigins(o['allowedOrigins']),
     allowInsecureLocalhostRpc,
-    trustProxyHops: numberOr(o, 'trustProxyHops', '$', 0, 0, 5),
+    trustProxyHops,
     quoteTtlSeconds: numberOr(o, 'quoteTtlSeconds', '$', 120, 10, 600),
     minDeadlineSeconds,
     maxDeadlineSeconds,
@@ -311,7 +340,8 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
       cooldownSeconds: numberOr(br, 'cooldownSeconds', 'breaker', 60, 1, 86_400),
     },
     queue: {
-      maxPending: numberOr(q, 'maxPending', 'queue', 16, 1, 1024),
+      maxPending,
+      maxPerClient: numberOr(q, 'maxPerClient', 'queue', Math.max(1, Math.floor((maxPending * 3) / 4)), 1, maxPending),
       receiptTimeoutSeconds: numberOr(q, 'receiptTimeoutSeconds', 'queue', 120, 5, 3600),
     },
     shutdownGraceSeconds: numberOr(o, 'shutdownGraceSeconds', '$', 15, 1, 300),

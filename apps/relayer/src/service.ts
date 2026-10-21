@@ -17,7 +17,7 @@ import type { RateLimiter } from './limiter.js';
 import { nullLogger, type Logger } from './log.js';
 import type { AllowedToken, GasPriceSource, TokenPriceSource } from './pricing.js';
 import { signQuote, verifyQuote } from './quoteToken.js';
-import type { QuoteRequest, SweepRequest } from './validate.js';
+import { isCanonicalSignature, type QuoteRequest, type SweepRequest } from './validate.js';
 
 /** Dependencies of {@link RelayerService}. */
 export interface ServiceDeps {
@@ -77,7 +77,12 @@ export interface HealthResponse {
 /** Per-request context (logging only). */
 export interface RequestContext {
   readonly requestId: string;
+  /** Opaque (salted-hash) client identifier used only to bound how many lane slots one client holds. */
+  readonly clientKey?: string;
 }
+
+/** Further receipt waits (each `receiptTimeoutSeconds` long) before a timed-out transaction is given up on. */
+const RECONCILE_ATTEMPTS = 2;
 
 interface ChainRuntime {
   readonly cfg: ChainRuntimeConfig;
@@ -135,7 +140,7 @@ export class RelayerService {
       this.chains.set(cfg.chainId, {
         cfg,
         client,
-        lane: new ChainLane(d.config.queue.maxPending),
+        lane: new ChainLane(d.config.queue.maxPending, d.config.queue.maxPerClient),
         nonces: new NonceManager(() => client.getPendingNonce()),
         budget: new DailyBudget(cfg.dailyBudgetWei, this.now),
         breaker: new CircuitBreaker(
@@ -192,8 +197,7 @@ export class RelayerService {
       throw new RelayerError(422, 'invalid_order');
     }
     const gasPrice = await this.gasPrice(rt);
-    const units = token.permit ? rt.cfg.gasUnits.sweepWithPermit : rt.cfg.gasUnits.sweep;
-    const gasCost = await this.d.tokenPrices.nativeToTokenUnits(req.chainId, token, units * gasPrice);
+    const gasCost = await this.gasCostInToken(rt, token, gasPrice);
     const { fee } = sponsorFee(req.amount, gasCost);
     // If even the 300 bps cap cannot reimburse the gas, the sweep is uneconomical: refuse to quote.
     if (fee < gasCost) throw new RelayerError(422, 'amount_too_small');
@@ -255,6 +259,10 @@ export class RelayerService {
       if (e instanceof ChainAdapterError) throw new RelayerError(422, 'invalid_order');
       throw e;
     }
+    // Same rule as the contract's OpenZeppelin `ECDSA.recover`: only canonical (low-s, v in 27/28) signatures.
+    // A malleated twin would otherwise recover the same owner here and only fail in the simulation.
+    if (!isCanonicalSignature(req.sweepSig)) throw new RelayerError(422, 'invalid_signature');
+
     let recovered: Address;
     try {
       recovered = await recoverTypedDataAddress({
@@ -288,13 +296,14 @@ export class RelayerService {
     try {
       funding = await rt.client.getSweepFunding(s.token, s.owner, rt.cfg.sweepRelayer);
     } catch {
+      rt.breaker.recordFailure();
       throw new RelayerError(503, 'rpc_unavailable');
     }
     if (funding.balance < s.amount) throw new RelayerError(422, 'insufficient_balance');
     if (req.permit === undefined && funding.allowance < s.amount) throw new RelayerError(422, 'insufficient_allowance');
 
     const call: SweepCall = { sweepRelayer: rt.cfg.sweepRelayer, sweep: s, sweepSig: req.sweepSig, permit: req.permit };
-    return rt.lane.submit(() => this.runJob(rt, call, ctx));
+    return rt.lane.submit(() => this.runJob(rt, call, ctx), ctx.clientKey);
   }
 
   /** Stops admitting work and waits for every queued/in-flight transaction to settle. */
@@ -313,12 +322,21 @@ export class RelayerService {
     return { rt, token };
   }
 
+  /** Gas cost of one sweep at `gasPrice`, in token base units, using the configured gas units (as the quote does). */
+  private gasCostInToken(rt: ChainRuntime, token: AllowedToken, gasPrice: bigint): Promise<bigint> {
+    const units = token.permit ? rt.cfg.gasUnits.sweepWithPermit : rt.cfg.gasUnits.sweep;
+    return this.d.tokenPrices.nativeToTokenUnits(rt.cfg.chainId, token, units * gasPrice);
+  }
+
   private async gasPrice(rt: ChainRuntime): Promise<bigint> {
     let price: bigint;
     try {
       price = await this.d.gasPrices.getGasPrice(rt.cfg.chainId);
     } catch (e) {
       if (e instanceof RelayerError) throw e;
+      // An unreachable RPC is an operational failure like any other: it must open the breaker (and so
+      // degrade /healthz) instead of leaving every client to wait out the RPC timeout.
+      rt.breaker.recordFailure();
       throw new RelayerError(503, 'rpc_unavailable');
     }
     if (price > rt.cfg.maxGasPriceWei) throw new RelayerError(503, 'gas_price_too_high', 30);
@@ -354,6 +372,12 @@ export class RelayerService {
     };
 
     const gasPrice = await this.gasPrice(rt);
+    // The quote may be up to `quoteTtlSeconds` old: refuse if the signed fee no longer covers the gas
+    // at today's price (client re-quotes). Market-caused, so it does not touch the breaker.
+    const token = cfg.tokens.find((x) => x.address === call.sweep.token);
+    if (token !== undefined && call.sweep.fee < (await this.gasCostInToken(rt, token, gasPrice))) {
+      throw new RelayerError(422, 'fee_below_gas');
+    }
     const balance = await op(() => client.getBalance());
     if (balance < cfg.minBalanceWei) {
       breaker.trip();
@@ -376,6 +400,7 @@ export class RelayerService {
     if (gasLimit > cfg.maxGasLimit) throw new RelayerError(422, 'gas_limit_too_high');
 
     const reserved = gasLimit * gasPrice;
+    const reservedDay = budget.dayIndex();
     if (!budget.reserve(reserved)) {
       throw new RelayerError(503, 'budget_exhausted', budget.secondsToReset());
     }
@@ -386,7 +411,7 @@ export class RelayerService {
       txHash = await client.sendSweep(call, { nonce, gas: gasLimit, gasPrice });
     } catch {
       nonces.invalidate();
-      budget.release(reserved);
+      budget.release(reserved, reservedDay);
       breaker.recordFailure();
       throw new RelayerError(503, 'send_failed');
     }
@@ -398,14 +423,60 @@ export class RelayerService {
       if (r.status === 'timeout') {
         nonces.invalidate();
         this.logger.log('warn', 'receipt_timeout', { chainId: cfg.chainId, txHash, errorClass: 'receipt_timeout' });
+        // Keep the reservation (the transaction may still land) but settle it off-lane, so a slow RPC
+        // cannot leak the daily budget and the lane slot is not held any longer.
+        void this.reconcile(rt, txHash, reserved, reservedDay, gasPrice);
         return;
       }
-      budget.release(reserved > r.gasUsed * gasPrice ? reserved - r.gasUsed * gasPrice : 0n);
+      budget.release(reserved > r.gasUsed * gasPrice ? reserved - r.gasUsed * gasPrice : 0n, reservedDay);
       if (r.status === 'reverted') {
-        breaker.recordFailure();
-        this.logger.log('error', 'sweep_reverted', { chainId: cfg.chainId, txHash, errorClass: 'mined_revert' });
+        // A revert after a passing simulation is usually a third party (front-runner) consuming the order:
+        // the order is then no longer executable and re-simulating says so. That is not a relayer fault.
+        const userCaused = await this.explainedByOrder(client, call);
+        if (!userCaused) breaker.recordFailure();
+        this.logger.log('error', 'sweep_reverted', {
+          chainId: cfg.chainId,
+          txHash,
+          errorClass: userCaused ? 'mined_revert_front_run' : 'mined_revert',
+        });
       }
     })();
     return { value: { txHash }, settled };
+  }
+
+  /** @returns True when re-simulating a reverted sweep reverts too (order consumed/expired: not the relayer's fault). */
+  private async explainedByOrder(client: ChainClient, call: SweepCall): Promise<boolean> {
+    try {
+      await client.simulateSweep(call);
+      return false;
+    } catch (e) {
+      return e instanceof SimulationRevert;
+    }
+  }
+
+  /**
+   * Resolves the daily-budget reservation of a transaction whose receipt timed out. Waits for the
+   * receipt a few more times; a receipt gives the exact gas, none means the transaction was dropped or
+   * is stuck, and the reservation is then returned in full (at most one transaction's gas can still be
+   * spent unaccounted). Never throws; stops at shutdown (budget state is process-local anyway).
+   */
+  private async reconcile(rt: ChainRuntime, txHash: Hex, reserved: bigint, day: number, gasPrice: bigint): Promise<void> {
+    const { client, budget, cfg } = rt;
+    try {
+      for (let i = 0; i < RECONCILE_ATTEMPTS; i++) {
+        if (this.closing) return;
+        const r = await client.waitForReceipt(txHash, this.d.config.queue.receiptTimeoutSeconds * 1000);
+        if (r.status !== 'timeout') {
+          budget.release(reserved > r.gasUsed * gasPrice ? reserved - r.gasUsed * gasPrice : 0n, day);
+          this.logger.log('info', 'receipt_late', { chainId: cfg.chainId, txHash });
+          return;
+        }
+      }
+      if (this.closing) return;
+      budget.release(reserved, day);
+      this.logger.log('warn', 'receipt_unresolved', { chainId: cfg.chainId, txHash, errorClass: 'receipt_unresolved' });
+    } catch {
+      // keep the reservation: the conservative choice
+    }
   }
 }

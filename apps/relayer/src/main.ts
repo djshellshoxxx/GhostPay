@@ -1,12 +1,12 @@
 import { privateKeyToAccount } from 'viem/accounts';
 import { loadConfigFile } from './config.js';
-import { createLogger } from './log.js';
+import { createLogger, createStdoutSink } from './log.js';
 import { buildRelayer } from './runtime.js';
 import { HOT_KEY_SOURCE, QUOTE_SECRET_SOURCE, loadSecret } from './secrets.js';
 
 /** Process entry point: `node dist/main.js`. Excluded from coverage (thin glue over tested modules). */
 async function main(): Promise<void> {
-  const logger = createLogger((line) => process.stdout.write(`${line}\n`));
+  const logger = createLogger(createStdoutSink(process.stdout));
   const env = process.env;
   const hotKey = loadSecret(env, HOT_KEY_SOURCE);
   const quoteSecret = loadSecret(env, QUOTE_SECRET_SOURCE);

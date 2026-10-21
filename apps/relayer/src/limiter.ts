@@ -109,6 +109,14 @@ export class RateLimiter {
   }
 
   /**
+   * @param rawKey Raw identifier (not retained).
+   * @returns The salted-hash form of the key, for bookkeeping elsewhere that must not hold raw IPs.
+   */
+  public fingerprint(rawKey: string): string {
+    return this.hasher.hash(rawKey);
+  }
+
+  /**
    * Consumes one token for `rawKey`.
    *
    * @param rawKey Raw identifier; hashed immediately and never stored.

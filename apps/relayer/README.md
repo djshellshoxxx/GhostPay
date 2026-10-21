@@ -36,17 +36,17 @@ chain and token allowlist (`chain_not_supported`, `token_not_supported` 422) -> 
 `permit_value_too_low`) -> `feeTo` equals the relayer's (`fee_to_mismatch`) -> quote token authentic (`invalid_quote` 400),
 unexpired (`quote_expired` 410), `sweep.fee >= quote.fee` (`fee_below_quote`), `fee <= 300 bps` (`fee_above_cap`) ->
 deadline in `(now+min, now+max]`, max 1800 s (`deadline_too_soon/far`) -> contract static rules (`invalid_order`) ->
-signature recovers to `owner` (`invalid_signature`) -> per-owner rate limit (`rate_limited_owner` 429; keyed only by a
+signature is canonical (low-s, `v` 27/28, as OpenZeppelin `ECDSA.recover` requires) and recovers to `owner` (`invalid_signature`) -> per-owner rate limit (`rate_limited_owner` 429; keyed only by a
 proven owner) -> `PolicyGate` (`policy_denied` 403, `policy_unavailable` 503) -> breaker -> funding pre-check
 (`insufficient_balance` / `insufficient_allowance` 422, allowance skipped when a permit is supplied; two `eth_call`s,
 done before taking a lane slot) -> serial per-chain lane:
-gas price cap (`gas_price_too_high` 503), balance floor (`breaker_open`), `simulateContract` (revert class: `nonce_used`
+gas price cap (`gas_price_too_high` 503), signed fee still covers gas at the current price (`fee_below_gas` 422: re-quote), balance floor (`breaker_open`), `simulateContract` (revert class: `nonce_used`
 409, `expired`, `invalid_signature`, `token_transfer_failed`, `permit_value_too_low`, `invalid_order`,
 `simulation_reverted` 422; RPC failure `rpc_unavailable` 503), gas limit (`gas_limit_too_high`), daily budget
 (`budget_exhausted` 503 + `Retry-After`) -> send (`send_failed` 503).
 
 Other classes: `invalid_*` 400 (field-level validation), `unsupported_media_type` 415, `body_too_large` 413,
-`rate_limited_ip` 429, `origin_not_allowed` 403, `queue_full` / `shutting_down` 503, `not_found` 404, `method_not_allowed` 405,
+`rate_limited_ip` 429, `client_queue_full` 429 (one client already holds `queue.maxPerClient` lane slots), `origin_not_allowed` 403, `queue_full` / `shutting_down` 503, `not_found` 404, `method_not_allowed` 405,
 `internal_error` 500.
 
 ## Configuration
@@ -82,7 +82,10 @@ RELAYER_CONFIG=/etc/ghostpay/relayer.config.json node apps/relayer/dist/main.js
 ```
 
 HTTPS is terminated by the host (reverse proxy); set `trustProxyHops` to the number of trusted proxies so the rate-limit
-bucket uses the right client address (0 = use the socket address and ignore `X-Forwarded-For`). `SIGTERM`/`SIGINT` start a
+bucket uses the right client address (0 = use the socket address and ignore `X-Forwarded-For`). The address taken is the
+`trustProxyHops`-th entry from the right and must be a plain IP literal, otherwise the socket address is used. Startup is
+refused if `trustProxyHops > 0` while `listen.host` is a public IP literal; the relayer must never be reachable directly
+(bind to loopback/a private interface or firewall it), because a direct client controls `X-Forwarded-For`. `SIGTERM`/`SIGINT` start a
 graceful shutdown: stop listening, refuse new work, let queued and in-flight transactions settle, force-close after
 `shutdownGraceSeconds`. Deployment: `Dockerfile` (distroless, non-root; build from the repo root) and
 `deploy/ghostpay-relayer.service`.

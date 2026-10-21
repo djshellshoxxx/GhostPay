@@ -560,7 +560,7 @@ describe('serialization, queue and shutdown', () => {
   });
 
   it('rejects with 503 when the bounded queue is full', async () => {
-    const s = await start({ config: { queue: { maxPending: 2, receiptTimeoutSeconds: 30 } } });
+    const s = await start({ config: { queue: { maxPending: 2, maxPerClient: 2, receiptTimeoutSeconds: 30 } } });
     let release: () => void = () => undefined;
     s.fake.receiptGate = new Promise<void>((r) => {
       release = r;

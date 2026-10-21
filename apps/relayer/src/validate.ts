@@ -105,3 +105,21 @@ export function parseSweepRequest(body: unknown): SweepRequest {
     quoteToken,
   };
 }
+
+/** Half of the secp256k1 group order: the largest `s` OpenZeppelin `ECDSA.recover` accepts. */
+const HALF_ORDER = 0x7fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a0n;
+
+/**
+ * Whether a 65-byte `r || s || v` signature is canonical the way the contract requires it
+ * (OpenZeppelin `ECDSA.recover`): `s` in the lower half of the curve order and `v` exactly 27 or 28.
+ * viem's recovery also accepts the malleable high-s twin and `v` of 0/1, which would only fail later in
+ * the simulation.
+ *
+ * @param sig 0x-prefixed 65-byte hex (already validated for length).
+ * @returns True when the contract would not reject it for form.
+ */
+export function isCanonicalSignature(sig: Hex): boolean {
+  const s = BigInt(`0x${sig.slice(66, 130)}`);
+  const v = Number.parseInt(sig.slice(130, 132), 16);
+  return s <= HALF_ORDER && (v === 27 || v === 28);
+}

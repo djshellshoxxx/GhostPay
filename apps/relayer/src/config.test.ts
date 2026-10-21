@@ -49,7 +49,7 @@ describe('parseConfig', () => {
     expect(c.quoteTtlSeconds).toBe(120);
     expect(c.minDeadlineSeconds).toBe(30);
     expect(c.maxDeadlineSeconds).toBe(1800);
-    expect(c.queue).toEqual({ maxPending: 16, receiptTimeoutSeconds: 120 });
+    expect(c.queue).toEqual({ maxPending: 16, maxPerClient: 12, receiptTimeoutSeconds: 120 });
     expect(c.breaker).toEqual({ windowSize: 20, minSamples: 5, failureRatio: 0.5, cooldownSeconds: 60 });
     const ch = c.chains[0];
     expect(ch?.feeTo).toBe(HOT_ADDRESS); // defaults to the hot-key address

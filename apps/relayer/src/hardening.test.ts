@@ -139,12 +139,14 @@ describe('R5 quote during shutdown', () => {
   });
 });
 
-describe('R6 fee vs gas at send time (documented deviation)', () => {
-  it('sends a quoted sweep even if gas rose below the cap after the quote', async () => {
+describe('R6 fee vs gas at send time (now enforced, RA-FG-3)', () => {
+  it('refuses a quoted sweep when gas rose so far that the signed fee no longer covers it', async () => {
     const s = await start();
     const body = (await prepare(s, { nonce: 1n })).body;
     s.fake.gasPrice = 40_000_000_000n; // 40x the quote-time price, still under the 50 gwei cap
-    expect((await call(s, 'POST', '/v1/sweep', body)).status).toBe(200);
+    const r = await call(s, 'POST', '/v1/sweep', body);
+    expect(r.status).toBe(422);
+    expect(errCode(r)).toBe('fee_below_gas');
   });
 });
 

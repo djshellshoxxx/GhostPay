@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
-import type { AddressInfo } from 'node:net';
+import { isIP, type AddressInfo } from 'node:net';
 import type { RelayerConfig } from './config.js';
 import { RelayerError, invalid } from './errors.js';
 import type { RateLimiter } from './limiter.js';
@@ -19,6 +19,54 @@ export interface HttpDeps {
   readonly logger?: Logger;
   /** Request id generator (tests). */
   readonly newRequestId?: () => string;
+  /** Overrides the connection timeouts (tests); production uses {@link DEFAULT_TIMEOUTS}. */
+  readonly timeouts?: Partial<HttpTimeouts>;
+}
+
+/** Slow-client protections, in milliseconds. */
+export interface HttpTimeouts {
+  readonly headersTimeoutMs: number;
+  readonly requestTimeoutMs: number;
+  readonly keepAliveTimeoutMs: number;
+  /** How often Node checks connections against the two timeouts above (its default of 30 s makes them late). */
+  readonly checkIntervalMs: number;
+}
+
+/** Production connection timeouts. */
+export const DEFAULT_TIMEOUTS: HttpTimeouts = { headersTimeoutMs: 10_000, requestTimeoutMs: 15_000, keepAliveTimeoutMs: 5_000, checkIntervalMs: 1_000 };
+
+/**
+ * Canonical textual form of an IP literal for rate-limit keying, or `undefined` when `raw` is not one
+ * (no zone ids, no hostnames, no junk). IPv4-mapped IPv6 maps to the IPv4 form.
+ */
+function normalizeIp(raw: string): string | undefined {
+  const mapped = /^::ffff:(\d{1,3}(?:\.\d{1,3}){3})$/i.exec(raw);
+  const ip = mapped?.[1] ?? raw;
+  const kind = isIP(ip);
+  if (kind === 4) return ip;
+  if (kind === 6 && !ip.includes('%')) return new URL(`http://[${ip}]`).hostname.slice(1, -1);
+  return undefined;
+}
+
+/**
+ * The rate-limit identity of a request: with `hops` trusted proxies, the `hops`-th entry from the RIGHT
+ * of `X-Forwarded-For` (what the nearest trusted proxy appended; everything left of it is client
+ * supplied). Anything that is not a plain IP literal, or a list shorter than `hops`, falls back to the
+ * socket address so garbage values cannot mint new buckets.
+ *
+ * @param xff Raw header value(s).
+ * @param peer Socket address.
+ * @param hops Number of trusted proxies in front (0 ignores the header).
+ * @returns Key material for the IP limiter.
+ */
+export function resolveClientIp(xff: string | readonly string[] | undefined, peer: string | undefined, hops: number): string {
+  if (hops > 0 && xff !== undefined) {
+    const parts = (typeof xff === 'string' ? xff : xff.join(',')).split(',');
+    const hit = parts[parts.length - hops]?.trim();
+    const ip = hit === undefined ? undefined : normalizeIp(hit);
+    if (ip !== undefined) return ip;
+  }
+  return peer ?? 'unknown';
 }
 
 type Route = '/healthz' | '/v1/info' | '/v1/quote' | '/v1/sweep';
@@ -107,12 +155,13 @@ export class RelayerHttpServer {
   public constructor(private readonly d: HttpDeps) {
     this.origins = new Set(d.config.allowedOrigins);
     this.logger = d.logger ?? nullLogger;
-    this.server = createServer({ maxHeaderSize: 8192 }, (req, res) => {
+    const tm = { ...DEFAULT_TIMEOUTS, ...d.timeouts };
+    this.server = createServer({ maxHeaderSize: 8192, connectionsCheckingInterval: tm.checkIntervalMs }, (req, res) => {
       void this.handle(req, res);
     });
-    this.server.headersTimeout = 10_000;
-    this.server.requestTimeout = 15_000;
-    this.server.keepAliveTimeout = 5_000;
+    this.server.headersTimeout = tm.headersTimeoutMs;
+    this.server.requestTimeout = tm.requestTimeoutMs;
+    this.server.keepAliveTimeout = tm.keepAliveTimeoutMs;
     this.server.maxConnections = 1024;
   }
 
@@ -165,14 +214,7 @@ export class RelayerHttpServer {
   }
 
   private clientIp(req: IncomingMessage): string {
-    const hops = this.d.config.trustProxyHops;
-    const xff = req.headers['x-forwarded-for'];
-    if (hops > 0 && typeof xff === 'string') {
-      const parts = xff.split(',').map((p) => p.trim());
-      const hit = parts[parts.length - hops];
-      if (hit !== undefined && hit !== '') return hit;
-    }
-    return req.socket.remoteAddress ?? 'unknown';
+    return resolveClientIp(req.headers['x-forwarded-for'], req.socket.remoteAddress, this.d.config.trustProxyHops);
   }
 
   private async handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
@@ -240,7 +282,8 @@ export class RelayerHttpServer {
         return;
       case '/v1/quote':
       case '/v1/sweep': {
-        const limit = this.d.ipLimiter.take(this.clientIp(req));
+        const ip = this.clientIp(req);
+        const limit = this.d.ipLimiter.take(ip);
         if (!limit.ok) throw new RelayerError(429, 'rate_limited_ip', limit.retryAfterSeconds);
         const ct = req.headers['content-type'];
         if (ct === undefined || !JSON_TYPE.test(ct)) throw new RelayerError(415, 'unsupported_media_type');
@@ -248,7 +291,7 @@ export class RelayerHttpServer {
         if (path === '/v1/quote') {
           this.send(c, 200, await this.d.service.quote(parseQuoteRequest(body)));
         } else {
-          this.send(c, 200, await this.d.service.sweep(parseSweepRequest(body), { requestId: c.requestId }));
+          this.send(c, 200, await this.d.service.sweep(parseSweepRequest(body), { requestId: c.requestId, clientKey: this.d.ipLimiter.fingerprint(ip) }));
         }
         return;
       }

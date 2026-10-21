@@ -105,7 +105,7 @@ export function testConfig(over: Partial<RelayerConfig> = {}): RelayerConfig {
     maxDeadlineSeconds: 1800,
     rateLimit: { ipPerMinute: 600, ipBurst: 100, ownerPerMinute: 60, ownerBurst: 20, maxKeys: 100, saltRotationHours: 24 },
     breaker: { windowSize: 10, minSamples: 3, failureRatio: 0.5, cooldownSeconds: 60 },
-    queue: { maxPending: 4, receiptTimeoutSeconds: 30 },
+    queue: { maxPending: 4, maxPerClient: 3, receiptTimeoutSeconds: 30 },
     shutdownGraceSeconds: 2,
     chains: [
       {

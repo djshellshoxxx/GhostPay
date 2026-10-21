@@ -88,7 +88,7 @@ describe.skipIf(!available)('end to end on anvil (real GhostPaySweepRelayer + ER
         allowInsecureLocalhostRpc: true,
         listen: { host: '127.0.0.1', port: 0 },
         breaker: { windowSize: 10, minSamples: 3, failureRatio: 0.5, cooldownSeconds: 5 },
-        queue: { maxPending: 4, receiptTimeoutSeconds: 30 },
+        queue: { maxPending: 4, maxPerClient: 4, receiptTimeoutSeconds: 30 },
         chains: [
           {
             chainId: 31337,

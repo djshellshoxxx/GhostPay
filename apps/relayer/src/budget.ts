@@ -35,13 +35,22 @@ export class DailyBudget {
     return true;
   }
 
+  /** @returns The UTC day (since the epoch) the next reservation counts against. */
+  public dayIndex(): number {
+    this.roll();
+    return this.day;
+  }
+
   /**
    * Returns an unused part of a reservation.
    *
    * @param wei Amount to give back (clamped to what is spent).
+   * @param day The {@link DailyBudget.dayIndex} at reservation time; a release for an earlier day is
+   * dropped (that day's counter is already gone) so it cannot reduce today's spend.
    */
-  public release(wei: bigint): void {
+  public release(wei: bigint, day?: number): void {
     this.roll();
+    if (day !== undefined && day !== this.day) return;
     this.spent = wei > this.spent ? 0n : this.spent - wei;
   }
 

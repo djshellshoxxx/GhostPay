@@ -15,8 +15,9 @@ Contract code wins over docs. Items for the lead to confirm or reject.
 5. **Quote token format** `v1.<expiresAt>.<fee>.<mac>` (fee readable inside the token so the server stays stateless).
    Expired quote is HTTP 410; tampered/malformed is 400; the spec lists no codes for these.
 6. **Signature is exactly 65 bytes.** The contract's `ECDSA.recover` also accepts 64-byte EIP-2098 signatures; the
-   relayer rejects them in validation. High-s signatures pass recovery here and are rejected by the simulation
-   (`invalid_signature` class, as the contract reverts with `ECDSAInvalidSignatureS`).
+   relayer rejects them in validation. High-s signatures and `v` of 0/1 are rejected up front as `invalid_signature`
+   (the contract's OpenZeppelin `ECDSA.recover` reverts on both), before any RPC call; previously they recovered fine here
+   and failed only in the simulation. The permit signature is the token's business and is not checked.
 7. **One in-flight transaction means one per receipt.** The lane slot is held until the receipt (or
    `receiptTimeoutSeconds`), so throughput is about one sweep per block per chain. The HTTP response is sent as soon as the
    transaction is broadcast. After a timeout or send failure the nonce is re-read from the pending count.
@@ -49,8 +50,33 @@ Contract code wins over docs. Items for the lead to confirm or reject.
     is supplied) before taking a lane slot, so fresh signing keys with no funds cannot occupy the lane or probe the breaker.
     Costs two `eth_call`s per accepted-so-far request (bounded by the IP limiter). A funded owner who can still make the
     simulation revert can use the lane; that is covered by the owner and IP limits only.
-19. **Fee vs gas at send time is not re-checked.** The sweep re-checks only the gas price cap. A quote (TTL 120 s) priced at
-    a low gas price is honoured even if gas rises, up to `maxGasPriceWei`; the relayer absorbs the difference (bounded by the
-    cap and the daily budget). Rejecting would force clients to re-quote on ordinary gas noise; accepted as operator risk.
+19. **Fee vs gas is re-checked at send time** (RA-FG-3). Inside the lane the signed `fee` must still be at least the gas
+    cost of one sweep (configured gas units x current `eth_gasPrice`, converted like the quote) or the sweep is refused with
+    `fee_below_gas` (422, before the simulation, not counted by the breaker). A quote carries a 10 % margin (more for small
+    amounts, where the 50 bps floor dominates), so ordinary gas noise passes; a larger rise inside the quote TTL makes the
+    client re-quote. Replaces the earlier "absorb it, bounded by the cap and budget" behaviour.
 20. **Breaker probe.** A half-open probe that ends without an RPC outcome (gas cap, budget, gas limit) gives its slot back
     (`releaseProbe`); a user-caused simulation revert counts as success. `/healthz` reports `degraded` unless some chain is closed.
+21. **Gas-price and funding RPC failures feed the breaker.** `eth_gasPrice` (quote or sweep) and the pre-lane funding
+    check failing now count as operational failures, so a dead RPC opens the breaker and `/healthz` turns 503/`degraded`
+    instead of staying `ok` while every client waits out the RPC timeout.
+22. **Mined reverts.** After a reverted receipt the sweep is re-simulated once: if that reverts too (order consumed by a
+    front-runner, expired) it is logged `mined_revert_front_run` and does NOT count against the breaker (RA-CB-5); otherwise
+    (`mined_revert`, or the re-simulation itself failed) it counts as before. The relayer still pays the gas of a front-run
+    revert; that loss is bounded only by `dailyBudgetWei`.
+23. **Receipt timeout.** The lane slot is released as before, but the daily-budget reservation is now reconciled off-lane:
+    up to two more receipt waits; a receipt releases the unused part, none releases the whole reservation
+    (`receipt_unresolved`). A transaction that lands after that is unaccounted (at most one transaction's gas each). Releases
+    for a previous UTC day are dropped. Nothing is reconciled once shutdown has begun (budget is process-local).
+24. **Per-client lane cap.** `queue.maxPerClient` (default 3/4 of `maxPending`, min 1) bounds the lane slots one hashed
+    client IP can hold; beyond it `client_queue_full` (429). It limits one address, not a botnet or a proxy collapsing all
+    users into one address (`trustProxyHops` 0 behind a proxy).
+25. **Client IP.** `X-Forwarded-For` is honoured only with `trustProxyHops > 0`, using the rightmost-trusted entry, and only
+    if it is an IP literal (IPv4-mapped IPv6 folded to IPv4); `trustProxyHops > 0` with a public-IP `listen.host` is refused
+    at startup. Wildcard binds are still allowed (containers), so keeping the port unreachable except via the proxy stays
+    the operator's duty. IPv6 clients are still keyed per full address, not per /64.
+26. **Logging is best effort.** A throwing sink, an `'error'` event on stdout (ENOSPC, EPIPE) or a destroyed stream drops the
+    line instead of crashing the process.
+27. **Slow clients.** Node checks `headersTimeout`/`requestTimeout` only every `connectionsCheckingInterval` (30 s by
+    default); it is now 1 s, so 10 s/15 s are enforced within about a second. `maxConnections` stays 1024 with no per-IP
+    connection cap: do that at the proxy/firewall.

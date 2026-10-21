@@ -6,7 +6,7 @@
   "deadline": { "minSeconds": 30, "maxSeconds": 1800 },
   "rateLimit": { "ipPerMinute": 30, "ipBurst": 10, "ownerPerMinute": 6, "ownerBurst": 3, "maxKeys": 10000, "saltRotationHours": 24 },
   "breaker": { "windowSize": 20, "minSamples": 5, "failureRatio": 0.5, "cooldownSeconds": 60 },
-  "queue": { "maxPending": 16, "receiptTimeoutSeconds": 120 },
+  "queue": { "maxPending": 16, "maxPerClient": 12, "receiptTimeoutSeconds": 120 },
   "shutdownGraceSeconds": 15,
   "chains": [
     {
