@@ -40,3 +40,28 @@ HTTP JSON API, `Content-Type: application/json`, body cap 16 KiB, strict schema 
 
 ## 4. Release engineering
 Reproducible build script, `SHA256SUMS`, SBOM (CycloneDX via `npm sbom`), signed tag instructions, GitHub Actions workflows with SHA-pinned actions and least-privilege permissions (drafted with `@<SHA>` placeholders only where the SHA could not be verified offline; see audit notes), `_headers`, deployment manifest signing procedure.
+
+## 5. Implementation deltas (annotation 2026-10-21)
+
+The text above is the original target. Where code and this specification differ, the code wins and the difference is listed here. Authority: `docs/audits/01-completeness-audit.md` sections 3.5, 3.6, 5; per-package `DEVIATIONS.md`. Items marked *(in progress)* were being changed by other contributors when this was written and are not verified here.
+
+| Spec statement | Reality |
+|---|---|
+| S1 view 1: "release hash display" | Shown, but it hashes the entry script fetched from the same origin, so it is self-attested and cannot detect a compromised host (audit S3-04). Real verification is external ([release and verify](operators/release-and-verify.md)). |
+| S1 view 2: "optional registry publish (ERC-6538)" | **Not built.** The page only warns about public association (W-03). An ABI fragment for the registry is being added to `chain-adapters` *(in progress)*. |
+| S1 view 3 / Create: fiat pricing | The Create page offers "Fiat price", but no Chainlink feed is configured (`FEEDS` is empty), so such invoices cannot be paid. Disabling the option is *(in progress)*; policy in ADR-0012. |
+| S1 view 4: fee recipient "from manifest" | True, but the manifest is unauthenticated and nothing is read back from the chain (S3-01). Compiling manifests into the hashed bundle plus on-chain verification is *(in progress)*; target design in [DEPLOYMENT_MANIFEST.md](DEPLOYMENT_MANIFEST.md). |
+| S1 view 5: scan list | Announced amounts of non-router announcements are shown unverified (S3-02, D4). Verification before display is *(in progress)*. |
+| S1 view 6: sweep "linkability notice" | A generic notice exists; it does not say the payer can follow the funds, and does not check destination history (D1). Sharper copy is *(in progress)*. Relayed sweeps require an ERC-2612 token; others use the direct path. |
+| S1 security controls: "Playwright egress test fails on any request to an origin that is not same-origin or a configured RPC/relayer" | The egress assertion covers parse and review only. Pay, scan and sweep flows do not assert egress and the "configured origin" allowlist is not modelled (audit 01 section 5 item 12). |
+| S1 CSP "user-configured origins injected at build as an allowlist plus a runtime-checked list" | Shipped as `connect-src 'self' https: wss:` with the allowlist check in the RPC adapter (documented trade-off, S3-11). `_headers` has never run on a real host. |
+| S1: accessibility | Keyboard, labels, live regions and contrast are tested in Chromium; no axe or screen-reader audit has been done. |
+| S1: Feature 2 embed | Popup-only, takes a full invoice link, no `postMessage`, no iframe mode (GitHub Pages cannot send `frame-ancestors`). |
+| S2 `quote.ts` | Code exists and fails closed, but there are no verified feed addresses. `rpc.ts` fallback-provider reconciliation exists as a helper (`requestWithFallbackCheck`) and is not used by the scanner. |
+| S3 `POST /v1/quote`: "live gas estimate **and token price**" | Gas price is live (`eth_gasPrice`). The token price is the constant 1.0 (USD stablecoins only) and the native price is an operator constant in the config; there is no oracle (relayer DEVIATIONS item 2). |
+| S3: "`viem` only plus Node built-ins" | Plus the workspace package `@ghostpay/chain-adapters` (fee maths, sweep typed data, RPC and manifest validation). |
+| S3: balance alerts | Log events and the circuit breaker. A metrics endpoint and an alert webhook are *(in progress)*. |
+| S3: circuit breaker | The audited commit could latch in `half_open` with `/healthz` reporting `ok` (S3-05); fix and a `degraded`/`unhealthy` status are *(in progress)*. |
+| S3: `PolicyGate` | Hook exists, default allow-all, no sanctions screen is shipped. |
+| S3 / DEVELOPER_SPECIFICATION: separate relayer client package | The client is `apps/web/src/lib/relayerClient.ts`; there is no `@ghostpay/relayer-adapter`. |
+| S4 release engineering | Workflows and scripts (deterministic build, `SHA256SUMS`, CycloneDX SBOM, release manifest, attestation, draft release) are drafted *(in progress)* and have never run on GitHub; no signed release, no key fingerprint, no manifest signing procedure exists. Hosting is gated by ADR-0015. |

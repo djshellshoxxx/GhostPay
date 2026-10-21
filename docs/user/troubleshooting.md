@@ -1,0 +1,27 @@
+# Troubleshooting
+
+| Symptom | Likely cause | What to do |
+|---|---|---|
+| "Payments disabled on this chain" | No deployment manifest loaded for that chain (true for every chain today: nothing is deployed) | Nothing to fix in the app. Wait for a published testnet deployment. |
+| Invoice rejected: tampered, too large or invalid | The link was cut off, edited, re-encoded by a messenger, or is bigger than 16 KiB | Ask the seller to resend the link as plain text. The app sends nothing when parsing fails. |
+| "Signature" shown as invalid | The invoice content was changed after signing | Do not pay. Ask the seller for a new link. |
+| Invoice expired | The seller's validity window passed | Ask for a new invoice. |
+| Fiat-priced invoice cannot be paid ("no feed") | No oracle price feed is configured in the app | Ask the seller for a token-priced invoice. This is expected until feeds are verified (ADR-0012). |
+| No wallet found | No browser wallet detected, or it is locked | Install/unlock a wallet and reload. Mobile wallet connection (WalletConnect) is not built. |
+| Wallet is on the wrong network | The invoice chain differs from the wallet's chain | Approve the network switch the app requests, or switch manually. The app refuses if the wallet will not switch. |
+| App refuses: "wallet changed the transaction" / chain mismatch | The wallet or its RPC modified the transaction, or reports another chain | Do not retry blindly. Try another wallet or RPC; report it if it repeats. This protection is intentional. |
+| "Could not verify" after sending | No RPC is configured in Settings, or the RPC has not seen the transaction yet | Set your own RPC in Settings and check the hash on a block explorer. |
+| Transaction reverted | Token not supported (fee-on-transfer, rebasing, blacklisted address), expired deadline, slippage floor | Do not retry with the same settings. Fee-on-transfer and rebasing tokens are rejected by design. |
+| Payments to a router suddenly all fail for one token | The fee recipient may be blocked by the token issuer, or cannot receive ETH | Operator issue (audit D5). Operators see [deployment runbook](../operators/deployment-runbook.md). |
+| Scan finds nothing | Start block too late, RPC range limits, wrong chain, or the payer used a wrong view tag | Lower the start block, try another RPC, check the chain, ask the payer for the transaction hash. |
+| Scan is slow or errors | Public RPCs limit `eth_getLogs` ranges | Use a different or your own RPC; see [local scanner and RPC](../operators/local-scanner-and-rpc.md). |
+| A payment shows up but the balance is zero | The match is a claim, not a payment (anyone can post announcements) | Check the one-time address balance. Do not deliver goods. |
+| Sweep says balance unknown | No RPC configured for that chain | Add an RPC in Settings. |
+| Relayer sweep not available | No relayer URL set, token has no `permit`, or relayer does not list the token | Use the direct sweep (needs native coin for gas) or set a relayer. |
+| Relayer returns an error class such as `fee_below_quote`, `quote_expired`, `rate_limited_ip`, `breaker_open`, `budget_exhausted` | Quote older than its lifetime, rate limits, relayer paused itself, or out of daily budget | Request a fresh quote; wait; or use another relayer or the direct path. |
+| Keystore will not import | Wrong passphrase or not a GhostPay keystore | There is no recovery. Try other passphrases you may have used. |
+| Keys disappeared | Tabs forget keys on reload by design | Import your encrypted keystore. |
+| Tags gone | Browser data was cleared, or the vault was wiped; tags are local only | No recovery. There is no encrypted export yet. |
+| Tags locked | Idle lock after the minutes you set in Settings | Unlock with your loaded keys. |
+
+Still stuck? Do not post private keys, seed phrases, keystore files or full invoice links in a public issue. Report suspected vulnerabilities privately (see [SECURITY.md](../../SECURITY.md)).

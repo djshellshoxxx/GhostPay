@@ -39,6 +39,19 @@ apps/
   indexer/           optional, non-authoritative public-log cache
 ```
 
+> **Annotation 2026-10-21 (stale package map).** The layout above was the plan. The repository actually contains:
+>
+> | Planned | Actual |
+> |---|---|
+> | `packages/core-crypto`, `invoice-schema`, `chain-adapters` | as planned, same names |
+> | `packages/contracts` (`@ghostpay/contracts`) | exists as a Foundry project **without** a `package.json` (not an npm workspace member) |
+> | `packages/relayer-adapter` | **does not exist**; the client lives in `apps/web/src/lib/relayerClient.ts` |
+> | `apps/ui` | named `apps/web` (`@ghostpay/web`) |
+> | `apps/indexer` | **does not exist** (no indexer; scanning uses the user's RPC) |
+> | (not planned here) | `apps/relayer` (`@ghostpay/relayer`, the relay service), `packages/btc-silent-payments` (BIP-352 library, not integrated) |
+>
+> See the README package map and the per-package `DEVIATIONS.md`. The module descriptions below remain the intent; where they disagree with the code, the code wins.
+
 - **core-crypto:** EIP-5564 scheme 1 key validation, derivation, scan check, stealth private key computation, serialization, test vectors.
 - **invoice-schema:** canonical typed invoice schema, parser/serializer, encryption envelope, signature verification; no UI or RPC dependencies.
 - **chain-adapters:** chain IDs, token metadata, announcer/router ABIs, quote adapters, log pagination, finality policy.

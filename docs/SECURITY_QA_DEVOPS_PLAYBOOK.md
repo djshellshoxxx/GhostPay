@@ -550,6 +550,8 @@ Acceptance: deterministic addresses match; unapproved destination fails; delays/
 
 Every contract, interface, public/external function, event, custom error, parameter and return gets NatSpec. Explain security invariants and caller-visible effects.
 
+> **Stale sample (annotation 2026-10-21).** The sample below is illustrative NatSpec style only. It is not the implemented contract: the real router is `GhostPayRouter` (`packages/contracts/src/GhostPayRouter.sol`), has no `invoiceId` parameter or `GhostPaySettled` event (SPEC_REVIEW A1, ADR-0003), and emits only the standard ERC-5564 `Announcement` plus `FeeCollected(token, amount)`. Likewise the commands that name `contracts/GhostPayPaymentRouter.sol` should read `packages/contracts/src/GhostPayRouter.sol`. See CONTRACTS_SPEC.md for the normative interface.
+
 ~~~solidity
 /// @title GhostPayPaymentRouter
 /// @notice Atomically splits a supported ERC-20 payment and announces its stealth recipient.

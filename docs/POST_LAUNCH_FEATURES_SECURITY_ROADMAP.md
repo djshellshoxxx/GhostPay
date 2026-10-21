@@ -67,6 +67,8 @@ Re-estimate immediately before transaction confirmation. Reject stale quotes and
 
 ### Contract interface sketch
 
+> **Stale sample (annotation 2026-10-21).** The sketch below carries a `bytes32 invoiceId` parameter and a `uint48 deadline`. Both were removed from the implemented router: there is no on-chain invoice id (SPEC_REVIEW A1, ADR-0003) and the deadline is `uint256`. The normative signature is in CONTRACTS_SPEC section 1: `payERC20WithBuffer(IERC20 token, address stealth, uint256 gross, uint256 minNet, uint256 deadline, uint256 maxBufferWei, bytes ephemeralPubKey, bytes metadata)`, with `msg.value` equal to the buffer, no fee on the buffer, and no permit variant. Do not copy the sketch.
+
 Prefer a distinct payable router method, so non-buffer payments do not unexpectedly transfer ETH. Production code must use reviewed SafeERC20/ReentrancyGuard utilities and enforce supported token behavior.
 
 ~~~solidity
@@ -517,6 +519,8 @@ For unbiased selection, use rejection sampling rather than modulo when span does
 - [ ] Product language describes timing obfuscation only, not anonymity.
 
 # Implementation order and release gates
+
+> **Status annotation 2026-10-21 (what is actually built; evidence in `docs/audits/01-completeness-audit.md` section 3.7 and `docs/reviews/`).** Built, reduced scope: Feature 1 gas buffer (no invoice-level buffer policy, no fiat estimate, no permit+buffer), Feature 2 embed (popup-only, takes a full invoice link, no merchant profile, no iframe/`postMessage` mode), Feature 4 local tags (no encrypted export/import, no key rotation), Feature 6 delay. **Not built:** Feature 3 escrow (specified only), Feature 5 stage 1 (no Tor-routed light indexer, padding or indexer client; scanning uses the user's RPC), stages 2-3 (research only). None of these has had an independent review; the self-run Phase B records are in `docs/reviews/`.
 
 1. **First:** Feature 4 local tagging and Feature 2 embed SDK, after data-flow/XSS review; they mainly extend client boundaries.
 2. **Next:** Feature 1 gas buffer, only after fee-router and token behavior audit.

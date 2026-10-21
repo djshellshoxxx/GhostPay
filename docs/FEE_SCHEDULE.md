@@ -24,13 +24,16 @@
 
 - F-PAY: `fee = gross * 25 / 10_000` (floor). `net = gross - fee`. Dust payments (`gross < 400` base units) pay zero fee; the router still works. Fee-on-transfer, rebasing and callback tokens are rejected by balance-delta checks (the stealth address balance must rise by exactly `net`, the recipient balance by exactly `fee`).
 - F-SPONSOR: `relayerFee <= amount - 1`. Contract rule: `amount > relayerFee`. The relayer quotes `relayerFee`; the client recomputes the policy locally and refuses a quote above the published cap.
-- Native-token payments use the same bps; the fee is sent first to `feeRecipient`, remainder to the stealth address, both via checked `call` with gas stipend limits documented in the contract.
+- Native-token payments use the same bps; the fee is sent first to `feeRecipient`, remainder to the stealth address, both via checked `call`. (Correction 2026-10-21: the implementation forwards **all** gas to both recipients rather than a stipend, deliberately, for Safe compatibility; a contract recipient that reverts or cannot receive ETH makes every native payment at or above the dust threshold revert. See ADR-0013 and the deployment runbook.)
 - Gas-buffer (Feature 1): the native buffer is passed through to the stealth address with **no fee**.
 
 ## 4. Where the numbers live
 
 - Contracts: `FEE_BPS` constant (25), `feeRecipient` immutable.
-- Client: `packages/chain-adapters/src/fees.ts` exports `FEE_SCHEDULE` and pure functions used for previews. A unit test asserts the client preview equals the contract result (differential test against the compiled router).
+- Client: `packages/chain-adapters/src/fees.ts` exports `FEE_SCHEDULE` and pure functions used for previews.
+  - **What exists (as audited at `1f7ab71`/`d6e5ea1`):** unit tests that share boundary vectors with the Solidity tests (for example 399 and 400 base units, from `GhostPayRouter.t.sol`), plus a check that reads `FEE_BPS`/`BPS` out of the Solidity source text (`packages/chain-adapters/DEVIATIONS.md` item 13). This is **not** a differential execution test, and an earlier version of this section wrongly said it was (audit 01 section 5 item 4). The Foundry suite independently tests the contract's own arithmetic (including fuzzing and the invariant `fee + net == gross`).
+  - **What is planned/in progress:** a true differential test that deploys the compiled `GhostPayRouter` on a local `anvil` and compares `routerFee`/`routerNet`/`grossForNet` with the on-chain result for boundary and random amounts, ERC-20 and native (`packages/chain-adapters/src/router.anvil.test.ts`, appearing in the working tree while this was written; not run or verified by the documentation author). It skips when `anvil` is absent unless `REQUIRE_ANVIL=1`, so check that CI actually provides anvil before counting it as evidence.
+  - The relayer's own end-to-end test (`apps/relayer/src/e2e.anvil.test.ts`) runs the real `GhostPaySweepRelayer`, but covers the sweep fee, not the router fee.
 - Relayer: `apps/relayer` reads the same `FEE_SCHEDULE`; sponsorship quotes are single-use and expire.
 
 ## 5. Disclosure copy (required in UI)

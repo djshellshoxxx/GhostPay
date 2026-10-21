@@ -234,6 +234,8 @@ An initial fee model must specify:
 └── audits/
 ```
 
+> **Annotation 2026-10-21 (stale structure).** The tree above was the initial plan and is not the current layout. Actual top level: `packages/{core-crypto,invoice-schema,chain-adapters,btc-silent-payments,contracts}`, `apps/{web,relayer}`, `deployments/`, `test-vectors/`, `scripts/`, `docs/` (including `docs/audits/`, `docs/user/`, `docs/operators/`, `docs/reviews/`). There is no `packages/stealth-crypto` (it became `core-crypto`), no root `contracts/` (it is `packages/contracts`), and no root `audits/` directory (self-run reviews are in `docs/audits/`; **no independent external audit exists**). See the README package map.
+
 Start with this blueprint and decision records. The crypto package, contracts, and UI should be implemented only after their interfaces and test vectors are specified.
 
 ## Primary references

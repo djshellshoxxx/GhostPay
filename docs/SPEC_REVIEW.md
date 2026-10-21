@@ -15,7 +15,7 @@ Reviewed: README, MASTER_BLUEPRINT, DEVELOPER_SPECIFICATION, SECURITY_QA_DEVOPS_
 | A7 | Spec said "6x reduction" and "99.6%" inconsistently. | Standardised wording: view tag lets the scanner skip ~255/256 of the later point operations; log download is unchanged. |
 | A8 | Playbook CI template used `npm` while spec said "pnpm or npm". | Decision: npm workspaces, lockfile committed. |
 | A9 | Spec lists `ethers` or `viem`. | Decision: `viem` only. |
-| A10 | Noble 2.x requires `.js` subpath imports (`@noble/curves/secp256k1.js`) and renamed some APIs; spec examples assume 1.x. | ADR-0004 pins versions and import paths. |
+| A10 | Noble 2.x requires `.js` subpath imports (`@noble/curves/secp256k1.js`) and renamed some APIs; spec examples assume 1.x. | ADR-0004 pins versions and import paths. (Caveat 2026-10-21: the pinned `viem` installs its own noble 1.x copies, see THIRD_PARTY.md section 1 and the ADR-0004 amendment.) |
 | A11 | GitHub Pages cannot set response headers; `frame-ancestors`, `Referrer-Policy` headers cannot be enforced, so Feature 2 anti-clickjacking cannot be honoured there. | Primary deployment target is a host with header control (Cloudflare Pages `_headers` shipped). GitHub Pages is documented as a degraded mirror: meta CSP + meta referrer only, embed iframe mode disabled, popup mode only. |
 
 ## B. Gaps filled (new documents)
@@ -28,8 +28,8 @@ Reviewed: README, MASTER_BLUEPRINT, DEVELOPER_SPECIFICATION, SECURITY_QA_DEVOPS_
 | Gasless sweep contract never specified (spec only says "token-authorized") | `GhostPaySweepRelayer` (EIP-712 sweep signature + permit), see CONTRACTS_SPEC.md |
 | No contract-level spec of PolicyAccount (Proposal 3) | CONTRACTS_SPEC.md section 4 |
 | No multi-chain / non-EVM plan | MULTICHAIN_SPEC.md |
-| No ADRs, no threat-model directory, no deployment manifest format | docs/adr/, docs/threat-model/, DEPLOYMENT_MANIFEST.md |
-| No SECURITY.md, no dependency/licence register | SECURITY.md, THIRD_PARTY.md |
+| No ADRs, no threat-model directory, no deployment manifest format | docs/adr/, docs/threat-model/, DEPLOYMENT_MANIFEST.md (`deployments/README.md` and `deployments/schema.json` carried the format until 2026-10-21; `docs/DEPLOYMENT_MANIFEST.md` was written then, describing current behaviour and the intended hardening) |
+| No SECURITY.md, no dependency/licence register | SECURITY.md, THIRD_PARTY.md (**correction 2026-10-21:** this row originally listed `THIRD_PARTY.md` as filled, but the file did not exist until the completeness audit flagged it; it is now generated from `package-lock.json` by `docs/tools/third-party-table.mjs`) |
 | No test-vector provenance | test-vectors/README.md |
 
 ## C. Plan changes
@@ -38,7 +38,7 @@ Reviewed: README, MASTER_BLUEPRINT, DEVELOPER_SPECIFICATION, SECURITY_QA_DEVOPS_
 2. ERC-4337 sweeping is removed from the MVP path. MVP sponsorship is permit + EIP-712 sweep signature through `GhostPaySweepRelayer`. ERC-4337 remains a future scheme (Proposal 3).
 3. Chain scope for v1: Ethereum Sepolia, Base Sepolia (test), then Base, Optimism, Arbitrum One, Polygon PoS, Ethereum mainnet only after audit. Non-EVM follows MULTICHAIN_SPEC.md.
 4. Monetisation added as a first-class workstream (FEE_SCHEDULE.md), with an explicit rule that the owner's wallet enters only through the deployment manifest.
-5. Feature 5 stage 2/3 (PIR/MPC) stay research-only and are not built. Stage 1 (Tor-friendly range queries, local matching) is built as an RPC adapter option.
+5. Feature 5 stage 2/3 (PIR/MPC) stay research-only and are not built. Stage 1 (Tor-friendly range queries, local matching) is **specified but not built** (**correction 2026-10-21**: this line previously said it was built as an RPC adapter option; audit 01 section 5 item 3 found no Tor/proxy option, no fixed-size padded windows beyond the provider log-range cap, and no indexer client; `apps/web/DEVIATIONS.md` item 8 agrees). What exists is local matching over logs fetched from the user's own RPC. Guidance for reducing RPC leakage is in `docs/operators/local-scanner-and-rpc.md`.
 6. Feature 3 (escrow) stays out of v1 scope (custody); specified, not built.
 
 ## D. Open items needing the owner
@@ -46,4 +46,4 @@ Reviewed: README, MASTER_BLUEPRINT, DEVELOPER_SPECIFICATION, SECURITY_QA_DEVOPS_
 - Fee recipient address per chain, fee rate confirmation (25 bps default), F-SPONSOR and F-SECURE numbers.
 - Licence for the repository (currently none; packages marked `UNLICENSED`).
 - Jurisdictional/legal review of the fee model.
-- Hosting target (see README "Hosting" once decided).
+- Hosting target. The README now has a "Hosting" section stating that hosting is intentionally not configured and what must happen first; the decision itself is open (ADR-0015 gates it).
