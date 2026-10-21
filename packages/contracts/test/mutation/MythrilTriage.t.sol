@@ -10,10 +10,10 @@ contract MythrilTriageTest is PolicyBase {
     function testFuzz_factoryUnknownCalldataRevertsWithoutPanic(bytes calldata data) public {
         bytes4 sel = data.length >= 4 ? bytes4(data[:4]) : bytes4(0);
         vm.assume(
-            data.length < 4 || (
-                sel != factory.deploy.selector && sel != factory.predictAddress.selector
-                    && sel != factory.policyHashOf.selector
-            )
+            data.length < 4
+                || (sel != factory.deploy.selector
+                    && sel != factory.predictAddress.selector
+                    && sel != factory.policyHashOf.selector)
         );
         (bool ok, bytes memory ret) = address(factory).call(data);
         assertFalse(ok);
