@@ -149,6 +149,47 @@ describe('runScan', () => {
   });
 });
 
+describe('runScan robustness (S3-15)', () => {
+  it('wipes the viewing key even when the worker factory throws', async () => {
+    const s = setup();
+    const viewingKey = unsafeRevealSecret(s.keys.viewingSecret);
+    await expect(
+      runScan({ chain, manifest, client: chainWith(10, []), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), viewingKey, createWorker: () => { throw new Error('no worker'); }, signal: new AbortController().signal }),
+    ).rejects.toThrow(/no worker/);
+    expect(viewingKey.every((b) => b === 0)).toBe(true);
+  });
+
+  it('stops a worker that never answers and wipes the key', async () => {
+    const s = setup();
+    const hung = new InlineWorker();
+    hung.postMessage = (): void => undefined;
+    const viewingKey = unsafeRevealSecret(s.keys.viewingSecret);
+    await expect(
+      runScan({ chain, manifest, client: chainWith(10, []), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), viewingKey, createWorker: () => hung, signal: new AbortController().signal, replyTimeoutMs: 20 }),
+    ).rejects.toThrow(/did not answer in time/);
+    expect(hung.terminated).toBe(true);
+    expect(viewingKey.every((b) => b === 0)).toBe(true);
+  });
+
+  it('Cancel unblocks a hung worker reply and returns the partial result', async () => {
+    const s = setup();
+    const hung = new InlineWorker();
+    hung.postMessage = (): void => undefined;
+    const ctl = new AbortController();
+    setTimeout(() => ctl.abort(), 20);
+    const res = await runScan({ chain, manifest, client: chainWith(10, []), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => hung, signal: ctl.signal, replyTimeoutMs: 60_000 });
+    expect(res.matches).toEqual([]);
+    expect(hung.terminated).toBe(true);
+  });
+
+  it('binds every match to the chain it was found on', async () => {
+    const s = setup();
+    const res = await runScan({ chain, manifest, client: chainWith(2500, s.logs), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => new InlineWorker(), signal: new AbortController().signal });
+    expect(res.matches.length).toBeGreaterThan(0);
+    expect(res.matches.every((m) => m.chainId === 84532)).toBe(true);
+  });
+});
+
 describe('localCheckpointStore', () => {
   interface MemStorage {
     map: Map<string, string>;

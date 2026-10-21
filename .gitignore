@@ -9,3 +9,6 @@ broadcast/
 !.env.example
 *.log
 .DS_Store
+
+# Local devnet manifest (scripts/devnet/up.sh); the web bundle scan forbids shipping any manifest
+apps/web/public/deployments/31337.json

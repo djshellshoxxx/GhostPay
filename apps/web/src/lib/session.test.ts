@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { clearSession, exportKeystore, generateSession, getSessionPublic, hasSession, importKeystore, importSession, requireSession, subscribeSession } from './session';
+import { clearSession, exportKeystore, revealViewingKey, withSessionSecrets, withSessionSecretsAsync, generateSession, getSessionPublic, hasSession, importKeystore, importSession, requireSession, subscribeSession } from './session';
 
 afterEach(() => {
   clearSession();
@@ -88,5 +88,73 @@ describe('session', () => {
       { N: 1 << 14 },
     );
     await expect(importKeystore(zero, 'a long passphrase')).rejects.toThrow(/invalid keys/);
+  });
+});
+
+describe('boxed key storage (S3-08)', () => {
+  it('lends temporary scalars that are wiped after the callback, also on error', () => {
+    generateSession();
+    let kept: Uint8Array | undefined;
+    withSessionSecrets((s) => {
+      kept = s.keys.spendingSecret;
+      expect(kept.some((b) => b !== 0)).toBe(true);
+    });
+    expect(kept?.every((b) => b === 0)).toBe(true);
+    let keptOnError: Uint8Array | undefined;
+    expect(() =>
+      withSessionSecrets((s) => {
+        keptOnError = s.signingKey;
+        throw new Error('boom');
+      }),
+    ).toThrow('boom');
+    expect(keptOnError?.every((b) => b === 0)).toBe(true);
+  });
+
+  it('wipes the async temporaries once the promise settles', async () => {
+    generateSession();
+    let kept: Uint8Array | undefined;
+    await withSessionSecretsAsync(async (s) => {
+      await Promise.resolve();
+      kept = s.keys.viewingSecret;
+    });
+    expect(kept?.every((b) => b === 0)).toBe(true);
+  });
+
+  it('hands out independent copies: wiping one never corrupts the stored key', () => {
+    const pub = importSession({ spendingKeyHex: HEX_A, viewingKeyHex: HEX_B });
+    const copy = revealViewingKey();
+    expect(Buffer.from(copy).toString('hex')).toBe(HEX_B);
+    copy.fill(0);
+    expect(Buffer.from(revealViewingKey()).toString('hex')).toBe(HEX_B);
+    withSessionSecrets((s) => s.keys.viewingSecret.fill(0));
+    expect(Buffer.from(revealViewingKey()).toString('hex')).toBe(HEX_B);
+    expect(getSessionPublic()).toBe(pub);
+  });
+
+  it('keeps no readable key bytes on the module surface and refuses use after clear', () => {
+    generateSession();
+    clearSession();
+    expect(() => revealViewingKey()).toThrow(/Load or generate/);
+    expect(() => withSessionSecrets(() => 1)).toThrow(/Load or generate/);
+    expect(() => requireSession()).toThrow(/Load or generate/);
+  });
+
+  it('bounds and wipes compatibility copies from requireSession', () => {
+    generateSession();
+    const first = requireSession().keys.spendingSecret;
+    for (let i = 0; i < 10; i++) requireSession();
+    expect(first.every((b) => b === 0)).toBe(true); // evicted copies are wiped
+    const last = requireSession().keys.viewingSecret;
+    clearSession();
+    expect(last.every((b) => b === 0)).toBe(true);
+  });
+
+  it('exports a keystore from the boxed keys and re-imports it', async () => {
+    const pub = importSession({ spendingKeyHex: HEX_A, viewingKeyHex: HEX_B, signingKeyHex: '33'.repeat(32) });
+    const text = await exportKeystore('correct horse battery staple');
+    clearSession();
+    const again = await importKeystore(text, 'correct horse battery staple');
+    expect(again.metaAddress).toBe(pub.metaAddress);
+    expect(again.signerPublicKey).toBe(pub.signerPublicKey);
   });
 });

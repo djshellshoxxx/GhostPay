@@ -14,6 +14,18 @@ const OUT = resolve(import.meta.dirname, '../../../packages/contracts/out');
 const RELAYER_JSON = `${OUT}/GhostPaySweepRelayer.sol/GhostPaySweepRelayer.json`;
 const TOKEN_JSON = `${OUT}/PermitToken.sol/PermitToken.json`;
 const available = existsSync(ANVIL) && existsSync(RELAYER_JSON) && existsSync(TOKEN_JSON);
+// In CI (or with REQUIRE_ANVIL=1) a missing anvil/artifact is a hard failure, never a silent skip (audit G-09).
+const mustRun = process.env['CI'] === 'true' || process.env['REQUIRE_ANVIL'] === '1';
+
+describe.runIf(mustRun)('anvil e2e prerequisites (CI must not skip)', () => {
+  it('anvil binary and forge artifacts exist', () => {
+    expect({ anvil: existsSync(ANVIL), relayer: existsSync(RELAYER_JSON), token: existsSync(TOKEN_JSON) }).toEqual({
+      anvil: true,
+      relayer: true,
+      token: true,
+    });
+  });
+});
 
 // Throwaway test keys; balances are set on the local anvil with anvil_setBalance.
 const DEPLOYER_KEY: Hex = `0x${'dd'.repeat(32)}`;

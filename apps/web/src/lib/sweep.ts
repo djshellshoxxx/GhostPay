@@ -13,12 +13,15 @@ import {
   type RpcClient,
   type SweepOrder,
 } from '@ghostpay/chain-adapters';
+import { findLookalikes, parseStrictAddress, isReason, classifyDestination, type DestinationClass } from '@ghostpay/address-safety';
 import { deriveStealthSecret, zeroize, type PublicAnnouncement, type SecretScalar } from '@ghostpay/core-crypto';
-import { encodeFunctionData, getAddress, isAddress, keccak256, serializeTransaction } from 'viem/utils';
+import type { TypedDataInput } from '@ghostpay/tx-review';
+import { encodeFunctionData, getAddress, keccak256, parseTransaction, serializeTransaction } from 'viem/utils';
 import { UserFacingError } from './errors';
 import { buildPermit } from './pay';
 import { requestQuote, submitSweep, type FetchFn, type RelayerQuote } from './relayerClient';
-import { requireSession } from './session';
+import { withSessionSecrets } from './session';
+import { DIRECT_MAX_FEE_SHARE_BPS, guardTx, guardTypedData, reviewPolicy, simulateCall } from './txGuard';
 
 export interface SweepTarget {
   readonly chainId: number;
@@ -32,8 +35,7 @@ type Rpc = Pick<RpcClient, 'request'>;
 
 /** Derives the stealth key in memory and proves it controls `owner` before it is ever used. */
 export function deriveVerifiedSweepKey(target: SweepTarget): SecretScalar {
-  const keys = requireSession().keys;
-  const secret = deriveStealthSecret(target.announcement, keys);
+  const secret = withSessionSecrets((s) => deriveStealthSecret(target.announcement, s.keys));
   if (addressOfSecret(secret) !== target.owner) {
     zeroize(secret);
     throw new UserFacingError('Blocked: the derived key does not control that address.');
@@ -41,14 +43,33 @@ export function deriveVerifiedSweepKey(target: SweepTarget): SecretScalar {
   return secret;
 }
 
-export function checkDestination(destination: string, owner: Address, manifest: DeploymentManifest): Address {
-  if (!isAddress(destination, { strict: false })) throw new UserFacingError('Enter a valid destination address (0x…).');
-  const d = getAddress(destination);
+/**
+ * Validates a sweep destination (S3-12/S3-22 address poisoning).
+ *
+ * @remarks Parsing is strict: `0x` + 40 hex, all-lowercase or a valid EIP-55 checksum. A destination that shares its
+ * first and last four nibbles with the stealth address, a GhostPay contract or any address in `known` (saved
+ * destinations) without being equal is refused as a probable lookalike.
+ *
+ * @param known Addresses the user already trusts (saved destinations).
+ */
+export function checkDestination(destination: string, owner: Address, manifest: DeploymentManifest, known: readonly Address[] = []): Address {
+  const parsed = parseStrictAddress(destination.trim());
+  if (isReason(parsed)) throw new UserFacingError('Enter a valid destination address (0x…). Mixed-case addresses must have a correct checksum.');
+  const d = parsed;
   if (d === owner) throw new UserFacingError('The destination must differ from the stealth address.');
   if (d === manifest.router || d === manifest.sweepRelayer || d === manifest.announcer || d === manifest.feeRecipient) {
     throw new UserFacingError('The destination must not be a GhostPay contract or the fee recipient.');
   }
+  const trusted = [owner, manifest.router, manifest.sweepRelayer, manifest.announcer, manifest.feeRecipient, ...known];
+  if (findLookalikes(d, trusted).length > 0) {
+    throw new UserFacingError('Blocked: this address looks almost identical to an address you know (address poisoning). Check every character.');
+  }
   return d;
+}
+
+/** How the destination relates to what the user knows; the UI shows the linkability warning for `new`. */
+export function describeDestination(destination: Address, owner: Address, saved: readonly Address[] = []): DestinationClass {
+  return classifyDestination(destination, { saved, ownStealth: [owner], feeRecipients: [] });
 }
 
 export async function readBalance(rpc: Rpc, owner: Address, token: Address | 'native'): Promise<bigint> {
@@ -120,6 +141,26 @@ export async function relayedSweep(i: RelayedSweepInput): Promise<string> {
       nonce: (i.randomNonce ?? defaultNonce)(),
     };
     const td = buildSweepTypedData(i.target.chainId, i.manifest.sweepRelayer, order);
+    const policy = reviewPolicy(i.manifest, i.target.chainId, { feeRecipient: i.quote.feeTo });
+    // Decode the typed data that will be signed and compare it with the order the user reviewed (S3-09).
+    guardTypedData(
+      td as unknown as TypedDataInput,
+      {
+        kind: 'relayed_sweep_sig',
+        chainId: i.target.chainId,
+        verifyingContract: i.manifest.sweepRelayer,
+        owner: i.target.owner,
+        token: i.target.token,
+        destination: i.destination,
+        amount: i.amount,
+        fee: i.quote.fee,
+        feeTo: i.quote.feeTo,
+        deadline,
+        nonce: order.nonce,
+      },
+      policy,
+      i.nowSeconds,
+    );
     const sweepSig = await signSweep(td, secret);
     const ptd = await buildPermit(i.rpc, {
       chainId: i.target.chainId,
@@ -129,6 +170,21 @@ export async function relayedSweep(i: RelayedSweepInput): Promise<string> {
       value: i.amount,
       deadline,
     });
+    guardTypedData(
+      ptd as unknown as TypedDataInput,
+      {
+        kind: 'permit_sig',
+        chainId: i.target.chainId,
+        token: i.target.token,
+        owner: i.target.owner,
+        spender: i.manifest.sweepRelayer,
+        value: i.amount,
+        nonce: BigInt((ptd.message as { nonce: bigint }).nonce),
+        deadline,
+      },
+      policy,
+      i.nowSeconds,
+    );
     const permit = await signPermit(ptd, secret);
     return await submitSweep(
       i.relayerUrl,
@@ -147,6 +203,10 @@ export async function relayedSweep(i: RelayedSweepInput): Promise<string> {
 
 export interface DirectSweepInput {
   readonly target: SweepTarget;
+  /** Authenticated manifest: the review policy (allowlist, protocol contracts) is built from it. */
+  readonly manifest: DeploymentManifest;
+  /** Unix seconds (default: now). */
+  readonly nowSeconds?: number;
   readonly destination: Address;
   /** For ERC-20 the amount to move; for native the whole balance minus gas is moved and this is the balance. */
   readonly amount: bigint;
@@ -191,6 +251,35 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
       }
     }
     const unsigned = { type: 'eip1559' as const, chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value, data };
+    // Review the exact serialized bytes that will be hashed (S3-09): allowlisted token only, capped fee fields.
+    const reviewed = parseTransaction(serializeTransaction(unsigned));
+    guardTx(
+      {
+        chainId,
+        to: reviewed.to ?? '',
+        data: reviewed.data ?? '0x',
+        value: reviewed.value ?? 0n,
+        from: owner,
+        maxFeePerGas: reviewed.maxFeePerGas ?? 0n,
+        maxPriorityFeePerGas: reviewed.maxPriorityFeePerGas ?? 0n,
+        gasLimit: reviewed.gas ?? 0n,
+      },
+      {
+        kind: 'direct_sweep',
+        chainId,
+        from: owner,
+        token,
+        to: i.destination,
+        amount: token === 'native' ? value : i.amount,
+        maxFeePerGas,
+        maxPriorityFeePerGas: priority,
+        gasLimit: gas,
+      },
+      reviewPolicy(i.manifest, chainId, { maxFeeShareBps: DIRECT_MAX_FEE_SHARE_BPS }),
+      i.nowSeconds ?? Math.floor(Date.now() / 1000),
+    );
+    // Dry run where the node supports it: a transfer that would revert is never signed (S3-09, S3-19).
+    await simulateCall(i.rpc, { from: owner, to, data, value }, token !== 'native');
     const sig = await signDigest(keccak256(serializeTransaction(unsigned)), secret);
     const raw = serializeTransaction(unsigned, { r: sig.r, s: sig.s, yParity: sig.v - 27 });
     const hash = await i.rpc.request('eth_sendRawTransaction', [raw]);

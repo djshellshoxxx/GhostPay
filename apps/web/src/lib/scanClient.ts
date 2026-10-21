@@ -18,11 +18,13 @@ import type { FromWorker, ToWorker, WireLog } from './scannerCore';
 export interface ScanWorkerLike {
   onmessage: ((e: { readonly data: FromWorker }) => void) | null;
   onerror: ((e: unknown) => void) | null;
-  postMessage(m: ToWorker): void;
+  postMessage(m: ToWorker, transfer?: Transferable[]): void;
   terminate(): void;
 }
 
 export interface ScanMatch {
+  /** Chain the match was found on; consumers must not relabel it with another chain's tokens (S3-15). */
+  readonly chainId: number;
   readonly announcement: ScannedAnnouncement;
   readonly stealthAddress: Address;
   readonly metadata: ParsedMetadata | undefined;
@@ -65,6 +67,8 @@ export interface ScanParams {
   readonly onProgress?: (p: ScanProgress) => void;
   readonly onMatch?: (m: ScanMatch) => void;
   readonly maxPages?: number;
+  /** A worker reply that takes longer than this terminates the scan (default 60 s; S3-15). */
+  readonly replyTimeoutMs?: number;
   /** Independent second provider on the same chain; compared at every checkpoint. */
   readonly secondaryClient?: RpcClient;
   readonly onDiscrepancy?: (d: readonly ProviderDiscrepancy[]) => void;
@@ -79,22 +83,26 @@ function toWire(a: ScannedAnnouncement): WireLog {
  * the viewing key. Cancelling via `signal` stops fetching, tells the worker to stop, and terminates it.
  */
 export async function runScan(p: ScanParams): Promise<{ readonly matches: readonly ScanMatch[]; readonly cursor: ScanCursor; readonly scanned: number; readonly discrepancies: readonly ProviderDiscrepancy[] }> {
-  const worker = p.createWorker();
+  let worker: ScanWorkerLike | undefined;
   const pending = new Map<number, (m: FromWorker) => void>();
   let ready: ((m: FromWorker) => void) | undefined;
   let failed: ((e: Error) => void) | undefined;
-  worker.onmessage = (e): void => {
-    const m = e.data;
-    if (m.type === 'ready' || m.type === 'error' || m.type === 'ended') ready?.(m);
-    else if (m.type === 'matches') pending.get(m.batchId)?.(m);
-  };
-  worker.onerror = (): void => {
-    failed?.(new UserFacingError('The scanner worker failed.'));
-  };
+  const timeoutMs = p.replyTimeoutMs ?? 60_000;
+  const ABORTED = Symbol('aborted');
+  // Settles on a reply, a worker error, the reply timeout, or Cancel: a hung worker can never block the caller.
   const wait = (register: (resolve: (m: FromWorker) => void) => void): Promise<FromWorker> =>
     new Promise<FromWorker>((resolve, reject) => {
-      failed = reject;
-      register(resolve);
+      const done = (fn: () => void): void => {
+        clearTimeout(timer);
+        p.signal.removeEventListener('abort', onAbort);
+        fn();
+      };
+      const onAbort = (): void => done(() => reject(ABORTED));
+      const timer = setTimeout(() => done(() => reject(new UserFacingError('The scanner did not answer in time and was stopped.'))), timeoutMs);
+      p.signal.addEventListener('abort', onAbort, { once: true });
+      failed = (e) => done(() => reject(e));
+      register((m) => done(() => resolve(m)));
+      if (p.signal.aborted) onAbort();
     });
 
   const all: ScanMatch[] = [];
@@ -105,9 +113,20 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   const discrepancies: ProviderDiscrepancy[] = [];
   let batchId = 0;
   try {
+    // Created inside the try so a throwing factory still reaches the key wipe below (S3-15).
+    const w = p.createWorker();
+    worker = w;
+    w.onmessage = (e): void => {
+      const m = e.data;
+      if (m.type === 'ready' || m.type === 'error' || m.type === 'ended') ready?.(m);
+      else if (m.type === 'matches') pending.get(m.batchId)?.(m);
+    };
+    w.onerror = (): void => {
+      failed?.(new UserFacingError('The scanner worker failed.'));
+    };
     const started = await wait((resolve) => {
       ready = resolve;
-      worker.postMessage({ type: 'start', viewingKey: p.viewingKey, spendingPublicKey: p.spendingPublicKeyHex });
+      w.postMessage({ type: 'start', viewingKey: p.viewingKey, spendingPublicKey: p.spendingPublicKeyHex });
     });
     if (started.type !== 'ready') throw new UserFacingError('The scanner rejected the keys.');
     const maxPages = p.maxPages ?? 10_000;
@@ -121,7 +140,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       const id = ++batchId;
       const reply = await wait((resolve) => {
         pending.set(id, resolve);
-        worker.postMessage({ type: 'batch', batchId: id, logs: res.announcements.map(toWire) });
+        w.postMessage({ type: 'batch', batchId: id, logs: res.announcements.map(toWire) });
       });
       pending.delete(id);
       if (reply.type !== 'matches') throw new UserFacingError('The scanner returned an unexpected reply.');
@@ -148,7 +167,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
                 blockNumber: announcement.blockNumber,
                 viaRouter,
               });
-        const match: ScanMatch = { announcement, stealthAddress: m.stealthAddress as Address, metadata, viaRouter, receipt };
+        const match: ScanMatch = { chainId: p.chain.chainId, announcement, stealthAddress: m.stealthAddress as Address, metadata, viaRouter, receipt };
         all.push(match);
         p.onMatch?.(match);
       }
@@ -177,11 +196,19 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: !res.truncated, discrepancies: discrepancies.length });
       if (!res.truncated) break;
     }
+  } catch (e) {
+    // Cancel while a reply was pending: return what was found so far.
+    if (e !== ABORTED) throw e;
   } finally {
-    if (p.signal.aborted) worker.postMessage({ type: 'cancel' });
-    worker.postMessage({ type: 'end' });
-    worker.terminate();
-    zeroizeBytes(p.viewingKey);
+    try {
+      if (worker !== undefined) {
+        if (p.signal.aborted) worker.postMessage({ type: 'cancel' });
+        worker.postMessage({ type: 'end' });
+        worker.terminate();
+      }
+    } finally {
+      zeroizeBytes(p.viewingKey);
+    }
   }
   return { matches: all, cursor, scanned, discrepancies };
 }

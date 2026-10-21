@@ -162,7 +162,7 @@ describe('directSweep (stealth address pays gas, signs a plain transfer)', () =>
     const sent: { raw?: `0x${string}` } = {};
     const base = rpcFor(10n ** 17n, sent);
     const rpc = { ...base, request: (m: string, p: readonly unknown[]) => { if (m === 'eth_sendRawTransaction') sent.raw = p[0] as `0x${string}`; return base.request(m, p).then((r) => (m === 'eth_sendRawTransaction' ? keccak256(p[0] as `0x${string}`) : r)); } };
-    const res = await directSweep({ target, destination: DEST, amount: 777n, rpc });
+    const res = await directSweep({ target, manifest, destination: DEST, amount: 777n, rpc });
     expect(res.hash).toBe(keccak256(sent.raw!));
     expect(res.sent).toBe(777n);
     const tx = parseTransaction(sent.raw!);
@@ -182,7 +182,7 @@ describe('directSweep (stealth address pays gas, signs a plain transfer)', () =>
     const sent: { raw?: `0x${string}` } = {};
     const base = rpcFor(10n ** 17n, sent);
     const rpc = { ...base, request: (m: string, p: readonly unknown[]) => { if (m === 'eth_sendRawTransaction') sent.raw = p[0] as `0x${string}`; return base.request(m, p).then((r) => (m === 'eth_sendRawTransaction' ? keccak256(p[0] as `0x${string}`) : r)); } };
-    const res = await directSweep({ target: { ...target, token: 'native' }, destination: DEST, amount: 10n ** 17n, rpc });
+    const res = await directSweep({ target: { ...target, token: 'native' }, manifest, destination: DEST, amount: 10n ** 17n, rpc });
     const tx = parseTransaction(sent.raw!);
     expect(tx.to?.toLowerCase()).toBe(DEST.toLowerCase());
     expect(tx.value).toBe(10n ** 17n - 21_000n * 2_000_000_000n);
@@ -191,13 +191,13 @@ describe('directSweep (stealth address pays gas, signs a plain transfer)', () =>
   });
 
   it('explains when the stealth address has no gas, and when native balance is too low', async () => {
-    await expect(directSweep({ target, destination: DEST, amount: 1n, rpc: rpcFor(0n, {}) })).rejects.toThrow(/no native coin for gas/);
-    await expect(directSweep({ target: { ...target, token: 'native' }, destination: DEST, amount: 1n, rpc: rpcFor(1000n, {}) })).rejects.toThrow(/does not cover the network fee/);
+    await expect(directSweep({ target, manifest, destination: DEST, amount: 1n, rpc: rpcFor(0n, {}) })).rejects.toThrow(/no native coin for gas/);
+    await expect(directSweep({ target: { ...target, token: 'native' }, manifest, destination: DEST, amount: 1n, rpc: rpcFor(1000n, {}) })).rejects.toThrow(/does not cover the network fee/);
   });
 
   it('rejects an RPC that returns a hash that does not match the signed transaction', async () => {
     const base = rpcFor(10n ** 17n, {});
     const rpc = { ...base, request: (m: string, p: readonly unknown[]) => (m === 'eth_sendRawTransaction' ? Promise.resolve(`0x${'aa'.repeat(32)}`) : base.request(m, p)) };
-    await expect(directSweep({ target, destination: DEST, amount: 1n, rpc })).rejects.toThrow(/does not match the signed transaction/);
+    await expect(directSweep({ target, manifest, destination: DEST, amount: 1n, rpc })).rejects.toThrow(/does not match the signed transaction/);
   });
 });

@@ -104,7 +104,7 @@ export function Sweep(): ReactNode {
       const rpc = await app.getRpc(chainId);
       if (loaded === undefined || rpc === undefined || balance === undefined) throw new Error('state');
       const dest = checkDestination(destination, target.owner, loaded);
-      const res = await directSweep({ target, destination: dest, amount: balance, rpc });
+      const res = await directSweep({ target, manifest: loaded, destination: dest, amount: balance, rpc });
       setHash(res.hash);
       app.announce('Sweep broadcast.');
     });
