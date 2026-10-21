@@ -59,7 +59,9 @@ contract EchidnaRouter {
 
     function _sum(IERC20 t) internal view returns (uint256 s) {
         s = t.balanceOf(FEE_RECIPIENT);
-        for (uint8 i = 0; i < 4; i++) s += t.balanceOf(_s(i));
+        for (uint8 i = 0; i < 4; i++) {
+            s += t.balanceOf(_s(i));
+        }
     }
 
     function payErc20(uint8 si, uint256 gross, bytes1 tag) external {
@@ -100,7 +102,8 @@ contract EchidnaRouter {
             block.timestamp,
             _eph(),
             _meta(0xab, 0xa9059cbb, address(fotToken), net)
-        ) {} catch {}
+        ) {}
+            catch {}
     }
 
     function payNative(uint8 si, uint256 gross, bytes1 tag) external {
@@ -108,8 +111,8 @@ contract EchidnaRouter {
         uint256 fee = gross * 25 / 10_000;
         uint256 net = gross - fee;
         address st = _s(si);
-        uint256 before = FEE_RECIPIENT.balance + _s(0).balance + _s(1).balance + _s(2).balance
-            + _s(3).balance;
+        uint256 before =
+            FEE_RECIPIENT.balance + _s(0).balance + _s(1).balance + _s(2).balance + _s(3).balance;
         try router.payNative{value: gross}(
             st, net, block.timestamp, _eph(), _meta(tag, 0xeeeeeeee, NATIVE, net)
         ) {
@@ -163,8 +166,8 @@ contract EchidnaRouter {
     // ---------------- properties ----------------
 
     function echidna_router_never_holds_tokens() external view returns (bool) {
-        return token.balanceOf(address(router)) == donated && fotToken.balanceOf(address(router)) == 0
-            && address(router).balance == 0;
+        return token.balanceOf(address(router)) == donated
+            && fotToken.balanceOf(address(router)) == 0 && address(router).balance == 0;
     }
 
     function echidna_fee_plus_net_eq_gross() external view returns (bool) {
@@ -172,8 +175,8 @@ contract EchidnaRouter {
     }
 
     function echidna_native_fee_plus_net_eq_gross() external view returns (bool) {
-        uint256 s = FEE_RECIPIENT.balance + _s(0).balance + _s(1).balance + _s(2).balance
-            + _s(3).balance;
+        uint256 s =
+            FEE_RECIPIENT.balance + _s(0).balance + _s(1).balance + _s(2).balance + _s(3).balance;
         return !perCallBroken && s == totalGrossNative + totalBuffer;
     }
 
