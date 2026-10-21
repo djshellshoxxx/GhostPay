@@ -17,3 +17,6 @@ export { erc20Abi } from './abi/erc20.js';
 export { erc20MetadataAbi } from './abi/erc20Metadata.js';
 export { erc2612PermitAbi } from './abi/erc2612.js';
 export { chainlinkAggregatorAbi } from './abi/chainlinkAggregator.js';
+export * from './deploymentsSignature.js';
+export * from './deploymentsVerify.js';
+export * from './scanVerify.js';

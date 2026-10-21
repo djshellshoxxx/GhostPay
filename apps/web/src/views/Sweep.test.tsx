@@ -8,7 +8,8 @@ import type { Services } from '../lib/services';
 import { clearSession, generateSession } from '../lib/session';
 import { SETTINGS_KEY } from '../lib/settings';
 import { makeLog } from '../test/announcements';
-import { FAKE_ANNOUNCER, FAKE_ROUTER, fakeManifest } from '../test/fakeManifest';
+import { FAKE_ANNOUNCER, FAKE_ROUTER } from '../test/fakeManifest';
+import { backedManifest, withManifestChain } from '../test/manifestChain';
 import { chainWithLogs } from '../test/mockChain';
 import { makeServices, renderApp } from '../test/render';
 
@@ -18,7 +19,7 @@ beforeEach(() => {
   window.history.replaceState(null, '', '/');
 });
 
-const loaded: Services['loadManifest'] = (id) => Promise.resolve({ status: 'loaded', manifest: fakeManifest(id) });
+const loaded: Services['loadManifest'] = (id) => Promise.resolve({ status: 'loaded', manifest: backedManifest(id) });
 const DEST = '0x6666666666666666666666666666666666666666';
 const TOKEN = '0x036CbD53842c5426634e7929541eC2318f3dCF7e';
 
@@ -56,7 +57,7 @@ async function toSweep(opts: { balance?: bigint; native?: bigint; relayer?: bool
   const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 50, index: 0, caller: FAKE_ROUTER, amount: 5_000_000n });
   const rpc = chainWithLogs(84532, 100, [mine.log], extra(opts.balance ?? 5_000_000n, opts.native ?? 10n ** 17n, opts.raw ?? {}));
   const user = userEvent.setup();
-  renderApp(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(rpc), ...(opts.fetchFn === undefined ? {} : { fetchFn: opts.fetchFn }) }));
+  renderApp(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)), ...(opts.fetchFn === undefined ? {} : { fetchFn: opts.fetchFn }) }));
   await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Scan and receive' }));
   await user.selectOptions(screen.getByLabelText('Chain'), screen.getByRole('option', { name: 'Base Sepolia' }));
   await user.type(screen.getByLabelText('Start block'), '0');

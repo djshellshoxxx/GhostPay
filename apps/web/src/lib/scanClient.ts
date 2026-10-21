@@ -1,10 +1,14 @@
 import {
+  compareProviders,
   fetchAnnouncements,
+  verifyReceipt,
   type Address,
   type ChainConfig,
   type DeploymentManifest,
   type RpcClient,
   type ScanCursor,
+  type ProviderDiscrepancy,
+  type ReceiptStatus,
   type ScannedAnnouncement,
 } from '@ghostpay/chain-adapters';
 import { parseMetadata, type ParsedMetadata } from '@ghostpay/core-crypto';
@@ -23,6 +27,12 @@ export interface ScanMatch {
   readonly stealthAddress: Address;
   readonly metadata: ParsedMetadata | undefined;
   readonly viaRouter: boolean;
+  /**
+   * `verified`: router-attested or backed by the stealth address balance, and `finalityDepth` deep.
+   * `claimed`: metadata only (a direct announcement anyone can forge): do not treat the amount as received.
+   * `pending`: not yet final.
+   */
+  readonly receipt: ReceiptStatus;
 }
 
 export interface ScanProgress {
@@ -31,6 +41,8 @@ export interface ScanProgress {
   readonly matches: number;
   readonly skipped: number;
   readonly caughtUp: boolean;
+  /** Pages where a second provider disagreed (checkpoint withheld for those pages). */
+  readonly discrepancies?: number;
 }
 
 export interface CheckpointStore {
@@ -53,6 +65,9 @@ export interface ScanParams {
   readonly onProgress?: (p: ScanProgress) => void;
   readonly onMatch?: (m: ScanMatch) => void;
   readonly maxPages?: number;
+  /** Independent second provider on the same chain; compared at every checkpoint. */
+  readonly secondaryClient?: RpcClient;
+  readonly onDiscrepancy?: (d: readonly ProviderDiscrepancy[]) => void;
 }
 
 function toWire(a: ScannedAnnouncement): WireLog {
@@ -63,7 +78,7 @@ function toWire(a: ScannedAnnouncement): WireLog {
  * Network access happens here (via chain-adapters), never in the worker. The worker receives public logs and, once,
  * the viewing key. Cancelling via `signal` stops fetching, tells the worker to stop, and terminates it.
  */
-export async function runScan(p: ScanParams): Promise<{ readonly matches: readonly ScanMatch[]; readonly cursor: ScanCursor; readonly scanned: number }> {
+export async function runScan(p: ScanParams): Promise<{ readonly matches: readonly ScanMatch[]; readonly cursor: ScanCursor; readonly scanned: number; readonly discrepancies: readonly ProviderDiscrepancy[] }> {
   const worker = p.createWorker();
   const pending = new Map<number, (m: FromWorker) => void>();
   let ready: ((m: FromWorker) => void) | undefined;
@@ -87,6 +102,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   let cursor = p.cursor;
   let scanned = 0;
   let skipped = 0;
+  const discrepancies: ProviderDiscrepancy[] = [];
   let batchId = 0;
   try {
     const started = await wait((resolve) => {
@@ -100,6 +116,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       const res = await fetchAnnouncements({ chain: p.chain, client: p.client, announcer: p.manifest.announcer, cursor });
       if (p.signal.aborted) break;
       skipped += res.skipped;
+      const pageFrom = res.reorg?.rolledBackTo ?? cursor.nextBlock;
       for (const a of res.announcements) byId.set(a.id, a);
       const id = ++batchId;
       const reply = await wait((resolve) => {
@@ -118,19 +135,46 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         } catch {
           metadata = undefined;
         }
-        const match: ScanMatch = {
-          announcement,
-          stealthAddress: m.stealthAddress as Address,
-          metadata,
-          viaRouter: announcement.caller.toLowerCase() === p.manifest.router.toLowerCase(),
-        };
+        const viaRouter = announcement.caller.toLowerCase() === p.manifest.router.toLowerCase();
+        // Without readable metadata nothing is claimed, so nothing can be verified.
+        const receipt: ReceiptStatus =
+          metadata === undefined
+            ? 'claimed'
+            : await verifyReceipt(p.client, p.chain, {
+                stealthAddress: m.stealthAddress as Address,
+                native: metadata.kind === 'native',
+                token: metadata.token,
+                amount: metadata.netAmount,
+                blockNumber: announcement.blockNumber,
+                viaRouter,
+              });
+        const match: ScanMatch = { announcement, stealthAddress: m.stealthAddress as Address, metadata, viaRouter, receipt };
         all.push(match);
         p.onMatch?.(match);
       }
       byId.clear();
+      let disagree = false;
+      if (p.secondaryClient !== undefined && res.cursor.last !== undefined) {
+        const cmp = await compareProviders({
+          chain: p.chain,
+          secondary: p.secondaryClient,
+          announcer: p.manifest.announcer,
+          fromBlock: pageFrom,
+          toBlock: res.cursor.last.number,
+          primaryAnnouncements: res.announcements,
+          primarySkipped: res.skipped,
+          primaryBlockHash: res.cursor.last.hash,
+        });
+        if (cmp.discrepancies.length > 0) {
+          disagree = true;
+          discrepancies.push(...cmp.discrepancies);
+          p.onDiscrepancy?.(cmp.discrepancies);
+        }
+      }
       cursor = res.cursor;
-      p.checkpoints?.save(p.chain.chainId, cursor);
-      p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: !res.truncated });
+      // A page the providers disagree on must be re-scanned: do not persist a checkpoint past it.
+      if (!disagree) p.checkpoints?.save(p.chain.chainId, cursor);
+      p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: !res.truncated, discrepancies: discrepancies.length });
       if (!res.truncated) break;
     }
   } finally {
@@ -139,7 +183,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
     worker.terminate();
     zeroizeBytes(p.viewingKey);
   }
-  return { matches: all, cursor, scanned };
+  return { matches: all, cursor, scanned, discrepancies };
 }
 
 function zeroizeBytes(b: Uint8Array): void {

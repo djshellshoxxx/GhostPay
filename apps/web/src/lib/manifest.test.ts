@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { fakeManifestJson } from '../test/fakeManifest';
-import { loadManifest } from './manifest';
+import { ed25519 } from '@noble/curves/ed25519.js';
+import { manifestSigningBytes, type ReleaseKey } from '@ghostpay/chain-adapters';
+import { backedManifest, withManifestChain } from '../test/manifestChain';
+import { mockRpc } from '../test/mockRpc';
+import { loadManifest, verifyManifestState } from './manifest';
 
 const ok = (body: string, status = 200): Promise<Response> => Promise.resolve(new Response(body, { status }));
 
@@ -41,5 +45,51 @@ describe('loadManifest', () => {
     let url = '';
     await loadManifest(5, (u) => { url = u; return ok('', 404); }, '/x/');
     expect(url).toBe('/x/deployments/5.json');
+  });
+
+  it('flags an unsigned testnet manifest loudly and refuses an unsigned mainnet one', async () => {
+    const s = await loadManifest(84532, () => ok(fakeManifestJson(84532)));
+    expect(s.status === 'loaded' && s.trust).toBe('unsigned-dev');
+    expect(s.status === 'loaded' && s.warning).toMatch(/UNSIGNED DEV MANIFEST/);
+    expect((await loadManifest(8453, () => ok(fakeManifestJson(8453)))).status).toBe('invalid');
+    expect((await loadManifest(999999, () => ok(fakeManifestJson(999999)))).status).toBe('invalid');
+  });
+  describe('with a pinned release key', () => {
+    const priv = ed25519.utils.randomSecretKey();
+    const hex = (b: Uint8Array): `0x${string}` => `0x${Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('')}`;
+    const key: ReleaseKey = { alg: 'ed25519', publicKey: hex(ed25519.getPublicKey(priv)) };
+    const signed = (mutate?: (o: Record<string, unknown>) => void): string => {
+      const text = fakeManifestJson(84532);
+      const sig = hex(ed25519.sign(manifestSigningBytes(text), priv));
+      const o = { ...(JSON.parse(text) as Record<string, unknown>), signature: sig };
+      mutate?.(o);
+      return JSON.stringify(o);
+    };
+    it('loads a correctly signed manifest as signed', async () => {
+      const s = await loadManifest(84532, () => ok(signed()), './', key);
+      expect(s.status === 'loaded' && s.trust).toBe('signed');
+    });
+    it('rejects tampered, unsigned or foreign-signed manifests as invalid', async () => {
+      const tampered = signed((o) => { o['feeRecipient'] = '0x5555555555555555555555555555555555555555'; });
+      expect((await loadManifest(84532, () => ok(tampered), './', key)).status).toBe('invalid');
+      expect((await loadManifest(84532, () => ok(fakeManifestJson(84532)), './', key)).status).toBe('invalid');
+      const other: ReleaseKey = { alg: 'ed25519', publicKey: hex(ed25519.getPublicKey(ed25519.utils.randomSecretKey())) };
+      expect((await loadManifest(84532, () => ok(signed()), './', other)).status).toBe('invalid');
+    });
+  });
+  describe('verifyManifestState', () => {
+    const base = mockRpc(84532, () => { throw new Error('unexpected'); });
+    const state = { status: 'loaded', manifest: backedManifest(84532) } as const;
+    it('keeps a manifest that matches the chain', async () => {
+      expect((await verifyManifestState(state, withManifestChain(base))).status).toBe('loaded');
+    });
+    it('turns a fee recipient mismatch, wrong code or RPC failure into invalid (fail closed)', async () => {
+      expect((await verifyManifestState(state, withManifestChain(base, { feeRecipient: '0x00000000000000000000000000000000deadbeef' }))).status).toBe('invalid');
+      expect((await verifyManifestState(state, withManifestChain(base, { code: {} }))).status).toBe('invalid');
+      expect((await verifyManifestState(state, base)).status).toBe('invalid');
+    });
+    it('passes through absent/invalid states', async () => {
+      expect(await verifyManifestState({ status: 'absent' }, base)).toEqual({ status: 'absent' });
+    });
   });
 });

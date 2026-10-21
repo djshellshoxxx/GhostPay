@@ -190,4 +190,59 @@ describe('localCheckpointStore', () => {
     expect(() => { throwing.save(1, { nextBlock: 1n }); throwing.clear(1); }).not.toThrow();
     void vi;
   });
+
+  describe('receipt verification and second provider', () => {
+    const run = async (s: ReturnType<typeof setup>, client: ReturnType<typeof chainWith>, extra: Partial<Parameters<typeof runScan>[0]> = {}) => {
+      const cp = new Map<number, unknown>();
+      const res = await runScan({
+        chain, manifest, client, cursor: { nextBlock: 0n },
+        spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+        createWorker: () => new InlineWorker(), signal: new AbortController().signal,
+        checkpoints: { load: () => undefined, save: (id, c) => cp.set(id, c), clear: () => undefined }, ...extra,
+      });
+      return { res, cp };
+    };
+    const withBalance = (base: ReturnType<typeof chainWith>, balance: bigint) => ({
+      ...base,
+      request: (m: string, p: readonly unknown[]) =>
+        m === 'eth_call' || m === 'eth_getBalance' ? Promise.resolve(`0x${balance.toString(16)}`) : base.request(m, p),
+    });
+
+    it('labels a forged direct announcement "claimed" (no funds) but trusts the router one', async () => {
+      const s = setup();
+      const { res } = await run(s, chainWith(2500, s.logs));
+      void res;
+      const byRouter = res.matches.find((m) => m.viaRouter);
+      const direct = res.matches.find((m) => !m.viaRouter);
+      expect(byRouter?.receipt).toBe('verified');
+      expect(direct?.receipt).toBe('claimed');
+    });
+    it('verifies a direct announcement only when the stealth address holds the announced amount', async () => {
+      const s = setup();
+      const base = chainWith(2500, s.logs);
+      const rich = await run(s, withBalance(base, 10n ** 30n));
+      expect(rich.res.matches.find((m) => !m.viaRouter)?.receipt).toBe('verified');
+      const poor = await run(s, withBalance(base, 1n));
+      expect(poor.res.matches.find((m) => !m.viaRouter)?.receipt).toBe('claimed');
+    });
+    it('marks matches inside finalityDepth as pending', async () => {
+      const s = setup();
+      const { res } = await run(s, chainWith(2150, s.logs));
+      expect(res.matches.find((m) => !m.viaRouter)?.receipt).toBe('pending');
+    });
+    it('records no discrepancy and advances the checkpoint when providers agree', async () => {
+      const s = setup();
+      const { res, cp } = await run(s, chainWith(2500, s.logs), { secondaryClient: chainWith(2500, s.logs) });
+      expect(res.discrepancies).toEqual([]);
+      expect(cp.get(84532)).toBeDefined();
+    });
+    it('surfaces a hidden/forged log disagreement and withholds the checkpoint', async () => {
+      const s = setup();
+      const seen: string[] = [];
+      const { res, cp } = await run(s, chainWith(2500, s.logs), { secondaryClient: chainWith(2500, [s.mine.log]), onDiscrepancy: (d) => seen.push(...d.map((x) => x.kind)) });
+      expect(res.discrepancies.map((d) => d.kind)).toEqual(['missing_in_secondary', 'missing_in_secondary']);
+      expect(seen).toHaveLength(2);
+      expect(cp.get(84532)).toBeUndefined();
+    });
+  });
 });

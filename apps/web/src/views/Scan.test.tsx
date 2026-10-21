@@ -4,7 +4,8 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { clearSession, generateSession } from '../lib/session';
 import { SETTINGS_KEY } from '../lib/settings';
-import { FAKE_ANNOUNCER, FAKE_ROUTER, fakeManifest } from '../test/fakeManifest';
+import { FAKE_ANNOUNCER, FAKE_ROUTER } from '../test/fakeManifest';
+import { backedManifest, withManifestChain } from '../test/manifestChain';
 import { InlineWorker } from '../test/inlineWorker';
 import { makeLog } from '../test/announcements';
 import { chainWithLogs } from '../test/mockChain';
@@ -17,7 +18,7 @@ beforeEach(() => {
   window.history.replaceState(null, '', '/');
 });
 
-const loaded: Services['loadManifest'] = (id) => Promise.resolve({ status: 'loaded', manifest: fakeManifest(id) });
+const loaded: Services['loadManifest'] = (id) => Promise.resolve({ status: 'loaded', manifest: backedManifest(id), trust: 'unsigned-dev', warning: 'UNSIGNED DEV MANIFEST: test.' });
 
 async function openScan(services: Services, pickBaseSepolia = true): Promise<ReturnType<typeof userEvent.setup>> {
   const user = userEvent.setup();
@@ -58,7 +59,7 @@ describe('Scan and receive', () => {
     generateSession();
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
     const rpc = chainWithLogs(84532, 10, []);
-    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(rpc) }));
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
     await user.click(screen.getByRole('button', { name: 'Start scan' }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/Enter the block number/);
   });
@@ -71,7 +72,7 @@ describe('Scan and receive', () => {
     const other = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(generateKeySet()), block: 121, index: 1, caller: FAKE_ROUTER });
     const rpc = chainWithLogs(84532, 500, [mine.log, other.log]);
     const checkpoints = memoryCheckpoints();
-    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(rpc), checkpoints, createScanWorker: () => new InlineWorker() }));
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)), checkpoints, createScanWorker: () => new InlineWorker() }));
     await user.type(screen.getByLabelText('Start block'), '100');
     await user.click(screen.getByRole('button', { name: 'Start scan' }));
     expect(await screen.findByText('Payments found')).toBeTruthy();
@@ -121,7 +122,7 @@ describe('Scan and receive', () => {
       if (m.type === 'batch') void gate.then(() => { original(m); });
       else original(m);
     };
-    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(rpc), createScanWorker: () => worker }));
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)), createScanWorker: () => worker }));
     await user.type(screen.getByLabelText('Start block'), '0');
     await user.click(screen.getByRole('button', { name: 'Start scan' }));
     const cancel = screen.getByRole('button', { name: 'Cancel' });
@@ -141,7 +142,7 @@ describe('Scan and receive', () => {
     bad.postMessage = (): void => {
       queueMicrotask(() => bad.onerror?.(new Error('x')));
     };
-    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(rpc), createScanWorker: () => bad }));
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)), createScanWorker: () => bad }));
     await user.type(screen.getByLabelText('Start block'), '0');
     await user.click(screen.getByRole('button', { name: 'Start scan' }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/worker failed/);
@@ -155,5 +156,17 @@ describe('Scan and receive', () => {
     const user = await openScan(services);
     await user.click(screen.getByRole('button', { name: 'Unlock tags' }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/different viewing key/);
+  });
+
+  it('blocks the scan when on-chain state contradicts the manifest, and warns about unsigned dev manifests', async () => {
+    generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const rpc = chainWithLogs(84532, 10, []);
+    const evil = withManifestChain(rpc, { feeRecipient: '0x00000000000000000000000000000000deadbeef' });
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(evil), createScanWorker: () => new InlineWorker() }));
+    expect(await screen.findByText(/UNSIGNED DEV MANIFEST/)).toBeTruthy();
+    await user.type(screen.getByLabelText('Start block'), '0');
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(/do not match the deployment manifest/);
   });
 });

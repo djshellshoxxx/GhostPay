@@ -3,6 +3,7 @@ import { unsafeRevealSecret } from '@ghostpay/core-crypto';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../components/Common';
 import { useManifest } from '../components/Disclosure';
+import { verifyManifestState } from '../lib/manifest';
 import { formatUnits } from '../lib/format';
 import { userMessage } from '../lib/errors';
 import { runScan, type ScanMatch, type ScanProgress } from '../lib/scanClient';
@@ -62,6 +63,11 @@ export function Scan(): ReactNode {
           }
           cursor = { nextBlock: BigInt(start.trim()) };
         }
+        const checked = await verifyManifestState(manifest, rpc);
+        if (checked.status !== 'loaded') {
+          setError('Scan blocked: the contracts on this chain do not match the deployment manifest.');
+          return;
+        }
         const secrets = requireSession();
         const viewingKey = unsafeRevealSecret(secrets.keys.viewingSecret);
         const ctl = new AbortController();
@@ -85,6 +91,7 @@ export function Scan(): ReactNode {
             app.setMatches([...found]);
           },
         });
+        if (res.discrepancies.length > 0) setError(`The second RPC provider disagreed on ${String(res.discrepancies.length)} check(s). Results may be incomplete or forged; checkpoints were not advanced. Try another provider.`);
         setDone(ctl.signal.aborted ? `Cancelled. ${String(res.scanned)} announcements checked.` : `Finished. ${String(res.scanned)} announcements checked, ${String(res.matches.length)} payments found.`);
         app.announce('Scan finished.');
       } catch (e) {
@@ -111,6 +118,7 @@ export function Scan(): ReactNode {
             </select>
           )}
         </Field>
+        {manifest?.status === 'loaded' && manifest.trust === 'unsigned-dev' && <Notice kind="warn">{manifest.warning ?? 'UNSIGNED DEV MANIFEST: testnet only.'}</Notice>}
         {manifest !== undefined && manifest.status !== 'loaded' && <Notice kind="warn">Payments disabled on this chain: no deployment manifest is loaded.</Notice>}
         <Field label="Start block" hint={checkpoint === undefined ? 'The first block to scan from.' : `A checkpoint exists at block ${checkpoint.nextBlock.toString()}.`}>
           {(id, d) => <input id={id} aria-describedby={d} inputMode="numeric" value={start} onChange={(e) => { setStart(e.target.value); }} disabled={running} />}
@@ -194,8 +202,10 @@ function Matches(props: { readonly chainId: number }): ReactNode {
           return (
             <li key={id} className="card">
               <p>
-                <strong>{describe(m, props.chainId)}</strong> in block {m.announcement.blockNumber.toString()}
+                <strong>{m.receipt === 'verified' ? describe(m, props.chainId) : `Claimed, not confirmed: ${describe(m, props.chainId)}`}</strong> in block {m.announcement.blockNumber.toString()}
                 {m.viaRouter ? '' : ' (paid directly, no GhostPay fee)'}
+                {m.receipt === 'claimed' && ' - the announcement is unverified (no matching funds found at the one-time address); do not release goods.'}
+                {m.receipt === 'pending' && ' - waiting for enough confirmations.'}
               </p>
               <p>One-time address: <Mono>{m.stealthAddress}</Mono></p>
               {tags[id] !== undefined && <p>Tag: <strong className="wrap">{tags[id]}</strong></p>}
