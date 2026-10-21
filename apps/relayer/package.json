@@ -1,0 +1,24 @@
+{
+  "name": "@ghostpay/relayer",
+  "version": "0.1.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --coverage",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@ghostpay/chain-adapters": "0.1.0",
+    "viem": "2.57.7"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.5",
+    "@vitest/coverage-v8": "5.0.5",
+    "fast-check": "4.10.2",
+    "typescript": "5.9.3",
+    "vitest": "5.0.5"
+  }
+}
