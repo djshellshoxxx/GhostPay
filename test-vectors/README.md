@@ -24,3 +24,18 @@ ERC-5564 scheme-1 vectors pinned by ADR-0001, with GhostPay metadata layouts.
 
 Vector set: mid-range scalars, smallest scalars (1, 2, 3), largest scalars (n-1, n-2, n-3), half-width and n/2
 boundary scalars, short scalars with many leading zero bytes, alternating bit patterns.
+
+## policy-scheme.json
+
+Scheme `0x47500002` (policy-guarded account) vectors for `@ghostpay/policy-scheme`.
+
+- **Provenance:** `node test-vectors/generate-policy-scheme.mjs` (repo root). Owner EOA, ephemeral key, view tag and owner key come
+  from `@scopelift/stealth-address-sdk` (scheme-1 maths, loaded through Vite like `generate.mjs`); `abi.encode`, keccak256,
+  CREATE/CREATE2 addresses, EIP-712 digests and signatures from `viem`; the limits tree from a separate StandardMerkleTree
+  re-implementation inside the generator. The package under test is never imported.
+- **Contents:** deployment (chain 31337, factory/implementation as `CREATE(deployer, 1/0)` of a test key), the four type strings and
+  typehashes, four limits trees with every proof, invalid trees with expected error codes, four accounts (keys, scheme-2 meta-address,
+  policy, policy hash, salt, owner, account, owner key) and per account signed `Withdraw`/`CancelWithdraw`/`ProposeDestination`/`CancelDestination`.
+- **Consumers:** `packages/policy-scheme/src/vectors.test.ts` (byte equality) and `src/anvil.test.ts`, which deploys the real contracts
+  from the same key and checks the predicted addresses, typehashes, domain separators and that the vector signatures are accepted on-chain.
+- **Keys:** public test keys only.

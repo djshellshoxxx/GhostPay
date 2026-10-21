@@ -231,6 +231,37 @@ describe('BlindBitClient (shape verified from the BlindBit-Oracle v2 server READ
     );
   });
 
+  it('getInfo parses the documented /info payload strictly', async () => {
+    const good = {
+      network: 'signet',
+      height: 834761,
+      tweaks_only: false,
+      tweaks_full_basic: true,
+      tweaks_full_with_dust_filter: false,
+      tweaks_cut_through_with_dust_filter: false,
+    };
+    const c = (body: unknown): BlindBitClient =>
+      new BlindBitClient({ baseUrl: BASE, fetch: server({ '/info': body }).fetch });
+    expect(await c(good).getInfo()).toEqual({
+      network: 'signet',
+      height: 834761,
+      tweaksOnly: false,
+      tweaksFullBasic: true,
+      tweaksFullWithDustFilter: false,
+      tweaksCutThroughWithDustFilter: false,
+    });
+    const bads: unknown[] = [
+      null,
+      { ...good, network: 5 },
+      { ...good, network: '' },
+      { ...good, height: -1 },
+      { ...good, tweaks_only: 'no' },
+      { ...good, tweaks_full_basic: undefined },
+    ];
+    for (const b of bads)
+      await expect(c(b).getInfo()).rejects.toSatisfy((e) => code(e) === 'INVALID_RESPONSE');
+  });
+
   it('validates the base URL and heights', async () => {
     const f = server({}).fetch;
     for (const bad of [

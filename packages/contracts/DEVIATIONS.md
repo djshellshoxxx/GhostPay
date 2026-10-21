@@ -167,3 +167,36 @@ Changes made after the independent review. Items A1-A6 change code; the remainin
 - **A6. Audit tests.** `test_returnDataBomb_gasOverhead`/`..._destinationInflatesExecutorGas` became `test_returnDataBomb_*Bounded`; `test_EXPLOIT_duplicateLeafSubmitterPicksPermissiveLimit` became
   `test_duplicateLeafSubmitterCannotPickPermissiveLimit`. All other `test_EXPLOIT_*` tests (M-01, M-03, L-02, L-03, L-05, I-03, I-04) are unchanged and document the residual behaviour.
   The test helper `PolicyBase._w` fills `limitLeafHash` with the fixture tree leaf of the token; `_wFor` binds it to an explicit proof.
+
+# GhostPayPolicyRouter (scheme 0x47500002, audit 02 M-02)
+
+New contract `src/GhostPayPolicyRouter.sol` (+ `src/interfaces/IGhostPayPolicyRouter.sol`, `script/DeployPolicyRouter.s.sol`). Chosen over a `schemeId`
+argument on `GhostPayRouter` (the audit's other option) so the audited scheme-1 router and its ABI stay unchanged. Items R1-R9; the lead should confirm or reject each.
+
+- **R1. Separate router, same economics.** Same `FEE_BPS = 25`, floor rounding, 57-byte metadata layout, ephemeral-key rule, SafeERC20 + exact balance deltas,
+  `nonReentrant`, try/catch permit, `FeeCollected` only when `fee > 0`, assembly native `call` without return-data copy (A1), reverting `receive`/`fallback`,
+  no admin. `SCHEME_ID = 0x47500002`. Every error shared with `IGhostPayRouter` has the same name and therefore the same selector.
+- **R2. Policy binding.** Immutable `FACTORY` (`PolicyAccountFactory`, must be non-zero and have code: `ZeroAddress` / new `FactoryHasNoCode`). Each payment passes
+  `PolicyRef {address owner; bytes32 policyHash;}` and the router requires `stealth == FACTORY.predictAddress(owner, policyHash)` (staticcall to the trusted immutable factory),
+  else new error `NotPolicyAccount(address expected)`; `owner == address(0)` reverts `ZeroAddress` (the factory could never deploy that account). `stealth` stays an explicit
+  argument so a client bug in the derivation reverts instead of paying a different address. Deployed and counterfactual accounts are both accepted.
+- **R3. ABI shape differs from the scheme-1 router.** `(owner, policyHash)` is a struct and the permit signature is `PermitSig {uint8 v; bytes32 r; bytes32 s;}`, because the flat
+  argument lists exceed the legacy codegen's stack in the ABI decoder (`via_ir` is not used by this package). Signatures:
+  `payERC20(address,address,(address,bytes32),uint256,uint256,uint256,bytes,bytes)`,
+  `payERC20WithPermit(address,address,(address,bytes32),uint256,uint256,uint256,bytes,bytes,(uint8,bytes32,bytes32))`,
+  `payNative(address,(address,bytes32),uint256,uint256,bytes,bytes)`,
+  `payERC20WithBuffer(address,address,(address,bytes32),uint256,uint256,uint256,uint256,bytes,bytes)`. Scheme-1 calldata hits the reverting fallback (`NoDirectETH`).
+- **R4. Check order:** policy binding (`ZeroAddress` owner, `NotPolicyAccount`) runs **first** in every entry point (before the buffer checks, the token-zero check, the deadline and
+  the permit), then the scheme-1 order of DEVIATIONS item 5. Consequences: a wrong recipient never touches the token or consumes a permit nonce; `stealth == 0` reports
+  `NotPolicyAccount`, not `InvalidStealth`. `InvalidStealth` is still reachable when the fee recipient is itself the predicted account (rejected, like scheme 1).
+- **R5. What the binding does not prove.** It proves the address is a clone slot of this factory for `(owner, policyHash)`; it cannot prove `policyHash` has a sensible pre-image or that
+  `owner` is the payee's stealth key (both come from the meta-address/derivation off-chain). Funds paid to an account whose policy pre-image nobody knows are stuck, as with any wrong stealth address.
+- **R6. Factory/implementation pinning.** Redeploying the factory requires a new router; manifests and scanners must pin `(chainId, policyRouter, factory, implementation codehash)`.
+- **R7. Slither:** zero results for the new files at **all** severities (no `--exclude*` flags), using inline `slither-disable` start/end or next-line comments with rationale
+  for `timestamp` (deadline), `assembly` (A1) and `naming-convention` (upper-case immutables, same as scheme 1). CI's medium+ run is unchanged and still passes.
+- **R8. Coverage:** `forge coverage --ir-minimum` for `src/GhostPayPolicyRouter.sol`: branches 100 %, functions 100 %, lines 84/85; the uncovered "line" is the assembly `call` (same
+  instrumentation artefact as A1). `scripts/check-natspec.sh` was not edited; the same check run with `CONTRACTS=(GhostPayPolicyRouter)` passes.
+- **R9. `DeployPolicyRouter.s.sol`** follows `DeployBase` conventions: required `FEE_RECIPIENT` (not the broadcaster), required `POLICY_FACTORY` (code at the factory and its `IMPLEMENTATION`;
+  optional `EXPECTED_POLICY_FACTORY_CODEHASH`), the `Deploy` announcer rules duplicated (`ANNOUNCER`, `ALLOW_CUSTOM_ANNOUNCER=1`, `EXPECTED_ANNOUNCER_CODEHASH`) because they live in
+  `Deploy` rather than `DeployBase`, chain allowlist, and read-back of every immutable plus `SCHEME_ID`. The `deployments/schema.json` manifest has no `policyRouter` field yet (not changed here).
+  `.gas-snapshot` gained the new non-fuzz tests only (merged, sorted).

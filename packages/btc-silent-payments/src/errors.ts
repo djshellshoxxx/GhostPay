@@ -28,7 +28,11 @@ export type SilentPaymentErrorCode =
   | 'INVALID_RESPONSE'
   | 'REORG_DETECTED'
   | 'ABORTED'
-  | 'UNSUPPORTED';
+  | 'UNSUPPORTED'
+  | 'INSUFFICIENT_FUNDS'
+  | 'DUST_OUTPUT'
+  | 'FEE_TOO_HIGH'
+  | 'SIGNATURE_INVALID';
 
 const MESSAGES: Readonly<Record<SilentPaymentErrorCode, string>> = {
   INVALID_SCALAR: 'invalid secret scalar (must be 32 bytes in [1, n-1])',
@@ -57,6 +61,10 @@ const MESSAGES: Readonly<Record<SilentPaymentErrorCode, string>> = {
   REORG_DETECTED: 'tweak source returned inconsistent block data (possible reorg)',
   ABORTED: 'operation aborted',
   UNSUPPORTED: 'operation is not supported',
+  INSUFFICIENT_FUNDS: 'selected outputs do not cover the payments and the fee',
+  DUST_OUTPUT: 'an output is below the dust limit',
+  FEE_TOO_HIGH: 'fee rate or absolute fee exceeds the safety limit',
+  SIGNATURE_INVALID: 'signed transaction failed verification',
 };
 
 /** Error type thrown by every function in this package. */

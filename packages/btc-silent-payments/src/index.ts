@@ -15,6 +15,7 @@ export * from './scan/scanner.js';
 export type * from './scan/types.js';
 export * from './secret.js';
 export * from './sender.js';
+export * from './spend.js';
 export * from './tx.js';
 export * from './units.js';
 export * from './uri.js';
