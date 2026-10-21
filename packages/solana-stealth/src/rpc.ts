@@ -28,6 +28,10 @@ export function parseJsonLossless(text: string): unknown {
   } as (this: unknown, key: string, value: unknown) => unknown);
 }
 
+function isAborted(signal: AbortSignal | undefined): boolean {
+  return signal?.aborted === true;
+}
+
 function isLocalHost(host: string): boolean {
   return host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
 }
@@ -56,7 +60,7 @@ export function createHttpRpc(opts: HttpRpcOptions): SolanaRpc {
   let nextId = 1;
   return {
     async request(method, params, signal) {
-      if (signal?.aborted === true) return fail('ABORTED');
+      if (isAborted(signal)) return fail('ABORTED');
       const id = nextId++;
       const timeout = AbortSignal.timeout(timeoutMs);
       const combined = signal === undefined ? timeout : AbortSignal.any([signal, timeout]);
@@ -73,8 +77,7 @@ export function createHttpRpc(opts: HttpRpcOptions): SolanaRpc {
         text = await res.text();
       } catch (e) {
         if (e instanceof SolanaStealthError) throw e;
-        if (signal?.aborted === true) return fail('ABORTED');
-        return fail('TRANSPORT_FAILURE');
+        return fail(isAborted(signal) ? 'ABORTED' : 'TRANSPORT_FAILURE');
       }
       let body: unknown;
       try {

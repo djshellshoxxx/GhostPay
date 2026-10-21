@@ -1,7 +1,6 @@
 import {
   scanBlocks,
   SilentPaymentError,
-  type SecretScalar,
   type SpendableOutput,
 } from '@ghostpay/btc-silent-payments';
 import type { EsploraClient } from './esplora';
@@ -53,7 +52,7 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
   const seen = new Set<string>();
   const gen = scanBlocks({
     source,
-    keys: { scanSecret: wallet.keys.scanSecret as SecretScalar, spendPublicKey: wallet.keys.spendPublicKey },
+    keys: { scanSecret: wallet.keys.scanSecret, spendPublicKey: wallet.keys.spendPublicKey },
     fromHeight,
     toHeight,
     ...(signal === undefined ? {} : { signal }),

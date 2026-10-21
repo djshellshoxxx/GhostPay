@@ -6,6 +6,7 @@ import { useServices } from './lib/services';
 import { getSessionPublic, subscribeSession } from './lib/session';
 import { loadSettings, saveSettings, type Settings as SettingsData } from './lib/settings';
 import { AppContext, VIEW_LABELS, type AppState, type ViewId } from './state';
+import { BtcView } from './features/btc/BtcView';
 import { About } from './views/About';
 import { CreateInvoice } from './views/CreateInvoice';
 import { Home } from './views/Home';
@@ -15,7 +16,7 @@ import { SellerKeys } from './views/SellerKeys';
 import { Settings } from './views/Settings';
 import { Sweep } from './views/Sweep';
 
-const ORDER: readonly ViewId[] = ['home', 'seller', 'create', 'pay', 'scan', 'sweep', 'settings', 'about'];
+const ORDER: readonly ViewId[] = ['home', 'seller', 'create', 'pay', 'scan', 'sweep', 'btc', 'settings', 'about'];
 
 function ViewSwitch(props: { readonly view: ViewId }): ReactNode {
   switch (props.view) {
@@ -31,6 +32,8 @@ function ViewSwitch(props: { readonly view: ViewId }): ReactNode {
       return <Scan />;
     case 'sweep':
       return <Sweep />;
+    case 'btc':
+      return <BtcView />;
     case 'settings':
       return <Settings />;
     case 'about':
