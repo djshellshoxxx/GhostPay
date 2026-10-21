@@ -1,0 +1,26 @@
+[
+ {
+  "id": "72",
+  "status": "KILLED",
+  "killer": "[FAIL: NonceAlreadyUsed()] test_sweep_lowerNonceUsableAfterHigherNonceInSameWord() (gas: 275608)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -110,7 +110,8 @@\n \n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n-        if (word & bit != 0) revert NonceAlreadyUsed();\n+        /// BinaryOpMutation(`&` |==> `/`) of: `if (word & bit != 0) revert NonceAlreadyUsed();`\n+        if (word/bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n     }\n \n"
+ },
+ {
+  "id": "85",
+  "status": "SURVIVED",
+  "killer": "",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -111,7 +111,8 @@\n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n-        _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n+        /// BinaryOpMutation(`|` |==> `+`) of: `_nonceBitmap[s.owner][s.nonce >> 8] = word | bit;`\n+        _nonceBitmap[s.owner][s.nonce >> 8] = word+bit;\n     }\n \n     /// @dev Moves `amount - fee` to the destination and `fee` to `feeTo`, verifying exact balance deltas.\n"
+ },
+ {
+  "id": "98",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed] test_sweep_zeroFeeEmitsNoTransferToFeeTo() (gas: 207270)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -128,7 +128,8 @@\n         // forge-lint: disable-start(arbitrary-send-erc20)\n         // slither-disable-next-line arbitrary-send-erc20\n         token.safeTransferFrom(s.owner, s.destination, net);\n-        if (s.fee != 0) {\n+        /// IfStatementMutation(`s.fee != 0` |==> `true`) of: `if (s.fee != 0) {`\n+        if (true) {\n             // slither-disable-next-line arbitrary-send-erc20\n             token.safeTransferFrom(s.owner, s.feeTo, s.fee);\n         }\n"
+ }
+]

@@ -1,0 +1,18 @@
+[
+ {
+  "id": "12",
+  "status": "SURVIVED",
+  "killer": "",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -96,7 +96,8 @@\n         if (address(token) == address(0)) revert ZeroAddress();\n         // Deadline semantics are inherent to the product; second-level validator drift is acceptable.\n         // forge-lint: disable-next-line(block-timestamp)\n-        if (block.timestamp > deadline) revert Expired();\n+        /// IfStatementMutation(`block.timestamp > deadline` |==> `false`) of: `if (block.timestamp > deadline) revert Expired();`\n+        if (false) revert Expired();\n         // A front-run permit consumes the nonce and makes this call revert; ignoring the failure is\n         // safe because the transfer below reverts unless the allowance is sufficient.\n         try IERC20Permit(address(token))\n"
+ },
+ {
+  "id": "15",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed: 0 != 1] test_payERC20WithPermit_announcesToAnnouncer() (gas: 1229212)",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -103,7 +103,8 @@\n             .permit(msg.sender, address(this), gross, deadline, v, r, s) {}\n             catch {}\n         _payERC20(token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata);\n-        ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata);\n+        /// DeleteExpressionMutation(`ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata)` |==> `assert(true)`) of: `ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata);`\n+        assert(true);\n     }\n \n     /// @inheritdoc IGhostPayRouter\n"
+ }
+]

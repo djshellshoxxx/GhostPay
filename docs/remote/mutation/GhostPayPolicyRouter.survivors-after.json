@@ -1,0 +1,10 @@
+[
+ {
+  "id": "15",
+  "status": "SURVIVED",
+  "killer": "",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayPolicyRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -122,7 +122,8 @@\n         // Deadline semantics are inherent to the product; second-level validator drift is acceptable.\n         // slither-disable-start timestamp\n         // forge-lint: disable-next-line(block-timestamp)\n-        if (block.timestamp > deadline) revert Expired();\n+        /// IfStatementMutation(`block.timestamp > deadline` |==> `false`) of: `if (block.timestamp > deadline) revert Expired();`\n+        if (false) revert Expired();\n         // slither-disable-end timestamp\n         // A front-run permit consumes the nonce and makes this call revert; ignoring the failure is\n         // safe because the transfer below reverts unless the allowance is sufficient.\n"
+ }
+]

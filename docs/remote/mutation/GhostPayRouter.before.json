@@ -1,0 +1,674 @@
+[
+ {
+  "id": "1",
+  "status": "INVALID",
+  "killer": "",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -60,7 +60,8 @@\n     /// @param announcer The ERC-5564 announcer; must be non-zero.\n     /// @param feeRecipient The fee recipient; must be non-zero and not the router itself.\n     constructor(IERC5564Announcer announcer, address feeRecipient) {\n-        if (address(announcer) == address(0) || feeRecipient == address(0)) revert ZeroAddress();\n+        /// IfStatementMutation(`address(announcer) == address(0) || feeRecipient == address(0)` |==> `true`) of: `if (address(announcer) == address(0) || feeRecipient == address(0)) revert ZeroAddress();`\n+        if (true) revert ZeroAddress();\n         if (feeRecipient == address(this)) revert InvalidStealth();\n         ANNOUNCER = announcer;\n         FEE_RECIPIENT = feeRecipient;\n"
+ },
+ {
+  "id": "2",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_constructor_revertsOnZeroAnnouncer() (gas: 6332)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -60,7 +60,8 @@\n     /// @param announcer The ERC-5564 announcer; must be non-zero.\n     /// @param feeRecipient The fee recipient; must be non-zero and not the router itself.\n     constructor(IERC5564Announcer announcer, address feeRecipient) {\n-        if (address(announcer) == address(0) || feeRecipient == address(0)) revert ZeroAddress();\n+        /// IfStatementMutation(`address(announcer) == address(0) || feeRecipient == address(0)` |==> `false`) of: `if (address(announcer) == address(0) || feeRecipient == address(0)) revert ZeroAddress();`\n+        if (false) revert ZeroAddress();\n         if (feeRecipient == address(this)) revert InvalidStealth();\n         ANNOUNCER = announcer;\n         FEE_RECIPIENT = feeRecipient;\n"
+ },
+ {
+  "id": "3",
+  "status": "INVALID",
+  "killer": "",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -61,7 +61,8 @@\n     /// @param feeRecipient The fee recipient; must be non-zero and not the router itself.\n     constructor(IERC5564Announcer announcer, address feeRecipient) {\n         if (address(announcer) == address(0) || feeRecipient == address(0)) revert ZeroAddress();\n-        if (feeRecipient == address(this)) revert InvalidStealth();\n+        /// IfStatementMutation(`feeRecipient == address(this)` |==> `true`) of: `if (feeRecipient == address(this)) revert InvalidStealth();`\n+        if (true) revert InvalidStealth();\n         ANNOUNCER = announcer;\n         FEE_RECIPIENT = feeRecipient;\n     }\n"
+ },
+ {
+  "id": "4",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_constructor_revertsWhenFeeRecipientIsRouter() (gas: 7217)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -61,7 +61,8 @@\n     /// @param feeRecipient The fee recipient; must be non-zero and not the router itself.\n     constructor(IERC5564Announcer announcer, address feeRecipient) {\n         if (address(announcer) == address(0) || feeRecipient == address(0)) revert ZeroAddress();\n-        if (feeRecipient == address(this)) revert InvalidStealth();\n+        /// IfStatementMutation(`feeRecipient == address(this)` |==> `false`) of: `if (feeRecipient == address(this)) revert InvalidStealth();`\n+        if (false) revert InvalidStealth();\n         ANNOUNCER = announcer;\n         FEE_RECIPIENT = feeRecipient;\n     }\n"
+ },
+ {
+  "id": "5",
+  "status": "KILLED",
+  "killer": "[FAIL: router.ANNOUNCER mismatch] test_deployScriptScenarios() (gas: 6516239)",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -62,7 +62,8 @@\n     constructor(IERC5564Announcer announcer, address feeRecipient) {\n         if (address(announcer) == address(0) || feeRecipient == address(0)) revert ZeroAddress();\n         if (feeRecipient == address(this)) revert InvalidStealth();\n-        ANNOUNCER = announcer;\n+        /// DeleteExpressionMutation(`ANNOUNCER = announcer` |==> `assert(true)`) of: `ANNOUNCER = announcer;`\n+        assert(true);\n         FEE_RECIPIENT = feeRecipient;\n     }\n \n"
+ },
+ {
+  "id": "6",
+  "status": "KILLED",
+  "killer": "[FAIL: router.FEE_RECIPIENT mismatch] test_deployScriptScenarios() (gas: 6515560)",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -63,7 +63,8 @@\n         if (address(announcer) == address(0) || feeRecipient == address(0)) revert ZeroAddress();\n         if (feeRecipient == address(this)) revert InvalidStealth();\n         ANNOUNCER = announcer;\n-        FEE_RECIPIENT = feeRecipient;\n+        /// DeleteExpressionMutation(`FEE_RECIPIENT = feeRecipient` |==> `assert(true)`) of: `FEE_RECIPIENT = feeRecipient;`\n+        assert(true);\n     }\n \n     /// @inheritdoc IGhostPayRouter\n"
+ },
+ {
+  "id": "7",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected; counterexample: calldata=0xc69b7b8b0000000000000000000000000000000000000000000000000000000000000001 args=[1]] testFuzz_deadline(uint256) (runs: 2, \u03bc: 52131",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -76,7 +76,8 @@\n         bytes calldata ephemeralPubKey,\n         bytes calldata metadata\n     ) external nonReentrant {\n-        _payERC20(token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata);\n+        /// DeleteExpressionMutation(`_payERC20(token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata)` |==> `assert(true)`) of: `_payERC20(token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata);`\n+        assert(true);\n         ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata);\n     }\n \n"
+ },
+ {
+  "id": "8",
+  "status": "KILLED",
+  "killer": "[FAIL: announcement for victim emitted with caller==router] test_EXPLOIT_announcementSpoofing_fakeTokenOffCurveKeyWrongTag() (gas: 797027)",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -77,7 +77,8 @@\n         bytes calldata metadata\n     ) external nonReentrant {\n         _payERC20(token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata);\n-        ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata);\n+        /// DeleteExpressionMutation(`ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata)` |==> `assert(true)`) of: `ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata);`\n+        assert(true);\n     }\n \n     /// @inheritdoc IGhostPayRouter\n"
+ },
+ {
+  "id": "9",
+  "status": "KILLED",
+  "killer": "[FAIL: ZeroAddress()] test_phantomAndFakePermit_cannotBypassAllowance() (gas: 1405415)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -93,7 +93,8 @@\n         bytes32 r,\n         bytes32 s\n     ) external nonReentrant {\n-        if (address(token) == address(0)) revert ZeroAddress();\n+        /// IfStatementMutation(`address(token) == address(0)` |==> `true`) of: `if (address(token) == address(0)) revert ZeroAddress();`\n+        if (true) revert ZeroAddress();\n         // Deadline semantics are inherent to the product; second-level validator drift is acceptable.\n         // forge-lint: disable-next-line(block-timestamp)\n         if (block.timestamp > deadline) revert Expired();\n"
+ },
+ {
+  "id": "10",
+  "status": "KILLED",
+  "killer": "[FAIL: call reverted as expected, but without data] test_payERC20WithPermit_revertsExpiredAndZeroToken() (gas: 83037)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -93,7 +93,8 @@\n         bytes32 r,\n         bytes32 s\n     ) external nonReentrant {\n-        if (address(token) == address(0)) revert ZeroAddress();\n+        /// IfStatementMutation(`address(token) == address(0)` |==> `false`) of: `if (address(token) == address(0)) revert ZeroAddress();`\n+        if (false) revert ZeroAddress();\n         // Deadline semantics are inherent to the product; second-level validator drift is acceptable.\n         // forge-lint: disable-next-line(block-timestamp)\n         if (block.timestamp > deadline) revert Expired();\n"
+ },
+ {
+  "id": "11",
+  "status": "KILLED",
+  "killer": "[FAIL: Expired()] test_payERC20WithPermit_frontRunPermitStillSucceeds() (gas: 1181770)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -96,7 +96,8 @@\n         if (address(token) == address(0)) revert ZeroAddress();\n         // Deadline semantics are inherent to the product; second-level validator drift is acceptable.\n         // forge-lint: disable-next-line(block-timestamp)\n-        if (block.timestamp > deadline) revert Expired();\n+        /// IfStatementMutation(`block.timestamp > deadline` |==> `true`) of: `if (block.timestamp > deadline) revert Expired();`\n+        if (true) revert Expired();\n         // A front-run permit consumes the nonce and makes this call revert; ignoring the failure is\n         // safe because the transfer below reverts unless the allowance is sufficient.\n         try IERC20Permit(address(token))\n"
+ },
+ {
+  "id": "12",
+  "status": "SURVIVED",
+  "killer": "",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -96,7 +96,8 @@\n         if (address(token) == address(0)) revert ZeroAddress();\n         // Deadline semantics are inherent to the product; second-level validator drift is acceptable.\n         // forge-lint: disable-next-line(block-timestamp)\n-        if (block.timestamp > deadline) revert Expired();\n+        /// IfStatementMutation(`block.timestamp > deadline` |==> `false`) of: `if (block.timestamp > deadline) revert Expired();`\n+        if (false) revert Expired();\n         // A front-run permit consumes the nonce and makes this call revert; ignoring the failure is\n         // safe because the transfer below reverts unless the allowance is sufficient.\n         try IERC20Permit(address(token))\n"
+ },
+ {
+  "id": "13",
+  "status": "KILLED",
+  "killer": "[FAIL: Expired()] test_phantomAndFakePermit_cannotBypassAllowance() (gas: 1405592)",
+  "description": "SwapArgumentsOperatorMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -96,7 +96,8 @@\n         if (address(token) == address(0)) revert ZeroAddress();\n         // Deadline semantics are inherent to the product; second-level validator drift is acceptable.\n         // forge-lint: disable-next-line(block-timestamp)\n-        if (block.timestamp > deadline) revert Expired();\n+        /// SwapArgumentsOperatorMutation(`block.timestamp > deadline` |==> `deadline > block.timestamp`) of: `if (block.timestamp > deadline) revert Expired();`\n+        if (deadline > block.timestamp) revert Expired();\n         // A front-run permit consumes the nonce and makes this call revert; ignoring the failure is\n         // safe because the transfer below reverts unless the allowance is sufficient.\n         try IERC20Permit(address(token))\n"
+ },
+ {
+  "id": "14",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_phantomAndFakePermit_cannotBypassAllowance() (gas: 1305477)",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -102,7 +102,8 @@\n         try IERC20Permit(address(token))\n             .permit(msg.sender, address(this), gross, deadline, v, r, s) {}\n             catch {}\n-        _payERC20(token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata);\n+        /// DeleteExpressionMutation(`_payERC20(token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata)` |==> `assert(true)`) of: `_payERC20(token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata);`\n+        assert(true);\n         ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata);\n     }\n \n"
+ },
+ {
+  "id": "15",
+  "status": "SURVIVED",
+  "killer": "",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -103,7 +103,8 @@\n             .permit(msg.sender, address(this), gross, deadline, v, r, s) {}\n             catch {}\n         _payERC20(token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata);\n-        ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata);\n+        /// DeleteExpressionMutation(`ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata)` |==> `assert(true)`) of: `ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata);`\n+        assert(true);\n     }\n \n     /// @inheritdoc IGhostPayRouter\n"
+ },
+ {
+  "id": "16",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_payNative_revertsBadMetadata() (gas: 135058)",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -116,7 +116,8 @@\n     ) external payable nonReentrant {\n         (uint256 fee, uint256 net) =\n             _validate(stealth, msg.value, minNet, deadline, ephemeralPubKey);\n-        _checkMetadata(metadata, NATIVE_MARKER, NATIVE, net);\n+        /// DeleteExpressionMutation(`_checkMetadata(metadata, NATIVE_MARKER, NATIVE, net)` |==> `assert(true)`) of: `_checkMetadata(metadata, NATIVE_MARKER, NATIVE, net);`\n+        assert(true);\n \n         if (fee != 0) {\n             _sendNative(FEE_RECIPIENT, fee);\n"
+ },
+ {
+  "id": "17",
+  "status": "KILLED",
+  "killer": "[FAIL: NativeTransferFailed()] test_payNative_dustSkipsFeeTransfer() (gas: 153945)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -118,7 +118,8 @@\n             _validate(stealth, msg.value, minNet, deadline, ephemeralPubKey);\n         _checkMetadata(metadata, NATIVE_MARKER, NATIVE, net);\n \n-        if (fee != 0) {\n+        /// IfStatementMutation(`fee != 0` |==> `true`) of: `if (fee != 0) {`\n+        if (true) {\n             _sendNative(FEE_RECIPIENT, fee);\n             // Router is nonReentrant, so callbacks cannot reorder or fabricate this log.\n             // forge-lint: disable-next-line(reentrancy-events)\n"
+ },
+ {
+  "id": "18",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed: 0 != 40616793; counterexample: calldata=0xdf93c68700000000000000000000000000000000000000000000000000000003c8613c66 args=[16246717542 [1.624e10]]] testFuzz_native(uint256) (run",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -118,7 +118,8 @@\n             _validate(stealth, msg.value, minNet, deadline, ephemeralPubKey);\n         _checkMetadata(metadata, NATIVE_MARKER, NATIVE, net);\n \n-        if (fee != 0) {\n+        /// IfStatementMutation(`fee != 0` |==> `false`) of: `if (fee != 0) {`\n+        if (false) {\n             _sendNative(FEE_RECIPIENT, fee);\n             // Router is nonReentrant, so callbacks cannot reorder or fabricate this log.\n             // forge-lint: disable-next-line(reentrancy-events)\n"
+ },
+ {
+  "id": "19",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_EXPLOIT_feeRecipientRejectsNative_dosNativePayments() (gas: 194398)",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -119,7 +119,8 @@\n         _checkMetadata(metadata, NATIVE_MARKER, NATIVE, net);\n \n         if (fee != 0) {\n-            _sendNative(FEE_RECIPIENT, fee);\n+            /// DeleteExpressionMutation(`_sendNative(FEE_RECIPIENT, fee)` |==> `assert(true)`) of: `_sendNative(FEE_RECIPIENT, fee);`\n+            assert(true);\n             // Router is nonReentrant, so callbacks cannot reorder or fabricate this log.\n             // forge-lint: disable-next-line(reentrancy-events)\n             emit FeeCollected(NATIVE, fee);\n"
+ },
+ {
+  "id": "20",
+  "status": "KILLED",
+  "killer": "[FAIL: recipient-injected announcement precedes the router's: 1 != 2] test_EXPLOIT_stealthContractInjectsAnnouncementBeforeRouterAnnounce() (gas: 362071)",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -124,7 +124,8 @@\n             // forge-lint: disable-next-line(reentrancy-events)\n             emit FeeCollected(NATIVE, fee);\n         }\n-        _sendNative(stealth, net);\n+        /// DeleteExpressionMutation(`_sendNative(stealth, net)` |==> `assert(true)`) of: `_sendNative(stealth, net);`\n+        assert(true);\n         ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata);\n     }\n \n"
+ },
+ {
+  "id": "21",
+  "status": "KILLED",
+  "killer": "[FAIL: recipient-injected announcement precedes the router's: 1 != 2] test_EXPLOIT_stealthContractInjectsAnnouncementBeforeRouterAnnounce() (gas: 378419)",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -125,7 +125,8 @@\n             emit FeeCollected(NATIVE, fee);\n         }\n         _sendNative(stealth, net);\n-        ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata);\n+        /// DeleteExpressionMutation(`ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata)` |==> `assert(true)`) of: `ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata);`\n+        assert(true);\n     }\n \n     /// @inheritdoc IGhostPayRouter\n"
+ },
+ {
+  "id": "22",
+  "status": "KILLED",
+  "killer": "[FAIL: BufferRequired(); counterexample: calldata=0x19525049000000000000000000000000000b169653f9a26007c47e57c61ffb3a2f09a16f00000000000000000000000000000000000001376ad79b443512bba2d58794a7 args=[24727",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -139,7 +139,8 @@\n         bytes calldata ephemeralPubKey,\n         bytes calldata metadata\n     ) external payable nonReentrant {\n-        if (msg.value == 0) revert BufferRequired();\n+        /// IfStatementMutation(`msg.value == 0` |==> `true`) of: `if (msg.value == 0) revert BufferRequired();`\n+        if (true) revert BufferRequired();\n         if (msg.value > maxBufferWei) revert BufferTooLarge();\n         _payERC20(token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata);\n         _sendNative(stealth, msg.value);\n"
+ },
+ {
+  "id": "23",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_buffer_revertsBufferRequired() (gas: 129340)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -139,7 +139,8 @@\n         bytes calldata ephemeralPubKey,\n         bytes calldata metadata\n     ) external payable nonReentrant {\n-        if (msg.value == 0) revert BufferRequired();\n+        /// IfStatementMutation(`msg.value == 0` |==> `false`) of: `if (msg.value == 0) revert BufferRequired();`\n+        if (false) revert BufferRequired();\n         if (msg.value > maxBufferWei) revert BufferTooLarge();\n         _payERC20(token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata);\n         _sendNative(stealth, msg.value);\n"
+ },
+ {
+  "id": "24",
+  "status": "KILLED",
+  "killer": "[FAIL: BufferTooLarge(); counterexample: calldata=0x1952504900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b48 args=[0, 28",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -140,7 +140,8 @@\n         bytes calldata metadata\n     ) external payable nonReentrant {\n         if (msg.value == 0) revert BufferRequired();\n-        if (msg.value > maxBufferWei) revert BufferTooLarge();\n+        /// IfStatementMutation(`msg.value > maxBufferWei` |==> `true`) of: `if (msg.value > maxBufferWei) revert BufferTooLarge();`\n+        if (true) revert BufferTooLarge();\n         _payERC20(token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata);\n         _sendNative(stealth, msg.value);\n         ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata);\n"
+ },
+ {
+  "id": "25",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_buffer_revertsBufferTooLarge() (gas: 167792)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -140,7 +140,8 @@\n         bytes calldata metadata\n     ) external payable nonReentrant {\n         if (msg.value == 0) revert BufferRequired();\n-        if (msg.value > maxBufferWei) revert BufferTooLarge();\n+        /// IfStatementMutation(`msg.value > maxBufferWei` |==> `false`) of: `if (msg.value > maxBufferWei) revert BufferTooLarge();`\n+        if (false) revert BufferTooLarge();\n         _payERC20(token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata);\n         _sendNative(stealth, msg.value);\n         ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata);\n"
+ },
+ {
+  "id": "26",
+  "status": "KILLED",
+  "killer": "[FAIL: BufferTooLarge()] test_routerHoldsNothing() (gas: 52861)",
+  "description": "SwapArgumentsOperatorMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -140,7 +140,8 @@\n         bytes calldata metadata\n     ) external payable nonReentrant {\n         if (msg.value == 0) revert BufferRequired();\n-        if (msg.value > maxBufferWei) revert BufferTooLarge();\n+        /// SwapArgumentsOperatorMutation(`msg.value > maxBufferWei` |==> `maxBufferWei > msg.value`) of: `if (msg.value > maxBufferWei) revert BufferTooLarge();`\n+        if (maxBufferWei > msg.value) revert BufferTooLarge();\n         _payERC20(token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata);\n         _sendNative(stealth, msg.value);\n         ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata);\n"
+ },
+ {
+  "id": "27",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed: 498706148229985142445926118911 != 0] invariant_feeOnTransferNeverSucceeds",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -141,7 +141,8 @@\n     ) external payable nonReentrant {\n         if (msg.value == 0) revert BufferRequired();\n         if (msg.value > maxBufferWei) revert BufferTooLarge();\n-        _payERC20(token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata);\n+        /// DeleteExpressionMutation(`_payERC20(token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata)` |==> `assert(true)`) of: `_payERC20(token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata);`\n+        assert(true);\n         _sendNative(stealth, msg.value);\n         ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata);\n     }\n"
+ },
+ {
+  "id": "28",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed: 0 != 45499266105135400673; counterexample: calldata=0x19525049000000000000000000000000000000000000000000000000000000000000000000000000000006162973842a7e46e65a4c7f69465e7313553",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -142,7 +142,8 @@\n         if (msg.value == 0) revert BufferRequired();\n         if (msg.value > maxBufferWei) revert BufferTooLarge();\n         _payERC20(token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata);\n-        _sendNative(stealth, msg.value);\n+        /// DeleteExpressionMutation(`_sendNative(stealth, msg.value)` |==> `assert(true)`) of: `_sendNative(stealth, msg.value);`\n+        assert(true);\n         ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata);\n     }\n \n"
+ },
+ {
+  "id": "29",
+  "status": "KILLED",
+  "killer": "[FAIL: Transfer != expected Announcement] test_buffer_announcesErc20Metadata() (gas: 166181)",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -143,7 +143,8 @@\n         if (msg.value > maxBufferWei) revert BufferTooLarge();\n         _payERC20(token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata);\n         _sendNative(stealth, msg.value);\n-        ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata);\n+        /// DeleteExpressionMutation(`ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata)` |==> `assert(true)`) of: `ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata);`\n+        assert(true);\n     }\n \n     /// @notice Always reverts: the router does not accept plain native transfers.\n"
+ },
+ {
+  "id": "30",
+  "status": "KILLED",
+  "killer": "[FAIL: ZeroAddress()] test_EXPLOIT_announcementSpoofing_fakeTokenOffCurveKeyWrongTag() (gas: 719714)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -167,7 +167,8 @@\n         bytes calldata ephemeralPubKey,\n         bytes calldata metadata\n     ) private {\n-        if (address(token) == address(0)) revert ZeroAddress();\n+        /// IfStatementMutation(`address(token) == address(0)` |==> `true`) of: `if (address(token) == address(0)) revert ZeroAddress();`\n+        if (true) revert ZeroAddress();\n         (uint256 fee, uint256 net) = _validate(stealth, gross, minNet, deadline, ephemeralPubKey);\n         _checkMetadata(metadata, ERC20_MARKER, address(token), net);\n \n"
+ },
+ {
+  "id": "31",
+  "status": "KILLED",
+  "killer": "[FAIL: Error != expected error: InvalidMetadata() != ZeroAddress()] test_payERC20_revertsZeroToken() (gas: 46910)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -167,7 +167,8 @@\n         bytes calldata ephemeralPubKey,\n         bytes calldata metadata\n     ) private {\n-        if (address(token) == address(0)) revert ZeroAddress();\n+        /// IfStatementMutation(`address(token) == address(0)` |==> `false`) of: `if (address(token) == address(0)) revert ZeroAddress();`\n+        if (false) revert ZeroAddress();\n         (uint256 fee, uint256 net) = _validate(stealth, gross, minNet, deadline, ephemeralPubKey);\n         _checkMetadata(metadata, ERC20_MARKER, address(token), net);\n \n"
+ },
+ {
+  "id": "32",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected; counterexample: calldata=0x46224fd10000000000000000000000000000000000007edd4f94a92bc0623617c5d9b6cd0000000000000000000000000000000000000000000000000078c846",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -169,7 +169,8 @@\n     ) private {\n         if (address(token) == address(0)) revert ZeroAddress();\n         (uint256 fee, uint256 net) = _validate(stealth, gross, minNet, deadline, ephemeralPubKey);\n-        _checkMetadata(metadata, ERC20_MARKER, address(token), net);\n+        /// DeleteExpressionMutation(`_checkMetadata(metadata, ERC20_MARKER, address(token), net)` |==> `assert(true)`) of: `_checkMetadata(metadata, ERC20_MARKER, address(token), net);`\n+        assert(true);\n \n         _pull(token, stealth, fee, net);\n     }\n"
+ },
+ {
+  "id": "33",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed: 0 != 8453000000000000000000; counterexample: calldata=0x89c3a155000000000000000000000000000000000000000000000000000000000000000e00000000000000000000000000000000000000000000000",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -171,7 +171,8 @@\n         (uint256 fee, uint256 net) = _validate(stealth, gross, minNet, deadline, ephemeralPubKey);\n         _checkMetadata(metadata, ERC20_MARKER, address(token), net);\n \n-        _pull(token, stealth, fee, net);\n+        /// DeleteExpressionMutation(`_pull(token, stealth, fee, net)` |==> `assert(true)`) of: `_pull(token, stealth, fee, net);`\n+        assert(true);\n     }\n \n     /// @dev Pulls `fee` to the fee recipient and `net` to `stealth` from the caller, then verifies\n"
+ },
+ {
+  "id": "34",
+  "status": "KILLED",
+  "killer": "[FAIL: Blacklisted(0xa32c0203D5F9Fcfe1b2A359e5628cb5a22001bA7)] test_EXPLOIT_feeRecipientBlacklisted_dosAllErc20Payments() (gas: 993549)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -181,7 +181,8 @@\n         uint256 stealthBefore = token.balanceOf(stealth);\n         uint256 feeBefore = token.balanceOf(feeRecipient);\n \n-        if (fee != 0) {\n+        /// IfStatementMutation(`fee != 0` |==> `true`) of: `if (fee != 0) {`\n+        if (true) {\n             token.safeTransferFrom(msg.sender, feeRecipient, fee);\n             // Router is nonReentrant, so callbacks cannot reorder or fabricate this log.\n             // forge-lint: disable-next-line(reentrancy-events)\n"
+ },
+ {
+  "id": "35",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_announcementSpoofing_fakeTokenOffCurveKeyWrongTag() (gas: 762690)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -181,7 +181,8 @@\n         uint256 stealthBefore = token.balanceOf(stealth);\n         uint256 feeBefore = token.balanceOf(feeRecipient);\n \n-        if (fee != 0) {\n+        /// IfStatementMutation(`fee != 0` |==> `false`) of: `if (fee != 0) {`\n+        if (false) {\n             token.safeTransferFrom(msg.sender, feeRecipient, fee);\n             // Router is nonReentrant, so callbacks cannot reorder or fabricate this log.\n             // forge-lint: disable-next-line(reentrancy-events)\n"
+ },
+ {
+  "id": "36",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta(); counterexample: calldata=0x195250490000000000000000000000000006597489c9a45e96af2fa143afbbc304c3ef040000000000000002044e4982e20f19a5ef389f8c0ded1da744a895449065d9e0 arg",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -182,7 +182,8 @@\n         uint256 feeBefore = token.balanceOf(feeRecipient);\n \n         if (fee != 0) {\n-            token.safeTransferFrom(msg.sender, feeRecipient, fee);\n+            /// DeleteExpressionMutation(`token.safeTransferFrom(msg.sender, feeRecipient, fee)` |==> `assert(true)`) of: `token.safeTransferFrom(msg.sender, feeRecipient, fee);`\n+            assert(true);\n             // Router is nonReentrant, so callbacks cannot reorder or fabricate this log.\n             // forge-lint: disable-next-line(reentrancy-events)\n             emit FeeCollected(address(token), fee);\n"
+ },
+ {
+  "id": "37",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta(); counterexample: calldata=0x1952504900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b48 arg",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -187,7 +187,8 @@\n             // forge-lint: disable-next-line(reentrancy-events)\n             emit FeeCollected(address(token), fee);\n         }\n-        token.safeTransferFrom(msg.sender, stealth, net);\n+        /// DeleteExpressionMutation(`token.safeTransferFrom(msg.sender, stealth, net)` |==> `assert(true)`) of: `token.safeTransferFrom(msg.sender, stealth, net);`\n+        assert(true);\n \n         uint256 stealthAfter = token.balanceOf(stealth);\n         uint256 feeAfter = token.balanceOf(feeRecipient);\n"
+ },
+ {
+  "id": "38",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta(); counterexample: calldata=0x19525049000000000000000000000000000b169653f9a26007c47e57c61ffb3a2f09a16f00000000000000000000000000000000000001376ad79b443512bba2d58794a7 arg",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -193,7 +193,8 @@\n         uint256 feeAfter = token.balanceOf(feeRecipient);\n         // Exact deltas are the intended check: any deviation (fee-on-transfer, rebasing) must revert.\n         // forge-lint: disable-next-line(incorrect-strict-equality)\n-        if (stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee) {\n+        /// IfStatementMutation(`stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee` |==> `true`) of: `if (stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee) {`\n+        if (true) {\n             revert UnexpectedBalanceDelta();\n         }\n     }\n"
+ },
+ {
+  "id": "39",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_payerIsFeeRecipient_reverts() (gas: 206566)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -193,7 +193,8 @@\n         uint256 feeAfter = token.balanceOf(feeRecipient);\n         // Exact deltas are the intended check: any deviation (fee-on-transfer, rebasing) must revert.\n         // forge-lint: disable-next-line(incorrect-strict-equality)\n-        if (stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee) {\n+        /// IfStatementMutation(`stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee` |==> `false`) of: `if (stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee) {`\n+        if (false) {\n             revert UnexpectedBalanceDelta();\n         }\n     }\n"
+ },
+ {
+  "id": "40",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11)] test_EXPLOIT_announcementSpoofing_fakeTokenOffCurveKeyWrongTag() (gas: 788030)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -193,7 +193,8 @@\n         uint256 feeAfter = token.balanceOf(feeRecipient);\n         // Exact deltas are the intended check: any deviation (fee-on-transfer, rebasing) must revert.\n         // forge-lint: disable-next-line(incorrect-strict-equality)\n-        if (stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee) {\n+        /// BinaryOpMutation(`+` |==> `-`) of: `if (stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee) {`\n+        if (stealthAfter != stealthBefore-net || feeAfter != feeBefore + fee) {\n             revert UnexpectedBalanceDelta();\n         }\n     }\n"
+ },
+ {
+  "id": "41",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_announcementSpoofing_fakeTokenOffCurveKeyWrongTag() (gas: 788107)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -193,7 +193,8 @@\n         uint256 feeAfter = token.balanceOf(feeRecipient);\n         // Exact deltas are the intended check: any deviation (fee-on-transfer, rebasing) must revert.\n         // forge-lint: disable-next-line(incorrect-strict-equality)\n-        if (stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee) {\n+        /// BinaryOpMutation(`+` |==> `*`) of: `if (stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee) {`\n+        if (stealthAfter != stealthBefore*net || feeAfter != feeBefore + fee) {\n             revert UnexpectedBalanceDelta();\n         }\n     }\n"
+ },
+ {
+  "id": "42",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_announcementSpoofing_fakeTokenOffCurveKeyWrongTag() (gas: 788075)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -193,7 +193,8 @@\n         uint256 feeAfter = token.balanceOf(feeRecipient);\n         // Exact deltas are the intended check: any deviation (fee-on-transfer, rebasing) must revert.\n         // forge-lint: disable-next-line(incorrect-strict-equality)\n-        if (stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee) {\n+        /// BinaryOpMutation(`+` |==> `/`) of: `if (stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee) {`\n+        if (stealthAfter != stealthBefore/net || feeAfter != feeBefore + fee) {\n             revert UnexpectedBalanceDelta();\n         }\n     }\n"
+ },
+ {
+  "id": "43",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_announcementSpoofing_fakeTokenOffCurveKeyWrongTag() (gas: 788075)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -193,7 +193,8 @@\n         uint256 feeAfter = token.balanceOf(feeRecipient);\n         // Exact deltas are the intended check: any deviation (fee-on-transfer, rebasing) must revert.\n         // forge-lint: disable-next-line(incorrect-strict-equality)\n-        if (stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee) {\n+        /// BinaryOpMutation(`+` |==> `%`) of: `if (stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee) {`\n+        if (stealthAfter != stealthBefore%net || feeAfter != feeBefore + fee) {\n             revert UnexpectedBalanceDelta();\n         }\n     }\n"
+ },
+ {
+  "id": "44",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_announcementSpoofing_fakeTokenOffCurveKeyWrongTag() (gas: 788151)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -193,7 +193,8 @@\n         uint256 feeAfter = token.balanceOf(feeRecipient);\n         // Exact deltas are the intended check: any deviation (fee-on-transfer, rebasing) must revert.\n         // forge-lint: disable-next-line(incorrect-strict-equality)\n-        if (stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee) {\n+        /// BinaryOpMutation(`+` |==> `**`) of: `if (stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee) {`\n+        if (stealthAfter != stealthBefore**net || feeAfter != feeBefore + fee) {\n             revert UnexpectedBalanceDelta();\n         }\n     }\n"
+ },
+ {
+  "id": "45",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11); counterexample: calldata=0x19525049fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdffffffffffffffffffffffffffffffffffffffffffffff",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -193,7 +193,8 @@\n         uint256 feeAfter = token.balanceOf(feeRecipient);\n         // Exact deltas are the intended check: any deviation (fee-on-transfer, rebasing) must revert.\n         // forge-lint: disable-next-line(incorrect-strict-equality)\n-        if (stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee) {\n+        /// BinaryOpMutation(`+` |==> `-`) of: `if (stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee) {`\n+        if (stealthAfter != stealthBefore + net || feeAfter != feeBefore-fee) {\n             revert UnexpectedBalanceDelta();\n         }\n     }\n"
+ },
+ {
+  "id": "46",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_announcementSpoofing_fakeTokenOffCurveKeyWrongTag() (gas: 788193)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -193,7 +193,8 @@\n         uint256 feeAfter = token.balanceOf(feeRecipient);\n         // Exact deltas are the intended check: any deviation (fee-on-transfer, rebasing) must revert.\n         // forge-lint: disable-next-line(incorrect-strict-equality)\n-        if (stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee) {\n+        /// BinaryOpMutation(`+` |==> `*`) of: `if (stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee) {`\n+        if (stealthAfter != stealthBefore + net || feeAfter != feeBefore*fee) {\n             revert UnexpectedBalanceDelta();\n         }\n     }\n"
+ },
+ {
+  "id": "47",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta(); counterexample: calldata=0x19525049051d13440d9dd29f1281db4bfffd9869366c2674d64f01a3e8e5071c03674ed7000000000000000000000000000000000000000b7a2647ca26a1b05fb5743e8d arg",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -193,7 +193,8 @@\n         uint256 feeAfter = token.balanceOf(feeRecipient);\n         // Exact deltas are the intended check: any deviation (fee-on-transfer, rebasing) must revert.\n         // forge-lint: disable-next-line(incorrect-strict-equality)\n-        if (stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee) {\n+        /// BinaryOpMutation(`+` |==> `/`) of: `if (stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee) {`\n+        if (stealthAfter != stealthBefore + net || feeAfter != feeBefore/fee) {\n             revert UnexpectedBalanceDelta();\n         }\n     }\n"
+ },
+ {
+  "id": "48",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta(); counterexample: calldata=0x19525049fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe arg",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -193,7 +193,8 @@\n         uint256 feeAfter = token.balanceOf(feeRecipient);\n         // Exact deltas are the intended check: any deviation (fee-on-transfer, rebasing) must revert.\n         // forge-lint: disable-next-line(incorrect-strict-equality)\n-        if (stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee) {\n+        /// BinaryOpMutation(`+` |==> `%`) of: `if (stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee) {`\n+        if (stealthAfter != stealthBefore + net || feeAfter != feeBefore%fee) {\n             revert UnexpectedBalanceDelta();\n         }\n     }\n"
+ },
+ {
+  "id": "49",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_announcementSpoofing_fakeTokenOffCurveKeyWrongTag() (gas: 788237)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -193,7 +193,8 @@\n         uint256 feeAfter = token.balanceOf(feeRecipient);\n         // Exact deltas are the intended check: any deviation (fee-on-transfer, rebasing) must revert.\n         // forge-lint: disable-next-line(incorrect-strict-equality)\n-        if (stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee) {\n+        /// BinaryOpMutation(`+` |==> `**`) of: `if (stealthAfter != stealthBefore + net || feeAfter != feeBefore + fee) {`\n+        if (stealthAfter != stealthBefore + net || feeAfter != feeBefore**fee) {\n             revert UnexpectedBalanceDelta();\n         }\n     }\n"
+ },
+ {
+  "id": "50",
+  "status": "KILLED",
+  "killer": "[FAIL: Expired(); counterexample: calldata=0x19525049051d13440d9dd29f1281db4bfffd9869366c2674d64f01a3e8e5071c03674ed7000000000000000000000000000000000000000b7a2647ca26a1b05fb5743e8d args=[231293577568",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -208,7 +208,8 @@\n     ) private view returns (uint256 fee, uint256 net) {\n         // Deadline semantics are inherent to the product; second-level validator drift is acceptable.\n         // forge-lint: disable-next-line(block-timestamp)\n-        if (block.timestamp > deadline) revert Expired();\n+        /// IfStatementMutation(`block.timestamp > deadline` |==> `true`) of: `if (block.timestamp > deadline) revert Expired();`\n+        if (true) revert Expired();\n         if (stealth == address(0) || stealth == address(this) || stealth == FEE_RECIPIENT) {\n             revert InvalidStealth();\n         }\n"
+ },
+ {
+  "id": "51",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected; counterexample: calldata=0xc69b7b8b0000000000000000000000000000000000000000000000000000000000002710 args=[10000 [1e4]]] testFuzz_deadline(uint256) (runs: 1",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -208,7 +208,8 @@\n     ) private view returns (uint256 fee, uint256 net) {\n         // Deadline semantics are inherent to the product; second-level validator drift is acceptable.\n         // forge-lint: disable-next-line(block-timestamp)\n-        if (block.timestamp > deadline) revert Expired();\n+        /// IfStatementMutation(`block.timestamp > deadline` |==> `false`) of: `if (block.timestamp > deadline) revert Expired();`\n+        if (false) revert Expired();\n         if (stealth == address(0) || stealth == address(this) || stealth == FEE_RECIPIENT) {\n             revert InvalidStealth();\n         }\n"
+ },
+ {
+  "id": "52",
+  "status": "KILLED",
+  "killer": "[FAIL: Expired()] test_EXPLOIT_announcementSpoofing_fakeTokenOffCurveKeyWrongTag() (gas: 719814)",
+  "description": "SwapArgumentsOperatorMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -208,7 +208,8 @@\n     ) private view returns (uint256 fee, uint256 net) {\n         // Deadline semantics are inherent to the product; second-level validator drift is acceptable.\n         // forge-lint: disable-next-line(block-timestamp)\n-        if (block.timestamp > deadline) revert Expired();\n+        /// SwapArgumentsOperatorMutation(`block.timestamp > deadline` |==> `deadline > block.timestamp`) of: `if (block.timestamp > deadline) revert Expired();`\n+        if (deadline > block.timestamp) revert Expired();\n         if (stealth == address(0) || stealth == address(this) || stealth == FEE_RECIPIENT) {\n             revert InvalidStealth();\n         }\n"
+ },
+ {
+  "id": "53",
+  "status": "KILLED",
+  "killer": "[FAIL: InvalidStealth(); counterexample: calldata=0x19525049000000000000000000000000000b169653f9a26007c47e57c61ffb3a2f09a16f00000000000000000000000000000000000001376ad79b443512bba2d58794a7 args=[24727",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -209,7 +209,8 @@\n         // Deadline semantics are inherent to the product; second-level validator drift is acceptable.\n         // forge-lint: disable-next-line(block-timestamp)\n         if (block.timestamp > deadline) revert Expired();\n-        if (stealth == address(0) || stealth == address(this) || stealth == FEE_RECIPIENT) {\n+        /// IfStatementMutation(`stealth == address(0) || stealth == address(this) || stealth == FEE_RECIPIENT` |==> `true`) of: `if (stealth == address(0) || stealth == address(this) || stealth == FEE_RECIPIENT) {`\n+        if (true) {\n             revert InvalidStealth();\n         }\n         if (gross == 0) revert ZeroAmount();\n"
+ },
+ {
+  "id": "54",
+  "status": "KILLED",
+  "killer": "[FAIL: Error != expected error: UnexpectedBalanceDelta() != InvalidStealth()] test_payERC20_revertsStealthIsFeeRecipient() (gas: 99905)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -209,7 +209,8 @@\n         // Deadline semantics are inherent to the product; second-level validator drift is acceptable.\n         // forge-lint: disable-next-line(block-timestamp)\n         if (block.timestamp > deadline) revert Expired();\n-        if (stealth == address(0) || stealth == address(this) || stealth == FEE_RECIPIENT) {\n+        /// IfStatementMutation(`stealth == address(0) || stealth == address(this) || stealth == FEE_RECIPIENT` |==> `false`) of: `if (stealth == address(0) || stealth == address(this) || stealth == FEE_RECIPIENT) {`\n+        if (false) {\n             revert InvalidStealth();\n         }\n         if (gross == 0) revert ZeroAmount();\n"
+ },
+ {
+  "id": "55",
+  "status": "KILLED",
+  "killer": "[FAIL: ZeroAmount(); counterexample: calldata=0x195250490000000000000000000000000006597489c9a45e96af2fa143afbbc304c3ef040000000000000002044e4982e20f19a5ef389f8c0ded1da744a895449065d9e0 args=[141597120",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -212,7 +212,8 @@\n         if (stealth == address(0) || stealth == address(this) || stealth == FEE_RECIPIENT) {\n             revert InvalidStealth();\n         }\n-        if (gross == 0) revert ZeroAmount();\n+        /// IfStatementMutation(`gross == 0` |==> `true`) of: `if (gross == 0) revert ZeroAmount();`\n+        if (true) revert ZeroAmount();\n         fee = gross * FEE_BPS / BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n         net = gross - fee;\n"
+ },
+ {
+  "id": "56",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_payERC20_revertsZeroGross() (gas: 77123)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -212,7 +212,8 @@\n         if (stealth == address(0) || stealth == address(this) || stealth == FEE_RECIPIENT) {\n             revert InvalidStealth();\n         }\n-        if (gross == 0) revert ZeroAmount();\n+        /// IfStatementMutation(`gross == 0` |==> `false`) of: `if (gross == 0) revert ZeroAmount();`\n+        if (false) revert ZeroAmount();\n         fee = gross * FEE_BPS / BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n         net = gross - fee;\n"
+ },
+ {
+  "id": "57",
+  "status": "KILLED",
+  "killer": "[FAIL: InvalidMetadata(); counterexample: calldata=0x19525049000000000000000000000000000b169653f9a26007c47e57c61ffb3a2f09a16f00000000000000000000000000000000000001376ad79b443512bba2d58794a7 args=[2472",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -213,7 +213,8 @@\n             revert InvalidStealth();\n         }\n         if (gross == 0) revert ZeroAmount();\n-        fee = gross * FEE_BPS / BPS;\n+        /// DeleteExpressionMutation(`fee = gross * FEE_BPS / BPS` |==> `assert(true)`) of: `fee = gross * FEE_BPS / BPS;`\n+        assert(true);\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n         net = gross - fee;\n         if (net < minNet) revert SlippageExceeded();\n"
+ },
+ {
+  "id": "58",
+  "status": "KILLED",
+  "killer": "[FAIL: InvalidMetadata()] test_EXPLOIT_announcementSpoofing_fakeTokenOffCurveKeyWrongTag() (gas: 721225)",
+  "description": "AssignmentMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -213,7 +213,8 @@\n             revert InvalidStealth();\n         }\n         if (gross == 0) revert ZeroAmount();\n-        fee = gross * FEE_BPS / BPS;\n+        /// AssignmentMutation(`gross * FEE_BPS / BPS` |==> `0`) of: `fee = gross * FEE_BPS / BPS;`\n+        fee = 0;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n         net = gross - fee;\n         if (net < minNet) revert SlippageExceeded();\n"
+ },
+ {
+  "id": "59",
+  "status": "KILLED",
+  "killer": "[FAIL: InvalidMetadata(); counterexample: calldata=0x19525049000000000000000000000000000b169653f9a26007c47e57c61ffb3a2f09a16f00000000000000000000000000000000000001376ad79b443512bba2d58794a7 args=[2472",
+  "description": "AssignmentMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -213,7 +213,8 @@\n             revert InvalidStealth();\n         }\n         if (gross == 0) revert ZeroAmount();\n-        fee = gross * FEE_BPS / BPS;\n+        /// AssignmentMutation(`gross * FEE_BPS / BPS` |==> `1`) of: `fee = gross * FEE_BPS / BPS;`\n+        fee = 1;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n         net = gross - fee;\n         if (net < minNet) revert SlippageExceeded();\n"
+ },
+ {
+  "id": "60",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11); counterexample: calldata=0x19525049051d13440d9dd29f1281db4bfffd9869366c2674d64f01a3e8e5071c03674ed7000000000000000000000000000000000000000b7a2647",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -213,7 +213,8 @@\n             revert InvalidStealth();\n         }\n         if (gross == 0) revert ZeroAmount();\n-        fee = gross * FEE_BPS / BPS;\n+        /// BinaryOpMutation(`/` |==> `+`) of: `fee = gross * FEE_BPS / BPS;`\n+        fee = gross * FEE_BPS+BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n         net = gross - fee;\n         if (net < minNet) revert SlippageExceeded();\n"
+ },
+ {
+  "id": "61",
+  "status": "KILLED",
+  "killer": "[FAIL: InvalidMetadata()] test_EXPLOIT_announcementSpoofing_fakeTokenOffCurveKeyWrongTag() (gas: 721392)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -213,7 +213,8 @@\n             revert InvalidStealth();\n         }\n         if (gross == 0) revert ZeroAmount();\n-        fee = gross * FEE_BPS / BPS;\n+        /// BinaryOpMutation(`/` |==> `-`) of: `fee = gross * FEE_BPS / BPS;`\n+        fee = gross * FEE_BPS-BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n         net = gross - fee;\n         if (net < minNet) revert SlippageExceeded();\n"
+ },
+ {
+  "id": "62",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11); counterexample: calldata=0x19525049fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdffffffffffffffffffffffffffffffffffffffffffffff",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -213,7 +213,8 @@\n             revert InvalidStealth();\n         }\n         if (gross == 0) revert ZeroAmount();\n-        fee = gross * FEE_BPS / BPS;\n+        /// BinaryOpMutation(`/` |==> `*`) of: `fee = gross * FEE_BPS / BPS;`\n+        fee = gross * FEE_BPS*BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n         net = gross - fee;\n         if (net < minNet) revert SlippageExceeded();\n"
+ },
+ {
+  "id": "63",
+  "status": "KILLED",
+  "killer": "[FAIL: InvalidMetadata()] test_EXPLOIT_announcementSpoofing_fakeTokenOffCurveKeyWrongTag() (gas: 721376)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -213,7 +213,8 @@\n             revert InvalidStealth();\n         }\n         if (gross == 0) revert ZeroAmount();\n-        fee = gross * FEE_BPS / BPS;\n+        /// BinaryOpMutation(`/` |==> `%`) of: `fee = gross * FEE_BPS / BPS;`\n+        fee = gross * FEE_BPS%BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n         net = gross - fee;\n         if (net < minNet) revert SlippageExceeded();\n"
+ },
+ {
+  "id": "64",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11); counterexample: calldata=0x19525049000000000000000000000000000b169653f9a26007c47e57c61ffb3a2f09a16f00000000000000000000000000000000000001376ad79b",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -213,7 +213,8 @@\n             revert InvalidStealth();\n         }\n         if (gross == 0) revert ZeroAmount();\n-        fee = gross * FEE_BPS / BPS;\n+        /// BinaryOpMutation(`/` |==> `**`) of: `fee = gross * FEE_BPS / BPS;`\n+        fee = gross * FEE_BPS**BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n         net = gross - fee;\n         if (net < minNet) revert SlippageExceeded();\n"
+ },
+ {
+  "id": "65",
+  "status": "KILLED",
+  "killer": "[FAIL: InvalidMetadata(); counterexample: calldata=0x19525049fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe args=[1157",
+  "description": "SwapArgumentsOperatorMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -213,7 +213,8 @@\n             revert InvalidStealth();\n         }\n         if (gross == 0) revert ZeroAmount();\n-        fee = gross * FEE_BPS / BPS;\n+        /// SwapArgumentsOperatorMutation(`gross * FEE_BPS / BPS` |==> `BPS / gross * FEE_BPS`) of: `fee = gross * FEE_BPS / BPS;`\n+        fee = BPS / gross * FEE_BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n         net = gross - fee;\n         if (net < minNet) revert SlippageExceeded();\n"
+ },
+ {
+  "id": "66",
+  "status": "KILLED",
+  "killer": "[FAIL: SlippageExceeded()] test_EXPLOIT_announcementSpoofing_fakeTokenOffCurveKeyWrongTag() (gas: 720231)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -213,7 +213,8 @@\n             revert InvalidStealth();\n         }\n         if (gross == 0) revert ZeroAmount();\n-        fee = gross * FEE_BPS / BPS;\n+        /// BinaryOpMutation(`*` |==> `+`) of: `fee = gross * FEE_BPS / BPS;`\n+        fee = gross+FEE_BPS / BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n         net = gross - fee;\n         if (net < minNet) revert SlippageExceeded();\n"
+ },
+ {
+  "id": "67",
+  "status": "KILLED",
+  "killer": "[FAIL: SlippageExceeded()] test_EXPLOIT_announcementSpoofing_fakeTokenOffCurveKeyWrongTag() (gas: 720231)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -213,7 +213,8 @@\n             revert InvalidStealth();\n         }\n         if (gross == 0) revert ZeroAmount();\n-        fee = gross * FEE_BPS / BPS;\n+        /// BinaryOpMutation(`*` |==> `-`) of: `fee = gross * FEE_BPS / BPS;`\n+        fee = gross-FEE_BPS / BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n         net = gross - fee;\n         if (net < minNet) revert SlippageExceeded();\n"
+ },
+ {
+  "id": "68",
+  "status": "KILLED",
+  "killer": "[FAIL: InvalidMetadata(); counterexample: calldata=0x19525049000000000000000000000000000b169653f9a26007c47e57c61ffb3a2f09a16f00000000000000000000000000000000000001376ad79b443512bba2d58794a7 args=[2472",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -213,7 +213,8 @@\n             revert InvalidStealth();\n         }\n         if (gross == 0) revert ZeroAmount();\n-        fee = gross * FEE_BPS / BPS;\n+        /// BinaryOpMutation(`*` |==> `/`) of: `fee = gross * FEE_BPS / BPS;`\n+        fee = gross/FEE_BPS / BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n         net = gross - fee;\n         if (net < minNet) revert SlippageExceeded();\n"
+ },
+ {
+  "id": "69",
+  "status": "KILLED",
+  "killer": "[FAIL: InvalidMetadata()] test_EXPLOIT_announcementSpoofing_fakeTokenOffCurveKeyWrongTag() (gas: 721344)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -213,7 +213,8 @@\n             revert InvalidStealth();\n         }\n         if (gross == 0) revert ZeroAmount();\n-        fee = gross * FEE_BPS / BPS;\n+        /// BinaryOpMutation(`*` |==> `%`) of: `fee = gross * FEE_BPS / BPS;`\n+        fee = gross%FEE_BPS / BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n         net = gross - fee;\n         if (net < minNet) revert SlippageExceeded();\n"
+ },
+ {
+  "id": "70",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11); counterexample: calldata=0x195250490000000000000000000000000006597489c9a45e96af2fa143afbbc304c3ef040000000000000002044e4982e20f19a5ef389f8c0ded1d",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -213,7 +213,8 @@\n             revert InvalidStealth();\n         }\n         if (gross == 0) revert ZeroAmount();\n-        fee = gross * FEE_BPS / BPS;\n+        /// BinaryOpMutation(`*` |==> `**`) of: `fee = gross * FEE_BPS / BPS;`\n+        fee = gross**FEE_BPS / BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n         net = gross - fee;\n         if (net < minNet) revert SlippageExceeded();\n"
+ },
+ {
+  "id": "71",
+  "status": "KILLED",
+  "killer": "[FAIL: SlippageExceeded()] test_EXPLOIT_announcementSpoofing_fakeTokenOffCurveKeyWrongTag() (gas: 720170)",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -215,7 +215,8 @@\n         if (gross == 0) revert ZeroAmount();\n         fee = gross * FEE_BPS / BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n-        net = gross - fee;\n+        /// DeleteExpressionMutation(`net = gross - fee` |==> `assert(true)`) of: `net = gross - fee;`\n+        assert(true);\n         if (net < minNet) revert SlippageExceeded();\n         if (\n             ephemeralPubKey.length != EPHEMERAL_KEY_LENGTH\n"
+ },
+ {
+  "id": "72",
+  "status": "KILLED",
+  "killer": "[FAIL: SlippageExceeded(); counterexample: calldata=0x19525049051d13440d9dd29f1281db4bfffd9869366c2674d64f01a3e8e5071c03674ed7000000000000000000000000000000000000000b7a2647ca26a1b05fb5743e8d args=[231",
+  "description": "AssignmentMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -215,7 +215,8 @@\n         if (gross == 0) revert ZeroAmount();\n         fee = gross * FEE_BPS / BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n-        net = gross - fee;\n+        /// AssignmentMutation(`gross - fee` |==> `0`) of: `net = gross - fee;`\n+        net = 0;\n         if (net < minNet) revert SlippageExceeded();\n         if (\n             ephemeralPubKey.length != EPHEMERAL_KEY_LENGTH\n"
+ },
+ {
+  "id": "73",
+  "status": "KILLED",
+  "killer": "[FAIL: SlippageExceeded(); counterexample: calldata=0x19525049fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe args=[115",
+  "description": "AssignmentMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -215,7 +215,8 @@\n         if (gross == 0) revert ZeroAmount();\n         fee = gross * FEE_BPS / BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n-        net = gross - fee;\n+        /// AssignmentMutation(`gross - fee` |==> `1`) of: `net = gross - fee;`\n+        net = 1;\n         if (net < minNet) revert SlippageExceeded();\n         if (\n             ephemeralPubKey.length != EPHEMERAL_KEY_LENGTH\n"
+ },
+ {
+  "id": "74",
+  "status": "KILLED",
+  "killer": "[FAIL: InvalidMetadata(); counterexample: calldata=0x195250490000000000000000000000000006597489c9a45e96af2fa143afbbc304c3ef040000000000000002044e4982e20f19a5ef389f8c0ded1da744a895449065d9e0 args=[1415",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -215,7 +215,8 @@\n         if (gross == 0) revert ZeroAmount();\n         fee = gross * FEE_BPS / BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n-        net = gross - fee;\n+        /// BinaryOpMutation(`-` |==> `+`) of: `net = gross - fee;`\n+        net = gross+fee;\n         if (net < minNet) revert SlippageExceeded();\n         if (\n             ephemeralPubKey.length != EPHEMERAL_KEY_LENGTH\n"
+ },
+ {
+  "id": "75",
+  "status": "KILLED",
+  "killer": "[FAIL: InvalidMetadata(); counterexample: calldata=0x19525049000000000000000000000000000b169653f9a26007c47e57c61ffb3a2f09a16f00000000000000000000000000000000000001376ad79b443512bba2d58794a7 args=[2472",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -215,7 +215,8 @@\n         if (gross == 0) revert ZeroAmount();\n         fee = gross * FEE_BPS / BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n-        net = gross - fee;\n+        /// BinaryOpMutation(`-` |==> `*`) of: `net = gross - fee;`\n+        net = gross*fee;\n         if (net < minNet) revert SlippageExceeded();\n         if (\n             ephemeralPubKey.length != EPHEMERAL_KEY_LENGTH\n"
+ },
+ {
+  "id": "76",
+  "status": "KILLED",
+  "killer": "[FAIL: SlippageExceeded(); counterexample: calldata=0x19525049fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe args=[115",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -215,7 +215,8 @@\n         if (gross == 0) revert ZeroAmount();\n         fee = gross * FEE_BPS / BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n-        net = gross - fee;\n+        /// BinaryOpMutation(`-` |==> `/`) of: `net = gross - fee;`\n+        net = gross/fee;\n         if (net < minNet) revert SlippageExceeded();\n         if (\n             ephemeralPubKey.length != EPHEMERAL_KEY_LENGTH\n"
+ },
+ {
+  "id": "77",
+  "status": "KILLED",
+  "killer": "[FAIL: SlippageExceeded(); counterexample: calldata=0x19525049051d13440d9dd29f1281db4bfffd9869366c2674d64f01a3e8e5071c03674ed7000000000000000000000000000000000000000b7a2647ca26a1b05fb5743e8d args=[231",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -215,7 +215,8 @@\n         if (gross == 0) revert ZeroAmount();\n         fee = gross * FEE_BPS / BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n-        net = gross - fee;\n+        /// BinaryOpMutation(`-` |==> `%`) of: `net = gross - fee;`\n+        net = gross%fee;\n         if (net < minNet) revert SlippageExceeded();\n         if (\n             ephemeralPubKey.length != EPHEMERAL_KEY_LENGTH\n"
+ },
+ {
+  "id": "78",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11); counterexample: calldata=0x195250490000000000000000000000000006597489c9a45e96af2fa143afbbc304c3ef040000000000000002044e4982e20f19a5ef389f8c0ded1d",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -215,7 +215,8 @@\n         if (gross == 0) revert ZeroAmount();\n         fee = gross * FEE_BPS / BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n-        net = gross - fee;\n+        /// BinaryOpMutation(`-` |==> `**`) of: `net = gross - fee;`\n+        net = gross**fee;\n         if (net < minNet) revert SlippageExceeded();\n         if (\n             ephemeralPubKey.length != EPHEMERAL_KEY_LENGTH\n"
+ },
+ {
+  "id": "79",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11)] test_EXPLOIT_announcementSpoofing_fakeTokenOffCurveKeyWrongTag() (gas: 720195)",
+  "description": "SwapArgumentsOperatorMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -215,7 +215,8 @@\n         if (gross == 0) revert ZeroAmount();\n         fee = gross * FEE_BPS / BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n-        net = gross - fee;\n+        /// SwapArgumentsOperatorMutation(`gross - fee` |==> `fee - gross`) of: `net = gross - fee;`\n+        net = fee - gross;\n         if (net < minNet) revert SlippageExceeded();\n         if (\n             ephemeralPubKey.length != EPHEMERAL_KEY_LENGTH\n"
+ },
+ {
+  "id": "80",
+  "status": "KILLED",
+  "killer": "[FAIL: SlippageExceeded(); counterexample: calldata=0x19525049051d13440d9dd29f1281db4bfffd9869366c2674d64f01a3e8e5071c03674ed7000000000000000000000000000000000000000b7a2647ca26a1b05fb5743e8d args=[231",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -216,7 +216,8 @@\n         fee = gross * FEE_BPS / BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n         net = gross - fee;\n-        if (net < minNet) revert SlippageExceeded();\n+        /// IfStatementMutation(`net < minNet` |==> `true`) of: `if (net < minNet) revert SlippageExceeded();`\n+        if (true) revert SlippageExceeded();\n         if (\n             ephemeralPubKey.length != EPHEMERAL_KEY_LENGTH\n                 || (ephemeralPubKey[0] != 0x02 && ephemeralPubKey[0] != 0x03)\n"
+ },
+ {
+  "id": "81",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected; counterexample: calldata=0x5984a27d0000000000000000000000000000000000000000000000000000000000002ca900000000000000000000000000000000000000000000000000000000",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -216,7 +216,8 @@\n         fee = gross * FEE_BPS / BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n         net = gross - fee;\n-        if (net < minNet) revert SlippageExceeded();\n+        /// IfStatementMutation(`net < minNet` |==> `false`) of: `if (net < minNet) revert SlippageExceeded();`\n+        if (false) revert SlippageExceeded();\n         if (\n             ephemeralPubKey.length != EPHEMERAL_KEY_LENGTH\n                 || (ephemeralPubKey[0] != 0x02 && ephemeralPubKey[0] != 0x03)\n"
+ },
+ {
+  "id": "82",
+  "status": "KILLED",
+  "killer": "[FAIL: Error != expected error: SlippageExceeded() != InvalidMetadata(); counterexample: calldata=0x46224fd10000000000000000000000000000000000007edd4f94a92bc0623617c5d9b6cd0000000000000000000000000000",
+  "description": "SwapArgumentsOperatorMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -216,7 +216,8 @@\n         fee = gross * FEE_BPS / BPS;\n         // fee < gross for every gross > 0 (25/10_000 < 1), so net > 0 is guaranteed here.\n         net = gross - fee;\n-        if (net < minNet) revert SlippageExceeded();\n+        /// SwapArgumentsOperatorMutation(`net < minNet` |==> `minNet < net`) of: `if (net < minNet) revert SlippageExceeded();`\n+        if (minNet < net) revert SlippageExceeded();\n         if (\n             ephemeralPubKey.length != EPHEMERAL_KEY_LENGTH\n                 || (ephemeralPubKey[0] != 0x02 && ephemeralPubKey[0] != 0x03)\n"
+ },
+ {
+  "id": "83",
+  "status": "KILLED",
+  "killer": "[FAIL: NativeTransferFailed(); counterexample: calldata=0x19525049051d13440d9dd29f1281db4bfffd9869366c2674d64f01a3e8e5071c03674ed7000000000000000000000000000000000000000b7a2647ca26a1b05fb5743e8d args=",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -245,6 +245,7 @@\n         assembly (\"memory-safe\") {\n             ok := call(gas(), to, amount, 0, 0, 0, 0)\n         }\n-        if (!ok) revert NativeTransferFailed();\n+        /// IfStatementMutation(`!ok` |==> `true`) of: `if (!ok) revert NativeTransferFailed();`\n+        if (true) revert NativeTransferFailed();\n     }\n }\n"
+ },
+ {
+  "id": "84",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_EXPLOIT_feeRecipientRejectsNative_dosNativePayments() (gas: 203878)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPayRouter.sol",
+  "diff": "--- original\n+++ mutant\n@@ -245,6 +245,7 @@\n         assembly (\"memory-safe\") {\n             ok := call(gas(), to, amount, 0, 0, 0, 0)\n         }\n-        if (!ok) revert NativeTransferFailed();\n+        /// IfStatementMutation(`!ok` |==> `false`) of: `if (!ok) revert NativeTransferFailed();`\n+        if (false) revert NativeTransferFailed();\n     }\n }\n"
+ }
+]

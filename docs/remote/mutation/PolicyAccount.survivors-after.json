@@ -1,0 +1,42 @@
+[
+ {
+  "id": "128",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed: 0x97DC82e296771252FadEEAb00561707A8B88Dd2D != 0x0000000000000000000000000000000000000000] test_cancelDestination_clearsAllPendingFields() (gas: 239498)",
+  "description": "DeleteExpressionMutation",
+  "file": "src/PolicyAccount.sol",
+  "diff": "--- original\n+++ mutant\n@@ -281,7 +281,8 @@\n     function cancelDestination(bytes32 id, bytes calldata sig) external nonReentrant {\n         if (pendingEffectiveAt == 0 || pendingProposalId != id) revert NoProposal();\n         _checkOwner(keccak256(abi.encode(CANCEL_DESTINATION_TYPEHASH, id)), sig);\n-        delete pendingDestination;\n+        /// DeleteExpressionMutation(`delete pendingDestination` |==> `assert(true)`) of: `delete pendingDestination;`\n+        assert(true);\n         delete pendingEffectiveAt;\n         delete pendingProposalId;\n         // Nonreentrant; the only \"external call\" before this point is the ecrecover precompile.\n"
+ },
+ {
+  "id": "133",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed: 0xd83d51f8a758155b044b672f3eabf04a2d4bef5d754390aecdffbf350498d45c != 0x0000000000000000000000000000000000000000000000000000000000000000] test_cancelDestination_clearsAllPendi",
+  "description": "DeleteExpressionMutation",
+  "file": "src/PolicyAccount.sol",
+  "diff": "--- original\n+++ mutant\n@@ -283,7 +283,8 @@\n         _checkOwner(keccak256(abi.encode(CANCEL_DESTINATION_TYPEHASH, id)), sig);\n         delete pendingDestination;\n         delete pendingEffectiveAt;\n-        delete pendingProposalId;\n+        /// DeleteExpressionMutation(`delete pendingProposalId` |==> `assert(true)`) of: `delete pendingProposalId;`\n+        assert(true);\n         // Nonreentrant; the only \"external call\" before this point is the ecrecover precompile.\n         // forge-lint: disable-next-line(reentrancy-events)\n         emit DestinationChangeCancelled(id);\n"
+ },
+ {
+  "id": "134",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed: 0xd83d51f8a758155b044b672f3eabf04a2d4bef5d754390aecdffbf350498d45c != 0x0000000000000000000000000000000000000000000000000000000000000000] test_cancelDestination_clearsAllPendi",
+  "description": "UnaryOperatorMutation",
+  "file": "src/PolicyAccount.sol",
+  "diff": "--- original\n+++ mutant\n@@ -283,7 +283,8 @@\n         _checkOwner(keccak256(abi.encode(CANCEL_DESTINATION_TYPEHASH, id)), sig);\n         delete pendingDestination;\n         delete pendingEffectiveAt;\n-        delete pendingProposalId;\n+        /// UnaryOperatorMutation(`delete` |==> `~`) of: `delete pendingProposalId;`\n+        ~ pendingProposalId;\n         // Nonreentrant; the only \"external call\" before this point is the ecrecover precompile.\n         // forge-lint: disable-next-line(reentrancy-events)\n         emit DestinationChangeCancelled(id);\n"
+ },
+ {
+  "id": "194",
+  "status": "KILLED",
+  "killer": "[FAIL: NonceAlreadyUsed()] test_nonce_lowerFreshNonceAcceptedAfterHigherInSameWord() (gas: 240654)",
+  "description": "BinaryOpMutation",
+  "file": "src/PolicyAccount.sol",
+  "diff": "--- original\n+++ mutant\n@@ -334,7 +334,8 @@\n     function _useNonce(uint256 nonce) private {\n         uint256 bit = 1 << (nonce & 0xff);\n         uint256 word = _nonceBitmap[nonce >> 8];\n-        if (word & bit != 0) revert NonceAlreadyUsed();\n+        /// BinaryOpMutation(`&` |==> `/`) of: `if (word & bit != 0) revert NonceAlreadyUsed();`\n+        if (word/bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[nonce >> 8] = word | bit;\n     }\n \n"
+ },
+ {
+  "id": "207",
+  "status": "SURVIVED",
+  "killer": "",
+  "description": "BinaryOpMutation",
+  "file": "src/PolicyAccount.sol",
+  "diff": "--- original\n+++ mutant\n@@ -335,7 +335,8 @@\n         uint256 bit = 1 << (nonce & 0xff);\n         uint256 word = _nonceBitmap[nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n-        _nonceBitmap[nonce >> 8] = word | bit;\n+        /// BinaryOpMutation(`|` |==> `+`) of: `_nonceBitmap[nonce >> 8] = word | bit;`\n+        _nonceBitmap[nonce >> 8] = word+bit;\n     }\n \n     /// @dev Books `amount` against the two-bucket window of `token`; reverts if it would exceed `limit`.\n"
+ }
+]

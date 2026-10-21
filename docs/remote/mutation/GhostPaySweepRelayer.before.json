@@ -1,0 +1,922 @@
+[
+ {
+  "id": "1",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_replay_reverts() (gas: 378899)",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -47,7 +47,8 @@\n         external\n         nonReentrant\n     {\n-        _authorize(s, sweepSig);\n+        /// DeleteExpressionMutation(`_authorize(s, sweepSig)` |==> `assert(true)`) of: `_authorize(s, sweepSig);`\n+        assert(true);\n         if (permit.value < s.amount) revert PermitValueTooLow();\n         // A front-run permit consumes the owner's permit nonce and makes this call revert; ignoring the\n         // failure is safe because the transfer reverts unless the allowance is sufficient.\n"
+ },
+ {
+  "id": "2",
+  "status": "KILLED",
+  "killer": "[FAIL: PermitValueTooLow()] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 473703)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -48,7 +48,8 @@\n         nonReentrant\n     {\n         _authorize(s, sweepSig);\n-        if (permit.value < s.amount) revert PermitValueTooLow();\n+        /// IfStatementMutation(`permit.value < s.amount` |==> `true`) of: `if (permit.value < s.amount) revert PermitValueTooLow();`\n+        if (true) revert PermitValueTooLow();\n         // A front-run permit consumes the owner's permit nonce and makes this call revert; ignoring the\n         // failure is safe because the transfer reverts unless the allowance is sufficient.\n         try IERC20Permit(s.token)\n"
+ },
+ {
+  "id": "3",
+  "status": "KILLED",
+  "killer": "[FAIL: Error != expected error: ERC20InsufficientAllowance(0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f, 4999999 [4.999e6], 5000000 [5e6]) != PermitValueTooLow()] test_permitValueTooLow_reverts() (gas: ",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -48,7 +48,8 @@\n         nonReentrant\n     {\n         _authorize(s, sweepSig);\n-        if (permit.value < s.amount) revert PermitValueTooLow();\n+        /// IfStatementMutation(`permit.value < s.amount` |==> `false`) of: `if (permit.value < s.amount) revert PermitValueTooLow();`\n+        if (false) revert PermitValueTooLow();\n         // A front-run permit consumes the owner's permit nonce and makes this call revert; ignoring the\n         // failure is safe because the transfer reverts unless the allowance is sufficient.\n         try IERC20Permit(s.token)\n"
+ },
+ {
+  "id": "4",
+  "status": "KILLED",
+  "killer": "[FAIL: PermitValueTooLow()] test_residualAllowanceAfterPermitSweep() (gas: 112395)",
+  "description": "SwapArgumentsOperatorMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -48,7 +48,8 @@\n         nonReentrant\n     {\n         _authorize(s, sweepSig);\n-        if (permit.value < s.amount) revert PermitValueTooLow();\n+        /// SwapArgumentsOperatorMutation(`permit.value < s.amount` |==> `s.amount < permit.value`) of: `if (permit.value < s.amount) revert PermitValueTooLow();`\n+        if (s.amount < permit.value) revert PermitValueTooLow();\n         // A front-run permit consumes the owner's permit nonce and makes this call revert; ignoring the\n         // failure is safe because the transfer reverts unless the allowance is sufficient.\n         try IERC20Permit(s.token)\n"
+ },
+ {
+  "id": "5",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_permitInvalid_noAllowance_reverts() (gas: 140236)",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -56,7 +56,8 @@\n                 s.owner, address(this), permit.value, permit.deadline, permit.v, permit.r, permit.s\n             ) {}\n             catch {}\n-        _execute(s);\n+        /// DeleteExpressionMutation(`_execute(s)` |==> `assert(true)`) of: `_execute(s);`\n+        assert(true);\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "6",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed: 336063425950 != 336063425916] invariant_balancesMatchSignedOrders",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -61,7 +61,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function sweep(Sweep calldata s, bytes calldata sweepSig) external nonReentrant {\n-        _authorize(s, sweepSig);\n+        /// DeleteExpressionMutation(`_authorize(s, sweepSig)` |==> `assert(true)`) of: `_authorize(s, sweepSig);`\n+        assert(true);\n         _execute(s);\n     }\n \n"
+ },
+ {
+  "id": "7",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed: 0 != 3886304758; counterexample: calldata=0x0690ab520000000000000000000000000000000000000000003d9a64bae7ae33c7dd412b000000000000000000000000000000000000000000000000000000000ae",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -62,7 +62,8 @@\n     /// @inheritdoc IGhostPaySweepRelayer\n     function sweep(Sweep calldata s, bytes calldata sweepSig) external nonReentrant {\n         _authorize(s, sweepSig);\n-        _execute(s);\n+        /// DeleteExpressionMutation(`_execute(s)` |==> `assert(true)`) of: `_execute(s);`\n+        assert(true);\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "8",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed] test_nonceBitmap_isUnorderedAndPerOwner() (gas: 259365)",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// DeleteExpressionMutation(`used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0` |==> `assert(true)`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        assert(true);\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "9",
+  "status": "KILLED",
+  "killer": "[FAIL: revert rolled the nonce back] test_EXPLOIT_ownerDodgesFeeAndWastesRelayerGas() (gas: 389609)",
+  "description": "AssignmentMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// AssignmentMutation(`_nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0` |==> `true`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = true;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "10",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed] test_nonceMaxUint_works_once() (gas: 231401)",
+  "description": "AssignmentMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// AssignmentMutation(`_nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0` |==> `false`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = false;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "11",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed] test_nonceBitmap_isUnorderedAndPerOwner() (gas: 68441)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// BinaryOpMutation(`&` |==> `+`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce >> 8]+(1 << (nonce & 0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "12",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11)] test_EXPLOIT_ownerDodgesFeeAndWastesRelayerGas() (gas: 388596)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// BinaryOpMutation(`&` |==> `-`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce >> 8]-(1 << (nonce & 0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "13",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11)] test_nonceMaxUint_works_once() (gas: 233051)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// BinaryOpMutation(`&` |==> `*`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce >> 8]*(1 << (nonce & 0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "14",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed: true != false] invariant_nonceSingleUse",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// BinaryOpMutation(`&` |==> `/`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce >> 8]/(1 << (nonce & 0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "15",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed] test_nonceMaxUint_works_once() (gas: 236125)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// BinaryOpMutation(`&` |==> `%`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce >> 8]%(1 << (nonce & 0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "16",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11)] test_nonceMaxUint_works_once() (gas: 233318)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// BinaryOpMutation(`&` |==> `**`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce >> 8]**(1 << (nonce & 0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "17",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11)] test_nonceMaxUint_works_once() (gas: 81305)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// BinaryOpMutation(`>>` |==> `+`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce+8] & (1 << (nonce & 0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "18",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11)] test_EXPLOIT_ownerDodgesFeeAndWastesRelayerGas() (gas: 386421)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// BinaryOpMutation(`>>` |==> `-`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce-8] & (1 << (nonce & 0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "19",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed: false != true] invariant_nonceSingleUse",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// BinaryOpMutation(`>>` |==> `*`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce*8] & (1 << (nonce & 0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "20",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed] test_nonceMaxUint_works_once() (gas: 236133)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// BinaryOpMutation(`>>` |==> `/`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce/8] & (1 << (nonce & 0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "21",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed] test_nonceMaxUint_works_once() (gas: 236133)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// BinaryOpMutation(`>>` |==> `%`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce%8] & (1 << (nonce & 0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "22",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11)] test_nonceMaxUint_works_once() (gas: 81550)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// BinaryOpMutation(`>>` |==> `**`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce**8] & (1 << (nonce & 0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "23",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed: false != true] invariant_nonceSingleUse",
+  "description": "SwapArgumentsOperatorMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// SwapArgumentsOperatorMutation(`nonce >> 8` |==> `8 >> nonce`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][8 >> nonce] & (1 << (nonce & 0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "24",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed] test_nonceMaxUint_works_once() (gas: 236183)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// BinaryOpMutation(`<<` |==> `+`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce >> 8] & (1+(nonce & 0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "25",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11)] invariant_nonceSingleUse",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// BinaryOpMutation(`<<` |==> `-`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce >> 8] & (1-(nonce & 0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "26",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed] test_nonceBitmap_isUnorderedAndPerOwner() (gas: 273729)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// BinaryOpMutation(`<<` |==> `*`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce >> 8] & (1*(nonce & 0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "27",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: division or modulo by zero (0x12)] invariant_nonceSingleUse",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// BinaryOpMutation(`<<` |==> `/`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce >> 8] & (1/(nonce & 0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "28",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed] test_nonceMaxUint_works_once() (gas: 236151)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// BinaryOpMutation(`<<` |==> `%`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce >> 8] & (1%(nonce & 0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "29",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed] test_nonceBitmap_isUnorderedAndPerOwner() (gas: 780203)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// BinaryOpMutation(`<<` |==> `**`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce >> 8] & (1**(nonce & 0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "30",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed] test_nonceBitmap_isUnorderedAndPerOwner() (gas: 273051)",
+  "description": "SwapArgumentsOperatorMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// SwapArgumentsOperatorMutation(`1 << (nonce & 0xff)` |==> `(nonce & 0xff) << 1`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce >> 8] & ((nonce & 0xff) << 1) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "31",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11)] test_nonceMaxUint_works_once() (gas: 81197)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// BinaryOpMutation(`&` |==> `+`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce+0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "32",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11)] invariant_nonceSingleUse",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// BinaryOpMutation(`&` |==> `-`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce-0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "33",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11)] test_nonceMaxUint_works_once() (gas: 81213)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// BinaryOpMutation(`&` |==> `*`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce*0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "34",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed] test_nonceMaxUint_works_once() (gas: 236163)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// BinaryOpMutation(`&` |==> `/`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce/0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "35",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed] test_nonceBitmap_isUnorderedAndPerOwner() (gas: 517773)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// BinaryOpMutation(`&` |==> `%`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce%0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "36",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11)] test_nonceMaxUint_works_once() (gas: 81442)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -67,7 +67,8 @@\n \n     /// @inheritdoc IGhostPaySweepRelayer\n     function nonceUsed(address owner, uint256 nonce) external view returns (bool used) {\n-        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;\n+        /// BinaryOpMutation(`&` |==> `**`) of: `used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce & 0xff)) != 0;`\n+        used = _nonceBitmap[owner][nonce >> 8] & (1 << (nonce**0xff)) != 0;\n     }\n \n     /// @inheritdoc IGhostPaySweepRelayer\n"
+ },
+ {
+  "id": "37",
+  "status": "KILLED",
+  "killer": "[FAIL: relayer.DOMAIN_SEPARATOR is zero] test_deployScriptScenarios() (gas: 6520498)",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -73,7 +73,8 @@\n     /// @inheritdoc IGhostPaySweepRelayer\n     // forge-lint: disable-next-line(mixed-case-function)\n     function DOMAIN_SEPARATOR() external view returns (bytes32 separator) {\n-        separator = _domainSeparatorV4();\n+        /// DeleteExpressionMutation(`separator = _domainSeparatorV4()` |==> `assert(true)`) of: `separator = _domainSeparatorV4();`\n+        assert(true);\n     }\n \n     /// @dev Validates the order, verifies the signature and consumes the nonce (before any external call).\n"
+ },
+ {
+  "id": "38",
+  "status": "KILLED",
+  "killer": "[FAIL: relayer.DOMAIN_SEPARATOR is zero] test_deployScriptScenarios() (gas: 6514254)",
+  "description": "AssignmentMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -73,7 +73,8 @@\n     /// @inheritdoc IGhostPaySweepRelayer\n     // forge-lint: disable-next-line(mixed-case-function)\n     function DOMAIN_SEPARATOR() external view returns (bytes32 separator) {\n-        separator = _domainSeparatorV4();\n+        /// AssignmentMutation(`_domainSeparatorV4()` |==> `0`) of: `separator = _domainSeparatorV4();`\n+        separator = 0;\n     }\n \n     /// @dev Validates the order, verifies the signature and consumes the nonce (before any external call).\n"
+ },
+ {
+  "id": "39",
+  "status": "KILLED",
+  "killer": "[FAIL: Error != expected error: Expired() != InvalidSignature(); counterexample: calldata=0xba47bbf20000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -80,7 +80,8 @@\n     function _authorize(Sweep calldata s, bytes calldata sweepSig) private {\n         // Deadline semantics are inherent to the product; second-level validator drift is acceptable.\n         // forge-lint: disable-next-line(block-timestamp)\n-        if (block.timestamp > s.deadline) revert Expired();\n+        /// IfStatementMutation(`block.timestamp > s.deadline` |==> `true`) of: `if (block.timestamp > s.deadline) revert Expired();`\n+        if (true) revert Expired();\n         if (s.amount <= s.fee) revert InvalidAmount();\n         if (\n             s.destination == address(0) || s.feeTo == address(0) || s.owner == address(0)\n"
+ },
+ {
+  "id": "40",
+  "status": "KILLED",
+  "killer": "[FAIL: Error != expected error: ERC20InsufficientAllowance(0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f, 0, 995000000 [9.95e8]) != Expired()] test_expired_reverts() (gas: 103712)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -80,7 +80,8 @@\n     function _authorize(Sweep calldata s, bytes calldata sweepSig) private {\n         // Deadline semantics are inherent to the product; second-level validator drift is acceptable.\n         // forge-lint: disable-next-line(block-timestamp)\n-        if (block.timestamp > s.deadline) revert Expired();\n+        /// IfStatementMutation(`block.timestamp > s.deadline` |==> `false`) of: `if (block.timestamp > s.deadline) revert Expired();`\n+        if (false) revert Expired();\n         if (s.amount <= s.fee) revert InvalidAmount();\n         if (\n             s.destination == address(0) || s.feeTo == address(0) || s.owner == address(0)\n"
+ },
+ {
+  "id": "41",
+  "status": "KILLED",
+  "killer": "[FAIL: Expired()] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 443558)",
+  "description": "SwapArgumentsOperatorMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -80,7 +80,8 @@\n     function _authorize(Sweep calldata s, bytes calldata sweepSig) private {\n         // Deadline semantics are inherent to the product; second-level validator drift is acceptable.\n         // forge-lint: disable-next-line(block-timestamp)\n-        if (block.timestamp > s.deadline) revert Expired();\n+        /// SwapArgumentsOperatorMutation(`block.timestamp > s.deadline` |==> `s.deadline > block.timestamp`) of: `if (block.timestamp > s.deadline) revert Expired();`\n+        if (s.deadline > block.timestamp) revert Expired();\n         if (s.amount <= s.fee) revert InvalidAmount();\n         if (\n             s.destination == address(0) || s.feeTo == address(0) || s.owner == address(0)\n"
+ },
+ {
+  "id": "42",
+  "status": "KILLED",
+  "killer": "[FAIL: InvalidAmount()] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 443559)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -81,7 +81,8 @@\n         // Deadline semantics are inherent to the product; second-level validator drift is acceptable.\n         // forge-lint: disable-next-line(block-timestamp)\n         if (block.timestamp > s.deadline) revert Expired();\n-        if (s.amount <= s.fee) revert InvalidAmount();\n+        /// IfStatementMutation(`s.amount <= s.fee` |==> `true`) of: `if (s.amount <= s.fee) revert InvalidAmount();`\n+        if (true) revert InvalidAmount();\n         if (\n             s.destination == address(0) || s.feeTo == address(0) || s.owner == address(0)\n                 || s.token == address(0)\n"
+ },
+ {
+  "id": "43",
+  "status": "KILLED",
+  "killer": "[FAIL: Error != expected error: InvalidSignature() != InvalidAmount()] test_amountNotGreaterThanFee_reverts() (gas: 64495)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -81,7 +81,8 @@\n         // Deadline semantics are inherent to the product; second-level validator drift is acceptable.\n         // forge-lint: disable-next-line(block-timestamp)\n         if (block.timestamp > s.deadline) revert Expired();\n-        if (s.amount <= s.fee) revert InvalidAmount();\n+        /// IfStatementMutation(`s.amount <= s.fee` |==> `false`) of: `if (s.amount <= s.fee) revert InvalidAmount();`\n+        if (false) revert InvalidAmount();\n         if (\n             s.destination == address(0) || s.feeTo == address(0) || s.owner == address(0)\n                 || s.token == address(0)\n"
+ },
+ {
+  "id": "44",
+  "status": "KILLED",
+  "killer": "[FAIL: InvalidAmount()] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 443599)",
+  "description": "SwapArgumentsOperatorMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -81,7 +81,8 @@\n         // Deadline semantics are inherent to the product; second-level validator drift is acceptable.\n         // forge-lint: disable-next-line(block-timestamp)\n         if (block.timestamp > s.deadline) revert Expired();\n-        if (s.amount <= s.fee) revert InvalidAmount();\n+        /// SwapArgumentsOperatorMutation(`s.amount <= s.fee` |==> `s.fee <= s.amount`) of: `if (s.amount <= s.fee) revert InvalidAmount();`\n+        if (s.fee <= s.amount) revert InvalidAmount();\n         if (\n             s.destination == address(0) || s.feeTo == address(0) || s.owner == address(0)\n                 || s.token == address(0)\n"
+ },
+ {
+  "id": "45",
+  "status": "KILLED",
+  "killer": "[FAIL: InvalidSignature(); counterexample: calldata=0x0690ab520000000000000000000000000000000000000000003d9a64bae7ae33c7dd412b000000000000000000000000000000000000000000000000000000000aed6b350000000000",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -106,7 +106,8 @@\n                 )\n             )\n         );\n-        if (ECDSA.recover(digest, sweepSig) != s.owner) revert InvalidSignature();\n+        /// IfStatementMutation(`ECDSA.recover(digest, sweepSig) != s.owner` |==> `true`) of: `if (ECDSA.recover(digest, sweepSig) != s.owner) revert InvalidSignature();`\n+        if (true) revert InvalidSignature();\n \n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n"
+ },
+ {
+  "id": "46",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_crossRelayerAndCrossChainReplayRejected() (gas: 261429)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -106,7 +106,8 @@\n                 )\n             )\n         );\n-        if (ECDSA.recover(digest, sweepSig) != s.owner) revert InvalidSignature();\n+        /// IfStatementMutation(`ECDSA.recover(digest, sweepSig) != s.owner` |==> `false`) of: `if (ECDSA.recover(digest, sweepSig) != s.owner) revert InvalidSignature();`\n+        if (false) revert InvalidSignature();\n \n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n"
+ },
+ {
+  "id": "47",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed: true != false] invariant_nonceSingleUse",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -108,7 +108,8 @@\n         );\n         if (ECDSA.recover(digest, sweepSig) != s.owner) revert InvalidSignature();\n \n-        uint256 bit = 1 << (s.nonce & 0xff);\n+        /// BinaryOpMutation(`<<` |==> `+`) of: `uint256 bit = 1 << (s.nonce & 0xff);`\n+        uint256 bit = 1+(s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n"
+ },
+ {
+  "id": "48",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11)] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 450899)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -108,7 +108,8 @@\n         );\n         if (ECDSA.recover(digest, sweepSig) != s.owner) revert InvalidSignature();\n \n-        uint256 bit = 1 << (s.nonce & 0xff);\n+        /// BinaryOpMutation(`<<` |==> `-`) of: `uint256 bit = 1 << (s.nonce & 0xff);`\n+        uint256 bit = 1-(s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n"
+ },
+ {
+  "id": "49",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed] test_nonceMaxUint_works_once() (gas: 236090)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -108,7 +108,8 @@\n         );\n         if (ECDSA.recover(digest, sweepSig) != s.owner) revert InvalidSignature();\n \n-        uint256 bit = 1 << (s.nonce & 0xff);\n+        /// BinaryOpMutation(`<<` |==> `*`) of: `uint256 bit = 1 << (s.nonce & 0xff);`\n+        uint256 bit = 1*(s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n"
+ },
+ {
+  "id": "50",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_frontRunCopy_paysOriginalFeeTo_noDiversion() (gas: 311511)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -108,7 +108,8 @@\n         );\n         if (ECDSA.recover(digest, sweepSig) != s.owner) revert InvalidSignature();\n \n-        uint256 bit = 1 << (s.nonce & 0xff);\n+        /// BinaryOpMutation(`<<` |==> `/`) of: `uint256 bit = 1 << (s.nonce & 0xff);`\n+        uint256 bit = 1/(s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n"
+ },
+ {
+  "id": "51",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed: false != true] invariant_nonceSingleUse",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -108,7 +108,8 @@\n         );\n         if (ECDSA.recover(digest, sweepSig) != s.owner) revert InvalidSignature();\n \n-        uint256 bit = 1 << (s.nonce & 0xff);\n+        /// BinaryOpMutation(`<<` |==> `%`) of: `uint256 bit = 1 << (s.nonce & 0xff);`\n+        uint256 bit = 1%(s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n"
+ },
+ {
+  "id": "52",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed: true != false] invariant_nonceSingleUse",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -108,7 +108,8 @@\n         );\n         if (ECDSA.recover(digest, sweepSig) != s.owner) revert InvalidSignature();\n \n-        uint256 bit = 1 << (s.nonce & 0xff);\n+        /// BinaryOpMutation(`<<` |==> `**`) of: `uint256 bit = 1 << (s.nonce & 0xff);`\n+        uint256 bit = 1**(s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n"
+ },
+ {
+  "id": "53",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed] test_nonceMaxUint_works_once() (gas: 236001)",
+  "description": "SwapArgumentsOperatorMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -108,7 +108,8 @@\n         );\n         if (ECDSA.recover(digest, sweepSig) != s.owner) revert InvalidSignature();\n \n-        uint256 bit = 1 << (s.nonce & 0xff);\n+        /// SwapArgumentsOperatorMutation(`1 << (s.nonce & 0xff)` |==> `(s.nonce & 0xff) << 1`) of: `uint256 bit = 1 << (s.nonce & 0xff);`\n+        uint256 bit = (s.nonce & 0xff) << 1;\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n"
+ },
+ {
+  "id": "54",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed: false != true] invariant_nonceSingleUse",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -108,7 +108,8 @@\n         );\n         if (ECDSA.recover(digest, sweepSig) != s.owner) revert InvalidSignature();\n \n-        uint256 bit = 1 << (s.nonce & 0xff);\n+        /// BinaryOpMutation(`&` |==> `+`) of: `uint256 bit = 1 << (s.nonce & 0xff);`\n+        uint256 bit = 1 << (s.nonce+0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n"
+ },
+ {
+  "id": "55",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11)] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 450893)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -108,7 +108,8 @@\n         );\n         if (ECDSA.recover(digest, sweepSig) != s.owner) revert InvalidSignature();\n \n-        uint256 bit = 1 << (s.nonce & 0xff);\n+        /// BinaryOpMutation(`&` |==> `-`) of: `uint256 bit = 1 << (s.nonce & 0xff);`\n+        uint256 bit = 1 << (s.nonce-0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n"
+ },
+ {
+  "id": "56",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed: false != true] invariant_nonceSingleUse",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -108,7 +108,8 @@\n         );\n         if (ECDSA.recover(digest, sweepSig) != s.owner) revert InvalidSignature();\n \n-        uint256 bit = 1 << (s.nonce & 0xff);\n+        /// BinaryOpMutation(`&` |==> `*`) of: `uint256 bit = 1 << (s.nonce & 0xff);`\n+        uint256 bit = 1 << (s.nonce*0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n"
+ },
+ {
+  "id": "57",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed] test_nonceMaxUint_works_once() (gas: 216161)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -108,7 +108,8 @@\n         );\n         if (ECDSA.recover(digest, sweepSig) != s.owner) revert InvalidSignature();\n \n-        uint256 bit = 1 << (s.nonce & 0xff);\n+        /// BinaryOpMutation(`&` |==> `/`) of: `uint256 bit = 1 << (s.nonce & 0xff);`\n+        uint256 bit = 1 << (s.nonce/0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n"
+ },
+ {
+  "id": "58",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed] test_nonceMaxUint_works_once() (gas: 236061)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -108,7 +108,8 @@\n         );\n         if (ECDSA.recover(digest, sweepSig) != s.owner) revert InvalidSignature();\n \n-        uint256 bit = 1 << (s.nonce & 0xff);\n+        /// BinaryOpMutation(`&` |==> `%`) of: `uint256 bit = 1 << (s.nonce & 0xff);`\n+        uint256 bit = 1 << (s.nonce%0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n"
+ },
+ {
+  "id": "59",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11)] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 451823)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -108,7 +108,8 @@\n         );\n         if (ECDSA.recover(digest, sweepSig) != s.owner) revert InvalidSignature();\n \n-        uint256 bit = 1 << (s.nonce & 0xff);\n+        /// BinaryOpMutation(`&` |==> `**`) of: `uint256 bit = 1 << (s.nonce & 0xff);`\n+        uint256 bit = 1 << (s.nonce**0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n"
+ },
+ {
+  "id": "60",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_frontRunCopy_paysOriginalFeeTo_noDiversion() (gas: 335665)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -109,7 +109,8 @@\n         if (ECDSA.recover(digest, sweepSig) != s.owner) revert InvalidSignature();\n \n         uint256 bit = 1 << (s.nonce & 0xff);\n-        uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n+        /// BinaryOpMutation(`>>` |==> `+`) of: `uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];`\n+        uint256 word = _nonceBitmap[s.owner][s.nonce+8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n     }\n"
+ },
+ {
+  "id": "61",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11); counterexample: calldata=0x0690ab52000000000000000000000000000000000000000000000152a90ebfbb2325aa310000000000000000000000000000000000000000ffffff",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -109,7 +109,8 @@\n         if (ECDSA.recover(digest, sweepSig) != s.owner) revert InvalidSignature();\n \n         uint256 bit = 1 << (s.nonce & 0xff);\n-        uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n+        /// BinaryOpMutation(`>>` |==> `-`) of: `uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];`\n+        uint256 word = _nonceBitmap[s.owner][s.nonce-8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n     }\n"
+ },
+ {
+  "id": "62",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_frontRunCopy_paysOriginalFeeTo_noDiversion() (gas: 335697)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -109,7 +109,8 @@\n         if (ECDSA.recover(digest, sweepSig) != s.owner) revert InvalidSignature();\n \n         uint256 bit = 1 << (s.nonce & 0xff);\n-        uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n+        /// BinaryOpMutation(`>>` |==> `*`) of: `uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];`\n+        uint256 word = _nonceBitmap[s.owner][s.nonce*8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n     }\n"
+ },
+ {
+  "id": "63",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_frontRunCopy_paysOriginalFeeTo_noDiversion() (gas: 335633)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -109,7 +109,8 @@\n         if (ECDSA.recover(digest, sweepSig) != s.owner) revert InvalidSignature();\n \n         uint256 bit = 1 << (s.nonce & 0xff);\n-        uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n+        /// BinaryOpMutation(`>>` |==> `/`) of: `uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];`\n+        uint256 word = _nonceBitmap[s.owner][s.nonce/8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n     }\n"
+ },
+ {
+  "id": "64",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_frontRunCopy_paysOriginalFeeTo_noDiversion() (gas: 335633)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -109,7 +109,8 @@\n         if (ECDSA.recover(digest, sweepSig) != s.owner) revert InvalidSignature();\n \n         uint256 bit = 1 << (s.nonce & 0xff);\n-        uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n+        /// BinaryOpMutation(`>>` |==> `%`) of: `uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];`\n+        uint256 word = _nonceBitmap[s.owner][s.nonce%8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n     }\n"
+ },
+ {
+  "id": "65",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_frontRunCopy_paysOriginalFeeTo_noDiversion() (gas: 336171)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -109,7 +109,8 @@\n         if (ECDSA.recover(digest, sweepSig) != s.owner) revert InvalidSignature();\n \n         uint256 bit = 1 << (s.nonce & 0xff);\n-        uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n+        /// BinaryOpMutation(`>>` |==> `**`) of: `uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];`\n+        uint256 word = _nonceBitmap[s.owner][s.nonce**8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n     }\n"
+ },
+ {
+  "id": "66",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_nonceMaxUint_works_once() (gas: 337675)",
+  "description": "SwapArgumentsOperatorMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -109,7 +109,8 @@\n         if (ECDSA.recover(digest, sweepSig) != s.owner) revert InvalidSignature();\n \n         uint256 bit = 1 << (s.nonce & 0xff);\n-        uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n+        /// SwapArgumentsOperatorMutation(`s.nonce >> 8` |==> `8 >> s.nonce`) of: `uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];`\n+        uint256 word = _nonceBitmap[s.owner][8 >> s.nonce];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n     }\n"
+ },
+ {
+  "id": "67",
+  "status": "KILLED",
+  "killer": "[FAIL: NonceAlreadyUsed()] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 453321)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -110,7 +110,8 @@\n \n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n-        if (word & bit != 0) revert NonceAlreadyUsed();\n+        /// IfStatementMutation(`word & bit != 0` |==> `true`) of: `if (word & bit != 0) revert NonceAlreadyUsed();`\n+        if (true) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n     }\n \n"
+ },
+ {
+  "id": "68",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_frontRunCopy_paysOriginalFeeTo_noDiversion() (gas: 331245)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -110,7 +110,8 @@\n \n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n-        if (word & bit != 0) revert NonceAlreadyUsed();\n+        /// IfStatementMutation(`word & bit != 0` |==> `false`) of: `if (word & bit != 0) revert NonceAlreadyUsed();`\n+        if (false) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n     }\n \n"
+ },
+ {
+  "id": "69",
+  "status": "KILLED",
+  "killer": "[FAIL: NonceAlreadyUsed()] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 453412)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -110,7 +110,8 @@\n \n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n-        if (word & bit != 0) revert NonceAlreadyUsed();\n+        /// BinaryOpMutation(`&` |==> `+`) of: `if (word & bit != 0) revert NonceAlreadyUsed();`\n+        if (word+bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n     }\n \n"
+ },
+ {
+  "id": "70",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11)] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 453377)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -110,7 +110,8 @@\n \n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n-        if (word & bit != 0) revert NonceAlreadyUsed();\n+        /// BinaryOpMutation(`&` |==> `-`) of: `if (word & bit != 0) revert NonceAlreadyUsed();`\n+        if (word-bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n     }\n \n"
+ },
+ {
+  "id": "71",
+  "status": "KILLED",
+  "killer": "[FAIL: Error != expected error: panic: arithmetic underflow or overflow (0x11) != NonceAlreadyUsed()] test_nonceMaxUint_works_once() (gas: 294757)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -110,7 +110,8 @@\n \n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n-        if (word & bit != 0) revert NonceAlreadyUsed();\n+        /// BinaryOpMutation(`&` |==> `*`) of: `if (word & bit != 0) revert NonceAlreadyUsed();`\n+        if (word*bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n     }\n \n"
+ },
+ {
+  "id": "72",
+  "status": "SURVIVED",
+  "killer": "",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -110,7 +110,8 @@\n \n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n-        if (word & bit != 0) revert NonceAlreadyUsed();\n+        /// BinaryOpMutation(`&` |==> `/`) of: `if (word & bit != 0) revert NonceAlreadyUsed();`\n+        if (word/bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n     }\n \n"
+ },
+ {
+  "id": "73",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_frontRunCopy_paysOriginalFeeTo_noDiversion() (gas: 331397)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -110,7 +110,8 @@\n \n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n-        if (word & bit != 0) revert NonceAlreadyUsed();\n+        /// BinaryOpMutation(`&` |==> `%`) of: `if (word & bit != 0) revert NonceAlreadyUsed();`\n+        if (word%bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n     }\n \n"
+ },
+ {
+  "id": "74",
+  "status": "KILLED",
+  "killer": "[FAIL: Error != expected error: panic: arithmetic underflow or overflow (0x11) != NonceAlreadyUsed()] test_frontRunCopy_paysOriginalFeeTo_noDiversion() (gas: 293338)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -110,7 +110,8 @@\n \n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n-        if (word & bit != 0) revert NonceAlreadyUsed();\n+        /// BinaryOpMutation(`&` |==> `**`) of: `if (word & bit != 0) revert NonceAlreadyUsed();`\n+        if (word**bit != 0) revert NonceAlreadyUsed();\n         _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n     }\n \n"
+ },
+ {
+  "id": "75",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_frontRunCopy_paysOriginalFeeTo_noDiversion() (gas: 310411)",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -111,7 +111,8 @@\n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n-        _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n+        /// DeleteExpressionMutation(`_nonceBitmap[s.owner][s.nonce >> 8] = word | bit` |==> `assert(true)`) of: `_nonceBitmap[s.owner][s.nonce >> 8] = word | bit;`\n+        assert(true);\n     }\n \n     /// @dev Moves `amount - fee` to the destination and `fee` to `feeTo`, verifying exact balance deltas.\n"
+ },
+ {
+  "id": "76",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_frontRunCopy_paysOriginalFeeTo_noDiversion() (gas: 311385)",
+  "description": "AssignmentMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -111,7 +111,8 @@\n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n-        _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n+        /// AssignmentMutation(`word | bit` |==> `0`) of: `_nonceBitmap[s.owner][s.nonce >> 8] = word | bit;`\n+        _nonceBitmap[s.owner][s.nonce >> 8] = 0;\n     }\n \n     /// @dev Moves `amount - fee` to the destination and `fee` to `feeTo`, verifying exact balance deltas.\n"
+ },
+ {
+  "id": "77",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_frontRunCopy_paysOriginalFeeTo_noDiversion() (gas: 331285)",
+  "description": "AssignmentMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -111,7 +111,8 @@\n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n-        _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n+        /// AssignmentMutation(`word | bit` |==> `1`) of: `_nonceBitmap[s.owner][s.nonce >> 8] = word | bit;`\n+        _nonceBitmap[s.owner][s.nonce >> 8] = 1;\n     }\n \n     /// @dev Moves `amount - fee` to the destination and `fee` to `feeTo`, verifying exact balance deltas.\n"
+ },
+ {
+  "id": "78",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_frontRunCopy_paysOriginalFeeTo_noDiversion() (gas: 335631)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -111,7 +111,8 @@\n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n-        _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n+        /// BinaryOpMutation(`>>` |==> `+`) of: `_nonceBitmap[s.owner][s.nonce >> 8] = word | bit;`\n+        _nonceBitmap[s.owner][s.nonce+8] = word | bit;\n     }\n \n     /// @dev Moves `amount - fee` to the destination and `fee` to `feeTo`, verifying exact balance deltas.\n"
+ },
+ {
+  "id": "79",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11)] test_EXPLOIT_ownerDodgesFeeAndWastesRelayerGas() (gas: 122771)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -111,7 +111,8 @@\n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n-        _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n+        /// BinaryOpMutation(`>>` |==> `-`) of: `_nonceBitmap[s.owner][s.nonce >> 8] = word | bit;`\n+        _nonceBitmap[s.owner][s.nonce-8] = word | bit;\n     }\n \n     /// @dev Moves `amount - fee` to the destination and `fee` to `feeTo`, verifying exact balance deltas.\n"
+ },
+ {
+  "id": "80",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11); counterexample: calldata=0x0690ab520000000000000000000000000000000000000000000000000000953ed051d20a0000000000000000000000000000000000000000000000",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -111,7 +111,8 @@\n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n-        _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n+        /// BinaryOpMutation(`>>` |==> `*`) of: `_nonceBitmap[s.owner][s.nonce >> 8] = word | bit;`\n+        _nonceBitmap[s.owner][s.nonce*8] = word | bit;\n     }\n \n     /// @dev Moves `amount - fee` to the destination and `fee` to `feeTo`, verifying exact balance deltas.\n"
+ },
+ {
+  "id": "81",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_frontRunCopy_paysOriginalFeeTo_noDiversion() (gas: 335599)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -111,7 +111,8 @@\n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n-        _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n+        /// BinaryOpMutation(`>>` |==> `/`) of: `_nonceBitmap[s.owner][s.nonce >> 8] = word | bit;`\n+        _nonceBitmap[s.owner][s.nonce/8] = word | bit;\n     }\n \n     /// @dev Moves `amount - fee` to the destination and `fee` to `feeTo`, verifying exact balance deltas.\n"
+ },
+ {
+  "id": "82",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_frontRunCopy_paysOriginalFeeTo_noDiversion() (gas: 335599)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -111,7 +111,8 @@\n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n-        _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n+        /// BinaryOpMutation(`>>` |==> `%`) of: `_nonceBitmap[s.owner][s.nonce >> 8] = word | bit;`\n+        _nonceBitmap[s.owner][s.nonce%8] = word | bit;\n     }\n \n     /// @dev Moves `amount - fee` to the destination and `fee` to `feeTo`, verifying exact balance deltas.\n"
+ },
+ {
+  "id": "83",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_frontRunCopy_paysOriginalFeeTo_noDiversion() (gas: 336137)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -111,7 +111,8 @@\n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n-        _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n+        /// BinaryOpMutation(`>>` |==> `**`) of: `_nonceBitmap[s.owner][s.nonce >> 8] = word | bit;`\n+        _nonceBitmap[s.owner][s.nonce**8] = word | bit;\n     }\n \n     /// @dev Moves `amount - fee` to the destination and `fee` to `feeTo`, verifying exact balance deltas.\n"
+ },
+ {
+  "id": "84",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed] test_nonceMaxUint_works_once() (gas: 238101)",
+  "description": "SwapArgumentsOperatorMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -111,7 +111,8 @@\n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n-        _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n+        /// SwapArgumentsOperatorMutation(`s.nonce >> 8` |==> `8 >> s.nonce`) of: `_nonceBitmap[s.owner][s.nonce >> 8] = word | bit;`\n+        _nonceBitmap[s.owner][8 >> s.nonce] = word | bit;\n     }\n \n     /// @dev Moves `amount - fee` to the destination and `fee` to `feeTo`, verifying exact balance deltas.\n"
+ },
+ {
+  "id": "85",
+  "status": "SURVIVED",
+  "killer": "",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -111,7 +111,8 @@\n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n-        _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n+        /// BinaryOpMutation(`|` |==> `+`) of: `_nonceBitmap[s.owner][s.nonce >> 8] = word | bit;`\n+        _nonceBitmap[s.owner][s.nonce >> 8] = word+bit;\n     }\n \n     /// @dev Moves `amount - fee` to the destination and `fee` to `feeTo`, verifying exact balance deltas.\n"
+ },
+ {
+  "id": "86",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11)] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 453403)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -111,7 +111,8 @@\n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n-        _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n+        /// BinaryOpMutation(`|` |==> `-`) of: `_nonceBitmap[s.owner][s.nonce >> 8] = word | bit;`\n+        _nonceBitmap[s.owner][s.nonce >> 8] = word-bit;\n     }\n \n     /// @dev Moves `amount - fee` to the destination and `fee` to `feeTo`, verifying exact balance deltas.\n"
+ },
+ {
+  "id": "87",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_frontRunCopy_paysOriginalFeeTo_noDiversion() (gas: 311561)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -111,7 +111,8 @@\n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n-        _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n+        /// BinaryOpMutation(`|` |==> `*`) of: `_nonceBitmap[s.owner][s.nonce >> 8] = word | bit;`\n+        _nonceBitmap[s.owner][s.nonce >> 8] = word*bit;\n     }\n \n     /// @dev Moves `amount - fee` to the destination and `fee` to `feeTo`, verifying exact balance deltas.\n"
+ },
+ {
+  "id": "88",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed: false != true] invariant_nonceSingleUse",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -111,7 +111,8 @@\n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n-        _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n+        /// BinaryOpMutation(`|` |==> `/`) of: `_nonceBitmap[s.owner][s.nonce >> 8] = word | bit;`\n+        _nonceBitmap[s.owner][s.nonce >> 8] = word/bit;\n     }\n \n     /// @dev Moves `amount - fee` to the destination and `fee` to `feeTo`, verifying exact balance deltas.\n"
+ },
+ {
+  "id": "89",
+  "status": "KILLED",
+  "killer": "[FAIL: assertion failed: false != true] invariant_nonceSingleUse",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -111,7 +111,8 @@\n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n-        _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n+        /// BinaryOpMutation(`|` |==> `%`) of: `_nonceBitmap[s.owner][s.nonce >> 8] = word | bit;`\n+        _nonceBitmap[s.owner][s.nonce >> 8] = word%bit;\n     }\n \n     /// @dev Moves `amount - fee` to the destination and `fee` to `feeTo`, verifying exact balance deltas.\n"
+ },
+ {
+  "id": "90",
+  "status": "KILLED",
+  "killer": "[FAIL: next call did not revert as expected] test_frontRunCopy_paysOriginalFeeTo_noDiversion() (gas: 311649)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -111,7 +111,8 @@\n         uint256 bit = 1 << (s.nonce & 0xff);\n         uint256 word = _nonceBitmap[s.owner][s.nonce >> 8];\n         if (word & bit != 0) revert NonceAlreadyUsed();\n-        _nonceBitmap[s.owner][s.nonce >> 8] = word | bit;\n+        /// BinaryOpMutation(`|` |==> `**`) of: `_nonceBitmap[s.owner][s.nonce >> 8] = word | bit;`\n+        _nonceBitmap[s.owner][s.nonce >> 8] = word**bit;\n     }\n \n     /// @dev Moves `amount - fee` to the destination and `fee` to `feeTo`, verifying exact balance deltas.\n"
+ },
+ {
+  "id": "91",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 19989331)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -117,7 +117,8 @@\n     /// @dev Moves `amount - fee` to the destination and `fee` to `feeTo`, verifying exact balance deltas.\n     function _execute(Sweep calldata s) private {\n         IERC20 token = IERC20(s.token);\n-        uint256 net = s.amount - s.fee;\n+        /// BinaryOpMutation(`-` |==> `+`) of: `uint256 net = s.amount - s.fee;`\n+        uint256 net = s.amount+s.fee;\n         uint256 ownerBefore = token.balanceOf(s.owner);\n         uint256 destBefore = token.balanceOf(s.destination);\n         uint256 feeBefore = token.balanceOf(s.feeTo);\n"
+ },
+ {
+  "id": "92",
+  "status": "KILLED",
+  "killer": "[FAIL: ERC20InsufficientBalance(0xfAefd7C275fAc9E5F0e65bef5F1B3cc7307d2eaE, 10000000000 [1e10], 566686985837122964 [5.666e17]); counterexample: calldata=0x0690ab520000000000000000000000000000000000000",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -117,7 +117,8 @@\n     /// @dev Moves `amount - fee` to the destination and `fee` to `feeTo`, verifying exact balance deltas.\n     function _execute(Sweep calldata s) private {\n         IERC20 token = IERC20(s.token);\n-        uint256 net = s.amount - s.fee;\n+        /// BinaryOpMutation(`-` |==> `*`) of: `uint256 net = s.amount - s.fee;`\n+        uint256 net = s.amount*s.fee;\n         uint256 ownerBefore = token.balanceOf(s.owner);\n         uint256 destBefore = token.balanceOf(s.destination);\n         uint256 feeBefore = token.balanceOf(s.feeTo);\n"
+ },
+ {
+  "id": "93",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 19989315)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -117,7 +117,8 @@\n     /// @dev Moves `amount - fee` to the destination and `fee` to `feeTo`, verifying exact balance deltas.\n     function _execute(Sweep calldata s) private {\n         IERC20 token = IERC20(s.token);\n-        uint256 net = s.amount - s.fee;\n+        /// BinaryOpMutation(`-` |==> `/`) of: `uint256 net = s.amount - s.fee;`\n+        uint256 net = s.amount/s.fee;\n         uint256 ownerBefore = token.balanceOf(s.owner);\n         uint256 destBefore = token.balanceOf(s.destination);\n         uint256 feeBefore = token.balanceOf(s.feeTo);\n"
+ },
+ {
+  "id": "94",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 19969415)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -117,7 +117,8 @@\n     /// @dev Moves `amount - fee` to the destination and `fee` to `feeTo`, verifying exact balance deltas.\n     function _execute(Sweep calldata s) private {\n         IERC20 token = IERC20(s.token);\n-        uint256 net = s.amount - s.fee;\n+        /// BinaryOpMutation(`-` |==> `%`) of: `uint256 net = s.amount - s.fee;`\n+        uint256 net = s.amount%s.fee;\n         uint256 ownerBefore = token.balanceOf(s.owner);\n         uint256 destBefore = token.balanceOf(s.destination);\n         uint256 feeBefore = token.balanceOf(s.feeTo);\n"
+ },
+ {
+  "id": "95",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11)] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 19926853)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -117,7 +117,8 @@\n     /// @dev Moves `amount - fee` to the destination and `fee` to `feeTo`, verifying exact balance deltas.\n     function _execute(Sweep calldata s) private {\n         IERC20 token = IERC20(s.token);\n-        uint256 net = s.amount - s.fee;\n+        /// BinaryOpMutation(`-` |==> `**`) of: `uint256 net = s.amount - s.fee;`\n+        uint256 net = s.amount**s.fee;\n         uint256 ownerBefore = token.balanceOf(s.owner);\n         uint256 destBefore = token.balanceOf(s.destination);\n         uint256 feeBefore = token.balanceOf(s.feeTo);\n"
+ },
+ {
+  "id": "96",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11)] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 19926245)",
+  "description": "SwapArgumentsOperatorMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -117,7 +117,8 @@\n     /// @dev Moves `amount - fee` to the destination and `fee` to `feeTo`, verifying exact balance deltas.\n     function _execute(Sweep calldata s) private {\n         IERC20 token = IERC20(s.token);\n-        uint256 net = s.amount - s.fee;\n+        /// SwapArgumentsOperatorMutation(`s.amount - s.fee` |==> `s.fee - s.amount`) of: `uint256 net = s.amount - s.fee;`\n+        uint256 net = s.fee - s.amount;\n         uint256 ownerBefore = token.balanceOf(s.owner);\n         uint256 destBefore = token.balanceOf(s.destination);\n         uint256 feeBefore = token.balanceOf(s.feeTo);\n"
+ },
+ {
+  "id": "97",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 19966962)",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -127,7 +127,8 @@\n         // order that fixes token, destination, feeTo, amount and fee, and the nonce is single-use.\n         // forge-lint: disable-start(arbitrary-send-erc20)\n         // slither-disable-next-line arbitrary-send-erc20\n-        token.safeTransferFrom(s.owner, s.destination, net);\n+        /// DeleteExpressionMutation(`token.safeTransferFrom(s.owner, s.destination, net)` |==> `assert(true)`) of: `token.safeTransferFrom(s.owner, s.destination, net);`\n+        assert(true);\n         if (s.fee != 0) {\n             // slither-disable-next-line arbitrary-send-erc20\n             token.safeTransferFrom(s.owner, s.feeTo, s.fee);\n"
+ },
+ {
+  "id": "98",
+  "status": "SURVIVED",
+  "killer": "",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -128,7 +128,8 @@\n         // forge-lint: disable-start(arbitrary-send-erc20)\n         // slither-disable-next-line arbitrary-send-erc20\n         token.safeTransferFrom(s.owner, s.destination, net);\n-        if (s.fee != 0) {\n+        /// IfStatementMutation(`s.fee != 0` |==> `true`) of: `if (s.fee != 0) {`\n+        if (true) {\n             // slither-disable-next-line arbitrary-send-erc20\n             token.safeTransferFrom(s.owner, s.feeTo, s.fee);\n         }\n"
+ },
+ {
+  "id": "99",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 19966925)",
+  "description": "IfStatementMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -128,7 +128,8 @@\n         // forge-lint: disable-start(arbitrary-send-erc20)\n         // slither-disable-next-line arbitrary-send-erc20\n         token.safeTransferFrom(s.owner, s.destination, net);\n-        if (s.fee != 0) {\n+        /// IfStatementMutation(`s.fee != 0` |==> `false`) of: `if (s.fee != 0) {`\n+        if (false) {\n             // slither-disable-next-line arbitrary-send-erc20\n             token.safeTransferFrom(s.owner, s.feeTo, s.fee);\n         }\n"
+ },
+ {
+  "id": "100",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 19966925)",
+  "description": "DeleteExpressionMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -130,7 +130,8 @@\n         token.safeTransferFrom(s.owner, s.destination, net);\n         if (s.fee != 0) {\n             // slither-disable-next-line arbitrary-send-erc20\n-            token.safeTransferFrom(s.owner, s.feeTo, s.fee);\n+            /// DeleteExpressionMutation(`token.safeTransferFrom(s.owner, s.feeTo, s.fee)` |==> `assert(true)`) of: `token.safeTransferFrom(s.owner, s.feeTo, s.fee);`\n+            assert(true);\n         }\n         // forge-lint: disable-end(arbitrary-send-erc20)\n \n"
+ },
+ {
+  "id": "101",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 19989331)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -137,7 +137,8 @@\n         // Exact deltas are the intended check: any deviation (fee-on-transfer, rebasing) must revert.\n         // forge-lint: disable-start(incorrect-strict-equality)\n         if (\n-            token.balanceOf(s.owner) + s.amount != ownerBefore\n+            /// BinaryOpMutation(`+` |==> `-`) of: `token.balanceOf(s.owner) + s.amount != ownerBefore`\n+            token.balanceOf(s.owner)-s.amount != ownerBefore\n                 || token.balanceOf(s.destination) != destBefore + net\n                 || token.balanceOf(s.feeTo) != feeBefore + s.fee\n         ) revert UnexpectedBalanceDelta();\n"
+ },
+ {
+  "id": "102",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 19989347)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -137,7 +137,8 @@\n         // Exact deltas are the intended check: any deviation (fee-on-transfer, rebasing) must revert.\n         // forge-lint: disable-start(incorrect-strict-equality)\n         if (\n-            token.balanceOf(s.owner) + s.amount != ownerBefore\n+            /// BinaryOpMutation(`+` |==> `*`) of: `token.balanceOf(s.owner) + s.amount != ownerBefore`\n+            token.balanceOf(s.owner)*s.amount != ownerBefore\n                 || token.balanceOf(s.destination) != destBefore + net\n                 || token.balanceOf(s.feeTo) != feeBefore + s.fee\n         ) revert UnexpectedBalanceDelta();\n"
+ },
+ {
+  "id": "103",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 19989315)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -137,7 +137,8 @@\n         // Exact deltas are the intended check: any deviation (fee-on-transfer, rebasing) must revert.\n         // forge-lint: disable-start(incorrect-strict-equality)\n         if (\n-            token.balanceOf(s.owner) + s.amount != ownerBefore\n+            /// BinaryOpMutation(`+` |==> `/`) of: `token.balanceOf(s.owner) + s.amount != ownerBefore`\n+            token.balanceOf(s.owner)/s.amount != ownerBefore\n                 || token.balanceOf(s.destination) != destBefore + net\n                 || token.balanceOf(s.feeTo) != feeBefore + s.fee\n         ) revert UnexpectedBalanceDelta();\n"
+ },
+ {
+  "id": "104",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 19989315)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -137,7 +137,8 @@\n         // Exact deltas are the intended check: any deviation (fee-on-transfer, rebasing) must revert.\n         // forge-lint: disable-start(incorrect-strict-equality)\n         if (\n-            token.balanceOf(s.owner) + s.amount != ownerBefore\n+            /// BinaryOpMutation(`+` |==> `%`) of: `token.balanceOf(s.owner) + s.amount != ownerBefore`\n+            token.balanceOf(s.owner)%s.amount != ownerBefore\n                 || token.balanceOf(s.destination) != destBefore + net\n                 || token.balanceOf(s.feeTo) != feeBefore + s.fee\n         ) revert UnexpectedBalanceDelta();\n"
+ },
+ {
+  "id": "105",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11)] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 19989741)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -137,7 +137,8 @@\n         // Exact deltas are the intended check: any deviation (fee-on-transfer, rebasing) must revert.\n         // forge-lint: disable-start(incorrect-strict-equality)\n         if (\n-            token.balanceOf(s.owner) + s.amount != ownerBefore\n+            /// BinaryOpMutation(`+` |==> `**`) of: `token.balanceOf(s.owner) + s.amount != ownerBefore`\n+            token.balanceOf(s.owner)**s.amount != ownerBefore\n                 || token.balanceOf(s.destination) != destBefore + net\n                 || token.balanceOf(s.feeTo) != feeBefore + s.fee\n         ) revert UnexpectedBalanceDelta();\n"
+ },
+ {
+  "id": "106",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11)] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 19989355)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -138,7 +138,8 @@\n         // forge-lint: disable-start(incorrect-strict-equality)\n         if (\n             token.balanceOf(s.owner) + s.amount != ownerBefore\n-                || token.balanceOf(s.destination) != destBefore + net\n+                /// BinaryOpMutation(`+` |==> `-`) of: `|| token.balanceOf(s.destination) != destBefore + net`\n+                || token.balanceOf(s.destination) != destBefore-net\n                 || token.balanceOf(s.feeTo) != feeBefore + s.fee\n         ) revert UnexpectedBalanceDelta();\n         // forge-lint: disable-end(incorrect-strict-equality)\n"
+ },
+ {
+  "id": "107",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 19990560)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -138,7 +138,8 @@\n         // forge-lint: disable-start(incorrect-strict-equality)\n         if (\n             token.balanceOf(s.owner) + s.amount != ownerBefore\n-                || token.balanceOf(s.destination) != destBefore + net\n+                /// BinaryOpMutation(`+` |==> `*`) of: `|| token.balanceOf(s.destination) != destBefore + net`\n+                || token.balanceOf(s.destination) != destBefore*net\n                 || token.balanceOf(s.feeTo) != feeBefore + s.fee\n         ) revert UnexpectedBalanceDelta();\n         // forge-lint: disable-end(incorrect-strict-equality)\n"
+ },
+ {
+  "id": "108",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 19990528)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -138,7 +138,8 @@\n         // forge-lint: disable-start(incorrect-strict-equality)\n         if (\n             token.balanceOf(s.owner) + s.amount != ownerBefore\n-                || token.balanceOf(s.destination) != destBefore + net\n+                /// BinaryOpMutation(`+` |==> `/`) of: `|| token.balanceOf(s.destination) != destBefore + net`\n+                || token.balanceOf(s.destination) != destBefore/net\n                 || token.balanceOf(s.feeTo) != feeBefore + s.fee\n         ) revert UnexpectedBalanceDelta();\n         // forge-lint: disable-end(incorrect-strict-equality)\n"
+ },
+ {
+  "id": "109",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 19990528)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -138,7 +138,8 @@\n         // forge-lint: disable-start(incorrect-strict-equality)\n         if (\n             token.balanceOf(s.owner) + s.amount != ownerBefore\n-                || token.balanceOf(s.destination) != destBefore + net\n+                /// BinaryOpMutation(`+` |==> `%`) of: `|| token.balanceOf(s.destination) != destBefore + net`\n+                || token.balanceOf(s.destination) != destBefore%net\n                 || token.balanceOf(s.feeTo) != feeBefore + s.fee\n         ) revert UnexpectedBalanceDelta();\n         // forge-lint: disable-end(incorrect-strict-equality)\n"
+ },
+ {
+  "id": "110",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 19990604)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -138,7 +138,8 @@\n         // forge-lint: disable-start(incorrect-strict-equality)\n         if (\n             token.balanceOf(s.owner) + s.amount != ownerBefore\n-                || token.balanceOf(s.destination) != destBefore + net\n+                /// BinaryOpMutation(`+` |==> `**`) of: `|| token.balanceOf(s.destination) != destBefore + net`\n+                || token.balanceOf(s.destination) != destBefore**net\n                 || token.balanceOf(s.feeTo) != feeBefore + s.fee\n         ) revert UnexpectedBalanceDelta();\n         // forge-lint: disable-end(incorrect-strict-equality)\n"
+ },
+ {
+  "id": "111",
+  "status": "KILLED",
+  "killer": "[FAIL: panic: arithmetic underflow or overflow (0x11)] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 19990594)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -139,7 +139,8 @@\n         if (\n             token.balanceOf(s.owner) + s.amount != ownerBefore\n                 || token.balanceOf(s.destination) != destBefore + net\n-                || token.balanceOf(s.feeTo) != feeBefore + s.fee\n+                /// BinaryOpMutation(`+` |==> `-`) of: `|| token.balanceOf(s.feeTo) != feeBefore + s.fee`\n+                || token.balanceOf(s.feeTo) != feeBefore-s.fee\n         ) revert UnexpectedBalanceDelta();\n         // forge-lint: disable-end(incorrect-strict-equality)\n \n"
+ },
+ {
+  "id": "112",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 19991782)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -139,7 +139,8 @@\n         if (\n             token.balanceOf(s.owner) + s.amount != ownerBefore\n                 || token.balanceOf(s.destination) != destBefore + net\n-                || token.balanceOf(s.feeTo) != feeBefore + s.fee\n+                /// BinaryOpMutation(`+` |==> `*`) of: `|| token.balanceOf(s.feeTo) != feeBefore + s.fee`\n+                || token.balanceOf(s.feeTo) != feeBefore*s.fee\n         ) revert UnexpectedBalanceDelta();\n         // forge-lint: disable-end(incorrect-strict-equality)\n \n"
+ },
+ {
+  "id": "113",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 19991750)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -139,7 +139,8 @@\n         if (\n             token.balanceOf(s.owner) + s.amount != ownerBefore\n                 || token.balanceOf(s.destination) != destBefore + net\n-                || token.balanceOf(s.feeTo) != feeBefore + s.fee\n+                /// BinaryOpMutation(`+` |==> `/`) of: `|| token.balanceOf(s.feeTo) != feeBefore + s.fee`\n+                || token.balanceOf(s.feeTo) != feeBefore/s.fee\n         ) revert UnexpectedBalanceDelta();\n         // forge-lint: disable-end(incorrect-strict-equality)\n \n"
+ },
+ {
+  "id": "114",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 19991750)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -139,7 +139,8 @@\n         if (\n             token.balanceOf(s.owner) + s.amount != ownerBefore\n                 || token.balanceOf(s.destination) != destBefore + net\n-                || token.balanceOf(s.feeTo) != feeBefore + s.fee\n+                /// BinaryOpMutation(`+` |==> `%`) of: `|| token.balanceOf(s.feeTo) != feeBefore + s.fee`\n+                || token.balanceOf(s.feeTo) != feeBefore%s.fee\n         ) revert UnexpectedBalanceDelta();\n         // forge-lint: disable-end(incorrect-strict-equality)\n \n"
+ },
+ {
+  "id": "115",
+  "status": "KILLED",
+  "killer": "[FAIL: UnexpectedBalanceDelta()] test_EXPLOIT_hostileTokenBurnsRelayerGas() (gas: 19991826)",
+  "description": "BinaryOpMutation",
+  "file": "src/GhostPaySweepRelayer.sol",
+  "diff": "--- original\n+++ mutant\n@@ -139,7 +139,8 @@\n         if (\n             token.balanceOf(s.owner) + s.amount != ownerBefore\n                 || token.balanceOf(s.destination) != destBefore + net\n-                || token.balanceOf(s.feeTo) != feeBefore + s.fee\n+                /// BinaryOpMutation(`+` |==> `**`) of: `|| token.balanceOf(s.feeTo) != feeBefore + s.fee`\n+                || token.balanceOf(s.feeTo) != feeBefore**s.fee\n         ) revert UnexpectedBalanceDelta();\n         // forge-lint: disable-end(incorrect-strict-equality)\n \n"
+ }
+]
