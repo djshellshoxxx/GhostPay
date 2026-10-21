@@ -154,6 +154,11 @@ function parseTokens(chainId: number, v: unknown, path: string): AllowedToken[] 
   });
 }
 
+/** True for hosts that only local processes (the reverse proxy) can reach. */
+function isLoopbackHost(h: string): boolean {
+  return h === 'localhost' || h === '::1' || h === '[::1]' || /^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(h);
+}
+
 function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; insecureRpc: boolean }, ctx: ConfigContext): ChainRuntimeConfig {
   const path = `chains[${String(i)}]`;
   const c = wrap(
@@ -257,6 +262,10 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
   const listen = sub(o, 'listen', '$', ['host', 'port']);
   const host = listen['host'] ?? '127.0.0.1';
   if (typeof host !== 'string' || host === '' || host.length > 255) return bad('listen.host', 'invalid');
+  const hops = o['trustProxyHops'];
+  if (typeof hops === 'number' && hops > 0 && !isLoopbackHost(host)) {
+    return bad('trustProxyHops', 'requires a loopback listen.host (a reachable listener lets clients spoof X-Forwarded-For)');
+  }
   const dl = sub(o, 'deadline', '$', ['minSeconds', 'maxSeconds']);
   const minDeadlineSeconds = numberOr(dl, 'minSeconds', 'deadline', 30, 1, MAX_DEADLINE_WINDOW_SECONDS);
   const maxDeadlineSeconds = numberOr(dl, 'maxSeconds', 'deadline', MAX_DEADLINE_WINDOW_SECONDS, 1, MAX_DEADLINE_WINDOW_SECONDS);

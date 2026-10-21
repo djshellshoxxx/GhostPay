@@ -1,13 +1,22 @@
 // @vitest-environment jsdom
 import { parseFragment } from '@ghostpay/invoice-schema';
-import { screen, waitFor, within } from '@testing-library/react';
+import { cleanup, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeManifestJson } from '../test/fakeManifest';
 import { clearSession, generateSession } from '../lib/session';
 import { makeServices, renderApp } from '../test/render';
 
+const feedState = vi.hoisted(() => ({ list: [] as unknown[] }));
+vi.mock('@ghostpay/chain-adapters', async (orig) => {
+  const actual = await orig<Record<string, unknown>>();
+  const m = { ...actual };
+  Object.defineProperty(m, 'FEEDS', { get: () => feedState.list, enumerable: true });
+  return m;
+});
+
 beforeEach(() => {
+  feedState.list = [];
   clearSession();
   window.localStorage.clear();
   window.history.replaceState(null, '', '/');
@@ -21,6 +30,20 @@ async function open(services = makeServices()): Promise<ReturnType<typeof userEv
 }
 
 describe('Create invoice', () => {
+  it('gap 3: fiat-quote option is disabled while FEEDS is empty and enabled once a feed exists', async () => {
+    generateSession();
+    await open();
+    const opt = screen.getByRole<HTMLOptionElement>('option', { name: /Fiat price/ });
+    expect(opt.disabled).toBe(true);
+    expect(opt.textContent).toMatch(/no price feed configured/);
+    cleanup();
+    feedState.list = [{ chainId: 1 }];
+    const user = await open();
+    expect(screen.getByRole<HTMLOptionElement>('option', { name: /Fiat price/ }).disabled).toBe(false);
+    await user.selectOptions(screen.getByLabelText('Pricing'), 'fiat_quote');
+    expect(screen.queryByLabelText('Token amount')).toBeNull();
+  });
+
   it('asks for keys first', async () => {
     const user = await open();
     expect(screen.getByText('You need seller keys first.')).toBeTruthy();
@@ -53,8 +76,7 @@ describe('Create invoice', () => {
     generateSession();
     const user = await open();
     await user.selectOptions(screen.getByLabelText('Token'), screen.getByRole('option', { name: 'USDC' }));
-    await user.selectOptions(screen.getByLabelText('Pricing'), 'fiat_quote');
-    expect(screen.getByText(/No feed is configured in this release/)).toBeTruthy();
+    await user.type(screen.getByLabelText('Token amount'), '3.3');
     await user.click(screen.getByRole('button', { name: 'Add item' }));
     await user.type(screen.getByLabelText('Item 1 description'), 'A');
     await user.type(screen.getByLabelText('Item 1 unit price'), '1.00');
@@ -73,6 +95,7 @@ describe('Create invoice', () => {
     const parsed = await parseFragment(link.value.slice('https://app.test/'.length));
     expect(parsed.encrypted).toBe(true);
     expect(parsed.invoice.fiat.minorUnits).toBe('330');
+    expect(parsed.invoice.amountPolicy.mode).toBe('fixed_token');
     expect(parsed.invoice.lineItems.map((l) => l.description)).toEqual(['A', 'C']);
     expect(parsed.invoice.memo).toBe('hello');
     expect(screen.getByText(/encryption key is inside it/)).toBeTruthy();

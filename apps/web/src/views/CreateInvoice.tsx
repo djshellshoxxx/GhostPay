@@ -1,3 +1,4 @@
+import { FEEDS } from '@ghostpay/chain-adapters';
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { CopyButton, Field, Notice } from '../components/Common';
 import { useManifest } from '../components/Disclosure';
@@ -27,6 +28,8 @@ export function CreateInvoice(): ReactNode {
   const [encrypt, setEncrypt] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const [created, setCreated] = useState<CreatedInvoice | undefined>(undefined);
+  // Gap 3 / ADR-0012: fiat-quote invoices cannot be paid without a verified feed, so do not let sellers create them.
+  const fiatAvailable = FEEDS.length > 0;
   const manifest = useManifest(chainId);
 
   if (app.session === undefined) {
@@ -121,9 +124,11 @@ export function CreateInvoice(): ReactNode {
           <legend>Amount</legend>
           <Field label="Pricing">
             {(id) => (
-              <select id={id} value={amountMode} onChange={(e) => { setAmountMode(e.target.value as 'fiat_quote' | 'fixed_token'); }}>
+              <select id={id} value={fiatAvailable ? amountMode : 'fixed_token'} onChange={(e) => { setAmountMode(e.target.value as 'fiat_quote' | 'fixed_token'); }}>
                 <option value="fixed_token">Fixed token amount</option>
-                <option value="fiat_quote">Fiat price, converted at payment time</option>
+                <option value="fiat_quote" disabled={!fiatAvailable}>
+                  {fiatAvailable ? 'Fiat price, converted at payment time' : 'Fiat price (unavailable: no price feed configured)'}
+                </option>
               </select>
             )}
           </Field>

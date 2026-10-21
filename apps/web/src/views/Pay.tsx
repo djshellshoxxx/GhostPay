@@ -47,14 +47,29 @@ export function Pay(): ReactNode {
   const fragment = app.fragment;
   const pinned = app.settings.pinnedSigners;
 
+  // N-04: identity of the invoice the payer is looking at. Anything prepared for an earlier invoice is dropped
+  // when the fragment changes (for example through an in-tab hashchange), and late async results are ignored.
+  const generation = useRef(0);
+
   // Parse whenever a fragment is present. Nothing is logged or sent anywhere.
   useEffect(() => {
     let live = true;
+    generation.current += 1;
+    scheduler.current?.cancel();
+    setBuilt(undefined);
+    setWallet(undefined);
+    setResult(undefined);
+    setBufferQuote(undefined);
+    setSchedule(undefined);
+    setStatus('');
+    setError(undefined);
     if (fragment === undefined) {
       setParsed(undefined);
       setPhase('input');
       return;
     }
+    // Do not keep showing the previous invoice (with its prepared payment gone) while the new one parses.
+    setParsed(undefined);
     parseFragment(fragment, { pinnedSigners: pinned }).then(
       (p) => {
         if (!live) return;
@@ -271,6 +286,7 @@ export function Pay(): ReactNode {
     if (wallet === undefined || ctx === undefined) return;
     setError(undefined);
     setPhase('busy');
+    const gen = generation.current;
     void (async () => {
       try {
         const rt = await runtime();
@@ -285,6 +301,7 @@ export function Pay(): ReactNode {
           await ensureAllowance(wallet, ctx, t.address, rt, setStatus);
         }
         const b = await preparePayment(wallet, ctx, { usePermit: permit, ...(buffer === undefined ? {} : { buffer }) }, rt, setStatus);
+        if (gen !== generation.current) return;
         setBuilt(b);
         setStatus('');
         setPhase('prepared');
@@ -301,10 +318,15 @@ export function Pay(): ReactNode {
     if (wallet === undefined || ctx === undefined || built === undefined) return;
     setError(undefined);
     setPhase('busy');
+    const gen = generation.current;
     void (async () => {
       try {
         const rt = await runtime();
         const res = await sendPayment(wallet, ctx, built, rt, setStatus);
+        if (gen !== generation.current) {
+          app.announce('A payment for the previously opened invoice was submitted.');
+          return;
+        }
         setResult(res);
         setPhase('done');
         setStatus('');

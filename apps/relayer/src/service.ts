@@ -77,7 +77,12 @@ export interface HealthResponse {
 /** Per-request context (logging only). */
 export interface RequestContext {
   readonly requestId: string;
+  /** Admission bucket (client IP as seen by the server); only held in memory while a request is in flight. */
+  readonly clientKey?: string;
 }
+
+/** Maximum concurrent cheap pre-simulations (outside the serial lane) per service. */
+const MAX_PRESIM = 8;
 
 interface ChainRuntime {
   readonly cfg: ChainRuntimeConfig;
@@ -123,6 +128,8 @@ export class RelayerService {
   private readonly logger: Logger;
   private readonly now: () => number;
   private closing = false;
+  private presim = 0;
+  private readonly inflightByClient = new Map<string, number>();
 
   public constructor(private readonly d: ServiceDeps) {
     this.policy = d.policy ?? allowAllPolicy;
@@ -282,7 +289,42 @@ export class RelayerService {
     if (rt.breaker.isBlocking()) throw new RelayerError(503, 'breaker_open', cfg.breaker.cooldownSeconds);
 
     const call: SweepCall = { sweepRelayer: rt.cfg.sweepRelayer, sweep: s, sweepSig: req.sweepSig, permit: req.permit };
-    return rt.lane.submit(() => this.runJob(rt, call, ctx));
+
+    // N-01: a fresh throw-away key passes signature and owner limits for free, so reject doomed sweeps
+    // with a concurrency-bounded eth_call BEFORE they can occupy a slot of the serial lane, and cap how
+    // many lane slots a single client may hold.
+    const key = ctx.clientKey;
+    const cap = Math.max(1, Math.ceil(cfg.queue.maxPending * 0.75));
+    if (key !== undefined && (this.inflightByClient.get(key) ?? 0) >= cap) throw new RelayerError(429, 'rate_limited_ip', 5);
+    await this.preflight(rt, call);
+
+    if (key !== undefined) this.inflightByClient.set(key, (this.inflightByClient.get(key) ?? 0) + 1);
+    try {
+      return await rt.lane.submit(() => this.runJob(rt, call, token, ctx));
+    } finally {
+      if (key !== undefined) {
+        const n = (this.inflightByClient.get(key) ?? 1) - 1;
+        if (n <= 0) this.inflightByClient.delete(key);
+        else this.inflightByClient.set(key, n);
+      }
+    }
+  }
+
+  /** Cheap stateless simulation outside the lane; reverts are answered here and never queued. */
+  private async preflight(rt: ChainRuntime, call: SweepCall): Promise<void> {
+    if (this.presim >= MAX_PRESIM) throw new RelayerError(503, 'busy', 2);
+    this.presim += 1;
+    try {
+      await rt.client.simulateSweep(call);
+    } catch (e) {
+      if (e instanceof SimulationRevert) throw revertToError(e);
+      // After the cooldown a failed probe must re-open the breaker immediately.
+      if (rt.breaker.state === 'open') rt.breaker.trip();
+      else rt.breaker.recordFailure();
+      throw new RelayerError(503, 'rpc_unavailable');
+    } finally {
+      this.presim -= 1;
+    }
   }
 
   /** Stops admitting work and waits for every queued/in-flight transaction to settle. */
@@ -314,7 +356,7 @@ export class RelayerService {
   }
 
   /** Runs inside the chain lane: exactly one of these is active per chain at any time. */
-  private async runJob(rt: ChainRuntime, call: SweepCall, ctx: RequestContext): Promise<JobOutcome<SweepResponse>> {
+  private async runJob(rt: ChainRuntime, call: SweepCall, token: AllowedToken, ctx: RequestContext): Promise<JobOutcome<SweepResponse>> {
     const { cfg, client, breaker, budget, nonces } = rt;
     if (!breaker.allow()) throw new RelayerError(503, 'breaker_open', this.d.config.breaker.cooldownSeconds);
 
@@ -336,6 +378,11 @@ export class RelayerService {
       this.logger.log('error', 'breaker_tripped_low_balance', { requestId: ctx.requestId, chainId: cfg.chainId, errorClass: 'low_balance' });
       throw new RelayerError(503, 'breaker_open', this.d.config.breaker.cooldownSeconds);
     }
+
+    // N-02: the quoted fee must still cover the gas at the CURRENT price (same basis as the quote).
+    const units = token.permit ? cfg.gasUnits.sweepWithPermit : cfg.gasUnits.sweep;
+    const costNow = await this.d.tokenPrices.nativeToTokenUnits(cfg.chainId, token, units * gasPrice);
+    if (call.sweep.fee < costNow) throw new RelayerError(422, 'fee_below_cost');
 
     let gasLimit: bigint;
     try {

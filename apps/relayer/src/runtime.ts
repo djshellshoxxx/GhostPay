@@ -1,6 +1,6 @@
 import { createPublicClient, createWalletClient, defineChain, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
-import { createClient, findChain, type ChainConfig } from '@ghostpay/chain-adapters';
+import { ChainAdapterError, createClient, findChain, type ChainConfig } from '@ghostpay/chain-adapters';
 import { createViemChainClient, type ChainClient } from './chain.js';
 import { DEV_CHAIN_ID, type RelayerConfig } from './config.js';
 import { KeyHasher, RateLimiter } from './limiter.js';
@@ -57,6 +57,9 @@ export async function buildChainClients(config: RelayerConfig, hotKey: Uint8Arra
     const transport = http(c.rpcUrl, { timeout: 10_000, retryCount: 1 });
     const publicClient = createPublicClient({ chain, transport });
     const walletClient = createWalletClient({ chain, transport, account });
+    // N-07: refuse to sign sweeps against an address that has no contract code on this RPC.
+    const code = await publicClient.getCode({ address: c.sweepRelayer }).catch(() => undefined);
+    if (code === undefined || code === '0x') throw new ChainAdapterError('RPC_FAILURE', 'sweep relayer has no contract code on the configured RPC');
     out.set(c.chainId, createViemChainClient({ publicClient, walletClient, account, chain }));
   }
   return out;

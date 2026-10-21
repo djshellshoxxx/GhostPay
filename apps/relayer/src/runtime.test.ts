@@ -9,7 +9,7 @@ afterEach(async () => {
   await Promise.all(servers.splice(0).map((s) => new Promise<void>((r) => s.close(() => r()))));
 });
 
-function fakeRpc(chainId: number): Promise<string> {
+function fakeRpc(chainId: number, code = '0x6001'): Promise<string> {
   return new Promise((resolve) => {
     const s = createServer((req, res) => {
       let body = '';
@@ -17,7 +17,7 @@ function fakeRpc(chainId: number): Promise<string> {
       req.on('end', () => {
         const j = JSON.parse(body) as { id: number; method: string };
         res.setHeader('content-type', 'application/json');
-        res.end(JSON.stringify({ jsonrpc: '2.0', id: j.id, result: j.method === 'eth_chainId' ? `0x${chainId.toString(16)}` : '0x0' }));
+        res.end(JSON.stringify({ jsonrpc: '2.0', id: j.id, result: j.method === 'eth_chainId' ? `0x${chainId.toString(16)}` : j.method === 'eth_getCode' ? code : '0x0' }));
       });
     });
     servers.push(s);
@@ -48,5 +48,12 @@ describe('buildChainClients', () => {
     const cfg = testConfig({ allowInsecureLocalhostRpc: true });
     const chains = [{ ...(cfg.chains[0] as object), rpcUrl: url }] as never;
     await expect(buildChainClients({ ...cfg, chains }, new Uint8Array(32).fill(5))).rejects.toMatchObject({ code: 'CHAIN_MISMATCH' });
+  });
+
+  it('N-07: refuses a sweep relayer address without contract code', async () => {
+    const url = await fakeRpc(11155111, '0x');
+    const cfg = testConfig({ allowInsecureLocalhostRpc: true });
+    const chains = [{ ...(cfg.chains[0] as object), rpcUrl: url }] as never;
+    await expect(buildChainClients({ ...cfg, chains }, new Uint8Array(32).fill(5))).rejects.toMatchObject({ code: 'RPC_FAILURE' });
   });
 });

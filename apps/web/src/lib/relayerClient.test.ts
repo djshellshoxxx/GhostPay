@@ -40,6 +40,24 @@ describe('requestQuote', () => {
     await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(json({ error: 'Has Spaces!' }, 422)))).rejects.toThrow('HTTP 422.');
     await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(new Response('<html>', { status: 500 })))).rejects.toThrow('HTTP 500.');
   });
+  it('N-06: reads the relayer error shape {"error":{"code":...}}', async () => {
+    const e = requestQuote('https://relay.test', Q, () => Promise.resolve(json({ error: { code: 'quote_expired' } }, 410)));
+    await expect(e).rejects.toThrow('HTTP 410 (quote_expired).');
+    await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(json({ error: { code: 'Bad Code' } }, 503)))).rejects.toThrow('HTTP 503.');
+  });
+  it('N-06: stops reading a streamed body at the cap and honours a declared length', async () => {
+    let pulls = 0;
+    const stream = new ReadableStream<Uint8Array>({
+      pull(c) {
+        pulls += 1;
+        c.enqueue(new Uint8Array(8 * 1024).fill(120));
+      },
+    });
+    await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(new Response(stream)))).rejects.toThrow(/too large/);
+    expect(pulls).toBeLessThan(10);
+    const big = new Response('{}', { headers: { 'content-length': '99999' } });
+    await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(big))).rejects.toThrow(/too large/);
+  });
   it('handles transport failures, oversized and non-JSON replies', async () => {
     await expect(requestQuote('https://relay.test', Q, () => Promise.reject(new TypeError('offline')))).rejects.toThrow(/Could not reach the relayer/);
     await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(new Response('x'.repeat(20_000))))).rejects.toThrow(/too large/);

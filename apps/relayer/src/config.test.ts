@@ -61,7 +61,7 @@ describe('parseConfig', () => {
   it('accepts overrides, rpcUrlEnv and custom tokens', () => {
     const c = parse(
       good({
-        listen: { host: '0.0.0.0', port: 9000 },
+        listen: { host: '127.0.0.1', port: 9000 },
         trustProxyHops: 1,
         deadline: { minSeconds: 10, maxSeconds: 600 },
         rateLimit: { ipPerMinute: 5, ipBurst: 2, ownerPerMinute: 1, ownerBurst: 1, maxKeys: 64, saltRotationHours: 6 },
@@ -95,6 +95,7 @@ describe('parseConfig', () => {
     ['http non-local origin', (c) => ({ ...c, allowedOrigins: ['http://app.example'] })],
     ['origin with path', (c) => ({ ...c, allowedOrigins: ['https://app.example/x'] })],
     ['origin non-string', (c) => ({ ...c, allowedOrigins: [5] })],
+    ['N-08 exposed listener with trusted proxy hops', (c) => ({ ...c, listen: { host: '0.0.0.0' }, trustProxyHops: 1 }), /loopback/],
     ['bad listen host', (c) => ({ ...c, listen: { host: '' } })],
     ['bad port', (c) => ({ ...c, listen: { port: 70000 } })],
     ['port float', (c) => ({ ...c, listen: { port: 1.5 } })],

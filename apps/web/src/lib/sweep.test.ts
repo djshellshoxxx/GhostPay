@@ -85,6 +85,12 @@ describe('getSweepQuote', () => {
 });
 
 describe('relayedSweep (EIP-712 sweep + ERC-2612 permit, signed in memory)', () => {
+  it('N-02: refuses a stale quote or a fee above the cap before signing anything', async () => {
+    const base = { target, manifest, destination: DEST, amount: 1_000_000n, relayerUrl: 'https://relay.test', rpc: undefined as never, nowSeconds: NOW, fetchFn: () => Promise.reject(new Error('must not be called')) };
+    await expect(relayedSweep({ ...base, quote: { fee: 5000n, feeTo: FEE_TO, expiresAt: NOW + 10, quoteToken: 'tok' } })).rejects.toThrow(/expired/);
+    await expect(relayedSweep({ ...base, quote: { fee: 900_000n, feeTo: FEE_TO, expiresAt: NOW + 600, quoteToken: 'tok' } })).rejects.toThrow(/above the published cap/);
+  });
+
   it('signs a sweep and a permit that recover to the stealth address and submits them', async () => {
     const rpc = mockRpc(84532, (_m, params) => {
       const data = (params[0] as { data: string }).data;

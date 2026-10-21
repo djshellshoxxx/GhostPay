@@ -2,6 +2,7 @@ import { request as httpRequest } from 'node:http';
 import { connect } from 'node:net';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { CHAIN_ID, DEST, FEE_TO, NOPERMIT, NOW_SEC, ORIGIN, OTHER_KEY, OWNER, STRANGER, SWEEP_CONTRACT, USDC, call, errCode, prepare, startHarness, testConfig, type Harness } from './harness.testutil.js';
+import { SimulationRevert } from './errors.js';
 import type { QuoteResponse } from './service.js';
 
 let h: Harness | undefined;
@@ -460,7 +461,7 @@ describe('circuit breaker', () => {
     const r = await call(s, 'POST', '/v1/sweep', (await prepare(s)).body);
     expect(r.status).toBe(503);
     expect(errCode(r)).toBe('breaker_open');
-    expect(s.fake.simulations).toBe(0);
+    expect(s.fake.simulations).toBe(1); // only the out-of-lane pre-simulation ran
     // while open, requests are refused before they even reach the lane
     expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 2n })).body))).toBe('breaker_open');
     expect(s.logs.join('\n')).toContain('breaker_tripped_low_balance');
@@ -663,5 +664,87 @@ describe('logging redaction', () => {
       for (const k of Object.keys(JSON.parse(line) as object)) expect(allowed.has(k)).toBe(true);
     }
     expect(all).toContain('sweep_sent');
+  });
+});
+
+describe('N-01 / N-02 / N-03 regressions', () => {
+  it('N-01: junk sweeps are rejected before they can occupy a lane slot', async () => {
+    const s = await start({ config: { queue: { maxPending: 2, receiptTimeoutSeconds: 30 } } });
+    s.fake.simulateError = new SimulationRevert('SafeERC20FailedOperation');
+    const bodies = await Promise.all([1n, 2n, 3n, 4n, 5n].map(async (n) => (await prepare(s, { nonce: n })).body));
+    const rs = await Promise.all(bodies.map((b) => call(s, 'POST', '/v1/sweep', b)));
+    expect(rs.map((r) => r.status)).toEqual([422, 422, 422, 422, 422]);
+    expect(s.relayer.service.health().status).toBe('ok');
+    s.fake.simulateError = undefined;
+    // lane never filled: a legitimate sweep goes through
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 9n })).body)).status).toBe(200);
+  });
+
+  it('N-01: bounded concurrent pre-simulations answer 503 busy', async () => {
+    const s = await start({ config: { queue: { maxPending: 64, receiptTimeoutSeconds: 30 } } });
+    const orig = s.fake.simulateSweep.bind(s.fake);
+    let open: () => void = () => undefined;
+    const gate = new Promise<void>((r) => {
+      open = r;
+    });
+    s.fake.simulateSweep = async (c) => {
+      await gate;
+      return orig(c);
+    };
+    const bodies = await Promise.all(Array.from({ length: 14 }, async (_, i) => (await prepare(s, { nonce: BigInt(i + 1) })).body));
+    const rs = Promise.all(bodies.map((b) => call(s, 'POST', '/v1/sweep', b)));
+    for (let i = 0; i < 100 && s.fake.simulations < 8; i++) await settle();
+    await settle();
+    open();
+    const codes = (await rs).map((r) => r.status);
+    expect(codes.filter((c) => c === 503).length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('N-01: per-client cap on lane slots', async () => {
+    const s = await start({ config: { queue: { maxPending: 4, receiptTimeoutSeconds: 30 } } });
+    let release: () => void = () => undefined;
+    s.fake.receiptGate = new Promise<void>((r) => {
+      release = r;
+    });
+    const bodies = await Promise.all([1n, 2n, 3n, 4n, 5n].map(async (n) => (await prepare(s, { nonce: n })).body));
+    const rs = bodies.slice(0, 4).map((b) => call(s, 'POST', '/v1/sweep', b));
+    for (let i = 0; i < 100 && s.fake.simulations < 5; i++) await settle();
+    await settle();
+    await settle();
+    const fourth = await call(s, 'POST', '/v1/sweep', bodies[4]);
+    expect(fourth.status).toBe(429);
+    release();
+    expect((await Promise.all(rs)).map((r) => r.status)).toEqual([200, 200, 200, 200]);
+  });
+
+  it('N-01: pre-simulation RPC failure is 503 rpc_unavailable', async () => {
+    const s = await start();
+    s.fake.simulateError = new Error('down');
+    const r = await call(s, 'POST', '/v1/sweep', (await prepare(s)).body);
+    expect([r.status, errCode(r)]).toEqual([503, 'rpc_unavailable']);
+  });
+
+  it('N-02: refuses when the gas price rose so the quoted fee no longer covers cost', async () => {
+    const s = await start();
+    const { body } = await prepare(s);
+    s.fake.gasPrice = 40_000_000_000n; // quote was priced at 1 gwei
+    const r = await call(s, 'POST', '/v1/sweep', body);
+    expect([r.status, errCode(r)]).toEqual([422, 'fee_below_cost']);
+    expect(s.fake.sent).toHaveLength(0);
+  });
+
+  it('N-03: malformed request targets answer 400, not 500', async () => {
+    const s = await start();
+    for (const target of ['//', 'http://[']) {
+      const status = await new Promise<number>((resolve, reject) => {
+        const sock = connect(Number(new URL(s.url).port), '127.0.0.1', () => sock.write(`GET ${target} HTTP/1.1\r\nHost: x\r\nConnection: close\r\n\r\n`));
+        let buf = '';
+        sock.on('data', (d: Buffer) => (buf += d.toString()));
+        sock.on('end', () => resolve(Number(/HTTP\/1.1 (\d+)/.exec(buf)?.[1])));
+        sock.on('error', reject);
+      });
+      expect(status).toBe(400);
+    }
+    expect(s.logs.some((l) => l.includes('internal_error'))).toBe(false);
   });
 });

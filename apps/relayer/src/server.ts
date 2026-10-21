@@ -204,7 +204,12 @@ export class RelayerHttpServer {
 
   private async dispatch(c: Ctx): Promise<void> {
     const { req, res } = c;
-    const path = new URL(req.url ?? '/', 'http://relayer.invalid').pathname;
+    let path: string;
+    try {
+      path = new URL(req.url ?? '/', 'http://relayer.invalid').pathname;
+    } catch {
+      throw new RelayerError(400, 'invalid_url');
+    }
     if (isRoute(path)) c.route = path;
 
     const origin = req.headers.origin;
@@ -240,7 +245,8 @@ export class RelayerHttpServer {
         return;
       case '/v1/quote':
       case '/v1/sweep': {
-        const limit = this.d.ipLimiter.take(this.clientIp(req));
+        const ip = this.clientIp(req);
+        const limit = this.d.ipLimiter.take(ip);
         if (!limit.ok) throw new RelayerError(429, 'rate_limited_ip', limit.retryAfterSeconds);
         const ct = req.headers['content-type'];
         if (ct === undefined || !JSON_TYPE.test(ct)) throw new RelayerError(415, 'unsupported_media_type');
@@ -248,7 +254,7 @@ export class RelayerHttpServer {
         if (path === '/v1/quote') {
           this.send(c, 200, await this.d.service.quote(parseQuoteRequest(body)));
         } else {
-          this.send(c, 200, await this.d.service.sweep(parseSweepRequest(body), { requestId: c.requestId }));
+          this.send(c, 200, await this.d.service.sweep(parseSweepRequest(body), { requestId: c.requestId, clientKey: ip }));
         }
         return;
       }

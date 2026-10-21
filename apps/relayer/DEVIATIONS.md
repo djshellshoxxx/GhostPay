@@ -41,3 +41,19 @@ Contract code wins over docs. Items for the lead to confirm or reject.
     integration.
 16. **Coverage scope:** `src/main.ts` (process wiring, signal handlers) is excluded from coverage; its refuse-to-start paths
     were smoke-tested manually against a built `dist`, not by the test suite.
+
+## Audit round 3 fixes (apps audit part, 2026-10-21)
+
+17. **N-01 admission control.** `sweep` now runs a stateless `simulateSweep` (`eth_call`) OUTSIDE the serial lane, with at most 8
+    concurrent pre-simulations (`503 busy`), so junk sweeps from throw-away keys are answered `422` without ever taking a lane slot.
+    A client (IP as seen by the server) may hold at most `ceil(0.75 * queue.maxPending)` lane slots (`429 rate_limited_ip`). Valid sweeps
+    are simulated twice (pre-check plus in-lane, which stays authoritative). A failed pre-simulation counts as an operational failure for
+    the breaker, and re-opens it immediately when it was the post-cooldown probe. Not done: caching gas price/balance reads, a
+    `balanceOf(owner)` precondition read, and a trusted-proxy allowlist (see 20).
+18. **N-02 fee floor at send time.** The lane re-prices `gasUnits * currentGasPrice` into token units and refuses `422 fee_below_cost`
+    when the signed fee is lower. `quoteTtlSeconds` ceiling (600) is unchanged.
+19. **N-03 / N-07.** Unparseable request targets answer `400 invalid_url`. Startup now refuses a `sweepRelayer` with no code on the RPC
+    (`eth_getCode`). Not done: bytecode-hash comparison against the manifest and periodic `eth_chainId` re-checks.
+20. **N-08 config.** `trustProxyHops > 0` requires a loopback `listen.host` (127.x, `::1`, `localhost`); a reverse proxy on the same
+    host is the supported topology. There is still no `trustedProxies` allowlist, so container deployments that must bind `0.0.0.0`
+    cannot use `trustProxyHops` and fall back to the socket address.

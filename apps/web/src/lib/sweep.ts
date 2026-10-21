@@ -106,6 +106,14 @@ function defaultNonce(): bigint {
 
 /** Signs the EIP-712 Sweep and the ERC-2612 permit with the in-memory stealth key and hands them to the relayer. */
 export async function relayedSweep(i: RelayedSweepInput): Promise<string> {
+  // N-02: re-check the quote at signing time (it may have sat on screen past its expiry or been paired with a
+  // different amount); nothing is derived or signed unless the fee is still within the published cap.
+  if (i.quote.expiresAt <= i.nowSeconds + 30) throw new UserFacingError('The relayer quote has expired or is about to. Request a new quote.');
+  try {
+    assertSponsorFeeAcceptable(i.amount, i.quote.fee);
+  } catch {
+    throw new UserFacingError('The relayer fee is above the published cap for this amount. Refusing.');
+  }
   const secret = deriveVerifiedSweepKey(i.target);
   try {
     const deadline = BigInt(i.nowSeconds + 20 * 60);

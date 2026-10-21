@@ -90,3 +90,10 @@ Everything else under `src/` (all views, components and `lib/` logic) is measure
   construction (labels, roles, live regions, focus management, 44 px targets, contrast ratio check in e2e) plus a few Playwright checks.
 - The embed SDK was verified against a second local origin only; it was not tested inside real merchant pages.
 - No external audit. `README`-level claims of privacy are bounded by `docs/threat-model/THREAT_MODEL.md`.
+
+23. **Audit round 3 (apps part).** N-04: `Pay` resets prepared payment, wallet session, result, buffer quote and schedule whenever the
+    fragment changes and ignores late async results from a previous invoice (generation counter). N-06: relayer errors are read as
+    `{"error":{"code"}}` and the response is read with a streaming 16 KiB cap. N-02 (web): `relayedSweep` re-checks quote expiry (30 s
+    margin) and the fee cap immediately before signing. Gap 3: the fiat-quote option in Create invoice is disabled while
+    `chain-adapters` `FEEDS` is empty. NOT done: TS-03 reorg/depth display and the ERC-6538 publish UI, because the matching
+    `chain-adapters` exports were still uncommitted work in progress when this change was made.

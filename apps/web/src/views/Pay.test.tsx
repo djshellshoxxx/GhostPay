@@ -192,6 +192,21 @@ describe('Pay: sending', () => {
     expect(screen.getByText(/not yet confirmed/)).toBeTruthy();
   });
 
+  it('N-04: a hashchange to another invoice drops the prepared payment (no stale Send button)', async () => {
+    const wallet = new MockWallet();
+    await toPrepared(wallet, makeServices({ loadManifest: loaded(84532) }));
+    const other = await makeParsed({ token: 'native', tokenAmount: '0.75', memo: 'Invoice B' });
+    act(() => {
+      setHash(other.fragment);
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    });
+    expect(await screen.findByRole('heading', { name: 'Review payment' })).toBeTruthy();
+    expect(screen.queryByRole('heading', { name: 'Final check before your wallet' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Send payment in my wallet' })).toBeNull();
+    expect(wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
+    expect(screen.getByText('Invoice B')).toBeTruthy();
+  });
+
   it('verifies on the user RPC when one is configured and offers a local receipt', async () => {
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
     const wallet = new MockWallet();

@@ -22,6 +22,38 @@ export interface QuoteRequest {
 const MAX_RESPONSE = 16 * 1024;
 const TIMEOUT_MS = 15_000;
 
+/** N-06: reads at most MAX_RESPONSE bytes; a hostile relayer cannot make us buffer an unbounded body. */
+async function readCapped(res: Response): Promise<string> {
+  const tooBig = (): UserFacingError => new UserFacingError('The relayer response was too large and was ignored.');
+  const declared = Number(res.headers.get('content-length') ?? '0');
+  if (Number.isFinite(declared) && declared > MAX_RESPONSE) throw tooBig();
+  if (res.body === null) {
+    const t = await res.text();
+    if (t.length > MAX_RESPONSE) throw tooBig();
+    return t;
+  }
+  const reader = res.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > MAX_RESPONSE) {
+      void reader.cancel().catch(() => undefined);
+      throw tooBig();
+    }
+    chunks.push(value);
+  }
+  const all = new Uint8Array(total);
+  let off = 0;
+  for (const c of chunks) {
+    all.set(c, off);
+    off += c.byteLength;
+  }
+  return new TextDecoder().decode(all);
+}
+
 async function post(base: string, path: string, body: unknown, fetchFn: FetchFn): Promise<unknown> {
   const ctl = new AbortController();
   const timer = setTimeout(() => {
@@ -38,13 +70,14 @@ async function post(base: string, path: string, body: unknown, fetchFn: FetchFn)
       cache: 'no-store',
       signal: ctl.signal,
     });
-    const text = await res.text();
-    if (text.length > MAX_RESPONSE) throw new UserFacingError('The relayer response was too large and was ignored.');
+    const text = await readCapped(res);
     if (!res.ok) {
       let cls = '';
       try {
+        // The relayer answers {"error":{"code":"<class>"}}; a bare string is accepted for older relayers.
         const j = JSON.parse(text) as { error?: unknown };
-        if (typeof j.error === 'string' && /^[a-z_]{1,40}$/.test(j.error)) cls = ` (${j.error})`;
+        const code = typeof j.error === 'object' && j.error !== null ? (j.error as { code?: unknown }).code : j.error;
+        if (typeof code === 'string' && /^[a-z_]{1,40}$/.test(code)) cls = ` (${code})`;
       } catch {
         /* class only; never echo the body */
       }
