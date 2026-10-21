@@ -1,1 +1,16 @@
-export {};
+export { PirError } from './errors.js';
+export type { PirErrorCode } from './errors.js';
+export { assertTestnetChainId, TESTNET_CHAIN_IDS } from './guard.js';
+export { csprng, randomBelow, shuffle } from './rand.js';
+export type { RandomBytes } from './rand.js';
+export { pirQuery, pirAnswer, pirReconstruct, queryBytes, MAX_PAGES } from './xor.js';
+export { packPages, unpackPage, MIN_PAGE_BYTES, MAX_PAGE_BYTES, DEFAULT_PAGE_BYTES } from './pages.js';
+export type { PackableAnnouncement, UnpackedAnnouncement, Shard } from './pages.js';
+export { verifyPage, merkleRoot, leafHash, manifestLeaves, parseManifest, manifestsEqual } from './manifest.js';
+export type { Manifest } from './manifest.js';
+export { PirServer } from './server.js';
+export { createPirHttpServer } from './http.js';
+export type { PirHttpOptions, RunningPirHttp } from './http.js';
+export { PirClient, createHttpLink, validateServerPair, pagesForRange, MIN_PAGES_PER_EPOCH } from './client.js';
+export type { PirClientOptions, PirServerLink, PirHttpTransport } from './client.js';
+export { PIR2_CLAIMS, SAME_OPERATOR_NOTICE } from './honesty.js';
