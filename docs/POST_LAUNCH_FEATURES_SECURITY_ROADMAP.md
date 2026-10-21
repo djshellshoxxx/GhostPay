@@ -468,8 +468,15 @@ interface ScheduledPayment {
 
 function randomDelayMs(minMs: number, maxMs: number, cryptoApi: Crypto): number {
   const span = maxMs - minMs + 1;
+  const range = 0x1_0000_0000;
+  if (!Number.isSafeInteger(span) || span <= 0 || span > range) {
+    throw new RangeError("Invalid jitter range");
+  }
+  const limit = range - (range % span);
   const sample = new Uint32Array(1);
-  cryptoApi.getRandomValues(sample);
+  do {
+    cryptoApi.getRandomValues(sample);
+  } while (sample[0] >= limit);
   return minMs + (sample[0] % span);
 }
 ~~~
