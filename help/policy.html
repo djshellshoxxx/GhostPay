@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Policy accounts | GhostPay</title>
+<meta name="description" content="Experimental guarded accounts: fixed destination, delay and limits.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../theme.css">
+<link rel="stylesheet" href="../site.css">
+</head>
+<body class="site">
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><div class="wrap">
+<p class="brand"><a href="../">GhostPay</a></p>
+<p class="tagline">Stealth-address payments. Unaudited software, testnet only.</p>
+<nav aria-label="Guides"><ul class="nav"><li><a class="nav-btn" href="../">App</a></li><li><a class="nav-btn" href="../why.html">Why</a></li><li><a class="nav-btn" href="../how-it-works.html">How it works</a></li><li><a class="nav-btn" href="../privacy-options.html">Privacy options</a></li><li><a class="nav-btn" aria-current="page" href="../help/">Help</a></li></ul></nav>
+</div></header>
+<main id="main" tabindex="-1"><div class="wrap">
+<p class="muted"><a href="../help/">Help</a> / Policy accounts</p>
+<h1>Policy accounts</h1>
+<p>A policy account is a small contract that can only pay one fixed destination, after a delay, within per-token limits. The goal: a stolen key cannot quietly send funds elsewhere.</p>
+<div class="notice notice-warn" role="note"><p><span class="status experimental">EXPERIMENTAL</span> Contracts and a client library only. <strong>No app support, no recovery path, not deployed, unaudited. Do not use.</strong></p></div>
+<figure class="diagram" id="fig-policy">
+<svg class="dg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 889" role="img" aria-labelledby="dg-policy-t dg-policy-d" focusable="false"><title id="dg-policy-t">Policy accounts (experimental)</title><desc id="dg-policy-d">Flow of the policy-guarded account. The seller fixes a policy: destination, delay and per-token limits. A payer pays the predicted account address. The seller deploys the small account contract, then signs a withdrawal request, waits out the delay during which the owner can cancel, and the funds go only to the fixed destination within the limit. Changing the destination takes twice the delay. Experimental: contracts and a client library only, no app support.</desc><defs><marker id="dg-policy-m" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker></defs><rect class="bg" x="0" y="0" width="360" height="889"/><g class="node a-seller"><rect class="box" x="16" y="14" width="328" height="98" rx="4"/><circle class="badge" cx="36" cy="34" r="10"/><text class="badge-n" x="36" y="38" text-anchor="middle">1</text><text class="tag" x="54" y="38">SELLER</text><text class="d-title" x="30" y="57">Choose a policy</text><text class="d-text" x="30" y="78">Destination, delay and per-token limits.</text><text class="d-text" x="30" y="95">Only their hash goes in the meta-address.</text></g><g class="node a-payer"><rect class="box" x="16" y="140" width="328" height="98" rx="4"/><circle class="badge" cx="36" cy="160" r="10"/><text class="badge-n" x="36" y="164" text-anchor="middle">2</text><text class="tag" x="54" y="164">PAYER</text><text class="d-title" x="30" y="183">Pay the account address</text><text class="d-text" x="30" y="204">A predicted address, not yet deployed. The</text><text class="d-text" x="30" y="221">policy router checks it matches the policy.</text></g><path class="arrow" d="M180 112 L180 139" marker-end="url(#dg-policy-m)"/><g class="node a-seller"><rect class="box" x="16" y="266" width="328" height="98" rx="4"/><circle class="badge" cx="36" cy="286" r="10"/><text class="badge-n" x="36" y="290" text-anchor="middle">3</text><text class="tag" x="54" y="290">SELLER</text><text class="d-title" x="30" y="309">Scan, then deploy</text><text class="d-text" x="30" y="330">Anyone can deploy the small account</text><text class="d-text" x="30" y="347">contract. Flat creation fee.</text></g><path class="arrow" d="M180 238 L180 265" marker-end="url(#dg-policy-m)"/><g class="node a-seller"><rect class="box" x="16" y="392" width="328" height="98" rx="4"/><circle class="badge" cx="36" cy="412" r="10"/><text class="badge-n" x="36" y="416" text-anchor="middle">4</text><text class="tag" x="54" y="416">SELLER</text><text class="d-title" x="30" y="435">Sign a withdrawal request</text><text class="d-text" x="30" y="456">Token, amount and deadline, in a signed</text><text class="d-text" x="30" y="473">message.</text></g><path class="arrow" d="M180 364 L180 391" marker-end="url(#dg-policy-m)"/><g class="node a-chain"><rect class="box" x="16" y="518" width="328" height="115" rx="4"/><circle class="badge" cx="36" cy="538" r="10"/><text class="badge-n" x="36" y="542" text-anchor="middle">5</text><text class="tag" x="54" y="542">CHAIN</text><text class="d-title" x="30" y="561">Wait out the delay</text><text class="d-text" x="30" y="582">The owner can cancel during the wait. A</text><text class="d-text" x="30" y="599">request can only ever pay the fixed</text><text class="d-text" x="30" y="616">destination.</text></g><path class="arrow" d="M180 490 L180 517" marker-end="url(#dg-policy-m)"/><g class="node a-chain"><rect class="box" x="16" y="661" width="328" height="98" rx="4"/><circle class="badge" cx="36" cy="681" r="10"/><text class="badge-n" x="36" y="685" text-anchor="middle">6</text><text class="tag" x="54" y="685">CHAIN</text><text class="d-title" x="30" y="704">Execute</text><text class="d-text" x="30" y="725">Funds go only to the fixed destination,</text><text class="d-text" x="30" y="742">within the rolling limit.</text></g><path class="arrow" d="M180 633 L180 660" marker-end="url(#dg-policy-m)"/><g class="node note tone-warn"><rect class="box dashed" x="16" y="787" width="328" height="88" rx="4"/><text class="d-text" x="30" y="811">Changing the destination: propose, then</text><text class="d-text" x="30" y="828">wait twice the delay. A fixed destination</text><text class="d-text" x="30" y="845">makes the on-chain link to it permanent.</text><text class="d-text" x="30" y="862">The delay is a cost if you need money fast.</text></g><path class="arrow" d="M180 759 L180 786" marker-end="url(#dg-policy-m)"/></svg>
+<figcaption>EXPERIMENTAL. No app support and no recovery path. Do not use.</figcaption>
+<details class="textalt"><summary>Text version of this diagram</summary><ol>
+<li><strong>Seller: Choose a policy</strong> Destination, delay and per-token limits. Only their hash goes in the meta-address.</li>
+<li><strong>Payer: Pay the account address</strong> A predicted address, not yet deployed. The policy router checks it matches the policy.</li>
+<li><strong>Seller: Scan, then deploy</strong> Anyone can deploy the small account contract. Flat creation fee.</li>
+<li><strong>Seller: Sign a withdrawal request</strong> Token, amount and deadline, in a signed message.</li>
+<li><strong>Chain: Wait out the delay</strong> The owner can cancel during the wait. A request can only ever pay the fixed destination.</li>
+<li><strong>Chain: Execute</strong> Funds go only to the fixed destination, within the rolling limit.</li>
+<li><strong></strong> Changing the destination: propose, then wait twice the delay. A fixed destination makes the on-chain link to it permanent. The delay is a cost if you need money fast.</li>
+</ol></details>
+</figure>
+<h2>Trade-offs</h2>
+<ul>
+<li>The destination is fixed in advance, so the link from your payments to that destination is permanent. This is the opposite of the fresh-destination advice for normal sweeps.</li>
+<li>A delay protects you and also slows you. Changing the destination takes twice the delay.</li>
+<li>The policy hash is public in your meta-address; the destination itself is not revealed by it.</li>
+<li>Creation has a flat fee (design value, owner to confirm). The usual 0.25 % checkout fee also applies when paying through the policy router.</li>
+</ul>
+
+<div class="pager"><span><a class="btn" href="../help/bitcoin.html">← Bitcoin Silent Payments</a></span><span><a class="btn" href="../help/glossary.html">Glossary →</a></span></div>
+</div></main>
+<footer class="site-footer"><div class="wrap">
+<p>Pre-audit prototype. Nothing is deployed and no real money should be used. No scripts, no analytics, no third-party requests on these pages. <a href="../help/faq.html">FAQ</a> · <a href="../help/glossary.html">Glossary</a> · <a href="../">Open the app</a></p>
+</div></footer>
+</body>
+</html>

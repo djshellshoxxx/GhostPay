@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Glossary | GhostPay</title>
+<meta name="description" content="Plain-language glossary of GhostPay terms.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../theme.css">
+<link rel="stylesheet" href="../site.css">
+</head>
+<body class="site">
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><div class="wrap">
+<p class="brand"><a href="../">GhostPay</a></p>
+<p class="tagline">Stealth-address payments. Unaudited software, testnet only.</p>
+<nav aria-label="Guides"><ul class="nav"><li><a class="nav-btn" href="../">App</a></li><li><a class="nav-btn" href="../why.html">Why</a></li><li><a class="nav-btn" href="../how-it-works.html">How it works</a></li><li><a class="nav-btn" href="../privacy-options.html">Privacy options</a></li><li><a class="nav-btn" aria-current="page" href="../help/">Help</a></li></ul></nav>
+</div></header>
+<main id="main" tabindex="-1"><div class="wrap">
+<p class="muted"><a href="../help/">Help</a> / Glossary</p>
+<h1>Glossary</h1>
+<dl class="gloss">
+<dt>Announcement</dt><dd>A public log entry saying a payment was made: one-time address, ephemeral public key, view tag. It lets the seller find the payment.</dd>
+<dt>Anonymity set</dt><dd>The crowd you blend into. Here, mostly &ldquo;GhostPay users on that chain&rdquo;, which is small and listable.</dd>
+<dt>Base units</dt><dd>The smallest unit of a token (for USDC, millionths). Fees are computed on them.</dd>
+<dt>Basis point (bps)</dt><dd>One hundredth of a percent. 25 bps is 0.25 %.</dd>
+<dt>Bearer link</dt><dd>A link that works for anyone who holds it. The invoice link is one.</dd>
+<dt>BIP-352 / Silent Payments</dt><dd>Bitcoin scheme with one static address and a fresh output per payment.</dd>
+<dt>Deployment manifest</dt><dd>A file naming the contract and fee-recipient addresses for a chain. Without one the app disables payment.</dd>
+<dt>Destination</dt><dd>The wallet you sweep to. Use a fresh one.</dd>
+<dt>Ephemeral key</dt><dd>A one-off key pair the payer makes for each payment. Only its public half is published.</dd>
+<dt>ERC-2612 permit</dt><dd>A signed message that lets a contract move tokens without a separate approval transaction.</dd>
+<dt>ERC-5564</dt><dd>The Ethereum standard for stealth addresses and announcements.</dd>
+<dt>Gas</dt><dd>The network fee for a transaction, paid in the chain&rsquo;s native coin.</dd>
+<dt>Gas buffer</dt><dd>Extra native coin a payer adds to the one-time address so the seller can pay gas. Public; links payer and address.</dd>
+<dt>Meta-address</dt><dd>The public address a seller shares. Holds a spending public key and a viewing public key.</dd>
+<dt>Nonce</dt><dd>A number used once. In a sweep order it stops replays.</dd>
+<dt>One-time address</dt><dd>A fresh address made for a single payment, also called a stealth address.</dd>
+<dt>Policy account</dt><dd>Experimental contract with a fixed destination, delay and limits.</dd>
+<dt>PayJoin</dt><dd>Bitcoin technique where the receiver adds an input to the payment. Planned, not built.</dd>
+<dt>Relayer</dt><dd>A service that submits your signed sweep and pays gas for a fee.</dd>
+<dt>Router</dt><dd>GhostPay&rsquo;s checkout contract: takes the 0.25 % fee, forwards the rest, posts the announcement.</dd>
+<dt>RPC</dt><dd>The server your app asks to read the chain and send transactions.</dd>
+<dt>Spending key</dt><dd>The private key that can move funds. Never share.</dd>
+<dt>Sweep</dt><dd>Moving funds from a one-time address to your wallet.</dd>
+<dt>Testnet</dt><dd>A practice network with valueless coins. GhostPay is testnet-only today.</dd>
+<dt>Timelock / delay</dt><dd>A required wait before a withdrawal can happen.</dd>
+<dt>View tag</dt><dd>The first byte of a hash of the shared secret. A quick filter for the scanner; hides nothing.</dd>
+<dt>Viewing key</dt><dd>The private key that lets software find your payments. Cannot spend, but reveals your history.</dd>
+</dl>
+
+<div class="pager"><span><a class="btn" href="../help/policy.html">← Policy accounts</a></span><span><a class="btn" href="../help/faq.html">FAQ →</a></span></div>
+</div></main>
+<footer class="site-footer"><div class="wrap">
+<p>Pre-audit prototype. Nothing is deployed and no real money should be used. No scripts, no analytics, no third-party requests on these pages. <a href="../help/faq.html">FAQ</a> · <a href="../help/glossary.html">Glossary</a> · <a href="../">Open the app</a></p>
+</div></footer>
+</body>
+</html>

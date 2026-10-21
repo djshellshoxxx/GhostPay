@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Sweep relayer | GhostPay</title>
+<meta name="description" content="How a gas-sponsored sweep works: signed order, relayer, fee split and nonce.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../theme.css">
+<link rel="stylesheet" href="../site.css">
+</head>
+<body class="site">
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><div class="wrap">
+<p class="brand"><a href="../">GhostPay</a></p>
+<p class="tagline">Stealth-address payments. Unaudited software, testnet only.</p>
+<nav aria-label="Guides"><ul class="nav"><li><a class="nav-btn" href="../">App</a></li><li><a class="nav-btn" href="../why.html">Why</a></li><li><a class="nav-btn" href="../how-it-works.html">How it works</a></li><li><a class="nav-btn" href="../privacy-options.html">Privacy options</a></li><li><a class="nav-btn" aria-current="page" href="../help/">Help</a></li></ul></nav>
+</div></header>
+<main id="main" tabindex="-1"><div class="wrap">
+<p class="muted"><a href="../help/">Help</a> / Sweep relayer</p>
+<h1>Sweep relayer</h1>
+<p>A <strong>sweep</strong> moves funds from a one-time address to your own wallet. A one-time address starts with no gas coin, so a relayer can pay gas and take a fee from the tokens.</p>
+<figure class="diagram" id="fig-sweep">
+<svg class="dg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 940" role="img" aria-labelledby="dg-sweep-t dg-sweep-d" focusable="false"><title id="dg-sweep-t">Gas-sponsored sweep through a relayer</title><desc id="dg-sweep-d">Flow of a sweep using a relayer. The seller asks for a quote, the relayer simulates and prices it, the seller signs an order that fixes token, destination, fee wallet, amount, fee, deadline and nonce, the relayer submits it and pays gas, the sweep contract checks signature, deadline and nonce, marks the nonce used, then pays the net amount to the destination and the fee to the relayer.</desc><defs><marker id="dg-sweep-m" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker></defs><rect class="bg" x="0" y="0" width="360" height="940"/><g class="node a-seller"><rect class="box" x="16" y="14" width="328" height="98" rx="4"/><circle class="badge" cx="36" cy="34" r="10"/><text class="badge-n" x="36" y="38" text-anchor="middle">1</text><text class="tag" x="54" y="38">SELLER</text><text class="d-title" x="30" y="57">Ask for a quote</text><text class="d-text" x="30" y="78">Give the relayer the one-time address,</text><text class="d-text" x="30" y="95">destination and token.</text></g><g class="node a-relayer"><rect class="box" x="16" y="140" width="328" height="98" rx="4"/><circle class="badge" cx="36" cy="160" r="10"/><text class="badge-n" x="36" y="164" text-anchor="middle">2</text><text class="tag" x="54" y="164">RELAYER</text><text class="d-title" x="30" y="183">Simulate and price</text><text class="d-text" x="30" y="204">Fee is max(gas cost x 1.10, 0.50 %), capped</text><text class="d-text" x="30" y="221">at 3 %.</text></g><path class="arrow" d="M180 112 L180 139" marker-end="url(#dg-sweep-m)"/><g class="node a-seller"><rect class="box" x="16" y="266" width="328" height="115" rx="4"/><circle class="badge" cx="36" cy="286" r="10"/><text class="badge-n" x="36" y="290" text-anchor="middle">3</text><text class="tag" x="54" y="290">SELLER</text><text class="d-title" x="30" y="309">Sign the order</text><text class="d-text" x="30" y="330">One signature fixes token, destination, fee</text><text class="d-text" x="30" y="347">wallet, amount, fee, deadline and nonce. A</text><text class="d-text" x="30" y="364">permit lets the contract move the tokens.</text></g><path class="arrow" d="M180 238 L180 265" marker-end="url(#dg-sweep-m)"/><g class="node a-relayer"><rect class="box" x="16" y="409" width="328" height="98" rx="4"/><circle class="badge" cx="36" cy="429" r="10"/><text class="badge-n" x="36" y="433" text-anchor="middle">4</text><text class="tag" x="54" y="433">RELAYER</text><text class="d-title" x="30" y="452">Submit the transaction</text><text class="d-text" x="30" y="473">Pays the gas. Cannot change destination,</text><text class="d-text" x="30" y="490">amount or fee.</text></g><path class="arrow" d="M180 381 L180 408" marker-end="url(#dg-sweep-m)"/><g class="node a-chain"><rect class="box" x="16" y="535" width="328" height="115" rx="4"/><circle class="badge" cx="36" cy="555" r="10"/><text class="badge-n" x="36" y="559" text-anchor="middle">5</text><text class="tag" x="54" y="559">CHAIN</text><text class="d-title" x="30" y="578">Contract checks</text><text class="d-text" x="30" y="599">Not expired. Signature is the owner’s.</text><text class="d-text" x="30" y="616">Nonce unused, then marked used first, so</text><text class="d-text" x="30" y="633">the order cannot be replayed.</text></g><path class="arrow" d="M180 507 L180 534" marker-end="url(#dg-sweep-m)"/><g class="node a-chain"><rect class="box" x="16" y="678" width="158" height="115" rx="4"/><text class="tag" x="30" y="702">CHAIN</text><text class="d-title" x="30" y="721">Net amount</text><text class="d-text" x="30" y="742">amount minus fee,</text><text class="d-text" x="30" y="759">to your</text><text class="d-text" x="30" y="776">destination</text></g><g class="node a-relayer"><rect class="box" x="186" y="678" width="158" height="115" rx="4"/><text class="tag" x="200" y="702">RELAYER</text><text class="d-title" x="200" y="721">Fee</text><text class="d-text" x="200" y="742">to the fee wallet</text><text class="d-text" x="200" y="759">in the signed order</text></g><path class="arrow" d="M180 650 L180 664 L95 664 L95 677" marker-end="url(#dg-sweep-m)"/><path class="arrow" d="M180 650 L180 664 L265 664 L265 677" marker-end="url(#dg-sweep-m)"/><g class="node note tone-warn"><rect class="box dashed" x="16" y="821" width="328" height="105" rx="4"/><text class="d-text" x="30" y="845">The relayer sees one-time address,</text><text class="d-text" x="30" y="862">destination, token, amount, fee, hashed IP</text><text class="d-text" x="30" y="879">and timing, and can refuse or delay. Gasless</text><text class="d-text" x="30" y="896">is not unlinkable. Needs a token with</text><text class="d-text" x="30" y="913">permit; USDT-style tokens cannot use it.</text></g><path class="arrow" d="M95 793 L95 807 L180 807 L180 820" marker-end="url(#dg-sweep-m)"/><path class="arrow" d="M265 793 L265 807 L180 807 L180 820" marker-end="url(#dg-sweep-m)"/></svg>
+<figcaption>The relayer pays gas and cannot change what the seller signed.</figcaption>
+<details class="textalt"><summary>Text version of this diagram</summary><ol>
+<li><strong>Seller: Ask for a quote</strong> Give the relayer the one-time address, destination and token.</li>
+<li><strong>Relayer: Simulate and price</strong> Fee is max(gas cost x 1.10, 0.50 %), capped at 3 %.</li>
+<li><strong>Seller: Sign the order</strong> One signature fixes token, destination, fee wallet, amount, fee, deadline and nonce. A permit lets the contract move the tokens.</li>
+<li><strong>Relayer: Submit the transaction</strong> Pays the gas. Cannot change destination, amount or fee.</li>
+<li><strong>Chain: Contract checks</strong> Not expired. Signature is the owner’s. Nonce unused, then marked used first, so the order cannot be replayed.</li>
+<li><strong>Chain: Net amount</strong> amount minus fee, to your destination</li>
+<li><strong>Relayer: Fee</strong> to the fee wallet in the signed order</li>
+<li><strong></strong> The relayer sees one-time address, destination, token, amount, fee, hashed IP and timing, and can refuse or delay. Gasless is not unlinkable. Needs a token with permit; USDT-style tokens cannot use it.</li>
+</ol></details>
+</figure>
+<h2>In plain words</h2>
+<ul>
+<li><strong>Signed order.</strong> Your single signature fixes the destination, amount and fee. The relayer can send it or not; it cannot edit it.</li>
+<li><strong>Nonce.</strong> A one-use number inside the order. The contract marks it used before moving anything, so the same order cannot run twice.</li>
+<li><strong>Fee split.</strong> Net amount to your destination, fee to the fee wallet you signed. The fee is the larger of gas cost times 1.10 and 0.50 %, capped at 3 %.</li>
+<li><strong>Direct sweep</strong> is the alternative: put gas coin on the one-time address and send an ordinary transfer yourself.</li>
+</ul>
+<div class="notice notice-warn" role="note"><p>The sweep is public. Anyone can link the one-time address to your destination, so use a fresh destination. In the app the key is used inside the page and there is no wallet pop-up, so read the destination on screen before signing.</p></div>
+
+<div class="pager"><span><a class="btn" href="../help/stealth.html">← One-time addresses</a></span><span><a class="btn" href="../help/fees.html">Fees →</a></span></div>
+</div></main>
+<footer class="site-footer"><div class="wrap">
+<p>Pre-audit prototype. Nothing is deployed and no real money should be used. No scripts, no analytics, no third-party requests on these pages. <a href="../help/faq.html">FAQ</a> · <a href="../help/glossary.html">Glossary</a> · <a href="../">Open the app</a></p>
+</div></footer>
+</body>
+</html>

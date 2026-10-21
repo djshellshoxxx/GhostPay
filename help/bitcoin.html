@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Bitcoin Silent Payments | GhostPay</title>
+<meta name="description" content="BIP-352 silent payments: sender, receiver, scan and spend, at concept level.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../theme.css">
+<link rel="stylesheet" href="../site.css">
+</head>
+<body class="site">
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><div class="wrap">
+<p class="brand"><a href="../">GhostPay</a></p>
+<p class="tagline">Stealth-address payments. Unaudited software, testnet only.</p>
+<nav aria-label="Guides"><ul class="nav"><li><a class="nav-btn" href="../">App</a></li><li><a class="nav-btn" href="../why.html">Why</a></li><li><a class="nav-btn" href="../how-it-works.html">How it works</a></li><li><a class="nav-btn" href="../privacy-options.html">Privacy options</a></li><li><a class="nav-btn" aria-current="page" href="../help/">Help</a></li></ul></nav>
+</div></header>
+<main id="main" tabindex="-1"><div class="wrap">
+<p class="muted"><a href="../help/">Help</a> / Bitcoin Silent Payments</p>
+<h1>Bitcoin Silent Payments</h1>
+<p>Silent Payments (BIP-352) is Bitcoin&rsquo;s version of the one-time address idea: one static address, a fresh output for every payment.</p>
+<div class="notice notice-warn" role="note"><p><span class="status experimental">EXPERIMENTAL</span> GhostPay has a tested library for this. It is <strong>not wired into the web app or the relayer</strong> and has never run on a real network. Testnet only.</p></div>
+<figure class="diagram" id="fig-bitcoin">
+<svg class="dg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 923" role="img" aria-labelledby="dg-bitcoin-t dg-bitcoin-d" focusable="false"><title id="dg-bitcoin-t">Bitcoin Silent Payments (BIP-352)</title><desc id="dg-bitcoin-d">Flow of BIP-352 Silent Payments. The receiver makes a scan key and a spend key and shares one static address. The sender derives a fresh taproot output key from its own input keys and the receiver address, so there is no address reuse. The output looks like an ordinary payment on-chain. The receiver scans transactions with the scan key, and spends with the spend key plus a per-output tweak. Status: experimental library, not wired into the web app or relayer.</desc><defs><marker id="dg-bitcoin-m" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker></defs><rect class="bg" x="0" y="0" width="360" height="923"/><g class="node a-seller"><rect class="box" x="16" y="14" width="328" height="98" rx="4"/><circle class="badge" cx="36" cy="34" r="10"/><text class="badge-n" x="36" y="38" text-anchor="middle">1</text><text class="tag" x="54" y="38">RECEIVER</text><text class="d-title" x="30" y="57">Make keys and address</text><text class="d-text" x="30" y="78">A scan key and a spend key give one static</text><text class="d-text" x="30" y="95">sp1… address (tsp1… on testnet).</text></g><g class="node a-payer"><rect class="box" x="16" y="140" width="328" height="98" rx="4"/><circle class="badge" cx="36" cy="160" r="10"/><text class="badge-n" x="36" y="164" text-anchor="middle">2</text><text class="tag" x="54" y="164">SENDER</text><text class="d-title" x="30" y="183">Choose inputs</text><text class="d-text" x="30" y="204">Spend coins you control. Their private keys</text><text class="d-text" x="30" y="221">feed the maths.</text></g><path class="arrow" d="M180 112 L180 139" marker-end="url(#dg-bitcoin-m)"/><g class="node a-payer"><rect class="box" x="16" y="266" width="328" height="115" rx="4"/><circle class="badge" cx="36" cy="286" r="10"/><text class="badge-n" x="36" y="290" text-anchor="middle">3</text><text class="tag" x="54" y="290">SENDER</text><text class="d-title" x="30" y="309">Derive the output key</text><text class="d-text" x="30" y="330">Input keys + receiver’s scan key give a</text><text class="d-text" x="30" y="347">shared secret, which tweaks the spend key</text><text class="d-text" x="30" y="364">into a fresh output.</text></g><path class="arrow" d="M180 238 L180 265" marker-end="url(#dg-bitcoin-m)"/><g class="node a-chain"><rect class="box" x="16" y="409" width="328" height="98" rx="4"/><circle class="badge" cx="36" cy="429" r="10"/><text class="badge-n" x="36" y="433" text-anchor="middle">4</text><text class="tag" x="54" y="433">CHAIN</text><text class="d-title" x="30" y="452">Ordinary-looking payment</text><text class="d-text" x="30" y="473">A normal taproot output. No reuse, no</text><text class="d-text" x="30" y="490">notification transaction.</text></g><path class="arrow" d="M180 381 L180 408" marker-end="url(#dg-bitcoin-m)"/><g class="node a-seller"><rect class="box" x="16" y="535" width="328" height="132" rx="4"/><circle class="badge" cx="36" cy="555" r="10"/><text class="badge-n" x="36" y="559" text-anchor="middle">5</text><text class="tag" x="54" y="559">RECEIVER</text><text class="d-title" x="30" y="578">Scan</text><text class="d-text" x="30" y="599">Per transaction, the scan key tests</text><text class="d-text" x="30" y="616">whether an output is yours. A</text><text class="d-text" x="30" y="633">BlindBit-style server can supply the tweak</text><text class="d-text" x="30" y="650">data.</text></g><path class="arrow" d="M180 507 L180 534" marker-end="url(#dg-bitcoin-m)"/><g class="node a-seller"><rect class="box" x="16" y="695" width="328" height="98" rx="4"/><circle class="badge" cx="36" cy="715" r="10"/><text class="badge-n" x="36" y="719" text-anchor="middle">6</text><text class="tag" x="54" y="719">RECEIVER</text><text class="d-title" x="30" y="738">Spend</text><text class="d-text" x="30" y="759">Spend key + that output’s tweak = its</text><text class="d-text" x="30" y="776">private key. Sign a key-path spend.</text></g><path class="arrow" d="M180 667 L180 694" marker-end="url(#dg-bitcoin-m)"/><g class="node note tone-warn"><rect class="box dashed" x="16" y="821" width="328" height="88" rx="4"/><text class="d-text" x="30" y="845">Amounts, timing and the sender’s inputs</text><text class="d-text" x="30" y="862">are still public. Library tested on official</text><text class="d-text" x="30" y="879">BIP-352 vectors only; never run on a real</text><text class="d-text" x="30" y="896">network. Testnet only. Not in the app.</text></g><path class="arrow" d="M180 793 L180 820" marker-end="url(#dg-bitcoin-m)"/></svg>
+<figcaption>Experimental: a tested library, not yet part of the app.</figcaption>
+<details class="textalt"><summary>Text version of this diagram</summary><ol>
+<li><strong>Receiver: Make keys and address</strong> A scan key and a spend key give one static sp1… address (tsp1… on testnet).</li>
+<li><strong>Sender: Choose inputs</strong> Spend coins you control. Their private keys feed the maths.</li>
+<li><strong>Sender: Derive the output key</strong> Input keys + receiver’s scan key give a shared secret, which tweaks the spend key into a fresh output.</li>
+<li><strong>Chain: Ordinary-looking payment</strong> A normal taproot output. No reuse, no notification transaction.</li>
+<li><strong>Receiver: Scan</strong> Per transaction, the scan key tests whether an output is yours. A BlindBit-style server can supply the tweak data.</li>
+<li><strong>Receiver: Spend</strong> Spend key + that output’s tweak = its private key. Sign a key-path spend.</li>
+<li><strong></strong> Amounts, timing and the sender’s inputs are still public. Library tested on official BIP-352 vectors only; never run on a real network. Testnet only. Not in the app.</li>
+</ol></details>
+</figure>
+<h2>In plain words</h2>
+<ul>
+<li>The receiver has two keys: a <strong>scan</strong> key to find payments and a <strong>spend</strong> key to move them.</li>
+<li>The sender combines its own input keys with the receiver&rsquo;s address to make a new output key. No contact needed.</li>
+<li>Nothing on-chain says it is a silent payment. There is no notification transaction.</li>
+<li>Scanning needs data from every candidate transaction, which is heavier than the Ethereum view-tag scan.</li>
+</ul>
+<h2>Fees on Bitcoin</h2>
+<p>There is no enforceable GhostPay protocol fee on Bitcoin. Amounts are in satoshis.</p>
+
+<div class="pager"><span><a class="btn" href="../help/privacy-map.html">← Privacy options map</a></span><span><a class="btn" href="../help/policy.html">Policy accounts →</a></span></div>
+</div></main>
+<footer class="site-footer"><div class="wrap">
+<p>Pre-audit prototype. Nothing is deployed and no real money should be used. No scripts, no analytics, no third-party requests on these pages. <a href="../help/faq.html">FAQ</a> · <a href="../help/glossary.html">Glossary</a> · <a href="../">Open the app</a></p>
+</div></footer>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Fees | GhostPay</title>
+<meta name="description" content="What GhostPay charges and when.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../theme.css">
+<link rel="stylesheet" href="../site.css">
+</head>
+<body class="site">
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><div class="wrap">
+<p class="brand"><a href="../">GhostPay</a></p>
+<p class="tagline">Stealth-address payments. Unaudited software, testnet only.</p>
+<nav aria-label="Guides"><ul class="nav"><li><a class="nav-btn" href="../">App</a></li><li><a class="nav-btn" href="../why.html">Why</a></li><li><a class="nav-btn" href="../how-it-works.html">How it works</a></li><li><a class="nav-btn" href="../privacy-options.html">Privacy options</a></li><li><a class="nav-btn" aria-current="page" href="../help/">Help</a></li></ul></nav>
+</div></header>
+<main id="main" tabindex="-1"><div class="wrap">
+<p class="muted"><a href="../help/">Help</a> / Fees</p>
+<h1>Fees</h1>
+<p>Nothing is deployed, so no fee is collected anywhere today. This is the designed schedule.</p>
+<figure class="diagram" id="fig-fees">
+<svg class="dg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 779" role="img" aria-labelledby="dg-fees-t dg-fees-d" focusable="false"><title id="dg-fees-t">Fee model</title><desc id="dg-fees-d">Diagram of GhostPay fees. Paying through the router costs 0.25 percent of the gross amount, rounded down. Paying the one-time address directly has no GhostPay fee. A relayer sweep costs the larger of gas cost times 1.10 or 0.50 percent, capped at 3 percent. A direct sweep has no relayer fee. Policy account creation has a flat fee, contracts only. Worked example: 100.00 USDC through the router means 0.25 USDC fee and 99.75 USDC net.</desc><defs><marker id="dg-fees-m" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker></defs><rect class="bg" x="0" y="0" width="360" height="779"/><g class="node a-payer"><rect class="box" x="16" y="14" width="328" height="98" rx="4"/><text class="tag" x="30" y="38">PAYER</text><text class="d-title" x="30" y="57">How does the payer pay?</text><text class="d-text" x="30" y="78">The fee only applies where funds pass</text><text class="d-text" x="30" y="95">through GhostPay’s contract.</text></g><g class="node a-chain"><rect class="box" x="16" y="140" width="158" height="132" rx="4"/><text class="tag" x="30" y="164">CHAIN</text><text class="d-title" x="30" y="183">Router</text><text class="d-text" x="30" y="204">0.25 % of gross,</text><text class="d-text" x="30" y="221">rounded down.</text><text class="d-text" x="30" y="238">Below 400 base</text><text class="d-text" x="30" y="255">units: 0.</text></g><g class="node a-payer"><rect class="box" x="186" y="140" width="158" height="132" rx="4"/><text class="tag" x="200" y="164">PAYER</text><text class="d-title" x="200" y="183">Direct</text><text class="d-text" x="200" y="204">No GhostPay fee.</text><text class="d-text" x="200" y="221">Also no router</text><text class="d-text" x="200" y="238">checks.</text></g><path class="arrow" d="M180 112 L180 126 L95 126 L95 139" marker-end="url(#dg-fees-m)"/><path class="arrow" d="M180 112 L180 126 L265 126 L265 139" marker-end="url(#dg-fees-m)"/><g class="node a-seller"><rect class="box" x="16" y="300" width="328" height="81" rx="4"/><text class="tag" x="30" y="324">SELLER</text><text class="d-title" x="30" y="343">How does the seller sweep?</text><text class="d-text" x="30" y="364">Network gas is never a GhostPay fee.</text></g><path class="arrow" d="M95 272 L95 286 L180 286 L180 299" marker-end="url(#dg-fees-m)"/><path class="arrow" d="M265 272 L265 286 L180 286 L180 299" marker-end="url(#dg-fees-m)"/><g class="node a-relayer"><rect class="box" x="16" y="409" width="158" height="115" rx="4"/><text class="tag" x="30" y="433">RELAYER</text><text class="d-title" x="30" y="452">Relayer</text><text class="d-text" x="30" y="473">max(gas x 1.10, 0.50</text><text class="d-text" x="30" y="490">%), capped at 3 %.</text><text class="d-text" x="30" y="507">In the signature.</text></g><g class="node a-seller"><rect class="box" x="186" y="409" width="158" height="115" rx="4"/><text class="tag" x="200" y="433">SELLER</text><text class="d-title" x="200" y="452">Direct</text><text class="d-text" x="200" y="473">You pay your own</text><text class="d-text" x="200" y="490">gas. No relayer</text><text class="d-text" x="200" y="507">fee.</text></g><path class="arrow" d="M180 381 L180 395 L95 395 L95 408" marker-end="url(#dg-fees-m)"/><path class="arrow" d="M180 381 L180 395 L265 395 L265 408" marker-end="url(#dg-fees-m)"/><g class="node a-none"><rect class="box" x="16" y="552" width="328" height="97" rx="4"/><text class="d-title" x="30" y="577">Policy account creation</text><text class="d-text" x="30" y="598">Flat fee in a stablecoin (design value USD 3,</text><text class="d-text" x="30" y="615">owner to confirm). Contracts only, no app</text><text class="d-text" x="30" y="632">support.</text></g><path class="arrow" d="M95 524 L95 538 L180 538 L180 551" marker-end="url(#dg-fees-m)"/><path class="arrow" d="M265 524 L265 538 L180 538 L180 551" marker-end="url(#dg-fees-m)"/><g class="node note "><rect class="box dashed" x="16" y="677" width="328" height="88" rx="4"/><text class="d-text" x="30" y="701">Example, made-up numbers: 100.00 USDC</text><text class="d-text" x="30" y="718">through the router = 0.25 USDC fee, 99.75</text><text class="d-text" x="30" y="735">USDC to the seller. Scanning, tags, delay,</text><text class="d-text" x="30" y="752">QR codes and invoices are free.</text></g><path class="arrow" d="M180 649 L180 676" marker-end="url(#dg-fees-m)"/></svg>
+<figcaption>Nothing is deployed, so no fee is being collected anywhere today.</figcaption>
+<details class="textalt"><summary>Text version of this diagram</summary><ol>
+<li><strong>Payer: How does the payer pay?</strong> The fee only applies where funds pass through GhostPay’s contract.</li>
+<li><strong>Chain: Router</strong> 0.25 % of gross, rounded down. Below 400 base units: 0.</li>
+<li><strong>Payer: Direct</strong> No GhostPay fee. Also no router checks.</li>
+<li><strong>Seller: How does the seller sweep?</strong> Network gas is never a GhostPay fee.</li>
+<li><strong>Relayer: Relayer</strong> max(gas x 1.10, 0.50 %), capped at 3 %. In the signature.</li>
+<li><strong>Seller: Direct</strong> You pay your own gas. No relayer fee.</li>
+<li><strong>Policy account creation</strong> Flat fee in a stablecoin (design value USD 3, owner to confirm). Contracts only, no app support.</li>
+<li><strong></strong> Example, made-up numbers: 100.00 USDC through the router = 0.25 USDC fee, 99.75 USDC to the seller. Scanning, tags, delay, QR codes and invoices are free.</li>
+</ol></details>
+</figure>
+<div class="table-wrap" role="region" aria-label="Fee table" tabindex="0">
+<table>
+<caption>Fee table</caption>
+<thead><tr><th scope="col">Fee</th><th scope="col">When</th><th scope="col">Amount</th></tr></thead>
+<tbody>
+<tr><td data-label="Fee">Checkout</td><td data-label="When">Pay through the router</td><td data-label="Amount">0.25 % (25 bps) of gross, rounded down; none under 400 base units</td></tr>
+<tr><td data-label="Fee">Direct pay</td><td data-label="When">Payer sends to the one-time address</td><td data-label="Amount">No GhostPay fee</td></tr>
+<tr><td data-label="Fee">Relayer sweep</td><td data-label="When">You use a relayer</td><td data-label="Amount">max(gas cost x 1.10, 0.50 %), capped at 3 %, fixed in your signature</td></tr>
+<tr><td data-label="Fee">Policy account creation</td><td data-label="When">Contracts only, no app</td><td data-label="Amount">Flat stablecoin fee (design value USD 3, owner to confirm)</td></tr>
+</tbody></table></div>
+<h2>Good to know</h2>
+<ul>
+<li>The fee only works where funds pass through GhostPay&rsquo;s contract. A payer can bypass it, and a fork of the client can drop it. This is by design and disclosed.</li>
+<li>The fee rate and recipient are fixed per deployment and shown in the app from the deployment manifest. The recipient is not in the source code.</li>
+<li>Network gas, wallet fees and RPC charges are not GhostPay fees.</li>
+</ul>
+
+<div class="pager"><span><a class="btn" href="../help/sweep.html">← Sweep relayer</a></span><span><a class="btn" href="../help/observers.html">What observers see →</a></span></div>
+</div></main>
+<footer class="site-footer"><div class="wrap">
+<p>Pre-audit prototype. Nothing is deployed and no real money should be used. No scripts, no analytics, no third-party requests on these pages. <a href="../help/faq.html">FAQ</a> · <a href="../help/glossary.html">Glossary</a> · <a href="../">Open the app</a></p>
+</div></footer>
+</body>
+</html>

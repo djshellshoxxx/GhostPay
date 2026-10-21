@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>What observers see | GhostPay</title>
+<meta name="description" content="What the public, the host, the RPC, the relayer and the payer can and cannot learn.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../theme.css">
+<link rel="stylesheet" href="../site.css">
+</head>
+<body class="site">
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><div class="wrap">
+<p class="brand"><a href="../">GhostPay</a></p>
+<p class="tagline">Stealth-address payments. Unaudited software, testnet only.</p>
+<nav aria-label="Guides"><ul class="nav"><li><a class="nav-btn" href="../">App</a></li><li><a class="nav-btn" href="../why.html">Why</a></li><li><a class="nav-btn" href="../how-it-works.html">How it works</a></li><li><a class="nav-btn" href="../privacy-options.html">Privacy options</a></li><li><a class="nav-btn" aria-current="page" href="../help/">Help</a></li></ul></nav>
+</div></header>
+<main id="main" tabindex="-1"><div class="wrap">
+<p class="muted"><a href="../help/">Help</a> / What observers see</p>
+<h1>What observers see</h1>
+<p>GhostPay reduces address reuse. It does not make a payment private. Here is who learns what.</p>
+<figure class="diagram" id="fig-observers">
+<svg class="dg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 943" role="img" aria-labelledby="dg-observers-t dg-observers-d" focusable="false"><title id="dg-observers-t">What an observer sees and what stays hidden</title><desc id="dg-observers-d">Two panels, then a card per observer. Public on-chain: payer address, token and amounts, time, use of the router, the announcement and the sweep source and destination. Not public from chain data alone: which seller owns the one-time address, the invoice contents, any keys. Then cards for the static host, RPC provider, relayer, wallet provider, holder of the invoice link and the payer, each with what they learn and what they do not.</desc><defs><marker id="dg-observers-m" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker></defs><rect class="bg" x="0" y="0" width="360" height="943"/><g class="node a-observer"><rect class="box" x="16" y="14" width="158" height="200" rx="4"/><text class="tag" x="30" y="38">OBSERVER</text><text class="d-title" x="30" y="57">PUBLIC</text><text class="d-text" x="30" y="78">Payer address</text><text class="d-text" x="30" y="95">Token and amount</text><text class="d-text" x="30" y="112">Time</text><text class="d-text" x="30" y="129">Router was used</text><text class="d-text" x="30" y="146">Announcement</text><text class="d-text" x="30" y="163">Sweep source and</text><text class="d-text" x="30" y="180">destination</text></g><g class="node a-seller"><rect class="box" x="186" y="14" width="158" height="200" rx="4"/><text class="tag" x="200" y="38">SELLER</text><text class="d-title" x="200" y="57">NOT PUBLIC</text><text class="d-text" x="200" y="78">Which seller owns</text><text class="d-text" x="200" y="95">the one-time</text><text class="d-text" x="200" y="112">address</text><text class="d-text" x="200" y="129">Invoice contents</text><text class="d-text" x="200" y="146">Spending and</text><text class="d-text" x="200" y="163">viewing keys</text><text class="d-text" x="200" y="180">The # part of the</text><text class="d-text" x="200" y="197">link</text></g><g class="node a-observer"><rect class="box" x="16" y="242" width="328" height="115" rx="4"/><text class="tag" x="30" y="266">OBSERVER</text><text class="d-title" x="30" y="285">Static host / CDN</text><text class="d-text" x="30" y="306">Sees: your IP, user agent, files fetched,</text><text class="d-text" x="30" y="323">timing.</text><text class="d-text" x="30" y="340">Not: the # part, keys, invoice.</text></g><g class="node a-observer"><rect class="box" x="16" y="385" width="328" height="115" rx="4"/><text class="tag" x="30" y="409">OBSERVER</text><text class="d-title" x="30" y="428">RPC provider</text><text class="d-text" x="30" y="449">Sees: your IP, blocks and addresses you</text><text class="d-text" x="30" y="466">query, transactions you send.</text><text class="d-text" x="30" y="483">Not: keys, invoice.</text></g><g class="node a-observer"><rect class="box" x="16" y="528" width="328" height="132" rx="4"/><text class="tag" x="30" y="552">OBSERVER</text><text class="d-title" x="30" y="571">Relayer operator</text><text class="d-text" x="30" y="592">Sees: hashed IP, one-time address,</text><text class="d-text" x="30" y="609">destination, token, amount, fee, timing. Can</text><text class="d-text" x="30" y="626">censor.</text><text class="d-text" x="30" y="643">Not: keys.</text></g><g class="node a-observer"><rect class="box" x="16" y="688" width="328" height="98" rx="4"/><text class="tag" x="30" y="712">OBSERVER</text><text class="d-title" x="30" y="731">Anyone with the invoice link</text><text class="d-text" x="30" y="752">Sees: the whole invoice (it is a bearer link).</text><text class="d-text" x="30" y="769">Not: seller keys.</text></g><g class="node a-observer"><rect class="box" x="16" y="814" width="328" height="115" rx="4"/><text class="tag" x="30" y="838">OBSERVER</text><text class="d-title" x="30" y="857">The payer</text><text class="d-text" x="30" y="878">Knows: the one-time address, so can watch</text><text class="d-text" x="30" y="895">where you sweep it.</text><text class="d-text" x="30" y="912">Not: your keys.</text></g></svg>
+<figcaption>Hidden does not mean anonymous. The list on the left is the part people forget.</figcaption>
+<details class="textalt"><summary>Text version of this diagram</summary><ol>
+<li><strong>Observer: PUBLIC</strong> Payer address Token and amount Time Router was used Announcement Sweep source and destination</li>
+<li><strong>Seller: NOT PUBLIC</strong> Which seller owns the one-time address Invoice contents Spending and viewing keys The # part of the link</li>
+<li><strong>Observer: Static host / CDN</strong> Sees: your IP, user agent, files fetched, timing. Not: the # part, keys, invoice.</li>
+<li><strong>Observer: RPC provider</strong> Sees: your IP, blocks and addresses you query, transactions you send. Not: keys, invoice.</li>
+<li><strong>Observer: Relayer operator</strong> Sees: hashed IP, one-time address, destination, token, amount, fee, timing. Can censor. Not: keys.</li>
+<li><strong>Observer: Anyone with the invoice link</strong> Sees: the whole invoice (it is a bearer link). Not: seller keys.</li>
+<li><strong>Observer: The payer</strong> Knows: the one-time address, so can watch where you sweep it. Not: your keys.</li>
+</ol></details>
+</figure>
+<div class="table-wrap" role="region" aria-label="Who learns what" tabindex="0">
+<table>
+<caption>Who learns what</caption>
+<thead><tr><th scope="col">Observer</th><th scope="col">Learns</th><th scope="col">Does not learn</th></tr></thead>
+<tbody>
+<tr><td data-label="Observer">Public chain analyst</td><td data-label="Learns">Payer address, token, gross and net amounts, fee flow, router use, the announcement, timing, and the sweep source and destination</td><td data-label="Does not learn">Which seller owns a one-time address from chain data alone; invoice contents</td></tr>
+<tr><td data-label="Observer">Static host / CDN</td><td data-label="Learns">Your IP, user agent, files fetched, timing</td><td data-label="Does not learn">The # part of the link, keys, invoice</td></tr>
+<tr><td data-label="Observer">RPC provider</td><td data-label="Learns">Your IP, blocks and addresses you query, transactions you send</td><td data-label="Does not learn">Viewing or spending keys; invoice</td></tr>
+<tr><td data-label="Observer">Relayer operator</td><td data-label="Learns">Hashed IP, one-time address, destination, token, amount, fee, timing; can censor</td><td data-label="Does not learn">Keys</td></tr>
+<tr><td data-label="Observer">Wallet provider</td><td data-label="Learns">Transaction requests, chain, connected accounts</td><td data-label="Does not learn">Keys of the one-time address</td></tr>
+<tr><td data-label="Observer">Anyone holding the invoice link</td><td data-label="Learns">The entire invoice</td><td data-label="Does not learn">Seller keys</td></tr>
+<tr><td data-label="Observer">The payer</td><td data-label="Learns">The one-time address they paid, so where you sweep it</td><td data-label="Does not learn">Your keys</td></tr>
+<tr><td data-label="Observer">Anyone with two of your invoices</td><td data-label="Learns">Both come from the same seller (same meta-address)</td><td data-label="Does not learn">Your private keys</td></tr>
+</tbody></table></div>
+<div class="notice notice-warn" role="note"><p><strong>Not hidden:</strong> payer, amount, token, time and the router call. A compromised website, browser extension or device defeats everything.</p></div>
+
+<div class="pager"><span><a class="btn" href="../help/fees.html">← Fees</a></span><span><a class="btn" href="../help/privacy-map.html">Privacy options map →</a></span></div>
+</div></main>
+<footer class="site-footer"><div class="wrap">
+<p>Pre-audit prototype. Nothing is deployed and no real money should be used. No scripts, no analytics, no third-party requests on these pages. <a href="../help/faq.html">FAQ</a> · <a href="../help/glossary.html">Glossary</a> · <a href="../">Open the app</a></p>
+</div></footer>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Privacy options | GhostPay</title>
+<meta name="description" content="Every selectable privacy option, honestly labelled built, planned or experimental.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="./theme.css">
+<link rel="stylesheet" href="./site.css">
+</head>
+<body class="site">
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><div class="wrap">
+<p class="brand"><a href="./">GhostPay</a></p>
+<p class="tagline">Stealth-address payments. Unaudited software, testnet only.</p>
+<nav aria-label="Guides"><ul class="nav"><li><a class="nav-btn" href="./">App</a></li><li><a class="nav-btn" href="./why.html">Why</a></li><li><a class="nav-btn" href="./how-it-works.html">How it works</a></li><li><a class="nav-btn" aria-current="page" href="./privacy-options.html">Privacy options</a></li><li><a class="nav-btn" href="./help/">Help</a></li></ul></nav>
+</div></header>
+<main id="main" tabindex="-1"><div class="wrap">
+
+<h1>Privacy options</h1>
+<p class="lead">GhostPay offers a menu of privacy options. Most are <strong>not built yet</strong>. This page lists each one with its real status and what it still leaves visible.</p>
+
+<div class="notice notice-warn" role="note"><p><strong>Hidden is not anonymous.</strong> Even the best option here leaves the payer, amount, token, time and router call public unless a card says otherwise. Nothing is audited. Testnet only.</p></div>
+
+<h2>How to read the labels</h2>
+<ul class="legend">
+<li><span class="status built">BUILT</span> Works in the app (or the running app code) today, in tests and mocks. Not tested against a real wallet, RPC or chain.</li>
+<li><span class="status planned">PLANNED</span> A written spec only. No code. It may change or never ship.</li>
+<li><span class="status experimental">EXPERIMENTAL</span> Code exists as a library or contracts, but a user cannot use it from the app, or it is unverified.</li>
+</ul>
+
+<figure class="diagram" id="fig-privacy-map">
+<svg class="dg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 1126" role="img" aria-labelledby="dg-privacy-map-t dg-privacy-map-d" focusable="false"><title id="dg-privacy-map-t">Privacy options map</title><desc id="dg-privacy-map-d">Pipeline of the payment lifecycle with the privacy options that apply at each stage and their honest status: pay, receive and scan, sweep, optional extras, a network-layer band, and Bitcoin. Each option is labelled built, planned or experimental. Chaining several planned methods adds cost and delay and does not add up to anonymity.</desc><defs><marker id="dg-privacy-map-m" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker></defs><rect class="bg" x="0" y="0" width="360" height="1126"/><g class="node a-payer"><rect class="box" x="16" y="14" width="328" height="152" rx="4"/><text class="d-title" x="30" y="37">1  Pay</text><line class="sep" x1="26" y1="46" x2="334" y2="46"/><text class="d-text" x="30" y="61">Random payment delay</text><g class="chip s-built"><rect x="230" y="51" width="100" height="19" rx="9.5"/><text x="280" y="64.5" text-anchor="middle">BUILT</text></g><line class="sep" x1="26" y1="74" x2="334" y2="74"/><text class="d-text" x="30" y="89">Fresh payer wallet or</text><text class="d-text" x="30" y="106">sponsored pay</text><g class="chip s-planned"><rect x="230" y="79" width="100" height="19" rx="9.5"/><text x="280" y="92.5" text-anchor="middle">PLANNED</text></g><line class="sep" x1="26" y1="116" x2="334" y2="116"/><text class="d-text" x="30" y="131">Round, split or fixed</text><text class="d-text" x="30" y="148">amounts</text><g class="chip s-planned"><rect x="230" y="121" width="100" height="19" rx="9.5"/><text x="280" y="134.5" text-anchor="middle">PLANNED</text></g></g><g class="node a-seller"><rect class="box" x="16" y="194" width="328" height="152" rx="4"/><text class="d-title" x="30" y="217">2  Receive and scan</text><line class="sep" x1="26" y1="226" x2="334" y2="226"/><text class="d-text" x="30" y="241">View-tag scan, one-time</text><text class="d-text" x="30" y="258">address per payment</text><g class="chip s-built"><rect x="230" y="231" width="100" height="19" rx="9.5"/><text x="280" y="244.5" text-anchor="middle">BUILT</text></g><line class="sep" x1="26" y1="268" x2="334" y2="268"/><text class="d-text" x="30" y="283">Your own RPC URL</text><g class="chip s-built"><rect x="230" y="273" width="100" height="19" rx="9.5"/><text x="280" y="286.5" text-anchor="middle">BUILT</text></g><line class="sep" x1="26" y1="296" x2="334" y2="296"/><text class="d-text" x="30" y="311">Aligned scan ranges,</text><text class="d-text" x="30" y="328">private scanning (PIR)</text><g class="chip s-planned"><rect x="230" y="301" width="100" height="19" rx="9.5"/><text x="280" y="314.5" text-anchor="middle">PLANNED</text></g></g><path class="arrow" d="M180 166 L180 193" marker-end="url(#dg-privacy-map-m)"/><g class="node a-seller"><rect class="box" x="16" y="374" width="328" height="152" rx="4"/><text class="d-title" x="30" y="397">3  Sweep</text><line class="sep" x1="26" y1="406" x2="334" y2="406"/><text class="d-text" x="30" y="421">Direct or relayer sweep</text><g class="chip s-built"><rect x="230" y="411" width="100" height="19" rx="9.5"/><text x="280" y="424.5" text-anchor="middle">BUILT</text></g><line class="sep" x1="26" y1="434" x2="334" y2="434"/><text class="d-text" x="30" y="449">Fresh self-derived</text><text class="d-text" x="30" y="466">destination</text><g class="chip s-planned"><rect x="230" y="439" width="100" height="19" rx="9.5"/><text x="280" y="452.5" text-anchor="middle">PLANNED</text></g><line class="sep" x1="26" y1="476" x2="334" y2="476"/><text class="d-text" x="30" y="491">Policy account (fixed</text><text class="d-text" x="30" y="508">destination)</text><g class="chip s-exp"><rect x="230" y="481" width="100" height="19" rx="9.5"/><text x="280" y="494.5" text-anchor="middle">EXPERIMENTAL</text></g></g><path class="arrow" d="M180 346 L180 373" marker-end="url(#dg-privacy-map-m)"/><g class="node a-chain"><rect class="box" x="16" y="554" width="328" height="152" rx="4"/><text class="d-title" x="30" y="577">4  Optional extras after sweep</text><line class="sep" x1="26" y1="586" x2="334" y2="586"/><text class="d-text" x="30" y="601">Delayed multi-hop</text><text class="d-text" x="30" y="618">forwarding (weak)</text><g class="chip s-planned"><rect x="230" y="591" width="100" height="19" rx="9.5"/><text x="280" y="604.5" text-anchor="middle">PLANNED</text></g><line class="sep" x1="26" y1="628" x2="334" y2="628"/><text class="d-text" x="30" y="643">Pool exit (Privacy Pools,</text><text class="d-text" x="30" y="660">Railgun, own pool)</text><g class="chip s-planned"><rect x="230" y="633" width="100" height="19" rx="9.5"/><text x="280" y="646.5" text-anchor="middle">PLANNED</text></g><line class="sep" x1="26" y1="670" x2="334" y2="670"/><text class="d-text" x="30" y="685">Confidential token amounts</text><g class="chip s-planned"><rect x="230" y="675" width="100" height="19" rx="9.5"/><text x="280" y="688.5" text-anchor="middle">PLANNED</text></g></g><path class="arrow" d="M180 526 L180 553" marker-end="url(#dg-privacy-map-m)"/><g class="node a-relayer"><rect class="box" x="16" y="734" width="328" height="141" rx="4"/><text class="d-title" x="30" y="757">Network layer (under every stage)</text><line class="sep" x1="26" y1="766" x2="334" y2="766"/><text class="d-text" x="30" y="781">Tor, I2P, Nym, Oblivious</text><text class="d-text" x="30" y="798">HTTP profiles</text><g class="chip s-planned"><rect x="230" y="771" width="100" height="19" rx="9.5"/><text x="280" y="784.5" text-anchor="middle">PLANNED</text></g><line class="sep" x1="26" y1="808" x2="334" y2="808"/><text class="d-text" x="30" y="823">Tor Browser as your own</text><text class="d-text" x="30" y="840">browser (not an app</text><text class="d-text" x="30" y="857">feature, untested)</text><g class="chip s-exp"><rect x="230" y="813" width="100" height="19" rx="9.5"/><text x="280" y="826.5" text-anchor="middle">EXPERIMENTAL</text></g></g><g class="node a-none"><rect class="box" x="16" y="903" width="328" height="110" rx="4"/><text class="d-title" x="30" y="926">Bitcoin tier</text><line class="sep" x1="26" y1="935" x2="334" y2="935"/><text class="d-text" x="30" y="950">Silent Payments (BIP-352)</text><text class="d-text" x="30" y="967">library</text><g class="chip s-exp"><rect x="230" y="940" width="100" height="19" rx="9.5"/><text x="280" y="953.5" text-anchor="middle">EXPERIMENTAL</text></g><line class="sep" x1="26" y1="977" x2="334" y2="977"/><text class="d-text" x="30" y="992">PayJoin</text><g class="chip s-planned"><rect x="230" y="982" width="100" height="19" rx="9.5"/><text x="280" y="995.5" text-anchor="middle">PLANNED</text></g></g><g class="node note tone-warn"><rect class="box dashed" x="16" y="1041" width="328" height="71" rx="4"/><text class="d-text" x="30" y="1065">Chaining methods adds cost, delay and new</text><text class="d-text" x="30" y="1082">ways to slip. It does not add up to</text><text class="d-text" x="30" y="1099">anonymity.</text></g></svg>
+<figcaption>Chaining runs top to bottom. Status labels are literal: BUILT means usable in the app today.</figcaption>
+<details class="textalt"><summary>Text version of this diagram</summary><ol>
+<li><strong>Payer: 1  Pay</strong><ul><li>Random payment delay (built)</li><li>Fresh payer wallet or sponsored pay (planned)</li><li>Round, split or fixed amounts (planned)</li></ul></li>
+<li><strong>Seller: 2  Receive and scan</strong><ul><li>View-tag scan, one-time address per payment (built)</li><li>Your own RPC URL (built)</li><li>Aligned scan ranges, private scanning (PIR) (planned)</li></ul></li>
+<li><strong>Seller: 3  Sweep</strong><ul><li>Direct or relayer sweep (built)</li><li>Fresh self-derived destination (planned)</li><li>Policy account (fixed destination) (experimental)</li></ul></li>
+<li><strong>Chain: 4  Optional extras after sweep</strong><ul><li>Delayed multi-hop forwarding (weak) (planned)</li><li>Pool exit (Privacy Pools, Railgun, own pool) (planned)</li><li>Confidential token amounts (planned)</li></ul></li>
+<li><strong>Relayer: Network layer (under every stage)</strong><ul><li>Tor, I2P, Nym, Oblivious HTTP profiles (planned)</li><li>Tor Browser as your own browser (not an app feature, untested) (experimental)</li></ul></li>
+<li><strong>Bitcoin tier</strong><ul><li>Silent Payments (BIP-352) library (experimental)</li><li>PayJoin (planned)</li></ul></li>
+<li><strong></strong> Chaining methods adds cost, delay and new ways to slip. It does not add up to anonymity.</li>
+</ol></details>
+</figure>
+
+<h2>Chaining methods</h2>
+<p>Options are meant to be picked one at a time and stacked: pay with a delay, scan through your own node, sweep to a fresh destination, optionally exit through a pool. Read the map above from top to bottom. Each stacked step adds cost, delay and a new way to make a mistake, and the methods do not add up to anonymity. Only the built options can be used today.</p>
+
+<h2 id="built">Built</h2>
+<p>Usable in the app today.</p>
+<div class="cards two">
+<article class="card"><h3>One-time address per payment <span class="status built">BUILT</span></h3>
+<p>Each payment goes to a new address derived from your meta-address, so an invoice does not reveal which on-chain address is yours.</p>
+<p><strong>Does not hide:</strong> The payer, amount, token, time and router use. Two invoices from one seller share a meta-address.</p>
+<p class="where">Source: README, docs/user/privacy-limits.md</p></article>
+<article class="card"><h3>Fragment-only invoice link <span class="status built">BUILT</span></h3>
+<p>Invoice data sits after the # in the link, which browsers do not send to the web server. You can encrypt line items and memo inside the link.</p>
+<p><strong>Does not hide:</strong> Anyone holding the link reads the invoice (it is a bearer link). Browsers may keep it in history.</p>
+<p class="where">Source: apps/web, docs/user</p></article>
+<article class="card"><h3>View-tag scanning <span class="status built">BUILT</span></h3>
+<p>A 1-byte tag in each announcement lets your scanner skip most non-matching payments quickly.</p>
+<p><strong>Does not hide:</strong> Nothing. It saves work only; the public log is unchanged.</p>
+<p class="where">Source: docs/user/privacy-limits.md item 6; MH-TAG-1</p></article>
+<article class="card"><h3>Random payment delay <span class="status built">BUILT</span></h3>
+<p>Optional wait of random length (you pick the range) before the payer can send. Cancel or send now at any time.</p>
+<p><strong>Does not hide:</strong> Not anonymity. It is timing friction only. No cover transactions. The tab must stay open.</p>
+<p class="where">Source: apps/web Pay + Settings</p></article>
+<article class="card"><h3>Gas buffer (opt-in trade-off) <span class="status built">BUILT</span></h3>
+<p>Adds a little native coin to the one-time address so the seller can pay gas to move tokens.</p>
+<p><strong>Does not hide:</strong> It is public and links payer to one-time address more visibly. It costs privacy; listed so you can decide.</p>
+<p class="where">Source: apps/web Pay</p></article>
+<article class="card"><h3>Your own RPC URL <span class="status built">BUILT</span></h3>
+<p>Choose the RPC endpoint per chain in Settings instead of relying on a default.</p>
+<p><strong>Does not hide:</strong> The RPC you choose still sees your IP, the addresses you query and what you broadcast.</p>
+<p class="where">Source: apps/web Settings; MH-NET-1 (partial)</p></article>
+<article class="card"><h3>Direct or relayer sweep <span class="status built">BUILT</span></h3>
+<p>Sweep yourself (the one-time address needs gas coin) or have a relayer submit a signed order and take a fee from the amount.</p>
+<p><strong>Does not hide:</strong> The chain still shows one-time address to destination. A relayer additionally sees destination, amount, token, hashed IP and timing.</p>
+<p class="where">Source: apps/web Sweep, apps/relayer</p></article>
+<article class="card"><h3>No third-party code, no-referrer <span class="status built">BUILT</span></h3>
+<p>The app loads nothing from third parties and sets a no-referrer policy. A content-security policy restricts scripts and styles to the app&#39;s own origin.</p>
+<p><strong>Does not hide:</strong> A compromised host or browser extension defeats everything. GitHub Pages cannot send security headers.</p>
+<p class="where">Source: apps/web index.html; MH-WEB-1 (done, with gaps)</p></article>
+</div>
+<h2 id="planned">Planned</h2>
+<p>Spec only. Nothing below is implemented.</p>
+<div class="cards two">
+<article class="card"><h3>Fresh payer wallet and sponsored payments <span class="status planned">PLANNED</span></h3>
+<p>Payer options (fresh wallet, permit relay, EIP-7702 sponsor, ERC-4337 paymaster) to cut the link to the payer main wallet.</p>
+<p><strong>Does not hide:</strong> Never hides the payer address itself, and a sponsor sees payer, amount and timing.</p>
+<p class="where">Source: privacy-specs/payer-hiding.md</p></article>
+<article class="card"><h3>Amount and timing blurring <span class="status planned">PLANNED</span></h3>
+<p>Round amounts, split a payment, use fixed denominations, multi-step delays, plus an honesty meter showing the crowd-size estimate.</p>
+<p><strong>Does not hide:</strong> Friction only; it does not make you anonymous and the spec says so.</p>
+<p class="where">Source: privacy-specs/amount-blurring.md</p></article>
+<article class="card"><h3>Sweep hygiene <span class="status planned">PLANNED</span></h3>
+<p>Fresh self-derived destination, no consolidation, address-free verification, buffer rounding, a known-wallet guard.</p>
+<p><strong>Does not hide:</strong> The sweep is still visible on-chain. It lowers self-inflicted leaks only.</p>
+<p class="where">Source: privacy-specs/hygiene.md</p></article>
+<article class="card"><h3>Delayed multi-hop forwarding (weak) <span class="status planned">PLANNED</span></h3>
+<p>Forward funds through several hops over time. Off by default, behind a blocking warning.</p>
+<p><strong>Does not hide:</strong> Followers and automated analysis link hops easily. Adds delay and cost, not unlinkability.</p>
+<p class="where">Source: privacy-specs/hops.md</p></article>
+<article class="card"><h3>Exit through an external pool <span class="status planned">PLANNED</span></h3>
+<p>Exit through Privacy Pools or Railgun, chosen by the user.</p>
+<p><strong>Does not hide:</strong> Depends on third-party contracts and their anonymity sets. Nothing has been run against any pool.</p>
+<p class="where">Source: privacy-specs/external-pools.md</p></article>
+<article class="card"><h3>Own shielded-pool exit <span class="status planned">PLANNED</span></h3>
+<p>A GhostPay-built pool with zero-knowledge proofs for the exit step.</p>
+<p><strong>Does not hide:</strong> Large, unbuilt, zero-knowledge circuits unaudited. Anonymity set would start at zero.</p>
+<p class="where">Source: privacy-specs/shielded-pool.md</p></article>
+<article class="card"><h3>Confidential token amounts <span class="status planned">PLANNED</span></h3>
+<p>Hide amounts with encrypted-amount tokens (for example Zama fhEVM, ERC-7984 draft) on supported testnets.</p>
+<p><strong>Does not hide:</strong> Relies on coprocessor or TEE trust. Payer and timing stay public.</p>
+<p class="where">Source: privacy-specs/confidential-tokens.md</p></article>
+<article class="card"><h3>Network-layer privacy <span class="status planned">PLANNED</span></h3>
+<p>Transport profiles for RPC and relayer calls: Tor, I2P outproxy, Nym, Oblivious HTTP, own node, quorum.</p>
+<p><strong>Does not hide:</strong> Hides your IP from the endpoint at best. Does not hide anything on-chain.</p>
+<p class="where">Source: privacy-specs/network-privacy.md</p></article>
+<article class="card"><h3>Private scanning <span class="status planned">PLANNED</span></h3>
+<p>Scan via an indexer over Tor, two-server PIR or a light client so your RPC learns less about which payments are yours.</p>
+<p><strong>Does not hide:</strong> Research-grade. Server-side trust assumptions apply.</p>
+<p class="where">Source: network-privacy.md; MH-SCAN-2/3</p></article>
+<article class="card"><h3>Metadata hardening menu <span class="status planned">PLANNED</span></h3>
+<p>About 30 independent switches (MH-*): minimal announcements, amount noise, gas bucketing, relayer batching, padding, multi-relayer, zero-log relayer, per-invoice meta-address, per-chain keys and more. A few (standard announcer, view tag, full-range scan) are already how the app works.</p>
+<p><strong>Does not hide:</strong> Each one hides one named leak and leaves others. Most are off by default and not built.</p>
+<p class="where">Source: privacy-specs/metadata-hardening.md</p></article>
+<article class="card"><h3>Bitcoin PayJoin <span class="status planned">PLANNED</span></h3>
+<p>Payee adds an input to the payment so common-input heuristics break (BIP-78, async BIP-77).</p>
+<p><strong>Does not hide:</strong> Not silent payments, not a mixer. Fallback broadcast stays possible. Testnet PoC only.</p>
+<p class="where">Source: privacy-specs/btc-payjoin.md</p></article>
+</div>
+<h2 id="experimental">Experimental</h2>
+<p>Code exists but is not part of the app, or is unverified.</p>
+<div class="cards two">
+<article class="card"><h3>Bitcoin Silent Payments (BIP-352) <span class="status experimental">EXPERIMENTAL</span></h3>
+<p>A library for keys, addresses, sender derivation, scanning and spending. Passes the official BIP-352 vectors.</p>
+<p><strong>Does not hide:</strong> Not wired into the web app or relayer; never run against a real network. Amounts and timing are still public.</p>
+<p class="where">Source: packages/btc-silent-payments</p></article>
+<article class="card"><h3>Policy accounts <span class="status experimental">EXPERIMENTAL</span></h3>
+<p>Smart accounts that can only pay a fixed destination, after a delay, within limits. Contracts and a client library exist.</p>
+<p><strong>Does not hide:</strong> No app support, no recovery path, destination link becomes permanent. Do not use.</p>
+<p class="where">Source: packages/policy-scheme, PolicyAccount.sol</p></article>
+<article class="card"><h3>Tor Browser, your own setup <span class="status experimental">EXPERIMENTAL</span></h3>
+<p>You can open any site in Tor Browser to hide your IP from the host and RPC.</p>
+<p><strong>Does not hide:</strong> Not an app feature. The app does not check it and we have not tested GhostPay with it.</p>
+<p class="where">Source: docs/remote/onion-i2p-research.md</p></article>
+</div>
+
+<p>Source files are in <code>docs/remote/privacy-specs/</code> in the repository. If this page and the code ever disagree, the code wins and this page is wrong.</p>
+<div class="btn-row"><a class="btn" href="./help/privacy-map.html">Help: privacy map</a><a class="btn" href="./help/observers.html">What observers see</a></div>
+
+
+</div></main>
+<footer class="site-footer"><div class="wrap">
+<p>Pre-audit prototype. Nothing is deployed and no real money should be used. No scripts, no analytics, no third-party requests on these pages. <a href="./help/faq.html">FAQ</a> · <a href="./help/glossary.html">Glossary</a> · <a href="./">Open the app</a></p>
+</div></footer>
+</body>
+</html>

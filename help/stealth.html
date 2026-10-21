@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>One-time addresses | GhostPay</title>
+<meta name="description" content="Concept diagram of stealth address derivation, with no secrets.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../theme.css">
+<link rel="stylesheet" href="../site.css">
+</head>
+<body class="site">
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><div class="wrap">
+<p class="brand"><a href="../">GhostPay</a></p>
+<p class="tagline">Stealth-address payments. Unaudited software, testnet only.</p>
+<nav aria-label="Guides"><ul class="nav"><li><a class="nav-btn" href="../">App</a></li><li><a class="nav-btn" href="../why.html">Why</a></li><li><a class="nav-btn" href="../how-it-works.html">How it works</a></li><li><a class="nav-btn" href="../privacy-options.html">Privacy options</a></li><li><a class="nav-btn" aria-current="page" href="../help/">Help</a></li></ul></nav>
+</div></header>
+<main id="main" tabindex="-1"><div class="wrap">
+<p class="muted"><a href="../help/">Help</a> / One-time addresses</p>
+<h1>One-time addresses</h1>
+<p>A stealth address scheme (ERC-5564) lets a stranger make an address for you that only you can spend from, without talking to you first.</p>
+<figure class="diagram" id="fig-stealth">
+<svg class="dg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 745" role="img" aria-labelledby="dg-stealth-t dg-stealth-d" focusable="false"><title id="dg-stealth-t">How a one-time (stealth) address is made</title><desc id="dg-stealth-d">Concept diagram of stealth address derivation. The seller publishes a meta-address of two public keys. For each payment the payer makes a fresh ephemeral key, combines it with the seller viewing public key to get a shared secret, and derives a one-time address from the seller spending public key. The seller gets the same shared secret from the viewing private key and the ephemeral public key in the announcement, and can compute the one-time private key. No secret values are shown.</desc><defs><marker id="dg-stealth-m" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker></defs><rect class="bg" x="0" y="0" width="360" height="745"/><g class="node a-seller"><rect class="box" x="16" y="14" width="328" height="98" rx="4"/><text class="tag" x="30" y="38">SELLER</text><text class="d-title" x="30" y="57">Meta-address (public)</text><text class="d-text" x="30" y="78">Two public keys: spending and viewing.</text><text class="d-text" x="30" y="95">Shared once, reused for every invoice.</text></g><g class="node a-payer"><rect class="box" x="16" y="140" width="328" height="98" rx="4"/><text class="tag" x="30" y="164">PAYER</text><text class="d-title" x="30" y="183">Fresh ephemeral key per payment</text><text class="d-text" x="30" y="204">Random key pair. Only its public half goes</text><text class="d-text" x="30" y="221">on-chain.</text></g><path class="arrow" d="M180 112 L180 139" marker-end="url(#dg-stealth-m)"/><text class="via" x="188" y="130">payer, new for every payment</text><g class="node a-payer"><rect class="box" x="16" y="266" width="158" height="98" rx="4"/><text class="tag" x="30" y="290">PAYER</text><text class="d-title" x="30" y="309">Shared secret</text><text class="d-text" x="30" y="330">ephemeral private</text><text class="d-text" x="30" y="347">+ viewing public</text></g><g class="node a-seller"><rect class="box" x="186" y="266" width="158" height="98" rx="4"/><text class="tag" x="200" y="290">SELLER</text><text class="d-title" x="200" y="309">Same secret</text><text class="d-text" x="200" y="330">viewing private +</text><text class="d-text" x="200" y="347">ephemeral public</text></g><path class="arrow" d="M180 238 L180 252 L95 252 L95 265" marker-end="url(#dg-stealth-m)"/><path class="arrow" d="M180 238 L180 252 L265 252 L265 265" marker-end="url(#dg-stealth-m)"/><g class="node a-none"><rect class="box" x="16" y="392" width="328" height="80" rx="4"/><text class="d-title" x="30" y="417">Hash of the secret</text><text class="d-text" x="30" y="438">Gives a 1-byte view tag (a quick filter) and a</text><text class="d-text" x="30" y="455">tweak number.</text></g><path class="arrow" d="M95 364 L95 378 L180 378 L180 391" marker-end="url(#dg-stealth-m)"/><path class="arrow" d="M265 364 L265 378 L180 378 L180 391" marker-end="url(#dg-stealth-m)"/><g class="node a-payer"><rect class="box" x="16" y="500" width="158" height="115" rx="4"/><text class="tag" x="30" y="524">PAYER</text><text class="d-title" x="30" y="543">One-time address</text><text class="d-text" x="30" y="564">spending public +</text><text class="d-text" x="30" y="581">tweak, turned into</text><text class="d-text" x="30" y="598">an address</text></g><g class="node a-seller"><rect class="box" x="186" y="500" width="158" height="115" rx="4"/><text class="tag" x="200" y="524">SELLER</text><text class="d-title" x="200" y="543">One-time key</text><text class="d-text" x="200" y="564">spending private +</text><text class="d-text" x="200" y="581">tweak. Only the</text><text class="d-text" x="200" y="598">seller has it</text></g><path class="arrow" d="M180 472 L180 486 L95 486 L95 499" marker-end="url(#dg-stealth-m)"/><path class="arrow" d="M180 472 L180 486 L265 486 L265 499" marker-end="url(#dg-stealth-m)"/><g class="node note "><rect class="box dashed" x="16" y="643" width="328" height="88" rx="4"/><text class="d-text" x="30" y="667">No secret is shown on this page. Anyone can</text><text class="d-text" x="30" y="684">see the one-time address and ephemeral</text><text class="d-text" x="30" y="701">public key on-chain, but cannot tell whose</text><text class="d-text" x="30" y="718">address it is from that alone.</text></g><path class="arrow" d="M95 615 L95 629 L180 629 L180 642" marker-end="url(#dg-stealth-m)"/><path class="arrow" d="M265 615 L265 629 L180 629 L180 642" marker-end="url(#dg-stealth-m)"/></svg>
+<figcaption>Concept only. Real maths: secp256k1, ERC-5564 scheme 1.</figcaption>
+<details class="textalt"><summary>Text version of this diagram</summary><ol>
+<li><strong>Seller: Meta-address (public)</strong> Two public keys: spending and viewing. Shared once, reused for every invoice.</li>
+<li><em>payer, new for every payment.</em> <strong>Payer: Fresh ephemeral key per payment</strong> Random key pair. Only its public half goes on-chain.</li>
+<li><strong>Payer: Shared secret</strong> ephemeral private + viewing public</li>
+<li><strong>Seller: Same secret</strong> viewing private + ephemeral public</li>
+<li><strong>Hash of the secret</strong> Gives a 1-byte view tag (a quick filter) and a tweak number.</li>
+<li><strong>Payer: One-time address</strong> spending public + tweak, turned into an address</li>
+<li><strong>Seller: One-time key</strong> spending private + tweak. Only the seller has it</li>
+<li><strong></strong> No secret is shown on this page. Anyone can see the one-time address and ephemeral public key on-chain, but cannot tell whose address it is from that alone.</li>
+</ol></details>
+</figure>
+<h2>In plain words</h2>
+<ul>
+<li>You publish a <strong>meta-address</strong>: two public keys. They are not an address you receive to.</li>
+<li>Each payer makes a one-off key, mixes it with your public viewing key and gets a secret only they and you can compute.</li>
+<li>That secret shifts your spending public key into a brand-new address. Only your spending private key plus the same shift can spend it.</li>
+<li>The payer posts the one-off <em>public</em> key in an announcement. You use your viewing key to spot payments meant for you.</li>
+</ul>
+<h2>What this does not hide</h2>
+<ul>
+<li>The one-time address, token, amount and time are public.</li>
+<li>Your meta-address is a stable identifier. Two invoices from you can be tied together.</li>
+<li>Whoever holds your <em>viewing</em> key can see all your incoming payments (not spend them).</li>
+</ul>
+
+<div class="pager"><span><a class="btn" href="../help/flow.html">← The whole flow</a></span><span><a class="btn" href="../help/sweep.html">Sweep relayer →</a></span></div>
+</div></main>
+<footer class="site-footer"><div class="wrap">
+<p>Pre-audit prototype. Nothing is deployed and no real money should be used. No scripts, no analytics, no third-party requests on these pages. <a href="../help/faq.html">FAQ</a> · <a href="../help/glossary.html">Glossary</a> · <a href="../">Open the app</a></p>
+</div></footer>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>How it works | GhostPay</title>
+<meta name="description" content="A plain walk-through of a GhostPay payment from keys to destination wallet.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="./theme.css">
+<link rel="stylesheet" href="./site.css">
+</head>
+<body class="site">
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><div class="wrap">
+<p class="brand"><a href="./">GhostPay</a></p>
+<p class="tagline">Stealth-address payments. Unaudited software, testnet only.</p>
+<nav aria-label="Guides"><ul class="nav"><li><a class="nav-btn" href="./">App</a></li><li><a class="nav-btn" href="./why.html">Why</a></li><li><a class="nav-btn" aria-current="page" href="./how-it-works.html">How it works</a></li><li><a class="nav-btn" href="./privacy-options.html">Privacy options</a></li><li><a class="nav-btn" href="./help/">Help</a></li></ul></nav>
+</div></header>
+<main id="main" tabindex="-1"><div class="wrap">
+
+<h1>How it works</h1>
+<p class="lead">One public address in, a fresh one-time address per payment, and a sweep to your own wallet. Here is the whole path.</p>
+
+<figure class="diagram" id="fig-flow">
+<svg class="dg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 1227" role="img" aria-labelledby="dg-flow-t dg-flow-d" focusable="false"><title id="dg-flow-t">Overall flow of a GhostPay payment</title><desc id="dg-flow-d">Vertical flowchart in nine steps. The seller creates keys and a meta-address, makes an invoice link whose data sits after the # and is never sent to a server, the payer reviews it and pays through the router or directly to the one-time address, an announcement event is published, the seller scans with the view tag, sweeps directly or via a relayer, and the funds land in a destination wallet.</desc><defs><marker id="dg-flow-m" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="head" d="M0 0 L10 5 L0 10 z"/></marker></defs><rect class="bg" x="0" y="0" width="360" height="1227"/><g class="node a-seller"><rect class="box" x="16" y="14" width="328" height="115" rx="4"/><circle class="badge" cx="36" cy="34" r="10"/><text class="badge-n" x="36" y="38" text-anchor="middle">1</text><text class="tag" x="54" y="38">SELLER</text><text class="d-title" x="30" y="57">Create keys and meta-address</text><text class="d-text" x="30" y="78">Made in the browser. Share only the public</text><text class="d-text" x="30" y="95">meta-address. Back up the keys: nobody can</text><text class="d-text" x="30" y="112">recover them.</text></g><g class="node a-seller"><rect class="box" x="16" y="157" width="328" height="115" rx="4"/><circle class="badge" cx="36" cy="177" r="10"/><text class="badge-n" x="36" y="181" text-anchor="middle">2</text><text class="tag" x="54" y="181">SELLER</text><text class="d-title" x="30" y="200">Make an invoice link</text><text class="d-text" x="30" y="221">The invoice sits after the # in the link.</text><text class="d-text" x="30" y="238">Browsers do not send that part to the web</text><text class="d-text" x="30" y="255">server.</text></g><path class="arrow" d="M180 129 L180 156" marker-end="url(#dg-flow-m)"/><g class="node a-payer"><rect class="box" x="16" y="300" width="328" height="98" rx="4"/><circle class="badge" cx="36" cy="320" r="10"/><text class="badge-n" x="36" y="324" text-anchor="middle">3</text><text class="tag" x="54" y="324">PAYER</text><text class="d-title" x="30" y="343">Open the link and review</text><text class="d-text" x="30" y="364">Check chain, token, amount, fee, expiry and</text><text class="d-text" x="30" y="381">signature, then choose a wallet.</text></g><path class="arrow" d="M180 272 L180 299" marker-end="url(#dg-flow-m)"/><g class="node a-payer"><rect class="box" x="16" y="426" width="158" height="115" rx="4"/><circle class="badge" cx="36" cy="446" r="10"/><text class="badge-n" x="36" y="450" text-anchor="middle">4a</text><text class="tag" x="54" y="450">PAYER</text><text class="d-title" x="30" y="469">Pay via router</text><text class="d-text" x="30" y="490">0.25 % fee. Router</text><text class="d-text" x="30" y="507">passes the rest</text><text class="d-text" x="30" y="524">on.</text></g><g class="node a-payer"><rect class="box" x="186" y="426" width="158" height="115" rx="4"/><circle class="badge" cx="206" cy="446" r="10"/><text class="badge-n" x="206" y="450" text-anchor="middle">4b</text><text class="tag" x="224" y="450">PAYER</text><text class="d-title" x="200" y="469">Pay direct</text><text class="d-text" x="200" y="490">No GhostPay fee.</text><text class="d-text" x="200" y="507">No router checks.</text></g><path class="arrow" d="M180 398 L180 412 L95 412 L95 425" marker-end="url(#dg-flow-m)"/><path class="arrow" d="M180 398 L180 412 L265 412 L265 425" marker-end="url(#dg-flow-m)"/><g class="node a-chain"><rect class="box" x="16" y="569" width="328" height="98" rx="4"/><circle class="badge" cx="36" cy="589" r="10"/><text class="badge-n" x="36" y="593" text-anchor="middle">5</text><text class="tag" x="54" y="593">CHAIN</text><text class="d-title" x="30" y="612">Announcement event</text><text class="d-text" x="30" y="633">A public log entry: one-time address,</text><text class="d-text" x="30" y="650">ephemeral public key, view tag.</text></g><path class="arrow" d="M95 541 L95 555 L180 555 L180 568" marker-end="url(#dg-flow-m)"/><path class="arrow" d="M265 541 L265 555 L180 555 L180 568" marker-end="url(#dg-flow-m)"/><g class="node a-seller"><rect class="box" x="16" y="695" width="328" height="115" rx="4"/><circle class="badge" cx="36" cy="715" r="10"/><text class="badge-n" x="36" y="719" text-anchor="middle">6</text><text class="tag" x="54" y="719">SELLER</text><text class="d-title" x="30" y="738">Scan with the view tag</text><text class="d-text" x="30" y="759">The viewing key tests each announcement.</text><text class="d-text" x="30" y="776">The 1-byte tag lets most non-matches be</text><text class="d-text" x="30" y="793">skipped quickly.</text></g><path class="arrow" d="M180 667 L180 694" marker-end="url(#dg-flow-m)"/><g class="node a-seller"><rect class="box" x="16" y="838" width="158" height="133" rx="4"/><circle class="badge" cx="36" cy="858" r="10"/><text class="badge-n" x="36" y="862" text-anchor="middle">7a</text><text class="tag" x="54" y="862">SELLER</text><text class="d-title" x="30" y="881">Sweep direct</text><text class="d-text" x="30" y="902">Needs gas coin on</text><text class="d-text" x="30" y="919">the one-time</text><text class="d-text" x="30" y="936">address.</text></g><g class="node a-relayer"><rect class="box" x="186" y="838" width="158" height="133" rx="4"/><circle class="badge" cx="206" cy="858" r="10"/><text class="badge-n" x="206" y="862" text-anchor="middle">7b</text><text class="tag" x="224" y="862">RELAYER</text><text class="d-title" x="200" y="881">Sweep via</text><text class="d-title" x="200" y="899">relayer</text><text class="d-text" x="200" y="920">Signed order. Fee</text><text class="d-text" x="200" y="937">comes out of the</text><text class="d-text" x="200" y="954">amount.</text></g><path class="arrow" d="M180 810 L180 824 L95 824 L95 837" marker-end="url(#dg-flow-m)"/><path class="arrow" d="M180 810 L180 824 L265 824 L265 837" marker-end="url(#dg-flow-m)"/><g class="node a-seller"><rect class="box" x="16" y="999" width="328" height="98" rx="4"/><circle class="badge" cx="36" cy="1019" r="10"/><text class="badge-n" x="36" y="1023" text-anchor="middle">8</text><text class="tag" x="54" y="1023">SELLER</text><text class="d-title" x="30" y="1042">Destination wallet</text><text class="d-text" x="30" y="1063">Use a fresh address. The payer can follow</text><text class="d-text" x="30" y="1080">the funds from the one-time address.</text></g><path class="arrow" d="M95 971 L95 985 L180 985 L180 998" marker-end="url(#dg-flow-m)"/><path class="arrow" d="M265 971 L265 985 L180 985 L180 998" marker-end="url(#dg-flow-m)"/><g class="node note tone-warn"><rect class="box dashed" x="16" y="1125" width="328" height="88" rx="4"/><text class="d-text" x="30" y="1149">Public at every step: payer address,</text><text class="d-text" x="30" y="1166">amount, token, time, use of the router. The</text><text class="d-text" x="30" y="1183">sweep links one-time address to</text><text class="d-text" x="30" y="1200">destination.</text></g><path class="arrow" d="M180 1097 L180 1124" marker-end="url(#dg-flow-m)"/></svg>
+<figcaption>From keys to destination wallet. Public steps are marked CHAIN.</figcaption>
+<details class="textalt"><summary>Text version of this diagram</summary><ol>
+<li><strong>Seller: Create keys and meta-address</strong> Made in the browser. Share only the public meta-address. Back up the keys: nobody can recover them.</li>
+<li><strong>Seller: Make an invoice link</strong> The invoice sits after the # in the link. Browsers do not send that part to the web server.</li>
+<li><strong>Payer: Open the link and review</strong> Check chain, token, amount, fee, expiry and signature, then choose a wallet.</li>
+<li><strong>Payer: Pay via router</strong> 0.25 % fee. Router passes the rest on.</li>
+<li><strong>Payer: Pay direct</strong> No GhostPay fee. No router checks.</li>
+<li><strong>Chain: Announcement event</strong> A public log entry: one-time address, ephemeral public key, view tag.</li>
+<li><strong>Seller: Scan with the view tag</strong> The viewing key tests each announcement. The 1-byte tag lets most non-matches be skipped quickly.</li>
+<li><strong>Seller: Sweep direct</strong> Needs gas coin on the one-time address.</li>
+<li><strong>Relayer: Sweep via relayer</strong> Signed order. Fee comes out of the amount.</li>
+<li><strong>Seller: Destination wallet</strong> Use a fresh address. The payer can follow the funds from the one-time address.</li>
+<li><strong></strong> Public at every step: payer address, amount, token, time, use of the router. The sweep links one-time address to destination.</li>
+</ol></details>
+</figure>
+
+<h2>In three acts</h2>
+<div class="cards three">
+<article class="card"><h3>1. The seller sets up</h3><p>Creates keys in the browser, backs them up, shares the meta-address and sends an invoice link.</p></article>
+<article class="card"><h3>2. The payer pays</h3><p>Opens the link, reviews every amount, pays from their own wallet. A public announcement is posted.</p></article>
+<article class="card"><h3>3. The seller collects</h3><p>Scans announcements with the viewing key and sweeps funds to a destination wallet.</p></article>
+</div>
+
+<div class="notice notice-warn" role="note">
+<h3>What this does not hide</h3>
+<p>The payer address, amount, token, time and the use of the GhostPay router are public on-chain. Sweeping links the one-time address to your destination wallet, so use a fresh destination. See <a href="./help/observers.html">what an observer sees</a>.</p>
+</div>
+
+<h2>Go deeper</h2>
+<div class="cards two">
+<a class="card card-link" href="./help/stealth.html"><h3>How one-time addresses are made</h3><p>Meta-address, ephemeral key, shared secret.</p></a>
+<a class="card card-link" href="./help/sweep.html"><h3>The sweep relayer</h3><p>Signed order, fee split, nonce.</p></a>
+<a class="card card-link" href="./help/fees.html"><h3>Fees</h3><p>Router, direct pay, relayer.</p></a>
+<a class="card card-link" href="./help/"><h3>All help pages</h3><p>Diagrams, glossary, FAQ.</p></a>
+</div>
+
+
+</div></main>
+<footer class="site-footer"><div class="wrap">
+<p>Pre-audit prototype. Nothing is deployed and no real money should be used. No scripts, no analytics, no third-party requests on these pages. <a href="./help/faq.html">FAQ</a> · <a href="./help/glossary.html">Glossary</a> · <a href="./">Open the app</a></p>
+</div></footer>
+</body>
+</html>
