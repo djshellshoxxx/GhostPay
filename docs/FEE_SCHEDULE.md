@@ -13,7 +13,7 @@
 
 | ID | Fee | Charged by | Default | Enforcement |
 |---|---|---|---|---|
-| F-PAY | Checkout fee on payments routed through `GhostPayRouter` | Router contract, taken from the gross amount | **25 bps (0.25 %)**, floor-rounded | On-chain, immutable. Bypassed by paying the stealth address directly. |
+| F-PAY | Checkout fee on payments routed through `GhostPayRouter` (scheme 1) or `GhostPayPolicyRouter` (scheme 2, same 25 bps, `FEE_BPS = 25`) | Router contract, taken from the gross amount | **25 bps (0.25 %)**, floor-rounded | On-chain, immutable. Bypassed by paying the stealth address directly. |
 | F-SPONSOR | Gas-sponsored sweep ("gasless sweep") | `GhostPaySweepRelayer`, taken from the swept token amount | `max(gasReimbursement × 1.10, 50 bps of amount)` capped at 300 bps **[OWNER]** | On-chain: the exact fee and `feeTo` are inside the stealth key's EIP-712 signature; contract cannot take more than signed. Rate policy lives in the relayer service and the client check. |
 | F-SECURE | Flat fee for opt-in advanced security feature: policy-guarded stealth smart account (cold-destination allowlist, delay, limits, recovery) | `PolicyAccountFactory`, charged once at account creation | **Flat, denominated in the chain's stablecoin, default USD 3.00 equivalent** **[OWNER]** | On-chain at creation (immutable amount per deployment). |
 | F-FREE | Local encrypted tagging, timing jitter, QR/wallet handoff, scanner, invoice creation | none | free | Client-only features cannot be charged enforceably; they stay free. |

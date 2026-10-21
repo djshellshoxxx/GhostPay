@@ -139,6 +139,8 @@ The lead should confirm or reject each.
   scheme-2 derivation vectors must pin `(chainId, factory, implementation codehash)`.
 - **Section 4 says the announcement uses `stealthAddress = A_acct` but assigns no contract to emit it.** The existing router can announce for `A_acct` unchanged (it only requires a
   non-zero address); nothing in the new contracts announces.
+
+  > **Correction (2026-10-21):** the claim that the existing router "can announce for `A_acct` unchanged" is incomplete. `GhostPayRouter` hard-codes `SCHEME_ID = 1` (`GhostPayRouter.sol:38`), so announcing `A_acct` through it emits scheme 1, not the `0x47500002` required by `CONTRACTS_SPEC.md` section 4. Scheme-1 router cannot announce scheme `0x47500002`; use `GhostPayPolicyRouter` (`SCHEME_ID = 0x47500002`, see "GhostPayPolicyRouter" below and `CONTRACTS_SPEC.md` section 4.1).
 - **"Delay" is one number for both the withdrawal timer and (doubled) the destination timelock**, as specified; there is no separate configuration.
 
 # Audit remediation (docs/audits/02-security-review-contracts.md)

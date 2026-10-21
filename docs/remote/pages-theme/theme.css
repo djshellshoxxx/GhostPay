@@ -1,0 +1,165 @@
+/* GhostPay Pages prototype theme: cypher-dystopian, neon on near-black navy.
+   Loaded after the app stylesheet. Same-origin only (CSP style-src/font-src 'self').
+   Title face: Michroma (SIL OFL 1.1), see fonts/OFL.txt. */
+@font-face {
+  font-family: "Michroma";
+  src: url("./fonts/Michroma-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* :root:root:root outranks the app's :root:not([data-theme]) dark/light blocks */
+:root:root:root {
+  color-scheme: dark;
+  --bg: #050912;
+  --surface: #09111f;
+  --text: #f4f9ff;
+  --muted: #a8c3da;
+  --border: #12708c;
+  --accent: #00e5ff;
+  --accent-text: #001218;
+  --danger: #ff7b8c;
+  --ok: #5dffb2;
+  --warn-bg: #2a2106;
+  --warn-border: #ffcf5e;
+  --error-bg: #2c0b14;
+  --info-bg: #07192b;
+  --ok-bg: #062a1e;
+  --focus: #ffffff;
+  --glow: 0 0 6px rgba(0, 229, 255, 0.45);
+  --title: "Michroma", "Eurostile", "Arial Narrow", system-ui, sans-serif;
+}
+
+html { background: #050912; }
+
+body {
+  background:
+    radial-gradient(ellipse 80% 40% at 50% -10%, rgba(0, 150, 255, 0.22), transparent 70%),
+    radial-gradient(ellipse 60% 30% at 100% 100%, rgba(0, 229, 255, 0.08), transparent 70%),
+    var(--bg);
+  background-attachment: fixed;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* static scanlines + vignette, CSS only, no animation */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  background:
+    repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) 2px, rgba(0, 0, 0, 0.18) 3px, rgba(0, 0, 0, 0) 4px),
+    radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
+}
+
+h1, h2 {
+  font-family: var(--title);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text);
+  line-height: 1.25;
+}
+h1 {
+  font-size: clamp(1.5rem, 7vw, 2.4rem);
+  letter-spacing: 0.22em;
+  margin-top: 24px;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.55), 0 0 14px rgba(0, 229, 255, 0.75), 0 0 32px rgba(0, 120, 255, 0.5);
+}
+h2 { font-size: clamp(1rem, 4.4vw, 1.2rem); text-shadow: var(--glow); }
+h3 { color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; font-size: 1rem; }
+
+.tagline { letter-spacing: 0.03em; }
+
+a { color: var(--accent); }
+
+.site-header {
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 12px -6px rgba(0, 229, 255, 0.6);
+  margin-bottom: 8px;
+}
+.site-footer { border-top: 1px solid var(--border); margin-top: 16px; padding-top: 12px; }
+
+.card, .panel, fieldset, .table-wrap {
+  background: linear-gradient(160deg, rgba(0, 229, 255, 0.05), rgba(9, 17, 31, 0.92) 40%);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  box-shadow: 0 0 12px -4px rgba(0, 229, 255, 0.35), inset 0 0 0 1px rgba(0, 229, 255, 0.04);
+}
+legend { color: var(--accent); }
+
+.nav-btn, .btn {
+  border-radius: 2px;
+  background: rgba(0, 229, 255, 0.04);
+  border: 1px solid var(--border);
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.9rem;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+.nav-btn:hover, .btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: rgba(0, 229, 255, 0.12);
+  box-shadow: var(--glow);
+}
+.nav-btn[aria-current='page'] {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(0, 229, 255, 0.1);
+  box-shadow: inset 0 -3px 0 var(--accent), var(--glow);
+}
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+}
+.btn-primary:hover:not(:disabled) { background: #7df3ff; border-color: #7df3ff; box-shadow: 0 0 16px rgba(0, 229, 255, 0.8); }
+.btn-danger { border-color: var(--danger); color: var(--danger); }
+.btn:disabled { opacity: 0.6; }
+.link-btn { color: var(--accent); }
+
+.field label { color: var(--text); letter-spacing: 0.02em; }
+.field input:not([type='checkbox']):not([type='radio']), .field select, .field textarea, input[type='file'] {
+  background: #030710;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--text);
+}
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); box-shadow: var(--glow); }
+input[type='checkbox'], input[type='radio'] { accent-color: var(--accent); }
+::placeholder { color: #8ba6bd; opacity: 1; }
+::selection { background: var(--accent); color: var(--accent-text); }
+
+/* focus: white 3px ring + cyan halo, always visible */
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px rgba(0, 229, 255, 0.55);
+}
+.skip { background: var(--accent); color: var(--accent-text); }
+
+.notice { border-radius: 2px; border-color: var(--border); }
+.notice-warn { border-color: var(--warn-border); }
+.notice-error { border-color: var(--danger); }
+.notice-ok { border-color: var(--ok); }
+
+th, td { border-top-color: var(--border); }
+th { color: var(--accent); }
+summary { color: var(--accent); }
+code, .mono { color: #d6f6ff; }
+.qr-svg { border-color: var(--accent); box-shadow: 0 0 14px rgba(0, 229, 255, 0.5); }
+
+@media (max-width: 40rem) {
+  h1 { letter-spacing: 0.14em; }
+  .nav-btn { font-size: 0.8rem; padding: 6px 8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
