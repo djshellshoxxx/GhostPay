@@ -41,10 +41,12 @@ export interface ScanRange {
   readonly fromBlock: bigint;
   /** Inclusive; defaults to the chain head. */
   readonly toBlock?: bigint;
+  /** EVM-only deep scan (ignore view tag for router announcements); ignored by the Bitcoin adapter. */
+  readonly deep?: boolean;
 }
 
 /** Status of a fee line on a chain. */
-export type FeeStatus = 'enforced' | 'not_enforceable' | 'not_deployed';
+export type FeeStatus = 'enforced' | 'available' | 'not_enforceable' | 'not_deployed';
 
 /** Which fees can honestly be charged on this chain. */
 export interface FeeCapability {
