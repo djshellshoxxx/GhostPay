@@ -10,12 +10,45 @@ on:
 permissions:
   contents: read
 
+# One run per ref; a new push to a PR cancels the superseded run. Runs on main are never cancelled.
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 
 jobs:
-  typescript:
+  # Docs-only pull requests (every changed file under docs/ or a *.md) skip the heavy jobs. Anything else, and every
+  # non-PR run, runs everything. `secrets-and-egress` never depends on this job.
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - id: filter
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT" != "pull_request" ]; then echo "code=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          files="$(gh api "repos/$REPO/pulls/$PR/files" --paginate --jq '.[] | .filename, (.previous_filename // empty)')"
+          if [ -z "$files" ]; then echo "code=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          if printf '%s\n' "$files" | grep -qvE '^(docs/.*|.*\.md)$'; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "code=false" >> "$GITHUB_OUTPUT"
+            echo "Docs-only change: heavy jobs skipped."
+          fi
+
+  ts-check:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -24,37 +57,94 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: "22"
-          cache: npm
-      # Foundry provides `anvil` and `forge` for the relayer's real-contract end-to-end test.
-      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
-        with:
-          version: v1.8.5
-      - run: npm ci --ignore-scripts
-      # Workspace packages resolve each other through their built `dist`; build them before anything else.
-      - run: npm run build:libs
-      - name: Build contract artifacts for the relayer anvil e2e
-        working-directory: packages/contracts
-        run: |
-          # The checked-in config points at a sandbox-only solc path; CI downloads the pinned compiler.
-          sed -i 's|^solc = .*|solc_version = "0.8.28"|' foundry.toml
-          forge build
-      - name: Locate anvil
-        run: echo "ANVIL_BIN=$(command -v anvil)" >> "$GITHUB_ENV"
+      - uses: ./.github/actions/setup-node-libs
       - run: npm run typecheck
       - run: npm run lint
-      - name: Unit tests (relayer anvil e2e must run, not skip)
+      - run: npm run build --workspace @ghostpay/web
+      - run: npm audit --omit=dev --audit-level=high
+
+  # Every workspace with a test script runs in exactly one of these groups: the two slow libraries and the relayer
+  # (anvil e2e) have their own jobs; `rest` is computed as all other workspaces, so a new package is never skipped.
+  ts-test:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [core-crypto, btc-silent-payments, web, rest]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-libs
+      - name: Unit tests
+        env:
+          GROUP: ${{ matrix.group }}
+        run: |
+          set -euo pipefail
+          case "$GROUP" in
+            core-crypto) npm test -w packages/core-crypto ;;
+            btc-silent-payments) npm test -w packages/btc-silent-payments ;;
+            web) npm test -w apps/web ;;
+            rest)
+              args=()
+              while IFS= read -r w; do args+=(-w "$w"); done < <(
+                npm query '.workspace' | jq -r '.[].location' \
+                  | grep -vxE 'packages/core-crypto|packages/btc-silent-payments|apps/web|apps/relayer'
+              )
+              echo "rest group: ${args[*]}"
+              npm test "${args[@]}" --if-present
+              ;;
+          esac
+
+  ts-test-relayer:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-libs
+      - uses: ./.github/actions/setup-forge
+        with:
+          cache-name: relayer-e2e
+      - name: Build contract artifacts for the relayer anvil e2e
+        working-directory: packages/contracts
+        run: forge build
+      - name: Locate anvil
+        run: echo "ANVIL_BIN=$(command -v anvil)" >> "$GITHUB_ENV"
+      - name: Relayer unit tests (anvil e2e must run, not skip)
         env:
           # The relayer e2e must fail instead of silently skipping when anvil or artifacts are missing
           # (audit G-09 / O-06). Honoured once apps/relayer/src/e2e.anvil.test.ts reads it.
           REQUIRE_ANVIL: "1"
-        run: npm test
-      - run: npm run build --workspace @ghostpay/web
-      - run: npm audit --omit=dev --audit-level=high
+        run: npm test -w apps/relayer
+
+  # Stable required-check name: succeeds only if every TypeScript job succeeded (or was skipped as docs-only).
+  typescript:
+    if: always()
+    needs: [changes, ts-check, ts-test, ts-test-relayer]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "needs results: $RESULTS"
+          case " $RESULTS " in *" failure "*|*" cancelled "*) exit 1 ;; esac
 
   e2e:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -63,14 +153,15 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      - uses: ./.github/actions/setup-node-libs
+      - id: pw
+        run: echo "version=$(node -p "require('./apps/web/package.json').devDependencies['@playwright/test']")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
-          node-version: "22"
-          cache: npm
-      - run: npm ci --ignore-scripts
-      - run: npm run build:libs
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
       # Allowed in GitHub-hosted CI. apps/web/playwright.config.ts falls back to this managed Chromium when no
-      # GHOSTPAY_CHROMIUM / preinstalled browser path exists.
+      # GHOSTPAY_CHROMIUM / preinstalled browser path exists. With a warm cache only the OS packages are installed.
       - run: npx playwright install --with-deps chromium
       # The suite's webServer runs `npm run build` (with bundle scan) and `vite preview` itself.
       - run: npm run test:e2e --workspace @ghostpay/web
@@ -82,7 +173,9 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-  contracts:
+  contracts-test:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
@@ -94,15 +187,29 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+      - uses: ./.github/actions/setup-forge
         with:
-          version: v1.8.5
-      # The checked-in config points at a sandbox-only solc path; CI downloads the pinned compiler.
-      - run: sed -i 's|^solc = .*|solc_version = "0.8.28"|' foundry.toml
-      - run: forge fmt --check
+          cache-name: test
       - run: forge build --sizes
       - run: forge test
-      - run: forge snapshot --check
+
+  contracts-coverage:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: packages/contracts
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-forge
+        with:
+          cache-name: coverage
       - name: Coverage (summary + lcov)
         run: forge coverage --ir-minimum --report summary --report lcov --report-file lcov.info
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -111,13 +218,71 @@ jobs:
           path: packages/contracts/lcov.info
           if-no-files-found: error
           retention-days: 14
+
+  contracts-static:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: packages/contracts
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-forge
+        with:
+          cache-name: static
+      - run: forge fmt --check
       - run: bash scripts/check-natspec.sh
+      - run: forge snapshot --check
+
+  contracts-slither:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: packages/contracts
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-forge
+        with:
+          cache-name: slither
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.solc-select
+          key: slither-${{ runner.os }}-0.11.6-1.2.0-0.8.28
       - name: Slither
         run: |
           python3 -m pip install --quiet "slither-analyzer==0.11.6" "solc-select==1.2.0"
           solc-select install 0.8.28 && solc-select use 0.8.28
           # By-design findings carry inline slither-disable comments (see docs/audits/00-slither-triage.md).
           slither . --filter-paths "lib|test|script" --fail-medium --exclude-informational --exclude-low
+
+  # Stable required-check name: succeeds only if every contracts job succeeded (or was skipped as docs-only).
+  contracts:
+    if: always()
+    needs: [changes, contracts-test, contracts-coverage, contracts-static, contracts-slither]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "needs results: $RESULTS"
+          case " $RESULTS " in *" failure "*|*" cancelled "*) exit 1 ;; esac
 
   secrets-and-egress:
     runs-on: ubuntu-latest

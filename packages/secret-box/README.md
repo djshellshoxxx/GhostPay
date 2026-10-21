@@ -12,3 +12,8 @@ Closes the leaks listed in audit 03 S3-08 for code that adopts it. **Guardrail, 
 ```bash
 npm run typecheck && npm run lint && npm test   # from this directory
 ```
+
+## Status and deviations
+
+Library only; not imported by any other workspace; no external audit.
+Differences from the spec and open items: [`DEVIATIONS.md`](./DEVIATIONS.md). Scripts (`package.json`): `build`, `typecheck`, `test` (`vitest run --coverage`), `lint`.
