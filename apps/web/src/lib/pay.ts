@@ -277,7 +277,9 @@ export function permitReader(rpc: Pick<RpcClient, 'request'>, version: string): 
     },
     async nonce(token, owner) {
       const data = encodeFunctionData({ abi: erc2612PermitAbi, functionName: 'nonces', args: [owner] });
-      return BigInt(await call(token, data));
+      const r = await call(token, data);
+      if (!/^0x[0-9a-fA-F]{64}$/.test(r)) throw new UserFacingError('Your RPC returned an unexpected permit nonce.');
+      return BigInt(r);
     },
     async domainSeparator(token) {
       const data = encodeFunctionData({ abi: erc2612PermitAbi, functionName: 'DOMAIN_SEPARATOR' });

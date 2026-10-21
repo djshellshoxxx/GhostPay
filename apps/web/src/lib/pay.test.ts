@@ -1,3 +1,4 @@
+import { UserFacingError } from './errors';
 import {
   chainlinkAggregatorAbi,
   eip712DomainSeparator,
@@ -324,5 +325,9 @@ describe('permit (ERC-2612)', () => {
     const bad = permitReader(mockRpc(1, () => 42), '1');
     await expect(bad.name(USDC_84532)).rejects.toThrow(/unexpected result/);
     expect(await permitReader(mockRpc(1, () => '0x'), '7').version(USDC_84532)).toBe('7');
+  });
+  it('turns an empty 0x nonce result into a UserFacingError, not a SyntaxError', async () => {
+    const r = permitReader(mockRpc(1, () => '0x'), '1');
+    await expect(r.nonce(USDC_84532, '0x5555555555555555555555555555555555555555')).rejects.toBeInstanceOf(UserFacingError);
   });
 });

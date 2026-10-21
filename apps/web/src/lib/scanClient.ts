@@ -64,18 +64,10 @@ function toWire(a: ScannedAnnouncement): WireLog {
  * the viewing key. Cancelling via `signal` stops fetching, tells the worker to stop, and terminates it.
  */
 export async function runScan(p: ScanParams): Promise<{ readonly matches: readonly ScanMatch[]; readonly cursor: ScanCursor; readonly scanned: number }> {
-  const worker = p.createWorker();
+  let worker: ScanWorkerLike | undefined;
   const pending = new Map<number, (m: FromWorker) => void>();
   let ready: ((m: FromWorker) => void) | undefined;
   let failed: ((e: Error) => void) | undefined;
-  worker.onmessage = (e): void => {
-    const m = e.data;
-    if (m.type === 'ready' || m.type === 'error' || m.type === 'ended') ready?.(m);
-    else if (m.type === 'matches') pending.get(m.batchId)?.(m);
-  };
-  worker.onerror = (): void => {
-    failed?.(new UserFacingError('The scanner worker failed.'));
-  };
   const wait = (register: (resolve: (m: FromWorker) => void) => void): Promise<FromWorker> =>
     new Promise<FromWorker>((resolve, reject) => {
       failed = reject;
@@ -89,9 +81,20 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   let skipped = 0;
   let batchId = 0;
   try {
+    const w = p.createWorker();
+    worker = w;
+    w.onmessage = (e): void => {
+      const m = e.data;
+      if (m.type === 'matches') pending.get(m.batchId)?.(m);
+      else if (m.type === 'error' && pending.size > 0) failed?.(new UserFacingError('The scanner worker reported an error.'));
+      else if (m.type === 'ready' || m.type === 'error' || m.type === 'ended') ready?.(m);
+    };
+    w.onerror = (): void => {
+      failed?.(new UserFacingError('The scanner worker failed.'));
+    };
     const started = await wait((resolve) => {
       ready = resolve;
-      worker.postMessage({ type: 'start', viewingKey: p.viewingKey, spendingPublicKey: p.spendingPublicKeyHex });
+      w.postMessage({ type: 'start', viewingKey: p.viewingKey, spendingPublicKey: p.spendingPublicKeyHex });
     });
     if (started.type !== 'ready') throw new UserFacingError('The scanner rejected the keys.');
     const maxPages = p.maxPages ?? 10_000;
@@ -104,7 +107,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       const id = ++batchId;
       const reply = await wait((resolve) => {
         pending.set(id, resolve);
-        worker.postMessage({ type: 'batch', batchId: id, logs: res.announcements.map(toWire) });
+        w.postMessage({ type: 'batch', batchId: id, logs: res.announcements.map(toWire) });
       });
       pending.delete(id);
       if (reply.type !== 'matches') throw new UserFacingError('The scanner returned an unexpected reply.');
@@ -134,9 +137,11 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       if (!res.truncated) break;
     }
   } finally {
-    if (p.signal.aborted) worker.postMessage({ type: 'cancel' });
-    worker.postMessage({ type: 'end' });
-    worker.terminate();
+    if (worker !== undefined) {
+      if (p.signal.aborted) worker.postMessage({ type: 'cancel' });
+      worker.postMessage({ type: 'end' });
+      worker.terminate();
+    }
     zeroizeBytes(p.viewingKey);
   }
   return { matches: all, cursor, scanned };

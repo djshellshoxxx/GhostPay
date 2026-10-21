@@ -110,7 +110,7 @@ describe('Sweep', () => {
     const posted: string[] = [];
     const fetchFn: Services['fetchFn'] = (url) => {
       posted.push(url);
-      if (url.endsWith('/v1/quote')) return Promise.resolve(new Response(JSON.stringify({ fee: '25000', feeTo: '0x7777777777777777777777777777777777777777', expiresAt: 1_800_000_100, quoteToken: 'tok' })));
+      if (url.endsWith('/v1/quote')) return Promise.resolve(new Response(JSON.stringify({ fee: '25000', feeTo: '0x4444444444444444444444444444444444444444', expiresAt: 1_800_000_100, quoteToken: 'tok' })));
       return Promise.resolve(new Response(JSON.stringify({ txHash: `0x${'34'.repeat(32)}` }), { status: 200 }));
     };
     const user = await toSweep({ relayer: true, fetchFn });

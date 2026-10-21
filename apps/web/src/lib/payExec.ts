@@ -1,4 +1,5 @@
 import type { Address, BuiltPayment, Hex, RpcClient } from '@ghostpay/chain-adapters';
+import { checkExpiry } from '@ghostpay/invoice-schema';
 import { UserFacingError } from './errors';
 import { formatUnits } from './format';
 import {
@@ -117,7 +118,11 @@ export async function preparePayment(session: WalletSession, ctx: PayContext, op
 /** Final gate and send. The assertion runs on exactly the object that is passed to the wallet. */
 export async function sendPayment(session: WalletSession, ctx: PayContext, built: BuiltPayment, rt: Runtime, status: StatusFn): Promise<SubmitResult> {
   assertReadyToSend(built, ctx);
-  if (BigInt(rt.nowSeconds()) >= built.preview.deadline) throw new UserFacingError('The prepared payment has expired. Review again.');
+  const now = rt.nowSeconds();
+  if (BigInt(now) >= built.preview.deadline) throw new UserFacingError('The prepared payment has expired. Review again.');
+  const expiry = checkExpiry(ctx.review.invoice, now);
+  if (expiry.invoiceExpired) throw new UserFacingError('This invoice has expired. Do not pay; ask the seller for a new one.');
+  if (ctx.review.invoice.amountPolicy.mode === 'fiat_quote' && expiry.quoteExpired) throw new UserFacingError('The seller’s price quote has expired. Ask for a new invoice.');
   return submitTx(session, { to: built.tx.to, data: built.tx.data, value: built.tx.value }, rt, status);
 }
 

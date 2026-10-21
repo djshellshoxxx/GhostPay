@@ -64,3 +64,9 @@ export function formatUnix(seconds: number): string {
 export function taxFor(subtotalMinor: bigint, rateBps: number): bigint {
   return (subtotalMinor * BigInt(rateBps) + 5_000n) / 10_000n;
 }
+
+/** Seconds as minutes for display: whole minutes plainly, otherwise one decimal (never rounds 90 s to "2"). */
+export function minutesLabel(seconds: number): string {
+  const m = seconds / 60;
+  return Number.isInteger(m) ? String(m) : m.toFixed(1);
+}

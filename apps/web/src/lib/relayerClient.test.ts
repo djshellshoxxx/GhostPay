@@ -45,10 +45,25 @@ describe('requestQuote', () => {
     await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(new Response('x'.repeat(20_000))))).rejects.toThrow(/too large/);
     await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(new Response('not json')))).rejects.toThrow(/invalid response/);
   });
+  it('stops reading an oversized body at the cap (stream) and honours content-length', async () => {
+    let pulled = 0;
+    const big = new ReadableStream<Uint8Array>({
+      pull(c) {
+        pulled += 8192;
+        c.enqueue(new Uint8Array(8192).fill(97));
+        if (pulled > 1_000_000) c.close();
+      },
+    });
+    await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(new Response(big)))).rejects.toThrow(/too large/);
+    expect(pulled).toBeLessThan(100_000);
+    const declared = new Response('{}', { headers: { 'content-length': '99999' } });
+    await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(declared))).rejects.toThrow(/too large/);
+  });
 });
 
 describe('submitSweep', () => {
   const body: SweepSubmission = {
+    chainId: 84532,
     sweep: { token: TOKEN, owner: OWNER, destination: DEST, feeTo: FEE_TO, amount: 10n, fee: 1n, deadline: 99n, nonce: 7n },
     sweepSig: '0xaa',
     permit: { value: 10n, deadline: 99n, v: 27, r: '0x01', s: '0x02' },
@@ -62,6 +77,7 @@ describe('submitSweep', () => {
     });
     expect(hash).toBe(`0x${'ab'.repeat(32)}`);
     const parsed = JSON.parse(sent) as { sweep: Record<string, unknown>; permit: Record<string, unknown> };
+    expect(parsed).toMatchObject({ chainId: 84532 });
     expect(parsed.sweep['amount']).toBe('10');
     expect(parsed.sweep['nonce']).toBe('7');
     expect(parsed.permit['value']).toBe('10');

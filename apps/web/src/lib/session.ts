@@ -106,10 +106,20 @@ function keySetFromScalars(spending: SecretScalar, viewing: SecretScalar): Steal
 
 /** Imports keys typed or pasted by the user. Keys stay in memory only. */
 export function importSession(input: ImportedHex): SessionPublic {
-  const spending = scalarFromHex(input.spendingKeyHex, 'Spending key');
-  const viewing = scalarFromHex(input.viewingKeyHex, 'Viewing key');
-  const signing = input.signingKeyHex === undefined || input.signingKeyHex.trim() === '' ? randomScalar() : scalarFromHex(input.signingKeyHex, 'Signing key');
-  return install({ keys: keySetFromScalars(spending, viewing), signingKey: signing });
+  const made: SecretScalar[] = [];
+  const keep = (s: SecretScalar): SecretScalar => {
+    made.push(s);
+    return s;
+  };
+  try {
+    const spending = keep(scalarFromHex(input.spendingKeyHex, 'Spending key'));
+    const viewing = keep(scalarFromHex(input.viewingKeyHex, 'Viewing key'));
+    const signing = keep(input.signingKeyHex === undefined || input.signingKeyHex.trim() === '' ? randomScalar() : scalarFromHex(input.signingKeyHex, 'Signing key'));
+    return install({ keys: keySetFromScalars(spending, viewing), signingKey: signing });
+  } catch (e) {
+    zeroize(...made);
+    throw e;
+  }
 }
 
 /** Secrets for an operation that needs them (sign, scan, sweep). Throws when no keys are loaded. */
@@ -149,12 +159,17 @@ export async function exportKeystore(passphrase: string, options: KeystoreOption
 /** Decrypts a keystore and loads it into memory. */
 export async function importKeystore(text: string, passphrase: string): Promise<SessionPublic> {
   const secrets = await decryptKeystore(text, passphrase);
+  const made: SecretScalar[] = [];
   try {
     const spending = secretScalarFromBytes(secrets.spendingKey);
+    made.push(spending);
     const viewing = secretScalarFromBytes(secrets.viewingKey);
+    made.push(viewing);
     const signing = secretScalarFromBytes(secrets.signingKey);
+    made.push(signing);
     return install({ keys: keySetFromScalars(spending, viewing), signingKey: signing });
   } catch (e) {
+    zeroize(...made);
     if (e instanceof UserFacingError) throw e;
     throw new UserFacingError('The keystore contains invalid keys.');
   } finally {

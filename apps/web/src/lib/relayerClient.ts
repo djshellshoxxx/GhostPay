@@ -22,6 +22,42 @@ export interface QuoteRequest {
 const MAX_RESPONSE = 16 * 1024;
 const TIMEOUT_MS = 15_000;
 
+const TOO_LARGE = 'The relayer response was too large and was ignored.';
+
+/** Reads the body but stops (and cancels the stream) as soon as it exceeds the cap; never buffers an oversized body. */
+async function readCapped(res: Response): Promise<string> {
+  const declared = res.headers.get('content-length');
+  if (declared !== null && /^\d+$/.test(declared) && Number(declared) > MAX_RESPONSE) {
+    void res.body?.cancel().catch(() => undefined);
+    throw new UserFacingError(TOO_LARGE);
+  }
+  if (res.body === null) {
+    const t = await res.text();
+    if (t.length > MAX_RESPONSE) throw new UserFacingError(TOO_LARGE);
+    return t;
+  }
+  const reader = res.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > MAX_RESPONSE) {
+      void reader.cancel().catch(() => undefined);
+      throw new UserFacingError(TOO_LARGE);
+    }
+    chunks.push(value);
+  }
+  const all = new Uint8Array(total);
+  let off = 0;
+  for (const c of chunks) {
+    all.set(c, off);
+    off += c.byteLength;
+  }
+  return new TextDecoder().decode(all);
+}
+
 async function post(base: string, path: string, body: unknown, fetchFn: FetchFn): Promise<unknown> {
   const ctl = new AbortController();
   const timer = setTimeout(() => {
@@ -38,8 +74,7 @@ async function post(base: string, path: string, body: unknown, fetchFn: FetchFn)
       cache: 'no-store',
       signal: ctl.signal,
     });
-    const text = await res.text();
-    if (text.length > MAX_RESPONSE) throw new UserFacingError('The relayer response was too large and was ignored.');
+    const text = await readCapped(res);
     if (!res.ok) {
       let cls = '';
       try {
@@ -85,6 +120,7 @@ export async function requestQuote(base: string, q: QuoteRequest, fetchFn: Fetch
 }
 
 export interface SweepSubmission {
+  readonly chainId: number;
   readonly sweep: {
     readonly token: Address;
     readonly owner: Address;

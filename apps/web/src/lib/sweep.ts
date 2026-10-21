@@ -71,6 +71,7 @@ export async function getSweepQuote(
   destination: Address,
   amount: bigint,
   nowSeconds: number,
+  feeRecipient: Address,
   fetchFn?: FetchFn,
 ): Promise<SweepQuoteView> {
   if (relayerUrl === '') throw new UserFacingError('Set a relayer URL in Settings, or sweep directly.');
@@ -82,6 +83,8 @@ export async function getSweepQuote(
   }
   if (quote.expiresAt <= nowSeconds) throw new UserFacingError('The relayer quote has already expired.');
   if (quote.feeTo === target.owner || quote.feeTo === destination) throw new UserFacingError('The relayer fee address is unacceptable.');
+  // The relayer pins feeTo to the manifest feeRecipient; a different address is a hostile or misconfigured relayer.
+  if (quote.feeTo !== getAddress(feeRecipient)) throw new UserFacingError('The relayer fee address does not match the deployment fee recipient. Refusing.');
   return { quote, net: amount - quote.fee };
 }
 
@@ -133,6 +136,7 @@ export async function relayedSweep(i: RelayedSweepInput): Promise<string> {
     return await submitSweep(
       i.relayerUrl,
       {
+        chainId: i.target.chainId,
         sweep: order,
         sweepSig: sweepSig.signature,
         permit: { value: i.amount, deadline, v: permit.v, r: permit.r, s: permit.s },

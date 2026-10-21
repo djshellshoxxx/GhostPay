@@ -4,7 +4,7 @@ import type { BuiltPayment } from '@ghostpay/chain-adapters';
 import { CopyButton, Mono, Notice, downloadText } from '../components/Common';
 import { FeeDisclosure, useManifest } from '../components/Disclosure';
 import { extractFragment } from '../lib/fragment';
-import { formatCountdown, formatFiat, formatUnits, formatUnix, shortHex } from '../lib/format';
+import { formatCountdown, formatFiat, formatUnits, formatUnix, minutesLabel, shortHex } from '../lib/format';
 import { userMessage } from '../lib/errors';
 import { DelayScheduler, randomDelayMs, type ScheduleSnapshot } from '../lib/jitter';
 import {
@@ -448,7 +448,7 @@ export function Pay(): ReactNode {
           <div className="check">
             <input id="delay" type="checkbox" checked={useDelay} onChange={(e) => { setUseDelay(e.target.checked); }} />
             <label htmlFor="delay">
-              Wait a random time first ({String(Math.round(app.settings.delayMinSec / 60))} to {String(Math.round(app.settings.delayMaxSec / 60))} minutes)
+              Wait a random time first ({minutesLabel(app.settings.delayMinSec)} to {minutesLabel(app.settings.delayMaxSec)} minutes)
             </label>
           </div>
           <p className="hint">Timing friction only, not anonymity. While waiting nothing is signed or sent, and the page must stay open. You can cancel or send now.</p>

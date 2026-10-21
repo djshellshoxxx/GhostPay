@@ -104,6 +104,12 @@ describe('TagVault (Feature 4)', () => {
     expect(k.every((b) => b === 0)).toBe(true);
   });
 
+  it('concurrent saves for one address keep a single record (no duplicate recordIds)', async () => {
+    const { vault, store } = await unlocked();
+    await Promise.all([vault.save(84532, payload({ notes: 'a' })), vault.save(84532, payload({ notes: 'b' })), vault.save(84532, payload({ notes: 'c' }))]);
+    expect(await store.getAll()).toHaveLength(1);
+    expect((await vault.find(84532, ADDR))?.notes).toBe('c');
+  });
   it('binds the chain id as AAD: a record moved to another chain does not decrypt', async () => {
     const { vault, store } = await unlocked();
     await vault.save(84532, payload());

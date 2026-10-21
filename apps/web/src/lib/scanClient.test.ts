@@ -138,6 +138,29 @@ describe('runScan', () => {
     ).rejects.toThrow(/worker failed/);
   });
 
+  it('fails fast (no hang) when the worker posts an error mid-batch', async () => {
+    const s = setup();
+    const w = new InlineWorker();
+    const orig = w.postMessage.bind(w);
+    w.postMessage = (m): void => {
+      if (m.type === 'batch') queueMicrotask(() => w.onmessage?.({ data: { type: 'error', message: 'boom' } } as never));
+      else orig(m);
+    };
+    const run = runScan({ chain, manifest, client: chainWith(10_000, s.logs), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => w, signal: new AbortController().signal });
+    await expect(Promise.race([run, new Promise((_r, rej) => setTimeout(() => rej(new Error('HANG')), 1500))])).rejects.toThrow(/scanner/);
+    expect(w.terminated).toBe(true);
+  });
+
+  it('zeroizes the viewing key copy even when createWorker throws', async () => {
+    const s = setup();
+    const key = unsafeRevealSecret(s.keys.viewingSecret);
+    expect(key.some((b) => b !== 0)).toBe(true);
+    await expect(
+      runScan({ chain, manifest, client: chainWith(10, []), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), viewingKey: key, createWorker: () => { throw new Error('no worker'); }, signal: new AbortController().signal }),
+    ).rejects.toThrow(/no worker/);
+    expect(key.every((b) => b === 0)).toBe(true);
+  });
+
   it('propagates RPC failures and still shuts the worker down', async () => {
     const s = setup();
     const worker = new InlineWorker();

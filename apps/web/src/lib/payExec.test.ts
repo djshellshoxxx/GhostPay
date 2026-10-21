@@ -56,6 +56,17 @@ describe('native payment end to end (mock wallet, mock RPC)', () => {
     expect(JSON.stringify(receipt)).not.toMatch(/secret|private/i);
   });
 
+  it('re-checks invoice expiry at send time (not only the router deadline)', async () => {
+    const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
+    let now = NOW;
+    const rt: Runtime = { rpc: chainSeeing(wallet), nowSeconds: () => now, sleep };
+    const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+    const soon = { ...ctx, review: { ...ctx.review, invoice: { ...ctx.review.invoice, expiresAt: NOW + 5 } } } as PayContext;
+    now = NOW + 10;
+    await expect(sendPayment(session, soon, built, rt, noStatus)).rejects.toThrow(/invoice has expired/);
+    expect(wallet.sent).toBeUndefined();
+  });
+
   it('works without an RPC but says it could not verify', async () => {
     const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
     const rt: Runtime = { rpc: undefined, nowSeconds: () => NOW };

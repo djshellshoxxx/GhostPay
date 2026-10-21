@@ -31,6 +31,9 @@ export function Sweep(): ReactNode {
   useEffect(() => {
     let live = true;
     if (chainId === undefined || sel === undefined || tokenAddr === undefined) return;
+    // A different payment/token must never show (or sweep with) the previous selection's balance or quote.
+    setBalance(undefined);
+    setQuote(undefined);
     void (async () => {
       try {
         const rpc = await app.getRpc(chainId);
@@ -85,7 +88,7 @@ export function Sweep(): ReactNode {
     void guard(async () => {
       if (loaded === undefined || balance === undefined || tokenAddr === 'native') throw new Error('state');
       const dest = checkDestination(destination, target.owner, loaded);
-      setQuote(await getSweepQuote(app.settings.relayerUrl, { ...target, token: tokenAddr }, dest, balance, nowSec(), services.fetchFn));
+      setQuote(await getSweepQuote(app.settings.relayerUrl, { ...target, token: tokenAddr }, dest, balance, nowSec(), loaded.feeRecipient, services.fetchFn));
     });
   };
 

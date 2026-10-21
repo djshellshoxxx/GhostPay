@@ -144,7 +144,16 @@ export class TagVault {
     return bytesToHex(new Uint8Array(mac));
   }
 
-  public async save(chainId: number, payload: TagPayload): Promise<void> {
+  private saveQueue: Promise<void> = Promise.resolve();
+
+  /** Saves are serialised so two concurrent saves for one address cannot both miss the existing record. */
+  public save(chainId: number, payload: TagPayload): Promise<void> {
+    const run = this.saveQueue.then(() => this.saveNow(chainId, payload));
+    this.saveQueue = run.catch(() => undefined);
+    return run;
+  }
+
+  private async saveNow(chainId: number, payload: TagPayload): Promise<void> {
     const { aes } = this.keys();
     const clean = validatePayload(payload);
     const lookupKey = await this.token(chainId, clean.stealthAddress);

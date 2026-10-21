@@ -65,22 +65,25 @@ describe('readBalance', () => {
 
 describe('getSweepQuote', () => {
   const quoteFetch = (over: Record<string, unknown> = {}) => (): Promise<Response> =>
-    Promise.resolve(new Response(JSON.stringify({ fee: '5000', feeTo: FEE_TO, expiresAt: NOW + 60, quoteToken: 'tok', ...over })));
+    Promise.resolve(new Response(JSON.stringify({ fee: '5000', feeTo: FAKE_FEE_RECIPIENT, expiresAt: NOW + 60, quoteToken: 'tok', ...over })));
   it('returns the quote and net amount', async () => {
-    const q = await getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, quoteFetch());
+    const q = await getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, FAKE_FEE_RECIPIENT, quoteFetch());
     expect(q.net).toBe(995_000n);
   });
   it('requires a relayer URL', async () => {
-    await expect(getSweepQuote('', target, DEST, 1_000_000n, NOW)).rejects.toThrow(/relayer URL/);
+    await expect(getSweepQuote('', target, DEST, 1_000_000n, NOW, FAKE_FEE_RECIPIENT)).rejects.toThrow(/relayer URL/);
   });
   it('refuses fees above the published 3 % cap', async () => {
-    await expect(getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, quoteFetch({ fee: '30001' }))).rejects.toThrow(/above the published cap/);
-    await expect(getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, quoteFetch({ fee: '1000000' }))).rejects.toThrow(/above the published cap/);
+    await expect(getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, FAKE_FEE_RECIPIENT, quoteFetch({ fee: '30001' }))).rejects.toThrow(/above the published cap/);
+    await expect(getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, FAKE_FEE_RECIPIENT, quoteFetch({ fee: '1000000' }))).rejects.toThrow(/above the published cap/);
+  });
+  it('refuses a feeTo that is not the manifest fee recipient', async () => {
+    await expect(getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, FAKE_FEE_RECIPIENT, quoteFetch({ feeTo: FEE_TO }))).rejects.toThrow(/does not match the deployment fee recipient/);
   });
   it('refuses expired quotes and unacceptable fee addresses', async () => {
-    await expect(getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, quoteFetch({ expiresAt: NOW }))).rejects.toThrow(/expired/);
-    await expect(getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, quoteFetch({ feeTo: DEST }))).rejects.toThrow(/fee address is unacceptable/);
-    await expect(getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, quoteFetch({ feeTo: target.owner }))).rejects.toThrow(/fee address is unacceptable/);
+    await expect(getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, FAKE_FEE_RECIPIENT, quoteFetch({ expiresAt: NOW }))).rejects.toThrow(/expired/);
+    await expect(getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, FAKE_FEE_RECIPIENT, quoteFetch({ feeTo: DEST }))).rejects.toThrow(/fee address is unacceptable/);
+    await expect(getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, FAKE_FEE_RECIPIENT, quoteFetch({ feeTo: target.owner }))).rejects.toThrow(/fee address is unacceptable/);
   });
 });
 
@@ -92,7 +95,7 @@ describe('relayedSweep (EIP-712 sweep + ERC-2612 permit, signed in memory)', () 
       if (data.startsWith('0x7ecebe00')) return encodeFunctionResult({ abi: erc2612PermitAbi, functionName: 'nonces', result: 4n });
       return eip712DomainSeparator({ name: 'USDC', version: '2', chainId: 84532, verifyingContract: TOKEN });
     });
-    let posted: { sweep: Record<string, string>; sweepSig: `0x${string}`; permit: Record<string, string | number>; quoteToken: string } | undefined;
+    let posted: { chainId: number; sweep: Record<string, string>; sweepSig: `0x${string}`; permit: Record<string, string | number>; quoteToken: string } | undefined;
     const fetchFn = (_u: string, init: RequestInit): Promise<Response> => {
       posted = JSON.parse(bodyText(init.body)) as never;
       return Promise.resolve(new Response(JSON.stringify({ txHash: `0x${'12'.repeat(32)}` })));
@@ -112,6 +115,7 @@ describe('relayedSweep (EIP-712 sweep + ERC-2612 permit, signed in memory)', () 
     expect(hash).toBe(`0x${'12'.repeat(32)}`);
     const p = posted!;
     expect(p.quoteToken).toBe('tok');
+    expect(p.chainId).toBe(84532);
     expect(p.sweep).toMatchObject({ token: TOKEN, owner: target.owner, destination: DEST, feeTo: FEE_TO, amount: '1000000', fee: '5000', nonce: '42' });
     const td = buildSweepTypedData(84532, manifest.sweepRelayer, {
       token: TOKEN,

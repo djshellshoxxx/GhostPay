@@ -27,11 +27,13 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
 8. No network-reachable "light indexer" (Feature 5); scanning uses the user's RPC through `chain-adapters`.
 
 ## Behaviour choices the specs left open
-9. **Relayer wire format.** `apps/relayer` did not exist when this was written, so the client follows APP_AND_RELAYER_SPEC section 3 literally:
+9. **Relayer wire format.** Matches `apps/relayer/src/validate.ts` (the relayer exists and is the source of truth):
    `POST /v1/quote {chainId, token, owner, destination, amount}` -> `{fee, feeTo, expiresAt, quoteToken}` and
-   `POST /v1/sweep {sweep, sweepSig, permit, quoteToken}` -> `{txHash}`. All uint256 values are decimal strings. `permit` is
-   `{value, deadline, v, r, s}` (the `sweepWithPermit` tuple). If the relayer chooses other names this client needs a one-file change
-   (`src/lib/relayerClient.ts`). The client rejects a quote above the 3 % published cap before signing anything.
+   `POST /v1/sweep {chainId, sweep, sweepSig, permit, quoteToken}` -> `{txHash}`. All uint256 values are decimal strings. `permit` is
+   `{value, deadline, v, r, s}` (the `sweepWithPermit` tuple). `src/lib/relayerContract.test.ts` feeds the body built by `relayedSweep`
+   into the relayer's real `parseSweepRequest`, so wire drift fails the web test suite. The client rejects a quote above the 3 % published
+   cap, or whose `feeTo` is not the manifest `feeRecipient` (the relayer pins the same value), before signing anything. Relayer responses
+   are read with a streaming 16 KiB cap.
 10. **Relayed sweeps need an ERC-2612 token** (the router sweep contract pulls with a permit). Other cases use the **direct sweep**: the
     stealth key signs a plain EIP-1559 transfer (ERC-20 `transfer` or native) that the stealth address pays gas for. The signed transaction
     is checked to carry the hash returned by the RPC.

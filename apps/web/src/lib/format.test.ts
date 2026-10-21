@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fiatDecimals, formatCountdown, formatFiat, formatUnits, formatUnix, parseUnits, shortHex, taxFor } from './format';
+import { fiatDecimals, formatCountdown, formatFiat, formatUnits, formatUnix, minutesLabel, parseUnits, shortHex, taxFor } from './format';
 
 describe('formatUnits / parseUnits', () => {
   it('formats and trims', () => {
@@ -57,5 +57,14 @@ describe('display helpers', () => {
   });
   it('formats unix time in UTC', () => {
     expect(formatUnix(0)).toBe('1970-01-01 00:00:00 UTC');
+  });
+});
+
+describe('minutesLabel', () => {
+  it('does not round fractional minutes to a misleading integer', () => {
+    expect(minutesLabel(120)).toBe('2');
+    expect(minutesLabel(900)).toBe('15');
+    expect(minutesLabel(90)).toBe('1.5');
+    expect(minutesLabel(30)).toBe('0.5');
   });
 });
