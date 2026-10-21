@@ -1,0 +1,44 @@
+# Example systemd unit. Contains no secrets: put them in root-owned files with mode 600
+# (RELAYER_KEY_FILE, QUOTE_SECRET_FILE) and reference only their paths.
+[Unit]
+Description=GhostPay gas-sponsorship relayer
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ghostpay-relayer
+Group=ghostpay-relayer
+WorkingDirectory=/opt/ghostpay/apps/relayer
+ExecStart=/usr/bin/node dist/main.js
+Environment=NODE_ENV=production
+Environment=RELAYER_CONFIG=/etc/ghostpay-relayer/relayer.config.json
+Environment=DEPLOYMENTS_DIR=/etc/ghostpay-relayer/deployments
+Environment=RELAYER_KEY_FILE=/etc/ghostpay-relayer/hot.key
+Environment=QUOTE_SECRET_FILE=/etc/ghostpay-relayer/quote.secret
+# RPC URLs with API keys: EnvironmentFile must be mode 600 and contain e.g. RPC_URL_84532=https://...
+EnvironmentFile=/etc/ghostpay-relayer/rpc.env
+# ALLOW_MAINNET=1 is deliberately NOT set here.
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+KillSignal=SIGTERM
+
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6
+RestrictNamespaces=true
+LockPersonality=true
+MemoryDenyWriteExecute=false
+SystemCallArchitectures=native
+CapabilityBoundingSet=
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target
