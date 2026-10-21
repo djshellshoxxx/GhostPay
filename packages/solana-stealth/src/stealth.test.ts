@@ -34,8 +34,17 @@ describe('test vectors (cross-checked by scripts/crosscheck_vectors.py)', () => 
     expect(toHex(keys.spendPublicKey)).toBe(c['spendPublicKey']);
     expect(toHex(keys.viewPublicKey)).toBe(c['viewPublicKey']);
     expect(encodeMetaAddress('devnet', keys.spendPublicKey, keys.viewPublicKey)).toBe(c['metaAddressDevnet']);
-    expect(encodeMetaAddress('mainnet', keys.spendPublicKey, keys.viewPublicKey)).toBe(c['metaAddressMainnet']);
-    const r = wrapScalar(BigInt('0x' + Buffer.from(hexToBytes(c['ephemeralSecret'] as string)).reverse().toString('hex')));
+    expect(encodeMetaAddress('mainnet', keys.spendPublicKey, keys.viewPublicKey)).toBe(
+      c['metaAddressMainnet'],
+    );
+    const r = wrapScalar(
+      BigInt(
+        '0x' +
+          Buffer.from(hexToBytes(c['ephemeralSecret'] as string))
+            .reverse()
+            .toString('hex'),
+      ),
+    );
     const pay = deriveStealthPaymentWithEphemeral(keys.spendPublicKey, keys.viewPublicKey, r);
     expect(toHex(pay.ephemeralPublicKey)).toBe(c['ephemeralPublicKey']);
     expect(pay.viewTag).toBe(c['viewTag']);
@@ -73,20 +82,40 @@ describe('dual-key stealth roundtrip', () => {
     const pay = deriveStealthPayment(keys.spendPublicKey, keys.viewPublicKey, rng);
     const wrong = (pay.viewTag + 1) % 256;
     expect(checkAnnouncement(keys.viewSecret, keys.spendPublicKey, pay.ephemeralPublicKey, wrong)).toBeNull();
-    expect(checkAnnouncement(keys.viewSecret, keys.spendPublicKey, pay.ephemeralPublicKey, undefined)).not.toBeNull();
+    expect(
+      checkAnnouncement(keys.viewSecret, keys.spendPublicKey, pay.ephemeralPublicKey, undefined),
+    ).not.toBeNull();
   });
   it('expected stealth key mismatch returns null / throws in deriveSpendKey', () => {
     const pay = deriveStealthPayment(keys.spendPublicKey, keys.viewPublicKey, rng);
-    const m = checkAnnouncement(keys.viewSecret, keys.spendPublicKey, pay.ephemeralPublicKey, pay.viewTag, keys.spendPublicKey);
+    const m = checkAnnouncement(
+      keys.viewSecret,
+      keys.spendPublicKey,
+      pay.ephemeralPublicKey,
+      pay.viewTag,
+      keys.spendPublicKey,
+    );
     expect(m).toBeNull();
-    const ok = checkAnnouncement(keys.viewSecret, keys.spendPublicKey, pay.ephemeralPublicKey, pay.viewTag, pay.stealthPublicKey);
-    expect(code(() => deriveSpendKey(keys.spendSecret, ok!.tweak, keys.viewPublicKey))).toBe('DERIVED_KEY_INVALID');
+    const ok = checkAnnouncement(
+      keys.viewSecret,
+      keys.spendPublicKey,
+      pay.ephemeralPublicKey,
+      pay.viewTag,
+      pay.stealthPublicKey,
+    );
+    expect(code(() => deriveSpendKey(keys.spendSecret, ok!.tweak, keys.viewPublicKey))).toBe(
+      'DERIVED_KEY_INVALID',
+    );
   });
   it('rejects torsion / invalid R and invalid recipient keys before secret math', () => {
-    expect(code(() => checkAnnouncement(keys.viewSecret, keys.spendPublicKey, torsion, 0))).toBe('INVALID_POINT');
+    expect(code(() => checkAnnouncement(keys.viewSecret, keys.spendPublicKey, torsion, 0))).toBe(
+      'INVALID_POINT',
+    );
     expect(code(() => deriveStealthPayment(torsion, keys.viewPublicKey))).toBe('INVALID_POINT');
     expect(code(() => deriveStealthPayment(keys.spendPublicKey, torsion))).toBe('INVALID_POINT');
-    expect(code(() => checkAnnouncement(keys.viewSecret, torsion, keys.viewPublicKey, 0))).toBe('INVALID_POINT');
+    expect(code(() => checkAnnouncement(keys.viewSecret, torsion, keys.viewPublicKey, 0))).toBe(
+      'INVALID_POINT',
+    );
   });
   it('deriveSpendKey rejects p == 0', () => {
     const s = wrapScalar(5n);
@@ -142,8 +171,12 @@ describe('meta-address', () => {
     expect(code(() => decodeMetaAddress(META_ADDRESS_PREFIX + '2222'))).toBe('INVALID_META_ADDRESS');
     expect(code(() => decodeMetaAddress('x'.repeat(200)))).toBe('INVALID_META_ADDRESS');
     expect(code(() => decodeMetaAddress(1 as unknown as string))).toBe('INVALID_META_ADDRESS');
-    expect(code(() => decodeMetaAddress(build(2, 1, k.spendPublicKey, k.viewPublicKey)))).toBe('UNSUPPORTED_VERSION');
-    expect(code(() => decodeMetaAddress(build(1, 9, k.spendPublicKey, k.viewPublicKey)))).toBe('INVALID_META_ADDRESS');
+    expect(code(() => decodeMetaAddress(build(2, 1, k.spendPublicKey, k.viewPublicKey)))).toBe(
+      'UNSUPPORTED_VERSION',
+    );
+    expect(code(() => decodeMetaAddress(build(1, 9, k.spendPublicKey, k.viewPublicKey)))).toBe(
+      'INVALID_META_ADDRESS',
+    );
     expect(code(() => decodeMetaAddress(build(1, 1, torsion, k.viewPublicKey)))).toBe('INVALID_POINT');
     expect(code(() => encodeMetaAddress('devnet', torsion, k.viewPublicKey))).toBe('INVALID_POINT');
   });
@@ -164,8 +197,12 @@ describe('announcement memo', () => {
     expect(parseAnnouncementMemo(5 as unknown as string)).toBeNull();
     expect(code(() => parseAnnouncementMemo(ANNOUNCEMENT_PREFIX + '0'))).toBe('INVALID_ANNOUNCEMENT');
     expect(code(() => parseAnnouncementMemo(ANNOUNCEMENT_PREFIX + '2222'))).toBe('INVALID_ANNOUNCEMENT');
-    expect(code(() => parseAnnouncementMemo(ANNOUNCEMENT_PREFIX + 'z'.repeat(100)))).toBe('INVALID_ANNOUNCEMENT');
-    expect(code(() => parseAnnouncementMemo(ANNOUNCEMENT_PREFIX + base58.encode(new Uint8Array([...torsion, 1]))))).toBe('INVALID_POINT');
+    expect(code(() => parseAnnouncementMemo(ANNOUNCEMENT_PREFIX + 'z'.repeat(100)))).toBe(
+      'INVALID_ANNOUNCEMENT',
+    );
+    expect(
+      code(() => parseAnnouncementMemo(ANNOUNCEMENT_PREFIX + base58.encode(new Uint8Array([...torsion, 1])))),
+    ).toBe('INVALID_POINT');
     expect(code(() => encodeAnnouncementMemo(k.viewPublicKey, 256))).toBe('INVALID_ANNOUNCEMENT');
     expect(code(() => encodeAnnouncementMemo(k.viewPublicKey, 1.5))).toBe('INVALID_ANNOUNCEMENT');
     expect(code(() => encodeAnnouncementMemo(torsion, 1))).toBe('INVALID_POINT');

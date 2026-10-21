@@ -70,7 +70,9 @@ describe('scalars', () => {
     expect(() => String(s)).toThrow(TypeError);
     expect(() => `${s as unknown as string}`).toThrow(TypeError);
     expect(() => s.toLocaleString()).toThrow(TypeError);
-    expect(() => (s as unknown as Record<symbol, () => void>)[Symbol.for('nodejs.util.inspect.custom')]?.()).toThrow(TypeError);
+    expect(() =>
+      (s as unknown as Record<symbol, () => void>)[Symbol.for('nodejs.util.inspect.custom')]?.(),
+    ).toThrow(TypeError);
     expect(s.slice(0, 2)).toBeInstanceOf(Uint8Array);
   });
   it('zeroize clears buffers', () => {

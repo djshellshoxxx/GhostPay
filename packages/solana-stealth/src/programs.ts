@@ -17,9 +17,7 @@ export const TOKEN_PROGRAM: Address = address('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9
  *  transfer fees are NOT handled and such mints must be rejected by the caller). */
 export const TOKEN_2022_PROGRAM: Address = address('TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb');
 /** Associated Token Account program. */
-export const ASSOCIATED_TOKEN_PROGRAM: Address = address(
-  'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
-);
+export const ASSOCIATED_TOKEN_PROGRAM: Address = address('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
 /** SPL Memo program, the long-deployed version (`LEGACY_MEMO_PROGRAM_ADDRESS_V3` in @solana-program/memo). Default for announcements. */
 export const MEMO_PROGRAM: Address = address('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr');
 /** Original memo program (`LEGACY_MEMO_PROGRAM_ADDRESS_V1`); accepted by the scanner only. */

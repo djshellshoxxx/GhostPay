@@ -21,13 +21,15 @@ const code = async (fn: () => unknown): Promise<string> => {
   return 'NO_THROW';
 };
 
-function fakeFetch(respond: (body: { id: number; method: string }) => { status?: number; text: string } | Error): typeof fetch {
-  return ((_url: unknown, init?: RequestInit) => {
+function fakeFetch(
+  respond: (body: { id: number; method: string }) => { status?: number; text: string } | Error,
+): typeof fetch {
+  return (_url: unknown, init?: RequestInit) => {
     const body = JSON.parse(init?.body as string) as { id: number; method: string };
     const r = respond(body);
     if (r instanceof Error) return Promise.reject(r);
     return Promise.resolve(new Response(r.text, { status: r.status ?? 200 }));
-  });
+  };
 }
 
 describe('createHttpRpc', () => {
@@ -83,14 +85,18 @@ describe('json + typed helpers', () => {
   it('toU64', async () => {
     expect(toU64(3)).toBe(3n);
     expect(toU64(3n)).toBe(3n);
-    for (const bad of [-1, 1.5, '3', -1n, null]) expect(await code(() => toU64(bad))).toBe('INVALID_RESPONSE');
+    for (const bad of [-1, 1.5, '3', -1n, null])
+      expect(await code(() => toU64(bad))).toBe('INVALID_RESPONSE');
   });
   it('typed wrappers parse responses', async () => {
     const rpc = new MockRpc({
       getLatestBlockhash: () => ({ context: {}, value: { blockhash: 'abc', lastValidBlockHeight: 7 } }),
       getMinimumBalanceForRentExemption: () => 890880,
       getSlot: () => 42,
-      getSignaturesForAddress: () => [{ signature: 's', slot: 1, err: null }, { signature: 't', slot: 2, err: { x: 1 } }],
+      getSignaturesForAddress: () => [
+        { signature: 's', slot: 1, err: null },
+        { signature: 't', slot: 2, err: { x: 1 } },
+      ],
     });
     expect(await getLatestBlockhash(rpc)).toEqual({ blockhash: 'abc', lastValidBlockHeight: 7n });
     expect(await getMinimumBalanceForRentExemption(rpc, 0)).toBe(890880n);
@@ -117,7 +123,10 @@ describe('json + typed helpers', () => {
 describe('getTransaction', () => {
   const good = {
     slot: 10,
-    transaction: { signatures: ['sig'], message: { accountKeys: ['A', 'B'], instructions: [{ programIdIndex: 1, accounts: [0], data: '2' }] } },
+    transaction: {
+      signatures: ['sig'],
+      message: { accountKeys: ['A', 'B'], instructions: [{ programIdIndex: 1, accounts: [0], data: '2' }] },
+    },
     meta: {
       err: null,
       preBalances: [5, 0],
@@ -142,13 +151,18 @@ describe('getTransaction', () => {
   it.each([
     ['sig mismatch', mutate((g) => (g.transaction.signatures = ['other']))],
     ['bad ix list', mutate((g) => ((g.transaction.message as Record<string, unknown>)['instructions'] = 1))],
-    ['bad accounts', mutate((g) => ((g.transaction.message.instructions[0] as Record<string, unknown>)['accounts'] = 1))],
+    [
+      'bad accounts',
+      mutate((g) => ((g.transaction.message.instructions[0] as Record<string, unknown>)['accounts'] = 1)),
+    ],
     ['bad index', mutate((g) => (g.transaction.message.instructions[0]!.programIdIndex = 999))],
     ['bad balances', mutate((g) => ((g.meta as Record<string, unknown>)['preBalances'] = 1))],
     ['bad token amount', mutate((g) => (g.meta.postTokenBalances[0]!.uiTokenAmount.amount = '-1'))],
     ['bad token list', mutate((g) => ((g.meta as Record<string, unknown>)['postTokenBalances'] = 1))],
   ])('%s', async (_n, resp) => {
-    expect(await code(() => getTransaction(new MockRpc({ getTransaction: () => resp }), 'sig'))).toBe('INVALID_RESPONSE');
+    expect(await code(() => getTransaction(new MockRpc({ getTransaction: () => resp }), 'sig'))).toBe(
+      'INVALID_RESPONSE',
+    );
   });
   it('tolerates null token balances and missing owner', async () => {
     const g = mutate((x) => {

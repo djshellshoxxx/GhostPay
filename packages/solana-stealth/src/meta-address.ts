@@ -76,9 +76,7 @@ export function decodeMetaAddress(input: string, expectedCluster?: SolanaCluster
   const payload = raw.subarray(0, PAYLOAD_LEN);
   if (!equalBytes(checksum(payload), raw.subarray(PAYLOAD_LEN))) return fail('BAD_CHECKSUM');
   if (payload[0] !== META_ADDRESS_VERSION) return fail('UNSUPPORTED_VERSION');
-  const cluster = (Object.keys(CLUSTER_BYTE) as SolanaCluster[]).find(
-    (c) => CLUSTER_BYTE[c] === payload[1],
-  );
+  const cluster = (Object.keys(CLUSTER_BYTE) as SolanaCluster[]).find((c) => CLUSTER_BYTE[c] === payload[1]);
   if (cluster === undefined) return fail('INVALID_META_ADDRESS');
   if (expectedCluster !== undefined && cluster !== expectedCluster) return fail('NETWORK_MISMATCH');
   return {

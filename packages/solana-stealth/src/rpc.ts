@@ -251,7 +251,11 @@ export async function getTransaction(
     const i = obj(e);
     const accounts = i['accounts'];
     if (!Array.isArray(accounts)) return fail('INVALID_RESPONSE');
-    return { programIdIndex: index(i['programIdIndex']), accounts: accounts.map(index), data: str(i['data']) };
+    return {
+      programIdIndex: index(i['programIdIndex']),
+      accounts: accounts.map(index),
+      data: str(i['data']),
+    };
   });
   const bal = (v: unknown): bigint[] => {
     if (!Array.isArray(v)) return fail('INVALID_RESPONSE');

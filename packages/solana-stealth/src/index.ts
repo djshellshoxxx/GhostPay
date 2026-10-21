@@ -3,13 +3,7 @@
  * (SOL + SPL). Not audited. See docs/adr/ADR-0017-solana-stealth.md.
  */
 export * from './errors.js';
-export {
-  L,
-  secretScalarFromBytes,
-  unsafeRevealSecret,
-  zeroize,
-  type SecretScalar,
-} from './secret.js';
+export { L, secretScalarFromBytes, unsafeRevealSecret, zeroize, type SecretScalar } from './secret.js';
 export {
   DOMAIN,
   parsePublicPoint,

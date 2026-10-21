@@ -68,9 +68,9 @@ export function parseSolanaAddress(input: string): Address {
   }
 }
 
-function parseAsset(asset: SolanaAsset):
-  | { kind: 'native' }
-  | { kind: 'spl'; mint: Address; decimals: number; tokenProgram: Address } {
+function parseAsset(
+  asset: SolanaAsset,
+): { kind: 'native' } | { kind: 'spl'; mint: Address; decimals: number; tokenProgram: Address } {
   if (asset.kind === 'native') return { kind: 'native' };
   if (asset.kind !== 'spl') return fail('INVALID_INPUT');
   const tokenProgram = parseSolanaAddress(asset.tokenProgram);
@@ -120,10 +120,7 @@ function compile(feePayer: Address, lifetime: BlockhashLifetime, ixs: Instructio
  */
 export function addSignature(tx: SolanaTx, signer: Address, signature: Uint8Array): SolanaTx {
   if (!tx.requiredSigners.includes(signer)) return fail('SIGNER_NOT_REQUIRED');
-  if (
-    signature.length !== 64 ||
-    !verifySignature(signature, tx.messageBytes, base58.decode(signer))
-  ) {
+  if (signature.length !== 64 || !verifySignature(signature, tx.messageBytes, base58.decode(signer))) {
     return fail('SIGNATURE_INVALID');
   }
   const signatures = { ...tx.transaction.signatures, [signer]: signature as SignatureBytes };
@@ -207,12 +204,10 @@ export async function buildStealthPaymentTx(input: StealthPaymentTxInput): Promi
   const feePayer = input.feePayer === undefined ? payer : parseSolanaAddress(input.feePayer);
   const asset = parseAsset(input.asset);
   if (typeof input.amount !== 'bigint' || input.amount <= 0n) return fail('INVALID_AMOUNT');
-  const payment =
-    input.payment ?? deriveStealthPayment(input.spendPublicKey, input.viewPublicKey, input.rng);
+  const payment = input.payment ?? deriveStealthPayment(input.spendPublicKey, input.viewPublicKey, input.rng);
   const stealthOwner = toAddress(payment.stealthAddress);
   const memo = encodeAnnouncementMemo(payment.ephemeralPublicKey, payment.viewTag);
-  const memoProgram =
-    input.memoProgram === undefined ? MEMO_PROGRAM : parseSolanaAddress(input.memoProgram);
+  const memoProgram = input.memoProgram === undefined ? MEMO_PROGRAM : parseSolanaAddress(input.memoProgram);
   const ixs: Instruction[] = [];
   let creditedAccount: Address;
   if (asset.kind === 'native') {

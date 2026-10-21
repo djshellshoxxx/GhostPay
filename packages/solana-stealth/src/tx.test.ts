@@ -77,7 +77,9 @@ describe('program ids and instruction encodings', () => {
       bytes = tx.messageBytes;
       const p = secretScalarFromBytes(hexToBytes(c0['spendKey'] as string));
       const signed = signWithStealthKey(tx, p, new Uint8Array(32));
-      expect(toHex(signed.transaction.signatures[c0['stealthAddress'] as Address]!)).toBe(t['stealthSignature']);
+      expect(toHex(signed.transaction.signatures[c0['stealthAddress'] as Address]!)).toBe(
+        t['stealthSignature'],
+      );
     } else {
       const built = await buildStealthPaymentTx({
         payer: t['payer'] as string,
@@ -159,7 +161,12 @@ describe('payment -> detect -> sweep, fully signed', () => {
       await findAssociatedTokenAddress(built.stealthOwner, mint as Address, TOKEN_PROGRAM),
     );
 
-    const m = checkAnnouncement(keys.viewSecret, keys.spendPublicKey, built.payment.ephemeralPublicKey, built.payment.viewTag)!;
+    const m = checkAnnouncement(
+      keys.viewSecret,
+      keys.spendPublicKey,
+      built.payment.ephemeralPublicKey,
+      built.payment.viewTag,
+    )!;
     const p = deriveSpendKey(keys.spendSecret, m.tweak, built.payment.stealthPublicKey);
     const sweep = await buildStealthSweepTx({
       stealthAddress: built.stealthOwner,
@@ -206,7 +213,11 @@ describe('input validation', () => {
     ['below rent', { amount: 1n }, 'BELOW_RENT_EXEMPT'],
     ['no rent minimum', { rentExemptMinimum: undefined }, 'INVALID_INPUT'],
     ['bad blockhash', { lifetime: { blockhash: 'xx', lastValidBlockHeight: 1n } }, 'INVALID_INPUT'],
-    ['bad height', { lifetime: { blockhash: lifetime.blockhash, lastValidBlockHeight: -1n } }, 'INVALID_INPUT'],
+    [
+      'bad height',
+      { lifetime: { blockhash: lifetime.blockhash, lastValidBlockHeight: -1n } },
+      'INVALID_INPUT',
+    ],
     ['bad memo program', { memoProgram: '0' }, 'INVALID_ADDRESS'],
     ['bad asset kind', { asset: { kind: 'nft' } }, 'INVALID_INPUT'],
     ['bad token program', { asset: { ...spl, tokenProgram: SYSTEM_PROGRAM } }, 'INVALID_ADDRESS'],
@@ -230,7 +241,13 @@ describe('input validation', () => {
     expect(legacyMessageToJson(b.tx.messageBytes).accountKeys).toContain(sponsor.address);
   });
   it('sweep validation', async () => {
-    const s = { stealthAddress: payer.address, destination: sponsor.address, asset: { kind: 'native' } as const, amount: 1n, lifetime };
+    const s = {
+      stealthAddress: payer.address,
+      destination: sponsor.address,
+      asset: { kind: 'native' } as const,
+      amount: 1n,
+      lifetime,
+    };
     expect(await code(() => buildStealthSweepTx({ ...s, amount: 0n }))).toBe('INVALID_AMOUNT');
     expect(await code(() => buildStealthSweepTx({ ...s, destination: payer.address }))).toBe('INVALID_INPUT');
     expect(await code(() => buildStealthSweepTx({ ...s, closeTokenAccount: true }))).toBe('INVALID_INPUT');
@@ -239,9 +256,15 @@ describe('input validation', () => {
   });
   it('signature checks', async () => {
     const b = await buildStealthPaymentTx(base);
-    expect(await code(() => addSignature(b.tx, sponsor.address as Address, sponsor.sign(b.tx.messageBytes)))).toBe('SIGNER_NOT_REQUIRED');
-    expect(await code(() => addSignature(b.tx, payer.address as Address, sponsor.sign(b.tx.messageBytes)))).toBe('SIGNATURE_INVALID');
-    expect(await code(() => addSignature(b.tx, payer.address as Address, new Uint8Array(10)))).toBe('SIGNATURE_INVALID');
+    expect(
+      await code(() => addSignature(b.tx, sponsor.address as Address, sponsor.sign(b.tx.messageBytes))),
+    ).toBe('SIGNER_NOT_REQUIRED');
+    expect(
+      await code(() => addSignature(b.tx, payer.address as Address, sponsor.sign(b.tx.messageBytes))),
+    ).toBe('SIGNATURE_INVALID');
+    expect(await code(() => addSignature(b.tx, payer.address as Address, new Uint8Array(10)))).toBe(
+      'SIGNATURE_INVALID',
+    );
     expect(await code(() => signWithStealthKey(b.tx, keys.spendSecret))).toBe('SIGNER_NOT_REQUIRED');
     expect(await code(() => parseSolanaAddress('0'))).toBe('INVALID_ADDRESS');
   });

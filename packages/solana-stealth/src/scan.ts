@@ -2,7 +2,7 @@ import { base58 } from '@scure/base';
 import { parseAnnouncementMemo, type Announcement } from './announcement.js';
 import type { PublicPoint } from './ed25519.js';
 import { fail, SolanaStealthError } from './errors.js';
-import { SCANNED_MEMO_PROGRAMS } from './programs.js';
+import { MEMO_PROGRAM, SCANNED_MEMO_PROGRAMS } from './programs.js';
 import {
   getSignaturesForAddress,
   getSlot,
@@ -67,7 +67,7 @@ export async function* fetchAnnouncements(
   opts: FetchAnnouncementsOptions,
 ): AsyncGenerator<AnnouncementRecord> {
   const { signal } = opts;
-  const indexAddress = opts.indexAddress ?? (SCANNED_MEMO_PROGRAMS[0]);
+  const indexAddress: string = opts.indexAddress ?? MEMO_PROGRAM;
   const limit = opts.pageLimit ?? 1000;
   const maxPages = opts.maxPages ?? 10_000;
   if (!Number.isInteger(limit) || limit < 1 || limit > 1000) fail('INVALID_INPUT');
@@ -130,10 +130,7 @@ export interface DetectedSolanaPayment {
 }
 
 /** Credits observed for `owner` in `tx`. */
-export function creditsFor(
-  tx: RpcTransaction,
-  owner: string,
-): { lamports: bigint; tokens: TokenReceipt[] } {
+export function creditsFor(tx: RpcTransaction, owner: string): { lamports: bigint; tokens: TokenReceipt[] } {
   let lamports = 0n;
   const i = tx.accountKeys.indexOf(owner);
   if (i >= 0) {

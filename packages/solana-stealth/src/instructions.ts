@@ -7,12 +7,7 @@ import {
 } from '@solana/kit';
 import { utf8ToBytes } from '@noble/hashes/utils.js';
 import { fail } from './errors.js';
-import {
-  ASSOCIATED_TOKEN_PROGRAM,
-  MEMO_PROGRAM,
-  SYSTEM_PROGRAM,
-  TOKEN_PROGRAMS,
-} from './programs.js';
+import { ASSOCIATED_TOKEN_PROGRAM, MEMO_PROGRAM, SYSTEM_PROGRAM, TOKEN_PROGRAMS } from './programs.js';
 
 const U64_MAX = (1n << 64n) - 1n;
 

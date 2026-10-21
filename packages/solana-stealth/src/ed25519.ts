@@ -20,13 +20,7 @@ const G = ed25519.Point.BASE;
 export const DOMAIN = 'GhostPay/solana-stealth/v1/';
 
 /** Domain labels used by the scheme (ADR-0017 section 3). */
-export type DomainLabel =
-  | 'shared'
-  | 'view-tag'
-  | 'checksum'
-  | 'spend-key'
-  | 'view-key'
-  | 'nonce';
+export type DomainLabel = 'shared' | 'view-tag' | 'checksum' | 'spend-key' | 'view-key' | 'nonce';
 
 /**
  * Domain separation tag bytes: `len(tag) || tag`, tag = `DOMAIN + label` (ASCII).
@@ -132,11 +126,7 @@ export function randomScalar(rng?: RandomSource): SecretScalar {
  * @returns 64-byte signature `R || S`.
  * @throws {SolanaStealthError} `SIGNATURE_INVALID` if self-verification fails.
  */
-export function signWithScalar(
-  secret: SecretScalar,
-  message: Uint8Array,
-  aux?: Uint8Array,
-): Uint8Array {
+export function signWithScalar(secret: SecretScalar, message: Uint8Array, aux?: Uint8Array): Uint8Array {
   const p = scalarValue(secret);
   const A = G.multiply(p).toBytes();
   let auxBytes = aux;

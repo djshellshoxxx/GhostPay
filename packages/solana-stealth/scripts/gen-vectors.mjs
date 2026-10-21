@@ -73,8 +73,12 @@ const nonCanonical = [
 const notOnCurve = hex(numberToBytesLE(2n, 32)); // y=2 has no valid x
 
 // Payment transactions (deterministic; no RNG): fixed public labels as addresses.
-const addr = (s) => base58.encode(ed25519.Point.BASE.multiply(bytesToNumberLE(label('addr-' + s)) % L).toBytes());
-const lifetime = { blockhash: base58.encode(label('blockhash').subarray(0, 32)), lastValidBlockHeight: 1000n };
+const addr = (s) =>
+  base58.encode(ed25519.Point.BASE.multiply(bytesToNumberLE(label('addr-' + s)) % L).toBytes());
+const lifetime = {
+  blockhash: base58.encode(label('blockhash').subarray(0, 32)),
+  lastValidBlockHeight: 1000n,
+};
 const c0 = cases[0];
 const payment = {
   stealthPublicKey: Uint8Array.from(Buffer.from(c0.stealthPublicKey, 'hex')),
@@ -88,30 +92,77 @@ const payer = addr('payer');
 const sponsor = addr('sponsor');
 const mint = addr('mint');
 const solTx = await S.buildStealthPaymentTx({
-  payer, spendPublicKey: spk, viewPublicKey: spk, asset: { kind: 'native' }, amount: 5_000_000n,
-  lifetime, rentExemptMinimum: 890_880n, payment,
+  payer,
+  spendPublicKey: spk,
+  viewPublicKey: spk,
+  asset: { kind: 'native' },
+  amount: 5_000_000n,
+  lifetime,
+  rentExemptMinimum: 890_880n,
+  payment,
 });
-txs.push({ name: 'sol-payment', payer, feePayer: payer, mint: null, amount: '5000000', decimals: null, tokenProgram: null,
-  stealthAddress: c0.stealthAddress, creditedAccount: solTx.creditedAccount, memo: solTx.memo,
-  blockhash: lifetime.blockhash, messageBytes: hex(solTx.tx.messageBytes) });
+txs.push({
+  name: 'sol-payment',
+  payer,
+  feePayer: payer,
+  mint: null,
+  amount: '5000000',
+  decimals: null,
+  tokenProgram: null,
+  stealthAddress: c0.stealthAddress,
+  creditedAccount: solTx.creditedAccount,
+  memo: solTx.memo,
+  blockhash: lifetime.blockhash,
+  messageBytes: hex(solTx.tx.messageBytes),
+});
 const splTx = await S.buildStealthPaymentTx({
-  payer, feePayer: sponsor, spendPublicKey: spk, viewPublicKey: spk,
-  asset: { kind: 'spl', mint, decimals: 6, tokenProgram: S.TOKEN_PROGRAM }, amount: 1_250_000n, lifetime, payment,
+  payer,
+  feePayer: sponsor,
+  spendPublicKey: spk,
+  viewPublicKey: spk,
+  asset: { kind: 'spl', mint, decimals: 6, tokenProgram: S.TOKEN_PROGRAM },
+  amount: 1_250_000n,
+  lifetime,
+  payment,
 });
-txs.push({ name: 'spl-payment-sponsored', payer, feePayer: sponsor, mint, amount: '1250000', decimals: 6,
-  tokenProgram: S.TOKEN_PROGRAM, stealthAddress: c0.stealthAddress, creditedAccount: splTx.creditedAccount,
-  memo: splTx.memo, blockhash: lifetime.blockhash, messageBytes: hex(splTx.tx.messageBytes) });
+txs.push({
+  name: 'spl-payment-sponsored',
+  payer,
+  feePayer: sponsor,
+  mint,
+  amount: '1250000',
+  decimals: 6,
+  tokenProgram: S.TOKEN_PROGRAM,
+  stealthAddress: c0.stealthAddress,
+  creditedAccount: splTx.creditedAccount,
+  memo: splTx.memo,
+  blockhash: lifetime.blockhash,
+  messageBytes: hex(splTx.tx.messageBytes),
+});
 const sweep = await S.buildStealthSweepTx({
-  stealthAddress: c0.stealthAddress, feePayer: sponsor, destination: addr('destination'),
-  asset: { kind: 'spl', mint, decimals: 6, tokenProgram: S.TOKEN_PROGRAM }, amount: 1_250_000n, lifetime,
+  stealthAddress: c0.stealthAddress,
+  feePayer: sponsor,
+  destination: addr('destination'),
+  asset: { kind: 'spl', mint, decimals: 6, tokenProgram: S.TOKEN_PROGRAM },
+  amount: 1_250_000n,
+  lifetime,
   closeTokenAccount: true,
 });
 const spendKey = S.secretScalarFromBytes(Uint8Array.from(Buffer.from(c0.spendKey, 'hex')));
 const signedSweep = S.signWithStealthKey(sweep, spendKey, ZERO32);
-txs.push({ name: 'spl-sweep-sponsored-close', payer: c0.stealthAddress, feePayer: sponsor, mint,
-  destination: addr('destination'), amount: '1250000', decimals: 6, tokenProgram: S.TOKEN_PROGRAM,
-  blockhash: lifetime.blockhash, messageBytes: hex(sweep.messageBytes),
-  stealthSignature: hex(signedSweep.transaction.signatures[c0.stealthAddress]) });
+txs.push({
+  name: 'spl-sweep-sponsored-close',
+  payer: c0.stealthAddress,
+  feePayer: sponsor,
+  mint,
+  destination: addr('destination'),
+  amount: '1250000',
+  decimals: 6,
+  tokenProgram: S.TOKEN_PROGRAM,
+  blockhash: lifetime.blockhash,
+  messageBytes: hex(sweep.messageBytes),
+  stealthSignature: hex(signedSweep.transaction.signatures[c0.stealthAddress]),
+});
 
 const doc = {
   description:
@@ -119,7 +170,10 @@ const doc = {
   version: 1,
   domainPrefix: S.DOMAIN,
   programs: {
-    system: S.SYSTEM_PROGRAM, token: S.TOKEN_PROGRAM, associatedToken: S.ASSOCIATED_TOKEN_PROGRAM, memo: S.MEMO_PROGRAM,
+    system: S.SYSTEM_PROGRAM,
+    token: S.TOKEN_PROGRAM,
+    associatedToken: S.ASSOCIATED_TOKEN_PROGRAM,
+    memo: S.MEMO_PROGRAM,
   },
   cases,
   invalidPoints: { smallOrder: small, mixedOrder: [mixed], nonCanonical, notOnCurve: [notOnCurve] },
