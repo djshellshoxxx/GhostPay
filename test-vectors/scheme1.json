@@ -1,0 +1,137 @@
+{
+  "description": "ERC-5564 scheme-1 vectors (ADR-0001). Keys are TEST-ONLY and public.",
+  "generatedAt": "2026-10-21",
+  "generator": "test-vectors/generate.mjs",
+  "provenance": {
+    "sdk": "@scopelift/stealth-address-sdk",
+    "sdkVersion": "1.0.0-beta.5",
+    "sdkLicense": "MIT",
+    "nobleSecp256k1Version": "2.3.0",
+    "nobleCurvesVersion": "2.4.0",
+    "viemVersion": "2.57.7",
+    "node": "v22.22.0"
+  },
+  "nativeToken": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+  "vectors": [
+    {
+      "id": "scheme1-001",
+      "note": "ordinary mid-range scalars",
+      "spendingPrivateKey": "0x1111111111111111111111111111111111111111111111111111111111111111",
+      "viewingPrivateKey": "0x2222222222222222222222222222222222222222222222222222222222222222",
+      "ephemeralPrivateKey": "0x3333333333333333333333333333333333333333333333333333333333333333",
+      "spendingPublicKey": "0x034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa",
+      "viewingPublicKey": "0x02466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27",
+      "metaAddress": "st:eth:0x034f355bdcb7cc0af728ef3cceb9615d90684bb5b2ca5f859ab0f0b704075871aa02466d7fcae563e5cb09a0d1870bb580344804617879a14949cf22285f1bae3f27",
+      "ephemeralPublicKey": "0x023c72addb4fdf09af94f0c94d7fe92a386a7e70cf8a1d85916386bb2535c7b1b1",
+      "viewTag": "0x20",
+      "stealthAddress": "0xD8606eD2ecDB71fdcb8cCA8fA1925ff84238f2a9",
+      "stealthPrivateKey": "0x32074def70f9689560d0eb1b86aa895b735ed5852c9ce187ff0dcd968e8a19d3",
+      "metadata": {
+        "netAmount": "1",
+        "token": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "erc20": "0x20a9059cbba0b86991c6218b36c1d19d4a2e9eb0ce3606eb480000000000000000000000000000000000000000000000000000000000000001",
+        "native": "0x20eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee0000000000000000000000000000000000000000000000000000000000000001"
+      }
+    },
+    {
+      "id": "scheme1-002",
+      "note": "smallest scalars (leading-zero serialisation)",
+      "spendingPrivateKey": "0x0000000000000000000000000000000000000000000000000000000000000001",
+      "viewingPrivateKey": "0x0000000000000000000000000000000000000000000000000000000000000002",
+      "ephemeralPrivateKey": "0x0000000000000000000000000000000000000000000000000000000000000003",
+      "spendingPublicKey": "0x0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+      "viewingPublicKey": "0x02c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5",
+      "metaAddress": "st:eth:0x0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179802c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5",
+      "ephemeralPublicKey": "0x02f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+      "viewTag": "0xcd",
+      "stealthAddress": "0x7f7d3Bae345AE700dCdA65D1b1f98F43835a17c4",
+      "stealthPrivateKey": "0xcd36b55d26196fc0b96312b01dd978fc5e380c8afeab49aae283f0ca6a814ff5",
+      "metadata": {
+        "netAmount": "1000000",
+        "token": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "erc20": "0xcda9059cbba0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000000f4240",
+        "native": "0xcdeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000000000000000000000000000000000000000000000000000000f4240"
+      }
+    },
+    {
+      "id": "scheme1-003",
+      "note": "largest scalars (n-1, n-2, n-3)",
+      "spendingPrivateKey": "0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140",
+      "viewingPrivateKey": "0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413f",
+      "ephemeralPrivateKey": "0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036413e",
+      "spendingPublicKey": "0x0379be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+      "viewingPublicKey": "0x03c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5",
+      "metaAddress": "st:eth:0x0379be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179803c6047f9441ed7d6d3045406e95c07cd85c778e4b8cef3ca7abac09b95c709ee5",
+      "ephemeralPublicKey": "0x03f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9",
+      "viewTag": "0xcd",
+      "stealthAddress": "0x6Ae07edE174C19e3c9A73e2913885e1B7aca13dd",
+      "stealthPrivateKey": "0xcd36b55d26196fc0b96312b01dd978fc5e380c8afeab49aae283f0ca6a814ff3",
+      "metadata": {
+        "netAmount": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+        "token": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "erc20": "0xcda9059cbba0b86991c6218b36c1d19d4a2e9eb0ce3606eb48ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "native": "0xcdeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      }
+    },
+    {
+      "id": "scheme1-004",
+      "note": "half-width and n/2 boundary scalars",
+      "spendingPrivateKey": "0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff",
+      "viewingPrivateKey": "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "ephemeralPrivateKey": "0x7fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a0",
+      "spendingPublicKey": "0x036c034fd8cc8bd548e12569b630710400e6c24a05d9d6b32f08522a241e936da8",
+      "viewingPublicKey": "0x034646ae5047316b4230d0086c8acec687f00b1cd9d1dc634f6cb358ac0a9a8fff",
+      "metaAddress": "st:eth:0x036c034fd8cc8bd548e12569b630710400e6c24a05d9d6b32f08522a241e936da8034646ae5047316b4230d0086c8acec687f00b1cd9d1dc634f6cb358ac0a9a8fff",
+      "ephemeralPublicKey": "0x0300000000000000000000003b78ce563f89a0ed9414f5aa28ad0d96d6795f9c63",
+      "viewTag": "0x4c",
+      "stealthAddress": "0x4F50D822c093522875869b8789fd635Ab8593127",
+      "stealthPrivateKey": "0x4cb21f5875fb917968a30673102cd1c1ba7fa396cc162117f714b23d464b58b7",
+      "metadata": {
+        "netAmount": "1",
+        "token": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "erc20": "0x4ca9059cbba0b86991c6218b36c1d19d4a2e9eb0ce3606eb480000000000000000000000000000000000000000000000000000000000000001",
+        "native": "0x4ceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee0000000000000000000000000000000000000000000000000000000000000001"
+      }
+    },
+    {
+      "id": "scheme1-005",
+      "note": "short scalars with many leading zero bytes",
+      "spendingPrivateKey": "0x00000000000000000000000000000000000000000000000000000000deadbeef",
+      "viewingPrivateKey": "0x00000000000000000000000000000000000000000000000000000000cafebabe",
+      "ephemeralPrivateKey": "0x00000000000000000000000000000000000000000000000000000000feedface",
+      "spendingPublicKey": "0x0276d2fdf1302d1fa9556f4df94ec84cefba6d482e54f47c6c2a238c1baa560f0e",
+      "viewingPublicKey": "0x02dd285e29fbd0d853699087b48ef44607cb791a7ddc4392ef82c571b11f6a922f",
+      "metaAddress": "st:eth:0x0276d2fdf1302d1fa9556f4df94ec84cefba6d482e54f47c6c2a238c1baa560f0e02dd285e29fbd0d853699087b48ef44607cb791a7ddc4392ef82c571b11f6a922f",
+      "ephemeralPublicKey": "0x02f7eb5a7530926f4bf8c110759859ca2eedc783c083a4d6bb6cec9a134098c604",
+      "viewTag": "0xbd",
+      "stealthAddress": "0x77315057a613F5882800628063af3020915be0Fe",
+      "stealthPrivateKey": "0xbd62233518dd01014df09475438964f1049fde72d533a5463a836d96a4de2c74",
+      "metadata": {
+        "netAmount": "1000000",
+        "token": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "erc20": "0xbda9059cbba0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000000f4240",
+        "native": "0xbdeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000000000000000000000000000000000000000000000000000000f4240"
+      }
+    },
+    {
+      "id": "scheme1-006",
+      "note": "alternating bit patterns",
+      "spendingPrivateKey": "0xa5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+      "viewingPrivateKey": "0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+      "ephemeralPrivateKey": "0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+      "spendingPublicKey": "0x02e8c20537e368bbc1f15b99159088c265444bb3365cbea99c16f94bfddc23aeeb",
+      "viewingPublicKey": "0x029c5530e4385ebc41cdaf8257edf9a2baaf8506a4099103211e6ed7382103ed67",
+      "metaAddress": "st:eth:0x02e8c20537e368bbc1f15b99159088c265444bb3365cbea99c16f94bfddc23aeeb029c5530e4385ebc41cdaf8257edf9a2baaf8506a4099103211e6ed7382103ed67",
+      "ephemeralPublicKey": "0x021a7a569e91dbf60581509c7fc946d1003b60c7dee85299538db6353538d59574",
+      "viewTag": "0xf4",
+      "stealthAddress": "0xCC2d2733D25e48Aea04eDF324e19e3AF8CC9E41F",
+      "stealthPrivateKey": "0x99fa12fabad6da18a7ff83c12a524d2ba074cca83e40636cba26e716b0882c5a",
+      "metadata": {
+        "netAmount": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+        "token": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "erc20": "0xf4a9059cbba0b86991c6218b36c1d19d4a2e9eb0ce3606eb48ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "native": "0xf4eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      }
+    }
+  ]
+}

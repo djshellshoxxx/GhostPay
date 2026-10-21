@@ -28,3 +28,6 @@ Decision: EVM first (identical contracts, CREATE2 deterministic addresses where 
 
 ## ADR-0009 Sponsorship without ERC-4337 for MVP
 Decision: gasless sweep uses ERC-2612 permit plus an EIP-712 sweep authorisation consumed by `GhostPaySweepRelayer`. ERC-4337 deferred to scheme `0x47500002`.
+
+## ADR-0010 Invoice schema field shapes and signature coverage
+Context: the first implementation (packages/invoice-schema) fixed shapes the specs left open. Decision: the signature covers the full canonical plaintext invoice (including private fields) and is verified after decryption; the AES-GCM tag and AAD bind the ciphertext separately. `amountPolicy`, `feePolicy`, `tax` shapes are those in `packages/invoice-schema/src/schema.ts` and are normative for v1. The meta-address decoder accepts only two distinct 33-byte keys (single-key/identical-key forms rejected as a key-reuse hazard). Address inputs must be lowercase or strictly EIP-55. An invalid signature does not throw in `parseFragment`; it returns `signatureValid:false` and the UI must block "verified" wording.
