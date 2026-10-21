@@ -5,7 +5,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 FORGE="${FORGE:-forge}"
-CONTRACTS=(GhostPayRouter GhostPaySweepRelayer)
+CONTRACTS=(GhostPayRouter GhostPaySweepRelayer PolicyAccount PolicyAccountFactory)
 
 "$FORGE" build >/dev/null
 status=0
@@ -24,7 +24,8 @@ if not dev.get("title"):
 # Third-party (OpenZeppelin) members that appear in the ABI through inheritance.
 THIRD_PARTY = {"eip712Domain", "SafeERC20FailedOperation", "ECDSAInvalidSignature", "ECDSAInvalidSignatureLength",
                "ECDSAInvalidSignatureS", "InvalidShortString", "StringTooLong", "ReentrancyGuardReentrantCall",
-               "EIP712DomainChanged"}
+               "EIP712DomainChanged",
+               "InsufficientBalance", "FailedDeployment"}
 def ty(x):
     if x["type"].startswith("tuple"):
         return "(" + ",".join(ty(c) for c in x["components"]) + ")" + x["type"][5:]

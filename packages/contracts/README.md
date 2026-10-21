@@ -7,9 +7,11 @@ Solidity 0.8.28 (EVM `cancun`, optimizer 200 runs), Foundry, OpenZeppelin Contra
 |---|---|
 | `src/GhostPayRouter.sol` | Checkout router: 25 bps floor fee, net to stealth address, ERC-5564 announcement with exact 57-byte metadata (ERC-20, native, ERC-20 + gas buffer). |
 | `src/GhostPaySweepRelayer.sol` | Gas-sponsored stealth sweep: EIP-712 order signed by the stealth key, optional ERC-2612 permit (try/catch), bitmap nonces, token-denominated reimbursement. |
-| `src/interfaces/` | `IGhostPayRouter`, `IGhostPaySweepRelayer`, `IERC5564Announcer` (identical to the CC0 reference interface). |
+| `src/PolicyAccount.sol` | Policy-guarded stealth account (scheme `0x47500002`): EIP-1167 clone target; owner-signed (EIP-712) withdraw requests, delay, merkle-committed per-token window caps, funds only to `destination`, destination change after `2 * delay`. |
+| `src/PolicyAccountFactory.sol` | Immutable CREATE2 clone factory; charges the F-SECURE flat fee once per account; emits only `AccountDeployed(account)`. |
+| `src/interfaces/` | `IGhostPayRouter`, `IGhostPaySweepRelayer`, `IPolicyAccount`, `IERC5564Announcer` (identical to the CC0 reference interface). |
 
-No owner, proxy, pause, rescue, fee setter, `delegatecall` or arbitrary call exists anywhere. Section 4 (PolicyAccount) is not built yet.
+No owner, proxy, pause, rescue, fee setter, `delegatecall` or arbitrary call exists anywhere. The policy-guarded account (section 4) is described below; its deviations are items P1-P19 in `DEVIATIONS.md`.
 
 ## Layout
 
@@ -19,6 +21,7 @@ test/                unit, fuzz, invariant, deploy-script tests
 test/mocks/          standard / no-return / returns-false / fee-on-transfer / reentrant / permit / blacklist tokens, native receivers
 test/utils/          CC0 reference ERC5564Announcer (test only)
 script/Deploy.s.sol  deployment script (env driven, no keys or addresses in source)
+script/DeployPolicy.s.sol  policy implementation + factory deployment (env driven)
 scripts/check-natspec.sh  NatSpec completeness check
 lib/                 vendored openzeppelin-contracts 5.6.1 and forge-std (no git submodules)
 ```
@@ -88,3 +91,31 @@ run; the "fork-style" requirement is met by compiling the CC0 reference announce
   tokens whose `permit` is DAI-style. The relayer does not enforce the F-SPONSOR pricing policy; that lives in
   the relayer service and client.
 - Contracts are immutable: any defect means deploying a replacement and publishing a new manifest.
+
+## Policy-guarded stealth account (scheme `0x47500002`)
+
+Normative text: `docs/CONTRACTS_SPEC.md` section 4, fee F-SECURE in `docs/FEE_SCHEDULE.md`. Deviations and open questions: `DEVIATIONS.md` P1-P19.
+
+- `A_acct = CREATE2(factory, salt = keccak256(abi.encode(owner, policyHash)), EIP-1167 clone of implementation)` with
+  `policyHash = keccak256(abi.encode(destination, delaySeconds, limitsRoot))` (`factory.policyHashOf`, `factory.predictAddress`). The address depends on
+  chain, factory and implementation; pin all three in the deployment manifest.
+- `factory.deploy(owner, destination, delay, limitsRoot)`: anyone, once per policy; pulls `FLAT_FEE` of `FEE_TOKEN` from the caller (needs approval) to `FEE_RECIPIENT`
+  first (skipped when the fee is 0); `delay` in `[1 s, 30 days]`; no admin.
+- Account flow: owner signs `Withdraw` -> anyone calls `requestWithdraw(w, limitProof, sig)` -> after `delay` anyone calls `executeWithdraw(id)` (funds go to
+  `destination` only) -> or anyone relays the owner's `cancel(id, sig)`. Destination change: `proposeDestination` (owner-signed) -> `executeDestinationChange()` after
+  `2 * delay` -> or `cancelDestination(id, sig)`.
+- Limits: `limitsRoot` is a merkle root of `keccak256(bytes.concat(keccak256(abi.encode(token, limit, windowSeconds))))`; `0` = unlimited; a token without a leaf is not
+  withdrawable (add an unlimited leaf, `limit = type(uint256).max`). The window is two fixed buckets (conservative, see P2).
+- Limitations: a stolen key still withdraws to the owner's destination after the delay and can fight destination changes (no guardian or recovery path exists; a lost key
+  means locked funds); ERC-777/fee-on-transfer/rebasing tokens cannot be withdrawn; 2300-gas native senders cannot pay a clone (P14); not wallet-interoperable.
+
+```bash
+FEE_RECIPIENT=<multisig> FEE_TOKEN=<stablecoin> FLAT_FEE=3000000 \
+forge script script/DeployPolicy.s.sol --rpc-url "$RPC" --broadcast --account <keystore>
+```
+
+Verification (forge 1.8.5, solc 0.8.28, default profile: 10 000 fuzz runs, invariants 256 x 50): all 225 tests of the package pass; the policy contracts add 103 forge tests (73 account unit,
+22 factory, 6 account fuzz, 1 deploy script, 1 invariant suite with 7 invariants). `forge coverage --ir-minimum`: `PolicyAccount` 100 % lines (118/118), 100 % branches
+(35/35); `PolicyAccountFactory` 100 % lines (28/28), 100 % branches (7/7). Mutation spot checks (1x instead of 2x destination timelock, no cap, payout to caller, no delay) are caught by the suite.
+**Slither, Echidna and Mythril were not available and have not been run.** No fork test, no live deployment, no external audit, and no independent
+review of the merkle-leaf format by a client implementation yet.

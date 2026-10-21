@@ -25,13 +25,36 @@
     "sweepRelayer": { "$ref": "#/$defs/address" },
     "feeRecipient": { "$ref": "#/$defs/address" },
     "feeBps": { "type": "integer", "minimum": 0, "maximum": 10000 },
+    "policyImplementation": {
+      "description": "Optional. Locked PolicyAccount implementation cloned by the policy factory (scheme 0x47500002).",
+      "$ref": "#/$defs/address"
+    },
+    "policyFactory": {
+      "description": "Optional. PolicyAccountFactory. When present, every other policy* field is required.",
+      "$ref": "#/$defs/address"
+    },
+    "policyFeeToken": {
+      "description": "Optional. Token in which the factory's F-SECURE flat fee is paid (factory FEE_TOKEN).",
+      "$ref": "#/$defs/address"
+    },
+    "policyFlatFee": {
+      "description": "Optional. Factory FLAT_FEE in fee-token base units, as a decimal string (may exceed 2^53).",
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]{0,77})$"
+    },
+    "policyFeeRecipient": {
+      "description": "Optional. Factory FEE_RECIPIENT (may differ from the router's).",
+      "$ref": "#/$defs/address"
+    },
     "deployTx": {
       "type": "object",
       "additionalProperties": false,
       "required": ["router", "sweepRelayer"],
       "properties": {
         "router": { "$ref": "#/$defs/bytes32" },
-        "sweepRelayer": { "$ref": "#/$defs/bytes32" }
+        "sweepRelayer": { "$ref": "#/$defs/bytes32" },
+        "policyImplementation": { "$ref": "#/$defs/bytes32" },
+        "policyFactory": { "$ref": "#/$defs/bytes32" }
       }
     },
     "solcVersion": { "type": "string", "pattern": "^0\\.8\\.\\d+(\\+commit\\.[0-9a-f]{8})?$" },
@@ -43,11 +66,21 @@
       "required": ["router", "sweepRelayer"],
       "properties": {
         "router": { "$ref": "#/$defs/bytes32" },
-        "sweepRelayer": { "$ref": "#/$defs/bytes32" }
+        "sweepRelayer": { "$ref": "#/$defs/bytes32" },
+        "policyImplementation": { "$ref": "#/$defs/bytes32" },
+        "policyFactory": { "$ref": "#/$defs/bytes32" }
       }
     },
     "date": { "type": "string", "format": "date-time" },
     "signature": { "type": "string", "pattern": "^0x[0-9a-fA-F]+$" }
+  },
+  "dependentRequired": {
+    "policyFactory": [
+      "policyImplementation",
+      "policyFeeToken",
+      "policyFlatFee",
+      "policyFeeRecipient"
+    ]
   },
   "$defs": {
     "address": { "type": "string", "pattern": "^0x[0-9a-fA-F]{40}$" },
