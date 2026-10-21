@@ -27,12 +27,12 @@ export const DEFAULT_SETTINGS: Settings = Object.freeze({
 export const SETTINGS_KEY = 'ghostpay.settings.v1';
 const MAX_DELAY_SEC = 24 * 3600;
 
-/** Validates a user-entered RPC URL (https/wss only, no credentials, no fragment). Returns the normalized URL. */
+/** Validates a user-entered RPC URL (https only, no credentials, no fragment). Returns the normalized URL. */
 export function checkRpcUrl(raw: string): string {
   try {
     return validateRpcUrl(raw.trim());
   } catch {
-    throw new UserFacingError('RPC URL rejected: use https:// or wss://, with no username, password or fragment.');
+    throw new UserFacingError('RPC URL rejected: use https://, with no username, password or fragment.');
   }
 }
 

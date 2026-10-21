@@ -11,9 +11,10 @@ const node = (chainHex = '0xaa36a7') => fakeTransport((m) => (m === 'eth_chainId
 const opts = { sleep: noSleep, random: () => 0.5 } as const;
 
 describe('validateRpcUrl', () => {
-  it('accepts https and wss', () => {
+  it('accepts https; rejects wss (the default transport is HTTP only)', () => {
     expect(validateRpcUrl(URL_OK)).toBe(URL_OK);
-    expect(validateRpcUrl('wss://rpc.example.test/ws')).toContain('wss://');
+    expect(() => validateRpcUrl('wss://rpc.example.test/ws')).toThrow(/RPC_URL_REJECTED/);
+    expect(() => validateRpcUrl('ws://localhost:8546', { allowInsecureLocalhost: true })).toThrow(/RPC_URL_REJECTED/);
   });
   it.each([
     'http://rpc.example.test',
@@ -32,7 +33,7 @@ describe('validateRpcUrl', () => {
     expect(() => validateRpcUrl(u)).toThrow(/RPC_URL_REJECTED/);
   });
   it('allows loopback http only with the explicit flag', () => {
-    for (const h of ['http://localhost:8545', 'http://127.0.0.1:8545', 'http://[::1]:8545', 'ws://localhost:8546']) {
+    for (const h of ['http://localhost:8545', 'http://127.0.0.1:8545', 'http://[::1]:8545']) {
       expect(() => validateRpcUrl(h, { allowInsecureLocalhost: true })).not.toThrow();
     }
     expect(() => validateRpcUrl('http://rpc.example.test', { allowInsecureLocalhost: true })).toThrow(/RPC_URL_REJECTED/);

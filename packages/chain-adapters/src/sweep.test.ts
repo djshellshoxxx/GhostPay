@@ -196,6 +196,9 @@ describe('ERC-2612 permit', () => {
     await expect(buildPermitTypedData(args({ value: 0n }))).rejects.toThrow(ChainAdapterError);
     await expect(buildPermitTypedData(args({ value: -1n }))).rejects.toThrow(ChainAdapterError);
     await expect(buildPermitTypedData(args({ deadline: -1n }))).rejects.toThrow(ChainAdapterError);
+    await expect(buildPermitTypedData(args({ deadline: 0n }))).rejects.toThrow(/deadline/);
+    await expect(buildPermitTypedData(args({ deadline: 100n, now: 100n }))).rejects.toThrow(/future/);
+    await expect(buildPermitTypedData(args({ deadline: 101n, now: 100n }))).resolves.toBeDefined();
     await expect(buildPermitTypedData(args({ chainId: 0 }))).rejects.toThrow(ChainAdapterError);
     await expect(buildPermitTypedData(args({ token: '0x12' }))).rejects.toThrow(ChainAdapterError);
     await expect(buildPermitTypedData(args({ reader: reader({ name: () => Promise.reject(new Error('rpc down')) }) }))).rejects.toThrow('rpc down');

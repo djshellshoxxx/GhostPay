@@ -263,6 +263,8 @@ export async function buildPermitTypedData(p: {
   readonly spender: string;
   readonly value: bigint;
   readonly deadline: bigint;
+  /** Optional unix seconds; when given, `deadline` must be strictly greater (an expired permit is refused). */
+  readonly now?: bigint;
   readonly reader: PermitReader;
 }): Promise<PermitTypedData> {
   if (!Number.isSafeInteger(p.chainId) || p.chainId < 1) return fail('INVALID_INPUT', 'chainId');
@@ -272,6 +274,11 @@ export async function buildPermitTypedData(p: {
   u256(p.value, 'value');
   u256(p.deadline, 'deadline');
   if (p.value === 0n) return fail('INVALID_INPUT', 'value');
+  if (p.deadline === 0n) return fail('INVALID_INPUT', 'deadline');
+  if (p.now !== undefined) {
+    u256(p.now, 'now');
+    if (p.deadline <= p.now) return fail('INVALID_INPUT', 'deadline is not in the future');
+  }
   const [name, version, nonce] = await Promise.all([p.reader.name(token), p.reader.version(token), p.reader.nonce(token, owner)]);
   if (typeof name !== 'string' || name.length === 0 || name.length > 128) return fail('UNSUPPORTED_TOKEN', 'permit name');
   if (typeof version !== 'string' || version.length === 0 || version.length > 16) return fail('UNSUPPORTED_TOKEN', 'permit version');

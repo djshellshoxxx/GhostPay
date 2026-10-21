@@ -83,10 +83,11 @@ export function grossForNet(net: bigint): bigint {
   uint(net, 'net');
   if (net === 0n) fail('INVALID_INPUT', 'net must be positive');
   const denom = FEE_SCHEDULE.BPS - FEE_SCHEDULE.ROUTER_FEE_BPS;
-  let g = (net * FEE_SCHEDULE.BPS + denom - 1n) / denom;
-  if (g > MAX_ROUTER_GROSS) fail('INVALID_INPUT', 'net too large');
+  const estimate = (net * FEE_SCHEDULE.BPS + denom - 1n) / denom;
+  // The estimate can overshoot the minimal gross by a few units; clamp it so the top of the range works.
+  let g = estimate > MAX_ROUTER_GROSS ? MAX_ROUTER_GROSS : estimate;
   while (g > 1n && g - 1n - ((g - 1n) * FEE_SCHEDULE.ROUTER_FEE_BPS) / FEE_SCHEDULE.BPS >= net) g -= 1n;
-  while (g - (g * FEE_SCHEDULE.ROUTER_FEE_BPS) / FEE_SCHEDULE.BPS < net) g += 1n;
+  while (g <= MAX_ROUTER_GROSS && g - (g * FEE_SCHEDULE.ROUTER_FEE_BPS) / FEE_SCHEDULE.BPS < net) g += 1n;
   if (g > MAX_ROUTER_GROSS) fail('INVALID_INPUT', 'net too large');
   return g;
 }

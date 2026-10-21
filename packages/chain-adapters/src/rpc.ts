@@ -63,7 +63,8 @@ const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]']);
 /**
  * Validates an RPC endpoint URL.
  *
- * @remarks Accepts `https:` and `wss:`; `http:`/`ws:` only for loopback hosts with the explicit flag.
+ * @remarks Accepts `https:`; `http:` only for loopback hosts with the explicit flag. WebSocket schemes
+ * (`wss:`/`ws:`) are rejected because the default transport is HTTP(S) only.
  * Rejects credentials in the userinfo (they leak into logs and referrers), fragments, empty hosts and
  * other schemes.
  *
@@ -82,11 +83,11 @@ export function validateRpcUrl(raw: string, opts: UrlOptions = {}): string {
   if (u.username !== '' || u.password !== '') return fail('RPC_URL_REJECTED', 'credentials in URL are not allowed');
   if (u.hash !== '') return fail('RPC_URL_REJECTED', 'fragment not allowed');
   if (u.hostname === '') return fail('RPC_URL_REJECTED', 'empty host');
-  if (u.protocol === 'https:' || u.protocol === 'wss:') return u.toString();
-  if ((u.protocol === 'http:' || u.protocol === 'ws:') && opts.allowInsecureLocalhost === true && LOCAL_HOSTS.has(u.hostname)) {
+  if (u.protocol === 'https:') return u.toString();
+  if (u.protocol === 'http:' && opts.allowInsecureLocalhost === true && LOCAL_HOSTS.has(u.hostname)) {
     return u.toString();
   }
-  return fail('RPC_URL_REJECTED', 'only https/wss (or explicit localhost opt-in) allowed');
+  return fail('RPC_URL_REJECTED', 'only https (or explicit localhost opt-in) allowed');
 }
 
 /** Default transport on top of global `fetch`: HTTP(S) only, streamed size cap, abort-based timeout. */
@@ -105,7 +106,10 @@ export const fetchTransport: RpcTransport = {
         signal: ctl.signal,
         redirect: 'error',
       });
-      if (!res.ok) throw new RpcHttpError(res.status);
+      if (!res.ok) {
+        await res.body?.cancel().catch(() => undefined);
+        throw new RpcHttpError(res.status);
+      }
       if (res.body === null) return fail('RPC_FAILURE', 'empty body');
       const reader = res.body.getReader();
       const chunks: Uint8Array[] = [];
@@ -207,8 +211,12 @@ export async function createClient(chain: ChainConfig, url: string, opts: Client
   const transport = opts.transport ?? fetchTransport;
   const timeoutMs = opts.timeoutMs ?? 10_000;
   const maxBytes = opts.maxResponseBytes ?? 2 * 1024 * 1024;
-  const retries = Math.min(Math.max(opts.retries ?? 2, 0), 5);
   const base = opts.baseDelayMs ?? 200;
+  if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) return fail('INVALID_INPUT', 'timeoutMs must be a positive finite number');
+  if (!Number.isFinite(maxBytes) || maxBytes <= 0) return fail('INVALID_INPUT', 'maxResponseBytes must be a positive finite number');
+  if (!Number.isFinite(base) || base < 0) return fail('INVALID_INPUT', 'baseDelayMs must be a non-negative finite number');
+  if (opts.retries !== undefined && !Number.isFinite(opts.retries)) return fail('INVALID_INPUT', 'retries must be finite');
+  const retries = Math.min(Math.max(Math.floor(opts.retries ?? 2), 0), 5);
   const sleep = opts.sleep ?? defaultSleep;
   const random = opts.random ?? cryptoRandom;
   let nextId = 1;

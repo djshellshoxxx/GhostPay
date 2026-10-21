@@ -69,7 +69,49 @@ function b32(v: unknown, path: string): Hex {
 }
 
 function isRealDate(s: string): boolean {
-  return RFC3339.test(s) && !Number.isNaN(Date.parse(s));
+  const m = RFC3339.exec(s);
+  if (m === null || Number.isNaN(Date.parse(s))) return false;
+  // Date.parse normalises impossible calendar days (2026-02-30 -> March); require the day to exist.
+  const [y, mo, d] = [Number(s.slice(0, 4)), Number(s.slice(5, 7)), Number(s.slice(8, 10))];
+  const dim = new Date(Date.UTC(y, mo, 0)).getUTCDate();
+  const [hh, mi, ss] = [Number(s.slice(11, 13)), Number(s.slice(14, 16)), Number(s.slice(17, 19))];
+  return mo >= 1 && mo <= 12 && d >= 1 && d <= dim && hh <= 23 && mi <= 59 && ss <= 59;
+}
+
+/**
+ * Throws when any JSON object in `text` repeats a key (after escape decoding). `JSON.parse` silently keeps
+ * the last duplicate, which would let a manifest show one value to a reviewer and another to the parser.
+ * Precondition: `text` is already valid JSON.
+ */
+function assertNoDuplicateKeys(text: string): void {
+  const stack: (Set<string> | null)[] = [];
+  let expectKey = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i] as string;
+    if (c === '"') {
+      let j = i + 1;
+      while (text[j] !== '"') j += text[j] === '\\' ? 2 : 1;
+      const top = stack[stack.length - 1];
+      if (expectKey && top !== undefined && top !== null) {
+        const key = JSON.parse(text.slice(i, j + 1)) as string;
+        if (top.has(key)) bad('duplicate key');
+        top.add(key);
+        expectKey = false;
+      }
+      i = j;
+    } else if (c === '{') {
+      stack.push(new Set());
+      expectKey = true;
+    } else if (c === '[') {
+      stack.push(null);
+      expectKey = false;
+    } else if (c === '}' || c === ']') {
+      stack.pop();
+      expectKey = false;
+    } else if (c === ',') {
+      expectKey = stack[stack.length - 1] instanceof Set;
+    }
+  }
 }
 
 /**
@@ -173,7 +215,7 @@ export const MAX_MANIFEST_BYTES = 16 * 1024;
  * @param text Raw JSON, at most {@link MAX_MANIFEST_BYTES} bytes.
  * @param expectedChainId Chain the manifest must describe.
  * @returns Validated manifest.
- * @throws {ChainAdapterError} `INVALID_MANIFEST` (oversize, bad JSON, `__proto__` keys) or `CHAIN_MISMATCH`.
+ * @throws {ChainAdapterError} `INVALID_MANIFEST` (oversize, bad JSON, duplicate keys, `__proto__` keys) or `CHAIN_MISMATCH`.
  */
 export function loadDeployment(text: string, expectedChainId: number): DeploymentManifest {
   if (typeof text !== 'string' || new TextEncoder().encode(text).length > MAX_MANIFEST_BYTES) return bad('size');
@@ -183,5 +225,6 @@ export function loadDeployment(text: string, expectedChainId: number): Deploymen
   } catch {
     return bad('json');
   }
+  assertNoDuplicateKeys(text);
   return validateManifest(parsed, expectedChainId);
 }

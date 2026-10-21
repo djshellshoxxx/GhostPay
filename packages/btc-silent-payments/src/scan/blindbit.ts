@@ -1,4 +1,4 @@
-import { fail } from '../errors.js';
+import { fail, SilentPaymentError } from '../errors.js';
 import { parseHex, toHex } from '../ecc.js';
 import { parseCompressedPoint, type CompressedPoint } from '../secret.js';
 import type { BlockOutput, BlockOutputs, BlockTweaks, TweakSource } from './types.js';
@@ -7,6 +7,9 @@ import type { BlockOutput, BlockOutputs, BlockTweaks, TweakSource } from './type
 export interface FetchResponseLike {
   readonly ok: boolean;
   readonly status: number;
+  /** Real `fetch` responses provide these; they enable the byte cap. Fakes may omit them. */
+  readonly headers?: { get(name: string): string | null };
+  readonly body?: ReadableStream<Uint8Array> | null;
   json(): Promise<unknown>;
 }
 
@@ -18,10 +21,14 @@ export type FetchLike = (
 
 /** Options of {@link BlindBitClient}. */
 export interface BlindBitClientOptions {
-  /** Base URL of a BlindBit oracle the user chose (http or https), without credentials, query or fragment. */
+  /** Base URL of a BlindBit oracle the user chose: https, or http for loopback only; no credentials, query or fragment. */
   readonly baseUrl: string;
   /** Injected transport (global `fetch` in production, a recorder in tests). */
   readonly fetch: FetchLike;
+  /** Per-request deadline in ms (request plus body read), default 30 000. */
+  readonly timeoutMs?: number;
+  /** Largest accepted response body in bytes, default 32 MiB (200 000 entries fit comfortably). */
+  readonly maxResponseBytes?: number;
 }
 
 /** `GET /info` payload (BlindBit-Oracle v2 `internal/server/README.md`, retrieved 2026-10-21). */
@@ -37,6 +44,11 @@ export interface BlindBitInfo {
 
 const MAX_ENTRIES = 200_000;
 const MAX_HEIGHT = 0xffffffff;
+const MAX_VOUT = 0xffffffff;
+const MAX_SATS = 21_000_000n * 100_000_000n;
+const DEFAULT_TIMEOUT_MS = 30_000;
+const DEFAULT_MAX_BYTES = 32 * 1024 * 1024;
+const LOOPBACK = new Set(['localhost', '127.0.0.1', '[::1]']);
 
 function isRecord(v: unknown): v is Record<string, unknown> {
   return typeof v === 'object' && v !== null && !Array.isArray(v);
@@ -83,10 +95,16 @@ function blockIdentifier(body: Record<string, unknown>, height: number): string 
 export class BlindBitClient implements TweakSource {
   private readonly base: string;
   private readonly transport: FetchLike;
+  private readonly timeoutMs: number;
+  private readonly maxBytes: number;
 
   public constructor(options: BlindBitClientOptions) {
     this.base = BlindBitClient.normalizeBase(options.baseUrl);
     this.transport = options.fetch;
+    this.timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+    this.maxBytes = options.maxResponseBytes ?? DEFAULT_MAX_BYTES;
+    if (!Number.isFinite(this.timeoutMs) || this.timeoutMs <= 0) fail('INVALID_INPUT');
+    if (!Number.isSafeInteger(this.maxBytes) || this.maxBytes <= 0) fail('INVALID_INPUT');
   }
 
   private static normalizeBase(baseUrl: string): string {
@@ -96,7 +114,8 @@ export class BlindBitClient implements TweakSource {
     } catch {
       return fail('INVALID_INPUT');
     }
-    const badProtocol = url.protocol !== 'http:' && url.protocol !== 'https:';
+    // Plain http would expose the scanned heights (and allow tampering) on the network: loopback only.
+    const badProtocol = url.protocol === 'https:' ? false : url.protocol !== 'http:' || !LOOPBACK.has(url.hostname);
     if (badProtocol || url.username !== '' || url.password !== '' || url.search !== '' || url.hash !== '') {
       return fail('INVALID_INPUT');
     }
@@ -104,6 +123,23 @@ export class BlindBitClient implements TweakSource {
   }
 
   private async get(path: string, signal?: AbortSignal): Promise<unknown> {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const deadline = new Promise<never>((_resolve, reject) => {
+      timer = setTimeout(() => {
+        reject(new Error('timeout'));
+      }, this.timeoutMs);
+    });
+    try {
+      return await Promise.race([this.fetchJson(path, signal), deadline]);
+    } catch (e) {
+      if (e instanceof SilentPaymentError) throw e;
+      return signal?.aborted === true ? fail('ABORTED') : fail('TRANSPORT_FAILURE');
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  private async fetchJson(path: string, signal?: AbortSignal): Promise<unknown> {
     let res: FetchResponseLike;
     try {
       res = await this.transport(
@@ -113,10 +149,41 @@ export class BlindBitClient implements TweakSource {
     } catch {
       return signal?.aborted === true ? fail('ABORTED') : fail('TRANSPORT_FAILURE');
     }
-    if (!res.ok) return fail('TRANSPORT_FAILURE');
+    if (!res.ok) {
+      await res.body?.cancel().catch(() => undefined);
+      return fail('TRANSPORT_FAILURE');
+    }
+    const declared = res.headers?.get('content-length');
+    if (declared !== null && declared !== undefined && /^\d+$/.test(declared) && Number(declared) > this.maxBytes) {
+      await res.body?.cancel().catch(() => undefined);
+      return fail('INVALID_RESPONSE');
+    }
     try {
-      return await res.json();
-    } catch {
+      if (res.body === undefined) return await res.json();
+      if (res.body === null) return fail('INVALID_RESPONSE');
+      const reader = res.body.getReader();
+      const chunks: Uint8Array[] = [];
+      let total = 0;
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (value === undefined) continue;
+        total += value.length;
+        if (total > this.maxBytes) {
+          await reader.cancel().catch(() => undefined);
+          return fail('INVALID_RESPONSE');
+        }
+        chunks.push(value);
+      }
+      const all = new Uint8Array(total);
+      let off = 0;
+      for (const c of chunks) {
+        all.set(c, off);
+        off += c.length;
+      }
+      return JSON.parse(new TextDecoder().decode(all)) as unknown;
+    } catch (e) {
+      if (e instanceof SilentPaymentError) throw e;
       return fail('INVALID_RESPONSE');
     }
   }
@@ -184,11 +251,14 @@ export class BlindBitClient implements TweakSource {
     if (!Array.isArray(index) || index.length > MAX_ENTRIES) return fail('INVALID_RESPONSE');
     const outputs: BlockOutput[] = index.map((o: unknown) => {
       if (!isRecord(o)) return fail('INVALID_RESPONSE');
+      const vout = uint(o['vout']);
+      const amountSats = BigInt(uint(o['amount']));
+      if (vout > MAX_VOUT || amountSats > MAX_SATS) return fail('INVALID_RESPONSE');
       return {
         xOnlyPublicKey: parseHex(hexString(o['pubkey'], 32), 32),
         txid: hexString(o['txid'], 32),
-        vout: uint(o['vout']),
-        amountSats: BigInt(uint(o['amount'])),
+        vout,
+        amountSats,
       };
     });
     return { height, blockHash, outputs };

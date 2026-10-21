@@ -68,7 +68,7 @@ export function Settings(): ReactNode {
       <form onSubmit={onSave} className="stack" noValidate>
         <fieldset>
           <legend>RPC endpoints</legend>
-          <p className="hint">Only https:// and wss:// are accepted, with no username or password. The chain id is verified when the endpoint is used. No default RPC is built in.</p>
+          <p className="hint">Only https:// is accepted, with no username or password. The chain id is verified when the endpoint is used. No default RPC is built in.</p>
           {services.chains.map((c) => (
             <div key={c.chainId} className="row">
               <Field label={`${c.name} RPC URL`}>

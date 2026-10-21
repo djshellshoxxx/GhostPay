@@ -206,7 +206,16 @@ export function createEvmAdapter(deps: EvmAdapterDeps): ChainAdapter {
       let cursor: ScanCursor = { nextBlock: range.fromBlock };
       for (;;) {
         if (signal.aborted) return;
-        const res = await fetchAnnouncements({ chain, client, announcer: deployment.announcer, cursor });
+        const res = await fetchAnnouncements({
+          chain,
+          client,
+          announcer: deployment.announcer,
+          cursor,
+          ...(range.toBlock === undefined ? {} : { toBlock: range.toBlock }),
+        });
+        // Later pages carry the previous page's cursor hash. A mismatch means payments already yielded may
+        // be orphaned and `scan` cannot retract them: fail closed so the caller restarts the scan.
+        if (res.reorg !== undefined && cursor.last !== undefined) return fail('RPC_FAILURE', 'chain reorganised during scan; retry');
         for (const a of res.announcements) {
           if (signal.aborted) return;
           if (range.toBlock !== undefined && a.blockNumber > range.toBlock) continue;
@@ -226,7 +235,7 @@ export function createEvmAdapter(deps: EvmAdapterDeps): ChainAdapter {
           };
         }
         cursor = res.cursor;
-        if (!res.truncated || (range.toBlock !== undefined && cursor.nextBlock > range.toBlock)) return;
+        if (!res.truncated) return;
       }
     },
   };

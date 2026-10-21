@@ -2,10 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { DEFAULT_SETTINGS, SETTINGS_KEY, checkDelayRange, checkRelayerUrl, checkRpcUrl, loadSettings, sanitizeSettings, saveSettings } from './settings';
 
 describe('settings validation', () => {
-  it('accepts https/wss RPC URLs and rejects the rest', () => {
+  it('accepts https RPC URLs and rejects the rest (wss is not supported by the fetch transport)', () => {
     expect(checkRpcUrl(' https://rpc.example/key ')).toBe('https://rpc.example/key');
-    expect(checkRpcUrl('wss://rpc.example/ws')).toBe('wss://rpc.example/ws');
-    for (const bad of ['http://rpc.example', 'https://user:pw@rpc.example', 'https://rpc.example/#x', 'ftp://x', 'nope', 'javascript:alert(1)']) {
+    for (const bad of ['http://rpc.example', 'wss://rpc.example/ws', 'https://user:pw@rpc.example', 'https://rpc.example/#x', 'ftp://x', 'nope', 'javascript:alert(1)']) {
       expect(() => checkRpcUrl(bad)).toThrow(/RPC URL rejected/);
     }
   });

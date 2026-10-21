@@ -58,21 +58,30 @@ export async function* scanBlocks(p: ScanBlocksParams): AsyncGenerator<ReceivedO
     if (tw.height !== height || outs.height !== height || tw.blockHash !== outs.blockHash) {
       return fail('REORG_DETECTED');
     }
-    const byKey = new Map<string, (typeof outs.outputs)[number]>();
-    for (const o of outs.outputs) byKey.set(toHex(o.xOnlyPublicKey), o);
+    // Several outputs of one block may pay the same x-only key (nothing on chain prevents it, and
+    // anyone can copy a key they saw). Keep every occurrence: each is spendable by this wallet and
+    // must be reported with its OWN txid/vout/amount, never another output's.
+    const byKey = new Map<string, (typeof outs.outputs)[number][]>();
+    for (const o of outs.outputs) {
+      const k = toHex(o.xOnlyPublicKey);
+      const list = byKey.get(k);
+      if (list === undefined) byKey.set(k, [o]);
+      else list.push(o);
+    }
     const candidates = new Set(byKey.keys());
     for (const tweak of tw.tweaks) {
       if (isAborted(signal)) return;
       for (const f of scanTweakAgainstSet(keys, tweak, candidates, labels)) {
-        const meta = byKey.get(toHex(f.xOnlyPublicKey));
-        yield {
-          ...f,
-          height,
-          blockHash: tw.blockHash,
-          ...(meta?.txid === undefined ? {} : { txid: meta.txid }),
-          ...(meta?.vout === undefined ? {} : { vout: meta.vout }),
-          ...(meta?.amountSats === undefined ? {} : { amountSats: meta.amountSats }),
-        };
+        for (const meta of byKey.get(toHex(f.xOnlyPublicKey)) ?? []) {
+          yield {
+            ...f,
+            height,
+            blockHash: tw.blockHash,
+            ...(meta.txid === undefined ? {} : { txid: meta.txid }),
+            ...(meta.vout === undefined ? {} : { vout: meta.vout }),
+            ...(meta.amountSats === undefined ? {} : { amountSats: meta.amountSats }),
+          };
+        }
       }
     }
   }

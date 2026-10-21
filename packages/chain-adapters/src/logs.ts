@@ -36,6 +36,8 @@ export interface FetchOptions {
   /** Announcer from the verified deployment manifest. */
   readonly announcer: Address;
   readonly cursor: ScanCursor;
+  /** Inclusive upper block bound; the scan never requests logs above it (default: chain head). */
+  readonly toBlock?: bigint;
   /** ERC-5564 scheme id filter, default 1n. */
   readonly schemeId?: bigint;
   /** Upper bound of `eth_getLogs` calls in one invocation, default 50. */
@@ -157,6 +159,9 @@ export function validateAnnouncementLog(
  *   the caller which stored results to drop.
  * - Ranges are at most `min(chain.getLogsMaxRange, opts.maxRange)`; a provider range error halves the
  *   window (down to one block) before giving up.
+ * - Every window's end-block hash is read before its logs and re-verified before returning: a reorg inside
+ *   the scanned span (also in a truncated multi-request call) yields `reorg` with the first affected
+ *   window's start, drops that window's and later results, and returns a cursor positioned there.
  * - Duplicate logs (same `blockHash:logIndex`) within a call are dropped.
  * - Caps (`maxRequests`, `maxLogs`) end the call with `truncated: true` and a cursor that resumes
  *   exactly after the last completed range, so nothing is skipped.
@@ -186,6 +191,7 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
 
   const head = await o.client.blockNumber();
   const headRef = await o.client.getBlock(head);
+  const end = o.toBlock !== undefined && o.toBlock < head ? o.toBlock : head;
   const out: ScannedAnnouncement[] = [];
   const seen = new Set<string>();
   let skipped = 0;
@@ -194,20 +200,26 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
   let doneThrough = next - 1n;
   let processed = false;
   let truncated = false;
+  /** Boundary hash of every window, read BEFORE its logs: re-verified before returning (reorg inside the span). */
+  const windows: { from: bigint; to: bigint; hash: Hex }[] = [];
 
-  while (next <= head) {
+  while (next <= end) {
     if (requests >= maxRequests || out.length >= maxLogs) {
       truncated = true;
       break;
     }
-    const to = next + window - 1n > head ? head : next + window - 1n;
+    const to = next + window - 1n > end ? end : next + window - 1n;
     requests++;
+    const boundary = to === head && headRef !== null ? headRef : await o.client.getBlock(to);
+    if (boundary === null) return fail('RPC_FAILURE', 'window boundary block unavailable');
+    windows.push({ from: next, to, hash: boundary.hash });
     let logs: readonly RpcLog[];
     try {
       logs = await o.client.getLogs({ address: o.announcer, topics: [ANNOUNCEMENT_TOPIC, schemeTopic(schemeId)], fromBlock: next, toBlock: to });
     } catch (e) {
       if (e instanceof ChainAdapterError && /json-rpc error -(32602|32005)/.test(e.message) && window > 1n) {
         window = window / 2n;
+        windows.pop();
         continue;
       }
       throw e;
@@ -232,6 +244,23 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
     if (ref === null) return fail('RPC_FAILURE', 'processed block vanished');
     if (headRef !== null && doneThrough === head && ref.hash.toLowerCase() !== headRef.hash.toLowerCase()) {
       return fail('RPC_FAILURE', 'chain reorganised during scan; retry');
+    }
+    // Re-verify every window boundary: a reorg inside the span (including truncated, multi-request scans)
+    // changes the hash of the window's end block. Roll back to the first window that no longer matches.
+    for (let i = 0; i < windows.length; i++) {
+      const w = windows[i] as { from: bigint; to: bigint; hash: Hex };
+      const cur = w.to === doneThrough ? ref : await o.client.getBlock(w.to);
+      if (cur !== null && cur.hash.toLowerCase() === w.hash.toLowerCase()) continue;
+      const prev = windows[i - 1];
+      const lastOk = prev !== undefined ? { number: prev.to, hash: prev.hash } : reorg === undefined ? o.cursor.last : undefined;
+      const rc: ScanCursor = lastOk === undefined ? { nextBlock: w.from } : { nextBlock: w.from, last: lastOk };
+      return {
+        announcements: out.filter((x) => x.blockNumber < w.from),
+        cursor: rc,
+        truncated: true,
+        skipped,
+        reorg: { rolledBackTo: reorg === undefined ? w.from : reorg.rolledBackTo },
+      };
     }
     last = { number: doneThrough, hash: ref.hash };
   }
