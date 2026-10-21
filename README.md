@@ -21,17 +21,25 @@ Open work is tracked in the audits: [completeness audit](docs/audits/01-complete
 
 | Path | What it is |
 |---|---|
-| `packages/contracts` | Foundry project: `GhostPayRouter` (checkout, 25 bps fee, ERC-5564 announcement), `GhostPaySweepRelayer` (gas-sponsored sweep via EIP-712 + ERC-2612 permit), `PolicyAccount` and `PolicyAccountFactory` (experimental, contracts only; see [ADR-0014](docs/adr/ADR-LOG.md)). No owner, proxy, pause or admin. |
+| `packages/contracts` | Foundry project: `GhostPayRouter` (checkout, 25 bps fee, ERC-5564 announcement), `GhostPaySweepRelayer` (gas-sponsored sweep via EIP-712 + ERC-2612 permit), `PolicyAccount` and `PolicyAccountFactory` (experimental; see [ADR-0014](docs/adr/ADR-LOG.md)), and `GhostPayPolicyRouter` (see below). No owner, proxy, pause or admin. Not deployed. |
 | `packages/core-crypto` | Scheme-1 stealth key derivation, view-tag check, metadata builders, non-serialisable secrets. |
 | `packages/invoice-schema` | Invoice schema, strict parser, signing, AES-GCM envelope, `#gpi=v1.` link format. |
 | `packages/chain-adapters` | Chain and token allowlists, fee maths, deployment-manifest validation, RPC, log scanning, router and sweep builders, quote reading. |
-| `packages/btc-silent-payments` | BIP-352 Silent Payments library (official vectors pass). Not wired into the web app or relayer. |
+| `packages/btc-silent-payments` | BIP-352 Silent Payments: keys, addresses, sender derivation, scanning, spend-key derivation, Bitcoin `ChainAdapter`, and signed PSBT/raw-tx sweeps (`buildSpendTransaction`, software keys only). Official vectors pass. **Not wired into the web app or relayer.** |
+| `packages/policy-scheme` | Client side of the policy-account scheme `0x47500002` (policy hash, limits tree, scheme-2 meta-address, derivation, EIP-712, calldata, `GhostPayPolicyRouter` calldata). Experimental ([ADR-0014](docs/adr/ADR-LOG.md)); not used by the web app or relayer. |
+| `packages/relayer-guard` | Relayer abuse controls: circuit breaker, trusted-proxy client IP, token-bucket limiter, loss budget, and a challenge module (HMAC question challenge; raises bot cost only). **Not wired into `apps/relayer`.** |
+| `packages/secret-box` | Closure-held secret bytes with scoped wiping (guardrail, not a boundary). **Not wired into `core-crypto` or `apps/web`.** |
+| `packages/tx-review` | Pre-sign decoder and reviewer for transactions and EIP-712 payloads. **Not wired into `apps/web`.** |
+| `packages/address-safety` | Address and display-text safety checks (strict parse, lookalikes, fingerprints, payee trust, text sanitising). **Not wired into any app.** |
+| `packages/ops-monitor` | Operator-run, read-only chain-side probes (manifest drift, fee-recipient health, release integrity, hot key, announcement rate, RPC disagreement). **Not wired in anywhere; never run against a live network.** |
 | `apps/web` | React 19 + Vite static app: seller keys, invoice creation, pay, scan, sweep, settings. |
 | `apps/relayer` | Node gas-sponsorship relay service for sweeps (stateless quotes, simulation, budgets, circuit breaker). |
 | `deployments/` | Manifest schema and format notes. No real manifests yet. See [`docs/DEPLOYMENT_MANIFEST.md`](docs/DEPLOYMENT_MANIFEST.md). |
 | `test-vectors/` | Pinned scheme-1 vectors and their provenance. |
 | `scripts/`, `.github/workflows/` | Release build, verification and CI scripts (being added; see [`docs/operators/release-and-verify.md`](docs/operators/release-and-verify.md)). |
 | `docs/` | Specifications, ADRs, threat model, audits, user guides, operator runbooks, feature reviews. |
+
+Wiring is checked by `@ghostpay/*` imports: `apps/web` uses `chain-adapters`, `core-crypto` and `invoice-schema`; `apps/relayer` uses `chain-adapters`. Nothing else is imported by either app.
 
 Each package has its own README and a `DEVIATIONS.md` listing where the code differs from the specs. Where a README and the code disagree, the code wins and the discrepancy is a bug in the README.
 
@@ -40,16 +48,32 @@ Each package has its own README and a `DEVIATIONS.md` listing where the code dif
 Requirements: Node >= 22 (`engines` in `package.json`; CI uses 22), Foundry 1.8.5 for the contracts.
 
 ```bash
-npm ci --ignore-scripts      # install exactly what package-lock.json says, run no install scripts
+npm ci --ignore-scripts      # install exactly what package-lock.json says, run no install scripts (the CI form)
 npm run build:libs           # REQUIRED before typecheck/test/build: workspaces resolve each other through dist/
 npm run typecheck
 npm run lint
-npm test                     # vitest with coverage thresholds in every workspace
+npm test                     # vitest with coverage thresholds in every workspace that has a test script
 npm run build --workspace @ghostpay/web    # also runs the bundle scan (scripts/scan-bundle.mjs)
 npm run test:e2e --workspace @ghostpay/web # Playwright; needs a Chromium build (not run by `npm test`)
+npm run ci:scan-secrets      # scripts/scan-secrets.sh
+npm run ci:check-actions     # scripts/check-actions-pinned.sh
+npm run release:build        # scripts/release-build.sh
+npm run release:repro        # scripts/repro-check.sh
 ```
 
-Verified on a clean checkout of `HEAD` on 2026-10-21 (Node 22.22.0, npm 10.9.4): `npm ci --ignore-scripts`, `npm run build:libs` and `npm test` succeed. Test counts at that time: btc-silent-payments 286, chain-adapters 216, core-crypto 54, invoice-schema 174, relayer 192 passed + 1 skipped, web 320. The skipped relayer test is the anvil end-to-end test; it skips when `anvil` or `packages/contracts/out` is missing (set `ANVIL_BIN`, run `forge build` first). Counts change as work lands; treat them as a snapshot, not a guarantee.
+CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs these jobs; docs-only pull requests (only `docs/` or `*.md` changed) skip the heavy ones:
+
+- `ts-check`: `npm run typecheck`, `npm run lint`, `npm run build --workspace @ghostpay/web`, `npm audit --omit=dev --audit-level=high`.
+- `ts-test` (matrix `core-crypto`, `btc-silent-payments`, `web`, `rest`): `npm test` per workspace; `rest` is every other workspace except `apps/relayer`.
+- `ts-test-relayer`: `forge build` in `packages/contracts`, then `npm test -w apps/relayer` with `REQUIRE_ANVIL=1` (anvil e2e).
+- `e2e`: `npx playwright install --with-deps chromium`, then `npm run test:e2e --workspace @ghostpay/web`.
+- `contracts-test` (`forge build --sizes`, `forge test`), `contracts-coverage` (`forge coverage --ir-minimum --report summary --report lcov --report-file lcov.info`), `contracts-static` (`forge fmt --check`, `bash scripts/check-natspec.sh`, `forge snapshot --check`), `contracts-slither` (slither 0.11.6, solc 0.8.28, `--fail-medium`).
+- `secrets-and-egress`: `scripts/scan-secrets.sh`, `scripts/check-actions-pinned.sh`.
+- Required-check gates: `typescript` (needs `ts-check`, `ts-test`, `ts-test-relayer`) and `contracts` (needs the four contracts jobs). `e2e` is not part of either gate.
+
+Not verified by me while updating this README (read from `package.json` and the workflow only, not run): every command in this section, including the `release:*` scripts and `npm audit`.
+
+Verified on a clean checkout of an earlier `HEAD` on 2026-10-21 (Node 22.22.0, npm 10.9.4): `npm ci --ignore-scripts`, `npm run build:libs` and `npm test` succeed. Test counts at that time: btc-silent-payments 286, chain-adapters 216, core-crypto 54, invoice-schema 174, relayer 192 passed + 1 skipped, web 320. The skipped relayer test is the anvil end-to-end test; it skips when `anvil` or `packages/contracts/out` is missing (set `ANVIL_BIN`, run `forge build` first). The newer [`docs/remote/STATUS.md`](docs/remote/STATUS.md) records per-package counts and coverage from the latest local run (2026-10-21: e.g. btc-silent-payments 299, policy-scheme 60, relayer 193, forge 377 tests in 23 suites) and its failures (one `forge coverage --ir-minimum` test fails). Counts change as work lands; treat them as a snapshot, not a guarantee. Note: CI sets `REQUIRE_ANVIL=1` for the relayer, but `apps/relayer/src/e2e.anvil.test.ts` does not read it yet (only `packages/policy-scheme` does), so that e2e can still skip silently there.
 
 Contracts (from `packages/contracts`):
 
@@ -63,14 +87,33 @@ bash scripts/check-natspec.sh
 
 > **`foundry.toml` contains a sandbox-specific line:** `solc = "/home/user/tools/solc"`. On any other machine replace it with `solc_version = "0.8.28"` locally (CI does this with `sed -i 's|^solc = .*|solc_version = "0.8.28"|' foundry.toml`). Do not commit that change without deciding how to make the file portable. Tests under `test/audit/` are adversarial proofs of concept from the contracts review (they assert that weaknesses are real); a baseline run without them is `forge test --no-match-path 'test/audit/*'`.
 
-Forge result when this README was written: 231 tests passed without `test/audit/`, plus 43 audit PoC tests passing. The tree was still changing, so re-run before relying on the number. Coverage (`forge coverage`) and gas-snapshot checks were not re-run for this README.
+Forge result when this README was first written: 231 tests passed without `test/audit/`, plus 43 audit PoC tests. [`docs/remote/STATUS.md`](docs/remote/STATUS.md) (2026-10-21 run) records 377 passing in 23 suites, `forge fmt --check` and `forge snapshot --check` passing, and one test failing only under `forge coverage --ir-minimum`.
 
-Not run anywhere yet: Echidna, Mythril, mutation testing, mainnet-fork tests, Firefox/Safari end-to-end, any real wallet.
+Not run anywhere yet: mainnet-fork tests, Firefox/Safari end-to-end, any real wallet. Run only locally (sandbox, not in CI): Echidna and mutation testing, below.
+
+### GhostPayPolicyRouter
+
+`packages/contracts/src/GhostPayPolicyRouter.sol` is the scheme-2 checkout router. Like `GhostPayRouter` it takes the 25 bps floor fee, forwards the net amount and emits an ERC-5564 announcement with the 57-byte metadata, but it only pays policy accounts: the caller passes `(owner, policyHash)` and the router requires `stealth == FACTORY.predictAddress(owner, policyHash)`. The announcement uses scheme id `0x47500002` (this addresses audit finding M-02 for the router path). Entry points: `payERC20`, `payERC20WithPermit`, `payNative`, `payERC20WithBuffer`; announcer, fee recipient and factory are immutable; no owner, pause or upgrade path. Deploy script: `packages/contracts/script/DeployPolicyRouter.s.sol`; client calldata in `packages/policy-scheme/src/router.ts`. It is not deployed and not enabled in the app or relayer (ADR-0014 gates still apply).
+
+### Echidna and mutation testing (local runs only)
+
+- Echidna harnesses: `packages/contracts/test/echidna/Echidna{Router,Sweep,Policy}.sol` with shared config `packages/contracts/echidna.yaml` (property mode, 300 000 calls each). Results and limits: [`docs/remote/contracts-assurance.md`](docs/remote/contracts-assurance.md). `echidna_canary_*` properties are expected to fail by design.
+- Mutation testing (gambit, 582 mutants over the five contracts): 565 killed before new tests, 573/577 (99.3 %) after adding `packages/contracts/test/mutation_local/` (4 files); the 4 survivors were triaged as equivalent mutants. Details and limits (dev-profile fuzz runs): [`docs/remote/mutation-results-local.md`](docs/remote/mutation-results-local.md).
+- Neither is in CI. These are the authors' local results, not independently reproduced, and not an audit.
+
+### BTC spending
+
+`@ghostpay/btc-silent-payments` can sweep detected Silent Payment outputs: `buildSpendTransaction` derives the BIP-352 spend key per output, builds and signs a key-path PSBT/raw transaction (software keys only; hardware wallets out of scope) and self-verifies the signatures. It is verified against the official BIP-352 vectors and noble schnorr, not against Bitcoin Core or a network, and nothing in `apps/web` or `apps/relayer` calls it.
+
+### Pages prototype
+
+A prototype static build of `apps/web` is published from an orphan `gh-pages` branch (procedure, CSP limits, theme overlay): [`docs/remote/pages-prototype.md`](docs/remote/pages-prototype.md). Payments stay disabled there (no deployment manifest); it is not a hardened production host and does not change the [Hosting](#hosting) position.
 
 ## Documentation
 
 Start with these, in order:
 
+0. [Documentation index](docs/INDEX.md) and [remote-extensions check status](docs/remote/STATUS.md)
 1. [Spec review and corrections](docs/SPEC_REVIEW.md) (resolves conflicts between the older documents; read first)
 2. [Fee schedule and revenue architecture](docs/FEE_SCHEDULE.md)
 3. [Contracts specification](docs/CONTRACTS_SPEC.md), [Web app and relayer specification](docs/APP_AND_RELAYER_SPEC.md), [Multi-chain specification](docs/MULTICHAIN_SPEC.md)
