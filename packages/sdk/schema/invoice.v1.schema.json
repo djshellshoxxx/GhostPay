@@ -1,0 +1,200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ghostpay.invalid/schema/invoice.v1.json",
+  "title": "GhostPay invoice v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "v",
+    "chainId",
+    "schemeId",
+    "metaAddress",
+    "nonce",
+    "fiat",
+    "token",
+    "amountPolicy",
+    "quote",
+    "expiresAt",
+    "lineItems",
+    "tax",
+    "feePolicy",
+    "signer"
+  ],
+  "properties": {
+    "v": {
+      "const": 1
+    },
+    "chainId": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Chain ids 31337-31399 are reserved for test mode."
+    },
+    "schemeId": {
+      "const": 1
+    },
+    "metaAddress": {
+      "type": "string",
+      "pattern": "^st:eth:0x[0-9a-f]{132}$"
+    },
+    "nonce": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{32}$"
+    },
+    "fiat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "minorUnits"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "minorUnits": {
+          "type": "string",
+          "pattern": "^(?:0|[1-9][0-9]{0,29})$"
+        }
+      }
+    },
+    "token": {
+      "type": "string",
+      "pattern": "^(?:native|0x[0-9a-f]{40})$"
+    },
+    "amountPolicy": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode"
+          ],
+          "properties": {
+            "mode": {
+              "const": "fiat_quote"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "tokenAmount"
+          ],
+          "properties": {
+            "mode": {
+              "const": "fixed_token"
+            },
+            "tokenAmount": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,77}$"
+            }
+          }
+        }
+      ]
+    },
+    "quote": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "timestamp",
+        "expiresAt",
+        "maxSlippageBps"
+      ],
+      "properties": {
+        "source": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9._:-]{0,63}$"
+        },
+        "timestamp": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "maxSlippageBps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        }
+      }
+    },
+    "expiresAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "lineItems": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "description",
+          "quantity",
+          "unitMinorUnits"
+        ],
+        "properties": {
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400,
+            "description": "Plain text, NFC, no control characters, at most 200 code points. Never render as markup."
+          },
+          "quantity": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,8}$"
+          },
+          "unitMinorUnits": {
+            "type": "string",
+            "pattern": "^(?:0|[1-9][0-9]{0,29})$"
+          }
+        }
+      }
+    },
+    "tax": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rateBps",
+        "minorUnits"
+      ],
+      "properties": {
+        "rateBps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "minorUnits": {
+          "type": "string",
+          "pattern": "^(?:0|[1-9][0-9]{0,29})$"
+        }
+      }
+    },
+    "feePolicy": {
+      "enum": [
+        "payer_pays",
+        "seller_pays"
+      ]
+    },
+    "memo": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000,
+      "description": "Plain text, NFC, no control characters, at most 500 code points. Never render as markup."
+    },
+    "signer": {
+      "type": "string",
+      "pattern": "^0[23][0-9a-f]{64}$"
+    }
+  }
+}
