@@ -1,0 +1,101 @@
+{
+ "source": "Railgun-Privacy/contract @36bcf5ed7cf94bfafb6e1a303e1832c769c16780 (master, 2026-08-15) contracts/logic/RailgunSmartWallet.sol compiled with solc 0.8.28, OpenZeppelin 4.9.6; retrieved 2026-10-21",
+ "functions": {
+  "ZERO_VALUE()": "0xec732959",
+  "addToBlocklist(address[])": "0xf71a55f8",
+  "addVector(uint256)": "0x6cefafaa",
+  "changeFee(uint120,uint120,uint256)": "0xcc1f73fd",
+  "changeTreasury(address)": "0xb14f2a39",
+  "checkSafetyVectors()": "0x0804a4ee",
+  "getFee(uint136,bool,uint120)": "0x43c88730",
+  "getInsertionTreeNumberAndStartingIndex(uint256)": "0x0c9c0c8d",
+  "getTokenID((uint8,address,uint256))": "0x92d3c7a4",
+  "getVerificationKey(uint256,uint256)": "0x7b12ae83",
+  "hashBoundParams((uint16,uint72,uint8,uint64,address,bytes32,(bytes32[4],bytes32,bytes32,bytes,bytes)[]))": "0x28f89c3a",
+  "hashCommitment((bytes32,(uint8,address,uint256),uint120))": "0x71c53455",
+  "hashLeftRight(bytes32,bytes32)": "0x38bf282e",
+  "initializeRailgunLogic(address,uint120,uint120,uint256,address)": "0xa33952a9",
+  "lastEventBlock()": "0xcd3efe06",
+  "merkleRoot()": "0x2eb4a7ab",
+  "nextLeafIndex()": "0x0be4f422",
+  "nftFee()": "0x9071adc0",
+  "nullifiers(uint256,bytes32)": "0xf19ea903",
+  "owner()": "0x8da5cb5b",
+  "removeFromBlocklist(address[])": "0xab63e69c",
+  "removeVector(uint256)": "0xdc7c9a1f",
+  "renounceOwnership()": "0x715018a6",
+  "rootHistory(uint256,bytes32)": "0xc718dbda",
+  "setVerificationKey(uint256,uint256,(string,(uint256,uint256),(uint256[2],uint256[2]),(uint256[2],uint256[2]),(uint256[2],uint256[2]),(uint256,uint256)[]))": "0x2ec0f359",
+  "shield(((bytes32,(uint8,address,uint256),uint120),(bytes32[3],bytes32))[])": "0x044a40c3",
+  "shieldFee()": "0x01c37790",
+  "snarkSafetyVector(uint256)": "0x129458f4",
+  "sumCommitments((((uint256,uint256),(uint256[2],uint256[2]),(uint256,uint256)),bytes32,bytes32[],bytes32[],(uint16,uint72,uint8,uint64,address,bytes32,(bytes32[4],bytes32,bytes32,bytes,bytes)[]),(bytes32,(uint8,address,uint256),uint120))[])": "0x59bb6199",
+  "tokenBlocklist(address)": "0x815b534f",
+  "tokenIDMapping(bytes32)": "0xb8ceaef2",
+  "transact((((uint256,uint256),(uint256[2],uint256[2]),(uint256,uint256)),bytes32,bytes32[],bytes32[],(uint16,uint72,uint8,uint64,address,bytes32,(bytes32[4],bytes32,bytes32,bytes,bytes)[]),(bytes32,(uint8,address,uint256),uint120))[])": "0xd8ae136a",
+  "transferOwnership(address)": "0xf2fde38b",
+  "treasury()": "0x61d027b3",
+  "treeNumber()": "0x66503315",
+  "unshieldFee()": "0x053ed12a",
+  "validateCommitmentPreimage((bytes32,(uint8,address,uint256),uint120))": "0x617e1b17",
+  "validateTransaction((((uint256,uint256),(uint256[2],uint256[2]),(uint256,uint256)),bytes32,bytes32[],bytes32[],(uint16,uint72,uint8,uint64,address,bytes32,(bytes32[4],bytes32,bytes32,bytes,bytes)[]),(bytes32,(uint8,address,uint256),uint120)))": "0x17476891",
+  "verify((((uint256,uint256),(uint256[2],uint256[2]),(uint256,uint256)),bytes32,bytes32[],bytes32[],(uint16,uint72,uint8,uint64,address,bytes32,(bytes32[4],bytes32,bytes32,bytes,bytes)[]),(bytes32,(uint8,address,uint256),uint120)))": "0xee990783",
+  "verifyProof((string,(uint256,uint256),(uint256[2],uint256[2]),(uint256[2],uint256[2]),(uint256[2],uint256[2]),(uint256,uint256)[]),((uint256,uint256),(uint256[2],uint256[2]),(uint256,uint256)),uint256[])": "0x2ebfe12a",
+  "zeros(uint256)": "0xe8295588"
+ },
+ "events": {
+  "Action(address,(uint32,uint32,bool,bytes32)[])": [
+   false,
+   false
+  ],
+  "AddToBlocklist(address)": [
+   true
+  ],
+  "FeeChange(uint256,uint256,uint256)": [
+   false,
+   false,
+   false
+  ],
+  "Initialized(uint8)": [
+   false
+  ],
+  "Nullified(uint16,bytes32[])": [
+   false,
+   false
+  ],
+  "OwnershipTransferred(address,address)": [
+   true,
+   true
+  ],
+  "RemoveFromBlocklist(address)": [
+   true
+  ],
+  "Shield(uint256,uint256,(bytes32,(uint8,address,uint256),uint120)[],(bytes32[3],bytes32)[],uint256[])": [
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "Transact(uint256,uint256,bytes32[],(bytes32[4],bytes32,bytes32,bytes,bytes)[])": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "TreasuryChange(address)": [
+   false
+  ],
+  "Unshield(address,(uint8,address,uint256),uint256,uint256)": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "VerifyingKeySet(uint256,uint256,(string,(uint256,uint256),(uint256[2],uint256[2]),(uint256[2],uint256[2]),(uint256[2],uint256[2]),(uint256,uint256)[]))": [
+   false,
+   false,
+   false
+  ]
+ }
+}
