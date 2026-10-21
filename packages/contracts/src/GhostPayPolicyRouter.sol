@@ -169,9 +169,9 @@ contract GhostPayPolicyRouter is IGhostPayPolicyRouter, ReentrancyGuard {
         bytes calldata ephemeralPubKey,
         bytes calldata metadata
     ) external payable nonReentrant {
+        _checkPolicyAccount(stealth, policy);
         if (msg.value == 0) revert BufferRequired();
         if (msg.value > maxBufferWei) revert BufferTooLarge();
-        _checkPolicyAccount(stealth, policy);
         _payERC20(token, stealth, gross, minNet, deadline, ephemeralPubKey, metadata);
         _sendNative(stealth, msg.value);
         ANNOUNCER.announce(SCHEME_ID, stealth, ephemeralPubKey, metadata);

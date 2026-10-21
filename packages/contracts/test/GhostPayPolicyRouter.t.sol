@@ -1047,6 +1047,17 @@ contract GhostPayPolicyRouterTest is PolicyRouterBase {
         _payBuffer(0.02 ether, 0.01 ether);
     }
 
+    /// @dev DEVIATIONS R4: policy binding runs before the buffer checks.
+    function test_buffer_policyCheckBeforeBufferChecks() public {
+        vm.prank(alice);
+        vm.expectRevert(
+            abi.encodeWithSelector(IGhostPayPolicyRouter.NotPolicyAccount.selector, stealth)
+        );
+        router.payERC20WithBuffer{value: 0}(
+            IERC20(address(token)), alice, _ref(), GROSS, 0, block.timestamp + 1, 1, _eph(), ""
+        );
+    }
+
     function test_buffer_revertsPolicyMismatch() public {
         vm.prank(alice);
         vm.expectRevert(
