@@ -1,6 +1,7 @@
 import type { Address, BuiltPayment, Hex, RpcClient } from '@ghostpay/chain-adapters';
 import { UserFacingError } from './errors';
 import { formatUnits } from './format';
+import { guardApprove, guardRouterPayment, simulateCall } from './txGuard';
 import {
   assertApproveTx,
   assertPermitSigner,
@@ -74,6 +75,8 @@ export async function ensureAllowance(
   if (have >= need) return 'already-approved';
   const tx = buildApproveTx(token, spender, need);
   assertApproveTx(tx, token, spender, need);
+  // Decode + policy review of the approval bytes (spender = manifest router, amount <= this payment's gross, S3-19).
+  guardApprove(tx, ctx.chain.chainId, { token, spender, amount: need }, ctx.manifest, rt.nowSeconds());
   status(`Approve exactly ${formatUnits(need, ctx.review.token?.decimals ?? 18)} ${ctx.review.token?.symbol ?? ''} for the router.`);
   const res = await submitTx(session, tx, rt, status);
   if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError('The approval was not confirmed. Nothing was paid.');
@@ -118,6 +121,10 @@ export async function preparePayment(session: WalletSession, ctx: PayContext, op
 export async function sendPayment(session: WalletSession, ctx: PayContext, built: BuiltPayment, rt: Runtime, status: StatusFn): Promise<SubmitResult> {
   assertReadyToSend(built, ctx);
   if (BigInt(rt.nowSeconds()) >= built.preview.deadline) throw new UserFacingError('The prepared payment has expired. Review again.');
+  // Independent decode of the exact calldata + allowlist/fee/deadline policy before the wallet is asked (S3-09, S3-19).
+  guardRouterPayment(built.tx, built.preview, ctx.manifest, rt.nowSeconds());
+  // Dry run where the user's node supports it: a payment that would revert is never sent to the wallet.
+  if (rt.rpc !== undefined) await simulateCall(rt.rpc, { from: session.account, to: built.tx.to, data: built.tx.data, value: built.tx.value });
   return submitTx(session, { to: built.tx.to, data: built.tx.data, value: built.tx.value }, rt, status);
 }
 

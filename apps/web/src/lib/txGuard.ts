@@ -115,3 +115,76 @@ export async function simulateCall(
   }
   return 'ok';
 }
+
+/**
+ * Reviews an ERC-20 approval before the wallet prompt: spender must be the manifest router, token allowlisted, and the
+ * amount no more than this payment's gross (S3-19).
+ */
+export function guardApprove(
+  tx: { readonly to: Address; readonly data: Hex; readonly value: bigint },
+  chainId: number,
+  expected: { readonly token: Address; readonly spender: Address; readonly amount: bigint },
+  manifest: DeploymentManifest,
+  now: number,
+): void {
+  guardTx(
+    { chainId, to: tx.to, data: tx.data, value: tx.value },
+    { kind: 'erc20_approve', chainId, ...expected },
+    reviewPolicy(manifest, chainId),
+    now,
+    { paymentGross: expected.amount },
+  );
+}
+
+/** The subset of a built payment the reviewer needs (matches chain-adapters' `PaymentPreview`). */
+export interface ReviewablePayment {
+  readonly method: string;
+  readonly chainId: number;
+  readonly router: Address;
+  readonly token: Address | 'native';
+  readonly stealth: Address;
+  readonly gross: bigint;
+  readonly fee: bigint;
+  readonly minNet: bigint;
+  readonly deadline: bigint;
+  readonly ephemeralPublicKey: Hex;
+  readonly metadata: Hex;
+}
+
+/**
+ * Reviews the router payment about to be sent: the calldata bytes are decoded and compared with the preview the user
+ * saw, then checked against the manifest router, the token allowlist, the fee cap and the deadline window.
+ *
+ * @remarks `payERC20WithBuffer` is not decodable by tx-review (deliberately, haiku L-04), so buffer payments keep only
+ * the existing preview/calldata comparison of `assertReadyToSend`.
+ *
+ * @returns `'reviewed'`, or `'skipped-buffer'` for a buffer payment.
+ */
+export function guardRouterPayment(
+  tx: { readonly to: Address; readonly data: Hex; readonly value: bigint },
+  preview: ReviewablePayment,
+  manifest: DeploymentManifest,
+  now: number,
+): 'reviewed' | 'skipped-buffer' {
+  if (preview.method === 'payERC20WithBuffer') return 'skipped-buffer';
+  guardTx(
+    { chainId: preview.chainId, to: tx.to, data: tx.data, value: tx.value },
+    {
+      kind: 'router_payment',
+      method: preview.method as 'payERC20' | 'payERC20WithPermit' | 'payNative',
+      chainId: preview.chainId,
+      router: preview.router,
+      token: preview.token,
+      stealth: preview.stealth,
+      gross: preview.gross,
+      minNet: preview.minNet,
+      fee: preview.fee,
+      deadline: preview.deadline,
+      metadata: preview.metadata,
+      ephemeralKey: preview.ephemeralPublicKey,
+    },
+    reviewPolicy(manifest, preview.chainId),
+    now,
+  );
+  return 'reviewed';
+}
