@@ -49,12 +49,12 @@ describe('Create invoice', () => {
     expect(fetchFn).not.toHaveBeenCalled();
   });
 
-  it('supports multiple items, encryption, fiat pricing and token selection', async () => {
+  it('supports multiple items, encryption and token selection; fiat pricing is hard-disabled', async () => {
     generateSession();
     const user = await open();
     await user.selectOptions(screen.getByLabelText('Token'), screen.getByRole('option', { name: 'USDC' }));
-    await user.selectOptions(screen.getByLabelText('Pricing'), 'fiat_quote');
-    expect(screen.getByText(/No feed is configured in this release/)).toBeTruthy();
+    expect((screen.getByRole('option', { name: /Fiat price/ }) as HTMLOptionElement).disabled).toBe(true);
+    await user.type(screen.getByLabelText('Token amount'), '3.3');
     await user.click(screen.getByRole('button', { name: 'Add item' }));
     await user.type(screen.getByLabelText('Item 1 description'), 'A');
     await user.type(screen.getByLabelText('Item 1 unit price'), '1.00');

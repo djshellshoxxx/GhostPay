@@ -33,6 +33,11 @@ const base = { nativeDecimals: 18 } as const;
 export const CHAINS: readonly ChainConfig[] = Object.freeze([
   { ...base, chainId: 11155111, name: 'Ethereum Sepolia', nativeSymbol: 'ETH', testnet: true, enabled: true, finalityDepth: 64, getLogsMaxRange: 1000, blockTimeMs: 12000 },
   { ...base, chainId: 84532, name: 'Base Sepolia', nativeSymbol: 'ETH', testnet: true, enabled: true, finalityDepth: 100, getLogsMaxRange: 1000, blockTimeMs: 2000 },
+  { ...base, chainId: 11155420, name: 'OP Sepolia', nativeSymbol: 'ETH', testnet: true, enabled: true, finalityDepth: 100, getLogsMaxRange: 1000, blockTimeMs: 2000 },
+  { ...base, chainId: 421614, name: 'Arbitrum Sepolia', nativeSymbol: 'ETH', testnet: true, enabled: true, finalityDepth: 250, getLogsMaxRange: 1000, blockTimeMs: 250 },
+  { ...base, chainId: 80002, name: 'Polygon Amoy', nativeSymbol: 'POL', testnet: true, enabled: true, finalityDepth: 128, getLogsMaxRange: 1000, blockTimeMs: 2000 },
+  { ...base, chainId: 97, name: 'BNB Smart Chain Testnet', nativeSymbol: 'tBNB', testnet: true, enabled: true, finalityDepth: 40, getLogsMaxRange: 1000, blockTimeMs: 750 },
+  { ...base, chainId: 43113, name: 'Avalanche Fuji', nativeSymbol: 'AVAX', testnet: true, enabled: true, finalityDepth: 12, getLogsMaxRange: 1000, blockTimeMs: 2000 },
   { ...base, chainId: 1, name: 'Ethereum', nativeSymbol: 'ETH', testnet: false, enabled: false, finalityDepth: 64, getLogsMaxRange: 1000, blockTimeMs: 12000 },
   { ...base, chainId: 8453, name: 'Base', nativeSymbol: 'ETH', testnet: false, enabled: false, finalityDepth: 100, getLogsMaxRange: 1000, blockTimeMs: 2000 },
   { ...base, chainId: 10, name: 'OP Mainnet', nativeSymbol: 'ETH', testnet: false, enabled: false, finalityDepth: 100, getLogsMaxRange: 1000, blockTimeMs: 2000 },

@@ -1,3 +1,4 @@
+import { FEEDS } from '@ghostpay/chain-adapters';
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { CopyButton, Field, Notice } from '../components/Common';
 import { useManifest } from '../components/Disclosure';
@@ -6,6 +7,9 @@ import { userMessage } from '../lib/errors';
 import { buildInvoiceLink, tokenChoices, type CreatedInvoice, type InvoiceForm, type LineItemInput } from '../lib/invoiceCreate';
 import { useServices } from '../lib/services';
 import { useApp } from '../state';
+
+/** Fiat pricing needs a verified Chainlink feed (G-03). Hard-disabled until FEEDS is populated. */
+const FIAT_QUOTE_AVAILABLE = FEEDS.length > 0;
 
 const EMPTY_ITEM: LineItemInput = { description: '', quantity: '1', unitPrice: '' };
 
@@ -121,9 +125,11 @@ export function CreateInvoice(): ReactNode {
           <legend>Amount</legend>
           <Field label="Pricing">
             {(id) => (
-              <select id={id} value={amountMode} onChange={(e) => { setAmountMode(e.target.value as 'fiat_quote' | 'fixed_token'); }}>
+              <select id={id} value={amountMode} onChange={(e) => { setAmountMode(FIAT_QUOTE_AVAILABLE && e.target.value === 'fiat_quote' ? 'fiat_quote' : 'fixed_token'); }}>
                 <option value="fixed_token">Fixed token amount</option>
-                <option value="fiat_quote">Fiat price, converted at payment time</option>
+                <option value="fiat_quote" disabled={!FIAT_QUOTE_AVAILABLE}>
+                  {FIAT_QUOTE_AVAILABLE ? 'Fiat price, converted at payment time' : 'Fiat price (unavailable: no verified price feed)'}
+                </option>
               </select>
             )}
           </Field>
