@@ -18,13 +18,27 @@ export interface DeploymentManifest {
   readonly bytecodeHashes: { readonly router: Hex; readonly sweepRelayer: Hex };
   readonly date: string;
   readonly signature?: Hex;
+  /** Optional policy-account (scheme 0x47500002) deployment; present only when every policy field is set. */
+  readonly policy?: {
+    readonly implementation: Address;
+    readonly factory: Address;
+    readonly feeToken: Address;
+    /** Flat fee (F-SECURE) in fee-token base units. */
+    readonly flatFee: bigint;
+    readonly feeRecipient: Address;
+    readonly deployTx: { readonly implementation: Hex; readonly factory: Hex };
+    readonly bytecodeHashes: { readonly implementation: Hex; readonly factory: Hex };
+  };
 }
 
 const TOP_KEYS = [
   'chainId', 'announcer', 'router', 'sweepRelayer', 'feeRecipient', 'feeBps', 'deployTx',
   'solcVersion', 'commit', 'bytecodeHashes', 'date', 'signature',
+  'policyImplementation', 'policyFactory', 'policyFeeToken', 'policyFlatFee', 'policyFeeRecipient',
 ] as const;
-const REQUIRED = TOP_KEYS.filter((k) => k !== 'signature');
+const POLICY_KEYS = ['policyImplementation', 'policyFactory', 'policyFeeToken', 'policyFlatFee', 'policyFeeRecipient'] as const;
+const REQUIRED = TOP_KEYS.filter((k) => k !== 'signature' && !(POLICY_KEYS as readonly string[]).includes(k));
+const UINT_DECIMAL = /^(0|[1-9][0-9]{0,77})$/;
 const BYTES32 = /^0x[0-9a-fA-F]{64}$/;
 const ZERO_BYTES32 = /^0x0{64}$/;
 const RFC3339 = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
@@ -87,8 +101,11 @@ export function validateManifest(value: unknown, expectedChainId: number): Deplo
   if (new Set([announcer, router, sweepRelayer]).size !== 3) return bad('announcer/router/sweepRelayer must be distinct');
   if (feeRecipient === router || feeRecipient === sweepRelayer) return bad('feeRecipient collides with a contract');
 
-  const dtx = obj(r['deployTx'], 'deployTx', ['router', 'sweepRelayer'], ['router', 'sweepRelayer']);
-  const bch = obj(r['bytecodeHashes'], 'bytecodeHashes', ['router', 'sweepRelayer'], ['router', 'sweepRelayer']);
+  const hasPolicy = POLICY_KEYS.some((k) => r[k] !== undefined);
+  if (hasPolicy && POLICY_KEYS.some((k) => r[k] === undefined)) return bad('policy fields must be all present or all absent');
+  const txKeys = hasPolicy ? ['router', 'sweepRelayer', 'policyImplementation', 'policyFactory'] : ['router', 'sweepRelayer'];
+  const dtx = obj(r['deployTx'], 'deployTx', txKeys, txKeys);
+  const bch = obj(r['bytecodeHashes'], 'bytecodeHashes', txKeys, txKeys);
 
   const solc = r['solcVersion'];
   if (typeof solc !== 'string' || !/^0\.8\.\d+(\+commit\.[0-9a-f]{8})?$/.test(solc)) return bad('solcVersion');
@@ -115,8 +132,36 @@ export function validateManifest(value: unknown, expectedChainId: number): Deplo
     },
     date,
     ...(sig === undefined ? {} : { signature: sig as Hex }),
+    ...(hasPolicy ? { policy: parsePolicy(r, dtx, bch, [announcer, router, sweepRelayer]) } : {}),
   };
   return out;
+}
+
+function parsePolicy(
+  r: Record<string, unknown>,
+  dtx: Record<string, unknown>,
+  bch: Record<string, unknown>,
+  taken: readonly Address[],
+): NonNullable<DeploymentManifest['policy']> {
+  const implementation = addr(r['policyImplementation'], 'policyImplementation');
+  const factory = addr(r['policyFactory'], 'policyFactory');
+  const feeToken = addr(r['policyFeeToken'], 'policyFeeToken');
+  const feeRecipient = addr(r['policyFeeRecipient'], 'policyFeeRecipient');
+  if (new Set([...taken, implementation, factory]).size !== taken.length + 2) return bad('policy contracts must be distinct');
+  if (feeRecipient === implementation || feeRecipient === factory) return bad('policyFeeRecipient collides with a contract');
+  const fee = r['policyFlatFee'];
+  if (typeof fee !== 'string' || !UINT_DECIMAL.test(fee)) return bad('policyFlatFee');
+  const flatFee = BigInt(fee);
+  if (flatFee >= 1n << 256n) return bad('policyFlatFee');
+  return {
+    implementation,
+    factory,
+    feeToken,
+    flatFee,
+    feeRecipient,
+    deployTx: { implementation: b32(dtx['policyImplementation'], 'deployTx.policyImplementation'), factory: b32(dtx['policyFactory'], 'deployTx.policyFactory') },
+    bytecodeHashes: { implementation: b32(bch['policyImplementation'], 'bytecodeHashes.policyImplementation'), factory: b32(bch['policyFactory'], 'bytecodeHashes.policyFactory') },
+  };
 }
 
 /** Maximum accepted manifest text size in bytes. */

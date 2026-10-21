@@ -30,7 +30,9 @@ describe('validateManifest', () => {
   it('is in sync with deployments/schema.json (keys and required)', () => {
     const keys = Object.keys(manifestJson()).sort();
     expect(keys).toEqual([...schema.required].sort());
-    expect(Object.keys(schema.properties).sort()).toEqual([...keys, 'signature'].sort());
+    expect(Object.keys(schema.properties).sort()).toEqual(
+      [...keys, 'signature', 'policyImplementation', 'policyFactory', 'policyFeeToken', 'policyFlatFee', 'policyFeeRecipient'].sort(),
+    );
   });
   it('rejects chainId mismatch with CHAIN_MISMATCH', () => {
     expect(() => validateManifest(manifestJson(84532), CHAIN)).toThrow(/CHAIN_MISMATCH/);
@@ -91,5 +93,42 @@ describe('loadDeployment', () => {
     expect(() => loadDeployment(' '.repeat(MAX_MANIFEST_BYTES + 1), CHAIN)).toThrow(/size/);
     expect(() => loadDeployment(JSON.stringify(manifestJson()).replace('{', '{"__proto__":{"a":1},'), CHAIN)).toThrow(ChainAdapterError);
     expect(() => loadDeployment(5 as unknown as string, CHAIN)).toThrow(/size/);
+  });
+});
+
+describe('validateManifest policy section', () => {
+  const policy = (extra: Record<string, unknown> = {}): Record<string, unknown> => {
+    const m = manifestJson();
+    const h = (n: number): string => `0x${n.toString(16).padStart(64, '0')}`;
+    m['policyImplementation'] = '0x00000000000000000000000000000000000000a1';
+    m['policyFactory'] = '0x00000000000000000000000000000000000000a2';
+    m['policyFeeToken'] = '0x00000000000000000000000000000000000000a3';
+    m['policyFlatFee'] = '3000000';
+    m['policyFeeRecipient'] = '0x00000000000000000000000000000000000000a4';
+    (m['deployTx'] as Record<string, unknown>)['policyImplementation'] = h(11);
+    (m['deployTx'] as Record<string, unknown>)['policyFactory'] = h(12);
+    (m['bytecodeHashes'] as Record<string, unknown>)['policyImplementation'] = h(13);
+    (m['bytecodeHashes'] as Record<string, unknown>)['policyFactory'] = h(14);
+    Object.assign(m, extra);
+    return m;
+  };
+  it('accepts a complete policy section', () => {
+    const m = validateManifest(policy(), CHAIN);
+    expect(m.policy?.flatFee).toBe(3_000_000n);
+    expect(validateManifest(manifestJson(), CHAIN).policy).toBeUndefined();
+  });
+  it('rejects partial, malformed or colliding policy sections', () => {
+    const partial = policy();
+    delete partial['policyFlatFee'];
+    rejects(partial);
+    rejects(policy({ policyFlatFee: '03' }));
+    rejects(policy({ policyFlatFee: 3 }));
+    rejects(policy({ policyFlatFee: (2n ** 256n).toString() }));
+    rejects(policy({ policyFactory: '0x00000000000000000000000000000000000000a1' }));
+    rejects(policy({ policyFactory: String(manifestJson()['router']) }));
+    rejects(policy({ policyFeeRecipient: '0x00000000000000000000000000000000000000a2' }));
+    const noTx = policy();
+    delete (noTx['deployTx'] as Record<string, unknown>)['policyFactory'];
+    rejects(noTx);
   });
 });
