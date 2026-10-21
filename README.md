@@ -6,10 +6,11 @@ The project goal is to reduce address reuse and limit routine exposure of invoic
 
 ## Project status
 
-**Architecture phase.** No production contracts or application are implemented. The initial documentation includes the [Master Blueprint](docs/MASTER_BLUEPRINT.md) and a [Developer Specification](docs/DEVELOPER_SPECIFICATION.md) with module interfaces, crypto rules, security controls, threat model, and build plan.
+**Architecture phase.** No production contracts or application are implemented. The initial documentation includes the [Master Blueprint](docs/MASTER_BLUEPRINT.md), [Developer Specification](docs/DEVELOPER_SPECIFICATION.md), and [Security, QA, DevOps, and Feature Expansion Playbook](docs/SECURITY_QA_DEVOPS_PLAYBOOK.md).
 
 ## Starting points
 
+- [Security, QA, DevOps, and Feature Expansion Playbook](docs/SECURITY_QA_DEVOPS_PLAYBOOK.md)
 - [Developer Specification and Execution Blueprint](docs/DEVELOPER_SPECIFICATION.md)
 - [Master Blueprint](docs/MASTER_BLUEPRINT.md)
 - [EIP-5564: Stealth Addresses](https://eips.ethereum.org/EIPS/eip-5564)
@@ -33,4 +34,4 @@ The project goal is to reduce address reuse and limit routine exposure of invoic
 - ERC-4337 gas sponsorship does not by itself provide transaction unlinkability.
 - Do not deploy contracts for real funds until test coverage, threat analysis, and independent security review are complete.
 
-See the [Developer Specification](docs/DEVELOPER_SPECIFICATION.md) for module-level implementation requirements and security gates.
+See the [Security, QA, DevOps, and Feature Expansion Playbook](docs/SECURITY_QA_DEVOPS_PLAYBOOK.md) for release gates and operational procedures.
