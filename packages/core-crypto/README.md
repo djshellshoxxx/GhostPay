@@ -46,6 +46,7 @@ Production code passes no `rng`; tests inject a deterministic `RandomSource`.
 - Randomness: `crypto.getRandomValues` with rejection sampling (no modular bias). `Math.random` is banned by ESLint.
 - Errors are fixed strings with a stable `code`; they never contain key bytes or the offending input.
 - `checkAnnouncement` returns `{ matches: false }` on malformed log data so a hostile log cannot stop a scanner.
+- **Announcement metadata is not authenticated.** A `checkAnnouncement` match binds only R, the stealth address and `metadata[0]`; anyone can replay them with different token/amount bytes. Cross-check with `metadataMatches(metadata, {token, netAmount})` against the router's own event or the on-chain balance, de-duplicate by (tx hash, log index), and use `{ requireRouterMetadata: true }` to reject malformed metadata.
 - The 1-byte view tag leaks one byte of hash of the shared secret by design; it does not hide payer, amount, time or graph.
 - Coverage thresholds and tests establish regression safety, not cryptographic correctness. This package has had no external audit.
 

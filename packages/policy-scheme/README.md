@@ -31,6 +31,12 @@ No new crypto libraries: `@noble/curves`, `@noble/hashes`, `viem` and `@ghostpay
 
 `npm run gen-abi` regenerates `src/abi/*.ts` from forge output; `npm run gen-vectors` regenerates the vectors.
 
+## Trust notes
+
+- The scheme-2 meta-address string is **unauthenticated** (no checksum, chain id, factory or signature). Whoever supplies it chooses the payee keys and `policyHash`; a swapped `policyHash` pays an account the recipient never scans for. Obtain it over an authenticated channel and verify it out of band.
+- `decodePolicyPaymentCalldata` without `expected` proves only internal consistency; pass `expected` (owner, policyHash, ephemeralPublicKey, viewTag, token, netAmount) built from your own derivation, and check the router address and `msg.value` yourself.
+- `signPolicyTypedData` signs only policy-account structs, and `buildWithdrawTypedData` recomputes the limit leaf; pass `expectedOwner` to the signer.
+
 ## Status and deviations
 
 Experimental, not imported by `apps/web` or `apps/relayer`. [`docs/remote/STATUS.md`](../../docs/remote/STATUS.md) records 60 passed for this package in the 2026-10-21 run (the anvil tests skip when anvil or forge artifacts are missing). Deviations: [`DEVIATIONS.md`](./DEVIATIONS.md). Scripts: `build`, `typecheck`, `test`, `lint`, `gen-abi`, `gen-vectors`.

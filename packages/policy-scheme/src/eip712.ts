@@ -13,7 +13,7 @@ import {
   toHex,
 } from 'viem/utils';
 import { fail } from './errors.js';
-import { verifyLimitProof, type TokenLimitProof } from './limits.js';
+import { limitLeafHash as computeLeafHash, verifyLimitProof, type TokenLimitProof } from './limits.js';
 import {
   MAX_UINT256,
   ZERO_HASH,
@@ -227,6 +227,11 @@ export function buildWithdrawTypedData(p: WithdrawParams): WithdrawTypedData {
     if (root === ZERO_HASH) return fail('INVALID_INPUT', 'limitsRoot is zero; pass limit: null');
     const lp = p.limit.proof;
     if (!verifyLimitProof(root, lp.leaf, lp.proof)) return fail('INVALID_PROOF');
+    // Never trust caller-supplied limit data: recompute the leaf from (token, limit, window).
+    // This also binds the proof to the token being withdrawn and rejects inner nodes as leaves.
+    if (computeLeafHash({ token, limit: lp.limit, windowSeconds: lp.windowSeconds }) !== bytes32(lp.leaf, 'leaf')) {
+      return fail('INVALID_PROOF', 'leaf does not match token, limit and window');
+    }
     if (amount > lp.limit) return fail('INVALID_LIMIT', 'amount exceeds limit');
     limitLeafHash = bytes32(lp.leaf, 'leaf');
   }
@@ -318,6 +323,35 @@ function addressOfSecret(secret: Uint8Array): Address {
   return getAddress(`0x${bytesToHex(keccak_256(pub.subarray(1)).subarray(12)).slice(2)}`);
 }
 
+/** @internal Rejects typed data that is not one of this package's policy-account structs. */
+function assertPolicyShape(td: AnyPolicyTypedData): void {
+  const pt = td.primaryType as string;
+  if (!Object.prototype.hasOwnProperty.call(POLICY_TYPES, pt)) return fail('SIGNING_FAILED', 'unknown primary type');
+  const want = POLICY_TYPES[pt as keyof typeof POLICY_TYPES];
+  const types = td.types as unknown as Record<string, readonly { name: string; type: string }[]>;
+  const keys = Object.keys(types);
+  const got = types[pt];
+  if (
+    keys.length !== 1 ||
+    keys[0] !== pt ||
+    got === undefined ||
+    got.length !== want.length ||
+    got.some((f, i) => f.name !== (want[i] as { name: string }).name || f.type !== (want[i] as { type: string }).type)
+  ) {
+    return fail('SIGNING_FAILED', 'types are not policy types');
+  }
+  const d = td.domain;
+  if (d.name !== POLICY_DOMAIN_NAME || d.version !== POLICY_DOMAIN_VERSION) {
+    return fail('SIGNING_FAILED', 'domain is not the policy account domain');
+  }
+  try {
+    chainIdOf(d.chainId);
+    nonZeroAddr(d.verifyingContract, 'verifyingContract');
+  } catch {
+    return fail('SIGNING_FAILED', 'invalid domain');
+  }
+}
+
 /**
  * Signs policy typed data with the owner key.
  *
@@ -330,8 +364,10 @@ function addressOfSecret(secret: Uint8Array): Address {
  * @param expectedOwner The account's `owner()`; strongly recommended.
  * @returns 65-byte signature and its parts.
  * @throws {PolicySchemeError} `SIGNING_FAILED`.
- * @security The secret copy is zeroized after use; the secret is never logged. Signing anything
- * except a digest from these builders is impossible through this function.
+ * @security The secret copy is zeroized after use; the secret is never logged. The structure is
+ * validated before signing: domain name/version, `primaryType` and `types` must be exactly those of
+ * the policy account (`POLICY_TYPES`), so foreign typed data cannot be signed through this function.
+ * `expectedOwner` is optional for backward compatibility but strongly recommended.
  * @testVector policy-scheme.withdraws
  */
 export async function signPolicyTypedData(
@@ -339,6 +375,7 @@ export async function signPolicyTypedData(
   ownerSecret: SecretScalar,
   expectedOwner?: Address,
 ): Promise<PolicySignature> {
+  assertPolicyShape(td);
   const viaViem = viemDigest(td.domain, td.types, td.primaryType, td.message);
   if (viaViem !== td.digest) return fail('SIGNING_FAILED', 'digest mismatch');
   const key = unsafeRevealSecret(ownerSecret);

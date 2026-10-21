@@ -1,6 +1,6 @@
 import { GhostPayCryptoError, parseCompressedPoint, secretScalarFromBytes } from '@ghostpay/core-crypto';
 import { decodeFunctionData } from 'viem/utils';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   PolicySchemeError,
   ZERO_ADDRESS,
@@ -32,6 +32,7 @@ import {
   signPolicyTypedData,
   validatePolicy,
   verifyLimitProof,
+  POLICY_TYPES,
   type Address,
   type Hex,
   type WithdrawTypedData,
@@ -254,5 +255,72 @@ describe('calldata', () => {
     ].map((c) => decodeFunctionData({ abi: policyAccountAbi, data: c.data }).functionName);
     expect(names).toEqual(['executeWithdraw', 'cancel', 'proposeDestination', 'executeDestinationChange', 'cancelDestination']);
     expect(code(() => encodeExecuteWithdraw(ZERO_ADDRESS, td.structHash))).toBe('INVALID_ADDRESS');
+  });
+});
+
+describe('round3b: policy-scheme hardening', () => {
+  afterEach(() => vi.restoreAllMocks());
+  const owner = (): ReturnType<typeof secretScalarFromBytes> => secretScalarFromBytes(hexBytes(A.ownerPrivateKey));
+  const tree = buildLimitsTree([
+    { token: ZERO_ADDRESS, limit: 100n, windowSeconds: 60n },
+    { token: USDC, limit: 10n, windowSeconds: 60n },
+  ]);
+  const lp = getLimitProof(tree, USDC);
+  const wbase = { chainId: 1, account: A.accountAddress, token: USDC, amount: 5n, deadline: 10n, nonce: 1n, limit: { limitsRoot: tree.root, proof: lp } };
+
+  it('signer refuses typed data that is not a policy-account struct (signing oracle)', async () => {
+    const td = buildWithdrawTypedData(wbase);
+    const evilDomain = { ...td, domain: { ...td.domain, name: 'Evil' } };
+    const evilTypes = { ...td, types: { Withdraw: [{ name: 'x', type: 'uint256' }] }, message: { x: 1n } };
+    const evilPrimary = { ...td, primaryType: 'Transfer' };
+    for (const bad of [evilDomain, evilTypes, evilPrimary]) {
+      const withDigest = { ...bad, digest: '0x' } as never;
+      expect(await acode(() => signPolicyTypedData(withDigest, owner()))).toBe('SIGNING_FAILED');
+    }
+    // a self-consistent foreign struct must not be signable
+    const { hashTypedData } = await import('viem/utils');
+    const foreign = {
+      domain: { name: 'Evil', version: '1', chainId: 1, verifyingContract: A.accountAddress },
+      types: { Transfer: [{ name: 'amt', type: 'uint256' }] },
+      primaryType: 'Transfer',
+      message: { amt: 1n },
+    } as const;
+    const digest = hashTypedData(foreign);
+    expect(await acode(() => signPolicyTypedData({ ...foreign, structHash: digest, digest } as never, owner()))).toBe('SIGNING_FAILED');
+    // genuine data still signs
+    expect(await acode(() => signPolicyTypedData(td, owner(), A.ownerAddress))).toBe('no error');
+    expect(Object.keys(POLICY_TYPES)).toContain(td.primaryType);
+  });
+
+  it('withdraw builder recomputes the limit leaf and binds the token', () => {
+    expect(code(() => buildWithdrawTypedData(wbase))).toBe('no error');
+    const inflated = { ...lp, limit: 10n ** 30n, windowSeconds: 1n };
+    expect(code(() => buildWithdrawTypedData({ ...wbase, amount: 10n ** 20n, limit: { limitsRoot: tree.root, proof: inflated } }))).toBe('INVALID_PROOF');
+    // proof for another token's leaf is not accepted for this token
+    expect(code(() => buildWithdrawTypedData({ ...wbase, token: ZERO_ADDRESS }))).toBe('INVALID_PROOF');
+    // an inner node masquerading as a leaf
+    expect(code(() => buildWithdrawTypedData({ ...wbase, limit: { limitsRoot: tree.root, proof: { leaf: tree.root, proof: [], limit: 10n ** 30n, windowSeconds: 1n } } }))).toBe('INVALID_PROOF');
+  });
+
+  it('getLimitProof rejects a tree whose leaf fields were edited', () => {
+    const forged = { ...tree, leaves: tree.leaves.map((l) => (l.token === USDC ? { ...l, limit: 10n ** 30n } : l)) };
+    expect(code(() => getLimitProof(forged as never, USDC))).toBe('INVALID_PROOF');
+  });
+
+  it('checkScheme2Announcement leaves no live viewing-secret copy when argument validation throws', () => {
+    const copies: Uint8Array[] = [];
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    const realSet = Uint8Array.prototype.set;
+    vi.spyOn(Uint8Array.prototype, 'set').mockImplementation(function (this: Uint8Array, ...a: Parameters<typeof realSet>) {
+      if (this.length === 32 && this.constructor.name === 'SecretBytes') copies.push(this);
+      return realSet.apply(this, a);
+    });
+    const view = secretScalarFromBytes(hexBytes(A.viewingPrivateKey));
+    const spend = parseCompressedPoint(hexBytes(A.spendingPublicKey));
+    const ann = { stealthAddress: A.accountAddress, ephemeralPublicKey: A.ephemeralPublicKey, metadata: A.viewTag };
+    expect(code(() => checkScheme2Announcement(ann as never, view, spend, ['0xzz'], dep))).toBe('INVALID_HEX');
+    expect(code(() => checkScheme2Announcement(ann as never, view, spend, [A.policyHash], { ...dep, factory: ZERO_ADDRESS }))).toBe('INVALID_ADDRESS');
+    const mine = copies.filter((c) => c !== (view as Uint8Array));
+    for (const c of mine) expect(c.every((b) => b === 0)).toBe(true);
   });
 });

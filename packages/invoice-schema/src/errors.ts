@@ -14,7 +14,8 @@ export type InvoiceErrorCode =
   | 'DECRYPT'
   | 'SIGNING'
   | 'RANDOMNESS'
-  | 'UNSUPPORTED';
+  | 'UNSUPPORTED'
+  | 'UNTRUSTED_SIGNER';
 
 /** Base class of every error thrown by this package. */
 export class InvoiceError extends Error {
@@ -93,5 +94,11 @@ export class RandomnessError extends InvoiceError {
 export class UnsupportedError extends InvoiceError {
   public constructor() {
     super('UNSUPPORTED', 'unsupported invoice version or algorithm');
+  }
+}
+/** `requirePinnedSigner` was set and the invoice signer is not in `pinnedSigners` (or the signature is invalid). */
+export class UntrustedSignerError extends InvoiceError {
+  public constructor() {
+    super('UNTRUSTED_SIGNER', 'invoice signer is not pinned');
   }
 }

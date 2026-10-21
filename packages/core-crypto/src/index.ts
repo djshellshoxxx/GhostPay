@@ -12,8 +12,8 @@ export {
   CURVE_ORDER,
 } from './secret.js';
 export type { SecretScalar, CompressedPoint } from './secret.js';
-export { deriveStealthPayment, checkAnnouncement, deriveStealthSecret } from './stealth.js';
-export type { DerivedStealthPayment, PublicAnnouncement, AnnouncementCheck } from './stealth.js';
+export { deriveStealthPayment, checkAnnouncement, deriveStealthSecret, metadataMatches } from './stealth.js';
+export type { DerivedStealthPayment, PublicAnnouncement, AnnouncementCheck, CheckAnnouncementOptions } from './stealth.js';
 export {
   buildErc20Metadata,
   buildNativeMetadata,

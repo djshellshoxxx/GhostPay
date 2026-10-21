@@ -138,6 +138,10 @@ export function getLimitProof(tree: LimitsTree, token: Address): TokenLimitProof
   const idx = tree.leaves.findIndex((l) => l.token.toLowerCase() === t);
   const entry = tree.leaves[idx];
   if (entry === undefined) return fail('UNKNOWN_TOKEN');
+  // A tree restored from storage is untrusted: recompute the leaf from its fields.
+  if (limitLeafHash({ token: entry.token, limit: entry.limit, windowSeconds: entry.windowSeconds }) !== entry.leaf) {
+    return fail('INVALID_PROOF', 'leaf does not match token, limit and window');
+  }
   const proof: Hex[] = [];
   let pos = tree.tree.length - 1 - idx;
   while (pos > 0) {

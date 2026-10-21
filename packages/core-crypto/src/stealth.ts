@@ -6,6 +6,7 @@ import { getAddress } from 'viem/utils';
 import { GhostPayCryptoError, fail } from './errors.js';
 import { assertAddress, strictHexToBytes, type Address } from './hex.js';
 import { decodeMetaAddress, publicKeyOf, type StealthKeySet } from './keys.js';
+import { parseMetadata } from './metadata.js';
 import { randomScalar, type RandomSource } from './rng.js';
 import {
   CURVE_ORDER,
@@ -44,6 +45,17 @@ export interface PublicAnnouncement {
 
 export type AnnouncementCheck =
   { readonly matches: false } | { readonly matches: true; readonly stealthAddress: Address };
+
+/** Options for {@link checkAnnouncement}. */
+export interface CheckAnnouncementOptions {
+  /**
+   * When true, a match additionally requires `metadata` to be valid 57-byte router metadata
+   * (see `parseMetadata`). This rejects malformed or padded replays, but it does NOT
+   * authenticate the amount or token inside well-formed metadata (see the `@security` note
+   * on {@link checkAnnouncement}). Default false (plain ERC-5564 semantics).
+   */
+  readonly requireRouterMetadata?: boolean;
+}
 
 interface ParsedAnnouncement {
   readonly address: Address;
@@ -141,7 +153,14 @@ export function deriveStealthPayment(metaAddress: string, rng?: RandomSource): D
  * @param spendingPublicKey Recipient spending public key.
  * @returns `{ matches: false }` or the checksummed matching address.
  * @throws {GhostPayCryptoError} `INVALID_SCALAR` / `INVALID_POINT` for bad key arguments.
+ * @param options Optional strictness flags.
  * @security Does not reveal or log the viewing secret; the view tag leaks one byte of shared-secret hash by design.
+ * METADATA IS NOT AUTHENTICATED: a match binds only the ephemeral key, stealth address and
+ * `metadata[0]`. Ephemeral key, address and tag are public once the original log exists, so
+ * anyone can re-emit them (ERC-5564 Announcer is permissionless) with different token/amount
+ * bytes and still match. Never display or credit `parseMetadata(...).netAmount/token` from a
+ * matched announcement unless it is cross-checked (see {@link metadataMatches}) against the
+ * router's own event or the on-chain balance, and de-duplicate by (tx hash, log index).
  * @see https://eips.ethereum.org/EIPS/eip-5564
  * @testVector scheme1-001
  */
@@ -149,6 +168,7 @@ export function checkAnnouncement(
   announcement: PublicAnnouncement,
   viewingSecret: SecretScalar,
   spendingPublicKey: CompressedPoint,
+  options: CheckAnnouncementOptions = {},
 ): AnnouncementCheck {
   const spend = parseCompressedPoint(spendingPublicKey);
   let parsed: ParsedAnnouncement;
@@ -174,7 +194,40 @@ export function checkAnnouncement(
     throw e;
   }
   if (address.toLowerCase() !== parsed.address.toLowerCase()) return { matches: false };
+  if (options.requireRouterMetadata === true) {
+    try {
+      parseMetadata(announcement.metadata);
+    } catch (e) {
+      if (e instanceof GhostPayCryptoError) return { matches: false };
+      throw e;
+    }
+  }
   return { matches: true, stealthAddress: address };
+}
+
+/**
+ * Checks that announcement metadata carries exactly the token and net amount learned from a
+ * trusted source (the router's own event, or an on-chain balance delta).
+ *
+ * @remarks Companion to {@link checkAnnouncement}, whose match does not authenticate metadata.
+ * Returns false for malformed metadata instead of throwing.
+ *
+ * @param metadata 0x-hex announcement metadata.
+ * @param expected Token (ERC-20 address or `NATIVE_TOKEN_ADDRESS`) and net amount from a trusted source.
+ * @returns Whether the metadata is valid router metadata for exactly that token and amount.
+ * @security Only as trustworthy as `expected`; never derive `expected` from the same announcement.
+ */
+export function metadataMatches(
+  metadata: string,
+  expected: { readonly token: string; readonly netAmount: bigint },
+): boolean {
+  try {
+    const m = parseMetadata(metadata);
+    return m.netAmount === expected.netAmount && m.token.toLowerCase() === expected.token.toLowerCase();
+  } catch (e) {
+    if (e instanceof GhostPayCryptoError) return false;
+    throw e;
+  }
 }
 
 /**

@@ -9,6 +9,7 @@ import {
   SchemaError,
   SigningError,
   UnsupportedError,
+  UntrustedSignerError,
   Utf8Error,
 } from './errors.js';
 import { canonicalize, parseStrictJson } from './json.js';
@@ -40,7 +41,12 @@ const AAD_MAGIC = utf8ToBytes('GPI1');
 export type TrustLevel = 'invalid-signature' | 'valid-signature' | 'trusted-seller';
 
 export interface Verification {
-  /** The embedded signer key signed exactly these canonical bytes. Says nothing about who the signer is. */
+  /**
+   * The embedded signer key signed exactly these canonical bytes (integrity only). Says nothing
+   * about who the signer is: ANY party can produce a valid self-signed invoice naming its own
+   * payee `metaAddress`. Never treat this as seller authentication; use `signerPinned`,
+   * {@link isTrustedSeller} or `ParseOptions.requirePinnedSigner`.
+   */
   readonly signatureValid: boolean;
   /** `signatureValid` AND the signer key is in the caller's pinned set. Never true for an invalid signature. */
   readonly signerPinned: boolean;
@@ -100,6 +106,14 @@ export interface EncodeOptions {
 export interface ParseOptions {
   /** Lowercase 66-hex compressed signer keys the caller trusts. */
   readonly pinnedSigners?: readonly string[];
+  /**
+   * Fail closed: throw {@link UntrustedSignerError} unless the signature is valid AND the signer
+   * is in `pinnedSigners`. Use this on any path that will pay `invoice.metaAddress`: a
+   * `valid-signature` invoice may be self-signed by anyone, including a phisher whose own
+   * metaAddress is in the link. Default false (backward compatible; callers must then gate on
+   * {@link isTrustedSeller}).
+   */
+  readonly requirePinnedSigner?: boolean;
 }
 
 function getSubtle(): SubtleCrypto {
@@ -304,5 +318,6 @@ export async function parseFragment(fragment: string, options: ParseOptions = {}
     : signerPinned
       ? 'trusted-seller'
       : 'valid-signature';
+  if (options.requirePinnedSigner === true && !signerPinned) throw new UntrustedSignerError();
   return { invoice, signature, verification: { signatureValid, signerPinned }, trust, encrypted };
 }

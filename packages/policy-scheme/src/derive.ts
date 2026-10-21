@@ -174,9 +174,10 @@ export function checkScheme2Announcement(
   deployment: PolicyDeployment,
 ): Scheme2Check {
   const spend = parseCompressedPoint(spendingPublicKey);
-  const viewing = secretScalarFromBytes(viewingSecret);
+  // Validate every argument BEFORE the secret copy exists, so no error path can leak it.
   const hashes = policyHashes.map((p, i) => bytes32(p, `policyHashes[${String(i)}]`));
   const dep = { factory: nonZeroAddr(deployment.factory, 'factory'), implementation: nonZeroAddr(deployment.implementation, 'implementation') };
+  const viewing = secretScalarFromBytes(viewingSecret);
   try {
     const parsed = parse(announcement);
     if (parsed === null) return { matches: false };

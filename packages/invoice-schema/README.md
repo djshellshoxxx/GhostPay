@@ -37,8 +37,10 @@ if (isTrustedSeller(parsed)) { /* only now may the UI say the seller key is pinn
 - **The fragment is a bearer secret.** The AES key is inside it, so anyone holding the link can read the invoice.
   Encryption only keeps line items away from casual observers of partial data; it is not access control.
 - **A valid signature is not a trusted seller.** It proves the embedded key signed these bytes. Only
-  `signerPinned` (key matches a pin you obtained out of band) supports trust; `isTrustedSeller` encodes that in the type.
-  Bare links offer an integrity self-check only. UI wording must not say "verified seller".
+  `signerPinned` (key matches a pin you obtained out of band) supports trust; `isTrustedSeller` encodes that in the type. Any party can self-sign an invoice naming its own payee `metaAddress`, so on any path that pays `invoice.metaAddress` pass `{ pinnedSigners, requirePinnedSigner: true }` (throws `UntrustedSignerError` otherwise) or gate on `isTrustedSeller`. The default stays permissive for backward compatibility.
+  Bare links offer an integrity self-check only. UI wording must not say "verified seller". Any party can self-sign an invoice naming its own payee `metaAddress`: on any path that pays
+  `invoice.metaAddress` pass `{ pinnedSigners, requirePinnedSigner: true }` (throws `UntrustedSignerError` otherwise) or gate on
+  `isTrustedSeller`. The default stays permissive for backward compatibility.
 - **JavaScript cannot guarantee zeroization** of keys or plaintext; the invoice-signing key is a plain `Uint8Array` you own.
 - Decoded strings are inert data: render as text, never as HTML. Never log the fragment or parsed private fields.
 - Expiry is client-side policy only (ADR-0003); `checkExpiry` takes an injected clock and expiry is exclusive.

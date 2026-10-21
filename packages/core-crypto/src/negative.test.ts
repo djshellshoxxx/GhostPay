@@ -4,7 +4,11 @@ import { bytesToHex } from '@noble/hashes/utils.js';
 import { describe, expect, it } from 'vitest';
 import {
   GhostPayCryptoError,
+  NATIVE_TOKEN_ADDRESS,
+  buildErc20Metadata,
+  buildNativeMetadata,
   checkAnnouncement,
+  metadataMatches,
   decodeMetaAddress,
   deriveStealthPayment,
   deriveStealthSecret,
@@ -297,5 +301,30 @@ describe('deriveStealthSecret', () => {
   it('rejects the wrong recipient', () => {
     const stranger = generateKeySet(seededRng('stranger-2'));
     expect(() => deriveStealthSecret(goodAnn, stranger)).toThrow(GhostPayCryptoError);
+  });
+});
+
+describe('round3b M-1: announcement metadata is not authenticated', () => {
+  const ann = (metadata: string) => ({ ...goodAnn, metadata });
+  const tag = pay.viewTag;
+  const real = `0x${hex(buildNativeMetadata(tag, 5n))}`;
+  const forged = `0x${hex(buildErc20Metadata(tag, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 10n ** 30n))}`;
+  it('reproduces: a replay with swapped token/amount still matches (protocol limit)', () => {
+    expect(checkAnnouncement(ann(real), keys.viewingSecret, spendPub).matches).toBe(true);
+    expect(checkAnnouncement(ann(forged), keys.viewingSecret, spendPub).matches).toBe(true);
+  });
+  it('requireRouterMetadata rejects malformed/padded metadata but keeps default behaviour', () => {
+    const strict = { requireRouterMetadata: true };
+    expect(checkAnnouncement(ann(real), keys.viewingSecret, spendPub, strict).matches).toBe(true);
+    for (const m of [`0x${hex(tag)}`, `${real}00`, `0x${hex(tag)}${'ff'.repeat(56)}`])
+      expect(checkAnnouncement(ann(m), keys.viewingSecret, spendPub, strict)).toEqual({ matches: false });
+    expect(checkAnnouncement(ann(`0x${hex(tag)}`), keys.viewingSecret, spendPub).matches).toBe(true);
+  });
+  it('metadataMatches detects swapped token/amount against trusted values', () => {
+    const exp = { token: NATIVE_TOKEN_ADDRESS, netAmount: 5n };
+    expect(metadataMatches(real, exp)).toBe(true);
+    expect(metadataMatches(forged, exp)).toBe(false);
+    expect(metadataMatches(real, { ...exp, netAmount: 6n })).toBe(false);
+    expect(metadataMatches('0x00', exp)).toBe(false);
   });
 });

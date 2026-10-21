@@ -1,4 +1,4 @@
-import { buildErc20Metadata, buildNativeMetadata, parseCompressedPoint } from '@ghostpay/core-crypto';
+import { buildErc20Metadata, buildNativeMetadata, parseCompressedPoint, parseMetadata, NATIVE_TOKEN_ADDRESS } from '@ghostpay/core-crypto';
 import { bytesToHex, decodeFunctionData, encodeFunctionData, hexToBytes } from 'viem/utils';
 import { ghostPayPolicyRouterAbi } from './abi/policyRouter.js';
 import type { CallRequest } from './calldata.js';
@@ -156,6 +156,14 @@ export interface DecodedPolicyPayment {
 export interface ExpectedPolicyRef {
   readonly owner: Address;
   readonly policyHash: Hex;
+  /** Payer-derived ephemeral key R (33-byte compressed, hex). Without it a swapped R is undetectable. */
+  readonly ephemeralPublicKey?: Hex | Uint8Array;
+  /** Payer-derived view tag (one byte, hex with or without 0x). */
+  readonly viewTag?: string;
+  /** Expected token: `'native'` or an ERC-20 address. */
+  readonly token?: 'native' | Address;
+  /** Expected net amount delivered (gross minus fee). */
+  readonly netAmount?: bigint;
 }
 
 /**
@@ -165,9 +173,15 @@ export interface ExpectedPolicyRef {
  * @param deployment Factory and implementation; `stealth` must equal the account predicted from the salt.
  * @param expected When given, the salt must equal `accountSalt(expected.owner, expected.policyHash)`.
  * @returns Method and the scheme-2 fields.
- * @throws {PolicySchemeError} `INVALID_INPUT` on unknown calldata or a stealth/salt mismatch.
- * @security Use before showing a wallet prompt: a tampered `stealth` or salt is detected here; pass
- * `expected` (from the payee's meta-address and the payer's derivation) to also bind owner and policy.
+ * @throws {PolicySchemeError} `INVALID_INPUT` on unknown calldata, non-canonical encoding, a
+ * stealth/salt mismatch, an invalid ephemeral key, metadata that is not valid router metadata
+ * consistent with the call (kind, token, net = gross - fee, net >= minNet), or any `expected` mismatch.
+ * @security Use before showing a wallet prompt. Without `expected` this only proves INTERNAL
+ * consistency (stealth is the account for the salt; metadata is well formed and matches the call):
+ * a frontend that swaps the whole payee (stealth, salt, R, tag) is NOT detectable without the
+ * payee's meta-address, so callers must pass `expected` built from their own derivation
+ * (owner, policyHash, ephemeralPublicKey, viewTag, token, netAmount). Router address and `msg.value`
+ * are not part of the calldata and must be checked by the caller (see `buildPolicyPaymentTx`).
  */
 export function decodePolicyPaymentCalldata(data: Hex, deployment: PolicyDeployment, expected?: ExpectedPolicyRef): DecodedPolicyPayment {
   let d: ReturnType<typeof decodeFunctionData<typeof ghostPayPolicyRouterAbi>>;
@@ -181,6 +195,13 @@ export function decodePolicyPaymentCalldata(data: Hex, deployment: PolicyDeploym
   if (ephIdx === undefined) return fail('INVALID_INPUT', 'not a payment method');
   const a = d.args as readonly unknown[];
   const native = method === 'payNative';
+  let canonical: Hex;
+  try {
+    canonical = encodeFunctionData({ abi: ghostPayPolicyRouterAbi, functionName: d.functionName, args: d.args });
+  } catch {
+    return fail('INVALID_INPUT', 'not policy router calldata');
+  }
+  if (canonical.toLowerCase() !== data.toLowerCase()) return fail('INVALID_INPUT', 'non-canonical calldata');
   const stealth = (native ? a[0] : a[1]) as Address;
   const salt = (native ? a[1] : a[2]) as Hex;
   if (predictAccountAddressFromSalt(deployment, salt) !== stealth) {
@@ -189,11 +210,49 @@ export function decodePolicyPaymentCalldata(data: Hex, deployment: PolicyDeploym
   if (expected !== undefined && accountSalt(nonZeroAddr(expected.owner, 'owner'), expected.policyHash) !== salt) {
     return fail('INVALID_INPUT', 'salt does not match the expected owner and policy');
   }
-  return Object.freeze({
-    method: method as PolicyRouterMethod,
-    stealth,
-    salt,
-    ephemeralPublicKey: a[ephIdx] as Hex,
-    metadata: a[ephIdx + 1] as Hex,
-  });
+  const ephemeralPublicKey = a[ephIdx] as Hex;
+  const metadata = a[ephIdx + 1] as Hex;
+  let ephBytes: Uint8Array;
+  let meta: ReturnType<typeof parseMetadata>;
+  try {
+    ephBytes = parseCompressedPoint(hexToBytes(ephemeralPublicKey));
+  } catch {
+    return fail('INVALID_INPUT', 'invalid ephemeral key');
+  }
+  try {
+    meta = parseMetadata(metadata);
+  } catch {
+    return fail('INVALID_INPUT', 'invalid payment metadata');
+  }
+  if (native) {
+    if (meta.kind !== 'native') return fail('INVALID_INPUT', 'metadata is not native');
+    if (meta.netAmount < (a[2] as bigint)) return fail('INVALID_INPUT', 'metadata net below minNet');
+  } else {
+    if (meta.kind !== 'erc20' || meta.token.toLowerCase() !== (a[0] as string).toLowerCase()) {
+      return fail('INVALID_INPUT', 'metadata token does not match the call');
+    }
+    const gross = a[3] as bigint;
+    if (gross < 1n || gross > MAX_POLICY_ROUTER_GROSS || meta.netAmount !== gross - policyRouterFee(gross)) {
+      return fail('INVALID_INPUT', 'metadata net is not gross minus fee');
+    }
+    if (meta.netAmount < (a[4] as bigint)) return fail('INVALID_INPUT', 'metadata net below minNet');
+  }
+  if (expected !== undefined) {
+    if (expected.ephemeralPublicKey !== undefined) {
+      const want = typeof expected.ephemeralPublicKey === 'string' ? hexToBytes(expected.ephemeralPublicKey) : expected.ephemeralPublicKey;
+      if (bytesToHex(ephBytes) !== bytesToHex(want)) return fail('INVALID_INPUT', 'ephemeral key does not match');
+    }
+    if (expected.viewTag !== undefined) {
+      const want = expected.viewTag.toLowerCase().replace(/^0x/, '');
+      if (want !== metadata.slice(2, 4).toLowerCase()) return fail('INVALID_INPUT', 'view tag does not match');
+    }
+    if (expected.token !== undefined) {
+      const want = expected.token === 'native' ? NATIVE_TOKEN_ADDRESS : expected.token;
+      if (meta.token.toLowerCase() !== want.toLowerCase()) return fail('INVALID_INPUT', 'token does not match');
+    }
+    if (expected.netAmount !== undefined && meta.netAmount !== expected.netAmount) {
+      return fail('INVALID_INPUT', 'net amount does not match');
+    }
+  }
+  return Object.freeze({ method: method as PolicyRouterMethod, stealth, salt, ephemeralPublicKey, metadata });
 }

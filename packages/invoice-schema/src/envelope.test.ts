@@ -14,6 +14,7 @@ import {
   SchemaError,
   SigningError,
   UnsupportedError,
+  UntrustedSignerError,
   Utf8Error,
   canonicalize,
   decodeBase64Url,
@@ -579,4 +580,33 @@ describe('flipping any character of a fragment never produces a valid altered in
       }
     }, 120_000);
   }
+});
+
+describe('round3b M-2: self-signed invoices', () => {
+  it('reproduces: any self-signed invoice parses as valid-signature with its own payee', async () => {
+    const attacker = signInvoice(
+      sampleInvoice({ signer: OTHER_SIGNER, memo: 'phish' }),
+      new Uint8Array(32).fill(0).map((_, i) => (i === 31 ? 8 : 0)),
+    );
+    const p = await parseFragment(await encodeFragment(attacker));
+    expect(p.trust).toBe('valid-signature');
+    expect(isTrustedSeller(p)).toBe(false);
+  });
+  it('requirePinnedSigner throws unless the signer is pinned; default unchanged', async () => {
+    const f = await encodeFragment(sampleSigned());
+    await expect(parseFragment(f, { requirePinnedSigner: true })).rejects.toBeInstanceOf(UntrustedSignerError);
+    await expect(
+      parseFragment(f, { requirePinnedSigner: true, pinnedSigners: [OTHER_SIGNER] }),
+    ).rejects.toMatchObject({ code: 'UNTRUSTED_SIGNER' });
+    const ok = await parseFragment(f, { requirePinnedSigner: true, pinnedSigners: [SIGNER] });
+    expect(ok.trust).toBe('trusted-seller');
+    expect((await parseFragment(f)).trust).toBe('valid-signature');
+  });
+  it('requirePinnedSigner also rejects an invalid signature', async () => {
+    const env = decodeEnvelope(await encodeFragment(sampleSigned()));
+    env['sig'] = '1'.repeat(128);
+    await expect(
+      parseFragment(frag(env), { requirePinnedSigner: true, pinnedSigners: [SIGNER] }),
+    ).rejects.toBeInstanceOf(UntrustedSignerError);
+  });
 });
