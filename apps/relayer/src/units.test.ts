@@ -1,4 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
+import { createWebhookAlerts, nullAlerts } from './alerts.js';
+import { Metrics } from './metrics.js';
 import { DailyBudget } from './budget.js';
 import { parseAddress, parseHex, parseInt53, parseObject, parseUint } from './codec.js';
 import { RelayerError, SimulationRevert, invalid } from './errors.js';
@@ -265,5 +267,59 @@ describe('revert mapping', () => {
   ])('%s -> %i %s', (name, status, code) => {
     const e = revertToError(new SimulationRevert(name));
     expect([e.status, e.code]).toEqual([status, code]);
+  });
+});
+
+describe('Metrics', () => {
+  it('renders counters and gauges, bounds series and rejects injectable labels', () => {
+    const m = new Metrics();
+    m.inc('relayer_x_total', { route: '/v1/sweep', status: 200 });
+    m.inc('relayer_x_total', { route: '/v1/sweep', status: 200 });
+    m.inc('relayer_x_total', { route: 'evil"\n} 1\n#', status: 1 });
+    m.inc('Bad Name');
+    m.inc('relayer_plain_total');
+    m.gauge('relayer_g', 'help', () => [{ labels: { chain_id: '1' }, value: 2 }, { labels: {}, value: Number.NaN }]);
+    const text = m.render();
+    expect(text).toContain('relayer_x_total{route="/v1/sweep",status="200"} 2');
+    expect(text).toContain('route="invalid"');
+    expect(text).toContain('relayer_plain_total 1');
+    expect(text).toContain('relayer_g{chain_id="1"} 2');
+    expect(text).toContain('relayer_g 0');
+    expect(text).not.toContain('evil');
+    expect(text).not.toContain('Bad Name');
+    for (let i = 0; i < 600; i++) m.inc('relayer_many_total', { n: i });
+    expect(text.split('\n').length).toBeLessThan(40);
+    expect(m.render().split('\n').filter((l) => l.startsWith('relayer_many_total')).length).toBeLessThanOrEqual(512);
+  });
+});
+
+describe('webhook alerts', () => {
+  it('posts a request-data-free payload, de-duplicates, and survives delivery failure', async () => {
+    let t = 0;
+    const sent: { url: string; body: string }[] = [];
+    const logs: string[] = [];
+    let fail: 'none' | 'throw' | 'status' = 'none';
+    const fetchImpl = ((url: string, init: { body: string }) => {
+      sent.push({ url, body: init.body });
+      if (fail === 'throw') return Promise.reject(new Error('net'));
+      return Promise.resolve({ ok: fail === 'none' });
+    }) as unknown as typeof fetch;
+    const sink = createWebhookAlerts({ url: 'https://hooks.example/x', now: () => t, fetchImpl, logger: createLogger((l) => logs.push(l)), minIntervalMs: 1000 });
+    sink.send({ kind: 'breaker_open', chainId: 5 });
+    sink.send({ kind: 'breaker_open', chainId: 5 });
+    sink.send({ kind: 'low_balance' });
+    expect(sent).toHaveLength(2);
+    expect(JSON.parse(sent[0]?.body ?? '{}')).toEqual({ kind: 'breaker_open', chainId: 5, text: 'ghostpay-relayer alert: breaker_open chain 5' });
+    expect(JSON.parse(sent[1]?.body ?? '{}')).toEqual({ kind: 'low_balance', text: 'ghostpay-relayer alert: low_balance' });
+    t = 1000;
+    fail = 'throw';
+    sink.send({ kind: 'breaker_open', chainId: 5 });
+    t = 3000;
+    fail = 'status';
+    sink.send({ kind: 'breaker_open', chainId: 5 });
+    await new Promise((r) => setTimeout(r, 10));
+    expect(logs.join('\n')).toContain('"errorClass":"network"');
+    expect(logs.join('\n')).toContain('"errorClass":"http_status"');
+    nullAlerts.send({ kind: 'mined_revert' });
   });
 });

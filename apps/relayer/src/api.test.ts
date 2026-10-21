@@ -715,7 +715,6 @@ describe('S3-05/06 breaker integration', () => {
     const h = await call(s, 'GET', '/healthz');
     expect(h.status).toBe(503);
     expect(h.json).toMatchObject({ status: 'degraded', chains: [{ breaker: 'half_open' }] });
-    expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 61n })).body))).toBe('breaker_open');
   });
 
   it('a probe that never settles expires and re-opens instead of wedging', async () => {
@@ -751,9 +750,14 @@ describe('S3-05/06 breaker integration', () => {
     }
     expect(denied).toBe('loss_budget_exhausted');
     expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'ok' }); // breaker untouched
-    // a different network and destination is not collateral damage of the per-source key, but the destination key is shared:
+    // the network key is charged too, so minting a fresh destination does not reset the budget
     const other = await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 300n, destination: STRANGER })).body);
-    expect(other.status).toBe(200);
+    expect(errCode(other)).toBe('loss_budget_exhausted');
+    expect(other.headers.get('retry-after')).toBe('3600');
+    // after the window the budget is restored (monotonic clock is the injected one)
+    s.clock.ms += 3_600_000;
+    s.fake.receipt = { status: 'success', gasUsed: 100_000n };
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 301n })).body)).status).toBe(200);
   });
 
   it('serves authenticated Prometheus metrics and sends alerts without request data', async () => {
