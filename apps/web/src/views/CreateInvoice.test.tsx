@@ -104,6 +104,6 @@ describe('Create invoice', () => {
     const user = await open();
     const chain = screen.getByLabelText('Chain');
     await user.selectOptions(chain, screen.getByRole('option', { name: 'Ethereum Sepolia' }));
-    expect(within(screen.getByLabelText('Token')).getAllByRole('option').map((o) => o.textContent)).toEqual(['ETH', 'USDC']);
+    expect(within(screen.getByLabelText('Token')).getAllByRole('option').map((o) => o.textContent)).toEqual(['ETH', 'USDC', 'EURC']);
   });
 });

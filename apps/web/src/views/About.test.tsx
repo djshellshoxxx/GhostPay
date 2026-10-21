@@ -34,7 +34,7 @@ describe('About / Privacy', () => {
   it('with no manifest every chain says "payments disabled" and no recipient is ever shown', async () => {
     await openAbout(makeServices());
     const disabled = await screen.findAllByText(/payments disabled on this chain/);
-    expect(disabled).toHaveLength(2);
+    expect(disabled).toHaveLength(7);
     expect(document.body.textContent).not.toMatch(/0x[0-9a-fA-F]{40}/);
   });
 
@@ -43,15 +43,15 @@ describe('About / Privacy', () => {
     expect(await screen.findByText(FAKE_FEE_RECIPIENT)).toBeTruthy();
     expect(screen.getByText(FAKE_ROUTER)).toBeTruthy();
     const items = screen.getAllByText(/GhostPay charges 0\.25 % on payments made through its checkout contract\. The fee goes to/);
-    expect(items).toHaveLength(2);
+    expect(items).toHaveLength(7);
     expect(screen.getAllByText(/payments disabled on this chain/)).toHaveLength(1);
     expect(screen.getByText(/carries no signature; this app does not verify manifest signatures/)).toBeTruthy();
-    expect(screen.getAllByText(/Paying the stealth address directly costs no GhostPay fee\./)).toHaveLength(2);
+    expect(screen.getAllByText(/Paying the stealth address directly costs no GhostPay fee\./)).toHaveLength(7);
   });
 
   it('an invalid manifest keeps payments disabled', async () => {
     await openAbout(makeServices({ loadManifest: () => Promise.resolve({ status: 'invalid', reason: 'x' }) }));
-    expect((await screen.findAllByText(/payments disabled on this chain/)).length).toBe(2);
+    expect((await screen.findAllByText(/payments disabled on this chain/)).length).toBe(7);
   });
 });
 
