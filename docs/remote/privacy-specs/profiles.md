@@ -510,3 +510,11 @@ S-M: types + catalogue data S (largest part is transcription from ten specs), ru
 
 All [R], read 2026-10-21: `docs/remote/privacy-specs/{hygiene,amount-blurring,hops,payer-hiding,shielded-pool,external-pools,confidential-tokens,network-privacy,metadata-hardening,btc-payjoin}.md`; `docs/remote/security-specs/privacy-ops.md`; `docs/remote/anonymization-research.md` sections 12, 14; `apps/web/src/lib/settings.ts`; `packages/relayer-guard/{package.json,tsconfig.json,tsconfig.build.json,vitest.config.ts}`.
 External: RFC 2119 https://www.rfc-editor.org/rfc/rfc2119 and RFC 8174 https://www.rfc-editor.org/rfc/rfc8174 (keyword conventions) **[U: fetch failed, ENOTFOUND, 2026-10-21]**.
+
+## 18. Chaining
+
+Ordered pipelines of methods (e.g. PH-1 -> AB-DENOM -> pool deposit -> SP-PAY -> hygiene sweep, with network transport as a cross-cutting layer) are specified in [chaining.md](chaining.md). Effect on this package (lane A, additive; no change to sections 6-11 semantics):
+- New data files `src/steps.ts` (`STEP_CATALOGUE`: step kinds with typed input/output holdings) and `src/chainRules.ts` (`CHAIN_RULES` C-01..C-35, `chainMatrix()`); new `privacy.err.chain.*` / `privacy.warn.chain.*` keys and ack `ctUnwrapPublic` in `src/keys.ts`; `scripts/gen-matrix.mjs --chain`.
+- Each pipeline projects to one `Selection`, so R-01..R-40 still apply; chain rules add ordering only and resolve to the stricter effect (chaining PL-7). Refinement [new]: R-17 applies to the payment step (`pay.from-pool`), not to an earlier payer pool deposit.
+- Logic (planner, validator, executor, summary) lives in the new package `@ghostpay/privacy-pipeline`, which depends on this one; this package still imports no method package.
+- Presets map to pipeline templates via `selectionToPipeline(applyPreset(...))`; PP-12 extends to templates (no hops, no unwrap, no PayJoin, no second pool).
