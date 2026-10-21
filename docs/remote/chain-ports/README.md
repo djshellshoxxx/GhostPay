@@ -19,20 +19,21 @@
 
 ## Verdict summary
 
-_Coordinator to fill after all docs land._
+Summarised from each doc by the coordinator; details and unverified lists live in the docs. "Built" = Phase 2 package exists with real tests (see each package README).
 
 | Doc | Verdict | Adapter fit | Fee cap | Effort | Owner package |
 |---|---|---|---|---|---|
-| bitcoin.md | | | | | |
-| btc-family.md | | | | | |
-| solana.md | | | | | |
-| tron.md | | | | | |
-| evm-extra.md | | | | | |
-| ton.md | | | | | |
-| xrp.md | | | | | |
-| cardano.md | | | | | |
-| monero-zcash.md | | | | | |
-| lightning-ecash.md | | | | | |
+| bitcoin.md | Feasible; adapter gap (EVM-shaped types, numeric chainId in invoice envelope) needs a chain-adapters change by another owner | Does not fit structurally today | all `not_enforceable`, no tip | S-M | existing `btc-silent-payments` (swarm 4) |
+| btc-family.md | LTC conditional testnet spike only; BCH and DOGE no-go (no taproot) | Structural `family:'bitcoin'` shape | all `not_enforceable` | M (LTC), L (BCH/DOGE) | `packages/btc-family` (built, research-only for LTC/DOGE/BCH) |
+| solana.md | Feasible; crypto PoC S, full port with program and audit L | Structural, `solana` already in union | `not_enforceable` until audited program | S / L | `packages/chain-solana` (built) |
+| tron.md | Feasible, M, own adapter family | Needs `ChainFamily` extension | `not_enforceable` until fee contract | M | `packages/chain-tron` (built) |
+| evm-extra.md | Feasible, S per chain; zkSync Era deferred (custom CREATE2) | Existing EVM adapter via config | enforced by router once deployed | S (zkSync L) | `packages/chain-evm-extra` (built) |
+| ton.md | Feasible, spec only | Needs new family | not enforceable | M | future `packages/chain-ton` |
+| xrp.md | Feasible for native XRP only | Needs new family | not enforceable | M | future `packages/chain-xrp` |
+| cardano.md | Feasible | Needs new family | not enforceable without script step | M | future `packages/chain-cardano` |
+| cosmos.md | Feasible, per-chain config cost | Needs new family | not enforceable without CosmWasm | M | future `packages/chain-cosmos` |
+| monero-zcash.md | No scheme port; bridge/swap hop only | Hop side-interface | 0 bps | spec only | none |
+| lightning-ecash.md | Payment-hop option, signet/mutinynet only | Hop side-interface | `not_enforceable` | spec only | future `packages/ln-hop` |
 
 ## Build order
 
