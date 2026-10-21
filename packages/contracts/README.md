@@ -9,6 +9,7 @@ Solidity 0.8.28 (EVM `cancun`, optimizer 200 runs), Foundry, OpenZeppelin Contra
 | `src/GhostPaySweepRelayer.sol` | Gas-sponsored stealth sweep: EIP-712 order signed by the stealth key, optional ERC-2612 permit (try/catch), bitmap nonces, token-denominated reimbursement. |
 | `src/PolicyAccount.sol` | Policy-guarded stealth account (scheme `0x47500002`): EIP-1167 clone target; owner-signed (EIP-712) withdraw requests, delay, merkle-committed per-token window caps, funds only to `destination`, destination change after `2 * delay`. |
 | `src/PolicyAccountFactory.sol` | Immutable CREATE2 clone factory; charges the F-SECURE flat fee once per account; emits only `AccountDeployed(account)`. |
+| `src/GhostPayPolicyRouter.sol` | Scheme-2 checkout router: same 25 bps fee and 57-byte metadata, pays only `FACTORY.predictAddress(owner, policyHash)` accounts, announces scheme `0x47500002`. Immutable, no admin. Deploy script `script/DeployPolicyRouter.s.sol`. |
 | `src/interfaces/` | `IGhostPayRouter`, `IGhostPaySweepRelayer`, `IPolicyAccount`, `IERC5564Announcer` (identical to the CC0 reference interface). |
 
 No owner, proxy, pause, rescue, fee setter, `delegatecall` or arbitrary call exists anywhere. The policy-guarded account (section 4) is described below; its deviations are items P1-P19 in `DEVIATIONS.md`.
@@ -74,15 +75,19 @@ Record the result in `deployments/<chainId>.json` (see `deployments/README.md`).
 
 ## Verification status
 
-Latest local run (forge 1.8.5, solc 0.8.28, default profile: 10 000 fuzz runs, invariants 256 runs x depth 50): **274 tests in 14 suites pass**
+Newer figures (2026-10-21: 377 tests in 23 suites, `forge fmt --check` and `forge snapshot --check` passing, one test failing only under `forge coverage --ir-minimum`) are in [`docs/remote/STATUS.md`](../../docs/remote/STATUS.md); Echidna and mutation results are in the section below. Older run (forge 1.8.5, solc 0.8.28, default profile: 10 000 fuzz runs, invariants 256 runs x depth 50): **274 tests in 14 suites pass**
 (includes the audit regression/PoC tests under `test/audit/`). `forge coverage --ir-minimum` (production sources only): lines 99.25 % (264/266),
 branches 100 % (39/39), functions 100 % (72/72); the two uncovered "lines" are the new assembly `call` statements, which the coverage instrumentation
 does not count although the tests execute them (verified by the gas-bound regression tests). Under `--ir-minimum` the instrumented bytecode differs from the
 release build and `Sweep.audit.t.sol::test_crossRelayerAndCrossChainReplayRejected` fails in coverage mode only (it switches `chainid`; the cause under instrumentation was not investigated and the contract it exercises, the sweep relayer, is unchanged apart from comments); it passes in the normal run. `.gas-snapshot` is committed.
 Static analysis: Slither 0 medium/high results with the CI exclusions and also **without** the `arbitrary-send-erc20,incorrect-equality` exclusions
-(both sites carry an inline `slither-disable-next-line` with rationale); Mythril was run once by the audit; Echidna was **not** run. Forge's built-in
+(both sites carry an inline `slither-disable-next-line` with rationale); Mythril was run once by the audit. Echidna and mutation testing were run locally only (see "Echidna and mutation testing"); neither is in CI. Forge's built-in
 linter reports no findings (justified inline `forge-lint: disable` comments only). No fork test against a live network was run; the "fork-style"
 requirement is met by compiling the CC0 reference announcer locally and asserting the `Announcement` event.
+
+## Echidna and mutation testing (local only)
+
+Harnesses in `test/echidna/` (`EchidnaRouter`, `EchidnaSweep`, `EchidnaPolicy`; config `echidna.yaml`; `echidna_canary_*` properties are expected to fail). Results: [`docs/remote/contracts-assurance.md`](../../docs/remote/contracts-assurance.md). Mutation testing with gambit (582 mutants, 573/577 killed after the tests in `test/mutation_local/`, remaining 4 equivalent): [`docs/remote/mutation-results-local.md`](../../docs/remote/mutation-results-local.md). Neither runs in CI.
 
 ## Audit follow-ups (docs/audits/02-security-review-contracts.md)
 
@@ -100,7 +105,7 @@ documented here; the matching `test_EXPLOIT_*` tests keep asserting the residual
   **Owner decision (not implemented):** a *pull-vault* design in which the router/factory credits the fee to a vault that the recipient withdraws from later, so a bad
   recipient can never block a payer. Cost: the contracts would hold balances (custody, an accounting surface, a withdrawal path) and the "no custody, no admin" property
   of the router would be weakened. It is documented as a design alternative only.
-- **M-02: the router announces scheme id 1 only** (`SCHEME_ID = 1` is a constant). Payments to a `PolicyAccount` address (scheme `0x47500002`) through the
+- **M-02: `GhostPayRouter` announces scheme id 1 only** (the separate `GhostPayPolicyRouter` now announces `0x47500002`; the text below describes the scheme-1 router) (`SCHEME_ID = 1` is a constant). Payments to a `PolicyAccount` address (scheme `0x47500002`) through the
   router are announced under scheme 1 and are therefore not discoverable by a scheme-2 scanner. **Policy accounts are experimental and must not be used with the router
   until a router variant (or a `schemeId` argument restricted to `{1, 0x47500002}`, which is a public-contract change that needs `CONTRACTS_SPEC` first) exists** and
   scanners/test vectors cover scheme 2. Funds are not lost: they sit at `A_acct`.

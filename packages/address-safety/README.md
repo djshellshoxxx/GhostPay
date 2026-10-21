@@ -15,3 +15,8 @@ Runtime dependency: `viem` (checksum only) plus Node `node:crypto`. **Not wired 
 ```bash
 npm run typecheck && npm run lint && npm test   # from this directory
 ```
+
+## Status and deviations
+
+Library only; not imported by any app or package; no external audit.
+Differences from the spec and open items: [`DEVIATIONS.md`](./DEVIATIONS.md). Scripts (`package.json`): `build`, `typecheck`, `test` (`vitest run --coverage`), `lint`.

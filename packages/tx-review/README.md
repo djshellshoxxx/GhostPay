@@ -11,3 +11,8 @@ Dependencies: `viem` and `@ghostpay/chain-adapters` (ABIs, `decodePaymentCalldat
 ```bash
 npm run typecheck && npm run lint && npm test   # from this directory
 ```
+
+## Status and deviations
+
+Library only; not imported by `apps/web`; no external audit.
+Differences from the spec and open items: [`DEVIATIONS.md`](./DEVIATIONS.md). Scripts (`package.json`): `build`, `typecheck`, `test` (`vitest run --coverage`), `lint`.

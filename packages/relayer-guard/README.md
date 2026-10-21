@@ -18,3 +18,8 @@ npm run typecheck && npm run lint && npm test   # from this directory
 ## Challenge module
 
 `createChallengeService`: stateless HMAC-signed plain-text question challenge (`issue(context)` / `verify`), with `MemoryReplayStore`, `MemoryAttemptLimiter` and `normalizeAnswer`. **Only raises bot cost; not a security boundary.** Keep it behind the per-owner limiter and `LossBudget`; use shared stores with more than one process. Spec section 8. Not wired into `apps/relayer`.
+
+## Status and deviations
+
+Library only (breaker, limiter, IP resolution, loss budget, challenge module); not imported by `apps/relayer`; no external audit.
+Differences from the spec and open items: [`DEVIATIONS.md`](./DEVIATIONS.md). Scripts (`package.json`): `build`, `typecheck`, `test` (`vitest run --coverage`), `lint`.

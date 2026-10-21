@@ -18,3 +18,8 @@ Dependencies: `viem` (keccak256), `@ghostpay/chain-adapters` (types), Node built
 ```bash
 npm run typecheck && npm run lint && npm test   # from this directory
 ```
+
+## Status and deviations
+
+Library only; not imported anywhere; no live network run; no external audit.
+Differences from the spec and open items: [`DEVIATIONS.md`](./DEVIATIONS.md). Scripts (`package.json`): `build`, `typecheck`, `test` (`vitest run --coverage`), `lint`.
