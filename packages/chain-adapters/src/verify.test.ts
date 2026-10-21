@@ -108,4 +108,72 @@ describe('verifyAnnouncementAmount', () => {
     const r = await run(client([transfer()]), { isAllowedToken: () => false });
     expect(r).toMatchObject({ reason: 'token_not_allowlisted' });
   });
+
+  describe('NC-02 / NC-01', () => {
+    it('NC-02: one Transfer log verifies only one announcement when a ledger is shared', async () => {
+      const consumedTransfers = new Set<string>();
+      const c = client([transfer()]);
+      const r = [];
+      for (const logIndex of [0, 2, 3]) r.push(await run(c, { announcement: ann({ logIndex }), consumedTransfers }));
+      expect(r.map((v) => v.status)).toEqual(['verified', 'claimed', 'claimed']);
+      expect(r[1]).toMatchObject({ reason: 'no_transfer_found' });
+    });
+
+    it('NC-02: concurrent verifications also count the log once', async () => {
+      const consumedTransfers = new Set<string>();
+      const c = client([transfer()]);
+      const r = await Promise.all([0, 2, 3].map((logIndex) => run(c, { announcement: ann({ logIndex }), consumedTransfers })));
+      expect(r.filter((v) => v.status === 'verified')).toHaveLength(1);
+    });
+
+    it('NC-02: distinct Transfer logs each verify their own announcement', async () => {
+      const consumedTransfers = new Set<string>();
+      const c = client([transfer({ logIndex: '0x1' }), transfer({ logIndex: '0x4' }, 7n)]);
+      const a = await run(c, { consumedTransfers });
+      const b = await run(c, { consumedTransfers });
+      expect(a).toMatchObject({ status: 'verified', amount: 1007n });
+      expect(b).toMatchObject({ status: 'claimed', reason: 'no_transfer_found' });
+    });
+
+    const two = (a: RpcLog[] | Error, b: RpcLog[] | Error) => {
+      const mk = (logs: RpcLog[] | Error) => ({
+        chainId: 11155111,
+        getLogs: () => Promise.reject(new Error('unused')),
+        request: (): Promise<unknown> => (logs instanceof Error ? Promise.reject(logs) : Promise.resolve(logs)),
+      });
+      return { primary: mk(a), secondary: mk(b) };
+    };
+
+    it('NC-01: with a secondary client, agreeing providers verify', async () => {
+      const { primary, secondary } = two([transfer()], [transfer()]);
+      const r = await verifyAnnouncementAmount({
+        client: primary, secondaryClient: secondary, announcement: ann(), metadata: erc20Meta(), viaRouter: false,
+      });
+      expect(r).toMatchObject({ status: 'verified', amount: 1000n });
+    });
+
+    it('NC-01: a forged Transfer only on the primary degrades to claimed', async () => {
+      const { primary, secondary } = two([transfer({}, 999_000n)], []);
+      const r = await verifyAnnouncementAmount({
+        client: primary, secondaryClient: secondary, announcement: ann(), metadata: erc20Meta(), viaRouter: false,
+      });
+      expect(r).toMatchObject({ status: 'claimed', reason: 'verification_failed' });
+    });
+
+    it('NC-01: a failing secondary degrades to claimed', async () => {
+      const { primary, secondary } = two([transfer()], new Error('down'));
+      const r = await verifyAnnouncementAmount({
+        client: primary, secondaryClient: secondary, announcement: ann(), metadata: erc20Meta(), viaRouter: false,
+      });
+      expect(r).toMatchObject({ status: 'claimed', reason: 'verification_failed' });
+    });
+
+    it('NC-01: a primary that cannot cross-check degrades to claimed', async () => {
+      const { secondary } = two([], []);
+      const r = await verifyAnnouncementAmount({
+        client: client([transfer()]), secondaryClient: secondary, announcement: ann(), metadata: erc20Meta(), viaRouter: false,
+      });
+      expect(r).toMatchObject({ status: 'claimed', reason: 'verification_failed' });
+    });
+  });
 });

@@ -139,3 +139,11 @@ Frigate (Sparrow) / Electrum Silent Payments protocol:
   in the tree and are not interchangeable at runtime boundaries, which this package keeps separate). Lockfile updated.
 - The Bitshala `silent-pay` differential reference (MULTICHAIN_SPEC 3.4) was **not** used (not installed); the
   differential coverage here is the official vectors plus `@scure/bip32` for BIP-32 paths.
+
+## Audit round 3 (NC-03), 2026-10-21
+
+- **NC-03 fixed (mitigated).** `scanBlocks` now de-duplicates by x-only key across the whole call (and across calls
+  when the caller persists `seenKeys`): a key seen at an earlier height is still yielded but flagged
+  `duplicateKey: true`, because a BIP-352 output key cannot legitimately recur. Flagged results must not be trusted;
+  the first sighting is NOT proven genuine either. `BitcoinAdapterDeps` gains `verifier` and `seenKeys`. Without a
+  `verifier` every adapter result stays `verified: false`: show txid/vout/amount as claimed. No verifier ships.

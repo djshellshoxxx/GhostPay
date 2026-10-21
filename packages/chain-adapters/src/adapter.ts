@@ -235,6 +235,7 @@ export function createEvmAdapter(deps: EvmAdapterDeps): ChainAdapter {
 
     async *scan(range, keys, signal) {
       let cursor: ScanCursor = { nextBlock: range.fromBlock };
+      const consumedTransfers = new Set<string>();
       for (;;) {
         if (signal.aborted) return;
         const res = await fetchAnnouncements({
@@ -261,7 +262,14 @@ export function createEvmAdapter(deps: EvmAdapterDeps): ChainAdapter {
           const verification: AmountVerification =
             deps.verifyAmounts === false
               ? { status: 'claimed', reason: 'not_checked' }
-              : await verifyAnnouncementAmount({ client, announcement: a, metadata, viaRouter });
+              : await verifyAnnouncementAmount({
+                  client,
+                  announcement: a,
+                  metadata,
+                  viaRouter,
+                  consumedTransfers,
+                  ...(deps.secondaryClient === undefined ? {} : { secondaryClient: deps.secondaryClient }),
+                });
           const confirmations = a.confirmations ?? 1n;
           yield {
             stealthAddress: hit.stealthAddress,

@@ -1,7 +1,7 @@
 import type { ParsedMetadata } from '@ghostpay/core-crypto';
 import { keccak256, toBytes } from 'viem/utils';
 import { findToken } from './config/tokens.js';
-import type { ScannedAnnouncement } from './logs.js';
+import { getLogsAgreed, type ScannedAnnouncement } from './logs.js';
 import type { RpcClient, RpcLog } from './rpc.js';
 import type { Address, Hex } from './types.js';
 
@@ -35,7 +35,7 @@ export type AmountVerification =
 
 /** Inputs for {@link verifyAnnouncementAmount}. */
 export interface VerifyAmountInput {
-  readonly client: Pick<RpcClient, 'getLogs' | 'chainId'>;
+  readonly client: Pick<RpcClient, 'getLogs' | 'chainId'> & Partial<Pick<RpcClient, 'request'>>;
   readonly announcement: ScannedAnnouncement;
   /** Parsed metadata, or `undefined` when the metadata is not in the 57-byte layout. */
   readonly metadata: ParsedMetadata | undefined;
@@ -43,6 +43,16 @@ export interface VerifyAmountInput {
   readonly viaRouter: boolean;
   /** Token allowlist predicate; default: `config/tokens.ts` for the client's chain. */
   readonly isAllowedToken?: (token: Address) => boolean;
+  /**
+   * Second independent provider. When set, the `Transfer` logs must be identical on both providers
+   * (same cross-check as the announcement scan); a disagreement or failure degrades to `claimed` (NC-01).
+   */
+  readonly secondaryClient?: Pick<RpcClient, 'request' | 'chainId'>;
+  /**
+   * Shared ledger of Transfer logs (`blockHash:logIndex`) already attributed to an announcement. A log can
+   * verify at most one announcement; share one map across a whole scan (NC-02).
+   */
+  readonly consumedTransfers?: Set<string>;
 }
 
 function pad32(a: string): string {
@@ -70,17 +80,22 @@ export async function verifyAnnouncementAmount(i: VerifyAmountInput): Promise<Am
   if (!allowed(metadata.token)) return { status: 'claimed', reason: 'token_not_allowlisted', claimed };
   let logs: readonly RpcLog[];
   try {
-    logs = await i.client.getLogs({
+    const filter = {
       address: metadata.token,
       topics: [TRANSFER_TOPIC, null, pad32(a.stealthAddress) as Hex],
       fromBlock: a.blockNumber,
       toBlock: a.blockNumber,
-    });
+    };
+    const { client, secondaryClient } = i;
+    if (secondaryClient === undefined) logs = await client.getLogs(filter);
+    else if (client.request === undefined) throw new Error('primary client cannot cross-check');
+    else logs = await getLogsAgreed({ chainId: client.chainId, request: client.request }, secondaryClient, filter);
   } catch {
     return { status: 'claimed', reason: 'verification_failed', claimed };
   }
   let sum = 0n;
   const seen = new Set<string>();
+  const fresh: string[] = [];
   for (const l of logs) {
     if (typeof l !== 'object' || l === null) continue;
     if (l.removed === true || typeof l.address !== 'string' || l.address.toLowerCase() !== metadata.token.toLowerCase()) continue;
@@ -91,11 +106,13 @@ export async function verifyAnnouncementAmount(i: VerifyAmountInput): Promise<Am
     if (typeof l.blockHash !== 'string' || l.blockHash.toLowerCase() !== a.blockHash.toLowerCase()) continue;
     if (a.transactionHash !== undefined && l.transactionHash?.toLowerCase() !== a.transactionHash) continue;
     const key = `${l.blockHash}:${String(l.logIndex)}`;
-    if (seen.has(key)) continue;
+    if (seen.has(key) || i.consumedTransfers?.has(key) === true) continue;
     seen.add(key);
+    fresh.push(key);
     sum += BigInt(l.data);
   }
   if (sum === 0n) return { status: 'claimed', reason: 'no_transfer_found', claimed };
+  for (const k of fresh) i.consumedTransfers?.add(k);
   return { status: 'verified', source: 'transfer_logs', token: metadata.token, amount: sum };
 }
 

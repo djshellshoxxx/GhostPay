@@ -169,6 +169,19 @@ describe('Bitcoin ChainAdapter', () => {
       }
     });
 
+    it('NC-03: results are unverified without a verifier; a verifier is honoured and a seenKeys set is shared', async () => {
+      const unverified = await all(adapter, 10n, 10n);
+      expect(unverified.every((f) => f.verified === false)).toBe(true);
+      const seenKeys = new Set<string>();
+      const strict = createBitcoinAdapter({ network: 'mainnet', source, verifier: () => Promise.resolve(true), seenKeys });
+      const ok = await all(strict, 10n, 10n);
+      expect(ok.length).toBeGreaterThan(0);
+      expect(ok.every((f) => f.verified === true && f.duplicateKey === false)).toBe(true);
+      expect((await all(strict, 10n, 10n)).every((f) => f.duplicateKey === true)).toBe(true);
+      const rejecting = createBitcoinAdapter({ network: 'mainnet', source, verifier: () => Promise.resolve(false) });
+      expect(await all(rejecting, 10n, 10n)).toEqual([]);
+    });
+
     it('respects the range and the label list', async () => {
       expect(await all(adapter, 11n, 11n)).toEqual([]);
       const noLabel = await all(adapter, 10n, 10n, new AbortController(), {

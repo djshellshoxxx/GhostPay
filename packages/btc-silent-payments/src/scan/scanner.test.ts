@@ -186,6 +186,33 @@ describe('privacy: the transport only ever receives block heights', () => {
     expect(mem.requests.every((r) => r.height === undefined || Number.isInteger(r.height))).toBe(true);
   });
 
+  describe('NC-03 key replay at other heights', () => {
+    function replay(): InMemoryTweakSource {
+      const b = makeBlock(400, [{ inputs: [p2wpkhInput('dup')], recipients: [aliceAddr] }]);
+      const fake = { ...b.outputs.outputs[0]!, txid: '33'.repeat(32), vout: 7, amountSats: 5_000_000_000n };
+      return new InMemoryTweakSource([
+        b,
+        {
+          tweaks: { ...b.tweaks, height: 401, blockHash: blockHashOf(401) },
+          outputs: { ...b.outputs, height: 401, blockHash: blockHashOf(401), outputs: [fake] },
+        },
+      ]);
+    }
+    it('flags the replayed key at the later height as duplicateKey and unverified', async () => {
+      const found: ReceivedOutput[] = [];
+      for await (const r of scanBlocks({ source: replay(), keys, fromHeight: 400, toHeight: 401 })) found.push(r);
+      expect(found.map((f) => [f.height, f.duplicateKey, f.verified])).toEqual([[400, false, false], [401, true, false]]);
+    });
+    it('a persisted seenKeys set flags replays across calls', async () => {
+      const seenKeys = new Set<string>();
+      const src = replay();
+      for await (const _ of scanBlocks({ source: src, keys, fromHeight: 400, toHeight: 400, seenKeys })) void _;
+      const later: ReceivedOutput[] = [];
+      for await (const r of scanBlocks({ source: src, keys, fromHeight: 401, toHeight: 401, seenKeys })) later.push(r);
+      expect(later.map((f) => f.duplicateKey)).toEqual([true]);
+    });
+  });
+
   describe('TS-01 / TS-02 / TS-04 regressions', () => {
     function spoofed(): { src: InMemoryTweakSource; realTxid: string } {
       const b = makeBlock(300, [{ inputs: [p2wpkhInput('spoof')], recipients: [aliceAddr] }]);

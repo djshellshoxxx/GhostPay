@@ -16,7 +16,7 @@ import type {
 } from './adapter-types.js';
 import { fail } from './errors.js';
 import { createLabelTable } from './labels.js';
-import { scanBlocks } from './scan/scanner.js';
+import { scanBlocks, type OutputVerifier } from './scan/scanner.js';
 import type { TweakSource } from './scan/types.js';
 import { MAX_MONEY_SATS } from './units.js';
 import { buildBitcoinUri } from './uri.js';
@@ -26,6 +26,13 @@ export interface BitcoinAdapterDeps {
   readonly network: SilentPaymentNetwork;
   /** Where to read block tweak data from. Without it `scan` fails with `UNSUPPORTED`. */
   readonly source?: TweakSource;
+  /**
+   * Independent check of oracle-reported outputs (own node, second oracle). Without it every detected
+   * payment has `verified: false` and its txid/vout/amount must be shown as claimed (TS-02, NC-03).
+   */
+  readonly verifier?: OutputVerifier;
+  /** Persisted set of x-only keys (hex) already reported; repeats are flagged `duplicateKey` across scans. */
+  readonly seenKeys?: Set<string>;
 }
 
 /**
@@ -114,6 +121,8 @@ export function createBitcoinAdapter(deps: BitcoinAdapterDeps): BitcoinChainAdap
         fromHeight: toHeight(range.fromBlock),
         ...(range.toBlock === undefined ? {} : { toHeight: toHeight(range.toBlock) }),
         signal,
+        ...(deps.verifier === undefined ? {} : { verifier: deps.verifier }),
+        ...(deps.seenKeys === undefined ? {} : { seenKeys: deps.seenKeys }),
       });
       for await (const r of iterator) {
         yield {

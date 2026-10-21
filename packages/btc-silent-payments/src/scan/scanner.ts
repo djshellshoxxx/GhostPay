@@ -49,6 +49,12 @@ export interface ScanBlocksParams {
   readonly maxBlocks?: number;
   /** Optional independent verification. Outputs failing it are dropped; passing ones get `verified: true`. */
   readonly verifier?: OutputVerifier;
+  /**
+   * x-only keys (hex) already reported. A BIP-352 output key cannot legitimately recur at another height
+   * (its inputs are spent), so a key seen here again is flagged `duplicateKey` (NC-03). Pass a set you
+   * persist to extend this across calls; it is updated in place.
+   */
+  readonly seenKeys?: Set<string>;
 }
 
 /**
@@ -77,6 +83,7 @@ export async function* scanBlocks(p: ScanBlocksParams): AsyncGenerator<ReceivedO
   }
   // (txid:vout) already yielded in this call: an oracle repeating an output at several heights counts once.
   const seenOutpoints = new Set<string>();
+  const seenKeys = p.seenKeys ?? new Set<string>();
   const labels = keys.labels ?? createLabelTable(keys.scanSecret);
   for (let height = fromHeight; height <= toHeight; height++) {
     if (isAborted(signal)) return;
@@ -95,11 +102,19 @@ export async function* scanBlocks(p: ScanBlocksParams): AsyncGenerator<ReceivedO
       else list.push(o);
     }
     const candidates = new Set(byKey.keys());
+    const priorKey = new Map<string, boolean>();
     for (const tweak of tw.tweaks) {
       if (isAborted(signal)) return;
       for (const f of scanTweakAgainstSet(keys, tweak, candidates, labels)) {
         const metas = byKey.get(toHex(f.xOnlyPublicKey)) ?? [];
-        const duplicateKey = metas.length > 1;
+        const kHex = toHex(f.xOnlyPublicKey);
+        let prior = priorKey.get(kHex);
+        if (prior === undefined) {
+          prior = seenKeys.has(kHex);
+          priorKey.set(kHex, prior);
+          seenKeys.add(kHex);
+        }
+        const duplicateKey = metas.length > 1 || prior;
         for (const meta of metas) {
           if (meta.txid !== undefined && meta.vout !== undefined) {
             const op = `${meta.txid}:${meta.vout}`;

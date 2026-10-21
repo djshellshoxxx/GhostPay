@@ -304,7 +304,11 @@ function projectLogs(result: unknown): unknown {
     .sort((x, y) => JSON.stringify(x).localeCompare(JSON.stringify(y)));
 }
 
-async function getLogsAgreed(a: RpcClient, b: RpcClient, f: Parameters<RpcClient['getLogs']>[0]): Promise<readonly RpcLog[]> {
+/** `eth_getLogs` that both providers must return identically (projected); throws `RPC_FAILURE` otherwise. */
+export async function getLogsAgreed(
+  a: Pick<RpcClient, 'request' | 'chainId'>,
+  b: Pick<RpcClient, 'request' | 'chainId'>,
+  f: Parameters<RpcClient['getLogs']>[0]): Promise<readonly RpcLog[]> {
   const r = await requestWithFallbackCheck(
     a,
     b,

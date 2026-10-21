@@ -72,3 +72,11 @@ The contracts' real code wins over spec text. Each item should be confirmed or r
     `sequencerUptime` (`assertSequencerUp`, answer 0 = up, grace 3600 s). `withinSlippage` implements the
     `quote.maxSlippageBps` comparison; the app still has to take the second read. `FEEDS` stays empty, so no
     heartbeat or sequencer feed is configured here. `-32000` range errors are still not halved.
+
+19. **Audit round 3 (NC-01, NC-02), 2026-10-21.** `verifyAnnouncementAmount` takes `secondaryClient`; `scan()` passes
+    `deps.secondaryClient`, so the direct-payment `Transfer` logs go through the same `getLogsAgreed` cross-check as
+    the announcements (disagreement or failure -> `claimed: verification_failed`). It also takes a
+    `consumedTransfers` set (`blockHash:logIndex`); `scan()` creates one per call, so a Transfer log verifies at most
+    one announcement and repeated announcements to the same stealth address get `no_transfer_found`. Limits: the
+    ledger is per `scan()` call (not persisted across calls or restarts), and the first announcement in log order
+    takes the Transfer; verified amounts are the log value, not capped by the announced amount.

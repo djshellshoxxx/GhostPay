@@ -321,8 +321,8 @@ function parseResponse(text: string, id: number): unknown {
  * @throws {ChainAdapterError} `CHAIN_MISMATCH` for different chains, `RPC_FAILURE` on disagreement.
  */
 export async function requestWithFallbackCheck(
-  a: RpcClient,
-  b: RpcClient,
+  a: Pick<RpcClient, 'request' | 'chainId'>,
+  b: Pick<RpcClient, 'request' | 'chainId'>,
   method: string,
   params: readonly unknown[],
   project: (result: unknown) => unknown = (r) => r,
