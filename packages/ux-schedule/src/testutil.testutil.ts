@@ -8,8 +8,7 @@ export const NY2026: TzOffset = (t) => {
   return t >= start && t < end ? -240 : -300;
 };
 
-export const utc = (y: number, mo: number, d: number, h = 0, mi = 0): number =>
-  Date.UTC(y, mo - 1, d, h, mi);
+export const utc = (y: number, mo: number, d: number, h = 0, mi = 0): number => Date.UTC(y, mo - 1, d, h, mi);
 
 export const fixed = (ms: number) => () => ms;
 export { MS_DAY };

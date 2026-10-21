@@ -16,8 +16,13 @@ export function redactAddress(address: string, form: AddressForm, path = 'addres
   if (form === 'full') return address;
   const { head, tail } = form;
   if (
-    !Number.isInteger(head) || !Number.isInteger(tail) ||
-    head < 1 || tail < 1 || head > 16 || tail > 16 || head + tail > Math.floor(address.length / 2)
+    !Number.isInteger(head) ||
+    !Number.isInteger(tail) ||
+    head < 1 ||
+    tail < 1 ||
+    head > 16 ||
+    tail > 16 ||
+    head + tail > Math.floor(address.length / 2)
   ) {
     throw new ReceiptError('INVALID_POLICY', path, 'invalid truncation');
   }

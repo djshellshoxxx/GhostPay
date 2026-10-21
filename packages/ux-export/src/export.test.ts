@@ -7,7 +7,10 @@ import { resolveColumns, validateRow, type LedgerRow } from './types.js';
 
 describe('exportCsv', () => {
   it('writes RFC 4180 output with exact decimals', () => {
-    const csv = exportCsv([row(), row({ id: 'tx-0002', direction: 'out', amount: 1n, fee: 20n, memo: 'a\nb' })]);
+    const csv = exportCsv([
+      row(),
+      row({ id: 'tx-0002', direction: 'out', amount: 1n, fee: 20n, memo: 'a\nb' }),
+    ]);
     expect(csv).toBe(
       'id,timestamp,direction,chain,asset,decimals,amount,fee,counterparty,tx_hash,memo,status\r\n' +
         'tx-0001,2024-01-02T03:04:05.006Z,in,testnet,USDC,6,1.500000,0.000000,fake-address-0001,0xfake0001,"coffee, ""large""",confirmed\r\n' +
@@ -19,7 +22,7 @@ describe('exportCsv', () => {
       columns: ['id', 'asset', 'counterparty', 'memo', 'signed_amount'],
     });
     expect(csv).toBe(
-      "id,asset,counterparty,memo,signed_amount\r\n'-1,'+X,'@evil,\"'=HYPERLINK(\"\"x\"\")\",1.500000\r\n",
+      'id,asset,counterparty,memo,signed_amount\r\n\'-1,\'+X,\'@evil,"\'=HYPERLINK(""x"")",1.500000\r\n',
     );
     const out = exportCsv([row({ direction: 'out' })], { columns: ['signed_amount'] });
     expect(out).toBe('signed_amount\r\n-1.500000\r\n');
@@ -37,21 +40,44 @@ describe('exportCsv', () => {
       bom: true,
     });
     expect(csv).toBe('﻿Amount,timestamp,status\n1.5,2024-01-02,confirmed\n');
-    expect(exportCsv([row()], { columns: ['timestamp'], dateFormat: 'unix' })).toBe('timestamp\r\n1704164645\r\n');
+    expect(exportCsv([row()], { columns: ['timestamp'], dateFormat: 'unix' })).toBe(
+      'timestamp\r\n1704164645\r\n',
+    );
   });
   it('quotes a lone empty field so rows are not blank lines', () => {
     expect(exportCsv([row({ memo: '' })], { columns: ['memo'] })).toBe('memo\r\n""\r\n');
   });
   it('handles all columns', () => {
     const csv = exportCsv([row()], {
-      columns: ['id', 'timestamp', 'direction', 'chain', 'asset', 'decimals', 'amount', 'signed_amount', 'fee', 'counterparty', 'tx_hash', 'memo', 'status'],
+      columns: [
+        'id',
+        'timestamp',
+        'direction',
+        'chain',
+        'asset',
+        'decimals',
+        'amount',
+        'signed_amount',
+        'fee',
+        'counterparty',
+        'tx_hash',
+        'memo',
+        'status',
+      ],
     });
     expect(csv.split('\r\n')[1]).toContain(',1.500000,1.500000,0.000000,');
   });
   it('rejects bad options', () => {
     expect(() => exportCsv([], { columns: [] })).toThrow(ExportError);
     expect(() => exportCsv([], { columns: ['id', 'id'] })).toThrow(/duplicate/);
-    expect(() => exportCsv([], { columns: [{ key: 'id', header: 'x' }, { key: 'memo', header: 'x' }] })).toThrow(/duplicate/);
+    expect(() =>
+      exportCsv([], {
+        columns: [
+          { key: 'id', header: 'x' },
+          { key: 'memo', header: 'x' },
+        ],
+      }),
+    ).toThrow(/duplicate/);
     expect(() => exportCsv([], { columns: ['nope' as never] })).toThrow(/unknown/);
     expect(() => exportCsv([], { columns: [{ key: 'id', header: '' }] })).toThrow(/header/);
     expect(() => exportCsv([], { columns: [{ key: 'id', header: 'x'.repeat(65) }] })).toThrow(/header/);
@@ -80,7 +106,9 @@ describe('exportCsv', () => {
   it('rejects control characters unless replacing', () => {
     expect(() => exportCsv([row({ memo: 'a\u0000b' })])).toThrow(/control/);
     expect(() => exportCsv([row()], { columns: [{ key: 'id', header: 'a\u0001' }] })).toThrow(ExportError);
-    expect(exportCsv([row({ memo: 'a\u0000b' })], { columns: ['memo'], invalidText: 'replace' })).toBe('memo\r\na�b\r\n');
+    expect(exportCsv([row({ memo: 'a\u0000b' })], { columns: ['memo'], invalidText: 'replace' })).toBe(
+      'memo\r\na�b\r\n',
+    );
   });
 });
 
@@ -96,7 +124,9 @@ describe('limits and streaming', () => {
     expect(exportCsv([row()], { maxBytes: n })).toBe(one);
     expect(() => exportCsv([row()], { maxBytes: n - 1 })).toThrow(/maxBytes/);
     expect(() => exportCsv([row()], { maxBytes: n, bom: true })).toThrow(/maxBytes/);
-    expect(() => exportCsv([row({ memo: '€'.repeat(10) })], { columns: ['memo'], maxBytes: 20 })).toThrow(ExportError);
+    expect(() => exportCsv([row({ memo: '€'.repeat(10) })], { columns: ['memo'], maxBytes: 20 })).toThrow(
+      ExportError,
+    );
   });
   it('stops pulling rows once the limit trips', () => {
     let pulled = 0;

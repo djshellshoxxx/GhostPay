@@ -41,8 +41,14 @@ export interface RecurrenceRule {
 }
 
 const KEYS = [
-  'frequency', 'interval', 'startDate', 'timeOfDayMinutes',
-  'weekdays', 'dayOfMonth', 'endMs', 'maxOccurrences',
+  'frequency',
+  'interval',
+  'startDate',
+  'timeOfDayMinutes',
+  'weekdays',
+  'dayOfMonth',
+  'endMs',
+  'maxOccurrences',
 ];
 
 /**
@@ -182,12 +188,7 @@ export function nextOccurrence(rule: RecurrenceRule, tz: TzOffset, afterMs: numb
 }
 
 /** Up to `count` (1..100) occurrences strictly after `afterMs`. */
-export function listUpcoming(
-  rule: RecurrenceRule,
-  tz: TzOffset,
-  afterMs: number,
-  count: number,
-): number[] {
+export function listUpcoming(rule: RecurrenceRule, tz: TzOffset, afterMs: number, count: number): number[] {
   const n = Math.min(Math.max(Math.trunc(count), 0), MAX_UPCOMING);
   const out: number[] = [];
   if (n === 0) return out;
@@ -265,4 +266,3 @@ export function evaluateRecurrence(opts: EvaluateOptions): Evaluation {
     nextMs,
   };
 }
-

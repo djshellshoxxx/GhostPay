@@ -40,7 +40,8 @@ export interface ExportOptions {
 
 function posInt(v: number | undefined, def: number, name: string): number {
   const n = v ?? def;
-  if (!Number.isSafeInteger(n) || n < 1) throw new ExportError('INVALID_OPTION', `${name} must be a positive integer`);
+  if (!Number.isSafeInteger(n) || n < 1)
+    throw new ExportError('INVALID_OPTION', `${name} must be a positive integer`);
   return n;
 }
 
@@ -146,20 +147,32 @@ export class LedgerEncoder {
     return this.columns.map((c, i) => {
       const col = i + 1;
       switch (c.key) {
-        case 'id': return this.text(r.id, col);
-        case 'timestamp': return formatTimestamp(r.timestampMs, this.dateFormat);
-        case 'direction': return r.direction;
-        case 'chain': return this.text(r.chain, col);
-        case 'asset': return this.text(r.asset, col);
-        case 'decimals': return String(r.decimals);
-        case 'amount': return formatUnits(r.amount, r.decimals, this.trim);
+        case 'id':
+          return this.text(r.id, col);
+        case 'timestamp':
+          return formatTimestamp(r.timestampMs, this.dateFormat);
+        case 'direction':
+          return r.direction;
+        case 'chain':
+          return this.text(r.chain, col);
+        case 'asset':
+          return this.text(r.asset, col);
+        case 'decimals':
+          return String(r.decimals);
+        case 'amount':
+          return formatUnits(r.amount, r.decimals, this.trim);
         case 'signed_amount':
           return formatUnits(r.direction === 'out' ? -r.amount : r.amount, r.decimals, this.trim);
-        case 'fee': return formatUnits(r.fee, r.decimals, this.trim);
-        case 'counterparty': return this.text(r.counterparty, col);
-        case 'tx_hash': return this.text(r.txHash, col);
-        case 'memo': return this.text(r.memo, col);
-        case 'status': return r.status;
+        case 'fee':
+          return formatUnits(r.fee, r.decimals, this.trim);
+        case 'counterparty':
+          return this.text(r.counterparty, col);
+        case 'tx_hash':
+          return this.text(r.txHash, col);
+        case 'memo':
+          return this.text(r.memo, col);
+        case 'status':
+          return r.status;
       }
     });
   }
@@ -171,7 +184,10 @@ export class LedgerEncoder {
  * @security Every text cell is validated, formula-neutralised and RFC 4180
  * quoted; numeric cells come only from bigint/number formatting.
  */
-export function* csvChunks(rows: Iterable<LedgerRow>, options: ExportOptions = {}): Generator<string, void, undefined> {
+export function* csvChunks(
+  rows: Iterable<LedgerRow>,
+  options: ExportOptions = {},
+): Generator<string, void, undefined> {
   const enc = new LedgerEncoder(options);
   const first = enc.writer.header(enc.headerFields());
   if (first !== undefined) yield first;

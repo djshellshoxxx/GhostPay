@@ -99,5 +99,10 @@ export type InvalidTextPolicy = 'throw' | 'replace';
 export function cleanText(value: string, policy: InvalidTextPolicy, row: number, column: number): string {
   if (!hasInvalidText(value)) return value;
   if (policy === 'replace') return replaceInvalidText(value);
-  throw new ExportError('INVALID_TEXT', 'text contains control characters or unpaired surrogates', row, column);
+  throw new ExportError(
+    'INVALID_TEXT',
+    'text contains control characters or unpaired surrogates',
+    row,
+    column,
+  );
 }

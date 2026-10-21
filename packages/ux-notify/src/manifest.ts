@@ -59,8 +59,33 @@ export interface ManifestOptions {
   discreetIdentity?: { name: string; shortName: string };
 }
 
-const FORBIDDEN = ['related_applications', 'prefer_related_applications', 'share_target', 'protocol_handlers', 'file_handlers', 'url_handlers', 'launch_handler', 'edge_side_panel'];
-const KNOWN = ['id', 'name', 'short_name', 'description', 'start_url', 'scope', 'display', 'orientation', 'background_color', 'theme_color', 'lang', 'dir', 'icons', 'categories', 'shortcuts'];
+const FORBIDDEN = [
+  'related_applications',
+  'prefer_related_applications',
+  'share_target',
+  'protocol_handlers',
+  'file_handlers',
+  'url_handlers',
+  'launch_handler',
+  'edge_side_panel',
+];
+const KNOWN = [
+  'id',
+  'name',
+  'short_name',
+  'description',
+  'start_url',
+  'scope',
+  'display',
+  'orientation',
+  'background_color',
+  'theme_color',
+  'lang',
+  'dir',
+  'icons',
+  'categories',
+  'shortcuts',
+];
 const DISPLAYS = ['standalone', 'minimal-ui', 'fullscreen', 'browser'];
 const HEX = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 const ICON_TYPES: Record<string, string> = { png: 'image/png', webp: 'image/webp', svg: 'image/svg+xml' };
@@ -68,12 +93,14 @@ const ICON_TYPES: Record<string, string> = { png: 'image/png', webp: 'image/webp
 /** Path-absolute, same-origin, no traversal/scheme/fragment/secret-bearing query. */
 function pathIssue(v: unknown): string | null {
   if (typeof v !== 'string' || v === '' || v.length > 512) return 'invalid_url';
-  if (!v.startsWith('/') || v.startsWith('//') || v.includes('\\') || v.includes('#')) return 'not_same_origin_path';
+  if (!v.startsWith('/') || v.startsWith('//') || v.includes('\\') || v.includes('#'))
+    return 'not_same_origin_path';
   // eslint-disable-next-line no-control-regex
   if (/[\u0000- \u007f]/.test(v)) return 'invalid_url';
   const qi = v.indexOf('?');
   const path = qi === -1 ? v : v.slice(0, qi);
-  if (path.split('/').some((s) => s === '..' || s === '.') || /%2e|%2f|%5c/i.test(path)) return 'path_traversal';
+  if (path.split('/').some((s) => s === '..' || s === '.') || /%2e|%2f|%5c/i.test(path))
+    return 'path_traversal';
   if (qi !== -1 && hasSensitiveQuery(v.slice(qi))) return 'sensitive_query';
   return null;
 }
@@ -100,21 +127,31 @@ export function validateManifest(input: unknown): ManifestIssue[] {
   const sn = input['short_name'];
   if (typeof sn !== 'string' || sn.trim() === '' || sn.length > 12) err('short_name', 'invalid_short_name');
   const desc = input['description'];
-  if (desc !== undefined && (typeof desc !== 'string' || desc.length > 300)) err('description', 'invalid_description');
+  if (desc !== undefined && (typeof desc !== 'string' || desc.length > 300))
+    err('description', 'invalid_description');
 
   for (const f of ['start_url', 'scope', 'id'] as const) {
     const code = pathIssue(input[f]);
     if (code) err(f, code);
   }
-  const su = input['start_url'], sc = input['scope'];
-  if (typeof su === 'string' && typeof sc === 'string' && pathIssue(su) === null && pathIssue(sc) === null && !inScope(su, sc)) {
+  const su = input['start_url'],
+    sc = input['scope'];
+  if (
+    typeof su === 'string' &&
+    typeof sc === 'string' &&
+    pathIssue(su) === null &&
+    pathIssue(sc) === null &&
+    !inScope(su, sc)
+  ) {
     err('start_url', 'start_url_outside_scope');
   }
 
-  if (typeof input['display'] !== 'string' || !DISPLAYS.includes(input['display'])) err('display', 'invalid_display');
+  if (typeof input['display'] !== 'string' || !DISPLAYS.includes(input['display']))
+    err('display', 'invalid_display');
   else if (input['display'] === 'browser') warn('display', 'not_installable_display');
   const or = input['orientation'];
-  if (or !== undefined && or !== 'any' && or !== 'portrait' && or !== 'landscape') err('orientation', 'invalid_orientation');
+  if (or !== undefined && or !== 'any' && or !== 'portrait' && or !== 'landscape')
+    err('orientation', 'invalid_orientation');
   for (const f of ['background_color', 'theme_color']) {
     const c = input[f];
     if (typeof c !== 'string' || !HEX.test(c)) err(f, 'invalid_color');
@@ -125,7 +162,13 @@ export function validateManifest(input: unknown): ManifestIssue[] {
   if (dir !== 'ltr' && dir !== 'rtl' && dir !== 'auto') err('dir', 'invalid_dir');
 
   const cats = input['categories'];
-  if (cats !== undefined && (!Array.isArray(cats) || cats.length > 10 || !cats.every((c) => typeof c === 'string' && /^[a-z]{2,24}$/.test(c)))) err('categories', 'invalid_categories');
+  if (
+    cats !== undefined &&
+    (!Array.isArray(cats) ||
+      cats.length > 10 ||
+      !cats.every((c) => typeof c === 'string' && /^[a-z]{2,24}$/.test(c)))
+  )
+    err('categories', 'invalid_categories');
 
   checkIcons(input['icons'], err, warn);
 
@@ -135,19 +178,27 @@ export function validateManifest(input: unknown): ManifestIssue[] {
     else {
       (sh as unknown[]).forEach((s, i) => {
         const p = `shortcuts[${i}]`;
-        if (!isRecord(s) || typeof s['name'] !== 'string' || s['name'] === '' || s['name'].length > 45) return err(p, 'invalid_shortcut');
+        if (!isRecord(s) || typeof s['name'] !== 'string' || s['name'] === '' || s['name'].length > 45)
+          return err(p, 'invalid_shortcut');
         const code = pathIssue(s['url']);
         if (code) return err(`${p}.url`, code);
-        if (typeof sc === 'string' && pathIssue(sc) === null && !inScope(s['url'] as string, sc)) err(`${p}.url`, 'shortcut_outside_scope');
+        if (typeof sc === 'string' && pathIssue(sc) === null && !inScope(s['url'] as string, sc))
+          err(`${p}.url`, 'shortcut_outside_scope');
       });
     }
   }
   return issues;
 }
 
-function checkIcons(icons: unknown, err: (p: string, c: string) => void, warn: (p: string, c: string) => void): void {
+function checkIcons(
+  icons: unknown,
+  err: (p: string, c: string) => void,
+  warn: (p: string, c: string) => void,
+): void {
   if (!Array.isArray(icons) || icons.length < 1 || icons.length > 12) return err('icons', 'invalid_icons');
-  let has192 = false, has512 = false, maskable = false;
+  let has192 = false,
+    has512 = false,
+    maskable = false;
   (icons as unknown[]).forEach((ic, i) => {
     const p = `icons[${i}]`;
     if (!isRecord(ic)) return err(p, 'invalid_icon');
@@ -161,8 +212,17 @@ function checkIcons(icons: unknown, err: (p: string, c: string) => void, warn: (
     const sizes = ic['sizes'];
     const m = typeof sizes === 'string' ? /^(\d{2,4})x(\d{2,4})$/.exec(sizes) : null;
     if (!(sizes === 'any' && ext === 'svg') && (!m || m[1] !== m[2])) return err(`${p}.sizes`, 'icon_sizes');
-    const purposes = ic['purpose'] === undefined ? ['any'] : typeof ic['purpose'] === 'string' ? ic['purpose'].split(' ') : [];
-    if (purposes.length === 0 || !purposes.every((x) => x === 'any' || x === 'maskable' || x === 'monochrome')) return err(`${p}.purpose`, 'icon_purpose');
+    const purposes =
+      ic['purpose'] === undefined
+        ? ['any']
+        : typeof ic['purpose'] === 'string'
+          ? ic['purpose'].split(' ')
+          : [];
+    if (
+      purposes.length === 0 ||
+      !purposes.every((x) => x === 'any' || x === 'maskable' || x === 'monochrome')
+    )
+      return err(`${p}.purpose`, 'icon_purpose');
     const px = m ? Number(m[1]) : 0;
     if (purposes.includes('maskable')) maskable = true;
     if (purposes.includes('any') && ext === 'png') {
@@ -174,7 +234,8 @@ function checkIcons(icons: unknown, err: (p: string, c: string) => void, warn: (
   if (!maskable) warn('icons', 'no_maskable_icon');
 }
 
-export type GenerateResult = { ok: true; manifest: WebManifest; warnings: ManifestIssue[] } | { ok: false; issues: ManifestIssue[] };
+export type GenerateResult =
+  { ok: true; manifest: WebManifest; warnings: ManifestIssue[] } | { ok: false; issues: ManifestIssue[] };
 
 /** Build a manifest and validate it; refuses to return an invalid one. */
 export function generateManifest(o: ManifestOptions): GenerateResult {
@@ -195,5 +256,7 @@ export function generateManifest(o: ManifestOptions): GenerateResult {
   if (o.description !== undefined && o.discreetIdentity === undefined) manifest.description = o.description;
   if (o.shortcuts) manifest.shortcuts = o.shortcuts.map((s) => ({ ...s }));
   const issues = validateManifest(manifest);
-  return issues.some((i) => i.severity === 'error') ? { ok: false, issues } : { ok: true, manifest, warnings: issues };
+  return issues.some((i) => i.severity === 'error')
+    ? { ok: false, issues }
+    : { ok: true, manifest, warnings: issues };
 }

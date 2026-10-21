@@ -57,7 +57,10 @@ export function parseLedgerCsv(text: string, options: ImportOptions = {}): Ledge
     throw new ExportError('INVALID_OPTION', 'need a decimals column or assetDecimals');
   }
 
-  const records = parseCsv(text, { ...options, maxRows: (options.maxRows ?? PARSE_DEFAULTS.maxRows - 1) + 1 });
+  const records = parseCsv(text, {
+    ...options,
+    maxRows: (options.maxRows ?? PARSE_DEFAULTS.maxRows - 1) + 1,
+  });
   if (records.length === 0) throw new ExportError('PARSE_HEADER', 'empty input; header row required');
   assertRectangular(records);
   const un = options.unneutralize !== false;
@@ -65,9 +68,11 @@ export function parseLedgerCsv(text: string, options: ImportOptions = {}): Ledge
 
   const header = records[0] ?? [];
   cols.forEach((c, i) => {
-    if (txt(header[i] ?? '') !== c.header) throw new ExportError('PARSE_HEADER', 'header does not match columns', 1, i + 1);
+    if (txt(header[i] ?? '') !== c.header)
+      throw new ExportError('PARSE_HEADER', 'header does not match columns', 1, i + 1);
   });
-  if (header.length !== cols.length) throw new ExportError('PARSE_HEADER', 'header has wrong number of columns', 1);
+  if (header.length !== cols.length)
+    throw new ExportError('PARSE_HEADER', 'header has wrong number of columns', 1);
 
   const dateFormat = options.dateFormat ?? 'iso';
   const seen = new Set<string>();
@@ -111,11 +116,13 @@ export function parseLedgerCsv(text: string, options: ImportOptions = {}): Ledge
     let decimals: number;
     if (keys.has('decimals')) {
       decimals = wrap('decimals', (v) => {
-        if (!/^(0|[1-9][0-9]?)$/.test(v)) throw new ExportError('INVALID_AMOUNT', 'decimals not a plain integer');
+        if (!/^(0|[1-9][0-9]?)$/.test(v))
+          throw new ExportError('INVALID_AMOUNT', 'decimals not a plain integer');
         return Number(v);
       });
       const expected = options.assetDecimals?.get(asset);
-      if (expected !== undefined && expected !== decimals) fail('decimals', 'decimals disagree with assetDecimals');
+      if (expected !== undefined && expected !== decimals)
+        fail('decimals', 'decimals disagree with assetDecimals');
     } else {
       const d = options.assetDecimals?.get(asset);
       if (d === undefined) fail('asset', 'no decimals known for asset');
@@ -142,12 +149,14 @@ export function parseLedgerCsv(text: string, options: ImportOptions = {}): Ledge
       if (direction !== undefined && abs !== 0n && dir !== direction) {
         fail('signed_amount', 'sign disagrees with direction');
       }
-      if (amount !== undefined && amount !== abs) fail('signed_amount', 'signed_amount disagrees with amount');
+      if (amount !== undefined && amount !== abs)
+        fail('signed_amount', 'signed_amount disagrees with amount');
       direction ??= dir;
       amount ??= abs;
     }
     /* c8 ignore next */
-    if (direction === undefined || amount === undefined) throw new ExportError('PARSE_VALUE', 'cannot determine amount', rowNo);
+    if (direction === undefined || amount === undefined)
+      throw new ExportError('PARSE_VALUE', 'cannot determine amount', rowNo);
 
     const fee = keys.has('fee') ? wrap('fee', (v) => parseUnits(v, decimals)) : 0n;
     const timestampMs = wrap('timestamp', (v) => parseTimestamp(v, dateFormat));

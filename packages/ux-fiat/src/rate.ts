@@ -62,10 +62,7 @@ export function checkPolicy(p: RatePolicy): Result<{ min: bigint; max: bigint; s
  * zero / negative / out-of-range rates, bad timestamps, unsafe labels.
  * @security Quote contents are untrusted (may come from a cache or API).
  */
-export function parseRate(
-  q: RateQuote,
-  policy: RatePolicy = DEFAULT_RATE_POLICY,
-): Result<ParsedRate> {
+export function parseRate(q: RateQuote, policy: RatePolicy = DEFAULT_RATE_POLICY): Result<ParsedRate> {
   const pol = checkPolicy(policy);
   if (!pol.ok) return pol;
   if (q === null || typeof q !== 'object') return err('bad-rate-format', 'quote missing');

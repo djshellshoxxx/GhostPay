@@ -49,7 +49,8 @@ function utc(y: number, mo: number, d: number, h = 0, mi = 0, s = 0, ms = 0): nu
 export function parseTimestamp(text: string, format: DateFormat = 'iso'): number {
   if (text.length > 40) throw new ExportError('INVALID_DATE', 'timestamp too long');
   if (format === 'unix') {
-    if (!/^(0|[1-9]\d{0,12})$/.test(text)) throw new ExportError('INVALID_DATE', 'not a unix seconds integer');
+    if (!/^(0|[1-9]\d{0,12})$/.test(text))
+      throw new ExportError('INVALID_DATE', 'not a unix seconds integer');
     const ms = Number(text) * 1000;
     assertTimestamp(ms);
     return ms;

@@ -21,15 +21,20 @@ describe('neutralizeFormula', () => {
   });
   it('is exactly reversible', () => {
     fc.assert(
-      fc.property(fc.string({ unit: fc.constantFrom('=', '+', '-', '@', '\t', '\r', "'", 'a', ' ', ',', '"') }), (s) => {
-        expect(unneutralizeFormula(neutralizeFormula(s))).toBe(s);
-      }),
+      fc.property(
+        fc.string({ unit: fc.constantFrom('=', '+', '-', '@', '\t', '\r', "'", 'a', ' ', ',', '"') }),
+        (s) => {
+          expect(unneutralizeFormula(neutralizeFormula(s))).toBe(s);
+        },
+      ),
     );
   });
   it('output never starts with a trigger char', () => {
     fc.assert(
       fc.property(fc.string(), (s) => {
-        expect('=+-@\t\r'.includes(neutralizeFormula(s).charAt(0)) && neutralizeFormula(s) !== '').toBe(false);
+        expect('=+-@\t\r'.includes(neutralizeFormula(s).charAt(0)) && neutralizeFormula(s) !== '').toBe(
+          false,
+        );
       }),
     );
   });
@@ -50,7 +55,11 @@ describe('utf8Length', () => {
   it('matches TextEncoder', () => {
     fc.assert(
       fc.property(fc.string({ unit: 'binary' }), (s) => {
-        expect(utf8Length((s.replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, '\uFFFD')))).toBe(new TextEncoder().encode(s).length);
+        expect(
+          utf8Length(
+            s.replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, '\uFFFD'),
+          ),
+        ).toBe(new TextEncoder().encode(s).length);
       }),
     );
   });

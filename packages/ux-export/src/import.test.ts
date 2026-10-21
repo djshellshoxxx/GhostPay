@@ -21,16 +21,35 @@ describe('round trip', () => {
   it('restores rows exactly, including hostile text', () => {
     const rows = [
       row(),
-      row({ id: "'=x", memo: "=cmd|' /C calc'!A0", counterparty: '-5', direction: 'out', amount: MAX_AMOUNT, fee: 7n, decimals: 18 }),
+      row({
+        id: "'=x",
+        memo: "=cmd|' /C calc'!A0",
+        counterparty: '-5',
+        direction: 'out',
+        amount: MAX_AMOUNT,
+        fee: 7n,
+        decimals: 18,
+      }),
       row({ id: '@a', memo: 'line1\r\nline2,\t"q"', txHash: '+1', status: 'pending', timestampMs: 0 }),
-      row({ id: 'e', memo: '', chain: '', counterparty: '', txHash: '', amount: 0n, timestampMs: MAX_TIMESTAMP_MS, status: 'failed' }),
+      row({
+        id: 'e',
+        memo: '',
+        chain: '',
+        counterparty: '',
+        txHash: '',
+        amount: 0n,
+        timestampMs: MAX_TIMESTAMP_MS,
+        status: 'failed',
+      }),
       row({ id: "''-", memo: "'''=", asset: '-X' }),
     ];
     expect(parseLedgerCsv(exportCsv(rows), {})).toEqual(rows);
     expect(parseLedgerCsv(exportCsv(rows, { bom: true, eol: 'lf', trimZeros: true }))).toEqual(rows);
   });
   it('property: arbitrary rows survive export -> import', () => {
-    const text = fc.string({ unit: fc.constantFrom('a', ',', '"', '\n', '\r', '\t', '=', '+', '-', '@', "'", ' ', 'é') });
+    const text = fc.string({
+      unit: fc.constantFrom('a', ',', '"', '\n', '\r', '\t', '=', '+', '-', '@', "'", ' ', 'é'),
+    });
     const arb = fc.record({
       id: text.filter((s) => s !== ''),
       timestampMs: fc.integer({ min: 0, max: MAX_TIMESTAMP_MS }),
@@ -91,15 +110,35 @@ describe('header and shape validation', () => {
     expect(code(() => parseLedgerCsv(good.replace(',status', '')))).toBe('PARSE_RAGGED');
     expect(code(() => parseLedgerCsv(good.replace('1.500000,', '')))).toBe('PARSE_RAGGED');
     expect(code(() => parseLedgerCsv('id\r\nx\r\n'))).toBe('PARSE_HEADER');
-    expect(code(() => parseLedgerCsv(good.replace('status\r\n', 'status,extra\r\n').replace('confirmed\r\n', 'confirmed,x\r\n')))).toBe('PARSE_HEADER');
+    expect(
+      code(() =>
+        parseLedgerCsv(
+          good.replace('status\r\n', 'status,extra\r\n').replace('confirmed\r\n', 'confirmed,x\r\n'),
+        ),
+      ),
+    ).toBe('PARSE_HEADER');
   });
   it('requires essential columns / decimals source', () => {
-    expect(code(() => parseLedgerCsv(good, { columns: ['timestamp', 'asset', 'amount', 'direction', 'decimals'] }))).toBe('INVALID_OPTION');
-    expect(code(() => parseLedgerCsv(good, { columns: ['id', 'asset', 'amount', 'direction', 'decimals'] }))).toBe('INVALID_OPTION');
-    expect(code(() => parseLedgerCsv(good, { columns: ['id', 'timestamp', 'amount', 'direction', 'decimals'] }))).toBe('INVALID_OPTION');
-    expect(code(() => parseLedgerCsv(good, { columns: ['id', 'timestamp', 'asset', 'direction', 'decimals'] }))).toBe('INVALID_OPTION');
-    expect(code(() => parseLedgerCsv(good, { columns: ['id', 'timestamp', 'asset', 'amount', 'decimals'] }))).toBe('INVALID_OPTION');
-    expect(code(() => parseLedgerCsv(good, { columns: ['id', 'timestamp', 'asset', 'amount', 'direction'] }))).toBe('INVALID_OPTION');
+    expect(
+      code(() =>
+        parseLedgerCsv(good, { columns: ['timestamp', 'asset', 'amount', 'direction', 'decimals'] }),
+      ),
+    ).toBe('INVALID_OPTION');
+    expect(
+      code(() => parseLedgerCsv(good, { columns: ['id', 'asset', 'amount', 'direction', 'decimals'] })),
+    ).toBe('INVALID_OPTION');
+    expect(
+      code(() => parseLedgerCsv(good, { columns: ['id', 'timestamp', 'amount', 'direction', 'decimals'] })),
+    ).toBe('INVALID_OPTION');
+    expect(
+      code(() => parseLedgerCsv(good, { columns: ['id', 'timestamp', 'asset', 'direction', 'decimals'] })),
+    ).toBe('INVALID_OPTION');
+    expect(
+      code(() => parseLedgerCsv(good, { columns: ['id', 'timestamp', 'asset', 'amount', 'decimals'] })),
+    ).toBe('INVALID_OPTION');
+    expect(
+      code(() => parseLedgerCsv(good, { columns: ['id', 'timestamp', 'asset', 'amount', 'direction'] })),
+    ).toBe('INVALID_OPTION');
   });
   it('enforces limits through options', () => {
     const many = exportCsv(Array.from({ length: 5 }, (_, i) => row({ id: `i${i}` })));
@@ -145,15 +184,23 @@ describe('cell validation', () => {
     const columns = ['id', 'timestamp', 'asset', 'amount', 'direction'] as const;
     const csv = exportCsv([row()], { columns });
     expect(code(() => parseLedgerCsv(csv, { columns, assetDecimals: new Map() }))).toBe('PARSE_VALUE');
-    expect(parseLedgerCsv(csv, { columns, assetDecimals: new Map([['USDC', 6]]) })[0]?.amount).toBe(1_500_000n);
+    expect(parseLedgerCsv(csv, { columns, assetDecimals: new Map([['USDC', 6]]) })[0]?.amount).toBe(
+      1_500_000n,
+    );
   });
   it('validates signed_amount against amount and direction', () => {
     const columns = ['id', 'timestamp', 'asset', 'decimals', 'direction', 'amount', 'signed_amount'] as const;
     const csv = exportCsv([row(), row({ id: 'z', amount: 0n, direction: 'out' })], { columns });
     expect(parseLedgerCsv(csv, { columns })).toHaveLength(2);
-    expect(code(() => parseLedgerCsv(csv.replace(',in,1.500000,1.500000', ',out,1.500000,1.500000'), { columns }))).toBe('PARSE_VALUE');
-    expect(code(() => parseLedgerCsv(csv.replace(',1.500000,1.500000', ',1.500000,-1.500000'), { columns }))).toBe('PARSE_VALUE');
-    expect(code(() => parseLedgerCsv(csv.replace(',1.500000,1.500000', ',1.500000,2'), { columns }))).toBe('PARSE_VALUE');
+    expect(
+      code(() => parseLedgerCsv(csv.replace(',in,1.500000,1.500000', ',out,1.500000,1.500000'), { columns })),
+    ).toBe('PARSE_VALUE');
+    expect(
+      code(() => parseLedgerCsv(csv.replace(',1.500000,1.500000', ',1.500000,-1.500000'), { columns })),
+    ).toBe('PARSE_VALUE');
+    expect(code(() => parseLedgerCsv(csv.replace(',1.500000,1.500000', ',1.500000,2'), { columns }))).toBe(
+      'PARSE_VALUE',
+    );
     const only = ['id', 'timestamp', 'asset', 'decimals', 'signed_amount'] as const;
     const c2 = exportCsv([row()], { columns: only }).replace('1.500000', '-0');
     expect(code(() => parseLedgerCsv(c2, { columns: only }))).toBe('PARSE_VALUE');

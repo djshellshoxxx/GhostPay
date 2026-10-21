@@ -35,8 +35,26 @@ describe('summarize', () => {
   it('totals per period and asset with exact bigint math', () => {
     const s = summarize(rows, { period: 'quarter' });
     expect(s).toEqual([
-      { period: '2024-Q1', asset: 'ETH', decimals: 18, count: 1, received: 99n, sent: 0n, fees: 0n, net: 99n },
-      { period: '2024-Q1', asset: 'USDC', decimals: 6, count: 2, received: 10_000_000n, sent: 2_500_000n, fees: 1_000n, net: 7_499_000n },
+      {
+        period: '2024-Q1',
+        asset: 'ETH',
+        decimals: 18,
+        count: 1,
+        received: 99n,
+        sent: 0n,
+        fees: 0n,
+        net: 99n,
+      },
+      {
+        period: '2024-Q1',
+        asset: 'USDC',
+        decimals: 6,
+        count: 2,
+        received: 10_000_000n,
+        sent: 2_500_000n,
+        fees: 1_000n,
+        net: 7_499_000n,
+      },
       { period: '2024-Q2', asset: 'USDC', decimals: 6, count: 1, received: 1n, sent: 0n, fees: 0n, net: 1n },
     ]);
   });
@@ -57,9 +75,9 @@ describe('summarize', () => {
     expect(s[0]?.net).toBe(-6n);
   });
   it('rejects mixed decimals and bad options', () => {
-    expect(() =>
-      summarize([row({ id: 'a' }), row({ id: 'b', decimals: 8 })], { period: 'all' }),
-    ).toThrow(/decimals/);
+    expect(() => summarize([row({ id: 'a' }), row({ id: 'b', decimals: 8 })], { period: 'all' })).toThrow(
+      /decimals/,
+    );
     expect(() => summarize([], { period: 'all', statuses: ['bogus' as never] })).toThrow(ExportError);
     expect(() => summarize([], { period: 'all', fromMs: -1 })).toThrow(ExportError);
     expect(() => summarize([], { period: 'all', toMs: 1.5 })).toThrow(ExportError);
@@ -90,7 +108,12 @@ describe('totalsPerAsset', () => {
   });
   it('rejects decimals mismatch', () => {
     const base = { period: 'p', asset: 'X', count: 1, received: 0n, sent: 0n, fees: 0n, net: 0n };
-    expect(() => totalsPerAsset([{ ...base, decimals: 1 }, { ...base, decimals: 2 }])).toThrow(ExportError);
+    expect(() =>
+      totalsPerAsset([
+        { ...base, decimals: 1 },
+        { ...base, decimals: 2 },
+      ]),
+    ).toThrow(ExportError);
   });
 });
 
@@ -111,7 +134,16 @@ describe('summaryToCsv', () => {
     expect(exportCsv([])).toContain('id,timestamp');
   });
   it('rejects control chars in asset', () => {
-    const l = { period: 'p', asset: 'A\u0000', decimals: 0, count: 1, received: 0n, sent: 0n, fees: 0n, net: 0n };
+    const l = {
+      period: 'p',
+      asset: 'A\u0000',
+      decimals: 0,
+      count: 1,
+      received: 0n,
+      sent: 0n,
+      fees: 0n,
+      net: 0n,
+    };
     expect(() => summaryToCsv([l])).toThrow(/control/);
     expect(summaryToCsv([l], { invalidText: 'replace' })).toContain('A�');
   });

@@ -1,12 +1,26 @@
 import { describe, expect, it } from 'vitest';
 import {
-  MAX_SCHEDULED, MAX_HORIZON_MS, addScheduled, cancel, confirm, isTerminal, schedulePayment,
-  sweep, tick, validateSnapshot, type ScheduledPayment,
+  MAX_SCHEDULED,
+  MAX_HORIZON_MS,
+  addScheduled,
+  cancel,
+  confirm,
+  isTerminal,
+  schedulePayment,
+  sweep,
+  tick,
+  validateSnapshot,
+  type ScheduledPayment,
 } from './scheduled.js';
 import { MS_DAY, fixed } from './testutil.testutil.js';
 
 const NOW = 1_800_000_000_000;
-const pay = { chain: 'eip155:1', asset: 'USDC', recipient: '0xAbCdEf0000000000000000000000000000000001', amount: '2500000' };
+const pay = {
+  chain: 'eip155:1',
+  asset: 'USDC',
+  recipient: '0xAbCdEf0000000000000000000000000000000001',
+  amount: '2500000',
+};
 const mk = (o: Record<string, unknown> = {}, now = NOW): ScheduledPayment => {
   const r = schedulePayment({ id: 's1', payment: pay, dueAtMs: NOW + 1000, ...o }, fixed(now));
   if (!r.ok) throw new Error(r.error.message);
@@ -69,8 +83,12 @@ describe('state machine', () => {
   });
   it('requires explicit user confirmation and matching details', () => {
     const p = mk({ dueAtMs: NOW });
-    expect(ec(confirm(p, { ...ack, userConfirmed: false as unknown as true }, fixed(NOW)))).toBe('not_confirmed');
-    expect(ec(confirm(p, { ...ack, recipient: '0xAbCdEf0000000000000000000000000000000002' }, fixed(NOW)))).toBe('mismatch');
+    expect(ec(confirm(p, { ...ack, userConfirmed: false as unknown as true }, fixed(NOW)))).toBe(
+      'not_confirmed',
+    );
+    expect(
+      ec(confirm(p, { ...ack, recipient: '0xAbCdEf0000000000000000000000000000000002' }, fixed(NOW))),
+    ).toBe('mismatch');
     expect(ec(confirm(p, { ...ack, amount: '2500001' }, fixed(NOW)))).toBe('mismatch');
   });
   it('terminal states are final', () => {

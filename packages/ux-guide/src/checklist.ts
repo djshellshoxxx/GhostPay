@@ -114,7 +114,11 @@ export function isCleanAddress(a: unknown): a is string {
  * Detect a look-alike (address-poisoning) address: same first and last
  * `edge` characters as a known address but not equal to it.
  */
-export function findLookalike(address: string, known: readonly KnownAddress[], edge = 4): KnownAddress | null {
+export function findLookalike(
+  address: string,
+  known: readonly KnownAddress[],
+  edge = 4,
+): KnownAddress | null {
   const n = normalizeAddress(address);
   if (n.length < edge * 2 + 1) return null;
   for (const k of known) {
@@ -143,27 +147,47 @@ function validInput(i: unknown): i is SendCheckInput {
   const w = x['wallet'] as Record<string, unknown> | undefined;
   const a = x['amount'] as Record<string, unknown> | undefined;
   if (!r || !w || !a || typeof r !== 'object' || typeof w !== 'object' || typeof a !== 'object') return false;
-  if (typeof r['address'] !== 'string' || typeof r['network'] !== 'string' || typeof w['network'] !== 'string') return false;
+  if (
+    typeof r['address'] !== 'string' ||
+    typeof r['network'] !== 'string' ||
+    typeof w['network'] !== 'string'
+  )
+    return false;
   if (typeof r['source'] !== 'string' || !SOURCES.includes(r['source'])) return false;
-  for (const k of ['valid', 'inContacts', 'previouslyPaid', 'changedSinceEntry']) if (typeof r[k] !== 'boolean') return false;
+  for (const k of ['valid', 'inContacts', 'previouslyPaid', 'changedSinceEntry'])
+    if (typeof r[k] !== 'boolean') return false;
   const strArr = (v: unknown): boolean => Array.isArray(v) && v.every((s) => typeof s === 'string');
   if (!strArr(w['ownAddresses']) || !strArr(x['acknowledged'])) return false;
-  for (const k of ['baseUnits', 'feeBaseUnits', 'balanceBaseUnits']) if (typeof a[k] !== 'string') return false;
-  if (a['fiat'] !== undefined && (typeof a['fiat'] !== 'number' || !Number.isFinite(a['fiat']) || a['fiat'] < 0)) return false;
+  for (const k of ['baseUnits', 'feeBaseUnits', 'balanceBaseUnits'])
+    if (typeof a[k] !== 'string') return false;
+  if (
+    a['fiat'] !== undefined &&
+    (typeof a['fiat'] !== 'number' || !Number.isFinite(a['fiat']) || a['fiat'] < 0)
+  )
+    return false;
   if (!isProfileId(x['profile'])) return false;
   if (typeof x['backupConfirmed'] !== 'boolean' || typeof x['addressReviewed'] !== 'boolean') return false;
   const ka = x['knownAddresses'];
   if (!Array.isArray(ka)) return false;
   return ka.every((k: unknown) => {
     const o = k as Record<string, unknown> | null;
-    return typeof o === 'object' && o !== null && typeof o['address'] === 'string' && typeof o['label'] === 'string';
+    return (
+      typeof o === 'object' &&
+      o !== null &&
+      typeof o['address'] === 'string' &&
+      typeof o['label'] === 'string'
+    );
   });
 }
 
 const failClosed = (): ChecklistResult => {
   const item: ChecklistItem = {
-    id: 'input_invalid', kind: 'blocker', passed: false, acknowledged: false,
-    messageKey: 'guide.checklist.input_invalid', params: {},
+    id: 'input_invalid',
+    kind: 'blocker',
+    passed: false,
+    acknowledged: false,
+    messageKey: 'guide.checklist.input_invalid',
+    params: {},
   };
   return { canSend: false, items: [item], blockers: [item], pendingWarnings: [], reviewNeeded: false };
 };
@@ -179,17 +203,31 @@ export function evaluateChecklist(input: unknown): ChecklistResult {
   const settings = settingsFor(profile);
   const items: ChecklistItem[] = [];
   const blocker = (id: ItemId, passed: boolean, params: ChecklistItem['params'] = {}): void => {
-    items.push({ id, kind: 'blocker', passed, acknowledged: false, messageKey: `guide.checklist.${id}`, params });
+    items.push({
+      id,
+      kind: 'blocker',
+      passed,
+      acknowledged: false,
+      messageKey: `guide.checklist.${id}`,
+      params,
+    });
   };
   const warning = (id: ItemId, passed: boolean, params: ChecklistItem['params'] = {}): void => {
     items.push({
-      id, kind: 'warning', passed, acknowledged: !passed && input.acknowledged.includes(id),
-      messageKey: `guide.checklist.${id}`, params,
+      id,
+      kind: 'warning',
+      passed,
+      acknowledged: !passed && input.acknowledged.includes(id),
+      messageKey: `guide.checklist.${id}`,
+      params,
     });
   };
 
   blocker('address_invalid', r.valid && isCleanAddress(r.address));
-  blocker('network_mismatch', r.network === wallet.network, { expected: wallet.network, actual: r.network.slice(0, 32) });
+  blocker('network_mismatch', r.network === wallet.network, {
+    expected: wallet.network,
+    actual: r.network.slice(0, 32),
+  });
 
   const { baseUnits, feeBaseUnits, balanceBaseUnits } = amount;
   const numsOk = DIGITS.test(baseUnits) && DIGITS.test(feeBaseUnits) && DIGITS.test(balanceBaseUnits);
@@ -262,11 +300,7 @@ export function buildAddressReview(address: string, pick: (n: number) => number)
     chunks,
     edge: Math.min(6, Math.floor(address.length / 2)),
     challengeIndex: idx,
-    promptKeys: [
-      'guide.review.compareEnds',
-      'guide.review.compareMiddle',
-      'guide.review.retypeChunk',
-    ],
+    promptKeys: ['guide.review.compareEnds', 'guide.review.compareMiddle', 'guide.review.retypeChunk'],
   };
 }
 

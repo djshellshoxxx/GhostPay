@@ -41,9 +41,19 @@ export interface CacheRequest {
 }
 
 export type CacheReason =
-  | 'static_asset' | 'static_exact' | 'navigation' | 'invalid_url' | 'non_get' | 'cross_origin'
-  | 'insecure_scheme' | 'api_path' | 'sensitive_query' | 'has_fragment' | 'authenticated'
-  | 'not_allowlisted' | 'unhashed_asset';
+  | 'static_asset'
+  | 'static_exact'
+  | 'navigation'
+  | 'invalid_url'
+  | 'non_get'
+  | 'cross_origin'
+  | 'insecure_scheme'
+  | 'api_path'
+  | 'sensitive_query'
+  | 'has_fragment'
+  | 'authenticated'
+  | 'not_allowlisted'
+  | 'unhashed_asset';
 
 export interface CacheDecision {
   strategy: 'cache-first' | 'network-only' | 'navigation';
@@ -53,8 +63,14 @@ export interface CacheDecision {
   reason: CacheReason;
 }
 
-const deny = (reason: CacheReason, offlineFallback = false): CacheDecision => ({ strategy: 'network-only', cacheable: false, offlineFallback, reason });
-const segPrefix = (path: string, prefix: string): boolean => path === prefix || path.startsWith(prefix.endsWith('/') ? prefix : prefix + '/');
+const deny = (reason: CacheReason, offlineFallback = false): CacheDecision => ({
+  strategy: 'network-only',
+  cacheable: false,
+  offlineFallback,
+  reason,
+});
+const segPrefix = (path: string, prefix: string): boolean =>
+  path === prefix || path.startsWith(prefix.endsWith('/') ? prefix : prefix + '/');
 
 /** Decide how the SW may treat a request. */
 export function classifyRequest(cfg: CachePolicyConfig, req: CacheRequest): CacheDecision {
@@ -66,7 +82,9 @@ export function classifyRequest(cfg: CachePolicyConfig, req: CacheRequest): Cach
   }
   if (u.username !== '' || u.password !== '') return deny('invalid_url');
   if (req.method.toUpperCase() !== 'GET') return deny('non_get');
-  const secure = u.protocol === 'https:' || (u.protocol === 'http:' && (u.hostname === 'localhost' || u.hostname === '127.0.0.1'));
+  const secure =
+    u.protocol === 'https:' ||
+    (u.protocol === 'http:' && (u.hostname === 'localhost' || u.hostname === '127.0.0.1'));
   if (!secure) return deny('insecure_scheme');
   if (u.origin !== cfg.origin) return deny('cross_origin');
   const nav = req.mode === 'navigate';
@@ -81,7 +99,10 @@ export function classifyRequest(cfg: CachePolicyConfig, req: CacheRequest): Cach
   if (u.search === '' && cfg.staticExact.includes(u.pathname) && cfg.staticExtensions.includes(ext)) {
     return { strategy: 'cache-first', cacheable: true, offlineFallback: false, reason: 'static_exact' };
   }
-  if (cfg.staticPrefixes.some((p) => segPrefix(path, p.toLowerCase())) && cfg.staticExtensions.includes(ext)) {
+  if (
+    cfg.staticPrefixes.some((p) => segPrefix(path, p.toLowerCase())) &&
+    cfg.staticExtensions.includes(ext)
+  ) {
     const file = path.slice(path.lastIndexOf('/') + 1);
     if (cfg.requireContentHash && !/[-.][a-z0-9_]{8,}\.[a-z0-9]+$/.test(file)) return deny('unhashed_asset');
     return { strategy: 'cache-first', cacheable: true, offlineFallback: false, reason: 'static_asset' };
@@ -99,11 +120,13 @@ export interface ResponseInfo {
   hasSetCookie?: boolean;
 }
 
-const STORABLE_TYPES = /^(text\/(css|javascript|html)|application\/(javascript|manifest\+json)|font\/woff2|image\/(png|svg\+xml|webp|x-icon|vnd\.microsoft\.icon))(;|$)/i;
+const STORABLE_TYPES =
+  /^(text\/(css|javascript|html)|application\/(javascript|manifest\+json)|font\/woff2|image\/(png|svg\+xml|webp|x-icon|vnd\.microsoft\.icon))(;|$)/i;
 
 /** Whether a fetched response may be written to the cache for an already-cacheable request. */
 export function shouldStoreResponse(decision: CacheDecision, res: ResponseInfo): boolean {
-  if (!decision.cacheable || res.status !== 200 || res.type !== 'basic' || res.hasSetCookie === true) return false;
+  if (!decision.cacheable || res.status !== 200 || res.type !== 'basic' || res.hasSetCookie === true)
+    return false;
   if (/(^|,)\s*(no-store|private)\b/i.test(res.cacheControl ?? '')) return false;
   if ((res.vary ?? '').includes('*')) return false;
   return STORABLE_TYPES.test(res.contentType ?? '');
@@ -128,7 +151,9 @@ export function planFallback(i: FallbackInput): FallbackAction {
 
 /** Validate that every precache URL is itself cacheable under the policy. Returns offenders. */
 export function auditPrecache(cfg: CachePolicyConfig, paths: string[]): string[] {
-  return paths.filter((p) => !classifyRequest(cfg, { url: cfg.origin + p, method: 'GET', mode: 'no-cors' }).cacheable);
+  return paths.filter(
+    (p) => !classifyRequest(cfg, { url: cfg.origin + p, method: 'GET', mode: 'no-cors' }).cacheable,
+  );
 }
 
 /** Cache bucket name for a version. */
@@ -185,15 +210,18 @@ export function compareVersions(a: [number, number, number], b: [number, number,
  * mixed versions cause skew, so they are prompted instead of auto-activated.
  */
 export function decideUpdate(i: UpdateInput): UpdateDecision {
-  const run = parseVersion(i.runningVersion), min = parseVersion(i.minSupportedVersion);
-  if (!run || !min || !Number.isSafeInteger(i.openClients) || i.openClients < 0) return { action: 'invalid', reason: 'bad_input' };
+  const run = parseVersion(i.runningVersion),
+    min = parseVersion(i.minSupportedVersion);
+  if (!run || !min || !Number.isSafeInteger(i.openClients) || i.openClients < 0)
+    return { action: 'invalid', reason: 'bad_input' };
   if (i.waitingVersion === undefined) return { action: 'none', reason: 'no_waiting_worker' };
   const wait = parseVersion(i.waitingVersion);
   if (!wait) return { action: 'invalid', reason: 'bad_waiting_version' };
   if (compareVersions(wait, run) <= 0) return { action: 'none', reason: 'waiting_not_newer' };
   if (compareVersions(wait, min) < 0) return { action: 'invalid', reason: 'waiting_below_min_supported' };
   const unsupported = compareVersions(run, min) < 0;
-  if (i.inSensitiveFlow) return { action: 'defer', reason: unsupported ? 'unsupported_but_in_flow' : 'in_flow' };
+  if (i.inSensitiveFlow)
+    return { action: 'defer', reason: unsupported ? 'unsupported_but_in_flow' : 'in_flow' };
   if (unsupported) return { action: 'apply-now', reason: 'running_unsupported' };
   if (wait[0] !== run[0]) return { action: 'prompt', reason: 'major_change' };
   if (i.openClients > 1) return { action: 'prompt', reason: 'multiple_tabs' };
@@ -202,6 +230,7 @@ export function decideUpdate(i: UpdateInput): UpdateDecision {
 
 /** Version skew between a page and its worker/data: same major required. */
 export function isSkewed(pageVersion: string, workerVersion: string): boolean {
-  const a = parseVersion(pageVersion), b = parseVersion(workerVersion);
+  const a = parseVersion(pageVersion),
+    b = parseVersion(workerVersion);
   return !a || !b || a[0] !== b[0];
 }

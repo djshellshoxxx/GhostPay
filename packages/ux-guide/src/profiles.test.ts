@@ -1,15 +1,29 @@
 import { describe, expect, it } from 'vitest';
 import fc from 'fast-check';
 import {
-  AnswerError, PROFILE_IDS, QUESTIONS, TRADEOFFS, detectProfile, diffSettings, isProfileId,
-  recommendProfile, settingsFor, type ProfileId,
+  AnswerError,
+  PROFILE_IDS,
+  QUESTIONS,
+  TRADEOFFS,
+  detectProfile,
+  diffSettings,
+  isProfileId,
+  recommendProfile,
+  settingsFor,
+  type ProfileId,
 } from './profiles.js';
 
 describe('settingsFor', () => {
   it('returns exact plain data per profile', () => {
     expect(settingsFor('everyday')).toEqual({
-      receiveAddressMode: 'reuse', sendDelayMaxMinutes: 0, fiatRateMode: 'on_demand', hideBalanceByDefault: false,
-      addressReview: 'new_recipients', confirmationsRequired: 1, highValueFiatThreshold: 1000, autoLockMinutes: 15,
+      receiveAddressMode: 'reuse',
+      sendDelayMaxMinutes: 0,
+      fiatRateMode: 'on_demand',
+      hideBalanceByDefault: false,
+      addressReview: 'new_recipients',
+      confirmationsRequired: 1,
+      highValueFiatThreshold: 1000,
+      autoLockMinutes: 15,
     });
     expect(settingsFor('maximum').sendDelayMaxMinutes).toBe(60);
     expect(settingsFor('maximum').fiatRateMode).toBe('off');
@@ -23,7 +37,11 @@ describe('settingsFor', () => {
     expect(() => settingsFor('__proto__' as ProfileId)).toThrow(RangeError);
   });
   it('privacy-related settings tighten monotonically', () => {
-    const [a, b, c] = PROFILE_IDS.map(settingsFor) as [ReturnType<typeof settingsFor>, ReturnType<typeof settingsFor>, ReturnType<typeof settingsFor>];
+    const [a, b, c] = PROFILE_IDS.map(settingsFor) as [
+      ReturnType<typeof settingsFor>,
+      ReturnType<typeof settingsFor>,
+      ReturnType<typeof settingsFor>,
+    ];
     expect(a.confirmationsRequired).toBeLessThan(b.confirmationsRequired);
     expect(b.confirmationsRequired).toBeLessThan(c.confirmationsRequired);
     expect(a.highValueFiatThreshold).toBeGreaterThan(b.highValueFiatThreshold);
@@ -36,8 +54,14 @@ describe('diff/detect', () => {
   it('diffs everyday to private', () => {
     const d = diffSettings(settingsFor('everyday'), settingsFor('private'));
     expect(d.map((x) => x.key)).toEqual([
-      'receiveAddressMode', 'sendDelayMaxMinutes', 'fiatRateMode', 'hideBalanceByDefault', 'addressReview',
-      'confirmationsRequired', 'highValueFiatThreshold', 'autoLockMinutes',
+      'receiveAddressMode',
+      'sendDelayMaxMinutes',
+      'fiatRateMode',
+      'hideBalanceByDefault',
+      'addressReview',
+      'confirmationsRequired',
+      'highValueFiatThreshold',
+      'autoLockMinutes',
     ]);
     expect(d[1]).toEqual({ key: 'sendDelayMaxMinutes', from: 0, to: 10 });
   });
@@ -91,7 +115,9 @@ describe('recommendProfile', () => {
     expect(r.profile).toBe('maximum');
   });
   it('acquaintances/moderate/minutes -> private', () => {
-    expect(recommendProfile({ audience: 'acquaintances', amounts: 'moderate', waiting: 'minutes' }).profile).toBe('private');
+    expect(
+      recommendProfile({ audience: 'acquaintances', amounts: 'moderate', waiting: 'minutes' }).profile,
+    ).toBe('private');
   });
   it('caps maximum to private when instant sends are needed', () => {
     const r = recommendProfile({ audience: 'adversary', amounts: 'large', waiting: 'instant' });
@@ -117,7 +143,10 @@ describe('recommendProfile', () => {
     const opt = <Q extends keyof typeof QUESTIONS>(q: Q) => fc.constantFrom(...QUESTIONS[q]);
     fc.assert(
       fc.property(
-        fc.record({ audience: opt('audience'), amounts: opt('amounts'), waiting: opt('waiting') }, { requiredKeys: [] }),
+        fc.record(
+          { audience: opt('audience'), amounts: opt('amounts'), waiting: opt('waiting') },
+          { requiredKeys: [] },
+        ),
         (a) => {
           const r = recommendProfile(a);
           expect(PROFILE_IDS).toContain(r.profile);

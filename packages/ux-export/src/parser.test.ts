@@ -17,14 +17,25 @@ describe('parseCsv accepts', () => {
   it('basic shapes', () => {
     expect(parseCsv('')).toEqual([]);
     expect(parseCsv('﻿')).toEqual([]);
-    expect(parseCsv('a,b\r\nc,d\r\n')).toEqual([['a', 'b'], ['c', 'd']]);
-    expect(parseCsv('a,b\nc,d')).toEqual([['a', 'b'], ['c', 'd']]);
+    expect(parseCsv('a,b\r\nc,d\r\n')).toEqual([
+      ['a', 'b'],
+      ['c', 'd'],
+    ]);
+    expect(parseCsv('a,b\nc,d')).toEqual([
+      ['a', 'b'],
+      ['c', 'd'],
+    ]);
     expect(parseCsv('﻿a\n')).toEqual([['a']]);
-    expect(parseCsv('a,\n,b')).toEqual([['a', ''], ['', 'b']]);
+    expect(parseCsv('a,\n,b')).toEqual([
+      ['a', ''],
+      ['', 'b'],
+    ]);
     expect(parseCsv('a,')).toEqual([['a', '']]);
   });
   it('quoted fields', () => {
-    expect(parseCsv('"a,b","say ""hi""","l1\r\nl2","l3\nl4"\r\n')).toEqual([['a,b', 'say "hi"', 'l1\r\nl2', 'l3\nl4']]);
+    expect(parseCsv('"a,b","say ""hi""","l1\r\nl2","l3\nl4"\r\n')).toEqual([
+      ['a,b', 'say "hi"', 'l1\r\nl2', 'l3\nl4'],
+    ]);
     expect(parseCsv('""\r\n""\r\n')).toEqual([[''], ['']]);
     expect(parseCsv('"a"\r\n')).toEqual([['a']]);
   });
@@ -91,7 +102,9 @@ describe('limits', () => {
   });
   it('hostile quote-heavy input stays fast', () => {
     const t0 = Date.now();
-    expect(code(() => parseCsv('"' + '""'.repeat(200_000) + 'x', { maxFieldChars: 1_000_000 }))).toBe('PARSE_SYNTAX');
+    expect(code(() => parseCsv('"' + '""'.repeat(200_000) + 'x', { maxFieldChars: 1_000_000 }))).toBe(
+      'PARSE_SYNTAX',
+    );
     expect(Date.now() - t0).toBeLessThan(2000);
   });
 });
@@ -106,14 +119,24 @@ describe('assertRectangular', () => {
 
 describe('round trip property', () => {
   it('parse(encode(x)) === x for arbitrary valid text', () => {
-    const text = fc.string({ unit: fc.constantFrom('a', 'b', ',', '"', '\n', '\r', ' ', "'", '=', 'é', '\u{1F600}') });
+    const text = fc.string({
+      unit: fc.constantFrom('a', 'b', ',', '"', '\n', '\r', ' ', "'", '=', 'é', '\u{1F600}'),
+    });
     fc.assert(
-      fc.property(fc.array(fc.array(text, { minLength: 2, maxLength: 4 }), { minLength: 1, maxLength: 5 }), (rows0) => {
-        const w = rows0[0]?.length ?? 0;
-        const rows = rows0.map((r) => r.slice(0, 2).concat(Array(Math.max(0, w - 2)).fill('')).slice(0, 2));
-        const csv = rows.map((r) => r.map((f) => quoteField(f)).join(',')).join('\r\n') + '\r\n';
-        expect(parseCsv(csv)).toEqual(rows);
-      }),
+      fc.property(
+        fc.array(fc.array(text, { minLength: 2, maxLength: 4 }), { minLength: 1, maxLength: 5 }),
+        (rows0) => {
+          const w = rows0[0]?.length ?? 0;
+          const rows = rows0.map((r) =>
+            r
+              .slice(0, 2)
+              .concat(Array(Math.max(0, w - 2)).fill(''))
+              .slice(0, 2),
+          );
+          const csv = rows.map((r) => r.map((f) => quoteField(f)).join(',')).join('\r\n') + '\r\n';
+          expect(parseCsv(csv)).toEqual(rows);
+        },
+      ),
     );
   });
 });

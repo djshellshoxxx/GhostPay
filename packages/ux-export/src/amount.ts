@@ -45,7 +45,8 @@ export function parseUnits(text: string, decimals: number): bigint {
   const m = UNSIGNED.exec(text);
   if (!m) throw new ExportError('INVALID_AMOUNT', 'amount is not a plain decimal number');
   const frac = m[2] ?? '';
-  if (frac.length > decimals) throw new ExportError('INVALID_AMOUNT', 'amount has too many fractional digits');
+  if (frac.length > decimals)
+    throw new ExportError('INVALID_AMOUNT', 'amount has too many fractional digits');
   const v = BigInt((m[1] ?? '0') + frac.padEnd(decimals, '0'));
   if (v > MAX_AMOUNT) throw new ExportError('INVALID_AMOUNT', 'amount exceeds uint256');
   return v;

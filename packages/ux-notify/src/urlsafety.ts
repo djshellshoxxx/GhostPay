@@ -6,8 +6,27 @@
  */
 
 const SENSITIVE_SUBSTRINGS: readonly string[] = [
-  'token', 'secret', 'key', 'auth', 'sig', 'pass', 'seed', 'mnemonic', 'session', 'jwt',
-  'cookie', 'bearer', 'code', 'otp', 'pin', 'invoice', 'payload', 'psbt', 'view', 'nonce', 'cred',
+  'token',
+  'secret',
+  'key',
+  'auth',
+  'sig',
+  'pass',
+  'seed',
+  'mnemonic',
+  'session',
+  'jwt',
+  'cookie',
+  'bearer',
+  'code',
+  'otp',
+  'pin',
+  'invoice',
+  'payload',
+  'psbt',
+  'view',
+  'nonce',
+  'cred',
 ];
 
 /** True if a query string has a secret-looking key or a long opaque value. */

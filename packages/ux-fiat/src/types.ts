@@ -31,8 +31,7 @@ export interface FiatError {
 }
 
 export type Result<T> =
-  | { readonly ok: true; readonly value: T }
-  | { readonly ok: false; readonly error: FiatError };
+  { readonly ok: true; readonly value: T } | { readonly ok: false; readonly error: FiatError };
 
 export const ok = <T>(value: T): Result<T> => ({ ok: true, value });
 export const err = <T = never>(code: FiatErrorCode, message: string): Result<T> => ({
@@ -46,14 +45,7 @@ export const err = <T = never>(code: FiatErrorCode, message: string): Result<T> 
  * - trunc: toward zero; away: away from zero; floor: toward -inf; ceil: toward +inf
  * - half-away / half-trunc / half-even: nearest, ties broken as named.
  */
-export type RoundingMode =
-  | 'trunc'
-  | 'away'
-  | 'floor'
-  | 'ceil'
-  | 'half-away'
-  | 'half-trunc'
-  | 'half-even';
+export type RoundingMode = 'trunc' | 'away' | 'floor' | 'ceil' | 'half-away' | 'half-trunc' | 'half-even';
 
 export const ROUNDING_MODES: readonly RoundingMode[] = [
   'trunc',

@@ -1,11 +1,6 @@
 import type { PaymentTemplate } from './template.js';
 import { readClock, type Clock, err, ok, type Result } from './result.js';
-import {
-  evaluateRecurrence,
-  type Evaluation,
-  type MissedPolicy,
-  type RecurrenceRule,
-} from './recurrence.js';
+import { evaluateRecurrence, type Evaluation, type MissedPolicy, type RecurrenceRule } from './recurrence.js';
 import { DEFAULT_SCHEDULED_MAX_AGE_MS, tick, type ScheduledPayment } from './scheduled.js';
 import type { TzOffset } from './time.js';
 

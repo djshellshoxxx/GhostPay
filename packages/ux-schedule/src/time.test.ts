@@ -1,8 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import fc from 'fast-check';
 import {
-  UTC, civilFromDays, daysFromCivil, daysInMonth, isLeapYear, localToUtc, offsetMs,
-  utcToLocalMs, weekdayOfDays, MS_DAY,
+  UTC,
+  civilFromDays,
+  daysFromCivil,
+  daysInMonth,
+  isLeapYear,
+  localToUtc,
+  offsetMs,
+  utcToLocalMs,
+  weekdayOfDays,
+  MS_DAY,
 } from './time.js';
 import { NY2026, utc } from './testutil.testutil.js';
 
@@ -15,10 +23,12 @@ describe('civil math', () => {
     expect(weekdayOfDays(-1)).toBe(3);
   });
   it('round-trips', () => {
-    fc.assert(fc.property(fc.integer({ min: -100000, max: 100000 }), (d) => {
-      const c = civilFromDays(d);
-      return daysFromCivil(c.year, c.month, c.day) === d;
-    }));
+    fc.assert(
+      fc.property(fc.integer({ min: -100000, max: 100000 }), (d) => {
+        const c = civilFromDays(d);
+        return daysFromCivil(c.year, c.month, c.day) === d;
+      }),
+    );
   });
   it('leap years and month lengths', () => {
     expect(isLeapYear(2000)).toBe(true);

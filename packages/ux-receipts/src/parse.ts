@@ -1,10 +1,24 @@
 import type { ReceiptIssue } from './errors.js';
 import {
-  REDACTABLE_FIELDS, RECEIPT_TYPE, RECEIPT_VERSION, type Receipt, type RedactableField,
+  REDACTABLE_FIELDS,
+  RECEIPT_TYPE,
+  RECEIPT_VERSION,
+  type Receipt,
+  type RedactableField,
 } from './types.js';
 import {
-  isAddress, isAmountBase, isAssetSymbol, isChainId, isDecimals, isDigestHex, isForbiddenFieldName,
-  isIsoDay, isIsoInstant, isRedactedAddress, isSafeMemo, isTxHash,
+  isAddress,
+  isAmountBase,
+  isAssetSymbol,
+  isChainId,
+  isDecimals,
+  isDigestHex,
+  isForbiddenFieldName,
+  isIsoDay,
+  isIsoInstant,
+  isRedactedAddress,
+  isSafeMemo,
+  isTxHash,
 } from './validate.js';
 
 /** Max accepted serialized receipt size (UTF-16 units). */
@@ -15,7 +29,18 @@ export type ParseResult =
   | { readonly ok: false; readonly issues: readonly ReceiptIssue[] };
 
 const KEYS = new Set([
-  'v', 'type', 'createdAt', 'chain', 'asset', 'amount', 'memo', 'txHash', 'sender', 'recipient', 'redacted', 'digest',
+  'v',
+  'type',
+  'createdAt',
+  'chain',
+  'asset',
+  'amount',
+  'memo',
+  'txHash',
+  'sender',
+  'recipient',
+  'redacted',
+  'digest',
 ]);
 
 function isPlain(v: unknown): v is Record<string, unknown> {
@@ -43,9 +68,11 @@ export function parseReceipt(input: unknown): ParseResult {
     }
   }
   const issues: ReceiptIssue[] = [];
-  const bad = (path: string, message = 'invalid value'): void => void issues.push({ code: 'INVALID_FIELD', path, message });
+  const bad = (path: string, message = 'invalid value'): void =>
+    void issues.push({ code: 'INVALID_FIELD', path, message });
 
-  if (!isPlain(value)) return { ok: false, issues: [{ code: 'MALFORMED', path: '', message: 'receipt must be an object' }] };
+  if (!isPlain(value))
+    return { ok: false, issues: [{ code: 'MALFORMED', path: '', message: 'receipt must be an object' }] };
   const r = value;
   for (const k of Object.keys(r)) {
     if (KEYS.has(k)) continue;
@@ -86,8 +113,13 @@ export function parseReceipt(input: unknown): ParseResult {
   const asset = r['asset'];
   if (has('asset') !== has('amount')) bad('asset', 'asset and amount must appear together');
   if (has('asset')) {
-    if (!isPlain(asset) || Object.keys(asset).some((k) => k !== 'symbol' && k !== 'decimals') ||
-      !isAssetSymbol(asset['symbol']) || !isDecimals(asset['decimals'])) bad('asset');
+    if (
+      !isPlain(asset) ||
+      Object.keys(asset).some((k) => k !== 'symbol' && k !== 'decimals') ||
+      !isAssetSymbol(asset['symbol']) ||
+      !isDecimals(asset['decimals'])
+    )
+      bad('asset');
   }
   if (has('amount') && !isAmountBase(r['amount'])) bad('amount');
   exclusive('amount', has('amount'));
@@ -102,7 +134,8 @@ export function parseReceipt(input: unknown): ParseResult {
   }
 
   const d = r['digest'];
-  if (!isPlain(d) || Object.keys(d).length !== 2 || d['alg'] !== 'SHA-256' || !isDigestHex(d['hex'])) bad('digest');
+  if (!isPlain(d) || Object.keys(d).length !== 2 || d['alg'] !== 'SHA-256' || !isDigestHex(d['hex']))
+    bad('digest');
 
   if (issues.length > 0) return { ok: false, issues };
   return { ok: true, receipt: r as unknown as Receipt };

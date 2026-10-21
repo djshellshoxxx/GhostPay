@@ -41,7 +41,9 @@ export function renderText(r: Receipt, labels: Partial<ReceiptLabels> = {}): str
   const L = { ...DEFAULT_LABELS, ...labels };
   const out: string[] = [L.title];
   if (r.amount !== undefined && r.asset !== undefined) {
-    out.push(`${L.amount}: ${formatAmount(r.amount, r.asset.decimals)} ${sanitizeForDisplay(r.asset.symbol)}`);
+    out.push(
+      `${L.amount}: ${formatAmount(r.amount, r.asset.decimals)} ${sanitizeForDisplay(r.asset.symbol)}`,
+    );
   }
   if (r.chain !== undefined) out.push(`${L.chain}: ${sanitizeForDisplay(r.chain)}`);
   if (r.createdAt !== undefined) out.push(`${L.time}: ${sanitizeForDisplay(r.createdAt)}`);

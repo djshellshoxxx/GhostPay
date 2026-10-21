@@ -6,8 +6,7 @@ export interface ScheduleError {
 
 /** Discriminated result; no exceptions for expected failures. */
 export type Result<T> =
-  | { readonly ok: true; readonly value: T }
-  | { readonly ok: false; readonly error: ScheduleError };
+  { readonly ok: true; readonly value: T } | { readonly ok: false; readonly error: ScheduleError };
 
 /** Injected clock returning UTC epoch milliseconds. */
 export type Clock = () => number;

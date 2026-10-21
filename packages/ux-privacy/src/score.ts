@@ -22,7 +22,8 @@ export interface PrivacyFacts {
 }
 
 /** Factor identifiers, in display order. */
-export type FactorId = 'addressReuse' | 'amountCorrelation' | 'timing' | 'gasFunding' | 'relayer' | 'anonymitySet';
+export type FactorId =
+  'addressReuse' | 'amountCorrelation' | 'timing' | 'gasFunding' | 'relayer' | 'anonymitySet';
 
 /** Per-factor, explainable result. */
 export interface FactorResult {
@@ -99,7 +100,8 @@ export const PRIVACY_LIMITS: readonly string[] = Object.freeze([
 
 /** @internal Integer in [0, max] or throws. */
 function count(value: unknown, field: string, max = MAX_COUNT): number {
-  if (typeof value !== 'number' || !Number.isSafeInteger(value) || value < 0 || value > max) return fail(field);
+  if (typeof value !== 'number' || !Number.isSafeInteger(value) || value < 0 || value > max)
+    return fail(field);
   return value;
 }
 
@@ -115,7 +117,9 @@ function validate(f: PrivacyFacts): PrivacyFacts {
     amountMatchCount: count(f.amountMatchCount, 'amountMatchCount'),
     inOutAmountEqual: f.inOutAmountEqual,
     secondsBetweenInAndOut:
-      f.secondsBetweenInAndOut === null ? null : count(f.secondsBetweenInAndOut, 'secondsBetweenInAndOut', MAX_SECONDS),
+      f.secondsBetweenInAndOut === null
+        ? null
+        : count(f.secondsBetweenInAndOut, 'secondsBetweenInAndOut', MAX_SECONDS),
     gasFunding: gas,
     relayerUsed: f.relayerUsed,
     anonymitySetSize: f.anonymitySetSize === null ? null : count(f.anonymitySetSize, 'anonymitySetSize'),
@@ -130,7 +134,11 @@ interface Scored {
 }
 
 /** @internal Picks the first tier whose bound exceeds the value. */
-function tiered(value: number, tiers: readonly (readonly [number, number, string])[], last: readonly [number, string]) {
+function tiered(
+  value: number,
+  tiers: readonly (readonly [number, number, string])[],
+  last: readonly [number, string],
+) {
   for (const [bound, score, tier] of tiers) if (value < bound) return { score, tier };
   return { score: last[0], tier: last[1] };
 }
@@ -193,7 +201,12 @@ function scoreAmount(f: PrivacyFacts): Scored {
 function scoreTiming(f: PrivacyFacts): Scored {
   const s = f.secondsBetweenInAndOut;
   if (s === null) {
-    return { score: 40, known: false, tier: 'unknown', text: 'Timing is unknown; a cautious middle value was used.' };
+    return {
+      score: 40,
+      known: false,
+      tier: 'unknown',
+      text: 'Timing is unknown; a cautious middle value was used.',
+    };
   }
   const t = tiered(
     s,
@@ -206,32 +219,66 @@ function scoreTiming(f: PrivacyFacts): Scored {
     ],
     [95, 'long'],
   );
-  return { ...t, known: true, text: `${String(Math.floor(s / 60))} minute(s) passed between deposit and withdrawal.` };
+  return {
+    ...t,
+    known: true,
+    text: `${String(Math.floor(s / 60))} minute(s) passed between deposit and withdrawal.`,
+  };
 }
 
 /** @internal */
 function scoreGas(f: PrivacyFacts): Scored {
   if (f.gasFunding === 'linked') {
-    return { score: 0, known: true, tier: 'linked', text: 'Gas came from a wallet linked to you, which ties the accounts together.' };
+    return {
+      score: 0,
+      known: true,
+      tier: 'linked',
+      text: 'Gas came from a wallet linked to you, which ties the accounts together.',
+    };
   }
   if (f.gasFunding === 'unknown') {
-    return { score: 40, known: false, tier: 'unknown', text: 'Gas funding is unknown; a cautious middle value was used.' };
+    return {
+      score: 40,
+      known: false,
+      tier: 'unknown',
+      text: 'Gas funding is unknown; a cautious middle value was used.',
+    };
   }
-  return { score: 100, known: true, tier: 'unlinked', text: 'Gas was not funded from a wallet linked to you.' };
+  return {
+    score: 100,
+    known: true,
+    tier: 'unlinked',
+    text: 'Gas was not funded from a wallet linked to you.',
+  };
 }
 
 /** @internal */
 function scoreRelayer(f: PrivacyFacts): Scored {
   return f.relayerUsed
-    ? { score: 100, known: true, tier: 'used', text: 'A relayer submitted the transaction, so your wallet did not pay gas directly.' }
-    : { score: 25, known: true, tier: 'unused', text: 'No relayer was used, so your own wallet appears as the transaction sender.' };
+    ? {
+        score: 100,
+        known: true,
+        tier: 'used',
+        text: 'A relayer submitted the transaction, so your wallet did not pay gas directly.',
+      }
+    : {
+        score: 25,
+        known: true,
+        tier: 'unused',
+        text: 'No relayer was used, so your own wallet appears as the transaction sender.',
+      };
 }
 
 /** @internal */
 function scoreCrowd(f: PrivacyFacts): Scored {
   const n = f.anonymitySetSize;
   if (n === null) {
-    return { score: 30, known: false, tier: 'unknown', text: 'Crowd size is unknown; a cautious low value was used.' };
+    return {
+      score: 30,
+      known: false,
+      tier: 'unknown',
+      text: 'Crowd size is unknown; a cautious low value was used.',
+    };
   }
   const t = tiered(
     n,
@@ -249,11 +296,15 @@ function scoreCrowd(f: PrivacyFacts): Scored {
 
 const ADVICE: Readonly<Record<FactorId, string>> = {
   addressReuse: 'Use a fresh receive address for every payment and never reuse one.',
-  amountCorrelation: 'Use common amounts shared by many others, and withdraw a different amount than you deposited (for example in smaller parts).',
-  timing: 'Wait longer between depositing and withdrawing; days is better than minutes, and avoid a fixed schedule.',
-  gasFunding: 'Do not fund gas from a wallet linked to you; use a relayer or a gas source that is not tied to your identity.',
+  amountCorrelation:
+    'Use common amounts shared by many others, and withdraw a different amount than you deposited (for example in smaller parts).',
+  timing:
+    'Wait longer between depositing and withdrawing; days is better than minutes, and avoid a fixed schedule.',
+  gasFunding:
+    'Do not fund gas from a wallet linked to you; use a relayer or a gas source that is not tied to your identity.',
   relayer: 'Submit transactions through a relayer instead of paying gas from your own wallet.',
-  anonymitySet: 'Wait until more people have used the same pool and amount before withdrawing, or choose a busier pool.',
+  anonymitySet:
+    'Wait until more people have used the same pool and amount before withdrawing, or choose a busier pool.',
 };
 
 /** @internal */

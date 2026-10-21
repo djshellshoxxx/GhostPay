@@ -22,7 +22,8 @@ export const PARSE_DEFAULTS = {
 
 function lim(v: number | undefined, def: number, name: string): number {
   const n = v ?? def;
-  if (!Number.isSafeInteger(n) || n < 1) throw new ExportError('INVALID_OPTION', `${name} must be a positive integer`);
+  if (!Number.isSafeInteger(n) || n < 1)
+    throw new ExportError('INVALID_OPTION', `${name} must be a positive integer`);
   return n;
 }
 
@@ -75,7 +76,8 @@ export function parseCsv(text: string, limits: ParseLimits = {}): string[][] {
         const q = text.indexOf('"', i);
         if (q === -1) syntax('unterminated quoted field');
         value += text.slice(i, q);
-        if (value.length > maxChars) throw new ExportError('LIMIT_FIELD_LENGTH', 'field too long', rowNo(), row.length + 1);
+        if (value.length > maxChars)
+          throw new ExportError('LIMIT_FIELD_LENGTH', 'field too long', rowNo(), row.length + 1);
         if (text[q + 1] === '"') {
           value += '"';
           i = q + 2;
@@ -90,7 +92,8 @@ export function parseCsv(text: string, limits: ParseLimits = {}): string[][] {
       const m = unquoted.exec(text);
       value = m === null ? '' : m[0];
       i += value.length;
-      if (value.length > maxChars) throw new ExportError('LIMIT_FIELD_LENGTH', 'field too long', rowNo(), row.length + 1);
+      if (value.length > maxChars)
+        throw new ExportError('LIMIT_FIELD_LENGTH', 'field too long', rowNo(), row.length + 1);
       if (text[i] === '"') syntax('quote inside unquoted field');
     }
     row.push(value);
@@ -120,6 +123,7 @@ export function parseCsv(text: string, limits: ParseLimits = {}): string[][] {
 export function assertRectangular(rows: readonly (readonly string[])[]): void {
   const w = rows[0]?.length ?? 0;
   rows.forEach((r, idx) => {
-    if (r.length !== w) throw new ExportError('PARSE_RAGGED', 'record has a different field count than the header', idx + 1);
+    if (r.length !== w)
+      throw new ExportError('PARSE_RAGGED', 'record has a different field count than the header', idx + 1);
   });
 }

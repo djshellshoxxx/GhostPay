@@ -4,7 +4,15 @@ export const RECEIPT_VERSION = 1 as const;
 export const RECEIPT_TYPE = 'ghostpay.receipt' as const;
 
 /** Fields a policy can withhold. Asset travels with amount. */
-export const REDACTABLE_FIELDS = ['time', 'chain', 'amount', 'memo', 'txHash', 'sender', 'recipient'] as const;
+export const REDACTABLE_FIELDS = [
+  'time',
+  'chain',
+  'amount',
+  'memo',
+  'txHash',
+  'sender',
+  'recipient',
+] as const;
 export type RedactableField = (typeof REDACTABLE_FIELDS)[number];
 
 export interface AssetInfo {

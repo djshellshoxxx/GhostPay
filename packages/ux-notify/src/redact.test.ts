@@ -16,14 +16,21 @@ describe('redact', () => {
     expect(containsAddress('Lunch with Sam')).toBe(false);
   });
   it('detects amounts', () => {
-    for (const s of ['$5', '5€', '12.50', '1,234.5', '5 USDC', '1000', 'paid 25.00 USD']) expect(containsSensitive(s), s).toBe(true);
-    for (const s of ['A payment arrived.', 'Open the app', 'Payments received']) expect(containsSensitive(s), s).toBe(false);
+    for (const s of ['$5', '5€', '12.50', '1,234.5', '5 USDC', '1000', 'paid 25.00 USD'])
+      expect(containsSensitive(s), s).toBe(true);
+    for (const s of ['A payment arrived.', 'Open the app', 'Payments received'])
+      expect(containsSensitive(s), s).toBe(false);
   });
   it('masks addresses and never returns full ones', () => {
     expect(maskAddress(EVM)).toBe('0x1111…1111');
     expect(maskAddress('short')).toBe('••••');
     expect(maskAddress('bad address!!!!')).toBe('••••');
-    fc.assert(fc.property(fc.stringMatching(/^[A-Za-z0-9]{12,100}$/), (a) => maskAddress(a) !== a && maskAddress(a).length <= 11));
+    fc.assert(
+      fc.property(
+        fc.stringMatching(/^[A-Za-z0-9]{12,100}$/),
+        (a) => maskAddress(a) !== a && maskAddress(a).length <= 11,
+      ),
+    );
   });
   it('sanitizes labels', () => {
     expect(sanitizeLabel('  a\u0000b‮  c\n\td ')).toBe('a b c d');

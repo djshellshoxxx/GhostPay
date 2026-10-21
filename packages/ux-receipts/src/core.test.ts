@@ -32,8 +32,15 @@ describe('canonicalJson', () => {
     );
   });
   it.each([
-    ['float', 1.5], ['NaN', NaN], ['Infinity', Infinity], ['undefined', undefined], ['bigint', 1n],
-    ['function', () => 1], ['symbol', Symbol('x')], ['date', new Date(0)], ['map', new Map()],
+    ['float', 1.5],
+    ['NaN', NaN],
+    ['Infinity', Infinity],
+    ['undefined', undefined],
+    ['bigint', 1n],
+    ['function', () => 1],
+    ['symbol', Symbol('x')],
+    ['date', new Date(0)],
+    ['map', new Map()],
   ])('rejects %s', (_n, v) => {
     expect(() => canonicalJson(v)).toThrow(ReceiptError);
     expect(() => canonicalJson({ k: v })).toThrow(ReceiptError);
@@ -68,7 +75,10 @@ describe('sha256Hex', () => {
 
 describe('formatAmount', () => {
   it.each([
-    ['1500000', 6, '1.5'], ['1', 6, '0.000001'], ['1000000', 6, '1'], ['5', 0, '5'],
+    ['1500000', 6, '1.5'],
+    ['1', 6, '0.000001'],
+    ['1000000', 6, '1'],
+    ['5', 0, '5'],
     ['123456789012345678901234567890', 18, '123456789012.34567890123456789'],
   ])('%s/%i', (a, d, e) => expect(formatAmount(a, d)).toBe(e));
   it('rejects bad input', () => {
@@ -85,7 +95,14 @@ describe('addresses', () => {
     expect(redactAddress(A, 'hidden')).toBeUndefined();
     expect(redactAddress(A, { head: 6, tail: 4 })).toBe('0xAbCd...EF01');
   });
-  it.each([[0, 4], [6, 0], [1.5, 2], [17, 1], [1, 17], [20, 2]])('rejects truncation %i/%i', (head, tail) => {
+  it.each([
+    [0, 4],
+    [6, 0],
+    [1.5, 2],
+    [17, 1],
+    [1, 17],
+    [20, 2],
+  ])('rejects truncation %i/%i', (head, tail) => {
     expect(() => redactAddress(A, { head, tail })).toThrow(/truncation/);
   });
   it('rejects non-addresses', () => {
@@ -102,14 +119,19 @@ describe('addresses', () => {
   });
   it('truncation never reveals more than half', () => {
     fc.assert(
-      fc.property(fc.stringMatching(/^[a-f0-9]{20,64}$/), fc.integer({ min: 1, max: 16 }), fc.integer({ min: 1, max: 16 }), (a, h, t) => {
-        try {
-          const s = redactAddress(a, { head: h, tail: t })!;
-          return s.length - 3 <= a.length / 2 && matchesAddress(s, a);
-        } catch (e) {
-          return e instanceof ReceiptError && h + t > Math.floor(a.length / 2);
-        }
-      }),
+      fc.property(
+        fc.stringMatching(/^[a-f0-9]{20,64}$/),
+        fc.integer({ min: 1, max: 16 }),
+        fc.integer({ min: 1, max: 16 }),
+        (a, h, t) => {
+          try {
+            const s = redactAddress(a, { head: h, tail: t })!;
+            return s.length - 3 <= a.length / 2 && matchesAddress(s, a);
+          } catch (e) {
+            return e instanceof ReceiptError && h + t > Math.floor(a.length / 2);
+          }
+        },
+      ),
     );
   });
 });
@@ -118,12 +140,19 @@ describe('secret detection', () => {
   const positives: [string, string][] = [
     ['hex-256', 'k=' + 'ab'.repeat(32)],
     ['hex-256', '0x' + '12'.repeat(32)],
-    ['extended-private-key', 'xprv' + '9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi'],
+    [
+      'extended-private-key',
+      'xprv' +
+        '9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi',
+    ],
     ['stealth-meta-address', 'st:eth:0x' + 'ab'.repeat(33)],
     ['key-word', 'my Viewing Key is secret'],
     ['key-word', 'private_key'],
     ['seed-word', 'seed phrase inside'],
-    ['mnemonic-shaped', 'abandon ability able about above absent absorb abstract absurd abuse access accident'],
+    [
+      'mnemonic-shaped',
+      'abandon ability able about above absent absorb abstract absurd abuse access accident',
+    ],
   ];
   it.each(positives)('flags %s', (reason, text) => expect(detectSecretLikeText(text)).toContain(reason));
   it('does not flag ordinary memos', () => {

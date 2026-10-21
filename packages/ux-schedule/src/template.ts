@@ -81,13 +81,13 @@ export function createTemplate(input: unknown, clock: Clock): Result<PaymentTemp
 }
 
 /** Apply a partial patch (id is immutable); the merged result is fully re-validated. */
-export function updateTemplate(
-  t: PaymentTemplate,
-  patch: unknown,
-  clock: Clock,
-): Result<PaymentTemplate> {
+export function updateTemplate(t: PaymentTemplate, patch: unknown, clock: Clock): Result<PaymentTemplate> {
   if (!isPlainObject(patch)) return err('bad_template', 'patch must be an object');
-  const k = checkKeys(patch, INPUT_KEYS.filter((x) => x !== 'id'), 'patch');
+  const k = checkKeys(
+    patch,
+    INPUT_KEYS.filter((x) => x !== 'id'),
+    'patch',
+  );
   if (!k.ok) return k;
   const merged: Record<string, unknown> = {
     id: t.id,
@@ -143,8 +143,12 @@ export function parseTemplates(raw: unknown): Result<readonly PaymentTemplate[]>
     const c = item['createdAtMs'];
     const u = item['updatedAtMs'];
     if (
-      typeof c !== 'number' || typeof u !== 'number' ||
-      !Number.isSafeInteger(c) || !Number.isSafeInteger(u) || c < 0 || u < c
+      typeof c !== 'number' ||
+      typeof u !== 'number' ||
+      !Number.isSafeInteger(c) ||
+      !Number.isSafeInteger(u) ||
+      c < 0 ||
+      u < c
     ) {
       return err('bad_time', 'invalid template timestamps');
     }

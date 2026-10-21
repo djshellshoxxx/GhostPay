@@ -1,8 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import fc from 'fast-check';
 import {
-  MAX_QUIZ_ATTEMPTS, buildQuiz, gradeQuiz, initialState, parseState, reduce, viewModel,
-  type OnboardingEvent, type OnboardingState,
+  MAX_QUIZ_ATTEMPTS,
+  buildQuiz,
+  gradeQuiz,
+  initialState,
+  parseState,
+  reduce,
+  viewModel,
+  type OnboardingEvent,
+  type OnboardingState,
 } from './onboarding.js';
 
 function run(s: OnboardingState, ...evs: OnboardingEvent[]): OnboardingState {
@@ -16,7 +23,12 @@ function run(s: OnboardingState, ...evs: OnboardingEvent[]): OnboardingState {
 }
 const T = 1_700_000_000_000;
 const created = (): OnboardingState =>
-  run(initialState(T), { type: 'START', at: T + 1 }, { type: 'CHOOSE_WALLET_MODE', mode: 'create', at: T + 2 }, { type: 'WALLET_READY', wordCount: 12, at: T + 3 });
+  run(
+    initialState(T),
+    { type: 'START', at: T + 1 },
+    { type: 'CHOOSE_WALLET_MODE', mode: 'create', at: T + 2 },
+    { type: 'WALLET_READY', wordCount: 12, at: T + 3 },
+  );
 const err = (s: OnboardingState, e: OnboardingEvent) => {
   const r = reduce(s, e);
   expect(r.ok).toBe(false);
@@ -28,20 +40,39 @@ describe('happy paths', () => {
   it('create flow reaches done', () => {
     let s = created();
     expect(s.step).toBe('backup');
-    s = run(s, { type: 'QUIZ_POSITIONS', positions: [2, 5, 11], at: T + 4 }, { type: 'QUIZ_SUBMITTED', correct: [true, true, true], at: T + 5 });
+    s = run(
+      s,
+      { type: 'QUIZ_POSITIONS', positions: [2, 5, 11], at: T + 4 },
+      { type: 'QUIZ_SUBMITTED', correct: [true, true, true], at: T + 5 },
+    );
     expect(s.step).toBe('profile');
     expect(s.backupConfirmed).toBe(true);
-    s = run(s, { type: 'PROFILE_CHOSEN', profile: 'private', at: T + 6 }, { type: 'RECEIVE_ACKNOWLEDGED', at: T + 7 });
+    s = run(
+      s,
+      { type: 'PROFILE_CHOSEN', profile: 'private', at: T + 6 },
+      { type: 'RECEIVE_ACKNOWLEDGED', at: T + 7 },
+    );
     expect(s.step).toBe('done');
     expect(s.updatedAt).toBe(T + 7);
     expect(viewModel(s).finished).toBe(true);
     expect(parseState(JSON.parse(JSON.stringify(s)))).toEqual(s);
   });
   it('import flow skips backup quiz', () => {
-    let s = run(initialState(T), { type: 'START', at: T }, { type: 'CHOOSE_WALLET_MODE', mode: 'import', at: T }, { type: 'WALLET_READY', at: T });
+    let s = run(
+      initialState(T),
+      { type: 'START', at: T },
+      { type: 'CHOOSE_WALLET_MODE', mode: 'import', at: T },
+      { type: 'WALLET_READY', at: T },
+    );
     expect(s.step).toBe('profile');
     expect(s.wordCount).toBeNull();
-    expect(viewModel(s).progress.map((p) => p.status)).toEqual(['done', 'done', 'skipped', 'current', 'todo']);
+    expect(viewModel(s).progress.map((p) => p.status)).toEqual([
+      'done',
+      'done',
+      'skipped',
+      'current',
+      'todo',
+    ]);
     s = run(s, { type: 'PROFILE_CHOSEN', profile: 'maximum', at: T });
     expect(parseState(s)).toEqual(s);
   });
@@ -55,13 +86,21 @@ describe('quiz', () => {
   it('wrong answers clear positions, count attempts, then force review', () => {
     let s = created();
     for (let i = 1; i < MAX_QUIZ_ATTEMPTS; i++) {
-      s = run(s, { type: 'QUIZ_POSITIONS', positions: [1, 2, 3], at: T }, { type: 'QUIZ_SUBMITTED', correct: [true, false, true], at: T });
+      s = run(
+        s,
+        { type: 'QUIZ_POSITIONS', positions: [1, 2, 3], at: T },
+        { type: 'QUIZ_SUBMITTED', correct: [true, false, true], at: T },
+      );
       expect(s.quizAttempts).toBe(i);
       expect(s.quizPositions).toEqual([]);
       expect(s.reviewRequired).toBe(false);
     }
     expect(viewModel(s).quizAttemptsLeft).toBe(1);
-    s = run(s, { type: 'QUIZ_POSITIONS', positions: [1, 2, 3], at: T }, { type: 'QUIZ_SUBMITTED', correct: [false, false, false], at: T });
+    s = run(
+      s,
+      { type: 'QUIZ_POSITIONS', positions: [1, 2, 3], at: T },
+      { type: 'QUIZ_SUBMITTED', correct: [false, false, false], at: T },
+    );
     expect(s.reviewRequired).toBe(true);
     expect(s.quizAttempts).toBe(0);
     expect(err(s, { type: 'QUIZ_POSITIONS', positions: [1, 2, 3], at: T })).toBe('review_required');
@@ -80,13 +119,21 @@ describe('quiz', () => {
     expect(err(s, { type: 'QUIZ_POSITIONS', positions: [1, 2, 13], at: T })).toBe('bad_positions');
     expect(err(s, { type: 'QUIZ_POSITIONS', positions: [1, 1.5, 3], at: T })).toBe('bad_positions');
     expect(err(s, { type: 'QUIZ_POSITIONS', positions: [0, 2, 3], at: T })).toBe('bad_positions');
-    expect(err(s, { type: 'QUIZ_POSITIONS', positions: ['1', 2, 3] as unknown as number[], at: T })).toBe('bad_positions');
-    expect(err(s, { type: 'QUIZ_POSITIONS', positions: 'abc' as unknown as number[], at: T })).toBe('bad_positions');
+    expect(err(s, { type: 'QUIZ_POSITIONS', positions: ['1', 2, 3] as unknown as number[], at: T })).toBe(
+      'bad_positions',
+    );
+    expect(err(s, { type: 'QUIZ_POSITIONS', positions: 'abc' as unknown as number[], at: T })).toBe(
+      'bad_positions',
+    );
     expect(err(s, { type: 'QUIZ_SUBMITTED', correct: [true, true, true], at: T })).toBe('bad_positions');
     const q = run(s, { type: 'QUIZ_POSITIONS', positions: [1, 2, 3], at: T });
     expect(err(q, { type: 'QUIZ_SUBMITTED', correct: [true, true], at: T })).toBe('bad_quiz_result');
-    expect(err(q, { type: 'QUIZ_SUBMITTED', correct: ['yes', true, true] as unknown as boolean[], at: T })).toBe('bad_quiz_result');
-    expect(err(q, { type: 'QUIZ_SUBMITTED', correct: null as unknown as boolean[], at: T })).toBe('bad_quiz_result');
+    expect(
+      err(q, { type: 'QUIZ_SUBMITTED', correct: ['yes', true, true] as unknown as boolean[], at: T }),
+    ).toBe('bad_quiz_result');
+    expect(err(q, { type: 'QUIZ_SUBMITTED', correct: null as unknown as boolean[], at: T })).toBe(
+      'bad_quiz_result',
+    );
   });
   it('buildQuiz picks distinct sorted positions', () => {
     expect(buildQuiz(12, () => 0)).toEqual([1, 2, 3]);
@@ -144,14 +191,25 @@ describe('transition guards', () => {
     expect(back.walletMode).toBeNull();
   });
   it('profile step guards', () => {
-    const s = run(initialState(T), { type: 'START', at: T }, { type: 'CHOOSE_WALLET_MODE', mode: 'import', at: T }, { type: 'WALLET_READY', at: T });
+    const s = run(
+      initialState(T),
+      { type: 'START', at: T },
+      { type: 'CHOOSE_WALLET_MODE', mode: 'import', at: T },
+      { type: 'WALLET_READY', at: T },
+    );
     expect(err(s, { type: 'PROFILE_CHOSEN', profile: 'nope' as 'private', at: T })).toBe('invalid_event');
     expect(err(s, { type: 'BACK', at: T })).toBe('cannot_go_back');
     const bad: OnboardingState = { ...s, walletReady: false };
     expect(err(bad, { type: 'PROFILE_CHOSEN', profile: 'private', at: T })).toBe('wallet_not_ready');
   });
   it('back from receive returns to profile', () => {
-    let s = run(initialState(T), { type: 'START', at: T }, { type: 'CHOOSE_WALLET_MODE', mode: 'import', at: T }, { type: 'WALLET_READY', at: T }, { type: 'PROFILE_CHOSEN', profile: 'everyday', at: T });
+    let s = run(
+      initialState(T),
+      { type: 'START', at: T },
+      { type: 'CHOOSE_WALLET_MODE', mode: 'import', at: T },
+      { type: 'WALLET_READY', at: T },
+      { type: 'PROFILE_CHOSEN', profile: 'everyday', at: T },
+    );
     expect(viewModel(s).canGoBack).toBe(true);
     s = run(s, { type: 'BACK', at: T });
     expect(s.step).toBe('profile');
@@ -168,12 +226,25 @@ describe('transition guards', () => {
   it('property: random event streams never throw and never leave valid states', () => {
     const evArb: fc.Arbitrary<OnboardingEvent> = fc.oneof(
       fc.constant<OnboardingEvent>({ type: 'START', at: T }),
-      fc.constantFrom<'create' | 'import'>('create', 'import').map((mode): OnboardingEvent => ({ type: 'CHOOSE_WALLET_MODE', mode, at: T })),
-      fc.constantFrom<12 | 24 | undefined>(12, 24, undefined).map((w) => (w ? { type: 'WALLET_READY', wordCount: w, at: T } : { type: 'WALLET_READY', at: T }) as OnboardingEvent),
+      fc
+        .constantFrom<'create' | 'import'>('create', 'import')
+        .map((mode): OnboardingEvent => ({ type: 'CHOOSE_WALLET_MODE', mode, at: T })),
+      fc
+        .constantFrom<12 | 24 | undefined>(12, 24, undefined)
+        .map(
+          (w) =>
+            (w
+              ? { type: 'WALLET_READY', wordCount: w, at: T }
+              : { type: 'WALLET_READY', at: T }) as OnboardingEvent,
+        ),
       fc.constant<OnboardingEvent>({ type: 'QUIZ_POSITIONS', positions: [1, 4, 9], at: T }),
-      fc.array(fc.boolean(), { maxLength: 4 }).map((correct): OnboardingEvent => ({ type: 'QUIZ_SUBMITTED', correct, at: T })),
+      fc
+        .array(fc.boolean(), { maxLength: 4 })
+        .map((correct): OnboardingEvent => ({ type: 'QUIZ_SUBMITTED', correct, at: T })),
       fc.constant<OnboardingEvent>({ type: 'PHRASE_REVIEWED', at: T }),
-      fc.constantFrom('everyday', 'private', 'maximum').map((profile): OnboardingEvent => ({ type: 'PROFILE_CHOSEN', profile, at: T })),
+      fc
+        .constantFrom('everyday', 'private', 'maximum')
+        .map((profile): OnboardingEvent => ({ type: 'PROFILE_CHOSEN', profile, at: T })),
       fc.constant<OnboardingEvent>({ type: 'RECEIVE_ACKNOWLEDGED', at: T }),
       fc.constant<OnboardingEvent>({ type: 'BACK', at: T }),
     );
@@ -194,7 +265,13 @@ describe('transition guards', () => {
 describe('viewModel', () => {
   it('welcome and wallet steps', () => {
     const w = viewModel(initialState(T));
-    expect(w).toMatchObject({ stepNumber: 1, totalSteps: 5, titleKey: 'guide.onboarding.welcome.title', canGoBack: false, resumeAction: 'none' });
+    expect(w).toMatchObject({
+      stepNumber: 1,
+      totalSteps: 5,
+      titleKey: 'guide.onboarding.welcome.title',
+      canGoBack: false,
+      resumeAction: 'none',
+    });
     const s1 = run(initialState(T), { type: 'START', at: T });
     expect(viewModel(s1).primary?.enabled).toBe(false);
     expect(viewModel(s1).canGoBack).toBe(true);
@@ -206,12 +283,23 @@ describe('viewModel', () => {
   it('backup step may show phrase, warns, exposes quiz', () => {
     const s = run(created(), { type: 'QUIZ_POSITIONS', positions: [2, 5, 11], at: T });
     const v = viewModel(s);
-    expect(v).toMatchObject({ mayShowPhrase: true, quizPositions: [2, 5, 11], quizAttemptsLeft: 3, stepNumber: 3, resumeAction: 'none' });
+    expect(v).toMatchObject({
+      mayShowPhrase: true,
+      quizPositions: [2, 5, 11],
+      quizAttemptsLeft: 3,
+      stepNumber: 3,
+      resumeAction: 'none',
+    });
     expect(v.warningKeys).toContain('guide.onboarding.warn.neverShare');
     expect(v.primary).toMatchObject({ id: 'submit_quiz', enabled: true });
   });
   it('receive and profile steps', () => {
-    const p = run(initialState(T), { type: 'START', at: T }, { type: 'CHOOSE_WALLET_MODE', mode: 'import', at: T }, { type: 'WALLET_READY', at: T });
+    const p = run(
+      initialState(T),
+      { type: 'START', at: T },
+      { type: 'CHOOSE_WALLET_MODE', mode: 'import', at: T },
+      { type: 'WALLET_READY', at: T },
+    );
     expect(viewModel(p).primary?.id).toBe('choose_profile');
     expect(viewModel(p).mayShowPhrase).toBe(false);
     const r = run(p, { type: 'PROFILE_CHOSEN', profile: 'private', at: T });
@@ -285,6 +373,10 @@ describe('parseState (untrusted persisted data)', () => {
     expect(parseState({ ...prof, profile: 'private' })).not.toBeNull();
   });
   it('fuzz: arbitrary JSON never throws', () => {
-    fc.assert(fc.property(fc.jsonValue(), (v) => { parseState(v); }));
+    fc.assert(
+      fc.property(fc.jsonValue(), (v) => {
+        parseState(v);
+      }),
+    );
   });
 });

@@ -6,10 +6,26 @@ import { confirm } from './scheduled.js';
 import { UTC } from './time.js';
 import { fixed, goodTemplate, noMemo, utc } from './testutil.testutil.js';
 
-const r = validateRule({ frequency: 'monthly', interval: 1, startDate: { year: 2026, month: 1, day: 31 }, timeOfDayMinutes: 600 });
+const r = validateRule({
+  frequency: 'monthly',
+  interval: 1,
+  startDate: { year: 2026, month: 1, day: 31 },
+  timeOfDayMinutes: 600,
+});
 if (!r.ok) throw new Error();
-const sched: RecurringSchedule = { id: 'sch', templateId: 'rent', rule: r.value, paused: false, policy: 'latest-only', lastHandledMs: null };
-const tpl = (() => { const t = createTemplate(goodTemplate, fixed(0)); if (!t.ok) throw new Error(); return t.value; })();
+const sched: RecurringSchedule = {
+  id: 'sch',
+  templateId: 'rent',
+  rule: r.value,
+  paused: false,
+  policy: 'latest-only',
+  lastHandledMs: null,
+};
+const tpl = (() => {
+  const t = createTemplate(goodTemplate, fixed(0));
+  if (!t.ok) throw new Error();
+  return t.value;
+})();
 const now = utc(2026, 2, 28, 12);
 
 describe('recurring schedule', () => {

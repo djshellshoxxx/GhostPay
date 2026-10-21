@@ -38,7 +38,9 @@ export function civilFromDays(days: number): CivilDate {
   const z = days + 719468;
   const era = Math.floor(z / 146097);
   const doe = z - era * 146097;
-  const yoe = Math.floor((doe - Math.floor(doe / 1460) + Math.floor(doe / 36524) - Math.floor(doe / 146096)) / 365);
+  const yoe = Math.floor(
+    (doe - Math.floor(doe / 1460) + Math.floor(doe / 36524) - Math.floor(doe / 146096)) / 365,
+  );
   const doy = doe - (365 * yoe + Math.floor(yoe / 4) - Math.floor(yoe / 100));
   const mp = Math.floor((5 * doy + 2) / 153);
   const day = doy - Math.floor((153 * mp + 2) / 5) + 1;

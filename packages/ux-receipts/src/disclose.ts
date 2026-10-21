@@ -3,12 +3,25 @@ import { digestBody } from './digest.js';
 import { ReceiptError } from './errors.js';
 import { detectSecretLikeText } from './secrets.js';
 import {
-  REDACTABLE_FIELDS, RECEIPT_TYPE, RECEIPT_VERSION,
-  type AddressForm, type DisclosurePolicy, type PaymentRecord, type Receipt, type RedactableField,
+  REDACTABLE_FIELDS,
+  RECEIPT_TYPE,
+  RECEIPT_VERSION,
+  type AddressForm,
+  type DisclosurePolicy,
+  type PaymentRecord,
+  type Receipt,
+  type RedactableField,
 } from './types.js';
 import {
-  isAddress, isAmountBase, isAssetSymbol, isChainId, isDecimals, isForbiddenFieldName,
-  isIsoInstant, isSafeMemo, isTxHash,
+  isAddress,
+  isAmountBase,
+  isAssetSymbol,
+  isChainId,
+  isDecimals,
+  isForbiddenFieldName,
+  isIsoInstant,
+  isSafeMemo,
+  isTxHash,
 } from './validate.js';
 
 /**
@@ -18,16 +31,49 @@ import {
  * - full: everything in the record, full addresses.
  */
 export const PRESETS: Readonly<Record<'minimal' | 'standard' | 'full', DisclosurePolicy>> = {
-  minimal: { time: 'day', chain: false, amount: false, memo: false, txHash: false, sender: 'hidden', recipient: 'hidden' },
-  standard: { time: 'exact', chain: true, amount: true, memo: false, txHash: false, sender: TRUNCATED, recipient: TRUNCATED },
-  full: { time: 'exact', chain: true, amount: true, memo: true, txHash: true, sender: 'full', recipient: 'full' },
+  minimal: {
+    time: 'day',
+    chain: false,
+    amount: false,
+    memo: false,
+    txHash: false,
+    sender: 'hidden',
+    recipient: 'hidden',
+  },
+  standard: {
+    time: 'exact',
+    chain: true,
+    amount: true,
+    memo: false,
+    txHash: false,
+    sender: TRUNCATED,
+    recipient: TRUNCATED,
+  },
+  full: {
+    time: 'exact',
+    chain: true,
+    amount: true,
+    memo: true,
+    txHash: true,
+    sender: 'full',
+    recipient: 'full',
+  },
 };
 
 const RECORD_KEYS = new Set([
-  'createdAt', 'chain', 'asset', 'amountBase', 'memo', 'txHash', 'sender', 'recipient', 'recipientKind',
+  'createdAt',
+  'chain',
+  'asset',
+  'amountBase',
+  'memo',
+  'txHash',
+  'sender',
+  'recipient',
+  'recipientKind',
 ]);
 
-const bad = (path: string, msg = 'invalid value'): ReceiptError => new ReceiptError('INVALID_FIELD', path, msg);
+const bad = (path: string, msg = 'invalid value'): ReceiptError =>
+  new ReceiptError('INVALID_FIELD', path, msg);
 
 function isPlain(v: unknown): v is Record<string, unknown> {
   if (typeof v !== 'object' || v === null || Array.isArray(v)) return false;
@@ -52,7 +98,8 @@ export function validateRecord(input: unknown): PaymentRecord {
   if (!isIsoInstant(r['createdAt'])) throw bad('createdAt');
   if (!isChainId(r['chain'])) throw bad('chain');
   const asset = r['asset'];
-  if (!isPlain(asset) || Object.keys(asset).some((k) => k !== 'symbol' && k !== 'decimals')) throw bad('asset');
+  if (!isPlain(asset) || Object.keys(asset).some((k) => k !== 'symbol' && k !== 'decimals'))
+    throw bad('asset');
   if (!isAssetSymbol(asset['symbol'])) throw bad('asset.symbol');
   if (!isDecimals(asset['decimals'])) throw bad('asset.decimals');
   if (!isAmountBase(r['amountBase'])) throw bad('amountBase');
@@ -88,7 +135,8 @@ function checkForm(f: unknown, path: string): void {
 export function validatePolicy(p: unknown): DisclosurePolicy {
   if (!isPlain(p)) throw new ReceiptError('INVALID_POLICY', 'policy', 'policy must be an object');
   const t = p['time'];
-  if (t !== 'exact' && t !== 'day' && t !== 'hidden') throw new ReceiptError('INVALID_POLICY', 'time', 'invalid time form');
+  if (t !== 'exact' && t !== 'day' && t !== 'hidden')
+    throw new ReceiptError('INVALID_POLICY', 'time', 'invalid time form');
   for (const k of ['chain', 'amount', 'memo', 'txHash'] as const) {
     if (typeof p[k] !== 'boolean') throw new ReceiptError('INVALID_POLICY', k, 'must be boolean');
   }
@@ -124,7 +172,11 @@ export async function createReceipt(recordInput: unknown, policyInput: unknown):
   if (pol.memo) {
     if (rec.memo !== undefined) {
       if (detectSecretLikeText(rec.memo).length > 0) {
-        throw new ReceiptError('SECRET_LIKE_MEMO', 'memo', 'memo looks like secret material and cannot be shared');
+        throw new ReceiptError(
+          'SECRET_LIKE_MEMO',
+          'memo',
+          'memo looks like secret material and cannot be shared',
+        );
       }
       body['memo'] = rec.memo;
     }

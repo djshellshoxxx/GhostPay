@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import fc from 'fast-check';
-import { NotificationQueue, NOTIFICATION_KINDS, parseSnapshot, validateParams, type NotificationInput, type QueueConfig } from './notification.js';
+import {
+  NotificationQueue,
+  NOTIFICATION_KINDS,
+  parseSnapshot,
+  validateParams,
+  type NotificationInput,
+  type QueueConfig,
+} from './notification.js';
 import { containsSensitive } from './redact.js';
 
 const EVM = '0x2222222222222222222222222222222222222222';
@@ -13,7 +20,10 @@ function mk(extra: Partial<QueueConfig> = {}, start = 1_700_000_000_000) {
   return { q, clock };
 }
 const rcv = (key: string, extra: Partial<NotificationInput> = {}): NotificationInput => ({
-  kind: 'payment_received', dedupeKey: key, params: { amount: '12.50', asset: 'USDC', address: EVM, label: 'Sam' }, ...extra,
+  kind: 'payment_received',
+  dedupeKey: key,
+  params: { amount: '12.50', asset: 'USDC', address: EVM, label: 'Sam' },
+  ...extra,
 });
 
 describe('privacy rendering', () => {
@@ -52,7 +62,13 @@ describe('privacy rendering', () => {
   it('lock screen is generic for every kind in both modes', () => {
     for (const discreet of [true, false]) {
       const { q } = mk({ discreet });
-      NOTIFICATION_KINDS.forEach((kind, i) => q.push({ kind, dedupeKey: `k${i}`, params: { amount: '99.99', asset: 'ETH', address: EVM, label: 'Bob' } }));
+      NOTIFICATION_KINDS.forEach((kind, i) =>
+        q.push({
+          kind,
+          dedupeKey: `k${i}`,
+          params: { amount: '99.99', asset: 'ETH', address: EVM, label: 'Bob' },
+        }),
+      );
       for (const v of q.list('lockscreen')) {
         expect(v.title).toBe('Notification');
         expect(v.body).toBe('Open the app to see more.');
@@ -93,7 +109,9 @@ describe('privacy rendering', () => {
   it('property: discreet/lockscreen never leak any generated params', () => {
     fc.assert(
       fc.property(
-        fc.stringMatching(/^\d{1,10}(\.\d{1,6})?$/), fc.stringMatching(/^[A-Za-z0-9]{12,60}$/), fc.string({ maxLength: 30 }),
+        fc.stringMatching(/^\d{1,10}(\.\d{1,6})?$/),
+        fc.stringMatching(/^[A-Za-z0-9]{12,60}$/),
+        fc.string({ maxLength: 30 }),
         (amount, address, label) => {
           const { q } = mk({ discreet: true });
           q.push({ kind: 'payment_received', dedupeKey: 'p', params: { amount, address, label } });
@@ -111,7 +129,8 @@ describe('privacy rendering', () => {
 describe('validation', () => {
   it('rejects bad inputs', () => {
     const { q } = mk();
-    const bad = (i: unknown, reason: string) => expect(q.push(i as NotificationInput)).toEqual({ outcome: 'rejected', reason });
+    const bad = (i: unknown, reason: string) =>
+      expect(q.push(i as NotificationInput)).toEqual({ outcome: 'rejected', reason });
     bad(null, 'kind');
     bad({ kind: 'nope', dedupeKey: 'a' }, 'kind');
     bad({ kind: 'sync_issue', dedupeKey: 'bad key!' }, 'dedupe_key');
@@ -159,7 +178,10 @@ describe('dedupe, coalesce, priority', () => {
     const { q, clock } = mk({ coalesceWindowMs: 10 * MIN });
     const a = q.push(rcv('1', { coalesceKey: 'g' })) as { id: string };
     clock.t += 5 * MIN;
-    expect(q.push(rcv('2', { coalesceKey: 'g', priority: 'high' }))).toEqual({ outcome: 'coalesced', id: a.id });
+    expect(q.push(rcv('2', { coalesceKey: 'g', priority: 'high' }))).toEqual({
+      outcome: 'coalesced',
+      id: a.id,
+    });
     expect(q.get(a.id)!.count).toBe(2);
     expect(q.get(a.id)!.priority).toBe('high');
     expect(q.push({ kind: 'payment_sent', dedupeKey: '3', coalesceKey: 'g' }).outcome).toBe('added');
@@ -239,7 +261,12 @@ describe('capacity', () => {
     q.push({ kind: 'sync_issue', dedupeKey: 'l', priority: 'low' });
     clock.t += 1;
     q.push({ kind: 'sync_issue', dedupeKey: 'n2' }); // evicts unread low
-    expect(q.list().map((v) => v.priority).sort()).toEqual(['critical', 'normal', 'normal']);
+    expect(
+      q
+        .list()
+        .map((v) => v.priority)
+        .sort(),
+    ).toEqual(['critical', 'normal', 'normal']);
     q.markRead(n.id);
     clock.t += 1;
     q.push({ kind: 'sync_issue', dedupeKey: 'n3' }); // evicts read normal
@@ -251,7 +278,10 @@ describe('capacity', () => {
     q.push({ kind: 'security_alert', dedupeKey: 'a', priority: 'critical' });
     clock.t += 1;
     q.push({ kind: 'security_alert', dedupeKey: 'b', priority: 'critical' });
-    expect(q.push({ kind: 'sync_issue', dedupeKey: 'x', priority: 'high' })).toEqual({ outcome: 'rejected', reason: 'queue_full' });
+    expect(q.push({ kind: 'sync_issue', dedupeKey: 'x', priority: 'high' })).toEqual({
+      outcome: 'rejected',
+      reason: 'queue_full',
+    });
     expect(q.push({ kind: 'security_alert', dedupeKey: 'c', priority: 'critical' }).outcome).toBe('added');
     expect(q.list()).toHaveLength(2);
     expect(q.get('n1')).toBeUndefined();
@@ -285,7 +315,10 @@ describe('quiet hours and alerts', () => {
     expect(q.isQuietNow()).toBe(true);
   });
   it('same-day window, empty window, null, invalid', () => {
-    const { q, clock } = mk({ quietHours: { startMinute: 600, endMinute: 660, utcOffsetMinutes: 0 } }, Date.UTC(2024, 0, 1, 10, 30));
+    const { q, clock } = mk(
+      { quietHours: { startMinute: 600, endMinute: 660, utcOffsetMinutes: 0 } },
+      Date.UTC(2024, 0, 1, 10, 30),
+    );
     expect(q.isQuietNow()).toBe(true);
     clock.t = Date.UTC(2024, 0, 1, 11, 0);
     expect(q.isQuietNow()).toBe(false);
@@ -297,7 +330,10 @@ describe('quiet hours and alerts', () => {
     expect(q.isQuietNow()).toBe(false);
   });
   it('takeAlerts: quiet suppresses all but critical; deferred ones alert later; low never; once only', () => {
-    const { q, clock } = mk({ quietHours: { startMinute: 0, endMinute: 360, utcOffsetMinutes: 0 } }, Date.UTC(2024, 0, 1, 3, 0));
+    const { q, clock } = mk(
+      { quietHours: { startMinute: 0, endMinute: 360, utcOffsetMinutes: 0 } },
+      Date.UTC(2024, 0, 1, 3, 0),
+    );
     q.push({ kind: 'payment_received', dedupeKey: 'n' });
     q.push({ kind: 'sync_issue', dedupeKey: 'l', priority: 'low' });
     q.push({ kind: 'security_alert', dedupeKey: 'c', priority: 'critical' });
@@ -338,7 +374,8 @@ describe('snapshot / restore', () => {
   });
   it('drops expired on restore; truncates to maxSize', () => {
     const a = mk();
-    for (let i = 0; i < 5; i++) a.q.push({ kind: 'sync_issue', dedupeKey: `k${i}`, ttlMs: i === 0 ? 10 : DAY });
+    for (let i = 0; i < 5; i++)
+      a.q.push({ kind: 'sync_issue', dedupeKey: `k${i}`, ttlMs: i === 0 ? 10 : DAY });
     const b = mk({ maxSize: 3 }, a.clock.t + 100);
     expect(b.q.restore(a.q.snapshot())).toEqual({ ok: true, value: 3 });
   });
@@ -348,16 +385,29 @@ describe('snapshot / restore', () => {
     const good = a.q.snapshot();
     const rec = good.records[0]!;
     const cases: unknown[] = [
-      null, [], { v: 2, seq: 0, records: [] }, { v: 1, seq: -1, records: [] }, { v: 1, seq: 0, records: 'x' },
-      { v: 1, seq: 0, records: [], extra: 1 }, { v: 1, seq: 0, records: new Array(1001).fill(rec) },
-      { ...good, records: [null] }, { ...good, records: [{ ...rec, extra: 1 }] },
-      { ...good, records: [{ ...rec, id: 'x1' }] }, { ...good, records: [rec, rec] },
-      { ...good, records: [{ ...rec, kind: 'nope' }] }, { ...good, records: [{ ...rec, kind: 5 }] },
-      { ...good, records: [{ ...rec, priority: 'meh' }] }, { ...good, records: [{ ...rec, priority: 1 }] },
-      { ...good, records: [{ ...rec, dedupeKeys: [] }] }, { ...good, records: [{ ...rec, dedupeKeys: ['bad key'] }] },
-      { ...good, records: [{ ...rec, dedupeKeys: 'x' }] }, { ...good, records: [{ ...rec, coalesceKey: '??' }] },
-      { ...good, records: [{ ...rec, count: 0 }] }, { ...good, records: [{ ...rec, createdAt: -1 }] },
-      { ...good, records: [{ ...rec, expiresAt: 'x' }] }, { ...good, records: [{ ...rec, read: 1 }] },
+      null,
+      [],
+      { v: 2, seq: 0, records: [] },
+      { v: 1, seq: -1, records: [] },
+      { v: 1, seq: 0, records: 'x' },
+      { v: 1, seq: 0, records: [], extra: 1 },
+      { v: 1, seq: 0, records: new Array(1001).fill(rec) },
+      { ...good, records: [null] },
+      { ...good, records: [{ ...rec, extra: 1 }] },
+      { ...good, records: [{ ...rec, id: 'x1' }] },
+      { ...good, records: [rec, rec] },
+      { ...good, records: [{ ...rec, kind: 'nope' }] },
+      { ...good, records: [{ ...rec, kind: 5 }] },
+      { ...good, records: [{ ...rec, priority: 'meh' }] },
+      { ...good, records: [{ ...rec, priority: 1 }] },
+      { ...good, records: [{ ...rec, dedupeKeys: [] }] },
+      { ...good, records: [{ ...rec, dedupeKeys: ['bad key'] }] },
+      { ...good, records: [{ ...rec, dedupeKeys: 'x' }] },
+      { ...good, records: [{ ...rec, coalesceKey: '??' }] },
+      { ...good, records: [{ ...rec, count: 0 }] },
+      { ...good, records: [{ ...rec, createdAt: -1 }] },
+      { ...good, records: [{ ...rec, expiresAt: 'x' }] },
+      { ...good, records: [{ ...rec, read: 1 }] },
       { ...good, records: [{ ...rec, params: { amount: 'x' } }] },
     ];
     for (const c of cases) {

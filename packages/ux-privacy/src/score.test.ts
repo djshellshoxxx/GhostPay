@@ -63,7 +63,12 @@ describe('computePrivacyScore', () => {
   });
 
   it('ranks advice by recoverable points', () => {
-    const r = computePrivacyScore({ ...best, gasFunding: 'linked', addressReuseCount: 1, relayerUsed: false });
+    const r = computePrivacyScore({
+      ...best,
+      gasFunding: 'linked',
+      addressReuseCount: 1,
+      relayerUsed: false,
+    });
     expect(r.advice.map((a) => a.factor)).toEqual(['gasFunding', 'addressReuse', 'relayer']);
     expect(r.advice.map((a) => a.rank)).toEqual([1, 2, 3]);
     expect(r.advice[0]?.potentialGain).toBe(20);
@@ -157,13 +162,13 @@ describe('computePrivacyScore', () => {
         expect(r.score).toBeGreaterThanOrEqual(0);
         expect(r.score).toBeLessThanOrEqual(MAX_SCORE);
         expect(computePrivacyScore(f)).toEqual(r);
-        expect(computePrivacyScore({ ...f, addressReuseCount: f.addressReuseCount + 1 }).rawScore).toBeLessThanOrEqual(
-          r.rawScore,
-        );
+        expect(
+          computePrivacyScore({ ...f, addressReuseCount: f.addressReuseCount + 1 }).rawScore,
+        ).toBeLessThanOrEqual(r.rawScore);
         if (f.anonymitySetSize !== null) {
-          expect(computePrivacyScore({ ...f, anonymitySetSize: f.anonymitySetSize * 2 + 1 }).rawScore).toBeGreaterThanOrEqual(
-            r.rawScore,
-          );
+          expect(
+            computePrivacyScore({ ...f, anonymitySetSize: f.anonymitySetSize * 2 + 1 }).rawScore,
+          ).toBeGreaterThanOrEqual(r.rawScore);
         }
         for (const a of r.advice) expect(a.potentialGain).toBeGreaterThan(0);
         const gains = r.advice.map((a) => a.potentialGain);

@@ -139,7 +139,9 @@ export function gradeQuiz(
   return positions.map((pos, i) => {
     const expected = phrase[pos - 1];
     const typed = answers[i];
-    return expected !== undefined && typed !== undefined && typed.trim().toLowerCase() === expected.toLowerCase();
+    return (
+      expected !== undefined && typed !== undefined && typed.trim().toLowerCase() === expected.toLowerCase()
+    );
   });
 }
 
@@ -179,7 +181,11 @@ export function reduce(state: OnboardingState, event: OnboardingEvent): ReduceRe
     case 'QUIZ_POSITIONS':
       if (state.step !== 'backup') return fail(state, 'wrong_step');
       if (state.reviewRequired) return fail(state, 'review_required');
-      if (state.wordCount === null || !Array.isArray(event.positions) || !validPositions(event.positions, state.wordCount)) {
+      if (
+        state.wordCount === null ||
+        !Array.isArray(event.positions) ||
+        !validPositions(event.positions, state.wordCount)
+      ) {
         return fail(state, 'bad_positions');
       }
       return ok(state, { quizPositions: [...event.positions] }, at);
@@ -188,7 +194,11 @@ export function reduce(state: OnboardingState, event: OnboardingEvent): ReduceRe
       if (state.reviewRequired) return fail(state, 'review_required');
       if (state.quizPositions.length === 0) return fail(state, 'bad_positions');
       const c = event.correct;
-      if (!Array.isArray(c) || c.length !== state.quizPositions.length || c.some((b) => typeof b !== 'boolean')) {
+      if (
+        !Array.isArray(c) ||
+        c.length !== state.quizPositions.length ||
+        c.some((b) => typeof b !== 'boolean')
+      ) {
         return fail(state, 'bad_quiz_result');
       }
       if (c.every(Boolean)) {
@@ -213,7 +223,8 @@ export function reduce(state: OnboardingState, event: OnboardingEvent): ReduceRe
       if (state.step !== 'receive') return fail(state, 'wrong_step');
       return ok(state, { receiveAcknowledged: true, step: 'done' }, at);
     case 'BACK':
-      if (state.step === 'wallet' && !state.walletReady) return ok(state, { step: 'welcome', walletMode: null }, at);
+      if (state.step === 'wallet' && !state.walletReady)
+        return ok(state, { step: 'welcome', walletMode: null }, at);
       if (state.step === 'receive') return ok(state, { step: 'profile' }, at);
       return fail(state, 'cannot_go_back');
     default:
@@ -222,8 +233,19 @@ export function reduce(state: OnboardingState, event: OnboardingEvent): ReduceRe
 }
 
 const KEYS = [
-  'version', 'step', 'walletMode', 'walletReady', 'wordCount', 'quizPositions', 'quizAttempts',
-  'reviewRequired', 'backupConfirmed', 'profile', 'receiveAcknowledged', 'startedAt', 'updatedAt',
+  'version',
+  'step',
+  'walletMode',
+  'walletReady',
+  'wordCount',
+  'quizPositions',
+  'quizAttempts',
+  'reviewRequired',
+  'backupConfirmed',
+  'profile',
+  'receiveAcknowledged',
+  'startedAt',
+  'updatedAt',
 ] as const;
 const STEPS: readonly string[] = ['welcome', 'wallet', 'backup', 'profile', 'receive', 'done'];
 
@@ -238,7 +260,8 @@ export function parseState(raw: unknown): OnboardingState | null {
   if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) return null;
   const o = raw as Record<string, unknown>;
   const keys = Object.keys(o);
-  if (keys.length !== KEYS.length || !KEYS.every((k) => Object.prototype.hasOwnProperty.call(o, k))) return null;
+  if (keys.length !== KEYS.length || !KEYS.every((k) => Object.prototype.hasOwnProperty.call(o, k)))
+    return null;
   if (o['version'] !== 1) return null;
   if (typeof o['step'] !== 'string' || !STEPS.includes(o['step'])) return null;
   const mode = o['walletMode'];
@@ -248,7 +271,13 @@ export function parseState(raw: unknown): OnboardingState | null {
   if (typeof o['walletReady'] !== 'boolean' || typeof o['reviewRequired'] !== 'boolean') return null;
   if (typeof o['backupConfirmed'] !== 'boolean' || typeof o['receiveAcknowledged'] !== 'boolean') return null;
   const attempts = o['quizAttempts'];
-  if (typeof attempts !== 'number' || !Number.isInteger(attempts) || attempts < 0 || attempts >= MAX_QUIZ_ATTEMPTS) return null;
+  if (
+    typeof attempts !== 'number' ||
+    !Number.isInteger(attempts) ||
+    attempts < 0 ||
+    attempts >= MAX_QUIZ_ATTEMPTS
+  )
+    return null;
   const profile = o['profile'];
   if (profile !== null && !isProfileId(profile)) return null;
   if (!isTs(o['startedAt']) || !isTs(o['updatedAt']) || o['updatedAt'] < o['startedAt']) return null;
@@ -264,13 +293,22 @@ export function parseState(raw: unknown): OnboardingState | null {
   if (idx >= 3 && !o['backupConfirmed']) return null;
   if (step !== 'backup' && (qp.length > 0 || o['reviewRequired'] || attempts > 0)) return null;
   if (idx >= 4 && profile === null) return null;
-  if (step === 'done' !== (o['receiveAcknowledged'] === true)) return null;
+  if ((step === 'done') !== (o['receiveAcknowledged'] === true)) return null;
   if (idx < 2 && o['walletReady']) return null;
   return {
-    version: 1, step, walletMode: mode, walletReady: o['walletReady'], wordCount: wc,
-    quizPositions: [...(qp as number[])], quizAttempts: attempts, reviewRequired: o['reviewRequired'],
-    backupConfirmed: o['backupConfirmed'], profile, receiveAcknowledged: o['receiveAcknowledged'],
-    startedAt: o['startedAt'], updatedAt: o['updatedAt'],
+    version: 1,
+    step,
+    walletMode: mode,
+    walletReady: o['walletReady'],
+    wordCount: wc,
+    quizPositions: [...(qp as number[])],
+    quizAttempts: attempts,
+    reviewRequired: o['reviewRequired'],
+    backupConfirmed: o['backupConfirmed'],
+    profile,
+    receiveAcknowledged: o['receiveAcknowledged'],
+    startedAt: o['startedAt'],
+    updatedAt: o['updatedAt'],
   };
 }
 
@@ -278,11 +316,7 @@ export function parseState(raw: unknown): OnboardingState | null {
 export type StepStatus = 'done' | 'current' | 'todo' | 'skipped';
 
 /** What the host must do on (re)entry to the current step. */
-export type ResumeAction =
-  | 'none'
-  | 'restart_wallet_creation'
-  | 'draw_quiz_positions'
-  | 'show_phrase_again';
+export type ResumeAction = 'none' | 'restart_wallet_creation' | 'draw_quiz_positions' | 'show_phrase_again';
 
 /** View-model for rendering. Contains only keys and flags, no secrets. */
 export interface OnboardingViewModel {
@@ -321,7 +355,11 @@ export function viewModel(state: OnboardingState): OnboardingViewModel {
       break;
     case 'wallet':
       warnings.push('guide.onboarding.warn.noRecovery');
-      primary = { id: 'continue', labelKey: 'guide.onboarding.wallet.cta', enabled: state.walletMode !== null };
+      primary = {
+        id: 'continue',
+        labelKey: 'guide.onboarding.wallet.cta',
+        enabled: state.walletMode !== null,
+      };
       // A half-made wallet is never persisted, so a resumed session starts it over.
       if (state.walletMode === 'create') resumeAction = 'restart_wallet_creation';
       break;
@@ -331,7 +369,9 @@ export function viewModel(state: OnboardingState): OnboardingViewModel {
       else if (state.quizPositions.length === 0) resumeAction = 'draw_quiz_positions';
       primary = {
         id: state.reviewRequired ? 'reviewed' : 'submit_quiz',
-        labelKey: state.reviewRequired ? 'guide.onboarding.backup.reviewed' : 'guide.onboarding.backup.submit',
+        labelKey: state.reviewRequired
+          ? 'guide.onboarding.backup.reviewed'
+          : 'guide.onboarding.backup.submit',
         enabled: state.reviewRequired || state.quizPositions.length > 0,
       };
       break;

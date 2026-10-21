@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
-  MAX_TEMPLATES, addTemplate, createTemplate, parseTemplates, removeTemplate, updateTemplate,
+  MAX_TEMPLATES,
+  addTemplate,
+  createTemplate,
+  parseTemplates,
+  removeTemplate,
+  updateTemplate,
 } from './template.js';
 import { fixed, goodTemplate, noMemo } from './testutil.testutil.js';
 
@@ -18,22 +23,34 @@ describe('createTemplate', () => {
     const r = createTemplate(noMemo, clock);
     expect(r.ok && 'memo' in r.value).toBe(false);
   });
-  it.each([
-    [null], [[]], ['x'], [new (class A {})()],
-  ])('rejects non-object %#', (v) => expect(code(createTemplate(v, clock))).toBe('bad_template'));
+  it.each([[null], [[]], ['x'], [new (class A {})()]])('rejects non-object %#', (v) =>
+    expect(code(createTemplate(v, clock))).toBe('bad_template'),
+  );
   it('rejects unknown keys (e.g. __proto__ style smuggling)', () => {
     expect(code(mk({ extra: 1 }))).toBe('unknown_field');
     expect(code(createTemplate(JSON.parse('{"__proto__":{"x":1}}'), clock))).toBe('unknown_field');
   });
   it.each([
-    ['id', '', 'bad_id'], ['id', 'a b', 'bad_id'], ['id', 5, 'bad_id'],
-    ['name', '', 'bad_text'], ['name', 'x'.repeat(65), 'bad_text'], ['name', 'a\nb', 'bad_text'],
-    ['name', 'a‮b', 'bad_text'], ['name', 'a b', 'bad_text'], ['name', 3, 'bad_text'],
-    ['chain', 'a b', 'bad_token'], ['asset', '', 'bad_token'],
-    ['recipient', 'has space', 'bad_recipient'], ['recipient', '', 'bad_recipient'],
+    ['id', '', 'bad_id'],
+    ['id', 'a b', 'bad_id'],
+    ['id', 5, 'bad_id'],
+    ['name', '', 'bad_text'],
+    ['name', 'x'.repeat(65), 'bad_text'],
+    ['name', 'a\nb', 'bad_text'],
+    ['name', 'a‮b', 'bad_text'],
+    ['name', 'a b', 'bad_text'],
+    ['name', 3, 'bad_text'],
+    ['chain', 'a b', 'bad_token'],
+    ['asset', '', 'bad_token'],
+    ['recipient', 'has space', 'bad_recipient'],
+    ['recipient', '', 'bad_recipient'],
     ['recipient', 'é', 'bad_recipient'],
-    ['amount', '0', 'bad_amount'], ['amount', '-5', 'bad_amount'], ['amount', '01', 'bad_amount'],
-    ['amount', '1.5', 'bad_amount'], ['amount', 100, 'bad_amount'], ['amount', '1e3', 'bad_amount'],
+    ['amount', '0', 'bad_amount'],
+    ['amount', '-5', 'bad_amount'],
+    ['amount', '01', 'bad_amount'],
+    ['amount', '1.5', 'bad_amount'],
+    ['amount', 100, 'bad_amount'],
+    ['amount', '1e3', 'bad_amount'],
     ['amount', '9'.repeat(79), 'bad_amount'],
     ['memo', 'x'.repeat(141), 'bad_text'],
   ])('rejects bad %s=%j', (k, v, c) => expect(code(mk({ [k]: v }))).toBe(c));
@@ -48,7 +65,11 @@ describe('createTemplate', () => {
 });
 
 describe('updateTemplate', () => {
-  const base = (() => { const r = mk(); if (!r.ok) throw new Error(); return r.value; })();
+  const base = (() => {
+    const r = mk();
+    if (!r.ok) throw new Error();
+    return r.value;
+  })();
   it('merges, revalidates and bumps updatedAt', () => {
     const r = updateTemplate(base, { amount: '42' }, fixed(5000));
     expect(r.ok && r.value.amount).toBe('42');

@@ -1,7 +1,8 @@
 /** Shared tiny helpers (pure). */
 
 /** Result type used by all validators; never throws on untrusted input. */
-export type Result<T> = { readonly ok: true; readonly value: T } | { readonly ok: false; readonly error: string };
+export type Result<T> =
+  { readonly ok: true; readonly value: T } | { readonly ok: false; readonly error: string };
 
 /** @internal */
 export const ok = <T>(value: T): Result<T> => ({ ok: true, value });

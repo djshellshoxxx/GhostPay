@@ -21,7 +21,8 @@ function encode(v: unknown, depth: number): string {
     case 'string':
       return JSON.stringify(v);
     case 'number':
-      if (!Number.isSafeInteger(v)) throw new ReceiptError('NOT_CANONICALIZABLE', '', 'only safe integers allowed');
+      if (!Number.isSafeInteger(v))
+        throw new ReceiptError('NOT_CANONICALIZABLE', '', 'only safe integers allowed');
       return String(v);
     case 'object': {
       if (Array.isArray(v)) return '[' + v.map((x) => encode(x, depth + 1)).join(',') + ']';
@@ -31,9 +32,7 @@ function encode(v: unknown, depth: number): string {
       }
       const obj = v as Record<string, unknown>;
       const keys = Object.keys(obj).sort();
-      return (
-        '{' + keys.map((k) => JSON.stringify(k) + ':' + encode(obj[k], depth + 1)).join(',') + '}'
-      );
+      return '{' + keys.map((k) => JSON.stringify(k) + ':' + encode(obj[k], depth + 1)).join(',') + '}';
     }
     default:
       throw new ReceiptError('NOT_CANONICALIZABLE', '', 'unsupported value type');

@@ -103,7 +103,8 @@ export function resolveColumns(specs: readonly ColumnSpec[]): ResolvedColumn[] {
     const key = typeof s === 'string' ? s : s.key;
     const header = typeof s === 'string' ? s : s.header;
     if (!ALL_COLUMNS.includes(key)) throw new ExportError('INVALID_OPTION', 'unknown column key');
-    if (header === '' || header.length > 64) throw new ExportError('INVALID_OPTION', 'header must be 1..64 chars');
+    if (header === '' || header.length > 64)
+      throw new ExportError('INVALID_OPTION', 'header must be 1..64 chars');
     if (keys.has(key) || headers.has(header)) throw new ExportError('INVALID_OPTION', 'duplicate column');
     keys.add(key);
     headers.add(header);
@@ -132,7 +133,8 @@ export function validateRow(r: LedgerRow, index: number): void {
   if (r.id === '' || r.asset === '') bad('id and asset must be non-empty');
   if (!isDirection(r.direction)) bad('invalid direction');
   if (!isStatus(r.status)) bad('invalid status');
-  if (typeof r.amount !== 'bigint' || r.amount < 0n || r.amount > MAX_AMOUNT) bad('amount must be bigint in 0..2^256-1');
+  if (typeof r.amount !== 'bigint' || r.amount < 0n || r.amount > MAX_AMOUNT)
+    bad('amount must be bigint in 0..2^256-1');
   if (typeof r.fee !== 'bigint' || r.fee < 0n || r.fee > MAX_AMOUNT) bad('fee must be bigint in 0..2^256-1');
   try {
     assertDecimals(r.decimals);

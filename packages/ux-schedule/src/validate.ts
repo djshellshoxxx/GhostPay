@@ -32,9 +32,7 @@ export function validId(v: unknown, what: string): Result<string> {
 }
 
 export function validToken(v: unknown, what: string): Result<string> {
-  return typeof v === 'string' && TOKEN_RE.test(v)
-    ? ok(v)
-    : err('bad_token', `${what}: invalid identifier`);
+  return typeof v === 'string' && TOKEN_RE.test(v) ? ok(v) : err('bad_token', `${what}: invalid identifier`);
 }
 
 /** Recipient is chain-specific and checked elsewhere; here only printable ASCII, no spaces. */

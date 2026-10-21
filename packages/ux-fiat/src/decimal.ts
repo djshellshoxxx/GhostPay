@@ -84,11 +84,7 @@ export function parseUnsignedDecimal(
  * Parse a human decimal string into base units. Excess fractional digits are
  * an error (never silently truncated) unless a rounding mode is supplied.
  */
-export function parseUnits(
-  s: string,
-  decimals: number,
-  mode?: RoundingMode,
-): Result<bigint> {
+export function parseUnits(s: string, decimals: number, mode?: RoundingMode): Result<bigint> {
   if (!isSmallInt(decimals, MAX_ASSET_DECIMALS)) return err('bad-decimals', 'bad decimals');
   const p = parseUnsignedDecimal(s, MAX_AMOUNT_DIGITS, mode ? 4 * MAX_AMOUNT_DIGITS : decimals);
   if (!p.ok) return p;
@@ -105,7 +101,9 @@ export function formatUnits(amount: bigint, decimals: number): Result<string> {
   if (!a.ok) return a;
   if (!isSmallInt(decimals, MAX_ASSET_DECIMALS)) return err('bad-decimals', 'bad decimals');
   const neg = amount < 0n;
-  const digits = absBig(amount).toString().padStart(decimals + 1, '0');
+  const digits = absBig(amount)
+    .toString()
+    .padStart(decimals + 1, '0');
   const int = digits.slice(0, digits.length - decimals);
   const frac = digits.slice(digits.length - decimals).replace(/0+$/, '');
   return ok(`${neg ? '-' : ''}${int}${frac ? '.' + frac : ''}`);

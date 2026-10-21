@@ -20,14 +20,7 @@ export interface FiatFormat {
   readonly minFractionDigits?: number;
 }
 
-export type FormatPartType =
-  | 'sign'
-  | 'symbol'
-  | 'space'
-  | 'integer'
-  | 'group'
-  | 'decimal'
-  | 'fraction';
+export type FormatPartType = 'sign' | 'symbol' | 'space' | 'integer' | 'group' | 'decimal' | 'fraction';
 
 export interface FormatPart {
   readonly type: FormatPartType;
@@ -38,10 +31,7 @@ const BAD_SEP_RE = /[0-9\p{Cc}\p{Cf}]/u;
 
 function checkFormat(f: FiatFormat, decimals: number): Result<true> {
   const sepOk = (s: string, max: number, allowEmpty: boolean): boolean =>
-    typeof s === 'string' &&
-    (allowEmpty || s.length > 0) &&
-    s.length <= max &&
-    !BAD_SEP_RE.test(s);
+    typeof s === 'string' && (allowEmpty || s.length > 0) && s.length <= max && !BAD_SEP_RE.test(s);
   if (!sepOk(f.symbol, 8, true) || !sepOk(f.minusSign, 2, false)) {
     return err('bad-format', 'bad symbol or minus sign');
   }
@@ -80,11 +70,7 @@ function groupDigits(int: string, f: FiatFormat): string[] {
  * (value is never rounded here).
  * @security Pure; separators are validated so digits can't be spoofed.
  */
-export function formatFiatParts(
-  minor: bigint,
-  decimals: number,
-  fmt: FiatFormat,
-): Result<FormatPart[]> {
+export function formatFiatParts(minor: bigint, decimals: number, fmt: FiatFormat): Result<FormatPart[]> {
   const a = checkAmount(minor);
   if (!a.ok) return a;
   if (!isSmallInt(decimals, MAX_FIAT_DECIMALS)) return err('bad-decimals', 'bad fiat decimals');

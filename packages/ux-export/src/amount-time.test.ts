@@ -27,9 +27,14 @@ describe('formatUnits', () => {
   });
   it('round-trips with parseUnits', () => {
     fc.assert(
-      fc.property(fc.bigInt({ min: 0n, max: MAX_AMOUNT }), fc.integer({ min: 0, max: 38 }), fc.boolean(), (v, d, t) => {
-        expect(parseUnits(formatUnits(v, d, t), d)).toBe(v);
-      }),
+      fc.property(
+        fc.bigInt({ min: 0n, max: MAX_AMOUNT }),
+        fc.integer({ min: 0, max: 38 }),
+        fc.boolean(),
+        (v, d, t) => {
+          expect(parseUnits(formatUnits(v, d, t), d)).toBe(v);
+        },
+      ),
     );
   });
 });
@@ -41,12 +46,25 @@ describe('parseUnits', () => {
     expect(parseUnits('0.000001', 6)).toBe(1n);
     expect(parseUnits('12', 2)).toBe(1200n);
   });
-  it.each(['', '-1', '+1', '1e3', ' 1', '1 ', '1.', '.5', '01', '1,000', '0x10', '1.2.3', '１', 'NaN', 'Infinity'])(
-    'rejects %j',
-    (s) => {
-      expect(() => parseUnits(s, 6)).toThrow(ExportError);
-    },
-  );
+  it.each([
+    '',
+    '-1',
+    '+1',
+    '1e3',
+    ' 1',
+    '1 ',
+    '1.',
+    '.5',
+    '01',
+    '1,000',
+    '0x10',
+    '1.2.3',
+    '１',
+    'NaN',
+    'Infinity',
+  ])('rejects %j', (s) => {
+    expect(() => parseUnits(s, 6)).toThrow(ExportError);
+  });
   it('rejects too much precision, overflow and long input', () => {
     expect(() => parseUnits('0.1234567', 6)).toThrow(/fractional/);
     expect(() => parseUnits('1.0', 0)).toThrow(/fractional/);

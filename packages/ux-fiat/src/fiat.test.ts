@@ -37,12 +37,22 @@ const rate = (o: Partial<RateQuote> = {}): ParsedRate => {
   return r.value;
 };
 const US: FiatFormat = {
-  symbol: '$', symbolPosition: 'prefix', symbolSpace: false,
-  groupSeparator: ',', decimalSeparator: '.', grouping: 3, minusSign: '-',
+  symbol: '$',
+  symbolPosition: 'prefix',
+  symbolSpace: false,
+  groupSeparator: ',',
+  decimalSeparator: '.',
+  grouping: 3,
+  minusSign: '-',
 };
 const DE: FiatFormat = {
-  symbol: '€', symbolPosition: 'suffix', symbolSpace: true,
-  groupSeparator: '.', decimalSeparator: ',', grouping: 3, minusSign: '−',
+  symbol: '€',
+  symbolPosition: 'suffix',
+  symbolSpace: true,
+  groupSeparator: '.',
+  decimalSeparator: ',',
+  grouping: 3,
+  minusSign: '−',
 };
 const IN: FiatFormat = { ...US, symbol: '₹', grouping: 'indian' };
 
@@ -320,7 +330,13 @@ describe('formatting', () => {
   it('typed parts', () => {
     const r = formatFiatParts(-123456n, 2, US);
     expect(r.ok && r.value.map((p) => p.type)).toEqual([
-      'sign', 'symbol', 'integer', 'group', 'integer', 'decimal', 'fraction',
+      'sign',
+      'symbol',
+      'integer',
+      'group',
+      'integer',
+      'decimal',
+      'fraction',
     ]);
   });
   it('rejects bad formats', () => {
@@ -428,8 +444,12 @@ describe('computeFiatView', () => {
     expect(code(computeFiatView({ ...base, quote: q({ fiat: 'EUR' }) }))).toBe('rate-mismatch');
     expect(code(computeFiatView({ ...base, quote: q({ timestampMs: NOW + 31_000 }) }))).toBe('bad-timestamp');
     expect(code(computeFiatView({ ...base, nowMs: 0, quote: q() }))).toBe('bad-timestamp');
-    expect(code(computeFiatView({ ...base, quote: q(), policy: { ...DEFAULT_RATE_POLICY, staleMs: 0 } }))).toBe('bad-policy');
+    expect(
+      code(computeFiatView({ ...base, quote: q(), policy: { ...DEFAULT_RATE_POLICY, staleMs: 0 } })),
+    ).toBe('bad-policy');
     expect(code(computeFiatView({ ...base, amountBase: 10n ** 80n, quote: q() }))).toBe('overflow');
-    expect(code(computeFiatView({ ...base, format: { ...US, groupSeparator: '.' }, quote: q() }))).toBe('bad-format');
+    expect(code(computeFiatView({ ...base, format: { ...US, groupSeparator: '.' }, quote: q() }))).toBe(
+      'bad-format',
+    );
   });
 });

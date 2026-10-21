@@ -236,7 +236,8 @@ export function recommendProfile(answers: unknown): Recommendation {
   const reasons: string[] = [];
   const rec = answers as Record<string, unknown>;
   for (const k of Object.keys(rec)) {
-    if (!Object.prototype.hasOwnProperty.call(QUESTIONS, k)) throw new AnswerError(`unknown question: ${k.slice(0, 32)}`);
+    if (!Object.prototype.hasOwnProperty.call(QUESTIONS, k))
+      throw new AnswerError(`unknown question: ${k.slice(0, 32)}`);
   }
   for (const q of Object.keys(QUESTIONS) as QuestionId[]) {
     const v = rec[q];

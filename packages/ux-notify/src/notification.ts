@@ -97,8 +97,7 @@ export interface NotificationView {
 }
 
 export type PushOutcome =
-  | { outcome: 'added' | 'deduped' | 'coalesced'; id: string }
-  | { outcome: 'rejected'; reason: string };
+  { outcome: 'added' | 'deduped' | 'coalesced'; id: string } | { outcome: 'rejected'; reason: string };
 
 export interface QueueSnapshot {
   v: 1;
@@ -149,13 +148,55 @@ interface Template {
 }
 
 const TEMPLATES: Record<NotificationKind, Template> = {
-  payment_received: { titleKey: 'notify.paymentReceived.title', bodyKey: 'notify.paymentReceived.body', title: 'Payment received', discreetBody: 'A payment arrived. Open the app to view it.', multiTitle: 'Payments received' },
-  payment_sent: { titleKey: 'notify.paymentSent.title', bodyKey: 'notify.paymentSent.body', title: 'Payment sent', discreetBody: 'A payment was sent.', multiTitle: 'Payments sent' },
-  payment_failed: { titleKey: 'notify.paymentFailed.title', bodyKey: 'notify.paymentFailed.body', title: 'Payment failed', discreetBody: 'A payment needs your attention.', multiTitle: 'Payments failed' },
-  reminder_due: { titleKey: 'notify.reminderDue.title', bodyKey: 'notify.reminderDue.body', title: 'Reminder due', discreetBody: 'You have a reminder due.', multiTitle: 'Reminders due' },
-  sync_issue: { titleKey: 'notify.syncIssue.title', bodyKey: 'notify.syncIssue.body', title: 'Sync problem', discreetBody: 'Some data could not be refreshed.', multiTitle: 'Sync problems' },
-  security_alert: { titleKey: 'notify.securityAlert.title', bodyKey: 'notify.securityAlert.body', title: 'Security alert', discreetBody: 'Open the app to review a security notice.', multiTitle: 'Security alerts' },
-  update_available: { titleKey: 'notify.updateAvailable.title', bodyKey: 'notify.updateAvailable.body', title: 'Update available', discreetBody: 'A new version is ready.', multiTitle: 'Updates available' },
+  payment_received: {
+    titleKey: 'notify.paymentReceived.title',
+    bodyKey: 'notify.paymentReceived.body',
+    title: 'Payment received',
+    discreetBody: 'A payment arrived. Open the app to view it.',
+    multiTitle: 'Payments received',
+  },
+  payment_sent: {
+    titleKey: 'notify.paymentSent.title',
+    bodyKey: 'notify.paymentSent.body',
+    title: 'Payment sent',
+    discreetBody: 'A payment was sent.',
+    multiTitle: 'Payments sent',
+  },
+  payment_failed: {
+    titleKey: 'notify.paymentFailed.title',
+    bodyKey: 'notify.paymentFailed.body',
+    title: 'Payment failed',
+    discreetBody: 'A payment needs your attention.',
+    multiTitle: 'Payments failed',
+  },
+  reminder_due: {
+    titleKey: 'notify.reminderDue.title',
+    bodyKey: 'notify.reminderDue.body',
+    title: 'Reminder due',
+    discreetBody: 'You have a reminder due.',
+    multiTitle: 'Reminders due',
+  },
+  sync_issue: {
+    titleKey: 'notify.syncIssue.title',
+    bodyKey: 'notify.syncIssue.body',
+    title: 'Sync problem',
+    discreetBody: 'Some data could not be refreshed.',
+    multiTitle: 'Sync problems',
+  },
+  security_alert: {
+    titleKey: 'notify.securityAlert.title',
+    bodyKey: 'notify.securityAlert.body',
+    title: 'Security alert',
+    discreetBody: 'Open the app to review a security notice.',
+    multiTitle: 'Security alerts',
+  },
+  update_available: {
+    titleKey: 'notify.updateAvailable.title',
+    bodyKey: 'notify.updateAvailable.body',
+    title: 'Update available',
+    discreetBody: 'A new version is ready.',
+    multiTitle: 'Updates available',
+  },
 };
 
 const LOCK_BODY = 'Open the app to see more.';
@@ -169,28 +210,71 @@ const GENERIC_TITLE = 'Notification';
  * output masks addresses (first6…last4) and never prints a full address. A
  * final {@link containsSensitive} guard falls back to the generic text.
  */
-export function renderRecord(r: NotificationRecord, surface: Surface, discreet: boolean, lockLabel: string): NotificationView {
+export function renderRecord(
+  r: NotificationRecord,
+  surface: Surface,
+  discreet: boolean,
+  lockLabel: string,
+): NotificationView {
   const t = TEMPLATES[r.kind];
   const base = {
-    id: r.id, kind: r.kind, priority: r.priority, count: r.count, read: r.read,
-    createdAt: r.createdAt, updatedAt: r.updatedAt, surface,
+    id: r.id,
+    kind: r.kind,
+    priority: r.priority,
+    count: r.count,
+    read: r.read,
+    createdAt: r.createdAt,
+    updatedAt: r.updatedAt,
+    surface,
   };
   if (surface === 'lockscreen') {
-    return { ...base, title: lockLabel, body: LOCK_BODY, titleKey: 'notify.lockscreen.title', bodyKey: 'notify.lockscreen.body', args: {}, redacted: true };
+    return {
+      ...base,
+      title: lockLabel,
+      body: LOCK_BODY,
+      titleKey: 'notify.lockscreen.title',
+      bodyKey: 'notify.lockscreen.body',
+      args: {},
+      redacted: true,
+    };
   }
   if (discreet) {
     const title = r.count > 1 ? t.multiTitle : t.title;
     const body = t.discreetBody;
     if (containsSensitive(title) || containsSensitive(body)) {
       /* c8 ignore next 2 -- templates are static; guard is defence in depth */
-      return { ...base, title: GENERIC_TITLE, body: LOCK_BODY, titleKey: 'notify.lockscreen.title', bodyKey: 'notify.lockscreen.body', args: {}, redacted: true };
+      return {
+        ...base,
+        title: GENERIC_TITLE,
+        body: LOCK_BODY,
+        titleKey: 'notify.lockscreen.title',
+        bodyKey: 'notify.lockscreen.body',
+        args: {},
+        redacted: true,
+      };
     }
-    return { ...base, title, body, titleKey: t.titleKey, bodyKey: t.bodyKey + 'Discreet', args: {}, redacted: true };
+    return {
+      ...base,
+      title,
+      body,
+      titleKey: t.titleKey,
+      bodyKey: t.bodyKey + 'Discreet',
+      args: {},
+      redacted: true,
+    };
   }
   const args: Record<string, string> = {};
   if (r.count > 1) {
     args['count'] = String(r.count);
-    return { ...base, title: `${r.count} ${t.multiTitle.toLowerCase()}`, body: 'Open the app for details.', titleKey: t.titleKey + 'Multi', bodyKey: 'notify.multi.body', args, redacted: false };
+    return {
+      ...base,
+      title: `${r.count} ${t.multiTitle.toLowerCase()}`,
+      body: 'Open the app for details.',
+      titleKey: t.titleKey + 'Multi',
+      bodyKey: 'notify.multi.body',
+      args,
+      redacted: false,
+    };
   }
   const parts: string[] = [];
   if (r.params.amount !== undefined) {
@@ -231,8 +315,12 @@ export class NotificationQueue {
     this.quiet = null;
     if (cfg.quietHours) this.setQuietHours(cfg.quietHours);
     this.maxSize = cfg.maxSize !== undefined && intIn(cfg.maxSize, 1, 1000) ? cfg.maxSize : 50;
-    this.windowMs = cfg.coalesceWindowMs !== undefined && intIn(cfg.coalesceWindowMs, 0, DAY) ? cfg.coalesceWindowMs : 60_000;
-    this.ttl = cfg.defaultTtlMs !== undefined && intIn(cfg.defaultTtlMs, 1, 365 * DAY) ? cfg.defaultTtlMs : 7 * DAY;
+    this.windowMs =
+      cfg.coalesceWindowMs !== undefined && intIn(cfg.coalesceWindowMs, 0, DAY)
+        ? cfg.coalesceWindowMs
+        : 60_000;
+    this.ttl =
+      cfg.defaultTtlMs !== undefined && intIn(cfg.defaultTtlMs, 1, 365 * DAY) ? cfg.defaultTtlMs : 7 * DAY;
     const l = cfg.lockScreenLabel !== undefined ? sanitizeLabel(cfg.lockScreenLabel, 24) : '';
     this.lockLabel = l !== '' && !containsSensitive(l) ? l : GENERIC_TITLE;
   }
@@ -250,7 +338,12 @@ export class NotificationQueue {
       this.quiet = null;
       return true;
     }
-    if (!intIn(q.startMinute, 0, 1439) || !intIn(q.endMinute, 0, 1439) || !intIn(q.utcOffsetMinutes, -840, 840)) return false;
+    if (
+      !intIn(q.startMinute, 0, 1439) ||
+      !intIn(q.endMinute, 0, 1439) ||
+      !intIn(q.utcOffsetMinutes, -840, 840)
+    )
+      return false;
     this.quiet = { ...q };
     return true;
   }
@@ -260,7 +353,9 @@ export class NotificationQueue {
     const q = this.quiet;
     if (q === null || q.startMinute === q.endMinute) return false;
     const m = (((Math.floor(this.now() / 60_000) + q.utcOffsetMinutes) % 1440) + 1440) % 1440;
-    return q.startMinute < q.endMinute ? m >= q.startMinute && m < q.endMinute : m >= q.startMinute || m < q.endMinute;
+    return q.startMinute < q.endMinute
+      ? m >= q.startMinute && m < q.endMinute
+      : m >= q.startMinute || m < q.endMinute;
   }
 
   private live(): NotificationRecord[] {
@@ -277,9 +372,15 @@ export class NotificationQueue {
 
   push(input: NotificationInput): PushOutcome {
     this.purgeExpired();
-    if (!isRecord(input) || !NOTIFICATION_KINDS.includes(input.kind)) return { outcome: 'rejected', reason: 'kind' };
-    if (typeof input.dedupeKey !== 'string' || !DEDUPE_KEY_RE.test(input.dedupeKey)) return { outcome: 'rejected', reason: 'dedupe_key' };
-    if (input.coalesceKey !== undefined && (typeof input.coalesceKey !== 'string' || !DEDUPE_KEY_RE.test(input.coalesceKey))) return { outcome: 'rejected', reason: 'coalesce_key' };
+    if (!isRecord(input) || !NOTIFICATION_KINDS.includes(input.kind))
+      return { outcome: 'rejected', reason: 'kind' };
+    if (typeof input.dedupeKey !== 'string' || !DEDUPE_KEY_RE.test(input.dedupeKey))
+      return { outcome: 'rejected', reason: 'dedupe_key' };
+    if (
+      input.coalesceKey !== undefined &&
+      (typeof input.coalesceKey !== 'string' || !DEDUPE_KEY_RE.test(input.coalesceKey))
+    )
+      return { outcome: 'rejected', reason: 'coalesce_key' };
     const priority = input.priority ?? 'normal';
     if (!PRIORITIES.includes(priority)) return { outcome: 'rejected', reason: 'priority' };
     const params = validateParams(input.params);
@@ -299,7 +400,11 @@ export class NotificationQueue {
 
     if (input.coalesceKey !== undefined) {
       const target = this.records.find(
-        (r) => !r.read && r.kind === input.kind && r.coalesceKey === input.coalesceKey && t - r.updatedAt <= this.windowMs,
+        (r) =>
+          !r.read &&
+          r.kind === input.kind &&
+          r.coalesceKey === input.coalesceKey &&
+          t - r.updatedAt <= this.windowMs,
       );
       if (target) {
         target.count += 1;
@@ -315,11 +420,21 @@ export class NotificationQueue {
       }
     }
 
-    if (this.records.length >= this.maxSize && !this.evictFor(priority)) return { outcome: 'rejected', reason: 'queue_full' };
+    if (this.records.length >= this.maxSize && !this.evictFor(priority))
+      return { outcome: 'rejected', reason: 'queue_full' };
     this.seq += 1;
     const rec: NotificationRecord = {
-      id: `n${this.seq}`, kind: input.kind, dedupeKeys: [input.dedupeKey], priority, params: params.value,
-      count: 1, createdAt: t, updatedAt: t, expiresAt: t + ttl, read: false, alerted: false,
+      id: `n${this.seq}`,
+      kind: input.kind,
+      dedupeKeys: [input.dedupeKey],
+      priority,
+      params: params.value,
+      count: 1,
+      createdAt: t,
+      updatedAt: t,
+      expiresAt: t + ttl,
+      read: false,
+      alerted: false,
     };
     if (input.coalesceKey !== undefined) rec.coalesceKey = input.coalesceKey;
     this.records.push(rec);
@@ -405,7 +520,11 @@ export class NotificationQueue {
 
   /** Serialisable state (params only, no rendered text). */
   snapshot(): QueueSnapshot {
-    return { v: 1, seq: this.seq, records: this.records.map((r) => ({ ...r, dedupeKeys: [...r.dedupeKeys], params: { ...r.params } })) };
+    return {
+      v: 1,
+      seq: this.seq,
+      records: this.records.map((r) => ({ ...r, dedupeKeys: [...r.dedupeKeys], params: { ...r.params } })),
+    };
   }
 
   /** Restore from untrusted storage. Strictly validated; unchanged on failure. */
@@ -421,28 +540,83 @@ export class NotificationQueue {
 
 /** Validate a stored snapshot. */
 export function parseSnapshot(data: unknown): Result<QueueSnapshot> {
-  if (!isRecord(data) || !onlyKeys(data, ['v', 'seq', 'records']) || data['v'] !== 1) return fail('snapshot_shape');
+  if (!isRecord(data) || !onlyKeys(data, ['v', 'seq', 'records']) || data['v'] !== 1)
+    return fail('snapshot_shape');
   const seq = data['seq'];
   const recs = data['records'];
-  if (!intIn(seq, 0, Number.MAX_SAFE_INTEGER) || !Array.isArray(recs) || recs.length > 1000) return fail('snapshot_shape');
+  if (!intIn(seq, 0, Number.MAX_SAFE_INTEGER) || !Array.isArray(recs) || recs.length > 1000)
+    return fail('snapshot_shape');
   const out: NotificationRecord[] = [];
   const ids = new Set<string>();
   for (const raw of recs as unknown[]) {
-    if (!isRecord(raw) || !onlyKeys(raw, ['id', 'kind', 'dedupeKeys', 'coalesceKey', 'priority', 'params', 'count', 'createdAt', 'updatedAt', 'expiresAt', 'read', 'alerted'])) return fail('record_shape');
-    const { id, kind, dedupeKeys, coalesceKey, priority, count, createdAt, updatedAt, expiresAt, read, alerted } = raw;
+    if (
+      !isRecord(raw) ||
+      !onlyKeys(raw, [
+        'id',
+        'kind',
+        'dedupeKeys',
+        'coalesceKey',
+        'priority',
+        'params',
+        'count',
+        'createdAt',
+        'updatedAt',
+        'expiresAt',
+        'read',
+        'alerted',
+      ])
+    )
+      return fail('record_shape');
+    const {
+      id,
+      kind,
+      dedupeKeys,
+      coalesceKey,
+      priority,
+      count,
+      createdAt,
+      updatedAt,
+      expiresAt,
+      read,
+      alerted,
+    } = raw;
     if (typeof id !== 'string' || !/^n\d{1,15}$/.test(id) || ids.has(id)) return fail('record_id');
     ids.add(id);
-    if (typeof kind !== 'string' || !(NOTIFICATION_KINDS as readonly string[]).includes(kind)) return fail('record_kind');
-    if (typeof priority !== 'string' || !(PRIORITIES as readonly string[]).includes(priority)) return fail('record_priority');
-    if (!Array.isArray(dedupeKeys) || dedupeKeys.length < 1 || dedupeKeys.length > MAX_DEDUPE_KEYS || !dedupeKeys.every((k) => typeof k === 'string' && DEDUPE_KEY_RE.test(k))) return fail('record_keys');
-    if (coalesceKey !== undefined && (typeof coalesceKey !== 'string' || !DEDUPE_KEY_RE.test(coalesceKey))) return fail('record_keys');
-    if (!intIn(count, 1, 1_000_000) || !intIn(createdAt, 0, 8.64e15) || !intIn(updatedAt, 0, 8.64e15) || !intIn(expiresAt, 0, 8.64e15)) return fail('record_numbers');
+    if (typeof kind !== 'string' || !(NOTIFICATION_KINDS as readonly string[]).includes(kind))
+      return fail('record_kind');
+    if (typeof priority !== 'string' || !(PRIORITIES as readonly string[]).includes(priority))
+      return fail('record_priority');
+    if (
+      !Array.isArray(dedupeKeys) ||
+      dedupeKeys.length < 1 ||
+      dedupeKeys.length > MAX_DEDUPE_KEYS ||
+      !dedupeKeys.every((k) => typeof k === 'string' && DEDUPE_KEY_RE.test(k))
+    )
+      return fail('record_keys');
+    if (coalesceKey !== undefined && (typeof coalesceKey !== 'string' || !DEDUPE_KEY_RE.test(coalesceKey)))
+      return fail('record_keys');
+    if (
+      !intIn(count, 1, 1_000_000) ||
+      !intIn(createdAt, 0, 8.64e15) ||
+      !intIn(updatedAt, 0, 8.64e15) ||
+      !intIn(expiresAt, 0, 8.64e15)
+    )
+      return fail('record_numbers');
     if (typeof read !== 'boolean' || typeof alerted !== 'boolean') return fail('record_flags');
     const params = validateParams(raw['params']);
     if (!params.ok) return params;
     const rec: NotificationRecord = {
-      id, kind: kind as NotificationKind, dedupeKeys: dedupeKeys as string[], priority: priority as Priority,
-      params: params.value, count, createdAt, updatedAt, expiresAt, read, alerted,
+      id,
+      kind: kind as NotificationKind,
+      dedupeKeys: dedupeKeys as string[],
+      priority: priority as Priority,
+      params: params.value,
+      count,
+      createdAt,
+      updatedAt,
+      expiresAt,
+      read,
+      alerted,
     };
     if (coalesceKey !== undefined) rec.coalesceKey = coalesceKey;
     out.push(rec);

@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import fc from 'fast-check';
 import {
-  evaluateRecurrence, listUpcoming, nextOccurrence, occurrences, validateRule,
+  evaluateRecurrence,
+  listUpcoming,
+  nextOccurrence,
+  occurrences,
+  validateRule,
   type RecurrenceRule,
 } from './recurrence.js';
 import { UTC } from './time.js';
@@ -9,17 +13,28 @@ import { MS_DAY, NY2026, fixed, utc } from './testutil.testutil.js';
 
 function rule(o: Record<string, unknown>): RecurrenceRule {
   const r = validateRule({
-    frequency: 'daily', interval: 1, startDate: { year: 2026, month: 1, day: 1 },
-    timeOfDayMinutes: 540, ...o,
+    frequency: 'daily',
+    interval: 1,
+    startDate: { year: 2026, month: 1, day: 1 },
+    timeOfDayMinutes: 540,
+    ...o,
   });
   if (!r.ok) throw new Error(r.error.message);
   return r.value;
 }
 const take = (r: RecurrenceRule, tz = UTC, n = 5) => listUpcoming(r, tz, -1, n);
-const ec = (v: unknown) => { const r = validateRule(v); return r.ok ? 'ok' : r.error.code; };
+const ec = (v: unknown) => {
+  const r = validateRule(v);
+  return r.ok ? 'ok' : r.error.code;
+};
 
 describe('validateRule', () => {
-  const base = { frequency: 'daily', interval: 1, startDate: { year: 2026, month: 1, day: 1 }, timeOfDayMinutes: 0 };
+  const base = {
+    frequency: 'daily',
+    interval: 1,
+    startDate: { year: 2026, month: 1, day: 1 },
+    timeOfDayMinutes: 0,
+  };
   it('fills defaults', () => {
     const w = validateRule({ ...base, frequency: 'weekly' });
     expect(w.ok && w.value.weekdays).toEqual([4]); // 2026-01-01 is Thursday
@@ -36,22 +51,32 @@ describe('validateRule', () => {
     expect(r.ok && r.value.maxOccurrences).toBe(3);
   });
   it.each([
-    [null], [{ ...base, frequency: 'hourly' }], [{ ...base, interval: 0 }], [{ ...base, interval: 366 }],
-    [{ ...base, frequency: 'monthly', interval: 121 }], [{ ...base, interval: 1.5 }],
-    [{ ...base, startDate: 5 }], [{ ...base, startDate: { year: 1999, month: 1, day: 1 } }],
+    [null],
+    [{ ...base, frequency: 'hourly' }],
+    [{ ...base, interval: 0 }],
+    [{ ...base, interval: 366 }],
+    [{ ...base, frequency: 'monthly', interval: 121 }],
+    [{ ...base, interval: 1.5 }],
+    [{ ...base, startDate: 5 }],
+    [{ ...base, startDate: { year: 1999, month: 1, day: 1 } }],
     [{ ...base, startDate: { year: 2201, month: 1, day: 1 } }],
     [{ ...base, startDate: { year: 2026, month: 13, day: 1 } }],
     [{ ...base, startDate: { year: 2026, month: 2, day: 30 } }],
     [{ ...base, startDate: { year: 2026, month: 2, day: 29 } }],
     [{ ...base, startDate: { year: 2026, month: 1, day: 1, x: 1 } }],
     [{ ...base, startDate: { year: 2026, month: 1, day: 0 } }],
-    [{ ...base, timeOfDayMinutes: 1440 }], [{ ...base, timeOfDayMinutes: -1 }],
-    [{ ...base, weekdays: [1] }], [{ ...base, dayOfMonth: 3 }],
-    [{ ...base, frequency: 'weekly', weekdays: [] }], [{ ...base, frequency: 'weekly', weekdays: 'x' }],
+    [{ ...base, timeOfDayMinutes: 1440 }],
+    [{ ...base, timeOfDayMinutes: -1 }],
+    [{ ...base, weekdays: [1] }],
+    [{ ...base, dayOfMonth: 3 }],
+    [{ ...base, frequency: 'weekly', weekdays: [] }],
+    [{ ...base, frequency: 'weekly', weekdays: 'x' }],
     [{ ...base, frequency: 'weekly', weekdays: [7] }],
     [{ ...base, frequency: 'weekly', weekdays: [0, 1, 2, 3, 4, 5, 6, 0] }],
     [{ ...base, frequency: 'monthly', dayOfMonth: 32 }],
-    [{ ...base, endMs: -1 }], [{ ...base, maxOccurrences: 0 }], [{ ...base, maxOccurrences: 10001 }],
+    [{ ...base, endMs: -1 }],
+    [{ ...base, maxOccurrences: 0 }],
+    [{ ...base, maxOccurrences: 10001 }],
     [{ ...base, junk: true }],
   ])('rejects %#', (v) => expect(ec(v)).not.toBe('ok'));
 });
@@ -87,7 +112,10 @@ describe('monthly month-end clamping', () => {
   const r = rule({ frequency: 'monthly', startDate: { year: 2026, month: 1, day: 31 } });
   it('Jan 31 -> Feb 28 -> Mar 31 -> Apr 30 (no drift)', () => {
     expect(take(r, UTC, 4)).toEqual([
-      utc(2026, 1, 31, 9), utc(2026, 2, 28, 9), utc(2026, 3, 31, 9), utc(2026, 4, 30, 9),
+      utc(2026, 1, 31, 9),
+      utc(2026, 2, 28, 9),
+      utc(2026, 3, 31, 9),
+      utc(2026, 4, 30, 9),
     ]);
   });
   it('leap February', () => {
@@ -95,11 +123,19 @@ describe('monthly month-end clamping', () => {
     expect(t[1]).toBe(utc(2028, 2, 29, 9));
   });
   it('dayOfMonth override earlier than start is skipped for start month', () => {
-    const t = take(rule({ frequency: 'monthly', dayOfMonth: 5, startDate: { year: 2026, month: 1, day: 20 } }), UTC, 2);
+    const t = take(
+      rule({ frequency: 'monthly', dayOfMonth: 5, startDate: { year: 2026, month: 1, day: 20 } }),
+      UTC,
+      2,
+    );
     expect(t).toEqual([utc(2026, 2, 5, 9), utc(2026, 3, 5, 9)]);
   });
   it('quarterly across year end', () => {
-    const t = take(rule({ frequency: 'monthly', interval: 3, startDate: { year: 2026, month: 11, day: 15 } }), UTC, 2);
+    const t = take(
+      rule({ frequency: 'monthly', interval: 3, startDate: { year: 2026, month: 11, day: 15 } }),
+      UTC,
+      2,
+    );
     expect(t).toEqual([utc(2026, 11, 15, 9), utc(2027, 2, 15, 9)]);
   });
 });
@@ -112,7 +148,11 @@ describe('DST safety', () => {
   });
   it('02:30 daily during gap day still fires once, shifted forward', () => {
     const g = rule({ timeOfDayMinutes: 150, startDate: { year: 2026, month: 3, day: 7 } });
-    expect(take(g, NY2026, 3)).toEqual([utc(2026, 3, 7, 7, 30), utc(2026, 3, 8, 7, 30), utc(2026, 3, 9, 6, 30)]);
+    expect(take(g, NY2026, 3)).toEqual([
+      utc(2026, 3, 7, 7, 30),
+      utc(2026, 3, 8, 7, 30),
+      utc(2026, 3, 9, 6, 30),
+    ]);
   });
   it('01:30 on fall-back day fires once (first occurrence)', () => {
     const g = rule({ timeOfDayMinutes: 90, startDate: { year: 2026, month: 10, day: 31 } });
@@ -120,12 +160,17 @@ describe('DST safety', () => {
     expect(t).toEqual([utc(2026, 10, 31, 5, 30), utc(2026, 11, 1, 5, 30), utc(2026, 11, 2, 6, 30)]);
   });
   it('strictly increasing for random times and starts', () => {
-    fc.assert(fc.property(fc.integer({ min: 0, max: 1439 }), fc.integer({ min: 1, max: 365 }), (tod, day) => {
-      const d = new Date(Date.UTC(2026, 0, day));
-      const g = rule({ timeOfDayMinutes: tod, startDate: { year: 2026, month: d.getUTCMonth() + 1, day: d.getUTCDate() } });
-      const xs = take(g, NY2026, 30);
-      return xs.every((x, i) => i === 0 || x > (xs[i - 1] as number));
-    }));
+    fc.assert(
+      fc.property(fc.integer({ min: 0, max: 1439 }), fc.integer({ min: 1, max: 365 }), (tod, day) => {
+        const d = new Date(Date.UTC(2026, 0, day));
+        const g = rule({
+          timeOfDayMinutes: tod,
+          startDate: { year: 2026, month: d.getUTCMonth() + 1, day: d.getUTCDate() },
+        });
+        const xs = take(g, NY2026, 30);
+        return xs.every((x, i) => i === 0 || x > (xs[i - 1] as number));
+      }),
+    );
   });
 });
 
@@ -145,7 +190,10 @@ describe('limits', () => {
   });
   it('defends against non-monotone resolvers', () => {
     let calls = 0;
-    const weird = (t: number) => { calls++; return t > utc(2026, 1, 2) ? -900 : 0; };
+    const weird = (t: number) => {
+      calls++;
+      return t > utc(2026, 1, 2) ? -900 : 0;
+    };
     const xs = take(rule({}), weird, 4);
     expect(calls).toBeGreaterThan(0);
     expect(xs.every((x, i) => i === 0 || x > (xs[i - 1] as number))).toBe(true);
@@ -169,14 +217,27 @@ describe('evaluateRecurrence (skipped / missed / never auto-send)', () => {
 
   it('latest-only: one prompt, the rest skipped, 3h overdue', () => {
     const e = ev();
-    expect(e.due).toEqual([{ dueAtMs: utc(2026, 1, 10, 9), overdueMs: 3 * 3_600_000, needsUserConfirm: true }]);
+    expect(e.due).toEqual([
+      { dueAtMs: utc(2026, 1, 10, 9), overdueMs: 3 * 3_600_000, needsUserConfirm: true },
+    ]);
     expect(e.skippedCount).toBe(9);
     expect(e.nextMs).toBe(utc(2026, 1, 11, 9));
   });
   it('max-age skips ancient occurrences even if latest', () => {
-    const e = evaluateRecurrence({ rule: r, tz: UTC, clock: fixed(utc(2026, 1, 20, 12)), lastHandledMs: null, maxAgeMs: 2 * MS_DAY });
+    const e = evaluateRecurrence({
+      rule: r,
+      tz: UTC,
+      clock: fixed(utc(2026, 1, 20, 12)),
+      lastHandledMs: null,
+      maxAgeMs: 2 * MS_DAY,
+    });
     expect(e.due.map((d) => d.dueAtMs)).toEqual([utc(2026, 1, 20, 9)]);
-    const none = evaluateRecurrence({ rule: rule({ endMs: utc(2026, 1, 3, 9) }), tz: UTC, clock: fixed(utc(2026, 1, 20, 12)), lastHandledMs: null });
+    const none = evaluateRecurrence({
+      rule: rule({ endMs: utc(2026, 1, 3, 9) }),
+      tz: UTC,
+      clock: fixed(utc(2026, 1, 20, 12)),
+      lastHandledMs: null,
+    });
     expect(none.due).toEqual([]);
     expect(none.skippedCount).toBe(3);
     expect(none.nextMs).toBeNull();

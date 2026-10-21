@@ -44,7 +44,11 @@ export interface VerificationReport {
   /** Shape/digest/time problems; empty when self-consistent. */
   readonly issues: readonly ReceiptIssue[];
   readonly selfConsistent: boolean;
-  readonly chain: { readonly status: ChainStatus; readonly mismatches: readonly string[]; readonly matched: readonly string[] };
+  readonly chain: {
+    readonly status: ChainStatus;
+    readonly mismatches: readonly string[];
+    readonly matched: readonly string[];
+  };
   /** Honest limits to show next to the verdict. */
   readonly caveats: readonly string[];
 }
@@ -71,8 +75,11 @@ export async function verifyReceipt(input: unknown, opts: VerifyOptions = {}): P
   const parsed = parseReceipt(input);
   if (!parsed.ok) {
     return {
-      verdict: 'invalid', issues: parsed.issues, selfConsistent: false,
-      chain: { status: 'not_checked', mismatches: [], matched: [] }, caveats,
+      verdict: 'invalid',
+      issues: parsed.issues,
+      selfConsistent: false,
+      chain: { status: 'not_checked', mismatches: [], matched: [] },
+      caveats,
     };
   }
   const r = parsed.receipt;
@@ -89,8 +96,11 @@ export async function verifyReceipt(input: unknown, opts: VerifyOptions = {}): P
   }
   if (issues.length > 0) {
     return {
-      verdict: 'invalid', issues, selfConsistent: false,
-      chain: { status: 'not_checked', mismatches: [], matched: [] }, caveats,
+      verdict: 'invalid',
+      issues,
+      selfConsistent: false,
+      chain: { status: 'not_checked', mismatches: [], matched: [] },
+      caveats,
     };
   }
 
@@ -106,9 +116,14 @@ export async function verifyReceipt(input: unknown, opts: VerifyOptions = {}): P
 }
 
 async function checkChain(
-  r: Receipt, verifier: ChainVerifier | undefined,
+  r: Receipt,
+  verifier: ChainVerifier | undefined,
 ): Promise<VerificationReport['chain']> {
-  const none = (status: ChainStatus): VerificationReport['chain'] => ({ status, mismatches: [], matched: [] });
+  const none = (status: ChainStatus): VerificationReport['chain'] => ({
+    status,
+    mismatches: [],
+    matched: [],
+  });
   if (verifier === undefined) return none('not_checked');
   if (r.chain === undefined || r.txHash === undefined) return none('not_checkable');
   let res: ChainLookupResult;
@@ -128,9 +143,20 @@ async function checkChain(
     (ok ? matched : mismatches).push(name);
   };
   cmp('amount', r.amount !== undefined && f.amountBase !== undefined ? r.amount === f.amountBase : undefined);
-  cmp('asset', r.asset !== undefined && f.assetSymbol !== undefined ? r.asset.symbol === f.assetSymbol : undefined);
-  cmp('sender', r.sender !== undefined && f.sender !== undefined ? matchesAddress(r.sender, f.sender) : undefined);
-  cmp('recipient', r.recipient !== undefined && f.recipient !== undefined ? matchesAddress(r.recipient, f.recipient) : undefined);
+  cmp(
+    'asset',
+    r.asset !== undefined && f.assetSymbol !== undefined ? r.asset.symbol === f.assetSymbol : undefined,
+  );
+  cmp(
+    'sender',
+    r.sender !== undefined && f.sender !== undefined ? matchesAddress(r.sender, f.sender) : undefined,
+  );
+  cmp(
+    'recipient',
+    r.recipient !== undefined && f.recipient !== undefined
+      ? matchesAddress(r.recipient, f.recipient)
+      : undefined,
+  );
   if (mismatches.length > 0) return { status: 'mismatch', mismatches, matched };
   if (!f.confirmed) return { status: 'unconfirmed', mismatches, matched };
   return { status: matched.length > 0 ? 'confirmed' : 'tx_exists_only', mismatches, matched };
