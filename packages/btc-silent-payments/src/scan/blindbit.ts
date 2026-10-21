@@ -24,6 +24,17 @@ export interface BlindBitClientOptions {
   readonly fetch: FetchLike;
 }
 
+/** `GET /info` payload (BlindBit-Oracle v2 `internal/server/README.md`, retrieved 2026-10-21). */
+export interface BlindBitInfo {
+  /** Network name reported by the oracle (the docs show `signet`; the full value set is undocumented). */
+  readonly network: string;
+  readonly height: number;
+  readonly tweaksOnly: boolean;
+  readonly tweaksFullBasic: boolean;
+  readonly tweaksFullWithDustFilter: boolean;
+  readonly tweaksCutThroughWithDustFilter: boolean;
+}
+
 const MAX_ENTRIES = 200_000;
 const MAX_HEIGHT = 0xffffffff;
 
@@ -58,8 +69,9 @@ function blockIdentifier(body: Record<string, unknown>, height: number): string 
  * @remarks VERIFIED against the BlindBit-Oracle v2 server README
  * (`internal/server/README.md`, retrieved 2026-10-21): `GET /info` (supported),
  * `GET /tweaks/:blockheight` and `GET /utxos/:blockheight` (both marked DEPRECATED in favour of
- * gRPC, which this client does not implement). The `/filter` endpoints of the v1 oracle are NOT
- * implemented because they are not documented for v2 (see DEVIATIONS.md). Whether `/utxos`
+ * gRPC, which this client does not implement). The other deprecated routes (`/spent-outputs`,
+ * `/compute-index`, `/full-block`) and the v1 `/filter` endpoints are NOT implemented
+ * (see DEVIATIONS.md). Whether `/utxos`
  * lists spent outputs of the block is not documented; scanning only sees what the oracle returns.
  *
  * Privacy: every request is a bare `GET <base>/<info|tweaks|utxos>[/<height>]` without body,
@@ -118,6 +130,32 @@ export class BlindBitClient implements TweakSource {
     const body = await this.get('/info', signal);
     if (!isRecord(body)) return fail('INVALID_RESPONSE');
     return uint(body['height']);
+  }
+
+  /**
+   * `GET /info`, the one HTTP route the v2 docs still mark as supported. Lets a caller check the
+   * oracle's network and which tweak index it serves before scanning.
+   *
+   * @throws {SilentPaymentError} `INVALID_RESPONSE` for any missing or mistyped field.
+   */
+  public async getInfo(signal?: AbortSignal): Promise<BlindBitInfo> {
+    const body = await this.get('/info', signal);
+    if (!isRecord(body)) return fail('INVALID_RESPONSE');
+    const flag = (k: string): boolean => {
+      const v = body[k];
+      return typeof v === 'boolean' ? v : fail('INVALID_RESPONSE');
+    };
+    const network = body['network'];
+    if (typeof network !== 'string' || network.length === 0 || network.length > 32)
+      return fail('INVALID_RESPONSE');
+    return {
+      network,
+      height: uint(body['height']),
+      tweaksOnly: flag('tweaks_only'),
+      tweaksFullBasic: flag('tweaks_full_basic'),
+      tweaksFullWithDustFilter: flag('tweaks_full_with_dust_filter'),
+      tweaksCutThroughWithDustFilter: flag('tweaks_cut_through_with_dust_filter'),
+    };
   }
 
   public async getTweaks(height: number, signal?: AbortSignal): Promise<BlockTweaks> {
