@@ -1,4 +1,5 @@
 import { createHmac, randomBytes } from 'node:crypto';
+import { TokenBucketLimiter } from '@ghostpay/relayer-guard';
 
 /** Insertion-ordered LRU map with a hard size bound. */
 export class LruMap<K, V> {
@@ -80,23 +81,21 @@ export class KeyHasher {
   }
 }
 
-interface Bucket {
-  tokens: number;
-  last: number;
-}
-
 /** Result of a limiter probe. */
 export interface LimitResult {
   readonly ok: boolean;
   readonly retryAfterSeconds: number;
+  /** True when the request was charged to the shared overflow bucket (table full of active keys). */
+  readonly overflow: boolean;
 }
 
 /**
- * Token-bucket rate limiter over hashed keys with bounded memory (LRU). All state is dropped when
- * the hasher's salt rotates.
+ * Rate limiter over hashed keys with bounded memory, backed by the flood-proof monotonic
+ * {@link TokenBucketLimiter} of `@ghostpay/relayer-guard` (audit S3-07, haiku L6). All state is
+ * dropped when the hasher's salt rotates.
  */
 export class RateLimiter {
-  private readonly buckets: LruMap<string, Bucket>;
+  private limiter: TokenBucketLimiter;
   private epoch: number;
 
   public constructor(
@@ -104,7 +103,7 @@ export class RateLimiter {
     private readonly hasher: KeyHasher,
     private readonly now: () => number,
   ) {
-    this.buckets = new LruMap(opts.maxKeys);
+    this.limiter = this.fresh();
     this.epoch = hasher.epoch;
   }
 
@@ -116,23 +115,14 @@ export class RateLimiter {
    */
   public take(rawKey: string): LimitResult {
     if (this.hasher.epoch !== this.epoch) {
-      this.buckets.clear();
+      this.limiter = this.fresh();
       this.epoch = this.hasher.epoch;
     }
-    const key = this.hasher.hash(rawKey);
-    const t = this.now();
-    const ratePerMs = this.opts.perMinute / 60_000;
-    const b = this.buckets.get(key) ?? { tokens: this.opts.burst, last: t };
-    b.tokens = Math.min(this.opts.burst, b.tokens + (t - b.last) * ratePerMs);
-    b.last = t;
-    let result: LimitResult;
-    if (b.tokens >= 1) {
-      b.tokens -= 1;
-      result = { ok: true, retryAfterSeconds: 0 };
-    } else {
-      result = { ok: false, retryAfterSeconds: Math.max(1, Math.ceil((1 - b.tokens) / ratePerMs / 1000)) };
-    }
-    this.buckets.set(key, b);
-    return result;
+    const r = this.limiter.take(this.hasher.hash(rawKey));
+    return { ok: r.ok, retryAfterSeconds: r.ok ? 0 : Math.max(1, Math.ceil(r.retryAfterMs / 1000)), overflow: r.overflow };
+  }
+
+  private fresh(): TokenBucketLimiter {
+    return new TokenBucketLimiter({ ratePerSecond: this.opts.perMinute / 60, burst: this.opts.burst, maxKeys: this.opts.maxKeys }, this.now);
   }
 }

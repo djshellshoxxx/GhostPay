@@ -1,4 +1,4 @@
-export * from './breaker.js';
+export * from './alerts.js';
 export * from './budget.js';
 export * from './chain.js';
 export * from './codec.js';
@@ -7,6 +7,7 @@ export * from './errors.js';
 export * from './lane.js';
 export * from './limiter.js';
 export * from './log.js';
+export * from './metrics.js';
 export * from './policy.js';
 export * from './pricing.js';
 export * from './quoteToken.js';
