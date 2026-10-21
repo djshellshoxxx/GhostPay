@@ -47,6 +47,15 @@ export class CircuitBreaker {
     return false;
   }
 
+  /**
+   * Gives back a half-open probe slot whose job ended without any outcome (for example it was refused
+   * for a gas cap or the daily budget before reaching the chain). The breaker stays open, with the
+   * cooldown already elapsed, so the next request becomes the probe. No-op in other states.
+   */
+  public releaseProbe(): void {
+    if (this.current === 'half_open') this.current = 'open';
+  }
+
   /** Records a successful operation. */
   public recordSuccess(): void {
     if (this.current === 'half_open') {

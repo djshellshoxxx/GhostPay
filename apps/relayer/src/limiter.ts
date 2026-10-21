@@ -123,7 +123,7 @@ export class RateLimiter {
     const t = this.now();
     const ratePerMs = this.opts.perMinute / 60_000;
     const b = this.buckets.get(key) ?? { tokens: this.opts.burst, last: t };
-    b.tokens = Math.min(this.opts.burst, b.tokens + (t - b.last) * ratePerMs);
+    b.tokens = Math.min(this.opts.burst, b.tokens + Math.max(0, t - b.last) * ratePerMs);
     b.last = t;
     let result: LimitResult;
     if (b.tokens >= 1) {

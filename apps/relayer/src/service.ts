@@ -174,7 +174,7 @@ export class RelayerService {
     const chains = [...this.chains.values()].map((r) => ({ chainId: r.cfg.chainId, breaker: r.breaker.state }));
     let status: HealthResponse['status'] = 'ok';
     if (this.closing) status = 'shutting_down';
-    else if (chains.every((c) => c.breaker === 'open')) status = 'degraded';
+    else if (chains.every((c) => c.breaker !== 'closed')) status = 'degraded';
     return { status, chains };
   }
 
@@ -186,6 +186,7 @@ export class RelayerService {
    * @throws {RelayerError} 422 unsupported chain/token/too small; 503 RPC or gas price cap.
    */
   public async quote(req: QuoteRequest): Promise<QuoteResponse> {
+    if (this.closing) throw new RelayerError(503, 'shutting_down');
     const { rt, token } = this.resolve(req.chainId, req.token);
     if (req.destination === req.owner || rt.cfg.feeTo === req.owner || rt.cfg.feeTo === req.destination) {
       throw new RelayerError(422, 'invalid_order');
@@ -281,6 +282,17 @@ export class RelayerService {
 
     if (rt.breaker.isBlocking()) throw new RelayerError(503, 'breaker_open', cfg.breaker.cooldownSeconds);
 
+    // Cheap pre-lane funding check: an owner key with no tokens (or no allowance and no permit) must not
+    // be able to occupy a lane slot, run a simulation or probe the breaker.
+    let funding;
+    try {
+      funding = await rt.client.getSweepFunding(s.token, s.owner, rt.cfg.sweepRelayer);
+    } catch {
+      throw new RelayerError(503, 'rpc_unavailable');
+    }
+    if (funding.balance < s.amount) throw new RelayerError(422, 'insufficient_balance');
+    if (req.permit === undefined && funding.allowance < s.amount) throw new RelayerError(422, 'insufficient_allowance');
+
     const call: SweepCall = { sweepRelayer: rt.cfg.sweepRelayer, sweep: s, sweepSig: req.sweepSig, permit: req.permit };
     return rt.lane.submit(() => this.runJob(rt, call, ctx));
   }
@@ -315,8 +327,20 @@ export class RelayerService {
 
   /** Runs inside the chain lane: exactly one of these is active per chain at any time. */
   private async runJob(rt: ChainRuntime, call: SweepCall, ctx: RequestContext): Promise<JobOutcome<SweepResponse>> {
-    const { cfg, client, breaker, budget, nonces } = rt;
+    const { breaker } = rt;
     if (!breaker.allow()) throw new RelayerError(503, 'breaker_open', this.d.config.breaker.cooldownSeconds);
+    try {
+      return await this.runAdmitted(rt, call, ctx);
+    } catch (e) {
+      // A half-open probe must always leave an outcome behind or give its slot back; otherwise the
+      // breaker would stay half-open forever and refuse every later sweep.
+      breaker.releaseProbe();
+      throw e;
+    }
+  }
+
+  private async runAdmitted(rt: ChainRuntime, call: SweepCall, ctx: RequestContext): Promise<JobOutcome<SweepResponse>> {
+    const { cfg, client, breaker, budget, nonces } = rt;
 
     // Operational (non-user) failures feed the breaker; user-caused reverts do not.
     const op = async <T>(fn: () => Promise<T>): Promise<T> => {
@@ -341,7 +365,12 @@ export class RelayerService {
     try {
       gasLimit = (await op(() => client.simulateSweep(call))).gasLimit;
     } catch (e) {
-      if (e instanceof SimulationRevert) throw revertToError(e);
+      if (e instanceof SimulationRevert) {
+        // A user-caused revert proves the RPC path works: it is not an operational failure, so a
+        // half-open probe ending here closes the breaker (and a closed breaker is left untouched).
+        if (breaker.state === 'half_open') breaker.recordSuccess();
+        throw revertToError(e);
+      }
       throw e;
     }
     if (gasLimit > cfg.maxGasLimit) throw new RelayerError(422, 'gas_limit_too_high');

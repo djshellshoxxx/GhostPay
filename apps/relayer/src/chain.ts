@@ -5,6 +5,7 @@ import {
   type Account,
   type Address,
   type Chain,
+  erc20Abi,
   type Hex,
   type PublicClient,
   type Transport,
@@ -50,6 +51,8 @@ export interface ChainClient {
   getGasPrice(): Promise<bigint>;
   /** Native balance of the hot key in wei. */
   getBalance(): Promise<bigint>;
+  /** Token balance and allowance (to `spender`) of `owner`; a cheap pre-lane funding check. */
+  getSweepFunding(token: Address, owner: Address, spender: Address): Promise<{ readonly balance: bigint; readonly allowance: bigint }>;
   /** Pending transaction count of the hot key. */
   getPendingNonce(): Promise<number>;
   /** Simulates the sweep (`simulateContract`) and returns a gas limit to use. */
@@ -110,6 +113,13 @@ export function createViemChainClient(d: ViemChainDeps): ChainClient {
     relayerAddress: account.address,
     getGasPrice: () => pub.getGasPrice(),
     getBalance: () => pub.getBalance({ address: account.address }),
+    async getSweepFunding(token, owner, spender) {
+      const [balance, allowance] = await Promise.all([
+        pub.readContract({ address: token, abi: erc20Abi, functionName: 'balanceOf', args: [owner] }),
+        pub.readContract({ address: token, abi: erc20Abi, functionName: 'allowance', args: [owner, spender] }),
+      ]);
+      return { balance, allowance };
+    },
     getPendingNonce: () => pub.getTransactionCount({ address: account.address, blockTag: 'pending' }),
 
     async simulateSweep(call) {

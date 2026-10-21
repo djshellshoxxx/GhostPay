@@ -41,6 +41,10 @@ export class FakeChain implements ChainClient {
   public receiptGate: Promise<void> | undefined;
   public readonly sent: { call: SweepCall; opts: SendOptions }[] = [];
   public readonly used = new Set<string>();
+  /** Owner token balance / allowance reported by the funding pre-check. */
+  public tokenBalance = 10n ** 30n;
+  public tokenAllowance = 10n ** 30n;
+  public fundingChecks = 0;
   public inFlight = 0;
   public maxInFlight = 0;
   public simulations = 0;
@@ -56,6 +60,11 @@ export class FakeChain implements ChainClient {
   }
   public getPendingNonce(): Promise<number> {
     return Promise.resolve(this.pendingNonce);
+  }
+  public getSweepFunding(): Promise<{ balance: bigint; allowance: bigint }> {
+    this.fundingChecks += 1;
+    if (this.rpcDown) return Promise.reject(new Error('down'));
+    return Promise.resolve({ balance: this.tokenBalance, allowance: this.tokenAllowance });
   }
   public simulateSweep(call: SweepCall): Promise<{ gasLimit: bigint }> {
     this.simulations += 1;

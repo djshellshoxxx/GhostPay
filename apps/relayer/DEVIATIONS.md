@@ -41,3 +41,16 @@ Contract code wins over docs. Items for the lead to confirm or reject.
     integration.
 16. **Coverage scope:** `src/main.ts` (process wiring, signal handlers) is excluded from coverage; its refuse-to-start paths
     were smoke-tested manually against a built `dist`, not by the test suite.
+17. **Fee recipient vs manifest.** With a deployment manifest loaded, `feeTo` must equal the manifest `feeRecipient`
+    (docs/FEE_SCHEDULE.md) and defaults to it; startup is refused otherwise. The earlier hot-key default now only applies
+    to chains without a manifest (dev chain). `docs/APP_AND_RELAYER_SPEC.md` only says `sweep.feeTo == relayer feeTo`, which
+    still holds. The example config no longer sets `feeTo`.
+18. **Funding pre-check before the lane.** `POST /v1/sweep` reads the owner's token balance (and allowance, unless a permit
+    is supplied) before taking a lane slot, so fresh signing keys with no funds cannot occupy the lane or probe the breaker.
+    Costs two `eth_call`s per accepted-so-far request (bounded by the IP limiter). A funded owner who can still make the
+    simulation revert can use the lane; that is covered by the owner and IP limits only.
+19. **Fee vs gas at send time is not re-checked.** The sweep re-checks only the gas price cap. A quote (TTL 120 s) priced at
+    a low gas price is honoured even if gas rises, up to `maxGasPriceWei`; the relayer absorbs the difference (bounded by the
+    cap and the daily budget). Rejecting would force clients to re-quote on ordinary gas noise; accepted as operator risk.
+20. **Breaker probe.** A half-open probe that ends without an RPC outcome (gas cap, budget, gas limit) gives its slot back
+    (`releaseProbe`); a user-caused simulation revert counts as success. `/healthz` reports `degraded` unless some chain is closed.

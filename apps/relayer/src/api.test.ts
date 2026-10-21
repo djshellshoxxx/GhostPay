@@ -584,9 +584,9 @@ describe('serialization, queue and shutdown', () => {
       release = r;
     });
     expect((await call(s, 'POST', '/v1/sweep', (await prepare(s)).body)).status).toBe(200);
+    const { body } = await prepare(s, { nonce: 2n }); // quoting is refused once shutdown starts
     const closing = s.relayer.server.close();
     expect(s.relayer.service.health().status).toBe('shutting_down');
-    const { body } = await prepare(s, { nonce: 2n });
     const { parseSweepRequest } = await import('./validate.js');
     await expect(s.relayer.service.sweep(parseSweepRequest(body), { requestId: 'abcdef12' })).rejects.toMatchObject({ status: 503, code: 'shutting_down' });
     let done = false;

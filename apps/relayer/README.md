@@ -35,7 +35,9 @@ chain and token allowlist (`chain_not_supported`, `token_not_supported` 422) -> 
 unexpired (`quote_expired` 410), `sweep.fee >= quote.fee` (`fee_below_quote`), `fee <= 300 bps` (`fee_above_cap`) ->
 deadline in `(now+min, now+max]`, max 1800 s (`deadline_too_soon/far`) -> contract static rules (`invalid_order`) ->
 signature recovers to `owner` (`invalid_signature`) -> per-owner rate limit (`rate_limited_owner` 429; keyed only by a
-proven owner) -> `PolicyGate` (`policy_denied` 403, `policy_unavailable` 503) -> breaker -> serial per-chain lane:
+proven owner) -> `PolicyGate` (`policy_denied` 403, `policy_unavailable` 503) -> breaker -> funding pre-check
+(`insufficient_balance` / `insufficient_allowance` 422, allowance skipped when a permit is supplied; two `eth_call`s,
+done before taking a lane slot) -> serial per-chain lane:
 gas price cap (`gas_price_too_high` 503), balance floor (`breaker_open`), `simulateContract` (revert class: `nonce_used`
 409, `expired`, `invalid_signature`, `token_transfer_failed`, `permit_value_too_low`, `invalid_order`,
 `simulation_reverted` 422; RPC failure `rpc_unavailable` 503), gas limit (`gas_limit_too_high`), daily budget
@@ -60,7 +62,7 @@ missing economics all stop startup.
 | `<name from rpcUrlEnv>` | RPC URL kept out of the file (API keys) |
 
 Per chain: `rpcUrl`|`rpcUrlEnv`, `sweepRelayer` (optional; taken from the manifest when present, must match it if both),
-`feeTo` (default: the hot-key address), `tokens` (each `usdStable: true`; symbol/decimals/permit come from the
+`feeTo` (with a manifest: must equal its `feeRecipient`, defaults to it, never the hot key; without a manifest, i.e. the dev chain: defaults to the hot-key address), `tokens` (each `usdStable: true`; symbol/decimals/permit come from the
 chain-adapters allowlist or must be given), `nativeUsdPrice`, `gasUnits`, `maxGasLimit`, `maxGasPriceWei`,
 `dailyBudgetWei`, `minBalanceWei`. Operator numbers (`gasUnits`, `nativeUsdPrice`, caps, budget) have no defaults on
 purpose and must be set from your own measurements. The example file's values are placeholders, not measurements.

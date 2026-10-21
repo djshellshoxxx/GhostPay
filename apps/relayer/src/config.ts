@@ -186,7 +186,12 @@ function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; inse
   }
 
   let sweepRelayer: Address | undefined;
-  if (manifestText !== undefined) sweepRelayer = loadDeployment(manifestText, chainId).sweepRelayer;
+  let manifestFeeRecipient: Address | undefined;
+  if (manifestText !== undefined) {
+    const dep = loadDeployment(manifestText, chainId);
+    sweepRelayer = dep.sweepRelayer;
+    manifestFeeRecipient = dep.feeRecipient;
+  }
   if (c['sweepRelayer'] !== undefined) {
     const configured = wrap(() => parseAddress(c['sweepRelayer'], 'sweepRelayer'), `${path}.sweepRelayer`);
     if (sweepRelayer !== undefined && configured !== sweepRelayer) return bad(`${path}.sweepRelayer`, 'differs from the deployment manifest');
@@ -194,7 +199,16 @@ function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; inse
   }
   if (sweepRelayer === undefined) return bad(`${path}.sweepRelayer`, 'no manifest and no sweepRelayer configured');
 
-  const feeTo = c['feeTo'] === undefined ? ctx.hotKeyAddress : wrap(() => parseAddress(c['feeTo'], 'feeTo'), `${path}.feeTo`);
+  // With a manifest the fee recipient is the manifest's `feeRecipient` (docs/FEE_SCHEDULE.md): a
+  // configured `feeTo` must equal it and the hot key is never the default. Without a manifest (the
+  // local dev chain) the documented hot-key default stays.
+  let feeTo: Address;
+  if (c['feeTo'] !== undefined) {
+    feeTo = wrap(() => parseAddress(c['feeTo'], 'feeTo'), `${path}.feeTo`);
+    if (manifestFeeRecipient !== undefined && feeTo !== manifestFeeRecipient) return bad(`${path}.feeTo`, 'differs from the deployment manifest feeRecipient');
+  } else {
+    feeTo = manifestFeeRecipient ?? ctx.hotKeyAddress;
+  }
   if (feeTo === sweepRelayer) return bad(`${path}.feeTo`, 'must not be the sweep relayer contract');
 
   if ((c['rpcUrl'] === undefined) === (c['rpcUrlEnv'] === undefined)) return bad(path, 'set exactly one of rpcUrl and rpcUrlEnv');

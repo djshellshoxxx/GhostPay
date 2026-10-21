@@ -168,3 +168,14 @@ describe('createViemChainClient', () => {
     expect(await setup({ raw: [] }).waitForReceipt(HASH, 60)).toEqual({ status: 'timeout', gasUsed: 0n });
   });
 });
+
+describe('getSweepFunding', () => {
+  it('reads token balance and allowance with two eth_calls', async () => {
+    const words = ['0x' + (5).toString(16).padStart(64, '0'), '0x' + (9).toString(16).padStart(64, '0')];
+    let n = 0;
+    const c = setup({ raw: [], call: () => words[n++ % 2] });
+    const f = await c.getSweepFunding(USDC, OWNER, SWEEP_CONTRACT);
+    expect([f.balance, f.allowance].sort()).toEqual([5n, 9n]);
+    expect(n).toBe(2);
+  });
+});
