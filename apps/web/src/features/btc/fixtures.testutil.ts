@@ -141,7 +141,7 @@ export function mockChain(netId: BtcNetworkId, recipient: BtcWallet): MockChain 
       }
       if (path === '/fee-estimates') return json({ '1': 3.5, '6': 1.2 });
       if (path === '/tx' && init.method === 'POST') {
-        chain.broadcasts.push(String(init.body));
+        chain.broadcasts.push(typeof init.body === 'string' ? init.body : '');
         return text(HASH(0x9999));
       }
       return Promise.resolve(new Response('not found', { status: 404 }));

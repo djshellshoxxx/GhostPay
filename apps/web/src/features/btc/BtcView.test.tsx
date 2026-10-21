@@ -28,7 +28,7 @@ describe('BtcView', () => {
   it('shows test-only warning and keeps mainnet disabled', () => {
     renderWith(<BtcView />, makeServices());
     expect(screen.getByText(/Mainnet is disabled/)).toBeTruthy();
-    expect((screen.getByRole('option', { name: /mainnet/i }) as HTMLOptionElement).disabled).toBe(true);
+    expect(screen.getByRole<HTMLOptionElement>('option', { name: /mainnet/i }).disabled).toBe(true);
   });
 
   it('creates a wallet, shows the seed once, address, payment instructions, and locks', async () => {
@@ -93,7 +93,7 @@ describe('BtcView', () => {
     expect(screen.getByRole('alert').textContent).toMatch(/not valid for this network/);
 
     await user.click(screen.getByRole('checkbox', { name: /^Sweep / }));
-    expect((screen.getByRole('button', { name: 'Review sweep' }) as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Review sweep' }).disabled).toBe(true);
     await user.click(screen.getByRole('checkbox', { name: /^Sweep / }));
 
     chain.failPath = '/blocks/tip/height';
