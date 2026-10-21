@@ -10,7 +10,7 @@ Inputs: round-1 audits from the sibling swarm on `claude/remote-extensions-1` (`
 | contracts | Unsalted policyHash dictionary attack | yes | DOCUMENTED, owner decision: a salted policyHash changes policy-scheme vectors/meta-address format. Router calldata no longer carries policyHash (N-01). A no-contract blinding leaf in the limits tree is tested as mitigation. |
 | contracts | Fee-token failure freezes funds to undeployed account | yes | Already mitigated by FeeWaived; residual freezes tested and documented |
 | contracts | Stolen-key spec claim overstated | yes (wording) | FIXED in contracts docs; spec and policy guide wording patched (this commit) |
-| contracts | `deployments/schema.json` lacks GhostPayPolicyRouter | yes | FIXED (this commit): `policyRouter`, `deployTx`, `bytecodeHashes`, `dependentRequired` |
+| contracts | `deployments/schema.json` lacks GhostPayPolicyRouter | yes | OPEN: the schema patch (appendix A of fixes-round3b-contracts.md) was applied and then reverted, because `packages/chain-adapters` `validateManifest` rejects unknown keys and a test pins schema and validator in sync (`deployments.test.ts`). Needs `policyRouter` support in the validator first (chain-adapters, outside this swarm's agreed scope) |
 | contracts | Halmos | n/a | 3 starter specs (RT-1, PR-1, FA-1) pass on halmos 0.3.3; no Certora/long campaign |
 | core-crypto | M-1 replayed announcement matches with swapped amount/token | yes | Protocol limit: DOCUMENTED, opt-in `checkAnnouncement(..., {requireRouterMetadata})`, `metadataMatches()`; defaults unchanged |
 | invoice-schema | M-2 any self-signed invoice reads as valid-signature | yes | Design limit: DOCUMENTED, opt-in `requirePinnedSigner` throws `UntrustedSignerError`; defaults unchanged |

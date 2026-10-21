@@ -46,10 +46,6 @@
       "description": "Optional. Factory FEE_RECIPIENT (may differ from the router's).",
       "$ref": "#/$defs/address"
     },
-    "policyRouter": {
-      "description": "Optional. GhostPayPolicyRouter (scheme 0x47500002 checkout). Requires policyFactory; its FACTORY() must equal policyFactory.",
-      "$ref": "#/$defs/address"
-    },
     "deployTx": {
       "type": "object",
       "additionalProperties": false,
@@ -58,8 +54,7 @@
         "router": { "$ref": "#/$defs/bytes32" },
         "sweepRelayer": { "$ref": "#/$defs/bytes32" },
         "policyImplementation": { "$ref": "#/$defs/bytes32" },
-        "policyFactory": { "$ref": "#/$defs/bytes32" },
-        "policyRouter": { "$ref": "#/$defs/bytes32" }
+        "policyFactory": { "$ref": "#/$defs/bytes32" }
       }
     },
     "solcVersion": { "type": "string", "pattern": "^0\\.8\\.\\d+(\\+commit\\.[0-9a-f]{8})?$" },
@@ -73,15 +68,13 @@
         "router": { "$ref": "#/$defs/bytes32" },
         "sweepRelayer": { "$ref": "#/$defs/bytes32" },
         "policyImplementation": { "$ref": "#/$defs/bytes32" },
-        "policyFactory": { "$ref": "#/$defs/bytes32" },
-        "policyRouter": { "$ref": "#/$defs/bytes32" }
+        "policyFactory": { "$ref": "#/$defs/bytes32" }
       }
     },
     "date": { "type": "string", "format": "date-time" },
     "signature": { "type": "string", "pattern": "^0x[0-9a-fA-F]+$" }
   },
   "dependentRequired": {
-    "policyRouter": ["policyFactory"],
     "policyFactory": [
       "policyImplementation",
       "policyFeeToken",
