@@ -250,3 +250,7 @@ th, td { text-align: left; vertical-align: top; padding: 8px 12px; border-top: 1
 summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 600; }
 
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
+
+/* Text from untrusted sources (invoice memo, wallet names): isolate direction so it cannot reorder neighbouring text. */
+.isolate { unicode-bidi: isolate; direction: ltr; }
+.warn-list { margin: 4px 0 0; padding-left: 1.2em; }

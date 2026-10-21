@@ -10,7 +10,7 @@ import { createInvoice, signInvoice, parseFragment, encodeFragment } from '@ghos
 import { encodeFunctionResult } from 'viem/utils';
 import { privateKeyToAccount } from 'viem/accounts';
 import { afterEach, describe, expect, it } from 'vitest';
-import { FAKE_FEE_RECIPIENT, FAKE_ROUTER, fakeManifest } from '../test/fakeManifest';
+import { FAKE_FEE_RECIPIENT, FAKE_ROUTER, fakeManifest, fakeVerified } from '../test/fakeManifest';
 import { BASE_FORM, NOW, USDC_84532, makeParsed } from '../test/invoiceFixtures';
 import { mockRpc } from '../test/mockRpc';
 import { buildInvoiceLink } from './invoiceCreate';
@@ -35,10 +35,12 @@ import {
   type PayContext,
 } from './pay';
 import { clearSession, generateSession, requireSession } from './session';
+import type { DeploymentCheck } from './deployment';
 import type { ManifestState } from './manifest';
 import { currentSignerHex } from '../test/keys';
 
 const LOADED = (chainId: number): ManifestState => ({ status: 'loaded', manifest: fakeManifest(chainId) });
+const OK = (chainId: number): DeploymentCheck => ({ status: 'verified', verified: fakeVerified(fakeManifest(chainId)) });
 
 afterEach(() => {
   clearSession();
@@ -72,7 +74,7 @@ describe('trustView (ADR-0010 wording)', () => {
 describe('reviewInvoice', () => {
   it('has no blockers for a good invoice with a loaded manifest', async () => {
     const { parsed } = await makeParsed();
-    const r = reviewInvoice(parsed, NOW + 10, LOADED(84532));
+    const r = reviewInvoice(parsed, NOW + 10, LOADED(84532), OK(84532));
     expect(r.blockers).toEqual([]);
     expect(r.token).toMatchObject({ symbol: 'USDC', decimals: 6 });
     expect(r.chain?.name).toBe('Base Sepolia');
@@ -87,33 +89,33 @@ describe('reviewInvoice', () => {
   });
   it('blocks expired invoices and expired fiat quotes', async () => {
     const { parsed } = await makeParsed();
-    expect(reviewInvoice(parsed, NOW + 24 * 3600 + 1, LOADED(84532)).blockers).toContain('This invoice has expired.');
+    expect(reviewInvoice(parsed, NOW + 24 * 3600 + 1, LOADED(84532), OK(84532)).blockers).toContain('This invoice has expired.');
     const { parsed: fiat } = await makeParsed({ amountMode: 'fiat_quote' });
-    expect(reviewInvoice(fiat, NOW + 16 * 60, LOADED(84532)).blockers.join(' ')).toMatch(/quote has expired/);
-    expect(reviewInvoice(parsed, NOW + 16 * 60, LOADED(84532)).blockers.join(' ')).not.toMatch(/quote has expired/);
+    expect(reviewInvoice(fiat, NOW + 16 * 60, LOADED(84532), OK(84532)).blockers.join(' ')).toMatch(/quote has expired/);
+    expect(reviewInvoice(parsed, NOW + 16 * 60, LOADED(84532), OK(84532)).blockers.join(' ')).not.toMatch(/quote has expired/);
   });
   it('blocks mainnets (disabled) and unknown chains', async () => {
     const mainnet = await parseOf({ chainId: 8453, token: 'native' });
-    expect(reviewInvoice(mainnet, NOW, LOADED(8453)).blockers.join(' ')).toMatch(/disabled on Base/);
+    expect(reviewInvoice(mainnet, NOW, LOADED(8453), OK(8453)).blockers.join(' ')).toMatch(/disabled on Base/);
     const unknown = await parseOf({ chainId: 999_999, token: 'native' });
     expect(reviewInvoice(unknown, NOW, { status: 'absent' }).blockers.join(' ')).toMatch(/Unknown chain/);
   });
   it('blocks tokens that are not allowlisted', async () => {
     const t = await parseOf({ token: '0x0000000000000000000000000000000000000001' });
-    expect(reviewInvoice(t, NOW, LOADED(84532)).blockers.join(' ')).toMatch(/allowlist/);
+    expect(reviewInvoice(t, NOW, LOADED(84532), OK(84532)).blockers.join(' ')).toMatch(/allowlist/);
   });
   it('blocks totals that do not add up', async () => {
     const t = await parseOf({ fiat: { currency: 'USD', minorUnits: '99999' } });
-    expect(reviewInvoice(t, NOW, LOADED(84532)).blockers.join(' ')).toMatch(/totals do not add up/);
+    expect(reviewInvoice(t, NOW, LOADED(84532), OK(84532)).blockers.join(' ')).toMatch(/totals do not add up/);
   });
   it('blocks an invalid signature', async () => {
     const { parsed } = await makeParsed();
     const bad = { ...parsed, trust: 'invalid-signature' as const, verification: { signatureValid: false, signerPinned: false } };
-    expect(reviewInvoice(bad, NOW, LOADED(84532)).blockers.join(' ')).toMatch(/INVALID/);
+    expect(reviewInvoice(bad, NOW, LOADED(84532), OK(84532)).blockers.join(' ')).toMatch(/INVALID/);
   });
   it('describes native tokens with the chain symbol', async () => {
     const { parsed } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
-    expect(reviewInvoice(parsed, NOW, LOADED(84532)).token).toMatchObject({ symbol: 'ETH', decimals: 18, address: 'native' });
+    expect(reviewInvoice(parsed, NOW, LOADED(84532), OK(84532)).token).toMatchObject({ symbol: 'ETH', decimals: 18, address: 'native' });
   });
 });
 
@@ -138,7 +140,7 @@ function signingKey(): Uint8Array {
 describe('createPayContext and amounts', () => {
   async function ctxFor(patch: Parameters<typeof makeParsed>[0] = {}, manifest = LOADED(84532)): Promise<PayContext> {
     const { parsed } = await makeParsed(patch);
-    return createPayContext(reviewInvoice(parsed, NOW, manifest), undefined, { nowSeconds: NOW });
+    return createPayContext(reviewInvoice(parsed, NOW, manifest, OK(84532)), undefined, { nowSeconds: NOW });
   }
   it('computes gross, 0.25 % fee and net (seller pays)', async () => {
     const c = await ctxFor();
@@ -159,13 +161,13 @@ describe('createPayContext and amounts', () => {
   });
   it('fiat-quote invoices need an RPC and a configured feed (fail closed)', async () => {
     const { parsed } = await makeParsed({ amountMode: 'fiat_quote' });
-    const review = reviewInvoice(parsed, NOW, LOADED(84532));
+    const review = reviewInvoice(parsed, NOW, LOADED(84532), OK(84532));
     await expect(createPayContext(review, undefined, { nowSeconds: NOW })).rejects.toThrow(/Configure an RPC/);
     await expect(createPayContext(review, mockRpc(84532, () => '0x'), { nowSeconds: NOW })).rejects.toThrow(/No price feed is configured/);
   });
   it('converts fiat with a fresh feed, rounding up for the payer', async () => {
     const { parsed } = await makeParsed({ amountMode: 'fiat_quote' });
-    const review = reviewInvoice(parsed, NOW, LOADED(84532));
+    const review = reviewInvoice(parsed, NOW, LOADED(84532), OK(84532));
     const feed: FeedConfig = { chainId: 84532, address: '0x7777777777777777777777777777777777777777', base: 'USDC', quote: 'USD' };
     const rpc = mockRpc(84532, (method, params) => {
       expect(method).toBe('eth_call');
@@ -187,7 +189,7 @@ describe('createPayContext and amounts', () => {
 describe('buildFinal and the preview-equals-calldata gate', () => {
   async function built(patch: Parameters<typeof makeParsed>[0] = {}, opts: Partial<Parameters<typeof buildFinal>[1]> = {}): Promise<{ ctx: PayContext; b: BuiltPayment }> {
     const { parsed } = await makeParsed(patch);
-    const ctx = await createPayContext(reviewInvoice(parsed, NOW, LOADED(84532)), undefined, { nowSeconds: NOW });
+    const ctx = await createPayContext(reviewInvoice(parsed, NOW, LOADED(84532), OK(84532)), undefined, { nowSeconds: NOW });
     return { ctx, b: buildFinal(ctx, { nowSeconds: NOW, ...opts }) };
   }
   it('builds ERC-20 and native payments that pass the gate', async () => {
@@ -202,7 +204,7 @@ describe('buildFinal and the preview-equals-calldata gate', () => {
   });
   it('uses a fresh one-time address and ephemeral key every time', async () => {
     const { parsed } = await makeParsed();
-    const ctx = await createPayContext(reviewInvoice(parsed, NOW, LOADED(84532)), undefined, { nowSeconds: NOW });
+    const ctx = await createPayContext(reviewInvoice(parsed, NOW, LOADED(84532), OK(84532)), undefined, { nowSeconds: NOW });
     const a = buildFinal(ctx, { nowSeconds: NOW });
     const b = buildFinal(ctx, { nowSeconds: NOW });
     expect(a.preview.stealth).not.toBe(b.preview.stealth);
@@ -225,7 +227,7 @@ describe('buildFinal and the preview-equals-calldata gate', () => {
     const otherCtx: PayContext = { ...ctx, request: { ...ctx.request, grossAmount: ctx.request.grossAmount + 1n } };
     expect(() => assertReadyToSend(b, otherCtx)).toThrow(/amounts differ/);
     const otherManifest: PayContext = { ...ctx, manifest: { ...ctx.manifest, router: '0x8888888888888888888888888888888888888888' } };
-    expect(() => assertReadyToSend(b, otherManifest)).toThrow(/manifest router/);
+    expect(() => assertReadyToSend(b, otherManifest)).toThrow(/router that was verified on-chain/);
   });
   it('REFUSES when token or chain in the preview differ from the invoice', async () => {
     const { ctx, b } = await built();
@@ -239,7 +241,7 @@ describe('buildFinal and the preview-equals-calldata gate', () => {
   });
   it('builds buffer payments with a capped, unexpired quote only', async () => {
     const { parsed } = await makeParsed();
-    const ctx = await createPayContext(reviewInvoice(parsed, NOW, LOADED(84532)), undefined, { nowSeconds: NOW });
+    const ctx = await createPayContext(reviewInvoice(parsed, NOW, LOADED(84532), OK(84532)), undefined, { nowSeconds: NOW });
     const q = { bufferWei: 123_456n, maxFeePerGas: 1n, gasLimit: 1n, safetyBps: 2000n, quotedAt: NOW, expiresAt: NOW + BUFFER_QUOTE_TTL_SECONDS };
     const b = buildFinal(ctx, { nowSeconds: NOW, buffer: q });
     expect(b.preview.method).toBe('payERC20WithBuffer');

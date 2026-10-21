@@ -1,6 +1,9 @@
 # Cloudflare Pages / Netlify header file. GitHub Pages cannot apply it (see DEVIATIONS.md, popup-only embed).
-# connect-src is broad (https: wss:) because user-chosen RPC and relayer origins are runtime data; the RPC adapter
+# connect-src is broad (https: wss:) by default because user-chosen RPC and relayer origins are runtime data; the RPC adapter
 # validates every URL (https/wss only, no credentials) and verifies eth_chainId before use (APP_AND_RELAYER_SPEC section 1).
+# Build with GHOSTPAY_CONNECT_ORIGINS=https://rpc.example,wss://... to replace `https: wss:` with exactly those origins;
+# origins a user adds in Settings then need a manual edit of this file (README, section CSP).
+# Deployment manifests are compiled into the hashed JS bundle; there is no mutable /deployments path any more.
 /*
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https: wss:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; worker-src 'self'
   Referrer-Policy: no-referrer
@@ -8,6 +11,7 @@
   X-Frame-Options: DENY
   Permissions-Policy: accelerometer=(), autoplay=(), bluetooth=(), camera=(), display-capture=(), geolocation=(), gyroscope=(), hid=(), magnetometer=(), microphone=(), midi=(), payment=(), serial=(), usb=(), xr-spatial-tracking=()
   Cross-Origin-Opener-Policy: same-origin
+  Strict-Transport-Security: max-age=63072000; includeSubDomains
 
 /index.html
   Cache-Control: no-cache
@@ -16,11 +20,11 @@
   Cross-Origin-Resource-Policy: same-origin
   Cache-Control: public, max-age=31536000, immutable
 
-/deployments/*
-  Cross-Origin-Resource-Policy: same-origin
-  Cache-Control: no-store
-
 # The embed SDK is loaded cross-origin by merchant pages by design; it is a static, dependency-free file.
+# This unversioned name is a MOVING ALIAS (1 h cache). Merchants should pin the content-addressed copy that the build writes
+# (ghostpay-embed-v1.<hash>.js, see dist/embed-sri.json) together with its SHA-384 integrity value. SRI on a cross-origin
+# script needs the CORS header below.
 /ghostpay-embed-v1.js
+  Access-Control-Allow-Origin: *
   Cross-Origin-Resource-Policy: cross-origin
   Cache-Control: public, max-age=3600

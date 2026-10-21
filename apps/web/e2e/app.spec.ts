@@ -26,7 +26,7 @@ test('loads, shows the shell, and raises no console errors or CSP violations', a
   expect(bad.map((m) => m.text())).toEqual([]);
 });
 
-test('create invoice -> open link -> review screen (no manifest shipped, so payment is disabled)', async ({ page }) => {
+test('create invoice -> open link -> review screen (no RPC configured, so the contracts cannot be verified and payment is disabled)', async ({ page }) => {
   const bad = watchConsole(page);
   await page.goto('/');
   await generateKeys(page);
@@ -40,7 +40,7 @@ test('create invoice -> open link -> review screen (no manifest shipped, so paym
   await expect(page.getByText('Base Sepolia', { exact: true })).toBeVisible();
   await expect(page.getByText('Thanks for your business')).toBeVisible();
   await expect(page.getByText('This payment cannot proceed')).toBeVisible();
-  await expect(page.getByText(/Payments disabled on this chain/).first()).toBeVisible();
+  await expect(page.getByText(/Configure an RPC for this chain in Settings: the app must read the contracts back/).first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'Continue' })).toBeDisabled();
   expect((await page.locator('body').innerText()).toLowerCase()).not.toContain('verified seller');
   expect(bad.map((m) => m.text())).toEqual([]);

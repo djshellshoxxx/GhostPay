@@ -13,6 +13,8 @@ export interface WalletInfo {
   /** Only ever a short `data:image/...;base64,` URI, otherwise omitted. */
   readonly icon?: string;
   readonly rdns?: string;
+  /** True when a second announcement reused this uuid with a different name or rdns (impersonation attempt, S3-22). */
+  readonly conflict?: boolean;
   readonly kind: 'eip6963' | 'injected';
   readonly provider: Eip1193Provider;
 }
@@ -33,8 +35,9 @@ function isProvider(v: unknown): v is Eip1193Provider {
 
 function cleanText(v: unknown, max: number): string | undefined {
   if (typeof v !== 'string') return undefined;
+  // Control, format (bidi, zero-width), private-use and tag characters are removed: a wallet name must render as it reads.
   // eslint-disable-next-line no-control-regex
-  const t = v.replace(/[\u0000-\u001f\u007f-\u009f]/g, '').trim();
+  const t = v.replace(/[\u0000-\u001f\u007f-\u009f]|\p{Cf}|\p{Co}|[\u{E0000}-\u{E007F}]/gu, '').trim();
   return t.length === 0 ? undefined : t.slice(0, max);
 }
 
@@ -49,9 +52,15 @@ export async function discoverWallets(win: WindowLike, waitMs = 150): Promise<re
     if (detail === null || typeof detail !== 'object' || detail.info === undefined || !isProvider(detail.provider)) return;
     const uuid = cleanText(detail.info['uuid'], 64);
     const name = cleanText(detail.info['name'], 40);
-    if (uuid === undefined || name === undefined || found.has(uuid)) return;
+    if (uuid === undefined || name === undefined) return;
     const icon = detail.info['icon'];
     const rdns = cleanText(detail.info['rdns'], 80);
+    const prior = found.get(uuid);
+    if (prior !== undefined) {
+      // First announcement wins, but a second one that disagrees is evidence of spoofing: flag it instead of hiding it.
+      if (prior.name !== name || prior.rdns !== rdns) found.set(uuid, { ...prior, conflict: true });
+      return;
+    }
     found.set(uuid, {
       id: `6963:${uuid}`,
       name,
@@ -70,6 +79,33 @@ export async function discoverWallets(win: WindowLike, waitMs = 150): Promise<re
     list.push({ id: 'injected', name: 'Browser wallet (EIP-1193 injected)', kind: 'injected', provider: win.ethereum });
   }
   return list;
+}
+
+const SCRIPTS: readonly (readonly [string, RegExp])[] = [
+  ['Latin', /\p{Script=Latin}/u],
+  ['Cyrillic', /\p{Script=Cyrillic}/u],
+  ['Greek', /\p{Script=Greek}/u],
+];
+
+/**
+ * Warnings for the wallet picker (S3-22): two wallets sharing a name, a uuid announced twice with different identity,
+ * letters from several alphabets in one name (lookalikes), a non-ASCII name, or no rdns. Wallet identity is
+ * self-declared by the page that announces it; these are hints, not proof.
+ */
+export function walletWarnings(list: readonly WalletInfo[]): ReadonlyMap<string, readonly string[]> {
+  const out = new Map<string, string[]>();
+  const names = new Map<string, number>();
+  for (const w of list) names.set(w.name.toLowerCase(), (names.get(w.name.toLowerCase()) ?? 0) + 1);
+  for (const w of list) {
+    const msgs: string[] = [];
+    if ((names.get(w.name.toLowerCase()) ?? 0) > 1) msgs.push('Another wallet announced the same name. Pick the one whose identifier you recognise.');
+    if (w.conflict === true) msgs.push('This wallet was announced twice with different names or identifiers. Treat it as suspicious.');
+    if (SCRIPTS.filter(([, re]) => re.test(w.name)).length > 1) msgs.push('The name mixes letters from different alphabets, which is a common lookalike trick.');
+    else if (/[^\x20-\x7e]/.test(w.name)) msgs.push('The name contains non-ASCII characters.');
+    if (w.kind === 'eip6963' && w.rdns === undefined) msgs.push('It did not announce a reverse-DNS identifier.');
+    if (msgs.length > 0) out.set(w.id, msgs);
+  }
+  return out;
 }
 
 export interface WalletSession {

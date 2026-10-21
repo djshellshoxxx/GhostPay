@@ -6,7 +6,22 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER, FAKE_SWEEP_RELAYER, fakeManifest } from '../test/fakeManifest';
 import { mockRpc } from '../test/mockRpc';
 import { clearSession, generateSession, requireSession } from './session';
-import { checkDestination, deriveVerifiedSweepKey, directSweep, getSweepQuote, readBalance, relayedSweep, type SweepTarget } from './sweep';
+import {
+  MAX_FEE_PER_GAS_CAP,
+  checkDestination,
+  deriveVerifiedSweepKey,
+  destinationWarnings,
+  directSweep,
+  executeDirectSweep,
+  forgetUsedDestinations,
+  getSweepQuote,
+  inspectDestination,
+  markDestinationUsed,
+  planDirectSweep,
+  readBalance,
+  relayedSweep,
+  type SweepTarget,
+} from './sweep';
 import { erc20Abi } from '@ghostpay/chain-adapters';
 
 const TOKEN = '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as Address;
@@ -199,5 +214,97 @@ describe('directSweep (stealth address pays gas, signs a plain transfer)', () =>
     const base = rpcFor(10n ** 17n, {});
     const rpc = { ...base, request: (m: string, p: readonly unknown[]) => (m === 'eth_sendRawTransaction' ? Promise.resolve(`0x${'aa'.repeat(32)}`) : base.request(m, p)) };
     await expect(directSweep({ target, destination: DEST, amount: 1n, rpc })).rejects.toThrow(/does not match the signed transaction/);
+  });
+});
+
+describe('S3-09: direct sweep target and fee parameters', () => {
+  const gas = (priceHex: string, balance: bigint) =>
+    mockRpc(84532, (method) => {
+      if (method === 'eth_gasPrice') return priceHex;
+      if (method === 'eth_getTransactionCount') return '0x0';
+      if (method === 'eth_getBalance') return `0x${balance.toString(16)}`;
+      if (method === 'eth_estimateGas') return '0xc350';
+      throw new Error(method);
+    });
+
+  it('refuses a token that is not on the allowlist (forged announcement) before anything is read or signed', async () => {
+    const calls: string[] = [];
+    const rpc = mockRpc(84532, (m) => {
+      calls.push(m);
+      return '0x1';
+    });
+    const evil = '0x00000000000000000000000000000000deadbeef' as Address;
+    await expect(directSweep({ target: { ...target, token: evil }, destination: DEST, amount: 1n, rpc })).rejects.toThrow(/not on the allowlist/);
+    await expect(planDirectSweep({ target: { ...target, token: evil }, destination: DEST, amount: 1n, rpc })).rejects.toThrow(/not on the allowlist/);
+    await expect(
+      relayedSweep({ target: { ...target, token: evil }, manifest, destination: DEST, amount: 1n, quote: { fee: 0n, feeTo: FEE_TO, expiresAt: NOW + 60, quoteToken: 't' }, relayerUrl: 'https://relay.test', rpc, nowSeconds: NOW }),
+    ).rejects.toThrow(/not on the allowlist/);
+    expect(calls).toEqual([]);
+  });
+
+  it('caps maxFeePerGas at the absolute ceiling even if the RPC lies', async () => {
+    // 400 gwei reported: 2x would be 800 gwei, capped to 500 gwei.
+    const plan = await planDirectSweep({ target, destination: DEST, amount: 1n, rpc: gas(`0x${(400n * 10n ** 9n).toString(16)}`, 10n ** 20n) });
+    expect(plan.maxFeePerGas).toBe(MAX_FEE_PER_GAS_CAP);
+    expect(plan.maxGasCost).toBe(plan.gas * MAX_FEE_PER_GAS_CAP);
+    // 42 000 gwei reported (the audit PoC): refused outright.
+    await expect(planDirectSweep({ target, destination: DEST, amount: 1n, rpc: gas(`0x${(42_857n * 10n ** 9n).toString(16)}`, 10n ** 20n) })).rejects.toThrow(/unusually high gas price/);
+  });
+
+  it('refuses a native sweep whose worst-case fee exceeds 5 % of the balance', async () => {
+    const native = { ...target, token: 'native' as const };
+    // 1 gwei price: cost = 21000 * 2 gwei = 42 000 gwei. Balance 0.0004 ETH = 400 000 gwei -> 10.5 %.
+    await expect(planDirectSweep({ target: native, destination: DEST, amount: 1n, rpc: gas('0x3b9aca00', 400_000n * 10n ** 9n) })).rejects.toThrow(/more than 5 %/);
+    const ok = await planDirectSweep({ target: native, destination: DEST, amount: 1n, rpc: gas('0x3b9aca00', 10n ** 18n) });
+    expect(ok.sent).toBe(10n ** 18n - ok.maxGasCost);
+  });
+
+  it('signs EXACTLY the plan that was shown (no recomputation) and remembers the destination for this tab only', async () => {
+    forgetUsedDestinations();
+    const sent: string[] = [];
+    const base = gas('0x3b9aca00', 10n ** 18n);
+    const rpc = { ...base, request: (m: string, p: readonly unknown[]) => (m === 'eth_sendRawTransaction' ? ((sent.push(p[0] as string), Promise.resolve(keccak256(p[0] as `0x${string}`))) as Promise<unknown>) : base.request(m, p)) };
+    const input = { target, destination: DEST, amount: 5n, rpc };
+    const plan = await planDirectSweep(input);
+    const res = await executeDirectSweep(input, plan);
+    const tx = parseTransaction(sent[0] as `0x${string}`);
+    expect(tx.maxFeePerGas).toBe(plan.maxFeePerGas);
+    expect(tx.gas).toBe(plan.gas);
+    expect(tx.nonce).toBe(plan.nonce);
+    expect(res.maxGasCost).toBe(plan.maxGasCost);
+    const info = await inspectDestination(
+      mockRpc(84532, (m) => (m === 'eth_getCode' ? '0x' : '0x0')),
+      DEST,
+    );
+    expect(info.usedThisSession).toBe(true);
+    expect(info.hasHistory).toBe(true);
+    forgetUsedDestinations();
+  });
+});
+
+describe('D1: destination history check', () => {
+  const node = (count: string, balance: string, code: string) =>
+    mockRpc(84532, (m) => (m === 'eth_getTransactionCount' ? count : m === 'eth_getBalance' ? balance : m === 'eth_getCode' ? code : null));
+  it('reports a fresh address and the reasons an address is not fresh', async () => {
+    forgetUsedDestinations();
+    const fresh = await inspectDestination(node('0x0', '0x0', '0x'), DEST);
+    expect(fresh).toMatchObject({ txCount: 0n, balance: 0n, isContract: false, usedThisSession: false, hasHistory: false });
+    expect(destinationWarnings(fresh)).toEqual([]);
+    const used = await inspectDestination(node('0x1', '0x5', '0x6001'), DEST);
+    expect(used.hasHistory).toBe(true);
+    expect(destinationWarnings(used)).toEqual([
+      'It has sent 1 transaction before.',
+      'It already holds a native balance, so it has received funds before.',
+      'It is a contract (a smart wallet, exchange deposit or something else).',
+    ]);
+    markDestinationUsed(DEST);
+    const again = await inspectDestination(node('0x0', '0x0', '0x'), DEST);
+    expect(again.hasHistory).toBe(true);
+    expect(destinationWarnings(again)).toEqual(['You already swept to this address in this tab: the two payments are now publicly linked to each other.']);
+    forgetUsedDestinations();
+  });
+  it('rejects malformed RPC answers instead of guessing', async () => {
+    await expect(inspectDestination(node('0x0', '0x0', 'nope'), DEST)).rejects.toThrow(/unexpected answer about the destination/);
+    await expect(inspectDestination(node('zz', '0x0', '0x'), DEST)).rejects.toThrow();
   });
 });

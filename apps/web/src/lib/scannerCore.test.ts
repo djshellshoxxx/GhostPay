@@ -102,11 +102,11 @@ describe('worker isolation (APP_AND_RELAYER_SPEC: no network APIs in scanning co
       .replace(/^\s*\/\/.*$/gm, '');
     expect(text).not.toMatch(FORBIDDEN);
   });
-  it('imports nothing but core-crypto and its own protocol module', () => {
+  it('imports nothing but core-crypto, the network-free deep-scan module and its own protocol module', () => {
     for (const name of files) {
       const text = readFileSync(fileURLToPath(new URL(`./${name}`, import.meta.url)), 'utf8');
       const imports = [...text.matchAll(/from\s+'([^']+)'/g)].map((m) => m[1]);
-      for (const i of imports) expect(['@ghostpay/core-crypto', './scannerCore']).toContain(i);
+      for (const i of imports) expect(['@ghostpay/core-crypto', '@ghostpay/chain-adapters/deepscan', './scannerCore']).toContain(i);
     }
   });
 });

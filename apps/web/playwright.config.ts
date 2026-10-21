@@ -1,4 +1,5 @@
 import { existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from '@playwright/test';
 
 // Chromium is pre-installed in this environment; never run `playwright install`.
@@ -22,6 +23,8 @@ export default defineConfig({
   },
   webServer: {
     command: 'npm run build && npx vite preview --port 4173 --strictPort --host localhost',
+    // The suite's bundle contains the obviously fake manifest in e2e/fixtures, never apps/web/deployments.
+    env: { GHOSTPAY_DEPLOYMENTS_DIR: fileURLToPath(new URL('./e2e/fixtures', import.meta.url)) },
     url: 'http://localhost:4173/',
     reuseExistingServer: false,
     timeout: 180_000,

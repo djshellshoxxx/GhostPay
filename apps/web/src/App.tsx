@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
-import type { RpcClient } from '@ghostpay/chain-adapters';
+import { createReconciledClient, type DeploymentManifest, type RpcClient } from '@ghostpay/chain-adapters';
+import { checkDeployment as runCheck, type DeploymentCheck } from './lib/deployment';
 import { clearFragment, readInvoiceFragment } from './lib/fragment';
 import type { ScanMatch } from './lib/scanClient';
 import { useServices } from './lib/services';
@@ -107,11 +108,10 @@ export function App(): ReactNode {
     main.current?.focus();
   }, [view]);
 
-  const getRpc = useCallback(
-    (chainId: number): Promise<RpcClient | undefined> => {
-      const url = settings.rpcUrls[String(chainId)];
+  const rawRpc = useCallback(
+    (chainId: number, url: string | undefined): Promise<RpcClient> | undefined => {
       const chain = services.chains.find((c) => c.chainId === chainId);
-      if (url === undefined || chain === undefined) return Promise.resolve(undefined);
+      if (url === undefined || chain === undefined) return undefined;
       const key = `${String(chainId)}|${url}`;
       let p = rpcCache.current.get(key);
       if (p === undefined) {
@@ -123,7 +123,64 @@ export function App(): ReactNode {
       }
       return p;
     },
-    [settings.rpcUrls, services],
+    [services],
+  );
+
+  // With a second provider configured every client request goes through identical-result reconciliation (S3-14).
+  const getRpc = useCallback(
+    async (chainId: number): Promise<RpcClient | undefined> => {
+      const a = rawRpc(chainId, settings.rpcUrls[String(chainId)]);
+      if (a === undefined) return undefined;
+      const b = rawRpc(chainId, settings.secondaryRpcUrls[String(chainId)]);
+      return b === undefined ? a : createReconciledClient(await a, await b);
+    },
+    [rawRpc, settings.rpcUrls, settings.secondaryRpcUrls],
+  );
+
+  const checkCache = useRef(new Map<string, Promise<DeploymentCheck>>());
+  const checkDeployment = useCallback(
+    (manifest: DeploymentManifest): Promise<DeploymentCheck> => {
+      const id = String(manifest.chainId);
+      const key = `${id}|${settings.rpcUrls[id] ?? ''}|${settings.secondaryRpcUrls[id] ?? ''}`;
+      const hit = checkCache.current.get(key);
+      if (hit !== undefined) return hit;
+      const p = (async (): Promise<DeploymentCheck> => {
+        const primary = rawRpc(manifest.chainId, settings.rpcUrls[id]);
+        if (primary === undefined) return { status: 'no-rpc' };
+        let a: RpcClient;
+        let b: RpcClient | undefined;
+        try {
+          a = await primary;
+          const second = rawRpc(manifest.chainId, settings.secondaryRpcUrls[id]);
+          b = second === undefined ? undefined : await second;
+        } catch {
+          return { status: 'unverified', reason: 'the RPC endpoint is unreachable or reports another chain' };
+        }
+        return runCheck(manifest, a, b, services.verifyDeployment);
+      })();
+      checkCache.current.set(key, p);
+      void p.then((r) => {
+        if (r.status !== 'verified') checkCache.current.delete(key);
+      });
+      return p;
+    },
+    [rawRpc, services, settings.rpcUrls, settings.secondaryRpcUrls],
+  );
+
+  const rpcHosts = useCallback(
+    (chainId: number): readonly string[] => {
+      const hosts: string[] = [];
+      for (const u of [settings.rpcUrls[String(chainId)], settings.secondaryRpcUrls[String(chainId)]]) {
+        if (u === undefined) continue;
+        try {
+          hosts.push(new URL(u).host);
+        } catch {
+          /* ignore */
+        }
+      }
+      return hosts;
+    },
+    [settings.rpcUrls, settings.secondaryRpcUrls],
   );
 
   const state = useMemo<AppState>(
@@ -143,9 +200,11 @@ export function App(): ReactNode {
       sweepTarget,
       selectForSweep,
       getRpc,
+      checkDeployment,
+      rpcHosts,
       announce: setLive,
     }),
-    [view, settings, session, fragment, matches, sweepTarget, getRpc],
+    [view, settings, session, fragment, matches, sweepTarget, getRpc, checkDeployment, rpcHosts],
   );
 
   return (
@@ -171,7 +230,7 @@ export function App(): ReactNode {
       </main>
       <div className="sr-only" role="status" aria-live="polite">{live}</div>
       <footer className="site-footer">
-        <p>No analytics, no third-party scripts, no remote fonts. Fee and contract addresses come only from the deployment manifest.</p>
+        <p>No analytics, no third-party scripts, no remote fonts. Contract addresses and the fee recipient come from a manifest compiled into this app and are read back from the chain before any payment.</p>
       </footer>
     </AppContext.Provider>
   );

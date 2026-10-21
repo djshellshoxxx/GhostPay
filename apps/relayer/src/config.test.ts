@@ -1,9 +1,9 @@
-import { chmodSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { chmodSync, mkdirSync, mkdtempSync, readFileSync, symlinkSync, writeFileSync, chownSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { DEV_CHAIN_ID, loadConfigFile, parseConfig, type ConfigContext } from './config.js';
-import { ConfigError, HOT_KEY_SOURCE, QUOTE_SECRET_SOURCE, loadSecret } from './secrets.js';
+import { ConfigError, HOT_KEY_SOURCE, QUOTE_SECRET_PREVIOUS_SOURCE, QUOTE_SECRET_SOURCE, loadOptionalSecret, loadSecret } from './secrets.js';
 import { DEST, FEE_TO, HOT_ADDRESS, NOPERMIT, ORIGIN, STRANGER, SWEEP_CONTRACT, USDC } from './harness.testutil.js';
 
 type Json = Record<string, unknown>;
@@ -12,6 +12,7 @@ const chain = (over: Json = {}): Json => ({
   chainId: 11155111,
   rpcUrl: 'https://rpc.example/key',
   sweepRelayer: SWEEP_CONTRACT,
+  feeTo: FEE_TO,
   tokens: [{ address: USDC, usdStable: true }],
   nativeUsdPrice: '3000.5',
   gasUnits: { sweep: '100000', sweepWithPermit: '130000' },
@@ -50,9 +51,13 @@ describe('parseConfig', () => {
     expect(c.minDeadlineSeconds).toBe(30);
     expect(c.maxDeadlineSeconds).toBe(1800);
     expect(c.queue).toEqual({ maxPending: 16, receiptTimeoutSeconds: 120 });
-    expect(c.breaker).toEqual({ windowSize: 20, minSamples: 5, failureRatio: 0.5, cooldownSeconds: 60 });
+    expect(c.breaker).toEqual({ windowSize: 20, minSamples: 5, failureRatio: 0.5, cooldownSeconds: 60, halfOpenTimeoutSeconds: 30 });
+    expect(c.trustProxy).toEqual([]); // X-Forwarded-For is never trusted by default
+    expect(c.metrics).toEqual({ enabled: false, bearerToken: undefined });
+    expect(c.alerts).toEqual({ webhookUrl: undefined, cooldownSeconds: 900 });
+    expect(c.server.maxConnectionsPerIp).toBe(64);
     const ch = c.chains[0];
-    expect(ch?.feeTo).toBe(HOT_ADDRESS); // defaults to the hot-key address
+    expect(ch?.feeTo).toBe(FEE_TO);
     expect(ch?.nativeUsdMicro).toBe(3_000_500_000n);
     expect(ch?.tokens[0]).toEqual({ address: USDC, symbol: 'USDC', decimals: 6, permit: true, usdStable: true });
     expect(ch?.rpcUrl).toBe('https://rpc.example/key');
@@ -62,7 +67,7 @@ describe('parseConfig', () => {
     const c = parse(
       good({
         listen: { host: '0.0.0.0', port: 9000 },
-        trustProxyHops: 1,
+        trustProxy: ['10.0.0.0/8', '2001:db8::/32'],
         deadline: { minSeconds: 10, maxSeconds: 600 },
         rateLimit: { ipPerMinute: 5, ipBurst: 2, ownerPerMinute: 1, ownerBurst: 1, maxKeys: 64, saltRotationHours: 6 },
         breaker: { windowSize: 10, minSamples: 4, failureRatio: 0.7, cooldownSeconds: 5 },
@@ -80,6 +85,7 @@ describe('parseConfig', () => {
       { env: { MY_RPC: 'https://rpc2.example' } },
     );
     expect(c.port).toBe(9000);
+    expect(c.trustProxy).toEqual(['10.0.0.0/8', '2001:db8::/32']);
     expect(c.rateLimit.saltRotationHours).toBe(6);
     expect(c.chains[0]?.rpcUrl).toBe('https://rpc2.example/');
     expect(c.chains[0]?.feeTo).toBe(FEE_TO);
@@ -181,10 +187,81 @@ describe('parseConfig', () => {
   });
 });
 
+describe('hardening options', () => {
+  it('S3-07: trustProxy must be a list of valid, non-zero-length CIDRs', () => {
+    expect(parse(good({ trustProxy: [] })).trustProxy).toEqual([]);
+    for (const bad of ['10.0.0.0/8', [1], ['nope'], ['0.0.0.0/0'], ['::/0'], Array.from({ length: 33 }, () => '10.0.0.1')]) {
+      expect(() => parse(good({ trustProxy: bad }))).toThrow(/trustProxy/);
+    }
+    expect(() => parse(good({ trustProxyHops: 1 }))).toThrow(/invalid/); // the old hop-count option is gone
+  });
+  it('S3-18(b,c): feeTo is explicit, not a precompile and not the hot key unless allowed', () => {
+    const noFee = good({ chains: [chain({ feeTo: undefined })] });
+    expect(() => parse(noFee)).toThrow(/feeTo: required/);
+    expect(parse({ ...noFee, allowFeeToHotKey: true }).chains[0]?.feeTo).toBe(HOT_ADDRESS);
+    expect(() => parse(good({ chains: [chain({ feeTo: '0x0000000000000000000000000000000000000001' })] }))).toThrow(/burn/);
+    expect(() => parse(good({ chains: [chain({ feeTo: '0x0000000000000000000000000000000000000009' })] }))).toThrow(/burn/); // ecrecover/sha256/... range
+    expect(() => parse(good({ chains: [chain({ feeTo: '0x0000000000000000000000000000000000000000' })] }))).toThrow(/feeTo/);
+    expect(() => parse(good({ chains: [chain({ feeTo: 'REPLACE_WITH_COLD_FEE_ADDRESS' })] }))).toThrow(/feeTo/);
+    expect(() => parse(good({ chains: [chain({ feeTo: HOT_ADDRESS })] }))).toThrow(/differ from the hot key/);
+    expect(parse(good({ allowFeeToHotKey: true, chains: [chain({ feeTo: HOT_ADDRESS })] })).chains[0]?.feeTo).toBe(HOT_ADDRESS);
+  });
+  it('G-11: metrics need a token off loopback; the token comes from the environment and is validated', () => {
+    const TOKEN = 'k'.repeat(40);
+    expect(() => parse(good({ listen: { host: '0.0.0.0' }, metrics: { enabled: true } }))).toThrow(/bearerTokenEnv/);
+    expect(parse(good({ metrics: { enabled: true } })).metrics).toEqual({ enabled: true, bearerToken: undefined });
+    expect(parse(good({ listen: { host: '::1' }, metrics: { enabled: true } })).metrics.enabled).toBe(true);
+    const ok = parse(good({ listen: { host: '0.0.0.0' }, metrics: { enabled: true, bearerTokenEnv: 'M_TOKEN' } }), { env: { M_TOKEN: TOKEN } });
+    expect(ok.metrics).toEqual({ enabled: true, bearerToken: TOKEN });
+    expect(() => parse(good({ metrics: { enabled: true, bearerTokenEnv: 'M_TOKEN' } }))).toThrow(/32\.\.256/);
+    expect(() => parse(good({ metrics: { enabled: true, bearerTokenEnv: 'M_TOKEN' } }), { env: { M_TOKEN: 'short' } })).toThrow(/32\.\.256/);
+    expect(() => parse(good({ metrics: { enabled: true, bearerTokenEnv: 'lower' } }))).toThrow(/env var name/);
+    expect(() => parse(good({ metrics: { enabled: true, bearerTokenEnv: 7 } }))).toThrow(/env var name/);
+    try {
+      parse(good({ metrics: { enabled: true, bearerTokenEnv: 'M_TOKEN' } }), { env: { M_TOKEN: 'secret!' } });
+    } catch (e) {
+      expect((e as Error).message).not.toContain('secret!');
+    }
+  });
+  it('G-11: alerts webhook is https and public, from the file or the environment', () => {
+    const url = 'https://hooks.example.org/T/B/X';
+    expect(parse(good({ alerts: { webhookUrl: url, cooldownSeconds: 60 } })).alerts).toEqual({ webhookUrl: url, cooldownSeconds: 60 });
+    expect(parse(good({ alerts: { webhookUrlEnv: 'HOOK' } }), { env: { HOOK: url } }).alerts.webhookUrl).toBe(url);
+    expect(parse(good()).alerts.webhookUrl).toBeUndefined();
+    for (const bad of ['http://hooks.example.org/x', 'https://127.0.0.1/x', 'https://169.254.169.254/', 'https://localhost/x', 7]) {
+      expect(() => parse(good({ alerts: { webhookUrl: bad } }))).toThrow(/alerts\.webhookUrl/);
+    }
+    expect(() => parse(good({ alerts: { webhookUrl: url, webhookUrlEnv: 'HOOK' } }), { env: { HOOK: url } })).toThrow(/only one/);
+    expect(() => parse(good({ alerts: { webhookUrlEnv: 'HOOK' } }))).toThrow(/empty/);
+    expect(() => parse(good({ alerts: { webhookUrlEnv: 'hook' } }))).toThrow(/env var name/);
+    expect(() => parse(good({ alerts: { webhookUrlEnv: 'HOOK' } }), { env: { HOOK: 'https://10.0.0.1/' } })).toThrow(/private/);
+  });
+  it('S3-05/06/18: breaker, abuse, gas and server options are bounded', () => {
+    const c = parse(good({
+      breaker: { halfOpenTimeoutSeconds: 12 },
+      abuse: { ownerMaxFailures: 2, destinationMaxFailures: 4, windowSeconds: 120 },
+      gas: { coverPercent: 150, maxMovePercent: 10, quoteCacheSeconds: 0 },
+      server: { headersTimeoutMs: 2000, requestTimeoutMs: 3000, keepAliveTimeoutMs: 1500, bodyTimeoutMs: 800, maxConnections: 10, maxConnectionsPerIp: 3, maxHeadersCount: 20 },
+      rateLimit: { quotePerMinute: 10, quoteBurst: 5 },
+    }));
+    expect(c.breaker.halfOpenTimeoutSeconds).toBe(12);
+    expect(c.abuse).toEqual({ ownerMaxFailures: 2, destinationMaxFailures: 4, windowSeconds: 120 });
+    expect(c.gas).toEqual({ coverPercent: 150, maxMovePercent: 10, quoteCacheSeconds: 0 });
+    expect(c.server.maxConnectionsPerIp).toBe(3);
+    expect(c.rateLimit.quoteBurst).toBe(5);
+    expect(() => parse(good({ gas: { coverPercent: 50 } }))).toThrow(/coverPercent/);
+    expect(() => parse(good({ server: { bodyTimeoutMs: 1 } }))).toThrow(/bodyTimeoutMs/);
+    expect(() => parse(good({ abuse: { windowSeconds: 1 } }))).toThrow(/windowSeconds/);
+  });
+});
+
 describe('example config', () => {
   it('stays valid (with a manifest for the chain)', () => {
     const raw: unknown = JSON.parse(readFileSync(new URL('../relayer.config.example.json', import.meta.url), 'utf8'));
-    const c = parse(raw, { env: { RPC_URL_84532: 'https://rpc.example' }, readManifest: (id) => MANIFEST(id) });
+    expect(() => parse(raw, { env: { RPC_URL_84532: 'https://rpc.example' }, readManifest: (id) => MANIFEST(id) })).toThrow(/feeTo/); // placeholder must be replaced
+    const filled = structuredClone(raw) as { chains: { feeTo: string }[] };
+    (filled.chains[0] as { feeTo: string }).feeTo = FEE_TO;
+    const c = parse(filled, { env: { RPC_URL_84532: 'https://rpc.example' }, readManifest: (id) => MANIFEST(id) });
     expect(c.chains[0]?.chainId).toBe(84532);
     expect(c.chains[0]?.tokens[0]?.symbol).toBe('USDC');
   });
@@ -257,6 +334,29 @@ describe('loadSecret', () => {
         expect((e as Error).message).not.toContain('abab');
       }
     }
+  });
+  it('S3-18(d): refuses symlinks and files owned by someone else', () => {
+    const real = file('real', KEY, 0o600);
+    const link = join(dir, 'link');
+    symlinkSync(real, link);
+    expect(() => loadSecret({ RELAYER_KEY_FILE: link }, HOT_KEY_SOURCE)).toThrow(/symlink/);
+    if (process.getuid?.() === 0) {
+      const other = file('foreign', KEY, 0o600);
+      chownSync(other, 12345, 12345);
+      expect(() => loadSecret({ RELAYER_KEY_FILE: other }, HOT_KEY_SOURCE)).toThrow(/owned by/);
+    }
+  });
+  it('S3-18(d): refuses secrets passed in the environment in production unless explicitly allowed', () => {
+    expect(() => loadSecret({ RELAYER_KEY: KEY, NODE_ENV: 'production' }, HOT_KEY_SOURCE)).toThrow(/production/);
+    expect(loadSecret({ RELAYER_KEY: KEY, NODE_ENV: 'production', ALLOW_SECRET_ENV: '1' }, HOT_KEY_SOURCE)).toHaveLength(32);
+    expect(loadSecret({ RELAYER_KEY_FILE: file('prodfile', KEY, 0o600), NODE_ENV: 'production' }, HOT_KEY_SOURCE)).toHaveLength(32);
+  });
+  it('S3-21: the previous quote secret is optional', () => {
+    expect(loadOptionalSecret({}, QUOTE_SECRET_PREVIOUS_SOURCE)).toBeUndefined();
+    expect(loadOptionalSecret({ QUOTE_SECRET_PREVIOUS: '' }, QUOTE_SECRET_PREVIOUS_SOURCE)).toBeUndefined();
+    expect(loadOptionalSecret({ QUOTE_SECRET_PREVIOUS: 'ab'.repeat(32) }, QUOTE_SECRET_PREVIOUS_SOURCE)).toHaveLength(32);
+    expect(loadOptionalSecret({ QUOTE_SECRET_PREVIOUS_FILE: file('prev', 'ab'.repeat(40), 0o600) }, QUOTE_SECRET_PREVIOUS_SOURCE)).toHaveLength(40);
+    expect(() => loadOptionalSecret({ QUOTE_SECRET_PREVIOUS: 'zz' }, QUOTE_SECRET_PREVIOUS_SOURCE)).toThrow(/invalid/);
   });
   it('reports an unreadable file whose stat succeeded', () => {
     const p = file('unreadable', KEY, 0o600);

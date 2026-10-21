@@ -1,3 +1,4 @@
+import { hasFeedsForChain } from '@ghostpay/chain-adapters';
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { CopyButton, Field, Notice } from '../components/Common';
 import { useManifest } from '../components/Disclosure';
@@ -28,6 +29,9 @@ export function CreateInvoice(): ReactNode {
   const [error, setError] = useState<string | undefined>(undefined);
   const [created, setCreated] = useState<CreatedInvoice | undefined>(undefined);
   const manifest = useManifest(chainId);
+  // Fiat pricing needs a verified price feed for the chain; without one such an invoice could never be paid (G-03).
+  const fiatAvailable = hasFeedsForChain(chainId);
+  const effectiveMode = fiatAvailable ? amountMode : 'fixed_token';
 
   if (app.session === undefined) {
     return (
@@ -53,7 +57,7 @@ export function CreateInvoice(): ReactNode {
       lineItems: items,
       taxRatePercent: taxRate,
       feePolicy,
-      amountMode,
+      amountMode: effectiveMode,
       tokenAmount,
       expiryHours,
       quoteTtlMinutes: quoteMinutes,
@@ -121,20 +125,19 @@ export function CreateInvoice(): ReactNode {
           <legend>Amount</legend>
           <Field label="Pricing">
             {(id) => (
-              <select id={id} value={amountMode} onChange={(e) => { setAmountMode(e.target.value as 'fiat_quote' | 'fixed_token'); }}>
+              <select id={id} value={effectiveMode} onChange={(e) => { setAmountMode(e.target.value as 'fiat_quote' | 'fixed_token'); }}>
                 <option value="fixed_token">Fixed token amount</option>
-                <option value="fiat_quote">Fiat price, converted at payment time</option>
+                {fiatAvailable && <option value="fiat_quote">Fiat price, converted at payment time</option>}
               </select>
             )}
           </Field>
-          {amountMode === 'fixed_token' ? (
+          {!fiatAvailable && <p className="hint">Fiat-priced invoices are not offered on this chain: this release has no verified price feed for it, so nobody could pay such an invoice.</p>}
+          {effectiveMode === 'fixed_token' ? (
             <Field label="Token amount" hint="Decimal amount in the token's units, for example 25.50.">
               {(id, d) => <input id={id} aria-describedby={d} inputMode="decimal" value={tokenAmount} onChange={(e) => { setTokenAmount(e.target.value); }} />}
             </Field>
           ) : (
-            <Notice kind="info">
-              Payers convert the fiat total with a price feed at payment time. No feed is configured in this release, so such invoices cannot be paid from this app yet.
-            </Notice>
+            <Notice kind="info">Payers convert the fiat total with a verified Chainlink price feed at payment time.</Notice>
           )}
           <Field label="Currency (ISO code)">{(id) => <input id={id} maxLength={3} value={currency} onChange={(e) => { setCurrency(e.target.value); }} />}</Field>
           <Field label="Who pays the 0.25 % checkout fee">

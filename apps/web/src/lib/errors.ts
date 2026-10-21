@@ -34,6 +34,8 @@ export function userMessage(error: unknown): string {
     return error.code === 'SCHEMA' && error.path !== undefined ? `${base} (field: ${error.path})` : base;
   }
   if (error instanceof ChainAdapterError) {
+    // These two carry fixed-form, user-readable details written for this purpose (no URLs, no provider text).
+    if (error.code === 'PAYMENT_UNVERIFIED' || error.code === 'DEPLOYMENT_UNVERIFIED') return `Cannot confirm: ${error.message.replace(/^[A-Z_]+: /, '')}.`;
     return `Blocked by a safety check (${error.code}).`;
   }
   if (error instanceof GhostPayCryptoError) {

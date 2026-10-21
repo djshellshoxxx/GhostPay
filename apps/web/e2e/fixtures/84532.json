@@ -1,0 +1,19 @@
+{
+  "chainId": 84532,
+  "announcer": "0x55649E01B5Df198D18D95b5cc5051630cfD45564",
+  "router": "0x1111111111111111111111111111111111111111",
+  "sweepRelayer": "0x2222222222222222222222222222222222222222",
+  "feeRecipient": "0x4444444444444444444444444444444444444444",
+  "feeBps": 25,
+  "deployTx": {
+    "router": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "sweepRelayer": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "solcVersion": "0.8.28+commit.7893614a",
+  "commit": "cccccccccccccccccccccccccccccccccccccccc",
+  "bytecodeHashes": {
+    "router": "0xb34cae44c9f4107ce790dc74c036acf741cdf09a64c23bc7a8f163710965426f",
+    "sweepRelayer": "0x22cca4fbdab7ef843174d67d40d95ef6c56bf53ff1ba54871f1ceb864d042024"
+  },
+  "date": "2026-01-01T00:00:00Z"
+}

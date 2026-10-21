@@ -27,12 +27,14 @@ import {
   type PermitTypedData,
   type RpcClient,
   type TokenConfig,
+  type VerifiedDeployment,
 } from '@ghostpay/chain-adapters';
 import { checkExpiry, type ExpiryStatus, type Invoice, type ParsedInvoice } from '@ghostpay/invoice-schema';
 import { decodeFunctionData, decodeFunctionResult, encodeFunctionData, getAddress, recoverAddress } from 'viem/utils';
 import { UserFacingError } from './errors';
 import { fiatDecimals } from './format';
 import { computeTotals } from './invoiceCreate';
+import { deploymentProblem, type DeploymentCheck } from './deployment';
 import type { ManifestState } from './manifest';
 
 export type TrustView =
@@ -63,12 +65,14 @@ export interface Review {
   readonly token: { readonly symbol: string; readonly decimals: number; readonly address: Address | 'native'; readonly config: TokenConfig | undefined } | undefined;
   readonly totals: { readonly subtotal: bigint; readonly tax: bigint; readonly total: bigint };
   readonly manifest: DeploymentManifest | undefined;
+  /** Contract addresses and fee recipient as READ FROM THE CHAIN; set only when the on-chain check passed. */
+  readonly verified: VerifiedDeployment | undefined;
   /** Reasons payment cannot proceed. Empty means the review may continue. */
   readonly blockers: readonly string[];
 }
 
 /** Resolves chain/token and collects every reason the payment must not proceed. Pure. */
-export function reviewInvoice(parsed: ParsedInvoice, nowSeconds: number, manifest: ManifestState): Review {
+export function reviewInvoice(parsed: ParsedInvoice, nowSeconds: number, manifest: ManifestState, check?: DeploymentCheck | 'checking'): Review {
   const inv = parsed.invoice;
   const blockers: string[] = [];
   const trust = trustView(parsed);
@@ -100,7 +104,13 @@ export function reviewInvoice(parsed: ParsedInvoice, nowSeconds: number, manifes
         : 'Payments disabled on this chain: no deployment manifest is loaded.',
     );
   }
-  return { invoice: inv, trust, encrypted: parsed.encrypted, expiry, chain, token, totals, manifest: loaded, blockers };
+  // Fail closed: nothing is payable until the bundled manifest has been read back from the chain (S3-01).
+  let verified: VerifiedDeployment | undefined;
+  if (loaded !== undefined && chain?.enabled === true) {
+    if (check !== undefined && check !== 'checking' && check.status === 'verified') verified = check.verified;
+    else blockers.push(deploymentProblem(check) ?? 'The deployment has not been verified on-chain.');
+  }
+  return { invoice: inv, trust, encrypted: parsed.encrypted, expiry, chain, token, totals, manifest: loaded, verified, blockers };
 }
 
 /** A client that refuses all network use; lets the adapter build calldata with no RPC configured. */
@@ -114,6 +124,8 @@ export interface PayContext {
   readonly adapter: ChainAdapter;
   readonly request: PaymentRequest;
   readonly manifest: DeploymentManifest;
+  /** Router, relayer and fee recipient as read from the chain. */
+  readonly verified: VerifiedDeployment;
   readonly chain: ChainConfig;
   readonly client: RpcClient;
   readonly quotedTokenAmount: bigint | undefined;
@@ -129,8 +141,8 @@ export interface FeedDeps {
  * from a configured Chainlink feed through the user's RPC; with no feed or no RPC this fails closed.
  */
 export async function createPayContext(review: Review, client: RpcClient | undefined, deps: FeedDeps): Promise<PayContext> {
-  const { chain, manifest, token } = review;
-  if (review.blockers.length > 0 || chain === undefined || manifest === undefined || token === undefined) {
+  const { chain, manifest, token, verified } = review;
+  if (review.blockers.length > 0 || chain === undefined || manifest === undefined || token === undefined || verified === undefined) {
     throw new UserFacingError('This payment is blocked. Resolve the items in the review first.');
   }
   const rpc = client ?? offlineClient(chain.chainId);
@@ -158,7 +170,7 @@ export async function createPayContext(review: Review, client: RpcClient | undef
     });
   }
   const request = adapter.buildPaymentRequest(inv, quoted === undefined ? {} : { quotedTokenAmount: quoted });
-  return { review, adapter, request, manifest, chain, client: rpc, quotedTokenAmount: quoted };
+  return { review, adapter, request, manifest, verified, chain, client: rpc, quotedTokenAmount: quoted };
 }
 
 /** Sweep-gas estimate used to size the optional buffer. A conservative constant, not a simulation (shown as such). */
@@ -220,7 +232,9 @@ export function assertReadyToSend(built: BuiltPayment, ctx: PayContext): void {
   const p = built.preview;
   const inv = ctx.review.invoice;
   const same = (a: string, b: string): boolean => a.toLowerCase() === b.toLowerCase();
-  if (!same(built.tx.to, ctx.manifest.router) || !same(p.router, ctx.manifest.router)) throw new UserFacingError('Blocked: the transaction does not target the manifest router.');
+  if (!same(built.tx.to, ctx.verified.router) || !same(p.router, ctx.verified.router) || !same(ctx.manifest.router, ctx.verified.router)) {
+    throw new UserFacingError('Blocked: the transaction does not target the router that was verified on-chain.');
+  }
   if (p.chainId !== inv.chainId) throw new UserFacingError('Blocked: chain differs from the invoice.');
   if (p.token === 'native' ? inv.token !== 'native' : !same(p.token, inv.token)) throw new UserFacingError('Blocked: token differs from the invoice.');
   if (p.gross !== ctx.request.grossAmount || p.fee !== ctx.request.feeAmount || p.net !== ctx.request.netAmount) {

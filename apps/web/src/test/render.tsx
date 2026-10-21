@@ -6,7 +6,9 @@ import { App } from '../App';
 import { ServicesContext, type Services } from '../lib/services';
 import { MemoryTagStore, TagVault } from '../lib/tags';
 import { InlineWorker } from './inlineWorker';
+import { fakeVerified } from './fakeManifest';
 import { NOW } from './invoiceFixtures';
+import { mockRpc } from './mockRpc';
 
 afterEach(() => {
   cleanup();
@@ -24,7 +26,14 @@ export function makeServices(over: Partial<Services> = {}): Services {
     sleep: () => Promise.resolve(),
     fetchFn: () => Promise.reject(new Error('network is not available in tests')),
     loadManifest: () => Promise.resolve({ status: 'absent' }),
-    createRpc: () => Promise.reject(new Error('no rpc in tests')),
+    verifyDeployment: (m) => Promise.resolve(fakeVerified(m)),
+    // A configured RPC that fails every call: deployment verification is stubbed by `verifyDeployment` below.
+    createRpc: (chain) =>
+      Promise.resolve(
+        mockRpc(chain.chainId, (method) => {
+          throw new Error(`unexpected ${method}`);
+        }),
+      ),
     discoverWallets: () => Promise.resolve([]),
     createScanWorker: () => new InlineWorker(),
     checkpoints: memoryCheckpoints(),

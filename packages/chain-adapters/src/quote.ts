@@ -47,6 +47,16 @@ export function findFeed(chainId: number, base: string, quote: string): FeedConf
   return FEEDS.find((f) => f.chainId === chainId && f.base === base && f.quote === quote);
 }
 
+/**
+ * Whether ANY verified feed exists for a chain. UIs use it to hide fiat-priced invoices where they cannot be paid.
+ *
+ * @param chainId Chain id.
+ * @returns True when `FEEDS` has at least one entry for the chain.
+ */
+export function hasFeedsForChain(chainId: number): boolean {
+  return FEEDS.some((f) => f.chainId === chainId);
+}
+
 /** Options for {@link readPrice}. */
 export interface PriceOptions {
   /** Current unix seconds. */

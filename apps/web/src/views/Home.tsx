@@ -71,16 +71,18 @@ export function Home(): ReactNode {
       <h3>Fees</h3>
       <ChainFeeList />
 
-      <h3>Release check</h3>
+      <h3>Release check (informational only)</h3>
       <p>
-        SHA-256 of the app script you are running:{' '}
+        SHA-256 of the app script you are running, as fetched by this page from its own host:{' '}
         {hash === undefined ? 'computing…' : hash === 'unavailable' ? 'not available in this environment' : (
           <>
             <Mono>{hash.sha256}</Mono> ({hash.file})
           </>
         )}
       </p>
-      <p className="hint">Compare it with the hash the maintainers publish for this release. A host that serves different files to different visitors is not detected by this check.</p>
+      <p className="hint">
+        This is not a verification. A compromised host, or a malicious mirror, controls both this page and the answer to the request that produced this number, so it can show you any hash. To check a release, hash the served files from another machine and compare with the signed list the maintainers publish elsewhere (see About).
+      </p>
     </section>
   );
 }

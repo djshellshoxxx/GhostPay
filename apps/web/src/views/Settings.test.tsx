@@ -131,4 +131,37 @@ describe('Settings', () => {
     await user.click(screen.getByRole('button', { name: 'Test Base Sepolia' }));
     await waitFor(() => { expect(screen.getByText(/RPC URL rejected/)).toBeTruthy(); });
   });
+
+  describe('second provider and integrity note (S3-14, S3-25)', () => {
+    it('says that settings are not tamper-protected', async () => {
+      await open();
+      expect(screen.getByText('Settings are not tamper-protected')).toBeTruthy();
+      expect(screen.getByText(/silently change these settings/)).toBeTruthy();
+    });
+    it('saves an independent second RPC per chain', async () => {
+      const user = await open();
+      await user.type(screen.getByLabelText('Base Sepolia RPC URL'), 'https://a.example/v1');
+      await user.type(screen.getByLabelText(/Base Sepolia second RPC URL/), 'https://b.example/v1');
+      await user.click(screen.getByRole('button', { name: 'Save settings' }));
+      expect(await screen.findByText('Settings saved.')).toBeTruthy();
+      expect(stored()['secondaryRpcUrls']).toEqual({ '84532': 'https://b.example/v1' });
+    });
+    it('refuses a second RPC without a primary, or on the same origin as the primary', async () => {
+      const user = await open();
+      await user.type(screen.getByLabelText(/Base Sepolia second RPC URL/), 'https://b.example/v1');
+      await user.click(screen.getByRole('button', { name: 'Save settings' }));
+      expect((await screen.findByRole('alert')).textContent).toMatch(/needs a primary RPC/);
+      await user.type(screen.getByLabelText('Base Sepolia RPC URL'), 'https://b.example/other');
+      await user.click(screen.getByRole('button', { name: 'Save settings' }));
+      expect((await screen.findByRole('alert')).textContent).toMatch(/independent provider/);
+      expect(stored()['secondaryRpcUrls']).toBeUndefined();
+    });
+    it('rejects an invalid second RPC URL', async () => {
+      const user = await open();
+      await user.type(screen.getByLabelText('Base Sepolia RPC URL'), 'https://a.example');
+      await user.type(screen.getByLabelText(/Base Sepolia second RPC URL/), 'http://insecure.example');
+      await user.click(screen.getByRole('button', { name: 'Save settings' }));
+      expect((await screen.findByRole('alert')).textContent).toMatch(/RPC URL rejected/);
+    });
+  });
 });

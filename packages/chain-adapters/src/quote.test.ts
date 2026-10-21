@@ -139,3 +139,11 @@ describe('createAggregatorReader (ABI round trip through a fake node)', () => {
     await expect(readPrice(r2, FEED, opts)).rejects.toThrow(/feed read failed/);
   });
 });
+
+import { hasFeedsForChain as _hasFeeds, FEEDS as _FEEDS } from './quote.js';
+describe('hasFeedsForChain (G-03)', () => {
+  it('is false for every chain while FEEDS holds no verified entry, and tracks FEEDS', () => {
+    for (const c of [1, 11155111, 84532, 999]) expect(_hasFeeds(c)).toBe(_FEEDS.some((f) => f.chainId === c));
+    expect(_FEEDS).toHaveLength(0);
+  });
+});

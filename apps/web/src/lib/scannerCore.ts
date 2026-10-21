@@ -3,6 +3,7 @@
  * EventSource, sendBeacon, importScripts): a test reads this file and the worker entry and fails if one appears.
  * Public logs go in; match flags and addresses come out. Key material never leaves this module.
  */
+import { checkAnnouncementDeep } from '@ghostpay/chain-adapters/deepscan';
 import {
   checkAnnouncement,
   parseCompressedPoint,
@@ -18,11 +19,15 @@ export interface WireLog {
   readonly stealthAddress: string;
   readonly ephemeralPublicKey: string;
   readonly metadata: string;
+  /** Deep scan: ignore the view tag for this log (it was announced by the router). */
+  readonly skipTag?: boolean;
 }
 
 export interface WireMatch {
   readonly id: string;
   readonly stealthAddress: string;
+  /** Set only for skipTag logs: whether the announced view tag was the right one. */
+  readonly tagMatches?: boolean;
 }
 
 export type ToWorker =
@@ -75,9 +80,14 @@ export class ScanSession {
     for (let i = 0; i < logs.length; i++) {
       if (this.cancelled) break;
       const log = logs[i] as WireLog;
-      const hit = checkAnnouncement(log, secret, this.spend);
       this.total++;
-      if (hit.matches) out.push({ id: log.id, stealthAddress: hit.stealthAddress });
+      if (log.skipTag === true) {
+        const deep = checkAnnouncementDeep(log, secret, this.spend);
+        if (deep.matches) out.push({ id: log.id, stealthAddress: deep.stealthAddress, tagMatches: deep.tagMatches });
+      } else {
+        const hit = checkAnnouncement(log, secret, this.spend);
+        if (hit.matches) out.push({ id: log.id, stealthAddress: hit.stealthAddress });
+      }
       if (onProgress !== undefined && i % 128 === 127) onProgress(this.total);
     }
     return out;

@@ -46,6 +46,8 @@ export class KeyHasher {
   private salt: Buffer;
   private startedAt: number;
   private epochCounter = 0;
+  private timer: NodeJS.Timeout | undefined;
+  private readonly listeners: (() => void)[] = [];
 
   public constructor(
     private readonly rotationMs: number,
@@ -62,6 +64,31 @@ export class KeyHasher {
     return this.epochCounter;
   }
 
+  /** Registers a callback run on every rotation (limiters drop their buckets). */
+  public onRotate(fn: () => void): void {
+    this.listeners.push(fn);
+  }
+
+  /**
+   * Rotates eagerly: a quiet relayer must not keep old buckets in memory past the retention period just
+   * because no request arrived to trigger the lazy rotation.
+   *
+   * @param checkMs Polling interval; the timer never keeps the process alive.
+   */
+  public startTimer(checkMs: number): void {
+    this.stopTimer();
+    this.timer = setInterval(() => {
+      this.rotateIfDue();
+    }, checkMs);
+    this.timer.unref();
+  }
+
+  /** Stops the eager rotation timer. */
+  public stopTimer(): void {
+    if (this.timer !== undefined) clearInterval(this.timer);
+    this.timer = undefined;
+  }
+
   /**
    * @param input Raw identifier (IP, address). Not retained.
    * @returns 128-bit hex digest valid until the next rotation.
@@ -76,6 +103,7 @@ export class KeyHasher {
       this.salt = this.random(32);
       this.startedAt = this.now();
       this.epochCounter += 1;
+      for (const l of this.listeners) l();
     }
   }
 }
@@ -97,7 +125,6 @@ export interface LimitResult {
  */
 export class RateLimiter {
   private readonly buckets: LruMap<string, Bucket>;
-  private epoch: number;
 
   public constructor(
     private readonly opts: { readonly perMinute: number; readonly burst: number; readonly maxKeys: number },
@@ -105,7 +132,9 @@ export class RateLimiter {
     private readonly now: () => number,
   ) {
     this.buckets = new LruMap(opts.maxKeys);
-    this.epoch = hasher.epoch;
+    hasher.onRotate(() => {
+      this.buckets.clear();
+    });
   }
 
   /**
@@ -115,10 +144,6 @@ export class RateLimiter {
    * @returns Whether the request may proceed.
    */
   public take(rawKey: string): LimitResult {
-    if (this.hasher.epoch !== this.epoch) {
-      this.buckets.clear();
-      this.epoch = this.hasher.epoch;
-    }
     const key = this.hasher.hash(rawKey);
     const t = this.now();
     const ratePerMs = this.opts.perMinute / 60_000;

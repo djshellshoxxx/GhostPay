@@ -2,12 +2,12 @@ import { erc2612PermitAbi, erc20MetadataAbi, eip712DomainSeparator } from '@ghos
 import { privateKeyToAccount } from 'viem/accounts';
 import { encodeFunctionResult } from 'viem/utils';
 import { afterEach, describe, expect, it } from 'vitest';
-import { FAKE_ROUTER, fakeManifest } from '../test/fakeManifest';
+import { FAKE_ROUTER, fakeManifest, fakeVerified } from '../test/fakeManifest';
 import { NOW, USDC_84532, makeParsed } from '../test/invoiceFixtures';
 import { MOCK_ACCOUNT, MockWallet } from '../test/mockWallet';
 import { mockRpc, type MockRpc } from '../test/mockRpc';
 import { createPayContext, reviewInvoice, type BufferQuote, type PayContext } from './pay';
-import { buildReceipt, ensureAllowance, preparePayment, sendPayment, submitTx, type Runtime } from './payExec';
+import { buildReceipt, ensureAllowance, grantApproval, planApproval, revokeApproval, preparePayment, sendPayment, submitTx, type Runtime } from './payExec';
 import { clearSession } from './session';
 import { SubmissionMismatchError, connectWallet, type WalletInfo, type WalletSession } from './wallet';
 
@@ -21,7 +21,7 @@ const winfo = (w: { request: WalletInfo['provider']['request'] }): WalletInfo =>
 
 async function setup(patch: Parameters<typeof makeParsed>[0] = {}, wallet = new MockWallet()): Promise<{ ctx: PayContext; session: WalletSession; wallet: MockWallet }> {
   const { parsed } = await makeParsed(patch);
-  const ctx = await createPayContext(reviewInvoice(parsed, NOW, { status: 'loaded', manifest: fakeManifest(84532) }), undefined, { nowSeconds: NOW });
+  const ctx = await createPayContext(reviewInvoice(parsed, NOW, { status: 'loaded', manifest: fakeManifest(84532) }, { status: 'verified', verified: fakeVerified(fakeManifest(84532)) }), undefined, { nowSeconds: NOW });
   const session = await connectWallet(winfo(wallet), 84532);
   return { ctx, session, wallet };
 }
@@ -137,6 +137,66 @@ describe('native payment end to end (mock wallet, mock RPC)', () => {
   });
 });
 
+describe('S3-19: approval planned, then granted exactly, and revocable', () => {
+  const word = (n: bigint): string => `0x${n.toString(16).padStart(64, '0')}`;
+  it('planning only READS the allowance and sends nothing', async () => {
+    const { ctx, session, wallet } = await setup();
+    const rpc = chainSeeing(wallet, (m) => (m === 'eth_call' ? word(5n) : undefined));
+    const plan = await planApproval(session, ctx, USDC_84532, { rpc, nowSeconds: () => NOW, sleep });
+    expect(plan).toEqual({ token: USDC_84532, spender: FAKE_ROUTER, need: ctx.request.grossAmount, have: 5n, required: true });
+    expect(wallet.sent).toBeUndefined();
+    expect(wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
+    const covered = chainSeeing(wallet, (m) => (m === 'eth_call' ? word(10n ** 12n) : undefined));
+    expect((await planApproval(session, ctx, USDC_84532 as `0x${string}`, { rpc: covered, nowSeconds: () => NOW, sleep })).required).toBe(false);
+    await expect(planApproval(session, ctx, USDC_84532 as `0x${string}`, { rpc: undefined, nowSeconds: () => NOW })).rejects.toThrow(/needs an RPC/);
+  });
+  it('grants exactly the planned amount and returns the allowance that really exists (may exceed the request)', async () => {
+    const { ctx, session, wallet } = await setup();
+    let allowance = 0n;
+    const rpc = chainSeeing(wallet, (m) => {
+      if (m === 'eth_call') return word(allowance);
+      if (m === 'eth_getTransactionByHash') allowance = 2n ** 256n - 1n; // the wallet let the user raise the cap to "unlimited"
+      return undefined;
+    });
+    const rt = { rpc, nowSeconds: () => NOW, sleep };
+    const plan = await planApproval(session, ctx, USDC_84532, rt);
+    const after = await grantApproval(session, ctx, plan, rt, noStatus);
+    expect(wallet.sent?.['to']).toBe(USDC_84532);
+    expect(after).toBe(2n ** 256n - 1n);
+    expect(after).toBeGreaterThan(plan.need);
+  });
+  it('grant fails closed without an RPC, an unconfirmed receipt or an allowance that did not appear', async () => {
+    const { ctx, session, wallet } = await setup();
+    const plan = { token: USDC_84532 as `0x${string}`, spender: FAKE_ROUTER as `0x${string}`, need: 5n, have: 0n, required: true };
+    await expect(grantApproval(session, ctx, plan, { rpc: undefined, nowSeconds: () => NOW }, noStatus)).rejects.toThrow(/needs an RPC/);
+    const noReceipt = chainSeeing(wallet, (m) => (m === 'eth_getTransactionReceipt' ? null : m === 'eth_call' ? word(0n) : undefined));
+    await expect(grantApproval(session, ctx, plan, { rpc: noReceipt, nowSeconds: () => NOW, sleep }, noStatus)).rejects.toThrow(/not confirmed/);
+    const nothing = chainSeeing(wallet, (m) => (m === 'eth_call' ? word(0n) : undefined));
+    await expect(grantApproval(session, ctx, plan, { rpc: nothing, nowSeconds: () => NOW, sleep }, noStatus)).rejects.toThrow(/did not take effect/);
+  });
+  it('revoke sends approve(router, 0) and checks that the allowance is gone', async () => {
+    const { ctx, session, wallet } = await setup();
+    const plan = { token: USDC_84532 as `0x${string}`, spender: FAKE_ROUTER as `0x${string}`, need: 5n, have: 5n, required: false };
+    let allowance = 5n;
+    const rpc = chainSeeing(wallet, (m) => {
+      if (m === 'eth_call') return word(allowance);
+      if (m === 'eth_getTransactionByHash') allowance = 0n;
+      return undefined;
+    });
+    const msgs: string[] = [];
+    await revokeApproval(session, ctx, plan, { rpc, nowSeconds: () => NOW, sleep }, (m) => msgs.push(m));
+    expect(msgs.join(' ')).toMatch(/approve 0/);
+    expect(String(wallet.sent?.['data'])).toMatch(/^0x095ea7b3/);
+    expect(String(wallet.sent?.['data'])).toMatch(/0{64}$/);
+    // still non-zero afterwards, unconfirmed, or no RPC
+    const stuck = chainSeeing(wallet, (m) => (m === 'eth_call' ? word(5n) : undefined));
+    await expect(revokeApproval(session, ctx, plan, { rpc: stuck, nowSeconds: () => NOW, sleep }, noStatus)).rejects.toThrow(/still not zero/);
+    const unconfirmed = chainSeeing(wallet, (m) => (m === 'eth_getTransactionReceipt' ? null : undefined));
+    await expect(revokeApproval(session, ctx, plan, { rpc: unconfirmed, nowSeconds: () => NOW, sleep }, noStatus)).rejects.toThrow(/not confirmed/);
+    await expect(revokeApproval(session, ctx, plan, { rpc: undefined, nowSeconds: () => NOW }, noStatus)).rejects.toThrow(/needs an RPC/);
+  });
+});
+
 describe('ERC-20 flows', () => {
   const OWNER = MOCK_ACCOUNT as `0x${string}`;
   it('approves exactly the gross amount when the allowance is too low, and verifies it took effect', async () => {
@@ -189,7 +249,7 @@ describe('ERC-20 flows', () => {
       },
     });
     const { parsed } = await makeParsed();
-    const ctx = await createPayContext(reviewInvoice(parsed, NOW, { status: 'loaded', manifest: fakeManifest(84532) }), undefined, { nowSeconds: NOW });
+    const ctx = await createPayContext(reviewInvoice(parsed, NOW, { status: 'loaded', manifest: fakeManifest(84532) }, { status: 'verified', verified: fakeVerified(fakeManifest(84532)) }), undefined, { nowSeconds: NOW });
     const session = await connectWallet(signing, 84532);
     const rpc = mockRpc(84532, (_m, params) => {
       const data = (params[0] as { data: string }).data;
@@ -221,7 +281,7 @@ describe('ERC-20 flows', () => {
       },
     });
     const { parsed } = await makeParsed();
-    const ctx = await createPayContext(reviewInvoice(parsed, NOW, { status: 'loaded', manifest: fakeManifest(84532) }), undefined, { nowSeconds: NOW });
+    const ctx = await createPayContext(reviewInvoice(parsed, NOW, { status: 'loaded', manifest: fakeManifest(84532) }, { status: 'verified', verified: fakeVerified(fakeManifest(84532)) }), undefined, { nowSeconds: NOW });
     const session = await connectWallet(lying, 84532);
     const rpc = mockRpc(84532, (_m, params) => {
       const data = (params[0] as { data: string }).data;

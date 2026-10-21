@@ -30,7 +30,7 @@ export interface Logger {
 
 const EVENT = /^[a-z][a-z0-9_]{0,47}$/;
 const REQUEST_ID = /^[0-9a-f-]{8,36}$/;
-const ROUTE = new Set(['/healthz', '/v1/info', '/v1/quote', '/v1/sweep', 'other']);
+const ROUTE = new Set(['/healthz', '/v1/info', '/v1/quote', '/v1/sweep', '/metrics', 'other']);
 const ERROR_CLASS = /^[a-z][a-z0-9_]{0,63}$/;
 const TX_HASH = /^0x[0-9a-f]{64}$/;
 

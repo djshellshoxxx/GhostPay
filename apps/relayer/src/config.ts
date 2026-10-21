@@ -10,6 +10,8 @@ import {
   validateRpcUrl,
 } from '@ghostpay/chain-adapters';
 import { parseAddress, parseObject, type JsonObject } from './codec.js';
+import { validateWebhookUrl } from './alerts.js';
+import { TrustedProxies } from './clientip.js';
 import { parseUsdMicro, type AllowedToken } from './pricing.js';
 import { ConfigError, type Env } from './secrets.js';
 
@@ -40,7 +42,9 @@ export interface RelayerConfig {
   readonly port: number;
   readonly allowedOrigins: readonly string[];
   readonly allowInsecureLocalhostRpc: boolean;
-  readonly trustProxyHops: number;
+  /** CIDRs of reverse proxies whose `X-Forwarded-For` is honoured. Empty (default): never trusted. */
+  readonly trustProxy: readonly string[];
+  readonly allowFeeToHotKey: boolean;
   readonly quoteTtlSeconds: number;
   readonly minDeadlineSeconds: number;
   readonly maxDeadlineSeconds: number;
@@ -51,8 +55,41 @@ export interface RelayerConfig {
     readonly ownerBurst: number;
     readonly maxKeys: number;
     readonly saltRotationHours: number;
+    /** Global budget for `/v1/quote` across all clients (each quote costs an RPC call). */
+    readonly quotePerMinute: number;
+    readonly quoteBurst: number;
   };
-  readonly breaker: { readonly windowSize: number; readonly minSamples: number; readonly failureRatio: number; readonly cooldownSeconds: number };
+  readonly breaker: {
+    readonly windowSize: number;
+    readonly minSamples: number;
+    readonly failureRatio: number;
+    readonly cooldownSeconds: number;
+    readonly halfOpenTimeoutSeconds: number;
+  };
+  /** Gas-griefing controls. */
+  readonly abuse: { readonly ownerMaxFailures: number; readonly destinationMaxFailures: number; readonly windowSeconds: number };
+  /** Gas economics checks applied at quote and again at send time. */
+  readonly gas: {
+    /** Fee must be at least this percent of the gas cost (quote time and send time). */
+    readonly coverPercent: number;
+    /** Reject a sweep when the gas price rose more than this percent between job start and send. */
+    readonly maxMovePercent: number;
+    /** Quotes reuse a gas price at most this old. */
+    readonly quoteCacheSeconds: number;
+  };
+  /** Node HTTP server limits. */
+  readonly server: {
+    readonly headersTimeoutMs: number;
+    readonly requestTimeoutMs: number;
+    readonly keepAliveTimeoutMs: number;
+    readonly bodyTimeoutMs: number;
+    readonly maxConnections: number;
+    /** Per-peer cap (IPv6 by /64); not applied to trusted proxies. */
+    readonly maxConnectionsPerIp: number;
+    readonly maxHeadersCount: number;
+  };
+  readonly metrics: { readonly enabled: boolean; readonly bearerToken: string | undefined };
+  readonly alerts: { readonly webhookUrl: string | undefined; readonly cooldownSeconds: number };
   readonly queue: { readonly maxPending: number; readonly receiptTimeoutSeconds: number };
   readonly shutdownGraceSeconds: number;
   readonly chains: readonly ChainRuntimeConfig[];
@@ -61,7 +98,7 @@ export interface RelayerConfig {
 /** Inputs besides the JSON itself. */
 export interface ConfigContext {
   readonly env: Env;
-  /** Address of the hot key; default `feeTo`. */
+  /** Address of the hot key (`feeTo` must differ unless `allowFeeToHotKey`). */
   readonly hotKeyAddress: Address;
   /** Returns the manifest JSON text for a chain id, or `undefined` when none exists. */
   readonly readManifest: (chainId: number) => string | undefined;
@@ -110,6 +147,51 @@ function wrap<T>(fn: () => T, path: string): T {
   }
 }
 
+function parseTrustProxy(v: unknown): string[] {
+  if (v === undefined) return [];
+  if (!Array.isArray(v) || v.length > 32 || v.some((x) => typeof x !== 'string')) return bad('trustProxy', 'must be an array of proxy CIDRs (max 32)');
+  const list = v as string[];
+  new TrustedProxies(list); // validates every entry; throws ConfigError
+  if (list.some((c) => c.endsWith('/0'))) return bad('trustProxy', 'a /0 network would trust the whole internet');
+  return list;
+}
+
+const LOOPBACK_HOSTS = new Set(['127.0.0.1', '::1', 'localhost']);
+
+function parseMetrics(m: JsonObject, host: string, env: Env): { enabled: boolean; bearerToken: string | undefined } {
+  const enabled = boolOr(m, 'enabled', 'metrics', false);
+  const envName = m['bearerTokenEnv'];
+  let bearerToken: string | undefined;
+  if (envName !== undefined) {
+    if (typeof envName !== 'string' || !/^[A-Z_][A-Z0-9_]{0,63}$/.test(envName)) return bad('metrics.bearerTokenEnv', 'must be an env var name');
+    bearerToken = env[envName];
+    if (bearerToken === undefined || !/^[A-Za-z0-9._~+/=-]{32,256}$/.test(bearerToken)) {
+      return bad('metrics.bearerTokenEnv', 'the variable must hold a token of 32..256 URL-safe characters');
+    }
+  }
+  if (enabled && bearerToken === undefined && !LOOPBACK_HOSTS.has(host)) {
+    return bad('metrics', 'enabling metrics on a non-loopback listen host requires bearerTokenEnv');
+  }
+  return { enabled, bearerToken };
+}
+
+function parseAlerts(a: JsonObject, env: Env): { webhookUrl: string | undefined; cooldownSeconds: number } {
+  if (a['webhookUrl'] !== undefined && a['webhookUrlEnv'] !== undefined) return bad('alerts', 'set only one of webhookUrl and webhookUrlEnv');
+  let raw: unknown = a['webhookUrl'];
+  if (a['webhookUrlEnv'] !== undefined) {
+    const n = a['webhookUrlEnv'];
+    if (typeof n !== 'string' || !/^[A-Z_][A-Z0-9_]{0,63}$/.test(n)) return bad('alerts.webhookUrlEnv', 'must be an env var name');
+    raw = env[n];
+    if (raw === undefined || raw === '') return bad('alerts.webhookUrlEnv', 'variable is empty');
+  }
+  let webhookUrl: string | undefined;
+  if (raw !== undefined) {
+    if (typeof raw !== 'string') return bad('alerts.webhookUrl', 'must be a string');
+    webhookUrl = validateWebhookUrl(raw).href;
+  }
+  return { webhookUrl, cooldownSeconds: numberOr(a, 'cooldownSeconds', 'alerts', 900, 1, 86_400) };
+}
+
 function parseOrigins(v: unknown): string[] {
   if (!Array.isArray(v) || v.length === 0 || v.length > 32) return bad('allowedOrigins', 'must be a non-empty array (max 32)');
   return v.map((x: unknown): string => {
@@ -154,7 +236,7 @@ function parseTokens(chainId: number, v: unknown, path: string): AllowedToken[] 
   });
 }
 
-function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; insecureRpc: boolean }, ctx: ConfigContext): ChainRuntimeConfig {
+function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; insecureRpc: boolean; allowFeeToHotKey: boolean }, ctx: ConfigContext): ChainRuntimeConfig {
   const path = `chains[${String(i)}]`;
   const c = wrap(
     () =>
@@ -194,7 +276,15 @@ function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; inse
   }
   if (sweepRelayer === undefined) return bad(`${path}.sweepRelayer`, 'no manifest and no sweepRelayer configured');
 
-  const feeTo = c['feeTo'] === undefined ? ctx.hotKeyAddress : wrap(() => parseAddress(c['feeTo'], 'feeTo'), `${path}.feeTo`);
+  let feeTo: Address;
+  if (c['feeTo'] === undefined) {
+    if (!top.allowFeeToHotKey) return bad(`${path}.feeTo`, 'required (earned fees must not accumulate on the hot key); or set allowFeeToHotKey');
+    feeTo = ctx.hotKeyAddress;
+  } else {
+    feeTo = wrap(() => parseAddress(c['feeTo'], 'feeTo'), `${path}.feeTo`);
+  }
+  if (BigInt(feeTo) < 0x10000n) return bad(`${path}.feeTo`, 'zero address and precompiles would burn fee income');
+  if (feeTo === ctx.hotKeyAddress && !top.allowFeeToHotKey) return bad(`${path}.feeTo`, 'must differ from the hot key (or set allowFeeToHotKey)');
   if (feeTo === sweepRelayer) return bad(`${path}.feeTo`, 'must not be the sweep relayer contract');
 
   if ((c['rpcUrl'] === undefined) === (c['rpcUrlEnv'] === undefined)) return bad(path, 'set exactly one of rpcUrl and rpcUrlEnv');
@@ -250,7 +340,10 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
         raw,
         'config',
         ['allowedOrigins', 'chains'],
-        ['listen', 'allowDevChain', 'allowInsecureLocalhostRpc', 'trustProxyHops', 'quoteTtlSeconds', 'deadline', 'rateLimit', 'breaker', 'queue', 'shutdownGraceSeconds'],
+        [
+          'listen', 'allowDevChain', 'allowInsecureLocalhostRpc', 'allowFeeToHotKey', 'trustProxy', 'quoteTtlSeconds', 'deadline',
+          'rateLimit', 'breaker', 'abuse', 'gas', 'server', 'metrics', 'alerts', 'queue', 'shutdownGraceSeconds',
+        ],
       ),
     '$',
   );
@@ -261,15 +354,21 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
   const minDeadlineSeconds = numberOr(dl, 'minSeconds', 'deadline', 30, 1, MAX_DEADLINE_WINDOW_SECONDS);
   const maxDeadlineSeconds = numberOr(dl, 'maxSeconds', 'deadline', MAX_DEADLINE_WINDOW_SECONDS, 1, MAX_DEADLINE_WINDOW_SECONDS);
   if (minDeadlineSeconds >= maxDeadlineSeconds) return bad('deadline', 'minSeconds must be below maxSeconds');
-  const rl = sub(o, 'rateLimit', '$', ['ipPerMinute', 'ipBurst', 'ownerPerMinute', 'ownerBurst', 'maxKeys', 'saltRotationHours']);
-  const br = sub(o, 'breaker', '$', ['windowSize', 'minSamples', 'failureRatio', 'cooldownSeconds']);
+  const rl = sub(o, 'rateLimit', '$', ['ipPerMinute', 'ipBurst', 'ownerPerMinute', 'ownerBurst', 'maxKeys', 'saltRotationHours', 'quotePerMinute', 'quoteBurst']);
+  const br = sub(o, 'breaker', '$', ['windowSize', 'minSamples', 'failureRatio', 'cooldownSeconds', 'halfOpenTimeoutSeconds']);
+  const ab = sub(o, 'abuse', '$', ['ownerMaxFailures', 'destinationMaxFailures', 'windowSeconds']);
+  const gs = sub(o, 'gas', '$', ['coverPercent', 'maxMovePercent', 'quoteCacheSeconds']);
+  const sv = sub(o, 'server', '$', ['headersTimeoutMs', 'requestTimeoutMs', 'keepAliveTimeoutMs', 'bodyTimeoutMs', 'maxConnections', 'maxConnectionsPerIp', 'maxHeadersCount']);
+  const mt = sub(o, 'metrics', '$', ['enabled', 'bearerTokenEnv']);
+  const al = sub(o, 'alerts', '$', ['webhookUrl', 'webhookUrlEnv', 'cooldownSeconds']);
   const q = sub(o, 'queue', '$', ['maxPending', 'receiptTimeoutSeconds']);
   const allowDevChain = boolOr(o, 'allowDevChain', '$', false);
   const allowInsecureLocalhostRpc = boolOr(o, 'allowInsecureLocalhostRpc', '$', false);
+  const allowFeeToHotKey = boolOr(o, 'allowFeeToHotKey', '$', false);
 
   const chainsRaw = o['chains'];
   if (!Array.isArray(chainsRaw) || chainsRaw.length === 0 || chainsRaw.length > 16) return bad('chains', 'must be a non-empty array (max 16)');
-  const chains = chainsRaw.map((x: unknown, i) => parseChain(x, i, { allowDevChain, insecureRpc: allowInsecureLocalhostRpc }, ctx));
+  const chains = chainsRaw.map((x: unknown, i) => parseChain(x, i, { allowDevChain, insecureRpc: allowInsecureLocalhostRpc, allowFeeToHotKey }, ctx));
   if (new Set(chains.map((c) => c.chainId)).size !== chains.length) return bad('chains', 'duplicate chainId');
 
   const windowSize = numberOr(br, 'windowSize', 'breaker', 20, 2, 1000);
@@ -278,7 +377,8 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
     port: numberOr(listen, 'port', 'listen', 8787, 0, 65535),
     allowedOrigins: parseOrigins(o['allowedOrigins']),
     allowInsecureLocalhostRpc,
-    trustProxyHops: numberOr(o, 'trustProxyHops', '$', 0, 0, 5),
+    trustProxy: parseTrustProxy(o['trustProxy']),
+    allowFeeToHotKey,
     quoteTtlSeconds: numberOr(o, 'quoteTtlSeconds', '$', 120, 10, 600),
     minDeadlineSeconds,
     maxDeadlineSeconds,
@@ -289,13 +389,37 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
       ownerBurst: numberOr(rl, 'ownerBurst', 'rateLimit', 3, 1, 100_000, false),
       maxKeys: numberOr(rl, 'maxKeys', 'rateLimit', 10_000, 16, 1_000_000),
       saltRotationHours: numberOr(rl, 'saltRotationHours', 'rateLimit', 24, 1, 24),
+      quotePerMinute: numberOr(rl, 'quotePerMinute', 'rateLimit', 300, 1, 1_000_000, false),
+      quoteBurst: numberOr(rl, 'quoteBurst', 'rateLimit', 60, 1, 1_000_000, false),
     },
     breaker: {
       windowSize,
       minSamples: numberOr(br, 'minSamples', 'breaker', Math.min(5, windowSize), 1, windowSize),
       failureRatio: numberOr(br, 'failureRatio', 'breaker', 0.5, 0.01, 1, false),
       cooldownSeconds: numberOr(br, 'cooldownSeconds', 'breaker', 60, 1, 86_400),
+      halfOpenTimeoutSeconds: numberOr(br, 'halfOpenTimeoutSeconds', 'breaker', 30, 1, 3600),
     },
+    abuse: {
+      ownerMaxFailures: numberOr(ab, 'ownerMaxFailures', 'abuse', 3, 1, 1000),
+      destinationMaxFailures: numberOr(ab, 'destinationMaxFailures', 'abuse', 5, 1, 1000),
+      windowSeconds: numberOr(ab, 'windowSeconds', 'abuse', 3600, 60, 86_400),
+    },
+    gas: {
+      coverPercent: numberOr(gs, 'coverPercent', 'gas', 100, 100, 1000),
+      maxMovePercent: numberOr(gs, 'maxMovePercent', 'gas', 25, 0, 1000),
+      quoteCacheSeconds: numberOr(gs, 'quoteCacheSeconds', 'gas', 5, 0, 60),
+    },
+    server: {
+      headersTimeoutMs: numberOr(sv, 'headersTimeoutMs', 'server', 10_000, 1000, 120_000),
+      requestTimeoutMs: numberOr(sv, 'requestTimeoutMs', 'server', 15_000, 1000, 300_000),
+      keepAliveTimeoutMs: numberOr(sv, 'keepAliveTimeoutMs', 'server', 5000, 1000, 120_000),
+      bodyTimeoutMs: numberOr(sv, 'bodyTimeoutMs', 'server', 5000, 500, 120_000),
+      maxConnections: numberOr(sv, 'maxConnections', 'server', 1024, 1, 100_000),
+      maxConnectionsPerIp: numberOr(sv, 'maxConnectionsPerIp', 'server', 64, 1, 100_000),
+      maxHeadersCount: numberOr(sv, 'maxHeadersCount', 'server', 50, 8, 1000),
+    },
+    metrics: parseMetrics(mt, host, ctx.env),
+    alerts: parseAlerts(al, ctx.env),
     queue: {
       maxPending: numberOr(q, 'maxPending', 'queue', 16, 1, 1024),
       receiptTimeoutSeconds: numberOr(q, 'receiptTimeoutSeconds', 'queue', 120, 5, 3600),

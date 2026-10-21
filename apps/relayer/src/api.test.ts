@@ -154,7 +154,7 @@ describe('POST /v1/quote', () => {
     expect(j.fee).toBe('429000');
     expect(j.feeTo).toBe(FEE_TO);
     expect(j.expiresAt).toBe(NOW_SEC + 120);
-    expect(j.quoteToken).toMatch(/^v1\.\d+\.429000\.[0-9a-f]{64}$/);
+    expect(j.quoteToken).toMatch(/^v2\.[0-9a-f]{8}\.\d+\.429000\.[0-9a-f]{64}$/);
   });
 
   it('uses the 50 bps floor and the cheaper non-permit estimate', async () => {
@@ -289,7 +289,7 @@ describe('POST /v1/sweep success and validation', () => {
     expect(errCode(await call(s, 'POST', '/v1/sweep', { ...body, sweep: { ...sw, amount: '100000001' } }))).toBe('invalid_quote');
     expect(errCode(await call(s, 'POST', '/v1/sweep', { ...body, quoteToken: 'garbage' }))).toBe('invalid_quoteToken');
     // a token from a lower fee forged by editing the embedded fee field is also rejected
-    const forged = quote.quoteToken.replace(/^v1\.(\d+)\.\d+\./, 'v1.$1.1.');
+    const forged = quote.quoteToken.replace(/^(v2\.[0-9a-f]{8}\.\d+)\.\d+\./, '$1.1.');
     expect(errCode(await call(s, 'POST', '/v1/sweep', { ...body, quoteToken: forged }))).toBe('invalid_quote');
 
     const low = await prepare(s, { fee: BigInt(quote.fee) - 1n, nonce: 2n });
@@ -436,7 +436,7 @@ describe('circuit breaker', () => {
     expect(errCode(open)).toBe('breaker_open');
     const health = await call(s, 'GET', '/healthz');
     expect(health.status).toBe(503);
-    expect((health.json as { status: string }).status).toBe('degraded');
+    expect((health.json as { status: string }).status).toBe('unhealthy');
 
     s.clock.ms += 61_000;
     s.fake.simulateError = undefined;
@@ -496,7 +496,7 @@ describe('policy gate', () => {
 
 describe('rate limiting', () => {
   it('limits per IP bucket with Retry-After', async () => {
-    const s = await start({ config: { rateLimit: { ipPerMinute: 1, ipBurst: 2, ownerPerMinute: 60, ownerBurst: 20, maxKeys: 100, saltRotationHours: 24 } } });
+    const s = await start({ config: { rateLimit: { ipPerMinute: 1, ipBurst: 2, ownerPerMinute: 60, ownerBurst: 20, maxKeys: 100, saltRotationHours: 24, quotePerMinute: 6000, quoteBurst: 1000 } } });
     const q = { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '100000000' };
     expect((await call(s, 'POST', '/v1/quote', q)).status).toBe(200);
     expect((await call(s, 'POST', '/v1/quote', q)).status).toBe(200);
@@ -510,7 +510,7 @@ describe('rate limiting', () => {
   });
 
   it('limits per owner only after the signature is proven', async () => {
-    const s = await start({ config: { rateLimit: { ipPerMinute: 600, ipBurst: 100, ownerPerMinute: 1, ownerBurst: 1, maxKeys: 100, saltRotationHours: 24 } } });
+    const s = await start({ config: { rateLimit: { ipPerMinute: 600, ipBurst: 100, ownerPerMinute: 1, ownerBurst: 1, maxKeys: 100, saltRotationHours: 24, quotePerMinute: 6000, quoteBurst: 1000 } } });
     // forged requests for the victim owner do not consume the victim's quota
     for (let i = 0; i < 3; i++) {
       const forged = await prepare(s, { signerKey: OTHER_KEY, nonce: BigInt(i + 100) });
@@ -523,20 +523,53 @@ describe('rate limiting', () => {
     expect(limited.headers.get('retry-after')).toBeTruthy();
   });
 
-  it('honours X-Forwarded-For only with trustProxyHops', async () => {
-    const lim = { ipPerMinute: 1, ipBurst: 1, ownerPerMinute: 60, ownerBurst: 20, maxKeys: 100, saltRotationHours: 24 };
-    const q = { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '100000000' };
-    const s = await start({ config: { rateLimit: lim, trustProxyHops: 1 } });
-    expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '9.9.9.9, 1.1.1.1' })).status).toBe(200);
-    expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '8.8.8.8, 1.1.1.1' })).status).toBe(429);
-    expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '8.8.8.8, 2.2.2.2' })).status).toBe(200);
-    // no header / too few hops falls back to the socket address
+  const lim = { ipPerMinute: 1, ipBurst: 1, ownerPerMinute: 60, ownerBurst: 20, maxKeys: 100, saltRotationHours: 24, quotePerMinute: 6000, quoteBurst: 1000 };
+  const q = { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '100000000' };
+
+  it('S3-07: honours X-Forwarded-For only when the TCP peer is a configured proxy, walking from the right', async () => {
+    const s = await start({ config: { rateLimit: lim, trustProxy: ['127.0.0.0/8'] } });
+    // the rightmost untrusted entry is the client; entries to its left are attacker-controlled and ignored
+    expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': 'spoof-1, 9.9.9.9' })).status).toBe(200);
+    expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '8.8.8.8, 9.9.9.9' })).status).toBe(429);
+    expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '9.9.9.9, 7.7.7.7, 127.0.0.2' })).status).toBe(200); // 7.7.7.7
+    // no header falls back to the socket address
     expect((await call(s, 'POST', '/v1/quote', q)).status).toBe(200);
     expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '' })).status).toBe(429);
-    await s.stop();
-    const t = await start({ config: { rateLimit: lim, trustProxyHops: 0 } });
-    expect((await call(t, 'POST', '/v1/quote', q, { 'x-forwarded-for': '3.3.3.3' })).status).toBe(200);
-    expect((await call(t, 'POST', '/v1/quote', q, { 'x-forwarded-for': '4.4.4.4' })).status).toBe(429);
+  });
+
+  it('S3-07: header spoofing does not work without trustProxy (default) or from a non-proxy peer', async () => {
+    for (const trustProxy of [[], ['10.0.0.0/8']]) {
+      const t = await start({ config: { rateLimit: lim, trustProxy } });
+      const codes: number[] = [];
+      for (let i = 0; i < 12; i++) codes.push((await call(t, 'POST', '/v1/quote', q, { 'x-forwarded-for': `203.0.113.${String(i + 1)}` })).status);
+      expect(codes.filter((c) => c === 200)).toHaveLength(1);
+      expect(codes.filter((c) => c === 429)).toHaveLength(11);
+      await t.stop();
+    }
+  });
+
+  it('S3-07: /v1/quote has a global budget on top of the per-IP limit', async () => {
+    const s = await start({ config: { rateLimit: { ...lim, ipPerMinute: 6000, ipBurst: 1000, quotePerMinute: 1, quoteBurst: 2 } } });
+    expect((await call(s, 'POST', '/v1/quote', q)).status).toBe(200);
+    expect((await call(s, 'POST', '/v1/quote', q)).status).toBe(200);
+    const third = await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '1.2.3.4' });
+    expect(third.status).toBe(429);
+    expect(errCode(third)).toBe('rate_limited_quote');
+    expect((await call(s, 'GET', '/v1/info')).status).toBe(200);
+  });
+
+  it('S3-07: quote gas price is cached for a few seconds', async () => {
+    const s = await start({ config: { gas: { coverPercent: 100, maxMovePercent: 25, quoteCacheSeconds: 5 } } });
+    const spy = vi.spyOn(s.fake, 'getGasPrice');
+    await call(s, 'POST', '/v1/quote', q);
+    await call(s, 'POST', '/v1/quote', q);
+    expect(spy).toHaveBeenCalledTimes(1);
+    s.clock.ms += 6000;
+    await call(s, 'POST', '/v1/quote', q);
+    expect(spy).toHaveBeenCalledTimes(2);
+    s.clock.ms -= 60_000; // clock going backwards never serves a stale price
+    await s.relayer.service.quote({ ...q, amount: 100_000_000n, owner: OWNER, destination: DEST, chainId: CHAIN_ID, token: USDC });
+    expect(spy).toHaveBeenCalledTimes(3);
   });
 });
 

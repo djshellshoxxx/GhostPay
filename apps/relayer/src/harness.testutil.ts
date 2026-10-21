@@ -1,7 +1,7 @@
 import type { Address, Hex } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { buildSweepTypedData } from '@ghostpay/chain-adapters';
-import type { ChainClient, ReceiptSummary, SendOptions, SweepCall } from './chain.js';
+import type { ChainClient, OrderState, ReceiptSummary, SendOptions, SimulationResult, SweepCall } from './chain.js';
 import type { RelayerConfig } from './config.js';
 import { SimulationRevert } from './errors.js';
 import { createLogger, type Logger } from './log.js';
@@ -35,6 +35,11 @@ export class FakeChain implements ChainClient {
   public rpcDown = false;
   public sendFails = false;
   public simulateError: Error | undefined;
+  /** When set, simulations from this number on (1-based) throw this error (state change between simulations). */
+  public simulateErrorFrom: { n: number; error: Error } | undefined;
+  public ownerBalance = 10n ** 12n;
+  public allowance = 10n ** 12n;
+  public stateError: Error | undefined;
   /** Awaited inside `sendSweep`; lets tests hold a transaction open. */
   public sendGate: Promise<void> | undefined;
   /** Awaited inside `waitForReceipt`. */
@@ -57,9 +62,19 @@ export class FakeChain implements ChainClient {
   public getPendingNonce(): Promise<number> {
     return Promise.resolve(this.pendingNonce);
   }
-  public simulateSweep(call: SweepCall): Promise<{ gasLimit: bigint }> {
+  public readOrderState(call: SweepCall): Promise<OrderState> {
+    if (this.rpcDown) return Promise.reject(new Error('down'));
+    if (this.stateError !== undefined) return Promise.reject(this.stateError);
+    return Promise.resolve({
+      ownerBalance: this.ownerBalance,
+      allowance: this.allowance,
+      nonceUsed: this.used.has(`${call.sweep.owner}:${call.sweep.nonce.toString()}`),
+    });
+  }
+  public simulateSweep(call: SweepCall): Promise<SimulationResult> {
     this.simulations += 1;
     if (this.rpcDown) return Promise.reject(new Error('down'));
+    if (this.simulateErrorFrom !== undefined && this.simulations >= this.simulateErrorFrom.n) return Promise.reject(this.simulateErrorFrom.error);
     if (this.simulateError !== undefined) return Promise.reject(this.simulateError);
     if (this.used.has(`${call.sweep.owner}:${call.sweep.nonce.toString()}`)) return Promise.reject(new SimulationRevert('NonceAlreadyUsed'));
     return Promise.resolve({ gasLimit: this.gasLimit });
@@ -90,12 +105,21 @@ export function testConfig(over: Partial<RelayerConfig> = {}): RelayerConfig {
     port: 0,
     allowedOrigins: [ORIGIN],
     allowInsecureLocalhostRpc: false,
-    trustProxyHops: 0,
+    trustProxy: [],
     quoteTtlSeconds: 120,
     minDeadlineSeconds: 30,
     maxDeadlineSeconds: 1800,
-    rateLimit: { ipPerMinute: 600, ipBurst: 100, ownerPerMinute: 60, ownerBurst: 20, maxKeys: 100, saltRotationHours: 24 },
-    breaker: { windowSize: 10, minSamples: 3, failureRatio: 0.5, cooldownSeconds: 60 },
+    rateLimit: { ipPerMinute: 600, ipBurst: 100, ownerPerMinute: 60, ownerBurst: 20, maxKeys: 100, saltRotationHours: 24, quotePerMinute: 6000, quoteBurst: 1000 },
+    breaker: { windowSize: 10, minSamples: 3, failureRatio: 0.5, cooldownSeconds: 60, halfOpenTimeoutSeconds: 30 },
+    abuse: { ownerMaxFailures: 3, destinationMaxFailures: 5, windowSeconds: 3600 },
+    gas: { coverPercent: 100, maxMovePercent: 25, quoteCacheSeconds: 0 },
+    server: {
+      headersTimeoutMs: 10_000, requestTimeoutMs: 15_000, keepAliveTimeoutMs: 5000, bodyTimeoutMs: 5000,
+      maxConnections: 1024, maxConnectionsPerIp: 64, maxHeadersCount: 50,
+    },
+    metrics: { enabled: false, bearerToken: undefined },
+    alerts: { webhookUrl: undefined, cooldownSeconds: 900 },
+    allowFeeToHotKey: false,
     queue: { maxPending: 4, receiptTimeoutSeconds: 30 },
     shutdownGraceSeconds: 2,
     chains: [
@@ -134,6 +158,8 @@ export interface HarnessOptions {
   readonly config?: Partial<RelayerConfig>;
   readonly policy?: PolicyGate;
   readonly fake?: FakeChain;
+  readonly quoteSecret?: Uint8Array;
+  readonly previousQuoteSecret?: Uint8Array;
 }
 
 export async function startHarness(o: HarnessOptions = {}): Promise<Harness> {
@@ -144,7 +170,8 @@ export async function startHarness(o: HarnessOptions = {}): Promise<Harness> {
   const relayer = await buildRelayer({
     config: testConfig(o.config),
     hotKey: new Uint8Array(32).fill(3),
-    quoteSecret: new Uint8Array(32).fill(9),
+    quoteSecret: o.quoteSecret ?? new Uint8Array(32).fill(9),
+    ...(o.previousQuoteSecret === undefined ? {} : { previousQuoteSecret: o.previousQuoteSecret }),
     logger,
     clients: new Map([[CHAIN_ID, fake]]),
     now: () => clock.ms,

@@ -1,4 +1,4 @@
-import { CHAINS, createClient } from '@ghostpay/chain-adapters';
+import { CHAINS, createClient, verifyDeployment } from '@ghostpay/chain-adapters';
 import { IdbTagStore } from './idbStore';
 import { loadManifest } from './manifest';
 import { localCheckpointStore } from './scanClient';
@@ -24,7 +24,8 @@ export function createDefaultServices(): Services {
     nowMs: () => Date.now(),
     sleep: (ms) => new Promise((r) => setTimeout(r, ms)),
     fetchFn: (u, i) => fetch(u, i),
-    loadManifest: (id) => loadManifest(id),
+    loadManifest: (id) => Promise.resolve(loadManifest(id)),
+    verifyDeployment,
     createRpc: (chain, url) => createClient(chain, url),
     discoverWallets: () => discoverWallets(window),
     createScanWorker: createBrowserScanWorker,

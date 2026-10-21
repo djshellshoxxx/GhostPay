@@ -1,5 +1,8 @@
-# Example systemd unit. Contains no secrets: put them in root-owned files with mode 600
-# (RELAYER_KEY_FILE, QUOTE_SECRET_FILE) and reference only their paths.
+# Example systemd unit. Contains no secrets. Secret files are root-owned, mode 600, and handed to the service with
+# LoadCredential= (systemd copies them into a private tmpfs readable only by the service user, which satisfies the
+# relayer's "owned by the service user or root, mode 600, not a symlink" check). Do NOT point RELAYER_KEY_FILE at a
+# root-only file: the unprivileged service user could not read it.
+# Run behind a TLS reverse proxy on the same host; keep "listen.host" at 127.0.0.1.
 [Unit]
 Description=GhostPay gas-sponsorship relayer
 After=network-online.target
@@ -14,8 +17,11 @@ ExecStart=/usr/bin/node dist/main.js
 Environment=NODE_ENV=production
 Environment=RELAYER_CONFIG=/etc/ghostpay-relayer/relayer.config.json
 Environment=DEPLOYMENTS_DIR=/etc/ghostpay-relayer/deployments
-Environment=RELAYER_KEY_FILE=/etc/ghostpay-relayer/hot.key
-Environment=QUOTE_SECRET_FILE=/etc/ghostpay-relayer/quote.secret
+LoadCredential=hot.key:/etc/ghostpay-relayer/hot.key
+LoadCredential=quote.secret:/etc/ghostpay-relayer/quote.secret
+# During a quote-secret rotation also: LoadCredential=quote.secret.previous:/etc/ghostpay-relayer/quote.secret.previous
+Environment=RELAYER_KEY_FILE=%d/hot.key
+Environment=QUOTE_SECRET_FILE=%d/quote.secret
 # RPC URLs with API keys: EnvironmentFile must be mode 600 and contain e.g. RPC_URL_84532=https://...
 EnvironmentFile=/etc/ghostpay-relayer/rpc.env
 # ALLOW_MAINNET=1 is deliberately NOT set here.
@@ -38,7 +44,30 @@ LockPersonality=true
 MemoryDenyWriteExecute=false
 SystemCallArchitectures=native
 CapabilityBoundingSet=
+AmbientCapabilities=
 UMask=0077
+# Added after `systemd-analyze security` review (S3-18): MemoryDenyWriteExecute stays false because V8 needs W+X.
+ProtectProc=invisible
+ProcSubset=pid
+PrivateUsers=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+ProtectKernelLogs=true
+ProtectClock=true
+ProtectHostname=true
+RemoveIPC=true
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
+SystemCallErrorNumber=EPERM
+# Resource limits (one process, small heap, bounded descriptors)
+LimitNOFILE=4096
+TasksMax=64
+MemoryMax=512M
+# Outbound allow-list: deny everything, allow the proxy (loopback) and your RPC endpoints / alert webhook. Fill in the
+# addresses of your providers (DNS names are not accepted here) and uncomment:
+#IPAddressDeny=any
+#IPAddressAllow=localhost
+#IPAddressAllow=<rpc-provider-ip-or-cidr>
 
 [Install]
 WantedBy=multi-user.target

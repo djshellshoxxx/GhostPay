@@ -73,6 +73,6 @@ describe('persistence', () => {
     expect(saveSettings(s, { setItem: () => { throw new Error('full'); } })).toBe(false);
   });
   it('never stores key material fields', () => {
-    expect(Object.keys(DEFAULT_SETTINGS).sort()).toEqual(['autoClearFragment', 'delayMaxSec', 'delayMinSec', 'lockTimeoutMin', 'pinnedSigners', 'relayerUrl', 'rpcUrls', 'theme']);
+    expect(Object.keys(DEFAULT_SETTINGS).sort()).toEqual(['autoClearFragment', 'delayMaxSec', 'delayMinSec', 'lockTimeoutMin', 'pinnedSigners', 'relayerUrl', 'rpcUrls', 'secondaryRpcUrls', 'theme']);
   });
 });

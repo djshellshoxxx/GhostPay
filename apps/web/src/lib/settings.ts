@@ -4,6 +4,8 @@ import { UserFacingError } from './errors';
 /** Non-secret preferences. RPC URLs are stored in plain text in this browser; the Settings page says so. */
 export interface Settings {
   readonly rpcUrls: Readonly<Record<string, string>>;
+  /** Optional second, independent provider per chain: security-relevant reads must then agree on both (S3-14). */
+  readonly secondaryRpcUrls: Readonly<Record<string, string>>;
   readonly relayerUrl: string;
   readonly delayMinSec: number;
   readonly delayMaxSec: number;
@@ -15,6 +17,7 @@ export interface Settings {
 
 export const DEFAULT_SETTINGS: Settings = Object.freeze({
   rpcUrls: Object.freeze({}),
+  secondaryRpcUrls: Object.freeze({}),
   relayerUrl: '',
   delayMinSec: 120,
   delayMaxSec: 900,
@@ -60,21 +63,26 @@ export function checkDelayRange(minSec: number, maxSec: number): void {
   }
 }
 
-/** Coerces untrusted stored JSON to a valid `Settings`; anything unexpected falls back to defaults field by field. */
-export function sanitizeSettings(raw: unknown): Settings {
-  const o = typeof raw === 'object' && raw !== null && !Array.isArray(raw) ? (raw as Record<string, unknown>) : {};
-  const rpcUrls: Record<string, string> = {};
-  const rawRpc = o['rpcUrls'];
-  if (typeof rawRpc === 'object' && rawRpc !== null && !Array.isArray(rawRpc)) {
-    for (const [k, v] of Object.entries(rawRpc as Record<string, unknown>)) {
+function sanitizeUrlMap(raw: unknown): Record<string, string> {
+  const out: Record<string, string> = {};
+  if (typeof raw === 'object' && raw !== null && !Array.isArray(raw)) {
+    for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
       if (!/^[1-9][0-9]{0,15}$/.test(k) || typeof v !== 'string') continue;
       try {
-        rpcUrls[k] = checkRpcUrl(v);
+        out[k] = checkRpcUrl(v);
       } catch {
         /* drop invalid entry */
       }
     }
   }
+  return out;
+}
+
+/** Coerces untrusted stored JSON to a valid `Settings`; anything unexpected falls back to defaults field by field. */
+export function sanitizeSettings(raw: unknown): Settings {
+  const o = typeof raw === 'object' && raw !== null && !Array.isArray(raw) ? (raw as Record<string, unknown>) : {};
+  const rpcUrls = sanitizeUrlMap(o['rpcUrls']);
+  const secondaryRpcUrls = sanitizeUrlMap(o['secondaryRpcUrls']);
   let relayerUrl = '';
   if (typeof o['relayerUrl'] === 'string') {
     try {
@@ -105,6 +113,7 @@ export function sanitizeSettings(raw: unknown): Settings {
     : [];
   return {
     rpcUrls,
+    secondaryRpcUrls,
     relayerUrl,
     delayMinSec,
     delayMaxSec,

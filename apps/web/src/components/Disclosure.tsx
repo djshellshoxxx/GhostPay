@@ -1,10 +1,12 @@
 import { FEE_SCHEDULE } from '@ghostpay/chain-adapters';
 import { useEffect, useState, type ReactNode } from 'react';
-import type { ManifestState } from '../lib/manifest';
+import { deploymentProblem, type DeploymentCheck } from '../lib/deployment';
+import type { ManifestState, SignatureStatus } from '../lib/manifest';
+import { useApp } from '../state';
 import { useServices } from '../lib/services';
 import { Mono } from './Common';
 
-/** Loads the manifest state for one chain from the app origin. */
+/** Looks up the manifest compiled into this bundle for one chain. */
 export function useManifest(chainId: number | undefined): ManifestState | undefined {
   const services = useServices();
   const [state, setState] = useState<{ chainId: number; value: ManifestState } | undefined>(undefined);
@@ -21,6 +23,37 @@ export function useManifest(chainId: number | undefined): ManifestState | undefi
   return chainId !== undefined && state?.chainId === chainId ? state.value : undefined;
 }
 
+/**
+ * Reads the bundled manifest back from the chain through the user's RPC. `undefined` while there is no manifest to check,
+ * `'checking'` while reading. Payments, scanning and sweeping are gated on `verified`.
+ */
+export function useDeploymentCheck(manifest: ManifestState | undefined): { readonly check: DeploymentCheck | 'checking' | undefined; readonly recheck: () => void } {
+  const app = useApp();
+  const [result, setResult] = useState<{ key: string; value: DeploymentCheck } | undefined>(undefined);
+  const [nonce, setNonce] = useState(0);
+  const m = manifest?.status === 'loaded' ? manifest.manifest : undefined;
+  const key = m === undefined ? '' : `${String(m.chainId)}|${app.rpcHosts(m.chainId).join(',')}|${String(nonce)}`;
+  useEffect(() => {
+    if (m === undefined) return;
+    let live = true;
+    void app.checkDeployment(m).then((value) => {
+      if (live) setResult({ key, value });
+    });
+    return () => {
+      live = false;
+    };
+  }, [app.checkDeployment, m, key]);
+  if (m === undefined) return { check: undefined, recheck: () => undefined };
+  return { check: result?.key === key ? result.value : 'checking', recheck: () => { setNonce((n) => n + 1); } };
+}
+
+/** One honest sentence about the manifest signature. */
+export function signatureSentence(sig: SignatureStatus | undefined): string {
+  if (sig === 'valid') return 'signed by a release key that is built into this app';
+  if (sig === 'unverifiable') return 'carries a signature this build cannot check (no release key is built in)';
+  return 'an unsigned manifest (no release key is built in, so there is no signature to check)';
+}
+
 /** bps to a percent string without floating point, for example 25 -> `0.25`. */
 export function bpsToPercent(bps: bigint): string {
   const whole = bps / 100n;
@@ -29,25 +62,35 @@ export function bpsToPercent(bps: bigint): string {
 }
 
 /**
- * Mandatory fee disclosure (FEE_SCHEDULE section 5). The recipient is read ONLY from the loaded manifest; when there
- * is none the text says payments are disabled on that chain.
+ * Mandatory fee disclosure (FEE_SCHEDULE section 5). The recipient shown is the one READ FROM THE CHAIN once the deployment
+ * check has passed; before that it is labelled as the bundled, not yet verified, manifest value.
  */
-export function FeeDisclosure(props: { readonly manifest: ManifestState | undefined; readonly chainName?: string | undefined }): ReactNode {
+export function FeeDisclosure(props: {
+  readonly manifest: ManifestState | undefined;
+  readonly check?: DeploymentCheck | 'checking' | undefined;
+  readonly chainName?: string | undefined;
+}): ReactNode {
   const pct = bpsToPercent(FEE_SCHEDULE.ROUTER_FEE_BPS);
   const m = props.manifest;
+  const c = props.check;
   return (
     <p className="fee-disclosure">
       GhostPay charges {pct} % on payments made through its checkout contract. The fee goes to{' '}
       {m?.status === 'loaded' ? (
-        <>
-          <Mono>{m.manifest.feeRecipient}</Mono> (shown from the deployment manifest
-          {m.manifest.signature === undefined ? ', which carries no signature; this app does not verify manifest signatures' : ', whose signature this app does not verify'})
-        </>
+        c !== undefined && c !== 'checking' && c.status === 'verified' ? (
+          <>
+            <Mono>{c.verified.feeRecipient}</Mono> (read from the router contract on-chain and equal to the bundled manifest; the manifest is {signatureSentence(m.signature)})
+          </>
+        ) : (
+          <>
+            <Mono>{m.manifest.feeRecipient}</Mono> (from the manifest bundled with this app, <strong>not yet verified on-chain</strong>; the manifest is {signatureSentence(m.signature)})
+          </>
+        )
       ) : m === undefined ? (
         <>the address in the deployment manifest (loading…)</>
       ) : (
         <>
-          the address in the deployment manifest, but {props.chainName === undefined ? 'this chain' : props.chainName} has none loaded: <strong>payments disabled on this chain</strong>
+          the address in the deployment manifest, but {props.chainName === undefined ? 'this chain' : props.chainName} has none usable: <strong>payments disabled on this chain</strong>
         </>
       )}
       . Paying the stealth address directly costs no GhostPay fee.
@@ -98,22 +141,29 @@ export function ObserverTable(): ReactNode {
 
 export const LIMITS: readonly string[] = [
   'GhostPay does not hide the payer, the amount, the token, the time, or the router call. It hides which seller owns the one-time (stealth) address.',
-  'A sweep from a stealth address to a known wallet links them on-chain. Sweeping through a relayer does not remove that link.',
+  'A sweep from a stealth address to your wallet is public. The payer knows the one-time address they paid, so the payer can follow the funds to your destination and see whatever else arrives there. Sweeping through a relayer does not remove that link.',
   'An invoice link is a bearer secret: anyone who has the link (or its QR code) can read it. The signature only shows the link was not altered by someone without the signing key; it does not prove who the seller is.',
   'The optional delay is timing friction, not anonymity: no cover transactions are created and the final transaction is public.',
   'The optional gas buffer is a public native transfer in the same transaction as your payment and links the payer to the stealth address.',
+  'Opening an invoice link by clicking it or scanning a QR code navigates the browser to it, and some browsers keep that address (including the secret part) in their history database even though this page removes it from the address bar. Paste the link into the Pay page, or use a private window.',
+  'Your RPC provider sees which addresses you scan, check and sweep, together with your IP address. Use your own node or Tor-aware access if that matters to you.',
   'This app runs entirely in your browser, but your browser, extensions, wallet, RPC provider and operating system are all trusted by it. It has had no external audit.',
 ];
 
 function ChainFee(props: { readonly chainId: number; readonly name: string }): ReactNode {
   const manifest = useManifest(props.chainId);
+  const { check } = useDeploymentCheck(manifest);
+  const verified = check !== undefined && check !== 'checking' && check.status === 'verified' ? check.verified : undefined;
+  const problem = manifest?.status === 'loaded' ? deploymentProblem(check) : undefined;
   return (
     <li>
       <strong>{props.name}</strong>
-      <FeeDisclosure manifest={manifest} chainName={props.name} />
+      <FeeDisclosure manifest={manifest} check={check} chainName={props.name} />
       {manifest?.status === 'loaded' && (
         <p className="hint">
-          Router <Mono>{manifest.manifest.router}</Mono>, sweep relayer <Mono>{manifest.manifest.sweepRelayer}</Mono>.
+          {verified === undefined ? 'Bundled manifest (unverified): router ' : 'Router (verified on-chain) '}
+          <Mono>{verified?.router ?? manifest.manifest.router}</Mono>, sweep relayer <Mono>{verified?.sweepRelayer ?? manifest.manifest.sweepRelayer}</Mono>.
+          {problem !== undefined && ` ${problem}`}
         </p>
       )}
     </li>

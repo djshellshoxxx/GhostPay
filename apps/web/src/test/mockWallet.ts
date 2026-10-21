@@ -15,6 +15,8 @@ export interface MockWalletOptions {
   /** Mutates calldata before "broadcasting". */
   readonly mutateTx?: (tx: Record<string, unknown>) => Record<string, unknown>;
   readonly rejectSend?: boolean;
+  /** Reject only the n-th (1-based) eth_sendTransaction, accept the others. */
+  readonly rejectSendNumber?: number;
   /** Signature returned by eth_signTypedData_v4. */
   readonly typedDataSignature?: string;
   readonly failSwitch?: boolean;
@@ -26,6 +28,7 @@ export const MOCK_ACCOUNT = '0x5555555555555555555555555555555555555555';
 export class MockWallet implements Eip1193Provider {
   public readonly calls: RecordedCall[] = [];
   public sent: Record<string, unknown> | undefined;
+  private sends = 0;
   public chainId: number;
   public constructor(private readonly o: MockWalletOptions = {}) {
     this.chainId = o.chainId ?? 84532;
@@ -51,6 +54,8 @@ export class MockWallet implements Eip1193Provider {
         return Promise.resolve(null);
       }
       case 'eth_sendTransaction': {
+        this.sends++;
+        if (this.o.rejectSendNumber === this.sends) return Promise.reject(Object.assign(new Error('user rejected'), { code: 4001 }));
         if (this.o.rejectSend === true) return Promise.reject(Object.assign(new Error('user rejected'), { code: 4001 }));
         const tx = (args.params as [Record<string, unknown>])[0];
         this.sent = this.o.mutateTx === undefined ? tx : this.o.mutateTx(tx);

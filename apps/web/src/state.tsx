@@ -1,5 +1,6 @@
 import { createContext, useContext } from 'react';
-import type { RpcClient } from '@ghostpay/chain-adapters';
+import type { DeploymentManifest, RpcClient } from '@ghostpay/chain-adapters';
+import type { DeploymentCheck } from './lib/deployment';
 import type { ScanMatch } from './lib/scanClient';
 import type { SessionPublic } from './lib/session';
 import type { Settings } from './lib/settings';
@@ -33,6 +34,10 @@ export interface AppState {
   readonly selectForSweep: (m: { readonly match: ScanMatch; readonly chainId: number } | undefined) => void;
   /** Verified RPC for a chain from the user's settings, or undefined when none is configured. */
   readonly getRpc: (chainId: number) => Promise<RpcClient | undefined>;
+  /** Reads the bundled manifest back from the chain (primary RPC, plus the second provider when configured). Cached per chain and RPC; failures are not cached. */
+  readonly checkDeployment: (manifest: DeploymentManifest) => Promise<DeploymentCheck>;
+  /** Host names of the RPC endpoints in use for a chain, for warnings. */
+  readonly rpcHosts: (chainId: number) => readonly string[];
   /** Announces a short status message to the polite live region. */
   readonly announce: (message: string) => void;
 }

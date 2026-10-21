@@ -11,6 +11,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./deepscan": {
+      "types": "./dist/deepscan.d.ts",
+      "default": "./dist/deepscan.js"
     }
   },
   "files": ["dist"],

@@ -149,6 +149,73 @@ describe('runScan', () => {
   });
 });
 
+describe('runScan robustness (S3-15)', () => {
+  const base = (s: ReturnType<typeof setup>) => ({
+    chain,
+    manifest,
+    cursor: { nextBlock: 0n },
+    spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey),
+    viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+  });
+
+  it('stamps each match with the chain it was found on', async () => {
+    const s = setup();
+    const res = await runScan({ ...base(s), client: chainWith(500, s.logs), createWorker: () => new InlineWorker(), signal: new AbortController().signal });
+    expect(res.matches.length).toBeGreaterThan(0);
+    expect(res.matches.every((m) => m.chainId === 84532)).toBe(true);
+  });
+
+  it('times out a worker that never answers, terminates it and zeroizes the key', async () => {
+    const s = setup();
+    const hung = new InlineWorker();
+    hung.postMessage = (): void => undefined; // never replies
+    const b = base(s);
+    await expect(runScan({ ...b, client: chainWith(10, []), createWorker: () => hung, signal: new AbortController().signal, replyTimeoutMs: 20 })).rejects.toThrow(/did not answer in time/);
+    expect(hung.terminated).toBe(true);
+    expect(Array.from(b.viewingKey).every((x) => x === 0)).toBe(true);
+  });
+
+  it('Cancel unblocks a worker that never answers a batch', async () => {
+    const s = setup();
+    const hung = new InlineWorker();
+    const original = hung.postMessage.bind(hung);
+    hung.postMessage = (m): void => {
+      if (m.type !== 'batch') original(m); // answers start, ignores batches
+    };
+    const ctl = new AbortController();
+    setTimeout(() => { ctl.abort(); }, 20);
+    const res = await runScan({ ...base(s), client: chainWith(500, s.logs), createWorker: () => hung, signal: ctl.signal, replyTimeoutMs: 10_000 });
+    expect(res.matches).toEqual([]);
+    expect(hung.terminated).toBe(true);
+    expect(hung.received.some((m) => m.type === 'cancel')).toBe(true);
+  });
+
+  it('zeroizes the viewing key even when creating the worker throws', async () => {
+    const s = setup();
+    const b = base(s);
+    await expect(
+      runScan({ ...b, client: chainWith(10, []), createWorker: () => { throw new Error('no worker'); }, signal: new AbortController().signal }),
+    ).rejects.toThrow('no worker');
+    expect(Array.from(b.viewingKey).every((x) => x === 0)).toBe(true);
+  });
+
+  it('deep scan flags only router announcements for tag-free checking and reports a wrong tag', async () => {
+    const keys = generateKeySet();
+    const meta = encodeMetaAddress(keys);
+    const wrong = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 120, index: 0, caller: FAKE_ROUTER, wrongTag: true });
+    const wrongStranger = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 121, index: 1, caller: '0x9999999999999999999999999999999999999999', wrongTag: true });
+    const common = { chain, manifest, cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(keys.spendingPublicKey), client: chainWith(500, [wrong.log, wrongStranger.log]), signal: new AbortController().signal };
+    const off = await runScan({ ...common, viewingKey: unsafeRevealSecret(keys.viewingSecret), createWorker: () => new InlineWorker() });
+    expect(off.matches).toEqual([]);
+    const worker = new InlineWorker();
+    const on = await runScan({ ...common, viewingKey: unsafeRevealSecret(keys.viewingSecret), deep: true, createWorker: () => worker });
+    expect(on.matches).toHaveLength(1);
+    expect(on.matches[0]).toMatchObject({ tagMatches: false, viaRouter: true });
+    const batch = worker.received.find((m) => m.type === 'batch');
+    expect(batch?.type === 'batch' && batch.logs.filter((l) => l.skipTag === true)).toHaveLength(1);
+  });
+});
+
 describe('localCheckpointStore', () => {
   interface MemStorage {
     map: Map<string, string>;

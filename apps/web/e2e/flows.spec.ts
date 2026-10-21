@@ -1,10 +1,23 @@
 import { expect, test, type BrowserContext, type Page, type Route } from '@playwright/test';
+import { readFileSync } from 'node:fs';
 import { createServer, type Server } from 'node:http';
+import { fileURLToPath } from 'node:url';
 import { makeLog } from '../src/test/announcements';
-import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER, fakeManifestJson } from '../src/test/fakeManifest';
+import { FAKE_FEE_RECIPIENT, FAKE_ROUTER } from '../src/test/fakeManifest';
 import { ORIGIN, createInvoice, generateKeys, openFresh } from './helpers';
 
 const RPC = 'https://rpc.e2e.test';
+// The bundle is built with e2e/fixtures/84532.json (see playwright.config.ts). The mock node below serves the matching
+// contract code and immutables, so the REAL on-chain read-back (verifyDeployment) runs in the browser.
+const CANONICAL_ANNOUNCER = '0x55649E01B5Df198D18D95b5cc5051630cfD45564';
+const ROUTER_CODE = '0x600160005260206000f3aa';
+const RELAYER_CODE = '0x600260005260206000f3bb';
+const ANNOUNCER_CODE = '0x600460005260206000f3dd';
+const SEL_FEE_BPS = '0xbf333f2c';
+const SEL_FEE_RECIPIENT = '0xebd09054';
+const SEL_ANNOUNCER = '0x04e6b741';
+const word = (hex: string): string => `0x${hex.replace(/^0x/, '').toLowerCase().padStart(64, '0')}`;
+const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'POST, OPTIONS' };
 
 interface SentTx {
@@ -15,9 +28,8 @@ interface SentTx {
 }
 
 /** Serves the (test-only, fake) manifest and a tiny JSON-RPC node; everything else off-origin stays blocked. */
-async function mockNetwork(context: BrowserContext, state: { sent?: SentTx; logs?: unknown[] }): Promise<{ requests: string[] }> {
+async function mockNetwork(context: BrowserContext, state: { sent?: SentTx; logs?: unknown[]; routerCode?: string }): Promise<{ requests: string[] }> {
   const requests: string[] = [];
-  await context.route('**/deployments/84532.json', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: fakeManifestJson(84532) }));
   await context.route(`${RPC}/**`, async (route: Route) => {
     const req = route.request();
     requests.push(req.url());
@@ -38,8 +50,26 @@ async function mockNetwork(context: BrowserContext, state: { sent?: SentTx; logs
         const h = (x: number): string => `0x${x.toString(16).padStart(64, '0')}`;
         return reply({ number: `0x${n.toString(16)}`, hash: h(n), parentHash: h(n - 1) });
       }
+      case 'eth_getCode': {
+        const a = String(body.params[0]).toLowerCase();
+        if (a === FAKE_ROUTER.toLowerCase()) return reply(state.routerCode ?? ROUTER_CODE);
+        if (a === '0x2222222222222222222222222222222222222222') return reply(RELAYER_CODE);
+        if (a === CANONICAL_ANNOUNCER.toLowerCase()) return reply(ANNOUNCER_CODE);
+        return reply('0x');
+      }
+      case 'eth_call': {
+        const data = (body.params[0] as { data: string }).data;
+        if (data === SEL_FEE_BPS) return reply(word('0x19'));
+        if (data === SEL_FEE_RECIPIENT) return reply(word(FAKE_FEE_RECIPIENT));
+        if (data === SEL_ANNOUNCER) return reply(word(CANONICAL_ANNOUNCER));
+        return reply(word('0x0'));
+      }
       case 'eth_getLogs': {
-        const f = body.params[0] as { fromBlock: string; toBlock: string };
+        const f = body.params[0] as { fromBlock: string; toBlock: string; topics?: string[]; address?: string };
+        if (f.topics?.[0] === TRANSFER_TOPIC) {
+          const h = `0x${parseInt(f.fromBlock, 16).toString(16).padStart(64, '0')}`;
+          return reply([{ address: f.address, blockHash: h, topics: f.topics, data: word('0xf4240') }]);
+        }
         const from = parseInt(f.fromBlock, 16);
         const to = parseInt(f.toBlock, 16);
         return reply((state.logs ?? []).filter((l) => parseInt((l as { blockNumber: string }).blockNumber, 16) >= from && parseInt((l as { blockNumber: string }).blockNumber, 16) <= to));
@@ -104,6 +134,12 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await mockNetwork(context, state);
     await injectWallet(page, state);
     await configureRpc(page);
+    // Egress allow-list (APP_AND_RELAYER_SPEC section 1): only the app's own origin and the configured RPC may be contacted.
+    const offOrigin: string[] = [];
+    page.on('request', (r) => {
+      const o = new URL(r.url()).origin;
+      if (o !== ORIGIN && o !== RPC && r.url().startsWith('http')) offOrigin.push(r.url());
+    });
     await page.goto('/');
     await generateKeys(page);
     const link = await createInvoice(page);
@@ -111,6 +147,7 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
 
     await expect(page.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
     await expect(page.getByText('You pay (gross)')).toBeVisible();
+    await expect(page.getByText('Contract (router), read from the chain')).toBeVisible();
     await expect(page.getByText(FAKE_ROUTER).first()).toBeVisible();
     await expect(page.getByText(FAKE_FEE_RECIPIENT).first()).toBeVisible();
     await expect(page.getByText(/GhostPay charges 0\.25 % on payments made through its checkout contract/)).toBeVisible();
@@ -126,6 +163,7 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await expect(page.getByText(/Independently verified on your RPC/)).toBeVisible();
     expect(state.sent?.to.toLowerCase()).toBe(FAKE_ROUTER.toLowerCase());
     expect(BigInt(state.sent?.value ?? '0x0')).toBe(500_000_000_000_000_000n);
+    expect(offOrigin).toEqual([]);
   });
 
   test('refuses when the wallet mutates the transaction', async ({ page, context }) => {
@@ -149,6 +187,22 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await expect(page.getByRole('heading', { name: 'Submitted' })).toHaveCount(0);
   });
 
+  test('FAILS CLOSED when the router code on-chain is not the reviewed bytecode (S3-01)', async ({ page, context }) => {
+    const state: { sent?: SentTx; routerCode?: string } = { routerCode: '0x6000600060006000fd' };
+    await mockNetwork(context, state);
+    await injectWallet(page, state);
+    await configureRpc(page);
+    await page.goto('/');
+    await generateKeys(page);
+    const link = await createInvoice(page);
+    await openFresh(page, link);
+    await expect(page.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
+    await expect(page.getByText(/router code hash differs from the manifest/).first()).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Continue' })).toBeDisabled();
+    await expect(page.getByText('You pay (gross)')).toHaveCount(0);
+    expect(state.sent).toBeUndefined();
+  });
+
   test('scans in a real Web Worker under the CSP, finds my payment, and stores tags only as ciphertext', async ({ page, context }) => {
     const state: { logs?: unknown[] } = {};
     const net = await mockNetwork(context, state);
@@ -162,16 +216,18 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await configureRpc(page);
     await page.goto('/');
     const meta = await generateKeys(page);
-    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 120, index: 0, caller: FAKE_ROUTER });
+    const mine = makeLog({ announcer: CANONICAL_ANNOUNCER, metaAddress: meta, block: 120, index: 0, caller: FAKE_ROUTER });
     state.logs = [mine.log];
 
     await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Scan and receive' }).click();
     await page.getByLabel('Chain').selectOption({ label: 'Base Sepolia' });
     await page.getByLabel('Start block').fill('0');
     await page.getByRole('button', { name: 'Start scan' }).click();
-    await expect(page.getByRole('heading', { name: 'Payments found' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Announcements addressed to you' })).toBeVisible();
     await expect(page.getByText(mine.stealthAddress)).toBeVisible();
-    await expect(page.getByText(/Finished\. 1 announcements checked, 1 payments found\./)).toBeVisible();
+    await expect(page.getByText(/Finished\. 1 announcements checked, 1 announcement addressed to you\./)).toBeVisible();
+    // Only after the chain confirmed the transfer is it called received (S3-02).
+    await expect(page.getByText(/Received: 1 USDC/)).toBeVisible();
     expect(workers.some((u) => u.startsWith(`${ORIGIN}/assets/scanner.worker-`))).toBe(true);
     expect(offOrigin).toEqual([]);
     expect(net.requests.length).toBeGreaterThan(0);
@@ -254,5 +310,21 @@ test.describe('embed SDK (popup mode only)', () => {
     await popup.waitForLoadState();
     await expect(popup.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
     expect(await popup.evaluate(() => (window.opener as unknown) === null)).toBe(true);
+  });
+
+  test('the versioned embed file loads with its published SHA-384 SRI value, and a wrong value is blocked (S3-10)', async ({ context }) => {
+    const sri = JSON.parse(readFileSync(fileURLToPath(new URL('../dist/embed-sri.json', import.meta.url)), 'utf8')) as { file: string; integrity: string };
+    expect(sri.file).toMatch(/^ghostpay-embed-v1\.[0-9a-f]{12}\.js$/);
+    expect(sri.integrity).toMatch(/^sha384-/);
+    const page = (integrity: string): string =>
+      `<!doctype html><title>Shop</title><body><button id="b" data-ghostpay data-invoice="${ORIGIN}/#gpi=v1.abc"></button><script src="${ORIGIN}/${sri.file}" integrity="${integrity}" crossorigin="anonymous"></script></body>`;
+    html = page(sri.integrity);
+    const good = await context.newPage();
+    await good.goto(MERCHANT);
+    await expect(good.locator('#b')).toHaveText('Pay with GhostPay');
+    html = page(`sha384-${'A'.repeat(64)}`);
+    const bad = await context.newPage();
+    await bad.goto(MERCHANT);
+    await expect(bad.locator('#b')).toHaveText('');
   });
 });

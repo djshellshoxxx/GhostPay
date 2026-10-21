@@ -68,7 +68,7 @@ export async function ensureAllowance(
   status: StatusFn,
 ): Promise<'already-approved' | 'approved'> {
   if (rt.rpc === undefined) throw new UserFacingError('Approving a token needs an RPC for this chain. Configure one in Settings.');
-  const spender = ctx.manifest.router;
+  const spender = ctx.verified.router;
   const need = ctx.request.grossAmount;
   const have = await readAllowance(rt.rpc, token, session.account, spender);
   if (have >= need) return 'already-approved';
@@ -80,6 +80,54 @@ export async function ensureAllowance(
   const after = await readAllowance(rt.rpc, token, session.account, spender);
   if (after < need) throw new UserFacingError('The approval did not take effect. Nothing was paid.');
   return 'approved';
+}
+
+/** What the ERC-20 approval step will do, decided and shown BEFORE anything is sent (S3-19). */
+export interface ApprovalPlan {
+  readonly token: Address;
+  readonly spender: Address;
+  /** Exact amount that would be approved: the gross payment. Never unlimited. */
+  readonly need: bigint;
+  /** Allowance the router already has from this account. */
+  readonly have: bigint;
+  readonly required: boolean;
+}
+
+/** Reads the current allowance; sends nothing. */
+export async function planApproval(session: WalletSession, ctx: PayContext, token: Address, rt: Runtime): Promise<ApprovalPlan> {
+  if (rt.rpc === undefined) throw new UserFacingError('Approving a token needs an RPC for this chain. Configure one in Settings.');
+  const spender = ctx.verified.router;
+  const need = ctx.request.grossAmount;
+  const have = await readAllowance(rt.rpc, token, session.account, spender);
+  return { token, spender, need, have, required: have < need };
+}
+
+/**
+ * Sends the exact-amount approval and reads the allowance back. Returns the allowance that really exists afterwards, which
+ * can exceed `need` if the wallet let the user edit the spending cap: the caller must show that and offer to revoke.
+ */
+export async function grantApproval(session: WalletSession, ctx: PayContext, plan: ApprovalPlan, rt: Runtime, status: StatusFn): Promise<bigint> {
+  if (rt.rpc === undefined) throw new UserFacingError('Approving a token needs an RPC for this chain. Configure one in Settings.');
+  const tx = buildApproveTx(plan.token, plan.spender, plan.need);
+  assertApproveTx(tx, plan.token, plan.spender, plan.need);
+  status(`Approve exactly ${formatUnits(plan.need, ctx.review.token?.decimals ?? 18)} ${ctx.review.token?.symbol ?? ''} for the router ${plan.spender}.`);
+  const res = await submitTx(session, tx, rt, status);
+  if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError('The approval was not confirmed. Nothing was paid.');
+  const after = await readAllowance(rt.rpc, plan.token, session.account, plan.spender);
+  if (after < plan.need) throw new UserFacingError('The approval did not take effect. Nothing was paid.');
+  return after;
+}
+
+/** `approve(router, 0)`: removes the allowance. Exact calldata is asserted like any approval. */
+export async function revokeApproval(session: WalletSession, ctx: PayContext, plan: ApprovalPlan, rt: Runtime, status: StatusFn): Promise<void> {
+  if (rt.rpc === undefined) throw new UserFacingError('Revoking needs an RPC for this chain. Configure one in Settings.');
+  const tx = buildApproveTx(plan.token, plan.spender, 0n);
+  assertApproveTx(tx, plan.token, plan.spender, 0n);
+  status(`Revoke the router’s allowance (approve 0) for ${plan.spender}.`);
+  const res = await submitTx(session, tx, rt, status);
+  if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError('The revoke was not confirmed. Check your allowances in your wallet.');
+  const after = await readAllowance(rt.rpc, plan.token, session.account, plan.spender);
+  if (after !== 0n) throw new UserFacingError('The allowance is still not zero. Check your allowances in your wallet.');
 }
 
 export interface PrepareOptions {
@@ -104,7 +152,7 @@ export async function preparePayment(session: WalletSession, ctx: PayContext, op
     chainId: ctx.chain.chainId,
     token: token.address,
     owner: session.account,
-    spender: ctx.manifest.router,
+    spender: ctx.verified.router,
     value: ctx.request.grossAmount,
     deadline: BigInt(deadline),
   });
@@ -127,6 +175,8 @@ export interface LocalReceipt {
   readonly chainId: number;
   readonly txHash: Hex;
   readonly router: Address;
+  /** As read from the router contract on-chain. */
+  readonly feeRecipient: Address;
   readonly token: string;
   readonly gross: string;
   readonly fee: string;
@@ -147,6 +197,7 @@ export function buildReceipt(ctx: PayContext, built: BuiltPayment, result: Submi
     chainId: ctx.chain.chainId,
     txHash: result.hash,
     router: built.preview.router,
+    feeRecipient: ctx.verified.feeRecipient,
     token: built.preview.token,
     gross: built.preview.gross.toString(),
     fee: built.preview.fee.toString(),

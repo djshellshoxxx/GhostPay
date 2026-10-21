@@ -17,6 +17,8 @@ export interface ScannedAnnouncement extends PublicAnnouncement {
   readonly blockNumber: bigint;
   readonly blockHash: Hex;
   readonly logIndex: number;
+  /** Transaction that emitted the log, when the provider returned a well-formed hash (untrusted until verified). */
+  readonly transactionHash?: Hex;
   /** Stable dedupe key `blockHash:logIndex`. */
   readonly id: string;
 }
@@ -135,6 +137,7 @@ export function validateAnnouncementLog(
     return undefined;
   }
   const index = Number(logIndex);
+  const txHash = typeof log.transactionHash === 'string' && HASH.test(log.transactionHash) ? (log.transactionHash as Hex) : undefined;
   return {
     schemeId,
     stealthAddress: stealth,
@@ -144,6 +147,7 @@ export function validateAnnouncementLog(
     blockNumber,
     blockHash: log.blockHash as Hex,
     logIndex: index,
+    ...(txHash === undefined ? {} : { transactionHash: txHash }),
     id: `${log.blockHash}:${String(index)}`,
   };
 }

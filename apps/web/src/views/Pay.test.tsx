@@ -7,7 +7,7 @@ import { buildInvoiceLink } from '../lib/invoiceCreate';
 import { clearSession, generateSession } from '../lib/session';
 import { SETTINGS_KEY } from '../lib/settings';
 import type { WalletInfo } from '../lib/wallet';
-import { FAKE_FEE_RECIPIENT, FAKE_ROUTER, fakeManifest } from '../test/fakeManifest';
+import { FAKE_FEE_RECIPIENT, FAKE_ROUTER, fakeManifest, fakeVerified } from '../test/fakeManifest';
 import { BASE_FORM, NOW, makeParsed } from '../test/invoiceFixtures';
 import { MockWallet } from '../test/mockWallet';
 import { mockRpc } from '../test/mockRpc';
@@ -17,11 +17,20 @@ import type { Services } from '../lib/services';
 beforeEach(() => {
   clearSession();
   window.localStorage.clear();
+  // The deployment must be read back through the user's RPC before anything is payable (S3-01): configure one.
+  window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
   setHash('');
 });
 
 const loaded = (id: number): Services['loadManifest'] => () => Promise.resolve({ status: 'loaded', manifest: fakeManifest(id) });
 const walletInfo = (w: MockWallet): WalletInfo => ({ id: 'mock', name: 'Mock Wallet', kind: 'eip6963', provider: w });
+
+/** Clicks a button once it is enabled (the payment context is built asynchronously after the on-chain deployment check). */
+async function clickEnabled(user: ReturnType<typeof userEvent.setup>, name: string): Promise<void> {
+  const button = await screen.findByRole<HTMLButtonElement>('button', { name });
+  await waitFor(() => { expect(button.disabled).toBe(false); });
+  await user.click(button);
+}
 
 function openWith(fragment: string, services: Services): ReturnType<typeof userEvent.setup> {
   setHash(fragment);
@@ -62,7 +71,7 @@ describe('Pay: invoice reading and review', () => {
   });
 
   it('keeps the fragment when the user turns auto-clear off, and offers to remove it', async () => {
-    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ autoClearFragment: false }));
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' }, autoClearFragment: false }));
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
     const user = openWith(fragment, makeServices({ loadManifest: loaded(84532) }));
     await screen.findByRole('heading', { name: 'Review payment' });
@@ -171,16 +180,20 @@ describe('Pay: sending', () => {
   async function toPrepared(wallet: MockWallet, services: Services): Promise<ReturnType<typeof userEvent.setup>> {
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
     const user = openWith(fragment, { ...services, discoverWallets: () => Promise.resolve([walletInfo(wallet)]) });
-    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    await clickEnabled(user, 'Continue');
     await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
     await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
     await screen.findByRole('heading', { name: 'Final check before your wallet' });
     return user;
   }
 
-  it('shows decoded calldata, sends only after the explicit click, and reports an unverified (no RPC) result honestly', async () => {
+  it('shows decoded calldata, sends only after the explicit click, and reports a not-yet-visible transaction honestly', async () => {
     const wallet = new MockWallet();
-    const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532) }));
+    const quiet = mockRpc(84532, (m) => {
+      if (m === 'eth_getTransactionByHash' || m === 'eth_getTransactionReceipt') return null;
+      throw new Error(`unexpected ${m}`);
+    });
+    const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(quiet) }));
     expect(wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
     expect(screen.getByText('payNative')).toBeTruthy();
     expect(screen.getByText('One-time destination')).toBeTruthy();
@@ -188,7 +201,7 @@ describe('Pay: sending', () => {
     await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
     expect(await screen.findByRole('heading', { name: 'Submitted' })).toBeTruthy();
     expect(wallet.sent?.['to']).toBe(FAKE_ROUTER);
-    expect(screen.getByText(/No RPC is configured, so this app could not verify/)).toBeTruthy();
+    expect(screen.getByText(/Your RPC does not show the transaction yet/)).toBeTruthy();
     expect(screen.getByText(/not yet confirmed/)).toBeTruthy();
   });
 
@@ -231,7 +244,7 @@ describe('Pay: sending', () => {
       setHash(fragment);
       const view = renderApp(makeServices({ loadManifest: loaded(84532), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
       const user = userEvent.setup();
-      await user.click(await screen.findByRole('button', { name: 'Continue' }));
+      await clickEnabled(user, 'Continue');
       await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
       expect((await screen.findByRole('alert')).textContent).toMatch(re);
       expect(screen.queryByRole('button', { name: 'Prepare payment' })).toBeNull();
@@ -243,7 +256,7 @@ describe('Pay: sending', () => {
   it('shows a clear message when no wallet is installed', async () => {
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
     const user = openWith(fragment, makeServices({ loadManifest: loaded(84532) }));
-    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    await clickEnabled(user, 'Continue');
     expect(await screen.findByText(/No browser wallet found/)).toBeTruthy();
   });
 
@@ -258,12 +271,12 @@ describe('Pay: sending', () => {
 
 describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
   it('delay: nothing is signed while waiting, can be cancelled, or skipped with "send now"', async () => {
-    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ delayMinSec: 60, delayMaxSec: 60 }));
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' }, delayMinSec: 60, delayMaxSec: 60 }));
     const wallet = new MockWallet();
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
     const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
     await user.click(await screen.findByLabelText(/Wait a random time first/));
-    await user.click(screen.getByRole('button', { name: 'Start the delay' }));
+    await clickEnabled(user, 'Start the delay');
     expect(await screen.findByText('Scheduled locally. Nothing has been signed or broadcast.')).toBeTruthy();
     expect(screen.getByText(/Time left: /)).toBeTruthy();
     expect(wallet.calls).toEqual([]);
@@ -271,20 +284,20 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     await user.click(screen.getByRole('button', { name: 'Cancel' }));
     expect(await screen.findByRole('button', { name: 'Start the delay' })).toBeTruthy();
     expect(wallet.calls).toEqual([]);
-    await user.click(screen.getByRole('button', { name: 'Start the delay' }));
+    await clickEnabled(user, 'Start the delay');
     await user.click(await screen.findByRole('button', { name: 'Send now' }));
     expect(await screen.findByRole('button', { name: /Connect Mock Wallet/ })).toBeTruthy();
     expect(wallet.calls).toEqual([]);
   });
 
   it('delay: revalidates at the due time and stops if the invoice expired while waiting', async () => {
-    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ delayMinSec: 60, delayMaxSec: 60 }));
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' }, delayMinSec: 60, delayMaxSec: 60 }));
     let clock = NOW * 1000;
     const wallet = new MockWallet();
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
     const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), nowMs: () => clock, discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
     await user.click(await screen.findByLabelText(/Wait a random time first/));
-    await user.click(screen.getByRole('button', { name: 'Start the delay' }));
+    await clickEnabled(user, 'Start the delay');
     await screen.findByText('Scheduled locally. Nothing has been signed or broadcast.');
     clock = (NOW + 48 * 3600) * 1000;
     await user.click(screen.getByRole('button', { name: 'Send now' }));
@@ -294,11 +307,11 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
   });
 
   it('delay: becomes ready by itself after the (zero) interval', async () => {
-    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ delayMinSec: 0, delayMaxSec: 0 }));
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' }, delayMinSec: 0, delayMaxSec: 0 }));
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
     const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), discoverWallets: () => Promise.resolve([walletInfo(new MockWallet())]) }));
     await user.click(await screen.findByLabelText(/Wait a random time first/));
-    await user.click(screen.getByRole('button', { name: 'Start the delay' }));
+    await clickEnabled(user, 'Start the delay');
     expect(await screen.findByRole('button', { name: /Connect Mock Wallet/ }, { timeout: 4000 })).toBeTruthy();
   });
 
@@ -316,11 +329,13 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     expect(screen.getByText('Public linkage')).toBeTruthy();
   });
 
-  it('gas buffer without an RPC explains what is missing', async () => {
+  it('a gas buffer that cannot be quoted is reported and nothing is sent', async () => {
     const { fragment } = await makeParsed();
-    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532) }));
+    const wallet = new MockWallet();
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
     await user.click(await screen.findByLabelText(/Add a gas buffer/));
-    expect((await screen.findByRole('alert')).textContent).toMatch(/needs an RPC/);
+    expect((await screen.findByRole('alert')).textContent).toMatch(/Something went wrong/);
+    expect(wallet.calls).toEqual([]);
   });
 
   it('native invoices offer no gas buffer', async () => {
@@ -350,8 +365,118 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     await screen.findByRole('heading', { name: 'Final check before your wallet' }, { timeout: 5000 });
     expect(screen.getByText('payERC20WithBuffer')).toBeTruthy();
     expect(screen.getByText(/gas buffer, public/)).toBeTruthy();
-    await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    // S3-19: the approval is only SHOWN here (exact amount, spender, allowance today); nothing has been sent yet.
+    expect(screen.getByText('Token approval needed first')).toBeTruthy();
+    expect(screen.getByText('Will be approved (exactly)')).toBeTruthy();
+    expect(wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
+    await user.click(screen.getByRole('button', { name: 'Approve exactly, then send payment in my wallet' }));
     await waitFor(() => { expect(screen.getByRole('heading', { name: 'Submitted' })).toBeTruthy(); }, { timeout: 5000 });
     expect(wallet.sent?.['to']).toBe(FAKE_ROUTER);
+    expect(wallet.calls.filter((c) => c.method === 'eth_sendTransaction')).toHaveLength(2);
+  });
+});
+
+describe('Pay: on-chain deployment check (S3-01), safe text and wallet picker', () => {
+  const rejecting = (msg: string): Services['verifyDeployment'] => () =>
+    Promise.reject(Object.assign(new Error(`DEPLOYMENT_UNVERIFIED: ${msg}`), { name: 'ChainAdapterError' }));
+
+  it('blocks payment, with the reason, when the contracts do not match the manifest on-chain', async () => {
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    openWith(fragment, makeServices({ loadManifest: loaded(84532), verifyDeployment: rejecting('router FEE_RECIPIENT differs from the manifest') }));
+    expect(await screen.findByText(/This payment cannot proceed/)).toBeTruthy();
+    expect((await screen.findAllByText(/router FEE_RECIPIENT differs from the manifest/)).length).toBeGreaterThan(0);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Continue' }).disabled).toBe(true);
+    expect(screen.queryByText('You pay (gross)')).toBeNull();
+  });
+
+  it('blocks payment when no RPC is configured, because the contracts cannot be read back', async () => {
+    window.localStorage.removeItem(SETTINGS_KEY);
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    openWith(fragment, makeServices({ loadManifest: loaded(84532) }));
+    expect((await screen.findAllByText(/Configure an RPC for this chain in Settings: the app must read the contracts back/)).length).toBeGreaterThan(0);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Continue' }).disabled).toBe(true);
+  });
+
+  it('shows the router and the fee recipient AS READ FROM THE CHAIN, not the manifest text', async () => {
+    const chainRecipient = '0x9999999999999999999999999999999999999999';
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    openWith(fragment, makeServices({ loadManifest: loaded(84532), verifyDeployment: (m) => Promise.resolve({ ...fakeVerified(m), feeRecipient: chainRecipient }) }));
+    expect(await screen.findByText('Fee recipient, read from the chain')).toBeTruthy();
+    expect((await screen.findAllByText(chainRecipient)).length).toBeGreaterThan(0);
+    expect(screen.queryByText(FAKE_FEE_RECIPIENT)).toBeNull();
+    expect(screen.getByText('Contract (router), read from the chain')).toBeTruthy();
+  });
+
+  it('refuses to send when the verified router is not the manifest router', async () => {
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const wallet = new MockWallet();
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), verifyDeployment: (m) => Promise.resolve({ ...fakeVerified(m), router: '0x8888888888888888888888888888888888888888' }), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await clickEnabled(user, 'Continue');
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' });
+    await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(/router that was verified on-chain/);
+    expect(wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
+  });
+
+  it('makes hidden and direction-changing characters in the memo and line items visible (S3-12)', async () => {
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5', memo: 'Total\u202E 1 000\u200B USD', lineItems: [{ description: 'pаypal\u2066 fee', quantity: '1', unitPrice: '100' }] });
+    openWith(fragment, makeServices({ loadManifest: loaded(84532) }));
+    await screen.findByRole('heading', { name: 'Review payment' });
+    expect(document.body.textContent).toContain('Total⟨U+202E⟩ 1 000⟨U+200B⟩ USD');
+    expect(document.body.textContent).toContain('⟨U+2066⟩');
+    expect(document.body.textContent).toMatch(/mixes Latin letters with Cyrillic or Greek/);
+    expect(document.body.textContent).not.toContain('\u202E');
+    expect(document.querySelector('.isolate')).not.toBeNull();
+  });
+
+  it('tells the payer to paste rather than click links, because of browser history (S3-03)', async () => {
+    renderApp(makeServices());
+    const user = userEvent.setup();
+    await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Pay' }));
+    expect(screen.getByText(/Pasting is safer than clicking/)).toBeTruthy();
+    expect(screen.getByText(/history database/)).toBeTruthy();
+    expect(screen.getByText(/private window/)).toBeTruthy();
+  });
+
+  it('flags wallets that share a name, show their identifier and warn about lookalikes (S3-22)', async () => {
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const a: WalletInfo = { id: 'a', name: 'MetaMask', rdns: 'io.metamask', kind: 'eip6963', provider: new MockWallet() };
+    const b: WalletInfo = { id: 'b', name: 'MetaMask', rdns: 'evil.example', kind: 'eip6963', provider: new MockWallet() };
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), discoverWallets: () => Promise.resolve([a, b]) }));
+    await clickEnabled(user, 'Continue');
+    expect(await screen.findByText('(io.metamask)')).toBeTruthy();
+    expect(screen.getByText('(evil.example)')).toBeTruthy();
+    expect(screen.getAllByText(/Another wallet announced the same name/)).toHaveLength(2);
+  });
+
+  it('offers to revoke an approval that was granted when the payment itself is then rejected (S3-19)', async () => {
+    const { fragment } = await makeParsed();
+    const wallet = new MockWallet({ rejectSendNumber: 2 });
+    let allowance = 0n;
+    const base = chainSeeing(wallet);
+    const rpc = mockRpc(84532, (method, params) => {
+      if (method === 'eth_call') return `0x${allowance.toString(16).padStart(64, '0')}`;
+      if (method === 'eth_getTransactionByHash') {
+        const data = typeof wallet.sent?.['data'] === 'string' ? wallet.sent['data'] : '';
+        allowance = data.startsWith('0x095ea7b3') ? BigInt(`0x${data.slice(-64)}`) : allowance;
+      }
+      return base.request(method, params);
+    });
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(rpc), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(await screen.findByLabelText(/Add a gas buffer/));
+    await screen.findByText(/Extra 0\.00024 ETH/);
+    await clickEnabled(user, 'Continue');
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' }, { timeout: 5000 });
+    await user.click(screen.getByRole('button', { name: 'Approve exactly, then send payment in my wallet' }));
+    expect((await screen.findByRole('alert', {}, { timeout: 5000 })).textContent).toMatch(/rejected the request/);
+    expect(screen.getByText(/If you stop before the payment, remove it/)).toBeTruthy();
+    expect(allowance).toBeGreaterThan(0n);
+    await user.click(screen.getByRole('button', { name: 'Revoke approval' }));
+    await waitFor(() => { expect(allowance).toBe(0n); }, { timeout: 5000 });
+    expect(wallet.sent?.['data']).toMatch(/^0x095ea7b3.*0{64}$/);
   });
 });

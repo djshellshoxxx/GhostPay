@@ -1,7 +1,8 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
+import { RegistryPanel } from '../components/RegistryPanel';
 import { userMessage } from '../lib/errors';
-import { passphraseProblem } from '../lib/keystore';
+import { passphraseProblem, passphraseStrength } from '../lib/keystore';
 import { clearSession, exportKeystore, generateSession, importKeystore, importSession } from '../lib/session';
 import { useApp } from '../state';
 
@@ -34,6 +35,10 @@ export function SellerKeys(): ReactNode {
       setSigning('');
       done('Keys loaded into memory.');
     } catch (err) {
+      // Typed key material is cleared on failure too; a JS string cannot be wiped, but it should not stay in state.
+      setSpend('');
+      setViewKey('');
+      setSigning('');
       fail(err);
     }
   };
@@ -143,8 +148,8 @@ export function SellerKeys(): ReactNode {
 
           <h3>Back up (encrypted)</h3>
           <form onSubmit={onExport} className="stack" autoComplete="off">
-            <Field label="Passphrase (at least 10 characters)">{(id) => <input id={id} type="password" autoComplete="new-password" value={pass} onChange={(e) => { setPass(e.target.value); }} />}</Field>
-            <Field label="Repeat passphrase">{(id) => <input id={id} type="password" autoComplete="new-password" value={pass2} onChange={(e) => { setPass2(e.target.value); }} />}</Field>
+            <Field label="Passphrase (at least 14 characters)" hint={pass === '' ? 'Four or more unrelated words are better than symbols. Not stored; your browser should not offer to save it.' : `Strength: ${passphraseStrength(pass).label} (rough estimate, about ${String(passphraseStrength(pass).bits)} bits)`}>{(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" value={pass} onChange={(e) => { setPass(e.target.value); }} />}</Field>
+            <Field label="Repeat passphrase">{(id) => <input id={id} type="password" autoComplete="off" value={pass2} onChange={(e) => { setPass2(e.target.value); }} />}</Field>
             <button type="submit" className="btn" disabled={busy}>Download encrypted keystore</button>
           </form>
           <p className="hint">Format: scrypt (N=2^17, r=8, p=1) and AES-256-GCM. The passphrase is not stored anywhere.</p>
@@ -156,8 +161,7 @@ export function SellerKeys(): ReactNode {
         </>
       )}
 
-      <h3>Public registry</h3>
-      <p className="hint">Publishing your meta-address to the ERC-6538 registry would publicly associate it with your wallet address. This release does not publish; share the meta-address directly.</p>
+      <RegistryPanel />
     </section>
   );
 }

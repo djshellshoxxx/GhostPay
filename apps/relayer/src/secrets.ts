@@ -1,4 +1,4 @@
-import { readFileSync, statSync } from 'node:fs';
+import { lstatSync, readFileSync, statSync } from 'node:fs';
 
 /** Environment view. */
 export type Env = Readonly<Record<string, string | undefined>>;
@@ -26,8 +26,10 @@ export interface SecretSource {
  * Loads a hex secret from a file (path in `fileVar`) or an env value.
  *
  * @remarks The file must be a regular file whose mode has no group/world bits (`chmod 600`); otherwise
- * startup is refused. On Windows (no POSIX modes) the mode check is skipped. Contents are never
- * included in error messages or logs.
+ * startup is refused, as is a symlink or a file owned by neither the service user nor root. On Windows
+ * (no POSIX modes) these checks are skipped. A value passed directly in the environment (visible in
+ * `/proc/<pid>/environ` and `docker inspect`) is refused when `NODE_ENV=production` unless
+ * `ALLOW_SECRET_ENV=1`. Contents are never included in error messages or logs.
  *
  * @param env Environment.
  * @param src Source description.
@@ -44,13 +46,19 @@ export function loadSecret(env: Env, src: SecretSource): Uint8Array {
   if (path !== undefined && path !== '') {
     let st;
     try {
+      if (process.platform !== 'win32' && lstatSync(path).isSymbolicLink()) throw new ConfigError(`${src.fileVar}: symlinks are not accepted`);
       st = statSync(path);
-    } catch {
+    } catch (e) {
+      if (e instanceof ConfigError) throw e;
       throw new ConfigError(`${src.fileVar}: file not readable`);
     }
     if (!st.isFile() || st.size > 4096) throw new ConfigError(`${src.fileVar}: not a regular small file`);
     if (process.platform !== 'win32' && (st.mode & 0o077) !== 0) {
       throw new ConfigError(`${src.fileVar}: file mode must not allow group/world access (chmod 600)`);
+    }
+    const uid = process.getuid?.();
+    if (process.platform !== 'win32' && uid !== undefined && st.uid !== uid && st.uid !== 0) {
+      throw new ConfigError(`${src.fileVar}: file must be owned by the service user or root`);
     }
     try {
       text = readFileSync(path, 'utf8');
@@ -58,6 +66,9 @@ export function loadSecret(env: Env, src: SecretSource): Uint8Array {
       throw new ConfigError(`${src.fileVar}: file not readable`);
     }
   } else if (direct !== undefined && direct !== '') {
+    if (env['NODE_ENV'] === 'production' && env['ALLOW_SECRET_ENV'] !== '1') {
+      throw new ConfigError(`${src.valueVar}: secrets in environment variables are refused in production (use ${src.fileVar})`);
+    }
     text = direct;
   } else {
     throw new ConfigError(`${src.fileVar} or ${src.valueVar} is required`);
@@ -73,3 +84,24 @@ export function loadSecret(env: Env, src: SecretSource): Uint8Array {
 export const HOT_KEY_SOURCE: SecretSource = { fileVar: 'RELAYER_KEY_FILE', valueVar: 'RELAYER_KEY', minBytes: 32, maxBytes: 32 };
 /** Quote HMAC secret source: 32..128 bytes. */
 export const QUOTE_SECRET_SOURCE: SecretSource = { fileVar: 'QUOTE_SECRET_FILE', valueVar: 'QUOTE_SECRET', minBytes: 32, maxBytes: 128 };
+
+/**
+ * Loads an optional secret (absent when neither variable is set).
+ *
+ * @param env Environment.
+ * @param src Source description.
+ * @returns Decoded bytes or `undefined`.
+ * @throws {ConfigError} as {@link loadSecret} when present but invalid.
+ */
+export function loadOptionalSecret(env: Env, src: SecretSource): Uint8Array | undefined {
+  const has = (v: string): boolean => env[v] !== undefined && env[v] !== '';
+  return has(src.fileVar) || has(src.valueVar) ? loadSecret(env, src) : undefined;
+}
+
+/** Previous quote secret (verify-only, rotation window). */
+export const QUOTE_SECRET_PREVIOUS_SOURCE: SecretSource = {
+  fileVar: 'QUOTE_SECRET_PREVIOUS_FILE',
+  valueVar: 'QUOTE_SECRET_PREVIOUS',
+  minBytes: 32,
+  maxBytes: 128,
+};

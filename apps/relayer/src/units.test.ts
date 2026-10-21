@@ -8,7 +8,8 @@ import { KeyHasher, LruMap, RateLimiter } from './limiter.js';
 import { createLogger, nullLogger, sanitizeFields } from './log.js';
 import { allowAllPolicy } from './policy.js';
 import { FixedStablePriceSource, RpcGasPriceSource, parseUsdMicro, type AllowedToken } from './pricing.js';
-import { signQuote, verifyQuote, type QuoteClaims } from './quoteToken.js';
+import { makeKeyring, quoteKeyId, signQuote, verifyQuote, type QuoteClaims } from './quoteToken.js';
+import { QUOTE_TOKEN_PATTERN } from './validate.js';
 import { revertToError } from './service.js';
 import { CHAIN_ID, DEST, FEE_TO, FakeChain, OWNER, USDC } from './harness.testutil.js';
 
@@ -38,25 +39,52 @@ describe('codec', () => {
 
 describe('quote token', () => {
   const secret = new Uint8Array(32).fill(1);
+  const ring = makeKeyring(secret);
   const claims: QuoteClaims = { chainId: 1, token: USDC, owner: OWNER, destination: DEST, amount: 10n, fee: 2n, feeTo: FEE_TO, expiresAt: 1234 };
   const binding = { chainId: claims.chainId, token: claims.token, owner: claims.owner, destination: claims.destination, amount: claims.amount, feeTo: claims.feeTo };
   it('round-trips and binds every field', () => {
-    const t = signQuote(secret, claims);
-    expect(verifyQuote(secret, t, binding)).toEqual({ fee: 2n, expiresAt: 1234 });
+    const t = signQuote(ring.primary, claims);
+    expect(t).toMatch(/^v2\.[0-9a-f]{8}\.1234\.2\.[0-9a-f]{64}$/);
+    expect(verifyQuote(ring, t, binding)).toEqual({ fee: 2n, expiresAt: 1234 });
     for (const k of Object.keys(binding) as (keyof typeof binding)[]) {
       const other = k === 'chainId' ? 2 : k === 'amount' ? 11n : OWNER === binding[k] ? DEST : OWNER;
-      expect(verifyQuote(secret, t, { ...binding, [k]: other })).toBeNull();
+      expect(verifyQuote(ring, t, { ...binding, [k]: other })).toBeNull();
     }
-    expect(verifyQuote(new Uint8Array(32).fill(2), t, binding)).toBeNull();
+    expect(verifyQuote(makeKeyring(new Uint8Array(32).fill(2)), t, binding)).toBeNull();
   });
   it('rejects malformed, tampered and unsafe-expiry tokens', () => {
-    const t = signQuote(secret, claims);
-    expect(verifyQuote(secret, 'nope', binding)).toBeNull();
-    expect(verifyQuote(secret, t.replace('.1234.', '.1235.'), binding)).toBeNull();
-    expect(verifyQuote(secret, t.replace('.2.', '.1.'), binding)).toBeNull();
-    expect(verifyQuote(secret, `v1.${'9'.repeat(12)}.2.${'0'.repeat(64)}`, binding)).toBeNull();
-    const huge = signQuote(secret, { ...claims, expiresAt: 10 ** 12 });
-    expect(verifyQuote(secret, huge, binding)).toBeNull(); // 13 digits: outside the token pattern
+    const t = signQuote(ring.primary, claims);
+    expect(verifyQuote(ring, 'nope', binding)).toBeNull();
+    expect(verifyQuote(ring, t.replace('.1234.', '.1235.'), binding)).toBeNull();
+    expect(verifyQuote(ring, t.replace('.2.', '.1.'), binding)).toBeNull();
+    expect(verifyQuote(ring, `v2.${ring.primary.id}.${'9'.repeat(12)}.2.${'0'.repeat(64)}`, binding)).toBeNull();
+    const huge = signQuote(ring.primary, { ...claims, expiresAt: 10 ** 12 });
+    expect(verifyQuote(ring, huge, binding)).toBeNull(); // 13 digits: outside the token pattern
+  });
+  it('S3-20: rejects non-canonical encodings (leading zeros) even when the MAC is otherwise valid', () => {
+    const t = signQuote(ring.primary, claims);
+    expect(verifyQuote(ring, t.replace('.1234.', '.001234.'), binding)).toBeNull();
+    expect(verifyQuote(ring, t.replace('.2.', '.02.'), binding)).toBeNull();
+    expect(QUOTE_TOKEN_PATTERN.test(t)).toBe(true);
+    expect(QUOTE_TOKEN_PATTERN.test(t.replace('.1234.', '.01234.'))).toBe(false);
+    expect(QUOTE_TOKEN_PATTERN.test(t.toUpperCase())).toBe(false);
+    // the retired v1 format is refused
+    expect(verifyQuote(ring, `v1.1234.2.${'0'.repeat(64)}`, binding)).toBeNull();
+  });
+  it('S3-21: key id selects the key; a previous key verifies during rotation but never signs', () => {
+    const oldSecret = new Uint8Array(32).fill(5);
+    const oldRing = makeKeyring(oldSecret);
+    const issuedBefore = signQuote(oldRing.primary, claims);
+    const rotated = makeKeyring(secret, oldSecret);
+    expect(rotated.previous?.id).toBe(oldRing.primary.id);
+    expect(verifyQuote(rotated, issuedBefore, binding)).toEqual({ fee: 2n, expiresAt: 1234 });
+    expect(verifyQuote(ring, issuedBefore, binding)).toBeNull(); // window closed: previous key dropped
+    expect(verifyQuote(rotated, signQuote(rotated.primary, claims), binding)).not.toBeNull();
+    // unknown key id
+    expect(verifyQuote(rotated, issuedBefore.replace(oldRing.primary.id, '00000000'), binding)).toBeNull();
+    // the key id commits to the secret, so a previous equal to the current is a configuration mistake
+    expect(() => makeKeyring(secret, secret)).toThrow(/differ/);
+    expect(quoteKeyId(secret)).toHaveLength(8);
   });
 });
 

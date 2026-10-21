@@ -151,6 +151,13 @@ export interface ClientOptions extends UrlOptions {
   readonly sleep?: (ms: number) => Promise<void>;
   /** Injected uniform random in [0,1) for jitter (tests). Default: Web Crypto. */
   readonly random?: () => number;
+  /**
+   * Re-verify `eth_chainId` when this many ms have passed since the last check, and always after any failed request
+   * (a reconnect). Default 60 000; `0` disables the periodic check (the check after a failure stays on).
+   */
+  readonly chainRecheckMs?: number;
+  /** Injected clock in ms (tests). Default `Date.now`. */
+  readonly now?: () => number;
 }
 
 /** Verified JSON-RPC client bound to one chain. */
@@ -213,7 +220,12 @@ export async function createClient(chain: ChainConfig, url: string, opts: Client
   const random = opts.random ?? cryptoRandom;
   let nextId = 1;
 
-  async function request(method: string, params: readonly unknown[]): Promise<unknown> {
+  const recheckMs = opts.chainRecheckMs ?? 60_000;
+  const clock = opts.now ?? Date.now;
+  let lastChainCheck = clock();
+  let dirty = false;
+
+  async function rawRequest(method: string, params: readonly unknown[]): Promise<unknown> {
     const id = nextId++;
     const body = JSON.stringify({ jsonrpc: '2.0', id, method, params });
     for (let attempt = 0; ; attempt++) {
@@ -222,14 +234,38 @@ export async function createClient(chain: ChainConfig, url: string, opts: Client
         if (text.length > maxBytes) return fail('RESPONSE_TOO_LARGE', 'response exceeds cap');
         return parseResponse(text, id);
       } catch (e) {
+        // A transport-level failure may mean a reconnect to a different backend: re-verify the chain before trusting
+        // more. A JSON-RPC error object proves the same node answered, so it does not.
+        if (!(e instanceof JsonRpcError)) dirty = true;
         if (attempt >= retries || !isRetryable(e)) return rethrow(e);
         await sleep(Math.floor(random() * base * 2 ** attempt));
       }
     }
   }
 
-  const client: RpcClient = {
-    chainId: chain.chainId,
+  async function checkChain(): Promise<void> {
+    const reported = parseQuantity(await rawRequest('eth_chainId', []));
+    if (reported !== BigInt(chain.chainId)) return fail('CHAIN_MISMATCH', 'endpoint reports a different chain id');
+    lastChainCheck = clock();
+    dirty = false;
+  }
+
+  /** Every request after the first connect is preceded by a chain id re-check when stale or after a failure. */
+  async function guarded(method: string, params: readonly unknown[]): Promise<unknown> {
+    if (method !== 'eth_chainId' && (dirty || (recheckMs > 0 && clock() - lastChainCheck >= recheckMs))) await checkChain();
+    return rawRequest(method, params);
+  }
+
+  const client = clientFromRequest(chain.chainId, guarded);
+  await checkChain();
+  dirty = false;
+  return client;
+}
+
+/** Builds the typed client surface on top of a raw `request` function. */
+function clientFromRequest(chainId: number, request: RpcClient['request']): RpcClient {
+  return {
+    chainId,
     request,
     async blockNumber() {
       return parseQuantity(await request('eth_blockNumber', []));
@@ -256,10 +292,6 @@ export async function createClient(chain: ChainConfig, url: string, opts: Client
       return r as RpcLog[];
     },
   };
-
-  const reported = parseQuantity(await request('eth_chainId', []));
-  if (reported !== BigInt(chain.chainId)) return fail('CHAIN_MISMATCH', 'endpoint reports a different chain id');
-  return client;
 }
 
 class JsonRpcError extends Error {
@@ -336,4 +368,57 @@ function stableStringify(v: unknown): string {
     return `{${Object.keys(o).sort().map((k) => `${JSON.stringify(k)}:${stableStringify(o[k])}`).join(',')}}`;
   }
   return JSON.stringify(v);
+}
+
+/** Methods whose result is deterministic for a given block and safe to demand from two providers. */
+export const DEFAULT_RECONCILED_METHODS: readonly string[] = Object.freeze([
+  'eth_getCode',
+  'eth_call',
+  'eth_getBalance',
+  'eth_getTransactionCount',
+  'eth_getTransactionByHash',
+  'eth_getTransactionReceipt',
+  'eth_getBlockByNumber',
+  'eth_getLogs',
+]);
+
+/** Options for {@link createReconciledClient}. */
+export interface ReconcileOptions {
+  /** Methods that must return identical results from both providers. Default {@link DEFAULT_RECONCILED_METHODS}. */
+  readonly methods?: readonly string[];
+  /** Sleep used between the first disagreement and the single re-try (tip races). Default 1000 ms. */
+  readonly sleep?: (ms: number) => Promise<void>;
+  readonly retryDelayMs?: number;
+}
+
+/**
+ * Wraps two verified clients so that every security-relevant read must be identical on both providers.
+ *
+ * @remarks Reads outside the reconciled set (`eth_blockNumber`, `eth_gasPrice`, `eth_sendRawTransaction`, ...) go to
+ * the primary only. A disagreement is re-tried once after a short pause (providers may differ by one block at the
+ * tip); a second disagreement throws `RPC_FAILURE: providers disagree`. This detects a single lying or omitting
+ * provider (S3-14); it does not help when both providers are the same backend or collude.
+ *
+ * @param primary Primary client.
+ * @param secondary Independent second client on the same chain.
+ * @param opts Options.
+ * @returns A client with the same interface.
+ * @throws {ChainAdapterError} `CHAIN_MISMATCH` when the clients are on different chains.
+ */
+export function createReconciledClient(primary: RpcClient, secondary: RpcClient, opts: ReconcileOptions = {}): RpcClient {
+  if (primary.chainId !== secondary.chainId) return fail('CHAIN_MISMATCH', 'clients target different chains');
+  const methods = new Set(opts.methods ?? DEFAULT_RECONCILED_METHODS);
+  const sleep = opts.sleep ?? defaultSleep;
+  const delay = opts.retryDelayMs ?? 1000;
+  const request = async (method: string, params: readonly unknown[]): Promise<unknown> => {
+    if (!methods.has(method)) return primary.request(method, params);
+    try {
+      return await requestWithFallbackCheck(primary, secondary, method, params);
+    } catch (e) {
+      if (!(e instanceof Error) || e.message !== 'RPC_FAILURE: providers disagree') throw e;
+      await sleep(delay);
+      return requestWithFallbackCheck(primary, secondary, method, params);
+    }
+  };
+  return clientFromRequest(primary.chainId, request);
 }

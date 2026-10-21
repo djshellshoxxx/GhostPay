@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import type { Services } from '../lib/services';
 import { OBSERVERS, bpsToPercent } from '../components/Disclosure';
 import { FAKE_FEE_RECIPIENT, FAKE_ROUTER, fakeManifest } from '../test/fakeManifest';
+import { SETTINGS_KEY } from '../lib/settings';
 import { makeServices, renderApp } from '../test/render';
 
 beforeEach(() => {
@@ -45,8 +46,36 @@ describe('About / Privacy', () => {
     const items = screen.getAllByText(/GhostPay charges 0\.25 % on payments made through its checkout contract\. The fee goes to/);
     expect(items).toHaveLength(2);
     expect(screen.getAllByText(/payments disabled on this chain/)).toHaveLength(1);
-    expect(screen.getByText(/carries no signature; this app does not verify manifest signatures/)).toBeTruthy();
+    expect(screen.getAllByText(/an unsigned manifest \(no release key is built in/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/not yet verified on-chain/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Paying the stealth address directly costs no GhostPay fee\./)).toHaveLength(2);
+  });
+
+  it('shows the recipient AS READ FROM THE CHAIN once the deployment check passed', async () => {
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    await openAbout(makeServices({ loadManifest: (id) => Promise.resolve(id === 84532 ? { status: 'loaded', manifest: fakeManifest(84532) } : { status: 'absent' }) }));
+    expect(await screen.findByText(/read from the router contract on-chain/)).toBeTruthy();
+    expect(screen.getByText(/Router \(verified on-chain\)/)).toBeTruthy();
+  });
+
+  it('says why the contracts could not be verified, and does not call them verified', async () => {
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const verifyDeployment: Services['verifyDeployment'] = () => Promise.reject(Object.assign(new Error('DEPLOYMENT_UNVERIFIED: router code hash differs from the manifest'), { name: 'ChainAdapterError' }));
+    await openAbout(makeServices({ verifyDeployment, loadManifest: (id) => Promise.resolve(id === 84532 ? { status: 'loaded', manifest: fakeManifest(84532) } : { status: 'absent' }) }));
+    expect((await screen.findAllByText(/router code hash differs from the manifest/)).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/read from the router contract on-chain/)).toBeNull();
+    expect(screen.getByText(/Bundled manifest \(unverified\)/)).toBeTruthy();
+  });
+
+  it('is honest that the release hash cannot detect a compromised host, and says how to really verify (S3-04)', async () => {
+    await openAbout(makeServices());
+    expect(screen.getByText(/informational only/)).toBeTruthy();
+    expect(screen.getByText(/can show you the hash it wants you to see/)).toBeTruthy();
+    expect(screen.getByText(/SHA256SUMS/)).toBeTruthy();
+    expect(screen.getByText(/Paste the link into the Pay page, or use a private window/)).toBeTruthy();
+    expect(screen.getByText(/payer knows the one-time address they paid/)).toBeTruthy();
+    expect(screen.getByText(/Your RPC provider sees which addresses you scan/)).toBeTruthy();
+    expect(document.body.textContent).not.toMatch(/Compare the SHA-256 shown on the Home page with the hash published/);
   });
 
   it('an invalid manifest keeps payments disabled', async () => {
@@ -56,6 +85,12 @@ describe('About / Privacy', () => {
 });
 
 describe('Home', () => {
+  it('labels the release hash informational only and not a verification (S3-04)', async () => {
+    renderApp(makeServices());
+    expect(await screen.findByText('Release check (informational only)')).toBeTruthy();
+    expect(screen.getByText(/This is not a verification/)).toBeTruthy();
+  });
+
   it('shows a release hash computed from the entry script, or says it is unavailable', async () => {
     const script = document.createElement('script');
     script.type = 'module';

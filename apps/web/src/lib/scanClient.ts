@@ -19,6 +19,10 @@ export interface ScanWorkerLike {
 }
 
 export interface ScanMatch {
+  /** Chain the announcement was found on: a match is never shown or swept under another chain (S3-15). */
+  readonly chainId: number;
+  /** False when found only by deep scan because the payer published a wrong view tag. */
+  readonly tagMatches?: boolean;
   readonly announcement: ScannedAnnouncement;
   readonly stealthAddress: Address;
   readonly metadata: ParsedMetadata | undefined;
@@ -53,33 +57,55 @@ export interface ScanParams {
   readonly onProgress?: (p: ScanProgress) => void;
   readonly onMatch?: (m: ScanMatch) => void;
   readonly maxPages?: number;
+  /** Deep scan (D4): ignore the view tag for announcements called by the router. One extra ECDH per such announcement. */
+  readonly deep?: boolean;
+  /** Longest wait for one worker reply, default 60 s. */
+  readonly replyTimeoutMs?: number;
 }
 
-function toWire(a: ScannedAnnouncement): WireLog {
-  return { id: a.id, schemeId: a.schemeId, stealthAddress: a.stealthAddress, ephemeralPublicKey: a.ephemeralPublicKey, metadata: a.metadata };
+function toWire(a: ScannedAnnouncement, skipTag: boolean): WireLog {
+  return {
+    id: a.id,
+    schemeId: a.schemeId,
+    stealthAddress: a.stealthAddress,
+    ephemeralPublicKey: a.ephemeralPublicKey,
+    metadata: a.metadata,
+    ...(skipTag ? { skipTag: true } : {}),
+  };
 }
+
+class ScanCancelled extends Error {}
 
 /**
  * Network access happens here (via chain-adapters), never in the worker. The worker receives public logs and, once,
  * the viewing key. Cancelling via `signal` stops fetching, tells the worker to stop, and terminates it.
  */
 export async function runScan(p: ScanParams): Promise<{ readonly matches: readonly ScanMatch[]; readonly cursor: ScanCursor; readonly scanned: number }> {
-  const worker = p.createWorker();
+  let worker: ScanWorkerLike | undefined;
   const pending = new Map<number, (m: FromWorker) => void>();
   let ready: ((m: FromWorker) => void) | undefined;
   let failed: ((e: Error) => void) | undefined;
-  worker.onmessage = (e): void => {
-    const m = e.data;
-    if (m.type === 'ready' || m.type === 'error' || m.type === 'ended') ready?.(m);
-    else if (m.type === 'matches') pending.get(m.batchId)?.(m);
-  };
-  worker.onerror = (): void => {
-    failed?.(new UserFacingError('The scanner worker failed.'));
-  };
+  const timeoutMs = p.replyTimeoutMs ?? 60_000;
+  // Every wait ends: by a reply, a worker error, a timeout, or the user pressing Cancel (S3-15).
   const wait = (register: (resolve: (m: FromWorker) => void) => void): Promise<FromWorker> =>
     new Promise<FromWorker>((resolve, reject) => {
-      failed = reject;
-      register(resolve);
+      const timer = setTimeout(() => {
+        reject(new UserFacingError('The scanner did not answer in time and was stopped.'));
+      }, timeoutMs);
+      const onAbort = (): void => {
+        reject(new ScanCancelled());
+      };
+      if (p.signal.aborted) onAbort();
+      else p.signal.addEventListener('abort', onAbort, { once: true });
+      failed = (e) => {
+        clearTimeout(timer);
+        reject(e);
+      };
+      register((m) => {
+        clearTimeout(timer);
+        p.signal.removeEventListener('abort', onAbort);
+        resolve(m);
+      });
     });
 
   const all: ScanMatch[] = [];
@@ -89,9 +115,19 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   let skipped = 0;
   let batchId = 0;
   try {
+    worker = p.createWorker();
+    const w = worker;
+    w.onmessage = (e): void => {
+      const m = e.data;
+      if (m.type === 'ready' || m.type === 'error' || m.type === 'ended') ready?.(m);
+      else if (m.type === 'matches') pending.get(m.batchId)?.(m);
+    };
+    w.onerror = (): void => {
+      failed?.(new UserFacingError('The scanner worker failed.'));
+    };
     const started = await wait((resolve) => {
       ready = resolve;
-      worker.postMessage({ type: 'start', viewingKey: p.viewingKey, spendingPublicKey: p.spendingPublicKeyHex });
+      w.postMessage({ type: 'start', viewingKey: p.viewingKey, spendingPublicKey: p.spendingPublicKeyHex });
     });
     if (started.type !== 'ready') throw new UserFacingError('The scanner rejected the keys.');
     const maxPages = p.maxPages ?? 10_000;
@@ -102,9 +138,10 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       skipped += res.skipped;
       for (const a of res.announcements) byId.set(a.id, a);
       const id = ++batchId;
+      const routerLc = p.manifest.router.toLowerCase();
       const reply = await wait((resolve) => {
         pending.set(id, resolve);
-        worker.postMessage({ type: 'batch', batchId: id, logs: res.announcements.map(toWire) });
+        w.postMessage({ type: 'batch', batchId: id, logs: res.announcements.map((a) => toWire(a, p.deep === true && a.caller.toLowerCase() === routerLc)) });
       });
       pending.delete(id);
       if (reply.type !== 'matches') throw new UserFacingError('The scanner returned an unexpected reply.');
@@ -119,10 +156,12 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
           metadata = undefined;
         }
         const match: ScanMatch = {
+          chainId: p.chain.chainId,
+          ...(m.tagMatches === undefined ? {} : { tagMatches: m.tagMatches }),
           announcement,
           stealthAddress: m.stealthAddress as Address,
           metadata,
-          viaRouter: announcement.caller.toLowerCase() === p.manifest.router.toLowerCase(),
+          viaRouter: announcement.caller.toLowerCase() === routerLc,
         };
         all.push(match);
         p.onMatch?.(match);
@@ -133,10 +172,14 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: !res.truncated });
       if (!res.truncated) break;
     }
+  } catch (e) {
+    if (!(e instanceof ScanCancelled)) throw e;
   } finally {
-    if (p.signal.aborted) worker.postMessage({ type: 'cancel' });
-    worker.postMessage({ type: 'end' });
-    worker.terminate();
+    if (worker !== undefined) {
+      if (p.signal.aborted) worker.postMessage({ type: 'cancel' });
+      worker.postMessage({ type: 'end' });
+      worker.terminate();
+    }
     zeroizeBytes(p.viewingKey);
   }
   return { matches: all, cursor, scanned };

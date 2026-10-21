@@ -6,6 +6,9 @@ import {
   sponsorFee,
   type SweepOrder,
 } from '@ghostpay/chain-adapters';
+import { nullAlertSink, type AlertKind, type AlertSink } from './alerts.js';
+import { FailureBudgets } from './abuse.js';
+import { Metrics } from './metrics.js';
 import { allowAllPolicy, type PolicyGate } from './policy.js';
 import { CircuitBreaker, type BreakerState } from './breaker.js';
 import { DailyBudget } from './budget.js';
@@ -16,17 +19,21 @@ import { ChainLane, NonceManager, type JobOutcome } from './lane.js';
 import type { RateLimiter } from './limiter.js';
 import { nullLogger, type Logger } from './log.js';
 import type { AllowedToken, GasPriceSource, TokenPriceSource } from './pricing.js';
-import { signQuote, verifyQuote } from './quoteToken.js';
+import { signQuote, verifyQuote, type QuoteKeyring } from './quoteToken.js';
 import type { QuoteRequest, SweepRequest } from './validate.js';
 
 /** Dependencies of {@link RelayerService}. */
 export interface ServiceDeps {
   readonly config: RelayerConfig;
   readonly clients: ReadonlyMap<number, ChainClient>;
-  readonly quoteSecret: Uint8Array;
+  readonly quoteKeys: QuoteKeyring;
   readonly gasPrices: GasPriceSource;
   readonly tokenPrices: TokenPriceSource;
   readonly ownerLimiter: RateLimiter;
+  /** Per-owner / per-destination budgets of costly failures. */
+  readonly abuse: FailureBudgets;
+  readonly alerts?: AlertSink;
+  readonly metrics?: Metrics;
   readonly policy?: PolicyGate;
   readonly logger?: Logger;
   /** Clock in ms. */
@@ -70,7 +77,11 @@ export interface InfoResponse {
 
 /** Response of `GET /healthz`. */
 export interface HealthResponse {
-  readonly status: 'ok' | 'degraded' | 'shutting_down';
+  /**
+   * `ok`: every breaker closed. `degraded`: some chain is open or half-open. `unhealthy`: no chain can serve
+   * (all open or half-open). `shutting_down`: draining.
+   */
+  readonly status: 'ok' | 'degraded' | 'unhealthy' | 'shutting_down';
   readonly chains: readonly { readonly chainId: number; readonly breaker: BreakerState }[];
 }
 
@@ -86,6 +97,8 @@ interface ChainRuntime {
   readonly nonces: NonceManager;
   readonly budget: DailyBudget;
   readonly breaker: CircuitBreaker;
+  gasQuote: { readonly price: bigint; readonly at: number } | undefined;
+  lastBalance: bigint | undefined;
 }
 
 const REVERT_MAP: Readonly<Record<string, readonly [number, string]>> = {
@@ -123,8 +136,14 @@ export class RelayerService {
   private readonly logger: Logger;
   private readonly now: () => number;
   private closing = false;
+  private monitorTimer: NodeJS.Timeout | undefined;
+  private readonly alerts: AlertSink;
+  /** Operational counters/gauges (`/metrics`). */
+  public readonly metrics: Metrics;
 
   public constructor(private readonly d: ServiceDeps) {
+    this.alerts = d.alerts ?? nullAlertSink;
+    this.metrics = d.metrics ?? new Metrics();
     this.policy = d.policy ?? allowAllPolicy;
     this.logger = d.logger ?? nullLogger;
     this.now = d.now ?? Date.now;
@@ -139,9 +158,11 @@ export class RelayerService {
         nonces: new NonceManager(() => client.getPendingNonce()),
         budget: new DailyBudget(cfg.dailyBudgetWei, this.now),
         breaker: new CircuitBreaker(
-          { windowSize: b.windowSize, minSamples: b.minSamples, failureRatio: b.failureRatio, cooldownMs: b.cooldownSeconds * 1000 },
+          { windowSize: b.windowSize, minSamples: b.minSamples, failureRatio: b.failureRatio, cooldownMs: b.cooldownSeconds * 1000, halfOpenTimeoutMs: b.halfOpenTimeoutSeconds * 1000 },
           this.now,
         ),
+        gasQuote: undefined,
+        lastBalance: undefined,
       });
     }
   }
@@ -174,8 +195,72 @@ export class RelayerService {
     const chains = [...this.chains.values()].map((r) => ({ chainId: r.cfg.chainId, breaker: r.breaker.state }));
     let status: HealthResponse['status'] = 'ok';
     if (this.closing) status = 'shutting_down';
-    else if (chains.every((c) => c.breaker === 'open')) status = 'degraded';
+    else if (chains.every((c) => c.breaker !== 'closed')) status = 'unhealthy';
+    else if (chains.some((c) => c.breaker !== 'closed')) status = 'degraded';
     return { status, chains };
+  }
+
+  /**
+   * Starts the background monitor: it polls the hot-key balance even when no traffic arrives, so the
+   * low-balance alert does not depend on a user request. The timer never keeps the process alive.
+   *
+   * @param intervalMs Polling interval.
+   */
+  public startMonitor(intervalMs: number): void {
+    this.stopMonitor();
+    this.monitorTimer = setInterval(() => {
+      void this.monitorOnce();
+    }, intervalMs);
+    this.monitorTimer.unref();
+  }
+
+  /** Stops the background monitor. */
+  public stopMonitor(): void {
+    if (this.monitorTimer !== undefined) clearInterval(this.monitorTimer);
+    this.monitorTimer = undefined;
+  }
+
+  /** One monitor pass: refreshes the balance gauge and raises low-balance alerts. Never throws. */
+  public async monitorOnce(): Promise<void> {
+    for (const rt of this.chains.values()) {
+      try {
+        this.observeBalance(rt, await rt.client.getBalance());
+      } catch {
+        this.metrics.inc('ghostpay_relayer_errors_total', { class: 'monitor_rpc' });
+      }
+    }
+  }
+
+  /** @returns Prometheus text with current gauges (no RPC calls). */
+  public renderMetrics(): string {
+    for (const rt of this.chains.values()) {
+      const chain = rt.cfg.chainId;
+      const st = rt.breaker.state;
+      this.metrics.set('ghostpay_relayer_breaker_state', { chain }, st === 'closed' ? 0 : st === 'half_open' ? 1 : 2);
+      this.metrics.set('ghostpay_relayer_daily_budget_used_wei', { chain }, Number(rt.budget.used));
+      this.metrics.set('ghostpay_relayer_daily_budget_limit_wei', { chain }, Number(rt.cfg.dailyBudgetWei));
+      this.metrics.set('ghostpay_relayer_queue_pending', { chain }, rt.lane.pending);
+    }
+    return this.metrics.render();
+  }
+
+  private alert(kind: AlertKind, severity: 'warning' | 'critical', chainId: number): void {
+    this.metrics.inc('ghostpay_relayer_alerts_total', { kind });
+    this.alerts.notify({ kind, severity, chainId });
+  }
+
+  private observeBalance(rt: ChainRuntime, balance: bigint): void {
+    rt.lastBalance = balance;
+    this.metrics.set('ghostpay_relayer_hot_balance_wei', { chain: rt.cfg.chainId }, Number(balance));
+    if (balance < rt.cfg.minBalanceWei) this.alert('low_balance', 'critical', rt.cfg.chainId);
+    else if (balance < rt.cfg.minBalanceWei * 2n) this.alert('balance_warning', 'warning', rt.cfg.chainId);
+  }
+
+  /** Records an operational failure; a resulting trip on error rate raises an alert. */
+  private fail(rt: ChainRuntime): void {
+    const before = rt.breaker.state;
+    rt.breaker.recordFailure();
+    if (before === 'closed' && rt.breaker.state === 'open') this.alert('error_rate', 'critical', rt.cfg.chainId);
   }
 
   /**
@@ -190,14 +275,14 @@ export class RelayerService {
     if (req.destination === req.owner || rt.cfg.feeTo === req.owner || rt.cfg.feeTo === req.destination) {
       throw new RelayerError(422, 'invalid_order');
     }
-    const gasPrice = await this.gasPrice(rt);
+    const gasPrice = await this.quoteGasPrice(rt);
     const units = token.permit ? rt.cfg.gasUnits.sweepWithPermit : rt.cfg.gasUnits.sweep;
     const gasCost = await this.d.tokenPrices.nativeToTokenUnits(req.chainId, token, units * gasPrice);
     const { fee } = sponsorFee(req.amount, gasCost);
-    // If even the 300 bps cap cannot reimburse the gas, the sweep is uneconomical: refuse to quote.
-    if (fee < gasCost) throw new RelayerError(422, 'amount_too_small');
+    // If even the 300 bps cap cannot reimburse the gas (times the configured cover), the sweep is uneconomical.
+    if (fee * 100n < gasCost * BigInt(this.d.config.gas.coverPercent)) throw new RelayerError(422, 'amount_too_small');
     const expiresAt = Math.floor(this.now() / 1000) + this.d.config.quoteTtlSeconds;
-    const quoteToken = signQuote(this.d.quoteSecret, {
+    const quoteToken = signQuote(this.d.quoteKeys.primary, {
       chainId: req.chainId,
       token: req.token,
       owner: req.owner,
@@ -228,7 +313,7 @@ export class RelayerService {
     }
     if (s.feeTo !== rt.cfg.feeTo) throw new RelayerError(422, 'fee_to_mismatch');
 
-    const quote = verifyQuote(this.d.quoteSecret, req.quoteToken, {
+    const quote = verifyQuote(this.d.quoteKeys, req.quoteToken, {
       chainId: req.chainId,
       token: s.token,
       owner: s.owner,
@@ -271,6 +356,9 @@ export class RelayerService {
     const limit = this.d.ownerLimiter.take(s.owner.toLowerCase());
     if (!limit.ok) throw new RelayerError(429, 'rate_limited_owner', limit.retryAfterSeconds);
 
+    const budget = this.d.abuse.check(s.owner.toLowerCase(), s.destination.toLowerCase());
+    if (!budget.ok) throw new RelayerError(429, 'failure_budget_exceeded', budget.retryAfterSeconds);
+
     let decision;
     try {
       decision = await this.policy.check({ chainId: req.chainId, token: s.token, owner: s.owner, destination: s.destination, amount: s.amount });
@@ -288,6 +376,7 @@ export class RelayerService {
   /** Stops admitting work and waits for every queued/in-flight transaction to settle. */
   public async shutdown(): Promise<void> {
     this.closing = true;
+    this.stopMonitor();
     const lanes = [...this.chains.values()].map((r) => r.lane);
     for (const l of lanes) l.close();
     await Promise.all(lanes.map((l) => l.drain()));
@@ -313,67 +402,147 @@ export class RelayerService {
     return price;
   }
 
+  /** Gas price for quotes: cached for a few seconds so unauthenticated quote spam costs one RPC call per window. */
+  private async quoteGasPrice(rt: ChainRuntime): Promise<bigint> {
+    const ttl = this.d.config.gas.quoteCacheSeconds * 1000;
+    const hit = rt.gasQuote;
+    if (hit !== undefined && ttl > 0 && this.now() - hit.at < ttl && this.now() >= hit.at) return hit.price;
+    const price = await this.gasPrice(rt);
+    rt.gasQuote = { price, at: this.now() };
+    return price;
+  }
+
   /** Runs inside the chain lane: exactly one of these is active per chain at any time. */
   private async runJob(rt: ChainRuntime, call: SweepCall, ctx: RequestContext): Promise<JobOutcome<SweepResponse>> {
-    const { cfg, client, breaker, budget, nonces } = rt;
-    if (!breaker.allow()) throw new RelayerError(503, 'breaker_open', this.d.config.breaker.cooldownSeconds);
+    if (!rt.breaker.allow()) throw new RelayerError(503, 'breaker_open', this.d.config.breaker.cooldownSeconds);
+    try {
+      return await this.runAdmitted(rt, call, ctx);
+    } finally {
+      // Every exit path settles a half-open probe: success/failure/trip already resolved it, anything else
+      // (user error, cap, budget) frees the probe slot so the next request is admitted as the probe.
+      rt.breaker.releaseProbe();
+    }
+  }
 
-    // Operational (non-user) failures feed the breaker; user-caused reverts do not.
+  private async runAdmitted(rt: ChainRuntime, call: SweepCall, ctx: RequestContext): Promise<JobOutcome<SweepResponse>> {
+    const { cfg, client, breaker, budget, nonces } = rt;
+    const gas = this.d.config.gas;
+    const s = call.sweep;
+    const owner = s.owner.toLowerCase();
+    const destination = s.destination.toLowerCase();
+
+    // Operational (non-user) failures feed the breaker; user-caused outcomes never do.
     const op = async <T>(fn: () => Promise<T>): Promise<T> => {
       try {
         return await fn();
       } catch (e) {
         if (e instanceof SimulationRevert || e instanceof RelayerError) throw e;
-        breaker.recordFailure();
+        this.fail(rt);
         throw new RelayerError(503, 'rpc_unavailable');
       }
     };
+    const strike = (): void => {
+      this.d.abuse.record(owner, destination);
+    };
+    const simulate = async (): Promise<{ gasLimit: bigint; gasEstimate: bigint }> => {
+      try {
+        const r = await op(() => client.simulateSweep(call));
+        return { gasLimit: r.gasLimit, gasEstimate: r.gasEstimate ?? r.gasLimit };
+      } catch (e) {
+        if (e instanceof SimulationRevert) throw revertToError(e);
+        throw e;
+      }
+    };
+    const coversGas = async (gasUnits: bigint, price: bigint): Promise<boolean> => {
+      const token = cfg.tokens.find((t) => t.address === s.token);
+      if (token === undefined) return false;
+      const cost = await this.d.tokenPrices.nativeToTokenUnits(cfg.chainId, token, gasUnits * price);
+      return s.fee * 100n >= cost * BigInt(gas.coverPercent);
+    };
+
+    // A queued job may have waited: re-check the failure budget before spending anything.
+    const earlyBudget = this.d.abuse.check(owner, destination);
+    if (!earlyBudget.ok) throw new RelayerError(429, 'failure_budget_exceeded', earlyBudget.retryAfterSeconds);
 
     const gasPrice = await this.gasPrice(rt);
     const balance = await op(() => client.getBalance());
+    this.observeBalance(rt, balance);
     if (balance < cfg.minBalanceWei) {
       breaker.trip();
       this.logger.log('error', 'breaker_tripped_low_balance', { requestId: ctx.requestId, chainId: cfg.chainId, errorClass: 'low_balance' });
       throw new RelayerError(503, 'breaker_open', this.d.config.breaker.cooldownSeconds);
     }
 
-    let gasLimit: bigint;
+    // Cheap reads first: an order that cannot succeed on chain never reaches the gas-spending path.
+    const state = await op(() => client.readOrderState(call));
+    if (state.nonceUsed) throw new RelayerError(409, 'nonce_used');
+    if (state.ownerBalance < s.amount) {
+      strike();
+      throw new RelayerError(422, 'insufficient_token_balance');
+    }
+    if (call.permit === undefined && state.allowance < s.amount) {
+      strike();
+      throw new RelayerError(422, 'insufficient_allowance');
+    }
+
+    const first = await simulate();
+    if (first.gasLimit > cfg.maxGasLimit) throw new RelayerError(422, 'gas_limit_too_high');
+    if (!(await coversGas(first.gasEstimate, gasPrice))) throw new RelayerError(422, 'fee_below_gas_cost');
+    if (first.gasLimit * gasPrice > budget.remaining) throw new RelayerError(503, 'budget_exhausted', budget.secondsToReset());
+
+    // Immediately before sending: fresh price, fresh simulation. A change between the two simulations is the
+    // signature of the front-run-then-revert griefing pattern, so it costs the source a strike.
+    const sendPrice = await this.gasPrice(rt);
+    if (sendPrice * 100n > gasPrice * BigInt(100 + gas.maxMovePercent)) throw new RelayerError(503, 'gas_price_moved', 5);
+    let second: { gasLimit: bigint; gasEstimate: bigint };
     try {
-      gasLimit = (await op(() => client.simulateSweep(call))).gasLimit;
+      second = await simulate();
     } catch (e) {
-      if (e instanceof SimulationRevert) throw revertToError(e);
+      if (e instanceof RelayerError && e.status < 500) strike();
       throw e;
     }
-    if (gasLimit > cfg.maxGasLimit) throw new RelayerError(422, 'gas_limit_too_high');
+    if (second.gasLimit > cfg.maxGasLimit) throw new RelayerError(422, 'gas_limit_too_high');
+    if (!(await coversGas(second.gasEstimate, sendPrice))) throw new RelayerError(422, 'fee_below_gas_cost');
 
-    const reserved = gasLimit * gasPrice;
+    const gasLimit = second.gasLimit;
+    const reserved = gasLimit * sendPrice;
     if (!budget.reserve(reserved)) {
       throw new RelayerError(503, 'budget_exhausted', budget.secondsToReset());
     }
+    const reservedDay = budget.currentDay;
 
     let txHash: Hex;
     try {
       const nonce = await nonces.acquire();
-      txHash = await client.sendSweep(call, { nonce, gas: gasLimit, gasPrice });
+      txHash = await client.sendSweep(call, { nonce, gas: gasLimit, gasPrice: sendPrice });
     } catch {
       nonces.invalidate();
-      budget.release(reserved);
-      breaker.recordFailure();
+      budget.release(reserved, reservedDay);
+      this.fail(rt);
+      this.metrics.inc('ghostpay_relayer_sweeps_total', { chain: cfg.chainId, result: 'send_failed' });
       throw new RelayerError(503, 'send_failed');
     }
     breaker.recordSuccess();
+    this.metrics.inc('ghostpay_relayer_sweeps_total', { chain: cfg.chainId, result: 'sent' });
     this.logger.log('info', 'sweep_sent', { requestId: ctx.requestId, chainId: cfg.chainId, txHash });
 
     const settled = (async (): Promise<void> => {
       const r = await client.waitForReceipt(txHash, this.d.config.queue.receiptTimeoutSeconds * 1000);
       if (r.status === 'timeout') {
         nonces.invalidate();
+        this.metrics.inc('ghostpay_relayer_sweeps_total', { chain: cfg.chainId, result: 'receipt_timeout' });
         this.logger.log('warn', 'receipt_timeout', { chainId: cfg.chainId, txHash, errorClass: 'receipt_timeout' });
         return;
       }
-      budget.release(reserved > r.gasUsed * gasPrice ? reserved - r.gasUsed * gasPrice : 0n);
+      const used = r.gasUsed * sendPrice;
+      // Gas of reverted transactions stays counted against the daily budget.
+      budget.release(reserved > used ? reserved - used : 0n, reservedDay);
       if (r.status === 'reverted') {
-        breaker.recordFailure();
+        // A mined revert after two clean simulations is attributed to the sweep's source (the owner moved the
+        // funds or similar), not to chain health: it spends the source's failure budget, not the breaker.
+        strike();
+        this.metrics.inc('ghostpay_relayer_sweeps_total', { chain: cfg.chainId, result: 'reverted' });
+        this.metrics.inc('ghostpay_relayer_failed_gas_wei_total', { chain: cfg.chainId }, Number(used));
         this.logger.log('error', 'sweep_reverted', { chainId: cfg.chainId, txHash, errorClass: 'mined_revert' });
       }
     })();

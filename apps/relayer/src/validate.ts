@@ -44,8 +44,8 @@ export interface SweepRequest {
   readonly quoteToken: string;
 }
 
-/** Quote tokens: `v1.<expiresAt>.<fee>.<64 hex mac>`. */
-export const QUOTE_TOKEN_PATTERN = /^v1\.[0-9]{1,12}\.(?:0|[1-9][0-9]{0,77})\.[0-9a-f]{64}$/;
+/** Quote tokens: `v2.<8 hex key id>.<expiresAt>.<fee>.<64 hex mac>`; decimals are canonical (no leading zeros). */
+export const QUOTE_TOKEN_PATTERN = /^v2\.[0-9a-f]{8}\.(?:0|[1-9][0-9]{0,11})\.(?:0|[1-9][0-9]{0,77})\.[0-9a-f]{64}$/;
 
 /**
  * Strictly validates a quote request.

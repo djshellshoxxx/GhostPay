@@ -14,6 +14,18 @@ const OUT = resolve(import.meta.dirname, '../../../packages/contracts/out');
 const RELAYER_JSON = `${OUT}/GhostPaySweepRelayer.sol/GhostPaySweepRelayer.json`;
 const TOKEN_JSON = `${OUT}/PermitToken.sol/PermitToken.json`;
 const available = existsSync(ANVIL) && existsSync(RELAYER_JSON) && existsSync(TOKEN_JSON);
+/** CI sets REQUIRE_ANVIL=1 so a missing anvil or missing `forge build` output FAILS instead of silently skipping. */
+const required = process.env['REQUIRE_ANVIL'] === '1';
+
+describe.runIf(required && !available)('end to end on anvil: prerequisites (REQUIRE_ANVIL=1)', () => {
+  it('has anvil and the compiled contract artifacts', () => {
+    expect.fail(
+      `REQUIRE_ANVIL=1 but prerequisites are missing: anvil=${String(existsSync(ANVIL))} (${ANVIL}), ` +
+        `GhostPaySweepRelayer.json=${String(existsSync(RELAYER_JSON))}, PermitToken.json=${String(existsSync(TOKEN_JSON))}. ` +
+        'Install Foundry (set ANVIL_BIN) and run `forge build` in packages/contracts.',
+    );
+  });
+});
 
 // Throwaway test keys; balances are set on the local anvil with anvil_setBalance.
 const DEPLOYER_KEY: Hex = `0x${'dd'.repeat(32)}`;

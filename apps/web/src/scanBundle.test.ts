@@ -10,7 +10,7 @@ afterEach(() => {
 });
 
 const GOOD_HTML = `<!doctype html><html><head><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'"><meta name="referrer" content="no-referrer"><script type="module" src="./assets/a.js"></script><link rel="stylesheet" href="./assets/a.css"></head><body></body></html>`;
-const GOOD_HEADERS = `/*\n  Content-Security-Policy: default-src 'self'; script-src 'self'; object-src 'none'; frame-ancestors 'none'\n  Referrer-Policy: no-referrer\n  X-Content-Type-Options: nosniff\n  Permissions-Policy: camera=()\n`;
+const GOOD_HEADERS = `/*\n  Content-Security-Policy: default-src 'self'; script-src 'self'; object-src 'none'; frame-ancestors 'none'\n  Referrer-Policy: no-referrer\n  X-Content-Type-Options: nosniff\n  Permissions-Policy: camera=()\n  Strict-Transport-Security: max-age=1\n`;
 
 function build(files: Record<string, string> = {}, opts: { html?: string; headers?: string | null } = {}): { dist: string; src: string; cfg: string } {
   const root = mkdtempSync(join(tmpdir(), 'gp-scan-'));
@@ -64,7 +64,7 @@ describe('scan-bundle', () => {
     ['css font-face', 'dist/assets/a.css', '@font-face{font-family:x}', /font-face/],
     ['worker with fetch', 'dist/assets/scanner.worker-1.js', 'fetch("/x")', /network API "fetch\("/],
     ['worker with websocket', 'dist/assets/scanner.worker-1.js', 'new WebSocket(u)', /WebSocket/],
-    ['shipped manifest', 'dist/deployments/84532.json', '{}', /manifest is shipped/],
+    ['shipped manifest', 'dist/deployments/84532.json', '{}', /mutable manifest file is shipped/],
     ['dangerouslySetInnerHTML in src', 'src/Bad.tsx', 'export const A = () => <div dangerouslySetInnerHTML={{__html: x}} />;', /src\/Bad\.tsx: dangerouslySetInnerHTML/],
     ['innerHTML in src', 'src/Bad.ts', 'el.innerHTML = "x";', /src\/Bad\.ts: innerHTML/],
     ['eval in src', 'src/Bad.ts', 'eval("1");', /eval\/new Function/],

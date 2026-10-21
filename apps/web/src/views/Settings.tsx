@@ -1,6 +1,6 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { Field, Notice } from '../components/Common';
-import { userMessage } from '../lib/errors';
+import { UserFacingError, userMessage } from '../lib/errors';
 import { checkDelayRange, checkRelayerUrl, checkRpcUrl, type Settings as SettingsData } from '../lib/settings';
 import { useServices } from '../lib/services';
 import { useApp } from '../state';
@@ -10,6 +10,7 @@ export function Settings(): ReactNode {
   const services = useServices();
   const s = app.settings;
   const [rpc, setRpc] = useState<Record<string, string>>({ ...s.rpcUrls });
+  const [rpc2, setRpc2] = useState<Record<string, string>>({ ...s.secondaryRpcUrls });
   const [relayer, setRelayer] = useState(s.relayerUrl);
   const [minSec, setMinSec] = useState(s.delayMinSec);
   const [maxSec, setMaxSec] = useState(s.delayMaxSec);
@@ -25,6 +26,14 @@ export function Settings(): ReactNode {
     try {
       const rpcUrls: Record<string, string> = {};
       for (const [k, v] of Object.entries(rpc)) if (v.trim() !== '') rpcUrls[k] = checkRpcUrl(v);
+      const secondaryRpcUrls: Record<string, string> = {};
+      for (const [k, v] of Object.entries(rpc2)) if (v.trim() !== '') secondaryRpcUrls[k] = checkRpcUrl(v);
+      for (const k of Object.keys(secondaryRpcUrls)) {
+        if (rpcUrls[k] === undefined) throw new UserFacingError('A second RPC needs a primary RPC for the same chain.');
+        if (new URL(rpcUrls[k]).origin === new URL(secondaryRpcUrls[k] as string).origin) {
+          throw new UserFacingError('The second RPC must be an independent provider, not the same origin as the first.');
+        }
+      }
       checkDelayRange(minSec, maxSec);
       if (!Number.isInteger(lock) || lock < 1 || lock > 240) throw new Error('lock');
       const pinnedSigners = pins
@@ -35,7 +44,7 @@ export function Settings(): ReactNode {
         setMessage({ kind: 'error', text: 'Pinned signer keys must be 66 hexadecimal characters starting with 02 or 03, one per line.' });
         return;
       }
-      const next: SettingsData = { rpcUrls, relayerUrl: checkRelayerUrl(relayer), delayMinSec: minSec, delayMaxSec: maxSec, lockTimeoutMin: lock, theme, autoClearFragment: autoClear, pinnedSigners };
+      const next: SettingsData = { rpcUrls, secondaryRpcUrls, relayerUrl: checkRelayerUrl(relayer), delayMinSec: minSec, delayMaxSec: maxSec, lockTimeoutMin: lock, theme, autoClearFragment: autoClear, pinnedSigners };
       const saved = app.updateSettings(next);
       setMessage(saved ? { kind: 'ok', text: 'Settings saved.' } : { kind: 'warn', text: 'Browser storage is unavailable, so these settings apply to this tab only.' });
       app.announce('Settings updated.');
@@ -65,6 +74,9 @@ export function Settings(): ReactNode {
       <Notice kind="info">
         Settings are kept in this browser in plain text, including RPC URLs. Do not put a URL there that contains a secret you would not store in plain text. No key is ever stored.
       </Notice>
+      <Notice kind="warn" title="Settings are not tamper-protected">
+        Anything that can write to this site&rsquo;s browser storage (another local user, malware, an extension) can silently change these settings: add a hostile RPC, a pinned signer key or another relayer. The contracts are re-read from the chain through whatever RPC is set here, so check the RPC addresses on this page before paying or sweeping, and use a second independent RPC if you can.
+      </Notice>
       <form onSubmit={onSave} className="stack" noValidate>
         <fieldset>
           <legend>RPC endpoints</legend>
@@ -73,6 +85,9 @@ export function Settings(): ReactNode {
             <div key={c.chainId} className="row">
               <Field label={`${c.name} RPC URL`}>
                 {(id) => <input id={id} type="url" spellCheck={false} value={rpc[String(c.chainId)] ?? ''} onChange={(e) => { setRpc({ ...rpc, [String(c.chainId)]: e.target.value }); }} />}
+              </Field>
+              <Field label={`${c.name} second RPC URL (optional, independent provider)`} hint="When set, contract read-backs, balances, receipts and log queries must be identical on both providers; a single lying or censoring provider is then detected. Leave empty to trust one provider.">
+                {(id, d) => <input id={id} aria-describedby={d} type="url" spellCheck={false} value={rpc2[String(c.chainId)] ?? ''} onChange={(e) => { setRpc2({ ...rpc2, [String(c.chainId)]: e.target.value }); }} />}
               </Field>
               <button type="button" className="btn" onClick={() => { onTest(c.chainId); }}>Test {c.name}</button>
               <p role="status" className="hint">{checks[c.chainId] ?? ''}</p>

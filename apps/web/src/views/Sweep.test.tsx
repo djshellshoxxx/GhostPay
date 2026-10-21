@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { encodeFunctionResult, keccak256 } from 'viem/utils';
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { Services } from '../lib/services';
+import { forgetUsedDestinations } from '../lib/sweep';
 import { clearSession, generateSession } from '../lib/session';
 import { SETTINGS_KEY } from '../lib/settings';
 import { makeLog } from '../test/announcements';
@@ -13,6 +14,10 @@ import { chainWithLogs } from '../test/mockChain';
 import { makeServices, renderApp } from '../test/render';
 
 beforeEach(() => {
+  forgetUsedDestinations();
+  destBalance.value = 0n;
+  destCode.value = '0x';
+  destTxCount.value = 0n;
   clearSession();
   window.localStorage.clear();
   window.history.replaceState(null, '', '/');
@@ -20,17 +25,23 @@ beforeEach(() => {
 
 const loaded: Services['loadManifest'] = (id) => Promise.resolve({ status: 'loaded', manifest: fakeManifest(id) });
 const DEST = '0x6666666666666666666666666666666666666666';
+// What the user's RPC reports about the destination address (fresh by default).
+const destBalance = { value: 0n };
+const destCode = { value: '0x' };
+const destTxCount = { value: 0n };
 const TOKEN = '0x036CbD53842c5426634e7929541eC2318f3dCF7e';
 
 function extra(balance: bigint, nativeBalance: bigint, rawSink: { raw?: string }) {
   return (method: string, params: readonly unknown[]): unknown => {
     switch (method) {
       case 'eth_getBalance':
-        return `0x${nativeBalance.toString(16)}`;
+        return (params[0] as string).toLowerCase() === DEST ? `0x${(destBalance.value).toString(16)}` : `0x${nativeBalance.toString(16)}`;
+      case 'eth_getCode':
+        return destCode.value;
       case 'eth_gasPrice':
         return '0x3b9aca00';
       case 'eth_getTransactionCount':
-        return '0x0';
+        return (params[0] as string).toLowerCase() === DEST ? `0x${destTxCount.value.toString(16)}` : '0x0';
       case 'eth_estimateGas':
         return '0xc350';
       case 'eth_sendRawTransaction':
@@ -50,7 +61,7 @@ function extra(balance: bigint, nativeBalance: bigint, rawSink: { raw?: string }
 }
 
 /** Scans one payment, then opens the Sweep view for it. */
-async function toSweep(opts: { balance?: bigint; native?: bigint; relayer?: boolean; fetchFn?: Services['fetchFn']; raw?: { raw?: string } } = {}): Promise<ReturnType<typeof userEvent.setup>> {
+async function toSweep(opts: { balance?: bigint; native?: bigint; relayer?: boolean; fetchFn?: Services['fetchFn']; raw?: { raw?: string }; verify?: Services['verifyDeployment'] } = {}): Promise<ReturnType<typeof userEvent.setup>> {
   const pub = generateSession();
   window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' }, ...(opts.relayer === true ? { relayerUrl: 'https://relay.test' } : {}) }));
   const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 50, index: 0, caller: FAKE_ROUTER, amount: 5_000_000n });
@@ -63,6 +74,14 @@ async function toSweep(opts: { balance?: bigint; native?: bigint; relayer?: bool
   await user.click(screen.getByRole('button', { name: 'Start scan' }));
   await user.click(await screen.findByRole('button', { name: 'Sweep this payment' }));
   return user;
+}
+
+type User = ReturnType<typeof userEvent.setup>;
+async function enterDestination(user: User, dest = DEST): Promise<void> {
+  const box = screen.getByLabelText('Destination address (your own wallet)');
+  await user.clear(box);
+  await user.type(box, dest);
+  await user.click(screen.getByRole('button', { name: 'Check destination history' }));
 }
 
 describe('Sweep', () => {
@@ -79,18 +98,22 @@ describe('Sweep', () => {
     const raw: { raw?: string } = {};
     const user = await toSweep({ raw });
     expect(await screen.findByText('5 USDC')).toBeTruthy();
-    expect(screen.getByText('Linkability')).toBeTruthy();
+    expect(screen.getByText('The payer can follow this sweep')).toBeTruthy();
+    expect(screen.getByText(/The person who paid you knows the one-time address/)).toBeTruthy();
     expect(screen.getByText(/never shown or stored/)).toBeTruthy();
     await user.click(screen.getByLabelText(/Directly/));
-    await user.type(screen.getByLabelText('Destination address (your own wallet)'), 'nope');
-    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    await enterDestination(user, 'nope');
     expect((await screen.findByRole('alert')).textContent).toMatch(/valid destination/);
-    await user.clear(screen.getByLabelText('Destination address (your own wallet)'));
-    await user.type(screen.getByLabelText('Destination address (your own wallet)'), FAKE_ROUTER);
-    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    await enterDestination(user, FAKE_ROUTER);
     expect((await screen.findByRole('alert')).textContent).toMatch(/GhostPay contract or the fee recipient/);
-    await user.clear(screen.getByLabelText('Destination address (your own wallet)'));
-    await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+    // Nothing can be signed before the destination was looked up.
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Prepare direct sweep' }).disabled).toBe(true);
+    await enterDestination(user);
+    expect(await screen.findByText('Fresh destination')).toBeTruthy();
+    // The fee is shown and confirmed before anything is signed.
+    await user.click(screen.getByRole('button', { name: 'Prepare direct sweep' }));
+    expect(await screen.findByText('Confirm the network fee')).toBeTruthy();
+    expect(raw.raw).toBeUndefined();
     await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
     expect(await screen.findByText('Submitted')).toBeTruthy();
     expect(raw.raw).toMatch(/^0x02/);
@@ -101,8 +124,9 @@ describe('Sweep', () => {
     const user = await toSweep({ native: 0n });
     await screen.findByText('5 USDC');
     await user.click(screen.getByLabelText(/Directly/));
-    await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
-    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    await enterDestination(user);
+    await screen.findByText('Fresh destination');
+    await user.click(screen.getByRole('button', { name: 'Prepare direct sweep' }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/no native coin for gas/);
   });
 
@@ -115,7 +139,8 @@ describe('Sweep', () => {
     };
     const user = await toSweep({ relayer: true, fetchFn });
     await screen.findByText('5 USDC');
-    await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+    await enterDestination(user);
+    await screen.findByText('Fresh destination');
     await user.click(screen.getByRole('button', { name: 'Get relayer quote' }));
     expect(await screen.findByText(/Relayer fee: 0\.025 USDC/)).toBeTruthy();
     expect(screen.getByText(/You receive: 4\.975 USDC/)).toBeTruthy();
@@ -129,7 +154,8 @@ describe('Sweep', () => {
     const fetchFn: Services['fetchFn'] = () => Promise.resolve(new Response(JSON.stringify({ fee: '1000000', feeTo: '0x7777777777777777777777777777777777777777', expiresAt: 1_800_000_100, quoteToken: 'tok' })));
     const user = await toSweep({ relayer: true, fetchFn });
     await screen.findByText('5 USDC');
-    await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+    await enterDestination(user);
+    await screen.findByText('Fresh destination');
     await user.click(screen.getByRole('button', { name: 'Get relayer quote' }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/above the published cap/);
     expect(screen.queryByRole('button', { name: 'Sign and submit to relayer' })).toBeNull();
@@ -152,6 +178,65 @@ describe('Sweep', () => {
     const user = await toSweep({ balance: 0n });
     await waitFor(() => { expect(screen.getByText('0 USDC')).toBeTruthy(); });
     await user.click(screen.getByLabelText(/Directly/));
-    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Prepare direct sweep' }).disabled).toBe(true);
+  });
+
+  describe('destination privacy (D1, D8)', () => {
+    it('warns about RPC visibility and names the RPC host', async () => {
+      await toSweep();
+      await screen.findByText('5 USDC');
+      expect(screen.getByText('Your RPC provider sees this')).toBeTruthy();
+      expect(screen.getByText(/rpc\.test/)).toBeTruthy();
+    });
+
+    it.each([
+      ['has sent transactions', () => { destTxCount.value = 3n; }, /sent 3 transactions/],
+      ['holds a balance', () => { destBalance.value = 10n; }, /already holds a native balance/],
+      ['is a contract', () => { destCode.value = '0x6001'; }, /is a contract/],
+    ])('blocks until acknowledged when the destination %s', async (_name, arrange, text) => {
+      arrange();
+      const user = await toSweep({ relayer: true, fetchFn: () => Promise.reject(new Error('no network')) });
+      await screen.findByText('5 USDC');
+      await enterDestination(user);
+      expect(await screen.findByText('This destination is not fresh')).toBeTruthy();
+      expect(screen.getByText(text)).toBeTruthy();
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Get relayer quote' }).disabled).toBe(true);
+      await user.click(screen.getByLabelText(/I understand the payer can follow the funds/));
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Get relayer quote' }).disabled).toBe(false);
+      // Changing the destination invalidates the acknowledgement.
+      await user.type(screen.getByLabelText('Destination address (your own wallet)'), '0');
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Get relayer quote' }).disabled).toBe(true);
+    });
+
+    it('flags a destination already used for a sweep in this tab', async () => {
+      const raw: { raw?: string } = {};
+      const user = await toSweep({ raw });
+      await screen.findByText('5 USDC');
+      await user.click(screen.getByLabelText(/Directly/));
+      await enterDestination(user);
+      await screen.findByText('Fresh destination');
+      await user.click(screen.getByRole('button', { name: 'Prepare direct sweep' }));
+      await user.click(await screen.findByRole('button', { name: 'Sign and broadcast directly' }));
+      await screen.findByText('Submitted');
+      await enterDestination(user);
+      expect(await screen.findByText(/already swept to this address in this tab/)).toBeTruthy();
+    });
+
+    it('will not sweep a token that is not on the allowlist (forged announcement), even directly', async () => {
+      const pub = generateSession();
+      window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+      const forged = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 50, index: 0, caller: '0x00000000000000000000000000000000000000ee', amount: 5_000_000n, token: '0x00000000000000000000000000000000deadbeef' });
+      const rpc = chainWithLogs(84532, 100, [forged.log], extra(5_000_000n, 10n ** 17n, {}));
+      const user = userEvent.setup();
+      renderApp(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(rpc) }));
+      await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Scan and receive' }));
+      await user.selectOptions(screen.getByLabelText('Chain'), screen.getByRole('option', { name: 'Base Sepolia' }));
+      await user.type(screen.getByLabelText('Start block'), '0');
+      await user.click(screen.getByRole('button', { name: 'Start scan' }));
+      await user.click(await screen.findByRole('button', { name: 'Sweep this payment' }));
+      expect(await screen.findByText(/not on the allowlist/)).toBeTruthy();
+      await user.click(screen.getByLabelText(/Directly/));
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Prepare direct sweep' }).disabled).toBe(true);
+    });
   });
 });

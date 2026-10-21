@@ -62,12 +62,12 @@ describe('Seller keys', () => {
     };
     URL.revokeObjectURL = (): void => undefined;
     HTMLAnchorElement.prototype.click = click;
-    await user.type(screen.getByLabelText('Passphrase (at least 10 characters)'), 'short');
+    await user.type(screen.getByLabelText('Passphrase (at least 14 characters)'), 'short');
     await user.type(screen.getByLabelText('Repeat passphrase'), 'short');
     await user.click(screen.getByRole('button', { name: 'Download encrypted keystore' }));
-    expect(screen.getByRole('alert').textContent).toMatch(/at least 10/);
-    await user.clear(screen.getByLabelText('Passphrase (at least 10 characters)'));
-    await user.type(screen.getByLabelText('Passphrase (at least 10 characters)'), 'a long passphrase');
+    expect(screen.getByRole('alert').textContent).toMatch(/at least 14/);
+    await user.clear(screen.getByLabelText('Passphrase (at least 14 characters)'));
+    await user.type(screen.getByLabelText('Passphrase (at least 14 characters)'), 'a long passphrase');
     await user.clear(screen.getByLabelText('Repeat passphrase'));
     await user.type(screen.getByLabelText('Repeat passphrase'), 'different one!!');
     await user.click(screen.getByRole('button', { name: 'Download encrypted keystore' }));
@@ -111,5 +111,35 @@ describe('Seller keys', () => {
     await user.type(screen.getByLabelText('Passphrase'), 'whatever pass');
     await user.click(screen.getByRole('button', { name: 'Decrypt and load' }));
     expect(screen.getByRole('alert').textContent).toMatch(/not a GhostPay keystore/);
+  });
+
+  it('shows a strength estimate for the export passphrase and never offers it to the password manager (S3-13, S3-26)', async () => {
+    const user = await open();
+    await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
+    const box = screen.getByLabelText(/Passphrase \(at least 14 characters\)/);
+    expect(box.getAttribute('autocomplete')).toBe('off');
+    expect(screen.getByLabelText('Repeat passphrase').getAttribute('autocomplete')).toBe('off');
+    await user.type(box, 'aaaaaaaaaaaaaaaa');
+    expect(screen.getByText(/Strength: weak/)).toBeTruthy();
+    await user.clear(box);
+    await user.type(box, 'correct horse battery staple');
+    expect(screen.getByText(/Strength: strong/)).toBeTruthy();
+    // A weak passphrase is refused even when it is long enough.
+    await user.clear(box);
+    await user.type(box, 'aaaaaaaaaaaaaaaa');
+    await user.type(screen.getByLabelText('Repeat passphrase'), 'aaaaaaaaaaaaaaaa');
+    await user.click(screen.getByRole('button', { name: 'Download encrypted keystore' }));
+    expect(screen.getByRole('alert').textContent).toMatch(/too easy to guess/);
+  });
+
+  it('clears typed key hex even when the import fails', async () => {
+    const user = await open();
+    await user.click(screen.getByText('Import existing keys (hex)'));
+    const a = screen.getByLabelText('Spending private key (64 hex characters)');
+    await user.type(a, 'abc');
+    await user.type(screen.getByLabelText('Viewing private key (64 hex characters)'), '22'.repeat(32));
+    await user.click(screen.getByRole('button', { name: 'Load keys' }));
+    expect((a as HTMLInputElement).value).toBe('');
+    expect(screen.getByLabelText<HTMLInputElement>('Viewing private key (64 hex characters)').value).toBe('');
   });
 });

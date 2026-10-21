@@ -93,8 +93,8 @@ describe('createViemChainClient', () => {
 
   it('simulates both entrypoints and adds 20% gas headroom', async () => {
     const c = setup({ raw: [] });
-    expect(await c.simulateSweep(call)).toEqual({ gasLimit: 120_000n });
-    expect(await c.simulateSweep(permitCall)).toEqual({ gasLimit: 120_000n });
+    expect(await c.simulateSweep(call)).toEqual({ gasLimit: 120_000n, gasEstimate: 100_000n });
+    expect(await c.simulateSweep(permitCall)).toEqual({ gasLimit: 120_000n, gasEstimate: 100_000n });
   });
 
   it('classifies reverts by decoded custom error name', async () => {

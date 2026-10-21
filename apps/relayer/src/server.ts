@@ -1,6 +1,7 @@
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID, timingSafeEqual } from 'node:crypto';
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
-import type { AddressInfo } from 'node:net';
+import type { AddressInfo, Socket } from 'node:net';
+import { TrustedProxies, bucketIp } from './clientip.js';
 import type { RelayerConfig } from './config.js';
 import { RelayerError, invalid } from './errors.js';
 import type { RateLimiter } from './limiter.js';
@@ -16,17 +17,20 @@ export interface HttpDeps {
   readonly config: RelayerConfig;
   readonly service: RelayerService;
   readonly ipLimiter: RateLimiter;
+  /** Global budget shared by every `/v1/quote` caller (each quote may cost an RPC call). */
+  readonly quoteLimiter: RateLimiter;
   readonly logger?: Logger;
   /** Request id generator (tests). */
   readonly newRequestId?: () => string;
 }
 
-type Route = '/healthz' | '/v1/info' | '/v1/quote' | '/v1/sweep';
+type Route = '/healthz' | '/v1/info' | '/v1/quote' | '/v1/sweep' | '/metrics';
 const ROUTES: Readonly<Record<Route, 'GET' | 'POST'>> = {
   '/healthz': 'GET',
   '/v1/info': 'GET',
   '/v1/quote': 'POST',
   '/v1/sweep': 'POST',
+  '/metrics': 'GET',
 };
 
 const JSON_TYPE = /^application\/json(?:\s*;\s*charset=utf-8)?$/i;
@@ -56,7 +60,7 @@ function isRoute(p: string): p is Route {
 }
 
 /** Reads the body with a hard byte cap, rejecting early on an oversized `Content-Length`. */
-function readBody(req: IncomingMessage, cap: number): Promise<Buffer> {
+function readBody(req: IncomingMessage, cap: number, timeoutMs: number): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const declared = req.headers['content-length'];
     if (declared !== undefined) {
@@ -66,9 +70,14 @@ function readBody(req: IncomingMessage, cap: number): Promise<Buffer> {
     const chunks: Buffer[] = [];
     let total = 0;
     let done = false;
+    // A client that trickles bytes (slowloris) must not hold the slot beyond the body deadline.
+    const timer = setTimeout(() => {
+      finish(() => reject(new RelayerError(408, 'request_timeout')));
+    }, timeoutMs);
     const finish = (fn: () => void): void => {
       if (done) return;
       done = true;
+      clearTimeout(timer);
       req.removeListener('data', onData);
       fn();
     };
@@ -103,17 +112,46 @@ export class RelayerHttpServer {
   private readonly origins: ReadonlySet<string>;
   private readonly logger: Logger;
   private draining = false;
+  private readonly proxies: TrustedProxies;
+  private readonly connections = new Map<string, number>();
+  private readonly metricsTokenDigest: Buffer | undefined;
 
   public constructor(private readonly d: HttpDeps) {
     this.origins = new Set(d.config.allowedOrigins);
     this.logger = d.logger ?? nullLogger;
+    this.proxies = new TrustedProxies(d.config.trustProxy);
+    const tok = d.config.metrics.bearerToken;
+    this.metricsTokenDigest = tok === undefined ? undefined : createHash('sha256').update(tok).digest();
+    const sv = d.config.server;
     this.server = createServer({ maxHeaderSize: 8192 }, (req, res) => {
       void this.handle(req, res);
     });
-    this.server.headersTimeout = 10_000;
-    this.server.requestTimeout = 15_000;
-    this.server.keepAliveTimeout = 5_000;
-    this.server.maxConnections = 1024;
+    this.server.headersTimeout = sv.headersTimeoutMs;
+    this.server.requestTimeout = sv.requestTimeoutMs;
+    this.server.keepAliveTimeout = sv.keepAliveTimeoutMs;
+    this.server.maxConnections = sv.maxConnections;
+    this.server.maxHeadersCount = sv.maxHeadersCount;
+    this.server.on('connection', (sock: Socket) => {
+      this.admitConnection(sock);
+    });
+  }
+
+  /** Per-peer connection cap (IPv6 by /64). Trusted proxies are exempt: they multiplex many clients. */
+  private admitConnection(sock: Socket): void {
+    const peer = sock.remoteAddress;
+    if (peer === undefined || this.proxies.contains(peer)) return;
+    const key = bucketIp(peer);
+    const n = (this.connections.get(key) ?? 0) + 1;
+    if (n > this.d.config.server.maxConnectionsPerIp) {
+      sock.destroy();
+      return;
+    }
+    this.connections.set(key, n);
+    sock.once('close', () => {
+      const left = (this.connections.get(key) ?? 1) - 1;
+      if (left <= 0) this.connections.delete(key);
+      else this.connections.set(key, left);
+    });
   }
 
   /**
@@ -164,21 +202,27 @@ export class RelayerHttpServer {
     c.res.end(payload);
   }
 
+  /** Bucket identity of the caller: `X-Forwarded-For` only counts when the TCP peer is a configured proxy. */
   private clientIp(req: IncomingMessage): string {
-    const hops = this.d.config.trustProxyHops;
-    const xff = req.headers['x-forwarded-for'];
-    if (hops > 0 && typeof xff === 'string') {
-      const parts = xff.split(',').map((p) => p.trim());
-      const hit = parts[parts.length - hops];
-      if (hit !== undefined && hit !== '') return hit;
+    return bucketIp(this.proxies.resolve(req.socket.remoteAddress, req.headers['x-forwarded-for']));
+  }
+
+  private authorizedForMetrics(req: IncomingMessage): boolean {
+    if (this.metricsTokenDigest === undefined) {
+      // No token means loopback-only scraping; a forwarded request came through a proxy and is refused.
+      return req.headers['x-forwarded-for'] === undefined;
     }
-    return req.socket.remoteAddress ?? 'unknown';
+    const h = req.headers.authorization;
+    const m = typeof h === 'string' ? /^Bearer ([^\s]{1,512})$/.exec(h) : null;
+    if (m?.[1] === undefined) return false;
+    return timingSafeEqual(createHash('sha256').update(m[1]).digest(), this.metricsTokenDigest);
   }
 
   private async handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
     const c: Ctx = { req, res, requestId: this.d.newRequestId?.() ?? randomUUID(), route: 'other', status: 500, errorClass: undefined };
     for (const [k, v] of Object.entries(SECURITY_HEADERS)) res.setHeader(k, v);
     res.setHeader('Vary', 'Origin');
+    if (this.draining) res.setHeader('Connection', 'close');
     try {
       await this.dispatch(c);
     } catch (e) {
@@ -186,7 +230,7 @@ export class RelayerHttpServer {
         c.errorClass = e.code;
         const extra: Record<string, string> = {};
         if (e.retryAfterSeconds !== undefined) extra['Retry-After'] = String(e.retryAfterSeconds);
-        if (e.status === 413 || e.status === 503) extra['Connection'] = 'close';
+        if (e.status === 413 || e.status === 503 || e.status === 408) extra['Connection'] = 'close';
         this.send(c, e.status, { error: { code: e.code } }, extra);
         if (e.status === 413) res.once('finish', () => req.destroy());
       } else {
@@ -194,6 +238,8 @@ export class RelayerHttpServer {
         this.send(c, 500, { error: { code: 'internal_error' } });
       }
     }
+    this.d.service.metrics.inc('ghostpay_relayer_http_requests_total', { route: c.route, status: c.status });
+    if (c.errorClass !== undefined) this.d.service.metrics.inc('ghostpay_relayer_errors_total', { class: c.errorClass });
     this.logger.log(c.status >= 500 ? 'error' : 'info', 'request', {
       requestId: c.requestId,
       route: c.route,
@@ -212,7 +258,8 @@ export class RelayerHttpServer {
       if (!this.origins.has(origin)) throw new RelayerError(403, 'origin_not_allowed');
       res.setHeader('Access-Control-Allow-Origin', origin);
     }
-    if (this.draining) throw new RelayerError(503, 'shutting_down');
+    // /healthz keeps answering while draining so orchestrators see `shutting_down` rather than a refused request.
+    if (this.draining && path !== '/healthz') throw new RelayerError(503, 'shutting_down');
 
     if (req.method === 'OPTIONS') {
       res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -223,7 +270,7 @@ export class RelayerHttpServer {
       res.end();
       return;
     }
-    if (!isRoute(path)) throw new RelayerError(404, 'not_found');
+    if (!isRoute(path) || (path === '/metrics' && !this.d.config.metrics.enabled)) throw new RelayerError(404, 'not_found');
     if (req.method !== ROUTES[path]) {
       res.setHeader('Allow', ROUTES[path]);
       throw new RelayerError(405, 'method_not_allowed');
@@ -238,13 +285,30 @@ export class RelayerHttpServer {
       case '/v1/info':
         this.send(c, 200, this.d.service.info());
         return;
+      case '/metrics': {
+        const l = this.d.ipLimiter.take(this.clientIp(req));
+        if (!l.ok) throw new RelayerError(429, 'rate_limited_ip', l.retryAfterSeconds);
+        if (!this.authorizedForMetrics(req)) {
+          res.setHeader('WWW-Authenticate', 'Bearer');
+          throw new RelayerError(401, 'unauthorized');
+        }
+        const text = this.d.service.renderMetrics();
+        c.status = 200;
+        res.writeHead(200, { 'Content-Type': 'text/plain; version=0.0.4; charset=utf-8', 'Content-Length': Buffer.byteLength(text) });
+        res.end(text);
+        return;
+      }
       case '/v1/quote':
       case '/v1/sweep': {
         const limit = this.d.ipLimiter.take(this.clientIp(req));
         if (!limit.ok) throw new RelayerError(429, 'rate_limited_ip', limit.retryAfterSeconds);
+        if (path === '/v1/quote') {
+          const ql = this.d.quoteLimiter.take('quote');
+          if (!ql.ok) throw new RelayerError(429, 'rate_limited_quote', ql.retryAfterSeconds);
+        }
         const ct = req.headers['content-type'];
         if (ct === undefined || !JSON_TYPE.test(ct)) throw new RelayerError(415, 'unsupported_media_type');
-        const body = parseJson(await readBody(req, MAX_BODY_BYTES));
+        const body = parseJson(await readBody(req, MAX_BODY_BYTES, this.d.config.server.bodyTimeoutMs));
         if (path === '/v1/quote') {
           this.send(c, 200, await this.d.service.quote(parseQuoteRequest(body)));
         } else {

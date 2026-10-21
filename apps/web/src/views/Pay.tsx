@@ -1,8 +1,8 @@
 import { parseFragment, type ParsedInvoice } from '@ghostpay/invoice-schema';
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { BuiltPayment } from '@ghostpay/chain-adapters';
-import { CopyButton, Mono, Notice, downloadText } from '../components/Common';
-import { FeeDisclosure, useManifest } from '../components/Disclosure';
+import { CopyButton, Mono, Notice, SafeText, downloadText } from '../components/Common';
+import { FeeDisclosure, useDeploymentCheck, useManifest } from '../components/Disclosure';
 import { extractFragment } from '../lib/fragment';
 import { formatCountdown, formatFiat, formatUnits, formatUnix, shortHex } from '../lib/format';
 import { userMessage } from '../lib/errors';
@@ -15,9 +15,9 @@ import {
   type BufferQuote,
   type PayContext,
 } from '../lib/pay';
-import { buildReceipt, ensureAllowance, preparePayment, sendPayment, type Runtime, type SubmitResult } from '../lib/payExec';
+import { buildReceipt, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, type ApprovalPlan, type Runtime, type SubmitResult } from '../lib/payExec';
 import { useServices } from '../lib/services';
-import { connectWallet, type WalletInfo, type WalletSession } from '../lib/wallet';
+import { connectWallet, walletWarnings, type WalletInfo, type WalletSession } from '../lib/wallet';
 import { useApp } from '../state';
 
 type Phase = 'input' | 'review' | 'waiting' | 'ready' | 'prepared' | 'busy' | 'done';
@@ -41,6 +41,8 @@ export function Pay(): ReactNode {
   const [status, setStatus] = useState('');
   const [error, setError] = useState<string | undefined>(undefined);
   const [result, setResult] = useState<SubmitResult | undefined>(undefined);
+  const [approval, setApproval] = useState<ApprovalPlan | undefined>(undefined);
+  const [granted, setGranted] = useState<bigint | undefined>(undefined);
   const [tick, setTick] = useState(0);
   const scheduler = useRef<DelayScheduler | undefined>(undefined);
 
@@ -75,26 +77,27 @@ export function Pay(): ReactNode {
   }, [fragment, pinned]);
 
   const manifest = useManifest(parsed?.invoice.chainId);
+  const { check, recheck } = useDeploymentCheck(manifest);
   const nowSeconds = Math.floor(services.nowMs() / 1000);
   const review = useMemo(
-    () => (parsed === undefined || manifest === undefined ? undefined : reviewInvoice(parsed, nowSeconds, manifest)),
+    () => (parsed === undefined || manifest === undefined ? undefined : reviewInvoice(parsed, nowSeconds, manifest, check)),
     // `tick` re-evaluates expiry while the page is open.
-    [parsed, manifest, tick],
+    [parsed, manifest, check, tick],
   );
   const chainId = parsed?.invoice.chainId;
 
   // Build the payment request (amounts) as soon as the review has no blockers. The review is recomputed from the
   // latest invoice/manifest/clock every time (also when a delay ends), never from a stale closure.
-  const latest = useRef({ parsed, manifest });
-  latest.current = { parsed, manifest };
+  const latest = useRef({ parsed, manifest, check });
+  latest.current = { parsed, manifest, check };
   const refreshContext = useCallback(async (): Promise<PayContext | undefined> => {
-    const { parsed: p, manifest: m } = latest.current;
+    const { parsed: p, manifest: m, check: c } = latest.current;
     if (p === undefined || m === undefined) {
       setCtx(undefined);
       return undefined;
     }
     const now = Math.floor(services.nowMs() / 1000);
-    const fresh = reviewInvoice(p, now, m);
+    const fresh = reviewInvoice(p, now, m, c);
     if (fresh.blockers.length > 0) {
       setCtx(undefined);
       setTick((n) => n + 1);
@@ -102,10 +105,10 @@ export function Pay(): ReactNode {
     }
     try {
       const rpc = await app.getRpc(p.invoice.chainId);
-      const c = await createPayContext(fresh, rpc, { nowSeconds: now });
-      setCtx(c);
+      const made = await createPayContext(fresh, rpc, { nowSeconds: now });
+      setCtx(made);
       setCtxError(undefined);
-      return c;
+      return made;
     } catch (e) {
       setCtx(undefined);
       setCtxError(userMessage(e));
@@ -281,10 +284,15 @@ export function Pay(): ReactNode {
         }
         const t = ctx.review.token;
         const permit = t?.config?.permit === true && buffer === undefined;
+        // S3-19: nothing is sent here. If an approval will be needed it is only READ and shown next to the final preview;
+        // the approval transaction is sent after the user confirms that preview.
+        let plan: ApprovalPlan | undefined;
         if (isErc20 && !permit && t?.address !== undefined && t.address !== 'native') {
-          await ensureAllowance(wallet, ctx, t.address, rt, setStatus);
+          plan = await planApproval(wallet, ctx, t.address, rt);
         }
         const b = await preparePayment(wallet, ctx, { usePermit: permit, ...(buffer === undefined ? {} : { buffer }) }, rt, setStatus);
+        setApproval(plan);
+        setGranted(undefined);
         setBuilt(b);
         setStatus('');
         setPhase('prepared');
@@ -304,6 +312,9 @@ export function Pay(): ReactNode {
     void (async () => {
       try {
         const rt = await runtime();
+        if (approval?.required === true && granted === undefined) {
+          setGranted(await grantApproval(wallet, ctx, approval, rt, setStatus));
+        }
         const res = await sendPayment(wallet, ctx, built, rt, setStatus);
         setResult(res);
         setPhase('done');
@@ -317,6 +328,25 @@ export function Pay(): ReactNode {
     })();
   };
 
+  const onRevoke = (): void => {
+    if (wallet === undefined || ctx === undefined || approval === undefined) return;
+    setError(undefined);
+    setPhase('busy');
+    void (async () => {
+      try {
+        await revokeApproval(wallet, ctx, approval, await runtime(), setStatus);
+        setGranted(undefined);
+        setApproval({ ...approval, have: 0n, required: true });
+        app.announce('Approval revoked.');
+      } catch (e) {
+        setError(userMessage(e));
+      } finally {
+        setStatus('');
+        setPhase('prepared');
+      }
+    })();
+  };
+
   const forget = (): void => {
     scheduler.current?.cancel();
     app.setFragment(undefined);
@@ -324,6 +354,8 @@ export function Pay(): ReactNode {
     setBuilt(undefined);
     setWallet(undefined);
     setResult(undefined);
+    setApproval(undefined);
+    setGranted(undefined);
     setPhase('input');
   };
 
@@ -340,6 +372,9 @@ export function Pay(): ReactNode {
             <label htmlFor="paste">Paste an invoice link</label>
             <textarea id="paste" rows={3} value={paste} onChange={(e) => { setPaste(e.target.value); }} spellCheck={false} />
             <p className="hint">The link is read in this page only. It is never sent to a server.</p>
+            <p className="hint">
+              Pasting is safer than clicking: when a link is opened by clicking it or scanning a QR code, the browser navigates to it and may keep the whole address, including the secret part, in its history database even though this page removes it from the address bar. Copy the link and paste it here, or open it in a private window.
+            </p>
           </div>
           <button type="submit" className="btn btn-primary">Read invoice</button>
         </form>
@@ -348,6 +383,7 @@ export function Pay(): ReactNode {
   }
 
   const inv = parsed.invoice;
+  const warnings = walletWarnings(wallets ?? []);
   const ready = phase === 'ready' || phase === 'prepared' || phase === 'busy' || phase === 'done';
   const decimals = token?.decimals ?? 18;
   const symbol = token?.symbol ?? '';
@@ -405,7 +441,7 @@ export function Pay(): ReactNode {
             <tbody>
               {inv.lineItems.map((li, i) => (
                 <tr key={i}>
-                  <td className="wrap">{li.description}</td>
+                  <td className="wrap"><SafeText value={li.description} /></td>
                   <td>{li.quantity}</td>
                   <td>{formatFiat(BigInt(li.unitMinorUnits), inv.fiat.currency)}</td>
                 </tr>
@@ -417,7 +453,7 @@ export function Pay(): ReactNode {
       )}
       {inv.memo !== undefined && (
         <p className="wrap">
-          <strong>Memo:</strong> {inv.memo}
+          <strong>Memo:</strong> <SafeText value={inv.memo} />
         </p>
       )}
 
@@ -429,15 +465,20 @@ export function Pay(): ReactNode {
           <dd>{formatUnits(ctx.request.feeAmount, decimals)} {symbol}</dd>
           <dt>Seller receives (net)</dt>
           <dd>{formatUnits(ctx.request.netAmount, decimals)} {symbol}</dd>
-          <dt>Contract (router)</dt>
-          <dd><Mono>{ctx.manifest.router}</Mono></dd>
-          <dt>Fee recipient</dt>
-          <dd><Mono>{ctx.manifest.feeRecipient}</Mono></dd>
+          <dt>Contract (router), read from the chain</dt>
+          <dd><Mono>{ctx.verified.router}</Mono></dd>
+          <dt>Fee recipient, read from the chain</dt>
+          <dd><Mono>{ctx.verified.feeRecipient}</Mono></dd>
           <dt>Destination</dt>
           <dd>A fresh one-time (stealth) address is derived when the payment is prepared and shown before you send.</dd>
         </dl>
       )}
-      <FeeDisclosure manifest={manifest} chainName={review.chain?.name} />
+      {manifest?.status === 'loaded' && check !== undefined && check !== 'checking' && check.status !== 'verified' && (
+        <div className="actions">
+          <button type="button" className="btn" onClick={recheck}>Check the contracts again</button>
+        </div>
+      )}
+      <FeeDisclosure manifest={manifest} check={check} chainName={review.chain?.name} />
       <Notice kind="info" title="What becomes public">
         Your address, the token, the amounts, the fee and the time are public on-chain. The seller&rsquo;s identity is not revealed by the one-time address.
       </Notice>
@@ -502,7 +543,11 @@ export function Pay(): ReactNode {
                   <li key={w.id}>
                     <button type="button" className="btn" onClick={() => { onConnect(w); }}>
                       {w.icon !== undefined && <img src={w.icon} alt="" width={20} height={20} />} Connect {w.name}
+                      {w.rdns !== undefined && <span className="hint"> ({w.rdns})</span>}
                     </button>
+                    {warnings.get(w.id)?.map((m) => (
+                      <p key={m} className="hint" role="note">⚠ {m}</p>
+                    ))}
                   </li>
                 ))}
               </ul>
@@ -521,7 +566,7 @@ export function Pay(): ReactNode {
       )}
 
       {built !== undefined && phase !== 'done' && ctx !== undefined && (
-        <FinalPreview built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} />
+        <FinalPreview built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} approval={approval} granted={granted} onRevoke={onRevoke} />
       )}
 
       {status !== '' && <p role="status" className="status">{status}</p>}
@@ -579,7 +624,15 @@ export function Pay(): ReactNode {
   );
 }
 
-function FinalPreview(props: { readonly built: BuiltPayment; readonly ctx: PayContext; readonly onSend: () => void; readonly busy: boolean }): ReactNode {
+function FinalPreview(props: {
+  readonly built: BuiltPayment;
+  readonly ctx: PayContext;
+  readonly onSend: () => void;
+  readonly busy: boolean;
+  readonly approval: ApprovalPlan | undefined;
+  readonly granted: bigint | undefined;
+  readonly onRevoke: () => void;
+}): ReactNode {
   const { built, ctx } = props;
   const p = built.preview;
   const decoded = decodeForDisplay(built, ctx.chain.chainId);
@@ -600,7 +653,7 @@ function FinalPreview(props: { readonly built: BuiltPayment; readonly ctx: PayCo
         <dt>Gross</dt>
         <dd>{formatUnits(decoded.gross, dec)} {sym}</dd>
         <dt>Fee</dt>
-        <dd>{formatUnits(decoded.fee, dec)} {sym} to {ctx.manifest.feeRecipient}</dd>
+        <dd>{formatUnits(decoded.fee, dec)} {sym} to {ctx.verified.feeRecipient} (as read from the router on-chain)</dd>
         <dt>Net to seller</dt>
         <dd>{formatUnits(decoded.net, dec)} {sym} (minimum accepted {formatUnits(decoded.minNet, dec)})</dd>
         <dt>Native value sent</dt>
@@ -608,8 +661,38 @@ function FinalPreview(props: { readonly built: BuiltPayment; readonly ctx: PayCo
         <dt>Deadline</dt>
         <dd>{formatUnix(Number(p.deadline))}</dd>
       </dl>
+      {props.approval !== undefined && (
+        <div className="notice notice-warn" role="note">
+          <strong className="notice-title">Token approval{props.approval.required ? ' needed first' : ' already in place'}</strong>
+          <dl className="details">
+            <dt>Spender (router)</dt>
+            <dd><Mono>{props.approval.spender}</Mono></dd>
+            <dt>Allowance today</dt>
+            <dd>{formatUnits(props.approval.have, dec)} {sym}</dd>
+            <dt>{props.approval.required ? 'Will be approved (exactly)' : 'Needed for this payment'}</dt>
+            <dd>{formatUnits(props.approval.need, dec)} {sym}</dd>
+          </dl>
+          {props.approval.required ? (
+            <p>
+              Pressing the button below first asks your wallet for this exact approval and then for the payment. Check the amount in your wallet: it must not be &ldquo;unlimited&rdquo;. A separate approval transaction is public and a chain observer can link it to the payment that follows. Tokens with permit support avoid it.
+            </p>
+          ) : (
+            <p>The router already has at least this allowance from you. A larger existing allowance is not changed by this payment; you can revoke it in your wallet.</p>
+          )}
+          {props.granted !== undefined && props.granted > props.approval.need && (
+            <p role="alert"><strong>Your wallet granted {formatUnits(props.granted, dec)} {sym}, more than the {formatUnits(props.approval.need, dec)} requested.</strong> Revoke it unless you meant it.</p>
+          )}
+          {props.granted !== undefined && (
+            <p>
+              Allowance now: {formatUnits(props.granted, dec)} {sym}. If you stop before the payment, remove it:
+              {' '}
+              <button type="button" className="btn" onClick={props.onRevoke} disabled={props.busy}>Revoke approval</button>
+            </p>
+          )}
+        </div>
+      )}
       <button type="button" className="btn btn-primary" onClick={props.onSend} disabled={props.busy}>
-        Send payment in my wallet
+        {props.approval?.required === true && props.granted === undefined ? 'Approve exactly, then send payment in my wallet' : 'Send payment in my wallet'}
       </button>
     </div>
   );

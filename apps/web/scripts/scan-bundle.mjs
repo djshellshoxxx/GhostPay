@@ -125,7 +125,7 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
   if (!existsSync(headersPath)) problems.push('_headers missing');
   else {
     const h = readFileSync(headersPath, 'utf8');
-    for (const need of ["default-src 'self'", "script-src 'self'", "object-src 'none'", "frame-ancestors 'none'", 'Referrer-Policy: no-referrer', 'X-Content-Type-Options: nosniff', 'Permissions-Policy']) {
+    for (const need of ["default-src 'self'", "script-src 'self'", "object-src 'none'", "frame-ancestors 'none'", 'Referrer-Policy: no-referrer', 'X-Content-Type-Options: nosniff', 'Permissions-Policy', 'Strict-Transport-Security']) {
       if (!h.includes(need)) problems.push(`_headers: missing ${need}`);
     }
     if (/'unsafe-(?:inline|eval)'/.test(h)) problems.push('_headers: unsafe-inline/eval in CSP');
@@ -133,7 +133,7 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
 
   if (existsSync(join(distDir, 'deployments'))) {
     for (const f of walk(join(distDir, 'deployments'))) {
-      if (/\.json$/i.test(f)) problems.push(`deployments/${relative(join(distDir, 'deployments'), f)}: a manifest is shipped (none may be)`);
+      if (/\.json$/i.test(f)) problems.push(`deployments/${relative(join(distDir, 'deployments'), f)}: a mutable manifest file is shipped (manifests must be compiled into the bundle)`);
     }
   }
 
@@ -165,5 +165,5 @@ if (isMain) {
     process.exit(1);
   }
   const files = walk(join(root, 'dist'));
-  console.log(`Bundle scan passed: ${String(files.length)} files, no eval/new Function/innerHTML use, no unexpected origins, no source maps, no manifests.`);
+  console.log(`Bundle scan passed: ${String(files.length)} files, no eval/new Function/innerHTML use, no unexpected origins, no source maps, no mutable manifest files.`);
 }

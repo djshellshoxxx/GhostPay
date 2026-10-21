@@ -5,19 +5,25 @@ the roadmap features or the brief, plus things that are deliberately not done. N
 wallet, a real chain or a real RPC provider; all of that is mocked.
 
 ## Dependencies
-1. `@noble/hashes` (2.4.0) is declared in `package.json` because the keystore uses its scrypt. It was already installed (hoisted,
-   used by `core-crypto`), nothing was downloaded, but `package-lock.json` has no entry for it under `apps/web`. Run
-   `npm install --package-lock-only` once (a root-level change that was out of this task's ownership).
+1. `@noble/hashes` (2.4.0) is declared in `package.json` because the keystore uses its scrypt; `package-lock.json` carries the entry (an earlier note here said it did not; that was stale, audit 01 section 5 row 7).
 2. The app resolves `@ghostpay/*` through their built `dist/` (their `main`/`types`). Build those packages first on a clean checkout.
 
 ## Not implemented (and why)
-3. **ERC-6538 registry publish**: the deployment manifest has no registry address, and publishing associates the meta-address with a
-   wallet publicly. The Seller keys page says so and shares the meta-address directly instead.
-4. **Fiat-priced (`fiat_quote`) invoices cannot be paid yet**: `chain-adapters` ships an empty `FEEDS` table (no verified Chainlink
-   addresses, see its `TODO-VERIFY.md`). The code path exists (`createPayContext` -> `readPrice` -> `fiatToTokenAmount`, round up for the
-   payer) and is unit-tested with an injected feed; with no feed it fails closed with a plain message. The Create page warns about this.
-5. **Manifest signatures are not verified.** `DeploymentManifest.signature` is optional and no release key exists. The UI shows
-   "carries no signature" / "whose signature this app does not verify" next to the fee recipient instead of implying verification.
+3. **ERC-6538 registry (G-07)**: implemented in `components/RegistryPanel.tsx` (Seller keys view). The canonical registry address is a constant in
+   `chain-adapters` (`0x6538E6bf4B0eBd30A8Ea093027Ac2422ce5d6538`, CONTRACTS_SPEC section 1), not a manifest field; the earlier reason given here ("the
+   manifest has no registry address") was not a real blocker (audit 01 section 5 row 10). Before any use the app checks through the user's RPC that the address has
+   code and answers `ERC6538REGISTRY_ENTRY_TYPE_HASH()` with the known constant. Publishing needs an explicit confirmation that it publicly and permanently links the
+   signing wallet to the meta-address. Limit: no runtime code hash of the deployed registry has been verified from an official source (a behavioural probe only), and
+   it was tested against mocks, not a real chain.
+4. **Fiat-priced (`fiat_quote`) invoices cannot be paid yet**: `chain-adapters` ships an empty `FEEDS` table (no verified Chainlink addresses, see its
+   `TODO-VERIFY.md`; official sources were unreachable). The code path exists and is unit-tested with an injected feed. Create invoice therefore **does not offer**
+   "Fiat price" on a chain without a verified feed (`hasFeedsForChain`); it is not just a warning any more (G-03).
+5. **Manifest trust (S3-01 / G-05).** Manifests are compiled into the hashed bundle from `deployments/<chainId>.json` (validated at build time); there is no
+   runtime fetch and no mutable `/deployments/` path. Pay, Scan and Sweep are disabled until `verifyDeployment` has read the bundled addresses back from the chain
+   (code hashes, `FEE_BPS == 25`, `FEE_RECIPIENT`, `ANNOUNCER == canonical`), through the user's RPC and, if configured, a second independent provider. This needs an
+   RPC; **with no RPC nothing is payable** (previously a native payment worked without one). The signature field is verified against build-time release keys
+   (`GHOSTPAY_RELEASE_PUBKEYS`, EMPTY by default), so by default the UI says "an unsigned manifest". A lying single RPC can still fake the read-back; the second
+   provider is optional. A compromised host serving a different bundle defeats all of it (D7).
 6. **Embed SDK (`public/ghostpay-embed-v1.js`)** is popup-only (GitHub Pages cannot send `frame-ancestors`) and takes a full invoice link
    (`data-invoice`), not `data-amount/currency/token/chain/merchant-id`: the merchant-profile mode needs a signed merchant profile
    format that does not exist yet. The link must be https (or `localhost`) and on the same origin as the script. Because the popup uses
@@ -57,11 +63,33 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
 18. Settings (incl. RPC URLs that may contain provider keys) are stored in `localStorage` as plain text and the Settings page says so. No key
     material is ever stored; an e2e test inspects localStorage, sessionStorage, IndexedDB and cookies.
 
+## Behaviour added by the audit fixes (docs/audits/03, 04)
+- **Scan integrity (S3-02, D4):** announcement metadata is a claim. Rows are "Received" only after router caller + canonical block hash + an independent trace of the
+  amount (ERC-20 `Transfer(router -> one-time address, net)` in that block; native: balance or successful router receipt). Non-router matches are "Unverified
+  announcement". Matches are de-duplicated by (one-time address, ephemeral key), carry their chain id, and show confirmations against `finalityDepth`.
+  "Deep scan" ignores the view tag for router announcements (costly, warned); "Check a payer's transaction hash" tests one transaction without the tag shortcut.
+  The tag-free check lives in `chain-adapters/deepscan` (pinned to `core-crypto.checkAnnouncement` by a differential test); the proper home is an option in `core-crypto`.
+- **Sweep privacy (D1, D8):** the notice says the payer can follow the funds; the destination is looked up (transactions sent, balance, code, reuse in this tab) and a
+  non-fresh destination needs an explicit acknowledgement; RPC-visibility warnings on Scan and Sweep. Destinations are NOT persisted (a stored list would itself be a
+  linkage record); only this tab remembers them.
+- **Direct sweep (S3-09):** allowlisted tokens only, `maxFeePerGas` capped at 500 gwei, native sweeps refused when the worst-case fee is over 5 % of the balance, and a
+  confirmation screen shows the exact fee parameters before anything is signed.
+- **Approvals (S3-19):** the allowance is read, never sent, before the final preview; the exact-amount approval is requested after the user confirms the preview; the
+  allowance that really exists afterwards is shown (a wallet may let the user raise it) and "Revoke approval" is offered.
+- **Display text (S3-12):** invoice memo and line items go through `lib/sanitize.ts` (bidi/zero-width/tag/private-use characters shown as `⟨U+XXXX⟩`, mixed-alphabet
+  words flagged). The schema-level rejection belongs to `packages/invoice-schema` and is not done here.
+- **Keystore (S3-13/S3-26):** import ceilings N<=2^18, r<=8, p<=2; passphrase minimum 14 characters plus a strength estimate; `autocomplete="off"`.
+- **RPC (S3-14):** `chain-adapters` re-verifies `eth_chainId` every 60 s and after any transport failure; an optional second RPC per chain makes contract reads, balances,
+  receipts and logs require identical answers. Rejecting private-range RPC hosts in the browser is NOT done.
+- **Wallet picker (S3-22):** shows `rdns`, warns on duplicate names, a uuid announced twice with different identity, mixed-alphabet or non-ASCII names, missing `rdns`.
+- **Tags (S3-16):** record id and lookup token are bound into the AAD, `find` checks the decrypted address. Old (v1-AAD) tag records do not decrypt (unreleased format).
+- **Embed SDK (S3-10), CSP (S3-11), release hash (S3-04), history (S3-03):** see `README.md`.
+
 ## Hardening notes
 19. `public/_headers` is the real header policy. Neither `vite preview` nor the unit tests apply it, so e2e exercises the **meta** CSP (same
     directives minus `frame-ancestors`, which browsers ignore in a meta tag). `scripts/scan-bundle.mjs` asserts the `_headers` file still
     contains the key directives and that the built `index.html` has no inline script/style/handler.
-20. `connect-src` is `'self' https: wss:` because RPC and relayer origins are user data (spec section 1); the RPC adapter allows only https/wss.
+20. `connect-src` is `'self' https: wss:` by default because RPC and relayer origins are user data (spec section 1); the RPC adapter allows only https/wss. Setting `GHOSTPAY_CONNECT_ORIGINS` at build time narrows it (README). Meta-only hosting cannot enforce `frame-ancestors` or protect the worker script response.
 21. **Bundle scan allowlist.** The scan fails on `eval`, `new Function`, `Function()`, string timers, `document.write`, `insertAdjacentHTML`,
     `outerHTML=`, `importScripts`, stray `Math.random`, any `innerHTML=` outside two React DOM fingerprints, any
     `dangerouslySetInnerHTML:`/`=` use, source maps, `@font-face`, remote CSS, inline HTML, shipped manifests and any URL host not in
@@ -83,9 +111,15 @@ Excluded from the coverage denominator, each with its own evidence instead:
 - `src/test/**`, `*.test.*`, `*.testutil.*`, `src/vite-env.d.ts`: test code and ambient types.
 Everything else under `src/` (all views, components and `lib/` logic) is measured.
 
+## Egress test scope (audit 01 section 5 row 12)
+The Playwright suite asserts that only the app's own origin and the configured RPC are contacted during parsing/review (`app.spec.ts`), the whole payment flow
+(`flows.spec.ts`, pay) and the scan flow (`flows.spec.ts`, scan). The sweep, Settings "Test" button and registry flows are covered by unit tests with injected
+fetch/RPC only, not by an e2e egress assertion, and the allow-list is the single configured RPC origin (a relayer origin is not modelled in e2e).
+
 ## Unverified (be explicit)
-- No real wallet, browser extension, mobile wallet, chain, RPC provider or relayer was used. Wallets and RPC are mocks; the manifest used in
-  tests is a clearly fake placeholder in `src/test/fakeManifest.ts` and is never served by the app.
+- No real wallet, browser extension, mobile wallet, chain, RPC provider or relayer was used. Wallets and RPC are mocks; the manifests used in
+  tests are clearly fake placeholders (`src/test/fakeManifest.ts`, `e2e/fixtures/84532.json`); the e2e mock node serves matching fake contract code so the real
+  `verifyDeployment` runs, but no real contract was read.
 - Only Chromium (the pre-installed build) was run; Firefox/Safari are untested. No axe/screen-reader audit was run: accessibility is by
   construction (labels, roles, live regions, focus management, 44 px targets, contrast ratio check in e2e) plus a few Playwright checks.
 - The embed SDK was verified against a second local origin only; it was not tested inside real merchant pages.
