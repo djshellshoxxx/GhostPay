@@ -96,6 +96,6 @@ describe('previewSweep', () => {
     expect(code(() => previewSweep({ ...common, inputAmountsSats: [690n], address: bcrt, regtest: true }))).toBe('DUST_OUTPUT');
     expect(code(() => previewSweep({ ...common, dustLimitSats: -1n, address: bcrt, regtest: true }))).toBe('INVALID_INPUT');
     expect(code(() => previewSweep({ ...common, inputAmountsSats: [0n], address: bcrt, regtest: true }))).toBe('INVALID_AMOUNT');
-    expect(code(() => previewSweep({ ...common, inputAmountsSats: [100_000n], feeRate: 10_000, address: bcrt, regtest: true }))).toBe('FEE_TOO_HIGH');
+    expect(code(() => previewSweep({ ...common, inputAmountsSats: [100_000n], feeRate: 600, address: bcrt, regtest: true }))).toBe('FEE_TOO_HIGH');
   });
 });
