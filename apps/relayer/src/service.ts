@@ -81,8 +81,10 @@ export interface RequestContext {
   readonly clientKey?: string;
 }
 
-/** Maximum concurrent cheap pre-simulations (outside the serial lane) per service. */
+/** Maximum concurrent cheap pre-simulations (outside the serial lane) per chain. */
 const MAX_PRESIM = 8;
+/** Maximum concurrent pre-simulations one client may hold, so a single client cannot exhaust MAX_PRESIM. */
+const MAX_PRESIM_PER_CLIENT = 2;
 
 interface ChainRuntime {
   readonly cfg: ChainRuntimeConfig;
@@ -91,6 +93,8 @@ interface ChainRuntime {
   readonly nonces: NonceManager;
   readonly budget: DailyBudget;
   readonly breaker: CircuitBreaker;
+  /** Pre-simulations in flight on this chain. */
+  presim: number;
 }
 
 const REVERT_MAP: Readonly<Record<string, readonly [number, string]>> = {
@@ -128,8 +132,8 @@ export class RelayerService {
   private readonly logger: Logger;
   private readonly now: () => number;
   private closing = false;
-  private presim = 0;
   private readonly inflightByClient = new Map<string, number>();
+  private readonly presimByClient = new Map<string, number>();
 
   public constructor(private readonly d: ServiceDeps) {
     this.policy = d.policy ?? allowAllPolicy;
@@ -149,6 +153,7 @@ export class RelayerService {
           { windowSize: b.windowSize, minSamples: b.minSamples, failureRatio: b.failureRatio, cooldownMs: b.cooldownSeconds * 1000 },
           this.now,
         ),
+        presim: 0,
       });
     }
   }
@@ -292,28 +297,35 @@ export class RelayerService {
 
     // N-01: a fresh throw-away key passes signature and owner limits for free, so reject doomed sweeps
     // with a concurrency-bounded eth_call BEFORE they can occupy a slot of the serial lane, and cap how
-    // many lane slots a single client may hold.
+    // many lane slots a single client (IPv6 /64 group) may hold. NC-04: the slot is reserved
+    // synchronously BEFORE the first await (no check-then-await window) and released in `finally`.
     const key = ctx.clientKey;
-    const cap = Math.max(1, Math.ceil(cfg.queue.maxPending * 0.75));
-    if (key !== undefined && (this.inflightByClient.get(key) ?? 0) >= cap) throw new RelayerError(429, 'rate_limited_ip', 5);
-    await this.preflight(rt, call);
-
-    if (key !== undefined) this.inflightByClient.set(key, (this.inflightByClient.get(key) ?? 0) + 1);
+    const cap = Math.min(cfg.queue.maxPending, Math.max(2, Math.ceil(cfg.queue.maxPending / 4)));
+    if (key !== undefined) {
+      if ((this.inflightByClient.get(key) ?? 0) >= cap) throw new RelayerError(429, 'rate_limited_ip', 5);
+      this.inflightByClient.set(key, (this.inflightByClient.get(key) ?? 0) + 1);
+    }
     try {
+      await this.preflight(rt, call, key);
       return await rt.lane.submit(() => this.runJob(rt, call, token, ctx));
     } finally {
-      if (key !== undefined) {
-        const n = (this.inflightByClient.get(key) ?? 1) - 1;
-        if (n <= 0) this.inflightByClient.delete(key);
-        else this.inflightByClient.set(key, n);
-      }
+      if (key !== undefined) this.decrement(this.inflightByClient, key);
     }
   }
 
+  private decrement(m: Map<string, number>, key: string): void {
+    const n = (m.get(key) ?? 1) - 1;
+    if (n <= 0) m.delete(key);
+    else m.set(key, n);
+  }
+
   /** Cheap stateless simulation outside the lane; reverts are answered here and never queued. */
-  private async preflight(rt: ChainRuntime, call: SweepCall): Promise<void> {
-    if (this.presim >= MAX_PRESIM) throw new RelayerError(503, 'busy', 2);
-    this.presim += 1;
+  private async preflight(rt: ChainRuntime, call: SweepCall, key: string | undefined): Promise<void> {
+    // NC-05: per-chain global bound plus a per-client sub-limit, so one client cannot starve the rest.
+    if (key !== undefined && (this.presimByClient.get(key) ?? 0) >= MAX_PRESIM_PER_CLIENT) throw new RelayerError(503, 'busy', 2);
+    if (rt.presim >= MAX_PRESIM) throw new RelayerError(503, 'busy', 2);
+    rt.presim += 1;
+    if (key !== undefined) this.presimByClient.set(key, (this.presimByClient.get(key) ?? 0) + 1);
     try {
       await rt.client.simulateSweep(call);
     } catch (e) {
@@ -323,7 +335,8 @@ export class RelayerService {
       else rt.breaker.recordFailure();
       throw new RelayerError(503, 'rpc_unavailable');
     } finally {
-      this.presim -= 1;
+      rt.presim -= 1;
+      if (key !== undefined) this.decrement(this.presimByClient, key);
     }
   }
 

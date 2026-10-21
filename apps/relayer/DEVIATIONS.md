@@ -67,3 +67,12 @@ Contract code wins over docs. Items for the lead to confirm or reject.
     that name `sweepRelayer` without a manifest (dev/test only; mainnet requires a manifest) keep the older "has code" check and log
     `manifest_unverified` (warn). The anvil end-to-end test is still skipped here and does not cover the read-back.
 
+22. **NC-04 / NC-05 admission fairness (2026-10-21).** Client key is now `clientGroup(ip)`: IPv6 -> its /64 prefix, IPv4-mapped IPv6 -> the
+    IPv4 address, IPv4 per address (not /24: NAT/CGNAT would merge unrelated users). It keys both `ipLimiter` and the lane cap. The cap is
+    `min(maxPending, max(2, ceil(maxPending / 4)))` lane slots per client: at the default 16 that is 4, so at least 4 distinct clients are
+    needed to fill the queue (was 75%: 2). The floor of 2 keeps a lone legitimate client able to pipeline; for `maxPending < 8` one client
+    can therefore still hold a large share of a tiny queue (document and size `maxPending` accordingly). The slot is reserved
+    synchronously before the pre-simulation await and released in `finally`, so concurrent requests cannot overshoot. Pre-simulation is
+    now bounded per chain (8) with at most 2 per client (`503 busy`), so one client cannot starve admission for everyone; 4+ distinct
+    clients can still occupy all 8 slots. Not done: brief queueing instead of immediate `503 busy`, IPv6 aggregation wider than /64, and the
+    shared-bucket fallback when `trustProxyHops` exceeds the XFF entries (all such requests share the proxy's address).

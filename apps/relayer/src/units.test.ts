@@ -4,7 +4,7 @@ import { DailyBudget } from './budget.js';
 import { parseAddress, parseHex, parseInt53, parseObject, parseUint } from './codec.js';
 import { RelayerError, SimulationRevert, invalid } from './errors.js';
 import { ChainLane, NonceManager } from './lane.js';
-import { KeyHasher, LruMap, RateLimiter } from './limiter.js';
+import { KeyHasher, LruMap, RateLimiter, clientGroup } from './limiter.js';
 import { createLogger, nullLogger, sanitizeFields } from './log.js';
 import { allowAllPolicy } from './policy.js';
 import { FixedStablePriceSource, RpcGasPriceSource, parseUsdMicro, type AllowedToken } from './pricing.js';
@@ -57,6 +57,21 @@ describe('quote token', () => {
     expect(verifyQuote(secret, `v1.${'9'.repeat(12)}.2.${'0'.repeat(64)}`, binding)).toBeNull();
     const huge = signQuote(secret, { ...claims, expiresAt: 10 ** 12 });
     expect(verifyQuote(secret, huge, binding)).toBeNull(); // 13 digits: outside the token pattern
+  });
+});
+
+describe('clientGroup', () => {
+  it('groups IPv6 by /64, unwraps IPv4-mapped, leaves IPv4 and junk alone', () => {
+    expect(clientGroup('2001:db8:1:2:aaaa:bbbb:cccc:dddd')).toBe('2001:db8:1:2::/64');
+    expect(clientGroup('2001:DB8:1:2::1')).toBe('2001:db8:1:2::/64');
+    expect(clientGroup('2001:db8:1:2:ffff::9%eth0')).toBe('2001:db8:1:2::/64');
+    expect(clientGroup('2001:db8::1')).toBe('2001:db8:0:0::/64');
+    expect(clientGroup('::1')).toBe('0:0:0:0::/64');
+    expect(clientGroup('::ffff:1.2.3.4')).toBe('1.2.3.4');
+    expect(clientGroup('::ffff:102:304')).toBe('1.2.3.4');
+    expect(clientGroup('64:ff9b::1.2.3.4')).toBe('64:ff9b:0:0::/64');
+    expect(clientGroup('1.2.3.4')).toBe('1.2.3.4');
+    expect(clientGroup('unknown')).toBe('unknown');
   });
 });
 

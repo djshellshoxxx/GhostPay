@@ -700,21 +700,74 @@ describe('N-01 / N-02 / N-03 regressions', () => {
     expect(codes.filter((c) => c === 503).length).toBeGreaterThanOrEqual(2);
   });
 
-  it('N-01: per-client cap on lane slots', async () => {
-    const s = await start({ config: { queue: { maxPending: 4, receiptTimeoutSeconds: 30 } } });
+  it('N-01 / NC-04: per-client cap on lane slots (ceil(maxPending/4), min 2)', async () => {
+    const s = await start({ config: { queue: { maxPending: 8, receiptTimeoutSeconds: 30 } } });
     let release: () => void = () => undefined;
-    s.fake.receiptGate = new Promise<void>((r) => {
+    s.fake.sendGate = new Promise<void>((r) => {
       release = r;
     });
-    const bodies = await Promise.all([1n, 2n, 3n, 4n, 5n].map(async (n) => (await prepare(s, { nonce: n })).body));
-    const rs = bodies.slice(0, 4).map((b) => call(s, 'POST', '/v1/sweep', b));
-    for (let i = 0; i < 100 && s.fake.simulations < 5; i++) await settle();
+    const bodies = await Promise.all([1n, 2n, 3n].map(async (n) => (await prepare(s, { nonce: n })).body));
+    const rs = bodies.slice(0, 2).map((b) => call(s, 'POST', '/v1/sweep', b));
+    for (let i = 0; i < 100 && s.fake.simulations < 2; i++) await settle();
     await settle();
     await settle();
-    const fourth = await call(s, 'POST', '/v1/sweep', bodies[4]);
-    expect(fourth.status).toBe(429);
+    const third = await call(s, 'POST', '/v1/sweep', bodies[2]);
+    expect(third.status).toBe(429);
     release();
-    expect((await Promise.all(rs)).map((r) => r.status)).toEqual([200, 200, 200, 200]);
+    expect((await Promise.all(rs)).map((r) => r.status)).toEqual([200, 200]);
+  });
+
+  it('NC-04: the cap slot is reserved before the pre-simulation await (no check-then-await overshoot)', async () => {
+    const s = await start({ config: { queue: { maxPending: 8, receiptTimeoutSeconds: 30 } } });
+    const orig = s.fake.simulateSweep.bind(s.fake);
+    let open: () => void = () => undefined;
+    const gate = new Promise<void>((r) => {
+      open = r;
+    });
+    let started = 0;
+    s.fake.simulateSweep = async (c) => {
+      started += 1;
+      await gate;
+      return orig(c);
+    };
+    const bodies = await Promise.all(Array.from({ length: 6 }, async (_, i) => (await prepare(s, { nonce: BigInt(i + 1) })).body));
+    const rs = Promise.all(bodies.map((b) => call(s, 'POST', '/v1/sweep', b)));
+    for (let i = 0; i < 100 && started < 2; i++) await settle();
+    await settle();
+    await settle();
+    expect(started).toBe(2); // cap = 2: the other four were refused before any eth_call
+    open();
+    const codes = (await rs).map((r) => r.status).sort();
+    expect(codes).toEqual([200, 200, 429, 429, 429, 429]);
+  });
+
+  it('NC-05: one client cannot exhaust the pre-simulation slots of other clients', async () => {
+    const s = await start({ config: { queue: { maxPending: 64, receiptTimeoutSeconds: 30 }, trustProxyHops: 1 } });
+    const orig = s.fake.simulateSweep.bind(s.fake);
+    let open: () => void = () => undefined;
+    const gate = new Promise<void>((r) => {
+      open = r;
+    });
+    let started = 0;
+    s.fake.simulateSweep = async (c) => {
+      started += 1;
+      await gate;
+      return orig(c);
+    };
+    const bodies = await Promise.all(Array.from({ length: 6 }, async (_, i) => (await prepare(s, { nonce: BigInt(i + 1) })).body));
+    const attacker = bodies.slice(0, 5).map((b) => call(s, 'POST', '/v1/sweep', b, { 'x-forwarded-for': '5.5.5.5' }));
+    for (let i = 0; i < 100 && started < 2; i++) await settle();
+    await settle();
+    await settle();
+    expect(started).toBe(2); // per-client presim limit
+    const other = call(s, 'POST', '/v1/sweep', bodies[5], { 'x-forwarded-for': '6.6.6.6' });
+    for (let i = 0; i < 100 && started < 3; i++) await settle();
+    await settle();
+    expect(started).toBe(3); // the other client is admitted immediately
+    open();
+    expect((await other).status).toBe(200);
+    const codes = (await Promise.all(attacker)).map((r) => r.status);
+    expect(codes.filter((c) => c === 503)).toHaveLength(3);
   });
 
   it('N-01: pre-simulation RPC failure is 503 rpc_unavailable', async () => {

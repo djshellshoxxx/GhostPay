@@ -1,4 +1,40 @@
 import { createHmac, randomBytes } from 'node:crypto';
+import { isIPv4, isIPv6 } from 'node:net';
+
+/**
+ * Groups a client address so one host cannot mint unlimited keys: IPv6 maps to its /64 prefix (a single
+ * subscriber normally owns at least a /64), IPv4-mapped IPv6 maps to the plain IPv4 address, IPv4 stays
+ * per-address. Anything unparsable is returned unchanged (single shared bucket).
+ */
+export function clientGroup(addr: string): string {
+  const a = addr.split('%')[0] ?? addr;
+  if (isIPv4(a)) return a;
+  if (!isIPv6(a)) return addr;
+  let tail: number[] = [];
+  let head = a.toLowerCase();
+  const dot = head.lastIndexOf('.');
+  if (dot !== -1) {
+    const colon = head.lastIndexOf(':');
+    const v4 = head.slice(colon + 1).split('.').map(Number);
+    tail = [((v4[0] ?? 0) << 8) | (v4[1] ?? 0), ((v4[2] ?? 0) << 8) | (v4[3] ?? 0)];
+    head = head.slice(0, colon + 1) + '0:0';
+  }
+  const [l, r] = head.split('::');
+  const left = l === '' || l === undefined ? [] : l.split(':');
+  const right = r === undefined || r === '' ? [] : r.split(':');
+  const fill = head.includes('::') ? Array<string>(8 - left.length - right.length).fill('0') : [];
+  const g = [...left, ...fill, ...right].map((x) => parseInt(x, 16));
+  if (tail.length === 2) {
+    g[6] = tail[0] ?? 0;
+    g[7] = tail[1] ?? 0;
+  }
+  if (g.slice(0, 5).every((x) => x === 0) && g[5] === 0xffff) {
+    const hi = g[6] ?? 0;
+    const lo = g[7] ?? 0;
+    return `${hi >> 8}.${hi & 255}.${lo >> 8}.${lo & 255}`;
+  }
+  return `${g.slice(0, 4).map((x) => x.toString(16)).join(':')}::/64`;
+}
 
 /** Insertion-ordered LRU map with a hard size bound. */
 export class LruMap<K, V> {

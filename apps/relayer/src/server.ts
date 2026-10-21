@@ -3,7 +3,7 @@ import { createServer, type IncomingMessage, type Server, type ServerResponse } 
 import type { AddressInfo } from 'node:net';
 import type { RelayerConfig } from './config.js';
 import { RelayerError, invalid } from './errors.js';
-import type { RateLimiter } from './limiter.js';
+import { clientGroup, type RateLimiter } from './limiter.js';
 import { nullLogger, type Logger } from './log.js';
 import type { RelayerService } from './service.js';
 import { parseQuoteRequest, parseSweepRequest } from './validate.js';
@@ -170,9 +170,9 @@ export class RelayerHttpServer {
     if (hops > 0 && typeof xff === 'string') {
       const parts = xff.split(',').map((p) => p.trim());
       const hit = parts[parts.length - hops];
-      if (hit !== undefined && hit !== '') return hit;
+      if (hit !== undefined && hit !== '') return clientGroup(hit);
     }
-    return req.socket.remoteAddress ?? 'unknown';
+    return clientGroup(req.socket.remoteAddress ?? 'unknown');
   }
 
   private async handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
