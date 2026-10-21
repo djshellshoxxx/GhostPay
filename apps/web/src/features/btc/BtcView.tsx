@@ -100,7 +100,7 @@ export function BtcView(): ReactNode {
         const c = client();
         await c.checkNetwork(net, ac.signal);
         const from = Number(fromHeight);
-        if (!Number.isInteger(from) || from < 0) throw new Error('Enter the first block height to scan.');
+        if (fromHeight.trim() === '' || !Number.isInteger(from) || from < 0) throw new Error('Enter the first block height to scan.');
         const res = await scanForPayments({
           client: c,
           wallet,

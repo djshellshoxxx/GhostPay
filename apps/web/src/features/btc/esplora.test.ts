@@ -1,7 +1,7 @@
 import { SilentPaymentError } from '@ghostpay/btc-silent-payments';
 import { describe, expect, it } from 'vitest';
 import { EsploraClient, EsploraTweakSource, normalizeEsploraUrl } from './esplora';
-import { mockChain, walletA, SEED_B, walletA as w } from './fixtures.testutil';
+import { mockChain, walletA, SEED_B } from './fixtures.testutil';
 import { BTC_NETWORKS, btcNetwork, MAINNET_GENESIS } from './network';
 import { MAX_SCAN_BLOCKS, scanForPayments } from './scan';
 import { walletFromSeedHex } from './wallet';
@@ -41,7 +41,7 @@ describe('network table', () => {
 
 describe('EsploraClient', () => {
   const mk = (netId: 'regtest' | 'signet' = 'regtest') => {
-    const chain = mockChain(netId, w(netId));
+    const chain = mockChain(netId, walletA(netId));
     return { chain, client: new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn }) };
   };
 
