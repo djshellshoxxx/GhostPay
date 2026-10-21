@@ -38,7 +38,7 @@ Source: `docs/chains/solana.md`, read from `@solana-program/*` packages on 2026-
 ## Limits
 
 - No UI, no invoice flow and no router. Fees from [Fees](fees.md) are not applied on Solana.
-- Token-2022 mints with extensions (transfer fees, hooks and similar) are unsupported and may lose funds if used.
+- Token-2022 mints with extensions (transfer fees, hooks and similar) are unsupported. Do not use them with this package.
 - The announcement memo is public. Anyone can see that a one-time address received a payment from a given sender.
 - The sponsored fee payer is a new trust point. The sponsor sees the transaction it pays for.
 - Stablecoins on Solana are not allowlisted. Treat any mint address as unverified until checked against the issuer's documentation.
