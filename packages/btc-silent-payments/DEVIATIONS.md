@@ -37,25 +37,63 @@ See `test-vectors/README.md` for provenance.
   and `grossAmount = netAmount`. A voluntary tip output is not implemented.
 - `scan` heights are `bigint` in `ScanRange` and must fit in uint32.
 
-## BlindBit oracle: what is verified and what is not
+## BlindBit oracle and Frigate: what is verified and what is not
 
-Source: `https://raw.githubusercontent.com/setavenger/BlindBit-Oracle/master/README.md` and
-`internal/server/README.md`, read 2026-10-21 (v2 documentation).
+Primary sources, all retrieved 2026-10-21:
 
-- **Verified from the docs:** `GET /info` (supported; JSON with `height`), `GET /tweaks/:blockheight`
-  (`{block_identifier:{block_hash,block_height}, index:[33-byte hex]}`), `GET /utxos/:blockheight`
-  (`{block_identifier, index:[{txid,vout,pubkey,amount}]}`). `BlindBitClient` implements exactly these three.
-- The same documents mark `/tweaks` and `/utxos` **DEPRECATED** in favour of gRPC (`OracleService`, protobuf in
-  `blindbit-lib`). **gRPC is not implemented.** Expect these HTTP routes to disappear.
-- **Unverified / not implemented:** the `/filter` endpoints (v1 oracle; not documented for v2), which would let a
-  client avoid downloading all outputs. Nothing is guessed. Whether `/utxos` returns outputs that were already
-  spent in the same block, whether it applies dust filtering (`tweaks_full_with_dust_filter`) and the precise txid
-  byte order are **not specified** in the docs; the client treats `txid` as display-order hex, which is unverified.
-- The client was **never run against a real oracle**. Tests use an injected fake `fetch`. Treat the BlindBit client
-  as unverified until a live signet/regtest oracle test is recorded.
+- `https://raw.githubusercontent.com/setavenger/BlindBit-Oracle/master/README.md` ("Available HTTP Endpoints", "Client Discovery")
+- `https://raw.githubusercontent.com/setavenger/BlindBit-Oracle/master/internal/server/README.md` (HTTP API specification)
+- `https://raw.githubusercontent.com/sparrowwallet/frigate/master/README.md`
+- `https://raw.githubusercontent.com/silent-payments/BIP0352-index-server-specification/main/README.md`
+
+BlindBit-Oracle (v2 docs; v1 endpoints are declared incompatible):
+
+- **Verified, implemented:** `GET /info` (the only HTTP route still **supported**; JSON `network`, `height`,
+  `tweaks_only`, `tweaks_full_basic`, `tweaks_full_with_dust_filter`, `tweaks_cut_through_with_dust_filter`;
+  `getTipHeight` and `getInfo`), `GET /tweaks/:blockheight` (`{block_identifier:{block_hash,block_height}, index:[33-byte hex]}`),
+  `GET /utxos/:blockheight` (`{block_identifier, index:[{txid,vout,pubkey,amount}]}`).
+- **Verified, deliberately not implemented:** `GET /spent-outputs/:h`, `GET /compute-index/:h`, `GET /full-block/:h`
+  (all marked **deprecated**; the README says new clients should use the gRPC `OracleService`: `GetInfo`,
+  `StreamComputeIndex`, `StreamBlockScanDataShort`, `GetFullBlock`, protobufs in `blindbit-lib`). `/tweaks` and `/utxos`
+  are deprecated too; expect all block-data HTTP routes to disappear. **gRPC is not implemented.**
+- The v1 `/filter` endpoints are not documented for v2: not implemented, nothing guessed.
+- **Not specified by the docs (unverified):** whether `/utxos` omits already-spent outputs, dust filtering semantics per
+  storage flag (the docs only say `tweaks_full_basic` = "no dust"), and txid byte order in `/utxos`. The only byte-order
+  statement is for `spent_outpoints` of the deprecated full-block route ("reversed"). The client treats `txid` as
+  display-order hex: **unverified**. `getInfo` does not enforce that `network` matches the wallet network (the set of
+  network strings is undocumented); callers should compare it themselves.
+- The client was **never run against a real oracle**; tests use an injected fake `fetch`.
+
+Frigate (Sparrow) / Electrum Silent Payments protocol:
+
+- Frigate is an Electrum server doing **server-side** scanning with **ephemeral client keys**
+  (`blockchain.silentpayments.subscribe`, per the Frigate README pacing section and the index-server spec table:
+  `subscribe`, `unsubscribe`). The spec signature is `subscribe(scan_private_key, spend_public_key, start)`.
+  The Frigate README does not document the wire format beyond that, and the spec's notification payload was not read to
+  the level needed for an implementation.
+- **Not implemented, by design:** this protocol sends the **scan private key** to the server. That contradicts this
+  package's invariant that key material never reaches a transport (tested). A hosted scanner is a separate trust
+  decision (and, per MULTICHAIN_SPEC, hosted scanning is out of scope). Nothing here is claimed about Frigate behaviour.
+
 - Light-client privacy: the oracle operator sees which block heights are scanned (and the client IP). It never
   receives key material, which the tests assert (`blindbit.test.ts`, `scanner.test.ts`, `adapter.test.ts`).
   `TweakSource` is the generic seam for an own-node or other index.
+
+## Spending (BIP-352 spend path)
+
+- Per input: `d = b_spend + tweak`, negated if `d*G` has odd y (`spendPrivateKey`); the tweak from the scanner already
+  includes the label tweak, so labeled outputs and change (m = 0) spend the same way. The key is used **without** a BIP-341
+  taproot tweak (the silent-payment output key is final), so `@scure/btc-signer`'s own `tapInternalKey` signing path is
+  NOT used: the key-path BIP-341 sighash (`preimageWitnessV1`, SIGHASH_DEFAULT) is signed with noble BIP-340 and set as
+  `tapKeySig`; the signer finalizes and extracts.
+- Self-check before returning: independent noble `schnorr.verify` of every input against the output key (also exported as
+  `verifyKeyPathSpend`), and exact vsize == estimate. The wallet key is checked against the claimed output key first.
+- Verification evidence: all official BIP-352 receiving vectors that have outputs are swept in `spend-vectors.test.ts`
+  (labels included) and verify; `spend.test.ts` covers both parities, multi-tx multi-label sweeps, fee math, change
+  (regular address and derived silent-payment change, re-scanned and re-spent), silent-payment destinations, dust and
+  error paths. **Not verified:** acceptance by Bitcoin Core (`testmempoolaccept`) or any network; no signet broadcast.
+- Fee policy: `fee = ceil(feerate * vsize)`; change below the dust limit (default 546) is folded into the fee; a leftover
+  larger than that without a change address is refused instead of burned.
 
 ## Security statements
 
@@ -69,13 +107,19 @@ Source: `https://raw.githubusercontent.com/setavenger/BlindBit-Oracle/master/REA
 
 ## Out of scope / follow-ups
 
-- **Spending / PSBT signing** (`@scure/btc-signer` is not installed): only the parity-normalized spend key
-  (`spendPrivateKey`) is provided; tests prove a BIP-340 signature with it verifies against the output key.
+- **Hardware-wallet signing is out of scope.** Spending is software signing only (`buildSpendTransaction`), on a
+  trusted device. No device protocol (and no device displays or verifies silent-payment outputs) is implemented.
+- Spending covers P2TR key-path spends of detected silent-payment outputs only. Not implemented: coin selection (the
+  caller picks the outputs; all are swept), SIGHASH types other than DEFAULT, multi-party/PSBT combining of foreign
+  inputs, Taproot script-path spends, regtest (`bcrt`) addresses (`@scure/btc-signer` ships mainnet and testnet `tb`
+  parameters only; `testnet` here means `tb`/`tsp`), fee estimation from a node/mempool (the caller supplies the
+  feerate; capped at 10 000 sat/vB), output shuffling (destinations then change, in order), anti-fee-sniping locktime.
 - gRPC BlindBit client; `/filter` support; own-node (`bitcoind`) `TweakSource`; reorg tracking across blocks
   (only a per-block height/hash consistency check exists); persistence of scan progress.
 - Voluntary tip output; hosted scanning service; hardware wallet support (unsupported in v1 per spec).
-- `package-lock.json` was not regenerated (no `npm install` was run). New declared dependencies:
-  `@scure/base@1.2.6` (already installed at the root via viem) and devDependency `@scure/bip32@1.7.0`
-  (differential test only; already installed at the root). Run `npm install` once when the workspace is free.
+- Dependencies: `@scure/base@1.2.6`, devDependency `@scure/bip32@1.7.0` and (2026-10-21) `@scure/btc-signer@2.4.1`
+  (exact; its dependencies are `@noble/curves` 2.4.0 and `@noble/hashes` 2.4.0, identical to this package's pins and
+  hoisted as one copy; it nests its own `@scure/base` 2.4.0 and `micro-packed` 0.11.1, so two `@scure/base` majors exist
+  in the tree and are not interchangeable at runtime boundaries, which this package keeps separate). Lockfile updated.
 - The Bitshala `silent-pay` differential reference (MULTICHAIN_SPEC 3.4) was **not** used (not installed); the
   differential coverage here is the official vectors plus `@scure/bip32` for BIP-32 paths.

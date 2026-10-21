@@ -6,7 +6,8 @@ BIP-352 **Silent Payments** for GhostPay's Bitcoin tier (docs/MULTICHAIN_SPEC.md
 
 Scope: seller side (keys, `sp1...` / `tsp1...` addresses, labels, `bitcoin:?sp=` URIs), sender-side output
 derivation, receiver-side scanning and spend-key derivation, a block scanner over an injected tweak source, and an
-adapter. **Not included:** spending / PSBT signing, gRPC, running a node. See `DEVIATIONS.md` for every deviation and
+adapter, and spending: signed PSBT / raw-transaction sweeps of detected outputs (`buildSpendTransaction`, via
+`@scure/btc-signer`). **Not included:** hardware-wallet signing (out of scope), gRPC, running a node, coin selection. See `DEVIATIONS.md` for every deviation and
 unverified item.
 
 ## Verification status
@@ -14,6 +15,8 @@ unverified item.
 - **BIP-352 official vectors:** 28 test cases = 28 sending + 29 receiving vectors, all pass, including exact
   `priv_key_tweak` and exact BIP-340 signatures (`src/vectors.test.ts`; provenance in `test-vectors/README.md`).
 - BIP-350 Bech32m vectors and BIP-32 vectors 1-4 are parsed from the saved BIP texts and pass.
+- Spending: every official receiving vector with outputs is swept and the signatures verify (noble schnorr); not
+  verified against Bitcoin Core or a network.
 - Not verified: BlindBit against a live oracle; behaviour in any wallet or on a real network.
 - `npm run typecheck`, `npm run lint`, `npm test` (coverage thresholds 95/90/95/95). Results are in the hand-off
   report, not hard-coded here.
@@ -52,8 +55,25 @@ for await (const hit of scanBlocks({ source, keys: { scanSecret: keys.scanSecret
 | `inputs.ts`, `tx.ts` | eligible input rules (P2TR, P2WPKH, P2SH-P2WPKH, P2PKH), NUMS skip, outpoints, witness parsing |
 | `receiver.ts` | tweak data, scanning with labels, spend key with even-y normalization |
 | `scan/` | `TweakSource` interface, `InMemoryTweakSource`, `BlindBitClient` (HTTP, see caveats), `scanBlocks` |
+| `spend.ts` | key-path sweep of silent-payment outputs: BIP-352 spend tweak (labels, parity), fee/vsize, change, signed PSBT, schnorr self-verification |
 | `adapter.ts`, `adapter-types.ts` | Bitcoin `ChainAdapter`; copied interface with a drift test |
 | `units.ts`, `uri.ts` | sats <-> BTC decimal strings, `bitcoin:?sp=` builder and strict parser |
+
+## Spending
+
+```ts
+const r = buildSpendTransaction({
+  outputs: found.map((f, i) => ({ txid, vout: i, amountSats, xOnlyPublicKey: f.xOnlyPublicKey, spendTweak: f.spendTweak })),
+  spendSecret: keys.spendSecret,
+  destinations: [{ address: 'bc1q...', amountSats: 50_000n }],  // or one entry without amount = sweep
+  changeAddress: changeAddress(keys, 'mainnet'),                 // fresh address, or own sp change (label 0)
+  feeRate: 4.5,                                                  // sat/vB, supplied by the caller
+  network: 'mainnet',
+});
+// r.psbt (signed), r.rawTx, r.txid, r.feeSats, r.vsize
+```
+
+Hardware-wallet signing is out of scope (software keys only; see `DEVIATIONS.md`).
 
 ## Security notes
 
