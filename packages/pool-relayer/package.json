@@ -1,0 +1,44 @@
+{
+  "name": "@ghostpay/pool-relayer",
+  "version": "0.1.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "description": "Withdrawal relayer for the GhostPay testnet shielded pool: HTTP-agnostic core plus a node:http entry (testnet only).",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --coverage",
+    "lint": "eslint --config ../../eslint.config.js src",
+    "start": "node dist/main.js"
+  },
+  "dependencies": {
+    "@ghostpay/pool-prover": "0.1.0",
+    "@ghostpay/pool-sdk": "0.1.0",
+    "@ghostpay/relayer-guard": "0.1.0",
+    "viem": "2.57.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "22.20.5",
+    "@vitest/coverage-v8": "5.0.5",
+    "eslint": "10.13.0",
+    "fast-check": "4.10.2",
+    "prettier": "3.9.10",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.72.0",
+    "vitest": "5.0.5"
+  }
+}
