@@ -1,0 +1,64 @@
+name: Verify release artifacts
+description: >-
+  Checks downloaded release artifacts against SHA256SUMS and the published release-manifest.json, and that the
+  manifest records the expected commit. Consistency check only: authenticity needs the signed tag and the build
+  attestation (optional input below). Uses no third-party actions.
+
+inputs:
+  artifact-dir:
+    description: Directory holding the downloaded release files.
+    required: false
+    default: release-out
+  sums-file:
+    description: Checksums file name inside artifact-dir.
+    required: false
+    default: SHA256SUMS
+  manifest-file:
+    description: Manifest file name inside artifact-dir.
+    required: false
+    default: release-manifest.json
+  expected-commit:
+    description: 40-hex commit SHA that the SIGNED tag points at (you must obtain it independently of the artifacts).
+    required: true
+  verify-attestation:
+    description: "Set to 'true' to also run `gh attestation verify` for every file in the checksums file."
+    required: false
+    default: 'false'
+  repository:
+    description: owner/repo that produced the attestation (only used when verify-attestation is 'true').
+    required: false
+    default: ${{ github.repository }}
+  github-token:
+    description: Token for `gh attestation verify` (only used when verify-attestation is 'true').
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    # Inputs are passed through env vars, never interpolated into the script text (no expression injection).
+    - name: Verify hashes and manifest
+      shell: bash
+      env:
+        GP_DIR: ${{ inputs.artifact-dir }}
+        GP_SUMS: ${{ inputs.sums-file }}
+        GP_MANIFEST: ${{ inputs.manifest-file }}
+        GP_COMMIT: ${{ inputs.expected-commit }}
+      run: bash "$GITHUB_ACTION_PATH/verify.sh"
+
+    - name: Verify build attestations (optional)
+      if: ${{ inputs.verify-attestation == 'true' }}
+      shell: bash
+      env:
+        GP_DIR: ${{ inputs.artifact-dir }}
+        GP_SUMS: ${{ inputs.sums-file }}
+        GP_REPO: ${{ inputs.repository }}
+        GH_TOKEN: ${{ inputs.github-token }}
+      run: |
+        set -euo pipefail
+        [[ "$GP_REPO" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]] || { echo "::error::invalid repository input"; exit 1; }
+        cd "$GP_DIR"
+        while read -r _ f; do
+          f="${f#\*}"
+          gh attestation verify "$f" --repo "$GP_REPO"
+        done < "$GP_SUMS"
