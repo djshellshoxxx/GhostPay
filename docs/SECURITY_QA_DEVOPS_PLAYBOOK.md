@@ -107,6 +107,7 @@ on:
   pull_request:
   push:
     branches: [main]
+    tags: ['v*']
   schedule:
     - cron: "17 4 * * 2"
   workflow_dispatch:
