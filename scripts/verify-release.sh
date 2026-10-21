@@ -63,10 +63,10 @@ fi
 # 4. Archive sanity: single top-level dir, no source maps, no absolute or parent paths, index.html present.
 listing="$(tar -tzf "$tarball")" || { bad "tarball is not a readable .tar.gz"; listing=""; }
 if [ -n "$listing" ]; then
-  if echo "$listing" | grep -qE '(^/|(^|/)\.\.(/|$))'; then bad "archive has absolute or parent paths"; else ok "no absolute/parent paths"; fi
+  if grep -qE '(^/|(^|/)\.\.(/|$))' <<<"$listing"; then bad "archive has absolute or parent paths"; else ok "no absolute/parent paths"; fi
   if [ "$(echo "$listing" | cut -d/ -f1 | sort -u | wc -l | tr -d ' ')" = "1" ]; then ok "single top-level directory"; else bad "multiple top-level entries"; fi
-  if echo "$listing" | grep -qE '\.map$'; then bad "source maps present"; else ok "no source maps"; fi
-  if echo "$listing" | grep -qE '(^|/)index\.html$'; then ok "index.html present"; else bad "index.html missing"; fi
+  if grep -qE '\.map$' <<<"$listing"; then bad "source maps present"; else ok "no source maps"; fi
+  if grep -qE '(^|/)index\.html$' <<<"$listing"; then ok "index.html present"; else bad "index.html missing"; fi
 fi
 
 cat <<CHECKLIST
