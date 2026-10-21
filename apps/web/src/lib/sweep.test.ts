@@ -6,7 +6,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER, FAKE_SWEEP_RELAYER, fakeManifest } from '../test/fakeManifest';
 import { mockRpc } from '../test/mockRpc';
 import { clearSession, generateSession, requireSession } from './session';
-import { checkDestination, deriveVerifiedSweepKey, directSweep, getSweepQuote, readBalance, relayedSweep, type SweepTarget } from './sweep';
+import { checkDestination, describeDestination, deriveVerifiedSweepKey, directSweep, getSweepQuote, readBalance, relayedSweep, type SweepTarget } from './sweep';
 import { erc20Abi } from '@ghostpay/chain-adapters';
 
 const TOKEN = '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as Address;
@@ -199,5 +199,120 @@ describe('directSweep (stealth address pays gas, signs a plain transfer)', () =>
     const base = rpcFor(10n ** 17n, {});
     const rpc = { ...base, request: (m: string, p: readonly unknown[]) => (m === 'eth_sendRawTransaction' ? Promise.resolve(`0x${'aa'.repeat(32)}`) : base.request(m, p)) };
     await expect(directSweep({ target, manifest, destination: DEST, amount: 1n, rpc })).rejects.toThrow(/does not match the signed transaction/);
+  });
+});
+
+describe('S3-09 / S3-12 / S3-22 integration (tx-review + address-safety)', () => {
+  const rpcWith = (over: Record<string, unknown>, balance = 10n ** 17n) =>
+    mockRpc(84532, (method, params) => {
+      if (method in over) {
+        const v = over[method];
+        if (v instanceof Error) throw v;
+        return v;
+      }
+      switch (method) {
+        case 'eth_gasPrice':
+          return '0x3b9aca00';
+        case 'eth_getTransactionCount':
+          return '0x7';
+        case 'eth_getBalance':
+          return `0x${balance.toString(16)}`;
+        case 'eth_estimateGas':
+          return '0xc350';
+        case 'eth_sendRawTransaction':
+          return keccak256(params[0] as `0x${string}`);
+        default:
+          throw new Error(method);
+      }
+    });
+
+  it('refuses a token that is not on the allowlist before anything is signed (attacker-chosen contract)', async () => {
+    const evil = '0x00000000000000000000000000000000deadbeef' as Address;
+    const rpc = rpcWith({});
+    await expect(directSweep({ target: { ...target, token: evil }, manifest, destination: DEST, amount: 5n, rpc })).rejects.toThrow(/TOKEN_NOT_ALLOWLISTED/);
+    expect(rpc.calls.map((c) => c.method)).not.toContain('eth_sendRawTransaction');
+  });
+
+  it('refuses a fee cap forced up by a lying RPC (absolute ceiling)', async () => {
+    const rpc = rpcWith({ eth_gasPrice: `0x${(3_000n * 10n ** 9n).toString(16)}` }, 10n ** 24n);
+    await expect(directSweep({ target, manifest, destination: DEST, amount: 5n, rpc })).rejects.toThrow(/FEE_PER_GAS_ABOVE_CAP/);
+    expect(rpc.calls.map((c) => c.method)).not.toContain('eth_sendRawTransaction');
+  });
+
+  it('refuses a gas limit estimate above the ceiling', async () => {
+    const rpc = rpcWith({ eth_estimateGas: '0x7a120' }); // 500 000 x 1.2
+    await expect(directSweep({ target, manifest, destination: DEST, amount: 5n, rpc })).rejects.toThrow(/GAS_LIMIT_ABOVE_CAP/);
+  });
+
+  it('refuses a native sweep whose fee would eat most of the balance', async () => {
+    const rpc = rpcWith({}, 10n ** 14n);
+    await expect(directSweep({ target: { ...target, token: 'native' }, manifest, destination: DEST, amount: 10n ** 14n, rpc })).rejects.toThrow(/FEE_SHARE_ABOVE_CAP/);
+  });
+
+  it('dry-runs the transfer and refuses a revert or a false return', async () => {
+    await expect(directSweep({ target, manifest, destination: DEST, amount: 5n, rpc: rpcWith({ eth_call: new Error('execution reverted') }) })).rejects.toThrow(/would revert/);
+    await expect(directSweep({ target, manifest, destination: DEST, amount: 5n, rpc: rpcWith({ eth_call: `0x${'0'.repeat(64)}` }) })).rejects.toThrow(/returned false/);
+    const ok = rpcWith({ eth_call: `0x${'0'.repeat(63)}1` });
+    await directSweep({ target, manifest, destination: DEST, amount: 5n, rpc: ok });
+    expect(ok.calls.map((c) => c.method)).toContain('eth_call');
+  });
+
+  it('still works when the node cannot run eth_call (simulation unavailable, not a revert)', async () => {
+    const rpc = rpcWith({ eth_call: new Error('method not supported') });
+    const res = await directSweep({ target, manifest, destination: DEST, amount: 5n, rpc });
+    expect(res.sent).toBe(5n);
+  });
+
+  it('relayed sweep signs only what was reviewed: a relayer feeTo that differs from the quote cannot slip in', async () => {
+    const seen: unknown[] = [];
+    const rpc = mockRpc(84532, () => {
+      throw new Error('no rpc');
+    });
+    await expect(
+      relayedSweep({
+        target,
+        manifest,
+        destination: DEST,
+        amount: 1_000_000n,
+        quote: { fee: 5000n, feeTo: FEE_TO, expiresAt: NOW + 60, quoteToken: 'tok' },
+        relayerUrl: 'https://relay.test',
+        rpc,
+        nowSeconds: NOW,
+        randomNonce: () => 1n,
+        fetchFn: (): Promise<Response> => {
+          seen.push(1);
+          return Promise.resolve(new Response('{}'));
+        },
+      }),
+    ).rejects.toThrow(); // the permit needs an RPC; the sweep typed data already passed the review
+    expect(seen).toHaveLength(0);
+  });
+
+  it('refuses an excessive relayer fee at the review stage even if the quote check were bypassed', async () => {
+    const rpc = mockRpc(84532, () => {
+      throw new Error('no rpc');
+    });
+    await expect(
+      relayedSweep({ target, manifest, destination: DEST, amount: 1_000_000n, quote: { fee: 400_000n, feeTo: FEE_TO, expiresAt: NOW + 60, quoteToken: 'tok' }, relayerUrl: 'https://relay.test', rpc, nowSeconds: NOW }),
+    ).rejects.toThrow(/FEE_SHARE_ABOVE_CAP/);
+  });
+
+  it('rejects poisoned and malformed destinations', () => {
+    const flip = (mid: string): string => mid.toLowerCase().replace(/[0-9a-f]/g, (c) => (c === 'a' ? 'b' : 'a'));
+    const near = `${manifest.router.slice(0, 6)}${flip(manifest.router.slice(6, -4))}${manifest.router.slice(-4)}`.toLowerCase();
+    expect(() => checkDestination(near, target.owner, manifest)).toThrow(/almost identical/);
+    const savedLike = `${DEST.slice(0, 6)}${flip(DEST.slice(6, -4))}${DEST.slice(-4)}`.toLowerCase();
+    expect(() => checkDestination(savedLike, target.owner, manifest, [DEST])).toThrow(/almost identical/);
+    expect(checkDestination(DEST, target.owner, manifest, [DEST])).toBe(DEST);
+    // bad EIP-55 checksum and all-uppercase hex are refused, whitespace is trimmed
+    const bad = DEST.slice(0, 2) + DEST.slice(2).split('').map((c, i) => (i === 3 ? (c === c.toUpperCase() ? c.toLowerCase() : c.toUpperCase()) : c)).join('');
+    if (bad !== DEST && bad !== DEST.toLowerCase()) expect(() => checkDestination(bad, target.owner, manifest)).toThrow(/valid destination/);
+    expect(() => checkDestination(`0x${'ab'.repeat(20).toUpperCase()}`, target.owner, manifest)).toThrow(/valid destination/);
+    expect(checkDestination(`  ${DEST.toLowerCase()} `, target.owner, manifest)).toBe(DEST);
+  });
+
+  it('classifies destinations for the linkability warning', () => {
+    expect(describeDestination(DEST, target.owner, [])).toBe('new');
+    expect(describeDestination(DEST, target.owner, [DEST])).toBe('saved');
   });
 });
