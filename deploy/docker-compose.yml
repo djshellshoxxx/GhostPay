@@ -1,0 +1,100 @@
+# GhostPay self-host recipe: static web bundle + reverse proxy (nginx) + API (relayer), optional Tor onion service.
+# NOTHING here deploys by itself: run deploy/selfhost.sh (it validates prerequisites and prints the plan first).
+# No secrets live in this file or in the repo: secrets are file-based (./secrets, gitignored).
+name: ghostpay
+
+x-hardening: &hardening
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  restart: unless-stopped
+  logging:
+    driver: local
+    options: { max-size: "5m", max-file: "3" }
+
+services:
+  api:
+    <<: *hardening
+    build:
+      context: ..
+      dockerfile: apps/relayer/Dockerfile
+    image: ${GHOSTPAY_API_IMAGE:-ghostpay-relayer:local}
+    user: "${GHOSTPAY_API_UID:-65532}:${GHOSTPAY_API_UID:-65532}"
+    environment:
+      NODE_ENV: production
+      RELAYER_CONFIG: /etc/ghostpay/relayer.config.json
+      DEPLOYMENTS_DIR: /etc/ghostpay/deployments
+      RELAYER_KEY_FILE: /run/secrets/relayer_key
+      QUOTE_SECRET_FILE: /run/secrets/quote_secret
+    env_file:
+      # RPC_URL_<chainId>=... (may contain API keys): file is mode 600, gitignored.
+      - path: ./secrets/rpc.env
+        required: false
+    secrets: [relayer_key, quote_secret]
+    volumes:
+      - ./config/relayer.config.json:/etc/ghostpay/relayer.config.json:ro
+      - ../deployments:/etc/ghostpay/deployments:ro
+    tmpfs:
+      - /tmp:size=16m,mode=1777,noexec,nosuid,nodev
+    networks: [backend]
+    expose: ["8787"]
+    pids_limit: 128
+    mem_limit: 512m
+
+  web:
+    <<: *hardening
+    image: ${GHOSTPAY_NGINX_IMAGE:-nginxinc/nginx-unprivileged:1.27-alpine}
+    user: "101:101"
+    depends_on: [api]
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/security-headers.conf:/etc/nginx/ghostpay/security-headers.conf:ro
+      - ${GHOSTPAY_WEB_DIST:-./web-dist}:/usr/share/ghostpay/web:ro
+    tmpfs:
+      - /tmp:size=16m,mode=1777,noexec,nosuid,nodev
+    ports:
+      # Loopback only. Terminate TLS in front (Caddy, Cloudflare Tunnel, host nginx). Never publish plain HTTP publicly.
+      - "127.0.0.1:${GHOSTPAY_HTTP_PORT:-8080}:8080"
+    networks: [backend, frontend]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/index.html"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    pids_limit: 64
+    mem_limit: 128m
+
+  # Optional Tor onion service: `docker compose --profile onion up -d`. Keys are generated inside the named volume
+  # on first start (never in the repo). Back the volume up if you want to keep the .onion address.
+  tor:
+    <<: *hardening
+    profiles: [onion]
+    build:
+      context: ./tor
+      args:
+        BASE_IMAGE: ${GHOSTPAY_TOR_BASE_IMAGE:-debian:bookworm-slim}
+    image: ${GHOSTPAY_TOR_IMAGE:-ghostpay-tor:local}
+    depends_on: [web]
+    volumes:
+      - ./tor/torrc:/etc/tor/torrc:ro
+      - tor-data:/var/lib/tor
+    tmpfs:
+      - /tmp:size=8m,mode=1777,noexec,nosuid,nodev
+    networks: [frontend]
+    pids_limit: 64
+    mem_limit: 256m
+
+networks:
+  # backend: web <-> api. The api container needs outbound access to your chain RPC endpoints, so it is not `internal`.
+  # Egress filtering (allow only your RPC hosts) is a host-firewall task; see README.
+  backend: {}
+  frontend: {}
+
+volumes:
+  tor-data: {}
+
+secrets:
+  relayer_key:
+    file: ./secrets/relayer_key
+  quote_secret:
+    file: ./secrets/quote_secret

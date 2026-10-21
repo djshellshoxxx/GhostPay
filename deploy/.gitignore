@@ -1,0 +1,9 @@
+# Nothing secret or environment-specific is ever committed.
+.env
+secrets/*
+!secrets/README.md
+config/relayer.config.json
+web-dist/
+tor-data/
+*.key
+*.secret
