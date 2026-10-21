@@ -68,7 +68,7 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
   amount (ERC-20 `Transfer(router -> one-time address, net)` in that block; native: balance or successful router receipt). Non-router matches are "Unverified
   announcement". Matches are de-duplicated by (one-time address, ephemeral key), carry their chain id, and show confirmations against `finalityDepth`.
   "Deep scan" ignores the view tag for router announcements (costly, warned); "Check a payer's transaction hash" tests one transaction without the tag shortcut.
-  The tag-free check lives in `chain-adapters/deepscan` (pinned to `core-crypto.checkAnnouncement` by a differential test); the proper home is an option in `core-crypto`.
+  The tag-free check is `core-crypto.checkAnnouncement(..., { ignoreViewTag: true })`, wrapped by `chain-adapters/deepscan`.
 - **Sweep privacy (D1, D8):** the notice says the payer can follow the funds; the destination is looked up (transactions sent, balance, code, reuse in this tab) and a
   non-fresh destination needs an explicit acknowledgement; RPC-visibility warnings on Scan and Sweep. Destinations are NOT persisted (a stored list would itself be a
   linkage record); only this tab remembers them.

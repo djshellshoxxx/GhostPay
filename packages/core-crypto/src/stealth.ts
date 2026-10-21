@@ -43,7 +43,22 @@ export interface PublicAnnouncement {
 }
 
 export type AnnouncementCheck =
-  { readonly matches: false } | { readonly matches: true; readonly stealthAddress: Address };
+  | { readonly matches: false }
+  | {
+      readonly matches: true;
+      readonly stealthAddress: Address;
+      /** Present only when `ignoreViewTag` was set: false when the announced tag differs from the real one. */
+      readonly tagMatches?: boolean;
+    };
+
+/** Options for {@link checkAnnouncement}. */
+export interface CheckAnnouncementOptions {
+  /**
+   * Skip the early view-tag reject (deep scan, default false). The derived address must still equal the announced
+   * address. Costs one point multiplication per checked announcement; the result then carries `tagMatches`.
+   */
+  readonly ignoreViewTag?: boolean;
+}
 
 interface ParsedAnnouncement {
   readonly address: Address;
@@ -139,6 +154,7 @@ export function deriveStealthPayment(metaAddress: string, rng?: RandomSource): D
  * @param announcement Public announcement fields.
  * @param viewingSecret Recipient viewing scalar.
  * @param spendingPublicKey Recipient spending public key.
+ * @param options `ignoreViewTag` skips the tag reject but still verifies the derived address (result then has `tagMatches`).
  * @returns `{ matches: false }` or the checksummed matching address.
  * @throws {GhostPayCryptoError} `INVALID_SCALAR` / `INVALID_POINT` for bad key arguments.
  * @security Does not reveal or log the viewing secret; the view tag leaks one byte of shared-secret hash by design.
@@ -149,6 +165,7 @@ export function checkAnnouncement(
   announcement: PublicAnnouncement,
   viewingSecret: SecretScalar,
   spendingPublicKey: CompressedPoint,
+  options: CheckAnnouncementOptions = {},
 ): AnnouncementCheck {
   const spend = parseCompressedPoint(spendingPublicKey);
   let parsed: ParsedAnnouncement;
@@ -165,7 +182,8 @@ export function checkAnnouncement(
     if (e instanceof GhostPayCryptoError && e.code === 'ZERO_HASH') return { matches: false };
     throw e;
   }
-  if (derived.tag !== parsed.viewTag) return { matches: false };
+  const ignoreViewTag = options.ignoreViewTag === true;
+  if (!ignoreViewTag && derived.tag !== parsed.viewTag) return { matches: false };
   let address: Address;
   try {
     address = stealthAddressFor(spend, derived.h);
@@ -174,6 +192,7 @@ export function checkAnnouncement(
     throw e;
   }
   if (address.toLowerCase() !== parsed.address.toLowerCase()) return { matches: false };
+  if (ignoreViewTag) return { matches: true, stealthAddress: address, tagMatches: derived.tag === parsed.viewTag };
   return { matches: true, stealthAddress: address };
 }
 

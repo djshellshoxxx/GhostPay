@@ -1,8 +1,8 @@
 /**
  * Display sanitiser for text that comes from an invoice (S3-12). The invoice schema accepts bidirectional controls,
  * zero-width and tag characters, which can reorder or hide text in the review screen. This replaces every such code
- * point with a visible `⟨U+XXXX⟩` marker and reports lookalike alphabets. The schema-level fix (reject them at parse time)
- * belongs to `packages/invoice-schema`; this is the defence at the point of display.
+ * point with a visible `⟨U+XXXX⟩` marker and reports lookalike alphabets. invoice-schema now rejects them at parse time (S3-12);
+ * this stays as defence in depth at the point of display.
  */
 const INVISIBLE = /\p{Cf}|\p{Co}|[\u{E0000}-\u{E007F}]|[\u{2028}\u{2029}\u{180E}]/gu;
 

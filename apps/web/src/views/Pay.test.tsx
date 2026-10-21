@@ -420,14 +420,12 @@ describe('Pay: on-chain deployment check (S3-01), safe text and wallet picker', 
     expect(wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
   });
 
-  it('makes hidden and direction-changing characters in the memo and line items visible (S3-12)', async () => {
-    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5', memo: 'Total\u202E 1 000\u200B USD', lineItems: [{ description: 'pаypal\u2066 fee', quantity: '1', unitPrice: '100' }] });
+  it('flags lookalike scripts in the memo and line items, and the schema refuses hidden or direction-changing characters at creation (S3-12)', async () => {
+    await expect(makeParsed({ token: 'native', tokenAmount: '0.5', memo: 'Total\u202E 1 000\u200B USD' })).rejects.toMatchObject({ code: 'FORBIDDEN_CHARACTER' });
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5', memo: 'Total 1 000 USD', lineItems: [{ description: 'pаypal fee', quantity: '1', unitPrice: '100' }] });
     openWith(fragment, makeServices({ loadManifest: loaded(84532) }));
     await screen.findByRole('heading', { name: 'Review payment' });
-    expect(document.body.textContent).toContain('Total⟨U+202E⟩ 1 000⟨U+200B⟩ USD');
-    expect(document.body.textContent).toContain('⟨U+2066⟩');
     expect(document.body.textContent).toMatch(/mixes Latin letters with Cyrillic or Greek/);
-    expect(document.body.textContent).not.toContain('\u202E');
     expect(document.querySelector('.isolate')).not.toBeNull();
   });
 

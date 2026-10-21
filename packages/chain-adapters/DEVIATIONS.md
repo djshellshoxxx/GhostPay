@@ -43,9 +43,8 @@ The contracts' real code wins over spec text. Each item should be confirmed or r
     `packages/contracts/out`) with a mock token on a throw-away `anvil` and asserts that `routerFee`/`routerNet`/`grossForNet` equal the on-chain result for boundary
     values (1, 399/400/401, ..., `MAX_ROUTER_GROSS`), random amounts across bit lengths, native payments, and that the router rejects what the client rejects. It skips
     when `anvil` is not on PATH; `REQUIRE_ANVIL=1` makes a missing anvil a failure. Build first: `(cd packages/contracts && PATH=/home/user/tools/foundry:$PATH forge build)`.
-14. **Deep scan duplicates the ADR-0001 derivation** in `deepscan.ts` (view tag ignored) because `core-crypto` exposes no such option. A differential test pins it to
-    `checkAnnouncement`; the right fix is an `ignoreViewTag` option in `core-crypto`. It is a separate package entry (`@ghostpay/chain-adapters/deepscan`) so the scanner
-    worker does not import the network-capable parts of this package.
+14. **Deep scan** (`deepscan.ts`) is a thin wrapper over `checkAnnouncement(..., { ignoreViewTag: true })` from `core-crypto` (no duplicated derivation). It is a separate package entry
+    (`@ghostpay/chain-adapters/deepscan`) so the scanner worker does not import the network-capable parts of this package.
 15. **Scanner claims are never trusted** (`payments.ts`): `verifyClaimedPayment` and `verifyPaymentByTxHash` establish what the chain supports; `dedupeClaims` collapses
     replays by (one-time address, ephemeral key). All of it is only as honest as the RPC; use `createReconciledClient` (two providers, identical results) for a stronger statement.
 16. **RPC adapter (S3-14):** `eth_chainId` is re-verified every 60 s (`chainRecheckMs`) and after any transport failure; `createReconciledClient` routes security-relevant

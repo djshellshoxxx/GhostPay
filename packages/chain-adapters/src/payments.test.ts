@@ -242,16 +242,6 @@ describe('verifyClaimedPayment', () => {
 });
 
 describe('checkAnnouncementDeep', () => {
-  it('agrees with core-crypto checkAnnouncement whenever the view tag is right', () => {
-    for (let i = 0; i < 20; i++) {
-      const { claim } = make();
-      const a = claim.announcement;
-      const normal = checkAnnouncement(a, keys.viewingSecret, keys.spendingPublicKey);
-      const deep = checkAnnouncementDeep(a, keys.viewingSecret, keys.spendingPublicKey);
-      expect(normal.matches).toBe(true);
-      expect(deep).toEqual({ matches: true, stealthAddress: (normal as { stealthAddress: Address }).stealthAddress, tagMatches: true });
-    }
-  });
   it('finds a payment whose payer published a WRONG view tag, which the tag filter misses (D4)', () => {
     const { claim } = make({ wrongTag: true });
     const a = claim.announcement;

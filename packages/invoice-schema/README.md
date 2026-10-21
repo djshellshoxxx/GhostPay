@@ -47,3 +47,16 @@ if (isTrustedSeller(parsed)) { /* only now may the UI say the seller key is pinn
 ## Scripts
 
 `npm run build | typecheck | test | lint` (from this directory).
+
+## Text hygiene (S3-12)
+
+Strict parsing (`validateInvoice`, `validatePrivatePart`, `parseFragment`) rejects, in every free-text field (line-item
+`description` and `memo`), with a `ForbiddenCharacterError` (a `SchemaError` subclass, `code: 'FORBIDDEN_CHARACTER'`, `path` = the field):
+
+- bidirectional controls U+202A-202E, U+2066-2069, U+200E, U+200F, U+061C;
+- zero-width and invisible characters U+200B-200D, U+2060, U+FEFF, U+00AD (also U+180E, U+2028, U+2029);
+- Unicode tag characters U+E0000-E007F;
+- all other C0/C1 control characters (U+0000-001F, U+007F-009F), except that a line feed `\n` is allowed in `memo` only.
+
+Lone surrogates and non-NFC text still raise plain `SCHEMA`. The error message never echoes the offending character.
+Consumers should still render text as text; `apps/web` keeps its display sanitiser as defence in depth for already-stored data.
