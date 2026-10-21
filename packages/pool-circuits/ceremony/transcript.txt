@@ -1,0 +1,14 @@
+INSECURE DEV CEREMONY transcript
+snarkjs 0.7.6, circomlib 2.0.5
+beacon 0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20 (public; 2^10 iterations)
+mode: beacon-only, deterministic: toxic waste is PUBLIC, proofs are FORGEABLE
+phase1: INSECURE-LOCAL powersoftau new bn128 15
+ptau sha256 dbaf795a782102ecd10d224ee21e5491b4b9586485660c0378ffe17d8e70e565
+phase2 withdraw32: snarkjs zkey verify -> ZKey Ok!
+  r1cs sha256 250bb732996232c9c05dff97e5e3bda14cc86ec746725f4b252de35aeb57f45e
+  zkey sha256 c039edefafdd5ad22eaf51c7738655702f32f76a9eeb96e14be38de5490b28a6
+  wasm sha256 f0bb3494c32ad8924a24c9c005fb34e0f814640c571f59530ca1bdd58feff55c
+phase2 commitment: snarkjs zkey verify -> ZKey Ok!
+  r1cs sha256 01e21ed296302ea51a06ebe763d51fbf526a606261c2c3a3d757a2c585922f10
+  zkey sha256 59cb249b54e4c95c7efa82b519cd0444034ca1b0359b46c07dbcbe4ac2070784
+  wasm sha256 eb41d37994cab87814f8ef4ca238632ef2f24fef1a834c359b47b84de3cceb51

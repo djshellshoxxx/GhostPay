@@ -1,0 +1,21 @@
+# Verifier smoke tests for the INSECURE DEV CEREMONY verifiers (not the pool contracts).
+# Run locally: FOUNDRY_SOLC=/path/to/solc-0.8.28 forge test   (CI: solc_version as below)
+[profile.default]
+src = "../verifiers"
+test = "test"
+out = "out"
+cache_path = "cache"
+libs = ["../../contracts/lib"]
+remappings = ["forge-std/=../../contracts/lib/forge-std/src/", "pool-verifiers/=../verifiers/"]
+allow_paths = [".."]
+solc_version = "0.8.28"
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 200
+bytecode_hash = "none"
+cbor_metadata = false
+ffi = false
+fs_permissions = [{ access = "read", path = "../fixtures" }]
+
+[fuzz]
+runs = 1000

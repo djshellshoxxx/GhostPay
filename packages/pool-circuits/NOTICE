@@ -1,0 +1,22 @@
+@ghostpay/pool-circuits -- third-party notices
+
+1. 0xbow privacy-pools-core (https://github.com/0xbow-io/privacy-pools-core), Apache License 2.0.
+   circuits/commitment.circom, circuits/merkleTree.circom and circuits/withdraw.circom are derived from
+   packages/circuits/circuits/{commitment,merkleTree,withdraw}.circom (fetched 2026-10-21, branch main).
+   Changes are listed at the top of each file and in DEVIATIONS.md. Apache-2.0 section 4 applies:
+   a copy of the licence is at https://www.apache.org/licenses/LICENSE-2.0 .
+
+2. circomlib 2.0.5 (iden3): included via `include "circomlib/circuits/..."` (Poseidon, comparators,
+   bitify, mux1). npm metadata says GPL-3.0; the repository LICENSE file says LGPL-3.0. Treated as GPL-3.0.
+
+3. snarkjs 0.7.6 (iden3), GPL-3.0: used to run the setup and to generate verifiers/*.sol from its
+   Groth16 template (the generated files carry SPDX-License-Identifier: GPL-3.0).
+
+4. circom 2.2.3 (iden3), GPL-3.0: compiler, not redistributed here.
+
+5. poseidon-lite 0.3.0 (MIT), @zk-kit/lean-imt 2.2.5 (MIT, tests only), viem 2.57.7 (MIT, scripts/tests),
+   ffjavascript 0.3.1 (GPL-3.0, tests only).
+
+OWNER DECISION: the repository is UNLICENSED. Distributing the GPL-3.0-derived circuits and verifiers
+under UNLICENSED is not settled; see docs/remote/privacy-specs/shielded-pool.md Q1. This package keeps
+the GPL material isolated so the decision does not force a rewrite. Not relicensed here.
