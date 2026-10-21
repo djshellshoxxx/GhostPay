@@ -246,3 +246,70 @@ describe('assertNoSecretBox', () => {
     expect(code(() => assertNoSecretBox(wide))).toBe('INVALID_INPUT');
   });
 });
+
+describe('wipe intrinsic (L-2)', () => {
+  it('zeroes a Uint8Array subclass whose fill is overridden', () => {
+    class Evil extends Uint8Array {
+      public override fill(): this {
+        return this;
+      }
+    }
+    const e = new Evil(Uint8Array.of(9, 9, 9));
+    wipe(e);
+    expect([...e]).toEqual([0, 0, 0]);
+    const own = Uint8Array.of(7, 7);
+    Object.defineProperty(own, 'fill', { value: () => own });
+    SecretBox.copyOf(own);
+    expect([...own]).toEqual([0, 0]);
+  });
+});
+
+describe('use() with async callback (L-4)', () => {
+  it('throws and does not leave an unhandled rejection', async () => {
+    const seen: unknown[] = [];
+    const h = (r: unknown): void => void seen.push(r);
+    process.on('unhandledRejection', h);
+    try {
+      const b = fresh();
+      expect(code(() => b.use(() => Promise.reject(new Error('late'))))).toBe('ASYNC_IN_SYNC_USE');
+      const odd = { then: (): never => { throw new Error('bad then'); } };
+      expect(code(() => b.use(() => odd))).toBe('ASYNC_IN_SYNC_USE');
+      await new Promise((r) => setTimeout(r, 20));
+    } finally {
+      process.off('unhandledRejection', h);
+    }
+    expect(seen).toEqual([]);
+  });
+});
+
+describe('assertNoSecretBox containers (L-5)', () => {
+  const sc = (v: unknown): string | undefined => code(() => assertNoSecretBox(v));
+  it('finds boxes under symbol keys, non-enumerable props, class fields, typed-array props, error cause', () => {
+    expect(sc({ [Symbol('k')]: fresh() })).toBe('SECRET_IN_PAYLOAD');
+    expect(sc(Object.defineProperty({}, 'hid', { value: fresh(), enumerable: false }))).toBe('SECRET_IN_PAYLOAD');
+    class Holder { public inner = fresh(); }
+    expect(sc(new Holder())).toBe('SECRET_IN_PAYLOAD');
+    const ta = Object.assign(new Uint8Array(4), { extra: fresh() });
+    expect(sc(ta)).toBe('SECRET_IN_PAYLOAD');
+    expect(sc(new Error('x', { cause: fresh() }))).toBe('SECRET_IN_PAYLOAD');
+    expect(sc(new Map([['a', new Set([[fresh()]])]]))).toBe('SECRET_IN_PAYLOAD');
+    expect(sc(Object.assign(new Map(), { side: fresh() }))).toBe('SECRET_IN_PAYLOAD');
+  });
+  it('handles cycles and large typed arrays', () => {
+    const a: Record<string, unknown> = {};
+    a['self'] = a;
+    const m = new Map<unknown, unknown>();
+    m.set('m', m);
+    expect(sc([a, m, new Uint8Array(100_000)])).toBeUndefined();
+  });
+  it('fails closed with SecretBoxError on getters, proxies, WeakMap/WeakSet', () => {
+    let called = false;
+    const g = { get x(): unknown { called = true; throw new Error('boom'); } };
+    expect(sc(g)).toBe('INVALID_INPUT');
+    expect(called).toBe(false);
+    const px = new Proxy({}, { ownKeys: () => { throw new Error('trap'); } });
+    expect(sc(px)).toBe('INVALID_INPUT');
+    expect(sc(new WeakMap())).toBe('INVALID_INPUT');
+    expect(sc({ w: new WeakSet() })).toBe('INVALID_INPUT');
+  });
+});
