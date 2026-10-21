@@ -32,3 +32,6 @@ Pages cannot send HTTP headers, so `public/_headers` is dropped. Lost: `frame-an
 - Payments disabled: no deployment manifest.
 - Embed SDK/popup mode not supported on Pages (see apps/web/DEVIATIONS.md).
 - Not a hardened production host.
+
+## Theme (cypher / neon)
+A CSS-only overlay in `docs/remote/pages-theme/` (see its README for font source, license, contrast). After the normal build and `scan-bundle` step run `bash docs/remote/pages-theme/apply-theme.sh "$OUT"`, then publish as above. Source in `apps/web` is not modified; CSP meta unchanged (same-origin CSS and font only).
