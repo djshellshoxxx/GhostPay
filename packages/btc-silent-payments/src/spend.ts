@@ -43,6 +43,8 @@ export interface BuildSpendParams {
   /** Fee rate in sat/vB (fractional allowed, e.g. 1.5). Caller-supplied; this package has no fee oracle. */
   readonly feeRate: number;
   readonly network: SilentPaymentNetwork;
+  /** With `network: 'testnet'`: use `bcrt` instead of `tb` for regular addresses (bitcoind regtest). Default false. */
+  readonly regtest?: boolean;
   /** Outputs and change below this are rejected / folded into the fee. Default 546. */
   readonly dustLimitSats?: bigint;
   /** Signal BIP-125 replaceability. Default true. */
@@ -96,13 +98,16 @@ function isSilentPaymentAddress(address: string): boolean {
   return /^t?sp1/i.test(address);
 }
 
-function btcNetwork(n: SilentPaymentNetwork): typeof NETWORK {
-  return n === 'mainnet' ? NETWORK : TEST_NETWORK;
+const REGTEST_NETWORK: typeof NETWORK = { ...TEST_NETWORK, bech32: 'bcrt' };
+
+function btcNetwork(n: SilentPaymentNetwork, regtest = false): typeof NETWORK {
+  if (n === 'mainnet') return NETWORK;
+  return regtest ? REGTEST_NETWORK : TEST_NETWORK;
 }
 
-function scriptOf(address: string, network: SilentPaymentNetwork): Uint8Array {
+function scriptOf(address: string, network: SilentPaymentNetwork, regtest: boolean): Uint8Array {
   try {
-    return OutScript.encode(Address(btcNetwork(network)).decode(address));
+    return OutScript.encode(Address(btcNetwork(network, regtest)).decode(address));
   } catch {
     return fail('INVALID_ADDRESS');
   }
@@ -161,7 +166,7 @@ export function verifyKeyPathSpend(
  * dust limit is folded into the fee. After signing, every signature is verified with noble schnorr
  * and the vsize is checked against the estimate; any mismatch throws and nothing is returned.
  * Output order is destinations then change (callers wanting shuffling must build their own).
- * Hardware-wallet signing is out of scope. Regtest addresses (`bcrt`) are not supported (`testnet` = `tb`).
+ * Hardware-wallet signing is out of scope. Regular addresses are `tb` for `testnet`, or `bcrt` when `regtest` is set.
  *
  * @param params See {@link BuildSpendParams}.
  * @returns Signed PSBT and final transaction.
@@ -199,7 +204,7 @@ export function buildSpendTransaction(params: BuildSpendParams): SpendResult {
   }));
   const hasChangeSlot = !sweep && params.changeAddress !== undefined;
   const lenOf = (p: { address: string; isSp: boolean }): number =>
-    p.isSp ? P2TR_SCRIPT_LEN : scriptOf(p.address, network).length;
+    p.isSp ? P2TR_SCRIPT_LEN : scriptOf(p.address, network, params.regtest === true).length;
   const destLens = planned.map(lenOf);
   const changeLen =
     params.changeAddress === undefined
@@ -287,7 +292,7 @@ export function buildSpendTransaction(params: BuildSpendParams): SpendResult {
         if (d === undefined) return fail('INVALID_INPUT');
         tx.addOutput({ script: Uint8Array.of(0x51, 0x20, ...d.xOnlyPublicKey), amount: p.amountSats });
       } else {
-        tx.addOutputAddress(p.address, p.amountSats, btcNetwork(network));
+        tx.addOutputAddress(p.address, p.amountSats, btcNetwork(network, params.regtest === true));
       }
     }
 
