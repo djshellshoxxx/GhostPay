@@ -1,7 +1,7 @@
 import http from 'node:http';
 import https from 'node:https';
 import { listenLoopback, trackSockets, type Running } from './loopback.js';
-import { TEST_TLS_CERT, TEST_TLS_KEY } from './tlsFixture.js';
+import { TEST_TLS_CERT, TEST_TLS_KEY } from './test/tlsFixture.js';
 
 /** One request recorded by an echo server. */
 export interface HttpRecord {

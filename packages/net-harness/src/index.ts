@@ -10,4 +10,4 @@ export { startOhttpGateway, startOhttpRelay, OHTTP_REQ_TYPE, OHTTP_RES_TYPE, OHT
 export type { OhttpGateway, OhttpGatewayOptions, OhttpRelay, OhttpRecord } from './ohttp.js';
 export { installPoisonedResolver } from './poisonedResolver.js';
 export type { PoisonedResolver } from './poisonedResolver.js';
-export { TEST_TLS_CERT, TEST_TLS_KEY, TEST_TLS_HOSTNAMES } from './tlsFixture.js';
+export { TEST_TLS_CERT, TEST_TLS_KEY, TEST_TLS_HOSTNAMES } from './test/tlsFixture.js';
