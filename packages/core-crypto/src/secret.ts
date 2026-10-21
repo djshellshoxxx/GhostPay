@@ -10,7 +10,12 @@ export const CURVE_ORDER: bigint = secp256k1.Point.Fn.ORDER;
 
 /**
  * A 32-byte secret scalar in [1, n-1]. Instances throw on `JSON.stringify`,
- * `String()`, template interpolation and `util.inspect`/`console.log`.
+ * `String()`, template interpolation, `util.inspect`/`console.log`, `slice` and `subarray`.
+ *
+ * @security Best-effort guardrail (audit S3-08), not a boundary: spread, `Array.from`, `Buffer.from`,
+ * `structuredClone` and `TextDecoder` still read the bytes. Long-lived keys belong in a
+ * `@ghostpay/secret-box` `SecretBox` (apps/web `session.ts` does this); a `SecretScalar` should only be a short-lived
+ * temporary, wiped with {@link zeroize}.
  */
 export type SecretScalar = Uint8Array & { readonly [secretBrand]: 'SecretScalar' };
 
@@ -41,6 +46,14 @@ class SecretBytes extends Uint8Array<ArrayBuffer> {
     throw new TypeError(REDACTED);
   }
   public [Symbol.toPrimitive](): never {
+    throw new TypeError(REDACTED);
+  }
+  // S3-08: `slice`/`subarray` used to return a plain, unprotected Uint8Array through the species override.
+  // Copy a secret only through `unsafeRevealSecret`, or hold it in a `@ghostpay/secret-box` SecretBox.
+  public override slice(): never {
+    throw new TypeError(REDACTED);
+  }
+  public override subarray(): never {
     throw new TypeError(REDACTED);
   }
 }

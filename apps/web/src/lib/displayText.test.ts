@@ -4,7 +4,8 @@ import { payeeFingerprint, safeText } from './displayText';
 describe('safeText (S3-12)', () => {
   it('passes clean text through unchanged', () => {
     expect(safeText('Consulting, March 2026')).toEqual({ text: 'Consulting, March 2026', flagged: false });
-    expect(safeText('line one\nline two\tend').flagged).toBe(false);
+    // the schema already rejects C0 controls; if one arrives anyway, newline and tab stay readable but the text is flagged
+    expect(safeText('line one\nline two\tend')).toEqual({ text: 'line one\nline two\tend', flagged: true });
   });
 
   it('makes every hostile character visible instead of reordering or hiding text', () => {
