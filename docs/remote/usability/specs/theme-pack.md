@@ -1,45 +1,38 @@
 # Spec: theme-pack: Selectable themes incl. cypher and high-contrast
-Impact 2/5 | Effort S | Score 2 | Build wave 1 | Depends on: a11y-pass
+Impact 2/5 | Effort S | Score 2 | Build wave 1 | Depends on: none (originally a11y-pass; WCAG math is implemented in `theme.ts`)
+Status: logic built in `packages/ux-core/src/theme.ts` (swarm 7). Applying CSS, the Settings select and the cypher stylesheet file are UI wiring.
 
 ## Problem
 Theme setting offers system/light/dark only (settings.ts:11,129); the cypher theme exists only as a Pages overlay (docs/remote/pages-theme) and cannot be chosen in the app.
 
-## Exists today (verified in repo) vs missing
-- apps/web/src/lib/settings.ts:11 theme union; App.tsx data-theme effect.
-- docs/remote/pages-theme/theme.css, apply-theme.sh, Michroma OFL font.
-- apps/web/DEVIATIONS.md item 21: bundle scan forbids @font-face in app output.
-- Missing: everything described under Design.
+## Exists today (verified in repo)
+settings.ts theme union; App.tsx data-theme effect; docs/remote/pages-theme/theme.css; apps/web/DEVIATIONS.md item 21 (bundle scan forbids @font-face in app output).
 
 ## Design
-Theme registry {id,label,tokens, optional cssFile}. Built-in tokens for light/dark/high-contrast live in the app CSS; cypher ships as a separate same-origin static CSS + font file loaded only when selected (link element appended by the app, CSP style-src/font-src self already allow). Scan-bundle allowlist extended for that one static file. All themes validated by a11y-pass contrast checker in CI.
+- Closed token set (11): `bg surface text text-muted primary primary-text border danger success link focus-ring`; values strictly `#rrggbb`.
+- `ThemeDef {id, label, scheme, level: AA|AAA, motion: none|reduced-aware, tokens, cssFile?}`.
+- `THEMES` = `light`, `dark`, `high-contrast` (AAA, motion none), `cypher` (AA, motion none, `cssFile: "/themes/cypher.css"`). `THEME_IDS` = `system` + those.
+- `validateTheme(unknown) -> Violation[]` (never throws; violations carry static paths and numbers, never input text): id `^[a-z][a-z0-9-]{1,23}$`, label `^[A-Za-z0-9][A-Za-z0-9 ._-]{0,39}$`, scheme, level, motion, tokens (unknown/missing/bad colour), `cssFile` must equal `/themes/<id>.css`, plus contrast. Only own properties are read.
+- WCAG 2.x contrast: `relativeLuminance`, `contrastRatio` (unrounded, so 4.499 fails). 15 pair rules: text pairs (text, text-muted on bg/surface; primary-text on primary; link/danger/success on bg/surface) need 4.5 (AA) or 7 (AAA); UI parts (border/bg, focus-ring on bg and surface, primary/bg) need 3.
+- `cssFor(theme)`: refuses any theme with violations; otherwise emits exactly `:root[data-theme="<id>"]{color-scheme:<scheme>;--gp-<token>:#rrggbb;...}` and the same variables as a map for `style.setProperty`. Values and ids are regex-validated before use, so no value can introduce a selector, `url()`, comment or `}`.
+- `parseThemeJson(json)`: 4 KiB cap, validates, lower-cases colours, drops unknown top-level fields (for a future "import theme").
+- `themeAttr(unknown)` returns a registered id or `system` (THEME-1). `themeCssHref(id)` returns the only stylesheet href the app may append; `isSameOriginThemeHref` is the guard to assert before appending.
 
 ## Privacy and security impact
-No remote fonts; selecting a theme fetches one same-origin file (visible only to the host serving the app anyway).
-
-## Build ownership
-- NEW package: `packages/theme-pack` (TypeScript, ESM, no UI, no DOM except where noted, no network unless stated; own README.md, DEVIATIONS.md, vitest tests, coverage thresholds like sibling packages). Name `@ghostpay/theme-pack`.
-- Public API (exports from `src/index.ts`):
-- `THEMES: readonly ThemeDef[]`
-- `validateTheme(t): Violation[] (contrast via a11y-kit)`
-- `themeAttr(id): string`
-- The package may import only: other `@ghostpay/*` packages named in Depends on, `@noble/*` already in the lockfile. New third-party dependencies need a THIRD_PARTY.md entry before merge.
-
-## UI wiring (apps/web; keep minimal, serialise in the single wiring session)
-- apps/web/src/lib/settings.ts (theme union widened, sanitised)
-- apps/web/src/views/Settings.tsx (select)
-- apps/web/src/App.tsx (apply + lazy link)
-- apps/web/scripts/scan-bundle.mjs (allow theme file)
-- Add `@ghostpay/theme-pack` to `apps/web/package.json` dependencies. Shared hot files (`state.tsx`, `App.tsx`, `lib/services.ts`, `lib/defaultServices.ts`, `lib/settings.ts`) are touched by several specs: wire them one spec at a time in the order in README.md.
+No remote fonts or styles; selecting cypher fetches one same-origin file. Imported themes cannot carry URLs or arbitrary CSS.
 
 ## Requirements
-1. **THEME-1** MUST Unknown stored theme falls back to system.
-2. **THEME-2** MUST Every theme passes AA contrast validation.
-3. **THEME-3** MUST Cypher animation-free; honours prefers-reduced-motion.
-4. **THEME-4** MUST Theme file loaded only from same origin.
-5. **THEME-5** SHOULD Preview swatch in Settings.
+1. **THEME-1** MUST Unknown or non-string stored theme -> `system`.
+2. **THEME-2** MUST Every registered theme has zero violations (AA text 4.5, UI 3; high-contrast AAA 7).
+3. **THEME-3** MUST Cypher `motion: "none"`; reduced-aware themes disable motion under `prefers-reduced-motion` (stylesheet rule, wiring).
+4. **THEME-4** MUST Theme file only from `/themes/<id>.css`, same origin; exactly one `<link>` appended, never duplicated.
+5. **THEME-5** SHOULD Preview swatch from `tokens` in Settings.
+6. **THEME-6** MUST CSS output only for valid themes and only through the fixed template.
 
-## Acceptance tests
-1. **T-1** sanitizeSettings({theme:"evil"}) -> "system".
-2. **T-2** validateTheme(cypher) has no violations.
-3. **T-3** Selecting cypher appends exactly one <link> to same-origin href.
-Plus: package coverage thresholds 90/85/90/90 (as apps/web), `npm run typecheck`, `npm run lint`, bundle scan (`apps/web/scripts/scan-bundle.mjs`) still clean, no new network host in the e2e network log.
+## Acceptance tests (`theme.test.ts`)
+1. **T-1** `themeAttr` matrix (`evil`, `LIGHT`, `__proto__`, numbers, arrays) -> `system`.
+2. **T-2** `validateTheme` on every THEMES entry is `[]`; hc text/bg and muted/surface >= 7.
+3. **T-3** (e2e, wiring) selecting cypher appends exactly one same-origin `<link>`.
+4. **T-4** injection payloads in tokens (`url(...)`, `#fff;}body{...`, newline, `@import`, objects) -> `BAD_COLOR`; `cssFile` variants (`//host`, `..`, query, backslash, other id) -> `BAD_CSS_FILE`.
+5. **T-5** 4.5 boundary: `#767676` on white passes, `#777777` fails; AAA light fails; ui 3:1 checks.
+6. **T-6** property (500 runs): `cssFor` output either refused or matches the fixed template regex.

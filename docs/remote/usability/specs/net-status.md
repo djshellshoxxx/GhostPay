@@ -1,48 +1,47 @@
-# Spec: net-status: Status and health page
+# Spec: net-status: Status and health
 Impact 3/5 | Effort S | Score 3 | Build wave 0 | Depends on: none
+Status: pure state machine built in `packages/ux-core/src/netstate.ts` (swarm 7). The probe runner (fetch, timeouts, storage/wallet probes) is NOT part of ux-core and stays in the wiring session.
 
 ## Problem
-Failures (no RPC, wrong chain id, relayer down, wrong device clock, blocked storage) surface late and cryptically; invoice expiry depends on the device clock.
+Failures (no RPC, wrong chain id, relayer down, wrong device clock) surface late and cryptically; invoice expiry depends on the device clock.
 
-## Exists today (verified in repo) vs missing
+## Exists today (verified in repo)
 - apps/web/src/views/Settings.tsx:47-60 per-chain RPC "Test" (chain id check only).
-- apps/relayer/src/server.ts:24-33,233 serves GET /healthz and /v1/info.
-- apps/web/src/lib/release.ts release-hash widget (Home.tsx:20-60).
-- apps/web/src/lib/settings.ts storage-failure tolerance (saveSettings returns false).
-- Missing: everything described under Design.
+- apps/relayer/src/server.ts serves GET /healthz and /v1/info.
+- apps/web/src/lib/settings.ts storage-failure tolerance.
 
-## Design
-Check runner: independent checks return {id, status: ok|warn|fail|skipped, detail}. Checks: RPC reachable + chain id; latest block age (stale RPC); clock skew vs latest block timestamp (warn >120 s); relayer /healthz and /v1/info (only if relayerUrl set); manifest loaded per chain; storage available (localStorage, IndexedDB); wallet detected; worker support; secure context. Every network check goes only to endpoints the user configured, user-initiated (button) and never automatic on load. Results are held in memory.
+## Design (split in two layers)
+**Layer A, ux-core (built): reducer over injected probe results.**
+- State: `browserOnline`, `configuredChains`, per-chain RPC `EndpointState`, relayer `EndpointState`, `config`. No URLs or hosts, only chain ids and the literal `relayer`.
+- Events: `browser-online`, `browser-offline`, `configure {chainsWithRpc, hasRelayer}`, `probe {target, result, atMs}`.
+- `ProbeResult = {ok:true, latencyMs, blockTimestampSec?} | {ok:false, reason: timeout|network|http|chain-mismatch|bad-response}`.
+- Reachability: `unknown | reachable | degraded | unreachable | stale`. Unreachable after `failThreshold` (2) consecutive failures; one success recovers; latency over `slowMs` (3000) is degraded; successes older than `staleAfterMs` (300 s) read as stale.
+- Offline: probe failures are not counted (the network is the cause). Returning online resets counters and results to unknown so the user re-checks.
+- `clockSkewSec(localNowMs, blockTimestampSec)` = local minus block time, rounded; `|skew| > 120` raises `CLOCK_SKEW`.
+- `summarize(state, nowMs)` -> `{overall, rpcDown, relayer, errorCode}`; overall priority: offline, no-rpc, rpc-down, rpc-degraded, relayer-down, clock-skew, unknown, ok. `errorCode` is a ux-core catalog code (`OFFLINE NO_RPC RPC_UNREACHABLE RELAYER_UNREACHABLE CLOCK_SKEW`).
+- `backoffMs(failures, jitter01)` for a user-confirmed retry button; jitter injected.
+- Hostile probe data (negative/NaN latency or timestamp, unconfigured chain, relayer probe with no relayer) is ignored or downgraded to `bad-response`. At most 64 chains tracked.
+
+**Layer B, wiring (not built): check runner** `runChecks(env)` per original spec: RPC chain id and block age, relayer `/healthz` + `/v1/info`, manifest, storage, wallet, worker, secure context. Each check has an 8 s timeout and cannot throw; results feed `reduceNet` as `probe` events. Report text replaces hosts with "RPC for <chain name>" and contains no "http".
 
 ## Privacy and security impact
-No third-party endpoints (no "is the internet up" ping to a vendor). Relayer probe reveals IP to the relayer the user already chose; show that in the button label. No result persisted.
-
-## Build ownership
-- NEW package: `packages/net-status` (TypeScript, ESM, no UI, no DOM except where noted, no network unless stated; own README.md, DEVIATIONS.md, vitest tests, coverage thresholds like sibling packages). Name `@ghostpay/net-status`.
-- Public API (exports from `src/index.ts`):
-- `runChecks(env: CheckEnv, which?: CheckId[]): Promise<CheckResult[]>`
-- `type CheckEnv = {rpc(chainId): Promise<RpcLike|undefined>; fetchFn; nowMs; storage probes; wallets: () => Promise<number>}`
-- `clockSkewSec(localNowMs: number, blockTimestampSec: number): number`
-- `CHECK_IDS`
-- The package may import only: other `@ghostpay/*` packages named in Depends on, `@noble/*` already in the lockfile. New third-party dependencies need a THIRD_PARTY.md entry before merge.
-
-## UI wiring (apps/web; keep minimal, serialise in the single wiring session)
-- apps/web/src/views/Status.tsx (new)
-- apps/web/src/state.tsx + App.tsx (ViewId 'status', nav entry)
-- apps/web/src/views/Settings.tsx (link to Status after Test)
-- Add `@ghostpay/net-status` to `apps/web/package.json` dependencies. Shared hot files (`state.tsx`, `App.tsx`, `lib/services.ts`, `lib/defaultServices.ts`, `lib/settings.ts`) are touched by several specs: wire them one spec at a time in the order in README.md.
+No third-party endpoints, no "is the internet up" ping. Probes only go to endpoints the user configured, only on a button press (label states that the relayer sees the IP). Results held in memory only.
 
 ## Requirements
-1. **NETST-1** MUST No check runs without a user action.
-2. **NETST-2** MUST Each check has a timeout (default 8 s) and cannot throw out of runChecks.
-3. **NETST-3** MUST Relayer checks are skipped when relayerUrl is empty.
-4. **NETST-4** MUST Clock skew uses the RPC block timestamp, never a third-party time server.
-5. **NETST-5** SHOULD Copyable plain-text report with no URLs (hosts replaced by "RPC for <chain name>").
-6. **NETST-6** SHOULD Pair each fail with a ux-errors Guidance if installed.
+1. **NETST-1** MUST No probe without a user action (runner contract; reducer has no timers).
+2. **NETST-2** MUST Reducer never throws on any event sequence (property test).
+3. **NETST-3** MUST Relayer state ignores probes when no relayer is configured.
+4. **NETST-4** MUST Clock skew derives from the RPC block timestamp only.
+5. **NETST-5** MUST State contains no URL (test).
+6. **NETST-6** MUST Offline failures do not accumulate; online transition resets.
+7. **NETST-7** SHOULD Summary maps to a ux-core error code for guidance.
+8. **NETST-8** MUST Hostile probe numbers cannot produce `reachable`.
 
-## Acceptance tests
-1. **T-1** Mock RPC with chainId mismatch -> fail "different chain".
-2. **T-2** Block timestamp 10 min behind local clock -> warn with skew≈600.
-3. **T-3** relayerUrl="" -> relayer check skipped, zero fetch calls (spy).
-4. **T-4** Report string contains no "http" substring.
-Plus: package coverage thresholds 90/85/90/90 (as apps/web), `npm run typecheck`, `npm run lint`, bundle scan (`apps/web/scripts/scan-bundle.mjs`) still clean, no new network host in the e2e network log.
+## Acceptance tests (`netstate.test.ts`)
+1. **T-1** one failure tolerated, two -> `rpc-down` + `RPC_UNREACHABLE`, one success recovers.
+2. **T-2** block timestamp 600 s behind local clock -> skew 600, overall `clock-skew`; exactly 120 -> ok.
+3. **T-3** no relayer configured: probe returns same state object; summary relayer `not-configured`.
+4. **T-4** `JSON.stringify(state)` has no `http` or `://`.
+5. **T-5** offline/online transitions; stale after 400 s; degraded at 3001 ms; hostile data matrix; 300-run event-sequence property.
+6. **T-6** backoff 1000..60000 with injected jitter; junk inputs sanitised.
+Runner-level tests (chain-id mismatch -> "different chain"; zero fetch spies when relayerUrl is empty; report has no "http") belong to the wiring session.

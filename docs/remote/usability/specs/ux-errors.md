@@ -1,45 +1,44 @@
 # Spec: ux-errors: Error recovery guidance
 Impact 4/5 | Effort S | Score 4 | Build wave 0 | Depends on: none
+Status: logic built in `packages/ux-core/src/errors.ts` (swarm 7). Package name for the app: `@ghostpay/ux-core` (supersedes the planned `@ghostpay/ux-errors`).
 
 ## Problem
 Errors are generic ("Something went wrong. Nothing was sent.", "Blocked by a safety check (CODE)") and give no next step.
 
-## Exists today (verified in repo) vs missing
-- apps/web/src/lib/errors.ts:19-43 userMessage maps InvoiceError/ChainAdapterError/GhostPayCryptoError to fixed text; chain-adapter codes are shown raw (errors.ts:38).
-- docs/user/troubleshooting.md has a symptom table that the app does not link to.
-- Missing: everything described under Design.
+## Exists today (verified in repo)
+- apps/web/src/lib/errors.ts:19-43 `userMessage` maps InvoiceError / ChainAdapterError / GhostPayCryptoError to fixed text; adapter and crypto codes are shown raw.
+- docs/user/troubleshooting.md symptom table is not linked from the app.
 
 ## Design
-Pure map from stable error code (plus context: view, chain, has-RPC, has-relayer) to {summary, cause, steps[], severity, retrySafe, helpAnchor}. Steps are plain text keys, never interpolated user input. The app shows summary + "What to do" list + retry-safety line ("Nothing was sent" only when the caller proves it). Unknown codes fall back to a generic entry that still lists the three universal steps (check RPC, reload, see troubleshooting).
+Pure catalog keyed by stable code. `recover(code, ctx)` returns `Guidance`:
+`{code, summary, cause, steps: Step[], severity, retrySafe, docAnchor}` where `Step = {key, text, action}`.
+- `key` is a stable i18n key (`step.<name>`); `text` is static English; `action` is one of `open-settings-rpc | open-settings-relayer | reload | open-troubleshooting | go-online | none` so the UI can render a button.
+- Catalog covers 11 invoice, 13 chain-adapter and 16 crypto codes (mirrored from source and diffed by a test) plus 10 app codes: `OFFLINE NO_RPC RPC_UNREACHABLE RELAYER_UNREACHABLE CLOCK_SKEW STORAGE_BLOCKED STORAGE_QUOTA STORAGE_CORRUPT WALLET_MISSING USER_REJECTED`.
+- Context rules: network-class entries (and the generic entry) get `go-online` first when `ctx.online=false`, else `add RPC` first when `ctx.hasRpc=false`. `RELAYER_UNREACHABLE` with `hasRelayer=false` leads with the relayer step. Steps are de-duplicated, order stable.
+- `ctx.phase` (`prepare|sign|broadcast|unknown`, default unknown) is how the caller proves progress. `retrySafe` is `yes` only if the entry is a pre-signing failure AND `phase==='prepare'`; `no` when the entry is `SIGNING_FAILED` or phase is `sign`/`broadcast`; otherwise `unknown`.
+- `retryLine(g)` renders the one-line safety statement; "Nothing was sent" appears only for `yes`.
+- `codeOf(thrown)` extracts a code from an unknown thrown value, accepting only `^[A-Z][A-Z0-9_]{1,39}$`; everything else is `UNKNOWN`.
+- `diagnostics(code, appVersion)` returns the text for "Copy diagnostics": code and version only, each shape-checked.
+- Unknown / malformed / prototype-name codes (`__proto__`, `constructor`) use the generic entry with steps `checkRpc, reload, docs`.
 
 ## Privacy and security impact
-No telemetry; no error text leaves the device. Messages must never echo links, keys, RPC URLs (preserves errors.ts contract). "Copy diagnostics" button copies only code + app version, never state.
-
-## Build ownership
-- NEW package: `packages/ux-errors` (TypeScript, ESM, no UI, no DOM except where noted, no network unless stated; own README.md, DEVIATIONS.md, vitest tests, coverage thresholds like sibling packages). Name `@ghostpay/ux-errors`.
-- Public API (exports from `src/index.ts`):
-- `recover(code: string, ctx: {view; chainId?; hasRpc; hasRelayer; online}): Guidance`
-- `listCodes(): string[] (for coverage test)`
-- `type Guidance = {summary; steps: string[]; retrySafe: "yes"|"no"|"unknown"; docAnchor?: string; severity: "info"|"warn"|"error"}`
-- The package may import only: other `@ghostpay/*` packages named in Depends on, `@noble/*` already in the lockfile. New third-party dependencies need a THIRD_PARTY.md entry before merge.
-
-## UI wiring (apps/web; keep minimal, serialise in the single wiring session)
-- apps/web/src/lib/errors.ts (add code passthrough; keep userMessage signature)
-- apps/web/src/components/Common.tsx (Notice gets optional steps list)
-- each view that renders userMessage (Pay, Scan, Sweep, Settings, SellerKeys, CreateInvoice): replace text with <ErrorNotice error=...>
-- Add `@ghostpay/ux-errors` to `apps/web/package.json` dependencies. Shared hot files (`state.tsx`, `App.tsx`, `lib/services.ts`, `lib/defaultServices.ts`, `lib/settings.ts`) are touched by several specs: wire them one spec at a time in the order in README.md.
+No telemetry; nothing leaves the device. Output is assembled from static strings only: no input is interpolated, so links, keys, addresses and RPC URLs cannot appear. Own-property lookup prevents prototype-key confusion.
 
 ## Requirements
-1. **UXERR-1** MUST Every ChainAdapterError, InvoiceError and GhostPayCryptoError code known to the app has a Guidance entry; a test enumerates the code unions and fails on a missing one.
-2. **UXERR-2** MUST Guidance text contains no interpolation of user-supplied strings.
-3. **UXERR-3** MUST "retrySafe: yes" only for errors raised before any signing or broadcast.
-4. **UXERR-4** MUST Output is deterministic and pure (no I/O).
-5. **UXERR-5** SHOULD Link each entry to the matching docs/user/troubleshooting.md row anchor.
-6. **UXERR-6** SHOULD Offer context-aware first step (no RPC configured -> "Add an RPC in Settings" button).
+1. **UXERR-1** MUST Every code in InvoiceErrorCode, AdapterErrorCode and CryptoErrorCode has an entry; a test parses the three unions from source and fails on any difference.
+2. **UXERR-2** MUST No interpolation of user-supplied strings anywhere in Guidance.
+3. **UXERR-3** MUST `retrySafe: "yes"` only for pre-signing errors with caller-proven `phase: "prepare"`.
+4. **UXERR-4** MUST Pure and deterministic; no I/O, clock or randomness.
+5. **UXERR-5** SHOULD Every entry has a `docAnchor` (lower-case slug) for a docs/user/troubleshooting.md row.
+6. **UXERR-6** SHOULD Context-aware first step (offline, then no RPC).
+7. **UXERR-7** MUST `diagnostics` output contains only a well-formed code and version.
+8. **UXERR-8** MUST `recover` never throws, for any `code` value including non-strings.
 
-## Acceptance tests
-1. **T-1** Given every code in the three error enums, recover() returns non-empty summary and >=1 step.
-2. **T-2** Property: no output contains a 0x-prefixed 40-hex run or "https://" for arbitrary ctx.
-3. **T-3** With ctx.hasRpc=false and code=RPC_UNREACHABLE the first step names Settings.
-4. **T-4** Unknown code returns the generic entry.
-Plus: package coverage thresholds 90/85/90/90 (as apps/web), `npm run typecheck`, `npm run lint`, bundle scan (`apps/web/scripts/scan-bundle.mjs`) still clean, no new network host in the e2e network log.
+## Acceptance tests (all in `errors.test.ts`)
+1. **T-1** every code in the three unions plus app codes yields non-empty summary and at least one step; catalog equals the union of the lists.
+2. **T-2** property (300 runs, arbitrary strings and contexts): JSON of the Guidance has no `0x`+40-hex and no `http(s)://`.
+3. **T-3** `hasRpc=false`, `RPC_UNREACHABLE`: first step action is `open-settings-rpc` and text names Settings.
+4. **T-4** unknown codes (`NOPE`, empty, `__proto__`, `constructor`, 500 chars, `0xabc`, non-string) return `code:"UNKNOWN"` with the three universal steps.
+5. **T-5** retrySafe matrix: unknown phase -> unknown; prepare + pre-sign -> yes; sign -> no; `SIGNING_FAILED` -> no; `RPC_FAILURE`+prepare -> unknown.
+6. **T-6** `diagnostics("0xabc https://x", "v1 https://evil")` gives UNKNOWN / unknown.
+Gates: `npm run typecheck && npm run lint && npm test` (thresholds 95/90/95/95), bundle scan clean, no new network host.
