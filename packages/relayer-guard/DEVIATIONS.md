@@ -6,3 +6,7 @@
 4. **Overflow bucket** is shared by all newcomers while the table is full of active keys (availability over per-client fairness during a flood).
 5. Classification of mined reverts (`mined_revert_state_changed` vs `mined_revert_unexplained`) requires a re-simulation the relayer does not do yet.
 6. Primary RFCs (7239, 6585, 9110) could not be fetched in this session; behaviour is based on the MDN pages cited in the spec.
+7. **Challenge: `context_mismatch` dropped.** The context is inside the MAC, so a wrong context is indistinguishable from forgery and reports `bad_signature`; distinguishing them would be an oracle.
+8. **Challenge: store-full signalling.** `ReplayStore.markUsed` keeps its `boolean` contract; "full" is signalled by throwing (`ReplayStoreFullError`), and any throw maps to `replay_store_full` (fail closed). `AttemptLimiter` signals full by returning `Infinity`; a throw maps to `too_many_attempts`.
+9. **Challenge: unexpected internal errors** in `verify` (e.g. a throwing clock) are reported as `malformed` rather than thrown.
+10. **Challenge: difficulty is bound into the MAC**, so changing it invalidates outstanding tokens. Memory stores are per-process only.
