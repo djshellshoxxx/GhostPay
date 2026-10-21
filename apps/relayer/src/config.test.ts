@@ -179,6 +179,12 @@ describe('parseConfig', () => {
       const c = parse(good({ chains: [chain({ sweepRelayer: undefined })] }), { readManifest: (id) => MANIFEST(id) });
       expect(c.chains[0]?.sweepRelayer).toBe(SWEEP_CONTRACT);
     });
+    it('keeps the validated manifest on the chain so startup can read it back from the chain', () => {
+      const c = parse(good({ chains: [chain({ sweepRelayer: undefined })] }), { readManifest: (id) => MANIFEST(id) });
+      expect(c.chains[0]?.manifest?.sweepRelayer).toBe(SWEEP_CONTRACT);
+      expect(c.chains[0]?.manifest?.bytecodeHashes.sweepRelayer).toBe(`0x${'44'.repeat(32)}`);
+      expect(parse(good()).chains[0]?.manifest).toBeUndefined();
+    });
   });
 });
 

@@ -1,6 +1,6 @@
 import { CHAINS, createClient } from '@ghostpay/chain-adapters';
 import { IdbTagStore } from './idbStore';
-import { loadManifest } from './manifest';
+import { loadManifest, verifyManifestOnChain } from './manifest';
 import { localCheckpointStore } from './scanClient';
 import type { Services } from './services';
 import { TagVault, MemoryTagStore, type TagStore } from './tags';
@@ -25,6 +25,7 @@ export function createDefaultServices(): Services {
     sleep: (ms) => new Promise((r) => setTimeout(r, ms)),
     fetchFn: (u, i) => fetch(u, i),
     loadManifest: (id) => loadManifest(id),
+    verifyManifest: (m, rpc) => verifyManifestOnChain(m, rpc),
     createRpc: (chain, url) => createClient(chain, url),
     discoverWallets: () => discoverWallets(window),
     createScanWorker: createBrowserScanWorker,

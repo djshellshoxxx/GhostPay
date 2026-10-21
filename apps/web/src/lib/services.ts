@@ -1,6 +1,6 @@
-import type { ChainConfig, RpcClient } from '@ghostpay/chain-adapters';
+import type { ChainConfig, DeploymentManifest, RpcClient } from '@ghostpay/chain-adapters';
 import { createContext, useContext } from 'react';
-import type { ManifestState } from './manifest';
+import type { ManifestState, VerifyOutcome } from './manifest';
 import type { CheckpointStore, ScanWorkerLike } from './scanClient';
 import type { TagVault } from './tags';
 import type { WalletInfo } from './wallet';
@@ -11,6 +11,8 @@ export interface Services {
   readonly sleep: (ms: number) => Promise<void>;
   readonly fetchFn: (url: string, init: RequestInit) => Promise<Response>;
   readonly loadManifest: (chainId: number) => Promise<ManifestState>;
+  /** On-chain read-back of a loaded manifest (fail closed). `rpc` is `undefined` when none is configured. */
+  readonly verifyManifest: (manifest: DeploymentManifest, rpc: RpcClient | undefined) => Promise<VerifyOutcome>;
   readonly createRpc: (chain: ChainConfig, url: string) => Promise<RpcClient>;
   readonly discoverWallets: () => Promise<readonly WalletInfo[]>;
   readonly createScanWorker: () => ScanWorkerLike;

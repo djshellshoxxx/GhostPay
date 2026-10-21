@@ -1,6 +1,8 @@
 import {
   fetchAnnouncements,
+  verifyAnnouncementAmount,
   type Address,
+  type AmountVerification,
   type ChainConfig,
   type DeploymentManifest,
   type RpcClient,
@@ -23,6 +25,15 @@ export interface ScanMatch {
   readonly stealthAddress: Address;
   readonly metadata: ParsedMetadata | undefined;
   readonly viaRouter: boolean;
+  /**
+   * `verified`: the amount is confirmed by the manifest router or by allowlisted ERC-20 Transfer logs.
+   * `claimed`: the amount comes only from payer-written announcement metadata and must NOT be shown as received.
+   */
+  readonly verification: AmountVerification;
+  /** Confirmations at the chain head seen when this page was fetched (1 = newest block). */
+  readonly confirmations: bigint;
+  /** True only once `confirmations > chain.finalityDepth`; below that a reorg can still remove the payment (TS-03). */
+  readonly final: boolean;
 }
 
 export interface ScanProgress {
@@ -52,6 +63,11 @@ export interface ScanParams {
   readonly checkpoints?: CheckpointStore;
   readonly onProgress?: (p: ScanProgress) => void;
   readonly onMatch?: (m: ScanMatch) => void;
+  /**
+   * A reorg was detected: the consumer must drop every match with `announcement.blockNumber >= rolledBackTo`.
+   * `runScan` has already removed them from its own result.
+   */
+  readonly onReorg?: (rolledBackTo: bigint, dropped: number) => void;
   readonly maxPages?: number;
 }
 
@@ -82,7 +98,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       register(resolve);
     });
 
-  const all: ScanMatch[] = [];
+  let all: ScanMatch[] = [];
   const byId = new Map<string, ScannedAnnouncement>();
   let cursor = p.cursor;
   let scanned = 0;
@@ -100,6 +116,12 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       const res = await fetchAnnouncements({ chain: p.chain, client: p.client, announcer: p.manifest.announcer, cursor });
       if (p.signal.aborted) break;
       skipped += res.skipped;
+      if (res.reorg !== undefined) {
+        const to = res.reorg.rolledBackTo;
+        const before = all.length;
+        all = all.filter((m) => m.announcement.blockNumber < to);
+        p.onReorg?.(to, before - all.length);
+      }
       for (const a of res.announcements) byId.set(a.id, a);
       const id = ++batchId;
       const reply = await wait((resolve) => {
@@ -118,11 +140,18 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         } catch {
           metadata = undefined;
         }
+        const viaRouter = announcement.caller.toLowerCase() === p.manifest.router.toLowerCase();
+        // Never throws; any RPC error degrades to `claimed`.
+        const verification = await verifyAnnouncementAmount({ client: p.client, announcement, metadata, viaRouter });
+        const confirmations = announcement.confirmations ?? 1n;
         const match: ScanMatch = {
           announcement,
           stealthAddress: m.stealthAddress as Address,
           metadata,
-          viaRouter: announcement.caller.toLowerCase() === p.manifest.router.toLowerCase(),
+          viaRouter,
+          verification,
+          confirmations,
+          final: confirmations > BigInt(p.chain.finalityDepth),
         };
         all.push(match);
         p.onMatch?.(match);

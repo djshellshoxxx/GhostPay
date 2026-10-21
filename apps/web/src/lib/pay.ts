@@ -33,7 +33,7 @@ import { decodeFunctionData, decodeFunctionResult, encodeFunctionData, getAddres
 import { UserFacingError } from './errors';
 import { fiatDecimals } from './format';
 import { computeTotals } from './invoiceCreate';
-import type { ManifestState } from './manifest';
+import { manifestBlockText, type ManifestState } from './manifest';
 
 export type TrustView =
   | { readonly kind: 'invalid-signature'; readonly text: string }
@@ -94,11 +94,7 @@ export function reviewInvoice(parsed: ParsedInvoice, nowSeconds: number, manifes
   let loaded: DeploymentManifest | undefined;
   if (manifest.status === 'loaded') loaded = manifest.manifest;
   else if (chain?.enabled === true) {
-    blockers.push(
-      manifest.status === 'invalid'
-        ? 'Payments disabled on this chain: the deployment manifest failed validation.'
-        : 'Payments disabled on this chain: no deployment manifest is loaded.',
-    );
+    blockers.push(manifestBlockText(manifest) ?? 'Payments disabled on this chain.');
   }
   return { invoice: inv, trust, encrypted: parsed.encrypted, expiry, chain, token, totals, manifest: loaded, blockers };
 }
@@ -143,9 +139,16 @@ export async function createPayContext(review: Review, client: RpcClient | undef
     if (feed === undefined) {
       throw new UserFacingError(`No price feed is configured for ${token.symbol}/${inv.fiat.currency} on ${chain.name}. This invoice cannot be paid from this app version.`);
     }
+    // TS-07: the invoice's maxAge is seller-authored, so the feed heartbeat must bound it. A feed without a known
+    // heartbeat cannot be used (fail closed). L2 feeds with a sequencer-uptime feed get the grace-period check (TS-13).
+    if (feed.heartbeatSeconds === undefined) {
+      throw new UserFacingError(`The ${token.symbol}/${inv.fiat.currency} price feed has no configured heartbeat, so its freshness cannot be checked. This invoice cannot be paid from this app version.`);
+    }
     const price = await readPrice(createAggregatorReader(client), feed.address, {
       now: BigInt(deps.nowSeconds),
       maxAgeSeconds: BigInt(Math.min(Math.max(inv.quote.expiresAt - inv.quote.timestamp, 60), 86_400)),
+      heartbeatSeconds: BigInt(feed.heartbeatSeconds),
+      ...(feed.sequencerUptimeFeed === undefined ? {} : { sequencerUptime: { feed: feed.sequencerUptimeFeed } }),
     });
     quoted = fiatToTokenAmount({
       fiatMinorUnits: BigInt(inv.fiat.minorUnits),

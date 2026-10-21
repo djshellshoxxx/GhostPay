@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../components/Common';
 import { useManifest } from '../components/Disclosure';
 import { formatUnits } from '../lib/format';
+import { manifestBlockText } from '../lib/manifest';
 import { userMessage } from '../lib/errors';
 import { runScan, type ScanMatch, type ScanProgress } from '../lib/scanClient';
 import { useServices } from '../lib/services';
@@ -21,6 +22,7 @@ export function Scan(): ReactNode {
   const [progress, setProgress] = useState<ScanProgress | undefined>(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
   const [done, setDone] = useState<string | undefined>(undefined);
+  const [reorgNote, setReorgNote] = useState<string | undefined>(undefined);
   const abort = useRef<AbortController | undefined>(undefined);
   const manifest = useManifest(chainId);
   const checkpoint = services.checkpoints.load(chainId);
@@ -45,6 +47,7 @@ export function Scan(): ReactNode {
   const begin = (): void => {
     setError(undefined);
     setDone(undefined);
+    setReorgNote(undefined);
     void (async () => {
       try {
         const chain = findChain(chainId);
@@ -68,7 +71,7 @@ export function Scan(): ReactNode {
         abort.current = ctl;
         setRunning(true);
         app.setMatches([]);
-        const found: ScanMatch[] = [];
+        let found: ScanMatch[] = [];
         const res = await runScan({
           chain,
           manifest: manifest.manifest,
@@ -83,6 +86,14 @@ export function Scan(): ReactNode {
           onMatch: (m) => {
             found.push(m);
             app.setMatches([...found]);
+          },
+          onReorg: (to, dropped) => {
+            found = found.filter((m) => m.announcement.blockNumber < to);
+            app.setMatches([...found]);
+            setReorgNote(
+              `A chain reorganisation was detected: ${String(dropped)} payment${dropped === 1 ? ' was' : 's were'} removed from the list (block ${to.toString()} and later). They are listed again only if they are still on the canonical chain.`,
+            );
+            app.announce('Chain reorganisation detected during the scan.');
           },
         });
         setDone(ctl.signal.aborted ? `Cancelled. ${String(res.scanned)} announcements checked.` : `Finished. ${String(res.scanned)} announcements checked, ${String(res.matches.length)} payments found.`);
@@ -111,7 +122,8 @@ export function Scan(): ReactNode {
             </select>
           )}
         </Field>
-        {manifest !== undefined && manifest.status !== 'loaded' && <Notice kind="warn">Payments disabled on this chain: no deployment manifest is loaded.</Notice>}
+        {manifest === undefined && <p className="hint" role="status">Loading the deployment manifest and checking it against the chain…</p>}
+        {manifest !== undefined && manifest.status !== 'loaded' && <Notice kind="warn">{manifestBlockText(manifest)}</Notice>}
         <Field label="Start block" hint={checkpoint === undefined ? 'The first block to scan from.' : `A checkpoint exists at block ${checkpoint.nextBlock.toString()}.`}>
           {(id, d) => <input id={id} aria-describedby={d} inputMode="numeric" value={start} onChange={(e) => { setStart(e.target.value); }} disabled={running} />}
         </Field>
@@ -122,7 +134,7 @@ export function Scan(): ReactNode {
           </div>
         )}
         <div className="actions">
-          <button type="button" className="btn btn-primary" onClick={begin} disabled={running}>Start scan</button>
+          <button type="button" className="btn btn-primary" onClick={begin} disabled={running || manifest === undefined}>Start scan</button>
           <button type="button" className="btn" onClick={() => { abort.current?.abort(); }} disabled={!running}>Cancel</button>
           {checkpoint !== undefined && (
             <button type="button" className="btn" onClick={() => { services.checkpoints.clear(chainId); setResume(false); app.announce('Checkpoint cleared.'); }} disabled={running}>
@@ -137,6 +149,7 @@ export function Scan(): ReactNode {
       </div>
       {done !== undefined && <Notice kind="ok">{done}</Notice>}
       {error !== undefined && <Notice kind="error">{error}</Notice>}
+      {reorgNote !== undefined && <Notice kind="warn" title="Reorganisation">{reorgNote}</Notice>}
 
       <Matches chainId={chainId} />
       <Tags chainId={chainId} />
@@ -144,11 +157,38 @@ export function Scan(): ReactNode {
   );
 }
 
-function describe(m: ScanMatch, chainId: number): string {
-  if (m.metadata === undefined) return 'Unknown payment layout';
-  if (m.metadata.kind === 'native') return `${formatUnits(m.metadata.netAmount, 18)} ${findChain(chainId)?.nativeSymbol ?? 'native'}`;
-  const t = tokensForChain(chainId).find((x) => x.address.toLowerCase() === m.metadata?.token.toLowerCase());
-  return t === undefined ? `${m.metadata.netAmount.toString()} units of unlisted token ${m.metadata.token}` : `${formatUnits(m.metadata.netAmount, t.decimals)} ${t.symbol}`;
+function formatAmount(kind: 'native' | 'erc20', token: string, amount: bigint, chainId: number): string {
+  if (kind === 'native') return `${formatUnits(amount, 18)} ${findChain(chainId)?.nativeSymbol ?? 'native'}`;
+  const t = tokensForChain(chainId).find((x) => x.address.toLowerCase() === token.toLowerCase());
+  return t === undefined ? `${amount.toString()} units of unlisted token ${token}` : `${formatUnits(amount, t.decimals)} ${t.symbol}`;
+}
+
+const CLAIMED_REASON: Readonly<Record<string, string>> = {
+  no_metadata: 'the payment has no readable amount',
+  native_unverifiable: 'native-coin amounts from direct payers cannot be verified here',
+  token_not_allowlisted: 'the token is not on the allowlist',
+  no_transfer_found: 'no matching token transfer to this address was found',
+  verification_failed: 'your RPC could not confirm the transfer',
+  not_checked: 'it was not checked',
+};
+
+/** The amount line. A `claimed` amount is labelled as the payer's claim and is never worded as money received. */
+export function describeAmount(m: ScanMatch, chainId: number): { readonly verified: boolean; readonly text: string } {
+  const v = m.verification;
+  if (v.status === 'verified') {
+    return { verified: true, text: `Verified: ${formatAmount(m.metadata?.kind ?? 'erc20', v.token, v.amount, chainId)}` };
+  }
+  const why = CLAIMED_REASON[v.reason] ?? 'it could not be verified';
+  if (v.claimed === undefined || m.metadata === undefined) return { verified: false, text: `Amount not verified (${why})` };
+  return { verified: false, text: `Claimed by the payer, not verified: ${formatAmount(m.metadata.kind, v.claimed.token, v.claimed.amount, chainId)} (${why})` };
+}
+
+function finality(m: ScanMatch, chainId: number): string {
+  const depth = findChain(chainId)?.finalityDepth ?? 0;
+  const n = m.confirmations.toString();
+  return m.final
+    ? `Final (${n} confirmations when scanned)`
+    : `Not final: ${n} of ${String(depth + 1)} confirmations when scanned. A reorganisation can still remove this payment; do not treat it as received yet.`;
 }
 
 function Matches(props: { readonly chainId: number }): ReactNode {
@@ -194,9 +234,13 @@ function Matches(props: { readonly chainId: number }): ReactNode {
           return (
             <li key={id} className="card">
               <p>
-                <strong>{describe(m, props.chainId)}</strong> in block {m.announcement.blockNumber.toString()}
+                <strong>{describeAmount(m, props.chainId).text}</strong> in block {m.announcement.blockNumber.toString()}
                 {m.viaRouter ? '' : ' (paid directly, no GhostPay fee)'}
               </p>
+              <p className={m.final ? 'hint' : 'pending'}>{finality(m, props.chainId)}</p>
+              {!describeAmount(m, props.chainId).verified && (
+                <p className="hint">Anyone can announce a payment with any amount. Only a verified amount is evidence of money received; check the balance before you rely on it.</p>
+              )}
               <p>One-time address: <Mono>{m.stealthAddress}</Mono></p>
               {tags[id] !== undefined && <p>Tag: <strong className="wrap">{tags[id]}</strong></p>}
               {unlocked && (

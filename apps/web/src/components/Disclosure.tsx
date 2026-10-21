@@ -1,23 +1,34 @@
 import { FEE_SCHEDULE } from '@ghostpay/chain-adapters';
 import { useEffect, useState, type ReactNode } from 'react';
-import type { ManifestState } from '../lib/manifest';
+import { applyVerification, type ManifestState } from '../lib/manifest';
 import { useServices } from '../lib/services';
+import { useApp } from '../state';
 import { Mono } from './Common';
 
-/** Loads the manifest state for one chain from the app origin. */
+/**
+ * Loads the manifest state for one chain from the app origin and reads it back from the chain through the user's RPC.
+ * `undefined` while loading/verifying. `loaded` is only ever reported after a successful read-back; with no RPC or any
+ * mismatch the state is `unverified` and every consumer keeps payments disabled (fail closed).
+ */
 export function useManifest(chainId: number | undefined): ManifestState | undefined {
   const services = useServices();
+  const { getRpc } = useApp();
   const [state, setState] = useState<{ chainId: number; value: ManifestState } | undefined>(undefined);
   useEffect(() => {
     if (chainId === undefined) return;
     let live = true;
-    void services.loadManifest(chainId).then((value) => {
+    void (async () => {
+      let value = await services.loadManifest(chainId);
+      if (value.status === 'loaded') {
+        const rpc = await getRpc(chainId).catch(() => undefined);
+        value = applyVerification(value, await services.verifyManifest(value.manifest, rpc).catch(() => ({ ok: false as const, reason: 'The read-back failed.' })));
+      }
       if (live) setState({ chainId, value });
-    });
+    })();
     return () => {
       live = false;
     };
-  }, [chainId, services]);
+  }, [chainId, services, getRpc]);
   return chainId !== undefined && state?.chainId === chainId ? state.value : undefined;
 }
 
@@ -44,7 +55,11 @@ export function FeeDisclosure(props: { readonly manifest: ManifestState | undefi
           {m.manifest.signature === undefined ? ', which carries no signature; this app does not verify manifest signatures' : ', whose signature this app does not verify'})
         </>
       ) : m === undefined ? (
-        <>the address in the deployment manifest (loading…)</>
+        <>the address in the deployment manifest (loading and verifying…)</>
+      ) : m.status === 'unverified' ? (
+        <>
+          the address in the deployment manifest, which could not be verified against the chain: <strong>payments disabled on this chain</strong> ({m.reason})
+        </>
       ) : (
         <>
           the address in the deployment manifest, but {props.chainName === undefined ? 'this chain' : props.chainName} has none loaded: <strong>payments disabled on this chain</strong>

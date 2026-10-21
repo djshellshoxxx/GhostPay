@@ -77,6 +77,74 @@ describe('runScan', () => {
     expect(JSON.stringify(batches, (_k, v: unknown) => (typeof v === 'bigint' ? v.toString() : v))).not.toContain(hexOf(s.keys.viewingSecret));
   });
 
+  it('marks router payments verified and direct payers claimed, with confirmations and finality (TS-03)', async () => {
+    const s = setup();
+    // head 2500: block 2100 has 401 confirmations (> 100 finalityDepth), block 2450 has 51 (not final).
+    const recent = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(s.keys), block: 2450, index: 0, caller: FAKE_ROUTER });
+    const res = await runScan({
+      chain,
+      manifest,
+      client: chainWith(2500, [...s.logs, recent.log]),
+      cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey),
+      viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+      createWorker: () => new InlineWorker(),
+      signal: new AbortController().signal,
+    });
+    const by = (addr: string) => res.matches.find((m) => m.stealthAddress === addr)!;
+    const router = by(s.mine.stealthAddress);
+    expect(router.verification).toMatchObject({ status: 'verified', source: 'router', amount: 1_000_000n });
+    expect(router.confirmations).toBe(2381n);
+    expect(router.final).toBe(true);
+    const direct = by(s.mine2.stealthAddress);
+    expect(direct.verification.status).toBe('claimed');
+    if (direct.verification.status === 'claimed') expect(direct.verification.claimed?.amount).toBe(1_000_000n);
+    expect(direct.final).toBe(true);
+    const fresh = by(recent.stealthAddress);
+    expect(fresh.confirmations).toBe(51n);
+    expect(fresh.final).toBe(false);
+  });
+
+  it('drops matches at or after a detected reorg and reports it through onReorg (TS-03)', async () => {
+    const keys = generateKeySet();
+    const meta = encodeMetaAddress(keys);
+    const early = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 120, index: 0, caller: FAKE_ROUTER });
+    const doomed = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 49_950, index: 0, caller: FAKE_ROUTER });
+    let forked = false;
+    const rpc = mockRpc(84532, (method, params) => {
+      if (method === 'eth_blockNumber') return '0x1d4c0'; // 120 000
+      if (method === 'eth_getBlockByNumber') {
+        const n = Number(params[0]);
+        const h = forked && n >= 49_000 ? `0x${'f'.repeat(48)}${n.toString(16).padStart(16, '0')}` : blockHash(n);
+        return { hash: h, parentHash: blockHash(n - 1), number: `0x${n.toString(16)}` };
+      }
+      if (method === 'eth_getLogs') {
+        const f = params[0] as { fromBlock: bigint; toBlock: bigint };
+        const all = forked ? [early.log] : [early.log, doomed.log]; // the payment at 49 950 is reorged away
+        return all.filter((l) => BigInt(l.blockNumber) >= f.fromBlock && BigInt(l.blockNumber) <= f.toBlock);
+      }
+      throw new Error(`unexpected ${method}`);
+    });
+    const reorgs: [bigint, number][] = [];
+    let pages = 0;
+    const res = await runScan({
+      chain,
+      manifest,
+      client: rpc,
+      cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(keys.spendingPublicKey),
+      viewingKey: unsafeRevealSecret(keys.viewingSecret),
+      createWorker: () => new InlineWorker(),
+      signal: new AbortController().signal,
+      onProgress: () => {
+        if (++pages === 1) forked = true;
+      },
+      onReorg: (to, dropped) => reorgs.push([to, dropped]),
+    });
+    expect(reorgs).toEqual([[49_900n, 1]]);
+    expect(res.matches.map((m) => m.stealthAddress)).toEqual([early.stealthAddress]);
+  });
+
   it('can be cancelled between pages and says so to the worker', async () => {
     const s = setup();
     const worker = new InlineWorker();

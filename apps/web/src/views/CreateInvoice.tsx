@@ -5,6 +5,7 @@ import { useManifest } from '../components/Disclosure';
 import { QrView } from '../components/QrView';
 import { userMessage } from '../lib/errors';
 import { buildInvoiceLink, tokenChoices, type CreatedInvoice, type InvoiceForm, type LineItemInput } from '../lib/invoiceCreate';
+import { manifestBlockText } from '../lib/manifest';
 import { useServices } from '../lib/services';
 import { useApp } from '../state';
 
@@ -105,7 +106,7 @@ export function CreateInvoice(): ReactNode {
             )}
           </Field>
           {manifest?.status !== 'loaded' && manifest !== undefined && (
-            <Notice kind="warn">Payments disabled on this chain: no deployment manifest is loaded. You can still create the invoice, but nobody can pay it from this app yet.</Notice>
+            <Notice kind="warn">{manifestBlockText(manifest)} You can still create the invoice, but nobody can pay it from this app yet.</Notice>
           )}
           <Field label="Token">
             {(id) => (

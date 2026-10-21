@@ -5,6 +5,7 @@ import { useManifest } from '../components/Disclosure';
 import { userMessage } from '../lib/errors';
 import { formatUnits } from '../lib/format';
 import { checkDestination, directSweep, getSweepQuote, readBalance, relayedSweep, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
+import { manifestBlockText } from '../lib/manifest';
 import { useServices } from '../lib/services';
 import { useApp } from '../state';
 
@@ -123,7 +124,7 @@ export function Sweep(): ReactNode {
         <dt>Balance on chain</dt>
         <dd>{balance === undefined ? 'unknown (an RPC for this chain is required)' : `${formatUnits(balance, decimals)} ${symbol}`}</dd>
       </dl>
-      {manifest !== undefined && loaded === undefined && <Notice kind="warn">Payments disabled on this chain: no deployment manifest is loaded.</Notice>}
+      {manifest !== undefined && loaded === undefined && <Notice kind="warn">{manifestBlockText(manifest)}</Notice>}
       {tokenAddr !== 'native' && tokenCfg === undefined && <Notice kind="error">This token is not on the allowlist. It will not be swept from here.</Notice>}
       <Notice kind="warn" title="Linkability">
         Moving funds from the one-time address to your destination is public. Anyone can link the two addresses, and a relayer additionally sees your IP address (hashed), the amount and the timing. Your stealth key is derived in memory for this action and is never shown or stored.

@@ -95,5 +95,33 @@ Everything else under `src/` (all views, components and `lib/` logic) is measure
     fragment changes and ignores late async results from a previous invoice (generation counter). N-06: relayer errors are read as
     `{"error":{"code"}}` and the response is read with a streaming 16 KiB cap. N-02 (web): `relayedSweep` re-checks quote expiry (30 s
     margin) and the fee cap immediately before signing. Gap 3: the fiat-quote option in Create invoice is disabled while
-    `chain-adapters` `FEEDS` is empty. NOT done: TS-03 reorg/depth display and the ERC-6538 publish UI, because the matching
-    `chain-adapters` exports were still uncommitted work in progress when this change was made.
+    `chain-adapters` `FEEDS` is empty. TS-03 and the ERC-6538 UI were completed afterwards, see 24.
+
+24. **Consuming the new chain-adapters APIs (2026-10-21).**
+    - **Manifest read-back (fail closed).** `useManifest` loads the manifest and then calls `verifyManifest` + `assertManifestVerified`
+      (via `Services.verifyManifest`, default `verifyManifestOnChain`) with the user's RPC for that chain. A manifest is `loaded` only after
+      that passes. No RPC configured, any mismatch (fee recipient, announcer, fee bps, router/relayer code hash), an RPC error or a thrown
+      error give the new state `unverified` with a reason that names failed checks only (never chain values). Pay, Scan, Sweep and Create
+      invoice treat it like an absent manifest (payments disabled, reason shown). Consequence: paying now REQUIRES a configured RPC for the
+      chain. One provider only (the single user RPC); `requireTwoProviders` is not used because Settings has one URL per chain. The
+      adapter is still created without `readback` because the gate sits upstream; the `readback` option is not threaded through. Verified
+      once per page view and chain, no 10-minute re-check. Scan's Start button is disabled while verification is pending.
+    - **TS-03.** `runScan` scans to the head (`minConfirmations` 1) and attaches `confirmations` and `final` (`confirmations >
+      finalityDepth`) to every match. Counts are as of the page fetch; they are not refreshed while the page is open. Matches that are not
+      final are labelled "Not final: n of finalityDepth+1 confirmations" with the warning not to treat them as received. A detected reorg
+      drops matches with `blockNumber >= rolledBackTo` (also from the list in the UI) and shows a notice; they come back only if re-found.
+      Sweep is not blocked for non-final payments (it works on the on-chain balance).
+    - **Claimed vs verified.** Each match carries `verifyAnnouncementAmount`'s verdict, using the user's RPC. Only `verified` is worded
+      "Verified: x"; anything else reads "Claimed by the payer, not verified: x (reason)". Direct native-coin payments always stay claimed.
+    - **ERC-6538 (`views/Registry.tsx`, inside Seller keys).** Collapsed, "optional", with a privacy warning. Publish and Clear need the
+      consent checkbox, a connected wallet, an RPC and `assertRegistryAvailable`. `REGISTRY_CODEHASHES` is empty upstream, so lookup and
+      publish are unavailable until the user pastes an independently verified runtime code hash ("Expected registry code hash"). That
+      field is a user-supplied trust anchor; this release ships no pinned hash. `registerKeysOnBehalf` and `incrementNonce` are not exposed.
+      The sent transaction is not re-decoded against the preview (it is built from the user's own meta-address only). Selectors are
+      those of the hand-written ABI (chain-adapters DEVIATIONS 17), unexecuted against the reference contract.
+    - **Quotes.** `createPayContext` passes `heartbeatSeconds` and, when the feed has one, `sequencerUptime` to `readPrice`. A feed with no
+      `heartbeatSeconds` is refused (fail closed) because the invoice's `maxAge` is seller-authored. `FEEDS` is still empty upstream, so
+      fiat-quote payment remains unreachable in practice. The second read for `withinSlippage` before sending is NOT implemented.
+    - e2e: the mock RPC now answers the read-back (`src/test/readbackRpc.ts`, fake bytecode whose keccak is in the test manifest), plus
+      a fail-closed test.
+

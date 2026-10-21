@@ -11,6 +11,7 @@ import { FAKE_FEE_RECIPIENT, FAKE_ROUTER, fakeManifest } from '../test/fakeManif
 import { BASE_FORM, NOW, makeParsed } from '../test/invoiceFixtures';
 import { MockWallet } from '../test/mockWallet';
 import { mockRpc } from '../test/mockRpc';
+import { verifyManifestOnChain } from '../lib/manifest';
 import { makeServices, renderApp, setHash } from '../test/render';
 import type { Services } from '../lib/services';
 
@@ -59,6 +60,27 @@ describe('Pay: invoice reading and review', () => {
     expect(screen.getByText(/Paying the stealth address directly costs no GhostPay fee/)).toBeTruthy();
     expect(screen.getByText('What becomes public')).toBeTruthy();
     expect(screen.getByText('Thanks')).toBeTruthy();
+  });
+
+  it('fails closed when the manifest cannot be verified against the chain: payment blocked, reason shown', async () => {
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    openWith(fragment, makeServices({
+      loadManifest: loaded(84532),
+      verifyManifest: () => Promise.resolve({ ok: false, reason: 'The deployment manifest does not match what is deployed on the chain (failed checks: router.codehash). Do not use this deployment.' }),
+    }));
+    const blocked = await screen.findByText('This payment cannot proceed');
+    expect(blocked.closest('.notice')?.textContent).toMatch(/could not be verified.*router\.codehash/);
+    expect(screen.queryByText('You pay (gross)')).toBeNull();
+    const cont = screen.queryByRole<HTMLButtonElement>('button', { name: 'Continue' });
+    expect(cont === null || cont.disabled).toBe(true);
+    expect(screen.queryByText(FAKE_FEE_RECIPIENT)).toBeNull();
+  });
+
+  it('with the real read-back and no RPC configured, payment stays disabled and asks for an RPC', async () => {
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    openWith(fragment, makeServices({ loadManifest: loaded(84532), verifyManifest: verifyManifestOnChain }));
+    const blocked = await screen.findByText('This payment cannot proceed');
+    expect(blocked.closest('.notice')?.textContent).toMatch(/Add one in Settings/);
   });
 
   it('keeps the fragment when the user turns auto-clear off, and offers to remove it', async () => {

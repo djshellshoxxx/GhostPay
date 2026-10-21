@@ -24,6 +24,7 @@ export function makeServices(over: Partial<Services> = {}): Services {
     sleep: () => Promise.resolve(),
     fetchFn: () => Promise.reject(new Error('network is not available in tests')),
     loadManifest: () => Promise.resolve({ status: 'absent' }),
+    verifyManifest: () => Promise.resolve({ ok: true }),
     createRpc: () => Promise.reject(new Error('no rpc in tests')),
     discoverWallets: () => Promise.resolve([]),
     createScanWorker: () => new InlineWorker(),

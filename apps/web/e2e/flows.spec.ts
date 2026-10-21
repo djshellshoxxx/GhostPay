@@ -1,7 +1,8 @@
 import { expect, test, type BrowserContext, type Page, type Route } from '@playwright/test';
 import { createServer, type Server } from 'node:http';
 import { makeLog } from '../src/test/announcements';
-import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER, fakeManifestJson } from '../src/test/fakeManifest';
+import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER } from '../src/test/fakeManifest';
+import { readbackManifestJson, readbackReply, type ReadbackFaults } from '../src/test/readbackRpc';
 import { ORIGIN, createInvoice, generateKeys, openFresh } from './helpers';
 
 const RPC = 'https://rpc.e2e.test';
@@ -15,9 +16,9 @@ interface SentTx {
 }
 
 /** Serves the (test-only, fake) manifest and a tiny JSON-RPC node; everything else off-origin stays blocked. */
-async function mockNetwork(context: BrowserContext, state: { sent?: SentTx; logs?: unknown[] }): Promise<{ requests: string[] }> {
+async function mockNetwork(context: BrowserContext, state: { sent?: SentTx; logs?: unknown[]; faults?: ReadbackFaults }): Promise<{ requests: string[] }> {
   const requests: string[] = [];
-  await context.route('**/deployments/84532.json', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: fakeManifestJson(84532) }));
+  await context.route('**/deployments/84532.json', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: readbackManifestJson(84532) }));
   await context.route(`${RPC}/**`, async (route: Route) => {
     const req = route.request();
     requests.push(req.url());
@@ -50,6 +51,10 @@ async function mockNetwork(context: BrowserContext, state: { sent?: SentTx; logs
         return reply(state.sent === undefined ? null : { status: '0x1', blockNumber: '0x1f5', to: state.sent.to });
       case 'eth_gasPrice':
         return reply('0x3b9aca00');
+      case 'eth_call':
+      case 'eth_getCode':
+        // The app reads the manifest back from the chain (fee recipient, announcer, fee bps, code hashes).
+        return reply(readbackReply(body.method, body.params, state.faults));
       default:
         return reply(null);
     }
@@ -147,6 +152,24 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await page.getByRole('button', { name: 'Send payment in my wallet' }).click();
     await expect(page.getByRole('alert')).toContainText('differs from the preview (call data)');
     await expect(page.getByRole('heading', { name: 'Submitted' })).toHaveCount(0);
+  });
+
+  test('fails closed when the chain disagrees with the manifest: the user sees why and cannot continue', async ({ page, context }) => {
+    const state: { sent?: SentTx; faults?: ReadbackFaults } = { faults: { feeRecipient: '0x9999999999999999999999999999999999999999' } };
+    await mockNetwork(context, state);
+    await injectWallet(page, state);
+    await configureRpc(page);
+    await page.goto('/');
+    await generateKeys(page);
+    const link = await createInvoice(page);
+    await openFresh(page, link);
+    await expect(page.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
+    await expect(page.getByText('This payment cannot proceed')).toBeVisible();
+    await expect(page.getByText(/could not be verified/).first()).toBeVisible();
+    await expect(page.getByText(/router\.FEE_RECIPIENT/).first()).toBeVisible();
+    await expect(page.getByText('You pay (gross)')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Continue' })).toBeDisabled();
+    expect(state.sent).toBeUndefined();
   });
 
   test('scans in a real Web Worker under the CSP, finds my payment, and stores tags only as ciphertext', async ({ page, context }) => {

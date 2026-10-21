@@ -34,6 +34,12 @@ export function userMessage(error: unknown): string {
     return error.code === 'SCHEMA' && error.path !== undefined ? `${base} (field: ${error.path})` : base;
   }
   if (error instanceof ChainAdapterError) {
+    if (error.code === 'REGISTRY_UNAVAILABLE') {
+      return 'The ERC-6538 registry could not be trusted on this chain (no pinned code hash, no code, or a different code hash). Nothing was sent.';
+    }
+    if (error.code === 'MANIFEST_READBACK_FAILED') {
+      return 'The deployment manifest does not match the chain. Payments are disabled.';
+    }
     return `Blocked by a safety check (${error.code}).`;
   }
   if (error instanceof GhostPayCryptoError) {

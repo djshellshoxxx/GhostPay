@@ -7,6 +7,7 @@ import {
   findToken,
   loadDeployment,
   requireEnabledChain,
+  type DeploymentManifest,
   validateRpcUrl,
 } from '@ghostpay/chain-adapters';
 import { parseAddress, parseObject, type JsonObject } from './codec.js';
@@ -24,6 +25,12 @@ export interface ChainRuntimeConfig {
   readonly name: string;
   readonly rpcUrl: string;
   readonly sweepRelayer: Address;
+  /**
+   * The validated deployment manifest for this chain, when one exists. Startup reads it back from the chain
+   * (`verifyManifest`: fee recipient, announcer, fee bps and runtime code hashes incl. the sweep relayer) and
+   * refuses to start on any mismatch. Absent only for dev/test configs that name `sweepRelayer` directly.
+   */
+  readonly manifest?: DeploymentManifest;
   readonly feeTo: Address;
   readonly tokens: readonly AllowedToken[];
   readonly nativeUsdMicro: bigint;
@@ -191,7 +198,8 @@ function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; inse
   }
 
   let sweepRelayer: Address | undefined;
-  if (manifestText !== undefined) sweepRelayer = loadDeployment(manifestText, chainId).sweepRelayer;
+  const manifest = manifestText === undefined ? undefined : loadDeployment(manifestText, chainId);
+  if (manifest !== undefined) sweepRelayer = manifest.sweepRelayer;
   if (c['sweepRelayer'] !== undefined) {
     const configured = wrap(() => parseAddress(c['sweepRelayer'], 'sweepRelayer'), `${path}.sweepRelayer`);
     if (sweepRelayer !== undefined && configured !== sweepRelayer) return bad(`${path}.sweepRelayer`, 'differs from the deployment manifest');
@@ -229,6 +237,7 @@ function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; inse
     name,
     rpcUrl,
     sweepRelayer: getAddress(sweepRelayer),
+    ...(manifest === undefined ? {} : { manifest }),
     feeTo,
     tokens: parseTokens(chainId, c['tokens'], path),
     nativeUsdMicro,

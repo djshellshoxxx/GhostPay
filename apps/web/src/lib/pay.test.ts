@@ -166,7 +166,7 @@ describe('createPayContext and amounts', () => {
   it('converts fiat with a fresh feed, rounding up for the payer', async () => {
     const { parsed } = await makeParsed({ amountMode: 'fiat_quote' });
     const review = reviewInvoice(parsed, NOW, LOADED(84532));
-    const feed: FeedConfig = { chainId: 84532, address: '0x7777777777777777777777777777777777777777', base: 'USDC', quote: 'USD' };
+    const feed: FeedConfig = { chainId: 84532, address: '0x7777777777777777777777777777777777777777', base: 'USDC', quote: 'USD', heartbeatSeconds: 3600 };
     const rpc = mockRpc(84532, (method, params) => {
       expect(method).toBe('eth_call');
       const data = (params[0] as { data: string }).data;
@@ -176,6 +176,42 @@ describe('createPayContext and amounts', () => {
     const c = await createPayContext(review, rpc, { nowSeconds: NOW, findFeedFn: () => feed });
     expect(c.quotedTokenAmount).toBe(100_000_000n); // 100.00 USD at 1.00 USD per USDC, 6 decimals
     expect(c.request.grossAmount).toBe(100_000_000n);
+  });
+  describe('price feed hardening (TS-07, TS-13)', () => {
+    const FEED_ADDR = '0x7777777777777777777777777777777777777777';
+    const SEQ_ADDR = '0x8888888888888888888888888888888888888888';
+    const feedRpc = (updatedAt: number, sequencer?: { answer: bigint; startedAt: number }) =>
+      mockRpc(84532, (method, params) => {
+        expect(method).toBe('eth_call');
+        const c = params[0] as { to: string; data: string };
+        if (c.data.startsWith('0x313ce567')) return encodeFunctionResult({ abi: chainlinkAggregatorAbi, functionName: 'decimals', result: 8 });
+        if (c.to.toLowerCase() === SEQ_ADDR) {
+          return encodeFunctionResult({ abi: chainlinkAggregatorAbi, functionName: 'latestRoundData', result: [1n, sequencer?.answer ?? 0n, BigInt(sequencer?.startedAt ?? 1), BigInt(NOW), 1n] });
+        }
+        return encodeFunctionResult({ abi: chainlinkAggregatorAbi, functionName: 'latestRoundData', result: [1n, 100_000_000n, BigInt(updatedAt), BigInt(updatedAt), 1n] });
+      });
+    const review = async () => reviewInvoice((await makeParsed({ amountMode: 'fiat_quote', quoteTtlMinutes: 1440 })).parsed, NOW, LOADED(84532));
+
+    it('refuses a feed with no known heartbeat instead of trusting the invoice-supplied max age', async () => {
+      const feed: FeedConfig = { chainId: 84532, address: FEED_ADDR, base: 'USDC', quote: 'USD' };
+      await expect(createPayContext(await review(), feedRpc(NOW), { nowSeconds: NOW, findFeedFn: () => feed })).rejects.toThrow(/no configured heartbeat/);
+    });
+    it('caps staleness at heartbeat + 300 s even when the invoice allows a long quote window', async () => {
+      const feed: FeedConfig = { chainId: 84532, address: FEED_ADDR, base: 'USDC', quote: 'USD', heartbeatSeconds: 3600 };
+      const r = await review();
+      // Fresh enough for the seller's window but older than heartbeat + margin (3900 s): refused.
+      await expect(createPayContext(r, feedRpc(NOW - 4000), { nowSeconds: NOW, findFeedFn: () => feed })).rejects.toThrow(/QUOTE_FAILED: stale price/);
+      const ok = await createPayContext(r, feedRpc(NOW - 3800), { nowSeconds: NOW, findFeedFn: () => feed });
+      expect(ok.quotedTokenAmount).toBe(100_000_000n);
+    });
+    it('checks the L2 sequencer-uptime feed before reading the price', async () => {
+      const feed: FeedConfig = { chainId: 84532, address: FEED_ADDR, base: 'USDC', quote: 'USD', heartbeatSeconds: 3600, sequencerUptimeFeed: SEQ_ADDR };
+      const r = await review();
+      await expect(createPayContext(r, feedRpc(NOW, { answer: 1n, startedAt: NOW - 100_000 }), { nowSeconds: NOW, findFeedFn: () => feed })).rejects.toThrow(/sequencer down/);
+      await expect(createPayContext(r, feedRpc(NOW, { answer: 0n, startedAt: NOW - 60 }), { nowSeconds: NOW, findFeedFn: () => feed })).rejects.toThrow(/grace period/);
+      const up = await createPayContext(r, feedRpc(NOW, { answer: 0n, startedAt: NOW - 100_000 }), { nowSeconds: NOW, findFeedFn: () => feed });
+      expect(up.quotedTokenAmount).toBe(100_000_000n);
+    });
   });
   it('offline client refuses every network call', async () => {
     const c = offlineClient(1);

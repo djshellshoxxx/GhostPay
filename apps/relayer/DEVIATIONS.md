@@ -53,7 +53,17 @@ Contract code wins over docs. Items for the lead to confirm or reject.
 18. **N-02 fee floor at send time.** The lane re-prices `gasUnits * currentGasPrice` into token units and refuses `422 fee_below_cost`
     when the signed fee is lower. `quoteTtlSeconds` ceiling (600) is unchanged.
 19. **N-03 / N-07.** Unparseable request targets answer `400 invalid_url`. Startup now refuses a `sweepRelayer` with no code on the RPC
-    (`eth_getCode`). Not done: bytecode-hash comparison against the manifest and periodic `eth_chainId` re-checks.
+    (`eth_getCode`). The bytecode-hash comparison was added later (see 21); periodic `eth_chainId` re-checks are still not done.
 20. **N-08 config.** `trustProxyHops > 0` requires a loopback `listen.host` (127.x, `::1`, `localhost`); a reverse proxy on the same
     host is the supported topology. There is still no `trustedProxies` allowlist, so container deployments that must bind `0.0.0.0`
     cannot use `trustProxyHops` and fall back to the socket address.
+
+21. **Manifest read-back at startup (N-07 remainder, 2026-10-21).** `ChainRuntimeConfig.manifest` keeps the validated manifest when one
+    exists for the chain. `buildChainClients` then runs `verifyManifest` + `assertManifestVerified` (router `FEE_RECIPIENT`/`ANNOUNCER`/
+    `FEE_BPS`, runtime code hashes of router and sweep relayer, announcer code) on the verified RPC and refuses to start with
+    `MANIFEST_READBACK_FAILED` (stderr names the failed checks, no chain values; log lines `manifest_readback_failed`/`_ok`). The code hash is
+    the POST-immutable runtime hash, as chain-adapters defines it. Limits: one RPC (no second-provider cross-check), done once at startup
+    (no periodic re-check, so a later upgrade of a proxy-less contract is not noticed until restart), manifest signature not verified. Configs
+    that name `sweepRelayer` without a manifest (dev/test only; mainnet requires a manifest) keep the older "has code" check and log
+    `manifest_unverified` (warn). The anvil end-to-end test is still skipped here and does not cover the read-back.
+

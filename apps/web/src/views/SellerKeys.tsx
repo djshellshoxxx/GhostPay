@@ -4,6 +4,7 @@ import { userMessage } from '../lib/errors';
 import { passphraseProblem } from '../lib/keystore';
 import { clearSession, exportKeystore, generateSession, importKeystore, importSession } from '../lib/session';
 import { useApp } from '../state';
+import { Registry } from './Registry';
 
 export function SellerKeys(): ReactNode {
   const app = useApp();
@@ -156,8 +157,7 @@ export function SellerKeys(): ReactNode {
         </>
       )}
 
-      <h3>Public registry</h3>
-      <p className="hint">Publishing your meta-address to the ERC-6538 registry would publicly associate it with your wallet address. This release does not publish; share the meta-address directly.</p>
+      <Registry />
     </section>
   );
 }
