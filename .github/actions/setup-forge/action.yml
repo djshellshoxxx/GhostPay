@@ -1,0 +1,29 @@
+name: Setup Foundry for packages/contracts
+description: Pinned Foundry, the pinned solc (cached), and the forge build cache for the contracts package.
+inputs:
+  cache-name:
+    description: Distinguishes forge caches whose compiler settings differ (test vs coverage).
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+      with:
+        version: v1.8.5
+    # The checked-in config points at a sandbox-only solc path; CI downloads the pinned compiler.
+    - run: sed -i 's|^solc = .*|solc_version = "0.8.28"|' packages/contracts/foundry.toml
+      shell: bash
+    - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      with:
+        path: ~/.svm
+        key: svm-${{ runner.os }}-0.8.28
+    # forge re-checks content hashes recorded in its cache file, so a partial restore (restore-keys) only
+    # skips recompilation of unchanged sources; it cannot serve a stale artifact.
+    - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      with:
+        path: |
+          packages/contracts/out
+          packages/contracts/cache
+        key: forge-${{ inputs.cache-name }}-${{ runner.os }}-${{ hashFiles('packages/contracts/src/**', 'packages/contracts/test/**', 'packages/contracts/script/**', 'packages/contracts/lib/**', 'packages/contracts/foundry.toml', 'packages/contracts/remappings.txt') }}
+        restore-keys: |
+          forge-${{ inputs.cache-name }}-${{ runner.os }}-

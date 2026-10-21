@@ -91,3 +91,42 @@ Out of scope: TLS, connection-level floods (S3-18a; needs the reverse proxy), qu
 - Node.js v22 `net` docs, <https://raw.githubusercontent.com/nodejs/node/v22.x/doc/api/net.md>, retrieved 2026-10-21 (`net.isIPv4`/`isIPv6`, `BlockList` considered and not used so masking is explicit and testable).
 - MDN "429 Too Many Requests" and "Retry-After", <https://raw.githubusercontent.com/mdn/content/main/files/en-us/web/http/reference/status/429/index.md>, retrieved 2026-10-21 (`retryAfterMs` maps to `Retry-After` seconds, rounded up, by the caller).
 - Primary RFCs (RFC 7239, RFC 6585, RFC 9110) could **not** be fetched from this session (proxy 403 for rfc-editor.org); not quoted.
+
+## 8. Challenge module (plain-text question)
+
+Purpose: raise the cost of scripted abuse of the sweep endpoint. **It is not a security boundary.** A bot solves a plain-text question trivially; the module only forces it to ship a solver and spend a round trip. It must sit behind the per-owner `TokenBucketLimiter` and the gas `LossBudget`. Client-side checks are worthless; the relayer must verify.
+
+### 8.1 Design
+
+- `createChallengeService({ secrets, ttlMs = 120_000 (max 900_000), difficulty = 1|2|3, now = Date.now, randomBytes, replayStore, attemptLimiter, maxAttempts = 3 })`. Bad config throws `GuardError('INVALID_CONFIG')`. Node `crypto` only; no network, no third-party code, nothing secret is logged.
+- `issue(context)` returns `{ question, token, expiresAt }`. `context` is caller supplied, 1..256 chars (e.g. `${chainId}:${owner}`), never an IP.
+- Token: base64url of `v1.<expiryMs>.<nonce16 b64url>.<mac b64url>`. `mac = HMAC-SHA256(signKey, len-prefixed(version, expiry, nonce, difficulty, context))`. `signKey` and `questionKey` are independent subkeys of each secret (HMAC with distinct labels).
+- Stateless: question and answer are regenerated on verify from an HMAC-SHA256 counter-mode PRF keyed by `questionKey` over `nonce | difficulty`. The token carries no answer.
+- `verify({ token, answer, context })` order: parse (token <= 200 chars, canonical base64url fields) -> MAC against every secret with `timingSafeEqual` -> expiry (`now >= expiresAt` is expired) -> attempt counter (id = nonce) -> normalised answer compared as SHA-256 digests with `timingSafeEqual` -> `replayStore.markUsed(nonce, expiresAt)` on success. Returns `{ ok: true }` or `{ ok: false, reason }` with `malformed | bad_signature | expired | wrong_answer | too_many_attempts | replayed | replay_store_full`. It never throws on attacker input.
+- `context_mismatch` is intentionally **not** a reason: the context is inside the MAC, so a wrong context is indistinguishable from a forgery and reports `bad_signature`. Telling them apart would be an oracle.
+- Wrong answers consume attempts and do not mark the token used. Attempt limiter or replay store failure or fullness fails **closed** (`too_many_attempts` / `replay_store_full`).
+- `normalizeAnswer`: NFKC, trim, lowercase, collapse whitespace, any `\p{Nd}` digit to ASCII, strip leading `+` and zeros on numeric answers, reject > 64 chars (before and after NFKC).
+- Question bank: fixed local tables, chosen deterministically from PRF bytes (no `Math.random`). Arithmetic (add, non-negative subtract, multiply, multiply-add) with operands scaling by difficulty; words/patterns (nth letter, reversed word, next number in a sequence, letter count, longest/shortest, alphabetical first/last). Prompts use ASCII digits.
+- Stores: `ReplayStore.markUsed(id, expiresAt)` and `AttemptLimiter.increment(id, expiresAt)` (sync or async). `MemoryReplayStore` / `MemoryAttemptLimiter` are bounded (`maxEntries` 10_000), purge expired entries first, never evict live ones; when full the replay store throws `ReplayStoreFullError` and the attempt limiter returns `Infinity`.
+
+### 8.2 Threats
+
+| Threat | Handling |
+|---|---|
+| Bots solve questions trivially | Accepted. Only raises cost; per-owner limiter and `LossBudget` remain the real controls. |
+| Token theft / replay | Single use via replay store; short TTL; wrong answers cannot mark it used, so a thief cannot burn a victim's token except by solving it. |
+| Context binding | Context is inside the MAC; a token issued for owner A fails for owner B (`bad_signature`). |
+| Secret rotation | First secret signs, all verify. Add the new secret first, drop the old after `ttlMs` has elapsed. Secrets >= 32 bytes, copied at construction. |
+| Clock skew | Wall clock is required, since another process may verify. `monotonicNow` is wrong here (per-process origin). Keep hosts NTP-synced; skew shifts effective TTL by the skew. Changing `difficulty` invalidates outstanding tokens. |
+| Multi-process replay | Memory stores are per process: a token can be replayed once per process. Production with more than one relayer process must supply a shared `ReplayStore` and `AttemptLimiter`. |
+| DoS via verify cost | Token capped at 200 chars, context at 256, answer at 64; one HMAC per secret plus one for the question; rate limit before verify. |
+| Answer oracle | Constant-time digest comparison; no answer or token in errors. Attempt cap (default 3) bounds guessing. |
+
+### 8.3 Integration note (later `apps/relayer` wiring; not done here)
+
+1. Call `issue(`${chainId}:${owner}`)` on a GET and return `question` and `token`.
+2. On the sweep request, call `verify` **before** simulation or any gas spend; reject on any `ok: false` (HTTP 4xx, or 429/503 for `too_many_attempts` / `replay_store_full`).
+3. Keep the per-owner `TokenBucketLimiter` and the `LossBudget` in front of both endpoints.
+4. Context is `chainId:owner`, never the client IP.
+5. Load secrets from the environment (>= 32 random bytes each); never commit them.
+6. Use a shared replay store and attempt limiter if more than one relayer process runs.
