@@ -7,6 +7,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@ghostpay/chain-adapters': here('../../packages/chain-adapters/src/index.ts'),
+      '@ghostpay/relayer-guard': here('../../packages/relayer-guard/src/index.ts'),
       '@ghostpay/core-crypto': here('../../packages/core-crypto/src/index.ts'),
       '@ghostpay/invoice-schema': here('../../packages/invoice-schema/src/index.ts'),
     },

@@ -9,6 +9,7 @@ import {
   requireEnabledChain,
   validateRpcUrl,
 } from '@ghostpay/chain-adapters';
+import { TrustedProxies } from '@ghostpay/relayer-guard';
 import { parseAddress, parseObject, type JsonObject } from './codec.js';
 import { parseUsdMicro, type AllowedToken } from './pricing.js';
 import { ConfigError, type Env } from './secrets.js';
