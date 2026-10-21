@@ -2,8 +2,32 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "types": ["node"],
-    "rootDir": "."
+    "types": [
+      "node"
+    ],
+    "paths": {
+      "@ghostpay/i18n": [
+        "../i18n/src/index.ts"
+      ],
+      "@ghostpay/invoice-schema": [
+        "../invoice-schema/src/index.ts"
+      ],
+      "@ghostpay/merchant-billing": [
+        "../merchant-billing/src/index.ts"
+      ],
+      "@ghostpay/merchant-hooks": [
+        "../merchant-hooks/src/index.ts"
+      ],
+      "@ghostpay/merchant-ledger": [
+        "../merchant-ledger/src/index.ts"
+      ],
+      "@ghostpay/sandbox": [
+        "../sandbox/src/index.ts"
+      ]
+    }
   },
-  "include": ["src/**/*.ts", "vitest.config.ts"]
+  "include": [
+    "src/**/*.ts",
+    "vitest.config.ts"
+  ]
 }
