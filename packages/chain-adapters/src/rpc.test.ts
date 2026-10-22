@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ChainAdapterError } from './errors.js';
 import { SEPOLIA } from './fixtures.testutil.js';
 import {
-  RpcHttpError, createClient, fetchTransport, parseQuantity, requestWithFallbackCheck, validateRpcUrl, type RpcTransport,
+  RpcHttpError, createClient, createReconciledClient, fetchTransport, parseQuantity, requestWithFallbackCheck, validateRpcUrl, type RpcTransport,
 } from './rpc.js';
 import { FakeRpcError, fakeTransport, noSleep } from './rpc.testutil.js';
 
@@ -213,5 +213,113 @@ describe('fetchTransport (global fetch stubbed, no network)', () => {
   it('times out by aborting', async () => {
     vi.stubGlobal('fetch', vi.fn((_u: string, i: RequestInit) => new Promise((_r, rej) => { i.signal?.addEventListener('abort', () => { rej(new Error('aborted')); }); })));
     await expect(fetchTransport.send(URL_OK, '{}', { timeoutMs: 10, maxBytes: 10 })).rejects.toThrow(/timeout/);
+  });
+});
+
+describe('chain id re-verification (S3-14)', () => {
+  const mk = (state: { chain: string; calls: string[] }, extra = {}) =>
+    createClient(SEPOLIA, URL_OK, {
+      sleep: noSleep,
+      random: () => 0,
+      retries: 0,
+      transport: fakeTransport((m) => {
+        state.calls.push(m);
+        if (m === 'eth_chainId') return state.chain;
+        if (m === 'eth_blockNumber') return '0x10';
+        if (m === 'eth_boom') throw new FakeRpcError(-32000);
+        return null;
+      }),
+      ...extra,
+    });
+
+  it('re-checks eth_chainId once the interval has elapsed and catches a bait-and-switch', async () => {
+    const state = { chain: '0xaa36a7', calls: [] as string[] };
+    let t = 0;
+    const c = await mk(state, { chainRecheckMs: 1000, now: () => t });
+    state.calls.length = 0;
+    t = 500;
+    await c.blockNumber();
+    expect(state.calls).toEqual(['eth_blockNumber']);
+    t = 1500;
+    await c.blockNumber();
+    expect(state.calls).toEqual(['eth_blockNumber', 'eth_chainId', 'eth_blockNumber']);
+    state.chain = '0x1'; // the endpoint now serves another chain
+    t = 3000;
+    await expect(c.blockNumber()).rejects.toThrow(/CHAIN_MISMATCH/);
+    await expect(c.request('eth_getCode', ['0x0', 'latest'])).rejects.toThrow(/CHAIN_MISMATCH/);
+  });
+  it('re-checks after a transport failure (reconnect) but not after a JSON-RPC error object', async () => {
+    const state = { chain: '0xaa36a7', calls: [] as string[] };
+    let fail = false;
+    const base = fakeTransport((m) => {
+      state.calls.push(m);
+      if (m === 'eth_chainId') return state.chain;
+      return '0x10';
+    });
+    const t: RpcTransport = { send: (u, b, i) => (fail ? Promise.reject(new RpcHttpError(502)) : base.send(u, b, i)) };
+    const c = await createClient(SEPOLIA, URL_OK, { transport: t, ...opts, retries: 0, chainRecheckMs: 0 });
+    fail = true;
+    await expect(c.blockNumber()).rejects.toThrow(/http status 502/);
+    fail = false;
+    state.calls.length = 0;
+    await c.blockNumber();
+    expect(state.calls).toEqual(['eth_chainId', 'eth_blockNumber']);
+    state.calls.length = 0;
+    await c.blockNumber();
+    expect(state.calls).toEqual(['eth_blockNumber']); // flag cleared again
+
+    const s2 = { chain: '0xaa36a7', calls: [] as string[] };
+    const c2 = await mk(s2, { chainRecheckMs: 0 });
+    await expect(c2.request('eth_boom', [])).rejects.toThrow(/json-rpc error/);
+    s2.calls.length = 0;
+    await c2.blockNumber();
+    expect(s2.calls).toEqual(['eth_blockNumber']);
+  });
+});
+
+describe('createReconciledClient', () => {
+  const mkNode = (answers: Record<string, unknown>) =>
+    createClient(SEPOLIA, URL_OK, {
+      sleep: noSleep,
+      retries: 0,
+      transport: fakeTransport((m) => (m === 'eth_chainId' ? '0xaa36a7' : (answers[m] ?? null))),
+    });
+  it('passes identical reads through and sends non-reconciled methods to the primary only', async () => {
+    const a = await mkNode({ eth_getCode: '0x6001', eth_blockNumber: '0x10' });
+    const b = await mkNode({ eth_getCode: '0x6001', eth_blockNumber: '0x99' });
+    const r = createReconciledClient(a, b, { sleep: noSleep });
+    expect(await r.request('eth_getCode', ['0x0', 'latest'])).toBe('0x6001');
+    expect(await r.blockNumber()).toBe(16n);
+    expect(r.chainId).toBe(11155111);
+  });
+  it('fails closed when the providers disagree, after one re-try', async () => {
+    const a = await mkNode({ eth_getCode: '0x6001' });
+    let n = 0;
+    const b: typeof a = { ...(await mkNode({})), request: (m) => (m === 'eth_getCode' ? Promise.resolve(++n === 1 ? '0x6002' : '0x6003') : Promise.resolve(null)) };
+    const slept: number[] = [];
+    const r = createReconciledClient(a, b, { sleep: (ms) => { slept.push(ms); return Promise.resolve(); }, retryDelayMs: 7 });
+    await expect(r.request('eth_getCode', ['0x0', 'latest'])).rejects.toThrow(/providers disagree/);
+    expect(slept).toEqual([7]);
+  });
+  it('tolerates a one-block tip race (agrees on the re-try)', async () => {
+    const a = await mkNode({ eth_getCode: '0x6001' });
+    let n = 0;
+    const b: typeof a = { ...(await mkNode({})), request: () => Promise.resolve(++n === 1 ? '0x' : '0x6001') };
+    const r = createReconciledClient(a, b, { sleep: noSleep });
+    expect(await r.request('eth_getCode', ['0x0', 'latest'])).toBe('0x6001');
+  });
+  it('does not retry other failures and rejects clients on different chains', async () => {
+    const a = await mkNode({});
+    const b: typeof a = { ...(await mkNode({})), request: () => Promise.reject(new Error('down')) };
+    const r = createReconciledClient(a, b, { sleep: noSleep });
+    await expect(r.request('eth_getCode', [])).rejects.toThrow('down');
+    expect(() => createReconciledClient(a, { ...a, chainId: 1 })).toThrow(/CHAIN_MISMATCH/);
+  });
+  it('honours a custom method list', async () => {
+    const a = await mkNode({ eth_gasPrice: '0x1' });
+    const b = await mkNode({ eth_gasPrice: '0x2' });
+    const strict = createReconciledClient(a, b, { methods: ['eth_gasPrice'], sleep: noSleep });
+    await expect(strict.request('eth_gasPrice', [])).rejects.toThrow(/disagree/);
+    expect(await createReconciledClient(a, b).request('eth_gasPrice', [])).toBe('0x1');
   });
 });

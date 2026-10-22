@@ -13,6 +13,7 @@ import {
 import type { Invoice } from '@ghostpay/invoice-schema';
 import type { ChainConfig } from './config/chains.js';
 import { requireEnabledChain } from './config/chains.js';
+import { checkAnnouncementDeep } from './deepscan.js';
 import type { DeploymentManifest } from './deployments.js';
 import { fail } from './errors.js';
 import { FEE_SCHEDULE, grossForNet, routerSplit } from './fees.js';
@@ -78,6 +79,11 @@ export interface ScanRange {
   readonly fromBlock: bigint;
   /** Inclusive; defaults to the chain head. */
   readonly toBlock?: bigint;
+  /**
+   * Deep scan (D4): for announcements whose caller is the router, ignore the view tag. Costs one extra ECDH and point
+   * multiplication per such announcement. Other announcements stay tag-filtered.
+   */
+  readonly deep?: boolean;
 }
 
 /** A payment that matches the viewing key. */
@@ -88,10 +94,18 @@ export interface DetectedPayment {
   readonly metadata: ParsedMetadata | undefined;
   /** True when the announce call came from this chain's GhostPay router. */
   readonly viaRouter: boolean;
+  /**
+   * Deep scans only: false when the payer published a wrong view tag (found only because the tag was ignored).
+   * Absent for ordinary tag-filtered matches.
+   */
+  readonly tagMatches?: boolean;
 }
 
-/** Status of a fee line on a chain. */
-export type FeeStatus = 'enforced' | 'not_enforceable' | 'not_deployed';
+/**
+ * Status of a fee line on a chain. `available` means the manifest carries a policy-account deployment, so the line
+ * exists on-chain; this client does not build or enforce policy-account flows yet (audit gap G-13).
+ */
+export type FeeStatus = 'enforced' | 'available' | 'not_enforceable' | 'not_deployed';
 
 /** Which fees can honestly be charged on this chain (never advertise an uncollectable fee). */
 export interface FeeCapability {
@@ -153,7 +167,7 @@ export function createEvmAdapter(deps: EvmAdapterDeps): ChainAdapter {
       checkout: 'enforced',
       checkoutBps: Number(FEE_SCHEDULE.ROUTER_FEE_BPS),
       gasSponsorship: 'enforced',
-      flatSecurity: 'not_deployed',
+      flatSecurity: deployment.policy === undefined ? 'not_deployed' : 'available',
     },
 
     parseRecipient(input) {
@@ -210,8 +224,19 @@ export function createEvmAdapter(deps: EvmAdapterDeps): ChainAdapter {
         for (const a of res.announcements) {
           if (signal.aborted) return;
           if (range.toBlock !== undefined && a.blockNumber > range.toBlock) continue;
-          const hit = checkAnnouncement(a, keys.viewingSecret, keys.spendingPublicKey);
-          if (!hit.matches) continue;
+          const viaRouter = a.caller.toLowerCase() === deployment.router.toLowerCase();
+          let stealthAddress: Address;
+          let tagMatches: boolean | undefined;
+          if (range.deep === true && viaRouter) {
+            const deepHit = checkAnnouncementDeep(a, keys.viewingSecret, keys.spendingPublicKey);
+            if (!deepHit.matches) continue;
+            stealthAddress = deepHit.stealthAddress;
+            tagMatches = deepHit.tagMatches;
+          } else {
+            const hit = checkAnnouncement(a, keys.viewingSecret, keys.spendingPublicKey);
+            if (!hit.matches) continue;
+            stealthAddress = hit.stealthAddress;
+          }
           let metadata: ParsedMetadata | undefined;
           try {
             metadata = parseMetadata(a.metadata);
@@ -219,10 +244,11 @@ export function createEvmAdapter(deps: EvmAdapterDeps): ChainAdapter {
             metadata = undefined;
           }
           yield {
-            stealthAddress: hit.stealthAddress,
+            stealthAddress,
             announcement: a,
             metadata,
-            viaRouter: a.caller.toLowerCase() === deployment.router.toLowerCase(),
+            viaRouter,
+            ...(tagMatches === undefined ? {} : { tagMatches }),
           };
         }
         cursor = res.cursor;

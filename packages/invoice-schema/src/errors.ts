@@ -10,6 +10,7 @@ export type InvoiceErrorCode =
   | 'UTF8'
   | 'JSON'
   | 'SCHEMA'
+  | 'FORBIDDEN_CHARACTER'
   | 'NON_CANONICAL'
   | 'DECRYPT'
   | 'SIGNING'
@@ -65,8 +66,14 @@ export class JsonParseError extends InvoiceError {
 }
 /** Structure, type, range, length or text-hygiene violation. */
 export class SchemaError extends InvoiceError {
+  public constructor(path: string, code: InvoiceErrorCode = 'SCHEMA', message = 'invoice schema violation') {
+    super(code, message, path);
+  }
+}
+/** Free text contains hidden or control characters; never echoes the input. */
+export class ForbiddenCharacterError extends SchemaError {
   public constructor(path: string) {
-    super('SCHEMA', 'invoice schema violation', path);
+    super(path, 'FORBIDDEN_CHARACTER', 'invoice text contains a forbidden character');
   }
 }
 /** Valid content that is not byte-for-byte the canonical serialization. */

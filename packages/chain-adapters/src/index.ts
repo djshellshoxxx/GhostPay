@@ -21,3 +21,8 @@ export * from './deploymentsSignature.js';
 export * from './deploymentsVerify.js';
 export * from './scanVerify.js';
 export * from './registry.js';
+
+export { verifyManifestOnChain } from './deploymentsVerify.js';
+export * from './scanVerify.js';
+export { RELEASE_KEY, UNSIGNED_DEV_WARNING, MANIFEST_SIGNING_DOMAIN, manifestSigningBytes, verifyManifestSignature as verifyTextManifestSignature } from './deploymentsSignature.js';
+export type { ReleaseKey, ManifestTrust } from './deploymentsSignature.js';

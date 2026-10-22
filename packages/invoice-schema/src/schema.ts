@@ -1,6 +1,6 @@
 import { secp256k1 } from '@noble/curves/secp256k1.js';
 import { bytesToHex } from '@noble/hashes/utils.js';
-import { RandomnessError, SchemaError } from './errors.js';
+import { ForbiddenCharacterError, RandomnessError, SchemaError } from './errors.js';
 
 /** Maximum number of line items. */
 export const MAX_LINE_ITEMS = 50;
@@ -142,12 +142,22 @@ function hasLoneSurrogate(s: string): boolean {
   return false;
 }
 
-/** Text hygiene: well-formed UTF-16, NFC, no C0/C1 control characters, 1..max code points. */
-function text(v: unknown, path: string, max: number): string {
+/**
+ * S3-12 forbidden code points: bidi controls (U+061C, U+200E/F, U+202A-202E, U+2066-2069), zero-width and invisible
+ * (U+00AD, U+200B-200D, U+2060, U+FEFF, U+180E), line/paragraph separators (U+2028/9), Unicode tags (U+E0000-E007F)
+ * and C0/C1 controls (U+007F-009F, and U+0000-001F).
+ */
+// eslint-disable-next-line no-control-regex
+const FORBIDDEN_RE = /[\u0000-\u001f\u007f-\u009f\u00ad\u061c\u180e\u200b-\u200f\u2028-\u202e\u2060\u2066-\u2069\ufeff\u{e0000}-\u{e007f}]/u;
+/** Same, but a line feed is allowed (memo only). */
+// eslint-disable-next-line no-control-regex
+const FORBIDDEN_EXCEPT_LF_RE = /[\u0000-\u0009\u000b-\u001f\u007f-\u009f\u00ad\u061c\u180e\u200b-\u200f\u2028-\u202e\u2060\u2066-\u2069\ufeff\u{e0000}-\u{e007f}]/u;
+
+/** Text hygiene: well-formed UTF-16, NFC, no forbidden characters (S3-12), 1..max code points. */
+function text(v: unknown, path: string, max: number, allowLf = false): string {
   if (typeof v !== 'string' || v.length === 0 || v.length > max * 2) return fail(path);
   if (hasLoneSurrogate(v) || v !== v.normalize('NFC')) return fail(path);
-  // eslint-disable-next-line no-control-regex
-  if (/[\u0000-\u001f\u007f-\u009f]/.test(v)) return fail(path);
+  if ((allowLf ? FORBIDDEN_EXCEPT_LF_RE : FORBIDDEN_RE).test(v)) throw new ForbiddenCharacterError(path);
   let count = 0;
   for (const _ of v) {
     void _;
@@ -191,7 +201,7 @@ export function validatePrivatePart(value: unknown): { lineItems: readonly LineI
   const lineItems = validateLineItems(r['lineItems'], 'lineItems');
   return r['memo'] === undefined
     ? { lineItems }
-    : { lineItems, memo: text(r['memo'], 'memo', MAX_MEMO_LENGTH) };
+    : { lineItems, memo: text(r['memo'], 'memo', MAX_MEMO_LENGTH, true) };
 }
 
 function validPoint(hex: string, path: string): void {
@@ -297,7 +307,7 @@ export function validateInvoice(value: unknown): Invoice {
     feePolicy: feePolicy,
     signer,
   };
-  return r['memo'] === undefined ? base : { ...base, memo: text(r['memo'], 'memo', MAX_MEMO_LENGTH) };
+  return r['memo'] === undefined ? base : { ...base, memo: text(r['memo'], 'memo', MAX_MEMO_LENGTH, true) };
 }
 
 /** @internal Resolve the injected or global CSPRNG. */

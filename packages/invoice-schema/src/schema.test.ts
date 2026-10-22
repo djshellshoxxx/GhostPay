@@ -439,13 +439,6 @@ describe('validateInvoice rejects', () => {
       },
     ],
     [
-      'memo newline',
-      'memo',
-      (o) => {
-        o['memo'] = 'a\nb';
-      },
-    ],
-    [
       'memo C1 control',
       'memo',
       (o) => {

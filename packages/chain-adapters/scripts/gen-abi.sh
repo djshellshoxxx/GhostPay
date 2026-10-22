@@ -36,4 +36,7 @@ emit IERC20Permit erc2612PermitAbi "$tmp/IERC20Permit.json" erc2612
 
 "$SOLC" --abi "$here/abi-src/AggregatorV3Interface.sol" -o "$tmp/agg" --overwrite >/dev/null
 emit AggregatorV3Interface chainlinkAggregatorAbi "$tmp/agg/AggregatorV3Interface.abi" chainlinkAggregator
+
+"$SOLC" --abi "$here/abi-src/IERC6538Registry.sol" -o "$tmp/reg" --overwrite >/dev/null
+emit IERC6538Registry erc6538RegistryAbi "$tmp/reg/IERC6538Registry.abi" erc6538Registry
 echo "ABIs written to $out"

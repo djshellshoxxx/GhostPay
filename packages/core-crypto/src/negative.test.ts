@@ -197,6 +197,19 @@ describe('meta-address', () => {
 });
 
 describe('announcements', () => {
+  it('ignoreViewTag: a wrong-tag payment is found only when the option is set, and the address is still verified', () => {
+    const wrongTag = { ...goodAnn, metadata: `0x${((Number.parseInt(goodAnn.metadata.slice(2, 4), 16) + 1) & 0xff).toString(16).padStart(2, '0')}${goodAnn.metadata.slice(4)}` };
+    expect(checkAnnouncement(wrongTag, keys.viewingSecret, spendPub).matches).toBe(false);
+    expect(checkAnnouncement(wrongTag, keys.viewingSecret, spendPub, { ignoreViewTag: false }).matches).toBe(false);
+    const deep = checkAnnouncement(wrongTag, keys.viewingSecret, spendPub, { ignoreViewTag: true });
+    expect(deep).toEqual({ matches: true, stealthAddress: pay.stealthAddress, tagMatches: false });
+    const right = checkAnnouncement(goodAnn, keys.viewingSecret, spendPub, { ignoreViewTag: true });
+    expect(right).toEqual({ matches: true, stealthAddress: pay.stealthAddress, tagMatches: true });
+    expect(checkAnnouncement(goodAnn, keys.viewingSecret, spendPub)).not.toHaveProperty('tagMatches');
+    const other = '0x00000000000000000000000000000000000000aa';
+    expect(checkAnnouncement({ ...wrongTag, stealthAddress: other }, keys.viewingSecret, spendPub, { ignoreViewTag: true }).matches).toBe(false);
+    expect(checkAnnouncement({ ...goodAnn, metadata: '0x' }, keys.viewingSecret, spendPub, { ignoreViewTag: true }).matches).toBe(false);
+  });
   it('baseline matches', () => {
     expect(checkAnnouncement(goodAnn, keys.viewingSecret, spendPub).matches).toBe(true);
   });
