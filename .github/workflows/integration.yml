@@ -32,7 +32,9 @@ permissions:
 # One run per ref; a newer push to a PR cancels the superseded run. Scheduled / manual runs are never cancelled.
 concurrency:
   group: integration-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  # Do not cancel a run that is already going: a Docker stack run is slow and every result is useful, and frequent
+  # pushes to the PR branch were cancelling each one before it finished. A newer run waits behind it in the queue.
+  cancel-in-progress: false
 
 jobs:
   integration:
