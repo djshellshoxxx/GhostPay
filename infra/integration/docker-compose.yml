@@ -77,7 +77,10 @@ services:
       BITCOIND_RPC_USER: ${BITCOIND_RPC_USER:?run via scripts/integration/run-all.sh}
       BITCOIND_RPC_PASSWORD: ${BITCOIND_RPC_PASSWORD:?run via scripts/integration/run-all.sh}
     tmpfs:
-      - /home/bitcoin/.bitcoin:size=512m,mode=1777
+      # The image entrypoint chowns /home/bitcoin and its dotfiles before dropping privileges; on a read-only root
+      # that exits 1 ("chown: changing ownership of '/home/bitcoin': Read-only file system"; first CI run). Mount
+      # the home directory itself as tmpfs so the chown succeeds. Regtest data is throwaway.
+      - /home/bitcoin:size=512m,mode=0755
       - /tmp:size=64m,mode=1777
     ports:
       - "127.0.0.1:18443:18443"
@@ -99,6 +102,13 @@ services:
       context: .
       dockerfile: Dockerfile.solana
     image: ghostpay-it/solana-test-validator:v3.1.14
+    # Agave v3 asserts io_uring_supported() at startup (fs/src/dirs.rs:27; first CI run: exit 101). Docker's default
+    # seccomp profile blocks io_uring_*, so this ONE throwaway dev container runs without seccomp filtering, with the
+    # locked-memory limit io_uring needs. Every other hardening option (cap_drop ALL, no-new-privileges, read-only
+    # root, 127.0.0.1-only ports) still applies. Follow-up: replace with a custom profile allowing only io_uring_*.
+    security_opt: ["no-new-privileges:true", "seccomp=unconfined"]
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
     command:
       # solana-entrypoint.sh prepends `solana-test-validator --bind-address <container ip>`.
       - --ledger=/ledger
