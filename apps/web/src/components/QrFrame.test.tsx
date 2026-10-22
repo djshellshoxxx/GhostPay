@@ -146,6 +146,15 @@ describe('multipart', () => {
     await user.click(dlg.querySelector('.qr-actions button:first-child') as HTMLElement);
     expect(dlg.textContent).toContain('Part 1 of 3');
   });
+  it('keeps the displayed part in bounds when the multipart payload shrinks', () => {
+    const { rerender } = render(<QrFrame kind="proof" text="all" chunks={chunks} caption="Receipt" />);
+    fireEvent.click(screen.getByRole('button', { name: 'Next part' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Next part' }));
+    expect(screen.getByText('Part 3 of 3')).toBeTruthy();
+    rerender(<QrFrame kind="proof" text="new" chunks={['new1', 'new2']} caption="Receipt" />);
+    expect(screen.getByText('Part 2 of 2')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Next part' }).hasAttribute('disabled')).toBe(true);
+  });
   it('a single chunk is shown as a plain code', () => {
     render(<QrFrame kind="proof" text="one" chunks={['one']} caption="c" />);
     expect(screen.queryByText(/Part 1/)).toBeNull();
