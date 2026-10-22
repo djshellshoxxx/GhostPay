@@ -66,6 +66,18 @@ jobs:
         if: always()
         run: bash scripts/integration/run-all.sh logs
 
+      # Also print the tail of every container log into this job's log so a failure is diagnosable without
+      # downloading the artifact. Services are dev-only (no secrets); `down` has not run yet.
+      - name: show container log tails
+        if: failure()
+        run: |
+          for f in infra/integration/.state/logs/*; do
+            [ -f "$f" ] || continue
+            echo "::group::$f (last 60 lines)"
+            tail -n 60 "$f" || true
+            echo "::endgroup::"
+          done
+
       - name: upload logs
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
