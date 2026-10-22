@@ -73,8 +73,9 @@ jobs:
         run: |
           for f in infra/integration/.state/logs/*; do
             [ -f "$f" ] || continue
-            echo "::group::$f (last 60 lines)"
-            tail -n 60 "$f" || true
+            echo "::group::$f (last 25 non-metric lines)"
+            # solana-test-validator emits a metrics datapoint every few ms; drop them so real errors are visible.
+            grep -v 'solana_metrics::metrics' "$f" | tail -n 25 || true
             echo "::endgroup::"
           done
 
