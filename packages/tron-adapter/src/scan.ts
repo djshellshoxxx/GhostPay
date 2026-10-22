@@ -20,7 +20,7 @@ export interface DetectedTronPayment {
   readonly asset: string;
   readonly amount: bigint;
   readonly payer: string;
-  /** False when `trustedTokens` was given and the contract is not in it. Never credit untrusted tokens as value. */
+  /** False unless native or the contract is in `trustedTokens` (fail closed when unset). Never credit untrusted tokens as value. */
   readonly trustedToken: boolean;
 }
 
@@ -31,7 +31,7 @@ export interface TronScanOptions {
   readonly toBlock?: bigint;
   readonly viewingSecret: SecretScalar;
   readonly spendingPublicKey: CompressedPoint;
-  /** Base58 TRC-20 contracts considered real value (fake-token spoofing defence). */
+  /** Base58 TRC-20 contracts considered real value (fake-token spoofing defence). Unset: no token is trusted. */
   readonly trustedTokens?: readonly string[];
   readonly pageSize?: number;
   readonly signal: AbortSignal;
@@ -141,7 +141,7 @@ export async function* scanTron(rpc: TronRpc, o: TronScanOptions): AsyncGenerato
           asset: c.asset,
           amount: c.amount,
           payer: c.payer,
-          trustedToken: c.asset === 'native' || trusted === undefined || trusted.has(c.asset),
+          trustedToken: c.asset === 'native' || (trusted?.has(c.asset) ?? false),
         };
       }
     }
