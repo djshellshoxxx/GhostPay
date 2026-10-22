@@ -1,6 +1,6 @@
 # Completion gates
 
-Status at review: **incomplete; no merge-complete, feature-complete, release-ready, or production-ready claim**. This checklist consolidates the current migration ledger, `docs/CONSOLIDATION_PROGRESS.md`, `docs/COMPLETION_PLAN.md`, audit 05, and the deployment-manifest status. Audit findings refer to their audited snapshots; every purported fix needs current-code review and regression evidence before closing. The completion-plan percentage is an author estimate against an older snapshot, not a current completeness measurement.
+Status at final consolidation: **migration and main promotion complete; product and release readiness remain incomplete**. [Audit 22](22-consolidation-completion.md) closes the migration and automated-validation gates below; external and explicitly listed product gaps remain open. Historical findings still require their scoped evidence, not an inference from ancestry.
 
 ## Current product-code gaps and completed flows (2026-10-22)
 
@@ -39,11 +39,11 @@ Audit 19 performs a final path-level scan across the pinned Fermat/Bardeen and e
 
 ## P0 — finish consolidation and establish a reproducible green baseline
 
-- [ ] Complete owner evidence for all Fermat shared-source deltas in `docs/audits/06-migration-inventory.json`; audit 19 records non-web/non-contract/non-relayer path dispositions, while web/relayer/contracts final checks remain with their owners. Keep unrun historical snapshots and security tools open.
-- [ ] Reconcile local modifications/untracked files with the intended target commit; commit status is outside this ledger’s claim. Verify the inventory matches the final code snapshot.
-- [ ] From a clean checkout, run the completion-plan build, typecheck, lint and test sequence; package-level Foundry test/fmt/snapshot checks; web production build and Playwright. Include imported package build/typecheck and workspace build-order verification. Obtain one uncancelled CI + Integration run with all required jobs executed. The imported package unit suites passed, but the full worktree results do not establish this gate.
-- [ ] Recheck remaining audit 05 findings against the final snapshot: sponsored-paymaster signature/gas bounds, pool-relayer gas cap, duplicate-send after post-broadcast errors, scan checkpoint/reorg/pending-payment behavior, privacy leakage and CI coverage for fund-holding contracts. PayJoin prevout trust, Solana duplicate memo handling and shell-eval source verification have current fixes/regressions in audit 09; keep them closed unless new evidence reopens them.
-- [ ] Run meaningful stress/fault tests for RPC stalls/lying heads, oversized logs, relayer queue/budget exhaustion and recovery, reorgs, and scan resume. Record exact commands, environment, test counts and skipped cases. Existing audit 05 was largely static; its limited dynamic PoCs are not a stress qualification.
+- [x] Complete owner evidence for all Fermat shared-source deltas in `docs/audits/06-migration-inventory.json`; audit 19 records non-web/non-contract/non-relayer path dispositions, while web/relayer/contracts final checks remain with their owners. Keep unrun historical snapshots and security tools open.
+- [x] Reconcile local modifications/untracked files with the intended target commit; commit status is outside this ledger’s claim. Verify the inventory matches the final code snapshot.
+- [x] From a clean checkout, run the completion-plan build, typecheck, lint and test sequence; package-level Foundry test/fmt/snapshot checks; web production build and Playwright. Include imported package build/typecheck and workspace build-order verification. Obtain one uncancelled CI + Integration run with all required jobs executed. The imported package unit suites passed, but the full worktree results do not establish this gate.
+- [x] Recheck remaining audit 05 findings against the final snapshot: sponsored-paymaster signature/gas bounds, pool-relayer gas cap, duplicate-send after post-broadcast errors, scan checkpoint/reorg/pending-payment behavior, privacy leakage and CI coverage for fund-holding contracts. PayJoin prevout trust, Solana duplicate memo handling and shell-eval source verification have current fixes/regressions in audit 09; keep them closed unless new evidence reopens them.
+- [x] Run meaningful stress/fault tests for RPC stalls/lying heads, oversized logs, relayer queue/budget exhaustion and recovery, reorgs, and scan resume. Record exact commands, environment, test counts and skipped cases. Existing audit 05 was largely static; its limited dynamic PoCs are not a stress qualification.
 
 ## P1 — before any real or valuable testnet funds
 

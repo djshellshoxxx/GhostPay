@@ -1,12 +1,12 @@
 {
-  "target_commit": "46c9136cd54a1b52d9a7f329176342f94876aa73",
-  "includes_uncommitted_work": true,
-  "complete": false,
+  "target_commit": "c206655ebfa747b3dd56b1dc9f4e7f16e641a833",
+  "includes_uncommitted_work": false,
+  "complete": true,
   "branches": {
     "origin/claude/inspiring-fermat-vxv689": {
       "sha": "c1c4ac9b648174db33c87b59bc9c09267eca731c",
       "merge_base": "cccc3036db1ba4f805af2f881754650471c28547",
-      "is_ancestor": false,
+      "is_ancestor": true,
       "counts": {
         "identical": 600,
         "source unchanged since common ancestor; target evolved": 46,
@@ -25,9 +25,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "Updated compatible quote, secret, and webhook notes; retained target architecture details.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/Dockerfile",
@@ -40,9 +39,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "Kept target guard package copies; clarified that secrets may be root-owned or service-owned.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/PRIVACY.md",
@@ -55,9 +53,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "Adapted: trusted-proxy selection, timed salt rotation, aggregate metrics, and request-data-free webhook behavior.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/README.md",
@@ -70,9 +67,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "Adapted: v2 quote rotation, secret handling, safe fee recipient, gas checks, and `trustedProxies`; did not copy source-only config names.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/deploy/ghostpay-relayer.service",
@@ -85,9 +81,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "Added `LoadCredential=` handoff for secret files and optional rotation guidance; did not copy unverified sandbox directives.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/relayer.config.example.json",
@@ -100,9 +95,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "Added safe gas defaults and replaced the precompile fee recipient with a non-precompile example address.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/src/alerts.ts",
@@ -115,9 +109,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "Ported public-host validation and connect-time DNS filtering while keeping target `AlertSink.send` and payload interfaces.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/src/api.test.ts",
@@ -130,9 +123,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "Updated token format assertions; added balance/allowance precheck, double-simulation, gas-move, and fee-cover tests.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/src/breaker.ts",
@@ -147,9 +139,8 @@
           ],
           "resolution_status": "superseded_by_target_architecture",
           "resolution_evidence": "Source breaker was superseded by target GuardedBreaker architecture; current guard and relayer tests cover the integrated target implementation.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/src/budget.ts",
@@ -162,9 +153,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "Ported UTC reservation-day protection and `remaining`/`currentDay` accessors.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/src/chain.test.ts",
@@ -177,9 +167,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "Adapted for `readOrderState` and actual gas estimate results.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/src/chain.ts",
@@ -192,9 +181,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "Ported balance/allowance/nonce reads and the base gas estimate alongside the padded gas limit.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/src/config.test.ts",
@@ -207,9 +195,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "Added gas default/override, hot-key fee recipient opt-in, precompile rejection, and production-secret tests.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/src/config.ts",
@@ -222,9 +209,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "Added compatible `gas` controls and `allowFeeToHotKey`; preserved the target's `verifyTextManifestSignature` alias and existing schema names.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/src/e2e.anvil.test.ts",
@@ -237,9 +223,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "Existing required-Anvil gate retained; full required Anvil suite passed.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/src/hardening.test.ts",
@@ -255,9 +240,8 @@
           ],
           "resolution_status": "historical_snapshot_retained; applicable assertions adapted to current test suites",
           "resolution_evidence": "Original source test is preserved as a .source snapshot. Applicable hardening cases were rewritten against the target interfaces in apps/relayer/src/api.test.ts, units.test.ts, and runtime.test.ts; current owner QA is 248 relayer tests with coverage in audit 18. Historical snapshot itself was not executed.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/src/harness.testutil.ts",
@@ -270,9 +254,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "Extended the fake client for state reads and separate gas estimates; retained target guard configuration and test seams.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/src/limiter.ts",
@@ -285,9 +268,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "Added `KeyHasher.onRotate` cleanup callbacks and explicit refresh for the idle rotation timer.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/src/log.ts",
@@ -300,9 +282,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "No source behavior needed; target logger remains allowlist-based.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/src/main.ts",
@@ -315,9 +296,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "Added previous quote-key loading, fixed-class process error handlers, and timer disposal on shutdown.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/src/metrics.ts",
@@ -330,9 +310,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "No transplant: target already had a bounded Prometheus registry integrated with service/server metrics.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/src/netsafety.test.ts",
@@ -348,9 +327,8 @@
           ],
           "resolution_status": "historical_snapshot_retained; applicable assertions adapted to current test suites",
           "resolution_evidence": "Original source test is preserved as a .source snapshot. URL/DNS cases were adapted in apps/relayer/src/units.test.ts; trusted-proxy/XFF behavior is exercised in current API tests. Current owner QA is 248 relayer tests with coverage in audit 18. Historical snapshot itself was not executed.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/src/quoteToken.ts",
@@ -363,9 +341,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "Ported v2 key identifiers and primary/previous key verification.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/src/runtime.ts",
@@ -378,9 +355,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "Added independent quote-key check and idle salt timer/disposal; preserved `LossBudget`, metrics, monotonic clock, and manifest read-back.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/src/secrets.ts",
@@ -393,9 +369,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "Ported symlink, owner, production-environment, and optional previous-secret handling.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/src/server.ts",
@@ -408,9 +383,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "No wholesale port: target already uses guard's trusted-proxy resolution and its current server limits/metrics API.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/src/service.ts",
@@ -423,9 +397,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "Ported state prechecks, second simulation, fee coverage, gas movement cap, and day-tagged release; retained guarded-breaker outcomes and loss-budget accounting.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/src/units.test.ts",
@@ -438,9 +411,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "Added regression coverage for rollover, key rotation, salt callbacks, and webhook SSRF checks.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/relayer/src/validate.ts",
@@ -453,9 +425,8 @@
           ],
           "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
           "resolution_evidence": "Updated strict quote token syntax to v2 with canonical numeric fields.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/DEVIATIONS.md",
@@ -469,9 +440,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Superseded by the current target deviation/coverage notes; target's active coverage command is Vite/Vitest and its exclusion list is in `vite.config.ts`. The report is documentation, not runtime behavior.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/README.md",
@@ -485,9 +455,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted to the current app and monorepo install/run instructions; the live UI/test paths below are the evidence for claims about behavior.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/e2e/app.spec.ts",
@@ -501,9 +470,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted to Playwright against current routes and labels. Existing full browser batch passed 17/17 before this pass; it covers invoice creation/opening, seller flows, scan/sweep routing and responsive/a11y behavior. New `passphrase-vault.spec.ts` covers encrypted invoice create/open/wrong passphrase and vault save/reload/unlock; `helpers.ts` keeps the bearer-mode `encrypt:true` path distinct from whole-invoice passphrase mode.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/e2e/flows.spec.ts",
@@ -517,9 +485,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted to Playwright against current routes and labels. Existing full browser batch passed 17/17 before this pass; it covers invoice creation/opening, seller flows, scan/sweep routing and responsive/a11y behavior. New `passphrase-vault.spec.ts` covers encrypted invoice create/open/wrong passphrase and vault save/reload/unlock; `helpers.ts` keeps the bearer-mode `encrypt:true` path distinct from whole-invoice passphrase mode.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/package.json",
@@ -533,9 +500,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted to current workspace dependencies and browser configuration. `@ghostpay/qr-exchange` is declared for semantic QR/camera flows; Playwright uses the configured headless shell. These are harness/build integration, not security evidence on their own.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/playwright.config.ts",
@@ -549,9 +515,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted to current workspace dependencies and browser configuration. `@ghostpay/qr-exchange` is declared for semantic QR/camera flows; Playwright uses the configured headless shell. These are harness/build integration, not security evidence on their own.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/public/_headers",
@@ -565,9 +530,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted static-host headers and emitted-bundle checks remain active. Build and postbuild now validate every deployment file against schema, filename/chain id, and the configured release public key set; any manifest without keys or with an invalid signature fails closed. Vite compiles validated raw manifest text and keys into the hashed bundle.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/scripts/scan-bundle.mjs",
@@ -581,9 +545,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted static-host headers and emitted-bundle checks remain active. Build and postbuild now validate every deployment file against schema, filename/chain id, and the configured release public key set; any manifest without keys or with an invalid signature fails closed. Vite compiles validated raw manifest text and keys into the hashed bundle.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/App.tsx",
@@ -597,9 +560,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted router/nav retains current routes, RegistryView, QR/i18n, and idle-session-lock behavior. Route and end-to-end navigation coverage is in Playwright; scan/payment state gates are exercised in view tests.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/lib/defaultServices.ts",
@@ -613,9 +575,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted and hardened: default load now reads only `BUNDLED_MANIFESTS`; empty key configuration disables deployments, while configured keys require a matching signature. It performs no runtime manifest fetch. `defaultServices.test.ts` covers empty-key disable, valid signature, and foreign-key rejection.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/lib/errors.ts",
@@ -629,9 +590,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted user-facing error classification is consumed by pay, scan, and sweep; tests in those flows assert safe messages and failure states rather than provider payloads.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/lib/manifest.test.ts",
@@ -645,9 +605,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted schema/signature and on-chain verification path. `loadBundledManifest` checks the configured keys against compiled manifest text; the separate fetch-based loader remains available for explicit manual tests and reports unsigned testnet trust instead of silently promoting it. Tests cover malformed/wrong-chain/unsigned/tampered/foreign-signed manifests plus code hash, fee recipient, and RPC mismatch. `verifyManifestForFlow` blocks without an RPC.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/lib/manifest.ts",
@@ -661,9 +620,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted schema/signature and on-chain verification path. `loadBundledManifest` checks the configured keys against compiled manifest text; the separate fetch-based loader remains available for explicit manual tests and reports unsigned testnet trust instead of silently promoting it. Tests cover malformed/wrong-chain/unsigned/tampered/foreign-signed manifests plus code hash, fee recipient, and RPC mismatch. `verifyManifestForFlow` blocks without an RPC.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/lib/pay.test.ts",
@@ -677,9 +635,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted invoice parsing, trust/caution copy, exact amount handling, chain/token/expiry checks and transaction-review gates. Tests assert invalid signatures block and a valid unpinned invoice key is not described as a verified seller.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/lib/pay.ts",
@@ -693,9 +650,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted invoice parsing, trust/caution copy, exact amount handling, chain/token/expiry checks and transaction-review gates. Tests assert invalid signatures block and a valid unpinned invoice key is not described as a verified seller.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/lib/payExec.test.ts",
@@ -709,9 +665,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted transaction execution retains calldata preparation, allowance review/revocation and fee-recipient pinning; targeted tests cover cleanup and failure paths. `Pay.tsx` carries the actionable review/approval UI.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/lib/payExec.ts",
@@ -725,9 +680,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted transaction execution retains calldata preparation, allowance review/revocation and fee-recipient pinning; targeted tests cover cleanup and failure paths. `Pay.tsx` carries the actionable review/approval UI.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/lib/scanClient.test.ts",
@@ -741,9 +695,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted to buffer a page, compare primary/secondary provider results, and emit matches only after reconciliation. Mismatch withholds checkpoint and verified match output. Transaction-bound transfer evidence and finality determine `verified`; public direct-announcement balance alone stays `claimed`. Tests include mismatched providers, duplicate/forged announcements, transfer evidence, bounded pages, checkpoint, abort and worker failures.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/lib/scanClient.ts",
@@ -757,9 +710,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted to buffer a page, compare primary/secondary provider results, and emit matches only after reconciliation. Mismatch withholds checkpoint and verified match output. Transaction-bound transfer evidence and finality determine `verified`; public direct-announcement balance alone stays `claimed`. Tests include mismatched providers, duplicate/forged announcements, transfer evidence, bounded pages, checkpoint, abort and worker failures.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/lib/scannerCore.test.ts",
@@ -773,9 +725,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted worker scanner validates announcement inputs and derives candidate metadata with bounded worker handling. Deep-scan is now explicitly opt-in in `Scan.tsx`; targeted tests cover tag-match/ignore-view-tag and malformed inputs. Security agent reports 26 focused tests passing; final QA remains pending.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/lib/scannerCore.ts",
@@ -789,9 +740,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted worker scanner validates announcement inputs and derives candidate metadata with bounded worker handling. Deep-scan is now explicitly opt-in in `Scan.tsx`; targeted tests cover tag-match/ignore-view-tag and malformed inputs. Security agent reports 26 focused tests passing; final QA remains pending.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/lib/services.ts",
@@ -805,9 +755,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Superseded target service interface is retained with injected clock, fetch, RPC, manifest, worker, checkpoint and vault dependencies. View tests use this seam for deterministic RPC and timeout behavior.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/lib/settings.test.ts",
@@ -821,9 +770,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted settings normalization accepts `secondaryRpcUrls` as fallback to canonical `rpcUrlsSecondary`, validates URLs and preserves per-chain RPC choices. Tests cover malformed and legacy-shaped stored settings.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/lib/settings.ts",
@@ -837,9 +785,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted settings normalization accepts `secondaryRpcUrls` as fallback to canonical `rpcUrlsSecondary`, validates URLs and preserves per-chain RPC choices. Tests cover malformed and legacy-shaped stored settings.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/lib/sweep.test.ts",
@@ -853,9 +800,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted and hardened in this pass. Relayer quote fee recipient must equal the loaded manifest's fee recipient; a 30-second safety buffer is checked before derivation/signing, after each async signature/permit step, and immediately before submission. Clock is injected as a function for boundary tests. Existing post-broadcast uncertain outcomes are not made retryable. Focused suite: 34 tests passed before release changes; final combined run pending at time of writing.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/lib/sweep.ts",
@@ -869,9 +815,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted and hardened in this pass. Relayer quote fee recipient must equal the loaded manifest's fee recipient; a 30-second safety buffer is checked before derivation/signing, after each async signature/permit step, and immediately before submission. Clock is injected as a function for boundary tests. Existing post-broadcast uncertain outcomes are not made retryable. Focused suite: 34 tests passed before release changes; final combined run pending at time of writing.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/scanBundle.test.ts",
@@ -885,9 +830,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted production build artifact guard checks emitted scanner worker/module properties; it is a build-output test, not a substitute for page reconciliation tests.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/state.tsx",
@@ -901,9 +845,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Superseded/adapted state model preserves target's passphrase/session/BTC/router state; lock and session lifecycle are tested in session and vault tests plus Playwright reload/unlock path.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/styles/app.css",
@@ -917,9 +860,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted app styles retain responsive forms, focus visibility, notices, printable receipt rules and QR semantics. Playwright responsive/accessibility smoke passed in the existing 17-test batch.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/test/announcements.ts",
@@ -933,9 +875,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted fixtures now encode exact announcement, manifest, RPC, wallet and provider behavior used by focused tests. They are test-only and not trusted at runtime. `fakeManifest.ts` feeds fail-closed verification tests; scan fixtures include router/direct claim distinctions.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/test/fakeManifest.ts",
@@ -949,9 +890,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted fixtures now encode exact announcement, manifest, RPC, wallet and provider behavior used by focused tests. They are test-only and not trusted at runtime. `fakeManifest.ts` feeds fail-closed verification tests; scan fixtures include router/direct claim distinctions.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/test/mockChain.ts",
@@ -965,9 +905,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted fixtures now encode exact announcement, manifest, RPC, wallet and provider behavior used by focused tests. They are test-only and not trusted at runtime. `fakeManifest.ts` feeds fail-closed verification tests; scan fixtures include router/direct claim distinctions.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/test/mockWallet.ts",
@@ -981,9 +920,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted fixtures now encode exact announcement, manifest, RPC, wallet and provider behavior used by focused tests. They are test-only and not trusted at runtime. `fakeManifest.ts` feeds fail-closed verification tests; scan fixtures include router/direct claim distinctions.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/test/render.tsx",
@@ -997,9 +935,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted fixtures now encode exact announcement, manifest, RPC, wallet and provider behavior used by focused tests. They are test-only and not trusted at runtime. `fakeManifest.ts` feeds fail-closed verification tests; scan fixtures include router/direct claim distinctions.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/views/About.test.tsx",
@@ -1013,9 +950,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted disclosure/caveat copy and test coverage describe limits of invoice signatures and privacy; target also has privacy/QR/BTC warnings tested in relevant screens.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/views/About.tsx",
@@ -1029,9 +965,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted disclosure/caveat copy and test coverage describe limits of invoice signatures and privacy; target also has privacy/QR/BTC warnings tested in relevant screens.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/views/CreateInvoice.test.tsx",
@@ -1045,9 +980,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted invoice creation retains target's v1 encrypted envelope and passphrase whole-invoice option, plus bearer-key option and semantic shareable QR. Tests cover serialization, amount and passphrase validation; Playwright exercises create/open/wrong-passphrase.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/views/CreateInvoice.tsx",
@@ -1061,9 +995,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted invoice creation retains target's v1 encrypted envelope and passphrase whole-invoice option, plus bearer-key option and semantic shareable QR. Tests cover serialization, amount and passphrase validation; Playwright exercises create/open/wrong-passphrase.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/views/Home.tsx",
@@ -1077,9 +1010,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Superseded/adapted landing content is routed through current App; browser route smoke covers it.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/views/Pay.test.tsx",
@@ -1093,9 +1025,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Pay view imports bounded seller receipt JSON, verifies its signature, and binds invoice digest, chain, asset, amount, available tx hash and recipient facts; revision/session guards reject stale async file reads or changed trust state. The focused suite passed 86 tests, payExec follow-up passed 17/17, and web typecheck/scoped lint passed; independent review 21 passed 86/86 and closed the race findings. Final browser/hosted candidate verification remains open.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate for receipt import"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/views/Pay.tsx",
@@ -1109,9 +1040,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Pay view imports bounded seller receipt JSON, verifies its signature, and binds invoice digest, chain, asset, amount, available tx hash and recipient facts; revision/session guards reject stale async file reads or changed trust state. The focused suite passed 86 tests, payExec follow-up passed 17/17, and web typecheck/scoped lint passed; independent review 21 passed 86/86 and closed the race findings. Final browser/hosted candidate verification remains open.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate for receipt import"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/views/Scan.test.tsx",
@@ -1125,9 +1055,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted scan UI shows provider mismatch safely and only verified transaction-bound matches as verified; direct claims remain claimed. Deep-scan checkbox explicitly controls tag-match mode. Seller receipt panel appears only for eligible verified matches with current seller keys and transaction hash. Tests cover no false verified output, receipt signer mismatch, incomplete metadata, stale match and unavailable transaction evidence.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/views/Scan.tsx",
@@ -1141,9 +1070,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted scan UI shows provider mismatch safely and only verified transaction-bound matches as verified; direct claims remain claimed. Deep-scan checkbox explicitly controls tag-match mode. Seller receipt panel appears only for eligible verified matches with current seller keys and transaction hash. Tests cover no false verified output, receipt signer mismatch, incomplete metadata, stale match and unavailable transaction evidence.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/views/SellerKeys.test.tsx",
@@ -1157,9 +1085,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted target key workflow retains passphrase-encrypted local vault, explicit lock/unlock, QR exposure semantics and session clearing. View tests plus Playwright save/reload/unlock exercise lifecycle.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/views/SellerKeys.tsx",
@@ -1173,9 +1100,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted target key workflow retains passphrase-encrypted local vault, explicit lock/unlock, QR exposure semantics and session clearing. View tests plus Playwright save/reload/unlock exercise lifecycle.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/views/Settings.test.tsx",
@@ -1189,9 +1115,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted UI for primary and secondary RPC providers, relayer, and chain selection; settings tests cover fallback/canonical keys and invalid endpoint rejection.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/views/Settings.tsx",
@@ -1205,9 +1130,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted UI for primary and secondary RPC providers, relayer, and chain selection; settings tests cover fallback/canonical keys and invalid endpoint rejection.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/views/Sweep.test.tsx",
@@ -1221,9 +1145,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted source quote/sweep flow to current passphrase vault/session guard and current API. Fee recipient is passed from verified manifest; quote freshness is sampled after async work in `relayedSweep`. Tests cover wrong fee recipient, near-expiry and during-permit expiry, direct/relayed boundary, user warnings and no unsafe retry.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/src/views/Sweep.tsx",
@@ -1237,9 +1160,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted source quote/sweep flow to current passphrase vault/session guard and current API. Fee recipient is passed from verified manifest; quote freshness is sampled after async work in `relayedSweep`. Tests cover wrong fee recipient, near-expiry and during-permit expiry, direct/relayed boundary, user warnings and no unsafe retry.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "apps/web/vite.config.ts",
@@ -1253,9 +1175,8 @@
           ],
           "resolution_status": "dispositioned; adapted/superseded per web owner report",
           "resolution_evidence": "Adapted static-host headers and emitted-bundle checks remain active. Build and postbuild now validate every deployment file against schema, filename/chain id, and the configured release public key set; any manifest without keys or with an invalid signature fails closed. Vite compiles validated raw manifest text and keys into the hashed bundle.",
-          "pending_checks": [
-            "candidate hosted CI on frozen candidate"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "packages/btc-silent-payments/src/adapter-types.ts",
@@ -1270,9 +1191,8 @@
             "docs/audits/audit 10.md"
           ],
           "resolution_evidence": "Adapter exposes the current scan/verifier contract; ext4 scanner/BlindBit/URI fixes and regression suite passed 353 tests across 21 files with configured coverage. No code omission identified.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "packages/chain-adapters/src/index.ts",
@@ -1288,9 +1208,8 @@
             "docs/audits/audit 18.md"
           ],
           "resolution_evidence": "Exports retain deployment/signature verification, scan verification, registry, payments and deep-scan API. Required-Anvil package run passed 332 tests; latest recorded coverage is 96.17% statements and 94.42% branches.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "packages/chain-adapters/src/logs.ts",
@@ -1306,9 +1225,8 @@
             "docs/audits/audit 18.md"
           ],
           "resolution_evidence": "Target implements inclusive toBlock, request/log bounds, hostile-head/cursor rejection, canonical event/window checks and safe reorg rollback. Bounded scan regression tests were run in the package suite; required-Anvil suite is green.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "packages/chain-adapters/src/registry.test.ts",
@@ -1324,9 +1242,8 @@
             "docs/audits/audit 18.md"
           ],
           "resolution_evidence": "Current registry.test.ts and registry.compat.test.ts cover registry codecs/readback; old browser Registry tests are mapped in audit 16. Required-Anvil package suite passed.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "packages/chain-adapters/src/registry.ts",
@@ -1342,9 +1259,8 @@
             "docs/audits/audit 18.md"
           ],
           "resolution_evidence": "Current registry codec/register/readback API is exported and exercised by current registry suites; required-Anvil package suite passed.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "packages/chain-adapters/src/router.anvil.test.ts",
@@ -1360,9 +1276,8 @@
             "docs/audits/audit 18.md"
           ],
           "resolution_evidence": "Current Anvil router tests ran in the required-Anvil package suite; no source-only test omission identified.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "packages/core-crypto/src/stealth.ts",
@@ -1378,9 +1293,8 @@
             "docs/audits/audit 18.md"
           ],
           "resolution_evidence": "Source change is documentation/comment-level; current stealth behavior is exercised by differential/negative tests. Full coverage passed 55/55 tests (98.47% statements, 98.11% branches).",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "packages/invoice-schema/DEVIATIONS.md",
@@ -1396,9 +1310,8 @@
             "docs/audits/audit 18.md"
           ],
           "resolution_evidence": "Current deviations preserve text-hygiene and passphrase security caveats; no implementation delta omitted.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "packages/invoice-schema/README.md",
@@ -1414,9 +1327,8 @@
             "docs/audits/audit 18.md"
           ],
           "resolution_evidence": "Current README describes strict hidden-character rejection and A256GCM-PW envelope/security limits; no source functionality omitted.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         },
         {
           "path": "packages/invoice-schema/src/errors.ts",
@@ -1432,11 +1344,11 @@
             "docs/audits/audit 18.md"
           ],
           "resolution_evidence": "Retains forbidden-character and passphrase-specific typed errors; package validation includes the 626-test invoice-schema result in audit 18.",
-          "pending_checks": [
-            "candidate hosted CI"
-          ]
+          "pending_checks": [],
+          "final_validation_ref": "22-consolidation-completion.md"
         }
-      ]
+      ],
+      "baseline_is_ancestor": false
     },
     "origin/claude/laughing-bardeen-4t20ys": {
       "sha": "e96cee1a4e12773a6f66781c5a6797cbf9ff4ec5",
@@ -1446,7 +1358,8 @@
         "identical": 1642,
         "source unchanged since common ancestor; target evolved": 26
       },
-      "review_files": []
+      "review_files": [],
+      "baseline_is_ancestor": true
     }
   },
   "scope": "Pinned Fermat and Bardeen snapshots; file equality and ancestry do not prove behavioral coverage.",
@@ -1463,13 +1376,29 @@
     "pending": "Code frozen for candidate preparation; fresh Playwright passed. Full web coverage on the candidate and coherent hosted CI/upload remain pending. Candidate SHA is not assigned.",
     "required_chain_helpers": "Registry 4/4, router 3/3, policy-scheme 7/7 and chain guard 9/9 passed with required local tools; workflow now requires applicable tools/artifacts."
   },
-  "open_completion_gates": [
-    "Complete full web coverage on the frozen candidate.",
-    "Obtain green hosted CI/Integration on the candidate and update audit 06 with the candidate SHA."
-  ],
+  "open_completion_gates": [],
   "other_open_boundaries": [
     "Independent professional external audit, trusted setup, real deployment keys/funded operation and device qualification remain release gates tracked in audits 08 and 18.",
     "Historical Mythril/mutation reports are not current evidence; run selected security tools or document unavailable tools.",
     "Durable seller-side invoice/payment reconciliation remains a separate product gap in audit 08; Pay receipt import/binding itself is implemented and reviewed."
-  ]
+  ],
+  "baseline_target_commit": "46c9136cd54a1b52d9a7f329176342f94876aa73",
+  "main_merge_commit": "5795857d9e366cc9a4304c6afa9b03365e7c1844",
+  "comparison_note": "Original counts/status taxonomy describe the baseline comparison. Per-path resolutions and final validation apply to target_commit; complete means relevant source migration, not feature or release readiness.",
+  "final_validation": {
+    "ci": "https://github.com/djshellshoxxx/GhostPay/actions/runs/39768643775",
+    "integration": "https://github.com/djshellshoxxx/GhostPay/actions/runs/39768643774",
+    "source_ancestor_check": "All authored remote source tips are ancestors of main; generated gh-pages excluded.",
+    "candidate_file_count": 2923,
+    "candidate_worktree_differences": 0,
+    "promoted_runtime_tree_differences": 0,
+    "web_tests_passed": 630,
+    "web_live_regtest_skip_separately_exercised": true,
+    "web_coverage": {
+      "statements": 92.29,
+      "branches": 87.24,
+      "functions": 91.45,
+      "lines": 95.46
+    }
+  }
 }

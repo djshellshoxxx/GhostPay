@@ -1,6 +1,6 @@
 # Consolidated integration verification
 
-Date: 2026-10-22. Status: **in progress**. Remote checkpoint `ecc29c1ec998c4f131471967e2691678ca33f0fa` preserves the consolidated work; subsequent fixes are still being verified. This report is evidence for repository integration, not a production-readiness certificate.
+Date: 2026-10-22. Status: **verified consolidation; main promoted**. Candidate `c206655ebfa747b3dd56b1dc9f4e7f16e641a833` passed the full hosted gates and was promoted by PR #20. This report is evidence for repository integration, not a production-readiness certificate.
 
 ## Completed checks
 
@@ -31,12 +31,11 @@ Date: 2026-10-22. Status: **in progress**. Remote checkpoint `ecc29c1ec998c4f131
 
 Coverage percentages above are actual configured-gate runs, not focused-test coverage estimates. Expensive suites were not reduced to make them pass. Detailed test mechanisms and exceptions belong to the linked area reports.
 
-## Current final gates
+## Final validation
 
-- The signed-fixture Playwright run passed 17/17 in 2.1 minutes, including native payment, mutated-calldata refusal, worker scan, passphrase invoices and vault reload/unlock. The later Pay receipt-import and async-flow hardening passed 86 related tests, a 17-test payExec follow-up, web typecheck and scoped lint. Independent security review passed another 86/86 run and closed the stale cross-invoice prepared-payment defect (audit 21); the fresh full browser run passed 17/17 in 2.1 minutes after those changes; full coverage is gated on the final clean-checkout hosted run.
-- Root typecheck passed. The full lint sweep completed with only the earlier chain-adapter errors; those were fixed, scoped lint/typecheck and the full 332-test coverage suite passed, and every other workspace completed lint successfully. The final hosted workflow must verify the coherent tree.
-- Hosted CI and Integration completed on the checkpoint, with the failures described below. Slither, secret/action checks, main contract tests/static checks, extra contract suites, core and BTC jobs passed. Relayer coverage failure on the checkpoint is addressed locally by the new coverage tests; QR branch coverage shortfall is addressed by the 52-test package run. The devnet signature rejection was fixed and the full local rehearsal passed; browser fixture readback and disclosure assertions were corrected. A fresh coherent candidate still requires green hosted workflows. These partial successes are not a green workflow claim.
-- Final source disposition, exact-tree publication, clean-checkout verification, branch consolidation and main promotion remain pending. Source refs are retained.
+Candidate `c206655ebfa747b3dd56b1dc9f4e7f16e641a833` passed uncancelled [CI](https://github.com/djshellshoxxx/GhostPay/actions/runs/39768643775) and [Integration](https://github.com/djshellshoxxx/GhostPay/actions/runs/39768643774) before main merge `5795857d9e366cc9a4304c6afa9b03365e7c1844`. Hosted web coverage passed: 630 tests, 92.29% statements / 87.24% branches / 91.45% functions / 95.46% lines. The sole ordinary-suite live Bitcoin skip was separately exercised against Core 28.1. The full FHE hosted suite passed all 46 cases in one run. Full workspace typecheck/lint/build/audit, browser, all test shards, contracts and static gates passed.
+
+The unused registry duplicate was removed in favor of the tested active view. Required Anvil flags are scoped to configured workspaces; optional external research fixtures retain explicit gates. The exact 2,923-file candidate matched the worktree, and its runtime tree matched promoted main. All authored source tips are main ancestors. See [final completion record](22-consolidation-completion.md) for resolved PRs, complete scope and remaining boundaries.
 
 ## Security review
 

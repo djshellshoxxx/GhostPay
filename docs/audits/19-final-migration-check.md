@@ -74,3 +74,7 @@ The durable source-integration checkpoint is `origin/integration/consolidated-20
 The source branch tips remain non-ancestors where shown; this is expected because migration used selective ports rather than merges. Their authored source dispositions are recorded by owner: web in audit 16, contracts and package QA in audit 10, relayer in audit 11, ext8 deployment/integrations in audit 15, and remaining path/provenance work in audits 06/07/13/19. Generated reports, `.source` regression snapshots and `gh-pages` output are not represented as merged runtime code or as current passing test evidence.
 
 The candidate final commit has not been created at this check. Therefore `06-migration-inventory.json` remains `complete: false`, and neither this link pass nor the ancestry table closes merge-completion, final-snapshot QA, hosted-CI or release gates.
+
+## Final closure — 2026-10-22
+
+This section supersedes earlier pending migration/QA statements in this snapshot report. Candidate `c206655ebfa747b3dd56b1dc9f4e7f16e641a833` passed full CI and platform Integration and was promoted by PR #20 in main merge `5795857d9e366cc9a4304c6afa9b03365e7c1844`. All authored source tips are main ancestors; exact-tree comparisons found zero candidate/worktree or promoted runtime differences. Inventory 06 now records migration complete, with product/external boundaries retained. Web: 630 passed, original coverage gates passed; browser 17/17; full FHE hosted 46 passing. The authoritative closure and limits are in [audit 22](22-consolidation-completion.md).
