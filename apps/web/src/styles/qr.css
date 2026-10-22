@@ -1,0 +1,123 @@
+/* Colour-coded QR frames. Colour is never the only cue: each kind also has a text label, an icon and a distinct border style.
+   Token values must match QR_PALETTE_LIGHT / QR_PALETTE_DARK in lib/qrKinds.ts (enforced by a test). No inline styles (CSP). */
+:root {
+  --qr-red: #b00020; --qr-red-on: #ffffff;
+  --qr-green: #1b6b35; --qr-green-on: #ffffff;
+  --qr-orange: #b45309; --qr-orange-on: #ffffff;
+  --qr-blue: #0b4fd6; --qr-blue-on: #ffffff;
+  --qr-purple: #6d28d9; --qr-purple-on: #ffffff;
+  --qr-yellow: #a67c00; --qr-yellow-on: #000000;
+  --qr-width: 6px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --qr-red: #ff6b7a; --qr-red-on: #000000;
+    --qr-green: #4cc38a; --qr-green-on: #000000;
+    --qr-orange: #ff9f43; --qr-orange-on: #000000;
+    --qr-blue: #6ea8ff; --qr-blue-on: #000000;
+    --qr-purple: #b794f6; --qr-purple-on: #000000;
+    --qr-yellow: #f2c230; --qr-yellow-on: #000000;
+  }
+}
+
+:root[data-theme='dark'] {
+  --qr-red: #ff6b7a; --qr-red-on: #000000;
+  --qr-green: #4cc38a; --qr-green-on: #000000;
+  --qr-orange: #ff9f43; --qr-orange-on: #000000;
+  --qr-blue: #6ea8ff; --qr-blue-on: #000000;
+  --qr-purple: #b794f6; --qr-purple-on: #000000;
+  --qr-yellow: #f2c230; --qr-yellow-on: #000000;
+}
+
+@media (prefers-contrast: more) {
+  :root { --qr-width: 8px; }
+}
+
+@media (forced-colors: active) {
+  :root {
+    --qr-red: CanvasText; --qr-green: CanvasText; --qr-orange: CanvasText;
+    --qr-blue: CanvasText; --qr-purple: CanvasText; --qr-yellow: CanvasText;
+    --qr-red-on: Canvas; --qr-green-on: Canvas; --qr-orange-on: Canvas;
+    --qr-blue-on: Canvas; --qr-purple-on: Canvas; --qr-yellow-on: Canvas;
+  }
+}
+
+.qr-frame {
+  --qr-c: var(--border);
+  --qr-on: var(--text);
+  position: relative;
+  margin: 16px 0;
+  padding: 12px;
+  max-width: 24rem;
+  background: var(--surface);
+  color: var(--text);
+  border-width: var(--qr-width);
+  border-style: solid;
+  border-color: var(--qr-c);
+  border-radius: 12px;
+}
+.qr-kind-secret { --qr-c: var(--qr-red); --qr-on: var(--qr-red-on); border-style: solid; border-width: calc(var(--qr-width) + 4px); }
+.qr-kind-shareable { --qr-c: var(--qr-green); --qr-on: var(--qr-green-on); border-style: solid; border-width: calc(var(--qr-width) - 2px); }
+.qr-kind-bearer { --qr-c: var(--qr-orange); --qr-on: var(--qr-orange-on); border-style: dashed; }
+.qr-kind-device { --qr-c: var(--qr-blue); --qr-on: var(--qr-blue-on); border-style: double; border-width: calc(var(--qr-width) + 4px); }
+.qr-kind-proof { --qr-c: var(--qr-purple); --qr-on: var(--qr-purple-on); border-style: dotted; border-width: calc(var(--qr-width) + 2px); }
+.qr-kind-caution { --qr-c: var(--qr-yellow); --qr-on: var(--qr-yellow-on); border-style: groove; border-width: calc(var(--qr-width) + 2px); }
+.qr-kind-caution::before {
+  content: '';
+  display: block;
+  height: 10px;
+  margin: -4px -4px 8px;
+  background: repeating-linear-gradient(135deg, var(--qr-yellow) 0 10px, var(--surface) 10px 20px);
+}
+
+.qr-frame-head { display: flex; align-items: center; gap: 8px; }
+.qr-label {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--qr-c);
+  color: var(--qr-on);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.qr-icon { flex: none; color: var(--qr-c); }
+.qr-explain, .qr-warning, .qr-caption, .qr-note { margin: 8px 0; overflow-wrap: anywhere; }
+.qr-warning { font-weight: 600; }
+.qr-note { color: var(--muted); font-size: 0.9rem; min-height: 1.2em; }
+.qr-frame .qr { margin: 8px 0; max-width: none; }
+.qr-actions, .qr-parts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 8px 0; }
+.qr-actions .btn, .qr-parts .btn, .qr-hidden .btn { min-height: 44px; min-width: 44px; }
+.qr-part-status { font-weight: 600; margin: 0; flex-basis: 100%; }
+.qr-auto { flex-basis: 100%; }
+
+/* Full-screen scanning view: always a white, high-contrast page, whatever the theme. */
+.qr-large {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  background: #ffffff;
+  color: #000000;
+  border: var(--qr-width) var(--qr-large-style, solid) var(--qr-c);
+}
+.qr-large .qr { width: min(90vmin, 40rem); }
+.qr-large .qr-note { color: #000000; }
+.qr-large-label { display: flex; align-items: center; gap: 8px; font-weight: 700; margin: 0; }
+.qr-large .btn { color: #000000; background: #ffffff; border: 2px solid #000000; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .qr-frame { transition: border-color 0.2s; }
+}
+
+/* Secret codes are never printed by default. */
+@media print {
+  .qr-kind-secret .qr-body, .qr-kind-secret .qr-actions { display: none; }
+  .qr-kind-secret::after { content: 'Secret QR code not printed.'; }
+}

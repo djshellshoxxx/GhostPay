@@ -8,7 +8,7 @@ const MAX_CHAIN_ID = Number.MAX_SAFE_INTEGER;
 const NUM = /^([0-9]+)(?:\.([0-9]+))?(?:[eE]([0-9]{1,3}))?$/;
 
 /**
- * Strict EIP-681 `number` to a non-negative integer. Signs are rejected, `.` needs digits both sides, `e` needs digits,
+ * Strict EIP-681 `number` to a positive integer. Signs are rejected, `.` needs digits both sides, `e` needs digits,
  * and the exponent must be >= the fraction digit count (so the result is an integer). Result must fit in uint256.
  */
 export function parseEip681Number(s: string): bigint {
@@ -19,8 +19,9 @@ export function parseEip681Number(s: string): bigint {
   const exp = m[3] === undefined ? 0 : Number(m[3]);
   if (exp > 77) return fail('AMOUNT_OVERFLOW');
   if (exp < frac.length) return fail('INVALID_AMOUNT');
-  if (intPart.length > 1 && intPart.startsWith('0') && frac === '' ) return fail('INVALID_AMOUNT');
+  if (/^0[0-9]/.test(intPart)) return fail('INVALID_AMOUNT');
   const v = BigInt(intPart + frac) * 10n ** BigInt(exp - frac.length);
+  if (v === 0n) return fail('INVALID_AMOUNT');
   if (v > UINT256_MAX) return fail('AMOUNT_OVERFLOW');
   return v;
 }

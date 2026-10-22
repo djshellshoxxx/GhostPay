@@ -24,7 +24,7 @@ import {
   signInvoice,
   type SignedInvoice,
 } from './index.js';
-import { passphraseToBytes } from './passphrase.js';
+import { buildPassphraseAad, derivePassphraseKey, passphraseToBytes } from './passphrase.js';
 import {
   OTHER_SIGNER,
   OTHER_SIGNING_KEY,
@@ -449,6 +449,27 @@ describe('passphrase-protected links (A256GCM-PW, ADR-0020)', () => {
     } finally {
       if (desc !== undefined) Object.defineProperty(globalThis, 'crypto', desc);
     }
+  });
+});
+
+describe('passphrase internals', () => {
+  it('derivePassphraseKey refuses disallowed parameters and salts (defence in depth)', async () => {
+    const pw = passphraseToBytes(PASS);
+    const salt = new Uint8Array(16);
+    await expect(derivePassphraseKey(pw, salt, { N: 1 << 20, r: 8, p: 1 })).rejects.toBeInstanceOf(
+      InvoiceError,
+    );
+    await expect(derivePassphraseKey(pw, new Uint8Array(15), { N: N15, r: 8, p: 1 })).rejects.toBeInstanceOf(
+      InvoiceError,
+    );
+    const k = await derivePassphraseKey(pw, salt, { N: N15, r: 8, p: 1 });
+    expect(k).toEqual(scrypt(enc(PASS), salt, { N: N15, r: 8, p: 1, dkLen: 32 }));
+  });
+  it('AAD layout is magic || chainId u64 || signer || N,r,p u32 || salt', () => {
+    const salt = new Uint8Array(16).fill(7);
+    const aad = buildPassphraseAad(8453, SIGNER, { N: N15, r: 8, p: 1 }, salt);
+    expect(aad.length).toBe(8 + 8 + 33 + 12 + 16);
+    expect(aad).toEqual(refAad(8453, SIGNER, N15, 8, 1, salt));
   });
 });
 

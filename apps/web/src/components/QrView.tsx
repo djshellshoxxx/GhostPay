@@ -3,8 +3,12 @@ import { makeQr, qrPath, qrSvgText, qrViewSize } from '../lib/qr';
 import { UserFacingError } from '../lib/errors';
 import { Notice, downloadText } from './Common';
 
-/** Locally generated QR (no network). Rendered as an SVG built from React elements, not from markup strings. */
-export function QrView(props: { readonly text: string; readonly caption: string }): ReactNode {
+/**
+ * Locally generated QR (no network). Rendered as an SVG built from React elements, not from markup strings.
+ * @deprecated Use `QrFrame` (components/QrFrame.tsx) with an explicit `kind`; a bare QrView has no sensitivity cue.
+ * `bare` renders only the QR image (used by QrFrame, which supplies caption and actions).
+ */
+export function QrView(props: { readonly text: string; readonly caption: string; readonly bare?: boolean }): ReactNode {
   const result = useMemo(() => {
     try {
       const m = makeQr(props.text);
@@ -22,7 +26,8 @@ export function QrView(props: { readonly text: string; readonly caption: string 
         <rect width={n} height={n} className="qr-bg" />
         <path d={qrPath(result.m)} className="qr-fg" />
       </svg>
-      <figcaption>{props.caption}</figcaption>
+      {props.bare === true ? null : <figcaption>{props.caption}</figcaption>}
+      {props.bare === true ? null : (
       <button
         type="button"
         className="btn"
@@ -32,6 +37,7 @@ export function QrView(props: { readonly text: string; readonly caption: string 
       >
         Download QR (SVG)
       </button>
+      )}
     </figure>
   );
 }
