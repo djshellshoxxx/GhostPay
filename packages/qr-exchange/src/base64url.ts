@@ -51,12 +51,12 @@ export function b64urlDecode(text: string): Uint8Array {
   if (rest === 2) {
     const n = (vals[i]! << 18) | (vals[i + 1]! << 12);
     if ((vals[i + 1]! & 15) !== 0) throw new QrExchangeError('BAD_CHUNK');
-    out[o++] = (n >> 16) & 255;
+    out[o] = (n >> 16) & 255;
   } else if (rest === 3) {
     const n = (vals[i]! << 18) | (vals[i + 1]! << 12) | (vals[i + 2]! << 6);
     if ((vals[i + 2]! & 3) !== 0) throw new QrExchangeError('BAD_CHUNK');
-    out[o++] = (n >> 16) & 255;
-    out[o++] = (n >> 8) & 255;
+    out[o] = (n >> 16) & 255;
+    out[o + 1] = (n >> 8) & 255;
   }
   return out;
 }

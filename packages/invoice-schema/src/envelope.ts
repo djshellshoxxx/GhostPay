@@ -479,7 +479,10 @@ export async function parseFragment(fragment: string, options: ParseOptions = {}
  * @security `header` is unauthenticated (anyone can edit it); show it only as "claimed" until decrypted.
  * @testVector invoice-v1-sample
  */
-export async function openFragment(fragment: string, options: ParseOptions = {}): Promise<OpenFragmentResult> {
+export async function openFragment(
+  fragment: string,
+  options: ParseOptions = {},
+): Promise<OpenFragmentResult> {
   return parseRoot(decodeEnvelopeRoot(fragment), options, true);
 }
 

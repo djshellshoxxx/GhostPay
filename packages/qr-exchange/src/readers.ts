@@ -103,7 +103,7 @@ interface DefaultEnv {
 }
 
 /** BarcodeDetector when the platform has it, otherwise canvas + jsQR. */
-export async function createDefaultReader(env: DefaultEnv = globalThis as unknown as DefaultEnv): Promise<FrameReader> {
+export async function createDefaultReader(env: DefaultEnv = globalThis): Promise<FrameReader> {
   const platform = await createPlatformReader(env.BarcodeDetector);
   if (platform !== null) return platform;
   const doc = env.document;

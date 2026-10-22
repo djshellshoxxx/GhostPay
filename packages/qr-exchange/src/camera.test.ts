@@ -58,7 +58,7 @@ describe('startCamera', () => {
     const gum = vi.fn().mockResolvedValue(stream);
     const v = fakeVideo();
     expect(gum).not.toHaveBeenCalled();
-    await startCamera(v, { getUserMedia: gum } as MediaDevicesLike);
+    await startCamera(v, { getUserMedia: gum });
     expect(gum).toHaveBeenCalledWith({ video: { facingMode: 'environment', width: { ideal: 1280 } }, audio: false });
     expect(v.srcObject).toBe(stream);
     expect(v.played).toBe(1);
@@ -69,7 +69,7 @@ describe('startCamera', () => {
     expect(await codeOf(startCamera(v, mk('NotAllowedError')))).toBe('CAMERA_DENIED');
     expect(await codeOf(startCamera(v, mk('SecurityError')))).toBe('CAMERA_DENIED');
     expect(await codeOf(startCamera(v, mk('NotFoundError')))).toBe('CAMERA_UNAVAILABLE');
-    expect(await codeOf(startCamera(v, { getUserMedia: () => Promise.reject('str') }))).toBe('CAMERA_UNAVAILABLE');
+    expect(await codeOf(startCamera(v, { getUserMedia: () => Promise.reject(new Error('str')) }))).toBe('CAMERA_UNAVAILABLE');
     expect(await codeOf(startCamera(v, undefined))).toBe('CAMERA_UNAVAILABLE');
   });
   it('stops tracks if play fails or abort happens mid-prompt; no prompt if pre-aborted', async () => {

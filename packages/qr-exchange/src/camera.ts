@@ -31,6 +31,10 @@ const HAVE_CURRENT_DATA = 2;
 export const MAX_SCAN_TEXT_LEN = 4096;
 const MAX_CONSECUTIVE_READ_FAILURES = 30;
 
+function isAborted(signal: AbortSignal | undefined): boolean {
+  return signal?.aborted === true;
+}
+
 function isStream(v: unknown): v is MediaStreamLike {
   return typeof v === 'object' && v !== null && typeof (v as { getTracks?: unknown }).getTracks === 'function';
 }
@@ -62,7 +66,7 @@ export async function startCamera(
   if (mediaDevices === undefined || typeof mediaDevices.getUserMedia !== 'function') {
     throw new QrExchangeError('CAMERA_UNAVAILABLE');
   }
-  if (options.signal?.aborted === true) throw new QrExchangeError('ABORTED');
+  if (isAborted(options.signal)) throw new QrExchangeError('ABORTED');
   let stream: MediaStreamLike;
   try {
     stream = await mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 } }, audio: false });
@@ -71,7 +75,7 @@ export async function startCamera(
     throw new QrExchangeError(name === 'NotAllowedError' || name === 'SecurityError' ? 'CAMERA_DENIED' : 'CAMERA_UNAVAILABLE');
   }
   video.srcObject = stream;
-  if (options.signal?.aborted === true) {
+  if (isAborted(options.signal)) {
     stopVideo(video);
     throw new QrExchangeError('ABORTED');
   }

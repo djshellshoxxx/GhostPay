@@ -126,7 +126,7 @@ describe('Assembler', () => {
     expect(a.add(chunks[1] as string).received).toBe(2);
   });
   it('rejects a conflicting body for a held index (valid crc)', () => {
-    const p = parseChunk(chunks[0] as string);
+    const p = parseChunk(chunks[0]);
     const body = 'A'.repeat(p.data.length);
     const crc = crc32Ascii(`${p.session}/0/${String(p.total)}/${body}`).toString(16).padStart(8, '0');
     const forged = `GPQ1/${p.session}/0/${String(p.total)}/${crc}/${body}`;
@@ -135,7 +135,7 @@ describe('Assembler', () => {
     expect(code(() => a.add(forged))).toBe('CHUNK_CONFLICT');
   });
   it('fails integrity (and resets) when a crc-valid forged chunk changes the payload', () => {
-    const p = parseChunk(chunks[0] as string);
+    const p = parseChunk(chunks[0]);
     const body = 'A'.repeat(p.data.length);
     const crc = crc32Ascii(`${p.session}/0/${String(p.total)}/${body}`).toString(16).padStart(8, '0');
     const forged = `GPQ1/${p.session}/0/${String(p.total)}/${crc}/${body}`;
