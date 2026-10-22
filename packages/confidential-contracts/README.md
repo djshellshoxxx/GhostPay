@@ -15,7 +15,7 @@ What it hides: gross, fee and net amounts. What it does **not** hide: payer, ste
 
 Hardhat, not Foundry (the fhEVM mock ships as `@fhevm/hardhat-plugin`; see `DEVIATIONS.md`). Solidity 0.8.28, evm `cancun`.
 
-The pinned `@fhevm/hardhat-plugin` 0.4.2 requires the compatible `@fhevm/solidity` 0.11.1 configuration. Upgrading only the Solidity library to 0.13.4 fails the plugin's `ZamaConfig.sol` compatibility check. Upgrade this stack together and run the complete suite; Dependabot leaves minor/major Solidity-library changes for that coordinated upgrade.
+The pinned `@fhevm/hardhat-plugin` 0.4.2 requires `@fhevm/solidity` 0.11.1 and exactly `@zama-fhe/relayer-sdk` 0.4.1. Upgrading only the Solidity library to 0.13.4 fails the plugin's `ZamaConfig.sol` compatibility check; SDK 0.4.5 fails its exact-version assertion. Upgrade this stack together and run the complete suite; Dependabot leaves minor/major Solidity-library changes and SDK changes for that coordinated upgrade.
 
 ```bash
 # from the repo root: npm ci --ignore-scripts
