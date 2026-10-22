@@ -3,7 +3,7 @@ import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { clearSession, generateSession, getSessionPublic } from '../lib/session';
-import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests } from '../lib/keyVault';
+import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests, type KeyVaultStore } from '../lib/keyVault';
 import { makeServices, renderApp } from '../test/render';
 
 let vaultStore = new MemoryKeyVaultStore();
@@ -41,6 +41,65 @@ describe('Seller keys', () => {
     expect(await vaultStore.get()).toBe(ciphertext);
     expect(await vaultStore.get()).not.toContain(passphrase);
     expect(screen.getByLabelText<HTMLInputElement>('Vault passphrase').value).toBe('');
+  });
+
+  it('keeps a saved vault locked after a wrong passphrase and clears the password field', async () => {
+    generateSession();
+    await saveEncryptedVault('violet comet maple lantern', { N: 1 << 14 });
+    clearSession();
+    const user = await open();
+    await user.type(await screen.findByLabelText('Vault passphrase'), 'incorrect vault phrase');
+    await user.click(screen.getByRole('button', { name: 'Unlock saved vault' }));
+    await waitFor(() => { expect(screen.getByRole('alert').textContent).toMatch(/Wrong passphrase/); }, { timeout: 15_000 });
+    expect(getSessionPublic()).toBeUndefined();
+    expect(screen.getByLabelText<HTMLInputElement>('Vault passphrase').value).toBe('');
+    expect(screen.getByRole('button', { name: 'Delete encrypted vault' })).toBeTruthy();
+  });
+
+  it('requires a valid matching vault passphrase before saving any ciphertext', async () => {
+    const user = await open();
+    await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
+    const store = vaultStore;
+    await user.type(await screen.findByLabelText('New vault passphrase (14+ characters)'), 'short');
+    await user.type(screen.getByLabelText('Repeat vault passphrase'), 'short');
+    await user.click(screen.getByRole('button', { name: 'Save encrypted vault in this browser' }));
+    expect(screen.getByRole('alert').textContent).toMatch(/at least 14/);
+    expect(await store.get()).toBeUndefined();
+    await user.clear(screen.getByLabelText('New vault passphrase (14+ characters)'));
+    await user.clear(screen.getByLabelText('Repeat vault passphrase'));
+    await user.type(screen.getByLabelText('New vault passphrase (14+ characters)'), 'violet comet maple lantern');
+    await user.type(screen.getByLabelText('Repeat vault passphrase'), 'different phrase here');
+    await user.click(screen.getByRole('button', { name: 'Save encrypted vault in this browser' }));
+    expect(screen.getByRole('alert').textContent).toMatch(/differ/);
+    expect(await store.get()).toBeUndefined();
+  });
+
+  it('supports cancelling or confirming explicit vault deletion', async () => {
+    generateSession();
+    await saveEncryptedVault('violet comet maple lantern', { N: 1 << 14 });
+    const user = await open();
+    await user.click(screen.getByRole('button', { name: 'Delete encrypted vault' }));
+    expect(screen.getByText(/permanently deletes the saved ciphertext/)).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(screen.getByRole('button', { name: 'Unlock saved vault' })).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Delete encrypted vault' }));
+    await user.click(screen.getByRole('button', { name: 'Confirm delete encrypted vault' }));
+    expect(await screen.findAllByText('Encrypted vault deleted from this browser.')).toHaveLength(2);
+    expect(await vaultStore.get()).toBeUndefined();
+    expect(screen.queryByRole('button', { name: 'Unlock saved vault' })).toBeNull();
+  });
+
+  it('reports unavailable encrypted browser storage while keeping in-memory key creation available', async () => {
+    const unavailable: KeyVaultStore = {
+      get: () => Promise.reject(new Error('simulated browser storage failure')),
+      putIfEmpty: () => Promise.reject(new Error('simulated browser storage failure')),
+      delete: () => Promise.reject(new Error('simulated browser storage failure')),
+    };
+    setKeyVaultStoreForTests(unavailable);
+    const user = await open();
+    expect(await screen.findByText(/This browser cannot read the optional vault/)).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
+    expect(getSessionPublic()).toBeDefined();
   });
 
   it('generates keys in memory and shows only public data; nothing is written to web storage', async () => {

@@ -119,20 +119,25 @@ jobs:
                   | awk -v shard="$shard" '(NR - 1) % 3 == shard'
               )
               echo "$GROUP: ${args[*]}"
+              anvil_args=()
+              other_args=()
               needs_contract_artifacts=false
-              for workspace in "${args[@]}"; do
+              for ((i = 0; i < ${#args[@]}; i += 2)); do
+                workspace="${args[$((i + 1))]}"
                 if [[ "$workspace" == "packages/chain-adapters" || "$workspace" == "packages/policy-scheme" ]]; then
                   needs_contract_artifacts=true
+                  anvil_args+=(-w "$workspace")
+                else
+                  other_args+=(-w "$workspace")
                 fi
               done
               if [[ "$needs_contract_artifacts" == true ]]; then
                 (cd packages/contracts && forge build)
                 anvil_bin="$(command -v anvil)"
                 test -x "$anvil_bin"
-                ANVIL_BIN="$anvil_bin" REQUIRE_ANVIL=1 npm test "${args[@]}" --if-present
-              else
-                npm test "${args[@]}" --if-present
+                ANVIL_BIN="$anvil_bin" REQUIRE_ANVIL=1 npm test "${anvil_args[@]}" --if-present
               fi
+              if [[ ${#other_args[@]} -gt 0 ]]; then npm test "${other_args[@]}" --if-present; fi
               if [ "$shard" = 0 ]; then
                 node --test scripts/testnet/*.test.mjs scripts/regtest/*.test.mjs
               fi

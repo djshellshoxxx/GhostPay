@@ -74,3 +74,7 @@ The above table covers every `apps/web/**` path in the 50-path Fermat inventory 
 - Targeted ESLint on changed TypeScript sweep, manifest, default-service, Playwright and Vite config paths passed; `apps/web/scripts/scan-bundle.mjs` passed `node --check`.
 - Playwright's fake Base Sepolia manifest has a test-only secp256k1 signature; only `playwright.config.ts` supplies its public key to the E2E web-server build. Final browser run: 17/17 passed, including signed native payment, mutated calldata refusal, passphrase invoice create/open/wrong-password, and vault reload/wrong-password/unlock.
 - No production manifest or release key was added.
+
+### Registry duplicate disposition
+
+The unreferenced `src/components/RegistryPanel.tsx` was removed after confirming `App.tsx` routes the public-registry view to `features/registry/RegistryView.tsx` and no production module imported the old component. The active view retains lookup, explicit publication consent, transaction preview and wallet submission, on-chain ERC-6538 identity checks, submission readback, and clear-entry behavior. `RegistryView.test.tsx` covers those flows; the separate route smoke test was retained and renamed `RegistryView.route.test.tsx` to reflect the active route. The old panel was not the migrated source of truth and removing it does not reduce the coverage threshold or test scope.

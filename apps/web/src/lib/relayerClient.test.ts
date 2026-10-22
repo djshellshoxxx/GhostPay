@@ -26,10 +26,13 @@ describe('requestQuote', () => {
   });
   it.each([
     ['fee', { ...goodQuote, fee: '1e3' }, /invalid fee\./],
+    ['oversized fee', { ...goodQuote, fee: '9'.repeat(79) }, /invalid fee\./],
     ['feeTo', { ...goodQuote, feeTo: 'nope' }, /fee address/],
     ['expiry', { ...goodQuote, expiresAt: 'soon' }, /expiry/],
+    ['unsafe expiry', { ...goodQuote, expiresAt: Number.MAX_SAFE_INTEGER + 1 }, /expiry/],
     ['token', { ...goodQuote, quoteToken: '<script>' }, /quote token/],
     ['empty token', { ...goodQuote, quoteToken: '' }, /quote token/],
+    ['oversized token', { ...goodQuote, quoteToken: 'a'.repeat(2049) }, /quote token/],
     ['not an object', [1], /invalid response/],
   ])('rejects a malformed %s', async (_n, body, re) => {
     await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(json(body)))).rejects.toThrow(re);
@@ -44,6 +47,14 @@ describe('requestQuote', () => {
     await expect(requestQuote('https://relay.test', Q, () => Promise.reject(new TypeError('offline')))).rejects.toThrow(/Could not reach the relayer/);
     await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(new Response('x'.repeat(20_000))))).rejects.toThrow(/too large/);
     await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(new Response('not json')))).rejects.toThrow(/invalid response/);
+  });
+  it('maps a response stream read failure to a generic transport error', async () => {
+    const failedBody = {
+      ok: true,
+      status: 200,
+      text: () => Promise.reject(new TypeError('private transport detail')),
+    } as Response;
+    await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(failedBody))).rejects.toThrow('Could not reach the relayer.');
   });
 });
 

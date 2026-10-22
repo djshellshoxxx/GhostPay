@@ -4,6 +4,7 @@ import {
   authorizeEncryptedVault,
   deleteEncryptedVault,
   MemoryKeyVaultStore,
+  IndexedDbKeyVaultStore,
   readEncryptedVault,
   saveEncryptedVault,
   unlockEncryptedVault,
@@ -99,5 +100,53 @@ describe('encrypted seller vault', () => {
     await saveEncryptedVault(PASS, { N: 1 << 14 }, store);
     await deleteEncryptedVault(store);
     expect(await readEncryptedVault(store)).toBeUndefined();
+  });
+
+  it('fails closed when IndexedDB is unavailable and handles an empty saved vault', async () => {
+    const store = new IndexedDbKeyVaultStore();
+    await expect(store.get()).rejects.toThrow(/storage is unavailable/);
+    await expect(store.putIfEmpty('ciphertext')).rejects.toThrow(/storage is unavailable/);
+    await expect(store.delete()).rejects.toThrow(/storage is unavailable/);
+    const empty = new MemoryKeyVaultStore();
+    expect(await authorizeEncryptedVault(PASS, empty)).toBeUndefined();
+    await expect(unlockEncryptedVault(PASS, empty)).rejects.toThrow(/No encrypted seller vault/);
+  });
+
+  it('never overwrites an existing ciphertext and rejects competing saves atomically', async () => {
+    const store = new MemoryKeyVaultStore();
+    importSession({ spendingKeyHex: SPEND, viewingKeyHex: VIEW, signingKeyHex: SIGN });
+    await saveEncryptedVault(PASS, { N: 1 << 14 }, store);
+    const existing = await readEncryptedVault(store);
+    await expect(saveEncryptedVault(`${PASS} other`, { N: 1 << 14 }, store)).rejects.toThrow(/already exists/);
+    expect(await readEncryptedVault(store)).toBe(existing);
+
+    const competing = new MemoryKeyVaultStore();
+    const outcomes = await Promise.allSettled([
+      saveEncryptedVault(PASS, { N: 1 << 14 }, competing),
+      saveEncryptedVault(PASS, { N: 1 << 14 }, competing),
+    ]);
+    expect(outcomes.filter((outcome) => outcome.status === 'fulfilled')).toHaveLength(1);
+    expect(outcomes.filter((outcome) => outcome.status === 'rejected')).toHaveLength(1);
+    expect(await readEncryptedVault(competing)).toBeDefined();
+  });
+
+  it('refuses to persist ciphertext if the session changes while storage is being read', async () => {
+    importSession({ spendingKeyHex: SPEND, viewingKeyHex: VIEW, signingKeyHex: SIGN });
+    let reachedRead!: () => void;
+    let releaseRead!: (value: string | undefined) => void;
+    let written: string | undefined;
+    const readStarted = new Promise<void>((resolve) => { reachedRead = resolve; });
+    const pendingRead = new Promise<string | undefined>((resolve) => { releaseRead = resolve; });
+    const delayedStore = {
+      get: () => { reachedRead(); return pendingRead; },
+      putIfEmpty: (value: string) => { written = value; return Promise.resolve(); },
+      delete: () => Promise.resolve(),
+    };
+    const saving = saveEncryptedVault(PASS, { N: 1 << 14 }, delayedStore);
+    await readStarted;
+    importSession({ spendingKeyHex: '44'.repeat(32), viewingKeyHex: '55'.repeat(32), signingKeyHex: '66'.repeat(32) });
+    releaseRead(undefined);
+    await expect(saving).rejects.toThrow(/changed during this action/);
+    expect(written).toBeUndefined();
   });
 });

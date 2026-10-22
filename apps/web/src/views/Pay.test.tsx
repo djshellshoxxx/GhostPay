@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { decodeBase64Url, encodeBase64Url, invoiceDigest, openFragment, parseFragment } from '@ghostpay/invoice-schema';
 import { bytesToHex } from '@noble/hashes/utils.js';
+import { secp256k1 } from '@noble/curves/secp256k1.js';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -68,15 +69,26 @@ describe('Pay: invoice reading and review', () => {
     };
     const correct = withSessionSecrets((secrets) => signReceipt(receiptFields, secrets.signingKey));
     const wrongInvoice = withSessionSecrets((secrets) => signReceipt({ ...receiptFields, invoiceDigest: `0x${'e'.repeat(64)}` }, secrets.signingKey));
+    const separatelyTrustedKey = new Uint8Array(32).fill(77);
+    const separatelySigned = signReceipt(receiptFields, separatelyTrustedKey);
     const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
     await screen.findByText('Seller receives (net)');
     const upload = screen.getByLabelText('Signed seller receipt JSON');
+    await user.upload(upload, new File(['x'.repeat(65_537)], 'oversized.json', { type: 'application/json' }));
+    await user.click(screen.getByRole('button', { name: 'Check receipt against this invoice' }));
+    expect(await screen.findByText('Receipt not accepted')).toBeTruthy();
+    expect(screen.queryByText(/The signature matches/)).toBeNull();
     await user.upload(upload, new File([receiptJson(wrongInvoice)], 'receipt.json', { type: 'application/json' }));
     await user.click(screen.getByRole('button', { name: 'Check receipt against this invoice' }));
     expect(await screen.findByText('Receipt not accepted')).toBeTruthy();
     await user.upload(upload, new File([receiptJson(correct)], 'receipt.json', { type: 'application/json' }));
     await user.click(screen.getByRole('button', { name: 'Check receipt against this invoice' }));
     expect(await screen.findByText(/The signature matches the valid invoice-signing key/)).toBeTruthy();
+    await user.clear(screen.getByLabelText('Explicitly trusted signer key (optional)'));
+    await user.type(screen.getByLabelText('Explicitly trusted signer key (optional)'), bytesToHex(secp256k1.getPublicKey(separatelyTrustedKey)));
+    await user.upload(upload, new File([receiptJson(separatelySigned)], 'trusted.json', { type: 'application/json' }));
+    await user.click(screen.getByRole('button', { name: 'Check receipt against this invoice' }));
+    expect(await screen.findByText(/The signature matches the explicitly trusted key/)).toBeTruthy();
     expect(screen.getByText(/does not independently prove an on-chain payment/)).toBeTruthy();
     const next = await makeParsed({ tokenAmount: '101' });
     window.history.replaceState(null, '', `/${next.fragment}`);
