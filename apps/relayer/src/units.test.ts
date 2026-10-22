@@ -112,7 +112,9 @@ describe('limiter primitives', () => {
     const h = new KeyHasher(1000, () => t);
     const a = h.hash('203.0.113.9');
     expect(a).toMatch(/^[0-9a-f]{32}$/);
-    expect(a).not.toContain('203');
+    expect(a).not.toContain('203.0.113.9');
+    expect(h.hash('203.0.113.8')).not.toBe(a);
+    expect(new KeyHasher(1000, () => t).hash('203.0.113.9')).not.toBe(a);
     expect(h.hash('203.0.113.9')).toBe(a);
     expect(h.epoch).toBe(0);
     t = 1000;

@@ -32,10 +32,11 @@ source (see `docs/FEE_SCHEDULE.md`).
    `ALLOW_CUSTOM_ANNOUNCER=1`; `DeployPolicy.s.sol` additionally needs `FEE_TOKEN`, `FLAT_FEE` and `MAX_FLAT_FEE`. Chain id 31337 needs `ALLOW_LOCAL=1`.
 2. The scripts already read back every immutable; additionally verify the sources on the block explorer and read back `FEE_RECIPIENT`, `FEE_BPS`, `ANNOUNCER` and the
    runtime code hashes from the chain.
-3. Write `deployments/<chainId>.json`, sign the exact `manifestDigest` bytes with the approved offline release key, and put
-   the compact signature in `signature`. No in-repository signing command exists; do not substitute the legacy
-   `manifestSigningBytes` raw-text scheme used by the relayer compatibility verifier. Validate the schema and run the web
-   project validator with the matching public key before committing in a reviewed pull request.
+3. `scripts/testnet/make-manifest.mjs` writes an unsigned `deployments/<chainId>.json`. Sign the exact `manifestDigest`
+   bytes with the approved offline release key and put the compact signature in `signature`. No in-repository signing
+   command exists; do not substitute the legacy `manifestSigningBytes` raw-text scheme used by the relayer compatibility
+   verifier. Only after signing, explicitly copy the file to `apps/web/deployments/<chainId>.json`; validate the schema
+   and web bundle with the matching pinned public key before committing both copies in a reviewed pull request.
 
 ## Example (shape only, placeholder values)
 

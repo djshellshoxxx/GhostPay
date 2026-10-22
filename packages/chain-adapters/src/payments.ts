@@ -123,16 +123,25 @@ export async function verifyClaimedPayment(i: VerifyClaimInput): Promise<Payment
   if (i.secondaryClient !== undefined) {
     const secondary = await verifyClaimedPaymentOnClient({ chain: i.chain, client: i.secondaryClient, router: i.router, announcer: i.announcer, claim: i.claim });
     if (secondary.status !== 'received' || secondary.evidenceId !== primary.evidenceId || secondary.final !== primary.final || secondary.evidence.join('|') !== primary.evidence.join('|')) {
-      const { evidenceId: _evidenceId, ...withoutEvidenceId } = primary;
-      return { ...withoutEvidenceId, status: 'unverified-claim', reason: 'The two RPC providers did not agree on the payment evidence.' };
+      return withoutEvidenceId(primary, 'The two RPC providers did not agree on the payment evidence.');
     }
   }
   if (primary.evidenceId !== undefined && i.consumedTransfers?.has(primary.evidenceId) === true) {
-    const { evidenceId: _evidenceId, ...withoutEvidenceId } = primary;
-    return { ...withoutEvidenceId, status: 'unverified-claim', reason: 'This transfer evidence has already been credited to another announcement in this scan.' };
+    return withoutEvidenceId(primary, 'This transfer evidence has already been credited to another announcement in this scan.');
   }
   if (primary.evidenceId !== undefined) i.consumedTransfers?.add(primary.evidenceId);
   return primary;
+}
+
+function withoutEvidenceId(result: PaymentVerification, reason: string): PaymentVerification {
+  return {
+    status: 'unverified-claim',
+    reason,
+    confirmations: result.confirmations,
+    final: result.final,
+    ...(result.observedBalance === undefined ? {} : { observedBalance: result.observedBalance }),
+    evidence: result.evidence,
+  };
 }
 
 async function verifyClaimedPaymentOnClient(i: VerifyClaimInput): Promise<PaymentVerification> {
@@ -209,9 +218,9 @@ function transferMatches(l: RpcLog, token: Address, router: Address, stealth: Ad
     l.blockHash.toLowerCase() === a.blockHash.toLowerCase() &&
     l.blockNumber !== undefined && parseQuantity(l.blockNumber) === a.blockNumber &&
     Array.isArray(l.topics) && l.topics.length === 3 &&
-    l.topics[0]?.toLowerCase() === TRANSFER_TOPIC.toLowerCase() &&
-    l.topics[1]?.toLowerCase() === pad(router).toLowerCase() &&
-    l.topics[2]?.toLowerCase() === pad(stealth).toLowerCase() &&
+    typeof l.topics[0] === 'string' && l.topics[0].toLowerCase() === TRANSFER_TOPIC.toLowerCase() &&
+    typeof l.topics[1] === 'string' && l.topics[1].toLowerCase() === pad(router).toLowerCase() &&
+    typeof l.topics[2] === 'string' && l.topics[2].toLowerCase() === pad(stealth).toLowerCase() &&
     typeof l.transactionHash === 'string' && HASH32.test(l.transactionHash) &&
     a.transactionHash !== undefined && l.transactionHash.toLowerCase() === a.transactionHash.toLowerCase() &&
     l.logIndex !== undefined && parseQuantity(l.logIndex) <= 0xffffffn &&

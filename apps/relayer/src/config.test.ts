@@ -2,7 +2,8 @@ import { chmodSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from '
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { secp256k1 } from '@noble/curves/secp256k1.js';
-import { loadDeployment, manifestDigest } from '@ghostpay/chain-adapters';
+import { sha256 } from '@noble/hashes/sha2.js';
+import { loadDeployment, manifestDigest, manifestSigningBytes, verifyTextManifestSignature, type ReleaseKey } from '@ghostpay/chain-adapters';
 import { describe, expect, it } from 'vitest';
 import { DEV_CHAIN_ID, loadConfigFile, parseConfig, parseReleaseKeys, type ConfigContext } from './config.js';
 import { ConfigError, HOT_KEY_SOURCE, QUOTE_SECRET_PREVIOUS_SOURCE, QUOTE_SECRET_SOURCE, loadOptionalSecret, loadSecret } from './secrets.js';
@@ -241,7 +242,14 @@ describe('parseConfig', () => {
     });
     it('does not treat legacy raw-text signatures as valid structured signatures', () => {
       const c = good({ chains: [chain({ sweepRelayer: undefined })] });
-      expect(() => parse(c, { releaseKeys: [KEY], readManifest: (id) => JSON.stringify({ ...(JSON.parse(MANIFEST(id)) as Json), signature: `0x${'11'.repeat(64)}` }) })).toThrow(/signature/i);
+      const legacySk = new Uint8Array(32).fill(12);
+      const legacyPk = Array.from(secp256k1.getPublicKey(legacySk, true), (byte) => byte.toString(16).padStart(2, '0')).join('');
+      const legacyKey: ReleaseKey = { alg: 'secp256k1', publicKey: `0x${legacyPk}` };
+      const text = MANIFEST(11155111);
+      const legacySig = `0x${Array.from(secp256k1.sign(sha256(manifestSigningBytes(text)), legacySk, { prehash: false, lowS: true }), (byte) => byte.toString(16).padStart(2, '0')).join('')}`;
+      const legacy = JSON.stringify({ ...(JSON.parse(text) as Json), signature: legacySig });
+      expect(verifyTextManifestSignature(legacy, { testnet: true, key: legacyKey }).trust).toBe('signed');
+      expect(() => parse(c, { releaseKeys: [KEY], readManifest: () => legacy })).toThrow(/signature/i);
     });
     it('parses a bounded compressed-key release allowlist', () => {
       expect(parseReleaseKeys(KEY)).toEqual([KEY]);

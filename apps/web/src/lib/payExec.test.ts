@@ -155,10 +155,12 @@ describe('ERC-20 flows', () => {
     const plan = await planApproval(ctx, session, USDC_84532, rt);
     expect(plan).toMatchObject({ need: ctx.request.grossAmount, have: 0n, required: true, spender: FAKE_ROUTER });
     expect(wallet.sent).toBeUndefined();
-    const out = await grantApproval(session, ctx, plan, rt, (m) => msgs.push(m));
+    const hashes: string[] = [];
+    const out = await grantApproval(session, ctx, plan, rt, (m) => msgs.push(m), undefined, (hash) => { hashes.push(hash); });
     expect(out).toBe(ctx.request.grossAmount);
     expect(wallet.sent?.['to']).toBe(USDC_84532);
     expect(msgs.join(' ')).toMatch(/Approve exactly 100 USDC/);
+    expect(hashes).toEqual([`0x${'9'.repeat(64)}`]);
   });
   it('skips approval when the allowance already covers the payment', async () => {
     const { ctx, session, wallet } = await setup();

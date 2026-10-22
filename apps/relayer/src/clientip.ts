@@ -7,9 +7,9 @@ const MAX_XFF_ENTRIES = 32;
 /** Strips an IPv6 zone id and unwraps IPv4-mapped IPv6 (`::ffff:1.2.3.4`). Returns `undefined` for non-IPs. */
 export function normalizeIp(raw: string): string | undefined {
   let ip = raw.trim();
+  if (ip.startsWith('[') && ip.endsWith(']')) ip = ip.slice(1, -1);
   const zone = ip.indexOf('%');
   if (zone >= 0) ip = ip.slice(0, zone);
-  if (ip.startsWith('[') && ip.endsWith(']')) ip = ip.slice(1, -1);
   const mapped = /^::ffff:(\d{1,3}(?:\.\d{1,3}){3})$/i.exec(ip);
   if (mapped?.[1] !== undefined) ip = mapped[1];
   return isIP(ip) === 0 ? undefined : ip.toLowerCase();

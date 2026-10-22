@@ -6,7 +6,8 @@ import { loadDeployment, type DeploymentManifest, type VerifiedDeployment } from
  */
 export const FAKE_ROUTER = '0x1111111111111111111111111111111111111111' as const;
 export const FAKE_SWEEP_RELAYER = '0x2222222222222222222222222222222222222222' as const;
-export const FAKE_ANNOUNCER = '0x3333333333333333333333333333333333333333' as const;
+// Runtime verification pins the protocol announcer; only the router/relayer/fee recipient are fake placeholders.
+export const FAKE_ANNOUNCER = '0x55649E01B5Df198D18D95b5cc5051630cfD45564' as const;
 export const FAKE_FEE_RECIPIENT = '0x4444444444444444444444444444444444444444' as const;
 
 export function fakeManifestJson(chainId: number): string {

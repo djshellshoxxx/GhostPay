@@ -29,11 +29,13 @@ in the root README.
 
 ## Procedure
 
-1. Deploy (`packages/contracts`, `forge script script/Deploy.s.sol ...`), verify sources, read back `FEE_RECIPIENT`,
-   `FEE_BPS`, `ANNOUNCER` and the runtime code hashes.
-2. Write `apps/web/deployments/<chainId>.json` (shape: root `deployments/README.md` and `deployments/schema.json`); the
-   `announcer` MUST be the canonical `0x55649E01B5Df198D18D95b5cc5051630cfD45564`.
-3. `npm run validate:deployments -w @ghostpay/web`, then commit in a reviewed pull request.
+1. Deploy and verify sources. `scripts/testnet/deploy.sh` writes an unsigned manifest to `deployments/<chainId>.json`.
+2. Sign that exact manifest offline with the approved release key and add the compact signature. The `announcer` MUST be
+   the canonical `0x55649E01B5Df198D18D95b5cc5051630cfD45564`.
+3. Explicitly copy the signed file to `apps/web/deployments/<chainId>.json`. The deployment script does not stage it,
+   and the removed `--copy-web` option refuses with this guidance rather than placing an unsigned file in the app.
+4. Run `GHOSTPAY_RELEASE_PUBKEYS=<pinned-key> npm run validate:deployments -w @ghostpay/web`, then commit both reviewed
+   copies in a pull request. An unsigned manifest intentionally fails the web build.
 
 `e2e/fixtures/84532.json` is an obviously fake manifest used only by the Playwright build
 (`GHOSTPAY_DEPLOYMENTS_DIR=e2e/fixtures`); never copy it here.

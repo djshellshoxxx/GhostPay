@@ -39,6 +39,10 @@ export class FakeChain implements ChainClient {
   public rpcDown = false;
   public sendFails = false;
   public simulateError: Error | undefined;
+  public readonly simulationFailures = new Map<number, Error>();
+  /** Awaited inside simulation; useful for testing admission races before reservation. */
+  public simulateGate: Promise<void> | undefined;
+  public receiptError: Error | undefined;
   /** Awaited inside `sendSweep`; lets tests hold a transaction open. */
   public sendGate: Promise<void> | undefined;
   /** Awaited inside `waitForReceipt`. */
@@ -71,10 +75,16 @@ export class FakeChain implements ChainClient {
   }
   public simulateSweep(call: SweepCall): Promise<SimulationResult> {
     this.simulations += 1;
-    if (this.rpcDown) return Promise.reject(new Error('down'));
-    if (this.simulateError !== undefined) return Promise.reject(this.simulateError);
-    if (this.used.has(`${call.sweep.owner}:${call.sweep.nonce.toString()}`)) return Promise.reject(new SimulationRevert('NonceAlreadyUsed'));
-    return Promise.resolve({ gasLimit: this.gasLimit, gasEstimate: this.gasEstimate });
+    if (this.simulateGate !== undefined) return this.simulateGate.then(() => this.simulateResult(call));
+    return Promise.resolve(this.simulateResult(call));
+  }
+  private simulateResult(call: SweepCall): SimulationResult {
+    if (this.rpcDown) throw new Error('down');
+    const numberedFailure = this.simulationFailures.get(this.simulations);
+    if (numberedFailure !== undefined) throw numberedFailure;
+    if (this.simulateError !== undefined) throw this.simulateError;
+    if (this.used.has(`${call.sweep.owner}:${call.sweep.nonce.toString()}`)) throw new SimulationRevert('NonceAlreadyUsed');
+    return { gasLimit: this.gasLimit, gasEstimate: this.gasEstimate };
   }
   public async sendSweep(call: SweepCall, opts: SendOptions): Promise<Hex> {
     this.inFlight += 1;
@@ -91,6 +101,10 @@ export class FakeChain implements ChainClient {
   }
   public async waitForReceipt(): Promise<ReceiptSummary> {
     if (this.receiptGate !== undefined) await this.receiptGate;
+    if (this.receiptError !== undefined) {
+      this.inFlight -= 1;
+      throw this.receiptError;
+    }
     this.inFlight -= 1;
     return this.receipt;
   }

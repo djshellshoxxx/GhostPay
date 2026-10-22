@@ -194,6 +194,7 @@ export interface FinalBuildOptions {
 
 /** Router deadline window for a prepared payment. */
 export const DEADLINE_SECONDS = 20 * 60;
+const builtPaymentContexts = new WeakMap<BuiltPayment, PayContext>();
 
 /** Builds the transaction and the preview from the SAME call; the UI renders `preview` and sends `tx`. */
 export function buildFinal(ctx: PayContext, opts: FinalBuildOptions): BuiltPayment {
@@ -203,12 +204,14 @@ export function buildFinal(ctx: PayContext, opts: FinalBuildOptions): BuiltPayme
     if (opts.buffer.bufferWei > MAX_BUFFER_WEI) throw new UserFacingError('The gas buffer exceeds the safety cap.');
   }
   const deadline = BigInt(opts.deadlineSeconds ?? opts.nowSeconds + DEADLINE_SECONDS);
-  return ctx.request.build({
+  const built = ctx.request.build({
     deadline,
     now: BigInt(opts.nowSeconds),
     ...(opts.permitSignature === undefined ? {} : { permitSignature: opts.permitSignature }),
     ...(opts.buffer === undefined ? {} : { buffer: { bufferWei: opts.buffer.bufferWei, maxBufferWei: opts.buffer.bufferWei } }),
   });
+  builtPaymentContexts.set(built, ctx);
+  return built;
 }
 
 /**
@@ -216,6 +219,7 @@ export function buildFinal(ctx: PayContext, opts: FinalBuildOptions): BuiltPayme
  * preview the user saw, and the preview is compared to the review (router from the manifest, token, gross, chain).
  */
 export function assertReadyToSend(built: BuiltPayment, ctx: PayContext): void {
+  if (builtPaymentContexts.get(built) !== ctx) throw new UserFacingError('Blocked: the prepared payment belongs to a different reviewed invoice. Prepare it again.');
   assertPreviewMatchesCalldata(built.preview, built.tx, ctx.chain.chainId);
   const p = built.preview;
   const inv = ctx.review.invoice;

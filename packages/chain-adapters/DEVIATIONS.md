@@ -11,7 +11,7 @@ The contracts' real code wins over spec text. Each item should be confirmed or r
    `eth_getCode` of router, sweep relayer and policy factory (keccak256 against the manifest `bytecodeHashes`) and the router's `FEE_BPS()`, `FEE_RECIPIENT()`,
    `ANNOUNCER()` (must equal 25, the manifest, and the canonical announcer constant), through one RPC or two independent ones that must agree. The UI must show the
    returned values, not the manifest text. Closes audit A-07 / G-05 for the read-back half; manifest authenticity still depends on the optional signature
-   (`verifyManifestSignature`, 64-byte compact secp256k1 ECDSA over `keccak256(canonicalManifestJson)`, release keys supplied by the build, none by default).
+   (`verifyObjectManifestSignature`, 64-byte compact secp256k1 ECDSA over `keccak256(canonicalManifestJson)`, release keys supplied by the build, none by default). Production consumers require this structured signature; the legacy raw-text verifier remains a separate compatibility API.
 3. **Invoice amount semantics (spec silent).** `fixed_token.tokenAmount` = what the seller should receive when
    `feePolicy = payer_pays` (gross = `grossForNet`, may exceed the target by at most 1 base unit because the fee is
    floor-rounded) and the gross spent when `seller_pays`. `fiat_quote` requires a caller-supplied

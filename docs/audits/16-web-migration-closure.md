@@ -63,7 +63,7 @@ The above table covers every `apps/web/**` path in the 50-path Fermat inventory 
 
 1. **No production release key or manifest is supplied.** Vite accepts validated public keys through `GHOSTPAY_RELEASE_PUBKEYS`; none is invented in this work. Until operators provide a key generated and held offline, manifests cannot be added to a normal build and default deployment loading stays disabled. Manual tests may still inject a `ReleaseKey` explicitly; that does not alter default trust.
 2. **No maintained offline signer command exists.** `DEPLOYMENT_MANIFEST.md` provides a mode-0600 key-file recipe that signs the structured digest and never prints the private key. A reviewed, maintained signer tool/ceremony remains open.
-3. **Browser evidence predates this pass's last code edits.** Existing e2e run was 17/17 before sweep/release-policy/bundling edits. Focused tests and web typecheck are rerun after changes; a fresh full browser rerun is left to the root's final frozen web batch.
+3. **Browser coverage uses a test-only signed release fixture.** The final 17-test Playwright run passed after the sweep, release-policy, and signed-bundle changes. The fixture key is configured only for the E2E web-server build; it is not a production release key.
 
 ## Validation in this pass
 
@@ -71,6 +71,6 @@ The above table covers every `apps/web/**` path in the 50-path Fermat inventory 
 - `npm test --workspace @ghostpay/ops-monitor`: 96/96 passed with coverage thresholds met. The manifest tests prove a valid legacy raw-text signature is refused by the production structured verifier.
 - `npx vitest run src/config.test.ts` in `apps/relayer`: 95/95 passed, including structured signature, unsigned/forged manifest, no-key refusal, and release-key parsing regressions.
 - `npm run typecheck --workspace @ghostpay/web`: passed after the bundle gate and Vite define changes.
-- Targeted ESLint on changed TypeScript sweep, manifest, default-service, Playwright and Vite config paths passed; `node --check` on both changed MJS validators is running.
-- Playwright's fake Base Sepolia manifest now has a test-only secp256k1 signature; only `playwright.config.ts` supplies its public key to the E2E web-server build. Browser rerun is pending after concurrent repository checks finish.
+- Targeted ESLint on changed TypeScript sweep, manifest, default-service, Playwright and Vite config paths passed; `apps/web/scripts/scan-bundle.mjs` passed `node --check`.
+- Playwright's fake Base Sepolia manifest has a test-only secp256k1 signature; only `playwright.config.ts` supplies its public key to the E2E web-server build. Final browser run: 17/17 passed, including signed native payment, mutated calldata refusal, passphrase invoice create/open/wrong-password, and vault reload/wrong-password/unlock.
 - No production manifest or release key was added.

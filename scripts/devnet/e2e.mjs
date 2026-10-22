@@ -22,6 +22,7 @@ import { createInvoice, signInvoice, verifyInvoiceSignature } from '@ghostpay/in
 import {
   addressOfSecret, assertPreviewMatchesCalldata, buildPaymentTx, buildPermitTypedData, buildSweepTypedData, createClient,
   decodePaymentCalldata, fetchAnnouncements, findChain, loadDeployment, routerSplit, signPermit, signSweep,
+  manifestDigest, verifyObjectManifestSignature,
 } from '@ghostpay/chain-adapters';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -220,9 +221,37 @@ writeFileSync(cfgPath, JSON.stringify({
 const relayerDist = resolve(ROOT, 'apps/relayer/dist/main.js');
 if (!existsSync(relayerDist)) execFileSync('npx', ['tsc', '-p', 'tsconfig.build.json'], { cwd: resolve(ROOT, 'apps/relayer'), stdio: 'inherit' });
 const quoteSecret = crypto.getRandomValues(new Uint8Array(32));
+
+// This deterministic private key is a disposable fixture for this local-only E2E, never a release key.
+// Sign the generated devnet deployment with it so the relayer exercises the same structured manifestDigest
+// verification used in production. The key is scoped to chain 31337 and the temporary fixture directory.
+const devReleaseSecret = new Uint8Array(32);
+devReleaseSecret[31] = 1;
+const { secp256k1 } = await import('@noble/curves/secp256k1.js');
+const devReleasePublicKey = Buffer.from(secp256k1.getPublicKey(devReleaseSecret, true)).toString('hex');
+const manifestDigestBytes = Uint8Array.from(manifestDigest(manifest).slice(2).match(/../g) ?? [], (byte) => parseInt(byte, 16));
+const devManifestSignature = `0x${Buffer.from(secp256k1.sign(manifestDigestBytes, devReleaseSecret, { prehash: false, lowS: true })).toString('hex')}`;
+const signedManifest = { ...manifest, signature: devManifestSignature };
+assert.equal(verifyObjectManifestSignature(signedManifest, [devReleasePublicKey]).status, 'valid', 'devnet manifest fixture signature');
+const signedDeploymentsDir = resolve(STATE, 'signed-deployments');
+mkdirSync(signedDeploymentsDir, { recursive: true });
+const signedManifestPath = resolve(signedDeploymentsDir, `${CHAIN_ID}.json`);
+writeFileSync(signedManifestPath, `${JSON.stringify(signedManifest, null, 2)}\n`);
+assert.equal(
+  verifyObjectManifestSignature(loadDeployment(readFileSync(signedManifestPath, 'utf8'), CHAIN_ID), [devReleasePublicKey]).status,
+  'valid',
+  'serialized devnet manifest signature',
+);
 const relayerProc = spawn(process.execPath, [relayerDist], {
   cwd: resolve(ROOT, 'apps/relayer'),
-  env: { ...process.env, RELAYER_CONFIG: cfgPath, DEPLOYMENTS_DIR: resolve(ROOT, 'deployments'), RELAYER_KEY: keyOf(state.accounts.relayerHot), QUOTE_SECRET: secretHex(quoteSecret) },
+  env: {
+    ...process.env,
+    RELAYER_CONFIG: cfgPath,
+    DEPLOYMENTS_DIR: signedDeploymentsDir,
+    GHOSTPAY_RELEASE_PUBKEYS: devReleasePublicKey,
+    RELAYER_KEY: keyOf(state.accounts.relayerHot),
+    QUOTE_SECRET: secretHex(quoteSecret),
+  },
   stdio: ['ignore', 'pipe', 'pipe'],
 });
 let relayerLog = '';

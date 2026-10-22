@@ -14,7 +14,7 @@ import { keccak256, toBytes } from 'viem';
 const FAKE_CODE: Record<string, `0x${string}`> = {
   [FAKE_ROUTER]: '0x60016000',
   [FAKE_SWEEP_RELAYER]: '0x60026000',
-  [FAKE_ANNOUNCER]: '0x60036000',
+  [FAKE_ANNOUNCER.toLowerCase()]: '0x60036000',
 };
 const word = (hex: string): string => `0x${hex.replace(/^0x/, '').toLowerCase().padStart(64, '0')}`;
 const SEL = (sig: string): string => keccak256(toBytes(sig)).slice(0, 10);

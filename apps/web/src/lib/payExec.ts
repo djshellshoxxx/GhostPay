@@ -55,6 +55,7 @@ export class PostBroadcastError extends UserFacingError {
 }
 
 export type StatusFn = (message: string) => void;
+export type BroadcastFn = (hash: Hex) => void;
 
 /** Sends one transaction, cross-checks it on the user's own RPC and waits for a receipt when an RPC exists. */
 export async function submitTx(session: WalletSession, tx: TxRequest, rt: Runtime, status: StatusFn): Promise<SubmitResult> {
@@ -99,14 +100,16 @@ export async function planApproval(ctx: PayContext, session: WalletSession, toke
 }
 
 /** Sends only the exact allowance shown in the final preview and reads back what the wallet actually granted. */
-export async function grantApproval(session: WalletSession, ctx: PayContext, plan: ApprovalPlan, rt: Runtime, status: StatusFn): Promise<bigint> {
+export async function grantApproval(session: WalletSession, ctx: PayContext, plan: ApprovalPlan, rt: Runtime, status: StatusFn, assertCurrent?: () => void, onBroadcast?: BroadcastFn): Promise<bigint> {
   if (rt.rpc === undefined) throw new UserFacingError('Approving a token needs an RPC for this chain. Configure one in Settings.');
   if (!plan.required) return plan.have;
   const tx = buildApproveTx(plan.token, plan.spender, plan.need);
   assertApproveTx(tx, plan.token, plan.spender, plan.need);
   guardApprove(tx, ctx.chain.chainId, { token: plan.token, spender: plan.spender, amount: plan.need }, ctx.manifest, rt.nowSeconds());
   status(`Approve exactly ${formatUnits(plan.need, ctx.review.token?.decimals ?? 18)} ${ctx.review.token?.symbol ?? ''} for the router.`);
+  assertCurrent?.();
   const res = await submitTx(session, tx, rt, status);
+  onBroadcast?.(res.hash);
   if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError('The approval was not confirmed. Nothing was paid.');
   const after = await readAllowance(rt.rpc, plan.token, session.account, plan.spender);
   if (after < plan.need) throw new UserFacingError('The approval did not take effect. Nothing was paid.');
@@ -114,13 +117,15 @@ export async function grantApproval(session: WalletSession, ctx: PayContext, pla
 }
 
 /** Revokes a router allowance with approve(spender, 0), then verifies it on-chain. */
-export async function revokeApproval(session: WalletSession, ctx: PayContext, plan: ApprovalPlan, rt: Runtime, status: StatusFn): Promise<void> {
+export async function revokeApproval(session: WalletSession, ctx: PayContext, plan: ApprovalPlan, rt: Runtime, status: StatusFn, assertCurrent?: () => void, onBroadcast?: BroadcastFn): Promise<void> {
   if (rt.rpc === undefined) throw new UserFacingError('Revoking needs an RPC for this chain. Configure one in Settings.');
   const tx = buildApproveTx(plan.token, plan.spender, 0n);
   assertApproveTx(tx, plan.token, plan.spender, 0n);
   guardApprove(tx, ctx.chain.chainId, { token: plan.token, spender: plan.spender, amount: 0n }, ctx.manifest, rt.nowSeconds());
   status(`Revoke the router allowance for ${plan.spender}.`);
+  assertCurrent?.();
   const res = await submitTx(session, tx, rt, status);
+  onBroadcast?.(res.hash);
   if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError('The revoke was not confirmed. Check your allowances in your wallet.');
   const after = await readAllowance(rt.rpc, plan.token, session.account, plan.spender);
   if (after !== 0n) throw new UserFacingError('The allowance is still not zero. Check your allowances in your wallet.');
@@ -135,7 +140,7 @@ export interface PrepareOptions {
  * Prepares the final payment: optional permit signature (verified to recover to the payer), then the transaction and
  * its preview from one build call. Nothing is sent here.
  */
-export async function preparePayment(session: WalletSession, ctx: PayContext, opts: PrepareOptions, rt: Runtime, status: StatusFn): Promise<BuiltPayment> {
+export async function preparePayment(session: WalletSession, ctx: PayContext, opts: PrepareOptions, rt: Runtime, status: StatusFn, assertCurrent?: () => void): Promise<BuiltPayment> {
   const now = rt.nowSeconds();
   const token = ctx.review.token;
   if (opts.usePermit && opts.buffer !== undefined) throw new UserFacingError('A gas buffer cannot be combined with a permit payment.');
@@ -153,19 +158,23 @@ export async function preparePayment(session: WalletSession, ctx: PayContext, op
     deadline: BigInt(deadline),
   });
   status(`Sign a permit allowing the router to pull exactly ${formatUnits(ctx.request.grossAmount, token.decimals)} ${token.symbol} (no gas).`);
+  assertCurrent?.();
   const sig = await signTypedDataViaWallet(session, typedDataJson(td));
+  assertCurrent?.();
   await assertPermitSigner(td, sig, session.account);
   return buildFinal(ctx, { nowSeconds: now, deadlineSeconds: deadline, permitSignature: sig });
 }
 
 /** Final gate and send. The assertion runs on exactly the object that is passed to the wallet. */
-export async function sendPayment(session: WalletSession, ctx: PayContext, built: BuiltPayment, rt: Runtime, status: StatusFn): Promise<SubmitResult> {
+export async function sendPayment(session: WalletSession, ctx: PayContext, built: BuiltPayment, rt: Runtime, status: StatusFn, assertCurrent?: () => void): Promise<SubmitResult> {
+  assertCurrent?.();
   assertReadyToSend(built, ctx);
   if (BigInt(rt.nowSeconds()) >= built.preview.deadline) throw new UserFacingError('The prepared payment has expired. Review again.');
   // Independent decode of the exact calldata + allowlist/fee/deadline policy before the wallet is asked (S3-09, S3-19).
   guardRouterPayment(built.tx, built.preview, ctx.manifest, rt.nowSeconds());
   // Dry run where the user's node supports it: a payment that would revert is never sent to the wallet.
   if (rt.rpc !== undefined) await simulateCall(rt.rpc, { from: session.account, to: built.tx.to, data: built.tx.data, value: built.tx.value });
+  assertCurrent?.();
   return submitTx(session, { to: built.tx.to, data: built.tx.data, value: built.tx.value }, rt, status);
 }
 

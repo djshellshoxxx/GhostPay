@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
-import { decodeBase64Url, encodeBase64Url, openFragment, parseFragment } from '@ghostpay/invoice-schema';
+import { decodeBase64Url, encodeBase64Url, invoiceDigest, openFragment, parseFragment } from '@ghostpay/invoice-schema';
+import { bytesToHex } from '@noble/hashes/utils.js';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -14,6 +15,9 @@ import { MockWallet } from '../test/mockWallet';
 import { mockRpc } from '../test/mockRpc';
 import { makeServices, renderApp, setHash } from '../test/render';
 import type { Services } from '../lib/services';
+import { receiptJson, signReceipt } from '../lib/receipts';
+import * as payExec from '../lib/payExec';
+import { withSessionSecrets } from '../lib/session';
 
 beforeEach(() => {
   clearSession();
@@ -51,10 +55,91 @@ function chainSeeing(wallet: MockWallet) {
 }
 
 describe('Pay: invoice reading and review', () => {
+  it('accepts a signed receipt only when its invoice digest and expected payment fields match', async () => {
+    const { parsed, fragment } = await makeParsed();
+    const receiptFields = {
+      invoiceDigest: `0x${bytesToHex(invoiceDigest(parsed.invoice))}`,
+      chainId: parsed.invoice.chainId,
+      txHash: `0x${'a'.repeat(64)}`,
+      stealthAddress: `0x${'b'.repeat(40)}`,
+      asset: parsed.invoice.token,
+      amountMinorUnits: '99750000',
+      issuedAt: NOW,
+    };
+    const correct = withSessionSecrets((secrets) => signReceipt(receiptFields, secrets.signingKey));
+    const wrongInvoice = withSessionSecrets((secrets) => signReceipt({ ...receiptFields, invoiceDigest: `0x${'e'.repeat(64)}` }, secrets.signingKey));
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    await screen.findByText('Seller receives (net)');
+    const upload = screen.getByLabelText('Signed seller receipt JSON');
+    await user.upload(upload, new File([receiptJson(wrongInvoice)], 'receipt.json', { type: 'application/json' }));
+    await user.click(screen.getByRole('button', { name: 'Check receipt against this invoice' }));
+    expect(await screen.findByText('Receipt not accepted')).toBeTruthy();
+    await user.upload(upload, new File([receiptJson(correct)], 'receipt.json', { type: 'application/json' }));
+    await user.click(screen.getByRole('button', { name: 'Check receipt against this invoice' }));
+    expect(await screen.findByText(/The signature matches the valid invoice-signing key/)).toBeTruthy();
+    expect(screen.getByText(/does not independently prove an on-chain payment/)).toBeTruthy();
+    const next = await makeParsed({ tokenAmount: '101' });
+    window.history.replaceState(null, '', `/${next.fragment}`);
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+    await screen.findByRole('heading', { name: 'Review payment' });
+    expect(screen.queryByText('Receipt matches this invoice')).toBeNull();
+  });
+
+  it('does not accept a receipt under a trusted key that changed during file reading', async () => {
+    const { parsed, fragment } = await makeParsed();
+    const receipt = withSessionSecrets((secrets) => signReceipt({
+      invoiceDigest: `0x${bytesToHex(invoiceDigest(parsed.invoice))}`,
+      chainId: parsed.invoice.chainId,
+      txHash: `0x${'a'.repeat(64)}`,
+      stealthAddress: `0x${'b'.repeat(40)}`,
+      asset: parsed.invoice.token,
+      amountMinorUnits: '99750000',
+      issuedAt: NOW,
+    }, secrets.signingKey));
+    let resolveText!: (value: string) => void;
+    const deferredText = new Promise<string>((resolve) => { resolveText = resolve; });
+    const textSpy = vi.spyOn(File.prototype, 'text').mockReturnValue(deferredText);
+    try {
+      const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+      await screen.findByText('Seller receives (net)');
+      await user.upload(screen.getByLabelText('Signed seller receipt JSON'), new File(['deferred'], 'receipt.json', { type: 'application/json' }));
+      await user.click(screen.getByRole('button', { name: 'Check receipt against this invoice' }));
+      await user.type(screen.getByLabelText('Explicitly trusted signer key (optional)'), `02${'1'.repeat(64)}`);
+      resolveText(receiptJson(receipt));
+      await waitFor(() => { expect(screen.getByRole('button', { name: 'Check receipt against this invoice' }).getAttribute('disabled')).toBeNull(); });
+      expect(screen.queryByText(/The signature matches/)).toBeNull();
+    } finally {
+      textSpy.mockRestore();
+    }
+  });
+
+  it('keeps a late context refresh from replacing the currently opened invoice', async () => {
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ autoClearFragment: false, rpcUrls: { '84532': 'https://rpc.test' } }));
+    const first = await makeParsed({ tokenAmount: '100' });
+    const second = await makeParsed({ tokenAmount: '200' });
+    let resolveFirst!: (value: Awaited<ReturnType<Services['createRpc']>>) => void;
+    const firstRpc = new Promise<Awaited<ReturnType<Services['createRpc']>>>((resolve) => { resolveFirst = resolve; });
+    const readyRpc = withManifestChain(mockRpc(84532, (method) => (method === 'eth_getTransactionByHash' || method === 'eth_getTransactionReceipt' ? null : '0x')));
+    let calls = 0;
+    const services = makeServices({
+      loadManifest: loaded(84532),
+      createRpc: () => (++calls === 1 ? firstRpc : Promise.resolve(readyRpc)),
+    });
+    openWith(first.fragment, services);
+    await screen.findByRole('heading', { name: 'Review payment' });
+    window.history.replaceState(null, '', `/${second.fragment}`);
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+    await screen.findByRole('heading', { name: 'Review payment' });
+    act(() => { resolveFirst(readyRpc); });
+    expect(await screen.findByText('199.5 USDC')).toBeTruthy();
+    await waitFor(() => { expect(screen.getByText('199.5 USDC')).toBeTruthy(); });
+    expect(screen.queryByText('99.75 USDC')).toBeNull();
+  });
+
   it('opens a link, shows the review, uses the required signature wording and clears the fragment', async () => {
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5', memo: 'Thanks' });
     openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
-    expect(await screen.findByRole('heading', { level: 2, name: 'Review payment' })).toBeTruthy();
+    expect(await screen.findByRole('heading', { level: 2, name: 'Review payment' }, { timeout: 15_000 })).toBeTruthy();
     const sig = screen.getByText(/Signature matches key/);
     expect(sig.textContent).toMatch(/\(not pinned\)/);
     expect(document.body.textContent?.toLowerCase()).not.toContain('verified seller');
@@ -89,16 +174,16 @@ describe('Pay: invoice reading and review', () => {
     expect(await screen.findByText('Passphrase-protected invoice')).toBeTruthy();
     await user.type(screen.getByLabelText('Invoice passphrase'), 'wrong phrase here');
     await user.click(screen.getByRole('button', { name: 'Open invoice' }));
-    await waitFor(() => { expect(screen.getByRole('alert').textContent).toMatch(/did not open this invoice/); }, { timeout: 30_000 });
+    await waitFor(() => { expect(screen.getByRole('alert').textContent).toMatch(/did not open this invoice/); }, { timeout: 120_000 });
     expect(screen.queryByRole('heading', { name: 'Review payment' })).toBeNull();
     await user.clear(screen.getByLabelText('Invoice passphrase'));
     await user.type(screen.getByLabelText('Invoice passphrase'), passphrase);
     await user.click(screen.getByRole('button', { name: 'Open invoice' }));
-    await waitFor(() => { expect(screen.getByRole('heading', { name: 'Review payment' })).toBeTruthy(); }, { timeout: 30_000 });
+    await waitFor(() => { expect(screen.getByRole('heading', { name: 'Review payment' })).toBeTruthy(); }, { timeout: 120_000 });
     expect(screen.getByText('private note')).toBeTruthy();
     expect(window.location.hash).toBe('');
   // Three production-cost scrypt operations exceed the ordinary test bound under V8 coverage.
-  }, 180_000);
+  }, 360_000);
 
   it('says payments are disabled on a chain with no manifest and offers no way forward', async () => {
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
@@ -206,6 +291,40 @@ describe('Pay: sending', () => {
     await screen.findByRole('heading', { name: 'Final check before your wallet' });
     return user;
   }
+
+  it('discards a deferred preparation when the opened invoice changes', async () => {
+    const first = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const second = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    let releasePreparation!: () => void;
+    const preparationGate = new Promise<void>((resolve) => { releasePreparation = resolve; });
+    const originalPrepare = payExec.preparePayment;
+    const prepareSpy = vi.spyOn(payExec, 'preparePayment').mockImplementation(async (...args) => {
+      const built = await originalPrepare(...args);
+      await preparationGate;
+      return built;
+    });
+    const wallet = new MockWallet();
+    try {
+      const user = openWith(first.fragment, makeServices({
+        loadManifest: loaded(84532),
+        createRpc: readBackRpc(),
+        discoverWallets: () => Promise.resolve([walletInfo(wallet)]),
+      }));
+      await user.click(await screen.findByRole('button', { name: 'Continue' }));
+      await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+      await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+      await waitFor(() => { expect(prepareSpy).toHaveBeenCalled(); });
+      window.history.replaceState(null, '', `/${second.fragment}`);
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+      await screen.findByText('Seller receives (net)');
+      act(() => { releasePreparation(); });
+      await waitFor(() => { expect(screen.queryByRole('heading', { name: 'Final check before your wallet' })).toBeNull(); });
+      expect(wallet.calls.some((call) => call.method === 'eth_sendTransaction')).toBe(false);
+    } finally {
+      prepareSpy.mockRestore();
+      releasePreparation();
+    }
+  });
 
   it('shows decoded calldata, sends only after the explicit click, and reports an unverified result honestly (the RPC cannot see the transaction yet)', async () => {
     const wallet = new MockWallet();

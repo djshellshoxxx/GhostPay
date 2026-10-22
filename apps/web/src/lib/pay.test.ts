@@ -208,6 +208,12 @@ describe('buildFinal and the preview-equals-calldata gate', () => {
     expect(a.preview.stealth).not.toBe(b.preview.stealth);
     expect(a.preview.ephemeralPublicKey).not.toBe(b.preview.ephemeralPublicKey);
   });
+  it('refuses to rebind a prepared payment to another invoice with the same chain, token, and amount', async () => {
+    const first = await built({ token: 'native', tokenAmount: '0.5' });
+    const second = await built({ token: 'native', tokenAmount: '0.5' });
+    expect(first.b.preview.stealth).not.toBe(second.b.preview.stealth);
+    expect(() => assertReadyToSend(first.b, second.ctx)).toThrow(/different reviewed invoice/);
+  });
   it('REFUSES when the calldata was mutated after the preview was made', async () => {
     const { ctx, b } = await built();
     const flip = (hex: string, at: number): `0x${string}` => `0x${hex.slice(2, at)}${hex[at] === '0' ? '1' : '0'}${hex.slice(at + 1)}` as `0x${string}`;
@@ -223,19 +229,19 @@ describe('buildFinal and the preview-equals-calldata gate', () => {
     expect(() => assertReadyToSend({ ...b, tx: { ...b.tx, value: 1n } }, ctx)).toThrow();
     expect(() => assertReadyToSend({ ...b, preview: { ...b.preview, gross: b.preview.gross + 1n } }, ctx)).toThrow();
     const otherCtx: PayContext = { ...ctx, request: { ...ctx.request, grossAmount: ctx.request.grossAmount + 1n } };
-    expect(() => assertReadyToSend(b, otherCtx)).toThrow(/amounts differ/);
+    expect(() => assertReadyToSend(b, otherCtx)).toThrow(/different reviewed invoice/);
     const otherManifest: PayContext = { ...ctx, manifest: { ...ctx.manifest, router: '0x8888888888888888888888888888888888888888' } };
-    expect(() => assertReadyToSend(b, otherManifest)).toThrow(/manifest router/);
+    expect(() => assertReadyToSend(b, otherManifest)).toThrow(/different reviewed invoice/);
   });
   it('REFUSES when token or chain in the preview differ from the invoice', async () => {
     const { ctx, b } = await built();
     const invoiceNative = { ...ctx, review: { ...ctx.review, invoice: { ...ctx.review.invoice, token: 'native' } } };
-    expect(() => assertReadyToSend(b, invoiceNative)).toThrow(/token differs/);
+    expect(() => assertReadyToSend(b, invoiceNative)).toThrow(/different reviewed invoice/);
     const n = await built({ token: 'native', tokenAmount: '0.1' });
     const invoiceErc = { ...n.ctx, review: { ...n.ctx.review, invoice: { ...n.ctx.review.invoice, token: USDC_84532 } } };
-    expect(() => assertReadyToSend(n.b, invoiceErc)).toThrow(/token differs/);
+    expect(() => assertReadyToSend(n.b, invoiceErc)).toThrow(/different reviewed invoice/);
     const wrongChain = { ...ctx, review: { ...ctx.review, invoice: { ...ctx.review.invoice, chainId: 1 } } };
-    expect(() => assertReadyToSend(b, wrongChain)).toThrow(/chain differs/);
+    expect(() => assertReadyToSend(b, wrongChain)).toThrow(/different reviewed invoice/);
   });
   it('builds buffer payments with a capped, unexpired quote only', async () => {
     const { parsed } = await makeParsed();

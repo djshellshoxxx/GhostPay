@@ -8,7 +8,7 @@
 #   btc     scripts/integration/btc-regtest.e2e.mjs   (bitcoind regtest, BITCOIND_RPC_* env)
 #   solana  scripts/integration/solana-local.e2e.mjs  (solana-test-validator, SOLANA_RPC_URL)
 # Every selected suite runs even if an earlier one fails; the exit status is non-zero if any failed.
-# Test fixtures that scripts/devnet writes into the tracked tree (deployments/31337.json and its web copy) are
+# Test fixtures that scripts/devnet writes into the tracked tree (deployments/31337.json) are
 # restored on exit so a run leaves `git status` as it found it.
 set -euo pipefail
 
@@ -69,7 +69,7 @@ wants solana && npm run build -w @ghostpay/solana-stealth
 wants evm && npm run build -w @ghostpay/relayer
 
 # ---- keep the tracked tree clean ------------------------------------------------------------------------------------
-FIXTURES=(deployments/31337.json apps/web/public/deployments/31337.json)
+FIXTURES=(deployments/31337.json)
 BK="$(mktemp -d)"
 for f in "${FIXTURES[@]}"; do
   if [ -f "$f" ]; then cp -p "$f" "$BK/$(basename "$(dirname "$f")")-$(basename "$f")"; fi

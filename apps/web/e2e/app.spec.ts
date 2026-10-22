@@ -30,14 +30,14 @@ test('create invoice -> open link -> review screen (no manifest shipped, so paym
   const bad = watchConsole(page);
   await page.goto('/');
   await generateKeys(page);
-  const link = await createInvoice(page, { memo: 'Thanks for your business' });
+  const link = await createInvoice(page, { memo: 'Thanks for your business', chainLabel: 'Ethereum Sepolia' });
   await expect(page.getByRole('img', { name: 'QR code containing the invoice link' })).toBeVisible();
   await expect(page.getByText('Bearer link')).toBeVisible();
 
   await openFresh(page, link);
   await expect(page.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
   await expect(page.getByText(/Signature matches key [0-9a-f]{66} \(not pinned\)/)).toBeVisible();
-  await expect(page.getByText('Base Sepolia', { exact: true })).toBeVisible();
+  await expect(page.getByText('Ethereum Sepolia', { exact: true })).toBeVisible();
   await expect(page.getByText('Thanks for your business')).toBeVisible();
   await expect(page.getByText('This payment cannot proceed')).toBeVisible();
   await expect(page.getByText(/Payments disabled on this chain/).first()).toBeVisible();

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Starts a local anvil (chain id 31337) and deploys the full GhostPay devnet stack.
 # Idempotent: re-running with a live, already deployed devnet changes nothing.
-# Writes deployments/31337.json (schema-validated), copies it to apps/web/public/deployments/ and
-# writes scripts/devnet/.state/devnet.json (token + account addresses for the e2e script).
+# Writes deployments/31337.json (schema-validated) and scripts/devnet/.state/devnet.json
+# (token + account addresses for the e2e script). Chain 31337 is intentionally not a bundled web deployment.
 # Env: DEVNET_PORT (8545). Needs foundry (anvil, forge, cast) and node >= 22.
 set -euo pipefail
 # shellcheck source=lib.sh
@@ -56,6 +56,6 @@ rm -rf "$ROOT/packages/contracts/broadcast/DeployDevnet.s.sol/$CHAIN_ID"
 )
 
 BROADCAST="$ROOT/packages/contracts/broadcast/DeployDevnet.s.sol/$CHAIN_ID/run-latest.json"
-node "$ROOT/scripts/testnet/make-manifest.mjs" --rpc "$RPC_URL" --broadcast "$BROADCAST" --out "$MANIFEST" --copy-web
+node "$ROOT/scripts/testnet/make-manifest.mjs" --rpc "$RPC_URL" --broadcast "$BROADCAST" --out "$MANIFEST"
 node "$DEVNET_DIR/write-state.mjs" "$BROADCAST" "$STATE_JSON" "$RPC_URL"
 echo "devnet up: rpc=$RPC_URL chainId=$CHAIN_ID manifest=$MANIFEST"

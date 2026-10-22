@@ -17,473 +17,1424 @@
         {
           "path": "apps/relayer/DEVIATIONS.md",
           "source_blob": "0845d28c491c5f954fde27fa97d53c5809e3eb5c",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "Updated compatible quote, secret, and webhook notes; retained target architecture details.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/Dockerfile",
           "source_blob": "7d8251d7c6c6c81b04bcdf92924ad1a723ca6eae",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "Kept target guard package copies; clarified that secrets may be root-owned or service-owned.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/PRIVACY.md",
           "source_blob": "31fde08aafb04917268b23e813cacbd72cd09080",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "Adapted: trusted-proxy selection, timed salt rotation, aggregate metrics, and request-data-free webhook behavior.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/README.md",
           "source_blob": "e13fd7ad0e0267be9f3061df7c0c1181dec73909",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "Adapted: v2 quote rotation, secret handling, safe fee recipient, gas checks, and `trustedProxies`; did not copy source-only config names.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/deploy/ghostpay-relayer.service",
           "source_blob": "c45ee1bc2e0fdab8f2d449359647a85d27b04bda",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "Added `LoadCredential=` handoff for secret files and optional rotation guidance; did not copy unverified sandbox directives.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/relayer.config.example.json",
           "source_blob": "37c0915760d9b3890de797b8adf4fc667c4687d2",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "Added safe gas defaults and replaced the precompile fee recipient with a non-precompile example address.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/src/alerts.ts",
           "source_blob": "6fb21f542cef90c8d99c391da93fa3fde2383c6a",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "Ported public-host validation and connect-time DNS filtering while keeping target `AlertSink.send` and payload interfaces.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/src/api.test.ts",
           "source_blob": "88695927d3ac49e96d9cf80ab9df8de638f10a54",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "Updated token format assertions; added balance/allowance precheck, double-simulation, gas-move, and fee-cover tests.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/src/breaker.ts",
           "source_blob": "9612612e3c6402a9cabf1c9449dd8db889df9251",
           "status": "source-only: review required",
           "disposition": "replaced by target architecture",
-          "evidence": "Guarded breaker behavior is implemented in packages/relayer-guard and integrated into apps/relayer; do not copy the source file/API. Root owns final relayer tests and signoff."
+          "evidence": "Guarded breaker behavior is implemented in packages/relayer-guard and integrated into apps/relayer; do not copy the source file/API. Root owns final relayer tests and signoff.",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "superseded_by_target_architecture",
+          "resolution_evidence": "Source breaker was superseded by target GuardedBreaker architecture; current guard and relayer tests cover the integrated target implementation.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/src/budget.ts",
           "source_blob": "b3a0c26998520fb316e1ad9a5fca9a7fde18df3f",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "Ported UTC reservation-day protection and `remaining`/`currentDay` accessors.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/src/chain.test.ts",
           "source_blob": "0ff90ee5a79a2d276784fcfd1cddf99eb1f7de13",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "Adapted for `readOrderState` and actual gas estimate results.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/src/chain.ts",
           "source_blob": "cae40ce3602139cf8c95f08d38289276d14f6b96",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "Ported balance/allowance/nonce reads and the base gas estimate alongside the padded gas limit.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/src/config.test.ts",
           "source_blob": "52900b2bcc511e914aa84d106a537ce81958166d",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "Added gas default/override, hot-key fee recipient opt-in, precompile rejection, and production-secret tests.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/src/config.ts",
           "source_blob": "3c1566b73d585a75073ff54b36ae53c3fd7fb463",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "Added compatible `gas` controls and `allowFeeToHotKey`; preserved the target's `verifyTextManifestSignature` alias and existing schema names.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/src/e2e.anvil.test.ts",
           "source_blob": "56dc9aa203b9d015879fe3735e2c0bd386618f79",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "Existing required-Anvil gate retained; full required Anvil suite passed.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/src/hardening.test.ts",
           "source_blob": "ef42b0ea494f230e33bfbcd397185ceea78d46fd",
           "status": "source-only: review required",
           "disposition": "historical regression snapshot retained",
-          "evidence": "Source is preserved as .source under docs/remote/migration-source; current relayer tests and audit 11 own behavioral equivalence. Do not count snapshot as executed."
+          "evidence": "Source is preserved as .source under docs/remote/migration-source; current relayer tests and audit 11 own behavioral equivalence. Do not count snapshot as executed.",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/remote/migration-source/remote-extensions-2/apps/relayer/src/hardening.test.ts.source"
+          ],
+          "resolution_status": "historical_snapshot_retained; applicable assertions adapted to current test suites",
+          "resolution_evidence": "Original source test is preserved as a .source snapshot. Applicable hardening cases were rewritten against the target interfaces in apps/relayer/src/api.test.ts, units.test.ts, and runtime.test.ts; current owner QA is 248 relayer tests with coverage in audit 18. Historical snapshot itself was not executed.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/src/harness.testutil.ts",
           "source_blob": "39612619141376d482dbb7fe6be874a6a15ec1ab",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "Extended the fake client for state reads and separate gas estimates; retained target guard configuration and test seams.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/src/limiter.ts",
           "source_blob": "88761256332f2a27826333883c8df1e24215ef36",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "Added `KeyHasher.onRotate` cleanup callbacks and explicit refresh for the idle rotation timer.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/src/log.ts",
           "source_blob": "e21254ad7b5ad39a2c2e3f37c9af78b7064ab69e",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "No source behavior needed; target logger remains allowlist-based.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/src/main.ts",
           "source_blob": "7cd724757a994dbf0be607d42b9c0f05a2c6a0e2",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "Added previous quote-key loading, fixed-class process error handlers, and timer disposal on shutdown.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/src/metrics.ts",
           "source_blob": "db5af7ac304ac25d130baa4f3ac1e0bd0d599534",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "No transplant: target already had a bounded Prometheus registry integrated with service/server metrics.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/src/netsafety.test.ts",
           "source_blob": "adb8a78fd9fee17e7ebcc480d62b19813e150cd1",
           "status": "source-only: review required",
           "disposition": "historical regression snapshot retained",
-          "evidence": "Source is preserved as .source under docs/remote/migration-source; current relayer tests and audit 11 own behavioral equivalence. Do not count snapshot as executed."
+          "evidence": "Source is preserved as .source under docs/remote/migration-source; current relayer tests and audit 11 own behavioral equivalence. Do not count snapshot as executed.",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/remote/migration-source/remote-extensions-2/apps/relayer/src/netsafety.test.ts.source"
+          ],
+          "resolution_status": "historical_snapshot_retained; applicable assertions adapted to current test suites",
+          "resolution_evidence": "Original source test is preserved as a .source snapshot. URL/DNS cases were adapted in apps/relayer/src/units.test.ts; trusted-proxy/XFF behavior is exercised in current API tests. Current owner QA is 248 relayer tests with coverage in audit 18. Historical snapshot itself was not executed.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/src/quoteToken.ts",
           "source_blob": "67ec5cb5b184a07e41713cd31bd6a2f949117118",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "Ported v2 key identifiers and primary/previous key verification.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/src/runtime.ts",
           "source_blob": "ac429268fcf7e45703f915a38f2243bbad6661e5",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "Added independent quote-key check and idle salt timer/disposal; preserved `LossBudget`, metrics, monotonic clock, and manifest read-back.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/src/secrets.ts",
           "source_blob": "ed1f8e22ba4fe18a10486f213cfeaf2108469aa4",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "Ported symlink, owner, production-environment, and optional previous-secret handling.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/src/server.ts",
           "source_blob": "25de26f6d31f8895d99178454d24287d1556d572",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "No wholesale port: target already uses guard's trusted-proxy resolution and its current server limits/metrics API.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/src/service.ts",
           "source_blob": "cf0effa98489d4084944ac3bcca3b6316a38d9dc",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "Ported state prechecks, second simulation, fee coverage, gas movement cap, and day-tagged release; retained guarded-breaker outcomes and loss-budget accounting.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/src/units.test.ts",
           "source_blob": "0b120e134c63f43bc6beca58f9caa6506d03318d",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "Added regression coverage for rollover, key rotation, salt callbacks, and webhook SSRF checks.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/relayer/src/validate.ts",
           "source_blob": "df6c3935e8eb80efa2f205be9b1183ae5c15f1a4",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "relayer migration",
+          "evidence_refs": [
+            "docs/audits/11-relayer-migration.md",
+            "docs/audits/18-integration-verification.md"
+          ],
+          "resolution_status": "dispositioned; adapted/reviewed per relayer owner report",
+          "resolution_evidence": "Updated strict quote token syntax to v2 with canonical numeric fields.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "apps/web/DEVIATIONS.md",
           "source_blob": "e4ed4450efde036926e74ce0897366d41d50f51f",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Superseded by the current target deviation/coverage notes; target's active coverage command is Vite/Vitest and its exclusion list is in `vite.config.ts`. The report is documentation, not runtime behavior.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/README.md",
           "source_blob": "8565e77e9835a136604fd2c7903146d488a2a971",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted to the current app and monorepo install/run instructions; the live UI/test paths below are the evidence for claims about behavior.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/e2e/app.spec.ts",
           "source_blob": "833304e5bef15035ca9c7a0180212bdb2157c031",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted to Playwright against current routes and labels. Existing full browser batch passed 17/17 before this pass; it covers invoice creation/opening, seller flows, scan/sweep routing and responsive/a11y behavior. New `passphrase-vault.spec.ts` covers encrypted invoice create/open/wrong passphrase and vault save/reload/unlock; `helpers.ts` keeps the bearer-mode `encrypt:true` path distinct from whole-invoice passphrase mode.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/e2e/flows.spec.ts",
           "source_blob": "9376707bd5897d81a3aa1089638b9a247999b04d",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted to Playwright against current routes and labels. Existing full browser batch passed 17/17 before this pass; it covers invoice creation/opening, seller flows, scan/sweep routing and responsive/a11y behavior. New `passphrase-vault.spec.ts` covers encrypted invoice create/open/wrong passphrase and vault save/reload/unlock; `helpers.ts` keeps the bearer-mode `encrypt:true` path distinct from whole-invoice passphrase mode.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/package.json",
           "source_blob": "40c849230b3ab932da9257e9b7b17fc8c7687cec",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted to current workspace dependencies and browser configuration. `@ghostpay/qr-exchange` is declared for semantic QR/camera flows; Playwright uses the configured headless shell. These are harness/build integration, not security evidence on their own.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/playwright.config.ts",
           "source_blob": "5f68f7e54105ab6db65d30b2c3f0515337a8e26b",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted to current workspace dependencies and browser configuration. `@ghostpay/qr-exchange` is declared for semantic QR/camera flows; Playwright uses the configured headless shell. These are harness/build integration, not security evidence on their own.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/public/_headers",
           "source_blob": "720929dc748bcaf7e375623921c7cb6d5fc859cd",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted static-host headers and emitted-bundle checks remain active. Build and postbuild now validate every deployment file against schema, filename/chain id, and the configured release public key set; any manifest without keys or with an invalid signature fails closed. Vite compiles validated raw manifest text and keys into the hashed bundle.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/scripts/scan-bundle.mjs",
           "source_blob": "80ac0cb6ab995e57b016598cb19c02a384312d06",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted static-host headers and emitted-bundle checks remain active. Build and postbuild now validate every deployment file against schema, filename/chain id, and the configured release public key set; any manifest without keys or with an invalid signature fails closed. Vite compiles validated raw manifest text and keys into the hashed bundle.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/App.tsx",
           "source_blob": "2671b7c6c07ae10655b03abda983f6c7c5905cc2",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted router/nav retains current routes, RegistryView, QR/i18n, and idle-session-lock behavior. Route and end-to-end navigation coverage is in Playwright; scan/payment state gates are exercised in view tests.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/lib/defaultServices.ts",
           "source_blob": "1995df3bc6025e2139a5c02ee576518f7bf1bf71",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted and hardened: default load now reads only `BUNDLED_MANIFESTS`; empty key configuration disables deployments, while configured keys require a matching signature. It performs no runtime manifest fetch. `defaultServices.test.ts` covers empty-key disable, valid signature, and foreign-key rejection.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/lib/errors.ts",
           "source_blob": "1cece23babc2bac0303c22cb2fa0e1180ce52fa7",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted user-facing error classification is consumed by pay, scan, and sweep; tests in those flows assert safe messages and failure states rather than provider payloads.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/lib/manifest.test.ts",
           "source_blob": "7f6abd8bde7ab2d8e47957416d1c316026c7d866",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted schema/signature and on-chain verification path. `loadBundledManifest` checks the configured keys against compiled manifest text; the separate fetch-based loader remains available for explicit manual tests and reports unsigned testnet trust instead of silently promoting it. Tests cover malformed/wrong-chain/unsigned/tampered/foreign-signed manifests plus code hash, fee recipient, and RPC mismatch. `verifyManifestForFlow` blocks without an RPC.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/lib/manifest.ts",
           "source_blob": "c5dc3ec33ad35752add99e8f37830a037e561451",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted schema/signature and on-chain verification path. `loadBundledManifest` checks the configured keys against compiled manifest text; the separate fetch-based loader remains available for explicit manual tests and reports unsigned testnet trust instead of silently promoting it. Tests cover malformed/wrong-chain/unsigned/tampered/foreign-signed manifests plus code hash, fee recipient, and RPC mismatch. `verifyManifestForFlow` blocks without an RPC.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/lib/pay.test.ts",
           "source_blob": "fe12de7a877f77c5102847d54d2153116b45666a",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted invoice parsing, trust/caution copy, exact amount handling, chain/token/expiry checks and transaction-review gates. Tests assert invalid signatures block and a valid unpinned invoice key is not described as a verified seller.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/lib/pay.ts",
           "source_blob": "b87b0bd06658cb812f15006231b765a7ed89a065",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted invoice parsing, trust/caution copy, exact amount handling, chain/token/expiry checks and transaction-review gates. Tests assert invalid signatures block and a valid unpinned invoice key is not described as a verified seller.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/lib/payExec.test.ts",
           "source_blob": "0ab397955d3a44b4a927be2a2d9b86d31654c083",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted transaction execution retains calldata preparation, allowance review/revocation and fee-recipient pinning; targeted tests cover cleanup and failure paths. `Pay.tsx` carries the actionable review/approval UI.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/lib/payExec.ts",
           "source_blob": "354454f1ca4ce6996ec5fa706aa52b32e575a819",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted transaction execution retains calldata preparation, allowance review/revocation and fee-recipient pinning; targeted tests cover cleanup and failure paths. `Pay.tsx` carries the actionable review/approval UI.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/lib/scanClient.test.ts",
           "source_blob": "decfaf94404114e0b9daeed660194231ddfca9d0",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted to buffer a page, compare primary/secondary provider results, and emit matches only after reconciliation. Mismatch withholds checkpoint and verified match output. Transaction-bound transfer evidence and finality determine `verified`; public direct-announcement balance alone stays `claimed`. Tests include mismatched providers, duplicate/forged announcements, transfer evidence, bounded pages, checkpoint, abort and worker failures.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/lib/scanClient.ts",
           "source_blob": "62181a069d91f96048fa6e2fe1a4eea43f8b646e",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted to buffer a page, compare primary/secondary provider results, and emit matches only after reconciliation. Mismatch withholds checkpoint and verified match output. Transaction-bound transfer evidence and finality determine `verified`; public direct-announcement balance alone stays `claimed`. Tests include mismatched providers, duplicate/forged announcements, transfer evidence, bounded pages, checkpoint, abort and worker failures.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/lib/scannerCore.test.ts",
           "source_blob": "ebe3f1553ce7658a78f89012db51afe00bcb9c99",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted worker scanner validates announcement inputs and derives candidate metadata with bounded worker handling. Deep-scan is now explicitly opt-in in `Scan.tsx`; targeted tests cover tag-match/ignore-view-tag and malformed inputs. Security agent reports 26 focused tests passing; final QA remains pending.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/lib/scannerCore.ts",
           "source_blob": "f15d28e3229971f845943c12e6954652284929cc",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted worker scanner validates announcement inputs and derives candidate metadata with bounded worker handling. Deep-scan is now explicitly opt-in in `Scan.tsx`; targeted tests cover tag-match/ignore-view-tag and malformed inputs. Security agent reports 26 focused tests passing; final QA remains pending.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/lib/services.ts",
           "source_blob": "92f28983dcb6d91ea74cd1c91f3d3d24f7b6ce6e",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Superseded target service interface is retained with injected clock, fetch, RPC, manifest, worker, checkpoint and vault dependencies. View tests use this seam for deterministic RPC and timeout behavior.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/lib/settings.test.ts",
           "source_blob": "3af3179afadd9291b5e0e2127246d3728115c20a",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted settings normalization accepts `secondaryRpcUrls` as fallback to canonical `rpcUrlsSecondary`, validates URLs and preserves per-chain RPC choices. Tests cover malformed and legacy-shaped stored settings.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/lib/settings.ts",
           "source_blob": "c63d08096ab74624cfb9912c39d68e20697a759b",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted settings normalization accepts `secondaryRpcUrls` as fallback to canonical `rpcUrlsSecondary`, validates URLs and preserves per-chain RPC choices. Tests cover malformed and legacy-shaped stored settings.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/lib/sweep.test.ts",
           "source_blob": "2a33acfb66764dc35aaee79dc0df6a9db4181afb",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted and hardened in this pass. Relayer quote fee recipient must equal the loaded manifest's fee recipient; a 30-second safety buffer is checked before derivation/signing, after each async signature/permit step, and immediately before submission. Clock is injected as a function for boundary tests. Existing post-broadcast uncertain outcomes are not made retryable. Focused suite: 34 tests passed before release changes; final combined run pending at time of writing.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/lib/sweep.ts",
           "source_blob": "20daf7cfcece2f431c6f57f792caca83785ee088",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted and hardened in this pass. Relayer quote fee recipient must equal the loaded manifest's fee recipient; a 30-second safety buffer is checked before derivation/signing, after each async signature/permit step, and immediately before submission. Clock is injected as a function for boundary tests. Existing post-broadcast uncertain outcomes are not made retryable. Focused suite: 34 tests passed before release changes; final combined run pending at time of writing.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/scanBundle.test.ts",
           "source_blob": "ca64c32f0ffebad054c8bcec3f509e3002a098f2",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted production build artifact guard checks emitted scanner worker/module properties; it is a build-output test, not a substitute for page reconciliation tests.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/state.tsx",
           "source_blob": "ca66ad65cb5bbf7c4bc24ed21a27641e9ff60d0a",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Superseded/adapted state model preserves target's passphrase/session/BTC/router state; lock and session lifecycle are tested in session and vault tests plus Playwright reload/unlock path.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/styles/app.css",
           "source_blob": "94dd3245f2f614a362c0f0d6cab61cd5b54a6d30",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted app styles retain responsive forms, focus visibility, notices, printable receipt rules and QR semantics. Playwright responsive/accessibility smoke passed in the existing 17-test batch.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/test/announcements.ts",
           "source_blob": "4ad55c920c7f4b4c827c13b62696668220ad49b2",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted fixtures now encode exact announcement, manifest, RPC, wallet and provider behavior used by focused tests. They are test-only and not trusted at runtime. `fakeManifest.ts` feeds fail-closed verification tests; scan fixtures include router/direct claim distinctions.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/test/fakeManifest.ts",
           "source_blob": "2412c4a998603bf7d173335323a9fd04d048b963",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted fixtures now encode exact announcement, manifest, RPC, wallet and provider behavior used by focused tests. They are test-only and not trusted at runtime. `fakeManifest.ts` feeds fail-closed verification tests; scan fixtures include router/direct claim distinctions.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/test/mockChain.ts",
           "source_blob": "d5f548a98130122a274619e1476604b4f5ba5dc6",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted fixtures now encode exact announcement, manifest, RPC, wallet and provider behavior used by focused tests. They are test-only and not trusted at runtime. `fakeManifest.ts` feeds fail-closed verification tests; scan fixtures include router/direct claim distinctions.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/test/mockWallet.ts",
           "source_blob": "ae0c7f47e79db36cad2e94d4e42ed0b85227d963",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted fixtures now encode exact announcement, manifest, RPC, wallet and provider behavior used by focused tests. They are test-only and not trusted at runtime. `fakeManifest.ts` feeds fail-closed verification tests; scan fixtures include router/direct claim distinctions.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/test/render.tsx",
           "source_blob": "5e90bad2774744e833bae7cdf8f8d65e14de06fb",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted fixtures now encode exact announcement, manifest, RPC, wallet and provider behavior used by focused tests. They are test-only and not trusted at runtime. `fakeManifest.ts` feeds fail-closed verification tests; scan fixtures include router/direct claim distinctions.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/views/About.test.tsx",
           "source_blob": "b3ae043fdbbfbb8a6b154af3edf5d682aaf38713",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted disclosure/caveat copy and test coverage describe limits of invoice signatures and privacy; target also has privacy/QR/BTC warnings tested in relevant screens.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/views/About.tsx",
           "source_blob": "7557c378b199bd18fe205b3a79f85e1318d5ecd4",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted disclosure/caveat copy and test coverage describe limits of invoice signatures and privacy; target also has privacy/QR/BTC warnings tested in relevant screens.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/views/CreateInvoice.test.tsx",
           "source_blob": "db3574590820aae0c012e93eb8c8e9dcb6daaa35",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted invoice creation retains target's v1 encrypted envelope and passphrase whole-invoice option, plus bearer-key option and semantic shareable QR. Tests cover serialization, amount and passphrase validation; Playwright exercises create/open/wrong-passphrase.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/views/CreateInvoice.tsx",
           "source_blob": "e137139bdf9f2bd085574361697402750754b8fa",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted invoice creation retains target's v1 encrypted envelope and passphrase whole-invoice option, plus bearer-key option and semantic shareable QR. Tests cover serialization, amount and passphrase validation; Playwright exercises create/open/wrong-passphrase.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/views/Home.tsx",
           "source_blob": "03a80cb105e33c201ecd8b64735afa9ed14ed340",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Superseded/adapted landing content is routed through current App; browser route smoke covers it.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/views/Pay.test.tsx",
           "source_blob": "cd22502d558d0a8bbfdecf72350b8718ccd6942a",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Pay view imports bounded seller receipt JSON, verifies its signature, and binds invoice digest, chain, asset, amount, available tx hash and recipient facts; revision/session guards reject stale async file reads or changed trust state. The focused suite passed 86 tests, payExec follow-up passed 17/17, and web typecheck/scoped lint passed; independent review 21 passed 86/86 and closed the race findings. Final browser/hosted candidate verification remains open.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate for receipt import"
+          ]
         },
         {
           "path": "apps/web/src/views/Pay.tsx",
           "source_blob": "e4b217f69c9386fc977422d25b9068c5a0493f9e",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Pay view imports bounded seller receipt JSON, verifies its signature, and binds invoice digest, chain, asset, amount, available tx hash and recipient facts; revision/session guards reject stale async file reads or changed trust state. The focused suite passed 86 tests, payExec follow-up passed 17/17, and web typecheck/scoped lint passed; independent review 21 passed 86/86 and closed the race findings. Final browser/hosted candidate verification remains open.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate for receipt import"
+          ]
         },
         {
           "path": "apps/web/src/views/Scan.test.tsx",
           "source_blob": "4f10d43fdcf825439c1a69008f9e96215f9bbf90",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted scan UI shows provider mismatch safely and only verified transaction-bound matches as verified; direct claims remain claimed. Deep-scan checkbox explicitly controls tag-match mode. Seller receipt panel appears only for eligible verified matches with current seller keys and transaction hash. Tests cover no false verified output, receipt signer mismatch, incomplete metadata, stale match and unavailable transaction evidence.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/views/Scan.tsx",
           "source_blob": "ffc748f330302621078e9a0da47a47ad88381ae2",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted scan UI shows provider mismatch safely and only verified transaction-bound matches as verified; direct claims remain claimed. Deep-scan checkbox explicitly controls tag-match mode. Seller receipt panel appears only for eligible verified matches with current seller keys and transaction hash. Tests cover no false verified output, receipt signer mismatch, incomplete metadata, stale match and unavailable transaction evidence.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/views/SellerKeys.test.tsx",
           "source_blob": "d9f305f378f0c1989474d6d26103254e6cd98442",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted target key workflow retains passphrase-encrypted local vault, explicit lock/unlock, QR exposure semantics and session clearing. View tests plus Playwright save/reload/unlock exercise lifecycle.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/views/SellerKeys.tsx",
           "source_blob": "605aab45a7eadbb17c67502cf4e37d3c2c4e03d8",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted target key workflow retains passphrase-encrypted local vault, explicit lock/unlock, QR exposure semantics and session clearing. View tests plus Playwright save/reload/unlock exercise lifecycle.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/views/Settings.test.tsx",
           "source_blob": "a3c73ce1c1280e7e8f8c61ef8903bebd050ba77a",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted UI for primary and secondary RPC providers, relayer, and chain selection; settings tests cover fallback/canonical keys and invalid endpoint rejection.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/views/Settings.tsx",
           "source_blob": "80a3428fb16c8f2380bb87c3fd28b1380161aa64",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted UI for primary and secondary RPC providers, relayer, and chain selection; settings tests cover fallback/canonical keys and invalid endpoint rejection.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/views/Sweep.test.tsx",
           "source_blob": "6b2790f66f1b2baab50e0b03b130e5717bb590c6",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted source quote/sweep flow to current passphrase vault/session guard and current API. Fee recipient is passed from verified manifest; quote freshness is sampled after async work in `relayedSweep`. Tests cover wrong fee recipient, near-expiry and during-permit expiry, direct/relayed boundary, user warnings and no unsafe retry.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/src/views/Sweep.tsx",
           "source_blob": "990210e8839a94a8138252f78b0cba4b17fb2f3c",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted source quote/sweep flow to current passphrase vault/session guard and current API. Fee recipient is passed from verified manifest; quote freshness is sampled after async work in `relayedSweep`. Tests cover wrong fee recipient, near-expiry and during-permit expiry, direct/relayed boundary, user warnings and no unsafe retry.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "apps/web/vite.config.ts",
           "source_blob": "7db7ae1222d299b959d2b61bad5a21a0b13a3322",
-          "status": "shared source change: review required"
+          "status": "shared source change: review required",
+          "owner": "web migration",
+          "evidence_refs": [
+            "docs/audits/16-web-migration-closure.md",
+            "docs/audits/18-integration-verification.md",
+            "docs/audits/08-completion-gates.md"
+          ],
+          "resolution_status": "dispositioned; adapted/superseded per web owner report",
+          "resolution_evidence": "Adapted static-host headers and emitted-bundle checks remain active. Build and postbuild now validate every deployment file against schema, filename/chain id, and the configured release public key set; any manifest without keys or with an invalid signature fails closed. Vite compiles validated raw manifest text and keys into the hashed bundle.",
+          "pending_checks": [
+            "candidate hosted CI on frozen candidate"
+          ]
         },
         {
           "path": "packages/btc-silent-payments/src/adapter-types.ts",
           "source_blob": "5e897c794a88d3cf3d0e1bfc6f64491bfcdfcefc",
           "status": "shared source change: review required",
           "disposition": "ported and tested",
-          "evidence": "Audit 07: BTC ext4 hardening; package typecheck and full 21-file/353-test suite passed."
+          "evidence": "Audit 07: BTC ext4 hardening; package typecheck and full 21-file/353-test suite passed.",
+          "owner": "library/package QA",
+          "resolution_status": "ported and tested",
+          "evidence_refs": [
+            "docs/audits/audit 19.md",
+            "docs/audits/audit 10.md"
+          ],
+          "resolution_evidence": "Adapter exposes the current scan/verifier contract; ext4 scanner/BlindBit/URI fixes and regression suite passed 353 tests across 21 files with configured coverage. No code omission identified.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "packages/chain-adapters/src/index.ts",
           "source_blob": "38f33f8551342658897092e60c7d07669a7bf77c",
           "status": "shared source change: review required",
           "disposition": "adapted and reviewed",
-          "evidence": "Current exports retain deployments/signature/readback/scan verification/registry/payments/deepscan APIs under compatible names; chain-adapters package QA is owned by audit 10/root and its final rerun is pending."
+          "evidence": "Current exports retain deployments/signature/readback/scan verification/registry/payments/deepscan APIs under compatible names; required-Anvil suite passed 332 tests across 19 files at 96.17% statements and 94.42% branches (audit 18).",
+          "owner": "library/package QA",
+          "resolution_status": "adapted and validated",
+          "evidence_refs": [
+            "docs/audits/audit 19.md",
+            "docs/audits/audit 10.md",
+            "docs/audits/audit 18.md"
+          ],
+          "resolution_evidence": "Exports retain deployment/signature verification, scan verification, registry, payments and deep-scan API. Required-Anvil package run passed 332 tests; latest recorded coverage is 96.17% statements and 94.42% branches.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "packages/chain-adapters/src/logs.ts",
           "source_blob": "c275f88479b328f56420ecee713541f4821770b6",
           "status": "shared source change: review required",
           "disposition": "adapted and reviewed",
-          "evidence": "Current bounded scan adds toBlock, caps, hostile-head/cursor guards, range rollback and canonical block checks; tests are logs.test.ts, scanHardening.test.ts, scanVerify.test.ts; root final QA pending."
+          "evidence": "Current bounded scan adds inclusive toBlock, caps, hostile-head/cursor guards, range rollback and canonical-block checks; related regressions ran in the required-Anvil 332-test suite (audit 18).",
+          "owner": "library/package QA",
+          "resolution_status": "adapted and validated",
+          "evidence_refs": [
+            "docs/audits/audit 19.md",
+            "docs/audits/audit 10.md",
+            "docs/audits/audit 18.md"
+          ],
+          "resolution_evidence": "Target implements inclusive toBlock, request/log bounds, hostile-head/cursor rejection, canonical event/window checks and safe reorg rollback. Bounded scan regression tests were run in the package suite; required-Anvil suite is green.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "packages/chain-adapters/src/registry.test.ts",
           "source_blob": "4eac9d048812b28d6e91c67223c77027ad031e7a",
           "status": "shared source change: review required",
           "disposition": "reviewed; behavior represented",
-          "evidence": "Current registry.test.ts plus registry.compat.test.ts cover codec/register/readback behavior; browser view is separately reviewed in audit 16."
+          "evidence": "Current registry.test.ts plus registry.compat.test.ts cover codec/register/readback behavior; required-Anvil package QA passed 332 tests across 19 files (audit 18).",
+          "owner": "library/package QA",
+          "resolution_status": "adapted; behavior covered by current suites",
+          "evidence_refs": [
+            "docs/audits/audit 19.md",
+            "docs/audits/audit 10.md",
+            "docs/audits/audit 18.md"
+          ],
+          "resolution_evidence": "Current registry.test.ts and registry.compat.test.ts cover registry codecs/readback; old browser Registry tests are mapped in audit 16. Required-Anvil package suite passed.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "packages/chain-adapters/src/registry.ts",
           "source_blob": "b91d2fd5f8238d53f8d8c0d4fd1728559c90280e",
           "status": "shared source change: review required",
           "disposition": "adapted and reviewed",
-          "evidence": "Current typed codec/register/readback implementation and registry suites retained; audit 10/root final QA pending."
+          "evidence": "Current typed codec/register/readback implementation is exercised by registry suites; required-Anvil package QA passed 332 tests across 19 files (audit 18).",
+          "owner": "library/package QA",
+          "resolution_status": "adapted and validated",
+          "evidence_refs": [
+            "docs/audits/audit 19.md",
+            "docs/audits/audit 10.md",
+            "docs/audits/audit 18.md"
+          ],
+          "resolution_evidence": "Current registry codec/register/readback API is exported and exercised by current registry suites; required-Anvil package suite passed.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "packages/chain-adapters/src/router.anvil.test.ts",
           "source_blob": "1cb659a7bbf06632ded3f7859ec2685c406aa3f0",
           "status": "shared source change: review required",
           "disposition": "reviewed; source assertions retained/adapted",
-          "evidence": "Current router.anvil.test.ts is present and remains in chain-adapters test suite; environment-dependent Anvil cases must be assessed from final root QA, not assumed executed."
+          "evidence": "Current router Anvil tests were executed in the required-Anvil package suite: 332 tests across 19 files passed (audit 18).",
+          "owner": "library/package QA",
+          "resolution_status": "retained/adapted; required-Anvil suite passed",
+          "evidence_refs": [
+            "docs/audits/audit 19.md",
+            "docs/audits/audit 10.md",
+            "docs/audits/audit 18.md"
+          ],
+          "resolution_evidence": "Current Anvil router tests ran in the required-Anvil package suite; no source-only test omission identified.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "packages/core-crypto/src/stealth.ts",
           "source_blob": "8f5da56da9bad789d0fa3d75f7f189ac447cee89",
           "status": "shared source change: review required",
           "disposition": "adapted; no functional delta identified",
-          "evidence": "Source change is documentation/comment-level; core-crypto full suite 55/55 and coverage thresholds passed per root QA update; current negative/differential suites exercise stealth behavior."
+          "evidence": "Source change is documentation/comment-level; core-crypto full suite 55/55 and coverage thresholds passed per root QA update; current negative/differential suites exercise stealth behavior.",
+          "owner": "library/package QA",
+          "resolution_status": "reviewed; no functional source delta identified",
+          "evidence_refs": [
+            "docs/audits/audit 19.md",
+            "docs/audits/audit 10.md",
+            "docs/audits/audit 18.md"
+          ],
+          "resolution_evidence": "Source change is documentation/comment-level; current stealth behavior is exercised by differential/negative tests. Full coverage passed 55/55 tests (98.47% statements, 98.11% branches).",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "packages/invoice-schema/DEVIATIONS.md",
           "source_blob": "2803dc8e12547caefdc359e3f9aa3c41dbca05e8",
           "status": "shared source change: review required",
           "disposition": "adapted documentation",
-          "evidence": "Current deviations preserve hidden-character and passphrase constraints; passphrase implementation and tests are in current package."
+          "evidence": "Current deviations preserve hidden-character and passphrase constraints; passphrase implementation and tests are in current package.",
+          "owner": "library/package QA",
+          "resolution_status": "documentation reconciled",
+          "evidence_refs": [
+            "docs/audits/audit 19.md",
+            "docs/audits/audit 10.md",
+            "docs/audits/audit 18.md"
+          ],
+          "resolution_evidence": "Current deviations preserve text-hygiene and passphrase security caveats; no implementation delta omitted.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "packages/invoice-schema/README.md",
           "source_blob": "19d738bb75ff72ca7687e5ff555aa6f81e8ab4d2",
           "status": "shared source change: review required",
           "disposition": "adapted documentation",
-          "evidence": "Current README contains source text-hygiene requirements and passphrase envelope/security details; test implementation is packages/invoice-schema/src/passphrase.test.ts plus schema suites."
+          "evidence": "Current README contains source text-hygiene requirements and passphrase envelope/security details; test implementation is packages/invoice-schema/src/passphrase.test.ts plus schema suites.",
+          "owner": "library/package QA",
+          "resolution_status": "documentation reconciled",
+          "evidence_refs": [
+            "docs/audits/audit 19.md",
+            "docs/audits/audit 10.md",
+            "docs/audits/audit 18.md"
+          ],
+          "resolution_evidence": "Current README describes strict hidden-character rejection and A256GCM-PW envelope/security limits; no source functionality omitted.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         },
         {
           "path": "packages/invoice-schema/src/errors.ts",
           "source_blob": "54b14a5c052c49ce71c7a99a7fb098fa49481592",
           "status": "shared source change: review required",
           "disposition": "adapted and tested",
-          "evidence": "Current error types retain forbidden-character and passphrase-specific errors; invoice-schema QA/test rerun belongs to root final package baseline."
+          "evidence": "Current error types retain forbidden-character and passphrase-specific errors; invoice-schema QA/test rerun belongs to root final package baseline.",
+          "owner": "library/package QA",
+          "resolution_status": "adapted and validated",
+          "evidence_refs": [
+            "docs/audits/audit 19.md",
+            "docs/audits/audit 10.md",
+            "docs/audits/audit 18.md"
+          ],
+          "resolution_evidence": "Retains forbidden-character and passphrase-specific typed errors; package validation includes the 626-test invoice-schema result in audit 18.",
+          "pending_checks": [
+            "candidate hosted CI"
+          ]
         }
       ]
     },
@@ -498,5 +1449,27 @@
       "review_files": []
     }
   },
-  "scope": "Pinned Fermat and Bardeen snapshots; file equality and ancestry do not prove behavioral coverage."
+  "scope": "Pinned Fermat and Bardeen snapshots; file equality and ancestry do not prove behavioral coverage.",
+  "current_snapshot_evidence": {
+    "base_checkpoint": "origin/integration/consolidated-2026-10-21 ecc29c1ec998c4f131471967e2691678ca33f0fa; worktree contains additional uncommitted candidate changes",
+    "chain_adapters": "332 tests across 19 files with required Anvil; 96.17% statements, 94.42% branches (audit 18)",
+    "main_contracts": "411 latest full default-profile tests; deterministic snapshot check passed 370/370 (audit 10/18)",
+    "relayer": "248 tests; 97.25% statements, 92.35% branches (audit 18)",
+    "relayer_guard": "146 tests; 98.05% statements, 93.67% branches (audit 18)",
+    "qr_exchange": "52 tests; 98.39% statements, 91.04% branches (audit 18)",
+    "pay_receipt_import": "86 focused related tests; payExec 17/17 follow-up; typecheck/scoped lint pass; independent review 21 passed 86/86; fresh signed-fixture Playwright 17/17 in 2.1 minutes. Full web coverage and candidate hosted CI pending.",
+    "btc_live_regtest": "1 no-skip live web sweep passed: 50,000,000 sat found; destination 49,999,802 sat; fee 198 sat (audit 18)",
+    "operator_scripts": "13 tests passed; CI rest-0 shard",
+    "pending": "Code frozen for candidate preparation; fresh Playwright passed. Full web coverage on the candidate and coherent hosted CI/upload remain pending. Candidate SHA is not assigned.",
+    "required_chain_helpers": "Registry 4/4, router 3/3, policy-scheme 7/7 and chain guard 9/9 passed with required local tools; workflow now requires applicable tools/artifacts."
+  },
+  "open_completion_gates": [
+    "Complete full web coverage on the frozen candidate.",
+    "Obtain green hosted CI/Integration on the candidate and update audit 06 with the candidate SHA."
+  ],
+  "other_open_boundaries": [
+    "Independent professional external audit, trusted setup, real deployment keys/funded operation and device qualification remain release gates tracked in audits 08 and 18.",
+    "Historical Mythril/mutation reports are not current evidence; run selected security tools or document unavailable tools.",
+    "Durable seller-side invoice/payment reconciliation remains a separate product gap in audit 08; Pay receipt import/binding itself is implemented and reviewed."
+  ]
 }

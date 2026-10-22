@@ -47,13 +47,12 @@ assertPreviewMatchesCalldata(preview, tx, 84532);            // before the walle
 
 ## Limits
 
-No network or EVM was used in tests; see `TODO-VERIFY.md` (unverified token/feed addresses, chain parameters) and
-`DEVIATIONS.md`. Bitcoin and Solana adapters are out of scope for this package version.
+Most tests use deterministic RPC fixtures; the required-Anvil suite also exercises a local EVM. See `TODO-VERIFY.md` for unverified public token/feed addresses and chain parameters, and `DEVIATIONS.md` for scope limits. Bitcoin and Solana adapters are out of scope for this package version.
 
 ## Trust and verification helpers (audit fixes S3-01, S3-02, S3-14, G-07)
 
 - `verifyDeployment(manifest, client, { secondary?, requireSecondary? })` reads the contracts back from the chain (code hashes, `FEE_BPS`, `FEE_RECIPIENT`, `ANNOUNCER`) and fails closed.
-  `verifyManifestSignature(manifest, releaseKeys)` checks a detached secp256k1 signature over `manifestDigest`; with no keys it reports `unsigned` / `unverifiable`, never `valid`.
+  `verifyObjectManifestSignature(manifest, releaseKeys)` checks a detached secp256k1 signature over `manifestDigest`; with no keys it reports `unsigned` / `unverifiable`, never `valid`. Production consumers use this structured format. `verifyManifestSignature` / `verifyTextManifestSignature` retain the legacy raw-text API for compatibility and are not interchangeable with it.
 - `verifyClaimedPayment`, `verifyPaymentByTxHash`, `dedupeClaims`: announcement metadata is a claim until the chain supports it. `checkAnnouncementDeep`
   (also `@ghostpay/chain-adapters/deepscan`) ignores the view tag for router announcements.
 - `createClient` re-checks `eth_chainId` periodically and after failures; `createReconciledClient(a, b)` requires identical answers from two providers.

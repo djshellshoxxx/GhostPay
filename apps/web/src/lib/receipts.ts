@@ -25,6 +25,24 @@ export interface SignedReceipt extends ReceiptPayload {
   readonly signature: string;
 }
 
+export interface ReceiptInvoiceBinding {
+  readonly invoiceDigest: string;
+  readonly chainId: number;
+  readonly asset: string;
+  readonly amountMinorUnits: string;
+  readonly invoiceSignerPublicKey: string;
+  readonly invoiceSignatureValid: boolean;
+  /** A public key the user has already verified out of band; never inferred from receipt content. */
+  readonly trustedSignerPublicKey?: string;
+  readonly txHash?: string;
+  readonly stealthAddress?: string;
+}
+
+export interface BoundReceipt {
+  readonly receipt: SignedReceipt;
+  readonly signerMatch: 'invoice-signing-key' | 'explicitly-trusted-key';
+}
+
 const DIGEST = /^0x[0-9a-f]{64}$/;
 const HASH = /^0x[0-9a-f]{64}$/;
 const ADDRESS = /^0x[0-9a-f]{40}$/;
@@ -32,6 +50,7 @@ const PUBKEY = /^[0-9a-f]{66}$/;
 const SIGNATURE = /^[0-9a-f]{128}$/;
 const AMOUNT = /^[1-9][0-9]{0,77}$/;
 const MAX_AMOUNT = (1n << 256n) - 1n;
+export const MAX_RECEIPT_JSON_BYTES = 65_536;
 const PAYLOAD_KEYS = ['amountMinorUnits', 'asset', 'chainId', 'invoiceDigest', 'issuedAt', 'signerPublicKey', 'stealthAddress', 'txHash', 'version'] as const;
 const RECEIPT_KEYS = [...PAYLOAD_KEYS, 'signature'] as const;
 
@@ -108,8 +127,33 @@ export function verifyReceipt(value: unknown): value is SignedReceipt {
   }
 }
 
+/**
+ * Verify a seller attestation against the currently opened invoice and expected payment facts.
+ * This establishes key control and field consistency only; it does not independently prove an on-chain payment.
+ */
+export function bindReceiptToInvoice(value: unknown, binding: ReceiptInvoiceBinding): BoundReceipt {
+  if (!verifyReceipt(value)) throw new TypeError('Receipt signature is invalid.');
+  const receipt = value;
+  if (receipt.invoiceDigest !== binding.invoiceDigest.toLowerCase()) throw new TypeError('Receipt is for a different invoice.');
+  if (receipt.chainId !== binding.chainId) throw new TypeError('Receipt chain does not match this invoice.');
+  if (receipt.asset !== binding.asset.toLowerCase()) throw new TypeError('Receipt asset does not match this invoice.');
+  if (receipt.amountMinorUnits !== binding.amountMinorUnits) throw new TypeError('Receipt amount does not match the expected seller amount.');
+  if (binding.txHash !== undefined && receipt.txHash !== binding.txHash.toLowerCase()) throw new TypeError('Receipt transaction hash does not match this payment.');
+  if (binding.stealthAddress !== undefined && receipt.stealthAddress !== binding.stealthAddress.toLowerCase()) throw new TypeError('Receipt recipient does not match this payment.');
+
+  const matchesInvoiceKey = binding.invoiceSignatureValid && receipt.signerPublicKey === binding.invoiceSignerPublicKey.toLowerCase();
+  const trustedKey = binding.trustedSignerPublicKey?.trim().toLowerCase();
+  if (trustedKey !== undefined && !PUBKEY.test(trustedKey)) throw new TypeError('Trusted signer key must be a compressed public key in hex.');
+  const matchesExplicitKey = trustedKey !== undefined && receipt.signerPublicKey === trustedKey;
+  if (!matchesInvoiceKey && !matchesExplicitKey) throw new TypeError('Receipt signer is not the valid invoice signer or the explicitly trusted key.');
+  return { receipt, signerMatch: matchesExplicitKey ? 'explicitly-trusted-key' : 'invoice-signing-key' };
+}
+
 /** Parses a receipt export and requires a valid signature. */
 export function parseVerifiedReceipt(text: string): SignedReceipt {
+  if (new TextEncoder().encode(text).byteLength > MAX_RECEIPT_JSON_BYTES) {
+    throw new TypeError('Receipt file exceeds 64 KiB.');
+  }
   const parsed = parseStrictJson(text);
   if (!verifyReceipt(parsed)) throw new TypeError('Receipt is malformed or its signature is invalid.');
   return parsed;

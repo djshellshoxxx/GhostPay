@@ -3,10 +3,10 @@
 // deployments/schema.json (built-in minimal 2020-12 subset validator) and the chain-adapters validator.
 //
 // Usage: node scripts/testnet/make-manifest.mjs --rpc <url> [--broadcast <run-latest.json>]
-//          [--policy-broadcast <run-latest.json>] [--out <file>] [--copy-web] [--commit <40hex>] [--dry]
+//          [--policy-broadcast <run-latest.json>] [--out <file>] [--commit <40hex>] [--dry]
 //   env fallback: RPC_URL. Default broadcast: packages/contracts/broadcast/Deploy.s.sol/<chainId>/run-latest.json
 // Exit codes: 0 ok, 1 usage/validation failure.
-import { readFileSync, writeFileSync, mkdirSync, existsSync, copyFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -147,9 +147,13 @@ export async function validateAll(manifest) {
 
 async function main() {
   const argv = process.argv.slice(2);
+  if (argv.includes('--copy-web')) {
+    console.error('--copy-web was removed: sign deployments/<chainId>.json offline, then explicitly copy the signed file to apps/web/deployments/<chainId>.json and validate it with the pinned release keys.');
+    process.exit(2);
+  }
   const rpc = arg('rpc', argv) ?? process.env.RPC_URL;
   if (rpc === undefined) {
-    console.error('usage: make-manifest.mjs --rpc <url> [--broadcast f] [--policy-broadcast f] [--out f] [--copy-web] [--commit sha] [--dry]');
+    console.error('usage: make-manifest.mjs --rpc <url> [--broadcast f] [--policy-broadcast f] [--out f] [--commit sha] [--dry]');
     process.exit(1);
   }
   const m = await buildManifest({
@@ -168,12 +172,6 @@ async function main() {
   mkdirSync(dirname(out), { recursive: true });
   writeFileSync(out, text);
   console.error(`wrote ${out}`);
-  if (argv.includes('--copy-web')) {
-    const dst = resolve(ROOT, `apps/web/public/deployments/${m.chainId}.json`);
-    mkdirSync(dirname(dst), { recursive: true });
-    copyFileSync(out, dst);
-    console.error(`copied ${dst}`);
-  }
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

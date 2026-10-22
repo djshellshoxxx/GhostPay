@@ -71,6 +71,7 @@ describe('startCamera', () => {
     expect(await codeOf(startCamera(v, mk('NotFoundError')))).toBe('CAMERA_UNAVAILABLE');
     expect(await codeOf(startCamera(v, { getUserMedia: () => Promise.reject(new Error('str')) }))).toBe('CAMERA_UNAVAILABLE');
     expect(await codeOf(startCamera(v, undefined))).toBe('CAMERA_UNAVAILABLE');
+    expect(await codeOf(startCamera(v, {} as MediaDevicesLike))).toBe('CAMERA_UNAVAILABLE');
   });
   it('stops tracks if play fails or abort happens mid-prompt; no prompt if pre-aborted', async () => {
     const a = fakeStream();
@@ -89,6 +90,13 @@ describe('startCamera', () => {
     const gum = vi.fn();
     expect(await codeOf(startCamera(v2, { getUserMedia: gum }, { signal: ac.signal }))).toBe('ABORTED');
     expect(gum).not.toHaveBeenCalled();
+
+    const c = fakeStream();
+    const afterPlay = new AbortController();
+    const v3 = fakeVideo({ play: () => { afterPlay.abort(); return Promise.resolve(); } });
+    expect(await codeOf(startCamera(v3, { getUserMedia: () => Promise.resolve(c.stream) }, { signal: afterPlay.signal }))).toBe('ABORTED');
+    expect(c.stops.every((s) => s.mock.calls.length === 1)).toBe(true);
+    expect(v3.srcObject).toBeNull();
   });
   it('a late aborted acquisition stops only its own stream and cannot replace a newer stream', async () => {
     const a = fakeStream();
@@ -180,6 +188,9 @@ describe('scanFromVideo', () => {
     const v2 = fakeVideo({ srcObject: new Blob([]) });
     stopVideo(v2);
     expect(v2.srcObject).toBeNull();
+    const v3 = fakeVideo({ srcObject: { getTracks: () => { throw new Error('tracks'); } } });
+    expect(() => stopVideo(v3)).not.toThrow();
+    expect(v3.srcObject).toBeNull();
   });
   it('uses the default reader when none is given', async () => {
     const v = fakeVideo();

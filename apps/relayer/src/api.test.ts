@@ -21,6 +21,7 @@ import {
   type Harness,
 } from './harness.testutil.js';
 import type { QuoteResponse } from './service.js';
+import { SimulationRevert } from './errors.js';
 
 let h: Harness | undefined;
 afterEach(async () => {
@@ -654,6 +655,16 @@ describe('simulation, replay and operational limits', () => {
     expect(s.fake.sent[0]?.opts.nonce).toBe(42);
   });
 
+  it('maps a typed failure from the final pre-send simulation without broadcasting', async () => {
+    const s = await start();
+    s.fake.simulationFailures.set(2, new SimulationRevert('Expired'));
+    const r = await call(s, 'POST', '/v1/sweep', (await prepare(s)).body);
+    expect(r.status).toBe(422);
+    expect(errCode(r)).toBe('expired');
+    expect(s.fake.simulations).toBe(2);
+    expect(s.fake.sent).toHaveLength(0);
+  });
+
   it('reserves worst-case gas loss before send, releases it on success, and retains it on receipt timeout', async () => {
     const estimate = 150_000n * 1_000_000_000n;
     const cfg = {
@@ -681,6 +692,74 @@ describe('simulation, replay and operational limits', () => {
     expect(blocked.status).toBe(429);
     expect(errCode(blocked)).toBe('loss_budget_exhausted');
     expect(timeout.fake.sent).toHaveLength(1);
+  });
+
+  it('retains the loss reservation when receipt polling throws', async () => {
+    const estimate = 150_000n * 1_000_000_000n;
+    const s = await start({
+      config: { lossBudget: { windowSeconds: 3600, perKeyWei: estimate, globalWei: 10n ** 18n, maxKeys: 100 } },
+    });
+    s.fake.receiptError = new Error('provider disconnected');
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 451n })).body)).status).toBe(200);
+    await settle();
+    const blocked = await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 452n })).body);
+    expect(blocked.status).toBe(429);
+    expect(errCode(blocked)).toBe('loss_budget_exhausted');
+    expect(s.fake.sent).toHaveLength(1);
+    expect(s.logs.join('\n')).toContain('receipt_timeout');
+  });
+
+  it('rolls back a partial multi-key reservation after a concurrent network-group denial', async () => {
+    const estimate = 150_000n * 1_000_000_000n;
+    let policyCalls = 0;
+    let resolveSecondPolicy: () => void = () => undefined;
+    const secondPolicy = new Promise<void>((resolve) => { resolveSecondPolicy = resolve; });
+    const s = await start({
+      config: {
+        trustedProxies: ['127.0.0.1/32'],
+        lossBudget: { windowSeconds: 3600, perKeyWei: estimate, globalWei: estimate * 10n, maxKeys: 100 },
+      },
+      policy: { check: () => {
+        policyCalls += 1;
+        if (policyCalls === 2) resolveSecondPolicy();
+        return Promise.resolve({ allow: true });
+      } },
+    });
+    s.fake.receipt = { status: 'reverted', gasUsed: 150_000n };
+    let releaseSimulation: () => void = () => undefined;
+    const simulationGate = new Promise<void>((resolve) => { releaseSimulation = resolve; });
+    let releaseReceipt: () => void = () => undefined;
+    const receiptGate = new Promise<void>((resolve) => { releaseReceipt = resolve; });
+    s.fake.simulateGate = simulationGate;
+    s.fake.receiptGate = receiptGate;
+    const firstBody = (await prepare(s, { nonce: 461n, destination: DEST })).body;
+    const secondBody = (await prepare(s, { nonce: 462n, destination: STRANGER })).body;
+    const first = call(s, 'POST', '/v1/sweep', firstBody, { 'x-forwarded-for': '198.51.100.10' });
+    for (let i = 0; i < 20 && s.fake.simulations === 0; i += 1) await settle();
+    expect(s.fake.simulations).toBe(1);
+    // Both requests pass the cheap budget probe before the first reservation is made.
+    const second = call(s, 'POST', '/v1/sweep', secondBody, { 'x-forwarded-for': '198.51.100.11' });
+    await secondPolicy;
+    await settle();
+    releaseSimulation();
+    await settle();
+    expect(s.fake.sent).toHaveLength(1);
+    releaseReceipt();
+    const [firstReply, deniedReply] = await Promise.all([first, second]);
+    expect(firstReply.status).toBe(200);
+    expect(deniedReply.status).toBe(429);
+    expect(errCode(deniedReply)).toBe('loss_budget_exhausted');
+    expect(s.fake.sent).toHaveLength(1);
+
+    s.fake.simulateGate = undefined;
+    s.fake.receiptGate = undefined;
+    // A different network group can now reserve the same destination key, proving the partial
+    // destination reservation made before the network-group denial was actually rolled back.
+    const retry = await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 463n, destination: STRANGER })).body, {
+      'x-forwarded-for': '203.0.113.10',
+    });
+    expect(retry.status).toBe(200);
+    expect(s.fake.sent).toHaveLength(2);
   });
 
   it('releases loss reservations when transaction submission fails', async () => {

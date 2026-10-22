@@ -86,6 +86,10 @@ jobs:
       - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
         with:
           version: v1.8.5
+      - name: Install pinned Solidity compiler for the web registry integration test
+        if: matrix.group == 'web'
+        working-directory: packages/contracts
+        run: forge build
       - name: Unit tests
         env:
           GROUP: ${{ matrix.group }}
@@ -94,8 +98,18 @@ jobs:
           case "$GROUP" in
             core-crypto) npm test -w packages/core-crypto ;;
             btc-silent-payments) npm test -w packages/btc-silent-payments ;;
-            web) npm test -w apps/web ;;
-            confidential-contracts) npm test -w packages/confidential-contracts ;;
+            web)
+              anvil_bin="$(command -v anvil)"
+              solc_bin="$HOME/.svm/0.8.28/solc-0.8.28"
+              test -x "$anvil_bin"
+              test -x "$solc_bin"
+              ANVIL_BIN="$anvil_bin" SOLC_BIN="$solc_bin" REQUIRE_ANVIL=1 npm test -w apps/web
+              ;;
+            confidential-contracts)
+              anvil_bin="$(command -v anvil)"
+              test -x "$anvil_bin"
+              ANVIL_BIN="$anvil_bin" npm test -w packages/confidential-contracts
+              ;;
             rest-*)
               shard="${GROUP#rest-}"
               args=()
@@ -105,7 +119,23 @@ jobs:
                   | awk -v shard="$shard" '(NR - 1) % 3 == shard'
               )
               echo "$GROUP: ${args[*]}"
-              npm test "${args[@]}" --if-present
+              needs_contract_artifacts=false
+              for workspace in "${args[@]}"; do
+                if [[ "$workspace" == "packages/chain-adapters" || "$workspace" == "packages/policy-scheme" ]]; then
+                  needs_contract_artifacts=true
+                fi
+              done
+              if [[ "$needs_contract_artifacts" == true ]]; then
+                (cd packages/contracts && forge build)
+                anvil_bin="$(command -v anvil)"
+                test -x "$anvil_bin"
+                ANVIL_BIN="$anvil_bin" REQUIRE_ANVIL=1 npm test "${args[@]}" --if-present
+              else
+                npm test "${args[@]}" --if-present
+              fi
+              if [ "$shard" = 0 ]; then
+                node --test scripts/testnet/*.test.mjs scripts/regtest/*.test.mjs
+              fi
               ;;
           esac
 

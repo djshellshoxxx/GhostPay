@@ -181,6 +181,7 @@ describe('verifyClaimedPayment', () => {
       [transferLog(claim, { topics: [TRANSFER_TOPIC, pad(FAKE.announcer), pad(claim.stealthAddress)] })],
       [transferLog(claim, { topics: [TRANSFER_TOPIC, pad(FAKE.router), pad(FAKE.announcer)] })],
       [transferLog(claim, { topics: [`0x${'00'.repeat(32)}`, pad(FAKE.router), pad(claim.stealthAddress)] })],
+      [transferLog(claim, { topics: [TRANSFER_TOPIC, 1, pad(claim.stealthAddress)] })],
       [transferLog(claim, { transactionHash: `0x${'ee'.repeat(32)}` })],
       [transferLog(claim, { blockNumber: '0x65' })],
       [transferLog(claim, { logIndex: '0x1000000' })],

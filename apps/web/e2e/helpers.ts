@@ -18,12 +18,14 @@ export interface InvoiceOptions {
   readonly encrypt?: boolean;
   /** Encrypts the entire invoice with an independently shared passphrase. */
   readonly passphrase?: string;
+  /** Select a chain without a bundled E2E manifest when testing the disabled-deployment path. */
+  readonly chainLabel?: string;
 }
 
-/** Fills the Create invoice form (fixed 0.5 native-coin price on Base Sepolia) and returns the invoice link. */
+/** Fills the Create invoice form (fixed 0.5 native-coin price) and returns the invoice link. */
 export async function createInvoice(page: Page, opts: InvoiceOptions = {}): Promise<string> {
   await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Create invoice' }).click();
-  await page.getByLabel('Chain').selectOption({ label: 'Base Sepolia' });
+  await page.getByLabel('Chain').selectOption({ label: opts.chainLabel ?? 'Base Sepolia' });
   await page.getByLabel('Token amount').fill('0.5');
   await page.getByLabel('Item 1 description').fill(opts.description ?? 'Consulting');
   await page.getByLabel('Item 1 unit price').fill('50.00');

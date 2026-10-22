@@ -39,7 +39,7 @@ describe('Create invoice', () => {
     await user.clear(screen.getByLabelText('Item 1 unit price'));
     await user.type(screen.getByLabelText('Item 1 unit price'), '25.50');
     await user.click(screen.getByRole('button', { name: 'Create invoice link' }));
-    const link = await screen.findByLabelText<HTMLTextAreaElement>('Link', {}, { timeout: 30_000 });
+    const link = await screen.findByLabelText<HTMLTextAreaElement>('Link');
     expect(link.value.startsWith('https://app.test/#gpi=v1.')).toBe(true);
     const parsed = await parseFragment(link.value.slice('https://app.test/'.length));
     expect(parsed.invoice.lineItems[0]?.description).toBe('Design work');
@@ -93,7 +93,7 @@ describe('Create invoice', () => {
     await user.type(screen.getByLabelText('Invoice passphrase (at least 14 characters)'), passphrase);
     await user.type(screen.getByLabelText('Repeat invoice passphrase'), passphrase);
     await user.click(screen.getByRole('button', { name: 'Create invoice link' }));
-    const link = await screen.findByLabelText<HTMLTextAreaElement>('Link', {}, { timeout: 30_000 });
+    const link = await screen.findByLabelText<HTMLTextAreaElement>('Link', {}, { timeout: 120_000 });
     const fragment = link.value.slice('https://app.test/'.length);
     expect(await openFragment(fragment)).toMatchObject({ status: 'needsPassphrase' });
     expect((await openFragment(fragment, { passphrase })).status).toBe('ok');
@@ -101,7 +101,7 @@ describe('Create invoice', () => {
     expect(screen.getByText('SHARE').closest('section')?.getAttribute('data-qr-kind')).toBe('shareable');
     expect(screen.getByLabelText<HTMLInputElement>('Invoice passphrase (at least 14 characters)').value).toBe('');
   // Exercise real encryption and decryption; V8 coverage adds substantial scrypt overhead.
-  }, 180_000);
+  }, 300_000);
 
   it('shows validation errors in an alert and no link', async () => {
     generateSession();

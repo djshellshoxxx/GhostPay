@@ -18,7 +18,6 @@
 #   DEPLOYER_ADDRESS   simulate: REQUIRED public address of your funded testnet deployer (forge needs a funded sender to estimate gas)
 #   CONFIRM_BROADCAST  must be exactly 1 for broadcast
 #   ANNOUNCER / ALLOW_CUSTOM_ANNOUNCER / EXPECTED_ANNOUNCER_CODEHASH : see packages/contracts/script/Deploy.s.sol
-#   SKIP_WEB_COPY=1    do not copy the manifest to apps/web/public/deployments/
 # No key, address or RPC URL is stored by this script. Exit codes: 0 ok, 1 failed check, 2 usage.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -101,9 +100,8 @@ else die "no signer: set KEYSTORE_ACCOUNT (preferred) or PRIVATE_KEY"; fi
 (cd "$CONTRACTS" && forge script script/Deploy.s.sol --rpc-url "$RPC_URL" --broadcast --slow "${signer_args[@]}")
 
 manifest_args=(--rpc "$RPC_URL" --broadcast "$BROADCAST_DIR/run-latest.json" --out "$ROOT/deployments/$chain_id.json")
-[[ "${SKIP_WEB_COPY:-}" == 1 ]] || manifest_args+=(--copy-web)
 node "$ROOT/scripts/testnet/make-manifest.mjs" "${manifest_args[@]}"
 ROUTER="$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).router)' "$ROOT/deployments/$chain_id.json")"
 RELAYER="$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).sweepRelayer)' "$ROOT/deployments/$chain_id.json")"
 (cd "$CONTRACTS" && ROUTER="$ROUTER" SWEEP_RELAYER="$RELAYER" forge script script/SmokeSepolia.s.sol --rpc-url "$RPC_URL")
-echo "DEPLOYED $network ($chain_id). Next: scripts/testnet/verify-sources.sh $network, then review + commit deployments/$chain_id.json via PR."
+echo "DEPLOYED $network ($chain_id). Next: scripts/testnet/verify-sources.sh $network; sign deployments/$chain_id.json offline, then explicitly copy the signed file to apps/web/deployments/$chain_id.json, validate with pinned release keys, and review the PR."

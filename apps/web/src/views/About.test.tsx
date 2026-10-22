@@ -45,7 +45,8 @@ describe('About / Privacy', () => {
     const items = screen.getAllByText(/GhostPay charges 0\.25 % on payments made through its checkout contract\. The fee goes to/);
     expect(items).toHaveLength(7);
     expect(screen.getAllByText(/payments disabled on this chain/)).toHaveLength(6);
-    expect(screen.getByText(/carries no signature; this app does not verify manifest signatures/)).toBeTruthy();
+    expect(screen.getByText(/deployment manifest must have a valid signature from one of those keys/)).toBeTruthy();
+    expect(screen.getByText(/Check that the deployment addresses and code match the chain through an RPC you trust/)).toBeTruthy();
     expect(screen.getAllByText(/Paying the stealth address directly costs no GhostPay fee\./)).toHaveLength(7);
   });
 

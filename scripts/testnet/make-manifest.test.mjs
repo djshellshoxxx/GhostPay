@@ -1,5 +1,6 @@
 // node --test scripts/testnet/make-manifest.test.mjs   (needs `npm run build:libs`; no network, no anvil)
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { test } from 'node:test';
@@ -32,6 +33,13 @@ test('unknown key, missing field, bad address and bad date are reported', () => 
 test('policyFactory requires the other policy fields (dependentRequired)', () => {
   const errs = validateAgainstSchema({ ...good(), policyFactory: a(9) }, schema).join('\n');
   assert.match(errs, /policyImplementation: required when policyFactory present/);
+});
+test('legacy --copy-web fails with safe offline-signing guidance', () => {
+  const script = resolve(dirname(fileURLToPath(import.meta.url)), 'make-manifest.mjs');
+  const result = spawnSync(process.execPath, [script, '--copy-web'], { encoding: 'utf8' });
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /sign deployments\/<chainId>\.json offline/);
+  assert.match(result.stderr, /apps\/web\/deployments\/<chainId>\.json/);
 });
 test('feeBps outside 0..10000 and non-25 feeBps are rejected', async () => {
   assert.match(validateAgainstSchema({ ...good(), feeBps: 10001 }, schema).join(), /above maximum/);
