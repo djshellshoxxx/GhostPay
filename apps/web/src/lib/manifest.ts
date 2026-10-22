@@ -75,3 +75,15 @@ export async function verifyManifestState(state: ManifestState, client: RpcClien
     return { status: 'invalid', reason: 'The contracts on-chain do not match the deployment manifest.' };
   }
 }
+
+/**
+ * Gate for every flow that builds a payment or sweep from a manifest (WEB-APP-01): the manifest is cross-checked
+ * against the chain first. Without an RPC nothing can be checked, so a loaded manifest fails closed.
+ */
+export async function verifyManifestForFlow(state: ManifestState, client: RpcClient | undefined): Promise<ManifestState> {
+  if (state.status !== 'loaded') return state;
+  if (client === undefined) {
+    return { status: 'invalid', reason: 'An RPC for this chain is needed to verify the contracts against the deployment manifest. Configure one in Settings.' };
+  }
+  return verifyManifestState(state, client);
+}

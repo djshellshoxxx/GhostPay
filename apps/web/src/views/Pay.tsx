@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import type { BuiltPayment } from '@ghostpay/chain-adapters';
 import { CopyButton, Mono, Notice, downloadText } from '../components/Common';
 import { FeeDisclosure, useManifest } from '../components/Disclosure';
+import { ManifestBanner } from '../components/ManifestBanner';
 import { extractFragment } from '../lib/fragment';
 import { safeText, payeeFingerprint } from '../lib/displayText';
 import { formatCountdown, formatFiat, formatUnits, formatUnix, shortHex } from '../lib/format';
@@ -16,12 +17,13 @@ import {
   type BufferQuote,
   type PayContext,
 } from '../lib/pay';
-import { buildReceipt, ensureAllowance, preparePayment, sendPayment, type Runtime, type SubmitResult } from '../lib/payExec';
+import { verifyManifestForFlow } from '../lib/manifest';
+import { PostBroadcastError, buildReceipt, ensureAllowance, preparePayment, sendPayment, type Runtime, type SubmitResult } from '../lib/payExec';
 import { useServices } from '../lib/services';
 import { connectWallet, type WalletInfo, type WalletSession } from '../lib/wallet';
 import { useApp } from '../state';
 
-type Phase = 'input' | 'review' | 'waiting' | 'ready' | 'prepared' | 'busy' | 'done';
+type Phase = 'input' | 'review' | 'waiting' | 'ready' | 'prepared' | 'busy' | 'submitted' | 'done';
 
 export function Pay(): ReactNode {
   const app = useApp();
@@ -42,6 +44,8 @@ export function Pay(): ReactNode {
   const [status, setStatus] = useState('');
   const [error, setError] = useState<string | undefined>(undefined);
   const [result, setResult] = useState<SubmitResult | undefined>(undefined);
+  /** Set once the wallet broadcast but verification failed: terminal, Send is never offered again. */
+  const [broadcast, setBroadcast] = useState<string | undefined>(undefined);
   const [tick, setTick] = useState(0);
   const scheduler = useRef<DelayScheduler | undefined>(undefined);
 
@@ -103,6 +107,13 @@ export function Pay(): ReactNode {
     }
     try {
       const rpc = await app.getRpc(p.invoice.chainId);
+      // WEB-APP-01: read the manifest back from the chain before any payment is built from it.
+      const checked = await verifyManifestForFlow(m, rpc);
+      if (checked.status !== 'loaded') {
+        setCtx(undefined);
+        setCtxError(checked.status === 'invalid' ? checked.reason : 'Payments are disabled on this chain: no deployment manifest is loaded.');
+        return undefined;
+      }
       const c = await createPayContext(fresh, rpc, { nowSeconds: now });
       setCtx(c);
       setCtxError(undefined);
@@ -312,6 +323,14 @@ export function Pay(): ReactNode {
         app.announce('Payment submitted.');
       } catch (e) {
         setStatus('');
+        if (e instanceof PostBroadcastError) {
+          // WEB-APP-02: the wallet already broadcast. Keep the hash, never return to `prepared`.
+          setBroadcast(e.hash);
+          setError(userMessage(e));
+          setPhase('submitted');
+          app.announce('Payment sent, verification failed. Do not send again.');
+          return;
+        }
         setError(userMessage(e));
         setPhase('prepared');
       }
@@ -325,6 +344,7 @@ export function Pay(): ReactNode {
     setBuilt(undefined);
     setWallet(undefined);
     setResult(undefined);
+    setBroadcast(undefined);
     setPhase('input');
   };
 
@@ -349,7 +369,7 @@ export function Pay(): ReactNode {
   }
 
   const inv = parsed.invoice;
-  const ready = phase === 'ready' || phase === 'prepared' || phase === 'busy' || phase === 'done';
+  const ready = phase === 'ready' || phase === 'prepared' || phase === 'busy' || phase === 'submitted' || phase === 'done';
   const decimals = token?.decimals ?? 18;
   const symbol = token?.symbol ?? '';
 
@@ -440,6 +460,7 @@ export function Pay(): ReactNode {
           <dd>A fresh one-time (stealth) address is derived when the payment is prepared and shown before you send.</dd>
         </dl>
       )}
+      <ManifestBanner manifest={manifest} />
       <FeeDisclosure manifest={manifest} chainName={review.chain?.name} />
       <Notice kind="info" title="What becomes public">
         Your address, the token, the amounts, the fee and the time are public on-chain. The seller&rsquo;s identity is not revealed by the one-time address.
@@ -493,7 +514,7 @@ export function Pay(): ReactNode {
         </div>
       )}
 
-      {ready && phase !== 'done' && (
+      {ready && phase !== 'done' && phase !== 'submitted' && (
         <div className="panel">
           <h3>Wallet</h3>
           {wallet === undefined ? (
@@ -523,12 +544,22 @@ export function Pay(): ReactNode {
         </div>
       )}
 
-      {built !== undefined && phase !== 'done' && ctx !== undefined && (
+      {built !== undefined && phase !== 'done' && phase !== 'submitted' && ctx !== undefined && (
         <FinalPreview built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} />
       )}
 
       {status !== '' && <p role="status" className="status">{status}</p>}
       {error !== undefined && <Notice kind="error">{error}</Notice>}
+
+      {phase === 'submitted' && broadcast !== undefined && (
+        <div className="panel" aria-live="polite">
+          <h3>Sent, verifying</h3>
+          <p>Your wallet already broadcast this payment. Do not send it again. Transaction hash: <Mono>{broadcast}</Mono></p>
+          <div className="actions">
+            <CopyButton text={broadcast} label="Copy hash" />
+          </div>
+        </div>
+      )}
 
       {phase === 'done' && result !== undefined && ctx !== undefined && built !== undefined && (
         <div className="panel" aria-live="polite">
@@ -569,7 +600,7 @@ export function Pay(): ReactNode {
             {useDelay ? 'Start the delay' : 'Continue'}
           </button>
         )}
-        {phase !== 'done' && (
+        {phase !== 'done' && phase !== 'submitted' && (
           <button type="button" className="btn" onClick={forget}>Forget this invoice</button>
         )}
         {!app.settings.autoClearFragment && (

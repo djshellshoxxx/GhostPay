@@ -1,3 +1,4 @@
+import { ManifestBanner } from '../components/ManifestBanner';
 import { FEEDS } from '@ghostpay/chain-adapters';
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { CopyButton, Field, Notice } from '../components/Common';
@@ -105,6 +106,7 @@ export function CreateInvoice(): ReactNode {
               </select>
             )}
           </Field>
+          <ManifestBanner manifest={manifest} />
           {manifest?.status !== 'loaded' && manifest !== undefined && (
             <Notice kind="warn">Payments disabled on this chain: no deployment manifest is loaded. You can still create the invoice, but nobody can pay it from this app yet.</Notice>
           )}

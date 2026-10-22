@@ -9,6 +9,7 @@ import { SETTINGS_KEY } from '../lib/settings';
 import type { WalletInfo } from '../lib/wallet';
 import { FAKE_FEE_RECIPIENT, FAKE_ROUTER, fakeManifest } from '../test/fakeManifest';
 import { BASE_FORM, NOW, makeParsed } from '../test/invoiceFixtures';
+import { backedManifest, withManifestChain } from '../test/manifestChain';
 import { MockWallet } from '../test/mockWallet';
 import { mockRpc } from '../test/mockRpc';
 import { makeServices, renderApp, setHash } from '../test/render';
@@ -20,7 +21,7 @@ beforeEach(() => {
   setHash('');
 });
 
-const loaded = (id: number): Services['loadManifest'] => () => Promise.resolve({ status: 'loaded', manifest: fakeManifest(id) });
+const loaded = (id: number): Services['loadManifest'] => () => Promise.resolve({ status: 'loaded', manifest: backedManifest(id) });
 const walletInfo = (w: MockWallet): WalletInfo => ({ id: 'mock', name: 'Mock Wallet', kind: 'eip6963', provider: w });
 
 function openWith(fragment: string, services: Services): ReturnType<typeof userEvent.setup> {
@@ -162,7 +163,7 @@ describe('Pay: invoice reading and review', () => {
     const { fragment } = await makeParsed({ amountMode: 'fiat_quote' });
     const rpc = mockRpc(84532, () => '0x');
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
-    openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(rpc) }));
+    openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
     expect(await screen.findByText(/No price feed is configured for USDC\/USD/)).toBeTruthy();
   });
 });
@@ -196,7 +197,7 @@ describe('Pay: sending', () => {
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
     const wallet = new MockWallet();
     const rpc = chainSeeing(wallet);
-    const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(rpc) }));
+    const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
     await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
     expect(await screen.findByText(/Independently verified on your RPC/)).toBeTruthy();
     expect(screen.getByText(/included in block 100/)).toBeTruthy();
@@ -215,7 +216,7 @@ describe('Pay: sending', () => {
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
     const wallet = new MockWallet({ mutateTx: (tx) => ({ ...tx, value: '0x1' }) });
     const rpc = chainSeeing(wallet);
-    const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(rpc) }));
+    const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
     await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/differs from the preview \(value\)/);
     expect(screen.queryByRole('heading', { name: 'Submitted' })).toBeNull();
@@ -307,7 +308,7 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     const wallet = new MockWallet();
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
     const rpc = chainSeeing(wallet);
-    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(rpc) }));
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
     const box = await screen.findByLabelText<HTMLInputElement>(/Add a gas buffer/);
     expect(box.checked).toBe(false);
     await user.click(box);
@@ -341,7 +342,7 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
       if (method === 'eth_getTransactionByHash' && (wallet.sent?.['to'] as string | undefined)?.toLowerCase() === '0x036cbd53842c5426634e7929541ec2318f3dcf7e') allowance = 10n ** 12n;
       return base.request(method, params);
     });
-    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(rpc), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
     await user.click(await screen.findByLabelText(/Add a gas buffer/));
     await screen.findByText(/Extra 0\.00024 ETH/);
     await user.click(screen.getByRole('button', { name: 'Continue' }));
@@ -353,5 +354,55 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
     await waitFor(() => { expect(screen.getByRole('heading', { name: 'Submitted' })).toBeTruthy(); }, { timeout: 5000 });
     expect(wallet.sent?.['to']).toBe(FAKE_ROUTER);
+  });
+});
+
+describe('Pay: manifest read-back and post-broadcast safety (WEB-APP-01, WEB-APP-02)', () => {
+  async function toPreparedWith(wallet: MockWallet, rpc: ReturnType<typeof mockRpc>): Promise<ReturnType<typeof userEvent.setup>> {
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' });
+    return user;
+  }
+
+  it('WEB-APP-02: after the wallet broadcast, a verification failure never re-enables Send and never says nothing was sent', async () => {
+    const wallet = new MockWallet();
+    const rpc = mockRpc(84532, (method) => {
+      if (method === 'eth_gasPrice') return '0x3b9aca00';
+      throw new Error('HTTP 500');
+    });
+    const user = await toPreparedWith(wallet, rpc);
+    await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await screen.findByText(/already sent this transaction/);
+    expect(screen.queryByRole('button', { name: 'Send payment in my wallet' })).toBeNull();
+    expect(document.body.textContent).not.toContain('Nothing was sent');
+    expect(document.body.textContent).toContain('9'.repeat(64));
+    expect(wallet.calls.filter((c) => c.method === 'eth_sendTransaction')).toHaveLength(1);
+  });
+
+  it('WEB-APP-01: refuses to build a payment when the contracts on chain do not match the manifest', async () => {
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const bad = withManifestChain(mockRpc(84532, () => '0x'), { feeRecipient: '0x00000000000000000000000000000000deadbeef' });
+    openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(bad) }));
+    expect(await screen.findByText(/do not match the deployment manifest/)).toBeTruthy();
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Continue' }).disabled).toBe(true);
+  });
+
+  it('WEB-APP-01: without an RPC the manifest cannot be verified, so no payment is built', async () => {
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    openWith(fragment, makeServices({ loadManifest: loaded(84532) }));
+    expect(await screen.findByText(/RPC for this chain is needed to verify/)).toBeTruthy();
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Continue' }).disabled).toBe(true);
+  });
+
+  it('WEB-APP-01: shows the unsigned-dev banner', async () => {
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    openWith(fragment, makeServices({ loadManifest: () => Promise.resolve({ status: 'loaded', manifest: backedManifest(84532), trust: 'unsigned-dev', warning: 'UNSIGNED DEV MANIFEST (test)' }) }));
+    expect(await screen.findByText('UNSIGNED DEV MANIFEST (test)')).toBeTruthy();
   });
 });

@@ -9,7 +9,7 @@ import { clearSession, generateSession } from '../lib/session';
 import { SETTINGS_KEY } from '../lib/settings';
 import { makeLog } from '../test/announcements';
 import { FAKE_ANNOUNCER, FAKE_ROUTER } from '../test/fakeManifest';
-import { backedManifest, withManifestChain } from '../test/manifestChain';
+import { FAKE_CODE, backedManifest, withManifestChain } from '../test/manifestChain';
 import { chainWithLogs } from '../test/mockChain';
 import { makeServices, renderApp } from '../test/render';
 
@@ -51,13 +51,13 @@ function extra(balance: bigint, nativeBalance: bigint, rawSink: { raw?: string }
 }
 
 /** Scans one payment, then opens the Sweep view for it. */
-async function toSweep(opts: { balance?: bigint; native?: bigint; relayer?: boolean; fetchFn?: Services['fetchFn']; raw?: { raw?: string } } = {}): Promise<ReturnType<typeof userEvent.setup>> {
+async function toSweep(opts: { balance?: bigint; native?: bigint; relayer?: boolean; fetchFn?: Services['fetchFn']; raw?: { raw?: string }; code?: Record<string, string>; unsigned?: boolean } = {}): Promise<ReturnType<typeof userEvent.setup>> {
   const pub = generateSession();
   window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' }, ...(opts.relayer === true ? { relayerUrl: 'https://relay.test' } : {}) }));
   const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 50, index: 0, caller: FAKE_ROUTER, amount: 5_000_000n });
   const rpc = chainWithLogs(84532, 100, [mine.log], extra(opts.balance ?? 5_000_000n, opts.native ?? 10n ** 17n, opts.raw ?? {}));
   const user = userEvent.setup();
-  renderApp(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)), ...(opts.fetchFn === undefined ? {} : { fetchFn: opts.fetchFn }) }));
+  renderApp(makeServices({ loadManifest: opts.unsigned === true ? (id) => Promise.resolve({ status: 'loaded', manifest: backedManifest(id), trust: 'unsigned-dev', warning: 'UNSIGNED DEV MANIFEST (test)' }) : loaded, createRpc: () => Promise.resolve(withManifestChain(rpc, { code: opts.code ?? FAKE_CODE })), ...(opts.fetchFn === undefined ? {} : { fetchFn: opts.fetchFn }) }));
   await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Scan and receive' }));
   await user.selectOptions(screen.getByLabelText('Chain'), screen.getByRole('option', { name: 'Base Sepolia' }));
   await user.type(screen.getByLabelText('Start block'), '0');
@@ -96,6 +96,24 @@ describe('Sweep', () => {
     expect(await screen.findByText('Submitted')).toBeTruthy();
     expect(raw.raw).toMatch(/^0x02/);
     expect(screen.getByText(keccak256(raw.raw as `0x${string}`))).toBeTruthy();
+  });
+
+  it('WEB-APP-01: re-verifies the manifest on chain before signing and refuses on mismatch', async () => {
+    const code: Record<string, string> = { ...FAKE_CODE };
+    const raw: { raw?: string } = {};
+    const user = await toSweep({ code, raw });
+    await screen.findByText('5 USDC');
+    for (const k of Object.keys(code)) code[k] = '0x00';
+    await user.click(screen.getByLabelText(/Directly/));
+    await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(/do not match the deployment manifest/);
+    expect(raw.raw).toBeUndefined();
+  });
+
+  it('WEB-APP-01: shows the unsigned-dev banner', async () => {
+    await toSweep({ unsigned: true });
+    expect(await screen.findByText('UNSIGNED DEV MANIFEST (test)')).toBeTruthy();
   });
 
   it('explains when the one-time address has no gas for a direct sweep', async () => {

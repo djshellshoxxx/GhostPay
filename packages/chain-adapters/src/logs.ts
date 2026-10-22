@@ -155,8 +155,9 @@ export function validateAnnouncementLog(
  * - Reorg check first: the stored block hash is compared with the chain; on mismatch (or a missing
  *   block) the cursor rolls back by `chain.finalityDepth` blocks (never below 0) and `reorg` tells
  *   the caller which stored results to drop.
- * - Ranges are at most `min(chain.getLogsMaxRange, opts.maxRange)`; a provider range error halves the
- *   window (down to one block) before giving up.
+ * - Ranges are at most `min(chain.getLogsMaxRange, opts.maxRange)`; a provider range error or an oversize
+ *   response halves the window (down to one block) before giving up.
+ * - A cursor more than `finalityDepth` blocks beyond the reported head is refused (`RPC_FAILURE`).
  * - Duplicate logs (same `blockHash:logIndex`) within a call are dropped.
  * - Caps (`maxRequests`, `maxLogs`) end the call with `truncated: true` and a cursor that resumes
  *   exactly after the last completed range, so nothing is skipped.
@@ -185,6 +186,9 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
   }
 
   const head = await o.client.blockNumber();
+  // A cursor more than finalityDepth beyond the reported head is poisoned (earlier lying head) or the provider lies low:
+  // fail closed rather than save a cursor that silently skips the real blocks.
+  if (next - 1n > head + depth) return fail('RPC_FAILURE', 'cursor is ahead of the chain head; clear the checkpoint and rescan');
   const headRef = await o.client.getBlock(head);
   const out: ScannedAnnouncement[] = [];
   const seen = new Set<string>();
@@ -206,7 +210,9 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
     try {
       logs = await o.client.getLogs({ address: o.announcer, topics: [ANNOUNCEMENT_TOPIC, schemeTopic(schemeId)], fromBlock: next, toBlock: to });
     } catch (e) {
-      if (e instanceof ChainAdapterError && /json-rpc error -(32602|32005)/.test(e.message) && window > 1n) {
+      // A provider range error or a response over the client cap (announcer spam) both mean "ask for less".
+      const tooBig = e instanceof ChainAdapterError && (e.code === 'RESPONSE_TOO_LARGE' || /json-rpc error -(32602|32005)/.test(e.message));
+      if (tooBig && window > 1n) {
         window = window / 2n;
         continue;
       }

@@ -221,13 +221,17 @@ describe('fetchAnnouncements', () => {
       expect(r.reorg).toEqual({ rolledBackTo: 0n });
       expect(chain.requests[0]?.from).toBe(0n);
     });
-    it('reorg with head behind the rollback point clears the stale hash', async () => {
+    it('cursor far beyond the head (poisoned checkpoint) fails closed instead of saving a cursor past the real chain (CHAIN-ADAPTERS-02)', async () => {
       const chain = mkChain({ head: 10 });
       const c = await client(chain);
-      chain.head = 10;
-      const r = await fetchWith(c, { nextBlock: 31n, last: { number: 30n, hash: bh(30) } });
-      expect(r.reorg).toEqual({ rolledBackTo: 26n });
-      expect(r.cursor.nextBlock).toBe(26n);
+      await expect(fetchWith(c, { nextBlock: 31n, last: { number: 30n, hash: bh(30) } })).rejects.toThrow(/RPC_FAILURE.*ahead of the chain head/);
+    });
+    it('reorg with head slightly behind the rollback point clears the stale hash', async () => {
+      const chain = mkChain({ head: 10 });
+      const c = await client(chain);
+      const r = await fetchWith(c, { nextBlock: 16n, last: { number: 15n, hash: bh(15) } });
+      expect(r.reorg).toEqual({ rolledBackTo: 11n });
+      expect(r.cursor.nextBlock).toBe(11n);
       expect(r.cursor.last).toBeUndefined();
     });
     it('nothing new: keeps cursor and re-reads last hash', async () => {

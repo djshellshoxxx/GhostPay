@@ -38,6 +38,22 @@ export interface SubmitResult {
   readonly receipt: ReceiptInfo | undefined;
 }
 
+/**
+ * Thrown when the wallet already broadcast the transaction (a hash exists) but the follow-up checks failed. The UI must
+ * never offer to send again: the payment may be on its way.
+ */
+export class PostBroadcastError extends UserFacingError {
+  public constructor(
+    public readonly hash: Hex,
+    detail: string,
+    cause?: unknown,
+  ) {
+    super(`Your wallet already sent this transaction (hash ${hash}), but it could not be verified: ${detail} It may still go through. Check your wallet and a block explorer before doing anything else; do not send again.`);
+    this.name = 'PostBroadcastError';
+    this.cause = cause;
+  }
+}
+
 export type StatusFn = (message: string) => void;
 
 /** Sends one transaction, cross-checks it on the user's own RPC and waits for a receipt when an RPC exists. */
@@ -48,16 +64,21 @@ export async function submitTx(session: WalletSession, tx: TxRequest, rt: Runtim
     status('Submitted. No RPC is configured, so this app could not independently verify the transaction.');
     return { hash, verification: 'no-rpc', receipt: undefined };
   }
-  status('Submitted. Verifying the transaction on your RPC…');
-  const verification = await verifySubmission(
-    rt.rpc,
-    hash,
-    { from: session.account, to: tx.to, data: tx.data, value: tx.value, chainId: session.chainId },
-    rt.sleep,
-  );
-  status('Waiting for inclusion…');
-  const receipt = await pollReceipt(rt.rpc, hash, tx.to, rt.sleep);
-  return { hash, verification, receipt };
+  try {
+    status('Submitted. Verifying the transaction on your RPC…');
+    const verification = await verifySubmission(
+      rt.rpc,
+      hash,
+      { from: session.account, to: tx.to, data: tx.data, value: tx.value, chainId: session.chainId },
+      rt.sleep,
+    );
+    status('Waiting for inclusion…');
+    const receipt = await pollReceipt(rt.rpc, hash, tx.to, rt.sleep);
+    return { hash, verification, receipt };
+  } catch (e) {
+    // The broadcast already happened: keep the hash, never let the caller treat this as "nothing was sent".
+    throw new PostBroadcastError(hash, e instanceof UserFacingError ? e.message : 'the RPC check failed.', e);
+  }
 }
 
 /** ERC-20 approval step for non-permit payments (and buffer payments). Requires an RPC to read the allowance. */

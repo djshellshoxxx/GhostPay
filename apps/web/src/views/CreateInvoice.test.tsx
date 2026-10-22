@@ -108,6 +108,17 @@ describe('Create invoice', () => {
     });
   });
 
+  it('WEB-APP-01: shows the unsigned-dev banner when the manifest is unsigned', async () => {
+    generateSession();
+    await open(
+      makeServices({
+        loadManifest: (id) =>
+          Promise.resolve({ status: 'loaded', manifest: JSON.parse(fakeManifestJson(id)) as never, trust: 'unsigned-dev', warning: 'UNSIGNED DEV MANIFEST (test)' }),
+      }),
+    );
+    expect(await screen.findByText('UNSIGNED DEV MANIFEST (test)')).toBeTruthy();
+  });
+
   it("switching chain resets the token and offers that chain's tokens", async () => {
     generateSession();
     const user = await open();

@@ -7,7 +7,7 @@ import { NOW, USDC_84532, makeParsed } from '../test/invoiceFixtures';
 import { MOCK_ACCOUNT, MockWallet } from '../test/mockWallet';
 import { mockRpc, type MockRpc } from '../test/mockRpc';
 import { createPayContext, reviewInvoice, type BufferQuote, type PayContext } from './pay';
-import { buildReceipt, ensureAllowance, preparePayment, sendPayment, submitTx, type Runtime } from './payExec';
+import { PostBroadcastError, buildReceipt, ensureAllowance, preparePayment, sendPayment, submitTx, type Runtime } from './payExec';
 import { clearSession } from './session';
 import { SubmissionMismatchError, connectWallet, type WalletInfo, type WalletSession } from './wallet';
 
@@ -75,7 +75,8 @@ describe('native payment end to end (mock wallet, mock RPC)', () => {
     const rt: Runtime = { rpc: chainSeeing(wallet), nowSeconds: () => NOW, sleep };
     const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
     const p = sendPayment(session, ctx, built, rt, noStatus);
-    await expect(p).rejects.toThrow(SubmissionMismatchError);
+    await expect(p).rejects.toThrow(PostBroadcastError);
+    await expect(p).rejects.toMatchObject({ cause: expect.any(SubmissionMismatchError) as unknown, hash: `0x${'9'.repeat(64)}` });
     await expect(p).rejects.toThrow(/differs from the preview \(call data\)/);
   });
 
@@ -83,12 +84,12 @@ describe('native payment end to end (mock wallet, mock RPC)', () => {
     const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' }, new MockWallet({ mutateTx: (tx) => ({ ...tx, value: '0x1' }) }));
     const rt: Runtime = { rpc: chainSeeing(wallet), nowSeconds: () => NOW, sleep };
     const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
-    await expect(sendPayment(session, ctx, built, rt, noStatus)).rejects.toMatchObject({ field: 'value' });
+    await expect(sendPayment(session, ctx, built, rt, noStatus)).rejects.toMatchObject({ cause: { field: 'value' } });
     const w2 = new MockWallet({ mutateTx: (tx) => ({ ...tx, to: '0x9999999999999999999999999999999999999999' }) });
     const s2 = await setup({ token: 'native', tokenAmount: '0.5' }, w2);
     const rt2: Runtime = { rpc: chainSeeing(w2), nowSeconds: () => NOW, sleep };
     const b2 = await preparePayment(s2.session, s2.ctx, { usePermit: false }, rt2, noStatus);
-    await expect(sendPayment(s2.session, s2.ctx, b2, rt2, noStatus)).rejects.toMatchObject({ field: 'destination contract' });
+    await expect(sendPayment(s2.session, s2.ctx, b2, rt2, noStatus)).rejects.toMatchObject({ cause: { field: 'destination contract' } });
   });
 
   it('catches a wallet that lies about the chain (the independent RPC sees another chain id)', async () => {
@@ -99,7 +100,7 @@ describe('native payment end to end (mock wallet, mock RPC)', () => {
     });
     const rt: Runtime = { rpc, nowSeconds: () => NOW, sleep };
     const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
-    await expect(sendPayment(session, ctx, built, rt, noStatus)).rejects.toMatchObject({ field: 'chain' });
+    await expect(sendPayment(session, ctx, built, rt, noStatus)).rejects.toMatchObject({ cause: { field: 'chain' } });
   });
 
   it('never reaches the wallet when the final gate fails', async () => {

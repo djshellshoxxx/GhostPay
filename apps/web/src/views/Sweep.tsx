@@ -2,7 +2,9 @@ import { findChain, findToken, type Address } from '@ghostpay/chain-adapters';
 import { useEffect, useState, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice } from '../components/Common';
 import { useManifest } from '../components/Disclosure';
-import { userMessage } from '../lib/errors';
+import { ManifestBanner } from '../components/ManifestBanner';
+import { verifyManifestForFlow } from '../lib/manifest';
+import { UserFacingError, userMessage } from '../lib/errors';
 import { formatUnits } from '../lib/format';
 import { checkDestination, directSweep, getSweepQuote, readBalance, relayedSweep, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
 import { useServices } from '../lib/services';
@@ -81,8 +83,16 @@ export function Sweep(): ReactNode {
     }
   };
 
+  /** WEB-APP-01: read the manifest back from the chain before anything is signed or requested from it. */
+  const verified = async (rpc: Awaited<ReturnType<typeof app.getRpc>>): Promise<void> => {
+    if (manifest === undefined) throw new Error('state');
+    const checked = await verifyManifestForFlow(manifest, rpc);
+    if (checked.status !== 'loaded') throw new UserFacingError(checked.status === 'invalid' ? checked.reason : 'Payments are disabled on this chain: no deployment manifest is loaded.');
+  };
+
   const onQuote = (): void => {
     void guard(async () => {
+      await verified(await app.getRpc(chainId));
       if (loaded === undefined || balance === undefined || tokenAddr === 'native') throw new Error('state');
       const dest = checkDestination(destination, target.owner, loaded);
       setQuote(await getSweepQuote(app.settings.relayerUrl, { ...target, token: tokenAddr }, dest, balance, nowSec(), services.fetchFn));
@@ -92,6 +102,7 @@ export function Sweep(): ReactNode {
   const onRelay = (): void => {
     void guard(async () => {
       const rpc = await app.getRpc(chainId);
+      await verified(rpc);
       if (loaded === undefined || rpc === undefined || quote === undefined || balance === undefined || tokenAddr === 'native') throw new Error('state');
       const dest = checkDestination(destination, target.owner, loaded);
       setHash(await relayedSweep({ target: { ...target, token: tokenAddr }, manifest: loaded, destination: dest, amount: balance, quote: quote.quote, relayerUrl: app.settings.relayerUrl, rpc, nowSeconds: nowSec(), fetchFn: services.fetchFn }));
@@ -102,6 +113,7 @@ export function Sweep(): ReactNode {
   const onDirect = (): void => {
     void guard(async () => {
       const rpc = await app.getRpc(chainId);
+      await verified(rpc);
       if (loaded === undefined || rpc === undefined || balance === undefined) throw new Error('state');
       const dest = checkDestination(destination, target.owner, loaded);
       const res = await directSweep({ target, manifest: loaded, destination: dest, amount: balance, rpc });
@@ -123,6 +135,7 @@ export function Sweep(): ReactNode {
         <dt>Balance on chain</dt>
         <dd>{balance === undefined ? 'unknown (an RPC for this chain is required)' : `${formatUnits(balance, decimals)} ${symbol}`}</dd>
       </dl>
+      <ManifestBanner manifest={manifest} />
       {manifest !== undefined && loaded === undefined && <Notice kind="warn">Payments disabled on this chain: no deployment manifest is loaded.</Notice>}
       {tokenAddr !== 'native' && tokenCfg === undefined && <Notice kind="error">This token is not on the allowlist. It will not be swept from here.</Notice>}
       <Notice kind="warn" title="Linkability">
