@@ -21,11 +21,13 @@ contract DeployPoolTest is Test {
         vm.setEnv("RAGEQUIT_VERIFIER", vm.toString(address(new MockRagequitVerifier())));
         vm.setEnv("MAX_DEPOSIT", "1000000000000000000000");
         vm.setEnv("REGISTRY", vm.toString(address(0)));
+        vm.setEnv("ACK_INSECURE_DEV_CEREMONY", "true");
     }
 
     /// One sequential test: environment variables are process-global and tests run in parallel.
     function test_deployScript() public {
         _deploysErc20AndNativeOnSepolia();
+        _refusesWithoutDevCeremonyAck();
         _refusesOtherChains();
         _refusesCodelessVerifier();
     }
@@ -43,6 +45,16 @@ contract DeployPoolTest is Test {
         vm.setEnv("ASSET", vm.toString(address(0)));
         o = s.run();
         assertEq(IGhostPayShieldedPool(o.pool).ASSET(), address(0));
+    }
+
+    /// CONTRACTS-POOLS-09: deploying forgeable dev-ceremony verifiers needs an explicit acknowledgement.
+    function _refusesWithoutDevCeremonyAck() internal {
+        vm.chainId(11_155_111);
+        vm.setEnv("ASSET", vm.toString(address(0)));
+        vm.setEnv("ACK_INSECURE_DEV_CEREMONY", "false");
+        vm.expectRevert(DeployPool.DevCeremonyNotAcknowledged.selector);
+        s.run();
+        vm.setEnv("ACK_INSECURE_DEV_CEREMONY", "true");
     }
 
     function _refusesOtherChains() internal {

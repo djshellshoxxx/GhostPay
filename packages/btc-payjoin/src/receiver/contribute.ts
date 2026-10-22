@@ -5,7 +5,7 @@ import type { PayjoinParams } from '../params.js';
 import { encodePsbt, estimateInputVsize, outpointKey, outputInfo, sameBytes, type Utxo } from '../psbt.js';
 import { secureUnit } from '../rng.js';
 import { verifyKeyPathInput } from '../signers.js';
-import type { CheckedOriginal, ReceiverContext } from './checks.js';
+import { DEFAULT_MAX_CONTRIBUTION_FEE_RATE, type CheckedOriginal, type ReceiverContext } from './checks.js';
 import type { ExposedUtxos } from './seen.js';
 
 /** Result of {@link buildProposal}. */
@@ -40,7 +40,8 @@ const ceilDiv = (a: bigint, b: bigint): bigint => (a + b - 1n) / b;
  *    Original fee and vsize and `vi` the added input's vsize. The sender's fee
  *    output pays at most `min(maxadditionalfeecontribution, extra,
  *    floor(F0 * vSenderMax / V0))` and never below dust; the receiver's payment
- *    output pays the rest. The payment output grows by the contributed value
+ *    output pays the rest, at most `ceil(maxContributionFeeRate * vi)` (an
+ *    absolute cap, since `F0` comes from sender-claimed amounts). The payment output grows by the contributed value
  *    minus the receiver's share, and never drops below the Original's.
  * 3. The input goes to a random position; senders' inputs/outputs keep their
  *    order; keypaths and partial signatures are absent; the receiver input is
@@ -112,6 +113,8 @@ export async function buildProposal(
     feeIdx = params.additionalFeeOutputIndex;
   }
 
+  const capRate = ctx.maxContributionFeeRate ?? DEFAULT_MAX_CONTRIBUTION_FEE_RATE;
+  const ownCap = (vi: number): bigint => ceilDiv(BigInt(Math.ceil(capRate * 1_000_000)) * BigInt(vi), 1_000_000n);
   let chosen: { cand: Cand; senderShare: bigint; ownShare: bigint } | undefined;
   for (const cand of cands) {
     let sc = 0n;
@@ -125,6 +128,8 @@ export async function buildProposal(
       if (feeOut.amount - sc < 546n) sc = feeOut.amount > 546n ? feeOut.amount - 546n : 0n;
     }
     const own = cand.extra - sc;
+    // Absolute cap: never trust the (sender-claimed) F0 or minfeerate for our own spend (BITCOIN-01).
+    if (own > ownCap(cand.vi)) continue;
     const newPayment = payment.amount + cand.u.amount - own;
     if (newPayment < payment.amount) continue;
     if (ctx.amountSats !== undefined && newPayment < ctx.amountSats) continue;

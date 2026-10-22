@@ -287,7 +287,7 @@ describe('PH-3 submitEip7702', () => {
 
 describe('PH-4 sponsorUserOp / submitUserOp', () => {
   const salt = 9n;
-  async function stage(h: Harness, tweak: { fee?: bigint; calls?: Parameters<typeof buildPayerCalls>[0]; initCode?: Hex; nonce?: bigint; gas?: Partial<{ verificationGasLimit: bigint; callGasLimit: bigint; maxFeePerGas: bigint }>; sender?: Address } = {}) {
+  async function stage(h: Harness, tweak: { fee?: bigint; calls?: Parameters<typeof buildPayerCalls>[0]; initCode?: Hex; nonce?: bigint; gas?: Partial<{ verificationGasLimit: bigint; callGasLimit: bigint; maxFeePerGas: bigint; maxPriorityFeePerGas: bigint; preVerificationGas: bigint }>; sender?: Address } = {}) {
     const q = await quoteFor(h, 'erc4337-paymaster');
     const routerCalldata = encodeRouterPay(ROUTER, payArgs());
     const sender = getAddress(tweak.sender ?? addr(0xabc));
@@ -352,6 +352,58 @@ describe('PH-4 sponsorUserOp / submitUserOp', () => {
     await code(h.svc.sponsorUserOp(CTX, req), 'BAD_REQUEST');
     await code(h.svc.sponsorUserOp(CTX, { ...req, chainId: 1 }), 'MAINNET_FORBIDDEN');
     await code(h.svc.sponsorUserOp(CTX, { ...req, userOp: { ...req.userOp, callData: '0xdeadbeef' } }), 'PAYLOAD_MISMATCH');
+  });
+  it('CONTRACTS-POOLS-01: fee fields are bounded by the live gas price and pvg by the op size', async () => {
+    const h = harness();
+    const variants: [string, Parameters<typeof stage>[1]][] = [
+      ['maxFee above 2x live gas price', { gas: { maxFeePerGas: 2_000_000_001n } }],
+      ['priority fee above the tip cap', { gas: { maxFeePerGas: 2_000_000_000n, maxPriorityFeePerGas: 2_000_000_001n } }],
+      ['priority fee above maxFee', { gas: { maxFeePerGas: 1_000_000_000n, maxPriorityFeePerGas: 1_500_000_000n } }],
+      ['preVerificationGas far above the calldata bound', { gas: { preVerificationGas: 5_000_000n } }],
+    ];
+    for (const [name, v] of variants) {
+      const { req } = await stage(h, v);
+      await expect(h.svc.sponsorUserOp(CTX, req), name).rejects.toMatchObject({ code: 'BAD_REQUEST' });
+    }
+    // the self-bundle PoC shape (90 gwei tip at a 45 gwei market) is refused even though its cost is under maxOpCostWei
+    h.chain.gas = 45_000_000_000n;
+    const poc = await stage(h, { gas: { verificationGasLimit: 500_000n, callGasLimit: 200_000n, preVerificationGas: 50_000n, maxFeePerGas: 90_000_000_000n, maxPriorityFeePerGas: 90_000_000_000n } });
+    await code(h.svc.sponsorUserOp(CTX, poc.req), 'BAD_REQUEST');
+    // a tuned configuration accepts what the defaults refuse
+    const loose = harness({ maxFeeMultiplierBps: 30_000, maxPriorityFeeWei: 3_000_000_000n });
+    const { req } = await stage(loose, { gas: { maxFeePerGas: 3_000_000_000n, maxPriorityFeePerGas: 3_000_000_000n } });
+    await expect(loose.svc.sponsorUserOp(CTX, req)).resolves.toBeDefined();
+  });
+  it('CONTRACTS-POOLS-01: the paymaster signature is short-lived even for a long quote', async () => {
+    const h = harness({ quoteTtlMs: 3_600_000 });
+    const { req } = await stage(h);
+    const r = await h.svc.sponsorUserOp(CTX, req);
+    expect(r.validUntil).toBe(nowSec(h) + 120n);
+    const h2 = harness({ quoteTtlMs: 3_600_000, paymasterValiditySeconds: 30 });
+    const { req: r2 } = await stage(h2);
+    expect((await h2.svc.sponsorUserOp(CTX, r2)).validUntil).toBe(nowSec(h2) + 30n);
+    expect(() => harness({ paymasterValiditySeconds: 0 })).toThrow();
+  });
+  it('CONTRACTS-POOLS-03: the counterfactual sender must already hold gross + sponsor fee (step 1 and step 2)', async () => {
+    const h = harness();
+    const { q, req, sender } = await stage(h);
+    h.chain.tokenBalance = GROSS + q.sponsorFee - 1n;
+    await code(h.svc.sponsorUserOp(CTX, req), 'BAD_REQUEST');
+    const bal = h.chain.calls.find((c) => c.to.toLowerCase() === TOKEN.toLowerCase());
+    expect(bal?.data.toLowerCase()).toBe(`0x70a08231${'00'.repeat(12)}${sender.slice(2).toLowerCase()}`);
+    h.chain.tokenBalance = GROSS + q.sponsorFee;
+    const s = await signed(h, req);
+    // balance drained between the steps: refused before handleOps is simulated or sent
+    h.chain.tokenBalance = 0n;
+    await code(h.svc.submitUserOp(CTX, s.req), 'BAD_REQUEST');
+    expect(h.chain.simulated).toHaveLength(0);
+    expect(h.chain.sent).toHaveLength(0);
+    // malformed balanceOf answer
+    h.chain.tokenBalance = GROSS + q.sponsorFee;
+    const h2 = harness();
+    const st = await stage(h2);
+    h2.chain.call = async () => '0x12';
+    await code(h2.svc.sponsorUserOp(CTX, st.req), 'BAD_REQUEST');
   });
   it('step 1 needs a configured signer and a deployed PH-4', async () => {
     const noSigner = harness({ paymasterSigner: undefined });

@@ -18,7 +18,7 @@ export { softwareSigner, verifyKeyPathInput, type PsbtSigner, type ReceiverWalle
 export { checkFinalFeeRate, senderPrevOuts, verifyProposal, type VerifiedProposal, type VerifyContext } from './sender/checks.js';
 export { buildOriginalPsbt, DUST_LIMIT_SATS, ORIGINAL_SEQUENCE, type BuiltOriginal, type OriginalInputs } from './sender/original.js';
 export { SenderSession, type SenderEvent, type SenderOpen, type SenderState } from './sender/session.js';
-export { checkOriginal, type CheckedOriginal, type ReceiverContext } from './receiver/checks.js';
+export { checkOriginal, DEFAULT_MAX_CONTRIBUTION_FEE_RATE, type CheckedOriginal, type ReceiverContext } from './receiver/checks.js';
 export { buildProposal, type BuiltProposal } from './receiver/contribute.js';
 export { MemoryExposedUtxos, MemorySeenInputs, type ExposedUtxos, type SeenInputs } from './receiver/seen.js';
 export { ReceiverSession, type ReceiverOutcome } from './receiver/session.js';

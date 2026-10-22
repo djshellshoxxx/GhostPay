@@ -20,6 +20,12 @@ import {IPaymaster, IEntryPointStake, PackedUserOperation} from "./interfaces/IE
 /// `sender`, `callData`, gas field or time window invalidates it, and the account nonce makes a signature
 /// single-use per operation.
 ///
+/// Gas-field caps (CONTRACTS-POOLS-01): the signature does not bind the bundler or the `handleOps`
+/// beneficiary, so whoever submits the op is paid from this deposit at the op's own fee fields. The
+/// immutable caps `MAX_FEE_PER_GAS`, `MAX_PRIORITY_FEE_PER_GAS` and `MAX_PRE_VERIFICATION_GAS` bound
+/// what a self-bundling holder of a valid signature (or a stolen or sloppy signer) can extract per op;
+/// validation reverts above them. The sponsor service applies tighter, live-gas-price-based limits.
+///
 /// Privileged role (the ONLY one in the payer-hiding contracts, testnet only): `SPONSOR_ADMIN` (immutable)
 /// may withdraw the paymaster's EntryPoint deposit and manage its stake. It cannot change the signer,
 /// cannot sponsor operations by itself and cannot touch user funds. If the admin key is lost the deposit
@@ -44,6 +50,15 @@ contract GhostPayVerifyingPaymaster is IPaymaster, ChainGuard {
     /// @notice Sole privileged role: manages this paymaster's deposit and stake.
     // forge-lint: disable-next-line(screaming-snake-case-immutable)
     address public immutable SPONSOR_ADMIN;
+    /// @notice Largest accepted `maxFeePerGas` of a sponsored operation (wei).
+    // forge-lint: disable-next-line(screaming-snake-case-immutable)
+    uint256 public immutable MAX_FEE_PER_GAS;
+    /// @notice Largest accepted `maxPriorityFeePerGas` of a sponsored operation (wei).
+    // forge-lint: disable-next-line(screaming-snake-case-immutable)
+    uint256 public immutable MAX_PRIORITY_FEE_PER_GAS;
+    /// @notice Largest accepted `preVerificationGas` of a sponsored operation.
+    // forge-lint: disable-next-line(screaming-snake-case-immutable)
+    uint256 public immutable MAX_PRE_VERIFICATION_GAS;
 
     /// @notice The caller is not the EntryPoint.
     error NotEntryPoint();
@@ -57,18 +72,39 @@ contract GhostPayVerifyingPaymaster is IPaymaster, ChainGuard {
     error NoExpiry();
     /// @notice `postOp` must never be called (the context is always empty).
     error PostOpUnsupported();
+    /// @notice A gas-field cap passed to the constructor was zero, or priority cap above fee cap.
+    error BadGasCap();
+    /// @notice The operation's fee fields or `preVerificationGas` exceed the immutable caps.
+    error GasAboveCap();
 
     /// @param entryPoint The ERC-4337 v0.7 EntryPoint.
     /// @param verifyingSigner Key whose signatures authorise sponsorship.
     /// @param sponsorAdmin Key that may withdraw the deposit and manage the stake.
-    constructor(address entryPoint, address verifyingSigner, address sponsorAdmin) ChainGuard() {
+    /// @param maxFeePerGas Cap on a sponsored op's `maxFeePerGas` (wei, non-zero).
+    /// @param maxPriorityFeePerGas Cap on its `maxPriorityFeePerGas` (wei, non-zero, <= `maxFeePerGas`).
+    /// @param maxPreVerificationGas Cap on its `preVerificationGas` (non-zero).
+    constructor(
+        address entryPoint,
+        address verifyingSigner,
+        address sponsorAdmin,
+        uint256 maxFeePerGas,
+        uint256 maxPriorityFeePerGas,
+        uint256 maxPreVerificationGas
+    ) ChainGuard() {
         if (
             entryPoint == address(0) || verifyingSigner == address(0) || sponsorAdmin == address(0)
                 || entryPoint.code.length == 0
         ) revert ZeroAddress();
+        if (
+            maxFeePerGas == 0 || maxPriorityFeePerGas == 0 || maxPreVerificationGas == 0
+                || maxPriorityFeePerGas > maxFeePerGas
+        ) revert BadGasCap();
         ENTRY_POINT = IEntryPointStake(entryPoint);
         VERIFYING_SIGNER = verifyingSigner;
         SPONSOR_ADMIN = sponsorAdmin;
+        MAX_FEE_PER_GAS = maxFeePerGas;
+        MAX_PRIORITY_FEE_PER_GAS = maxPriorityFeePerGas;
+        MAX_PRE_VERIFICATION_GAS = maxPreVerificationGas;
     }
 
     /// @inheritdoc IPaymaster
@@ -83,6 +119,12 @@ contract GhostPayVerifyingPaymaster is IPaymaster, ChainGuard {
         uint48 validUntil = uint48(bytes6(pmd[PM_DATA_OFFSET:PM_DATA_OFFSET + 6]));
         uint48 validAfter = uint48(bytes6(pmd[PM_DATA_OFFSET + 6:PM_SIG_OFFSET]));
         if (validUntil == 0) revert NoExpiry();
+        // gasFees = maxPriorityFeePerGas (high 128 bits) || maxFeePerGas (low 128 bits).
+        uint256 fees = uint256(userOp.gasFees);
+        if (
+            fees & type(uint128).max > MAX_FEE_PER_GAS || fees >> 128 > MAX_PRIORITY_FEE_PER_GAS
+                || userOp.preVerificationGas > MAX_PRE_VERIFICATION_GAS
+        ) revert GasAboveCap();
 
         bytes32 digest =
             MessageHashUtils.toEthSignedMessageHash(getHash(userOp, validUntil, validAfter));

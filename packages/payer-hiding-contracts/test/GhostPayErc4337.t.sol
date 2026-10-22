@@ -33,6 +33,9 @@ contract GhostPayErc4337Test is PHBase {
     address payable internal beneficiary = payable(makeAddr("beneficiary"));
 
     uint256 internal constant SALT = 7;
+    uint256 internal constant PM_MAX_FEE = 50 gwei;
+    uint256 internal constant PM_MAX_PRIO = 2 gwei;
+    uint256 internal constant PM_MAX_PVG = 200_000;
 
     function setUp() public override {
         super.setUp();
@@ -40,7 +43,9 @@ contract GhostPayErc4337Test is PHBase {
         (signerAddr, signerPk) = makeAddrAndKey("pmSigner");
         ep = new EntryPoint();
         factory = new GhostPayPayerAccountFactory(address(ep));
-        paymaster = new GhostPayVerifyingPaymaster(address(ep), signerAddr, admin);
+        paymaster = new GhostPayVerifyingPaymaster(
+            address(ep), signerAddr, admin, PM_MAX_FEE, PM_MAX_PRIO, PM_MAX_PVG
+        );
         vm.deal(address(this), 100 ether);
         paymaster.deposit{value: 10 ether}();
         token.mint(factory.getAddress(owner, SALT), 10 * GROSS); // counterfactual account holds tokens, no ETH
@@ -254,6 +259,114 @@ contract GhostPayErc4337Test is PHBase {
         // different owner or salt -> different address
         assertTrue(factory.getAddress(owner, SALT + 1) != expect);
         assertTrue(factory.getAddress(sponsor, SALT) != expect);
+    }
+
+    // ---------- CONTRACTS-POOLS-01: self-bundled op with attacker-chosen gas fields ----------
+
+    /// @dev Signs a valid sponsored op with the given fee fields and pvg and self-bundles it with an
+    /// attacker beneficiary; returns the paymaster deposit lost (0 when the op is refused).
+    function _selfBundleLoss(uint128 maxPriority, uint128 maxFee, uint256 pvg)
+        internal
+        returns (uint256 lost)
+    {
+        EpOp memory op = _baseOp(
+            abi.encodeCall(
+                GhostPayPayerAccount.executeBatch, (_calls(address(router), GROSS, SPONSOR_FEE))
+            ),
+            true
+        );
+        op.accountGasLimits = bytes32(abi.encodePacked(uint128(500_000), uint128(200_000)));
+        op.preVerificationGas = pvg;
+        op.gasFees = bytes32(abi.encodePacked(maxPriority, maxFee));
+        op.paymasterAndData =
+            _pmData(op, uint48(T0 + 1 hours), 0, signerPk, address(paymaster), block.chainid);
+        op.signature = _ownerSign(op);
+        EpOp[] memory ops = new EpOp[](1);
+        ops[0] = op;
+        vm.fee(1 gwei);
+        vm.txGasPrice(1 gwei);
+        uint256 before = ep.balanceOf(address(paymaster));
+        address payable attacker = payable(makeAddr("attacker"));
+        vm.prank(attacker);
+        try ep.handleOps(ops, attacker) {} catch {}
+        lost = before - ep.balanceOf(address(paymaster));
+    }
+
+    function test_pools01_selfBundleHighFees_refused() public {
+        assertEq(_selfBundleLoss(90 gwei, 90 gwei, 50_000), 0, "deposit drained via tip");
+    }
+
+    function test_pools01_selfBundleHugePvg_refused() public {
+        assertEq(_selfBundleLoss(2 gwei, 2 gwei, 5_000_000), 0, "deposit drained via pvg");
+    }
+
+    function test_pools01_capsEnforcedInValidation() public {
+        EpOp memory op = _baseOp("", false);
+        // exactly at the caps: accepted
+        op.gasFees = bytes32(abi.encodePacked(uint128(PM_MAX_PRIO), uint128(PM_MAX_FEE)));
+        op.preVerificationGas = PM_MAX_PVG;
+        op.paymasterAndData =
+            _pmData(op, uint48(T0 + 1 hours), 0, signerPk, address(paymaster), block.chainid);
+        vm.prank(address(ep));
+        (, uint256 vd) = paymaster.validatePaymasterUserOp(_my(op), bytes32(0), 0);
+        assertEq(vd & type(uint160).max, 0, "at caps: valid");
+        // one above each cap: reverts even with a valid signature
+        for (uint256 k; k < 3; ++k) {
+            EpOp memory o = _baseOp("", false);
+            o.gasFees = bytes32(abi.encodePacked(uint128(PM_MAX_PRIO), uint128(PM_MAX_FEE)));
+            o.preVerificationGas = PM_MAX_PVG;
+            if (k == 0) {
+                o.gasFees = bytes32(abi.encodePacked(uint128(PM_MAX_PRIO), uint128(PM_MAX_FEE + 1)));
+            }
+            if (k == 1) {
+                o.gasFees = bytes32(abi.encodePacked(uint128(PM_MAX_PRIO + 1), uint128(PM_MAX_FEE)));
+            }
+            if (k == 2) o.preVerificationGas = PM_MAX_PVG + 1;
+            o.paymasterAndData =
+                _pmData(o, uint48(T0 + 1 hours), 0, signerPk, address(paymaster), block.chainid);
+            vm.prank(address(ep));
+            vm.expectRevert(GhostPayVerifyingPaymaster.GasAboveCap.selector);
+            paymaster.validatePaymasterUserOp(_my(o), bytes32(0), 0);
+        }
+        assertEq(paymaster.MAX_FEE_PER_GAS(), PM_MAX_FEE);
+        assertEq(paymaster.MAX_PRIORITY_FEE_PER_GAS(), PM_MAX_PRIO);
+        assertEq(paymaster.MAX_PRE_VERIFICATION_GAS(), PM_MAX_PVG);
+    }
+
+    function test_pools01_selfBundleAboveCap_failsAA33() public {
+        EpOp memory op = _baseOp(
+            abi.encodeCall(
+                GhostPayPayerAccount.executeBatch, (_calls(address(router), GROSS, SPONSOR_FEE))
+            ),
+            true
+        );
+        op.gasFees = bytes32(abi.encodePacked(uint128(90 gwei), uint128(90 gwei)));
+        op.paymasterAndData =
+            _pmData(op, uint48(T0 + 1 hours), 0, signerPk, address(paymaster), block.chainid);
+        op.signature = _ownerSign(op);
+        EpOp[] memory ops = new EpOp[](1);
+        ops[0] = op;
+        vm.prank(bundler);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IEntryPoint.FailedOpWithRevert.selector,
+                0,
+                "AA33 reverted",
+                abi.encodeWithSelector(GhostPayVerifyingPaymaster.GasAboveCap.selector)
+            )
+        );
+        ep.handleOps(ops, beneficiary);
+    }
+
+    function test_pools01_constructorRejectsBadCaps() public {
+        vm.expectRevert(GhostPayVerifyingPaymaster.BadGasCap.selector);
+        new GhostPayVerifyingPaymaster(address(ep), signerAddr, admin, 0, PM_MAX_PRIO, PM_MAX_PVG);
+        vm.expectRevert(GhostPayVerifyingPaymaster.BadGasCap.selector);
+        new GhostPayVerifyingPaymaster(address(ep), signerAddr, admin, PM_MAX_FEE, 0, PM_MAX_PVG);
+        vm.expectRevert(GhostPayVerifyingPaymaster.BadGasCap.selector);
+        new GhostPayVerifyingPaymaster(address(ep), signerAddr, admin, PM_MAX_FEE, PM_MAX_PRIO, 0);
+        vm.expectRevert(GhostPayVerifyingPaymaster.BadGasCap.selector);
+        new GhostPayVerifyingPaymaster(address(ep), signerAddr, admin, 1 gwei, 2 gwei, PM_MAX_PVG);
     }
 
     // ---------- paymaster rejections ----------
@@ -535,13 +648,21 @@ contract GhostPayErc4337Test is PHBase {
         vm.expectRevert(GhostPayPayerAccount.ZeroAddress.selector);
         new GhostPayPayerAccount(makeAddr("noCode"), owner);
         vm.expectRevert(GhostPayVerifyingPaymaster.ZeroAddress.selector);
-        new GhostPayVerifyingPaymaster(address(0), signerAddr, admin);
+        new GhostPayVerifyingPaymaster(
+            address(0), signerAddr, admin, PM_MAX_FEE, PM_MAX_PRIO, PM_MAX_PVG
+        );
         vm.expectRevert(GhostPayVerifyingPaymaster.ZeroAddress.selector);
-        new GhostPayVerifyingPaymaster(address(ep), address(0), admin);
+        new GhostPayVerifyingPaymaster(
+            address(ep), address(0), admin, PM_MAX_FEE, PM_MAX_PRIO, PM_MAX_PVG
+        );
         vm.expectRevert(GhostPayVerifyingPaymaster.ZeroAddress.selector);
-        new GhostPayVerifyingPaymaster(address(ep), signerAddr, address(0));
+        new GhostPayVerifyingPaymaster(
+            address(ep), signerAddr, address(0), PM_MAX_FEE, PM_MAX_PRIO, PM_MAX_PVG
+        );
         vm.expectRevert(GhostPayVerifyingPaymaster.ZeroAddress.selector);
-        new GhostPayVerifyingPaymaster(makeAddr("noCode"), signerAddr, admin);
+        new GhostPayVerifyingPaymaster(
+            makeAddr("noCode"), signerAddr, admin, PM_MAX_FEE, PM_MAX_PRIO, PM_MAX_PVG
+        );
     }
 
     function test_constructors_chainGuard() public {
@@ -551,11 +672,15 @@ contract GhostPayErc4337Test is PHBase {
         vm.expectRevert(abi.encodeWithSelector(ChainGuard.UnsupportedChain.selector, 1));
         new GhostPayPayerAccount(address(ep), owner);
         vm.expectRevert(abi.encodeWithSelector(ChainGuard.UnsupportedChain.selector, 1));
-        new GhostPayVerifyingPaymaster(address(ep), signerAddr, admin);
+        new GhostPayVerifyingPaymaster(
+            address(ep), signerAddr, admin, PM_MAX_FEE, PM_MAX_PRIO, PM_MAX_PVG
+        );
         vm.chainId(84_532);
         new GhostPayPayerAccountFactory(address(ep));
         vm.chainId(11_155_111);
-        new GhostPayVerifyingPaymaster(address(ep), signerAddr, admin);
+        new GhostPayVerifyingPaymaster(
+            address(ep), signerAddr, admin, PM_MAX_FEE, PM_MAX_PRIO, PM_MAX_PVG
+        );
     }
 
     // ---------- fuzz ----------
@@ -576,6 +701,12 @@ contract GhostPayErc4337Test is PHBase {
         else if (field == 2) op.gasFees = bytes32(uint256(op.gasFees) + delta);
         else op.accountGasLimits = bytes32(uint256(op.accountGasLimits) + delta);
         vm.prank(address(ep));
+        if (op.preVerificationGas > PM_MAX_PVG || uint128(uint256(op.gasFees)) > PM_MAX_FEE) {
+            // beyond the immutable caps the op is refused outright (CONTRACTS-POOLS-01)
+            vm.expectRevert(GhostPayVerifyingPaymaster.GasAboveCap.selector);
+            paymaster.validatePaymasterUserOp(_my(op), bytes32(0), 0);
+            return;
+        }
         (, uint256 vd) = paymaster.validatePaymasterUserOp(_my(op), bytes32(0), 0);
         assertEq(vd & type(uint160).max, 1, "any change invalidates the paymaster signature");
     }

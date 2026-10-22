@@ -2,7 +2,7 @@ import { schnorr, secp256k1 } from '@noble/curves/secp256k1.js';
 import { hex } from '@scure/base';
 import * as btc from '@scure/btc-signer';
 import { fail } from './errors.js';
-import { inputPrevOut, outputInfo, type Utxo } from './psbt.js';
+import { inputPrevOut, outputInfo, type PrevOut, type Utxo } from './psbt.js';
 
 /**
  * Sender-side signer. Signs exactly one input of a mutable transaction.
@@ -24,6 +24,12 @@ export interface ReceiverWallet {
   signInput(tx: btc.Transaction, index: number, utxo: Utxo): void;
   /** Required in non-interactive mode (BPJ-RCV-4): can this Original be broadcast? */
   testMempoolAccept?(txHex: string): Promise<boolean>;
+  /**
+   * Optional chain lookup (e.g. the receiver's node `gettxout`) of an Original
+   * input's prevout; `undefined` when unknown or spent. When present, every
+   * sender-claimed `witness_utxo`/`non_witness_utxo` must match it (BITCOIN-01).
+   */
+  getPrevOut?(txid: string, index: number): Promise<PrevOut | undefined>;
 }
 
 /**

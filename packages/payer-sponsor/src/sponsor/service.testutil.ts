@@ -44,9 +44,17 @@ export class FakeChain implements SponsorChain {
   public sent: { call: SponsorCall; gasLimit: bigint }[] = [];
   public simulated: SponsorCall[] = [];
   public factoryAnswer: Hex = `0x${'00'.repeat(32)}`;
+  /** `balanceOf` answer of TOKEN for any account (default: plenty). */
+  public tokenBalance = 10n ** 30n;
+  public calls: { to: Address; data: Hex }[] = [];
   public codes = new Map<string, Hex>();
   public gasPrice = async (): Promise<bigint> => this.gas;
-  public call = async (): Promise<Hex> => this.factoryAnswer;
+  public call = async (to: Address, data: Hex): Promise<Hex> => {
+    this.calls.push({ to, data });
+    // ERC-20 balanceOf(address) on TOKEN; everything else is the factory getAddress answer.
+    if (to.toLowerCase() === TOKEN.toLowerCase() && data.slice(0, 10) === '0x70a08231') return `0x${this.tokenBalance.toString(16).padStart(64, '0')}`;
+    return this.factoryAnswer;
+  };
   public simulate = async (c: SponsorCall) => {
     this.simulated.push(c);
     if (this.simThrows) throw new Error('rpc down');

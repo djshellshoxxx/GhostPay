@@ -19,7 +19,7 @@ export const config = (over: Partial<RelayerConfig> = {}): RelayerConfig =>
 export interface FakeChain extends ChainPort {
   sent: number;
   simulated: number;
-  state: { gasPrice: bigint; ts: bigint; knownRoot: boolean; spent: boolean; simulate: 'ok' | 'revert' | 'rpc'; send: 'ok' | 'fail'; receipt: ReceiptSummary['status']; costWei: bigint; rpcDown: boolean };
+  state: { gasPrice: bigint; ts: bigint; knownRoot: boolean; spent: boolean; simulate: 'ok' | 'revert' | 'rpc'; send: 'ok' | 'fail'; gasLimit: bigint; receipt: ReceiptSummary['status']; costWei: bigint; rpcDown: boolean };
 }
 
 export function fakeChain(chainId = 31337): FakeChain {
@@ -28,7 +28,7 @@ export function fakeChain(chainId = 31337): FakeChain {
     relayerAddress: RELAYER,
     sent: 0,
     simulated: 0,
-    state: { gasPrice: 1_000n, ts: 1_000_000n, knownRoot: true, spent: false, simulate: 'ok', send: 'ok', receipt: 'success', costWei: 77n, rpcDown: false },
+    state: { gasPrice: 1_000n, ts: 1_000_000n, knownRoot: true, spent: false, simulate: 'ok', send: 'ok', gasLimit: 120_000n, receipt: 'success', costWei: 77n, rpcDown: false },
     getGasPrice() {
       return c.state.rpcDown ? Promise.reject(new Error('down')) : Promise.resolve(c.state.gasPrice);
     },
@@ -41,7 +41,7 @@ export function fakeChain(chainId = 31337): FakeChain {
       c.simulated++;
       if (c.state.simulate === 'revert') return Promise.reject(new SimulationRevert());
       if (c.state.simulate === 'rpc') return Promise.reject(new Error('rpc'));
-      return Promise.resolve({ gasLimit: 200_000n });
+      return Promise.resolve({ gasLimit: c.state.gasLimit });
     },
     sendWithdraw() {
       if (c.state.send === 'fail') return Promise.reject(new Error('send'));

@@ -8,6 +8,7 @@ import { buildProposal } from './contribute.js';
 import { checkOriginal } from './checks.js';
 import { MemoryExposedUtxos, MemorySeenInputs } from './seen.js';
 import { buildOriginalPsbt } from '../sender/original.js';
+import { withDefaults } from '../params.js';
 
 const codeOf = async (f: () => Promise<unknown>): Promise<PayjoinErrorCode | 'none'> => {
   try {
@@ -169,6 +170,55 @@ describe('buildProposal policy', () => {
   it('not_enough_money when the only candidate cannot cover the receiver share under pjos=0', async () => {
     // minfeerate demands a bump far above the candidate value; fee output offered nothing.
     await expect(scenario({ receiverAmounts: [2_000n], params: { minFeeRateSatPerVb: 5000, disableOutputSubstitution: true }, outputSubstitution: false })).rejects.toMatchObject({ code: 'not_enough_money' });
+  });
+  describe('BITCOIN-01: sender-claimed input amounts', () => {
+    // Hostile sender: a valid Original whose witness_utxo amount is inflated by
+    // 690 344 sat and no fee output, so the claimed F0 is huge (audit exploit).
+    const inflated = async (ctxOver: Partial<import('./checks.js').ReceiverContext> = {}) => {
+      const s = await scenario({ senderAmounts: [100_000n], receiverAmounts: [50_000n, 1_000_000n], amount: 10_000n, feeRate: 1, noBuild: true });
+      const lie = encodePsbt(rebuild(s.built.tx, { mapInput: (i) => ({ ...i, witnessUtxo: { script: (i.witnessUtxo as { script: Uint8Array }).script, amount: 100_000n + 690_344n } }) }));
+      return { s, lie, ctx: { ...s.ctx, ...ctxOver } };
+    };
+    it('caps the receiver fee share absolutely, so an inflated claim cannot burn its UTXO', async () => {
+      const { s, lie, ctx } = await inflated();
+      const checked = await checkOriginal(lie, ctx);
+      expect(checked.fee).toBeGreaterThan(690_000n); // the claim is believed without a lookup
+      const res = await buildProposal(checked, withDefaults(), ctx).then(
+        (b) => b,
+        (e: unknown) => e as { code: PayjoinErrorCode },
+      );
+      if ('code' in res) {
+        expect(res.code).toBe('not_enough_money');
+        return;
+      }
+      // If a proposal is released, the receiver's real loss is bounded by the cap (100 sat/vB * input vsize).
+      const p = parsePsbt(res.psbt);
+      const realIn = new Map([...s.sUtxos, ...s.rUtxos].map((u) => [`${u.txid}:${String(u.index)}`, { script: u.script, amount: u.amount }]));
+      const used = [...Array(p.inputsLength).keys()].map((k) => inputOutpoint(p, k)).filter((op) => s.rUtxos.some((u) => `${u.txid}:${String(u.index)}` === op));
+      const contributed = used.reduce((a, op) => a + (realIn.get(op)?.amount ?? 0n), 0n);
+      const payIdx = [...Array(p.outputsLength).keys()].find((k) => hex.encode(outputInfo(p, k).script) === hex.encode(s.paymentScript)) as number;
+      const loss = contributed - (outputInfo(p, payIdx).amount - outputInfo(s.built.tx, s.built.paymentIndex).amount);
+      expect(loss).toBeLessThanOrEqual(100n * 68n);
+    });
+    it('honours a configured cap and a hostile minfeerate cannot exceed it either', async () => {
+      const { lie, ctx } = await inflated({ maxContributionFeeRate: 1_000_000 });
+      const checked = await checkOriginal(lie, ctx);
+      expect((await buildProposal(checked, withDefaults(), ctx)).contributed).toBe(true); // opt-out still possible
+      const s = await scenario({ receiverAmounts: [1_000_000n], noBuild: true });
+      await expect(buildProposal(s.checked, withDefaults({ minFeeRateSatPerVb: 1000 }), s.ctx)).rejects.toMatchObject({ code: 'not_enough_money' });
+    });
+    it('rejects an Original whose claimed prevout disagrees with the wallet lookup', async () => {
+      const { s, lie, ctx } = await inflated();
+      const real = new Map(s.sUtxos.map((u) => [`${u.txid}:${String(u.index)}`, { script: u.script, amount: u.amount }]));
+      const lookup = (txid: string, index: number) => Promise.resolve(real.get(`${txid}:${String(index)}`));
+      const w = { ...s.wallet, getPrevOut: lookup };
+      expect(await codeOf(() => checkOriginal(lie, { ...ctx, wallet: w }))).toBe('psbt_invalid');
+      expect((await checkOriginal(s.built.psbt, { ...ctx, wallet: w })).fee).toBe(s.built.fee);
+      const none = { ...s.wallet, getPrevOut: () => Promise.resolve(undefined) };
+      expect(await codeOf(() => checkOriginal(s.built.psbt, { ...ctx, wallet: none }))).toBe('psbt_invalid');
+      const down = { ...s.wallet, getPrevOut: () => Promise.reject(new Error('rpc down')) };
+      expect(await codeOf(() => checkOriginal(s.built.psbt, { ...ctx, wallet: down }))).toBe('psbt_invalid');
+    });
   });
   it('never reuses an Original input as the contribution', async () => {
     const s = await scenario();

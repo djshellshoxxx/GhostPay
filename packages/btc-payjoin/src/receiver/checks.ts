@@ -1,3 +1,4 @@
+import { hex } from '@scure/base';
 import type * as btc from '@scure/btc-signer';
 import { fail } from '../errors.js';
 import { addressToScript, assertNetwork, type BtcNetwork } from '../network.js';
@@ -30,6 +31,12 @@ export interface ReceiverContext {
   readonly contributeFromSp?: boolean;
   /** Minimum feerate (sat/vB) the Original must pay; default 1. */
   readonly minOriginalFeeRate?: number;
+  /**
+   * Hard cap (sat/vB of the added input's vsize) on the fee the receiver pays
+   * out of its own funds; default {@link DEFAULT_MAX_CONTRIBUTION_FEE_RATE}.
+   * Bounds the loss when the sender lies about its input amounts (BITCOIN-01).
+   */
+  readonly maxContributionFeeRate?: number;
   /** Allow replying with the Original unchanged when no input can be added (default false). */
   readonly allowNoop?: boolean;
   /** Fresh own address of the same script type to substitute for the payment output (if the sender allows). */
@@ -38,6 +45,9 @@ export interface ReceiverContext {
   readonly random?: () => number;
   readonly now?: () => number;
 }
+
+/** Default for {@link ReceiverContext.maxContributionFeeRate} (sat/vB). */
+export const DEFAULT_MAX_CONTRIBUTION_FEE_RATE = 100;
 
 /** A validated Original. */
 export interface CheckedOriginal {
@@ -79,6 +89,15 @@ export async function checkOriginal(psbtB64: string, ctx: ReceiverContext): Prom
     if (ctx.wallet.isMine(prev.script)) fail('input_owned_by_receiver');
     prevOuts.set(op, prev);
     sequences.add(tx.getInput(i).sequence ?? 0xffffffff);
+  }
+  if (ctx.wallet.getPrevOut !== undefined) {
+    // Sender-claimed amounts drive the fee maths; check them against the chain (BITCOIN-01).
+    for (let i = 0; i < tx.inputsLength; i++) {
+      const inp = tx.getInput(i);
+      const claimed = prevOuts.get(outpoints[i] as string) as PrevOut;
+      const real = await ctx.wallet.getPrevOut(hex.encode(inp.txid as Uint8Array), inp.index as number).catch(() => undefined);
+      if (real === undefined || real.amount !== claimed.amount || !sameBytes(real.script, claimed.script)) fail('psbt_invalid', 'prevout does not match chain');
+    }
   }
   for (let k = 0; k < tx.outputsLength; k++) if (outputHasKeypaths(tx, k)) fail('keypaths_present');
   if (sequences.size !== 1) fail('sequence_changed', 'original inputs use mixed sequences');

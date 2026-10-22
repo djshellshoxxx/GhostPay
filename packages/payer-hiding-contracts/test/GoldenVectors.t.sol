@@ -148,7 +148,9 @@ contract GoldenVectorsTest is Test {
         deployCodeTo("EntryPoint.sol:EntryPoint", _a("entryPoint"));
         deployCodeTo(
             "GhostPayVerifyingPaymaster.sol:GhostPayVerifyingPaymaster",
-            abi.encode(_a("entryPoint"), makeAddr("signer"), makeAddr("admin")),
+            abi.encode(
+                _a("entryPoint"), makeAddr("signer"), makeAddr("admin"), 50 gwei, 2 gwei, 200_000
+            ),
             _a("paymaster")
         );
         EpOp memory e = _op();

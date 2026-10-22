@@ -22,11 +22,13 @@ import {IPoseidonT3, IPoseidonT4} from "../src/interfaces/IPoseidon.sol";
 /// NOT RUN by this package's authors against any network. Env:
 ///   ASSET (address, 0x0 = native pool), ANNOUNCER, WITHDRAW_VERIFIER, RAGEQUIT_VERIFIER (required),
 ///   REGISTRY (optional; deployed if unset), DENOMINATION (default 0), MAX_DEPOSIT (required),
-///   MAX_RELAYER_FEE_BPS (default 500), ASP_GRACE_SECONDS (default 600), ALLOW_LOCAL=1 for 31337.
+///   MAX_RELAYER_FEE_BPS (default 500), ASP_GRACE_SECONDS (default 600), ALLOW_LOCAL=1 for 31337,
+///   ACK_INSECURE_DEV_CEREMONY=1 (required: the verifiers are forgeable, never use with value).
 /// The verifiers come from `packages/pool-circuits` (INSECURE DEV CEREMONY: forged proofs can drain
 /// the pool); deploy them first with `forge create` from that package's `verifiers/`.
 contract DeployPool is Script {
     error ChainNotAllowed(uint256 chainId);
+    error DevCeremonyNotAcknowledged();
     error NoCode(string what, address at);
     error ReadBackMismatch(string what);
 
@@ -38,6 +40,7 @@ contract DeployPool is Script {
     }
 
     function run() external returns (Out memory o) {
+        if (!vm.envOr("ACK_INSECURE_DEV_CEREMONY", false)) revert DevCeremonyNotAcknowledged();
         if (block.chainid != 11_155_111 && block.chainid != 84_532) {
             if (!(block.chainid == 31_337 && vm.envOr("ALLOW_LOCAL", false))) {
                 revert ChainNotAllowed(block.chainid);

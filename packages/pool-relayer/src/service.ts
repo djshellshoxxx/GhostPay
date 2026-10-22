@@ -238,7 +238,7 @@ export class PoolRelayerService {
     if (!this.loss.allows(ctx.clientKey)) return fail(429, 'loss_budget_exhausted');
 
     return this.lane(r.chainId, async () => {
-      const st: { klass: RelayResultClass } = { klass: 'confirmed' };
+      const st: { klass: RelayResultClass; tooExpensive?: boolean } = { klass: 'confirmed' };
       let result: RelayResult | undefined;
       let cost = 0n;
       try {
@@ -255,6 +255,11 @@ export class PoolRelayerService {
               st.klass = 'rpc_error';
               throw e;
             }
+            if (gasLimit > (this.cfg.gasEstimate * BigInt(this.cfg.gasCapBps)) / 10_000n) {
+              st.klass = 'simulation_reverted';
+              st.tooExpensive = true;
+              return;
+            }
             let txHash: Hex;
             try {
               txHash = await chain.sendWithdraw(entry.pool, w, r.proof, { gas: gasLimit, gasPrice });
@@ -270,6 +275,8 @@ export class PoolRelayerService {
               st.klass = 'receipt_timeout';
               result = { txHash, status: 'pending' };
               return;
+            } else {
+              cost = rc.costWei;
             }
             result = { txHash, status: 'confirmed' };
           },
@@ -281,10 +288,16 @@ export class PoolRelayerService {
         log(open ? 'breaker_open' : st.klass);
         throw new RelayerError(open ? 503 : 502, open ? 'breaker_open' : st.klass);
       }
+      if (st.tooExpensive === true) return fail(400, 'gas_too_high');
       if (st.klass === 'simulation_reverted') return fail(400, 'simulation_reverted');
       if (st.klass === 'mined_revert_state_changed') {
         this.loss.charge(ctx.clientKey, cost);
         return fail(502, 'mined_revert');
+      }
+      if (result?.status === 'confirmed') {
+        // CONTRACTS-POOLS-02: charge the unreimbursed part (gas paid minus the fee, in wei) of every confirmed relay.
+        const feeWei = (w.relayerFee * entry.rate.den) / entry.rate.num;
+        if (cost > feeWei) this.loss.charge(ctx.clientKey, cost - feeWei);
       }
       const res = result as RelayResult;
       log(res.status === 'confirmed' ? 'confirmed' : 'receipt_timeout', { txHash: res.txHash });

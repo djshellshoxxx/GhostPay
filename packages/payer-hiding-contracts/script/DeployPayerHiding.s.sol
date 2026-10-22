@@ -16,6 +16,9 @@ import {GhostPayVerifyingPaymaster} from "../src/GhostPayVerifyingPaymaster.sol"
 ///   `EXPECTED_ENTRY_POINT_CODEHASH` is set the EntryPoint's `codehash` must equal it (PH-4-REQ-2).
 /// - `PAYMASTER_SIGNER` and `SPONSOR_ADMIN` (required for the paymaster, non-zero): the verifying signer
 ///   and the sole privileged admin of the paymaster. Set `SKIP_PAYMASTER=1` to deploy without PH-4.
+/// - `PM_MAX_FEE_PER_GAS` (default 50 gwei), `PM_MAX_PRIORITY_FEE_PER_GAS` (default 2 gwei),
+///   `PM_MAX_PRE_VERIFICATION_GAS` (default 200000): the paymaster's immutable gas-field caps
+///   (CONTRACTS-POOLS-01). Pick them for the target chain; they cannot be changed after deployment.
 /// Sign with `--account`, `--ledger` or `--trezor`; dry-run without `--broadcast` (this repository
 /// deploys nothing to a real network from CI). Addresses are only logged; add them to the local
 /// manifest after reading the code hashes back from the chain.
@@ -64,7 +67,12 @@ contract DeployPayerHiding is Script {
         if (!skip) {
             factory = new GhostPayPayerAccountFactory(entryPoint);
             paymaster = new GhostPayVerifyingPaymaster(
-                entryPoint, vm.envAddress("PAYMASTER_SIGNER"), vm.envAddress("SPONSOR_ADMIN")
+                entryPoint,
+                vm.envAddress("PAYMASTER_SIGNER"),
+                vm.envAddress("SPONSOR_ADMIN"),
+                vm.envOr("PM_MAX_FEE_PER_GAS", uint256(50 gwei)),
+                vm.envOr("PM_MAX_PRIORITY_FEE_PER_GAS", uint256(2 gwei)),
+                vm.envOr("PM_MAX_PRE_VERIFICATION_GAS", uint256(200_000))
             );
         }
         vm.stopBroadcast();

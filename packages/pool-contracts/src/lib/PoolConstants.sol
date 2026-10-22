@@ -28,9 +28,16 @@ library PoolConstants {
     uint256 internal constant POSEIDON_T4_KAT =
         6_542_985_608_222_806_190_361_240_322_586_112_750_744_169_038_454_362_455_181_422_643_027_100_751_666;
 
+    /// @notice Ethereum mainnet WETH9. Code here on chain id 31337 means a mainnet fork, not a local chain.
+    address internal constant MAINNET_WETH9 = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+
     /// @notice Returns true iff the current chain is anvil (31337), Sepolia (11155111) or Base Sepolia (84532).
+    /// @dev The verifiers come from an INSECURE dev ceremony (forged proofs drain the pool), so a mainnet fork
+    /// started with `--chain-id 31337` must not pass for a local chain (CONTRACTS-POOLS-09): chain id 31337 is
+    /// refused when the mainnet WETH9 has code.
     /// @return True on an allowed testnet.
     function isAllowedChain() internal view returns (bool) {
-        return block.chainid == 31_337 || block.chainid == 11_155_111 || block.chainid == 84_532;
+        if (block.chainid == 31_337) return MAINNET_WETH9.code.length == 0;
+        return block.chainid == 11_155_111 || block.chainid == 84_532;
     }
 }

@@ -171,6 +171,28 @@ describe('service', () => {
     expect(await code(r.svc.relay(goodRequest(), ctx))).toBe('429:loss_budget_exhausted');
     expect(r.chain.sent).toBe(1);
   });
+  it('CONTRACTS-POOLS-02: refuses a simulation far above the gas the fee is priced for', async () => {
+    const r = make();
+    r.chain.state.gasLimit = 3_652_993n;
+    expect(await code(r.svc.relay(goodRequest(), ctx))).toBe('400:gas_too_high');
+    expect(r.chain.sent).toBe(0);
+    r.chain.state.gasLimit = 150_000n;
+    expect(await code(r.svc.relay(goodRequest(), ctx))).toBe('ok');
+    r.chain.state.gasLimit = 150_001n;
+    expect(await code(r.svc.relay(goodRequest(), ctx))).toBe('400:gas_too_high');
+  });
+  it('CONTRACTS-POOLS-02: confirmed relay charges the loss budget gasCost - fee', async () => {
+    const fee = goodRequest().withdrawal.relayerFee;
+    const loss = new LossBudget({ windowMs: 1e9, perKeyLimit: 100n, globalLimit: 1000n, maxKeys: 10 });
+    const r = make({ loss });
+    r.chain.state.costWei = fee + 100n;
+    expect(await code(r.svc.relay(goodRequest(), ctx))).toBe('ok');
+    expect(await code(r.svc.relay(goodRequest(), ctx))).toBe('429:loss_budget_exhausted');
+    const r2 = make({ loss: new LossBudget({ windowMs: 1e9, perKeyLimit: 100n, globalLimit: 1000n, maxKeys: 10 }) });
+    r2.chain.state.costWei = fee - 1n;
+    expect(await code(r2.svc.relay(goodRequest(), ctx))).toBe('ok');
+    expect(await code(r2.svc.relay(goodRequest(), ctx))).toBe('ok');
+  });
   it('receipt timeout returns pending', async () => {
     const r = make();
     r.chain.state.receipt = 'timeout';
