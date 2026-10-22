@@ -3,13 +3,15 @@ import { unsafeRevealSecret } from '@ghostpay/core-crypto';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../components/Common';
 import { ReceiptPanel } from '../components/ReceiptPanel';
+import { ReconciliationLedger } from '../components/ReconciliationLedger';
 import { useManifest } from '../components/Disclosure';
 import { verifyManifestState } from '../lib/manifest';
 import { formatUnits } from '../lib/format';
 import { userMessage } from '../lib/errors';
 import { checkpointKeyId, runScan, type ScanMatch, type ScanProgress } from '../lib/scanClient';
 import { useServices } from '../lib/services';
-import { requireSession } from '../lib/session';
+import { getSessionPublic, requireSession } from '../lib/session';
+import { invalidateReconciliationAtOrAfter, isReconciliationLedgerEnabled } from '../lib/reconciliationLedger';
 import type { TagPayload } from '../lib/tags';
 import { useApp } from '../state';
 
@@ -24,8 +26,9 @@ export function Scan(): ReactNode {
   const [progress, setProgress] = useState<ScanProgress | undefined>(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
   const [done, setDone] = useState<string | undefined>(undefined);
-  const [scanOwner, setScanOwner] = useState<{ readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
+  const [scanOwner, setScanOwner] = useState<{ readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
   const abort = useRef<AbortController | undefined>(undefined);
+  const startingScope = useRef<{ readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
   const manifest = useManifest(chainId);
   const keyId = app.session === undefined ? undefined : checkpointKeyId(app.session.spendingPublicKey, app.session.viewingPublicKey);
   const checkpoint = keyId === undefined ? undefined : services.checkpoints.load(chainId, keyId);
@@ -37,6 +40,21 @@ export function Scan(): ReactNode {
     [],
   );
 
+  useEffect(() => {
+    const scope = startingScope.current;
+    if (scope !== undefined && (scope.chainId !== chainId || scope.keyId !== keyId || scope.signerPublicKey !== app.session?.signerPublicKey)) {
+      abort.current?.abort();
+    }
+  }, [app.session?.signerPublicKey, chainId, keyId]);
+
+  useEffect(() => {
+    if (scanOwner !== undefined && (scanOwner.chainId !== chainId || scanOwner.keyId !== keyId || scanOwner.signerPublicKey !== app.session?.signerPublicKey)) {
+      abort.current?.abort();
+      app.setMatches([]);
+      setScanOwner(undefined);
+    }
+  }, [app.session?.signerPublicKey, app.setMatches, chainId, keyId, scanOwner]);
+
   if (app.session === undefined) {
     return (
       <section aria-labelledby="scan-h">
@@ -47,20 +65,44 @@ export function Scan(): ReactNode {
     );
   }
 
+  const scanMatchesCurrentScope = scanOwner !== undefined && scanOwner.chainId === chainId && scanOwner.keyId === keyId && scanOwner.signerPublicKey === app.session.signerPublicKey;
+  const scopedMatches = scanMatchesCurrentScope ? app.matches.filter((match) => match.chainId === chainId) : [];
+
   const begin = (): void => {
-    if (keyId === undefined) return;
+    if (keyId === undefined || abort.current !== undefined) return;
+    const sessionAtStart = app.session;
+    if (sessionAtStart === undefined) return;
+    const scope = { chainId, keyId, signerPublicKey: sessionAtStart.signerPublicKey };
+    const ctl = new AbortController();
+    abort.current = ctl;
+    startingScope.current = scope;
+    setRunning(true);
     setError(undefined);
     setDone(undefined);
+    setScanOwner(undefined);
+    app.setMatches([]);
+    const scopeKeysAreCurrent = (): boolean => {
+      const current = getSessionPublic();
+      const currentKeyId = current === undefined ? undefined : checkpointKeyId(current.spendingPublicKey, current.viewingPublicKey);
+      return currentKeyId === scope.keyId && current?.signerPublicKey === scope.signerPublicKey;
+    };
+    const scopeIsCurrent = (): boolean => !ctl.signal.aborted && scopeKeysAreCurrent();
+    const assertScopeCurrent = (): void => {
+      if (ctl.signal.aborted) throw new Error('scan-aborted');
+      if (!scopeIsCurrent()) throw new Error('scan-session-changed');
+    };
     void (async () => {
       try {
         const chain = findChain(chainId);
         if (chain === undefined || manifest?.status !== 'loaded') throw new Error('manifest');
         const rpc: RpcClient | undefined = await app.getRpc(chainId);
+        assertScopeCurrent();
         if (rpc === undefined) {
           setError('Configure an RPC for this chain in Settings first.');
           return;
         }
         const rpc2: RpcClient | undefined = await app.getSecondaryRpc(chainId).catch(() => undefined);
+        assertScopeCurrent();
         let cursor = resume ? checkpoint : undefined;
         if (cursor === undefined) {
           if (!/^\d{1,15}$/.test(start.trim())) {
@@ -70,17 +112,15 @@ export function Scan(): ReactNode {
           cursor = { nextBlock: BigInt(start.trim()) };
         }
         const checked = await verifyManifestState(manifest, rpc);
+        assertScopeCurrent();
         if (checked.status !== 'loaded') {
           setError('Scan blocked: the contracts on this chain do not match the deployment manifest.');
           return;
         }
         const secrets = requireSession();
-        setScanOwner({ keyId, signerPublicKey: app.session?.signerPublicKey ?? '' });
+        assertScopeCurrent();
+        setScanOwner(scope);
         const viewingKey = unsafeRevealSecret(secrets.keys.viewingSecret);
-        const ctl = new AbortController();
-        abort.current = ctl;
-        setRunning(true);
-        app.setMatches([]);
         let found: ScanMatch[] = [];
         const res = await runScan({
           chain,
@@ -95,12 +135,19 @@ export function Scan(): ReactNode {
           createWorker: services.createScanWorker,
           signal: ctl.signal,
           checkpoints: services.checkpoints,
-          onProgress: setProgress,
+          onProgress: (nextProgress) => { if (scopeIsCurrent()) setProgress(nextProgress); },
           onReorg: (to) => {
+            if (!scopeIsCurrent()) return;
             found = found.filter((m) => m.announcement.blockNumber < to);
             app.setMatches([...found]);
+            try {
+              if (isReconciliationLedgerEnabled()) invalidateReconciliationAtOrAfter(chainId, keyId, to);
+            } catch {
+              setError('A scan reorg was detected, but local reconciliation records could not be updated. Review or delete the ledger before relying on it.');
+            }
           },
           onMatch: (m) => {
+            if (!scopeIsCurrent()) return;
             const identity = `${m.stealthAddress.toLowerCase()}|${m.announcement.ephemeralPublicKey.toLowerCase()}`;
             const prior = found.findIndex((x) => `${x.stealthAddress.toLowerCase()}|${x.announcement.ephemeralPublicKey.toLowerCase()}` === identity);
             if (prior < 0) found.push(m);
@@ -108,14 +155,22 @@ export function Scan(): ReactNode {
             app.setMatches([...found]);
           },
         });
+        if (!ctl.signal.aborted) assertScopeCurrent();
         if (res.discrepancies.length > 0) setError(`The second RPC provider disagreed on ${String(res.discrepancies.length)} check(s). Results may be incomplete or forged; checkpoints were not advanced. Try another provider.`);
         if (res.limitReached) setError(`This scan reached its safety limit. It stopped before processing the next page; resume from block ${res.cursor.nextBlock.toString()} to continue.`);
         const note = ` Started at block ${cursor.nextBlock.toString()}${resume && checkpoint !== undefined ? ' (from checkpoint)' : ''}.${rpc2 === undefined ? ' Only one RPC was used: add a second RPC in Settings to cross-check it.' : ''}`;
         setDone((ctl.signal.aborted ? `Cancelled. ${String(res.scanned)} announcements checked.` : res.limitReached ? `Stopped at the safety limit. ${String(res.scanned)} announcements checked, ${String(res.matches.length)} payments found.` : `Finished. ${String(res.scanned)} announcements checked, ${String(res.matches.length)} payments found.`) + note);
         app.announce(res.limitReached ? 'Scan stopped at the safety limit.' : 'Scan finished.');
       } catch (e) {
+        if (e instanceof Error && (e.message === 'scan-aborted' || e.message === 'scan-session-changed')) {
+          if (e.message === 'scan-session-changed') setError('Seller keys changed while the scan was starting. The scan was stopped; start again with the current keys.');
+          else if (scopeKeysAreCurrent()) setDone('Cancelled. The scan stopped before completing.');
+          return;
+        }
         setError(e instanceof Error && e.message === 'manifest' ? 'Payments are disabled on this chain: no deployment manifest is loaded, so the announcer address is unknown.' : userMessage(e));
       } finally {
+        if (abort.current === ctl) abort.current = undefined;
+        if (startingScope.current === scope) startingScope.current = undefined;
         setRunning(false);
       }
     })();
@@ -175,8 +230,16 @@ export function Scan(): ReactNode {
 
       <Matches
         chainId={chainId}
+        matches={scopedMatches}
         sellerSignerPublicKey={app.session.signerPublicKey}
-        receiptSignerPublicKey={scanOwner !== undefined && scanOwner.keyId === keyId ? scanOwner.signerPublicKey : undefined}
+        receiptSignerPublicKey={scanMatchesCurrentScope ? scanOwner.signerPublicKey : undefined}
+      />
+      <ReconciliationLedger
+        chainId={chainId}
+        sellerKeyId={keyId}
+        matches={app.matches}
+        scanMatchesCurrentScope={scanMatchesCurrentScope}
+        onAnnounce={app.announce}
       />
       <Tags chainId={chainId} />
     </section>
@@ -190,14 +253,14 @@ function describe(m: ScanMatch, chainId: number): string {
   return t === undefined ? `${m.metadata.netAmount.toString()} units of unlisted token ${m.metadata.token}` : `${formatUnits(m.metadata.netAmount, t.decimals)} ${t.symbol}`;
 }
 
-function Matches(props: { readonly chainId: number; readonly sellerSignerPublicKey: string; readonly receiptSignerPublicKey: string | undefined }): ReactNode {
+function Matches(props: { readonly chainId: number; readonly matches: readonly ScanMatch[]; readonly sellerSignerPublicKey: string; readonly receiptSignerPublicKey: string | undefined }): ReactNode {
   const app = useApp();
   const services = useServices();
   const [tags, setTags] = useState<Readonly<Record<string, string>>>({});
   const [label, setLabel] = useState<Readonly<Record<string, string>>>({});
   const [err, setErr] = useState<string | undefined>(undefined);
   const unlocked = services.vault.unlocked;
-  const matches = app.matches;
+  const matches = props.matches;
 
   useEffect(() => {
     let live = true;
@@ -233,7 +296,7 @@ function Matches(props: { readonly chainId: number; readonly sellerSignerPublicK
           return (
             <li key={id} className="card">
               <p>
-                <strong>{m.receipt === 'verified' ? describe(m, props.chainId) : `Claimed, not confirmed: ${describe(m, props.chainId)}`}</strong> in block {m.announcement.blockNumber.toString()}
+                <strong>{m.receipt === 'verified' ? describe(m, m.chainId) : `Claimed, not confirmed: ${describe(m, m.chainId)}`}</strong> in block {m.announcement.blockNumber.toString()}
                 {m.viaRouter ? '' : ' (paid directly, no GhostPay fee)'}
                 {!m.tagMatches && ' (found by deep scan: announced view tag did not match)'}
                 {m.receipt === 'claimed' && (m.viaRouter ? ' - this announcement could not be verified as a payment; do not release goods based on it.' : ' - this is a direct announcement claim; an existing balance does not prove this payment occurred, so do not release goods based on it.')}
@@ -271,7 +334,7 @@ function Matches(props: { readonly chainId: number; readonly sellerSignerPublicK
               {m.receipt === 'verified' && m.metadata !== undefined && props.receiptSignerPublicKey !== undefined && props.receiptSignerPublicKey === props.sellerSignerPublicKey && (
                 <ReceiptPanel match={m} sellerSignerPublicKey={props.receiptSignerPublicKey} />
               )}
-              <button type="button" className="btn btn-primary" onClick={() => { app.selectForSweep({ match: m, chainId: props.chainId }); app.setView('sweep'); }}>
+              <button type="button" className="btn btn-primary" onClick={() => { app.selectForSweep({ match: m, chainId: m.chainId }); app.setView('sweep'); }}>
                 Sweep this payment
               </button>
             </li>

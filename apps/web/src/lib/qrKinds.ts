@@ -99,7 +99,7 @@ export const QR_KINDS: Readonly<Record<QrKind, QrKindInfo>> = {
     border: 'dotted',
     icon: 'check-doc',
     label: 'PROOF',
-    explanation: 'A record you can check or keep: it proves something happened or lets you compare a fingerprint.',
+    explanation: 'Signed data or fingerprints can be checked or kept. A seller receipt attests to key control; it does not independently prove payment or seller identity.',
     examples: 'Receipts, proof of payment, signed manifests, fingerprints to compare.',
     rules: { revealRequired: false, autoHideSeconds: null, allowCopyText: true, allowDownload: true, printByDefault: true, warning: null },
   },

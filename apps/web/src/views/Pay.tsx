@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import type { BuiltPayment } from '@ghostpay/chain-adapters';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
+import { CameraImporter } from '../components/CameraImporter';
 import { FeeDisclosure, useManifest } from '../components/Disclosure';
 import { ManifestBanner } from '../components/ManifestBanner';
 import { extractFragment } from '../lib/fragment';
@@ -23,7 +24,7 @@ import { PostBroadcastError, buildReceipt, grantApproval, planApproval, prepareP
 import { useServices } from '../lib/services';
 import { connectWallet, walletWarnings, type WalletInfo, type WalletSession } from '../lib/wallet';
 import { useApp } from '../state';
-import { bindReceiptToInvoice, parseVerifiedReceipt, type BoundReceipt } from '../lib/receipts';
+import { bindReceiptToInvoice, MAX_RECEIPT_JSON_BYTES, parseVerifiedReceipt, type BoundReceipt } from '../lib/receipts';
 
 type Phase = 'input' | 'review' | 'waiting' | 'ready' | 'prepared' | 'busy' | 'submitted' | 'done';
 
@@ -56,6 +57,7 @@ export function Pay(): ReactNode {
   const [receiptTrustedKey, setReceiptTrustedKey] = useState('');
   const [receiptError, setReceiptError] = useState<string | undefined>(undefined);
   const [receiptBusy, setReceiptBusy] = useState(false);
+  const receiptBusyRef = useRef(false);
   const receiptImportRevision = useRef(0);
   const [approval, setApproval] = useState<ApprovalPlan | undefined>(undefined);
   const [granted, setGranted] = useState<bigint | undefined>(undefined);
@@ -75,6 +77,7 @@ export function Pay(): ReactNode {
     let live = true;
     flowRevision.current += 1;
     receiptImportRevision.current += 1;
+    receiptBusyRef.current = false;
     setReceiptBusy(false);
     setBoundReceipt(undefined);
     setReceiptError(undefined);
@@ -141,8 +144,8 @@ export function Pay(): ReactNode {
 
   // Build the payment request (amounts) as soon as the review has no blockers. The review is recomputed from the
   // latest invoice/manifest/clock every time (also when a delay ends), never from a stale closure.
-  const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext });
-  latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext };
+  const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment });
+  latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment };
   const assertCurrentInvoice = (revision: number, invoice: ParsedInvoice['invoice']): void => {
     if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice || latest.current.ctx?.review.invoice !== invoice) {
       throw new Error('The invoice changed. Review it again before continuing.');
@@ -277,29 +280,34 @@ export function Pay(): ReactNode {
     ).finally(() => { if (flowRevision.current === revision) setUnlocking(false); });
   };
 
-  const onImportReceipt = (e: React.FormEvent<HTMLFormElement>): void => {
-    e.preventDefault();
-    const fileInput = e.currentTarget.querySelector<HTMLInputElement>('input[type="file"]');
-    const file = fileInput?.files?.[0];
+  const importReceiptText = (readText: () => Promise<string>, byteLength?: number): Promise<boolean> => {
+    if (receiptBusyRef.current) return Promise.resolve(false);
     const invoiceAtStart = parsed;
     const contextAtStart = ctx;
-    if (file === undefined || invoiceAtStart === undefined || contextAtStart === undefined) return;
+    const fragmentAtStart = fragment;
+    const flowAtStart = flowRevision.current;
+    if (latest.current.fragment !== fragmentAtStart || flowRevision.current !== flowAtStart) return Promise.resolve(false);
+    if (invoiceAtStart === undefined || contextAtStart === undefined) return Promise.resolve(false);
     if (contextAtStart.review.invoice !== invoiceAtStart.invoice) {
       setReceiptError('Payment details are still updating for this invoice. Try again when they finish loading.');
-      return;
+      return Promise.resolve(false);
     }
     const trustedKeyAtStart = receiptTrustedKey;
     const importRevision = ++receiptImportRevision.current;
+    receiptBusyRef.current = true;
     setReceiptBusy(true);
     setBoundReceipt(undefined);
     setReceiptError(undefined);
-    void (async () => {
+    return (async () => {
       try {
-        if (file.size > 65_536) throw new Error('Receipt file exceeds 64 KiB.');
-        const text = await file.text();
+        if (byteLength !== undefined && byteLength > MAX_RECEIPT_JSON_BYTES) throw new Error('Receipt file exceeds 64 KiB.');
+        const text = await readText();
+        if (text.length > MAX_RECEIPT_JSON_BYTES || new TextEncoder().encode(text).byteLength > MAX_RECEIPT_JSON_BYTES) {
+          throw new Error(byteLength === undefined ? 'Receipt QR/text exceeds 64 KiB.' : 'Receipt file exceeds 64 KiB.');
+        }
         const receipt = parseVerifiedReceipt(text);
         const current = latest.current;
-        if (current.parsed !== invoiceAtStart) return;
+        if (receiptImportRevision.current !== importRevision || flowRevision.current !== flowAtStart || current.fragment !== fragmentAtStart || current.parsed !== invoiceAtStart) return false;
         if (current.ctx?.review.invoice !== invoiceAtStart.invoice) throw new Error('Payment details are still updating for this invoice. Try again when they finish loading.');
         const binding = bindReceiptToInvoice(receipt, {
           invoiceDigest: `0x${bytesToHex(invoiceDigest(invoiceAtStart.invoice))}`,
@@ -312,15 +320,27 @@ export function Pay(): ReactNode {
           ...(current.result === undefined || current.resultForContext !== current.ctx ? {} : { txHash: current.result.hash }),
           ...(current.built === undefined || current.builtFor !== invoiceAtStart.invoice || current.builtForContext !== current.ctx ? {} : { stealthAddress: current.built.preview.stealth }),
         });
-        if (receiptImportRevision.current !== importRevision || latest.current.parsed !== invoiceAtStart || latest.current.receiptTrustedKey !== trustedKeyAtStart) return;
+        if (receiptImportRevision.current !== importRevision || flowRevision.current !== flowAtStart || latest.current.fragment !== fragmentAtStart || latest.current.parsed !== invoiceAtStart || latest.current.receiptTrustedKey !== trustedKeyAtStart) return false;
         setBoundReceipt(binding);
+        return true;
       } catch (err) {
-        if (receiptImportRevision.current === importRevision && latest.current.parsed === invoiceAtStart && latest.current.receiptTrustedKey === trustedKeyAtStart) setReceiptError(userMessage(err));
+        if (receiptImportRevision.current === importRevision && flowRevision.current === flowAtStart && latest.current.fragment === fragmentAtStart && latest.current.parsed === invoiceAtStart && latest.current.receiptTrustedKey === trustedKeyAtStart) setReceiptError(userMessage(err));
+        return false;
       } finally {
-        if (fileInput !== null && fileInput !== undefined) fileInput.value = '';
-        if (receiptImportRevision.current === importRevision) setReceiptBusy(false);
+        if (receiptImportRevision.current === importRevision) {
+          receiptBusyRef.current = false;
+          setReceiptBusy(false);
+        }
       }
     })();
+  };
+
+  const onImportReceipt = (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
+    const fileInput = e.currentTarget.querySelector<HTMLInputElement>('input[type="file"]');
+    const file = fileInput?.files?.[0];
+    if (file === undefined) return;
+    void importReceiptText(() => file.text(), file.size).finally(() => { if (fileInput !== null) fileInput.value = ''; });
   };
 
   const startWaiting = (): void => {
@@ -741,6 +761,11 @@ export function Pay(): ReactNode {
             </Field>
             <button type="submit" className="btn" disabled={receiptBusy || ctx === undefined}>{receiptBusy ? 'Checking receipt…' : 'Check receipt against this invoice'}</button>
           </form>
+          <CameraImporter
+            key={fragment ?? ''}
+            label="Scan or paste a seller receipt"
+            onText={(text) => importReceiptText(() => Promise.resolve(text))}
+          />
           {receiptError !== undefined && <Notice kind="error" title="Receipt not accepted">{receiptError}</Notice>}
           {boundReceipt !== undefined && (
             <Notice kind="ok" title="Receipt matches this invoice">
