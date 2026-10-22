@@ -2,6 +2,8 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { act } from '@testing-library/react';
+import { checkpointKeyId } from '../lib/scanClient';
 import { clearSession, generateSession } from '../lib/session';
 import { SETTINGS_KEY } from '../lib/settings';
 import { FAKE_ANNOUNCER, FAKE_ROUTER } from '../test/fakeManifest';
@@ -80,7 +82,7 @@ describe('Scan and receive', () => {
     expect(screen.getByText(mine.stealthAddress)).toBeTruthy();
     expect(screen.queryByText(other.stealthAddress)).toBeNull();
     await waitFor(() => { expect(screen.getByText(/Finished\. 2 announcements checked, 1 payments found\./)).toBeTruthy(); });
-    expect(checkpoints.load(84532)?.nextBlock).toBe(501n);
+    expect(checkpoints.load(84532, checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey))?.nextBlock).toBe(401n); // head 500 + 1 - finalityDepth 100: the tail is re-scanned on resume
     expect(screen.getByText(/Resume from checkpoint/)).toBeTruthy();
 
     // Tags: locked by default, unlock, tag, lock hides, delete everything.
@@ -101,11 +103,56 @@ describe('Scan and receive', () => {
     await waitFor(() => { expect(screen.queryByLabelText(/Client tag/)).toBeNull(); });
 
     await user.click(screen.getByRole('button', { name: 'Clear checkpoint' }));
-    expect(checkpoints.load(84532)).toBeUndefined();
+    expect(checkpoints.load(84532, checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey))).toBeUndefined();
 
     await user.click(screen.getByRole('button', { name: 'Sweep this payment' }));
     expect(screen.getByRole('heading', { level: 2, name: 'Sweep' })).toBeTruthy();
     expect(screen.getByText(mine.stealthAddress)).toBeTruthy();
+  });
+
+  it('does not offer another key set\'s checkpoint (WEB-APP-04)', async () => {
+    const pub = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const rpc = chainWithLogs(84532, 500, []);
+    const checkpoints = memoryCheckpoints();
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)), checkpoints }));
+    await user.type(screen.getByLabelText('Start block'), '100');
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    await waitFor(() => { expect(screen.getByText(/Finished\./)).toBeTruthy(); });
+    expect(screen.getByLabelText('Resume from checkpoint')).toBeTruthy();
+    expect(checkpoints.load(84532, checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey))).toBeDefined();
+    act(() => { clearSession(); generateSession(); });
+    await waitFor(() => { expect(screen.queryByLabelText('Resume from checkpoint')).toBeNull(); });
+    expect(screen.queryByText(/A checkpoint exists/)).toBeNull();
+  });
+
+  it('cross-checks with the second RPC configured in Settings (WEB-APP-04)', async () => {
+    generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' }, rpcUrlsSecondary: { '84532': 'https://rpc2.test' } }));
+    const primary = chainWithLogs(84532, 500, []);
+    const secondary = chainWithLogs(84532, 500, []);
+    const created: string[] = [];
+    const createRpc: Services['createRpc'] = (_c, url) => {
+      created.push(url);
+      return Promise.resolve(url.startsWith('https://rpc2.test') ? secondary : withManifestChain(primary));
+    };
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc }));
+    await user.type(screen.getByLabelText('Start block'), '100');
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    await waitFor(() => { expect(screen.getByText(/Finished\./)).toBeTruthy(); });
+    expect(created.some((u) => u.startsWith('https://rpc2.test'))).toBe(true);
+    expect(secondary.calls.some((c) => c.method === 'eth_getLogs')).toBe(true);
+    expect(screen.queryByText(/Only one RPC was used/)).toBeNull();
+  });
+
+  it('says so when only one RPC was used', async () => {
+    generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const rpc = chainWithLogs(84532, 500, []);
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
+    await user.type(screen.getByLabelText('Start block'), '100');
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    expect(await screen.findByText(/Only one RPC was used/)).toBeTruthy();
   });
 
   it('can be cancelled while running', async () => {

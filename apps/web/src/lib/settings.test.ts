@@ -45,6 +45,8 @@ describe('sanitizeSettings', () => {
       pinnedSigners: [`02${'a'.repeat(64)}`, 'bad', 5],
     });
     expect(s.rpcUrls).toEqual({ '84532': 'https://rpc.example/' });
+    expect(s.rpcUrlsSecondary).toEqual({});
+    expect(sanitizeSettings({ rpcUrlsSecondary: { '84532': 'https://rpc2.example', '1': 'http://insecure' } }).rpcUrlsSecondary).toEqual({ '84532': 'https://rpc2.example/' });
     expect(s.relayerUrl).toBe('https://relay.example');
     expect(s.delayMinSec).toBe(10);
     expect(s.theme).toBe('dark');
@@ -73,6 +75,6 @@ describe('persistence', () => {
     expect(saveSettings(s, { setItem: () => { throw new Error('full'); } })).toBe(false);
   });
   it('never stores key material fields', () => {
-    expect(Object.keys(DEFAULT_SETTINGS).sort()).toEqual(['autoClearFragment', 'delayMaxSec', 'delayMinSec', 'lockTimeoutMin', 'pinnedSigners', 'relayerUrl', 'rpcUrls', 'theme']);
+    expect(Object.keys(DEFAULT_SETTINGS).sort()).toEqual(['autoClearFragment', 'delayMaxSec', 'delayMinSec', 'lockTimeoutMin', 'pinnedSigners', 'relayerUrl', 'rpcUrls', 'rpcUrlsSecondary', 'theme']);
   });
 });

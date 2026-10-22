@@ -59,6 +59,18 @@ describe('Settings', () => {
     expect(JSON.stringify(stored())).not.toMatch(/secret|private|seed/i);
   });
 
+  it('saves a validated second RPC per chain (WEB-APP-04)', async () => {
+    const user = await open();
+    await user.type(screen.getByLabelText('Base Sepolia second RPC URL (optional)'), 'https://rpc2.example');
+    await user.click(screen.getByRole('button', { name: 'Save settings' }));
+    expect(await screen.findByText('Settings saved.')).toBeTruthy();
+    expect(stored()).toMatchObject({ rpcUrlsSecondary: { '84532': 'https://rpc2.example/' } });
+    await user.clear(screen.getByLabelText('Base Sepolia second RPC URL (optional)'));
+    await user.type(screen.getByLabelText('Base Sepolia second RPC URL (optional)'), 'http://insecure.example');
+    await user.click(screen.getByRole('button', { name: 'Save settings' }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(/RPC URL rejected/);
+  });
+
   it.each([
     ['Base Sepolia RPC URL', 'http://insecure.example', /RPC URL rejected/],
     ['Base Sepolia RPC URL', 'https://user:pw@rpc.example', /RPC URL rejected/],
