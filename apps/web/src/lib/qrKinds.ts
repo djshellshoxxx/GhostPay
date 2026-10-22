@@ -138,8 +138,8 @@ export const QR_PALETTE_LIGHT: QrPalette = {
   red: { color: '#b00020', on: '#ffffff' },
   green: { color: '#1b6b35', on: '#ffffff' },
   orange: { color: '#b45309', on: '#ffffff' },
-  blue: { color: '#0b4fd6', on: '#ffffff' },
-  purple: { color: '#6d28d9', on: '#ffffff' },
+  blue: { color: '#1565d8', on: '#ffffff' },
+  purple: { color: '#4a148c', on: '#ffffff' },
   yellow: { color: '#a67c00', on: '#000000' },
 };
 
@@ -147,8 +147,8 @@ export const QR_PALETTE_DARK: QrPalette = {
   red: { color: '#ff6b7a', on: '#000000' },
   green: { color: '#4cc38a', on: '#000000' },
   orange: { color: '#ff9f43', on: '#000000' },
-  blue: { color: '#6ea8ff', on: '#000000' },
-  purple: { color: '#b794f6', on: '#000000' },
+  blue: { color: '#4d9fff', on: '#000000' },
+  purple: { color: '#d0b0ff', on: '#000000' },
   yellow: { color: '#f2c230', on: '#000000' },
 };
 

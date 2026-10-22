@@ -15,3 +15,16 @@
 5. **Meta-address** is validated locally (canonical lowercase, two distinct on-curve keys) without depending on core-crypto.
 6. **@noble/ciphers** is a dev dependency only: it is used by tests as an independent AES-GCM implementation.
 7. TypeScript 5.9.3 (typescript-eslint does not yet support 7.x).
+8. **Passphrase links (ADR-0020)** keep the `#gpi=v1.` prefix and select the mode by `alg: "A256GCM-PW"`; older parsers
+   fail closed with `UnsupportedError`. Unlike `A256GCM`, the whole invoice and the signature are inside the ciphertext and
+   `s`/`n`/`c` are base64url (not hex) to keep links and QR codes small. Header/plaintext mismatch of chainId or signer is
+   a `SchemaError` (reachable only by someone who knows the passphrase).
+9. **Passphrase minimum** is the keystore's value (10) but counted in Unicode code points after NFKC, where the keystore
+   counts UTF-16 units of the raw string; so NFKC-equivalent inputs always get the same verdict. Upper cap 1024 UTF-8 bytes.
+10. **Errors after authentication are specific.** Only the GCM failure is collapsed into `WrongPassphraseError`; UTF-8,
+    JSON, canonical and schema errors after a successful decrypt keep their own types because reaching them already
+    requires the passphrase, so they are not an oracle for guessing it.
+11. **`ParsedInvoice` gained `passphraseProtected: boolean`** (additive). New error codes: `PASSPHRASE_REQUIRED`,
+    `PASSPHRASE_UNEXPECTED`, `PASSPHRASE_POLICY`, `PASSPHRASE`. `apps/web/src/lib/errors.ts` has no text for them yet
+    (it falls back to a generic message); the UI prompt is not wired (apps are out of scope for this change).
+12. **Runtime dependency unchanged**: scrypt is `@noble/hashes@2.4.0` `scryptAsync`, the version `apps/web` keystore uses.
