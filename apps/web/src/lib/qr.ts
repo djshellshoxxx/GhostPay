@@ -24,7 +24,18 @@ export function makeQr(text: string): QrMatrix {
 const QUIET = 4;
 
 /** SVG path data for the dark modules (one `M x y h1 v1 h-1 z` per module), including the quiet zone offset. */
+/** Validate externally supplied matrices before constructing a downloadable SVG. */
+function assertQrMatrix(m: QrMatrix): void {
+  if (!Number.isSafeInteger(m.size) || m.size < 1 || m.size > 177 || m.dark.length !== m.size * m.size) {
+    throw new UserFacingError('Invalid QR matrix.');
+  }
+  for (const module of m.dark) {
+    if (typeof module !== 'boolean') throw new UserFacingError('Invalid QR matrix.');
+  }
+}
+
 export function qrPath(m: QrMatrix): string {
+  assertQrMatrix(m);
   const parts: string[] = [];
   for (let r = 0; r < m.size; r++) {
     for (let c = 0; c < m.size; c++) {
