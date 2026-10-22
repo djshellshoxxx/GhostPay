@@ -1,0 +1,24 @@
+<!--page title="How it works" desc="A plain walk-through of a GhostPay payment from keys to destination wallet." -->
+<p class="lead">One public address in, a fresh one-time address per payment, and a sweep to your own wallet. Here is the whole path.</p>
+
+{{diagram:flow}}
+
+<h2>In three acts</h2>
+<div class="cards three">
+<article class="card"><h3>1. The seller sets up</h3><p>Creates keys in the browser, backs them up, shares the meta-address and sends an invoice link.</p></article>
+<article class="card"><h3>2. The payer pays</h3><p>Opens the link, reviews every amount, pays from their own wallet. A public announcement is posted.</p></article>
+<article class="card"><h3>3. The seller collects</h3><p>Scans announcements with the viewing key and sweeps funds to a destination wallet.</p></article>
+</div>
+
+<div class="notice notice-warn" role="note">
+<h3>What this does not hide</h3>
+<p>The payer address, amount, token, time and the use of the GhostPay router are public on-chain. Sweeping links the one-time address to your destination wallet, so use a fresh destination. See <a href="{{root}}help/observers.html">what an observer sees</a>.</p>
+</div>
+
+<h2>Go deeper</h2>
+<div class="cards two">
+<a class="card card-link" href="{{root}}help/stealth.html"><h3>How one-time addresses are made</h3><p>Meta-address, ephemeral key, shared secret.</p></a>
+<a class="card card-link" href="{{root}}help/sweep.html"><h3>The sweep relayer</h3><p>Signed order, fee split, nonce.</p></a>
+<a class="card card-link" href="{{root}}help/fees.html"><h3>Fees</h3><p>Router, direct pay, relayer.</p></a>
+<a class="card card-link" href="{{root}}help/"><h3>All help pages</h3><p>Diagrams, glossary, FAQ.</p></a>
+</div>
