@@ -38,6 +38,16 @@ describe('basic routes, headers and CORS', () => {
     expect(j.chains[0]?.tokens).toHaveLength(2);
   });
 
+  it('rejects unexpected query parameters without processing the request', async () => {
+    const s = await start();
+    const health = await call(s, 'GET', '/healthz?token=should-not-be-here');
+    expect(health.status).toBe(400);
+    expect(errCode(health)).toBe('unexpected_query');
+    const quote = await call(s, 'POST', '/v1/quote?secret=leak', {});
+    expect(quote.status).toBe(400);
+    expect(errCode(quote)).toBe('unexpected_query');
+  });
+
   it('answers 404 and 405', async () => {
     const s = await start();
     expect(errCode(await call(s, 'GET', '/nope'))).toBe('not_found');
