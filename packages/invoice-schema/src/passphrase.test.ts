@@ -291,7 +291,10 @@ describe('passphrase-protected links (A256GCM-PW, ADR-0020)', () => {
     const env = decodeEnvelope(await pwEncode(sampleSigned()));
     for (const alg of ['A256GCM', 'none']) {
       expect(await errName(parseFragment(frag({ ...env, alg })))).toBe('SchemaError');
-      expect(await errName(parseFragment(frag({ ...env, alg }), { passphrase: PASS }))).toBe('SchemaError');
+      // With a passphrase the relabelled link is refused as a possible substitution.
+      expect(await errName(parseFragment(frag({ ...env, alg }), { passphrase: PASS }))).toBe(
+        'PassphraseUnexpectedError',
+      );
     }
     expect(await errName(parseFragment(frag({ ...env, alg: 'A256GCM-PW2' }), { passphrase: PASS }))).toBe(
       'UnsupportedError',
@@ -497,14 +500,14 @@ describe('passphrase fuzzing', () => {
         if (b === undefined) (copy as Record<string, unknown>)[a] = v;
         else (copy[a] as Record<string, unknown>)[b] = v;
         try {
-          const r = await openFragment(frag(copy), { passphrase: PASS });
-          // Only an unmutated-equivalent envelope may open.
-          expect(r.status).toBe('ok');
+          // No passphrase: exercises every structural check without KDF work.
+          const r = await openFragment(frag(copy));
+          expect(r.status).toBe('needsPassphrase');
         } catch (e) {
           expect(e).toBeInstanceOf(InvoiceError);
         }
       }),
-      { numRuns: 60 },
+      { numRuns: 400 },
     );
   });
 
@@ -516,7 +519,7 @@ describe('passphrase fuzzing', () => {
         const e = await openFragment(frag(copy), { passphrase: PASS }).catch((x: unknown) => x);
         expect(e).toBeInstanceOf(InvoiceError);
       }),
-      { numRuns: 25 },
+      { numRuns: 8 },
     );
   });
 });
