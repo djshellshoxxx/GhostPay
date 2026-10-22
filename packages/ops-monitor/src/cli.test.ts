@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
-import type { RpcClient } from '@ghostpay/chain-adapters';
+import { ed25519 } from '@noble/curves/ed25519.js';
+import { manifestSigningBytes, type ReleaseKey, type RpcClient } from '@ghostpay/chain-adapters';
 import { keccak256 } from 'viem';
 import { mkdtempSync, readFileSync, readdirSync } from 'node:fs';
 import { createServer } from 'node:http';
@@ -176,6 +177,33 @@ describe('runCli', () => {
     const wrong = rig({ files: { '/m/84532.json': MANIFEST.replace('84532', '1') } });
     expect(await runCli(['--config', '/cfg.json'], ENV, wrong.deps)).toBe(3);
     expect(wrong.err.join('\n')).not.toContain('key-a');
+  });
+
+  it('authenticates manifests with the release key before trusting them (CHAIN-ADAPTERS-05), fail closed', async () => {
+    const sk = new Uint8Array(32).fill(7);
+    const releaseKey: ReleaseKey = { alg: 'ed25519', publicKey: `0x${Buffer.from(ed25519.getPublicKey(sk)).toString('hex')}` };
+    const sign = (text: string, k: Uint8Array): string => {
+      const signature = `0x${Buffer.from(ed25519.sign(manifestSigningBytes(text), k)).toString('hex')}`;
+      return JSON.stringify({ ...(JSON.parse(text) as Record<string, unknown>), signature });
+    };
+    // pinned key + unsigned or forged manifest: refuse
+    const unsigned = rig();
+    expect(await runCli(['--config', '/cfg.json'], ENV, { ...unsigned.deps, releaseKey })).toBe(3);
+    expect(unsigned.err.join('\n')).toContain('signature');
+    const forged = rig({ files: { '/m/84532.json': sign(MANIFEST, new Uint8Array(32).fill(9)) } });
+    expect(await runCli(['--config', '/cfg.json'], ENV, { ...forged.deps, releaseKey })).toBe(3);
+    // properly signed manifest is accepted
+    const ok = rig({ files: { '/m/84532.json': sign(MANIFEST, sk) } });
+    expect(await runCli(['--config', '/cfg.json', '--dry-run'], ENV, { ...ok.deps, releaseKey })).toBe(0);
+    // mainnet manifest with no release key pinned: refused
+    const main = rig({
+      files: {
+        '/cfg.json': CONFIG({ chains: [{ chainId: 1, rpcUrlEnvs: ['RPC_A'], manifestFile: '/m/1.json' }] }),
+        '/m/1.json': MANIFEST.replace('84532', '1'),
+      },
+    });
+    expect(await runCli(['--config', '/cfg.json'], ENV, main.deps)).toBe(3);
+    expect(main.err.join('\n')).toContain('signature');
   });
 
   it('checks release files against SHA256SUMS through the injected fetch', async () => {

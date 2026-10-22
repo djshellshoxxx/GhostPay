@@ -146,7 +146,7 @@ describe('scanFromVideo', () => {
     pre.abort();
     await scanFromVideo(v, () => true, { reader: seq(null), signal: pre.signal });
     let n = 0;
-    await scanFromVideo(v, () => true, { reader: { read: () => Promise.resolve(++n > 1 ? 'x' : null) }, intervalMs: 1 });
+    await scanFromVideo(fakeVideo(), () => true, { reader: { read: () => Promise.resolve(++n > 1 ? 'x' : null) }, intervalMs: 1 });
     expect(n).toBeGreaterThan(1);
   });
   it('stopVideo survives throwing tracks and non-stream srcObject', () => {

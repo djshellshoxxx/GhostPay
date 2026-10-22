@@ -3,6 +3,8 @@ import {
   createClient,
   findChain,
   loadDeployment,
+  verifyManifestSignature,
+  type ReleaseKey,
   validateRpcUrl,
   type DeploymentManifest,
   type RpcClient,
@@ -26,6 +28,8 @@ export type ExitCode = 0 | 1 | 2 | 3;
 export interface CliDeps {
   readonly readText: (path: string) => Promise<string>;
   readonly writeAtomic: (path: string, text: string) => Promise<void>;
+  /** Pinned release key override (tests). Default: the key pinned in chain-adapters (none: mainnet manifests are refused). */
+  readonly releaseKey?: ReleaseKey | undefined;
   readonly createRpc: (chainId: number, url: string) => Promise<RpcClient>;
   readonly postJson: (url: string, body: string) => Promise<boolean>;
   readonly now: () => number;
@@ -88,6 +92,13 @@ async function buildContext(cfg: OpsConfig, env: Env, d: CliDeps): Promise<{ ctx
   const manifestCopies: Record<number, string> = {};
   for (const c of cfg.chains) {
     const text = await d.readText(c.manifestFile);
+    // CHAIN-ADAPTERS-05: authenticate the manifest before trusting it; fail closed (no pinned key: mainnet refused).
+    // The on-chain read-back is the W1 probe, which pages on any mismatch.
+    try {
+      verifyManifestSignature(text, 'releaseKey' in d ? { testnet: findChain(c.chainId)?.testnet ?? false, key: d.releaseKey } : { testnet: findChain(c.chainId)?.testnet ?? false });
+    } catch {
+      throw new MonitorError('INVALID_CONFIG', 'manifest signature check failed');
+    }
     manifests.push(loadDeployment(text, c.chainId));
     manifestCopies[c.chainId] = text;
     for (const name of c.rpcUrlEnvs) {

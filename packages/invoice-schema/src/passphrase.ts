@@ -36,7 +36,11 @@ export interface ScryptParams {
  * @returns Whether N is in {@link SCRYPT_ALLOWED_N}, r = 8 and p = 1.
  * @security Called before any KDF work so a link cannot force an expensive derivation.
  */
-export function isAllowedScrypt(params: { readonly N: unknown; readonly r: unknown; readonly p: unknown }): boolean {
+export function isAllowedScrypt(params: {
+  readonly N: unknown;
+  readonly r: unknown;
+  readonly p: unknown;
+}): boolean {
   return (
     typeof params.N === 'number' &&
     SCRYPT_ALLOWED_N.includes(params.N) &&
