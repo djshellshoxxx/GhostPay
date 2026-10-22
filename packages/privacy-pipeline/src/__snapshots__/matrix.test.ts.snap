@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`chainMatrix (chaining spec section 4, compact table) > snapshot of the generated table 1`] = `
+"amount.shape        - - Y - - Y X
+payer.fresh-wallet  - - Y - - Y -
+ct.wrap             - - - - - Y -
+sweep.delay         Y Y M - Y - -
+hops.forward        Y Y M - - - -
+hygiene.sweep       X X X X X X X
+pool.deposit        - - X Y - - Y
+pool.exit           X X X X X X X"
+`;
