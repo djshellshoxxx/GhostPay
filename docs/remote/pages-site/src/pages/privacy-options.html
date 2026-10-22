@@ -1,0 +1,120 @@
+<!--page title="Privacy options" desc="Every selectable privacy option, honestly labelled built, planned or experimental." -->
+<p class="lead">GhostPay offers a menu of privacy options. Most are <strong>not built yet</strong>. This page lists each one with its real status and what it still leaves visible.</p>
+
+<div class="notice notice-warn" role="note"><p><strong>Hidden is not anonymous.</strong> Even the best option here leaves the payer, amount, token, time and router call public unless a card says otherwise. Nothing is audited. Testnet only.</p></div>
+
+<h2>How to read the labels</h2>
+<ul class="legend">
+<li>{{S:built}} Works in the app (or the running app code) today, in tests and mocks. Not tested against a real wallet, RPC or chain.</li>
+<li>{{S:planned}} A written spec only. No code. It may change or never ship.</li>
+<li>{{S:experimental}} Code exists as a library or contracts, but a user cannot use it from the app, or it is unverified.</li>
+</ul>
+
+{{diagram:privacy-map}}
+
+<h2>Chaining methods</h2>
+<p>Options are meant to be picked one at a time and stacked: pay with a delay, scan through your own node, sweep to a fresh destination, optionally exit through a pool. Read the map above from top to bottom. Each stacked step adds cost, delay and a new way to make a mistake, and the methods do not add up to anonymity. Only the built options can be used today.</p>
+
+<h2 id="built">Built</h2>
+<p>Usable in the app today.</p>
+<div class="cards two">
+<article class="card"><h3>One-time address per payment {{S:built}}</h3>
+<p>Each payment goes to a new address derived from your meta-address, so an invoice does not reveal which on-chain address is yours.</p>
+<p><strong>Does not hide:</strong> The payer, amount, token, time and router use. Two invoices from one seller share a meta-address.</p>
+<p class="where">Source: README, docs/user/privacy-limits.md</p></article>
+<article class="card"><h3>Fragment-only invoice link {{S:built}}</h3>
+<p>Invoice data sits after the # in the link, which browsers do not send to the web server. You can encrypt line items and memo inside the link.</p>
+<p><strong>Does not hide:</strong> Anyone holding the link reads the invoice (it is a bearer link). Browsers may keep it in history.</p>
+<p class="where">Source: apps/web, docs/user</p></article>
+<article class="card"><h3>View-tag scanning {{S:built}}</h3>
+<p>A 1-byte tag in each announcement lets your scanner skip most non-matching payments quickly.</p>
+<p><strong>Does not hide:</strong> Nothing. It saves work only; the public log is unchanged.</p>
+<p class="where">Source: docs/user/privacy-limits.md item 6; MH-TAG-1</p></article>
+<article class="card"><h3>Random payment delay {{S:built}}</h3>
+<p>Optional wait of random length (you pick the range) before the payer can send. Cancel or send now at any time.</p>
+<p><strong>Does not hide:</strong> Not anonymity. It is timing friction only. No cover transactions. The tab must stay open.</p>
+<p class="where">Source: apps/web Pay + Settings</p></article>
+<article class="card"><h3>Gas buffer (opt-in trade-off) {{S:built}}</h3>
+<p>Adds a little native coin to the one-time address so the seller can pay gas to move tokens.</p>
+<p><strong>Does not hide:</strong> It is public and links payer to one-time address more visibly. It costs privacy; listed so you can decide.</p>
+<p class="where">Source: apps/web Pay</p></article>
+<article class="card"><h3>Your own RPC URL {{S:built}}</h3>
+<p>Choose the RPC endpoint per chain in Settings instead of relying on a default.</p>
+<p><strong>Does not hide:</strong> The RPC you choose still sees your IP, the addresses you query and what you broadcast.</p>
+<p class="where">Source: apps/web Settings; MH-NET-1 (partial)</p></article>
+<article class="card"><h3>Direct or relayer sweep {{S:built}}</h3>
+<p>Sweep yourself (the one-time address needs gas coin) or have a relayer submit a signed order and take a fee from the amount.</p>
+<p><strong>Does not hide:</strong> The chain still shows one-time address to destination. A relayer additionally sees destination, amount, token, hashed IP and timing.</p>
+<p class="where">Source: apps/web Sweep, apps/relayer</p></article>
+<article class="card"><h3>No third-party code, no-referrer {{S:built}}</h3>
+<p>The app loads nothing from third parties and sets a no-referrer policy. A content-security policy restricts scripts and styles to the app&#39;s own origin.</p>
+<p><strong>Does not hide:</strong> A compromised host or browser extension defeats everything. GitHub Pages cannot send security headers.</p>
+<p class="where">Source: apps/web index.html; MH-WEB-1 (done, with gaps)</p></article>
+</div>
+<h2 id="planned">Planned</h2>
+<p>Spec only. Nothing below is implemented.</p>
+<div class="cards two">
+<article class="card"><h3>Fresh payer wallet and sponsored payments {{S:planned}}</h3>
+<p>Payer options (fresh wallet, permit relay, EIP-7702 sponsor, ERC-4337 paymaster) to cut the link to the payer main wallet.</p>
+<p><strong>Does not hide:</strong> Never hides the payer address itself, and a sponsor sees payer, amount and timing.</p>
+<p class="where">Source: privacy-specs/payer-hiding.md</p></article>
+<article class="card"><h3>Amount and timing blurring {{S:planned}}</h3>
+<p>Round amounts, split a payment, use fixed denominations, multi-step delays, plus an honesty meter showing the crowd-size estimate.</p>
+<p><strong>Does not hide:</strong> Friction only; it does not make you anonymous and the spec says so.</p>
+<p class="where">Source: privacy-specs/amount-blurring.md</p></article>
+<article class="card"><h3>Sweep hygiene {{S:planned}}</h3>
+<p>Fresh self-derived destination, no consolidation, address-free verification, buffer rounding, a known-wallet guard.</p>
+<p><strong>Does not hide:</strong> The sweep is still visible on-chain. It lowers self-inflicted leaks only.</p>
+<p class="where">Source: privacy-specs/hygiene.md</p></article>
+<article class="card"><h3>Delayed multi-hop forwarding (weak) {{S:planned}}</h3>
+<p>Forward funds through several hops over time. Off by default, behind a blocking warning.</p>
+<p><strong>Does not hide:</strong> Followers and automated analysis link hops easily. Adds delay and cost, not unlinkability.</p>
+<p class="where">Source: privacy-specs/hops.md</p></article>
+<article class="card"><h3>Exit through an external pool {{S:planned}}</h3>
+<p>Exit through Privacy Pools or Railgun, chosen by the user.</p>
+<p><strong>Does not hide:</strong> Depends on third-party contracts and their anonymity sets. Nothing has been run against any pool.</p>
+<p class="where">Source: privacy-specs/external-pools.md</p></article>
+<article class="card"><h3>Own shielded-pool exit {{S:planned}}</h3>
+<p>A GhostPay-built pool with zero-knowledge proofs for the exit step.</p>
+<p><strong>Does not hide:</strong> Large, unbuilt, zero-knowledge circuits unaudited. Anonymity set would start at zero.</p>
+<p class="where">Source: privacy-specs/shielded-pool.md</p></article>
+<article class="card"><h3>Confidential token amounts {{S:planned}}</h3>
+<p>Hide amounts with encrypted-amount tokens (for example Zama fhEVM, ERC-7984 draft) on supported testnets.</p>
+<p><strong>Does not hide:</strong> Relies on coprocessor or TEE trust. Payer and timing stay public.</p>
+<p class="where">Source: privacy-specs/confidential-tokens.md</p></article>
+<article class="card"><h3>Network-layer privacy {{S:planned}}</h3>
+<p>Transport profiles for RPC and relayer calls: Tor, I2P outproxy, Nym, Oblivious HTTP, own node, quorum.</p>
+<p><strong>Does not hide:</strong> Hides your IP from the endpoint at best. Does not hide anything on-chain.</p>
+<p class="where">Source: privacy-specs/network-privacy.md</p></article>
+<article class="card"><h3>Private scanning {{S:planned}}</h3>
+<p>Scan via an indexer over Tor, two-server PIR or a light client so your RPC learns less about which payments are yours.</p>
+<p><strong>Does not hide:</strong> Research-grade. Server-side trust assumptions apply.</p>
+<p class="where">Source: network-privacy.md; MH-SCAN-2/3</p></article>
+<article class="card"><h3>Metadata hardening menu {{S:planned}}</h3>
+<p>About 30 independent switches (MH-*): minimal announcements, amount noise, gas bucketing, relayer batching, padding, multi-relayer, zero-log relayer, per-invoice meta-address, per-chain keys and more. A few (standard announcer, view tag, full-range scan) are already how the app works.</p>
+<p><strong>Does not hide:</strong> Each one hides one named leak and leaves others. Most are off by default and not built.</p>
+<p class="where">Source: privacy-specs/metadata-hardening.md</p></article>
+<article class="card"><h3>Bitcoin PayJoin {{S:planned}}</h3>
+<p>Payee adds an input to the payment so common-input heuristics break (BIP-78, async BIP-77).</p>
+<p><strong>Does not hide:</strong> Not silent payments, not a mixer. Fallback broadcast stays possible. Testnet PoC only.</p>
+<p class="where">Source: privacy-specs/btc-payjoin.md</p></article>
+</div>
+<h2 id="experimental">Experimental</h2>
+<p>Code exists but is not part of the app, or is unverified.</p>
+<div class="cards two">
+<article class="card"><h3>Bitcoin Silent Payments (BIP-352) {{S:experimental}}</h3>
+<p>A library for keys, addresses, sender derivation, scanning and spending. Passes the official BIP-352 vectors.</p>
+<p><strong>Does not hide:</strong> Not wired into the web app or relayer; never run against a real network. Amounts and timing are still public.</p>
+<p class="where">Source: packages/btc-silent-payments</p></article>
+<article class="card"><h3>Policy accounts {{S:experimental}}</h3>
+<p>Smart accounts that can only pay a fixed destination, after a delay, within limits. Contracts and a client library exist.</p>
+<p><strong>Does not hide:</strong> No app support, no recovery path, destination link becomes permanent. Do not use.</p>
+<p class="where">Source: packages/policy-scheme, PolicyAccount.sol</p></article>
+<article class="card"><h3>Tor Browser, your own setup {{S:experimental}}</h3>
+<p>You can open any site in Tor Browser to hide your IP from the host and RPC.</p>
+<p><strong>Does not hide:</strong> Not an app feature. The app does not check it and we have not tested GhostPay with it.</p>
+<p class="where">Source: docs/remote/onion-i2p-research.md</p></article>
+</div>
+
+<p>Source files are in <code>docs/remote/privacy-specs/</code> in the repository. If this page and the code ever disagree, the code wins and this page is wrong.</p>
+<div class="btn-row"><a class="btn" href="{{root}}help/privacy-map.html">Help: privacy map</a><a class="btn" href="{{root}}help/observers.html">What observers see</a></div>
