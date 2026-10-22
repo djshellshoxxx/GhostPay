@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { createWebhookAlerts, nullAlerts } from './alerts.js';
+import { createWebhookAlerts, isPublicIp, nullAlerts, publicOnlyLookup, validateWebhookUrl } from './alerts.js';
 import { Metrics } from './metrics.js';
 import { DailyBudget } from './budget.js';
 import { parseAddress, parseHex, parseInt53, parseObject, parseUint } from './codec.js';
@@ -9,7 +9,7 @@ import { KeyHasher, LruMap, RateLimiter } from './limiter.js';
 import { createLogger, nullLogger, sanitizeFields } from './log.js';
 import { allowAllPolicy } from './policy.js';
 import { FixedStablePriceSource, RpcGasPriceSource, parseUsdMicro, type AllowedToken } from './pricing.js';
-import { signQuote, verifyQuote, type QuoteClaims } from './quoteToken.js';
+import { makeKeyring, signQuote, verifyQuote, type QuoteClaims } from './quoteToken.js';
 import { revertToError } from './service.js';
 import { CHAIN_ID, DEST, FEE_TO, FakeChain, OWNER, USDC } from './harness.testutil.js';
 
@@ -59,6 +59,16 @@ describe('quote token', () => {
     const huge = signQuote(secret, { ...claims, expiresAt: 10 ** 12 });
     expect(verifyQuote(secret, huge, binding)).toBeNull(); // 13 digits: outside the token pattern
   });
+  it('rotates quote keys while accepting tokens signed by the previous key', () => {
+    const oldSecret = new Uint8Array(32).fill(3);
+    const nextSecret = new Uint8Array(32).fill(4);
+    const oldToken = signQuote(oldSecret, claims);
+    const rotation = makeKeyring(nextSecret, oldSecret);
+    expect(signQuote(rotation.primary, claims)).not.toBe(oldToken);
+    expect(verifyQuote(rotation, oldToken, binding)).toEqual({ fee: 2n, expiresAt: 1234 });
+    expect(verifyQuote(makeKeyring(nextSecret), oldToken, binding)).toBeNull();
+    expect(() => makeKeyring(nextSecret, nextSecret)).toThrow(/must differ/);
+  });
 });
 
 describe('limiter primitives', () => {
@@ -86,6 +96,11 @@ describe('limiter primitives', () => {
     t = 1000;
     expect(h.epoch).toBe(1);
     expect(h.hash('203.0.113.9')).not.toBe(a);
+    const cleared = vi.fn();
+    h.onRotate(cleared);
+    t = 2000;
+    expect(h.epoch).toBe(2);
+    expect(cleared).toHaveBeenCalledTimes(1);
   });
   it('RateLimiter bounds memory, refills, and resets on rotation', () => {
     let t = 0;
@@ -178,6 +193,21 @@ describe('DailyBudget', () => {
     t = 86_400_000;
     expect(b.used).toBe(0n);
     expect(b.reserve(100n)).toBe(true);
+  });
+
+  it('does not let a prior-day settlement release the new day reserve', () => {
+    let t = 0;
+    const b = new DailyBudget(100n, () => t);
+    expect(b.reserve(80n)).toBe(true);
+    const yesterday = b.currentDay;
+
+    t = 86_400_000;
+    expect(b.reserve(80n)).toBe(true);
+    b.release(80n, yesterday);
+
+    expect(b.used).toBe(80n);
+    expect(b.remaining).toBe(20n);
+    expect(b.reserve(21n)).toBe(false);
   });
 });
 
@@ -294,6 +324,21 @@ describe('Metrics', () => {
 });
 
 describe('webhook alerts', () => {
+  it('rejects private webhook destinations and mixed public/private DNS answers', () => {
+    for (const ip of ['127.0.0.1', '10.0.0.1', '169.254.1.1', '::1', 'fc00::1', '::ffff:192.168.1.2']) {
+      expect(isPublicIp(ip)).toBe(false);
+    }
+    expect(isPublicIp('8.8.8.8')).toBe(true);
+    expect(() => validateWebhookUrl('http://hooks.example/path')).toThrow(/https/);
+    expect(() => validateWebhookUrl('https://127.0.0.1/hook')).toThrow(/private/);
+    expect(() => validateWebhookUrl('https://hooks.internal/hook')).toThrow(/public DNS/);
+
+    const lookup = publicOnlyLookup((_host, _options, cb) => cb(null, [
+      { address: '8.8.8.8', family: 4 }, { address: '10.0.0.1', family: 4 },
+    ]));
+    lookup('hooks.example', { all: true }, (err) => expect(err?.code).toBe('ENOTPUBLIC'));
+  });
+
   it('posts a request-data-free payload, de-duplicates, and survives delivery failure', async () => {
     let t = 0;
     const sent: { url: string; body: string }[] = [];

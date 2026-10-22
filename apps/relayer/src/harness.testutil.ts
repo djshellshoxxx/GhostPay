@@ -1,7 +1,7 @@
 import type { Address, Hex } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { buildSweepTypedData } from '@ghostpay/chain-adapters';
-import type { ChainClient, ReceiptSummary, SendOptions, SweepCall } from './chain.js';
+import type { ChainClient, OrderState, ReceiptSummary, SendOptions, SimulationResult, SweepCall } from './chain.js';
 import type { RelayerConfig } from './config.js';
 import { SimulationRevert } from './errors.js';
 import type { AlertSink } from './alerts.js';
@@ -32,6 +32,9 @@ export class FakeChain implements ChainClient {
   public balance = 10n ** 18n;
   public pendingNonce = 7;
   public gasLimit = 150_000n;
+  public gasEstimate = 125_000n;
+  public ownerBalance = 10n ** 30n;
+  public allowance = 10n ** 30n;
   public receipt: ReceiptSummary = { status: 'success', gasUsed: 100_000n };
   public rpcDown = false;
   public sendFails = false;
@@ -58,12 +61,20 @@ export class FakeChain implements ChainClient {
   public getPendingNonce(): Promise<number> {
     return Promise.resolve(this.pendingNonce);
   }
-  public simulateSweep(call: SweepCall): Promise<{ gasLimit: bigint }> {
+  public readOrderState(call: SweepCall): Promise<OrderState> {
+    if (this.rpcDown) return Promise.reject(new Error('down'));
+    return Promise.resolve({
+      ownerBalance: this.ownerBalance,
+      allowance: this.allowance,
+      nonceUsed: this.used.has(`${call.sweep.owner}:${call.sweep.nonce.toString()}`),
+    });
+  }
+  public simulateSweep(call: SweepCall): Promise<SimulationResult> {
     this.simulations += 1;
     if (this.rpcDown) return Promise.reject(new Error('down'));
     if (this.simulateError !== undefined) return Promise.reject(this.simulateError);
     if (this.used.has(`${call.sweep.owner}:${call.sweep.nonce.toString()}`)) return Promise.reject(new SimulationRevert('NonceAlreadyUsed'));
-    return Promise.resolve({ gasLimit: this.gasLimit });
+    return Promise.resolve({ gasLimit: this.gasLimit, gasEstimate: this.gasEstimate });
   }
   public async sendSweep(call: SweepCall, opts: SendOptions): Promise<Hex> {
     this.inFlight += 1;
@@ -92,6 +103,8 @@ export function testConfig(over: Partial<RelayerConfig> = {}): RelayerConfig {
     allowedOrigins: [ORIGIN],
     allowInsecureLocalhostRpc: false,
     trustedProxies: [],
+    allowFeeToHotKey: false,
+    gas: { coverPercent: 100, maxMovePercent: 25, quoteCacheSeconds: 3 },
     quoteTtlSeconds: 120,
     minDeadlineSeconds: 30,
     maxDeadlineSeconds: 1800,
@@ -161,7 +174,10 @@ export async function startHarness(o: HarnessOptions = {}): Promise<Harness> {
     url: `http://127.0.0.1:${String(addr.port)}`,
     logs,
     clock,
-    stop: () => relayer.server.close(),
+    stop: async () => {
+      await relayer.server.close();
+      relayer.dispose();
+    },
   };
 }
 

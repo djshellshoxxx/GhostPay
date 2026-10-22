@@ -12,7 +12,8 @@ Contract code wins over docs. Items for the lead to confirm or reject.
    the cap is the published policy and what the client refuses (`assertSponsorFeeAcceptable`).
 4. **Quote refused when even the capped fee cannot cover raw gas cost** (`amount_too_small`); not in the spec, avoids
    guaranteed-loss sweeps.
-5. **Quote token format** `v1.<expiresAt>.<fee>.<mac>` (fee readable inside the token so the server stays stateless).
+5. **Quote token format** `v2.<keyId>.<expiresAt>.<fee>.<mac>` (fee readable inside the token so the server stays stateless;
+   a verify-only previous key can be configured for one quote-TTL rotation window).
    Expired quote is HTTP 410; tampered/malformed is 400; the spec lists no codes for these.
 6. **Signature is exactly 65 bytes.** The contract's `ECDSA.recover` also accepts 64-byte EIP-2098 signatures; the
    relayer rejects them in validation. High-s signatures pass recovery here and are rejected by the simulation
@@ -48,5 +49,9 @@ Contract code wins over docs. Items for the lead to confirm or reject.
 - A mined revert after a passing simulation is treated as attacker-attributable (neutral for the breaker) and charged to the loss budget. A genuine relayer-side revert (for example wrong gas) therefore no longer opens the breaker; it shows up as `relayer_mined_reverts_total` and as `mined_revert` alerts instead. There is no re-simulation at the inclusion block to tell the two apart.
 - Loss budget keys: client network bucket (IPv4 /32, IPv6 /64) and destination, hashed with the rotating salt. Rotation (default daily) forgets the accounting; the per-window default is 1 hour. Defaults (0.005 / 0.05 native units) are not tuned for any chain.
 - The challenge module of relayer-guard is not wired.
+- Secret files reject symlinks and ownership outside the service user/root; production environment secrets require
+  `ALLOW_SECRET_ENV=1`. Process-level failures print only a fixed class to avoid exposing RPC URLs.
+- The alert webhook accepts only HTTPS public DNS/IP targets and checks all DNS answers again at connection time; redirects
+  are not followed, preventing internal-address and DNS-rebinding targets.
 - `/metrics` and the alert webhook have only been exercised with fakes (no Prometheus scrape, no real webhook receiver). `/healthz` now reports `degraded` for any non-closed breaker.
 - `getGasPrice` on the quote path is cached for 3 s (not on the sweep path).

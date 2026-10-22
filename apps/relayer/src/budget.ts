@@ -39,10 +39,25 @@ export class DailyBudget {
    * Returns an unused part of a reservation.
    *
    * @param wei Amount to give back (clamped to what is spent).
+   * @param reservedDay The value of {@link currentDay} when the reservation was made. A late
+   * settlement from a prior UTC day must not reduce the new day's reservations.
    */
-  public release(wei: bigint): void {
+  public release(wei: bigint, reservedDay?: number): void {
     this.roll();
+    if (reservedDay !== undefined && reservedDay !== this.day) return;
     this.spent = wei > this.spent ? 0n : this.spent - wei;
+  }
+
+  /** @returns The UTC day index that a new reservation will belong to. */
+  public get currentDay(): number {
+    this.roll();
+    return this.day;
+  }
+
+  /** @returns Wei still available today. */
+  public get remaining(): bigint {
+    this.roll();
+    return this.limitWei > this.spent ? this.limitWei - this.spent : 0n;
   }
 
   /** @returns Wei spent so far today. */

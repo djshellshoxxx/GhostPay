@@ -5,7 +5,8 @@ reverse proxy, CDN, load balancer or RPC provider in front of or behind it, must
 
 ## What the relayer necessarily sees (in memory, for the duration of a request)
 
-- The client IP address of the TCP connection (or the `X-Forwarded-For` entry selected by `trustProxyHops`).
+- The client IP address of the TCP connection (or the rightmost untrusted `X-Forwarded-For` entry when the
+  TCP peer belongs to a `trustedProxies` CIDR).
 - For `/v1/quote`: chain, token, owner (stealth) address, destination address, amount.
 - For `/v1/sweep`: the signed sweep order (token, owner, destination, fee recipient, amount, fee, deadline,
   nonce), the EIP-712 signature, the optional ERC-2612 permit, and the quote token.
@@ -21,11 +22,13 @@ fee, and the relayer's hot-key address. That is inherent to the product.
 | Rate-limit bucket keyed by `HMAC-SHA256(random salt, IP)` truncated to 128 bits, with a token counter and a timestamp | process memory only | until the salt rotates (config `saltRotationHours`, maximum 24 h; all buckets are dropped at rotation), until LRU eviction (bounded by `rateLimit.maxKeys`), or process exit |
 | Rate-limit bucket keyed by `HMAC-SHA256(same salt, lowercase owner address)`, truncated | process memory only | same as above |
 | Per-chain daily gas spend counter and circuit-breaker outcome window | process memory only | UTC day / sliding window; contain no user data |
+| Prometheus request, sweep and breaker counters | process memory only | process lifetime; labels are bounded and contain no user addresses or IPs |
 | Structured log lines | stdout (operator decides where it goes) | operator-controlled; see below |
 
-The salt is generated from the OS CSPRNG at start and at every rotation and is never written anywhere. The raw IP
-address is used only inside the request handler to compute the hash and is not stored, logged, or put in
-any data structure that outlives the request. Hashes from different salt periods cannot be linked.
+The salt is generated from the OS CSPRNG at start and at every rotation and is never written anywhere. A timer checks
+for rotation once per minute at most, so a quiet process drops expired buckets without waiting for another request. The
+raw IP address is used only inside the request handler to compute the hash and is not stored, logged, or put in any data
+structure that outlives the request. Hashes from different salt periods cannot be linked.
 
 ## What is logged (and what is not)
 
@@ -38,9 +41,14 @@ A test in `src/api.test.ts` scans the log output for these values.
 
 ## What is NOT retained
 
-No database, no files, no cookies, no analytics, no third-party calls other than the configured JSON-RPC
-endpoints. Request bodies are discarded after the response. The quote token is stateless (an HMAC), so quotes
-are not stored.
+No database, no files, no cookies, no analytics, and no third-party calls other than the configured JSON-RPC endpoints
+and the optional operator-configured HTTPS alert webhook. Request bodies are discarded after the response. The quote
+token is stateless (an HMAC), so quotes are not stored.
+
+The webhook sends only a fixed alert kind, chain id, and timestamp; it carries no address, amount, URL, or request data.
+The endpoint must be HTTPS on a public host. DNS answers are rechecked at connection time and any private or non-public
+address causes delivery to fail. Redirects are not followed. `/metrics` exposes aggregate route/status/error counts,
+sweep outcomes by chain, and breaker/budget gauges; it has no labels derived from users.
 
 ## What other parties see
 

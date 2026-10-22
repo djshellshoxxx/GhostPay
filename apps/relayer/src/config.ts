@@ -7,7 +7,7 @@ import {
   findToken,
   loadDeployment,
   requireEnabledChain,
-  verifyManifestSignature,
+  verifyTextManifestSignature as verifyManifestSignature,
   type DeploymentManifest,
   type ReleaseKey,
   validateRpcUrl,
@@ -48,6 +48,8 @@ export interface RelayerConfig {
   readonly allowInsecureLocalhostRpc: boolean;
   /** Addresses or CIDR blocks of reverse proxies whose `X-Forwarded-For` is honoured (empty: ignore the header). */
   readonly trustedProxies: readonly string[];
+  readonly allowFeeToHotKey: boolean;
+  readonly gas: { readonly coverPercent: number; readonly maxMovePercent: number; readonly quoteCacheSeconds: number };
   readonly quoteTtlSeconds: number;
   readonly minDeadlineSeconds: number;
   readonly maxDeadlineSeconds: number;
@@ -183,7 +185,7 @@ function parseTokens(chainId: number, v: unknown, path: string): AllowedToken[] 
   });
 }
 
-function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; insecureRpc: boolean }, ctx: ConfigContext): ChainRuntimeConfig {
+function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; insecureRpc: boolean; allowFeeToHotKey: boolean }, ctx: ConfigContext): ChainRuntimeConfig {
   const path = `chains[${String(i)}]`;
   const c = wrap(
     () =>
@@ -234,8 +236,13 @@ function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; inse
   }
   if (sweepRelayer === undefined) return bad(`${path}.sweepRelayer`, 'no manifest and no sweepRelayer configured');
 
+  const allowFeeToHotKey = top.allowFeeToHotKey;
+  if (c['feeTo'] === undefined && !allowFeeToHotKey) return bad(`${path}.feeTo`, 'required; set allowFeeToHotKey only if the hot key must receive fees');
   const feeTo = c['feeTo'] === undefined ? ctx.hotKeyAddress : wrap(() => parseAddress(c['feeTo'], 'feeTo'), `${path}.feeTo`);
   if (feeTo === sweepRelayer) return bad(`${path}.feeTo`, 'must not be the sweep relayer contract');
+  if (feeTo === ctx.hotKeyAddress && !allowFeeToHotKey) return bad(`${path}.feeTo`, 'must differ from the hot key unless allowFeeToHotKey is enabled');
+  const feeToNumber = BigInt(feeTo);
+  if (feeToNumber === 0n || (feeToNumber >= 1n && feeToNumber <= 10n)) return bad(`${path}.feeTo`, 'must not be the zero or a precompile address');
 
   if ((c['rpcUrl'] === undefined) === (c['rpcUrlEnv'] === undefined)) return bad(path, 'set exactly one of rpcUrl and rpcUrlEnv');
   const envName = c['rpcUrlEnv'];
@@ -345,7 +352,7 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
         raw,
         'config',
         ['allowedOrigins', 'chains'],
-        ['listen', 'allowDevChain', 'allowInsecureLocalhostRpc', 'trustedProxies', 'quoteTtlSeconds', 'deadline', 'rateLimit', 'breaker', 'lossBudget', 'queue', 'shutdownGraceSeconds', 'metricsTokenEnv', 'alertWebhookUrlEnv'],
+        ['listen', 'allowDevChain', 'allowInsecureLocalhostRpc', 'trustedProxies', 'allowFeeToHotKey', 'gas', 'quoteTtlSeconds', 'deadline', 'rateLimit', 'breaker', 'lossBudget', 'queue', 'shutdownGraceSeconds', 'metricsTokenEnv', 'alertWebhookUrlEnv'],
       ),
     '$',
   );
@@ -359,13 +366,15 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
   const rl = sub(o, 'rateLimit', '$', ['ipPerMinute', 'ipBurst', 'ownerPerMinute', 'ownerBurst', 'maxKeys', 'saltRotationHours', 'quoteGlobalPerMinute', 'quoteGlobalBurst']);
   const br = sub(o, 'breaker', '$', ['windowSize', 'minSamples', 'failureRatio', 'cooldownSeconds', 'probeTimeoutSeconds']);
   const lb = sub(o, 'lossBudget', '$', ['windowSeconds', 'perKeyWei', 'globalWei', 'maxKeys']);
+  const ga = sub(o, 'gas', '$', ['coverPercent', 'maxMovePercent', 'quoteCacheSeconds']);
   const q = sub(o, 'queue', '$', ['maxPending', 'receiptTimeoutSeconds']);
   const allowDevChain = boolOr(o, 'allowDevChain', '$', false);
   const allowInsecureLocalhostRpc = boolOr(o, 'allowInsecureLocalhostRpc', '$', false);
+  const allowFeeToHotKey = boolOr(o, 'allowFeeToHotKey', '$', false);
 
   const chainsRaw = o['chains'];
   if (!Array.isArray(chainsRaw) || chainsRaw.length === 0 || chainsRaw.length > 16) return bad('chains', 'must be a non-empty array (max 16)');
-  const chains = chainsRaw.map((x: unknown, i) => parseChain(x, i, { allowDevChain, insecureRpc: allowInsecureLocalhostRpc }, ctx));
+  const chains = chainsRaw.map((x: unknown, i) => parseChain(x, i, { allowDevChain, insecureRpc: allowInsecureLocalhostRpc, allowFeeToHotKey }, ctx));
   if (new Set(chains.map((c) => c.chainId)).size !== chains.length) return bad('chains', 'duplicate chainId');
 
   const windowSize = numberOr(br, 'windowSize', 'breaker', 20, 2, 1000);
@@ -375,6 +384,12 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
     allowedOrigins: parseOrigins(o['allowedOrigins']),
     allowInsecureLocalhostRpc,
     trustedProxies: parseTrustedProxies(o['trustedProxies']),
+    allowFeeToHotKey,
+    gas: {
+      coverPercent: numberOr(ga, 'coverPercent', 'gas', 100, 1, 300),
+      maxMovePercent: numberOr(ga, 'maxMovePercent', 'gas', 25, 0, 500),
+      quoteCacheSeconds: numberOr(ga, 'quoteCacheSeconds', 'gas', 3, 0, 60),
+    },
     quoteTtlSeconds: numberOr(o, 'quoteTtlSeconds', '$', 120, 10, 600),
     minDeadlineSeconds,
     maxDeadlineSeconds,

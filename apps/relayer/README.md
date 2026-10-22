@@ -27,9 +27,9 @@ Errors are `{"error":{"code":"<class>"}}` with a fixed class and nothing else.
 `sweepSig` is the 65-byte `r||s||v` EIP-712 signature (domain `GhostPaySweepRelayer`/`1`/chainId/contract).
 `permit` present -> `sweepWithPermit` (token must have `permit: true`); absent -> `sweep` (allowance already granted).
 
-`quoteToken` = `v1.<expiresAt>.<fee>.<hmac-sha256>`; the MAC covers chain, token, owner, destination, amount, fee,
+`quoteToken` = `v2.<keyId>.<expiresAt>.<fee>.<hmac-sha256>`; the MAC covers chain, token, owner, destination, amount, fee,
 `feeTo` and expiry under the server secret, compared in constant time. Stateless; single use is enforced by the contract's
-sweep nonce.
+sweep nonce. The key id lets a deployment accept a previous key briefly while new quotes use the current key.
 
 ### Sweep checks, in order
 
@@ -56,21 +56,27 @@ missing economics all stop startup.
 
 | Env | Meaning |
 |---|---|
-| `RELAYER_KEY_FILE` or `RELAYER_KEY` | 32-byte hot key (hex). A file must be a regular file with no group/world permission bits (`chmod 600`) or startup is refused. Never logged. |
-| `QUOTE_SECRET_FILE` or `QUOTE_SECRET` | 32-128 byte HMAC secret (hex), same file rules. Changing it invalidates outstanding quotes. |
+| `RELAYER_KEY_FILE` or `RELAYER_KEY` | 32-byte hot key (hex). A file must be regular, non-symlink, owned by the service user or root, and have no group/world permission bits (`chmod 600`). Production environment values require `ALLOW_SECRET_ENV=1`. Never logged. |
+| `QUOTE_SECRET_FILE` or `QUOTE_SECRET` | 32-128 byte HMAC secret (hex), same file rules. A rotation can preserve outstanding quotes briefly with the previous-secret variables below. |
+| `QUOTE_SECRET_PREVIOUS_FILE` or `QUOTE_SECRET_PREVIOUS` | Optional prior quote secret accepted for verification only. Remove it after `quoteTtlSeconds` to finish rotation. |
+| `ALLOW_SECRET_ENV=1` | Explicit opt-in required to load a secret directly from an environment variable when `NODE_ENV=production`. |
 | `RELAYER_CONFIG`, `DEPLOYMENTS_DIR` | config path; directory with `<chainId>.json` deployment manifests (default `../../deployments`) |
 | `ALLOW_MAINNET=1` | required, in addition to a valid manifest, for any non-testnet chain id |
 | `<name from rpcUrlEnv>` | RPC URL kept out of the file (API keys) |
+| `allowFeeToHotKey` | Defaults to `false`; set `true` only when fee proceeds are intentionally sent to the signing key. `feeTo` must be explicit otherwise, and zero/precompile recipients are rejected. |
 
 Per chain: `rpcUrl`|`rpcUrlEnv`, `sweepRelayer` (optional; taken from the manifest when present, must match it if both),
-`feeTo` (default: the hot-key address), `tokens` (each `usdStable: true`; symbol/decimals/permit come from the
+`feeTo` (required unless `allowFeeToHotKey: true`), `tokens` (each `usdStable: true`; symbol/decimals/permit come from the
 chain-adapters allowlist or must be given), `nativeUsdPrice`, `gasUnits`, `maxGasLimit`, `maxGasPriceWei`,
 `dailyBudgetWei`, `minBalanceWei`. Operator numbers (`gasUnits`, `nativeUsdPrice`, caps, budget) have no defaults on
 purpose and must be set from your own measurements. The example file's values are placeholders, not measurements.
 
 Fee: `sponsorFee(amount, gasUnits * eth_gasPrice converted at nativeUsdPrice with the stablecoin fixed at 1.0)` from
 chain-adapters = `clamp(max(gas x 1.10, 50 bps), cap 300 bps)`. If the cap cannot cover raw gas cost the quote is refused
-(`amount_too_small`). Non-stable tokens are unsupported in v1.
+(`amount_too_small`). At send time, the relayer reads token balance/allowance/nonce, simulates twice, checks the actual
+estimated gas cost against `gas.coverPercent` (default 100%), and refuses if `eth_gasPrice` moves more than
+`gas.maxMovePercent` (default 25%) between simulations. Quote gas prices are cached for `gas.quoteCacheSeconds` (default 3).
+Non-stable tokens are unsupported in v1.
 
 ## Run
 
@@ -80,11 +86,16 @@ RELAYER_KEY_FILE=/etc/ghostpay/hot.key QUOTE_SECRET_FILE=/etc/ghostpay/quote.sec
 RELAYER_CONFIG=/etc/ghostpay/relayer.config.json node apps/relayer/dist/main.js
 ```
 
-HTTPS is terminated by the host (reverse proxy); set `trustProxyHops` to the number of trusted proxies so the rate-limit
-bucket uses the right client address (0 = use the socket address and ignore `X-Forwarded-For`). `SIGTERM`/`SIGINT` start a
+HTTPS is terminated by the host (reverse proxy); list its IPs or CIDRs in `trustedProxies` so the rate-limit bucket can
+use `X-Forwarded-For` only when the socket peer is trusted. An empty list ignores that header. `SIGTERM`/`SIGINT` start a
 graceful shutdown: stop listening, refuse new work, let queued and in-flight transactions settle, force-close after
 `shutdownGraceSeconds`. Deployment: `Dockerfile` (distroless, non-root; build from the repo root) and
 `deploy/ghostpay-relayer.service`.
+
+To rotate the quote secret, deploy the new value as `QUOTE_SECRET_FILE` and the old value as
+`QUOTE_SECRET_PREVIOUS_FILE`. New quotes use the new key; old quotes remain valid until their normal expiry. After
+`quoteTtlSeconds`, remove the previous-secret setting and restart. The previous key is verify-only and must differ from the
+current key.
 
 ## Threat notes
 

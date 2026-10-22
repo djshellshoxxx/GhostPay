@@ -1,5 +1,5 @@
-# Example systemd unit. Contains no secrets: put them in root-owned files with mode 600
-# (RELAYER_KEY_FILE, QUOTE_SECRET_FILE) and reference only their paths.
+# Example systemd unit. Contains no secrets. LoadCredential stages root-owned files in a private credential
+# directory readable by the service user, which satisfies the relayer's ownership and mode checks.
 [Unit]
 Description=GhostPay gas-sponsorship relayer
 After=network-online.target
@@ -14,8 +14,12 @@ ExecStart=/usr/bin/node dist/main.js
 Environment=NODE_ENV=production
 Environment=RELAYER_CONFIG=/etc/ghostpay-relayer/relayer.config.json
 Environment=DEPLOYMENTS_DIR=/etc/ghostpay-relayer/deployments
-Environment=RELAYER_KEY_FILE=/etc/ghostpay-relayer/hot.key
-Environment=QUOTE_SECRET_FILE=/etc/ghostpay-relayer/quote.secret
+LoadCredential=hot.key:/etc/ghostpay-relayer/hot.key
+LoadCredential=quote.secret:/etc/ghostpay-relayer/quote.secret
+# For a quote-secret rotation, also add: LoadCredential=quote.secret.previous:/etc/ghostpay-relayer/quote.secret.previous
+Environment=RELAYER_KEY_FILE=%d/hot.key
+Environment=QUOTE_SECRET_FILE=%d/quote.secret
+# During rotation: Environment=QUOTE_SECRET_PREVIOUS_FILE=%d/quote.secret.previous
 # RPC URLs with API keys: EnvironmentFile must be mode 600 and contain e.g. RPC_URL_84532=https://...
 EnvironmentFile=/etc/ghostpay-relayer/rpc.env
 # ALLOW_MAINNET=1 is deliberately NOT set here.

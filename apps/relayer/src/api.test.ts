@@ -164,7 +164,7 @@ describe('POST /v1/quote', () => {
     expect(j.fee).toBe('429000');
     expect(j.feeTo).toBe(FEE_TO);
     expect(j.expiresAt).toBe(NOW_SEC + 120);
-    expect(j.quoteToken).toMatch(/^v1\.\d+\.429000\.[0-9a-f]{64}$/);
+    expect(j.quoteToken).toMatch(/^v2\.[0-9a-f]{8}\.\d+\.429000\.[0-9a-f]{64}$/);
   });
 
   it('uses the 50 bps floor and the cheaper non-permit estimate', async () => {
@@ -299,7 +299,7 @@ describe('POST /v1/sweep success and validation', () => {
     expect(errCode(await call(s, 'POST', '/v1/sweep', { ...body, sweep: { ...sw, amount: '100000001' } }))).toBe('invalid_quote');
     expect(errCode(await call(s, 'POST', '/v1/sweep', { ...body, quoteToken: 'garbage' }))).toBe('invalid_quoteToken');
     // a token from a lower fee forged by editing the embedded fee field is also rejected
-    const forged = quote.quoteToken.replace(/^v1\.(\d+)\.\d+\./, 'v1.$1.1.');
+    const forged = quote.quoteToken.replace(/^(v2\.[0-9a-f]{8}\.\d+)\.\d+\./, '$1.1.');
     expect(errCode(await call(s, 'POST', '/v1/sweep', { ...body, quoteToken: forged }))).toBe('invalid_quote');
 
     const low = await prepare(s, { fee: BigInt(quote.fee) - 1n, nonce: 2n });
@@ -357,10 +357,48 @@ describe('POST /v1/sweep success and validation', () => {
 });
 
 describe('simulation, replay and operational limits', () => {
+  it('checks nonce, token balance and allowance before simulating', async () => {
+    const lowBalance = await start();
+    lowBalance.fake.ownerBalance = 0n;
+    const balance = await call(lowBalance, 'POST', '/v1/sweep', (await prepare(lowBalance, { permit: false })).body);
+    expect(errCode(balance)).toBe('insufficient_token_balance');
+    expect(lowBalance.fake.simulations).toBe(0);
+    await lowBalance.stop();
+    h = undefined;
+
+    const lowAllowance = await start();
+    lowAllowance.fake.allowance = 0n;
+    const allowance = await call(lowAllowance, 'POST', '/v1/sweep', (await prepare(lowAllowance, { permit: false })).body);
+    expect(errCode(allowance)).toBe('insufficient_allowance');
+    expect(lowAllowance.fake.simulations).toBe(0);
+  });
+
+  it('simulates twice and rejects gas price movement before sending', async () => {
+    const s = await start();
+    const { body } = await prepare(s);
+    let calls = 0;
+    s.fake.getGasPrice = () => Promise.resolve(calls++ === 0 ? 1_000_000_000n : 2_000_000_000n);
+    const moved = await call(s, 'POST', '/v1/sweep', body);
+    expect(errCode(moved)).toBe('gas_price_moved');
+    expect(s.fake.simulations).toBe(1);
+    expect(s.fake.sent).toHaveLength(0);
+  });
+
+  it('checks actual estimated gas cost against the sweep fee', async () => {
+    const s = await start();
+    const { body } = await prepare(s);
+    s.fake.gasEstimate = 10_000_000n;
+    const r = await call(s, 'POST', '/v1/sweep', body);
+    expect(errCode(r)).toBe('fee_below_gas_cost');
+    expect(s.fake.simulations).toBe(1);
+    expect(s.fake.sent).toHaveLength(0);
+  });
+
   it('maps a nonce replay to 409 (simulation revert, nothing sent twice)', async () => {
     const s = await start();
     const { body } = await prepare(s);
     expect((await call(s, 'POST', '/v1/sweep', body)).status).toBe(200);
+    expect(s.fake.simulations).toBe(2);
     await settle();
     const again = await call(s, 'POST', '/v1/sweep', body);
     expect(again.status).toBe(409);

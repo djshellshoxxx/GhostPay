@@ -12,6 +12,7 @@ import { FixedStablePriceSource, RpcGasPriceSource } from './pricing.js';
 import { RelayerHttpServer } from './server.js';
 import { RelayerService } from './service.js';
 import type { PolicyGate } from './policy.js';
+import { ConfigError } from './secrets.js';
 
 /** Version string reported by `/v1/info`. */
 export const RELAYER_VERSION = '0.1.0';
@@ -22,6 +23,7 @@ export interface RuntimeDeps {
   /** 32-byte hot key. */
   readonly hotKey: Uint8Array;
   readonly quoteSecret: Uint8Array;
+  readonly previousQuoteSecret?: Uint8Array;
   readonly logger: Logger;
   readonly policy?: PolicyGate;
   /** Replaces the real chain clients (tests). */
@@ -38,6 +40,8 @@ export interface Relayer {
   readonly service: RelayerService;
   readonly server: RelayerHttpServer;
   readonly metrics: Metrics;
+  /** Stops process-lifetime maintenance timers. */
+  dispose(): void;
 }
 
 function hex(b: Uint8Array): `0x${string}` {
@@ -80,6 +84,11 @@ export async function buildChainClients(config: RelayerConfig, hotKey: Uint8Arra
  * @returns The relayer (not yet listening).
  */
 export async function buildRelayer(d: RuntimeDeps): Promise<Relayer> {
+  const hotBytes = Buffer.from(d.hotKey);
+  if (Buffer.from(d.quoteSecret).subarray(0, hotBytes.length).equals(hotBytes) ||
+      (d.previousQuoteSecret !== undefined && Buffer.from(d.previousQuoteSecret).subarray(0, hotBytes.length).equals(hotBytes))) {
+    throw new ConfigError('quote secret must not equal or begin with the hot key');
+  }
   const now = d.now ?? Date.now;
   const clients = d.clients ?? (await buildChainClients(d.config, d.hotKey));
   const mono = d.monotonic ?? d.now ?? monotonicNow;
@@ -97,6 +106,7 @@ export async function buildRelayer(d: RuntimeDeps): Promise<Relayer> {
     config: d.config,
     clients,
     quoteSecret: d.quoteSecret,
+    ...(d.previousQuoteSecret === undefined ? {} : { previousQuoteSecret: d.previousQuoteSecret }),
     gasPrices: new RpcGasPriceSource(clients),
     tokenPrices: new FixedStablePriceSource(new Map(d.config.chains.map((c) => [c.chainId, c.nativeUsdMicro]))),
     ownerLimiter,
@@ -111,5 +121,7 @@ export async function buildRelayer(d: RuntimeDeps): Promise<Relayer> {
     version: RELAYER_VERSION,
   });
   const server = new RelayerHttpServer({ config: d.config, service, ipLimiter, logger: d.logger, metrics, monotonic: mono });
-  return { service, server, metrics };
+  const rotationTimer = setInterval(() => hasher.refresh(), Math.min(d.config.rateLimit.saltRotationHours * 3_600_000, 60_000));
+  rotationTimer.unref();
+  return { service, server, metrics, dispose: () => clearInterval(rotationTimer) };
 }

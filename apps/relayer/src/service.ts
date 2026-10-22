@@ -18,7 +18,7 @@ import { KeyHasher, type RateLimiter } from './limiter.js';
 import type { Metrics } from './metrics.js';
 import { nullLogger, type Logger } from './log.js';
 import type { AllowedToken, GasPriceSource, TokenPriceSource } from './pricing.js';
-import { signQuote, verifyQuote } from './quoteToken.js';
+import { makeKeyring, signQuote, verifyQuote, type QuoteKeyring } from './quoteToken.js';
 import type { QuoteRequest, SweepRequest } from './validate.js';
 
 /** Dependencies of {@link RelayerService}. */
@@ -26,6 +26,7 @@ export interface ServiceDeps {
   readonly config: RelayerConfig;
   readonly clients: ReadonlyMap<number, ChainClient>;
   readonly quoteSecret: Uint8Array;
+  readonly previousQuoteSecret?: Uint8Array;
   readonly gasPrices: GasPriceSource;
   readonly tokenPrices: TokenPriceSource;
   readonly ownerLimiter: RateLimiter;
@@ -140,9 +141,11 @@ export class RelayerService {
   private readonly lossBudget: LossBudget;
   private readonly alerts: AlertSink;
   private readonly gasCache = new Map<number, { price: bigint; at: number }>();
+  private readonly quoteKeys: QuoteKeyring;
   private closing = false;
 
   public constructor(private readonly d: ServiceDeps) {
+    this.quoteKeys = makeKeyring(d.quoteSecret, d.previousQuoteSecret);
     this.policy = d.policy ?? allowAllPolicy;
     this.logger = d.logger ?? nullLogger;
     this.now = d.now ?? Date.now;
@@ -239,9 +242,9 @@ export class RelayerService {
     const gasCost = await this.d.tokenPrices.nativeToTokenUnits(req.chainId, token, units * gasPrice);
     const { fee } = sponsorFee(req.amount, gasCost);
     // If even the 300 bps cap cannot reimburse the gas, the sweep is uneconomical: refuse to quote.
-    if (fee < gasCost) throw new RelayerError(422, 'amount_too_small');
+    if (fee * 100n < gasCost * BigInt(this.d.config.gas.coverPercent)) throw new RelayerError(422, 'amount_too_small');
     const expiresAt = Math.floor(this.now() / 1000) + this.d.config.quoteTtlSeconds;
-    const quoteToken = signQuote(this.d.quoteSecret, {
+    const quoteToken = signQuote(this.quoteKeys.primary, {
       chainId: req.chainId,
       token: req.token,
       owner: req.owner,
@@ -272,7 +275,7 @@ export class RelayerService {
     }
     if (s.feeTo !== rt.cfg.feeTo) throw new RelayerError(422, 'fee_to_mismatch');
 
-    const quote = verifyQuote(this.d.quoteSecret, req.quoteToken, {
+    const quote = verifyQuote(this.quoteKeys, req.quoteToken, {
       chainId: req.chainId,
       token: s.token,
       owner: s.owner,
@@ -372,7 +375,7 @@ export class RelayerService {
 
   /** Quote path only: briefly reuses a validated price so anonymous quotes cannot force one RPC call each (S3-07). */
   private async quoteGasPrice(rt: ChainRuntime): Promise<bigint> {
-    const ttl = this.d.gasPriceCacheMs ?? 3000;
+    const ttl = this.d.gasPriceCacheMs ?? this.d.config.gas.quoteCacheSeconds * 1000;
     const t = this.now();
     const hit = this.gasCache.get(rt.cfg.chainId);
     if (ttl > 0 && hit !== undefined && t >= hit.at && t - hit.at < ttl) return hit.price;
@@ -442,29 +445,57 @@ export class RelayerService {
       throw new RelayerError(503, 'breaker_open', this.d.config.breaker.cooldownSeconds);
     }
 
+    const state = await op(() => client.readOrderState(call));
+    if (state.nonceUsed) throw new RelayerError(409, 'nonce_used');
+    if (state.ownerBalance < call.sweep.amount) throw new RelayerError(422, 'insufficient_token_balance');
+    if (call.permit === undefined && state.allowance < call.sweep.amount) throw new RelayerError(422, 'insufficient_allowance');
+
     this.requireLossBudget(rt, keys);
-    let gasLimit: bigint;
+    let firstSimulation: Awaited<ReturnType<ChainClient['simulateSweep']>>;
     try {
-      gasLimit = (await op(() => client.simulateSweep(call))).gasLimit;
+      firstSimulation = await op(() => client.simulateSweep(call));
     } catch (e) {
       if (e instanceof SimulationRevert) throw revertToError(e);
       throw e;
     }
-    if (gasLimit > cfg.maxGasLimit) throw new RelayerError(422, 'gas_limit_too_high');
+    if (firstSimulation.gasLimit > cfg.maxGasLimit) throw new RelayerError(422, 'gas_limit_too_high');
+    const token = cfg.tokens.find((t) => t.address === call.sweep.token);
+    if (token === undefined) throw new RelayerError(422, 'token_not_supported');
+    const coversGas = async (estimate: bigint, price: bigint): Promise<boolean> => {
+      const cost = await this.d.tokenPrices.nativeToTokenUnits(cfg.chainId, token, estimate * price);
+      return call.sweep.fee * 100n >= cost * BigInt(this.d.config.gas.coverPercent);
+    };
+    if (!(await coversGas(firstSimulation.gasEstimate, gasPrice))) throw new RelayerError(422, 'fee_below_gas_cost');
 
-    const reserved = gasLimit * gasPrice;
+    const sendGasPrice = await this.gasPrice(rt);
+    if (sendGasPrice * 100n > gasPrice * BigInt(100 + this.d.config.gas.maxMovePercent)) {
+      throw new RelayerError(503, 'gas_price_moved', 5);
+    }
+    let finalSimulation: Awaited<ReturnType<ChainClient['simulateSweep']>>;
+    try {
+      finalSimulation = await op(() => client.simulateSweep(call));
+    } catch (e) {
+      if (e instanceof SimulationRevert) throw revertToError(e);
+      throw e;
+    }
+    if (finalSimulation.gasLimit > cfg.maxGasLimit) throw new RelayerError(422, 'gas_limit_too_high');
+    if (!(await coversGas(finalSimulation.gasEstimate, sendGasPrice))) throw new RelayerError(422, 'fee_below_gas_cost');
+
+    const gasLimit = finalSimulation.gasLimit;
+    const reserved = gasLimit * sendGasPrice;
     if (!budget.reserve(reserved)) {
       this.alerts.send({ kind: 'daily_budget_exhausted', chainId: cfg.chainId });
       throw new RelayerError(503, 'budget_exhausted', budget.secondsToReset());
     }
+    const reservedDay = budget.currentDay;
 
     let txHash: Hex;
     try {
       const nonce = await nonces.acquire();
-      txHash = await client.sendSweep(call, { nonce, gas: gasLimit, gasPrice });
+      txHash = await client.sendSweep(call, { nonce, gas: gasLimit, gasPrice: sendGasPrice });
     } catch {
       nonces.invalidate();
-      budget.release(reserved);
+      budget.release(reserved, reservedDay);
       setOutcome(classifyRelayOutcome('send_failed'));
       throw new RelayerError(503, 'send_failed');
     }
@@ -478,8 +509,8 @@ export class RelayerService {
         this.logger.log('warn', 'receipt_timeout', { chainId: cfg.chainId, txHash, errorClass: 'receipt_timeout' });
         return;
       }
-      const spent = r.gasUsed * gasPrice;
-      budget.release(reserved > spent ? reserved - spent : 0n);
+      const spent = r.gasUsed * sendGasPrice;
+      budget.release(reserved > spent ? reserved - spent : 0n, reservedDay);
       if (r.status === 'reverted') {
         // The simulation passed moments earlier, so a mined revert means state changed in between
         // (front-run, S3-06): the relayer paid gas and earned no fee. Charge the sources, do not

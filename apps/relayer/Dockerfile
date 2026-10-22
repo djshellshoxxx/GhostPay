@@ -29,5 +29,5 @@ COPY --from=build --chown=nonroot:nonroot /repo/apps/relayer/dist /repo/apps/rel
 USER nonroot
 EXPOSE 8787
 # RELAYER_CONFIG, DEPLOYMENTS_DIR, RELAYER_KEY_FILE, QUOTE_SECRET_FILE are supplied at run time.
-# Secret files must be mode 600 and owned by uid 65532 (nonroot), otherwise startup is refused.
+# Secret files must be mode 600 and owned by uid 65532 (nonroot) or root, otherwise startup is refused.
 CMD ["dist/main.js"]

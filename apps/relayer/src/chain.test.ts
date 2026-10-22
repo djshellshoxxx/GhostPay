@@ -22,7 +22,7 @@ function rpcError(code: number, message: string, data?: Hex): Error {
 }
 
 function setup(script: Script) {
-  const request = ({ method }: { method: string; params?: unknown }): Promise<unknown> => {
+  const request = ({ method, params }: { method: string; params?: unknown }): Promise<unknown> => {
     switch (method) {
       case 'eth_chainId': return Promise.resolve(toHex(CHAIN_ID));
       case 'eth_gasPrice': return Promise.resolve('0x3b9aca00');
@@ -30,7 +30,10 @@ function setup(script: Script) {
       case 'eth_getTransactionCount': return Promise.resolve('0x7');
       case 'eth_call':
         try {
-          return Promise.resolve(script.call?.() ?? '0x');
+          if (script.call !== undefined) return Promise.resolve(script.call());
+          const paramList = Array.isArray(params) ? params : [];
+          const data = (paramList[0] as { data?: string } | undefined)?.data ?? '';
+          return Promise.resolve(data.startsWith('0x70a08231') || data.startsWith('0xdd62ed3e') ? `0x${'00'.repeat(31)}01` : `0x${'00'.repeat(32)}`);
         } catch (e) {
           return Promise.reject(e instanceof Error ? e : new Error('x'));
         }
@@ -91,10 +94,15 @@ describe('createViemChainClient', () => {
     expect(await c.getPendingNonce()).toBe(7);
   });
 
+  it('reads the owner token balance, allowance and sweep nonce', async () => {
+    const c = setup({ raw: [] });
+    expect(await c.readOrderState(call)).toEqual({ ownerBalance: 1n, allowance: 1n, nonceUsed: false });
+  });
+
   it('simulates both entrypoints and adds 20% gas headroom', async () => {
     const c = setup({ raw: [] });
-    expect(await c.simulateSweep(call)).toEqual({ gasLimit: 120_000n });
-    expect(await c.simulateSweep(permitCall)).toEqual({ gasLimit: 120_000n });
+    expect(await c.simulateSweep(call)).toEqual({ gasLimit: 120_000n, gasEstimate: 100_000n });
+    expect(await c.simulateSweep(permitCall)).toEqual({ gasLimit: 120_000n, gasEstimate: 100_000n });
   });
 
   it('classifies reverts by decoded custom error name', async () => {

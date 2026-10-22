@@ -1,4 +1,4 @@
-import { createHmac, timingSafeEqual } from 'node:crypto';
+import { createHash, createHmac, timingSafeEqual } from 'node:crypto';
 import type { Address } from 'viem';
 import { QUOTE_TOKEN_PATTERN } from './validate.js';
 
@@ -15,63 +15,64 @@ export interface QuoteClaims {
   readonly expiresAt: number;
 }
 
-function mac(secret: Uint8Array, c: QuoteClaims): Buffer {
+/** One signing or verification key, identified without exposing the secret. */
+export interface QuoteKey {
+  readonly id: string;
+  readonly secret: Uint8Array;
+}
+
+/** Current signing key and optional verify-only previous key. */
+export interface QuoteKeyring {
+  readonly primary: QuoteKey;
+  readonly previous?: QuoteKey;
+}
+
+export function quoteKeyId(secret: Uint8Array): string {
+  return createHash('sha256').update('ghostpay-quote-kid\n').update(secret).digest().subarray(0, 4).toString('hex');
+}
+
+/** Creates a rotation keyring. Identical primary and previous secrets are rejected. */
+export function makeKeyring(primary: Uint8Array, previous?: Uint8Array): QuoteKeyring {
+  const current = { id: quoteKeyId(primary), secret: primary };
+  if (previous === undefined) return { primary: current };
+  const prior = { id: quoteKeyId(previous), secret: previous };
+  if (prior.id === current.id) throw new Error('previous quote secret must differ from the current one');
+  return { primary: current, previous: prior };
+}
+
+function mac(key: QuoteKey, c: QuoteClaims): Buffer {
   const canonical = [
-    'ghostpay-quote-v1',
-    String(c.chainId),
-    c.token.toLowerCase(),
-    c.owner.toLowerCase(),
-    c.destination.toLowerCase(),
-    c.amount.toString(),
-    c.fee.toString(),
-    c.feeTo.toLowerCase(),
-    String(c.expiresAt),
+    'ghostpay-quote-v2', key.id, String(c.chainId), c.token.toLowerCase(), c.owner.toLowerCase(),
+    c.destination.toLowerCase(), c.amount.toString(), c.fee.toString(), c.feeTo.toLowerCase(), String(c.expiresAt),
   ].join('\n');
-  return createHmac('sha256', secret).update(canonical).digest();
+  return createHmac('sha256', key.secret).update(canonical).digest();
 }
 
-/**
- * Signs a quote: `v1.<expiresAt>.<fee>.<hmac-sha256 hex>`.
- *
- * @remarks Stateless: the MAC covers chain, token, owner, destination, amount, fee, feeTo and expiry,
- * so a client cannot reuse a quote for a different order. Single use is enforced by the contract's
- * sweep nonce, not by the server.
- *
- * @param secret Server secret (at least 32 bytes).
- * @param claims Quote content.
- * @returns Opaque token.
- */
-export function signQuote(secret: Uint8Array, claims: QuoteClaims): string {
-  return `v1.${String(claims.expiresAt)}.${claims.fee.toString()}.${mac(secret, claims).toString('hex')}`;
+/** Signs a stateless order-bound token using the primary quote key. */
+export function signQuote(key: QuoteKey | Uint8Array, claims: QuoteClaims): string {
+  const signingKey = key instanceof Uint8Array ? makeKeyring(key).primary : key;
+  return `v2.${signingKey.id}.${String(claims.expiresAt)}.${claims.fee.toString()}.${mac(signingKey, claims).toString('hex')}`;
 }
 
-/** What a verified token reveals. */
 export interface VerifiedQuote {
   readonly fee: bigint;
   readonly expiresAt: number;
 }
 
-/**
- * Verifies a token against the order it is presented with, in constant time.
- *
- * @remarks Does NOT check expiry: the caller compares `expiresAt` with its clock, so "expired" and
- * "tampered" stay distinguishable internally.
- *
- * @param secret Server secret.
- * @param token Presented token.
- * @param binding The order fields the token must be bound to.
- * @returns Fee and expiry when authentic, otherwise `null`.
- */
+/** Verifies an order-bound quote in constant time, accepting the current and optional previous key. */
 export function verifyQuote(
-  secret: Uint8Array,
+  keys: QuoteKeyring | Uint8Array,
   token: string,
   binding: Omit<QuoteClaims, 'fee' | 'expiresAt'>,
 ): VerifiedQuote | null {
   if (!QUOTE_TOKEN_PATTERN.test(token)) return null;
-  const [, exp, fee, tag] = token.split('.') as [string, string, string, string];
-  const expiresAt = Number(exp); // at most 12 digits (pattern), always a safe integer
+  const keyring = keys instanceof Uint8Array ? makeKeyring(keys) : keys;
+  const [, kid, exp, fee, tag] = token.split('.') as [string, string, string, string, string];
+  const key = keyring.primary.id === kid ? keyring.primary : keyring.previous?.id === kid ? keyring.previous : undefined;
+  if (key === undefined) return null;
+  const expiresAt = Number(exp);
   const claims: QuoteClaims = { ...binding, fee: BigInt(fee), expiresAt };
-  const expected = mac(secret, claims);
+  const expected = mac(key, claims);
   const presented = Buffer.from(tag, 'hex');
   if (presented.length !== expected.length || !timingSafeEqual(presented, expected)) return null;
   return { fee: claims.fee, expiresAt };

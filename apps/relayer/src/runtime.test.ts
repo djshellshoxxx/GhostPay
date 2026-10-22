@@ -1,8 +1,9 @@
 import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { afterEach, describe, expect, it } from 'vitest';
-import { buildChainClients } from './runtime.js';
-import { testConfig } from './harness.testutil.js';
+import { buildChainClients, buildRelayer } from './runtime.js';
+import { FakeChain, testConfig } from './harness.testutil.js';
+import { createLogger } from './log.js';
 
 const servers: Server[] = [];
 afterEach(async () => {
@@ -64,5 +65,15 @@ describe('buildChainClients', () => {
     const cfg = testConfig({ allowInsecureLocalhostRpc: true });
     const chains = [{ ...(cfg.chains[0] as object), rpcUrl: url }] as never;
     await expect(buildChainClients({ ...cfg, chains }, new Uint8Array(32).fill(5))).rejects.toMatchObject({ code: 'CHAIN_MISMATCH' });
+  });
+});
+
+describe('buildRelayer key separation', () => {
+  it('refuses a quote secret equal to or prefixed by the hot signing key', async () => {
+    const hotKey = new Uint8Array(32).fill(3);
+    const shared = new Map([[11155111, new FakeChain()]]);
+    const common = { config: testConfig(), hotKey, logger: createLogger(() => undefined), clients: shared };
+    await expect(buildRelayer({ ...common, quoteSecret: hotKey })).rejects.toThrow(/must not equal or begin with the hot key/);
+    await expect(buildRelayer({ ...common, quoteSecret: new Uint8Array(64).fill(0).map((x, i) => i < 32 ? 3 : x) })).rejects.toThrow(/must not equal or begin with the hot key/);
   });
 });

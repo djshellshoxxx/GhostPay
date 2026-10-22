@@ -47,6 +47,7 @@ export class KeyHasher {
   private salt: Buffer;
   private startedAt: number;
   private epochCounter = 0;
+  private readonly rotationListeners = new Set<() => void>();
 
   public constructor(
     private readonly rotationMs: number,
@@ -72,11 +73,22 @@ export class KeyHasher {
     return createHmac('sha256', this.salt).update(input).digest('hex').slice(0, 32);
   }
 
+  /** Registers cleanup for state keyed by this salt. The callback runs once per rotation. */
+  public onRotate(listener: () => void): void {
+    this.rotationListeners.add(listener);
+  }
+
+  /** Rotates if the configured lifetime elapsed. Also called periodically while the service is idle. */
+  public refresh(): void {
+    this.rotateIfDue();
+  }
+
   private rotateIfDue(): void {
     if (this.now() - this.startedAt >= this.rotationMs) {
       this.salt = this.random(32);
       this.startedAt = this.now();
       this.epochCounter += 1;
+      for (const listener of this.rotationListeners) listener();
     }
   }
 }

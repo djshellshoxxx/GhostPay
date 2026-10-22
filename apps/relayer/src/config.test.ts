@@ -5,7 +5,7 @@ import { ed25519 } from '@noble/curves/ed25519.js';
 import { manifestSigningBytes, type ReleaseKey } from '@ghostpay/chain-adapters';
 import { describe, expect, it } from 'vitest';
 import { DEV_CHAIN_ID, loadConfigFile, parseConfig, type ConfigContext } from './config.js';
-import { ConfigError, HOT_KEY_SOURCE, QUOTE_SECRET_SOURCE, loadSecret } from './secrets.js';
+import { ConfigError, HOT_KEY_SOURCE, QUOTE_SECRET_PREVIOUS_SOURCE, QUOTE_SECRET_SOURCE, loadOptionalSecret, loadSecret } from './secrets.js';
 import { DEST, FEE_TO, HOT_ADDRESS, NOPERMIT, ORIGIN, STRANGER, SWEEP_CONTRACT, USDC } from './harness.testutil.js';
 
 type Json = Record<string, unknown>;
@@ -14,6 +14,7 @@ const chain = (over: Json = {}): Json => ({
   chainId: 11155111,
   rpcUrl: 'https://rpc.example/key',
   sweepRelayer: SWEEP_CONTRACT,
+  feeTo: FEE_TO,
   tokens: [{ address: USDC, usdStable: true }],
   nativeUsdPrice: '3000.5',
   gasUnits: { sweep: '100000', sweepWithPermit: '130000' },
@@ -67,7 +68,8 @@ describe('parseConfig', () => {
     expect(c.metricsToken).toBeUndefined();
     expect(c.alertWebhookUrl).toBeUndefined();
     const ch = c.chains[0];
-    expect(ch?.feeTo).toBe(HOT_ADDRESS); // defaults to the hot-key address
+    expect(c.gas).toEqual({ coverPercent: 100, maxMovePercent: 25, quoteCacheSeconds: 3 });
+    expect(ch?.feeTo).toBe(FEE_TO);
     expect(ch?.nativeUsdMicro).toBe(3_000_500_000n);
     expect(ch?.tokens[0]).toEqual({ address: USDC, symbol: 'USDC', decimals: 6, permit: true, usdStable: true });
     expect(ch?.rpcUrl).toBe('https://rpc.example/key');
@@ -78,6 +80,7 @@ describe('parseConfig', () => {
       good({
         listen: { host: '0.0.0.0', port: 9000 },
         trustedProxies: ['10.0.0.0/8', '::1'],
+        gas: { coverPercent: 120, maxMovePercent: 15, quoteCacheSeconds: 0 },
         lossBudget: { windowSeconds: 600, perKeyWei: '1000', globalWei: '5000', maxKeys: 32 },
         metricsTokenEnv: 'M_TOK',
         alertWebhookUrlEnv: 'A_HOOK',
@@ -99,6 +102,7 @@ describe('parseConfig', () => {
     );
     expect(c.port).toBe(9000);
     expect(c.trustedProxies).toEqual(['10.0.0.0/8', '::1']);
+    expect(c.gas).toEqual({ coverPercent: 120, maxMovePercent: 15, quoteCacheSeconds: 0 });
     expect(c.lossBudget).toEqual({ windowSeconds: 600, perKeyWei: 1000n, globalWei: 5000n, maxKeys: 32 });
     expect(c.metricsToken).toBe('m'.repeat(40));
     expect(c.alertWebhookUrl).toBe('https://hooks.example/x');
@@ -106,6 +110,14 @@ describe('parseConfig', () => {
     expect(c.chains[0]?.rpcUrl).toBe('https://rpc2.example/');
     expect(c.chains[0]?.feeTo).toBe(FEE_TO);
     expect(c.chains[0]?.tokens[1]).toMatchObject({ symbol: 'USDX', decimals: 18, permit: false });
+  });
+
+  it('requires explicit opt-in before using the hot key as fee recipient', () => {
+    const hotRecipient = chain({ feeTo: undefined });
+    expect(() => parse(good({ chains: [hotRecipient] }))).toThrow(/feeTo.*required/);
+    const c = parse(good({ allowFeeToHotKey: true, chains: [hotRecipient] }));
+    expect(c.allowFeeToHotKey).toBe(true);
+    expect(c.chains[0]?.feeTo).toBe(HOT_ADDRESS);
   });
 
   const bad: [string, (c: Json) => Json, RegExp?][] = [
@@ -151,6 +163,8 @@ describe('parseConfig', () => {
     ['no sweepRelayer and no manifest', (c) => ({ ...c, chains: [chain({ sweepRelayer: undefined })] }), /sweepRelayer/],
     ['bad sweepRelayer', (c) => ({ ...c, chains: [chain({ sweepRelayer: '0x12' })] })],
     ['feeTo is the contract', (c) => ({ ...c, chains: [chain({ feeTo: SWEEP_CONTRACT })] })],
+    ['feeTo is precompile', (c) => ({ ...c, chains: [chain({ feeTo: '0x0000000000000000000000000000000000000001' })] })],
+    ['feeTo is hot key', (c) => ({ ...c, chains: [chain({ feeTo: HOT_ADDRESS })] })],
     ['bad feeTo', (c) => ({ ...c, chains: [chain({ feeTo: 'x' })] })],
     ['both rpcUrl and env', (c) => ({ ...c, chains: [chain({ rpcUrlEnv: 'A' })] })],
     ['neither rpcUrl nor env', (c) => ({ ...c, chains: [chain({ rpcUrl: undefined })] })],
@@ -294,6 +308,10 @@ describe('loadSecret', () => {
     expect(() => loadSecret({ RELAYER_KEY: `${KEY}00` }, HOT_KEY_SOURCE)).toThrow(/invalid secret/);
     expect(loadSecret({ QUOTE_SECRET: 'ab'.repeat(64) }, QUOTE_SECRET_SOURCE)).toHaveLength(64);
     expect(() => loadSecret({ QUOTE_SECRET: 'ab'.repeat(16) }, QUOTE_SECRET_SOURCE)).toThrow();
+    expect(loadOptionalSecret({}, QUOTE_SECRET_PREVIOUS_SOURCE)).toBeUndefined();
+    expect(loadOptionalSecret({ QUOTE_SECRET_PREVIOUS: 'cd'.repeat(32) }, QUOTE_SECRET_PREVIOUS_SOURCE)).toHaveLength(32);
+    expect(() => loadSecret({ RELAYER_KEY: KEY, NODE_ENV: 'production' }, HOT_KEY_SOURCE)).toThrow(/refused in production/);
+    expect(loadSecret({ RELAYER_KEY: KEY, NODE_ENV: 'production', ALLOW_SECRET_ENV: '1' }, HOT_KEY_SOURCE)).toHaveLength(32);
   });
   it('never puts the secret in an error message', () => {
     const secret = 'ab'.repeat(33);
