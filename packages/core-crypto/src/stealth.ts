@@ -43,7 +43,13 @@ export interface PublicAnnouncement {
 }
 
 export type AnnouncementCheck =
-  { readonly matches: false } | { readonly matches: true; readonly stealthAddress: Address };
+  | { readonly matches: false }
+  | { readonly matches: true; readonly stealthAddress: Address; readonly tagMatches?: boolean };
+
+/** Deep-scan opt-in. Ordinary callers retain early view-tag rejection. */
+export interface CheckAnnouncementOptions {
+  readonly ignoreViewTag?: boolean;
+}
 
 interface ParsedAnnouncement {
   readonly address: Address;
@@ -149,6 +155,7 @@ export function checkAnnouncement(
   announcement: PublicAnnouncement,
   viewingSecret: SecretScalar,
   spendingPublicKey: CompressedPoint,
+  options: CheckAnnouncementOptions = {},
 ): AnnouncementCheck {
   const spend = parseCompressedPoint(spendingPublicKey);
   let parsed: ParsedAnnouncement;
@@ -165,7 +172,8 @@ export function checkAnnouncement(
     if (e instanceof GhostPayCryptoError && e.code === 'ZERO_HASH') return { matches: false };
     throw e;
   }
-  if (derived.tag !== parsed.viewTag) return { matches: false };
+  const ignoreViewTag = options.ignoreViewTag === true;
+  if (!ignoreViewTag && derived.tag !== parsed.viewTag) return { matches: false };
   let address: Address;
   try {
     address = stealthAddressFor(spend, derived.h);
@@ -174,6 +182,7 @@ export function checkAnnouncement(
     throw e;
   }
   if (address.toLowerCase() !== parsed.address.toLowerCase()) return { matches: false };
+  if (ignoreViewTag) return { matches: true, stealthAddress: address, tagMatches: derived.tag === parsed.viewTag };
   return { matches: true, stealthAddress: address };
 }
 
