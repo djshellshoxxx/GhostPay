@@ -2,8 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f7f8fa" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f1218" media="(prefers-color-scheme: dark)" />
+    <meta name="format-detection" content="telephone=no" />
     <meta name="referrer" content="no-referrer" />
     <meta
       http-equiv="Content-Security-Policy"
@@ -15,7 +18,41 @@
   </head>
   <body>
     <div id="root"></div>
-    <noscript>GhostPay needs JavaScript to run locally in your browser. It loads no third-party code.</noscript>
+    <noscript>
+      <header>
+        <h1>GhostPay</h1>
+        <p>Stealth-address payments. Unaudited software.</p>
+      </header>
+      <nav aria-label="Help without JavaScript">
+        <ul>
+          <li><a href="help.html">Help: paying an invoice, receiving, troubleshooting</a></li>
+          <li><a href="privacy.html">Privacy: what this app does and does not hide</a></li>
+        </ul>
+      </nav>
+      <main>
+        <h2>This app needs JavaScript</h2>
+        <p>
+          GhostPay runs entirely in your browser. Your keys are generated, stored, used for signing and used for
+          scanning on your own device, and they never leave it. That needs JavaScript and the Web Crypto API
+          (crypto.subtle and crypto.getRandomValues). There is no server-side version, because a server version would
+          have to hold your keys. The page loads no third-party code, no analytics and no remote fonts.
+        </p>
+        <p>
+          Text browsers such as lynx and w3m cannot run it. Turn JavaScript on in a current graphical browser
+          (Firefox, Chrome, Safari, Edge, Opera or similar) to use the app. The help and privacy pages linked above
+          work without JavaScript.
+        </p>
+        <h2>Pay an invoice using a wallet (no JavaScript needed)</h2>
+        <ol>
+          <li>Get the invoice from the seller as a link, a QR code or a pasted text block.</li>
+          <li>Read the amount, the asset, the chain and the expiry in the invoice text. If any of these is missing or unclear, stop and ask the seller.</li>
+          <li>Open your own wallet app. Open GhostPay in a browser with JavaScript on, or ask the seller for a plain payment link or address that your wallet supports.</li>
+          <li>Send exactly that amount of that asset on that chain to the address shown. Check the first and last characters of the address on your wallet screen against the invoice.</li>
+          <li>Keep the transaction hash. Send it to the seller as proof of payment.</li>
+        </ol>
+        <p>Never type a seed phrase or private key into any web page, including this one.</p>
+      </main>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
