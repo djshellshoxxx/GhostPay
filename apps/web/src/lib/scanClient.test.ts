@@ -128,7 +128,7 @@ describe('runScan', () => {
   it('reports a worker that rejects the keys, and worker crashes', async () => {
     const s = setup();
     await expect(
-      runScan({ chain, manifest, client: chainWith(10, []), cursor: { nextBlock: 0n }, spendingPublicKeyHex: 'zz', viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => new InlineWorker(), signal: new AbortController().signal }),
+      runScan({ chain, manifest, client: chainWith(10, []), cursor: { nextBlock: 0n }, spendingPublicKeyHex: 'zz', keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => new InlineWorker(), signal: new AbortController().signal }),
     ).rejects.toThrow(/rejected the keys/);
     const crashing = new InlineWorker();
     crashing.postMessage = (): void => {
