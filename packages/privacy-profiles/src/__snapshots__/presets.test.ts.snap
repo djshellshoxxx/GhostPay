@@ -1,0 +1,461 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`preset snapshots for four fixed contexts > confidential-amount / empty caps web Sepolia 1`] = `
+{
+  "acks": [
+    "privacy.ack.payerStillPublic",
+  ],
+  "downgrades": [
+    "pay.amountVisibility:ct1-zama->public:E_CAPABILITY",
+    "net.rpcProfile:tor-browser->direct:E_CAPABILITY",
+    "net.relayerProfile:tor-browser->direct:E_CAPABILITY",
+    "net.rpcMode:quorum->single:E_CAPABILITY",
+    "net.endpointSeparation:on->off:E_CAPABILITY",
+    "net.scanMode:indexer-tor->range:E_CAPABILITY",
+    "relayer.multi:on->off:E_CAPABILITY",
+  ],
+  "trust": [],
+  "values": {
+    "btc.feeRateNormalise": "on",
+    "btc.ordering": "bip69",
+    "identity.perChainKeys": "on",
+    "invoice.coarseTime": "on",
+    "invoice.encrypt": "on",
+    "invoice.padding": "on",
+    "net.scanAlign": "on",
+    "pay.amountBlur": "delay",
+    "pay.payerMode": "fresh-wallet",
+    "sweep.delay": "jitter",
+  },
+}
+`;
+
+exports[`preset snapshots for four fixed contexts > confidential-amount / full caps web-onion Sepolia 1`] = `
+{
+  "acks": [
+    "privacy.ack.ctTrust",
+  ],
+  "downgrades": [
+    "pay.payerMode:fresh-wallet->direct:E_CONFLICT",
+  ],
+  "trust": [
+    "indexer",
+    "rpc",
+    "sweep-relayer",
+    "tor-exit",
+    "tor-network",
+    "zama-decrypt-relayer",
+    "zama-kms-coprocessors",
+  ],
+  "values": {
+    "btc.feeRateNormalise": "on",
+    "btc.ordering": "bip69",
+    "identity.perChainKeys": "on",
+    "invoice.coarseTime": "on",
+    "invoice.encrypt": "on",
+    "invoice.padding": "on",
+    "net.endpointSeparation": "on",
+    "net.relayerProfile": "tor-browser",
+    "net.rpcMode": "quorum",
+    "net.rpcProfile": "tor-browser",
+    "net.scanAlign": "on",
+    "net.scanMode": "indexer-tor",
+    "pay.amountBlur": "delay",
+    "pay.amountVisibility": "ct1-zama",
+    "relayer.multi": "on",
+    "sweep.delay": "jitter",
+  },
+}
+`;
+
+exports[`preset snapshots for four fixed contexts > confidential-amount / node anvil test-mode 1`] = `
+{
+  "acks": [
+    "privacy.ack.payerStillPublic",
+  ],
+  "downgrades": [
+    "pay.amountVisibility:ct1-zama->public:E_CAPABILITY",
+    "net.rpcProfile:tor-browser->direct:E_CAPABILITY",
+    "net.relayerProfile:tor-browser->direct:E_CAPABILITY",
+    "net.rpcMode:quorum->single:E_CAPABILITY",
+    "net.endpointSeparation:on->off:E_CAPABILITY",
+    "net.scanMode:indexer-tor->range:E_CAPABILITY",
+    "relayer.multi:on->off:E_CAPABILITY",
+  ],
+  "trust": [],
+  "values": {
+    "btc.feeRateNormalise": "on",
+    "btc.ordering": "bip69",
+    "identity.perChainKeys": "on",
+    "invoice.coarseTime": "on",
+    "invoice.encrypt": "on",
+    "invoice.padding": "on",
+    "net.scanAlign": "on",
+    "pay.amountBlur": "delay",
+    "pay.payerMode": "fresh-wallet",
+    "sweep.delay": "jitter",
+  },
+}
+`;
+
+exports[`preset snapshots for four fixed contexts > confidential-amount / web Base Sepolia sponsor+eip7702 1`] = `
+{
+  "acks": [
+    "privacy.ack.payerStillPublic",
+  ],
+  "downgrades": [
+    "pay.amountVisibility:ct1-zama->public:E_CAPABILITY",
+    "net.rpcProfile:tor-browser->direct:E_CAPABILITY",
+    "net.relayerProfile:tor-browser->direct:E_CAPABILITY",
+    "net.rpcMode:quorum->single:E_CAPABILITY",
+    "net.endpointSeparation:on->off:E_CAPABILITY",
+    "net.scanMode:indexer-tor->range:E_CAPABILITY",
+    "relayer.multi:on->off:E_CAPABILITY",
+  ],
+  "trust": [],
+  "values": {
+    "btc.feeRateNormalise": "on",
+    "btc.ordering": "bip69",
+    "identity.perChainKeys": "on",
+    "invoice.coarseTime": "on",
+    "invoice.encrypt": "on",
+    "invoice.padding": "on",
+    "net.scanAlign": "on",
+    "pay.amountBlur": "delay",
+    "pay.payerMode": "fresh-wallet",
+    "sweep.delay": "jitter",
+  },
+}
+`;
+
+exports[`preset snapshots for four fixed contexts > enhanced / empty caps web Sepolia 1`] = `
+{
+  "acks": [
+    "privacy.ack.payerStillPublic",
+  ],
+  "downgrades": [
+    "net.rpcProfile:tor-browser->direct:E_CAPABILITY",
+    "net.relayerProfile:tor-browser->direct:E_CAPABILITY",
+    "net.rpcMode:quorum->single:E_CAPABILITY",
+    "net.endpointSeparation:on->off:E_CAPABILITY",
+    "net.scanMode:indexer-tor->range:E_CAPABILITY",
+    "relayer.multi:on->off:E_CAPABILITY",
+  ],
+  "trust": [],
+  "values": {
+    "btc.feeRateNormalise": "on",
+    "btc.ordering": "bip69",
+    "identity.perChainKeys": "on",
+    "invoice.coarseTime": "on",
+    "invoice.encrypt": "on",
+    "invoice.padding": "on",
+    "net.scanAlign": "on",
+    "pay.amountBlur": "round",
+    "pay.payerMode": "fresh-wallet",
+    "sweep.delay": "jitter",
+  },
+}
+`;
+
+exports[`preset snapshots for four fixed contexts > enhanced / full caps web-onion Sepolia 1`] = `
+{
+  "acks": [
+    "privacy.ack.payerStillPublic",
+  ],
+  "downgrades": [],
+  "trust": [
+    "indexer",
+    "rpc",
+    "sweep-relayer",
+    "tor-exit",
+    "tor-network",
+  ],
+  "values": {
+    "btc.feeRateNormalise": "on",
+    "btc.ordering": "bip69",
+    "identity.perChainKeys": "on",
+    "invoice.coarseTime": "on",
+    "invoice.encrypt": "on",
+    "invoice.padding": "on",
+    "net.endpointSeparation": "on",
+    "net.relayerProfile": "tor-browser",
+    "net.rpcMode": "quorum",
+    "net.rpcProfile": "tor-browser",
+    "net.scanAlign": "on",
+    "net.scanMode": "indexer-tor",
+    "pay.amountBlur": "round",
+    "pay.payerMode": "fresh-wallet",
+    "relayer.multi": "on",
+    "sweep.delay": "jitter",
+  },
+}
+`;
+
+exports[`preset snapshots for four fixed contexts > enhanced / node anvil test-mode 1`] = `
+{
+  "acks": [
+    "privacy.ack.payerStillPublic",
+  ],
+  "downgrades": [
+    "net.rpcProfile:tor-browser->direct:E_CAPABILITY",
+    "net.relayerProfile:tor-browser->direct:E_CAPABILITY",
+    "net.rpcMode:quorum->single:E_CAPABILITY",
+    "net.endpointSeparation:on->off:E_CAPABILITY",
+    "net.scanMode:indexer-tor->range:E_CAPABILITY",
+    "relayer.multi:on->off:E_CAPABILITY",
+  ],
+  "trust": [],
+  "values": {
+    "btc.feeRateNormalise": "on",
+    "btc.ordering": "bip69",
+    "identity.perChainKeys": "on",
+    "invoice.coarseTime": "on",
+    "invoice.encrypt": "on",
+    "invoice.padding": "on",
+    "net.scanAlign": "on",
+    "pay.amountBlur": "round",
+    "pay.payerMode": "fresh-wallet",
+    "sweep.delay": "jitter",
+  },
+}
+`;
+
+exports[`preset snapshots for four fixed contexts > enhanced / web Base Sepolia sponsor+eip7702 1`] = `
+{
+  "acks": [
+    "privacy.ack.payerStillPublic",
+  ],
+  "downgrades": [
+    "net.rpcProfile:tor-browser->direct:E_CAPABILITY",
+    "net.relayerProfile:tor-browser->direct:E_CAPABILITY",
+    "net.rpcMode:quorum->single:E_CAPABILITY",
+    "net.endpointSeparation:on->off:E_CAPABILITY",
+    "net.scanMode:indexer-tor->range:E_CAPABILITY",
+    "relayer.multi:on->off:E_CAPABILITY",
+  ],
+  "trust": [],
+  "values": {
+    "btc.feeRateNormalise": "on",
+    "btc.ordering": "bip69",
+    "identity.perChainKeys": "on",
+    "invoice.coarseTime": "on",
+    "invoice.encrypt": "on",
+    "invoice.padding": "on",
+    "net.scanAlign": "on",
+    "pay.amountBlur": "round",
+    "pay.payerMode": "fresh-wallet",
+    "sweep.delay": "jitter",
+  },
+}
+`;
+
+exports[`preset snapshots for four fixed contexts > maximum / empty caps web Sepolia 1`] = `
+{
+  "acks": [
+    "privacy.ack.payerStillPublic",
+  ],
+  "downgrades": [
+    "sweep.exit:privacy-pools->plain:E_CAPABILITY",
+    "sweep.exitGas:eip7702->buffer:E_REQUIRES",
+    "pay.source:shielded-pool->wallet:E_CAPABILITY",
+    "pay.payerMode:eip7702-sponsored->fresh-wallet:E_CAPABILITY",
+    "net.rpcProfile:tor-browser->direct:E_CAPABILITY",
+    "net.relayerProfile:tor-browser->direct:E_CAPABILITY",
+    "net.rpcMode:quorum->single:E_CAPABILITY",
+    "net.endpointSeparation:on->off:E_CAPABILITY",
+    "net.scanMode:pir2->range:E_CAPABILITY",
+    "relayer.multi:on->off:E_CAPABILITY",
+  ],
+  "trust": [],
+  "values": {
+    "btc.feeRateNormalise": "on",
+    "btc.ordering": "bip69",
+    "btc.psbtStrip": "on",
+    "identity.perChainKeys": "on",
+    "identity.perInvoiceMeta": "on",
+    "invoice.coarseTime": "on",
+    "invoice.encrypt": "on",
+    "invoice.padding": "on",
+    "net.scanAlign": "on",
+    "pay.amountBlur": "denom",
+    "pay.payerMode": "fresh-wallet",
+    "sweep.delay": "jitter",
+  },
+}
+`;
+
+exports[`preset snapshots for four fixed contexts > maximum / full caps web-onion Sepolia 1`] = `
+{
+  "acks": [
+    "privacy.ack.poolDisclosure",
+    "privacy.ack.shieldedPoolTestnet",
+  ],
+  "downgrades": [
+    "pay.payerMode:eip7702-sponsored->direct:E_CONFLICT",
+    "pay.amountBlur:denom->delay:E_CONFLICT",
+  ],
+  "trust": [
+    "own-circuits-dev-ceremony",
+    "own-unaudited-contracts",
+    "pir-server-pair",
+    "pool-relayer",
+    "privacy-pools-asp",
+    "privacy-pools-operator",
+    "rpc",
+    "sweep-relayer",
+    "third-party-unaudited-code",
+    "tor-exit",
+    "tor-network",
+  ],
+  "values": {
+    "btc.feeRateNormalise": "on",
+    "btc.ordering": "bip69",
+    "btc.psbtStrip": "on",
+    "identity.perChainKeys": "on",
+    "identity.perInvoiceMeta": "on",
+    "invoice.coarseTime": "on",
+    "invoice.encrypt": "on",
+    "invoice.padding": "on",
+    "net.endpointSeparation": "on",
+    "net.relayerProfile": "tor-browser",
+    "net.rpcMode": "quorum",
+    "net.rpcProfile": "tor-browser",
+    "net.scanAlign": "on",
+    "net.scanMode": "pir2",
+    "pay.amountBlur": "delay",
+    "pay.source": "shielded-pool",
+    "relayer.multi": "on",
+    "sweep.delay": "jitter",
+    "sweep.exit": "privacy-pools",
+    "sweep.exitGas": "eip7702",
+  },
+}
+`;
+
+exports[`preset snapshots for four fixed contexts > maximum / node anvil test-mode 1`] = `
+{
+  "acks": [
+    "privacy.ack.payerStillPublic",
+  ],
+  "downgrades": [
+    "sweep.exit:privacy-pools->plain:E_CAPABILITY",
+    "sweep.exitGas:eip7702->buffer:E_REQUIRES",
+    "pay.source:shielded-pool->wallet:E_CAPABILITY",
+    "pay.payerMode:eip7702-sponsored->fresh-wallet:E_CAPABILITY",
+    "net.rpcProfile:tor-browser->direct:E_CAPABILITY",
+    "net.relayerProfile:tor-browser->direct:E_CAPABILITY",
+    "net.rpcMode:quorum->single:E_CAPABILITY",
+    "net.endpointSeparation:on->off:E_CAPABILITY",
+    "net.scanMode:pir2->range:E_CAPABILITY",
+    "relayer.multi:on->off:E_CAPABILITY",
+  ],
+  "trust": [],
+  "values": {
+    "btc.feeRateNormalise": "on",
+    "btc.ordering": "bip69",
+    "btc.psbtStrip": "on",
+    "identity.perChainKeys": "on",
+    "identity.perInvoiceMeta": "on",
+    "invoice.coarseTime": "on",
+    "invoice.encrypt": "on",
+    "invoice.padding": "on",
+    "net.scanAlign": "on",
+    "pay.amountBlur": "denom",
+    "pay.payerMode": "fresh-wallet",
+    "sweep.delay": "jitter",
+  },
+}
+`;
+
+exports[`preset snapshots for four fixed contexts > maximum / web Base Sepolia sponsor+eip7702 1`] = `
+{
+  "acks": [
+    "privacy.ack.payerStillPublic",
+  ],
+  "downgrades": [
+    "sweep.exit:privacy-pools->plain:E_CAPABILITY",
+    "sweep.exitGas:eip7702->buffer:E_REQUIRES",
+    "pay.source:shielded-pool->wallet:E_CAPABILITY",
+    "net.rpcProfile:tor-browser->direct:E_CAPABILITY",
+    "net.relayerProfile:tor-browser->direct:E_CAPABILITY",
+    "net.rpcMode:quorum->single:E_CAPABILITY",
+    "net.endpointSeparation:on->off:E_CAPABILITY",
+    "net.scanMode:pir2->range:E_CAPABILITY",
+    "relayer.multi:on->off:E_CAPABILITY",
+  ],
+  "trust": [
+    "own-unaudited-contracts",
+    "payer-sponsor",
+  ],
+  "values": {
+    "btc.feeRateNormalise": "on",
+    "btc.ordering": "bip69",
+    "btc.psbtStrip": "on",
+    "identity.perChainKeys": "on",
+    "identity.perInvoiceMeta": "on",
+    "invoice.coarseTime": "on",
+    "invoice.encrypt": "on",
+    "invoice.padding": "on",
+    "net.scanAlign": "on",
+    "pay.amountBlur": "denom",
+    "pay.payerMode": "eip7702-sponsored",
+    "sweep.delay": "jitter",
+  },
+}
+`;
+
+exports[`preset snapshots for four fixed contexts > standard / empty caps web Sepolia 1`] = `
+{
+  "acks": [],
+  "downgrades": [],
+  "trust": [],
+  "values": {
+    "btc.ordering": "bip69",
+    "invoice.coarseTime": "on",
+    "invoice.encrypt": "on",
+    "net.scanAlign": "on",
+  },
+}
+`;
+
+exports[`preset snapshots for four fixed contexts > standard / full caps web-onion Sepolia 1`] = `
+{
+  "acks": [],
+  "downgrades": [],
+  "trust": [],
+  "values": {
+    "btc.ordering": "bip69",
+    "invoice.coarseTime": "on",
+    "invoice.encrypt": "on",
+    "net.scanAlign": "on",
+  },
+}
+`;
+
+exports[`preset snapshots for four fixed contexts > standard / node anvil test-mode 1`] = `
+{
+  "acks": [],
+  "downgrades": [],
+  "trust": [],
+  "values": {
+    "btc.ordering": "bip69",
+    "invoice.coarseTime": "on",
+    "invoice.encrypt": "on",
+    "net.scanAlign": "on",
+  },
+}
+`;
+
+exports[`preset snapshots for four fixed contexts > standard / web Base Sepolia sponsor+eip7702 1`] = `
+{
+  "acks": [],
+  "downgrades": [],
+  "trust": [],
+  "values": {
+    "btc.ordering": "bip69",
+    "invoice.coarseTime": "on",
+    "invoice.encrypt": "on",
+    "net.scanAlign": "on",
+  },
+}
+`;
