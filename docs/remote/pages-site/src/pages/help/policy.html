@@ -1,0 +1,11 @@
+<!--page title="Policy accounts" desc="Experimental guarded accounts: fixed destination, delay and limits." prev="help/bitcoin.html" next="help/glossary.html" -->
+<p>A policy account is a small contract that can only pay one fixed destination, after a delay, within per-token limits. The goal: a stolen key cannot quietly send funds elsewhere.</p>
+<div class="notice notice-warn" role="note"><p>{{S:experimental}} Contracts and a client library only. <strong>No app support, no recovery path, not deployed, unaudited. Do not use.</strong></p></div>
+{{diagram:policy}}
+<h2>Trade-offs</h2>
+<ul>
+<li>The destination is fixed in advance, so the link from your payments to that destination is permanent. This is the opposite of the fresh-destination advice for normal sweeps.</li>
+<li>A delay protects you and also slows you. Changing the destination takes twice the delay.</li>
+<li>The policy hash is public in your meta-address; the destination itself is not revealed by it.</li>
+<li>Creation has a flat fee (design value, owner to confirm). The usual 0.25 % checkout fee also applies when paying through the policy router.</li>
+</ul>
