@@ -402,7 +402,8 @@ describe('PH-4 sponsorUserOp / submitUserOp', () => {
     h.chain.tokenBalance = GROSS + q.sponsorFee;
     const h2 = harness();
     const st = await stage(h2);
-    h2.chain.call = async () => '0x12';
+    const factoryCall = h2.chain.call;
+    h2.chain.call = async (to, data) => (to.toLowerCase() === TOKEN.toLowerCase() ? '0x12' : factoryCall(to, data));
     await code(h2.svc.sponsorUserOp(CTX, st.req), 'BAD_REQUEST');
   });
   it('step 1 needs a configured signer and a deployed PH-4', async () => {

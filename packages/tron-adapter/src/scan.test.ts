@@ -115,6 +115,15 @@ describe('scan with mock RPC', () => {
     const out = (await collect(scanTron(rpc, { fromBlock: 5n, toBlock: 5n, viewingSecret: keys.viewingSecret, spendingPublicKey: keys.spendingPublicKey, trustedTokens: [PAYER], signal: sc.signal }))) as { trustedToken: boolean }[];
     expect(out[0]?.trustedToken).toBe(false);
   });
+  it('trustedToken fails closed when trustedTokens is unset (SOLANA-TRON-02)', async () => {
+    const usdt = build('usdt', 9n, 'b');
+    const rpc = mockRpc([{ number: 5, transactions: [nodeTx(usdt)] }], {
+      [usdt.tx.txID]: { id: usdt.tx.txID, log: [transferLog(usdt.stealthAddress, 9n)] },
+    });
+    const out = (await collect(scanTron(rpc, { fromBlock: 5n, toBlock: 5n, viewingSecret: keys.viewingSecret, spendingPublicKey: keys.spendingPublicKey, signal: sc.signal }))) as { trustedToken: boolean }[];
+    expect(out).toHaveLength(1);
+    expect(out[0]?.trustedToken).toBe(false);
+  });
   it('skips fake-token spoof: no Transfer log, wrong amount/recipient/contract, failed receipt', async () => {
     const usdt = build('usdt', 50n, 'b');
     const t = usdt.tx.txID;

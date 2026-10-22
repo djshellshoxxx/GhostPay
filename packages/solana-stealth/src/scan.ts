@@ -156,6 +156,7 @@ export function creditsFor(tx: RpcTransaction, owner: string): { lamports: bigin
  *
  * @remarks Announcements whose derived stealth address received nothing in the same
  * transaction are dropped: anyone who knows `V` can publish a matching memo without paying.
+ * Detections are deduplicated by `(signature, stealthAddress)` (records of one tx are contiguous).
  */
 export async function* scanAnnouncements(
   records: AsyncIterable<AnnouncementRecord>,
@@ -163,11 +164,20 @@ export async function* scanAnnouncements(
   spendPublicKey: Uint8Array,
   signal?: AbortSignal,
 ): AsyncGenerator<DetectedSolanaPayment> {
+  // Repeated memos in one tx re-derive the same P and the same whole-tx credit: report once.
+  let seenSignature: string | undefined;
+  let seenAddresses = new Set<string>();
   for await (const rec of records) {
     checkAbort(signal);
     const { ephemeralPublicKey, viewTag } = rec.announcement;
     const m = checkAnnouncement(viewSecret, spendPublicKey, ephemeralPublicKey, viewTag);
     if (m === null) continue;
+    if (rec.signature !== seenSignature) {
+      seenSignature = rec.signature;
+      seenAddresses = new Set();
+    }
+    if (seenAddresses.has(m.stealthAddress)) continue;
+    seenAddresses.add(m.stealthAddress);
     const credits = creditsFor(rec.tx, m.stealthAddress);
     if (credits.lamports === 0n && credits.tokens.length === 0) continue;
     yield {

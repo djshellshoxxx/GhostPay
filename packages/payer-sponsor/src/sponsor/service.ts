@@ -1,4 +1,5 @@
 import {
+  encodeFunctionData,
   getAddress,
   isAddressEqual,
   keccak256,
@@ -79,6 +80,18 @@ export interface SponsorServiceOptions {
   readonly maxVerificationGas?: bigint;
   readonly maxCallGas?: bigint;
   readonly maxOpCostWei?: bigint;
+  /**
+   * PH-4 (CONTRACTS-POOLS-01): largest `maxFeePerGas` as a multiple of the live gas price, in basis
+   * points (default 20000 = 2x). Whoever submits a sponsored op is paid at its fee fields from the
+   * paymaster deposit, so fees well above the market are pure extraction.
+   */
+  readonly maxFeeMultiplierBps?: number;
+  /** PH-4: largest `maxPriorityFeePerGas` in wei (default 2 gwei); never above `maxFeePerGas`. */
+  readonly maxPriorityFeeWei?: bigint;
+  /** PH-4: `preVerificationGas` may be at most this plus 16 gas per byte of the packed op (default 100000). */
+  readonly preVerificationGasOverhead?: bigint;
+  /** PH-4: paymaster signature lifetime in seconds, capped by the quote expiry (default 120). */
+  readonly paymasterValiditySeconds?: number;
   readonly limiter: TokenBucketLimiter;
   readonly breaker: GuardedBreaker;
   readonly loss: LossBudget;
@@ -103,6 +116,11 @@ interface StoredQuote {
 }
 
 const TRANSFER_TOPIC = toEventSelector('Transfer(address,address,uint256)');
+const BALANCE_OF_ABI = [
+  { type: 'function', name: 'balanceOf', stateMutability: 'view', inputs: [{ name: 'a', type: 'address' }], outputs: [{ name: '', type: 'uint256' }] },
+] as const;
+/** Fixed part of a packed v0.7 op counted for the pvg bound: 9 head words, paymasterAndData (129), signature (65). */
+const OP_FIXED_BYTES = 9n * 32n + 129n + 65n;
 const BPS = 10_000n;
 const WEI = 10n ** 18n;
 
@@ -140,7 +158,9 @@ export class SponsorService {
     }
     const bad =
       !Number.isInteger(o.safetyBps) || o.safetyBps < 0 || o.safetyBps > 10_000 ||
-      !(o.quoteTtlMs > 0) || !Number.isInteger(o.maxQuotes) || o.maxQuotes < 1 || !(o.maxDeadlineSeconds > 0);
+      !(o.quoteTtlMs > 0) || !Number.isInteger(o.maxQuotes) || o.maxQuotes < 1 || !(o.maxDeadlineSeconds > 0) ||
+      (o.maxFeeMultiplierBps !== undefined && (!Number.isInteger(o.maxFeeMultiplierBps) || o.maxFeeMultiplierBps < 10_000)) ||
+      (o.paymasterValiditySeconds !== undefined && (!Number.isInteger(o.paymasterValiditySeconds) || o.paymasterValiditySeconds < 1));
     if (bad) throw new PayerSponsorError('INVALID_ARGUMENT', 'invalid sponsor options');
     this.now = o.now ?? Date.now;
     this.rand = o.randomBytes ?? ((n) => crypto.getRandomValues(new Uint8Array(n)));
@@ -279,7 +299,10 @@ export class SponsorService {
       if (q.sponsored) throw new PayerSponsorError('QUOTE_UNKNOWN', 'quote already used for a paymaster authorisation');
       const signer = this.o.paymasterSigner;
       if (signer === undefined) throw new PayerSponsorError('MODE_UNAVAILABLE', 'paymaster signer not configured');
-      const validUntil = BigInt(Math.floor(q.expiresAt / 1000));
+      // Short-lived signature (CONTRACTS-POOLS-01): minutes at most, never past the quote.
+      const quoteEnd = BigInt(Math.floor(q.expiresAt / 1000));
+      const sigEnd = BigInt(Math.floor(this.now() / 1000) + (this.o.paymasterValiditySeconds ?? 120));
+      const validUntil = sigEnd < quoteEnd ? sigEnd : quoteEnd;
       const params: PaymasterParams = {
         paymaster: pm.paymaster,
         verificationGasLimit: 200_000n,
@@ -429,12 +452,32 @@ export class SponsorService {
     }
     // Gas caps bound the sponsor's maximum loss per operation.
     const [vgl, cgl] = unpackUint128Pair(op.accountGasLimits);
-    const [, maxFee] = unpackUint128Pair(op.gasFees);
+    const [maxPriority, maxFee] = unpackUint128Pair(op.gasFees);
     const maxVg = this.o.maxVerificationGas ?? 2_000_000n;
     const maxCg = this.o.maxCallGas ?? 1_500_000n;
     const maxCost = this.o.maxOpCostWei ?? 10n ** 17n;
     if (vgl > maxVg || cgl > maxCg) throw new PayerSponsorError('BAD_REQUEST', 'gas limits above the sponsor caps');
     if ((vgl + cgl + op.preVerificationGas + 250_000n) * maxFee > maxCost) throw new PayerSponsorError('BAD_REQUEST', 'operation cost above the sponsor cap');
+    // CONTRACTS-POOLS-01: the paymaster signature does not bind the bundler, so anyone may submit the
+    // op and be paid at its fee fields plus its full preVerificationGas from the paymaster deposit.
+    // Keep those close to the market and to the op's real size.
+    const gasPrice = await cfg.chain.gasPrice();
+    if (maxFee * BPS > gasPrice * BigInt(this.o.maxFeeMultiplierBps ?? 20_000)) {
+      throw new PayerSponsorError('BAD_REQUEST', 'maxFeePerGas too far above the live gas price');
+    }
+    if (maxPriority > maxFee || maxPriority > (this.o.maxPriorityFeeWei ?? 2_000_000_000n)) {
+      throw new PayerSponsorError('BAD_REQUEST', 'maxPriorityFeePerGas above the sponsor cap');
+    }
+    const opBytes = BigInt((op.initCode.length - 2) / 2 + (op.callData.length - 2) / 2) + OP_FIXED_BYTES;
+    if (op.preVerificationGas > (this.o.preVerificationGasOverhead ?? 100_000n) + 16n * opBytes) {
+      throw new PayerSponsorError('BAD_REQUEST', 'preVerificationGas above the calldata-derived bound');
+    }
+    // CONTRACTS-POOLS-03: the inner batch failing does not revert handleOps, so the deposit would pay
+    // for deployment and validation while the fee is never paid. The fresh account must already hold
+    // gross + fee (checked before signing and again before sending).
+    const rawBal = await cfg.chain.call(q.token, encodeFunctionData({ abi: BALANCE_OF_ABI, functionName: 'balanceOf', args: [op.sender] }));
+    if (rawBal.length !== 66) throw new PayerSponsorError('BAD_REQUEST', 'token balance unreadable');
+    if (BigInt(rawBal) < q.gross + req.sponsorFee) throw new PayerSponsorError('BAD_REQUEST', 'sender token balance below gross + sponsor fee');
     return { paymaster: d.paymaster, entryPoint: d.entryPoint };
   }
 

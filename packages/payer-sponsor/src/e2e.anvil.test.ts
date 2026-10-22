@@ -132,7 +132,7 @@ describe.skipIf(!available)('payer-hiding modes end to end on anvil', () => {
     delegate = await deploy('GhostPayPayerDelegate', 'GhostPayPayerDelegate');
     entryPoint = await deploy('EntryPoint', 'EntryPoint');
     factory = await deploy('GhostPayPayerAccountFactory', 'GhostPayPayerAccountFactory', [entryPoint]);
-    paymaster = await deploy('GhostPayVerifyingPaymaster', 'GhostPayVerifyingPaymaster', [entryPoint, pmSigner.address, deployer.address]);
+    paymaster = await deploy('GhostPayVerifyingPaymaster', 'GhostPayVerifyingPaymaster', [entryPoint, pmSigner.address, deployer.address, 50_000_000_000n, 2_000_000_000n, 200_000n]);
     const dep = createWalletClient({ account: deployer, transport: http(url), chain: foundry });
     await pub.waitForTransactionReceipt({ hash: await dep.writeContract({ address: entryPoint, abi: EP_ABI, functionName: 'depositTo', args: [paymaster], value: 10n ** 18n }) });
 
@@ -292,10 +292,13 @@ describe.skipIf(!available)('payer-hiding modes end to end on anvil', () => {
     const q = await service.quote(ctx, { mode: 'erc4337-paymaster', chainId: 31337, token, gross: GROSS });
     const routerCalldata = encodeRouterPay(routerTarget, pay());
     const nonce = BigInt((await pub.call({ to: entryPoint, data: encodeGetNonce(sender) })).data ?? '0x0');
+    // fee fields within the sponsor's live-price bound and the paymaster's immutable caps (CONTRACTS-POOLS-01)
+    const gp = await pub.getGasPrice();
+    const tip = gp < 1_000_000_000n ? gp : 1_000_000_000n;
     const built = buildUserOperation({
       chainId: 31337, entryPoint, sender, initCode: buildInitCode(factory, owner.address, saltNonce), nonce,
       calls: buildPayerCalls({ token, router, routerCalldata, gross: GROSS, sponsorFee: q.sponsorFee, sponsorFeeTo: q.sponsorFeeTo }),
-      gas: { verificationGasLimit: 1_500_000n, callGasLimit: 1_000_000n, preVerificationGas: 100_000n, maxFeePerGas: 2_000_000_000n, maxPriorityFeePerGas: 1_000_000_000n },
+      gas: { verificationGasLimit: 1_500_000n, callGasLimit: 1_000_000n, preVerificationGas: 100_000n, maxFeePerGas: gp, maxPriorityFeePerGas: tip },
     });
     const req = { quoteId: q.quoteId, chainId: 31337, router: routerTarget, routerCalldata, owner: owner.address, saltNonce, sponsorFee: q.sponsorFee, userOp: built.userOp };
     const sponsored = await service.sponsorUserOp(ctx, req);

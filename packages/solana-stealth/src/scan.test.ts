@@ -258,6 +258,26 @@ describe('Solana adapter scan over mock RPC', () => {
     expect(bobs.map((f) => f.signature)).toEqual(['bob']);
   });
 
+  it('reports one detection per (signature, stealth address) when the memo is repeated (SOLANA-TRON-01)', async () => {
+    const { txs } = await fixtureChain();
+    const dup = structuredClone(txs.find((t) => t.signature === 'sol')!);
+    const msg = (dup.response as { transaction: { message: { instructions: unknown[] } } }).transaction.message;
+    const memoIx = msg.instructions[1]!;
+    for (let i = 0; i < 5; i++) msg.instructions.push(structuredClone(memoIx));
+    const rpc = chainRpc([dup, ...txs.filter((t) => t.signature !== 'sol')]);
+    const recs = await collect(fetchAnnouncements(rpc, { fromSlot: 0n }));
+    expect(recs.filter((r) => r.signature === 'sol').length).toBeGreaterThan(1);
+    const found: DetectedSolanaPayment[] = await collect(
+      scanAnnouncements(
+        fetchAnnouncements(rpc, { fromSlot: 0n }),
+        alice.viewSecret,
+        alice.spendPublicKey,
+      ),
+    );
+    expect(found.filter((f) => f.signature === 'sol')).toHaveLength(1);
+    expect(found.map((f) => f.signature)).toEqual(['spl', 'sol']);
+  });
+
   it('respects slot range and pagination', async () => {
     const { txs } = await fixtureChain();
     const rpc = chainRpc(txs);

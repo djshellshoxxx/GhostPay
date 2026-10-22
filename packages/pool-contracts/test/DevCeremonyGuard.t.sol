@@ -4,7 +4,9 @@ pragma solidity 0.8.28;
 import {GhostPayAssociationSetRegistry} from "../src/GhostPayAssociationSetRegistry.sol";
 import {GhostPayShieldedPoolERC20} from "../src/GhostPayShieldedPoolERC20.sol";
 import {GhostPayShieldedPoolNative} from "../src/GhostPayShieldedPoolNative.sol";
-import {IGhostPayAssociationSetRegistry} from "../src/interfaces/IGhostPayAssociationSetRegistry.sol";
+import {
+    IGhostPayAssociationSetRegistry
+} from "../src/interfaces/IGhostPayAssociationSetRegistry.sol";
 import {IGhostPayShieldedPool} from "../src/interfaces/IGhostPayShieldedPool.sol";
 
 import {PoolBase} from "./PoolBase.t.sol";
