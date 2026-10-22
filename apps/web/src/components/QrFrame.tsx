@@ -94,7 +94,8 @@ export function QrFrame(props: QrFrameProps): ReactNode {
   const closeRef = useRef<HTMLButtonElement | null>(null);
 
   const total = parts?.length ?? 1;
-  const safeIndex = Math.min(index, total - 1);
+  // Clamp both ends when the multipart payload changes between renders.
+  const safeIndex = Math.max(0, Math.min(index, total - 1));
   const current = parts !== null ? (parts[safeIndex] ?? props.text) : props.text;
   const visible = revealed || !rules.revealRequired;
 
