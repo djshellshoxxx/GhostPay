@@ -38,6 +38,8 @@ export interface FetchOptions {
   /** Announcer from the verified deployment manifest. */
   readonly announcer: Address;
   readonly cursor: ScanCursor;
+  /** Inclusive upper bound; defaults to the reported head. */
+  readonly toBlock?: bigint;
   /** ERC-5564 scheme id filter, default 1n. */
   readonly schemeId?: bigint;
   /** Upper bound of `eth_getLogs` calls in one invocation, default 50. */
@@ -61,6 +63,14 @@ export interface FetchResult {
 }
 
 const HASH = /^0x[0-9a-f]{64}$/;
+/** Values above this bound are not a plausible EVM head and can drive a hostile, effectively endless scan. */
+export const MAX_PLAUSIBLE_HEAD = 10_000_000_000n;
+const MAX_REQUESTS_PER_FETCH = 50;
+const MAX_LOGS_PER_FETCH = 10_000;
+// Ancillary eth_getBlockByNumber reads do not consume the eth_getLogs page budget. A fetch
+// performs at most 1,000 distinct event-block lookups, plus the bounded window checks and fixed
+// head/checkpoint reads documented below.
+const MAX_CANONICAL_BLOCK_READS = 1_000;
 
 function schemeTopic(id: bigint): Hex {
   return `0x${id.toString(16).padStart(64, '0')}`;
@@ -157,14 +167,16 @@ export function validateAnnouncementLog(
  *
  * @remarks
  * - Reorg check first: the stored block hash is compared with the chain; on mismatch (or a missing
- *   block) the cursor rolls back by `chain.finalityDepth` blocks (never below 0) and `reorg` tells
- *   the caller which stored results to drop.
+ *   block) the cursor resets to genesis because one checkpoint cannot safely identify a deep fork.
+ *   `reorg` tells the caller which stored results to drop.
  * - Ranges are at most `min(chain.getLogsMaxRange, opts.maxRange)`; a provider range error or an oversize
  *   response halves the window (down to one block) before giving up.
  * - A cursor more than `finalityDepth` blocks beyond the reported head is refused (`RPC_FAILURE`).
  * - Duplicate logs (same `blockHash:logIndex`) within a call are dropped.
- * - Caps (`maxRequests`, `maxLogs`) end the call with `truncated: true` and a cursor that resumes
- *   exactly after the last completed range, so nothing is skipped.
+ * - `maxRequests` bounds `eth_getLogs` calls (at most 50); `maxLogs` bounds accepted logs (at most
+ *   10,000). Canonical event-block lookups have a separate 1,000-read cap. Window boundary checks
+ *   add at most 50 reads before and 50 after completed pages, plus fixed head/checkpoint reads.
+ *   Page/log caps end with `truncated: true` and a cursor after the last completed range.
  * - The new cursor stores the hash of the last processed block, re-read after the logs.
  *
  * @param o Options.
@@ -173,9 +185,13 @@ export function validateAnnouncementLog(
  */
 export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> {
   if (o.client.chainId !== o.chain.chainId) return fail('CHAIN_MISMATCH', 'client chain differs from scan chain');
+  if (typeof o.cursor.nextBlock !== 'bigint' || o.cursor.nextBlock < 0n ||
+      (o.toBlock !== undefined && (typeof o.toBlock !== 'bigint' || o.toBlock < 0n))) {
+    return fail('INVALID_INPUT', 'invalid scan range');
+  }
   const schemeId = o.schemeId ?? 1n;
-  const maxRequests = o.maxRequests ?? 50;
-  const maxLogs = o.maxLogs ?? 10_000;
+  const maxRequests = Math.max(1, Math.min(MAX_REQUESTS_PER_FETCH, Number.isSafeInteger(o.maxRequests) ? (o.maxRequests as number) : MAX_REQUESTS_PER_FETCH));
+  const maxLogs = Math.max(1, Math.min(MAX_LOGS_PER_FETCH, Number.isSafeInteger(o.maxLogs) ? (o.maxLogs as number) : MAX_LOGS_PER_FETCH));
   const cap = BigInt(Math.max(1, Math.min(o.maxRange ?? o.chain.getLogsMaxRange, o.chain.getLogsMaxRange)));
   const depth = BigInt(o.chain.finalityDepth);
 
@@ -184,18 +200,26 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
   if (o.cursor.last !== undefined) {
     const ref = await o.client.getBlock(o.cursor.last.number);
     if (ref === null || ref.hash.toLowerCase() !== o.cursor.last.hash.toLowerCase()) {
-      next = o.cursor.last.number >= depth ? o.cursor.last.number - depth + 1n : 0n;
-      reorg = { rolledBackTo: next };
+      // With only one persisted checkpoint we cannot locate a deep fork safely. Reset to genesis so a
+      // reorg deeper than finalityDepth cannot leave an unscanned gap between the fork and this cursor.
+      next = 0n;
+      reorg = { rolledBackTo: 0n };
     }
   }
 
   const head = await o.client.blockNumber();
+  if (head > MAX_PLAUSIBLE_HEAD) return fail('RPC_FAILURE', 'implausible chain head');
   // A cursor more than finalityDepth beyond the reported head is poisoned (earlier lying head) or the provider lies low:
   // fail closed rather than save a cursor that silently skips the real blocks.
-  if (next - 1n > head + depth) return fail('RPC_FAILURE', 'cursor is ahead of the chain head; clear the checkpoint and rescan');
-  const headRef = await o.client.getBlock(head);
+  if (o.cursor.nextBlock - 1n > head + depth) return fail('RPC_FAILURE', 'cursor is ahead of the chain head; clear the checkpoint and rescan');
+  const end = o.toBlock !== undefined && o.toBlock < head ? o.toBlock : head;
+  const headRef = end === head ? await o.client.getBlock(head) : null;
+  if (end === head && headRef === null) return fail('RPC_FAILURE', 'chain head block unavailable');
   const out: ScannedAnnouncement[] = [];
   const seen = new Set<string>();
+  const canonical = new Map<bigint, string>();
+  const windows: { from: bigint; to: bigint; hash: Hex }[] = [];
+  let canonicalBlockReads = 0;
   let skipped = 0;
   let requests = 0;
   let window = cap;
@@ -203,13 +227,17 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
   let processed = false;
   let truncated = false;
 
-  while (next <= head) {
+  while (next <= end) {
     if (requests >= maxRequests || out.length >= maxLogs) {
       truncated = true;
       break;
     }
-    const to = next + window - 1n > head ? head : next + window - 1n;
+    const to = next + window - 1n > end ? end : next + window - 1n;
     requests++;
+    const boundary = to === head ? headRef : await o.client.getBlock(to);
+    if (boundary === null) return fail('RPC_FAILURE', 'window boundary block unavailable');
+    windows.push({ from: next, to, hash: boundary.hash });
+    canonical.set(to, boundary.hash.toLowerCase());
     let logs: readonly RpcLog[];
     try {
       logs = await o.client.getLogs({ address: o.announcer, topics: [ANNOUNCEMENT_TOPIC, schemeTopic(schemeId)], fromBlock: next, toBlock: to });
@@ -218,18 +246,49 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
       const tooBig = e instanceof ChainAdapterError && (e.code === 'RESPONSE_TOO_LARGE' || /json-rpc error -(32602|32005)/.test(e.message));
       if (tooBig && window > 1n) {
         window = window / 2n;
+        windows.pop();
+        canonical.delete(to);
         continue;
       }
       throw e;
     }
+    const page: ScannedAnnouncement[] = [];
+    const pageIds = new Set<string>();
+    let pageSkipped = 0;
     for (const log of logs) {
       const a = validateAnnouncementLog(log, o.announcer, schemeId, next, to);
       if (a === undefined) {
-        skipped++;
-      } else if (!seen.has(a.id)) {
-        seen.add(a.id);
-        out.push(a);
+        pageSkipped++;
+      } else if (!seen.has(a.id) && !pageIds.has(a.id)) {
+        page.push(a);
+        pageIds.add(a.id);
       }
+    }
+    const remainingLogs = maxLogs - out.length;
+    if (page.length > remainingLogs) {
+      if (window > 1n) {
+        window = window / 2n;
+        windows.pop();
+        continue;
+      }
+      return fail('RPC_FAILURE', 'accepted log cap exceeded within one block');
+    }
+    skipped += pageSkipped;
+    for (const a of page) {
+      let hash = canonical.get(a.blockNumber);
+      if (hash === undefined) {
+        if (canonicalBlockReads >= MAX_CANONICAL_BLOCK_READS) {
+          return fail('RPC_FAILURE', 'canonical log block read cap reached');
+        }
+        const block = await o.client.getBlock(a.blockNumber);
+        if (block === null) return fail('RPC_FAILURE', 'log block unavailable');
+        hash = block.hash.toLowerCase();
+        canonical.set(a.blockNumber, hash);
+        canonicalBlockReads++;
+      }
+      if (hash !== a.blockHash.toLowerCase()) return fail('RPC_FAILURE', 'log block hash differs from canonical block');
+      seen.add(a.id);
+      out.push(a);
     }
     doneThrough = to;
     processed = true;
@@ -240,8 +299,26 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
   if (processed) {
     const ref = await o.client.getBlock(doneThrough);
     if (ref === null) return fail('RPC_FAILURE', 'processed block vanished');
-    if (headRef !== null && doneThrough === head && ref.hash.toLowerCase() !== headRef.hash.toLowerCase()) {
+    if (doneThrough === head && headRef !== null && ref.hash.toLowerCase() !== headRef.hash.toLowerCase()) {
       return fail('RPC_FAILURE', 'chain reorganised during scan; retry');
+    }
+    // Recheck every processed window end. Checking only the head misses a fork in a truncated or
+    // bounded scan and can persist a fresh cursor hash alongside stale logs from the old fork.
+    for (let i = 0; i < windows.length; i++) {
+      const w = windows[i] as { from: bigint; to: bigint; hash: Hex };
+      const current = w.to === doneThrough ? ref : await o.client.getBlock(w.to);
+      if (current !== null && current.hash.toLowerCase() === w.hash.toLowerCase()) continue;
+      const previous = windows[i - 1];
+      const anchor = previous !== undefined ? { number: previous.to, hash: previous.hash } : (reorg === undefined ? o.cursor.last : undefined);
+      const rollback = reorg?.rolledBackTo ?? w.from;
+      const cursor: ScanCursor = anchor === undefined ? { nextBlock: w.from } : { nextBlock: w.from, last: anchor };
+      return {
+        announcements: out.filter((a) => a.blockNumber < w.from),
+        cursor,
+        truncated: true,
+        skipped,
+        reorg: { rolledBackTo: rollback < w.from ? rollback : w.from },
+      };
     }
     last = { number: doneThrough, hash: ref.hash };
   }

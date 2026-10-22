@@ -2,7 +2,7 @@ import { encodeAbiParameters, getAddress } from 'viem/utils';
 import { describe, expect, it } from 'vitest';
 import { ChainAdapterError } from './errors.js';
 import { FAKE, SEPOLIA, payment, recipient } from './fixtures.testutil.js';
-import { ANNOUNCEMENT_TOPIC, fetchAnnouncements, validateAnnouncementLog, type ScanCursor } from './logs.js';
+import { ANNOUNCEMENT_TOPIC, fetchAnnouncements, MAX_PLAUSIBLE_HEAD, validateAnnouncementLog, type ScanCursor } from './logs.js';
 import { createClient, type RpcClient, type RpcLog } from './rpc.js';
 import { FakeRpcError, fakeTransport, noSleep } from './rpc.testutil.js';
 import type { Hex } from './types.js';
@@ -129,6 +129,27 @@ describe('fetchAnnouncements', () => {
     await fetchWith(await client(c2), { nextBlock: 0n }, { maxRange: 1000 });
     expect(c2.requests.map((r) => Number(r.to - r.from + 1n))).toEqual([10, 10, 10]);
   });
+  it('never requests above an explicit toBlock even when the provider head is higher', async () => {
+    const chain = mkChain({ head: 25, logs: [mkLog({}, 12), mkLog({}, 20)] });
+    const r = await fetchWith(await client(chain), { nextBlock: 0n }, { toBlock: 14n });
+    expect(chain.requests).toEqual([{ from: 0n, to: 9n }, { from: 10n, to: 14n }]);
+    expect(r.announcements.map((a) => a.blockNumber)).toEqual([12n]);
+    expect(r.cursor).toEqual({ nextBlock: 15n, last: { number: 14n, hash: bh(14) } });
+    expect(r.truncated).toBe(false);
+  });
+  it('does no log work when toBlock is below the cursor', async () => {
+    const chain = mkChain({ head: 25 });
+    const r = await fetchWith(await client(chain), { nextBlock: 15n }, { toBlock: 14n });
+    expect(chain.requests).toHaveLength(0);
+    expect(r.cursor).toEqual({ nextBlock: 15n });
+    expect(r.truncated).toBe(false);
+  });
+  it('rejects an implausibly high hostile head before requesting logs', async () => {
+    const chain = mkChain({ head: Number.MAX_SAFE_INTEGER });
+    const c = await client(chain, { eth_blockNumber: () => `0x${MAX_PLAUSIBLE_HEAD.toString(16)}1` });
+    await expect(fetchWith(c, { nextBlock: 0n })).rejects.toThrow(/implausible chain head/);
+    expect(chain.requests).toHaveLength(0);
+  });
   it('request cap truncates and resumes exactly where it stopped (no gaps)', async () => {
     const chain = mkChain({ head: 25, logs: [mkLog({}, 3), mkLog({}, 12), mkLog({}, 25)] });
     const c = await client(chain);
@@ -145,6 +166,18 @@ describe('fetchAnnouncements', () => {
     expect(r.truncated).toBe(true);
     expect(r.announcements).toHaveLength(2);
     expect(r.cursor.nextBlock).toBe(10n);
+  });
+  it('shrinks a page before it would exceed the accepted-log cap', async () => {
+    const chain = mkChain({ head: 25, logs: [mkLog({}, 3), mkLog({}, 4), mkLog({}, 8), mkLog({}, 12)] });
+    const r = await fetchWith(await client(chain), { nextBlock: 0n }, { maxLogs: 2 });
+    expect(r.announcements.map((a) => a.blockNumber)).toEqual([3n, 4n]);
+    expect(r.cursor.nextBlock).toBe(5n);
+    expect(r.truncated).toBe(true);
+    expect(chain.requests).toEqual([{ from: 0n, to: 9n }, { from: 0n, to: 4n }]);
+  });
+  it('fails closed when a single block exceeds the accepted-log cap', async () => {
+    const chain = mkChain({ head: 9, logs: [mkLog({}, 3, 0), mkLog({}, 3, 1), mkLog({}, 3, 2)] });
+    await expect(fetchWith(await client(chain), { nextBlock: 0n }, { maxLogs: 2 })).rejects.toThrow(/accepted log cap exceeded within one block/);
   });
   it('halves the window when the provider rejects the range, down to success', async () => {
     const chain = mkChain({ head: 9, providerMax: 3, logs: [mkLog({}, 5)] });
@@ -201,17 +234,18 @@ describe('fetchAnnouncements', () => {
       expect(chain.requests.at(-1)).toEqual({ from: 21n, to: 24n });
       expect(r2.cursor.last?.number).toBe(24n);
     });
-    it('hash mismatch rolls back by finalityDepth and reports the rollback point', async () => {
+    it('hash mismatch conservatively resets to genesis when the deep fork point is unknown', async () => {
       const chain = mkChain({ head: 20, logs: [mkLog({}, 18)] });
       const c = await client(chain);
       const r1 = await fetchWith(c, { nextBlock: 0n });
       expect(r1.announcements).toHaveLength(1);
       chain.fork = 1; // every block hash changes
+      chain.logs = [{ ...mkLog({}, 18), blockHash: bh(18, 1) }];
       chain.requests.length = 0;
       const r2 = await fetchWith(c, r1.cursor);
-      expect(r2.reorg).toEqual({ rolledBackTo: 16n }); // 20 - 5 + 1
-      expect(chain.requests[0]?.from).toBe(16n);
-      expect(r2.announcements.map((a) => a.blockNumber)).toEqual([18n]); // replayed; caller dedupes by id after dropping >= 16
+      expect(r2.reorg).toEqual({ rolledBackTo: 0n });
+      expect(chain.requests[0]?.from).toBe(0n);
+      expect(r2.announcements.map((a) => a.blockNumber)).toEqual([18n]); // replayed after dropping all stored results
       expect(r2.cursor.last?.hash).toBe(bh(20, 1));
     });
     it('missing stored block counts as a reorg; rollback never goes below 0', async () => {
@@ -226,13 +260,32 @@ describe('fetchAnnouncements', () => {
       const c = await client(chain);
       await expect(fetchWith(c, { nextBlock: 31n, last: { number: 30n, hash: bh(30) } })).rejects.toThrow(/RPC_FAILURE.*ahead of the chain head/);
     });
-    it('reorg with head slightly behind the rollback point clears the stale hash', async () => {
+    it('reorg with head below the old cursor clears the stale checkpoint and rescans from genesis', async () => {
       const chain = mkChain({ head: 10 });
       const c = await client(chain);
       const r = await fetchWith(c, { nextBlock: 16n, last: { number: 15n, hash: bh(15) } });
-      expect(r.reorg).toEqual({ rolledBackTo: 11n });
+      expect(r.reorg).toEqual({ rolledBackTo: 0n });
       expect(r.cursor.nextBlock).toBe(11n);
-      expect(r.cursor.last).toBeUndefined();
+      expect(r.cursor.last?.number).toBe(10n);
+    });
+    it('drops logs and rolls back when a processed truncated window reorganizes', async () => {
+      const chain = mkChain({ head: 20, logs: [mkLog({}, 9)] });
+      let switched = false;
+      const c = await client(chain, {
+        eth_getLogs: (p) => {
+          const f = p[0] as { fromBlock: string; toBlock: string };
+          const from = BigInt(f.fromBlock);
+          const to = BigInt(f.toBlock);
+          chain.requests.push({ from, to });
+          if (!switched) { switched = true; chain.fork = 1; }
+          return chain.logs.filter((l) => BigInt(l.blockNumber) >= from && BigInt(l.blockNumber) <= to);
+        },
+      });
+      const r = await fetchWith(c, { nextBlock: 0n }, { maxRequests: 1 });
+      expect(r.truncated).toBe(true);
+      expect(r.reorg).toEqual({ rolledBackTo: 0n });
+      expect(r.announcements).toHaveLength(0);
+      expect(r.cursor.nextBlock).toBe(0n);
     });
     it('nothing new: keeps cursor and re-reads last hash', async () => {
       const chain = mkChain({ head: 20 });

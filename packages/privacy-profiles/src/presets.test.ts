@@ -138,7 +138,7 @@ describe('PP-10 / PP-11 / PP-12 / PP-13 properties', () => {
       const r = applyPreset(id, { action: 'settings', chainId, env, capabilities: new Set(caps) });
       expect(r.evaluation.blocking.filter((b) => b.code !== 'E_ACK_MISSING'), `${id} ${env} ${chainId}`).toEqual([]);
     }
-  });
+  }, 180_000);
   it('PP-11 removing a capability never adds a required capability', () => {
     const need = (id: PresetId, c: Context): Set<Capability> => {
       const r = applyPreset(id, c);

@@ -40,10 +40,12 @@ export interface ScanRange {
   readonly fromBlock: bigint;
   /** Inclusive; defaults to the finalized head. */
   readonly toBlock?: bigint;
+  /** EVM-only deep scan option; ignored by the Solana adapter. */
+  readonly deep?: boolean;
 }
 
 /** Status of a fee line on a chain. */
-export type FeeStatus = 'enforced' | 'not_enforceable' | 'not_deployed';
+export type FeeStatus = 'enforced' | 'available' | 'not_enforceable' | 'not_deployed';
 
 /** Which fees can honestly be charged on this chain. */
 export interface FeeCapability {

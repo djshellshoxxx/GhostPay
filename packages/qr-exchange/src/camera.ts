@@ -30,6 +30,7 @@ const HAVE_CURRENT_DATA = 2;
 /** Decoded text longer than this is dropped before it reaches the caller (largest valid chunk is ~740 chars). */
 export const MAX_SCAN_TEXT_LEN = 4096;
 const MAX_CONSECUTIVE_READ_FAILURES = 30;
+const stoppedTracks = new WeakSet<object>();
 
 function isAborted(signal: AbortSignal | undefined): boolean {
   return signal?.aborted === true;
@@ -39,18 +40,29 @@ function isStream(v: unknown): v is MediaStreamLike {
   return typeof v === 'object' && v !== null && typeof (v as { getTracks?: unknown }).getTracks === 'function';
 }
 
-/** Stops every track of the element's stream and detaches it. Safe to call repeatedly. */
-export function stopVideo(video: VideoLike): void {
-  const s = video.srcObject;
-  if (isStream(s)) {
-    for (const t of s.getTracks()) {
-      try {
-        t.stop();
-      } catch {
-        /* keep stopping the remaining tracks */
-      }
+/** Stops tracks on a captured stream without touching a video element that may now own another stream. */
+function stopStream(stream: unknown): void {
+  if (!isStream(stream)) return;
+  let tracks: readonly MediaTrackLike[];
+  try {
+    tracks = stream.getTracks();
+  } catch {
+    return;
+  }
+  for (const track of tracks) {
+    if (typeof track !== 'object' || track === null || stoppedTracks.has(track)) continue;
+    stoppedTracks.add(track);
+    try {
+      track.stop();
+    } catch {
+      /* keep stopping the remaining tracks */
     }
   }
+}
+
+/** Stops every track of the element's stream and detaches it. Safe to call repeatedly. */
+export function stopVideo(video: VideoLike): void {
+  stopStream(video.srcObject);
   video.srcObject = null;
 }
 
@@ -74,16 +86,22 @@ export async function startCamera(
     const name = typeof e === 'object' && e !== null ? (e as { name?: unknown }).name : undefined;
     throw new QrExchangeError(name === 'NotAllowedError' || name === 'SecurityError' ? 'CAMERA_DENIED' : 'CAMERA_UNAVAILABLE');
   }
-  video.srcObject = stream;
   if (isAborted(options.signal)) {
-    stopVideo(video);
+    stopStream(stream);
     throw new QrExchangeError('ABORTED');
   }
+  video.srcObject = stream;
   try {
     await video.play();
   } catch {
-    stopVideo(video);
+    if (video.srcObject === stream) video.srcObject = null;
+    stopStream(stream);
     throw new QrExchangeError('CAMERA_UNAVAILABLE');
+  }
+  if (isAborted(options.signal) || video.srcObject !== stream) {
+    if (video.srcObject === stream) video.srcObject = null;
+    stopStream(stream);
+    throw new QrExchangeError(isAborted(options.signal) ? 'ABORTED' : 'CAMERA_UNAVAILABLE');
   }
 }
 
@@ -124,11 +142,13 @@ export async function scanFromVideo(
   const { signal } = options;
   const wait = options.wait ?? defaultWait;
   const intervalMs = options.intervalMs ?? 120;
+  const ownedStream = video.srcObject;
   try {
     const reader = options.reader ?? (await (await import('./readers.js')).createDefaultReader());
     let last: string | null = null;
     let failures = 0;
     while (signal?.aborted !== true) {
+      if (video.srcObject !== ownedStream) break;
       if (video.readyState >= HAVE_CURRENT_DATA && video.videoWidth > 0 && video.videoHeight > 0) {
         let text: string | null = null;
         try {
@@ -138,6 +158,7 @@ export async function scanFromVideo(
           if (++failures >= MAX_CONSECUTIVE_READ_FAILURES) throw new QrExchangeError('SCAN_FAILED');
         }
         if (text !== null && text.length > 0 && text.length <= MAX_SCAN_TEXT_LEN && text !== last) {
+          if (isAborted(signal) || video.srcObject !== ownedStream) break;
           last = text;
           if ((await onText(text)) === true) return;
         }
@@ -145,6 +166,7 @@ export async function scanFromVideo(
       await wait(intervalMs, signal);
     }
   } finally {
-    stopVideo(video);
+    if (video.srcObject === ownedStream) stopVideo(video);
+    else stopStream(ownedStream);
   }
 }

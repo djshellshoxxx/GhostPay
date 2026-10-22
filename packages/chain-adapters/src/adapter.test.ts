@@ -12,17 +12,32 @@ import { fakeTransport, noSleep } from './rpc.testutil.js';
 import type { Hex } from './types.js';
 
 const deployment = validateManifest(manifestJson(), 11155111);
-const mkClient = (logs: unknown[] = [], head = 20) =>
-  createClient(SEPOLIA, 'https://rpc.example.test', {
+const mkClient = (logs: unknown[] = [], head = 20, opts: { readonly reorgOnHeadCall?: number } = {}) => {
+  let headCalls = 0;
+  let fork = 0;
+  return createClient(SEPOLIA, 'https://rpc.example.test', {
     sleep: noSleep,
     transport: fakeTransport((m, p) => {
       if (m === 'eth_chainId') return '0xaa36a7';
-      if (m === 'eth_blockNumber') return `0x${head.toString(16)}`;
-      if (m === 'eth_getBlockByNumber') return { number: p[0], hash: `0x${'a'.repeat(63)}1`, parentHash: `0x${'b'.repeat(64)}` };
+      if (m === 'eth_blockNumber') {
+        headCalls++;
+        if (headCalls === opts.reorgOnHeadCall) fork = 1;
+        return `0x${head.toString(16)}`;
+      }
+      if (m === 'eth_getBlockByNumber') {
+        const number = BigInt(p[0] as string);
+        if (fork === 1) return { number: p[0], hash: `0x${'f'.repeat(64)}`, parentHash: `0x${'e'.repeat(64)}` };
+        return {
+          number: p[0],
+          hash: `0x${number.toString(16).padStart(64, '0')}`,
+          parentHash: `0x${(number > 0n ? number - 1n : 0n).toString(16).padStart(64, '0')}`,
+        };
+      }
       const f = p[0] as { fromBlock: string; toBlock: string };
       return (logs as { blockNumber: string }[]).filter((l) => BigInt(l.blockNumber) >= BigInt(f.fromBlock) && BigInt(l.blockNumber) <= BigInt(f.toBlock));
     }),
   });
+};
 const adapter = async (logs: unknown[] = [], head = 20) => createEvmAdapter({ chain: SEPOLIA, deployment, client: await mkClient(logs, head) });
 
 describe('createEvmAdapter', () => {
@@ -157,6 +172,17 @@ describe('createEvmAdapter', () => {
       // 60 001 blocks / 1000 per request = 61 requests > default cap of 50 per fetch: needs a second page.
       expect(await collect(a, mine)).toHaveLength(2);
       expect(await collect(a, mine, { fromBlock: 0n, toBlock: 5n } as never)).toHaveLength(1);
+    });
+    it('does not release earlier-page matches if a later page detects a reorg', async () => {
+      const mine = generateKeySet();
+      const logs = [announcementLog(encodeMetaAddress(mine), 3)];
+      const client = await mkClient(logs, 60_000, { reorgOnHeadCall: 3 });
+      const a = createEvmAdapter({ chain: SEPOLIA, deployment, client });
+      const yielded: unknown[] = [];
+      await expect(async () => {
+        for await (const item of a.scan({ fromBlock: 0n }, { viewingSecret: mine.viewingSecret, spendingPublicKey: mine.spendingPublicKey }, new AbortController().signal)) yielded.push(item);
+      }).rejects.toThrow(/reorganised|canonical block/);
+      expect(yielded).toHaveLength(0);
     });
   });
 });

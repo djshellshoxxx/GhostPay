@@ -17,10 +17,13 @@ import { checkAnnouncementDeep } from './deepscan.js';
 import type { DeploymentManifest } from './deployments.js';
 import { fail } from './errors.js';
 import { FEE_SCHEDULE, grossForNet, routerSplit } from './fees.js';
-import { fetchAnnouncements, type ScanCursor, type ScannedAnnouncement } from './logs.js';
+import { fetchAnnouncements, MAX_PLAUSIBLE_HEAD, type ScanCursor, type ScannedAnnouncement } from './logs.js';
 import { buildPaymentTx, type BuiltPayment, type PaymentTx } from './router.js';
 import type { RpcClient } from './rpc.js';
 import type { Address, Hex } from './types.js';
+
+const MAX_BUFFERED_SCAN_MATCHES = 10_000;
+const MAX_BUFFERED_SCAN_BATCHES = 100;
 
 /** Chain families a `ChainAdapter` can serve (MULTICHAIN_SPEC section 1). */
 export type ChainFamily = 'evm' | 'bitcoin' | 'solana';
@@ -217,13 +220,28 @@ export function createEvmAdapter(deps: EvmAdapterDeps): ChainAdapter {
     },
 
     async *scan(range, keys, signal) {
+      if (signal.aborted) return;
+      if (typeof range.fromBlock !== 'bigint' || range.fromBlock < 0n ||
+          (range.toBlock !== undefined && (typeof range.toBlock !== 'bigint' || range.toBlock < 0n))) {
+        fail('INVALID_INPUT', 'invalid scan range');
+      }
+      const observedHead = await client.blockNumber();
+      if (signal.aborted) return;
+      if (observedHead > MAX_PLAUSIBLE_HEAD) fail('RPC_FAILURE', 'implausible chain head');
+      const end = range.toBlock !== undefined && range.toBlock < observedHead ? range.toBlock : observedHead;
+      if (range.fromBlock > end) return;
       let cursor: ScanCursor = { nextBlock: range.fromBlock };
+      const pending: DetectedPayment[] = [];
+      const checkpoints: { number: bigint; hash: Hex }[] = [];
+      let batches = 0;
       for (;;) {
         if (signal.aborted) return;
-        const res = await fetchAnnouncements({ chain, client, announcer: deployment.announcer, cursor });
+        const res = await fetchAnnouncements({ chain, client, announcer: deployment.announcer, cursor, toBlock: end });
+        if (res.reorg !== undefined) fail('RPC_FAILURE', 'chain reorganised during scan; retry from the rollback point');
+        batches++;
+        if (batches > MAX_BUFFERED_SCAN_BATCHES) fail('RPC_FAILURE', 'scan batch cap reached; split the requested range');
         for (const a of res.announcements) {
           if (signal.aborted) return;
-          if (range.toBlock !== undefined && a.blockNumber > range.toBlock) continue;
           const viaRouter = a.caller.toLowerCase() === deployment.router.toLowerCase();
           let stealthAddress: Address;
           let tagMatches: boolean | undefined;
@@ -243,16 +261,34 @@ export function createEvmAdapter(deps: EvmAdapterDeps): ChainAdapter {
           } catch {
             metadata = undefined;
           }
-          yield {
+          if (pending.length >= MAX_BUFFERED_SCAN_MATCHES) fail('RPC_FAILURE', 'scan match cap reached; split the requested range');
+          pending.push({
             stealthAddress,
             announcement: a,
             metadata,
             viaRouter,
             ...(tagMatches === undefined ? {} : { tagMatches }),
-          };
+          });
         }
         cursor = res.cursor;
-        if (!res.truncated || (range.toBlock !== undefined && cursor.nextBlock > range.toBlock)) return;
+        if (res.cursor.last !== undefined) checkpoints.push(res.cursor.last);
+        if (!res.truncated || cursor.nextBlock > end) break;
+        if (cursor.nextBlock <= range.fromBlock || (batches > 1 && cursor.last === undefined)) {
+          fail('RPC_FAILURE', 'scan made no forward progress');
+        }
+      }
+      // A later page can discover a fork deeper than the preceding page checkpoint. Verify all
+      // checkpoints once more before releasing any match from this bounded scan.
+      for (const checkpoint of checkpoints) {
+        if (signal.aborted) return;
+        const canonical = await client.getBlock(checkpoint.number);
+        if (canonical === null || canonical.hash.toLowerCase() !== checkpoint.hash.toLowerCase()) {
+          fail('RPC_FAILURE', 'chain reorganised during scan; discard results and retry');
+        }
+      }
+      for (const payment of pending) {
+        if (signal.aborted) return;
+        yield payment;
       }
     },
   };

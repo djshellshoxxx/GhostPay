@@ -39,6 +39,8 @@ export interface ViewCapability {
 export interface ScanRange {
   readonly fromBlock: bigint;
   readonly toBlock?: bigint;
+  /** EVM-only deep scan option; ignored by the Tron adapter. */
+  readonly deep?: boolean;
 }
 export interface FeeCapability {
   readonly checkout: FeeStatus;

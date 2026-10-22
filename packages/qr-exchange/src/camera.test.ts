@@ -90,6 +90,29 @@ describe('startCamera', () => {
     expect(await codeOf(startCamera(v2, { getUserMedia: gum }, { signal: ac.signal }))).toBe('ABORTED');
     expect(gum).not.toHaveBeenCalled();
   });
+  it('a late aborted acquisition stops only its own stream and cannot replace a newer stream', async () => {
+    const a = fakeStream();
+    const b = fakeStream();
+    let resolveA: (stream: typeof a.stream) => void = () => undefined;
+    let resolveB: (stream: typeof b.stream) => void = () => undefined;
+    const acA = new AbortController();
+    const video = fakeVideo();
+    const pendingA = startCamera(video, { getUserMedia: () => new Promise((resolve) => { resolveA = resolve; }) }, { signal: acA.signal });
+    acA.abort();
+    const pendingB = startCamera(video, { getUserMedia: () => new Promise((resolve) => { resolveB = resolve; }) });
+
+    resolveB(b.stream);
+    await pendingB;
+    expect(video.srcObject).toBe(b.stream);
+    resolveA(a.stream);
+    expect(await codeOf(pendingA)).toBe('ABORTED');
+    expect(video.srcObject).toBe(b.stream);
+    expect(a.stops.every((s) => s.mock.calls.length === 1)).toBe(true);
+    expect(b.stops.every((s) => s.mock.calls.length === 0)).toBe(true);
+
+    stopVideo(video);
+    expect(b.stops.every((s) => s.mock.calls.length === 1)).toBe(true);
+  });
 });
 
 describe('scanFromVideo', () => {

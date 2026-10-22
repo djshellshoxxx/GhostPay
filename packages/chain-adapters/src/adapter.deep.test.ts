@@ -25,13 +25,27 @@ function withPolicy(): Record<string, unknown> {
     bytecodeHashes: { ...(m['bytecodeHashes'] as object), policyImplementation: `0x${'7'.repeat(64)}`, policyFactory: `0x${'8'.repeat(64)}` },
   };
 }
-const client = (logs: unknown[] = []) =>
+const client = (logs: unknown[] = [], seen?: { from: bigint; to: bigint }[]) =>
   createClient(SEPOLIA, 'https://rpc.example.test', {
     sleep: noSleep,
     transport: fakeTransport((m, p) => {
       if (m === 'eth_chainId') return '0xaa36a7';
       if (m === 'eth_blockNumber') return '0x14';
-      if (m === 'eth_getBlockByNumber') return { number: p[0], hash: `0x${'a'.repeat(63)}1`, parentHash: `0x${'b'.repeat(64)}` };
+      if (m === 'eth_getBlockByNumber') {
+        const n = BigInt(p[0] as string);
+        const hash = n === 3n ? `0x${'3'.repeat(64)}` : `0x${'a'.repeat(63)}1`;
+        return { number: p[0], hash, parentHash: `0x${'b'.repeat(64)}` };
+      }
+      if (m === 'eth_getLogs') {
+        const filter = p[0] as { fromBlock: string; toBlock: string };
+        const from = BigInt(filter.fromBlock);
+        const to = BigInt(filter.toBlock);
+        seen?.push({ from, to });
+        return logs.filter((l) => {
+          const n = BigInt((l as { blockNumber: string }).blockNumber);
+          return n >= from && n <= to;
+        });
+      }
       return logs;
     }),
   });
@@ -88,5 +102,18 @@ describe('scan({ deep })', () => {
     const mine = generateKeySet();
     const found = await run([log(encodeMetaAddress(mine), FAKE.router, false)], mine, false);
     expect(found[0]).not.toHaveProperty('tagMatches');
+  });
+  it('passes an explicit inclusive upper bound into the log query', async () => {
+    const mine = generateKeySet();
+    const seen: { from: bigint; to: bigint }[] = [];
+    const a = createEvmAdapter({
+      chain: SEPOLIA,
+      deployment: validateManifest(manifestJson(), 11155111),
+      client: await client([log(encodeMetaAddress(mine), FAKE.router, false)], seen),
+    });
+    const out = [];
+    for await (const d of a.scan({ fromBlock: 0n, toBlock: 2n }, { viewingSecret: mine.viewingSecret, spendingPublicKey: mine.spendingPublicKey }, new AbortController().signal)) out.push(d);
+    expect(out).toHaveLength(0);
+    expect(seen).toEqual([{ from: 0n, to: 2n }]);
   });
 });
