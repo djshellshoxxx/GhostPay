@@ -1,0 +1,18 @@
+<!--page title="What observers see" desc="What the public, the host, the RPC, the relayer and the payer can and cannot learn." prev="help/fees.html" next="help/privacy-map.html" -->
+<p>GhostPay reduces address reuse. It does not make a payment private. Here is who learns what.</p>
+{{diagram:observers}}
+<div class="table-wrap" role="region" aria-label="Who learns what" tabindex="0">
+<table>
+<caption>Who learns what</caption>
+<thead><tr><th scope="col">Observer</th><th scope="col">Learns</th><th scope="col">Does not learn</th></tr></thead>
+<tbody>
+<tr><td data-label="Observer">Public chain analyst</td><td data-label="Learns">Payer address, token, gross and net amounts, fee flow, router use, the announcement, timing, and the sweep source and destination</td><td data-label="Does not learn">Which seller owns a one-time address from chain data alone; invoice contents</td></tr>
+<tr><td data-label="Observer">Static host / CDN</td><td data-label="Learns">Your IP, user agent, files fetched, timing</td><td data-label="Does not learn">The # part of the link, keys, invoice</td></tr>
+<tr><td data-label="Observer">RPC provider</td><td data-label="Learns">Your IP, blocks and addresses you query, transactions you send</td><td data-label="Does not learn">Viewing or spending keys; invoice</td></tr>
+<tr><td data-label="Observer">Relayer operator</td><td data-label="Learns">Hashed IP, one-time address, destination, token, amount, fee, timing; can censor</td><td data-label="Does not learn">Keys</td></tr>
+<tr><td data-label="Observer">Wallet provider</td><td data-label="Learns">Transaction requests, chain, connected accounts</td><td data-label="Does not learn">Keys of the one-time address</td></tr>
+<tr><td data-label="Observer">Anyone holding the invoice link</td><td data-label="Learns">The entire invoice</td><td data-label="Does not learn">Seller keys</td></tr>
+<tr><td data-label="Observer">The payer</td><td data-label="Learns">The one-time address they paid, so where you sweep it</td><td data-label="Does not learn">Your keys</td></tr>
+<tr><td data-label="Observer">Anyone with two of your invoices</td><td data-label="Learns">Both come from the same seller (same meta-address)</td><td data-label="Does not learn">Your private keys</td></tr>
+</tbody></table></div>
+<div class="notice notice-warn" role="note"><p><strong>Not hidden:</strong> payer, amount, token, time and the router call. A compromised website, browser extension or device defeats everything.</p></div>
