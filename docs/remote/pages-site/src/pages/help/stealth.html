@@ -1,0 +1,16 @@
+<!--page title="One-time addresses" desc="Concept diagram of stealth address derivation, with no secrets." prev="help/flow.html" next="help/sweep.html" -->
+<p>A stealth address scheme (ERC-5564) lets a stranger make an address for you that only you can spend from, without talking to you first.</p>
+{{diagram:stealth}}
+<h2>In plain words</h2>
+<ul>
+<li>You publish a <strong>meta-address</strong>: two public keys. They are not an address you receive to.</li>
+<li>Each payer makes a one-off key, mixes it with your public viewing key and gets a secret only they and you can compute.</li>
+<li>That secret shifts your spending public key into a brand-new address. Only your spending private key plus the same shift can spend it.</li>
+<li>The payer posts the one-off <em>public</em> key in an announcement. You use your viewing key to spot payments meant for you.</li>
+</ul>
+<h2>What this does not hide</h2>
+<ul>
+<li>The one-time address, token, amount and time are public.</li>
+<li>Your meta-address is a stable identifier. Two invoices from you can be tied together.</li>
+<li>Whoever holds your <em>viewing</em> key can see all your incoming payments (not spend them).</li>
+</ul>
