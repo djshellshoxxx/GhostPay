@@ -61,6 +61,11 @@ describe('ReceiptPanel', () => {
       signerPublicKey: seller.signerPublicKey,
     });
     expect(screen.getAllByText(/not matched/).length).toBeGreaterThan(0);
+    expect(screen.queryByRole('img', { name: 'Signed seller receipt JSON' })).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Show receipt QR' }));
+    expect(screen.getByRole('img', { name: 'Signed seller receipt JSON' })).toBeTruthy();
+    expect(document.querySelector('[data-qr-kind="proof"]')).toBeTruthy();
+    expect(screen.getByText(/This QR contains the transaction, recipient, amount and invoice digest/)).toBeTruthy();
   });
 
   it('rejects an invalid manually supplied invoice digest without producing a receipt', async () => {

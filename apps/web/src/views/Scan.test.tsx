@@ -14,6 +14,7 @@ import { chainWithLogs } from '../test/mockChain';
 import { makeServices, memoryCheckpoints, renderApp } from '../test/render';
 import type { Services } from '../lib/services';
 import { verifyReceipt } from '../lib/receipts';
+import { readReconciliationRecords, RECONCILIATION_LEDGER_DATA_KEY } from '../lib/reconciliationLedger';
 
 const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 const topicAddress = (address: string): string => `0x${address.slice(2).toLowerCase().padStart(64, '0')}`;
@@ -133,6 +134,40 @@ describe('Scan and receive', () => {
     expect(screen.getByText(/Claimed, not confirmed/)).toBeTruthy();
   });
 
+  it('clears actionable matches when the selected chain changes after a scan', async () => {
+    const pub = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 0, caller: FAKE_ROUTER });
+    const rpc = chainWithLogs(84532, 500, [mine.log]);
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)), createScanWorker: () => new InlineWorker() }));
+    await user.type(screen.getByLabelText('Start block'), '100');
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    expect(await screen.findByRole('button', { name: 'Sweep this payment' })).toBeTruthy();
+    expect(screen.getByText(mine.stealthAddress)).toBeTruthy();
+    await user.selectOptions(screen.getByLabelText('Chain'), '11155111');
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: 'Sweep this payment' })).toBeNull();
+      expect(screen.queryByText(mine.stealthAddress)).toBeNull();
+    });
+  });
+
+  it('clears actionable matches when the seller session changes after a scan', async () => {
+    const pub = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 0, caller: FAKE_ROUTER });
+    const rpc = chainWithLogs(84532, 500, [mine.log]);
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)), createScanWorker: () => new InlineWorker() }));
+    await user.type(screen.getByLabelText('Start block'), '100');
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    expect(await screen.findByRole('button', { name: 'Sweep this payment' })).toBeTruthy();
+    expect(screen.getByText(mine.stealthAddress)).toBeTruthy();
+    act(() => { clearSession(); generateSession(); });
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: 'Sweep this payment' })).toBeNull();
+      expect(screen.queryByText(mine.stealthAddress)).toBeNull();
+    });
+  });
+
   it('signs and exports a receipt from immutable finalized match data only', async () => {
     const pub = generateSession();
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
@@ -173,6 +208,20 @@ describe('Scan and receive', () => {
       signerPublicKey: pub.signerPublicKey,
     });
     expect(screen.getByText(/does not establish seller identity/)).toBeTruthy();
+
+    await user.click(screen.getByRole('button', { name: 'Enable local ledger on this device' }));
+    await user.type(screen.getByLabelText('Invoice digest (optional, manual link)'), invoiceDigest);
+    await user.click(screen.getByRole('button', { name: 'Add verified payment to ledger' }));
+    await waitFor(() => { expect(readReconciliationRecords()).toHaveLength(1); });
+    expect(readReconciliationRecords()[0]).toMatchObject({
+      sellerKeyId: checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey),
+      chainId: 84532,
+      transactionHash: txHash,
+      invoiceDigest,
+      evidenceStatus: 'verified-at-scan',
+      evidenceSource: 'verified-router-scan',
+    });
+    expect(window.localStorage.getItem(RECONCILIATION_LEDGER_DATA_KEY)).not.toContain('signature');
   });
 
   it('does not offer another key set\'s checkpoint (WEB-APP-04)', async () => {

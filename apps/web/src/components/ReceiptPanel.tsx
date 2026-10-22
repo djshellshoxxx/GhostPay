@@ -1,7 +1,9 @@
 import { findChain, tokensForChain } from '@ghostpay/chain-adapters';
 import { useEffect, useState, type ReactNode } from 'react';
 import { CopyButton, Field, Notice, downloadText, Mono } from './Common';
+import { QrFrame } from './QrFrame';
 import { formatUnits } from '../lib/format';
+import { makeQr } from '../lib/qr';
 import type { ScanMatch } from '../lib/scanClient';
 import { getSessionPublic, withSessionSecrets } from '../lib/session';
 import { receiptJson, signReceipt, type SignedReceipt } from '../lib/receipts';
@@ -26,6 +28,7 @@ function amountLabel(match: ScanMatch): string {
 export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
   const [invoiceDigest, setInvoiceDigest] = useState('');
   const [receipt, setReceipt] = useState<SignedReceipt | undefined>(undefined);
+  const [showReceiptQr, setShowReceiptQr] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const match = props.match;
   const txHash = match.announcement.transactionHash;
@@ -41,6 +44,7 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
   useEffect(() => {
     setInvoiceDigest('');
     setReceipt(undefined);
+    setShowReceiptQr(false);
     setError(undefined);
   }, [matchIdentity, props.sellerSignerPublicKey]);
   const signerStillCurrent = getSessionPublic()?.signerPublicKey === props.sellerSignerPublicKey;
@@ -66,8 +70,23 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
         }, secrets.signingKey);
       });
       setReceipt(created);
+      setShowReceiptQr(false);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'The receipt could not be signed.');
+    }
+  };
+
+  const receiptText = receipt === undefined ? undefined : receiptJson(receipt);
+  const showQr = (): void => {
+    if (receiptText === undefined) return;
+    try {
+      // Check the actual payload before rendering/exporting it as a QR. The JSON remains available if it does not fit.
+      makeQr(receiptText);
+      setShowReceiptQr(true);
+      setError(undefined);
+    } catch {
+      setShowReceiptQr(false);
+      setError('This receipt is too large for one QR code. Use the JSON copy or download instead.');
     }
   };
 
@@ -111,12 +130,15 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
                 <dt>Issued</dt><dd>{new Date(receipt.issuedAt * 1000).toISOString()}</dd>
                 <dt>Signer public key</dt><dd><Mono>{receipt.signerPublicKey}</Mono></dd>
               </dl>
-              <Field label="Signed receipt JSON">{(id) => <textarea id={id} className="mono receipt-json" readOnly rows={8} value={receiptJson(receipt)} onFocus={(e) => { e.currentTarget.select(); }} />}</Field>
+              <Field label="Signed receipt JSON">{(id) => <textarea id={id} className="mono receipt-json" readOnly rows={8} value={receiptText ?? ''} onFocus={(e) => { e.currentTarget.select(); }} />}</Field>
               <div className="actions receipt-actions">
-                <CopyButton text={receiptJson(receipt)} label="Copy receipt JSON" />
-                <button type="button" className="btn" onClick={() => { downloadText('ghostpay-receipt.json', receiptJson(receipt), 'application/json'); }}>Download JSON</button>
+                <CopyButton text={receiptText ?? ''} label="Copy receipt JSON" />
+                <button type="button" className="btn" onClick={() => { downloadText('ghostpay-receipt.json', receiptText ?? '', 'application/json'); }}>Download JSON</button>
+                <button type="button" className="btn" onClick={showQr}>Show receipt QR</button>
                 <button type="button" className="btn" onClick={() => { window.print(); }}>Print receipt</button>
               </div>
+              <p className="hint">This QR contains the transaction, recipient, amount and invoice digest. Show it only to the intended recipient; the signature is a seller-key attestation, not independent payment proof.</p>
+              {showReceiptQr && receiptText !== undefined && <QrFrame kind="proof" text={receiptText} caption="Signed seller receipt JSON" />}
             </article>
           )}
         </>

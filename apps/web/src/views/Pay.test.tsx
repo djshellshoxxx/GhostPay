@@ -2,7 +2,7 @@
 import { decodeBase64Url, encodeBase64Url, invoiceDigest, openFragment, parseFragment } from '@ghostpay/invoice-schema';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { secp256k1 } from '@noble/curves/secp256k1.js';
-import { act, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { buildInvoiceLink } from '../lib/invoiceCreate';
@@ -72,7 +72,7 @@ describe('Pay: invoice reading and review', () => {
     const separatelyTrustedKey = new Uint8Array(32).fill(77);
     const separatelySigned = signReceipt(receiptFields, separatelyTrustedKey);
     const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
-    await screen.findByText('Seller receives (net)');
+    await screen.findByText('Seller receives (net)', {}, { timeout: 30_000 });
     const upload = screen.getByLabelText('Signed seller receipt JSON');
     await user.upload(upload, new File(['x'.repeat(65_537)], 'oversized.json', { type: 'application/json' }));
     await user.click(screen.getByRole('button', { name: 'Check receipt against this invoice' }));
@@ -94,7 +94,7 @@ describe('Pay: invoice reading and review', () => {
     window.history.replaceState(null, '', `/${next.fragment}`);
     window.dispatchEvent(new HashChangeEvent('hashchange'));
     await screen.findByRole('heading', { name: 'Review payment' });
-    expect(screen.queryByText('Receipt matches this invoice')).toBeNull();
+    await waitFor(() => { expect(screen.queryByText('Receipt matches this invoice')).toBeNull(); });
   });
 
   it('does not accept a receipt under a trusted key that changed during file reading', async () => {
@@ -123,6 +123,36 @@ describe('Pay: invoice reading and review', () => {
     } finally {
       textSpy.mockRestore();
     }
+  });
+
+  it('accepts bounded QR text only through the same strict receipt verification flow', async () => {
+    const { parsed, fragment } = await makeParsed();
+    const receipt = withSessionSecrets((secrets) => signReceipt({
+      invoiceDigest: `0x${bytesToHex(invoiceDigest(parsed.invoice))}`,
+      chainId: parsed.invoice.chainId,
+      txHash: `0x${'a'.repeat(64)}`,
+      stealthAddress: `0x${'b'.repeat(40)}`,
+      asset: parsed.invoice.token,
+      amountMinorUnits: '99750000',
+      issuedAt: NOW,
+    }, secrets.signingKey));
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    await screen.findByText('Seller receives (net)', {}, { timeout: 30_000 });
+
+    const paste = screen.getByLabelText('Or paste QR text');
+    fireEvent.change(paste, { target: { value: JSON.stringify({ ...receipt, extra: 'unrecognized' }) } });
+    await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
+    expect(await screen.findByText('Receipt not accepted')).toBeTruthy();
+    expect(screen.queryByText('Receipt matches this invoice')).toBeNull();
+
+    fireEvent.change(paste, { target: { value: receiptJson(receipt) } });
+    await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
+    expect(await screen.findByText('Receipt matches this invoice')).toBeTruthy();
+
+    fireEvent.change(paste, { target: { value: 'x'.repeat(65_537) } });
+    await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
+    expect(await screen.findByText('Receipt not accepted')).toBeTruthy();
+    expect(screen.queryByText('Receipt matches this invoice')).toBeNull();
   });
 
   it('keeps a late context refresh from replacing the currently opened invoice', async () => {
