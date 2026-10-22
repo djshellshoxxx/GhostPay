@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 758" width="900" height="758" role="img" aria-labelledby="ttl dsc">
+<title id="ttl">Animated scanning with view tags</title>
+<desc id="dsc">Six-step animation: the scanner downloads announcements, computes a one byte view tag for each, skips those that differ, runs the full check on matches and lists them as claims to verify against the chain balance. Tag values are illustrative. With reduced motion preferred, everything is shown statically.</desc>
+<style>
+:root{--bg:#ffffff;--fg:#1b1f24;--mut:#4d5866;--box:#eef1f6;--line:#6b778a;--acc:#1f4fc4;--accbg:#dbe6ff;--warn:#8a4b00;--warnbg:#fff0d0;--bad:#a8200f;--badbg:#fde4e1;--ok:#13663a;--okbg:#dcf3e4}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1318;--fg:#e6e9ee;--mut:#a3aebd;--box:#1a212b;--line:#7d8a9d;--acc:#8fb2ff;--accbg:#1c2c52;--warn:#ffb454;--warnbg:#3a2a0e;--bad:#ff9b92;--badbg:#411a17;--ok:#74d9a0;--okbg:#12331f}}
+svg{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.bg{fill:var(--bg)}
+.t{fill:var(--fg);font-size:14px}.b{font-weight:700}.m{fill:var(--mut)}.s{font-size:12px}.h{font-size:20px;font-weight:700}
+.box{fill:var(--box);stroke:var(--line);stroke-width:1.5}
+.box.acc{fill:var(--accbg);stroke:var(--acc)}.box.warn{fill:var(--warnbg);stroke:var(--warn)}
+.box.bad{fill:var(--badbg);stroke:var(--bad)}.box.ok{fill:var(--okbg);stroke:var(--ok)}
+.dash{stroke-dasharray:6 4}
+.grp{fill:none;stroke:var(--line);stroke-width:1.3;stroke-dasharray:3 5}
+.ln{fill:none;stroke:var(--line);stroke-width:2}.ln.acc{stroke:var(--acc)}.ln.warn{stroke:var(--warn)}.ln.bad{stroke:var(--bad)}.ln.ok{stroke:var(--ok)}
+.ah{fill:var(--line)}
+.bdg{fill:var(--acc)}.bdgt{fill:var(--bg);font-size:12px;font-weight:700}
+.ta{text-anchor:middle}
+
+.dot,.hlr,.hlb{display:none}.dot{fill:var(--acc)}.hlr{fill:none;stroke:var(--acc);stroke-width:4}.hlb{fill:var(--accbg)}
+@media (prefers-reduced-motion:no-preference){
+.dot,.hlr,.hlb{display:inline}
+.a{opacity:0;animation-duration:22.700000000000003s;animation-iteration-count:infinite;animation-timing-function:linear}
+@keyframes k0{0.0%{opacity:0}0.881%{opacity:0}2.203%{opacity:1}96.476%{opacity:1}97.797%{opacity:0}100.0%{opacity:0}}.k0{animation-name:k0}
+@keyframes k1{0.0%{opacity:0}1.762%{opacity:0;transform:translate(0px,0px)}2.423%{opacity:1;transform:translate(0px,0px)}2.643%{opacity:1;transform:translate(0px,0px)}11.894%{opacity:1;transform:translate(0px,45px)}12.775%{opacity:0;transform:translate(0px,45px)}100.0%{opacity:0}}.k1{animation-name:k1}
+@keyframes k2{0.0%{opacity:0}29.075%{opacity:0}30.396%{opacity:1}96.476%{opacity:1}97.797%{opacity:0}100.0%{opacity:0}}.k2{animation-name:k2}
+@keyframes k3{0.0%{opacity:0}42.291%{opacity:0}43.612%{opacity:1}55.947%{opacity:1}57.269%{opacity:0}100.0%{opacity:0}}.k3{animation-name:k3}
+@keyframes k4{0.0%{opacity:0}14.978%{opacity:0}16.3%{opacity:1}96.476%{opacity:1}97.797%{opacity:0}100.0%{opacity:0}}.k4{animation-name:k4}
+@keyframes k5{0.0%{opacity:0}15.859%{opacity:0;transform:translate(0px,0px)}16.52%{opacity:1;transform:translate(0px,0px)}16.74%{opacity:1;transform:translate(0px,0px)}25.991%{opacity:1;transform:translate(0px,60px)}26.872%{opacity:0;transform:translate(0px,60px)}100.0%{opacity:0}}.k5{animation-name:k5}
+@keyframes k6{0.0%{opacity:0}43.172%{opacity:0}44.493%{opacity:1}96.476%{opacity:1}97.797%{opacity:0}100.0%{opacity:0}}.k6{animation-name:k6}
+@keyframes k7{0.0%{opacity:0}44.053%{opacity:0;transform:translate(0px,0px)}44.714%{opacity:1;transform:translate(0px,0px)}44.934%{opacity:1;transform:translate(0px,0px)}54.185%{opacity:1;transform:translate(0px,39px)}55.066%{opacity:0;transform:translate(0px,39px)}100.0%{opacity:0}}.k7{animation-name:k7}
+@keyframes k8{0.0%{opacity:0}57.269%{opacity:0}58.59%{opacity:1}96.476%{opacity:1}97.797%{opacity:0}100.0%{opacity:0}}.k8{animation-name:k8}
+@keyframes k9{0.0%{opacity:0}58.15%{opacity:0;transform:translate(0px,0px)}58.811%{opacity:1;transform:translate(0px,0px)}59.031%{opacity:1;transform:translate(0px,0px)}68.282%{opacity:1;transform:translate(0px,34px)}69.163%{opacity:0;transform:translate(0px,34px)}100.0%{opacity:0}}.k9{animation-name:k9}
+@keyframes k10{0.0%{opacity:0}70.485%{opacity:0}71.806%{opacity:1}84.141%{opacity:1}85.463%{opacity:0}100.0%{opacity:0}}.k10{animation-name:k10}
+@keyframes k11{0.0%{opacity:0}1.322%{opacity:1}13.656%{opacity:1}14.978%{opacity:0}100.0%{opacity:0}}.k11{animation-name:k11}
+@keyframes k12{0.0%{opacity:0}14.097%{opacity:0}15.419%{opacity:1}27.753%{opacity:1}29.075%{opacity:0}100.0%{opacity:0}}.k12{animation-name:k12}
+@keyframes k13{0.0%{opacity:0}28.194%{opacity:0}29.515%{opacity:1}41.85%{opacity:1}43.172%{opacity:0}100.0%{opacity:0}}.k13{animation-name:k13}
+@keyframes k14{0.0%{opacity:0}56.388%{opacity:0}57.709%{opacity:1}70.044%{opacity:1}71.366%{opacity:0}100.0%{opacity:0}}.k14{animation-name:k14}
+}
+</style>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--line)"/></marker><marker id="ar-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--acc)"/></marker><marker id="ar-warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--warn)"/></marker><marker id="ar-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--bad)"/></marker><marker id="ar-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--ok)"/></marker></defs>
+<rect class="bg" width="900" height="758"/>
+<text class="t h" x="24" y="34">Scanning with view tags (animated)</text>
+<text class="t m s" x="24" y="54">Tag values are made up for illustration; a real view tag is one byte.</text>
+<rect id="rpc" class="box warn" x="330" y="70" width="240" height="50" rx="8"/>
+<text class="t ta b" x="450.0" y="91.5">RPC provider</text>
+<text class="t ta m s" x="450.0" y="108.5">serves logs; sees your IP + queries</text>
+<rect id="c0" class="box" x="24" y="170" width="62" height="56" rx="8"/>
+<text class="t ta b" x="55.0" y="194.5">3f</text>
+<text class="t ta m s" x="55.0" y="211.5">tag</text>
+<rect id="c1" class="box" x="96" y="170" width="62" height="56" rx="8"/>
+<text class="t ta b" x="127.0" y="194.5">a1</text>
+<text class="t ta m s" x="127.0" y="211.5">tag</text>
+<rect id="c2" class="box" x="168" y="170" width="62" height="56" rx="8"/>
+<text class="t ta b" x="199.0" y="194.5">07</text>
+<text class="t ta m s" x="199.0" y="211.5">tag</text>
+<rect id="c3" class="box" x="240" y="170" width="62" height="56" rx="8"/>
+<text class="t ta b" x="271.0" y="194.5">c4</text>
+<text class="t ta m s" x="271.0" y="211.5">tag</text>
+<rect id="c4" class="box" x="312" y="170" width="62" height="56" rx="8"/>
+<text class="t ta b" x="343.0" y="194.5">5d</text>
+<text class="t ta m s" x="343.0" y="211.5">tag</text>
+<rect id="c5" class="box" x="384" y="170" width="62" height="56" rx="8"/>
+<text class="t ta b" x="415.0" y="194.5">e9</text>
+<text class="t ta m s" x="415.0" y="211.5">tag</text>
+<rect id="c6" class="box" x="456" y="170" width="62" height="56" rx="8"/>
+<text class="t ta b" x="487.0" y="194.5">2b</text>
+<text class="t ta m s" x="487.0" y="211.5">tag</text>
+<rect id="c7" class="box" x="528" y="170" width="62" height="56" rx="8"/>
+<text class="t ta b" x="559.0" y="194.5">91</text>
+<text class="t ta m s" x="559.0" y="211.5">tag</text>
+<rect id="c8" class="box" x="600" y="170" width="62" height="56" rx="8"/>
+<text class="t ta b" x="631.0" y="194.5">7e</text>
+<text class="t ta m s" x="631.0" y="211.5">tag</text>
+<rect id="c9" class="box" x="672" y="170" width="62" height="56" rx="8"/>
+<text class="t ta b" x="703.0" y="194.5">d8</text>
+<text class="t ta m s" x="703.0" y="211.5">tag</text>
+<rect id="c10" class="box" x="744" y="170" width="62" height="56" rx="8"/>
+<text class="t ta b" x="775.0" y="194.5">40</text>
+<text class="t ta m s" x="775.0" y="211.5">tag</text>
+<rect id="c11" class="box" x="816" y="170" width="62" height="56" rx="8"/>
+<text class="t ta b" x="847.0" y="194.5">b6</text>
+<text class="t ta m s" x="847.0" y="211.5">tag</text>
+<text class="t m s b" x="24" y="160">Announcements in the block range (public)</text>
+<path class="ln warn a k0" d="M450 120 L450 165" marker-end="url(#ar-warn)"/>
+<text class="t m s a k0" x="460" y="150">all logs</text>
+<g class="a k0"><circle class="bdg" cx="430" cy="142" r="11"/><text class="bdgt ta" x="430" y="146">1</text></g>
+<circle class="dot a k1" cx="450" cy="120" r="6"/>
+<g class="a k2"><rect x="24" y="170" width="62" height="56" rx="8" fill="var(--bg)" opacity="0.72"/></g>
+<g class="a k2"><rect x="96" y="170" width="62" height="56" rx="8" fill="var(--bg)" opacity="0.72"/></g>
+<g class="a k2"><rect x="168" y="170" width="62" height="56" rx="8" fill="var(--bg)" opacity="0.72"/></g>
+<g class="a k2"><rect x="240" y="170" width="62" height="56" rx="8" fill="var(--bg)" opacity="0.72"/></g>
+<g class="a k2"><rect x="384" y="170" width="62" height="56" rx="8" fill="var(--bg)" opacity="0.72"/></g>
+<g class="a k2"><rect x="456" y="170" width="62" height="56" rx="8" fill="var(--bg)" opacity="0.72"/></g>
+<g class="a k2"><rect x="528" y="170" width="62" height="56" rx="8" fill="var(--bg)" opacity="0.72"/></g>
+<g class="a k2"><rect x="600" y="170" width="62" height="56" rx="8" fill="var(--bg)" opacity="0.72"/></g>
+<g class="a k2"><rect x="672" y="170" width="62" height="56" rx="8" fill="var(--bg)" opacity="0.72"/></g>
+<g class="a k2"><rect x="744" y="170" width="62" height="56" rx="8" fill="var(--bg)" opacity="0.72"/></g>
+<g class="a k2"><rect x="816" y="170" width="62" height="56" rx="8" fill="var(--bg)" opacity="0.72"/></g>
+<rect class="hlr a k3" x="307" y="165" width="72" height="66" rx="12"/>
+<rect class="hlr a k3" x="307" y="165" width="72" height="66" rx="12"/>
+<rect id="scan" class="box acc" x="330" y="290" width="240" height="66" rx="8"/>
+<text class="t ta b" x="450.0" y="319.5">Tag filter</text>
+<text class="t ta m s" x="450.0" y="336.5">compute tag from viewing key</text>
+<path class="ln acc a k4" d="M450 230 L450 290" marker-end="url(#ar-acc)"/>
+<text class="t m s a k4" x="460" y="262">each tag</text>
+<g class="a k4"><circle class="bdg" cx="430" cy="260" r="11"/><text class="bdgt ta" x="430" y="264">2</text></g>
+<circle class="dot a k5" cx="450" cy="230" r="6"/>
+<rect id="full" class="box acc" x="330" y="395" width="240" height="66" rx="8"/>
+<text class="t ta b" x="450.0" y="424.5">Full check</text>
+<text class="t ta m s" x="450.0" y="441.5">re-derive address with your keys</text>
+<path class="ln acc a k6" d="M450 356 L450 395" marker-end="url(#ar-acc)"/>
+<text class="t m s a k6" x="460" y="380">match</text>
+<g class="a k6"><circle class="bdg" cx="430" cy="376" r="11"/><text class="bdgt ta" x="430" y="380">4</text></g>
+<circle class="dot a k7" cx="450" cy="356" r="6"/>
+<rect id="found" class="box warn" x="330" y="495" width="240" height="60" rx="8"/>
+<text class="t ta b" x="450.0" y="521.5">Payments found</text>
+<text class="t ta m s" x="450.0" y="538.5">a claim: verify balance</text>
+<path class="ln warn a k8" d="M450 461 L450 495" marker-end="url(#ar-warn)"/>
+<text class="t m s a k8" x="460" y="482">yes</text>
+<g class="a k8"><circle class="bdg" cx="430" cy="478" r="11"/><text class="bdgt ta" x="430" y="482">5</text></g>
+<circle class="dot a k9" cx="450" cy="461" r="6"/>
+<rect id="risk" class="box bad" x="640" y="380" width="240" height="110" rx="8"/>
+<text class="t ta b" x="760.0" y="414.5">Limits</text>
+<text class="t ta m s" x="760.0" y="431.5">wrong tag by payer = missed</text>
+<text class="t ta m s" x="760.0" y="448.5">payment (deep scan planned,</text>
+<text class="t ta m s" x="760.0" y="465.5">not built); ask for the tx hash</text>
+<rect class="hlr a k10" x="325" y="490" width="250" height="70" rx="12"/>
+<rect class="hlr a k10" x="635" y="375" width="250" height="120" rx="12"/>
+<text class="t b" x="24" y="570">Steps</text>
+<rect class="hlb a k11" x="16" y="580" width="868" height="24" rx="6"/>
+<circle class="bdg" cx="38" cy="592" r="10"/><text class="bdgt ta" x="38" y="596">1</text>
+<text class="t s" x="58" y="596">Scanner downloads every announcement in a block range. View tags do not shrink this download.</text>
+<rect class="hlb a k12" x="16" y="606" width="868" height="24" rx="6"/>
+<circle class="bdg" cx="38" cy="618" r="10"/><text class="bdgt ta" x="38" y="622">2</text>
+<text class="t s" x="58" y="622">For each one it computes the expected tag from your viewing key and the ephemeral key (cheap).</text>
+<rect class="hlb a k13" x="16" y="632" width="868" height="24" rx="6"/>
+<circle class="bdg" cx="38" cy="644" r="10"/><text class="bdgt ta" x="38" y="648">3</text>
+<text class="t s" x="58" y="648">A different tag means not yours: skipped. Roughly 255 of 256 unrelated announcements stop here.</text>
+<rect class="hlb a k3" x="16" y="658" width="868" height="24" rx="6"/>
+<circle class="bdg" cx="38" cy="670" r="10"/><text class="bdgt ta" x="38" y="674">4</text>
+<text class="t s" x="58" y="674">A matching tag is only a hint. About 1 in 256 unrelated ones match by chance, so a full check follows.</text>
+<rect class="hlb a k14" x="16" y="684" width="868" height="24" rx="6"/>
+<circle class="bdg" cx="38" cy="696" r="10"/><text class="bdgt ta" x="38" y="700">5</text>
+<text class="t s" x="58" y="700">The full check re-derives the one-time address with your keys. A match is listed under Payments found.</text>
+<rect class="hlb a k10" x="16" y="710" width="868" height="24" rx="6"/>
+<circle class="bdg" cx="38" cy="722" r="10"/><text class="bdgt ta" x="38" y="726">6</text>
+<text class="t s" x="58" y="726">A match is a claim, not money: check the real balance. A payer can also post a wrong tag and hide from you.</text>
+</svg>

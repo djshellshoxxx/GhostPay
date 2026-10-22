@@ -1,0 +1,146 @@
+name: Nightly
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightly-${{ github.ref }}
+  cancel-in-progress: false
+
+# Deep checks that are too slow for pull requests. No secrets, read-only token.
+#
+# Open gaps, deliberately NOT faked here (docs/operators/release-and-verify.md "Open gaps"):
+#   - Mutation testing (gambit) and mainnet-fork tests: no CI configuration exists yet.
+# Echidna and Mythril below were written without network access to the tool hosts, so their install steps are
+# unverified until the first nightly run; a wrong URL or checksum fails loudly rather than skipping.
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: packages/contracts
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+        with:
+          version: v1.8.5
+      - name: Forge fuzz at 100k runs
+        run: forge test --fuzz-runs 100000
+
+  slither:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: packages/contracts
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+        with:
+          version: v1.8.5
+      - name: Slither (same exclusions as ci.yml)
+        run: |
+          python3 -m pip install --quiet "slither-analyzer==0.11.6" "solc-select==1.2.0"
+          solc-select install 0.8.28 && solc-select use 0.8.28
+          slither . --filter-paths "lib|test|script" --fail-medium --exclude-informational --exclude-low
+
+  dependency-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Production dependencies (gating)
+        run: npm audit --omit=dev --audit-level=high
+      - name: All dependencies incl. dev (reported, non-gating)
+        continue-on-error: true
+        run: npm audit --audit-level=high
+      - name: Signature and provenance check of installed packages
+        run: npm audit signatures
+
+  reproducibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Two clean builds in separate directories must be byte-identical
+        run: bash scripts/repro-check.sh --head
+
+  echidna:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    env:
+      # Version and tarball sha256 as recorded in docs/remote/third-party-additions.md (GitHub release asset).
+      ECHIDNA_VERSION: "2.2.7"
+      ECHIDNA_SHA256: "d9f8c2e829cc35a4077f8c139863c9087a038262639febd1dcc69d93b79aa314"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-forge
+        with:
+          cache-name: echidna
+      - name: Install echidna (checksum-verified) and crytic-compile
+        run: |
+          set -euo pipefail
+          f="echidna-${ECHIDNA_VERSION}-x86_64-linux.tar.gz"
+          curl -fsSL -o "$f" "https://github.com/crytic/echidna/releases/download/v${ECHIDNA_VERSION}/$f"
+          echo "${ECHIDNA_SHA256}  $f" | sha256sum -c -
+          mkdir -p "$HOME/.local/bin" && tar -xzf "$f" -C "$HOME/.local/bin" echidna
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          python3 -m pip install --quiet "crytic-compile==0.4.2"
+      - name: Echidna harnesses (properties must hold, canaries must fail)
+        working-directory: packages/contracts
+        run: bash scripts/run-echidna.sh
+
+  mythril:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-forge
+        with:
+          cache-name: mythril
+      - name: Mythril symbolic analysis
+        working-directory: packages/contracts
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet "mythril==0.24.8" "solc-select==1.2.0"
+          solc-select install 0.8.28 && solc-select use 0.8.28
+          bash scripts/run-mythril.sh

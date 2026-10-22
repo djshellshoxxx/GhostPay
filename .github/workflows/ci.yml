@@ -1,0 +1,395 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Least privilege by default; every job restates its own permissions.
+# No job here receives deployment, RPC, pinning, or signing secrets.
+permissions:
+  contents: read
+
+# One run per ref; a new push to a PR cancels the superseded run. Runs on main are never cancelled.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # Docs-only pull requests (every changed file under docs/ or a *.md) skip the heavy jobs. Anything else, and every
+  # non-PR run, runs everything. `secrets-and-egress` never depends on this job.
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - id: filter
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT" != "pull_request" ]; then echo "code=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          files="$(gh api "repos/$REPO/pulls/$PR/files" --paginate --jq '.[] | .filename, (.previous_filename // empty)')"
+          if [ -z "$files" ]; then echo "code=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          # Here-string, not a pipe: with pipefail, `grep -q` exiting early SIGPIPEs the writer on large PRs and the
+          # condition turns false, which would wrongly classify a code change as docs-only and skip every job.
+          if grep -qvE '^(docs/.*|.*\.md)$' <<<"$files"; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "code=false" >> "$GITHUB_OUTPUT"
+            echo "Docs-only change: heavy jobs skipped."
+          fi
+
+  ts-check:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-libs
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run build
+      - run: npm audit --omit=dev --audit-level=high
+
+  # Every test workspace runs once. Keep the expensive FHE stress suite independent and split the
+  # dynamically discovered remainder so newly migrated packages do not overflow one runner's budget.
+  ts-test:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ matrix.group == 'confidential-contracts' && 60 || 30 }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [core-crypto, btc-silent-payments, web, confidential-contracts, rest-0, rest-1, rest-2]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-libs
+      # anvil for the workspaces that have anvil integration tests (they otherwise skip). Pinned as in setup-forge.
+      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+        with:
+          version: v1.8.5
+      - name: Install pinned Solidity compiler for the web registry integration test
+        if: matrix.group == 'web'
+        working-directory: packages/contracts
+        run: forge build
+      - name: Unit tests
+        env:
+          GROUP: ${{ matrix.group }}
+        run: |
+          set -euo pipefail
+          case "$GROUP" in
+            core-crypto) npm test -w packages/core-crypto ;;
+            btc-silent-payments) npm test -w packages/btc-silent-payments ;;
+            web)
+              anvil_bin="$(command -v anvil)"
+              solc_bin="$HOME/.svm/0.8.28/solc-0.8.28"
+              test -x "$anvil_bin"
+              test -x "$solc_bin"
+              ANVIL_BIN="$anvil_bin" SOLC_BIN="$solc_bin" REQUIRE_ANVIL=1 npm test -w apps/web
+              ;;
+            confidential-contracts)
+              anvil_bin="$(command -v anvil)"
+              test -x "$anvil_bin"
+              ANVIL_BIN="$anvil_bin" npm test -w packages/confidential-contracts
+              ;;
+            rest-*)
+              shard="${GROUP#rest-}"
+              args=()
+              while IFS= read -r w; do args+=(-w "$w"); done < <(
+                npm query '.workspace' | jq -r '.[].location' | sort \
+                  | grep -vxE 'packages/core-crypto|packages/btc-silent-payments|packages/confidential-contracts|apps/web|apps/relayer' \
+                  | awk -v shard="$shard" '(NR - 1) % 3 == shard'
+              )
+              echo "$GROUP: ${args[*]}"
+              anvil_args=()
+              other_args=()
+              needs_contract_artifacts=false
+              for ((i = 0; i < ${#args[@]}; i += 2)); do
+                workspace="${args[$((i + 1))]}"
+                if [[ "$workspace" == "packages/chain-adapters" || "$workspace" == "packages/policy-scheme" ]]; then
+                  needs_contract_artifacts=true
+                  anvil_args+=(-w "$workspace")
+                else
+                  other_args+=(-w "$workspace")
+                fi
+              done
+              if [[ "$needs_contract_artifacts" == true ]]; then
+                (cd packages/contracts && forge build)
+                anvil_bin="$(command -v anvil)"
+                test -x "$anvil_bin"
+                ANVIL_BIN="$anvil_bin" REQUIRE_ANVIL=1 npm test "${anvil_args[@]}" --if-present
+              fi
+              if [[ ${#other_args[@]} -gt 0 ]]; then npm test "${other_args[@]}" --if-present; fi
+              if [ "$shard" = 0 ]; then
+                node --test scripts/testnet/*.test.mjs scripts/regtest/*.test.mjs
+              fi
+              ;;
+          esac
+
+  ts-test-relayer:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-libs
+      - uses: ./.github/actions/setup-forge
+        with:
+          cache-name: relayer-e2e
+      - name: Build contract artifacts for the relayer anvil e2e
+        working-directory: packages/contracts
+        run: forge build
+      - name: Locate anvil
+        run: echo "ANVIL_BIN=$(command -v anvil)" >> "$GITHUB_ENV"
+      - name: Relayer unit tests (anvil e2e must run, not skip)
+        env:
+          # The relayer e2e must fail instead of silently skipping when anvil or artifacts are missing
+          # (audit G-09 / O-06). Honoured once apps/relayer/src/e2e.anvil.test.ts reads it.
+          REQUIRE_ANVIL: '1'
+        run: npm test -w apps/relayer
+
+  # Stable required-check name: succeeds only if every TypeScript job succeeded (or was skipped as docs-only).
+  typescript:
+    if: always()
+    needs: [changes, ts-check, ts-test, ts-test-relayer]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "needs results: $RESULTS"
+          case " $RESULTS " in *" failure "*|*" cancelled "*) exit 1 ;; esac
+
+  e2e:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-libs
+      - id: pw
+        run: echo "version=$(node -p "require('./apps/web/package.json').devDependencies['@playwright/test']")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
+      # Allowed in GitHub-hosted CI. apps/web/playwright.config.ts falls back to this managed Chromium when no
+      # GHOSTPAY_CHROMIUM / preinstalled browser path exists. With a warm cache only the OS packages are installed.
+      - run: npx playwright install --with-deps chromium
+      # The suite's webServer runs `npm run build` (with bundle scan) and `vite preview` itself.
+      - run: npm run test:e2e --workspace @ghostpay/web
+      - if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: playwright-test-results
+          path: apps/web/test-results
+          if-no-files-found: ignore
+          retention-days: 7
+
+  contracts-test:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: packages/contracts
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-forge
+        with:
+          cache-name: test
+      - run: forge build --sizes
+      - run: forge test
+
+  contracts-coverage:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: packages/contracts
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-forge
+        with:
+          cache-name: coverage
+      - name: Coverage (summary + lcov)
+        run: forge coverage --ir-minimum --report summary --report lcov --report-file lcov.info
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: contracts-lcov
+          path: packages/contracts/lcov.info
+          if-no-files-found: error
+          retention-days: 14
+
+  contracts-static:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: packages/contracts
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-forge
+        with:
+          cache-name: static
+      - run: forge fmt --check
+      - run: bash scripts/check-natspec.sh
+      - run: forge snapshot --check --no-match-test "testFuzz|invariant"
+
+  contracts-slither:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: packages/contracts
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-forge
+        with:
+          cache-name: slither
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.solc-select
+          key: slither-${{ runner.os }}-0.11.6-1.2.0-0.8.28
+      - name: Slither
+        run: |
+          python3 -m pip install --quiet "slither-analyzer==0.11.6" "solc-select==1.2.0"
+          solc-select install 0.8.28 && solc-select use 0.8.28
+          # By-design findings carry inline slither-disable comments (see docs/audits/00-slither-triage.md).
+          slither . --filter-paths "lib|test|script" --fail-medium --exclude-informational --exclude-low
+
+  # Standalone Foundry projects are not under packages/contracts and need their own compilation/test jobs.
+  contracts-extra:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - name: pool-contracts
+            path: packages/pool-contracts
+            natspec: true
+            static: true
+          - name: payer-hiding-contracts
+            path: packages/payer-hiding-contracts
+            natspec: true
+            static: false
+    defaults:
+      run:
+        working-directory: ${{ matrix.project.path }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+        with:
+          version: v1.8.5
+      # ERC-4337's GPL-header EntryPoint source is fetched into a gitignored test-only directory;
+      # production sources use the local interface and never import this fixture.
+      - name: Fetch test-only ERC-4337 EntryPoint v0.7.0 fixture
+        if: matrix.project.name == 'payer-hiding-contracts'
+        run: bash scripts/fetch-entrypoint.sh
+      - name: Build Foundry project
+        run: forge build --sizes
+      # The pool smoke test and RealProof suite use generated verifiers and an insecure development
+      # ceremony fixture. They test integration only; CI does not generate ceremonies or certify keys.
+      - name: Run Foundry tests (including configured fuzz and invariant runs)
+        run: forge test
+      - name: Check formatting
+        run: forge fmt --check
+      - name: Check production NatSpec
+        if: matrix.project.natspec
+        run: bash scripts/check-natspec.sh
+      - name: Check pool bytecode and storage layout
+        if: matrix.project.static
+        run: bash scripts/check-static.sh
+
+  # Stable required-check name: succeeds only if every contracts job succeeded (or was skipped as docs-only).
+  contracts:
+    if: always()
+    needs: [changes, contracts-test, contracts-coverage, contracts-static, contracts-slither, contracts-extra]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "needs results: $RESULTS"
+          case " $RESULTS " in *" failure "*|*" cancelled "*) exit 1 ;; esac
+
+  secrets-and-egress:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Reject committed private keys and env files
+        run: bash scripts/scan-secrets.sh
+      - name: Every action is pinned to a full SHA with a version comment
+        run: bash scripts/check-actions-pinned.sh

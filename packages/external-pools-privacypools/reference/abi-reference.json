@@ -1,0 +1,116 @@
+{
+ "source": "0xbow-io/privacy-pools-core packages/contracts/src/interfaces/{IEntrypoint,IPrivacyPool,IState}.sol @main retrieved 2026-10-21, compiled with solc 0.8.28 (only the @oz import path rewritten)",
+ "functions": {
+  "ASSET()": "0x4800d97f",
+  "ENTRYPOINT()": "0xe8eb3cc6",
+  "MAX_TREE_DEPTH()": "0xe38df5f0",
+  "RAGEQUIT_VERIFIER()": "0xda662925",
+  "ROOT_HISTORY_SIZE()": "0xcd87a3b4",
+  "SCOPE()": "0x33d09200",
+  "WITHDRAWAL_VERIFIER()": "0x8735eb2b",
+  "allowance(address,address)": "0xdd62ed3e",
+  "approve(address,uint256)": "0x095ea7b3",
+  "assetConfig(address)": "0xd6dbaf58",
+  "associationSets(uint256)": "0xddb6afa9",
+  "balanceOf(address)": "0x70a08231",
+  "currentRoot()": "0xfdab463d",
+  "currentRootIndex()": "0x90eeb02b",
+  "currentTreeDepth()": "0x4a2b75c8",
+  "currentTreeSize()": "0xa8f0f95a",
+  "dead()": "0x36cf7c87",
+  "deposit(address,uint256,uint256)": "0x0efe6a8b",
+  "deposit(uint256)": "0xb6b55f25",
+  "depositors(uint256)": "0xe4b2fb79",
+  "initialize(address,address)": "0x485cc955",
+  "latestRoot()": "0xd7b0fef1",
+  "nonce()": "0xaffed0e0",
+  "nullifierHashes(uint256)": "0x1f79a1e9",
+  "ragequit((uint256[2],uint256[2][2],uint256[2],uint256[4]))": "0x71235b34",
+  "registerPool(address,address,uint256,uint256,uint256)": "0xc30b48cf",
+  "relay((address,bytes),(uint256[2],uint256[2][2],uint256[2],uint256[8]),uint256)": "0x8a44121e",
+  "removePool(address)": "0x3b7d0946",
+  "rootByIndex(uint256)": "0xb2df6569",
+  "roots(uint256)": "0xc2b40ae4",
+  "scopeToPool(uint256)": "0xadeca3dc",
+  "totalSupply()": "0x18160ddd",
+  "transfer(address,uint256)": "0xa9059cbb",
+  "transferFrom(address,address,uint256)": "0x23b872dd",
+  "updatePoolConfiguration(address,uint256,uint256,uint256)": "0x7c0ed021",
+  "updateRoot(uint256,string)": "0x87bf00f0",
+  "usedPrecommitments(uint256)": "0xa1cc748b",
+  "windDown()": "0xb85c5145",
+  "windDownPool(address)": "0x5e33debb",
+  "withdraw((address,bytes),(uint256[2],uint256[2][2],uint256[2],uint256[8]))": "0x30c0766d",
+  "withdrawFees(address,address)": "0xf2555278"
+ },
+ "events": {
+  "Deposited(address,address,uint256,uint256)": [
+   true,
+   true,
+   false,
+   false
+  ],
+  "FeesWithdrawn(address,address,uint256)": [
+   false,
+   false,
+   false
+  ],
+  "PoolConfigurationUpdated(address,address,uint256,uint256,uint256)": [
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "PoolRegistered(address,address,uint256)": [
+   false,
+   false,
+   false
+  ],
+  "PoolRemoved(address,address,uint256)": [
+   false,
+   false,
+   false
+  ],
+  "PoolWindDown(address)": [
+   false
+  ],
+  "RootUpdated(uint256,string,uint256)": [
+   false,
+   false,
+   false
+  ],
+  "WithdrawalRelayed(address,address,address,uint256,uint256)": [
+   true,
+   true,
+   true,
+   false,
+   false
+  ],
+  "Deposited(address,uint256,uint256,uint256,uint256)": [
+   true,
+   false,
+   false,
+   false,
+   false
+  ],
+  "LeafInserted(uint256,uint256,uint256)": [
+   false,
+   false,
+   false
+  ],
+  "PoolDied()": [],
+  "Ragequit(address,uint256,uint256,uint256)": [
+   true,
+   false,
+   false,
+   false
+  ],
+  "Withdrawn(address,uint256,uint256,uint256)": [
+   true,
+   false,
+   false,
+   false
+  ]
+ }
+}

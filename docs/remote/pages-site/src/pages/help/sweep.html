@@ -1,0 +1,11 @@
+<!--page title="Sweep relayer" desc="How a gas-sponsored sweep works: signed order, relayer, fee split and nonce." prev="help/stealth.html" next="help/fees.html" -->
+<p>A <strong>sweep</strong> moves funds from a one-time address to your own wallet. A one-time address starts with no gas coin, so a relayer can pay gas and take a fee from the tokens.</p>
+{{diagram:sweep}}
+<h2>In plain words</h2>
+<ul>
+<li><strong>Signed order.</strong> Your single signature fixes the destination, amount and fee. The relayer can send it or not; it cannot edit it.</li>
+<li><strong>Nonce.</strong> A one-use number inside the order. The contract marks it used before moving anything, so the same order cannot run twice.</li>
+<li><strong>Fee split.</strong> Net amount to your destination, fee to the fee wallet you signed. The fee is the larger of gas cost times 1.10 and 0.50 %, capped at 3 %.</li>
+<li><strong>Direct sweep</strong> is the alternative: put gas coin on the one-time address and send an ordinary transfer yourself.</li>
+</ul>
+<div class="notice notice-warn" role="note"><p>The sweep is public. Anyone can link the one-time address to your destination, so use a fresh destination. In the app the key is used inside the page and there is no wallet pop-up, so read the destination on screen before signing.</p></div>

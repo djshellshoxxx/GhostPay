@@ -1,6 +1,6 @@
 # GhostPay Developer Specification and Execution Blueprint
 
-**Status:** Developer-ready design baseline; not an implementation or security audit.  
+**Status:** Developer-ready design baseline; not an implementation or security audit. See SPEC_REVIEW.md for corrections applied on 2026-10-21 (they take precedence over older text).  
 **Research checked:** 2026-10-21. Review linked standards and upstream releases again before pinning dependencies or deploying.
 
 ## Scope and non-goals
@@ -39,6 +39,19 @@ apps/
   indexer/           optional, non-authoritative public-log cache
 ```
 
+> **Annotation 2026-10-21 (stale package map).** The layout above was the plan. The repository actually contains:
+>
+> | Planned | Actual |
+> |---|---|
+> | `packages/core-crypto`, `invoice-schema`, `chain-adapters` | as planned, same names |
+> | `packages/contracts` (`@ghostpay/contracts`) | exists as a Foundry project **without** a `package.json` (not an npm workspace member) |
+> | `packages/relayer-adapter` | **does not exist**; the client lives in `apps/web/src/lib/relayerClient.ts` |
+> | `apps/ui` | named `apps/web` (`@ghostpay/web`) |
+> | `apps/indexer` | **does not exist** (no indexer; scanning uses the user's RPC) |
+> | (not planned here) | `apps/relayer` (`@ghostpay/relayer`, the relay service), `packages/btc-silent-payments` (BIP-352 library, not integrated) |
+>
+> See the README package map and the per-package `DEVIATIONS.md`. The module descriptions below remain the intent; where they disagree with the code, the code wins.
+
 - **core-crypto:** EIP-5564 scheme 1 key validation, derivation, scan check, stealth private key computation, serialization, test vectors.
 - **invoice-schema:** canonical typed invoice schema, parser/serializer, encryption envelope, signature verification; no UI or RPC dependencies.
 - **chain-adapters:** chain IDs, token metadata, announcer/router ABIs, quote adapters, log pagination, finality policy.
@@ -66,119 +79,9 @@ Do not replace or alter the standard EIP-5564 singleton announcer. EIP-5564 spec
 
 A 0.25% fee is enforceable only when payment uses a wrapper/router (or equivalent token authorization); a direct transfer to a stealth address bypasses the protocol fee. A fee recipient and the split are public. Immutable code improves reviewability but makes mistakes permanent.
 
-### Interfaces and implementation skeleton
+### Interfaces
 
-The following illustrates the boundary and checks; it is intentionally incomplete and must be completed, compiled, audited, and fuzzed before deployment.
-
-```solidity
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
-
-interface IERC5564Announcer {
-    event Announcement(
-        uint256 indexed schemeId,
-        address indexed stealthAddress,
-        address indexed caller,
-        bytes ephemeralPubKey,
-        bytes metadata
-    );
-
-    function announce(
-        uint256 schemeId,
-        address stealthAddress,
-        bytes calldata ephemeralPubKey,
-        bytes calldata metadata
-    ) external;
-}
-
-interface IERC20Minimal {
-    function transferFrom(address from, address to, uint256 amount)
-        external returns (bool);
-}
-
-interface IERC20MetadataMinimal {
-    function decimals() external view returns (uint8);
-}
-
-/// @dev Production code must use a reviewed SafeERC20/ReentrancyGuard implementation
-/// pinned to a known OpenZeppelin release; this excerpt shows the protocol boundary.
-contract GhostPayPaymentRouter {
-    error InvalidConfiguration();
-    error InvalidPayment();
-    error InvalidMetadata();
-    error TransferFailed();
-
-    uint256 public constant FEE_BPS = 25; // 25 / 10_000 = 0.25%
-    uint256 private constant BPS_DENOMINATOR = 10_000;
-
-    IERC5564Announcer public immutable announcer;
-    address public immutable feeRecipient;
-    uint256 public immutable schemeId;
-
-    event GhostPaySettled(
-        bytes32 indexed invoiceId,
-        address indexed payer,
-        address indexed stealthAddress,
-        address token,
-        uint256 grossAmount,
-        uint256 feeAmount,
-        uint256 netAmount
-    );
-
-    constructor(
-        IERC5564Announcer announcer_,
-        address feeRecipient_,
-        uint256 schemeId_
-    ) {
-        if (address(announcer_) == address(0) ||
-            feeRecipient_ == address(0) ||
-            schemeId_ != 1) revert InvalidConfiguration();
-
-        announcer = announcer_;
-        feeRecipient = feeRecipient_;
-        schemeId = schemeId_;
-    }
-
-    function payERC20(
-        bytes32 invoiceId,
-        IERC20Minimal token,
-        address stealthAddress,
-        uint256 grossAmount,
-        bytes calldata ephemeralPubKey,
-        bytes calldata metadata
-    ) external /* nonReentrant */ {
-        if (address(token) == address(0) ||
-            stealthAddress == address(0) ||
-            grossAmount == 0) revert InvalidPayment();
-
-        // EIP-5564 scheme 1: metadata[0] is the one-byte view tag.
-        if (metadata.length < 1) revert InvalidMetadata();
-
-        uint256 fee = grossAmount * FEE_BPS / BPS_DENOMINATOR;
-        uint256 net = grossAmount - fee;
-        if (net == 0) revert InvalidPayment();
-
-        // Complete with OpenZeppelin SafeERC20; reject fee-on-transfer,
-        // rebasing, callback, or otherwise unsupported tokens unless separately tested.
-        if (fee != 0 && !token.transferFrom(msg.sender, feeRecipient, fee)) {
-            revert TransferFailed();
-        }
-        if (!token.transferFrom(msg.sender, stealthAddress, net)) {
-            revert TransferFailed();
-        }
-
-        // Announcement caller is this router. Indexers must account for that.
-        announcer.announce(schemeId, stealthAddress, ephemeralPubKey, metadata);
-
-        emit GhostPaySettled(
-            invoiceId, msg.sender, stealthAddress, address(token),
-            grossAmount, fee, net
-        );
-    }
-}
-```
-
-**Required production changes:** use OpenZeppelin `SafeERC20` and `ReentrancyGuard`; check arithmetic/fee rounding; constrain or document token behavior; prevent invoice replay if invoices are single-use; validate expiry and chain context; ensure metadata contains the correct EIP-5564 token transfer selector, token address, amount, and view tag; add a non-custodial permit path only after separate review; test reentrant and malicious ERC-20s; and test rollback atomicity when announce fails. Do not treat the event's `invoiceId` as private. Consider whether an invoice identifier should be omitted from chain logs to avoid a direct correlation.
+The normative contract interfaces, rules, errors and test requirements are in [CONTRACTS_SPEC.md](CONTRACTS_SPEC.md) (router, native-asset path, ERC-2612 permit path, gas buffer, sweep relayer, policy account). The earlier illustrative sketch was removed because it emitted a public `invoiceId`, trusted `bool` return values and did not validate announcement metadata against the executed transfer (SPEC_REVIEW.md A1-A3). Fees are defined in [FEE_SCHEDULE.md](FEE_SCHEDULE.md).
 
 ### Event behavior and gas
 
@@ -210,34 +113,30 @@ Paymaster requirements:
 
 ## Module B: `@ghostpay/core-crypto` — TypeScript cryptographic engine
 
-### EIP-5564 scheme 1 formulas
+### EIP-5564 scheme 1 formulas (normative: ADR-0001)
 
-Let secp256k1 have base point (G), order (n), and field prime (p=2^{256}-2^{32}-977). Validate all scalars in ([1,n-1]) and all public points as valid non-infinity points on the correct curve.
+Notation: secp256k1 base point G, group order n, field prime p = 2^256 - 2^32 - 977. Validate every scalar in [1, n-1] and every public point as a valid, non-infinity, compressed (33-byte) curve point.
 
 **Recipient setup**
+- Generate independent random scalars p_spend and p_view (rejection sampling from a CSPRNG).
+- P_spend = p_spend*G, P_view = p_view*G.
+- Meta-address text form: `st:eth:0x<P_spend 33 bytes><P_view 33 bytes>`.
+- Never reuse one scalar for both roles. The viewing key reveals incoming payment history.
 
-- Generate independent random spending scalar (p_{spend}) and viewing scalar (p_{view}).
-- (P_{spend}=p_{spend}G), (P_{view}=p_{view}G).
-- Scheme 1 meta-address encodes the two public keys in the exact order/format required by ERC-5564. Text representation is `st:eth:0x<spendingPubKey><viewingPubKey>`; strip the prefix only for scheme decoding.
-- Never reuse one secret scalar for both roles. The viewing key can reveal incoming payment history and deserves protection.
+**Sender derivation**
+- Sample a fresh ephemeral scalar r in [1, n-1] from a CSPRNG; R = r*G (33-byte compressed) is the ephemeral public key.
+- S = r*P_view, serialised as a 33-byte compressed point (not x-only).
+- s_h = keccak256(S) (32 bytes). View tag v = s_h[0].
+- h = int(s_h) mod n; reject h == 0.
+- P_stealth = P_spend + h*G; stealth address = last 20 bytes of keccak256(uncompressed x||y of P_stealth), EIP-55 checksummed for display.
+- Announcement: schemeId 1, ephemeralPubKey R, metadata starts with v.
 
-**Sender generation for a payment**
-
-- Sample fresh ephemeral scalar (rin[1,n-1]) using CSPRNG.
-- (R=rG) is the ephemeral public key.
-- Shared curve point (S=rP_{view}), equivalently (S=p_{view}R) for the recipient.
-- (s_h=h(S)), where (h), point serialization, scalar reduction, and byte ordering MUST match the ERC-5564 scheme reference implementation and vectors exactly. Do not substitute an ad hoc HKDF/Keccak/SHA variant.
-- (v=	ext{MSB}(s_h)), the first byte of the scheme's hash output.
-- (Q=P_{spend}+s_hG); the stealth address is the standard EVM address conversion of (Q).
-- Return stealth address, (R), and (v). Include (v) as the first metadata byte.
-
-**Recipient scan and spend derivation**
-
-- Given event (R), compute (S=p_{view}R), then (s_h=h(S)).
-- Compare (	ext{MSB}(s_h)) with `metadata[0]`; mismatch rejects cheaply.
-- On match compute (Q=P_{spend}+s_hG) and compare its standard EVM address to the event stealth address.
-- For a true match compute (p_{stealth}=(p_{spend}+s_h)mod n), reject zero, and verify ((p_{stealth}G)) maps back to the expected address before signing.
-- The one-byte tag yields a 255/256 chance to skip the later operations for unrelated events and discloses one byte of shared-secret-derived material. It does not reduce downloaded logs. EIP-5564 estimates about a 6x reduction in parsing elliptic-curve/hash operations and notes the security-margin impact. See [EIP-5564 scheme and parsing rules](https://eips.ethereum.org/EIPS/eip-5564).
+**Recipient scan and spend**
+- S = p_view*R; s_h = keccak256(S); compare s_h[0] with metadata[0]; mismatch means skip.
+- On match compute P_stealth = P_spend + h*G and compare its address with the announced address.
+- Spend key p_stealth = (p_spend + h) mod n; reject zero; verify p_stealth*G maps to the announced address before signing.
+- The one-byte tag lets the scanner skip about 255/256 of the later point additions and hashes for unrelated announcements. It does not reduce the number of logs downloaded and reveals one byte of shared-secret-derived data (ERC-5564 notes the margin drops from 128 to about 124 bits).
+- Reference cross-check: `@scopelift/stealth-address-sdk` 1.0.0-beta.5 (MIT) produces identical outputs; used only in differential tests.
 
 ### API sketch
 

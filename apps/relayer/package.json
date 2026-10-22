@@ -1,0 +1,30 @@
+{
+  "name": "@ghostpay/relayer",
+  "version": "0.1.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "scripts": {
+    "build": "npm run build -w @ghostpay/chain-adapters && npm run build -w @ghostpay/relayer-guard && tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --coverage",
+    "lint": "eslint --config ../../eslint.config.js src",
+    "start": "node dist/main.js"
+  },
+  "dependencies": {
+    "@ghostpay/chain-adapters": "0.1.0",
+    "@ghostpay/relayer-guard": "0.1.0",
+    "viem": "2.57.7"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.5",
+    "@vitest/coverage-v8": "5.0.5",
+    "fast-check": "4.10.2",
+    "typescript": "5.9.3",
+    "vitest": "5.0.5"
+  },
+  "description": "GhostPay gas-sponsorship relay service (node:http, viem).",
+  "engines": {
+    "node": ">=22"
+  }
+}

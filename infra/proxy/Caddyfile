@@ -1,0 +1,83 @@
+# Reverse proxy for a GhostPay host: static web bundle + relayer behind a trusted proxy.
+# NOT deployed anywhere. Replace the OWNER placeholders; do not expose a public instance before the gates in
+# docs/adr/ADR-LOG.md (ADR-0015). Syntax not validated in the authoring sandbox (caddy not installed).
+#   caddy validate --config infra/proxy/Caddyfile --adapter caddyfile
+#
+# Headers mirror apps/web/public/_headers. Keep the three in sync (scripts: infra/proxy/check-headers.sh).
+{
+	# OWNER: contact email for ACME.
+	email owner@example.invalid
+	servers {
+		# Only this proxy is trusted by the relayer; nothing upstream of Caddy is trusted here.
+		trusted_proxies static private_ranges
+	}
+}
+
+# OWNER: replace with the real hostname.
+ghostpay.example.invalid {
+	encode zstd gzip
+	# No access logs of URLs by default.
+	log {
+		output discard
+	}
+
+	header {
+		Strict-Transport-Security "max-age=63072000; includeSubDomains"
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https: wss:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; worker-src 'self'"
+		Referrer-Policy "no-referrer"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Permissions-Policy "accelerometer=(), autoplay=(), bluetooth=(), camera=(), display-capture=(), geolocation=(), gyroscope=(), hid=(), magnetometer=(), microphone=(), midi=(), payment=(), serial=(), usb=(), xr-spatial-tracking=()"
+		Cross-Origin-Opener-Policy "same-origin"
+		# COEP: all subresources are same-origin; cross-origin RPC fetches are CORS requests, which COEP allows.
+		Cross-Origin-Embedder-Policy "require-corp"
+		-Server
+	}
+
+	# Relayer API: only the documented routes; /metrics is NOT proxied (scrape it on loopback).
+	@relayer path /healthz /v1/info /v1/quote /v1/sweep
+	handle @relayer {
+		request_body {
+			max_size 64KB
+		}
+		reverse_proxy 127.0.0.1:8787 {
+			# Overwrite, never append, client-supplied forwarding headers: the relayer walks X-Forwarded-For
+			# from the right and trusts only hops listed in its trustedProxies.
+			header_up X-Forwarded-For {remote_host}
+			header_up -X-Real-IP
+			header_up -Forwarded
+			transport http {
+				dial_timeout 3s
+				response_header_timeout 30s
+			}
+		}
+	}
+	handle /metrics {
+		respond 404
+	}
+
+	handle /deployments/* {
+		header Cache-Control "no-store"
+		header Cross-Origin-Resource-Policy "same-origin"
+		root * /srv/ghostpay
+		file_server
+	}
+	handle /assets/* {
+		header Cache-Control "public, max-age=31536000, immutable"
+		header Cross-Origin-Resource-Policy "same-origin"
+		root * /srv/ghostpay
+		file_server
+	}
+	handle /ghostpay-embed-v1.js {
+		header Cache-Control "public, max-age=3600"
+		header Cross-Origin-Resource-Policy "cross-origin"
+		root * /srv/ghostpay
+		file_server
+	}
+	handle {
+		header Cache-Control "no-cache"
+		root * /srv/ghostpay
+		try_files {path} /index.html
+		file_server
+	}
+}

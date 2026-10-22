@@ -1,0 +1,10 @@
+# GhostPay for PrestaShop (module skeleton)
+
+Same payment-link flow as `integrations/woocommerce` (see its README for the invoice-service contract and webhook rules): checkout option -> `validation` controller (CSRF token via `Tools::getToken`) creates the order in a new "Awaiting GhostPay payment" state, asks YOUR invoice service for a link (HMAC-signed, https-only cURL, no redirects), accepts it only for the configured host with a `#gpi=v1.` fragment, redirects the customer. `webhook` controller verifies the `GhostPay-Signature` HMAC over the raw body, claims the nonce atomically, and uses unique database claims for event IDs and provider transaction IDs. A live claim returns a retryable response; a failed side effect releases the claim, while completed claims suppress concurrent and fresh-nonce redeliveries. The module moves the order to `PS_OS_PAYMENT` only if `amountMinor >=` total in the same currency. No remote scripts, no third-party calls.
+
+`ghostpay/classes/` holds copies of the three WordPress-independent classes from the WooCommerce plugin (only the guard line differs); keep them in sync.
+
+## Skeleton status (honest)
+- PHP 8.3 CLI checks passed in this QA run: `php -l` on every WooCommerce and PrestaShop PHP file, both CLI test suites, and the PrestaShop exact-money/state-policy fixtures. Module callbacks were not run inside PrestaShop.
+- The invoice amount sent to the service now comes from the persisted `DECIMAL total_paid` string, and webhook comparison uses the same exact value. Unsupported or malformed money fails closed; a sufficient `invoice.paid`/`invoice.over` can mark paid, an underpayment enters the error state, partial remains awaiting, and expired cancels only an awaiting order. Invoice startup failures cancel the temporary order.
+- Still a skeleton: settings form rendering (`HelperForm`), refunds, secrets stored in `Configuration` (prefer environment-based secrets), translations, module packaging, and PrestaShop validator/integration tests. The PrestaShop version is not installed here, so platform-specific callbacks and order-state behavior remain unverified.

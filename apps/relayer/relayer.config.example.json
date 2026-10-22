@@ -1,0 +1,27 @@
+{
+  "listen": { "host": "127.0.0.1", "port": 8787 },
+  "allowedOrigins": ["https://app.example.org"],
+  "trustedProxies": ["127.0.0.1", "::1"],
+  "gas": { "coverPercent": 100, "maxMovePercent": 25, "quoteCacheSeconds": 3 },
+  "quoteTtlSeconds": 120,
+  "deadline": { "minSeconds": 30, "maxSeconds": 1800 },
+  "rateLimit": { "ipPerMinute": 30, "ipBurst": 10, "ownerPerMinute": 6, "ownerBurst": 3, "maxKeys": 10000, "saltRotationHours": 24, "quoteGlobalPerMinute": 600, "quoteGlobalBurst": 100 },
+  "breaker": { "windowSize": 20, "minSamples": 5, "failureRatio": 0.5, "cooldownSeconds": 60, "probeTimeoutSeconds": 60 },
+  "lossBudget": { "windowSeconds": 3600, "perKeyWei": "5000000000000000", "globalWei": "50000000000000000", "maxKeys": 10000 },
+  "queue": { "maxPending": 16, "receiptTimeoutSeconds": 120 },
+  "shutdownGraceSeconds": 15,
+  "chains": [
+    {
+      "chainId": 84532,
+      "rpcUrlEnv": "RPC_URL_84532",
+      "feeTo": "0x1111111111111111111111111111111111111111",
+      "tokens": [{ "address": "0x036CbD53842c5426634e7929541eC2318f3dCF7e", "usdStable": true }],
+      "nativeUsdPrice": "3000.00",
+      "gasUnits": { "sweep": "150000", "sweepWithPermit": "200000" },
+      "maxGasLimit": "500000",
+      "maxGasPriceWei": "5000000000",
+      "dailyBudgetWei": "50000000000000000",
+      "minBalanceWei": "10000000000000000"
+    }
+  ]
+}

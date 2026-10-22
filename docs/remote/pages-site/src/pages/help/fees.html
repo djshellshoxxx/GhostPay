@@ -1,0 +1,19 @@
+<!--page title="Fees" desc="What GhostPay charges and when." prev="help/sweep.html" next="help/observers.html" -->
+<p>Nothing is deployed, so no fee is collected anywhere today. This is the designed schedule.</p>
+{{diagram:fees}}
+<div class="table-wrap" role="region" aria-label="Fee table" tabindex="0">
+<table>
+<caption>Fee table</caption>
+<thead><tr><th scope="col">Fee</th><th scope="col">When</th><th scope="col">Amount</th></tr></thead>
+<tbody>
+<tr><td data-label="Fee">Checkout</td><td data-label="When">Pay through the router</td><td data-label="Amount">0.25 % (25 bps) of gross, rounded down; none under 400 base units</td></tr>
+<tr><td data-label="Fee">Direct pay</td><td data-label="When">Payer sends to the one-time address</td><td data-label="Amount">No GhostPay fee</td></tr>
+<tr><td data-label="Fee">Relayer sweep</td><td data-label="When">You use a relayer</td><td data-label="Amount">max(gas cost x 1.10, 0.50 %), capped at 3 %, fixed in your signature</td></tr>
+<tr><td data-label="Fee">Policy account creation</td><td data-label="When">Contracts only, no app</td><td data-label="Amount">Flat stablecoin fee (design value USD 3, owner to confirm)</td></tr>
+</tbody></table></div>
+<h2>Good to know</h2>
+<ul>
+<li>The fee only works where funds pass through GhostPay&rsquo;s contract. A payer can bypass it, and a fork of the client can drop it. This is by design and disclosed.</li>
+<li>The fee rate and recipient are fixed per deployment and shown in the app from the deployment manifest. The recipient is not in the source code.</li>
+<li>Network gas, wallet fees and RPC charges are not GhostPay fees.</li>
+</ul>

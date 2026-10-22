@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@ghostpay/chain-adapters": ["../../packages/chain-adapters/src/index.ts"],
+      "@ghostpay/relayer-guard": ["../../packages/relayer-guard/src/index.ts"],
+      "@ghostpay/core-crypto": ["../../packages/core-crypto/src/index.ts"],
+      "@ghostpay/invoice-schema": ["../../packages/invoice-schema/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*.ts", "vitest.config.ts"]
+}

@@ -1,0 +1,699 @@
+{
+  "_meta": {
+    "retrieved": "2026-10-21",
+    "summary": "Primary doc hosts (docs.chain.link, developers.circle.com, tether.to, chain docs) blocked by proxy (403/ENOTFOUND). Only raw.githubusercontent.com reachable. No addresses/feeds verified; all null."
+  },
+  "11155111": {
+    "name": "Sepolia",
+    "tokens": {
+      "USDC": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "Address/decimals/permit unverified. Capability only: Circle FiatToken (stablecoin-evm) is pausable and has blacklist (README, verified for FiatToken code generally, not this chain's deployment). Permit flavour expected ERC-2612 in v2.2 per Circle, unconfirmed here.",
+        "sources": [
+          "https://raw.githubusercontent.com/circlefin/stablecoin-evm/master/README.md"
+        ],
+        "status": "unverified"
+      },
+      "USDT": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable; Tether blacklist/pause capability unverified",
+        "sources": [],
+        "status": "unverified"
+      },
+      "DAI": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable; DAI-style permit (holder,spender,nonce,expiry,allowed) vs ERC-2612 unconfirmed",
+        "sources": [],
+        "status": "unverified"
+      },
+      "WETH": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable",
+        "sources": [],
+        "status": "unverified"
+      }
+    },
+    "feeds": {
+      "ETH/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "USDC/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "USDT/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "DAI/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      }
+    },
+    "finalityBlocks": null,
+    "finalityStatus": "unverified",
+    "nativeSymbol": null,
+    "nativeSymbolStatus": "unverified"
+  },
+  "84532": {
+    "name": "Base Sepolia",
+    "tokens": {
+      "USDC": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "Address/decimals/permit unverified. Capability only: Circle FiatToken (stablecoin-evm) is pausable and has blacklist (README, verified for FiatToken code generally, not this chain's deployment). Permit flavour expected ERC-2612 in v2.2 per Circle, unconfirmed here.",
+        "sources": [
+          "https://raw.githubusercontent.com/circlefin/stablecoin-evm/master/README.md"
+        ],
+        "status": "unverified"
+      },
+      "USDT": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable; Tether blacklist/pause capability unverified",
+        "sources": [],
+        "status": "unverified"
+      },
+      "DAI": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable; DAI-style permit (holder,spender,nonce,expiry,allowed) vs ERC-2612 unconfirmed",
+        "sources": [],
+        "status": "unverified"
+      },
+      "WETH": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable",
+        "sources": [],
+        "status": "unverified"
+      }
+    },
+    "feeds": {
+      "ETH/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "USDC/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "USDT/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "DAI/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      }
+    },
+    "finalityBlocks": null,
+    "finalityStatus": "unverified",
+    "nativeSymbol": null,
+    "nativeSymbolStatus": "unverified"
+  },
+  "1": {
+    "name": "Ethereum",
+    "tokens": {
+      "USDC": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "Address/decimals/permit unverified. Capability only: Circle FiatToken (stablecoin-evm) is pausable and has blacklist (README, verified for FiatToken code generally, not this chain's deployment). Permit flavour expected ERC-2612 in v2.2 per Circle, unconfirmed here.",
+        "sources": [
+          "https://raw.githubusercontent.com/circlefin/stablecoin-evm/master/README.md"
+        ],
+        "status": "unverified"
+      },
+      "USDT": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable; Tether blacklist/pause capability unverified",
+        "sources": [],
+        "status": "unverified"
+      },
+      "DAI": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable; DAI-style permit (holder,spender,nonce,expiry,allowed) vs ERC-2612 unconfirmed",
+        "sources": [],
+        "status": "unverified"
+      },
+      "WETH": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable",
+        "sources": [],
+        "status": "unverified"
+      }
+    },
+    "feeds": {
+      "ETH/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "USDC/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "USDT/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "DAI/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      }
+    },
+    "finalityBlocks": null,
+    "finalityStatus": "unverified",
+    "nativeSymbol": null,
+    "nativeSymbolStatus": "unverified"
+  },
+  "8453": {
+    "name": "Base",
+    "tokens": {
+      "USDC": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "Address/decimals/permit unverified. Capability only: Circle FiatToken (stablecoin-evm) is pausable and has blacklist (README, verified for FiatToken code generally, not this chain's deployment). Permit flavour expected ERC-2612 in v2.2 per Circle, unconfirmed here.",
+        "sources": [
+          "https://raw.githubusercontent.com/circlefin/stablecoin-evm/master/README.md"
+        ],
+        "status": "unverified"
+      },
+      "USDT": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable; Tether blacklist/pause capability unverified",
+        "sources": [],
+        "status": "unverified"
+      },
+      "DAI": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable; DAI-style permit (holder,spender,nonce,expiry,allowed) vs ERC-2612 unconfirmed",
+        "sources": [],
+        "status": "unverified"
+      },
+      "WETH": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable",
+        "sources": [],
+        "status": "unverified"
+      }
+    },
+    "feeds": {
+      "ETH/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "USDC/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "USDT/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "DAI/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      }
+    },
+    "finalityBlocks": null,
+    "finalityStatus": "unverified",
+    "nativeSymbol": null,
+    "nativeSymbolStatus": "unverified"
+  },
+  "10": {
+    "name": "Optimism",
+    "tokens": {
+      "USDC": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "Address/decimals/permit unverified. Capability only: Circle FiatToken (stablecoin-evm) is pausable and has blacklist (README, verified for FiatToken code generally, not this chain's deployment). Permit flavour expected ERC-2612 in v2.2 per Circle, unconfirmed here.",
+        "sources": [
+          "https://raw.githubusercontent.com/circlefin/stablecoin-evm/master/README.md"
+        ],
+        "status": "unverified"
+      },
+      "USDT": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable; Tether blacklist/pause capability unverified",
+        "sources": [],
+        "status": "unverified"
+      },
+      "DAI": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable; DAI-style permit (holder,spender,nonce,expiry,allowed) vs ERC-2612 unconfirmed",
+        "sources": [],
+        "status": "unverified"
+      },
+      "WETH": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable",
+        "sources": [],
+        "status": "unverified"
+      }
+    },
+    "feeds": {
+      "ETH/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "USDC/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "USDT/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "DAI/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      }
+    },
+    "finalityBlocks": null,
+    "finalityStatus": "unverified",
+    "nativeSymbol": null,
+    "nativeSymbolStatus": "unverified"
+  },
+  "42161": {
+    "name": "Arbitrum One",
+    "tokens": {
+      "USDC": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "Address/decimals/permit unverified. Capability only: Circle FiatToken (stablecoin-evm) is pausable and has blacklist (README, verified for FiatToken code generally, not this chain's deployment). Permit flavour expected ERC-2612 in v2.2 per Circle, unconfirmed here.",
+        "sources": [
+          "https://raw.githubusercontent.com/circlefin/stablecoin-evm/master/README.md"
+        ],
+        "status": "unverified"
+      },
+      "USDT": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable; Tether blacklist/pause capability unverified",
+        "sources": [],
+        "status": "unverified"
+      },
+      "DAI": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable; DAI-style permit (holder,spender,nonce,expiry,allowed) vs ERC-2612 unconfirmed",
+        "sources": [],
+        "status": "unverified"
+      },
+      "WETH": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable",
+        "sources": [],
+        "status": "unverified"
+      }
+    },
+    "feeds": {
+      "ETH/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "USDC/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "USDT/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "DAI/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      }
+    },
+    "finalityBlocks": null,
+    "finalityStatus": "unverified",
+    "nativeSymbol": null,
+    "nativeSymbolStatus": "unverified"
+  },
+  "137": {
+    "name": "Polygon PoS",
+    "tokens": {
+      "USDC": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "Address/decimals/permit unverified. Capability only: Circle FiatToken (stablecoin-evm) is pausable and has blacklist (README, verified for FiatToken code generally, not this chain's deployment). Permit flavour expected ERC-2612 in v2.2 per Circle, unconfirmed here.",
+        "sources": [
+          "https://raw.githubusercontent.com/circlefin/stablecoin-evm/master/README.md"
+        ],
+        "status": "unverified"
+      },
+      "USDT": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable; Tether blacklist/pause capability unverified",
+        "sources": [],
+        "status": "unverified"
+      },
+      "DAI": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable; DAI-style permit (holder,spender,nonce,expiry,allowed) vs ERC-2612 unconfirmed",
+        "sources": [],
+        "status": "unverified"
+      },
+      "WETH": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable",
+        "sources": [],
+        "status": "unverified"
+      }
+    },
+    "feeds": {
+      "POL/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "USDC/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "USDT/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "DAI/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      }
+    },
+    "finalityBlocks": null,
+    "finalityStatus": "unverified",
+    "nativeSymbol": null,
+    "nativeSymbolStatus": "unverified"
+  },
+  "56": {
+    "name": "BNB",
+    "tokens": {
+      "USDC": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "Address/decimals/permit unverified. Capability only: Circle FiatToken (stablecoin-evm) is pausable and has blacklist (README, verified for FiatToken code generally, not this chain's deployment). Permit flavour expected ERC-2612 in v2.2 per Circle, unconfirmed here.",
+        "sources": [
+          "https://raw.githubusercontent.com/circlefin/stablecoin-evm/master/README.md"
+        ],
+        "status": "unverified"
+      },
+      "USDT": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable; Tether blacklist/pause capability unverified",
+        "sources": [],
+        "status": "unverified"
+      },
+      "DAI": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable; DAI-style permit (holder,spender,nonce,expiry,allowed) vs ERC-2612 unconfirmed",
+        "sources": [],
+        "status": "unverified"
+      },
+      "WETH": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable",
+        "sources": [],
+        "status": "unverified"
+      }
+    },
+    "feeds": {
+      "BNB/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "USDC/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "USDT/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "DAI/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      }
+    },
+    "finalityBlocks": null,
+    "finalityStatus": "unverified",
+    "nativeSymbol": null,
+    "nativeSymbolStatus": "unverified"
+  },
+  "43114": {
+    "name": "Avalanche C",
+    "tokens": {
+      "USDC": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "Address/decimals/permit unverified. Capability only: Circle FiatToken (stablecoin-evm) is pausable and has blacklist (README, verified for FiatToken code generally, not this chain's deployment). Permit flavour expected ERC-2612 in v2.2 per Circle, unconfirmed here.",
+        "sources": [
+          "https://raw.githubusercontent.com/circlefin/stablecoin-evm/master/README.md"
+        ],
+        "status": "unverified"
+      },
+      "USDT": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable; Tether blacklist/pause capability unverified",
+        "sources": [],
+        "status": "unverified"
+      },
+      "DAI": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable; DAI-style permit (holder,spender,nonce,expiry,allowed) vs ERC-2612 unconfirmed",
+        "sources": [],
+        "status": "unverified"
+      },
+      "WETH": {
+        "address": null,
+        "decimals": null,
+        "permit": null,
+        "notes": "unverified: primary source unreachable",
+        "sources": [],
+        "status": "unverified"
+      }
+    },
+    "feeds": {
+      "AVAX/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "USDC/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "USDT/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      },
+      "DAI/USD": {
+        "address": null,
+        "decimals": null,
+        "heartbeatSeconds": null,
+        "deviationBps": null,
+        "sources": [],
+        "status": "unverified"
+      }
+    },
+    "finalityBlocks": null,
+    "finalityStatus": "unverified",
+    "nativeSymbol": null,
+    "nativeSymbolStatus": "unverified"
+  }
+}

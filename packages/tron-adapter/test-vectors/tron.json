@@ -1,0 +1,57 @@
+{
+  "note": "Throwaway test vectors. Keys are NOT real. Cross-checked by scripts/crosscheck_vectors.py (independent Python).",
+  "addresses": [
+    {
+      "name": "USDT TRC-20 contract (mainnet; widely published)",
+      "hex": "41a614f803b6fd780986a42c78ec9c7f77e6ded13c",
+      "base58": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
+    },
+    {
+      "name": "secp256k1 private key 1 (0x7E5F...5Bdf EVM address)",
+      "hex": "417e5f4552091a69125d5dfcb7b8c2659029395bdf",
+      "base58": "TMVQGm1qAQYVdetCeGRRkTWYYrLXuHK2HC"
+    }
+  ],
+  "stealth": {
+    "spendSecret": "60cb954443c479f45aed10d9975fa57917110f7b3d9122bb8b4e491449569f25",
+    "viewSecret": "6368fa84d5fba34a5839b1b40a4cd76ff34596fae4ca4a3da48f858b93b69cab",
+    "spendPublicKey": "0234df4dae7611533ed9e6ef9f91fa22632dc5eb1bc76f3e1633db439abb84022f",
+    "viewPublicKey": "02813c55e96edf994eaeee3451743fce7db39bf84a5fedc9fbee2366ab3ff9ad87",
+    "meta": "st:trx:0x0234df4dae7611533ed9e6ef9f91fa22632dc5eb1bc76f3e1633db439abb84022f02813c55e96edf994eaeee3451743fce7db39bf84a5fedc9fbee2366ab3ff9ad87",
+    "ephemeralSecret": "d918cbc5994874ddbe94112daa3e5a129b91a73ea05c4813660eb69c272cc838",
+    "ephemeralPublicKey": "027e0abcfcb528259fd9554319585eea55d1661d8996eaae70d55526f15aabe392",
+    "viewTag": 242,
+    "stealthAddress": "TDRwZqsE47E712gMTkrwbPeHZPWXdxYhN1",
+    "memoHex": "47505431027e0abcfcb528259fd9554319585eea55d1661d8996eaae70d55526f15aabe392f2"
+  },
+  "txs": [
+    {
+      "kind": "trc20",
+      "owner": "TMVQGm1qAQYVdetCeGRRkTWYYrLXuHK2HC",
+      "contract": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+      "to": "TDRwZqsE47E712gMTkrwbPeHZPWXdxYhN1",
+      "amount": "12345678",
+      "feeLimitSun": "100000000",
+      "timestampMs": "1700000000000",
+      "expirationMs": "1700000600000",
+      "refBlockNumber": "74565",
+      "refBlockId": "000000000001234500112233445566778899aabbccddeeff0011223344556677",
+      "memoHex": "47505431027e0abcfcb528259fd9554319585eea55d1661d8996eaae70d55526f15aabe392f2",
+      "rawDataHex": "0a0223452208001122334455667740c09fbaffbc31522647505431027e0abcfcb528259fd9554319585eea55d1661d8996eaae70d55526f15aabe392f25aae01081f12a9010a31747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e54726967676572536d617274436f6e747261637412740a15417e5f4552091a69125d5dfcb7b8c2659029395bdf121541a614f803b6fd780986a42c78ec9c7f77e6ded13c2244a9059cbb00000000000000000000000025f6b95a79b9f31c6142cb9ca49f34aaa553e13a0000000000000000000000000000000000000000000000000000000000bc614e7080d095ffbc31900180c2d72f",
+      "txID": "ffeeb12401e8ec7bd461975fbaac9df16f3cd368a9213ded0f43b9d481509cac"
+    },
+    {
+      "kind": "trx",
+      "owner": "TMVQGm1qAQYVdetCeGRRkTWYYrLXuHK2HC",
+      "to": "TDRwZqsE47E712gMTkrwbPeHZPWXdxYhN1",
+      "amount": "5000000",
+      "timestampMs": "1700000000000",
+      "expirationMs": "1700000600000",
+      "refBlockNumber": "74565",
+      "refBlockId": "000000000001234500112233445566778899aabbccddeeff0011223344556677",
+      "memoHex": "47505431027e0abcfcb528259fd9554319585eea55d1661d8996eaae70d55526f15aabe392f2",
+      "rawDataHex": "0a0223452208001122334455667740c09fbaffbc31522647505431027e0abcfcb528259fd9554319585eea55d1661d8996eaae70d55526f15aabe392f25a68080112640a2d747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e5472616e73666572436f6e747261637412330a15417e5f4552091a69125d5dfcb7b8c2659029395bdf12154125f6b95a79b9f31c6142cb9ca49f34aaa553e13a18c096b1027080d095ffbc31",
+      "txID": "ad6aca33dd7b5af89736893387c1192d247dd0c084a938831222ccdef0cb8ee3"
+    }
+  ]
+}

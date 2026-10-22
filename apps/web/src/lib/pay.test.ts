@@ -1,0 +1,334 @@
+import {
+  chainlinkAggregatorAbi,
+  eip712DomainSeparator,
+  erc20MetadataAbi,
+  erc2612PermitAbi,
+  type BuiltPayment,
+  type FeedConfig,
+} from '@ghostpay/chain-adapters';
+import { createInvoice, signInvoice, parseFragment, encodeFragment } from '@ghostpay/invoice-schema';
+import { encodeFunctionResult } from 'viem/utils';
+import { privateKeyToAccount } from 'viem/accounts';
+import { afterEach, describe, expect, it } from 'vitest';
+import { FAKE_FEE_RECIPIENT, FAKE_ROUTER, fakeManifest } from '../test/fakeManifest';
+import { BASE_FORM, NOW, USDC_84532, makeParsed } from '../test/invoiceFixtures';
+import { mockRpc } from '../test/mockRpc';
+import { buildInvoiceLink } from './invoiceCreate';
+import {
+  BUFFER_QUOTE_TTL_SECONDS,
+  MAX_BUFFER_WEI,
+  assertApproveTx,
+  assertPermitSigner,
+  assertReadyToSend,
+  buildApproveTx,
+  buildFinal,
+  buildPermit,
+  createPayContext,
+  decodeForDisplay,
+  offlineClient,
+  permitReader,
+  quoteBuffer,
+  readAllowance,
+  reviewInvoice,
+  trustView,
+  typedDataJson,
+  type PayContext,
+} from './pay';
+import { clearSession, generateSession, requireSession } from './session';
+import type { ManifestState } from './manifest';
+import { currentSignerHex } from '../test/keys';
+
+const LOADED = (chainId: number): ManifestState => ({ status: 'loaded', manifest: fakeManifest(chainId) });
+
+afterEach(() => {
+  clearSession();
+});
+
+describe('trustView (ADR-0010 wording)', () => {
+  it('never says "verified seller"; shows the key and "not pinned"', async () => {
+    const { parsed } = await makeParsed();
+    const t = trustView(parsed);
+    expect(t.kind).toBe('valid-signature');
+    expect(t.text).toContain(`Signature matches key ${parsed.invoice.signer} (not pinned)`);
+    expect(t.text.toLowerCase()).not.toContain('verified seller');
+  });
+  it('describes a pinned key as pinned, still not as a legal identity', async () => {
+    generateSession();
+    const link = await buildInvoiceLink(BASE_FORM, 'https://a/', NOW);
+    const pinned = await parseFragment(link.fragment, { pinnedSigners: [currentSignerHex()] });
+    const t = trustView(pinned);
+    expect(t.kind).toBe('trusted-seller');
+    expect(t.text).toContain('(pinned by you)');
+    expect(t.text).toContain('not a legal seller');
+  });
+  it('flags an invalid signature as a hard stop', async () => {
+    const { parsed } = await makeParsed();
+    const t = trustView({ ...parsed, trust: 'invalid-signature', verification: { signatureValid: false, signerPinned: false } });
+    expect(t.kind).toBe('invalid-signature');
+    expect(t.text).toMatch(/INVALID/);
+  });
+});
+
+describe('reviewInvoice', () => {
+  it('has no blockers for a good invoice with a loaded manifest', async () => {
+    const { parsed } = await makeParsed();
+    const r = reviewInvoice(parsed, NOW + 10, LOADED(84532));
+    expect(r.blockers).toEqual([]);
+    expect(r.token).toMatchObject({ symbol: 'USDC', decimals: 6 });
+    expect(r.chain?.name).toBe('Base Sepolia');
+    expect(r.manifest?.feeRecipient).toBe(FAKE_FEE_RECIPIENT);
+    expect(r.totals.total).toBe(10_000n);
+  });
+  it('says payments are disabled when no manifest is loaded (absent or invalid)', async () => {
+    const { parsed } = await makeParsed();
+    expect(reviewInvoice(parsed, NOW, { status: 'absent' }).blockers).toContain('Payments disabled on this chain: no deployment manifest is loaded.');
+    expect(reviewInvoice(parsed, NOW, { status: 'invalid', reason: 'x' }).blockers.join(' ')).toMatch(/failed validation/);
+    expect(reviewInvoice(parsed, NOW, { status: 'absent' }).manifest).toBeUndefined();
+  });
+  it('blocks expired invoices and expired fiat quotes', async () => {
+    const { parsed } = await makeParsed();
+    expect(reviewInvoice(parsed, NOW + 24 * 3600 + 1, LOADED(84532)).blockers).toContain('This invoice has expired.');
+    const { parsed: fiat } = await makeParsed({ amountMode: 'fiat_quote' });
+    expect(reviewInvoice(fiat, NOW + 16 * 60, LOADED(84532)).blockers.join(' ')).toMatch(/quote has expired/);
+    expect(reviewInvoice(parsed, NOW + 16 * 60, LOADED(84532)).blockers.join(' ')).not.toMatch(/quote has expired/);
+  });
+  it('blocks mainnets (disabled) and unknown chains', async () => {
+    const mainnet = await parseOf({ chainId: 8453, token: 'native' });
+    expect(reviewInvoice(mainnet, NOW, LOADED(8453)).blockers.join(' ')).toMatch(/disabled on Base/);
+    const unknown = await parseOf({ chainId: 999_999, token: 'native' });
+    expect(reviewInvoice(unknown, NOW, { status: 'absent' }).blockers.join(' ')).toMatch(/Unknown chain/);
+  });
+  it('blocks tokens that are not allowlisted', async () => {
+    const t = await parseOf({ token: '0x0000000000000000000000000000000000000001' });
+    expect(reviewInvoice(t, NOW, LOADED(84532)).blockers.join(' ')).toMatch(/allowlist/);
+  });
+  it('blocks totals that do not add up', async () => {
+    const t = await parseOf({ fiat: { currency: 'USD', minorUnits: '99999' } });
+    expect(reviewInvoice(t, NOW, LOADED(84532)).blockers.join(' ')).toMatch(/totals do not add up/);
+  });
+  it('blocks an invalid signature', async () => {
+    const { parsed } = await makeParsed();
+    const bad = { ...parsed, trust: 'invalid-signature' as const, verification: { signatureValid: false, signerPinned: false } };
+    expect(reviewInvoice(bad, NOW, LOADED(84532)).blockers.join(' ')).toMatch(/INVALID/);
+  });
+  it('describes native tokens with the chain symbol', async () => {
+    const { parsed } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    expect(reviewInvoice(parsed, NOW, LOADED(84532)).token).toMatchObject({ symbol: 'ETH', decimals: 18, address: 'native' });
+  });
+});
+
+async function parseOf(overrides: Record<string, unknown>): Promise<Awaited<ReturnType<typeof parseFragment>>> {
+  generateSession();
+  const { parsed } = await makeParsed();
+  const inv = createInvoice({ ...stripId(parsed.invoice), ...overrides } as never);
+  const signed = signInvoice(inv, signingKey());
+  return parseFragment(await encodeFragment(signed));
+}
+function stripId(i: object): Record<string, unknown> {
+  const { v: _v, schemeId: _s, nonce: _n, ...rest } = i as Record<string, unknown>;
+  void _v;
+  void _s;
+  void _n;
+  return rest;
+}
+function signingKey(): Uint8Array {
+  return Uint8Array.from(requireSession().signingKey);
+}
+
+describe('createPayContext and amounts', () => {
+  async function ctxFor(patch: Parameters<typeof makeParsed>[0] = {}, manifest = LOADED(84532)): Promise<PayContext> {
+    const { parsed } = await makeParsed(patch);
+    return createPayContext(reviewInvoice(parsed, NOW, manifest), undefined, { nowSeconds: NOW });
+  }
+  it('computes gross, 0.25 % fee and net (seller pays)', async () => {
+    const c = await ctxFor();
+    expect(c.request.grossAmount).toBe(100_000_000n);
+    expect(c.request.feeAmount).toBe(250_000n);
+    expect(c.request.netAmount).toBe(99_750_000n);
+    expect(c.request.feeRecipient).toBe(FAKE_FEE_RECIPIENT);
+    expect(c.request.router).toBe(FAKE_ROUTER);
+  });
+  it('payer-pays grosses up so the seller nets the invoice amount', async () => {
+    const c = await ctxFor({ feePolicy: 'payer_pays' });
+    expect(c.request.netAmount).toBeGreaterThanOrEqual(100_000_000n);
+    expect(c.request.grossAmount).toBeGreaterThan(100_000_000n);
+  });
+  it('refuses a blocked review', async () => {
+    const { parsed } = await makeParsed();
+    await expect(createPayContext(reviewInvoice(parsed, NOW, { status: 'absent' }), undefined, { nowSeconds: NOW })).rejects.toThrow(/blocked/);
+  });
+  it('fiat-quote invoices need an RPC and a configured feed (fail closed)', async () => {
+    const { parsed } = await makeParsed({ amountMode: 'fiat_quote' });
+    const review = reviewInvoice(parsed, NOW, LOADED(84532));
+    await expect(createPayContext(review, undefined, { nowSeconds: NOW })).rejects.toThrow(/Configure an RPC/);
+    await expect(createPayContext(review, mockRpc(84532, () => '0x'), { nowSeconds: NOW })).rejects.toThrow(/No price feed is configured/);
+  });
+  it('converts fiat with a fresh feed, rounding up for the payer', async () => {
+    const { parsed } = await makeParsed({ amountMode: 'fiat_quote' });
+    const review = reviewInvoice(parsed, NOW, LOADED(84532));
+    const feed: FeedConfig = { chainId: 84532, address: '0x7777777777777777777777777777777777777777', base: 'USDC', quote: 'USD' };
+    const rpc = mockRpc(84532, (method, params) => {
+      expect(method).toBe('eth_call');
+      const data = (params[0] as { data: string }).data;
+      if (data.startsWith('0x313ce567')) return encodeFunctionResult({ abi: chainlinkAggregatorAbi, functionName: 'decimals', result: 8 });
+      return encodeFunctionResult({ abi: chainlinkAggregatorAbi, functionName: 'latestRoundData', result: [1n, 100_000_000n, BigInt(NOW), BigInt(NOW), 1n] });
+    });
+    const c = await createPayContext(review, rpc, { nowSeconds: NOW, findFeedFn: () => feed });
+    expect(c.quotedTokenAmount).toBe(100_000_000n); // 100.00 USD at 1.00 USD per USDC, 6 decimals
+    expect(c.request.grossAmount).toBe(100_000_000n);
+  });
+  it('offline client refuses every network call', async () => {
+    const c = offlineClient(1);
+    await expect(c.request('x', [])).rejects.toThrow(/No RPC/);
+    await expect(c.blockNumber()).rejects.toThrow();
+  });
+});
+
+describe('buildFinal and the preview-equals-calldata gate', () => {
+  async function built(patch: Parameters<typeof makeParsed>[0] = {}, opts: Partial<Parameters<typeof buildFinal>[1]> = {}): Promise<{ ctx: PayContext; b: BuiltPayment }> {
+    const { parsed } = await makeParsed(patch);
+    const ctx = await createPayContext(reviewInvoice(parsed, NOW, LOADED(84532)), undefined, { nowSeconds: NOW });
+    return { ctx, b: buildFinal(ctx, { nowSeconds: NOW, ...opts }) };
+  }
+  it('builds ERC-20 and native payments that pass the gate', async () => {
+    const e = await built();
+    expect(e.b.preview.method).toBe('payERC20');
+    expect(() => assertReadyToSend(e.b, e.ctx)).not.toThrow();
+    expect(decodeForDisplay(e.b, 84532).gross).toBe(100_000_000n);
+    const n = await built({ token: 'native', tokenAmount: '0.5' });
+    expect(n.b.preview.method).toBe('payNative');
+    expect(n.b.tx.value).toBe(500_000_000_000_000_000n);
+    expect(() => assertReadyToSend(n.b, n.ctx)).not.toThrow();
+  });
+  it('uses a fresh one-time address and ephemeral key every time', async () => {
+    const { parsed } = await makeParsed();
+    const ctx = await createPayContext(reviewInvoice(parsed, NOW, LOADED(84532)), undefined, { nowSeconds: NOW });
+    const a = buildFinal(ctx, { nowSeconds: NOW });
+    const b = buildFinal(ctx, { nowSeconds: NOW });
+    expect(a.preview.stealth).not.toBe(b.preview.stealth);
+    expect(a.preview.ephemeralPublicKey).not.toBe(b.preview.ephemeralPublicKey);
+  });
+  it('refuses to rebind a prepared payment to another invoice with the same chain, token, and amount', async () => {
+    const first = await built({ token: 'native', tokenAmount: '0.5' });
+    const second = await built({ token: 'native', tokenAmount: '0.5' });
+    expect(first.b.preview.stealth).not.toBe(second.b.preview.stealth);
+    expect(() => assertReadyToSend(first.b, second.ctx)).toThrow(/different reviewed invoice/);
+  });
+  it('REFUSES when the calldata was mutated after the preview was made', async () => {
+    const { ctx, b } = await built();
+    const flip = (hex: string, at: number): `0x${string}` => `0x${hex.slice(2, at)}${hex[at] === '0' ? '1' : '0'}${hex.slice(at + 1)}` as `0x${string}`;
+    // Mutate the amount word area, the destination area and the metadata tail.
+    for (const at of [20, 80, 140, b.tx.data.length - 10]) {
+      const tampered: BuiltPayment = { ...b, tx: { ...b.tx, data: flip(b.tx.data, at) } };
+      expect(() => assertReadyToSend(tampered, ctx), `offset ${String(at)}`).toThrow();
+    }
+  });
+  it('REFUSES a changed target, value, or a different preview than the reviewed amounts', async () => {
+    const { ctx, b } = await built();
+    expect(() => assertReadyToSend({ ...b, tx: { ...b.tx, to: '0x9999999999999999999999999999999999999999' } }, ctx)).toThrow();
+    expect(() => assertReadyToSend({ ...b, tx: { ...b.tx, value: 1n } }, ctx)).toThrow();
+    expect(() => assertReadyToSend({ ...b, preview: { ...b.preview, gross: b.preview.gross + 1n } }, ctx)).toThrow();
+    const otherCtx: PayContext = { ...ctx, request: { ...ctx.request, grossAmount: ctx.request.grossAmount + 1n } };
+    expect(() => assertReadyToSend(b, otherCtx)).toThrow(/different reviewed invoice/);
+    const otherManifest: PayContext = { ...ctx, manifest: { ...ctx.manifest, router: '0x8888888888888888888888888888888888888888' } };
+    expect(() => assertReadyToSend(b, otherManifest)).toThrow(/different reviewed invoice/);
+  });
+  it('REFUSES when token or chain in the preview differ from the invoice', async () => {
+    const { ctx, b } = await built();
+    const invoiceNative = { ...ctx, review: { ...ctx.review, invoice: { ...ctx.review.invoice, token: 'native' } } };
+    expect(() => assertReadyToSend(b, invoiceNative)).toThrow(/different reviewed invoice/);
+    const n = await built({ token: 'native', tokenAmount: '0.1' });
+    const invoiceErc = { ...n.ctx, review: { ...n.ctx.review, invoice: { ...n.ctx.review.invoice, token: USDC_84532 } } };
+    expect(() => assertReadyToSend(n.b, invoiceErc)).toThrow(/different reviewed invoice/);
+    const wrongChain = { ...ctx, review: { ...ctx.review, invoice: { ...ctx.review.invoice, chainId: 1 } } };
+    expect(() => assertReadyToSend(b, wrongChain)).toThrow(/different reviewed invoice/);
+  });
+  it('builds buffer payments with a capped, unexpired quote only', async () => {
+    const { parsed } = await makeParsed();
+    const ctx = await createPayContext(reviewInvoice(parsed, NOW, LOADED(84532)), undefined, { nowSeconds: NOW });
+    const q = { bufferWei: 123_456n, maxFeePerGas: 1n, gasLimit: 1n, safetyBps: 2000n, quotedAt: NOW, expiresAt: NOW + BUFFER_QUOTE_TTL_SECONDS };
+    const b = buildFinal(ctx, { nowSeconds: NOW, buffer: q });
+    expect(b.preview.method).toBe('payERC20WithBuffer');
+    expect(b.tx.value).toBe(123_456n);
+    expect(() => assertReadyToSend(b, ctx)).not.toThrow();
+    expect(() => buildFinal(ctx, { nowSeconds: NOW + 200, buffer: q })).toThrow(/expired/);
+    expect(() => buildFinal(ctx, { nowSeconds: NOW, buffer: { ...q, bufferWei: MAX_BUFFER_WEI + 1n } })).toThrow(/safety cap/);
+    const native = await built({ token: 'native', tokenAmount: '0.1' });
+    expect(() => buildFinal(native.ctx, { nowSeconds: NOW, buffer: q })).toThrow(/token payments only/);
+  });
+});
+
+describe('quoteBuffer (Feature 1)', () => {
+  it('sizes the buffer from the RPC gas price with 20 % safety', async () => {
+    const q = await quoteBuffer(mockRpc(84532, () => '0x3b9aca00'), NOW); // 1 gwei
+    // 100_000 gas * 2 gwei * 1.2
+    expect(q.bufferWei).toBe(100_000n * 2_000_000_000n * 12n / 10n);
+    expect(q.expiresAt - q.quotedAt).toBe(BUFFER_QUOTE_TTL_SECONDS);
+  });
+  it('fails closed when gas is absurdly high or the RPC misbehaves', async () => {
+    await expect(quoteBuffer(mockRpc(84532, () => `0x${(10n ** 12n).toString(16)}`), NOW)).rejects.toThrow(/safety cap/);
+    await expect(quoteBuffer(mockRpc(84532, () => 'nope'), NOW)).rejects.toThrow();
+  });
+});
+
+describe('approval helpers', () => {
+  const OWNER = '0x5555555555555555555555555555555555555555';
+  it('builds and asserts exact approvals', () => {
+    const tx = buildApproveTx(USDC_84532, FAKE_ROUTER, 5n);
+    expect(() => assertApproveTx(tx, USDC_84532, FAKE_ROUTER, 5n)).not.toThrow();
+    expect(() => assertApproveTx(tx, USDC_84532, FAKE_ROUTER, 6n)).toThrow(/spender or amount/);
+    expect(() => assertApproveTx(tx, USDC_84532, '0x9999999999999999999999999999999999999999', 5n)).toThrow(/spender or amount/);
+    expect(() => assertApproveTx({ ...tx, value: 1n }, USDC_84532, FAKE_ROUTER, 5n)).toThrow(/unexpected approval/);
+    expect(() => assertApproveTx({ ...tx, to: '0x9999999999999999999999999999999999999999' }, USDC_84532, FAKE_ROUTER, 5n)).toThrow(/unexpected approval/);
+    expect(() => assertApproveTx({ ...tx, data: '0x1234' }, USDC_84532, FAKE_ROUTER, 5n)).toThrow(/could not be decoded/);
+    expect(() => assertApproveTx({ ...tx, data: '0xa9059cbb' + '0'.repeat(128) as `0x${string}` }, USDC_84532, FAKE_ROUTER, 5n)).toThrow(/unexpected approval/);
+  });
+  it('reads allowances strictly', async () => {
+    expect(await readAllowance(mockRpc(1, () => `0x${'0'.repeat(63)}7`), USDC_84532, OWNER, FAKE_ROUTER)).toBe(7n);
+    await expect(readAllowance(mockRpc(1, () => '0x1'), USDC_84532, OWNER, FAKE_ROUTER)).rejects.toThrow(/unexpected allowance/);
+  });
+});
+
+describe('permit (ERC-2612)', () => {
+  const account = privateKeyToAccount(`0x${'ab'.repeat(32)}`);
+  const NAME = 'USDC';
+  function tokenRpc(version: string, chainId = 84532): ReturnType<typeof mockRpc> {
+    return mockRpc(chainId, (_m, params) => {
+      const data = (params[0] as { data: string }).data;
+      if (data.startsWith('0x06fdde03')) return encodeFunctionResult({ abi: erc20MetadataAbi, functionName: 'name', result: NAME });
+      if (data.startsWith('0x7ecebe00')) return encodeFunctionResult({ abi: erc2612PermitAbi, functionName: 'nonces', result: 3n });
+      if (data.startsWith('0x3644e515')) {
+        return eip712DomainSeparator({ name: NAME, version, chainId, verifyingContract: USDC_84532 });
+      }
+      throw new Error('unexpected call');
+    });
+  }
+  const P = { chainId: 84532, token: '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as const, owner: account.address, spender: FAKE_ROUTER, value: 5n, deadline: BigInt(NOW + 1200) };
+
+  it('probes domain versions 2 then 1 and accepts only a matching DOMAIN_SEPARATOR', async () => {
+    const v2 = await buildPermit(tokenRpc('2'), P);
+    expect(v2.domain.version).toBe('2');
+    expect(v2.message.nonce).toBe(3n);
+    const v1 = await buildPermit(tokenRpc('1'), P);
+    expect(v1.domain.version).toBe('1');
+    await expect(buildPermit(tokenRpc('9'), P)).rejects.toThrow(/DOMAIN_SEPARATOR/);
+  });
+  it('serialises typed data with an explicit EIP712Domain and string bigints', async () => {
+    const td = await buildPermit(tokenRpc('2'), P);
+    const json = JSON.parse(typedDataJson(td)) as { types: Record<string, unknown>; message: Record<string, unknown>; primaryType: string };
+    expect(Object.keys(json.types)).toEqual(['EIP712Domain', 'Permit']);
+    expect(json.message['value']).toBe('5');
+    expect(json.primaryType).toBe('Permit');
+  });
+  it('accepts only a signature that recovers to the payer', async () => {
+    const td = await buildPermit(tokenRpc('2'), P);
+    const sig = await account.signTypedData({ domain: td.domain, types: td.types, primaryType: 'Permit', message: td.message });
+    await expect(assertPermitSigner(td, sig, account.address)).resolves.toBeUndefined();
+    await expect(assertPermitSigner(td, sig, '0x5555555555555555555555555555555555555555')).rejects.toThrow(/does not match your account/);
+  });
+  it('rejects malformed RPC results in the reader', async () => {
+    const bad = permitReader(mockRpc(1, () => 42), '1');
+    await expect(bad.name(USDC_84532)).rejects.toThrow(/unexpected result/);
+    expect(await permitReader(mockRpc(1, () => '0x'), '7').version(USDC_84532)).toBe('7');
+  });
+});

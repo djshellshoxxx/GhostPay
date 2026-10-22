@@ -1,0 +1,50 @@
+[profile.default]
+src = "src"
+test = "test"
+script = "script"
+out = "out"
+libs = ["lib", "../contracts/lib"]
+# Generated GPL-3.0 verifiers stay in packages/pool-circuits; only tests import them.
+allow_paths = ["../pool-circuits/verifiers"]
+# Committed form. The offline sandbox has no compiler download access: run with
+# FOUNDRY_SOLC=/path/to/local/solc-0.8.28 (see README "Compiler setting").
+solc_version = "0.8.28"
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 200
+bytecode_hash = "none"
+cbor_metadata = false
+ffi = false
+fs_permissions = [
+    { access = "read", path = "./test/fixtures" },
+    { access = "read", path = "../../test-vectors/shielded-pool.json" },
+]
+
+[fuzz]
+runs = 10000
+
+[invariant]
+runs = 256
+depth = 50
+fail_on_revert = false
+
+[profile.dev.fuzz]
+runs = 256
+
+[profile.dev.invariant]
+runs = 64
+depth = 50
+
+[fmt]
+line_length = 100
+tab_width = 4
+bracket_spacing = false
+int_types = "long"
+multiline_func_header = "attributes_first"
+quote_style = "double"
+number_underscore = "thousands"
+ignore = ["lib/**", "src/verifiers/**"]
+
+[lint]
+# Test and script files use cheatcodes (vm.warp/prank) by design; lint production sources only.
+ignore = ["test/**", "script/**"]

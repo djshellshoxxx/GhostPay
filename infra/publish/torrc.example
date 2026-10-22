@@ -1,0 +1,10 @@
+# Example Tor onion service for the static GhostPay bundle. Not deployed. OWNER decisions: keys, address, logging.
+# Back the HiddenServiceDir/ keys up offline (hs_ed25519_secret_key IS the onion identity; leak = impersonation).
+# Replace paths. Serve the bundle on loopback only via infra/proxy/Caddyfile.static (:8080).
+HiddenServiceDir /var/lib/tor/ghostpay/
+HiddenServiceVersion 3
+HiddenServicePort 80 127.0.0.1:8080
+# Optional hardening (see Tor docs for the exact current option names before enabling):
+#   HiddenServiceNonAnonymousMode is for single-hop services only; do NOT enable if you need server anonymity.
+SafeLogging 1
+Log notice file /dev/null

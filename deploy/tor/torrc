@@ -1,0 +1,12 @@
+# Onion service for the GhostPay web bundle. Contains no keys: Tor creates them in /var/lib/tor on first start.
+DataDirectory /var/lib/tor
+Log notice stderr
+SocksPort 0
+ControlPort 0
+RunAsDaemon 0
+AvoidDiskWrites 1
+
+HiddenServiceDir /var/lib/tor/ghostpay
+HiddenServiceVersion 3
+HiddenServicePort 80 web:8080
+# Single-hop (non-anonymous) mode is deliberately NOT enabled: this is a client-facing privacy service.

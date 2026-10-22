@@ -1,0 +1,24 @@
+{%- comment -%}
+  GhostPay payment button. Static anchor only: no script, no iframe, no remote asset.
+  Usage: {% render 'ghostpay-button', link: order.metafields.ghostpay.payment_link.value, host: settings.ghostpay_pay_host, label: 'Pay with GhostPay' %}
+  The link is a bearer secret created server-side by YOUR app/service; render it only where the paying customer sees it.
+  Renders nothing unless: https, host equals `host` exactly, no '?', no '@', and a '#gpi=v1.' fragment.
+{%- endcomment -%}
+{%- liquid
+  assign ok = false
+  assign prefix = 'https://' | append: host | append: '/'
+  if link != blank and host != blank
+    if link contains '?' or link contains '@' or link contains ' '
+      assign ok = false
+    elsif link contains '#gpi=v1.' and link.size < 22000
+      assign start = link | slice: 0, prefix.size
+      if start == prefix
+        assign ok = true
+      endif
+    endif
+  endif
+  assign text = label | default: 'Pay with GhostPay' | strip_html | truncate: 40, ''
+-%}
+{%- if ok -%}
+  <a class="ghostpay-button" href="{{ link | escape }}" target="_blank" rel="noopener noreferrer">{{ text | escape }}</a>
+{%- endif -%}

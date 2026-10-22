@@ -1,0 +1,13 @@
+<!--page title="Bitcoin Silent Payments" desc="BIP-352 silent payments: sender, receiver, scan and spend, at concept level." prev="help/privacy-map.html" next="help/policy.html" -->
+<p>Silent Payments (BIP-352) is Bitcoin&rsquo;s version of the one-time address idea: one static address, a fresh output for every payment.</p>
+<div class="notice notice-warn" role="note"><p>{{S:experimental}} GhostPay has a tested library for this. It is <strong>not wired into the web app or the relayer</strong> and has never run on a real network. Testnet only.</p></div>
+{{diagram:bitcoin}}
+<h2>In plain words</h2>
+<ul>
+<li>The receiver has two keys: a <strong>scan</strong> key to find payments and a <strong>spend</strong> key to move them.</li>
+<li>The sender combines its own input keys with the receiver&rsquo;s address to make a new output key. No contact needed.</li>
+<li>Nothing on-chain says it is a silent payment. There is no notification transaction.</li>
+<li>Scanning needs data from every candidate transaction, which is heavier than the Ethereum view-tag scan.</li>
+</ul>
+<h2>Fees on Bitcoin</h2>
+<p>There is no enforceable GhostPay protocol fee on Bitcoin. Amounts are in satoshis.</p>

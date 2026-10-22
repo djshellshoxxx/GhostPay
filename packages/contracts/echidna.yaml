@@ -1,0 +1,12 @@
+# Shared Echidna config for the harnesses in test/echidna/. Run one contract at a time, e.g.
+#   echidna test/echidna/EchidnaRouter.sol --contract EchidnaRouter --config echidna.yaml --corpus-dir echidna-corpus-router
+# (needs crytic-compile on PATH; the foundry.toml `solc` path must point at a local 0.8.28 binary offline)
+testMode: property
+testLimit: 300000
+seqLen: 20
+shrinkLimit: 2000
+workers: 4
+seed: 20261021
+sender: ["0x10000", "0x20000", "0x30000"]
+deployer: "0x40000"
+balanceContract: 1000000000000000000000

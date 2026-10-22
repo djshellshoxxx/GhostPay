@@ -1,0 +1,38 @@
+// GhostPay Codespace / Dev Container for full-stack integration testing (anvil + bitcoind regtest + solana-test-validator
+// run as Docker containers INSIDE this container via docker-in-docker; see docs/operators/integration-testing.md).
+// Then:  bash scripts/integration/run-all.sh
+// Not executed in the environment this was written in (no Docker daemon, no Codespaces): see the doc's "unverified" list.
+{
+  "name": "GhostPay integration (Node 22, Foundry 1.8.5, Docker-in-Docker)",
+
+  // Same image the compose `runner` service uses: Node 22 (digest-pinned), Foundry v1.8.5 (SHA-256 verified).
+  // Rust and the Solana CLI are NOT installed here on purpose; the validator runs from its own container.
+  "build": {
+    "dockerfile": "../infra/integration/Dockerfile.runner",
+    "context": "../infra/integration"
+  },
+  "remoteUser": "node",
+
+  "features": {
+    // Official devcontainers feature ghcr.io/devcontainers/features/docker-in-docker, version 4.1.3 (latest 4.x when this
+    // was written), referenced by manifest digest (read from ghcr.io). Installs the Moby engine + Compose v2 and starts
+    // dockerd at container start (the feature requests privileged mode itself).
+    "ghcr.io/devcontainers/features/docker-in-docker@sha256:fae40f3c8be5a7c3b0db344c1d30341bc2c91ba38d1d5b14cd2ad72e6d65d084": {
+      "moby": true,
+      "dockerDashComposeVersion": "v2"
+    }
+  },
+
+  "postCreateCommand": "npm ci --ignore-scripts && npm run build:libs",
+
+  // The compose stack publishes these on 127.0.0.1 inside the Codespace; they are forwarded privately (never public).
+  "forwardPorts": [8545, 18443, 8899],
+  "portsAttributes": {
+    "8545": { "label": "anvil (EVM, chain 31337)", "onAutoForward": "silent", "visibility": "private" },
+    "18443": { "label": "bitcoind regtest RPC", "onAutoForward": "silent", "visibility": "private" },
+    "8899": { "label": "solana-test-validator RPC", "onAutoForward": "silent", "visibility": "private" }
+  },
+
+  // The validator needs roughly 2-4 GB; images, ledger and node_modules need disk. Choose a 4-core machine type.
+  "hostRequirements": { "cpus": 4, "memory": "8gb", "storage": "32gb" }
+}

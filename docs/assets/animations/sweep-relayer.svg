@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 674" width="900" height="674" role="img" aria-labelledby="ttl dsc">
+<title id="ttl">Animated sweep through a relayer</title>
+<desc id="dsc">Seven-step animation of a gas-sponsored sweep: choose a fresh destination, get a quote, sign with the stealth key in the browser, send to the relayer, relayer submits, contract pays fee and destination, and the chain permanently shows the link. With reduced motion preferred, everything is shown statically.</desc>
+<style>
+:root{--bg:#ffffff;--fg:#1b1f24;--mut:#4d5866;--box:#eef1f6;--line:#6b778a;--acc:#1f4fc4;--accbg:#dbe6ff;--warn:#8a4b00;--warnbg:#fff0d0;--bad:#a8200f;--badbg:#fde4e1;--ok:#13663a;--okbg:#dcf3e4}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1318;--fg:#e6e9ee;--mut:#a3aebd;--box:#1a212b;--line:#7d8a9d;--acc:#8fb2ff;--accbg:#1c2c52;--warn:#ffb454;--warnbg:#3a2a0e;--bad:#ff9b92;--badbg:#411a17;--ok:#74d9a0;--okbg:#12331f}}
+svg{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.bg{fill:var(--bg)}
+.t{fill:var(--fg);font-size:14px}.b{font-weight:700}.m{fill:var(--mut)}.s{font-size:12px}.h{font-size:20px;font-weight:700}
+.box{fill:var(--box);stroke:var(--line);stroke-width:1.5}
+.box.acc{fill:var(--accbg);stroke:var(--acc)}.box.warn{fill:var(--warnbg);stroke:var(--warn)}
+.box.bad{fill:var(--badbg);stroke:var(--bad)}.box.ok{fill:var(--okbg);stroke:var(--ok)}
+.dash{stroke-dasharray:6 4}
+.grp{fill:none;stroke:var(--line);stroke-width:1.3;stroke-dasharray:3 5}
+.ln{fill:none;stroke:var(--line);stroke-width:2}.ln.acc{stroke:var(--acc)}.ln.warn{stroke:var(--warn)}.ln.bad{stroke:var(--bad)}.ln.ok{stroke:var(--ok)}
+.ah{fill:var(--line)}
+.bdg{fill:var(--acc)}.bdgt{fill:var(--bg);font-size:12px;font-weight:700}
+.ta{text-anchor:middle}
+
+.dot,.hlr,.hlb{display:none}.dot{fill:var(--acc)}.hlr{fill:none;stroke:var(--acc);stroke-width:4}.hlb{fill:var(--accbg)}
+@media (prefers-reduced-motion:no-preference){
+.dot,.hlr,.hlb{display:inline}
+.a{opacity:0;animation-duration:25.900000000000002s;animation-iteration-count:infinite;animation-timing-function:linear}
+@keyframes k0{0.0%{opacity:0}1.158%{opacity:1}11.969%{opacity:1}13.127%{opacity:0}100.0%{opacity:0}}.k0{animation-name:k0}
+@keyframes k1{0.0%{opacity:0}13.127%{opacity:0}14.286%{opacity:1}96.911%{opacity:1}98.069%{opacity:0}100.0%{opacity:0}}.k1{animation-name:k1}
+@keyframes k2{0.0%{opacity:0}13.9%{opacity:0;transform:translate(0px,0px)}14.479%{opacity:1;transform:translate(0px,0px)}14.672%{opacity:1;transform:translate(0px,0px)}22.78%{opacity:1;transform:translate(120px,0px)}23.552%{opacity:0;transform:translate(120px,0px)}100.0%{opacity:0}}.k2{animation-name:k2}
+@keyframes k3{0.0%{opacity:0}24.71%{opacity:0}25.869%{opacity:1}36.68%{opacity:1}37.838%{opacity:0}100.0%{opacity:0}}.k3{animation-name:k3}
+@keyframes k4{0.0%{opacity:0}37.838%{opacity:0}38.996%{opacity:1}96.911%{opacity:1}98.069%{opacity:0}100.0%{opacity:0}}.k4{animation-name:k4}
+@keyframes k5{0.0%{opacity:0}38.61%{opacity:0;transform:translate(0px,0px)}39.189%{opacity:1;transform:translate(0px,0px)}39.382%{opacity:1;transform:translate(0px,0px)}47.49%{opacity:1;transform:translate(120px,0px)}48.263%{opacity:0;transform:translate(120px,0px)}100.0%{opacity:0}}.k5{animation-name:k5}
+@keyframes k6{0.0%{opacity:0}50.193%{opacity:0}51.351%{opacity:1}96.911%{opacity:1}98.069%{opacity:0}100.0%{opacity:0}}.k6{animation-name:k6}
+@keyframes k7{0.0%{opacity:0}50.965%{opacity:0;transform:translate(0px,0px)}51.544%{opacity:1;transform:translate(0px,0px)}51.737%{opacity:1;transform:translate(0px,0px)}59.846%{opacity:1;transform:translate(130px,0px)}60.618%{opacity:0;transform:translate(130px,0px)}100.0%{opacity:0}}.k7{animation-name:k7}
+@keyframes k8{0.0%{opacity:0}62.548%{opacity:0}63.707%{opacity:1}96.911%{opacity:1}98.069%{opacity:0}100.0%{opacity:0}}.k8{animation-name:k8}
+@keyframes k9{0.0%{opacity:0}63.32%{opacity:0;transform:translate(0px,0px)}63.9%{opacity:1;transform:translate(0px,0px)}64.093%{opacity:1;transform:translate(0px,0px)}66.795%{opacity:1;transform:translate(0px,35px)}69.498%{opacity:1;transform:translate(-180px,35px)}72.201%{opacity:1;transform:translate(-180px,80px)}72.973%{opacity:0;transform:translate(-180px,80px)}100.0%{opacity:0}}.k9{animation-name:k9}
+@keyframes k10{0.0%{opacity:0}63.32%{opacity:0;transform:translate(0px,0px)}63.9%{opacity:1;transform:translate(0px,0px)}64.093%{opacity:1;transform:translate(0px,0px)}72.201%{opacity:1;transform:translate(0px,80px)}72.973%{opacity:0;transform:translate(0px,80px)}100.0%{opacity:0}}.k10{animation-name:k10}
+@keyframes k11{0.0%{opacity:0}74.903%{opacity:0}76.062%{opacity:1}96.911%{opacity:1}98.069%{opacity:0}100.0%{opacity:0}}.k11{animation-name:k11}
+@keyframes k12{0.0%{opacity:0}74.131%{opacity:0}75.29%{opacity:1}86.1%{opacity:1}87.259%{opacity:0}100.0%{opacity:0}}.k12{animation-name:k12}
+@keyframes k13{0.0%{opacity:0}12.355%{opacity:0}13.514%{opacity:1}24.324%{opacity:1}25.483%{opacity:0}100.0%{opacity:0}}.k13{animation-name:k13}
+@keyframes k14{0.0%{opacity:0}37.066%{opacity:0}38.224%{opacity:1}49.035%{opacity:1}50.193%{opacity:0}100.0%{opacity:0}}.k14{animation-name:k14}
+@keyframes k15{0.0%{opacity:0}49.421%{opacity:0}50.579%{opacity:1}61.39%{opacity:1}62.548%{opacity:0}100.0%{opacity:0}}.k15{animation-name:k15}
+@keyframes k16{0.0%{opacity:0}61.776%{opacity:0}62.934%{opacity:1}73.745%{opacity:1}74.903%{opacity:0}100.0%{opacity:0}}.k16{animation-name:k16}
+}
+</style>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--line)"/></marker><marker id="ar-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--acc)"/></marker><marker id="ar-warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--warn)"/></marker><marker id="ar-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--bad)"/></marker><marker id="ar-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--ok)"/></marker></defs>
+<rect class="bg" width="900" height="674"/>
+<text class="t h" x="24" y="34">Sweep through a relayer (animated)</text>
+<text class="t m s" x="24" y="54">Relayer path needs a token with ERC-2612 permit. Direct path (own gas) is not animated.</text>
+<rect id="browser" class="box acc" x="20" y="100" width="210" height="90" rx="8"/>
+<text class="t ta b" x="125.0" y="133.0">Your browser</text>
+<text class="t ta m s" x="125.0" y="150.0">stealth key in memory,</text>
+<text class="t ta m s" x="125.0" y="167.0">signs, no wallet prompt</text>
+<rect id="relayer" class="box warn" x="350" y="100" width="200" height="90" rx="8"/>
+<text class="t ta b" x="450.0" y="141.5">Relayer service</text>
+<text class="t ta m s" x="450.0" y="158.5">quote, simulate, submit</text>
+<rect id="contract" class="box ok" x="680" y="100" width="200" height="90" rx="8"/>
+<text class="t ta b" x="780.0" y="141.5">GhostPaySweepRelayer</text>
+<text class="t ta m s" x="780.0" y="158.5">checks your signature</text>
+<rect id="otp" class="box ok" x="20" y="270" width="210" height="70" rx="8"/>
+<text class="t ta b" x="125.0" y="301.5">One-time address</text>
+<text class="t ta m s" x="125.0" y="318.5">tokens, no gas</text>
+<rect id="feeto" class="box warn" x="440" y="270" width="190" height="60" rx="8"/>
+<text class="t ta b" x="535.0" y="296.5">Relayer fee-to</text>
+<text class="t ta m s" x="535.0" y="313.5">signed fee</text>
+<rect id="dest" class="box acc" x="680" y="270" width="200" height="60" rx="8"/>
+<text class="t ta b" x="780.0" y="296.5">Your destination</text>
+<text class="t ta m s" x="780.0" y="313.5">amount minus fee</text>
+<rect class="hlr a k0" x="675" y="265" width="210" height="70" rx="12"/>
+<path class="ln acc a k1" d="M230 120 L350 120" marker-end="url(#ar-acc)"/>
+<text class="t m s a k1" x="264" y="113">request quote</text>
+<g class="a k1"><circle class="bdg" cx="242" cy="104" r="11"/><text class="bdgt ta" x="242" y="108">2</text></g>
+<circle class="dot a k2" cx="230" cy="120" r="6"/>
+<rect class="hlr a k3" x="15" y="95" width="220" height="100" rx="12"/>
+<rect class="hlr a k3" x="15" y="265" width="220" height="80" rx="12"/>
+<path class="ln acc a k4" d="M230 165 L350 165" marker-end="url(#ar-acc)"/>
+<text class="t m s a k4" x="262" y="183">signed order</text>
+<g class="a k4"><circle class="bdg" cx="242" cy="151" r="11"/><text class="bdgt ta" x="242" y="155">4</text></g>
+<circle class="dot a k5" cx="230" cy="165" r="6"/>
+<path class="ln warn a k6" d="M550 145 L680 145" marker-end="url(#ar-warn)"/>
+<text class="t m s a k6" x="584" y="138">submit + gas</text>
+<g class="a k6"><circle class="bdg" cx="562" cy="130" r="11"/><text class="bdgt ta" x="562" y="134">5</text></g>
+<circle class="dot a k7" cx="550" cy="145" r="6"/>
+<path class="ln ok a k8" d="M715 190 L715 225 L535 225 L535 270" marker-end="url(#ar-ok)"/>
+<text class="t m s a k8" x="560" y="262">fee</text>
+<g class="a k8"><circle class="bdg" cx="731" cy="205" r="11"/><text class="bdgt ta" x="731" y="209">6</text></g>
+<circle class="dot a k9" cx="715" cy="190" r="6"/>
+<path class="ln ok a k8" d="M800 190 L800 270" marker-end="url(#ar-ok)"/>
+<text class="t m s a k8" x="808" y="240">rest</text>
+<g class="a k8"><circle class="bdg" cx="818" cy="210" r="11"/><text class="bdgt ta" x="818" y="214">6</text></g>
+<circle class="dot a k10" cx="800" cy="190" r="6"/>
+<g class="a k11"><rect class="box bad" x="20" y="365" width="860" height="52" rx="8"/><text class="t b" x="36" y="388">Public link: payer -> one-time address -> destination.</text><text class="t s" x="36" y="406">A destination you use elsewhere is now tied to this payment. Batching only blurs timing; no mixer exists.</text></g>
+<rect class="hlr a k12" x="675" y="265" width="210" height="70" rx="12"/>
+<text class="t s m" x="24" y="448">The relayer operator sees the one-time address, destination, token, amount, fee, timing and a hashed IP.</text>
+<text class="t b" x="24" y="470">Steps</text>
+<rect class="hlb a k0" x="16" y="480" width="868" height="24" rx="6"/>
+<circle class="bdg" cx="38" cy="492" r="10"/><text class="bdgt ta" x="38" y="496">1</text>
+<text class="t s" x="58" y="496">You choose a destination. Use a fresh address: the chain will link it to the payment.</text>
+<rect class="hlb a k13" x="16" y="506" width="868" height="24" rx="6"/>
+<circle class="bdg" cx="38" cy="518" r="10"/><text class="bdgt ta" x="38" y="522">2</text>
+<text class="t s" x="58" y="522">Browser asks the relayer for a quote: the fee is fixed and the quote expires.</text>
+<rect class="hlb a k3" x="16" y="532" width="868" height="24" rx="6"/>
+<circle class="bdg" cx="38" cy="544" r="10"/><text class="bdgt ta" x="38" y="548">3</text>
+<text class="t s" x="58" y="548">Browser derives the stealth key in memory and signs the sweep order and token permit. No wallet prompt.</text>
+<rect class="hlb a k14" x="16" y="558" width="868" height="24" rx="6"/>
+<circle class="bdg" cx="38" cy="570" r="10"/><text class="bdgt ta" x="38" y="574">4</text>
+<text class="t s" x="58" y="574">Browser sends the signed order to the relayer. It cannot change the destination or amount you signed.</text>
+<rect class="hlb a k15" x="16" y="584" width="868" height="24" rx="6"/>
+<circle class="bdg" cx="38" cy="596" r="10"/><text class="bdgt ta" x="38" y="600">5</text>
+<text class="t s" x="58" y="600">Relayer simulates, then submits the transaction and pays the gas.</text>
+<rect class="hlb a k16" x="16" y="610" width="868" height="24" rx="6"/>
+<circle class="bdg" cx="38" cy="622" r="10"/><text class="bdgt ta" x="38" y="626">6</text>
+<text class="t s" x="58" y="626">Sweep contract pays the signed fee to the relayer's address and the rest to your destination.</text>
+<rect class="hlb a k12" x="16" y="636" width="868" height="24" rx="6"/>
+<circle class="bdg" cx="38" cy="648" r="10"/><text class="bdgt ta" x="38" y="652">7</text>
+<text class="t s" x="58" y="652">On-chain, anyone can now see payer -&gt; one-time address -&gt; destination. Gasless is not unlinkable.</text>
+</svg>

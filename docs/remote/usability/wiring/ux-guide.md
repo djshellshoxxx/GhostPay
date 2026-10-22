@@ -1,0 +1,10 @@
+# Wiring plan: ux-guide in apps/web
+
+Files (proposed): `apps/web/src/features/onboarding/OnboardingFlow.tsx`, `useOnboarding.ts`, `ProfilePicker.tsx`, `SendChecklist.tsx`, `AddressReviewDialog.tsx`.
+
+State: `useOnboarding` holds `OnboardingState`, persists JSON to localStorage key `ghostpay.onboarding.v1` after each ok transition; on load `parseState(JSON.parse(...))`, `null` => `initialState(Date.now())`. Clock (`at`) and RNG (`pick = n => crypto.getRandomValues` rejection-sampled) are injected here only.
+Flow glue: on `wallet` step host generates/imports wallet via ux-vault/secret-box, stores secret there, then dispatches `WALLET_READY`. Backup step: show phrase from vault in memory only (`mayShowPhrase`), draw positions with `buildQuiz`, grade with `gradeQuiz(positions, answers, phraseFromVault)`, dispatch `QUIZ_SUBMITTED{correct}`; zero the phrase array after. Honor `resumeAction`. Clear screenshots hint via warning keys.
+Profile: render `TRADEOFFS` as table, questionnaire from `QUESTIONS`, `recommendProfile`, confirm with `diffSettings(current, settingsFor(p))`, write settings to the settings store.
+Send: build `SendCheckInput` from send form state, call `evaluateChecklist` on every change; disable Send while `!canSend`; list `blockers` (red) and `pendingWarnings` (checkbox ack adds id to `acknowledged`); open `AddressReviewDialog` when `reviewNeeded`.
+i18n keys: `guide.onboarding.{welcome,wallet,backup,profile,receive,done}.{title,body}`, `guide.onboarding.warn.{noRecovery,neverShare,noScreenshot}`, `guide.onboarding.*.cta`, `guide.profile.tradeoff.<row>.{label,everyday,private,maximum}`, `guide.profile.reason.<q>.<opt>`, `guide.profile.reason.cap.instant`, `guide.checklist.<ItemId>`, `guide.review.{compareEnds,compareMiddle,retypeChunk}`.
+E2E ideas: refresh mid-quiz resumes with new positions; tamper localStorage with extra key restarts; 3 wrong answers forces phrase review; pasted look-alike address blocks send until ack; paste with zero-width char blocked; maximum profile always requires review.

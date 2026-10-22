@@ -1,0 +1,12 @@
+# Echidna config for test/echidna/. Run from this directory, one harness at a time:
+#   FOUNDRY_SOLC=/path/to/solc0.8.28 echidna test/echidna/EchidnaRelay.sol --contract EchidnaRelay --config echidna.yaml --corpus-dir echidna-corpus-relay
+# (needs crytic-compile on PATH). `echidna_canary_*` properties are EXPECTED TO FAIL (they prove success paths are reached).
+testMode: property
+testLimit: 300000
+seqLen: 20
+shrinkLimit: 2000
+workers: 4
+seed: 20261021
+sender: ["0x10000", "0x20000", "0x30000"]
+deployer: "0x40000"
+balanceContract: 1000000000000000000000

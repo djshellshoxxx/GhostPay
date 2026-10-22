@@ -1,0 +1,35 @@
+# Example systemd unit for one monitor run (a oneshot started by ghostpay-ops-monitor.timer).
+# Contains no secrets: RPC URLs (with API keys) and the webhook URL live in a root-owned mode-600 EnvironmentFile.
+# Exit codes: 0 healthy, 1 warn finding, 2 page finding, 3 the monitor could not run. 1 and 2 are expected results,
+# so they are treated as success here; the alert path is the webhook / Prometheus file, not unit failure.
+[Unit]
+Description=GhostPay ops monitor (read-only chain and release probes)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ghostpay-ops
+Group=ghostpay-ops
+WorkingDirectory=/opt/ghostpay/packages/ops-monitor
+ExecStart=/usr/bin/node dist/bin.js --config /etc/ghostpay-ops/ops-monitor.config.json
+SuccessExitStatus=1 2
+EnvironmentFile=/etc/ghostpay-ops/ops.env
+StateDirectory=ghostpay-ops
+TimeoutStartSec=120
+
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6
+RestrictNamespaces=true
+LockPersonality=true
+SystemCallArchitectures=native
+CapabilityBoundingSet=
+UMask=0077
+ReadOnlyPaths=/etc/ghostpay-ops

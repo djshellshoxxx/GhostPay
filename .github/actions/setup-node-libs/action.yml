@@ -1,0 +1,22 @@
+name: Setup Node and built libs
+description: Node 22 with the npm cache, `npm ci`, and the workspace libs built (or restored from a cache keyed on every input of the build).
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version: "22"
+        cache: npm
+    - run: npm ci --ignore-scripts
+      shell: bash
+    # Workspace packages resolve each other through their built `dist`. Cache EVERY package's dist and key on every
+    # package's inputs: a hand-kept subset skipped build:libs on a hit and left e.g. address-safety, tx-review and
+    # btc-silent-payments unbuilt, so apps/web failed to typecheck (e2e webServer) depending on cache state.
+    - id: libs
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      with:
+        path: packages/*/dist
+        key: libs-${{ runner.os }}-node22-${{ hashFiles('package.json', 'package-lock.json', 'tsconfig.base.json', 'scripts/build-workspaces.mjs', 'packages/*/src/**', 'packages/*/scripts/**', 'packages/*/package.json', 'packages/*/tsconfig*.json') }}
+    - if: steps.libs.outputs.cache-hit != 'true'
+      run: npm run build:libs
+      shell: bash

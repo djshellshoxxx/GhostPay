@@ -1,0 +1,29 @@
+{
+  "chains": [
+    {
+      "chainId": 84532,
+      "rpcUrlEnvs": ["OPS_RPC_84532_A", "OPS_RPC_84532_B"],
+      "manifestFile": "/etc/ghostpay-ops/deployments/84532.json",
+      "tokens": ["0x036CbD53842c5426634e7929541eC2318f3dCF7e"]
+    }
+  ],
+  "release": {
+    "mirrors": ["https://pay.example.org"],
+    "sha256sumsFile": "/etc/ghostpay-ops/SHA256SUMS",
+    "files": ["index.html"]
+  },
+  "relayer": {
+    "chainId": 84532,
+    "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "balanceFloorWei": "10000000000000000",
+    "maxNonceGap": 3,
+    "dailyUnreimbursedCapWei": "50000000000000000"
+  },
+  "announcements": { "baselinePerBlock": 0.5, "windowBlocks": 300 },
+  "output": {
+    "prometheusFile": "/var/lib/ghostpay-ops/ghostpay_ops.prom",
+    "webhookUrlEnv": "OPS_WEBHOOK_URL",
+    "dedupeMinutes": 60,
+    "stateFile": "/var/lib/ghostpay-ops/alert-state.json"
+  }
+}

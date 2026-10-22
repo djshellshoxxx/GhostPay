@@ -1,0 +1,46 @@
+# Papers and Repos: Crypto Payment and Exchange Security
+
+Status: research pass, sandbox-limited. No source below was opened in full.
+- arxiv.org, eprint.iacr.org, www.usenix.org, ethereum-magicians.org, docs.btcpayserver.org, cylab.cmu.edu, coindesk.com: blocked (proxy 403 / DNS fail).
+- github.com repo paths (bitcoin/bips, btcpayserver, ethereum/ERCs): 403, repos not attached to session.
+- All rows below come from WebSearch snippets only. Verify before citing.
+- Status key: SNIPPET = seen in search result text, not opened. UNVERIFIED = named in prompt or memory, no result seen.
+
+## Table
+
+| Title | Venue/Year | URL | Takeaway (2 lines) | GhostPay action |
+|---|---|---|---|---|
+| Blockchain Address Poisoning (Tsuchiya, Christin) | USENIX Security 2025 | https://www.usenix.org/conference/usenixsecurity25/presentation/tsuchiya | SNIPPET (via CMU CyLab news). Reports ~270M poisoning attempts on ETH/BSC, >$83M losses on ETH (secondary figures). Prompt's title "An Empirical Analysis of Address Poisoning" not confirmed. | Warn on lookalike-address sends; block sends to addresses matching recent-history prefix/suffix; show full address diff at confirm. |
+| Beware the Middleman: Empirical Analysis of Bitcoin-Exchange Risk (Moore, Christin) | Financial Cryptography 2013 | https://tylermoore.ens.utulsa.edu/fc13pres.pdf (slides, not opened) | SNIPPET (news + slides summary). 40 exchanges studied, 18 defunct, 9 breached; median lifetime 381 days; higher volume means more breaches. | Treat counterparty/custody provider risk as first-class; cap exposure per provider; plan exit path. |
+| SoK: Design, Vulnerabilities, and Security Measures of Cryptocurrency Wallets (Erinle et al.) | arXiv 2307.12874 (later "Design, Vulnerabilities and Defense of Cryptocurrency Wallets") | https://arxiv.org/abs/2307.12874 | SNIPPET (bibliography only). Cites many real exchange hot-wallet breaches; useful incident list. | Use its incident list as test-case seed for wallet threat model. |
+| SoK: Cryptocurrency Wallets, Security Review and Classification by Authentication Factors | arXiv 2402.17659 | https://arxiv.org/abs/2402.17659 | SNIPPET (bibliography only). Classifies wallets by auth factor. | Map GhostPay auth factors to this taxonomy when hardening login/signing. |
+| A proposed cybersecurity model for cryptocurrency exchanges | U. Alberta repository, 2020 | https://era.library.ualberta.ca/items/9fab24c2-0007-4839-8c33-58a056d74052 | SNIPPET. Analyzes 2016-2019 exchange/wallet attacks; recommends RASP and HSMs plus NIST/OWASP-based IR plan. | Add RASP-style runtime checks and HSM-backed key custody to backlog. |
+| Blockchain stealth-address view-tag design (EIP-5564 / ERC-5564) | Ethereum ERC, last call 2024 | https://ercs.ethereum.org/ERCS/erc-5564 | SNIPPET (forum + search text). 1-byte view tag gives ~1/256 false-positive rate; publishing full shared secret enables rainbow-style recovery of stealth key. | Keep view tag at 1 byte only if scan cost is acceptable; never publish full shared secret; test false-positive rate in tron-adapter stealth tests. |
+| ERC-5564 discussion thread | Ethereum Magicians | https://ethereum-magicians.org/t/erc-5564-stealth-addresses/10614 | SNIPPET. Tag-keypair alternative cuts false positives at cost of extra multiply; scan cost debate. | Same as above; record tradeoff in ADR. |
+| BIP-352 (Silent Payments) formal analysis | IACR ePrint 2026/2037 (approved 2026-09-17) | https://eprint.iacr.org/2026/2037 | SNIPPET. Says BIP-352 spec has no formal proof; claims receiver/co-tx unlinkability under DDH; reports linking attack + fix, worst-case scan attack, hardware-wallet disclosure that could lock funds, 2026 omitted-payment bug. | If stealth scanning is used for BTC, treat scan key as sensitive; add tests for linking attack and omitted-payment case; do not derive scan key from identity keys. |
+| BIP-352 spec issue #2153 (bip352 output-findability) | bitcoin/bips issue | https://mirror.b10c.me/bitcoin-bips/2153/ | SNIPPET. Proposes senders not create outputs receiver cannot find; cap outputs at scan-allowed keys to avoid fund loss. Pending as of May 2026. | Add sender-side check: outputs must be scannable by recipient; cap outputs per payment. |
+| Remote side-channel deanonymization of Zcash/Monero payees (Stanford) | Stanford crypto group (venue not confirmed) | https://crypto.stanford.edu/timings | SNIPPET. Remote attacker can link diversified addresses and recover payee IP; Monero patched via HackerOne. | Do not expose wallet-to-node linkage; route RPC via privacy-preserving proxy; avoid reusing one node for all users. |
+| An Empirical Analysis of Monero Cross-Chain Traceability | arXiv 1812.02808 (2018) | https://arxiv.org/pdf/1812.02808 | SNIPPET. Heuristics barely beat random on recent Monero txs (data to 2018); old result. | Background only. |
+| The Rise of Monero: Traceability, Challenges, Research Review (TRM Labs) | TRM blog | https://www.trmlabs.com/resources/blog/the-rise-of-monero-traceability-challenges-and-research-review | SNIPPET title only. Vendor review of Monero tracing research. | Vendor view, not peer-reviewed. Low priority. |
+| Network timing deanonymization of tx origin (Dash, Monero) | EuroS&P 2019 | UNVERIFIED (no URL opened) | Prompt/snippet claim only: timing of tx relay leaks origin to well-connected adversary. | Broadcast txs via Tor or mixed relay; add random relay delay. |
+| Deanonymization of Monero over Tor (ProxyMark) | arXiv 2607.07062 (Jul 2026) | https://arxiv.org/abs/2607.07062 | SNIPPET title only. Three-stage Tor-network deanonymization of Monero nodes. | Do not route wallet traffic via Tor to a single node without a threat review. |
+| CCSS v9.0 CryptoCurrency Security Standard | CryptoCurrency Certification Consortium (C4) | https://cryptoconsortium.org/cryptocurrency-security-standard-documentation/overview/ | SNIPPET. 47 control objectives across 10 aspects; 3 certification levels; applies beyond exchanges. | Use as checklist for key storage, key use, audits; map to controls file. |
+| CCSS control mappings | opensecurityarchitecture.org (third party) | https://opensecurityarchitecture.org/frameworks/ccss-v9/controls | SNIPPET. Third-party NIST SP 800-53 mapping; uneven coverage for crypto key ceremonies. | Use mapping as starting point; verify against C4 original. |
+| NIST IR 7765 (cited in prompt) | NIST | UNVERIFIED | Not found in search. Not confirmed to exist or to cover this topic. | Do not cite until checked on csrc.nist.gov. |
+| TSSHOCK: Breaking MPC Wallets | Black Hat USA 2023 (Verichains) | https://i.blackhat.com/BH-US-23/Presentations/US-23-Nguyen-TSSHOCK-Breaking-MPC-Wallets-wp.pdf | SNIPPET. Nearly all threshold-ECDSA TSS libs (GG18, GG20, CGGMP21) vulnerable to key extraction depending on impl bugs. | If MPC/TSS used, require ZK proofs for all rounds, pin audited library versions, add key-extraction regression tests. |
+| BitGo "Zero Proof" TSS flaw | Fireblocks blog | https://www.fireblocks.com/blog/bitgo-wallet-zero-proof-vulnerability | SNIPPET. Missing ZK proofs let counterparty extract secret share. | Same as TSSHOCK: ZK proof checks are mandatory. |
+| Key extraction attacks on MPC (Makriyannis, Yomtov, Galansky) | IACR ePrint (2023 ID, dated Jan 2024) | https://eprint.iacr.org/2023/1234.pdf | SNIPPET. Single corrupted party can extract full secret in MPC signing. | Threat-model MPC as single-party-compromise risk; require proactive refresh. |
+| BTCPay Server docs: hot wallet, watch-only, hardware wallet | BTCPay docs | https://docs.btcpayserver.org/Wallet | SNIPPET. Hot wallet seed wiped unless enabled; server signing is a risk; watch-only keeps funds safe if server breached; PSBT with hardware wallet recommended. | Default to watch-only xpub; keep signing keys off the app server; PSBT flow for signing. |
+| BTCPay Server critical vuln under active attack (Aug 2026) | Secondary news (KuCoin, OneKey, others) | https://onekey.so/blog/ecosystem/btcpay-server-critical-vulnerability-under-active-attack-upgrade-now-and-rotate-credentials-20260808112720/ | SNIPPET only, not BTCPay's own notice. Upgrade to 2.4.2; rotate macaroons; rebuild hot wallets. | Verify against BTCPay GitHub release notes. Add dependency-version and credential-rotation runbook. |
+| Coinbase Commerce / BitPay architecture writeups | Vendor docs | UNVERIFIED | Not searched in this pass. | Pending. |
+| Chainalysis / TRM heuristics that deanonymize stealth flows | Vendor blogs | UNVERIFIED | Not searched; no source opened. | Pending. Treat any claim as vendor opinion until a paper is found. |
+| Cryptocurrency payment processor papers repo | GitHub | UNVERIFIED | No GitHub repo could be opened (403). | Pending. |
+
+## Gaps and next steps
+1. Add the sandbox hosts to the allowlist or attach github repos (bitcoin/bips, btcpayserver/btcpayserver, ethereum/ERCs) via add_repo, then re-run fetches.
+2. Confirm the USENIX 2025 title and read the full paper (prompt title may be wrong).
+3. Confirm NIST IR 7765 exists before citing.
+4. Read ePrint 2026/2037 and BIP-352 #2153 in full before changing scan logic.
+
+## Blocked hosts seen this run
+arxiv.org, eprint.iacr.org, www.usenix.org, ethereum-magicians.org, eips.ethereum.org, docs.btcpayserver.org, cylab.cmu.edu, coindesk.com, getmonero.org, github.com (repo paths 403, repos not attached).

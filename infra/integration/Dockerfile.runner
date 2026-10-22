@@ -1,0 +1,38 @@
+# GhostPay integration "runner": Node 22 + Foundry (forge/cast/anvil) and nothing else. Used by
+#   - infra/integration/docker-compose.yml (service `runner`), and
+#   - .devcontainer/devcontainer.json (Codespaces), so both run the same toolchain.
+# Rust and the Solana CLI are deliberately NOT here: the validator runs in its own container.
+#
+# Base: official Docker library image node:22.23.4-bookworm-slim, pinned by tag AND multi-arch index digest
+#   (digest read from the Docker Hub API on 2026-10-21; re-read it before bumping the tag).
+FROM node:22.23.4-bookworm-slim@sha256:de170b39439eb0e5a3444ad7d60b015614a381e10fecae2e30ec9e735122f38d
+
+# Foundry v1.8.5 = the version pinned in .github/actions/setup-forge. The release tarball's SHA-256 below was
+# computed by downloading it over TLS from github.com/foundry-rs/foundry/releases (trust on first use): compare it
+# with the release page / attestation before you rely on it, and re-compute when you bump FOUNDRY_VERSION.
+ARG FOUNDRY_VERSION=v1.8.5
+ARG FOUNDRY_SHA256=6c66ffcc55fa4249197721baa3098bc208014ea1d8aa04b2ed50ac6bccffb226
+
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends bash ca-certificates curl git jq openssl procps; \
+    rm -rf /var/lib/apt/lists/*; \
+    curl -fsSL --retry 3 -o /tmp/foundry.tgz \
+      "https://github.com/foundry-rs/foundry/releases/download/${FOUNDRY_VERSION}/foundry_${FOUNDRY_VERSION}_linux_amd64.tar.gz"; \
+    echo "${FOUNDRY_SHA256}  /tmp/foundry.tgz" | sha256sum -c -; \
+    tar -xzf /tmp/foundry.tgz -C /usr/local/bin forge cast anvil; \
+    rm /tmp/foundry.tgz; \
+    forge --version; anvil --version; node --version
+
+# Unprivileged user. The base image's `node` user is uid/gid 1000; compose passes the invoking host user's ids
+# (GitHub's checkout is owned by 1001) so files the runner writes into the bind-mounted checkout stay yours and the
+# uid has a passwd entry (git and some npm paths look it up). `-o` tolerates an id that already exists in the base.
+ARG RUNNER_UID=1000
+ARG RUNNER_GID=1000
+RUN set -eux; \
+    if [ "${RUNNER_GID}" != "1000" ]; then groupmod -o -g "${RUNNER_GID}" node; fi; \
+    if [ "${RUNNER_UID}" != "1000" ]; then usermod -o -u "${RUNNER_UID}" -g "${RUNNER_GID}" node; fi; \
+    mkdir -p /home/runner /work; chown "${RUNNER_UID}:${RUNNER_GID}" /home/runner /work
+# amd64 only (the Foundry tarball above is amd64).
+USER node
+WORKDIR /work

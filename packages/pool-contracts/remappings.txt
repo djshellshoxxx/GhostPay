@@ -1,0 +1,5 @@
+@openzeppelin/contracts/=../contracts/lib/openzeppelin-contracts/contracts/
+forge-std/=../contracts/lib/forge-std/src/
+poseidon-solidity/=lib/poseidon-solidity/
+lean-imt/=lib/lean-imt/
+pool-circuits-verifiers/=../pool-circuits/verifiers/

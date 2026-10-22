@@ -1,0 +1,45 @@
+{
+  "name": "@ghostpay/external-pools-privacypools",
+  "version": "0.1.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "description": "Privacy Pools (0xbow) adapter for @ghostpay/external-pools (testnet only).",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "npm run build -w @ghostpay/external-pools --if-present && tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --coverage",
+    "lint": "eslint --config ../../eslint.config.js src"
+  },
+  "dependencies": {
+    "@0xbow/privacy-pools-core-sdk": "1.5.0",
+    "@ghostpay/external-pools": "0.1.0",
+    "@noble/hashes": "2.4.0",
+    "@scure/bip39": "1.6.0",
+    "@zk-kit/poseidon-cipher": "0.3.2",
+    "viem": "2.57.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "22.20.5",
+    "@vitest/coverage-v8": "5.0.5",
+    "eslint": "10.13.0",
+    "fast-check": "4.10.2",
+    "prettier": "3.9.10",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.72.0",
+    "vitest": "5.0.5"
+  }
+}

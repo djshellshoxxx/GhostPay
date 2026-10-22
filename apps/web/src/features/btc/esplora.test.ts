@@ -1,0 +1,228 @@
+import { SilentPaymentError } from '@ghostpay/btc-silent-payments';
+import { describe, expect, it } from 'vitest';
+import { EsploraClient, EsploraTweakSource, normalizeEsploraUrl } from './esplora';
+import { mockChain, walletA, SEED_B } from './fixtures.testutil';
+import { BTC_NETWORKS, btcNetwork, MAINNET_GENESIS } from './network';
+import { MAX_SCAN_BLOCKS, scanForPayments } from './scan';
+import { walletFromSeedHex } from './wallet';
+
+const BASE = 'https://esplora.test/api';
+
+function codeOf(p: Promise<unknown>): Promise<string> {
+  return p.then(
+    () => 'none',
+    (e: unknown) => (e instanceof SilentPaymentError ? e.code : 'other'),
+  );
+}
+
+describe('normalizeEsploraUrl', () => {
+  it('accepts https and loopback http, trims trailing slashes', () => {
+    expect(normalizeEsploraUrl(' https://a.example/api/ ')).toBe('https://a.example/api');
+    expect(normalizeEsploraUrl('http://127.0.0.1:3002')).toBe('http://127.0.0.1:3002');
+    expect(normalizeEsploraUrl('http://localhost:3002/')).toBe('http://localhost:3002');
+  });
+  it('refuses plain http to remote hosts, credentials, query, fragment, junk', () => {
+    for (const bad of ['http://a.example/api', 'https://u:p@a.example', 'https://a.example/?k=1', 'https://a.example/#x', 'ftp://a', 'nope', '']) {
+      expect(() => normalizeEsploraUrl(bad)).toThrow(SilentPaymentError);
+    }
+  });
+});
+
+describe('network table', () => {
+  it('has mainnet disabled and every test network enabled', () => {
+    expect(btcNetwork('mainnet').enabled).toBe(false);
+    expect(BTC_NETWORKS.filter((n) => n.enabled).map((n) => n.id)).toEqual(['testnet4', 'signet', 'regtest']);
+    expect(() => walletFromSeedHex('11'.repeat(32), btcNetwork('mainnet'))).toThrow(/disabled/);
+  });
+  it('rejects a bad seed', () => {
+    expect(() => walletFromSeedHex('zz', btcNetwork('regtest'))).toThrow(/64 hexadecimal/);
+  });
+});
+
+describe('EsploraClient', () => {
+  const mk = (netId: 'regtest' | 'signet' = 'regtest') => {
+    const chain = mockChain(netId, walletA(netId));
+    return { chain, client: new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn }) };
+  };
+
+  it('reads tip, hashes, pages and spent state', async () => {
+    const { chain, client } = mk();
+    expect(await client.tipHeight()).toBe(4);
+    expect(await client.blockHash(0)).toBe(btcNetwork('regtest').genesisHash);
+    const hash2 = await client.blockHash(2);
+    const txs = await client.blockTxs(hash2);
+    expect(txs).toHaveLength(30);
+    expect(txs[0]?.inputs).toBeNull();
+    expect(chain.requests.filter((r) => r.includes('/txs/'))).toEqual([`GET /block/${hash2}/txs/0`, `GET /block/${hash2}/txs/25`]);
+    const pay = (await client.blockTxs(await client.blockHash(3)))[2];
+    expect(pay?.outputs[1]?.valueSats).toBe(50_000n);
+    expect(await client.isUnspent(pay?.txid ?? '', 1)).toBe(true);
+    chain.spent.add(`${pay?.txid ?? ''}:1`);
+    expect(await client.isUnspent(pay?.txid ?? '', 1)).toBe(false);
+    expect(await client.feeRate(1)).toBe(3.5);
+    expect(await client.feeRate(25)).toBeUndefined();
+  });
+
+  it('broadcasts raw hex and validates the txid answer', async () => {
+    const { chain, client } = mk();
+    expect(await client.broadcast('0200ff')).toMatch(/^[0-9a-f]{64}$/);
+    expect(chain.broadcasts).toEqual(['0200ff']);
+    expect(await codeOf(client.broadcast('xyz'))).toBe('INVALID_INPUT');
+    const odd = new EsploraClient({ baseUrl: BASE, fetchFn: () => Promise.resolve(new Response('not a txid')) });
+    expect(await codeOf(odd.broadcast('00'))).toBe('INVALID_RESPONSE');
+  });
+
+  it('fails closed on transport errors, aborts and malformed data', async () => {
+    const { chain, client } = mk();
+    chain.failPath = '/blocks/tip/height';
+    expect(await codeOf(client.tipHeight())).toBe('TRANSPORT_FAILURE');
+    const down = new EsploraClient({ baseUrl: BASE, fetchFn: () => Promise.reject(new Error('offline')) });
+    expect(await codeOf(down.tipHeight())).toBe('TRANSPORT_FAILURE');
+    const ac = new AbortController();
+    ac.abort();
+    expect(await codeOf(down.tipHeight(ac.signal))).toBe('ABORTED');
+    expect(await codeOf(client.blockHash(-1))).toBe('INVALID_INPUT');
+    expect(await codeOf(client.blockTxs('abc'))).toBe('INVALID_INPUT');
+    expect(await codeOf(client.isUnspent('zz', 0))).toBe('INVALID_INPUT');
+
+    const respond = (body: string) => new EsploraClient({ baseUrl: BASE, fetchFn: () => Promise.resolve(new Response(body)) });
+    expect(await codeOf(respond('12x').tipHeight())).toBe('INVALID_RESPONSE');
+    expect(await codeOf(respond('nothex').blockHash(1))).toBe('INVALID_RESPONSE');
+    expect(await codeOf(respond('{not json').isUnspent('a'.repeat(64), 0))).toBe('INVALID_RESPONSE');
+    expect(await codeOf(respond('{"spent":"no"}').isUnspent('a'.repeat(64), 0))).toBe('INVALID_RESPONSE');
+    expect(await codeOf(respond('[1]').feeRate(1))).toBe('INVALID_RESPONSE');
+    expect(await codeOf(respond('{"1":"x"}').feeRate(1).then((v) => (v === undefined ? Promise.reject(new SilentPaymentError('INVALID_RESPONSE')) : v)))).toBe('INVALID_RESPONSE');
+    expect(await codeOf(respond('{}').blockTxs('a'.repeat(64)))).toBe('INVALID_RESPONSE');
+  });
+
+  it('rejects malformed transactions', async () => {
+    const h = 'a'.repeat(64);
+    const bad: unknown[] = [
+      [1],
+      [{ txid: 'zz', vin: [], vout: [] }],
+      [{ txid: h, vin: 'x', vout: [] }],
+      [{ txid: h, vin: [], vout: [1] }],
+      [{ txid: h, vin: [], vout: [{ scriptpubkey: 'zz', value: 1 }] }],
+      [{ txid: h, vin: [], vout: [{ scriptpubkey: '51', value: -1 }] }],
+      [{ txid: h, vin: [1], vout: [] }],
+      [{ txid: h, vin: [{ txid: h, vout: 0, prevout: null, scriptsig: '', witness: [], is_coinbase: false }], vout: [] }],
+      [{ txid: h, vin: [{ txid: h, vout: 0, prevout: { scriptpubkey: '00' }, scriptsig: '', witness: 'x', is_coinbase: false }], vout: [] }],
+    ];
+    for (const b of bad) {
+      const c = new EsploraClient({ baseUrl: BASE, fetchFn: () => Promise.resolve(new Response(JSON.stringify(b))) });
+      expect(await codeOf(c.blockTxs(h))).toBe('INVALID_RESPONSE');
+    }
+    const tooMany = new EsploraClient({ baseUrl: BASE, fetchFn: () => Promise.resolve(new Response(JSON.stringify(Array.from({ length: 26 }, () => 0)))) });
+    expect(await codeOf(tooMany.blockTxs(h))).toBe('INVALID_RESPONSE');
+  });
+
+  it('encodes witnesses of any size (compact size boundaries)', async () => {
+    const h = 'a'.repeat(64);
+    const big = 'ab'.repeat(300);
+    const tx = {
+      txid: h,
+      vin: [
+        { txid: h, vout: 0, prevout: { scriptpubkey: `0014${'6'.repeat(40)}` }, scriptsig: '', witness: [big, '', ...Array.from({ length: 300 }, () => '01')], is_coinbase: false },
+        { txid: h, vout: 1, prevout: { scriptpubkey: '00' }, scriptsig: '', witness: null, is_coinbase: false },
+      ],
+      vout: [],
+    };
+    const c = new EsploraClient({ baseUrl: BASE, fetchFn: () => Promise.resolve(new Response(JSON.stringify([tx]))) });
+    const [t] = await c.blockTxs(h);
+    expect(t?.inputs?.[0]?.witness).toHaveLength(302);
+    expect(t?.inputs?.[0]?.witness[0]).toHaveLength(300);
+    expect(t?.inputs?.[1]?.witness).toHaveLength(0);
+  });
+
+  it('checks the genesis hash and always refuses mainnet', async () => {
+    const { client } = mk('regtest');
+    await expect(client.checkNetwork(btcNetwork('regtest'))).resolves.toBeUndefined();
+    expect(await codeOf(client.checkNetwork(btcNetwork('signet')))).toBe('NETWORK_MISMATCH');
+    const main = new EsploraClient({ baseUrl: BASE, fetchFn: () => Promise.resolve(new Response(MAINNET_GENESIS)) });
+    expect(await codeOf(main.checkNetwork(btcNetwork('mainnet')))).toBe('NETWORK_MISMATCH');
+  });
+});
+
+describe('EsploraTweakSource and scanning', () => {
+  it('derives tweaks locally, skips coinbase, and caches per block', async () => {
+    const chain = mockChain('regtest', walletA());
+    const src = new EsploraTweakSource(new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn }));
+    expect(await src.getTipHeight()).toBe(4);
+    const [tw, outs] = await Promise.all([src.getTweaks(3), src.getOutputs(3)]);
+    expect(tw.tweaks).toHaveLength(2);
+    expect(outs.outputs).toHaveLength(1);
+    expect(tw.blockHash).toBe(outs.blockHash);
+    expect(outs.outputs[0]?.amountSats).toBe(50_000n);
+    expect(chain.requests.filter((r) => r.includes('/block-height/3'))).toHaveLength(1);
+    expect((await src.getTweaks(4)).tweaks).toHaveLength(0);
+  });
+
+  it('retries a block after a failed fetch and bounds its cache', async () => {
+    const chain = mockChain('regtest', walletA());
+    const src = new EsploraTweakSource(new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn }));
+    chain.failPath = '/block-height/1';
+    await expect(src.getTweaks(1)).rejects.toThrow();
+    chain.failPath = undefined;
+    expect((await src.getTweaks(1)).tweaks).toHaveLength(1);
+    for (const h of [0, 2, 3, 4]) await src.getTweaks(h);
+    await src.getTweaks(1);
+    expect(chain.requests.filter((r) => r.includes('/block-height/1'))).toHaveLength(3);
+  });
+
+  it('skips transactions whose inputs cannot yield a tweak', async () => {
+    const w = walletA();
+    const chain = mockChain('regtest', w);
+    const blk = chain.blocks[1];
+    if (blk === undefined) throw new Error('fixture');
+    blk.txs.push({
+      txid: 'e'.repeat(64),
+      vin: [{ txid: 'f'.repeat(64), vout: 0, prevout: { scriptpubkey: `0014${'6'.repeat(40)}` }, scriptsig: '', witness: ['00', '02'.repeat(5)], is_coinbase: false }],
+      vout: [{ scriptpubkey: `5120${'ab'.repeat(32)}`, value: 5 }],
+    });
+    const src = new EsploraTweakSource(new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn }));
+    expect((await src.getTweaks(1)).tweaks).toHaveLength(1);
+    expect((await src.getOutputs(1)).outputs).toHaveLength(0);
+  });
+
+  it('finds the payment, reports spent outputs, and finds nothing for another wallet', async () => {
+    const w = walletA();
+    const chain = mockChain('regtest', w);
+    const client = new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn });
+    const seen: number[] = [];
+    const res = await scanForPayments({ client, wallet: w, fromHeight: 1, onBlock: (h) => seen.push(h) });
+    expect(res.toHeight).toBe(4);
+    expect(res.found).toHaveLength(1);
+    expect(res.found[0]).toMatchObject({ vout: 1, amountSats: 50_000n, height: 3, label: null });
+    expect(seen).toEqual([3]);
+    // The server only ever saw heights, hashes, outpoints (no key material).
+    for (const r of chain.requests) expect(r).toMatch(/^GET \/(blocks\/tip\/height|block-height\/\d+|block\/[0-9a-f]{64}\/txs\/\d+|tx\/[0-9a-f]{64}\/outspend\/\d+)$/);
+
+    chain.spent.add(`${res.found[0]?.txid ?? ''}:1`);
+    const again = await scanForPayments({ client, wallet: w, fromHeight: 3, toHeight: 3 });
+    expect(again.found).toHaveLength(0);
+    expect(again.spentCount).toBe(1);
+
+    const other = walletFromSeedHex(SEED_B, btcNetwork('regtest'));
+    expect((await scanForPayments({ client, wallet: other, fromHeight: 0 })).found).toHaveLength(0);
+  });
+
+  it('validates the range', async () => {
+    const w = walletA();
+    const chain = mockChain('regtest', w);
+    const client = new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn });
+    expect(await codeOf(scanForPayments({ client, wallet: w, fromHeight: -1 }))).toBe('INVALID_INPUT');
+    expect((await scanForPayments({ client, wallet: w, fromHeight: 99 })).found).toEqual([]);
+    chain.blocks.length = 1;
+    const many = { ...client, tipHeight: () => Promise.resolve(MAX_SCAN_BLOCKS + 10) } as unknown as EsploraClient;
+    expect(await codeOf(scanForPayments({ client: many, wallet: w, fromHeight: 0 }))).toBe('INVALID_INPUT');
+  });
+
+  it('stops quietly when aborted', async () => {
+    const w = walletA();
+    const chain = mockChain('regtest', w);
+    const client = new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn });
+    const ac = new AbortController();
+    ac.abort();
+    expect((await scanForPayments({ client, wallet: w, fromHeight: 0, signal: ac.signal }).catch(() => ({ found: [] }))).found).toHaveLength(0);
+  });
+});

@@ -1,5 +1,7 @@
 # GhostPay: Master Blueprint
 
+> **Update 2026-10-21:** Superseded where it conflicts with [SPEC_REVIEW.md](SPEC_REVIEW.md), [CONTRACTS_SPEC.md](CONTRACTS_SPEC.md) and [FEE_SCHEDULE.md](FEE_SCHEDULE.md) (no on-chain `invoiceId`, exact signatures, fee model, owner-wallet handling).
+
 > **Project status:** Concept and architecture baseline. No production protocol or security guarantees are implemented yet.
 >
 > GhostPay explores private invoice creation and stealth-address settlement on EVM chains. “Zero-server,” “zero-knowledge,” and “unlinkable” are design goals that must be evaluated per component; they are not automatic properties of EIP-5564, EIP-6538, ERC-4337, or static hosting.
@@ -231,6 +233,8 @@ An initial fee model must specify:
 ├── test-vectors/
 └── audits/
 ```
+
+> **Annotation 2026-10-21 (stale structure).** The tree above was the initial plan and is not the current layout. Actual top level: `packages/{core-crypto,invoice-schema,chain-adapters,btc-silent-payments,contracts}`, `apps/{web,relayer}`, `deployments/`, `test-vectors/`, `scripts/`, `docs/` (including `docs/audits/`, `docs/user/`, `docs/operators/`, `docs/reviews/`). There is no `packages/stealth-crypto` (it became `core-crypto`), no root `contracts/` (it is `packages/contracts`), and no root `audits/` directory (self-run reviews are in `docs/audits/`; **no independent external audit exists**). See the README package map.
 
 Start with this blueprint and decision records. The crypto package, contracts, and UI should be implemented only after their interfaces and test vectors are specified.
 

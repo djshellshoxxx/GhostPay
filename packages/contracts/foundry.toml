@@ -1,0 +1,42 @@
+[profile.default]
+src = "src"
+test = "test"
+script = "script"
+out = "out"
+libs = ["lib"]
+# Portable: CI and developer machines download this compiler. Offline sandbox without the download host: put a
+# local 0.8.28 binary where svm looks, once, and nothing in this file needs editing:
+#   mkdir -p ~/.svm/0.8.28 && cp /path/to/solc-0.8.28 ~/.svm/0.8.28/solc-0.8.28
+# (or set FOUNDRY_SOLC=/path/to/solc-0.8.28). See README "Compiler".
+solc_version = "0.8.28"
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 200
+bytecode_hash = "none"
+cbor_metadata = false
+ffi = false
+fs_permissions = []
+
+[fuzz]
+runs = 10000
+
+[invariant]
+runs = 256
+depth = 50
+fail_on_revert = false
+
+[profile.dev.fuzz]
+runs = 256
+
+[profile.dev.invariant]
+runs = 64
+depth = 50
+
+[fmt]
+line_length = 100
+tab_width = 4
+bracket_spacing = false
+int_types = "long"
+multiline_func_header = "attributes_first"
+quote_style = "double"
+number_underscore = "thousands"

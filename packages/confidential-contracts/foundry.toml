@@ -1,0 +1,13 @@
+# Formatter config only (`forge fmt --check contracts`). The build and tests use Hardhat
+# (see DEVIATIONS.md item 1); this file is not used for compilation.
+[profile.default]
+src = "contracts"
+
+[fmt]
+line_length = 100
+tab_width = 4
+bracket_spacing = false
+int_types = "long"
+multiline_func_header = "attributes_first"
+quote_style = "double"
+number_underscore = "thousands"
