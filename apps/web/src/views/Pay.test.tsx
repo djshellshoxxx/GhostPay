@@ -7,7 +7,7 @@ import { buildInvoiceLink } from '../lib/invoiceCreate';
 import { clearSession, generateSession } from '../lib/session';
 import { SETTINGS_KEY } from '../lib/settings';
 import type { WalletInfo } from '../lib/wallet';
-import { FAKE_FEE_RECIPIENT, FAKE_ROUTER, fakeManifest } from '../test/fakeManifest';
+import { FAKE_FEE_RECIPIENT, FAKE_ROUTER } from '../test/fakeManifest';
 import { BASE_FORM, NOW, makeParsed } from '../test/invoiceFixtures';
 import { backedManifest, withManifestChain } from '../test/manifestChain';
 import { MockWallet } from '../test/mockWallet';

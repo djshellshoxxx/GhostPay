@@ -5,11 +5,12 @@ import { FAKE_ANNOUNCER, FAKE_ROUTER, fakeManifest } from '../test/fakeManifest'
 import { InlineWorker } from '../test/inlineWorker';
 import { makeLog } from '../test/announcements';
 import { mockRpc } from '../test/mockRpc';
-import { localCheckpointStore, runScan, type CheckpointStore, type ScanProgress } from './scanClient';
+import { checkpointKeyId, localCheckpointStore, runScan, type CheckpointStore, type ScanProgress } from './scanClient';
 
 const chain = CHAINS.find((c) => c.chainId === 84532)!;
 const hexOf = (b: Uint8Array): string => Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
 const manifest = fakeManifest(84532);
+const KEY = checkpointKeyId('02aa', '03bb');
 const blockHash = (n: number): string => `0x${n.toString(16).padStart(64, '0')}`;
 
 function chainWith(head: number, logs: RpcLog[]) {
@@ -43,7 +44,7 @@ describe('runScan', () => {
     const worker = new InlineWorker();
     const progress: ScanProgress[] = [];
     const cp = new Map<number, unknown>();
-    const checkpoints: CheckpointStore = { load: () => undefined, save: (id, c) => cp.set(id, c), clear: () => undefined };
+    const checkpoints: CheckpointStore = { load: () => undefined, save: (id, _k, c) => cp.set(id, c), clear: () => undefined };
     const viewingKey = unsafeRevealSecret(s.keys.viewingSecret);
     const found: string[] = [];
     const res = await runScan({
@@ -51,7 +52,7 @@ describe('runScan', () => {
       manifest,
       client: chainWith(2500, s.logs),
       cursor: { nextBlock: 0n },
-      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey),
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY,
       viewingKey,
       createWorker: () => worker,
       signal: new AbortController().signal,
@@ -86,7 +87,7 @@ describe('runScan', () => {
       manifest,
       client: chainWith(500_000, s.logs),
       cursor: { nextBlock: 0n },
-      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey),
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY,
       viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
       createWorker: () => worker,
       signal: ctl.signal,
@@ -106,7 +107,7 @@ describe('runScan', () => {
       manifest,
       client,
       cursor: { nextBlock: 0n },
-      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey),
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY,
       viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
       createWorker: () => new InlineWorker(),
       signal: new AbortController().signal,
@@ -120,7 +121,7 @@ describe('runScan', () => {
   it('respects maxPages', async () => {
     const s = setup();
     const progress: ScanProgress[] = [];
-    await runScan({ chain, manifest, client: chainWith(120_000, s.logs), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => new InlineWorker(), signal: new AbortController().signal, onProgress: (p) => progress.push(p), maxPages: 1 });
+    await runScan({ chain, manifest, client: chainWith(120_000, s.logs), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => new InlineWorker(), signal: new AbortController().signal, onProgress: (p) => progress.push(p), maxPages: 1 });
     expect(progress).toHaveLength(1);
   });
 
@@ -134,7 +135,7 @@ describe('runScan', () => {
       queueMicrotask(() => crashing.onerror?.(new Error('boom')));
     };
     await expect(
-      runScan({ chain, manifest, client: chainWith(10, []), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => crashing, signal: new AbortController().signal }),
+      runScan({ chain, manifest, client: chainWith(10, []), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => crashing, signal: new AbortController().signal }),
     ).rejects.toThrow(/worker failed/);
   });
 
@@ -144,7 +145,7 @@ describe('runScan', () => {
     const bad = mockRpc(84532, () => {
       throw new Error('rpc down');
     });
-    await expect(runScan({ chain, manifest, client: bad, cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => worker, signal: new AbortController().signal })).rejects.toThrow();
+    await expect(runScan({ chain, manifest, client: bad, cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => worker, signal: new AbortController().signal })).rejects.toThrow();
     expect(worker.terminated).toBe(true);
   });
 });
@@ -154,7 +155,7 @@ describe('runScan robustness (S3-15)', () => {
     const s = setup();
     const viewingKey = unsafeRevealSecret(s.keys.viewingSecret);
     await expect(
-      runScan({ chain, manifest, client: chainWith(10, []), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), viewingKey, createWorker: () => { throw new Error('no worker'); }, signal: new AbortController().signal }),
+      runScan({ chain, manifest, client: chainWith(10, []), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey, createWorker: () => { throw new Error('no worker'); }, signal: new AbortController().signal }),
     ).rejects.toThrow(/no worker/);
     expect(viewingKey.every((b) => b === 0)).toBe(true);
   });
@@ -165,7 +166,7 @@ describe('runScan robustness (S3-15)', () => {
     hung.postMessage = (): void => undefined;
     const viewingKey = unsafeRevealSecret(s.keys.viewingSecret);
     await expect(
-      runScan({ chain, manifest, client: chainWith(10, []), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), viewingKey, createWorker: () => hung, signal: new AbortController().signal, replyTimeoutMs: 20 }),
+      runScan({ chain, manifest, client: chainWith(10, []), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey, createWorker: () => hung, signal: new AbortController().signal, replyTimeoutMs: 20 }),
     ).rejects.toThrow(/did not answer in time/);
     expect(hung.terminated).toBe(true);
     expect(viewingKey.every((b) => b === 0)).toBe(true);
@@ -177,16 +178,86 @@ describe('runScan robustness (S3-15)', () => {
     hung.postMessage = (): void => undefined;
     const ctl = new AbortController();
     setTimeout(() => ctl.abort(), 20);
-    const res = await runScan({ chain, manifest, client: chainWith(10, []), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => hung, signal: ctl.signal, replyTimeoutMs: 60_000 });
+    const res = await runScan({ chain, manifest, client: chainWith(10, []), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => hung, signal: ctl.signal, replyTimeoutMs: 60_000 });
     expect(res.matches).toEqual([]);
     expect(hung.terminated).toBe(true);
   });
 
   it('binds every match to the chain it was found on', async () => {
     const s = setup();
-    const res = await runScan({ chain, manifest, client: chainWith(2500, s.logs), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => new InlineWorker(), signal: new AbortController().signal });
+    const res = await runScan({ chain, manifest, client: chainWith(2500, s.logs), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => new InlineWorker(), signal: new AbortController().signal });
     expect(res.matches.length).toBeGreaterThan(0);
     expect(res.matches.every((m) => m.chainId === 84532)).toBe(true);
+  });
+});
+
+describe('WEB-APP-04 / CHAIN-ADAPTERS-03: checkpoints', () => {
+  it('are bound to the key set: another key (or the old key-less v1 entry) never inherits a position', () => {
+    const map = new Map<string, string>();
+    const st = { getItem: (k: string) => map.get(k) ?? null, setItem: (k: string, v: string) => void map.set(k, v), removeItem: (k: string) => void map.delete(k) };
+    const cp = localCheckpointStore(st);
+    const A = checkpointKeyId('02aa', '03bb');
+    const B = checkpointKeyId('02cc', '03dd');
+    expect(A).not.toBe(B);
+    cp.save(84532, A, { nextBlock: 9000n });
+    expect(cp.load(84532, A)).toEqual({ nextBlock: 9000n });
+    expect(cp.load(84532, B)).toBeUndefined();
+    expect(cp.load(1, A)).toBeUndefined();
+    map.set('ghostpay.scan.checkpoint.v1.84532', JSON.stringify({ nextBlock: '9000' }));
+    expect(cp.load(84532, B)).toBeUndefined();
+    cp.clear(84532, B);
+    expect(cp.load(84532, A)).toEqual({ nextBlock: 9000n });
+    cp.save(84532, 'not-a-key-id', { nextBlock: 1n });
+    expect(map.size).toBe(2);
+  });
+
+  it('persist finalityDepth behind the head so pending payments are re-listed on resume', async () => {
+    const s = setup();
+    const near = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(s.keys), block: 2495, index: 0, caller: FAKE_ROUTER });
+    const saved = new Map<number, import('@ghostpay/chain-adapters').ScanCursor>();
+    const base = {
+      chain, manifest, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY,
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal,
+      checkpoints: { load: () => undefined, save: (id: number, _k: string, c: import('@ghostpay/chain-adapters').ScanCursor) => void saved.set(id, c), clear: () => undefined },
+    };
+    const first = await runScan({ ...base, client: chainWith(2500, [near.log]), cursor: { nextBlock: 2000n }, viewingKey: unsafeRevealSecret(s.keys.viewingSecret) });
+    expect(first.matches).toHaveLength(1);
+    expect(first.matches[0]?.receipt).toBe('pending');
+    const cp = saved.get(84532)!;
+    expect(cp.nextBlock).toBe(2401n); // 2501 - finalityDepth(100)
+    expect(cp.last?.number).toBe(2400n);
+    // Next session resumes from the checkpoint: the payment is found again, and by then (head far ahead) it is verified.
+    const second = await runScan({ ...base, client: chainWith(2700, [near.log]), cursor: cp, viewingKey: unsafeRevealSecret(s.keys.viewingSecret) });
+    expect(second.matches.map((m) => m.stealthAddress)).toEqual([near.stealthAddress]);
+    expect(second.matches[0]?.receipt).toBe('verified');
+  });
+
+  it('drop matches from orphaned blocks when a reorg is detected mid-scan', async () => {
+    const s = setup();
+    const orphan = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(s.keys), block: 49_950, index: 0, caller: FAKE_ROUTER });
+    let forked = false;
+    const client = mockRpc(84532, (method, params) => {
+      if (method === 'eth_blockNumber') return '0xea60'; // 60 000
+      if (method === 'eth_getBlockByNumber') {
+        const n = Number(params[0]);
+        return { hash: forked ? blockHash(n + 5_000_000) : blockHash(n), parentHash: blockHash(n - 1), number: `0x${n.toString(16)}` };
+      }
+      if (method === 'eth_getLogs') {
+        const f = params[0] as { fromBlock: bigint; toBlock: bigint };
+        const live = !forked && BigInt(orphan.log.blockNumber) >= f.fromBlock && BigInt(orphan.log.blockNumber) <= f.toBlock;
+        return live ? [orphan.log] : [];
+      }
+      throw new Error(`unexpected ${method}`);
+    });
+    const dropped: bigint[] = [];
+    const res = await runScan({
+      chain, manifest, client, cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY,
+      viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => new InlineWorker(), signal: new AbortController().signal,
+      onProgress: (p) => { if (p.nextBlock > 49_999n) forked = true; },
+      onReorg: (to) => dropped.push(to),
+    });
+    expect(dropped).toEqual([49_900n]); // last processed 49 999 - finalityDepth 100 + 1
+    expect(res.matches).toEqual([]);
   });
 });
 
@@ -204,31 +275,31 @@ describe('localCheckpointStore', () => {
   it('round-trips a cursor with a block hash', () => {
     const st = mem();
     const cp = localCheckpointStore(st);
-    expect(cp.load(1)).toBeUndefined();
-    cp.save(1, { nextBlock: 77n, last: { number: 76n, hash: `0x${'a'.repeat(64)}` } });
-    expect(cp.load(1)).toEqual({ nextBlock: 77n, last: { number: 76n, hash: `0x${'a'.repeat(64)}` } });
-    cp.save(2, { nextBlock: 5n });
-    expect(cp.load(2)).toEqual({ nextBlock: 5n });
-    cp.clear(1);
-    expect(cp.load(1)).toBeUndefined();
+    expect(cp.load(1, KEY)).toBeUndefined();
+    cp.save(1, KEY, { nextBlock: 77n, last: { number: 76n, hash: `0x${'a'.repeat(64)}` } });
+    expect(cp.load(1, KEY)).toEqual({ nextBlock: 77n, last: { number: 76n, hash: `0x${'a'.repeat(64)}` } });
+    cp.save(2, KEY, { nextBlock: 5n });
+    expect(cp.load(2, KEY)).toEqual({ nextBlock: 5n });
+    cp.clear(1, KEY);
+    expect(cp.load(1, KEY)).toBeUndefined();
     expect([...st.map.values()].join('')).not.toMatch(/secret|key/i);
   });
   it('ignores corrupt data and tolerates missing or failing storage', () => {
     const st = mem();
-    st.setItem('ghostpay.scan.checkpoint.v1.1', 'not json');
-    st.setItem('ghostpay.scan.checkpoint.v1.2', JSON.stringify({ nextBlock: 'abc' }));
-    st.setItem('ghostpay.scan.checkpoint.v1.3', JSON.stringify({ nextBlock: '5', last: { number: 'x', hash: 'y' } }));
+    st.setItem(`ghostpay.scan.checkpoint.v2.1.${KEY}`, 'not json');
+    st.setItem(`ghostpay.scan.checkpoint.v2.2.${KEY}`, JSON.stringify({ nextBlock: 'abc' }));
+    st.setItem(`ghostpay.scan.checkpoint.v2.3.${KEY}`, JSON.stringify({ nextBlock: '5', last: { number: 'x', hash: 'y' } }));
     const cp = localCheckpointStore(st);
-    expect(cp.load(1)).toBeUndefined();
-    expect(cp.load(2)).toBeUndefined();
-    expect(cp.load(3)).toEqual({ nextBlock: 5n });
+    expect(cp.load(1, KEY)).toBeUndefined();
+    expect(cp.load(2, KEY)).toBeUndefined();
+    expect(cp.load(3, KEY)).toEqual({ nextBlock: 5n });
     const none = localCheckpointStore(undefined);
-    expect(none.load(1)).toBeUndefined();
-    none.save(1, { nextBlock: 1n });
-    none.clear(1);
+    expect(none.load(1, KEY)).toBeUndefined();
+    none.save(1, KEY, { nextBlock: 1n });
+    none.clear(1, KEY);
     const throwing = localCheckpointStore({ getItem: () => { throw new Error('x'); }, setItem: () => { throw new Error('x'); }, removeItem: () => { throw new Error('x'); } });
-    expect(throwing.load(1)).toBeUndefined();
-    expect(() => { throwing.save(1, { nextBlock: 1n }); throwing.clear(1); }).not.toThrow();
+    expect(throwing.load(1, KEY)).toBeUndefined();
+    expect(() => { throwing.save(1, KEY, { nextBlock: 1n }); throwing.clear(1, KEY); }).not.toThrow();
     void vi;
   });
 
@@ -237,9 +308,9 @@ describe('localCheckpointStore', () => {
       const cp = new Map<number, unknown>();
       const res = await runScan({
         chain, manifest, client, cursor: { nextBlock: 0n },
-        spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+        spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
         createWorker: () => new InlineWorker(), signal: new AbortController().signal,
-        checkpoints: { load: () => undefined, save: (id, c) => cp.set(id, c), clear: () => undefined }, ...extra,
+        checkpoints: { load: () => undefined, save: (id, _k, c) => cp.set(id, c), clear: () => undefined }, ...extra,
       });
       return { res, cp };
     };
