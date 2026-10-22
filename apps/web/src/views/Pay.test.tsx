@@ -24,6 +24,10 @@ beforeEach(() => {
 const loaded = (id: number): Services['loadManifest'] => () => Promise.resolve({ status: 'loaded', manifest: backedManifest(id) });
 const walletInfo = (w: MockWallet): WalletInfo => ({ id: 'mock', name: 'Mock Wallet', kind: 'eip6963', provider: w });
 
+/** Chain that only answers the manifest read-back (enough to build a payment; nothing else is seen on it). */
+const readBackRpc = (): Services['createRpc'] => () => Promise.resolve(withManifestChain(mockRpc(84532, () => '0x')));
+const withRpcSetting = (): void => { window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } })); };
+
 function openWith(fragment: string, services: Services): ReturnType<typeof userEvent.setup> {
   setHash(fragment);
   renderApp(services);
@@ -45,7 +49,7 @@ function chainSeeing(wallet: MockWallet) {
 describe('Pay: invoice reading and review', () => {
   it('opens a link, shows the review, uses the required signature wording and clears the fragment', async () => {
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5', memo: 'Thanks' });
-    openWith(fragment, makeServices({ loadManifest: loaded(84532) }));
+    openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
     expect(await screen.findByRole('heading', { level: 2, name: 'Review payment' })).toBeTruthy();
     const sig = screen.getByText(/Signature matches key/);
     expect(sig.textContent).toMatch(/\(not pinned\)/);
@@ -65,7 +69,7 @@ describe('Pay: invoice reading and review', () => {
   it('keeps the fragment when the user turns auto-clear off, and offers to remove it', async () => {
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ autoClearFragment: false }));
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
-    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532) }));
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
     await screen.findByRole('heading', { name: 'Review payment' });
     expect(window.location.hash).toBe(fragment);
     await user.click(screen.getByRole('button', { name: 'Remove link from address bar' }));
@@ -84,7 +88,7 @@ describe('Pay: invoice reading and review', () => {
     const evil = '<img src=x onerror="window.__xss=1"><script>window.__xss=2</script>';
     generateSession();
     const created = await buildInvoiceLink({ ...BASE_FORM, token: 'native', tokenAmount: '0.1', lineItems: [{ description: evil, quantity: '1', unitPrice: '1.00' }], memo: evil }, 'https://app.test/', NOW);
-    openWith(created.fragment, makeServices({ loadManifest: loaded(84532) }));
+    openWith(created.fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
     await screen.findByRole('heading', { name: 'Review payment' });
     expect(document.querySelector('main img')).toBeNull();
     expect(document.querySelector('main script')).toBeNull();
@@ -97,7 +101,7 @@ describe('Pay: invoice reading and review', () => {
     const body = fragment.slice('#gpi=v1.'.length);
     const mid = Math.floor(body.length / 2);
     const tampered = `#gpi=v1.${body.slice(0, mid)}${body[mid] === 'A' ? 'B' : 'A'}${body.slice(mid + 1)}`;
-    openWith(tampered, makeServices({ loadManifest: loaded(84532) }));
+    openWith(tampered, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
     expect((await screen.findByText('Invoice rejected')).textContent).toBeTruthy();
     expect(screen.queryByRole('heading', { name: 'Review payment' })).toBeNull();
     expect(window.location.hash).toBe('');
@@ -111,7 +115,7 @@ describe('Pay: invoice reading and review', () => {
     const forged = `#gpi=v1.${encodeBase64Url(new TextEncoder().encode(edited))}`;
     const parsed = await parseFragment(forged);
     expect(parsed.trust).toBe('invalid-signature');
-    const user = openWith(forged, makeServices({ loadManifest: loaded(84532) }));
+    const user = openWith(forged, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
     expect((await screen.findAllByText(/signature is INVALID/)).length).toBeGreaterThan(0);
     expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Continue' }).disabled).toBe(true);
     void user;
@@ -126,7 +130,7 @@ describe('Pay: invoice reading and review', () => {
     const { link } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
     setHash('#something-else');
     const user = userEvent.setup();
-    renderApp(makeServices({ loadManifest: loaded(84532) }));
+    renderApp(makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
     await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Pay' }));
     expect(screen.getByRole('heading', { name: 'Pay an invoice' })).toBeTruthy();
     const box = screen.getByLabelText('Paste an invoice link');
@@ -143,7 +147,7 @@ describe('Pay: invoice reading and review', () => {
   });
 
   it('reacts to a link pasted into the address bar while the app is open', async () => {
-    renderApp(makeServices({ loadManifest: loaded(84532) }));
+    renderApp(makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
     act(() => {
       setHash(fragment);
@@ -155,7 +159,7 @@ describe('Pay: invoice reading and review', () => {
 
   it('blocks expired invoices', async () => {
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
-    openWith(fragment, makeServices({ loadManifest: loaded(84532), nowMs: () => (NOW + 48 * 3600) * 1000 }));
+    openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc(), nowMs: () => (NOW + 48 * 3600) * 1000 }));
     expect(await screen.findByText('This invoice has expired.')).toBeTruthy();
   });
 
@@ -181,7 +185,7 @@ describe('Pay: sending', () => {
 
   it('shows decoded calldata, sends only after the explicit click, and reports an unverified (no RPC) result honestly', async () => {
     const wallet = new MockWallet();
-    const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532) }));
+    const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
     expect(wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
     expect(screen.getByText('payNative')).toBeTruthy();
     expect(screen.getByText('One-time destination')).toBeTruthy();
@@ -230,7 +234,7 @@ describe('Pay: sending', () => {
     ] as const) {
       const wallet = new MockWallet(opts);
       setHash(fragment);
-      const view = renderApp(makeServices({ loadManifest: loaded(84532), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+      const view = renderApp(makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc(), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
       const user = userEvent.setup();
       await user.click(await screen.findByRole('button', { name: 'Continue' }));
       await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
@@ -243,14 +247,14 @@ describe('Pay: sending', () => {
 
   it('shows a clear message when no wallet is installed', async () => {
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
-    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532) }));
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
     await user.click(await screen.findByRole('button', { name: 'Continue' }));
     expect(await screen.findByText(/No browser wallet found/)).toBeTruthy();
   });
 
   it('surfaces a user rejection and lets them retry', async () => {
     const wallet = new MockWallet({ rejectSend: true });
-    const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532) }));
+    const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
     await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/rejected the request/);
     expect(screen.getByRole('button', { name: 'Send payment in my wallet' })).toBeTruthy();
@@ -262,7 +266,7 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ delayMinSec: 60, delayMaxSec: 60 }));
     const wallet = new MockWallet();
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
-    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc(), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
     await user.click(await screen.findByLabelText(/Wait a random time first/));
     await user.click(screen.getByRole('button', { name: 'Start the delay' }));
     expect(await screen.findByText('Scheduled locally. Nothing has been signed or broadcast.')).toBeTruthy();
@@ -283,7 +287,7 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     let clock = NOW * 1000;
     const wallet = new MockWallet();
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
-    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), nowMs: () => clock, discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc(), nowMs: () => clock, discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
     await user.click(await screen.findByLabelText(/Wait a random time first/));
     await user.click(screen.getByRole('button', { name: 'Start the delay' }));
     await screen.findByText('Scheduled locally. Nothing has been signed or broadcast.');
@@ -297,7 +301,7 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
   it('delay: becomes ready by itself after the (zero) interval', async () => {
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ delayMinSec: 0, delayMaxSec: 0 }));
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
-    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), discoverWallets: () => Promise.resolve([walletInfo(new MockWallet())]) }));
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc(), discoverWallets: () => Promise.resolve([walletInfo(new MockWallet())]) }));
     await user.click(await screen.findByLabelText(/Wait a random time first/));
     await user.click(screen.getByRole('button', { name: 'Start the delay' }));
     expect(await screen.findByRole('button', { name: /Connect Mock Wallet/ }, { timeout: 4000 })).toBeTruthy();
@@ -319,14 +323,14 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
 
   it('gas buffer without an RPC explains what is missing', async () => {
     const { fragment } = await makeParsed();
-    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532) }));
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
     await user.click(await screen.findByLabelText(/Add a gas buffer/));
     expect((await screen.findByRole('alert')).textContent).toMatch(/needs an RPC/);
   });
 
   it('native invoices offer no gas buffer', async () => {
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
-    openWith(fragment, makeServices({ loadManifest: loaded(84532) }));
+    openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
     await screen.findByRole('heading', { name: 'Review payment' });
     expect(screen.queryByLabelText(/Add a gas buffer/)).toBeNull();
   });
