@@ -13,8 +13,9 @@ afterEach(() => {
 });
 
 export function memoryCheckpoints(): Services['checkpoints'] {
-  const m = new Map<number, ReturnType<Services['checkpoints']['load']>>();
-  return { load: (id) => m.get(id), save: (id, c) => void m.set(id, c), clear: (id) => void m.delete(id) };
+  const m = new Map<string, ReturnType<Services['checkpoints']['load']>>();
+  const k = (id: number, key: string): string => `${String(id)}:${key}`;
+  return { load: (id, key) => m.get(k(id, key)), save: (id, key, c) => void m.set(k(id, key), c), clear: (id, key) => void m.delete(k(id, key)) };
 }
 
 /** Fully faked side effects: nothing touches the network unless a test provides it. */

@@ -113,9 +113,9 @@ export function App(): ReactNode {
     main.current?.focus();
   }, [view]);
 
-  const getRpc = useCallback(
-    (chainId: number): Promise<RpcClient | undefined> => {
-      const url = settings.rpcUrls[String(chainId)];
+  const rpcFor = useCallback(
+    (urls: Readonly<Record<string, string>>, chainId: number): Promise<RpcClient | undefined> => {
+      const url = urls[String(chainId)];
       const chain = services.chains.find((c) => c.chainId === chainId);
       if (url === undefined || chain === undefined) return Promise.resolve(undefined);
       const key = `${String(chainId)}|${url}`;
@@ -129,8 +129,10 @@ export function App(): ReactNode {
       }
       return p;
     },
-    [settings.rpcUrls, services],
+    [services],
   );
+  const getRpc = useCallback((chainId: number) => rpcFor(settings.rpcUrls, chainId), [rpcFor, settings.rpcUrls]);
+  const getSecondaryRpc = useCallback((chainId: number) => rpcFor(settings.rpcUrlsSecondary, chainId), [rpcFor, settings.rpcUrlsSecondary]);
 
   const state = useMemo<AppState>(
     () => ({
@@ -149,9 +151,10 @@ export function App(): ReactNode {
       sweepTarget,
       selectForSweep,
       getRpc,
+      getSecondaryRpc,
       announce: setLive,
     }),
-    [view, settings, session, fragment, matches, sweepTarget, getRpc],
+    [view, settings, session, fragment, matches, sweepTarget, getRpc, getSecondaryRpc],
   );
 
   return (

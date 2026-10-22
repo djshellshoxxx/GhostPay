@@ -6,7 +6,7 @@ import { useManifest } from '../components/Disclosure';
 import { verifyManifestState } from '../lib/manifest';
 import { formatUnits } from '../lib/format';
 import { userMessage } from '../lib/errors';
-import { runScan, type ScanMatch, type ScanProgress } from '../lib/scanClient';
+import { checkpointKeyId, runScan, type ScanMatch, type ScanProgress } from '../lib/scanClient';
 import { useServices } from '../lib/services';
 import { requireSession } from '../lib/session';
 import type { TagPayload } from '../lib/tags';
@@ -24,7 +24,8 @@ export function Scan(): ReactNode {
   const [done, setDone] = useState<string | undefined>(undefined);
   const abort = useRef<AbortController | undefined>(undefined);
   const manifest = useManifest(chainId);
-  const checkpoint = services.checkpoints.load(chainId);
+  const keyId = app.session === undefined ? undefined : checkpointKeyId(app.session.spendingPublicKey, app.session.viewingPublicKey);
+  const checkpoint = keyId === undefined ? undefined : services.checkpoints.load(chainId, keyId);
 
   useEffect(
     () => () => {
@@ -44,6 +45,7 @@ export function Scan(): ReactNode {
   }
 
   const begin = (): void => {
+    if (keyId === undefined) return;
     setError(undefined);
     setDone(undefined);
     void (async () => {
@@ -55,6 +57,7 @@ export function Scan(): ReactNode {
           setError('Configure an RPC for this chain in Settings first.');
           return;
         }
+        const rpc2: RpcClient | undefined = await app.getSecondaryRpc(chainId).catch(() => undefined);
         let cursor = resume ? checkpoint : undefined;
         if (cursor === undefined) {
           if (!/^\d{1,15}$/.test(start.trim())) {
@@ -74,25 +77,32 @@ export function Scan(): ReactNode {
         abort.current = ctl;
         setRunning(true);
         app.setMatches([]);
-        const found: ScanMatch[] = [];
+        let found: ScanMatch[] = [];
         const res = await runScan({
           chain,
           manifest: manifest.manifest,
           client: rpc,
           cursor,
           spendingPublicKeyHex: app.session?.spendingPublicKey ?? '',
+          keyId,
+          ...(rpc2 === undefined ? {} : { secondaryClient: rpc2 }),
           viewingKey,
           createWorker: services.createScanWorker,
           signal: ctl.signal,
           checkpoints: services.checkpoints,
           onProgress: setProgress,
+          onReorg: (to) => {
+            found = found.filter((m) => m.announcement.blockNumber < to);
+            app.setMatches([...found]);
+          },
           onMatch: (m) => {
             found.push(m);
             app.setMatches([...found]);
           },
         });
         if (res.discrepancies.length > 0) setError(`The second RPC provider disagreed on ${String(res.discrepancies.length)} check(s). Results may be incomplete or forged; checkpoints were not advanced. Try another provider.`);
-        setDone(ctl.signal.aborted ? `Cancelled. ${String(res.scanned)} announcements checked.` : `Finished. ${String(res.scanned)} announcements checked, ${String(res.matches.length)} payments found.`);
+        const note = ` Started at block ${cursor.nextBlock.toString()}${resume && checkpoint !== undefined ? ' (from checkpoint)' : ''}.${rpc2 === undefined ? ' Only one RPC was used: add a second RPC in Settings to cross-check it.' : ''}`;
+        setDone((ctl.signal.aborted ? `Cancelled. ${String(res.scanned)} announcements checked.` : `Finished. ${String(res.scanned)} announcements checked, ${String(res.matches.length)} payments found.`) + note);
         app.announce('Scan finished.');
       } catch (e) {
         setError(e instanceof Error && e.message === 'manifest' ? 'Payments are disabled on this chain: no deployment manifest is loaded, so the announcer address is unknown.' : userMessage(e));
@@ -133,7 +143,7 @@ export function Scan(): ReactNode {
           <button type="button" className="btn btn-primary" onClick={begin} disabled={running}>Start scan</button>
           <button type="button" className="btn" onClick={() => { abort.current?.abort(); }} disabled={!running}>Cancel</button>
           {checkpoint !== undefined && (
-            <button type="button" className="btn" onClick={() => { services.checkpoints.clear(chainId); setResume(false); app.announce('Checkpoint cleared.'); }} disabled={running}>
+            <button type="button" className="btn" onClick={() => { if (keyId !== undefined) services.checkpoints.clear(chainId, keyId); setResume(false); app.announce('Checkpoint cleared.'); }} disabled={running}>
               Clear checkpoint
             </button>
           )}

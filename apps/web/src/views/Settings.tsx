@@ -10,6 +10,7 @@ export function Settings(): ReactNode {
   const services = useServices();
   const s = app.settings;
   const [rpc, setRpc] = useState<Record<string, string>>({ ...s.rpcUrls });
+  const [rpc2, setRpc2] = useState<Record<string, string>>({ ...s.rpcUrlsSecondary });
   const [relayer, setRelayer] = useState(s.relayerUrl);
   const [minSec, setMinSec] = useState(s.delayMinSec);
   const [maxSec, setMaxSec] = useState(s.delayMaxSec);
@@ -25,6 +26,8 @@ export function Settings(): ReactNode {
     try {
       const rpcUrls: Record<string, string> = {};
       for (const [k, v] of Object.entries(rpc)) if (v.trim() !== '') rpcUrls[k] = checkRpcUrl(v);
+      const rpcUrlsSecondary: Record<string, string> = {};
+      for (const [k, v] of Object.entries(rpc2)) if (v.trim() !== '') rpcUrlsSecondary[k] = checkRpcUrl(v);
       checkDelayRange(minSec, maxSec);
       if (!Number.isInteger(lock) || lock < 1 || lock > 240) throw new Error('lock');
       const pinnedSigners = pins
@@ -35,7 +38,7 @@ export function Settings(): ReactNode {
         setMessage({ kind: 'error', text: 'Pinned signer keys must be 66 hexadecimal characters starting with 02 or 03, one per line.' });
         return;
       }
-      const next: SettingsData = { rpcUrls, relayerUrl: checkRelayerUrl(relayer), delayMinSec: minSec, delayMaxSec: maxSec, lockTimeoutMin: lock, theme, autoClearFragment: autoClear, pinnedSigners };
+      const next: SettingsData = { rpcUrls, rpcUrlsSecondary, relayerUrl: checkRelayerUrl(relayer), delayMinSec: minSec, delayMaxSec: maxSec, lockTimeoutMin: lock, theme, autoClearFragment: autoClear, pinnedSigners };
       const saved = app.updateSettings(next);
       setMessage(saved ? { kind: 'ok', text: 'Settings saved.' } : { kind: 'warn', text: 'Browser storage is unavailable, so these settings apply to this tab only.' });
       app.announce('Settings updated.');
@@ -76,6 +79,9 @@ export function Settings(): ReactNode {
               </Field>
               <button type="button" className="btn" onClick={() => { onTest(c.chainId); }}>Test {c.name}</button>
               <p role="status" className="hint">{checks[c.chainId] ?? ''}</p>
+              <Field label={`${c.name} second RPC URL (optional)`} hint="A different provider. Scans compare it with the main RPC and withhold the checkpoint when they disagree.">
+                {(id, d) => <input id={id} aria-describedby={d} type="url" spellCheck={false} value={rpc2[String(c.chainId)] ?? ''} onChange={(e) => { setRpc2({ ...rpc2, [String(c.chainId)]: e.target.value }); }} />}
+              </Field>
             </div>
           ))}
         </fieldset>

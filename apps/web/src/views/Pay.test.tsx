@@ -25,10 +25,14 @@ const loaded = (id: number): Services['loadManifest'] => () => Promise.resolve({
 const walletInfo = (w: MockWallet): WalletInfo => ({ id: 'mock', name: 'Mock Wallet', kind: 'eip6963', provider: w });
 
 /** Chain that only answers the manifest read-back (enough to build a payment; nothing else is seen on it). */
-const readBackRpc = (): Services['createRpc'] => () => Promise.resolve(withManifestChain(mockRpc(84532, () => '0x')));
-const withRpcSetting = (): void => { window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } })); };
+const readBackRpc = (): Services['createRpc'] => () => Promise.resolve(withManifestChain(mockRpc(84532, (m) => (m === 'eth_getTransactionByHash' || m === 'eth_getTransactionReceipt' ? null : '0x'))));
+const withRpcSetting = (): void => {
+  const cur = JSON.parse(window.localStorage.getItem(SETTINGS_KEY) ?? '{}') as Record<string, unknown>;
+  window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' }, ...cur }));
+};
 
-function openWith(fragment: string, services: Services): ReturnType<typeof userEvent.setup> {
+function openWith(fragment: string, services: Services, opts: { noRpcSetting?: boolean } = {}): ReturnType<typeof userEvent.setup> {
+  if (opts.noRpcSetting !== true) withRpcSetting();
   setHash(fragment);
   renderApp(services);
   return userEvent.setup();
@@ -183,7 +187,7 @@ describe('Pay: sending', () => {
     return user;
   }
 
-  it('shows decoded calldata, sends only after the explicit click, and reports an unverified (no RPC) result honestly', async () => {
+  it('shows decoded calldata, sends only after the explicit click, and reports an unverified result honestly (the RPC cannot see the transaction yet)', async () => {
     const wallet = new MockWallet();
     const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
     expect(wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
@@ -193,7 +197,7 @@ describe('Pay: sending', () => {
     await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
     expect(await screen.findByRole('heading', { name: 'Submitted' })).toBeTruthy();
     expect(wallet.sent?.['to']).toBe(FAKE_ROUTER);
-    expect(screen.getByText(/No RPC is configured, so this app could not verify/)).toBeTruthy();
+    expect(screen.getByText(/Your RPC does not show the transaction yet/)).toBeTruthy();
     expect(screen.getByText(/not yet confirmed/)).toBeTruthy();
   });
 
@@ -233,6 +237,7 @@ describe('Pay: sending', () => {
       [{ lieAboutChain: true }, /contradictory chain ids/],
     ] as const) {
       const wallet = new MockWallet(opts);
+      withRpcSetting();
       setHash(fragment);
       const view = renderApp(makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc(), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
       const user = userEvent.setup();
@@ -323,9 +328,9 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
 
   it('gas buffer without an RPC explains what is missing', async () => {
     const { fragment } = await makeParsed();
-    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }), { noRpcSetting: true });
     await user.click(await screen.findByLabelText(/Add a gas buffer/));
-    expect((await screen.findByRole('alert')).textContent).toMatch(/needs an RPC/);
+    expect((await screen.findAllByRole('alert')).map((a) => a.textContent).join(' ')).toMatch(/needs an RPC/);
   });
 
   it('native invoices offer no gas buffer', async () => {
@@ -399,7 +404,7 @@ describe('Pay: manifest read-back and post-broadcast safety (WEB-APP-01, WEB-APP
 
   it('WEB-APP-01: without an RPC the manifest cannot be verified, so no payment is built', async () => {
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
-    openWith(fragment, makeServices({ loadManifest: loaded(84532) }));
+    openWith(fragment, makeServices({ loadManifest: loaded(84532) }), { noRpcSetting: true });
     expect(await screen.findByText(/RPC for this chain is needed to verify/)).toBeTruthy();
     expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Continue' }).disabled).toBe(true);
   });

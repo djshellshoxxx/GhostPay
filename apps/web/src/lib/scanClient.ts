@@ -12,6 +12,8 @@ import {
   type ScannedAnnouncement,
 } from '@ghostpay/chain-adapters';
 import { parseMetadata, type ParsedMetadata } from '@ghostpay/core-crypto';
+import { sha256 } from '@noble/hashes/sha2.js';
+import { bytesToHex, utf8ToBytes } from '@noble/hashes/utils.js';
 import { UserFacingError } from './errors';
 import type { FromWorker, ToWorker, WireLog } from './scannerCore';
 
@@ -47,10 +49,18 @@ export interface ScanProgress {
   readonly discrepancies?: number;
 }
 
+/**
+ * Identifies the seller keys a checkpoint belongs to: `sha256(spendingPub|viewingPub)` as hex. A checkpoint is only valid for
+ * the keys (and chain) it was written for, so a key rotation or a second profile never inherits another profile's position.
+ */
+export function checkpointKeyId(spendingPublicKeyHex: string, viewingPublicKeyHex: string): string {
+  return bytesToHex(sha256(utf8ToBytes(`${spendingPublicKeyHex.toLowerCase()}|${viewingPublicKeyHex.toLowerCase()}`)));
+}
+
 export interface CheckpointStore {
-  load(chainId: number): ScanCursor | undefined;
-  save(chainId: number, cursor: ScanCursor): void;
-  clear(chainId: number): void;
+  load(chainId: number, keyId: string): ScanCursor | undefined;
+  save(chainId: number, keyId: string, cursor: ScanCursor): void;
+  clear(chainId: number, keyId: string): void;
 }
 
 export interface ScanParams {
@@ -59,6 +69,8 @@ export interface ScanParams {
   readonly client: RpcClient;
   readonly cursor: ScanCursor;
   readonly spendingPublicKeyHex: string;
+  /** {@link checkpointKeyId} of the keys being scanned; checkpoints are stored under it. */
+  readonly keyId: string;
   /** Raw viewing key bytes; consumed (zeroized by the worker) and sent nowhere else. */
   readonly viewingKey: Uint8Array;
   readonly createWorker: () => ScanWorkerLike;
@@ -66,6 +78,8 @@ export interface ScanParams {
   readonly checkpoints?: CheckpointStore;
   readonly onProgress?: (p: ScanProgress) => void;
   readonly onMatch?: (m: ScanMatch) => void;
+  /** A reorg was detected: matches found in blocks >= `rolledBackTo` were dropped from the result and must be dropped by the caller. */
+  readonly onReorg?: (rolledBackTo: bigint) => void;
   readonly maxPages?: number;
   /** A worker reply that takes longer than this terminates the scan (default 60 s; S3-15). */
   readonly replyTimeoutMs?: number;
@@ -136,6 +150,13 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       if (p.signal.aborted) break;
       skipped += res.skipped;
       const pageFrom = res.reorg?.rolledBackTo ?? cursor.nextBlock;
+      if (res.reorg !== undefined) {
+        // Matches from orphaned blocks must not stay listed; the replay below re-finds the ones that survived.
+        const keep = all.filter((m) => m.announcement.blockNumber < res.reorg!.rolledBackTo);
+        all.length = 0;
+        all.push(...keep);
+        p.onReorg?.(res.reorg.rolledBackTo);
+      }
       for (const a of res.announcements) byId.set(a.id, a);
       const id = ++batchId;
       const reply = await wait((resolve) => {
@@ -168,6 +189,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
                 viaRouter,
               });
         const match: ScanMatch = { chainId: p.chain.chainId, announcement, stealthAddress: m.stealthAddress as Address, metadata, viaRouter, receipt };
+        if (all.some((x) => x.announcement.id === announcement.id)) continue;
         all.push(match);
         p.onMatch?.(match);
       }
@@ -192,7 +214,10 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       }
       cursor = res.cursor;
       // A page the providers disagree on must be re-scanned: do not persist a checkpoint past it.
-      if (!disagree) p.checkpoints?.save(p.chain.chainId, cursor);
+      if (!disagree && p.checkpoints !== undefined) {
+        const saved = await persistable(p, cursor);
+        if (saved !== undefined) p.checkpoints.save(p.chain.chainId, p.keyId, saved);
+      }
       p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: !res.truncated, discrepancies: discrepancies.length });
       if (!res.truncated) break;
     }
@@ -213,11 +238,31 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   return { matches: all, cursor, scanned, discrepancies };
 }
 
+/**
+ * The cursor that is safe to persist: `finalityDepth` blocks behind the fetched position. Matches seen in that tail were only
+ * `pending` and live in memory alone, so the next session re-scans (and re-verifies) the tail instead of skipping it.
+ * Never moves behind where this run started.
+ */
+async function persistable(p: ScanParams, cursor: ScanCursor): Promise<ScanCursor | undefined> {
+  const depth = BigInt(p.chain.finalityDepth);
+  const floor = p.cursor.nextBlock;
+  let next = cursor.nextBlock > depth ? cursor.nextBlock - depth : 0n;
+  if (next < floor) next = floor;
+  if (next >= cursor.nextBlock) return cursor;
+  if (next === 0n) return { nextBlock: 0n };
+  // Keep reorg detection for the stored position: bind it to the hash of the block just before it.
+  const ref = await p.client.getBlock(next - 1n);
+  return ref === null ? { nextBlock: next } : { nextBlock: next, last: { number: next - 1n, hash: ref.hash } };
+}
+
 function zeroizeBytes(b: Uint8Array): void {
   b.fill(0);
 }
 
-const CP_PREFIX = 'ghostpay.scan.checkpoint.v1.';
+// v2: bound to the key set. v1 entries (chain only) are ignored: they cannot be attributed to a key.
+const CP_PREFIX = 'ghostpay.scan.checkpoint.v2.';
+const KEY_ID = /^[0-9a-f]{64}$/;
+const slot = (chainId: number, keyId: string): string | undefined => (KEY_ID.test(keyId) ? `${CP_PREFIX}${String(chainId)}.${keyId}` : undefined);
 
 interface StorageLike {
   getItem(k: string): string | null;
@@ -228,9 +273,10 @@ interface StorageLike {
 /** Public scan cursor persistence (block number and hash only; no keys, no matches). Tolerates storage failures. */
 export function localCheckpointStore(storage: StorageLike | undefined): CheckpointStore {
   return {
-    load(chainId) {
+    load(chainId, keyId) {
       try {
-        const text = storage?.getItem(CP_PREFIX + String(chainId));
+        const k = slot(chainId, keyId);
+        const text = k === undefined ? undefined : storage?.getItem(k);
         if (text === null || text === undefined) return undefined;
         const o = JSON.parse(text) as { nextBlock?: unknown; last?: { number?: unknown; hash?: unknown } };
         if (typeof o.nextBlock !== 'string' || !/^\d{1,20}$/.test(o.nextBlock)) return undefined;
@@ -243,17 +289,20 @@ export function localCheckpointStore(storage: StorageLike | undefined): Checkpoi
         return undefined;
       }
     },
-    save(chainId, cursor) {
+    save(chainId, keyId, cursor) {
       try {
+        const k = slot(chainId, keyId);
+        if (k === undefined) return;
         const body = { nextBlock: cursor.nextBlock.toString(), ...(cursor.last === undefined ? {} : { last: { number: cursor.last.number.toString(), hash: cursor.last.hash } }) };
-        storage?.setItem(CP_PREFIX + String(chainId), JSON.stringify(body));
+        storage?.setItem(k, JSON.stringify(body));
       } catch {
         /* checkpoints are an optimisation */
       }
     },
-    clear(chainId) {
+    clear(chainId, keyId) {
       try {
-        storage?.removeItem(CP_PREFIX + String(chainId));
+        const k = slot(chainId, keyId);
+        if (k !== undefined) storage?.removeItem(k);
       } catch {
         /* ignore */
       }
