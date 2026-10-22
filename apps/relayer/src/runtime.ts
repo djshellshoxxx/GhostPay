@@ -1,7 +1,7 @@
 import { createPublicClient, createWalletClient, defineChain, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { monotonicNow, LossBudget } from '@ghostpay/relayer-guard';
-import { createClient, findChain, type ChainConfig } from '@ghostpay/chain-adapters';
+import { createClient, findChain, verifyManifestOnChain, type ChainConfig } from '@ghostpay/chain-adapters';
 import { createViemChainClient, type ChainClient } from './chain.js';
 import { createWebhookAlerts, nullAlerts, type AlertSink } from './alerts.js';
 import { Metrics } from './metrics.js';
@@ -51,7 +51,8 @@ function hex(b: Uint8Array): `0x${string}` {
  * @param config Resolved configuration.
  * @param hotKey Hot key bytes.
  * @returns Chain clients by chain id.
- * @throws {ChainAdapterError} `CHAIN_MISMATCH` / `RPC_FAILURE` when an endpoint is wrong or down.
+ * @throws {ChainAdapterError} `CHAIN_MISMATCH` / `RPC_FAILURE` when an endpoint is wrong or down; `INVALID_MANIFEST` when
+ * the chain does not match the deployment manifest.
  */
 export async function buildChainClients(config: RelayerConfig, hotKey: Uint8Array): Promise<Map<number, ChainClient>> {
   const account = privateKeyToAccount(hex(hotKey));
@@ -60,7 +61,9 @@ export async function buildChainClients(config: RelayerConfig, hotKey: Uint8Arra
     const known: ChainConfig =
       findChain(c.chainId) ??
       { chainId: DEV_CHAIN_ID, name: c.name, nativeSymbol: 'ETH', nativeDecimals: 18, testnet: true, enabled: true, finalityDepth: 1, getLogsMaxRange: 1000, blockTimeMs: 1000 };
-    await createClient(known, c.rpcUrl, { allowInsecureLocalhost: config.allowInsecureLocalhostRpc });
+    const rpc = await createClient(known, c.rpcUrl, { allowInsecureLocalhost: config.allowInsecureLocalhostRpc });
+    // CHAIN-ADAPTERS-05: the manifest's router/fee recipient/announcer/code hashes must match the chain. Fail closed.
+    if (c.manifest !== undefined) await verifyManifestOnChain(c.manifest, rpc);
     const chain = defineChain({ id: c.chainId, name: c.name, nativeCurrency: { name: 'Native', symbol: known.nativeSymbol, decimals: 18 }, rpcUrls: { default: { http: [c.rpcUrl] } } });
     const transport = http(c.rpcUrl, { timeout: 10_000, retryCount: 1 });
     const publicClient = createPublicClient({ chain, transport });

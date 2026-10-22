@@ -43,6 +43,22 @@ describe('buildChainClients', () => {
     expect(clients.get(31337)?.chainId).toBe(31337);
   });
 
+  it('fails closed when the chain does not match the manifest (on-chain read-back, CHAIN-ADAPTERS-05)', async () => {
+    const url = await fakeRpc(11155111); // answers every eth_call/eth_getCode with 0x0: cannot confirm any manifest field
+    const cfg = testConfig({ allowInsecureLocalhostRpc: true });
+    const manifest = {
+      chainId: 11155111,
+      announcer: '0x55649e01b5df198d18d95b5cc5051630cfd45564',
+      router: '0x00000000000000000000000000000000000000a1',
+      sweepRelayer: '0x00000000000000000000000000000000000000a2',
+      feeRecipient: '0x00000000000000000000000000000000000000a3',
+      feeBps: 25,
+      bytecodeHashes: { router: `0x${'33'.repeat(32)}`, sweepRelayer: `0x${'44'.repeat(32)}` },
+    };
+    const chains = [{ ...(cfg.chains[0] as object), rpcUrl: url, manifest }] as never;
+    await expect(buildChainClients({ ...cfg, chains }, new Uint8Array(32).fill(5))).rejects.toBeDefined();
+  });
+
   it('refuses an endpoint on the wrong chain', async () => {
     const url = await fakeRpc(1);
     const cfg = testConfig({ allowInsecureLocalhostRpc: true });

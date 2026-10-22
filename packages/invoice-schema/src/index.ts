@@ -30,6 +30,7 @@ export {
   FRAGMENT_PREFIX,
   encodeFragment,
   parseFragment,
+  openFragment,
   isSignatureVerified,
   isTrustedSeller,
   type EncodeOptions,
@@ -39,5 +40,18 @@ export {
   type TrustLevel,
   type SignatureVerifiedInvoice,
   type TrustedSellerInvoice,
+  type PassphraseHeader,
+  type OpenFragmentResult,
 } from './envelope.js';
+export {
+  PASSPHRASE_ALG,
+  MIN_PASSPHRASE_CHARS,
+  MAX_PASSPHRASE_BYTES,
+  SCRYPT_ALLOWED_N,
+  SCRYPT_DEFAULT_N,
+  SCRYPT_R,
+  SCRYPT_P,
+  SALT_BYTES,
+  type ScryptParams,
+} from './passphrase.js';
 export { checkExpiry, type ExpiryStatus } from './expiry.js';

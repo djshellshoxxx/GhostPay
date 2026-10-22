@@ -3,6 +3,9 @@ import { decodeBase64Url, encodeBase64Url } from './base64url.js';
 import {
   DecryptionError,
   FragmentFormatError,
+  PassphraseRequiredError,
+  PassphraseUnexpectedError,
+  WrongPassphraseError,
   FragmentTooLargeError,
   InvoiceError,
   NonCanonicalError,
@@ -21,6 +24,18 @@ import {
   type RandomSource,
 } from './schema.js';
 import { verifyInvoiceSignature, type SignedInvoice } from './sign.js';
+import {
+  PASSPHRASE_ALG,
+  SALT_BYTES,
+  SCRYPT_DEFAULT_N,
+  SCRYPT_P,
+  SCRYPT_R,
+  buildPassphraseAad,
+  derivePassphraseKey,
+  isAllowedScrypt,
+  passphraseToBytes,
+  type ScryptParams,
+} from './passphrase.js';
 
 /** Hard limit on the decoded envelope size (16 KiB). */
 export const MAX_DECODED_BYTES = 16_384;
@@ -35,6 +50,10 @@ const NONCE_RE = /^[0-9a-f]{24}$/;
 const CT_RE = /^(?:[0-9a-f]{2}){16,}$/;
 const PUBKEY_RE = /^(?:02|03)[0-9a-f]{64}$/;
 const AAD_MAGIC = utf8ToBytes('GPI1');
+const B64_SALT_RE = /^[A-Za-z0-9_-]{22}$/;
+const B64_NONCE_RE = /^[A-Za-z0-9_-]{16}$/;
+/** At least a 16-byte GCM tag plus one byte of plaintext. */
+const B64_CT_RE = /^[A-Za-z0-9_-]{23,}$/;
 
 /** How a signed invoice is trusted. `valid-signature` is NOT `trusted-seller`. */
 export type TrustLevel = 'invalid-signature' | 'valid-signature' | 'trusted-seller';
@@ -53,8 +72,10 @@ export interface ParsedInvoice {
   readonly verification: Verification;
   /** Derived from `verification`; UIs must not say "verified seller" unless this is `trusted-seller`. */
   readonly trust: TrustLevel;
-  /** Whether the private part was AES-GCM encrypted in the fragment. */
+  /** Whether any part of the invoice was AES-GCM encrypted in the fragment (`A256GCM` or `A256GCM-PW`). */
   readonly encrypted: boolean;
+  /** Whether the whole invoice was encrypted under a passphrase-derived key (`A256GCM-PW`, ADR-0020). */
+  readonly passphraseProtected: boolean;
 }
 
 /** A parse result whose signature checked out against the embedded key (integrity only). */
@@ -95,12 +116,34 @@ export interface EncodeOptions {
   /** Encrypt `lineItems` and `memo` with a fresh AES-256-GCM key placed in the fragment. Default false. */
   readonly encrypt?: boolean;
   readonly rng?: RandomSource;
+  /**
+   * Passphrase-protect the link (`A256GCM-PW`, ADR-0020): the whole invoice and signature are encrypted
+   * under scrypt(NFKC passphrase, random salt); only chainId, signer and KDF parameters stay in clear.
+   * Implies encryption; combining it with `encrypt: false` is refused. Share the passphrase out of band.
+   */
+  readonly passphrase?: string;
+  /** scrypt N for passphrase mode: 2^15, 2^16 or 2^17 (default 2^17). Only valid with `passphrase`. */
+  readonly scryptN?: number;
 }
 
 export interface ParseOptions {
   /** Lowercase 66-hex compressed signer keys the caller trusts. */
   readonly pinnedSigners?: readonly string[];
+  /** Passphrase for an `A256GCM-PW` link. Supplying one for any other link is refused. */
+  readonly passphrase?: string;
 }
+
+/** Clear-text header of a passphrase-protected link. UNAUTHENTICATED until the passphrase decrypts it. */
+export interface PassphraseHeader {
+  readonly chainId: number;
+  readonly signer: string;
+  readonly kdf: ScryptParams;
+}
+
+/** Result of {@link openFragment}: either a parsed invoice, or a request to prompt for the passphrase. */
+export type OpenFragmentResult =
+  | { readonly status: 'ok'; readonly parsed: ParsedInvoice }
+  | { readonly status: 'needsPassphrase'; readonly header: PassphraseHeader };
 
 function getSubtle(): SubtleCrypto {
   const c = (globalThis as { crypto?: { subtle?: SubtleCrypto } }).crypto;
@@ -166,7 +209,12 @@ export async function encodeFragment(signed: SignedInvoice, options: EncodeOptio
   const invoice = validateInvoice(signed.invoice);
   if (!verifyInvoiceSignature({ invoice, signature: signed.signature })) throw new SigningError();
   let envelope: Record<string, unknown>;
-  if (options.encrypt === true) {
+  if (options.passphrase !== undefined) {
+    if (options.encrypt === false) throw new UnsupportedError();
+    envelope = await encodePassphraseEnvelope(invoice, signed.signature, options.passphrase, options);
+  } else if (options.scryptN !== undefined) {
+    throw new UnsupportedError();
+  } else if (options.encrypt === true) {
     const { pub, priv } = splitInvoice(invoice);
     const key = randomBytes(32, options.rng);
     const nonce = randomBytes(12, options.rng);
@@ -192,6 +240,42 @@ export async function encodeFragment(signed: SignedInvoice, options: EncodeOptio
   return FRAGMENT_PREFIX + encodeBase64Url(bytes);
 }
 
+async function encodePassphraseEnvelope(
+  invoice: Invoice,
+  signature: string,
+  passphrase: string,
+  options: EncodeOptions,
+): Promise<Record<string, unknown>> {
+  const params: ScryptParams = { N: options.scryptN ?? SCRYPT_DEFAULT_N, r: SCRYPT_R, p: SCRYPT_P };
+  if (!isAllowedScrypt(params)) throw new UnsupportedError();
+  const passBytes = passphraseToBytes(passphrase);
+  let key: Uint8Array<ArrayBuffer> | undefined;
+  const plain = utf8ToBytes(canonicalize({ inv: invoice, sig: signature }));
+  try {
+    const salt = randomBytes(SALT_BYTES, options.rng);
+    const nonce = randomBytes(12, options.rng);
+    key = await derivePassphraseKey(passBytes, salt, params);
+    const ct = await aesGcm(
+      'encrypt',
+      key,
+      nonce,
+      buildPassphraseAad(invoice.chainId, invoice.signer, params, salt),
+      plain,
+    );
+    return {
+      alg: PASSPHRASE_ALG,
+      chainId: invoice.chainId,
+      signer: invoice.signer,
+      kdf: { N: params.N, r: params.r, p: params.p, s: encodeBase64Url(salt) },
+      enc: { n: encodeBase64Url(nonce), c: encodeBase64Url(ct) },
+    };
+  } finally {
+    passBytes.fill(0);
+    key?.fill(0);
+    plain.fill(0);
+  }
+}
+
 function obj(v: unknown, keys: readonly string[]): Record<string, unknown> {
   if (typeof v !== 'object' || v === null || Array.isArray(v)) throw new SchemaError('$envelope');
   const rec = v as Record<string, unknown>;
@@ -203,6 +287,151 @@ function obj(v: unknown, keys: readonly string[]): Record<string, unknown> {
 function str(v: unknown, re: RegExp, path: string): string {
   if (typeof v !== 'string' || !re.test(v)) throw new SchemaError(path);
   return v;
+}
+
+function b64(v: unknown, re: RegExp, path: string, exactLength?: number): Uint8Array<ArrayBuffer> {
+  const bytes = decodeBase64Url(str(v, re, path));
+  if (exactLength !== undefined && bytes.length !== exactLength) throw new SchemaError(path);
+  return bytes;
+}
+
+function headerChainId(v: unknown): number {
+  if (typeof v !== 'number' || !Number.isSafeInteger(v) || v < 1) throw new SchemaError('chainId');
+  return v;
+}
+
+function decodeUtf8(bytes: Uint8Array): string {
+  try {
+    return new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes);
+  } catch {
+    throw new Utf8Error();
+  }
+}
+
+/** Strict decode of `#gpi=v1.<b64url>` into the canonical envelope object (no crypto). */
+function decodeEnvelopeRoot(fragment: string): Record<string, unknown> {
+  if (typeof fragment !== 'string' || !fragment.startsWith(FRAGMENT_PREFIX)) throw new FragmentFormatError();
+  const encoded = fragment.slice(FRAGMENT_PREFIX.length);
+  if (encoded.length > MAX_ENCODED_CHARS) throw new FragmentTooLargeError();
+  const bytes = decodeBase64Url(encoded);
+  if (bytes.length > MAX_DECODED_BYTES) throw new FragmentTooLargeError();
+  const source = decodeUtf8(bytes);
+  const parsed = parseStrictJson(source);
+  if (canonicalize(parsed) !== source) throw new NonCanonicalError();
+  const root = parsed as unknown;
+  if (typeof root !== 'object' || root === null || Array.isArray(root)) throw new SchemaError('$envelope');
+  return root as Record<string, unknown>;
+}
+
+interface PassphraseEnvelope {
+  readonly header: PassphraseHeader;
+  readonly salt: Uint8Array<ArrayBuffer>;
+  readonly nonce: Uint8Array<ArrayBuffer>;
+  readonly ct: Uint8Array<ArrayBuffer>;
+}
+
+/** Structural validation of an `A256GCM-PW` envelope. Runs before (and gates) any KDF work. */
+function readPassphraseEnvelope(root: Record<string, unknown>): PassphraseEnvelope {
+  const e = obj(root, ['alg', 'chainId', 'enc', 'kdf', 'signer']);
+  const chainId = headerChainId(e['chainId']);
+  const signer = str(e['signer'], PUBKEY_RE, 'signer');
+  const kdf = obj(e['kdf'], ['N', 'p', 'r', 's']);
+  const params = { N: kdf['N'], r: kdf['r'], p: kdf['p'] };
+  if (!isAllowedScrypt(params)) throw new UnsupportedError();
+  const salt = b64(kdf['s'], B64_SALT_RE, 'kdf.s', SALT_BYTES);
+  const enc = obj(e['enc'], ['c', 'n']);
+  const nonce = b64(enc['n'], B64_NONCE_RE, 'enc.n', 12);
+  const ct = b64(enc['c'], B64_CT_RE, 'enc.c');
+  return { header: { chainId, signer, kdf: params as ScryptParams }, salt, nonce, ct };
+}
+
+async function decryptPassphraseEnvelope(
+  env: PassphraseEnvelope,
+  passphrase: string,
+): Promise<{ invoice: Invoice; signature: string }> {
+  const passBytes = passphraseToBytes(passphrase);
+  const { header } = env;
+  let key: Uint8Array<ArrayBuffer> | undefined;
+  let plain: Uint8Array;
+  try {
+    key = await derivePassphraseKey(passBytes, env.salt, header.kdf);
+    try {
+      plain = await aesGcm(
+        'decrypt',
+        key,
+        env.nonce,
+        buildPassphraseAad(header.chainId, header.signer, header.kdf, env.salt),
+        env.ct,
+      );
+    } catch (err) {
+      if (!(err instanceof DecryptionError)) throw err;
+      // One error for wrong passphrase, tampered header/params/salt/nonce/ciphertext: no oracle.
+      throw new WrongPassphraseError();
+    }
+  } finally {
+    passBytes.fill(0);
+    key?.fill(0);
+  }
+  try {
+    // Past this point the ciphertext authenticated under the passphrase, so specific errors are no oracle.
+    const text = decodeUtf8(plain);
+    const parsed = parseStrictJson(text);
+    if (canonicalize(parsed) !== text) throw new NonCanonicalError();
+    const body = obj(parsed, ['inv', 'sig']);
+    const signature = str(body['sig'], HEX_SIG_RE, 'sig');
+    const invoice = validateInvoice(body['inv']);
+    if (invoice.chainId !== header.chainId) throw new SchemaError('chainId');
+    if (invoice.signer !== header.signer) throw new SchemaError('signer');
+    return { invoice, signature };
+  } finally {
+    plain.fill(0);
+  }
+}
+
+function finish(
+  invoice: Invoice,
+  signature: string,
+  encrypted: boolean,
+  passphraseProtected: boolean,
+  options: ParseOptions,
+): ParsedInvoice {
+  const signatureValid = verifyInvoiceSignature({ invoice, signature });
+  const pinned = options.pinnedSigners ?? [];
+  const signerPinned = signatureValid && pinned.some((k) => k.toLowerCase() === invoice.signer);
+  const trust: TrustLevel = !signatureValid
+    ? 'invalid-signature'
+    : signerPinned
+      ? 'trusted-seller'
+      : 'valid-signature';
+  return {
+    invoice,
+    signature,
+    verification: { signatureValid, signerPinned },
+    trust,
+    encrypted,
+    passphraseProtected,
+  };
+}
+
+async function parseRoot(
+  root: Record<string, unknown>,
+  options: ParseOptions,
+  prompt: boolean,
+): Promise<OpenFragmentResult> {
+  const alg = root['alg'];
+  if (alg === PASSPHRASE_ALG) {
+    const env = readPassphraseEnvelope(root);
+    if (options.passphrase === undefined) {
+      if (prompt) return { status: 'needsPassphrase', header: env.header };
+      throw new PassphraseRequiredError();
+    }
+    const { invoice, signature } = await decryptPassphraseEnvelope(env, options.passphrase);
+    return { status: 'ok', parsed: finish(invoice, signature, true, true, options) };
+  }
+  if (options.passphrase !== undefined && (alg === 'none' || alg === 'A256GCM')) {
+    throw new PassphraseUnexpectedError();
+  }
+  return { status: 'ok', parsed: await parseV1(root, options) };
 }
 
 /**
@@ -219,32 +448,43 @@ function str(v: unknown, re: RegExp, path: string): string {
  * inert data; never render them as HTML. This function does not fetch URLs or
  * check expiry (use {@link checkExpiry}).
  *
+ * Passphrase links (`alg: "A256GCM-PW"`, ADR-0020): the KDF parameters are checked against the
+ * allow-list before any derivation; without `options.passphrase` this throws
+ * {@link PassphraseRequiredError} (use {@link openFragment} to get a prompt-friendly result); a wrong
+ * passphrase or any tampering throws the single {@link WrongPassphraseError}. Supplying a passphrase for
+ * a non-passphrase link throws {@link PassphraseUnexpectedError}.
+ *
  * @param fragment Bounded `#gpi=v1.<base64url>` input (e.g. `location.hash`).
- * @param options Optional pinned signer keys.
+ * @param options Optional pinned signer keys and passphrase.
  * @returns Validated invoice plus verification result.
  * @throws {InvoiceError} Subclass per failure class: format, size, base64url, UTF-8, JSON, schema, canonical, decryption.
  * @security Do not log the fragment or returned private fields. It is a bearer secret readable by any script on the page.
  * @testVector invoice-v1-sample
  */
 export async function parseFragment(fragment: string, options: ParseOptions = {}): Promise<ParsedInvoice> {
-  if (typeof fragment !== 'string' || !fragment.startsWith(FRAGMENT_PREFIX)) throw new FragmentFormatError();
-  const encoded = fragment.slice(FRAGMENT_PREFIX.length);
-  if (encoded.length > MAX_ENCODED_CHARS) throw new FragmentTooLargeError();
-  const bytes = decodeBase64Url(encoded);
-  if (bytes.length > MAX_DECODED_BYTES) throw new FragmentTooLargeError();
-  let source: string;
-  try {
-    source = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes);
-  } catch {
-    throw new Utf8Error();
-  }
-  const parsed = parseStrictJson(source);
-  if (canonicalize(parsed) !== source) throw new NonCanonicalError();
+  const result = await parseRoot(decodeEnvelopeRoot(fragment), options, false);
+  /* c8 ignore next */
+  if (result.status !== 'ok') throw new PassphraseRequiredError();
+  return result.parsed;
+}
 
-  const root = parsed as unknown;
-  if (typeof root !== 'object' || root === null || Array.isArray(root)) throw new SchemaError('$envelope');
-  const alg = (root as Record<string, unknown>)['alg'];
+/**
+ * Like {@link parseFragment}, but returns `{status:'needsPassphrase', header}` for an `A256GCM-PW` link
+ * when no passphrase is supplied, so a UI can prompt. No KDF work happens in that case.
+ *
+ * @param fragment Bounded `#gpi=v1.<base64url>` input.
+ * @param options Pinned signers and optional passphrase.
+ * @returns Discriminated result.
+ * @throws {InvoiceError} Same classes as {@link parseFragment}, plus {@link WrongPassphraseError}.
+ * @security `header` is unauthenticated (anyone can edit it); show it only as "claimed" until decrypted.
+ * @testVector invoice-v1-sample
+ */
+export async function openFragment(fragment: string, options: ParseOptions = {}): Promise<OpenFragmentResult> {
+  return parseRoot(decodeEnvelopeRoot(fragment), options, true);
+}
 
+async function parseV1(root: Record<string, unknown>, options: ParseOptions): Promise<ParsedInvoice> {
+  const alg = root['alg'];
   let invoice: Invoice;
   let signature: string;
   let encrypted: boolean;
@@ -296,13 +536,5 @@ export async function parseFragment(fragment: string, options: ParseOptions = {}
     throw new UnsupportedError();
   }
 
-  const signatureValid = verifyInvoiceSignature({ invoice, signature });
-  const pinned = options.pinnedSigners ?? [];
-  const signerPinned = signatureValid && pinned.some((k) => k.toLowerCase() === invoice.signer);
-  const trust: TrustLevel = !signatureValid
-    ? 'invalid-signature'
-    : signerPinned
-      ? 'trusted-seller'
-      : 'valid-signature';
-  return { invoice, signature, verification: { signatureValid, signerPinned }, trust, encrypted };
+  return finish(invoice, signature, encrypted, false, options);
 }

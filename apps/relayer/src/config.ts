@@ -7,6 +7,9 @@ import {
   findToken,
   loadDeployment,
   requireEnabledChain,
+  verifyManifestSignature,
+  type DeploymentManifest,
+  type ReleaseKey,
   validateRpcUrl,
 } from '@ghostpay/chain-adapters';
 import { TrustedProxies } from '@ghostpay/relayer-guard';
@@ -33,6 +36,8 @@ export interface ChainRuntimeConfig {
   readonly maxGasPriceWei: bigint;
   readonly dailyBudgetWei: bigint;
   readonly minBalanceWei: bigint;
+  /** Signature-checked manifest for this chain, when one exists; `buildChainClients` reads it back from the chain. */
+  readonly manifest?: DeploymentManifest;
 }
 
 /** Resolved relayer configuration. */
@@ -87,6 +92,8 @@ export interface ConfigContext {
   readonly hotKeyAddress: Address;
   /** Returns the manifest JSON text for a chain id, or `undefined` when none exists. */
   readonly readManifest: (chainId: number) => string | undefined;
+  /** Pinned release key override (tests). Default: the key pinned in chain-adapters (none: mainnet manifests are refused). */
+  readonly releaseKey?: ReleaseKey | undefined;
 }
 
 function bad(path: string, why: string): never {
@@ -208,7 +215,18 @@ function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; inse
   }
 
   let sweepRelayer: Address | undefined;
-  if (manifestText !== undefined) sweepRelayer = loadDeployment(manifestText, chainId).sweepRelayer;
+  let manifest: DeploymentManifest | undefined;
+  if (manifestText !== undefined) {
+    manifest = loadDeployment(manifestText, chainId);
+    // CHAIN-ADAPTERS-05: authenticate the manifest before trusting it; fail closed (no pinned key: mainnet refused).
+    const testnet = known === undefined ? true : known.testnet;
+    try {
+      verifyManifestSignature(manifestText, 'releaseKey' in ctx ? { testnet, key: ctx.releaseKey } : { testnet });
+    } catch {
+      return bad(`${path}`, 'deployment manifest signature check failed (unsigned or invalid manifest refused)');
+    }
+    sweepRelayer = manifest.sweepRelayer;
+  }
   if (c['sweepRelayer'] !== undefined) {
     const configured = wrap(() => parseAddress(c['sweepRelayer'], 'sweepRelayer'), `${path}.sweepRelayer`);
     if (sweepRelayer !== undefined && configured !== sweepRelayer) return bad(`${path}.sweepRelayer`, 'differs from the deployment manifest');
@@ -254,6 +272,7 @@ function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; inse
     maxGasPriceWei: bigOf(c, 'maxGasPriceWei', path, 1n),
     dailyBudgetWei: bigOf(c, 'dailyBudgetWei', path, 1n),
     minBalanceWei: bigOf(c, 'minBalanceWei', path, 0n),
+    ...(manifest === undefined ? {} : { manifest }),
   };
 }
 
