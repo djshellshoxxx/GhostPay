@@ -63,6 +63,8 @@ services:
     command:
       - -datadir=/home/bitcoin/.bitcoin
       - -regtest=1
+      # The e2e looks up already-mined transactions with getrawtransaction, which needs a transaction index.
+      - -txindex=1
       - -server=1
       - -printtoconsole=1
       - -listen=0
