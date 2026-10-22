@@ -220,7 +220,10 @@ export class RelayerHttpServer {
 
   private async dispatch(c: Ctx): Promise<void> {
     const { req, res } = c;
-    const path = new URL(req.url ?? '/', 'http://relayer.invalid').pathname;
+    // Reject query-bearing requests: these endpoints never accept URL parameters, which could leak sensitive data into logs.
+    const target = new URL(req.url ?? '/', 'http://relayer.invalid');
+    if (target.search !== '') throw new RelayerError(400, 'unexpected_query');
+    const path = target.pathname;
     if (isRoute(path)) c.route = path;
 
     const origin = req.headers.origin;
