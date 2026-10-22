@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 714" width="900" height="714" role="img" aria-labelledby="ttl dsc">
+<title id="ttl">Animated stealth payment flow</title>
+<desc id="dsc">Seven-step animation of a stealth payment: the seller shares a meta-address in an invoice link, the payer derives a one-time address and pays through the router, the router sends fee and net amount and emits an announcement, and the seller scans and verifies the balance. With reduced motion preferred, all steps are shown statically.</desc>
+<style>
+:root{--bg:#ffffff;--fg:#1b1f24;--mut:#4d5866;--box:#eef1f6;--line:#6b778a;--acc:#1f4fc4;--accbg:#dbe6ff;--warn:#8a4b00;--warnbg:#fff0d0;--bad:#a8200f;--badbg:#fde4e1;--ok:#13663a;--okbg:#dcf3e4}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1318;--fg:#e6e9ee;--mut:#a3aebd;--box:#1a212b;--line:#7d8a9d;--acc:#8fb2ff;--accbg:#1c2c52;--warn:#ffb454;--warnbg:#3a2a0e;--bad:#ff9b92;--badbg:#411a17;--ok:#74d9a0;--okbg:#12331f}}
+svg{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.bg{fill:var(--bg)}
+.t{fill:var(--fg);font-size:14px}.b{font-weight:700}.m{fill:var(--mut)}.s{font-size:12px}.h{font-size:20px;font-weight:700}
+.box{fill:var(--box);stroke:var(--line);stroke-width:1.5}
+.box.acc{fill:var(--accbg);stroke:var(--acc)}.box.warn{fill:var(--warnbg);stroke:var(--warn)}
+.box.bad{fill:var(--badbg);stroke:var(--bad)}.box.ok{fill:var(--okbg);stroke:var(--ok)}
+.dash{stroke-dasharray:6 4}
+.grp{fill:none;stroke:var(--line);stroke-width:1.3;stroke-dasharray:3 5}
+.ln{fill:none;stroke:var(--line);stroke-width:2}.ln.acc{stroke:var(--acc)}.ln.warn{stroke:var(--warn)}.ln.bad{stroke:var(--bad)}.ln.ok{stroke:var(--ok)}
+.ah{fill:var(--line)}
+.bdg{fill:var(--acc)}.bdgt{fill:var(--bg);font-size:12px;font-weight:700}
+.ta{text-anchor:middle}
+
+.dot,.hlr,.hlb{display:none}.dot{fill:var(--acc)}.hlr{fill:none;stroke:var(--acc);stroke-width:4}.hlb{fill:var(--accbg)}
+@media (prefers-reduced-motion:no-preference){
+.dot,.hlr,.hlb{display:inline}
+.a{opacity:0;animation-duration:25.900000000000002s;animation-iteration-count:infinite;animation-timing-function:linear}
+@keyframes k0{0.0%{opacity:0}0.772%{opacity:0}1.931%{opacity:1}96.911%{opacity:1}98.069%{opacity:0}100.0%{opacity:0}}.k0{animation-name:k0}
+@keyframes k1{0.0%{opacity:0}1.544%{opacity:0;transform:translate(0px,0px)}2.124%{opacity:1;transform:translate(0px,0px)}2.317%{opacity:1;transform:translate(0px,0px)}10.425%{opacity:1;transform:translate(130px,0px)}11.197%{opacity:0;transform:translate(130px,0px)}100.0%{opacity:0}}.k1{animation-name:k1}
+@keyframes k2{0.0%{opacity:0}12.355%{opacity:0}13.514%{opacity:1}24.324%{opacity:1}25.483%{opacity:0}100.0%{opacity:0}}.k2{animation-name:k2}
+@keyframes k3{0.0%{opacity:0}25.483%{opacity:0}26.641%{opacity:1}96.911%{opacity:1}98.069%{opacity:0}100.0%{opacity:0}}.k3{animation-name:k3}
+@keyframes k4{0.0%{opacity:0}26.255%{opacity:0;transform:translate(0px,0px)}26.834%{opacity:1;transform:translate(0px,0px)}27.027%{opacity:1;transform:translate(0px,0px)}35.135%{opacity:1;transform:translate(0px,70px)}35.907%{opacity:0;transform:translate(0px,70px)}100.0%{opacity:0}}.k4{animation-name:k4}
+@keyframes k5{0.0%{opacity:0}37.838%{opacity:0}38.996%{opacity:1}96.911%{opacity:1}98.069%{opacity:0}100.0%{opacity:0}}.k5{animation-name:k5}
+@keyframes k6{0.0%{opacity:0}38.61%{opacity:0;transform:translate(0px,0px)}39.189%{opacity:1;transform:translate(0px,0px)}39.382%{opacity:1;transform:translate(0px,0px)}47.49%{opacity:1;transform:translate(130px,0px)}48.263%{opacity:0;transform:translate(130px,0px)}100.0%{opacity:0}}.k6{animation-name:k6}
+@keyframes k7{0.0%{opacity:0}38.61%{opacity:0;transform:translate(0px,0px)}39.189%{opacity:1;transform:translate(0px,0px)}39.382%{opacity:1;transform:translate(0px,0px)}47.49%{opacity:1;transform:translate(130px,30px)}48.263%{opacity:0;transform:translate(130px,30px)}100.0%{opacity:0}}.k7{animation-name:k7}
+@keyframes k8{0.0%{opacity:0}50.193%{opacity:0}51.351%{opacity:1}96.911%{opacity:1}98.069%{opacity:0}100.0%{opacity:0}}.k8{animation-name:k8}
+@keyframes k9{0.0%{opacity:0}50.965%{opacity:0;transform:translate(0px,0px)}51.544%{opacity:1;transform:translate(0px,0px)}51.737%{opacity:1;transform:translate(0px,0px)}59.846%{opacity:1;transform:translate(-130px,0px)}60.618%{opacity:0;transform:translate(-130px,0px)}100.0%{opacity:0}}.k9{animation-name:k9}
+@keyframes k10{0.0%{opacity:0}62.548%{opacity:0}63.707%{opacity:1}96.911%{opacity:1}98.069%{opacity:0}100.0%{opacity:0}}.k10{animation-name:k10}
+@keyframes k11{0.0%{opacity:0}63.32%{opacity:0;transform:translate(0px,0px)}63.9%{opacity:1;transform:translate(0px,0px)}64.093%{opacity:1;transform:translate(0px,0px)}72.201%{opacity:1;transform:translate(0px,-70px)}72.973%{opacity:0;transform:translate(0px,-70px)}100.0%{opacity:0}}.k11{animation-name:k11}
+@keyframes k12{0.0%{opacity:0}74.903%{opacity:0}76.062%{opacity:1}96.911%{opacity:1}98.069%{opacity:0}100.0%{opacity:0}}.k12{animation-name:k12}
+@keyframes k13{0.0%{opacity:0}75.676%{opacity:0;transform:translate(0px,0px)}76.255%{opacity:1;transform:translate(0px,0px)}76.448%{opacity:1;transform:translate(0px,0px)}79.151%{opacity:1;transform:translate(410px,0px)}81.853%{opacity:1;transform:translate(410px,-75px)}84.556%{opacity:1;transform:translate(460px,-75px)}85.328%{opacity:0;transform:translate(460px,-75px)}100.0%{opacity:0}}.k13{animation-name:k13}
+@keyframes k14{0.0%{opacity:0}1.158%{opacity:1}11.969%{opacity:1}13.127%{opacity:0}100.0%{opacity:0}}.k14{animation-name:k14}
+@keyframes k15{0.0%{opacity:0}24.71%{opacity:0}25.869%{opacity:1}36.68%{opacity:1}37.838%{opacity:0}100.0%{opacity:0}}.k15{animation-name:k15}
+@keyframes k16{0.0%{opacity:0}37.066%{opacity:0}38.224%{opacity:1}49.035%{opacity:1}50.193%{opacity:0}100.0%{opacity:0}}.k16{animation-name:k16}
+@keyframes k17{0.0%{opacity:0}49.421%{opacity:0}50.579%{opacity:1}61.39%{opacity:1}62.548%{opacity:0}100.0%{opacity:0}}.k17{animation-name:k17}
+@keyframes k18{0.0%{opacity:0}61.776%{opacity:0}62.934%{opacity:1}73.745%{opacity:1}74.903%{opacity:0}100.0%{opacity:0}}.k18{animation-name:k18}
+@keyframes k19{0.0%{opacity:0}74.131%{opacity:0}75.29%{opacity:1}86.1%{opacity:1}87.259%{opacity:0}100.0%{opacity:0}}.k19{animation-name:k19}
+}
+</style>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--line)"/></marker><marker id="ar-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--acc)"/></marker><marker id="ar-warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--warn)"/></marker><marker id="ar-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--bad)"/></marker><marker id="ar-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--ok)"/></marker></defs>
+<rect class="bg" width="900" height="714"/>
+<text class="t h" x="24" y="34">Stealth payment flow (animated)</text>
+<text class="t m s" x="24" y="54">Plays in a loop. If you prefer reduced motion, everything is shown at once. Testnet design only; nothing deployed.</text>
+<rect id="seller" class="box acc" x="20" y="80" width="200" height="70" rx="8"/>
+<text class="t ta b" x="120.0" y="111.5">Seller</text>
+<text class="t ta m s" x="120.0" y="128.5">meta-address + keys</text>
+<rect id="payer" class="box acc" x="350" y="80" width="200" height="70" rx="8"/>
+<text class="t ta b" x="450.0" y="111.5">Payer</text>
+<text class="t ta m s" x="450.0" y="128.5">app + wallet</text>
+<rect id="router" class="box ok" x="350" y="220" width="200" height="90" rx="8"/>
+<text class="t ta b" x="450.0" y="253.0">GhostPayRouter</text>
+<text class="t ta m s" x="450.0" y="270.0">split fee / net,</text>
+<text class="t ta m s" x="450.0" y="287.0">emit announcement</text>
+<rect id="fee" class="box ok" x="680" y="210" width="200" height="56" rx="8"/>
+<text class="t ta b" x="780.0" y="234.5">Fee recipient</text>
+<text class="t ta m s" x="780.0" y="251.5">0.25% (set at deployment)</text>
+<rect id="otp" class="box ok" x="680" y="290" width="200" height="70" rx="8"/>
+<text class="t ta b" x="780.0" y="321.5">One-time address</text>
+<text class="t ta m s" x="780.0" y="338.5">holds net amount</text>
+<rect id="ann" class="box ok" x="20" y="220" width="200" height="90" rx="8"/>
+<text class="t ta b" x="120.0" y="253.0">Announcer</text>
+<text class="t ta m s" x="120.0" y="270.0">public log:</text>
+<text class="t ta m s" x="120.0" y="287.0">address, key, view tag</text>
+<rect id="scan" class="box acc" x="20" y="380" width="200" height="70" rx="8"/>
+<text class="t ta b" x="120.0" y="411.5">Seller scanner</text>
+<text class="t ta m s" x="120.0" y="428.5">viewing key, local</text>
+<path class="ln acc a k0" d="M220 115 L350 115" marker-end="url(#ar-acc)"/>
+<text class="t m s a k0" x="255" y="106">invoice link</text>
+<g class="a k0"><circle class="bdg" cx="234" cy="101" r="11"/><text class="bdgt ta" x="234" y="105">1</text></g>
+<circle class="dot a k1" cx="220" cy="115" r="6"/>
+<rect class="hlr a k2" x="345" y="75" width="210" height="80" rx="12"/>
+<path class="ln acc a k3" d="M450 150 L450 220" marker-end="url(#ar-acc)"/>
+<text class="t m s a k3" x="458" y="190">gross</text>
+<g class="a k3"><circle class="bdg" cx="430" cy="185" r="11"/><text class="bdgt ta" x="430" y="189">3</text></g>
+<circle class="dot a k4" cx="450" cy="150" r="6"/>
+<path class="ln ok a k5" d="M550 238 L680 238" marker-end="url(#ar-ok)"/>
+<text class="t m s a k5" x="600" y="230">fee</text>
+<g class="a k5"><circle class="bdg" cx="566" cy="224" r="11"/><text class="bdgt ta" x="566" y="228">4</text></g>
+<circle class="dot a k6" cx="550" cy="238" r="6"/>
+<path class="ln ok a k5" d="M550 292 L680 322" marker-end="url(#ar-ok)"/>
+<text class="t m s a k5" x="600" y="322">net</text>
+<g class="a k5"><circle class="bdg" cx="566" cy="282" r="11"/><text class="bdgt ta" x="566" y="286">4</text></g>
+<circle class="dot a k7" cx="550" cy="292" r="6"/>
+<path class="ln  a k8" d="M350 265 L220 265" marker-end="url(#ar)"/>
+<text class="t m s a k8" x="255" y="256">announce</text>
+<g class="a k8"><circle class="bdg" cx="364" cy="251" r="11"/><text class="bdgt ta" x="364" y="255">5</text></g>
+<circle class="dot a k9" cx="350" cy="265" r="6"/>
+<path class="ln acc a k10" d="M120 380 L120 310" marker-end="url(#ar-acc)"/>
+<text class="t m s a k10" x="130" y="350">reads logs</text>
+<g class="a k10"><circle class="bdg" cx="104" cy="350" r="11"/><text class="bdgt ta" x="104" y="354">6</text></g>
+<circle class="dot a k11" cx="120" cy="380" r="6"/>
+<path class="ln warn a k12" d="M220 425 L630 425 L630 350 L680 350" marker-end="url(#ar-warn)"/>
+<text class="t m s a k12" x="300" y="416">check balance</text>
+<g class="a k12"><circle class="bdg" cx="244" cy="411" r="11"/><text class="bdgt ta" x="244" y="415">7</text></g>
+<circle class="dot a k13" cx="220" cy="425" r="6"/>
+<text class="t s m" x="24" y="480">Illustrative only. Everything on the right and middle is public on-chain; the invoice contents and your keys are not.</text>
+<text class="t b" x="24" y="510">Steps</text>
+<rect class="hlb a k14" x="16" y="520" width="868" height="24" rx="6"/>
+<circle class="bdg" cx="38" cy="532" r="10"/><text class="bdgt ta" x="38" y="536">1</text>
+<text class="t s" x="58" y="536">Seller shares one meta-address inside a signed invoice link (bearer link: keep it private).</text>
+<rect class="hlb a k2" x="16" y="546" width="868" height="24" rx="6"/>
+<circle class="bdg" cx="38" cy="558" r="10"/><text class="bdgt ta" x="38" y="562">2</text>
+<text class="t s" x="58" y="562">Payer's app derives a fresh one-time address from a new ephemeral key and the meta-address.</text>
+<rect class="hlb a k15" x="16" y="572" width="868" height="24" rx="6"/>
+<circle class="bdg" cx="38" cy="584" r="10"/><text class="bdgt ta" x="38" y="588">3</text>
+<text class="t s" x="58" y="588">Payer sends the gross amount through GhostPayRouter (the wallet shows the router, not the seller).</text>
+<rect class="hlb a k16" x="16" y="598" width="868" height="24" rx="6"/>
+<circle class="bdg" cx="38" cy="610" r="10"/><text class="bdgt ta" x="38" y="614">4</text>
+<text class="t s" x="58" y="614">Router sends the 0.25% fee to the fee recipient and the net amount to the one-time address.</text>
+<rect class="hlb a k17" x="16" y="624" width="868" height="24" rx="6"/>
+<circle class="bdg" cx="38" cy="636" r="10"/><text class="bdgt ta" x="38" y="640">5</text>
+<text class="t s" x="58" y="640">Router emits a public announcement: one-time address, ephemeral key, view tag.</text>
+<rect class="hlb a k18" x="16" y="650" width="868" height="24" rx="6"/>
+<circle class="bdg" cx="38" cy="662" r="10"/><text class="bdgt ta" x="38" y="666">6</text>
+<text class="t s" x="58" y="666">Seller's scanner downloads announcements and keeps those that match its keys.</text>
+<rect class="hlb a k19" x="16" y="676" width="868" height="24" rx="6"/>
+<circle class="bdg" cx="38" cy="688" r="10"/><text class="bdgt ta" x="38" y="692">7</text>
+<text class="t s" x="58" y="692">Seller checks the real balance of the one-time address before delivering anything.</text>
+</svg>

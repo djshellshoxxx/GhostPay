@@ -6,16 +6,17 @@ export type {
   BreakerHealth,
   Outcome,
   GuardedBreakerOptions,
+  AcquireOptions,
   Permit,
   RunResult,
   RelayResultClass,
 } from './breaker.js';
-export { parseIp, parseCidr, cidrContains, bucketKey } from './ip.js';
+export { parseIp, parseCidr, cidrContains, bucketKey, groupKey, groupOfBucketKey } from './ip.js';
 export type { ParsedIp, Cidr, BucketPrefixes } from './ip.js';
 export { TrustedProxies, resolveClientIp } from './client.js';
 export type { ClientSource, ResolvedClient, ResolveInput } from './client.js';
 export { TokenBucketLimiter, LossBudget, OVERFLOW_KEY } from './limiter.js';
-export type { TokenBucketOptions, TakeResult, LossBudgetOptions } from './limiter.js';
+export type { TokenBucketOptions, TakeResult, LossBudgetOptions, LossReservation } from './limiter.js';
 export {
   createChallengeService,
   ChallengeService,
@@ -31,6 +32,7 @@ export type {
   VerifyResult,
   IssuedChallenge,
   ChallengeOptions,
+  VerifyInput,
 } from './challenge.js';
 export { normalizeAnswer, generateQuestion } from './challenge-bank.js';
 export type { ChallengeDifficulty, ChallengeRng, GeneratedQuestion } from './challenge-bank.js';

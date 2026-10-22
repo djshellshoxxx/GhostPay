@@ -1,7 +1,8 @@
 import {
   compareProviders,
+  dedupeClaims,
   fetchAnnouncements,
-  verifyReceipt,
+  verifyClaimedPayment,
   type Address,
   type ChainConfig,
   type DeploymentManifest,
@@ -31,9 +32,11 @@ export interface ScanMatch {
   readonly stealthAddress: Address;
   readonly metadata: ParsedMetadata | undefined;
   readonly viaRouter: boolean;
+  /** True if the one-byte view tag matched; false identifies a payment found by the opt-in deep scan. */
+  readonly tagMatches: boolean;
   /**
-   * `verified`: router-attested or backed by the stealth address balance, and `finalityDepth` deep.
-   * `claimed`: metadata only (a direct announcement anyone can forge): do not treat the amount as received.
+   * `verified`: attested by the manifest-verified router after `finalityDepth` confirmations.
+   * `claimed`: announcement metadata only (a direct announcement anyone can forge); balance alone is not payment evidence.
    * `pending`: not yet final.
    */
   readonly receipt: ReceiptStatus;
@@ -47,6 +50,8 @@ export interface ScanProgress {
   readonly caughtUp: boolean;
   /** Pages where a second provider disagreed (checkpoint withheld for those pages). */
   readonly discrepancies?: number;
+  /** The configured per-run announcement or match budget stopped the scan; resume from `nextBlock`. */
+  readonly limitReached?: boolean;
 }
 
 /**
@@ -81,6 +86,12 @@ export interface ScanParams {
   /** A reorg was detected: matches found in blocks >= `rolledBackTo` were dropped from the result and must be dropped by the caller. */
   readonly onReorg?: (rolledBackTo: bigint) => void;
   readonly maxPages?: number;
+  /** Total accepted public announcements to process in one run (default 100,000). */
+  readonly maxAnnouncementsPerScan?: number;
+  /** Total cryptographic matches to retain in one run (default 10,000). */
+  readonly maxMatchesPerScan?: number;
+  /** Opt-in fallback: test the full stealth address when the announced view tag is incorrect. */
+  readonly deep?: boolean;
   /** A worker reply that takes longer than this terminates the scan (default 60 s; S3-15). */
   readonly replyTimeoutMs?: number;
   /** Independent second provider on the same chain; compared at every checkpoint. */
@@ -88,15 +99,15 @@ export interface ScanParams {
   readonly onDiscrepancy?: (d: readonly ProviderDiscrepancy[]) => void;
 }
 
-function toWire(a: ScannedAnnouncement): WireLog {
-  return { id: a.id, schemeId: a.schemeId, stealthAddress: a.stealthAddress, ephemeralPublicKey: a.ephemeralPublicKey, metadata: a.metadata };
+function toWire(a: ScannedAnnouncement, skipTag: boolean): WireLog {
+  return { id: a.id, schemeId: a.schemeId, stealthAddress: a.stealthAddress, ephemeralPublicKey: a.ephemeralPublicKey, metadata: a.metadata, ...(skipTag ? { skipTag: true } : {}) };
 }
 
 /**
  * Network access happens here (via chain-adapters), never in the worker. The worker receives public logs and, once,
  * the viewing key. Cancelling via `signal` stops fetching, tells the worker to stop, and terminates it.
  */
-export async function runScan(p: ScanParams): Promise<{ readonly matches: readonly ScanMatch[]; readonly cursor: ScanCursor; readonly scanned: number; readonly discrepancies: readonly ProviderDiscrepancy[] }> {
+export async function runScan(p: ScanParams): Promise<{ readonly matches: readonly ScanMatch[]; readonly cursor: ScanCursor; readonly scanned: number; readonly discrepancies: readonly ProviderDiscrepancy[]; readonly limitReached: boolean }> {
   let worker: ScanWorkerLike | undefined;
   const pending = new Map<number, (m: FromWorker) => void>();
   let ready: ((m: FromWorker) => void) | undefined;
@@ -124,7 +135,15 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   let cursor = p.cursor;
   let scanned = 0;
   let skipped = 0;
+  let limitReached = false;
+  // Payment identity, unlike a log id, survives a replay announcement at another block. Keep this
+  // ledger per scan only: checkpoints never persist claimed payment data or RPC evidence.
+  const claimLedger = new Map<string, number>();
+  const evidenceLedger = new Map<string, bigint>();
   const discrepancies: ProviderDiscrepancy[] = [];
+  // Pending results from this run are in memory only. On a reorg the safe persistence floor
+  // must move back with the rollback, rather than remaining pinned to the old checkpoint.
+  let persistenceFloor = p.cursor.nextBlock;
   let batchId = 0;
   try {
     // Created inside the try so a throwing factory still reaches the key wipe below (S3-15).
@@ -144,6 +163,8 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
     });
     if (started.type !== 'ready') throw new UserFacingError('The scanner rejected the keys.');
     const maxPages = p.maxPages ?? 10_000;
+    const maxAnnouncements = Math.max(1, Math.min(100_000, Number.isSafeInteger(p.maxAnnouncementsPerScan) ? p.maxAnnouncementsPerScan! : 100_000));
+    const maxMatches = Math.max(1, Math.min(10_000, Number.isSafeInteger(p.maxMatchesPerScan) ? p.maxMatchesPerScan! : 10_000));
     for (let page = 0; page < maxPages; page++) {
       if (p.signal.aborted) break;
       const res = await fetchAnnouncements({ chain: p.chain, client: p.client, announcer: p.manifest.announcer, cursor });
@@ -151,21 +172,35 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       skipped += res.skipped;
       const pageFrom = res.reorg?.rolledBackTo ?? cursor.nextBlock;
       if (res.reorg !== undefined) {
+        persistenceFloor = res.reorg.rolledBackTo;
         // Matches from orphaned blocks must not stay listed; the replay below re-finds the ones that survived.
         const keep = all.filter((m) => m.announcement.blockNumber < res.reorg!.rolledBackTo);
         all.length = 0;
         all.push(...keep);
+        claimLedger.clear();
+        keep.forEach((match, index) => claimLedger.set(`${match.stealthAddress.toLowerCase()}|${match.announcement.ephemeralPublicKey.toLowerCase()}`, index));
+        for (const [id, block] of evidenceLedger) if (block >= res.reorg.rolledBackTo) evidenceLedger.delete(id);
         p.onReorg?.(res.reorg.rolledBackTo);
+      }
+      if (scanned + res.announcements.length > maxAnnouncements) {
+        limitReached = true;
+        if (res.reorg !== undefined) {
+          cursor = { nextBlock: res.reorg.rolledBackTo };
+          p.checkpoints?.clear(p.chain.chainId, p.keyId);
+        }
+        p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, limitReached });
+        break;
       }
       for (const a of res.announcements) byId.set(a.id, a);
       const id = ++batchId;
       const reply = await wait((resolve) => {
         pending.set(id, resolve);
-        w.postMessage({ type: 'batch', batchId: id, logs: res.announcements.map(toWire) });
+        w.postMessage({ type: 'batch', batchId: id, logs: res.announcements.map((a) => toWire(a, p.deep === true && a.caller.toLowerCase() === p.manifest.router.toLowerCase())) });
       });
       pending.delete(id);
       if (reply.type !== 'matches') throw new UserFacingError('The scanner returned an unexpected reply.');
       scanned += res.announcements.length;
+      const claims: { readonly stealthAddress: Address; readonly announcement: ScannedAnnouncement; readonly metadata: ParsedMetadata | undefined; readonly viaRouter: boolean }[] = [];
       for (const m of reply.matches) {
         const announcement = byId.get(m.id);
         if (announcement === undefined) continue;
@@ -176,23 +211,48 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
           metadata = undefined;
         }
         const viaRouter = announcement.caller.toLowerCase() === p.manifest.router.toLowerCase();
-        // Without readable metadata nothing is claimed, so nothing can be verified.
-        const receipt: ReceiptStatus =
-          metadata === undefined
-            ? 'claimed'
-            : await verifyReceipt(p.client, p.chain, {
-                stealthAddress: m.stealthAddress as Address,
-                native: metadata.kind === 'native',
-                token: metadata.token,
-                amount: metadata.netAmount,
-                blockNumber: announcement.blockNumber,
-                viaRouter,
-              });
-        const match: ScanMatch = { chainId: p.chain.chainId, announcement, stealthAddress: m.stealthAddress as Address, metadata, viaRouter, receipt };
-        if (all.some((x) => x.announcement.id === announcement.id)) continue;
-        all.push(match);
-        p.onMatch?.(match);
+        claims.push({ stealthAddress: m.stealthAddress as Address, announcement, metadata, viaRouter });
       }
+      // Drop replay announcements before any payment verification. The helper prefers the verified
+      // router caller for a one-time address/ephemeral-key pair, then the earliest log.
+      const uniqueClaims = dedupeClaims(claims);
+      if (all.length + uniqueClaims.items.length > maxMatches) {
+        limitReached = true;
+        if (res.reorg !== undefined) {
+          cursor = { nextBlock: res.reorg.rolledBackTo };
+          p.checkpoints?.clear(p.chain.chainId, p.keyId);
+        }
+        p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, limitReached });
+        break;
+      }
+      const pageMatches: ScanMatch[] = [];
+      const pageEvidence = new Set(evidenceLedger.keys());
+      const workerMatches = new Map(reply.matches.map((m) => [m.id, m] as const));
+      for (const claim of uniqueClaims.items) {
+        if (p.signal.aborted) break;
+        if (all.some((x) => x.announcement.id === claim.announcement.id)) continue;
+        const verification = claim.metadata === undefined
+          ? undefined
+          : await verifyClaimedPayment({
+              chain: p.chain,
+              client: p.client,
+              router: p.manifest.router,
+              announcer: p.manifest.announcer,
+              claim,
+              ...(p.secondaryClient === undefined ? {} : { secondaryClient: p.secondaryClient }),
+              consumedTransfers: pageEvidence,
+            });
+        // A router-attributed announcement alone is still just a claim. Only independent transfer
+        // evidence can be shown as received; pending applies only to evidence-backed, non-final funds.
+        const receipt: ReceiptStatus = verification?.status === 'received'
+          ? verification.final ? 'verified' : 'pending'
+          : 'claimed';
+        const workerMatch = workerMatches.get(claim.announcement.id);
+        const match: ScanMatch = { chainId: p.chain.chainId, announcement: claim.announcement, stealthAddress: claim.stealthAddress, metadata: claim.metadata, viaRouter: claim.viaRouter, tagMatches: workerMatch?.tagMatches ?? true, receipt };
+        pageMatches.push(match);
+      }
+      // Don't commit evidence from a partially processed/cancelled page.
+      if (p.signal.aborted) break;
       byId.clear();
       let disagree = false;
       if (p.secondaryClient !== undefined && res.cursor.last !== undefined) {
@@ -212,10 +272,46 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
           p.onDiscrepancy?.(cmp.discrepancies);
         }
       }
+      // A primary-only router log can look cryptographically attested. Do not expose any matches from a page
+      // until its logs and checkpoint block have reconciled with the independent provider.
+      if (!disagree) {
+        for (const id of pageEvidence) if (!evidenceLedger.has(id)) {
+          const blockText = id.startsWith('native:') ? id.split(':')[1] : id.split(':')[2];
+          if (blockText !== undefined && /^\d+$/.test(blockText)) evidenceLedger.set(id, BigInt(blockText));
+        }
+        for (const match of pageMatches) {
+          if (all.some((x) => x.announcement.id === match.announcement.id)) continue;
+          const paymentKey = `${match.stealthAddress.toLowerCase()}|${match.announcement.ephemeralPublicKey.toLowerCase()}`;
+          const previous = claimLedger.get(paymentKey);
+          if (previous !== undefined) {
+            const old = all[previous];
+            // A later genuine router record outranks an earlier public replay. Equal-trust records
+            // stay first/earliest. The view's onMatch handler upserts by this same payment key.
+            if (old !== undefined && match.viaRouter && !old.viaRouter) {
+              all[previous] = match;
+              p.onMatch?.(match);
+            }
+            continue;
+          }
+          claimLedger.set(paymentKey, all.length);
+          all.push(match);
+          p.onMatch?.(match);
+        }
+      }
+      // A page the providers disagree on must be re-scanned. Do not advance the in-memory cursor
+      // or continue into later pages, since a later successful page could otherwise checkpoint
+      // past these withheld logs and permanently skip them on resume.
+      if (disagree) {
+        if (res.reorg !== undefined) {
+          cursor = { nextBlock: res.reorg.rolledBackTo };
+          p.checkpoints?.clear(p.chain.chainId, p.keyId);
+        }
+        p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
+        break;
+      }
       cursor = res.cursor;
-      // A page the providers disagree on must be re-scanned: do not persist a checkpoint past it.
       if (!disagree && p.checkpoints !== undefined) {
-        const saved = await persistable(p, cursor);
+        const saved = await persistable(p, cursor, persistenceFloor);
         if (saved !== undefined) p.checkpoints.save(p.chain.chainId, p.keyId, saved);
       }
       p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: !res.truncated, discrepancies: discrepancies.length });
@@ -235,7 +331,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       zeroizeBytes(p.viewingKey);
     }
   }
-  return { matches: all, cursor, scanned, discrepancies };
+  return { matches: all, cursor, scanned, discrepancies, limitReached };
 }
 
 /**
@@ -243,9 +339,8 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
  * `pending` and live in memory alone, so the next session re-scans (and re-verifies) the tail instead of skipping it.
  * Never moves behind where this run started.
  */
-async function persistable(p: ScanParams, cursor: ScanCursor): Promise<ScanCursor | undefined> {
+async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint): Promise<ScanCursor | undefined> {
   const depth = BigInt(p.chain.finalityDepth);
-  const floor = p.cursor.nextBlock;
   let next = cursor.nextBlock > depth ? cursor.nextBlock - depth : 0n;
   if (next < floor) next = floor;
   if (next >= cursor.nextBlock) return cursor;

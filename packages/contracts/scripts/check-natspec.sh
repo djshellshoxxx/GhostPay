@@ -25,7 +25,7 @@ if not dev.get("title"):
 THIRD_PARTY = {"eip712Domain", "SafeERC20FailedOperation", "ECDSAInvalidSignature", "ECDSAInvalidSignatureLength",
                "ECDSAInvalidSignatureS", "InvalidShortString", "StringTooLong", "ReentrancyGuardReentrantCall",
                "EIP712DomainChanged",
-               "InsufficientBalance", "FailedDeployment"}
+               "InsufficientBalance", "FailedDeployment", "SafeCastOverflowedUintDowncast"}
 def ty(x):
     if x["type"].startswith("tuple"):
         return "(" + ",".join(ty(c) for c in x["components"]) + ")" + x["type"][5:]

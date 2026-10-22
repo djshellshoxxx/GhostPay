@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { clearSession, exportKeystore, revealViewingKey, withSessionSecrets, withSessionSecretsAsync, generateSession, getSessionPublic, hasSession, importKeystore, importSession, requireSession, subscribeSession } from './session';
+import { captureSessionGuard, clearSession, exportKeystore, revealViewingKey, withSessionSecrets, withSessionSecretsAsync, generateSession, getSessionPublic, hasSession, importKeystore, importSession, requireSession, subscribeSession } from './session';
 
 afterEach(() => {
   clearSession();
@@ -88,6 +88,25 @@ describe('session', () => {
       { N: 1 << 14 },
     );
     await expect(importKeystore(zero, 'a long passphrase')).rejects.toThrow(/invalid keys/);
+  });
+
+  it('does not let a pending unlock replace a session changed while decrypting', async () => {
+    const original = generateSession();
+    const text = await exportKeystore('a long passphrase', { N: 1 << 15 });
+    const pending = importKeystore(text, 'a long passphrase');
+    clearSession();
+    const replacement = generateSession();
+    await expect(pending).rejects.toThrow(/changed while the keystore was unlocking/);
+    expect(getSessionPublic()).toBe(replacement);
+    expect(getSessionPublic()).not.toBe(original);
+  });
+
+  it('invalidates a guard across an empty-to-loaded transition', () => {
+    generateSession();
+    const check = captureSessionGuard();
+    clearSession();
+    generateSession();
+    expect(check).toThrow(/changed during this action/);
   });
 });
 

@@ -186,3 +186,60 @@ describe('privacy: the transport only ever receives block heights', () => {
     expect(mem.requests.every((r) => r.height === undefined || Number.isInteger(r.height))).toBe(true);
   });
 });
+
+describe('duplicate-key and outpoint replay handling', () => {
+  function replaySource(): InMemoryTweakSource {
+    const b = makeBlock(400, [{ inputs: [p2wpkhInput('duplicate-key')], recipients: [aliceAddr] }]);
+    const real = b.outputs.outputs[0];
+    if (real === undefined) throw new Error('fixture');
+    const replayed = { ...real, txid: '33'.repeat(32), vout: 7, amountSats: 5_000n };
+    const at = (height: number, outputs = [real]) => ({
+      tweaks: { ...b.tweaks, height, blockHash: blockHashOf(height) },
+      outputs: { ...b.outputs, height, blockHash: blockHashOf(height), outputs },
+    });
+    return new InMemoryTweakSource([
+      at(400, [{ ...real, txid: '22'.repeat(32), vout: 3, amountSats: 99_999n }, real]),
+      at(401, [replayed]),
+    ]);
+  }
+
+  it('returns each duplicate-key output with its own metadata and flags a later key replay', async () => {
+    const found = await collect(scanBlocks({ source: replaySource(), keys, fromHeight: 400, toHeight: 401 }));
+    expect(found).toHaveLength(3);
+    expect([found[0]?.height, found[0]?.txid, found[0]?.vout, found[0]?.amountSats]).toEqual([
+      400,
+      '22'.repeat(32),
+      3,
+      99_999n,
+    ]);
+    expect(found[1]?.height).toBe(400);
+    expect(found[1]?.txid).not.toBe(found[0]?.txid);
+    expect([found[2]?.height, found[2]?.txid, found[2]?.vout, found[2]?.amountSats]).toEqual([
+      401,
+      '33'.repeat(32),
+      7,
+      5_000n,
+    ]);
+    expect(found.every((r) => r.duplicateKey && !r.verified)).toBe(true);
+  });
+
+  it('updates seenKeys across independent scan calls and deduplicates a repeated outpoint', async () => {
+    const src = replaySource();
+    const seenKeys = new Set<string>();
+    const first = await collect(scanBlocks({ source: src, keys, fromHeight: 400, toHeight: 400, seenKeys }));
+    const later = await collect(scanBlocks({ source: src, keys, fromHeight: 401, toHeight: 401, seenKeys }));
+    expect(first.every((r) => r.duplicateKey)).toBe(true);
+    expect(later.map((r) => r.duplicateKey)).toEqual([true]);
+
+    const b = makeBlock(500, [{ inputs: [p2wpkhInput('same-outpoint')], recipients: [aliceAddr] }]);
+    const output = b.outputs.outputs[0];
+    if (output === undefined) throw new Error('fixture');
+    const repeated = new InMemoryTweakSource([500, 501].map((height) => ({
+      tweaks: { ...b.tweaks, height, blockHash: blockHashOf(height) },
+      outputs: { ...b.outputs, height, blockHash: blockHashOf(height), outputs: [output] },
+    })));
+    const once = await collect(scanBlocks({ source: repeated, keys, fromHeight: 500, toHeight: 501 }));
+    expect(once).toHaveLength(1);
+    expect(once[0]?.height).toBe(500);
+  });
+});

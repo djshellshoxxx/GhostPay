@@ -8,6 +8,7 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
 import {IPolicyAccount} from "./interfaces/IPolicyAccount.sol";
 
@@ -41,6 +42,9 @@ import {IPolicyAccount} from "./interfaces/IPolicyAccount.sol";
 ///   (`limitLeafHash`) and the supplied proof must use it, so the submitter cannot pick a different
 ///   leaf of the same tree. Merkle trees should still contain each token at most once.
 /// - The caller of `executeWithdraw`/`executeDestinationChange` is irrelevant; recipients are state.
+/// - Each request captures its destination at acceptance. A destination rotation invalidates older
+///   requests until they are cancelled and re-signed, so an old owner signature cannot follow a new
+///   destination.
 /// - Storage is read from the clone; `ReentrancyGuard` starts at 0 in clones, which is accepted by it.
 contract PolicyAccount is IPolicyAccount, EIP712, ReentrancyGuard {
     using SafeERC20 for IERC20;
@@ -95,8 +99,19 @@ contract PolicyAccount is IPolicyAccount, EIP712, ReentrancyGuard {
         uint256 previous;
     }
 
+    /// @dev Request fields plus the destination that was current when its signature was accepted.
+    struct StoredRequest {
+        address token;
+        Status status;
+        uint64 executeAfter;
+        uint64 windowSeconds;
+        address destination;
+        uint256 amount;
+        uint256 limit;
+    }
+
     /// @dev Withdrawal requests by id.
-    mapping(bytes32 id => Request) private _requests;
+    mapping(bytes32 id => StoredRequest) private _requests;
     /// @dev Per-token window state.
     mapping(address token => WindowState) private _windows;
     /// @dev Word index (`nonce >> 8`) => bitmap of used nonces.
@@ -170,14 +185,13 @@ contract PolicyAccount is IPolicyAccount, EIP712, ReentrancyGuard {
             }
         }
 
-        // Bounded: timestamp + MAX_DELAY fits in 64 bits for any realistic timestamp.
-        // forge-lint: disable-next-line(unsafe-typecast)
-        uint64 executeAfter = uint64(block.timestamp + delay);
-        _requests[id] = Request({
+        uint64 executeAfter = SafeCast.toUint64(block.timestamp + delay);
+        _requests[id] = StoredRequest({
             token: w.token,
             status: Status.Pending,
             executeAfter: executeAfter,
             windowSeconds: window,
+            destination: destination,
             amount: w.amount,
             limit: limit
         });
@@ -188,14 +202,17 @@ contract PolicyAccount is IPolicyAccount, EIP712, ReentrancyGuard {
 
     /// @inheritdoc IPolicyAccount
     function executeWithdraw(bytes32 id) external nonReentrant {
-        Request memory r = _requests[id];
+        StoredRequest memory r = _requests[id];
         if (r.status != Status.Pending) revert NotPending();
         // forge-lint: disable-next-line(block-timestamp)
         if (block.timestamp < r.executeAfter) revert TimelockActive(r.executeAfter);
+        address to = destination;
+        if (to != r.destination) {
+            revert DestinationChangedSinceRequest(r.destination, to);
+        }
         _requests[id].status = Status.Executed;
         if (r.limit != type(uint256).max) _consume(r.token, r.amount, r.limit, r.windowSeconds);
 
-        address to = destination;
         if (r.token == address(0)) {
             // Destination is contract state controlled only by the owner's timelocked policy, not by the
             // caller. Assembly call: no return data is copied, so a hostile destination cannot inflate
@@ -253,7 +270,7 @@ contract PolicyAccount is IPolicyAccount, EIP712, ReentrancyGuard {
 
         // Bounded: 2 * MAX_DELAY plus a timestamp fits in 64 bits.
         // forge-lint: disable-next-line(unsafe-typecast)
-        uint64 effectiveAt = uint64(block.timestamp + 2 * uint256(delay));
+        uint64 effectiveAt = SafeCast.toUint64(block.timestamp + 2 * uint256(delay));
         pendingDestination = newDestination;
         pendingEffectiveAt = effectiveAt;
         pendingProposalId = id;
@@ -293,7 +310,20 @@ contract PolicyAccount is IPolicyAccount, EIP712, ReentrancyGuard {
     /// @param id The request id.
     /// @return request The request (status `None` if unknown).
     function requests(bytes32 id) external view returns (Request memory request) {
-        request = _requests[id];
+        StoredRequest memory r = _requests[id];
+        request = Request({
+            token: r.token,
+            status: r.status,
+            executeAfter: r.executeAfter,
+            windowSeconds: r.windowSeconds,
+            amount: r.amount,
+            limit: r.limit
+        });
+    }
+
+    /// @inheritdoc IPolicyAccount
+    function requestDestination(bytes32 id) external view returns (address) {
+        return _requests[id].destination;
     }
 
     /// @notice Whether an unordered nonce was consumed.

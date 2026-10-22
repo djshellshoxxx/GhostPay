@@ -6,6 +6,7 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
 import {PolicyBase} from "./PolicyBase.t.sol";
 import {PolicyAccount} from "../src/PolicyAccount.sol";
@@ -940,6 +941,31 @@ contract PolicyAccountTest is PolicyBase {
         assertEq(acct.policyHash(), keccak256(abi.encode(destination, DELAY, root)));
     }
 
+    function test_requestTimestampBeyondUint64_revertsInsteadOfWrapping() public {
+        uint256 t = uint256(type(uint64).max) - DELAY + 1;
+        vm.warp(t);
+        IPolicyAccount.LimitProof memory lp = _lp(2);
+        IPolicyAccount.Withdraw memory w = _wFor(address(tokenU), 1, 1, lp);
+        w.deadline = type(uint256).max;
+        bytes memory sig = _sigW(ownerPk, address(acct), w);
+        vm.expectRevert(
+            abi.encodeWithSelector(SafeCast.SafeCastOverflowedUintDowncast.selector, 64, t + DELAY)
+        );
+        acct.requestWithdraw(w, lp, sig);
+    }
+
+    function test_destinationProposalTimestampBeyondUint64_revertsInsteadOfWrapping() public {
+        uint256 t = uint256(type(uint64).max) - 2 * uint256(DELAY) + 1;
+        vm.warp(t);
+        bytes memory sig = _sigPropose(ownerPk, address(acct), newDest, type(uint256).max, 1);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                SafeCast.SafeCastOverflowedUintDowncast.selector, 64, t + 2 * uint256(DELAY)
+            )
+        );
+        acct.proposeDestination(newDest, type(uint256).max, 1, sig);
+    }
+
     function test_executeDestinationChange_noProposal_reverts() public {
         vm.expectRevert(IPolicyAccount.NoProposal.selector);
         acct.executeDestinationChange();
@@ -1008,16 +1034,30 @@ contract PolicyAccountTest is PolicyBase {
         assertEq(token.balanceOf(thief), 0);
     }
 
-    function test_attack_changeAppliesAfterTwiceDelay_pendingWithdrawalsFollowNewDestination()
+    function test_destinationChangeInvalidatesPendingWithdrawals_requestCanBeCancelledAndResigned()
         public
     {
         bytes32 wid = _request(acct, address(token), 100e6, 1, 0);
+        assertEq(acct.requestDestination(wid), destination);
         _propose(newDest, 2);
         vm.warp(vm.getBlockTimestamp() + 2 * DELAY);
         acct.executeDestinationChange();
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IPolicyAccount.DestinationChangedSinceRequest.selector, destination, newDest
+            )
+        );
         acct.executeWithdraw(wid);
-        assertEq(token.balanceOf(newDest), 100e6);
         assertEq(token.balanceOf(destination), 0);
+        assertEq(token.balanceOf(newDest), 0);
+
+        acct.cancel(wid, _sigCancel(ownerPk, address(acct), wid));
+        bytes32 replacement = _request(acct, address(token), 40e6, 3, 0);
+        assertEq(acct.requestDestination(replacement), newDest);
+        vm.warp(vm.getBlockTimestamp() + DELAY);
+        acct.executeWithdraw(replacement);
+        assertEq(token.balanceOf(destination), 0);
+        assertEq(token.balanceOf(newDest), 40e6);
     }
 
     function test_attack_proposalSignatureReplayOnOtherClone_reverts() public {

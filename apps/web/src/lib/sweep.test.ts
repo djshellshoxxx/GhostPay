@@ -11,7 +11,7 @@ import { erc20Abi } from '@ghostpay/chain-adapters';
 
 const TOKEN = '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as Address;
 const DEST = '0x6666666666666666666666666666666666666666' as Address;
-const FEE_TO = '0x7777777777777777777777777777777777777777' as Address;
+const FEE_TO = FAKE_FEE_RECIPIENT as Address;
 const NOW = 1_800_000_000;
 const manifest = fakeManifest(84532);
 
@@ -67,24 +67,80 @@ describe('getSweepQuote', () => {
   const quoteFetch = (over: Record<string, unknown> = {}) => (): Promise<Response> =>
     Promise.resolve(new Response(JSON.stringify({ fee: '5000', feeTo: FEE_TO, expiresAt: NOW + 60, quoteToken: 'tok', ...over })));
   it('returns the quote and net amount', async () => {
-    const q = await getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, quoteFetch());
+    const q = await getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, manifest.feeRecipient, quoteFetch());
     expect(q.net).toBe(995_000n);
   });
   it('requires a relayer URL', async () => {
-    await expect(getSweepQuote('', target, DEST, 1_000_000n, NOW)).rejects.toThrow(/relayer URL/);
+    await expect(getSweepQuote('', target, DEST, 1_000_000n, NOW, manifest.feeRecipient)).rejects.toThrow(/relayer URL/);
   });
   it('refuses fees above the published 3 % cap', async () => {
-    await expect(getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, quoteFetch({ fee: '30001' }))).rejects.toThrow(/above the published cap/);
-    await expect(getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, quoteFetch({ fee: '1000000' }))).rejects.toThrow(/above the published cap/);
+    await expect(getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, manifest.feeRecipient, quoteFetch({ fee: '30001' }))).rejects.toThrow(/above the published cap/);
+    await expect(getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, manifest.feeRecipient, quoteFetch({ fee: '1000000' }))).rejects.toThrow(/above the published cap/);
   });
   it('refuses expired quotes and unacceptable fee addresses', async () => {
-    await expect(getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, quoteFetch({ expiresAt: NOW }))).rejects.toThrow(/expired/);
-    await expect(getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, quoteFetch({ feeTo: DEST }))).rejects.toThrow(/fee address is unacceptable/);
-    await expect(getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, quoteFetch({ feeTo: target.owner }))).rejects.toThrow(/fee address is unacceptable/);
+    await expect(getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, manifest.feeRecipient, quoteFetch({ expiresAt: NOW }))).rejects.toThrow(/expired/);
+    await expect(getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, manifest.feeRecipient, quoteFetch({ feeTo: DEST }))).rejects.toThrow(/fee address is unacceptable/);
+    await expect(getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, manifest.feeRecipient, quoteFetch({ feeTo: target.owner }))).rejects.toThrow(/fee address is unacceptable/);
+    await expect(getSweepQuote('https://relay.test', target, DEST, 1_000_000n, NOW, manifest.feeRecipient, quoteFetch({ feeTo: '0x7777777777777777777777777777777777777777' }))).rejects.toThrow(/does not match the deployment fee recipient/);
   });
 });
 
 describe('relayedSweep (EIP-712 sweep + ERC-2612 permit, signed in memory)', () => {
+  it('pins feeTo to the deployment manifest and rejects near-expiry quotes before requesting signatures', async () => {
+    const rpc = mockRpc(84532, () => {
+      throw new Error('RPC should not be reached');
+    });
+    const submitted: unknown[] = [];
+    const base = {
+      target,
+      manifest,
+      destination: DEST,
+      amount: 1_000_000n,
+      relayerUrl: 'https://relay.test',
+      rpc,
+      nowSeconds: () => NOW,
+      fetchFn: (): Promise<Response> => {
+        submitted.push(true);
+        return Promise.resolve(new Response('{}'));
+      },
+    };
+    await expect(relayedSweep({ ...base, quote: { fee: 5000n, feeTo: '0x7777777777777777777777777777777777777777', expiresAt: NOW + 600, quoteToken: 'tok' } }))
+      .rejects.toThrow(/does not match the deployment fee recipient/);
+    await expect(relayedSweep({ ...base, quote: { fee: 5000n, feeTo: FEE_TO, expiresAt: NOW + 30, quoteToken: 'tok' } }))
+      .rejects.toThrow(/expired or is about to/);
+    expect(rpc.calls).toHaveLength(0);
+    expect(submitted).toHaveLength(0);
+  });
+
+  it('rechecks quote expiry after asynchronous permit reads and stops before relay submission', async () => {
+    let now = NOW;
+    let submitted = false;
+    const rpc = mockRpc(84532, (_m, params) => {
+      const data = (params[0] as { data: string }).data;
+      if (data.startsWith('0x06fdde03')) {
+        now = NOW + 31;
+        return encodeFunctionResult({ abi: erc20MetadataAbi, functionName: 'name', result: 'USDC' });
+      }
+      if (data.startsWith('0x7ecebe00')) return encodeFunctionResult({ abi: erc2612PermitAbi, functionName: 'nonces', result: 4n });
+      return eip712DomainSeparator({ name: 'USDC', version: '2', chainId: 84532, verifyingContract: TOKEN });
+    });
+    await expect(relayedSweep({
+      target,
+      manifest,
+      destination: DEST,
+      amount: 1_000_000n,
+      quote: { fee: 5000n, feeTo: FEE_TO, expiresAt: NOW + 60, quoteToken: 'tok' },
+      relayerUrl: 'https://relay.test',
+      rpc,
+      nowSeconds: () => now,
+      fetchFn: (): Promise<Response> => {
+        submitted = true;
+        return Promise.resolve(new Response('{}'));
+      },
+    })).rejects.toThrow(/expired or is about to/);
+    expect(submitted).toBe(false);
+  });
+
   it('signs a sweep and a permit that recover to the stealth address and submits them', async () => {
     const rpc = mockRpc(84532, (_m, params) => {
       const data = (params[0] as { data: string }).data;
@@ -105,7 +161,7 @@ describe('relayedSweep (EIP-712 sweep + ERC-2612 permit, signed in memory)', () 
       quote: { fee: 5000n, feeTo: FEE_TO, expiresAt: NOW + 60, quoteToken: 'tok' },
       relayerUrl: 'https://relay.test',
       rpc,
-      nowSeconds: NOW,
+      nowSeconds: () => NOW,
       fetchFn,
       randomNonce: () => 42n,
     });
@@ -133,7 +189,7 @@ describe('relayedSweep (EIP-712 sweep + ERC-2612 permit, signed in memory)', () 
       throw new Error('rpc down');
     });
     await expect(
-      relayedSweep({ target, manifest, destination: DEST, amount: 1n, quote: { fee: 0n, feeTo: FEE_TO, expiresAt: NOW + 60, quoteToken: 'tok' }, relayerUrl: 'https://relay.test', rpc, nowSeconds: NOW }),
+      relayedSweep({ target, manifest, destination: DEST, amount: 1n, quote: { fee: 0n, feeTo: FEE_TO, expiresAt: NOW + 60, quoteToken: 'tok' }, relayerUrl: 'https://relay.test', rpc, nowSeconds: () => NOW }),
     ).rejects.toThrow();
     void requireSession;
   });
@@ -199,6 +255,48 @@ describe('directSweep (stealth address pays gas, signs a plain transfer)', () =>
     const base = rpcFor(10n ** 17n, {});
     const rpc = { ...base, request: (m: string, p: readonly unknown[]) => (m === 'eth_sendRawTransaction' ? Promise.resolve(`0x${'aa'.repeat(32)}`) : base.request(m, p)) };
     await expect(directSweep({ target, manifest, destination: DEST, amount: 1n, rpc })).rejects.toThrow(/does not match the signed transaction/);
+  });
+
+  it('aborts before signing when the session locks during an RPC await', async () => {
+    let release!: (value: unknown) => void;
+    const firstRpc = new Promise<unknown>((resolve) => { release = resolve; });
+    const calls: string[] = [];
+    const rpc = {
+      request: (method: string): Promise<unknown> => {
+        calls.push(method);
+        return method === 'eth_gasPrice' ? firstRpc : Promise.resolve('0x1');
+      },
+    } as never;
+    const pending = directSweep({ target, manifest, destination: DEST, amount: 1n, rpc });
+    clearSession();
+    release('0x3b9aca00');
+    await expect(pending).rejects.toThrow(/Seller keys changed during this action/);
+    expect(calls).toEqual(['eth_gasPrice']);
+  });
+
+  it('reports a direct sweep as submitted if the session locks after broadcast begins', async () => {
+    const sent: { raw?: `0x${string}` } = {};
+    const base = rpcFor(10n ** 17n, sent);
+    let beginSend!: () => void;
+    const sendStarted = new Promise<void>((resolve) => { beginSend = resolve; });
+    let resolveSend!: (hash: unknown) => void;
+    const sendResponse = new Promise<unknown>((resolve) => { resolveSend = resolve; });
+    const rpc = {
+      ...base,
+      request: (method: string, params: readonly unknown[]) => {
+        if (method === 'eth_sendRawTransaction') {
+          sent.raw = params[0] as `0x${string}`;
+          beginSend();
+          return sendResponse;
+        }
+        return base.request(method, params);
+      },
+    };
+    const pending = directSweep({ target, manifest, destination: DEST, amount: 777n, rpc });
+    await sendStarted;
+    clearSession();
+    resolveSend(keccak256(sent.raw!));
+    await expect(pending).resolves.toMatchObject({ hash: keccak256(sent.raw!), sent: 777n });
   });
 });
 
@@ -277,7 +375,7 @@ describe('S3-09 / S3-12 / S3-22 integration (tx-review + address-safety)', () =>
         quote: { fee: 5000n, feeTo: FEE_TO, expiresAt: NOW + 60, quoteToken: 'tok' },
         relayerUrl: 'https://relay.test',
         rpc,
-        nowSeconds: NOW,
+        nowSeconds: () => NOW,
         randomNonce: () => 1n,
         fetchFn: (): Promise<Response> => {
           seen.push(1);
@@ -293,8 +391,8 @@ describe('S3-09 / S3-12 / S3-22 integration (tx-review + address-safety)', () =>
       throw new Error('no rpc');
     });
     await expect(
-      relayedSweep({ target, manifest, destination: DEST, amount: 1_000_000n, quote: { fee: 400_000n, feeTo: FEE_TO, expiresAt: NOW + 60, quoteToken: 'tok' }, relayerUrl: 'https://relay.test', rpc, nowSeconds: NOW }),
-    ).rejects.toThrow(/FEE_SHARE_ABOVE_CAP/);
+      relayedSweep({ target, manifest, destination: DEST, amount: 1_000_000n, quote: { fee: 400_000n, feeTo: FEE_TO, expiresAt: NOW + 60, quoteToken: 'tok' }, relayerUrl: 'https://relay.test', rpc, nowSeconds: () => NOW }),
+    ).rejects.toThrow(/above the published cap/);
   });
 
   it('rejects poisoned and malformed destinations', () => {

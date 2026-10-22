@@ -237,6 +237,19 @@ th, td { text-align: left; vertical-align: top; padding: 8px 12px; border-top: 1
 .matches { list-style: none; padding: 0; }
 .matches > li { margin-bottom: 12px; }
 
+.receipt-panel { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
+.receipt-facts { overflow-wrap: anywhere; }
+.receipt-json { min-height: 10rem; }
+.receipt-print { margin-top: 16px; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); }
+.receipt-print h5 { margin: 0 0 8px; font-size: 1rem; }
+@media print {
+  body * { visibility: hidden; }
+  .receipt-print, .receipt-print * { visibility: visible; }
+  .receipt-print { position: absolute; inset: 0 auto auto 0; width: 100%; border: 0; background: #fff; color: #000; }
+  .receipt-actions, .receipt-json, .receipt-json + p { display: none !important; }
+  .receipt-print .field { display: none; }
+}
+
 .qr { margin: 12px 0; max-width: 20rem; }
 .qr-svg { width: 100%; height: auto; display: block; border: 1px solid var(--border); }
 .qr-bg { fill: #ffffff; }

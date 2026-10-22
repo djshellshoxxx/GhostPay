@@ -100,7 +100,10 @@ function node(w: World): Promise<RpcClient> {
 }
 const transferLog = (c: ClaimedPayment, over: Record<string, unknown> = {}): Record<string, unknown> => ({
   address: USDC_SEPOLIA,
+  blockNumber: `0x${c.announcement.blockNumber.toString(16)}`,
   blockHash: BLOCK_HASH,
+  transactionHash: c.announcement.transactionHash ?? TX,
+  logIndex: '0x5',
   topics: [TRANSFER_TOPIC, pad(FAKE.router), pad(c.stealthAddress)],
   data: word(NET),
   ...over,
@@ -133,13 +136,13 @@ describe('dedupeClaims', () => {
 describe('verifyClaimedPayment', () => {
   it('RECEIVED: router announcement, canonical block, matching token Transfer; shows depth versus finality', async () => {
     const { claim } = make();
-    const v = await verifyClaimedPayment(base(await node({ transferLogs: [transferLog(claim)], balance: NET }), claim));
+    const v = await verifyClaimedPayment({ ...base(await node({ transferLogs: [transferLog(claim)], balance: NET }), claim), observeBalance: true });
     expect(v.status).toBe('received');
     expect(v.evidence).toEqual(['router-caller', 'block-hash', 'transfer-log']);
     expect(v.confirmations).toBe(51n);
     expect(v.final).toBe(false);
     expect(v.observedBalance).toBe(NET);
-    const deep = await verifyClaimedPayment(base(await node({ transferLogs: [transferLog(claim)], head: 400n }), claim));
+    const deep = await verifyClaimedPayment({ ...base(await node({ transferLogs: [transferLog(claim)], head: 400n }), claim), observeBalance: true });
     expect(deep.final).toBe(true);
     expect(deep.observedBalance).toBe(0n); // already swept: still received, evidenced by the Transfer log
   });
@@ -160,6 +163,13 @@ describe('verifyClaimedPayment', () => {
     expect(v.observedBalance).toBeUndefined();
     expect(calls).not.toContain('eth_call');
   });
+  it('does not reveal a matched stealth address through balance reads by default', async () => {
+    const { claim } = make({ caller: FAKE.announcer });
+    const calls: string[] = [];
+    await verifyClaimedPayment(base(await node({ calls, balance: 5n }), claim));
+    expect(calls).not.toContain('eth_getBalance');
+    expect(calls).not.toContain('eth_call');
+  });
   it('router claim without a matching Transfer is unverified', async () => {
     const { claim } = make();
     const w = (logs: unknown[]) => node({ transferLogs: logs });
@@ -168,6 +178,12 @@ describe('verifyClaimedPayment', () => {
       [transferLog(claim, { data: word(NET + 1n) })],
       [transferLog(claim, { address: FAKE.announcer })],
       [transferLog(claim, { blockHash: `0x${'ee'.repeat(32)}` })],
+      [transferLog(claim, { topics: [TRANSFER_TOPIC, pad(FAKE.announcer), pad(claim.stealthAddress)] })],
+      [transferLog(claim, { topics: [TRANSFER_TOPIC, pad(FAKE.router), pad(FAKE.announcer)] })],
+      [transferLog(claim, { topics: [`0x${'00'.repeat(32)}`, pad(FAKE.router), pad(claim.stealthAddress)] })],
+      [transferLog(claim, { transactionHash: `0x${'ee'.repeat(32)}` })],
+      [transferLog(claim, { blockNumber: '0x65' })],
+      [transferLog(claim, { logIndex: '0x1000000' })],
       [transferLog(claim, { removed: true })],
       [transferLog(claim, { data: '0x12' })],
       [null],
@@ -187,9 +203,50 @@ describe('verifyClaimedPayment', () => {
     const v = await verifyClaimedPayment(base(await node({ failAll: true }), claim));
     expect(v.status).toBe('unverified-claim');
     expect(v.reason).toMatch(/could not confirm/);
-    const v2 = await verifyClaimedPayment(base(await node({ failBalance: true, transferLogs: [transferLog(claim)] }), claim));
+    const v2 = await verifyClaimedPayment({ ...base(await node({ failBalance: true, transferLogs: [transferLog(claim)] }), claim), observeBalance: true });
     expect(v2.status).toBe('received');
     expect(v2.observedBalance).toBeUndefined();
+  });
+  it('requires chain-bound allowlisted metadata and reconciled exact evidence', async () => {
+    const evil = '0x00000000000000000000000000000000deadbeef' as Address;
+    const { claim: unknownToken } = make({ token: evil });
+    expect((await verifyClaimedPayment(base(await node({ transferLogs: [transferLog(unknownToken)] }), unknownToken))).status).toBe('unverified-claim');
+    const { claim } = make();
+    const goodLog = transferLog(claim);
+    const primary = await node({ transferLogs: [goodLog] });
+    const secondary = await node({ transferLogs: [transferLog(claim, { data: word(NET + 1n) })] });
+    const reconciled = await verifyClaimedPayment({ ...base(primary, claim), secondaryClient: secondary });
+    expect(reconciled.status).toBe('unverified-claim');
+    expect(reconciled.reason).toMatch(/providers did not agree/);
+    const wrongChain = await verifyClaimedPayment({ ...base(primary, claim), chain: { ...SEPOLIA, chainId: 1 } });
+    expect(wrongChain.status).toBe('unverified-claim');
+  });
+  it('consumes each matching transfer once and only after successful verification', async () => {
+    const { claim } = make();
+    const consumed = new Set<string>();
+    const input = { ...base(await node({ transferLogs: [transferLog(claim)] }), claim), consumedTransfers: consumed };
+    const first = await verifyClaimedPayment(input);
+    expect(first.status).toBe('received');
+    expect(first.evidenceId).toBeDefined();
+    expect(consumed.size).toBe(1);
+    const second = await verifyClaimedPayment(input);
+    expect(second.status).toBe('unverified-claim');
+    expect(second.reason).toMatch(/already been credited/);
+    const empty = new Set<string>();
+    const failed = await verifyClaimedPayment({ ...input, consumedTransfers: empty, client: await node({}) });
+    expect(failed.status).toBe('unverified-claim');
+    expect(empty.size).toBe(0);
+  });
+  it('does not reuse one transaction Transfer for another announcement to the same one-time address', async () => {
+    const { claim } = make();
+    const second = { ...claim, announcement: { ...claim.announcement, ephemeralPublicKey: `0x02${'55'.repeat(32)}`, logIndex: claim.announcement.logIndex + 1 } };
+    const consumedTransfers = new Set<string>();
+    const client = await node({ transferLogs: [transferLog(claim)] });
+    const first = await verifyClaimedPayment({ ...base(client, claim), consumedTransfers });
+    const replay = await verifyClaimedPayment({ ...base(client, second), consumedTransfers });
+    expect(first.status).toBe('received');
+    expect(replay.status).toBe('unverified-claim');
+    expect(replay.reason).toMatch(/already been credited/);
   });
   it('router announcement with foreign metadata is unverified', async () => {
     const { claim } = make();
@@ -205,14 +262,14 @@ describe('verifyClaimedPayment', () => {
 
   describe('native', () => {
     const nativeOk = (c: ClaimedPayment) => ({
-      receipt: { status: '0x1', blockHash: BLOCK_HASH, logs: [{ address: ANN, logIndex: `0x${c.announcement.logIndex.toString(16)}` }] },
-      tx: { to: FAKE.router, value: `0x${(NET + 25_000n).toString(16)}` },
+      receipt: { status: '0x1', blockHash: BLOCK_HASH, blockNumber: `0x${c.announcement.blockNumber.toString(16)}`, transactionHash: c.announcement.transactionHash ?? TX, logs: [{ address: ANN, blockHash: BLOCK_HASH, blockNumber: `0x${c.announcement.blockNumber.toString(16)}`, transactionHash: c.announcement.transactionHash ?? TX, logIndex: `0x${c.announcement.logIndex.toString(16)}` }] },
+      tx: { hash: c.announcement.transactionHash ?? TX, blockNumber: `0x${c.announcement.blockNumber.toString(16)}`, to: FAKE.router, value: `0x${(NET + 25_000n).toString(16)}` },
     });
-    it('received when the balance covers the claim', async () => {
+    it('does not use an existing balance as proof of a native payment', async () => {
       const { claim } = make({ token: 'native' });
       const v = await verifyClaimedPayment(base(await node({ balance: NET }), claim));
-      expect(v.status).toBe('received');
-      expect(v.evidence).toEqual(['router-caller', 'block-hash', 'balance']);
+      expect(v.status).toBe('unverified-claim');
+      expect(v.evidence).toEqual(['router-caller', 'block-hash']);
     });
     it('received after a sweep when the receipt shows a successful router call carrying enough value', async () => {
       const { claim } = make({ token: 'native' });
@@ -269,12 +326,14 @@ describe('verifyPaymentByTxHash', () => {
   function receiptFor(claims: ClaimedPayment[], over: Record<string, unknown> = {}): unknown {
     return {
       status: '0x1',
+      transactionHash: TX,
       blockNumber: '0x64',
       blockHash: BLOCK_HASH,
       logs: claims.map((c, i) => ({
         address: ANN,
         topics: [ANNOUNCEMENT_TOPIC, word(1n), pad(c.stealthAddress), pad(c.announcement.caller)],
         data: encodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], [c.announcement.ephemeralPublicKey as Hex, c.announcement.metadata as Hex]),
+        transactionHash: TX,
         blockNumber: '0x64',
         blockHash: BLOCK_HASH,
         logIndex: `0x${(i + 4).toString(16)}`,
@@ -329,5 +388,15 @@ describe('verifyPaymentByTxHash', () => {
     const mine = make().claim;
     const res = await verifyPaymentByTxHash(input(await node({ receipt: receiptFor([mine]), transferLogs: [transferLog(mine)] }), TX.toUpperCase().replace('0X', '0x')));
     expect(res).toHaveLength(1);
+  });
+  it('requires the receipt and its announcements to bind to the requested canonical transaction', async () => {
+    const mine = make().claim;
+    const valid = receiptFor([mine]) as { logs: Record<string, unknown>[] };
+    const wrongReceiptTx = await node({ receipt: { ...valid, transactionHash: `0x${'ee'.repeat(32)}` }, transferLogs: [transferLog(mine)] });
+    await expect(verifyPaymentByTxHash(input(wrongReceiptTx))).rejects.toThrow(/receipt transaction hash does not match/);
+    const wrongBlock = await node({ receipt: { ...valid, blockHash: `0x${'ee'.repeat(32)}` }, transferLogs: [transferLog(mine)] });
+    await expect(verifyPaymentByTxHash(input(wrongBlock))).rejects.toThrow(/receipt block is not canonical/);
+    const forgedLogHash = { ...valid, logs: [{ ...valid.logs[0], transactionHash: `0x${'ee'.repeat(32)}` }] };
+    expect(await verifyPaymentByTxHash(input(await node({ receipt: forgedLogHash, transferLogs: [transferLog(mine)] })))).toEqual([]);
   });
 });

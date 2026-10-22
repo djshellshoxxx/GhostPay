@@ -25,6 +25,7 @@ describe('silent-payment UTXO as the contributed input', () => {
     const wallet = {
       isMine: (sc: Uint8Array) => hex.encode(sc) === hex.encode(script),
       listSpendable: () => Promise.resolve([spUtxo]),
+      getPrevOut: (txid: string, index: number) => s.wallet.getPrevOut(txid, index),
       signInput(tx: btc.Transaction, index: number) {
         const scripts: Uint8Array[] = [];
         const amounts: bigint[] = [];

@@ -89,3 +89,28 @@ describe('SecretScope after close', () => {
     expect(zero(lateBox)).toBe(true);
   });
 });
+
+describe('SecretScope.close robustness (L-1)', () => {
+  it('track rejects non-Uint8Array values', () => {
+    const s = new SecretScope();
+    expect(() => s.track({} as unknown as Uint8Array)).toThrow(SecretBoxError);
+    s.close();
+  });
+  it('close wipes and disposes everything even if a bad entry is present, then reports', () => {
+    const s = new SecretScope();
+    const a = s.track(Uint8Array.of(1, 2));
+    const box = s.box(Uint8Array.of(5, 5));
+    const c = s.track(Uint8Array.of(3, 4));
+    (s as unknown as { buffers: unknown[] }).buffers.splice(1, 0, {});
+    let err: unknown;
+    try { s.close(); } catch (e) { err = e; }
+    expect(err).toBeInstanceOf(SecretBoxError);
+    expect((err as SecretBoxError).code).toBe('INVALID_INPUT');
+    expect(zero(a) && zero(c)).toBe(true);
+    expect(box.disposed).toBe(true);
+    expect(() => s.close()).not.toThrow();
+  });
+  it('withScope does not mask the original error', () => {
+    expect(() => withScope((s) => { (s as unknown as { buffers: unknown[] }).buffers.push({}); throw new RangeError('orig'); })).toThrow(RangeError);
+  });
+});

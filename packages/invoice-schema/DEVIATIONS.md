@@ -25,6 +25,9 @@
     JSON, canonical and schema errors after a successful decrypt keep their own types because reaching them already
     requires the passphrase, so they are not an oracle for guessing it.
 11. **`ParsedInvoice` gained `passphraseProtected: boolean`** (additive). New error codes: `PASSPHRASE_REQUIRED`,
-    `PASSPHRASE_UNEXPECTED`, `PASSPHRASE_POLICY`, `PASSPHRASE`. `apps/web/src/lib/errors.ts` has no text for them yet
-    (it falls back to a generic message); the UI prompt is not wired (apps are out of scope for this change).
+    `PASSPHRASE_UNEXPECTED`, `PASSPHRASE_POLICY`, `PASSPHRASE`. The web application now provides dedicated messages and create/open passphrase prompts; browser regressions cover wrong and correct passphrases.
 12. **Runtime dependency unchanged**: scrypt is `@noble/hashes@2.4.0` `scryptAsync`, the version `apps/web` keystore uses.
+
+13. **Text hygiene (S3-12) is enforced at parse time** with `ForbiddenCharacterError` (`FORBIDDEN_CHARACTER`, subclass of `SchemaError`). U+180E, U+2028 and U+2029 are rejected in
+   addition to the listed set (the web display sanitiser already treated them as invisible). `memo` may contain `\n`; no other field may. This is a behaviour change: memos with a line feed
+   used to be rejected, and invoices containing the listed characters that older builds accepted are now rejected.

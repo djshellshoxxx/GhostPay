@@ -1,0 +1,141 @@
+<?php
+/**
+ * POST /module/ghostpay/webhook : signed GhostPay webhook. Authenticated by HMAC, so no CSRF token applies.
+ *
+ * @package GhostPay_PrestaShop
+ */
+
+class GhostpayWebhookModuleFrontController extends ModuleFrontController {
+
+	public $ssl = true;
+	public $auth = false;
+	public $ajax = true;
+
+	private function out( int $status, array $body ): void {
+		http_response_code( $status );
+		header( 'Content-Type: application/json' );
+		header( 'Cache-Control: no-store' );
+		echo json_encode( $body );
+		exit;
+	}
+
+	/** Claim event and provider-transaction identities atomically with recoverable leases. */
+	private function claim_delivery( Db $db, array $event ): array {
+		$keys = array_map( static fn( string $identity ): string => hash( 'sha256', $identity ), GhostPay_Event::identity_keys( $event ) );
+		$token = bin2hex( random_bytes( 16 ) );
+		$now = time();
+		if ( ! $db->execute( 'START TRANSACTION' ) ) {
+			return array( 'status' => 'error' );
+		}
+		foreach ( $keys as $key ) {
+			$sql = 'INSERT INTO `' . _DB_PREFIX_ . 'ghostpay_event_claim` (`claim_key`,`claim_token`,`claim_state`,`lease_until`) VALUES (\'' . pSQL( $key ) . '\',\'' . pSQL( $token ) . '\',\'processing\',' . ( $now + 900 ) . ') ON DUPLICATE KEY UPDATE `claim_token`=IF(`claim_state`=\'processing\' AND `lease_until`<' . $now . ',VALUES(`claim_token`),`claim_token`),`lease_until`=IF(`claim_state`=\'processing\' AND `lease_until`<' . $now . ',VALUES(`lease_until`),`lease_until`)';
+			if ( ! $db->execute( $sql ) ) {
+				$db->execute( 'ROLLBACK' );
+				return array( 'status' => 'error' );
+			}
+			$row = $db->getRow( 'SELECT `claim_token`,`claim_state`,`lease_until` FROM `' . _DB_PREFIX_ . 'ghostpay_event_claim` WHERE `claim_key`=\'' . pSQL( $key ) . '\'' );
+			if ( ! $row || 'complete' === $row['claim_state'] || $token !== $row['claim_token'] ) {
+				$db->execute( 'ROLLBACK' );
+				return array( 'status' => $row && 'complete' === $row['claim_state'] ? 'duplicate' : ( $row ? 'busy' : 'error' ) );
+			}
+		}
+		if ( ! $db->execute( 'COMMIT' ) ) {
+			$db->execute( 'ROLLBACK' );
+			return array( 'status' => 'error' );
+		}
+		return array( 'status' => 'claimed', 'keys' => $keys, 'token' => $token );
+	}
+
+	private function finish_delivery( Db $db, array $claim, bool $complete ): bool {
+		$token = pSQL( $claim['token'] );
+		$ok = true;
+		foreach ( $claim['keys'] as $key ) {
+			$where = '`claim_key`=\'' . pSQL( $key ) . '\' AND `claim_token`=\'' . $token . '\'';
+			$sql = $complete
+				? 'UPDATE `' . _DB_PREFIX_ . 'ghostpay_event_claim` SET `claim_state`=\'complete\',`lease_until`=0 WHERE ' . $where
+				: 'DELETE FROM `' . _DB_PREFIX_ . 'ghostpay_event_claim` WHERE ' . $where;
+			$ok = $db->execute( $sql ) && $ok;
+		}
+		return $ok;
+	}
+
+	public function postProcess() {
+		if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) ) {
+			$this->out( 405, array( 'ok' => false ) );
+		}
+		$secret = $this->module->secret( 'webhook' );
+		$header = (string) ( $_SERVER['HTTP_GHOSTPAY_SIGNATURE'] ?? '' );
+		$body   = (string) file_get_contents( 'php://input', false, null, 0, 65537 );
+		if ( null === $secret || strlen( $body ) > 65536 ) {
+			$this->out( 400, array( 'ok' => false ) );
+		}
+		$db  = Db::getInstance();
+		$res = GhostPay_Signature::verify(
+			$secret,
+			$body,
+			$header,
+			time(),
+			static function ( string $nonce, int $expires ) use ( $db ): bool {
+				$db->execute( 'DELETE FROM `' . _DB_PREFIX_ . 'ghostpay_nonce` WHERE `expires` < ' . (int) time() );
+				// Duplicate primary key => insert fails => replay. Fails closed on DB error.
+				return (bool) @$db->insert( 'ghostpay_nonce', array( 'nonce' => pSQL( $nonce ), 'expires' => (int) $expires ), false, false );
+			}
+		);
+		$event = 'ok' === $res ? GhostPay_Event::parse( $body ) : null;
+		if ( null === $event ) {
+			$this->out( 400, array( 'ok' => false ) );
+		}
+		$row = $db->getRow( 'SELECT `id_order`, `event_ids` FROM `' . _DB_PREFIX_ . 'ghostpay_invoice` WHERE `invoice_id` = \'' . pSQL( $event['data']['invoiceId'] ) . '\'' );
+		if ( ! $row ) {
+			$this->out( 200, array( 'ok' => true ) ); // unknown invoice: acknowledge.
+		}
+		$claim = $this->claim_delivery( $db, $event );
+		if ( 'duplicate' === $claim['status'] ) {
+			$this->out( 200, array( 'ok' => true, 'duplicate' => true ) );
+		}
+		if ( 'claimed' !== $claim['status'] ) {
+			$this->out( 503, array( 'ok' => false, 'retry' => true ) );
+		}
+		$order = new Order( (int) $row['id_order'] );
+		if ( ! Validate::isLoadedObject( $order ) || $order->module !== $this->module->name ) {
+			$this->finish_delivery( $db, $claim, true );
+			$this->out( 200, array( 'ok' => true ) );
+		}
+		$currency = new Currency( (int) $order->id_currency );
+		$exact_total = $this->module->exactOrderTotal( (int) $order->id );
+		$due         = null === $exact_total ? null : GhostPay_Money::to_minor( $exact_total, (int) $currency->precision );
+		$cmp      = null === $due ? null : GhostPay_Money::compare( $event['data']['amountMinor'], $due );
+		$is_awaiting = (int) $order->current_state === (int) Configuration::get( 'GHOSTPAY_OS_AWAITING' );
+		$action = $event['data']['currency'] === $currency->iso_code
+			? GhostPay_Event::order_action( $event['type'], $cmp, $is_awaiting )
+			: 'ignore';
+		$side_effect_ok = true;
+		switch ( $action ) {
+			case 'paid':
+				$history = new OrderHistory();
+				$history->id_order = (int) $order->id;
+				$side_effect_ok = $history->changeIdOrderState( (int) Configuration::get( 'PS_OS_PAYMENT' ), $order ) && $history->addWithemail( true );
+				break;
+			case 'hold':
+				$history = new OrderHistory();
+				$history->id_order = (int) $order->id;
+				$side_effect_ok = $history->changeIdOrderState( (int) Configuration::get( 'PS_OS_ERROR' ), $order ) && $history->addWithemail( true );
+				break;
+			case 'cancel':
+				$history = new OrderHistory();
+				$history->id_order = (int) $order->id;
+				$side_effect_ok = $history->changeIdOrderState( (int) Configuration::get( 'PS_OS_CANCELED' ), $order ) && $history->addWithemail( true );
+				break;
+			case 'partial':
+				// A partial payment remains unpaid and awaiting; later paid events may complete it.
+			case 'ignore':
+			default:
+				break;
+		}
+		if ( ! $side_effect_ok || ! $this->finish_delivery( $db, $claim, true ) ) {
+			$this->finish_delivery( $db, $claim, false );
+			$this->out( 503, array( 'ok' => false, 'retry' => true ) );
+		}
+		$this->out( 200, array( 'ok' => true ) );
+	}
+}

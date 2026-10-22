@@ -1,16 +1,23 @@
 // @vitest-environment jsdom
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { clearSession, getSessionPublic } from '../lib/session';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { clearSession, generateSession, getSessionPublic } from '../lib/session';
+import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests } from '../lib/keyVault';
 import { makeServices, renderApp } from '../test/render';
+
+let vaultStore = new MemoryKeyVaultStore();
 
 beforeEach(() => {
   clearSession();
+  vaultStore = new MemoryKeyVaultStore();
+  setKeyVaultStoreForTests(vaultStore);
   window.localStorage.clear();
   window.sessionStorage.clear();
   window.history.replaceState(null, '', '/');
 });
+
+afterEach(() => { setKeyVaultStoreForTests(undefined); });
 
 async function open(): Promise<ReturnType<typeof userEvent.setup>> {
   const user = userEvent.setup();
@@ -20,11 +27,28 @@ async function open(): Promise<ReturnType<typeof userEvent.setup>> {
 }
 
 describe('Seller keys', () => {
+  it('offers explicit encrypted-vault unlock after reload and never stores the passphrase', async () => {
+    const original = generateSession();
+    const passphrase = 'violet comet maple lantern';
+    await saveEncryptedVault(passphrase, { N: 1 << 14 });
+    const ciphertext = await vaultStore.get();
+    clearSession();
+    const user = await open();
+    expect(await screen.findByText(/Unlocking replaces the keys currently in memory/)).toBeTruthy();
+    await user.type(screen.getByLabelText('Vault passphrase'), passphrase);
+    await user.click(screen.getByRole('button', { name: 'Unlock saved vault' }));
+    await waitFor(() => { expect(getSessionPublic()?.metaAddress).toBe(original.metaAddress); }, { timeout: 30_000 });
+    expect(await vaultStore.get()).toBe(ciphertext);
+    expect(await vaultStore.get()).not.toContain(passphrase);
+    expect(screen.getByLabelText<HTMLInputElement>('Vault passphrase').value).toBe('');
+  });
+
   it('generates keys in memory and shows only public data; nothing is written to web storage', async () => {
     const user = await open();
     await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
     const pub = getSessionPublic()!;
     expect(screen.getByText(pub.metaAddress)).toBeTruthy();
+    expect(document.querySelector('[data-qr-kind="shareable"] svg')).toBeTruthy();
     expect(screen.getByText(pub.signerPublicKey)).toBeTruthy();
     expect(window.localStorage.length).toBe(0);
     expect(window.sessionStorage.length).toBe(0);
@@ -65,7 +89,7 @@ describe('Seller keys', () => {
     await user.type(screen.getByLabelText('Passphrase (at least 10 characters)'), 'short');
     await user.type(screen.getByLabelText('Repeat passphrase'), 'short');
     await user.click(screen.getByRole('button', { name: 'Download encrypted keystore' }));
-    expect(screen.getByRole('alert').textContent).toMatch(/at least 10/);
+    expect(screen.getByRole('alert').textContent).toMatch(/at least 14/);
     await user.clear(screen.getByLabelText('Passphrase (at least 10 characters)'));
     await user.type(screen.getByLabelText('Passphrase (at least 10 characters)'), 'a long passphrase');
     await user.clear(screen.getByLabelText('Repeat passphrase'));
@@ -77,6 +101,11 @@ describe('Seller keys', () => {
     await user.click(screen.getByRole('button', { name: 'Download encrypted keystore' }));
     await waitFor(() => { expect(click).toHaveBeenCalled(); }, { timeout: 30_000 });
     expect(created).toEqual(['application/json']);
+    const secretQr = document.querySelector('[data-qr-kind="secret"]');
+    expect(secretQr).toBeTruthy();
+    expect(secretQr?.querySelector('svg.qr-svg')).toBeNull();
+    await user.click(within(secretQr as HTMLElement).getByRole('button', { name: 'Reveal secret QR code' }));
+    expect(secretQr?.querySelector('svg.qr-svg')).toBeTruthy();
     expect(window.localStorage.length).toBe(0);
     await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
     expect(getSessionPublic()).toBeUndefined();

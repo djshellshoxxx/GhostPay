@@ -3,25 +3,32 @@ import { eip712DomainSeparator, erc20MetadataAbi, erc2612PermitAbi } from '@ghos
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { encodeFunctionResult, keccak256 } from 'viem/utils';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { Services } from '../lib/services';
 import { clearSession, generateSession } from '../lib/session';
+import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests } from '../lib/keyVault';
 import { SETTINGS_KEY } from '../lib/settings';
 import { makeLog } from '../test/announcements';
-import { FAKE_ANNOUNCER, FAKE_ROUTER } from '../test/fakeManifest';
+import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER } from '../test/fakeManifest';
 import { FAKE_CODE, backedManifest, withManifestChain } from '../test/manifestChain';
 import { chainWithLogs } from '../test/mockChain';
 import { makeServices, renderApp } from '../test/render';
 
 beforeEach(() => {
   clearSession();
+  vaultStore = new MemoryKeyVaultStore();
+  setKeyVaultStoreForTests(vaultStore);
   window.localStorage.clear();
   window.history.replaceState(null, '', '/');
 });
 
+afterEach(() => { setKeyVaultStoreForTests(undefined); });
+
 const loaded: Services['loadManifest'] = (id) => Promise.resolve({ status: 'loaded', manifest: backedManifest(id) });
 const DEST = '0x6666666666666666666666666666666666666666';
 const TOKEN = '0x036CbD53842c5426634e7929541eC2318f3dCF7e';
+const VAULT_PASS = 'violet comet maple lantern';
+let vaultStore = new MemoryKeyVaultStore();
 
 function extra(balance: bigint, nativeBalance: bigint, rawSink: { raw?: string }) {
   return (method: string, params: readonly unknown[]): unknown => {
@@ -51,8 +58,9 @@ function extra(balance: bigint, nativeBalance: bigint, rawSink: { raw?: string }
 }
 
 /** Scans one payment, then opens the Sweep view for it. */
-async function toSweep(opts: { balance?: bigint; native?: bigint; relayer?: boolean; fetchFn?: Services['fetchFn']; raw?: { raw?: string }; code?: Record<string, string>; unsigned?: boolean } = {}): Promise<ReturnType<typeof userEvent.setup>> {
+async function toSweep(opts: { balance?: bigint; native?: bigint; relayer?: boolean; fetchFn?: Services['fetchFn']; raw?: { raw?: string }; code?: Record<string, string>; unsigned?: boolean; vaultPass?: string } = {}): Promise<ReturnType<typeof userEvent.setup>> {
   const pub = generateSession();
+  if (opts.vaultPass !== undefined) await saveEncryptedVault(opts.vaultPass, { N: 1 << 14 });
   window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' }, ...(opts.relayer === true ? { relayerUrl: 'https://relay.test' } : {}) }));
   const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 50, index: 0, caller: FAKE_ROUTER, amount: 5_000_000n });
   const rpc = chainWithLogs(84532, 100, [mine.log], extra(opts.balance ?? 5_000_000n, opts.native ?? 10n ** 17n, opts.raw ?? {}));
@@ -76,11 +84,42 @@ describe('Sweep', () => {
     expect(screen.getByRole('heading', { level: 2, name: 'Scan and receive' })).toBeTruthy();
   });
 
+  it('accepts a pasted destination only after the chain and address checks pass', async () => {
+    const user = await toSweep();
+    await screen.findByText('5 USDC');
+    const paste = screen.getByLabelText('Or paste QR text');
+    await user.type(paste, 'not-an-address');
+    await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(/valid destination/);
+    expect(screen.getByLabelText<HTMLInputElement>('Destination address (your own wallet)').value).toBe('');
+    await user.clear(paste);
+    await user.type(paste, DEST);
+    await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
+    expect(screen.getByLabelText<HTMLInputElement>('Destination address (your own wallet)').value).toBe(DEST);
+  });
+
+  it('requires a fresh vault passphrase before spending from saved keys', async () => {
+    const raw: { raw?: string } = {};
+    const user = await toSweep({ raw, vaultPass: VAULT_PASS });
+    await screen.findByText('5 USDC');
+    await user.click(await screen.findByLabelText(/Directly/));
+    await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    expect((await screen.findByRole('alert', {}, { timeout: 30_000 })).textContent).toMatch(/Wrong passphrase/);
+    expect(raw.raw).toBeUndefined();
+
+    await user.type(screen.getByLabelText('Vault passphrase (required for each sweep action)'), VAULT_PASS);
+    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    expect(await screen.findByText('Submitted', {}, { timeout: 30_000 })).toBeTruthy();
+    expect(raw.raw).toMatch(/^0x02/);
+    expect(screen.getByLabelText<HTMLInputElement>('Vault passphrase (required for each sweep action)').value).toBe('');
+  });
+
   it('shows the on-chain balance, the linkability notice, and sweeps directly with a verified signed transaction', async () => {
     const raw: { raw?: string } = {};
     const user = await toSweep({ raw });
     expect(await screen.findByText('5 USDC')).toBeTruthy();
-    expect(screen.getByText('Linkability')).toBeTruthy();
+    expect(screen.getByText('The payer can follow this sweep')).toBeTruthy();
     expect(screen.getByText(/never shown or stored/)).toBeTruthy();
     await user.click(screen.getByLabelText(/Directly/));
     await user.type(screen.getByLabelText('Destination address (your own wallet)'), 'nope');
@@ -129,7 +168,7 @@ describe('Sweep', () => {
     const posted: string[] = [];
     const fetchFn: Services['fetchFn'] = (url) => {
       posted.push(url);
-      if (url.endsWith('/v1/quote')) return Promise.resolve(new Response(JSON.stringify({ fee: '25000', feeTo: '0x7777777777777777777777777777777777777777', expiresAt: 1_800_000_100, quoteToken: 'tok' })));
+      if (url.endsWith('/v1/quote')) return Promise.resolve(new Response(JSON.stringify({ fee: '25000', feeTo: FAKE_FEE_RECIPIENT, expiresAt: 1_800_000_100, quoteToken: 'tok' })));
       return Promise.resolve(new Response(JSON.stringify({ txHash: `0x${'34'.repeat(32)}` }), { status: 200 }));
     };
     const user = await toSweep({ relayer: true, fetchFn });
@@ -145,7 +184,7 @@ describe('Sweep', () => {
   });
 
   it('relayer path: refuses a fee above the published cap', async () => {
-    const fetchFn: Services['fetchFn'] = () => Promise.resolve(new Response(JSON.stringify({ fee: '1000000', feeTo: '0x7777777777777777777777777777777777777777', expiresAt: 1_800_000_100, quoteToken: 'tok' })));
+    const fetchFn: Services['fetchFn'] = () => Promise.resolve(new Response(JSON.stringify({ fee: '1000000', feeTo: FAKE_FEE_RECIPIENT, expiresAt: 1_800_000_100, quoteToken: 'tok' })));
     const user = await toSweep({ relayer: true, fetchFn });
     await screen.findByText('5 USDC');
     await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);

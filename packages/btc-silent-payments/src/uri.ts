@@ -23,6 +23,15 @@ export interface BuildUriParams {
 
 const MAX_URI_LENGTH = 2048;
 
+/** `encodeURIComponent` throws a raw `URIError` on lone surrogates: surface a typed error instead. */
+function encode(v: string): string {
+  try {
+    return encodeURIComponent(v);
+  } catch {
+    return fail('INVALID_URI');
+  }
+}
+
 /**
  * Builds `bitcoin:?sp=<address>[&amount=<btc decimal>][&label=..][&message=..]`
  * (BIP-21 style with the BIP-321 `sp` parameter and an empty on-chain address part).
@@ -42,8 +51,8 @@ export function buildBitcoinUri(p: BuildUriParams): string {
     if (p.amountSats <= 0n) return fail('INVALID_AMOUNT');
     uri += `&amount=${satsToBtcString(p.amountSats)}`;
   }
-  if (p.label !== undefined) uri += `&label=${encodeURIComponent(p.label)}`;
-  if (p.message !== undefined) uri += `&message=${encodeURIComponent(p.message)}`;
+  if (p.label !== undefined) uri += `&label=${encode(p.label)}`;
+  if (p.message !== undefined) uri += `&message=${encode(p.message)}`;
   if (uri.length > MAX_URI_LENGTH) return fail('INVALID_URI');
   return uri;
 }

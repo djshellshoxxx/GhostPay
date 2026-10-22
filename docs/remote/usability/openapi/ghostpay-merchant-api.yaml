@@ -1,0 +1,215 @@
+openapi: 3.1.0
+info:
+  title: GhostPay self-hosted merchant API
+  version: 0.1.0
+  summary: Documentation template for the merchant-operated GhostPay status and webhook API.
+  description: |
+    DOCUMENTATION ONLY. This file describes the API a merchant may run on their own
+    infrastructure (self-hosted). GhostPay operates no hosted service and the SDK
+    (`@ghostpay/sdk`) makes no network call unless you configure `baseUrl` yourself.
+
+    Privacy rules baked into the contract:
+    - Invoice links (`#gpi=v1.<...>`) are bearer secrets and are NEVER sent to this API.
+      Only the public facts in `RegisterInvoiceRequest` are registered.
+    - Money is always an integer string in minor units. No floats.
+    - Responses carry no analytics or tracking identifiers.
+  license:
+    name: UNLICENSED
+    identifier: UNLICENSED
+servers:
+  - url: https://merchant.example.test/api
+    description: Replace with your own host. Plain http is only acceptable on loopback.
+security:
+  - bearerAuth: []
+tags:
+  - name: health
+  - name: invoices
+  - name: webhooks
+paths:
+  /v1/health:
+    get:
+      tags: [health]
+      operationId: getHealth
+      summary: Liveness probe
+      security: []
+      responses:
+        '200':
+          description: Service is up.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+  /v1/invoices:
+    post:
+      tags: [invoices]
+      operationId: registerInvoice
+      summary: Register an invoice for status tracking
+      description: Registers public invoice facts only. Never send the invoice link or any signing key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterInvoiceRequest'
+      responses:
+        '200':
+          description: Registered (idempotent per nonce).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceStatus'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
+  /v1/invoices/{nonce}:
+    get:
+      tags: [invoices]
+      operationId: getInvoiceStatus
+      summary: Current payment state of an invoice
+      parameters:
+        - $ref: '#/components/parameters/Nonce'
+      responses:
+        '200':
+          description: Current state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceStatus'
+        '401':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+  /v1/invoices/{nonce}/payments:
+    get:
+      tags: [invoices]
+      operationId: listPayments
+      summary: Detected payments for an invoice
+      parameters:
+        - $ref: '#/components/parameters/Nonce'
+      responses:
+        '200':
+          description: Payments, oldest first (at most 1000).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentList'
+        '401':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+webhooks:
+  invoiceEvent:
+    post:
+      tags: [webhooks]
+      operationId: receiveInvoiceEvent
+      summary: Event delivered to the merchant's own endpoint
+      description: |
+        Delivered with header `GhostPay-Signature: t=<unix>,n=<nonce>,v1=<hex HMAC-SHA256(secret, "t.n.body")>`.
+        Verify the signature, timestamp tolerance and nonce replay before trusting the body, and process each
+        event `id` at most once (idempotency key). Event types: invoice.paid, invoice.partial, invoice.over, invoice.expired.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookEvent'
+      responses:
+        '2XX':
+          description: Acknowledged. Any other status is retried with backoff.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Merchant-issued API key. Keep it server side.
+  parameters:
+    Nonce:
+      name: nonce
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: '^[0-9a-f]{32}$'
+  responses:
+    Error:
+      description: Error. The body is a coarse code; it never echoes input.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+  schemas:
+    Health:
+      type: object
+      additionalProperties: false
+      required: [status, version]
+      properties:
+        status: { const: ok }
+        version: { type: string, pattern: '^[0-9A-Za-z.+-]{1,32}$' }
+    DecimalString:
+      type: string
+      pattern: '^(?:0|[1-9][0-9]{0,29})$'
+      description: Non-negative integer in minor units as a string.
+    RegisterInvoiceRequest:
+      type: object
+      additionalProperties: false
+      required: [nonce, chainId, currency, minorUnits, expiresAt]
+      properties:
+        nonce: { type: string, pattern: '^[0-9a-f]{32}$' }
+        chainId: { type: integer, minimum: 1 }
+        currency: { type: string, pattern: '^[A-Z]{3}$' }
+        minorUnits: { $ref: '#/components/schemas/DecimalString' }
+        expiresAt: { type: integer, minimum: 0, description: Unix seconds. }
+    InvoiceStatus:
+      type: object
+      additionalProperties: false
+      required: [nonce, state, receivedMinorUnits, updatedAt]
+      properties:
+        nonce: { type: string, pattern: '^[0-9a-f]{32}$' }
+        state: { enum: [pending, partial, paid, over, expired] }
+        receivedMinorUnits: { $ref: '#/components/schemas/DecimalString' }
+        updatedAt: { type: integer, minimum: 0 }
+    PaymentList:
+      type: object
+      additionalProperties: false
+      required: [payments]
+      properties:
+        payments:
+          type: array
+          maxItems: 1000
+          items:
+            type: object
+            additionalProperties: false
+            required: [id, txHash, amountMinorUnits, confirmations, detectedAt]
+            properties:
+              id: { type: string, pattern: '^[A-Za-z0-9_-]{1,64}$' }
+              txHash: { type: string, pattern: '^0x[0-9a-f]{64}$' }
+              amountMinorUnits: { $ref: '#/components/schemas/DecimalString' }
+              confirmations: { type: integer, minimum: 0 }
+              detectedAt: { type: integer, minimum: 0 }
+    WebhookEvent:
+      description: Same shape as packages/sdk/schema/webhook-event.v1.schema.json.
+      type: object
+      additionalProperties: false
+      required: [id, type, createdAt, data]
+      properties:
+        id: { type: string, pattern: '^[A-Za-z0-9_-]{8,64}$' }
+        type: { enum: [invoice.paid, invoice.partial, invoice.over, invoice.expired] }
+        createdAt: { type: integer, minimum: 0 }
+        data:
+          type: object
+          additionalProperties: false
+          required: [invoiceId, currency, amountMinor]
+          properties:
+            invoiceId: { type: string, pattern: '^[0-9a-f]{32}$' }
+            currency: { type: string, pattern: '^[A-Z]{3}$' }
+            amountMinor: { $ref: '#/components/schemas/DecimalString' }
+            paymentId: { type: string, pattern: '^[A-Za-z0-9_-]{1,64}$' }
+    ErrorBody:
+      type: object
+      additionalProperties: false
+      required: [error]
+      properties:
+        error: { enum: [bad_request, unauthorized, not_found, rate_limited, internal] }

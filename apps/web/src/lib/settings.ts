@@ -82,7 +82,7 @@ function sanitizeRpcMap(raw: unknown): Record<string, string> {
 export function sanitizeSettings(raw: unknown): Settings {
   const o = typeof raw === 'object' && raw !== null && !Array.isArray(raw) ? (raw as Record<string, unknown>) : {};
   const rpcUrls = sanitizeRpcMap(o['rpcUrls']);
-  const rpcUrlsSecondary = sanitizeRpcMap(o['rpcUrlsSecondary']);
+  const rpcUrlsSecondary = sanitizeRpcMap(o['rpcUrlsSecondary'] ?? o['secondaryRpcUrls']);
   let relayerUrl = '';
   if (typeof o['relayerUrl'] === 'string') {
     try {

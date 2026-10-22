@@ -86,7 +86,9 @@ function decodeStrict(abi: Abi, data: Hex): Strict {
  *
  * @remarks Only GhostPay router payments (`payERC20`, `payERC20WithPermit`, `payNative`), ERC-20
  * `approve` and `transfer`, and empty-calldata native transfers decode; everything else is
- * `{ kind: 'unknown' }` with the reason. `payERC20WithBuffer` is rejected outright (haiku L-04).
+ * `{ kind: 'unknown' }` with the reason (`setApprovalForAll`, `increaseAllowance`, Permit2 and every
+ * other selector are `UNKNOWN_SELECTOR`; a transaction carrying an EIP-7702 `authorizationList` is
+ * `UNSUPPORTED_TX_FEATURE`). `payERC20WithBuffer` is rejected outright (haiku L-04).
  * Calldata must re-encode byte for byte, so truncated data, trailing bytes and dirty padding fail.
  * A non-zero `value` on a call that does not take ETH fails. Native vs ERC-20 is decided from the
  * calldata shape only, never from announcement metadata (S3-09a); allowlisting happens in `review`.
@@ -100,6 +102,7 @@ function decodeStrict(abi: Abi, data: Hex): Strict {
  */
 export function decodeTx(tx: TxInput): Intent | UnknownIntent {
   if (!Number.isSafeInteger(tx.chainId) || tx.chainId < 1 || !isUint(tx.value)) return unknown('INVALID_TX_FIELD');
+  if (tx.authorizationList !== undefined) return unknown('UNSUPPORTED_TX_FEATURE');
   const to = strictAddress(tx.to);
   if (to === undefined) return unknown('INVALID_TX_FIELD');
   if (typeof tx.data !== 'string' || !/^0x(?:[0-9a-fA-F]{2})*$/.test(tx.data)) return unknown('MALFORMED_CALLDATA');

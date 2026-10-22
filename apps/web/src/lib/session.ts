@@ -42,6 +42,8 @@ interface Stored {
 }
 
 let current: Stored | undefined;
+// Changes even across empty -> populated -> empty transitions, so an async decrypt cannot install stale keys.
+let sessionRevision = 0;
 /** Compatibility copies handed out by {@link requireSession}; wiped when the session clears (bounded). */
 let issued: SecretScalar[] = [];
 const MAX_ISSUED = 8;
@@ -145,10 +147,19 @@ function keySetFromScalars(spending: SecretScalar, viewing: SecretScalar): Steal
 
 /** Imports keys typed or pasted by the user. Keys stay in memory only. */
 export function importSession(input: ImportedHex): SessionPublic {
-  const spending = scalarFromHex(input.spendingKeyHex, 'Spending key');
-  const viewing = scalarFromHex(input.viewingKeyHex, 'Viewing key');
-  const signing = input.signingKeyHex === undefined || input.signingKeyHex.trim() === '' ? randomScalar() : scalarFromHex(input.signingKeyHex, 'Signing key');
-  return install({ keys: keySetFromScalars(spending, viewing), signingKey: signing });
+  let spending: SecretScalar | undefined;
+  let viewing: SecretScalar | undefined;
+  let signing: SecretScalar | undefined;
+  try {
+    spending = scalarFromHex(input.spendingKeyHex, 'Spending key');
+    viewing = scalarFromHex(input.viewingKeyHex, 'Viewing key');
+    signing = input.signingKeyHex === undefined || input.signingKeyHex.trim() === '' ? randomScalar() : scalarFromHex(input.signingKeyHex, 'Signing key');
+    return install({ keys: keySetFromScalars(spending, viewing), signingKey: signing });
+  } finally {
+    if (spending !== undefined) zeroize(spending);
+    if (viewing !== undefined) zeroize(viewing);
+    if (signing !== undefined) zeroize(signing);
+  }
 }
 
 /**
@@ -202,8 +213,57 @@ export function hasSession(): boolean {
   return current !== undefined;
 }
 
+/** Captures session identity even when empty, for async operations that begin before reading a saved vault. */
+export function captureSessionVersionGuard(): () => void {
+  const revision = sessionRevision;
+  return () => {
+    if (sessionRevision !== revision) throw new UserFacingError('Seller keys changed during this action. Try again.');
+  };
+}
+
+/** Captures the loaded key holder and rejects use if it is cleared or replaced during an async operation. */
+export function captureSessionGuard(): () => void {
+  const expected = current;
+  const revision = sessionRevision;
+  if (expected === undefined) throw new UserFacingError('Load or generate seller keys first (Seller keys).');
+  return () => {
+    if (current !== expected || sessionRevision !== revision) throw new UserFacingError('Seller keys changed during this action. Try again.');
+  };
+}
+
+/**
+ * Verifies an explicit spending step-up against the saved encrypted vault and the currently loaded public identity.
+ * The decrypted key bytes and temporary scalars are wiped before this promise resolves.
+ */
+export async function verifyVaultForCurrentSession(ciphertext: string, passphrase: string): Promise<() => void> {
+  const guard = captureSessionGuard();
+  const expected = publicSummary;
+  if (expected === undefined) throw new UserFacingError('Load or generate seller keys first (Seller keys).');
+  const secrets = await decryptKeystore(ciphertext, passphrase);
+  let spending: SecretScalar | undefined;
+  let viewing: SecretScalar | undefined;
+  let signing: SecretScalar | undefined;
+  try {
+    spending = secretScalarFromBytes(secrets.spendingKey);
+    viewing = secretScalarFromBytes(secrets.viewingKey);
+    signing = secretScalarFromBytes(secrets.signingKey);
+    const candidate = summarize({ keys: keySetFromScalars(spending, viewing), signingKey: signing });
+    if (candidate.metaAddress !== expected.metaAddress || candidate.signerPublicKey !== expected.signerPublicKey) {
+      throw new UserFacingError('The saved encrypted vault does not match the loaded seller keys.');
+    }
+    guard();
+    return guard;
+  } finally {
+    if (spending !== undefined) zeroize(spending);
+    if (viewing !== undefined) zeroize(viewing);
+    if (signing !== undefined) zeroize(signing);
+    wipe(secrets.spendingKey, secrets.viewingKey, secrets.signingKey);
+  }
+}
+
 /** Best-effort wipe and forget. */
 export function clearSession(notify = true): void {
+  sessionRevision++;
   if (current !== undefined) {
     current.spending.dispose();
     current.viewing.dispose();
@@ -233,16 +293,24 @@ export async function exportKeystore(passphrase: string, options: KeystoreOption
 
 /** Decrypts a keystore and loads it into memory. */
 export async function importKeystore(text: string, passphrase: string): Promise<SessionPublic> {
+  const revision = sessionRevision;
   const secrets = await decryptKeystore(text, passphrase);
+  let spending: SecretScalar | undefined;
+  let viewing: SecretScalar | undefined;
+  let signing: SecretScalar | undefined;
   try {
-    const spending = secretScalarFromBytes(secrets.spendingKey);
-    const viewing = secretScalarFromBytes(secrets.viewingKey);
-    const signing = secretScalarFromBytes(secrets.signingKey);
+    if (sessionRevision !== revision) throw new UserFacingError('Seller keys changed while the keystore was unlocking. Try again.');
+    spending = secretScalarFromBytes(secrets.spendingKey);
+    viewing = secretScalarFromBytes(secrets.viewingKey);
+    signing = secretScalarFromBytes(secrets.signingKey);
     return install({ keys: keySetFromScalars(spending, viewing), signingKey: signing });
   } catch (e) {
     if (e instanceof UserFacingError) throw e;
     throw new UserFacingError('The keystore contains invalid keys.');
   } finally {
+    if (spending !== undefined) zeroize(spending);
+    if (viewing !== undefined) zeroize(viewing);
+    if (signing !== undefined) zeroize(signing);
     zeroize(secrets.spendingKey, secrets.viewingKey, secrets.signingKey);
   }
 }

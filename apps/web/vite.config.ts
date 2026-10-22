@@ -1,11 +1,43 @@
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vitest/config';
+import { parseReleaseKeys, validateDeployments } from './scripts/validate-deployments.mjs';
+
+const releaseKeys = parseReleaseKeys(process.env['GHOSTPAY_RELEASE_PUBKEYS']);
+const deploymentsDir = process.env['GHOSTPAY_DEPLOYMENTS_DIR'] === undefined
+  ? fileURLToPath(new URL('./deployments', import.meta.url))
+  : resolve(process.env['GHOSTPAY_DEPLOYMENTS_DIR']);
+
+/** Raw manifest text is compiled into the hashed bundle; malformed file names are rejected by validateDeployments. */
+function readManifests(dir: string): Record<string, string> {
+  const out: Record<string, string> = {};
+  if (!existsSync(dir)) return out;
+  for (const name of readdirSync(dir)) {
+    const match = /^([1-9][0-9]{0,15})\.json$/.exec(name);
+    if (match?.[1] !== undefined) out[match[1]] = readFileSync(resolve(dir, name), 'utf8');
+  }
+  return out;
+}
 
 // Static, CSP-friendly build: no inline scripts or styles, no source maps, no data: URI inlining,
 // no modulepreload polyfill (it injects inline code). Everything is emitted as same-origin files.
 export default defineConfig({
+  define: {
+    __GHOSTPAY_RELEASE_KEYS__: JSON.stringify(releaseKeys),
+    __GHOSTPAY_MANIFESTS__: JSON.stringify(readManifests(deploymentsDir)),
+  },
   plugins: [
     react(),
+    {
+      name: 'ghostpay-verify-bundled-deployments',
+      apply: 'build',
+      async buildStart() {
+        const problems = await validateDeployments(deploymentsDir, releaseKeys);
+        if (problems.length > 0) throw new Error(`deployments/ failed validation:\n - ${problems.join('\n - ')}`);
+      },
+    },
     {
       // The dev server and React Refresh inject inline scripts; the production CSP meta must not apply there.
       name: 'ghostpay-dev-without-meta-csp',

@@ -1,4 +1,5 @@
 import { useId, useState, type ReactNode } from 'react';
+import { sanitizeDisplayText } from '../lib/sanitize';
 
 export function Notice(props: { readonly kind: 'info' | 'warn' | 'error' | 'ok'; readonly title?: string; readonly children: ReactNode }): ReactNode {
   const label = { info: 'Note', warn: 'Warning', error: 'Problem', ok: 'Done' }[props.kind];
@@ -73,4 +74,24 @@ export function downloadText(filename: string, text: string, type: string): void
   setTimeout(() => {
     URL.revokeObjectURL(url);
   }, 1000);
+}
+
+/**
+ * Renders untrusted text with bidi, zero-width and tag characters made visible (S3-12). `notice` adds an inline explanation
+ * once, next to the first use, so the reader knows why markers appear.
+ */
+export function SafeText(props: { readonly value: string; readonly notice?: boolean }): ReactNode {
+  const s = sanitizeDisplayText(props.value);
+  return (
+    <>
+      <span className="isolate">{s.text}</span>
+      {props.notice !== false && (s.replaced > 0 || s.mixedScript) && (
+        <span className="hint">
+          {' '}
+          {s.replaced > 0 && `(${String(s.replaced)} hidden or direction-changing character${s.replaced === 1 ? '' : 's'} shown as ⟨U+…⟩.) `}
+          {s.mixedScript && '(A word mixes Latin letters with Cyrillic or Greek letters: check for lookalikes.)'}
+        </span>
+      )}
+    </>
+  );
 }

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 620" width="960" height="620" role="img" aria-labelledby="ttl dsc">
+<title id="ttl">Sweep and gas privacy through a relayer</title>
+<desc id="dsc">A one-time address holds tokens but no gas. Your browser derives the stealth key in memory and signs an EIP-712 sweep order and an ERC-2612 permit. The relayer service quotes, simulates and submits it to the sweep relayer contract, which pays the relayer fee and sends the rest to your destination. The alternative is to fund the one-time address with gas from your own wallet, which links that wallet to it. In both cases the chain shows payer to one-time address to destination, so a destination you reuse is exposed.</desc>
+<style>
+:root{--bg:#ffffff;--fg:#1b1f24;--mut:#4d5866;--box:#eef1f6;--line:#6b778a;--acc:#1f4fc4;--accbg:#dbe6ff;--warn:#8a4b00;--warnbg:#fff0d0;--bad:#a8200f;--badbg:#fde4e1;--ok:#13663a;--okbg:#dcf3e4}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1318;--fg:#e6e9ee;--mut:#a3aebd;--box:#1a212b;--line:#7d8a9d;--acc:#8fb2ff;--accbg:#1c2c52;--warn:#ffb454;--warnbg:#3a2a0e;--bad:#ff9b92;--badbg:#411a17;--ok:#74d9a0;--okbg:#12331f}}
+svg{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.bg{fill:var(--bg)}
+.t{fill:var(--fg);font-size:14px}.b{font-weight:700}.m{fill:var(--mut)}.s{font-size:12px}.h{font-size:20px;font-weight:700}
+.box{fill:var(--box);stroke:var(--line);stroke-width:1.5}
+.box.acc{fill:var(--accbg);stroke:var(--acc)}.box.warn{fill:var(--warnbg);stroke:var(--warn)}
+.box.bad{fill:var(--badbg);stroke:var(--bad)}.box.ok{fill:var(--okbg);stroke:var(--ok)}
+.dash{stroke-dasharray:6 4}
+.grp{fill:none;stroke:var(--line);stroke-width:1.3;stroke-dasharray:3 5}
+.ln{fill:none;stroke:var(--line);stroke-width:2}.ln.acc{stroke:var(--acc)}.ln.warn{stroke:var(--warn)}.ln.bad{stroke:var(--bad)}.ln.ok{stroke:var(--ok)}
+.ah{fill:var(--line)}
+.bdg{fill:var(--acc)}.bdgt{fill:var(--bg);font-size:12px;font-weight:700}
+.ta{text-anchor:middle}
+</style>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--line)"/></marker><marker id="ar-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--acc)"/></marker><marker id="ar-warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--warn)"/></marker><marker id="ar-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--bad)"/></marker><marker id="ar-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--ok)"/></marker></defs>
+<rect class="bg" width="960" height="620"/>
+<text class="t h" x="24" y="34">Sweep and gas privacy</text>
+<text class="t m s" x="24" y="54">Gasless is not unlinkable: the chain still shows payer -&gt; one-time address -&gt; destination.</text>
+<rect class="box" x="20" y="90" width="150" height="70" rx="8"/>
+<text class="t ta b" x="95.0" y="113.0">Payer</text>
+<text class="t ta m s" x="95.0" y="130.0">paid the one-time</text>
+<text class="t ta m s" x="95.0" y="147.0">address</text>
+<rect class="box ok" x="240" y="90" width="200" height="80" rx="8"/>
+<text class="t ta b" x="340.0" y="126.5">One-time address</text>
+<text class="t ta m s" x="340.0" y="143.5">holds tokens, no gas</text>
+<rect class="box ok" x="540" y="90" width="190" height="80" rx="8"/>
+<text class="t ta b" x="635.0" y="126.5">GhostPaySweepRelayer</text>
+<text class="t ta m s" x="635.0" y="143.5">checks your signature</text>
+<rect class="box acc" x="790" y="90" width="150" height="80" rx="8"/>
+<text class="t ta b" x="865.0" y="126.5">Your destination</text>
+<text class="t ta m s" x="865.0" y="143.5">use a fresh one</text>
+<rect class="box warn" x="540" y="250" width="190" height="56" rx="8"/>
+<text class="t ta b" x="635.0" y="274.5">Relayer fee-to</text>
+<text class="t ta m s" x="635.0" y="291.5">gets the signed fee</text>
+<rect class="box acc" x="240" y="250" width="200" height="90" rx="8"/>
+<text class="t ta b" x="340.0" y="274.5">Your browser</text>
+<text class="t ta m s" x="340.0" y="291.5">derives stealth key in memory,</text>
+<text class="t ta m s" x="340.0" y="308.5">signs Sweep + permit</text>
+<text class="t ta m s" x="340.0" y="325.5">(no wallet prompt)</text>
+<rect class="box warn" x="240" y="390" width="200" height="90" rx="8"/>
+<text class="t ta b" x="340.0" y="414.5">Relayer service</text>
+<text class="t ta m s" x="340.0" y="431.5">quote, simulate, submit</text>
+<text class="t ta m s" x="340.0" y="448.5">can refuse or delay,</text>
+<text class="t ta m s" x="340.0" y="465.5">cannot change what you signed</text>
+<rect class="box bad dash" x="20" y="250" width="190" height="100" rx="8"/>
+<text class="t ta b" x="115.0" y="279.5">Direct alternative</text>
+<text class="t ta m s" x="115.0" y="296.5">send native gas to the</text>
+<text class="t ta m s" x="115.0" y="313.5">one-time address yourself:</text>
+<text class="t ta m s" x="115.0" y="330.5">links your wallet to it</text>
+<rect class="box warn" x="540" y="390" width="400" height="90" rx="8"/>
+<text class="t ta b" x="740.0" y="423.0">What the relayer operator learns</text>
+<text class="t ta m s" x="740.0" y="440.0">one-time address, destination, token, amount, fee, timing,</text>
+<text class="t ta m s" x="740.0" y="457.0">and a hashed IP (rotating salt, not persisted)</text>
+<path class="ln " d="M170 125 L240 125" marker-end="url(#ar)"/>
+<path class="ln ok" d="M440 110 L540 110" marker-end="url(#ar-ok)"/>
+<path class="ln ok" d="M730 130 L790 130" marker-end="url(#ar-ok)"/>
+<path class="ln ok" d="M635 170 L635 250" marker-end="url(#ar-ok)"/>
+<path class="ln acc" d="M340 340 L340 390" marker-end="url(#ar-acc)"/>
+<path class="ln warn" d="M440 435 L500 435 L500 155 L540 155" marker-end="url(#ar-warn)"/>
+<path class="ln bad" stroke-dasharray="6 4" d="M115 250 L115 200 L270 200 L270 170" marker-end="url(#ar-bad)"/>
+<text class="t m s" x="446" y="104">tokens (spent)</text>
+<text class="t m s" x="348" y="372">signed order + quote</text>
+<g><circle class="bdg" cx="22" cy="92" r="11"/><text class="bdgt ta" x="22" y="96">1</text></g>
+<g><circle class="bdg" cx="242" cy="92" r="11"/><text class="bdgt ta" x="242" y="96">2</text></g>
+<g><circle class="bdg" cx="242" cy="252" r="11"/><text class="bdgt ta" x="242" y="256">3</text></g>
+<g><circle class="bdg" cx="242" cy="392" r="11"/><text class="bdgt ta" x="242" y="396">4</text></g>
+<g><circle class="bdg" cx="542" cy="92" r="11"/><text class="bdgt ta" x="542" y="96">5</text></g>
+<rect class="box bad" x="20" y="515" width="920" height="80" rx="8"/>
+<text class="t b" x="36" y="542">On-chain, anyone can see: payer -&gt; one-time address -&gt; destination.</text>
+<text class="t s" x="36" y="563">If the destination is a wallet you use elsewhere, the payer (and everyone) learns it is yours. Sweep to a fresh address, never your main wallet.</text>
+<text class="t s" x="36" y="581">Batching sweeps blurs timing only; GhostPay has no mixer and no unlinkability mechanism after the sweep.</text>
+</svg>

@@ -25,11 +25,11 @@ export interface ReceiverWallet {
   /** Required in non-interactive mode (BPJ-RCV-4): can this Original be broadcast? */
   testMempoolAccept?(txHex: string): Promise<boolean>;
   /**
-   * Optional chain lookup (e.g. the receiver's node `gettxout`) of an Original
-   * input's prevout; `undefined` when unknown or spent. When present, every
-   * sender-claimed `witness_utxo`/`non_witness_utxo` must match it (BITCOIN-01).
+   * Authoritative chain lookup (e.g. the receiver's node `gettxout`) of every
+   * Original input's prevout; `undefined` when unknown or spent. The receiver
+   * fails closed unless every sender-claimed UTXO matches (BITCOIN-01).
    */
-  getPrevOut?(txid: string, index: number): Promise<PrevOut | undefined>;
+  getPrevOut(txid: string, index: number): Promise<PrevOut | undefined>;
 }
 
 /**

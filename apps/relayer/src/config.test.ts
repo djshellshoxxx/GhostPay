@@ -1,10 +1,10 @@
 import { chmodSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { ed25519 } from '@noble/curves/ed25519.js';
-import { manifestSigningBytes, type ReleaseKey } from '@ghostpay/chain-adapters';
+import { secp256k1 } from '@noble/curves/secp256k1.js';
+import { loadDeployment, manifestDigest } from '@ghostpay/chain-adapters';
 import { describe, expect, it } from 'vitest';
-import { DEV_CHAIN_ID, loadConfigFile, parseConfig, type ConfigContext } from './config.js';
+import { DEV_CHAIN_ID, loadConfigFile, parseConfig, parseReleaseKeys, type ConfigContext } from './config.js';
 import { ConfigError, HOT_KEY_SOURCE, QUOTE_SECRET_PREVIOUS_SOURCE, QUOTE_SECRET_SOURCE, loadOptionalSecret, loadSecret } from './secrets.js';
 import { DEST, FEE_TO, HOT_ADDRESS, NOPERMIT, ORIGIN, STRANGER, SWEEP_CONTRACT, USDC } from './harness.testutil.js';
 
@@ -46,10 +46,12 @@ const MANIFEST = (chainId: number, sweep: string = SWEEP_CONTRACT): string =>
 
 // Pinned test release key + a manifest signed with it (CHAIN-ADAPTERS-05: the relayer must authenticate manifests).
 const SK = new Uint8Array(32).fill(7);
-const KEY: ReleaseKey = { alg: 'ed25519', publicKey: `0x${Buffer.from(ed25519.getPublicKey(SK)).toString('hex')}` };
+const KEY = Array.from(secp256k1.getPublicKey(SK, true), (byte) => byte.toString(16).padStart(2, '0')).join('');
 const SIGNED = (chainId: number, sweep: string = SWEEP_CONTRACT, signer: Uint8Array = SK): string => {
   const text = MANIFEST(chainId, sweep);
-  const signature = `0x${Buffer.from(ed25519.sign(manifestSigningBytes(text), signer)).toString('hex')}`;
+  const manifest = loadDeployment(text, chainId);
+  const digest = Uint8Array.from(manifestDigest(manifest).slice(2).match(/../g) ?? [], (byte) => parseInt(byte, 16));
+  const signature = `0x${Array.from(secp256k1.sign(digest, signer, { prehash: false, lowS: true }), (byte) => byte.toString(16).padStart(2, '0')).join('')}`;
   return JSON.stringify({ ...(JSON.parse(text) as Json), signature });
 };
 
@@ -213,7 +215,7 @@ describe('parseConfig', () => {
       expect(() => parse(main, { env: { ALLOW_MAINNET: 'true' }, readManifest: (id) => MANIFEST(id) })).toThrow(/ALLOW_MAINNET/);
     });
     it('starts with a signed manifest and ALLOW_MAINNET=1, taking the contract from the manifest', () => {
-      const c = parse(main, { env: { ALLOW_MAINNET: '1' }, releaseKey: KEY, readManifest: (id) => SIGNED(id) });
+      const c = parse(main, { env: { ALLOW_MAINNET: '1' }, releaseKeys: [KEY], readManifest: (id) => SIGNED(id) });
       expect(c.chains[0]?.sweepRelayer).toBe(SWEEP_CONTRACT);
       expect(c.chains[0]?.manifest?.router.toLowerCase()).toBe(DEST.toLowerCase());
     });
@@ -222,23 +224,33 @@ describe('parseConfig', () => {
     });
     it('refuses a mainnet manifest with a missing or forged signature when a key is pinned', () => {
       const env = { ALLOW_MAINNET: '1' };
-      expect(() => parse(main, { env, releaseKey: KEY, readManifest: (id) => MANIFEST(id) })).toThrow(/signature/i);
-      expect(() => parse(main, { env, releaseKey: KEY, readManifest: (id) => SIGNED(id, SWEEP_CONTRACT, new Uint8Array(32).fill(9)) })).toThrow(/signature/i);
+      expect(() => parse(main, { env, releaseKeys: [KEY], readManifest: (id) => MANIFEST(id) })).toThrow(/signature/i);
+      expect(() => parse(main, { env, releaseKeys: [KEY], readManifest: (id) => SIGNED(id, SWEEP_CONTRACT, new Uint8Array(32).fill(9)) })).toThrow(/signature/i);
     });
     it('rejects an invalid manifest and a conflicting configured address', () => {
-      expect(() => parse(main, { env: { ALLOW_MAINNET: '1' }, releaseKey: KEY, readManifest: () => '{}' })).toThrow();
+      expect(() => parse(main, { env: { ALLOW_MAINNET: '1' }, releaseKeys: [KEY], readManifest: () => '{}' })).toThrow();
       const conflict = good({ chains: [chain({ chainId: 1, sweepRelayer: DEST, tokens: custom })] });
-      expect(() => parse(conflict, { env: { ALLOW_MAINNET: '1' }, releaseKey: KEY, readManifest: (id) => SIGNED(id) })).toThrow(/differs from the deployment manifest/);
+      expect(() => parse(conflict, { env: { ALLOW_MAINNET: '1' }, releaseKeys: [KEY], readManifest: (id) => SIGNED(id) })).toThrow(/differs from the deployment manifest/);
       const same = good({ chains: [chain({ chainId: 1, tokens: custom })] });
-      expect(parse(same, { env: { ALLOW_MAINNET: '1' }, releaseKey: KEY, readManifest: (id) => SIGNED(id) }).chains[0]?.chainId).toBe(1);
+      expect(parse(same, { env: { ALLOW_MAINNET: '1' }, releaseKeys: [KEY], readManifest: (id) => SIGNED(id) }).chains[0]?.chainId).toBe(1);
     });
-    it('testnet: a pinned key requires a valid signature too', () => {
+    it('testnet manifests fail closed without a matching structured release signature', () => {
       const raw = good({ chains: [chain({ sweepRelayer: undefined })] });
-      expect(() => parse(raw, { releaseKey: KEY, readManifest: (id) => MANIFEST(id) })).toThrow(/signature/i);
-      expect(parse(raw, { releaseKey: KEY, readManifest: (id) => SIGNED(id) }).chains[0]?.sweepRelayer).toBe(SWEEP_CONTRACT);
+      expect(() => parse(raw, { readManifest: (id) => MANIFEST(id) })).toThrow(/signature/i);
+      expect(parse(raw, { releaseKeys: [KEY], readManifest: (id) => SIGNED(id) }).chains[0]?.sweepRelayer).toBe(SWEEP_CONTRACT);
     });
-    it('also reads manifests for testnets', () => {
-      const c = parse(good({ chains: [chain({ sweepRelayer: undefined })] }), { readManifest: (id) => MANIFEST(id) });
+    it('does not treat legacy raw-text signatures as valid structured signatures', () => {
+      const c = good({ chains: [chain({ sweepRelayer: undefined })] });
+      expect(() => parse(c, { releaseKeys: [KEY], readManifest: (id) => JSON.stringify({ ...(JSON.parse(MANIFEST(id)) as Json), signature: `0x${'11'.repeat(64)}` }) })).toThrow(/signature/i);
+    });
+    it('parses a bounded compressed-key release allowlist', () => {
+      expect(parseReleaseKeys(KEY)).toEqual([KEY]);
+      expect(parseReleaseKeys(undefined)).toEqual([]);
+      expect(() => parseReleaseKeys('nope')).toThrow(/GHOSTPAY_RELEASE_PUBKEYS/);
+      expect(() => parseReleaseKeys(Array(9).fill(KEY).join(','))).toThrow(/GHOSTPAY_RELEASE_PUBKEYS/);
+    });
+    it('reads a signed manifest for testnets', () => {
+      const c = parse(good({ chains: [chain({ sweepRelayer: undefined })] }), { releaseKeys: [KEY], readManifest: (id) => SIGNED(id) });
       expect(c.chains[0]?.sweepRelayer).toBe(SWEEP_CONTRACT);
     });
   });
@@ -247,7 +259,7 @@ describe('parseConfig', () => {
 describe('example config', () => {
   it('stays valid (with a manifest for the chain)', () => {
     const raw: unknown = JSON.parse(readFileSync(new URL('../relayer.config.example.json', import.meta.url), 'utf8'));
-    const c = parse(raw, { env: { RPC_URL_84532: 'https://rpc.example' }, readManifest: (id) => MANIFEST(id) });
+    const c = parse(raw, { env: { RPC_URL_84532: 'https://rpc.example' }, releaseKeys: [KEY], readManifest: (id) => SIGNED(id) });
     expect(c.chains[0]?.chainId).toBe(84532);
     expect(c.chains[0]?.tokens[0]?.symbol).toBe('USDC');
   });
@@ -257,13 +269,13 @@ describe('loadConfigFile', () => {
   const dir = mkdtempSync(join(tmpdir(), 'gp-cfg-'));
   const dep = join(dir, 'deployments');
   mkdirSync(dep);
-  const base = { env: {}, hotKeyAddress: HOT_ADDRESS };
+  const base = { env: {}, hotKeyAddress: HOT_ADDRESS, releaseKeys: [KEY] };
 
   it('reads config and manifests from disk', () => {
     const p = join(dir, 'ok.json');
     writeFileSync(p, JSON.stringify(good({ chains: [chain({ sweepRelayer: undefined })] })));
     expect(() => loadConfigFile(p, dep, base)).toThrow(/sweepRelayer/); // no manifest yet
-    writeFileSync(join(dep, '11155111.json'), MANIFEST(11155111));
+    writeFileSync(join(dep, '11155111.json'), SIGNED(11155111));
     expect(loadConfigFile(p, dep, base).chains[0]?.sweepRelayer).toBe(SWEEP_CONTRACT);
   });
   it('fails cleanly on missing, huge or malformed files', () => {

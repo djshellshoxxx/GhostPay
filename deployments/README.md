@@ -22,7 +22,7 @@ source (see `docs/FEE_SCHEDULE.md`).
 | `bytecodeHashes` | object | `{ "router": <bytes32>, "sweepRelayer": <bytes32> }`: `keccak256` of the **deployed (runtime) bytecode** read from the chain (`cast codehash`). |
 | `policyImplementation`, `policyFactory`, `policyFeeToken`, `policyFlatFee`, `policyFeeRecipient` | address / decimal string, optional | Policy-guarded account (scheme `0x47500002`, `docs/CONTRACTS_SPEC.md` section 4), written by `forge script script/DeployPolicy.s.sol`. All five are required together once `policyFactory` is present. `policyFlatFee` is a decimal string in `policyFeeToken` base units (F-SECURE; may exceed 2^53). `deployTx` and `bytecodeHashes` may carry matching optional `policyImplementation` / `policyFactory` entries. Manifests without these fields stay valid. |
 | `date` | string | RFC 3339 UTC deployment timestamp. |
-| `signature` | string, optional | Detached signature over the canonical manifest (release key); see the release process. |
+| `signature` | string, optional in the shared schema | Compact low-s secp256k1 `r || s` signature (`0x` + 128 hex digits) over `manifestDigest(validatedManifest)`, i.e. `keccak256(canonicalManifestJson(manifest))`. Required for any web deployment file because builds fail closed without configured release keys and a valid signature. |
 
 ## Procedure
 
@@ -32,8 +32,10 @@ source (see `docs/FEE_SCHEDULE.md`).
    `ALLOW_CUSTOM_ANNOUNCER=1`; `DeployPolicy.s.sol` additionally needs `FEE_TOKEN`, `FLAT_FEE` and `MAX_FLAT_FEE`. Chain id 31337 needs `ALLOW_LOCAL=1`.
 2. The scripts already read back every immutable; additionally verify the sources on the block explorer and read back `FEE_RECIPIENT`, `FEE_BPS`, `ANNOUNCER` and the
    runtime code hashes from the chain.
-3. Write `deployments/<chainId>.json`, validate with `npx ajv-cli validate -s deployments/schema.json -d deployments/<chainId>.json`
-   (or any 2020-12 validator), commit it in a reviewed pull request.
+3. Write `deployments/<chainId>.json`, sign the exact `manifestDigest` bytes with the approved offline release key, and put
+   the compact signature in `signature`. No in-repository signing command exists; do not substitute the legacy
+   `manifestSigningBytes` raw-text scheme used by the relayer compatibility verifier. Validate the schema and run the web
+   project validator with the matching public key before committing in a reviewed pull request.
 
 ## Example (shape only, placeholder values)
 

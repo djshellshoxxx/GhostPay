@@ -16,7 +16,7 @@ import type {
 } from './adapter-types.js';
 import { fail } from './errors.js';
 import { createLabelTable } from './labels.js';
-import { scanBlocks } from './scan/scanner.js';
+import { scanBlocks, type OutputVerifier } from './scan/scanner.js';
 import type { TweakSource } from './scan/types.js';
 import { MAX_MONEY_SATS } from './units.js';
 import { buildBitcoinUri } from './uri.js';
@@ -26,6 +26,10 @@ export interface BitcoinAdapterDeps {
   readonly network: SilentPaymentNetwork;
   /** Where to read block tweak data from. Without it `scan` fails with `UNSUPPORTED`. */
   readonly source?: TweakSource;
+  /** Optional independent verifier; without it results stay explicitly unverified. */
+  readonly verifier?: OutputVerifier;
+  /** Persisted keys already reported; repeats are flagged across calls. */
+  readonly seenKeys?: Set<string>;
 }
 
 /**
@@ -114,6 +118,8 @@ export function createBitcoinAdapter(deps: BitcoinAdapterDeps): BitcoinChainAdap
         fromHeight: toHeight(range.fromBlock),
         ...(range.toBlock === undefined ? {} : { toHeight: toHeight(range.toBlock) }),
         signal,
+        ...(deps.verifier === undefined ? {} : { verifier: deps.verifier }),
+        ...(deps.seenKeys === undefined ? {} : { seenKeys: deps.seenKeys }),
       });
       for await (const r of iterator) {
         yield {
@@ -123,6 +129,8 @@ export function createBitcoinAdapter(deps: BitcoinAdapterDeps): BitcoinChainAdap
           ...(r.txid === undefined ? {} : { txid: r.txid }),
           ...(r.vout === undefined ? {} : { vout: r.vout }),
           ...(r.amountSats === undefined ? {} : { amountSats: r.amountSats }),
+          duplicateKey: r.duplicateKey,
+          verified: r.verified,
           xOnlyPublicKey: r.xOnlyPublicKey,
           k: r.k,
           label: r.label,

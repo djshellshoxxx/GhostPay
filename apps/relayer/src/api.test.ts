@@ -1,7 +1,25 @@
 import { request as httpRequest } from 'node:http';
 import { connect } from 'node:net';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { CHAIN_ID, DEST, FEE_TO, NOPERMIT, NOW_SEC, ORIGIN, OTHER_KEY, OWNER, STRANGER, SWEEP_CONTRACT, USDC, call, errCode, prepare, startHarness, testConfig, type Harness } from './harness.testutil.js';
+import {
+  CHAIN_ID,
+  DEST,
+  FEE_TO,
+  NOPERMIT,
+  NOW_SEC,
+  ORIGIN,
+  OTHER_KEY,
+  OWNER,
+  STRANGER,
+  SWEEP_CONTRACT,
+  USDC,
+  call,
+  errCode,
+  prepare,
+  startHarness,
+  testConfig,
+  type Harness,
+} from './harness.testutil.js';
 import type { QuoteResponse } from './service.js';
 
 let h: Harness | undefined;
@@ -26,11 +44,21 @@ describe('basic routes, headers and CORS', () => {
     const r = await call(s, 'GET', '/healthz');
     expect(r.status).toBe(200);
     expect(r.json).toEqual({ status: 'ok', chains: [{ chainId: CHAIN_ID, breaker: 'closed' }] });
-    for (const k of ['x-content-type-options', 'cache-control', 'content-security-policy', 'referrer-policy', 'x-frame-options', 'strict-transport-security']) {
+    for (const k of [
+      'x-content-type-options',
+      'cache-control',
+      'content-security-policy',
+      'referrer-policy',
+      'x-frame-options',
+      'strict-transport-security',
+    ]) {
       expect(r.headers.get(k)).toBeTruthy();
     }
     const info = await call(s, 'GET', '/v1/info');
-    const j = info.json as { feePolicy: { capBps: number; minBps: number }; chains: { feeTo: string; sweepRelayer: string; tokens: unknown[] }[] };
+    const j = info.json as {
+      feePolicy: { capBps: number; minBps: number };
+      chains: { feeTo: string; sweepRelayer: string; tokens: unknown[] }[];
+    };
     expect(j.feePolicy.capBps).toBe(300);
     expect(j.feePolicy.minBps).toBe(50);
     expect(j.chains[0]?.feeTo).toBe(FEE_TO);
@@ -65,7 +93,10 @@ describe('basic routes, headers and CORS', () => {
     const bad = await call(s, 'GET', '/v1/info', undefined, { origin: 'https://evil.example' });
     expect(bad.status).toBe(403);
     expect(bad.headers.get('access-control-allow-origin')).toBeNull();
-    const pre = await call(s, 'OPTIONS', '/v1/sweep', undefined, { origin: ORIGIN, 'access-control-request-method': 'POST' });
+    const pre = await call(s, 'OPTIONS', '/v1/sweep', undefined, {
+      origin: ORIGIN,
+      'access-control-request-method': 'POST',
+    });
     expect(pre.status).toBe(204);
     expect(pre.headers.get('access-control-allow-origin')).toBe(ORIGIN);
     expect(pre.headers.get('access-control-allow-methods')).toContain('POST');
@@ -77,7 +108,13 @@ describe('basic routes, headers and CORS', () => {
   it('maps unexpected failures to an opaque 500', async () => {
     const s = await start();
     vi.spyOn(s.relayer.service, 'quote').mockRejectedValue(new Error('boom with secrets'));
-    const r = await call(s, 'POST', '/v1/quote', { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '1000' });
+    const r = await call(s, 'POST', '/v1/quote', {
+      chainId: CHAIN_ID,
+      token: USDC,
+      owner: OWNER,
+      destination: DEST,
+      amount: '1000',
+    });
     expect(r.status).toBe(500);
     expect(JSON.stringify(r.json)).not.toContain('boom');
   });
@@ -88,10 +125,18 @@ describe('request framing', () => {
 
   it('requires JSON content type', async () => {
     const s = await start();
-    expect(errCode(await call(s, 'POST', '/v1/quote', JSON.stringify(q), { 'content-type': 'text/plain' }))).toBe('unsupported_media_type');
-    const none = await fetch(`${s.url}/v1/quote`, { method: 'POST', body: JSON.stringify(q), headers: { 'content-type': '' } });
+    expect(
+      errCode(await call(s, 'POST', '/v1/quote', JSON.stringify(q), { 'content-type': 'text/plain' })),
+    ).toBe('unsupported_media_type');
+    const none = await fetch(`${s.url}/v1/quote`, {
+      method: 'POST',
+      body: JSON.stringify(q),
+      headers: { 'content-type': '' },
+    });
     expect(none.status).toBe(415);
-    const withCharset = await call(s, 'POST', '/v1/quote', JSON.stringify(q), { 'content-type': 'application/json; charset=utf-8' });
+    const withCharset = await call(s, 'POST', '/v1/quote', JSON.stringify(q), {
+      'content-type': 'application/json; charset=utf-8',
+    });
     expect(withCharset.status).toBe(200);
   });
 
@@ -99,7 +144,11 @@ describe('request framing', () => {
     const s = await start();
     expect(errCode(await call(s, 'POST', '/v1/quote', '{nope'))).toBe('invalid_json');
     expect(errCode(await call(s, 'POST', '/v1/quote', ''))).toBe('invalid_json');
-    const bin = await fetch(`${s.url}/v1/quote`, { method: 'POST', body: new Uint8Array([0x7b, 0xff, 0x7d]), headers: { 'content-type': 'application/json' } });
+    const bin = await fetch(`${s.url}/v1/quote`, {
+      method: 'POST',
+      body: new Uint8Array([0x7b, 0xff, 0x7d]),
+      headers: { 'content-type': 'application/json' },
+    });
     expect(bin.status).toBe(400);
   });
 
@@ -109,16 +158,30 @@ describe('request framing', () => {
     const r = await call(s, 'POST', '/v1/quote', big);
     expect(r.status).toBe(413);
     expect(errCode(r)).toBe('body_too_large');
-    const exact = await call(s, 'POST', '/v1/quote', JSON.stringify({ ...q, pad: 'x'.repeat(16 * 1024 - 400) }));
+    const exact = await call(
+      s,
+      'POST',
+      '/v1/quote',
+      JSON.stringify({ ...q, pad: 'x'.repeat(16 * 1024 - 400) }),
+    );
     expect(exact.status).toBe(400); // within cap -> reaches validation (unknown key)
 
     // chunked body without Content-Length that grows past the cap
     const status = await new Promise<number>((resolve, reject) => {
       const u = new URL(s.url);
-      const req = httpRequest({ host: u.hostname, port: u.port, path: '/v1/quote', method: 'POST', headers: { 'content-type': 'application/json' } }, (res) => {
-        res.resume();
-        resolve(res.statusCode ?? 0);
-      });
+      const req = httpRequest(
+        {
+          host: u.hostname,
+          port: u.port,
+          path: '/v1/quote',
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+        },
+        (res) => {
+          res.resume();
+          resolve(res.statusCode ?? 0);
+        },
+      );
       req.on('error', reject);
       req.write('{"a":"' + 'y'.repeat(10 * 1024));
       req.write('y'.repeat(10 * 1024));
@@ -131,10 +194,19 @@ describe('request framing', () => {
     const s = await start();
     const status = await new Promise<number>((resolve, reject) => {
       const u = new URL(s.url);
-      const req = httpRequest({ host: u.hostname, port: u.port, path: '/v1/sweep', method: 'POST', headers: { 'content-type': 'application/json', 'content-length': '20000' } }, (res) => {
-        res.resume();
-        resolve(res.statusCode ?? 0);
-      });
+      const req = httpRequest(
+        {
+          host: u.hostname,
+          port: u.port,
+          path: '/v1/sweep',
+          method: 'POST',
+          headers: { 'content-type': 'application/json', 'content-length': '20000' },
+        },
+        (res) => {
+          res.resume();
+          resolve(res.statusCode ?? 0);
+        },
+      );
       req.on('error', reject);
       req.flushHeaders();
     });
@@ -146,7 +218,9 @@ describe('request framing', () => {
     const u = new URL(s.url);
     const sock = connect(Number(u.port), u.hostname);
     await new Promise<void>((r) => sock.once('connect', r));
-    sock.write('POST /v1/quote HTTP/1.1\r\nHost: x\r\nContent-Type: application/json\r\nContent-Length: 50\r\n\r\n{"a"');
+    sock.write(
+      'POST /v1/quote HTTP/1.1\r\nHost: x\r\nContent-Type: application/json\r\nContent-Length: 50\r\n\r\n{"a"',
+    );
     await settle();
     sock.destroy();
     await settle();
@@ -157,7 +231,13 @@ describe('request framing', () => {
 describe('POST /v1/quote', () => {
   it('prices a permit token by the gas term when it dominates', async () => {
     const s = await start();
-    const r = await call(s, 'POST', '/v1/quote', { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '20000000' });
+    const r = await call(s, 'POST', '/v1/quote', {
+      chainId: CHAIN_ID,
+      token: USDC,
+      owner: OWNER,
+      destination: DEST,
+      amount: '20000000',
+    });
     expect(r.status).toBe(200);
     const j = r.json as QuoteResponse;
     // 130000 gas * 1 gwei * 3000 USD/ETH = 390000 token units; x1.10 = 429000
@@ -169,9 +249,21 @@ describe('POST /v1/quote', () => {
 
   it('uses the 50 bps floor and the cheaper non-permit estimate', async () => {
     const s = await start();
-    const a = await call(s, 'POST', '/v1/quote', { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '100000000' });
+    const a = await call(s, 'POST', '/v1/quote', {
+      chainId: CHAIN_ID,
+      token: USDC,
+      owner: OWNER,
+      destination: DEST,
+      amount: '100000000',
+    });
     expect((a.json as QuoteResponse).fee).toBe('500000');
-    const b = await call(s, 'POST', '/v1/quote', { chainId: CHAIN_ID, token: NOPERMIT, owner: OWNER, destination: DEST, amount: '20000000' });
+    const b = await call(s, 'POST', '/v1/quote', {
+      chainId: CHAIN_ID,
+      token: NOPERMIT,
+      owner: OWNER,
+      destination: DEST,
+      amount: '20000000',
+    });
     expect((b.json as QuoteResponse).fee).toBe('330000');
   });
 
@@ -180,8 +272,12 @@ describe('POST /v1/quote', () => {
     const base = { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '100000000' };
     expect(errCode(await call(s, 'POST', '/v1/quote', { ...base, chainId: 1 }))).toBe('chain_not_supported');
     expect(errCode(await call(s, 'POST', '/v1/quote', { ...base, token: DEST }))).toBe('token_not_supported');
-    expect(errCode(await call(s, 'POST', '/v1/quote', { ...base, destination: OWNER }))).toBe('invalid_order');
-    expect(errCode(await call(s, 'POST', '/v1/quote', { ...base, destination: FEE_TO }))).toBe('invalid_order');
+    expect(errCode(await call(s, 'POST', '/v1/quote', { ...base, destination: OWNER }))).toBe(
+      'invalid_order',
+    );
+    expect(errCode(await call(s, 'POST', '/v1/quote', { ...base, destination: FEE_TO }))).toBe(
+      'invalid_order',
+    );
     const small = await call(s, 'POST', '/v1/quote', { ...base, amount: '1000000' });
     expect(small.status).toBe(422);
     expect(errCode(small)).toBe('amount_too_small');
@@ -201,22 +297,43 @@ describe('POST /v1/quote', () => {
   it.each([
     ['not an object', []],
     ['null', null],
-    ['unknown key', { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '5', extra: 1 }],
+    [
+      'unknown key',
+      { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '5', extra: 1 },
+    ],
     ['missing key', { chainId: CHAIN_ID, token: USDC, owner: OWNER, amount: '5' }],
     ['chainId string', { chainId: '11155111', token: USDC, owner: OWNER, destination: DEST, amount: '5' }],
     ['chainId float', { chainId: 1.5, token: USDC, owner: OWNER, destination: DEST, amount: '5' }],
     ['chainId zero', { chainId: 0, token: USDC, owner: OWNER, destination: DEST, amount: '5' }],
     ['chainId too big', { chainId: 2 ** 60, token: USDC, owner: OWNER, destination: DEST, amount: '5' }],
     ['short address', { chainId: CHAIN_ID, token: '0x1234', owner: OWNER, destination: DEST, amount: '5' }],
-    ['bad checksum', { chainId: CHAIN_ID, token: USDC.replace('c7D4', 'C7d4'), owner: OWNER, destination: DEST, amount: '5' }],
-    ['zero address', { chainId: CHAIN_ID, token: `0x${'0'.repeat(40)}`, owner: OWNER, destination: DEST, amount: '5' }],
+    [
+      'bad checksum',
+      {
+        chainId: CHAIN_ID,
+        token: USDC.replace('c7D4', 'C7d4'),
+        owner: OWNER,
+        destination: DEST,
+        amount: '5',
+      },
+    ],
+    [
+      'zero address',
+      { chainId: CHAIN_ID, token: `0x${'0'.repeat(40)}`, owner: OWNER, destination: DEST, amount: '5' },
+    ],
     ['address number', { chainId: CHAIN_ID, token: 5, owner: OWNER, destination: DEST, amount: '5' }],
     ['amount zero', { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '0' }],
-    ['amount leading zero', { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '05' }],
+    [
+      'amount leading zero',
+      { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '05' },
+    ],
     ['amount negative', { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '-5' }],
     ['amount exponent', { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '1e3' }],
     ['amount number', { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: 5 }],
-    ['amount > uint256', { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: (2n ** 256n).toString() }],
+    [
+      'amount > uint256',
+      { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: (2n ** 256n).toString() },
+    ],
     ['amount whitespace', { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: ' 5' }],
   ])('rejects %s with 400', async (_name, body) => {
     const s = await start();
@@ -265,7 +382,9 @@ describe('POST /v1/sweep success and validation', () => {
     const { body } = await prepare(s);
     expect(errCode(await call(s, 'POST', '/v1/sweep', { ...body, chainId: 1 }))).toBe('chain_not_supported');
     const sw = body['sweep'] as Record<string, unknown>;
-    expect(errCode(await call(s, 'POST', '/v1/sweep', { ...body, sweep: { ...sw, token: DEST } }))).toBe('token_not_supported');
+    expect(errCode(await call(s, 'POST', '/v1/sweep', { ...body, sweep: { ...sw, token: DEST } }))).toBe(
+      'token_not_supported',
+    );
     const wrongDomain = await prepare(s, { chainId: 137 });
     expect(errCode(await call(s, 'POST', '/v1/sweep', wrongDomain.body))).toBe('invalid_signature');
   });
@@ -296,11 +415,17 @@ describe('POST /v1/sweep success and validation', () => {
     expect(t.status).toBe(400);
     expect(errCode(t)).toBe('invalid_quote');
     const sw = body['sweep'] as Record<string, unknown>;
-    expect(errCode(await call(s, 'POST', '/v1/sweep', { ...body, sweep: { ...sw, amount: '100000001' } }))).toBe('invalid_quote');
-    expect(errCode(await call(s, 'POST', '/v1/sweep', { ...body, quoteToken: 'garbage' }))).toBe('invalid_quoteToken');
+    expect(
+      errCode(await call(s, 'POST', '/v1/sweep', { ...body, sweep: { ...sw, amount: '100000001' } })),
+    ).toBe('invalid_quote');
+    expect(errCode(await call(s, 'POST', '/v1/sweep', { ...body, quoteToken: 'garbage' }))).toBe(
+      'invalid_quoteToken',
+    );
     // a token from a lower fee forged by editing the embedded fee field is also rejected
     const forged = quote.quoteToken.replace(/^(v2\.[0-9a-f]{8}\.\d+)\.\d+\./, '$1.1.');
-    expect(errCode(await call(s, 'POST', '/v1/sweep', { ...body, quoteToken: forged }))).toBe('invalid_quote');
+    expect(errCode(await call(s, 'POST', '/v1/sweep', { ...body, quoteToken: forged }))).toBe(
+      'invalid_quote',
+    );
 
     const low = await prepare(s, { fee: BigInt(quote.fee) - 1n, nonce: 2n });
     expect(errCode(await call(s, 'POST', '/v1/sweep', low.body))).toBe('fee_below_quote');
@@ -315,17 +440,38 @@ describe('POST /v1/sweep success and validation', () => {
 
   it('enforces the deadline window', async () => {
     const s = await start();
-    expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { deadlineOffset: 10 })).body))).toBe('deadline_too_soon');
-    expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { deadlineOffset: 1801 })).body))).toBe('deadline_too_far');
-    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { deadlineOffset: 1800 })).body)).status).toBe(200);
+    expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { deadlineOffset: 10 })).body))).toBe(
+      'deadline_too_soon',
+    );
+    expect(
+      errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { deadlineOffset: 1801 })).body)),
+    ).toBe('deadline_too_far');
+    expect(
+      (await call(s, 'POST', '/v1/sweep', (await prepare(s, { deadlineOffset: 1800 })).body)).status,
+    ).toBe(200);
   });
 
   it('rejects orders the contract would reject before any chain call', async () => {
     const s = await start();
-    const quote = await s.relayer.service.quote({ chainId: CHAIN_ID, token: USDC, owner: SWEEP_CONTRACT, destination: DEST, amount: 100_000_000n });
+    const quote = await s.relayer.service.quote({
+      chainId: CHAIN_ID,
+      token: USDC,
+      owner: SWEEP_CONTRACT,
+      destination: DEST,
+      amount: 100_000_000n,
+    });
     const body = {
       chainId: CHAIN_ID,
-      sweep: { token: USDC, owner: SWEEP_CONTRACT, destination: DEST, feeTo: FEE_TO, amount: '100000000', fee: quote.fee, deadline: String(NOW_SEC + 600), nonce: '1' },
+      sweep: {
+        token: USDC,
+        owner: SWEEP_CONTRACT,
+        destination: DEST,
+        feeTo: FEE_TO,
+        amount: '100000000',
+        fee: quote.fee,
+        deadline: String(NOW_SEC + 600),
+        nonce: '1',
+      },
       sweepSig: `0x${'11'.repeat(65)}`,
       quoteToken: quote.quoteToken,
     };
@@ -334,17 +480,57 @@ describe('POST /v1/sweep success and validation', () => {
 
   it.each([
     ['unknown top-level key', (b: Record<string, unknown>) => ({ ...b, extra: 1 })],
-    ['unknown sweep key', (b: Record<string, unknown>) => ({ ...b, sweep: { ...(b['sweep'] as object), extra: 1 } })],
+    [
+      'unknown sweep key',
+      (b: Record<string, unknown>) => ({ ...b, sweep: { ...(b['sweep'] as object), extra: 1 } }),
+    ],
     ['missing sweepSig', (b: Record<string, unknown>) => ({ ...b, sweepSig: undefined })],
     ['short sweepSig', (b: Record<string, unknown>) => ({ ...b, sweepSig: '0x1234' })],
     ['non-hex sweepSig', (b: Record<string, unknown>) => ({ ...b, sweepSig: `0x${'zz'.repeat(65)}` })],
     ['sweep not object', (b: Record<string, unknown>) => ({ ...b, sweep: 'x' })],
-    ['fee negative', (b: Record<string, unknown>) => ({ ...b, sweep: { ...(b['sweep'] as object), fee: '-1' } })],
-    ['nonce > uint256', (b: Record<string, unknown>) => ({ ...b, sweep: { ...(b['sweep'] as object), nonce: (2n ** 256n).toString() } })],
-    ['deadline zero', (b: Record<string, unknown>) => ({ ...b, sweep: { ...(b['sweep'] as object), deadline: '0' } })],
-    ['permit unknown key', (b: Record<string, unknown>) => ({ ...b, permit: { value: '1', deadline: '1', v: 27, r: `0x${'aa'.repeat(32)}`, s: `0x${'bb'.repeat(32)}`, x: 1 } })],
-    ['permit v invalid', (b: Record<string, unknown>) => ({ ...b, permit: { value: '1', deadline: '1', v: 1, r: `0x${'aa'.repeat(32)}`, s: `0x${'bb'.repeat(32)}` } })],
-    ['permit r short', (b: Record<string, unknown>) => ({ ...b, permit: { value: '1', deadline: '1', v: 27, r: '0xaa', s: `0x${'bb'.repeat(32)}` } })],
+    [
+      'fee negative',
+      (b: Record<string, unknown>) => ({ ...b, sweep: { ...(b['sweep'] as object), fee: '-1' } }),
+    ],
+    [
+      'nonce > uint256',
+      (b: Record<string, unknown>) => ({
+        ...b,
+        sweep: { ...(b['sweep'] as object), nonce: (2n ** 256n).toString() },
+      }),
+    ],
+    [
+      'deadline zero',
+      (b: Record<string, unknown>) => ({ ...b, sweep: { ...(b['sweep'] as object), deadline: '0' } }),
+    ],
+    [
+      'permit unknown key',
+      (b: Record<string, unknown>) => ({
+        ...b,
+        permit: {
+          value: '1',
+          deadline: '1',
+          v: 27,
+          r: `0x${'aa'.repeat(32)}`,
+          s: `0x${'bb'.repeat(32)}`,
+          x: 1,
+        },
+      }),
+    ],
+    [
+      'permit v invalid',
+      (b: Record<string, unknown>) => ({
+        ...b,
+        permit: { value: '1', deadline: '1', v: 1, r: `0x${'aa'.repeat(32)}`, s: `0x${'bb'.repeat(32)}` },
+      }),
+    ],
+    [
+      'permit r short',
+      (b: Record<string, unknown>) => ({
+        ...b,
+        permit: { value: '1', deadline: '1', v: 27, r: '0xaa', s: `0x${'bb'.repeat(32)}` },
+      }),
+    ],
     ['permit not object', (b: Record<string, unknown>) => ({ ...b, permit: 5 })],
   ])('rejects %s with 400', async (_n, mutate) => {
     const s = await start();
@@ -360,7 +546,12 @@ describe('simulation, replay and operational limits', () => {
   it('checks nonce, token balance and allowance before simulating', async () => {
     const lowBalance = await start();
     lowBalance.fake.ownerBalance = 0n;
-    const balance = await call(lowBalance, 'POST', '/v1/sweep', (await prepare(lowBalance, { permit: false })).body);
+    const balance = await call(
+      lowBalance,
+      'POST',
+      '/v1/sweep',
+      (await prepare(lowBalance, { permit: false })).body,
+    );
     expect(errCode(balance)).toBe('insufficient_token_balance');
     expect(lowBalance.fake.simulations).toBe(0);
     await lowBalance.stop();
@@ -368,7 +559,12 @@ describe('simulation, replay and operational limits', () => {
 
     const lowAllowance = await start();
     lowAllowance.fake.allowance = 0n;
-    const allowance = await call(lowAllowance, 'POST', '/v1/sweep', (await prepare(lowAllowance, { permit: false })).body);
+    const allowance = await call(
+      lowAllowance,
+      'POST',
+      '/v1/sweep',
+      (await prepare(lowAllowance, { permit: false })).body,
+    );
     expect(errCode(allowance)).toBe('insufficient_allowance');
     expect(lowAllowance.fake.simulations).toBe(0);
   });
@@ -414,7 +610,9 @@ describe('simulation, replay and operational limits', () => {
     expect(r.status).toBe(422);
     expect(errCode(r)).toBe('simulation_reverted');
     s.fake.simulateError = new SimulationRevert('Expired');
-    expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 2n })).body))).toBe('expired');
+    expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 2n })).body))).toBe(
+      'expired',
+    );
   });
 
   it('rejects a gas limit above the configured maximum', async () => {
@@ -454,6 +652,50 @@ describe('simulation, replay and operational limits', () => {
     s.fake.pendingNonce = 42;
     expect((await call(s, 'POST', '/v1/sweep', (await prepare(s)).body)).status).toBe(200);
     expect(s.fake.sent[0]?.opts.nonce).toBe(42);
+  });
+
+  it('reserves worst-case gas loss before send, releases it on success, and retains it on receipt timeout', async () => {
+    const estimate = 150_000n * 1_000_000_000n;
+    const cfg = {
+      lossBudget: { windowSeconds: 3600, perKeyWei: estimate, globalWei: 10n ** 18n, maxKeys: 100 },
+    };
+    const success = await start({ config: cfg });
+    expect(
+      (await call(success, 'POST', '/v1/sweep', (await prepare(success, { nonce: 401n })).body)).status,
+    ).toBe(200);
+    await settle();
+    expect(
+      (await call(success, 'POST', '/v1/sweep', (await prepare(success, { nonce: 402n })).body)).status,
+    ).toBe(200);
+    await settle();
+
+    await h?.stop();
+    h = undefined;
+    const timeout = await start({ config: cfg });
+    timeout.fake.receipt = { status: 'timeout', gasUsed: 0n };
+    expect(
+      (await call(timeout, 'POST', '/v1/sweep', (await prepare(timeout, { nonce: 403n })).body)).status,
+    ).toBe(200);
+    await settle();
+    const blocked = await call(timeout, 'POST', '/v1/sweep', (await prepare(timeout, { nonce: 404n })).body);
+    expect(blocked.status).toBe(429);
+    expect(errCode(blocked)).toBe('loss_budget_exhausted');
+    expect(timeout.fake.sent).toHaveLength(1);
+  });
+
+  it('releases loss reservations when transaction submission fails', async () => {
+    const estimate = 150_000n * 1_000_000_000n;
+    const s = await start({
+      config: {
+        lossBudget: { windowSeconds: 3600, perKeyWei: estimate, globalWei: 10n ** 18n, maxKeys: 100 },
+      },
+    });
+    s.fake.sendFails = true;
+    expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 405n })).body))).toBe(
+      'send_failed',
+    );
+    s.fake.sendFails = false;
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 406n })).body)).status).toBe(200);
   });
 
   it('counts reverted and timed-out receipts', async () => {
@@ -496,10 +738,15 @@ describe('circuit breaker', () => {
   it('re-opens when the half-open probe fails', async () => {
     const s = await start();
     s.fake.simulateError = new Error('down');
-    for (let i = 0; i < 3; i++) await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: BigInt(i + 1) })).body);
+    for (let i = 0; i < 3; i++)
+      await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: BigInt(i + 1) })).body);
     s.clock.ms += 61_000;
-    expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 9n })).body))).toBe('rpc_unavailable');
-    expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 10n })).body))).toBe('breaker_open');
+    expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 9n })).body))).toBe(
+      'rpc_unavailable',
+    );
+    expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 10n })).body))).toBe(
+      'breaker_open',
+    );
   });
 
   it('opens on a low relayer balance', async () => {
@@ -510,7 +757,9 @@ describe('circuit breaker', () => {
     expect(errCode(r)).toBe('breaker_open');
     expect(s.fake.simulations).toBe(0);
     // while open, requests are refused before they even reach the lane
-    expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 2n })).body))).toBe('breaker_open');
+    expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 2n })).body))).toBe(
+      'breaker_open',
+    );
     expect(s.logs.join('\n')).toContain('breaker_tripped_low_balance');
   });
 });
@@ -522,7 +771,9 @@ describe('policy gate', () => {
       policy: {
         check: (ctx) => {
           seen.push(ctx);
-          return Promise.resolve(ctx.amount > 0n ? { allow: false, reasonClass: 'sanctioned' } : { allow: true });
+          return Promise.resolve(
+            ctx.amount > 0n ? { allow: false, reasonClass: 'sanctioned' } : { allow: true },
+          );
         },
       },
     });
@@ -531,7 +782,9 @@ describe('policy gate', () => {
     expect(errCode(r)).toBe('policy_denied');
     expect(s.fake.simulations).toBe(0);
     expect(s.fake.sent).toHaveLength(0);
-    expect(seen).toEqual([{ chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: 100_000_000n }]);
+    expect(seen).toEqual([
+      { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: 100_000_000n },
+    ]);
   });
 
   it('fails closed when the gate throws', async () => {
@@ -544,7 +797,20 @@ describe('policy gate', () => {
 
 describe('rate limiting', () => {
   it('limits per IP bucket with Retry-After', async () => {
-    const s = await start({ config: { rateLimit: { ipPerMinute: 1, ipBurst: 2, ownerPerMinute: 60, ownerBurst: 20, maxKeys: 100, saltRotationHours: 24, quoteGlobalPerMinute: 6000, quoteGlobalBurst: 1000 } } });
+    const s = await start({
+      config: {
+        rateLimit: {
+          ipPerMinute: 1,
+          ipBurst: 2,
+          ownerPerMinute: 60,
+          ownerBurst: 20,
+          maxKeys: 100,
+          saltRotationHours: 24,
+          quoteGlobalPerMinute: 6000,
+          quoteGlobalBurst: 1000,
+        },
+      },
+    });
     const q = { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '100000000' };
     expect((await call(s, 'POST', '/v1/quote', q)).status).toBe(200);
     expect((await call(s, 'POST', '/v1/quote', q)).status).toBe(200);
@@ -558,7 +824,20 @@ describe('rate limiting', () => {
   });
 
   it('limits per owner only after the signature is proven', async () => {
-    const s = await start({ config: { rateLimit: { ipPerMinute: 600, ipBurst: 100, ownerPerMinute: 1, ownerBurst: 1, maxKeys: 100, saltRotationHours: 24, quoteGlobalPerMinute: 6000, quoteGlobalBurst: 1000 } } });
+    const s = await start({
+      config: {
+        rateLimit: {
+          ipPerMinute: 600,
+          ipBurst: 100,
+          ownerPerMinute: 1,
+          ownerBurst: 1,
+          maxKeys: 100,
+          saltRotationHours: 24,
+          quoteGlobalPerMinute: 6000,
+          quoteGlobalBurst: 1000,
+        },
+      },
+    });
     // forged requests for the victim owner do not consume the victim's quota
     for (let i = 0; i < 3; i++) {
       const forged = await prepare(s, { signerKey: OTHER_KEY, nonce: BigInt(i + 100) });
@@ -572,14 +851,29 @@ describe('rate limiting', () => {
   });
 
   it('honours X-Forwarded-For only from trusted proxies, walking right to left', async () => {
-    const lim = { ipPerMinute: 1, ipBurst: 1, ownerPerMinute: 60, ownerBurst: 20, maxKeys: 100, saltRotationHours: 24, quoteGlobalPerMinute: 6000, quoteGlobalBurst: 1000 };
+    const lim = {
+      ipPerMinute: 1,
+      ipBurst: 1,
+      ownerPerMinute: 60,
+      ownerBurst: 20,
+      maxKeys: 100,
+      saltRotationHours: 24,
+      quoteGlobalPerMinute: 6000,
+      quoteGlobalBurst: 1000,
+    };
     const q = { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '100000000' };
-    const s = await start({ config: { rateLimit: lim, trustedProxies: ['127.0.0.1', '::1', '::ffff:127.0.0.1'] } });
+    const s = await start({
+      config: { rateLimit: lim, trustedProxies: ['127.0.0.1', '::1', '::ffff:127.0.0.1'] },
+    });
     expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '9.9.9.9' })).status).toBe(200);
     expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '9.9.9.9' })).status).toBe(429);
     // a forged leftmost entry does not pick a new bucket: the rightmost untrusted hop decides
-    expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '1.2.3.4, 9.9.9.9' })).status).toBe(429);
-    expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '9.9.9.9, 127.0.0.1' })).status).toBe(429);
+    expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '1.2.3.4, 9.9.9.9' })).status).toBe(
+      429,
+    );
+    expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '9.9.9.9, 127.0.0.1' })).status).toBe(
+      429,
+    );
     expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '8.8.8.8' })).status).toBe(200);
     // garbage in a trusted chain is refused, not collapsed into the proxy's bucket
     const bad = await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': 'not-an-ip' });
@@ -589,18 +883,40 @@ describe('rate limiting', () => {
   });
 
   it('ignores X-Forwarded-For from an untrusted peer and buckets IPv4 by socket address', async () => {
-    const lim = { ipPerMinute: 1, ipBurst: 1, ownerPerMinute: 60, ownerBurst: 20, maxKeys: 100, saltRotationHours: 24, quoteGlobalPerMinute: 6000, quoteGlobalBurst: 1000 };
+    const lim = {
+      ipPerMinute: 1,
+      ipBurst: 1,
+      ownerPerMinute: 60,
+      ownerBurst: 20,
+      maxKeys: 100,
+      saltRotationHours: 24,
+      quoteGlobalPerMinute: 6000,
+      quoteGlobalBurst: 1000,
+    };
     const q = { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '100000000' };
     const t = await start({ config: { rateLimit: lim, trustedProxies: [] } });
     expect((await call(t, 'POST', '/v1/quote', q, { 'x-forwarded-for': '3.3.3.3' })).status).toBe(200);
     expect((await call(t, 'POST', '/v1/quote', q, { 'x-forwarded-for': '4.4.4.4' })).status).toBe(429);
-    expect((await call(t, 'POST', '/v1/quote', q, { 'x-forwarded-for': '5.5.5.5, 6.6.6.6' })).status).toBe(429);
+    expect((await call(t, 'POST', '/v1/quote', q, { 'x-forwarded-for': '5.5.5.5, 6.6.6.6' })).status).toBe(
+      429,
+    );
   });
 
   it('applies a process-wide quote budget on top of the per-client limit', async () => {
-    const lim = { ipPerMinute: 600, ipBurst: 100, ownerPerMinute: 60, ownerBurst: 20, maxKeys: 100, saltRotationHours: 24, quoteGlobalPerMinute: 1, quoteGlobalBurst: 2 };
+    const lim = {
+      ipPerMinute: 600,
+      ipBurst: 100,
+      ownerPerMinute: 60,
+      ownerBurst: 20,
+      maxKeys: 100,
+      saltRotationHours: 24,
+      quoteGlobalPerMinute: 1,
+      quoteGlobalBurst: 2,
+    };
     const q = { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '100000000' };
-    const s = await start({ config: { rateLimit: lim, trustedProxies: ['127.0.0.1', '::1', '::ffff:127.0.0.1'] } });
+    const s = await start({
+      config: { rateLimit: lim, trustedProxies: ['127.0.0.1', '::1', '::ffff:127.0.0.1'] },
+    });
     expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '1.1.1.1' })).status).toBe(200);
     expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '2.2.2.2' })).status).toBe(200);
     const limited = await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '3.3.3.3' });
@@ -657,7 +973,9 @@ describe('serialization, queue and shutdown', () => {
     expect(s.relayer.service.health().status).toBe('shutting_down');
     const { body } = await prepare(s, { nonce: 2n });
     const { parseSweepRequest } = await import('./validate.js');
-    await expect(s.relayer.service.sweep(parseSweepRequest(body), { requestId: 'abcdef12' })).rejects.toMatchObject({ status: 503, code: 'shutting_down' });
+    await expect(
+      s.relayer.service.sweep(parseSweepRequest(body), { requestId: 'abcdef12' }),
+    ).rejects.toMatchObject({ status: 503, code: 'shutting_down' });
     let done = false;
     void closing.then(() => {
       done = true;
@@ -715,19 +1033,43 @@ describe('logging redaction', () => {
     await call(s, 'POST', '/v1/sweep', ok.body);
     await call(s, 'POST', '/v1/sweep', ok.body); // replay
     await call(s, 'POST', '/v1/sweep', (await prepare(s, { signerKey: OTHER_KEY, nonce: 5n })).body);
-    await call(s, 'POST', '/v1/quote', { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '100000000' });
+    await call(s, 'POST', '/v1/quote', {
+      chainId: CHAIN_ID,
+      token: USDC,
+      owner: OWNER,
+      destination: DEST,
+      amount: '100000000',
+    });
     await call(s, 'POST', '/v1/quote', '{bad json with ' + DEST);
     await settle();
     const all = s.logs.join('\n');
     expect(all.length).toBeGreaterThan(0);
-    const secrets = [DEST, OWNER, FEE_TO, NOPERMIT, ok.body['sweepSig'] as string, ok.quote.quoteToken, 'bad json'];
+    const secrets = [
+      DEST,
+      OWNER,
+      FEE_TO,
+      NOPERMIT,
+      ok.body['sweepSig'] as string,
+      ok.quote.quoteToken,
+      'bad json',
+    ];
     for (const x of secrets) {
       expect(all.toLowerCase()).not.toContain(x.toLowerCase());
       expect(all).not.toContain(x.slice(2, 12));
     }
     expect(all).not.toMatch(/0x[0-9a-fA-F]{40}(?![0-9a-fA-F])/); // no address-shaped value anywhere
     expect(all).not.toMatch(/127\.0\.0\.1|::1/);
-    const allowed = new Set(['ts', 'level', 'event', 'requestId', 'route', 'status', 'chainId', 'txHash', 'errorClass']);
+    const allowed = new Set([
+      'ts',
+      'level',
+      'event',
+      'requestId',
+      'route',
+      'status',
+      'chainId',
+      'txHash',
+      'errorClass',
+    ]);
     for (const line of s.logs) {
       for (const k of Object.keys(JSON.parse(line) as object)) expect(allowed.has(k)).toBe(true);
     }
@@ -738,7 +1080,8 @@ describe('logging redaction', () => {
 describe('S3-05/06 breaker integration', () => {
   const trip = async (s: Harness): Promise<void> => {
     s.fake.simulateError = new Error('rpc exploded');
-    for (let i = 0; i < 3; i++) await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: BigInt(i + 1) })).body);
+    for (let i = 0; i < 3; i++)
+      await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: BigInt(i + 1) })).body);
     s.fake.simulateError = undefined;
   };
 
@@ -747,7 +1090,9 @@ describe('S3-05/06 breaker integration', () => {
     await trip(s);
     s.clock.ms += 61_000;
     s.fake.used.add(`${OWNER}:50`); // the probe will be a nonce_used simulation revert
-    expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 50n })).body))).toBe('nonce_used');
+    expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 50n })).body))).toBe(
+      'nonce_used',
+    );
     // the probe slot was released: the next request is admitted as the new probe and closes it
     expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 51n })).body)).status).toBe(200);
     expect((await call(s, 'GET', '/healthz')).status).toBe(200);
@@ -766,7 +1111,17 @@ describe('S3-05/06 breaker integration', () => {
   });
 
   it('a probe that never settles expires and re-opens instead of wedging', async () => {
-    const s = await start({ config: { breaker: { windowSize: 10, minSamples: 3, failureRatio: 0.5, cooldownSeconds: 60, probeTimeoutSeconds: 5 } } });
+    const s = await start({
+      config: {
+        breaker: {
+          windowSize: 10,
+          minSamples: 3,
+          failureRatio: 0.5,
+          cooldownSeconds: 60,
+          probeTimeoutSeconds: 5,
+        },
+      },
+    });
     await trip(s);
     s.clock.ms += 61_000;
     s.fake.sendGate = new Promise<void>(() => undefined);
@@ -782,24 +1137,45 @@ describe('S3-05/06 breaker integration', () => {
     const s = await start();
     for (let i = 0; i < 12; i++) {
       s.fake.used.add(`${OWNER}:${String(100 + i)}`);
-      expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: BigInt(100 + i) })).body))).toBe('nonce_used');
+      expect(
+        errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: BigInt(100 + i) })).body)),
+      ).toBe('nonce_used');
     }
     expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'ok' });
   });
 
   it('mined reverts do not feed the breaker but exhaust the per-source loss budget', async () => {
-    const s = await start({ config: { lossBudget: { windowSeconds: 3600, perKeyWei: 200_000n * 1_000_000_000n, globalWei: 10n ** 18n, maxKeys: 100 } } });
+    const s = await start({
+      config: {
+        lossBudget: {
+          windowSeconds: 3600,
+          perKeyWei: 200_000n * 1_000_000_000n,
+          globalWei: 10n ** 18n,
+          maxKeys: 100,
+        },
+      },
+    });
     s.fake.receipt = { status: 'reverted', gasUsed: 150_000n };
     let denied = '';
     for (let i = 0; i < 6 && denied === ''; i++) {
-      const r = await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: BigInt(200 + i), destination: DEST })).body);
+      const r = await call(
+        s,
+        'POST',
+        '/v1/sweep',
+        (await prepare(s, { nonce: BigInt(200 + i), destination: DEST })).body,
+      );
       await settle();
       if (r.status !== 200) denied = errCode(r);
     }
     expect(denied).toBe('loss_budget_exhausted');
     expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'ok' }); // breaker untouched
     // the network key is charged too, so minting a fresh destination does not reset the budget
-    const other = await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 300n, destination: STRANGER })).body);
+    const other = await call(
+      s,
+      'POST',
+      '/v1/sweep',
+      (await prepare(s, { nonce: 300n, destination: STRANGER })).body,
+    );
     expect(errCode(other)).toBe('loss_budget_exhausted');
     expect(other.headers.get('retry-after')).toBe('3600');
     // after the window the budget is restored (monotonic clock is the injected one)

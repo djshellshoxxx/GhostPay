@@ -34,7 +34,7 @@ describe('plurals use Intl.PluralRules for the active locale', () => {
       [0, '0 файлов'], [5, '5 файлов'], [11, '11 файлов'], [12, '12 файлов'], [14, '14 файлов'], [25, '25 файлов'], [100, '100 файлов'],
       [1.5, '1,5 файла (дробное)'],
     ];
-    for (const [n, out] of cases) expect(fmt(m, { n }, 'ru').replace(/ /g, ' ')).toBe(out);
+    for (const [n, out] of cases) expect(fmt(m, { n }, 'ru').replace(/\u00a0/g, ' ')).toBe(out);
   });
 
   it('polish: one / few / many / other', () => {

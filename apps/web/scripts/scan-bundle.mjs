@@ -5,8 +5,9 @@
 // fingerprints below (and the application source is separately forbidden from using them, enforced by ESLint and by
 // the source scan here). Anything else fails.
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
-import { join, relative, sep } from 'node:path';
+import { join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parseReleaseKeys, validateDeployments } from './validate-deployments.mjs';
 
 /** Hosts/URLs that may appear as inert string literals. None is ever fetched; each has a reason. */
 export const ALLOWED_URLS = [
@@ -158,6 +159,15 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
 const isMain = process.argv[1] !== undefined && fileURLToPath(import.meta.url) === process.argv[1];
 if (isMain) {
   const root = fileURLToPath(new URL('..', import.meta.url));
+  const deploymentDir = process.env['GHOSTPAY_DEPLOYMENTS_DIR'] === undefined
+    ? join(root, 'deployments')
+    : resolve(process.env['GHOSTPAY_DEPLOYMENTS_DIR']);
+  const deploymentProblems = await validateDeployments(deploymentDir, parseReleaseKeys(process.env['GHOSTPAY_RELEASE_PUBKEYS']));
+  if (deploymentProblems.length > 0) {
+    console.error('Deployment manifest scan FAILED:');
+    for (const p of deploymentProblems) console.error(` - ${p}`);
+    process.exit(1);
+  }
   const problems = scanBundle(join(root, 'dist'), join(root, 'src'), join(root, 'vite.config.ts'));
   if (problems.length > 0) {
     console.error('Bundle scan FAILED:');
@@ -165,5 +175,5 @@ if (isMain) {
     process.exit(1);
   }
   const files = walk(join(root, 'dist'));
-  console.log(`Bundle scan passed: ${String(files.length)} files, no eval/new Function/innerHTML use, no unexpected origins, no source maps, no manifests.`);
+  console.log(`Bundle scan passed: ${String(files.length)} files; bundled deployment source validated; no dynamic code, unexpected origins, source maps, or loose deployment JSON.`);
 }

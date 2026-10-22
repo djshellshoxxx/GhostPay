@@ -131,3 +131,14 @@ export function bucketKey(ip: ParsedIp, prefixes: BucketPrefixes = {}): string {
   requireConfig(Number.isInteger(v6) && v6 >= 1 && v6 <= 128, 'v6 prefix must be 1..128');
   return formatMasked(ip, ip.family === 4 ? v4 : v6);
 }
+
+/** Abuse group for client addresses: IPv4 /24 or IPv6 /48. */
+export function groupKey(ip: ParsedIp): string {
+  return bucketKey(ip, { v4: 24, v6: 48 });
+}
+
+/** Derives a network abuse group from a canonical {@link bucketKey}; opaque keys group by themselves. */
+export function groupOfBucketKey(key: string): string {
+  const ip = parseIp(key.slice(2).split('/')[0] ?? '');
+  return ip === null ? key : groupKey(ip);
+}

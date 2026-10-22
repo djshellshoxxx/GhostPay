@@ -41,7 +41,7 @@ export function FeeDisclosure(props: { readonly manifest: ManifestState | undefi
       {m?.status === 'loaded' ? (
         <>
           <Mono>{m.manifest.feeRecipient}</Mono> (shown from the deployment manifest
-          {m.manifest.signature === undefined ? ', which carries no signature; this app does not verify manifest signatures' : ', whose signature this app does not verify'})
+          {m.trust === 'signed' ? ', whose signature was verified by a release key built into this app' : m.trust === 'unsigned-dev' ? ', which is unsigned and permitted only as a testnet development manifest' : ', with signature status unavailable'})
         </>
       ) : m === undefined ? (
         <>the address in the deployment manifest (loading…)</>

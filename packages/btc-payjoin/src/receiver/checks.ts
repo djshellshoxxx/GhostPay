@@ -90,14 +90,19 @@ export async function checkOriginal(psbtB64: string, ctx: ReceiverContext): Prom
     prevOuts.set(op, prev);
     sequences.add(tx.getInput(i).sequence ?? 0xffffffff);
   }
-  if (ctx.wallet.getPrevOut !== undefined) {
-    // Sender-claimed amounts drive the fee maths; check them against the chain (BITCOIN-01).
-    for (let i = 0; i < tx.inputsLength; i++) {
-      const inp = tx.getInput(i);
-      const claimed = prevOuts.get(outpoints[i] as string) as PrevOut;
-      const real = await ctx.wallet.getPrevOut(hex.encode(inp.txid as Uint8Array), inp.index as number).catch(() => undefined);
-      if (real === undefined || real.amount !== claimed.amount || !sameBytes(real.script, claimed.script)) fail('psbt_invalid', 'prevout does not match chain');
+  if (typeof ctx.wallet.getPrevOut !== 'function') fail('unavailable', 'authoritative prevout lookup unavailable');
+  // Sender-claimed amounts drive fee maths and are never trusted without an authoritative lookup (BITCOIN-01).
+  for (let i = 0; i < tx.inputsLength; i++) {
+    const inp = tx.getInput(i);
+    const claimed = prevOuts.get(outpoints[i] as string) as PrevOut;
+    let real: PrevOut | undefined;
+    try {
+      real = await ctx.wallet.getPrevOut(hex.encode(inp.txid as Uint8Array), inp.index as number);
+    } catch {
+      fail('unavailable', 'authoritative prevout lookup failed');
     }
+    if (real === undefined) fail('psbt_invalid', 'prevout is unknown or spent');
+    if (real.amount !== claimed.amount || !sameBytes(real.script, claimed.script)) fail('psbt_invalid', 'prevout does not match chain');
   }
   for (let k = 0; k < tx.outputsLength; k++) if (outputHasKeypaths(tx, k)) fail('keypaths_present');
   if (sequences.size !== 1) fail('sequence_changed', 'original inputs use mixed sequences');

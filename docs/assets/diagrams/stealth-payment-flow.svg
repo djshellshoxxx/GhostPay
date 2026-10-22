@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" width="960" height="600" role="img" aria-labelledby="ttl dsc">
+<title id="ttl">Stealth payment flow</title>
+<desc id="dsc">Eight steps. The seller publishes a meta-address and shares a signed invoice link. The payer derives a one-time address and pays through the router, which sends the fee to the fee recipient and the net amount to the one-time address and emits an announcement. The seller scans announcements with a view tag filter, verifies the balance on chain, then sweeps to a fresh destination.</desc>
+<style>
+:root{--bg:#ffffff;--fg:#1b1f24;--mut:#4d5866;--box:#eef1f6;--line:#6b778a;--acc:#1f4fc4;--accbg:#dbe6ff;--warn:#8a4b00;--warnbg:#fff0d0;--bad:#a8200f;--badbg:#fde4e1;--ok:#13663a;--okbg:#dcf3e4}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1318;--fg:#e6e9ee;--mut:#a3aebd;--box:#1a212b;--line:#7d8a9d;--acc:#8fb2ff;--accbg:#1c2c52;--warn:#ffb454;--warnbg:#3a2a0e;--bad:#ff9b92;--badbg:#411a17;--ok:#74d9a0;--okbg:#12331f}}
+svg{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.bg{fill:var(--bg)}
+.t{fill:var(--fg);font-size:14px}.b{font-weight:700}.m{fill:var(--mut)}.s{font-size:12px}.h{font-size:20px;font-weight:700}
+.box{fill:var(--box);stroke:var(--line);stroke-width:1.5}
+.box.acc{fill:var(--accbg);stroke:var(--acc)}.box.warn{fill:var(--warnbg);stroke:var(--warn)}
+.box.bad{fill:var(--badbg);stroke:var(--bad)}.box.ok{fill:var(--okbg);stroke:var(--ok)}
+.dash{stroke-dasharray:6 4}
+.grp{fill:none;stroke:var(--line);stroke-width:1.3;stroke-dasharray:3 5}
+.ln{fill:none;stroke:var(--line);stroke-width:2}.ln.acc{stroke:var(--acc)}.ln.warn{stroke:var(--warn)}.ln.bad{stroke:var(--bad)}.ln.ok{stroke:var(--ok)}
+.ah{fill:var(--line)}
+.bdg{fill:var(--acc)}.bdgt{fill:var(--bg);font-size:12px;font-weight:700}
+.ta{text-anchor:middle}
+</style>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--line)"/></marker><marker id="ar-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--acc)"/></marker><marker id="ar-warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--warn)"/></marker><marker id="ar-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--bad)"/></marker><marker id="ar-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--ok)"/></marker></defs>
+<rect class="bg" width="960" height="600"/>
+<text class="t h" x="24" y="34">Stealth payment flow</text>
+<text class="t m s" x="24" y="54">From meta-address to sweep. Numbers match the steps in the guides.</text>
+<rect class="box acc" x="20" y="80" width="270" height="100" rx="8"/>
+<text class="t ta b" x="155.0" y="118.0">Seller meta-address</text>
+<text class="t ta m s" x="155.0" y="135.0">spending + viewing public keys</text>
+<text class="t ta m s" x="155.0" y="152.0">one stable public identifier</text>
+<rect class="box acc" x="345" y="80" width="270" height="100" rx="8"/>
+<text class="t ta b" x="480.0" y="118.0">Invoice link  #gpi=v1.…</text>
+<text class="t ta m s" x="480.0" y="135.0">signed; part after # not sent to host</text>
+<text class="t ta m s" x="480.0" y="152.0">bearer link: anyone with it reads it</text>
+<rect class="box acc" x="670" y="80" width="270" height="100" rx="8"/>
+<text class="t ta b" x="805.0" y="118.0">Payer reviews + derives</text>
+<text class="t ta m s" x="805.0" y="135.0">fresh ephemeral key + meta-address</text>
+<text class="t ta m s" x="805.0" y="152.0">gives a one-time address</text>
+<rect class="box ok" x="20" y="215" width="200" height="60" rx="8"/>
+<text class="t ta b" x="120.0" y="241.5">Fee recipient</text>
+<text class="t ta m s" x="120.0" y="258.5">from deployment manifest</text>
+<rect class="box ok" x="20" y="305" width="200" height="70" rx="8"/>
+<text class="t ta b" x="120.0" y="328.0">One-time address</text>
+<text class="t ta m s" x="120.0" y="345.0">holds the net amount</text>
+<text class="t ta m s" x="120.0" y="362.0">only you can spend it</text>
+<rect class="box ok" x="355" y="240" width="250" height="110" rx="8"/>
+<text class="t ta b" x="480.0" y="274.5">GhostPayRouter</text>
+<text class="t ta m s" x="480.0" y="291.5">takes gross, sends 0.25% fee,</text>
+<text class="t ta m s" x="480.0" y="308.5">sends net to one-time address,</text>
+<text class="t ta m s" x="480.0" y="325.5">emits announcement</text>
+<rect class="box ok" x="690" y="240" width="250" height="110" rx="8"/>
+<text class="t ta b" x="815.0" y="274.5">ERC-5564 Announcer</text>
+<text class="t ta m s" x="815.0" y="291.5">public log entry:</text>
+<text class="t ta m s" x="815.0" y="308.5">one-time address, ephemeral key,</text>
+<text class="t ta m s" x="815.0" y="325.5">view tag</text>
+<rect class="box acc" x="690" y="430" width="250" height="90" rx="8"/>
+<text class="t ta b" x="815.0" y="454.5">Seller scanner</text>
+<text class="t ta m s" x="815.0" y="471.5">downloads announcements,</text>
+<text class="t ta m s" x="815.0" y="488.5">view tag filter, full check</text>
+<text class="t ta m s" x="815.0" y="505.5">with viewing key</text>
+<rect class="box warn" x="355" y="430" width="250" height="90" rx="8"/>
+<text class="t ta b" x="480.0" y="454.5">Verify on chain</text>
+<text class="t ta m s" x="480.0" y="471.5">check the real balance and</text>
+<text class="t ta m s" x="480.0" y="488.5">confirmations; an announcement</text>
+<text class="t ta m s" x="480.0" y="505.5">is only a claim</text>
+<rect class="box acc" x="20" y="430" width="200" height="90" rx="8"/>
+<text class="t ta b" x="120.0" y="463.0">Sweep</text>
+<text class="t ta m s" x="120.0" y="480.0">spending key signs a move</text>
+<text class="t ta m s" x="120.0" y="497.0">to a fresh destination</text>
+<path class="ln acc" d="M290 130 L345 130" marker-end="url(#ar-acc)"/>
+<path class="ln acc" d="M615 130 L670 130" marker-end="url(#ar-acc)"/>
+<path class="ln acc" d="M805 180 L805 210 L480 210 L480 240" marker-end="url(#ar-acc)"/>
+<path class="ln " d="M355 262 L220 245" marker-end="url(#ar)"/>
+<path class="ln " d="M355 330 L220 340" marker-end="url(#ar)"/>
+<path class="ln " d="M605 295 L690 295" marker-end="url(#ar)"/>
+<path class="ln " d="M815 350 L815 430" marker-end="url(#ar)"/>
+<path class="ln " d="M690 475 L605 475" marker-end="url(#ar)"/>
+<path class="ln " d="M355 475 L220 475" marker-end="url(#ar)"/>
+<path class="ln " stroke-dasharray="6 4" d="M120 430 L120 377" marker-end="url(#ar)"/>
+<text class="t m s" x="280" y="238">fee</text>
+<text class="t m s" x="280" y="356">net</text>
+<text class="t m s" x="125" y="420" style="text-anchor:middle">spends from</text>
+<g><circle class="bdg" cx="22" cy="82" r="11"/><text class="bdgt ta" x="22" y="86">1</text></g>
+<g><circle class="bdg" cx="347" cy="82" r="11"/><text class="bdgt ta" x="347" y="86">2</text></g>
+<g><circle class="bdg" cx="672" cy="82" r="11"/><text class="bdgt ta" x="672" y="86">3</text></g>
+<g><circle class="bdg" cx="357" cy="242" r="11"/><text class="bdgt ta" x="357" y="246">4</text></g>
+<g><circle class="bdg" cx="692" cy="242" r="11"/><text class="bdgt ta" x="692" y="246">5</text></g>
+<g><circle class="bdg" cx="692" cy="432" r="11"/><text class="bdgt ta" x="692" y="436">6</text></g>
+<g><circle class="bdg" cx="357" cy="432" r="11"/><text class="bdgt ta" x="357" y="436">7</text></g>
+<g><circle class="bdg" cx="22" cy="432" r="11"/><text class="bdgt ta" x="22" y="436">8</text></g>
+<text class="t m s" x="24" y="560">Public on-chain: payer address, token, amounts, fee, router use, announcement, and the sweep. Private: invoice contents and keys.</text>
+<text class="t m s" x="24" y="580">Direct payments skip the router: no fee, no router checks. Always verify the balance (step 7).</text>
+</svg>

@@ -12,6 +12,8 @@ export interface FoundPayment extends SpendableOutput {
   readonly height: number;
   readonly blockHash: string;
   readonly label: number | null;
+  /** The source reported multiple outputs with this same x-only key, or replayed it at another height. */
+  readonly duplicateKey: boolean;
 }
 
 /** Blocks per scan request: each block means downloading all of its transactions. */
@@ -72,6 +74,7 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
       height: r.height,
       blockHash: r.blockHash,
       label: r.label,
+      duplicateKey: r.duplicateKey,
     });
   }
   const found: FoundPayment[] = [];

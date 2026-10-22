@@ -7,10 +7,11 @@ import { fileURLToPath } from 'node:url';
 
 /** @returns {Promise<string[]>} list of problems (empty when fine) */
 export async function validateDeployments(dir, releaseKeys = []) {
-  const { loadDeployment, verifyManifestSignature } = await import('@ghostpay/chain-adapters');
+  const { loadDeployment, verifyObjectManifestSignature } = await import('@ghostpay/chain-adapters');
   const problems = [];
   if (!existsSync(dir)) return problems;
-  for (const name of readdirSync(dir)) {
+  const names = readdirSync(dir);
+  for (const name of names) {
     if (name === 'README.md') continue;
     const m = /^([1-9][0-9]{0,15})\.json$/.exec(name);
     if (m === null) {
@@ -20,8 +21,12 @@ export async function validateDeployments(dir, releaseKeys = []) {
     const chainId = Number(m[1]);
     try {
       const manifest = loadDeployment(readFileSync(join(dir, name), 'utf8'), chainId);
-      if (releaseKeys.length > 0 && verifyManifestSignature(manifest, releaseKeys).status !== 'valid') {
-        problems.push(`${name}: release keys are configured but the manifest signature is missing or invalid`);
+      if (releaseKeys.length === 0) {
+        problems.push(`${name}: deployment manifests require at least one configured release verification key`);
+        continue;
+      }
+      if (verifyObjectManifestSignature(manifest, releaseKeys).status !== 'valid') {
+        problems.push(`${name}: manifest signature is missing or invalid for the configured release keys`);
       }
     } catch (e) {
       problems.push(`${name}: ${e instanceof Error ? e.message : 'invalid'}`);
@@ -32,6 +37,7 @@ export async function validateDeployments(dir, releaseKeys = []) {
 
 export function parseReleaseKeys(text) {
   const keys = (text ?? '').split(',').map((k) => k.trim().toLowerCase()).filter((k) => k !== '');
+  if (keys.length > 8) throw new Error('GHOSTPAY_RELEASE_PUBKEYS: at most 8 release keys may be configured');
   for (const k of keys) if (!/^(?:02|03)[0-9a-f]{64}$/.test(k)) throw new Error('GHOSTPAY_RELEASE_PUBKEYS: each key must be a 33-byte compressed secp256k1 public key (66 hex digits)');
   return keys;
 }

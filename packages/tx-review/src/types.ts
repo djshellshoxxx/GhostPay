@@ -88,6 +88,7 @@ export type DecodeFailureCode =
   | 'BUFFER_PAYMENT_UNSUPPORTED'
   | 'INVALID_PAYMENT'
   | 'INVALID_TX_FIELD'
+  | 'UNSUPPORTED_TX_FEATURE'
   | 'MISSING_TX_FIELD'
   | 'UNKNOWN_TYPED_DATA'
   | 'INVALID_TYPED_DATA';
@@ -192,6 +193,8 @@ export interface TxInput {
   readonly maxPriorityFeePerGas?: bigint;
   /** Required for `direct_sweep`. */
   readonly gasLimit?: bigint;
+  /** EIP-7702 authorization list; any value (even empty) makes the decode `UNSUPPORTED_TX_FEATURE`. */
+  readonly authorizationList?: unknown;
 }
 
 /** EIP-712 payload as passed to `eth_signTypedData_v4` / viem `signTypedData` (without `EIP712Domain` in `types`). */

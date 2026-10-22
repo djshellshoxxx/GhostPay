@@ -2,7 +2,8 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { clearSession } from './lib/session';
+import { clearSession, generateSession, hasSession } from './lib/session';
+import { MemoryKeyVaultStore, setKeyVaultStoreForTests } from './lib/keyVault';
 import { SETTINGS_KEY } from './lib/settings';
 import { makeServices, renderApp, setHash } from './test/render';
 
@@ -72,5 +73,27 @@ describe('App shell', () => {
       vi.useRealTimers();
     }
     await waitFor(() => { expect(services.vault.unlocked).toBe(false); });
+  });
+
+  it('clears seller keys at idle lock while preserving the encrypted vault', async () => {
+    const services = makeServices();
+    const store = new MemoryKeyVaultStore();
+    await store.putIfEmpty('{"ciphertext":"encrypted-only"}');
+    setKeyVaultStoreForTests(store);
+    generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 1 }));
+    const { vi } = await import('vitest');
+    vi.useFakeTimers();
+    try {
+      renderApp(services);
+      expect(hasSession()).toBe(true);
+      vi.advanceTimersByTime(61_000);
+      expect(hasSession()).toBe(false);
+      expect(services.vault.unlocked).toBe(false);
+      expect(await store.get()).toBe('{"ciphertext":"encrypted-only"}');
+    } finally {
+      vi.useRealTimers();
+      setKeyVaultStoreForTests(undefined);
+    }
   });
 });

@@ -14,7 +14,10 @@ export async function generateKeys(page: Page): Promise<string> {
 export interface InvoiceOptions {
   readonly description?: string;
   readonly memo?: string;
+  /** Encrypts private fields with the key carried by the link (convenience only). */
   readonly encrypt?: boolean;
+  /** Encrypts the entire invoice with an independently shared passphrase. */
+  readonly passphrase?: string;
 }
 
 /** Fills the Create invoice form (fixed 0.5 native-coin price on Base Sepolia) and returns the invoice link. */
@@ -25,7 +28,12 @@ export async function createInvoice(page: Page, opts: InvoiceOptions = {}): Prom
   await page.getByLabel('Item 1 description').fill(opts.description ?? 'Consulting');
   await page.getByLabel('Item 1 unit price').fill('50.00');
   if (opts.memo !== undefined) await page.getByLabel(/Memo/).fill(opts.memo);
-  if (opts.encrypt === true) await page.getByLabel('Encrypt line items and memo inside the link').check();
+  if (opts.encrypt === true) await page.getByLabel('Encrypt line items and memo with a key included in the link').check();
+  if (opts.passphrase !== undefined) {
+    await page.getByLabel('Protect the entire invoice with a passphrase').check();
+    await page.getByLabel('Invoice passphrase (at least 14 characters)').fill(opts.passphrase);
+    await page.getByLabel('Repeat invoice passphrase').fill(opts.passphrase);
+  }
   await page.getByRole('button', { name: 'Create invoice link' }).click();
   const box = page.getByRole('textbox', { name: 'Link', exact: true });
   await expect(box).toBeVisible();

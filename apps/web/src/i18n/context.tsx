@@ -34,6 +34,9 @@ export interface I18nProviderProps {
 
 const I18nContext = createContext<I18nState | undefined>(undefined);
 
+/** English source translator for isolated UI tests that render a component outside the live app provider. */
+export const SOURCE_TRANSLATOR = createTranslator(SOURCE_LOCALE, [{ locale: SOURCE_LOCALE, messages: SOURCE_CATALOG.messages }]);
+
 function browserLanguages(): readonly string[] {
   try {
     const n = globalThis.navigator as Navigator | undefined;
@@ -83,7 +86,10 @@ export function I18nProvider(props: I18nProviderProps): ReactNode {
     loadLayers(fallbackChain(requested), loader).then(
       (layers) => {
         if (cancelled) return;
-        setLoaded({ locale: requested, layers });
+        // Keep document lang/dir aligned with the first catalog that actually supplied text.
+        // For a registered language without a catalog, English is the visible fallback.
+        const activeLocale = layers.find((layer) => layer.locale !== SOURCE_LOCALE)?.locale ?? SOURCE_LOCALE;
+        setLoaded({ locale: activeLocale, layers });
         setStatus('ready');
       },
       () => {
@@ -127,6 +133,11 @@ export function useI18n(): I18nState {
   const s = useContext(I18nContext);
   if (s === undefined) throw new Error('I18nProvider missing');
   return s;
+}
+
+/** Optional context access for components that intentionally support isolated English-only rendering in tests. */
+export function useI18nOptional(): I18nState | undefined {
+  return useContext(I18nContext);
 }
 
 /** The translate function: t('settings.title'), t('settings.rpc.test', { chain: 'Base' }). */

@@ -90,6 +90,7 @@ describe('previewSweep', () => {
     };
     expect(code(() => previewSweep({ ...common, inputAmountsSats: [], address: bcrt, regtest: true }))).toBe('INVALID_INPUT');
     expect(code(() => previewSweep({ ...common, feeRate: 0, address: bcrt, regtest: true }))).toBe('INVALID_INPUT');
+    expect(code(() => previewSweep({ ...common, feeRate: 0.0001, address: bcrt, regtest: true }))).toBe('INVALID_INPUT');
     expect(code(() => previewSweep({ ...common, feeRate: 1e9, address: bcrt, regtest: true }))).toBe('FEE_TOO_HIGH');
     expect(code(() => previewSweep({ ...common, address: tb, regtest: true }))).toBe('INVALID_ADDRESS');
     expect(code(() => previewSweep({ ...common, inputAmountsSats: [100n], address: bcrt, regtest: true }))).toBe('INSUFFICIENT_FUNDS');

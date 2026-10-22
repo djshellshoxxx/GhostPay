@@ -125,16 +125,27 @@ export class RateLimiter {
    * @param rawKey Raw identifier; hashed immediately and never stored.
    * @returns Whether the request may proceed.
    */
-  public take(rawKey: string): LimitResult {
+  public take(rawKey: string, rawGroup?: string): LimitResult {
     if (this.hasher.epoch !== this.epoch) {
       this.limiter = this.fresh();
       this.epoch = this.hasher.epoch;
     }
-    const r = this.limiter.take(this.hasher.hash(rawKey));
-    return { ok: r.ok, retryAfterSeconds: r.ok ? 0 : Math.max(1, Math.ceil(r.retryAfterMs / 1000)), overflow: r.overflow };
+    const r = this.limiter.take(
+      this.hasher.hash(rawKey),
+      1,
+      rawGroup === undefined ? undefined : this.hasher.hash(rawGroup),
+    );
+    return {
+      ok: r.ok,
+      retryAfterSeconds: r.ok ? 0 : Math.max(1, Math.ceil(r.retryAfterMs / 1000)),
+      overflow: r.overflow,
+    };
   }
 
   private fresh(): TokenBucketLimiter {
-    return new TokenBucketLimiter({ ratePerSecond: this.opts.perMinute / 60, burst: this.opts.burst, maxKeys: this.opts.maxKeys }, this.now);
+    return new TokenBucketLimiter(
+      { ratePerSecond: this.opts.perMinute / 60, burst: this.opts.burst, maxKeys: this.opts.maxKeys },
+      this.now,
+    );
   }
 }

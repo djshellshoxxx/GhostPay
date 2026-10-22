@@ -1,8 +1,10 @@
-import { useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
+import { QrFrame } from '../components/QrFrame';
 import { userMessage } from '../lib/errors';
 import { passphraseProblem } from '../lib/keystore';
 import { clearSession, exportKeystore, generateSession, importKeystore, importSession } from '../lib/session';
+import { deleteEncryptedVault, readEncryptedVault, saveEncryptedVault, unlockEncryptedVault } from '../lib/keyVault';
 import { useApp } from '../state';
 
 export function SellerKeys(): ReactNode {
@@ -16,6 +18,22 @@ export function SellerKeys(): ReactNode {
   const [pass2, setPass2] = useState('');
   const [importPass, setImportPass] = useState('');
   const [file, setFile] = useState<File | undefined>(undefined);
+  const [backupQr, setBackupQr] = useState<string | undefined>(undefined);
+  const [vaultState, setVaultState] = useState<'checking' | 'empty' | 'saved' | 'unavailable'>('checking');
+  const [vaultSavePass, setVaultSavePass] = useState('');
+  const [vaultSavePass2, setVaultSavePass2] = useState('');
+  const [vaultUnlockPass, setVaultUnlockPass] = useState('');
+  const [vaultBusy, setVaultBusy] = useState(false);
+  const [confirmVaultDelete, setConfirmVaultDelete] = useState(false);
+
+  useEffect(() => {
+    let live = true;
+    void readEncryptedVault().then(
+      (saved) => { if (live) setVaultState(saved === undefined ? 'empty' : 'saved'); },
+      () => { if (live) setVaultState('unavailable'); },
+    );
+    return () => { live = false; };
+  }, []);
 
   const fail = (e: unknown): void => {
     setMessage({ kind: 'error', text: userMessage(e) });
@@ -54,6 +72,7 @@ export function SellerKeys(): ReactNode {
     exportKeystore(pass).then(
       (text) => {
         downloadText('ghostpay-keystore.json', text, 'application/json');
+        setBackupQr(text);
         setPass('');
         setPass2('');
         setBusy(false);
@@ -95,14 +114,94 @@ export function SellerKeys(): ReactNode {
       );
   };
 
+  const onSaveVault = (e: FormEvent): void => {
+    e.preventDefault();
+    const problem = passphraseProblem(vaultSavePass);
+    if (problem !== undefined) { setMessage({ kind: 'error', text: problem }); return; }
+    if (vaultSavePass !== vaultSavePass2) { setMessage({ kind: 'error', text: 'The two passphrases differ.' }); return; }
+    setVaultBusy(true);
+    void saveEncryptedVault(vaultSavePass).then(
+      () => {
+        setVaultSavePass('');
+        setVaultSavePass2('');
+        setVaultState('saved');
+        setVaultBusy(false);
+        done('Encrypted seller vault saved in this browser. The passphrase was cleared.');
+      },
+      (err: unknown) => {
+        setVaultBusy(false);
+        fail(err);
+      },
+    );
+  };
+
+  const onUnlockVault = (e: FormEvent): void => {
+    e.preventDefault();
+    setVaultBusy(true);
+    void unlockEncryptedVault(vaultUnlockPass).then(
+      () => {
+        setVaultUnlockPass('');
+        setBackupQr(undefined);
+        setVaultBusy(false);
+        done('Encrypted vault unlocked. Seller keys are back in memory.');
+      },
+      (err: unknown) => {
+        setVaultUnlockPass('');
+        setVaultBusy(false);
+        fail(err);
+      },
+    );
+  };
+
+  const onDeleteVault = (): void => {
+    setVaultBusy(true);
+    void deleteEncryptedVault().then(
+      () => {
+        setVaultState('empty');
+        setConfirmVaultDelete(false);
+        setVaultBusy(false);
+        done('Encrypted vault deleted from this browser.');
+      },
+      (err: unknown) => {
+        setVaultBusy(false);
+        fail(err);
+      },
+    );
+  };
+
   const s = app.session;
   return (
     <section aria-labelledby="keys-h">
       <h2 id="keys-h">Seller keys</h2>
-      <Notice kind="info" title="Keys stay in memory">
-        Keys are generated and used only inside this page. They are never written to browser storage. Reloading or closing the tab forgets them, so export an encrypted keystore if you want to keep them.
+      <Notice kind="info" title="Keys stay in memory by default">
+        Keys are generated and used only inside this page. They are never written to browser storage unless you explicitly save the optional encrypted vault below. Reloading or closing the tab forgets keys that were not saved.
       </Notice>
       {message !== undefined && <Notice kind={message.kind}>{message.text}</Notice>}
+      {vaultState === 'checking' && <p role="status">Checking for an encrypted seller vault…</p>}
+      {vaultState === 'unavailable' && (
+        <Notice kind="warn" title="Encrypted browser storage is unavailable">
+          This browser cannot read the optional vault. In-memory key use and encrypted file backups remain available, but do not try to save a local vault here.
+        </Notice>
+      )}
+      {vaultState === 'saved' && (
+        <section className="panel" aria-labelledby="vault-unlock-h">
+          <h3 id="vault-unlock-h">Encrypted seller vault saved in this browser</h3>
+          <p>Unlocking replaces the keys currently in memory. The vault stores only the encrypted keystore text; your passphrase is never saved.</p>
+          <form onSubmit={onUnlockVault} className="stack" autoComplete="off">
+            <Field label="Vault passphrase">{(id) => <input id={id} type="password" autoComplete="current-password" value={vaultUnlockPass} onChange={(e) => { setVaultUnlockPass(e.target.value); }} />}</Field>
+            <button type="submit" className="btn" disabled={vaultBusy || vaultUnlockPass === ''}>Unlock saved vault</button>
+          </form>
+          {!confirmVaultDelete ? (
+            <button type="button" className="btn btn-danger" disabled={vaultBusy} onClick={() => { setConfirmVaultDelete(true); }}>Delete encrypted vault</button>
+          ) : (
+            <div>
+              <p>This permanently deletes the saved ciphertext in this browser. Keep a separate backup first if needed.</p>
+              <button type="button" className="btn btn-danger" disabled={vaultBusy} onClick={onDeleteVault}>Confirm delete encrypted vault</button>{' '}
+              <button type="button" className="btn" onClick={() => { setConfirmVaultDelete(false); }}>Cancel</button>
+            </div>
+          )}
+        </section>
+      )}
 
       {s === undefined ? (
         <>
@@ -136,6 +235,7 @@ export function SellerKeys(): ReactNode {
           <h3>Your meta-address (public)</h3>
           <p>Share this to receive payments. It reveals no private key.</p>
           <p><Mono>{s.metaAddress}</Mono></p>
+          <QrFrame kind="shareable" text={s.metaAddress} caption="Seller stealth meta-address" />
           <p><CopyButton text={s.metaAddress} label="Copy meta-address" /></p>
           <h3>Invoice-signing public key</h3>
           <p><Mono>{s.signerPublicKey}</Mono></p>
@@ -148,9 +248,31 @@ export function SellerKeys(): ReactNode {
             <button type="submit" className="btn" disabled={busy}>Download encrypted keystore</button>
           </form>
           <p className="hint">Format: scrypt (N=2^17, r=8, p=1) and AES-256-GCM. The passphrase is not stored anywhere.</p>
+          {backupQr !== undefined && (
+            <>
+              <QrFrame kind="secret" text={backupQr} caption="Encrypted seller keystore backup" />
+              <button type="button" className="btn" onClick={() => { setBackupQr(undefined); }}>Forget encrypted QR from this page</button>
+            </>
+          )}
+
+          <section className="panel" aria-labelledby="vault-save-h">
+            <h3 id="vault-save-h">Optional encrypted browser vault</h3>
+            <p>
+              This keeps an encrypted keystore in this browser&rsquo;s IndexedDB so you can unlock after reload. Anyone with access to this browser profile can copy the ciphertext and attempt offline guesses; choose a strong passphrase. Browser storage can be cleared or lost, so keep a separate backup. GhostPay never saves the passphrase or plaintext key material here.
+            </p>
+            {vaultState === 'empty' ? (
+              <form onSubmit={onSaveVault} className="stack" autoComplete="off">
+                <Field label="New vault passphrase (14+ characters)">{(id) => <input id={id} type="password" autoComplete="new-password" value={vaultSavePass} onChange={(e) => { setVaultSavePass(e.target.value); }} />}</Field>
+                <Field label="Repeat vault passphrase">{(id) => <input id={id} type="password" autoComplete="new-password" value={vaultSavePass2} onChange={(e) => { setVaultSavePass2(e.target.value); }} />}</Field>
+                <button type="submit" className="btn" disabled={vaultBusy}>Save encrypted vault in this browser</button>
+              </form>
+            ) : vaultState === 'saved' ? (
+              <p>A vault already exists. It is never overwritten automatically; unlock or explicitly delete it before saving a different key set.</p>
+            ) : vaultState === 'unavailable' ? null : <p role="status">Checking vault availability…</p>}
+          </section>
 
           <h3>Forget keys</h3>
-          <button type="button" className="btn btn-danger" onClick={() => { clearSession(); app.announce('Keys wiped from memory.'); setMessage({ kind: 'ok', text: 'Keys wiped from memory.' }); }}>
+          <button type="button" className="btn btn-danger" onClick={() => { clearSession(); setBackupQr(undefined); app.announce('Keys wiped from memory.'); setMessage({ kind: 'ok', text: 'Keys wiped from memory.' }); }}>
             Wipe keys from memory
           </button>
         </>

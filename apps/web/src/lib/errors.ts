@@ -22,6 +22,10 @@ const INVOICE_TEXT: Readonly<Record<string, string>> = {
   SIGNING: 'The invoice could not be signed.',
   RANDOMNESS: 'The browser random source failed. Nothing was created.',
   UNSUPPORTED: 'This browser or invoice version is not supported.',
+  PASSPHRASE: 'The passphrase did not open this invoice. Check the passphrase or whether the link was changed.',
+  PASSPHRASE_REQUIRED: 'This invoice needs a passphrase to open.',
+  PASSPHRASE_UNEXPECTED: 'This link is not passphrase-protected; reload the invoice and try again.',
+  PASSPHRASE_POLICY: 'The invoice passphrase does not meet the required policy.',
 };
 
 /**

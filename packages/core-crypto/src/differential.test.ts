@@ -108,5 +108,7 @@ describe('differential: @scopelift/stealth-address-sdk 1.0.0-beta.5 and pure-nob
       }
     }
     expect(payments).toBe(1000);
-  });
+  // The full 1,000-payment independent SDK comparison measured 173s on the QA runner.
+  // Keep every vector; give this stress test its own bound rather than raising all test limits.
+  }, 300_000);
 });

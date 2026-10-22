@@ -40,7 +40,8 @@ function solve(q: string): string {
     const b = Number(m[3]);
     return String(m[2] === '+' ? a + b : m[2] === '-' ? a - b : a * b);
   }
-  if ((m = /^What is (\d+) \* (\d+) \+ (\d+)\?$/u.exec(q))) return String(Number(m[1]) * Number(m[2]) + Number(m[3]));
+  if ((m = /^What is (\d+) \* (\d+) \+ (\d+)\?$/u.exec(q)))
+    return String(Number(m[1]) * Number(m[2]) + Number(m[3]));
   if ((m = /^Counting from 1, which letter is number (\d+) of the word "(\w+)"\?$/u.exec(q))) {
     return (m[2] as string)[Number(m[1]) - 1] as string;
   }
@@ -54,9 +55,13 @@ function solve(q: string): string {
   if ((m = /^Type the word "(\w+)" backwards\.$/u.exec(q))) return [...(m[1] as string)].reverse().join('');
   if ((m = /^Which of these words is the (longest|shortest): (\w+), (\w+), (\w+)\?$/u.exec(q))) {
     const ws = m.slice(2, 5);
-    return [...ws].sort((a, b) => (m?.[1] === 'longest' ? b.length - a.length : a.length - b.length))[0] as string;
+    return [...ws].sort((a, b) =>
+      m?.[1] === 'longest' ? b.length - a.length : a.length - b.length,
+    )[0] as string;
   }
-  if ((m = /^Which of these words comes (first|last) in alphabetical order: (\w+), (\w+), (\w+)\?$/u.exec(q))) {
+  if (
+    (m = /^Which of these words comes (first|last) in alphabetical order: (\w+), (\w+), (\w+)\?$/u.exec(q))
+  ) {
     const s = m.slice(2, 5).sort();
     return (m[1] === 'first' ? s[0] : s[2]) as string;
   }
@@ -69,7 +74,9 @@ describe('challenge happy path', () => {
       for (let seed = 0; seed < 300; seed++) {
         const { svc } = make({ difficulty, randomBytes: seeded(seed) });
         const c = svc.issue(CTX);
-        expect(await svc.verify({ token: c.token, answer: solve(c.question), context: CTX })).toEqual({ ok: true });
+        expect(await svc.verify({ token: c.token, answer: solve(c.question), context: CTX })).toEqual({
+          ok: true,
+        });
       }
     });
   }
@@ -90,7 +97,14 @@ describe('challenge happy path', () => {
     const seen = new Set<string>();
     for (let seed = 0; seed < 400; seed++) {
       const { svc } = make({ difficulty: 3, randomBytes: seeded(seed) });
-      seen.add(svc.issue(CTX).question.replace(/[0-9]+/gu, 'N').split(' ').slice(0, 4).join(' '));
+      seen.add(
+        svc
+          .issue(CTX)
+          .question.replace(/[0-9]+/gu, 'N')
+          .split(' ')
+          .slice(0, 4)
+          .join(' '),
+      );
     }
     expect(seen.size).toBeGreaterThanOrEqual(8);
   });
@@ -116,25 +130,31 @@ describe('challenge happy path', () => {
     const svc = createChallengeService({ secrets: [SECRET_A] });
     const c = svc.issue(CTX);
     expect(c.expiresAt).toBeGreaterThan(Date.now());
-    expect(await svc.verify({ token: c.token, answer: solve(c.question), context: CTX })).toEqual({ ok: true });
+    expect(await svc.verify({ token: c.token, answer: solve(c.question), context: CTX })).toEqual({
+      ok: true,
+    });
     expect(svc.issue(CTX).token).not.toBe(c.token);
   });
 
   it('token never contains the answer (property)', () => {
     fc.assert(
-      fc.property(fc.integer({ min: 0, max: 1e6 }), fc.constantFrom<ChallengeDifficulty>(1, 2, 3), (seed, d) => {
-        const { svc } = make({ difficulty: d, randomBytes: seeded(seed) });
-        const c = svc.issue(CTX);
-        const answer = solve(c.question);
-        const inner = Buffer.from(c.token, 'base64url').toString('utf8');
-        const tail = inner.split('.').slice(2).join('.');
-        // Answers of >= 4 chars cannot appear by accident in 22+43 random-looking chars.
-        if (answer.length >= 4) {
-          expect(c.token).not.toContain(answer);
-          expect(tail).not.toContain(answer);
-        }
-        expect(inner.startsWith('v1.')).toBe(true);
-      }),
+      fc.property(
+        fc.integer({ min: 0, max: 1e6 }),
+        fc.constantFrom<ChallengeDifficulty>(1, 2, 3),
+        (seed, d) => {
+          const { svc } = make({ difficulty: d, randomBytes: seeded(seed) });
+          const c = svc.issue(CTX);
+          const answer = solve(c.question);
+          const inner = Buffer.from(c.token, 'base64url').toString('utf8');
+          const tail = inner.split('.').slice(2).join('.');
+          // Answers of >= 4 chars cannot appear by accident in 22+43 random-looking chars.
+          if (answer.length >= 4) {
+            expect(c.token).not.toContain(answer);
+            expect(tail).not.toContain(answer);
+          }
+          expect(inner.startsWith('v1.')).toBe(true);
+        },
+      ),
       { numRuns: 200 },
     );
   });
@@ -158,7 +178,12 @@ describe('tampering', () => {
   it('tampering with each segment is bad_signature or malformed', async () => {
     const { svc } = make();
     const c = svc.issue(CTX);
-    const parts = Buffer.from(c.token, 'base64url').toString('utf8').split('.') as [string, string, string, string];
+    const parts = Buffer.from(c.token, 'base64url').toString('utf8').split('.') as [
+      string,
+      string,
+      string,
+      string,
+    ];
     const enc = (p: string[]): string => Buffer.from(p.join('.'), 'utf8').toString('base64url');
     const answer = solve(c.question);
     const check = async (p: string[], reason: string): Promise<void> => {
@@ -189,7 +214,11 @@ describe('tampering', () => {
 
   it('a different difficulty cannot verify the token', async () => {
     const c = make({ difficulty: 1 }).svc.issue(CTX);
-    const r = await make({ difficulty: 2 }).svc.verify({ token: c.token, answer: solve(c.question), context: CTX });
+    const r = await make({ difficulty: 2 }).svc.verify({
+      token: c.token,
+      answer: solve(c.question),
+      context: CTX,
+    });
     expect(r).toEqual({ ok: false, reason: 'bad_signature' });
   });
 
@@ -209,7 +238,10 @@ describe('expiry and clock', () => {
     expect(c.expiresAt).toBe(1_001_000);
     const answer = solve(c.question);
     clock.t = c.expiresAt;
-    expect(await svc.verify({ token: c.token, answer, context: CTX })).toEqual({ ok: false, reason: 'expired' });
+    expect(await svc.verify({ token: c.token, answer, context: CTX })).toEqual({
+      ok: false,
+      reason: 'expired',
+    });
     clock.t = c.expiresAt - 1;
     expect(await svc.verify({ token: c.token, answer, context: CTX })).toEqual({ ok: true });
   });
@@ -233,12 +265,18 @@ describe('rotation', () => {
   it('old secret still verifies, new secret signs', async () => {
     const old = make({ secrets: [SECRET_A] }).svc.issue(CTX);
     const { svc } = make({ secrets: [SECRET_B, SECRET_A] });
-    expect(await svc.verify({ token: old.token, answer: solve(old.question), context: CTX })).toEqual({ ok: true });
+    expect(await svc.verify({ token: old.token, answer: solve(old.question), context: CTX })).toEqual({
+      ok: true,
+    });
     const fresh = svc.issue(CTX);
     // only-new service verifies it; only-old does not
     const answer = solve(fresh.question);
-    expect(await make({ secrets: [SECRET_B] }).svc.verify({ token: fresh.token, answer, context: CTX })).toEqual({ ok: true });
-    expect(await make({ secrets: [SECRET_A] }).svc.verify({ token: fresh.token, answer, context: CTX })).toEqual({
+    expect(
+      await make({ secrets: [SECRET_B] }).svc.verify({ token: fresh.token, answer, context: CTX }),
+    ).toEqual({ ok: true });
+    expect(
+      await make({ secrets: [SECRET_A] }).svc.verify({ token: fresh.token, answer, context: CTX }),
+    ).toEqual({
       ok: false,
       reason: 'bad_signature',
     });
@@ -248,8 +286,12 @@ describe('rotation', () => {
     // Same nonce under two secrets gives different questions (with overwhelming probability across seeds).
     let differing = 0;
     for (let seed = 0; seed < 50; seed++) {
-      const a = make({ secrets: [SECRET_A], randomBytes: seeded(seed), difficulty: 3 }).svc.issue(CTX).question;
-      const b = make({ secrets: [SECRET_B], randomBytes: seeded(seed), difficulty: 3 }).svc.issue(CTX).question;
+      const a = make({ secrets: [SECRET_A], randomBytes: seeded(seed), difficulty: 3 }).svc.issue(
+        CTX,
+      ).question;
+      const b = make({ secrets: [SECRET_B], randomBytes: seeded(seed), difficulty: 3 }).svc.issue(
+        CTX,
+      ).question;
       if (a !== b) differing++;
     }
     expect(differing).toBeGreaterThan(40);
@@ -260,7 +302,9 @@ describe('rotation', () => {
     const { svc } = make({ secrets: [s] });
     const c = svc.issue(CTX);
     s.fill(0);
-    expect(await svc.verify({ token: c.token, answer: solve(c.question), context: CTX })).toEqual({ ok: true });
+    expect(await svc.verify({ token: c.token, answer: solve(c.question), context: CTX })).toEqual({
+      ok: true,
+    });
   });
 });
 
@@ -270,15 +314,24 @@ describe('replay and attempts', () => {
     const c = svc.issue(CTX);
     const answer = solve(c.question);
     expect(await svc.verify({ token: c.token, answer, context: CTX })).toEqual({ ok: true });
-    expect(await svc.verify({ token: c.token, answer, context: CTX })).toEqual({ ok: false, reason: 'replayed' });
+    expect(await svc.verify({ token: c.token, answer, context: CTX })).toEqual({
+      ok: false,
+      reason: 'replayed',
+    });
   });
 
   it('wrong answers count attempts but do not mark replay', async () => {
     const { svc } = make();
     const c = svc.issue(CTX);
     const answer = solve(c.question);
-    expect(await svc.verify({ token: c.token, answer: 'zzz', context: CTX })).toEqual({ ok: false, reason: 'wrong_answer' });
-    expect(await svc.verify({ token: c.token, answer: '', context: CTX })).toEqual({ ok: false, reason: 'wrong_answer' });
+    expect(await svc.verify({ token: c.token, answer: 'zzz', context: CTX })).toEqual({
+      ok: false,
+      reason: 'wrong_answer',
+    });
+    expect(await svc.verify({ token: c.token, answer: '', context: CTX })).toEqual({
+      ok: false,
+      reason: 'wrong_answer',
+    });
     expect(await svc.verify({ token: c.token, answer, context: CTX })).toEqual({ ok: true });
   });
 
@@ -288,7 +341,10 @@ describe('replay and attempts', () => {
     const answer = solve(c.question);
     expect((await svc.verify({ token: c.token, answer: 'no', context: CTX })).ok).toBe(false);
     expect((await svc.verify({ token: c.token, answer: 'no', context: CTX })).ok).toBe(false);
-    expect(await svc.verify({ token: c.token, answer, context: CTX })).toEqual({ ok: false, reason: 'too_many_attempts' });
+    expect(await svc.verify({ token: c.token, answer, context: CTX })).toEqual({
+      ok: false,
+      reason: 'too_many_attempts',
+    });
   });
 
   it('oversized and non-string answers count as wrong answers', async () => {
@@ -298,7 +354,10 @@ describe('replay and attempts', () => {
       ok: false,
       reason: 'wrong_answer',
     });
-    expect(await svc.verify({ token: c.token, answer: 42, context: CTX })).toEqual({ ok: false, reason: 'wrong_answer' });
+    expect(await svc.verify({ token: c.token, answer: 42, context: CTX })).toEqual({
+      ok: false,
+      reason: 'wrong_answer',
+    });
   });
 
   it('replay store full fails closed', async () => {
@@ -306,7 +365,9 @@ describe('replay and attempts', () => {
     const { svc } = make({ replayStore });
     const a = svc.issue(CTX);
     const b = svc.issue(CTX);
-    expect(await svc.verify({ token: a.token, answer: solve(a.question), context: CTX })).toEqual({ ok: true });
+    expect(await svc.verify({ token: a.token, answer: solve(a.question), context: CTX })).toEqual({
+      ok: true,
+    });
     expect(await svc.verify({ token: b.token, answer: solve(b.question), context: CTX })).toEqual({
       ok: false,
       reason: 'replay_store_full',
@@ -335,7 +396,10 @@ describe('replay and attempts', () => {
     const c = svc.issue(CTX);
     const answer = solve(c.question);
     expect(await svc.verify({ token: c.token, answer, context: CTX })).toEqual({ ok: true });
-    expect(await svc.verify({ token: c.token, answer, context: CTX })).toEqual({ ok: false, reason: 'replayed' });
+    expect(await svc.verify({ token: c.token, answer, context: CTX })).toEqual({
+      ok: false,
+      reason: 'replayed',
+    });
     const broken = make({
       attemptLimiter: {
         increment: () => {
@@ -370,7 +434,7 @@ describe('replay and attempts', () => {
 describe('memory stores', () => {
   it('replay store purges expired entries first and never evicts live ones', () => {
     const clock = { t: 0 };
-    const s = new MemoryReplayStore({ maxEntries: 2, now: () => clock.t });
+    const s = new MemoryReplayStore({ maxEntries: 2, maxPerPartition: 2, now: () => clock.t });
     expect(s.markUsed('a', 10)).toBe(true);
     expect(s.markUsed('b', 20)).toBe(true);
     expect(s.markUsed('a', 10)).toBe(false);
@@ -399,6 +463,23 @@ describe('memory stores', () => {
     clock.t = 10;
     expect(l.increment('b', 20)).toBe(1);
     expect(l.increment('a', 30)).toBe(Number.POSITIVE_INFINITY);
+  });
+
+  it('replay quota isolates partitions and missing partitions share one bounded quota', () => {
+    const s = new MemoryReplayStore({ maxEntries: 4, maxPerPartition: 1, now: () => 0 });
+    expect(s.markUsed('a1', 10, 'a')).toBe(true);
+    expect(() => s.markUsed('a2', 10, 'a')).toThrow(ReplayStoreFullError);
+    expect(s.markUsed('b1', 10, 'b')).toBe(true);
+    expect(s.markUsed('u1', 10)).toBe(true);
+    expect(() => s.markUsed('u2', 10)).toThrow(ReplayStoreFullError);
+  });
+
+  it('attempt limiter evicts only from the largest partition under global pressure', () => {
+    const l = new MemoryAttemptLimiter({ maxEntries: 2, maxPerPartition: 2, now: () => 0 });
+    expect(l.increment('a1', 10, 'a')).toBe(1);
+    expect(l.increment('a2', 10, 'a')).toBe(1);
+    expect(l.increment('b1', 10, 'b')).toBe(1);
+    expect(l.increment('b1', 10, 'b')).toBe(2);
   });
 
   it('defaults use Date.now', () => {
@@ -466,7 +547,12 @@ describe('normalizeAnswer', () => {
 describe('fuzz: verify never throws on attacker input', () => {
   it('arbitrary token, answer and context values', async () => {
     const { svc } = make();
-    const any = fc.oneof(fc.string({ unit: 'binary', maxLength: 400 }), fc.constant(null), fc.integer(), fc.object());
+    const any = fc.oneof(
+      fc.string({ unit: 'binary', maxLength: 400 }),
+      fc.constant(null),
+      fc.integer(),
+      fc.object(),
+    );
     await fc.assert(
       fc.asyncProperty(any, any, any, async (token, answer, context) => {
         const r = await svc.verify({ token, answer, context });
@@ -479,19 +565,37 @@ describe('fuzz: verify never throws on attacker input', () => {
   it('oversized tokens and contexts are malformed', async () => {
     const { svc } = make();
     const c = svc.issue(CTX);
-    expect(await svc.verify({ token: 'A'.repeat(100_000), answer: 'x', context: CTX })).toEqual({ ok: false, reason: 'malformed' });
-    expect(await svc.verify({ token: c.token, answer: 'x', context: 'c'.repeat(257) })).toEqual({ ok: false, reason: 'malformed' });
-    expect(await svc.verify({ token: c.token, answer: 'x', context: '' })).toEqual({ ok: false, reason: 'malformed' });
-    expect(await svc.verify({ token: '', answer: 'x', context: CTX })).toEqual({ ok: false, reason: 'malformed' });
+    expect(await svc.verify({ token: 'A'.repeat(100_000), answer: 'x', context: CTX })).toEqual({
+      ok: false,
+      reason: 'malformed',
+    });
+    expect(await svc.verify({ token: c.token, answer: 'x', context: 'c'.repeat(257) })).toEqual({
+      ok: false,
+      reason: 'malformed',
+    });
+    expect(await svc.verify({ token: c.token, answer: 'x', context: '' })).toEqual({
+      ok: false,
+      reason: 'malformed',
+    });
+    expect(await svc.verify({ token: '', answer: 'x', context: CTX })).toEqual({
+      ok: false,
+      reason: 'malformed',
+    });
   });
 
   it('random valid-shaped tokens never verify', async () => {
     const { svc } = make();
     await fc.assert(
-      fc.asyncProperty(fc.uint8Array({ minLength: 16, maxLength: 16 }), fc.uint8Array({ minLength: 32, maxLength: 32 }), async (n, m) => {
-        const tok = Buffer.from(`v1.2000000.${Buffer.from(n).toString('base64url')}.${Buffer.from(m).toString('base64url')}`).toString('base64url');
-        expect((await svc.verify({ token: tok, answer: '1', context: CTX })).ok).toBe(false);
-      }),
+      fc.asyncProperty(
+        fc.uint8Array({ minLength: 16, maxLength: 16 }),
+        fc.uint8Array({ minLength: 32, maxLength: 32 }),
+        async (n, m) => {
+          const tok = Buffer.from(
+            `v1.2000000.${Buffer.from(n).toString('base64url')}.${Buffer.from(m).toString('base64url')}`,
+          ).toString('base64url');
+          expect((await svc.verify({ token: tok, answer: '1', context: CTX })).ok).toBe(false);
+        },
+      ),
       { numRuns: 200 },
     );
   });

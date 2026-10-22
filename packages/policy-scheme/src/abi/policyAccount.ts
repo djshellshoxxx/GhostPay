@@ -386,6 +386,25 @@ export const policyAccountAbi = [
   },
   {
     "type": "function",
+    "name": "requestDestination",
+    "inputs": [
+      {
+        "name": "id",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "requestWithdraw",
     "inputs": [
       {
@@ -692,6 +711,22 @@ export const policyAccountAbi = [
   },
   {
     "type": "error",
+    "name": "DestinationChangedSinceRequest",
+    "inputs": [
+      {
+        "name": "requestedDestination",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "currentDestination",
+        "type": "address",
+        "internalType": "address"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "ECDSAInvalidSignature",
     "inputs": []
   },
@@ -791,6 +826,22 @@ export const policyAccountAbi = [
     "type": "error",
     "name": "ReentrancyGuardReentrantCall",
     "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SafeCastOverflowedUintDowncast",
+    "inputs": [
+      {
+        "name": "bits",
+        "type": "uint8",
+        "internalType": "uint8"
+      },
+      {
+        "name": "value",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
   },
   {
     "type": "error",

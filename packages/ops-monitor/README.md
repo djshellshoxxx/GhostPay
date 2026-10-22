@@ -25,6 +25,8 @@ Dependencies: `viem` (keccak256), `@ghostpay/chain-adapters` (types, RPC client,
 
 Exit code: 0 healthy, 1 warn, 2 page, 3 the runner failed (bad config, RPC/chain mismatch, unwritable output, webhook failure). `--dry-run` writes and sends nothing. Config: [`ops-monitor.config.example.json`](./ops-monitor.config.example.json) (strict: unknown keys rejected). systemd: [`deploy/ghostpay-ops-monitor.service`](./deploy/ghostpay-ops-monitor.service) (oneshot, hardened) and [`deploy/ghostpay-ops-monitor.timer`](./deploy/ghostpay-ops-monitor.timer) (every 5 minutes). W4's `unreimbursedGasWeiToday` is not measured by the runner (reported as 0); watch `/metrics` of the relayer for loss-budget denials.
 
+Each deployment manifest must carry a valid compact low-s secp256k1 signature over the shared structured `manifestDigest`. Set `GHOSTPAY_RELEASE_PUBKEYS` to a comma-separated list of up to eight compressed public keys (66 hex characters each, no `0x`). Missing keys, unsigned files, legacy raw-text signatures, and unknown signers fail before probes run. The web build and relayer use the same format.
+
 ```bash
 npm run typecheck && npm run lint && npm test   # from this directory
 ```

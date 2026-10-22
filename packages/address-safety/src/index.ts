@@ -12,3 +12,4 @@ export { metaAddressFingerprint, payeeTrust } from './meta.js';
 export type { InvoiceTrustInput, PayeeTrust, PinnedSellers } from './meta.js';
 export { sanitizeDisplayText, MIXED_SCRIPT_MARKER } from './text.js';
 export type { SanitizePolicy, SanitizedText } from './text.js';
+export { NATIVE_TOKEN_PLACEHOLDER, isNativeTokenPlaceholder, parseTokenAddress, nativeTokenLabel } from './token.js';

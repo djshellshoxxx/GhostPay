@@ -39,6 +39,7 @@ FOUNDRY_PROFILE=dev forge test      # quick loop: 256 fuzz runs
 forge test --match-contract Invariant
 forge coverage --ir-minimum --report summary --no-match-coverage "test|script|lib"
 forge snapshot --no-match-test "testFuzz|invariant"   # rewrites .gas-snapshot (fuzz gas is non-deterministic, so excluded)
+forge snapshot --check --no-match-test "testFuzz|invariant" # CI check for the deterministic snapshot entries
 forge build --sizes
 scripts/check-natspec.sh            # FORGE=/path/to/forge if forge is not on PATH
 ```

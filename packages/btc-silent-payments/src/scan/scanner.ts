@@ -1,8 +1,8 @@
 import { createLabelTable } from '../labels.js';
-import { fail } from '../errors.js';
+import { fail, SilentPaymentError } from '../errors.js';
 import { toHex } from '../ecc.js';
 import { scanTweakAgainstSet, type FoundOutput, type ScanKeys } from '../receiver.js';
-import type { TweakSource } from './types.js';
+import type { BlockOutput, TweakSource } from './types.js';
 
 /** An output that belongs to the receiver, with its chain position. */
 export interface ReceivedOutput extends FoundOutput {
@@ -11,7 +11,14 @@ export interface ReceivedOutput extends FoundOutput {
   readonly txid?: string;
   readonly vout?: number;
   readonly amountSats?: bigint;
+  /** Multiple block outputs share this key, or it reappeared in a prior scan. */
+  readonly duplicateKey: boolean;
+  /** True only when an independent verifier confirmed this output. */
+  readonly verified: boolean;
 }
+
+/** Independent check of oracle-reported txid/vout/amount and output script. */
+export type OutputVerifier = (output: Omit<ReceivedOutput, 'verified'>, signal?: AbortSignal) => boolean | Promise<boolean>;
 
 function isAborted(signal: AbortSignal | undefined): boolean {
   return signal !== undefined && signal.aborted;
@@ -26,6 +33,48 @@ export interface ScanBlocksParams {
   /** Last block height (inclusive); defaults to the source's tip. */
   readonly toHeight?: number;
   readonly signal?: AbortSignal;
+  /**
+   * Largest number of blocks one call may scan (default {@link DEFAULT_MAX_SCAN_BLOCKS}). A hostile oracle that
+   * reports an inflated tip can otherwise keep a wallet requesting forever.
+   */
+  readonly maxBlocks?: number;
+  /**
+   * Optional second, independent source (own node, another oracle). For every block in which this wallet found
+   * outputs, the second source's block hash and outputs must agree with the first (hash, x-only key, txid, vout,
+   * amount) or the scan fails closed. PRIVACY: the second source learns the heights of blocks that contain
+   * payments to this wallet (the primary source learns every scanned height anyway).
+   */
+  readonly crossCheck?: TweakSource;
+  /**
+   * Optional per-output hook (for example a lookup in the user's own full node). Must return exactly `true`;
+   * `false`, a non-boolean or a throw rejects the scan with a typed error. Runs before the output is yielded.
+   */
+  readonly verifyOutput?: (output: ReceivedOutput, signal?: AbortSignal) => boolean | Promise<boolean>;
+  /** Optional verifier: false drops the output; absent verifier leaves it explicitly unverified. */
+  readonly verifier?: OutputVerifier;
+  /** Persisted x-only keys already returned; repeated keys are flagged and the set is updated. */
+  readonly seenKeys?: Set<string>;
+}
+
+/** Highest block height accepted (BlindBit and the request side use u32). */
+export const MAX_SCAN_HEIGHT = 0xffffffff;
+/** Default span limit of {@link scanBlocks}: about 38 years of blocks. */
+export const DEFAULT_MAX_SCAN_BLOCKS = 2_000_000;
+const MAX_VOUT = 0xffffffff;
+const MAX_SATS = 21_000_000n * 100_000_000n;
+const TXID = /^[0-9a-f]{64}$/;
+
+/** Rejects chain metadata no honest source can produce (a source is untrusted, whichever implementation). */
+function checkOutputBounds(o: BlockOutput): void {
+  if (o.txid !== undefined && (typeof o.txid !== 'string' || !TXID.test(o.txid))) return fail('INVALID_RESPONSE');
+  if (o.vout !== undefined && (!Number.isInteger(o.vout) || o.vout < 0 || o.vout > MAX_VOUT)) return fail('INVALID_RESPONSE');
+  if (o.amountSats !== undefined && (typeof o.amountSats !== 'bigint' || o.amountSats < 0n || o.amountSats > MAX_SATS)) {
+    return fail('INVALID_RESPONSE');
+  }
+}
+
+function sameOutput(a: BlockOutput, b: BlockOutput): boolean {
+  return toHex(a.xOnlyPublicKey) === toHex(b.xOnlyPublicKey) && a.txid === b.txid && a.vout === b.vout && a.amountSats === b.amountSats;
 }
 
 /**
@@ -39,7 +88,7 @@ export interface ScanBlocksParams {
  *
  * @param p Source, keys and range.
  * @returns Async iterable of received outputs in block order.
- * @throws {SilentPaymentError} `INVALID_INPUT`, `REORG_DETECTED`, `TRANSPORT_FAILURE`, `INVALID_RESPONSE`.
+ * @throws {SilentPaymentError} `INVALID_INPUT` (also for a span above `maxBlocks` or heights above u32), `REORG_DETECTED`, `TRANSPORT_FAILURE`, `INVALID_RESPONSE` (also for impossible txid/vout/amount values, a failed `verifyOutput`, or a `crossCheck` disagreement).
  * @security Uses the scan secret locally only. Block heights requested are visible to the source.
  */
 export async function* scanBlocks(p: ScanBlocksParams): AsyncGenerator<ReceivedOutput> {
@@ -47,7 +96,14 @@ export async function* scanBlocks(p: ScanBlocksParams): AsyncGenerator<ReceivedO
   if (!Number.isInteger(fromHeight) || fromHeight < 0) return fail('INVALID_INPUT');
   if (isAborted(signal)) return;
   const toHeight = p.toHeight ?? (await source.getTipHeight(signal));
-  if (!Number.isInteger(toHeight) || toHeight < fromHeight - 1) return fail('INVALID_INPUT');
+  if (!Number.isInteger(toHeight) || toHeight < fromHeight - 1 || toHeight > MAX_SCAN_HEIGHT || fromHeight > MAX_SCAN_HEIGHT) {
+    return fail('INVALID_INPUT');
+  }
+  const maxBlocks = p.maxBlocks ?? DEFAULT_MAX_SCAN_BLOCKS;
+  if (!Number.isSafeInteger(maxBlocks) || maxBlocks < 1) return fail('INVALID_INPUT');
+  if (toHeight - fromHeight + 1 > maxBlocks) return fail('INVALID_INPUT');
+  const seenKeys = p.seenKeys ?? new Set<string>();
+  const seenOutpoints = new Set<string>();
   const labels = keys.labels ?? createLabelTable(keys.scanSecret);
   for (let height = fromHeight; height <= toHeight; height++) {
     if (isAborted(signal)) return;
@@ -58,22 +114,96 @@ export async function* scanBlocks(p: ScanBlocksParams): AsyncGenerator<ReceivedO
     if (tw.height !== height || outs.height !== height || tw.blockHash !== outs.blockHash) {
       return fail('REORG_DETECTED');
     }
-    const byKey = new Map<string, (typeof outs.outputs)[number]>();
-    for (const o of outs.outputs) byKey.set(toHex(o.xOnlyPublicKey), o);
+    for (const o of outs.outputs) checkOutputBounds(o);
+    // Several outputs of one block may pay the same x-only key (nothing on chain prevents it, and
+    // anyone can copy a key they saw). Keep every occurrence: each is spendable by this wallet and
+    // must be reported with its OWN txid/vout/amount, never another output's.
+    const byKey = new Map<string, BlockOutput[]>();
+    for (const o of outs.outputs) {
+      const k = toHex(o.xOnlyPublicKey);
+      const list = byKey.get(k);
+      if (list === undefined) byKey.set(k, [o]);
+      else list.push(o);
+    }
     const candidates = new Set(byKey.keys());
+    const found: ReceivedOutput[] = [];
+    const priorKey = new Map<string, boolean>();
     for (const tweak of tw.tweaks) {
       if (isAborted(signal)) return;
       for (const f of scanTweakAgainstSet(keys, tweak, candidates, labels)) {
-        const meta = byKey.get(toHex(f.xOnlyPublicKey));
-        yield {
-          ...f,
-          height,
-          blockHash: tw.blockHash,
-          ...(meta?.txid === undefined ? {} : { txid: meta.txid }),
-          ...(meta?.vout === undefined ? {} : { vout: meta.vout }),
-          ...(meta?.amountSats === undefined ? {} : { amountSats: meta.amountSats }),
-        };
+        const keyHex = toHex(f.xOnlyPublicKey);
+        const metas = byKey.get(keyHex) ?? [];
+        let prior = priorKey.get(keyHex);
+        if (prior === undefined) {
+          prior = seenKeys.has(keyHex);
+          priorKey.set(keyHex, prior);
+          seenKeys.add(keyHex);
+        }
+        for (const meta of metas) {
+          if (meta.txid !== undefined && meta.vout !== undefined) {
+            const outpoint = `${meta.txid}:${meta.vout}`;
+            if (seenOutpoints.has(outpoint)) continue;
+            seenOutpoints.add(outpoint);
+          }
+          found.push({
+            ...f,
+            height,
+            blockHash: tw.blockHash,
+            ...(meta.txid === undefined ? {} : { txid: meta.txid }),
+            ...(meta.vout === undefined ? {} : { vout: meta.vout }),
+            ...(meta.amountSats === undefined ? {} : { amountSats: meta.amountSats }),
+            duplicateKey: metas.length > 1 || prior,
+            verified: false,
+          });
+        }
       }
     }
+    if (found.length > 0 && p.crossCheck !== undefined) await crossCheckBlock(p.crossCheck, height, tw.blockHash, found, byKey, signal);
+    for (const r of found) {
+      if (isAborted(signal)) return;
+      if (p.verifyOutput !== undefined) await runHook(p.verifyOutput, r, signal);
+      if (p.verifier === undefined) {
+        yield r;
+      } else if (await runVerifier(p.verifier, r, signal)) {
+        yield { ...r, verified: true };
+      }
+    }
+  }
+}
+
+async function runVerifier(verifier: OutputVerifier, r: ReceivedOutput, signal?: AbortSignal): Promise<boolean> {
+  try {
+    return await verifier(r, signal) === true;
+  } catch (e) {
+    if (e instanceof SilentPaymentError) throw e;
+    return fail('TRANSPORT_FAILURE');
+  }
+}
+
+async function runHook(hook: NonNullable<ScanBlocksParams['verifyOutput']>, r: ReceivedOutput, signal?: AbortSignal): Promise<void> {
+  let ok: unknown;
+  try {
+    ok = await hook(r, signal);
+  } catch (e) {
+    if (e instanceof SilentPaymentError) throw e;
+    return fail('TRANSPORT_FAILURE');
+  }
+  if (ok !== true) return fail('INVALID_RESPONSE');
+}
+
+async function crossCheckBlock(
+  second: TweakSource,
+  height: number,
+  blockHash: string,
+  found: readonly ReceivedOutput[],
+  byKey: ReadonlyMap<string, readonly BlockOutput[]>,
+  signal?: AbortSignal,
+): Promise<void> {
+  const other = await second.getOutputs(height, signal);
+  if (other.height !== height || other.blockHash !== blockHash) return fail('REORG_DETECTED');
+  for (const o of other.outputs) checkOutputBounds(o);
+  for (const f of found) {
+    const mine = (byKey.get(toHex(f.xOnlyPublicKey)) ?? []).find((m) => m.txid === f.txid && m.vout === f.vout && m.amountSats === f.amountSats);
+    if (mine === undefined || !other.outputs.some((o) => sameOutput(o, mine))) return fail('INVALID_RESPONSE');
   }
 }

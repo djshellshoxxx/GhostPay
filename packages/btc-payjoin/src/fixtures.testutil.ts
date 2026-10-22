@@ -23,6 +23,7 @@ export function key(label: string): Key {
 }
 
 let counter = 0;
+const fixturePrevouts = new Map<string, { script: Uint8Array; amount: bigint }>();
 export function fakeTxid(): string {
   counter++;
   return hex.encode(sha256(new TextEncoder().encode(`txid:${String(counter)}`)));
@@ -37,13 +38,21 @@ export function addressFor(k: Key, kind: Kind, network: BtcNetwork = 'testnet'):
 
 export function utxoFor(k: Key, kind: Kind, amount: bigint, extra: Partial<Utxo> = {}): Utxo {
   const txid = fakeTxid();
-  if (kind === 'wpkh') return { txid, index: 0, amount, script: btc.p2wpkh(k.pub, NET).script, ...extra };
+  if (kind === 'wpkh') {
+    const script = btc.p2wpkh(k.pub, NET).script;
+    fixturePrevouts.set(`${txid}:0`, { script, amount });
+    return { txid, index: 0, amount, script, ...extra };
+  }
   if (kind === 'sh-wpkh') {
     const inner = btc.p2wpkh(k.pub, NET);
-    return { txid, index: 0, amount, script: btc.p2sh(inner, NET).script, signing: { redeemScript: inner.script }, ...extra };
+    const script = btc.p2sh(inner, NET).script;
+    fixturePrevouts.set(`${txid}:0`, { script, amount });
+    return { txid, index: 0, amount, script, signing: { redeemScript: inner.script }, ...extra };
   }
   const xonly = k.pub.slice(1);
-  return { txid, index: 0, amount, script: btc.p2tr(xonly, undefined, NET).script, signing: { tapInternalKey: xonly }, ...extra };
+  const script = btc.p2tr(xonly, undefined, NET).script;
+  fixturePrevouts.set(`${txid}:0`, { script, amount });
+  return { txid, index: 0, amount, script, signing: { tapInternalKey: xonly }, ...extra };
 }
 
 /** Signer that resolves keys by scriptPubKey of the given (key, kind) pairs. */
@@ -66,6 +75,7 @@ export function receiverWallet(k: Key, kind: Kind, utxos: Utxo[]): ReceiverWalle
       tx.signIdx(key2, index);
     },
     testMempoolAccept: () => Promise.resolve(w.mempool),
+    getPrevOut: (txid: string, index: number) => Promise.resolve(fixturePrevouts.get(`${txid}:${String(index)}`)),
   };
   return w;
 }

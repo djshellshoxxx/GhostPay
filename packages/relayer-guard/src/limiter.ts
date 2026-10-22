@@ -1,4 +1,5 @@
 import { monotonicNow, requireConfig, type Clock } from './errors.js';
+import { groupOfBucketKey } from './ip.js';
 
 /** Key used for every request that arrives while the table is full of active entries. */
 export const OVERFLOW_KEY = '\u0000overflow';
@@ -9,6 +10,8 @@ export const OVERFLOW_KEY = '\u0000overflow';
  */
 class BoundedTable<V> {
   private readonly map = new Map<string, V>();
+  private readonly groups = new Map<string, number>();
+  private readonly keyGroups = new Map<string, string>();
 
   public constructor(
     private readonly max: number,
@@ -28,6 +31,10 @@ class BoundedTable<V> {
     return v;
   }
 
+  public groupSize(group: string): number {
+    return this.groups.get(group) ?? 0;
+  }
+
   /** @returns Whether {@link insert} would succeed now. */
   public canInsert(): boolean {
     if (this.map.size < this.max) return true;
@@ -36,14 +43,25 @@ class BoundedTable<V> {
   }
 
   /** Inserts `key`, evicting the least-recently-used entry only if it is idle. @returns false if full. */
-  public insert(key: string, v: V): boolean {
+  public insert(key: string, v: V, group: string): boolean {
     if (!this.canInsert()) return false;
     if (this.map.size >= this.max) {
       const oldest = this.map.keys().next().value;
-      if (oldest !== undefined) this.map.delete(oldest);
+      if (oldest !== undefined) this.remove(oldest);
     }
     this.map.set(key, v);
+    this.keyGroups.set(key, group);
+    this.groups.set(group, (this.groups.get(group) ?? 0) + 1);
     return true;
+  }
+
+  private remove(key: string): void {
+    if (!this.map.delete(key)) return;
+    const group = this.keyGroups.get(key) ?? '';
+    this.keyGroups.delete(key);
+    const n = this.groups.get(group) ?? 0;
+    if (n <= 1) this.groups.delete(group);
+    else this.groups.set(group, n - 1);
   }
 }
 
@@ -60,6 +78,12 @@ export interface TokenBucketOptions {
    * (default `burst`).
    */
   readonly overflowBurst?: number;
+  /** Maximum tracked keys per abuse group (default `max(1, ceil(maxKeys / 8))`). */
+  readonly maxPerGroup?: number;
+  /** Maximum isolated overflow buckets before using the shared overflow bucket (default 0). */
+  readonly maxOverflowGroups?: number;
+  /** Derives an abuse group from a key. Pass a privacy-preserving group explicitly to `take` when keys are hashed. */
+  readonly groupOf?: (key: string) => string;
 }
 
 /** Result of a limiter probe. */
@@ -92,6 +116,9 @@ export class TokenBucketLimiter {
   private readonly table: BoundedTable<Bucket>;
   private readonly overflowBucket: Bucket;
   private readonly overflowBurst: number;
+  private readonly groupOverflow = new Map<string, Bucket>();
+  private readonly maxPerGroup: number;
+  private readonly maxOverflowGroups: number;
 
   /**
    * @param opts Tunables (validated).
@@ -105,7 +132,20 @@ export class TokenBucketLimiter {
     requireConfig(Number.isFinite(opts.burst) && opts.burst >= 1, 'burst must be >= 1');
     requireConfig(Number.isInteger(opts.maxKeys) && opts.maxKeys >= 1, 'maxKeys must be an integer >= 1');
     this.overflowBurst = opts.overflowBurst ?? opts.burst;
-    requireConfig(Number.isFinite(this.overflowBurst) && this.overflowBurst >= 1, 'overflowBurst must be >= 1');
+    requireConfig(
+      Number.isFinite(this.overflowBurst) && this.overflowBurst >= 1,
+      'overflowBurst must be >= 1',
+    );
+    this.maxPerGroup = opts.maxPerGroup ?? Math.max(1, Math.ceil(opts.maxKeys / 8));
+    this.maxOverflowGroups = opts.maxOverflowGroups ?? 0;
+    requireConfig(
+      Number.isInteger(this.maxPerGroup) && this.maxPerGroup >= 1,
+      'maxPerGroup must be an integer >= 1',
+    );
+    requireConfig(
+      Number.isInteger(this.maxOverflowGroups) && this.maxOverflowGroups >= 0,
+      'maxOverflowGroups must be an integer >= 0',
+    );
     this.table = new BoundedTable(opts.maxKeys, (b) => this.refilled(b, opts.burst) >= opts.burst);
     this.overflowBucket = { tokens: this.overflowBurst, last: now() };
   }
@@ -121,16 +161,24 @@ export class TokenBucketLimiter {
    * @param key Bucket key.
    * @param cost Tokens, >= 0 (default 1). A cost above the capacity can never succeed.
    */
-  public take(key: string, cost = 1): TakeResult {
+  public take(key: string, cost = 1, abuseGroup?: string): TakeResult {
     requireConfig(Number.isFinite(cost) && cost >= 0, 'cost must be >= 0');
+    const group = abuseGroup ?? (this.opts.groupOf ?? groupOfBucketKey)(key);
+    requireConfig(group.length > 0 && group.length <= 256, 'group must be 1..256 characters');
     let bucket = this.table.get(key);
     let overflow = false;
     let cap = this.opts.burst;
     if (bucket === undefined) {
       const fresh = { tokens: this.opts.burst, last: this.now() };
-      if (this.table.insert(key, fresh)) bucket = fresh;
+      if (this.table.groupSize(group) < this.maxPerGroup && this.table.insert(key, fresh, group))
+        bucket = fresh;
       else {
-        bucket = this.overflowBucket;
+        bucket = this.groupOverflow.get(group);
+        if (bucket === undefined && this.groupOverflow.size < this.maxOverflowGroups) {
+          bucket = { tokens: this.overflowBurst, last: this.now() };
+          this.groupOverflow.set(group, bucket);
+        }
+        bucket ??= this.overflowBucket;
         overflow = true;
         cap = this.overflowBurst;
       }
@@ -142,7 +190,9 @@ export class TokenBucketLimiter {
       return { ok: true, retryAfterMs: 0, overflow };
     }
     const retryAfterMs =
-      cost > cap ? Number.POSITIVE_INFINITY : Math.ceil(((cost - bucket.tokens) / this.opts.ratePerSecond) * 1000);
+      cost > cap
+        ? Number.POSITIVE_INFINITY
+        : Math.ceil(((cost - bucket.tokens) / this.opts.ratePerSecond) * 1000);
     return { ok: false, retryAfterMs, overflow };
   }
 
@@ -162,6 +212,8 @@ export interface LossBudgetOptions {
   readonly globalLimit: bigint;
   /** Most distinct keys held, >= 1. */
   readonly maxKeys: number;
+  /** Maximum tracked keys per abuse group (default `max(1, ceil(maxKeys / 8))`). */
+  readonly maxPerGroup?: number;
 }
 
 interface Spend {
@@ -183,7 +235,10 @@ interface Spend {
 export class LossBudget {
   private readonly table: BoundedTable<Spend>;
   private readonly overflowSpend: Spend = { window: -1, spent: 0n };
+  private readonly groupSpends = new Map<string, Spend>();
+  private readonly overflowGroupSpend: Spend = { window: -1, spent: 0n };
   private readonly global: Spend = { window: -1, spent: 0n };
+  private readonly maxPerGroup: number;
 
   /**
    * @param opts Tunables (validated).
@@ -196,16 +251,17 @@ export class LossBudget {
     requireConfig(Number.isFinite(opts.windowMs) && opts.windowMs > 0, 'windowMs must be > 0');
     requireConfig(opts.perKeyLimit >= 0n && opts.globalLimit >= 0n, 'limits must be >= 0');
     requireConfig(Number.isInteger(opts.maxKeys) && opts.maxKeys >= 1, 'maxKeys must be an integer >= 1');
+    this.maxPerGroup = opts.maxPerGroup ?? Math.max(1, Math.ceil(opts.maxKeys / 8));
+    requireConfig(
+      Number.isInteger(this.maxPerGroup) && this.maxPerGroup >= 1,
+      'maxPerGroup must be an integer >= 1',
+    );
     this.table = new BoundedTable(opts.maxKeys, (s) => s.window !== this.windowIndex());
   }
 
   /** @returns Whether one more unreimbursed spend is allowed for `key` (both limits strictly unspent). */
-  public allows(key: string): boolean {
-    const w = this.windowIndex();
-    const s = this.peek(key);
-    const keySpent = s !== undefined && s.window === w ? s.spent : 0n;
-    const globalSpent = this.global.window === w ? this.global.spent : 0n;
-    return keySpent < this.opts.perKeyLimit && globalSpent < this.opts.globalLimit;
+  public allows(key: string, group = key): boolean {
+    return this.allowsAmount(key, 1n, group);
   }
 
   /**
@@ -215,15 +271,19 @@ export class LossBudget {
    * @param amount Loss, >= 0.
    * @returns The key's total in the current window after charging.
    */
-  public charge(key: string, amount: bigint): bigint {
+  public charge(key: string, amount: bigint, group = key): bigint {
     requireConfig(amount >= 0n, 'amount must be >= 0');
     const w = this.windowIndex();
     let s = this.table.get(key);
     if (s === undefined) {
       const fresh = { window: w, spent: 0n };
-      s = this.table.insert(key, fresh) ? fresh : this.overflowSpend;
+      s =
+        this.table.groupSize(group) < this.maxPerGroup && this.table.insert(key, fresh, group)
+          ? fresh
+          : this.overflowSpend;
     }
-    for (const t of [s, this.global]) {
+    const g = this.ensureGroupSpend(group, w);
+    for (const t of [s, g, this.global]) {
       if (t.window !== w) {
         t.window = w;
         t.spent = 0n;
@@ -233,11 +293,121 @@ export class LossBudget {
     return s.spent;
   }
 
-  private peek(key: string): Spend | undefined {
+  /** Atomically reserves a worst-case loss estimate so concurrent sends cannot overspend the budget. */
+  public reserve(key: string, estimate: bigint, group = key): LossReservation | null {
+    requireConfig(estimate >= 0n, 'estimate must be >= 0');
+    if (!this.allowsAmount(key, estimate, group)) return null;
+    const window = this.windowIndex();
+    const spend = this.ensureSpend(key, group, window);
+    const groupSpend = this.ensureGroupSpend(group, window);
+    spend.spent += estimate;
+    groupSpend.spent += estimate;
+    this.global.spent += estimate;
+    let settled = false;
+    const settle = (actual: bigint): boolean => {
+      requireConfig(actual >= 0n, 'actual must be >= 0');
+      if (settled) return false;
+      settled = true;
+      const current = this.windowIndex();
+      if (current === window) {
+        spend.spent += actual - estimate;
+        groupSpend.spent += actual - estimate;
+        this.global.spent += actual - estimate;
+      } else {
+        this.charge(key, actual, group);
+      }
+      return true;
+    };
+    const release = (): boolean => {
+      if (settled) return false;
+      settled = true;
+      if (this.windowIndex() === window) {
+        spend.spent -= estimate;
+        groupSpend.spent -= estimate;
+        this.global.spent -= estimate;
+      }
+      return true;
+    };
+    return {
+      window,
+      estimate,
+      get settled() {
+        return settled;
+      },
+      settle,
+      release,
+    };
+  }
+
+  private allowsAmount(key: string, amount: bigint, group: string): boolean {
+    const w = this.windowIndex();
+    const s = this.peek(key, group);
+    const keySpent = s !== undefined && s.window === w ? s.spent : 0n;
+    const groupSpend =
+      this.groupSpends.get(group) ??
+      (this.groupSpends.size >= this.opts.maxKeys ? this.overflowGroupSpend : undefined);
+    const groupSpent = groupSpend !== undefined && groupSpend.window === w ? groupSpend.spent : 0n;
+    const globalSpent = this.global.window === w ? this.global.spent : 0n;
+    return (
+      amount <= this.opts.perKeyLimit - keySpent &&
+      amount <= this.opts.perKeyLimit - groupSpent &&
+      amount <= this.opts.globalLimit - globalSpent
+    );
+  }
+
+  private ensureSpend(key: string, group: string, w: number): Spend {
+    let spend = this.table.get(key);
+    if (spend === undefined) {
+      const fresh = { window: w, spent: 0n };
+      spend =
+        this.table.groupSize(group) < this.maxPerGroup && this.table.insert(key, fresh, group)
+          ? fresh
+          : this.overflowSpend;
+    }
+    if (spend.window !== w) {
+      spend.window = w;
+      spend.spent = 0n;
+    }
+    if (this.global.window !== w) {
+      this.global.window = w;
+      this.global.spent = 0n;
+    }
+    return spend;
+  }
+
+  private ensureGroupSpend(group: string, w: number): Spend {
+    let spend = this.groupSpends.get(group);
+    if (spend === undefined) {
+      if (this.groupSpends.size < this.opts.maxKeys) {
+        spend = { window: w, spent: 0n };
+        this.groupSpends.set(group, spend);
+      } else {
+        spend = this.overflowGroupSpend;
+      }
+    }
+    if (spend.window !== w) {
+      spend.window = w;
+      spend.spent = 0n;
+    }
+    return spend;
+  }
+
+  private peek(key: string, group: string): Spend | undefined {
+    if (this.table.groupSize(group) >= this.maxPerGroup && this.table.get(key) === undefined)
+      return this.overflowSpend;
     return this.table.get(key) ?? (this.table.canInsert() ? undefined : this.overflowSpend);
   }
 
   private windowIndex(): number {
     return Math.floor(Math.max(0, this.now()) / this.opts.windowMs);
   }
+}
+
+/** A single-use loss reservation. `release()` is shorthand for settling zero loss. */
+export interface LossReservation {
+  readonly window: number;
+  readonly estimate: bigint;
+  readonly settled: boolean;
+  settle(actual: bigint): boolean;
+  release(): boolean;
 }

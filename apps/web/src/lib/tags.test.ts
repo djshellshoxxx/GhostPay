@@ -156,7 +156,7 @@ async function legacyRecord(store: MemoryTagStore, record: EncryptedTagRecord, b
   const iv = new Uint8Array(12).fill(3);
   const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv,
     additionalData: utf8ToBytes(`GhostPay/tag/v1|${String(record.chainId)}`) as Uint8Array<ArrayBuffer>, tagLength: 128 },
-    aes, utf8ToBytes(JSON.stringify(body)) as Uint8Array<ArrayBuffer>);
+    aes, utf8ToBytes(JSON.stringify(body)));
   return { ...record, schemaVersion: 1, iv: bytesToHex(iv), ciphertext: bytesToHex(new Uint8Array(ciphertext)) };
 }
 

@@ -7,9 +7,8 @@ import {
   findToken,
   loadDeployment,
   requireEnabledChain,
-  verifyTextManifestSignature as verifyManifestSignature,
+  verifyObjectManifestSignature,
   type DeploymentManifest,
-  type ReleaseKey,
   validateRpcUrl,
 } from '@ghostpay/chain-adapters';
 import { TrustedProxies } from '@ghostpay/relayer-guard';
@@ -94,8 +93,8 @@ export interface ConfigContext {
   readonly hotKeyAddress: Address;
   /** Returns the manifest JSON text for a chain id, or `undefined` when none exists. */
   readonly readManifest: (chainId: number) => string | undefined;
-  /** Pinned release key override (tests). Default: the key pinned in chain-adapters (none: mainnet manifests are refused). */
-  readonly releaseKey?: ReleaseKey | undefined;
+  /** Compressed secp256k1 release public keys; manifests fail closed without a matching key. */
+  readonly releaseKeys?: readonly string[] | undefined;
 }
 
 function bad(path: string, why: string): never {
@@ -220,10 +219,9 @@ function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; inse
   let manifest: DeploymentManifest | undefined;
   if (manifestText !== undefined) {
     manifest = loadDeployment(manifestText, chainId);
-    // CHAIN-ADAPTERS-05: authenticate the manifest before trusting it; fail closed (no pinned key: mainnet refused).
-    const testnet = known === undefined ? true : known.testnet;
+    // CHAIN-ADAPTERS-05: authenticate the structured manifest before trusting any deployment field.
     try {
-      verifyManifestSignature(manifestText, 'releaseKey' in ctx ? { testnet, key: ctx.releaseKey } : { testnet });
+      if (verifyObjectManifestSignature(manifest, ctx.releaseKeys ?? []).status !== 'valid') throw new Error('invalid manifest signature');
     } catch {
       return bad(`${path}`, 'deployment manifest signature check failed (unsigned or invalid manifest refused)');
     }
@@ -281,6 +279,16 @@ function parseChain(raw: unknown, i: number, top: { allowDevChain: boolean; inse
     minBalanceWei: bigOf(c, 'minBalanceWei', path, 0n),
     ...(manifest === undefined ? {} : { manifest }),
   };
+}
+
+/** Parse the release-key allowlist from its comma-separated environment setting. */
+export function parseReleaseKeys(value: string | undefined): readonly string[] {
+  if (value === undefined || value.trim() === '') return [];
+  const keys = value.split(',').map((key) => key.trim());
+  if (keys.length > 8 || keys.some((key) => !/^(?:02|03)[0-9a-fA-F]{64}$/.test(key))) {
+    throw new ConfigError('GHOSTPAY_RELEASE_PUBKEYS must contain up to 8 compressed secp256k1 keys');
+  }
+  return keys;
 }
 
 function bigOr(o: JsonObject, key: string, path: string, def: bigint): bigint {

@@ -3,8 +3,7 @@ import {
   createClient,
   findChain,
   loadDeployment,
-  verifyTextManifestSignature as verifyManifestSignature,
-  type ReleaseKey,
+  verifyObjectManifestSignature,
   validateRpcUrl,
   type DeploymentManifest,
   type RpcClient,
@@ -28,8 +27,8 @@ export type ExitCode = 0 | 1 | 2 | 3;
 export interface CliDeps {
   readonly readText: (path: string) => Promise<string>;
   readonly writeAtomic: (path: string, text: string) => Promise<void>;
-  /** Pinned release key override (tests). Default: the key pinned in chain-adapters (none: mainnet manifests are refused). */
-  readonly releaseKey?: ReleaseKey | undefined;
+  /** Compressed secp256k1 public keys, configured by GHOSTPAY_RELEASE_PUBKEYS. */
+  readonly releaseKeys?: readonly string[] | undefined;
   readonly createRpc: (chainId: number, url: string) => Promise<RpcClient>;
   readonly postJson: (url: string, body: string) => Promise<boolean>;
   readonly now: () => number;
@@ -92,14 +91,17 @@ async function buildContext(cfg: OpsConfig, env: Env, d: CliDeps): Promise<{ ctx
   const manifestCopies: Record<number, string> = {};
   for (const c of cfg.chains) {
     const text = await d.readText(c.manifestFile);
-    // CHAIN-ADAPTERS-05: authenticate the manifest before trusting it; fail closed (no pinned key: mainnet refused).
+    // Authenticate the structured manifest before trusting it; no configured key always fails closed.
     // The on-chain read-back is the W1 probe, which pages on any mismatch.
     try {
-      verifyManifestSignature(text, 'releaseKey' in d ? { testnet: findChain(c.chainId)?.testnet ?? false, key: d.releaseKey } : { testnet: findChain(c.chainId)?.testnet ?? false });
+      const manifest = loadDeployment(text, c.chainId);
+      if (verifyObjectManifestSignature(manifest, d.releaseKeys ?? []).status !== 'valid') {
+        throw new Error('manifest signature invalid or unverifiable');
+      }
+      manifests.push(manifest);
     } catch {
       throw new MonitorError('INVALID_CONFIG', 'manifest signature check failed');
     }
-    manifests.push(loadDeployment(text, c.chainId));
     manifestCopies[c.chainId] = text;
     for (const name of c.rpcUrlEnvs) {
       const url = env[name];
@@ -149,6 +151,16 @@ async function buildContext(cfg: OpsConfig, env: Env, d: CliDeps): Promise<{ ctx
   return { ctx, manifests, probes };
 }
 
+/** Parse the release-key allowlist from its comma-separated environment setting. */
+export function parseReleaseKeys(value: string | undefined): readonly string[] {
+  if (value === undefined || value.trim() === '') return [];
+  const keys = value.split(',').map((key) => key.trim());
+  if (keys.length > 8 || keys.some((key) => !/^(?:02|03)[0-9a-fA-F]{64}$/.test(key))) {
+    throw new MonitorError('INVALID_CONFIG', 'GHOSTPAY_RELEASE_PUBKEYS must contain up to 8 compressed secp256k1 keys');
+  }
+  return keys;
+}
+
 function exitFor(findings: readonly Finding[]): ExitCode {
   if (findings.some((f) => f.severity === 'page')) return 2;
   if (findings.some((f) => f.severity === 'warn')) return 1;
@@ -180,12 +192,20 @@ async function loadState(path: string | undefined, d: CliDeps): Promise<Map<stri
  * finding ids, severities and configured subjects, never RPC URLs or keys.
  */
 export async function runCli(argv: readonly string[], env: Env, deps: Partial<CliDeps> = {}): Promise<ExitCode> {
-  const d: CliDeps = { ...defaultDeps, ...deps };
   const args = parseArgs(argv);
+  const stderr = deps.stderr ?? defaultDeps.stderr;
   if (args === undefined) {
-    d.stderr(USAGE);
+    stderr(USAGE);
     return 3;
   }
+  let releaseKeys: readonly string[];
+  try {
+    releaseKeys = deps.releaseKeys ?? parseReleaseKeys(env['GHOSTPAY_RELEASE_PUBKEYS']);
+  } catch {
+    stderr('fatal: INVALID_CONFIG: GHOSTPAY_RELEASE_PUBKEYS must contain up to 8 compressed secp256k1 keys');
+    return 3;
+  }
+  const d: CliDeps = { ...defaultDeps, ...deps, releaseKeys };
   let findings: Finding[];
   let cfg: OpsConfig;
   try {

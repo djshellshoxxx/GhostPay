@@ -91,6 +91,7 @@ export function estimateKeyPathVsize(nInputs: number, outputScriptLengths: reado
 
 function feeFor(feeRate: number, vsize: number): bigint {
   const milli = BigInt(Math.round(feeRate * 1000));
+  if (milli === 0n) return fail('INVALID_INPUT');
   return (milli * BigInt(vsize) + 999n) / 1000n;
 }
 

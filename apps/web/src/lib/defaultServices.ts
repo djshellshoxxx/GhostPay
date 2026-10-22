@@ -1,6 +1,8 @@
 import { CHAINS, createClient } from '@ghostpay/chain-adapters';
 import { IdbTagStore } from './idbStore';
-import { loadManifest } from './manifest';
+import { loadBundledManifest } from './manifest';
+import { BUNDLED_MANIFESTS } from './bundledManifests';
+import { RELEASE_PUBLIC_KEYS } from './releaseKeys';
 import { localCheckpointStore } from './scanClient';
 import type { Services } from './services';
 import { TagVault, MemoryTagStore, type TagStore } from './tags';
@@ -19,12 +21,21 @@ function makeStore(): TagStore {
   return typeof indexedDB === 'undefined' ? new MemoryTagStore() : new IdbTagStore();
 }
 
+/** Default app policy: same-origin deployments need a signature from a key compiled into this bundle. */
+export function loadDefaultManifest(
+  chainId: number,
+  source: Readonly<Record<string, string>> = BUNDLED_MANIFESTS,
+  releaseKeys: readonly string[] = RELEASE_PUBLIC_KEYS,
+) {
+  return Promise.resolve(loadBundledManifest(chainId, source, releaseKeys));
+}
+
 export function createDefaultServices(): Services {
   return {
     nowMs: () => Date.now(),
     sleep: (ms) => new Promise((r) => setTimeout(r, ms)),
     fetchFn: (u, i) => fetch(u, i),
-    loadManifest: (id) => loadManifest(id),
+    loadManifest: (id) => loadDefaultManifest(id),
     createRpc: (chain, url) => createClient(chain, url),
     discoverWallets: () => discoverWallets(window),
     createScanWorker: createBrowserScanWorker,

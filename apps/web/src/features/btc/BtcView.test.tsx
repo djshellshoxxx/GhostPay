@@ -60,6 +60,10 @@ describe('BtcView', () => {
     await user.click(screen.getByRole('button', { name: 'Scan' }));
     await screen.findByText(/1 unspent payment/);
     expect(screen.getByText('0.0005 BTC')).toBeTruthy();
+    expect(screen.getByText(/Output and spent status were checked with the configured Esplora provider/).textContent)
+      .toMatch(/single-provider check, not independent verification/i);
+    expect(screen.getByRole('checkbox', { name: /Sweep [0-9a-f]{64}:1/ })).toBeTruthy();
+    expect(screen.getByText('Unique in this scan')).toBeTruthy();
 
     await user.type(screen.getByLabelText('Destination address'), BCRT);
     const fee = screen.getByLabelText(/Fee rate/);
@@ -80,6 +84,25 @@ describe('BtcView', () => {
     await screen.findByText(/The server accepted transaction/);
     expect(chain.broadcasts).toHaveLength(1);
     expect(chain.broadcasts[0]).toMatch(/^[0-9a-f]+$/);
+  });
+
+  it('validates scanned Bitcoin destinations for the selected test network before filling them', async () => {
+    const { user } = await setup();
+    await importSeed(user);
+    await user.type(screen.getByLabelText(/First block height/), '0');
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    await screen.findByText(/1 unspent payment/);
+
+    const paste = screen.getByLabelText('Or paste QR text');
+    await user.type(paste, 'tb1q000000000000000000000000000000000000000');
+    await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(/valid|network/i);
+    expect(screen.getByLabelText<HTMLInputElement>('Destination address').value).toBe('');
+
+    await user.clear(paste);
+    await user.type(paste, BCRT);
+    await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
+    expect(screen.getByLabelText<HTMLInputElement>('Destination address').value).toBe(BCRT);
   });
 
   it('reports a bad destination, deselected inputs and server failures', async () => {

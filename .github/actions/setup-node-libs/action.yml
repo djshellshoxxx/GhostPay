@@ -16,7 +16,7 @@ runs:
       uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       with:
         path: packages/*/dist
-        key: libs-${{ runner.os }}-node22-${{ hashFiles('package-lock.json', 'tsconfig.base.json', 'packages/*/src/**', 'packages/*/package.json', 'packages/*/tsconfig*.json') }}
+        key: libs-${{ runner.os }}-node22-${{ hashFiles('package.json', 'package-lock.json', 'tsconfig.base.json', 'scripts/build-workspaces.mjs', 'packages/*/src/**', 'packages/*/scripts/**', 'packages/*/package.json', 'packages/*/tsconfig*.json') }}
     - if: steps.libs.outputs.cache-hit != 'true'
       run: npm run build:libs
       shell: bash

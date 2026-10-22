@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { decodeBase64Url, encodeBase64Url, parseFragment } from '@ghostpay/invoice-schema';
+import { decodeBase64Url, encodeBase64Url, openFragment, parseFragment } from '@ghostpay/invoice-schema';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -79,6 +79,26 @@ describe('Pay: invoice reading and review', () => {
     await user.click(screen.getByRole('button', { name: 'Remove link from address bar' }));
     expect(window.location.hash).toBe('');
   });
+
+  it('prompts for a passphrase, rejects a wrong one, and opens the invoice only after decryption', async () => {
+    const passphrase = 'cedar orbit velvet lantern meadow';
+    generateSession();
+    const created = await buildInvoiceLink({ ...BASE_FORM, memo: 'private note', passphrase }, 'https://app.test/', NOW);
+    expect((await openFragment(created.fragment)).status).toBe('needsPassphrase');
+    const user = openWith(created.fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    expect(await screen.findByText('Passphrase-protected invoice')).toBeTruthy();
+    await user.type(screen.getByLabelText('Invoice passphrase'), 'wrong phrase here');
+    await user.click(screen.getByRole('button', { name: 'Open invoice' }));
+    await waitFor(() => { expect(screen.getByRole('alert').textContent).toMatch(/did not open this invoice/); }, { timeout: 30_000 });
+    expect(screen.queryByRole('heading', { name: 'Review payment' })).toBeNull();
+    await user.clear(screen.getByLabelText('Invoice passphrase'));
+    await user.type(screen.getByLabelText('Invoice passphrase'), passphrase);
+    await user.click(screen.getByRole('button', { name: 'Open invoice' }));
+    await waitFor(() => { expect(screen.getByRole('heading', { name: 'Review payment' })).toBeTruthy(); }, { timeout: 30_000 });
+    expect(screen.getByText('private note')).toBeTruthy();
+    expect(window.location.hash).toBe('');
+  // Three production-cost scrypt operations exceed the ordinary test bound under V8 coverage.
+  }, 180_000);
 
   it('says payments are disabled on a chain with no manifest and offers no way forward', async () => {
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
@@ -340,7 +360,7 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     expect(screen.queryByLabelText(/Add a gas buffer/)).toBeNull();
   });
 
-  it('ERC-20 flow with a buffer: approves exactly, prepares a buffer payment, sends', async () => {
+  it('ERC-20 flow with a buffer: previews the exact approval, then approves and sends', async () => {
     const { fragment } = await makeParsed();
     const wallet = new MockWallet();
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
@@ -360,7 +380,8 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     await screen.findByRole('heading', { name: 'Final check before your wallet' }, { timeout: 5000 });
     expect(screen.getByText('payERC20WithBuffer')).toBeTruthy();
     expect(screen.getByText(/gas buffer, public/)).toBeTruthy();
-    await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    expect(screen.getByText('Exact amount requested').parentElement?.textContent).toContain('100 USDC');
+    await user.click(screen.getByRole('button', { name: 'Approve exactly, then send payment in my wallet' }));
     await waitFor(() => { expect(screen.getByRole('heading', { name: 'Submitted' })).toBeTruthy(); }, { timeout: 5000 });
     expect(wallet.sent?.['to']).toBe(FAKE_ROUTER);
   });

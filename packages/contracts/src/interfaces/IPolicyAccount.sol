@@ -14,8 +14,9 @@ interface IPolicyAccount {
         Cancelled
     }
 
-    /// @notice Owner-signed (EIP-712) withdrawal order. The destination is never part of the order:
-    /// funds can only ever move to the account's current `destination`.
+    /// @notice Owner-signed (EIP-712) withdrawal order. The destination is never part of the order;
+    /// the account captures its current destination when accepting the request. If it changes before
+    /// execution, the request cannot execute and must be cancelled and re-signed.
     /// @param token ERC-20 token to withdraw, or `address(0)` for the native coin.
     /// @param amount Amount in base units; must be non-zero.
     /// @param deadline Last timestamp (inclusive) at which the request may be submitted.
@@ -123,6 +124,10 @@ interface IPolicyAccount {
     /// @notice The timelock has not elapsed.
     /// @param availableAt First timestamp at which the action becomes available.
     error TimelockActive(uint64 availableAt);
+    /// @notice The current destination differs from the one captured by this request.
+    /// @param requestedDestination Destination when the withdrawal request was accepted.
+    /// @param currentDestination Destination now configured on the account.
+    error DestinationChangedSinceRequest(address requestedDestination, address currentDestination);
     /// @notice A destination change is already pending; cancel it first.
     error ProposalPending();
     /// @notice There is no matching pending destination change.
@@ -154,6 +159,11 @@ interface IPolicyAccount {
     /// @notice Pay a matured request to the destination. Anyone may call.
     /// @param id The request id.
     function executeWithdraw(bytes32 id) external;
+
+    /// @notice Destination captured when a withdrawal request was accepted (zero for an unknown id).
+    /// @param id The request id.
+    /// @return destination The withdrawal destination captured for the request.
+    function requestDestination(bytes32 id) external view returns (address);
 
     /// @notice Cancel a pending request with an owner signature. Anyone may relay.
     /// @param id The request id.

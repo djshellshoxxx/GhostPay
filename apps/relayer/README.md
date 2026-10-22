@@ -54,6 +54,11 @@ JSON file (`RELAYER_CONFIG`, default `./relayer.config.json`) plus environment. 
 Validation is strict: unknown keys, wildcard or non-https origins, plain-http or credentialed RPC URLs, non-stable tokens,
 missing economics all stop startup.
 
+Deployment manifests are validated against the configured chain and must have a valid compact low-s secp256k1 signature
+over the shared structured `manifestDigest`. Set `GHOSTPAY_RELEASE_PUBKEYS` to a comma-separated allowlist of up to eight
+compressed public keys (66 hex characters each, no `0x`). Missing keys, unsigned manifests, and legacy raw-text
+signatures stop startup. The web build and ops monitor use the same manifest digest and key format.
+
 | Env | Meaning |
 |---|---|
 | `RELAYER_KEY_FILE` or `RELAYER_KEY` | 32-byte hot key (hex). A file must be regular, non-symlink, owned by the service user or root, and have no group/world permission bits (`chmod 600`). Production environment values require `ALLOW_SECRET_ENV=1`. Never logged. |

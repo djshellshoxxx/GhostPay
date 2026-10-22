@@ -32,6 +32,10 @@ const LABEL_RE = /^[A-Za-z0-9_.-]{1,32}$/;
 /** Web Crypto `getRandomValues` limit per call. */
 const MAX_RANDOM = 65_536;
 
+/** Intrinsic `fill` captured at load; never looked up on the (possibly attacker-shaped) buffer. */
+const TYPED_FILL = (Reflect.getPrototypeOf(Uint8Array.prototype) as { fill: (this: Uint8Array, v: number) => Uint8Array }).fill;
+const noop = (): void => undefined;
+
 function isThenable(v: unknown): v is PromiseLike<unknown> {
   return (
     (typeof v === 'object' || typeof v === 'function') &&
@@ -44,11 +48,13 @@ function isThenable(v: unknown): v is PromiseLike<unknown> {
  * Overwrites every buffer with zeros. `null`/`undefined` entries are skipped.
  *
  * @param buffers Buffers to clear.
- * @security Best-effort: JavaScript engines may have copied the bytes (GC moves, JIT registers,
+ * @security Zeroing uses the `%TypedArray%.prototype.fill` intrinsic captured at module load, so a
+ *   subclass or instance that overrides `fill` cannot skip the wipe (audit L-2).
+ *   Best-effort: JavaScript engines may have copied the bytes (GC moves, JIT registers,
  *   strings, `structuredClone`, transferred-then-received buffers). This clears only the given views.
  */
 export function wipe(...buffers: readonly (Uint8Array | null | undefined)[]): void {
-  for (const b of buffers) b?.fill(0);
+  for (const b of buffers) if (b !== null && b !== undefined) TYPED_FILL.call(b, 0);
 }
 
 function stateOf(box: SecretBox): State {
@@ -153,7 +159,9 @@ export class SecretBox {
    *
    * @param fn Must not return a promise: the copy would be wiped before the awaited code ran.
    * @returns The value of `fn`.
-   * @throws SecretBoxError ASYNC_IN_SYNC_USE if `fn` returns a thenable; DISPOSED if disposed.
+   * @throws SecretBoxError ASYNC_IN_SYNC_USE if `fn` returns a thenable (the work has already
+   *   started and cannot be cancelled; its later rejection is swallowed, its result is lost);
+   *   DISPOSED if disposed.
    * @security Do not keep a reference to the lent view; it is zero after return.
    */
   public use<T>(fn: (bytes: Uint8Array) => T): T {
@@ -161,6 +169,13 @@ export class SecretBox {
     try {
       const r = fn(copy);
       if (isThenable(r)) {
+        // The async body already started and may still reject; swallow that rejection so the
+        // only observable failure is the ASYNC_IN_SYNC_USE error below (audit L-4).
+        try {
+          r.then(undefined, noop);
+        } catch {
+          /* a throwing `then` is ignored; we are about to throw anyway */
+        }
         throw new SecretBoxError('ASYNC_IN_SYNC_USE', 'use() callback returned a promise; use useAsync()');
       }
       return r;
@@ -243,32 +258,59 @@ export class SecretBox {
 
 const MAX_DEPTH = 16;
 const MAX_NODES = 10_000;
+const INDEX_KEY = /^\d+$/;
 
 /**
- * Throws if `payload` contains a {@link SecretBox} anywhere in its own enumerable structure (arrays,
- * plain objects, `Map`/`Set` values). Call before `postMessage`, IndexedDB writes, `fetch` bodies or
- * logging structured data.
+ * Throws if `payload` contains a {@link SecretBox} anywhere in its own structure: every own property
+ * key (string, symbol, enumerable or not) of arrays, plain objects, class instances, errors and
+ * typed arrays, plus `Map` keys/values and `Set` members. Call before `postMessage`, IndexedDB
+ * writes, `fetch` bodies or logging structured data.
  *
  * @param payload Value about to leave the current context.
- * @throws SecretBoxError SECRET_IN_PAYLOAD; INVALID_INPUT if the structure is too deep (> 16) or
- *   large (> 10 000 nodes) to check, which fails closed.
+ * @throws SecretBoxError only: SECRET_IN_PAYLOAD when a box is found; INVALID_INPUT (fail closed)
+ *   when the structure is too deep (> 16) or large (> 10 000 nodes), contains an own accessor
+ *   property (never invoked, so no side effects), a `WeakMap`/`WeakSet` (not enumerable), or a
+ *   `Proxy`/exotic object whose reflection throws.
  * @security A box would be cloned as `{}` (not leaked), so this check turns a silent data-loss bug
- *   into a loud one. It cannot detect raw bytes obtained through `use()`/`take()` and placed in a
- *   payload: those are indistinguishable from other bytes.
+ *   into a loud one. It cannot see closures, class `#private` fields, prototype-chain state, or raw
+ *   bytes obtained through `use()`/`take()`: those are indistinguishable from other bytes.
  */
 export function assertNoSecretBox(payload: unknown): void {
   const seen = new Set<object>();
+  const tooComplex = (): SecretBoxError => new SecretBoxError('INVALID_INPUT', 'payload too deep or too large to check');
   const walk = (v: unknown, depth: number): void => {
     if (typeof v !== 'object' || v === null) return;
     if (SecretBox.isSecretBox(v)) throw new SecretBoxError('SECRET_IN_PAYLOAD', 'payload contains a SecretBox');
     if (seen.has(v)) return;
-    if (depth > MAX_DEPTH || seen.size >= MAX_NODES) {
-      throw new SecretBoxError('INVALID_INPUT', 'payload too deep or too large to check');
-    }
+    if (depth > MAX_DEPTH || seen.size >= MAX_NODES) throw tooComplex();
     seen.add(v);
-    if (ArrayBuffer.isView(v) || v instanceof ArrayBuffer) return;
-    const children = v instanceof Map ? [...v.keys(), ...v.values()] : v instanceof Set ? [...v] : Object.values(v);
-    for (const c of children) walk(c, depth + 1);
+    if (v instanceof WeakMap || v instanceof WeakSet) {
+      throw new SecretBoxError('INVALID_INPUT', 'WeakMap/WeakSet contents cannot be inspected');
+    }
+    if (v instanceof ArrayBuffer) return;
+    const view = ArrayBuffer.isView(v);
+    let accessor = false;
+    for (const key of Reflect.ownKeys(v)) {
+      if (view && typeof key === 'string' && INDEX_KEY.test(key)) continue;
+      const d = Reflect.getOwnPropertyDescriptor(v, key);
+      if (d === undefined) continue;
+      if (!('value' in d)) { accessor = true; continue; }
+      walk(d.value, depth + 1);
+    }
+    if (accessor) throw new SecretBoxError('INVALID_INPUT', 'accessor property cannot be inspected safely');
+    if (v instanceof Map) {
+      for (const [k, val] of v) {
+        walk(k, depth + 1);
+        walk(val, depth + 1);
+      }
+    } else if (v instanceof Set) {
+      for (const m of v) walk(m, depth + 1);
+    }
   };
-  walk(payload, 0);
+  try {
+    walk(payload, 0);
+  } catch (e) {
+    if (e instanceof SecretBoxError) throw e;
+    throw new SecretBoxError('INVALID_INPUT', 'payload could not be inspected');
+  }
 }

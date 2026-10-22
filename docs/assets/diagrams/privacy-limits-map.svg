@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640" width="960" height="640" role="img" aria-labelledby="ttl dsc">
+<title id="ttl">Privacy limits map</title>
+<desc id="dsc">A matrix of observers against what they can learn. Everyone can read the public chain facts. Chain analysts cannot tell which seller owns a one-time address from chain data alone. The payer knows the one-time address and can watch the sweep. Anyone with the invoice link reads the invoice. The static host sees your IP but not the part after the hash. The RPC provider sees your IP and queries. The relayer sees the sweep details. Nobody learns your keys unless your device, browser or extension is compromised.</desc>
+<style>
+:root{--bg:#ffffff;--fg:#1b1f24;--mut:#4d5866;--box:#eef1f6;--line:#6b778a;--acc:#1f4fc4;--accbg:#dbe6ff;--warn:#8a4b00;--warnbg:#fff0d0;--bad:#a8200f;--badbg:#fde4e1;--ok:#13663a;--okbg:#dcf3e4}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1318;--fg:#e6e9ee;--mut:#a3aebd;--box:#1a212b;--line:#7d8a9d;--acc:#8fb2ff;--accbg:#1c2c52;--warn:#ffb454;--warnbg:#3a2a0e;--bad:#ff9b92;--badbg:#411a17;--ok:#74d9a0;--okbg:#12331f}}
+svg{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.bg{fill:var(--bg)}
+.t{fill:var(--fg);font-size:14px}.b{font-weight:700}.m{fill:var(--mut)}.s{font-size:12px}.h{font-size:20px;font-weight:700}
+.box{fill:var(--box);stroke:var(--line);stroke-width:1.5}
+.box.acc{fill:var(--accbg);stroke:var(--acc)}.box.warn{fill:var(--warnbg);stroke:var(--warn)}
+.box.bad{fill:var(--badbg);stroke:var(--bad)}.box.ok{fill:var(--okbg);stroke:var(--ok)}
+.dash{stroke-dasharray:6 4}
+.grp{fill:none;stroke:var(--line);stroke-width:1.3;stroke-dasharray:3 5}
+.ln{fill:none;stroke:var(--line);stroke-width:2}.ln.acc{stroke:var(--acc)}.ln.warn{stroke:var(--warn)}.ln.bad{stroke:var(--bad)}.ln.ok{stroke:var(--ok)}
+.ah{fill:var(--line)}
+.bdg{fill:var(--acc)}.bdgt{fill:var(--bg);font-size:12px;font-weight:700}
+.ta{text-anchor:middle}
+</style>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--line)"/></marker><marker id="ar-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--acc)"/></marker><marker id="ar-warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--warn)"/></marker><marker id="ar-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--bad)"/></marker><marker id="ar-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--ok)"/></marker></defs>
+<rect class="bg" width="960" height="640"/>
+<text class="t h" x="24" y="34">Privacy limits map</text>
+<text class="t m s" x="24" y="54">Who can learn what. This reduces address reuse; it is not anonymity.</text>
+<rect class="box bad" x="20" y="64" width="920" height="46" rx="8"/>
+<text class="t s" x="34" y="84">Everyone can read: payer address, token, gross/net amounts, fee flow, router use, the announcement (one-time address,</text>
+<text class="t s" x="34" y="102">ephemeral key, view tag), timing, and the sweep (source, destination, amount) if you sweep.</text>
+<text class="t s b" x="337.0" y="148" style="text-anchor:middle">Your IP + queries</text>
+<text class="t s b" x="471.0" y="148" style="text-anchor:middle">Invoice contents</text>
+<text class="t s b" x="605.0" y="148" style="text-anchor:middle">Which seller</text>
+<text class="t s b" x="739.0" y="148" style="text-anchor:middle">Can censor / tamper</text>
+<text class="t s b" x="873.0" y="148" style="text-anchor:middle">Keys</text>
+<text class="t s b" x="24" y="186">Public chain analyst</text>
+<rect class="box ok" x="273" y="163" width="128" height="36" rx="6"/>
+<text class="t s" x="337.0" y="186" style="text-anchor:middle">No</text>
+<rect class="box ok" x="407" y="163" width="128" height="36" rx="6"/>
+<text class="t s" x="471.0" y="186" style="text-anchor:middle">No</text>
+<rect class="box ok" x="541" y="163" width="128" height="36" rx="6"/>
+<text class="t s" x="605.0" y="186" style="text-anchor:middle">From chain data: no</text>
+<rect class="box ok" x="675" y="163" width="128" height="36" rx="6"/>
+<text class="t s" x="739.0" y="186" style="text-anchor:middle">No</text>
+<rect class="box ok" x="809" y="163" width="128" height="36" rx="6"/>
+<text class="t s" x="873.0" y="186" style="text-anchor:middle">No</text>
+<text class="t s b" x="24" y="230">The payer</text>
+<rect class="box ok" x="273" y="207" width="128" height="36" rx="6"/>
+<text class="t s" x="337.0" y="230" style="text-anchor:middle">No</text>
+<rect class="box bad" x="407" y="207" width="128" height="36" rx="6"/>
+<text class="t s" x="471.0" y="230" style="text-anchor:middle">Yes (has link)</text>
+<rect class="box bad" x="541" y="207" width="128" height="36" rx="6"/>
+<text class="t s" x="605.0" y="230" style="text-anchor:middle">Yes; sees sweep</text>
+<rect class="box ok" x="675" y="207" width="128" height="36" rx="6"/>
+<text class="t s" x="739.0" y="230" style="text-anchor:middle">No</text>
+<rect class="box ok" x="809" y="207" width="128" height="36" rx="6"/>
+<text class="t s" x="873.0" y="230" style="text-anchor:middle">No</text>
+<text class="t s b" x="24" y="274">Holder of the invoice link</text>
+<rect class="box ok" x="273" y="251" width="128" height="36" rx="6"/>
+<text class="t s" x="337.0" y="274" style="text-anchor:middle">No</text>
+<rect class="box bad" x="407" y="251" width="128" height="36" rx="6"/>
+<text class="t s" x="471.0" y="274" style="text-anchor:middle">Yes</text>
+<rect class="box bad" x="541" y="251" width="128" height="36" rx="6"/>
+<text class="t s" x="605.0" y="274" style="text-anchor:middle">Yes</text>
+<rect class="box ok" x="675" y="251" width="128" height="36" rx="6"/>
+<text class="t s" x="739.0" y="274" style="text-anchor:middle">No</text>
+<rect class="box ok" x="809" y="251" width="128" height="36" rx="6"/>
+<text class="t s" x="873.0" y="274" style="text-anchor:middle">No</text>
+<text class="t s b" x="24" y="318">Anyone with two invoices</text>
+<rect class="box ok" x="273" y="295" width="128" height="36" rx="6"/>
+<text class="t s" x="337.0" y="318" style="text-anchor:middle">No</text>
+<rect class="box ok" x="407" y="295" width="128" height="36" rx="6"/>
+<text class="t s" x="471.0" y="318" style="text-anchor:middle">No</text>
+<rect class="box bad" x="541" y="295" width="128" height="36" rx="6"/>
+<text class="t s" x="605.0" y="318" style="text-anchor:middle">Same seller</text>
+<rect class="box ok" x="675" y="295" width="128" height="36" rx="6"/>
+<text class="t s" x="739.0" y="318" style="text-anchor:middle">No</text>
+<rect class="box ok" x="809" y="295" width="128" height="36" rx="6"/>
+<text class="t s" x="873.0" y="318" style="text-anchor:middle">No</text>
+<text class="t s b" x="24" y="362">Static host / CDN</text>
+<rect class="box bad" x="273" y="339" width="128" height="36" rx="6"/>
+<text class="t s" x="337.0" y="362" style="text-anchor:middle">Yes (IP, files)</text>
+<rect class="box ok" x="407" y="339" width="128" height="36" rx="6"/>
+<text class="t s" x="471.0" y="362" style="text-anchor:middle">No (# not sent)</text>
+<rect class="box ok" x="541" y="339" width="128" height="36" rx="6"/>
+<text class="t s" x="605.0" y="362" style="text-anchor:middle">No</text>
+<rect class="box bad" x="675" y="339" width="128" height="36" rx="6"/>
+<text class="t s" x="739.0" y="362" style="text-anchor:middle">Can serve bad code</text>
+<rect class="box ok" x="809" y="339" width="128" height="36" rx="6"/>
+<text class="t s" x="873.0" y="362" style="text-anchor:middle">No</text>
+<text class="t s b" x="24" y="406">RPC provider</text>
+<rect class="box bad" x="273" y="383" width="128" height="36" rx="6"/>
+<text class="t s" x="337.0" y="406" style="text-anchor:middle">Yes</text>
+<rect class="box ok" x="407" y="383" width="128" height="36" rx="6"/>
+<text class="t s" x="471.0" y="406" style="text-anchor:middle">No</text>
+<rect class="box warn" x="541" y="383" width="128" height="36" rx="6"/>
+<text class="t s" x="605.0" y="406" style="text-anchor:middle">Partly: addresses</text>
+<rect class="box warn" x="675" y="383" width="128" height="36" rx="6"/>
+<text class="t s" x="739.0" y="406" style="text-anchor:middle">Can lie/withhold</text>
+<rect class="box ok" x="809" y="383" width="128" height="36" rx="6"/>
+<text class="t s" x="873.0" y="406" style="text-anchor:middle">No</text>
+<text class="t s b" x="24" y="450">Relayer operator</text>
+<rect class="box warn" x="273" y="427" width="128" height="36" rx="6"/>
+<text class="t s" x="337.0" y="450" style="text-anchor:middle">Hashed IP</text>
+<rect class="box ok" x="407" y="427" width="128" height="36" rx="6"/>
+<text class="t s" x="471.0" y="450" style="text-anchor:middle">No</text>
+<rect class="box bad" x="541" y="427" width="128" height="36" rx="6"/>
+<text class="t s" x="605.0" y="450" style="text-anchor:middle">Yes: dest.</text>
+<rect class="box warn" x="675" y="427" width="128" height="36" rx="6"/>
+<text class="t s" x="739.0" y="450" style="text-anchor:middle">Can refuse/delay</text>
+<rect class="box ok" x="809" y="427" width="128" height="36" rx="6"/>
+<text class="t s" x="873.0" y="450" style="text-anchor:middle">No</text>
+<text class="t s b" x="24" y="494">Wallet / browser extension</text>
+<rect class="box ok" x="273" y="471" width="128" height="36" rx="6"/>
+<text class="t s" x="337.0" y="494" style="text-anchor:middle">No</text>
+<rect class="box warn" x="407" y="471" width="128" height="36" rx="6"/>
+<text class="t s" x="471.0" y="494" style="text-anchor:middle">Page-readable</text>
+<rect class="box ok" x="541" y="471" width="128" height="36" rx="6"/>
+<text class="t s" x="605.0" y="494" style="text-anchor:middle">No</text>
+<rect class="box bad" x="675" y="471" width="128" height="36" rx="6"/>
+<text class="t s" x="739.0" y="494" style="text-anchor:middle">If malicious</text>
+<rect class="box bad" x="809" y="471" width="128" height="36" rx="6"/>
+<text class="t s" x="873.0" y="494" style="text-anchor:middle">If compromised</text>
+<text class="t m s" x="24" y="540">Legend: red = learns / exposed, amber = partly or conditional, green = does not learn from this source. Words are shown in every cell.</text>
+<text class="t m s" x="24" y="562">A compromised device, browser extension or website defeats everything. No external audit; no signed release; no official host.</text>
+<text class="t b s" x="24" y="584">After you sweep to a wallet you use elsewhere, the payer and any analyst can tie that wallet to the payment.</text>
+</svg>

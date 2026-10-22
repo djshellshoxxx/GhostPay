@@ -1,7 +1,7 @@
-import { parseFragment, type ParsedInvoice } from '@ghostpay/invoice-schema';
+import { openFragment, type ParsedInvoice } from '@ghostpay/invoice-schema';
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { BuiltPayment } from '@ghostpay/chain-adapters';
-import { CopyButton, Mono, Notice, downloadText } from '../components/Common';
+import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
 import { FeeDisclosure, useManifest } from '../components/Disclosure';
 import { ManifestBanner } from '../components/ManifestBanner';
 import { extractFragment } from '../lib/fragment';
@@ -18,9 +18,9 @@ import {
   type PayContext,
 } from '../lib/pay';
 import { verifyManifestForFlow } from '../lib/manifest';
-import { PostBroadcastError, buildReceipt, ensureAllowance, preparePayment, sendPayment, type Runtime, type SubmitResult } from '../lib/payExec';
+import { PostBroadcastError, buildReceipt, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, type ApprovalPlan, type Runtime, type SubmitResult } from '../lib/payExec';
 import { useServices } from '../lib/services';
-import { connectWallet, type WalletInfo, type WalletSession } from '../lib/wallet';
+import { connectWallet, walletWarnings, type WalletInfo, type WalletSession } from '../lib/wallet';
 import { useApp } from '../state';
 
 type Phase = 'input' | 'review' | 'waiting' | 'ready' | 'prepared' | 'busy' | 'submitted' | 'done';
@@ -31,6 +31,9 @@ export function Pay(): ReactNode {
   const [parsed, setParsed] = useState<ParsedInvoice | undefined>(undefined);
   const [rejected, setRejected] = useState<string | undefined>(undefined);
   const [paste, setPaste] = useState('');
+  const [needsPassphrase, setNeedsPassphrase] = useState(false);
+  const [invoicePassphrase, setInvoicePassphrase] = useState('');
+  const [unlocking, setUnlocking] = useState(false);
   const [phase, setPhase] = useState<Phase>('input');
   const [useDelay, setUseDelay] = useState(false);
   const [useBuffer, setUseBuffer] = useState(false);
@@ -44,8 +47,11 @@ export function Pay(): ReactNode {
   const [status, setStatus] = useState('');
   const [error, setError] = useState<string | undefined>(undefined);
   const [result, setResult] = useState<SubmitResult | undefined>(undefined);
+  const [approval, setApproval] = useState<ApprovalPlan | undefined>(undefined);
+  const [granted, setGranted] = useState<bigint | undefined>(undefined);
   /** Set once the wallet broadcast but verification failed: terminal, Send is never offered again. */
   const [broadcast, setBroadcast] = useState<string | undefined>(undefined);
+  const [broadcastKind, setBroadcastKind] = useState<'approval' | 'payment'>('payment');
   const [tick, setTick] = useState(0);
   const scheduler = useRef<DelayScheduler | undefined>(undefined);
 
@@ -57,12 +63,23 @@ export function Pay(): ReactNode {
     let live = true;
     if (fragment === undefined) {
       setParsed(undefined);
+      setNeedsPassphrase(false);
+      setInvoicePassphrase('');
       setPhase('input');
       return;
     }
-    parseFragment(fragment, { pinnedSigners: pinned }).then(
-      (p) => {
+    openFragment(fragment, { pinnedSigners: pinned }).then(
+      (result) => {
         if (!live) return;
+        if (result.status === 'needsPassphrase') {
+          setParsed(undefined);
+          setNeedsPassphrase(true);
+          setRejected(undefined);
+          setPhase('input');
+          return;
+        }
+        const p = result.parsed;
+        setNeedsPassphrase(false);
         setRejected(undefined);
         setParsed(p);
         setPhase('review');
@@ -184,6 +201,26 @@ export function Pay(): ReactNode {
     setPaste('');
   };
 
+  const onUnlock = (e: React.FormEvent): void => {
+    e.preventDefault();
+    if (fragment === undefined || invoicePassphrase === '') return;
+    setUnlocking(true);
+    setRejected(undefined);
+    void openFragment(fragment, { pinnedSigners: pinned, passphrase: invoicePassphrase }).then(
+      (result) => {
+        if (result.status !== 'ok') throw new Error('passphrase');
+        setParsed(result.parsed);
+        setNeedsPassphrase(false);
+        setInvoicePassphrase('');
+        setRejected(undefined);
+        setPhase('review');
+      },
+      (e: unknown) => {
+        setRejected(userMessage(e));
+      },
+    ).finally(() => { setUnlocking(false); });
+  };
+
   const startWaiting = (): void => {
     if (parsed === undefined) return;
     setError(undefined);
@@ -293,10 +330,13 @@ export function Pay(): ReactNode {
         }
         const t = ctx.review.token;
         const permit = t?.config?.permit === true && buffer === undefined;
+        let plan: ApprovalPlan | undefined;
         if (isErc20 && !permit && t?.address !== undefined && t.address !== 'native') {
-          await ensureAllowance(wallet, ctx, t.address, rt, setStatus);
+          plan = await planApproval(ctx, wallet, t.address, rt);
         }
         const b = await preparePayment(wallet, ctx, { usePermit: permit, ...(buffer === undefined ? {} : { buffer }) }, rt, setStatus);
+        setApproval(plan);
+        setGranted(undefined);
         setBuilt(b);
         setStatus('');
         setPhase('prepared');
@@ -314,8 +354,15 @@ export function Pay(): ReactNode {
     setError(undefined);
     setPhase('busy');
     void (async () => {
+      let stage: 'approval' | 'payment' = approval?.required === true && granted === undefined ? 'approval' : 'payment';
       try {
         const rt = await runtime();
+        let actualAllowance = granted;
+        if (approval?.required === true && actualAllowance === undefined) {
+          actualAllowance = await grantApproval(wallet, ctx, approval, rt, setStatus);
+          setGranted(actualAllowance);
+        }
+        stage = 'payment';
         const res = await sendPayment(wallet, ctx, built, rt, setStatus);
         setResult(res);
         setPhase('done');
@@ -324,14 +371,34 @@ export function Pay(): ReactNode {
       } catch (e) {
         setStatus('');
         if (e instanceof PostBroadcastError) {
-          // WEB-APP-02: the wallet already broadcast. Keep the hash, never return to `prepared`.
+          // A broadcast that failed follow-up checks must never be offered again as though nothing was sent.
           setBroadcast(e.hash);
+          setBroadcastKind(stage);
           setError(userMessage(e));
           setPhase('submitted');
-          app.announce('Payment sent, verification failed. Do not send again.');
+          app.announce(`${stage === 'approval' ? 'Approval' : 'Payment'} sent, verification failed. Do not repeat it.`);
           return;
         }
         setError(userMessage(e));
+        setPhase('prepared');
+      }
+    })();
+  };
+
+  const onRevoke = (): void => {
+    if (wallet === undefined || ctx === undefined || approval === undefined) return;
+    setError(undefined);
+    setPhase('busy');
+    void (async () => {
+      try {
+        await revokeApproval(wallet, ctx, approval, await runtime(), setStatus);
+        setGranted(undefined);
+        setApproval({ ...approval, have: 0n, required: true });
+        app.announce('Approval revoked.');
+      } catch (e) {
+        setError(userMessage(e));
+      } finally {
+        setStatus('');
         setPhase('prepared');
       }
     })();
@@ -345,6 +412,9 @@ export function Pay(): ReactNode {
     setWallet(undefined);
     setResult(undefined);
     setBroadcast(undefined);
+    setBroadcastKind('payment');
+    setApproval(undefined);
+    setGranted(undefined);
     setPhase('input');
   };
 
@@ -356,11 +426,25 @@ export function Pay(): ReactNode {
         <h2 id="pay-h">Pay an invoice</h2>
         {rejected !== undefined && <Notice kind="error" title="Invoice rejected">{rejected} Nothing was shown or sent.</Notice>}
         {fragment !== undefined && rejected === undefined && <p role="status">Reading invoice…</p>}
+        {needsPassphrase && (
+          <form onSubmit={onUnlock} className="stack">
+            <Notice kind="warn" title="Passphrase-protected invoice">
+              The link header claims this invoice is protected. Its chain and signer details are unverified until the passphrase opens the invoice. The passphrase is used in this page only and is not stored.
+            </Notice>
+            <Field label="Invoice passphrase">
+              {(id) => <input id={id} type="password" autoComplete="off" value={invoicePassphrase} onChange={(e) => { setInvoicePassphrase(e.target.value); }} />}
+            </Field>
+            <button type="submit" className="btn btn-primary" disabled={unlocking || invoicePassphrase === ''}>{unlocking ? 'Opening invoice…' : 'Open invoice'}</button>
+          </form>
+        )}
         <form onSubmit={onPasteSubmit} className="stack">
           <div className="field">
-            <label htmlFor="paste">Paste an invoice link</label>
+            <label htmlFor="paste">{needsPassphrase ? 'Or paste a different invoice link' : 'Paste an invoice link'}</label>
             <textarea id="paste" rows={3} value={paste} onChange={(e) => { setPaste(e.target.value); }} spellCheck={false} />
             <p className="hint">The link is read in this page only. It is never sent to a server.</p>
+            <p className="hint">
+              Pasting is safer than clicking: a browser may keep a clicked invoice URL, including its secret part, in its history even after this page removes it from the address bar. Copy the link and paste it here, or open it in a private window.
+            </p>
           </div>
           <button type="submit" className="btn btn-primary">Read invoice</button>
         </form>
@@ -369,6 +453,7 @@ export function Pay(): ReactNode {
   }
 
   const inv = parsed.invoice;
+  const warnings = walletWarnings(wallets ?? []);
   const ready = phase === 'ready' || phase === 'prepared' || phase === 'busy' || phase === 'submitted' || phase === 'done';
   const decimals = token?.decimals ?? 18;
   const symbol = token?.symbol ?? '';
@@ -415,7 +500,7 @@ export function Pay(): ReactNode {
         <dt>Seller fingerprint</dt>
         <dd><Mono>{payeeFingerprint(inv.metaAddress)}</Mono> (compare with the seller by another channel)</dd>
         <dt>Private part</dt>
-        <dd>{parsed.encrypted ? 'Was encrypted in the link (decrypted here)' : 'Plain in the link'}</dd>
+        <dd>{parsed.passphraseProtected ? 'Entire invoice decrypted here with a passphrase' : parsed.encrypted ? 'Private invoice fields decrypted here with a key from the link' : 'Plain in the link'}</dd>
       </dl>
 
       {inv.lineItems.length > 0 && (
@@ -526,7 +611,11 @@ export function Pay(): ReactNode {
                   <li key={w.id}>
                     <button type="button" className="btn" onClick={() => { onConnect(w); }}>
                       {w.icon !== undefined && <img src={w.icon} alt="" width={20} height={20} />} Connect {w.name}
+                      {w.rdns !== undefined && <span className="hint"> ({w.rdns})</span>}
                     </button>
+                    {warnings.get(w.id)?.map((message) => (
+                      <p key={message} className="hint" role="note">⚠ {message}</p>
+                    ))}
                   </li>
                 ))}
               </ul>
@@ -545,7 +634,7 @@ export function Pay(): ReactNode {
       )}
 
       {built !== undefined && phase !== 'done' && phase !== 'submitted' && ctx !== undefined && (
-        <FinalPreview built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} />
+        <FinalPreview built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} approval={approval} granted={granted} onRevoke={onRevoke} />
       )}
 
       {status !== '' && <p role="status" className="status">{status}</p>}
@@ -553,8 +642,8 @@ export function Pay(): ReactNode {
 
       {phase === 'submitted' && broadcast !== undefined && (
         <div className="panel" aria-live="polite">
-          <h3>Sent, verifying</h3>
-          <p>Your wallet already broadcast this payment. Do not send it again. Transaction hash: <Mono>{broadcast}</Mono></p>
+          <h3>{broadcastKind === 'approval' ? 'Approval sent, verifying' : 'Payment sent, verifying'}</h3>
+          <p>Your wallet already broadcast this {broadcastKind}. Do not repeat it. Transaction hash: <Mono>{broadcast}</Mono></p>
           <div className="actions">
             <CopyButton text={broadcast} label="Copy hash" />
           </div>
@@ -613,7 +702,15 @@ export function Pay(): ReactNode {
   );
 }
 
-function FinalPreview(props: { readonly built: BuiltPayment; readonly ctx: PayContext; readonly onSend: () => void; readonly busy: boolean }): ReactNode {
+function FinalPreview(props: {
+  readonly built: BuiltPayment;
+  readonly ctx: PayContext;
+  readonly onSend: () => void;
+  readonly busy: boolean;
+  readonly approval: ApprovalPlan | undefined;
+  readonly granted: bigint | undefined;
+  readonly onRevoke: () => void;
+}): ReactNode {
   const { built, ctx } = props;
   const p = built.preview;
   const decoded = decodeForDisplay(built, ctx.chain.chainId);
@@ -634,7 +731,7 @@ function FinalPreview(props: { readonly built: BuiltPayment; readonly ctx: PayCo
         <dt>Gross</dt>
         <dd>{formatUnits(decoded.gross, dec)} {sym}</dd>
         <dt>Fee</dt>
-        <dd>{formatUnits(decoded.fee, dec)} {sym} to {ctx.manifest.feeRecipient}</dd>
+        <dd>{formatUnits(decoded.fee, dec)} {sym} to {ctx.manifest.feeRecipient} (deployment manifest verified against the chain)</dd>
         <dt>Net to seller</dt>
         <dd>{formatUnits(decoded.net, dec)} {sym} (minimum accepted {formatUnits(decoded.minNet, dec)})</dd>
         <dt>Native value sent</dt>
@@ -642,8 +739,32 @@ function FinalPreview(props: { readonly built: BuiltPayment; readonly ctx: PayCo
         <dt>Deadline</dt>
         <dd>{formatUnix(Number(p.deadline))}</dd>
       </dl>
+      {props.approval !== undefined && (
+        <div className="notice notice-warn" role="note">
+          <strong className="notice-title">Token approval{props.approval.required ? ' needed first' : ' already in place'}</strong>
+          <dl className="details">
+            <dt>Spender (router)</dt>
+            <dd><Mono>{props.approval.spender}</Mono></dd>
+            <dt>Allowance before this payment</dt>
+            <dd>{formatUnits(props.approval.have, dec)} {sym}</dd>
+            <dt>{props.approval.required ? 'Exact amount requested' : 'Needed for this payment'}</dt>
+            <dd>{formatUnits(props.approval.need, dec)} {sym}</dd>
+          </dl>
+          {props.approval.required ? (
+            <p>Pressing the button first asks your wallet for this exact approval and then for the payment. Check the amount in your wallet: it must not be unlimited. The approval is public and can link to the payment that follows. Permit-capable tokens avoid a separate approval transaction.</p>
+          ) : (
+            <p>The router already has enough allowance. This payment does not change a larger existing allowance; you can revoke it in your wallet.</p>
+          )}
+          {props.granted !== undefined && props.granted > props.approval.need && (
+            <p role="alert"><strong>Your wallet granted {formatUnits(props.granted, dec)} {sym}, more than the {formatUnits(props.approval.need, dec)} requested.</strong> Revoke it unless you meant to allow more.</p>
+          )}
+          {props.granted !== undefined && (
+            <p>Allowance now: {formatUnits(props.granted, dec)} {sym}. If you stop before payment, remove it: <button type="button" className="btn" onClick={props.onRevoke} disabled={props.busy}>Revoke approval</button></p>
+          )}
+        </div>
+      )}
       <button type="button" className="btn btn-primary" onClick={props.onSend} disabled={props.busy}>
-        Send payment in my wallet
+        {props.approval?.required === true && props.granted === undefined ? 'Approve exactly, then send payment in my wallet' : 'Send payment in my wallet'}
       </button>
     </div>
   );

@@ -2,6 +2,7 @@
 pragma solidity 0.8.28;
 
 import {Vm} from "forge-std/Vm.sol";
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
@@ -10,11 +11,48 @@ import {PolicyAccount} from "../src/PolicyAccount.sol";
 import {IPolicyAccount} from "../src/interfaces/IPolicyAccount.sol";
 import {PolicyAccountFactory} from "../src/PolicyAccountFactory.sol";
 import {FeeOnTransferToken} from "./mocks/FeeOnTransferToken.sol";
+import {BlacklistToken} from "./mocks/BlacklistToken.sol";
+
+/// @dev Malicious false-return token that moves balances before reporting failure.
+contract FalseAfterTransferToken is ERC20 {
+    constructor() ERC20("False after transfer", "FAT") {}
+
+    function mint(address to, uint256 amount) external {
+        _mint(to, amount);
+    }
+
+    function transferFrom(address from, address to, uint256 value) public override returns (bool) {
+        _spendAllowance(from, _msgSender(), value);
+        _transfer(from, to, value);
+        return false;
+    }
+}
+
+/// @dev Returns true and credits the recipient but debits either nothing or an incorrect amount.
+contract MisaccountingSuccessToken is ERC20 {
+    uint256 public immutable debitAmount;
+
+    constructor(uint256 debitAmount_) ERC20("Misaccounting success", "MST") {
+        debitAmount = debitAmount_;
+    }
+
+    function mint(address to, uint256 amount) external {
+        _mint(to, amount);
+    }
+
+    function transferFrom(address from, address to, uint256 value) public override returns (bool) {
+        _spendAllowance(from, _msgSender(), value);
+        _burn(from, debitAmount);
+        _mint(to, value);
+        return true;
+    }
+}
 import {ReentrantToken} from "./mocks/ReentrantToken.sol";
 
 /// @notice Unit and fuzz tests of `PolicyAccountFactory`.
 contract PolicyAccountFactoryTest is PolicyBase {
     event AccountDeployed(address indexed account);
+    event FeeWaived(address indexed account);
 
     // ------------------------------------------------------------------ constructor
 
@@ -161,11 +199,159 @@ contract PolicyAccountFactoryTest is PolicyBase {
 
     function test_deploy_noAllowance_reverts() public {
         vm.prank(relayer);
-        vm.expectRevert();
+        vm.expectRevert(PolicyAccountFactory.FeeTransferFailed.selector);
         factory.deploy(owner, newDest, DELAY, root);
         assertEq(
             factory.predictAddress(owner, factory.policyHashOf(newDest, DELAY, root)).code.length, 0
         );
+    }
+
+    function test_deploy_blacklistedRecipientWaivesFeeAndDeploys() public {
+        BlacklistToken token = new BlacklistToken();
+        PolicyAccountFactory f =
+            new PolicyAccountFactory(address(impl), address(token), FLAT_FEE, feeRecipient);
+        token.mint(payer, FLAT_FEE);
+        vm.prank(payer);
+        token.approve(address(f), FLAT_FEE);
+        token.setBlacklisted(feeRecipient, true);
+        address predicted = f.predictAddress(owner, f.policyHashOf(newDest, DELAY, root));
+
+        vm.expectEmit(true, false, false, true, address(f));
+        emit FeeWaived(predicted);
+        vm.prank(payer);
+        address deployed = f.deploy(owner, newDest, DELAY, root);
+
+        assertEq(deployed, predicted);
+        assertGt(deployed.code.length, 0);
+        assertEq(token.balanceOf(payer), FLAT_FEE, "failed fee call did not debit payer");
+        assertEq(token.balanceOf(feeRecipient), 0);
+        assertEq(PolicyAccount(payable(deployed)).owner(), owner);
+    }
+
+    function test_deploy_failedFeeWithInsufficientBalanceDoesNotWaive() public {
+        BlacklistToken token = new BlacklistToken();
+        PolicyAccountFactory f =
+            new PolicyAccountFactory(address(impl), address(token), FLAT_FEE, feeRecipient);
+        token.mint(payer, FLAT_FEE - 1);
+        vm.prank(payer);
+        token.approve(address(f), FLAT_FEE);
+        token.setBlacklisted(feeRecipient, true);
+        address predicted = f.predictAddress(owner, f.policyHashOf(newDest, DELAY, root));
+
+        vm.expectRevert(PolicyAccountFactory.FeeTransferFailed.selector);
+        vm.prank(payer);
+        f.deploy(owner, newDest, DELAY, root);
+
+        assertEq(predicted.code.length, 0);
+        assertEq(token.balanceOf(payer), FLAT_FEE - 1);
+    }
+
+    function test_deploy_failedFeeWithInsufficientAllowanceDoesNotWaive() public {
+        BlacklistToken token = new BlacklistToken();
+        PolicyAccountFactory f =
+            new PolicyAccountFactory(address(impl), address(token), FLAT_FEE, feeRecipient);
+        token.mint(payer, FLAT_FEE);
+        vm.prank(payer);
+        token.approve(address(f), FLAT_FEE - 1);
+        token.setBlacklisted(feeRecipient, true);
+        address predicted = f.predictAddress(owner, f.policyHashOf(newDest, DELAY, root));
+
+        vm.expectRevert(PolicyAccountFactory.FeeTransferFailed.selector);
+        vm.prank(payer);
+        f.deploy(owner, newDest, DELAY, root);
+
+        assertEq(predicted.code.length, 0);
+        assertEq(token.balanceOf(payer), FLAT_FEE);
+    }
+
+    function test_deploy_feeFailureCannotBypassInvalidPrerequisites() public {
+        BlacklistToken token = new BlacklistToken();
+        PolicyAccountFactory f =
+            new PolicyAccountFactory(address(impl), address(token), FLAT_FEE, feeRecipient);
+        token.mint(payer, FLAT_FEE);
+        vm.prank(payer);
+        token.approve(address(f), FLAT_FEE);
+        token.setBlacklisted(feeRecipient, true);
+
+        vm.expectRevert(abi.encodeWithSelector(PolicyAccountFactory.DelayTooShort.selector, 1));
+        vm.prank(payer);
+        f.deploy(owner, newDest, 1, root);
+        assertEq(f.predictAddress(owner, f.policyHashOf(newDest, 1, root)).code.length, 0);
+    }
+
+    function test_deploy_mutatingFalseReturnFeeTokenRevertsAtomically() public {
+        FalseAfterTransferToken token = new FalseAfterTransferToken();
+        PolicyAccountFactory f =
+            new PolicyAccountFactory(address(impl), address(token), FLAT_FEE, feeRecipient);
+        token.mint(payer, FLAT_FEE);
+        vm.prank(payer);
+        token.approve(address(f), FLAT_FEE);
+        address predicted = f.predictAddress(owner, f.policyHashOf(newDest, DELAY, root));
+
+        vm.expectRevert(PolicyAccountFactory.UnexpectedFeeDelta.selector);
+        vm.prank(payer);
+        f.deploy(owner, newDest, DELAY, root);
+
+        assertEq(token.balanceOf(payer), FLAT_FEE);
+        assertEq(token.balanceOf(feeRecipient), 0);
+        assertEq(token.allowance(payer, address(f)), FLAT_FEE);
+        assertEq(predicted.code.length, 0);
+    }
+
+    function test_deploy_trueReturnWithoutPayerDebitReverts() public {
+        MisaccountingSuccessToken token = new MisaccountingSuccessToken(0);
+        PolicyAccountFactory f =
+            new PolicyAccountFactory(address(impl), address(token), FLAT_FEE, feeRecipient);
+        token.mint(payer, FLAT_FEE);
+        vm.prank(payer);
+        token.approve(address(f), FLAT_FEE);
+        address predicted = f.predictAddress(owner, f.policyHashOf(newDest, DELAY, root));
+
+        vm.expectRevert(PolicyAccountFactory.UnexpectedFeeDelta.selector);
+        vm.prank(payer);
+        f.deploy(owner, newDest, DELAY, root);
+
+        assertEq(token.balanceOf(payer), FLAT_FEE);
+        assertEq(token.balanceOf(feeRecipient), 0);
+        assertEq(predicted.code.length, 0);
+    }
+
+    function test_deploy_trueReturnWithWrongPayerDebitReverts() public {
+        MisaccountingSuccessToken token = new MisaccountingSuccessToken(FLAT_FEE + 1);
+        PolicyAccountFactory f =
+            new PolicyAccountFactory(address(impl), address(token), FLAT_FEE, feeRecipient);
+        token.mint(payer, FLAT_FEE + 1);
+        vm.prank(payer);
+        token.approve(address(f), FLAT_FEE);
+        address predicted = f.predictAddress(owner, f.policyHashOf(newDest, DELAY, root));
+
+        vm.expectRevert(PolicyAccountFactory.UnexpectedFeeDelta.selector);
+        vm.prank(payer);
+        f.deploy(owner, newDest, DELAY, root);
+
+        assertEq(token.balanceOf(payer), FLAT_FEE + 1);
+        assertEq(token.balanceOf(feeRecipient), 0);
+        assertEq(predicted.code.length, 0);
+    }
+
+    function test_deploy_gasStarvationCannotTriggerFeeWaiver() public {
+        uint256 recipientBefore = feeToken.balanceOf(feeRecipient);
+        uint256 deployed;
+        for (uint256 gasLimit = 30_000; gasLimit < 400_000; gasLimit += 1500) {
+            uint256 snapshot = vm.snapshotState();
+            vm.prank(payer);
+            (bool ok,) = address(factory).call{gas: gasLimit}(
+                abi.encodeCall(factory.deploy, (owner, newDest, DELAY, root))
+            );
+            if (ok) {
+                deployed++;
+                assertEq(
+                    feeToken.balanceOf(feeRecipient), recipientBefore + FLAT_FEE, "fee charged"
+                );
+            }
+            vm.revertToState(snapshot);
+        }
+        assertGt(deployed, 0, "range reaches a successful deployment");
     }
 
     function test_deploy_feeOnTransferFeeToken_reverts() public {

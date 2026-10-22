@@ -1,0 +1,24 @@
+{
+  "_comment": "Fake example values. Replace metaAddress/token/signer with your own. Amounts are decimal strings in fiat minor units.",
+  "subscriptionId": "sub_demo_001",
+  "baseUrl": "https://pay.example.org/",
+  "plan": {
+    "id": "plan_basic",
+    "name": "Basic monthly plan",
+    "currency": "USD",
+    "amountMinor": "900",
+    "taxBps": 0,
+    "schedule": { "anchor": 1798761600, "cadence": { "kind": "monthly", "every": 1 } }
+  },
+  "template": {
+    "chainId": 8453,
+    "metaAddress": "REPLACE_WITH_YOUR_STEALTH_META_ADDRESS",
+    "token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "amountPolicy": { "mode": "fiat_quote" },
+    "feePolicy": "seller_pays",
+    "signer": "REPLACE_WITH_SIGNER_PUBKEY_HEX_FROM_YOUR_KEY",
+    "quoteSource": "chainlink:usdc-usd",
+    "quoteTtlSeconds": 600,
+    "maxSlippageBps": 50
+  }
+}

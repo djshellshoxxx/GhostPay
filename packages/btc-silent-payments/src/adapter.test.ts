@@ -167,6 +167,25 @@ describe('Bitcoin ChainAdapter', () => {
           toHex(f.xOnlyPublicKey),
         );
       }
+      expect(found.every((f) => f.verified === false && f.duplicateKey === false)).toBe(true);
+    });
+
+    it('exposes optional verification and persisted duplicate-key flags', async () => {
+      const seenKeys = new Set<string>();
+      const strict = createBitcoinAdapter({
+        network: 'mainnet',
+        source,
+        verifier: () => Promise.resolve(true),
+        seenKeys,
+      });
+      const first = await all(strict, 10n, 10n);
+      expect(first.length).toBeGreaterThan(0);
+      expect(first.every((f) => f.verified === true && f.duplicateKey === false)).toBe(true);
+      const repeated = await all(strict, 10n, 10n);
+      expect(repeated.every((f) => f.duplicateKey === true)).toBe(true);
+
+      const rejecting = createBitcoinAdapter({ network: 'mainnet', source, verifier: () => Promise.resolve(false) });
+      expect(await all(rejecting, 10n, 10n)).toEqual([]);
     });
 
     it('respects the range and the label list', async () => {

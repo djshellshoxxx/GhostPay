@@ -79,9 +79,10 @@ The lead should confirm or reject each.
   conservative: after spending the full cap, the next spend can be delayed by up to two windows (a true sliding log would need unbounded storage and an
   attacker-controlled loop). Accounting is at `executeWithdraw`, not `requestWithdraw`, so several requests can be pending at once and each is checked when it matures.
   `amount > limit` is rejected at request time (it could never execute).
-- **P3. Signatures never contain the destination; payout goes to the destination at execution time.** Pending requests therefore follow a destination change
-  (a rotated-away cold wallet should not still receive funds). The EIP-712 domain (name `GhostPayPolicyAccount`, version `1`, chain id, clone address)
-  binds chain and account. Types: `Withdraw(address token,uint256 amount,uint256 deadline,uint256 nonce)`, `CancelWithdraw(bytes32 id)`,
+- **P3 (closed): Signatures do not contain the destination, but the account captures it when accepting a request.** If `destination` changes before execution,
+  `executeWithdraw` reverts `DestinationChangedSinceRequest`; the owner can cancel that request and sign a new one for the current destination. The public
+  `requestDestination(id)` view exposes the captured recipient. The EIP-712 domain (name `GhostPayPolicyAccount`, version `1`, chain id, clone address)
+  binds chain and account. Types: `Withdraw(address token,uint256 amount,uint256 deadline,uint256 nonce,bytes32 limitLeafHash)`, `CancelWithdraw(bytes32 id)`,
   `ProposeDestination(address newDestination,uint256 deadline,uint256 nonce)`, `CancelDestination(bytes32 id)`. `id` = the struct hash of the signed
   {Withdraw}/{ProposeDestination}, so it is unique per nonce. Cancel signatures need no nonce (bound to a unique id, effect is idempotent) and a cancel
   signature of one type cannot be used as another.
@@ -96,10 +97,11 @@ The lead should confirm or reject each.
   Only the exact CREATE2 deployer, with the exact arguments, can initialise a clone, once. The implementation locks itself in its constructor.
   Because the factory initialises in the same transaction as the clone creation, front-running initialisation is impossible.
 - **P7. The factory is the only place with fee logic.** Constructor: zero `implementation` or `feeRecipient` revert `ZeroAddress`; zero `feeToken` reverts only if
-  `flatFee != 0`; `implementation` without code reverts `ImplementationHasNoCode`. `deploy` reverts `AlreadyDeployed(account)` **before** pulling the fee, then pulls
-  `flatFee` with `safeTransferFrom(msg.sender -> feeRecipient)` and requires the recipient balance to rise by exactly `flatFee` (`UnexpectedFeeDelta`; a payer that
-  is the fee recipient therefore cannot deploy with a non-zero fee). Only the recipient delta is checked (the payer's balance cannot fall by less than the transfer
-  without the recipient's also being short). `deploy` is `nonReentrant`.
+  `flatFee != 0`; `implementation` without code reverts `ImplementationHasNoCode`. `deploy` validates inputs and rejects `AlreadyDeployed(account)` **before** fee
+  transfer. A successful transfer requires `feeRecipient` to rise and the payer's balance to fall by exactly `flatFee` (`UnexpectedFeeDelta`; a payer that is the recipient therefore cannot deploy
+  with a non-zero fee). If `trySafeTransferFrom` fails, the fee is waived only when caller balance and allowance both cover it and the failed call did not change
+  caller balance, recipient balance, or allowance. Otherwise it reverts `FeeTransferFailed` or `UnexpectedFeeDelta`. A waived deployment emits `FeeWaived(account)`;
+  this prevents a fee-token pause/blacklist or recipient refusal from freezing counterfactual funds. `deploy` is `nonReentrant`.
 - **P8. Account-level argument validation duplicates the factory's** (zero owner/destination, `destination == address(this)`, delay in `[1, 30 days]`) so that
   a foreign deployer cannot create a weaker account from the same implementation. `owner == destination` is **allowed** (it only defeats the product, and rejecting
   it would make an already published counterfactual address undeployable and its funds unreachable); client software must validate it before publishing a
@@ -167,7 +169,7 @@ Changes made after the independent review. Items A1-A6 change code; the remainin
 - **A5. Slither.** The two CI exclusions (`arbitrary-send-erc20`, `incorrect-equality`) are replaced by inline `// slither-disable-next-line` comments with rationale at the three sites
   (`GhostPaySweepRelayer._execute` x2, `PolicyAccount._consume`); Slither passes with `--fail-medium --exclude-informational --exclude-low` and no `--exclude`.
 - **A6. Audit tests.** `test_returnDataBomb_gasOverhead`/`..._destinationInflatesExecutorGas` became `test_returnDataBomb_*Bounded`; `test_EXPLOIT_duplicateLeafSubmitterPicksPermissiveLimit` became
-  `test_duplicateLeafSubmitterCannotPickPermissiveLimit`. All other `test_EXPLOIT_*` tests (M-01, M-03, L-02, L-03, L-05, I-03, I-04) are unchanged and document the residual behaviour.
+  `test_duplicateLeafSubmitterCannotPickPermissiveLimit`. M-03's counterfactual-freeze exploit assertion is now a regression proving deployment succeeds when the fee recipient is blacklisted and the caller can pay; M-01, L-02, L-03, L-05, I-03 and I-04 remain documented residuals.
   The test helper `PolicyBase._w` fills `limitLeafHash` with the fixture tree leaf of the token; `_wFor` binds it to an explicit proof.
 
 # GhostPayPolicyRouter (scheme 0x47500002, audit 02 M-02)

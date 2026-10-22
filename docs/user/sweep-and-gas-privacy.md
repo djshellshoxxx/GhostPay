@@ -5,7 +5,7 @@ A *sweep* moves everything from a one-time address to a wallet you choose. It is
 > **Read this first.**
 >
 > 1. **The payer can follow the stealth address to your destination.** The payer knows the one-time address they paid, and anyone can watch it on a block explorer. When you sweep to wallet `W`, the chain publicly shows `payer -> one-time address -> W`. If `W` is a wallet you use for other things, the payer (and everyone else) learns it is yours, and can see its balance and other incoming payments.
-> 2. **Use a fresh destination for every sweep** (for example a new address from a hardware wallet or an HD account you do not use for anything else). The app warns when the destination looks used, but a fresh destination is your responsibility. Do not reuse one destination for several customers.
+> 2. **Use a fresh destination for every sweep** (for example a new address from a hardware wallet or an HD account you do not use for anything else). The app recommends a fresh destination, but it does not check whether an address has been used. Do not reuse one destination for several customers.
 > 3. **The relayer sees what you are doing.** A relayer learns the one-time address, destination, token, amount, fee, your IP address (hashed for rate limiting) and the timing, and can refuse or delay your request. It cannot change the destination or amount you signed.
 > 4. **Gasless is not unlinkable.** Using a relayer removes the need to put gas into the one-time address; it does not remove the on-chain link from one-time address to destination. Funding the one-time address with gas from your own wallet is worse: it links that wallet to the address directly.
 

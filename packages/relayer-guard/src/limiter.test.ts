@@ -43,6 +43,14 @@ describe('TokenBucketLimiter', () => {
     expect(l.size).toBe(2);
   });
 
+  it('partitions key floods into a shared abuse-group budget', () => {
+    const { l } = limiter({ maxKeys: 8, maxPerGroup: 1, overflowBurst: 1 });
+    expect(l.take('client-a-1', 1, 'net-a').ok).toBe(true);
+    expect(l.take('client-a-2', 1, 'net-a')).toMatchObject({ ok: true, overflow: true });
+    expect(l.take('client-a-3', 1, 'net-a').ok).toBe(false);
+    expect(l.take('client-b-1', 1, 'net-b').ok).toBe(true);
+  });
+
   it('evicts only idle (fully refilled) buckets', () => {
     const { l, clock } = limiter({ maxKeys: 1 });
     l.take('a');
@@ -91,7 +99,10 @@ describe('TokenBucketLimiter', () => {
 describe('LossBudget (S3-06)', () => {
   function budget(maxKeys = 4): { b: LossBudget; clock: { t: number } } {
     const clock = { t: 0 };
-    const b = new LossBudget({ windowMs: 1000, perKeyLimit: 100n, globalLimit: 250n, maxKeys }, () => clock.t);
+    const b = new LossBudget(
+      { windowMs: 1000, perKeyLimit: 100n, globalLimit: 250n, maxKeys },
+      () => clock.t,
+    );
     return { b, clock };
   }
 
@@ -116,6 +127,18 @@ describe('LossBudget (S3-06)', () => {
     expect(b.allows('fresh')).toBe(false);
   });
 
+  it('loss keys in one abuse group share overflow accounting when its partition quota is full', () => {
+    const clock = { t: 0 };
+    const b = new LossBudget(
+      { windowMs: 1000, perKeyLimit: 100n, globalLimit: 1000n, maxKeys: 4, maxPerGroup: 1 },
+      () => clock.t,
+    );
+    expect(b.charge('owner-a', 60n, 'net-a')).toBe(60n);
+    expect(b.charge('owner-b', 40n, 'net-a')).toBe(40n);
+    expect(b.allows('owner-c', 'net-a')).toBe(false);
+    expect(b.allows('owner-z', 'net-b')).toBe(true);
+  });
+
   it('when full of active keys, newcomers share the overflow entry', () => {
     const { b, clock } = budget(1);
     b.charge('a', 10n);
@@ -128,11 +151,47 @@ describe('LossBudget (S3-06)', () => {
   });
 
   it('validates config and amounts', () => {
-    expect(() => new LossBudget({ windowMs: 0, perKeyLimit: 1n, globalLimit: 1n, maxKeys: 1 })).toThrow(GuardError);
-    expect(() => new LossBudget({ windowMs: 1, perKeyLimit: -1n, globalLimit: 1n, maxKeys: 1 })).toThrow(GuardError);
-    expect(() => new LossBudget({ windowMs: 1, perKeyLimit: 1n, globalLimit: 1n, maxKeys: 0 })).toThrow(GuardError);
+    expect(() => new LossBudget({ windowMs: 0, perKeyLimit: 1n, globalLimit: 1n, maxKeys: 1 })).toThrow(
+      GuardError,
+    );
+    expect(() => new LossBudget({ windowMs: 1, perKeyLimit: -1n, globalLimit: 1n, maxKeys: 1 })).toThrow(
+      GuardError,
+    );
+    expect(() => new LossBudget({ windowMs: 1, perKeyLimit: 1n, globalLimit: 1n, maxKeys: 0 })).toThrow(
+      GuardError,
+    );
     const b = new LossBudget({ windowMs: 1000, perKeyLimit: 1n, globalLimit: 1n, maxKeys: 1 });
     expect(() => b.charge('a', -1n)).toThrow(GuardError);
     expect(b.allows('a')).toBe(true);
+  });
+
+  it('reserves loss capacity atomically and settles or releases once', () => {
+    const { b } = budget();
+    const first = b.reserve('owner', 70n);
+    expect(first).not.toBeNull();
+    expect(b.reserve('owner', 40n)).toBeNull();
+    expect(first?.settle(30n)).toBe(true);
+    expect(first?.settle(0n)).toBe(false);
+    expect(b.allows('owner')).toBe(true);
+    const second = b.reserve('owner', 60n);
+    expect(second?.release()).toBe(true);
+    expect(second?.release()).toBe(false);
+    expect(b.reserve('owner', 70n)).not.toBeNull();
+  });
+
+  it('late reservation settlement is charged in the current window; release cannot reset it', () => {
+    const { b, clock } = budget();
+    const pending = b.reserve('owner', 80n);
+    expect(pending).not.toBeNull();
+    clock.t += 1000;
+    b.charge('other', 40n);
+    expect(pending?.release()).toBe(true);
+    expect(b.allows('other')).toBe(true);
+    const lateLoss = b.reserve('late', 10n);
+    expect(lateLoss).not.toBeNull();
+    clock.t += 1000;
+    b.charge('current', 240n);
+    expect(lateLoss?.settle(20n)).toBe(true);
+    expect(b.allows('fresh')).toBe(false);
   });
 });

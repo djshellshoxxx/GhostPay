@@ -12,8 +12,23 @@ const hexOf = (b: Uint8Array): string => Array.from(b, (x) => x.toString(16).pad
 const manifest = fakeManifest(84532);
 const KEY = checkpointKeyId('02aa', '03bb');
 const blockHash = (n: number): string => `0x${n.toString(16).padStart(64, '0')}`;
+const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 
 function chainWith(head: number, logs: RpcLog[]) {
+  const transfers: RpcLog[] = logs.flatMap((log) => {
+    const sender = log.topics?.[3];
+    const recipient = log.topics?.[2];
+    if (sender?.toLowerCase() !== `0x${FAKE_ROUTER.slice(2).toLowerCase().padStart(64, '0')}` || recipient === undefined) return [];
+    return [{
+      address: '0x036cbd53842c5426634e7929541ec2318f3dcf7e',
+      blockNumber: log.blockNumber,
+      topics: [TRANSFER_TOPIC, sender, recipient],
+      data: `0x${1_000_000n.toString(16).padStart(64, '0')}`,
+      blockHash: log.blockHash,
+      ...(log.transactionHash === undefined ? {} : { transactionHash: log.transactionHash }),
+      logIndex: `0x${(Number(BigInt(log.logIndex)) + 100).toString(16)}`,
+    }];
+  });
   return mockRpc(84532, (method, params) => {
     if (method === 'eth_blockNumber') return `0x${head.toString(16)}`;
     if (method === 'eth_getBlockByNumber') {
@@ -21,9 +36,11 @@ function chainWith(head: number, logs: RpcLog[]) {
       return { hash: blockHash(n), parentHash: blockHash(n - 1), number: `0x${n.toString(16)}` };
     }
     if (method === 'eth_getLogs') {
-      const f = params[0] as { fromBlock: bigint; toBlock: bigint };
-      return logs.filter((l) => BigInt(l.blockNumber) >= f.fromBlock && BigInt(l.blockNumber) <= f.toBlock);
+      const f = params[0] as { address?: string; fromBlock: bigint; toBlock: bigint };
+      const source = f.address?.toLowerCase() === '0x036cbd53842c5426634e7929541ec2318f3dcf7e' ? transfers : logs;
+      return source.filter((l) => BigInt(l.blockNumber) >= f.fromBlock && BigInt(l.blockNumber) <= f.toBlock);
     }
+    if (method === 'eth_call' || method === 'eth_getBalance') return '0x0';
     throw new Error(`unexpected ${method}`);
   });
 }
@@ -42,6 +59,7 @@ describe('runScan', () => {
   it('fetches public logs in the main thread and finds only my payments through the worker', async () => {
     const s = setup();
     const worker = new InlineWorker();
+    const client = chainWith(2500, s.logs);
     const progress: ScanProgress[] = [];
     const cp = new Map<number, unknown>();
     const checkpoints: CheckpointStore = { load: () => undefined, save: (id, _k, c) => cp.set(id, c), clear: () => undefined };
@@ -50,7 +68,7 @@ describe('runScan', () => {
     const res = await runScan({
       chain,
       manifest,
-      client: chainWith(2500, s.logs),
+      client,
       cursor: { nextBlock: 0n },
       spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY,
       viewingKey,
@@ -68,6 +86,7 @@ describe('runScan', () => {
     expect(res.scanned).toBe(3);
     expect(progress.at(-1)).toMatchObject({ caughtUp: true, matches: 2 });
     expect(cp.get(84532)).toBeDefined();
+    expect(client.calls.some((c) => c.method === 'eth_getBalance' || (c.method === 'eth_call' && (c.params[0] as { data?: string }).data?.startsWith('0x70a08231') === true))).toBe(false);
     expect(res.cursor.nextBlock).toBe(2501n);
     // The worker saw the viewing key once, then only public logs; it was ended and terminated; the local copy is wiped.
     expect(worker.received.filter((m) => m.type === 'start')).toHaveLength(1);
@@ -98,6 +117,20 @@ describe('runScan', () => {
     expect(worker.terminated).toBe(true);
   });
 
+  it('persists only the finalized replay tail after a deep reorg behind the old checkpoint', async () => {
+    const s = setup();
+    const saved: unknown[] = [];
+    const res = await runScan({
+      chain, manifest, client: chainWith(150, []), cursor: { nextBlock: 100n, last: { number: 99n, hash: blockHash(9_999) as `0x${string}` } },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY,
+      viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => new InlineWorker(),
+      signal: new AbortController().signal,
+      checkpoints: { load: () => undefined, save: (_id, _key, cursor) => saved.push(cursor), clear: () => undefined },
+    });
+    expect(res.cursor.nextBlock).toBe(151n);
+    expect(saved.at(-1)).toMatchObject({ nextBlock: 51n, last: { number: 50n, hash: blockHash(50) } });
+  });
+
   it('pages through truncated results (maxRequests per fetch) until caught up', async () => {
     const s = setup();
     const client = chainWith(120_000, s.logs); // 120 windows of 1000 blocks > 50 requests per fetch
@@ -123,6 +156,64 @@ describe('runScan', () => {
     const progress: ScanProgress[] = [];
     await runScan({ chain, manifest, client: chainWith(120_000, s.logs), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => new InlineWorker(), signal: new AbortController().signal, onProgress: (p) => progress.push(p), maxPages: 1 });
     expect(progress).toHaveLength(1);
+  });
+
+  it('enforces per-run announcement and match budgets without advancing over an unprocessed page', async () => {
+    const s = setup();
+    for (const limits of [{ maxAnnouncementsPerScan: 2 }, { maxMatchesPerScan: 1 }]) {
+      const worker = new InlineWorker();
+      const res = await runScan({
+        chain, manifest, client: chainWith(2500, s.logs), cursor: { nextBlock: 0n },
+        spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY,
+        viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => worker,
+        signal: new AbortController().signal, ...limits,
+      });
+      expect(res.limitReached).toBe(true);
+      expect(res.cursor.nextBlock).toBe(0n);
+      expect(res.matches).toEqual([]);
+      expect(worker.received.filter((m) => m.type === 'batch')).toHaveLength(limits.maxAnnouncementsPerScan === undefined ? 1 : 0);
+    }
+  });
+
+  it('deduplicates replay announcements for one address and ephemeral key before crediting', async () => {
+    const s = setup();
+    const replay: RpcLog = { ...s.mine.log, blockNumber: '0x79', blockHash: blockHash(121), logIndex: '0x5' };
+    const res = await runScan({
+      chain, manifest, client: chainWith(2500, [s.mine.log, replay]), cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal,
+    });
+    expect(res.matches).toHaveLength(1);
+    expect(res.matches[0]?.receipt).toBe('verified');
+  });
+  it('keeps a per-scan replay ledger across log pages', async () => {
+    const s = setup();
+    const replay: RpcLog = { ...s.mine.log, blockNumber: '0x458', blockHash: blockHash(1112), logIndex: '0x5', transactionHash: `0x${'ab'.repeat(32)}` };
+    const res = await runScan({
+      chain, manifest, client: chainWith(2500, [s.mine.log, replay]), cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal,
+    });
+    expect(res.matches).toHaveLength(1);
+    expect(res.matches[0]?.receipt).toBe('verified');
+  });
+  it('replaces an earlier direct replay with a later genuine router record across pages', async () => {
+    const s = setup();
+    const directTopics = [...s.mine.log.topics];
+    directTopics[3] = `0x${'99'.repeat(20).padStart(64, '0')}`;
+    const direct: RpcLog = { ...s.mine.log, topics: directTopics, blockNumber: '0x78', blockHash: blockHash(120), logIndex: '0x0', transactionHash: `0x${'aa'.repeat(32)}` };
+    const router: RpcLog = { ...s.mine.log, blockNumber: '0xc7a8', blockHash: blockHash(51_112), logIndex: '0x1', transactionHash: `0x${'bb'.repeat(32)}` };
+    const emitted: import('./scanClient').ScanMatch[] = [];
+    const res = await runScan({
+      chain, manifest, client: chainWith(52_000, [direct, router]), cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal, onMatch: (m) => emitted.push(m),
+    });
+    expect(res.matches).toHaveLength(1);
+    expect(res.matches[0]?.viaRouter).toBe(true);
+    expect(res.matches[0]?.receipt).toBe('verified');
+    expect(emitted).toHaveLength(2); // append, then replacement; UI consumers upsert by payment identity
+    expect(emitted.at(-1)?.viaRouter).toBe(true);
   });
 
   it('reports a worker that rejects the keys, and worker crashes', async () => {
@@ -256,7 +347,7 @@ describe('WEB-APP-04 / CHAIN-ADAPTERS-03: checkpoints', () => {
       onProgress: (p) => { if (p.nextBlock > 49_999n) forked = true; },
       onReorg: (to) => dropped.push(to),
     });
-    expect(dropped).toEqual([49_900n]); // last processed 49 999 - finalityDepth 100 + 1
+    expect(dropped).toEqual([0n]); // a deep reorg resets to genesis because one checkpoint cannot locate the fork safely
     expect(res.matches).toEqual([]);
   });
 });
@@ -329,18 +420,35 @@ describe('localCheckpointStore', () => {
       expect(byRouter?.receipt).toBe('verified');
       expect(direct?.receipt).toBe('claimed');
     });
-    it('verifies a direct announcement only when the stealth address holds the announced amount', async () => {
+    it('does not treat a direct announcement plus an existing balance as proof of payment', async () => {
       const s = setup();
       const base = chainWith(2500, s.logs);
       const rich = await run(s, withBalance(base, 10n ** 30n));
-      expect(rich.res.matches.find((m) => !m.viaRouter)?.receipt).toBe('verified');
+      expect(rich.res.matches.find((m) => !m.viaRouter)?.receipt).toBe('claimed');
       const poor = await run(s, withBalance(base, 1n));
       expect(poor.res.matches.find((m) => !m.viaRouter)?.receipt).toBe('claimed');
     });
-    it('marks matches inside finalityDepth as pending', async () => {
+    it('does not label a pre-final direct announcement as a payment', async () => {
       const s = setup();
       const { res } = await run(s, chainWith(2150, s.logs));
-      expect(res.matches.find((m) => !m.viaRouter)?.receipt).toBe('pending');
+      expect(res.matches.find((m) => !m.viaRouter)?.receipt).toBe('claimed');
+    });
+    it('marks evidence-backed router transfers inside finalityDepth as pending', async () => {
+      const s = setup();
+      const near = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(s.keys), block: 2100, index: 2, caller: FAKE_ROUTER });
+      const { res } = await run(s, chainWith(2150, [near.log]));
+      expect(res.matches[0]?.receipt).toBe('pending');
+    });
+    it('requires a matching token transfer for router metadata before showing received', async () => {
+      const s = setup();
+      const base = chainWith(2500, [s.mine.log]);
+      const badTransfer = { ...base, request: (method: string, params: readonly unknown[]) => {
+        if (method === 'eth_getLogs' && (params[0] as { address?: string }).address?.toLowerCase() === '0x036cbd53842c5426634e7929541ec2318f3dcf7e') return Promise.resolve([]);
+        return base.request(method, params);
+      } };
+      const { res } = await run(s, badTransfer);
+      expect(res.matches[0]?.viaRouter).toBe(true);
+      expect(res.matches[0]?.receipt).toBe('claimed');
     });
     it('records no discrepancy and advances the checkpoint when providers agree', async () => {
       const s = setup();
@@ -350,11 +458,42 @@ describe('localCheckpointStore', () => {
     });
     it('surfaces a hidden/forged log disagreement and withholds the checkpoint', async () => {
       const s = setup();
+      const primaryOnlyRouterLog = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(s.keys), block: 2300, index: 5, caller: FAKE_ROUTER });
       const seen: string[] = [];
-      const { res, cp } = await run(s, chainWith(2500, s.logs), { secondaryClient: chainWith(2500, [s.mine.log]), onDiscrepancy: (d) => seen.push(...d.map((x) => x.kind)) });
-      expect(res.discrepancies.map((d) => d.kind)).toEqual(['missing_in_secondary', 'missing_in_secondary']);
-      expect(seen).toHaveLength(2);
+      const emitted: string[] = [];
+      const { res, cp } = await run(s, chainWith(2500, s.logs), {
+        // This forged router-attributed record exists only on primary and would otherwise be labeled verified.
+        client: chainWith(2500, [...s.logs, primaryOnlyRouterLog.log]),
+        secondaryClient: chainWith(2500, [s.mine.log]),
+        onDiscrepancy: (d) => seen.push(...d.map((x) => x.kind)),
+        onMatch: (m) => emitted.push(m.announcement.id),
+      });
+      expect(res.discrepancies.map((d) => d.kind)).toEqual(['missing_in_secondary', 'missing_in_secondary', 'missing_in_secondary']);
+      expect(seen).toHaveLength(3);
+      // In particular, a primary-only router log must not become an actionable verified card.
+      expect(res.matches).toEqual([]);
+      expect(emitted).toEqual([]);
       expect(cp.get(84532)).toBeUndefined();
+    });
+    it('stops at a discrepant page so a later agreeing page cannot checkpoint past it', async () => {
+      const s = setup();
+      const disputed = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(s.keys), block: 2300, index: 5, caller: FAKE_ROUTER });
+      const primary = chainWith(100_000, [...s.logs, disputed.log]);
+      const secondary = chainWith(100_000, s.logs);
+      const cp = new Map<number, unknown>();
+      const res = await runScan({
+        chain, manifest, client: primary, cursor: { nextBlock: 0n },
+        spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY,
+        viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => new InlineWorker(),
+        signal: new AbortController().signal, secondaryClient: secondary,
+        checkpoints: { load: () => undefined, save: (id, _key, value) => cp.set(id, value), clear: () => undefined },
+      });
+      expect(res.discrepancies.length).toBeGreaterThan(0);
+      expect(res.cursor.nextBlock).toBe(0n);
+      expect(cp.size).toBe(0);
+      // The only primary log query must be the first bounded page. The runner must not
+      // continue to a later agreeing page and accidentally persist a cursor past the gap.
+      expect(primary.calls.filter((c) => c.method === 'eth_getLogs' && (c.params[0] as { address?: string }).address?.toLowerCase() === FAKE_ANNOUNCER.toLowerCase())).toHaveLength(50);
     });
   });
 });

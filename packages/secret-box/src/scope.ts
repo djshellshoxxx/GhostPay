@@ -19,9 +19,11 @@ export class SecretScope {
    * Registers a buffer for wiping at {@link close}.
    *
    * @returns The same buffer, for inline use: `const k = scope.track(derive())`.
-   * @throws SecretBoxError DISPOSED if the scope is already closed (the buffer is wiped first).
+   * @throws SecretBoxError DISPOSED if the scope is already closed (the buffer is wiped first);
+   *   INVALID_INPUT if `buffer` is not a `Uint8Array` (nothing is registered).
    */
   public track<T extends Uint8Array>(buffer: T): T {
+    if (!(buffer instanceof Uint8Array)) throw new SecretBoxError('INVALID_INPUT', 'track() needs a Uint8Array');
     if (this.closed) {
       wipe(buffer);
       throw new SecretBoxError('DISPOSED', 'scope is closed');
@@ -57,13 +59,34 @@ export class SecretScope {
     return box;
   }
 
-  /** Wipes every tracked buffer and disposes every tracked box. Idempotent. */
+  /**
+   * Wipes every tracked buffer and disposes every tracked box. Idempotent. Each entry is handled on
+   * its own, so one bad entry cannot leave the others live (audit L-1).
+   *
+   * @throws SecretBoxError INVALID_INPUT after everything else was cleaned, if some entry could not
+   *   be wiped.
+   */
   public close(): void {
     this.closed = true;
-    wipe(...this.buffers);
-    for (const b of this.boxes) b.dispose();
+    const { buffers, boxes } = this;
     this.buffers = [];
     this.boxes = [];
+    let failed = false;
+    for (const b of buffers) {
+      try {
+        wipe(b);
+      } catch {
+        failed = true;
+      }
+    }
+    for (const b of boxes) {
+      try {
+        b.dispose();
+      } catch {
+        failed = true;
+      }
+    }
+    if (failed) throw new SecretBoxError('INVALID_INPUT', 'scope held an entry that could not be wiped');
   }
 }
 
@@ -75,23 +98,39 @@ export class SecretScope {
  */
 export function withScope<T>(fn: (scope: SecretScope) => T): T {
   const scope = new SecretScope();
+  let result: T;
   try {
-    const r = fn(scope);
-    if (typeof r === 'object' && r !== null && typeof (r as { then?: unknown }).then === 'function') {
+    result = fn(scope);
+    if (typeof result === 'object' && result !== null && typeof (result as { then?: unknown }).then === 'function') {
       throw new SecretBoxError('ASYNC_IN_SYNC_USE', 'withScope() callback returned a promise; use withScopeAsync()');
     }
-    return r;
-  } finally {
+  } catch (e) {
+    closeQuietly(scope);
+    throw e;
+  }
+  scope.close();
+  return result;
+}
+
+/** Closes while another error is propagating, so the close report cannot mask it. */
+function closeQuietly(scope: SecretScope): void {
+  try {
     scope.close();
+  } catch {
+    /* the original error wins; everything else was still wiped */
   }
 }
 
 /** Async variant of {@link withScope}: the scope closes when `fn`'s promise settles. */
 export async function withScopeAsync<T>(fn: (scope: SecretScope) => Promise<T>): Promise<T> {
   const scope = new SecretScope();
+  let result: T;
   try {
-    return await fn(scope);
-  } finally {
-    scope.close();
+    result = await fn(scope);
+  } catch (e) {
+    closeQuietly(scope);
+    throw e;
   }
+  scope.close();
+  return result;
 }

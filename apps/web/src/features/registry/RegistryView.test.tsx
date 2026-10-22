@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
-import { buildRegisterKeysCall, ERC6538_REGISTRY_ADDRESS, metaAddressToRegistryBytes } from '@ghostpay/chain-adapters';
+import { buildRegisterKeysCall, ERC6538_ENTRY_TYPEHASH, ERC6538_REGISTRY_ADDRESS, metaAddressToRegistryBytes, erc6538RegistryAbi } from '@ghostpay/chain-adapters';
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { encodeAbiParameters } from 'viem/utils';
+import { decodeFunctionData, encodeAbiParameters, keccak256, toBytes } from 'viem/utils';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { clearSession, generateSession, getSessionPublic } from '../../lib/session';
+import { buildClearRegistryCall } from '../../lib/registry';
 import { SETTINGS_KEY } from '../../lib/settings';
 import type { WalletInfo } from '../../lib/wallet';
 import { MockWallet } from '../../test/mockWallet';
@@ -12,6 +13,7 @@ import { mockRpc } from '../../test/mockRpc';
 import { makeServices, renderApp } from '../../test/render';
 
 const SEPOLIA = 11155111;
+const TYPEHASH_CALL = keccak256(toBytes('ERC6538REGISTRY_ENTRY_TYPE_HASH()')).slice(0, 10);
 const walletInfo = (w: MockWallet): WalletInfo => ({ id: 'mock', name: 'Mock Wallet', kind: 'eip6963', provider: w });
 
 beforeEach(() => {
@@ -29,10 +31,13 @@ async function open(services = makeServices(), withRpc = true): Promise<ReturnTy
   return user;
 }
 
-function chain(wallet: MockWallet, code = '0x6001', stored = '0x') {
+function chain(wallet: MockWallet, code = '0x6001', stored = '0x', typehash = ERC6538_ENTRY_TYPEHASH) {
   return mockRpc(SEPOLIA, (method, params) => {
     if (method === 'eth_getCode') return code;
-    if (method === 'eth_call') return stored;
+    if (method === 'eth_call') {
+      const call = params[0] as { data: string };
+      return call.data === TYPEHASH_CALL ? typehash : stored === '0x' ? encodeAbiParameters([{ type: 'bytes' }], ['0x']) : stored;
+    }
     if (method === 'eth_getTransactionByHash') {
       const s = wallet.sent;
       return s === undefined ? null : { hash: params[0], from: s['from'], to: s['to'], input: s['data'], value: s['value'], chainId: `0x${SEPOLIA.toString(16)}` };
@@ -58,7 +63,7 @@ describe('Registry view', () => {
     await user.click(screen.getByRole('checkbox'));
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
-    await user.click(await screen.findByRole('button', { name: 'Review transaction' }));
+    await user.click(await screen.findByRole('button', { name: 'Review publish transaction' }));
     expect(screen.getAllByText(ERC6538_REGISTRY_ADDRESS).length).toBeGreaterThan(0);
     expect(wallet.sent).toBeUndefined();
     await user.click(screen.getByRole('button', { name: 'Publish to registry' }));
@@ -76,7 +81,7 @@ describe('Registry view', () => {
     await user.click(screen.getByRole('checkbox'));
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
-    await user.click(await screen.findByRole('button', { name: 'Review transaction' }));
+    await user.click(await screen.findByRole('button', { name: 'Review publish transaction' }));
     await user.click(screen.getByRole('checkbox'));
     expect(screen.queryByRole('button', { name: 'Publish to registry' })).toBeNull();
   });
@@ -88,10 +93,42 @@ describe('Registry view', () => {
     await user.click(screen.getByRole('checkbox'));
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
-    await user.click(await screen.findByRole('button', { name: 'Review transaction' }));
-    expect((await screen.findByRole('alert')).textContent).toMatch(/CHAIN_DISABLED|unavailable|disabled|no code/i);
+    await user.click(await screen.findByRole('button', { name: 'Review publish transaction' }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(/DEPLOYMENT_UNVERIFIED/);
     expect(screen.queryByRole('button', { name: 'Publish to registry' })).toBeNull();
     expect(wallet.sent).toBeUndefined();
+  });
+
+  it('requires the expected ERC-6538 type hash before registry use', async () => {
+    generateSession();
+    const wallet = new MockWallet({ chainId: SEPOLIA });
+    const rpc = chain(wallet, '0x6001', '0x', `0x${'11'.repeat(32)}`);
+    const user = await open(makeServices({ createRpc: () => Promise.resolve(rpc), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('button', { name: 'Find wallets' }));
+    await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+    await user.click(await screen.findByRole('button', { name: 'Review publish transaction' }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(/DEPLOYMENT_UNVERIFIED/);
+    expect(wallet.sent).toBeUndefined();
+  });
+
+  it('reviews and clears the current entry through registerKeys(1, empty bytes)', async () => {
+    generateSession();
+    const wallet = new MockWallet({ chainId: SEPOLIA });
+    const user = await open(makeServices({ createRpc: () => Promise.resolve(chain(wallet)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('button', { name: 'Find wallets' }));
+    await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+    await user.click(await screen.findByRole('button', { name: 'Review clear transaction' }));
+    expect(screen.getByText(/clear current entry/)).toBeTruthy();
+    expect(wallet.sent).toBeUndefined();
+    await user.click(screen.getByRole('button', { name: 'Clear registry entry' }));
+    expect(await screen.findByText(/Clear submitted: .*public chain history remains visible/)).toBeTruthy();
+    const tx = wallet.sent as { readonly data: `0x${string}` };
+    const decoded = decodeFunctionData({ abi: erc6538RegistryAbi, data: tx.data });
+    expect(decoded.functionName).toBe('registerKeys');
+    expect(decoded.args).toEqual([1n, '0x']);
+    expect(tx.data).toBe(buildClearRegistryCall().data);
   });
 
   it('requires an RPC endpoint', async () => {
@@ -101,7 +138,7 @@ describe('Registry view', () => {
     await user.click(screen.getByRole('checkbox'));
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
-    await user.click(await screen.findByRole('button', { name: 'Review transaction' }));
+    await user.click(await screen.findByRole('button', { name: 'Review publish transaction' }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/RPC endpoint/);
   });
 

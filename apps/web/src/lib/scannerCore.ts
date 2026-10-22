@@ -18,11 +18,14 @@ export interface WireLog {
   readonly stealthAddress: string;
   readonly ephemeralPublicKey: string;
   readonly metadata: string;
+  /** Skip the one-byte view tag as an opt-in recovery scan (router announcements only). */
+  readonly skipTag?: boolean;
 }
 
 export interface WireMatch {
   readonly id: string;
   readonly stealthAddress: string;
+  readonly tagMatches: boolean;
 }
 
 export type ToWorker =
@@ -75,9 +78,9 @@ export class ScanSession {
     for (let i = 0; i < logs.length; i++) {
       if (this.cancelled) break;
       const log = logs[i] as WireLog;
-      const hit = checkAnnouncement(log, secret, this.spend);
+      const hit = checkAnnouncement(log, secret, this.spend, log.skipTag === true ? { ignoreViewTag: true } : {});
       this.total++;
-      if (hit.matches) out.push({ id: log.id, stealthAddress: hit.stealthAddress });
+      if (hit.matches) out.push({ id: log.id, stealthAddress: hit.stealthAddress, tagMatches: hit.tagMatches ?? true });
       if (onProgress !== undefined && i % 128 === 127) onProgress(this.total);
     }
     return out;

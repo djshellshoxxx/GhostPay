@@ -1,7 +1,8 @@
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
-import { ed25519 } from '@noble/curves/ed25519.js';
-import { manifestSigningBytes, type ReleaseKey, type RpcClient } from '@ghostpay/chain-adapters';
+import { secp256k1 } from '@noble/curves/secp256k1.js';
+import { sha256 } from '@noble/hashes/sha2.js';
+import { loadDeployment, manifestDigest, manifestSigningBytes, verifyTextManifestSignature, type ReleaseKey, type RpcClient } from '@ghostpay/chain-adapters';
 import { keccak256 } from 'viem';
 import { mkdtempSync, readFileSync, readdirSync } from 'node:fs';
 import { createServer } from 'node:http';
@@ -27,6 +28,16 @@ const MANIFEST = JSON.stringify({
   bytecodeHashes: { router: keccak256(CODE.router), sweepRelayer: keccak256(CODE.sweep) },
   date: '2026-10-21T00:00:00Z',
 });
+const TEST_SK = new Uint8Array(32).fill(7);
+const TEST_KEY = Array.from(secp256k1.getPublicKey(TEST_SK, true), (byte) => byte.toString(16).padStart(2, '0')).join('');
+function signManifest(text: string, privateKey = TEST_SK): string {
+  const manifestChain = JSON.parse(text) as { chainId: number };
+  const manifest = loadDeployment(text, manifestChain.chainId);
+  const digest = Uint8Array.from(manifestDigest(manifest).slice(2).match(/../g) ?? [], (byte) => parseInt(byte, 16));
+  const signature = `0x${Array.from(secp256k1.sign(digest, privateKey, { prehash: false, lowS: true }), (byte) => byte.toString(16).padStart(2, '0')).join('')}`;
+  return JSON.stringify({ ...(JSON.parse(text) as Record<string, unknown>), signature });
+}
+const SIGNED_MANIFEST = signManifest(MANIFEST);
 const CONFIG = (over: Record<string, unknown> = {}): string =>
   JSON.stringify({
     chains: [{ chainId: CHAIN, rpcUrlEnvs: ['RPC_A', 'RPC_B'], manifestFile: '/m/84532.json' }],
@@ -46,7 +57,7 @@ interface Rig {
 }
 
 function rig(opts: { files?: Record<string, string>; handler?: ReturnType<typeof healthy>; post?: boolean; lie?: boolean } = {}): Rig {
-  const files = new Map<string, string>(Object.entries({ '/m/84532.json': MANIFEST, '/cfg.json': CONFIG(), ...opts.files }));
+  const files = new Map<string, string>(Object.entries({ '/m/84532.json': SIGNED_MANIFEST, '/cfg.json': CONFIG(), ...opts.files }));
   const r: Rig = { files, out: [], err: [], posts: [], now: 1_900_000_000_000, deps: {} };
   let n = 0;
   (r as { deps: Partial<CliDeps> }).deps = {
@@ -67,6 +78,7 @@ function rig(opts: { files?: Record<string, string>; handler?: ReturnType<typeof
     now: () => r.now,
     stdout: (l) => r.out.push(l),
     stderr: (l) => r.err.push(l),
+    releaseKeys: [TEST_KEY],
   };
   return r;
 }
@@ -179,31 +191,40 @@ describe('runCli', () => {
     expect(wrong.err.join('\n')).not.toContain('key-a');
   });
 
-  it('authenticates manifests with the release key before trusting them (CHAIN-ADAPTERS-05), fail closed', async () => {
-    const sk = new Uint8Array(32).fill(7);
-    const releaseKey: ReleaseKey = { alg: 'ed25519', publicKey: `0x${Buffer.from(ed25519.getPublicKey(sk)).toString('hex')}` };
-    const sign = (text: string, k: Uint8Array): string => {
-      const signature = `0x${Buffer.from(ed25519.sign(manifestSigningBytes(text), k)).toString('hex')}`;
-      return JSON.stringify({ ...(JSON.parse(text) as Record<string, unknown>), signature });
-    };
-    // pinned key + unsigned or forged manifest: refuse
-    const unsigned = rig();
-    expect(await runCli(['--config', '/cfg.json'], ENV, { ...unsigned.deps, releaseKey })).toBe(3);
+  it('authenticates structured manifest digests with configured release keys and fails closed', async () => {
+    const unsigned = rig({ files: { '/m/84532.json': MANIFEST } });
+    expect(await runCli(['--config', '/cfg.json'], ENV, { ...unsigned.deps, releaseKeys: [TEST_KEY] })).toBe(3);
     expect(unsigned.err.join('\n')).toContain('signature');
-    const forged = rig({ files: { '/m/84532.json': sign(MANIFEST, new Uint8Array(32).fill(9)) } });
-    expect(await runCli(['--config', '/cfg.json'], ENV, { ...forged.deps, releaseKey })).toBe(3);
+    const forged = rig({ files: { '/m/84532.json': signManifest(MANIFEST, new Uint8Array(32).fill(9)) } });
+    expect(await runCli(['--config', '/cfg.json'], ENV, { ...forged.deps, releaseKeys: [TEST_KEY] })).toBe(3);
+    const legacySk = new Uint8Array(32).fill(12);
+    const legacyPk = Array.from(secp256k1.getPublicKey(legacySk, true), (byte) => byte.toString(16).padStart(2, '0')).join('');
+    const legacyKey: ReleaseKey = { alg: 'secp256k1', publicKey: `0x${legacyPk}` };
+    const legacySignature = `0x${Array.from(secp256k1.sign(sha256(manifestSigningBytes(MANIFEST)), legacySk, { prehash: false, lowS: true }), (byte) => byte.toString(16).padStart(2, '0')).join('')}`;
+    const legacyText = JSON.stringify({ ...(JSON.parse(MANIFEST) as Record<string, unknown>), signature: legacySignature });
+    expect(verifyTextManifestSignature(legacyText, { testnet: true, key: legacyKey }).trust).toBe('signed');
+    const legacy = rig({ files: { '/m/84532.json': legacyText } });
+    expect(await runCli(['--config', '/cfg.json'], ENV, { ...legacy.deps, releaseKeys: [TEST_KEY] })).toBe(3);
     // properly signed manifest is accepted
-    const ok = rig({ files: { '/m/84532.json': sign(MANIFEST, sk) } });
-    expect(await runCli(['--config', '/cfg.json', '--dry-run'], ENV, { ...ok.deps, releaseKey })).toBe(0);
+    const ok = rig({ files: { '/m/84532.json': SIGNED_MANIFEST } });
+    expect(await runCli(['--config', '/cfg.json', '--dry-run'], ENV, { ...ok.deps, releaseKeys: [TEST_KEY] })).toBe(0);
     // mainnet manifest with no release key pinned: refused
     const main = rig({
       files: {
         '/cfg.json': CONFIG({ chains: [{ chainId: 1, rpcUrlEnvs: ['RPC_A'], manifestFile: '/m/1.json' }] }),
-        '/m/1.json': MANIFEST.replace('84532', '1'),
+        '/m/1.json': signManifest(MANIFEST.replace('84532', '1')),
       },
     });
-    expect(await runCli(['--config', '/cfg.json'], ENV, main.deps)).toBe(3);
+    expect(await runCli(['--config', '/cfg.json'], ENV, { ...main.deps, releaseKeys: [] })).toBe(3);
     expect(main.err.join('\n')).toContain('signature');
+  });
+
+  it('parses only bounded compressed release keys from the environment', async () => {
+    const invalid = rig();
+    const fromEnv = await runCli(['--config', '/cfg.json', '--dry-run'], { ...ENV, GHOSTPAY_RELEASE_PUBKEYS: TEST_KEY }, { ...invalid.deps, releaseKeys: undefined });
+    expect(fromEnv, invalid.err.join('\n')).toBe(0);
+    expect(await runCli(['--config', '/cfg.json'], { ...ENV, GHOSTPAY_RELEASE_PUBKEYS: 'bad' }, { ...invalid.deps, releaseKeys: undefined })).toBe(3);
+    expect(invalid.err.join('\n')).toContain('GHOSTPAY_RELEASE_PUBKEYS');
   });
 
   it('checks release files against SHA256SUMS through the injected fetch', async () => {
@@ -211,7 +232,7 @@ describe('runCli', () => {
     const sum = createHash('sha256').update(index).digest('hex');
     const files = { '/cfg.json': CONFIG({ release: { mirrors: ['https://pay.example.org'], sha256sumsFile: '/SHA256SUMS', files: ['index.html'] } }), '/SHA256SUMS': `${sum}  index.html\n` };
     const ok = rig({ files });
-    const fetchOk = (body: string): FetchLike => (url) => Promise.resolve({ ok: true, status: 200, arrayBuffer: () => Promise.resolve(new TextEncoder().encode(url.includes('deployments') ? MANIFEST : body).buffer) });
+    const fetchOk = (body: string): FetchLike => (url) => Promise.resolve({ ok: true, status: 200, arrayBuffer: () => Promise.resolve(new TextEncoder().encode(url.includes('deployments') ? SIGNED_MANIFEST : body).buffer) });
     expect(await runCli(['--config', '/cfg.json'], ENV, { ...ok.deps, fetchFile: fetchOk(index)  })).toBe(0);
     const tampered = rig({ files });
     expect(await runCli(['--config', '/cfg.json'], ENV, { ...tampered.deps, fetchFile: fetchOk('evil')  })).toBe(2);

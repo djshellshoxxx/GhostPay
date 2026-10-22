@@ -160,9 +160,9 @@ describe('S3-16: tag vault record binding', () => {
 describe('S3-14: second provider setting', () => {
   it('keeps valid secondary RPC URLs and drops junk', () => {
     const s = sanitizeSettings({ rpcUrls: { '84532': 'https://a.test' }, secondaryRpcUrls: { '84532': 'https://b.test', '1': 'http://insecure.test', x: 'https://c.test', '5': 7 } });
-    expect(s.secondaryRpcUrls).toEqual({ '84532': 'https://b.test/' });
-    expect(DEFAULT_SETTINGS.secondaryRpcUrls).toEqual({});
-    expect(sanitizeSettings(null).secondaryRpcUrls).toEqual({});
+    expect(s.rpcUrlsSecondary).toEqual({ '84532': 'https://b.test/' });
+    expect(DEFAULT_SETTINGS.rpcUrlsSecondary).toEqual({});
+    expect(sanitizeSettings(null).rpcUrlsSecondary).toEqual({});
   });
 });
 

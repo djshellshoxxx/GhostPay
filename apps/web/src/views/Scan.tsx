@@ -2,6 +2,7 @@ import { findChain, tokensForChain, type RpcClient } from '@ghostpay/chain-adapt
 import { unsafeRevealSecret } from '@ghostpay/core-crypto';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../components/Common';
+import { ReceiptPanel } from '../components/ReceiptPanel';
 import { useManifest } from '../components/Disclosure';
 import { verifyManifestState } from '../lib/manifest';
 import { formatUnits } from '../lib/format';
@@ -18,10 +19,12 @@ export function Scan(): ReactNode {
   const [chainId, setChainId] = useState<number>(services.chains[0]?.chainId ?? 84532);
   const [start, setStart] = useState('');
   const [resume, setResume] = useState(true);
+  const [deepScan, setDeepScan] = useState(false);
   const [running, setRunning] = useState(false);
   const [progress, setProgress] = useState<ScanProgress | undefined>(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
   const [done, setDone] = useState<string | undefined>(undefined);
+  const [scanOwner, setScanOwner] = useState<{ readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
   const abort = useRef<AbortController | undefined>(undefined);
   const manifest = useManifest(chainId);
   const keyId = app.session === undefined ? undefined : checkpointKeyId(app.session.spendingPublicKey, app.session.viewingPublicKey);
@@ -72,6 +75,7 @@ export function Scan(): ReactNode {
           return;
         }
         const secrets = requireSession();
+        setScanOwner({ keyId, signerPublicKey: app.session?.signerPublicKey ?? '' });
         const viewingKey = unsafeRevealSecret(secrets.keys.viewingSecret);
         const ctl = new AbortController();
         abort.current = ctl;
@@ -85,6 +89,7 @@ export function Scan(): ReactNode {
           cursor,
           spendingPublicKeyHex: app.session?.spendingPublicKey ?? '',
           keyId,
+          deep: deepScan,
           ...(rpc2 === undefined ? {} : { secondaryClient: rpc2 }),
           viewingKey,
           createWorker: services.createScanWorker,
@@ -96,14 +101,18 @@ export function Scan(): ReactNode {
             app.setMatches([...found]);
           },
           onMatch: (m) => {
-            found.push(m);
+            const identity = `${m.stealthAddress.toLowerCase()}|${m.announcement.ephemeralPublicKey.toLowerCase()}`;
+            const prior = found.findIndex((x) => `${x.stealthAddress.toLowerCase()}|${x.announcement.ephemeralPublicKey.toLowerCase()}` === identity);
+            if (prior < 0) found.push(m);
+            else found[prior] = m;
             app.setMatches([...found]);
           },
         });
         if (res.discrepancies.length > 0) setError(`The second RPC provider disagreed on ${String(res.discrepancies.length)} check(s). Results may be incomplete or forged; checkpoints were not advanced. Try another provider.`);
+        if (res.limitReached) setError(`This scan reached its safety limit. It stopped before processing the next page; resume from block ${res.cursor.nextBlock.toString()} to continue.`);
         const note = ` Started at block ${cursor.nextBlock.toString()}${resume && checkpoint !== undefined ? ' (from checkpoint)' : ''}.${rpc2 === undefined ? ' Only one RPC was used: add a second RPC in Settings to cross-check it.' : ''}`;
-        setDone((ctl.signal.aborted ? `Cancelled. ${String(res.scanned)} announcements checked.` : `Finished. ${String(res.scanned)} announcements checked, ${String(res.matches.length)} payments found.`) + note);
-        app.announce('Scan finished.');
+        setDone((ctl.signal.aborted ? `Cancelled. ${String(res.scanned)} announcements checked.` : res.limitReached ? `Stopped at the safety limit. ${String(res.scanned)} announcements checked, ${String(res.matches.length)} payments found.` : `Finished. ${String(res.scanned)} announcements checked, ${String(res.matches.length)} payments found.`) + note);
+        app.announce(res.limitReached ? 'Scan stopped at the safety limit.' : 'Scan finished.');
       } catch (e) {
         setError(e instanceof Error && e.message === 'manifest' ? 'Payments are disabled on this chain: no deployment manifest is loaded, so the announcer address is unknown.' : userMessage(e));
       } finally {
@@ -118,6 +127,9 @@ export function Scan(): ReactNode {
       <p>
         Announcements are downloaded from your RPC and checked inside a dedicated worker. The worker gets public logs and your viewing key for this scan only; it cannot reach the network.
       </p>
+      <Notice kind="warn" title="RPC privacy">
+        Your RPC provider sees your IP address, scan ranges, and logs. Verifying a router payment also requests token transfer logs filtered for the one-time address, or the transaction receipt; these requests can reveal which public announcements matched your keys. A configured second provider sees the same verification evidence. Use trusted private RPC providers or your own nodes if this matters to you.
+      </Notice>
       <div className="stack">
         <Field label="Chain">
           {(id) => (
@@ -139,6 +151,11 @@ export function Scan(): ReactNode {
             <label htmlFor="resume">Resume from checkpoint</label>
           </div>
         )}
+        <div className="check">
+          <input id="deep-scan" type="checkbox" checked={deepScan} onChange={(e) => { setDeepScan(e.target.checked); }} disabled={running} />
+          <label htmlFor="deep-scan">Deep scan (also check wrong view tags)</label>
+        </div>
+        {deepScan && <Notice kind="warn">Deep scan spends substantially more CPU per router announcement. It still verifies the full stealth address and marks incorrect view tags for review.</Notice>}
         <div className="actions">
           <button type="button" className="btn btn-primary" onClick={begin} disabled={running}>Start scan</button>
           <button type="button" className="btn" onClick={() => { abort.current?.abort(); }} disabled={!running}>Cancel</button>
@@ -150,13 +167,17 @@ export function Scan(): ReactNode {
         </div>
       </div>
       <div role="status" aria-live="polite" className="status">
-        {progress !== undefined && `Scanned up to block ${progress.nextBlock.toString()}; ${String(progress.scanned)} announcements checked, ${String(progress.matches)} payments found${progress.skipped > 0 ? `, ${String(progress.skipped)} malformed logs skipped` : ''}.`}
+        {progress !== undefined && `Scanned up to block ${progress.nextBlock.toString()}; ${String(progress.scanned)} announcements checked, ${String(progress.matches)} payments found${progress.skipped > 0 ? `, ${String(progress.skipped)} malformed logs skipped` : ''}${progress.limitReached ? '; safety limit reached' : ''}.`}
         {running && progress === undefined && 'Starting…'}
       </div>
       {done !== undefined && <Notice kind="ok">{done}</Notice>}
       {error !== undefined && <Notice kind="error">{error}</Notice>}
 
-      <Matches chainId={chainId} />
+      <Matches
+        chainId={chainId}
+        sellerSignerPublicKey={app.session.signerPublicKey}
+        receiptSignerPublicKey={scanOwner !== undefined && scanOwner.keyId === keyId ? scanOwner.signerPublicKey : undefined}
+      />
       <Tags chainId={chainId} />
     </section>
   );
@@ -169,7 +190,7 @@ function describe(m: ScanMatch, chainId: number): string {
   return t === undefined ? `${m.metadata.netAmount.toString()} units of unlisted token ${m.metadata.token}` : `${formatUnits(m.metadata.netAmount, t.decimals)} ${t.symbol}`;
 }
 
-function Matches(props: { readonly chainId: number }): ReactNode {
+function Matches(props: { readonly chainId: number; readonly sellerSignerPublicKey: string; readonly receiptSignerPublicKey: string | undefined }): ReactNode {
   const app = useApp();
   const services = useServices();
   const [tags, setTags] = useState<Readonly<Record<string, string>>>({});
@@ -214,7 +235,8 @@ function Matches(props: { readonly chainId: number }): ReactNode {
               <p>
                 <strong>{m.receipt === 'verified' ? describe(m, props.chainId) : `Claimed, not confirmed: ${describe(m, props.chainId)}`}</strong> in block {m.announcement.blockNumber.toString()}
                 {m.viaRouter ? '' : ' (paid directly, no GhostPay fee)'}
-                {m.receipt === 'claimed' && ' - the announcement is unverified (no matching funds found at the one-time address); do not release goods.'}
+                {!m.tagMatches && ' (found by deep scan: announced view tag did not match)'}
+                {m.receipt === 'claimed' && (m.viaRouter ? ' - this announcement could not be verified as a payment; do not release goods based on it.' : ' - this is a direct announcement claim; an existing balance does not prove this payment occurred, so do not release goods based on it.')}
                 {m.receipt === 'pending' && ' - waiting for enough confirmations.'}
               </p>
               <p>One-time address: <Mono>{m.stealthAddress}</Mono></p>
@@ -245,6 +267,9 @@ function Matches(props: { readonly chainId: number }): ReactNode {
                     Save tag
                   </button>
                 </div>
+              )}
+              {m.receipt === 'verified' && m.metadata !== undefined && props.receiptSignerPublicKey !== undefined && props.receiptSignerPublicKey === props.sellerSignerPublicKey && (
+                <ReceiptPanel match={m} sellerSignerPublicKey={props.receiptSignerPublicKey} />
               )}
               <button type="button" className="btn btn-primary" onClick={() => { app.selectForSweep({ match: m, chainId: props.chainId }); app.setView('sweep'); }}>
                 Sweep this payment

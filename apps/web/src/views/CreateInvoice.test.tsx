@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { parseFragment } from '@ghostpay/invoice-schema';
+import { openFragment, parseFragment } from '@ghostpay/invoice-schema';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -39,7 +39,7 @@ describe('Create invoice', () => {
     await user.clear(screen.getByLabelText('Item 1 unit price'));
     await user.type(screen.getByLabelText('Item 1 unit price'), '25.50');
     await user.click(screen.getByRole('button', { name: 'Create invoice link' }));
-    const link = await screen.findByLabelText<HTMLTextAreaElement>('Link');
+    const link = await screen.findByLabelText<HTMLTextAreaElement>('Link', {}, { timeout: 30_000 });
     expect(link.value.startsWith('https://app.test/#gpi=v1.')).toBe(true);
     const parsed = await parseFragment(link.value.slice('https://app.test/'.length));
     expect(parsed.invoice.lineItems[0]?.description).toBe('Design work');
@@ -47,6 +47,7 @@ describe('Create invoice', () => {
     expect(parsed.verification.signatureValid).toBe(true);
     expect(screen.getByText('Bearer link')).toBeTruthy();
     expect(screen.getByRole('img', { name: 'QR code containing the invoice link' })).toBeTruthy();
+    expect(screen.getByText('SHARE').closest('section')?.getAttribute('data-qr-kind')).toBe('shareable');
     expect(screen.getByRole('button', { name: 'Copy link' })).toBeTruthy();
     expect(fetchFn).not.toHaveBeenCalled();
   });
@@ -65,7 +66,7 @@ describe('Create invoice', () => {
     await user.clear(screen.getByLabelText('Tax rate (%)'));
     await user.type(screen.getByLabelText('Tax rate (%)'), '10');
     await user.type(screen.getByLabelText(/Memo/), 'hello');
-    await user.click(screen.getByLabelText('Encrypt line items and memo inside the link'));
+    await user.click(screen.getByLabelText('Encrypt line items and memo with a key included in the link'));
     await user.click(screen.getByRole('button', { name: 'Remove item 2' }));
     await user.click(screen.getByRole('button', { name: 'Add item' }));
     await user.type(screen.getByLabelText('Item 2 description'), 'C');
@@ -77,8 +78,30 @@ describe('Create invoice', () => {
     expect(parsed.invoice.fiat.minorUnits).toBe('330');
     expect(parsed.invoice.lineItems.map((l) => l.description)).toEqual(['A', 'C']);
     expect(parsed.invoice.memo).toBe('hello');
-    expect(screen.getByText(/encryption key is inside it/)).toBeTruthy();
+    expect(screen.getByText(/encryption key is inside the link/)).toBeTruthy();
+    expect(screen.getByText('PRIVATE LINK').closest('section')?.getAttribute('data-qr-kind')).toBe('bearer');
   });
+
+  it('protects the whole invoice with an out-of-band passphrase', async () => {
+    generateSession();
+    const user = await open();
+    const passphrase = 'cedar orbit velvet lantern meadow';
+    await user.type(screen.getByLabelText('Token amount'), '25.5');
+    await user.type(screen.getByLabelText('Item 1 description'), 'Private design work');
+    await user.type(screen.getByLabelText('Item 1 unit price'), '25.50');
+    await user.click(screen.getByLabelText('Protect the entire invoice with a passphrase'));
+    await user.type(screen.getByLabelText('Invoice passphrase (at least 14 characters)'), passphrase);
+    await user.type(screen.getByLabelText('Repeat invoice passphrase'), passphrase);
+    await user.click(screen.getByRole('button', { name: 'Create invoice link' }));
+    const link = await screen.findByLabelText<HTMLTextAreaElement>('Link', {}, { timeout: 30_000 });
+    const fragment = link.value.slice('https://app.test/'.length);
+    expect(await openFragment(fragment)).toMatchObject({ status: 'needsPassphrase' });
+    expect((await openFragment(fragment, { passphrase })).status).toBe('ok');
+    expect(screen.getByText(/contents are protected by a passphrase/)).toBeTruthy();
+    expect(screen.getByText('SHARE').closest('section')?.getAttribute('data-qr-kind')).toBe('shareable');
+    expect(screen.getByLabelText<HTMLInputElement>('Invoice passphrase (at least 14 characters)').value).toBe('');
+  // Exercise real encryption and decryption; V8 coverage adds substantial scrypt overhead.
+  }, 180_000);
 
   it('shows validation errors in an alert and no link', async () => {
     generateSession();

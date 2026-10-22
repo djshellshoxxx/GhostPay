@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<meta name="referrer" content="no-referrer">
+<title>GhostPay POS example</title>
+<link rel="stylesheet" href="pos.css">
+</head>
+<body>
+<h1>GhostPay POS terminal (example)</h1>
+<p>Paste a payment link created by your backend, enter the amount, start the sale. The link disappears when the sale ends.</p>
+<label for="amount">Amount due</label><input id="amount" inputmode="decimal" autocomplete="off" placeholder="12.50">
+<label for="currency">Currency</label><input id="currency" value="USD" maxlength="3" autocomplete="off">
+<label for="link">Payment link (https://...#gpi=v1....)</label><input id="link" autocomplete="off" spellcheck="false">
+<button id="start" type="button">Start sale</button>
+<div id="error" role="alert"></div>
+<div id="status" data-status="idle">IDLE</div>
+<div id="amounts"></div><div id="countdown"></div>
+<div id="qr"></div>
+<div id="linkText"></div>
+<hr>
+<p>Demo only: record a payment by hand. A real terminal gets payment events from your server.</p>
+<label for="received-amount">Received amount</label><input id="received-amount" inputmode="decimal" autocomplete="off">
+<button id="received" type="button" disabled>Payment received</button>
+<button id="cancel" type="button" disabled>Cancel sale</button>
+<script src="vendor/qrcode.js"></script>
+<script type="module" src="pos.js"></script>
+</body>
+</html>

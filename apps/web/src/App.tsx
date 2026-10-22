@@ -3,7 +3,7 @@ import type { RpcClient } from '@ghostpay/chain-adapters';
 import { clearFragment, readInvoiceFragment } from './lib/fragment';
 import type { ScanMatch } from './lib/scanClient';
 import { useServices } from './lib/services';
-import { getSessionPublic, subscribeSession } from './lib/session';
+import { clearSession, getSessionPublic, subscribeSession } from './lib/session';
 import { loadSettings, saveSettings, type Settings as SettingsData } from './lib/settings';
 import { AppContext, VIEW_LABELS, type AppState, type ViewId } from './state';
 import { BtcView } from './features/btc/BtcView';
@@ -92,7 +92,8 @@ export function App(): ReactNode {
       if (timer !== undefined) clearTimeout(timer);
       timer = setTimeout(() => {
         services.vault.lock();
-        setLive('Local tags locked after inactivity.');
+        clearSession();
+        setLive('Seller keys and local tags locked after inactivity.');
       }, settings.lockTimeoutMin * 60_000);
     };
     arm();

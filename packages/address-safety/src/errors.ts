@@ -11,7 +11,9 @@ export type ReasonCode =
   | 'private_use'
   | 'tag_character'
   | 'control_character'
-  | 'unpaired_surrogate';
+  | 'unpaired_surrogate'
+  | 'native_placeholder'
+  | 'zero_address';
 
 /** A rejection result (returned, not thrown, by parse-style functions). */
 export interface Reason {

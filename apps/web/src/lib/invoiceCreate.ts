@@ -11,6 +11,7 @@ import {
 import { UserFacingError } from './errors';
 import { fiatDecimals, parseUnits, taxFor } from './format';
 import { getSessionPublic, requireSession } from './session';
+import { passphraseProblem } from './keystore';
 
 export interface LineItemInput {
   readonly description: string;
@@ -35,6 +36,8 @@ export interface InvoiceForm {
   readonly maxSlippageBps: number;
   readonly memo: string;
   readonly encrypt: boolean;
+  /** Protect the whole invoice with a secret shared out of band. */
+  readonly passphrase?: string;
 }
 
 export interface CreatedInvoice {
@@ -42,6 +45,7 @@ export interface CreatedInvoice {
   readonly fragment: string;
   readonly link: string;
   readonly encrypted: boolean;
+  readonly passphraseProtected: boolean;
 }
 
 /** Totals in fiat minor units, computed with integer math. */
@@ -95,6 +99,10 @@ export async function buildInvoiceLink(
   const pub = getSessionPublic();
   if (pub === undefined) throw new UserFacingError('Load or generate seller keys first (Seller keys).');
   const chain = findChain(form.chainId);
+  if (form.passphrase !== undefined) {
+    const problem = passphraseProblem(form.passphrase);
+    if (problem !== undefined) throw new UserFacingError(problem);
+  }
   if (chain === undefined) throw new UserFacingError('Unknown chain.');
   if (!/^[A-Z]{3}$/.test(form.currency)) throw new UserFacingError('Currency must be a three-letter ISO code such as USD.');
   const fd = fiatDecimals(form.currency);
@@ -143,7 +151,11 @@ export async function buildInvoiceLink(
     rng,
   );
   const signed = signInvoice(invoice, session.signingKey);
-  const fragment = await encodeFragment(signed, { encrypt: form.encrypt, ...(rng === undefined ? {} : { rng }) });
+  const fragment = await encodeFragment(signed, {
+    encrypt: form.passphrase === undefined ? form.encrypt : true,
+    ...(form.passphrase === undefined ? {} : { passphrase: form.passphrase }),
+    ...(rng === undefined ? {} : { rng }),
+  });
   if (!fragment.startsWith(FRAGMENT_PREFIX)) throw new UserFacingError('Internal error: unexpected fragment.');
-  return { invoice, fragment, link: `${baseUrl}${fragment}`, encrypted: form.encrypt };
+  return { invoice, fragment, link: `${baseUrl}${fragment}`, encrypted: form.encrypt || form.passphrase !== undefined, passphraseProtected: form.passphrase !== undefined };
 }

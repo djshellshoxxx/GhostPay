@@ -13,6 +13,10 @@ import { makeLog } from '../test/announcements';
 import { chainWithLogs } from '../test/mockChain';
 import { makeServices, memoryCheckpoints, renderApp } from '../test/render';
 import type { Services } from '../lib/services';
+import { verifyReceipt } from '../lib/receipts';
+
+const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
+const topicAddress = (address: string): string => `0x${address.slice(2).toLowerCase().padStart(64, '0')}`;
 
 beforeEach(() => {
   clearSession();
@@ -80,6 +84,8 @@ describe('Scan and receive', () => {
     expect(await screen.findByText('Payments found')).toBeTruthy();
     expect(screen.getByText(/2\.5 USDC/)).toBeTruthy();
     expect(screen.getByText(mine.stealthAddress)).toBeTruthy();
+    expect(screen.getByText(/could not be verified as a payment/)).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Sign receipt' })).toBeNull();
     expect(screen.queryByText(other.stealthAddress)).toBeNull();
     await waitFor(() => { expect(screen.getByText(/Finished\. 2 announcements checked, 1 payments found\./)).toBeTruthy(); });
     expect(checkpoints.load(84532, checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey))?.nextBlock).toBe(401n); // head 500 + 1 - finalityDepth 100: the tail is re-scanned on resume
@@ -108,6 +114,65 @@ describe('Scan and receive', () => {
     await user.click(screen.getByRole('button', { name: 'Sweep this payment' }));
     expect(screen.getByRole('heading', { level: 2, name: 'Sweep' })).toBeTruthy();
     expect(screen.getByText(mine.stealthAddress)).toBeTruthy();
+  });
+
+  it('opts into deep scan for wrong view tags and labels the diagnostic', async () => {
+    const pub = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const wrongTag = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 0, caller: FAKE_ROUTER, wrongTag: true });
+    const rpc = chainWithLogs(84532, 500, [wrongTag.log]);
+    const worker = new InlineWorker();
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)), createScanWorker: () => worker }));
+    await user.type(screen.getByLabelText('Start block'), '100');
+    await user.click(screen.getByLabelText('Deep scan (also check wrong view tags)'));
+    expect(screen.getByText(/substantially more CPU/)).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    expect(await screen.findByText(/found by deep scan: announced view tag did not match/)).toBeTruthy();
+    const batch = worker.received.find((m) => m.type === 'batch');
+    expect(batch?.type === 'batch' && batch.logs[0]?.skipTag).toBe(true);
+    expect(screen.getByText(/Claimed, not confirmed/)).toBeTruthy();
+  });
+
+  it('signs and exports a receipt from immutable finalized match data only', async () => {
+    const pub = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 0, caller: FAKE_ROUTER, amount: 2_500_000n });
+    const txHash = `0x${'a'.repeat(64)}`;
+    const announcement = { ...mine.log, transactionHash: txHash };
+    const transfer = {
+      address: '0x036cbd53842c5426634e7929541ec2318f3dcf7e',
+      topics: [TRANSFER_TOPIC, topicAddress(FAKE_ROUTER), announcement.topics?.[2] ?? '0x'],
+      data: `0x${2_500_000n.toString(16).padStart(64, '0')}`,
+      blockNumber: announcement.blockNumber,
+      blockHash: announcement.blockHash,
+      transactionHash: txHash,
+      logIndex: '0x10',
+    };
+    const rpc = chainWithLogs(84532, 500, [announcement], (method, params) => {
+      if (method === 'eth_getLogs' && (params[0] as { address?: string }).address?.toLowerCase() === transfer.address) return [transfer];
+      return undefined;
+    });
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)), createScanWorker: () => new InlineWorker() }));
+    await user.type(screen.getByLabelText('Start block'), '100');
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    expect(await screen.findByText('Seller-signed receipt')).toBeTruthy();
+    expect(screen.getByText(/2\.5 USDC/, { selector: 'dd' })).toBeTruthy();
+    const invoiceDigest = `0x${'b'.repeat(64)}`;
+    await user.type(screen.getByLabelText('Invoice digest (entered manually)'), invoiceDigest);
+    await user.click(screen.getByRole('button', { name: 'Sign receipt' }));
+    const json = await screen.findByLabelText<HTMLTextAreaElement>('Signed receipt JSON');
+    const decoded: unknown = JSON.parse(json.value);
+    expect(verifyReceipt(decoded)).toBe(true);
+    expect(decoded).toMatchObject({
+      invoiceDigest,
+      chainId: 84532,
+      txHash,
+      stealthAddress: mine.stealthAddress.toLowerCase(),
+      asset: '0x036cbd53842c5426634e7929541ec2318f3dcf7e',
+      amountMinorUnits: '2500000',
+      signerPublicKey: pub.signerPublicKey,
+    });
+    expect(screen.getByText(/does not establish seller identity/)).toBeTruthy();
   });
 
   it('does not offer another key set\'s checkpoint (WEB-APP-04)', async () => {

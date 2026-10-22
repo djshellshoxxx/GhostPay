@@ -88,7 +88,7 @@ describe('checkOriginal', () => {
   });
   it('non-interactive: needs a broadcastability test and honours it', async () => {
     const s = await scenario();
-    const noTest = { ...s.ctx, mode: 'non-interactive' as const, wallet: { isMine: (x: Uint8Array) => s.wallet.isMine(x), listSpendable: () => s.wallet.listSpendable(), signInput: (t: import('@scure/btc-signer').Transaction, i: number, u: Utxo) => { s.wallet.signInput(t, i, u); } } };
+    const noTest = { ...s.ctx, mode: 'non-interactive' as const, wallet: { isMine: (x: Uint8Array) => s.wallet.isMine(x), listSpendable: () => s.wallet.listSpendable(), signInput: (t: import('@scure/btc-signer').Transaction, i: number, u: Utxo) => { s.wallet.signInput(t, i, u); }, getPrevOut: (txid: string, index: number) => s.wallet.getPrevOut(txid, index) } };
     expect(await codeOf(() => checkOriginal(s.built.psbt, noTest))).toBe('not_broadcastable');
     const w = receiverWallet(s.rk, 'wpkh', s.rUtxos);
     const ctx = { ...s.ctx, mode: 'non-interactive' as const, wallet: w };
@@ -114,7 +114,8 @@ describe('checkOriginal', () => {
     const rAddr = addressFor(rk, 'wpkh');
     const uri = { address: rAddr, amountSats: 20_000n, pj: 'http://localhost/pj/X', outputSubstitution: true, network: 'testnet' as const };
     const built = buildOriginalPsbt({ uri, utxos: [real], feeRateSatPerVb: 2, changeAddress: addressFor(sk, 'wpkh'), signer: signerFor([{ k: sk, kind: 'wpkh' }]) });
-    const ctx = receiverCtx(receiverWallet(rk, 'wpkh', []), rAddr, { amountSats: 20_000n });
+    const wallet = receiverWallet(rk, 'wpkh', []);
+    const ctx = receiverCtx({ ...wallet, getPrevOut: (txid, index) => Promise.resolve(txid === real.txid && index === real.index ? { script: real.script, amount: real.amount } : undefined) }, rAddr, { amountSats: 20_000n });
     const nw = btc.RawTx.decode(prev.toBytes(true, true));
     const good = encodePsbt(rebuild(built.tx, { mapInput: (i) => ({ ...i, witnessUtxo: undefined, nonWitnessUtxo: nw }) }));
     expect((await checkOriginal(good, ctx)).fee).toBeGreaterThan(0n);
@@ -179,31 +180,11 @@ describe('buildProposal policy', () => {
       const lie = encodePsbt(rebuild(s.built.tx, { mapInput: (i) => ({ ...i, witnessUtxo: { script: (i.witnessUtxo as { script: Uint8Array }).script, amount: 100_000n + 690_344n } }) }));
       return { s, lie, ctx: { ...s.ctx, ...ctxOver } };
     };
-    it('caps the receiver fee share absolutely, so an inflated claim cannot burn its UTXO', async () => {
-      const { s, lie, ctx } = await inflated();
-      const checked = await checkOriginal(lie, ctx);
-      expect(checked.fee).toBeGreaterThan(690_000n); // the claim is believed without a lookup
-      const res = await buildProposal(checked, withDefaults(), ctx).then(
-        (b) => b,
-        (e: unknown) => e as { code: PayjoinErrorCode },
-      );
-      if ('code' in res) {
-        expect(res.code).toBe('not_enough_money');
-        return;
-      }
-      // If a proposal is released, the receiver's real loss is bounded by the cap (100 sat/vB * input vsize).
-      const p = parsePsbt(res.psbt);
-      const realIn = new Map([...s.sUtxos, ...s.rUtxos].map((u) => [`${u.txid}:${String(u.index)}`, { script: u.script, amount: u.amount }]));
-      const used = [...Array(p.inputsLength).keys()].map((k) => inputOutpoint(p, k)).filter((op) => s.rUtxos.some((u) => `${u.txid}:${String(u.index)}` === op));
-      const contributed = used.reduce((a, op) => a + (realIn.get(op)?.amount ?? 0n), 0n);
-      const payIdx = [...Array(p.outputsLength).keys()].find((k) => hex.encode(outputInfo(p, k).script) === hex.encode(s.paymentScript)) as number;
-      const loss = contributed - (outputInfo(p, payIdx).amount - outputInfo(s.built.tx, s.built.paymentIndex).amount);
-      expect(loss).toBeLessThanOrEqual(100n * 68n);
+    it('rejects an inflated sender prevout claim before using it for fee calculations', async () => {
+      const { lie, ctx } = await inflated();
+      expect(await codeOf(() => checkOriginal(lie, ctx))).toBe('psbt_invalid');
     });
     it('honours a configured cap and a hostile minfeerate cannot exceed it either', async () => {
-      const { lie, ctx } = await inflated({ maxContributionFeeRate: 1_000_000 });
-      const checked = await checkOriginal(lie, ctx);
-      expect((await buildProposal(checked, withDefaults(), ctx)).contributed).toBe(true); // opt-out still possible
       const s = await scenario({ receiverAmounts: [1_000_000n], noBuild: true });
       await expect(buildProposal(s.checked, withDefaults({ minFeeRateSatPerVb: 1000 }), s.ctx)).rejects.toMatchObject({ code: 'not_enough_money' });
     });
@@ -217,7 +198,9 @@ describe('buildProposal policy', () => {
       const none = { ...s.wallet, getPrevOut: () => Promise.resolve(undefined) };
       expect(await codeOf(() => checkOriginal(s.built.psbt, { ...ctx, wallet: none }))).toBe('psbt_invalid');
       const down = { ...s.wallet, getPrevOut: () => Promise.reject(new Error('rpc down')) };
-      expect(await codeOf(() => checkOriginal(s.built.psbt, { ...ctx, wallet: down }))).toBe('psbt_invalid');
+      expect(await codeOf(() => checkOriginal(s.built.psbt, { ...ctx, wallet: down }))).toBe('unavailable');
+      const absent = { ...s.wallet, getPrevOut: undefined };
+      expect(await codeOf(() => checkOriginal(s.built.psbt, { ...ctx, wallet: absent as never }))).toBe('unavailable');
     });
   });
   it('never reuses an Original input as the contribution', async () => {

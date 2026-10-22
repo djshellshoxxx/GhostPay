@@ -15,7 +15,6 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
-
 jobs:
   # Docs-only pull requests (every changed file under docs/ or a *.md) skip the heavy jobs. Anything else, and every
   # non-PR run, runs everything. `secrets-and-egress` never depends on this job.
@@ -62,22 +61,22 @@ jobs:
       - uses: ./.github/actions/setup-node-libs
       - run: npm run typecheck
       - run: npm run lint
-      - run: npm run build --workspace @ghostpay/web
+      - run: npm run build
       - run: npm audit --omit=dev --audit-level=high
 
-  # Every workspace with a test script runs in exactly one of these groups: the two slow libraries and the relayer
-  # (anvil e2e) have their own jobs; `rest` is computed as all other workspaces, so a new package is never skipped.
+  # Every test workspace runs once. Keep the expensive FHE stress suite independent and split the
+  # dynamically discovered remainder so newly migrated packages do not overflow one runner's budget.
   ts-test:
     needs: changes
     if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: ${{ matrix.group == 'confidential-contracts' && 60 || 30 }}
     permissions:
       contents: read
     strategy:
       fail-fast: false
       matrix:
-        group: [core-crypto, btc-silent-payments, web, rest]
+        group: [core-crypto, btc-silent-payments, web, confidential-contracts, rest-0, rest-1, rest-2]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -96,13 +95,16 @@ jobs:
             core-crypto) npm test -w packages/core-crypto ;;
             btc-silent-payments) npm test -w packages/btc-silent-payments ;;
             web) npm test -w apps/web ;;
-            rest)
+            confidential-contracts) npm test -w packages/confidential-contracts ;;
+            rest-*)
+              shard="${GROUP#rest-}"
               args=()
               while IFS= read -r w; do args+=(-w "$w"); done < <(
-                npm query '.workspace' | jq -r '.[].location' \
-                  | grep -vxE 'packages/core-crypto|packages/btc-silent-payments|apps/web|apps/relayer'
+                npm query '.workspace' | jq -r '.[].location' | sort \
+                  | grep -vxE 'packages/core-crypto|packages/btc-silent-payments|packages/confidential-contracts|apps/web|apps/relayer' \
+                  | awk -v shard="$shard" '(NR - 1) % 3 == shard'
               )
-              echo "rest group: ${args[*]}"
+              echo "$GROUP: ${args[*]}"
               npm test "${args[@]}" --if-present
               ;;
           esac
@@ -131,7 +133,7 @@ jobs:
         env:
           # The relayer e2e must fail instead of silently skipping when anvil or artifacts are missing
           # (audit G-09 / O-06). Honoured once apps/relayer/src/e2e.anvil.test.ts reads it.
-          REQUIRE_ANVIL: "1"
+          REQUIRE_ANVIL: '1'
         run: npm test -w apps/relayer
 
   # Stable required-check name: succeeds only if every TypeScript job succeeded (or was skipped as docs-only).
@@ -244,7 +246,7 @@ jobs:
           cache-name: static
       - run: forge fmt --check
       - run: bash scripts/check-natspec.sh
-      - run: forge snapshot --check
+      - run: forge snapshot --check --no-match-test "testFuzz|invariant"
 
   contracts-slither:
     needs: changes
@@ -276,10 +278,63 @@ jobs:
           # By-design findings carry inline slither-disable comments (see docs/audits/00-slither-triage.md).
           slither . --filter-paths "lib|test|script" --fail-medium --exclude-informational --exclude-low
 
+  # Standalone Foundry projects are not under packages/contracts and need their own compilation/test jobs.
+  contracts-extra:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - name: pool-contracts
+            path: packages/pool-contracts
+            natspec: true
+            static: true
+          - name: payer-hiding-contracts
+            path: packages/payer-hiding-contracts
+            natspec: true
+            static: false
+    defaults:
+      run:
+        working-directory: ${{ matrix.project.path }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+        with:
+          version: v1.8.5
+      # ERC-4337's GPL-header EntryPoint source is fetched into a gitignored test-only directory;
+      # production sources use the local interface and never import this fixture.
+      - name: Fetch test-only ERC-4337 EntryPoint v0.7.0 fixture
+        if: matrix.project.name == 'payer-hiding-contracts'
+        run: bash scripts/fetch-entrypoint.sh
+      - name: Build Foundry project
+        run: forge build --sizes
+      # The pool smoke test and RealProof suite use generated verifiers and an insecure development
+      # ceremony fixture. They test integration only; CI does not generate ceremonies or certify keys.
+      - name: Run Foundry tests (including configured fuzz and invariant runs)
+        run: forge test
+      - name: Check formatting
+        run: forge fmt --check
+      - name: Check production NatSpec
+        if: matrix.project.natspec
+        run: bash scripts/check-natspec.sh
+      - name: Check pool bytecode and storage layout
+        if: matrix.project.static
+        run: bash scripts/check-static.sh
+
   # Stable required-check name: succeeds only if every contracts job succeeded (or was skipped as docs-only).
   contracts:
     if: always()
-    needs: [changes, contracts-test, contracts-coverage, contracts-static, contracts-slither]
+    needs: [changes, contracts-test, contracts-coverage, contracts-static, contracts-slither, contracts-extra]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions: {}

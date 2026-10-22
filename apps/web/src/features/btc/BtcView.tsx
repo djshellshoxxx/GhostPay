@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
-import { QrView } from '../../components/QrView';
+import { CameraImporter } from '../../components/CameraImporter';
+import { QrFrame } from '../../components/QrFrame';
 import { useServices } from '../../lib/services';
 import { EsploraClient, normalizeEsploraUrl } from './esplora';
 import { BTC_NETWORKS, btcNetwork, type BtcNetworkId } from './network';
@@ -184,7 +185,7 @@ export function BtcView(): ReactNode {
         </Field>
         <Field
           label="Esplora server URL"
-          hint="Any Esplora-compatible REST server you trust for this network (https, or http to localhost for regtest). The server learns which block heights you scan and any transaction you broadcast. It cannot see your keys."
+          hint="Any Esplora-compatible REST server you trust for this network (https, or http to localhost for regtest). It sees every block height you scan, each matching output outpoint you check for spent status, and any transaction you broadcast. It cannot see your keys."
         >
           {(id, d) => (
             <input id={id} aria-describedby={d} type="url" spellCheck={false} autoComplete="off" placeholder={net.urlHint} value={url} onChange={(e) => { setUrl(e.target.value); }} />
@@ -227,7 +228,7 @@ export function BtcView(): ReactNode {
                   <li>Wait for one confirmation, then use "Scan" below starting a few blocks before the payment.</li>
                 </ol>
                 <CopyButton text={uri} label="Copy payment link" />
-                <QrView text={uri} caption="Silent payment request" />
+                <QrFrame kind="caution" text={uri} caption={`Silent payment request (${net.label})`} />
               </>
             )}
             {seedShown !== undefined && (
@@ -270,9 +271,12 @@ export function BtcView(): ReactNode {
               </p>
               {scan.found.length > 0 && (
                 <div className="table-wrap">
+                  <p role="note">
+                    Output and spent status were checked with the configured Esplora provider. This is a single-provider check, not independent verification. Select and review each exact transaction output below.
+                  </p>
                   <table>
                     <thead>
-                      <tr><th>Sweep</th><th>Output</th><th>Block</th><th>Amount</th></tr>
+                      <tr><th>Sweep</th><th>Output</th><th>Block</th><th>Amount</th><th>Key status</th></tr>
                     </thead>
                     <tbody>
                       {scan.found.map((f) => {
@@ -297,6 +301,7 @@ export function BtcView(): ReactNode {
                             <td><Mono>{id}</Mono></td>
                             <td>{f.height}</td>
                             <td>{formatBtc(f.amountSats)}</td>
+                            <td>{f.duplicateKey ? 'Duplicate output key; verify this exact outpoint' : 'Unique in this scan'}</td>
                           </tr>
                         );
                       })}
@@ -317,6 +322,37 @@ export function BtcView(): ReactNode {
               <input id={id} aria-describedby={d} className="mono" spellCheck={false} autoComplete="off" value={destination} onChange={(e) => { setDestination(e.target.value); setReview(undefined); setSigned(undefined); }} />
             )}
           </Field>
+          {wallet !== undefined && (
+            <CameraImporter
+              label="Import sweep destination QR"
+              onText={(scanned) => {
+                const candidate = scanned.trim();
+                let address = candidate;
+                if (/^bitcoin:/i.test(candidate)) {
+                  try {
+                    const uriParts = new URL(candidate);
+                    address = uriParts.searchParams.get('sp') ?? uriParts.pathname;
+                  } catch {
+                    setError('The Bitcoin payment QR is not valid.');
+                    return false;
+                  }
+                }
+                try {
+                  // reviewSweep applies the same network/address and dust checks used before signing.
+                  reviewSweep(wallet, selected, address, Number(feeRate));
+                  setDestination(address);
+                  setReview(undefined);
+                  setApproved(false);
+                  setSigned(undefined);
+                  setError(undefined);
+                  return true;
+                } catch (e) {
+                  setError(btcErrorMessage(e));
+                  return false;
+                }
+              }}
+            />
+          )}
           <Field label="Fee rate (sat/vB)" hint="Chosen by you; this app has no fee oracle. Transactions signal RBF (BIP-125).">
             {(id, d) => (
               <input id={id} aria-describedby={d} inputMode="decimal" value={feeRate} onChange={(e) => { setFeeRate(e.target.value); setReview(undefined); setSigned(undefined); }} />

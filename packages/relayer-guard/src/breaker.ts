@@ -29,7 +29,17 @@ export interface GuardedBreakerOptions {
   readonly cooldownMs: number;
   /** A probe not settled within this time counts as a failure and re-opens the breaker, > 0. */
   readonly probeTimeoutMs: number;
+  /** Neutral probe results tolerated in one half-open episode before requiring a validated caller (default 5). */
+  readonly maxNeutralProbes?: number;
 }
+
+/** Admission hint used only while half-open; closed-state behavior remains unchanged. */
+export interface AcquireOptions {
+  /** Whether the request has passed cheap request/signature/quote/rate-limit validation. */
+  readonly validated?: boolean;
+}
+
+const PROBE_RETRY_HINT_MS = 1_000;
 
 /** A single-use admission ticket. Exactly one {@link Permit.settle} call has an effect. */
 export interface Permit {
@@ -47,7 +57,8 @@ export interface Permit {
 }
 
 /** Result passed to a {@link GuardedBreaker.run} classifier. */
-export type RunResult<T> = { readonly ok: true; readonly value: T } | { readonly ok: false; readonly error: unknown };
+export type RunResult<T> =
+  { readonly ok: true; readonly value: T } | { readonly ok: false; readonly error: unknown };
 
 /**
  * Count-window circuit breaker whose half-open probe can never wedge.
@@ -68,6 +79,7 @@ export class GuardedBreaker {
   private openedAt = 0;
   private generation = 0;
   private probeIssuedAt: number | null = null;
+  private neutralProbes = 0;
 
   /**
    * @param opts Tunables (validated; throws `GuardError` INVALID_CONFIG).
@@ -77,14 +89,25 @@ export class GuardedBreaker {
     private readonly opts: GuardedBreakerOptions,
     private readonly now: Clock = monotonicNow,
   ) {
-    requireConfig(Number.isInteger(opts.minSamples) && opts.minSamples >= 1, 'minSamples must be an integer >= 1');
+    requireConfig(
+      Number.isInteger(opts.minSamples) && opts.minSamples >= 1,
+      'minSamples must be an integer >= 1',
+    );
     requireConfig(
       Number.isInteger(opts.windowSize) && opts.windowSize >= opts.minSamples,
       'windowSize must be an integer >= minSamples',
     );
     requireConfig(opts.failureRatio > 0 && opts.failureRatio <= 1, 'failureRatio must be in (0, 1]');
     requireConfig(Number.isFinite(opts.cooldownMs) && opts.cooldownMs > 0, 'cooldownMs must be > 0');
-    requireConfig(Number.isFinite(opts.probeTimeoutMs) && opts.probeTimeoutMs > 0, 'probeTimeoutMs must be > 0');
+    requireConfig(
+      Number.isFinite(opts.probeTimeoutMs) && opts.probeTimeoutMs > 0,
+      'probeTimeoutMs must be > 0',
+    );
+    requireConfig(
+      opts.maxNeutralProbes === undefined ||
+        (Number.isInteger(opts.maxNeutralProbes) && opts.maxNeutralProbes >= 1),
+      'maxNeutralProbes must be an integer >= 1',
+    );
   }
 
   /** Current state after applying any due probe expiry. */
@@ -101,9 +124,13 @@ export class GuardedBreaker {
     return this.now() - this.openedAt >= this.opts.cooldownMs ? 'degraded' : 'unhealthy';
   }
 
-  /** @returns Milliseconds until {@link tryAcquire} can succeed (0 when it can now or a probe is in flight). */
+  /** @returns Cooldown remaining, or a bounded retry hint while a half-open probe is in flight. */
   public retryAfterMs(): number {
     const s = this.state;
+    if (s === 'half_open' && this.probeIssuedAt !== null) {
+      const remaining = this.opts.probeTimeoutMs - (this.now() - this.probeIssuedAt);
+      return Math.max(1, Math.min(PROBE_RETRY_HINT_MS, remaining));
+    }
     if (s !== 'open') return 0;
     return Math.max(0, this.opts.cooldownMs - (this.now() - this.openedAt));
   }
@@ -111,10 +138,12 @@ export class GuardedBreaker {
   /**
    * Requests admission.
    *
-   * @returns A permit, or `null` when the breaker is open and cooling down, or half-open with a probe
-   *   already in flight.
+   * @param opts In half-open state, unvalidated callers do not consume the probe; after repeated
+   *   neutral outcomes only a caller explicitly marked validated may take the probe.
+   * @returns A permit, or `null` when the breaker is cooling down, a probe is in flight, or a
+   *   half-open caller is not eligible.
    */
-  public tryAcquire(): Permit | null {
+  public tryAcquire(opts: AcquireOptions = {}): Permit | null {
     const s = this.state;
     if (s === 'closed') return this.permit(false);
     if (s === 'open') {
@@ -122,6 +151,8 @@ export class GuardedBreaker {
       this.transition('half_open');
     }
     if (this.probeIssuedAt !== null) return null;
+    if (opts.validated === false) return null;
+    if (opts.validated !== true && this.neutralProbes >= (this.opts.maxNeutralProbes ?? 5)) return null;
     this.probeIssuedAt = this.now();
     return this.permit(true);
   }
@@ -192,7 +223,10 @@ export class GuardedBreaker {
     if (probe) {
       if (outcome === 'success') this.transition('closed');
       else if (outcome === 'failure') this.transition('open');
-      else this.probeIssuedAt = null;
+      else {
+        this.probeIssuedAt = null;
+        this.neutralProbes++;
+      }
       return;
     }
     if (outcome === 'neutral') return;
@@ -218,6 +252,7 @@ export class GuardedBreaker {
     this.current = to;
     this.generation += 1;
     this.probeIssuedAt = null;
+    this.neutralProbes = 0;
     this.outcomes.length = 0;
     if (to === 'open') this.openedAt = this.now();
   }

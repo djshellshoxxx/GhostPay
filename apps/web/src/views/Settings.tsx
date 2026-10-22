@@ -4,10 +4,15 @@ import { userMessage } from '../lib/errors';
 import { checkDelayRange, checkRelayerUrl, checkRpcUrl, type Settings as SettingsData } from '../lib/settings';
 import { useServices } from '../lib/services';
 import { useApp } from '../state';
+import { LanguagePicker } from '../i18n/LanguagePicker';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 
 export function Settings(): ReactNode {
   const app = useApp();
   const services = useServices();
+  // Settings is also rendered directly by component tests; those isolated renders intentionally use source English.
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const s = app.settings;
   const [rpc, setRpc] = useState<Record<string, string>>({ ...s.rpcUrls });
   const [rpc2, setRpc2] = useState<Record<string, string>>({ ...s.rpcUrlsSecondary });
@@ -35,15 +40,15 @@ export function Settings(): ReactNode {
         .map((l) => l.trim().toLowerCase())
         .filter((l) => l !== '');
       if (pinnedSigners.some((p) => !/^(?:02|03)[0-9a-f]{64}$/.test(p))) {
-        setMessage({ kind: 'error', text: 'Pinned signer keys must be 66 hexadecimal characters starting with 02 or 03, one per line.' });
+        setMessage({ kind: 'error', text: t('settings.error.pins') });
         return;
       }
       const next: SettingsData = { rpcUrls, rpcUrlsSecondary, relayerUrl: checkRelayerUrl(relayer), delayMinSec: minSec, delayMaxSec: maxSec, lockTimeoutMin: lock, theme, autoClearFragment: autoClear, pinnedSigners };
       const saved = app.updateSettings(next);
-      setMessage(saved ? { kind: 'ok', text: 'Settings saved.' } : { kind: 'warn', text: 'Browser storage is unavailable, so these settings apply to this tab only.' });
-      app.announce('Settings updated.');
+      setMessage(saved ? { kind: 'ok', text: t('settings.saved') } : { kind: 'warn', text: t('settings.storageUnavailable') });
+      app.announce(t('settings.announce'));
     } catch (err) {
-      setMessage({ kind: 'error', text: err instanceof Error && err.message === 'lock' ? 'Lock timeout must be 1 to 240 minutes.' : userMessage(err) });
+      setMessage({ kind: 'error', text: err instanceof Error && err.message === 'lock' ? t('settings.error.lock') : userMessage(err) });
     }
   };
 
@@ -51,74 +56,81 @@ export function Settings(): ReactNode {
     const chain = services.chains.find((c) => c.chainId === chainId);
     const url = rpc[String(chainId)] ?? '';
     if (chain === undefined) return;
-    setChecks((c) => ({ ...c, [chainId]: 'Checking…' }));
+    setChecks((c) => ({ ...c, [chainId]: t('settings.rpc.checking') }));
     void (async () => {
       try {
         await services.createRpc(chain, checkRpcUrl(url));
-        setChecks((c) => ({ ...c, [chainId]: 'Connected. The endpoint reports the expected chain id.' }));
+        setChecks((c) => ({ ...c, [chainId]: t('settings.rpc.connected') }));
       } catch (err) {
-        setChecks((c) => ({ ...c, [chainId]: err instanceof Error && err.name === 'ChainAdapterError' ? 'Failed: the endpoint is unreachable or reports a different chain.' : userMessage(err) }));
+        setChecks((c) => ({ ...c, [chainId]: err instanceof Error && err.name === 'ChainAdapterError' ? t('settings.rpc.failed') : userMessage(err) }));
       }
     })();
   };
 
   return (
     <section aria-labelledby="set-h">
-      <h2 id="set-h">Settings</h2>
+      <h2 id="set-h">{t('settings.title')}</h2>
+      {i18n !== undefined && <LanguagePicker />}
       <Notice kind="info">
-        Settings are kept in this browser in plain text, including RPC URLs. Do not put a URL there that contains a secret you would not store in plain text. No key is ever stored.
+        {t('settings.notice.plaintext')}
+      </Notice>
+      <Notice kind="warn" title="Settings can be changed outside this page">
+        Anything that can write to this site&rsquo;s browser storage, including another local user, malware or an extension, can change these RPC, relayer and pinned-signer settings. Review the endpoints and signer keys before relying on them. A second RPC can reveal disagreements, but it does not make either provider trustworthy by itself.
       </Notice>
       <form onSubmit={onSave} className="stack" noValidate>
         <fieldset>
-          <legend>RPC endpoints</legend>
-          <p className="hint">Only https:// and wss:// are accepted, with no username or password. The chain id is verified when the endpoint is used. No default RPC is built in.</p>
+          <legend>{t('settings.rpc.legend')}</legend>
+          <p className="hint">{t('settings.rpc.hint')}</p>
           {services.chains.map((c) => (
             <div key={c.chainId} className="row">
-              <Field label={`${c.name} RPC URL`}>
+              <Field label={t('settings.rpc.url', { chain: c.name })}>
                 {(id) => <input id={id} type="url" spellCheck={false} value={rpc[String(c.chainId)] ?? ''} onChange={(e) => { setRpc({ ...rpc, [String(c.chainId)]: e.target.value }); }} />}
               </Field>
-              <button type="button" className="btn" onClick={() => { onTest(c.chainId); }}>Test {c.name}</button>
+              <button type="button" className="btn" onClick={() => { onTest(c.chainId); }}>{t('settings.rpc.test', { chain: c.name })}</button>
               <p role="status" className="hint">{checks[c.chainId] ?? ''}</p>
-              <Field label={`${c.name} second RPC URL (optional)`} hint="A different provider. Scans compare it with the main RPC and withhold the checkpoint when they disagree.">
+              <Field label={t('settings.rpc.secondary.label', { chain: c.name })} hint={t('settings.rpc.secondary.hint')}>
                 {(id, d) => <input id={id} aria-describedby={d} type="url" spellCheck={false} value={rpc2[String(c.chainId)] ?? ''} onChange={(e) => { setRpc2({ ...rpc2, [String(c.chainId)]: e.target.value }); }} />}
               </Field>
             </div>
           ))}
         </fieldset>
         <fieldset>
-          <legend>Relayer</legend>
-          <Field label="Relayer URL (optional)" hint="https only. The relayer sees the one-time address, destination, token, amount and timing of each sweep it handles.">
+          <legend>{t('settings.relayer.legend')}</legend>
+          <Field label={t('settings.relayer.label')} hint={t('settings.relayer.hint')}>
             {(id, d) => <input id={id} aria-describedby={d} type="url" spellCheck={false} value={relayer} onChange={(e) => { setRelayer(e.target.value); }} />}
           </Field>
         </fieldset>
         <fieldset>
-          <legend>Payment delay (optional feature)</legend>
-          <Field label="Minimum delay (seconds)">{(id) => <input id={id} type="number" min={0} value={minSec} onChange={(e) => { setMinSec(Number(e.target.value)); }} />}</Field>
-          <Field label="Maximum delay (seconds)">{(id) => <input id={id} type="number" min={0} value={maxSec} onChange={(e) => { setMaxSec(Number(e.target.value)); }} />}</Field>
+          <legend>{t('settings.delay.legend')}</legend>
+          <Field label={t('settings.delay.min')}>{(id) => <input id={id} type="number" min={0} value={minSec} onChange={(e) => { setMinSec(Number(e.target.value)); }} />}</Field>
+          <Field label={t('settings.delay.max')}>{(id) => <input id={id} type="number" min={0} value={maxSec} onChange={(e) => { setMaxSec(Number(e.target.value)); }} />}</Field>
+          <p className="hint">{t('settings.delay.range', { min: minSec, max: maxSec })}</p>
         </fieldset>
         <fieldset>
-          <legend>Safety and appearance</legend>
-          <Field label="Lock local tags after idle minutes" hint="Keys stay in memory until you wipe them or close the tab.">
+          <legend>{t('settings.safety.legend')}</legend>
+          <Field label={t('settings.lock.label')} hint={t('settings.lock.hint')}>
             {(id, d) => <input id={id} aria-describedby={d} type="number" min={1} max={240} value={lock} onChange={(e) => { setLock(Number(e.target.value)); }} />}
           </Field>
-          <Field label="Theme">
+          <p className="hint">{t('settings.lock.summary', { minutes: lock })}</p>
+          <Field label={t('settings.theme.label')}>
             {(id) => (
               <select id={id} value={theme} onChange={(e) => { setTheme(e.target.value as SettingsData['theme']); }}>
-                <option value="system">Follow system</option>
-                <option value="light">Light</option>
-                <option value="dark">Dark</option>
+                <option value="system">{t('settings.theme.system')}</option>
+                <option value="light">{t('settings.theme.light')}</option>
+                <option value="dark">{t('settings.theme.dark')}</option>
               </select>
             )}
           </Field>
           <div className="check">
             <input id="autoclear" type="checkbox" checked={autoClear} onChange={(e) => { setAutoClear(e.target.checked); }} />
-            <label htmlFor="autoclear">Remove the invoice from the address bar after reading it</label>
+            <label htmlFor="autoclear">{t('settings.autoclear.label')}</label>
           </div>
-          <Field label="Pinned seller signing keys (one per line)" hint="Only keys you pin are described as pinned. Get them from the seller over a channel you trust.">
+          <Field label={t('settings.pins.label')} hint={t('settings.pins.hint')}>
             {(id, d) => <textarea id={id} aria-describedby={d} rows={3} spellCheck={false} value={pins} onChange={(e) => { setPins(e.target.value); }} />}
           </Field>
+          <p className="hint">{t('settings.pins.count', { count: pins.split('\n').filter((line) => line.trim() !== '').length })}</p>
         </fieldset>
-        <button type="submit" className="btn btn-primary">Save settings</button>
+        <button type="submit" className="btn btn-primary">{t('settings.save')}</button>
       </form>
       {message !== undefined && <Notice kind={message.kind}>{message.text}</Notice>}
     </section>

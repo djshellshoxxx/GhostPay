@@ -22,13 +22,13 @@ afterEach(() => {
 const hex = (b: Uint8Array): string => Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
 
 describe('validate-deployments (build step for the bundled manifests)', () => {
-  it('accepts an empty directory, a README and a valid <chainId>.json', async () => {
+  it('accepts an empty directory and README, but requires release keys for deployment files', async () => {
     const d = tmp();
     expect(await validateDeployments(d)).toEqual([]);
     expect(await validateDeployments(join(d, 'missing'))).toEqual([]);
     writeFileSync(join(d, 'README.md'), 'x');
     writeFileSync(join(d, '84532.json'), fakeManifestJson(84532));
-    expect(await validateDeployments(d)).toEqual([]);
+    expect((await validateDeployments(d)).join()).toMatch(/require at least one configured release verification key/);
   });
   it('fails the build for a wrong file name, a chain mismatch, bad JSON or an invalid manifest', async () => {
     const d = tmp();
@@ -58,6 +58,7 @@ describe('validate-deployments (build step for the bundled manifests)', () => {
     expect(parseReleaseKeys('')).toEqual([]);
     const k = `02${'ab'.repeat(32)}`;
     expect(parseReleaseKeys(` ${k.toUpperCase()} , ${k}`)).toEqual([k, k]);
+    expect(() => parseReleaseKeys(Array.from({ length: 9 }, () => k).join(','))).toThrow(/at most 8/);
     expect(() => parseReleaseKeys('04' + 'ab'.repeat(64))).toThrow(/compressed/);
     expect(() => parseReleaseKeys('0xabc')).toThrow(/compressed/);
   });

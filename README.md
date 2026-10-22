@@ -25,12 +25,12 @@ Open work is tracked in the audits: [completeness audit](docs/audits/01-complete
 | `packages/core-crypto` | Scheme-1 stealth key derivation, view-tag check, metadata builders, non-serialisable secrets. |
 | `packages/invoice-schema` | Invoice schema, strict parser, signing, AES-GCM envelope, `#gpi=v1.` link format. |
 | `packages/chain-adapters` | Chain and token allowlists, fee maths, deployment-manifest validation, RPC, log scanning, router and sweep builders, quote reading. |
-| `packages/btc-silent-payments` | BIP-352 Silent Payments: keys, addresses, sender derivation, scanning, spend-key derivation, Bitcoin `ChainAdapter`, and signed PSBT/raw-tx sweeps (`buildSpendTransaction`, software keys only). Official vectors pass. **Not wired into the web app or relayer.** |
+| `packages/btc-silent-payments` | BIP-352 Silent Payments: keys, addresses, sender derivation, scanning, spend-key derivation, Bitcoin `ChainAdapter`, and signed PSBT/raw-tx sweeps (`buildSpendTransaction`, software keys only). Used by the web app's Bitcoin view. Official vectors pass; mainnet stays disabled. |
 | `packages/policy-scheme` | Client side of the policy-account scheme `0x47500002` (policy hash, limits tree, scheme-2 meta-address, derivation, EIP-712, calldata, `GhostPayPolicyRouter` calldata). Experimental ([ADR-0014](docs/adr/ADR-LOG.md)); not used by the web app or relayer. |
-| `packages/relayer-guard` | Relayer abuse controls: circuit breaker, trusted-proxy client IP, token-bucket limiter, loss budget, and a challenge module (HMAC question challenge; raises bot cost only). **Not wired into `apps/relayer`.** |
-| `packages/secret-box` | Closure-held secret bytes with scoped wiping (guardrail, not a boundary). **Not wired into `core-crypto` or `apps/web`.** |
-| `packages/tx-review` | Pre-sign decoder and reviewer for transactions and EIP-712 payloads. **Not wired into `apps/web`.** |
-| `packages/address-safety` | Address and display-text safety checks (strict parse, lookalikes, fingerprints, payee trust, text sanitising). **Not wired into any app.** |
+| `packages/relayer-guard` | Relayer abuse controls: circuit breaker, trusted-proxy client IP, token-bucket limiter, loss budget, and a challenge module (HMAC question challenge; raises bot cost only). The relayer uses the guard controls; challenge storage is optional and is not proof of identity. |
+| `packages/secret-box` | Closure-held secret bytes with scoped wiping (guardrail, not a security boundary). Used for web session secret handling. |
+| `packages/tx-review` | Pre-sign decoder and reviewer for transactions and EIP-712 payloads. Used by web sweep transaction review. |
+| `packages/address-safety` | Address and display-text safety checks (strict parse, lookalikes, fingerprints, payee trust, text sanitising). Used by web sweep and display-text flows. |
 | `packages/ops-monitor` | Operator-run, read-only chain-side probes (manifest drift, fee-recipient health, release integrity, hot key, announcement rate, RPC disagreement). **Not wired in anywhere; never run against a live network.** |
 | `apps/web` | React 19 + Vite static app: seller keys, invoice creation, pay, scan, sweep, settings. |
 | `apps/relayer` | Node gas-sponsorship relay service for sweeps (stateless quotes, simulation, budgets, circuit breaker). |
@@ -39,7 +39,7 @@ Open work is tracked in the audits: [completeness audit](docs/audits/01-complete
 | `scripts/`, `.github/workflows/` | Release build, verification and CI scripts (being added; see [`docs/operators/release-and-verify.md`](docs/operators/release-and-verify.md)). |
 | `docs/` | Specifications, ADRs, threat model, audits, user guides, operator runbooks, feature reviews. |
 
-Wiring is checked by `@ghostpay/*` imports: `apps/web` uses `chain-adapters`, `core-crypto` and `invoice-schema`; `apps/relayer` uses `chain-adapters`. Nothing else is imported by either app.
+Workspace wiring is checked by `@ghostpay/*` imports. The web app uses `chain-adapters`, `core-crypto`, `invoice-schema`, `btc-silent-payments`, `secret-box`, `tx-review`, and `address-safety`; the relayer uses `chain-adapters` and `relayer-guard`. Other packages remain standalone unless their package-specific documentation says otherwise.
 
 Each package has its own README and a `DEVIATIONS.md` listing where the code differs from the specs. Where a README and the code disagree, the code wins and the discrepancy is a bug in the README.
 
@@ -103,7 +103,7 @@ Not run anywhere yet: mainnet-fork tests, Firefox/Safari end-to-end, any real wa
 
 ### BTC spending
 
-`@ghostpay/btc-silent-payments` can sweep detected Silent Payment outputs: `buildSpendTransaction` derives the BIP-352 spend key per output, builds and signs a key-path PSBT/raw transaction (software keys only; hardware wallets out of scope) and self-verifies the signatures. It is verified against the official BIP-352 vectors and noble schnorr, not against Bitcoin Core or a network, and nothing in `apps/web` or `apps/relayer` calls it.
+`@ghostpay/btc-silent-payments` powers the web app's Bitcoin view. It can sweep detected Silent Payment outputs: `buildSpendTransaction` derives the BIP-352 spend key per output, builds and signs a key-path PSBT/raw transaction (software keys only; hardware wallets out of scope) and self-verifies the signatures. It is verified against the official BIP-352 vectors and noble schnorr, not against Bitcoin Core or a network; mainnet remains disabled.
 
 ### Pages prototype
 

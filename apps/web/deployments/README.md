@@ -17,12 +17,12 @@ shows "payments disabled on this chain" and never builds a payment transaction.
    be 25, `FEE_RECIPIENT()` must equal `feeRecipient`, and `ANNOUNCER()` must equal both the manifest and the canonical
    announcer constant. Pay, Scan and Sweep are disabled until this passes, and the router and fee recipient the UI shows are
    the values **read from the chain**.
-3. **Signature (optional, honest).** `signature` is a detached secp256k1 ECDSA signature (64-byte compact `r || s`, low-s)
+3. **Release authenticity.** `signature` is a detached secp256k1 ECDSA signature (64-byte compact `r || s`, low-s)
    over `keccak256(canonical manifest JSON)`; see `canonicalManifestJson` / `manifestDigest` in `@ghostpay/chain-adapters`.
-   Release public keys are a **build-time constant array**, empty by default
-   (`GHOSTPAY_RELEASE_PUBKEYS=<66-hex>,<66-hex>`). With no key the UI says "an unsigned manifest" (or "carries a signature
-   this build cannot check"). With keys, a manifest without a valid signature fails the build and is refused at runtime.
-   The keys travel in the same bundle as the code, so they add assurance only if the bundle itself was checked out of band.
+   Release public keys are a **build-time constant array** (`GHOSTPAY_RELEASE_PUBKEYS=<66-hex>,<66-hex>`). If no key is
+   configured, any manifest file makes the build fail; the default app also refuses to load a manifest. With keys, a
+   manifest without a valid signature fails the build and is refused again at runtime. The keys travel in the same bundle
+   as the code, so they add assurance only if the bundle itself was checked out of band.
 
 None of this protects against a compromised host that serves a different bundle (D7); that needs the signed release process
 in the root README.

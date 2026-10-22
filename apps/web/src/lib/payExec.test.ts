@@ -7,7 +7,7 @@ import { NOW, USDC_84532, makeParsed } from '../test/invoiceFixtures';
 import { MOCK_ACCOUNT, MockWallet } from '../test/mockWallet';
 import { mockRpc, type MockRpc } from '../test/mockRpc';
 import { createPayContext, reviewInvoice, type BufferQuote, type PayContext } from './pay';
-import { PostBroadcastError, buildReceipt, ensureAllowance, preparePayment, sendPayment, submitTx, type Runtime } from './payExec';
+import { PostBroadcastError, buildReceipt, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, submitTx, type Runtime } from './payExec';
 import { clearSession } from './session';
 import { SubmissionMismatchError, connectWallet, type WalletInfo, type WalletSession } from './wallet';
 
@@ -140,7 +140,7 @@ describe('native payment end to end (mock wallet, mock RPC)', () => {
 
 describe('ERC-20 flows', () => {
   const OWNER = MOCK_ACCOUNT as `0x${string}`;
-  it('approves exactly the gross amount when the allowance is too low, and verifies it took effect', async () => {
+  it('plans the exact approval without sending, then grants exactly that amount and verifies it', async () => {
     const { ctx, session, wallet } = await setup();
     let allowance = 0n;
     const rpc = chainSeeing(wallet, (m) => {
@@ -151,25 +151,47 @@ describe('ERC-20 flows', () => {
       return undefined;
     });
     const msgs: string[] = [];
-    const out = await ensureAllowance(session, ctx, USDC_84532, { rpc, nowSeconds: () => NOW, sleep }, (m) => msgs.push(m));
-    expect(out).toBe('approved');
+    const rt = { rpc, nowSeconds: () => NOW, sleep };
+    const plan = await planApproval(ctx, session, USDC_84532, rt);
+    expect(plan).toMatchObject({ need: ctx.request.grossAmount, have: 0n, required: true, spender: FAKE_ROUTER });
+    expect(wallet.sent).toBeUndefined();
+    const out = await grantApproval(session, ctx, plan, rt, (m) => msgs.push(m));
+    expect(out).toBe(ctx.request.grossAmount);
     expect(wallet.sent?.['to']).toBe(USDC_84532);
     expect(msgs.join(' ')).toMatch(/Approve exactly 100 USDC/);
   });
   it('skips approval when the allowance already covers the payment', async () => {
     const { ctx, session, wallet } = await setup();
     const rpc = chainSeeing(wallet, () => `0x${(10n ** 12n).toString(16).padStart(64, '0')}`);
-    expect(await ensureAllowance(session, ctx, USDC_84532 as `0x${string}`, { rpc, nowSeconds: () => NOW, sleep }, noStatus)).toBe('already-approved');
+    const plan = await planApproval(ctx, session, USDC_84532, { rpc, nowSeconds: () => NOW, sleep });
+    expect(plan.required).toBe(false);
+    expect(plan.have).toBeGreaterThanOrEqual(plan.need);
     expect(wallet.sent).toBeUndefined();
   });
-  it('fails if the approval does not take effect, and without an RPC', async () => {
+  it('fails if the approval does not take effect and requires an RPC before planning', async () => {
     const { ctx, session, wallet } = await setup();
     const rpc = chainSeeing(wallet, (m) => (m === 'eth_call' ? `0x${'0'.repeat(64)}` : undefined));
-    await expect(ensureAllowance(session, ctx, USDC_84532 as `0x${string}`, { rpc, nowSeconds: () => NOW, sleep }, noStatus)).rejects.toThrow(/did not take effect/);
-    await expect(ensureAllowance(session, ctx, USDC_84532 as `0x${string}`, { rpc: undefined, nowSeconds: () => NOW }, noStatus)).rejects.toThrow(/needs an RPC/);
+    const rt = { rpc, nowSeconds: () => NOW, sleep };
+    const plan = await planApproval(ctx, session, USDC_84532, rt);
+    await expect(grantApproval(session, ctx, plan, rt, noStatus)).rejects.toThrow(/did not take effect/);
+    await expect(planApproval(ctx, session, USDC_84532, { rpc: undefined, nowSeconds: () => NOW })).rejects.toThrow(/needs an RPC/);
     const w3 = await setup();
     const rpc3 = chainSeeing(w3.wallet, (m) => (m === 'eth_call' ? `0x${'0'.repeat(64)}` : m === 'eth_getTransactionReceipt' ? null : undefined));
-    await expect(ensureAllowance(w3.session, w3.ctx, USDC_84532 as `0x${string}`, { rpc: rpc3, nowSeconds: () => NOW, sleep }, noStatus)).rejects.toThrow(/not confirmed/);
+    const plan3 = await planApproval(w3.ctx, w3.session, USDC_84532, { rpc: rpc3, nowSeconds: () => NOW, sleep });
+    await expect(grantApproval(w3.session, w3.ctx, plan3, { rpc: rpc3, nowSeconds: () => NOW, sleep }, noStatus)).rejects.toThrow(/not confirmed/);
+  });
+  it('revokes an allowance with approve(0) and verifies the allowance is cleared', async () => {
+    const { ctx, session, wallet } = await setup();
+    let allowance = ctx.request.grossAmount;
+    const rpc = chainSeeing(wallet, (m) => {
+      if (m === 'eth_call') return `0x${allowance.toString(16).padStart(64, '0')}`;
+      if (m === 'eth_getTransactionByHash') allowance = 0n;
+      return undefined;
+    });
+    const plan = await planApproval(ctx, session, USDC_84532, { rpc, nowSeconds: () => NOW, sleep });
+    await revokeApproval(session, ctx, plan, { rpc, nowSeconds: () => NOW, sleep }, noStatus);
+    expect(allowance).toBe(0n);
+    expect(wallet.sent?.['data']).toContain('0000000000000000000000000000000000000000000000000000000000000000');
   });
 
   it('permit path: asks the wallet to sign, verifies the signer, builds a permit payment', async () => {

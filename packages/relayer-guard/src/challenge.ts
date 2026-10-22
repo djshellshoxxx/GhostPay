@@ -25,7 +25,7 @@ export interface ReplayStore {
    * @returns `true` if newly marked, `false` if already used. Throw (e.g. {@link ReplayStoreFullError})
    * when the mark cannot be recorded: the service then fails closed.
    */
-  markUsed(id: string, expiresAt: number): boolean | Promise<boolean>;
+  markUsed(id: string, expiresAt: number, partition?: string): boolean | Promise<boolean>;
 }
 
 /** Counts verification attempts per challenge id. */
@@ -37,7 +37,7 @@ export interface AttemptLimiter {
    * @returns The new count. Return `Infinity` (or throw) when the count cannot be tracked: the
    * service then fails closed.
    */
-  increment(id: string, expiresAt: number): number | Promise<number>;
+  increment(id: string, expiresAt: number, partition?: string): number | Promise<number>;
 }
 
 /** Thrown by {@link MemoryReplayStore.markUsed} when every slot holds a live entry. */
@@ -48,15 +48,30 @@ export class ReplayStoreFullError extends Error {
   }
 }
 
-/** Bounded in-memory table of id to (expiry, value) that purges expired entries first and never evicts live ones. */
+interface Entry<V> {
+  readonly expiresAt: number;
+  readonly value: V;
+  readonly partition: string;
+}
+
+const FULL_SCAN_INTERVAL_MS = 1000;
+
+/** Bounded in-memory table with per-partition quotas and throttled full expiry scans. */
 class ExpiringTable<V> {
-  private readonly map = new Map<string, { expiresAt: number; value: V }>();
+  private readonly map = new Map<string, Entry<V>>();
+  private readonly partitions = new Map<string, Set<string>>();
+  private lastFullScan = Number.NEGATIVE_INFINITY;
 
   public constructor(
     private readonly maxEntries: number,
+    private readonly maxPerPartition: number,
     private readonly now: () => number,
   ) {
     requireConfig(Number.isInteger(maxEntries) && maxEntries >= 1, 'maxEntries must be an integer >= 1');
+    requireConfig(
+      Number.isInteger(maxPerPartition) && maxPerPartition >= 1,
+      'maxPerPartition must be an integer >= 1',
+    );
   }
 
   public get size(): number {
@@ -64,24 +79,73 @@ class ExpiringTable<V> {
   }
 
   /** @returns The live entry for `id`, or undefined (an expired entry is dropped). */
-  public live(id: string): { expiresAt: number; value: V } | undefined {
+  public live(id: string): Entry<V> | undefined {
     const e = this.map.get(id);
     if (e === undefined) return undefined;
     if (e.expiresAt <= this.now()) {
-      this.map.delete(id);
+      this.remove(id);
       return undefined;
     }
     return e;
   }
 
-  /** @returns false if `id` is new and the table is full of live entries. */
-  public set(id: string, expiresAt: number, value: V): boolean {
-    if (!this.map.has(id) && this.map.size >= this.maxEntries) {
-      const t = this.now();
-      for (const [k, e] of this.map) if (e.expiresAt <= t) this.map.delete(k);
-      if (this.map.size >= this.maxEntries) return false;
+  public set(
+    id: string,
+    expiresAt: number,
+    value: V,
+    partition: string | undefined,
+    evict: boolean,
+  ): 'ok' | 'partition_full' | 'full' {
+    this.remove(id);
+    // Missing partition is one bounded shared bucket, never an escape hatch around quotas.
+    requireConfig(
+      partition === undefined ||
+        (typeof partition === 'string' && partition.length >= 1 && partition.length <= MAX_CONTEXT_LENGTH),
+      'partition must be 1..256 characters',
+    );
+    const partitionKey = partition === undefined ? 'u:' : `p:${partition}`;
+    if ((this.partitions.get(partitionKey)?.size ?? 0) >= this.maxPerPartition) {
+      this.purge();
+      if ((this.partitions.get(partitionKey)?.size ?? 0) >= this.maxPerPartition) return 'partition_full';
     }
-    this.map.set(id, { expiresAt, value });
+    if (this.map.size >= this.maxEntries) {
+      this.purge();
+      if (this.map.size >= this.maxEntries && !(evict && this.evictFromLargestPartition())) return 'full';
+    }
+    this.map.set(id, { expiresAt, value, partition: partitionKey });
+    const ids = this.partitions.get(partitionKey) ?? new Set<string>();
+    ids.add(id);
+    this.partitions.set(partitionKey, ids);
+    return 'ok';
+  }
+
+  private remove(id: string): void {
+    const e = this.map.get(id);
+    if (e === undefined) return;
+    this.map.delete(id);
+    const ids = this.partitions.get(e.partition);
+    ids?.delete(id);
+    if (ids?.size === 0) this.partitions.delete(e.partition);
+  }
+
+  private purge(): void {
+    const now = this.now();
+    for (const [id, entry] of this.map) {
+      if (entry.expiresAt > now) break;
+      this.remove(id);
+    }
+    if (now - this.lastFullScan < FULL_SCAN_INTERVAL_MS) return;
+    this.lastFullScan = now;
+    for (const [id, entry] of this.map) if (entry.expiresAt <= now) this.remove(id);
+  }
+
+  private evictFromLargestPartition(): boolean {
+    let largest: Set<string> | undefined;
+    for (const ids of this.partitions.values())
+      if (largest === undefined || ids.size > largest.size) largest = ids;
+    const oldest = largest?.values().next().value;
+    if (oldest === undefined) return false;
+    this.remove(oldest);
     return true;
   }
 }
@@ -90,8 +154,16 @@ class ExpiringTable<V> {
 export interface MemoryStoreOptions {
   /** Most live entries held, integer >= 1 (default 10_000). */
   readonly maxEntries?: number;
+  /** Maximum live entries per caller partition (default `max(1, floor(maxEntries / 8))`). */
+  readonly maxPerPartition?: number;
   /** Wall clock in ms (default `Date.now`). */
   readonly now?: () => number;
+}
+
+function makeTable<V>(opts: MemoryStoreOptions): ExpiringTable<V> {
+  const max = opts.maxEntries ?? 10_000;
+  const perPartition = opts.maxPerPartition ?? Math.max(1, Math.floor(max / 8));
+  return new ExpiringTable<V>(max, perPartition, opts.now ?? Date.now);
 }
 
 /**
@@ -103,7 +175,7 @@ export class MemoryReplayStore implements ReplayStore {
   private readonly table: ExpiringTable<true>;
 
   public constructor(opts: MemoryStoreOptions = {}) {
-    this.table = new ExpiringTable<true>(opts.maxEntries ?? 10_000, opts.now ?? Date.now);
+    this.table = makeTable<true>(opts);
   }
 
   /** Number of entries currently held (including not yet purged expired ones). */
@@ -112,9 +184,9 @@ export class MemoryReplayStore implements ReplayStore {
   }
 
   /** @throws ReplayStoreFullError when full of live entries. */
-  public markUsed(id: string, expiresAt: number): boolean {
+  public markUsed(id: string, expiresAt: number, partition?: string): boolean {
     if (this.table.live(id) !== undefined) return false;
-    if (!this.table.set(id, expiresAt, true)) throw new ReplayStoreFullError();
+    if (this.table.set(id, expiresAt, true, partition, false) !== 'ok') throw new ReplayStoreFullError();
     return true;
   }
 }
@@ -128,13 +200,13 @@ export class MemoryAttemptLimiter implements AttemptLimiter {
   private readonly table: ExpiringTable<{ n: number }>;
 
   public constructor(opts: MemoryStoreOptions = {}) {
-    this.table = new ExpiringTable<{ n: number }>(opts.maxEntries ?? 10_000, opts.now ?? Date.now);
+    this.table = makeTable<{ n: number }>(opts);
   }
 
-  public increment(id: string, expiresAt: number): number {
+  public increment(id: string, expiresAt: number, partition?: string): number {
     const e = this.table.live(id);
     if (e !== undefined) return ++e.value.n;
-    return this.table.set(id, expiresAt, { n: 1 }) ? 1 : Number.POSITIVE_INFINITY;
+    return this.table.set(id, expiresAt, { n: 1 }, partition, true) === 'ok' ? 1 : Number.POSITIVE_INFINITY;
   }
 }
 
@@ -150,6 +222,14 @@ export type ChallengeFailure =
 
 /** Result of {@link ChallengeService.verify}. */
 export type VerifyResult = { readonly ok: true } | { readonly ok: false; readonly reason: ChallengeFailure };
+
+/** Challenge verification input; partition should be a resolved, preferably hashed client bucket. */
+export interface VerifyInput {
+  readonly token: unknown;
+  readonly answer: unknown;
+  readonly context: unknown;
+  readonly partition?: unknown;
+}
 
 /** An issued challenge. */
 export interface IssuedChallenge {
@@ -292,14 +372,23 @@ export class ChallengeService {
   public constructor(opts: ChallengeOptions) {
     requireConfig(Array.isArray(opts.secrets) && opts.secrets.length >= 1, 'at least one secret is required');
     for (const s of opts.secrets) {
-      requireConfig(s instanceof Uint8Array && s.length >= 32, 'each secret must be a Uint8Array of >= 32 bytes');
+      requireConfig(
+        s instanceof Uint8Array && s.length >= 32,
+        'each secret must be a Uint8Array of >= 32 bytes',
+      );
     }
     const ttl = opts.ttlMs ?? 120_000;
-    requireConfig(Number.isInteger(ttl) && ttl >= 1 && ttl <= 900_000, 'ttlMs must be an integer in 1..900000');
+    requireConfig(
+      Number.isInteger(ttl) && ttl >= 1 && ttl <= 900_000,
+      'ttlMs must be an integer in 1..900000',
+    );
     const diff = opts.difficulty ?? 1;
     requireConfig(diff === 1 || diff === 2 || diff === 3, 'difficulty must be 1, 2 or 3');
     const max = opts.maxAttempts ?? 3;
-    requireConfig(Number.isInteger(max) && max >= 1 && max <= 100, 'maxAttempts must be an integer in 1..100');
+    requireConfig(
+      Number.isInteger(max) && max >= 1 && max <= 100,
+      'maxAttempts must be an integer in 1..100',
+    );
     this.keys = opts.secrets.map((s) => {
       const copy = Uint8Array.from(s);
       return {
@@ -367,7 +456,7 @@ export class ChallengeService {
    * @security Costs one HMAC per configured secret for unauthenticated input, bounded by the
    * 200-char token cap; keep per-client rate limits in front.
    */
-  public async verify(input: { token: unknown; answer: unknown; context: unknown }): Promise<VerifyResult> {
+  public async verify(input: VerifyInput): Promise<VerifyResult> {
     try {
       return await this.verifyInner(input);
     } catch {
@@ -375,10 +464,21 @@ export class ChallengeService {
     }
   }
 
-  private async verifyInner(input: { token: unknown; answer: unknown; context: unknown }): Promise<VerifyResult> {
-    const { token, answer, context } = input;
+  private async verifyInner(input: VerifyInput): Promise<VerifyResult> {
+    const { token, answer, context, partition } = input;
     const p = parseToken(token);
-    if (p === null || typeof context !== 'string' || context.length < 1 || context.length > MAX_CONTEXT_LENGTH) {
+    if (
+      p === null ||
+      typeof context !== 'string' ||
+      context.length < 1 ||
+      context.length > MAX_CONTEXT_LENGTH
+    ) {
+      return { ok: false, reason: 'malformed' };
+    }
+    if (
+      partition !== undefined &&
+      (typeof partition !== 'string' || partition.length < 1 || partition.length > MAX_CONTEXT_LENGTH)
+    ) {
       return { ok: false, reason: 'malformed' };
     }
     let matched: KeyPair | undefined;
@@ -391,7 +491,7 @@ export class ChallengeService {
 
     let count: number;
     try {
-      count = await this.attempts.increment(p.nonce, p.expiresAt);
+      count = await this.attempts.increment(p.nonce, p.expiresAt, partition);
     } catch {
       return { ok: false, reason: 'too_many_attempts' };
     }
@@ -405,7 +505,7 @@ export class ChallengeService {
 
     let fresh: boolean;
     try {
-      fresh = await this.replay.markUsed(p.nonce, p.expiresAt);
+      fresh = await this.replay.markUsed(p.nonce, p.expiresAt, partition);
     } catch {
       return { ok: false, reason: 'replay_store_full' };
     }

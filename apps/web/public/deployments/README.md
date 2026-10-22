@@ -1,11 +1,11 @@
-# Deployment manifests (none shipped)
+# Public deployment directory (unused)
 
-The app loads `deployments/<chainId>.json` from its own origin and validates it with
-`@ghostpay/chain-adapters` (`loadDeployment`). **No manifest is shipped in this repository.** Until the owner
-deploys the contracts and publishes a reviewed manifest for a chain, the app shows
-"payments disabled on this chain" and never builds a payment transaction for it.
+The app does not load deployment manifests from this public directory. Reviewed manifests belong in
+`apps/web/deployments/`; Vite validates their schema, chain id and release signature, then compiles their raw text into the
+hashed JavaScript bundle. **No manifest is shipped in this repository.** Until the owner deploys the contracts and commits
+a reviewed signed manifest, the app shows "payments disabled on this chain" and never builds a payment transaction for it.
 
-The fee recipient shown in the UI is read only from the manifest. It is not hard-coded anywhere in the source.
-See `/deployments/README.md` at the repository root and `docs/FEE_SCHEDULE.md`.
+Runtime still reads contract code and immutable values through the user's RPC before enabling a flow. See
+`apps/web/deployments/README.md`, `/deployments/README.md` at the repository root and `docs/FEE_SCHEDULE.md`.
 
-A clearly fake, test-only example lives in `apps/web/src/test/fakeManifest.ts`. Never copy it here.
+A clearly fake, signed test-only example lives in `apps/web/e2e/fixtures/`. Never copy it into the production deployments directory.

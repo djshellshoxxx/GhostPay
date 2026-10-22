@@ -55,6 +55,17 @@ function signerRedeem(k: Key): Uint8Array {
   return btc.p2wpkh(k.pub, btc.TEST_NETWORK).script;
 }
 
+/** Verify foreign sender inputs against the independent node, never the supplied PSBT amounts. */
+function nodeReceiverWallet(k: Key, kind: Kind, utxos: Utxo[]): ReturnType<typeof receiverWallet> {
+  const wallet = receiverWallet(k, kind, utxos);
+  wallet.getPrevOut = async (txid, index) => {
+    const output = await rpc<{ value: number; scriptPubKey: { hex: string } } | null>('gettxout', [txid, index, true]);
+    if (output === null) return undefined;
+    return { amount: BigInt(Math.round(output.value * 1e8)), script: hex.decode(output.scriptPubKey.hex) };
+  };
+  return wallet;
+}
+
 describe.skipIf(!run && !REQUIRE)('regtest payjoin e2e', () => {
   const sk: Key = key('e2e-sender');
   const rk: Key = key('e2e-receiver');
@@ -107,7 +118,7 @@ describe.skipIf(!run && !REQUIRE)('regtest payjoin e2e', () => {
     expect(sU).toBeDefined();
     expect(rU).toBeDefined();
     const transport = new V1HttpTransport({ listen: (h) => nodeListen(h), replyTimeoutMs: 20_000 });
-    const wallet = receiverWallet(rk, 'wpkh', [rU]);
+    const wallet = nodeReceiverWallet(rk, 'wpkh', [rU]);
     wallet.testMempoolAccept = async (hexTx: string) => (await rpc<{ allowed: boolean }[]>('testmempoolaccept', [[hexTx]]))[0]?.allowed === true;
     const amount = 1_000_000n;
     const rs = await transport.openReceiverSession({ address: rAddr, network: 'regtest', amountSats: amount, expirySeconds: 600 });
@@ -199,7 +210,7 @@ describe.skipIf(!run && !REQUIRE)('regtest payjoin e2e', () => {
         now,
         params: { maxAdditionalFeeContributionSats: 400n, minFeeRateSatPerVb: 2 },
       });
-      const receiver = new ReceiverSession(receiverCtx(receiverWallet(rk, rKind, [rUtxo]), rAddr2, { network: 'regtest', amountSats: 500_000n }));
+      const receiver = new ReceiverSession(receiverCtx(nodeReceiverWallet(rk, rKind, [rUtxo]), rAddr2, { network: 'regtest', amountSats: 500_000n }));
       expect(await receiver.serve(rs)).toMatchObject({ ok: true });
       const ev = await sender.poll();
       expect(ev.kind).toBe('ready');

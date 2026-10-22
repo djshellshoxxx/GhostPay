@@ -102,6 +102,10 @@ export interface DetectedBitcoinPayment {
   readonly txid?: string;
   readonly vout?: number;
   readonly amountSats?: bigint;
+  /** True when multiple outputs share this key or it reappears across scans. */
+  readonly duplicateKey?: boolean;
+  /** True only when an independent `OutputVerifier` confirmed the reported output. */
+  readonly verified?: boolean;
   /** 32-byte x-only taproot output key. */
   readonly xOnlyPublicKey: Uint8Array;
   readonly k: number;

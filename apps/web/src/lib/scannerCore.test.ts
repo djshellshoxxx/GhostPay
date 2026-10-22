@@ -26,9 +26,21 @@ describe('ScanSession', () => {
     const seen: number[] = [];
     const logs = [f.other, f.mine, junk, wrongScheme, ...Array.from({ length: 130 }, (_, i) => ({ ...f.other, id: `x${String(i)}` }))];
     const matches = s.processBatch(logs, (n) => seen.push(n));
-    expect(matches).toEqual([{ id: 'mine', stealthAddress: f.mine.stealthAddress }]);
+    expect(matches).toEqual([{ id: 'mine', stealthAddress: f.mine.stealthAddress, tagMatches: true }]);
     expect(s.scanned).toBe(logs.length);
     expect(seen).toEqual([128]);
+  }, 15_000);
+  it('deep-scan bypasses only the view tag and reports that diagnostic', () => {
+    const f = fixture();
+    const bytes = Uint8Array.from(f.mine.metadata.slice(2).match(/../g) ?? [], (h) => parseInt(h, 16));
+    bytes[0] = bytes[0]! ^ 0x5a;
+    const wrongTag = { ...f.mine, metadata: `0x${hex(bytes)}` };
+    const ordinary = new ScanSession(unsafeRevealSecret(f.keys.viewingSecret), f.spendHex);
+    expect(ordinary.processBatch([{ ...wrongTag, skipTag: false }])).toEqual([]);
+    ordinary.dispose();
+    const deep = new ScanSession(unsafeRevealSecret(f.keys.viewingSecret), f.spendHex);
+    expect(deep.processBatch([{ ...wrongTag, skipTag: true }])).toEqual([{ id: 'mine', stealthAddress: f.mine.stealthAddress, tagMatches: false }]);
+    deep.dispose();
   });
   it('stops early when cancelled and refuses use after dispose', () => {
     const f = fixture();
@@ -65,7 +77,7 @@ describe('ScanProtocol (what the worker runs)', () => {
     send({ type: 'start', viewingKey: unsafeRevealSecret(f.keys.viewingSecret), spendingPublicKey: f.spendHex });
     send({ type: 'batch', batchId: 1, logs: [f.mine, f.other] });
     send({ type: 'end' });
-    expect(out).toEqual([{ type: 'ready' }, { type: 'matches', batchId: 1, matches: [{ id: 'mine', stealthAddress: f.mine.stealthAddress }], scanned: 2 }, { type: 'ended' }]);
+    expect(out).toEqual([{ type: 'ready' }, { type: 'matches', batchId: 1, matches: [{ id: 'mine', stealthAddress: f.mine.stealthAddress, tagMatches: true }], scanned: 2 }, { type: 'ended' }]);
   });
   it('reports bad keys and batches before start', () => {
     const { send, out } = run();

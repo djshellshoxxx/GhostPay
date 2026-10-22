@@ -81,29 +81,49 @@ export async function submitTx(session: WalletSession, tx: TxRequest, rt: Runtim
   }
 }
 
-/** ERC-20 approval step for non-permit payments (and buffer payments). Requires an RPC to read the allowance. */
-export async function ensureAllowance(
-  session: WalletSession,
-  ctx: PayContext,
-  token: Address,
-  rt: Runtime,
-  status: StatusFn,
-): Promise<'already-approved' | 'approved'> {
+export interface ApprovalPlan {
+  readonly token: Address;
+  readonly spender: Address;
+  readonly need: bigint;
+  readonly have: bigint;
+  readonly required: boolean;
+}
+
+/** Reads the current allowance and produces the exact approval preview; sends nothing. */
+export async function planApproval(ctx: PayContext, session: WalletSession, token: Address, rt: Runtime): Promise<ApprovalPlan> {
   if (rt.rpc === undefined) throw new UserFacingError('Approving a token needs an RPC for this chain. Configure one in Settings.');
   const spender = ctx.manifest.router;
   const need = ctx.request.grossAmount;
   const have = await readAllowance(rt.rpc, token, session.account, spender);
-  if (have >= need) return 'already-approved';
-  const tx = buildApproveTx(token, spender, need);
-  assertApproveTx(tx, token, spender, need);
-  // Decode + policy review of the approval bytes (spender = manifest router, amount <= this payment's gross, S3-19).
-  guardApprove(tx, ctx.chain.chainId, { token, spender, amount: need }, ctx.manifest, rt.nowSeconds());
-  status(`Approve exactly ${formatUnits(need, ctx.review.token?.decimals ?? 18)} ${ctx.review.token?.symbol ?? ''} for the router.`);
+  return { token, spender, need, have, required: have < need };
+}
+
+/** Sends only the exact allowance shown in the final preview and reads back what the wallet actually granted. */
+export async function grantApproval(session: WalletSession, ctx: PayContext, plan: ApprovalPlan, rt: Runtime, status: StatusFn): Promise<bigint> {
+  if (rt.rpc === undefined) throw new UserFacingError('Approving a token needs an RPC for this chain. Configure one in Settings.');
+  if (!plan.required) return plan.have;
+  const tx = buildApproveTx(plan.token, plan.spender, plan.need);
+  assertApproveTx(tx, plan.token, plan.spender, plan.need);
+  guardApprove(tx, ctx.chain.chainId, { token: plan.token, spender: plan.spender, amount: plan.need }, ctx.manifest, rt.nowSeconds());
+  status(`Approve exactly ${formatUnits(plan.need, ctx.review.token?.decimals ?? 18)} ${ctx.review.token?.symbol ?? ''} for the router.`);
   const res = await submitTx(session, tx, rt, status);
   if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError('The approval was not confirmed. Nothing was paid.');
-  const after = await readAllowance(rt.rpc, token, session.account, spender);
-  if (after < need) throw new UserFacingError('The approval did not take effect. Nothing was paid.');
-  return 'approved';
+  const after = await readAllowance(rt.rpc, plan.token, session.account, plan.spender);
+  if (after < plan.need) throw new UserFacingError('The approval did not take effect. Nothing was paid.');
+  return after;
+}
+
+/** Revokes a router allowance with approve(spender, 0), then verifies it on-chain. */
+export async function revokeApproval(session: WalletSession, ctx: PayContext, plan: ApprovalPlan, rt: Runtime, status: StatusFn): Promise<void> {
+  if (rt.rpc === undefined) throw new UserFacingError('Revoking needs an RPC for this chain. Configure one in Settings.');
+  const tx = buildApproveTx(plan.token, plan.spender, 0n);
+  assertApproveTx(tx, plan.token, plan.spender, 0n);
+  guardApprove(tx, ctx.chain.chainId, { token: plan.token, spender: plan.spender, amount: 0n }, ctx.manifest, rt.nowSeconds());
+  status(`Revoke the router allowance for ${plan.spender}.`);
+  const res = await submitTx(session, tx, rt, status);
+  if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError('The revoke was not confirmed. Check your allowances in your wallet.');
+  const after = await readAllowance(rt.rpc, plan.token, session.account, plan.spender);
+  if (after !== 0n) throw new UserFacingError('The allowance is still not zero. Check your allowances in your wallet.');
 }
 
 export interface PrepareOptions {

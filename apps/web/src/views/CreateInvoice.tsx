@@ -3,7 +3,7 @@ import { FEEDS } from '@ghostpay/chain-adapters';
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { CopyButton, Field, Notice } from '../components/Common';
 import { useManifest } from '../components/Disclosure';
-import { QrView } from '../components/QrView';
+import { QrFrame } from '../components/QrFrame';
 import { userMessage } from '../lib/errors';
 import { buildInvoiceLink, tokenChoices, type CreatedInvoice, type InvoiceForm, type LineItemInput } from '../lib/invoiceCreate';
 import { useServices } from '../lib/services';
@@ -30,6 +30,9 @@ export function CreateInvoice(): ReactNode {
   const [slippage, setSlippage] = useState(50);
   const [memo, setMemo] = useState('');
   const [encrypt, setEncrypt] = useState(false);
+  const [protectWithPassphrase, setProtectWithPassphrase] = useState(false);
+  const [passphrase, setPassphrase] = useState('');
+  const [passphraseAgain, setPassphraseAgain] = useState('');
   const [error, setError] = useState<string | undefined>(undefined);
   const [created, setCreated] = useState<CreatedInvoice | undefined>(undefined);
   const manifest = useManifest(chainId);
@@ -51,6 +54,10 @@ export function CreateInvoice(): ReactNode {
   const onSubmit = (e: FormEvent): void => {
     e.preventDefault();
     setError(undefined);
+    if (protectWithPassphrase && passphrase !== passphraseAgain) {
+      setError('The passphrases do not match.');
+      return;
+    }
     const form: InvoiceForm = {
       chainId,
       token,
@@ -65,10 +72,13 @@ export function CreateInvoice(): ReactNode {
       maxSlippageBps: slippage,
       memo,
       encrypt,
+      ...(protectWithPassphrase ? { passphrase } : {}),
     };
     buildInvoiceLink(form, services.baseUrl(), Math.floor(services.nowMs() / 1000)).then(
       (c) => {
         setCreated(c);
+        setPassphrase('');
+        setPassphraseAgain('');
         app.announce('Invoice link created.');
       },
       (err: unknown) => {
@@ -182,10 +192,24 @@ export function CreateInvoice(): ReactNode {
           <Field label="Maximum slippage (basis points)">{(id) => <input id={id} type="number" min={0} max={10000} value={slippage} onChange={(e) => { setSlippage(Number(e.target.value)); }} />}</Field>
           <Field label="Memo (optional, shown to the payer)">{(id) => <textarea id={id} rows={2} maxLength={500} value={memo} onChange={(e) => { setMemo(e.target.value); }} />}</Field>
           <div className="check">
-            <input id="enc" type="checkbox" checked={encrypt} onChange={(e) => { setEncrypt(e.target.checked); }} />
-            <label htmlFor="enc">Encrypt line items and memo inside the link</label>
+            <input id="enc" type="checkbox" checked={encrypt} disabled={protectWithPassphrase} onChange={(e) => { setEncrypt(e.target.checked); }} />
+            <label htmlFor="enc">Encrypt line items and memo with a key included in the link</label>
           </div>
-          <p className="hint">The decryption key is part of the link, so anyone holding the link can still read everything. Encryption only keeps the text out of casual views of the link.</p>
+          <p className="hint">The decryption key is part of the link, so this only keeps details out of casual views. Use a passphrase below to keep the entire invoice encrypted.</p>
+          <div className="check">
+            <input id="passphrase-protect" type="checkbox" checked={protectWithPassphrase} onChange={(e) => { setProtectWithPassphrase(e.target.checked); }} />
+            <label htmlFor="passphrase-protect">Protect the entire invoice with a passphrase</label>
+          </div>
+          {protectWithPassphrase && (
+            <>
+              <Field label="Invoice passphrase (at least 14 characters)" hint="Use several unrelated words. Send the passphrase to the payer through a different channel from the invoice link.">
+                {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" value={passphrase} onChange={(e) => { setPassphrase(e.target.value); }} />}
+              </Field>
+              <Field label="Repeat invoice passphrase">
+                {(id) => <input id={id} type="password" autoComplete="off" value={passphraseAgain} onChange={(e) => { setPassphraseAgain(e.target.value); }} />}
+              </Field>
+            </>
+          )}
         </fieldset>
 
         <button type="submit" className="btn btn-primary">Create invoice link</button>
@@ -197,11 +221,15 @@ export function CreateInvoice(): ReactNode {
         <div className="result" aria-live="polite">
           <h3>Your invoice link</h3>
           <Notice kind="warn" title="Bearer link">
-            Anyone who has this link or its QR code can read the invoice{created.encrypted ? ' (the encryption key is inside it)' : ''} and can pay it. Phone photo backups, clipboards, chat previews and browser history may keep a copy. Do not post it publicly unless that is intended.
+            Anyone who has this link or its QR code can pay it. {created.passphraseProtected ? 'The invoice contents are protected by a passphrase, which you must send separately; the passphrase cannot be recovered if lost.' : created.encrypted ? 'Anyone with the link can also read the invoice because its encryption key is inside the link.' : 'Anyone with the link can read the invoice.'} Phone photo backups, clipboards, chat previews and browser history may keep a copy. Do not post it publicly unless that is intended.
           </Notice>
           <Field label="Link">{(id) => <textarea id={id} readOnly rows={4} className="mono" value={created.link} onFocus={(e) => { e.currentTarget.select(); }} />}</Field>
           <p><CopyButton text={created.link} label="Copy link" /></p>
-          <QrView text={created.link} caption="QR code containing the invoice link" />
+          <QrFrame
+            kind={created.encrypted && !created.passphraseProtected ? 'bearer' : 'shareable'}
+            text={created.link}
+            caption="QR code containing the invoice link"
+          />
         </div>
       )}
     </section>

@@ -3,6 +3,7 @@ pragma solidity 0.8.28;
 
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
 import {PolicyBase} from "../PolicyBase.t.sol";
 import {PolicyAccount} from "../../src/PolicyAccount.sol";
@@ -269,13 +270,25 @@ contract PolicyAuditTest is PolicyBase {
         assertEq(acct.pendingDestination(), newDest);
     }
 
-    /// @dev Pending withdrawals are paid to the destination at EXECUTION time.
-    function test_pendingWithdrawFollowsDestinationChange() public {
+    /// @dev A destination change invalidates pending withdrawals until cancelled and re-signed.
+    function test_pendingWithdrawCannotFollowDestinationChange() public {
         bytes32 wid = _request(acct, address(tokenU), 100e6, 1, 2);
-        _propose(newDest, 2);
+        _propose(newDest, 3);
         vm.warp(block.timestamp + 2 * DELAY); // both mature; destination change executes first
         acct.executeDestinationChange();
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IPolicyAccount.DestinationChangedSinceRequest.selector, destination, newDest
+            )
+        );
         acct.executeWithdraw(wid);
+        assertEq(tokenU.balanceOf(newDest), 0);
+        assertEq(tokenU.balanceOf(destination), 0);
+        bytes memory cancelSig = _sigCancel(ownerPk, address(acct), wid);
+        acct.cancel(wid, cancelSig);
+        bytes32 replacement = _request(acct, address(tokenU), 100e6, 4, 2);
+        vm.warp(block.timestamp + DELAY);
+        acct.executeWithdraw(replacement);
         assertEq(tokenU.balanceOf(newDest), 100e6);
         assertEq(tokenU.balanceOf(destination), 0);
     }
@@ -376,9 +389,9 @@ contract PolicyAuditTest is PolicyBase {
         assertEq(address(bomb).balance, 1 ether);
     }
 
-    /// @dev Counterfactual funds depend on the factory being able to deploy. If the fee token blacklists/pauses the
-    /// immutable FEE_RECIPIENT, nobody can deploy the account any more and funds sent to its address are frozen.
-    function test_EXPLOIT_feeTokenBlacklistFreezesCounterfactualAccounts() public {
+    /// @dev M-03 regression: a fee transfer refusal must not freeze funds sent to a valid counterfactual
+    /// account when the caller has enough fee-token balance and allowance.
+    function test_feeTokenBlacklistDoesNotFreezeCounterfactualAccounts() public {
         BlacklistToken usdc = new BlacklistToken();
         PolicyAccountFactory f =
             new PolicyAccountFactory(address(impl), address(usdc), 3e6, feeRecipient);
@@ -391,9 +404,33 @@ contract PolicyAuditTest is PolicyBase {
         usdc.approve(address(f), type(uint256).max);
         usdc.setBlacklisted(feeRecipient, true); // issuer action
         vm.prank(payer);
-        vm.expectRevert(abi.encodeWithSelector(BlacklistToken.Blacklisted.selector, feeRecipient));
-        f.deploy(o2, destination, 1 days, bytes32(0));
-        // No other path can create code at `predicted`: funds are frozen until the issuer reverses the action.
-        assertEq(predicted.code.length, 0);
+        address deployed = f.deploy(o2, destination, 1 days, bytes32(0));
+        assertEq(deployed, predicted);
+        assertGt(predicted.code.length, 0);
+        assertEq(usdc.balanceOf(predicted), 1_000_000e6);
+        assertEq(usdc.balanceOf(payer), 100e6);
+        assertEq(PolicyAccount(payable(predicted)).owner(), o2);
+    }
+
+    /// @dev Timestamp fields must never wrap to an already-mature uint64 value.
+    function test_timestampNearUint64Max_revertsInsteadOfWrapping() public {
+        uint256 t = uint256(type(uint64).max) - DELAY + 1;
+        vm.warp(t);
+        IPolicyAccount.Withdraw memory w = _wFor(address(tokenU), 1, 1, _lp(2));
+        w.deadline = type(uint256).max;
+        vm.expectRevert(
+            abi.encodeWithSelector(SafeCast.SafeCastOverflowedUintDowncast.selector, 64, t + DELAY)
+        );
+        acct.requestWithdraw(w, _lp(2), _sigW(ownerPk, address(acct), w));
+
+        uint256 p = uint256(type(uint64).max) - 2 * uint256(DELAY) + 1;
+        vm.warp(p);
+        bytes memory sig = _sigPropose(ownerPk, address(acct), newDest, type(uint256).max, 2);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                SafeCast.SafeCastOverflowedUintDowncast.selector, 64, p + 2 * uint256(DELAY)
+            )
+        );
+        acct.proposeDestination(newDest, type(uint256).max, 2, sig);
     }
 }

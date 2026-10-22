@@ -1,10 +1,11 @@
-import { assertRegistryDeployed, buildLookupCall, buildRegisterKeysCall, ERC6538_REGISTRY_ADDRESS, lookupMetaAddress, type RegistryCall } from '@ghostpay/chain-adapters';
+import { buildLookupCall, buildRegisterKeysCall, ERC6538_REGISTRY_ADDRESS, lookupMetaAddress, verifyRegistry, type RegistryCall } from '@ghostpay/chain-adapters';
 import { useEffect, useState, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { userMessage } from '../../lib/errors';
 import { useServices } from '../../lib/services';
 import { connectWallet, sendViaWallet, verifySubmission, type WalletInfo, type WalletSession } from '../../lib/wallet';
 import { useApp } from '../../state';
+import { buildClearRegistryCall } from '../../lib/registry';
 
 type Msg = { readonly kind: 'ok' | 'error' | 'warn'; readonly text: string };
 
@@ -49,6 +50,7 @@ export function RegistryView(): ReactNode {
   const [wallets, setWallets] = useState<readonly WalletInfo[] | undefined>(undefined);
   const [wallet, setWallet] = useState<WalletSession | undefined>(undefined);
   const [reviewed, setReviewed] = useState<RegistryCall | undefined>(undefined);
+  const [reviewAction, setReviewAction] = useState<'publish' | 'clear' | undefined>(undefined);
   const [busy, setBusy] = useState(false);
   const [pub, setPub] = useState<Msg | undefined>(undefined);
   const [who, setWho] = useState('');
@@ -59,6 +61,7 @@ export function RegistryView(): ReactNode {
   const metaAddress = app.session?.metaAddress;
   useEffect(() => {
     setReviewed(undefined);
+    setReviewAction(undefined);
     setWallet(undefined);
   }, [chainId, consent, metaAddress]);
 
@@ -93,14 +96,15 @@ export function RegistryView(): ReactNode {
     );
   };
 
-  const onReview = (): void => {
+  const onReview = (action: 'publish' | 'clear'): void => {
     if (metaAddress === undefined) return;
     setBusy(true);
     void (async () => {
       try {
         const rpc = await rpcFor();
-        await assertRegistryDeployed(rpc);
-        setReviewed(buildRegisterKeysCall(metaAddress));
+        await verifyRegistry(rpc);
+        setReviewed(action === 'publish' ? buildRegisterKeysCall(metaAddress) : buildClearRegistryCall());
+        setReviewAction(action);
         setPub(undefined);
       } catch (e) {
         setPub(rpcMissing(e) ? noRpc : { kind: 'error', text: userMessage(e) });
@@ -111,20 +115,23 @@ export function RegistryView(): ReactNode {
   };
 
   const onPublish = (): void => {
-    if (wallet === undefined || reviewed === undefined || chainId === undefined) return;
+    if (wallet === undefined || reviewed === undefined || reviewAction === undefined || chainId === undefined || metaAddress === undefined) return;
     setBusy(true);
     void (async () => {
       try {
         const rpc = await rpcFor();
-        await assertRegistryDeployed(rpc);
-        const hash = await sendViaWallet(wallet, { to: reviewed.to, data: reviewed.data, value: reviewed.value });
-        const check = await verifySubmission(rpc, hash, { from: wallet.account, to: reviewed.to, data: reviewed.data, value: 0n, chainId }, services.sleep);
+        await verifyRegistry(rpc);
+        const expected = reviewAction === 'publish' ? buildRegisterKeysCall(metaAddress) : buildClearRegistryCall();
+        if (expected.to !== reviewed.to || expected.data !== reviewed.data || expected.value !== reviewed.value) throw new Error('The reviewed registry transaction changed. Review it again.');
+        const hash = await sendViaWallet(wallet, expected);
+        const check = await verifySubmission(rpc, hash, { from: wallet.account, to: expected.to, data: expected.data, value: 0n, chainId }, services.sleep);
         setReviewed(undefined);
+        setReviewAction(undefined);
         setPub({
           kind: check === 'verified' ? 'ok' : 'warn',
-          text: `Registration submitted: ${hash}. ${check === 'verified' ? 'Your RPC saw the same transaction you reviewed.' : 'Your RPC has not seen it yet; check a block explorer.'}`,
+          text: `${reviewAction === 'publish' ? 'Registration' : 'Clear'} submitted: ${hash}. ${check === 'verified' ? 'Your RPC saw the same transaction you reviewed.' : 'Your RPC has not seen it yet; check a block explorer.'}${reviewAction === 'clear' ? ' This removes the current entry only; public chain history remains visible.' : ''}`,
         });
-        app.announce('Registration submitted.');
+        app.announce(`${reviewAction === 'publish' ? 'Registration' : 'Clear'} submitted.`);
       } catch (e) {
         setPub(rpcMissing(e) ? noRpc : { kind: 'error', text: userMessage(e) });
       } finally {
@@ -141,6 +148,7 @@ export function RegistryView(): ReactNode {
       try {
         const call = buildLookupCall(who.trim());
         const rpc = await rpcFor();
+        await verifyRegistry(rpc);
         const meta = await lookupMetaAddress(rpc, who.trim());
         setFound({ meta, call });
       } catch (e) {
@@ -156,7 +164,7 @@ export function RegistryView(): ReactNode {
       <h2 id="reg-h">Public registry (ERC-6538)</h2>
       <p className="hint">
         Canonical registry address <Mono>{ERC6538_REGISTRY_ADDRESS}</Mono>, taken from the text of EIP-6538. The page checks that contract code exists on the
-        chosen network and refuses otherwise. Test networks only until mainnets are enabled.
+        chosen network and checks its ERC-6538 identity before use. Test networks only until mainnets are enabled.
       </p>
       <Field label="Network">
         {(id) => (
@@ -174,7 +182,7 @@ export function RegistryView(): ReactNode {
           <Notice kind="warn" title="This is a public association with your wallet address">
             Registering writes your meta-address into a public contract, linked permanently to the wallet address that sends the transaction. Anyone can then
             see that this wallet receives GhostPay payments and can look up where to pay it. This cannot be undone; you can only overwrite the entry. If that
-            link would harm your privacy, do not publish, and share the meta-address directly instead.
+            link would harm your privacy, do not publish, and share the meta-address directly instead. Clearing or overwriting replaces the current value but does not erase transaction history.
           </Notice>
           <p>Meta-address to publish: <Mono>{metaAddress}</Mono></p>
           <p>
@@ -193,13 +201,16 @@ export function RegistryView(): ReactNode {
           )}
           {wallet !== undefined && <p>Wallet: <Mono>{wallet.account}</Mono> on {chain?.name ?? String(wallet.chainId)}</p>}
           {wallet !== undefined && reviewed === undefined && (
-            <button type="button" className="btn" disabled={busy || !consent} onClick={onReview}>Review transaction</button>
+            <div className="actions">
+              <button type="button" className="btn" disabled={busy || !consent} onClick={() => { onReview('publish'); }}>Review publish transaction</button>
+              <button type="button" className="btn" disabled={busy || !consent} onClick={() => { onReview('clear'); }}>Review clear transaction</button>
+            </div>
           )}
           {reviewed !== undefined && chain !== undefined && (
             <>
               <h4>Transaction review</h4>
               <CallPreview call={reviewed} chainName={chain.name} />
-              <button type="button" className="btn btn-primary" disabled={busy || !consent} onClick={onPublish}>Publish to registry</button>
+              <button type="button" className="btn btn-primary" disabled={busy || !consent} onClick={onPublish}>{reviewAction === 'clear' ? 'Clear registry entry' : 'Publish to registry'}</button>
             </>
           )}
         </>

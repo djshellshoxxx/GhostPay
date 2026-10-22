@@ -6,8 +6,15 @@
     "outDir": "dist",
     "declaration": true,
     "sourceMap": true,
-    "types": []
+    "types": [
+      "node"
+    ]
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["src/**/*.test.ts", "src/**/*.testutil.ts"]
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/**/*.testutil.ts"
+  ]
 }

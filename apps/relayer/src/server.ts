@@ -1,7 +1,14 @@
 import { randomUUID, timingSafeEqual } from 'node:crypto';
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import type { AddressInfo } from 'node:net';
-import { TokenBucketLimiter, TrustedProxies, bucketKey, monotonicNow, resolveClientIp } from '@ghostpay/relayer-guard';
+import {
+  TokenBucketLimiter,
+  TrustedProxies,
+  bucketKey,
+  groupKey,
+  monotonicNow,
+  resolveClientIp,
+} from '@ghostpay/relayer-guard';
 import type { RelayerConfig } from './config.js';
 import { RelayerError, invalid } from './errors.js';
 import type { Metrics } from './metrics.js';
@@ -183,15 +190,22 @@ export class RelayerHttpServer {
    * socket peer is in `trustedProxies`; an unparseable peer or a broken forwarded chain is refused
    * rather than collapsed into one shared bucket (S3-07).
    */
-  private clientKey(req: IncomingMessage): string {
+  private clientKeys(req: IncomingMessage): { readonly key: string; readonly group: string } {
     const peer = req.socket.remoteAddress;
     const r = resolveClientIp({ peer, forwardedFor: req.headers['x-forwarded-for'], trusted: this.proxies });
     if (r === null) throw new RelayerError(400, 'invalid_client_address');
-    return bucketKey(r.ip);
+    return { key: bucketKey(r.ip), group: groupKey(r.ip) };
   }
 
   private async handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
-    const c: Ctx = { req, res, requestId: this.d.newRequestId?.() ?? randomUUID(), route: 'other', status: 500, errorClass: undefined };
+    const c: Ctx = {
+      req,
+      res,
+      requestId: this.d.newRequestId?.() ?? randomUUID(),
+      route: 'other',
+      status: 500,
+      errorClass: undefined,
+    };
     for (const [k, v] of Object.entries(SECURITY_HEADERS)) res.setHeader(k, v);
     res.setHeader('Vary', 'Origin');
     try {
@@ -260,10 +274,14 @@ export class RelayerHttpServer {
         if (token === undefined || this.d.metrics === undefined) throw new RelayerError(404, 'not_found');
         const expected = Buffer.from(`Bearer ${token}`);
         const given = Buffer.from(auth ?? '');
-        if (given.length !== expected.length || !timingSafeEqual(given, expected)) throw new RelayerError(401, 'unauthorized');
+        if (given.length !== expected.length || !timingSafeEqual(given, expected))
+          throw new RelayerError(401, 'unauthorized');
         const text = this.d.metrics.render();
         c.status = 200;
-        res.writeHead(200, { 'Content-Type': 'text/plain; version=0.0.4; charset=utf-8', 'Content-Length': Buffer.byteLength(text) });
+        res.writeHead(200, {
+          'Content-Type': 'text/plain; version=0.0.4; charset=utf-8',
+          'Content-Length': Buffer.byteLength(text),
+        });
         res.end(text);
         return;
       }
@@ -272,12 +290,13 @@ export class RelayerHttpServer {
         return;
       case '/v1/quote':
       case '/v1/sweep': {
-        const clientKey = this.clientKey(req);
-        const limit = this.d.ipLimiter.take(clientKey);
+        const { key: clientKey, group: clientGroupKey } = this.clientKeys(req);
+        const limit = this.d.ipLimiter.take(clientKey, clientGroupKey);
         if (!limit.ok) throw new RelayerError(429, 'rate_limited_ip', limit.retryAfterSeconds);
         if (path === '/v1/quote') {
           const g = this.quoteBudget.take('quote');
-          if (!g.ok) throw new RelayerError(429, 'rate_limited_global', Math.max(1, Math.ceil(g.retryAfterMs / 1000)));
+          if (!g.ok)
+            throw new RelayerError(429, 'rate_limited_global', Math.max(1, Math.ceil(g.retryAfterMs / 1000)));
         }
         const ct = req.headers['content-type'];
         if (ct === undefined || !JSON_TYPE.test(ct)) throw new RelayerError(415, 'unsupported_media_type');
@@ -285,7 +304,15 @@ export class RelayerHttpServer {
         if (path === '/v1/quote') {
           this.send(c, 200, await this.d.service.quote(parseQuoteRequest(body)));
         } else {
-          this.send(c, 200, await this.d.service.sweep(parseSweepRequest(body), { requestId: c.requestId, clientKey }));
+          this.send(
+            c,
+            200,
+            await this.d.service.sweep(parseSweepRequest(body), {
+              requestId: c.requestId,
+              clientKey,
+              clientGroupKey,
+            }),
+          );
         }
         return;
       }

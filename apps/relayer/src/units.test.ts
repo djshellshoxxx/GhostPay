@@ -1,5 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
-import { createWebhookAlerts, isPublicIp, nullAlerts, publicOnlyLookup, validateWebhookUrl } from './alerts.js';
+import {
+  createWebhookAlerts,
+  isPublicIp,
+  nullAlerts,
+  publicOnlyLookup,
+  validateWebhookUrl,
+} from './alerts.js';
 import { Metrics } from './metrics.js';
 import { DailyBudget } from './budget.js';
 import { parseAddress, parseHex, parseInt53, parseObject, parseUint } from './codec.js';
@@ -39,8 +45,24 @@ describe('codec', () => {
 
 describe('quote token', () => {
   const secret = new Uint8Array(32).fill(1);
-  const claims: QuoteClaims = { chainId: 1, token: USDC, owner: OWNER, destination: DEST, amount: 10n, fee: 2n, feeTo: FEE_TO, expiresAt: 1234 };
-  const binding = { chainId: claims.chainId, token: claims.token, owner: claims.owner, destination: claims.destination, amount: claims.amount, feeTo: claims.feeTo };
+  const claims: QuoteClaims = {
+    chainId: 1,
+    token: USDC,
+    owner: OWNER,
+    destination: DEST,
+    amount: 10n,
+    fee: 2n,
+    feeTo: FEE_TO,
+    expiresAt: 1234,
+  };
+  const binding = {
+    chainId: claims.chainId,
+    token: claims.token,
+    owner: claims.owner,
+    destination: claims.destination,
+    amount: claims.amount,
+    feeTo: claims.feeTo,
+  };
   it('round-trips and binds every field', () => {
     const t = signQuote(secret, claims);
     expect(verifyQuote(secret, t, binding)).toEqual({ fee: 2n, expiresAt: 1234 });
@@ -120,6 +142,16 @@ describe('limiter primitives', () => {
     t = 10_000; // salt rotation drops all state
     expect(rl.take('a').ok && rl.take('a').ok).toBe(true);
   });
+  it('RateLimiter hashes a shared abuse group alongside distinct client buckets', () => {
+    const t = 0;
+    const hasher = new KeyHasher(10_000, () => t);
+    const rl = new RateLimiter({ perMinute: 60, burst: 2, maxKeys: 8 }, hasher, () => t);
+    expect(rl.take('client-one', 'network-group').ok).toBe(true);
+    expect(rl.take('client-one', 'network-group').ok).toBe(true);
+    expect(rl.take('client-two', 'network-group').ok).toBe(true);
+    expect(rl.take('client-two', 'network-group').ok).toBe(true);
+    expect(rl.take('client-three', 'network-group').ok).toBe(false);
+  });
 });
 
 describe('ChainLane and NonceManager', () => {
@@ -151,7 +183,7 @@ describe('ChainLane and NonceManager', () => {
     const lane = new ChainLane(2);
     await expect(lane.submit(() => Promise.reject(new Error('x')))).rejects.toThrow('x');
     await expect(lane.submit(() => Promise.reject(new Error('str')))).rejects.toThrow('str');
-    expect((await lane.submit(() => Promise.resolve({ value: 1, settled: Promise.resolve() })))).toBe(1);
+    expect(await lane.submit(() => Promise.resolve({ value: 1, settled: Promise.resolve() }))).toBe(1);
   });
   it('rejects when full or closed', async () => {
     const lane = new ChainLane(1);
@@ -160,11 +192,15 @@ describe('ChainLane and NonceManager', () => {
       release = r;
     });
     const first = lane.submit(() => Promise.resolve({ value: 1, settled: gate }));
-    await expect(lane.submit(() => Promise.resolve({ value: 2, settled: Promise.resolve() }))).rejects.toMatchObject({ code: 'queue_full' });
+    await expect(
+      lane.submit(() => Promise.resolve({ value: 2, settled: Promise.resolve() })),
+    ).rejects.toMatchObject({ code: 'queue_full' });
     release();
     await first;
     lane.close();
-    await expect(lane.submit(() => Promise.resolve({ value: 3, settled: Promise.resolve() }))).rejects.toMatchObject({ code: 'shutting_down' });
+    await expect(
+      lane.submit(() => Promise.resolve({ value: 3, settled: Promise.resolve() })),
+    ).rejects.toMatchObject({ code: 'shutting_down' });
   });
   it('NonceManager hands out sequential nonces and re-syncs on invalidate', async () => {
     const fetchPending = vi.fn(() => Promise.resolve(5));
@@ -222,7 +258,14 @@ describe('logging', () => {
         txHash: `0x${'ab'.repeat(32)}`,
         errorClass: 'nonce_used',
       }),
-    ).toEqual({ requestId: 'abcdef12-1234', route: '/v1/sweep', status: 200, chainId: 1, txHash: `0x${'ab'.repeat(32)}`, errorClass: 'nonce_used' });
+    ).toEqual({
+      requestId: 'abcdef12-1234',
+      route: '/v1/sweep',
+      status: 200,
+      chainId: 1,
+      txHash: `0x${'ab'.repeat(32)}`,
+      errorClass: 'nonce_used',
+    });
     expect(
       sanitizeFields({
         requestId: 'has spaces and 0xdeadbeef',
@@ -237,14 +280,27 @@ describe('logging', () => {
   });
   it('ignores smuggled extra fields and bad event names', () => {
     const lines: string[] = [];
-    const log = createLogger((l) => lines.push(l), () => 0);
-    const smuggled = { requestId: 'abcdef12', owner: '0xSECRET', destination: '0xSECRET2', signature: 'sig' } as unknown as Parameters<typeof log.log>[2];
+    const log = createLogger(
+      (l) => lines.push(l),
+      () => 0,
+    );
+    const smuggled = {
+      requestId: 'abcdef12',
+      owner: '0xSECRET',
+      destination: '0xSECRET2',
+      signature: 'sig',
+    } as unknown as Parameters<typeof log.log>[2];
     log.log('info', 'ok_event', smuggled);
     log.log('warn', 'Bad Event 0xabc');
     log.log('error', 'plain', { errorClass: 'x_y' });
     expect(lines.join('')).not.toContain('SECRET');
     expect(lines.join('')).not.toContain('sig"');
-    expect(JSON.parse(lines[0] as string)).toEqual({ ts: '1970-01-01T00:00:00.000Z', level: 'info', event: 'ok_event', requestId: 'abcdef12' });
+    expect(JSON.parse(lines[0] as string)).toEqual({
+      ts: '1970-01-01T00:00:00.000Z',
+      level: 'info',
+      event: 'ok_event',
+      requestId: 'abcdef12',
+    });
     expect((JSON.parse(lines[1] as string) as { event: string }).event).toBe('invalid_event');
     nullLogger.log('info', 'x');
   });
@@ -257,13 +313,16 @@ describe('logging', () => {
 
 describe('policy and pricing', () => {
   it('allow-all policy allows', async () => {
-    expect(await allowAllPolicy.check({ chainId: 1, token: USDC, owner: OWNER, destination: DEST, amount: 1n })).toEqual({ allow: true });
+    expect(
+      await allowAllPolicy.check({ chainId: 1, token: USDC, owner: OWNER, destination: DEST, amount: 1n }),
+    ).toEqual({ allow: true });
   });
   it('parseUsdMicro', () => {
     expect(parseUsdMicro('3000')).toBe(3_000_000_000n);
     expect(parseUsdMicro('0.000001')).toBe(1n);
     expect(parseUsdMicro('1.5')).toBe(1_500_000n);
-    for (const bad of ['0', '0.0', '-1', '1.1234567', '', 'abc', '1e3']) expect(() => parseUsdMicro(bad)).toThrow();
+    for (const bad of ['0', '0.0', '-1', '1.1234567', '', 'abc', '1e3'])
+      expect(() => parseUsdMicro(bad)).toThrow();
   });
   it('FixedStablePriceSource converts wei to token units rounding up', async () => {
     const tok: AllowedToken = { address: USDC, symbol: 'USDC', decimals: 6, permit: true, usdStable: true };
@@ -308,7 +367,10 @@ describe('Metrics', () => {
     m.inc('relayer_x_total', { route: 'evil"\n} 1\n#', status: 1 });
     m.inc('Bad Name');
     m.inc('relayer_plain_total');
-    m.gauge('relayer_g', 'help', () => [{ labels: { chain_id: '1' }, value: 2 }, { labels: {}, value: Number.NaN }]);
+    m.gauge('relayer_g', 'help', () => [
+      { labels: { chain_id: '1' }, value: 2 },
+      { labels: {}, value: Number.NaN },
+    ]);
     const text = m.render();
     expect(text).toContain('relayer_x_total{route="/v1/sweep",status="200"} 2');
     expect(text).toContain('route="invalid"');
@@ -319,7 +381,12 @@ describe('Metrics', () => {
     expect(text).not.toContain('Bad Name');
     for (let i = 0; i < 600; i++) m.inc('relayer_many_total', { n: i });
     expect(text.split('\n').length).toBeLessThan(40);
-    expect(m.render().split('\n').filter((l) => l.startsWith('relayer_many_total')).length).toBeLessThanOrEqual(512);
+    expect(
+      m
+        .render()
+        .split('\n')
+        .filter((l) => l.startsWith('relayer_many_total')).length,
+    ).toBeLessThanOrEqual(512);
   });
 });
 
@@ -333,9 +400,12 @@ describe('webhook alerts', () => {
     expect(() => validateWebhookUrl('https://127.0.0.1/hook')).toThrow(/private/);
     expect(() => validateWebhookUrl('https://hooks.internal/hook')).toThrow(/public DNS/);
 
-    const lookup = publicOnlyLookup((_host, _options, cb) => cb(null, [
-      { address: '8.8.8.8', family: 4 }, { address: '10.0.0.1', family: 4 },
-    ]));
+    const lookup = publicOnlyLookup((_host, _options, cb) =>
+      cb(null, [
+        { address: '8.8.8.8', family: 4 },
+        { address: '10.0.0.1', family: 4 },
+      ]),
+    );
     lookup('hooks.example', { all: true }, (err) => expect(err?.code).toBe('ENOTPUBLIC'));
   });
 
@@ -349,13 +419,26 @@ describe('webhook alerts', () => {
       if (fail === 'throw') return Promise.reject(new Error('net'));
       return Promise.resolve({ ok: fail === 'none' });
     }) as unknown as typeof fetch;
-    const sink = createWebhookAlerts({ url: 'https://hooks.example/x', now: () => t, fetchImpl, logger: createLogger((l) => logs.push(l)), minIntervalMs: 1000 });
+    const sink = createWebhookAlerts({
+      url: 'https://hooks.example/x',
+      now: () => t,
+      fetchImpl,
+      logger: createLogger((l) => logs.push(l)),
+      minIntervalMs: 1000,
+    });
     sink.send({ kind: 'breaker_open', chainId: 5 });
     sink.send({ kind: 'breaker_open', chainId: 5 });
     sink.send({ kind: 'low_balance' });
     expect(sent).toHaveLength(2);
-    expect(JSON.parse(sent[0]?.body ?? '{}')).toEqual({ kind: 'breaker_open', chainId: 5, text: 'ghostpay-relayer alert: breaker_open chain 5' });
-    expect(JSON.parse(sent[1]?.body ?? '{}')).toEqual({ kind: 'low_balance', text: 'ghostpay-relayer alert: low_balance' });
+    expect(JSON.parse(sent[0]?.body ?? '{}')).toEqual({
+      kind: 'breaker_open',
+      chainId: 5,
+      text: 'ghostpay-relayer alert: breaker_open chain 5',
+    });
+    expect(JSON.parse(sent[1]?.body ?? '{}')).toEqual({
+      kind: 'low_balance',
+      text: 'ghostpay-relayer alert: low_balance',
+    });
     t = 1000;
     fail = 'throw';
     sink.send({ kind: 'breaker_open', chainId: 5 });
