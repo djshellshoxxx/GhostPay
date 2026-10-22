@@ -18,6 +18,11 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 5
+    # The fhEVM plugin validates exact paired Solidity/SDK versions; upgrade this stack together.
+    ignore:
+      - dependency-name: "@fhevm/solidity"
+        update-types: ["version-update:semver-minor", "version-update:semver-major"]
+      - dependency-name: "@zama-fhe/relayer-sdk"
     groups:
       npm-minor-patch:
         update-types: ["minor", "patch"]
