@@ -1,0 +1,40 @@
+<!--page title="Why GhostPay" h1="Why / Manifesto" desc="Why GhostPay exists, what it promises and what it does not." -->
+<p class="lead">A public blockchain is a public ledger. If a shop gives every customer the same address, anyone can read its sales, balance and customers. GhostPay tries to fix one piece of that: <strong>address reuse</strong>.</p>
+
+<div class="notice notice-warn" role="note">
+<p><strong>Read this first.</strong> GhostPay is unaudited, testnet-only and not deployed anywhere. It reduces address reuse. It does <strong>not</strong> make payments anonymous or untraceable.</p>
+</div>
+
+<h2>The idea in three lines</h2>
+<ol>
+<li>The seller shares one public <strong>meta-address</strong>.</li>
+<li>Every payment goes to a fresh <strong>one-time address</strong> that only the seller can find and spend from.</li>
+<li>Invoices travel in the link itself, after the <code>#</code>, so the web server never receives them.</li>
+</ol>
+
+<h2>What we stand for</h2>
+<div class="cards two">
+<article class="card"><h3>Runs in your browser</h3><p>Keys are made and used on your device. The app has no accounts, no analytics and no third-party scripts.</p></article>
+<article class="card"><h3>Limits stated up front</h3><p>The payer, amount, token, time and the use of the router stay public. We say so on the first page of the app.</p></article>
+<article class="card"><h3>No back door in the contracts</h3><p>The contracts are written with no owner, proxy, pause or admin function. They are not deployed and not independently audited, so treat this as a design goal to be checked.</p></article>
+<article class="card"><h3>Fees you can read</h3><p>0.25 % when you pay through the router. Paying the one-time address directly costs no GhostPay fee. See <a href="{{root}}help/fees.html">the fee model</a>.</p></article>
+</div>
+
+<h2>What we do not claim</h2>
+<ul>
+<li>Not anonymous. A payer can follow funds from the one-time address to the wallet you sweep to.</li>
+<li>Not audited by a third party. Only self-run and AI-assisted reviews exist.</li>
+<li>Not live. No contract is deployed and the app disables payment without a deployment manifest.</li>
+<li>Not for real money. Ethereum Sepolia and Base Sepolia testnets only.</li>
+<li>Not finished. Most privacy options on the <a href="{{root}}privacy-options.html">options page</a> are planned, not built.</li>
+</ul>
+
+<h2>Manifesto, short</h2>
+<blockquote class="card"><p>Reduce what a stranger can learn from your address. Say plainly what is still visible. Never ship a claim the code cannot back. Put the keys in the user&rsquo;s hands, and the warnings on the first screen.</p></blockquote>
+
+<div class="btn-row">
+<a class="btn btn-primary" href="{{root}}how-it-works.html">See how it works</a>
+<a class="btn" href="{{root}}privacy-options.html">Privacy options</a>
+<a class="btn" href="{{root}}help/">Help</a>
+<a class="btn" href="{{root}}">Open the app</a>
+</div>
