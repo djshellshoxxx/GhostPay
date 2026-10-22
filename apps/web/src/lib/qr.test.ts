@@ -21,6 +21,12 @@ describe('qr', () => {
     expect(svg.startsWith('<svg xmlns="http://www.w3.org/2000/svg"')).toBe(true);
     expect(svg).not.toMatch(/script|onload|href/i);
   });
+  it('rejects malformed matrices instead of producing misleading SVG output', () => {
+    expect(() => qrSvgText({ size: 2, dark: [true] })).toThrow(/Invalid QR matrix/);
+    expect(() => qrPath({ size: -1, dark: [] })).toThrow(/Invalid QR matrix/);
+    expect(() => qrSvgText({ size: 178, dark: [] })).toThrow(/Invalid QR matrix/);
+    expect(() => qrPath({ size: 1, dark: [1 as unknown as boolean] })).toThrow(/Invalid QR matrix/);
+  });
   it('fails clearly when the text is too long for a QR code', () => {
     expect(() => makeQr('x'.repeat(5000))).toThrow(/too long for a QR/);
   });
