@@ -14,7 +14,11 @@ export type InvoiceErrorCode =
   | 'DECRYPT'
   | 'SIGNING'
   | 'RANDOMNESS'
-  | 'UNSUPPORTED';
+  | 'UNSUPPORTED'
+  | 'PASSPHRASE_REQUIRED'
+  | 'PASSPHRASE_UNEXPECTED'
+  | 'PASSPHRASE_POLICY'
+  | 'PASSPHRASE';
 
 /** Base class of every error thrown by this package. */
 export class InvoiceError extends Error {
@@ -93,5 +97,32 @@ export class RandomnessError extends InvoiceError {
 export class UnsupportedError extends InvoiceError {
   public constructor() {
     super('UNSUPPORTED', 'unsupported invoice version or algorithm');
+  }
+}
+/** The fragment is passphrase-protected (`A256GCM-PW`) and no passphrase was supplied. Prompt the user. */
+export class PassphraseRequiredError extends InvoiceError {
+  public constructor() {
+    super('PASSPHRASE_REQUIRED', 'invoice passphrase required');
+  }
+}
+/** A passphrase was supplied for a fragment that is not passphrase-protected (possible link substitution). */
+export class PassphraseUnexpectedError extends InvoiceError {
+  public constructor() {
+    super('PASSPHRASE_UNEXPECTED', 'invoice link is not passphrase protected');
+  }
+}
+/** Passphrase is not a well-formed string, is shorter than the minimum, or exceeds the byte cap. */
+export class PassphrasePolicyError extends InvoiceError {
+  public constructor() {
+    super('PASSPHRASE_POLICY', 'invoice passphrase does not meet the policy');
+  }
+}
+/**
+ * Wrong passphrase OR tampered passphrase-protected envelope. Deliberately one error with one fixed
+ * message: callers cannot tell which part failed (no oracle).
+ */
+export class WrongPassphraseError extends InvoiceError {
+  public constructor() {
+    super('PASSPHRASE', 'wrong passphrase or damaged invoice link');
   }
 }
