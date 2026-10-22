@@ -37,7 +37,8 @@ export function parseTronUri(uri: string, expectedNetwork?: TronNetwork): TronRe
   const params = query === undefined ? [] : parseQuery(query, { foldKeys: true });
   const v = new Map<string, string>();
   for (const p of params) {
-    if (!['amount', 'token', 'network', 'label', 'message'].includes(p.key)) return fail('UNKNOWN_REQUIRED_PARAM');
+    if (!['amount', 'token', 'network', 'label', 'message'].includes(p.key))
+      return fail('UNKNOWN_REQUIRED_PARAM');
     v.set(p.key, p.value);
   }
   const net = v.get('network') ?? 'mainnet';

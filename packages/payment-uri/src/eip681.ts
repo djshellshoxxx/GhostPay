@@ -105,12 +105,20 @@ export function parseEip681(uri: string, opts: Eip681Options = {}): Eip681Reques
   };
 
   if (fn === undefined) {
-    for (const k of get.keys()) if (!['value', 'gas', 'gasLimit', 'gasPrice'].includes(k)) return fail('UNKNOWN_REQUIRED_PARAM');
+    for (const k of get.keys())
+      if (!['value', 'gas', 'gasLimit', 'gasPrice'].includes(k)) return fail('UNKNOWN_REQUIRED_PARAM');
     const value = get.has('value') ? parseEip681Number(get.get('value')!) : undefined;
-    return { kind: 'native', recipient: recipientInfo('evm', target.address), ...(value === undefined ? {} : { value }), ...common };
+    return {
+      kind: 'native',
+      recipient: recipientInfo('evm', target.address),
+      ...(value === undefined ? {} : { value }),
+      ...common,
+    };
   }
   if (fn !== 'transfer') return fail('UNSUPPORTED');
-  for (const k of get.keys()) if (!['address', 'uint256', 'gas', 'gasLimit', 'gasPrice'].includes(k)) return fail('UNKNOWN_REQUIRED_PARAM');
+  for (const k of get.keys())
+    if (!['address', 'uint256', 'gas', 'gasLimit', 'gasPrice'].includes(k))
+      return fail('UNKNOWN_REQUIRED_PARAM');
   const to = get.get('address');
   if (to === undefined) return fail('INVALID_QUERY');
   const dest = parseEvmAddress(to);

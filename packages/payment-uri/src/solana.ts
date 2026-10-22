@@ -46,7 +46,8 @@ export function parseSolanaPay(uri: string): SolanaTransferRequest {
   if (scheme !== 'solana') return fail('INVALID_SCHEME');
   if (/[:%/]/.test(rest)) return fail('UNSUPPORTED');
   const recipient = parseSolanaAddress(rest);
-  const params = query === undefined ? [] : parseQuery(query, { foldKeys: true, repeatable: new Set(['reference']) });
+  const params =
+    query === undefined ? [] : parseQuery(query, { foldKeys: true, repeatable: new Set(['reference']) });
   const refs: string[] = [];
   const v = new Map<string, string>();
   for (const p of params) {
@@ -58,7 +59,9 @@ export function parseSolanaPay(uri: string): SolanaTransferRequest {
     else return fail('UNKNOWN_REQUIRED_PARAM');
   }
   const amount = v.has('amount') ? parseDecimal(v.get('amount')!, MAX_SCALE, BOUND) : undefined;
-  const splToken = v.has('spl-token') ? recipientInfo('solana', parseSolanaAddress(v.get('spl-token')!)) : undefined;
+  const splToken = v.has('spl-token')
+    ? recipientInfo('solana', parseSolanaAddress(v.get('spl-token')!))
+    : undefined;
   const label = v.has('label') ? checkText(v.get('label'), MAX_LABEL_BYTES) : undefined;
   const message = v.has('message') ? checkText(v.get('message'), MAX_MESSAGE_BYTES) : undefined;
   const memo = v.has('memo') ? checkText(v.get('memo'), MAX_MEMO_BYTES) : undefined;

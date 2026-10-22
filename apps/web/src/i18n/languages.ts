@@ -43,6 +43,17 @@ export const LANGUAGES: readonly LanguageInfo[] = [
   { code: 'sw', name: 'Kiswahili', englishName: 'Swahili', dir: 'ltr' },
 ];
 
+/**
+ * Locales whose catalog a native speaker has reviewed. Empty today: every non-English catalog is machine-drafted, and
+ * the language picker says so. A locale is added here only together with status "reviewed" in its catalog meta
+ * (scripts/i18n/check.mjs enforces that the two agree).
+ */
+export const REVIEWED_LOCALES: ReadonlySet<string> = new Set<string>();
+
+export function isReviewed(code: string): boolean {
+  return REVIEWED_LOCALES.has(code);
+}
+
 /** Development-only test locales generated from English (see pseudolocalize). Never offered in production builds. */
 export const PSEUDO_LANGUAGES: readonly LanguageInfo[] = [
   { code: 'en-XA', name: 'Pseudo (accented, +40 %)', englishName: 'Pseudo-locale (accented)', dir: 'ltr' },

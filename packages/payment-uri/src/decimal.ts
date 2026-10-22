@@ -39,7 +39,13 @@ export function toAtomic(d: Decimal, decimals: number): bigint {
 
 /** Formats a non-negative integer of atomic units as a canonical decimal string. */
 export function formatAtomic(units: bigint, decimals: number): string {
-  if (typeof units !== 'bigint' || units <= 0n || !Number.isInteger(decimals) || decimals < 0 || decimals > 77) {
+  if (
+    typeof units !== 'bigint' ||
+    units <= 0n ||
+    !Number.isInteger(decimals) ||
+    decimals < 0 ||
+    decimals > 77
+  ) {
     return fail('INVALID_AMOUNT');
   }
   const s = units.toString().padStart(decimals + 1, '0');

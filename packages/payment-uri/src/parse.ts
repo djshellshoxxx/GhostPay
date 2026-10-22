@@ -32,7 +32,8 @@ export interface ParseOptions {
 export function parsePaymentUri(text: string, opts: ParseOptions = {}): ParsedPayload {
   if (typeof text !== 'string') return fail('INVALID_INPUT');
   if (text.length === 0) return fail('INVALID_INPUT');
-  if (/^https?:\/\//i.test(text)) return { kind: 'invoice-link', value: parseInvoiceLink(text, opts.invoiceLink) };
+  if (/^https?:\/\//i.test(text))
+    return { kind: 'invoice-link', value: parseInvoiceLink(text, opts.invoiceLink) };
   if (text.length > MAX_URI_LENGTH) return fail('TOO_LONG');
   const c = text.indexOf(':');
   if (c <= 0) return fail('INVALID_SCHEME');
@@ -47,6 +48,9 @@ export function parsePaymentUri(text: string, opts: ParseOptions = {}): ParsedPa
     case 'tron':
       return { kind: 'tron', value: parseTronUri(text, opts.tronNetwork) };
     default:
-      return { kind: 'eip3770', value: parseChainAddress(text, opts.chainShortNames ?? DEFAULT_CHAIN_SHORT_NAMES) };
+      return {
+        kind: 'eip3770',
+        value: parseChainAddress(text, opts.chainShortNames ?? DEFAULT_CHAIN_SHORT_NAMES),
+      };
   }
 }

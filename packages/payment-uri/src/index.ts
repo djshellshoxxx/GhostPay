@@ -24,7 +24,12 @@ export { parseSolanaPay, buildSolanaPay, solanaAtomic } from './solana.js';
 export type { SolanaTransferRequest, BuildSolanaParams } from './solana.js';
 export { parseTronUri, buildTronUri } from './tron.js';
 export type { TronRequest, TronNetwork, BuildTronParams } from './tron.js';
-export { parseInvoiceLink, buildInvoiceLink, INVOICE_FRAGMENT_PREFIX, MAX_INVOICE_LINK_LENGTH } from './invoice-link.js';
+export {
+  parseInvoiceLink,
+  buildInvoiceLink,
+  INVOICE_FRAGMENT_PREFIX,
+  MAX_INVOICE_LINK_LENGTH,
+} from './invoice-link.js';
 export type { InvoiceLink, InvoiceLinkOptions } from './invoice-link.js';
 export { parsePaymentUri } from './parse.js';
 export type { ParsedPayload, ParseOptions } from './parse.js';

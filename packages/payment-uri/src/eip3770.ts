@@ -43,7 +43,8 @@ export function parseChainAddress(
   const i = text.indexOf(':');
   if (i <= 0) return fail('INVALID_INPUT');
   const shortName = text.slice(0, i);
-  if (!SHORT.test(shortName) || !Object.prototype.hasOwnProperty.call(registry, shortName)) return fail('INVALID_CHAIN_ID');
+  if (!SHORT.test(shortName) || !Object.prototype.hasOwnProperty.call(registry, shortName))
+    return fail('INVALID_CHAIN_ID');
   const chainId = registry[shortName]!;
   const a = parseEvmAddress(text.slice(i + 1));
   return { shortName, chainId, address: a.address, checksummed: a.checksummed };

@@ -83,7 +83,8 @@ export function parseBitcoinUri(uri: string, opts: BitcoinParseOptions = {}): Bi
   if (allowed.length === 0) return fail('INVALID_QUERY');
   const common = ORDER.filter((n) => allowed.every((a) => a.includes(n)));
   if (common.length === 0) return fail('NETWORK_MISMATCH');
-  if (opts.expectedNetwork !== undefined && !common.includes(opts.expectedNetwork)) return fail('NETWORK_MISMATCH');
+  if (opts.expectedNetwork !== undefined && !common.includes(opts.expectedNetwork))
+    return fail('NETWORK_MISMATCH');
   const network = opts.expectedNetwork ?? common[0]!;
   const am = vals.get('amount');
   const amountSats = am === undefined ? undefined : toAtomic(parseDecimal(am, 8, MAX_SATS), 8);
@@ -131,7 +132,8 @@ export function buildBitcoinUri(p: BuildBitcoinParams): string {
     pairs.push(['sp', s.address]);
   }
   if (p.amountSats !== undefined) {
-    if (typeof p.amountSats !== 'bigint' || p.amountSats <= 0n || p.amountSats > MAX_SATS) return fail('INVALID_AMOUNT');
+    if (typeof p.amountSats !== 'bigint' || p.amountSats <= 0n || p.amountSats > MAX_SATS)
+      return fail('INVALID_AMOUNT');
     pairs.push(['amount', formatAtomic(p.amountSats, 8)]);
   }
   if (p.label !== undefined) pairs.push(['label', checkText(p.label, MAX_LABEL_BYTES)]);

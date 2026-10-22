@@ -216,3 +216,6 @@ Each package has a README and, where present, a DEVIATIONS.md (choices where the
 
 - `packages/contracts/lib/` (vendored forge-std and OpenZeppelin, including their README, CONTRIBUTING and RELEASE_CHECKLIST files): third-party code, excluded.
 - `node_modules/`: excluded.
+
+- [Handoff](./HANDOFF.md): current state, lessons, how to resume.
+- [Completion plan](./COMPLETION_PLAN.md): what remains and how to finish it.

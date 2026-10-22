@@ -1,9 +1,33 @@
 import { describe, expect, it } from 'vitest';
 import {
-  buildBitcoinUri, buildChainAddress, buildEip681Erc20, buildEip681Native, buildInvoiceLink, buildSolanaPay, buildTronUri,
-  formatAtomic, parseBitcoinUri, parseBtcAddress, parseChainAddress, parseDecimal, parseEip681, parseEip681Number, parseEvmAddress,
-  parseInvoiceLink, parsePaymentUri, parseSilentPaymentAddress, parseSolanaPay, parseSolanaAddress, parseTronUri, parseTronAddress,
-  recipientInfo, solanaAtomic, toAtomic, hasMixedScript, pctDecode, pctEncode,
+  buildBitcoinUri,
+  buildChainAddress,
+  buildEip681Erc20,
+  buildEip681Native,
+  buildInvoiceLink,
+  buildSolanaPay,
+  buildTronUri,
+  formatAtomic,
+  parseBitcoinUri,
+  parseBtcAddress,
+  parseChainAddress,
+  parseDecimal,
+  parseEip681,
+  parseEip681Number,
+  parseEvmAddress,
+  parseInvoiceLink,
+  parsePaymentUri,
+  parseSilentPaymentAddress,
+  parseSolanaPay,
+  parseSolanaAddress,
+  parseTronUri,
+  parseTronAddress,
+  recipientInfo,
+  solanaAtomic,
+  toAtomic,
+  hasMixedScript,
+  pctDecode,
+  pctEncode,
 } from './index.js';
 import * as F from './fixtures.testutil.js';
 
@@ -22,7 +46,9 @@ describe('EIP-55 / addresses', () => {
     expect(parseBtcAddress(F.BTC_P2PKH)).toMatchObject({ type: 'p2pkh', network: 'main' });
     expect(parseBtcAddress(F.BTC_P2SH)).toMatchObject({ type: 'p2sh', network: 'main' });
     expect(parseBtcAddress('bcrt1qw508d6qejxtdg4y5r3zarvary0c5xw7kygt080').network).toBe('regtest');
-    expect(parseBtcAddress('bc1qrp33g0q5c5txsp9arysrx4k6zdkfs4nce4xj0gdcccefvpysxf3qccfmv3').type).toBe('p2wsh');
+    expect(parseBtcAddress('bc1qrp33g0q5c5txsp9arysrx4k6zdkfs4nce4xj0gdcccefvpysxf3qccfmv3').type).toBe(
+      'p2wsh',
+    );
     expect(parseBtcAddress('bc1zw508d6qejxtdg4y5r3zarvaryvaxxpcs').type).toBe('witness-unknown');
     expect(parseBtcAddress('mipcBbFg9gMiCh81Kj8tqqdgoZub1ZJRfn').network).toBe('test');
     expect(parseBtcAddress('2MzQwSSnBHWHqSAqtTVQ6v47XtaisrJa1Vc').type).toBe('p2sh');
@@ -83,9 +109,16 @@ describe('decimals', () => {
 describe('EIP-681 vectors', () => {
   it('spec native example', () => {
     // The spec's own example has an invalid EIP-55 mixed-case address; a strict parser must reject it (DEVIATIONS.md).
-    expect(() => parseEip681('ethereum:0xfb6916095ca1df60bb79Ce92ce3ea74c37c5d359?value=2.014e18')).toThrow('checksum');
+    expect(() => parseEip681('ethereum:0xfb6916095ca1df60bb79Ce92ce3ea74c37c5d359?value=2.014e18')).toThrow(
+      'checksum',
+    );
     const r = parseEip681('ethereum:0xfb6916095ca1df60bb79ce92ce3ea74c37c5d359?value=2.014e18');
-    expect(r).toMatchObject({ kind: 'native', value: 2014000000000000000n, checksummed: false, legacyPayPrefix: false });
+    expect(r).toMatchObject({
+      kind: 'native',
+      value: 2014000000000000000n,
+      checksummed: false,
+      legacyPayPrefix: false,
+    });
     expect(r.recipient.canonical).toBe(F.EVM2);
   });
   it('spec erc20 example (lowercase accepted, flagged, checksummed output)', () => {
@@ -106,7 +139,9 @@ describe('EIP-681 vectors', () => {
     const t = buildEip681Erc20({ token: F.EVM2, recipient: F.EVM3, chainId: 1, amount: 5n });
     expect(parseEip681(t)).toMatchObject({ kind: 'erc20-transfer', amount: 5n });
     expect(buildEip681Native({ address: F.EVM })).toBe(`ethereum:${F.EVM}`);
-    expect(parseEip681(buildEip681Erc20({ token: F.EVM2, recipient: F.EVM3 }))).toMatchObject({ kind: 'erc20-transfer' });
+    expect(parseEip681(buildEip681Erc20({ token: F.EVM2, recipient: F.EVM3 }))).toMatchObject({
+      kind: 'erc20-transfer',
+    });
   });
 });
 
@@ -121,14 +156,19 @@ describe('EIP-3770', () => {
 describe('Bitcoin', () => {
   it('BIP-21 spec example', () => {
     // The BIP-21 example address has a bad base58 checksum and must be rejected.
-    expect(() => parseBitcoinUri('bitcoin:175tWpb8K1S7NmH4Zx6rewF9WQrcZv245W?amount=20.3&label=Luke-Jr')).toThrow();
+    expect(() =>
+      parseBitcoinUri('bitcoin:175tWpb8K1S7NmH4Zx6rewF9WQrcZv245W?amount=20.3&label=Luke-Jr'),
+    ).toThrow();
     const A = F.BTC_P2PKH;
     const r = parseBitcoinUri(`bitcoin:${A}?amount=20.3&label=Luke-Jr`);
-    expect(r).toMatchObject({ amountSats: 2030000000n, label: 'Luke-Jr', network: 'main', addressType: 'p2pkh' });
+    expect(r).toMatchObject({
+      amountSats: 2030000000n,
+      label: 'Luke-Jr',
+      network: 'main',
+      addressType: 'p2pkh',
+    });
     expect(r.address?.canonical).toBe(A);
-    const r2 = parseBitcoinUri(
-      `bitcoin:${A}?amount=50&label=Luke-Jr&message=Donation%20for%20project%20xyz`,
-    );
+    const r2 = parseBitcoinUri(`bitcoin:${A}?amount=50&label=Luke-Jr&message=Donation%20for%20project%20xyz`);
     expect(r2.message).toBe('Donation for project xyz');
   });
   it('sp-only (repo form) and combined', () => {
@@ -154,12 +194,14 @@ describe('Bitcoin', () => {
     expect(parseBitcoinUri(`bitcoin:?lightning=lntb1${'q'.repeat(60)}`).network).toBe('test');
   });
   it('builder', () => {
-    expect(buildBitcoinUri({ address: F.BTC_BECH32, amountSats: 150000000n, label: 'Ünï & co', message: 'a+b' })).toBe(
-      `bitcoin:${F.BTC_BECH32}?amount=1.5&label=%C3%9Cn%C3%AF%20%26%20co&message=a%2Bb`,
-    );
+    expect(
+      buildBitcoinUri({ address: F.BTC_BECH32, amountSats: 150000000n, label: 'Ünï & co', message: 'a+b' }),
+    ).toBe(`bitcoin:${F.BTC_BECH32}?amount=1.5&label=%C3%9Cn%C3%AF%20%26%20co&message=a%2Bb`);
     const sp = F.spAddr('sp');
     expect(buildBitcoinUri({ silentPayment: sp })).toBe(`bitcoin:?sp=${sp}`);
-    expect(buildBitcoinUri({ silentPayment: sp, amountSats: 1n })).toBe(`bitcoin:?sp=${sp}&amount=0.00000001`);
+    expect(buildBitcoinUri({ silentPayment: sp, amountSats: 1n })).toBe(
+      `bitcoin:?sp=${sp}&amount=0.00000001`,
+    );
   });
 });
 
@@ -175,9 +217,12 @@ describe('Solana Pay', () => {
   it('overflow and precision at conversion', () => {
     const r = parseSolanaPay(`solana:${F.SOL}?amount=0.0000000001`);
     expect(() => solanaAtomic(r.amount!, 9)).toThrow();
-    const big = parseSolanaPay(`solana:${F.SOL}?amount=18446744073709551616`);
-    expect(() => solanaAtomic(big.amount!, 0)).toThrow();
-    expect(solanaAtomic(parseSolanaPay(`solana:${F.SOL}?amount=18446744073709551615`).amount!, 0)).toBe(18446744073709551615n);
+    expect(() => parseSolanaPay(`solana:${F.SOL}?amount=18446744073709551616`)).toThrow('range');
+    const big = parseSolanaPay(`solana:${F.SOL}?amount=18446744073709551615`);
+    expect(() => solanaAtomic(big.amount!, 1)).toThrow('range');
+    expect(solanaAtomic(parseSolanaPay(`solana:${F.SOL}?amount=18446744073709551615`).amount!, 0)).toBe(
+      18446744073709551615n,
+    );
   });
   it('build', () => {
     expect(buildSolanaPay({ recipient: F.SOL, amount: '1.50' })).toBe(`solana:${F.SOL}?amount=1.5`);
@@ -200,9 +245,15 @@ describe('invoice link', () => {
   it('round trip', () => {
     const l = buildInvoiceLink('https://Ghostpay.Example', frag);
     expect(l).toBe(`https://ghostpay.example/pay${frag}`);
-    expect(parseInvoiceLink(l, { allowedHosts: ['ghostpay.example'] })).toMatchObject({ host: 'ghostpay.example', path: '/pay', fragment: frag });
+    expect(parseInvoiceLink(l, { allowedHosts: ['ghostpay.example'] })).toMatchObject({
+      host: 'ghostpay.example',
+      path: '/pay',
+      fragment: frag,
+    });
     expect(parseInvoiceLink(`https://a.example:8443${frag}`).origin).toBe('https://a.example:8443');
-    expect(parseInvoiceLink(`http://localhost:5173/pay${frag}`, { allowLocalDev: true }).host).toBe('localhost');
+    expect(parseInvoiceLink(`http://localhost:5173/pay${frag}`, { allowLocalDev: true }).host).toBe(
+      'localhost',
+    );
     expect(parseInvoiceLink(`http://127.0.0.1/pay${frag}`, { allowLocalDev: true }).host).toBe('127.0.0.1');
   });
 });

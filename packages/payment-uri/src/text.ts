@@ -1,6 +1,7 @@
 import { fail } from './errors.js';
 
-const UNSAFE = /[\p{Cc}\p{Cs}\p{Co}\p{Bidi_Control}\p{Default_Ignorable_Code_Point}\u{E0000}-\u{E007F}\u2028\u2029\uFFFD\p{Cn}]/u;
+const UNSAFE =
+  /[\p{Cc}\p{Cs}\p{Co}\p{Bidi_Control}\p{Default_Ignorable_Code_Point}\u{E0000}-\u{E007F}\u2028\u2029\uFFFD\p{Cn}]/u;
 const LATIN = /\p{Script=Latin}/u;
 const LOOKALIKE = /[\p{Script=Cyrillic}\p{Script=Greek}]/u;
 

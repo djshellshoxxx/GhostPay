@@ -25,6 +25,8 @@ export function recipientInfo(kind: RecipientKind, canonical: string): Recipient
   const body = kind === 'evm' ? canonical.slice(2) : canonical;
   const groups = body.match(/.{1,4}/g) ?? [];
   const display = (kind === 'evm' ? '0x' : '') + groups.join(' ');
-  const h = bytesToHex(sha256(new TextEncoder().encode(`ghostpay/payment-uri/recipient/v1\0${kind}\0${canonical}`)));
+  const h = bytesToHex(
+    sha256(new TextEncoder().encode(`ghostpay/payment-uri/recipient/v1\0${kind}\0${canonical}`)),
+  );
   return { kind, canonical, display, digest: `${h.slice(0, 4)} ${h.slice(4, 8)} ${h.slice(8, 12)}` };
 }

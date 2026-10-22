@@ -64,8 +64,14 @@ export function parseInvoiceLink(link: string, opts: InvoiceLinkOptions = {}): I
 }
 
 /** Builds an invoice link from an origin (`https://host[:port]`), optional path and a `#gpi=v1.` fragment. Re-validated by parsing. */
-export function buildInvoiceLink(origin: string, fragment: string, path = '/pay', opts: InvoiceLinkOptions = {}): string {
-  if (typeof fragment !== 'string' || !fragment.startsWith(INVOICE_FRAGMENT_PREFIX)) return fail('INVALID_LINK');
+export function buildInvoiceLink(
+  origin: string,
+  fragment: string,
+  path = '/pay',
+  opts: InvoiceLinkOptions = {},
+): string {
+  if (typeof fragment !== 'string' || !fragment.startsWith(INVOICE_FRAGMENT_PREFIX))
+    return fail('INVALID_LINK');
   const link = `${origin}${path}${fragment}`;
   const p = parseInvoiceLink(link, opts);
   return `${p.origin}${p.path}${p.fragment}`;

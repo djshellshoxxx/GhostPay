@@ -85,6 +85,7 @@ export function parseMessage(src: string): readonly Node[] {
   function seq(inPlural: boolean, closeTag: string | undefined, nested: boolean): Node[] {
     const out: Node[] = [];
     let text = '';
+    let closed = false;
     const flush = (): void => {
       if (text !== '') {
         out.push({ t: 'text', v: text });
@@ -175,7 +176,10 @@ export function parseMessage(src: string): readonly Node[] {
           fail(`unknown argument type "${type}"`);
         }
       } else if (c === '}') {
-        if (nested) break;
+        if (nested) {
+          closed = true;
+          break;
+        }
         fail('unmatched "}"');
       } else if (c === '#' && inPlural) {
         flush();
@@ -187,7 +191,7 @@ export function parseMessage(src: string): readonly Node[] {
       }
     }
     if (closeTag !== undefined) fail(`unclosed tag "${closeTag}"`);
-    if (nested) fail('missing "}"');
+    if (nested && !closed) fail('missing "}"');
     flush();
     return out;
   }
