@@ -28,16 +28,16 @@ describe('verifyReceipt', () => {
   it('direct announcement with no funds is only "claimed" (fake receipt)', async () => {
     expect(await verifyReceipt(rpc(2000n, {}), SEPOLIA, claim())).toBe('claimed');
   });
-  it('direct announcement backed by the balance is verified (native and ERC-20)', async () => {
-    expect(await verifyReceipt(rpc(2000n, { '1000': 100n }), SEPOLIA, claim())).toBe('verified');
-    expect(await verifyReceipt(rpc(2000n, { '1000': 100n }), SEPOLIA, claim({ native: false }))).toBe('verified');
+  it('pre-existing balance never proves a direct announcement (native and ERC-20)', async () => {
+    expect(await verifyReceipt(rpc(2000n, { '1000': 100n }), SEPOLIA, claim())).toBe('claimed');
+    expect(await verifyReceipt(rpc(2000n, { '1000': 100n }), SEPOLIA, claim({ native: false }))).toBe('claimed');
   });
   it('underfunded claim (balance < announced amount) stays claimed', async () => {
     expect(await verifyReceipt(rpc(2000n, { '1000': 99n }), SEPOLIA, claim())).toBe('claimed');
   });
-  it('funds swept later still verify via the announcing block; funded only after is verified at finalized head', async () => {
-    expect(await verifyReceipt(rpc(5000n, { '1000': 100n, [String(5000n - depth)]: 0n }), SEPOLIA, claim())).toBe('verified');
-    expect(await verifyReceipt(rpc(5000n, { [String(5000n - depth)]: 100n }), SEPOLIA, claim())).toBe('verified');
+  it('old or later funds cannot turn a replayed direct announcement into a receipt', async () => {
+    expect(await verifyReceipt(rpc(5000n, { '1000': 100n, [String(5000n - depth)]: 0n }), SEPOLIA, claim())).toBe('claimed');
+    expect(await verifyReceipt(rpc(5000n, { [String(5000n - depth)]: 100n }), SEPOLIA, claim())).toBe('claimed');
   });
   it('is pending until finalityDepth blocks deep, even for router payments and funded ones', async () => {
     expect(await verifyReceipt(rpc(1000n + depth - 1n, { '1000': 100n }), SEPOLIA, claim())).toBe('pending');
@@ -98,5 +98,17 @@ describe('compareProviders', () => {
     expect((await run(dead, [])).discrepancies.map((d) => d.kind)).toEqual(['secondary_error']);
     const other = { ...secondary([]), chainId: 1 } as RpcClient;
     expect((await run(other, [])).discrepancies.map((d) => d.kind)).toEqual(['secondary_error']);
+  });
+});
+
+describe('receipt claim boundaries', () => {
+  it('never verifies a router claim through a client on another chain', async () => {
+    const wrong = { ...rpc(5000n, {}), chainId: 1 };
+    expect(await verifyReceipt(wrong, SEPOLIA, claim({ viaRouter: true }))).toBe('claimed');
+  });
+  it('never verifies nonpositive amounts or negative block positions', async () => {
+    for (const change of [{ amount: 0n }, { amount: -1n }, { blockNumber: -1n }]) {
+      expect(await verifyReceipt(rpc(5000n, {}), SEPOLIA, claim({ viaRouter: true, ...change }))).toBe('claimed');
+    }
   });
 });

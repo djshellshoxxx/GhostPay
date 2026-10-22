@@ -3,7 +3,7 @@ import {
   createClient,
   findChain,
   loadDeployment,
-  verifyManifestSignature,
+  verifyTextManifestSignature as verifyManifestSignature,
   type ReleaseKey,
   validateRpcUrl,
   type DeploymentManifest,

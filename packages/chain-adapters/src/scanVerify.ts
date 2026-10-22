@@ -1,4 +1,3 @@
-import { keccak256, toBytes } from 'viem/utils';
 import type { ChainConfig } from './config/chains.js';
 import { ChainAdapterError } from './errors.js';
 import { ANNOUNCEMENT_TOPIC, validateAnnouncementLog, type ScannedAnnouncement } from './logs.js';
@@ -7,8 +6,7 @@ import type { Address, Hex } from './types.js';
 
 /**
  * Receipt status shown to the seller:
- * - `verified`: router-attested (the manifest-verified router announces only after moving funds) or the stealth
- *   address demonstrably held at least the claimed amount, and the block is `finalityDepth` deep;
+ * - `verified`: attested by the manifest-verified router after moving funds, once the block is `finalityDepth` deep;
  * - `claimed`: announcement metadata only; the transfer could not be confirmed (anyone can announce anything);
  * - `pending`: the announcing block is not yet `finalityDepth` deep.
  */
@@ -26,31 +24,12 @@ export interface ReceiptClaim {
   readonly viaRouter: boolean;
 }
 
-const BALANCE_OF = `0x${keccak256(toBytes('balanceOf(address)')).slice(2, 10)}`;
-const hexq = (n: bigint): string => `0x${n.toString(16)}`;
-
-async function balanceAt(client: RpcClient, claim: ReceiptClaim, block: bigint): Promise<bigint | undefined> {
-  try {
-    let r: unknown;
-    if (claim.native) {
-      r = await client.request('eth_getBalance', [claim.stealthAddress, hexq(block)]);
-    } else {
-      const data = `${BALANCE_OF}${claim.stealthAddress.slice(2).toLowerCase().padStart(64, '0')}`;
-      r = await client.request('eth_call', [{ to: claim.token, data }, hexq(block)]);
-    }
-    if (typeof r !== 'string' || !/^0x[0-9a-fA-F]{1,64}$/.test(r)) return undefined;
-    return BigInt(r);
-  } catch {
-    return undefined;
-  }
-}
-
 /**
  * Decides how much to trust one matched announcement (G-04). Never throws: any RPC failure degrades to `claimed`.
  *
  * @remarks Router announcements are trusted once final (the caller is the manifest-verified router). Direct
- * announcements are attacker-controlled, so the amount is shown only when the stealth address held at least the
- * claimed amount at the announcing block or at the finalized height (so a later sweep does not hide a real payment).
+ * announcements remain claims: pre-existing or later balances cannot prove an incoming transfer tied to an announcement.
+ * Use transaction-bound evidence before describing any direct announcement as a payment received.
  *
  * @param client Verified RPC client.
  * @param chain Chain config (supplies `finalityDepth`).
@@ -58,6 +37,7 @@ async function balanceAt(client: RpcClient, claim: ReceiptClaim, block: bigint):
  * @returns Receipt status.
  */
 export async function verifyReceipt(client: RpcClient, chain: ChainConfig, claim: ReceiptClaim): Promise<ReceiptStatus> {
+  if (client.chainId !== chain.chainId || claim.amount <= 0n || claim.blockNumber < 0n) return 'claimed';
   let head: bigint;
   try {
     head = await client.blockNumber();
@@ -67,10 +47,6 @@ export async function verifyReceipt(client: RpcClient, chain: ChainConfig, claim
   const depth = BigInt(chain.finalityDepth);
   if (head < claim.blockNumber + depth) return 'pending';
   if (claim.viaRouter) return 'verified';
-  for (const block of [claim.blockNumber, head - depth]) {
-    const bal = await balanceAt(client, claim, block);
-    if (bal !== undefined && bal >= claim.amount) return 'verified';
-  }
   return 'claimed';
 }
 

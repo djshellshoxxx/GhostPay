@@ -224,19 +224,32 @@ export async function createClient(chain: ChainConfig, url: string, opts: Client
   const clock = opts.now ?? Date.now;
   let lastChainCheck = clock();
   let dirty = false;
+  let failureGeneration = 0;
 
-  async function rawRequest(method: string, params: readonly unknown[]): Promise<unknown> {
+  async function rawRequest(method: string, params: readonly unknown[]): Promise<{ readonly value: unknown; readonly generation: number }> {
     const id = nextId++;
     const body = JSON.stringify({ jsonrpc: '2.0', id, method, params });
+    let reconnect = false;
     for (let attempt = 0; ; attempt++) {
+      // This flag belongs to this request: another concurrent chain check must not erase its recovery requirement.
+      // Chain-id requests perform their own bounded retries and never recursively verify themselves.
+      if (reconnect && method !== 'eth_chainId') {
+        await checkChain();
+        reconnect = false;
+      }
+      const generation = failureGeneration;
       try {
         const text = await transport.send(target, body, { timeoutMs, maxBytes });
         if (text.length > maxBytes) return fail('RESPONSE_TOO_LARGE', 'response exceeds cap');
-        return parseResponse(text, id);
+        return { value: parseResponse(text, id), generation };
       } catch (e) {
         // A transport-level failure may mean a reconnect to a different backend: re-verify the chain before trusting
         // more. A JSON-RPC error object proves the same node answered, so it does not.
-        if (!(e instanceof JsonRpcError)) dirty = true;
+        if (!(e instanceof JsonRpcError)) {
+          dirty = true;
+          reconnect = true;
+          failureGeneration++;
+        }
         if (attempt >= retries || !isRetryable(e)) return rethrow(e);
         await sleep(Math.floor(random() * base * 2 ** attempt));
       }
@@ -244,8 +257,11 @@ export async function createClient(chain: ChainConfig, url: string, opts: Client
   }
 
   async function checkChain(): Promise<void> {
-    const reported = parseQuantity(await rawRequest('eth_chainId', []));
+    const response = await rawRequest('eth_chainId', []);
+    const reported = parseQuantity(response.value);
     if (reported !== BigInt(chain.chainId)) return fail('CHAIN_MISMATCH', 'endpoint reports a different chain id');
+    // A response from a check started before another request lost its connection cannot clear that failure.
+    if (response.generation !== failureGeneration) return fail('RPC_FAILURE', 'connection changed during chain verification');
     lastChainCheck = clock();
     dirty = false;
   }
@@ -253,7 +269,7 @@ export async function createClient(chain: ChainConfig, url: string, opts: Client
   /** Every request after the first connect is preceded by a chain id re-check when stale or after a failure. */
   async function guarded(method: string, params: readonly unknown[]): Promise<unknown> {
     if (method !== 'eth_chainId' && (dirty || (recheckMs > 0 && clock() - lastChainCheck >= recheckMs))) await checkChain();
-    return rawRequest(method, params);
+    return (await rawRequest(method, params)).value;
   }
 
   const client = clientFromRequest(chain.chainId, guarded);

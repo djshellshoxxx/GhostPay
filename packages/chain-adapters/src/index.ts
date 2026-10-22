@@ -22,7 +22,10 @@ export * from './deploymentsVerify.js';
 export * from './scanVerify.js';
 export * from './registry.js';
 
-export { verifyManifestOnChain } from './deploymentsVerify.js';
-export * from './scanVerify.js';
-export { RELEASE_KEY, UNSIGNED_DEV_WARNING, MANIFEST_SIGNING_DOMAIN, manifestSigningBytes, verifyManifestSignature as verifyTextManifestSignature } from './deploymentsSignature.js';
-export type { ReleaseKey, ManifestTrust } from './deploymentsSignature.js';
+// The structured verification API complements the existing raw-JSON signing API.
+export { canonicalAnnouncer, CANONICAL_ANNOUNCER, canonicalManifestJson, manifestDigest,
+  verifyManifestSignature as verifyObjectManifestSignature, verifyDeployment } from './verify.js';
+export type { ManifestSignatureResult, VerifiedDeployment, VerifyDeploymentOptions } from './verify.js';
+export * from './payments.js';
+export * from './deepscan.js';
+export { verifyManifestSignature as verifyTextManifestSignature } from './deploymentsSignature.js';

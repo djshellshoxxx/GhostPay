@@ -323,3 +323,62 @@ describe('createReconciledClient', () => {
     expect(await createReconciledClient(a, b).request('eth_gasPrice', [])).toBe('0x1');
   });
 });
+
+describe('RPC retry chain identity', () => {
+  it('refuses a changed chain inside the same retried request', async () => {
+    let switched = false;
+    let reads = 0;
+    const transport = fakeTransport((method) => {
+      if (method === 'eth_chainId') return switched ? '0x1' : '0xaa36a7';
+      if (method === 'eth_blockNumber') {
+        reads++;
+        if (!switched) {
+          switched = true;
+          throw new RpcHttpError(502);
+        }
+        return '0x123';
+      }
+      return null;
+    });
+    const c = await createClient(SEPOLIA, URL_OK, { transport, ...opts, retries: 1, chainRecheckMs: 0 });
+    await expect(c.blockNumber()).rejects.toThrow(/CHAIN_MISMATCH/);
+    // Revalidate before issuing a new trusted read to a backend reached after a connection failure.
+    expect(reads).toBe(1);
+  });
+});
+
+describe('concurrent chain revalidation', () => {
+  it('does not let an older in-flight check clear a newer connection failure', async () => {
+    let now = 0;
+    let chainChecks = 0;
+    let switched = false;
+    let failRead: (() => void) | undefined;
+    let finishCheck: (() => void) | undefined;
+    const transport: RpcTransport = {
+      send: (_url, body) => {
+        const req = JSON.parse(body) as { method: string; id: number };
+        const reply = (result: string): string => JSON.stringify({ jsonrpc: '2.0', id: req.id, result });
+        if (req.method === 'eth_chainId') {
+          chainChecks++;
+          if (chainChecks === 2) return new Promise<string>((resolve) => { finishCheck = () => { resolve(reply('0xaa36a7')); }; });
+          return Promise.resolve(reply(switched ? '0x1' : '0xaa36a7'));
+        }
+        if (!switched && req.method === 'eth_blockNumber') {
+          return new Promise<string>((_resolve, reject) => { failRead = () => { switched = true; reject(new RpcHttpError(502)); }; });
+        }
+        return Promise.resolve(reply('0x10'));
+      },
+    };
+    const c = await createClient(SEPOLIA, URL_OK, { transport, ...opts, retries: 0, chainRecheckMs: 1, now: () => now });
+    const pendingRead = expect(c.blockNumber()).rejects.toThrow(/http status 502/);
+    now = 2;
+    const pendingCheck = expect(c.request('eth_getCode', [])).rejects.toThrow(/connection changed during chain verification/);
+    if (failRead === undefined || finishCheck === undefined) throw new Error('test did not reach both pending requests');
+    failRead();
+    await pendingRead;
+    finishCheck();
+    await pendingCheck;
+    await expect(c.blockNumber()).rejects.toThrow(/CHAIN_MISMATCH/);
+    expect(chainChecks).toBe(3);
+  });
+});

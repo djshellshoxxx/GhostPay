@@ -7,7 +7,10 @@ import { UserFacingError } from './errors';
  * - Keys: HKDF-SHA-256 over the viewing key with a random per-profile salt and distinct `info` strings produce a
  *   non-extractable AES-256-GCM key and a separate non-extractable HMAC-SHA-256 key. The viewing key is never used as a
  *   key directly.
- * - Records: AES-GCM with a fresh 96-bit IV per write; AAD binds the schema version and chain id. The lookup token is
+ * - Records: AES-GCM with a fresh 96-bit IV per write; the AAD binds the schema version, chain id, record id AND lookup
+ *   token, so ciphertext cannot be spliced from one record into another (S3-16), and `find` also checks that the decrypted
+ *   address is the one asked for. METADATA IS IN THE CLEAR: record count, chain id, record id, lookup token, IV and the
+ *   created/updated times are readable by anything that can read this origin's IndexedDB; only the payload is encrypted. The lookup token is
  *   HMAC(chainId || stealth address), so no raw address or unkeyed hash is stored.
  * - The unlocked CryptoKeys live in this object only; `lock()` drops them. Nothing is sent over the network.
  */
@@ -22,7 +25,7 @@ export interface TagPayload {
 }
 
 export interface EncryptedTagRecord {
-  readonly schemaVersion: 1;
+  readonly schemaVersion: 1 | 2;
   readonly chainId: number;
   readonly recordId: string;
   /** Hex HMAC token. */
@@ -68,8 +71,14 @@ function rand(n: number): Uint8Array<ArrayBuffer> {
   return b;
 }
 
+/** AAD of the profile check record. */
 function aad(chainId: number): Uint8Array<ArrayBuffer> {
   return utf8ToBytes(`GhostPay/tag/v1|${String(chainId)}`);
+}
+
+/** AAD of a tag record: binds position (chain, record id, lookup token) to the ciphertext. */
+function recordAad(chainId: number, recordId: string, lookupKey: string): Uint8Array<ArrayBuffer> {
+  return utf8ToBytes(`GhostPay/tag/v2|${String(chainId)}|${recordId}|${lookupKey}`);
 }
 
 function validatePayload(p: TagPayload): TagPayload {
@@ -150,12 +159,13 @@ export class TagVault {
     const lookupKey = await this.token(chainId, clean.stealthAddress);
     const existing = await this.store.getByLookup(chainId, lookupKey);
     const iv = rand(12);
-    const ct = new Uint8Array(await subtle().encrypt({ name: 'AES-GCM', iv, additionalData: aad(chainId), tagLength: 128 }, aes, utf8ToBytes(JSON.stringify(clean))));
+    const recordId = existing?.recordId ?? bytesToHex(rand(16));
+    const ct = new Uint8Array(await subtle().encrypt({ name: 'AES-GCM', iv, additionalData: recordAad(chainId, recordId, lookupKey), tagLength: 128 }, aes, utf8ToBytes(JSON.stringify(clean))));
     const t = this.now();
     await this.store.put({
-      schemaVersion: 1,
+      schemaVersion: 2,
       chainId,
-      recordId: existing?.recordId ?? bytesToHex(rand(16)),
+      recordId,
       lookupKey,
       iv: bytesToHex(iv),
       ciphertext: bytesToHex(ct),
@@ -166,17 +176,38 @@ export class TagVault {
 
   private async open(r: EncryptedTagRecord): Promise<TagPayload> {
     const { aes } = this.keys();
+    let plain: Uint8Array | undefined;
     try {
-      const plain = await subtle().decrypt({ name: 'AES-GCM', iv: hexToBytes(r.iv) as Uint8Array<ArrayBuffer>, additionalData: aad(r.chainId), tagLength: 128 }, aes, hexToBytes(r.ciphertext));
-      return validatePayload(JSON.parse(new TextDecoder().decode(plain)) as TagPayload);
+      if (r.schemaVersion !== 1 && r.schemaVersion !== 2) throw new Error('unsupported tag schema');
+      plain = new Uint8Array(await subtle().decrypt({
+        name: 'AES-GCM', iv: hexToBytes(r.iv) as Uint8Array<ArrayBuffer>,
+        additionalData: r.schemaVersion === 1 ? aad(r.chainId) : recordAad(r.chainId, r.recordId, r.lookupKey),
+        tagLength: 128,
+      }, aes, hexToBytes(r.ciphertext)));
+      const payload = validatePayload(JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(plain)) as TagPayload);
+      // Old records bound only the chain. Verify their address against the keyed lookup token before upgrading.
+      if (await this.token(r.chainId, payload.stealthAddress) !== r.lookupKey) throw new Error('tag lookup mismatch');
+      if (r.schemaVersion === 1) {
+        const iv = rand(12);
+        const ciphertext = await subtle().encrypt({ name: 'AES-GCM', iv,
+          additionalData: recordAad(r.chainId, r.recordId, r.lookupKey), tagLength: 128 }, aes, plain as Uint8Array<ArrayBuffer>);
+        await this.store.put({ ...r, schemaVersion: 2, iv: bytesToHex(iv), ciphertext: bytesToHex(new Uint8Array(ciphertext)) });
+      }
+      return payload;
     } catch {
       throw new UserFacingError('A stored tag could not be decrypted (damaged or from another key).');
+    } finally {
+      plain?.fill(0);
     }
   }
 
   public async find(chainId: number, stealthAddress: string): Promise<TagPayload | undefined> {
     const rec = await this.store.getByLookup(chainId, await this.token(chainId, stealthAddress));
-    return rec === undefined ? undefined : this.open(rec);
+    if (rec === undefined) return undefined;
+    const payload = await this.open(rec);
+    // Defence in depth: the record found under this token must really be about this address.
+    if (payload.stealthAddress !== stealthAddress.toLowerCase()) throw new UserFacingError('A stored tag does not belong to this address and was ignored.');
+    return payload;
   }
 
   public async list(chainId?: number): Promise<readonly TagPayload[]> {

@@ -1,3 +1,4 @@
+import { bytesToHex, hexToBytes, utf8ToBytes } from '@noble/hashes/utils.js';
 import { describe, expect, it } from 'vitest';
 import { MemoryTagStore, TagVault, type EncryptedTagRecord, type TagPayload } from './tags';
 
@@ -58,7 +59,7 @@ describe('TagVault (Feature 4)', () => {
       expect(dump).not.toContain(needle);
     }
     const rec = (await store.getAll())[0] as EncryptedTagRecord;
-    expect(rec.schemaVersion).toBe(1);
+    expect(rec.schemaVersion).toBe(2);
     expect(rec.lookupKey).toMatch(/^[0-9a-f]{64}$/);
     expect(rec.iv).toMatch(/^[0-9a-f]{24}$/);
     expect(rec.recordId).toMatch(/^[0-9a-f]{32}$/);
@@ -141,5 +142,56 @@ describe('TagVault (Feature 4)', () => {
     await expect(vault.save(1, payload({ notes: 'x'.repeat(2001) }))).rejects.toThrow(/too long/);
     await vault.save(1, payload({ invoiceLabel: '', notes: '' }));
     expect(await vault.find(1, ADDR)).toMatchObject({ clientLabel: 'Acme Corp — invoice #42' });
+  });
+});
+
+// Previous release's chain-only AAD, independent of TagVault.save.
+async function legacyRecord(store: MemoryTagStore, record: EncryptedTagRecord, body: TagPayload): Promise<EncryptedTagRecord> {
+  const meta = await store.getMeta();
+  if (meta === undefined) throw new Error('missing profile');
+  const base = await crypto.subtle.importKey('raw', key(7) as Uint8Array<ArrayBuffer>, 'HKDF', false, ['deriveKey']);
+  const aes = await crypto.subtle.deriveKey({ name: 'HKDF', hash: 'SHA-256',
+    salt: hexToBytes(meta.salt) as Uint8Array<ArrayBuffer>, info: utf8ToBytes('GhostPay/local-tags/v1/aes-gcm') as Uint8Array<ArrayBuffer> },
+    base, { name: 'AES-GCM', length: 256 }, false, ['encrypt']);
+  const iv = new Uint8Array(12).fill(3);
+  const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv,
+    additionalData: utf8ToBytes(`GhostPay/tag/v1|${String(record.chainId)}`) as Uint8Array<ArrayBuffer>, tagLength: 128 },
+    aes, utf8ToBytes(JSON.stringify(body)) as Uint8Array<ArrayBuffer>);
+  return { ...record, schemaVersion: 1, iv: bytesToHex(iv), ciphertext: bytesToHex(new Uint8Array(ciphertext)) };
+}
+
+describe('legacy tag migration', () => {
+  it('upgrades existing tags without changing identity or timestamps', async () => {
+    const { vault, store } = await unlocked();
+    await vault.save(84532, payload());
+    const record = (await store.getAll())[0];
+    if (record === undefined) throw new Error('missing record');
+    await store.put(await legacyRecord(store, record, payload()));
+    expect((await vault.find(84532, ADDR))?.clientLabel).toBe(payload().clientLabel);
+    expect((await store.getAll())[0]).toMatchObject({ schemaVersion: 2, recordId: record.recordId, lookupKey: record.lookupKey,
+      createdAt: record.createdAt, updatedAt: record.updatedAt });
+    vault.lock();
+    await vault.unlock(key(7));
+    expect((await vault.list(84532))[0]?.stealthAddress).toBe(ADDR.toLowerCase());
+  });
+
+  it('refuses legacy ciphertext with an address that disagrees with its lookup token', async () => {
+    const { vault, store } = await unlocked();
+    await vault.save(84532, payload());
+    const record = (await store.getAll())[0];
+    if (record === undefined) throw new Error('missing record');
+    await store.put(await legacyRecord(store, record, payload({ stealthAddress: '0x' + 'bb'.repeat(20) })));
+    await expect(vault.find(84532, ADDR)).rejects.toThrow(/could not be decrypted/);
+    await expect(vault.list()).rejects.toThrow(/could not be decrypted/);
+    expect((await store.getAll())[0]?.schemaVersion).toBe(1);
+  });
+
+  it('rejects attempts to downgrade a bound record to the legacy format', async () => {
+    const { vault, store } = await unlocked();
+    await vault.save(84532, payload());
+    const record = (await store.getAll())[0];
+    if (record === undefined) throw new Error('missing record');
+    await store.put({ ...record, schemaVersion: 1 });
+    await expect(vault.find(84532, ADDR)).rejects.toThrow(/could not be decrypted/);
   });
 });
