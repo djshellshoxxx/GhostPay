@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { buildRegisterKeysCall, ERC6538_ENTRY_TYPEHASH, ERC6538_REGISTRY_ADDRESS, metaAddressToRegistryBytes, erc6538RegistryAbi } from '@ghostpay/chain-adapters';
-import { screen, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { decodeFunctionData, encodeAbiParameters, keccak256, toBytes } from 'viem/utils';
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -47,6 +47,19 @@ function chain(wallet: MockWallet, code = '0x6001', stored = '0x', typehash = ER
 }
 
 describe('Registry view', () => {
+  it('reads a strict public meta-address QR for review without changing seller keys or publishing', async () => {
+    const scanned = generateSession().metaAddress;
+    const loaded = generateSession().metaAddress;
+    const wallet = new MockWallet({ chainId: SEPOLIA });
+    const user = await open(makeServices({ createRpc: () => Promise.resolve(chain(wallet)) }));
+    const paste = screen.getByLabelText('Or paste QR text');
+    await user.type(paste, scanned);
+    await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
+    expect(await screen.findByText('Scanned public meta-address (untrusted)')).toBeTruthy();
+    expect(getSessionPublic()?.metaAddress).toBe(loaded);
+    expect(wallet.sent).toBeUndefined();
+    expect(screen.queryByRole('button', { name: 'Publish to registry' })).toBeNull();
+  });
   it('needs keys before publishing', async () => {
     await open();
     expect(screen.getByText(/Load or generate keys/)).toBeTruthy();
@@ -74,6 +87,30 @@ describe('Registry view', () => {
     expect(wallet.sent?.['value']).toBe('0x0');
   });
 
+  it('does not publish if consent is withdrawn during the wallet network recheck', async () => {
+    generateSession();
+    const wallet = new MockWallet({ chainId: SEPOLIA });
+    let block = false;
+    let release: (() => void) | undefined;
+    const info: WalletInfo = { ...walletInfo(wallet), provider: {
+      request: async (args) => {
+        const answer = await wallet.request(args);
+        if (block && args.method === 'net_version') await new Promise<void>((resolve) => { release = resolve; });
+        return answer;
+      },
+    } };
+    const user = await open(makeServices({ createRpc: () => Promise.resolve(chain(wallet)), discoverWallets: () => Promise.resolve([info]) }));
+    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('button', { name: 'Find wallets' }));
+    await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+    await user.click(await screen.findByRole('button', { name: 'Review publish transaction' }));
+    block = true;
+    await user.click(screen.getByRole('button', { name: 'Publish to registry' }));
+    await waitFor(() => { expect(release).toBeTypeOf('function'); });
+    await user.click(screen.getByRole('checkbox'));
+    await act(async () => { release?.(); await Promise.resolve(); });
+    expect(wallet.sent).toBeUndefined();
+  });
   it('unchecking consent drops the connection and review', async () => {
     generateSession();
     const wallet = new MockWallet({ chainId: SEPOLIA });

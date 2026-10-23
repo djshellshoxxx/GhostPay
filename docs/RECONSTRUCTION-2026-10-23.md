@@ -109,3 +109,25 @@ both new contradictory-evidence regressions failed before adding a domain-separa
 and receipt sender/transaction chain consistency checks. Stable transfer consumption identity remains separate.
 Worker cancellation immediately wipes/terminates; malformed constructor input is wiped; async reorg persistence
 is awaited. Unexpected provider errors become fixed typed failures rather than leaking provider text.
+
+## Verified tranches: wallet authority and encrypted reconciliation
+
+Integrator rerun wallet/Pay/registry/journal command passed 105 tests across seven files; focused 13-file
+ESLint passed. Final checks cover consent/account/chain/provider/session/expiry changes during wallet awaits,
+same-invoice duplicates across payer accounts, pre-send journal durability, no automatic unknown-outcome expiry,
+explicit clear and late-hash retention. Lost responses say outcome unknown; returned hashes survive session changes.
+Pay receipt import requires consent and honors importer cancellation. Public-meta QR is a review-only sink;
+it cannot install seller keys or publish registry data.
+
+Integrator rerun vault/legacy/component/Scan command passed 62 tests across four files. Actual Chromium
+script `GHOSTPAY_CHROMIUM=/usr/bin/chromium node apps/web/scripts/test-reconciliation-idb.mjs` passed
+two-tab exact-ciphertext races, stale request-callback abort and cross-tab reorg refresh, with external egress blocked.
+The vault uses HKDF/AES-GCM, bounded ciphertext/records, explicit backup preview/activation, scope/revision guards
+and no plaintext document cache. Legacy plaintext is only explicitly untrusted read/export/delete.
+
+Cross-review additionally fixed same-key session replacement, cross-tab stale rendering, final plaintext read
+revocation and reorg-cap overflow. At 2,000 unique retained invalidation tombstones, further overflow commits
+a persistent conservative read-only safety state before warning the user; save cannot revive omitted IDs.
+Deletion/import retains that state. This capacity limit is explicit, and whole-profile deletion/rollback cannot
+be detected without external authority. Known invalidated IDs remain invalid after old-backup activation;
+fresh canonical live observations are preserved. Imported observations are untrusted historical data.

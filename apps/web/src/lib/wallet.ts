@@ -1,10 +1,13 @@
 import { parseQuantity, type Address, type Hex } from '@ghostpay/chain-adapters';
-import { getAddress, isAddress } from 'viem/utils';
+import { getAddress, isAddress, keccak256, toBytes } from 'viem/utils';
+import { beginAttempt, browserAttemptStorage, finishAttempt, type AttemptInput } from './duplicateAttemptJournal';
 import { UserFacingError } from './errors';
 
 /** Minimal EIP-1193 provider surface. */
 export interface Eip1193Provider {
   request(args: { readonly method: string; readonly params?: readonly unknown[] | object }): Promise<unknown>;
+  on?(event: string, listener: () => void): void;
+  removeListener?(event: string, listener: () => void): void;
 }
 
 export interface WalletInfo {
@@ -145,10 +148,13 @@ function firstAccount(v: unknown): Address {
   return toAccount(v[0]);
 }
 
-async function readChainId(p: Eip1193Provider): Promise<number> {
+async function readChainId(p: Eip1193Provider, assertCurrent?: () => void): Promise<number> {
+  assertCurrent?.();
   let id: bigint;
   try {
-    id = parseQuantity(await call(p, 'eth_chainId'));
+    const answer = await call(p, 'eth_chainId');
+    assertCurrent?.();
+    id = parseQuantity(answer);
   } catch (e) {
     if (e instanceof UserFacingError || e instanceof WalletCallError) throw e;
     throw new UserFacingError('The wallet returned an invalid chain id.');
@@ -163,6 +169,7 @@ async function readChainId(p: Eip1193Provider): Promise<number> {
   } catch {
     net = undefined;
   }
+  assertCurrent?.();
   if ((typeof net === 'string' || typeof net === 'number') && String(net) !== String(n)) {
     throw new UserFacingError('The wallet gave contradictory chain ids. Refusing to continue.');
   }
@@ -193,11 +200,17 @@ export async function connectWallet(wallet: WalletInfo, expectedChainId: number)
 }
 
 /** Re-reads account and chain immediately before a signature or send. */
-export async function recheckWallet(s: WalletSession): Promise<void> {
+export async function recheckWallet(s: WalletSession, assertCurrent?: () => void): Promise<void> {
+  assertCurrent?.();
   const acct = firstAccount(await call(s.wallet.provider, 'eth_accounts'));
+  assertCurrent?.();
   if (acct !== s.account) throw new UserFacingError('The selected wallet account changed. Reconnect and review again.');
-  const chainId = await readChainId(s.wallet.provider);
+  const chainId = await readChainId(s.wallet.provider, assertCurrent);
+  assertCurrent?.();
   if (chainId !== s.chainId) throw new UserFacingError('The wallet network changed. Reconnect and review again.');
+  const finalAccount = firstAccount(await call(s.wallet.provider, 'eth_accounts'));
+  assertCurrent?.();
+  if (finalAccount !== s.account) throw new UserFacingError('The selected wallet account changed. Reconnect and review again.');
 }
 
 export interface TxRequest {
@@ -208,22 +221,95 @@ export interface TxRequest {
 
 const HASH_RE = /^0x[0-9a-fA-F]{64}$/;
 
-/** Sends one transaction through the wallet and returns its hash (shape-checked only). */
-export async function sendViaWallet(s: WalletSession, tx: TxRequest): Promise<Hex> {
-  await recheckWallet(s);
-  const hash = await call(s.wallet.provider, 'eth_sendTransaction', [
-    { from: s.account, to: tx.to, data: tx.data, value: `0x${tx.value.toString(16)}`, chainId: `0x${s.chainId.toString(16)}` },
-  ]);
-  if (typeof hash !== 'string' || !HASH_RE.test(hash)) throw new UserFacingError('The wallet did not return a valid transaction hash.');
-  return hash.toLowerCase() as Hex;
+export interface WalletAttemptOptions {
+  readonly kind: AttemptInput['kind'];
+  /** Logical action identity (for payments, the signed invoice digest), independent of fresh stealth randomness. */
+  readonly scope?: string;
+}
+export function walletAttemptKey(s: WalletSession, tx: TxRequest, options?: WalletAttemptOptions): string {
+  return keccak256(toBytes(JSON.stringify([
+    s.chainId, options?.kind === 'payment' && options.scope !== undefined ? 'invoice-payer' : s.account.toLowerCase(), options?.kind ?? 'transaction',
+    options?.scope ?? [tx.to.toLowerCase(), tx.data.toLowerCase(), tx.value.toString()],
+  ])));
+}
+/** Returned hash is preserved even if tab storage fails after broadcast. */
+export class WalletBroadcastError extends UserFacingError {
+  public constructor(public readonly hash: Hex) {
+    super(`The wallet returned transaction ${hash}, but its hash could not be saved in this tab. Do not repeat the request; check your wallet.`);
+    this.name = 'WalletBroadcastError';
+  }
+}
+function walletAuthority(s: WalletSession, assertCurrent?: () => void): { assert: () => void; dispose: () => void } {
+  const provider = s.wallet.provider;
+  const account = s.account;
+  const chainId = s.chainId;
+  let changed = false;
+  const onChanged = (): void => { changed = true; };
+  const events = ['accountsChanged', 'chainChanged', 'disconnect'];
+  const dispose = (): void => {
+    for (const event of events) {
+      try { provider.removeListener?.(event, onChanged); } catch { /* Provider cleanup cannot erase a returned hash. */ }
+    }
+  };
+  if (provider.on !== undefined && provider.removeListener !== undefined) {
+    try { for (const event of events) provider.on(event, onChanged); } catch {
+      dispose();
+      throw new UserFacingError('The wallet could not be monitored for account or network changes. Reconnect before continuing.');
+    }
+  }
+  return {
+    assert: () => {
+      assertCurrent?.();
+      if (changed || s.wallet.provider !== provider || s.account !== account || s.chainId !== chainId) {
+        throw new UserFacingError('The wallet account, network or provider changed. Reconnect and review again.');
+      }
+    },
+    dispose,
+  };
+}
+/** Sends one transaction through the wallet. An initiated wallet request cannot be cancelled by this page. */
+export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurrent?: () => void, options?: WalletAttemptOptions): Promise<Hex> {
+  const authority = walletAuthority(s, assertCurrent);
+  try {
+    await recheckWallet(s, authority.assert);
+    authority.assert();
+    const storage = browserAttemptStorage();
+    const attempt = storage === undefined ? undefined : beginAttempt({
+      key: walletAttemptKey(s, tx, options), chainId: s.chainId, account: s.account.toLowerCase(), kind: options?.kind ?? 'transaction',
+    }, storage);
+    // No await between this final authority check, the journal write, and provider invocation.
+    authority.assert();
+    let hash: unknown;
+    try {
+      hash = await call(s.wallet.provider, 'eth_sendTransaction', [
+        { from: s.account, to: tx.to, data: tx.data, value: `0x${tx.value.toString(16)}`, chainId: `0x${s.chainId.toString(16)}` },
+      ]);
+    } catch (e) {
+      if (e instanceof UserFacingError) throw e;
+      throw new UserFacingError('The wallet request failed with an unknown outcome and may already have been submitted. Check your wallet and the chain before explicitly clearing this attempt; do not send again blindly.');
+    }
+    if (typeof hash !== 'string' || !HASH_RE.test(hash)) throw new UserFacingError('The wallet did not return a valid transaction hash. The outcome is unknown; check your wallet before another attempt.');
+    const normalized = hash.toLowerCase() as Hex;
+    if (attempt !== undefined) {
+      try { finishAttempt(attempt, normalized, storage); } catch { throw new WalletBroadcastError(normalized); }
+    }
+    return normalized;
+  } finally { authority.dispose(); }
+
 }
 
 /** `eth_signTypedData_v4`; the caller verifies the recovered signer. */
-export async function signTypedDataViaWallet(s: WalletSession, typedDataJson: string): Promise<Hex> {
-  await recheckWallet(s);
-  const sig = await call(s.wallet.provider, 'eth_signTypedData_v4', [s.account, typedDataJson]);
-  if (typeof sig !== 'string' || !/^0x[0-9a-fA-F]{130}$/.test(sig)) throw new UserFacingError('The wallet returned an invalid signature.');
-  return sig as Hex;
+export async function signTypedDataViaWallet(s: WalletSession, typedDataJson: string, assertCurrent?: () => void): Promise<Hex> {
+  const authority = walletAuthority(s, assertCurrent);
+  try {
+    await recheckWallet(s, authority.assert);
+    authority.assert();
+    const sig = await call(s.wallet.provider, 'eth_signTypedData_v4', [s.account, typedDataJson]);
+    authority.assert();
+    if (typeof sig !== 'string' || !/^0x[0-9a-fA-F]{130}$/.test(sig)) throw new UserFacingError('The wallet returned an invalid signature.');
+    return sig as Hex;
+  } finally { authority.dispose(); }
+
 }
 
 /** Raised when the transaction the network saw differs from the one that was previewed. */

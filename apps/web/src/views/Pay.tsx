@@ -4,6 +4,7 @@ import type { BuiltPayment } from '@ghostpay/chain-adapters';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
 import { CameraImporter } from '../components/CameraImporter';
+import { WalletAttempts } from '../components/WalletAttempts';
 import { FeeDisclosure, useManifest } from '../components/Disclosure';
 import { ManifestBanner } from '../components/ManifestBanner';
 import { extractFragment } from '../lib/fragment';
@@ -24,6 +25,7 @@ import { PostBroadcastError, buildReceipt, grantApproval, planApproval, prepareP
 import { useServices } from '../lib/services';
 import { connectWallet, walletWarnings, type WalletInfo, type WalletSession } from '../lib/wallet';
 import { useApp } from '../state';
+import { captureSessionVersionGuard } from '../lib/session';
 import { bindReceiptToInvoice, MAX_RECEIPT_JSON_BYTES, parseVerifiedReceipt, type BoundReceipt } from '../lib/receipts';
 
 type Phase = 'input' | 'review' | 'waiting' | 'ready' | 'prepared' | 'busy' | 'submitted' | 'done';
@@ -57,6 +59,7 @@ export function Pay(): ReactNode {
   const [receiptTrustedKey, setReceiptTrustedKey] = useState('');
   const [receiptError, setReceiptError] = useState<string | undefined>(undefined);
   const [receiptBusy, setReceiptBusy] = useState(false);
+  const [receiptConsent, setReceiptConsent] = useState(false);
   const receiptBusyRef = useRef(false);
   const receiptImportRevision = useRef(0);
   const [approval, setApproval] = useState<ApprovalPlan | undefined>(undefined);
@@ -79,6 +82,7 @@ export function Pay(): ReactNode {
     receiptImportRevision.current += 1;
     receiptBusyRef.current = false;
     setReceiptBusy(false);
+    setReceiptConsent(false);
     setBoundReceipt(undefined);
     setReceiptError(undefined);
     setReceiptTrustedKey('');
@@ -144,8 +148,10 @@ export function Pay(): ReactNode {
 
   // Build the payment request (amounts) as soon as the review has no blockers. The review is recomputed from the
   // latest invoice/manifest/clock every time (also when a delay ends), never from a stale closure.
-  const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment });
-  latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment };
+  const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent });
+  latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent };
+  const receiptScope = useMemo(() => ({ ctx, session: app.session }), [ctx, app.session]);
+  const authorityMatches = (): boolean => latest.current.wallet === wallet && latest.current.settings === app.settings && latest.current.session === app.session;
   const assertCurrentInvoice = (revision: number, invoice: ParsedInvoice['invoice']): void => {
     if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice || latest.current.ctx?.review.invoice !== invoice) {
       throw new Error('The invoice changed. Review it again before continuing.');
@@ -216,6 +222,8 @@ export function Pay(): ReactNode {
     return () => {
       document.removeEventListener('visibilitychange', onVis);
       scheduler.current?.cancel();
+      flowRevision.current += 1;
+      receiptImportRevision.current += 1;
     };
   }, []);
 
@@ -280,8 +288,12 @@ export function Pay(): ReactNode {
     ).finally(() => { if (flowRevision.current === revision) setUnlocking(false); });
   };
 
-  const importReceiptText = (readText: () => Promise<string>, byteLength?: number): Promise<boolean> => {
-    if (receiptBusyRef.current) return Promise.resolve(false);
+  const importReceiptText = (readText: () => Promise<string>, byteLength?: number, signal?: AbortSignal): Promise<boolean> => {
+    if (receiptBusyRef.current || signal?.aborted === true) return Promise.resolve(false);
+    if (!latest.current.receiptConsent) {
+      setReceiptError('Consent is required before opening private receipt details.');
+      return Promise.resolve(false);
+    }
     const invoiceAtStart = parsed;
     const contextAtStart = ctx;
     const fragmentAtStart = fragment;
@@ -305,6 +317,7 @@ export function Pay(): ReactNode {
         if (text.length > MAX_RECEIPT_JSON_BYTES || new TextEncoder().encode(text).byteLength > MAX_RECEIPT_JSON_BYTES) {
           throw new Error(byteLength === undefined ? 'Receipt QR/text exceeds 64 KiB.' : 'Receipt file exceeds 64 KiB.');
         }
+        if (signal?.aborted === true || !latest.current.receiptConsent) return false;
         const receipt = parseVerifiedReceipt(text);
         const current = latest.current;
         if (receiptImportRevision.current !== importRevision || flowRevision.current !== flowAtStart || current.fragment !== fragmentAtStart || current.parsed !== invoiceAtStart) return false;
@@ -321,6 +334,7 @@ export function Pay(): ReactNode {
           ...(current.built === undefined || current.builtFor !== invoiceAtStart.invoice || current.builtForContext !== current.ctx ? {} : { stealthAddress: current.built.preview.stealth }),
         });
         if (receiptImportRevision.current !== importRevision || flowRevision.current !== flowAtStart || latest.current.fragment !== fragmentAtStart || latest.current.parsed !== invoiceAtStart || latest.current.receiptTrustedKey !== trustedKeyAtStart) return false;
+        if (!latest.current.receiptConsent) return false;
         setBoundReceipt(binding);
         return true;
       } catch (err) {
@@ -434,11 +448,13 @@ export function Pay(): ReactNode {
   const onConnect = (w: WalletInfo): void => {
     if (chainId === undefined) return;
     const revision = flowRevision.current;
+    const sessionGuard = captureSessionVersionGuard();
     const invoice = parsed?.invoice;
     setError(undefined);
     setStatus('Waiting for your wallet…');
     connectWallet(w, chainId).then(
       (s) => {
+        try { sessionGuard(); } catch { return; }
         if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return;
         setWallet(s);
         setStatus('');
@@ -455,9 +471,14 @@ export function Pay(): ReactNode {
   const onPrepare = (): void => {
     if (wallet === undefined || ctx === undefined || parsed === undefined || ctx.review.invoice !== parsed.invoice) return;
     const revision = flowRevision.current;
+    const sessionGuard = captureSessionVersionGuard();
     const invoice = parsed.invoice;
-    const isCurrent = (): boolean => flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx?.review.invoice === invoice;
-    const guard = (): void => assertCurrentInvoice(revision, invoice);
+    const isCurrent = (): boolean => authorityMatches() && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx?.review.invoice === invoice;
+    const guard = (): void => {
+      sessionGuard();
+      assertCurrentInvoice(revision, invoice);
+      if (!authorityMatches()) throw new Error('The wallet, settings or session changed. Review again before continuing.');
+    };
     const scopedStatus = (message: string): void => { if (isCurrent()) setStatus(message); };
     setError(undefined);
     setPhase('busy');
@@ -500,10 +521,13 @@ export function Pay(): ReactNode {
   const onSend = (): void => {
     if (wallet === undefined || ctx === undefined || built === undefined || parsed === undefined || ctx.review.invoice !== parsed.invoice || builtFor !== parsed.invoice || builtForContext !== ctx) return;
     const revision = flowRevision.current;
+    const sessionGuard = captureSessionVersionGuard();
     const invoice = parsed.invoice;
-    const isCurrent = (): boolean => flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx === ctx && latest.current.built === built && latest.current.builtFor === invoice && latest.current.builtForContext === ctx;
+    const isCurrent = (): boolean => authorityMatches() && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx === ctx && latest.current.built === built && latest.current.builtFor === invoice && latest.current.builtForContext === ctx;
     const guard = (): void => {
+      sessionGuard();
       assertCurrentInvoice(revision, invoice);
+      if (!authorityMatches()) throw new Error('The wallet, settings or session changed. Review again before continuing.');
       if (latest.current.built !== built || latest.current.builtFor !== invoice || latest.current.builtForContext !== ctx) throw new Error('The prepared payment changed. Review it again before continuing.');
     };
     const scopedStatus = (message: string): void => { if (isCurrent()) setStatus(message); };
@@ -561,8 +585,9 @@ export function Pay(): ReactNode {
   const onRevoke = (): void => {
     if (wallet === undefined || ctx === undefined || approval === undefined || parsed === undefined || ctx.review.invoice !== parsed.invoice) return;
     const revision = flowRevision.current;
+    const sessionGuard = captureSessionVersionGuard();
     const invoice = parsed.invoice;
-    const isCurrent = (): boolean => flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx?.review.invoice === invoice;
+    const isCurrent = (): boolean => authorityMatches() && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx?.review.invoice === invoice;
     const scopedStatus = (message: string): void => { if (isCurrent()) setStatus(message); };
     setError(undefined);
     setPhase('busy');
@@ -571,6 +596,7 @@ export function Pay(): ReactNode {
         const rt = await runtime();
         if (!isCurrent()) return;
         await revokeApproval(wallet, ctx, approval, rt, scopedStatus, () => {
+          sessionGuard();
           if (!isCurrent()) throw new Error('The invoice changed. Review it again before continuing.');
         }, (hash) => { if (!isCurrent()) setPreviousBroadcast({ hash, kind: 'approval' }); });
         if (!isCurrent()) return;
@@ -593,6 +619,8 @@ export function Pay(): ReactNode {
   };
 
   const forget = (): void => {
+    flowRevision.current += 1;
+    receiptImportRevision.current += 1;
     scheduler.current?.cancel();
     app.setFragment(undefined);
     setParsed(undefined);
@@ -615,6 +643,7 @@ export function Pay(): ReactNode {
     return (
       <section aria-labelledby="pay-h">
         <h2 id="pay-h">Pay an invoice</h2>
+        <WalletAttempts />
         {previousBroadcast !== undefined && (
           <Notice kind="warn" title="Previous invoice transaction may have been submitted">
             Check your wallet before paying again. The transaction hash is <Mono>{previousBroadcast.hash}</Mono>. This was a {previousBroadcast.kind} for the invoice that was open before you changed links.
@@ -657,6 +686,7 @@ export function Pay(): ReactNode {
   return (
     <section aria-labelledby="pay-h">
       <h2 id="pay-h">Review payment</h2>
+      <WalletAttempts />
       {previousBroadcast !== undefined && (
         <Notice kind="warn" title="Previous invoice transaction may have been submitted">
           Check your wallet before paying again. The transaction hash is <Mono>{previousBroadcast.hash}</Mono>. This was a {previousBroadcast.kind} for the invoice that was open before you changed links.
@@ -752,6 +782,15 @@ export function Pay(): ReactNode {
           <p className="hint">
             This checks the receipt signature against the current signed invoice, chain, asset and exact seller amount. If this page has a transaction hash or prepared one-time address, those are checked too. A seller signature proves control of a key and does not independently prove an on-chain payment or seller identity.
           </p>
+          <p className="hint">A receipt may reveal a private amount, transaction and invoice association on this screen.</p>
+          <label><input type="checkbox" checked={receiptConsent} onChange={(event) => {
+            setReceiptConsent(event.target.checked);
+            receiptImportRevision.current += 1;
+            receiptBusyRef.current = false;
+            setReceiptBusy(false);
+            setBoundReceipt(undefined);
+            setReceiptError(undefined);
+          }} /> I consent to opening private receipt details on this screen.</label>
           <form className="stack" onSubmit={onImportReceipt}>
             <Field label="Signed seller receipt JSON">
               {(id) => <input id={id} type="file" accept="application/json,.json" />}
@@ -764,7 +803,16 @@ export function Pay(): ReactNode {
           <CameraImporter
             key={fragment ?? ''}
             label="Scan or paste a seller receipt"
-            onText={(text) => importReceiptText(() => Promise.resolve(text))}
+            active={receiptConsent && ctx !== undefined}
+            scopeKey={receiptScope}
+            onInputChange={() => {
+              receiptImportRevision.current += 1;
+              receiptBusyRef.current = false;
+              setReceiptBusy(false);
+              setBoundReceipt(undefined);
+              setReceiptError(undefined);
+            }}
+            onText={(text, signal) => importReceiptText(() => Promise.resolve(text), undefined, signal)}
           />
           {receiptError !== undefined && <Notice kind="error" title="Receipt not accepted">{receiptError}</Notice>}
           {boundReceipt !== undefined && (

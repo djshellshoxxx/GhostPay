@@ -56,6 +56,38 @@ describe('native payment end to end (mock wallet, mock RPC)', () => {
     expect(JSON.stringify(receipt)).not.toMatch(/secret|private/i);
   });
 
+  it('refuses when the invoice authority changes during the final wallet recheck', async () => {
+    const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
+    let current = true;
+    const guardedSession = { ...session, wallet: { ...session.wallet, provider: {
+      request: async (args: Parameters<MockWallet['request']>[0]) => {
+        const value = await wallet.request(args);
+        if (args.method === 'net_version') current = false;
+        return value;
+      },
+    } } };
+    const rt: Runtime = { rpc: undefined, nowSeconds: () => NOW };
+    const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+    await expect(sendPayment(guardedSession, ctx, built, rt, noStatus, () => {
+      if (!current) throw new Error('invoice changed during wallet check');
+    })).rejects.toThrow('invoice changed during wallet check');
+    expect(wallet.sent).toBeUndefined();
+  });
+  it('rechecks the payment deadline after final wallet network awaits', async () => {
+    const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
+    let now = NOW;
+    const rt: Runtime = { rpc: undefined, nowSeconds: () => now };
+    const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+    const guardedSession = { ...session, wallet: { ...session.wallet, provider: {
+      request: async (args: Parameters<MockWallet['request']>[0]) => {
+        const answer = await wallet.request(args);
+        if (args.method === 'net_version') now = Number(built.preview.deadline);
+        return answer;
+      },
+    } } };
+    await expect(sendPayment(guardedSession, ctx, built, rt, noStatus)).rejects.toThrow(/expired/);
+    expect(wallet.sent).toBeUndefined();
+  });
   it('works without an RPC but says it could not verify', async () => {
     const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
     const rt: Runtime = { rpc: undefined, nowSeconds: () => NOW };
