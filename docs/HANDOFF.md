@@ -1,5 +1,10 @@
 # GhostPay: session handoff
 
+> Historical handoff: the branch, main-state and completion estimates below describe 2026-10-22 before
+> consolidation. Main is now the canonical implementation baseline. For the authorized local reconstruction,
+> current branch, fresh test evidence and remaining gates, read [RECONSTRUCTION-2026-10-23.md](RECONSTRUCTION-2026-10-23.md)
+> and [HANDOFF-2026-10-23.md](HANDOFF-2026-10-23.md). No GitHub publication is authorized for that work.
+
 Written 2026-10-22 at commit `3519171` on branch `claude/laughing-bardeen-4t20ys` (draft PR
 [djshellshoxxx/GhostPay#17](https://github.com/djshellshoxxx/GhostPay/pull/17) into `main`).
 Session: https://claude.ai/code/session_018PjGZop7wp5vw9oDAZEwYA
