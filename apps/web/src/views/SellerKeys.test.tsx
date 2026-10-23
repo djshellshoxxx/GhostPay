@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { clearSession, generateSession, getSessionPublic } from '../lib/session';
@@ -145,12 +145,12 @@ describe('Seller keys', () => {
     };
     URL.revokeObjectURL = (): void => undefined;
     HTMLAnchorElement.prototype.click = click;
-    await user.type(screen.getByLabelText('Passphrase (at least 10 characters)'), 'short');
+    await user.type(screen.getByLabelText('Passphrase (at least 14 characters)'), 'short');
     await user.type(screen.getByLabelText('Repeat passphrase'), 'short');
     await user.click(screen.getByRole('button', { name: 'Download encrypted keystore' }));
     expect(screen.getByRole('alert').textContent).toMatch(/at least 14/);
-    await user.clear(screen.getByLabelText('Passphrase (at least 10 characters)'));
-    await user.type(screen.getByLabelText('Passphrase (at least 10 characters)'), 'a long passphrase');
+    await user.clear(screen.getByLabelText('Passphrase (at least 14 characters)'));
+    await user.type(screen.getByLabelText('Passphrase (at least 14 characters)'), 'a long passphrase');
     await user.clear(screen.getByLabelText('Repeat passphrase'));
     await user.type(screen.getByLabelText('Repeat passphrase'), 'different one!!');
     await user.click(screen.getByRole('button', { name: 'Download encrypted keystore' }));
@@ -200,4 +200,40 @@ describe('Seller keys', () => {
     await user.click(screen.getByRole('button', { name: 'Decrypt and load' }));
     expect(screen.getByRole('alert').textContent).toMatch(/not a GhostPay keystore/);
   });
+});
+
+
+it('imports only an encrypted keystore QR and waits for explicit decryption', async () => {
+  generateSession();
+  const original = getSessionPublic();
+  const { exportKeystore } = await import('../lib/session');
+  const text = await exportKeystore('a long passphrase', { N: 1 << 14 });
+  clearSession();
+  const user = await open();
+  await user.click(screen.getByText('Import an encrypted keystore'));
+  fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: text } });
+  await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
+  expect(getSessionPublic()).toBeUndefined();
+  await user.type(screen.getByLabelText('Passphrase'), 'a long passphrase');
+  await user.click(screen.getByRole('button', { name: 'Decrypt and load' }));
+  await waitFor(() => { expect(getSessionPublic()?.metaAddress).toBe(original?.metaAddress); });
+});
+
+it('does not install keys if the encrypted import disclosure closes during file reading', async () => {
+  generateSession();
+  const { exportKeystore } = await import('../lib/session');
+  const text = await exportKeystore('a long passphrase', { N: 1 << 14 });
+  clearSession();
+  const user = await open();
+  await user.click(screen.getByText('Import an encrypted keystore'));
+  let finish!: (value: string) => void;
+  const file = new File([text], 'keys.json', { type: 'application/json' });
+  Object.defineProperty(file, 'text', { value: () => new Promise<string>((resolve) => { finish = resolve; }) });
+  await user.upload(screen.getByLabelText('Keystore file'), file);
+  await user.type(screen.getByLabelText('Passphrase'), 'a long passphrase');
+  await user.click(screen.getByRole('button', { name: 'Decrypt and load' }));
+  await user.click(screen.getByText('Import an encrypted keystore'));
+  act(() => { finish(text); });
+  expect(getSessionPublic()).toBeUndefined();
+  expect(screen.getByLabelText<HTMLInputElement>('Passphrase').value).toBe('');
 });

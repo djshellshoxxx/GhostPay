@@ -80,14 +80,14 @@ describe('session', () => {
       'a long passphrase',
       { N: 1 << 14 },
     );
-    await expect(importKeystore(text, 'a long passphrase')).rejects.toThrow(/must differ/);
+    await expect(importKeystore(text, 'a long passphrase')).rejects.toThrow(/not a valid/);
     const zero = await encryptKeystore(
       { spendingKey: new Uint8Array(32), viewingKey: new Uint8Array(32).fill(1), signingKey: new Uint8Array(32).fill(3) },
       { metaAddress: 'x', signer: 'y' },
       'a long passphrase',
       { N: 1 << 14 },
     );
-    await expect(importKeystore(zero, 'a long passphrase')).rejects.toThrow(/invalid keys/);
+    await expect(importKeystore(zero, 'a long passphrase')).rejects.toThrow(/not a valid/);
   });
 
   it('does not let a pending unlock replace a session changed while decrypting', async () => {
@@ -176,4 +176,25 @@ describe('boxed key storage (S3-08)', () => {
     expect(again.metaAddress).toBe(pub.metaAddress);
     expect(again.signerPublicKey).toBe(pub.signerPublicKey);
   });
+});
+
+
+describe('keystore lifecycle guard', () => {
+  it('refuses to install decrypted keys after the caller closes the import', async () => {
+    generateSession();
+    const text = await exportKeystore('a long passphrase', { N: 1 << 14 });
+    clearSession();
+    const controller = new AbortController();
+    const pending = importKeystore(text, 'a long passphrase', controller.signal);
+    controller.abort();
+    await expect(pending).rejects.toThrow(/import was closed/);
+    expect(getSessionPublic()).toBeUndefined();
+  });
+});
+
+
+it('rejects reuse of an invoice-signing scalar as a spending or viewing key', () => {
+  for (const signingKeyHex of [HEX_A, HEX_B]) {
+    expect(() => importSession({ spendingKeyHex: HEX_A, viewingKeyHex: HEX_B, signingKeyHex })).toThrow(/independent/);
+  }
 });

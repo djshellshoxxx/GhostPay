@@ -1,9 +1,10 @@
-import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
+import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
 import { userMessage } from '../lib/errors';
-import { passphraseProblem } from '../lib/keystore';
-import { clearSession, exportKeystore, generateSession, importKeystore, importSession } from '../lib/session';
+import { MAX_KEYSTORE_BYTES, passphraseProblem, validateKeystoreEnvelope } from '../lib/keystore';
+import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, importKeystore, importSession } from '../lib/session';
 import { deleteEncryptedVault, readEncryptedVault, saveEncryptedVault, unlockEncryptedVault } from '../lib/keyVault';
 import { useApp } from '../state';
 
@@ -17,6 +18,9 @@ export function SellerKeys(): ReactNode {
   const [pass, setPass] = useState('');
   const [pass2, setPass2] = useState('');
   const [importPass, setImportPass] = useState('');
+  const [importText, setImportText] = useState<string | undefined>();
+  const operation = useRef<AbortController | null>(null);
+  const mounted = useRef(false);
   const [file, setFile] = useState<File | undefined>(undefined);
   const [backupQr, setBackupQr] = useState<string | undefined>(undefined);
   const [vaultState, setVaultState] = useState<'checking' | 'empty' | 'saved' | 'unavailable'>('checking');
@@ -34,6 +38,25 @@ export function SellerKeys(): ReactNode {
     );
     return () => { live = false; };
   }, []);
+
+  const cancelImport = (): void => {
+    operation.current?.abort(); operation.current = null;
+    setBusy(false); setVaultBusy(false); setImportPass(''); setFile(undefined); setImportText(undefined); setVaultUnlockPass('');
+  };
+  useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; operation.current?.abort(); operation.current = null; };
+  }, []);
+  useEffect(() => {
+    operation.current?.abort(); operation.current = null;
+    setBackupQr(undefined); setBusy(false); setVaultBusy(false);
+    setPass(''); setPass2(''); setImportPass(''); setVaultUnlockPass(''); setImportText(undefined); setFile(undefined);
+  }, [app.session]);
+  const startOperation = (): AbortController => {
+    operation.current?.abort();
+    const controller = new AbortController(); operation.current = controller; return controller;
+  };
+  const currentOperation = (controller: AbortController): boolean => mounted.current && operation.current === controller && !controller.signal.aborted;
 
   const fail = (e: unknown): void => {
     setMessage({ kind: 'error', text: userMessage(e) });
@@ -67,10 +90,14 @@ export function SellerKeys(): ReactNode {
       setMessage({ kind: 'error', text: 'The two passphrases differ.' });
       return;
     }
+    const controller = startOperation();
+    const unchanged = captureSessionVersionGuard();
     setBusy(true);
     setMessage({ kind: 'ok', text: 'Encrypting (this takes a moment on purpose)…' });
     exportKeystore(pass).then(
       (text) => {
+        if (!currentOperation(controller)) return;
+        try { unchanged(); } catch (error) { setBusy(false); fail(error); return; }
         downloadText('ghostpay-keystore.json', text, 'application/json');
         setBackupQr(text);
         setPass('');
@@ -79,6 +106,7 @@ export function SellerKeys(): ReactNode {
         done('Encrypted keystore downloaded. Keep the file and remember the passphrase: neither can be recovered.');
       },
       (err: unknown) => {
+        if (!currentOperation(controller)) return;
         setBusy(false);
         fail(err);
       },
@@ -87,31 +115,26 @@ export function SellerKeys(): ReactNode {
 
   const onImportKeystore = (e: FormEvent): void => {
     e.preventDefault();
-    if (file === undefined) {
-      setMessage({ kind: 'error', text: 'Choose a keystore file first.' });
-      return;
-    }
-    if (file.size > 8 * 1024) {
-      setMessage({ kind: 'error', text: 'This is not a GhostPay keystore file.' });
-      return;
-    }
-    setBusy(true);
-    setMessage({ kind: 'ok', text: 'Decrypting…' });
-    file
-      .text()
-      .then((text) => importKeystore(text, importPass))
-      .then(
-        () => {
-          setImportPass('');
-          setFile(undefined);
-          setBusy(false);
-          done('Keystore decrypted; keys are in memory.');
-        },
-        (err: unknown) => {
-          setBusy(false);
-          fail(err);
-        },
-      );
+    if (file === undefined && importText === undefined) { setMessage({ kind: 'error', text: 'Choose a keystore file first.' }); return; }
+    if (file !== undefined && file.size > MAX_KEYSTORE_BYTES) { setMessage({ kind: 'error', text: 'This is not a GhostPay keystore file.' }); return; }
+    const controller = startOperation();
+    const unchanged = captureSessionVersionGuard();
+    const selected = file; const pasted = importText; const passphrase = importPass;
+    setBusy(true); setMessage({ kind: 'ok', text: 'Decrypting…' });
+    void (async () => {
+      try {
+        const text = selected === undefined ? pasted! : await selected.text();
+        if (!currentOperation(controller)) return;
+        unchanged();
+        await importKeystore(text, passphrase, controller.signal);
+        if (!currentOperation(controller)) return;
+        setImportPass(''); setFile(undefined); setImportText(undefined); setBusy(false);
+        done('Keystore decrypted; keys are in memory.');
+      } catch (error) {
+        if (!currentOperation(controller)) return;
+        setImportPass(''); setBusy(false); fail(error);
+      }
+    })();
   };
 
   const onSaveVault = (e: FormEvent): void => {
@@ -137,15 +160,18 @@ export function SellerKeys(): ReactNode {
 
   const onUnlockVault = (e: FormEvent): void => {
     e.preventDefault();
+    const controller = startOperation();
     setVaultBusy(true);
-    void unlockEncryptedVault(vaultUnlockPass).then(
+    void unlockEncryptedVault(vaultUnlockPass, undefined, controller.signal).then(
       () => {
+        if (!currentOperation(controller)) return;
         setVaultUnlockPass('');
         setBackupQr(undefined);
         setVaultBusy(false);
         done('Encrypted vault unlocked. Seller keys are back in memory.');
       },
       (err: unknown) => {
+        if (!currentOperation(controller)) return;
         setVaultUnlockPass('');
         setVaultBusy(false);
         fail(err);
@@ -188,8 +214,9 @@ export function SellerKeys(): ReactNode {
           <h3 id="vault-unlock-h">Encrypted seller vault saved in this browser</h3>
           <p>Unlocking replaces the keys currently in memory. The vault stores only the encrypted keystore text; your passphrase is never saved.</p>
           <form onSubmit={onUnlockVault} className="stack" autoComplete="off">
-            <Field label="Vault passphrase">{(id) => <input id={id} type="password" autoComplete="current-password" value={vaultUnlockPass} onChange={(e) => { setVaultUnlockPass(e.target.value); }} />}</Field>
+            <Field label="Vault passphrase">{(id) => <input id={id} type="password" autoComplete="current-password" value={vaultUnlockPass} onChange={(e) => { if (vaultBusy) { operation.current?.abort(); setVaultBusy(false); } setVaultUnlockPass(e.target.value); }} />}</Field>
             <button type="submit" className="btn" disabled={vaultBusy || vaultUnlockPass === ''}>Unlock saved vault</button>
+            {vaultBusy && operation.current !== null && <button type="button" className="btn" onClick={cancelImport}>Cancel vault unlock</button>}
           </form>
           {!confirmVaultDelete ? (
             <button type="button" className="btn btn-danger" disabled={vaultBusy} onClick={() => { setConfirmVaultDelete(true); }}>Delete encrypted vault</button>
@@ -210,7 +237,7 @@ export function SellerKeys(): ReactNode {
               Generate new keys
             </button>
           </p>
-          <details>
+          <details onToggle={(event) => { if (!event.currentTarget.open) { setSpend(''); setViewKey(''); setSigning(''); } }}>
             <summary>Import existing keys (hex)</summary>
             <form onSubmit={onImportRaw} className="stack" autoComplete="off">
               <Field label="Spending private key (64 hex characters)">{(id) => <input id={id} type="password" autoComplete="off" spellCheck={false} value={spend} onChange={(e) => { setSpend(e.target.value); }} />}</Field>
@@ -221,13 +248,19 @@ export function SellerKeys(): ReactNode {
               <button type="submit" className="btn">Load keys</button>
             </form>
           </details>
-          <details>
+          <details onToggle={(event) => { if (!event.currentTarget.open) cancelImport(); }}>
             <summary>Import an encrypted keystore</summary>
             <form onSubmit={onImportKeystore} className="stack">
-              <Field label="Keystore file">{(id) => <input id={id} type="file" accept="application/json,.json" onChange={(e) => { setFile(e.target.files?.[0]); }} />}</Field>
-              <Field label="Passphrase">{(id) => <input id={id} type="password" autoComplete="off" value={importPass} onChange={(e) => { setImportPass(e.target.value); }} />}</Field>
+              <Field label="Keystore file">{(id) => <input id={id} type="file" accept="application/json,.json" onChange={(e) => { cancelImport(); setFile(e.target.files?.[0]); }} />}</Field>
+              <Field label="Passphrase">{(id) => <input id={id} type="password" autoComplete="off" value={importPass} onChange={(e) => { if (busy) { operation.current?.abort(); setBusy(false); } setImportPass(e.target.value); }} />}</Field>
               <button type="submit" className="btn" disabled={busy}>Decrypt and load</button>
+              {busy && <button type="button" className="btn" onClick={cancelImport}>Cancel keystore import</button>}
             </form>
+            <CameraImporter label="Import encrypted keystore QR" scopeKey={app.session} onInputChange={cancelImport} onText={(text, signal) => {
+              validateKeystoreEnvelope(text);
+              if (signal.aborted) return false;
+              cancelImport(); setImportText(text); setMessage({ kind: 'ok', text: 'Encrypted keystore received. Enter its passphrase and choose Decrypt and load.' }); return true;
+            }} />
           </details>
         </>
       ) : (
@@ -243,7 +276,7 @@ export function SellerKeys(): ReactNode {
 
           <h3>Back up (encrypted)</h3>
           <form onSubmit={onExport} className="stack" autoComplete="off">
-            <Field label="Passphrase (at least 10 characters)">{(id) => <input id={id} type="password" autoComplete="new-password" value={pass} onChange={(e) => { setPass(e.target.value); }} />}</Field>
+            <Field label="Passphrase (at least 14 characters)">{(id) => <input id={id} type="password" autoComplete="new-password" value={pass} onChange={(e) => { setPass(e.target.value); }} />}</Field>
             <Field label="Repeat passphrase">{(id) => <input id={id} type="password" autoComplete="new-password" value={pass2} onChange={(e) => { setPass2(e.target.value); }} />}</Field>
             <button type="submit" className="btn" disabled={busy}>Download encrypted keystore</button>
           </form>

@@ -72,5 +72,23 @@ wallet outcomes; reorg evidence revived by backup; apparent proofs lacking exact
 - Node `v24.19.0`, npm `11.9.0`, Git and system Chromium are available. Foundry/anvil/solc are not on PATH.
 - Initial `npm ci --ignore-scripts` failed because its default cache `/home/agent/.npm/_cacache`
   cannot be created. Retrying with a writable `/workspace/.npm-cache`; lockfile and integrity unchanged.
-- The parent owns the requested 40-minute continuation check for this same task. No extra environment task,
-  migration or saved-setup deletion is authorized or needed.
+- The parent owns the continuation check for this same task, now every 30 minutes per the later user instruction.
+  No extra environment task, migration or saved-setup deletion is authorized or needed.
+- Later user steering assigns two existing workers to `/workspace/p2p-offramp` and two to GhostPay, with this
+  shared integrator. QR/scanner workers finished their GhostPay slices and froze writes before transitioning.
+- Separate recovery inspection of the other saved GhostPay setup found all 2,929 tracked files identical to
+  remote main and no unique unfinished source. No recovery branch or upload was created. Reconstruction continues.
+
+## Verified tranche: QR, settings and keystore
+
+Integrator independently reran the worker's focused command: ten files and 78 tests passed, zero failures.
+Command from `apps/web`: `npx vitest run src/views/Settings.test.tsx src/views/SellerKeys.test.tsx
+src/lib/keystore.test.ts src/lib/session.test.ts src/lib/keyVault.test.ts src/components/CameraImporter.test.tsx
+src/lib/settingsExchange.test.ts src/lib/qrPayload.test.ts src/i18n/catalog.test.ts
+src/i18n/settings.integration.test.tsx --maxWorkers=1`.
+
+Changes: duplicate-safe bounded keystore envelopes, decrypted-key/public-metadata consistency, independent
+signing scalar, abort-aware session/key-vault import; camera/paste scope, close and disclosure cancellation;
+strict public-meta parser; five allowlisted settings with preview and explicit apply. Four actual catalogs
+en/es/ja/ar updated; no claim that all registered languages are translated. Broad coverage/browser gates
+remain pending. Physical camera, native translation and independent audit acceptance are not established.

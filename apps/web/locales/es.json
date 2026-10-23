@@ -48,6 +48,16 @@
     "i18n.picker.noCatalog": "aún sin traducir, se muestra el inglés",
     "i18n.picker.hint": "Las traducciones marcadas como automáticas no las ha revisado un hablante nativo. Comprueba importes, direcciones y comisiones en tu monedero.",
     "i18n.picker.current": "Idioma actual: {#strong}{name}{/strong}.",
-    "i18n.loadFailed": "No se pudo cargar el idioma seleccionado. Se muestra el inglés."
+    "i18n.loadFailed": "No se pudo cargar el idioma seleccionado. Se muestra el inglés.",
+    "settings.exchange.title": "Transferir preferencias no secretas",
+    "settings.exchange.description": "Comparte solo las preferencias guardadas de demora, bloqueo, tema y barra de direcciones. Se excluyen las URL, credenciales, claves de confianza fijadas y claves privadas. Revisa la importación antes de aplicarla.",
+    "settings.exchange.export": "Mostrar QR de preferencias",
+    "settings.exchange.hide": "Ocultar QR de preferencias",
+    "settings.exchange.import": "Importar preferencias no secretas",
+    "settings.exchange.review": "Revisar preferencias importadas",
+    "settings.exchange.apply": "Aplicar preferencias importadas",
+    "settings.exchange.discard": "Descartar vista previa",
+    "settings.exchange.yes": "Sí",
+    "settings.exchange.no": "No"
   }
 }

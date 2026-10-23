@@ -34,7 +34,7 @@ describe('CameraImporter', () => {
     expect(getUserMedia).not.toHaveBeenCalled();
     await user.type(screen.getByLabelText('Or paste QR text'), 'valid payload');
     await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
-    expect(onText).toHaveBeenCalledWith('valid payload');
+    expect(onText.mock.calls[0]?.[0]).toBe('valid payload');
     expect(screen.getByRole('status').textContent).toBe('QR text accepted.');
     expect(getUserMedia).not.toHaveBeenCalled();
   });
@@ -110,4 +110,49 @@ describe('CameraImporter', () => {
     await user.click(screen.getByRole('button', { name: 'Stop camera' }));
     expect(stopB).toHaveBeenCalledOnce();
   });
+});
+
+
+it('aborts pending pasted import when closed and clears the camera on disclosure collapse', async () => {
+  const pending = deferred<boolean>();
+  let signal: AbortSignal | undefined;
+  const user = userEvent.setup();
+  const { container } = render(<details open><summary>Import</summary><CameraImporter label="Import a QR" onText={(_text, currentSignal) => { signal = currentSignal; return pending.promise; }} /></details>);
+  await user.type(screen.getByLabelText('Or paste QR text'), 'pending');
+  await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
+  expect(signal?.aborted).toBe(false);
+  const disclosure = container.querySelector('details')!;
+  act(() => { disclosure.open = false; disclosure.dispatchEvent(new Event('toggle')); });
+  expect(signal?.aborted).toBe(true);
+  act(() => { pending.resolve(true); });
+  expect(screen.getByRole('status', { hidden: true }).textContent).not.toBe('QR text accepted.');
+});
+
+it('invalidates a pending paste on scope change and unmount', async () => {
+  const pending = deferred<boolean>();
+  const signals: AbortSignal[] = [];
+  const onText = (_text: string, signal: AbortSignal) => { signals.push(signal); return pending.promise; };
+  const user = userEvent.setup();
+  const { rerender, unmount } = render(<CameraImporter label="Import a QR" scopeKey="first" onText={onText} />);
+  await user.type(screen.getByLabelText('Or paste QR text'), 'pending');
+  await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
+  rerender(<CameraImporter label="Import a QR" scopeKey="second" onText={onText} />);
+  expect(signals[0]?.aborted).toBe(true);
+  await user.type(screen.getByLabelText('Or paste QR text'), 'next');
+  await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
+  unmount();
+  expect(signals[1]?.aborted).toBe(true);
+  pending.resolve(true);
+});
+
+it('invalidates the previous preview before rejecting oversized new input', async () => {
+  const onInputChange = vi.fn(); const onText = vi.fn();
+  const user = userEvent.setup();
+  render(<CameraImporter label="Import a QR" onInputChange={onInputChange} onText={onText} />);
+  const { fireEvent } = await import('@testing-library/react');
+  fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: 'x'.repeat(65_537) } });
+  expect(onInputChange).toHaveBeenCalledOnce();
+  await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
+  expect(onText).not.toHaveBeenCalled();
+  expect(screen.getByRole('status').textContent).toContain('64 KiB');
 });

@@ -1,4 +1,7 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
+import { CameraImporter } from '../components/CameraImporter';
+import { QrFrame } from '../components/QrFrame';
+import { exportSettingsExchange, parseSettingsExchange, applySettingsExchange, type SharedSettings } from '../lib/settingsExchange';
 import { Field, Notice } from '../components/Common';
 import { userMessage } from '../lib/errors';
 import { checkDelayRange, checkRelayerUrl, checkRpcUrl, type Settings as SettingsData } from '../lib/settings';
@@ -24,6 +27,8 @@ export function Settings(): ReactNode {
   const [autoClear, setAutoClear] = useState(s.autoClearFragment);
   const [pins, setPins] = useState(s.pinnedSigners.join('\n'));
   const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: string } | undefined>(undefined);
+  const [transfer, setTransfer] = useState<string | undefined>();
+  const [preview, setPreview] = useState<SharedSettings | undefined>();
   const [checks, setChecks] = useState<Record<string, string>>({});
 
   const onSave = (e: FormEvent): void => {
@@ -132,6 +137,31 @@ export function Settings(): ReactNode {
         </fieldset>
         <button type="submit" className="btn btn-primary">{t('settings.save')}</button>
       </form>
+      <section className="panel" aria-labelledby="settings-transfer-h">
+        <h3 id="settings-transfer-h">{t('settings.exchange.title')}</h3>
+        <p>{t('settings.exchange.description')}</p>
+        <button type="button" className="btn" onClick={() => { setTransfer(exportSettingsExchange(s)); }}>{t('settings.exchange.export')}</button>
+        {transfer !== undefined && <><QrFrame kind="device" text={transfer} caption={t('settings.exchange.title')} /><button type="button" className="btn" onClick={() => { setTransfer(undefined); }}>{t('settings.exchange.hide')}</button></>}
+        <CameraImporter label={t('settings.exchange.import')} scopeKey={s} onInputChange={() => { setPreview(undefined); }} onText={(text, signal) => {
+          const next = parseSettingsExchange(text);
+          if (signal.aborted) return false;
+          setPreview(next); setMessage(undefined); return true;
+        }} />
+        {preview !== undefined && <div>
+          <h4>{t('settings.exchange.review')}</h4>
+          <p>{t('settings.delay.range', { min: preview.delayMinSec, max: preview.delayMaxSec })}</p>
+          <p>{t('settings.lock.summary', { minutes: preview.lockTimeoutMin })}</p>
+          <p>{t('settings.theme.label')}: {t(preview.theme === 'dark' ? 'settings.theme.dark' : preview.theme === 'light' ? 'settings.theme.light' : 'settings.theme.system')}</p>
+          <p>{t('settings.autoclear.label')}: {t(preview.autoClearFragment ? 'settings.exchange.yes' : 'settings.exchange.no')}</p>
+          <button type="button" className="btn" onClick={() => {
+            const next = applySettingsExchange(app.settings, preview);
+            const saved = app.updateSettings(next);
+            setMinSec(next.delayMinSec); setMaxSec(next.delayMaxSec); setLock(next.lockTimeoutMin); setTheme(next.theme); setAutoClear(next.autoClearFragment);
+            setPreview(undefined); setMessage(saved ? { kind: 'ok', text: t('settings.saved') } : { kind: 'warn', text: t('settings.storageUnavailable') });
+          }}>{t('settings.exchange.apply')}</button>
+          <button type="button" className="btn" onClick={() => { setPreview(undefined); }}>{t('settings.exchange.discard')}</button>
+        </div>}
+      </section>
       {message !== undefined && <Notice kind={message.kind}>{message.text}</Notice>}
     </section>
   );
