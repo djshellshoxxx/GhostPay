@@ -84,7 +84,7 @@ export interface ScanParams {
   readonly onProgress?: (p: ScanProgress) => void;
   readonly onMatch?: (m: ScanMatch) => void;
   /** A reorg was detected: matches found in blocks >= `rolledBackTo` were dropped from the result and must be dropped by the caller. */
-  readonly onReorg?: (rolledBackTo: bigint) => void;
+  readonly onReorg?: (rolledBackTo: bigint) => void | Promise<void>;
   readonly maxPages?: number;
   /** Total accepted public announcements to process in one run (default 100,000). */
   readonly maxAnnouncementsPerScan?: number;
@@ -109,6 +109,18 @@ function toWire(a: ScannedAnnouncement, skipTag: boolean): WireLog {
  */
 export async function runScan(p: ScanParams): Promise<{ readonly matches: readonly ScanMatch[]; readonly cursor: ScanCursor; readonly scanned: number; readonly discrepancies: readonly ProviderDiscrepancy[]; readonly limitReached: boolean }> {
   let worker: ScanWorkerLike | undefined;
+  let stopped = false;
+  const stopWorker = (): void => {
+    if (stopped) return;
+    stopped = true;
+    zeroizeBytes(p.viewingKey);
+    if (worker === undefined) return;
+    // Teardown must reach terminate even if a broken worker rejects further messages.
+    try { if (p.signal.aborted) worker.postMessage({ type: 'cancel' }); } catch { /* best effort */ }
+    try { worker.postMessage({ type: 'end' }); } catch { /* best effort */ }
+    worker.terminate();
+  };
+  p.signal.addEventListener('abort', stopWorker, { once: true });
   const pending = new Map<number, (m: FromWorker) => void>();
   let ready: ((m: FromWorker) => void) | undefined;
   let failed: ((e: Error) => void) | undefined;
@@ -146,6 +158,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   let persistenceFloor = p.cursor.nextBlock;
   let batchId = 0;
   try {
+    if (p.signal.aborted) throw ABORTED;
     // Created inside the try so a throwing factory still reaches the key wipe below (S3-15).
     const w = p.createWorker();
     worker = w;
@@ -180,7 +193,8 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         claimLedger.clear();
         keep.forEach((match, index) => claimLedger.set(`${match.stealthAddress.toLowerCase()}|${match.announcement.ephemeralPublicKey.toLowerCase()}`, index));
         for (const [id, block] of evidenceLedger) if (block >= res.reorg.rolledBackTo) evidenceLedger.delete(id);
-        p.onReorg?.(res.reorg.rolledBackTo);
+        await p.onReorg?.(res.reorg.rolledBackTo);
+        if (p.signal.aborted) break;
       }
       if (scanned + res.announcements.length > maxAnnouncements) {
         limitReached = true;
@@ -198,6 +212,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         w.postMessage({ type: 'batch', batchId: id, logs: res.announcements.map((a) => toWire(a, p.deep === true && a.caller.toLowerCase() === p.manifest.router.toLowerCase())) });
       });
       pending.delete(id);
+      if (p.signal.aborted) break;
       if (reply.type !== 'matches') throw new UserFacingError('The scanner returned an unexpected reply.');
       scanned += res.announcements.length;
       const claims: { readonly stealthAddress: Address; readonly announcement: ScannedAnnouncement; readonly metadata: ParsedMetadata | undefined; readonly viaRouter: boolean }[] = [];
@@ -266,6 +281,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
           primarySkipped: res.skipped,
           primaryBlockHash: res.cursor.last.hash,
         });
+        if (p.signal.aborted) break;
         if (cmp.discrepancies.length > 0) {
           disagree = true;
           discrepancies.push(...cmp.discrepancies);
@@ -312,6 +328,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       cursor = res.cursor;
       if (!disagree && p.checkpoints !== undefined) {
         const saved = await persistable(p, cursor, persistenceFloor);
+        if (p.signal.aborted) break;
         if (saved !== undefined) p.checkpoints.save(p.chain.chainId, p.keyId, saved);
       }
       p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: !res.truncated, discrepancies: discrepancies.length });
@@ -321,15 +338,8 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
     // Cancel while a reply was pending: return what was found so far.
     if (e !== ABORTED) throw e;
   } finally {
-    try {
-      if (worker !== undefined) {
-        if (p.signal.aborted) worker.postMessage({ type: 'cancel' });
-        worker.postMessage({ type: 'end' });
-        worker.terminate();
-      }
-    } finally {
-      zeroizeBytes(p.viewingKey);
-    }
+    p.signal.removeEventListener('abort', stopWorker);
+    try { stopWorker(); } finally { zeroizeBytes(p.viewingKey); }
   }
   return { matches: all, cursor, scanned, discrepancies, limitReached };
 }

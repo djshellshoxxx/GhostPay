@@ -92,3 +92,20 @@ signing scalar, abort-aware session/key-vault import; camera/paste scope, close 
 strict public-meta parser; five allowlisted settings with preview and explicit apply. Four actual catalogs
 en/es/ja/ar updated; no claim that all registered languages are translated. Broad coverage/browser gates
 remain pending. Physical camera, native translation and independent audit acceptance are not established.
+
+## Verified tranche: scanner and chain payment evidence
+
+Fresh integrator targeted checks: `npx vitest run src/payments.test.ts --maxWorkers=1` in
+`packages/chain-adapters` passed 31 tests; adapter typecheck and lint passed. Rebuilt adapter, then
+`npx vitest run src/lib/scannerCore.test.ts src/lib/scanClient.test.ts --maxWorkers=1` in `apps/web`
+passed 45 tests. Worker additionally ran the committed deterministic malformed-wire corpus: 1,000,000
+logs in 5,000-log batches, zero throws/matches (109.80 s), and required local router anvil tests 3/3.
+The broad frozen suite will rerun the corpus and required fixtures; targeted evidence is not full acceptance.
+
+Changes bind direct-router transaction/calldata, exact receipt announcement and payer-to-stealth ERC20
+Transfer, then reread the canonical block. Indirect smart-wallet calls remain unverified. A final integrator
+regression demonstrated that two providers could disagree on payer while reporting identical event positions;
+both new contradictory-evidence regressions failed before adding a domain-separated direct-call binding digest
+and receipt sender/transaction chain consistency checks. Stable transfer consumption identity remains separate.
+Worker cancellation immediately wipes/terminates; malformed constructor input is wiped; async reorg persistence
+is awaited. Unexpected provider errors become fixed typed failures rather than leaking provider text.

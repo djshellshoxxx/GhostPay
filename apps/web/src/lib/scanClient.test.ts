@@ -1,6 +1,7 @@
-import { CHAINS, type RpcLog } from '@ghostpay/chain-adapters';
-import { encodeMetaAddress, generateKeySet, unsafeRevealSecret } from '@ghostpay/core-crypto';
+import { CHAINS, ghostPayRouterAbi, grossForNet, type Hex, type Address, type RpcLog } from '@ghostpay/chain-adapters';
+import { encodeMetaAddress, generateKeySet, parseMetadata, unsafeRevealSecret } from '@ghostpay/core-crypto';
 import { describe, expect, it, vi } from 'vitest';
+import { decodeAbiParameters, encodeFunctionData } from 'viem/utils';
 import { FAKE_ANNOUNCER, FAKE_ROUTER, fakeManifest } from '../test/fakeManifest';
 import { InlineWorker } from '../test/inlineWorker';
 import { makeLog } from '../test/announcements';
@@ -15,6 +16,9 @@ const blockHash = (n: number): string => `0x${n.toString(16).padStart(64, '0')}`
 const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 
 function chainWith(head: number, logs: RpcLog[]) {
+  // Real token transfers precede the announcement; reserve earlier indexes for them.
+  logs = logs.map((log) => ({ ...log, logIndex: `0x${(BigInt(log.logIndex) + 100n).toString(16)}` }));
+  const payer = '0x2222222222222222222222222222222222222222' as Address;
   const transfers: RpcLog[] = logs.flatMap((log) => {
     const sender = log.topics?.[3];
     const recipient = log.topics?.[2];
@@ -22,11 +26,11 @@ function chainWith(head: number, logs: RpcLog[]) {
     return [{
       address: '0x036cbd53842c5426634e7929541ec2318f3dcf7e',
       blockNumber: log.blockNumber,
-      topics: [TRANSFER_TOPIC, sender, recipient],
+      topics: [TRANSFER_TOPIC, `0x${payer.slice(2).padStart(64, '0')}`, recipient],
       data: `0x${1_000_000n.toString(16).padStart(64, '0')}`,
       blockHash: log.blockHash,
       ...(log.transactionHash === undefined ? {} : { transactionHash: log.transactionHash }),
-      logIndex: `0x${(Number(BigInt(log.logIndex)) + 100).toString(16)}`,
+      logIndex: `0x${(Number(BigInt(log.logIndex)) - 1).toString(16)}`,
     }];
   });
   return mockRpc(84532, (method, params) => {
@@ -39,6 +43,23 @@ function chainWith(head: number, logs: RpcLog[]) {
       const f = params[0] as { address?: string; fromBlock: bigint; toBlock: bigint };
       const source = f.address?.toLowerCase() === '0x036cbd53842c5426634e7929541ec2318f3dcf7e' ? transfers : logs;
       return source.filter((l) => BigInt(l.blockNumber) >= f.fromBlock && BigInt(l.blockNumber) <= f.toBlock);
+    }
+    if (method === 'eth_getTransactionReceipt' || method === 'eth_getTransactionByHash') {
+      const log = logs.find((item) => item.transactionHash?.toLowerCase() === String(params[0]).toLowerCase());
+      if (log === undefined) return null;
+      const [ephemeral, metadata] = decodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], log.data as Hex);
+      const parsed = parseMetadata(metadata);
+      if (parsed.kind !== 'erc20') throw new Error('fixture requires ERC20');
+      const stealth = `0x${log.topics[2]!.slice(-40)}` as const;
+      const common = { to: FAKE_ROUTER, from: payer, blockHash: log.blockHash, blockNumber: log.blockNumber };
+      if (method === 'eth_getTransactionReceipt') return {
+        ...common, status: '0x1', transactionHash: log.transactionHash,
+        logs: [...transfers.filter((item) => item.transactionHash === log.transactionHash), log],
+      };
+      return { ...common, hash: log.transactionHash, value: '0x0', input: encodeFunctionData({
+        abi: ghostPayRouterAbi, functionName: 'payERC20',
+        args: [parsed.token, stealth, grossForNet(parsed.netAmount), parsed.netAmount, 9999999999n, ephemeral, metadata],
+      }) };
     }
     if (method === 'eth_call' || method === 'eth_getBalance') return '0x0';
     throw new Error(`unexpected ${method}`);
@@ -117,6 +138,40 @@ describe('runScan', () => {
     expect(worker.terminated).toBe(true);
   });
 
+  it('awaits persistent reorg invalidation before processing replacement logs', async () => {
+    const s = setup();
+    let release!: () => void;
+    const invalidation = new Promise<void>((resolve) => { release = resolve; });
+    let invalidating = false;
+    const worker = new InlineWorker();
+    const task = runScan({
+      chain, manifest, client: chainWith(150, [s.mine.log]),
+      cursor: { nextBlock: 100n, last: { number: 99n, hash: blockHash(9_999) as `0x${string}` } },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY,
+      viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => worker,
+      signal: new AbortController().signal,
+      onReorg: async () => { invalidating = true; await invalidation; },
+    });
+    await vi.waitFor(() => expect(invalidating).toBe(true));
+    expect(worker.received.filter((message) => message.type === 'batch')).toEqual([]);
+    release();
+    expect((await task).matches).toHaveLength(1);
+  });
+  it('stops and wipes keys if persistent reorg invalidation fails', async () => {
+    const s = setup();
+    const worker = new InlineWorker();
+    const viewingKey = unsafeRevealSecret(s.keys.viewingSecret);
+    await expect(runScan({
+      chain, manifest, client: chainWith(150, [s.mine.log]),
+      cursor: { nextBlock: 100n, last: { number: 99n, hash: blockHash(9_999) as `0x${string}` } },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY,
+      viewingKey, createWorker: () => worker, signal: new AbortController().signal,
+      onReorg: () => Promise.reject(new Error('reorg invalidation failed')),
+    })).rejects.toThrow('reorg invalidation failed');
+    expect(worker.received.filter((message) => message.type === 'batch')).toEqual([]);
+    expect(worker.terminated).toBe(true);
+    expect(viewingKey.every((byte) => byte === 0)).toBe(true);
+  });
   it('persists only the finalized replay tail after a deep reorg behind the old checkpoint', async () => {
     const s = setup();
     const saved: unknown[] = [];
@@ -242,6 +297,23 @@ describe('runScan', () => {
 });
 
 describe('runScan robustness (S3-15)', () => {
+  it('destroys the worker immediately when cancelled during an outstanding RPC read', async () => {
+    const s = setup();
+    const worker = new InlineWorker();
+    const ctl = new AbortController();
+    let release!: (value: bigint) => void;
+    let reading = false;
+    const gate = new Promise<bigint>((resolve) => { release = resolve; });
+    const client = { ...chainWith(150, []), blockNumber: async () => { reading = true; return gate; } };
+    const viewingKey = unsafeRevealSecret(s.keys.viewingSecret);
+    const task = runScan({ chain, manifest, client, cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey, createWorker: () => worker, signal: ctl.signal });
+    await vi.waitFor(() => expect(reading).toBe(true));
+    ctl.abort();
+    expect(worker.terminated).toBe(true);
+    expect(viewingKey.every((byte) => byte === 0)).toBe(true);
+    release(150n);
+    expect((await task).matches).toEqual([]);
+  });
   it('wipes the viewing key even when the worker factory throws', async () => {
     const s = setup();
     const viewingKey = unsafeRevealSecret(s.keys.viewingSecret);
@@ -345,7 +417,7 @@ describe('WEB-APP-04 / CHAIN-ADAPTERS-03: checkpoints', () => {
       chain, manifest, client, cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY,
       viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => new InlineWorker(), signal: new AbortController().signal,
       onProgress: (p) => { if (p.nextBlock > 49_999n) forked = true; },
-      onReorg: (to) => dropped.push(to),
+      onReorg: (to) => { dropped.push(to); },
     });
     expect(dropped).toEqual([0n]); // a deep reorg resets to genesis because one checkpoint cannot locate the fork safely
     expect(res.matches).toEqual([]);
@@ -443,7 +515,7 @@ describe('localCheckpointStore', () => {
       const s = setup();
       const base = chainWith(2500, [s.mine.log]);
       const badTransfer = { ...base, request: (method: string, params: readonly unknown[]) => {
-        if (method === 'eth_getLogs' && (params[0] as { address?: string }).address?.toLowerCase() === '0x036cbd53842c5426634e7929541ec2318f3dcf7e') return Promise.resolve([]);
+        if (method === 'eth_getTransactionReceipt') return base.request(method, params).then((raw) => ({ ...(raw as object), logs: ((raw as { logs: RpcLog[] }).logs).filter((log) => log.topics[0] !== TRANSFER_TOPIC) }));
         return base.request(method, params);
       } };
       const { res } = await run(s, badTransfer);

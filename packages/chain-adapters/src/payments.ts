@@ -6,6 +6,7 @@ import { findToken } from './config/tokens.js';
 import { checkAnnouncementDeep } from './deepscan.js';
 import { ChainAdapterError, fail } from './errors.js';
 import { ANNOUNCEMENT_TOPIC, validateAnnouncementLog, type ScannedAnnouncement } from './logs.js';
+import { decodePaymentCalldata } from './router.js';
 import { parseQuantity, type RpcClient, type RpcLog } from './rpc.js';
 import type { Address, Hex } from './types.js';
 
@@ -40,11 +41,12 @@ export interface PaymentVerification {
   readonly evidence: readonly Evidence[];
   /** Stable identity of the exact event/transaction supporting this payment. */
   readonly evidenceId?: string;
+  /** Domain-separated digest of the direct transaction facts compared across providers. */
+  readonly evidenceBinding?: Hex;
 }
 
 const TRANSFER_TOPIC: Hex = keccak256(toBytes('Transfer(address,address,uint256)'));
 const pad = (a: string): Hex => `0x${'0'.repeat(24)}${a.slice(2).toLowerCase()}`;
-const q = (n: bigint): string => `0x${n.toString(16)}`;
 const HASH32 = /^0x[0-9a-fA-F]{64}$/;
 
 /**
@@ -108,7 +110,7 @@ export interface VerifyClaimInput {
  * @remarks Announcement metadata (token, amount, "net") is a CLAIM: anyone may call the announcer with any bytes.
  * A claim is `received` only when ALL of these hold: the caller is the router; the log's block hash is the canonical
  * hash of that block on the user's RPC; and the transfer is independently traced: for ERC-20 the token emitted
- * `Transfer(router -> oneTimeAddress, net)` in that same transaction and block, for the native coin a successful
+ * `Transfer(payer -> oneTimeAddress, net)` in the successful direct router transaction receipt, bound to its calldata; for the native coin a successful
  * canonical receipt and transaction show the exact announcement and a router call carrying at least that value.
  * A balance alone is never evidence of this payment. A lying RPC can fake all of it; configure a second provider to
  * compare evidence. Reads never throw: RPC
@@ -122,7 +124,7 @@ export async function verifyClaimedPayment(i: VerifyClaimInput): Promise<Payment
   if (primary.status !== 'received') return primary;
   if (i.secondaryClient !== undefined) {
     const secondary = await verifyClaimedPaymentOnClient({ chain: i.chain, client: i.secondaryClient, router: i.router, announcer: i.announcer, claim: i.claim });
-    if (secondary.status !== 'received' || secondary.evidenceId !== primary.evidenceId || secondary.final !== primary.final || secondary.evidence.join('|') !== primary.evidence.join('|')) {
+    if (secondary.status !== 'received' || secondary.evidenceId !== primary.evidenceId || secondary.evidenceBinding !== primary.evidenceBinding || secondary.final !== primary.final || secondary.evidence.join('|') !== primary.evidence.join('|')) {
       return withoutEvidenceId(primary, 'The two RPC providers did not agree on the payment evidence.');
     }
   }
@@ -149,6 +151,7 @@ async function verifyClaimedPaymentOnClient(i: VerifyClaimInput): Promise<Paymen
   const a = claim.announcement;
   const evidence: Evidence[] = [];
   let evidenceId: string | undefined;
+  let evidenceBinding: Hex | undefined;
   let confirmations = 0n;
   const done = (status: PaymentVerification['status'], reason: string | undefined, observed: bigint | undefined): PaymentVerification => ({
     status,
@@ -158,6 +161,7 @@ async function verifyClaimedPaymentOnClient(i: VerifyClaimInput): Promise<Paymen
     ...(observed === undefined ? {} : { observedBalance: observed }),
     evidence,
     ...(evidenceId === undefined ? {} : { evidenceId }),
+    ...(evidenceBinding === undefined ? {} : { evidenceBinding }),
   });
   const meta = claim.metadata;
   const asset: Address | 'native' | undefined = meta === undefined ? undefined : meta.kind === 'native' ? 'native' : meta.token;
@@ -182,32 +186,36 @@ async function verifyClaimedPaymentOnClient(i: VerifyClaimInput): Promise<Paymen
       return done('unverified-claim', 'The announcement’s block hash is not the canonical hash of that block on your RPC.', observed);
     }
     evidence.push('block-hash');
+    const direct = await directRouterEvidence(client, chain.chainId, i.router, i.announcer, claim);
+    if (direct === undefined) return done('unverified-claim', 'A successful direct router transaction bound to this exact announcement and calldata was not found. Indirect smart-wallet calls remain unverified.', observed);
+    evidence.push('receipt');
+    let supportingId: string | undefined;
     if (meta.kind === 'erc20') {
-      const logs = await client.request('eth_getLogs', [
-        { address: meta.token, fromBlock: q(a.blockNumber), toBlock: q(a.blockNumber), topics: [TRANSFER_TOPIC, pad(i.router), pad(claim.stealthAddress)] },
-      ]);
-      const hit = Array.isArray(logs) ? (logs as RpcLog[]).find((l) => transferMatches(l, meta.token, i.router, claim.stealthAddress, a, meta.netAmount)) : undefined;
-      if (hit === undefined) return done('unverified-claim', 'No matching token Transfer from the router to the one-time address was found in that block.', observed);
-      evidenceId = transferEvidenceId(meta.token, a.blockNumber, hit);
-      if (evidenceId === undefined) return done('unverified-claim', 'The token Transfer log omitted its canonical transaction or position.', observed);
-      if (i.consumedTransfers?.has(evidenceId) === true) return done('unverified-claim', 'This transfer evidence has already been credited to another announcement in this scan.', observed);
+      const hit = direct.logs.find((log) => transferMatches(log, meta.token, direct.payer, claim.stealthAddress, a, meta.netAmount));
+      if (hit === undefined) return done('unverified-claim', 'No matching token Transfer from the transaction payer to the one-time address was found in its receipt.', observed);
+      supportingId = transferEvidenceId(meta.token, a.blockNumber, hit);
+      if (supportingId === undefined) return done('unverified-claim', 'The token Transfer log omitted its canonical transaction or position.', observed);
+      if (i.consumedTransfers?.has(supportingId) === true) return done('unverified-claim', 'This transfer evidence has already been credited to another announcement in this scan.', observed);
       evidence.push('transfer-log');
-    } else if (await receiptCarries(client, i.router, i.announcer, a, meta.netAmount)) {
-      evidence.push('receipt');
-      // A native transaction is one indivisible value transfer. Do not let multiple announcement
-      // logs in the same transaction spend its receipt evidence more than once.
-      evidenceId = `native:${a.blockNumber.toString()}:${a.transactionHash?.toLowerCase() ?? ''}:${a.blockHash.toLowerCase()}`;
     } else {
-      return done('unverified-claim', 'A successful canonical router transaction tied to this announcement was not found.', observed);
+      // Credit one native value-bearing transaction at most once.
+      supportingId = `native:${a.blockNumber.toString()}:${a.transactionHash!.toLowerCase()}:${a.blockHash.toLowerCase()}`;
     }
-  } catch (e) {
-    if (e instanceof ChainAdapterError) return done('unverified-claim', 'Your RPC could not confirm this payment.', observed);
-    throw e;
+    // A reorg may happen while the receipt and transaction were being read. Never release stale evidence.
+    const confirmedBlock = await client.getBlock(a.blockNumber);
+    if (confirmedBlock === null || confirmedBlock.hash.toLowerCase() !== a.blockHash.toLowerCase()) {
+      return done('unverified-claim', 'The payment block changed while its evidence was being checked. Rescan before relying on it.', observed);
+    }
+    evidenceId = supportingId;
+    evidenceBinding = direct.binding;
+  } catch {
+    // Providers are replaceable interfaces; even an unexpected transport exception must not expose URLs or payloads.
+    return done('unverified-claim', 'Your RPC could not confirm this payment.', observed);
   }
   return done('received', undefined, observed);
 }
 
-function transferMatches(l: RpcLog, token: Address, router: Address, stealth: Address, a: ScannedAnnouncement, net: bigint): boolean {
+function transferMatches(l: RpcLog, token: Address, payer: Address, stealth: Address, a: ScannedAnnouncement, net: bigint): boolean {
   return (
     typeof l === 'object' &&
     l !== null &&
@@ -219,11 +227,11 @@ function transferMatches(l: RpcLog, token: Address, router: Address, stealth: Ad
     l.blockNumber !== undefined && parseQuantity(l.blockNumber) === a.blockNumber &&
     Array.isArray(l.topics) && l.topics.length === 3 &&
     typeof l.topics[0] === 'string' && l.topics[0].toLowerCase() === TRANSFER_TOPIC.toLowerCase() &&
-    typeof l.topics[1] === 'string' && l.topics[1].toLowerCase() === pad(router).toLowerCase() &&
+    typeof l.topics[1] === 'string' && l.topics[1].toLowerCase() === pad(payer).toLowerCase() &&
     typeof l.topics[2] === 'string' && l.topics[2].toLowerCase() === pad(stealth).toLowerCase() &&
     typeof l.transactionHash === 'string' && HASH32.test(l.transactionHash) &&
     a.transactionHash !== undefined && l.transactionHash.toLowerCase() === a.transactionHash.toLowerCase() &&
-    l.logIndex !== undefined && parseQuantity(l.logIndex) <= 0xffffffn &&
+    l.logIndex !== undefined && parseQuantity(l.logIndex) < BigInt(a.logIndex) && parseQuantity(l.logIndex) <= 0xffffffn &&
     typeof l.data === 'string' &&
     /^0x[0-9a-fA-F]{64}$/.test(l.data) &&
     BigInt(l.data) === net
@@ -239,26 +247,49 @@ function transferEvidenceId(token: Address, block: bigint, l: RpcLog): string | 
   }
 }
 
-async function receiptCarries(client: RpcClient, router: Address, announcer: Address, a: ScannedAnnouncement, net: bigint): Promise<boolean> {
-  if (a.transactionHash === undefined) return false;
+/** The bounded canonical receipt of a directly submitted router call; indirect calls need a separate proof. */
+async function directRouterEvidence(client: RpcClient, chainId: number, router: Address, announcer: Address, claim: ClaimedPayment): Promise<{ readonly logs: readonly RpcLog[]; readonly payer: Address; readonly binding: Hex } | undefined> {
+  const a = claim.announcement;
+  if (a.transactionHash === undefined || !HASH32.test(a.transactionHash) || !HASH32.test(a.blockHash) ||
+      !Number.isSafeInteger(a.logIndex) || a.logIndex < 0 || a.logIndex > 0xffffff ||
+      claim.stealthAddress.toLowerCase() !== a.stealthAddress.toLowerCase()) return undefined;
   const [rc, tx] = await Promise.all([
     client.request('eth_getTransactionReceipt', [a.transactionHash]),
     client.request('eth_getTransactionByHash', [a.transactionHash]),
   ]);
-  if (typeof rc !== 'object' || rc === null || typeof tx !== 'object' || tx === null) return false;
+  if (typeof rc !== 'object' || rc === null || typeof tx !== 'object' || tx === null) return undefined;
   const r = rc as Record<string, unknown>;
   const t = tx as Record<string, unknown>;
-  if (r['status'] !== '0x1' || typeof r['blockHash'] !== 'string' || r['blockHash'].toLowerCase() !== a.blockHash.toLowerCase() || r['blockNumber'] === undefined || parseQuantity(r['blockNumber']) !== a.blockNumber || typeof r['transactionHash'] !== 'string' || r['transactionHash'].toLowerCase() !== a.transactionHash.toLowerCase()) return false;
-  const logs = r['logs'];
-  const inReceipt =
-    Array.isArray(logs) &&
-    (logs as unknown[]).some((x) => {
-      const l = x as Record<string, unknown>;
-      return typeof l['address'] === 'string' && l['address'].toLowerCase() === announcer.toLowerCase() && typeof l['logIndex'] === 'string' && Number(parseQuantity(l['logIndex'])) === a.logIndex && typeof l['blockHash'] === 'string' && l['blockHash'].toLowerCase() === a.blockHash.toLowerCase() && l['blockNumber'] !== undefined && parseQuantity(l['blockNumber']) === a.blockNumber && typeof l['transactionHash'] === 'string' && l['transactionHash'].toLowerCase() === a.transactionHash!.toLowerCase();
-    });
-  if (!inReceipt) return false;
-  if (typeof t['to'] !== 'string' || t['to'].toLowerCase() !== router.toLowerCase() || typeof t['hash'] !== 'string' || t['hash'].toLowerCase() !== a.transactionHash.toLowerCase() || t['blockNumber'] === undefined || parseQuantity(t['blockNumber']) !== a.blockNumber) return false;
-  return parseQuantity(t['value']) >= net;
+  const same = (left: unknown, right: string): boolean => typeof left === 'string' && left.toLowerCase() === right.toLowerCase();
+  if (r['status'] !== '0x1' || !same(r['blockHash'], a.blockHash) || parseQuantity(r['blockNumber']) !== a.blockNumber || !same(r['transactionHash'], a.transactionHash)) return undefined;
+  if (!same(t['to'], router) || !same(t['hash'], a.transactionHash) || !same(t['blockHash'], a.blockHash) || parseQuantity(t['blockNumber']) !== a.blockNumber ||
+      typeof t['from'] !== 'string' || !/^0x[0-9a-fA-F]{40}$/.test(t['from']) ||
+      typeof t['input'] !== 'string' || t['input'].length > 8194) return undefined;
+  if (!same(r['from'], t['from']) || !same(r['to'], router) ||
+      (t['chainId'] !== undefined && parseQuantity(t['chainId']) !== BigInt(chainId))) return undefined;
+  const preview = decodePaymentCalldata({ to: router, data: t['input'] as Hex, value: parseQuantity(t['value']) }, chainId);
+  const meta = claim.metadata;
+  if (meta === undefined || !same(preview.stealth, claim.stealthAddress) || preview.net !== meta.netAmount ||
+      !same(preview.ephemeralPublicKey, a.ephemeralPublicKey) || !same(preview.metadata, a.metadata) ||
+      (meta.kind === 'native' ? preview.token !== 'native' : !same(preview.token, meta.token))) return undefined;
+  const rawLogs = r['logs'];
+  if (!Array.isArray(rawLogs) || rawLogs.length > 2000) return undefined;
+  const logs = rawLogs.filter((raw): raw is RpcLog => typeof raw === 'object' && raw !== null);
+  const exactAnnouncement = logs.some((raw) => {
+    try {
+      if (!same(raw.transactionHash, a.transactionHash!) || !same(raw.blockHash, a.blockHash)) return false;
+      const event = validateAnnouncementLog(raw, announcer, 1n, a.blockNumber, a.blockNumber);
+      return event !== undefined && event.logIndex === a.logIndex && same(event.caller, router) &&
+        same(event.stealthAddress, a.stealthAddress) && same(event.ephemeralPublicKey, a.ephemeralPublicKey) && same(event.metadata, a.metadata);
+    } catch { return false; }
+  });
+  if (!exactAnnouncement) return undefined;
+  const binding = keccak256(toBytes(JSON.stringify([
+    'GhostPay/direct-router-evidence/v1', chainId, a.blockHash.toLowerCase(),
+    a.transactionHash.toLowerCase(), t['from'].toLowerCase(), router.toLowerCase(),
+    t['input'].toLowerCase(), parseQuantity(t['value']).toString(),
+  ])));
+  return { logs, payer: t['from'] as Address, binding };
 }
 
 /** One payment found in a transaction by {@link verifyPaymentByTxHash}. */
@@ -292,7 +323,10 @@ export interface VerifyByTxInput {
 export async function verifyPaymentByTxHash(i: VerifyByTxInput): Promise<readonly TxPaymentResult[]> {
   if (!HASH32.test(i.txHash)) return fail('INVALID_INPUT', 'a transaction hash is 0x followed by 64 hex digits');
   const txHash = i.txHash.toLowerCase() as Hex;
-  const rc = await i.client.request('eth_getTransactionReceipt', [txHash]);
+  const rpcRead = async <T>(read: () => Promise<T>): Promise<T> => {
+    try { return await read(); } catch { return fail('RPC_FAILURE', 'your RPC could not verify this transaction'); }
+  };
+  const rc = await rpcRead(() => i.client.request('eth_getTransactionReceipt', [txHash]));
   if (rc === null) return fail('PAYMENT_UNVERIFIED', 'your RPC does not know this transaction');
   if (typeof rc !== 'object') return fail('RPC_FAILURE', 'malformed receipt');
   const r = rc as Record<string, unknown>;
@@ -302,7 +336,7 @@ export async function verifyPaymentByTxHash(i: VerifyByTxInput): Promise<readonl
   }
   const blockNumber = parseQuantity(r['blockNumber']);
   if (typeof r['blockHash'] !== 'string' || !HASH32.test(r['blockHash'])) return fail('RPC_FAILURE', 'malformed receipt block hash');
-  const receiptBlock = await i.client.getBlock(blockNumber);
+  const receiptBlock = await rpcRead(() => i.client.getBlock(blockNumber));
   if (receiptBlock === null || receiptBlock.hash.toLowerCase() !== r['blockHash'].toLowerCase()) {
     return fail('PAYMENT_UNVERIFIED', 'receipt block is not canonical');
   }
