@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { act } from '@testing-library/react';
 import { checkpointKeyId } from '../lib/scanClient';
-import { clearSession, generateSession } from '../lib/session';
+import { clearSession, generateSession, importSession, withSessionSecrets } from '../lib/session';
 import { SETTINGS_KEY } from '../lib/settings';
 import { FAKE_ANNOUNCER, FAKE_ROUTER } from '../test/fakeManifest';
 import { backedManifest, withManifestChain } from '../test/manifestChain';
@@ -14,13 +14,29 @@ import { chainWithLogs } from '../test/mockChain';
 import { makeServices, memoryCheckpoints, renderApp } from '../test/render';
 import type { Services } from '../lib/services';
 import { verifyReceipt } from '../lib/receipts';
-import { readReconciliationRecords, RECONCILIATION_LEDGER_DATA_KEY } from '../lib/reconciliationLedger';
+import { RECONCILIATION_LEDGER_DATA_KEY } from '../lib/reconciliationLedger';
+import type { ReconciliationVaultStore } from '../lib/reconciliationVault';
+import { captureSessionGuard, revealViewingKey } from '../lib/session';
+import { ghostPayRouterAbi, grossForNet, type Address, type Hex } from '@ghostpay/chain-adapters';
+import { parseMetadata } from '@ghostpay/core-crypto';
+import { decodeAbiParameters, encodeFunctionData } from 'viem/utils';
+
+let vaultData = new Map<string, string>();
+vi.mock('../lib/reconciliationVault', async (original) => {
+  const actual = await original<typeof import('../lib/reconciliationVault')>();
+  return { ...actual, createCurrentReconciliationVault: async (chainId: number, sellerKeyId: string) => {
+    const store: ReconciliationVaultStore = { read: (key) => Promise.resolve(vaultData.get(key) ?? null), compareAndSwap: (key, expected, next, guard) => { guard(); if ((vaultData.get(key) ?? null) !== expected) return Promise.resolve(false); vaultData.set(key, next); return Promise.resolve(true); } };
+    const vault = new actual.ReconciliationVault(store, { chainId, sellerKeyId }, captureSessionGuard());
+    await vault.unlock(revealViewingKey()); return vault;
+  } };
+});
 
 const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 const topicAddress = (address: string): string => `0x${address.slice(2).toLowerCase().padStart(64, '0')}`;
 
 beforeEach(() => {
   clearSession();
+  vaultData = new Map();
   window.localStorage.clear();
   window.history.replaceState(null, '', '/');
 });
@@ -171,20 +187,27 @@ describe('Scan and receive', () => {
   it('signs and exports a receipt from immutable finalized match data only', async () => {
     const pub = generateSession();
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
-    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 0, caller: FAKE_ROUTER, amount: 2_500_000n });
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 1, caller: FAKE_ROUTER, amount: 2_500_000n });
     const txHash = `0x${'a'.repeat(64)}`;
     const announcement = { ...mine.log, transactionHash: txHash };
+    const payer = '0x2222222222222222222222222222222222222222' as Address;
+    const [ephemeral, metadata] = decodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], announcement.data as Hex);
+    const parsed = parseMetadata(metadata);
+    if (parsed.kind !== 'erc20') throw new Error('ERC20 fixture required');
     const transfer = {
       address: '0x036cbd53842c5426634e7929541ec2318f3dcf7e',
-      topics: [TRANSFER_TOPIC, topicAddress(FAKE_ROUTER), announcement.topics?.[2] ?? '0x'],
+      topics: [TRANSFER_TOPIC, topicAddress(payer), announcement.topics?.[2] ?? '0x'],
       data: `0x${2_500_000n.toString(16).padStart(64, '0')}`,
       blockNumber: announcement.blockNumber,
       blockHash: announcement.blockHash,
       transactionHash: txHash,
-      logIndex: '0x10',
+      logIndex: '0x0',
     };
     const rpc = chainWithLogs(84532, 500, [announcement], (method, params) => {
       if (method === 'eth_getLogs' && (params[0] as { address?: string }).address?.toLowerCase() === transfer.address) return [transfer];
+      const common = { to: FAKE_ROUTER, from: payer, blockHash: announcement.blockHash, blockNumber: announcement.blockNumber };
+      if (method === 'eth_getTransactionReceipt') return { ...common, status: '0x1', transactionHash: txHash, logs: [transfer, announcement] };
+      if (method === 'eth_getTransactionByHash') return { ...common, hash: txHash, value: '0x0', input: encodeFunctionData({ abi: ghostPayRouterAbi, functionName: 'payERC20', args: [parsed.token, mine.stealthAddress as Address, grossForNet(parsed.netAmount), parsed.netAmount, 9999999999n, ephemeral, metadata] }) };
       return undefined;
     });
     const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)), createScanWorker: () => new InlineWorker() }));
@@ -209,11 +232,13 @@ describe('Scan and receive', () => {
     });
     expect(screen.getByText(/does not establish seller identity/)).toBeTruthy();
 
-    await user.click(screen.getByRole('button', { name: 'Enable local ledger on this device' }));
-    await user.type(screen.getByLabelText('Invoice digest (optional, manual link)'), invoiceDigest);
+    await user.click(screen.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }));
+    await user.type(await screen.findByLabelText('Invoice digest (optional, manual link)'), invoiceDigest);
     await user.click(screen.getByRole('button', { name: 'Add verified payment to ledger' }));
-    await waitFor(() => { expect(readReconciliationRecords()).toHaveLength(1); });
-    expect(readReconciliationRecords()[0]).toMatchObject({
+    await screen.findByText(/Manual invoice link/);
+    const { createCurrentReconciliationVault } = await import('../lib/reconciliationVault');
+    const reconciliation = await createCurrentReconciliationVault(84532, checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey));
+    expect((await reconciliation.read())[0]).toMatchObject({
       sellerKeyId: checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey),
       chainId: 84532,
       transactionHash: txHash,
@@ -221,7 +246,8 @@ describe('Scan and receive', () => {
       evidenceStatus: 'verified-at-scan',
       evidenceSource: 'verified-router-scan',
     });
-    expect(window.localStorage.getItem(RECONCILIATION_LEDGER_DATA_KEY)).not.toContain('signature');
+    expect(window.localStorage.getItem(RECONCILIATION_LEDGER_DATA_KEY)).toBeNull();
+    expect([...vaultData.values()][0]).not.toContain(txHash);
   });
 
   it('does not offer another key set\'s checkpoint (WEB-APP-04)', async () => {
@@ -330,4 +356,47 @@ describe('Scan and receive', () => {
     await user.click(screen.getByRole('button', { name: 'Start scan' }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/do not match the deployment manifest/);
   });
+  it('aborts pending scan setup when identical seller keys are cleared and reimported', async () => {
+    generateSession();
+    const keys = withSessionSecrets(({ keys, signingKey }) => ({
+      spendingKeyHex: Array.from(keys.spendingSecret, (b) => b.toString(16).padStart(2, '0')).join(''),
+      viewingKeyHex: Array.from(keys.viewingSecret, (b) => b.toString(16).padStart(2, '0')).join(''),
+      signingKeyHex: Array.from(signingKey, (b) => b.toString(16).padStart(2, '0')).join(''),
+    }));
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    let release!: (rpc: ReturnType<typeof withManifestChain>) => void;
+    const gate = new Promise<ReturnType<typeof withManifestChain>>((resolve) => { release = resolve; });
+    const createWorker = vi.fn(() => new InlineWorker()); const checkpoints = memoryCheckpoints();
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => gate, checkpoints, createScanWorker: createWorker }));
+    await user.type(screen.getByLabelText('Start block'), '0');
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    act(() => { clearSession(); importSession(keys); });
+    release(withManifestChain(chainWithLogs(84532, 500, [])));
+    await waitFor(() => expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Start scan' }).disabled).toBe(false));
+    expect(createWorker).not.toHaveBeenCalled();
+    expect(screen.queryByText(/Finished\./)).toBeNull();
+  });
+
+  it('stops an active worker and prevents checkpoints when the same keys are reimported', async () => {
+    const pub = generateSession();
+    const keys = withSessionSecrets(({ keys, signingKey }) => ({
+      spendingKeyHex: Array.from(keys.spendingSecret, (b) => b.toString(16).padStart(2, '0')).join(''),
+      viewingKeyHex: Array.from(keys.viewingSecret, (b) => b.toString(16).padStart(2, '0')).join(''),
+      signingKeyHex: Array.from(signingKey, (b) => b.toString(16).padStart(2, '0')).join(''),
+    }));
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 0, caller: FAKE_ROUTER });
+    const worker = new InlineWorker(); const original = worker.postMessage.bind(worker);
+    let release!: () => void; const gate = new Promise<void>((resolve) => { release = resolve; }); let batchPending = false;
+    worker.postMessage = (message): void => { if (message.type === 'batch') { batchPending = true; void gate.then(() => original(message)); } else original(message); };
+    const checkpoints = memoryCheckpoints();
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(chainWithLogs(84532, 500, [mine.log]))), checkpoints, createScanWorker: () => worker }));
+    await user.type(screen.getByLabelText('Start block'), '0'); await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    await waitFor(() => expect(batchPending).toBe(true));
+    act(() => { clearSession(); importSession(keys); }); release();
+    await waitFor(() => expect(worker.terminated).toBe(true));
+    expect(checkpoints.load(84532, checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey))).toBeUndefined();
+    expect(screen.queryByText(/Finished\./)).toBeNull();
+  });
+
 });
