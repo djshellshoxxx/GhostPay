@@ -96,6 +96,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
   const [query, setQuery] = useState('');
   const [error, setError] = useState<string | undefined>();
   const [unlocked, setUnlocked] = useState(false);
+  const [readOnly, setReadOnly] = useState(false);
   const [busy, setBusy] = useState(false);
   const [backup, setBackup] = useState('');
   const [preview, setPreview] = useState<ReconciliationImportPreview | undefined>();
@@ -104,7 +105,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
   const mounted = useRef(true);
   const pending = useRef(false);
   const backupRevision = useRef(0);
-  const refreshRevision = useRef(0);
+  const readRevision = useRef(0);
   const latest = useRef(props);
   latest.current = props;
   const visible = useMemo(
@@ -114,11 +115,12 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
   const reset = (): void => {
     revision.current++;
     backupRevision.current++;
-    refreshRevision.current++;
+    readRevision.current++;
     vault.current?.lock();
     vault.current = undefined;
     pending.current = false;
     setUnlocked(false);
+    setReadOnly(false);
     setBusy(false);
     setRecords([]);
     setLegacy(undefined);
@@ -147,24 +149,23 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
       const current = vault.current;
       if (current === undefined) return;
       const actionRevision = revision.current;
-      const refreshId = ++refreshRevision.current;
-      void current.read().then(
+      const refreshId = ++readRevision.current;
+      void current.readState().then(
         (next) => {
           if (
             mounted.current &&
             revision.current === actionRevision &&
-            refreshRevision.current === refreshId &&
+            readRevision.current === refreshId &&
             vault.current === current
-          )
-            setRecords(next);
+          ) {
+            setRecords(next.records);
+            setReadOnly(next.readOnly);
+          }
         },
         () => {
-          if (
-            mounted.current &&
-            revision.current === actionRevision &&
-            refreshRevision.current === refreshId
-          ) {
+          if (mounted.current && revision.current === actionRevision && readRevision.current === refreshId) {
             setRecords([]);
+            setReadOnly(true);
             setError(
               'Encrypted reconciliation data could not be refreshed. Lock and unlock before relying on it.',
             );
@@ -197,6 +198,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
     setError(undefined);
     void (async () => {
       let current: ReconciliationVault | undefined;
+      let readGeneration: number | undefined;
       try {
         current = vault.current;
         if (current === undefined) {
@@ -208,11 +210,16 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
         guard();
         await action(current, guard);
         guard();
-        const next = await current.read();
+        readGeneration = ++readRevision.current;
+        const next = await current.readState();
         guard();
-        setRecords(next);
+        if (readGeneration === readRevision.current) {
+          setRecords(next.records);
+          setReadOnly(next.readOnly);
+        }
         setUnlocked(true);
       } catch (cause) {
+        if (readGeneration !== undefined && readGeneration !== readRevision.current) return;
         try {
           guard();
           setError(cause instanceof Error ? cause.message : 'Encrypted reconciliation action failed.');
@@ -241,6 +248,13 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
         Invalidation history is bounded. If it reaches capacity, the encrypted vault becomes read-only;
         deletion and backups retain this safety state so old observations cannot revive.
       </p>
+      {unlocked && readOnly && (
+        <Notice kind="warn">
+          This reconciliation vault is read-only because invalidation history reached capacity or could not be
+          refreshed. You can read, export or delete observations; restoring backups retains the safety state.
+          Saving new observations is disabled.
+        </Notice>
+      )}
       {error !== undefined && <Notice kind="error">{error}</Notice>}
       {!unlocked ? (
         <button
@@ -302,7 +316,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
                   key={`${match.chainId}:${match.announcement.id}:${match.announcement.blockHash}`}
                   match={match}
                   sellerKeyId={props.sellerKeyId!}
-                  busy={busy}
+                  busy={busy || readOnly}
                   onError={setError}
                   onSave={(record) =>
                     run(async (current, guard) => {
@@ -432,6 +446,14 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
           </button>
           {preview !== undefined && (
             <div className="panel">
+              {preview.readOnly && (
+                <Notice kind="warn">
+                  Activation will make this vault read-only. This backup or its combined invalidation history
+                  carries a permanent safety state: new observations cannot be saved, and deleting records or
+                  restoring another backup will not remove that state. Activate only if you accept this
+                  limitation.
+                </Notice>
+              )}
               <p>
                 {preview.recordCount} historical observation{preview.recordCount === 1 ? '' : 's'};{' '}
                 {preview.invalidatedCount} already invalidated. Activation merges records as untrusted

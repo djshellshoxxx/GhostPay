@@ -178,7 +178,7 @@ describe('encrypted reconciliation UI', () => {
     expect(screen.queryByRole('button', { name: 'Activate previewed historical records' })).toBeNull();
   });
   it('rejects stale preview callbacks after encrypted input changes', async () => {
-    const staged = { recordCount: 4, invalidatedCount: 0 };
+    const staged = { recordCount: 4, invalidatedCount: 0, readOnly: false };
     let release!: (value: typeof staged) => void;
     vi.spyOn(vault, 'previewImport').mockReturnValue(
       new Promise((resolve) => {
@@ -303,5 +303,72 @@ describe('encrypted reconciliation UI', () => {
     visibility.mockReturnValue('visible');
     fireEvent(document, new Event('visibilitychange'));
     expect(await screen.findByText(/Invalidated after a reorg/)).toBeTruthy();
+  });
+  it('warns before activating an empty saturated backup and displays read-only state after later unlock', async () => {
+    const base = recordFromVerifiedMatch(match(), keyId);
+    const observed = Array.from({ length: 2001 }, (_, index) => {
+      const transactionHash = `0x${BigInt(index + 1)
+        .toString(16)
+        .padStart(64, '0')}`;
+      return {
+        ...base,
+        transactionHash,
+        id: `${keyId}:84532:${transactionHash}:${base.stealthAddress}:${base.blockHash}:3`,
+      };
+    });
+    await expect(vault.invalidateFrom(100n, observed)).rejects.toThrow(/read-only/);
+    await vault.clearRecords();
+    const backup = await vault.exportEncrypted();
+    data.clear();
+    factory.create.mockImplementation(async () => {
+      await vault.unlock(new Uint8Array(32).fill(7));
+      return vault;
+    });
+    const user = userEvent.setup();
+    render(panel());
+    await user.click(screen.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }));
+    fireEvent.change(await screen.findByLabelText('Encrypted reconciliation backup'), {
+      target: { value: backup },
+    });
+    await user.click(screen.getByRole('button', { name: 'Preview encrypted backup' }));
+    expect(await screen.findByText(/Activation will make this vault read-only/)).toBeTruthy();
+    expect(screen.queryByText(/This reconciliation vault is read-only/)).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Activate previewed historical records' }));
+    expect(await screen.findByText(/This reconciliation vault is read-only/)).toBeTruthy();
+    expect(
+      screen.getByRole<HTMLButtonElement>('button', { name: 'Add verified payment to ledger' }).disabled,
+    ).toBe(true);
+    await user.click(screen.getByRole('button', { name: 'Lock reconciliation vault' }));
+    await user.click(screen.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }));
+    expect(await screen.findByText(/This reconciliation vault is read-only/)).toBeTruthy();
+  });
+  it('does not let a delayed action read overwrite a newer reorg refresh', async () => {
+    await vault.save(recordFromVerifiedMatch(match(), keyId));
+    const stale = await vault.readState();
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:encrypted');
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
+    const user = userEvent.setup();
+    render(panel({ matches: [] }));
+    await user.click(screen.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }));
+    await screen.findByText(TX);
+    let release!: (value: typeof stale) => void;
+    const held = vi.spyOn(vault, 'readState').mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          release = resolve;
+        }),
+    );
+    await user.click(screen.getByRole('button', { name: 'Export encrypted reconciliation backup' }));
+    await waitFor(() => expect(held).toHaveBeenCalled());
+    await act(async () => {
+      await vault.invalidateFrom(100n);
+    });
+    expect(await screen.findByText(/Invalidated after a reorg/)).toBeTruthy();
+    await act(async () => {
+      release(stale);
+      await Promise.resolve();
+    });
+    expect(screen.getByText(/Invalidated after a reorg/)).toBeTruthy();
+    expect(screen.queryByText(/Router-verified when scanned/)).toBeNull();
   });
 });

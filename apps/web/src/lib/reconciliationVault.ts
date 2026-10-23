@@ -40,7 +40,12 @@ export interface ReconciliationVaultStore {
   /** Exact previous ciphertext comparison and guard run inside the same readwrite transaction, before put. */
   compareAndSwap(key: string, expected: string | null, next: string, guard: () => void): Promise<boolean>;
 }
+export interface ReconciliationState {
+  readonly records: readonly VaultRecord[];
+  readonly readOnly: boolean;
+}
 export interface ReconciliationImportPreview {
+  readonly readOnly: boolean;
   readonly recordCount: number;
   readonly invalidatedCount: number;
 }
@@ -357,6 +362,13 @@ export class ReconciliationVault {
     this.guard(revision);
     return snapshot.document.records;
   }
+  /** Atomic decrypted view for rendering status and observations from the same guarded snapshot. */
+  public async readState(): Promise<ReconciliationState> {
+    const revision = this.revision;
+    const snapshot = await this.snapshot();
+    this.guard(revision);
+    return { records: snapshot.document.records, readOnly: snapshot.document.saturated };
+  }
   public async save(value: ReconciliationRecord): Promise<void> {
     const record = { ...validateReconciliationRecord(value) };
     if (record.sellerKeyId !== this.scope.sellerKeyId || record.chainId !== this.scope.chainId)
@@ -442,9 +454,15 @@ export class ReconciliationVault {
     return text ?? this.encrypt(document);
   }
   public async previewImport(text: string): Promise<ReconciliationImportPreview> {
+    const revision = this.revision;
     const document = await this.decrypt(text);
-    this.guard();
+    const current = (await this.snapshot()).document;
+    this.guard(revision);
     const preview = Object.freeze({
+      readOnly:
+        document.saturated ||
+        current.saturated ||
+        new Set([...document.tombstones, ...current.tombstones]).size > MAX_RECONCILIATION_RECORDS,
       recordCount: document.records.length,
       invalidatedCount: document.records.filter((r) => r.evidenceStatus === 'invalidated-after-reorg').length,
     });
@@ -462,6 +480,10 @@ export class ReconciliationVault {
       const tombstones = [...new Set([...document.tombstones, ...imported.tombstones])];
       const saturated =
         document.saturated || imported.saturated || tombstones.length > MAX_RECONCILIATION_RECORDS;
+      if (saturated && !preview.readOnly)
+        throw new UserFacingError(
+          'The reconciliation safety state changed. Preview this backup again before accepting a read-only vault.',
+        );
       const cutoffs = [document.invalidatedFrom, imported.invalidatedFrom]
         .filter((n): n is string => n !== null)
         .map(BigInt);

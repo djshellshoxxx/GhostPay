@@ -378,10 +378,56 @@ describe('encrypted reconciliation vault', () => {
     await expect(vault.save(observations.at(-1)!)).rejects.toThrow(/read.only|capacity/i);
   });
 
-  it('does not release an empty plaintext snapshot when lock runs before the read continuation', async () => {
+  it.each(['read', 'readState'] as const)(
+    'does not release an empty plaintext snapshot when lock runs before the %s continuation',
+    async (method) => {
+      const vault = await unlocked();
+      const reading = vault[method]();
+      queueMicrotask(() => vault.lock());
+      await expect(reading).rejects.toThrow(/locked|stale/);
+    },
+  );
+  it('previews and reports a read-only empty backup before explicit activation', async () => {
     const vault = await unlocked();
-    const reading = vault.read();
-    queueMicrotask(() => vault.lock());
-    await expect(reading).rejects.toThrow(/locked|stale/);
+    const template = await vault.exportEncrypted();
+    const backup = encryptBody(template, {
+      version: 1,
+      records: [],
+      invalidatedFrom: '100',
+      saturated: true,
+      tombstones: [],
+    });
+    const preview = await vault.previewImport(backup);
+    expect(preview).toEqual({ recordCount: 0, invalidatedCount: 0, readOnly: true });
+    expect((await vault.readState()).readOnly).toBe(false);
+    await vault.activateImport(preview);
+    expect(await vault.readState()).toEqual({ records: [], readOnly: true });
+    vault.lock();
+    await vault.unlock(new Uint8Array(32).fill(7));
+    expect((await vault.readState()).readOnly).toBe(true);
+  });
+  it('warns when individually writable backup histories would saturate the combined vault', async () => {
+    const vault = await unlocked();
+    await vault.invalidateFrom(100n, [record]);
+    const template = await vault.exportEncrypted();
+    const tombstones = Array.from(
+      { length: MAX_RECONCILIATION_RECORDS },
+      (_, index) =>
+        `${scope.sellerKeyId}:${scope.chainId}:0x${BigInt(index + 1)
+          .toString(16)
+          .padStart(64, '0')}:${record.stealthAddress}:${record.blockHash}:4`,
+    );
+    const backup = encryptBody(template, {
+      version: 1,
+      records: [],
+      invalidatedFrom: '100',
+      saturated: false,
+      tombstones,
+    });
+    const preview = await vault.previewImport(backup);
+    expect(preview.readOnly).toBe(true);
+    expect((await vault.readState()).readOnly).toBe(false);
+    await vault.activateImport(preview);
+    expect((await vault.readState()).readOnly).toBe(true);
   });
 });

@@ -131,3 +131,9 @@ a persistent conservative read-only safety state before warning the user; save c
 Deletion/import retains that state. This capacity limit is explicit, and whole-profile deletion/rollback cannot
 be detected without external authority. Known invalidated IDs remain invalid after old-backup activation;
 fresh canonical live observations are preserved. Imported observations are untrusted historical data.
+
+Final pre-suite review added explicit permanent read-only status to saturated backup previews and later
+unlock, and unified action/event read generations so an old action result cannot overwrite a newer reorg
+refresh. Integrator rerun of the same four files passed 67/67; actual Chromium CAS/reorg refresh rerun passed.
+Source frozen afterward; dependency-ordered package build, web production build/bundle scan and committed
+secret/action checks passed. Full workspace coverage/typecheck/lint and default-profile contract suites are running.
