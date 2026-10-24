@@ -200,10 +200,14 @@ describe('import semantics', () => {
 
   it('a failing atomic commit leaves the store unchanged', async () => {
     class Failing extends MemoryTagStore {
-      public override applyBatch(): Promise<void> { return Promise.reject(new Error('disk full')); }
+      public fail = false;
+      public override applyBatch(...args: Parameters<MemoryTagStore['applyBatch']>): Promise<void> {
+        return this.fail ? Promise.reject(new Error('disk full')) : super.applyBatch(...args);
+      }
     }
     const store = new Failing();
     const v = await vaultWith(1, store);
+    store.fail = true;
     const before = JSON.stringify(await store.getAll());
     const p = await previewArchiveImport(v, await encodeArchive(contents(entries(3)), PASS, { N }), PASS, 'replace');
     await expect(v.applyImport(p.tags)).rejects.toThrow('disk full');
@@ -251,8 +255,8 @@ describe('key rotation', () => {
   it('crash injection: failing the commit at the single atomic step leaves the old state intact and usable', async () => {
     class Crashy extends MemoryTagStore {
       public crash = false;
-      public override applyBatch(b: Parameters<MemoryTagStore['applyBatch']>[0]): Promise<void> {
-        return this.crash ? Promise.reject(new Error('crash')) : super.applyBatch(b);
+      public override applyBatch(...args: Parameters<MemoryTagStore['applyBatch']>): Promise<void> {
+        return this.crash ? Promise.reject(new Error('crash')) : super.applyBatch(...args);
       }
     }
     const store = new Crashy();

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { userMessage } from '../lib/errors';
+import { UserFacingError, userMessage } from '../lib/errors';
 import { passphraseProblem } from '../lib/keystore';
 import { createCurrentReconciliationVault, type ReconciliationImportPreview, type ReconciliationVault } from '../lib/reconciliationVault';
 import { checkpointKeyId } from '../lib/scanClient';
@@ -38,19 +38,29 @@ export function TagArchive(): ReactNode {
   const [confirm, setConfirm] = useState<'none' | 'rotate' | 'wipe1' | 'wipe2'>('none');
   const operation = useRef<AbortController | null>(null);
   const mounted = useRef(false);
+  const openedHistory = useRef(new Set<ReconciliationVault>());
+  const closeHistory = (): void => {
+    for (const history of openedHistory.current) history.lock();
+    openedHistory.current.clear();
+  };
+  const invalidate = (): void => {
+    operation.current?.abort(); operation.current = null;
+    closeHistory(); setBusy(false); setStaged(undefined);
+  };
 
-  const start = (): AbortController => {
+  const start = (retainHistory = false): AbortController => {
     operation.current?.abort();
+    if (!retainHistory) { closeHistory(); setStaged(undefined); }
     const c = new AbortController(); operation.current = c; return c;
   };
   const current = (c: AbortController): boolean => mounted.current && operation.current === c && !c.signal.aborted;
   const reset = (): void => {
-    operation.current?.abort(); operation.current = null;
-    setBusy(false); setPass(''); setPass2(''); setImportPass(''); setFile(undefined); setStaged(undefined); setConfirm('none');
+    invalidate();
+    setPass(''); setPass2(''); setImportPass(''); setFile(undefined); setStaged(undefined); setConfirm('none');
   };
   useEffect(() => {
     mounted.current = true;
-    return () => { mounted.current = false; operation.current?.abort(); };
+    return () => { mounted.current = false; operation.current?.abort(); closeHistory(); };
   }, []);
   // A different or cleared seller session invalidates every pending action and staged preview.
   useEffect(() => { reset(); }, [app.session]);
@@ -61,15 +71,25 @@ export function TagArchive(): ReactNode {
   const fail = (e: unknown): void => { setMessage({ kind: 'error', text: userMessage(e) }); };
   const done = (text: string): void => { setMessage({ kind: 'ok', text }); app.announce(text); };
 
-  const historyVaults = async (): Promise<{ chainId: number; vault: ReconciliationVault }[]> => {
+  const historyVaults = async (c: AbortController): Promise<{ vaults: { chainId: number; vault: ReconciliationVault }[]; skipped: number }> => {
     const s = getSessionPublic();
-    if (s === undefined) return [];
+    if (s === undefined) return { vaults: [], skipped: 0 };
     const keyId = checkpointKeyId(s.spendingPublicKey, s.viewingPublicKey);
-    const out: { chainId: number; vault: ReconciliationVault }[] = [];
-    for (const c of chains) {
-      try { out.push({ chainId: c.chainId, vault: await createCurrentReconciliationVault(c.chainId, keyId) }); } catch { /* chain has no usable history vault */ }
+    const vaults: { chainId: number; vault: ReconciliationVault }[] = [];
+    let skipped = 0;
+    for (const chain of chains) {
+      if (!current(c)) throw new UserFacingError('Archive operation cancelled.');
+      let history: ReconciliationVault;
+      try { history = await createCurrentReconciliationVault(chain.chainId, keyId); }
+      catch { skipped++; continue; }
+      if (!current(c)) { history.lock(); throw new UserFacingError('Archive operation cancelled.'); }
+      openedHistory.current.add(history);
+      vaults.push({ chainId: chain.chainId, vault: history });
     }
-    return out;
+    return { vaults, skipped };
+  };
+  const closeVaults = (vaults: readonly { vault: ReconciliationVault }[]): void => {
+    for (const history of vaults) { history.vault.lock(); openedHistory.current.delete(history.vault); }
   };
 
   const onExport = (e: FormEvent): void => {
@@ -83,10 +103,13 @@ export function TagArchive(): ReactNode {
       let vaults: { chainId: number; vault: ReconciliationVault }[] = [];
       try {
         await ensureUnlocked();
+        if (!current(c)) return;
+        unchanged();
         const history: Record<string, string> = {};
         let skipped = 0;
         if (withHistory) {
-          vaults = await historyVaults();
+          const opened = await historyVaults(c);
+          vaults = opened.vaults; skipped = opened.skipped;
           for (const h of vaults) {
             try { history[String(h.chainId)] = await h.vault.exportEncrypted(); } catch { skipped++; }
           }
@@ -101,7 +124,7 @@ export function TagArchive(): ReactNode {
         if (!current(c)) return;
         setBusy(false); fail(error);
       } finally {
-        for (const h of vaults) h.vault.lock();
+        closeVaults(vaults);
       }
     })();
   };
@@ -114,47 +137,81 @@ export function TagArchive(): ReactNode {
     const selected = file; const passphrase = importPass;
     setBusy(true); setStaged(undefined); setMessage({ kind: 'ok', text: 'Decrypting…' });
     void (async () => {
+      let vaults: { chainId: number; vault: ReconciliationVault }[] = [];
+      let retained = false;
       try {
         const bytes = new Uint8Array(await selected.arrayBuffer());
         if (!current(c)) return;
         unchanged();
         await ensureUnlocked();
         const archive = await previewArchiveImport(vault, bytes, passphrase, mode, c.signal);
+        if (!current(c)) return;
+        unchanged();
+        const opened = await historyVaults(c);
+        vaults = opened.vaults;
+        for (const chain of archive.historyChains) {
+          if (!vaults.some((h) => String(h.chainId) === chain))
+            throw new UserFacingError(`Scan history for chain ${chain} cannot be opened here. No import was started.`);
+        }
         const history: Staged['history'][number][] = [];
-        for (const h of await historyVaults()) {
+        for (const h of vaults) {
+          if (!current(c)) return;
+          unchanged();
           const text = archive.contents.history[String(h.chainId)];
-          if (text === undefined) { h.vault.lock(); continue; }
+          if (text === undefined) { closeVaults([h]); continue; }
           history.push({ ...h, preview: await h.vault.previewImport(text) });
         }
-        if (!current(c)) { for (const h of history) h.vault.lock(); return; }
+        if (!current(c)) return;
         unchanged();
         setImportPass(''); setBusy(false); setStaged({ archive, history });
+        retained = true;
         setMessage({ kind: 'ok', text: 'Archive decrypted. Review the summary; nothing has been changed yet.' });
       } catch (error) {
         if (!current(c)) return;
         setImportPass(''); setBusy(false); fail(error);
+      } finally {
+        if (!retained) closeVaults(vaults);
       }
     })();
   };
 
   const onApply = (): void => {
     if (staged === undefined) return;
-    const c = start(); const unchanged = captureSessionVersionGuard();
+    const c = start(true); const unchanged = captureSessionVersionGuard();
     const s = staged;
+    type Outcome = 'not started' | 'commit outcome unknown' | 'committed';
+    let tags: Outcome = 'not started';
+    const history: Outcome[] = s.history.map(() => 'not started');
+    const guard = (): void => {
+      if (!current(c)) throw new UserFacingError('Import interrupted; subsequent stores were not started.');
+      unchanged();
+    };
     setBusy(true);
     void (async () => {
       try {
-        unchanged();
+        guard();
+        tags = 'commit outcome unknown';
         await vault.applyImport(s.archive.tags);
-        for (const h of s.history) await h.vault.activateImport(h.preview);
-        if (!mounted.current) return;
+        tags = 'committed';
+        for (const [index, h] of s.history.entries()) {
+          guard();
+          history[index] = 'commit outcome unknown';
+          await h.vault.activateImport(h.preview);
+          history[index] = 'committed';
+        }
+        guard();
         setStaged(undefined); setFile(undefined); setBusy(false);
-        done(`Imported: ${String(s.archive.tags.added)} added, ${String(s.archive.tags.updated)} updated, ${String(s.archive.tags.removed)} removed.`);
+        done(`Imported: ${String(s.archive.tags.added)} added, ${String(s.archive.tags.updated)} updated, ${String(s.archive.tags.removed)} removed. Tags committed.${s.history.length > 0 ? ` Scan history committed for ${String(s.history.length)} chain(s); restored history remains historical evidence, not a fresh scan.` : ''}`);
       } catch (error) {
-        if (!current(c)) return;
-        setStaged(undefined); setBusy(false); fail(error);
+        // A completed transaction cannot be cancelled, and a rejected acknowledgement
+        // does not prove unchanged storage. Never overwrite concurrent edits with a rollback.
+        if (!mounted.current || (operation.current !== c && operation.current !== null)) return;
+        setStaged(undefined); setBusy(false);
+        const outcomes = s.history.map((h, index) => `Scan history ${String(h.chainId)}: ${history[index] ?? 'not started'}.`).join(' ');
+        const reason = error instanceof UserFacingError ? error.message : 'The operation stopped.';
+        setMessage({ kind: 'error', text: `Import incomplete. Tags: ${tags}. ${outcomes} ${reason} Stores commit separately; inspect local data and make a new preview before retrying.` });
       } finally {
-        for (const h of s.history) h.vault.lock();
+        closeVaults(s.history);
       }
     })();
   };
@@ -165,6 +222,8 @@ export function TagArchive(): ReactNode {
     void (async () => {
       try {
         await ensureUnlocked();
+        if (!current(c)) return;
+        unchanged();
         const v = await vault.rotateKeys(revealViewingKey());
         if (!current(c)) return;
         unchanged();
@@ -178,8 +237,19 @@ export function TagArchive(): ReactNode {
   };
 
   const onWipe = (): void => {
-    setConfirm('none'); setStaged(undefined);
-    void vault.wipe().then(() => { done('All local tags deleted.'); }, fail);
+    const c = start(); const unchanged = captureSessionVersionGuard();
+    setConfirm('none'); setBusy(true);
+    void (async () => {
+      try {
+        unchanged();
+        await vault.wipe();
+        if (!current(c)) return;
+        unchanged(); setBusy(false); done('All local tags deleted.');
+      } catch (error) {
+        if (!current(c)) return;
+        setBusy(false); fail(error);
+      }
+    })();
   };
 
   const s = app.session;
@@ -199,9 +269,9 @@ export function TagArchive(): ReactNode {
 
           <form onSubmit={onPreview} className="stack" autoComplete="off">
             <Field label="Archive file">{(id) => <input id={id} type="file" accept=".gpa,application/octet-stream" onChange={(e) => { reset(); setFile(e.target.files?.[0]); }} />}</Field>
-            <Field label="Archive passphrase">{(id) => <input id={id} type="password" autoComplete="off" value={importPass} onChange={(e) => { if (busy) reset(); setImportPass(e.target.value); }} />}</Field>
-            <label><input type="radio" name="tag-import-mode" checked={mode === 'merge'} onChange={() => { setMode('merge'); setStaged(undefined); }} /> Merge (newest wins)</label>
-            <label><input type="radio" name="tag-import-mode" checked={mode === 'replace'} onChange={() => { setMode('replace'); setStaged(undefined); }} /> Replace all local tags</label>
+            <Field label="Archive passphrase">{(id) => <input id={id} type="password" autoComplete="off" value={importPass} onChange={(e) => { invalidate(); setImportPass(e.target.value); }} />}</Field>
+            <label><input type="radio" name="tag-import-mode" checked={mode === 'merge'} onChange={() => { invalidate(); setMode('merge'); }} /> Merge (newest wins)</label>
+            <label><input type="radio" name="tag-import-mode" checked={mode === 'replace'} onChange={() => { invalidate(); setMode('replace'); }} /> Replace all local tags</label>
             <button type="submit" className="btn" disabled={busy}>Decrypt and preview</button>
           </form>
           {staged !== undefined && (
@@ -209,8 +279,9 @@ export function TagArchive(): ReactNode {
               <p>
                 {String(staged.archive.tags.total)} tag(s) in the archive: {String(staged.archive.tags.added)} new, {String(staged.archive.tags.updated)} updated,
                 {' '}{String(staged.archive.tags.keptLocal)} kept because your copy is newer, {String(staged.archive.tags.removed)} local tag(s) removed.
-                {staged.history.length > 0 && ` Scan history for ${String(staged.history.length)} chain(s) will be merged.`}
+                {staged.history.length > 0 && ` Scan history for ${String(staged.history.length)} chain(s) will be merged in separate transactions. A failure can leave a partial import. Restored observations remain history; they are not fresh payment proof.`}
               </p>
+              {staged.history.map((h) => <p key={h.chainId}>Chain {String(h.chainId)}: {String(h.preview.recordCount)} history record(s), {String(h.preview.invalidatedCount)} invalidated.{h.preview.readOnly && ' This import makes the history vault read-only because its safety limit has been reached.'}</p>)}
               <button type="button" className="btn btn-primary" disabled={busy} onClick={onApply}>Apply import</button>{' '}
               <button type="button" className="btn" onClick={reset}>Discard</button>
             </div>
@@ -233,13 +304,13 @@ export function TagArchive(): ReactNode {
           ) : confirm === 'wipe1' ? (
             <div>
               <p>This deletes every tag in this browser. Download an archive first if you may need them.</p>
-              <button type="button" className="btn btn-danger" onClick={() => { setConfirm('wipe2'); }}>I understand, continue</button>{' '}
+              <button type="button" className="btn btn-danger" disabled={busy} onClick={() => { setConfirm('wipe2'); }}>I understand, continue</button>{' '}
               <button type="button" className="btn" onClick={() => { setConfirm('none'); }}>Cancel</button>
             </div>
           ) : (
             <div>
               <p>Last chance: this cannot be undone.</p>
-              <button type="button" className="btn btn-danger" onClick={onWipe}>Permanently delete all tags</button>{' '}
+              <button type="button" className="btn btn-danger" disabled={busy} onClick={onWipe}>Permanently delete all tags</button>{' '}
               <button type="button" className="btn" onClick={() => { setConfirm('none'); }}>Cancel</button>
             </div>
           )}

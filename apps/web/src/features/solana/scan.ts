@@ -68,27 +68,27 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
   const seen = new Set<string>();
   try {
     for await (const d of scanAnnouncements(records, wallet.keys.viewSecret, wallet.keys.spendPublicKey, signal)) {
-      p.onFound?.(d.slot);
-      if (seen.has(d.stealthAddress)) {
-        zeroize(d.tweak);
-        continue;
+      let retained = false;
+      try {
+        p.onFound?.(d.slot);
+        if (seen.has(d.stealthAddress)) continue;
+        seen.add(d.stealthAddress);
+        const balance = await getBalance(rpc, d.stealthAddress, signal);
+        if (balance === 0n) { emptiedCount++; continue; }
+        found.push({
+          signature: d.signature,
+          slot: d.slot,
+          stealthAddress: d.stealthAddress,
+          receivedLamports: d.lamportsReceived,
+          balanceLamports: balance,
+          tokenReceiptCount: d.tokenReceipts.length,
+          tweak: d.tweak,
+        });
+        retained = true;
+      } finally {
+        // Until ownership transfers to found, every exit (including callbacks and RPC failure) owns this secret.
+        if (!retained) zeroize(d.tweak);
       }
-      seen.add(d.stealthAddress);
-      const balance = await getBalance(rpc, d.stealthAddress, signal);
-      if (balance === 0n) {
-        emptiedCount++;
-        zeroize(d.tweak);
-        continue;
-      }
-      found.push({
-        signature: d.signature,
-        slot: d.slot,
-        stealthAddress: d.stealthAddress,
-        receivedLamports: d.lamportsReceived,
-        balanceLamports: balance,
-        tokenReceiptCount: d.tokenReceipts.length,
-        tweak: d.tweak,
-      });
     }
   } catch (e) {
     wipeFound(found);
