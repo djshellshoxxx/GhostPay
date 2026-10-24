@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { act } from '@testing-library/react';
 import { checkpointKeyId } from '../lib/scanClient';
+import * as scanClient from '../lib/scanClient';
 import { clearSession, generateSession, importSession, withSessionSecrets } from '../lib/session';
 import { SETTINGS_KEY } from '../lib/settings';
 import { FAKE_ANNOUNCER, FAKE_ROUTER } from '../test/fakeManifest';
@@ -17,17 +18,27 @@ import { verifyReceipt } from '../lib/receipts';
 import { RECONCILIATION_LEDGER_DATA_KEY } from '../lib/reconciliationLedger';
 import type { ReconciliationVaultStore } from '../lib/reconciliationVault';
 import { captureSessionGuard, revealViewingKey } from '../lib/session';
-import { ghostPayRouterAbi, grossForNet, type Address, type Hex } from '@ghostpay/chain-adapters';
+import { ghostPayRouterAbi, grossForNet, validateAnnouncementLog, type Address, type Hex } from '@ghostpay/chain-adapters';
+import { recordFromVerifiedMatch } from '../lib/reconciliationLedger';
 import { parseMetadata } from '@ghostpay/core-crypto';
 import { decodeAbiParameters, encodeFunctionData } from 'viem/utils';
 
 let vaultData = new Map<string, string>();
+let vaultCreationGate: Promise<void> | undefined;
+let vaultCreationWaiting = false;
+let vaultWriteGate: Promise<void> | undefined;
+let vaultWriteWaiting = false;
 vi.mock('../lib/reconciliationVault', async (original) => {
   const actual = await original<typeof import('../lib/reconciliationVault')>();
   return { ...actual, createCurrentReconciliationVault: async (chainId: number, sellerKeyId: string) => {
-    const store: ReconciliationVaultStore = { read: (key) => Promise.resolve(vaultData.get(key) ?? null), compareAndSwap: (key, expected, next, guard) => { guard(); if ((vaultData.get(key) ?? null) !== expected) return Promise.resolve(false); vaultData.set(key, next); return Promise.resolve(true); } };
+    const store: ReconciliationVaultStore = { read: (key) => Promise.resolve(vaultData.get(key) ?? null), compareAndSwap: async (key, expected, next, guard) => {
+      if (vaultWriteGate !== undefined) { vaultWriteWaiting = true; await vaultWriteGate; }
+      guard(); if ((vaultData.get(key) ?? null) !== expected) return false; vaultData.set(key, next); return true;
+    } };
     const vault = new actual.ReconciliationVault(store, { chainId, sellerKeyId }, captureSessionGuard());
-    await vault.unlock(revealViewingKey()); return vault;
+    await vault.unlock(revealViewingKey());
+    if (vaultCreationGate !== undefined) { vaultCreationWaiting = true; await vaultCreationGate; }
+    return vault;
   } };
 });
 
@@ -37,6 +48,10 @@ const topicAddress = (address: string): string => `0x${address.slice(2).toLowerC
 beforeEach(() => {
   clearSession();
   vaultData = new Map();
+  vaultCreationGate = undefined;
+  vaultCreationWaiting = false;
+  vaultWriteGate = undefined;
+  vaultWriteWaiting = false;
   window.localStorage.clear();
   window.history.replaceState(null, '', '/');
 });
@@ -283,6 +298,66 @@ describe('Scan and receive', () => {
     expect(created.some((u) => u.startsWith('https://rpc2.test'))).toBe(true);
     expect(secondary.calls.some((c) => c.method === 'eth_getLogs')).toBe(true);
     expect(screen.queryByText(/Only one RPC was used/)).toBeNull();
+  });
+
+  it('quarantines actionable cards before confirmation and retains unsaved observations for confirmed tombstones', async () => {
+    const pub = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 1, caller: FAKE_ROUTER });
+    const announcement = validateAnnouncementLog(mine.log, FAKE_ANNOUNCER, 1n, 0n, 500n)!;
+    const match: scanClient.ScanMatch = { chainId: 84532, announcement, stealthAddress: mine.stealthAddress as Address, metadata: parseMetadata(announcement.metadata), viaRouter: true, tagMatches: true, receipt: 'verified' };
+    let params!: scanClient.ScanParams; let release!: () => void;
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    const runner = vi.spyOn(scanClient, 'runScan').mockImplementation(async (p) => {
+      params = p; p.onMatch?.(match); await gate; p.viewingKey.fill(0);
+      return { matches: [], cursor: { nextBlock: 0n }, scanned: 1, discrepancies: [], limitReached: false };
+    });
+    try {
+      const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(chainWithLogs(84532, 500, []))) }));
+      await user.type(screen.getByLabelText('Start block'), '0'); await user.click(screen.getByRole('button', { name: 'Start scan' }));
+      expect(await screen.findByRole('button', { name: 'Sweep this payment' })).toBeTruthy();
+      act(() => { params.onQuarantine?.(0n); });
+      expect(screen.queryByRole('button', { name: 'Sweep this payment' })).toBeNull();
+      expect(screen.queryByRole('button', { name: 'Sign receipt' })).toBeNull();
+      expect(vaultData.size).toBe(0);
+      await act(async () => { await params.onReorg?.(0n); });
+      const { createCurrentReconciliationVault } = await import('../lib/reconciliationVault');
+      const keyId = checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey);
+      const vault = await createCurrentReconciliationVault(84532, keyId);
+      expect(await vault.read()).toEqual([]);
+      await expect(vault.save(recordFromVerifiedMatch(match, keyId))).rejects.toThrow(/invalidated/);
+      vault.lock();
+      release(); await waitFor(() => expect(screen.getByText(/Finished\./)).toBeTruthy());
+    } finally { release(); runner.mockRestore(); }
+  });
+
+  it.each(['unlock', 'write'] as const)('does not invalidate history after cancellation while reconciliation %s is pending', async (stage) => {
+    const pub = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 1, caller: FAKE_ROUTER });
+    const announcement = validateAnnouncementLog(mine.log, FAKE_ANNOUNCER, 1n, 0n, 500n)!;
+    const match: scanClient.ScanMatch = { chainId: 84532, announcement, stealthAddress: mine.stealthAddress as Address, metadata: parseMetadata(announcement.metadata), viaRouter: true, tagMatches: true, receipt: 'verified' };
+    let params!: scanClient.ScanParams; let finish!: () => void; let unlock!: () => void;
+    const gate = new Promise<void>((resolve) => { finish = resolve; });
+    const vaultGate = new Promise<void>((resolve) => { unlock = resolve; });
+    if (stage === 'unlock') vaultCreationGate = vaultGate;
+    else vaultWriteGate = vaultGate;
+    const runner = vi.spyOn(scanClient, 'runScan').mockImplementation(async (p) => {
+      params = p; p.onMatch?.(match); await gate; p.viewingKey.fill(0);
+      return { matches: [], cursor: { nextBlock: 0n }, scanned: 1, discrepancies: [], limitReached: false };
+    });
+    try {
+      const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(chainWithLogs(84532, 500, []))) }));
+      await user.type(screen.getByLabelText('Start block'), '0'); await user.click(screen.getByRole('button', { name: 'Start scan' }));
+      await screen.findByRole('button', { name: 'Sweep this payment' });
+      act(() => { params.onQuarantine?.(0n); });
+      const invalidation = Promise.resolve(params.onReorg?.(0n)).catch(() => undefined);
+      await waitFor(() => expect(stage === 'unlock' ? vaultCreationWaiting : vaultWriteWaiting).toBe(true));
+      await user.click(screen.getByRole('button', { name: 'Cancel' }));
+      await act(async () => { unlock(); await invalidation; });
+      expect(vaultData.size).toBe(0);
+      finish(); await waitFor(() => expect(screen.getByText(/Cancelled\./)).toBeTruthy());
+    } finally { unlock(); finish(); runner.mockRestore(); }
   });
 
   it('says so when only one RPC was used', async () => {

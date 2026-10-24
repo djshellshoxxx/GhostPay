@@ -131,6 +131,7 @@ export function Scan(): ReactNode {
         setScanOwner(scope);
         const viewingKey = unsafeRevealSecret(secrets.keys.viewingSecret);
         let found: ScanMatch[] = [];
+        let quarantined: ScanMatch[] = [];
         const res = await runScan({
           chain,
           manifest: manifest.manifest,
@@ -145,15 +146,27 @@ export function Scan(): ReactNode {
           signal: ctl.signal,
           checkpoints: services.checkpoints,
           onProgress: (nextProgress) => { if (scopeIsCurrent()) setProgress(nextProgress); },
+          onQuarantine: (to) => {
+            if (!scopeIsCurrent()) return;
+            // These already bounded run observations are retained only until confirmation,
+            // so unsaved verified evidence can receive persistent tombstones as well.
+            const affected = found.filter((m) => m.announcement.blockNumber >= to);
+            quarantined.push(...affected);
+            found = found.filter((m) => m.announcement.blockNumber < to);
+            app.setMatches([...found]);
+          },
           onReorg: async (to) => {
             if (!scopeIsCurrent()) return;
-            const invalidated = found.filter((m) => m.announcement.blockNumber >= to && m.receipt === 'verified' && m.viaRouter && m.metadata !== undefined && m.announcement.transactionHash !== undefined).map((m) => recordFromVerifiedMatch(m, keyId));
+            const invalidated = [...found, ...quarantined].filter((m) => m.announcement.blockNumber >= to && m.receipt === 'verified' && m.viaRouter && m.metadata !== undefined && m.announcement.transactionHash !== undefined).map((m) => recordFromVerifiedMatch(m, keyId));
             found = found.filter((m) => m.announcement.blockNumber < to);
             app.setMatches([...found]);
             try {
               const reconciliation = await createCurrentReconciliationVault(chainId, keyId);
-              try { await reconciliation.invalidateFrom(to, invalidated); }
-              finally { reconciliation.lock(); }
+              const lockOnAbort = (): void => { reconciliation.lock(); };
+              ctl.signal.addEventListener('abort', lockOnAbort, { once: true });
+              try { if (!scopeIsCurrent()) return; await reconciliation.invalidateFrom(to, invalidated); }
+              finally { ctl.signal.removeEventListener('abort', lockOnAbort); reconciliation.lock(); }
+              quarantined = quarantined.filter((m) => m.announcement.blockNumber < to);
             } catch (cause) {
               if (cause instanceof UserFacingError) throw cause;
               const warning = new UserFacingError('A scan reorg was detected, but encrypted reconciliation invalidation could not be committed. Stop relying on historical records until this is resolved.');
@@ -165,7 +178,10 @@ export function Scan(): ReactNode {
             if (!scopeIsCurrent()) return;
             const identity = `${m.stealthAddress.toLowerCase()}|${m.announcement.ephemeralPublicKey.toLowerCase()}`;
             const prior = found.findIndex((x) => `${x.stealthAddress.toLowerCase()}|${x.announcement.ephemeralPublicKey.toLowerCase()}` === identity);
-            if (prior < 0) found.push(m);
+            if (prior < 0) {
+              if (found.length + quarantined.length >= 10_000) throw new UserFacingError('The scan observation safety limit was reached. Start a fresh scan to continue.');
+              found.push(m);
+            }
             else found[prior] = m;
             app.setMatches([...found]);
           },

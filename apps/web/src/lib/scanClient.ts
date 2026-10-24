@@ -83,7 +83,9 @@ export interface ScanParams {
   readonly checkpoints?: CheckpointStore;
   readonly onProgress?: (p: ScanProgress) => void;
   readonly onMatch?: (m: ScanMatch) => void;
-  /** A reorg was detected: matches found in blocks >= `rolledBackTo` were dropped from the result and must be dropped by the caller. */
+  /** Immediately hide possibly orphaned actionable matches; this does not authorize persistent invalidation. */
+  readonly onQuarantine?: (rolledBackTo: bigint) => void;
+  /** A rollback was confirmed (by both providers when configured); persist invalidation before accepting replacement results. */
   readonly onReorg?: (rolledBackTo: bigint) => void | Promise<void>;
   readonly maxPages?: number;
   /** Total accepted public announcements to process in one run (default 100,000). */
@@ -186,13 +188,38 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       const pageFrom = res.reorg?.rolledBackTo ?? cursor.nextBlock;
       if (res.reorg !== undefined) {
         persistenceFloor = res.reorg.rolledBackTo;
-        // Matches from orphaned blocks must not stay listed; the replay below re-finds the ones that survived.
+        // Hide uncertain results immediately, while retaining the caller's observations for a
+        // confirmed invalidation. One provider's fork must never permanently poison the vault.
         const keep = all.filter((m) => m.announcement.blockNumber < res.reorg!.rolledBackTo);
         all.length = 0;
         all.push(...keep);
         claimLedger.clear();
         keep.forEach((match, index) => claimLedger.set(`${match.stealthAddress.toLowerCase()}|${match.announcement.ephemeralPublicKey.toLowerCase()}`, index));
         for (const [id, block] of evidenceLedger) if (block >= res.reorg.rolledBackTo) evidenceLedger.delete(id);
+        p.onQuarantine?.(res.reorg.rolledBackTo);
+        if (p.signal.aborted) break;
+        if (p.secondaryClient !== undefined) {
+          // Check the replacement page AND the old checkpoint/rollback anchors. Agreement at
+          // the page end alone cannot establish that a previously saved block was orphaned.
+          const pageComparison = res.cursor.last === undefined ? [] : (await compareProviders({
+            chain: p.chain, secondary: p.secondaryClient, announcer: p.manifest.announcer,
+            fromBlock: pageFrom, toBlock: res.cursor.last.number,
+            primaryAnnouncements: res.announcements, primarySkipped: res.skipped,
+            primaryBlockHash: res.cursor.last.hash,
+          })).discrepancies;
+          if (p.signal.aborted) break;
+          const conflicts = pageComparison.length > 0 ? pageComparison : await confirmRollback(p, cursor, res.cursor, res.reorg.rolledBackTo);
+          if (p.signal.aborted) break;
+          if (conflicts.length > 0) {
+            discrepancies.push(...conflicts);
+            p.onDiscrepancy?.(conflicts);
+            if (p.signal.aborted) break;
+            cursor = { nextBlock: res.reorg.rolledBackTo };
+            p.checkpoints?.clear(p.chain.chainId, p.keyId);
+            p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
+            break;
+          }
+        }
         await p.onReorg?.(res.reorg.rolledBackTo);
         if (p.signal.aborted) break;
       }
@@ -342,6 +369,41 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
     try { stopWorker(); } finally { zeroizeBytes(p.viewingKey); }
   }
   return { matches: all, cursor, scanned, discrepancies, limitReached };
+}
+
+/** Bounded, fresh two-provider checks immediately before irreversible historical invalidation. */
+async function confirmRollback(p: ScanParams, previous: ScanCursor, replacement: ScanCursor, rolledBackTo: bigint): Promise<readonly ProviderDiscrepancy[]> {
+  const secondary = p.secondaryClient;
+  if (secondary === undefined) return [];
+  const heights = new Set([rolledBackTo]);
+  if (previous.last !== undefined) heights.add(previous.last.number);
+  if (replacement.last !== undefined) heights.add(replacement.last.number);
+  const observed = new Map<bigint, string>();
+  try {
+    if (secondary.chainId !== p.chain.chainId) return [{ kind: 'secondary_error', ref: rolledBackTo.toString() }];
+    // Re-read after the independent RPC awaits: a transient fork or an equivocating primary
+    // must not turn a stale rollback report into permanent tombstones.
+    for (let pass = 0; pass < 2; pass++) {
+      const anchors = await Promise.all([...heights].map(async (number) => {
+        const [primary, independent] = await Promise.all([p.client.getBlock(number), secondary.getBlock(number)]);
+        return { number, primary, independent };
+      }));
+      if (p.signal.aborted) return [];
+      for (const { number, primary, independent } of anchors) {
+        const hash = primary?.hash.toLowerCase();
+        if (hash === undefined || independent === null || hash !== independent.hash.toLowerCase() ||
+            (observed.has(number) && observed.get(number) !== hash) ||
+            (replacement.last?.number === number && hash !== replacement.last.hash.toLowerCase()) ||
+            (rolledBackTo < previous.nextBlock && previous.last?.number === number && hash === previous.last.hash.toLowerCase())) {
+          return [{ kind: 'block_hash_differs', ref: number.toString() }];
+        }
+        observed.set(number, hash);
+      }
+    }
+    return [];
+  } catch {
+    return [{ kind: 'secondary_error', ref: rolledBackTo.toString() }];
+  }
 }
 
 /**

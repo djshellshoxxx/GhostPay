@@ -7,6 +7,7 @@ import { InlineWorker } from '../test/inlineWorker';
 import { makeLog } from '../test/announcements';
 import { mockRpc } from '../test/mockRpc';
 import { checkpointKeyId, localCheckpointStore, runScan, type CheckpointStore, type ScanProgress } from './scanClient';
+import { ReconciliationVault } from './reconciliationVault';
 
 const chain = CHAINS.find((c) => c.chainId === 84532)!;
 const hexOf = (b: Uint8Array): string => Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
@@ -171,6 +172,129 @@ describe('runScan', () => {
     expect(worker.received.filter((message) => message.type === 'batch')).toEqual([]);
     expect(worker.terminated).toBe(true);
     expect(viewingKey.every((byte) => byte === 0)).toBe(true);
+  });
+  it('quarantines an unconfirmed primary fork without permanently invalidating canonical history', async () => {
+    const s = setup();
+    const sellerKeyId = checkpointKeyId(hexOf(s.keys.spendingPublicKey), hexOf(s.keys.viewingPublicKey));
+    const data = new Map<string, string>();
+    const vault = new ReconciliationVault({
+      read: (key) => Promise.resolve(data.get(key) ?? null),
+      compareAndSwap: (key, expected, next, guard) => { guard(); if ((data.get(key) ?? null) !== expected) return Promise.resolve(false); data.set(key, next); return Promise.resolve(true); },
+    }, { chainId: chain.chainId, sellerKeyId }, () => undefined);
+    await vault.unlock(unsafeRevealSecret(s.keys.viewingSecret).slice());
+    const record = {
+      version: 1 as const, sellerKeyId, chainId: chain.chainId, transactionHash: blockHash(999),
+      blockHash: blockHash(120), blockNumber: '120', stealthAddress: `0x${'a'.repeat(40)}`, logIndex: 1,
+      asset: 'native', amountMinorUnits: '1', viewTagMatched: true, recordedAt: 1800000000000,
+      evidenceStatus: 'verified-at-scan' as const, evidenceSource: 'verified-router-scan' as const,
+      id: `${sellerKeyId}:${chain.chainId}:${blockHash(999)}:0x${'a'.repeat(40)}:${blockHash(120)}:1`,
+    };
+    await vault.save(record);
+    const primary = chainWith(300, []);
+    const invalidated = vi.fn((from: bigint) => vault.invalidateFrom(from));
+    const quarantined = vi.fn(); const emitted = vi.fn(); const saved = vi.fn();
+    const result = await runScan({
+      chain, manifest, client: { ...primary, getBlock: (n) => Promise.resolve({ number: n, hash: blockHash(Number(n) + 10000) as Hex, parentHash: blockHash(Number(n) + 9999) as Hex }) },
+      secondaryClient: chainWith(300, []), cursor: { nextBlock: 201n, last: { number: 200n, hash: blockHash(200) as Hex } },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: sellerKeyId,
+      viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => new InlineWorker(), signal: new AbortController().signal,
+      onReorg: invalidated, onQuarantine: quarantined, onMatch: emitted,
+      checkpoints: { load: () => undefined, save: saved, clear: () => undefined },
+    });
+    expect(result.discrepancies.length).toBeGreaterThan(0);
+    expect(quarantined).toHaveBeenCalledExactlyOnceWith(0n);
+    expect(invalidated).not.toHaveBeenCalled(); expect(emitted).not.toHaveBeenCalled(); expect(saved).not.toHaveBeenCalled();
+    expect(result.matches).toEqual([]);
+    expect((await vault.read())[0]?.evidenceStatus).toBe('verified-at-scan');
+    await expect(vault.save(record)).resolves.toBeUndefined();
+    vault.lock();
+  });
+  it('requires stable independent rollback anchors even when the replacement page end agrees', async () => {
+    for (const equivocate of [false, true]) {
+      const s = setup(); const primary = chainWith(300, []); const secondary = chainWith(300, []);
+      let checkpointReads = 0;
+      const invalidated = vi.fn(); const quarantined = vi.fn();
+      const result = await runScan({
+        chain, manifest, client: { ...primary, getBlock: (n) => {
+          if (n === 200n && (!equivocate || checkpointReads++ === 0)) return Promise.resolve({ number: n, hash: blockHash(10200) as Hex, parentHash: blockHash(10199) as Hex });
+          return primary.getBlock(n);
+        } },
+        secondaryClient: secondary, cursor: { nextBlock: 201n, last: { number: 200n, hash: blockHash(200) as Hex } },
+        spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY,
+        viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => new InlineWorker(), signal: new AbortController().signal,
+        onReorg: invalidated, onQuarantine: quarantined,
+      });
+      expect(result.discrepancies.length).toBeGreaterThan(0);
+      expect(invalidated).not.toHaveBeenCalled(); expect(quarantined).toHaveBeenCalledExactlyOnceWith(0n);
+    }
+  });
+  it('confirms a genuine rollback with both providers before awaiting durable invalidation', async () => {
+    const s = setup(); const primary = chainWith(300, []); const secondary = chainWith(300, []);
+    let release!: () => void; const gate = new Promise<void>((resolve) => { release = resolve; });
+    const order: string[] = []; const worker = new InlineWorker();
+    const task = runScan({
+      chain, manifest, client: primary, secondaryClient: secondary,
+      cursor: { nextBlock: 201n, last: { number: 200n, hash: blockHash(10200) as Hex } },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY,
+      viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => worker, signal: new AbortController().signal,
+      onQuarantine: () => { order.push('quarantine'); },
+      onReorg: async () => {
+        order.push('invalidate'); await gate;
+      },
+    });
+    await vi.waitFor(() => expect(order).toEqual(['quarantine', 'invalidate']));
+    expect(secondary.calls.some((call) => call.method === 'eth_getBlockByNumber' && call.params[0] === 200n)).toBe(true);
+    expect(worker.received.filter((message) => message.type === 'batch')).toEqual([]);
+    release(); expect((await task).discrepancies).toEqual([]);
+  });
+  it('cannot persist a rollback after cancellation while independent confirmation is pending', async () => {
+    const s = setup(); const primary = chainWith(300, []); const secondary = chainWith(300, []);
+    let release!: () => void; const gate = new Promise<void>((resolve) => { release = resolve; }); let waiting = false;
+    const ctl = new AbortController(); const invalidated = vi.fn(); const key = unsafeRevealSecret(s.keys.viewingSecret);
+    const task = runScan({
+      chain, manifest, client: primary, secondaryClient: { ...secondary, getBlock: async (n) => {
+        if (n === 200n) { waiting = true; await gate; }
+        return secondary.getBlock(n);
+      } },
+      cursor: { nextBlock: 201n, last: { number: 200n, hash: blockHash(10200) as Hex } },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: key,
+      createWorker: () => new InlineWorker(), signal: ctl.signal, onReorg: invalidated,
+    });
+    await vi.waitFor(() => expect(waiting).toBe(true)); ctl.abort();
+    expect(key.every((b) => b === 0)).toBe(true); release(); await task;
+    expect(invalidated).not.toHaveBeenCalled();
+  });
+  it('rejects missing, failing, drifting or inconsistent canonical rollback anchors', async () => {
+    for (const mode of ['missing', 'error', 'wrong-chain', 'rollback-disagreement', 'drift', 'replacement-drift'] as const) {
+      const s = setup(); const primary = chainWith(300, []); const secondary = chainWith(300, []);
+      let primaryCheckpointReads = 0; let secondaryCheckpointReads = 0; let primaryEndReads = 0;
+      const invalidated = vi.fn(); const emitted = vi.fn();
+      const result = await runScan({
+        chain, manifest,
+        client: { ...primary, getBlock: (n) => {
+          if (n === 200n && ++primaryCheckpointReads > 2 && mode === 'drift') return Promise.resolve({ number: n, hash: blockHash(10200) as Hex, parentHash: blockHash(10199) as Hex });
+          if (n === 300n && ++primaryEndReads > 2 && mode === 'replacement-drift') return Promise.resolve({ number: n, hash: blockHash(10300) as Hex, parentHash: blockHash(10299) as Hex });
+          return primary.getBlock(n);
+        } },
+        secondaryClient: { ...secondary, ...(mode === 'wrong-chain' ? { chainId: 1 } : {}), getBlock: (n) => {
+          if (n === 200n) {
+            if (mode === 'missing') return Promise.resolve(null);
+            if (mode === 'error') return Promise.reject(new Error('private RPC detail'));
+            if (++secondaryCheckpointReads > 1 && mode === 'drift') return Promise.resolve({ number: n, hash: blockHash(10200) as Hex, parentHash: blockHash(10199) as Hex });
+          }
+          if (n === 0n && mode === 'rollback-disagreement') return Promise.resolve({ number: n, hash: blockHash(10000) as Hex, parentHash: blockHash(9999) as Hex });
+          return secondary.getBlock(n);
+        } },
+        cursor: { nextBlock: 201n, last: { number: 200n, hash: blockHash(10200) as Hex } },
+        spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY,
+        viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => new InlineWorker(), signal: new AbortController().signal,
+        onReorg: invalidated, onMatch: emitted,
+      });
+      expect(result.discrepancies.length, mode).toBeGreaterThan(0);
+      expect(JSON.stringify(result.discrepancies)).not.toContain('private RPC detail');
+      expect(invalidated, mode).not.toHaveBeenCalled(); expect(emitted, mode).not.toHaveBeenCalled();
+      expect(result.matches, mode).toEqual([]);
+    }
   });
   it('persists only the finalized replay tail after a deep reorg behind the old checkpoint', async () => {
     const s = setup();
