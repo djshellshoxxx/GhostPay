@@ -44,6 +44,11 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     Buffer payments go through approval (the router cannot combine a permit with a buffer).
 13. **Permit domain version** is probed as `"2"` then `"1"`; each candidate is accepted only if the locally computed domain separator equals
     the token's on-chain `DOMAIN_SEPARATOR`. The wallet's permit signature is verified to recover to the payer before it is used.
+    Spec 04 post-sign: `classifyPermit` (`chain-adapters/src/permit.ts`) re-reads allowance, nonce and domain and runs a static `permit`
+    call. A front-run permit (allowance now covers) takes the allowance path; `nonce_consumed`/`sig_invalid`/`expired` raise
+    `PermitRejectedError` with a per-state message, nothing is sent, and only the next user-pressed Prepare switches to an exact approval.
+    A reverted static `permit` call is reported as `sig_invalid` even if an RPC fault caused it (fail closed). Option C (`PermitSkipped`
+    event) is a contract change and is not done.
 14. **Independent verification needs the user's RPC.** After `eth_sendTransaction`, the app fetches the transaction from the user's own
     RPC and compares sender, target, calldata, value and chain id with the preview (this is what catches a provider that mutates the
     transaction or lies about the chain). With no RPC configured the payment still works but the result says it could not be verified.

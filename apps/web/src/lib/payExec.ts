@@ -1,6 +1,6 @@
 import { invoiceDigest } from '@ghostpay/invoice-schema';
 import { bytesToHex } from '@noble/hashes/utils.js';
-import type { Address, BuiltPayment, Hex, RpcClient } from '@ghostpay/chain-adapters';
+import { classifyPermit, type Address, type BuiltPayment, type Hex, type PermitState, type RpcClient } from '@ghostpay/chain-adapters';
 import { UserFacingError } from './errors';
 import { formatUnits } from './format';
 import { guardApprove, guardRouterPayment, simulateCall } from './txGuard';
@@ -12,6 +12,8 @@ import {
   buildApproveTx,
   buildFinal,
   buildPermit,
+  permitPreflightReader,
+  permitStateMessage,
   readAllowance,
   typedDataJson,
   type BufferQuote,
@@ -56,6 +58,14 @@ export class PostBroadcastError extends UserFacingError {
     super(`Your wallet already sent this transaction (hash ${hash}), but it could not be verified: ${detail} It may still go through. Check your wallet and a block explorer before doing anything else; do not send again.`);
     this.name = 'PostBroadcastError';
     this.cause = cause;
+  }
+}
+
+/** A signed permit the post-sign pre-flight (spec 04) refused. Nothing was sent; the UI must not retry it silently. */
+export class PermitRejectedError extends UserFacingError {
+  public constructor(public readonly state: Exclude<PermitState, 'ok_to_permit' | 'already_allowed'>) {
+    super(permitStateMessage(state));
+    this.name = 'PermitRejectedError';
   }
 }
 
@@ -209,6 +219,27 @@ export async function preparePayment(session: WalletSession, ctx: PayContext, op
   assertCurrent?.();
   await assertPermitSigner(td, sig, session.account);
   assertCurrent?.();
+  // Spec 04 post-sign pre-flight: nonce, recovery and a static permit call. A front-run permit (allowance now set)
+  // takes the allowance path; any other refusal stops here with its own message and nothing is sent.
+  const state = await classifyPermit(
+    {
+      token: token.address,
+      permitCapable: token.config?.permit === true,
+      owner: session.account,
+      spender: ctx.manifest.router,
+      value: ctx.request.grossAmount,
+      domain: td.domain,
+      signed: { nonce: td.message.nonce, deadline: BigInt(deadline), signature: sig },
+      now: BigInt(rt.nowSeconds()),
+    },
+    permitPreflightReader(rt.rpc),
+  );
+  assertCurrent?.();
+  if (state === 'already_allowed') {
+    status(permitStateMessage('already_allowed'));
+    return buildFinal(ctx, { nowSeconds: now });
+  }
+  if (state !== 'ok_to_permit') throw new PermitRejectedError(state);
   return buildFinal(ctx, { nowSeconds: now, deadlineSeconds: deadline, permitSignature: sig });
 }
 

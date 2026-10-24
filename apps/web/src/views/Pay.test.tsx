@@ -19,6 +19,9 @@ import type { Services } from '../lib/services';
 import { receiptJson, signReceipt } from '../lib/receipts';
 import * as payExec from '../lib/payExec';
 import { withSessionSecrets } from '../lib/session';
+import { PERMIT_TYPES, eip712DomainSeparator, erc20MetadataAbi } from '@ghostpay/chain-adapters';
+import { privateKeyToAccount } from 'viem/accounts';
+import { encodeFunctionResult } from 'viem/utils';
 
 beforeEach(() => {
   clearSession();
@@ -592,6 +595,37 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     expect(screen.getByText('payERC20')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Approve exactly, then send payment in my wallet' })).toBeTruthy();
     expect(wallet.calls.some((c) => c.method === 'eth_signTypedData_v4')).toBe(false);
+  });
+
+  it('a signed permit the token rejects is explained, nothing is sent, and the next Prepare uses an exact approval (spec 04)', async () => {
+    const { fragment } = await makeParsed();
+    const payer = privateKeyToAccount(`0x${'cd'.repeat(32)}`);
+    const usdc = '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as const;
+    const domain = { name: 'USDC', version: '2', chainId: 84532, verifyingContract: usdc } as const;
+    const sig = await payer.signTypedData({ domain, types: PERMIT_TYPES, primaryType: 'Permit', message: { owner: payer.address, spender: FAKE_ROUTER, value: 100_000_000n, nonce: 0n, deadline: BigInt(NOW + 20 * 60) } });
+    const wallet = new MockWallet({ account: payer.address, typedDataSignature: sig });
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const base = chainSeeing(wallet);
+    const rpc = mockRpc(84532, (method, params) => {
+      if (method !== 'eth_call') return base.request(method, params);
+      const data = (params[0] as { data: string }).data;
+      if (data.startsWith('0x06fdde03')) return encodeFunctionResult({ abi: erc20MetadataAbi, functionName: 'name', result: 'USDC' });
+      if (data.startsWith('0x3644e515')) return eip712DomainSeparator(domain);
+      if (data.startsWith('0xd505accf')) throw new Error('execution reverted'); // token refuses the permit
+      return `0x${'0'.repeat(64)}`; // allowance 0, nonces 0
+    });
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    expect((await screen.findAllByRole('alert', {}, { timeout: 5000 })).map((a) => a.textContent).join(' ')).toMatch(/token rejected this permit signature/);
+    expect(wallet.calls.filter((c) => c.method === 'eth_signTypedData_v4')).toHaveLength(1);
+    expect(wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' }, { timeout: 5000 });
+    expect(screen.getByText('payERC20')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Approve exactly, then send payment in my wallet' })).toBeTruthy();
+    expect(wallet.calls.filter((c) => c.method === 'eth_signTypedData_v4')).toHaveLength(1);
   });
 
   it('permit token with enough allowance already skips the permit signature (spec 04 already_allowed)', async () => {

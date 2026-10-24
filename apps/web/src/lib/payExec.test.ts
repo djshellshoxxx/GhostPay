@@ -1,4 +1,4 @@
-import { erc2612PermitAbi, erc20MetadataAbi, eip712DomainSeparator } from '@ghostpay/chain-adapters';
+import { PERMIT_STATES, erc2612PermitAbi, erc20MetadataAbi, eip712DomainSeparator } from '@ghostpay/chain-adapters';
 import { privateKeyToAccount } from 'viem/accounts';
 import { encodeFunctionResult } from 'viem/utils';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -6,8 +6,8 @@ import { FAKE_ROUTER, fakeManifest } from '../test/fakeManifest';
 import { NOW, USDC_84532, makeParsed } from '../test/invoiceFixtures';
 import { MOCK_ACCOUNT, MockWallet } from '../test/mockWallet';
 import { mockRpc, type MockRpc } from '../test/mockRpc';
-import { createPayContext, reviewInvoice, type BufferQuote, type PayContext } from './pay';
-import { PostBroadcastError, buildReceipt, classifyPayerPermit, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, submitTx, type Runtime } from './payExec';
+import { createPayContext, permitStateMessage, reviewInvoice, type BufferQuote, type PayContext } from './pay';
+import { PermitRejectedError, PostBroadcastError, buildReceipt, classifyPayerPermit, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, submitTx, type Runtime } from './payExec';
 import { clearSession } from './session';
 import { userMessage } from './errors';
 import { SubmissionMismatchError, connectWallet, type WalletInfo, type WalletSession } from './wallet';
@@ -299,6 +299,8 @@ describe('ERC-20 flows', () => {
       const data = (params[0] as { data: string }).data;
       if (data.startsWith('0x06fdde03')) return encodeFunctionResult({ abi: erc20MetadataAbi, functionName: 'name', result: 'USDC' });
       if (data.startsWith('0x7ecebe00')) return encodeFunctionResult({ abi: erc2612PermitAbi, functionName: 'nonces', result: 0n });
+      if (data.startsWith('0xdd62ed3e')) return `0x${'0'.repeat(64)}`; // allowance(owner, router) = 0
+      if (data.startsWith('0xd505accf')) return '0x'; // static permit(...) succeeds
       return eip712DomainSeparator({ name: 'USDC', version: '2', chainId: 84532, verifyingContract: '0x036CbD53842c5426634e7929541eC2318f3dCF7e' });
     });
     const built = await preparePayment(session, ctx, { usePermit: true }, { rpc, nowSeconds: () => NOW }, noStatus);
@@ -359,6 +361,8 @@ describe('ERC-20 flows', () => {
       const data = (params[0] as { data: string }).data;
       if (data.startsWith('0x06fdde03')) return encodeFunctionResult({ abi: erc20MetadataAbi, functionName: 'name', result: 'USDC' });
       if (data.startsWith('0x7ecebe00')) return encodeFunctionResult({ abi: erc2612PermitAbi, functionName: 'nonces', result: 0n });
+      if (data.startsWith('0xdd62ed3e')) return `0x${'0'.repeat(64)}`; // allowance(owner, router) = 0
+      if (data.startsWith('0xd505accf')) return '0x'; // static permit(...) succeeds
       return eip712DomainSeparator({ name: 'USDC', version: '1', chainId: 84532, verifyingContract: '0x036CbD53842c5426634e7929541eC2318f3dCF7e' });
     });
     await expect(preparePayment(session, ctx, { usePermit: true }, { rpc, nowSeconds: () => NOW }, noStatus)).rejects.toThrow(/does not match your account/);
@@ -374,6 +378,100 @@ describe('ERC-20 flows', () => {
     const n = await setup({ token: 'native', tokenAmount: '0.5' });
     const nb = await preparePayment(n.session, n.ctx, { usePermit: true }, { rpc: undefined, nowSeconds: () => NOW }, noStatus);
     expect(nb.preview.method).toBe('payNative');
+  });
+});
+
+describe('permit post-sign pre-flight and fallback ladder (spec 04)', () => {
+  const USDC = '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as const;
+  const account = privateKeyToAccount(`0x${'cd'.repeat(32)}`);
+  const word = (v: bigint): string => `0x${v.toString(16).padStart(64, '0')}`;
+
+  interface TokenState { allowance: bigint; nonce: bigint; permitReverts?: boolean; onSign?: () => void }
+
+  async function permitSetup(state: TokenState): Promise<{ ctx: PayContext; session: WalletSession; rpc: MockRpc; signs: () => number; wallet: MockWallet }> {
+    const wallet = new MockWallet({ account: account.address });
+    let signs = 0;
+    const signing = winfo({
+      request: async (a) => {
+        if (a.method === 'eth_signTypedData_v4') {
+          signs += 1;
+          const td = JSON.parse((a.params as [string, string])[1]) as { domain: never; types: { Permit: never }; message: Record<string, string> };
+          const sig = await account.signTypedData({
+            domain: td.domain,
+            types: { Permit: td.types.Permit },
+            primaryType: 'Permit',
+            message: { owner: td.message['owner'], spender: td.message['spender'], value: BigInt(td.message['value'] as string), nonce: BigInt(td.message['nonce'] as string), deadline: BigInt(td.message['deadline'] as string) },
+          });
+          state.onSign?.();
+          return sig;
+        }
+        return wallet.request(a);
+      },
+    });
+    const { parsed } = await makeParsed();
+    const ctx = await createPayContext(reviewInvoice(parsed, NOW, { status: 'loaded', manifest: fakeManifest(84532) }), undefined, { nowSeconds: NOW });
+    const session = await connectWallet(signing, 84532);
+    const rpc = mockRpc(84532, (method, params) => {
+      if (method !== 'eth_call') throw new Error(`unexpected ${method}`);
+      const data = (params[0] as { data: string }).data;
+      if (data.startsWith('0x06fdde03')) return encodeFunctionResult({ abi: erc20MetadataAbi, functionName: 'name', result: 'USDC' });
+      if (data.startsWith('0x7ecebe00')) return encodeFunctionResult({ abi: erc2612PermitAbi, functionName: 'nonces', result: state.nonce });
+      if (data.startsWith('0xdd62ed3e')) return word(state.allowance);
+      if (data.startsWith('0x3644e515')) return eip712DomainSeparator({ name: 'USDC', version: '2', chainId: 84532, verifyingContract: USDC });
+      if (data.startsWith('0xd505accf')) {
+        if (state.permitReverts === true) throw new Error('execution reverted');
+        return '0x';
+      }
+      throw new Error('unexpected call');
+    });
+    return { ctx, session, rpc, signs: () => signs, wallet };
+  }
+
+  it('gives every PermitState its own user-facing message', () => {
+    const texts = PERMIT_STATES.map((s) => permitStateMessage(s));
+    expect(texts.every((t) => t.length > 20)).toBe(true);
+    expect(new Set(texts).size).toBe(PERMIT_STATES.length);
+  });
+
+  it('front-run permit after signing (nonce spent, allowance set) falls back to the allowance path', async () => {
+    const state: TokenState = { allowance: 0n, nonce: 0n };
+    state.onSign = () => { state.nonce = 1n; state.allowance = 10n ** 12n; };
+    const t = await permitSetup(state);
+    const msgs: string[] = [];
+    const built = await preparePayment(t.session, t.ctx, { usePermit: true }, { rpc: t.rpc, nowSeconds: () => NOW }, (m) => msgs.push(m));
+    expect(built.preview.method).toBe('payERC20');
+    expect(built.preview.permit).toBeUndefined();
+    expect(t.signs()).toBe(1);
+    expect(msgs.join(' ')).toMatch(/allowance already covers/);
+  });
+
+  it('a valid permit is simulated with a static permit call before it is used', async () => {
+    const t = await permitSetup({ allowance: 0n, nonce: 0n });
+    const built = await preparePayment(t.session, t.ctx, { usePermit: true }, { rpc: t.rpc, nowSeconds: () => NOW }, noStatus);
+    expect(built.preview.method).toBe('payERC20WithPermit');
+    expect(t.rpc.calls.some((c) => ((c.params[0] as { data?: string }).data ?? '').startsWith('0xd505accf'))).toBe(true);
+  });
+
+  it.each([
+    ['sig_invalid', { permitReverts: true, bump: false }],
+    ['nonce_consumed', { permitReverts: false, bump: true }],
+  ] as const)('%s after signing: PermitRejectedError, nothing sent, no re-prompt', async (stateName, s) => {
+    const state: TokenState = { allowance: 0n, nonce: 0n, permitReverts: s.permitReverts };
+    if (s.bump) state.onSign = () => { state.nonce = 1n; };
+    const t = await permitSetup(state);
+    const err: unknown = await preparePayment(t.session, t.ctx, { usePermit: true }, { rpc: t.rpc, nowSeconds: () => NOW }, noStatus).catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(PermitRejectedError);
+    expect((err as PermitRejectedError).state).toBe(stateName);
+    expect(userMessage(err)).toBe(permitStateMessage(stateName));
+    expect(t.signs()).toBe(1);
+    expect(t.wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
+  });
+
+  it('expired: a permit whose deadline passed while the wallet was open is refused', async () => {
+    const t = await permitSetup({ allowance: 0n, nonce: 0n });
+    let now = NOW;
+    const err: unknown = await preparePayment(t.session, t.ctx, { usePermit: true }, { rpc: t.rpc, nowSeconds: () => { const n = now; now += 20 * 60; return n; } }, noStatus).catch((e: unknown) => e);
+    expect((err as PermitRejectedError).state).toBe('expired');
   });
 });
 

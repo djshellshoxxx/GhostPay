@@ -22,7 +22,7 @@ import {
   type PayContext,
 } from '../lib/pay';
 import { verifyManifestForFlow } from '../lib/manifest';
-import { PostBroadcastError, buildReceipt, classifyPayerPermit, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, type ApprovalPlan, type Runtime, type SubmitResult } from '../lib/payExec';
+import { PermitRejectedError, PostBroadcastError, buildReceipt, classifyPayerPermit, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, type ApprovalPlan, type Runtime, type SubmitResult } from '../lib/payExec';
 import { useServices } from '../lib/services';
 import { connectWallet, walletWarnings, type WalletInfo, type WalletSession } from '../lib/wallet';
 import { useApp } from '../state';
@@ -82,6 +82,8 @@ export function Pay(): ReactNode {
   const [useDelay, setUseDelay] = useState(false);
   const [useBuffer, setUseBuffer] = useState(false);
   const [bufferQuote, setBufferQuote] = useState<BufferQuote | undefined>(undefined);
+  // Spec 04: after a signed permit was refused, the next (user-pressed) Prepare uses a one-time approval.
+  const [permitDeclined, setPermitDeclined] = useState(false);
   const [schedule, setSchedule] = useState<ScheduleSnapshot | undefined>(undefined);
   const [ctx, setCtx] = useState<PayContext | undefined>(undefined);
   const [ctxError, setCtxError] = useState<string | undefined>(undefined);
@@ -202,6 +204,7 @@ export function Pay(): ReactNode {
     setBroadcastKind('payment');
     setApproval(undefined);
     setGranted(undefined);
+    setPermitDeclined(false);
     setWallet(undefined);
     setStatus('');
     setError(undefined);
@@ -619,7 +622,7 @@ export function Pay(): ReactNode {
           if (buffer === undefined) throw new Error('buffer');
         }
         const t = ctx.review.token;
-        let permit = t?.config?.permit === true && buffer === undefined;
+        let permit = t?.config?.permit === true && buffer === undefined && !permitDeclined;
         if (permit) {
           const state = await classifyPayerPermit(ctx, wallet, rt);
           guard();
@@ -644,6 +647,7 @@ export function Pay(): ReactNode {
       } catch (e) {
         if (!isCurrent()) return;
         setStatus('');
+        if (e instanceof PermitRejectedError) setPermitDeclined(true);
         if (!(e instanceof Error && e.message === 'buffer')) setError(userMessage(e));
         setPhase('ready');
       }
