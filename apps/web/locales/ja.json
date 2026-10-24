@@ -48,6 +48,16 @@
     "i18n.picker.noCatalog": "未翻訳のため英語を表示",
     "i18n.picker.hint": "機械翻訳と表示されている翻訳は、ネイティブスピーカーによる確認を受けていません。金額、アドレス、手数料はウォレットで確認してください。",
     "i18n.picker.current": "現在の言語：{#strong}{name}{/strong}。",
-    "i18n.loadFailed": "選択した言語を読み込めませんでした。代わりに英語を表示します。"
+    "i18n.loadFailed": "選択した言語を読み込めませんでした。代わりに英語を表示します。",
+    "settings.exchange.title": "秘密でない設定を転送",
+    "settings.exchange.description": "保存済みの遅延、ロック、テーマ、アドレスバーの設定だけを共有します。URL、認証情報、固定した署名者の信頼、秘密鍵は含まれません。適用する前に内容を確認してください。",
+    "settings.exchange.export": "設定のQRを表示",
+    "settings.exchange.hide": "設定のQRを隠す",
+    "settings.exchange.import": "秘密でない設定を読み込む",
+    "settings.exchange.review": "読み込んだ設定を確認",
+    "settings.exchange.apply": "読み込んだ設定を適用",
+    "settings.exchange.discard": "プレビューを破棄",
+    "settings.exchange.yes": "はい",
+    "settings.exchange.no": "いいえ"
   }
 }

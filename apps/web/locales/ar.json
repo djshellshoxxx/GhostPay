@@ -48,6 +48,16 @@
     "i18n.picker.noCatalog": "لم تُترجم بعد، تُعرض الإنجليزية",
     "i18n.picker.hint": "الترجمات المعلَّمة بأنها آلية لم يراجعها متحدث أصلي. تحقق من المبالغ والعناوين والرسوم في محفظتك.",
     "i18n.picker.current": "اللغة الحالية: {#strong}{name}{/strong}.",
-    "i18n.loadFailed": "تعذّر تحميل اللغة المحددة. تُعرض الإنجليزية بدلًا منها."
+    "i18n.loadFailed": "تعذّر تحميل اللغة المحددة. تُعرض الإنجليزية بدلًا منها.",
+    "settings.exchange.title": "نقل التفضيلات غير السرية",
+    "settings.exchange.description": "شارك فقط تفضيلات التأخير والقفل والمظهر وشريط العنوان المحفوظة. لا تتضمن عناوين URL أو بيانات الاعتماد أو الثقة بالموقّعين المثبتين أو المفاتيح الخاصة. راجع الاستيراد قبل تطبيقه.",
+    "settings.exchange.export": "عرض رمز التفضيلات",
+    "settings.exchange.hide": "إخفاء رمز التفضيلات",
+    "settings.exchange.import": "استيراد تفضيلات غير سرية",
+    "settings.exchange.review": "مراجعة التفضيلات المستوردة",
+    "settings.exchange.apply": "تطبيق التفضيلات المستوردة",
+    "settings.exchange.discard": "تجاهل المعاينة",
+    "settings.exchange.yes": "نعم",
+    "settings.exchange.no": "لا"
   }
 }

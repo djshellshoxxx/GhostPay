@@ -1,19 +1,23 @@
 import { findChain, tokensForChain } from '@ghostpay/chain-adapters';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice, downloadText } from './Common';
 import {
   clearReconciliationRecords,
-  clearReconciliationScope,
-  exportReconciliationLedger,
-  isReconciliationLedgerEnabled,
-  RECONCILIATION_LEDGER_CHANGE_EVENT,
+  exportUntrustedLegacyReconciliation,
   readReconciliationRecords,
   recordFromVerifiedMatch,
-  saveReconciliationRecord,
   searchReconciliationRecords,
-  setReconciliationLedgerEnabled,
   type ReconciliationRecord,
 } from '../lib/reconciliationLedger';
+import {
+  createCurrentReconciliationVault,
+  MAX_VAULT_BYTES,
+  subscribeReconciliationChanges,
+  type ReconciliationImportPreview,
+  type ReconciliationVault,
+  type VaultRecord,
+} from '../lib/reconciliationVault';
+import { getSessionPublic, subscribeSession } from '../lib/session';
 import type { ScanMatch } from '../lib/scanClient';
 import { formatUnits } from '../lib/format';
 
@@ -24,58 +28,60 @@ export interface ReconciliationLedgerProps {
   readonly scanMatchesCurrentScope: boolean;
   readonly onAnnounce?: (message: string) => void;
 }
-
-function safeInitial(): { enabled: boolean; records: readonly ReconciliationRecord[]; error?: string } {
-  try {
-    return { enabled: isReconciliationLedgerEnabled(), records: readReconciliationRecords() };
-  } catch (error) {
-    return { enabled: false, records: [], error: error instanceof Error ? error.message : 'The local ledger could not be read.' };
-  }
-}
-
 function assetLabel(record: ReconciliationRecord): string {
-  if (record.asset === 'native') return `${formatUnits(BigInt(record.amountMinorUnits), 18)} ${findChain(record.chainId)?.nativeSymbol ?? 'native'}`;
+  if (record.asset === 'native')
+    return `${formatUnits(BigInt(record.amountMinorUnits), 18)} ${findChain(record.chainId)?.nativeSymbol ?? 'native'}`;
   const token = tokensForChain(record.chainId).find((item) => item.address.toLowerCase() === record.asset);
   return token === undefined
     ? `${record.amountMinorUnits} base units of ${record.asset}`
     : `${formatUnits(BigInt(record.amountMinorUnits), token.decimals)} ${token.symbol}`;
 }
-
 function MatchLedgerAction(props: {
   readonly match: ScanMatch;
-  readonly sellerKeyId: string | undefined;
-  readonly eligibleScope: boolean;
-  readonly enabled: boolean;
+  readonly sellerKeyId: string;
   readonly onSave: (record: ReconciliationRecord) => void;
+  readonly busy: boolean;
   readonly onError: (message: string) => void;
 }): ReactNode {
   const [invoiceDigest, setInvoiceDigest] = useState('');
   const match = props.match;
-  if (match.receipt !== 'verified') return null;
-  const sellerKeyId = props.sellerKeyId;
-  if (!props.eligibleScope || sellerKeyId === undefined) {
-    return <p className="hint">This result belongs to another chain or seller-key session. Run a scan with the current keys before saving it.</p>;
-  }
-  if (!props.enabled) return null;
-  if (!match.viaRouter || match.metadata === undefined) return null;
-  if (match.announcement.transactionHash === undefined) return <p className="hint">No transaction hash was returned, so this payment cannot be added to the local ledger.</p>;
-
+  if (
+    match.receipt !== 'verified' ||
+    !match.viaRouter ||
+    match.metadata === undefined ||
+    match.announcement.transactionHash === undefined
+  )
+    return null;
   return (
     <div className="ledger-save">
-      <Field label="Invoice digest (optional, manual link)" hint="This seller-entered digest links the scan record to an invoice by your assertion. The invoice is not opened or checked.">
-        {(id, describedBy) => <input id={id} aria-describedby={describedBy} className="mono" inputMode="text" autoComplete="off" value={invoiceDigest} onChange={(event) => { setInvoiceDigest(event.target.value); }} placeholder="0x…" />}
+      <Field
+        label="Invoice digest (optional, manual link)"
+        hint="Your annotation only. The invoice is not opened or checked and this link does not prove payment."
+      >
+        {(id, describedBy) => (
+          <input
+            id={id}
+            aria-describedby={describedBy}
+            className="mono"
+            autoComplete="off"
+            value={invoiceDigest}
+            onChange={(event) => setInvoiceDigest(event.target.value)}
+            placeholder="0x…"
+          />
+        )}
       </Field>
       <button
         type="button"
         className="btn"
+        disabled={props.busy}
         onClick={() => {
           try {
             const digest = invoiceDigest.trim().toLowerCase();
-            const record = recordFromVerifiedMatch(match, sellerKeyId, digest === '' ? undefined : digest);
-            props.onSave(record);
-            setInvoiceDigest('');
+            props.onSave(
+              recordFromVerifiedMatch(match, props.sellerKeyId, digest === '' ? undefined : digest),
+            );
           } catch (error) {
-            props.onError(error instanceof Error ? error.message : 'This scan result could not be saved.');
+            props.onError(error instanceof Error ? error.message : 'The observation could not be saved.');
           }
         }}
       >
@@ -84,172 +90,468 @@ function MatchLedgerAction(props: {
     </div>
   );
 }
-
 export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNode {
-  const [enabled, setEnabled] = useState(false);
-  const [records, setRecords] = useState<readonly ReconciliationRecord[]>([]);
+  const [records, setRecords] = useState<readonly VaultRecord[]>([]);
+  const [legacy, setLegacy] = useState<readonly ReconciliationRecord[] | undefined>(undefined);
   const [query, setQuery] = useState('');
-  const [error, setError] = useState<string | undefined>(undefined);
-  const scopedRecords = useMemo(() => records.filter((record) => record.chainId === props.chainId && record.sellerKeyId === props.sellerKeyId), [records, props.chainId, props.sellerKeyId]);
-  const visible = useMemo(() => searchReconciliationRecords(scopedRecords, query), [scopedRecords, query]);
-
+  const [error, setError] = useState<string | undefined>();
+  const [unlocked, setUnlocked] = useState(false);
+  const [readOnly, setReadOnly] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [backup, setBackup] = useState('');
+  const [preview, setPreview] = useState<ReconciliationImportPreview | undefined>();
+  const vault = useRef<ReconciliationVault | undefined>(undefined);
+  const revision = useRef(0);
+  const mounted = useRef(true);
+  const pending = useRef(false);
+  const backupRevision = useRef(0);
+  const readRevision = useRef(0);
+  const latest = useRef(props);
+  latest.current = props;
+  const visible = useMemo(
+    () => searchReconciliationRecords(records, query) as readonly VaultRecord[],
+    [records, query],
+  );
+  const reset = (): void => {
+    revision.current++;
+    backupRevision.current++;
+    readRevision.current++;
+    vault.current?.lock();
+    vault.current = undefined;
+    pending.current = false;
+    setUnlocked(false);
+    setReadOnly(false);
+    setBusy(false);
+    setRecords([]);
+    setLegacy(undefined);
+    setPreview(undefined);
+    setBackup('');
+    setQuery('');
+  };
   useEffect(() => {
-    const refresh = (): void => {
-      const current = safeInitial();
-      setEnabled(current.enabled);
-      setRecords(current.records);
-      setError(current.error);
-    };
-    refresh();
-    window.addEventListener(RECONCILIATION_LEDGER_CHANGE_EVENT, refresh);
-    window.addEventListener('storage', refresh);
+    mounted.current = true;
+    const unsubscribe = subscribeSession(() => {
+      if (mounted.current) reset();
+    });
     return () => {
-      window.removeEventListener(RECONCILIATION_LEDGER_CHANGE_EVENT, refresh);
-      window.removeEventListener('storage', refresh);
+      mounted.current = false;
+      revision.current++;
+      vault.current?.lock();
+      vault.current = undefined;
+      unsubscribe();
     };
   }, []);
-
-  const saveRecord = (record: ReconciliationRecord): void => {
-    try {
-      const next = saveReconciliationRecord(record);
-      setRecords(next);
-      setError(undefined);
-      props.onAnnounce?.('Verified payment added to the local ledger.');
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'The local ledger could not save this record.');
-    }
+  useEffect(() => {
+    reset();
+  }, [props.chainId, props.sellerKeyId]);
+  useEffect(() => {
+    const refresh = (): void => {
+      const current = vault.current;
+      if (current === undefined) return;
+      const actionRevision = revision.current;
+      const refreshId = ++readRevision.current;
+      void current.readState().then(
+        (next) => {
+          if (
+            mounted.current &&
+            revision.current === actionRevision &&
+            readRevision.current === refreshId &&
+            vault.current === current
+          ) {
+            setRecords(next.records);
+            setReadOnly(next.readOnly);
+          }
+        },
+        () => {
+          if (mounted.current && revision.current === actionRevision && readRevision.current === refreshId) {
+            setRecords([]);
+            setReadOnly(true);
+            setError(
+              'Encrypted reconciliation data could not be refreshed. Lock and unlock before relying on it.',
+            );
+          }
+        },
+      );
+    };
+    return subscribeReconciliationChanges(refresh);
+  }, []);
+  const run = (
+    action: (current: ReconciliationVault, guard: () => void) => Promise<void>,
+    unlock = false,
+  ): void => {
+    if (pending.current || props.sellerKeyId === undefined) return;
+    const actionRevision = revision.current;
+    const scope = { chainId: props.chainId, sellerKeyId: props.sellerKeyId };
+    const session = getSessionPublic();
+    const guard = (): void => {
+      if (
+        !mounted.current ||
+        revision.current !== actionRevision ||
+        latest.current.chainId !== scope.chainId ||
+        latest.current.sellerKeyId !== scope.sellerKeyId ||
+        getSessionPublic() !== session
+      )
+        throw new Error('Reconciliation action became stale.');
+    };
+    pending.current = true;
+    setBusy(true);
+    setError(undefined);
+    void (async () => {
+      let current: ReconciliationVault | undefined;
+      let readGeneration: number | undefined;
+      try {
+        current = vault.current;
+        if (current === undefined) {
+          if (!unlock) return;
+          current = await createCurrentReconciliationVault(scope.chainId, scope.sellerKeyId);
+          guard();
+          vault.current = current;
+        }
+        guard();
+        await action(current, guard);
+        guard();
+        readGeneration = ++readRevision.current;
+        const next = await current.readState();
+        guard();
+        if (readGeneration === readRevision.current) {
+          setRecords(next.records);
+          setReadOnly(next.readOnly);
+        }
+        setUnlocked(true);
+      } catch (cause) {
+        if (readGeneration !== undefined && readGeneration !== readRevision.current) return;
+        try {
+          guard();
+          setError(cause instanceof Error ? cause.message : 'Encrypted reconciliation action failed.');
+        } catch {
+          if (current !== vault.current) current?.lock();
+        }
+      } finally {
+        if (mounted.current && revision.current === actionRevision) {
+          pending.current = false;
+          setBusy(false);
+        }
+      }
+    })();
   };
-
   return (
     <section className="panel reconciliation-ledger" aria-labelledby="ledger-heading">
       <h3 id="ledger-heading">Local payment reconciliation</h3>
-      <p className="hint">This optional ledger stores verified router-scan payment evidence on this device. It is not encrypted; anyone with access to this browser profile may read it. Records are locally editable and are not tamper-evident or authoritative. It stores no private keys, customer tags, invoice contents, or seller-signed receipts. A seller receipt is never treated as payment proof. Exported JSON is also plain text. Records are historical evidence and may be invalidated by a later reorg; rescan before relying on them. Use one tab at a time to change records; reload other open tabs before editing. This panel shows the current seller-key and chain scope; disable and erase removes every scope.</p>
+      <p className="hint">
+        Selected observations are encrypted on this device with your viewing key. The public seller-key
+        identifier, chain and ciphertext size remain visible. Keep an encrypted backup and your seller
+        keystore; losing the seller keys loses access. Unlocked data is visible to this page. Historical
+        observations are not current payment proof: rescan before relying on them. Seller-signed receipts
+        never independently prove payment. Invoice links are your annotations.
+      </p>
+      <p className="hint">
+        Invalidation history is bounded. If it reaches capacity, the encrypted vault becomes read-only;
+        deletion and backups retain this safety state so old observations cannot revive.
+      </p>
+      {unlocked && readOnly && (
+        <Notice kind="warn">
+          This reconciliation vault is read-only because invalidation history reached capacity or could not be
+          refreshed. You can read, export or delete observations; restoring backups retains the safety state.
+          Saving new observations is disabled.
+        </Notice>
+      )}
       {error !== undefined && <Notice kind="error">{error}</Notice>}
-      {error !== undefined && (
+      {!unlocked ? (
         <button
           type="button"
-          className="btn btn-danger"
-          onClick={() => {
-            if (!window.confirm('Erase local reconciliation ledger data, including unreadable records?')) return;
-            try {
-              clearReconciliationRecords();
-              setRecords([]);
-              setError(undefined);
-            } catch (cause) {
-              setError(cause instanceof Error ? cause.message : 'The local ledger could not be erased.');
-            }
-          }}
+          className="btn"
+          disabled={busy || props.sellerKeyId === undefined}
+          onClick={() => run(() => Promise.resolve(), true)}
         >
-          Erase unreadable ledger data
+          Unlock encrypted reconciliation vault
         </button>
-      )}
-      {!enabled ? (
-        <>
-          <p>Nothing is saved until you enable the ledger and choose individual verified payments to add.</p>
-          <button
-            type="button"
-            className="btn"
-            onClick={() => {
-              try {
-                setReconciliationLedgerEnabled(true);
-                setEnabled(true);
-                setError(undefined);
-              } catch (cause) {
-                setError(cause instanceof Error ? cause.message : 'Local storage is unavailable.');
-              }
-            }}
-          >
-            Enable local ledger on this device
-          </button>
-        </>
       ) : (
         <>
           <div className="actions">
+            <button type="button" className="btn" onClick={reset}>
+              Lock reconciliation vault
+            </button>
             <button
               type="button"
               className="btn"
-              onClick={() => {
-                try {
-                  const json = exportReconciliationLedger(scopedRecords);
-                  downloadText('ghostpay-reconciliation.json', json, 'application/json');
-                  setError(undefined);
-                } catch (cause) {
-                  setError(cause instanceof Error ? cause.message : 'The ledger could not be exported.');
-                }
-              }}
-              disabled={scopedRecords.length === 0}
+              disabled={busy}
+              onClick={() =>
+                run(async (current, guard) => {
+                  const encrypted = await current.exportEncrypted();
+                  guard();
+                  downloadText('ghostpay-reconciliation-encrypted.json', encrypted, 'application/json');
+                })
+              }
             >
-              Export ledger JSON
+              Export encrypted reconciliation backup
             </button>
             <button
               type="button"
               className="btn btn-danger"
+              disabled={busy}
               onClick={() => {
-                if (props.sellerKeyId === undefined) return;
-                if (!window.confirm('Delete all local reconciliation records for the current seller keys and chain?')) return;
-                try {
-                  setRecords(clearReconciliationScope(props.chainId, props.sellerKeyId));
-                  setError(undefined);
-                  props.onAnnounce?.('Current-scope reconciliation records deleted.');
-                } catch (cause) {
-                  setError(cause instanceof Error ? cause.message : 'The local ledger could not be cleared.');
-                }
-              }}
-              disabled={scopedRecords.length === 0 || props.sellerKeyId === undefined}
-            >
-              Delete ledger records
-            </button>
-            <button
-              type="button"
-              className="btn"
-              onClick={() => {
-                if (!window.confirm('Disable the ledger and erase all its local records?')) return;
-                try {
-                  setReconciliationLedgerEnabled(false);
-                  setRecords([]);
-                  setEnabled(false);
-                  setQuery('');
-                  setError(undefined);
-                  props.onAnnounce?.('Local ledger disabled and deleted.');
-                } catch (cause) {
-                  setError(cause instanceof Error ? cause.message : 'The local ledger could not be disabled.');
-                }
+                if (
+                  window.confirm(
+                    'Delete encrypted observations in this seller and chain scope? Reorg invalidation history will be retained.',
+                  )
+                )
+                  run(async (current) => current.clearRecords());
               }}
             >
-              Disable and erase ledger
+              Delete encrypted observations
             </button>
           </div>
           <Field label="Search local records">
-            {(id) => <input id={id} type="search" value={query} onChange={(event) => { setQuery(event.target.value); }} placeholder="Invoice digest, transaction, recipient…" />}
+            {(id) => (
+              <input id={id} type="search" value={query} onChange={(event) => setQuery(event.target.value)} />
+            )}
           </Field>
-          <p className="hint">{String(scopedRecords.length)} stored record{scopedRecords.length === 1 ? '' : 's'} in this scope; {String(visible.length)} match{visible.length === 1 ? '' : 'es'}. Export and delete apply only to this scope.</p>
-          {props.matches.map((match) => (
-            <MatchLedgerAction
-              key={`${String(match.chainId)}:${match.announcement.id}:${match.announcement.blockHash}`}
-              match={match}
-              sellerKeyId={props.sellerKeyId}
-              eligibleScope={props.scanMatchesCurrentScope && match.chainId === props.chainId}
-              enabled={enabled}
-              onSave={saveRecord}
-              onError={setError}
-            />
-          ))}
-          {visible.length === 0 ? <p>{query.trim() === '' ? 'No records saved.' : 'No records match that search.'}</p> : (
+          <p className="hint">{records.length} stored records in the current seller and chain scope.</p>
+          {props.scanMatchesCurrentScope &&
+            props.sellerKeyId !== undefined &&
+            props.matches
+              .filter((match) => match.chainId === props.chainId)
+              .map((match) => (
+                <MatchLedgerAction
+                  key={`${match.chainId}:${match.announcement.id}:${match.announcement.blockHash}`}
+                  match={match}
+                  sellerKeyId={props.sellerKeyId!}
+                  busy={busy || readOnly}
+                  onError={setError}
+                  onSave={(record) =>
+                    run(async (current, guard) => {
+                      guard();
+                      if (!latest.current.scanMatchesCurrentScope || !latest.current.matches.includes(match))
+                        throw new Error('Scan evidence is no longer current. Rescan before saving.');
+                      await current.save(record);
+                      guard();
+                      props.onAnnounce?.('Observation saved in the encrypted reconciliation vault.');
+                    })
+                  }
+                />
+              ))}
+          {!props.scanMatchesCurrentScope && (
+            <p className="hint">
+              Run a scan in the current seller and chain session before saving new observations.
+            </p>
+          )}
+          {visible.length === 0 ? (
+            <p>No records saved.</p>
+          ) : (
             <ul className="plain-list">
               {visible.map((record) => (
                 <li key={record.id} className="card">
-                  <strong>{findChain(record.chainId)?.name ?? `Chain ${String(record.chainId)}`} · {assetLabel(record)}</strong>
-                  <p>Stored scan status: {record.evidenceStatus === 'verified-at-scan' ? 'router-verified when recorded (not independently revalidated)' : 'invalidated after a scan reorg'}; block {record.blockNumber}, log {String(record.logIndex)}{record.viewTagMatched ? '' : ' (deep scan: announced view tag mismatch)'}.</p>
-                  {record.invoiceDigest !== undefined && <p>Manual invoice link: <Mono>{record.invoiceDigest}</Mono></p>}
-                  <p>Transaction: <Mono>{record.transactionHash}</Mono></p>
-                  <p>Recipient: <Mono>{record.stealthAddress}</Mono></p>
-                  <p className="hint">Recorded {new Date(record.recordedAt).toISOString()}. A later reorg or chain change may invalidate the evidence; rescan before relying on it.</p>
+                  <strong>
+                    {findChain(record.chainId)?.name ?? `Chain ${record.chainId}`} · {assetLabel(record)}
+                  </strong>
+                  <p>
+                    {record.evidenceStatus === 'invalidated-after-reorg'
+                      ? 'Invalidated after a reorg; do not rely on this observation.'
+                      : record.provenance === 'imported-history'
+                        ? 'Imported historical observation — untrusted until independently rescanned.'
+                        : 'Router-verified when scanned; historical observation, not current payment proof.'}
+                  </p>
+                  {record.invoiceDigest !== undefined && (
+                    <p>
+                      Manual invoice link: <Mono>{record.invoiceDigest}</Mono>
+                    </p>
+                  )}
+                  <p>
+                    Transaction: <Mono>{record.transactionHash}</Mono>
+                  </p>
+                  <p>
+                    Recipient: <Mono>{record.stealthAddress}</Mono>
+                  </p>
+                  <p className="hint">
+                    Block {record.blockNumber}, log {record.logIndex}. Recorded{' '}
+                    {new Date(record.recordedAt).toISOString()}.
+                  </p>
                 </li>
               ))}
             </ul>
           )}
+          <Field
+            label="Encrypted reconciliation backup"
+            hint="Only this vault’s encrypted format is accepted; plaintext legacy ledgers and seller receipts are never imported."
+          >
+            {(id) => (
+              <textarea
+                id={id}
+                rows={3}
+                maxLength={MAX_VAULT_BYTES}
+                value={backup}
+                onChange={(event) => {
+                  backupRevision.current++;
+                  setBackup(event.target.value);
+                  setPreview(undefined);
+                }}
+              />
+            )}
+          </Field>
+          <Field label="Encrypted reconciliation backup file">
+            {(id) => (
+              <input
+                id={id}
+                type="file"
+                accept="application/json,.json"
+                disabled={busy}
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  event.target.value = '';
+                  const backupId = ++backupRevision.current;
+                  setPreview(undefined);
+                  if (file === undefined) return;
+                  if (file.size > MAX_VAULT_BYTES) {
+                    setError('Encrypted reconciliation backup exceeds its safety limit.');
+                    return;
+                  }
+                  const actionRevision = revision.current;
+                  void file.text().then(
+                    (text) => {
+                      if (
+                        mounted.current &&
+                        revision.current === actionRevision &&
+                        backupRevision.current === backupId
+                      )
+                        setBackup(text);
+                    },
+                    () => {
+                      if (
+                        mounted.current &&
+                        revision.current === actionRevision &&
+                        backupRevision.current === backupId
+                      )
+                        setError('The encrypted backup file could not be read.');
+                    },
+                  );
+                }}
+              />
+            )}
+          </Field>
+          <button
+            type="button"
+            className="btn"
+            disabled={busy || backup === ''}
+            onClick={() => {
+              const text = backup;
+              const backupId = backupRevision.current;
+              run(async (current, guard) => {
+                const staged = await current.previewImport(text);
+                guard();
+                if (backupRevision.current === backupId) setPreview(staged);
+              });
+            }}
+          >
+            Preview encrypted backup
+          </button>
+          {preview !== undefined && (
+            <div className="panel">
+              {preview.readOnly && (
+                <Notice kind="warn">
+                  Activation will make this vault read-only. This backup or its combined invalidation history
+                  carries a permanent safety state: new observations cannot be saved, and deleting records or
+                  restoring another backup will not remove that state. Activate only if you accept this
+                  limitation.
+                </Notice>
+              )}
+              <p>
+                {preview.recordCount} historical observation{preview.recordCount === 1 ? '' : 's'};{' '}
+                {preview.invalidatedCount} already invalidated. Activation merges records as untrusted
+                history, preserves known invalidation and does not verify payment.
+              </p>
+              <button
+                type="button"
+                className="btn"
+                disabled={busy}
+                onClick={() =>
+                  run(async (current, guard) => {
+                    await current.activateImport(preview);
+                    guard();
+                    setPreview(undefined);
+                    setBackup('');
+                  })
+                }
+              >
+                Activate previewed historical records
+              </button>
+            </div>
+          )}
         </>
       )}
+      <div className="panel">
+        <h4>Legacy plaintext ledger</h4>
+        <p className="hint">
+          Legacy data is untrusted and may have been edited. It remains available for read, plaintext export
+          and deletion only. It is never imported as payment proof or copied into the encrypted vault.
+        </p>
+        <button
+          type="button"
+          className="btn"
+          onClick={() => {
+            try {
+              setLegacy(readReconciliationRecords());
+              setError(undefined);
+            } catch (cause) {
+              setError(cause instanceof Error ? cause.message : 'Legacy data could not be read.');
+            }
+          }}
+        >
+          Read untrusted legacy records
+        </button>
+        <button
+          type="button"
+          className="btn"
+          onClick={() => {
+            if (
+              !window.confirm(
+                'Export untrusted legacy records as plaintext? This reveals the stored payment details.',
+              )
+            )
+              return;
+            try {
+              downloadText(
+                'ghostpay-untrusted-legacy-ledger.txt',
+                exportUntrustedLegacyReconciliation(),
+                'text/plain',
+              );
+            } catch (cause) {
+              setError(cause instanceof Error ? cause.message : 'Legacy data could not be exported.');
+            }
+          }}
+        >
+          Export untrusted legacy plaintext
+        </button>
+        <button
+          type="button"
+          className="btn btn-danger"
+          onClick={() => {
+            if (
+              !window.confirm(
+                'Delete all legacy plaintext reconciliation data, including unreadable records?',
+              )
+            )
+              return;
+            try {
+              clearReconciliationRecords();
+              setLegacy(undefined);
+              setError(undefined);
+            } catch {
+              setError('Legacy plaintext data could not be deleted.');
+            }
+          }}
+        >
+          Delete legacy plaintext records
+        </button>
+        {legacy !== undefined && (
+          <ul>
+            {legacy.map((record) => (
+              <li key={record.id}>
+                Untrusted legacy transaction: <Mono>{record.transactionHash}</Mono>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </section>
   );
 }

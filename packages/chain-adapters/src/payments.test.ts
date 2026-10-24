@@ -8,7 +8,9 @@ import {
   parseMetadata,
   type StealthKeySet,
 } from '@ghostpay/core-crypto';
-import { encodeAbiParameters, keccak256 } from 'viem/utils';
+import { encodeAbiParameters, encodeFunctionData, keccak256 } from 'viem/utils';
+import { ghostPayRouterAbi } from './abi/router.js';
+import { grossForNet } from './fees.js';
 import { describe, expect, it } from 'vitest';
 import { checkAnnouncementDeep } from './deepscan.js';
 import { FAKE, SEPOLIA, USDC_SEPOLIA } from './fixtures.testutil.js';
@@ -22,6 +24,7 @@ const hex = (b: Uint8Array): Hex => `0x${Array.from(b, (x) => x.toString(16).pad
 const ANN = '0x55649E01B5Df198D18D95b5cc5051630cfD45564' as Address;
 const BLOCK_HASH: Hex = `0x${'ab'.repeat(32)}`;
 const TX: Hex = `0x${'cd'.repeat(32)}`;
+const PAYER = '0x1111111111111111111111111111111111111111' as Address;
 const NET = 9_975_000n;
 const TRANSFER_TOPIC = keccak256(new TextEncoder().encode('Transfer(address,address,uint256)'));
 const pad = (a: string): Hex => `0x${'0'.repeat(24)}${a.slice(2).toLowerCase()}`;
@@ -62,6 +65,8 @@ function make(over: { caller?: Address; token?: 'native' | Address; net?: bigint
 }
 
 interface World {
+  claim?: ClaimedPayment;
+  reorgAfterEvidence?: boolean;
   head?: bigint;
   canonicalHash?: Hex | null;
   transferLogs?: unknown[];
@@ -73,6 +78,8 @@ interface World {
   calls?: string[];
 }
 function node(w: World): Promise<RpcClient> {
+  let blockReads = 0;
+  const direct = w.claim === undefined ? undefined : directEvidence(w.claim, w.transferLogs);
   return createClient(SEPOLIA, 'https://rpc.example.test', {
     sleep: noSleep,
     retries: 0,
@@ -84,7 +91,8 @@ function node(w: World): Promise<RpcClient> {
       if (m === 'eth_blockNumber') return `0x${(w.head ?? 150n).toString(16)}`;
       if (m === 'eth_getBlockByNumber') {
         if (w.canonicalHash === null) return null;
-        return { number: p[0], hash: w.canonicalHash ?? BLOCK_HASH, parentHash: `0x${'11'.repeat(32)}` };
+        blockReads++;
+        return { number: p[0], hash: w.reorgAfterEvidence === true && blockReads > 1 ? `0x${'ee'.repeat(32)}` : w.canonicalHash ?? BLOCK_HASH, parentHash: `0x${'11'.repeat(32)}` };
       }
       if (m === 'eth_getLogs') return w.transferLogs ?? [];
       if (m === 'eth_getBalance') return `0x${(w.balance ?? 0n).toString(16)}`;
@@ -92,8 +100,8 @@ function node(w: World): Promise<RpcClient> {
         if (w.failBalance === true) throw new Error('no');
         return word(w.balance ?? 0n);
       }
-      if (m === 'eth_getTransactionReceipt') return w.receipt ?? null;
-      if (m === 'eth_getTransactionByHash') return w.tx ?? null;
+      if (m === 'eth_getTransactionReceipt') return w.receipt === undefined ? direct?.receipt ?? null : w.receipt;
+      if (m === 'eth_getTransactionByHash') return w.tx === undefined ? direct?.tx ?? null : w.tx;
       return null;
     }),
   });
@@ -103,11 +111,33 @@ const transferLog = (c: ClaimedPayment, over: Record<string, unknown> = {}): Rec
   blockNumber: `0x${c.announcement.blockNumber.toString(16)}`,
   blockHash: BLOCK_HASH,
   transactionHash: c.announcement.transactionHash ?? TX,
-  logIndex: '0x5',
-  topics: [TRANSFER_TOPIC, pad(FAKE.router), pad(c.stealthAddress)],
+  logIndex: '0x3',
+  topics: [TRANSFER_TOPIC, pad(PAYER), pad(c.stealthAddress)],
   data: word(NET),
   ...over,
 });
+function announcementLog(c: ClaimedPayment): Record<string, unknown> {
+  const a = c.announcement;
+  return {
+    address: ANN, topics: [ANNOUNCEMENT_TOPIC, word(1n), pad(c.stealthAddress), pad(a.caller)],
+    data: encodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], [a.ephemeralPublicKey as Hex, a.metadata as Hex]),
+    transactionHash: a.transactionHash ?? TX, blockHash: a.blockHash,
+    blockNumber: `0x${a.blockNumber.toString(16)}`, logIndex: `0x${a.logIndex.toString(16)}`,
+  };
+}
+function directEvidence(c: ClaimedPayment, transfers: unknown[] = []): { receipt: Record<string, unknown>; tx: Record<string, unknown> } {
+  const a = c.announcement;
+  const m = c.metadata!;
+  const gross = grossForNet(m.netAmount);
+  const data = m.kind === 'native'
+    ? encodeFunctionData({ abi: ghostPayRouterAbi, functionName: 'payNative', args: [c.stealthAddress, m.netAmount, 9999999999n, a.ephemeralPublicKey as Hex, a.metadata as Hex] })
+    : encodeFunctionData({ abi: ghostPayRouterAbi, functionName: 'payERC20', args: [m.token, c.stealthAddress, gross, m.netAmount, 9999999999n, a.ephemeralPublicKey as Hex, a.metadata as Hex] });
+  const common = { blockHash: a.blockHash, blockNumber: `0x${a.blockNumber.toString(16)}`, from: PAYER, to: FAKE.router, transactionIndex: '0x0' };
+  return {
+    receipt: { ...common, status: '0x1', transactionHash: a.transactionHash ?? TX, logs: [announcementLog(c), ...transfers] },
+    tx: { ...common, hash: a.transactionHash ?? TX, input: data, value: m.kind === 'native' ? `0x${gross.toString(16)}` : '0x0' },
+  };
+}
 const base = (client: RpcClient, claim: ClaimedPayment) => ({ chain: { ...SEPOLIA, finalityDepth: 64 }, client, router: FAKE.router, announcer: ANN, claim });
 
 describe('dedupeClaims', () => {
@@ -136,20 +166,49 @@ describe('dedupeClaims', () => {
 describe('verifyClaimedPayment', () => {
   it('RECEIVED: router announcement, canonical block, matching token Transfer; shows depth versus finality', async () => {
     const { claim } = make();
-    const v = await verifyClaimedPayment({ ...base(await node({ transferLogs: [transferLog(claim)], balance: NET }), claim), observeBalance: true });
+    const v = await verifyClaimedPayment({ ...base(await node({ claim, transferLogs: [transferLog(claim)], balance: NET }), claim), observeBalance: true });
     expect(v.status).toBe('received');
-    expect(v.evidence).toEqual(['router-caller', 'block-hash', 'transfer-log']);
+    expect(v.evidence).toEqual(['router-caller', 'block-hash', 'receipt', 'transfer-log']);
     expect(v.confirmations).toBe(51n);
     expect(v.final).toBe(false);
     expect(v.observedBalance).toBe(NET);
-    const deep = await verifyClaimedPayment({ ...base(await node({ transferLogs: [transferLog(claim)], head: 400n }), claim), observeBalance: true });
+    const deep = await verifyClaimedPayment({ ...base(await node({ claim, transferLogs: [transferLog(claim)], head: 400n }), claim), observeBalance: true });
     expect(deep.final).toBe(true);
     expect(deep.observedBalance).toBe(0n); // already swept: still received, evidenced by the Transfer log
+  });
+  it('binds direct ERC20 payer-to-stealth evidence to exact calldata and receipt', async () => {
+    const { claim } = make();
+    const direct = directEvidence(claim, [transferLog(claim)]);
+    const good = await verifyClaimedPayment(base(await node({ ...direct }), claim));
+    expect(good.status).toBe('received');
+    for (const bad of [
+      { ...direct, tx: { ...direct.tx, from: FAKE.router } },
+      { ...direct, tx: { ...direct.tx, to: FAKE.announcer } },
+      { ...direct, tx: { ...direct.tx, input: '0x1234' } },
+      { ...direct, tx: { ...direct.tx, blockHash: `0x${'ee'.repeat(32)}` } },
+      { ...direct, receipt: { ...direct.receipt, logs: [announcementLog(claim)] } },
+      { ...direct, receipt: { ...direct.receipt, logs: [announcementLog(claim), transferLog(claim, { topics: [TRANSFER_TOPIC, pad(FAKE.router), pad(claim.stealthAddress)] })] } },
+      { ...direct, receipt: { ...direct.receipt, logs: [transferLog(claim)] } },
+      { ...direct, receipt: { ...direct.receipt, status: '0x0' } },
+    ]) expect((await verifyClaimedPayment(base(await node(bad), claim))).status).toBe('unverified-claim');
+  });
+  it('does not accept evidence orphaned during receipt retrieval', async () => {
+    const { claim } = make({ token: 'native' });
+    const result = await verifyClaimedPayment(base(await node({ ...directEvidence(claim), reorgAfterEvidence: true }), claim));
+    expect(result.status).toBe('unverified-claim');
+  });
+  it('sanitizes unexpected provider errors instead of leaking raw payloads', async () => {
+    const { claim } = make();
+    const client = await node({});
+    const broken = { ...client, blockNumber: () => Promise.reject(new Error('https://rpc.test/?apiKey=SECRET')) };
+    const result = await verifyClaimedPayment(base(broken, claim));
+    expect(result.status).toBe('unverified-claim');
+    expect(result.reason).not.toMatch(/SECRET|rpc.test/);
   });
   it('NON-ROUTER announcements are never "received", whatever they claim', async () => {
     const { claim } = make({ caller: FAKE.announcer, net: 10n ** 30n });
     const calls: string[] = [];
-    const v = await verifyClaimedPayment(base(await node({ transferLogs: [transferLog(claim)], calls }), claim));
+    const v = await verifyClaimedPayment(base(await node({ claim, transferLogs: [transferLog(claim)], calls }), claim));
     expect(v.status).toBe('unverified-announcement');
     expect(v.reason).toMatch(/Anyone can post/);
     expect(v.evidence).toEqual([]);
@@ -172,7 +231,7 @@ describe('verifyClaimedPayment', () => {
   });
   it('router claim without a matching Transfer is unverified', async () => {
     const { claim } = make();
-    const w = (logs: unknown[]) => node({ transferLogs: logs });
+    const w = (logs: unknown[]) => node({ claim, transferLogs: logs });
     for (const logs of [
       [],
       [transferLog(claim, { data: word(NET + 1n) })],
@@ -191,31 +250,31 @@ describe('verifyClaimedPayment', () => {
     ]) {
       const v = await verifyClaimedPayment(base(await w(logs), claim));
       expect(v.status).toBe('unverified-claim');
-      expect(v.reason).toMatch(/No matching token Transfer/);
+      expect(v.reason).toMatch(/Transfer|router transaction|announcement/);
     }
   });
   it('a non-canonical block hash or a missing block is unverified (fabricated or reorged log)', async () => {
     const { claim } = make();
-    expect((await verifyClaimedPayment(base(await node({ canonicalHash: `0x${'ee'.repeat(32)}`, transferLogs: [transferLog(claim)] }), claim))).reason).toMatch(/canonical hash/);
-    expect((await verifyClaimedPayment(base(await node({ canonicalHash: null }), claim))).status).toBe('unverified-claim');
+    expect((await verifyClaimedPayment(base(await node({ claim, canonicalHash: `0x${'ee'.repeat(32)}`, transferLogs: [transferLog(claim)] }), claim))).reason).toMatch(/canonical hash/);
+    expect((await verifyClaimedPayment(base(await node({ claim, canonicalHash: null }), claim))).status).toBe('unverified-claim');
   });
   it('RPC failure degrades to unverified instead of throwing', async () => {
     const { claim } = make();
     const v = await verifyClaimedPayment(base(await node({ failAll: true }), claim));
     expect(v.status).toBe('unverified-claim');
     expect(v.reason).toMatch(/could not confirm/);
-    const v2 = await verifyClaimedPayment({ ...base(await node({ failBalance: true, transferLogs: [transferLog(claim)] }), claim), observeBalance: true });
+    const v2 = await verifyClaimedPayment({ ...base(await node({ claim, failBalance: true, transferLogs: [transferLog(claim)] }), claim), observeBalance: true });
     expect(v2.status).toBe('received');
     expect(v2.observedBalance).toBeUndefined();
   });
   it('requires chain-bound allowlisted metadata and reconciled exact evidence', async () => {
     const evil = '0x00000000000000000000000000000000deadbeef' as Address;
     const { claim: unknownToken } = make({ token: evil });
-    expect((await verifyClaimedPayment(base(await node({ transferLogs: [transferLog(unknownToken)] }), unknownToken))).status).toBe('unverified-claim');
+    expect((await verifyClaimedPayment(base(await node({ claim: unknownToken, transferLogs: [transferLog(unknownToken)] }), unknownToken))).status).toBe('unverified-claim');
     const { claim } = make();
     const goodLog = transferLog(claim);
-    const primary = await node({ transferLogs: [goodLog] });
-    const secondary = await node({ transferLogs: [transferLog(claim, { data: word(NET + 1n) })] });
+    const primary = await node({ claim, transferLogs: [goodLog] });
+    const secondary = await node({ claim, transferLogs: [transferLog(claim, { data: word(NET + 1n) })] });
     const reconciled = await verifyClaimedPayment({ ...base(primary, claim), secondaryClient: secondary });
     expect(reconciled.status).toBe('unverified-claim');
     expect(reconciled.reason).toMatch(/providers did not agree/);
@@ -225,7 +284,7 @@ describe('verifyClaimedPayment', () => {
   it('consumes each matching transfer once and only after successful verification', async () => {
     const { claim } = make();
     const consumed = new Set<string>();
-    const input = { ...base(await node({ transferLogs: [transferLog(claim)] }), claim), consumedTransfers: consumed };
+    const input = { ...base(await node({ claim, transferLogs: [transferLog(claim)] }), claim), consumedTransfers: consumed };
     const first = await verifyClaimedPayment(input);
     expect(first.status).toBe('received');
     expect(first.evidenceId).toBeDefined();
@@ -238,16 +297,37 @@ describe('verifyClaimedPayment', () => {
     expect(failed.status).toBe('unverified-claim');
     expect(empty.size).toBe(0);
   });
-  it('does not reuse one transaction Transfer for another announcement to the same one-time address', async () => {
+  it('rejects providers that disagree on the direct payer even at identical transaction and log positions', async () => {
+    const { claim } = make();
+    const otherPayer = '0x2222222222222222222222222222222222222222' as Address;
+    const differentLog = transferLog(claim, { topics: [TRANSFER_TOPIC, pad(otherPayer), pad(claim.stealthAddress)] });
+    const different = directEvidence(claim, [differentLog]);
+    different.tx['from'] = otherPayer;
+    different.receipt['from'] = otherPayer;
+    const primary = await node({ claim, transferLogs: [transferLog(claim)] });
+    const secondary = await node({ claim, tx: different.tx, receipt: different.receipt });
+    const result = await verifyClaimedPayment({ ...base(primary, claim), secondaryClient: secondary });
+    expect(result.status).toBe('unverified-claim');
+    expect(result.reason).toMatch(/providers did not agree/);
+  });
+  it('rejects contradictory receipt sender and transaction chain fields', async () => {
+    const { claim } = make();
+    const direct = directEvidence(claim, [transferLog(claim)]);
+    for (const world of [
+      { claim, tx: direct.tx, receipt: { ...direct.receipt, from: '0x2222222222222222222222222222222222222222' } },
+      { claim, tx: { ...direct.tx, chainId: '0x1' }, receipt: direct.receipt },
+    ]) expect((await verifyClaimedPayment(base(await node(world), claim))).status).toBe('unverified-claim');
+  });
+  it('does not reuse one transaction Transfer for a different ephemeral announcement to the same address', async () => {
     const { claim } = make();
     const second = { ...claim, announcement: { ...claim.announcement, ephemeralPublicKey: `0x02${'55'.repeat(32)}`, logIndex: claim.announcement.logIndex + 1 } };
     const consumedTransfers = new Set<string>();
-    const client = await node({ transferLogs: [transferLog(claim)] });
+    const client = await node({ claim, transferLogs: [transferLog(claim)] });
     const first = await verifyClaimedPayment({ ...base(client, claim), consumedTransfers });
     const replay = await verifyClaimedPayment({ ...base(client, second), consumedTransfers });
     expect(first.status).toBe('received');
     expect(replay.status).toBe('unverified-claim');
-    expect(replay.reason).toMatch(/already been credited/);
+    expect(replay.reason).toMatch(/bound to this exact announcement/);
   });
   it('router announcement with foreign metadata is unverified', async () => {
     const { claim } = make();
@@ -257,15 +337,12 @@ describe('verifyClaimedPayment', () => {
   });
   it('block ahead of the head gives 0 confirmations', async () => {
     const { claim } = make({ block: 500n });
-    const v = await verifyClaimedPayment(base(await node({ head: 150n, transferLogs: [transferLog(claim)] }), claim));
+    const v = await verifyClaimedPayment(base(await node({ claim, head: 150n, transferLogs: [transferLog(claim)] }), claim));
     expect(v.confirmations).toBe(0n);
   });
 
   describe('native', () => {
-    const nativeOk = (c: ClaimedPayment) => ({
-      receipt: { status: '0x1', blockHash: BLOCK_HASH, blockNumber: `0x${c.announcement.blockNumber.toString(16)}`, transactionHash: c.announcement.transactionHash ?? TX, logs: [{ address: ANN, blockHash: BLOCK_HASH, blockNumber: `0x${c.announcement.blockNumber.toString(16)}`, transactionHash: c.announcement.transactionHash ?? TX, logIndex: `0x${c.announcement.logIndex.toString(16)}` }] },
-      tx: { hash: c.announcement.transactionHash ?? TX, blockNumber: `0x${c.announcement.blockNumber.toString(16)}`, to: FAKE.router, value: `0x${(NET + 25_000n).toString(16)}` },
-    });
+    const nativeOk = (c: ClaimedPayment) => directEvidence(c);
     it('does not use an existing balance as proof of a native payment', async () => {
       const { claim } = make({ token: 'native' });
       const v = await verifyClaimedPayment(base(await node({ balance: NET }), claim));
@@ -277,6 +354,18 @@ describe('verifyClaimedPayment', () => {
       const v = await verifyClaimedPayment(base(await node({ balance: 0n, ...nativeOk(claim) }), claim));
       expect(v.status).toBe('received');
       expect(v.evidence).toContain('receipt');
+    });
+    it('rejects native calldata or announcement bytes unrelated to the claimed receipt', async () => {
+      const { claim } = make({ token: 'native' });
+      const valid = nativeOk(claim);
+      const originalLog = (valid.receipt['logs'] as Record<string, unknown>[])[0]!;
+      for (const bad of [
+        { ...valid, tx: { ...valid.tx, input: '0x1234' } },
+        { ...valid, tx: { ...valid.tx, blockHash: `0x${'ee'.repeat(32)}` } },
+        { ...valid, receipt: { ...valid.receipt, logs: [{ ...originalLog, data: '0x' }] } },
+        { ...valid, receipt: { ...valid.receipt, logs: [{ ...originalLog, removed: true }] } },
+        { ...valid, receipt: { ...valid.receipt, logs: new Array(2001).fill(originalLog) } },
+      ]) expect((await verifyClaimedPayment(base(await node(bad), claim))).status).toBe('unverified-claim');
     });
     it('unverified when neither balance nor receipt supports the claim', async () => {
       const { claim } = make({ token: 'native' });
@@ -327,10 +416,12 @@ describe('verifyPaymentByTxHash', () => {
   function receiptFor(claims: ClaimedPayment[], over: Record<string, unknown> = {}): unknown {
     return {
       status: '0x1',
+      from: PAYER,
+      to: FAKE.router,
       transactionHash: TX,
       blockNumber: '0x64',
       blockHash: BLOCK_HASH,
-      logs: claims.map((c, i) => ({
+      logs: [...claims.map((c, i) => ({
         address: ANN,
         topics: [ANNOUNCEMENT_TOPIC, word(1n), pad(c.stealthAddress), pad(c.announcement.caller)],
         data: encodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], [c.announcement.ephemeralPublicKey as Hex, c.announcement.metadata as Hex]),
@@ -338,7 +429,7 @@ describe('verifyPaymentByTxHash', () => {
         blockNumber: '0x64',
         blockHash: BLOCK_HASH,
         logIndex: `0x${(i + 4).toString(16)}`,
-      })),
+      })), ...claims.filter((c) => c.metadata?.kind === 'erc20').map((c) => transferLog(c))],
       ...over,
     };
   }
@@ -354,7 +445,7 @@ describe('verifyPaymentByTxHash', () => {
 
   it('finds and verifies a payment even though the payer published a wrong view tag', async () => {
     const { claim } = make({ wrongTag: true });
-    const w: World = { receipt: receiptFor([claim]), transferLogs: [transferLog(claim)] };
+    const w: World = { claim, receipt: receiptFor([claim]), transferLogs: [transferLog(claim)] };
     const res = await verifyPaymentByTxHash(input(await node(w)));
     expect(res).toHaveLength(1);
     expect(res[0]?.tagMatches).toBe(false);
@@ -373,7 +464,7 @@ describe('verifyPaymentByTxHash', () => {
     const mine = make().claim;
     const r = receiptFor([mine]) as { logs: unknown[] };
     r.logs.unshift(null, { address: '0x00000000000000000000000000000000deadbeef', topics: [] }, { address: ANN, topics: 'x' }, { address: ANN, topics: [ANNOUNCEMENT_TOPIC] }, { address: ANN, topics: [ANNOUNCEMENT_TOPIC, word(1n), word(1n), word(2n)], data: '0x', blockNumber: '0x64', blockHash: BLOCK_HASH, logIndex: '0x1' });
-    const res = await verifyPaymentByTxHash(input(await node({ receipt: r, transferLogs: [transferLog(mine)] })));
+    const res = await verifyPaymentByTxHash(input(await node({ claim: mine, receipt: r, transferLogs: [transferLog(mine)] })));
     expect(res).toHaveLength(1);
   });
   it('rejects bad input, unknown, failed and malformed receipts', async () => {
@@ -385,9 +476,14 @@ describe('verifyPaymentByTxHash', () => {
     await expect(verifyPaymentByTxHash(input(await node({ receipt: receiptFor([mine], { logs: 'x' }) })))).rejects.toThrow(/malformed receipt logs/);
     await expect(verifyPaymentByTxHash(input(await node({ receipt: receiptFor([mine], { logs: new Array(2001).fill(null) }) })))).rejects.toThrow(/malformed receipt logs/);
   });
+  it('returns a fixed typed error for unexpected provider failures', async () => {
+    const client = await node({});
+    const broken = { ...client, request: () => Promise.reject(new Error('https://rpc.test/?apiKey=SECRET')) };
+    await expect(verifyPaymentByTxHash(input(broken))).rejects.toMatchObject({ code: 'RPC_FAILURE', message: 'RPC_FAILURE: your RPC could not verify this transaction' });
+  });
   it('lowercases the hash it sends', async () => {
     const mine = make().claim;
-    const res = await verifyPaymentByTxHash(input(await node({ receipt: receiptFor([mine]), transferLogs: [transferLog(mine)] }), TX.toUpperCase().replace('0X', '0x')));
+    const res = await verifyPaymentByTxHash(input(await node({ claim: mine, receipt: receiptFor([mine]), transferLogs: [transferLog(mine)] }), TX.toUpperCase().replace('0X', '0x')));
     expect(res).toHaveLength(1);
   });
   it('requires the receipt and its announcements to bind to the requested canonical transaction', async () => {

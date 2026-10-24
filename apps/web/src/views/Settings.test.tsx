@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ChainAdapterError } from '@ghostpay/chain-adapters';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -143,4 +143,25 @@ describe('Settings', () => {
     await user.click(screen.getByRole('button', { name: 'Test Base Sepolia' }));
     await waitFor(() => { expect(screen.getByText(/RPC URL rejected/)).toBeTruthy(); });
   });
+});
+
+
+it('previews nonsecret settings before explicit application and leaves URLs and signer trust untouched', async () => {
+  const user = await open();
+  await user.type(screen.getByLabelText('Base Sepolia RPC URL'), 'https://rpc.example');
+  await user.click(screen.getByRole('button', { name: 'Save settings' }));
+  const { exportSettingsExchange } = await import('../lib/settingsExchange');
+  const { DEFAULT_SETTINGS } = await import('../lib/settings');
+  fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: exportSettingsExchange({ ...DEFAULT_SETTINGS, theme: 'dark', delayMinSec: 0 }) } });
+  await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
+  expect(stored()['theme']).toBe('system');
+  expect(await screen.findByText(/Review imported preferences/)).toBeTruthy();
+  await user.click(screen.getByRole('button', { name: 'Apply imported preferences' }));
+  expect(stored()['theme']).toBe('dark');
+  expect(stored()['rpcUrls']).toEqual({ '84532': 'https://rpc.example/' });
+  fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: exportSettingsExchange(DEFAULT_SETTINGS) } });
+  await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
+  expect(screen.getByRole('button', { name: 'Apply imported preferences' })).toBeTruthy();
+  fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: 'invalid replacement' } });
+  expect(screen.queryByRole('button', { name: 'Apply imported preferences' })).toBeNull();
 });

@@ -106,6 +106,7 @@ export function getSessionPublic(): SessionPublic | undefined {
 }
 
 function install(next: SessionSecrets): SessionPublic {
+  if (next.signingKey.every((byte, i) => byte === next.keys.spendingSecret[i]) || next.signingKey.every((byte, i) => byte === next.keys.viewingSecret[i])) throw new UserFacingError('The invoice-signing key must be independent of spending and viewing keys.');
   clearSession(false);
   // Summarize first: boxing wipes the scalars.
   publicSummary = summarize(next);
@@ -292,13 +293,16 @@ export async function exportKeystore(passphrase: string, options: KeystoreOption
 }
 
 /** Decrypts a keystore and loads it into memory. */
-export async function importKeystore(text: string, passphrase: string): Promise<SessionPublic> {
+export async function importKeystore(text: string, passphrase: string, signal?: AbortSignal): Promise<SessionPublic> {
+  const assertOpen = (): void => { if (signal?.aborted === true) throw new UserFacingError('The keystore import was closed.'); };
+  assertOpen();
   const revision = sessionRevision;
   const secrets = await decryptKeystore(text, passphrase);
   let spending: SecretScalar | undefined;
   let viewing: SecretScalar | undefined;
   let signing: SecretScalar | undefined;
   try {
+    assertOpen();
     if (sessionRevision !== revision) throw new UserFacingError('Seller keys changed while the keystore was unlocking. Try again.');
     spending = secretScalarFromBytes(secrets.spendingKey);
     viewing = secretScalarFromBytes(secrets.viewingKey);

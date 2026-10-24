@@ -23,6 +23,7 @@ import { withSessionSecrets } from '../lib/session';
 beforeEach(() => {
   clearSession();
   window.localStorage.clear();
+  window.sessionStorage.clear();
   setHash('');
 });
 
@@ -73,6 +74,7 @@ describe('Pay: invoice reading and review', () => {
     const separatelySigned = signReceipt(receiptFields, separatelyTrustedKey);
     const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
     await screen.findByText('Seller receives (net)', {}, { timeout: 30_000 });
+    await user.click(screen.getByLabelText('I consent to opening private receipt details on this screen.'));
     const upload = screen.getByLabelText('Signed seller receipt JSON');
     await user.upload(upload, new File(['x'.repeat(65_537)], 'oversized.json', { type: 'application/json' }));
     await user.click(screen.getByRole('button', { name: 'Check receipt against this invoice' }));
@@ -97,6 +99,20 @@ describe('Pay: invoice reading and review', () => {
     await waitFor(() => { expect(screen.queryByText('Receipt matches this invoice')).toBeNull(); });
   });
 
+  it('does not read private receipt details without explicit consent', async () => {
+    const { fragment } = await makeParsed();
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    await screen.findByText('Seller receives (net)');
+    const text = vi.spyOn(File.prototype, 'text').mockResolvedValue('private details');
+    try {
+      await user.upload(screen.getByLabelText('Signed seller receipt JSON'), new File(['private details'], 'receipt.json', { type: 'application/json' }));
+      await user.click(screen.getByRole('button', { name: 'Check receipt against this invoice' }));
+      expect(await screen.findByText(/Consent is required before opening/)).toBeTruthy();
+      expect(text).not.toHaveBeenCalled();
+      expect(screen.queryByText('Receipt matches this invoice')).toBeNull();
+    } finally { text.mockRestore(); }
+  });
+
   it('does not accept a receipt under a trusted key that changed during file reading', async () => {
     const { parsed, fragment } = await makeParsed();
     const receipt = withSessionSecrets((secrets) => signReceipt({
@@ -114,6 +130,7 @@ describe('Pay: invoice reading and review', () => {
     try {
       const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
       await screen.findByText('Seller receives (net)');
+      await user.click(screen.getByLabelText('I consent to opening private receipt details on this screen.'));
       await user.upload(screen.getByLabelText('Signed seller receipt JSON'), new File(['deferred'], 'receipt.json', { type: 'application/json' }));
       await user.click(screen.getByRole('button', { name: 'Check receipt against this invoice' }));
       await user.type(screen.getByLabelText('Explicitly trusted signer key (optional)'), `02${'1'.repeat(64)}`);
@@ -139,6 +156,7 @@ describe('Pay: invoice reading and review', () => {
     const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
     await screen.findByText('Seller receives (net)', {}, { timeout: 30_000 });
 
+    await user.click(screen.getByLabelText('I consent to opening private receipt details on this screen.'));
     const paste = screen.getByLabelText('Or paste QR text');
     fireEvent.change(paste, { target: { value: JSON.stringify({ ...receipt, extra: 'unrecognized' }) } });
     await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
@@ -151,7 +169,7 @@ describe('Pay: invoice reading and review', () => {
 
     fireEvent.change(paste, { target: { value: 'x'.repeat(65_537) } });
     await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
-    expect(await screen.findByText('Receipt not accepted')).toBeTruthy();
+    expect(await screen.findByText('QR text exceeds the 64 KiB safety limit.')).toBeTruthy();
     expect(screen.queryByText('Receipt matches this invoice')).toBeNull();
   });
 
@@ -438,12 +456,22 @@ describe('Pay: sending', () => {
     expect(await screen.findByText(/No browser wallet found/)).toBeTruthy();
   });
 
-  it('surfaces a user rejection and lets them retry', async () => {
+  it('surfaces a user rejection and blocks a blind retry until explicit clearing', async () => {
     const wallet = new MockWallet({ rejectSend: true });
     const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
     await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/rejected the request/);
     expect(screen.getByRole('button', { name: 'Send payment in my wallet' })).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    expect((await screen.findByRole('alert')).textContent).toMatch(/previous wallet attempt/);
+    expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(1);
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    try {
+      await user.click(screen.getByRole('button', { name: 'Clear this attempt after checking my wallet' }));
+      await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+      expect((await screen.findByRole('alert')).textContent).toMatch(/rejected the request/);
+      expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(2);
+    } finally { confirm.mockRestore(); }
   });
 });
 

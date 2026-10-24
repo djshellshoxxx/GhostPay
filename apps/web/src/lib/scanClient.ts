@@ -83,8 +83,10 @@ export interface ScanParams {
   readonly checkpoints?: CheckpointStore;
   readonly onProgress?: (p: ScanProgress) => void;
   readonly onMatch?: (m: ScanMatch) => void;
-  /** A reorg was detected: matches found in blocks >= `rolledBackTo` were dropped from the result and must be dropped by the caller. */
-  readonly onReorg?: (rolledBackTo: bigint) => void;
+  /** Immediately hide possibly orphaned actionable matches; this does not authorize persistent invalidation. */
+  readonly onQuarantine?: (rolledBackTo: bigint) => void;
+  /** A rollback was confirmed (by both providers when configured); persist invalidation before accepting replacement results. */
+  readonly onReorg?: (rolledBackTo: bigint) => void | Promise<void>;
   readonly maxPages?: number;
   /** Total accepted public announcements to process in one run (default 100,000). */
   readonly maxAnnouncementsPerScan?: number;
@@ -109,6 +111,18 @@ function toWire(a: ScannedAnnouncement, skipTag: boolean): WireLog {
  */
 export async function runScan(p: ScanParams): Promise<{ readonly matches: readonly ScanMatch[]; readonly cursor: ScanCursor; readonly scanned: number; readonly discrepancies: readonly ProviderDiscrepancy[]; readonly limitReached: boolean }> {
   let worker: ScanWorkerLike | undefined;
+  let stopped = false;
+  const stopWorker = (): void => {
+    if (stopped) return;
+    stopped = true;
+    zeroizeBytes(p.viewingKey);
+    if (worker === undefined) return;
+    // Teardown must reach terminate even if a broken worker rejects further messages.
+    try { if (p.signal.aborted) worker.postMessage({ type: 'cancel' }); } catch { /* best effort */ }
+    try { worker.postMessage({ type: 'end' }); } catch { /* best effort */ }
+    worker.terminate();
+  };
+  p.signal.addEventListener('abort', stopWorker, { once: true });
   const pending = new Map<number, (m: FromWorker) => void>();
   let ready: ((m: FromWorker) => void) | undefined;
   let failed: ((e: Error) => void) | undefined;
@@ -146,6 +160,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   let persistenceFloor = p.cursor.nextBlock;
   let batchId = 0;
   try {
+    if (p.signal.aborted) throw ABORTED;
     // Created inside the try so a throwing factory still reaches the key wipe below (S3-15).
     const w = p.createWorker();
     worker = w;
@@ -173,14 +188,40 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       const pageFrom = res.reorg?.rolledBackTo ?? cursor.nextBlock;
       if (res.reorg !== undefined) {
         persistenceFloor = res.reorg.rolledBackTo;
-        // Matches from orphaned blocks must not stay listed; the replay below re-finds the ones that survived.
+        // Hide uncertain results immediately, while retaining the caller's observations for a
+        // confirmed invalidation. One provider's fork must never permanently poison the vault.
         const keep = all.filter((m) => m.announcement.blockNumber < res.reorg!.rolledBackTo);
         all.length = 0;
         all.push(...keep);
         claimLedger.clear();
         keep.forEach((match, index) => claimLedger.set(`${match.stealthAddress.toLowerCase()}|${match.announcement.ephemeralPublicKey.toLowerCase()}`, index));
         for (const [id, block] of evidenceLedger) if (block >= res.reorg.rolledBackTo) evidenceLedger.delete(id);
-        p.onReorg?.(res.reorg.rolledBackTo);
+        p.onQuarantine?.(res.reorg.rolledBackTo);
+        if (p.signal.aborted) break;
+        if (p.secondaryClient !== undefined) {
+          // Check the replacement page AND the old checkpoint/rollback anchors. Agreement at
+          // the page end alone cannot establish that a previously saved block was orphaned.
+          const pageComparison = res.cursor.last === undefined ? [] : (await compareProviders({
+            chain: p.chain, secondary: p.secondaryClient, announcer: p.manifest.announcer,
+            fromBlock: pageFrom, toBlock: res.cursor.last.number,
+            primaryAnnouncements: res.announcements, primarySkipped: res.skipped,
+            primaryBlockHash: res.cursor.last.hash,
+          })).discrepancies;
+          if (p.signal.aborted) break;
+          const conflicts = pageComparison.length > 0 ? pageComparison : await confirmRollback(p, cursor, res.cursor, res.reorg.rolledBackTo);
+          if (p.signal.aborted) break;
+          if (conflicts.length > 0) {
+            discrepancies.push(...conflicts);
+            p.onDiscrepancy?.(conflicts);
+            if (p.signal.aborted) break;
+            cursor = { nextBlock: res.reorg.rolledBackTo };
+            p.checkpoints?.clear(p.chain.chainId, p.keyId);
+            p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
+            break;
+          }
+        }
+        await p.onReorg?.(res.reorg.rolledBackTo);
+        if (p.signal.aborted) break;
       }
       if (scanned + res.announcements.length > maxAnnouncements) {
         limitReached = true;
@@ -198,6 +239,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         w.postMessage({ type: 'batch', batchId: id, logs: res.announcements.map((a) => toWire(a, p.deep === true && a.caller.toLowerCase() === p.manifest.router.toLowerCase())) });
       });
       pending.delete(id);
+      if (p.signal.aborted) break;
       if (reply.type !== 'matches') throw new UserFacingError('The scanner returned an unexpected reply.');
       scanned += res.announcements.length;
       const claims: { readonly stealthAddress: Address; readonly announcement: ScannedAnnouncement; readonly metadata: ParsedMetadata | undefined; readonly viaRouter: boolean }[] = [];
@@ -266,6 +308,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
           primarySkipped: res.skipped,
           primaryBlockHash: res.cursor.last.hash,
         });
+        if (p.signal.aborted) break;
         if (cmp.discrepancies.length > 0) {
           disagree = true;
           discrepancies.push(...cmp.discrepancies);
@@ -312,6 +355,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       cursor = res.cursor;
       if (!disagree && p.checkpoints !== undefined) {
         const saved = await persistable(p, cursor, persistenceFloor);
+        if (p.signal.aborted) break;
         if (saved !== undefined) p.checkpoints.save(p.chain.chainId, p.keyId, saved);
       }
       p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: !res.truncated, discrepancies: discrepancies.length });
@@ -321,17 +365,45 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
     // Cancel while a reply was pending: return what was found so far.
     if (e !== ABORTED) throw e;
   } finally {
-    try {
-      if (worker !== undefined) {
-        if (p.signal.aborted) worker.postMessage({ type: 'cancel' });
-        worker.postMessage({ type: 'end' });
-        worker.terminate();
-      }
-    } finally {
-      zeroizeBytes(p.viewingKey);
-    }
+    p.signal.removeEventListener('abort', stopWorker);
+    try { stopWorker(); } finally { zeroizeBytes(p.viewingKey); }
   }
   return { matches: all, cursor, scanned, discrepancies, limitReached };
+}
+
+/** Bounded, fresh two-provider checks immediately before irreversible historical invalidation. */
+async function confirmRollback(p: ScanParams, previous: ScanCursor, replacement: ScanCursor, rolledBackTo: bigint): Promise<readonly ProviderDiscrepancy[]> {
+  const secondary = p.secondaryClient;
+  if (secondary === undefined) return [];
+  const heights = new Set([rolledBackTo]);
+  if (previous.last !== undefined) heights.add(previous.last.number);
+  if (replacement.last !== undefined) heights.add(replacement.last.number);
+  const observed = new Map<bigint, string>();
+  try {
+    if (secondary.chainId !== p.chain.chainId) return [{ kind: 'secondary_error', ref: rolledBackTo.toString() }];
+    // Re-read after the independent RPC awaits: a transient fork or an equivocating primary
+    // must not turn a stale rollback report into permanent tombstones.
+    for (let pass = 0; pass < 2; pass++) {
+      const anchors = await Promise.all([...heights].map(async (number) => {
+        const [primary, independent] = await Promise.all([p.client.getBlock(number), secondary.getBlock(number)]);
+        return { number, primary, independent };
+      }));
+      if (p.signal.aborted) return [];
+      for (const { number, primary, independent } of anchors) {
+        const hash = primary?.hash.toLowerCase();
+        if (hash === undefined || independent === null || hash !== independent.hash.toLowerCase() ||
+            (observed.has(number) && observed.get(number) !== hash) ||
+            (replacement.last?.number === number && hash !== replacement.last.hash.toLowerCase()) ||
+            (rolledBackTo < previous.nextBlock && previous.last?.number === number && hash === previous.last.hash.toLowerCase())) {
+          return [{ kind: 'block_hash_differs', ref: number.toString() }];
+        }
+        observed.set(number, hash);
+      }
+    }
+    return [];
+  } catch {
+    return [{ kind: 'secondary_error', ref: rolledBackTo.toString() }];
+  }
 }
 
 /**

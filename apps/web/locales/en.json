@@ -48,6 +48,16 @@
     "i18n.picker.noCatalog": "not translated yet, English is shown",
     "i18n.picker.hint": "Translations marked machine-translated have not been reviewed by a native speaker. Check amounts, addresses and fees against your wallet.",
     "i18n.picker.current": "Current language: {#strong}{name}{/strong}.",
-    "i18n.loadFailed": "The selected language could not be loaded. English is shown instead."
+    "i18n.loadFailed": "The selected language could not be loaded. English is shown instead.",
+    "settings.exchange.title": "Transfer nonsecret preferences",
+    "settings.exchange.description": "Share only saved delay, lock, theme and address-bar preferences. URLs, credentials, pinned signer trust and private keys are excluded. Review an import before applying it.",
+    "settings.exchange.export": "Show preferences QR",
+    "settings.exchange.hide": "Hide preferences QR",
+    "settings.exchange.import": "Import nonsecret preferences",
+    "settings.exchange.review": "Review imported preferences",
+    "settings.exchange.apply": "Apply imported preferences",
+    "settings.exchange.discard": "Discard preview",
+    "settings.exchange.yes": "Yes",
+    "settings.exchange.no": "No"
   }
 }

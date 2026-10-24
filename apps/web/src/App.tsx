@@ -7,6 +7,8 @@ import { clearSession, getSessionPublic, subscribeSession } from './lib/session'
 import { loadSettings, saveSettings, type Settings as SettingsData } from './lib/settings';
 import { AppContext, VIEW_LABELS, type AppState, type ViewId } from './state';
 import { BtcView } from './features/btc/BtcView';
+import { SolanaView } from './features/solana/SolanaView';
+import { TronView } from './features/tron/TronView';
 import { RegistryView } from './features/registry/RegistryView';
 import { About } from './views/About';
 import { CreateInvoice } from './views/CreateInvoice';
@@ -17,7 +19,7 @@ import { SellerKeys } from './views/SellerKeys';
 import { Settings } from './views/Settings';
 import { Sweep } from './views/Sweep';
 
-const ORDER: readonly ViewId[] = ['home', 'seller', 'create', 'pay', 'scan', 'sweep', 'btc', 'registry', 'settings', 'about'];
+const ORDER: readonly ViewId[] = ['home', 'seller', 'create', 'pay', 'scan', 'sweep', 'btc', 'solana', 'tron', 'registry', 'settings', 'about'];
 
 function ViewSwitch(props: { readonly view: ViewId }): ReactNode {
   switch (props.view) {
@@ -35,6 +37,10 @@ function ViewSwitch(props: { readonly view: ViewId }): ReactNode {
       return <Sweep />;
     case 'btc':
       return <BtcView />;
+    case 'solana':
+      return <SolanaView />;
+    case 'tron':
+      return <TronView />;
     case 'registry':
       return <RegistryView />;
     case 'settings':

@@ -54,8 +54,8 @@ export class ScanSession {
   private total = 0;
 
   public constructor(viewingKey: Uint8Array, spendingPublicKey: string) {
-    this.spend = hexToPoint(spendingPublicKey);
     try {
+      this.spend = hexToPoint(spendingPublicKey);
       this.secret = secretScalarFromBytes(viewingKey);
     } finally {
       zeroize(viewingKey);
@@ -64,6 +64,7 @@ export class ScanSession {
 
   public cancel(): void {
     this.cancelled = true;
+    if (this.secret !== undefined) zeroize(this.secret);
   }
 
   public get scanned(): number {

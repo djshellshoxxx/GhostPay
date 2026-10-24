@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
+import { encodeMetaAddress, parseCompressedPoint } from '@ghostpay/core-crypto';
+import { secp256k1 } from '@noble/curves/secp256k1.js';
 import { DEFAULT_SCRYPT, decryptKeystore, encryptKeystore, passphraseProblem } from './keystore';
 
-const META = { metaAddress: 'st:eth:0xabc', signer: '02' + 'ab'.repeat(32) };
+const META = { metaAddress: encodeMetaAddress({ spendingPublicKey: parseCompressedPoint(secp256k1.getPublicKey(new Uint8Array(32).fill(1))), viewingPublicKey: parseCompressedPoint(secp256k1.getPublicKey(new Uint8Array(32).fill(2))) }), signer: Buffer.from(secp256k1.getPublicKey(new Uint8Array(32).fill(3))).toString('hex') };
 const secrets = () => ({ spendingKey: new Uint8Array(32).fill(1), viewingKey: new Uint8Array(32).fill(2), signingKey: new Uint8Array(32).fill(3) });
 const FAST = { N: 1 << 14 };
 
@@ -41,7 +43,7 @@ describe('keystore', () => {
 
   it('rejects tampered public metadata (it is authenticated)', async () => {
     const f = JSON.parse(await encryptKeystore(secrets(), META, 'correct horse battery', FAST)) as { meta: { metaAddress: string } };
-    f.meta.metaAddress = 'st:eth:0xdef';
+    f.meta.metaAddress = 'st:eth:0x' + META.metaAddress.slice(75) + META.metaAddress.slice(9, 75);
     await expect(decryptKeystore(JSON.stringify(f), 'correct horse battery')).rejects.toThrow(/Wrong passphrase|modified/);
   });
 
@@ -81,6 +83,23 @@ describe('keystore', () => {
     await expect(bad((f) => { f['iv'] = 'aa'; })).rejects.toThrow(/not a valid/);
     await expect(bad((f) => { f['meta'] = 5; })).rejects.toThrow(/not a valid/);
     await expect(bad((f) => { meta(f)['signer'] = 5; })).rejects.toThrow(/not a valid/);
+  });
+
+  it('rejects unknown envelope, KDF and metadata fields before derivation', async () => {
+    const text = await encryptKeystore(secrets(), META, 'correct horse battery', FAST);
+    for (const field of ['root', 'kdfParams', 'meta']) {
+      const file = JSON.parse(text) as Record<string, unknown>;
+      const target = field === 'root' ? file : file[field] as Record<string, unknown>;
+      target['extra'] = 'not allowed';
+      await expect(decryptKeystore(JSON.stringify(file), 'correct horse battery')).rejects.toThrow(/not a valid/);
+    }
+    await expect(decryptKeystore(text.replace('"v": 1', '"v": 1, "v": 1'), 'correct horse battery')).rejects.toThrow(/not a valid/);
+  });
+
+  it('rejects authenticated public metadata that differs from the decrypted keys', async () => {
+    const alternate = { ...META, signer: Buffer.from(secp256k1.getPublicKey(new Uint8Array(32).fill(4))).toString('hex') };
+    const text = await encryptKeystore(secrets(), alternate, 'correct horse battery', FAST);
+    await expect(decryptKeystore(text, 'correct horse battery')).rejects.toThrow(/metadata|not a valid/);
   });
 
   it('rejects a decrypted body with malformed keys', async () => {
