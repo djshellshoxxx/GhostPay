@@ -30,6 +30,9 @@ In progress — see ledger below. Prior handoff: `docs/HANDOFF-2026-10-24-PR26-C
 | 6 | Spec 13 send-time recheck tolerance | Recheck compares margin-free requirement so drift within the 20 % safety margin does not force re-prepare loops. | pay.test boundary 1.2 gwei pass / +1 wei block. |
 | 7 | Spec 11/12 BTC foundation: block integrity | `packages/btc-silent-payments/src/header.ts` (header parse, nBits target w/ Core negative/overflow rules, PoW vs per-network powLimit, CVE-2012-2459-safe Merkle root, `verifyBlockData`). Esplora: txid recomputed from JSON (version/locktime/sequence required), header hash = served hash, PoW, Merkle root, height linkage to pinned genesis (both directions), genesis never downloaded. Regtest shim serves `/block/:hash/header` + txid fields. | header.test 16 (mainnet/regtest genesis, block 170 Merkle); esplora.test tamper matrix (omit/inject/edit/wrong header/weak PoW on testnet4/fork below/above/genesis mismatch) + txid edits vs independent @scure/btc-signer txids; BtcView flows green; btc pkg 369 tests, coverage 97.56/96.41/96.91/99.29; shim `node --test` 4/4. |
 
+| 8 | Spec 08 deterministic vectors | `test-vectors/tags.json` + generator (node:crypto only) + `tagArchive.vectors.test.ts`. | 18/18 (5 valid incl. NFKC + N=2^17, 12 refusals). |
+| 9 | Live regtest coverage of header checks | `scripts/integration/btc-regtest.e2e.mjs` step verifies payment block via `verifyBlockData` on real bitcoind data + negative cases. | Runs in GitHub Integration workflow (not locally). |
+
 BTC limits (do not overclaim): NO difficulty retarget, chain work, MTP or best-chain selection; test-network PoW cheap; witness + prevout scripts not txid-bound (can hide, not forge, payments); `isUnspent` is server's word. Live bitcoind regtest e2e NOT run locally (no bitcoind); GitHub Integration workflow runs it on PR when btc paths change — check its result.
 
 Blocked: TRON Nile/Shasta positive genesis pinning — trongrid hosts 403 via network policy; not pinned from memory. Spec 13 fiat buffer estimate — `FEEDS` registry is empty (no verified feed addresses). Spec 05 lanes/budget redesign deferred (existing per-run budget + resumable `limitReached` already avoids silent drops).
@@ -44,4 +47,5 @@ Not done from spec 13 (needs schema version + ADR / feed work): invoice `bufferP
 - `apps/web: npx eslint` on all changed files exit 0.
 - Focused: `apps/web: npx vitest run src/lib/pay.test.ts src/lib/payExec src/views/Pay src/views/Scan.test.tsx` all pass.
 - `npm run ci:scan-secrets` OK.
-- Full web coverage + all-workspace lint: see below once finished.
+- `npm run lint` (all workspaces) exit 0 (run while edits in progress; changed files re-linted after).
+- First full web coverage run INVALID as evidence: it ran while files were being edited (picked up half-built btc changes). It also reproduced the 150-case archive fuzz timeout (120 s) under concurrent load. Killed; clean rerun on a frozen head recorded below.
