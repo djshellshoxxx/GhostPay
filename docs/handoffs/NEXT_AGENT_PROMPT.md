@@ -1,5 +1,16 @@
 # Next agent prompt (GhostPay)
 
+## Scope override — 2026-10-24 UTC
+
+The owner-approved [lean scope](LEAN_RELEASE_SCOPE.md) and [restart instructions](RESTART.md) supersede the historical baseline and priority list below. Read them first. Preserve [SESSION_STATUS](SESSION_STATUS.md) as historical test/provenance evidence, not a current rerun.
+
+Next: verify exact-head EVM configuration and disposition assigned core cases before one invoice → pay → detect/receipt → sweep → key-recovery demo. Generic relayer retry/fallback and optional or multi-chain expansion are NOT the next task.
+
+Detailed reproductions require the owner-supplied private review packet via supported access; no automatic Library access is assumed. This documentation grants no runtime, merge, release, deployment or production-funds authority. Keep all existing acceptance/security gates and preserve deferred work.
+
+## Historical prompt — retained, subordinate to the override
+
+
 Paste the block below into the next session.
 
 ```
