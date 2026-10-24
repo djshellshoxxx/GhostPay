@@ -5,11 +5,10 @@ name: Pages mirror
 # Cache-Control cannot be set, so clickjacking protection is absent and the iframe embed mode is unavailable
 # (see docs/operators/mirror-hosting.md and docs/operators/hosting.md). Use infra/proxy for a real host.
 #
+# Manual deployment only; merging source must not publish a site without separate deployment authorization.
 # Runs from main only. Prerequisite (OWNER): Settings > Pages > Source = "GitHub Actions", and the
 # `github-pages` environment restricted to the main branch. Until then the deploy job fails closed.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:

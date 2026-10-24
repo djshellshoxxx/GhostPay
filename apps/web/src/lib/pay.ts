@@ -161,11 +161,18 @@ export async function createPayContext(review: Review, client: RpcClient | undef
   return { review, adapter, request, manifest, chain, client: rpc, quotedTokenAmount: quoted };
 }
 
-/** Sweep-gas estimate used to size the optional buffer. A conservative constant, not a simulation (shown as such). */
+/** Default sweep-gas estimate (per-token table fallback floor). Conservative for plain ERC-20 transfers. */
 export const SWEEP_GAS_ESTIMATE = 100_000n;
+/** Upper bound for a simulated sweep; above it the token is treated as unsuitable for a buffer (fail closed). */
+export const MAX_SIMULATED_SWEEP_GAS = 500_000n;
+/** Simulated gas is scaled by this margin (bps over 100 %) to absorb drift between the payer's and the stealth sweep. */
+export const SWEEP_SIMULATION_MARGIN_BPS = 2_500n;
 /** Hard cap on any gas buffer (0.01 native unit). */
 export const MAX_BUFFER_WEI = 10n ** 16n;
-export const BUFFER_QUOTE_TTL_SECONDS = 120;
+/** Spec 13: a buffer quote older than 60 s is rejected. */
+export const BUFFER_QUOTE_TTL_SECONDS = 60;
+/** Fixed non-zero recipient for the sweep simulation, so the estimate includes a zero-to-non-zero balance write. */
+const SWEEP_SIMULATION_RECIPIENT = '0x000000000000000000000000000000000000dEaD' as Address;
 
 export interface BufferQuote {
   readonly bufferWei: bigint;
@@ -174,15 +181,64 @@ export interface BufferQuote {
   readonly safetyBps: bigint;
   readonly quotedAt: number;
   readonly expiresAt: number;
+  /** `simulated`: gasLimit covers an `eth_estimateGas` of the token transfer; `default`: table value only. */
+  readonly gasSource: 'simulated' | 'default';
 }
 
-/** Feature 1: native buffer sized from the user's RPC gas price. Fails closed above the cap. */
-export async function quoteBuffer(rpc: Pick<RpcClient, 'request'>, nowSeconds: number): Promise<BufferQuote> {
+/** Token transfer the seller's sweep will perform, simulated from the payer who holds the tokens now. */
+export interface SweepSimulation {
+  readonly token: Address;
+  readonly from: Address;
+  readonly amount: bigint;
+}
+
+/**
+ * Feature 1 / spec 13: native buffer sized from the user's RPC gas price and, when `sweep` is given, a token-specific
+ * `eth_estimateGas` of the transfer. Simulation failure fails closed: a token whose transfer cannot be simulated may
+ * have hooks or restrictions that a table default would underfund.
+ */
+export async function quoteBuffer(rpc: Pick<RpcClient, 'request'>, nowSeconds: number, sweep?: SweepSimulation): Promise<BufferQuote> {
+  let gasLimit = SWEEP_GAS_ESTIMATE;
+  if (sweep !== undefined) {
+    let simulated: bigint;
+    try {
+      const data = encodeFunctionData({ abi: erc20Abi, functionName: 'transfer', args: [SWEEP_SIMULATION_RECIPIENT, sweep.amount] });
+      simulated = parseQuantity(await rpc.request('eth_estimateGas', [{ from: sweep.from, to: sweep.token, data }]));
+    } catch {
+      throw new UserFacingError('The token transfer could not be simulated, so a safe gas buffer cannot be sized. Pay without a buffer or try again.');
+    }
+    if (simulated === 0n || simulated > MAX_SIMULATED_SWEEP_GAS) {
+      throw new UserFacingError('The simulated token transfer needs an unexpected amount of gas. A gas buffer is not offered for this token.');
+    }
+    const margined = (simulated * (FEE_SCHEDULE.BPS + SWEEP_SIMULATION_MARGIN_BPS) + FEE_SCHEDULE.BPS - 1n) / FEE_SCHEDULE.BPS;
+    if (margined > gasLimit) gasLimit = margined;
+  }
   const gasPrice = parseQuantity(await rpc.request('eth_gasPrice', []));
   const maxFeePerGas = gasPrice * 2n;
-  const bufferWei = calculateBuffer({ estimatedSweepGas: SWEEP_GAS_ESTIMATE, maxFeePerGas, safetyBps: FEE_SCHEDULE.DEFAULT_BUFFER_SAFETY_BPS });
+  const bufferWei = calculateBuffer({ estimatedSweepGas: gasLimit, maxFeePerGas, safetyBps: FEE_SCHEDULE.DEFAULT_BUFFER_SAFETY_BPS });
   if (bufferWei > MAX_BUFFER_WEI) throw new UserFacingError('The estimated gas buffer exceeds the safety cap. Gas looks unusually high; try again later.');
-  return { bufferWei, maxFeePerGas, gasLimit: SWEEP_GAS_ESTIMATE, safetyBps: FEE_SCHEDULE.DEFAULT_BUFFER_SAFETY_BPS, quotedAt: nowSeconds, expiresAt: nowSeconds + BUFFER_QUOTE_TTL_SECONDS };
+  return {
+    bufferWei, maxFeePerGas, gasLimit, safetyBps: FEE_SCHEDULE.DEFAULT_BUFFER_SAFETY_BPS,
+    quotedAt: nowSeconds, expiresAt: nowSeconds + BUFFER_QUOTE_TTL_SECONDS, gasSource: sweep === undefined ? 'default' : 'simulated',
+  };
+}
+
+/**
+ * Re-estimate before the wallet is asked (spec 13 "re-estimate at confirm"): the buffer value is fixed in the built
+ * calldata, so a fresh quote at the same gas limit must not exceed it. Guards against fee spikes between prepare and
+ * send (for example while an approval confirms). Never raises the buffer silently; the user must prepare again.
+ */
+export async function assertBufferStillSufficient(built: BuiltPayment, rpc: Pick<RpcClient, 'request'> | undefined): Promise<void> {
+  const quote = builtBufferQuotes.get(built);
+  if (quote === undefined) return;
+  if (rpc === undefined) throw new UserFacingError('A gas buffer needs an RPC for this chain to re-check gas before sending.');
+  const gasPrice = parseQuantity(await rpc.request('eth_gasPrice', []));
+  // The quote's safety margin exists to absorb drift, so only the margin-free requirement at today's price must fit;
+  // otherwise every small fee tick would force the user to prepare again.
+  const required = calculateBuffer({ estimatedSweepGas: quote.gasLimit, maxFeePerGas: gasPrice * 2n, safetyBps: 0n });
+  if (required > built.tx.value) {
+    throw new UserFacingError('Gas prices rose since the buffer was quoted, so the prepared buffer may not cover the sweep. Prepare the payment again.');
+  }
 }
 
 export interface FinalBuildOptions {
@@ -195,6 +251,7 @@ export interface FinalBuildOptions {
 /** Router deadline window for a prepared payment. */
 export const DEADLINE_SECONDS = 20 * 60;
 const builtPaymentContexts = new WeakMap<BuiltPayment, PayContext>();
+const builtBufferQuotes = new WeakMap<BuiltPayment, BufferQuote>();
 
 /** Builds the transaction and the preview from the SAME call; the UI renders `preview` and sends `tx`. */
 export function buildFinal(ctx: PayContext, opts: FinalBuildOptions): BuiltPayment {
@@ -211,6 +268,7 @@ export function buildFinal(ctx: PayContext, opts: FinalBuildOptions): BuiltPayme
     ...(opts.buffer === undefined ? {} : { buffer: { bufferWei: opts.buffer.bufferWei, maxBufferWei: opts.buffer.bufferWei } }),
   });
   builtPaymentContexts.set(built, ctx);
+  if (opts.buffer !== undefined) builtBufferQuotes.set(built, opts.buffer);
   return built;
 }
 

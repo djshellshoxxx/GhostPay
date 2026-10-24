@@ -2,7 +2,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vitest/config';
+import { configDefaults, defineConfig } from 'vitest/config';
 import { parseReleaseKeys, validateDeployments } from './scripts/validate-deployments.mjs';
 
 const releaseKeys = parseReleaseKeys(process.env['GHOSTPAY_RELEASE_PUBKEYS']);
@@ -59,6 +59,8 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.test.{ts,tsx}'],
+    // `*.nocov.test.*` run in a separate pass without coverage (vitest.nocov.config.ts); see DEVIATIONS.md.
+    exclude: [...configDefaults.exclude, 'src/**/*.nocov.test.{ts,tsx}'],
     testTimeout: 60_000,
     pool: 'forks',
     coverage: {

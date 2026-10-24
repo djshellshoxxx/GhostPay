@@ -16,7 +16,7 @@ import { bech32 } from '@scure/base';
 import * as btc from '@scure/btc-signer';
 import {
   buildSpendTransaction, computeTransactionTweak, createSilentPaymentOutputs, encodeSilentPaymentAddress,
-  generateSilentPaymentKeys, scanBlocks, silentPaymentKeysFromSeed,
+  generateSilentPaymentKeys, scanBlocks, silentPaymentKeysFromSeed, verifyBlockData,
 } from '@ghostpay/btc-silent-payments';
 
 const RPC = process.env.BITCOIND_RPC_URL ?? 'http://127.0.0.1:18443';
@@ -194,6 +194,18 @@ await step('receiver scans the chain with the scan key and finds the payment', a
   assert.equal(found[0].label, null);
   s.hit = found[0];
   return `${String(found[0].amountSats)} sats at ${found[0].txid.slice(0, 12)}...:${String(found[0].vout)}`;
+});
+
+await step('payment block passes header, proof-of-work, Merkle and linkage checks on real node data', async () => {
+  const hash = await rpc('getblockhash', [s.payHeight]);
+  const headerHex = await rpc('getblockheader', [hash, false]);
+  const txids = (await rpc('getblock', [hash, 1])).tx;
+  assert.ok(txids.includes(s.payTxid));
+  const header = verifyBlockData({ headerHex, expectedHash: hash, txids, network: 'regtest' });
+  assert.equal(header.prevHash, await rpc('getblockhash', [s.payHeight - 1]));
+  assert.throws(() => verifyBlockData({ headerHex, expectedHash: hash, txids: txids.filter((t) => t !== s.payTxid), network: 'regtest' }));
+  assert.throws(() => verifyBlockData({ headerHex, expectedHash: hash, txids, network: 'testnet4' }));
+  return `${String(txids.length)} txids under ${hash.slice(0, 12)}...`;
 });
 
 await step('a different receiver finds nothing', async () => {

@@ -300,6 +300,20 @@ describe('Scan and receive', () => {
     expect(screen.queryByText(/Only one RPC was used/)).toBeNull();
   });
 
+  it('fails closed when the configured second RPC cannot be opened instead of scanning with one provider', async () => {
+    generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' }, rpcUrlsSecondary: { '84532': 'https://rpc2.test' } }));
+    const primary = chainWithLogs(84532, 500, []);
+    const createRpc: Services['createRpc'] = (_c, url) =>
+      url.startsWith('https://rpc2.test') ? Promise.reject(new Error('CHAIN_MISMATCH: wrong chain')) : Promise.resolve(withManifestChain(primary));
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc }));
+    await user.type(screen.getByLabelText('Start block'), '100');
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    await waitFor(() => { expect(screen.getByText(/second RPC configured for this chain could not be used/)).toBeTruthy(); });
+    expect(primary.calls.some((c) => c.method === 'eth_getLogs')).toBe(false);
+    expect(screen.queryByText(/Finished\./)).toBeNull();
+  });
+
   it('quarantines actionable cards before confirmation and retains unsaved observations for confirmed tombstones', async () => {
     const pub = generateSession();
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));

@@ -29,6 +29,8 @@ Scanning needs an Esplora-compatible server URL that you supply. No public serve
 - The app downloads each block's transactions and computes the tweak locally. Keys never leave the page.
 - The server sees block heights, the outputs you check for spends, and any transaction you broadcast.
 - A malicious server can hide payments or lie about spent state. It cannot spend your funds.
+- Each scanned block is checked locally: the header hashes to the served block hash, its proof of work meets the network limit, txids recomputed from the served transactions produce the header's Merkle root, and consecutive heights link back to the pinned genesis. Omitted, injected or edited transactions in a block are refused.
+- These checks do not pick the best chain (no difficulty retarget, chain work or fork choice), and test-network proof of work is cheap. A dishonest server can still serve a self-consistent low-work fork, and witness data and spent state remain its word. Treat a found payment as unconfirmed until you check it on a node you trust.
 - A scan covers at most 500 blocks per run.
 
 Run your own Esplora-compatible node if you can. See [Local scanner and RPC](../operators/local-scanner-and-rpc.md).

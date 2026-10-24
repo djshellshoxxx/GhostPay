@@ -7,6 +7,7 @@ import { guardApprove, guardRouterPayment, simulateCall } from './txGuard';
 import {
   assertApproveTx,
   assertPermitSigner,
+  assertBufferStillSufficient,
   assertReadyToSend,
   buildApproveTx,
   buildFinal,
@@ -103,6 +104,32 @@ export interface ApprovalPlan {
   readonly required: boolean;
 }
 
+/** Spec 04 payer-side subset of `PermitState`; nonce/signature states are caught by the send-time `eth_call` simulation. */
+export type PayerPermitState = 'ok_to_permit' | 'already_allowed' | 'unsupported_token';
+
+/**
+ * Pre-flight before any permit signing prompt (spec 04). `already_allowed`: the router may already pull the gross
+ * amount, so no signature is requested. `unsupported_token`: the on-chain permit domain could not be read or did not
+ * match (DAI-style or non-standard token); the caller falls back to the exact-approval path the user reviews. Never
+ * sends anything and never falls back silently: the caller shows which path is used.
+ */
+export async function classifyPayerPermit(ctx: PayContext, session: WalletSession, rt: Runtime): Promise<PayerPermitState> {
+  const token = ctx.review.token;
+  if (rt.rpc === undefined) throw new UserFacingError('A permit payment needs an RPC to read the token. Configure one in Settings or use approval.');
+  if (token === undefined || token.address === 'native') return 'unsupported_token';
+  const have = await readAllowance(rt.rpc, token.address, session.account, ctx.manifest.router);
+  if (have >= ctx.request.grossAmount) return 'already_allowed';
+  try {
+    await buildPermit(rt.rpc, {
+      chainId: ctx.chain.chainId, token: token.address, owner: session.account, spender: ctx.manifest.router,
+      value: ctx.request.grossAmount, deadline: BigInt(rt.nowSeconds() + 20 * 60),
+    });
+    return 'ok_to_permit';
+  } catch {
+    return 'unsupported_token';
+  }
+}
+
 /** Reads the current allowance and produces the exact approval preview; sends nothing. */
 export async function planApproval(ctx: PayContext, session: WalletSession, token: Address, rt: Runtime): Promise<ApprovalPlan> {
   if (rt.rpc === undefined) throw new UserFacingError('Approving a token needs an RPC for this chain. Configure one in Settings.');
@@ -195,6 +222,8 @@ export async function sendPayment(session: WalletSession, ctx: PayContext, built
   guard();
   // Independent decode of the exact calldata + allowlist/fee/deadline policy before the wallet is asked.
   guardRouterPayment(built.tx, built.preview, ctx.manifest, rt.nowSeconds());
+  await assertBufferStillSufficient(built, rt.rpc);
+  guard();
   if (rt.rpc !== undefined) await simulateCall(rt.rpc, { from: session.account, to: built.tx.to, data: built.tx.data, value: built.tx.value });
   guard();
   return submitTx(session, { to: built.tx.to, data: built.tx.data, value: built.tx.value }, rt, status, guard, undefined, { kind: 'payment', scope: bytesToHex(invoiceDigest(ctx.review.invoice)) });

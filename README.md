@@ -1,5 +1,7 @@
 # GhostPay
 
+Experimental **software artwork** exploring client-side invoices and stealth-address payments. The functional descriptions, development status, risks, licensing and acceptance gates below remain applicable.
+
 GhostPay is an open-source project for client-side invoice creation and stealth-address payments on EVM networks. A seller publishes one stealth meta-address; every payment goes to a fresh one-time address that only the seller can find and spend from.
 
 The goal is to reduce address reuse and limit routine exposure of invoice details. Blockchain transactions and much of their metadata remain public, so GhostPay does **not** claim anonymity or unlinkability. See [what it does not hide](docs/user/privacy-limits.md).

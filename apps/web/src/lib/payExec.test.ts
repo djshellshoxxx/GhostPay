@@ -7,7 +7,7 @@ import { NOW, USDC_84532, makeParsed } from '../test/invoiceFixtures';
 import { MOCK_ACCOUNT, MockWallet } from '../test/mockWallet';
 import { mockRpc, type MockRpc } from '../test/mockRpc';
 import { createPayContext, reviewInvoice, type BufferQuote, type PayContext } from './pay';
-import { PostBroadcastError, buildReceipt, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, submitTx, type Runtime } from './payExec';
+import { PostBroadcastError, buildReceipt, classifyPayerPermit, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, submitTx, type Runtime } from './payExec';
 import { clearSession } from './session';
 import { userMessage } from './errors';
 import { SubmissionMismatchError, connectWallet, type WalletInfo, type WalletSession } from './wallet';
@@ -40,6 +40,29 @@ function chainSeeing(wallet: MockWallet, extra: (m: string, p: readonly unknown[
     throw new Error(`unexpected ${method}`);
   });
 }
+
+describe('gas buffer re-check before the wallet is asked (spec 13)', () => {
+  const quote = (gasLimit: bigint, gweiPrice: bigint): BufferQuote => ({
+    bufferWei: gasLimit * gweiPrice * 2_000_000_000n * 12n / 10n, maxFeePerGas: gweiPrice * 2_000_000_000n, gasLimit, safetyBps: 2000n,
+    quotedAt: NOW, expiresAt: NOW + 60, gasSource: 'simulated',
+  });
+  it('blocks the send without contacting the wallet when gas rose above the prepared buffer', async () => {
+    const { ctx, session, wallet } = await setup();
+    const rpc = chainSeeing(wallet, (m) => (m === 'eth_gasPrice' ? `0x${(3n * 10n ** 9n).toString(16)}` : undefined));
+    const rt: Runtime = { rpc, nowSeconds: () => NOW, sleep };
+    const built = await preparePayment(session, ctx, { usePermit: false, buffer: quote(100_000n, 1n) }, rt, noStatus);
+    await expect(sendPayment(session, ctx, built, rt, noStatus)).rejects.toThrow(/Gas prices rose/);
+    expect(wallet.sent).toBeUndefined();
+    expect(rpc.calls.some((c) => c.method === 'eth_call')).toBe(false);
+  });
+  it('refuses a buffered payment with no RPC to re-check gas', async () => {
+    const { ctx, session, wallet } = await setup();
+    const rt: Runtime = { rpc: undefined, nowSeconds: () => NOW };
+    const built = await preparePayment(session, ctx, { usePermit: false, buffer: quote(100_000n, 1n) }, rt, noStatus);
+    await expect(sendPayment(session, ctx, built, rt, noStatus)).rejects.toThrow(/needs an RPC/);
+    expect(wallet.sent).toBeUndefined();
+  });
+});
 
 describe('native payment end to end (mock wallet, mock RPC)', () => {
   it('prepares, passes the gate, sends and verifies on the user RPC', async () => {
@@ -284,6 +307,34 @@ describe('ERC-20 flows', () => {
     void OWNER;
   });
 
+  describe('classifyPayerPermit (spec 04 pre-flight)', () => {
+    const USDC = '0x036CbD53842c5426634e7929541eC2318f3dCF7e';
+    const permitRpc = (o: { allowance?: bigint; separator?: () => string } = {}) => mockRpc(84532, (_m, params) => {
+      const data = (params[0] as { data: string }).data;
+      if (data.startsWith('0xdd62ed3e')) return `0x${(o.allowance ?? 0n).toString(16).padStart(64, '0')}`;
+      if (data.startsWith('0x06fdde03')) return encodeFunctionResult({ abi: erc20MetadataAbi, functionName: 'name', result: 'USDC' });
+      if (data.startsWith('0x7ecebe00')) return encodeFunctionResult({ abi: erc2612PermitAbi, functionName: 'nonces', result: 0n });
+      return o.separator?.() ?? eip712DomainSeparator({ name: 'USDC', version: '2', chainId: 84532, verifyingContract: USDC });
+    });
+    it('classifies ok / already allowed / unsupported without any wallet prompt', async () => {
+      const { ctx, session, wallet } = await setup();
+      const rt = (rpc: MockRpc): Runtime => ({ rpc, nowSeconds: () => NOW });
+      expect(await classifyPayerPermit(ctx, session, rt(permitRpc()))).toBe('ok_to_permit');
+      expect(await classifyPayerPermit(ctx, session, rt(permitRpc({ allowance: ctx.request.grossAmount })))).toBe('already_allowed');
+      expect(await classifyPayerPermit(ctx, session, rt(permitRpc({ allowance: ctx.request.grossAmount - 1n })))).toBe('ok_to_permit');
+      // DAI-style / non-standard domain: neither version 2 nor 1 matches the on-chain separator.
+      expect(await classifyPayerPermit(ctx, session, rt(permitRpc({ separator: () => `0x${'ab'.repeat(32)}` })))).toBe('unsupported_token');
+      expect(await classifyPayerPermit(ctx, session, rt(permitRpc({ separator: () => { throw new Error('execution reverted'); } })))).toBe('unsupported_token');
+      expect(wallet.calls.some((c) => c.method === 'eth_signTypedData_v4' || c.method === 'eth_sendTransaction')).toBe(false);
+    });
+    it('needs an RPC, and propagates a malformed allowance read instead of guessing', async () => {
+      const { ctx, session } = await setup();
+      await expect(classifyPayerPermit(ctx, session, { rpc: undefined, nowSeconds: () => NOW })).rejects.toThrow(/needs an RPC/);
+      const bad = mockRpc(84532, () => '0x01');
+      await expect(classifyPayerPermit(ctx, session, { rpc: bad, nowSeconds: () => NOW })).rejects.toThrow(/unexpected allowance/);
+    });
+  });
+
   it('permit path refuses a wallet signature from a different account', async () => {
     const other = privateKeyToAccount(`0x${'ee'.repeat(32)}`);
     const wallet = new MockWallet({ account: '0x5555555555555555555555555555555555555555' });
@@ -316,7 +367,7 @@ describe('ERC-20 flows', () => {
   it('permit needs an RPC and cannot be combined with a buffer; native ignores permit', async () => {
     const { ctx, session } = await setup();
     await expect(preparePayment(session, ctx, { usePermit: true }, { rpc: undefined, nowSeconds: () => NOW }, noStatus)).rejects.toThrow(/needs an RPC/);
-    const q: BufferQuote = { bufferWei: 1n, maxFeePerGas: 1n, gasLimit: 1n, safetyBps: 1n, quotedAt: NOW, expiresAt: NOW + 100 };
+    const q: BufferQuote = { bufferWei: 1n, maxFeePerGas: 1n, gasLimit: 1n, safetyBps: 1n, quotedAt: NOW, expiresAt: NOW + 100, gasSource: 'default' };
     await expect(preparePayment(session, ctx, { usePermit: true, buffer: q }, { rpc: undefined, nowSeconds: () => NOW }, noStatus)).rejects.toThrow(/cannot be combined/);
     const b = await preparePayment(session, ctx, { usePermit: false, buffer: q }, { rpc: undefined, nowSeconds: () => NOW }, noStatus);
     expect(b.preview.method).toBe('payERC20WithBuffer');

@@ -1,7 +1,7 @@
-import { SilentPaymentError } from '@ghostpay/btc-silent-payments';
+import { parseHeader, SilentPaymentError } from '@ghostpay/btc-silent-payments';
 import { describe, expect, it } from 'vitest';
 import { EsploraClient, EsploraTweakSource, normalizeEsploraUrl } from './esplora';
-import { mockChain, walletA, SEED_B } from './fixtures.testutil';
+import { coinbase, mineHeader, mockChain, paymentTx, walletA, withTxid, SEED_B } from './fixtures.testutil';
 import { BTC_NETWORKS, btcNetwork, MAINNET_GENESIS } from './network';
 import { MAX_SCAN_BLOCKS, scanForPayments } from './scan';
 import { walletFromSeedHex } from './wallet';
@@ -119,19 +119,43 @@ describe('EsploraClient', () => {
   it('encodes witnesses of any size (compact size boundaries)', async () => {
     const h = 'a'.repeat(64);
     const big = 'ab'.repeat(300);
-    const tx = {
-      txid: h,
+    const tx = withTxid({
+      version: 2,
+      locktime: 0,
       vin: [
-        { txid: h, vout: 0, prevout: { scriptpubkey: `0014${'6'.repeat(40)}` }, scriptsig: '', witness: [big, '', ...Array.from({ length: 300 }, () => '01')], is_coinbase: false },
-        { txid: h, vout: 1, prevout: { scriptpubkey: '00' }, scriptsig: '', witness: null, is_coinbase: false },
+        { txid: h, vout: 0, sequence: 0xffffffff, prevout: { scriptpubkey: `0014${'6'.repeat(40)}` }, scriptsig: '', witness: [big, '', ...Array.from({ length: 300 }, () => '01')], is_coinbase: false },
+        { txid: h, vout: 1, sequence: 0xffffffff, prevout: { scriptpubkey: '00' }, scriptsig: '', witness: null as unknown as string[], is_coinbase: false },
       ],
-      vout: [],
-    };
+      vout: [{ scriptpubkey: '51', value: 1 }],
+    });
     const c = new EsploraClient({ baseUrl: BASE, fetchFn: () => Promise.resolve(new Response(JSON.stringify([tx]))) });
     const [t] = await c.blockTxs(h);
     expect(t?.inputs?.[0]?.witness).toHaveLength(302);
     expect(t?.inputs?.[0]?.witness[0]).toHaveLength(300);
     expect(t?.inputs?.[1]?.witness).toHaveLength(0);
+  });
+
+  it('recomputes txids like an independent implementation and rejects edited transaction content', async () => {
+    const tx = withTxid({
+      version: 1, locktime: 500_000,
+      vin: [{ txid: '12'.repeat(32), vout: 7, sequence: 0, prevout: { scriptpubkey: `0014${'6'.repeat(40)}` }, scriptsig: '00'.repeat(300), witness: [], is_coinbase: false }],
+      vout: Array.from({ length: 260 }, (_, k) => ({ scriptpubkey: `0014${'5'.repeat(40)}`, value: 1_000 + k })),
+    });
+    const serve = (body: unknown) => new EsploraClient({ baseUrl: BASE, fetchFn: () => Promise.resolve(new Response(JSON.stringify([body]))) });
+    expect((await serve(tx).blockTxs('a'.repeat(64)))[0]?.txid).toBe(tx.txid);
+    const edits: unknown[] = [
+      { ...tx, vout: tx.vout.map((o, k) => (k === 3 ? { ...o, value: o.value + 1 } : o)) },
+      { ...tx, vout: tx.vout.slice(1) },
+      { ...tx, vin: [{ ...tx.vin[0]!, vout: 8 }] },
+      { ...tx, vin: [{ ...tx.vin[0]!, sequence: 1 }] },
+      { ...tx, locktime: 0 },
+      { ...tx, version: 2 },
+      { ...tx, version: undefined },
+      { ...tx, locktime: undefined },
+      { ...tx, vin: [{ ...tx.vin[0]!, sequence: undefined }] },
+      { ...tx, vin: [] },
+    ];
+    for (const e of edits) expect(await codeOf(serve(e).blockTxs('a'.repeat(64)))).toBe('INVALID_RESPONSE');
   });
 
   it('checks the genesis hash and always refuses mainnet', async () => {
@@ -146,7 +170,7 @@ describe('EsploraClient', () => {
 describe('EsploraTweakSource and scanning', () => {
   it('derives tweaks locally, skips coinbase, and caches per block', async () => {
     const chain = mockChain('regtest', walletA());
-    const src = new EsploraTweakSource(new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn }));
+    const src = new EsploraTweakSource(new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn }), btcNetwork('regtest'));
     expect(await src.getTipHeight()).toBe(4);
     const [tw, outs] = await Promise.all([src.getTweaks(3), src.getOutputs(3)]);
     expect(tw.tweaks).toHaveLength(2);
@@ -159,7 +183,7 @@ describe('EsploraTweakSource and scanning', () => {
 
   it('retries a block after a failed fetch and bounds its cache', async () => {
     const chain = mockChain('regtest', walletA());
-    const src = new EsploraTweakSource(new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn }));
+    const src = new EsploraTweakSource(new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn }), btcNetwork('regtest'));
     chain.failPath = '/block-height/1';
     await expect(src.getTweaks(1)).rejects.toThrow();
     chain.failPath = undefined;
@@ -174,12 +198,15 @@ describe('EsploraTweakSource and scanning', () => {
     const chain = mockChain('regtest', w);
     const blk = chain.blocks[1];
     if (blk === undefined) throw new Error('fixture');
-    blk.txs.push({
-      txid: 'e'.repeat(64),
-      vin: [{ txid: 'f'.repeat(64), vout: 0, prevout: { scriptpubkey: `0014${'6'.repeat(40)}` }, scriptsig: '', witness: ['00', '02'.repeat(5)], is_coinbase: false }],
+    blk.txs.push(withTxid({
+      version: 2,
+      locktime: 0,
+      vin: [{ txid: 'f'.repeat(64), vout: 0, sequence: 0xffffffff, prevout: { scriptpubkey: `0014${'6'.repeat(40)}` }, scriptsig: '', witness: ['00', '02'.repeat(5)], is_coinbase: false }],
       vout: [{ scriptpubkey: `5120${'ab'.repeat(32)}`, value: 5 }],
-    });
-    const src = new EsploraTweakSource(new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn }));
+    }));
+    blk.header = mineHeader(btcNetwork('regtest').genesisHash, blk.txs);
+    blk.hash = parseHeader(blk.header).hash;
+    const src = new EsploraTweakSource(new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn }), btcNetwork('regtest'));
     expect((await src.getTweaks(1)).tweaks).toHaveLength(1);
     expect((await src.getOutputs(1)).outputs).toHaveLength(0);
   });
@@ -195,7 +222,7 @@ describe('EsploraTweakSource and scanning', () => {
     expect(res.found[0]).toMatchObject({ vout: 1, amountSats: 50_000n, height: 3, label: null });
     expect(seen).toEqual([3]);
     // The server only ever saw heights, hashes, outpoints (no key material).
-    for (const r of chain.requests) expect(r).toMatch(/^GET \/(blocks\/tip\/height|block-height\/\d+|block\/[0-9a-f]{64}\/txs\/\d+|tx\/[0-9a-f]{64}\/outspend\/\d+)$/);
+    for (const r of chain.requests) expect(r).toMatch(/^GET \/(blocks\/tip\/height|block-height\/\d+|block\/[0-9a-f]{64}\/txs\/\d+|block\/[0-9a-f]{64}\/header|tx\/[0-9a-f]{64}\/outspend\/\d+)$/);
 
     chain.spent.add(`${res.found[0]?.txid ?? ''}:1`);
     const again = await scanForPayments({ client, wallet: w, fromHeight: 3, toHeight: 3 });
@@ -204,6 +231,56 @@ describe('EsploraTweakSource and scanning', () => {
 
     const other = walletFromSeedHex(SEED_B, btcNetwork('regtest'));
     expect((await scanForPayments({ client, wallet: other, fromHeight: 0 })).found).toHaveLength(0);
+  });
+
+  it('binds scanned data to a proof-of-work header: omitted, injected, edited or unlinked blocks are refused', async () => {
+    const w = walletA();
+    const fresh = () => {
+      const chain = mockChain('regtest', w);
+      return { chain, src: new EsploraTweakSource(new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn }), btcNetwork('regtest')) };
+    };
+    const code = (p: Promise<unknown>) => codeOf(p);
+    // Omitting the payment (a hiding server) breaks the Merkle root.
+    let { chain, src } = fresh();
+    chain.blocks[3]!.txs.splice(2, 1);
+    expect(await code(src.getOutputs(3))).toBe('INVALID_RESPONSE');
+    // Injecting a self-consistent transaction without a matching header also breaks it.
+    ({ chain, src } = fresh());
+    chain.blocks[3]!.txs.push(paymentTx(77, w, SEED_B, 1_000_000));
+    expect(await code(src.getOutputs(3))).toBe('INVALID_RESPONSE');
+    // Header that does not hash to the served block hash.
+    ({ chain, src } = fresh());
+    chain.blocks[3]!.header = chain.blocks[4]!.header!;
+    expect(await code(src.getOutputs(3))).toBe('INVALID_RESPONSE');
+    // Regtest-easy proof of work is refused on a test network with a real limit.
+    ({ chain } = fresh());
+    const strict = new EsploraTweakSource(new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn }), btcNetwork('testnet4'));
+    expect(await code(strict.getOutputs(3))).toBe('INVALID_RESPONSE');
+    // A valid block that does not extend the block below it (or the pinned genesis) is a fork.
+    ({ chain, src } = fresh());
+    await src.getOutputs(2);
+    const forked = mineHeader('ab'.repeat(32), chain.blocks[3]!.txs);
+    chain.blocks[3]!.header = forked;
+    chain.blocks[3]!.hash = parseHeader(forked).hash;
+    expect(await code(src.getOutputs(3))).toBe('REORG_DETECTED');
+    ({ chain, src } = fresh());
+    const orphan = mineHeader('cd'.repeat(32), chain.blocks[1]!.txs);
+    chain.blocks[1]!.header = orphan;
+    chain.blocks[1]!.hash = parseHeader(orphan).hash;
+    expect(await code(src.getOutputs(1))).toBe('REORG_DETECTED');
+    // Linkage is checked from above too: block 2 seen first, then a replacement block 1.
+    ({ chain, src } = fresh());
+    await src.getOutputs(2);
+    const other = mineHeader(btcNetwork('regtest').genesisHash, [coinbase(99)]);
+    chain.blocks[1] = { hash: parseHeader(other).hash, header: other, txs: [coinbase(99)] };
+    expect(await code(src.getOutputs(1))).toBe('REORG_DETECTED');
+    // Genesis is never downloaded and must equal the pinned hash.
+    ({ chain, src } = fresh());
+    expect((await src.getOutputs(0)).outputs).toEqual([]);
+    expect(chain.requests.some((r) => r.includes('/header'))).toBe(false);
+    chain.blocks[0]!.hash = 'ee'.repeat(32);
+    ({ src } = { src: new EsploraTweakSource(new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn }), btcNetwork('regtest')) });
+    expect(await code(src.getOutputs(0))).toBe('NETWORK_MISMATCH');
   });
 
   it('validates the range', async () => {
