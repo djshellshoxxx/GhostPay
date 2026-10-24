@@ -310,7 +310,9 @@ describe('recovery guard', () => {
     ], new Set(), a1.policy.destination);
     expect(s.pendingDestination).toBeUndefined();
     expect(s.pending).toEqual([]);
-    expect(s.alerts).toEqual([{ level: 'warn', text: expect.stringMatching(/was changed to/) as unknown as string }]);
+    expect(s.alerts).toHaveLength(1);
+    expect(s.alerts[0]?.level).toBe('warn');
+    expect(s.alerts[0]?.text).toMatch(/was changed to/);
   });
   it('refuses an RPC on another chain and stops at the request cap', async () => {
     await expect(fetchAccountEvents(fakeChain(1, {}), sepolia, acct, 0n)).rejects.toThrow(/different chain/);

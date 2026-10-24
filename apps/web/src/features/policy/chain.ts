@@ -41,11 +41,11 @@ export async function ethCall(client: RpcClient, to: Address, data: Hex): Promis
   return r as Hex;
 }
 
-async function read<const A extends Abi>(client: RpcClient, abi: A, to: Address, functionName: string, args: readonly unknown[] = []): Promise<unknown> {
-  const data = encodeFunctionData({ abi: abi as Abi, functionName, args } as never);
+async function read(client: RpcClient, abi: Abi, to: Address, functionName: string, args: readonly unknown[] = []): Promise<unknown> {
+  const data = encodeFunctionData({ abi, functionName, args });
   const out = await ethCall(client, to, data);
   try {
-    return decodeFunctionResult({ abi: abi as Abi, functionName, data: out } as never) as unknown;
+    return decodeFunctionResult({ abi, functionName, data: out });
   } catch {
     throw new UserFacingError(`The contract at ${to} did not answer ${functionName}() as expected.`);
   }

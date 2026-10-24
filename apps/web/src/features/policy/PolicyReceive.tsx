@@ -117,7 +117,7 @@ function AccountPanel(props: { readonly ctx: PolicyCtx; readonly match: Scheme2M
         </>
       )}
       {summary?.alerts.map((a, i) => (
-        <Notice key={i} kind={a.level === 'danger' ? 'error' : 'warn'} title={a.level === 'danger' ? 'Action needed' : undefined}>
+        <Notice key={i} kind={a.level === 'danger' ? 'error' : 'warn'} title={a.level === 'danger' ? 'Action needed' : 'Warning'}>
           {a.text}
           {a.cancel !== undefined && <button type="button" disabled={busy} onClick={() => { cancel(a.cancel!.kind, a.cancel!.id); }}>Cancel it</button>}
         </Notice>

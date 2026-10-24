@@ -100,8 +100,9 @@ export function scheme2Log(opts: { stealth: Address; ephemeralPublicKey: Hex; me
 
 /** A PolicyAccount event log. */
 export function accountLog(acct: Address, eventName: string, args: Record<string, unknown>, block: number): RpcLog {
-  const ev = (policyAccountAbi as Abi).find((x) => x.type === 'event' && x.name === eventName) as { inputs: { name: string; type: string; indexed?: boolean }[] };
-  const topics = encodeEventTopics({ abi: policyAccountAbi as Abi, eventName, args } as never) as Hex[];
+  const ev = (policyAccountAbi as Abi).find((x) => x.type === 'event' && x.name === eventName) as unknown as { inputs: { name: string; type: string; indexed?: boolean }[] };
+  const anyAbi: Abi = policyAccountAbi;
+  const topics = encodeEventTopics({ abi: anyAbi, eventName, args }) as Hex[];
   const nonIndexed = ev.inputs.filter((i) => i.indexed !== true);
   return {
     address: acct,
@@ -123,7 +124,7 @@ export interface FakeChainState {
   logs?: RpcLog[];
 }
 
-const ABIS: Abi[] = [ghostPayPolicyRouterAbi as Abi, policyAccountFactoryAbi as Abi, policyAccountAbi as Abi, erc20Abi as Abi];
+const ABIS: Abi[] = [ghostPayPolicyRouterAbi, policyAccountFactoryAbi, policyAccountAbi, erc20Abi];
 
 /** Answers eth_call for the policy contracts from a result table. */
 export function fakeChain(chainId: number, s: FakeChainState): MockRpc {
@@ -156,7 +157,7 @@ export function fakeChain(chainId: number, s: FakeChainState): MockRpc {
         let result = s.calls?.[key] ?? s.calls?.[fallback];
         if (result === undefined && d.functionName === 'balanceOf') result = s.balances?.[`${to}@${String(d.args?.[0]).toLowerCase()}`] ?? 0n;
         if (result === undefined) throw new Error(`no result for ${key}`);
-        return encodeFunctionResult({ abi, functionName: d.functionName, result } as never);
+        return encodeFunctionResult({ abi, functionName: d.functionName, result });
       }
       throw new Error('unknown call');
     }

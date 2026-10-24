@@ -4,7 +4,7 @@
  */
 export const POLICY_FLAG = 'VITE_GHOSTPAY_EXPERIMENTAL_POLICY';
 
-export function isPolicyFeatureEnabled(env: Readonly<Record<string, unknown>> = import.meta.env as Readonly<Record<string, unknown>>): boolean {
+export function isPolicyFeatureEnabled(env: Readonly<Record<string, unknown>> = import.meta.env): boolean {
   return env[POLICY_FLAG] === '1';
 }
 

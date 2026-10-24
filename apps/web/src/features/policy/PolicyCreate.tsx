@@ -5,7 +5,6 @@ import {
   findPolicyFromCandidates,
   parsePolicyRecord,
   serializePolicyRecord,
-  type Address,
   type PolicyRecord,
 } from '@ghostpay/policy-scheme';
 import { bytesToHex } from '@noble/hashes/utils.js';
@@ -74,7 +73,7 @@ export function PolicyCreate(props: { readonly ctx: PolicyCtx }): ReactNode {
       if (dests.length === 0 || !dests.every((d) => isAddress(d, { strict: true }))) throw new UserFacingError('Enter one or more checksummed destination addresses.');
       const found = findPolicyFromCandidates({
         policyHash: meta.policyHash,
-        destinations: dests.map((d) => getAddress(d) as Address),
+        destinations: dests.map((d) => getAddress(d)),
         delaySeconds: DELAY_PRESETS.map((p) => p.seconds),
         limitsRoots: [ZERO_HASH, ...records.map((r) => r.policy.limitsRoot).filter((r) => r !== ZERO_HASH)],
       });
