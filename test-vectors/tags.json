@@ -1,0 +1,225 @@
+{
+  "description": "GhostPay Feature 4 tag archive (.gpa) vectors. TEST-ONLY passphrases, salts and IVs. Generated with node:crypto only.",
+  "format": "GPA1 | kdf=1 | log2N | r | p | salt16 | iv12 | AES-256-GCM(ct||tag16), AAD = bytes before iv; scrypt dkLen 32 over NFKC passphrase",
+  "provenance": {
+    "generator": "test-vectors/generate-tag-archive.mjs",
+    "node": "v22.22.0"
+  },
+  "generatedAt": "2026-10-24",
+  "valid": [
+    {
+      "id": "tags-001",
+      "note": "one record, N=2^14",
+      "passphrase": "correct horse battery staple 7",
+      "archiveHex": "47504131010e0801010101010101010101010101010101010202020202020202020202027d106fca5ee5198cbc8036e800275144d4543f20b98a6a206cc138a1e0408e24b82f3ad33fbac8076eaadcbfd9714a9997c4b5b72a2f6ca1ddd8892f6ac2a32ad2dae32705d36a764a42e87895bbd7c0ef1f7e039f03e21b56864ca5b88f226ad4f56f5a13f36cc9be07ec3a47e7f7f65b09ccd441f56aa00910adedfe0d9bd083b308e5a290d335a0c0e54ad094b620f6fa23d454a9db94dd4c51bcbaf2e5fc2c55737dc1850d2bc96d9e1b498edd6df835f5fbca414f0d16bcef017cc2f4f9881c190e1418a8daa1a88de7f46b10ef1994ac28fc70f0c2ea96a14f399b5894936309ade21b21aa95278bbcd6730ba23ef7d491a4db80b8fc51074a1433146059656df044f24d55e1fb5ab538fc809ac7ecc0db23bc7e38d05e86bc81c39c6efa8a924f2121638eef1663eb73833e356eaff7ce7291b03fa492cabdecc8753b0080462d9561e6e3b5457b4d0bfe438b3f15debb5cbac1ec32894253ae75c97f3e4abf09f50e6c1d2c3b0ab70c",
+      "expected": {
+        "version": 1,
+        "createdAt": 1700000200000,
+        "keyVersion": 1,
+        "records": [
+          {
+            "chainId": 84532,
+            "createdAt": 1700000000000,
+            "updatedAt": 1700000100000,
+            "payload": {
+              "stealthAddress": "0x0000000000000000000000000000000000000001",
+              "announcementId": "0xabababababababababababababababababababababababababababababababab:0",
+              "logIndex": 0,
+              "clientLabel": "Client 0"
+            }
+          }
+        ],
+        "history": {}
+      }
+    },
+    {
+      "id": "tags-002",
+      "note": "empty archive",
+      "passphrase": "correct horse battery staple 7",
+      "archiveHex": "47504131010e0801030303030303030303030303030303030404040404040404040404040c8c02ba6a286c7e8d53ab761ffc8e089201feae6d6b441944ef8f435fab86b4a9d4bb8c46e689265c911129a8fef4e3b5b160611e8cbdc8ec6ebc4fc667f413667df0d8c7488e7d428dbc54c4a8049553e135ffe5ce6378cdcfaed7a5162e41",
+      "expected": {
+        "version": 1,
+        "createdAt": 1700000200000,
+        "keyVersion": 1,
+        "records": [],
+        "history": {}
+      }
+    },
+    {
+      "id": "tags-003",
+      "note": "optional fields, unicode label, scan-history entry, mixed-case hex (normalised on import)",
+      "passphrase": "correct horse battery staple 7",
+      "archiveHex": "47504131010e0801000102030405060708090a0b0c0d0e0ff0f1f2f3f4f5f6f7f8f9fafb03068cffd6d3ae3af2263a143550680655d491b4271da4b754a7b0b8fbf1f81155ec69f295f8be848a8631521ccb4ebc216b506d003c530763a0612907452838c992649fb8381573ed8b8f1bc9d0fd01261470fc5571b25b35521462bcb06a35995e4eac5b56910038d4ebe4d09f87d540cebf40f041ba3f751309816055cec9265055becd951b593564e9a1005a53a610cb2e38e0d38be50b08a2b9a947494a3a38839390430c132dc22139f8b6c025df56a57cce593f97ffc578e1a7ab00212010a62c644253a953c81569dc882f5e2cd120379aba041b294353f73cf04115593db35ddd6ad2e004b00c8452c2ff0c258216537fcd9138faa310e09727d0d27c279a387582d66b909b61737acbecda2b5e5b2ad6870c4fb98bb2ae60a9174046bee70c7667750c94e3e86c45d32e0713dafbb8458d2da9f4c7db7fd41f527bd14656557aad9f603c21cfd1ec24b0124e08e71105369a3fb752e134362583bfd0d1e82515fbb8205f202aca398b829ede05785cbe40f2b8021428bc6c68489ee8acb485ae7623a03a94a0cc1eca395c2aa44268e2bcc3c1030a63017b416c57fe9045281e9beed47b2366bf754e51b678b64c55fc3bf2d16916133bba351c2e673bd100f08370013da9c5bb6d17bd4d89cbcee216582fda0e3a2c64bf039c9130d8bd30ab748c709528c71d7506c6d7aff26d5764a3ca043fb4ec1d25e1d7f0bf2ead5e20dff3ef8f69245e948826e460474afd7177c0040d91c0786264173bea559c3754a22d078b2f9c387838b086244492f677308a6beb591f75970dbac3f7bb2a6abf77f913ed636ad47119fd8c75759e9eef450272087e8d7bfae1bde7eb4c4f6f62f148364a975bff567ed103ec20d0ab70e7a7c454429987f6a6a0f49c325231b6e9d5f5dc0d51ef2a32a987e09e77c7e10fc95dfd088c7015a249116164f1fcfc4a3ebe479839b2a94b907d606a00e840afab9bf6c0894965a93dea044af0ce45be08c7ee73948d76c3807654b4d5419839daa32f28d133be903e6a5ae27bf1c36e03f2",
+      "expected": {
+        "version": 1,
+        "createdAt": 1700000200000,
+        "keyVersion": 1,
+        "records": [
+          {
+            "chainId": 84532,
+            "createdAt": 1700000000001,
+            "updatedAt": 1700000100001,
+            "payload": {
+              "stealthAddress": "0xAbCdEf0000000000000000000000000000000001",
+              "announcementId": "0xabababababababababababababababababababababababababababababababab:1",
+              "logIndex": 1,
+              "clientLabel": "Client 1",
+              "invoiceLabel": "Rechnung Nr. 7 – München",
+              "notes": "日本語のメモ"
+            }
+          },
+          {
+            "chainId": 84532,
+            "createdAt": 1700000000002,
+            "updatedAt": 1700000100002,
+            "payload": {
+              "stealthAddress": "0x0000000000000000000000000000000000000003",
+              "announcementId": "0xabababababababababababababababababababababababababababababababab:2",
+              "logIndex": 2,
+              "clientLabel": "Client 2"
+            }
+          }
+        ],
+        "history": {
+          "84532": "opaque-history-ciphertext"
+        }
+      }
+    },
+    {
+      "id": "tags-004",
+      "note": "passphrase NFKC normalisation (NFC encrypt, NFD decrypt)",
+      "passphrase": "café crème brûlée 42",
+      "archiveHex": "47504131010e080109090909090909090909090909090909080808080808080808080808f05164ee3e375461b86564eb01167fc70547e80462a591d74d8332245c98d5b06c53a0905f90dee2ae42fae430cf9614d3fe7258e3fb272dd3322d30c4fc6df8fd3fea07676ce9878ee05ea3bb2418c2b566d78ce59ebb6512a9eb856e2c4980593b716194bd7a4808bce5e07307e2ad7c2a8c8dddb90318d1a5ee450cec580409b409f9ea46c02d7889bc0cec14de0cc776d43f1d44cc4a6e693cfe7d78f37a61f927622d2931ca4bd6b2c31c8978a2a54719e84388583912e9f24fb40785fbc18fb7678a13414367852b16b0abdae6b48bfcabf22809b919394dab5923f68169a698dbfba5defd6baf6a89b506c4476d586177a5c008e10ae111e77c4a321fd90ccbd7edf6d0b2909ae18b3f6b533614110b240f8fa45786516413929d3fd3b0022254522f8affa4f02158a332e138e889768a60de4a6f54dd95de3ac6c10e395123e45d99e5a38e94280552e2218b71b86fae6f2d696e792be2a5ce2cd75658f30f167fbb481edaf216ac18",
+      "expected": {
+        "version": 1,
+        "createdAt": 1700000200000,
+        "keyVersion": 1,
+        "records": [
+          {
+            "chainId": 84532,
+            "createdAt": 1700000000003,
+            "updatedAt": 1700000100003,
+            "payload": {
+              "stealthAddress": "0x0000000000000000000000000000000000000004",
+              "announcementId": "0xabababababababababababababababababababababababababababababababab:3",
+              "logIndex": 3,
+              "clientLabel": "Client 3"
+            }
+          }
+        ],
+        "history": {}
+      }
+    },
+    {
+      "id": "tags-005",
+      "note": "production cost N=2^17",
+      "passphrase": "correct horse battery staple 7",
+      "archiveHex": "475041310111080117171717171717171717171717171717717171717171717171717171c97ead124be736ed81673bf4417eb68cd237b040b18db654fec6e6b022372da93597ba7e2401eeb32541a53e5a9453c0d9dcc750fbf8a22e82676ee0fb5e84f23ce412615b801d38a5e4cf1947a5183839612f451f69042621685ef09bafaf40222a302aa73d0309099505000371a37487e533f0748a1ad997f6a7aa24789a4126fae3f287e706c4a769d1df78bf5efea5492ec7b1cb2b6400bcd098db34341ec9b84db03fa4c0401ba8e67913fae2fc68663cc42b184beed17497a43c57e4d18c586b0b11c1367dd16773e127756f61d0b3bf338c12dc7775cd85e5070b7739a73be53804efb647ce028040251371da9ce7cf7c842502fb42061868979e3ca5af4996b4d1bf6857e134e6ed87cbc4668b084a6ea1f89c959f72ac721c1ba6a45bf532bd8da5eab989fc8757d638e5f4143e621157a3e8297985f6250ff8122101f840173c31f702993a2518979e21008042c71fc9376c4a07022d9f6dbea850de6033c87e66ba3f02be1e1d51",
+      "expected": {
+        "version": 1,
+        "createdAt": 1700000200000,
+        "keyVersion": 1,
+        "records": [
+          {
+            "chainId": 84532,
+            "createdAt": 1700000000004,
+            "updatedAt": 1700000100004,
+            "payload": {
+              "stealthAddress": "0x0000000000000000000000000000000000000005",
+              "announcementId": "0xabababababababababababababababababababababababababababababababab:4",
+              "logIndex": 4,
+              "clientLabel": "Client 4"
+            }
+          }
+        ],
+        "history": {}
+      }
+    }
+  ],
+  "invalid": [
+    {
+      "id": "tags-bad-001",
+      "note": "wrong passphrase",
+      "passphrase": "correct horse battery staple 8",
+      "archiveHex": "47504131010e0801010101010101010101010101010101010202020202020202020202027d106fca5ee5198cbc8036e800275144d4543f20b98a6a206cc138a1e0408e24b82f3ad33fbac8076eaadcbfd9714a9997c4b5b72a2f6ca1ddd8892f6ac2a32ad2dae32705d36a764a42e87895bbd7c0ef1f7e039f03e21b56864ca5b88f226ad4f56f5a13f36cc9be07ec3a47e7f7f65b09ccd441f56aa00910adedfe0d9bd083b308e5a290d335a0c0e54ad094b620f6fa23d454a9db94dd4c51bcbaf2e5fc2c55737dc1850d2bc96d9e1b498edd6df835f5fbca414f0d16bcef017cc2f4f9881c190e1418a8daa1a88de7f46b10ef1994ac28fc70f0c2ea96a14f399b5894936309ade21b21aa95278bbcd6730ba23ef7d491a4db80b8fc51074a1433146059656df044f24d55e1fb5ab538fc809ac7ecc0db23bc7e38d05e86bc81c39c6efa8a924f2121638eef1663eb73833e356eaff7ce7291b03fa492cabdecc8753b0080462d9561e6e3b5457b4d0bfe438b3f15debb5cbac1ec32894253ae75c97f3e4abf09f50e6c1d2c3b0ab70c",
+      "error": "auth"
+    },
+    {
+      "id": "tags-bad-002",
+      "note": "flipped ciphertext byte",
+      "passphrase": "correct horse battery staple 7",
+      "archiveHex": "47504131010e0801010101010101010101010101010101010202020202020202020202027d106fca5fe5198cbc8036e800275144d4543f20b98a6a206cc138a1e0408e24b82f3ad33fbac8076eaadcbfd9714a9997c4b5b72a2f6ca1ddd8892f6ac2a32ad2dae32705d36a764a42e87895bbd7c0ef1f7e039f03e21b56864ca5b88f226ad4f56f5a13f36cc9be07ec3a47e7f7f65b09ccd441f56aa00910adedfe0d9bd083b308e5a290d335a0c0e54ad094b620f6fa23d454a9db94dd4c51bcbaf2e5fc2c55737dc1850d2bc96d9e1b498edd6df835f5fbca414f0d16bcef017cc2f4f9881c190e1418a8daa1a88de7f46b10ef1994ac28fc70f0c2ea96a14f399b5894936309ade21b21aa95278bbcd6730ba23ef7d491a4db80b8fc51074a1433146059656df044f24d55e1fb5ab538fc809ac7ecc0db23bc7e38d05e86bc81c39c6efa8a924f2121638eef1663eb73833e356eaff7ce7291b03fa492cabdecc8753b0080462d9561e6e3b5457b4d0bfe438b3f15debb5cbac1ec32894253ae75c97f3e4abf09f50e6c1d2c3b0ab70c",
+      "error": "auth"
+    },
+    {
+      "id": "tags-bad-003",
+      "note": "flipped GCM tag byte",
+      "passphrase": "correct horse battery staple 7",
+      "archiveHex": "47504131010e0801010101010101010101010101010101010202020202020202020202027d106fca5ee5198cbc8036e800275144d4543f20b98a6a206cc138a1e0408e24b82f3ad33fbac8076eaadcbfd9714a9997c4b5b72a2f6ca1ddd8892f6ac2a32ad2dae32705d36a764a42e87895bbd7c0ef1f7e039f03e21b56864ca5b88f226ad4f56f5a13f36cc9be07ec3a47e7f7f65b09ccd441f56aa00910adedfe0d9bd083b308e5a290d335a0c0e54ad094b620f6fa23d454a9db94dd4c51bcbaf2e5fc2c55737dc1850d2bc96d9e1b498edd6df835f5fbca414f0d16bcef017cc2f4f9881c190e1418a8daa1a88de7f46b10ef1994ac28fc70f0c2ea96a14f399b5894936309ade21b21aa95278bbcd6730ba23ef7d491a4db80b8fc51074a1433146059656df044f24d55e1fb5ab538fc809ac7ecc0db23bc7e38d05e86bc81c39c6efa8a924f2121638eef1663eb73833e356eaff7ce7291b03fa492cabdecc8753b0080462d9561e6e3b5457b4d0bfe438b3f15debb5cbac1ec32894253ae75c97f3e4abf09f50e6c1d2c3b0ab70d",
+      "error": "auth"
+    },
+    {
+      "id": "tags-bad-004",
+      "note": "flipped salt byte (AAD and key change)",
+      "passphrase": "correct horse battery staple 7",
+      "archiveHex": "47504131010e0801010100010101010101010101010101010202020202020202020202027d106fca5ee5198cbc8036e800275144d4543f20b98a6a206cc138a1e0408e24b82f3ad33fbac8076eaadcbfd9714a9997c4b5b72a2f6ca1ddd8892f6ac2a32ad2dae32705d36a764a42e87895bbd7c0ef1f7e039f03e21b56864ca5b88f226ad4f56f5a13f36cc9be07ec3a47e7f7f65b09ccd441f56aa00910adedfe0d9bd083b308e5a290d335a0c0e54ad094b620f6fa23d454a9db94dd4c51bcbaf2e5fc2c55737dc1850d2bc96d9e1b498edd6df835f5fbca414f0d16bcef017cc2f4f9881c190e1418a8daa1a88de7f46b10ef1994ac28fc70f0c2ea96a14f399b5894936309ade21b21aa95278bbcd6730ba23ef7d491a4db80b8fc51074a1433146059656df044f24d55e1fb5ab538fc809ac7ecc0db23bc7e38d05e86bc81c39c6efa8a924f2121638eef1663eb73833e356eaff7ce7291b03fa492cabdecc8753b0080462d9561e6e3b5457b4d0bfe438b3f15debb5cbac1ec32894253ae75c97f3e4abf09f50e6c1d2c3b0ab70c",
+      "error": "auth"
+    },
+    {
+      "id": "tags-bad-005",
+      "note": "r changed 8 -> 4 (AAD-bound parameter)",
+      "passphrase": "correct horse battery staple 7",
+      "archiveHex": "47504131010e0401010101010101010101010101010101010202020202020202020202027d106fca5ee5198cbc8036e800275144d4543f20b98a6a206cc138a1e0408e24b82f3ad33fbac8076eaadcbfd9714a9997c4b5b72a2f6ca1ddd8892f6ac2a32ad2dae32705d36a764a42e87895bbd7c0ef1f7e039f03e21b56864ca5b88f226ad4f56f5a13f36cc9be07ec3a47e7f7f65b09ccd441f56aa00910adedfe0d9bd083b308e5a290d335a0c0e54ad094b620f6fa23d454a9db94dd4c51bcbaf2e5fc2c55737dc1850d2bc96d9e1b498edd6df835f5fbca414f0d16bcef017cc2f4f9881c190e1418a8daa1a88de7f46b10ef1994ac28fc70f0c2ea96a14f399b5894936309ade21b21aa95278bbcd6730ba23ef7d491a4db80b8fc51074a1433146059656df044f24d55e1fb5ab538fc809ac7ecc0db23bc7e38d05e86bc81c39c6efa8a924f2121638eef1663eb73833e356eaff7ce7291b03fa492cabdecc8753b0080462d9561e6e3b5457b4d0bfe438b3f15debb5cbac1ec32894253ae75c97f3e4abf09f50e6c1d2c3b0ab70c",
+      "error": "auth"
+    },
+    {
+      "id": "tags-bad-006",
+      "note": "N below the 2^14 floor",
+      "passphrase": "correct horse battery staple 7",
+      "archiveHex": "47504131010d0801010101010101010101010101010101010202020202020202020202027d106fca5ee5198cbc8036e800275144d4543f20b98a6a206cc138a1e0408e24b82f3ad33fbac8076eaadcbfd9714a9997c4b5b72a2f6ca1ddd8892f6ac2a32ad2dae32705d36a764a42e87895bbd7c0ef1f7e039f03e21b56864ca5b88f226ad4f56f5a13f36cc9be07ec3a47e7f7f65b09ccd441f56aa00910adedfe0d9bd083b308e5a290d335a0c0e54ad094b620f6fa23d454a9db94dd4c51bcbaf2e5fc2c55737dc1850d2bc96d9e1b498edd6df835f5fbca414f0d16bcef017cc2f4f9881c190e1418a8daa1a88de7f46b10ef1994ac28fc70f0c2ea96a14f399b5894936309ade21b21aa95278bbcd6730ba23ef7d491a4db80b8fc51074a1433146059656df044f24d55e1fb5ab538fc809ac7ecc0db23bc7e38d05e86bc81c39c6efa8a924f2121638eef1663eb73833e356eaff7ce7291b03fa492cabdecc8753b0080462d9561e6e3b5457b4d0bfe438b3f15debb5cbac1ec32894253ae75c97f3e4abf09f50e6c1d2c3b0ab70c",
+      "error": "format"
+    },
+    {
+      "id": "tags-bad-007",
+      "note": "N above the 2^18 ceiling",
+      "passphrase": "correct horse battery staple 7",
+      "archiveHex": "4750413101130801010101010101010101010101010101010202020202020202020202027d106fca5ee5198cbc8036e800275144d4543f20b98a6a206cc138a1e0408e24b82f3ad33fbac8076eaadcbfd9714a9997c4b5b72a2f6ca1ddd8892f6ac2a32ad2dae32705d36a764a42e87895bbd7c0ef1f7e039f03e21b56864ca5b88f226ad4f56f5a13f36cc9be07ec3a47e7f7f65b09ccd441f56aa00910adedfe0d9bd083b308e5a290d335a0c0e54ad094b620f6fa23d454a9db94dd4c51bcbaf2e5fc2c55737dc1850d2bc96d9e1b498edd6df835f5fbca414f0d16bcef017cc2f4f9881c190e1418a8daa1a88de7f46b10ef1994ac28fc70f0c2ea96a14f399b5894936309ade21b21aa95278bbcd6730ba23ef7d491a4db80b8fc51074a1433146059656df044f24d55e1fb5ab538fc809ac7ecc0db23bc7e38d05e86bc81c39c6efa8a924f2121638eef1663eb73833e356eaff7ce7291b03fa492cabdecc8753b0080462d9561e6e3b5457b4d0bfe438b3f15debb5cbac1ec32894253ae75c97f3e4abf09f50e6c1d2c3b0ab70c",
+      "error": "format"
+    },
+    {
+      "id": "tags-bad-008",
+      "note": "wrong magic",
+      "passphrase": "correct horse battery staple 7",
+      "archiveHex": "47504132010e0801010101010101010101010101010101010202020202020202020202027d106fca5ee5198cbc8036e800275144d4543f20b98a6a206cc138a1e0408e24b82f3ad33fbac8076eaadcbfd9714a9997c4b5b72a2f6ca1ddd8892f6ac2a32ad2dae32705d36a764a42e87895bbd7c0ef1f7e039f03e21b56864ca5b88f226ad4f56f5a13f36cc9be07ec3a47e7f7f65b09ccd441f56aa00910adedfe0d9bd083b308e5a290d335a0c0e54ad094b620f6fa23d454a9db94dd4c51bcbaf2e5fc2c55737dc1850d2bc96d9e1b498edd6df835f5fbca414f0d16bcef017cc2f4f9881c190e1418a8daa1a88de7f46b10ef1994ac28fc70f0c2ea96a14f399b5894936309ade21b21aa95278bbcd6730ba23ef7d491a4db80b8fc51074a1433146059656df044f24d55e1fb5ab538fc809ac7ecc0db23bc7e38d05e86bc81c39c6efa8a924f2121638eef1663eb73833e356eaff7ce7291b03fa492cabdecc8753b0080462d9561e6e3b5457b4d0bfe438b3f15debb5cbac1ec32894253ae75c97f3e4abf09f50e6c1d2c3b0ab70c",
+      "error": "format"
+    },
+    {
+      "id": "tags-bad-009",
+      "note": "truncated below header + iv + tag",
+      "passphrase": "correct horse battery staple 7",
+      "archiveHex": "47504131010e0801010101010101010101010101010101010202020202020202020202027d106fca5ee5198cbc8036e80027",
+      "error": "format"
+    },
+    {
+      "id": "tags-bad-010",
+      "note": "authentic archive with an unknown top-level key",
+      "passphrase": "correct horse battery staple 7",
+      "archiveHex": "47504131010e0801010101010101010101010101010101010202020202020202020202027d106fca5ee5198cbc8036e800275144d4543f20b98a6a206cc138a1e0408e24b82f3ad33fbac8076eaadcbfd9714a9997c4b5b72a2f6ca1ddd8892f6ac2a32ad2dae32705d36a764a42e87895bbd7c0ef1f7e039f03e21b56864ca5b88f226ad4f56f5a13f36cc9be07ec3a47e7f7f65b09ccd441f56aa00910adedfe0d9bd083b308e5a290d335a0c0e54ad094b620f6fa23d454a9db94dd4c51bcbaf2e5fc2c55737dc1850d2bc96d9e1b498edd6df835f5fbca414f0d16bcef017cc2f4f9881c190e1418a8daa1a88de7f46b10ef1994ac28fc70f0c2ea96a14f399b5894936309ade21b21aa95278bbcd6730ba23ef7d491a4db80b8fc51074a1433146059656df044f24d55e1fb5ab538fc809ac7ecc0db23bc7e38d05e86bc81c39c6efa8a924f2121638eef1663eb73833e356eaff7ce7291b03fa492cabdecc8753b0080462d9561e6e3b5457b4d0bfe438b3f15debb5cbac1ec32894253ff2305a10e2da512b9ccae40ad92bd1f17cc6693903619278567ce",
+      "error": "format"
+    },
+    {
+      "id": "tags-bad-011",
+      "note": "authentic archive from a newer version",
+      "passphrase": "correct horse battery staple 7",
+      "archiveHex": "47504131010e0801010101010101010101010101010101010202020202020202020202027d106fca5ee5198cbc8036eb00275144d4543f20b98a6a206cc138a1e0408e24b82f3ad33fbac8076eaadcbfd9714a9997c4b5b72a2f6ca1ddd8892f6ac2a32ad2dae32705d36a764a42e87895bbd7c0ef1f7e039f03e21b56864ca5b88f226ad4f56f5a13f36cc9be07ec3a47e7f7f65b09ccd441f56aa00910adedfe0d9bd083b308e5a290d335a0c0e54ad094b620f6fa23d454a9db94dd4c51bcbaf2e5fc2c55737dc1850d2bc96d9e1b498edd6df835f5fbca414f0d16bcef017cc2f4f9881c190e1418a8daa1a88de7f46b10ef1994ac28fc70f0c2ea96a14f399b5894936309ade21b21aa95278bbcd6730ba23ef7d491a4db80b8fc51074a1433146059656df044f24d55e1fb5ab538fc809ac7ecc0db23bc7e38d05e86bc81c39c6efa8a924f2121638eef1663eb73833e356eaff7ce7291b03fa492cabdecc8753b0080462d9561e6e3b5457b4d0bfe438b3f15debb5cbac1ec32894253ae912a9d05a984f41809d232b2bc0ff2c5",
+      "error": "version"
+    },
+    {
+      "id": "tags-bad-012",
+      "note": "authentic archive with an invalid stealth address",
+      "passphrase": "correct horse battery staple 7",
+      "archiveHex": "47504131010e0801010101010101010101010101010101010202020202020202020202027d106fca5ee5198cbc8036e800275144d4543f20b98a6a206cc138a1e0408e24b82f3ad33fbac8076eaadcbfd9714a9997c4b5b72a2f6ca1ddd8892f6ac2a32ad2dae32705d36a764a42e87895bbd7c0ef1f7e039f03e21b56864ca5b88f226ad4f56f5a13f36cc9be07ec3a47e7f7f65b09ccd441f56aa00910adedfe0d9bd083b308e5a290d335a0c0e54ad094b620f6fa23d454a9db94dd4c51bcbaf2e5fc2c557323d6c55839d57fcf4517d19833ab60a8ae9405365904b6fd013493a6a8da4d4b5f4649fa8bf3f9dfb6a7285eac1a9ba026eb7ff1c6e592ad5a129e18cfd33213ade21b21aa95278bbcd6730ba23ef7d491a4db80b8fc51074a14684623172663fe41da4150e6e21aee6ab1c098c9e4c7d435917d3bd753c6e7c1e19266fd858455212132d1de5526ca74942f223eece5d82b8fa10652581d3363acf3ec9f969072e47134",
+      "error": "format"
+    }
+  ]
+}

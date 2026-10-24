@@ -27,6 +27,13 @@ In progress — see ledger below. Prior handoff: `docs/HANDOFF-2026-10-24-PR26-C
 | 4 | Spec 13: re-estimate before send | `assertBufferStillSufficient` in `sendPayment` before simulation/wallet: fresh gas price at quoted gas limit must not exceed built buffer value; no RPC -> refuse. | pay.test + payExec.test (gas spike blocks send with zero wallet contact; no-RPC refusal). Would fail without guard. |
 | 5 | Spec 04 payer permit pre-flight | `classifyPayerPermit` (payExec): `already_allowed` skips signature, `unsupported_token` (domain unreadable/mismatch) falls back to exact approval path, never signs. Wired in Pay prepare. | payExec.test classifier matrix; 2 Pay UI tests (both fail pre-fix: permit build error). |
 
+| 6 | Spec 13 send-time recheck tolerance | Recheck compares margin-free requirement so drift within the 20 % safety margin does not force re-prepare loops. | pay.test boundary 1.2 gwei pass / +1 wei block. |
+| 7 | Spec 11/12 BTC foundation: block integrity | `packages/btc-silent-payments/src/header.ts` (header parse, nBits target w/ Core negative/overflow rules, PoW vs per-network powLimit, CVE-2012-2459-safe Merkle root, `verifyBlockData`). Esplora: txid recomputed from JSON (version/locktime/sequence required), header hash = served hash, PoW, Merkle root, height linkage to pinned genesis (both directions), genesis never downloaded. Regtest shim serves `/block/:hash/header` + txid fields. | header.test 16 (mainnet/regtest genesis, block 170 Merkle); esplora.test tamper matrix (omit/inject/edit/wrong header/weak PoW on testnet4/fork below/above/genesis mismatch) + txid edits vs independent @scure/btc-signer txids; BtcView flows green; btc pkg 369 tests, coverage 97.56/96.41/96.91/99.29; shim `node --test` 4/4. |
+
+BTC limits (do not overclaim): NO difficulty retarget, chain work, MTP or best-chain selection; test-network PoW cheap; witness + prevout scripts not txid-bound (can hide, not forge, payments); `isUnspent` is server's word. Live bitcoind regtest e2e NOT run locally (no bitcoind); GitHub Integration workflow runs it on PR when btc paths change — check its result.
+
+Blocked: TRON Nile/Shasta positive genesis pinning — trongrid hosts 403 via network policy; not pinned from memory. Spec 13 fiat buffer estimate — `FEEDS` registry is empty (no verified feed addresses). Spec 05 lanes/budget redesign deferred (existing per-run budget + resumable `limitReached` already avoids silent drops).
+
 Not done from spec 13 (needs schema version + ADR / feed work): invoice `bufferPolicy` (`maxWei/minWei`), fiat estimate of buffer, permit+buffer contract path (deferred, audit). Spec 04 relayer side (grief reserve, failure counter, sweep fallback ladder) not touched.
 
 ### Verification log (this session, exact commands)
