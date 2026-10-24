@@ -25,9 +25,10 @@ Do NOT redo (done and tested on this branch):
 
 Remaining, in dependency order:
 1. Get PR #27 reviewed; address findings; merge when exact head is reviewed and green.
-2. Archive fuzz test (apps/web/src/lib/tagArchive.test.ts, 150 cases, 120 s) times out under CPU contention.
-   Measure it uncontended (vitest --maxWorkers=1 on that file) and diagnose; never raise the deadline, cut cases,
-   lower KDF cost or skip it.
+2. Archive fuzz test (tagArchive.test.ts, 150 cases, 120 s): diagnosed — 13.9 s without coverage, >120 s under v8
+   coverage (block coverage deoptimises scrypt). Ask the owner whether to run it in a non-coverage vitest project;
+   never raise the deadline, cut cases, lower KDF cost or skip it. The 1M-log scanner fuzz (180 s) also exceeds its
+   limit on slow containers even without coverage; GitHub CI passes both.
 3. BTC beyond foundation: best-chain selection (chain work, retarget per network), header sync/persistence
    (spec 12 ScanState), witness binding via wtxid commitment. Do not describe current checks as SPV.
 4. Spec 13 remaining: invoice bufferPolicy (new schema version + ADR), fiat estimate once spec 03 feeds are populated

@@ -48,5 +48,7 @@ Not done from spec 13 (needs schema version + ADR / feed work): invoice `bufferP
 - Focused: `apps/web: npx vitest run src/lib/pay.test.ts src/lib/payExec src/views/Pay src/views/Scan.test.tsx` all pass.
 - `npm run ci:scan-secrets` OK.
 - `npm run lint` (all workspaces) exit 0 (run while edits in progress; changed files re-linted after).
-- Clean rerun on `b3d6e39`: `npm run build:libs` 0, `npm run typecheck` (all workspaces) 0. Local full web coverage rerun (`--maxWorkers=1`, uncontended): pending at this commit.
+- Clean rerun on `b3d6e39`: `npm run build:libs` 0, `npm run typecheck` (all workspaces) 0. Local full web coverage rerun on `9822122` (`cd apps/web && npx vitest run --coverage --maxWorkers=1`, nothing else running, 18:41-19:01 UTC): exit 1, 983 passed / 2 failed / 4 skipped (81 files). Both failures are time limits, unchanged code, green on GitHub CI for the same head:
+  - `tagArchive.test.ts` fuzz (150 cases, 120 s): **root cause measured** — alone WITHOUT coverage passes in 13.9 s wall; alone WITH v8 coverage exceeds 120 s. V8 block coverage deoptimises the scrypt hot loop (~10x). Not an archive-code bug. Options for the owner (not applied; no deadline/case/KDF/threshold changes made): run this file in a separate non-coverage vitest project, or accept CI-hardware evidence.
+  - `scannerCore.fuzz.test.ts` 1M wire logs (180 s): fails here even WITHOUT coverage (190.6 s) — this container's CPU is slower than CI runners. File untouched this session.
 - First full web coverage run INVALID as evidence: it ran while files were being edited (picked up half-built btc changes). It also reproduced the 150-case archive fuzz timeout (120 s) under concurrent load. Killed; clean rerun on a frozen head recorded below.
