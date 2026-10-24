@@ -110,7 +110,16 @@ export function Scan(): ReactNode {
           setError('Configure an RPC for this chain in Settings first.');
           return;
         }
-        const rpc2: RpcClient | undefined = await app.getSecondaryRpc(chainId).catch(() => undefined);
+        // A configured second RPC is a user-chosen cross-check. If it cannot be opened (unreachable, wrong chain),
+        // block instead of silently scanning with one provider; the user can remove it in Settings to opt out.
+        let rpc2: RpcClient | undefined;
+        try {
+          rpc2 = await app.getSecondaryRpc(chainId);
+        } catch {
+          assertScopeCurrent();
+          setError('Scan blocked: the second RPC configured for this chain could not be used. Check it in Settings, or remove it to scan with one provider.');
+          return;
+        }
         assertScopeCurrent();
         let cursor = resume ? checkpoint : undefined;
         if (cursor === undefined) {

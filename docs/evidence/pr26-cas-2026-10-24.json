@@ -1,0 +1,131 @@
+{
+  "recorded_utc": "2026-10-24T15:19:26.706130+00:00",
+  "source_commit": "2751517663e208d3d894af4c40b602432a22df6c",
+  "source_tree": "b20c8ecff795efd4f67dc5695113144c26334f67",
+  "baseline": "06f1426dd29b9b154d9f725d48918dcf049876bf",
+  "evidence": [
+    {
+      "command": "npm run ci:scan-secrets",
+      "result": "PASS, no committed env/key material",
+      "local_log": "/workspace/ghostpay-pr26-secrets-final.log",
+      "sha256": "88b5a5d40e3ed95ed85087e4657b21299290a1ee3f08a8bcc6778ec976d97332",
+      "log_modified_utc": "2026-10-24T15:14:25.285676+00:00"
+    },
+    {
+      "command": "npm run ci:check-actions",
+      "result": "PASS, 60 full-SHA action references",
+      "local_log": "/workspace/ghostpay-pr26-actions-final.log",
+      "sha256": "99d0f289a0fd398b79c2fa4b57a61624344917263ee277fc74f91b9f48a898fa",
+      "log_modified_utc": "2026-10-24T15:14:25.653687+00:00"
+    },
+    {
+      "command": "GHOSTPAY_CHROMIUM=/usr/bin/chromium node apps/web/scripts/test-tags-concurrency.mjs",
+      "result": "PASS, 11 native two-tab/legacy/lifetime/CAS/rollback/bounds scenarios, zero external egress",
+      "local_log": "/workspace/ghostpay-pr26-tags-browser-final.log",
+      "sha256": "f3303598d70721eaa0ec574e68dca2baf6809b6a614309df2e66be41439567b0",
+      "log_modified_utc": "2026-10-24T15:14:24.841664+00:00"
+    },
+    {
+      "command": "GHOSTPAY_CHROMIUM=/usr/bin/chromium npm run test:e2e -w @ghostpay/web",
+      "result": "PASS, 20 Chromium tests",
+      "local_log": "/workspace/ghostpay-pr26-e2e-final.log",
+      "sha256": "3e0220d198f3512d68ec97246214eb8c39f63c4e9749216ce79e84167a6882f3",
+      "log_modified_utc": "2026-10-24T15:15:23.683350+00:00"
+    },
+    {
+      "command": "ANVIL_BIN=/workspace/ghostpay-tools/anvil SOLC_BIN=/workspace/ghostpay-tools/solc REQUIRE_ANVIL=1 npm exec -w @ghostpay/web -- vitest run --coverage --maxWorkers=1",
+      "result": "FAIL gate: 950 passed/1 pre-existing BTC skip; statements90.25 branches84.97 functions91.41 lines94.25; branch85 unmet; BEFORE five additional chain tests",
+      "local_log": "/workspace/ghostpay-pr26-fixes-coverage-final.log",
+      "sha256": "f29f9c5acd47e3a2d2757e4f1ea2b81e76972f7c3559c6cc8fbf557082846b0f",
+      "log_modified_utc": "2026-10-24T15:08:40.279979+00:00"
+    },
+    {
+      "command": "exact06f baseline full web coverage",
+      "result": "FAIL: 872 passed/1 failed/1 pre-existing skip; archive 150-mutation fuzz test exceeded unchanged120s under concurrent local checks",
+      "local_log": "/workspace/ghostpay-pr26-exact-head-coverage-red.log",
+      "sha256": "c782bae01ffdab67acca17995601af1a8679078dc95ce22a0f5065bbf351f0f1",
+      "log_modified_utc": "2026-10-24T14:30:11.790473+00:00"
+    },
+    {
+      "command": "first fixed full web coverage",
+      "result": "FAIL: 949 passed/1 failed/1 skip; alert DOM wait timed out during real KDF; test corrected to await actual KDF preview completion",
+      "local_log": "/workspace/ghostpay-pr26-fixes-coverage-first.log",
+      "sha256": "9ba0fe7901b2436ab95c9ecec5ada4d166d2180874a771a285b406512815cd9b",
+      "log_modified_utc": "2026-10-24T14:45:29.604633+00:00"
+    }
+  ],
+  "source_files": [
+    {
+      "path": ".github/workflows/pages.yml",
+      "sha256": "c2405623437af86a829d711c377fc2f7d16f962298f1dbe9695143b7ce50607e",
+      "bytes": 3131
+    },
+    {
+      "path": "README.md",
+      "sha256": "bbf95bffe430df88c037a909204d7a3aa22a6b90c816e2aa6100b9443ff87e35",
+      "bytes": 19336
+    },
+    {
+      "path": "apps/web/scripts/test-tags-concurrency.mjs",
+      "sha256": "e5bbe552ddeb6605475dcf2e4e960ea479ddedcb43d586ef97a305e1a86343c8",
+      "bytes": 12856
+    },
+    {
+      "path": "apps/web/src/components/TagArchive.atomicity.test.tsx",
+      "sha256": "3a4da459048153140d8e4a34ff205b168ecc52fea2b6280b6064dc7236ea5853",
+      "bytes": 14953
+    },
+    {
+      "path": "apps/web/src/components/TagArchive.tsx",
+      "sha256": "f4ad97a9d85fea7a1b005f0e48b572ae96a2f1948fe243a62af7a46ebd3abb02",
+      "bytes": 17651
+    },
+    {
+      "path": "apps/web/src/features/solana/chain.hardening.test.ts",
+      "sha256": "a4321448f37958d7e658eacdf5bbf5649a1ec8b01caf70bf6415081e464c246e",
+      "bytes": 9912
+    },
+    {
+      "path": "apps/web/src/features/solana/scan-secrets.hardening.test.ts",
+      "sha256": "cd62c916bcea45282cfb071a3181b8e19ad737c01a76ed5648309d0f506dbbe7",
+      "bytes": 3594
+    },
+    {
+      "path": "apps/web/src/features/solana/scan.ts",
+      "sha256": "f4b9fa686fe0e314249c1ca3d5a333531483f6e5ba59df9b001e1bc851dc295e",
+      "bytes": 3434
+    },
+    {
+      "path": "apps/web/src/features/tron/chain.hardening.test.ts",
+      "sha256": "6fad547c1013014310e55b94842cce8fac4881ba2c58058f3f6d05b183115bbf",
+      "bytes": 10729
+    },
+    {
+      "path": "apps/web/src/lib/idbStore.ts",
+      "sha256": "8c75617d354dd26802fe459516ec7e0ea3f9c51acf2ed0f0dacc8ec5765e4cf0",
+      "bytes": 6543
+    },
+    {
+      "path": "apps/web/src/lib/tagArchive.test.ts",
+      "sha256": "1ee18c6c014d6473ceb8d021a36dc6ff3fa695cc5d80c633695455424d195d33",
+      "bytes": 18818
+    },
+    {
+      "path": "apps/web/src/lib/tags.ts",
+      "sha256": "5fe56f9c872db3f3fd24ee6629a9ae06116a57a46cdcd64f23a35e256d405dad",
+      "bytes": 28153
+    },
+    {
+      "path": "apps/web/src/lib/tagsConcurrency.test.ts",
+      "sha256": "1d668ac346a5b8450d9894a9020dd28b0831a873bc780a855b95a161730bbd0e",
+      "bytes": 4561
+    }
+  ],
+  "pending": [
+    "latest full web coverage with five additional chain tests; latest run already recorded archive fuzz timeout",
+    "all-workspace types/lint/build results",
+    "exact-head GitHub required checks"
+  ],
+  "independent_audit_run": false,
+  "release_acceptance": false
+}

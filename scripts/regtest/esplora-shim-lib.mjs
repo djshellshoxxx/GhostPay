@@ -1,7 +1,7 @@
 // Pure request handling for the regtest Esplora shim: maps the few Esplora REST routes GhostPay uses onto
 // bitcoind JSON-RPC. `rpc(method, params)` is injected, so this file is testable without bitcoind.
 // Esplora routes used by apps/web/src/features/btc/esplora.ts:
-//   GET /blocks/tip/height, GET /block-height/:h, GET /block/:hash/txs/:start (25 per page),
+//   GET /blocks/tip/height, GET /block-height/:h, GET /block/:hash/header, GET /block/:hash/txs/:start (25 per page),
 //   GET /tx/:txid/outspend/:vout, GET /fee-estimates, POST /tx
 // bitcoind getblock verbosity 3 includes each input's `prevout` (needs no txindex).
 
@@ -16,14 +16,18 @@ export function btcToSats(v) {
 
 /** bitcoind verbosity-3 transaction -> Esplora transaction JSON (only the fields GhostPay reads). */
 export function mapTx(tx) {
+  // version, locktime and sequence are needed: the app recomputes each txid and checks the header Merkle root.
   return {
     txid: tx.txid,
+    version: tx.version,
+    locktime: tx.locktime,
     vin: tx.vin.map((i) =>
       i.coinbase !== undefined
-        ? { txid: '0'.repeat(64), vout: 0xffffffff, prevout: null, scriptsig: i.coinbase, witness: i.txinwitness ?? [], is_coinbase: true }
+        ? { txid: '0'.repeat(64), vout: 0xffffffff, sequence: i.sequence, prevout: null, scriptsig: i.coinbase, witness: i.txinwitness ?? [], is_coinbase: true }
         : {
             txid: i.txid,
             vout: i.vout,
+            sequence: i.sequence,
             prevout: { scriptpubkey: i.prevout.scriptPubKey.hex, value: btcToSats(i.prevout.value) },
             scriptsig: i.scriptSig?.hex ?? '',
             witness: i.txinwitness ?? [],
@@ -52,6 +56,9 @@ export function createHandler(rpc) {
         } catch {
           return text('Block not found', 404);
         }
+      }
+      if (method === 'GET' && (m = /^\/block\/([0-9a-f]{64})\/header$/.exec(path))) {
+        return text(await rpc('getblockheader', [m[1], false]));
       }
       if (method === 'GET' && (m = /^\/block\/([0-9a-f]{64})\/txs\/(\d{1,7})$/.exec(path))) {
         const start = Number(m[2]);

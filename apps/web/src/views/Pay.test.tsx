@@ -557,6 +557,7 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     const base = chainSeeing(wallet);
     const rpc = mockRpc(84532, (method, params) => {
       if (method === 'eth_call') return `0x${allowance.toString(16).padStart(64, '0')}`;
+      if (method === 'eth_estimateGas') return '0xfde8';
       if (method === 'eth_getTransactionByHash' && (wallet.sent?.['to'] as string | undefined)?.toLowerCase() === '0x036cbd53842c5426634e7929541ec2318f3dcf7e') allowance = 10n ** 12n;
       return base.request(method, params);
     });
@@ -573,6 +574,61 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     await user.click(screen.getByRole('button', { name: 'Approve exactly, then send payment in my wallet' }));
     await waitFor(() => { expect(screen.getByRole('heading', { name: 'Submitted' })).toBeTruthy(); }, { timeout: 5000 });
     expect(wallet.sent?.['to']).toBe(FAKE_ROUTER);
+    expect(rpc.calls.some((c) => c.method === 'eth_estimateGas')).toBe(true);
+  });
+
+  it('permit token whose permit domain cannot be verified falls back to the exact approval path without a signature prompt (spec 04)', async () => {
+    const { fragment } = await makeParsed();
+    const wallet = new MockWallet();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const base = chainSeeing(wallet);
+    // Every eth_call answers with an allowance word: name() cannot decode, so the permit domain is unverifiable.
+    const rpc = mockRpc(84532, (method, params) => (method === 'eth_call' ? `0x${'0'.repeat(64)}` : base.request(method, params)));
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' }, { timeout: 5000 });
+    expect(screen.getByText('payERC20')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Approve exactly, then send payment in my wallet' })).toBeTruthy();
+    expect(wallet.calls.some((c) => c.method === 'eth_signTypedData_v4')).toBe(false);
+  });
+
+  it('permit token with enough allowance already skips the permit signature (spec 04 already_allowed)', async () => {
+    const { fragment } = await makeParsed();
+    const wallet = new MockWallet();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const base = chainSeeing(wallet);
+    const rpc = mockRpc(84532, (method, params) => (method === 'eth_call' ? `0x${(10n ** 12n).toString(16).padStart(64, '0')}` : base.request(method, params)));
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' }, { timeout: 5000 });
+    expect(screen.getByText('payERC20')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Approve exactly, then send payment in my wallet' })).toBeNull();
+    expect(wallet.calls.some((c) => c.method === 'eth_signTypedData_v4')).toBe(false);
+  });
+
+  it('ERC-20 flow with a buffer fails closed when the token transfer cannot be simulated (spec 13)', async () => {
+    const { fragment } = await makeParsed();
+    const wallet = new MockWallet();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const base = chainSeeing(wallet);
+    const rpc = mockRpc(84532, (method, params) => {
+      if (method === 'eth_call') return `0x${'0'.repeat(64)}`;
+      if (method === 'eth_estimateGas') throw new Error('execution reverted');
+      return base.request(method, params);
+    });
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(await screen.findByLabelText(/Add a gas buffer/));
+    await screen.findByText(/default table value/);
+    await user.click(screen.getByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByText(/could not be simulated/);
+    expect(screen.queryByRole('heading', { name: 'Final check before your wallet' })).toBeNull();
+    expect(wallet.sent).toBeUndefined();
   });
 });
 

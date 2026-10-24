@@ -1,4 +1,5 @@
-import { createSilentPaymentOutputs, silentPaymentKeysFromSeed } from '@ghostpay/btc-silent-payments';
+import { createSilentPaymentOutputs, merkleRoot, parseHeader, reverseHex, silentPaymentKeysFromSeed, targetFromBits } from '@ghostpay/btc-silent-payments';
+import { Transaction } from '@scure/btc-signer';
 import { btcNetwork, type BtcNetworkId } from './network';
 import { walletFromSeedHex, type BtcWallet } from './wallet';
 
@@ -11,6 +12,7 @@ const HASH = (i: number): string => i.toString(16).padStart(64, '0');
 export interface EsploraVin {
   txid: string;
   vout: number;
+  sequence: number;
   prevout: { scriptpubkey: string } | null;
   scriptsig: string;
   witness: string[];
@@ -18,12 +20,49 @@ export interface EsploraVin {
 }
 export interface EsploraTxJson {
   txid: string;
+  version: number;
+  locktime: number;
   vin: EsploraVin[];
   vout: { scriptpubkey: string; value: number }[];
 }
 export interface MockBlock {
   hash: string;
+  /** 80-byte header hex (absent for genesis, which the scanner never downloads). */
+  header?: string;
   txs: EsploraTxJson[];
+}
+
+/**
+ * Txid from an independent implementation (@scure/btc-signer), so the app's own serializer is tested
+ * against it rather than against itself.
+ */
+export function withTxid(tx: Omit<EsploraTxJson, 'txid'>): EsploraTxJson {
+  const t = new Transaction({ version: tx.version, lockTime: tx.locktime, allowUnknownInputs: true, allowUnknownOutputs: true, disableScriptCheck: true });
+  // Outputs first: an input with a final scriptSig counts as signed and freezes the outputs.
+  for (const o of tx.vout) t.addOutput({ script: Uint8Array.from(Buffer.from(o.scriptpubkey, 'hex')), amount: BigInt(o.value) });
+  for (const i of tx.vin) t.addInput({ txid: i.txid, index: i.vout, sequence: i.sequence, finalScriptSig: Uint8Array.from(Buffer.from(i.scriptsig, 'hex')) });
+  return { ...tx, txid: t.id };
+}
+
+const le32 = (n: number): string => Array.from([0, 8, 16, 24], (sh) => ((n >>> sh) & 0xff).toString(16).padStart(2, '0')).join('');
+
+/** Regtest-difficulty header over the block's txids, nonce ground until it meets 0x207fffff. */
+export function mineHeader(prevHash: string, txs: readonly EsploraTxJson[], bits = 0x207fffff): string {
+  const root = merkleRoot(txs.map((t) => t.txid));
+  for (let nonce = 0; ; nonce++) {
+    const hex = `${le32(0x20000000)}${reverseHex(prevHash)}${reverseHex(root)}${le32(1_700_000_000)}${le32(bits)}${le32(nonce)}`;
+    if (BigInt(`0x${parseHeader(hex).hash}`) <= targetFromBits(bits)) return hex;
+  }
+}
+
+/** Builds linked blocks above `genesisHash`. */
+export function mineChain(genesisHash: string, bodies: readonly EsploraTxJson[][]): MockBlock[] {
+  const out: MockBlock[] = [{ hash: genesisHash, txs: [] }];
+  for (const txs of bodies) {
+    const header = mineHeader(out[out.length - 1]!.hash, txs);
+    out.push({ hash: parseHeader(header).hash, header, txs });
+  }
+  return out;
 }
 
 function toHex(b: Uint8Array): string {
@@ -31,22 +70,25 @@ function toHex(b: Uint8Array): string {
 }
 
 export function coinbase(i: number): EsploraTxJson {
-  return {
-    txid: HASH(0x1000 + i),
-    vin: [{ txid: hex(64, '0'), vout: 0xffffffff, prevout: null, scriptsig: '03aabbcc', witness: [], is_coinbase: true }],
+  return withTxid({
+    version: 2,
+    locktime: 0,
+    vin: [{ txid: hex(64, '0'), vout: 0xffffffff, sequence: 0xffffffff, prevout: null, scriptsig: `03${i.toString(16).padStart(6, '0')}`, witness: [], is_coinbase: true }],
     vout: [{ scriptpubkey: `0014${hex(40, '9')}`, value: 5_000_000_000 }],
-  };
+  });
 }
 
 /** A transaction that has no silent payment output (decoy). */
 export function decoyTx(i: number, senderSeedHex: string): EsploraTxJson {
   const s = silentPaymentKeysFromSeed(Uint8Array.from(Buffer.from(senderSeedHex, 'hex')), { network: 'testnet' });
-  return {
-    txid: HASH(0x2000 + i),
+  return withTxid({
+    version: 2,
+    locktime: 0,
     vin: [
       {
         txid: HASH(0x3000 + i),
         vout: 0,
+        sequence: 0xfffffffd,
         prevout: { scriptpubkey: `0014${hex(40, '7')}` },
         scriptsig: '',
         witness: [hex(142, '3'), toHex(s.scanPublicKey)],
@@ -54,7 +96,7 @@ export function decoyTx(i: number, senderSeedHex: string): EsploraTxJson {
       },
     ],
     vout: [{ scriptpubkey: `0014${hex(40, '5')}`, value: 10_000 }],
-  };
+  });
 }
 
 /** A real BIP-352 payment of `amountSats` to `recipient`, sent from a P2WPKH input. */
@@ -68,12 +110,14 @@ export function paymentTx(i: number, recipient: BtcWallet, senderSeedHex: string
     network: 'testnet',
   });
   if (out === undefined) throw new Error('no output');
-  return {
-    txid: HASH(0x4000 + i),
+  return withTxid({
+    version: 2,
+    locktime: 0,
     vin: [
       {
         txid: fundingTxid,
         vout: 0,
+        sequence: 0xfffffffd,
         prevout: { scriptpubkey: `0014${hex(40, '6')}` },
         scriptsig: '',
         witness: [hex(142, '3'), toHex(sender.scanPublicKey)],
@@ -84,7 +128,7 @@ export function paymentTx(i: number, recipient: BtcWallet, senderSeedHex: string
       { scriptpubkey: `0014${hex(40, '5')}`, value: 1_234 },
       { scriptpubkey: `5120${toHex(out.xOnlyPublicKey)}`, value: amountSats },
     ],
-  };
+  });
 }
 
 export interface MockChain {
@@ -103,13 +147,12 @@ export interface MockChain {
  */
 export function mockChain(netId: BtcNetworkId, recipient: BtcWallet): MockChain {
   const net = btcNetwork(netId);
-  const blocks: MockBlock[] = [
-    { hash: net.genesisHash, txs: [coinbase(0)] },
-    { hash: HASH(0xb1), txs: [coinbase(1), decoyTx(1, SEED_B)] },
-    { hash: HASH(0xb2), txs: [coinbase(2), ...Array.from({ length: 29 }, (_, k) => decoyTx(10 + k, SEED_B))] },
-    { hash: HASH(0xb3), txs: [coinbase(3), decoyTx(40, SEED_B), paymentTx(50, recipient, SEED_B, 50_000)] },
-    { hash: HASH(0xb4), txs: [coinbase(4)] },
-  ];
+  const blocks: MockBlock[] = mineChain(net.genesisHash, [
+    [coinbase(1), decoyTx(1, SEED_B)],
+    [coinbase(2), ...Array.from({ length: 29 }, (_, k) => decoyTx(10 + k, SEED_B))],
+    [coinbase(3), decoyTx(40, SEED_B), paymentTx(50, recipient, SEED_B, 50_000)],
+    [coinbase(4)],
+  ]);
   const chain: MockChain = {
     blocks,
     spent: new Set<string>(),
@@ -135,6 +178,10 @@ export function mockChain(netId: BtcNetworkId, recipient: BtcWallet): MockChain 
         if (b === undefined) return Promise.resolve(new Response('nope', { status: 404 }));
         const start = Number(m[2]);
         return json(b.txs.slice(start, start + 25));
+      }
+      if ((m = /^\/block\/([0-9a-f]{64})\/header$/.exec(path))) {
+        const b = blocks.find((x) => x.hash === m?.[1]);
+        return b?.header === undefined ? Promise.resolve(new Response('nope', { status: 404 })) : text(b.header);
       }
       if ((m = /^\/tx\/([0-9a-f]{64})\/outspend\/(\d+)$/.exec(path))) {
         return json({ spent: chain.spent.has(`${m[1]}:${m[2]}`) });

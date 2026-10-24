@@ -19,3 +19,4 @@ export * from './spend.js';
 export * from './tx.js';
 export * from './units.js';
 export * from './uri.js';
+export * from './header.js';

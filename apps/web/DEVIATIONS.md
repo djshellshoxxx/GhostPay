@@ -72,6 +72,9 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
 22. No inline `style=` attributes are used anywhere (the CSP has no `'unsafe-inline'`): the QR code is an SVG built from React elements and CSS classes.
 
 ## Coverage exclusions (thresholds 90/85/90/90 are NOT lowered)
+Test files named `*.nocov.test.*` run in a second pass without coverage (`vitest.nocov.config.ts`, chained in `npm test`). Only the
+150-case tag-archive fuzz (`src/lib/tagArchive.fuzz.nocov.test.ts`) does: v8 block coverage deoptimises scrypt ~10x (measured 13.9 s
+uncovered vs >120 s covered). Its cases, 120 s deadline and KDF cost are unchanged, and `tagArchive.ts` is still covered by `tagArchive.test.ts`.
 Excluded from the coverage denominator, each with its own evidence instead:
 - `src/main.tsx`: bootstraps React with real globals (exercised by every e2e test).
 - `src/lib/scanner.worker.ts`: a 10-line `onmessage` forwarder; all logic is in `scannerCore.ts` (tested in-process, including a source scan
