@@ -233,8 +233,10 @@ export async function assertBufferStillSufficient(built: BuiltPayment, rpc: Pick
   if (quote === undefined) return;
   if (rpc === undefined) throw new UserFacingError('A gas buffer needs an RPC for this chain to re-check gas before sending.');
   const gasPrice = parseQuantity(await rpc.request('eth_gasPrice', []));
-  const fresh = calculateBuffer({ estimatedSweepGas: quote.gasLimit, maxFeePerGas: gasPrice * 2n, safetyBps: quote.safetyBps });
-  if (fresh > built.tx.value) {
+  // The quote's safety margin exists to absorb drift, so only the margin-free requirement at today's price must fit;
+  // otherwise every small fee tick would force the user to prepare again.
+  const required = calculateBuffer({ estimatedSweepGas: quote.gasLimit, maxFeePerGas: gasPrice * 2n, safetyBps: 0n });
+  if (required > built.tx.value) {
     throw new UserFacingError('Gas prices rose since the buffer was quoted, so the prepared buffer may not cover the sweep. Prepare the payment again.');
   }
 }

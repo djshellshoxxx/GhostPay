@@ -308,12 +308,15 @@ describe('quoteBuffer (Feature 1)', () => {
 describe('assertBufferStillSufficient (spec 13 re-estimate before send)', () => {
   const quoteAt = (gwei: bigint) => ({ bufferWei: 100_000n * gwei * 2_000_000_000n * 12n / 10n, maxFeePerGas: gwei * 2_000_000_000n, gasLimit: 100_000n, safetyBps: 2000n, quotedAt: NOW, expiresAt: NOW + BUFFER_QUOTE_TTL_SECONDS, gasSource: 'default' as const });
   const priced = (gwei: bigint) => mockRpc(84532, () => `0x${(gwei * 1_000_000_000n).toString(16)}`);
-  it('passes when gas is unchanged or lower, blocks when gas rose above the quoted buffer', async () => {
+  it('passes when gas is unchanged, lower or within the safety margin; blocks when gas rose beyond it', async () => {
     const { parsed } = await makeParsed();
     const ctx = await createPayContext(reviewInvoice(parsed, NOW, LOADED(84532)), undefined, { nowSeconds: NOW });
     const b = buildFinal(ctx, { nowSeconds: NOW, buffer: quoteAt(1n) });
     await expect(assertBufferStillSufficient(b, priced(1n))).resolves.toBeUndefined();
     await expect(assertBufferStillSufficient(b, mockRpc(84532, () => '0x1'))).resolves.toBeUndefined();
+    // Drift inside the 20 % safety margin is tolerated; beyond it the send is blocked.
+    await expect(assertBufferStillSufficient(b, mockRpc(84532, () => `0x${(1_200_000_000n).toString(16)}`))).resolves.toBeUndefined();
+    await expect(assertBufferStillSufficient(b, mockRpc(84532, () => `0x${(1_200_000_001n).toString(16)}`))).rejects.toThrow(/Gas prices rose/);
     await expect(assertBufferStillSufficient(b, priced(2n))).rejects.toThrow(/Gas prices rose/);
     await expect(assertBufferStillSufficient(b, undefined)).rejects.toThrow(/needs an RPC/);
     await expect(assertBufferStillSufficient(b, mockRpc(84532, () => 'nope'))).rejects.toThrow();
