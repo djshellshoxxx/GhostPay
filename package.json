@@ -16,7 +16,7 @@
     "test": "npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "build": "node scripts/build-workspaces.mjs",
-    "build:libs": "npm run build -w @ghostpay/core-crypto -w @ghostpay/invoice-schema && npm run build -w @ghostpay/btc-silent-payments -w @ghostpay/chain-adapters -w @ghostpay/address-safety -w @ghostpay/qr-exchange -w @ghostpay/payment-uri && npm run build -w @ghostpay/secret-box -w @ghostpay/tx-review -w @ghostpay/relayer-guard -w @ghostpay/pool-prover -w @ghostpay/pool-sdk -w @ghostpay/external-pools -w @ghostpay/solana-stealth",
+    "build:libs": "npm run build -w @ghostpay/core-crypto -w @ghostpay/invoice-schema && npm run build -w @ghostpay/btc-silent-payments -w @ghostpay/chain-adapters -w @ghostpay/address-safety -w @ghostpay/qr-exchange -w @ghostpay/payment-uri && npm run build -w @ghostpay/secret-box -w @ghostpay/tx-review -w @ghostpay/relayer-guard -w @ghostpay/pool-prover -w @ghostpay/pool-sdk -w @ghostpay/external-pools -w @ghostpay/solana-stealth -w @ghostpay/tron-adapter",
     "ci:scan-secrets": "bash scripts/scan-secrets.sh",
     "ci:check-actions": "bash scripts/check-actions-pinned.sh",
     "release:build": "bash scripts/release-build.sh",
