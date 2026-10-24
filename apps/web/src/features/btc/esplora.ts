@@ -1,6 +1,9 @@
 import {
   computeTransactionTweak,
+  reverseHex,
+  sha256d,
   SilentPaymentError,
+  verifyBlockData,
   txInputFromHex,
   type BlockOutput,
   type BlockOutputs,
@@ -67,13 +70,53 @@ function hexToBytes(h: string): Uint8Array {
   return out;
 }
 
+function u32le(n: number): string {
+  return [0, 8, 16, 24].map((sh) => ((n >>> sh) & 0xff).toString(16).padStart(2, '0')).join('');
+}
+
+function u64le(n: bigint): string {
+  let s = '';
+  for (let i = 0n; i < 8n; i++) s += Number((n >> (8n * i)) & 0xffn).toString(16).padStart(2, '0');
+  return s;
+}
+
+/**
+ * Recomputes the txid (non-witness serialization) from Esplora's JSON fields, so the inputs and outputs used for
+ * scanning are bound to the txid list that the block header's Merkle root commits to. Witness data and prevout
+ * scripts are NOT covered by the txid; a server that alters them can hide a payment but cannot forge one.
+ */
+function computeTxid(v: Record<string, unknown>, vin: readonly unknown[], vout: readonly unknown[]): string {
+  const version = v['version'];
+  const locktime = uint(v['locktime']);
+  if (typeof version !== 'number' || !Number.isInteger(version) || version < -0x80000000 || version > 0xffffffff || locktime > 0xffffffff) return bad();
+  let raw = u32le(version >>> 0) + compact(vin.length);
+  for (const i of vin) {
+    if (!isRecord(i)) return bad();
+    const prev = hexStr(i['txid'], 64);
+    const index = uint(i['vout']);
+    const sequence = uint(i['sequence']);
+    if (!HEX64.test(prev) || index > 0xffffffff || sequence > 0xffffffff) return bad();
+    const scriptSig = hexStr(i['scriptsig'] ?? '');
+    raw += reverseHex(prev) + u32le(index) + compact(scriptSig.length / 2) + scriptSig + u32le(sequence);
+  }
+  raw += compact(vout.length);
+  for (const o of vout) {
+    if (!isRecord(o)) return bad();
+    const script = hexStr(o['scriptpubkey']);
+    raw += u64le(BigInt(uint(o['value']))) + compact(script.length / 2) + script;
+  }
+  raw += u32le(locktime);
+  return reverseHex(Array.from(sha256d(hexToBytes(raw)), (x) => x.toString(16).padStart(2, '0')).join(''));
+}
+
 function parseTx(v: unknown): EsploraTx {
   if (!isRecord(v)) return bad();
   const txid = hexStr(v['txid'], 64);
   if (!HEX64.test(txid)) return bad();
   const vin = v['vin'];
   const vout = v['vout'];
-  if (!Array.isArray(vin) || !Array.isArray(vout) || vin.length > 100_000 || vout.length > 100_000) return bad();
+  if (!Array.isArray(vin) || !Array.isArray(vout) || vin.length === 0 || vin.length > 100_000 || vout.length > 100_000) return bad();
+  if (computeTxid(v, vin, vout) !== txid) return bad();
   const outputs = vout.map((o: unknown) => {
     if (!isRecord(o)) return bad();
     return { scriptPubKey: hexToBytes(hexStr(o['scriptpubkey'])), valueSats: BigInt(uint(o['value'])) };
@@ -191,6 +234,13 @@ export class EsploraClient {
     return bad();
   }
 
+  /** The 80-byte block header as hex. */
+  public async blockHeader(hash: string, signal?: AbortSignal): Promise<string> {
+    if (!HEX64.test(hash)) throw new SilentPaymentError('INVALID_INPUT');
+    const t = (await this.text(`/block/${hash}/header`, {}, signal)).trim().toLowerCase();
+    return /^[0-9a-f]{160}$/.test(t) ? t : bad();
+  }
+
   /** True when the outpoint is unspent according to the server (mempool included). */
   public async isUnspent(txid: string, vout: number, signal?: AbortSignal): Promise<boolean> {
     if (!HEX64.test(txid) || !Number.isInteger(vout) || vout < 0) throw new SilentPaymentError('INVALID_INPUT');
@@ -234,11 +284,22 @@ interface Parsed {
  * {@link TweakSource} built on plain Esplora data: tweaks are computed locally from each block's
  * transactions (BIP-352 `input_hash * A`), so any Esplora server works. Heavy (downloads whole
  * blocks) but the server only learns which block heights you read.
+ *
+ * Each block is checked before use: header hash equals the served block hash, proof of work meets
+ * the network limit, recomputed txids produce the header Merkle root, and consecutive heights link
+ * (height 1 links to the pinned genesis). This is NOT best-chain validation: no retarget, chain work
+ * or fork choice, and test-network proof of work is cheap, so a dishonest server can still serve a
+ * low-work fork. Spent state (`isUnspent`) remains the server's word.
  */
 export class EsploraTweakSource implements TweakSource {
   private readonly cache = new Map<number, Promise<Parsed>>();
+  /** Recently verified height -> hash, for header linkage across this source's lifetime. */
+  private readonly linked = new Map<number, string>();
+  private readonly prevOf = new Map<number, string>();
 
-  public constructor(private readonly client: EsploraClient) {}
+  public constructor(private readonly client: EsploraClient, private readonly net: BtcNetworkInfo) {
+    this.linked.set(0, net.genesisHash);
+  }
 
   public getTipHeight(signal?: AbortSignal): Promise<number> {
     return this.client.tipHeight(signal);
@@ -262,7 +323,26 @@ export class EsploraTweakSource implements TweakSource {
 
   private async fetchBlock(height: number, signal?: AbortSignal): Promise<Parsed> {
     const blockHash = await this.client.blockHash(height, signal);
-    const txs = await this.client.blockTxs(blockHash, signal);
+    // Genesis is pinned by checkNetwork; its only transaction is an unspendable coinbase.
+    if (height === 0) {
+      if (blockHash !== this.net.genesisHash) throw new SilentPaymentError('NETWORK_MISMATCH');
+      return { blockHash, tweaks: [], outputs: [] };
+    }
+    const [headerHex, txs] = await Promise.all([this.client.blockHeader(blockHash, signal), this.client.blockTxs(blockHash, signal)]);
+    const header = verifyBlockData({ headerHex, expectedHash: blockHash, txids: txs.map((t) => t.txid), network: this.net.id });
+    const below = this.linked.get(height - 1);
+    const above = this.linked.get(height + 1);
+    if ((below !== undefined && header.prevHash !== below) || (above !== undefined && this.prevOf.get(height + 1) !== blockHash)) {
+      throw new SilentPaymentError('REORG_DETECTED');
+    }
+    this.linked.set(height, blockHash);
+    this.prevOf.set(height, header.prevHash);
+    while (this.linked.size > 64) {
+      const oldest = [...this.linked.keys()].filter((h) => h !== 0).sort((a, b) => a - b)[0];
+      if (oldest === undefined) break;
+      this.linked.delete(oldest);
+      this.prevOf.delete(oldest);
+    }
     const tweaks: BlockTweaks['tweaks'][number][] = [];
     const outputs: BlockOutput[] = [];
     for (const tx of txs) {

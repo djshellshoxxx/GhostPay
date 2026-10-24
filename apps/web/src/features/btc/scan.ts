@@ -44,7 +44,7 @@ export interface ScanResult {
 export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
   const { client, wallet, fromHeight, signal } = p;
   if (!Number.isInteger(fromHeight) || fromHeight < 0) throw new SilentPaymentError('INVALID_INPUT');
-  const source = new EsploraTweakSource(client);
+  const source = new EsploraTweakSource(client, wallet.net);
   const tip = await client.tipHeight(signal);
   const toHeight = Math.min(p.toHeight ?? tip, tip);
   if (toHeight < fromHeight) return { fromHeight, toHeight, found: [], spentCount: 0 };
