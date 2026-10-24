@@ -131,22 +131,6 @@ describe('archive failure modes', () => {
     }
   });
 
-  it('fuzz: random and mutated inputs only ever fail with a user-facing error, never crash', async () => {
-    const good = await encodeArchive(contents(entries(2)), PASS, { N });
-    let seed = 12345;
-    const rnd = (n: number): number => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed % n; };
-    for (let i = 0; i < 150; i++) {
-      const b = i % 3 === 0 ? Uint8Array.from({ length: rnd(300) }, () => rnd(256)) : good.slice();
-      if (i % 3 !== 0) for (let k = 0; k < 1 + rnd(4); k++) { const at = 8 + rnd(b.length - 8); b[at] = (b[at] as number) ^ (1 + rnd(255)); }
-      try {
-        await decodeArchive(b, PASS);
-        throw new Error('accepted a mutated archive');
-      } catch (e) {
-        expect((e as Error).name === 'UserFacingError' || (e as Error).constructor.name === 'UserFacingError', String((e as Error).message)).toBe(true);
-      }
-    }
-  }, 120_000);
-
   it('strict schema: authentic archives with unknown fields or extra keys are rejected', async () => {
     const bad = contents([{ chainId: 1, createdAt: 1, updatedAt: 1, payload: { ...payload(0), extra: 'x' } as TagPayload }]);
     const bytes = await encodeArchive(bad, PASS, { N });

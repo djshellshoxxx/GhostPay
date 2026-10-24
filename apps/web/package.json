@@ -10,7 +10,7 @@
     "postbuild": "node scripts/scan-bundle.mjs",
     "preview": "vite preview",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --coverage",
+    "test": "vitest run --coverage && vitest run --config vitest.nocov.config.ts",
     "test:e2e": "playwright test",
     "lint": "eslint --config ../../eslint.config.js src e2e"
   },
