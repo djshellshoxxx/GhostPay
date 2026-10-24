@@ -240,7 +240,7 @@ describe('ERC-20 flows', () => {
       const after = action === 'grant' ? 0n : ctx.request.grossAmount;
       return `0x${after.toString(16).padStart(64, '0')}`;
     });
-    const plan = { token: USDC_84532, spender: FAKE_ROUTER, need: ctx.request.grossAmount, have: 0n, required: true };
+    const plan: Parameters<typeof grantApproval>[2] = { token: USDC_84532, spender: FAKE_ROUTER, need: ctx.request.grossAmount, have: 0n, required: true };
     const hashes: string[] = [];
     const operation = action === 'grant' ? grantApproval : revokeApproval;
     const error: unknown = await operation(session, ctx, plan, { rpc, nowSeconds: () => NOW, sleep }, noStatus, undefined, (hash) => { hashes.push(hash); }).catch((e: unknown) => e);
