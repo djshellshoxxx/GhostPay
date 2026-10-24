@@ -1,13 +1,16 @@
 import {
   chainlinkAggregatorAbi,
   eip712DomainSeparator,
+  erc20Abi,
   erc20MetadataAbi,
   erc2612PermitAbi,
+  type Address,
   type BuiltPayment,
+  type Hex,
   type FeedConfig,
 } from '@ghostpay/chain-adapters';
 import { createInvoice, signInvoice, parseFragment, encodeFragment } from '@ghostpay/invoice-schema';
-import { encodeFunctionResult } from 'viem/utils';
+import { decodeFunctionData, encodeFunctionResult } from 'viem/utils';
 import { privateKeyToAccount } from 'viem/accounts';
 import { afterEach, describe, expect, it } from 'vitest';
 import { FAKE_FEE_RECIPIENT, FAKE_ROUTER, fakeManifest } from '../test/fakeManifest';
@@ -28,6 +31,9 @@ import {
   offlineClient,
   permitReader,
   quoteBuffer,
+  assertBufferStillSufficient,
+  MAX_SIMULATED_SWEEP_GAS,
+  SWEEP_GAS_ESTIMATE,
   readAllowance,
   reviewInvoice,
   trustView,
@@ -246,7 +252,7 @@ describe('buildFinal and the preview-equals-calldata gate', () => {
   it('builds buffer payments with a capped, unexpired quote only', async () => {
     const { parsed } = await makeParsed();
     const ctx = await createPayContext(reviewInvoice(parsed, NOW, LOADED(84532)), undefined, { nowSeconds: NOW });
-    const q = { bufferWei: 123_456n, maxFeePerGas: 1n, gasLimit: 1n, safetyBps: 2000n, quotedAt: NOW, expiresAt: NOW + BUFFER_QUOTE_TTL_SECONDS };
+    const q = { bufferWei: 123_456n, maxFeePerGas: 1n, gasLimit: 1n, safetyBps: 2000n, quotedAt: NOW, expiresAt: NOW + BUFFER_QUOTE_TTL_SECONDS, gasSource: 'default' as const };
     const b = buildFinal(ctx, { nowSeconds: NOW, buffer: q });
     expect(b.preview.method).toBe('payERC20WithBuffer');
     expect(b.tx.value).toBe(123_456n);
@@ -268,6 +274,58 @@ describe('quoteBuffer (Feature 1)', () => {
   it('fails closed when gas is absurdly high or the RPC misbehaves', async () => {
     await expect(quoteBuffer(mockRpc(84532, () => `0x${(10n ** 12n).toString(16)}`), NOW)).rejects.toThrow(/safety cap/);
     await expect(quoteBuffer(mockRpc(84532, () => 'nope'), NOW)).rejects.toThrow();
+  });
+  it('rejects quotes older than 60 s (spec 13)', () => {
+    expect(BUFFER_QUOTE_TTL_SECONDS).toBe(60);
+  });
+  const SWEEP = { token: USDC_84532 as Address, from: '0x5555555555555555555555555555555555555555' as Address, amount: 1_000_000n };
+  const gasRpc = (estimate: () => unknown) => mockRpc(84532, (method) => (method === 'eth_estimateGas' ? estimate() : '0x3b9aca00'));
+  it('uses a token-specific transfer simulation, margined, never below the default table value', async () => {
+    const rpc = gasRpc(() => `0x${(200_000).toString(16)}`);
+    const q = await quoteBuffer(rpc, NOW, SWEEP);
+    expect(q.gasSource).toBe('simulated');
+    expect(q.gasLimit).toBe(250_000n);
+    expect(q.bufferWei).toBe(250_000n * 2_000_000_000n * 12n / 10n);
+    const call = rpc.calls.find((c) => c.method === 'eth_estimateGas')!;
+    const [tx] = call.params as [{ from: string; to: string; data: Hex }];
+    expect(tx.to).toBe(SWEEP.token);
+    expect(tx.from).toBe(SWEEP.from);
+    const decoded = decodeFunctionData({ abi: erc20Abi, data: tx.data });
+    expect(decoded.functionName).toBe('transfer');
+    expect(decoded.args[1]).toBe(SWEEP.amount);
+    // A cheap simulated transfer keeps the conservative default floor.
+    expect((await quoteBuffer(gasRpc(() => '0xc350'), NOW, SWEEP)).gasLimit).toBe(SWEEP_GAS_ESTIMATE);
+    expect((await quoteBuffer(gasRpc(() => '0x3b9aca00'), NOW)).gasSource).toBe('default');
+  });
+  it('fails closed when the sweep simulation fails or is implausible', async () => {
+    await expect(quoteBuffer(gasRpc(() => { throw new Error('execution reverted'); }), NOW, SWEEP)).rejects.toThrow(/could not be simulated/);
+    await expect(quoteBuffer(gasRpc(() => 'garbage'), NOW, SWEEP)).rejects.toThrow(/could not be simulated/);
+    await expect(quoteBuffer(gasRpc(() => '0x0'), NOW, SWEEP)).rejects.toThrow(/unexpected amount of gas/);
+    await expect(quoteBuffer(gasRpc(() => `0x${(MAX_SIMULATED_SWEEP_GAS + 1n).toString(16)}`), NOW, SWEEP)).rejects.toThrow(/unexpected amount of gas/);
+  });
+});
+
+describe('assertBufferStillSufficient (spec 13 re-estimate before send)', () => {
+  const quoteAt = (gwei: bigint) => ({ bufferWei: 100_000n * gwei * 2_000_000_000n * 12n / 10n, maxFeePerGas: gwei * 2_000_000_000n, gasLimit: 100_000n, safetyBps: 2000n, quotedAt: NOW, expiresAt: NOW + BUFFER_QUOTE_TTL_SECONDS, gasSource: 'default' as const });
+  const priced = (gwei: bigint) => mockRpc(84532, () => `0x${(gwei * 1_000_000_000n).toString(16)}`);
+  it('passes when gas is unchanged or lower, blocks when gas rose above the quoted buffer', async () => {
+    const { parsed } = await makeParsed();
+    const ctx = await createPayContext(reviewInvoice(parsed, NOW, LOADED(84532)), undefined, { nowSeconds: NOW });
+    const b = buildFinal(ctx, { nowSeconds: NOW, buffer: quoteAt(1n) });
+    await expect(assertBufferStillSufficient(b, priced(1n))).resolves.toBeUndefined();
+    await expect(assertBufferStillSufficient(b, mockRpc(84532, () => '0x1'))).resolves.toBeUndefined();
+    await expect(assertBufferStillSufficient(b, priced(2n))).rejects.toThrow(/Gas prices rose/);
+    await expect(assertBufferStillSufficient(b, undefined)).rejects.toThrow(/needs an RPC/);
+    await expect(assertBufferStillSufficient(b, mockRpc(84532, () => 'nope'))).rejects.toThrow();
+  });
+  it('is a no-op for payments built without a buffer', async () => {
+    const { parsed } = await makeParsed();
+    const ctx = await createPayContext(reviewInvoice(parsed, NOW, LOADED(84532)), undefined, { nowSeconds: NOW });
+    const b = buildFinal(ctx, { nowSeconds: NOW });
+    const rpc = priced(1000n);
+    await expect(assertBufferStillSufficient(b, undefined)).resolves.toBeUndefined();
+    await expect(assertBufferStillSufficient(b, rpc)).resolves.toBeUndefined();
+    expect(rpc.calls).toHaveLength(0);
   });
 });
 

@@ -18,10 +18,11 @@ import {
   quoteBuffer,
   reviewInvoice,
   type BufferQuote,
+  type SweepSimulation,
   type PayContext,
 } from '../lib/pay';
 import { verifyManifestForFlow } from '../lib/manifest';
-import { PostBroadcastError, buildReceipt, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, type ApprovalPlan, type Runtime, type SubmitResult } from '../lib/payExec';
+import { PostBroadcastError, buildReceipt, classifyPayerPermit, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, type ApprovalPlan, type Runtime, type SubmitResult } from '../lib/payExec';
 import { useServices } from '../lib/services';
 import { connectWallet, walletWarnings, type WalletInfo, type WalletSession } from '../lib/wallet';
 import { useApp } from '../state';
@@ -347,7 +348,7 @@ export function Pay(): ReactNode {
   const token = review?.token;
   const isErc20 = parsed !== undefined && parsed.invoice.token !== 'native';
 
-  const refreshBuffer = useCallback(async (): Promise<BufferQuote | undefined> => {
+  const refreshBuffer = useCallback(async (sweep?: SweepSimulation): Promise<BufferQuote | undefined> => {
     if (chainId === undefined) return undefined;
     const revision = flowRevision.current;
     const invoice = latest.current.parsed?.invoice;
@@ -358,7 +359,7 @@ export function Pay(): ReactNode {
       return undefined;
     }
     try {
-      const q = await quoteBuffer(rpc, Math.floor(services.nowMs() / 1000));
+      const q = await quoteBuffer(rpc, Math.floor(services.nowMs() / 1000), sweep);
       if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return undefined;
       setBufferQuote(q);
       return q;
@@ -611,12 +612,20 @@ export function Pay(): ReactNode {
         guard();
         let buffer: BufferQuote | undefined;
         if (useBuffer && isErc20) {
-          buffer = await refreshBuffer();
+          const bt = ctx.review.token;
+          // Spec 13: re-estimate at confirm with a token-specific transfer simulation from the payer's account.
+          buffer = await refreshBuffer(bt === undefined || bt.address === 'native' ? undefined : { token: bt.address, from: wallet.account, amount: ctx.request.netAmount });
           guard();
           if (buffer === undefined) throw new Error('buffer');
         }
         const t = ctx.review.token;
-        const permit = t?.config?.permit === true && buffer === undefined;
+        let permit = t?.config?.permit === true && buffer === undefined;
+        if (permit) {
+          const state = await classifyPayerPermit(ctx, wallet, rt);
+          guard();
+          permit = state === 'ok_to_permit';
+          if (state === 'unsupported_token') scopedStatus('This token\u2019s permit could not be verified on-chain, so an exact approval is used instead.');
+        }
         let plan: ApprovalPlan | undefined;
         if (isErc20 && !permit && t?.address !== undefined && t.address !== 'native') {
           plan = await planApproval(ctx, wallet, t.address, rt);
@@ -996,7 +1005,7 @@ export function Pay(): ReactNode {
               </div>
               {useBuffer && (
                 <Notice kind="warn" title="Public linkage">
-                  {bufferQuote === undefined ? 'Estimating buffer…' : `Extra ${formatUnits(bufferQuote.bufferWei, 18)} ${review.chain?.nativeSymbol ?? 'native coin'} (native, not ${symbol}) is sent in the same transaction to the one-time address. This publicly links your payment, the one-time address and the buffer. It is an estimate (${String(bufferQuote.gasLimit)} gas at up to ${String(bufferQuote.maxFeePerGas)} wei, +20 %), not a guarantee.`}
+                  {bufferQuote === undefined ? 'Estimating buffer…' : `Extra ${formatUnits(bufferQuote.bufferWei, 18)} ${review.chain?.nativeSymbol ?? 'native coin'} (native, not ${symbol}) is sent in the same transaction to the one-time address. This publicly links your payment, the one-time address and the buffer. It is an estimate (${String(bufferQuote.gasLimit)} gas${bufferQuote.gasSource === 'simulated' ? ', from a simulated token transfer' : ', default table value until you prepare the payment'} at up to ${String(bufferQuote.maxFeePerGas)} wei, +20 %), not a guarantee.`}
                 </Notice>
               )}
             </>
