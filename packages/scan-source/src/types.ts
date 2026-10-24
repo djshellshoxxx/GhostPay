@@ -21,6 +21,8 @@ export interface ScanAnnouncement {
   readonly blockNumber: bigint;
   readonly blockHash: Hex;
   readonly logIndex: number;
+  /** Transaction hash when the server supplied a well-formed one. Untrusted: only a receipt from the user's RPC gives it meaning. */
+  readonly transactionHash?: Hex;
   /** `blockHash:logIndex`, recomputed by the validator, never trusted from a server. */
   readonly id: string;
 }
