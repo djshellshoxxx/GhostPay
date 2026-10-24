@@ -31,13 +31,19 @@ export interface WindowLike {
 
 const ICON_RE = /^data:image\/(?:png|jpeg|webp|svg\+xml);base64,[A-Za-z0-9+/=]+$/;
 const MAX_ICON = 64 * 1024;
+const MAX_WALLETS = 32;
+const MAX_ANNOUNCEMENTS = 256;
+const MAX_METADATA_TEXT = 1024;
+const MAX_DISCOVERY_MS = 1000;
 
 function isProvider(v: unknown): v is Eip1193Provider {
-  return typeof v === 'object' && v !== null && typeof (v as { request?: unknown }).request === 'function';
+  try {
+    return typeof v === 'object' && v !== null && typeof (v as { request?: unknown }).request === 'function';
+  } catch { return false; }
 }
 
 function cleanText(v: unknown, max: number): string | undefined {
-  if (typeof v !== 'string') return undefined;
+  if (typeof v !== 'string' || v.length > MAX_METADATA_TEXT) return undefined;
   // Control, format (bidi, zero-width), private-use and tag characters are removed: a wallet name must render as it reads.
   // eslint-disable-next-line no-control-regex
   const t = v.replace(/[\u0000-\u001f\u007f-\u009f]|\p{Cf}|\p{Co}|[\u{E0000}-\u{E007F}]/gu, '').trim();
@@ -47,39 +53,65 @@ function cleanText(v: unknown, max: number): string | undefined {
 /**
  * EIP-6963 discovery plus a labelled `window.ethereum` fallback. Announcement payloads are untrusted: names are
  * stripped and truncated, icons accepted only as short base64 data URIs, duplicates by uuid dropped.
+ * One bounded discovery window processes at most 256 announcements and retains at most 32 providers.
  */
 export async function discoverWallets(win: WindowLike, waitMs = 150): Promise<readonly WalletInfo[]> {
   const found = new Map<string, WalletInfo>();
+  let active = true;
+  let announcements = 0;
   const onAnnounce = (e: Event): void => {
-    const detail = (e as CustomEvent<unknown>).detail as { info?: Record<string, unknown>; provider?: unknown } | null;
-    if (detail === null || typeof detail !== 'object' || detail.info === undefined || !isProvider(detail.provider)) return;
-    const uuid = cleanText(detail.info['uuid'], 64);
-    const name = cleanText(detail.info['name'], 40);
-    if (uuid === undefined || name === undefined) return;
-    const icon = detail.info['icon'];
-    const rdns = cleanText(detail.info['rdns'], 80);
-    const prior = found.get(uuid);
-    if (prior !== undefined) {
-      // First announcement wins, but a second one that disagrees is evidence of spoofing: flag it instead of hiding it.
-      if (prior.name !== name || prior.rdns !== rdns) found.set(uuid, { ...prior, conflict: true });
-      return;
+    // Count before reflecting any property, including event.detail: getters may throw or re-enter discovery.
+    if (!active || announcements >= MAX_ANNOUNCEMENTS) return;
+    announcements++;
+    try {
+      const detail = (e as CustomEvent<unknown>).detail as { info?: unknown; provider?: unknown } | null;
+      if (detail === null || typeof detail !== 'object') return;
+      const info = detail.info;
+      const provider = detail.provider;
+      if (typeof info !== 'object' || info === null || !isProvider(provider)) return;
+      // Capture every field once. A changing getter must not validate one identity/provider and return another.
+      const metadata = info as Record<string, unknown>;
+      const uuid = cleanText(metadata['uuid'], 64);
+      const name = cleanText(metadata['name'], 40);
+      if (uuid === undefined || name === undefined) return;
+      const icon = metadata['icon'];
+      const rdns = cleanText(metadata['rdns'], 80);
+      const prior = found.get(uuid);
+      if (prior !== undefined) {
+        // First announcement wins; conflicting metadata is a warning, never proof of wallet identity.
+        if (prior.name !== name || prior.rdns !== rdns) found.set(uuid, { ...prior, conflict: true });
+        return;
+      }
+      if (found.size >= MAX_WALLETS) return;
+      found.set(uuid, {
+        id: `6963:${uuid}`,
+        name,
+        kind: 'eip6963',
+        provider,
+        ...(typeof icon === 'string' && icon.length <= MAX_ICON && ICON_RE.test(icon) ? { icon } : {}),
+        ...(rdns === undefined ? {} : { rdns }),
+      });
+    } catch {
+      // EIP-6963 payloads are untrusted page objects, including accessors and revoked proxies.
     }
-    found.set(uuid, {
-      id: `6963:${uuid}`,
-      name,
-      kind: 'eip6963',
-      provider: detail.provider,
-      ...(typeof icon === 'string' && icon.length <= MAX_ICON && ICON_RE.test(icon) ? { icon } : {}),
-      ...(rdns === undefined ? {} : { rdns }),
-    });
   };
-  win.addEventListener('eip6963:announceProvider', onAnnounce);
-  win.dispatchEvent(new Event('eip6963:requestProvider'));
-  await new Promise((r) => setTimeout(r, waitMs));
-  win.removeEventListener('eip6963:announceProvider', onAnnounce);
+  try {
+    win.addEventListener('eip6963:announceProvider', onAnnounce);
+    win.dispatchEvent(new Event('eip6963:requestProvider'));
+    const duration = Number.isFinite(waitMs) ? Math.max(0, Math.min(MAX_DISCOVERY_MS, waitMs)) : 150;
+    await new Promise((resolve) => setTimeout(resolve, duration));
+  } catch {
+    throw new UserFacingError('Wallet discovery could not start. Retry or use another wallet.');
+  } finally {
+    active = false;
+    try { win.removeEventListener('eip6963:announceProvider', onAnnounce); } catch { /* Closed callback ignores late events even if cleanup fails. */ }
+  }
   const list = [...found.values()];
-  if (list.length === 0 && isProvider(win.ethereum)) {
-    list.push({ id: 'injected', name: 'Browser wallet (EIP-1193 injected)', kind: 'injected', provider: win.ethereum });
+  if (list.length === 0) {
+    try {
+      const injected = win.ethereum;
+      if (isProvider(injected)) list.push({ id: 'injected', name: 'Browser wallet (EIP-1193 injected)', kind: 'injected', provider: injected });
+    } catch { /* A hostile injected getter is not an available wallet. */ }
   }
   return list;
 }
@@ -121,20 +153,29 @@ async function call(p: Eip1193Provider, method: string, params?: readonly unknow
   try {
     return await p.request(params === undefined ? { method } : { method, params });
   } catch (e) {
-    const code = typeof e === 'object' && e !== null ? (e as { code?: unknown }).code : undefined;
+    let code: number | undefined;
+    try { code = typeof e === 'object' && e !== null ? cleanRpcCode((e as { code?: unknown }).code) : undefined; } catch { /* A thrown error can itself be a hostile proxy/accessor. */ }
     if (code === 4001) throw new UserFacingError('You rejected the request in your wallet.');
     throw new WalletCallError(method, code);
   }
 }
 
+/** Diagnostic codes only: EIP-1193 provider errors and standard JSON-RPC errors/server range. */
+function cleanRpcCode(code: unknown): number | undefined {
+  if (typeof code !== 'number' || !Number.isSafeInteger(code)) return undefined;
+  return [4001, 4100, 4200, 4900, 4901, -32700, -32600, -32601, -32602, -32603].includes(code) || (code >= -32099 && code <= -32000) ? code : undefined;
+}
+
 /** Raised for provider failures; the message carries no provider-supplied text. */
 export class WalletCallError extends Error {
+  public readonly rpcCode: number | undefined;
   public constructor(
     public readonly method: string,
-    public readonly rpcCode: unknown,
+    rpcCode: unknown,
   ) {
     super(`Wallet call failed: ${method}`);
     this.name = 'WalletCallError';
+    this.rpcCode = cleanRpcCode(rpcCode);
   }
 }
 

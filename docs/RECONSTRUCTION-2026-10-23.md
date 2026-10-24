@@ -4,6 +4,8 @@ This is expressly authorized reconstruction from the current remote baseline. Mi
 `b9ac0c24bea625d69ed2857460da29b7edd3ba27` and `6b698af62278aef802f58699f8f99bf68b87aaae`
 are not recovered or represented by the new changes. Earlier test claims do not count as fresh evidence.
 
+**Publication update — 2026-10-24 01:13 UTC:** the user explicitly authorized regular GitHub source checkpoints for both projects. Non-default work branches may receive secret-checked source at coherent milestones; no force-push, branch overwrite, main merge, PR mutation, release/deployment or new credentials/security-setting changes. Earlier no-publication statements record the prior authorization state. Preserve unfinished work and report its test status honestly.
+
 ## Verified starting state
 
 - Repository: `djshellshoxxx/GhostPay`; clean saved checkout initially on local `work`.
@@ -22,20 +24,22 @@ are not recovered or represented by the new changes. Earlier test claims do not 
 
 ## Requirement-to-evidence ledger
 
-| Requirement | Baseline evidence / gap | Work and fresh evidence |
+This table records the first reconstructed safeguard tranche through frozen source `081b76b`, not exhaustive product or release completion. Later invoice-QR/wallet-discovery work is separately verified before integration.
+
+| Requirement | Implementation/evidence | Remaining limit |
 |---|---|---|
-| Encrypted reconciliation; bounded CAS; seller/chain/session binding | `lib/reconciliationLedger.ts` uses plaintext localStorage read/replace; no equivalent vault | Vault worker: new encrypted IndexedDB vault and component integration; pending review/tests |
-| Preserve legacy data as untrusted read/export/delete | Existing UI writes and labels scan history | Vault worker: retire plaintext writes; pending tests |
-| Encrypted backup preview/activation; persistent reorg invalidation | No encrypted ledger backup or durable tombstone | Vault worker + awaited scan reorg callback; pending tests |
-| Receipt/public-meta strict bounds and consent | Existing receipt parsing and importer need recheck | QR and payment workers coordinate; pending evidence |
-| Allowlisted nonsecret settings preview/apply | Existing settings QR scope needs verification | QR worker: strict exchange schema; pending tests |
-| Real scrypt/AES-GCM keystore transfer; strict encrypted/decrypted metadata | Keystore accepts extra fields; metadata consistency validation absent | QR worker: tests first; pending evidence |
-| Camera/decrypt lifecycle; four actual catalogs | Importer/keystore lifetimes and locale coverage need recheck | QR worker: camera/session guards and catalog evidence; pending tests |
-| Wallet authority across awaits | Existing wallet/pay/registry paths need final boundary recheck | Payment worker: synchronous pre-send authority guards; pending tests |
-| Tab-scoped bounded journal, hashes retained, unknown outcomes persistent | Existing duplicate handling needs reconstruction | Payment worker: journal before submission and explicit clear; pending tests |
-| Scanner lifetimes, full owner/address derivation, ERC20/direct-router proof binding | Existing scan cancellation only flips flag; constructor failure can bypass wipe | Scanner worker: scan libraries and chain-adapter payment verifier; pending tests |
-| Sanitized typed failures, unsupported indirect proofs unverified | Existing paths need defensive review | Scanner/payment workers; pending evidence |
-| Acceptance and preservation | No fresh tests yet; no publication authorized | Integrator: freeze, inspect diff, broad checks, local commits, handoff and full-history bundle |
+| Encrypted reconciliation and bounded exact-ciphertext CAS | HKDF/AES-GCM vault; seller/chain/session scope; native two-tab IDB/CAS tests; 737-pass web suite includes vault cases | Local storage/profile rollback or deletion cannot be detected cryptographically without an external anchor |
+| Preserve legacy records as untrusted | Plaintext writer disabled; bounded untrusted read/export/delete only; legacy tests pass | Legacy records never become proof or silently enter encrypted verified history |
+| Encrypted backup preview/activation and reorg tombstones | Explicit preview/apply; imported provenance untrusted; confirmed reorg invalidation and saturated read-only cap; native refresh/reorg tests | Offline source freshness is unknown; forged imported historical labels are not authority |
+| Strict receipt/public-meta parsing and consent | Bounded strict schemas; receipt consent; existing payment verifier reused; registry scan only previews | Signed receipt alone never proves payment; indirect smart-wallet proof remains unverified |
+| Allowlisted nonsecret settings exchange | Five allowed preferences; strict preview/explicit apply; credentials/URLs/pins/private keys excluded | Wider settings transfer requires a new reviewed schema |
+| Real encrypted seller keystore transfer | Existing scrypt/AES-GCM envelope; encrypted/decrypted metadata and scalar checks; abort/session guards | Unlocked JS memory cannot promise forensic erasure |
+| Camera/decrypt lifetime and real catalogs | Close/collapse/reset/unmount/scope invalidation; actual en/es/ja/ar catalogs; focused and browser regressions | Physical cameras, all UI translations, native-language and accessibility acceptance remain open |
+| Final wallet/registry authority across awaits | Account/chain/net_version/provider/session/consent/invoice checks immediately before send; final-account browser zero-send test | Hostile wallet can lie consistently; final on-chain reconciliation remains required |
+| Tab duplicate-attempt journal | Bounded write-ahead unknown state; no automatic expiry; explicit clear; late-hash Chromium case and post-broadcast readback regressions | Bookkeeping clear cannot retract a transaction or cancel a wallet prompt; storage failures retain typed hash-bearing outcome |
+| Scanner keys and payment proof binding | Worker cancellation/wipe; deep opt-in full owner/address; payer-to-stealth ERC20; router/calldata/receipt/log chain identity and final reorg reread | Local/mock token tests are not independent live-provider acceptance |
+| Sanitized failures and unsupported proofs | Fixed typed RPC errors; contradicting provider evidence rejected; 356 adapter tests including actual local Anvil reorg cases | No unsupported indirect proof is promoted to verified |
+| Fresh qualification and preservation | Full required npm command: 8,082 passed/1 existing Bitcoin regtest skip; 19 Chromium E2E; normal build/bundle; local commits and verified history bundles | Independent audit blocked before intake; device/live-wallet/public launch/production ceremony gates open; no GitHub publication |
 
 ## Ordered implementation plan
 
@@ -45,20 +49,20 @@ and journal modules; keep proof authority at existing verified chain and wallet 
 **Tech stack:** npm workspaces, TypeScript, React, Web Crypto, IndexedDB, Vitest, Playwright, viem.
 
 Global constraints: no real funds or live transactions, no production deployment, no external scans, no
-new credentials or paid infrastructure. No pushes, PR mutations or release publication. Preserve OSS notices.
+new credentials or paid infrastructure. Regular secret-checked non-default source checkpoints are now authorized; no PR mutations or release publication. Preserve OSS notices.
 Do not reduce coverage thresholds or skip failures. Browser mocks do not establish device/audit acceptance.
 
 Review focus: stale callbacks after scope changes; malformed/oversized data before expensive work; ambiguous
 wallet outcomes; reorg evidence revived by backup; apparent proofs lacking exact chain/transaction binding.
 
 1. [x] Verify remote state and ancestry, preserve checkout, create local integration branch.
-2. [ ] Observe failing regressions, then implement disjoint thin slices with four workers and one integrator.
+2. [x] Observe failing regressions, then implement disjoint thin slices with four workers and one integrator.
    - Vault: `reconciliationVault`, legacy ledger, ledger component and Scan view.
    - QR: CameraImporter, keystore/session, SellerKeys, Settings, exchange parsing and four catalogs.
    - Wallet: Pay/payExec/wallet/txGuard, registry feature and duplicate-attempt journal.
    - Scanner: scanner core/client/worker and chain-adapters payment verifier.
-3. [ ] Integrator inspects each diff and targeted evidence; commit verified tranches locally with handoff notes.
-4. [ ] Freeze source edits. Run library builds, workspace typecheck/lint/tests with existing thresholds,
+3. [x] Integrator inspects each diff and targeted evidence; commit verified tranches locally with handoff notes.
+4. [x] Freeze source edits for the first reconstructed tranche. Run library builds, workspace typecheck/lint/tests with existing thresholds,
    web build/bundle scan, local browser tests and defensive secret/action checks. Report every failure and
    unavailable capability. Fix only understood failures; repeat affected checks after changes.
 5. [ ] Review the final frozen delta for security and functional regressions. Retain external acceptance gates.

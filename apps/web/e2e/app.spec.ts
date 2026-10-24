@@ -46,6 +46,43 @@ test('create invoice -> open link -> review screen (no manifest shipped, so paym
   expect(bad.map((m) => m.text())).toEqual([]);
 });
 
+test('invoice QR text stays local, rejects foreign links and requires a fresh preview after collapse', async ({ page }) => {
+  const bad = watchConsole(page);
+  await page.goto('/');
+  await generateKeys(page);
+  const link = await createInvoice(page, { memo: 'Local QR preview only', chainLabel: 'Ethereum Sepolia' });
+  const fragment = new URL(link).hash;
+  await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Pay', exact: true }).click();
+  await page.getByText('Scan an invoice QR', { exact: true }).click();
+  const importer = page.getByRole('region', { name: 'Invoice QR import' });
+  const location = page.url();
+  await importer.getByLabel('Or paste QR text').fill(`https://foreign.invalid/${fragment}`);
+  await importer.getByRole('button', { name: 'Use pasted text' }).click();
+  await expect(page.getByRole('alert')).toContainText('Invoice QR not accepted');
+  expect(page.url()).toBe(location);
+  await expect(page.getByRole('button', { name: 'Open scanned invoice' })).toHaveCount(0);
+
+  await importer.getByLabel('Or paste QR text').fill(fragment);
+  await importer.getByRole('button', { name: 'Use pasted text' }).click();
+  await expect(page.getByRole('heading', { name: 'Review scanned invoice' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Review payment' })).toHaveCount(0);
+  expect(await page.evaluate(() => sessionStorage.getItem('ghostpay.wallet-attempts.v1'))).toBeNull();
+  expect(page.url()).toBe(location);
+  await page.getByText('Scan an invoice QR', { exact: true }).click();
+  await page.getByText('Scan an invoice QR', { exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Open scanned invoice' })).toHaveCount(0);
+
+  await importer.getByLabel('Or paste QR text').fill(fragment);
+  await importer.getByRole('button', { name: 'Use pasted text' }).click();
+  await page.getByRole('button', { name: 'Open scanned invoice' }).click();
+  await expect(page.getByRole('heading', { name: 'Review payment' })).toBeVisible();
+  await expect(page.getByText('Local QR preview only')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Continue', exact: true })).toBeDisabled();
+  expect(await page.evaluate(() => sessionStorage.getItem('ghostpay.wallet-attempts.v1'))).toBeNull();
+  expect(page.url()).toBe(location);
+  expect(bad.map(message => message.text())).toEqual([]);
+});
+
 test('egress: parsing and reviewing an invoice makes no request except same-origin', async ({ page, context }) => {
   await page.goto('/');
   await generateKeys(page);
