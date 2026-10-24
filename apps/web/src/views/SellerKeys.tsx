@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
+import { TagArchive } from '../components/TagArchive';
 import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
 import { userMessage } from '../lib/errors';
@@ -310,6 +311,8 @@ export function SellerKeys(): ReactNode {
           </button>
         </>
       )}
+
+      <TagArchive />
 
       <h3>Public registry</h3>
       <p className="hint">Publishing your meta-address to the ERC-6538 registry would publicly associate it with your wallet address. Publishing is optional and has its own page.</p>
