@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { encodeMetaAddress, parseCompressedPoint } from '@ghostpay/core-crypto';
+import { secp256k1 } from '@noble/curves/secp256k1.js';
 import { checkDeployment, deploymentProblem } from './deployment';
 import { decryptKeystore, encryptKeystore, passphraseProblem, passphraseStrength } from './keystore';
 import { sanitizeDisplayText } from './sanitize';
@@ -9,8 +11,14 @@ import { fakeManifest, fakeVerified } from '../test/fakeManifest';
 import { mockRpc } from '../test/mockRpc';
 
 describe('S3-13: keystore import ceilings and passphrase policy', () => {
-  const META = { metaAddress: 'st:eth:0xabc', signer: '02' + 'ab'.repeat(32) };
   const secrets = { spendingKey: new Uint8Array(32).fill(1), viewingKey: new Uint8Array(32).fill(2), signingKey: new Uint8Array(32).fill(3) };
+  const META = {
+    metaAddress: encodeMetaAddress({
+      spendingPublicKey: parseCompressedPoint(secp256k1.getPublicKey(secrets.spendingKey)),
+      viewingPublicKey: parseCompressedPoint(secp256k1.getPublicKey(secrets.viewingKey)),
+    }),
+    signer: Buffer.from(secp256k1.getPublicKey(secrets.signingKey)).toString('hex'),
+  };
 
   it('rejects attacker-chosen scrypt costs above the export profile BEFORE deriving anything', async () => {
     const good = JSON.parse(await encryptKeystore(secrets, META, 'correct horse battery', { N: 1 << 14 })) as { kdfParams: Record<string, number> };

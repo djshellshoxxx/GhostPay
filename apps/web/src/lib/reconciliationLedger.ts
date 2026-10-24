@@ -60,7 +60,7 @@ function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value) && Object.getPrototypeOf(value) === Object.prototype;
 }
 
-function validateRecord(value: unknown): ReconciliationRecord {
+export function validateReconciliationRecord(value: unknown): ReconciliationRecord {
   if (!isObject(value)) return fail('A local ledger entry is not an object.');
   const allowed = new Set([
     'version', 'id', 'sellerKeyId', 'chainId', 'transactionHash', 'blockNumber', 'blockHash', 'logIndex',
@@ -95,7 +95,7 @@ function documentFromRaw(raw: string | null): ReconciliationLedgerDocument {
   let parsed: unknown;
   try { parsed = JSON.parse(raw) as unknown; } catch { return fail('The local reconciliation ledger is corrupt and was not changed.'); }
   if (!isObject(parsed) || Object.keys(parsed).sort().join('|') !== 'records|version' || parsed.version !== 1 || !Array.isArray(parsed.records) || parsed.records.length > MAX_RECONCILIATION_RECORDS) return fail('The local reconciliation ledger has an unsupported format.');
-  const records = parsed.records.map(validateRecord);
+  const records = parsed.records.map(validateReconciliationRecord);
   if (new Set(records.map((record) => record.id)).size !== records.length) return fail('The local reconciliation ledger contains duplicate entries.');
   return { version: 1, records };
 }
@@ -106,16 +106,14 @@ function serialize(document: ReconciliationLedgerDocument): string {
   return value;
 }
 
-export function isReconciliationLedgerEnabled(storage: LedgerStorage = defaultStorage()): boolean {
-  return storage.getItem(RECONCILIATION_LEDGER_ENABLED_KEY) === '1';
-}
+/** Legacy opt-in never enables the encrypted vault and cannot authorize new plaintext writes. */
+export function isReconciliationLedgerEnabled(storage: LedgerStorage = defaultStorage()): boolean { void storage; return false; }
 
+/** Retained for old callers: disable/delete is supported, enabling the plaintext ledger is forbidden. */
 export function setReconciliationLedgerEnabled(enabled: boolean, storage: LedgerStorage = defaultStorage()): void {
-  if (enabled) storage.setItem(RECONCILIATION_LEDGER_ENABLED_KEY, '1');
-  else {
-    storage.removeItem(RECONCILIATION_LEDGER_ENABLED_KEY);
-    storage.removeItem(RECONCILIATION_LEDGER_DATA_KEY);
-  }
+  if (enabled) return fail('The legacy ledger is read-only. Use the encrypted reconciliation vault.');
+  storage.removeItem(RECONCILIATION_LEDGER_ENABLED_KEY);
+  storage.removeItem(RECONCILIATION_LEDGER_DATA_KEY);
   announceChanged();
 }
 
@@ -161,43 +159,13 @@ export function recordFromVerifiedMatch(
     evidenceStatus: 'verified-at-scan',
     evidenceSource: 'verified-router-scan',
   };
-  return validateRecord(record);
+  return validateReconciliationRecord(record);
 }
 
-export function saveReconciliationRecord(record: ReconciliationRecord, storage: LedgerStorage = defaultStorage()): readonly ReconciliationRecord[] {
-  if (!isReconciliationLedgerEnabled(storage)) return fail('Enable the local reconciliation ledger before saving a record.');
-  const valid = validateRecord(record);
-  const doc = documentFromRaw(storage.getItem(RECONCILIATION_LEDGER_DATA_KEY));
-  const previousIndex = doc.records.findIndex((item) => item.id === valid.id);
-  if (previousIndex >= 0) {
-    const previous = doc.records[previousIndex]!;
-    if (previous.invoiceDigest !== undefined && valid.invoiceDigest !== undefined && previous.invoiceDigest !== valid.invoiceDigest) return fail('This payment is already linked to a different invoice digest.');
-    if (previous.invoiceDigest === undefined && valid.invoiceDigest !== undefined) {
-      const records = [...doc.records];
-      records[previousIndex] = { ...previous, invoiceDigest: valid.invoiceDigest };
-      storage.setItem(RECONCILIATION_LEDGER_DATA_KEY, serialize({ version: 1, records }));
-      announceChanged();
-      return records;
-    }
-    return doc.records;
-  }
-  if (doc.records.length >= MAX_RECONCILIATION_RECORDS) return fail('The local reconciliation ledger is full. Export and delete older records to continue.');
-  const records = [...doc.records, valid];
-  storage.setItem(RECONCILIATION_LEDGER_DATA_KEY, serialize({ version: 1, records }));
-  announceChanged();
-  return records;
-}
-
-export function invalidateReconciliationAtOrAfter(chainId: number, sellerKeyId: string, blockNumber: bigint, storage: LedgerStorage = defaultStorage()): readonly ReconciliationRecord[] {
-  const doc = documentFromRaw(storage.getItem(RECONCILIATION_LEDGER_DATA_KEY));
-  const records = doc.records.map((record) => record.chainId === chainId && record.sellerKeyId === sellerKeyId && BigInt(record.blockNumber) >= blockNumber
-    ? { ...record, evidenceStatus: 'invalidated-after-reorg' as const }
-    : record);
-  if (records.some((record, index) => record !== doc.records[index])) {
-    storage.setItem(RECONCILIATION_LEDGER_DATA_KEY, serialize({ version: 1, records }));
-    announceChanged();
-  }
-  return records;
+/** Existing records remain readable/exportable/deletable, but never become fresh chain evidence. */
+export function saveReconciliationRecord(_record: ReconciliationRecord, storage: LedgerStorage = defaultStorage()): readonly ReconciliationRecord[] {
+  void storage;
+  return fail('The legacy ledger is read-only. Use the encrypted reconciliation vault.');
 }
 
 export function clearReconciliationRecords(storage: LedgerStorage = defaultStorage()): void {
@@ -205,19 +173,17 @@ export function clearReconciliationRecords(storage: LedgerStorage = defaultStora
   announceChanged();
 }
 
-export function clearReconciliationScope(chainId: number, sellerKeyId: string, storage: LedgerStorage = defaultStorage()): readonly ReconciliationRecord[] {
-  const doc = documentFromRaw(storage.getItem(RECONCILIATION_LEDGER_DATA_KEY));
-  const records = doc.records.filter((record) => record.chainId !== chainId || record.sellerKeyId !== sellerKeyId);
-  if (records.length === doc.records.length) return records;
-  if (records.length === 0) storage.removeItem(RECONCILIATION_LEDGER_DATA_KEY);
-  else storage.setItem(RECONCILIATION_LEDGER_DATA_KEY, serialize({ version: 1, records }));
-  announceChanged();
-  return records;
+/** Explicit untrusted legacy export preserves bounded raw bytes even when schema validation fails. */
+export function exportUntrustedLegacyReconciliation(storage: LedgerStorage = defaultStorage()): string {
+  const raw = storage.getItem(RECONCILIATION_LEDGER_DATA_KEY);
+  if (raw === null) return fail('No legacy plaintext reconciliation data is stored.');
+  if (raw.length > MAX_LEDGER_BYTES || new TextEncoder().encode(raw).byteLength > MAX_LEDGER_BYTES) return fail('The legacy reconciliation data exceeds its safety limit.');
+  return raw;
 }
 
 export function exportReconciliationLedger(records: readonly ReconciliationRecord[]): string {
   if (records.length > MAX_RECONCILIATION_RECORDS) return fail('The local reconciliation ledger has too many records to export.');
-  return serialize({ version: 1, records: records.map(validateRecord) });
+  return serialize({ version: 1, records: records.map(validateReconciliationRecord) });
 }
 
 export function searchReconciliationRecords(records: readonly ReconciliationRecord[], query: string): readonly ReconciliationRecord[] {

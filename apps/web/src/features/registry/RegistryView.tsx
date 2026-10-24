@@ -1,11 +1,15 @@
 import { buildLookupCall, buildRegisterKeysCall, ERC6538_REGISTRY_ADDRESS, lookupMetaAddress, verifyRegistry, type RegistryCall } from '@ghostpay/chain-adapters';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { userMessage } from '../../lib/errors';
 import { useServices } from '../../lib/services';
-import { connectWallet, sendViaWallet, verifySubmission, type WalletInfo, type WalletSession } from '../../lib/wallet';
+import { connectWallet, sendViaWallet, verifySubmission, WalletBroadcastError, type WalletInfo, type WalletSession } from '../../lib/wallet';
 import { useApp } from '../../state';
 import { buildClearRegistryCall } from '../../lib/registry';
+import { captureSessionGuard } from '../../lib/session';
+import { WalletAttempts } from '../../components/WalletAttempts';
+import { CameraImporter } from '../../components/CameraImporter';
+import { parsePublicMetaQr } from '../../lib/qrPayload';
 
 type Msg = { readonly kind: 'ok' | 'error' | 'warn'; readonly text: string };
 
@@ -56,6 +60,8 @@ export function RegistryView(): ReactNode {
   const [who, setWho] = useState('');
   const [found, setFound] = useState<{ readonly meta: string | undefined; readonly call: RegistryCall } | undefined>(undefined);
   const [look, setLook] = useState<Msg | undefined>(undefined);
+  const [scannedMeta, setScannedMeta] = useState<string | undefined>();
+  const [scanError, setScanError] = useState<string | undefined>();
 
   // Any change to chain, consent or keys invalidates a prepared review and the wallet connection.
   const metaAddress = app.session?.metaAddress;
@@ -64,6 +70,29 @@ export function RegistryView(): ReactNode {
     setReviewAction(undefined);
     setWallet(undefined);
   }, [chainId, consent, metaAddress]);
+
+  const mounted = useRef(true);
+  const busyRef = useRef(false);
+  const latest = useRef({ chainId, consent, metaAddress, wallet, reviewed, reviewAction, session: app.session, settings: app.settings, who });
+  latest.current = { chainId, consent, metaAddress, wallet, reviewed, reviewAction, session: app.session, settings: app.settings, who };
+  useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; };
+  }, []);
+  useEffect(() => { setConsent(false); }, [chainId, app.session]);
+  const captureAuthority = (): (() => void) => {
+    const expected = latest.current;
+    const guardSession = captureSessionGuard();
+    return () => {
+      guardSession();
+      const current = latest.current;
+      if (!mounted.current || !current.consent || current.chainId !== expected.chainId || current.session !== expected.session ||
+          current.metaAddress !== expected.metaAddress || current.wallet !== expected.wallet || current.reviewed !== expected.reviewed ||
+          current.reviewAction !== expected.reviewAction || current.settings !== expected.settings) {
+        throw new Error('The registry session, network, wallet or consent changed. Review the action again.');
+      }
+    };
+  };
 
   const rpcFor = async (): Promise<NonNullable<Awaited<ReturnType<typeof app.getRpc>>>> => {
     if (chainId === undefined) throw new Error('chain');
@@ -82,49 +111,67 @@ export function RegistryView(): ReactNode {
   };
 
   const onConnect = (w: WalletInfo): void => {
-    if (chainId === undefined) return;
+    if (chainId === undefined || !consent || metaAddress === undefined || busyRef.current) return;
+    const guard = captureAuthority();
     setPub({ kind: 'ok', text: 'Waiting for your wallet…' });
     connectWallet(w, chainId).then(
-      (s) => {
-        setWallet(s);
+      (connected) => {
+        try { guard(); } catch { return; }
+        setWallet(connected);
         setPub(undefined);
         app.announce('Wallet connected.');
       },
       (e: unknown) => {
+        try { guard(); } catch { return; }
         setPub({ kind: 'error', text: userMessage(e) });
       },
     );
   };
 
   const onReview = (action: 'publish' | 'clear'): void => {
-    if (metaAddress === undefined) return;
+    if (metaAddress === undefined || !consent || wallet === undefined || busyRef.current) return;
+    const guard = captureAuthority();
+    busyRef.current = true;
     setBusy(true);
     void (async () => {
       try {
         const rpc = await rpcFor();
+        guard();
         await verifyRegistry(rpc);
+        guard();
         setReviewed(action === 'publish' ? buildRegisterKeysCall(metaAddress) : buildClearRegistryCall());
         setReviewAction(action);
         setPub(undefined);
       } catch (e) {
+        try { guard(); } catch { return; }
         setPub(rpcMissing(e) ? noRpc : { kind: 'error', text: userMessage(e) });
       } finally {
-        setBusy(false);
+        busyRef.current = false;
+        if (mounted.current) setBusy(false);
       }
     })();
   };
 
   const onPublish = (): void => {
-    if (wallet === undefined || reviewed === undefined || reviewAction === undefined || chainId === undefined || metaAddress === undefined) return;
+    if (wallet === undefined || reviewed === undefined || reviewAction === undefined || chainId === undefined || metaAddress === undefined || !consent || busyRef.current) return;
+    const guard = captureAuthority();
+    busyRef.current = true;
     setBusy(true);
     void (async () => {
+      let returnedHash: string | undefined;
       try {
         const rpc = await rpcFor();
+        guard();
         await verifyRegistry(rpc);
+        guard();
         const expected = reviewAction === 'publish' ? buildRegisterKeysCall(metaAddress) : buildClearRegistryCall();
         if (expected.to !== reviewed.to || expected.data !== reviewed.data || expected.value !== reviewed.value) throw new Error('The reviewed registry transaction changed. Review it again.');
-        const hash = await sendViaWallet(wallet, expected);
+        const hash = await sendViaWallet(wallet, expected, guard, { kind: 'registry' });
+        returnedHash = hash;
+        // The journal already retained this hash, even if the user changed sessions while the wallet was open.
+        guard();
         const check = await verifySubmission(rpc, hash, { from: wallet.account, to: expected.to, data: expected.data, value: 0n, chainId }, services.sleep);
+        guard();
         setReviewed(undefined);
         setReviewAction(undefined);
         setPub({
@@ -133,14 +180,24 @@ export function RegistryView(): ReactNode {
         });
         app.announce(`${reviewAction === 'publish' ? 'Registration' : 'Clear'} submitted.`);
       } catch (e) {
+        if (e instanceof WalletBroadcastError) returnedHash = e.hash;
+        if (!mounted.current) return;
+        if (returnedHash !== undefined) {
+          setPub({ kind: 'warn', text: `The wallet returned transaction ${returnedHash}. The session changed or verification failed; check your wallet and the journal before another attempt. This request cannot be cancelled or rolled back by this page.` });
+          return;
+        }
+        try { guard(); } catch { return; }
         setPub(rpcMissing(e) ? noRpc : { kind: 'error', text: userMessage(e) });
       } finally {
-        setBusy(false);
+        busyRef.current = false;
+        if (mounted.current) setBusy(false);
       }
     })();
   };
 
   const onLookup = (): void => {
+    const expected = latest.current;
+    const isCurrent = (): boolean => mounted.current && latest.current.chainId === expected.chainId && latest.current.who === expected.who && latest.current.settings === expected.settings;
     setFound(undefined);
     setLook(undefined);
     setBusy(true);
@@ -149,10 +206,12 @@ export function RegistryView(): ReactNode {
         const call = buildLookupCall(who.trim());
         const rpc = await rpcFor();
         await verifyRegistry(rpc);
+        if (!isCurrent()) return;
         const meta = await lookupMetaAddress(rpc, who.trim());
+        if (!isCurrent()) return;
         setFound({ meta, call });
       } catch (e) {
-        setLook(rpcMissing(e) ? noRpc : { kind: 'error', text: userMessage(e) });
+        if (isCurrent()) setLook(rpcMissing(e) ? noRpc : { kind: 'error', text: userMessage(e) });
       } finally {
         setBusy(false);
       }
@@ -162,6 +221,7 @@ export function RegistryView(): ReactNode {
   return (
     <section aria-labelledby="reg-h">
       <h2 id="reg-h">Public registry (ERC-6538)</h2>
+      <WalletAttempts />
       <p className="hint">
         Canonical registry address <Mono>{ERC6538_REGISTRY_ADDRESS}</Mono>, taken from the text of EIP-6538. The page checks that contract code exists on the
         chosen network and checks its ERC-6538 identity before use. Test networks only until mainnets are enabled.
@@ -216,6 +276,20 @@ export function RegistryView(): ReactNode {
         </>
       )}
       {pub !== undefined && <Notice kind={pub.kind}>{pub.text}</Notice>}
+
+      <section className="panel" aria-label="Public meta-address QR review">
+        <h3>Read a public meta-address QR</h3>
+        <p className="hint">Scanned text is untrusted. Reading it does not change seller keys or write to the registry. Confirm the owner's identity through another channel.</p>
+        <CameraImporter key={chainId} label="Scan or paste a public meta-address" scopeKey={app.session}
+          onInputChange={() => { setScannedMeta(undefined); setScanError(undefined); }}
+          onText={(text, signal) => {
+            if (signal.aborted) return false;
+            try { setScannedMeta(parsePublicMetaQr(text)); setScanError(undefined); return true; }
+            catch (e) { setScannedMeta(undefined); setScanError(userMessage(e)); return false; }
+          }} />
+        {scanError !== undefined && <Notice kind="error">{scanError}</Notice>}
+        {scannedMeta !== undefined && <><h4>Scanned public meta-address (untrusted)</h4><p><Mono>{scannedMeta}</Mono></p><CopyButton text={scannedMeta} label="Copy scanned public meta-address" /></>}
+      </section>
 
       <h3>Look up a payee</h3>
       <Field label="Wallet address (ENS names are not supported yet)">

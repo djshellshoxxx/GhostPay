@@ -58,6 +58,22 @@ describe('ScanSession', () => {
     expect(raw.every((b) => b === 0)).toBe(true);
     s.dispose();
   });
+  it('wipes supplied viewing bytes even when the spending point is rejected first', () => {
+    const f = fixture();
+    const raw = unsafeRevealSecret(f.keys.viewingSecret);
+    expect(() => new ScanSession(raw, 'zz')).toThrow(/INVALID_POINT/);
+    expect(raw.every((byte) => byte === 0)).toBe(true);
+  });
+  it('wipes the retained viewing scalar immediately on cancellation', () => {
+    const f = fixture();
+    const session = new ScanSession(unsafeRevealSecret(f.keys.viewingSecret), f.spendHex);
+    // Retain the exact scalar buffer to verify destruction, rather than a copied reveal value.
+    const scalar = (session as unknown as { readonly secret: Uint8Array }).secret;
+    expect(scalar.some((byte) => byte !== 0)).toBe(true);
+    session.cancel();
+    expect(scalar.every((byte) => byte === 0)).toBe(true);
+    expect(session.processBatch([f.mine])).toEqual([]);
+  });
   it('rejects bad keys', () => {
     const f = fixture();
     expect(() => new ScanSession(new Uint8Array(32), f.spendHex)).toThrow();

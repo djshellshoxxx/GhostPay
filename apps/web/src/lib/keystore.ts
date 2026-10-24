@@ -1,3 +1,5 @@
+import { decodeMetaAddress, encodeMetaAddress, parseCompressedPoint, secretScalarFromBytes, zeroize } from '@ghostpay/core-crypto';
+import { parseStrictJson, signerPublicKeyHex } from '@ghostpay/invoice-schema';
 import { scryptAsync } from '@noble/hashes/scrypt.js';
 import { bytesToHex, hexToBytes, utf8ToBytes } from '@noble/hashes/utils.js';
 import { UserFacingError } from './errors';
@@ -32,7 +34,7 @@ const MIN_N = 1 << 14;
 const MAX_N = 1 << 18;
 const MAX_R = 8;
 const MAX_P = 2;
-const MAX_KEYSTORE_BYTES = 8 * 1024;
+export const MAX_KEYSTORE_BYTES = 8 * 1024;
 const MIN_PASSPHRASE = 14;
 const HEX64 = /^[0-9a-f]{64}$/;
 
@@ -142,8 +144,9 @@ export async function encryptKeystore(
 
 const BAD = 'This is not a valid GhostPay keystore file.';
 
-function rec(v: unknown): Record<string, unknown> {
+function rec(v: unknown, keys?: readonly string[]): Record<string, unknown> {
   if (typeof v !== 'object' || v === null || Array.isArray(v)) throw new UserFacingError(BAD);
+  if (keys !== undefined && Object.keys(v).sort().join('|') !== [...keys].sort().join('|')) throw new UserFacingError(BAD);
   return v as Record<string, unknown>;
 }
 function hex(v: unknown, min: number, max: number): Uint8Array {
@@ -151,31 +154,34 @@ function hex(v: unknown, min: number, max: number): Uint8Array {
   return hexToBytes(v);
 }
 
-/** Strictly parses and decrypts a keystore. Wrong passphrase and tampering are indistinguishable by design. */
-export async function decryptKeystore(text: string, passphrase: string): Promise<KeystoreSecrets> {
-  if (typeof text !== 'string' || text.length > MAX_KEYSTORE_BYTES) throw new UserFacingError(BAD);
+/** Validates the complete bounded envelope before a QR/file transfer may request a passphrase. */
+export function validateKeystoreEnvelope(text: string): KeystoreFile {
+  if (typeof text !== 'string' || text.length > MAX_KEYSTORE_BYTES || new TextEncoder().encode(text).byteLength > MAX_KEYSTORE_BYTES) throw new UserFacingError(BAD);
   let parsed: unknown;
-  try {
-    parsed = JSON.parse(text);
-  } catch {
-    throw new UserFacingError(BAD);
-  }
-  const f = rec(parsed);
+  try { parsed = parseStrictJson(text); } catch { throw new UserFacingError(BAD); }
+  const f = rec(parsed, ['v', 'kdf', 'kdfParams', 'cipher', 'iv', 'meta', 'ciphertext']);
   if (f['v'] !== 1 || f['kdf'] !== 'scrypt' || f['cipher'] !== 'AES-256-GCM') throw new UserFacingError(BAD);
-  const kp = rec(f['kdfParams']);
-  const N = kp['N'];
-  const r = kp['r'];
-  const p = kp['p'];
+  const kp = rec(f['kdfParams'], ['N', 'r', 'p', 'salt']);
+  const N = kp['N']; const r = kp['r']; const p = kp['p'];
   if (typeof N !== 'number' || !Number.isInteger(N) || N < MIN_N || N > MAX_N || (N & (N - 1)) !== 0) throw new UserFacingError(BAD);
   if (typeof r !== 'number' || !Number.isInteger(r) || r < 1 || r > MAX_R) throw new UserFacingError(BAD);
   if (typeof p !== 'number' || !Number.isInteger(p) || p < 1 || p > MAX_P) throw new UserFacingError(BAD);
-  const salt = hex(kp['salt'], 16, 64);
-  const iv = hex(f['iv'], 12, 12);
-  const ct = hex(f['ciphertext'], 17, 1024);
-  const m = rec(f['meta']);
-  const metaAddress = m['metaAddress'];
-  const signer = m['signer'];
-  if (typeof metaAddress !== 'string' || typeof signer !== 'string' || metaAddress.length > 200 || signer.length > 80) throw new UserFacingError(BAD);
+  hex(kp['salt'], 16, 64); hex(f['iv'], 12, 12); hex(f['ciphertext'], 17, 1024);
+  const m = rec(f['meta'], ['metaAddress', 'signer']);
+  if (typeof m['metaAddress'] !== 'string' || m['metaAddress'].length !== 141 || typeof m['signer'] !== 'string' || !/^(02|03)[0-9a-f]{64}$/.test(m['signer'])) throw new UserFacingError(BAD);
+  try {
+    if (encodeMetaAddress(decodeMetaAddress(m['metaAddress'])) !== m['metaAddress']) throw new Error();
+    parseCompressedPoint(hexToBytes(m['signer']));
+  } catch { throw new UserFacingError(BAD); }
+  return f as unknown as KeystoreFile;
+}
+
+/** Strictly parses and decrypts a keystore. Wrong passphrase and tampering are indistinguishable by design. */
+export async function decryptKeystore(text: string, passphrase: string): Promise<KeystoreSecrets> {
+  const f = validateKeystoreEnvelope(text);
+  const { N, r, p } = f.kdfParams;
+  const salt = hexToBytes(f.kdfParams.salt); const iv = hexToBytes(f.iv); const ct = hexToBytes(f.ciphertext);
+  const { metaAddress, signer } = f.meta;
   const key = await derive(passphrase, salt, N, r, p);
   let plain: Uint8Array;
   try {
@@ -183,21 +189,34 @@ export async function decryptKeystore(text: string, passphrase: string): Promise
       await subtle().decrypt(
         { name: 'AES-GCM', iv: iv as Uint8Array<ArrayBuffer>, additionalData: aad({ metaAddress, signer }, N, r, p), tagLength: 128 },
         key,
-        ct as Uint8Array<ArrayBuffer>,
+        ct,
       ),
     );
   } catch {
     throw new UserFacingError('Wrong passphrase, or the keystore was modified.');
   }
   try {
-    const body = rec(JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(plain)));
+    const body = rec(parseStrictJson(new TextDecoder('utf-8', { fatal: true }).decode(plain)), ['spendingKey', 'viewingKey', 'signingKey']);
     const out: Record<string, Uint8Array> = {};
     for (const k of ['spendingKey', 'viewingKey', 'signingKey']) {
       const v = body[k];
       if (typeof v !== 'string' || !HEX64.test(v)) throw new UserFacingError(BAD);
-      out[k] = hexToBytes(v);
     }
-    return { spendingKey: out['spendingKey'] as Uint8Array, viewingKey: out['viewingKey'] as Uint8Array, signingKey: out['signingKey'] as Uint8Array };
+    for (const k of ['spendingKey', 'viewingKey', 'signingKey']) out[k] = hexToBytes(body[k] as string);
+    const secrets = { spendingKey: out['spendingKey'] as Uint8Array, viewingKey: out['viewingKey'] as Uint8Array, signingKey: out['signingKey'] as Uint8Array };
+    try {
+      const publicOf = (bytes: Uint8Array): string => {
+        const scalar = secretScalarFromBytes(bytes);
+        try { return signerPublicKeyHex(scalar); } finally { zeroize(scalar); }
+      };
+      const spendPub = publicOf(secrets.spendingKey); const viewPub = publicOf(secrets.viewingKey); const signingPub = publicOf(secrets.signingKey);
+      const actualMeta = encodeMetaAddress({ spendingPublicKey: parseCompressedPoint(hexToBytes(spendPub)), viewingPublicKey: parseCompressedPoint(hexToBytes(viewPub)) });
+      if (actualMeta !== metaAddress || signingPub !== signer || signingPub === spendPub || signingPub === viewPub) throw new UserFacingError('The keystore metadata does not match its independent seller keys.');
+      return secrets;
+    } catch (error) {
+      zeroize(secrets.spendingKey, secrets.viewingKey, secrets.signingKey);
+      throw error;
+    }
   } catch (e) {
     if (e instanceof UserFacingError) throw e;
     throw new UserFacingError(BAD);

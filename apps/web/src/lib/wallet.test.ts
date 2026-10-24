@@ -125,6 +125,55 @@ describe('sending', () => {
     const swapped: WalletInfo = { ...info(w2), provider: { request: (a) => (a.method === 'eth_accounts' ? Promise.resolve(['0x7777777777777777777777777777777777777777']) : w2.request(a)) } };
     await expect(recheckWallet({ ...s2, wallet: swapped })).rejects.toThrow(/account changed/);
   });
+  it('checks application authority again after wallet network awaits and before sending', async () => {
+    const base = new MockWallet();
+    let current = true;
+    const session = await connectWallet(info(base), 84532);
+    const wrapped = { ...session, wallet: { ...session.wallet, provider: {
+      request: async (args: Parameters<MockWallet['request']>[0]) => {
+        const value = await base.request(args);
+        if (args.method === 'net_version') current = false;
+        return value;
+      },
+    } } };
+    await expect(sendViaWallet(wrapped, { to: ROUTER, data: '0x', value: 0n }, () => {
+      if (!current) throw new Error('authority changed');
+    })).rejects.toThrow('authority changed');
+    expect(base.sent).toBeUndefined();
+  });
+  it('rechecks authority after wallet awaits before asking for a permit signature', async () => {
+    const base = new MockWallet();
+    const session = await connectWallet(info(base), 84532);
+    let current = true;
+    const wrapped = { ...session, wallet: { ...session.wallet, provider: {
+      request: async (args: Parameters<MockWallet['request']>[0]) => {
+        const value = await base.request(args);
+        if (args.method === 'net_version') current = false;
+        return value;
+      },
+    } } };
+    await expect(signTypedDataViaWallet(wrapped, '{}', () => {
+      if (!current) throw new Error('authority changed');
+    })).rejects.toThrow('authority changed');
+    expect(base.calls.some((call) => call.method === 'eth_signTypedData_v4')).toBe(false);
+  });
+  it('refuses a provider account-change event during the network check', async () => {
+    const base = new MockWallet();
+    const session = await connectWallet(info(base), 84532);
+    const listeners = new Map<string, () => void>();
+    const provider = {
+      on: (event: string, listener: () => void) => { listeners.set(event, listener); },
+      removeListener: (event: string) => { listeners.delete(event); },
+      request: async (args: Parameters<MockWallet['request']>[0]) => {
+        const value = await base.request(args);
+        if (args.method === 'net_version') listeners.get('accountsChanged')?.();
+        return value;
+      },
+    };
+    await expect(sendViaWallet({ ...session, wallet: { ...session.wallet, provider } }, { to: ROUTER, data: '0x', value: 0n })).rejects.toThrow(/changed/);
+    expect(base.sent).toBeUndefined();
+    expect(listeners.size).toBe(0);
+  });
   it('rejects bad hashes and signatures from the wallet', async () => {
     const mk = (send: unknown, sig: unknown): ReturnType<typeof connectWallet> => {
       const w = new MockWallet();

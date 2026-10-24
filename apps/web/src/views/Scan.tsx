@@ -7,11 +7,12 @@ import { ReconciliationLedger } from '../components/ReconciliationLedger';
 import { useManifest } from '../components/Disclosure';
 import { verifyManifestState } from '../lib/manifest';
 import { formatUnits } from '../lib/format';
-import { userMessage } from '../lib/errors';
+import { UserFacingError, userMessage } from '../lib/errors';
 import { checkpointKeyId, runScan, type ScanMatch, type ScanProgress } from '../lib/scanClient';
 import { useServices } from '../lib/services';
-import { getSessionPublic, requireSession } from '../lib/session';
-import { invalidateReconciliationAtOrAfter, isReconciliationLedgerEnabled } from '../lib/reconciliationLedger';
+import { captureSessionGuard, requireSession, subscribeSession } from '../lib/session';
+import { recordFromVerifiedMatch } from '../lib/reconciliationLedger';
+import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
 import type { TagPayload } from '../lib/tags';
 import { useApp } from '../state';
 
@@ -39,6 +40,15 @@ export function Scan(): ReactNode {
     },
     [],
   );
+
+  useEffect(() => subscribeSession(() => {
+    // A revision change invalidates even a clear-and-restore of identical public keys.
+    abort.current?.abort();
+    app.setMatches([]);
+    setScanOwner(undefined);
+    setProgress(undefined);
+    setDone(undefined);
+  }), [app.setMatches]);
 
   useEffect(() => {
     const scope = startingScope.current;
@@ -72,6 +82,7 @@ export function Scan(): ReactNode {
     if (keyId === undefined || abort.current !== undefined) return;
     const sessionAtStart = app.session;
     if (sessionAtStart === undefined) return;
+    const guardSession = captureSessionGuard();
     const scope = { chainId, keyId, signerPublicKey: sessionAtStart.signerPublicKey };
     const ctl = new AbortController();
     abort.current = ctl;
@@ -82,9 +93,7 @@ export function Scan(): ReactNode {
     setScanOwner(undefined);
     app.setMatches([]);
     const scopeKeysAreCurrent = (): boolean => {
-      const current = getSessionPublic();
-      const currentKeyId = current === undefined ? undefined : checkpointKeyId(current.spendingPublicKey, current.viewingPublicKey);
-      return currentKeyId === scope.keyId && current?.signerPublicKey === scope.signerPublicKey;
+      try { guardSession(); return true; } catch { return false; }
     };
     const scopeIsCurrent = (): boolean => !ctl.signal.aborted && scopeKeysAreCurrent();
     const assertScopeCurrent = (): void => {
@@ -101,7 +110,16 @@ export function Scan(): ReactNode {
           setError('Configure an RPC for this chain in Settings first.');
           return;
         }
-        const rpc2: RpcClient | undefined = await app.getSecondaryRpc(chainId).catch(() => undefined);
+        // A configured second RPC is a user-chosen cross-check. If it cannot be opened (unreachable, wrong chain),
+        // block instead of silently scanning with one provider; the user can remove it in Settings to opt out.
+        let rpc2: RpcClient | undefined;
+        try {
+          rpc2 = await app.getSecondaryRpc(chainId);
+        } catch {
+          assertScopeCurrent();
+          setError('Scan blocked: the second RPC configured for this chain could not be used. Check it in Settings, or remove it to scan with one provider.');
+          return;
+        }
         assertScopeCurrent();
         let cursor = resume ? checkpoint : undefined;
         if (cursor === undefined) {
@@ -122,6 +140,7 @@ export function Scan(): ReactNode {
         setScanOwner(scope);
         const viewingKey = unsafeRevealSecret(secrets.keys.viewingSecret);
         let found: ScanMatch[] = [];
+        let quarantined: ScanMatch[] = [];
         const res = await runScan({
           chain,
           manifest: manifest.manifest,
@@ -136,21 +155,42 @@ export function Scan(): ReactNode {
           signal: ctl.signal,
           checkpoints: services.checkpoints,
           onProgress: (nextProgress) => { if (scopeIsCurrent()) setProgress(nextProgress); },
-          onReorg: (to) => {
+          onQuarantine: (to) => {
             if (!scopeIsCurrent()) return;
+            // These already bounded run observations are retained only until confirmation,
+            // so unsaved verified evidence can receive persistent tombstones as well.
+            const affected = found.filter((m) => m.announcement.blockNumber >= to);
+            quarantined.push(...affected);
+            found = found.filter((m) => m.announcement.blockNumber < to);
+            app.setMatches([...found]);
+          },
+          onReorg: async (to) => {
+            if (!scopeIsCurrent()) return;
+            const invalidated = [...found, ...quarantined].filter((m) => m.announcement.blockNumber >= to && m.receipt === 'verified' && m.viaRouter && m.metadata !== undefined && m.announcement.transactionHash !== undefined).map((m) => recordFromVerifiedMatch(m, keyId));
             found = found.filter((m) => m.announcement.blockNumber < to);
             app.setMatches([...found]);
             try {
-              if (isReconciliationLedgerEnabled()) invalidateReconciliationAtOrAfter(chainId, keyId, to);
-            } catch {
-              setError('A scan reorg was detected, but local reconciliation records could not be updated. Review or delete the ledger before relying on it.');
+              const reconciliation = await createCurrentReconciliationVault(chainId, keyId);
+              const lockOnAbort = (): void => { reconciliation.lock(); };
+              ctl.signal.addEventListener('abort', lockOnAbort, { once: true });
+              try { if (!scopeIsCurrent()) return; await reconciliation.invalidateFrom(to, invalidated); }
+              finally { ctl.signal.removeEventListener('abort', lockOnAbort); reconciliation.lock(); }
+              quarantined = quarantined.filter((m) => m.announcement.blockNumber < to);
+            } catch (cause) {
+              if (cause instanceof UserFacingError) throw cause;
+              const warning = new UserFacingError('A scan reorg was detected, but encrypted reconciliation invalidation could not be committed. Stop relying on historical records until this is resolved.');
+              warning.cause = cause;
+              throw warning;
             }
           },
           onMatch: (m) => {
             if (!scopeIsCurrent()) return;
             const identity = `${m.stealthAddress.toLowerCase()}|${m.announcement.ephemeralPublicKey.toLowerCase()}`;
             const prior = found.findIndex((x) => `${x.stealthAddress.toLowerCase()}|${x.announcement.ephemeralPublicKey.toLowerCase()}` === identity);
-            if (prior < 0) found.push(m);
+            if (prior < 0) {
+              if (found.length + quarantined.length >= 10_000) throw new UserFacingError('The scan observation safety limit was reached. Start a fresh scan to continue.');
+              found.push(m);
+            }
             else found[prior] = m;
             app.setMatches([...found]);
           },
@@ -162,6 +202,7 @@ export function Scan(): ReactNode {
         setDone((ctl.signal.aborted ? `Cancelled. ${String(res.scanned)} announcements checked.` : res.limitReached ? `Stopped at the safety limit. ${String(res.scanned)} announcements checked, ${String(res.matches.length)} payments found.` : `Finished. ${String(res.scanned)} announcements checked, ${String(res.matches.length)} payments found.`) + note);
         app.announce(res.limitReached ? 'Scan stopped at the safety limit.' : 'Scan finished.');
       } catch (e) {
+        if (!scopeKeysAreCurrent()) return;
         if (e instanceof Error && (e.message === 'scan-aborted' || e.message === 'scan-session-changed')) {
           if (e.message === 'scan-session-changed') setError('Seller keys changed while the scan was starting. The scan was stopped; start again with the current keys.');
           else if (scopeKeysAreCurrent()) setDone('Cancelled. The scan stopped before completing.');
