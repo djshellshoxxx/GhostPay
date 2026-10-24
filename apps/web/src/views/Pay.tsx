@@ -26,6 +26,7 @@ import { PostBroadcastError, buildReceipt, classifyPayerPermit, grantApproval, p
 import { useServices } from '../lib/services';
 import { connectWallet, walletWarnings, type WalletInfo, type WalletSession } from '../lib/wallet';
 import { useApp } from '../state';
+import { notifyEmbedDone } from '../lib/embedHost';
 import { captureSessionVersionGuard } from '../lib/session';
 import { bindReceiptToInvoice, MAX_RECEIPT_JSON_BYTES, parseVerifiedReceipt, type BoundReceipt } from '../lib/receipts';
 
@@ -686,6 +687,7 @@ export function Pay(): ReactNode {
           return;
         }
         setResult(res);
+        notifyEmbedDone({ status: 'submitted', chainId: ctx.review.invoice.chainId, txHash: res.hash });
         setResultForContext(ctx);
         setPhase('done');
         setStatus('');

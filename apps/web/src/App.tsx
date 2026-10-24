@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import type { RpcClient } from '@ghostpay/chain-adapters';
+import { startEmbedHost, readProfileFromSearch } from './lib/embedHost';
 import { clearFragment, readInvoiceFragment } from './lib/fragment';
 import type { ScanMatch } from './lib/scanClient';
 import { useServices } from './lib/services';
@@ -69,6 +70,15 @@ export function App(): ReactNode {
       clearFragment(window.location, window.history);
     }
     // Only at load: later changes come through the hashchange handler below.
+  }, []);
+
+  // Embed completion channel: inert unless framed, built with VITE_EMBED_IFRAME=1 (header-capable host) and given a valid signed profile.
+  useEffect(() => {
+    const profile = readProfileFromSearch(window.location.search, Math.floor(Date.now() / 1000));
+    const session = startEmbedHost(window, profile, import.meta.env.VITE_EMBED_IFRAME === '1');
+    return () => {
+      session?.close();
+    };
   }, []);
 
   useEffect(() => {
