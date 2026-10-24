@@ -20,3 +20,4 @@ export * from './tx.js';
 export * from './units.js';
 export * from './uri.js';
 export * from './header.js';
+export * from './headerchain.js';
