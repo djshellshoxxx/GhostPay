@@ -15,7 +15,7 @@ Work branch: `claude/adoring-wozniak-850ue6`.
 
 ## Status
 
-In progress — see ledger below. Prior handoff: `docs/HANDOFF-2026-10-24-PR26-CAS.md`.
+In progress — see ledger below. PR #27 (draft): all 21 GitHub checks green on `9822122` (CI incl. web coverage gates, Integration incl. live bitcoind regtest/anvil/solana); mergeable clean; no review yet, so not merged. Next-agent prompt: `docs/handoffs/NEXT_AGENT_PROMPT.md`. Prior handoff: `docs/HANDOFF-2026-10-24-PR26-CAS.md`.
 
 ## Ledger (this session)
 
@@ -48,4 +48,5 @@ Not done from spec 13 (needs schema version + ADR / feed work): invoice `bufferP
 - Focused: `apps/web: npx vitest run src/lib/pay.test.ts src/lib/payExec src/views/Pay src/views/Scan.test.tsx` all pass.
 - `npm run ci:scan-secrets` OK.
 - `npm run lint` (all workspaces) exit 0 (run while edits in progress; changed files re-linted after).
+- Clean rerun on `b3d6e39`: `npm run build:libs` 0, `npm run typecheck` (all workspaces) 0. Local full web coverage rerun (`--maxWorkers=1`, uncontended): pending at this commit.
 - First full web coverage run INVALID as evidence: it ran while files were being edited (picked up half-built btc changes). It also reproduced the 150-case archive fuzz timeout (120 s) under concurrent load. Killed; clean rerun on a frozen head recorded below.
