@@ -55,3 +55,14 @@ export {
   type ScryptParams,
 } from './passphrase.js';
 export { checkExpiry, type ExpiryStatus } from './expiry.js';
+export {
+  MERCHANT_PROFILE_DOMAIN,
+  MAX_PROFILE_BYTES,
+  merchantIdFor,
+  signMerchantProfile,
+  verifyMerchantProfile,
+  type MerchantProfile,
+  type MerchantProfileBody,
+  type MerchantTemplate,
+  type ProfileResult,
+} from './merchantProfile.js';
