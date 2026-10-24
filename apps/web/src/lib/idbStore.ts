@@ -61,6 +61,20 @@ export class IdbTagStore implements TagStore {
   public async delete(recordId: string): Promise<void> {
     await wrap((await this.store(RECORDS, 'readwrite')).delete(recordId));
   }
+  /** One transaction over both stores; resolves only on `complete`, so a failure or abort commits nothing. */
+  public async applyBatch(b: { readonly puts: readonly EncryptedTagRecord[]; readonly deleteIds: readonly string[]; readonly meta?: ProfileMeta }): Promise<void> {
+    const db = await this.db();
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction([RECORDS, META], 'readwrite');
+      const records = tx.objectStore(RECORDS);
+      for (const id of b.deleteIds) records.delete(id);
+      for (const r of b.puts) records.put(r);
+      if (b.meta !== undefined) tx.objectStore(META).put(b.meta, 'profile');
+      tx.oncomplete = (): void => { resolve(); };
+      tx.onerror = (): void => { reject(new Error('IndexedDB batch failed')); };
+      tx.onabort = (): void => { reject(new Error('IndexedDB batch aborted')); };
+    });
+  }
   public async clear(): Promise<void> {
     await wrap((await this.store(RECORDS, 'readwrite')).clear());
     await wrap((await this.store(META, 'readwrite')).clear());
