@@ -129,6 +129,15 @@ interface StorageLike {
   setItem(k: string, v: string): void;
 }
 
+/** `localStorage` when the browser allows it. */
+export function browserStorage(): StorageLike | undefined {
+  try {
+    return globalThis.localStorage;
+  } catch {
+    return undefined;
+  }
+}
+
 export function loadScanPrivacy(storage: StorageLike | undefined): ScanPrivacySettings {
   try {
     const text = storage?.getItem(SCAN_PRIVACY_KEY);
@@ -465,7 +474,6 @@ export interface OpenScanOptions {
   readonly chain: ChainConfig;
   readonly announcer: Address;
   readonly appRpc: () => Promise<RpcClient | undefined>;
-  readonly appSecondaryRpc: () => Promise<RpcClient | undefined>;
   readonly fetchImpl: (url: string, init: RequestInit) => Promise<Response>;
   readonly sleep: (ms: number) => Promise<void>;
 }
@@ -475,22 +483,30 @@ export interface ScanClients {
   readonly base: RpcClient;
   /** `base` plus indexer and windows: hand this to the scan. */
   readonly scan: RpcClient;
-  readonly secondary: RpcClient | undefined;
 }
 
-/** Builds the scan clients for a ready plan; undefined when no RPC is configured. Makes no request before the scan asks. */
+/**
+ * Builds the scan clients for a ready plan; undefined when no RPC is configured. A custom endpoint is verified with one
+ * `eth_chainId` call on that endpoint only. The second RPC is the caller's business (`plan.useSecondary`), so its
+ * fail-closed handling stays in one place.
+ */
 export async function openScanClients(o: OpenScanOptions): Promise<ScanClients | undefined> {
   const { plan } = o;
   let base: RpcClient | undefined;
   if (plan.endpoint !== undefined) {
     const transport = createFetchTransport({ fetchImpl: o.fetchImpl as unknown as FetchLike, allowInsecureLocalhost: plan.allowLoopbackHttp });
-    base = await createClient(o.chain, plan.endpoint, { allowInsecureLocalhost: plan.allowLoopbackHttp, transport });
+    try {
+      base = await createClient(o.chain, plan.endpoint, { allowInsecureLocalhost: plan.allowLoopbackHttp, transport });
+    } catch (e) {
+      const blocked = new UserFacingError('Scan blocked: the private scan endpoint could not be used (unreachable or wrong chain). GhostPay did not fall back to another RPC.');
+      blocked.cause = e;
+      throw blocked;
+    }
   } else {
     base = await o.appRpc();
   }
   if (base === undefined) return undefined;
   const logs = plan.indexerUrl === undefined ? base : createIndexerScanClient(base, { chain: o.chain, announcer: o.announcer, baseUrl: plan.indexerUrl, fetchImpl: o.fetchImpl, windowBlocks: plan.window.windowBlocks });
   const scan = createWindowedScanClient(logs, { chain: o.chain, announcer: o.announcer, policy: plan.window, sleep: o.sleep });
-  const secondary = plan.useSecondary ? await o.appSecondaryRpc().catch(() => undefined) : undefined;
-  return { base, scan, secondary };
+  return { base, scan };
 }
