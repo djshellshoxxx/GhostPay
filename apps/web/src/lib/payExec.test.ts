@@ -9,6 +9,7 @@ import { mockRpc, type MockRpc } from '../test/mockRpc';
 import { createPayContext, reviewInvoice, type BufferQuote, type PayContext } from './pay';
 import { PostBroadcastError, buildReceipt, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, submitTx, type Runtime } from './payExec';
 import { clearSession } from './session';
+import { userMessage } from './errors';
 import { SubmissionMismatchError, connectWallet, type WalletInfo, type WalletSession } from './wallet';
 
 afterEach(() => {
@@ -226,6 +227,29 @@ describe('ERC-20 flows', () => {
     await revokeApproval(session, ctx, plan, { rpc, nowSeconds: () => NOW, sleep }, noStatus);
     expect(allowance).toBe(0n);
     expect(wallet.sent?.['data']).toContain('0000000000000000000000000000000000000000000000000000000000000000');
+  });
+
+  it.each([
+    ['grant', 'transport'], ['grant', 'wrong-allowance'],
+    ['revoke', 'transport'], ['revoke', 'wrong-allowance'],
+  ] as const)('%s retains its submitted hash after %s readback failure', async (action, failure) => {
+    const { ctx, session, wallet } = await setup();
+    const rpc = chainSeeing(wallet, (method) => {
+      if (method !== 'eth_call') return undefined;
+      if (failure === 'transport') throw new Error('secret RPC URL https://credential.invalid');
+      const after = action === 'grant' ? 0n : ctx.request.grossAmount;
+      return `0x${after.toString(16).padStart(64, '0')}`;
+    });
+    const plan = { token: USDC_84532, spender: FAKE_ROUTER, need: ctx.request.grossAmount, have: 0n, required: true };
+    const hashes: string[] = [];
+    const operation = action === 'grant' ? grantApproval : revokeApproval;
+    const error: unknown = await operation(session, ctx, plan, { rpc, nowSeconds: () => NOW, sleep }, noStatus, undefined, (hash) => { hashes.push(hash); }).catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(PostBroadcastError);
+    expect(error).toMatchObject({ hash: `0x${'9'.repeat(64)}` });
+    expect(hashes).toEqual([`0x${'9'.repeat(64)}`]);
+    expect(userMessage(error)).toMatch(/already sent/);
+    expect(userMessage(error)).not.toMatch(/Nothing was sent|secret|credential/);
+    expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(1);
   });
 
   it('permit path: asks the wallet to sign, verifies the signer, builds a permit payment', async () => {

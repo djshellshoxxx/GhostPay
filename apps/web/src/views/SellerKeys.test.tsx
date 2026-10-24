@@ -215,8 +215,25 @@ it('imports only an encrypted keystore QR and waits for explicit decryption', as
   await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
   expect(getSessionPublic()).toBeUndefined();
   await user.type(screen.getByLabelText('Passphrase'), 'a long passphrase');
-  await user.click(screen.getByRole('button', { name: 'Decrypt and load' }));
-  await waitFor(() => { expect(getSessionPublic()?.metaAddress).toBe(original?.metaAddress); });
+  const keySession = await import('../lib/session');
+  const actualImport = keySession.importKeystore;
+  let importPromise: ReturnType<typeof actualImport> | undefined;
+  const observedImport = vi.spyOn(keySession, 'importKeystore').mockImplementation((...args) => {
+    importPromise = actualImport(...args);
+    return importPromise;
+  });
+  try {
+    expect(observedImport).not.toHaveBeenCalled();
+    expect(getSessionPublic()).toBeUndefined();
+    await user.click(screen.getByRole('button', { name: 'Decrypt and load' }));
+    expect(observedImport).toHaveBeenCalledOnce();
+    expect(importPromise).toBeDefined();
+    // Await the real scrypt/AES-GCM operation instead of imposing an unrelated
+    // one-second polling deadline on the explicit-consent behavior under test.
+    await act(async () => { await importPromise; });
+    expect(getSessionPublic()?.metaAddress).toBe(original?.metaAddress);
+    expect(screen.queryByLabelText('Passphrase')).toBeNull();
+  } finally { observedImport.mockRestore(); }
 });
 
 it('does not install keys if the encrypted import disclosure closes during file reading', async () => {

@@ -122,10 +122,14 @@ export async function grantApproval(session: WalletSession, ctx: PayContext, pla
   status(`Approve exactly ${formatUnits(plan.need, ctx.review.token?.decimals ?? 18)} ${ctx.review.token?.symbol ?? ''} for the router.`);
   assertCurrent?.();
   const res = await submitTx(session, tx, rt, status, assertCurrent, onBroadcast, { kind: 'approval' });
-  if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError('The approval was not confirmed. Nothing was paid.');
-  const after = await readAllowance(rt.rpc, plan.token, session.account, plan.spender);
-  if (after < plan.need) throw new UserFacingError('The approval did not take effect. Nothing was paid.');
-  return after;
+  try {
+    if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError('The approval was not confirmed. Nothing was paid.');
+    const after = await readAllowance(rt.rpc, plan.token, session.account, plan.spender);
+    if (after < plan.need) throw new UserFacingError('The approval did not take effect. Nothing was paid.');
+    return after;
+  } catch (e) {
+    throw new PostBroadcastError(res.hash, e instanceof UserFacingError ? e.message : 'the allowance check failed.', e);
+  }
 }
 
 /** Revokes a router allowance with approve(spender, 0), then verifies it on-chain. */
@@ -137,9 +141,13 @@ export async function revokeApproval(session: WalletSession, ctx: PayContext, pl
   status(`Revoke the router allowance for ${plan.spender}.`);
   assertCurrent?.();
   const res = await submitTx(session, tx, rt, status, assertCurrent, onBroadcast, { kind: 'approval' });
-  if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError('The revoke was not confirmed. Check your allowances in your wallet.');
-  const after = await readAllowance(rt.rpc, plan.token, session.account, plan.spender);
-  if (after !== 0n) throw new UserFacingError('The allowance is still not zero. Check your allowances in your wallet.');
+  try {
+    if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError('The revoke was not confirmed. Check your allowances in your wallet.');
+    const after = await readAllowance(rt.rpc, plan.token, session.account, plan.spender);
+    if (after !== 0n) throw new UserFacingError('The allowance is still not zero. Check your allowances in your wallet.');
+  } catch (e) {
+    throw new PostBroadcastError(res.hash, e instanceof UserFacingError ? e.message : 'the allowance check failed.', e);
+  }
 }
 
 export interface PrepareOptions {
