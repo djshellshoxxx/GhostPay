@@ -693,3 +693,63 @@ describe('localCheckpointStore', () => {
     });
   });
 });
+
+describe('spec 05: spam lanes, backlog and local telemetry', () => {
+  const OTHER = '0x9999999999999999999999999999999999999999' as Address;
+  const spamAt = (stranger: string, block: number, count: number): RpcLog[] => {
+    const one = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block, index: 0, caller: OTHER, wrongTag: true }).log;
+    return Array.from({ length: count }, (_, i) => ({ ...one, logIndex: `0x${i.toString(16)}` }));
+  };
+
+  it('sends router (trusted lane) announcements to the worker before open-lane ones', async () => {
+    const keys = generateKeySet();
+    const meta = encodeMetaAddress(keys);
+    const open = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 100, index: 0, caller: OTHER });
+    const routed = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 200, index: 1, caller: FAKE_ROUTER });
+    const worker = new InlineWorker();
+    await runScan({
+      chain, manifest, client: chainWith(2500, [open.log, routed.log]), cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(keys.viewingSecret),
+      createWorker: () => worker, signal: new AbortController().signal,
+    });
+    const batch = worker.received.find((m) => m.type === 'batch');
+    const ids = batch?.type === 'batch' ? batch.logs.map((l) => l.id.split(':')[0]) : [];
+    expect(ids).toEqual([routed.log.blockHash, open.log.blockHash]);
+  });
+
+  it('defers open-lane logs past the per-scan budget as backlog, keeps finding router payments, and resumes without a gap', async () => {
+    const keys = generateKeySet();
+    const meta = encodeMetaAddress(keys);
+    const stranger = encodeMetaAddress(generateKeySet());
+    const routerPay = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 60_000, index: 40, caller: FAKE_ROUTER });
+    const direct = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 60_010, index: 41, caller: OTHER });
+    const client = chainWith(120_000, [...spamAt(stranger, 100, 30), ...spamAt(stranger, 60_001, 30), routerPay.log, direct.log]);
+    const progress: ScanProgress[] = [];
+    const run = (cursor: { nextBlock: bigint }) => runScan({
+      chain, manifest, client, cursor,
+      spendingPublicKeyHex: hexOf(keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal, openLaneBudget: 40,
+      onProgress: (p) => progress.push(p),
+    });
+    const first = await run({ nextBlock: 0n });
+    expect(first.matches.map((m) => m.stealthAddress)).toEqual([routerPay.stealthAddress]);
+    expect(first.backlog).toBe(31);
+    // The deferred page is not checkpointed past: the cursor stays at the start of that page.
+    expect(first.cursor.nextBlock).toBe(50_000n);
+    expect(progress.at(-1)).toMatchObject({ backlog: 31, caughtUp: false });
+    expect(first.telemetry).toMatchObject({ trusted: 1, open: 30, suspected: 60 });
+    const second = await run(first.cursor);
+    expect(second.matches.map((m) => m.stealthAddress).sort()).toEqual([routerPay.stealthAddress, direct.stealthAddress].sort());
+    expect(second.backlog).toBe(0);
+  });
+
+  it('reports a local privacy-set estimate from router announcements it scanned', async () => {
+    const s = setup();
+    const res = await runScan({
+      chain, manifest, client: chainWith(2500, s.logs), cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal,
+    });
+    expect(res.telemetry?.anonymity).toMatchObject({ level: 'low', count7d: 2, partial: false });
+  });
+});
