@@ -63,7 +63,7 @@ describe('invoice registration', () => {
 
   it('validates stored registrations strictly', () => {
     const good = registrationFromInvoice(testInvoice(), 5);
-    expect(validateRegisteredInvoice(good)).toBe(good);
+    expect(validateRegisteredInvoice(good)).toEqual(good);
     const bad: unknown[] = [
       null,
       [],

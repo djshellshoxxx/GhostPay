@@ -7,6 +7,14 @@ import {
   validateReconciliationRecord,
   type ReconciliationRecord,
 } from './reconciliationLedger';
+import {
+  MAX_REGISTERED_INVOICES,
+  proposeInvoiceMatch,
+  validateRegisteredInvoice,
+  type MatchProposal,
+  type RegisteredInvoice,
+} from './reconciliationMatch';
+import { receiptJson, validateReceiptPayload, verifyReceipt, type SignedReceipt } from './receipts';
 import { captureSessionGuard, getSessionPublic, revealViewingKey } from './session';
 import { checkpointKeyId } from './scanClient';
 
@@ -18,15 +26,24 @@ export interface ReconciliationScope {
   readonly sellerKeyId: string;
   readonly chainId: number;
 }
+export const MAX_ARCHIVED_RECEIPTS = 500;
 export interface VaultRecord extends ReconciliationRecord {
   readonly provenance: 'live-scan' | 'imported-history';
 }
+/** A seller-issued receipt kept for the seller's records. It is never payment evidence and never feeds matching. */
+export interface ArchivedReceipt {
+  readonly receipt: SignedReceipt;
+  readonly archivedAt: number;
+}
 interface Document {
   readonly saturated: boolean;
-  readonly version: 1;
+  readonly version: 2;
   readonly records: readonly VaultRecord[];
   readonly invalidatedFrom: string | null;
   readonly tombstones: readonly string[];
+  /** Opt-in, minimized invoice registrations for local matching. */
+  readonly invoices: readonly RegisteredInvoice[];
+  readonly receipts: readonly ArchivedReceipt[];
 }
 interface Envelope extends ReconciliationScope {
   readonly format: 'ghostpay-reconciliation';
@@ -43,21 +60,30 @@ export interface ReconciliationVaultStore {
 export interface ReconciliationState {
   readonly records: readonly VaultRecord[];
   readonly readOnly: boolean;
+  readonly invoices: readonly RegisteredInvoice[];
+  readonly receipts: readonly ArchivedReceipt[];
 }
 export interface ReconciliationImportPreview {
   readonly readOnly: boolean;
   readonly recordCount: number;
   readonly invalidatedCount: number;
+  readonly invoiceCount: number;
+  readonly receiptCount: number;
 }
 const encoder = new TextEncoder();
 const decoder = new TextDecoder('utf-8', { fatal: true });
 const empty = (): Document => ({
-  version: 1,
+  version: 2,
   records: [],
   invalidatedFrom: null,
   tombstones: [],
   saturated: false,
+  invoices: [],
+  receipts: [],
 });
+const READ_ONLY_MESSAGE =
+  'The reconciliation vault reached its invalidation capacity and is read-only. Export its encrypted history before reviewing this storage limitation. Old evidence cannot be revived.';
+const receiptId = (receipt: SignedReceipt): string => receipt.signature;
 function fail(message: string): never {
   throw new Error(message);
 }
@@ -114,10 +140,18 @@ function parseEnvelope(text: string, scope: ReconciliationScope): Envelope {
   return value as unknown as Envelope;
 }
 function validateDocument(value: unknown, scope: ReconciliationScope): Document {
+  // Version 1 documents (before invoice registration and receipt archiving) upgrade on the next write.
+  const legacy =
+    object(value) && value.version === 1 && exact(value, 'version|records|invalidatedFrom|tombstones|saturated');
   if (
     !object(value) ||
-    !exact(value, 'version|records|invalidatedFrom|tombstones|saturated') ||
-    value.version !== 1 ||
+    (!legacy &&
+      (value.version !== 2 ||
+        !exact(value, 'version|records|invalidatedFrom|tombstones|saturated|invoices|receipts') ||
+        !Array.isArray(value.invoices) ||
+        value.invoices.length > MAX_REGISTERED_INVOICES ||
+        !Array.isArray(value.receipts) ||
+        value.receipts.length > MAX_ARCHIVED_RECEIPTS)) ||
     typeof value.saturated !== 'boolean' ||
     !Array.isArray(value.records) ||
     value.records.length > MAX_RECONCILIATION_RECORDS ||
@@ -146,13 +180,66 @@ function validateDocument(value: unknown, scope: ReconciliationScope): Document 
       : fail('Invalid reconciliation tombstone.'),
   );
   if (new Set(tombstones).size !== tombstones.length) fail('Duplicate reconciliation tombstones.');
+  const invoices = legacy
+    ? []
+    : (value.invoices as unknown[]).map((item) => {
+        const invoice = validateRegisteredInvoice(item);
+        if (invoice.chainId !== scope.chainId) fail('Registered invoice has another scope.');
+        return invoice;
+      });
+  if (new Set(invoices.map((i) => i.invoiceDigest)).size !== invoices.length) fail('Duplicate registered invoice.');
+  if (new Set(invoices.map((i) => i.nonce)).size !== invoices.length) fail('Duplicate registered invoice nonce.');
+  const receipts = legacy ? [] : (value.receipts as unknown[]).map((item) => validateArchivedReceipt(item, scope));
+  if (new Set(receipts.map((r) => receiptId(r.receipt))).size !== receipts.length) fail('Duplicate archived receipt.');
   return {
-    version: 1,
+    version: 2,
     records,
     invalidatedFrom: value.invalidatedFrom,
     tombstones,
     saturated: value.saturated,
+    invoices,
+    receipts,
   };
+}
+/** Authenticated ciphertext already protects stored receipts; signatures are verified when archived. */
+function validateArchivedReceipt(value: unknown, scope: ReconciliationScope): ArchivedReceipt {
+  if (!object(value) || !exact(value, 'receipt|archivedAt') || !object(value.receipt))
+    return fail('Invalid archived receipt.');
+  const { signature, ...payload } = value.receipt;
+  let clean: ReturnType<typeof validateReceiptPayload>;
+  try {
+    clean = validateReceiptPayload(payload);
+  } catch {
+    return fail('Invalid archived receipt.');
+  }
+  if (typeof signature !== 'string' || !/^[0-9a-f]{128}$/.test(signature)) return fail('Invalid archived receipt.');
+  if (clean.chainId !== scope.chainId) fail('Archived receipt has another scope.');
+  const at = value.archivedAt;
+  if (!Number.isSafeInteger(at) || (at as number) <= 0 || (at as number) > 8_640_000_000_000_000)
+    fail('Invalid archived receipt timestamp.');
+  return { receipt: { ...clean, signature }, archivedAt: at as number };
+}
+/** Applies a live verified observation, preserving reorg tombstones and any prior annotation. */
+function withSaved(document: Document, record: ReconciliationRecord): Document {
+  if (document.saturated) throw new UserFacingError(READ_ONLY_MESSAGE);
+  if (document.tombstones.includes(record.id)) fail('This historical observation was invalidated by a reorg.');
+  const prior = document.records.find((r) => r.id === record.id);
+  if (prior?.evidenceStatus === 'invalidated-after-reorg')
+    fail('This historical observation was invalidated by a reorg.');
+  if (
+    prior?.invoiceDigest !== undefined &&
+    record.invoiceDigest !== undefined &&
+    prior.invoiceDigest !== record.invoiceDigest
+  )
+    fail('This record already has a different invoice annotation.');
+  const next: VaultRecord = {
+    ...record,
+    ...(prior?.invoiceDigest === undefined ? {} : { invoiceDigest: prior.invoiceDigest }),
+    provenance: 'live-scan',
+  };
+  const records =
+    prior === undefined ? [...document.records, next] : document.records.map((r) => (r.id === record.id ? next : r));
+  return { ...document, records };
 }
 function announce(): void {
   if (typeof window === 'undefined') return;
@@ -289,7 +376,7 @@ export class ReconciliationVault {
       this.guard(revision);
       if (
         error instanceof Error &&
-        /scope|record|limit|document|provenance|tombstone|cutoff/.test(error.message)
+        /scope|record|limit|document|provenance|tombstone|cutoff|invoice|receipt/.test(error.message)
       )
         throw error;
       throw new Error('Could not decrypt or validate the reconciliation data.', { cause: error });
@@ -367,7 +454,8 @@ export class ReconciliationVault {
     const revision = this.revision;
     const snapshot = await this.snapshot();
     this.guard(revision);
-    return { records: snapshot.document.records, readOnly: snapshot.document.saturated };
+    const { records, saturated, invoices, receipts } = snapshot.document;
+    return { records, readOnly: saturated, invoices, receipts };
   }
   public async save(value: ReconciliationRecord): Promise<void> {
     const record = { ...validateReconciliationRecord(value) };
@@ -375,33 +463,104 @@ export class ReconciliationVault {
       fail('Reconciliation record has another scope.');
     if (record.evidenceStatus !== 'verified-at-scan')
       fail('Only a current verified scan observation can be saved.');
+    await this.change((document) => withSaved(document, record));
+  }
+  /**
+   * Links a verified observation to a registered invoice only if local matching, re-run on the current encrypted
+   * document inside the compare-and-swap loop, still yields an exact pairing. Ambiguous or missing pairs are refused.
+   */
+  public async confirmProposal(value: ReconciliationRecord | VaultRecord, invoiceDigest: string): Promise<void> {
+    const { provenance, ...plain } = value as VaultRecord;
+    if (provenance !== undefined && provenance !== 'live-scan') fail('Imported history cannot be matched automatically.');
+    const record = { ...validateReconciliationRecord(plain) };
+    if (record.sellerKeyId !== this.scope.sellerKeyId || record.chainId !== this.scope.chainId)
+      fail('Reconciliation record has another scope.');
+    if (record.evidenceStatus !== 'verified-at-scan' || record.invoiceDigest !== undefined)
+      fail('Only a current unlinked verified scan observation can be matched.');
     await this.change((document) => {
-      if (document.saturated)
+      const saved = withSaved(document, record);
+      const current = saved.records.find((r) => r.id === record.id)!;
+      const proposal = proposeInvoiceMatch(current, saved.invoices, saved.records);
+      if (proposal.kind !== 'exact' || proposal.invoice.invoiceDigest !== invoiceDigest)
         throw new UserFacingError(
-          'The reconciliation vault reached its invalidation capacity and is read-only. Export its encrypted history before reviewing this storage limitation. Old evidence cannot be revived.',
+          'This payment no longer has a single exact invoice match. Review it and link it manually if appropriate.',
         );
-      if (document.tombstones.includes(record.id))
-        fail('This historical observation was invalidated by a reorg.');
-      const prior = document.records.find((r) => r.id === record.id);
-      if (prior?.evidenceStatus === 'invalidated-after-reorg')
-        fail('This historical observation was invalidated by a reorg.');
-      if (
-        prior?.invoiceDigest !== undefined &&
-        record.invoiceDigest !== undefined &&
-        prior.invoiceDigest !== record.invoiceDigest
-      )
-        fail('This record already has a different invoice annotation.');
-      const next: VaultRecord = {
-        ...record,
-        ...(prior?.invoiceDigest === undefined ? {} : { invoiceDigest: prior.invoiceDigest }),
-        provenance: 'live-scan',
+      return {
+        ...saved,
+        records: saved.records.map((r) => (r.id === record.id ? { ...r, invoiceDigest } : r)),
       };
-      const records =
-        prior === undefined
-          ? [...document.records, next]
-          : document.records.map((r) => (r.id === record.id ? next : r));
-      return { ...document, records };
     });
+  }
+  /** Proposals for stored and supplied current observations, computed from one guarded snapshot. */
+  public async proposals(
+    current: readonly ReconciliationRecord[] = [],
+  ): Promise<ReadonlyMap<string, MatchProposal>> {
+    const revision = this.revision;
+    const { document } = await this.snapshot();
+    this.guard(revision);
+    const stored = new Set(document.records.map((r) => r.id));
+    const context = [...document.records, ...current.filter((r) => !stored.has(r.id))];
+    return new Map(context.map((r) => [r.id, proposeInvoiceMatch(r, document.invoices, context)]));
+  }
+  /** Opt-in registration of an invoice this seller created; only matching fields are kept. */
+  public async registerInvoice(value: RegisteredInvoice): Promise<void> {
+    const invoice = validateRegisteredInvoice(value);
+    if (invoice.chainId !== this.scope.chainId) fail('Registered invoice has another scope.');
+    await this.change((document) => {
+      if (document.saturated) throw new UserFacingError(READ_ONLY_MESSAGE);
+      const prior = document.invoices.find(
+        (i) => i.invoiceDigest === invoice.invoiceDigest || i.nonce === invoice.nonce,
+      );
+      if (prior !== undefined) {
+        if (prior.invoiceDigest !== invoice.invoiceDigest) fail('Another registered invoice already uses this nonce.');
+        return document;
+      }
+      if (document.invoices.length >= MAX_REGISTERED_INVOICES)
+        throw new UserFacingError(
+          `At most ${String(MAX_REGISTERED_INVOICES)} invoices can be registered per seller and chain. Remove old registrations first.`,
+        );
+      return { ...document, invoices: [...document.invoices, invoice] };
+    });
+  }
+  /** Removing a registration never changes saved observations or their annotations. */
+  public async removeInvoice(invoiceDigest: string): Promise<void> {
+    await this.change((document) => ({
+      ...document,
+      invoices: document.invoices.filter((i) => i.invoiceDigest !== invoiceDigest),
+    }));
+  }
+  public async clearInvoices(): Promise<void> {
+    await this.change((document) => ({ ...document, invoices: [] }));
+  }
+  /** Archives a receipt this seller issued. The archive is never consulted as payment evidence. */
+  public async archiveReceipt(receipt: SignedReceipt, archivedAt = Date.now()): Promise<void> {
+    if (!verifyReceipt(receipt)) fail('Only a valid signed receipt can be archived.');
+    const entry = validateArchivedReceipt({ receipt: { ...receipt }, archivedAt }, this.scope);
+    await this.change((document) => {
+      if (document.saturated) throw new UserFacingError(READ_ONLY_MESSAGE);
+      if (document.receipts.some((r) => receiptId(r.receipt) === receiptId(entry.receipt))) return document;
+      if (document.receipts.length >= MAX_ARCHIVED_RECEIPTS)
+        throw new UserFacingError(
+          `At most ${String(MAX_ARCHIVED_RECEIPTS)} receipts can be archived per seller and chain. Export and delete old receipts first.`,
+        );
+      return { ...document, receipts: [...document.receipts, entry] };
+    });
+  }
+  public async removeReceipt(signature: string): Promise<void> {
+    await this.change((document) => ({
+      ...document,
+      receipts: document.receipts.filter((r) => receiptId(r.receipt) !== signature),
+    }));
+  }
+  public async clearReceipts(): Promise<void> {
+    await this.change((document) => ({ ...document, receipts: [] }));
+  }
+  /** Plaintext export of archived receipts on explicit request; every entry is re-verified by `receiptJson`. */
+  public async exportReceipts(): Promise<string> {
+    const revision = this.revision;
+    const { receipts } = (await this.snapshot()).document;
+    this.guard(revision);
+    return `[${receipts.map((r) => receiptJson(r.receipt)).join(',')}]`;
   }
   public async invalidateFrom(block: bigint, observed: readonly ReconciliationRecord[] = []): Promise<void> {
     if (block < 0n || block > 9_999_999_999_999_999n) fail('Invalid reorg block.');
@@ -465,6 +624,8 @@ export class ReconciliationVault {
         new Set([...document.tombstones, ...current.tombstones]).size > MAX_RECONCILIATION_RECORDS,
       recordCount: document.records.length,
       invalidatedCount: document.records.filter((r) => r.evidenceStatus === 'invalidated-after-reorg').length,
+      invoiceCount: document.invoices.length,
+      receiptCount: document.receipts.length,
     });
     // Retain encrypted input only. Activation decrypts and validates again against the current database.
     this.previews.set(preview, { text, revision: this.revision });
@@ -511,12 +672,26 @@ export class ReconciliationVault {
           ? { ...r, evidenceStatus: 'invalidated-after-reorg' }
           : r,
       );
+      // Registrations and archived receipts merge by identity; a nonce reused by another digest keeps the local one.
+      const invoices = [...document.invoices];
+      for (const invoice of imported.invoices)
+        if (!invoices.some((i) => i.invoiceDigest === invoice.invoiceDigest || i.nonce === invoice.nonce))
+          invoices.push(invoice);
+      const receipts = [...document.receipts];
+      for (const entry of imported.receipts)
+        if (!receipts.some((r) => receiptId(r.receipt) === receiptId(entry.receipt))) receipts.push(entry);
+      if (invoices.length > MAX_REGISTERED_INVOICES || receipts.length > MAX_ARCHIVED_RECEIPTS)
+        throw new UserFacingError(
+          'This backup would exceed the invoice registration or receipt archive limit. Remove old entries first.',
+        );
       return {
-        version: 1,
+        version: 2,
         records,
         tombstones: tombstones.slice(0, MAX_RECONCILIATION_RECORDS),
         invalidatedFrom: cutoff?.toString() ?? null,
         saturated,
+        invoices,
+        receipts,
       };
     });
     this.previews.delete(preview);

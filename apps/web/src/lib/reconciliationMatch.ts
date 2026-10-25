@@ -55,9 +55,11 @@ function fail(message: string): never {
 }
 
 export function validateRegisteredInvoice(value: unknown): RegisteredInvoice {
-  if (typeof value !== 'object' || value === null || Array.isArray(value) || Object.getPrototypeOf(value) !== Object.prototype)
+  const prototype: unknown = typeof value === 'object' && value !== null ? Object.getPrototypeOf(value) : undefined;
+  if (Array.isArray(value) || (prototype !== Object.prototype && prototype !== null))
     return fail('Invalid registered invoice.');
-  const o = value as Record<string, unknown>;
+  // Strict JSON parsing yields null-prototype objects; keep a plain copy.
+  const o = { ...(value as Record<string, unknown>) };
   if (Object.keys(o).sort().join('|') !== KEYS || o.version !== 1) return fail('Invalid registered invoice.');
   if (typeof o.invoiceDigest !== 'string' || !/^0x[0-9a-f]{64}$/.test(o.invoiceDigest)) return fail('Invalid registered invoice digest.');
   if (typeof o.nonce !== 'string' || !/^[0-9a-f]{32}$/.test(o.nonce)) return fail('Invalid registered invoice nonce.');
