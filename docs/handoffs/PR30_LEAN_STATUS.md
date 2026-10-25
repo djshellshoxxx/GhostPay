@@ -47,6 +47,17 @@ is preserved as `later-preserved`; it is not expanded further and not deleted.
 | Scan replay-tail anchor from primary only | a6a2a1c | **Fixed** `ba0fd59` (merged): two-provider mode reads the anchor from both providers plus a second primary read, checks chain/height; any failure raises a discrepancy, withholds the checkpoint and stops; Cancel writes nothing. Oracle failed before (fabricated anchor saved, resumed run invalidated a canonical vault record); 5/6 matrix tests failed before |
 | Direct sweep loses expected hash / re-arms signing after uncertain broadcast | edb0051 | **Fixed** `504018c` (merged): failed or wrong-hash broadcast returns an `unknown` outcome carrying the expected hash and nonce; signing for that address stays blocked across navigation until a read-only status check resolves it. 5 tests failed before (old code kept no outcome, showed a generic RPC_FAILURE). Limit: a page reload clears the guard (no durable persistence) |
 
+## Adversarial review (read-only Opus reviewer, head 94791be)
+
+No Critical or High findings; every new guard sits on the path to the wallet/RPC/storage write it protects (141/141 focused
+tests). Low findings and disposition:
+- Deadline equal to invoice/quote expiry left a 1 s window (router/permit accept the deadline second): **fixed** `dc7d306`,
+  deadline capped at expiry - 1; the test that encoded the off-by-one now fails on the old code.
+- Relayed sweep neither checked nor set the unresolved-attempt lock: **fixed** `58c3c4a`; new test failed before.
+- Policy-account send (`features/policy/send.ts`) has no session guard or approve-tx check before the wallet call: **open**,
+  outside lean scope (feature is experimental and off unless `VITE_GHOSTPAY_EXPERIMENTAL_POLICY=1`).
+- Sweep lock is in memory only (lost on reload, not shared across tabs): **open**, recorded limit.
+
 ## PR #31 reuse
 
 `claude/adoring-wozniak-850ue6` `a2217ea` differs from main only in `scripts/devnet/e2e.mjs` (receipt verification of every
