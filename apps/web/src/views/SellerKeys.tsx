@@ -8,9 +8,12 @@ import { MAX_KEYSTORE_BYTES, passphraseProblem, validateKeystoreEnvelope } from 
 import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, importKeystore, importSession } from '../lib/session';
 import { deleteEncryptedVault, readEncryptedVault, saveEncryptedVault, unlockEncryptedVault } from '../lib/keyVault';
 import { useApp } from '../state';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 
 export function SellerKeys(): ReactNode {
   const app = useApp();
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const [message, setMessage] = useState<{ kind: 'ok' | 'error'; text: string } | undefined>(undefined);
   const [busy, setBusy] = useState(false);
   const [spend, setSpend] = useState('');
@@ -74,7 +77,7 @@ export function SellerKeys(): ReactNode {
       setSpend('');
       setViewKey('');
       setSigning('');
-      done('Keys loaded into memory.');
+      done(t('sellerKeys.loaded'));
     } catch (err) {
       fail(err);
     }
@@ -88,13 +91,13 @@ export function SellerKeys(): ReactNode {
       return;
     }
     if (pass !== pass2) {
-      setMessage({ kind: 'error', text: 'The two passphrases differ.' });
+      setMessage({ kind: 'error', text: t('sellerKeys.passphrasesDiffer') });
       return;
     }
     const controller = startOperation();
     const unchanged = captureSessionVersionGuard();
     setBusy(true);
-    setMessage({ kind: 'ok', text: 'Encrypting (this takes a moment on purpose)…' });
+    setMessage({ kind: 'ok', text: t('sellerKeys.encrypting') });
     exportKeystore(pass).then(
       (text) => {
         if (!currentOperation(controller)) return;
@@ -104,7 +107,7 @@ export function SellerKeys(): ReactNode {
         setPass('');
         setPass2('');
         setBusy(false);
-        done('Encrypted keystore downloaded. Keep the file and remember the passphrase: neither can be recovered.');
+        done(t('sellerKeys.keystoreDownloaded'));
       },
       (err: unknown) => {
         if (!currentOperation(controller)) return;
@@ -116,12 +119,12 @@ export function SellerKeys(): ReactNode {
 
   const onImportKeystore = (e: FormEvent): void => {
     e.preventDefault();
-    if (file === undefined && importText === undefined) { setMessage({ kind: 'error', text: 'Choose a keystore file first.' }); return; }
-    if (file !== undefined && file.size > MAX_KEYSTORE_BYTES) { setMessage({ kind: 'error', text: 'This is not a GhostPay keystore file.' }); return; }
+    if (file === undefined && importText === undefined) { setMessage({ kind: 'error', text: t('sellerKeys.chooseFile') }); return; }
+    if (file !== undefined && file.size > MAX_KEYSTORE_BYTES) { setMessage({ kind: 'error', text: t('sellerKeys.notKeystore') }); return; }
     const controller = startOperation();
     const unchanged = captureSessionVersionGuard();
     const selected = file; const pasted = importText; const passphrase = importPass;
-    setBusy(true); setMessage({ kind: 'ok', text: 'Decrypting…' });
+    setBusy(true); setMessage({ kind: 'ok', text: t('sellerKeys.decrypting') });
     void (async () => {
       try {
         const text = selected === undefined ? pasted! : await selected.text();
@@ -130,7 +133,7 @@ export function SellerKeys(): ReactNode {
         await importKeystore(text, passphrase, controller.signal);
         if (!currentOperation(controller)) return;
         setImportPass(''); setFile(undefined); setImportText(undefined); setBusy(false);
-        done('Keystore decrypted; keys are in memory.');
+        done(t('sellerKeys.keystoreDecrypted'));
       } catch (error) {
         if (!currentOperation(controller)) return;
         setImportPass(''); setBusy(false); fail(error);
@@ -142,7 +145,7 @@ export function SellerKeys(): ReactNode {
     e.preventDefault();
     const problem = passphraseProblem(vaultSavePass);
     if (problem !== undefined) { setMessage({ kind: 'error', text: problem }); return; }
-    if (vaultSavePass !== vaultSavePass2) { setMessage({ kind: 'error', text: 'The two passphrases differ.' }); return; }
+    if (vaultSavePass !== vaultSavePass2) { setMessage({ kind: 'error', text: t('sellerKeys.passphrasesDiffer') }); return; }
     setVaultBusy(true);
     void saveEncryptedVault(vaultSavePass).then(
       () => {
@@ -150,7 +153,7 @@ export function SellerKeys(): ReactNode {
         setVaultSavePass2('');
         setVaultState('saved');
         setVaultBusy(false);
-        done('Encrypted seller vault saved in this browser. The passphrase was cleared.');
+        done(t('sellerKeys.vaultSaved'));
       },
       (err: unknown) => {
         setVaultBusy(false);
@@ -169,7 +172,7 @@ export function SellerKeys(): ReactNode {
         setVaultUnlockPass('');
         setBackupQr(undefined);
         setVaultBusy(false);
-        done('Encrypted vault unlocked. Seller keys are back in memory.');
+        done(t('sellerKeys.vaultUnlocked'));
       },
       (err: unknown) => {
         if (!currentOperation(controller)) return;
@@ -187,7 +190,7 @@ export function SellerKeys(): ReactNode {
         setVaultState('empty');
         setConfirmVaultDelete(false);
         setVaultBusy(false);
-        done('Encrypted vault deleted from this browser.');
+        done(t('sellerKeys.vaultDeleted'));
       },
       (err: unknown) => {
         setVaultBusy(false);
@@ -199,33 +202,33 @@ export function SellerKeys(): ReactNode {
   const s = app.session;
   return (
     <section aria-labelledby="keys-h">
-      <h2 id="keys-h">Seller keys</h2>
-      <Notice kind="info" title="Keys stay in memory by default">
-        Keys are generated and used only inside this page. They are never written to browser storage unless you explicitly save the optional encrypted vault below. Reloading or closing the tab forgets keys that were not saved.
+      <h2 id="keys-h">{t('sellerKeys.title')}</h2>
+      <Notice kind="info" title={t('sellerKeys.memory.title')}>
+        {t('sellerKeys.memory.body')}
       </Notice>
       {message !== undefined && <Notice kind={message.kind}>{message.text}</Notice>}
-      {vaultState === 'checking' && <p role="status">Checking for an encrypted seller vault…</p>}
+      {vaultState === 'checking' && <p role="status">{t('sellerKeys.checkingVault')}</p>}
       {vaultState === 'unavailable' && (
-        <Notice kind="warn" title="Encrypted browser storage is unavailable">
-          This browser cannot read the optional vault. In-memory key use and encrypted file backups remain available, but do not try to save a local vault here.
+        <Notice kind="warn" title={t('sellerKeys.storageUnavailable.title')}>
+          {t('sellerKeys.storageUnavailable.body')}
         </Notice>
       )}
       {vaultState === 'saved' && (
         <section className="panel" aria-labelledby="vault-unlock-h">
-          <h3 id="vault-unlock-h">Encrypted seller vault saved in this browser</h3>
-          <p>Unlocking replaces the keys currently in memory. The vault stores only the encrypted keystore text; your passphrase is never saved.</p>
+          <h3 id="vault-unlock-h">{t('sellerKeys.vaultSavedHeading')}</h3>
+          <p>{t('sellerKeys.unlockExplain')}</p>
           <form onSubmit={onUnlockVault} className="stack" autoComplete="off">
-            <Field label="Vault passphrase">{(id) => <input id={id} type="password" autoComplete="current-password" value={vaultUnlockPass} onChange={(e) => { if (vaultBusy) { operation.current?.abort(); setVaultBusy(false); } setVaultUnlockPass(e.target.value); }} />}</Field>
-            <button type="submit" className="btn" disabled={vaultBusy || vaultUnlockPass === ''}>Unlock saved vault</button>
-            {vaultBusy && operation.current !== null && <button type="button" className="btn" onClick={cancelImport}>Cancel vault unlock</button>}
+            <Field label={t('sellerKeys.vaultPassphrase')}>{(id) => <input id={id} type="password" autoComplete="current-password" value={vaultUnlockPass} onChange={(e) => { if (vaultBusy) { operation.current?.abort(); setVaultBusy(false); } setVaultUnlockPass(e.target.value); }} />}</Field>
+            <button type="submit" className="btn" disabled={vaultBusy || vaultUnlockPass === ''}>{t('sellerKeys.unlockVault')}</button>
+            {vaultBusy && operation.current !== null && <button type="button" className="btn" onClick={cancelImport}>{t('sellerKeys.cancelUnlock')}</button>}
           </form>
           {!confirmVaultDelete ? (
-            <button type="button" className="btn btn-danger" disabled={vaultBusy} onClick={() => { setConfirmVaultDelete(true); }}>Delete encrypted vault</button>
+            <button type="button" className="btn btn-danger" disabled={vaultBusy} onClick={() => { setConfirmVaultDelete(true); }}>{t('sellerKeys.deleteVault')}</button>
           ) : (
             <div>
-              <p>This permanently deletes the saved ciphertext in this browser. Keep a separate backup first if needed.</p>
-              <button type="button" className="btn btn-danger" disabled={vaultBusy} onClick={onDeleteVault}>Confirm delete encrypted vault</button>{' '}
-              <button type="button" className="btn" onClick={() => { setConfirmVaultDelete(false); }}>Cancel</button>
+              <p>{t('sellerKeys.deleteExplain')}</p>
+              <button type="button" className="btn btn-danger" disabled={vaultBusy} onClick={onDeleteVault}>{t('sellerKeys.confirmDelete')}</button>{' '}
+              <button type="button" className="btn" onClick={() => { setConfirmVaultDelete(false); }}>{t('sellerKeys.cancel')}</button>
             </div>
           )}
         </section>
@@ -234,89 +237,89 @@ export function SellerKeys(): ReactNode {
       {s === undefined ? (
         <>
           <p>
-            <button type="button" className="btn btn-primary" onClick={() => { try { generateSession(); done('New keys generated in memory.'); } catch (err) { fail(err); } }}>
-              Generate new keys
+            <button type="button" className="btn btn-primary" onClick={() => { try { generateSession(); done(t('sellerKeys.generated')); } catch (err) { fail(err); } }}>
+              {t('sellerKeys.generate')}
             </button>
           </p>
           <details onToggle={(event) => { if (!event.currentTarget.open) { setSpend(''); setViewKey(''); setSigning(''); } }}>
-            <summary>Import existing keys (hex)</summary>
+            <summary>{t('sellerKeys.importHex')}</summary>
             <form onSubmit={onImportRaw} className="stack" autoComplete="off">
-              <Field label="Spending private key (64 hex characters)">{(id) => <input id={id} type="password" autoComplete="off" spellCheck={false} value={spend} onChange={(e) => { setSpend(e.target.value); }} />}</Field>
-              <Field label="Viewing private key (64 hex characters)">{(id) => <input id={id} type="password" autoComplete="off" spellCheck={false} value={view} onChange={(e) => { setViewKey(e.target.value); }} />}</Field>
-              <Field label="Invoice-signing private key (optional)" hint="Leave empty to generate a separate signing key. It must not be your spending or viewing key.">
+              <Field label={t('sellerKeys.spendKey')}>{(id) => <input id={id} type="password" autoComplete="off" spellCheck={false} value={spend} onChange={(e) => { setSpend(e.target.value); }} />}</Field>
+              <Field label={t('sellerKeys.viewKey')}>{(id) => <input id={id} type="password" autoComplete="off" spellCheck={false} value={view} onChange={(e) => { setViewKey(e.target.value); }} />}</Field>
+              <Field label={t('sellerKeys.signKey.label')} hint={t('sellerKeys.signKey.hint')}>
                 {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" spellCheck={false} value={signing} onChange={(e) => { setSigning(e.target.value); }} />}
               </Field>
-              <button type="submit" className="btn">Load keys</button>
+              <button type="submit" className="btn">{t('sellerKeys.loadKeys')}</button>
             </form>
           </details>
           <details onToggle={(event) => { if (!event.currentTarget.open) cancelImport(); }}>
-            <summary>Import an encrypted keystore</summary>
+            <summary>{t('sellerKeys.importKeystore')}</summary>
             <form onSubmit={onImportKeystore} className="stack">
-              <Field label="Keystore file">{(id) => <input id={id} type="file" accept="application/json,.json" onChange={(e) => { cancelImport(); setFile(e.target.files?.[0]); }} />}</Field>
-              <Field label="Passphrase">{(id) => <input id={id} type="password" autoComplete="off" value={importPass} onChange={(e) => { if (busy) { operation.current?.abort(); setBusy(false); } setImportPass(e.target.value); }} />}</Field>
-              <button type="submit" className="btn" disabled={busy}>Decrypt and load</button>
-              {busy && <button type="button" className="btn" onClick={cancelImport}>Cancel keystore import</button>}
+              <Field label={t('sellerKeys.keystoreFile')}>{(id) => <input id={id} type="file" accept="application/json,.json" onChange={(e) => { cancelImport(); setFile(e.target.files?.[0]); }} />}</Field>
+              <Field label={t('sellerKeys.passphrase')}>{(id) => <input id={id} type="password" autoComplete="off" value={importPass} onChange={(e) => { if (busy) { operation.current?.abort(); setBusy(false); } setImportPass(e.target.value); }} />}</Field>
+              <button type="submit" className="btn" disabled={busy}>{t('sellerKeys.decryptLoad')}</button>
+              {busy && <button type="button" className="btn" onClick={cancelImport}>{t('sellerKeys.cancelKeystore')}</button>}
             </form>
-            <CameraImporter label="Import encrypted keystore QR" scopeKey={app.session} onInputChange={cancelImport} onText={(text, signal) => {
+            <CameraImporter label={t('sellerKeys.importKeystoreQr')} scopeKey={app.session} onInputChange={cancelImport} onText={(text, signal) => {
               validateKeystoreEnvelope(text);
               if (signal.aborted) return false;
-              cancelImport(); setImportText(text); setMessage({ kind: 'ok', text: 'Encrypted keystore received. Enter its passphrase and choose Decrypt and load.' }); return true;
+              cancelImport(); setImportText(text); setMessage({ kind: 'ok', text: t('sellerKeys.keystoreReceived') }); return true;
             }} />
           </details>
         </>
       ) : (
         <>
-          <h3>Your meta-address (public)</h3>
-          <p>Share this to receive payments. It reveals no private key.</p>
+          <h3>{t('sellerKeys.metaHeading')}</h3>
+          <p>{t('sellerKeys.metaShare')}</p>
           <p><Mono>{s.metaAddress}</Mono></p>
-          <QrFrame kind="shareable" text={s.metaAddress} caption="Seller stealth meta-address" />
-          <p><CopyButton text={s.metaAddress} label="Copy meta-address" /></p>
-          <h3>Invoice-signing public key</h3>
+          <QrFrame kind="shareable" text={s.metaAddress} caption={t('sellerKeys.metaCaption')} />
+          <p><CopyButton text={s.metaAddress} label={t('sellerKeys.copyMeta')} /></p>
+          <h3>{t('sellerKeys.signingKeyHeading')}</h3>
           <p><Mono>{s.signerPublicKey}</Mono></p>
-          <p className="hint">Payers see &ldquo;signature matches key …&rdquo;. They can pin this key; an unpinned key identifies nobody.</p>
+          <p className="hint">{t('sellerKeys.payersSee')}</p>
 
-          <h3>Back up (encrypted)</h3>
+          <h3>{t('sellerKeys.backupHeading')}</h3>
           <form onSubmit={onExport} className="stack" autoComplete="off">
-            <Field label="Passphrase (at least 14 characters)">{(id) => <input id={id} type="password" autoComplete="new-password" value={pass} onChange={(e) => { setPass(e.target.value); }} />}</Field>
-            <Field label="Repeat passphrase">{(id) => <input id={id} type="password" autoComplete="new-password" value={pass2} onChange={(e) => { setPass2(e.target.value); }} />}</Field>
-            <button type="submit" className="btn" disabled={busy}>Download encrypted keystore</button>
+            <Field label={t('sellerKeys.passphraseMin')}>{(id) => <input id={id} type="password" autoComplete="new-password" value={pass} onChange={(e) => { setPass(e.target.value); }} />}</Field>
+            <Field label={t('sellerKeys.repeatPassphrase')}>{(id) => <input id={id} type="password" autoComplete="new-password" value={pass2} onChange={(e) => { setPass2(e.target.value); }} />}</Field>
+            <button type="submit" className="btn" disabled={busy}>{t('sellerKeys.downloadKeystore')}</button>
           </form>
-          <p className="hint">Format: scrypt (N=2^17, r=8, p=1) and AES-256-GCM. The passphrase is not stored anywhere.</p>
+          <p className="hint">{t('sellerKeys.formatNote')}</p>
           {backupQr !== undefined && (
             <>
-              <QrFrame kind="secret" text={backupQr} caption="Encrypted seller keystore backup" />
-              <button type="button" className="btn" onClick={() => { setBackupQr(undefined); }}>Forget encrypted QR from this page</button>
+              <QrFrame kind="secret" text={backupQr} caption={t('sellerKeys.backupCaption')} />
+              <button type="button" className="btn" onClick={() => { setBackupQr(undefined); }}>{t('sellerKeys.forgetQr')}</button>
             </>
           )}
 
           <section className="panel" aria-labelledby="vault-save-h">
-            <h3 id="vault-save-h">Optional encrypted browser vault</h3>
+            <h3 id="vault-save-h">{t('sellerKeys.vaultOptionalHeading')}</h3>
             <p>
-              This keeps an encrypted keystore in this browser&rsquo;s IndexedDB so you can unlock after reload. Anyone with access to this browser profile can copy the ciphertext and attempt offline guesses; choose a strong passphrase. Browser storage can be cleared or lost, so keep a separate backup. GhostPay never saves the passphrase or plaintext key material here.
+              {t('sellerKeys.vaultExplain')}
             </p>
             {vaultState === 'empty' ? (
               <form onSubmit={onSaveVault} className="stack" autoComplete="off">
-                <Field label="New vault passphrase (14+ characters)">{(id) => <input id={id} type="password" autoComplete="new-password" value={vaultSavePass} onChange={(e) => { setVaultSavePass(e.target.value); }} />}</Field>
-                <Field label="Repeat vault passphrase">{(id) => <input id={id} type="password" autoComplete="new-password" value={vaultSavePass2} onChange={(e) => { setVaultSavePass2(e.target.value); }} />}</Field>
-                <button type="submit" className="btn" disabled={vaultBusy}>Save encrypted vault in this browser</button>
+                <Field label={t('sellerKeys.newVaultPass')}>{(id) => <input id={id} type="password" autoComplete="new-password" value={vaultSavePass} onChange={(e) => { setVaultSavePass(e.target.value); }} />}</Field>
+                <Field label={t('sellerKeys.repeatVaultPass')}>{(id) => <input id={id} type="password" autoComplete="new-password" value={vaultSavePass2} onChange={(e) => { setVaultSavePass2(e.target.value); }} />}</Field>
+                <button type="submit" className="btn" disabled={vaultBusy}>{t('sellerKeys.saveVault')}</button>
               </form>
             ) : vaultState === 'saved' ? (
-              <p>A vault already exists. It is never overwritten automatically; unlock or explicitly delete it before saving a different key set.</p>
-            ) : vaultState === 'unavailable' ? null : <p role="status">Checking vault availability…</p>}
+              <p>{t('sellerKeys.vaultExists')}</p>
+            ) : vaultState === 'unavailable' ? null : <p role="status">{t('sellerKeys.checkingAvailability')}</p>}
           </section>
 
-          <h3>Forget keys</h3>
-          <button type="button" className="btn btn-danger" onClick={() => { clearSession(); setBackupQr(undefined); app.announce('Keys wiped from memory.'); setMessage({ kind: 'ok', text: 'Keys wiped from memory.' }); }}>
-            Wipe keys from memory
+          <h3>{t('sellerKeys.forgetHeading')}</h3>
+          <button type="button" className="btn btn-danger" onClick={() => { clearSession(); setBackupQr(undefined); app.announce(t('sellerKeys.wiped')); setMessage({ kind: 'ok', text: t('sellerKeys.wiped') }); }}>
+            {t('sellerKeys.wipe')}
           </button>
         </>
       )}
 
       <TagArchive />
 
-      <h3>Public registry</h3>
-      <p className="hint">Publishing your meta-address to the ERC-6538 registry would publicly associate it with your wallet address. Publishing is optional and has its own page.</p>
-      <p><button type="button" className="btn" onClick={() => { app.setView('registry'); }}>Open public registry page</button></p>
+      <h3>{t('sellerKeys.registryHeading')}</h3>
+      <p className="hint">{t('sellerKeys.registryHint')}</p>
+      <p><button type="button" className="btn" onClick={() => { app.setView('registry'); }}>{t('sellerKeys.openRegistry')}</button></p>
     </section>
   );
 }

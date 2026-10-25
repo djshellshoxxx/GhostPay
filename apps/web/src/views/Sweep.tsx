@@ -12,10 +12,13 @@ import { authorizeEncryptedVault, readEncryptedVault } from '../lib/keyVault';
 import { captureSessionGuard } from '../lib/session';
 import { useServices } from '../lib/services';
 import { useApp } from '../state';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 
 export function Sweep(): ReactNode {
   const app = useApp();
   const services = useServices();
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const sel = app.sweepTarget;
   const chainId = sel?.chainId;
   const manifest = useManifest(chainId);
@@ -51,7 +54,7 @@ export function Sweep(): ReactNode {
   const tokenAddr: Address | 'native' | undefined = meta === undefined ? undefined : meta.kind === 'native' ? 'native' : meta.token;
   const tokenCfg = chainId === undefined || tokenAddr === undefined || tokenAddr === 'native' ? undefined : findToken(chainId, tokenAddr);
   const decimals = tokenAddr === 'native' ? 18 : (tokenCfg?.decimals ?? 18);
-  const symbol = tokenAddr === 'native' ? (chainId === undefined ? '' : (findChain(chainId)?.nativeSymbol ?? '')) : (tokenCfg?.symbol ?? 'token');
+  const symbol = tokenAddr === 'native' ? (chainId === undefined ? '' : (findChain(chainId)?.nativeSymbol ?? '')) : (tokenCfg?.symbol ?? t('sweep.tokenFallback'));
 
   useEffect(() => {
     let live = true;
@@ -74,17 +77,17 @@ export function Sweep(): ReactNode {
   if (sel === undefined || chainId === undefined || tokenAddr === undefined) {
     return (
       <section aria-labelledby="sw-h">
-        <h2 id="sw-h">Sweep</h2>
-        <Notice kind="info">Choose a payment to sweep from Scan and receive.</Notice>
-        <button type="button" className="btn btn-primary" onClick={() => { app.setView('scan'); }}>Go to Scan and receive</button>
+        <h2 id="sw-h">{t('sweep.title')}</h2>
+        <Notice kind="info">{t('sweep.choosePayment')}</Notice>
+        <button type="button" className="btn btn-primary" onClick={() => { app.setView('scan'); }}>{t('sweep.goToScan')}</button>
       </section>
     );
   }
   if (app.session === undefined) {
     return (
       <section aria-labelledby="sw-h">
-        <h2 id="sw-h">Sweep</h2>
-        <Notice kind="info">Your keys are no longer in memory. Load them again in Seller keys.</Notice>
+        <h2 id="sw-h">{t('sweep.title')}</h2>
+        <Notice kind="info">{t('sweep.keysGone')}</Notice>
       </section>
     );
   }
@@ -99,7 +102,7 @@ export function Sweep(): ReactNode {
     const epoch = authEpoch.current;
     const liveSession = captureSessionGuard();
     const assertCurrent = (): void => {
-      if (authEpoch.current !== epoch) throw new UserFacingError('Vault check cancelled because seller keys changed.');
+      if (authEpoch.current !== epoch) throw new UserFacingError(t('sweep.vaultCancelledKeys'));
       liveSession();
     };
     setBusy(true);
@@ -129,7 +132,7 @@ export function Sweep(): ReactNode {
   const verified = async (rpc: Awaited<ReturnType<typeof app.getRpc>>): Promise<void> => {
     if (manifest === undefined) throw new Error('state');
     const checked = await verifyManifestForFlow(manifest, rpc);
-    if (checked.status !== 'loaded') throw new UserFacingError(checked.status === 'invalid' ? checked.reason : 'Payments are disabled on this chain: no deployment manifest is loaded.');
+    if (checked.status !== 'loaded') throw new UserFacingError(checked.status === 'invalid' ? checked.reason : t('sweep.paymentsDisabledChain'));
   };
 
   const onQuote = (): void => {
@@ -156,7 +159,7 @@ export function Sweep(): ReactNode {
       const dest = checkDestination(destination, target.owner, loaded);
       const submitted = await relayedSweep({ target: { ...target, token: tokenAddr }, manifest: loaded, destination: dest, amount: balance, quote: quote.quote, relayerUrl: app.settings.relayerUrl, rpc, nowSeconds: nowSec, fetchFn: services.fetchFn });
       setHash(submitted);
-      app.announce('Sweep submitted to the relayer.');
+      app.announce(t('sweep.announceRelayer'));
       return true;
     });
   };
@@ -171,7 +174,7 @@ export function Sweep(): ReactNode {
       const dest = checkDestination(destination, target.owner, loaded);
       const res = await directSweep({ target, manifest: loaded, destination: dest, amount: balance, rpc });
       setHash(res.hash);
-      app.announce('Sweep broadcast.');
+      app.announce(t('sweep.announceBroadcast'));
       return true;
     });
   };
@@ -179,41 +182,41 @@ export function Sweep(): ReactNode {
   const cancelVaultCheck = (): void => {
     authEpoch.current += 1;
     setVaultPass('');
-    setError('Vault check cancelled.');
+    setError(t('sweep.vaultCancelled'));
   };
 
   return (
     <section aria-labelledby="sw-h">
-      <h2 id="sw-h">Sweep</h2>
+      <h2 id="sw-h">{t('sweep.title')}</h2>
       <dl className="details">
-        <dt>Chain</dt>
+        <dt>{t('sweep.chain')}</dt>
         <dd>{findChain(chainId)?.name ?? String(chainId)}</dd>
-        <dt>One-time address</dt>
+        <dt>{t('sweep.oneTimeAddress')}</dt>
         <dd><Mono>{target.owner}</Mono></dd>
-        <dt>Asset</dt>
+        <dt>{t('sweep.asset')}</dt>
         <dd>{symbol} {tokenAddr === 'native' ? '' : <Mono>{tokenAddr}</Mono>}</dd>
-        <dt>Balance on chain</dt>
-        <dd>{balance === undefined ? 'unknown (an RPC for this chain is required)' : `${formatUnits(balance, decimals)} ${symbol}`}</dd>
+        <dt>{t('sweep.balanceOnChain')}</dt>
+        <dd>{balance === undefined ? t('sweep.balanceUnknown') : `${formatUnits(balance, decimals)} ${symbol}`}</dd>
       </dl>
       <ManifestBanner manifest={manifest} />
-      {manifest !== undefined && loaded === undefined && <Notice kind="warn">Payments disabled on this chain: no deployment manifest is loaded.</Notice>}
-      {tokenAddr !== 'native' && tokenCfg === undefined && <Notice kind="error">This token is not on the allowlist. It will not be swept from here.</Notice>}
-      <Notice kind="warn" title="The payer can follow this sweep">
-        The payer knows the one-time address. When you move its funds, the destination and everything else that address has received or will receive are public and linkable. Use a fresh destination for each sweep, and avoid an address already known to be yours if you do not want to link those funds. A relayer also sees your IP address (hashed), amount and timing. Your stealth key is derived in memory for this action and is never shown or stored.
+      {manifest !== undefined && loaded === undefined && <Notice kind="warn">{t('sweep.noManifest')}</Notice>}
+      {tokenAddr !== 'native' && tokenCfg === undefined && <Notice kind="error">{t('sweep.tokenNotAllowed')}</Notice>}
+      <Notice kind="warn" title={t('sweep.payerFollow.title')}>
+        {t('sweep.payerFollow.body')}
       </Notice>
 
       <div className="stack">
-        <Field label="Destination address (your own wallet)">{(id) => <input id={id} spellCheck={false} value={destination} onChange={(e) => { setDestination(e.target.value); setQuote(undefined); }} placeholder="0x…" />}</Field>
+        <Field label={t('sweep.destination.label')}>{(id) => <input id={id} spellCheck={false} value={destination} onChange={(e) => { setDestination(e.target.value); setQuote(undefined); }} placeholder="0x…" />}</Field>
         {vaultState === 'saved' && (
-          <Field label="Vault passphrase (required for each sweep action)" hint="Checked against the encrypted vault and the seller keys currently loaded. It is cleared after every action.">
+          <Field label={t('sweep.vaultPass.label')} hint={t('sweep.vaultPass.hint')}>
             {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="current-password" value={vaultPass} onChange={(e) => { setVaultPass(e.target.value); }} />}
           </Field>
         )}
-        {vaultState === 'checking' && <p role="status">Checking encrypted vault status…</p>}
-        {vaultState === 'error' && <Notice kind="error">Could not check encrypted vault storage, so sweep signing is disabled until storage is available.</Notice>}
+        {vaultState === 'checking' && <p role="status">{t('sweep.vaultChecking')}</p>}
+        {vaultState === 'error' && <Notice kind="error">{t('sweep.vaultError')}</Notice>}
         {loaded !== undefined && (
           <CameraImporter
-            label="Import destination QR"
+            label={t('sweep.importQr')}
             onText={(text) => {
               try {
                 const checked = checkDestination(text, target.owner, loaded);
@@ -229,42 +232,42 @@ export function Sweep(): ReactNode {
           />
         )}
         <fieldset>
-          <legend>How to pay the network fee</legend>
+          <legend>{t('sweep.feeLegend')}</legend>
           <div className="check">
             <input id="m-relay" type="radio" name="mode" checked={mode === 'relayer'} onChange={() => { setMode('relayer'); }} />
-            <label htmlFor="m-relay">Through the relayer (fee deducted from the amount; needs a permit-capable token)</label>
+            <label htmlFor="m-relay">{t('sweep.modeRelayer')}</label>
           </div>
           <div className="check">
             <input id="m-direct" type="radio" name="mode" checked={mode === 'direct'} onChange={() => { setMode('direct'); }} />
-            <label htmlFor="m-direct">Directly (the one-time address must hold native coin for gas)</label>
+            <label htmlFor="m-direct">{t('sweep.modeDirect')}</label>
           </div>
         </fieldset>
 
         {mode === 'relayer' ? (
           <>
-            {!relayerOk && <Notice kind="info">Relayer sweeps need a relayer URL in Settings and a token with ERC-2612 permit. Use a direct sweep otherwise.</Notice>}
-            <button type="button" className="btn" onClick={onQuote} disabled={busy || !relayerOk || balance === undefined || balance === 0n}>Get relayer quote</button>
+            {!relayerOk && <Notice kind="info">{t('sweep.relayerNeeds')}</Notice>}
+            <button type="button" className="btn" onClick={onQuote} disabled={busy || !relayerOk || balance === undefined || balance === 0n}>{t('sweep.getQuote')}</button>
             {quote !== undefined && (
               <div className="panel">
-                <p>Relayer fee: {formatUnits(quote.quote.fee, decimals)} {symbol}, to <Mono>{quote.quote.feeTo}</Mono></p>
-                <p>You receive: {formatUnits(quote.net, decimals)} {symbol}</p>
-                <button type="button" className="btn btn-primary" onClick={onRelay} disabled={busy}>Sign and submit to relayer</button>
+                <p>{t('sweep.relayerFee', { amount: `${formatUnits(quote.quote.fee, decimals)} ${symbol}` })} <Mono>{quote.quote.feeTo}</Mono></p>
+                <p>{t('sweep.youReceive', { amount: `${formatUnits(quote.net, decimals)} ${symbol}` })}</p>
+                <button type="button" className="btn btn-primary" onClick={onRelay} disabled={busy}>{t('sweep.signRelayer')}</button>
               </div>
             )}
           </>
         ) : (
-          <button type="button" className="btn btn-primary" onClick={onDirect} disabled={busy || balance === undefined || balance === 0n}>Sign and broadcast directly</button>
+          <button type="button" className="btn btn-primary" onClick={onDirect} disabled={busy || balance === undefined || balance === 0n}>{t('sweep.signDirect')}</button>
         )}
       </div>
 
-      {busy && <p role="status">Working…</p>}
-      {busy && vaultPhase === 'authorizing' && <button type="button" className="btn" onClick={cancelVaultCheck}>Cancel vault check</button>}
+      {busy && <p role="status">{t('sweep.working')}</p>}
+      {busy && vaultPhase === 'authorizing' && <button type="button" className="btn" onClick={cancelVaultCheck}>{t('sweep.cancelVault')}</button>}
       {error !== undefined && <Notice kind="error">{error}</Notice>}
       {hash !== undefined && (
-        <Notice kind="ok" title="Submitted">
-          Transaction hash: <Mono>{hash}</Mono> <CopyButton text={hash} label="Copy hash" />
+        <Notice kind="ok" title={t('sweep.submitted')}>
+          {t('sweep.txHash')} <Mono>{hash}</Mono> <CopyButton text={hash} label={t('sweep.copyHash')} />
           <br />
-          Check it on your RPC or a block explorer you trust before relying on it.
+          {t('sweep.checkExplorer')}
         </Notice>
       )}
     </section>
