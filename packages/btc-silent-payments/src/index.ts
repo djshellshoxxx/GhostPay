@@ -23,3 +23,4 @@ export * from './header.js';
 export * from './headerchain.js';
 export * from './scan/headersync.js';
 export * from './scan/state.js';
+export * from './witness.js';
