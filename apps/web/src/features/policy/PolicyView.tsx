@@ -6,6 +6,7 @@ import { userMessage } from '../../lib/errors';
 import { useServices } from '../../lib/services';
 import { connectWallet, type WalletInfo, type WalletSession } from '../../lib/wallet';
 import { useApp } from '../../state';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
 import { verifyPolicyDeployment, type PolicyChainDeployment } from './chain';
 import { POLICY_WARNING } from './flag';
 import { PolicyCreate } from './PolicyCreate';
@@ -23,19 +24,22 @@ export interface PolicyCtx {
 
 function WalletPicker(props: { readonly chainId: number; readonly onConnected: (w: WalletSession) => void }): ReactNode {
   const services = useServices();
+  // Test renders without an I18nProvider fall back to the source English catalog.
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const [wallets, setWallets] = useState<readonly WalletInfo[] | undefined>(undefined);
   const [err, setErr] = useState<string | undefined>(undefined);
   return (
     <div>
       <button type="button" onClick={() => { setErr(undefined); void services.discoverWallets().then(setWallets, (e: unknown) => { setErr(userMessage(e)); }); }}>
-        Find wallets
+        {t('policy.wallet.find')}
       </button>
-      {wallets?.length === 0 && <p>No browser wallet found.</p>}
+      {wallets?.length === 0 && <p>{t('policy.wallet.none')}</p>}
       <ul className="plain">
         {wallets?.map((w) => (
           <li key={w.id}>
             <button type="button" onClick={() => { setErr(undefined); connectWallet(w, props.chainId).then(props.onConnected, (e: unknown) => { setErr(userMessage(e)); }); }}>
-              Connect {w.name}
+              {t('policy.wallet.connect', { name: w.name })}
             </button>
           </li>
         ))}
@@ -49,6 +53,9 @@ function WalletPicker(props: { readonly chainId: number; readonly onConnected: (
 export function PolicyView(): ReactNode {
   const app = useApp();
   const services = useServices();
+  // Test renders without an I18nProvider fall back to the source English catalog.
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const testnets = services.chains.filter((c) => c.testnet);
   const [chainId, setChainId] = useState<number | undefined>(testnets[0]?.chainId);
   const chain = testnets.find((c) => c.chainId === chainId);
@@ -70,7 +77,7 @@ export function PolicyView(): ReactNode {
       if (client === undefined) throw new Error('no-rpc');
       setDeployment(await verifyPolicyDeployment(client, chain, { factory, router }));
     } catch (e) {
-      setDepErr(e instanceof Error && e.message === 'no-rpc' ? 'Configure an RPC for this network in Settings first.' : userMessage(e));
+      setDepErr(e instanceof Error && e.message === 'no-rpc' ? t('policy.error.noRpc') : userMessage(e));
     } finally {
       setBusy(false);
     }
@@ -86,43 +93,36 @@ export function PolicyView(): ReactNode {
 
   return (
     <section aria-labelledby="policy-title">
-      <h2 id="policy-title">Policy accounts (experimental)</h2>
-      <Notice kind="warn" title="Experimental and unaudited">{POLICY_WARNING}</Notice>
-      <p>
-        A policy meta-address (scheme 0x47500002) makes every payment land in a small contract account that can only pay out to your
-        chosen destination, after a delay and within per-token limits. A stolen key is delayed, not stopped: watch the account and
-        cancel what you did not sign.
-      </p>
+      <h2 id="policy-title">{t('policy.title')}</h2>
+      <Notice kind="warn" title={t('policy.warning.title')}>{POLICY_WARNING}</Notice>
+      <p>{t('policy.intro')}</p>
 
-      <h3>Network and contracts</h3>
-      {testnets.length === 0 ? <Notice kind="info">No test network is configured.</Notice> : (
+      <h3>{t('policy.network.heading')}</h3>
+      {testnets.length === 0 ? <Notice kind="info">{t('policy.network.none')}</Notice> : (
         <>
-          <Field label="Test network">
+          <Field label={t('policy.network.label')}>
             {(id) => (
               <select id={id} value={chainId} onChange={(e) => { setChainId(Number(e.target.value)); setDeployment(undefined); }}>
                 {testnets.map((c) => <option key={c.chainId} value={c.chainId}>{c.name}</option>)}
               </select>
             )}
           </Field>
-          <Notice kind="info">
-            No policy deployment is pinned for any network. Enter a factory and router you deployed yourself; the app reads the
-            implementation, fee recipient and announcer back from the chain.
-          </Notice>
-          <Field label="PolicyAccountFactory address">{(id) => <input id={id} value={factory} onChange={(e) => { setFactory(e.target.value); }} spellCheck={false} />}</Field>
-          <Field label="GhostPayPolicyRouter address">{(id) => <input id={id} value={router} onChange={(e) => { setRouter(e.target.value); }} spellCheck={false} />}</Field>
-          <button type="button" disabled={busy} onClick={() => { void verify(); }}>Verify on-chain</button>
+          <Notice kind="info">{t('policy.network.notPinned')}</Notice>
+          <Field label={t('policy.network.factory')}>{(id) => <input id={id} value={factory} onChange={(e) => { setFactory(e.target.value); }} spellCheck={false} />}</Field>
+          <Field label={t('policy.network.router')}>{(id) => <input id={id} value={router} onChange={(e) => { setRouter(e.target.value); }} spellCheck={false} />}</Field>
+          <button type="button" disabled={busy} onClick={() => { void verify(); }}>{t('policy.network.verify')}</button>
           {depErr !== undefined && <Notice kind="error">{depErr}</Notice>}
           {deployment !== undefined && (
-            <dl className="kv" aria-label="Verified policy deployment">
-              <dt>Factory</dt><dd><Mono>{deployment.factory}</Mono></dd>
-              <dt>Implementation</dt><dd><Mono>{deployment.implementation}</Mono></dd>
-              <dt>Router</dt><dd><Mono>{deployment.router}</Mono></dd>
-              <dt>Router fee recipient</dt><dd><Mono>{deployment.feeRecipient}</Mono></dd>
-              <dt>Announcer</dt><dd><Mono>{deployment.announcer}</Mono></dd>
+            <dl className="kv" aria-label={t('policy.deployment.aria')}>
+              <dt>{t('policy.deployment.factory')}</dt><dd><Mono>{deployment.factory}</Mono></dd>
+              <dt>{t('policy.deployment.implementation')}</dt><dd><Mono>{deployment.implementation}</Mono></dd>
+              <dt>{t('policy.deployment.router')}</dt><dd><Mono>{deployment.router}</Mono></dd>
+              <dt>{t('policy.deployment.feeRecipient')}</dt><dd><Mono>{deployment.feeRecipient}</Mono></dd>
+              <dt>{t('policy.deployment.announcer')}</dt><dd><Mono>{deployment.announcer}</Mono></dd>
             </dl>
           )}
-          <h3>Wallet</h3>
-          {ctx?.wallet !== undefined ? <p>Connected: <Mono>{ctx.wallet.account}</Mono></p> : chain !== undefined && <WalletPicker chainId={chain.chainId} onConnected={setWallet} />}
+          <h3>{t('policy.wallet.heading')}</h3>
+          {ctx?.wallet !== undefined ? <p>{t('policy.wallet.connected')} <Mono>{ctx.wallet.account}</Mono></p> : chain !== undefined && <WalletPicker chainId={chain.chainId} onConnected={setWallet} />}
         </>
       )}
 
