@@ -1,6 +1,6 @@
 # PR #30 lean-core status (session 01LUsecE)
 
-Updated 2026-10-25 17:25 UTC. Branch `claude/cool-albattani-xopr89`, draft PR #30 -> `main`.
+Updated 2026-10-25 17:45 UTC. Head `c65eebb` (CI pending). Branch `claude/cool-albattani-xopr89`, draft PR #30 -> `main`.
 
 ## Verified heads
 
@@ -22,12 +22,12 @@ is preserved as `later-preserved`; it is not expanded further and not deleted.
 | Finding | Source pin of packet | Status on this branch |
 |---|---|---|
 | Bundle-origin scan failure on PR #30 | 356fe5e | **Fixed** in `baf8114` (feed source URLs moved out of runtime strings); web build + scan pass; CI green on `c0b0ba6` |
-| P1 invoice/fiat expiry not rechecked at final payment guard | a6a2a1c | Open, re-confirmed in source; worker `lean-expiry` reproducing first |
-| P2 prepared buffer quote outlives 60 s TTL at send | a6a2a1c | Open, re-confirmed (TTL only in `buildFinal`); worker `lean-expiry` |
-| Vault save commits after session revocation | a6a2a1c | Open, re-confirmed; worker `lean-vault` (failing-before tests written) |
-| Stale delete confirmation removes replacement vault | a6a2a1c | Open, re-confirmed; worker `lean-vault` |
-| Scan replay-tail anchor from primary only | a6a2a1c | Open, re-confirmed (`persistable` reads primary only); queued after the above |
-| Direct sweep loses expected hash / re-arms signing after uncertain broadcast | edb0051 | Open, re-confirmed; queued after scan anchor |
+| P1 invoice/fiat expiry not rechecked at final payment guard | a6a2a1c | **Fixed** `3adfd76` (merged): final guard, post-permit, buildFinal and pre-approval checks; permit/router share one deadline capped at invoice/quote expiry. 4 payExec + 1 Pay tests failed before |
+| P2 prepared buffer quote outlives 60 s TTL at send | a6a2a1c | **Fixed** `3496cab` (merged): `assertPreparedBufferFresh` in send guard and before approval. 4 payExec + 1 Pay tests failed before; expiresAt-1 passes |
+| Vault save commits after session revocation | a6a2a1c | **Fixed** `a8bc764` (merged): guard checked inside the IndexedDB transaction; post-commit change reported, not rolled back. keyVault.test:174 and SellerKeys.test:288 failed before |
+| Stale delete confirmation removes replacement vault | a6a2a1c | **Fixed** `fa3bcff` (merged): compare-and-delete in one readwrite transaction; stale confirmation shows "vault changed". Chromium two-tab script `apps/web/scripts/test-seller-vault-idb.mjs` passes (not wired into package.json) |
+| Scan replay-tail anchor from primary only | a6a2a1c | Open, re-confirmed (`persistable` reads primary only); worker `lean-scan-anchor` running |
+| Direct sweep loses expected hash / re-arms signing after uncertain broadcast | edb0051 | Open, re-confirmed; worker `lean-sweep` running |
 
 ## PR #31 reuse
 
