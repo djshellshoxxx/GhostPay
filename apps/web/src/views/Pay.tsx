@@ -14,6 +14,8 @@ import { userMessage } from '../lib/errors';
 import { DelayScheduler, randomDelayMs, type ScheduleSnapshot } from '../lib/jitter';
 import {
   createPayContext,
+  applyBufferPolicy,
+  bufferOffered,
   decodeForDisplay,
   quoteBuffer,
   reviewInvoice,
@@ -362,7 +364,9 @@ export function Pay(): ReactNode {
       return undefined;
     }
     try {
-      const q = await quoteBuffer(rpc, Math.floor(services.nowMs() / 1000), sweep);
+      if (invoice === undefined) return undefined;
+      // ADR-0023: a v2 invoice's seller policy bounds (or declines) the buffer before it is shown or built.
+      const q = applyBufferPolicy(await quoteBuffer(rpc, Math.floor(services.nowMs() / 1000), sweep), invoice);
       if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return undefined;
       setBufferQuote(q);
       return q;
@@ -992,7 +996,10 @@ export function Pay(): ReactNode {
             </label>
           </div>
           <p className="hint">Timing friction only, not anonymity. While waiting nothing is signed or sent, and the page must stay open. You can cancel or send now.</p>
-          {isErc20 && (
+          {isErc20 && parsed !== undefined && !bufferOffered(parsed.invoice) && (
+            <p className="hint">The seller does not accept a gas buffer for this invoice.</p>
+          )}
+          {isErc20 && parsed !== undefined && bufferOffered(parsed.invoice) && (
             <>
               <div className="check">
                 <input
@@ -1009,7 +1016,7 @@ export function Pay(): ReactNode {
               </div>
               {useBuffer && (
                 <Notice kind="warn" title="Public linkage">
-                  {bufferQuote === undefined ? 'Estimating buffer…' : `Extra ${formatUnits(bufferQuote.bufferWei, 18)} ${review.chain?.nativeSymbol ?? 'native coin'} (native, not ${symbol}) is sent in the same transaction to the one-time address. This publicly links your payment, the one-time address and the buffer. It is an estimate (${String(bufferQuote.gasLimit)} gas${bufferQuote.gasSource === 'simulated' ? ', from a simulated token transfer' : ', default table value until you prepare the payment'} at up to ${String(bufferQuote.maxFeePerGas)} wei, +20 %), not a guarantee.`}
+                  {bufferQuote === undefined ? 'Estimating buffer…' : `Extra ${formatUnits(bufferQuote.bufferWei, 18)} ${review.chain?.nativeSymbol ?? 'native coin'} (native, not ${symbol}) is sent in the same transaction to the one-time address. This publicly links your payment, the one-time address and the buffer. It is an estimate (${String(bufferQuote.gasLimit)} gas${bufferQuote.gasSource === 'simulated' ? ', from a simulated token transfer' : ', default table value until you prepare the payment'} at up to ${String(bufferQuote.maxFeePerGas)} wei, +20 %), not a guarantee.${bufferQuote.raisedToSellerMinimum === true ? " Raised to the seller's minimum buffer for this invoice." : ""} It is never refunded.`}
                 </Notice>
               )}
             </>

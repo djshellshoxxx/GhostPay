@@ -185,6 +185,40 @@ export interface BufferQuote {
   readonly expiresAt: number;
   /** `simulated`: gasLimit covers an `eth_estimateGas` of the token transfer; `default`: table value only. */
   readonly gasSource: 'simulated' | 'default';
+  /** Set when a v2 invoice's `bufferPolicy.minWei` raised the estimate (ADR-0023); shown to the payer. */
+  readonly raisedToSellerMinimum?: boolean;
+}
+
+/** Whether the invoice lets the payer add a gas buffer at all (v1: yes; v2: only when the seller accepted). */
+export function bufferOffered(invoice: Invoice): boolean {
+  if (invoice.token === 'native') return false;
+  return invoice.bufferPolicy === undefined || invoice.bufferPolicy.accepted;
+}
+
+/** Checks a buffer amount against the app cap and, for v2 invoices, the seller's policy (ADR-0023). */
+function assertBufferWithinPolicy(bufferWei: bigint, invoice: Invoice): void {
+  const p = invoice.bufferPolicy;
+  if (p !== undefined && !p.accepted) throw new UserFacingError('The seller does not accept a gas buffer for this invoice. Pay without one.');
+  if (bufferWei > MAX_BUFFER_WEI) throw new UserFacingError('The gas buffer exceeds the safety cap.');
+  if (p === undefined) return;
+  if (bufferWei > BigInt(p.maxWei)) throw new UserFacingError('The gas buffer would exceed the seller’s maximum for this invoice. Pay without a buffer or try later.');
+  if (bufferWei < BigInt(p.minWei)) throw new UserFacingError('The gas buffer is below the seller’s minimum for this invoice. Prepare it again.');
+}
+
+/**
+ * Applies a v2 invoice's seller `bufferPolicy` to a fresh quote (ADR-0023): declined -> refused; an estimate below
+ * `minWei` is raised to `minWei` (flagged so the UI shows it); anything above `min(maxWei, app cap)` is refused, as is a
+ * seller floor above the app cap. v1 invoices return the quote unchanged.
+ */
+export function applyBufferPolicy(quote: BufferQuote, invoice: Invoice): BufferQuote {
+  const p = invoice.bufferPolicy;
+  if (p === undefined) return quote;
+  if (!p.accepted) throw new UserFacingError('The seller does not accept a gas buffer for this invoice. Pay without one.');
+  const min = BigInt(p.minWei);
+  if (min > MAX_BUFFER_WEI) throw new UserFacingError('The seller’s minimum gas buffer is above this app’s safety cap. Pay without a buffer.');
+  const out = quote.bufferWei < min ? { ...quote, bufferWei: min, raisedToSellerMinimum: true } : quote;
+  assertBufferWithinPolicy(out.bufferWei, invoice);
+  return out;
 }
 
 /** Token transfer the seller's sweep will perform, simulated from the payer who holds the tokens now. */
@@ -260,7 +294,7 @@ export function buildFinal(ctx: PayContext, opts: FinalBuildOptions): BuiltPayme
   if (opts.buffer !== undefined) {
     if (ctx.review.invoice.token === 'native') throw new UserFacingError('A gas buffer applies to token payments only.');
     if (opts.nowSeconds >= opts.buffer.expiresAt) throw new UserFacingError('The gas buffer quote expired. Refresh it and review again.');
-    if (opts.buffer.bufferWei > MAX_BUFFER_WEI) throw new UserFacingError('The gas buffer exceeds the safety cap.');
+    assertBufferWithinPolicy(opts.buffer.bufferWei, ctx.review.invoice);
   }
   const deadline = BigInt(opts.deadlineSeconds ?? opts.nowSeconds + DEADLINE_SECONDS);
   const built = ctx.request.build({

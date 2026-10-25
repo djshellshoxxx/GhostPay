@@ -545,6 +545,25 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     expect((await screen.findAllByRole('alert')).map((a) => a.textContent).join(' ')).toMatch(/needs an RPC/);
   });
 
+  it('v2 invoice whose seller declines buffers offers none (ADR-0023)', async () => {
+    const { fragment } = await makeParsed({ bufferPolicy: { accepted: false, maxWei: '0', minWei: '0', refund: 'none' } });
+    openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    expect(await screen.findByText('The seller does not accept a gas buffer for this invoice.')).toBeTruthy();
+    expect(screen.queryByLabelText(/Add a gas buffer/)).toBeNull();
+  });
+
+  it('v2 invoice with a seller minimum raises a smaller estimate to it and says so (ADR-0023)', async () => {
+    const { fragment } = await makeParsed({ bufferPolicy: { accepted: true, maxWei: '1000000000000000', minWei: '500000000000000', refund: 'none' } });
+    const wallet = new MockWallet();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const rpc = chainSeeing(wallet);
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
+    await user.click(await screen.findByLabelText(/Add a gas buffer/));
+    const notice = await screen.findByText(/Extra 0\.0005 ETH/);
+    expect(notice.textContent).toMatch(/Raised to the seller's minimum/);
+    expect(notice.textContent).toMatch(/never refunded/);
+  });
+
   it('native invoices offer no gas buffer', async () => {
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
     openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
