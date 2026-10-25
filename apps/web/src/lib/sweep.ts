@@ -268,7 +268,8 @@ export interface DirectSweepInput {
 export interface DirectSweepAttempt {
   readonly chainId: number;
   readonly owner: Address;
-  readonly nonce: number;
+  /** Owner nonce of a direct sweep; absent for a relayed sweep (the relayer's account sends it). */
+  readonly nonce?: number;
   readonly destination: Address;
   readonly asset: Address | 'native';
   readonly amount: bigint;

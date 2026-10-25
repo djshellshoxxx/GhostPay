@@ -183,9 +183,27 @@ describe('Sweep', () => {
     expect(await screen.findByText(/Relayer fee: 0\.025 USDC/)).toBeTruthy();
     expect(screen.getByText(/You receive: 4\.975 USDC/)).toBeTruthy();
     await user.click(screen.getByRole('button', { name: 'Sign and submit to relayer' }));
-    expect(await screen.findByText('Submitted')).toBeTruthy();
-    expect(screen.getByText(`0x${'34'.repeat(32)}`)).toBeTruthy();
+    // The submitted hash is shown in the result and in the pending-attempt panel that keeps signing disarmed.
+    expect((await screen.findAllByText('Submitted')).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(`0x${'34'.repeat(32)}`).length).toBeGreaterThan(0);
     expect(posted).toEqual(['https://relay.test/v1/quote', 'https://relay.test/v1/sweep']);
+  });
+
+  it('relayer path: an accepted relayed sweep disarms direct signing until its status is resolved', async () => {
+    const fetchFn: Services['fetchFn'] = (url) => {
+      if (url.endsWith('/v1/quote')) return Promise.resolve(new Response(JSON.stringify({ fee: '25000', feeTo: FAKE_FEE_RECIPIENT, expiresAt: 1_800_000_100, quoteToken: 'tok' })));
+      return Promise.resolve(new Response(JSON.stringify({ txHash: `0x${'35'.repeat(32)}` }), { status: 200 }));
+    };
+    const user = await toSweep({ relayer: true, fetchFn });
+    await screen.findByText('5 USDC');
+    await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+    await user.click(screen.getByRole('button', { name: 'Get relayer quote' }));
+    await screen.findByText(/Relayer fee: 0\.025 USDC/);
+    await user.click(screen.getByRole('button', { name: 'Sign and submit to relayer' }));
+    expect((await screen.findAllByText('Submitted')).length).toBeGreaterThan(0);
+    // The relayed transaction may still be pending: a fresh direct signature from the same address must not be offered.
+    await user.click(screen.getByLabelText(/Directly/));
+    expect((screen.getByRole('button', { name: 'Sign and broadcast directly' }) as HTMLButtonElement).disabled).toBe(true);
   });
 
   it('relayer path: refuses a fee above the published cap', async () => {

@@ -155,6 +155,7 @@ export function Sweep(): ReactNode {
   };
 
   const onRelay = (): void => {
+    if (signingLocked) return;
     void guard(async (assertCurrent) => {
       const rpc = await app.getRpc(chainId);
       assertCurrent();
@@ -162,8 +163,11 @@ export function Sweep(): ReactNode {
       assertCurrent();
       if (loaded === undefined || rpc === undefined || quote === undefined || balance === undefined || tokenAddr === 'native') throw new Error('state');
       const dest = checkDestination(destination, target.owner, loaded);
+      assertNoUnresolvedAttempt();
       const submitted = await relayedSweep({ target: { ...target, token: tokenAddr }, manifest: loaded, destination: dest, amount: balance, quote: quote.quote, relayerUrl: app.settings.relayerUrl, rpc, nowSeconds: nowSec, fetchFn: services.fetchFn });
       setHash(submitted);
+      // The relayed transaction may still land: keep signing disarmed for this address until its status is checked.
+      recordSweepAttempt({ chainId, owner: target.owner, destination: dest, asset: tokenAddr, amount: balance, expectedHash: submitted.toLowerCase() as `0x${string}`, status: 'submitted' });
       app.announce(t('sweep.announceRelayer'));
       return true;
     });
