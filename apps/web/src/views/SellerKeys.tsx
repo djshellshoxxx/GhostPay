@@ -6,7 +6,7 @@ import { QrFrame } from '../components/QrFrame';
 import { userMessage } from '../lib/errors';
 import { MAX_KEYSTORE_BYTES, passphraseProblem, validateKeystoreEnvelope } from '../lib/keystore';
 import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, importKeystore, importSession } from '../lib/session';
-import { deleteEncryptedVault, readEncryptedVault, saveEncryptedVault, unlockEncryptedVault } from '../lib/keyVault';
+import { deleteEncryptedVault, readEncryptedVault, saveEncryptedVault, unlockEncryptedVault, VaultSavedForPreviousKeysError } from '../lib/keyVault';
 import { useApp } from '../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 
@@ -33,6 +33,7 @@ export function SellerKeys(): ReactNode {
   const [vaultUnlockPass, setVaultUnlockPass] = useState('');
   const [vaultBusy, setVaultBusy] = useState(false);
   const [confirmVaultDelete, setConfirmVaultDelete] = useState(false);
+  const saveOperation = useRef(0);
 
   useEffect(() => {
     let live = true;
@@ -146,17 +147,25 @@ export function SellerKeys(): ReactNode {
     const problem = passphraseProblem(vaultSavePass);
     if (problem !== undefined) { setMessage({ kind: 'error', text: problem }); return; }
     if (vaultSavePass !== vaultSavePass2) { setMessage({ kind: 'error', text: t('sellerKeys.passphrasesDiffer') }); return; }
+    const id = ++saveOperation.current;
+    const unchanged = captureSessionVersionGuard();
+    // Only the initiating save may report; it may claim success only for the keys that were loaded when it started.
+    const current = (): boolean => mounted.current && saveOperation.current === id;
     setVaultBusy(true);
     void saveEncryptedVault(vaultSavePass).then(
       () => {
+        if (!current()) return;
         setVaultSavePass('');
         setVaultSavePass2('');
         setVaultState('saved');
         setVaultBusy(false);
+        try { unchanged(); } catch { fail(new VaultSavedForPreviousKeysError()); return; }
         done(t('sellerKeys.vaultSaved'));
       },
       (err: unknown) => {
+        if (!current()) return;
         setVaultBusy(false);
+        if (err instanceof VaultSavedForPreviousKeysError) { setVaultSavePass(''); setVaultSavePass2(''); setVaultState('saved'); }
         fail(err);
       },
     );

@@ -254,3 +254,62 @@ it('does not install keys if the encrypted import disclosure closes during file 
   expect(getSessionPublic()).toBeUndefined();
   expect(screen.getByLabelText<HTMLInputElement>('Passphrase').value).toBe('');
 });
+
+describe('encrypted vault save lifetime', () => {
+  const PASSPHRASE = 'violet comet maple lantern';
+  const SAVED = 'Encrypted seller vault saved in this browser. The passphrase was cleared.';
+
+  async function startSave(store: KeyVaultStore): Promise<ReturnType<typeof userEvent.setup>> {
+    setKeyVaultStoreForTests(store);
+    const user = await open();
+    await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
+    await user.type(await screen.findByLabelText('New vault passphrase (14+ characters)'), PASSPHRASE);
+    await user.type(screen.getByLabelText('Repeat vault passphrase'), PASSPHRASE);
+    await user.click(screen.getByRole('button', { name: 'Save encrypted vault in this browser' }));
+    return user;
+  }
+
+  it('does not commit or report a save whose keys were wiped while the PUT was pending', async () => {
+    const durable = new MemoryKeyVaultStore();
+    let reachedPut!: () => void;
+    let releasePut!: () => void;
+    const putStarted = new Promise<void>((resolve) => { reachedPut = resolve; });
+    const putGate = new Promise<void>((resolve) => { releasePut = resolve; });
+    const store: KeyVaultStore = {
+      get: () => durable.get(),
+      putIfEmpty: async (...args: Parameters<KeyVaultStore['putIfEmpty']>) => { reachedPut(); await putGate; return durable.putIfEmpty(...args); },
+      delete: (...args: Parameters<KeyVaultStore['delete']>) => durable.delete(...args),
+    };
+    const user = await startSave(store);
+    await act(async () => { await putStarted; });
+    await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    await act(async () => { releasePut(); await Promise.resolve(); });
+    await waitFor(() => { expect(screen.getByRole('alert').textContent).toMatch(/changed during this action/); }, { timeout: 15_000 });
+    expect(await durable.get()).toBeUndefined();
+    expect(screen.queryByText(SAVED)).toBeNull();
+    expect(getSessionPublic()).toBeUndefined();
+  });
+
+  it('reports a durable commit honestly when the keys change after the write landed', async () => {
+    const durable = new MemoryKeyVaultStore();
+    let committed!: () => void;
+    let finish!: () => void;
+    const commitSeen = new Promise<void>((resolve) => { committed = resolve; });
+    const finishGate = new Promise<void>((resolve) => { finish = resolve; });
+    const store: KeyVaultStore = {
+      get: () => durable.get(),
+      putIfEmpty: async (...args: Parameters<KeyVaultStore['putIfEmpty']>) => { await durable.putIfEmpty(...args); committed(); await finishGate; },
+      delete: (...args: Parameters<KeyVaultStore['delete']>) => durable.delete(...args),
+    };
+    const user = await startSave(store);
+    await act(async () => { await commitSeen; });
+    const ciphertext = await durable.get();
+    expect(ciphertext).toBeDefined();
+    await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    await act(async () => { finish(); await Promise.resolve(); });
+    await waitFor(() => { expect(screen.getByRole('alert').textContent).toMatch(/saved for the seller keys that were loaded when you started/); }, { timeout: 15_000 });
+    expect(await durable.get()).toBe(ciphertext);
+    expect(screen.queryByText(SAVED)).toBeNull();
+    expect(await screen.findByRole('button', { name: 'Unlock saved vault' })).toBeTruthy();
+  });
+});

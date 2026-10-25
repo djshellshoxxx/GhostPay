@@ -5,7 +5,11 @@ import { UserFacingError } from './errors';
 /** Store interface kept deliberately small so the browser adapter can be replaced in tests. */
 export interface KeyVaultStore {
   get(): Promise<string | undefined>;
-  putIfEmpty(ciphertext: string): Promise<void>;
+  /**
+   * Atomically adds the ciphertext only if no vault exists. `stillCurrent` throws once the initiating key session is
+   * gone; adapters call it after any asynchronous wait and before the write can commit, and must not commit after it throws.
+   */
+  putIfEmpty(ciphertext: string, stillCurrent: () => void): Promise<void>;
   delete(): Promise<void>;
 }
 
@@ -54,20 +58,28 @@ export class IndexedDbKeyVaultStore implements KeyVaultStore {
     });
   }
 
-  async putIfEmpty(ciphertext: string): Promise<void> {
+  async putIfEmpty(ciphertext: string, stillCurrent: () => void): Promise<void> {
     const db = await this.db();
+    stillCurrent();
     await new Promise<void>((resolve, reject) => {
       const tx = db.transaction(STORE_NAME, 'readwrite');
       let exists = false;
+      let stale: Error | undefined;
       const request = tx.objectStore(STORE_NAME).add(ciphertext, RECORD_KEY);
+      // Last point before the transaction can commit: abort it if the initiating session has been revoked meanwhile.
+      request.onsuccess = () => {
+        try { stillCurrent(); } catch (error) {
+          stale = error instanceof Error ? error : new UserFacingError('Seller keys changed during this action. Try again.');
+          tx.abort();
+        }
+      };
       request.onerror = () => { if (request.error?.name === 'ConstraintError') exists = true; };
+      const failed = (): void => {
+        reject(stale ?? new UserFacingError(exists ? 'A saved encrypted vault already exists. Delete it before saving a different key set.' : 'Could not save encrypted browser storage.'));
+      };
       tx.oncomplete = () => { resolve(); };
-      tx.onerror = () => {
-        reject(new UserFacingError(exists ? 'A saved encrypted vault already exists. Delete it before saving a different key set.' : 'Could not save encrypted browser storage.'));
-      };
-      tx.onabort = () => {
-        reject(new UserFacingError(exists ? 'A saved encrypted vault already exists. Delete it before saving a different key set.' : 'Could not save encrypted browser storage.'));
-      };
+      tx.onerror = failed;
+      tx.onabort = failed;
     });
   }
 
@@ -87,7 +99,9 @@ export class IndexedDbKeyVaultStore implements KeyVaultStore {
 export class MemoryKeyVaultStore implements KeyVaultStore {
   private ciphertext: string | undefined;
   get(): Promise<string | undefined> { return Promise.resolve(this.ciphertext); }
-  putIfEmpty(ciphertext: string): Promise<void> {
+  /** The guard is optional only so tests can seed a record directly; saveEncryptedVault always passes one. */
+  putIfEmpty(ciphertext: string, stillCurrent?: () => void): Promise<void> {
+    stillCurrent?.();
     if (this.ciphertext !== undefined) throw new UserFacingError('A saved encrypted vault already exists. Delete it before saving a different key set.');
     this.ciphertext = ciphertext;
     return Promise.resolve();
@@ -107,6 +121,14 @@ function activeStore(): KeyVaultStore {
   return testStore ?? browserStore;
 }
 
+/** The ciphertext was durably saved, but the loaded seller keys changed after the commit. */
+export class VaultSavedForPreviousKeysError extends UserFacingError {
+  public constructor() {
+    super('The encrypted vault was saved for the seller keys that were loaded when you started, but the keys in memory changed afterward. Unlock or delete the saved vault before relying on it.');
+    this.name = 'VaultSavedForPreviousKeysError';
+  }
+}
+
 export function readEncryptedVault(store: KeyVaultStore = activeStore()): Promise<string | undefined> {
   return store.get();
 }
@@ -117,8 +139,9 @@ export async function saveEncryptedVault(passphrase: string, options: KeystoreOp
   unchanged();
   if (await store.get() !== undefined) throw new UserFacingError('A saved encrypted vault already exists. Delete it before saving a different key set.');
   unchanged();
-  await store.putIfEmpty(ciphertext);
-  unchanged();
+  await store.putIfEmpty(ciphertext, unchanged);
+  // The write is durable now. Never roll it back; if the keys changed after the commit, say exactly what happened.
+  try { unchanged(); } catch { throw new VaultSavedForPreviousKeysError(); }
 }
 
 export async function unlockEncryptedVault(passphrase: string, store: KeyVaultStore = activeStore(), signal?: AbortSignal): Promise<void> {
