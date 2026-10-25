@@ -6,7 +6,8 @@ import { useServices } from '../../lib/services';
 import { EsploraClient, normalizeEsploraUrl } from './esplora';
 import { BTC_NETWORKS, btcNetwork, type BtcNetworkId } from './network';
 import { MAX_SCAN_BLOCKS, scanForPayments, type FoundPayment, type ScanResult } from './scan';
-import { btcErrorMessage, formatBtc, reviewSweep, signSweep, type SignedSweep, type SweepReview } from './sweep';
+import { btcErrorMessage, formatBtc, reviewSweep, SIGNER_DESCRIPTION, signSweep, type SignedSweep, type SweepReview } from './sweep';
+import { SCAN_CHECKS, SCAN_LIMITS, SCAN_MODES } from './verification';
 import { paymentUri, randomSeedHex, walletFromSeedHex, type BtcWallet } from './wallet';
 
 /**
@@ -133,9 +134,14 @@ export function BtcView(): ReactNode {
 
   const doSign = (): void => {
     if (wallet === undefined || review === undefined || !approved) return;
-    guard(() => {
-      setSigned(signSweep(wallet, selected, review));
-    });
+    setError(undefined);
+    void (async () => {
+      try {
+        setSigned(await signSweep(wallet, selected, review));
+      } catch (e) {
+        setError(btcErrorMessage(e));
+      }
+    })();
   };
 
   const doBroadcast = (): void => {
@@ -260,6 +266,26 @@ export function BtcView(): ReactNode {
           {scanning && (
             <button type="button" className="btn" onClick={() => { abort.current?.abort(); }}>Cancel</button>
           )}
+          <details>
+            <summary>What the scan checks, and what it does not</summary>
+            <p>Checked on this device for every block:</p>
+            <ul>{SCAN_CHECKS.map((c) => <li key={c}>{c}</li>)}</ul>
+            <p>Limits:</p>
+            <ul>{SCAN_LIMITS.map((c) => <li key={c}>{c}</li>)}</ul>
+            <div className="table-wrap">
+              <table>
+                <caption>Where scan data comes from</caption>
+                <thead>
+                  <tr><th>Mode</th><th>Scan key leaves this device?</th><th>Server learns</th><th>Available</th></tr>
+                </thead>
+                <tbody>
+                  {SCAN_MODES.map((m) => (
+                    <tr key={m.mode}><td>{m.mode}</td><td>{m.keyLeaves}</td><td>{m.serverLearns}</td><td>{m.available}</td></tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </details>
           {scanNote !== undefined && <p role="status">{scanNote}</p>}
           {scan !== undefined && (
             <>
@@ -389,6 +415,7 @@ export function BtcView(): ReactNode {
                 <input type="checkbox" checked={approved} onChange={(e) => { setApproved(e.target.checked); }} />{' '}
                 I checked the destination address, the amount and the fee.
               </label>
+              <p className="hint">{SIGNER_DESCRIPTION}</p>
               <p>
                 <button type="button" className="btn btn-primary" disabled={!approved || signed !== undefined} onClick={doSign}>
                   Sign with software key
