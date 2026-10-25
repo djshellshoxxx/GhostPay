@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useId, useState, type ReactNode } from 'react';
 import { buildEip681Erc20, buildEip681Native, buildSolanaPay, buildTronUri, type TronNetwork } from '@ghostpay/payment-uri';
 import { kindForPayload } from '../lib/qrKinds';
 import { CopyButton, Mono, Notice } from './Common';
@@ -70,5 +70,53 @@ export function PaymentRequestQr(props: PaymentRequestQrProps): ReactNode {
       <p><Mono><span data-testid="payment-request-text">{uri}</span></Mono></p>
       <CopyButton text={uri} label="Copy payment request" />
     </div>
+  );
+}
+
+export interface PlainPaymentRequestProps {
+  readonly family: 'solana' | 'tron';
+  /** TRON network the URI names; `undefined` (a local test chain) has no URI form, so no request is offered. */
+  readonly tronNetwork?: TronNetwork;
+  readonly testnet: boolean;
+  readonly networkLabel: string;
+}
+
+/**
+ * Optional plain (non-stealth) payment request for the Solana and TRON views. The stealth meta-address cannot be
+ * put in a wallet payment URI, so the user supplies an ordinary receive address here.
+ */
+export function PlainPaymentRequest(props: PlainPaymentRequestProps): ReactNode {
+  const [recipient, setRecipient] = useState('');
+  const [amount, setAmount] = useState('');
+  const recipientId = useId();
+  const amountId = useId();
+  if (props.family === 'tron' && props.tronNetwork === undefined) {
+    return <Notice kind="info" title="No payment request">This local test chain has no payment-request link format.</Notice>;
+  }
+  const to = recipient.trim();
+  const amt = amount.trim();
+  const spec: PaymentRequestSpec | undefined =
+    to === ''
+      ? undefined
+      : props.family === 'solana'
+        ? { family: 'solana', recipient: to, amount: amt === '' ? undefined : amt }
+        : { family: 'tron', recipient: to, amount: amt === '' ? undefined : amt, network: props.tronNetwork ?? 'mainnet' };
+  return (
+    <details className="plain-request">
+      <summary>Plain payment request QR (optional)</summary>
+      <p className="hint">
+        This is a normal wallet payment link to an ordinary address on {props.networkLabel}. It is not a stealth payment: the
+        payment is visible on-chain and this app will not find it by scanning.
+      </p>
+      <div className="field">
+        <label htmlFor={recipientId}>Receive address</label>
+        <input id={recipientId} className="mono" autoComplete="off" spellCheck={false} value={recipient} onChange={(e) => { setRecipient(e.target.value); }} />
+      </div>
+      <div className="field">
+        <label htmlFor={amountId}>Amount (optional, whole units)</label>
+        <input id={amountId} inputMode="decimal" autoComplete="off" value={amount} onChange={(e) => { setAmount(e.target.value); }} />
+      </div>
+      {spec !== undefined && <PaymentRequestQr spec={spec} testnet={props.testnet} title={`${props.networkLabel} payment request`} />}
+    </details>
   );
 }

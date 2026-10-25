@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { parseEip681, parseSolanaPay, parseTronUri } from '@ghostpay/payment-uri';
-import { PaymentRequestQr, buildPaymentRequestUri, type PaymentRequestSpec } from './PaymentRequestQr';
+import { PaymentRequestQr, PlainPaymentRequest, buildPaymentRequestUri, type PaymentRequestSpec } from './PaymentRequestQr';
 
 afterEach(cleanup);
 
@@ -57,5 +57,30 @@ describe('PaymentRequestQr', () => {
   it('renders an optional note', () => {
     render(<PaymentRequestQr spec={sol} testnet={false} title="T" note="Plain transfer only." />);
     expect(screen.getByText('Plain transfer only.')).toBeTruthy();
+  });
+});
+
+describe('PlainPaymentRequest', () => {
+  const type = (label: RegExp, value: string): void => { fireEvent.change(screen.getByLabelText(label), { target: { value } }); };
+  it('shows nothing until an address is entered, then a request, with and without an amount', () => {
+    const { container } = render(<PlainPaymentRequest family="solana" testnet networkLabel="Solana devnet" />);
+    expect(container.querySelector('.qr-frame')).toBeNull();
+    type(/Receive address/, SOL);
+    expect(screen.getByTestId('payment-request-text').textContent).toBe(`solana:${SOL}`);
+    type(/Amount/, '2.5');
+    expect(screen.getByTestId('payment-request-text').textContent).toContain('amount=2.5');
+  });
+  it('builds a TRON request for a named network', () => {
+    render(<PlainPaymentRequest family="tron" tronNetwork="shasta" testnet networkLabel="TRON Shasta" />);
+    type(/Receive address/, TRON);
+    expect(screen.getByTestId('payment-request-text').textContent).toContain('network=shasta');
+  });
+  it('reports a bad address and declines local TRON chains', () => {
+    render(<PlainPaymentRequest family="solana" testnet networkLabel="Solana devnet" />);
+    type(/Receive address/, 'nope');
+    expect(screen.getByRole('alert')).toBeTruthy();
+    cleanup();
+    render(<PlainPaymentRequest family="tron" testnet networkLabel="Local" />);
+    expect(screen.getByText(/no payment-request link format/)).toBeTruthy();
   });
 });

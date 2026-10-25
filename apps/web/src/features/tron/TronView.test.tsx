@@ -217,3 +217,14 @@ describe('TronView', () => {
     expect(screen.getByText('Signed transaction')).toBeTruthy();
   });
 });
+
+describe('plain payment request', () => {
+  it('offers a TRON request QR with text and copy on a named network', async () => {
+    const { user } = await setup();
+    await user.selectOptions(screen.getByLabelText('Network'), 'nile');
+    await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
+    await user.type(screen.getByLabelText('Receive address'), DEST);
+    expect(screen.getByTestId('payment-request-text').textContent).toMatch(/^tron:/);
+    expect(screen.getByRole('button', { name: 'Copy payment request' })).toBeTruthy();
+  });
+});
