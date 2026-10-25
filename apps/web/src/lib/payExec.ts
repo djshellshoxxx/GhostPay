@@ -6,11 +6,14 @@ import { formatUnits } from './format';
 import { guardApprove, guardRouterPayment, simulateCall } from './txGuard';
 import {
   assertApproveTx,
+  assertInvoiceStillPayable,
   assertPermitSigner,
+  assertPreparedBufferFresh,
   assertBufferStillSufficient,
   assertReadyToSend,
   buildApproveTx,
   buildFinal,
+  boundedDeadline,
   buildPermit,
   permitPreflightReader,
   permitStateMessage,
@@ -204,7 +207,8 @@ export async function preparePayment(session: WalletSession, ctx: PayContext, op
     return buildFinal(ctx, { nowSeconds: now, ...(opts.buffer === undefined ? {} : { buffer: opts.buffer }) });
   }
   if (rt.rpc === undefined) throw new UserFacingError('A permit payment needs an RPC to read the token. Configure one in Settings or use approval.');
-  const deadline = now + 20 * 60;
+  // One deadline for the signed permit and the router calldata, bounded by invoice/fiat validity (never clamped later).
+  const deadline = boundedDeadline(ctx.review.invoice, now);
   const td = await buildPermit(rt.rpc, {
     chainId: ctx.chain.chainId,
     token: token.address,
@@ -217,6 +221,8 @@ export async function preparePayment(session: WalletSession, ctx: PayContext, op
   assertCurrent?.();
   const sig = await signTypedDataViaWallet(session, typedDataJson(td), assertCurrent);
   assertCurrent?.();
+  // The wallet may have held the request open: re-read the clock before using the signature.
+  assertInvoiceStillPayable(ctx.review.invoice, rt.nowSeconds());
   await assertPermitSigner(td, sig, session.account);
   assertCurrent?.();
   // Spec 04 post-sign pre-flight: nonce, recovery and a static permit call. A front-run permit (allowance now set)
@@ -248,6 +254,8 @@ export async function sendPayment(session: WalletSession, ctx: PayContext, built
   const guard = (): void => {
     assertCurrent?.();
     assertReadyToSend(built, ctx);
+    assertInvoiceStillPayable(ctx.review.invoice, rt.nowSeconds());
+    assertPreparedBufferFresh(built, rt.nowSeconds());
     if (BigInt(rt.nowSeconds()) >= built.preview.deadline) throw new UserFacingError('The prepared payment has expired. Review again.');
   };
   guard();

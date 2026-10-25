@@ -18,6 +18,8 @@ import {
   bufferOffered,
   decodeForDisplay,
   quoteBuffer,
+  assertInvoiceStillPayable,
+  assertPreparedBufferFresh,
   reviewInvoice,
   type BufferQuote,
   type SweepSimulation,
@@ -681,9 +683,17 @@ export function Pay(): ReactNode {
       try {
         const rt = await runtime();
         guard();
+        // Final validity gate before any wallet request (the initial approval included), rechecked after wallet awaits.
+        // Not part of `guard`: after a broadcast approval the allowance is kept and only the payment is refused.
+        const preSignGuard = (): void => {
+          guard();
+          assertInvoiceStillPayable(ctx.review.invoice, rt.nowSeconds());
+          assertPreparedBufferFresh(built, rt.nowSeconds());
+        };
+        preSignGuard();
         let actualAllowance = granted;
         if (approval?.required === true && actualAllowance === undefined) {
-          actualAllowance = await grantApproval(wallet, ctx, approval, rt, scopedStatus, guard, (hash) => {
+          actualAllowance = await grantApproval(wallet, ctx, approval, rt, scopedStatus, preSignGuard, (hash) => {
             if (!isCurrent()) setPreviousBroadcast({ hash, kind: 'approval' });
           });
           guard();
