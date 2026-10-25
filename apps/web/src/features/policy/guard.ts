@@ -4,7 +4,7 @@ import { decodeEventLog, getAddress } from 'viem/utils';
 import { UserFacingError } from '../../lib/errors';
 
 /**
- * Watch side of client-side recovery (ADR-0020): a stolen owner key is "delayed, not prevented", so
+ * Watch side of client-side recovery (ADR-0023): a stolen owner key is "delayed, not prevented", so
  * the owner must see every pending withdrawal and destination proposal in time to cancel it with the
  * same key. This reads the account's own events and flags anything this device did not sign.
  */

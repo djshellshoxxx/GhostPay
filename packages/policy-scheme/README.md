@@ -14,7 +14,7 @@ Client side of the policy-guarded stealth account, ERC-5564 scheme id `0x4750000
 | `calldata.ts` | factory `deploy` and every `PolicyAccount` call |
 | `router.ts` | `GhostPayPolicyRouter` `payERC20` / `payERC20WithPermit` / `payNative` / `payERC20WithBuffer` calldata and decoder |
 | `window.ts` | `windowHeadroom` / `consumeWindow`: mirror of `PolicyAccount._consume` (two-bucket rolling window) for planning withdrawals within limits |
-| `record.ts` | policy record backup (`ghostpay-policy-record` v1: meta-address + policy pre-image + limits), strict parser, `findPolicyFromCandidates` (client-side recovery, ADR-0020) |
+| `record.ts` | policy record backup (`ghostpay-policy-record` v1: meta-address + policy pre-image + limits), strict parser, `findPolicyFromCandidates` (client-side recovery, ADR-0023) |
 
 No new crypto libraries: `@noble/curves`, `@noble/hashes`, `viem` and `@ghostpay/core-crypto`, pinned exactly as in core-crypto.
 

@@ -17,7 +17,7 @@ Choices where the spec is silent. The lead should confirm or reject each.
 - **S6. Router builders** use the `GhostPayPolicyRouter` ABI generated from commit `2058a57` (`PolicyRef(owner, policyHash)` argument,
   scheme id `0x47500002`). The fee rule (`floor(gross * 25 / 10000)`) is mirrored, not read from the chain.
 - **S7. Policy record format** `ghostpay-policy-record` v1 (canonical JSON, see `vectors/client-v1.json`) is GhostPay-specific. It holds no
-  secrets but links destination and meta-address. It is the client-side recovery artefact of ADR-0020 (no contract change).
+  secrets but links destination and meta-address. It is the client-side recovery artefact of ADR-0023 (no contract change).
 - **S8. `windowHeadroom` is a planning bound, not a reservation**: consumption happens at `executeWithdraw`, so callers pass the earliest
   execution time and subtract other pending requests of the token. A thief with the owner key can consume headroom first.
 
