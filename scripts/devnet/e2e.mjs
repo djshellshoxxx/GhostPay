@@ -182,18 +182,27 @@ step('scan', `announcements=${scanned.announcements.length} matched=${mine.lengt
     claim: { stealthAddress: getAddress(a.stealthAddress), announcement: a, metadata, viaRouter: a.caller.toLowerCase() === manifest.router.toLowerCase() },
     consumedTransfers,
   });
+  let received = 0;
   for (const m of mine) {
     const meta = parseMetadata(m.a.metadata);
     const p = paid.find((x) => getAddress(x.stealth) === getAddress(m.a.stealthAddress));
     assert.ok(p, 'every match corresponds to a payment this run made');
     assert.equal(meta.netAmount, p.split.net, 'announced net equals the router split');
     const r = await verify(m.a, meta);
-    assert.equal(r.status, 'received', `receipt for ${p.id}: ${r.reason ?? ''}`);
-    // A claim that inflates the amount must not verify against the same on-chain transfer.
-    const forged = await verify(m.a, { ...meta, netAmount: meta.netAmount + 1n }, new Set());
-    assert.notEqual(forged.status, 'received', `forged amount for ${p.id} must not verify`);
+    if (meta.kind === 'native') {
+      assert.equal(r.status, 'received', `receipt for ${p.id}: ${r.reason ?? ''}`);
+      received++;
+      // A claim that inflates the amount must not verify against the same on-chain payment.
+      const forged = await verify(m.a, { ...meta, netAmount: meta.netAmount + 1n }, new Set());
+      assert.notEqual(forged.status, 'received', `forged amount for ${p.id} must not verify`);
+    } else {
+      // Fail closed: local devnet mock tokens are not in the verified token registry, so their claims
+      // stay unverified. ERC-20 receipt proof needs a verified registry entry for the chosen network.
+      assert.equal(r.status, 'unverified-claim', `${p.id} on an unregistered token must stay unverified`);
+      assert.match(r.reason ?? '', /unsupported asset/);
+    }
   }
-  step('receipt', `all ${mine.length} matches traced on-chain as received; inflated-amount claims refused`);
+  step('receipt', `${received} native payment(s) traced on-chain as received, inflated claim refused; ${mine.length - received} unregistered-token claims stay unverified (fail closed)`);
 }
 
 // ---- direct sweeps (stealth key signs its own tx) ----
