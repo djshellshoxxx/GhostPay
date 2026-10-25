@@ -6,7 +6,7 @@ import { QrFrame } from '../components/QrFrame';
 import { userMessage } from '../lib/errors';
 import { MAX_KEYSTORE_BYTES, passphraseProblem, validateKeystoreEnvelope } from '../lib/keystore';
 import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, importKeystore, importSession } from '../lib/session';
-import { deleteEncryptedVault, readEncryptedVault, saveEncryptedVault, unlockEncryptedVault } from '../lib/keyVault';
+import { deleteEncryptedVault, readEncryptedVault, saveEncryptedVault, unlockEncryptedVault, VaultChangedError, VaultSavedForPreviousKeysError } from '../lib/keyVault';
 import { useApp } from '../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 
@@ -32,7 +32,10 @@ export function SellerKeys(): ReactNode {
   const [vaultSavePass2, setVaultSavePass2] = useState('');
   const [vaultUnlockPass, setVaultUnlockPass] = useState('');
   const [vaultBusy, setVaultBusy] = useState(false);
-  const [confirmVaultDelete, setConfirmVaultDelete] = useState(false);
+  // The exact ciphertext shown when deletion was requested; Confirm deletes only this record. Never plaintext keys.
+  const [deleteExpected, setDeleteExpected] = useState<string | undefined>(undefined);
+  const confirmVaultDelete = deleteExpected !== undefined;
+  const saveOperation = useRef(0);
 
   useEffect(() => {
     let live = true;
@@ -146,17 +149,25 @@ export function SellerKeys(): ReactNode {
     const problem = passphraseProblem(vaultSavePass);
     if (problem !== undefined) { setMessage({ kind: 'error', text: problem }); return; }
     if (vaultSavePass !== vaultSavePass2) { setMessage({ kind: 'error', text: t('sellerKeys.passphrasesDiffer') }); return; }
+    const id = ++saveOperation.current;
+    const unchanged = captureSessionVersionGuard();
+    // Only the initiating save may report; it may claim success only for the keys that were loaded when it started.
+    const current = (): boolean => mounted.current && saveOperation.current === id;
     setVaultBusy(true);
     void saveEncryptedVault(vaultSavePass).then(
       () => {
+        if (!current()) return;
         setVaultSavePass('');
         setVaultSavePass2('');
         setVaultState('saved');
         setVaultBusy(false);
+        try { unchanged(); } catch { fail(new VaultSavedForPreviousKeysError()); return; }
         done(t('sellerKeys.vaultSaved'));
       },
       (err: unknown) => {
+        if (!current()) return;
         setVaultBusy(false);
+        if (err instanceof VaultSavedForPreviousKeysError) { setVaultSavePass(''); setVaultSavePass2(''); setVaultState('saved'); }
         fail(err);
       },
     );
@@ -183,17 +194,41 @@ export function SellerKeys(): ReactNode {
     );
   };
 
+  const refreshVault = (): void => {
+    void readEncryptedVault().then(
+      (saved) => { if (mounted.current) setVaultState(saved === undefined ? 'empty' : 'saved'); },
+      () => { if (mounted.current) setVaultState('unavailable'); },
+    );
+  };
+
+  const onRequestDeleteVault = (): void => {
+    void readEncryptedVault().then(
+      (saved) => {
+        if (!mounted.current) return;
+        if (saved === undefined) { setVaultState('empty'); return; }
+        setDeleteExpected(saved);
+      },
+      (err: unknown) => { if (mounted.current) fail(err); },
+    );
+  };
+
   const onDeleteVault = (): void => {
+    const expected = deleteExpected;
+    if (expected === undefined) return;
     setVaultBusy(true);
-    void deleteEncryptedVault().then(
+    void deleteEncryptedVault(expected).then(
       () => {
+        if (!mounted.current) return;
+        setDeleteExpected(undefined);
         setVaultState('empty');
-        setConfirmVaultDelete(false);
         setVaultBusy(false);
+        refreshVault();
         done(t('sellerKeys.vaultDeleted'));
       },
       (err: unknown) => {
+        if (!mounted.current) return;
         setVaultBusy(false);
+        if (err instanceof VaultChangedError) { setDeleteExpected(undefined); refreshVault(); }
         fail(err);
       },
     );
@@ -223,12 +258,12 @@ export function SellerKeys(): ReactNode {
             {vaultBusy && operation.current !== null && <button type="button" className="btn" onClick={cancelImport}>{t('sellerKeys.cancelUnlock')}</button>}
           </form>
           {!confirmVaultDelete ? (
-            <button type="button" className="btn btn-danger" disabled={vaultBusy} onClick={() => { setConfirmVaultDelete(true); }}>{t('sellerKeys.deleteVault')}</button>
+            <button type="button" className="btn btn-danger" disabled={vaultBusy} onClick={onRequestDeleteVault}>{t('sellerKeys.deleteVault')}</button>
           ) : (
             <div>
               <p>{t('sellerKeys.deleteExplain')}</p>
               <button type="button" className="btn btn-danger" disabled={vaultBusy} onClick={onDeleteVault}>{t('sellerKeys.confirmDelete')}</button>{' '}
-              <button type="button" className="btn" onClick={() => { setConfirmVaultDelete(false); }}>{t('sellerKeys.cancel')}</button>
+              <button type="button" className="btn" onClick={() => { setDeleteExpected(undefined); }}>{t('sellerKeys.cancel')}</button>
             </div>
           )}
         </section>
