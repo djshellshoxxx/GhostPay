@@ -54,6 +54,11 @@ export interface ScanBlocksParams {
   readonly verifier?: OutputVerifier;
   /** Persisted x-only keys already returned; repeated keys are flagged and the set is updated. */
   readonly seenKeys?: Set<string>;
+  /**
+   * Called once per block after all of that block's outputs were yielded (also for blocks with none), so a
+   * caller can persist progress. Not called for a block interrupted by abort.
+   */
+  readonly onBlock?: (block: { readonly height: number; readonly blockHash: string }) => void | Promise<void>;
 }
 
 /** Highest block height accepted (BlindBit and the request side use u32). */
@@ -168,6 +173,8 @@ export async function* scanBlocks(p: ScanBlocksParams): AsyncGenerator<ReceivedO
         yield { ...r, verified: true };
       }
     }
+    if (isAborted(signal)) return;
+    if (p.onBlock !== undefined) await p.onBlock({ height, blockHash: tw.blockHash });
   }
 }
 
