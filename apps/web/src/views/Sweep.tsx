@@ -7,11 +7,11 @@ import { ManifestBanner } from '../components/ManifestBanner';
 import { verifyManifestForFlow } from '../lib/manifest';
 import { UserFacingError, userMessage } from '../lib/errors';
 import { formatUnits } from '../lib/format';
-import { checkDestination, directSweep, getSweepQuote, readBalance, relayedSweep, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
+import { checkDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileDirectSweep, relayedSweep, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
 import { authorizeEncryptedVault, readEncryptedVault } from '../lib/keyVault';
 import { captureSessionGuard } from '../lib/session';
 import { useServices } from '../lib/services';
-import { useApp } from '../state';
+import { getSweepAttempt, recordSweepAttempt, useApp, useSweepAttempt } from '../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 
 export function Sweep(): ReactNode {
@@ -34,6 +34,11 @@ export function Sweep(): ReactNode {
   const [vaultPhase, setVaultPhase] = useState<'idle' | 'authorizing' | 'action'>('idle');
   const operation = useRef(0);
   const authEpoch = useRef(0);
+  // GP-SWEEP-OUTCOME-01: app-session record of the last direct sweep from this address; survives navigation.
+  const attempt = useSweepAttempt(chainId, sel?.match.stealthAddress);
+  const signingLocked = attempt !== undefined && isUnresolvedAttempt(attempt);
+  const [checking, setChecking] = useState(false);
+  const [checkNote, setCheckNote] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     let live = true;
@@ -165,6 +170,7 @@ export function Sweep(): ReactNode {
   };
 
   const onDirect = (): void => {
+    if (signingLocked) return;
     void guard(async (assertCurrent) => {
       const rpc = await app.getRpc(chainId);
       assertCurrent();
@@ -172,11 +178,44 @@ export function Sweep(): ReactNode {
       assertCurrent();
       if (loaded === undefined || rpc === undefined || balance === undefined) throw new Error('state');
       const dest = checkDestination(destination, target.owner, loaded);
-      const res = await directSweep({ target, manifest: loaded, destination: dest, amount: balance, rpc });
-      setHash(res.hash);
+      assertNoUnresolvedAttempt();
+      let res: Awaited<ReturnType<typeof directSweep>>;
+      try {
+        res = await directSweep({ target, manifest: loaded, destination: dest, amount: balance, rpc });
+      } catch (e) {
+        // The bytes may already be on the network: keep the public descriptor so signing stays disarmed.
+        if (e instanceof DirectSweepOutcomeUnknownError) recordSweepAttempt(e.attempt);
+        throw e;
+      }
+      recordSweepAttempt(res.attempt);
       app.announce(t('sweep.announceBroadcast'));
       return true;
     });
+  };
+
+  const assertNoUnresolvedAttempt = (): void => {
+    const current = getSweepAttempt(chainId, target.owner);
+    if (current !== undefined && isUnresolvedAttempt(current)) {
+      throw new UserFacingError('A sweep from this address may still be pending. Check its status before signing anything new.');
+    }
+  };
+
+  const onCheckStatus = (): void => {
+    if (attempt === undefined) return;
+    setChecking(true);
+    setCheckNote(undefined);
+    void (async () => {
+      try {
+        const rpc = await app.getRpc(attempt.chainId);
+        const next = rpc === undefined ? attempt : await reconcileDirectSweep(rpc, attempt);
+        if (next.status !== attempt.status) recordSweepAttempt(next);
+        else setCheckNote('No receipt found for this hash yet. That does not mean it was not sent; check again later.');
+      } catch {
+        setCheckNote('No receipt found for this hash yet. That does not mean it was not sent; check again later.');
+      } finally {
+        setChecking(false);
+      }
+    })();
   };
 
   const cancelVaultCheck = (): void => {
@@ -251,18 +290,36 @@ export function Sweep(): ReactNode {
               <div className="panel">
                 <p>{t('sweep.relayerFee', { amount: `${formatUnits(quote.quote.fee, decimals)} ${symbol}` })} <Mono>{quote.quote.feeTo}</Mono></p>
                 <p>{t('sweep.youReceive', { amount: `${formatUnits(quote.net, decimals)} ${symbol}` })}</p>
-                <button type="button" className="btn btn-primary" onClick={onRelay} disabled={busy}>{t('sweep.signRelayer')}</button>
+                <button type="button" className="btn btn-primary" onClick={onRelay} disabled={busy || signingLocked}>{t('sweep.signRelayer')}</button>
               </div>
             )}
           </>
         ) : (
-          <button type="button" className="btn btn-primary" onClick={onDirect} disabled={busy || balance === undefined || balance === 0n}>{t('sweep.signDirect')}</button>
+          <button type="button" className="btn btn-primary" onClick={onDirect} disabled={busy || signingLocked || balance === undefined || balance === 0n}>{t('sweep.signDirect')}</button>
         )}
       </div>
 
       {busy && <p role="status">{t('sweep.working')}</p>}
       {busy && vaultPhase === 'authorizing' && <button type="button" className="btn" onClick={cancelVaultCheck}>{t('sweep.cancelVault')}</button>}
       {error !== undefined && <Notice kind="error">{error}</Notice>}
+      {attempt !== undefined && (
+        <Notice
+          kind={attempt.status === 'unknown-after-handoff' || attempt.status === 'reverted' ? 'warn' : 'ok'}
+          title={attempt.status === 'submitted' ? t('sweep.submitted') : attempt.status === 'unknown-after-handoff' ? 'Outcome unknown' : attempt.status === 'included' ? 'Included on chain' : 'Reverted on chain'}
+        >
+          {attempt.status === 'unknown-after-handoff' && <>The signed transaction was handed to your RPC but its result is unknown. It may already be on the network, so signing a new one is disabled.<br /></>}
+          {t('sweep.txHash')} <Mono>{attempt.expectedHash}</Mono> <CopyButton text={attempt.expectedHash} label={t('sweep.copyHash')} />
+          <br />
+          {t('sweep.checkExplorer')}
+          {isUnresolvedAttempt(attempt) && (
+            <>
+              <br />
+              <button type="button" className="btn" onClick={onCheckStatus} disabled={checking}>Check status</button>
+            </>
+          )}
+          {checkNote !== undefined && <><br />{checkNote}</>}
+        </Notice>
+      )}
       {hash !== undefined && (
         <Notice kind="ok" title={t('sweep.submitted')}>
           {t('sweep.txHash')} <Mono>{hash}</Mono> <CopyButton text={hash} label={t('sweep.copyHash')} />
