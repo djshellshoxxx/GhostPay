@@ -1,5 +1,5 @@
 import { ManifestBanner } from '../components/ManifestBanner';
-import { FEEDS } from '@ghostpay/chain-adapters';
+import { findChain, findToken, isQuoteAvailable } from '@ghostpay/chain-adapters';
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { CopyButton, Field, Notice } from '../components/Common';
 import { useManifest } from '../components/Disclosure';
@@ -9,8 +9,11 @@ import { buildInvoiceLink, tokenChoices, type CreatedInvoice, type InvoiceForm, 
 import { useServices } from '../lib/services';
 import { useApp } from '../state';
 
-/** Fiat pricing needs a verified Chainlink feed (G-03). Hard-disabled until FEEDS is populated. */
-const FIAT_QUOTE_AVAILABLE = FEEDS.length > 0;
+/** Fiat pricing needs a verified Chainlink feed for the exact chain, token and currency (G-03); fail closed otherwise. */
+function fiatQuoteAvailable(chainId: number, token: string, currency: string): boolean {
+  const symbol = token === 'native' ? findChain(chainId)?.nativeSymbol : findToken(chainId, token)?.symbol;
+  return symbol !== undefined && isQuoteAvailable(chainId, symbol, currency.trim().toUpperCase());
+}
 
 const EMPTY_ITEM: LineItemInput = { description: '', quantity: '1', unitPrice: '' };
 
@@ -50,6 +53,9 @@ export function CreateInvoice(): ReactNode {
   }
 
   const choices = tokenChoices(chainId);
+  const FIAT_QUOTE_AVAILABLE = fiatQuoteAvailable(chainId, token, currency);
+  // A selection that lost its feed (chain, token or currency changed) never keeps fiat mode.
+  const effectiveAmountMode = FIAT_QUOTE_AVAILABLE ? amountMode : 'fixed_token';
 
   const onSubmit = (e: FormEvent): void => {
     e.preventDefault();
@@ -65,7 +71,7 @@ export function CreateInvoice(): ReactNode {
       lineItems: items,
       taxRatePercent: taxRate,
       feePolicy,
-      amountMode,
+      amountMode: effectiveAmountMode,
       tokenAmount,
       expiryHours,
       quoteTtlMinutes: quoteMinutes,
@@ -137,7 +143,7 @@ export function CreateInvoice(): ReactNode {
           <legend>Amount</legend>
           <Field label="Pricing">
             {(id) => (
-              <select id={id} value={amountMode} onChange={(e) => { setAmountMode(FIAT_QUOTE_AVAILABLE && e.target.value === 'fiat_quote' ? 'fiat_quote' : 'fixed_token'); }}>
+              <select id={id} value={effectiveAmountMode} onChange={(e) => { setAmountMode(FIAT_QUOTE_AVAILABLE && e.target.value === 'fiat_quote' ? 'fiat_quote' : 'fixed_token'); }}>
                 <option value="fixed_token">Fixed token amount</option>
                 <option value="fiat_quote" disabled={!FIAT_QUOTE_AVAILABLE}>
                   {FIAT_QUOTE_AVAILABLE ? 'Fiat price, converted at payment time' : 'Fiat price (unavailable: no verified price feed)'}
@@ -145,13 +151,13 @@ export function CreateInvoice(): ReactNode {
               </select>
             )}
           </Field>
-          {amountMode === 'fixed_token' ? (
+          {effectiveAmountMode === 'fixed_token' ? (
             <Field label="Token amount" hint="Decimal amount in the token's units, for example 25.50.">
               {(id, d) => <input id={id} aria-describedby={d} inputMode="decimal" value={tokenAmount} onChange={(e) => { setTokenAmount(e.target.value); }} />}
             </Field>
           ) : (
             <Notice kind="info">
-              Payers convert the fiat total with a price feed at payment time. No feed is configured in this release, so such invoices cannot be paid from this app yet.
+              Payers convert the fiat total with a price feed at payment time. The payer's app reads the verified Chainlink feed for this chain and fails closed if the price is stale or unavailable.
             </Notice>
           )}
           <Field label="Currency (ISO code)">{(id) => <input id={id} maxLength={3} value={currency} onChange={(e) => { setCurrency(e.target.value); }} />}</Field>

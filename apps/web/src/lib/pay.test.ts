@@ -172,7 +172,7 @@ describe('createPayContext and amounts', () => {
   it('converts fiat with a fresh feed, rounding up for the payer', async () => {
     const { parsed } = await makeParsed({ amountMode: 'fiat_quote' });
     const review = reviewInvoice(parsed, NOW, LOADED(84532));
-    const feed: FeedConfig = { chainId: 84532, address: '0x7777777777777777777777777777777777777777', base: 'USDC', quote: 'USD' };
+    const feed: FeedConfig = { chainId: 84532, address: '0x7777777777777777777777777777777777777777', base: 'USDC', quote: 'USD', sources: [{ url: 'https://example.test/mock-feed', retrieved: '2026-10-25' }] };
     const rpc = mockRpc(84532, (method, params) => {
       expect(method).toBe('eth_call');
       const data = (params[0] as { data: string }).data;
