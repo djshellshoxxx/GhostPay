@@ -24,6 +24,8 @@ import {
   type PayContext,
 } from '../lib/pay';
 import { verifyManifestForFlow } from '../lib/manifest';
+import { PaymentProofQr } from '../components/PaymentRequestQr';
+import { PrintBillButton } from '../components/PrintableBill';
 import { PermitRejectedError, PostBroadcastError, buildReceipt, classifyPayerPermit, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, type ApprovalPlan, type Runtime, type SubmitResult } from '../lib/payExec';
 import { useServices } from '../lib/services';
 import { connectWallet, walletWarnings, type WalletInfo, type WalletSession } from '../lib/wallet';
@@ -920,6 +922,14 @@ export function Pay(): ReactNode {
         </p>
       )}
 
+      <PrintBillButton
+        invoice={inv}
+        link={fragment === undefined || fragment === '' ? undefined : `${services.baseUrl()}${fragment}`}
+        passphraseProtected={parsed.passphraseProtected}
+        chainName={review.chain?.name ?? `Chain ${String(inv.chainId)}`}
+        tokenLabel={inv.token === 'native' ? (symbol === '' ? 'Native coin' : symbol) : symbol === '' ? inv.token : symbol}
+      />
+
       {ctx !== undefined && (
         <dl className="details amounts">
           <dt>You pay (gross)</dt>
@@ -1120,6 +1130,7 @@ export function Pay(): ReactNode {
               Download local receipt
             </button>
           </div>
+          <PaymentProofQr receipt={buildReceipt(ctx, built, result, new Date(services.nowMs()))} />
         </div>
       )}
 
