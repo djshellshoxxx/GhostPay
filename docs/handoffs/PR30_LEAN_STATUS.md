@@ -1,6 +1,6 @@
 # PR #30 lean-core status (session 01LUsecE)
 
-Updated 2026-10-25 17:45 UTC. Head `c65eebb` (CI pending). Branch `claude/cool-albattani-xopr89`, draft PR #30 -> `main`.
+Updated 2026-10-25 18:05 UTC. All six v29 lean findings fixed and merged; CI pending on the new head. Branch `claude/cool-albattani-xopr89`, draft PR #30 -> `main`.
 
 ## Verified heads
 
@@ -27,7 +27,7 @@ is preserved as `later-preserved`; it is not expanded further and not deleted.
 | Vault save commits after session revocation | a6a2a1c | **Fixed** `a8bc764` (merged): guard checked inside the IndexedDB transaction; post-commit change reported, not rolled back. keyVault.test:174 and SellerKeys.test:288 failed before |
 | Stale delete confirmation removes replacement vault | a6a2a1c | **Fixed** `fa3bcff` (merged): compare-and-delete in one readwrite transaction; stale confirmation shows "vault changed". Chromium two-tab script `apps/web/scripts/test-seller-vault-idb.mjs` passes (not wired into package.json) |
 | Scan replay-tail anchor from primary only | a6a2a1c | **Fixed** `ba0fd59` (merged): two-provider mode reads the anchor from both providers plus a second primary read, checks chain/height; any failure raises a discrepancy, withholds the checkpoint and stops; Cancel writes nothing. Oracle failed before (fabricated anchor saved, resumed run invalidated a canonical vault record); 5/6 matrix tests failed before |
-| Direct sweep loses expected hash / re-arms signing after uncertain broadcast | edb0051 | Open, re-confirmed; worker `lean-sweep` running |
+| Direct sweep loses expected hash / re-arms signing after uncertain broadcast | edb0051 | **Fixed** `504018c` (merged): failed or wrong-hash broadcast returns an `unknown` outcome carrying the expected hash and nonce; signing for that address stays blocked across navigation until a read-only status check resolves it. 5 tests failed before (old code kept no outcome, showed a generic RPC_FAILURE). Limit: a page reload clears the guard (no durable persistence) |
 
 ## PR #31 reuse
 
@@ -45,9 +45,8 @@ Backup branches `backup/pr30-before-consolidation-20261025`, `backup/pr31-before
 
 ## Next steps
 
-1. Merge `lean-expiry` and `lean-vault` with their failing-before evidence; run scoped tests, web typecheck/build; push; wait
-   for uncancelled CI.
-2. Scan replay-tail anchor corroboration (reproduce-first).
-3. Direct-sweep unknown-after-handoff descriptor (reproduce-first).
-4. Nightly reproducibility/mythril fixes.
-5. Adversarial review of all fund-safety deltas on the frozen head.
+1. Wait for an uncancelled CI + Integration run on the head carrying all six fixes.
+2. Nightly reproducibility/mythril fixes without weakening the SBOM or Mythril gates.
+3. Adversarial review of all fund-safety deltas on the frozen head.
+4. Durable (reload-surviving) sweep attempt record needs its own reviewed contract.
+5. Localize new safety strings (currently English only).
