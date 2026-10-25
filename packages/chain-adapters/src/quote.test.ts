@@ -61,11 +61,8 @@ describe('readPrice', () => {
   it('registry holds only sourced, checksummed, testnet entries; mainnets and unsourced feeds stay absent', () => {
     for (const f of FEEDS) {
       expect(getAddress(f.address)).toBe(f.address);
-      expect(f.sources.length).toBeGreaterThan(0);
-      for (const s of f.sources) {
-        expect(s.url).toMatch(/^https:\/\//);
-        expect(s.retrieved).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-      }
+      expect(f.sourceRef).toMatch(/^docs\/chains\/SOURCES-\d{4}-\d{2}-\d{2}\.md \(retrieved \d{4}-\d{2}-\d{2}\)$/);
+      expect(f.sourceRef).not.toMatch(/https?:/);
       expect(findChain(f.chainId)?.testnet).toBe(true);
       expect(f.quote).toBe('USD');
     }

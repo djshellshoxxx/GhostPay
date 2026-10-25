@@ -174,7 +174,7 @@ describe('createPayContext and amounts', () => {
   it('converts fiat with a fresh feed, rounding up for the payer', async () => {
     const { parsed } = await makeParsed({ amountMode: 'fiat_quote' });
     const review = reviewInvoice(parsed, NOW, LOADED(84532));
-    const feed: FeedConfig = { chainId: 84532, address: '0x7777777777777777777777777777777777777777', base: 'USDC', quote: 'USD', sources: [{ url: 'https://example.test/mock-feed', retrieved: '2026-10-25' }] };
+    const feed: FeedConfig = { chainId: 84532, address: '0x7777777777777777777777777777777777777777', base: 'USDC', quote: 'USD', sourceRef: 'docs/chains/SOURCES-2026-10-25.md (retrieved 2026-10-25)' };
     const rpc = mockRpc(84532, (method, params) => {
       expect(method).toBe('eth_call');
       const data = (params[0] as { data: string }).data;
@@ -266,7 +266,7 @@ describe('buildFinal and the preview-equals-calldata gate', () => {
   });
 });
 
-describe('seller bufferPolicy (invoice v2, ADR-0023)', () => {
+describe('seller bufferPolicy (invoice v2, ADR-0024)', () => {
   const gwei = mockRpc(84532, () => '0x3b9aca00'); // quote = 0.00024 ETH = 240_000_000_000_000 wei
   const QUOTED = 240_000_000_000_000n;
   async function v2ctx(policy: { accepted: boolean; maxWei: string; minWei: string }): Promise<PayContext> {

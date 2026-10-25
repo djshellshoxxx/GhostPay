@@ -185,7 +185,7 @@ export interface BufferQuote {
   readonly expiresAt: number;
   /** `simulated`: gasLimit covers an `eth_estimateGas` of the token transfer; `default`: table value only. */
   readonly gasSource: 'simulated' | 'default';
-  /** Set when a v2 invoice's `bufferPolicy.minWei` raised the estimate (ADR-0023); shown to the payer. */
+  /** Set when a v2 invoice's `bufferPolicy.minWei` raised the estimate (ADR-0024); shown to the payer. */
   readonly raisedToSellerMinimum?: boolean;
 }
 
@@ -195,7 +195,7 @@ export function bufferOffered(invoice: Invoice): boolean {
   return invoice.bufferPolicy === undefined || invoice.bufferPolicy.accepted;
 }
 
-/** Checks a buffer amount against the app cap and, for v2 invoices, the seller's policy (ADR-0023). */
+/** Checks a buffer amount against the app cap and, for v2 invoices, the seller's policy (ADR-0024). */
 function assertBufferWithinPolicy(bufferWei: bigint, invoice: Invoice): void {
   const p = invoice.bufferPolicy;
   if (p !== undefined && !p.accepted) throw new UserFacingError('The seller does not accept a gas buffer for this invoice. Pay without one.');
@@ -206,7 +206,7 @@ function assertBufferWithinPolicy(bufferWei: bigint, invoice: Invoice): void {
 }
 
 /**
- * Applies a v2 invoice's seller `bufferPolicy` to a fresh quote (ADR-0023): declined -> refused; an estimate below
+ * Applies a v2 invoice's seller `bufferPolicy` to a fresh quote (ADR-0024): declined -> refused; an estimate below
  * `minWei` is raised to `minWei` (flagged so the UI shows it); anything above `min(maxWei, app cap)` is refused, as is a
  * seller floor above the app cap. v1 invoices return the quote unchanged.
  */

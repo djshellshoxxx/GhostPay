@@ -41,7 +41,7 @@ export interface Tax {
 }
 
 /**
- * Seller's gas-buffer policy (spec 13, ADR-0023). Only in `v: 2` invoices. `refund` is fixed at `'none'`: a buffer is
+ * Seller's gas-buffer policy (spec 13, ADR-0024). Only in `v: 2` invoices. `refund` is fixed at `'none'`: a buffer is
  * never refunded (no silent refunds). Declined: `accepted: false` with both bounds `"0"`. Accepted: token invoices only,
  * `1 <= minWei <= maxWei <= 2^256-1` (wei, decimal strings); `minWei` is the seller's dust floor.
  */
@@ -52,7 +52,7 @@ export interface BufferPolicy {
   readonly refund: 'none';
 }
 
-/** GhostPay invoice (ADR-0002, ADR-0005, DEVELOPER_SPECIFICATION Module C). `v: 2` adds `bufferPolicy` (ADR-0023). */
+/** GhostPay invoice (ADR-0002, ADR-0005, DEVELOPER_SPECIFICATION Module C). `v: 2` adds `bufferPolicy` (ADR-0024). */
 export interface Invoice {
   readonly v: 1 | 2;
   readonly chainId: number;
@@ -340,7 +340,7 @@ function wei(v: unknown, path: string): bigint {
   return n;
 }
 
-/** Validates a v2 `bufferPolicy` (ADR-0023); returns a fresh canonical copy. */
+/** Validates a v2 `bufferPolicy` (ADR-0024); returns a fresh canonical copy. */
 function validateBufferPolicy(v: unknown, token: string): BufferPolicy {
   const keys = ['accepted', 'maxWei', 'minWei', 'refund'];
   const p = record(v, 'bufferPolicy', keys, keys);

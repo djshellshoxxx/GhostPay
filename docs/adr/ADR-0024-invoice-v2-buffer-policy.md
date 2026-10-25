@@ -1,4 +1,4 @@
-# ADR-0023: Invoice schema v2 with a seller gas-buffer policy
+# ADR-0024: Invoice schema v2 with a seller gas-buffer policy
 
 Status: proposed (pre-audit)
 

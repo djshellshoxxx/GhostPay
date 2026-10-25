@@ -27,8 +27,11 @@ export interface FeedConfig {
   readonly base: string;
   /** Quote currency of the answer, e.g. `USD`. */
   readonly quote: string;
-  /** Fetched sources for the address (URL and retrieval date, `YYYY-MM-DD`). Never empty. */
-  readonly sources: readonly { readonly url: string; readonly retrieved: string }[];
+  /**
+   * Where the address was sourced: a `docs/chains/SOURCES-*.md` path with retrieval date. Never empty. URLs stay in
+   * comments and that file so they are not shipped in the web bundle (the bundle egress scan forbids them).
+   */
+  readonly sourceRef: string;
   /**
    * Heartbeat in seconds from a fetched Chainlink source. ABSENT when no source could be fetched; callers
    * must then rely on the invoice quote TTL only (see docs/chains/SOURCES-2026-10-25.md).
@@ -47,11 +50,11 @@ export const FEEDS: readonly FeedConfig[] = Object.freeze([
     address: '0x694AA1769357215DE4FAC081bf1f309aDC325306',
     base: 'ETH',
     quote: 'USD',
-    sources: Object.freeze([
-      { url: 'https://github.com/smartcontractkit/hardhat-starter-kit/blob/main/contracts/PriceConsumerV3.sol', retrieved: '2026-10-25' },
-      { url: 'https://github.com/smartcontractkit/documentation/blob/main/public/samples/DataFeeds/HistoricalDataConsumer.sol', retrieved: '2026-10-25' },
-      { url: 'https://github.com/smartcontractkit/chainlink-agent-skills/blob/main/chainlink-data-feeds-skill/references/reading-price-feeds.md', retrieved: '2026-10-25' },
-    ]),
+    // Sources (retrieved 2026-10-25):
+    //   github.com/smartcontractkit/hardhat-starter-kit/blob/main/contracts/PriceConsumerV3.sol
+    //   github.com/smartcontractkit/documentation/blob/main/public/samples/DataFeeds/HistoricalDataConsumer.sol
+    //   github.com/smartcontractkit/chainlink-agent-skills/blob/main/chainlink-data-feeds-skill/references/reading-price-feeds.md
+    sourceRef: 'docs/chains/SOURCES-2026-10-25.md (retrieved 2026-10-25)',
   },
 ]);
 

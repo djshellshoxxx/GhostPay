@@ -573,7 +573,7 @@ describe('metadata sanity', () => {
   });
 });
 
-describe('v2 bufferPolicy (spec 13, ADR-0023)', () => {
+describe('v2 bufferPolicy (spec 13, ADR-0024)', () => {
   const POLICY = { accepted: true, maxWei: '10000000000000000', minWei: '100000000000000', refund: 'none' } as const;
   const v2 = sampleInvoice({ bufferPolicy: POLICY });
 
