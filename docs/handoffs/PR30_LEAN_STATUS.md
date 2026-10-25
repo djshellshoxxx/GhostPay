@@ -1,8 +1,11 @@
 # PR #30 lean-core status (session 01LUsecE)
 
-Updated 2026-10-25 18:05 UTC. All six v29 lean findings fixed and merged; CI pending on the new head. Branch `claude/cool-albattani-xopr89`, draft PR #30 -> `main`.
+Updated 2026-10-25 18:20 UTC. All six v29 lean findings and both review Lows fixed and merged; CI + Integration green on `643d1ed`. Branch `claude/cool-albattani-xopr89`, draft PR #30 -> `main`.
 
 ## Verified heads
+
+- PR #30 head `643d1ed` (all six v29 fixes, review fixes `dc7d306`/`58c3c4a`, Mythril pin, PR #31 e2e): CI run 40219475615
+  **success**, Integration run 40219475642 **success**. Uncancelled.
 
 - PR #30 head `c0b0ba6`: GitHub CI run 40178968128 **success** and Integration run 40178968082 **success** (first uncancelled
   run on this branch; earlier red `typescript`/`contracts` gates were cancelled-job aggregates from rapid pushes).
@@ -74,8 +77,8 @@ Backup branches `backup/pr30-before-consolidation-20261025`, `backup/pr31-before
 
 ## Next steps
 
-1. Wait for an uncancelled CI + Integration run on the head carrying all six fixes.
-2. Nightly reproducibility/mythril fixes without weakening the SBOM or Mythril gates.
-3. Adversarial review of all fund-safety deltas on the frozen head.
+1. Owner review of PR #30 (draft) for merge; Mythril pin takes effect on main after merge.
+2. Nightly `npm sbom` reproducibility fix (options above) without weakening the gate.
+3. Policy-account send guard (experimental, outside lean scope).
 4. Durable (reload-surviving) sweep attempt record needs its own reviewed contract.
 5. Localize new safety strings (currently English only).
