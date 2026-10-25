@@ -277,6 +277,17 @@ export async function assertBufferStillSufficient(built: BuiltPayment, rpc: Pick
   }
 }
 
+/**
+ * Spec 13 TTL at send: a prepared buffer quote is valid only until its `expiresAt`. The calldata is never rewritten;
+ * the payer must prepare again. Callers pass a fresh clock before and after every await.
+ */
+export function assertPreparedBufferFresh(built: BuiltPayment, nowSeconds: number): void {
+  const quote = builtBufferQuotes.get(built);
+  if (quote !== undefined && nowSeconds >= quote.expiresAt) {
+    throw new UserFacingError('The gas buffer quote expired before sending. Nothing was sent. Prepare the payment again.');
+  }
+}
+
 export interface FinalBuildOptions {
   readonly nowSeconds: number;
   readonly deadlineSeconds?: number;

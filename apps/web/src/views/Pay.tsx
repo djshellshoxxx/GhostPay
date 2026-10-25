@@ -19,6 +19,7 @@ import {
   decodeForDisplay,
   quoteBuffer,
   assertInvoiceStillPayable,
+  assertPreparedBufferFresh,
   reviewInvoice,
   type BufferQuote,
   type SweepSimulation,
@@ -687,6 +688,7 @@ export function Pay(): ReactNode {
         const preSignGuard = (): void => {
           guard();
           assertInvoiceStillPayable(ctx.review.invoice, rt.nowSeconds());
+          assertPreparedBufferFresh(built, rt.nowSeconds());
         };
         preSignGuard();
         let actualAllowance = granted;

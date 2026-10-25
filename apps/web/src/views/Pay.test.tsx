@@ -727,6 +727,13 @@ describe('Pay: validity is rechecked before the initial approval', () => {
     await screen.findByText(/invoice has expired/);
     expect(t.wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
   });
+  it('P2: a buffer quote past its 60 s TTL asks the wallet for nothing, not even the approval', async () => {
+    const t = await toPreparedBuffer(() => NOW);
+    t.setNow(NOW + 61);
+    await t.user.click(approveButton());
+    await screen.findByText(/gas buffer quote expired/);
+    expect(t.wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
+  });
 });
 
 describe('Pay: manifest read-back and post-broadcast safety (WEB-APP-01, WEB-APP-02)', () => {

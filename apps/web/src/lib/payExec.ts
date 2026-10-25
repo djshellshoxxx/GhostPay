@@ -8,6 +8,7 @@ import {
   assertApproveTx,
   assertInvoiceStillPayable,
   assertPermitSigner,
+  assertPreparedBufferFresh,
   assertBufferStillSufficient,
   assertReadyToSend,
   buildApproveTx,
@@ -254,6 +255,7 @@ export async function sendPayment(session: WalletSession, ctx: PayContext, built
     assertCurrent?.();
     assertReadyToSend(built, ctx);
     assertInvoiceStillPayable(ctx.review.invoice, rt.nowSeconds());
+    assertPreparedBufferFresh(built, rt.nowSeconds());
     if (BigInt(rt.nowSeconds()) >= built.preview.deadline) throw new UserFacingError('The prepared payment has expired. Review again.');
   };
   guard();

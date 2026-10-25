@@ -627,3 +627,63 @@ describe('final payment guard rechecks invoice and fiat quote validity (P1)', ()
     expect(wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
   });
 });
+
+describe('prepared gas buffer quote freshness at send (P2)', () => {
+  const quote: BufferQuote = {
+    bufferWei: 100_000n * 2_000_000_000n * 12n / 10n, maxFeePerGas: 2_000_000_000n, gasLimit: 100_000n, safetyBps: 2000n,
+    quotedAt: NOW, expiresAt: NOW + 60, gasSource: 'simulated',
+  };
+  let allowance = 0n;
+  const rpcFor = (wallet: MockWallet, onGas: () => void = () => undefined): MockRpc => chainSeeing(wallet, (m) => {
+    if (m === 'eth_gasPrice') { onGas(); return '0x3b9aca00'; }
+    if (m === 'eth_call') return `0x${allowance.toString(16).padStart(64, '0')}`;
+    return undefined;
+  });
+  const sends = (w: MockWallet): number => w.calls.filter((c) => c.method === 'eth_sendTransaction').length;
+
+  it.each([[NOW + 60, true], [NOW + 61, true], [NOW + 59, false]] as const)('send at %i with unchanged price: rejected=%s', async (at, rejected) => {
+    const { ctx, session, wallet } = await setup();
+    let now = NOW;
+    const rt: Runtime = { rpc: rpcFor(wallet), nowSeconds: () => now, sleep };
+    const built = await preparePayment(session, ctx, { usePermit: false, buffer: quote }, rt, noStatus);
+    now = at;
+    expect(BigInt(now)).toBeLessThan(built.preview.deadline);
+    const p = sendPayment(session, ctx, built, rt, noStatus);
+    if (rejected) {
+      await expect(p).rejects.toThrow(/gas buffer quote expired/);
+      expect(sends(wallet)).toBe(0);
+    } else {
+      await expect(p).resolves.toMatchObject({ hash: `0x${'9'.repeat(64)}` });
+      expect(sends(wallet)).toBe(1);
+    }
+  });
+
+  it('rejects when the TTL passes during the gas RPC or the final wallet net_version await', async () => {
+    const { ctx, session, wallet } = await setup();
+    let now = NOW;
+    const rt: Runtime = { rpc: rpcFor(wallet, () => { now = NOW + 60; }), nowSeconds: () => now, sleep };
+    const built = await preparePayment(session, ctx, { usePermit: false, buffer: quote }, rt, noStatus);
+    await expect(sendPayment(session, ctx, built, rt, noStatus)).rejects.toThrow(/gas buffer quote expired/);
+    now = NOW + 30;
+    const rt2: Runtime = { rpc: rpcFor(wallet), nowSeconds: () => now, sleep };
+    const s = delayedSession(session, wallet, (m) => { if (m === 'net_version') now = NOW + 60; });
+    await expect(sendPayment(s, ctx, built, rt2, noStatus)).rejects.toThrow(/gas buffer quote expired/);
+    expect(sends(wallet)).toBe(0);
+  });
+
+  it('an approval that completed after the TTL keeps its hash but never continues into the payment', async () => {
+    const { ctx, session, wallet } = await setup();
+    allowance = 0n;
+    let now = NOW;
+    const rt: Runtime = { rpc: rpcFor(wallet), nowSeconds: () => now, sleep };
+    const built = await preparePayment(session, ctx, { usePermit: false, buffer: quote }, rt, noStatus);
+    const plan = await planApproval(ctx, session, USDC_84532, rt);
+    const hashes: string[] = [];
+    const s = delayedSession(session, wallet, (m) => { if (m === 'eth_sendTransaction') { now = NOW + 61; allowance = plan.need; } });
+    await expect(grantApproval(s, ctx, plan, rt, noStatus, undefined, (h) => hashes.push(h))).resolves.toBe(plan.need);
+    expect(hashes).toEqual([`0x${'9'.repeat(64)}`]);
+    await expect(sendPayment(s, ctx, built, rt, noStatus)).rejects.toThrow(/gas buffer quote expired/);
+    expect(sends(wallet)).toBe(1);
+    allowance = 0n;
+  });
+});
