@@ -40,9 +40,21 @@ export interface Tax {
   readonly minorUnits: string;
 }
 
-/** GhostPay v1 invoice (ADR-0002, ADR-0005, DEVELOPER_SPECIFICATION Module C). */
+/**
+ * Seller's gas-buffer policy (spec 13, ADR-0023). Only in `v: 2` invoices. `refund` is fixed at `'none'`: a buffer is
+ * never refunded (no silent refunds). Declined: `accepted: false` with both bounds `"0"`. Accepted: token invoices only,
+ * `1 <= minWei <= maxWei <= 2^256-1` (wei, decimal strings); `minWei` is the seller's dust floor.
+ */
+export interface BufferPolicy {
+  readonly accepted: boolean;
+  readonly maxWei: string;
+  readonly minWei: string;
+  readonly refund: 'none';
+}
+
+/** GhostPay invoice (ADR-0002, ADR-0005, DEVELOPER_SPECIFICATION Module C). `v: 2` adds `bufferPolicy` (ADR-0023). */
 export interface Invoice {
-  readonly v: 1;
+  readonly v: 1 | 2;
   readonly chainId: number;
   readonly schemeId: 1;
   /** Canonical lowercase `st:eth:0x<spendPub33><viewPub33>`. */
@@ -62,9 +74,11 @@ export interface Invoice {
   readonly memo?: string;
   /** Invoice-signing public key: 33-byte compressed point as lowercase hex (66 chars). */
   readonly signer: string;
+  /** Present exactly when `v === 2`. */
+  readonly bufferPolicy?: BufferPolicy;
 }
 
-/** Fields the creator supplies; `v`, `schemeId` and `nonce` are filled in. */
+/** Fields the creator supplies; `v`, `schemeId` and `nonce` are filled in (`v` is 2 iff `bufferPolicy` is given). */
 export type NewInvoice = Omit<Invoice, 'v' | 'schemeId' | 'nonce'>;
 
 /** Keys that live in the encrypted private part of an invoice. */
@@ -86,12 +100,14 @@ const INVOICE_KEYS = [
   'feePolicy',
   'memo',
   'signer',
+  'bufferPolicy',
 ] as const;
-const REQUIRED_KEYS = INVOICE_KEYS.filter((k) => k !== 'memo');
+const REQUIRED_KEYS = INVOICE_KEYS.filter((k) => k !== 'memo' && k !== 'bufferPolicy');
 
 const DEC_RE = /^(?:0|[1-9][0-9]{0,29})$/;
 const QTY_RE = /^[1-9][0-9]{0,8}$/;
 const TOKEN_AMOUNT_RE = /^[1-9][0-9]{0,77}$/;
+const WEI_RE = /^(?:0|[1-9][0-9]{0,77})$/;
 const CURRENCY_RE = /^[A-Z]{3}$/;
 const SOURCE_RE = /^[a-z0-9][a-z0-9._:-]{0,63}$/;
 const NONCE_RE = /^[0-9a-f]{32}$/;
@@ -229,7 +245,12 @@ function validPoint(hex: string, path: string): void {
  */
 export function validateInvoice(value: unknown): Invoice {
   const r = record(value, '$', INVOICE_KEYS, REQUIRED_KEYS);
-  if (r['v'] !== 1) fail('v');
+  const rawVersion = r['v'];
+  if (rawVersion !== 1 && rawVersion !== 2) return fail('v');
+  const version: 1 | 2 = rawVersion;
+  // A v2 invoice without its policy is a wrong version; a v1 invoice carrying one has an unknown field.
+  if (version === 2 && r['bufferPolicy'] === undefined) fail('v');
+  if (version === 1 && r['bufferPolicy'] !== undefined) fail('bufferPolicy');
   if (r['schemeId'] !== 1) fail('schemeId');
   const chainId = safeInt(r['chainId'], 'chainId', 1, Number.MAX_SAFE_INTEGER);
   const metaAddress = matching(r['metaAddress'], 'metaAddress', META_RE);
@@ -291,8 +312,10 @@ export function validateInvoice(value: unknown): Invoice {
   const signer = matching(r['signer'], 'signer', PUBKEY_RE);
   validPoint(signer, 'signer');
 
-  const base = {
-    v: 1 as const,
+  const bufferPolicy = version === 2 ? validateBufferPolicy(r['bufferPolicy'], token) : undefined;
+
+  const core: Invoice = {
+    v: version,
     chainId,
     schemeId: 1 as const,
     metaAddress,
@@ -307,7 +330,33 @@ export function validateInvoice(value: unknown): Invoice {
     feePolicy: feePolicy,
     signer,
   };
+  const base: Invoice = bufferPolicy === undefined ? core : { ...core, bufferPolicy };
   return r['memo'] === undefined ? base : { ...base, memo: text(r['memo'], 'memo', MAX_MEMO_LENGTH, true) };
+}
+
+function wei(v: unknown, path: string): bigint {
+  const n = BigInt(matching(v, path, WEI_RE));
+  if (n > MAX_UINT256) fail(path);
+  return n;
+}
+
+/** Validates a v2 `bufferPolicy` (ADR-0023); returns a fresh canonical copy. */
+function validateBufferPolicy(v: unknown, token: string): BufferPolicy {
+  const keys = ['accepted', 'maxWei', 'minWei', 'refund'];
+  const p = record(v, 'bufferPolicy', keys, keys);
+  const accepted = p['accepted'];
+  if (typeof accepted !== 'boolean') return fail('bufferPolicy.accepted');
+  const maxWei = wei(p['maxWei'], 'bufferPolicy.maxWei');
+  const minWei = wei(p['minWei'], 'bufferPolicy.minWei');
+  if (p['refund'] !== 'none') return fail('bufferPolicy.refund');
+  if (!accepted) {
+    if (maxWei !== 0n) fail('bufferPolicy.maxWei');
+    if (minWei !== 0n) fail('bufferPolicy.minWei');
+  } else {
+    if (token === 'native') fail('bufferPolicy.accepted');
+    if (minWei < 1n || minWei > maxWei) fail('bufferPolicy.minWei');
+  }
+  return { accepted, maxWei: maxWei.toString(), minWei: minWei.toString(), refund: 'none' };
 }
 
 /** @internal Resolve the injected or global CSPRNG. */
@@ -327,7 +376,7 @@ export function randomBytes(length: number, rng?: RandomSource): Uint8Array<Arra
 /**
  * Creates a validated v1 invoice with a fresh 128-bit random nonce.
  *
- * @remarks Fills `v: 1`, `schemeId: 1` and `nonce` (16 bytes from
+ * @remarks Fills `v` (1, or 2 when `bufferPolicy` is given), `schemeId: 1` and `nonce` (16 bytes from
  * `crypto.getRandomValues`, lowercase hex) and validates the result. The
  * invoice is unsigned; call {@link signInvoice}.
  *
@@ -340,5 +389,5 @@ export function randomBytes(length: number, rng?: RandomSource): Uint8Array<Arra
  */
 export function createInvoice(input: NewInvoice, rng?: RandomSource): Invoice {
   const nonce = bytesToHex(randomBytes(16, rng));
-  return validateInvoice({ ...input, v: 1, schemeId: 1, nonce });
+  return validateInvoice({ ...input, v: input.bufferPolicy === undefined ? 1 : 2, schemeId: 1, nonce });
 }

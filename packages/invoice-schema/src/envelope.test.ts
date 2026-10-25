@@ -87,6 +87,15 @@ describe('plain fragments', () => {
     expect(p.verification).toEqual({ signatureValid: true, signerPinned: false });
     expect(p.trust).toBe('valid-signature');
   });
+  it('round trips a v2 invoice with its bufferPolicy in the signed public part (ADR-0023)', async () => {
+    const s = sampleSigned({ bufferPolicy: { accepted: true, maxWei: '5000', minWei: '10', refund: 'none' } });
+    expect(s.invoice.v).toBe(2);
+    for (const encrypt of [false, true]) {
+      const p = await parseFragment(await encodeFragment(s, { encrypt }));
+      expect(p.invoice).toEqual(s.invoice);
+      expect(p.trust).toBe('valid-signature');
+    }
+  });
   it('encoding is deterministic', async () => {
     const s = sampleSigned();
     expect(await encodeFragment(s)).toBe(await encodeFragment(s));

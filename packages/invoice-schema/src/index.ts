@@ -14,6 +14,7 @@ export {
   type Tax,
   type Quote,
   type AmountPolicy,
+  type BufferPolicy,
   type RandomSource,
 } from './schema.js';
 export {
