@@ -2,7 +2,7 @@
 
 Client side of the policy-guarded stealth account, ERC-5564 scheme id `0x47500002`
 (`docs/CONTRACTS_SPEC.md` section 4, `packages/contracts/DEVIATIONS.md` P1-P19, A2).
-**Experimental (ADR-0014): not enabled in the app or the relayer.**
+**Experimental (ADR-0014): not enabled in the relayer; in the web app only behind the off-by-default build flag `VITE_GHOSTPAY_EXPERIMENTAL_POLICY=1` (testnets, no pinned deployment).**
 
 | Module | What it does |
 | --- | --- |
@@ -36,4 +36,4 @@ No new crypto libraries: `@noble/curves`, `@noble/hashes`, `viem` and `@ghostpay
 
 ## Status and deviations
 
-Experimental, not imported by `apps/web` or `apps/relayer`. [`docs/remote/STATUS.md`](../../docs/remote/STATUS.md) records 60 passed for this package in the 2026-10-21 run (the anvil tests skip when anvil or forge artifacts are missing). Deviations: [`DEVIATIONS.md`](./DEVIATIONS.md). Scripts: `build`, `typecheck`, `test`, `lint`, `gen-abi`, `gen-vectors`.
+Experimental; imported only by the flagged `apps/web/src/features/policy` view, not by `apps/relayer`. [`docs/remote/STATUS.md`](../../docs/remote/STATUS.md) records 60 passed for this package in the 2026-10-21 run (the anvil tests skip when anvil or forge artifacts are missing). Deviations: [`DEVIATIONS.md`](./DEVIATIONS.md). Scripts: `build`, `typecheck`, `test`, `lint`, `gen-abi`, `gen-vectors`.
