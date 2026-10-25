@@ -313,3 +313,135 @@ describe('encrypted vault save lifetime', () => {
     expect(await screen.findByRole('button', { name: 'Unlock saved vault' })).toBeTruthy();
   });
 });
+
+describe('encrypted vault delete confirmation', () => {
+  const PASSPHRASE = 'violet comet maple lantern';
+  const CONFIRM = 'Confirm delete encrypted vault';
+  const DELETED = 'Encrypted vault deleted from this browser.';
+
+  /** Saves vault A for one key set and returns valid ciphertext B for a different key set. */
+  async function savedAWithReplacementB(): Promise<{ a: string; b: string }> {
+    generateSession();
+    const { exportKeystore } = await import('../lib/session');
+    const b = await exportKeystore(PASSPHRASE, { N: 1 << 14 });
+    clearSession();
+    generateSession();
+    await saveEncryptedVault(PASSPHRASE, { N: 1 << 14 });
+    clearSession();
+    const a = (await vaultStore.get())!;
+    expect(a).not.toBe(b);
+    return { a, b };
+  }
+
+  /** Simulates another tab replacing the shared record. */
+  async function replaceStored(from: string, to: string | undefined): Promise<void> {
+    await act(async () => {
+      await vaultStore.delete(from);
+      if (to !== undefined) await vaultStore.putIfEmpty(to);
+    });
+  }
+
+  async function openConfirmation(): Promise<ReturnType<typeof userEvent.setup>> {
+    const user = await open();
+    await user.click(await screen.findByRole('button', { name: 'Delete encrypted vault' }));
+    expect(await screen.findByRole('button', { name: CONFIRM })).toBeTruthy();
+    return user;
+  }
+
+  it('Cancel keeps vault A byte-for-byte', async () => {
+    const { a } = await savedAWithReplacementB();
+    const user = await openConfirmation();
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(await vaultStore.get()).toBe(a);
+    expect(screen.getByRole('button', { name: 'Unlock saved vault' })).toBeTruthy();
+  });
+
+  it('a stale confirmation cannot delete replacement vault B (A -> B)', async () => {
+    const { a, b } = await savedAWithReplacementB();
+    const user = await openConfirmation();
+    await replaceStored(a, b);
+    await user.click(screen.getByRole('button', { name: CONFIRM }));
+    await waitFor(() => { expect(screen.getByRole('alert').textContent).toMatch(/vault changed/i); });
+    expect(await vaultStore.get()).toBe(b);
+    expect(screen.queryByRole('button', { name: CONFIRM })).toBeNull();
+    expect(screen.queryByText(DELETED)).toBeNull();
+    expect(screen.getByRole('button', { name: 'Unlock saved vault' })).toBeTruthy();
+  });
+
+  it('a stale confirmation rejects when the vault was removed and B saved meanwhile (A -> empty -> B)', async () => {
+    const { a, b } = await savedAWithReplacementB();
+    const user = await openConfirmation();
+    await replaceStored(a, undefined);
+    expect(await vaultStore.get()).toBeUndefined();
+    await act(async () => { await vaultStore.putIfEmpty(b); });
+    await user.click(screen.getByRole('button', { name: CONFIRM }));
+    await waitFor(() => { expect(screen.getByRole('alert').textContent).toMatch(/vault changed/i); });
+    expect(await vaultStore.get()).toBe(b);
+    expect(screen.queryByText(DELETED)).toBeNull();
+  });
+
+  it('rejects when B lands between the Confirm click and the delete transaction', async () => {
+    const { a, b } = await savedAWithReplacementB();
+    const durable = vaultStore;
+    let reachedDelete!: () => void;
+    let releaseDelete!: () => void;
+    const deleteStarted = new Promise<void>((resolve) => { reachedDelete = resolve; });
+    const deleteGate = new Promise<void>((resolve) => { releaseDelete = resolve; });
+    setKeyVaultStoreForTests({
+      get: () => durable.get(),
+      putIfEmpty: (...args: Parameters<KeyVaultStore['putIfEmpty']>) => durable.putIfEmpty(...args),
+      delete: async (...args: Parameters<KeyVaultStore['delete']>) => { reachedDelete(); await deleteGate; return durable.delete(...args); },
+    });
+    const user = await openConfirmation();
+    await user.click(screen.getByRole('button', { name: CONFIRM }));
+    await act(async () => { await deleteStarted; });
+    await replaceStored(a, b);
+    await act(async () => { releaseDelete(); await Promise.resolve(); });
+    await waitFor(() => { expect(screen.getByRole('alert').textContent).toMatch(/vault changed/i); });
+    expect(await durable.get()).toBe(b);
+    expect(screen.queryByText(DELETED)).toBeNull();
+  });
+
+  it('an unchanged confirmation deletes A, and a repeated click cannot delete a later B', async () => {
+    const { a, b } = await savedAWithReplacementB();
+    const durable = vaultStore;
+    const gates: (() => void)[] = [];
+    const deletes: (string | undefined)[] = [];
+    setKeyVaultStoreForTests({
+      get: () => durable.get(),
+      putIfEmpty: (...args: Parameters<KeyVaultStore['putIfEmpty']>) => durable.putIfEmpty(...args),
+      delete: async (...args: Parameters<KeyVaultStore['delete']>) => {
+        deletes.push(args[0]);
+        await new Promise<void>((resolve) => { gates.push(resolve); });
+        return durable.delete(...args);
+      },
+    });
+    await openConfirmation();
+    const confirm = screen.getByRole('button', { name: CONFIRM });
+    fireEvent.click(confirm);
+    fireEvent.click(confirm);
+    await waitFor(() => { expect(gates.length).toBeGreaterThan(0); });
+    await act(async () => { gates.shift()?.(); await Promise.resolve(); });
+    expect(await screen.findAllByText(DELETED)).toHaveLength(2);
+    expect(await durable.get()).toBeUndefined();
+    await act(async () => { await durable.putIfEmpty(b); });
+    await act(async () => { for (const release of gates.splice(0)) release(); await Promise.resolve(); });
+    expect(await durable.get()).toBe(b);
+    expect(deletes.every((expected) => expected === a)).toBe(true);
+  });
+
+  it('shows a visible error when browser storage fails during delete', async () => {
+    const { a } = await savedAWithReplacementB();
+    const durable = vaultStore;
+    setKeyVaultStoreForTests({
+      get: () => durable.get(),
+      putIfEmpty: (...args: Parameters<KeyVaultStore['putIfEmpty']>) => durable.putIfEmpty(...args),
+      delete: () => Promise.reject(new Error('simulated browser storage failure')),
+    });
+    const user = await openConfirmation();
+    await user.click(screen.getByRole('button', { name: CONFIRM }));
+    await waitFor(() => { expect(screen.getByRole('alert')).toBeTruthy(); });
+    expect(screen.queryByText(DELETED)).toBeNull();
+    expect(await durable.get()).toBe(a);
+  });
+});

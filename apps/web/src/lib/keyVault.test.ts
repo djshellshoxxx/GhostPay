@@ -99,15 +99,29 @@ describe('encrypted seller vault', () => {
     const store = new MemoryKeyVaultStore();
     importSession({ spendingKeyHex: SPEND, viewingKeyHex: VIEW, signingKeyHex: SIGN });
     await saveEncryptedVault(PASS, { N: 1 << 14 }, store);
-    await deleteEncryptedVault(store);
+    await deleteEncryptedVault((await readEncryptedVault(store))!, store);
     expect(await readEncryptedVault(store)).toBeUndefined();
+  });
+
+  it('deletes only the exact ciphertext that was confirmed and preserves a replacement', async () => {
+    const store = new MemoryKeyVaultStore();
+    importSession({ spendingKeyHex: SPEND, viewingKeyHex: VIEW, signingKeyHex: SIGN });
+    await saveEncryptedVault(PASS, { N: 1 << 14 }, store);
+    const a = (await readEncryptedVault(store))!;
+    await store.delete(a);
+    await expect(deleteEncryptedVault(a, store)).rejects.toThrow(/changed since you asked to delete it/);
+    importSession({ spendingKeyHex: '44'.repeat(32), viewingKeyHex: '55'.repeat(32), signingKeyHex: '66'.repeat(32) });
+    await saveEncryptedVault(PASS, { N: 1 << 14 }, store);
+    const b = (await readEncryptedVault(store))!;
+    await expect(deleteEncryptedVault(a, store)).rejects.toThrow(/changed since you asked to delete it/);
+    expect(await readEncryptedVault(store)).toBe(b);
   });
 
   it('fails closed when IndexedDB is unavailable and handles an empty saved vault', async () => {
     const store = new IndexedDbKeyVaultStore();
     await expect(store.get()).rejects.toThrow(/storage is unavailable/);
     await expect(store.putIfEmpty('ciphertext', () => undefined)).rejects.toThrow(/storage is unavailable/);
-    await expect(store.delete()).rejects.toThrow(/storage is unavailable/);
+    await expect(store.delete('ciphertext')).rejects.toThrow(/storage is unavailable/);
     const empty = new MemoryKeyVaultStore();
     expect(await authorizeEncryptedVault(PASS, empty)).toBeUndefined();
     await expect(unlockEncryptedVault(PASS, empty)).rejects.toThrow(/No encrypted seller vault/);

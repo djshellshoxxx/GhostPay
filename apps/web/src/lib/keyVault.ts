@@ -10,7 +10,16 @@ export interface KeyVaultStore {
    * gone; adapters call it after any asynchronous wait and before the write can commit, and must not commit after it throws.
    */
   putIfEmpty(ciphertext: string, stillCurrent: () => void): Promise<void>;
-  delete(): Promise<void>;
+  /** Deletes the vault only if the stored record still equals `expected`, atomically; otherwise rejects with VaultChangedError. */
+  delete(expected: string): Promise<void>;
+}
+
+/** The stored vault is no longer the record the user confirmed deleting; nothing was deleted. */
+export class VaultChangedError extends UserFacingError {
+  public constructor() {
+    super('The saved encrypted vault changed since you asked to delete it, so nothing was deleted. Review the current vault and try again.');
+    this.name = 'VaultChangedError';
+  }
 }
 
 const DB_NAME = 'ghostpay-encrypted-seller-vault';
@@ -83,12 +92,19 @@ export class IndexedDbKeyVaultStore implements KeyVaultStore {
     });
   }
 
-  async delete(): Promise<void> {
+  async delete(expected: string): Promise<void> {
     const db = await this.db();
     await new Promise<void>((resolve, reject) => {
+      // Compare and delete inside one readwrite transaction so another tab cannot replace the record in between.
       const tx = db.transaction(STORE_NAME, 'readwrite');
-      tx.objectStore(STORE_NAME).delete(RECORD_KEY);
-      tx.oncomplete = () => { resolve(); };
+      const store = tx.objectStore(STORE_NAME);
+      const request = store.get(RECORD_KEY);
+      let changed = false;
+      request.onsuccess = () => {
+        if (request.result === expected) store.delete(RECORD_KEY);
+        else changed = true;
+      };
+      tx.oncomplete = () => { if (changed) reject(new VaultChangedError()); else resolve(); };
       tx.onerror = () => { reject(new UserFacingError('Could not delete encrypted browser storage.')); };
       tx.onabort = () => { reject(new UserFacingError('Could not delete encrypted browser storage.')); };
     });
@@ -106,7 +122,11 @@ export class MemoryKeyVaultStore implements KeyVaultStore {
     this.ciphertext = ciphertext;
     return Promise.resolve();
   }
-  delete(): Promise<void> { this.ciphertext = undefined; return Promise.resolve(); }
+  delete(expected: string): Promise<void> {
+    if (this.ciphertext !== expected) return Promise.reject(new VaultChangedError());
+    this.ciphertext = undefined;
+    return Promise.resolve();
+  }
 }
 
 const browserStore = new IndexedDbKeyVaultStore();
@@ -161,6 +181,7 @@ export async function authorizeEncryptedVault(passphrase: string, store: KeyVaul
   return verifyVaultForCurrentSession(ciphertext, passphrase);
 }
 
-export async function deleteEncryptedVault(store: KeyVaultStore = activeStore()): Promise<void> {
-  await store.delete();
+/** Deletes the saved vault only if it is still exactly the `expected` ciphertext the user confirmed. */
+export async function deleteEncryptedVault(expected: string, store: KeyVaultStore = activeStore()): Promise<void> {
+  await store.delete(expected);
 }
