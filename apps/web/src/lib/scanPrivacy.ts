@@ -73,7 +73,7 @@ export function checkScanEndpoint(raw: string, transport: ScanTransportKind): st
     let u: URL | undefined;
     try { u = new URL(trimmed); } catch { u = undefined; }
     if (u === undefined || !LOOPBACK.has(u.hostname) || (u.protocol !== 'http:' && u.protocol !== 'https:')) {
-      throw new UserFacingError('A local proxy endpoint must be on this computer, for example http://127.0.0.1:8545.');
+      throw new UserFacingError('A local proxy endpoint must be on this computer, for example port 8545 on 127.0.0.1 (plain http is allowed there).');
     }
     try { return validateRpcUrl(trimmed, { allowInsecureLocalhost: true }); } catch { throw new UserFacingError('Local proxy endpoint rejected: no username, password or fragment.'); }
   }
