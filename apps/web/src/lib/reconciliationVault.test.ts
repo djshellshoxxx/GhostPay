@@ -398,10 +398,10 @@ describe('encrypted reconciliation vault', () => {
       tombstones: [],
     });
     const preview = await vault.previewImport(backup);
-    expect(preview).toEqual({ recordCount: 0, invalidatedCount: 0, readOnly: true });
+    expect(preview).toEqual({ recordCount: 0, invalidatedCount: 0, readOnly: true, invoiceCount: 0, receiptCount: 0 });
     expect((await vault.readState()).readOnly).toBe(false);
     await vault.activateImport(preview);
-    expect(await vault.readState()).toEqual({ records: [], readOnly: true });
+    expect(await vault.readState()).toEqual({ records: [], readOnly: true, invoices: [], receipts: [] });
     vault.lock();
     await vault.unlock(new Uint8Array(32).fill(7));
     expect((await vault.readState()).readOnly).toBe(true);

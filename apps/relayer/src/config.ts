@@ -48,7 +48,8 @@ export interface RelayerConfig {
   /** Addresses or CIDR blocks of reverse proxies whose `X-Forwarded-For` is honoured (empty: ignore the header). */
   readonly trustedProxies: readonly string[];
   readonly allowFeeToHotKey: boolean;
-  readonly gas: { readonly coverPercent: number; readonly maxMovePercent: number; readonly quoteCacheSeconds: number };
+  /** `griefReserveBps`: spec 04 griefing margin added to the gas term of the sponsor fee (default 0, operator-tuned). */
+  readonly gas: { readonly coverPercent: number; readonly maxMovePercent: number; readonly quoteCacheSeconds: number; readonly griefReserveBps?: number };
   readonly quoteTtlSeconds: number;
   readonly minDeadlineSeconds: number;
   readonly maxDeadlineSeconds: number;
@@ -374,7 +375,7 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
   const rl = sub(o, 'rateLimit', '$', ['ipPerMinute', 'ipBurst', 'ownerPerMinute', 'ownerBurst', 'maxKeys', 'saltRotationHours', 'quoteGlobalPerMinute', 'quoteGlobalBurst']);
   const br = sub(o, 'breaker', '$', ['windowSize', 'minSamples', 'failureRatio', 'cooldownSeconds', 'probeTimeoutSeconds']);
   const lb = sub(o, 'lossBudget', '$', ['windowSeconds', 'perKeyWei', 'globalWei', 'maxKeys']);
-  const ga = sub(o, 'gas', '$', ['coverPercent', 'maxMovePercent', 'quoteCacheSeconds']);
+  const ga = sub(o, 'gas', '$', ['coverPercent', 'maxMovePercent', 'quoteCacheSeconds', 'griefReserveBps']);
   const q = sub(o, 'queue', '$', ['maxPending', 'receiptTimeoutSeconds']);
   const allowDevChain = boolOr(o, 'allowDevChain', '$', false);
   const allowInsecureLocalhostRpc = boolOr(o, 'allowInsecureLocalhostRpc', '$', false);
@@ -397,8 +398,10 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
       coverPercent: numberOr(ga, 'coverPercent', 'gas', 100, 1, 300),
       maxMovePercent: numberOr(ga, 'maxMovePercent', 'gas', 25, 0, 500),
       quoteCacheSeconds: numberOr(ga, 'quoteCacheSeconds', 'gas', 3, 0, 60),
+      griefReserveBps: numberOr(ga, 'griefReserveBps', 'gas', 0, 0, 5000),
     },
-    quoteTtlSeconds: numberOr(o, 'quoteTtlSeconds', '$', 120, 10, 600),
+    // Spec 04: quote TTL <= 60 s bounds how long a priced gas cost can be held against the relayer.
+    quoteTtlSeconds: numberOr(o, 'quoteTtlSeconds', '$', 60, 10, 60),
     minDeadlineSeconds,
     maxDeadlineSeconds,
     rateLimit: {

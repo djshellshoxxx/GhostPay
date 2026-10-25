@@ -5,6 +5,7 @@ import { exportSettingsExchange, parseSettingsExchange, applySettingsExchange, t
 import { Field, Notice } from '../components/Common';
 import { userMessage } from '../lib/errors';
 import { checkDelayRange, checkRelayerUrl, checkRpcUrl, type Settings as SettingsData } from '../lib/settings';
+import { applyParanoidPreset, browserStorage, checkIndexerUrl, checkScanEndpoint, describeScanDisclosure, loadScanPrivacy, saveScanPrivacy, type ScanPrivacySettings, type ScanTransportKind } from '../lib/scanPrivacy';
 import { useServices } from '../lib/services';
 import { useApp } from '../state';
 import { LanguagePicker } from '../i18n/LanguagePicker';
@@ -79,8 +80,8 @@ export function Settings(): ReactNode {
       <Notice kind="info">
         {t('settings.notice.plaintext')}
       </Notice>
-      <Notice kind="warn" title="Settings can be changed outside this page">
-        Anything that can write to this site&rsquo;s browser storage, including another local user, malware or an extension, can change these RPC, relayer and pinned-signer settings. Review the endpoints and signer keys before relying on them. A second RPC can reveal disagreements, but it does not make either provider trustworthy by itself.
+      <Notice kind="warn" title={t('settings.outside.title')}>
+        {t('settings.outside.body')}
       </Notice>
       <form onSubmit={onSave} className="stack" noValidate>
         <fieldset>
@@ -137,6 +138,7 @@ export function Settings(): ReactNode {
         </fieldset>
         <button type="submit" className="btn btn-primary">{t('settings.save')}</button>
       </form>
+      <ScanPrivacySection />
       <section className="panel" aria-labelledby="settings-transfer-h">
         <h3 id="settings-transfer-h">{t('settings.exchange.title')}</h3>
         <p>{t('settings.exchange.description')}</p>
@@ -164,5 +166,97 @@ export function Settings(): ReactNode {
       </section>
       {message !== undefined && <Notice kind={message.kind}>{message.text}</Notice>}
     </section>
+  );
+}
+
+/** Spec 10 / 05 options. Own storage key and own save, so the main settings form and its exchange format are unchanged. */
+function ScanPrivacySection(): ReactNode {
+  const app = useApp();
+  const services = useServices();
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
+  const [cfg, setCfg] = useState<ScanPrivacySettings>(() => loadScanPrivacy(browserStorage()));
+  const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: string } | undefined>(undefined);
+  const set = (patch: Partial<ScanPrivacySettings>): void => { setCfg((c) => ({ ...c, ...patch })); setMessage(undefined); };
+  const num = (v: string): number => (v.trim() === '' ? Number.NaN : Number(v));
+
+  const onSave = (e: FormEvent): void => {
+    e.preventDefault();
+    try {
+      const endpoints: Record<string, string> = {};
+      for (const [k, v] of Object.entries(cfg.endpoints)) if (v.trim() !== '') endpoints[k] = checkScanEndpoint(v, cfg.transport);
+      const indexerUrls: Record<string, string> = {};
+      for (const [k, v] of Object.entries(cfg.indexerUrls)) if (v.trim() !== '') indexerUrls[k] = checkIndexerUrl(v, cfg.transport);
+      const ok = (n: number, min: number, max: number): boolean => Number.isInteger(n) && n >= min && n <= max;
+      if (!ok(cfg.windowBlocks, 0, 100_000)) throw new Error(t('settings.scanPrivacy.errWindow'));
+      if (!ok(cfg.jitterMinMs, 0, 10_000) || !ok(cfg.jitterMaxMs, 0, 10_000) || cfg.jitterMinMs > cfg.jitterMaxMs) throw new Error(t('settings.scanPrivacy.errDelays'));
+      if (!ok(cfg.openLaneBudget, 1, 100_000)) throw new Error(t('settings.scanPrivacy.errBudget'));
+      const next = { ...cfg, endpoints, indexerUrls };
+      setCfg(next);
+      setMessage(saveScanPrivacy(browserStorage(), next) ? { kind: 'ok', text: t('settings.scanPrivacy.saved') } : { kind: 'warn', text: t('settings.scanPrivacy.refused') });
+    } catch (err) {
+      setMessage({ kind: 'error', text: err instanceof Error && !(err.name === 'ChainAdapterError') ? err.message : userMessage(err) });
+    }
+  };
+
+  return (
+    <form onSubmit={onSave} className="stack" noValidate>
+      <fieldset>
+        <legend>{t('settings.scanPrivacy.legend')}</legend>
+        <p className="hint">
+          {t('settings.scanPrivacy.hint')}
+        </p>
+        <Field label={t('settings.scanPrivacy.transport')}>
+          {(id) => (
+            <select id={id} value={cfg.transport} onChange={(e) => { set({ transport: e.target.value as ScanTransportKind }); }}>
+              <option value="direct">{t('settings.scanPrivacy.transportDirect')}</option>
+              <option value="tor-browser">{t('settings.scanPrivacy.transportTor')}</option>
+              <option value="local-proxy">{t('settings.scanPrivacy.transportProxy')}</option>
+            </select>
+          )}
+        </Field>
+        <div className="check">
+          <input id="scan-require-proxy" type="checkbox" checked={cfg.requireProxy} onChange={(e) => { set({ requireProxy: e.target.checked }); }} />
+          <label htmlFor="scan-require-proxy">{t('settings.scanPrivacy.requireProxy')}</label>
+        </div>
+        {services.chains.map((c) => (
+          <Field key={c.chainId} label={t('settings.scanPrivacy.endpoint', { chain: c.name })} hint={cfg.transport === 'local-proxy' ? t('settings.scanPrivacy.endpointRequired') : t('settings.scanPrivacy.endpointOptional')}>
+            {(id, d) => <input id={id} aria-describedby={d} type="url" spellCheck={false} value={cfg.endpoints[String(c.chainId)] ?? ''} onChange={(e) => { set({ endpoints: { ...cfg.endpoints, [String(c.chainId)]: e.target.value } }); }} />}
+          </Field>
+        ))}
+        <Field label={t('settings.scanPrivacy.source')}>
+          {(id) => (
+            <select id={id} value={cfg.source} onChange={(e) => { set({ source: e.target.value === 'indexer' ? 'indexer' : 'rpc' }); }}>
+              <option value="rpc">{t('settings.scanPrivacy.sourceRpc')}</option>
+              <option value="indexer">{t('settings.scanPrivacy.sourceIndexer')}</option>
+            </select>
+          )}
+        </Field>
+        {cfg.source === 'indexer' && services.chains.map((c) => (
+          <Field key={c.chainId} label={t('settings.scanPrivacy.indexerUrl', { chain: c.name })}>
+            {(id) => <input id={id} type="url" spellCheck={false} value={cfg.indexerUrls[String(c.chainId)] ?? ''} onChange={(e) => { set({ indexerUrls: { ...cfg.indexerUrls, [String(c.chainId)]: e.target.value } }); }} />}
+          </Field>
+        ))}
+        <Field label={t('settings.scanPrivacy.window')} hint={t('settings.scanPrivacy.windowHint')}>
+          {(id, d) => <input id={id} aria-describedby={d} type="number" min={0} value={Number.isNaN(cfg.windowBlocks) ? '' : cfg.windowBlocks} onChange={(e) => { set({ windowBlocks: num(e.target.value) }); }} />}
+        </Field>
+        <Field label={t('settings.scanPrivacy.jitterMin')}>{(id) => <input id={id} type="number" min={0} value={Number.isNaN(cfg.jitterMinMs) ? '' : cfg.jitterMinMs} onChange={(e) => { set({ jitterMinMs: num(e.target.value) }); }} />}</Field>
+        <Field label={t('settings.scanPrivacy.jitterMax')}>{(id) => <input id={id} type="number" min={0} value={Number.isNaN(cfg.jitterMaxMs) ? '' : cfg.jitterMaxMs} onChange={(e) => { set({ jitterMaxMs: num(e.target.value) }); }} />}</Field>
+        <Field label={t('settings.scanPrivacy.budget')} hint={t('settings.scanPrivacy.budgetHint')}>
+          {(id, d) => <input id={id} aria-describedby={d} type="number" min={1} value={Number.isNaN(cfg.openLaneBudget) ? '' : cfg.openLaneBudget} onChange={(e) => { set({ openLaneBudget: num(e.target.value) }); }} />}
+        </Field>
+        <h4>{t('settings.scanPrivacy.learnsHeading')}</h4>
+        <ul>
+          {describeScanDisclosure(cfg, { hasSecondary: Object.values(app.settings.rpcUrlsSecondary).some((u) => u !== '') }).map((row) => (
+            <li key={row.party}><strong>{row.party}:</strong> {row.learns}</li>
+          ))}
+        </ul>
+        <div className="actions">
+          <button type="button" className="btn" onClick={() => { set(applyParanoidPreset(cfg)); }}>{t('settings.scanPrivacy.paranoid')}</button>
+          <button type="submit" className="btn btn-primary">{t('settings.scanPrivacy.save')}</button>
+        </div>
+        {message !== undefined && <Notice kind={message.kind}>{message.text}</Notice>}
+      </fieldset>
+    </form>
   );
 }

@@ -32,7 +32,9 @@ export type SilentPaymentErrorCode =
   | 'INSUFFICIENT_FUNDS'
   | 'DUST_OUTPUT'
   | 'FEE_TOO_HIGH'
-  | 'SIGNATURE_INVALID';
+  | 'SIGNATURE_INVALID'
+  | 'INVALID_HEADER'
+  | 'SIGNER_REFUSED';
 
 const MESSAGES: Readonly<Record<SilentPaymentErrorCode, string>> = {
   INVALID_SCALAR: 'invalid secret scalar (must be 32 bytes in [1, n-1])',
@@ -65,6 +67,8 @@ const MESSAGES: Readonly<Record<SilentPaymentErrorCode, string>> = {
   DUST_OUTPUT: 'an output is below the dust limit',
   FEE_TOO_HIGH: 'fee rate or absolute fee exceeds the safety limit',
   SIGNATURE_INVALID: 'signed transaction failed verification',
+  INVALID_HEADER: 'block header violates a header-chain rule',
+  SIGNER_REFUSED: 'the signer refused the request',
 };
 
 /** Error type thrown by every function in this package. */

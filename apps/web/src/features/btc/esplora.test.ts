@@ -1,7 +1,7 @@
 import { parseHeader, SilentPaymentError } from '@ghostpay/btc-silent-payments';
 import { describe, expect, it } from 'vitest';
 import { EsploraClient, EsploraTweakSource, normalizeEsploraUrl } from './esplora';
-import { coinbase, mineHeader, mockChain, paymentTx, walletA, withTxid, SEED_B } from './fixtures.testutil';
+import { coinbase, mineHeader, mockChain, paymentTx, walletA, withTxid, withWitnessCommitment, SEED_B } from './fixtures.testutil';
 import { BTC_NETWORKS, btcNetwork, MAINNET_GENESIS } from './network';
 import { MAX_SCAN_BLOCKS, scanForPayments } from './scan';
 import { walletFromSeedHex } from './wallet';
@@ -204,11 +204,36 @@ describe('EsploraTweakSource and scanning', () => {
       vin: [{ txid: 'f'.repeat(64), vout: 0, sequence: 0xffffffff, prevout: { scriptpubkey: `0014${'6'.repeat(40)}` }, scriptsig: '', witness: ['00', '02'.repeat(5)], is_coinbase: false }],
       vout: [{ scriptpubkey: `5120${'ab'.repeat(32)}`, value: 5 }],
     }));
+    blk.txs = withWitnessCommitment([coinbase(1), ...blk.txs.slice(1)]); // keep the block valid: re-commit to the new witness
     blk.header = mineHeader(btcNetwork('regtest').genesisHash, blk.txs);
     blk.hash = parseHeader(blk.header).hash;
     const src = new EsploraTweakSource(new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn }), btcNetwork('regtest'));
     expect((await src.getTweaks(1)).tweaks).toHaveLength(1);
     expect((await src.getOutputs(1)).outputs).toHaveLength(0);
+  });
+
+  it('refuses witness data the coinbase does not commit to (BIP-141), even when every txid still matches', async () => {
+    const w = walletA();
+    const run = async (edit: (txs: ReturnType<typeof mockChain>['blocks'][number]['txs']) => void): Promise<string> => {
+      const chain = mockChain('regtest', w);
+      const blk = chain.blocks[3];
+      if (blk === undefined) throw new Error('fixture');
+      edit(blk.txs);
+      const src = new EsploraTweakSource(new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn }), btcNetwork('regtest'));
+      try {
+        await src.getTweaks(3);
+        return 'OK';
+      } catch (e) {
+        return e instanceof SilentPaymentError ? e.code : 'OTHER';
+      }
+    };
+    expect(await run(() => undefined)).toBe('OK');
+    // Swap the payment's input public key in the witness: txid (and header Merkle root) unchanged.
+    expect(await run((txs) => { const vin = txs[2]!.vin[0]!; vin.witness = [vin.witness[0]!, `02${'77'.repeat(32)}`]; })).toBe('INVALID_RESPONSE');
+    // Drop the commitment output: also changes the coinbase txid, so the Merkle root catches it first.
+    expect(await run((txs) => { txs[0]!.vout.pop(); })).toBe('INVALID_RESPONSE');
+    // Remove the reserved value from the coinbase witness: txid unchanged, commitment check fails.
+    expect(await run((txs) => { txs[0]!.vin[0]!.witness = []; })).toBe('INVALID_RESPONSE');
   });
 
   it('finds the payment, reports spent outputs, and finds nothing for another wallet', async () => {

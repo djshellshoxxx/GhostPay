@@ -4,10 +4,13 @@ import { Mono } from '../components/Common';
 import { computeReleaseHash, entryScriptUrl } from '../lib/release';
 import { useServices } from '../lib/services';
 import { useApp } from '../state';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 
 export function Home(): ReactNode {
   const app = useApp();
   const services = useServices();
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const [hash, setHash] = useState<{ file: string; sha256: string } | 'unavailable' | undefined>(undefined);
   useEffect(() => {
     let live = true;
@@ -31,32 +34,32 @@ export function Home(): ReactNode {
 
   return (
     <section aria-labelledby="home-h">
-      <h2 id="home-h">What do you want to do?</h2>
+      <h2 id="home-h">{t('home.title')}</h2>
       <div className="cards">
         <article className="card">
-          <h3>Seller</h3>
-          <p>Create keys and invoices, then scan for payments you have received.</p>
+          <h3>{t('home.seller.title')}</h3>
+          <p>{t('home.seller.body')}</p>
           <button type="button" className="btn btn-primary" onClick={() => { app.setView('seller'); }}>
-            Seller keys
+            {t('home.seller.button')}
           </button>
         </article>
         <article className="card">
-          <h3>Pay</h3>
-          <p>Open an invoice link, review every amount, and pay from your own wallet.</p>
+          <h3>{t('home.pay.title')}</h3>
+          <p>{t('home.pay.body')}</p>
           <button type="button" className="btn btn-primary" onClick={() => { app.setView('pay'); }}>
-            Pay an invoice
+            {t('home.pay.button')}
           </button>
         </article>
         <article className="card">
-          <h3>Sweep</h3>
-          <p>Move received funds from a one-time address to your own wallet.</p>
+          <h3>{t('home.sweep.title')}</h3>
+          <p>{t('home.sweep.body')}</p>
           <button type="button" className="btn btn-primary" onClick={() => { app.setView('sweep'); }}>
-            Sweep funds
+            {t('home.sweep.button')}
           </button>
         </article>
       </div>
 
-      <h3>Privacy limits in short</h3>
+      <h3>{t('home.limits.title')}</h3>
       <ul className="plain-list">
         {LIMITS.slice(0, 4).map((l) => (
           <li key={l}>{l}</li>
@@ -64,23 +67,23 @@ export function Home(): ReactNode {
       </ul>
       <p>
         <button type="button" className="link-btn" onClick={() => { app.setView('about'); }}>
-          Read the full privacy notes and observer table
+          {t('home.readFull')}
         </button>
       </p>
 
-      <h3>Fees</h3>
+      <h3>{t('home.fees')}</h3>
       <ChainFeeList />
 
-      <h3>Release check</h3>
+      <h3>{t('home.release.title')}</h3>
       <p>
-        SHA-256 of the app script you are running:{' '}
-        {hash === undefined ? 'computing…' : hash === 'unavailable' ? 'not available in this environment' : (
+        {t('home.release.label')}{' '}
+        {hash === undefined ? t('home.release.computing') : hash === 'unavailable' ? t('home.release.unavailable') : (
           <>
             <Mono>{hash.sha256}</Mono> ({hash.file})
           </>
         )}
       </p>
-      <p className="hint">Compare it with the hash the maintainers publish for this release. A host that serves different files to different visitors is not detected by this check.</p>
+      <p className="hint">{t('home.release.compare')}</p>
     </section>
   );
 }

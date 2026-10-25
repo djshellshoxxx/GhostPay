@@ -1,11 +1,12 @@
 // @vitest-environment jsdom
-import { eip712DomainSeparator, erc20MetadataAbi, erc2612PermitAbi } from '@ghostpay/chain-adapters';
+import { ChainAdapterError, eip712DomainSeparator, erc20MetadataAbi, erc2612PermitAbi } from '@ghostpay/chain-adapters';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { encodeFunctionResult, keccak256 } from 'viem/utils';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { Services } from '../lib/services';
 import { clearSession, generateSession } from '../lib/session';
+import * as appState from '../state';
 import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests } from '../lib/keyVault';
 import { SETTINGS_KEY } from '../lib/settings';
 import { makeLog } from '../test/announcements';
@@ -30,8 +31,11 @@ const TOKEN = '0x036CbD53842c5426634e7929541eC2318f3dCF7e';
 const VAULT_PASS = 'violet comet maple lantern';
 let vaultStore = new MemoryKeyVaultStore();
 
-function extra(balance: bigint, nativeBalance: bigint, rawSink: { raw?: string }) {
+interface RawSink { raw?: string; sendFail?: boolean; calls?: string[] }
+
+function extra(balance: bigint, nativeBalance: bigint, rawSink: RawSink) {
   return (method: string, params: readonly unknown[]): unknown => {
+    rawSink.calls?.push(method);
     switch (method) {
       case 'eth_getBalance':
         return `0x${nativeBalance.toString(16)}`;
@@ -43,6 +47,7 @@ function extra(balance: bigint, nativeBalance: bigint, rawSink: { raw?: string }
         return '0xc350';
       case 'eth_sendRawTransaction':
         rawSink.raw = params[0] as string;
+        if (rawSink.sendFail === true) throw new ChainAdapterError('RPC_FAILURE', 'connection reset after write');
         return keccak256(params[0] as `0x${string}`);
       case 'eth_call': {
         const data = (params[0] as { data: string }).data;
@@ -58,7 +63,7 @@ function extra(balance: bigint, nativeBalance: bigint, rawSink: { raw?: string }
 }
 
 /** Scans one payment, then opens the Sweep view for it. */
-async function toSweep(opts: { balance?: bigint; native?: bigint; relayer?: boolean; fetchFn?: Services['fetchFn']; raw?: { raw?: string }; code?: Record<string, string>; unsigned?: boolean; vaultPass?: string } = {}): Promise<ReturnType<typeof userEvent.setup>> {
+async function toSweep(opts: { balance?: bigint; native?: bigint; relayer?: boolean; fetchFn?: Services['fetchFn']; raw?: RawSink; code?: Record<string, string>; unsigned?: boolean; vaultPass?: string } = {}): Promise<ReturnType<typeof userEvent.setup>> {
   const pub = generateSession();
   if (opts.vaultPass !== undefined) await saveEncryptedVault(opts.vaultPass, { N: 1 << 14 });
   window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' }, ...(opts.relayer === true ? { relayerUrl: 'https://relay.test' } : {}) }));
@@ -178,9 +183,27 @@ describe('Sweep', () => {
     expect(await screen.findByText(/Relayer fee: 0\.025 USDC/)).toBeTruthy();
     expect(screen.getByText(/You receive: 4\.975 USDC/)).toBeTruthy();
     await user.click(screen.getByRole('button', { name: 'Sign and submit to relayer' }));
-    expect(await screen.findByText('Submitted')).toBeTruthy();
-    expect(screen.getByText(`0x${'34'.repeat(32)}`)).toBeTruthy();
+    // The submitted hash is shown in the result and in the pending-attempt panel that keeps signing disarmed.
+    expect((await screen.findAllByText('Submitted')).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(`0x${'34'.repeat(32)}`).length).toBeGreaterThan(0);
     expect(posted).toEqual(['https://relay.test/v1/quote', 'https://relay.test/v1/sweep']);
+  });
+
+  it('relayer path: an accepted relayed sweep disarms direct signing until its status is resolved', async () => {
+    const fetchFn: Services['fetchFn'] = (url) => {
+      if (url.endsWith('/v1/quote')) return Promise.resolve(new Response(JSON.stringify({ fee: '25000', feeTo: FAKE_FEE_RECIPIENT, expiresAt: 1_800_000_100, quoteToken: 'tok' })));
+      return Promise.resolve(new Response(JSON.stringify({ txHash: `0x${'35'.repeat(32)}` }), { status: 200 }));
+    };
+    const user = await toSweep({ relayer: true, fetchFn });
+    await screen.findByText('5 USDC');
+    await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+    await user.click(screen.getByRole('button', { name: 'Get relayer quote' }));
+    await screen.findByText(/Relayer fee: 0\.025 USDC/);
+    await user.click(screen.getByRole('button', { name: 'Sign and submit to relayer' }));
+    expect((await screen.findAllByText('Submitted')).length).toBeGreaterThan(0);
+    // The relayed transaction may still be pending: a fresh direct signature from the same address must not be offered.
+    await user.click(screen.getByLabelText(/Directly/));
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
   });
 
   it('relayer path: refuses a fee above the published cap', async () => {
@@ -211,5 +234,41 @@ describe('Sweep', () => {
     await waitFor(() => { expect(screen.getByText('0 USDC')).toBeTruthy(); });
     await user.click(screen.getByLabelText(/Directly/));
     expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+  });
+  it('GP-SWEEP-OUTCOME-01: an uncertain broadcast shows the expected hash and keeps signing disarmed across navigation', async () => {
+    (appState as unknown as { resetSweepAttemptsForTests?: () => void }).resetSweepAttemptsForTests?.();
+    const sink: RawSink = { sendFail: true, calls: [] };
+    const user = await toSweep({ raw: sink });
+    await screen.findByText('5 USDC');
+    await user.click(screen.getByLabelText(/Directly/));
+    await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+    const countOf = (m: string): number => (sink.calls ?? []).filter((c) => c === m).length;
+    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    expect(await screen.findByText('Outcome unknown')).toBeTruthy();
+    const expectedHash = keccak256(sink.raw as `0x${string}`);
+    expect(screen.getByText(expectedHash)).toBeTruthy();
+    expect(screen.queryByText('Submitted')).toBeNull();
+    const sends = countOf('eth_sendRawTransaction');
+    const nonceReads = countOf('eth_getTransactionCount');
+    expect(sends).toBe(1);
+    const sign = screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' });
+    expect(sign.disabled).toBe(true);
+    await user.click(sign);
+    expect(countOf('eth_sendRawTransaction')).toBe(sends);
+    expect(countOf('eth_getTransactionCount')).toBe(nonceReads);
+
+    const nav = within(screen.getByRole('navigation', { name: 'Main' }));
+    await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
+    await user.click(nav.getByRole('button', { name: 'Sweep' }));
+    await screen.findByText('5 USDC');
+    await user.click(screen.getByLabelText(/Directly/));
+    expect(screen.getByText('Outcome unknown')).toBeTruthy();
+    expect(screen.getByText(expectedHash)).toBeTruthy();
+    await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+    const again = screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' });
+    expect(again.disabled).toBe(true);
+    await user.click(again);
+    expect(countOf('eth_sendRawTransaction')).toBe(sends);
+    expect(countOf('eth_getTransactionCount')).toBe(nonceReads);
   });
 });

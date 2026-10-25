@@ -3,10 +3,12 @@ import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { CameraImporter } from '../../components/CameraImporter';
 import { QrFrame } from '../../components/QrFrame';
 import { useServices } from '../../lib/services';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
 import { EsploraClient, normalizeEsploraUrl } from './esplora';
 import { BTC_NETWORKS, btcNetwork, type BtcNetworkId } from './network';
 import { MAX_SCAN_BLOCKS, scanForPayments, type FoundPayment, type ScanResult } from './scan';
-import { btcErrorMessage, formatBtc, reviewSweep, signSweep, type SignedSweep, type SweepReview } from './sweep';
+import { btcErrorMessage, formatBtc, reviewSweep, SIGNER_DESCRIPTION, signSweep, type SignedSweep, type SweepReview } from './sweep';
+import { SCAN_CHECKS, SCAN_LIMITS, SCAN_MODES } from './verification';
 import { paymentUri, randomSeedHex, walletFromSeedHex, type BtcWallet } from './wallet';
 
 /**
@@ -15,6 +17,9 @@ import { paymentUri, randomSeedHex, walletFromSeedHex, type BtcWallet } from './
  */
 export function BtcView(): ReactNode {
   const services = useServices();
+  // Test renders without an I18nProvider fall back to the source English catalog.
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const [netId, setNetId] = useState<BtcNetworkId>('testnet4');
   const [url, setUrl] = useState('');
   const [seedInput, setSeedInput] = useState('');
@@ -101,16 +106,16 @@ export function BtcView(): ReactNode {
         const c = client();
         await c.checkNetwork(net, ac.signal);
         const from = Number(fromHeight);
-        if (fromHeight.trim() === '' || !Number.isInteger(from) || from < 0) throw new Error('Enter the first block height to scan.');
+        if (fromHeight.trim() === '' || !Number.isInteger(from) || from < 0) throw new Error(t('btc.scan.firstHeightRequired'));
         const res = await scanForPayments({
           client: c,
           wallet,
           fromHeight: from,
           signal: ac.signal,
-          onBlock: (h) => { setScanNote(`Found a payment in block ${String(h)}`); },
+          onBlock: (h) => { setScanNote(t('btc.scan.foundBlock', { height: String(h) })); },
         });
         setScan(res);
-        setScanNote(`Scanned blocks ${String(res.fromHeight)} to ${String(res.toHeight)}.`);
+        setScanNote(t('btc.scan.scanned', { from: String(res.fromHeight), to: String(res.toHeight) }));
         setPicked(new Set(res.found.map((f) => `${f.txid}:${String(f.vout)}`)));
       } catch (e) {
         setError(btcErrorMessage(e));
@@ -133,9 +138,14 @@ export function BtcView(): ReactNode {
 
   const doSign = (): void => {
     if (wallet === undefined || review === undefined || !approved) return;
-    guard(() => {
-      setSigned(signSweep(wallet, selected, review));
-    });
+    setError(undefined);
+    void (async () => {
+      try {
+        setSigned(await signSweep(wallet, selected, review));
+      } catch (e) {
+        setError(btcErrorMessage(e));
+      }
+    })();
   };
 
   const doBroadcast = (): void => {
@@ -160,16 +170,15 @@ export function BtcView(): ReactNode {
 
   return (
     <section aria-labelledby="btc-h">
-      <h2 id="btc-h">Bitcoin silent payments (test networks)</h2>
-      <Notice kind="warn" title="Proof of concept, test networks only">
-        Unaudited. Mainnet is disabled. Use only coins that have no value (testnet4, signet or a local regtest node).
-        Keys are held in memory and are never saved; write down the seed if you want to keep the wallet.
+      <h2 id="btc-h">{t('btc.title')}</h2>
+      <Notice kind="warn" title={t('btc.warning.title')}>
+        {t('btc.warning.body')}
       </Notice>
       {error !== undefined && <Notice kind="error">{error}</Notice>}
 
       <div className="panel">
-        <h3>1. Network and server</h3>
-        <Field label="Network">
+        <h3>{t('btc.section.network')}</h3>
+        <Field label={t('btc.network.label')}>
           {(id) => (
             <select
               id={id}
@@ -184,8 +193,8 @@ export function BtcView(): ReactNode {
           )}
         </Field>
         <Field
-          label="Esplora server URL"
-          hint="Any Esplora-compatible REST server you trust for this network (https, or http to localhost for regtest). It sees every block height you scan, each matching output outpoint you check for spent status, and any transaction you broadcast. It cannot see your keys."
+          label={t('btc.server.label')}
+          hint={t('btc.server.hint')}
         >
           {(id, d) => (
             <input id={id} aria-describedby={d} type="url" spellCheck={false} autoComplete="off" placeholder={net.urlHint} value={url} onChange={(e) => { setUrl(e.target.value); }} />
@@ -194,53 +203,53 @@ export function BtcView(): ReactNode {
       </div>
 
       <div className="panel">
-        <h3>2. Wallet and receive address</h3>
+        <h3>{t('btc.section.wallet')}</h3>
         {wallet === undefined ? (
           <>
             <button type="button" className="btn btn-primary" onClick={() => { useSeed(randomSeedHex(), true); }}>
-              Create new test wallet
+              {t('btc.wallet.create')}
             </button>
-            <Field label="Or import a seed" hint="64 hex characters (32 bytes) from a wallet created here. Test coins only.">
+            <Field label={t('btc.wallet.importLabel')} hint={t('btc.wallet.importHint')}>
               {(id, d) => (
                 <input id={id} aria-describedby={d} type="password" autoComplete="off" spellCheck={false} className="mono" value={seedInput} onChange={(e) => { setSeedInput(e.target.value); }} />
               )}
             </Field>
             <button type="button" className="btn" disabled={seedInput.trim() === ''} onClick={() => { useSeed(seedInput, false); }}>
-              Import seed
+              {t('btc.wallet.import')}
             </button>
           </>
         ) : (
           <>
-            <p>Receive address ({net.label}):</p>
+            <p>{t('btc.wallet.receiveAddress', { network: net.label })}</p>
             <p><Mono>{wallet.address}</Mono></p>
-            <CopyButton text={wallet.address} label="Copy address" />
-            <Field label="Optional amount to request (BTC)">
+            <CopyButton text={wallet.address} label={t('btc.wallet.copyAddress')} />
+            <Field label={t('btc.request.amount')}>
               {(id) => (
                 <input id={id} inputMode="decimal" value={amount} onChange={(e) => { setAmount(e.target.value); }} />
               )}
             </Field>
             {uri !== undefined && (
               <>
-                <h4>Payment instructions</h4>
+                <h4>{t('btc.payment.heading')}</h4>
                 <ol className="plain-list">
-                  <li>Open a wallet that supports BIP-352 silent payments on {net.label}.</li>
-                  <li>Send to the address above, or scan the QR code or open this link: <Mono>{uri}</Mono></li>
-                  <li>Wait for one confirmation, then use "Scan" below starting a few blocks before the payment.</li>
+                  <li>{t('btc.payment.step1', { network: net.label })}</li>
+                  <li>{t('btc.payment.step2')} <Mono>{uri}</Mono></li>
+                  <li>{t('btc.payment.step3')}</li>
                 </ol>
-                <CopyButton text={uri} label="Copy payment link" />
-                <QrFrame kind="caution" text={uri} caption={`Silent payment request (${net.label})`} />
+                <CopyButton text={uri} label={t('btc.payment.copyLink')} />
+                <QrFrame kind="caution" text={uri} caption={t('btc.payment.caption', { network: net.label })} />
               </>
             )}
             {seedShown !== undefined && (
-              <Notice kind="warn" title="Backup seed (shown once)">
+              <Notice kind="warn" title={t('btc.seed.title')}>
                 <p><Mono>{seedShown}</Mono></p>
-                <p>Anyone with this seed controls the wallet. It is not stored anywhere.</p>
-                <CopyButton text={seedShown} label="Copy seed" />{' '}
-                <button type="button" className="btn" onClick={() => { setSeedShown(undefined); }}>Hide seed</button>
+                <p>{t('btc.seed.warning')}</p>
+                <CopyButton text={seedShown} label={t('btc.seed.copy')} />{' '}
+                <button type="button" className="btn" onClick={() => { setSeedShown(undefined); }}>{t('btc.seed.hide')}</button>
               </Notice>
             )}
             <p>
-              <button type="button" className="btn btn-danger" onClick={lock}>Lock and forget keys</button>
+              <button type="button" className="btn btn-danger" onClick={lock}>{t('btc.lock')}</button>
             </p>
           </>
         )}
@@ -248,35 +257,55 @@ export function BtcView(): ReactNode {
 
       {wallet !== undefined && (
         <div className="panel">
-          <h3>3. Scan for payments</h3>
-          <Field label="First block height" hint={`Scans at most ${String(MAX_SCAN_BLOCKS)} blocks per run up to the server tip. Whole blocks are downloaded and checked on this device.`}>
+          <h3>{t('btc.section.scan')}</h3>
+          <Field label={t('btc.scan.heightLabel')} hint={t('btc.scan.heightHint', { max: String(MAX_SCAN_BLOCKS) })}>
             {(id, d) => (
               <input id={id} aria-describedby={d} inputMode="numeric" value={fromHeight} onChange={(e) => { setFromHeight(e.target.value); }} />
             )}
           </Field>
           <button type="button" className="btn btn-primary" disabled={scanning || url.trim() === ''} onClick={runScan}>
-            {scanning ? 'Scanning' : 'Scan'}
+            {scanning ? t('btc.scan.scanning') : t('btc.scan.action')}
           </button>
           {scanning && (
-            <button type="button" className="btn" onClick={() => { abort.current?.abort(); }}>Cancel</button>
+            <button type="button" className="btn" onClick={() => { abort.current?.abort(); }}>{t('btc.scan.cancel')}</button>
           )}
+          <details>
+            <summary>{t('btc.scan.details')}</summary>
+            <p>{t('btc.scan.checked')}</p>
+            <ul>{SCAN_CHECKS.map((c) => <li key={c}>{c}</li>)}</ul>
+            <p>{t('btc.scan.limits')}</p>
+            <ul>{SCAN_LIMITS.map((c) => <li key={c}>{c}</li>)}</ul>
+            <div className="table-wrap">
+              <table>
+                <caption>{t('btc.scan.sourceCaption')}</caption>
+                <thead>
+                  <tr><th>{t('btc.scan.mode')}</th><th>{t('btc.scan.keyLeaves')}</th><th>{t('btc.scan.serverLearns')}</th><th>{t('btc.scan.available')}</th></tr>
+                </thead>
+                <tbody>
+                  {SCAN_MODES.map((m) => (
+                    <tr key={m.mode}><td>{m.mode}</td><td>{m.keyLeaves}</td><td>{m.serverLearns}</td><td>{m.available}</td></tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </details>
           {scanNote !== undefined && <p role="status">{scanNote}</p>}
           {scan !== undefined && (
             <>
               <p>
                 {scan.found.length === 0
-                  ? 'No unspent payments found in this range.'
-                  : `${String(scan.found.length)} unspent payment(s) found.`}
-                {scan.spentCount > 0 && ` ${String(scan.spentCount)} already spent.`}
+                  ? t('btc.scan.noneFound')
+                  : t('btc.scan.foundCount', { count: String(scan.found.length) })}
+                {scan.spentCount > 0 && ` ${t('btc.scan.alreadySpent', { count: String(scan.spentCount) })}`}
               </p>
               {scan.found.length > 0 && (
                 <div className="table-wrap">
                   <p role="note">
-                    Output and spent status were checked with the configured Esplora provider. This is a single-provider check, not independent verification. Select and review each exact transaction output below.
+                    {t('btc.scan.singleProvider')}
                   </p>
                   <table>
                     <thead>
-                      <tr><th>Sweep</th><th>Output</th><th>Block</th><th>Amount</th><th>Key status</th></tr>
+                      <tr><th>{t('btc.scan.sweep')}</th><th>{t('btc.scan.output')}</th><th>{t('btc.scan.block')}</th><th>{t('btc.scan.amount')}</th><th>{t('btc.scan.keyStatus')}</th></tr>
                     </thead>
                     <tbody>
                       {scan.found.map((f) => {
@@ -286,7 +315,7 @@ export function BtcView(): ReactNode {
                             <td>
                               <input
                                 type="checkbox"
-                                aria-label={`Sweep ${id}`}
+                                aria-label={t('btc.scan.sweepAria', { id })}
                                 checked={picked.has(id)}
                                 onChange={(e) => {
                                   const next = new Set(picked);
@@ -301,7 +330,7 @@ export function BtcView(): ReactNode {
                             <td><Mono>{id}</Mono></td>
                             <td>{f.height}</td>
                             <td>{formatBtc(f.amountSats)}</td>
-                            <td>{f.duplicateKey ? 'Duplicate output key; verify this exact outpoint' : 'Unique in this scan'}</td>
+                            <td>{f.duplicateKey ? t('btc.scan.duplicateKey') : t('btc.scan.uniqueKey')}</td>
                           </tr>
                         );
                       })}
@@ -316,15 +345,15 @@ export function BtcView(): ReactNode {
 
       {wallet !== undefined && scan !== undefined && scan.found.length > 0 && (
         <div className="panel">
-          <h3>4. Sweep</h3>
-          <Field label="Destination address" hint={`A ${net.label} address or silent payment address (tsp1...). Check it carefully: a sent transaction cannot be reversed.`}>
+          <h3>{t('btc.section.sweep')}</h3>
+          <Field label={t('btc.sweep.destinationLabel')} hint={t('btc.sweep.destinationHint', { network: net.label })}>
             {(id, d) => (
               <input id={id} aria-describedby={d} className="mono" spellCheck={false} autoComplete="off" value={destination} onChange={(e) => { setDestination(e.target.value); setReview(undefined); setSigned(undefined); }} />
             )}
           </Field>
           {wallet !== undefined && (
             <CameraImporter
-              label="Import sweep destination QR"
+              label={t('btc.sweep.importQr')}
               onText={(scanned) => {
                 const candidate = scanned.trim();
                 let address = candidate;
@@ -333,7 +362,7 @@ export function BtcView(): ReactNode {
                     const uriParts = new URL(candidate);
                     address = uriParts.searchParams.get('sp') ?? uriParts.pathname;
                   } catch {
-                    setError('The Bitcoin payment QR is not valid.');
+                    setError(t('btc.sweep.invalidQr'));
                     return false;
                   }
                 }
@@ -353,21 +382,21 @@ export function BtcView(): ReactNode {
               }}
             />
           )}
-          <Field label="Fee rate (sat/vB)" hint="Chosen by you; this app has no fee oracle. Transactions signal RBF (BIP-125).">
+          <Field label={t('btc.sweep.feeLabel')} hint={t('btc.sweep.feeHint')}>
             {(id, d) => (
               <input id={id} aria-describedby={d} inputMode="decimal" value={feeRate} onChange={(e) => { setFeeRate(e.target.value); setReview(undefined); setSigned(undefined); }} />
             )}
           </Field>
           <button type="button" className="btn btn-primary" disabled={selected.length === 0 || destination.trim() === ''} onClick={doReview}>
-            Review sweep
+            {t('btc.sweep.review')}
           </button>
 
           {review !== undefined && (
             <section className="card" aria-labelledby="btc-review-h">
-              <h4 id="btc-review-h">Review before signing</h4>
+              <h4 id="btc-review-h">{t('btc.review.heading')}</h4>
               <dl>
-                <dt>Network</dt><dd>{review.networkLabel}</dd>
-                <dt>Spending</dt>
+                <dt>{t('btc.review.network')}</dt><dd>{review.networkLabel}</dd>
+                <dt>{t('btc.review.spending')}</dt>
                 <dd>
                   <ul className="plain-list">
                     {review.inputs.map((i) => (
@@ -375,23 +404,24 @@ export function BtcView(): ReactNode {
                     ))}
                   </ul>
                 </dd>
-                <dt>Total in</dt><dd>{formatBtc(review.totalSats)}</dd>
-                <dt>Fee</dt><dd>{formatBtc(review.feeSats)} ({String(review.feeSats)} sats, {String(review.feeRate)} sat/vB, {String(review.vsize)} vB)</dd>
-                <dt>Destination receives</dt><dd>{formatBtc(review.sendSats)}</dd>
-                <dt>Destination ({review.destinationKind})</dt><dd><Mono>{review.destination}</Mono></dd>
-                <dt>Change</dt><dd>None (everything selected is swept)</dd>
+                <dt>{t('btc.review.totalIn')}</dt><dd>{formatBtc(review.totalSats)}</dd>
+                <dt>{t('btc.review.fee')}</dt><dd>{formatBtc(review.feeSats)} {t('btc.review.feeDetail', { sats: String(review.feeSats), rate: String(review.feeRate), vsize: String(review.vsize) })}</dd>
+                <dt>{t('btc.review.receives')}</dt><dd>{formatBtc(review.sendSats)}</dd>
+                <dt>{t('btc.review.destination', { kind: review.destinationKind })}</dt><dd><Mono>{review.destination}</Mono></dd>
+                <dt>{t('btc.review.change')}</dt><dd>{t('btc.review.changeNone')}</dd>
               </dl>
               {review.destinationKind === 'silent payment address' && (
-                <p className="hint">The actual output key of a silent payment is derived when signing, so it is not shown here.</p>
+                <p className="hint">{t('btc.review.silentKeyHint')}</p>
               )}
               {review.warnings.map((w) => <Notice key={w} kind="warn">{w}</Notice>)}
               <label>
                 <input type="checkbox" checked={approved} onChange={(e) => { setApproved(e.target.checked); }} />{' '}
-                I checked the destination address, the amount and the fee.
+                {t('btc.review.approve')}
               </label>
+              <p className="hint">{SIGNER_DESCRIPTION}</p>
               <p>
                 <button type="button" className="btn btn-primary" disabled={!approved || signed !== undefined} onClick={doSign}>
-                  Sign with software key
+                  {t('btc.review.sign')}
                 </button>
               </p>
             </section>
@@ -399,14 +429,14 @@ export function BtcView(): ReactNode {
 
           {signed !== undefined && (
             <section className="card" aria-labelledby="btc-signed-h">
-              <h4 id="btc-signed-h">Signed transaction</h4>
-              <p>Transaction id: <Mono>{signed.txid}</Mono></p>
-              <p>Not sent yet. Broadcasting sends it to the server above.</p>
-              <CopyButton text={signed.rawHex} label="Copy raw transaction" />{' '}
+              <h4 id="btc-signed-h">{t('btc.signed.heading')}</h4>
+              <p>{t('btc.signed.txid')} <Mono>{signed.txid}</Mono></p>
+              <p>{t('btc.signed.notSent')}</p>
+              <CopyButton text={signed.rawHex} label={t('btc.signed.copyRaw')} />{' '}
               <button type="button" className="btn btn-primary" disabled={broadcastId !== undefined} onClick={doBroadcast}>
-                Broadcast to {net.label}
+                {t('btc.broadcast.action', { network: net.label })}
               </button>
-              {broadcastId !== undefined && <Notice kind="ok" title="Broadcast">The server accepted transaction <Mono>{broadcastId}</Mono>.</Notice>}
+              {broadcastId !== undefined && <Notice kind="ok" title={t('btc.broadcast.title')}>{t('btc.broadcast.accepted')} <Mono>{broadcastId}</Mono>.</Notice>}
             </section>
           )}
         </div>

@@ -107,16 +107,38 @@ Frigate (Sparrow) / Electrum Silent Payments protocol:
 
 ## Out of scope / follow-ups
 
-- **Hardware-wallet signing is out of scope.** Spending is software signing only (`buildSpendTransaction`), on a
-  trusted device. No device protocol (and no device displays or verifies silent-payment outputs) is implemented.
+- **Hardware signers: interface and software reference only (2026-10-25, spec 11).** `SilentPaymentSigner` +
+  `buildSpendTransactionWithSigner` keep `b_spend` out of the host; `SoftwareSilentPaymentSigner` enforces the checks a
+  device must (input key = `b_spend + tweak` for the claimed key and amount, SIGHASH_DEFAULT only, no foreign inputs,
+  silent-payment outputs re-derived from its own keys, outputs it cannot display refused, confirmation required).
+  **Not implemented:** any real device driver or vendor protocol; no device has been tested. The host cannot verify an
+  ECDH share by itself (no BIP-374 DLEQ proof): a faulty signer that returns a wrong share AND skips its own
+  re-derivation at signing would pay unfindable outputs. An output whose silent-payment nature is not declared is shown
+  as its raw `bc1p`/`tb1p` address. Change to the wallet's own label-0 address is displayed, not proven to be own change
+  (that would need the scan key on the device). The web view uses the software signer.
 - Spending covers P2TR key-path spends of detected silent-payment outputs only. Not implemented: coin selection (the
   caller picks the outputs; all are swept), SIGHASH types other than DEFAULT, multi-party/PSBT combining of foreign
   inputs, Taproot script-path spends, regtest (`bcrt`) addresses (`@scure/btc-signer` ships mainnet and testnet `tb`
   parameters only; `testnet` here means `tb`/`tsp`), fee estimation from a node/mempool (the caller supplies the
   feerate; capped at 10 000 sat/vB), output shuffling (destinations then change, in order), anti-fee-sniping locktime.
-- gRPC BlindBit client; `/filter` support; own-node (`bitcoind`) `TweakSource`; reorg tracking across blocks
-  (only a per-block height/hash consistency check exists); persistence of scan progress.
-- Voluntary tip output; hosted scanning service; hardware wallet support (unsupported in v1 per spec).
+- gRPC BlindBit client; `/filter` support; own-node (`bitcoind`) `TweakSource`; Web Worker scanning.
+- **Header chain (2026-10-25, spec 12).** `HeaderChain` mirrors Core `GetNextWorkRequired` /
+  `ContextualCheckBlockHeader` for mainnet, testnet4 (BIP-94), signet and regtest: linkage, PoW vs own nBits and
+  powLimit, exact required nBits (retarget + 4x clamp, testnet min-difficulty walk-back, BIP-94 first-block bits and
+  timewarp), MTP-11, +2 h future limit, BIP-34/66/65 versions; most cumulative work wins (strictly more). Evidence:
+  Core `pow_tests.cpp` retarget vectors and real mainnet headers 0-2, plus mined regtest-style chains. **Not covered:**
+  block contents beyond what `verifyBlockTransactions` binds, signet block signatures, Core checkpoints/assumevalid,
+  anything below the caller's pinned checkpoint (which must sit on a 2016-block boundary), withheld heavier chains
+  (ask several sources), and cheap test-network PoW. Checkpoints for testnet4/signet are not pinned in this repo, so the
+  web view does not use `HeaderChain` yet (it keeps per-block PoW/Merkle/witness checks and height linkage).
+- **Witness binding (2026-10-25).** `parseRawTransaction` (txid/wtxid, strict BIP-144) and `verifyWitnessCommitment`
+  (Core `CheckWitnessMalleation`: last matching commitment output, 32-byte reserved value, no witness without a
+  commitment). Prevout scripts/amounts remain unbound (earlier blocks); a lying server can hide, not forge, payments.
+- **Scan state (2026-10-25).** `ScanState` (birth height, last height/hash, 100-block reorg window, matches with
+  `confirmed`/`pending`), `reconcileScanState`, `resumeScan` (progress after every block), strict JSON. It holds no
+  secret but is private; `ScanStateStore` implementations must encrypt at rest. **Not implemented:** an encrypted
+  IndexedDB store and its use in the web view.
+- Voluntary tip output; hosted scanning service (mode C: absent, would need an ADR).
 - Dependencies: `@scure/base@1.2.6`, devDependency `@scure/bip32@1.7.0` and (2026-10-21) `@scure/btc-signer@2.4.1`
   (exact; its dependencies are `@noble/curves` 2.4.0 and `@noble/hashes` 2.4.0, identical to this package's pins and
   hoisted as one copy; it nests its own `@scure/base` 2.4.0 and `micro-packed` 0.11.1, so two `@scure/base` majors exist

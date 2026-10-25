@@ -7,7 +7,9 @@ import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER, FAKE_SWEEP_RELAYER, fa
 import { mockRpc } from '../test/mockRpc';
 import { clearSession, generateSession, requireSession } from './session';
 import { checkDestination, describeDestination, deriveVerifiedSweepKey, directSweep, getSweepQuote, readBalance, relayedSweep, type SweepTarget } from './sweep';
-import { erc20Abi } from '@ghostpay/chain-adapters';
+import { ChainAdapterError, erc20Abi } from '@ghostpay/chain-adapters';
+import { userMessage } from './errors';
+import * as sweepModule from './sweep';
 
 const TOKEN = '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as Address;
 const DEST = '0x6666666666666666666666666666666666666666' as Address;
@@ -297,6 +299,96 @@ describe('directSweep (stealth address pays gas, signs a plain transfer)', () =>
     clearSession();
     resolveSend(keccak256(sent.raw!));
     await expect(pending).resolves.toMatchObject({ hash: keccak256(sent.raw!), sent: 777n });
+  });
+});
+
+describe('GP-SWEEP-OUTCOME-01: a direct sweep keeps its expected hash across an uncertain broadcast', () => {
+  const balanceRpc = (sent: { raw?: `0x${string}`; sends: number }, onSend: (raw: `0x${string}`) => Promise<unknown>) => {
+    const base = mockRpc(84532, (method) => {
+      switch (method) {
+        case 'eth_gasPrice':
+          return '0x3b9aca00';
+        case 'eth_getTransactionCount':
+          return '0x7';
+        case 'eth_getBalance':
+          return `0x${(10n ** 17n).toString(16)}`;
+        case 'eth_estimateGas':
+          return '0xc350';
+        case 'eth_call':
+          return `0x${'0'.repeat(63)}1`;
+        default:
+          throw new Error(method);
+      }
+    });
+    return {
+      ...base,
+      request: (m: string, p: readonly unknown[]): Promise<unknown> => {
+        if (m !== 'eth_sendRawTransaction') return base.request(m, p);
+        sent.raw = p[0] as `0x${string}`;
+        sent.sends += 1;
+        return onSend(sent.raw);
+      },
+    };
+  };
+  const caught = (p: Promise<unknown>): Promise<unknown> => p.then(() => { throw new Error('expected the sweep not to report success'); }, (e: unknown) => e);
+
+  it('a rejected eth_sendRawTransaction after handoff yields an unknown outcome carrying the public descriptor', async () => {
+    const sent: { raw?: `0x${string}`; sends: number } = { sends: 0 };
+    const rpc = balanceRpc(sent, () => Promise.reject(new ChainAdapterError('RPC_FAILURE', 'connection reset after write')));
+    const err = await caught(directSweep({ target, manifest, destination: DEST, amount: 777n, rpc, nowSeconds: NOW }));
+    expect(sent.sends).toBe(1);
+    const expectedHash = keccak256(sent.raw!);
+    expect((err as { attempt?: unknown }).attempt).toEqual({
+      chainId: 84532,
+      owner: target.owner,
+      nonce: 7,
+      destination: DEST,
+      asset: TOKEN,
+      amount: 777n,
+      expectedHash,
+      status: 'unknown-after-handoff',
+    });
+    const msg = userMessage(err);
+    expect(msg).not.toMatch(/Nothing was sent|Blocked by a safety check/);
+    expect(msg).toMatch(/may already have been broadcast/);
+  });
+
+  it('a mismatched returned hash is never success and keeps the locally computed expected hash', async () => {
+    const sent: { raw?: `0x${string}`; sends: number } = { sends: 0 };
+    const rpc = balanceRpc(sent, () => Promise.resolve(`0x${'aa'.repeat(32)}`));
+    const err = await caught(directSweep({ target, manifest, destination: DEST, amount: 777n, rpc, nowSeconds: NOW }));
+    expect(userMessage(err)).toMatch(/does not match the signed transaction/);
+    expect((err as { attempt?: { status: string; expectedHash: string; nonce: number } }).attempt).toMatchObject({
+      status: 'unknown-after-handoff',
+      expectedHash: keccak256(sent.raw!),
+      nonce: 7,
+    });
+  });
+
+  it('a successful send reports a submitted descriptor; pre-handoff failures carry no descriptor', async () => {
+    const sent: { raw?: `0x${string}`; sends: number } = { sends: 0 };
+    const ok = balanceRpc(sent, (raw) => Promise.resolve(keccak256(raw)));
+    const res = await directSweep({ target, manifest, destination: DEST, amount: 777n, rpc: ok, nowSeconds: NOW });
+    expect((res as { attempt?: unknown }).attempt).toMatchObject({ status: 'submitted', expectedHash: keccak256(sent.raw!), nonce: 7 });
+    const evil = '0x00000000000000000000000000000000deadbeef' as Address;
+    const pre = await caught(directSweep({ target: { ...target, token: evil }, manifest, destination: DEST, amount: 5n, rpc: ok, nowSeconds: NOW }));
+    expect((pre as { attempt?: unknown }).attempt).toBeUndefined();
+    expect(sent.sends).toBe(1);
+  });
+
+  it('read-only reconciliation looks up the exact hash; absence or an RPC failure leaves the outcome unknown', async () => {
+    const reconcile = (sweepModule as unknown as { reconcileDirectSweep?: unknown }).reconcileDirectSweep as
+      | ((rpc: unknown, a: unknown) => Promise<{ status: string }>)
+      | undefined;
+    expect(typeof reconcile).toBe('function');
+    const attempt = { chainId: 84532, owner: target.owner, nonce: 7, destination: DEST, asset: TOKEN, amount: 777n, expectedHash: `0x${'bb'.repeat(32)}`, status: 'unknown-after-handoff' };
+    const absent = mockRpc(84532, () => null);
+    expect((await reconcile!(absent, attempt)).status).toBe('unknown-after-handoff');
+    expect(absent.calls).toEqual([{ method: 'eth_getTransactionReceipt', params: [attempt.expectedHash] }]);
+    expect((await reconcile!(mockRpc(84532, () => { throw new Error('timeout'); }), attempt)).status).toBe('unknown-after-handoff');
+    expect((await reconcile!(mockRpc(84532, () => ({ transactionHash: attempt.expectedHash, status: '0x1', blockNumber: '0x10' })), attempt)).status).toBe('included');
+    expect((await reconcile!(mockRpc(84532, () => ({ transactionHash: attempt.expectedHash, status: '0x0', blockNumber: '0x10' })), attempt)).status).toBe('reverted');
+    expect((await reconcile!(mockRpc(84532, () => ({ transactionHash: `0x${'cc'.repeat(32)}`, status: '0x1', blockNumber: '0x10' })), attempt)).status).toBe('unknown-after-handoff');
   });
 });
 

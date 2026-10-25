@@ -1,17 +1,24 @@
 # Solana payments
 
-> **Proof of concept, library only, unaudited.** Solana is not in the web app. You cannot pay or sweep on Solana from the GhostPay UI. Mainnet is refused unless a developer passes an explicit flag. Do not use real SOL or tokens.
+> **Proof of concept, test networks only, unaudited.** The web app has a "Solana (test)" view for devnet, testnet and a local validator. It can create a stealth meta-address, scan for payments and sweep **SOL only**. It cannot send payments. SPL tokens are not swept: if the funding transaction also credited tokens, the view warns and the tokens stay at the one-time address. Mainnet is disabled in the app and refused by the package unless a developer passes an explicit flag. Do not use real SOL or tokens.
 
-Solana support lives in `packages/solana-stealth` (design in [ADR-0017](../adr/ADR-0017-solana-stealth.md)). It implements dual-key ed25519 stealth payments for SOL and SPL tokens, with a `ChainAdapter` shape. Developers can call it from code. The web app does not import it.
+Solana support lives in `packages/solana-stealth` (design in [ADR-0017](../adr/ADR-0017-solana-stealth.md)). It implements dual-key ed25519 stealth payments for SOL and SPL tokens, with a `ChainAdapter` shape. The web test view (`apps/web/src/features/solana`) covers receive, scan and SOL sweep. Paying, SPL sweeping and fiat pricing are not in the app.
+
+## Using the test view
+
+1. Open **Solana (test)** and pick devnet, testnet or local validator. Enter an RPC server you trust; the app has no default. It refuses a server whose genesis hash does not match the selected cluster.
+2. Create or import keys. Keys live in memory only; write down the backup seed shown once.
+3. Give the payer your `st:sol:` meta-address. The payer needs separate tooling that sends SOL with the `gpst1:` announcement memo.
+4. Scan from a little before the payment slot, choose the found payment, review the sweep, sign, then broadcast.
 
 ## Clusters
 
 | Cluster | Chain id used by the package | Status in code |
 |---|---|---|
-| localnet | `sol-localnet` | enabled |
-| devnet | `sol-devnet` | enabled |
-| testnet | `sol-testnet` | enabled |
-| mainnet-beta | `sol-mainnet` | refused unless `allowMainnet: true` |
+| localnet | `sol-localnet` | enabled (package and web test view) |
+| devnet | `sol-devnet` | enabled (package and web test view) |
+| testnet | `sol-testnet` | enabled (package and web test view) |
+| mainnet-beta | `sol-mainnet` | refused unless `allowMainnet: true`; disabled in the web view |
 
 Mainnet is also gated by `docs/chains/CHECKLIST.md`.
 
@@ -37,7 +44,7 @@ Source: `docs/chains/solana.md`, read from `@solana-program/*` packages on 2026-
 
 ## Limits
 
-- No UI, no invoice flow and no router. Fees from [Fees](fees.md) are not applied on Solana.
+- The web view only receives, scans and sweeps SOL. There is no payer flow, no invoice flow, no SPL sweep and no router. Fees from [Fees](fees.md) are not applied on Solana.
 - Token-2022 mints with extensions (transfer fees, hooks and similar) are unsupported. Do not use them with this package.
 - The announcement memo is public. Anyone can see that a one-time address received a payment from a given sender.
 - The sponsored fee payer is a new trust point. The sponsor sees the transaction it pays for.

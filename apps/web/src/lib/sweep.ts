@@ -259,10 +259,64 @@ export interface DirectSweepInput {
   readonly rpc: Rpc;
 }
 
+/**
+ * Public record of one direct-sweep transaction handed to the RPC (GP-SWEEP-OUTCOME-01). It holds no key material.
+ *
+ * @remarks `expectedHash` is keccak256 of the exact signed bytes, computed before handoff. `unknown-after-handoff`
+ * means the bytes may already be on the network: it is neither success nor proof that nothing was sent.
+ */
+export interface DirectSweepAttempt {
+  readonly chainId: number;
+  readonly owner: Address;
+  /** Owner nonce of a direct sweep; absent for a relayed sweep (the relayer's account sends it). */
+  readonly nonce?: number;
+  readonly destination: Address;
+  readonly asset: Address | 'native';
+  readonly amount: bigint;
+  readonly expectedHash: Hex;
+  readonly status: 'submitted' | 'unknown-after-handoff' | 'included' | 'reverted';
+}
+
+/** True while an attempt may still land; signing a new transaction from the same address must stay disarmed. */
+export function isUnresolvedAttempt(a: DirectSweepAttempt): boolean {
+  return a.status === 'unknown-after-handoff' || a.status === 'submitted';
+}
+
+/** Thrown when the signed bytes were handed to the RPC but the outcome could not be confirmed. */
+export class DirectSweepOutcomeUnknownError extends UserFacingError {
+  public readonly attempt: DirectSweepAttempt;
+
+  public constructor(message: string, attempt: DirectSweepAttempt) {
+    super(message);
+    this.name = 'DirectSweepOutcomeUnknownError';
+    this.attempt = attempt;
+  }
+}
+
 export interface DirectSweepResult {
   readonly hash: Hex;
   readonly sent: bigint;
   readonly maxGasCost: bigint;
+  readonly attempt: DirectSweepAttempt;
+}
+
+/**
+ * Read-only receipt lookup by the exact expected hash through the configured RPC. A missing receipt, an RPC error or a
+ * receipt for another hash leaves the attempt unchanged: absence is never proof that the transaction was not sent.
+ */
+export async function reconcileDirectSweep(rpc: Rpc, attempt: DirectSweepAttempt): Promise<DirectSweepAttempt> {
+  let receipt: unknown;
+  try {
+    receipt = await rpc.request('eth_getTransactionReceipt', [attempt.expectedHash]);
+  } catch {
+    return attempt;
+  }
+  if (typeof receipt !== 'object' || receipt === null) return attempt;
+  const r = receipt as { transactionHash?: unknown; status?: unknown };
+  if (typeof r.transactionHash !== 'string' || r.transactionHash.toLowerCase() !== attempt.expectedHash) return attempt;
+  if (r.status === '0x1') return { ...attempt, status: 'included' };
+  if (r.status === '0x0') return { ...attempt, status: 'reverted' };
+  return attempt;
 }
 
 /** Signs a plain EIP-1559 transfer with the stealth key (the stealth address pays gas) and broadcasts it. */
@@ -338,12 +392,28 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
     assertSessionUnchanged();
     const raw = serializeTransaction(unsigned, { r: sig.r, s: sig.s, yParity: sig.v - 27 });
     zeroize(secret);
+    const sent = token === 'native' ? value : i.amount;
+    // Known before handoff, so an uncertain broadcast can still be tracked by its exact hash (GP-SWEEP-OUTCOME-01).
+    const expectedHash = keccak256(raw);
+    const attempt: DirectSweepAttempt = { chainId, owner, nonce, destination: i.destination, asset: token, amount: sent, expectedHash, status: 'unknown-after-handoff' };
+    // Last pre-handoff checkpoint: a failure up to here means the signed bytes never left this page.
     assertSessionUnchanged();
-    const hash = await i.rpc.request('eth_sendRawTransaction', [raw]);
-    if (typeof hash !== 'string' || hash.toLowerCase() !== keccak256(raw)) {
-      throw new UserFacingError('The RPC returned a transaction hash that does not match the signed transaction.');
+    let hash: unknown;
+    try {
+      hash = await i.rpc.request('eth_sendRawTransaction', [raw]);
+    } catch {
+      throw new DirectSweepOutcomeUnknownError(
+        `The RPC request failed after the signed transaction was handed to it, so it may already have been broadcast. Do not sign again; check the expected transaction hash ${expectedHash}.`,
+        attempt,
+      );
     }
-    return { hash: hash.toLowerCase() as Hex, sent: token === 'native' ? value : i.amount, maxGasCost: gas * maxFeePerGas };
+    if (typeof hash !== 'string' || hash.toLowerCase() !== expectedHash) {
+      throw new DirectSweepOutcomeUnknownError(
+        `The RPC returned a transaction hash that does not match the signed transaction. It may already have been broadcast; check the expected transaction hash ${expectedHash}.`,
+        attempt,
+      );
+    }
+    return { hash: expectedHash, sent, maxGasCost: gas * maxFeePerGas, attempt: { ...attempt, status: 'submitted' } };
   } finally {
     zeroize(secret);
   }
