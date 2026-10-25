@@ -15,7 +15,7 @@ Work branch: `claude/adoring-wozniak-850ue6`.
 
 ## Status
 
-In progress — see ledger below. PR #27 (draft): all 21 GitHub checks green on `9822122` (CI incl. web coverage gates, Integration incl. live bitcoind regtest/anvil/solana); mergeable clean; no review yet, so not merged. Next-agent prompt: `docs/handoffs/NEXT_AGENT_PROMPT.md`. Prior handoff: `docs/HANDOFF-2026-10-24-PR26-CAS.md`.
+**PR #27 MERGED** into main at `7ea6c3c4d9f6889ae2198026be1b5e5b7a676a2e` (merge commit; PR head `a4ab45f`), after owner review/approval and all 21 GitHub checks green on that exact head (CI incl. web coverage gates + coverage-off fuzz pass, e2e, contracts; Integration incl. live anvil / bitcoind regtest / Solana). No deployment or release triggered (pages workflow is manual-only).
 
 ## Ledger (this session)
 
@@ -31,6 +31,7 @@ In progress — see ledger below. PR #27 (draft): all 21 GitHub checks green on 
 | 7 | Spec 11/12 BTC foundation: block integrity | `packages/btc-silent-payments/src/header.ts` (header parse, nBits target w/ Core negative/overflow rules, PoW vs per-network powLimit, CVE-2012-2459-safe Merkle root, `verifyBlockData`). Esplora: txid recomputed from JSON (version/locktime/sequence required), header hash = served hash, PoW, Merkle root, height linkage to pinned genesis (both directions), genesis never downloaded. Regtest shim serves `/block/:hash/header` + txid fields. | header.test 16 (mainnet/regtest genesis, block 170 Merkle); esplora.test tamper matrix (omit/inject/edit/wrong header/weak PoW on testnet4/fork below/above/genesis mismatch) + txid edits vs independent @scure/btc-signer txids; BtcView flows green; btc pkg 369 tests, coverage 97.56/96.41/96.91/99.29; shim `node --test` 4/4. |
 
 | 8 | Spec 08 deterministic vectors | `test-vectors/tags.json` + generator (node:crypto only) + `tagArchive.vectors.test.ts`. | 18/18 (5 valid incl. NFKC + N=2^17, 12 refusals). |
+| 10 | Archive fuzz coverage-off pass (owner-approved) | Fuzz moved to `apps/web/src/lib/tagArchive.fuzz.nocov.test.ts`, run by `vitest.nocov.config.ts` chained in `npm test`; cases/deadline/KDF/thresholds unchanged; DEVIATIONS.md updated. | Local nocov pass 1/1; CI green on a4ab45f. |
 | 9 | Live regtest coverage of header checks | `scripts/integration/btc-regtest.e2e.mjs` step verifies payment block via `verifyBlockData` on real bitcoind data + negative cases. | Runs in GitHub Integration workflow (not locally). |
 
 BTC limits (do not overclaim): NO difficulty retarget, chain work, MTP or best-chain selection; test-network PoW cheap; witness + prevout scripts not txid-bound (can hide, not forge, payments); `isUnspent` is server's word. Live bitcoind regtest e2e NOT run locally (no bitcoind); GitHub Integration workflow runs it on PR when btc paths change — check its result.
