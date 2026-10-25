@@ -5,6 +5,7 @@ import { exportSettingsExchange, parseSettingsExchange, applySettingsExchange, t
 import { Field, Notice } from '../components/Common';
 import { userMessage } from '../lib/errors';
 import { checkDelayRange, checkRelayerUrl, checkRpcUrl, type Settings as SettingsData } from '../lib/settings';
+import { applyParanoidPreset, browserStorage, checkIndexerUrl, checkScanEndpoint, describeScanDisclosure, loadScanPrivacy, saveScanPrivacy, type ScanPrivacySettings, type ScanTransportKind } from '../lib/scanPrivacy';
 import { useServices } from '../lib/services';
 import { useApp } from '../state';
 import { LanguagePicker } from '../i18n/LanguagePicker';
@@ -137,6 +138,7 @@ export function Settings(): ReactNode {
         </fieldset>
         <button type="submit" className="btn btn-primary">{t('settings.save')}</button>
       </form>
+      <ScanPrivacySection />
       <section className="panel" aria-labelledby="settings-transfer-h">
         <h3 id="settings-transfer-h">{t('settings.exchange.title')}</h3>
         <p>{t('settings.exchange.description')}</p>
@@ -164,5 +166,95 @@ export function Settings(): ReactNode {
       </section>
       {message !== undefined && <Notice kind={message.kind}>{message.text}</Notice>}
     </section>
+  );
+}
+
+/** Spec 10 / 05 options. Own storage key and own save, so the main settings form and its exchange format are unchanged. */
+function ScanPrivacySection(): ReactNode {
+  const app = useApp();
+  const services = useServices();
+  const [cfg, setCfg] = useState<ScanPrivacySettings>(() => loadScanPrivacy(browserStorage()));
+  const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: string } | undefined>(undefined);
+  const set = (patch: Partial<ScanPrivacySettings>): void => { setCfg((c) => ({ ...c, ...patch })); setMessage(undefined); };
+  const num = (v: string): number => (v.trim() === '' ? Number.NaN : Number(v));
+
+  const onSave = (e: FormEvent): void => {
+    e.preventDefault();
+    try {
+      const endpoints: Record<string, string> = {};
+      for (const [k, v] of Object.entries(cfg.endpoints)) if (v.trim() !== '') endpoints[k] = checkScanEndpoint(v, cfg.transport);
+      const indexerUrls: Record<string, string> = {};
+      for (const [k, v] of Object.entries(cfg.indexerUrls)) if (v.trim() !== '') indexerUrls[k] = checkIndexerUrl(v, cfg.transport);
+      const ok = (n: number, min: number, max: number): boolean => Number.isInteger(n) && n >= min && n <= max;
+      if (!ok(cfg.windowBlocks, 0, 100_000)) throw new Error('Window size must be a whole number of blocks from 0 to 100000.');
+      if (!ok(cfg.jitterMinMs, 0, 10_000) || !ok(cfg.jitterMaxMs, 0, 10_000) || cfg.jitterMinMs > cfg.jitterMaxMs) throw new Error('Delays must be whole milliseconds, minimum at most maximum, up to 10000.');
+      if (!ok(cfg.openLaneBudget, 1, 100_000)) throw new Error('The per-scan budget must be from 1 to 100000.');
+      const next = { ...cfg, endpoints, indexerUrls };
+      setCfg(next);
+      setMessage(saveScanPrivacy(browserStorage(), next) ? { kind: 'ok', text: 'Scan privacy settings saved. They apply to the next scan.' } : { kind: 'warn', text: 'This browser refused to store the scan privacy settings.' });
+    } catch (err) {
+      setMessage({ kind: 'error', text: err instanceof Error && !(err.name === 'ChainAdapterError') ? err.message : userMessage(err) });
+    }
+  };
+
+  return (
+    <form onSubmit={onSave} className="stack" noValidate>
+      <fieldset>
+        <legend>Scan privacy</legend>
+        <p className="hint">
+          These options change how announcements are fetched, not what is on-chain. A web page cannot open a SOCKS connection or check that it runs in Tor Browser: &ldquo;Tor Browser&rdquo; means you opened this page in Tor Browser yourself; &ldquo;Local proxy&rdquo; means a JSON-RPC forwarder you run on this computer (for example one that sends traffic over Tor). Defaults add no new destination.
+        </p>
+        <Field label="Scan transport">
+          {(id) => (
+            <select id={id} value={cfg.transport} onChange={(e) => { set({ transport: e.target.value as ScanTransportKind }); }}>
+              <option value="direct">Direct (default)</option>
+              <option value="tor-browser">Tor Browser (you run it)</option>
+              <option value="local-proxy">Local proxy on this computer</option>
+            </select>
+          )}
+        </Field>
+        <div className="check">
+          <input id="scan-require-proxy" type="checkbox" checked={cfg.requireProxy} onChange={(e) => { set({ requireProxy: e.target.checked }); }} />
+          <label htmlFor="scan-require-proxy">Require the private path (block the scan instead of falling back; skip the direct second RPC behind a local proxy)</label>
+        </div>
+        {services.chains.map((c) => (
+          <Field key={c.chainId} label={`${c.name} scan endpoint`} hint={cfg.transport === 'local-proxy' ? 'Required: an address on 127.0.0.1 or localhost.' : 'Optional: leave empty to use the RPC above.'}>
+            {(id, d) => <input id={id} aria-describedby={d} type="url" spellCheck={false} value={cfg.endpoints[String(c.chainId)] ?? ''} onChange={(e) => { set({ endpoints: { ...cfg.endpoints, [String(c.chainId)]: e.target.value } }); }} />}
+          </Field>
+        ))}
+        <Field label="Announcement source">
+          {(id) => (
+            <select id={id} value={cfg.source} onChange={(e) => { set({ source: e.target.value === 'indexer' ? 'indexer' : 'rpc' }); }}>
+              <option value="rpc">Scan RPC (default)</option>
+              <option value="indexer">Public-log indexer (block hashes checked against your RPC)</option>
+            </select>
+          )}
+        </Field>
+        {cfg.source === 'indexer' && services.chains.map((c) => (
+          <Field key={c.chainId} label={`${c.name} indexer URL`}>
+            {(id) => <input id={id} type="url" spellCheck={false} value={cfg.indexerUrls[String(c.chainId)] ?? ''} onChange={(e) => { set({ indexerUrls: { ...cfg.indexerUrls, [String(c.chainId)]: e.target.value } }); }} />}
+          </Field>
+        ))}
+        <Field label="Fixed scan window (blocks, 0 = off)" hint="Everyone using the same window sends identical range queries. Capped at the chain's log range.">
+          {(id, d) => <input id={id} aria-describedby={d} type="number" min={0} value={Number.isNaN(cfg.windowBlocks) ? '' : cfg.windowBlocks} onChange={(e) => { set({ windowBlocks: num(e.target.value) }); }} />}
+        </Field>
+        <Field label="Scan request delay minimum (ms)">{(id) => <input id={id} type="number" min={0} value={Number.isNaN(cfg.jitterMinMs) ? '' : cfg.jitterMinMs} onChange={(e) => { set({ jitterMinMs: num(e.target.value) }); }} />}</Field>
+        <Field label="Scan request delay maximum (ms)">{(id) => <input id={id} type="number" min={0} value={Number.isNaN(cfg.jitterMaxMs) ? '' : cfg.jitterMaxMs} onChange={(e) => { set({ jitterMaxMs: num(e.target.value) }); }} />}</Field>
+        <Field label="Non-router announcements per scan" hint="Announcements posted by the GhostPay router are always checked first. Others beyond this budget are deferred to the next scan, never skipped.">
+          {(id, d) => <input id={id} aria-describedby={d} type="number" min={1} value={Number.isNaN(cfg.openLaneBudget) ? '' : cfg.openLaneBudget} onChange={(e) => { set({ openLaneBudget: num(e.target.value) }); }} />}
+        </Field>
+        <h4>What each party learns</h4>
+        <ul>
+          {describeScanDisclosure(cfg, { hasSecondary: Object.values(app.settings.rpcUrlsSecondary).some((u) => u !== '') }).map((row) => (
+            <li key={row.party}><strong>{row.party}:</strong> {row.learns}</li>
+          ))}
+        </ul>
+        <div className="actions">
+          <button type="button" className="btn" onClick={() => { set(applyParanoidPreset(cfg)); }}>Use the paranoid preset</button>
+          <button type="submit" className="btn btn-primary">Save scan privacy</button>
+        </div>
+        {message !== undefined && <Notice kind={message.kind}>{message.text}</Notice>}
+      </fieldset>
+    </form>
   );
 }
