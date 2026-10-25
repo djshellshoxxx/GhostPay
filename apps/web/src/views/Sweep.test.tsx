@@ -203,7 +203,7 @@ describe('Sweep', () => {
     expect((await screen.findAllByText('Submitted')).length).toBeGreaterThan(0);
     // The relayed transaction may still be pending: a fresh direct signature from the same address must not be offered.
     await user.click(screen.getByLabelText(/Directly/));
-    expect((screen.getByRole('button', { name: 'Sign and broadcast directly' }) as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
   });
 
   it('relayer path: refuses a fee above the published cap', async () => {
