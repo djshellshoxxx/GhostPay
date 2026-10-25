@@ -1,10 +1,12 @@
 import {
   computeTransactionTweak,
+  parseRawTransaction,
   reverseHex,
-  sha256d,
   SilentPaymentError,
   verifyBlockData,
+  verifyWitnessCommitment,
   txInputFromHex,
+  type ParsedTransaction,
   type BlockOutput,
   type BlockOutputs,
   type BlockTweaks,
@@ -62,6 +64,8 @@ export interface EsploraTx {
   readonly txid: string;
   readonly inputs: readonly TxInput[] | null; // null: coinbase
   readonly outputs: readonly { readonly scriptPubKey: Uint8Array; readonly valueSats: bigint }[];
+  /** Strict re-parse of the serialized transaction (txid and wtxid recomputed). */
+  readonly raw: ParsedTransaction;
 }
 
 function hexToBytes(h: string): Uint8Array {
@@ -80,16 +84,25 @@ function u64le(n: bigint): string {
   return s;
 }
 
+function witnessItems(i: Record<string, unknown>): string[] {
+  const w = i['witness'];
+  if (w === undefined || w === null) return [];
+  if (!Array.isArray(w)) return bad();
+  return w.map((x: unknown) => hexStr(x));
+}
+
 /**
- * Recomputes the txid (non-witness serialization) from Esplora's JSON fields, so the inputs and outputs used for
- * scanning are bound to the txid list that the block header's Merkle root commits to. Witness data and prevout
- * scripts are NOT covered by the txid; a server that alters them can hide a payment but cannot forge one.
+ * Re-serializes the transaction from Esplora's JSON fields, witness included (BIP-144), so the package can
+ * recompute its txid and wtxid. The txid binds inputs and outputs to the header Merkle root; the wtxid binds the
+ * witness through the coinbase commitment ({@link verifyWitnessCommitment}). Prevout scripts are still NOT bound
+ * (they live in earlier blocks): a server that alters them can hide a payment but cannot forge one.
  */
-function computeTxid(v: Record<string, unknown>, vin: readonly unknown[], vout: readonly unknown[]): string {
+function serializeTx(v: Record<string, unknown>, vin: readonly unknown[], vout: readonly unknown[]): string {
   const version = v['version'];
   const locktime = uint(v['locktime']);
   if (typeof version !== 'number' || !Number.isInteger(version) || version < -0x80000000 || version > 0xffffffff || locktime > 0xffffffff) return bad();
-  let raw = u32le(version >>> 0) + compact(vin.length);
+  const witnesses: string[][] = [];
+  let ins = '';
   for (const i of vin) {
     if (!isRecord(i)) return bad();
     const prev = hexStr(i['txid'], 64);
@@ -97,16 +110,18 @@ function computeTxid(v: Record<string, unknown>, vin: readonly unknown[], vout: 
     const sequence = uint(i['sequence']);
     if (!HEX64.test(prev) || index > 0xffffffff || sequence > 0xffffffff) return bad();
     const scriptSig = hexStr(i['scriptsig'] ?? '');
-    raw += reverseHex(prev) + u32le(index) + compact(scriptSig.length / 2) + scriptSig + u32le(sequence);
+    ins += reverseHex(prev) + u32le(index) + compact(scriptSig.length / 2) + scriptSig + u32le(sequence);
+    witnesses.push(witnessItems(i));
   }
-  raw += compact(vout.length);
+  let outs = '';
   for (const o of vout) {
     if (!isRecord(o)) return bad();
     const script = hexStr(o['scriptpubkey']);
-    raw += u64le(BigInt(uint(o['value']))) + compact(script.length / 2) + script;
+    outs += u64le(BigInt(uint(o['value']))) + compact(script.length / 2) + script;
   }
-  raw += u32le(locktime);
-  return reverseHex(Array.from(sha256d(hexToBytes(raw)), (x) => x.toString(16).padStart(2, '0')).join(''));
+  const segwit = witnesses.some((w) => w.length > 0);
+  const wit = segwit ? witnesses.map((w) => compact(w.length) + w.map((h) => compact(h.length / 2) + h).join('')).join('') : '';
+  return u32le(version >>> 0) + (segwit ? '0001' : '') + compact(vin.length) + ins + compact(vout.length) + outs + wit + u32le(locktime);
 }
 
 function parseTx(v: unknown): EsploraTx {
@@ -116,12 +131,13 @@ function parseTx(v: unknown): EsploraTx {
   const vin = v['vin'];
   const vout = v['vout'];
   if (!Array.isArray(vin) || !Array.isArray(vout) || vin.length === 0 || vin.length > 100_000 || vout.length > 100_000) return bad();
-  if (computeTxid(v, vin, vout) !== txid) return bad();
+  const raw = parseRawTransaction(serializeTx(v, vin, vout));
+  if (raw.txid !== txid) return bad();
   const outputs = vout.map((o: unknown) => {
     if (!isRecord(o)) return bad();
     return { scriptPubKey: hexToBytes(hexStr(o['scriptpubkey'])), valueSats: BigInt(uint(o['value'])) };
   });
-  return { txid, inputs: parseInputs(vin), outputs };
+  return { txid, inputs: parseInputs(vin), outputs, raw };
 }
 
 function parseInputs(vin: readonly unknown[]): readonly TxInput[] | null {
@@ -286,10 +302,12 @@ interface Parsed {
  * blocks) but the server only learns which block heights you read.
  *
  * Each block is checked before use: header hash equals the served block hash, proof of work meets
- * the network limit, recomputed txids produce the header Merkle root, and consecutive heights link
- * (height 1 links to the pinned genesis). This is NOT best-chain validation: no retarget, chain work
- * or fork choice, and test-network proof of work is cheap, so a dishonest server can still serve a
- * low-work fork. Spent state (`isUnspent`) remains the server's word.
+ * the network limit, recomputed txids produce the header Merkle root, recomputed wtxids match the
+ * coinbase witness commitment (BIP-141), and consecutive heights link (height 1 links to the pinned
+ * genesis). This source alone is NOT best-chain validation: it applies no retarget, chain work or fork
+ * choice (the package's `HeaderChain` does, given a pinned checkpoint), and test-network proof of work is
+ * cheap, so a dishonest server can still serve a low-work fork. Prevout scripts are not bound to any
+ * header, and spent state (`isUnspent`) remains the server's word.
  */
 export class EsploraTweakSource implements TweakSource {
   private readonly cache = new Map<number, Promise<Parsed>>();
@@ -330,6 +348,7 @@ export class EsploraTweakSource implements TweakSource {
     }
     const [headerHex, txs] = await Promise.all([this.client.blockHeader(blockHash, signal), this.client.blockTxs(blockHash, signal)]);
     const header = verifyBlockData({ headerHex, expectedHash: blockHash, txids: txs.map((t) => t.txid), network: this.net.id });
+    verifyWitnessCommitment(txs.map((t) => t.raw)); // binds witnesses (input public keys) via the coinbase wtxid commitment
     const below = this.linked.get(height - 1);
     const above = this.linked.get(height + 1);
     if ((below !== undefined && header.prevHash !== below) || (above !== undefined && this.prevOf.get(height + 1) !== blockHash)) {
