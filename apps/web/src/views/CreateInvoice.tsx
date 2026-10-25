@@ -1,11 +1,15 @@
 import { ManifestBanner } from '../components/ManifestBanner';
 import { findChain, findToken, isQuoteAvailable } from '@ghostpay/chain-adapters';
-import { useState, type FormEvent, type ReactNode } from 'react';
+import { useRef, useState, type FormEvent, type ReactNode } from 'react';
+import type { Invoice } from '@ghostpay/invoice-schema';
 import { CopyButton, Field, Notice } from '../components/Common';
 import { useManifest } from '../components/Disclosure';
 import { QrFrame } from '../components/QrFrame';
 import { userMessage } from '../lib/errors';
 import { buildInvoiceLink, tokenChoices, type CreatedInvoice, type InvoiceForm, type LineItemInput } from '../lib/invoiceCreate';
+import { registrationFromInvoice } from '../lib/reconciliationMatch';
+import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
+import { checkpointKeyId } from '../lib/scanClient';
 import { useServices } from '../lib/services';
 import { useApp } from '../state';
 
@@ -38,6 +42,10 @@ export function CreateInvoice(): ReactNode {
   const [passphraseAgain, setPassphraseAgain] = useState('');
   const [error, setError] = useState<string | undefined>(undefined);
   const [created, setCreated] = useState<CreatedInvoice | undefined>(undefined);
+  // Opt-in, off by default: keeps minimized invoice fields in the encrypted reconciliation vault for local matching.
+  const [registerForMatching, setRegisterForMatching] = useState(false);
+  const [registration, setRegistration] = useState<{ readonly kind: 'busy' | 'ok' } | { readonly kind: 'error'; readonly message: string } | undefined>(undefined);
+  const registrationRun = useRef(0);
   const manifest = useManifest(chainId);
 
   if (app.session === undefined) {
@@ -56,6 +64,29 @@ export function CreateInvoice(): ReactNode {
   const FIAT_QUOTE_AVAILABLE = fiatQuoteAvailable(chainId, token, currency);
   // A selection that lost its feed (chain, token or currency changed) never keeps fiat mode.
   const effectiveAmountMode = FIAT_QUOTE_AVAILABLE ? amountMode : 'fixed_token';
+
+  const registerCreated = (invoice: Invoice): void => {
+    const run = ++registrationRun.current;
+    // The view renders this form only with a session (early return above).
+    const session = app.session!;
+    if (!registerForMatching) {
+      setRegistration(undefined);
+      return;
+    }
+    setRegistration({ kind: 'busy' });
+    void (async () => {
+      const entry = registrationFromInvoice(invoice);
+      const vault = await createCurrentReconciliationVault(invoice.chainId, checkpointKeyId(session.spendingPublicKey, session.viewingPublicKey));
+      try {
+        await vault.registerInvoice(entry);
+      } finally {
+        vault.lock();
+      }
+    })().then(
+      () => { if (registrationRun.current === run) setRegistration({ kind: 'ok' }); },
+      (err: unknown) => { if (registrationRun.current === run) setRegistration({ kind: 'error', message: userMessage(err) }); },
+    );
+  };
 
   const onSubmit = (e: FormEvent): void => {
     e.preventDefault();
@@ -83,12 +114,15 @@ export function CreateInvoice(): ReactNode {
     buildInvoiceLink(form, services.baseUrl(), Math.floor(services.nowMs() / 1000)).then(
       (c) => {
         setCreated(c);
+        registerCreated(c.invoice);
         setPassphrase('');
         setPassphraseAgain('');
         app.announce('Invoice link created.');
       },
       (err: unknown) => {
         setCreated(undefined);
+        registrationRun.current++;
+        setRegistration(undefined);
         setError(userMessage(err));
       },
     );
@@ -218,6 +252,15 @@ export function CreateInvoice(): ReactNode {
           )}
         </fieldset>
 
+        <fieldset>
+          <legend>Local payment matching (optional)</legend>
+          <div className="check">
+            <input id="register-matching" type="checkbox" checked={registerForMatching} onChange={(e) => { setRegisterForMatching(e.target.checked); }} />
+            <label htmlFor="register-matching">Register this invoice in my encrypted reconciliation vault for automatic local matching</label>
+          </div>
+          <p className="hint">Off by default. Only the invoice digest, nonce, chain, token, expected amount and validity window are stored, encrypted on this device with your viewing key; line items and memo are not. Matching happens on this device only: nothing about the invoice is added to the payment or its announcement. You can remove registrations in the Scan view.</p>
+        </fieldset>
+
         <button type="submit" className="btn btn-primary">Create invoice link</button>
       </form>
 
@@ -229,6 +272,9 @@ export function CreateInvoice(): ReactNode {
           <Notice kind="warn" title="Bearer link">
             Anyone who has this link or its QR code can pay it. {created.passphraseProtected ? 'The invoice contents are protected by a passphrase, which you must send separately; the passphrase cannot be recovered if lost.' : created.encrypted ? 'Anyone with the link can also read the invoice because its encryption key is inside the link.' : 'Anyone with the link can read the invoice.'} Phone photo backups, clipboards, chat previews and browser history may keep a copy. Do not post it publicly unless that is intended.
           </Notice>
+          {registration?.kind === 'busy' && <Notice kind="info">Registering the invoice in your encrypted reconciliation vault…</Notice>}
+          {registration?.kind === 'ok' && <Notice kind="ok">Invoice registered in your encrypted reconciliation vault for local matching.</Notice>}
+          {registration?.kind === 'error' && <Notice kind="warn">The invoice link was created, but it could not be registered for local matching: {registration.message}</Notice>}
           <Field label="Link">{(id) => <textarea id={id} readOnly rows={4} className="mono" value={created.link} onFocus={(e) => { e.currentTarget.select(); }} />}</Field>
           <p><CopyButton text={created.link} label="Copy link" /></p>
           <QrFrame
