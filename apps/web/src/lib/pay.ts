@@ -286,6 +286,24 @@ export interface FinalBuildOptions {
 
 /** Router deadline window for a prepared payment. */
 export const DEADLINE_SECONDS = 20 * 60;
+
+/** First second at which the invoice may no longer be paid: its signed expiry and, for `fiat_quote`, the seller quote expiry. */
+export function invoicePayableUntil(invoice: Invoice): number {
+  return invoice.amountPolicy.mode === 'fiat_quote' ? Math.min(invoice.expiresAt, invoice.quote.expiresAt) : invoice.expiresAt;
+}
+
+/** Reapplies the review-time `checkExpiry` rules; every final pre-sign/pre-submit guard calls this with a fresh clock. */
+export function assertInvoiceStillPayable(invoice: Invoice, nowSeconds: number): void {
+  const expiry = checkExpiry(invoice, nowSeconds);
+  if (expiry.invoiceExpired) throw new UserFacingError('This invoice has expired. Nothing was sent.');
+  if (invoice.amountPolicy.mode === 'fiat_quote' && expiry.quoteExpired) throw new UserFacingError('The seller’s price quote has expired. Nothing was sent. Ask for a new invoice.');
+}
+
+/** One router (and permit) deadline: the 20-minute window, never past the invoice's payable limit. */
+export function boundedDeadline(invoice: Invoice, nowSeconds: number): number {
+  assertInvoiceStillPayable(invoice, nowSeconds);
+  return Math.min(nowSeconds + DEADLINE_SECONDS, invoicePayableUntil(invoice));
+}
 const builtPaymentContexts = new WeakMap<BuiltPayment, PayContext>();
 const builtBufferQuotes = new WeakMap<BuiltPayment, BufferQuote>();
 
@@ -296,7 +314,12 @@ export function buildFinal(ctx: PayContext, opts: FinalBuildOptions): BuiltPayme
     if (opts.nowSeconds >= opts.buffer.expiresAt) throw new UserFacingError('The gas buffer quote expired. Refresh it and review again.');
     assertBufferWithinPolicy(opts.buffer.bufferWei, ctx.review.invoice);
   }
-  const deadline = BigInt(opts.deadlineSeconds ?? opts.nowSeconds + DEADLINE_SECONDS);
+  const inv = ctx.review.invoice;
+  assertInvoiceStillPayable(inv, opts.nowSeconds);
+  if (opts.deadlineSeconds !== undefined && opts.deadlineSeconds > invoicePayableUntil(inv)) {
+    throw new UserFacingError('Blocked: the payment deadline would outlive the invoice. Prepare it again.');
+  }
+  const deadline = BigInt(opts.deadlineSeconds ?? boundedDeadline(inv, opts.nowSeconds));
   const built = ctx.request.build({
     deadline,
     now: BigInt(opts.nowSeconds),

@@ -1,7 +1,8 @@
-import { PERMIT_STATES, erc2612PermitAbi, erc20MetadataAbi, eip712DomainSeparator } from '@ghostpay/chain-adapters';
+import { PERMIT_STATES, chainlinkAggregatorAbi, erc2612PermitAbi, erc20MetadataAbi, eip712DomainSeparator, type FeedConfig } from '@ghostpay/chain-adapters';
 import { privateKeyToAccount } from 'viem/accounts';
 import { encodeFunctionResult } from 'viem/utils';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { ATTEMPT_JOURNAL_KEY } from './duplicateAttemptJournal';
 import { FAKE_ROUTER, fakeManifest } from '../test/fakeManifest';
 import { NOW, USDC_84532, makeParsed } from '../test/invoiceFixtures';
 import { MOCK_ACCOUNT, MockWallet } from '../test/mockWallet';
@@ -14,7 +15,29 @@ import { SubmissionMismatchError, connectWallet, type WalletInfo, type WalletSes
 
 afterEach(() => {
   clearSession();
+  vi.unstubAllGlobals();
 });
+
+/** In-memory attempt journal so a test can prove that no wallet attempt was reserved. */
+function stubAttemptJournal(): Map<string, string> {
+  const mem = new Map<string, string>();
+  vi.stubGlobal('window', {
+    sessionStorage: { getItem: (k: string) => mem.get(k) ?? null, setItem: (k: string, v: string) => { mem.set(k, v); }, removeItem: (k: string) => { mem.delete(k); } },
+    dispatchEvent: () => true,
+  });
+  return mem;
+}
+
+/** A session whose provider runs `hook` after each wallet answer (models time passing during a wallet await). */
+function delayedSession(session: WalletSession, wallet: MockWallet, hook: (method: string) => void): WalletSession {
+  return { ...session, wallet: { ...session.wallet, provider: {
+    request: async (args: Parameters<MockWallet['request']>[0]) => {
+      const answer = await wallet.request(args);
+      hook(args.method);
+      return answer;
+    },
+  } } };
+}
 
 const sleep = (): Promise<void> => Promise.resolve();
 const noStatus = (): void => undefined;
@@ -482,5 +505,125 @@ describe('submitTx', () => {
     const res = await submitTx(session, { to: FAKE_ROUTER, data: '0x', value: 0n }, { rpc, nowSeconds: () => NOW, sleep }, noStatus);
     expect(res.verification).toBe('not-visible-yet');
     expect(res.receipt).toBeUndefined();
+  });
+});
+
+describe('final payment guard rechecks invoice and fiat quote validity (P1)', () => {
+  const FEED: FeedConfig = { chainId: 84532, address: '0x7777777777777777777777777777777777777777', base: 'USDC', quote: 'USD', sourceRef: 'test fixture' };
+  const feedRpc = (): MockRpc => mockRpc(84532, (_m, params) => {
+    const data = (params[0] as { data: string }).data;
+    if (data.startsWith('0x313ce567')) return encodeFunctionResult({ abi: chainlinkAggregatorAbi, functionName: 'decimals', result: 8 });
+    return encodeFunctionResult({ abi: chainlinkAggregatorAbi, functionName: 'latestRoundData', result: [1n, 100_000_000n, BigInt(NOW), BigInt(NOW), 1n] });
+  });
+  async function fiatSetup(): Promise<{ ctx: PayContext; session: WalletSession; wallet: MockWallet }> {
+    const { parsed } = await makeParsed({ amountMode: 'fiat_quote' });
+    const ctx = await createPayContext(reviewInvoice(parsed, NOW, { status: 'loaded', manifest: fakeManifest(84532) }), feedRpc(), { nowSeconds: NOW, findFeedFn: () => FEED });
+    const wallet = new MockWallet();
+    const session = await connectWallet(winfo(wallet), 84532);
+    return { ctx, session, wallet };
+  }
+  const sends = (w: MockWallet): number => w.calls.filter((c) => c.method === 'eth_sendTransaction').length;
+
+  it('rejects an invoice that expired after prepare, before eth_sendTransaction and without reserving an attempt', async () => {
+    const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
+    const expiresAt = ctx.review.invoice.expiresAt;
+    let now = expiresAt - 60;
+    const rt: Runtime = { rpc: undefined, nowSeconds: () => now };
+    const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+    now = expiresAt;
+    const journal = stubAttemptJournal();
+    await expect(sendPayment(session, ctx, built, rt, noStatus)).rejects.toThrow(/invoice has expired/);
+    expect(sends(wallet)).toBe(0);
+    expect(wallet.sent).toBeUndefined();
+    expect(journal.get(ATTEMPT_JOURNAL_KEY)).toBeUndefined();
+  });
+
+  it('rejects when the invoice expires during the final wallet net_version await', async () => {
+    const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
+    const expiresAt = ctx.review.invoice.expiresAt;
+    let now = expiresAt - 60;
+    const rt: Runtime = { rpc: undefined, nowSeconds: () => now };
+    const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+    const journal = stubAttemptJournal();
+    const s = delayedSession(session, wallet, (m) => { if (m === 'net_version') now = expiresAt; });
+    await expect(sendPayment(s, ctx, built, rt, noStatus)).rejects.toThrow(/invoice has expired/);
+    expect(wallet.sent).toBeUndefined();
+    expect(journal.get(ATTEMPT_JOURNAL_KEY)).toBeUndefined();
+  });
+
+  it('fiat mode: rejects once the seller quote expired, also when it expires during net_version', async () => {
+    const { ctx, session, wallet } = await fiatSetup();
+    const quoteExpiry = ctx.review.invoice.quote.expiresAt;
+    let now = NOW;
+    const rt: Runtime = { rpc: undefined, nowSeconds: () => now };
+    const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+    now = quoteExpiry;
+    await expect(sendPayment(session, ctx, built, rt, noStatus)).rejects.toThrow(/quote has expired/);
+    now = quoteExpiry - 1;
+    const s = delayedSession(session, wallet, (m) => { if (m === 'net_version') now = quoteExpiry; });
+    await expect(sendPayment(s, ctx, built, rt, noStatus)).rejects.toThrow(/quote has expired/);
+    expect(sends(wallet)).toBe(0);
+    expect(built.preview.deadline).toBeLessThanOrEqual(BigInt(quoteExpiry));
+  });
+
+  it('fixed-token invoice with an old quote stays payable', async () => {
+    const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
+    let now = NOW;
+    const rt: Runtime = { rpc: undefined, nowSeconds: () => now };
+    const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+    now = ctx.review.invoice.quote.expiresAt + 1;
+    expect(BigInt(now)).toBeLessThan(built.preview.deadline);
+    await expect(sendPayment(session, ctx, built, rt, noStatus)).resolves.toMatchObject({ hash: `0x${'9'.repeat(64)}` });
+    expect(sends(wallet)).toBe(1);
+  });
+
+  it('expiry after the irreversible wallet request keeps the returned hash', async () => {
+    const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
+    const expiresAt = ctx.review.invoice.expiresAt;
+    let now = expiresAt - 60;
+    const rt: Runtime = { rpc: undefined, nowSeconds: () => now };
+    const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+    const s = delayedSession(session, wallet, (m) => { if (m === 'eth_sendTransaction') now = expiresAt + 3600; });
+    await expect(sendPayment(s, ctx, built, rt, noStatus)).resolves.toMatchObject({ hash: `0x${'9'.repeat(64)}` });
+  });
+
+  it('permit: one deadline bounded by invoice validity in typed data and calldata; a late signature is refused', async () => {
+    const account = privateKeyToAccount(`0x${'cd'.repeat(32)}`);
+    const wallet = new MockWallet({ account: account.address });
+    const signed: bigint[] = [];
+    let onSign = (): void => undefined;
+    const signing = winfo({
+      request: async (a) => {
+        if (a.method !== 'eth_signTypedData_v4') return wallet.request(a);
+        const td = JSON.parse((a.params as [string, string])[1]) as { domain: never; types: { Permit: never }; message: Record<string, string> };
+        const message = { owner: td.message['owner'], spender: td.message['spender'], value: BigInt(td.message['value'] as string), nonce: BigInt(td.message['nonce'] as string), deadline: BigInt(td.message['deadline'] as string) };
+        signed.push(message.deadline);
+        const sig = await account.signTypedData({ domain: td.domain, types: { Permit: td.types.Permit }, primaryType: 'Permit', message });
+        onSign();
+        return sig;
+      },
+    });
+    const { parsed } = await makeParsed();
+    const ctx = await createPayContext(reviewInvoice(parsed, NOW, { status: 'loaded', manifest: fakeManifest(84532) }), undefined, { nowSeconds: NOW });
+    const session = await connectWallet(signing, 84532);
+    const rpc = mockRpc(84532, (_m, params) => {
+      const data = (params[0] as { data: string }).data;
+      if (data.startsWith('0x06fdde03')) return encodeFunctionResult({ abi: erc20MetadataAbi, functionName: 'name', result: 'USDC' });
+      if (data.startsWith('0x7ecebe00')) return encodeFunctionResult({ abi: erc2612PermitAbi, functionName: 'nonces', result: 0n });
+      if (data.startsWith('0xdd62ed3e')) return `0x${'0'.repeat(64)}`;
+      if (data.startsWith('0xd505accf')) return '0x';
+      return eip712DomainSeparator({ name: 'USDC', version: '2', chainId: 84532, verifyingContract: '0x036CbD53842c5426634e7929541eC2318f3dCF7e' });
+    });
+    const expiresAt = parsed.invoice.expiresAt;
+    let now = expiresAt - 60;
+    const rt: Runtime = { rpc, nowSeconds: () => now };
+    const built = await preparePayment(session, ctx, { usePermit: true }, rt, noStatus);
+    expect(built.preview.method).toBe('payERC20WithPermit');
+    expect(signed[0]).toBe(built.preview.deadline);
+    expect(built.preview.deadline).toBeLessThanOrEqual(BigInt(expiresAt));
+    onSign = () => { now = expiresAt; };
+    now = expiresAt - 60;
+    await expect(preparePayment(session, ctx, { usePermit: true }, rt, noStatus)).rejects.toThrow(/invoice has expired/);
+    expect(wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
   });
 });

@@ -695,6 +695,40 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
   });
 });
 
+describe('Pay: validity is rechecked before the initial approval', () => {
+  /** ERC-20 buffer flow (approval required) prepared at `startSeconds`; returns a clock setter and the wallet. */
+  async function toPreparedBuffer(startSeconds: (expiresAt: number) => number): Promise<{ user: ReturnType<typeof userEvent.setup>; wallet: MockWallet; setNow: (s: number) => void; expiresAt: number }> {
+    const { fragment, parsed } = await makeParsed();
+    const wallet = new MockWallet();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const base = chainSeeing(wallet);
+    const rpc = mockRpc(84532, (method, params) => {
+      if (method === 'eth_call') return `0x${'0'.repeat(64)}`;
+      if (method === 'eth_estimateGas') return '0xfde8';
+      return base.request(method, params);
+    });
+    const expiresAt = parsed.invoice.expiresAt;
+    let clock = startSeconds(expiresAt) * 1000;
+    const user = openWith(fragment, makeServices({ nowMs: () => clock, loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(await screen.findByLabelText(/Add a gas buffer/));
+    await screen.findByText(/Extra 0\.00024 ETH/);
+    await user.click(screen.getByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' }, { timeout: 5000 });
+    return { user, wallet, setNow: (sec) => { clock = sec * 1000; }, expiresAt };
+  }
+  const approveButton = (): HTMLElement => screen.getByRole('button', { name: 'Approve exactly, then send payment in my wallet' });
+
+  it('P1: an invoice that expired after prepare asks the wallet for nothing, not even the approval', async () => {
+    const t = await toPreparedBuffer((e) => e - 30);
+    t.setNow(t.expiresAt);
+    await t.user.click(approveButton());
+    await screen.findByText(/invoice has expired/);
+    expect(t.wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
+  });
+});
+
 describe('Pay: manifest read-back and post-broadcast safety (WEB-APP-01, WEB-APP-02)', () => {
   async function toPreparedWith(wallet: MockWallet, rpc: ReturnType<typeof mockRpc>): Promise<ReturnType<typeof userEvent.setup>> {
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
