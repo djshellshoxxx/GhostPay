@@ -80,8 +80,8 @@ export function Settings(): ReactNode {
       <Notice kind="info">
         {t('settings.notice.plaintext')}
       </Notice>
-      <Notice kind="warn" title="Settings can be changed outside this page">
-        Anything that can write to this site&rsquo;s browser storage, including another local user, malware or an extension, can change these RPC, relayer and pinned-signer settings. Review the endpoints and signer keys before relying on them. A second RPC can reveal disagreements, but it does not make either provider trustworthy by itself.
+      <Notice kind="warn" title={t('settings.outside.title')}>
+        {t('settings.outside.body')}
       </Notice>
       <form onSubmit={onSave} className="stack" noValidate>
         <fieldset>
@@ -173,6 +173,8 @@ export function Settings(): ReactNode {
 function ScanPrivacySection(): ReactNode {
   const app = useApp();
   const services = useServices();
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const [cfg, setCfg] = useState<ScanPrivacySettings>(() => loadScanPrivacy(browserStorage()));
   const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: string } | undefined>(undefined);
   const set = (patch: Partial<ScanPrivacySettings>): void => { setCfg((c) => ({ ...c, ...patch })); setMessage(undefined); };
@@ -186,12 +188,12 @@ function ScanPrivacySection(): ReactNode {
       const indexerUrls: Record<string, string> = {};
       for (const [k, v] of Object.entries(cfg.indexerUrls)) if (v.trim() !== '') indexerUrls[k] = checkIndexerUrl(v, cfg.transport);
       const ok = (n: number, min: number, max: number): boolean => Number.isInteger(n) && n >= min && n <= max;
-      if (!ok(cfg.windowBlocks, 0, 100_000)) throw new Error('Window size must be a whole number of blocks from 0 to 100000.');
-      if (!ok(cfg.jitterMinMs, 0, 10_000) || !ok(cfg.jitterMaxMs, 0, 10_000) || cfg.jitterMinMs > cfg.jitterMaxMs) throw new Error('Delays must be whole milliseconds, minimum at most maximum, up to 10000.');
-      if (!ok(cfg.openLaneBudget, 1, 100_000)) throw new Error('The per-scan budget must be from 1 to 100000.');
+      if (!ok(cfg.windowBlocks, 0, 100_000)) throw new Error(t('settings.scanPrivacy.errWindow'));
+      if (!ok(cfg.jitterMinMs, 0, 10_000) || !ok(cfg.jitterMaxMs, 0, 10_000) || cfg.jitterMinMs > cfg.jitterMaxMs) throw new Error(t('settings.scanPrivacy.errDelays'));
+      if (!ok(cfg.openLaneBudget, 1, 100_000)) throw new Error(t('settings.scanPrivacy.errBudget'));
       const next = { ...cfg, endpoints, indexerUrls };
       setCfg(next);
-      setMessage(saveScanPrivacy(browserStorage(), next) ? { kind: 'ok', text: 'Scan privacy settings saved. They apply to the next scan.' } : { kind: 'warn', text: 'This browser refused to store the scan privacy settings.' });
+      setMessage(saveScanPrivacy(browserStorage(), next) ? { kind: 'ok', text: t('settings.scanPrivacy.saved') } : { kind: 'warn', text: t('settings.scanPrivacy.refused') });
     } catch (err) {
       setMessage({ kind: 'error', text: err instanceof Error && !(err.name === 'ChainAdapterError') ? err.message : userMessage(err) });
     }
@@ -200,58 +202,58 @@ function ScanPrivacySection(): ReactNode {
   return (
     <form onSubmit={onSave} className="stack" noValidate>
       <fieldset>
-        <legend>Scan privacy</legend>
+        <legend>{t('settings.scanPrivacy.legend')}</legend>
         <p className="hint">
-          These options change how announcements are fetched, not what is on-chain. A web page cannot open a SOCKS connection or check that it runs in Tor Browser: &ldquo;Tor Browser&rdquo; means you opened this page in Tor Browser yourself; &ldquo;Local proxy&rdquo; means a JSON-RPC forwarder you run on this computer (for example one that sends traffic over Tor). Defaults add no new destination.
+          {t('settings.scanPrivacy.hint')}
         </p>
-        <Field label="Scan transport">
+        <Field label={t('settings.scanPrivacy.transport')}>
           {(id) => (
             <select id={id} value={cfg.transport} onChange={(e) => { set({ transport: e.target.value as ScanTransportKind }); }}>
-              <option value="direct">Direct (default)</option>
-              <option value="tor-browser">Tor Browser (you run it)</option>
-              <option value="local-proxy">Local proxy on this computer</option>
+              <option value="direct">{t('settings.scanPrivacy.transportDirect')}</option>
+              <option value="tor-browser">{t('settings.scanPrivacy.transportTor')}</option>
+              <option value="local-proxy">{t('settings.scanPrivacy.transportProxy')}</option>
             </select>
           )}
         </Field>
         <div className="check">
           <input id="scan-require-proxy" type="checkbox" checked={cfg.requireProxy} onChange={(e) => { set({ requireProxy: e.target.checked }); }} />
-          <label htmlFor="scan-require-proxy">Require the private path (block the scan instead of falling back; skip the direct second RPC behind a local proxy)</label>
+          <label htmlFor="scan-require-proxy">{t('settings.scanPrivacy.requireProxy')}</label>
         </div>
         {services.chains.map((c) => (
-          <Field key={c.chainId} label={`${c.name} scan endpoint`} hint={cfg.transport === 'local-proxy' ? 'Required: an address on 127.0.0.1 or localhost.' : 'Optional: leave empty to use the RPC above.'}>
+          <Field key={c.chainId} label={t('settings.scanPrivacy.endpoint', { chain: c.name })} hint={cfg.transport === 'local-proxy' ? t('settings.scanPrivacy.endpointRequired') : t('settings.scanPrivacy.endpointOptional')}>
             {(id, d) => <input id={id} aria-describedby={d} type="url" spellCheck={false} value={cfg.endpoints[String(c.chainId)] ?? ''} onChange={(e) => { set({ endpoints: { ...cfg.endpoints, [String(c.chainId)]: e.target.value } }); }} />}
           </Field>
         ))}
-        <Field label="Announcement source">
+        <Field label={t('settings.scanPrivacy.source')}>
           {(id) => (
             <select id={id} value={cfg.source} onChange={(e) => { set({ source: e.target.value === 'indexer' ? 'indexer' : 'rpc' }); }}>
-              <option value="rpc">Scan RPC (default)</option>
-              <option value="indexer">Public-log indexer (block hashes checked against your RPC)</option>
+              <option value="rpc">{t('settings.scanPrivacy.sourceRpc')}</option>
+              <option value="indexer">{t('settings.scanPrivacy.sourceIndexer')}</option>
             </select>
           )}
         </Field>
         {cfg.source === 'indexer' && services.chains.map((c) => (
-          <Field key={c.chainId} label={`${c.name} indexer URL`}>
+          <Field key={c.chainId} label={t('settings.scanPrivacy.indexerUrl', { chain: c.name })}>
             {(id) => <input id={id} type="url" spellCheck={false} value={cfg.indexerUrls[String(c.chainId)] ?? ''} onChange={(e) => { set({ indexerUrls: { ...cfg.indexerUrls, [String(c.chainId)]: e.target.value } }); }} />}
           </Field>
         ))}
-        <Field label="Fixed scan window (blocks, 0 = off)" hint="Everyone using the same window sends identical range queries. Capped at the chain's log range.">
+        <Field label={t('settings.scanPrivacy.window')} hint={t('settings.scanPrivacy.windowHint')}>
           {(id, d) => <input id={id} aria-describedby={d} type="number" min={0} value={Number.isNaN(cfg.windowBlocks) ? '' : cfg.windowBlocks} onChange={(e) => { set({ windowBlocks: num(e.target.value) }); }} />}
         </Field>
-        <Field label="Scan request delay minimum (ms)">{(id) => <input id={id} type="number" min={0} value={Number.isNaN(cfg.jitterMinMs) ? '' : cfg.jitterMinMs} onChange={(e) => { set({ jitterMinMs: num(e.target.value) }); }} />}</Field>
-        <Field label="Scan request delay maximum (ms)">{(id) => <input id={id} type="number" min={0} value={Number.isNaN(cfg.jitterMaxMs) ? '' : cfg.jitterMaxMs} onChange={(e) => { set({ jitterMaxMs: num(e.target.value) }); }} />}</Field>
-        <Field label="Non-router announcements per scan" hint="Announcements posted by the GhostPay router are always checked first. Others beyond this budget are deferred to the next scan, never skipped.">
+        <Field label={t('settings.scanPrivacy.jitterMin')}>{(id) => <input id={id} type="number" min={0} value={Number.isNaN(cfg.jitterMinMs) ? '' : cfg.jitterMinMs} onChange={(e) => { set({ jitterMinMs: num(e.target.value) }); }} />}</Field>
+        <Field label={t('settings.scanPrivacy.jitterMax')}>{(id) => <input id={id} type="number" min={0} value={Number.isNaN(cfg.jitterMaxMs) ? '' : cfg.jitterMaxMs} onChange={(e) => { set({ jitterMaxMs: num(e.target.value) }); }} />}</Field>
+        <Field label={t('settings.scanPrivacy.budget')} hint={t('settings.scanPrivacy.budgetHint')}>
           {(id, d) => <input id={id} aria-describedby={d} type="number" min={1} value={Number.isNaN(cfg.openLaneBudget) ? '' : cfg.openLaneBudget} onChange={(e) => { set({ openLaneBudget: num(e.target.value) }); }} />}
         </Field>
-        <h4>What each party learns</h4>
+        <h4>{t('settings.scanPrivacy.learnsHeading')}</h4>
         <ul>
           {describeScanDisclosure(cfg, { hasSecondary: Object.values(app.settings.rpcUrlsSecondary).some((u) => u !== '') }).map((row) => (
             <li key={row.party}><strong>{row.party}:</strong> {row.learns}</li>
           ))}
         </ul>
         <div className="actions">
-          <button type="button" className="btn" onClick={() => { set(applyParanoidPreset(cfg)); }}>Use the paranoid preset</button>
-          <button type="submit" className="btn btn-primary">Save scan privacy</button>
+          <button type="button" className="btn" onClick={() => { set(applyParanoidPreset(cfg)); }}>{t('settings.scanPrivacy.paranoid')}</button>
+          <button type="submit" className="btn btn-primary">{t('settings.scanPrivacy.save')}</button>
         </div>
         {message !== undefined && <Notice kind={message.kind}>{message.text}</Notice>}
       </fieldset>
