@@ -1,7 +1,9 @@
 import { useId, useState, type ReactNode } from 'react';
 import { buildEip681Erc20, buildEip681Native, buildSolanaPay, buildTronUri, type TronNetwork } from '@ghostpay/payment-uri';
+import type { LocalReceipt } from '../lib/payExec';
+import { makeQr } from '../lib/qr';
 import { kindForPayload } from '../lib/qrKinds';
-import { CopyButton, Mono, Notice } from './Common';
+import { CopyButton, Mono, Notice, downloadText } from './Common';
 import { QrFrame } from './QrFrame';
 
 /** One payment request per chain family. Amounts follow each standard: atomic units for EVM, whole units for Solana/TRON. */
@@ -70,6 +72,54 @@ export function PaymentRequestQr(props: PaymentRequestQrProps): ReactNode {
       <p><Mono><span data-testid="payment-request-text">{uri}</span></Mono></p>
       <CopyButton text={uri} label="Copy payment request" />
     </div>
+  );
+}
+
+/**
+ * Payer-side proof of payment: the local receipt this device built, as a QR and a download. It records what the payer
+ * submitted; it is not independent payment proof (only the chain, or a seller-signed receipt, is evidence).
+ */
+export function PaymentProofQr(props: { readonly receipt: LocalReceipt }): ReactNode {
+  const [shown, setShown] = useState(false);
+  const [error, setError] = useState<string | undefined>(undefined);
+  const textId = useId();
+  const text = JSON.stringify(props.receipt, null, 2);
+  const compact = JSON.stringify(props.receipt);
+  const show = (): void => {
+    try {
+      makeQr(compact);
+      setError(undefined);
+      setShown(true);
+    } catch {
+      setShown(false);
+      setError('This proof is too large for one QR code. Use the JSON copy or download instead.');
+    }
+  };
+  return (
+    <section className="payment-proof" aria-label="Proof of payment">
+      <h4>Proof of payment</h4>
+      <p className="hint" data-testid="proof-disclaimer">
+        This is your own record of what this device submitted. It is not independent proof of payment: it is not signed by the
+        seller and can be edited by anyone who holds it. It contains the amount and time, so show it only to the person who needs it.
+      </p>
+      <div className="actions">
+        {shown ? (
+          <button type="button" className="btn" onClick={() => { setShown(false); }}>Hide proof QR</button>
+        ) : (
+          <button type="button" className="btn" onClick={show}>Show proof QR</button>
+        )}
+        <CopyButton text={text} label="Copy proof JSON" />
+        <button type="button" className="btn" onClick={() => { downloadText('ghostpay-proof-of-payment.json', text, 'application/json'); }}>Download proof JSON</button>
+      </div>
+      {error !== undefined && <Notice kind="error">{error}</Notice>}
+      {shown && (
+        <>
+          <QrFrame kind={kindForPayload('payment-proof', { unverified: props.receipt.status !== 'included' })} text={compact} caption="Payer proof of payment (not independent proof)" />
+          <label htmlFor={textId}>Proof of payment text</label>
+          <textarea id={textId} className="mono receipt-json" readOnly rows={8} value={text} />
+        </>
+      )}
+    </section>
   );
 }
 

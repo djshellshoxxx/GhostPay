@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import type { LocalReceipt } from '../lib/payExec';
 import { parseEip681, parseSolanaPay, parseTronUri } from '@ghostpay/payment-uri';
-import { PaymentRequestQr, PlainPaymentRequest, buildPaymentRequestUri, type PaymentRequestSpec } from './PaymentRequestQr';
+import { PaymentProofQr, PaymentRequestQr, PlainPaymentRequest, buildPaymentRequestUri, type PaymentRequestSpec } from './PaymentRequestQr';
 
 afterEach(cleanup);
 
@@ -57,6 +58,56 @@ describe('PaymentRequestQr', () => {
   it('renders an optional note', () => {
     render(<PaymentRequestQr spec={sol} testnet={false} title="T" note="Plain transfer only." />);
     expect(screen.getByText('Plain transfer only.')).toBeTruthy();
+  });
+});
+
+const RECEIPT: LocalReceipt = {
+  kind: 'ghostpay-local-receipt',
+  version: 1,
+  chainId: 84532,
+  txHash: `0x${'ab'.repeat(32)}`,
+  router: EVM as LocalReceipt['router'],
+  token: 'native',
+  gross: '100',
+  fee: '1',
+  net: '99',
+  invoiceNonce: 'n'.repeat(32),
+  fiat: 'USD 10000',
+  quote: { source: 'fixed', timestamp: 1, expiresAt: 2 },
+  status: 'included',
+  createdAt: '2026-10-25T00:00:00.000Z',
+};
+
+describe('PaymentProofQr', () => {
+  it('says it is not independent proof, hides the QR until asked, then shows it with text and copy', () => {
+    const { container } = render(<PaymentProofQr receipt={RECEIPT} />);
+    expect(screen.getByTestId('proof-disclaimer').textContent).toMatch(/not independent proof of payment/i);
+    expect(container.querySelector('.qr-frame')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Show proof QR' }));
+    expect(container.querySelector('[data-qr-kind="proof"]')).not.toBeNull();
+    expect((screen.getByLabelText('Proof of payment text') as HTMLTextAreaElement).value).toContain(RECEIPT.txHash);
+    expect(screen.getByRole('button', { name: 'Copy proof JSON' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Hide proof QR' }));
+    expect(container.querySelector('.qr-frame')).toBeNull();
+  });
+  it('downloads the proof JSON', () => {
+    const create = vi.fn(() => 'blob:x');
+    vi.stubGlobal('URL', Object.assign(URL, { createObjectURL: create, revokeObjectURL: vi.fn() }));
+    render(<PaymentProofQr receipt={RECEIPT} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Download proof JSON' }));
+    expect(create).toHaveBeenCalledOnce();
+    vi.unstubAllGlobals();
+  });
+  it('uses the caution frame when the transaction is not confirmed as included', () => {
+    const { container } = render(<PaymentProofQr receipt={{ ...RECEIPT, status: 'unconfirmed' }} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Show proof QR' }));
+    expect(container.querySelector('[data-qr-kind="caution"]')).not.toBeNull();
+  });
+  it('keeps the JSON available when the proof is too large for one QR', () => {
+    render(<PaymentProofQr receipt={{ ...RECEIPT, fiat: 'x'.repeat(4000) }} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Show proof QR' }));
+    expect(screen.getByRole('alert').textContent).toMatch(/too large for one QR/i);
+    expect(screen.getByRole('button', { name: 'Download proof JSON' })).toBeTruthy();
   });
 });
 
