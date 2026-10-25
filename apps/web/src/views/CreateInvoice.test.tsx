@@ -22,6 +22,40 @@ async function open(services = makeServices()): Promise<ReturnType<typeof userEv
   return user;
 }
 
+describe('Create invoice fiat gating (per chain and token)', () => {
+  const fiat = (): HTMLOptionElement => screen.getByRole<HTMLOptionElement>('option', { name: /Fiat price/ });
+  it('is disabled on a chain without a verified feed, even for the native token', async () => {
+    generateSession();
+    const user = await open();
+    await user.selectOptions(screen.getByLabelText('Chain'), screen.getByRole('option', { name: 'Base Sepolia' }));
+    expect(fiat().disabled).toBe(true);
+    expect(fiat().textContent).toMatch(/unavailable/);
+  });
+  it('is enabled only for the pair that has a verified feed (Sepolia ETH/USD), not for USDC or other currencies', async () => {
+    generateSession();
+    const user = await open();
+    await user.selectOptions(screen.getByLabelText('Chain'), screen.getByRole('option', { name: 'Ethereum Sepolia' }));
+    expect(fiat().disabled).toBe(false);
+    await user.selectOptions(screen.getByLabelText('Token'), screen.getByRole('option', { name: 'USDC' }));
+    expect(fiat().disabled).toBe(true);
+    await user.selectOptions(screen.getByLabelText('Token'), screen.getByRole('option', { name: 'ETH' }));
+    expect(fiat().disabled).toBe(false);
+    await user.clear(screen.getByLabelText('Currency (ISO code)'));
+    await user.type(screen.getByLabelText('Currency (ISO code)'), 'EUR');
+    expect(fiat().disabled).toBe(true);
+  });
+  it('falls back to a fixed token amount when the selection loses its feed', async () => {
+    generateSession();
+    const user = await open();
+    await user.selectOptions(screen.getByLabelText('Chain'), screen.getByRole('option', { name: 'Ethereum Sepolia' }));
+    await user.selectOptions(screen.getByLabelText('Pricing'), screen.getByRole('option', { name: /Fiat price/ }));
+    expect(screen.queryByLabelText('Token amount')).toBeNull();
+    await user.selectOptions(screen.getByLabelText('Chain'), screen.getByRole('option', { name: 'Base Sepolia' }));
+    expect(screen.getByLabelText('Token amount')).toBeTruthy();
+    expect(screen.getByLabelText<HTMLSelectElement>('Pricing').value).toBe('fixed_token');
+  });
+});
+
 describe('Create invoice', () => {
   it('asks for keys first', async () => {
     const user = await open();
@@ -52,7 +86,7 @@ describe('Create invoice', () => {
     expect(fetchFn).not.toHaveBeenCalled();
   });
 
-  it('supports multiple items, encryption and token selection; fiat pricing is hard-disabled', async () => {
+  it('supports multiple items, encryption and token selection; fiat pricing is disabled without a feed', async () => {
     generateSession();
     const user = await open();
     await user.selectOptions(screen.getByLabelText('Token'), screen.getByRole('option', { name: 'USDC' }));
