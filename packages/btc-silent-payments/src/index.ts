@@ -21,3 +21,5 @@ export * from './units.js';
 export * from './uri.js';
 export * from './header.js';
 export * from './headerchain.js';
+export * from './scan/headersync.js';
+export * from './scan/state.js';

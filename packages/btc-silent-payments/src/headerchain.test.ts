@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { parseHeader, reverseHex, targetFromBits } from './header.js';
+import { parseHeader, targetFromBits } from './header.js';
+import { NOW, REGTEST_GENESIS, extend, mine, regtestChain, u32 } from './headers.testutil.js';
 import {
   CHAIN_PARAMS,
   HeaderChain,
@@ -17,39 +18,6 @@ const MAINNET_1_HASH = '00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf
 const MAINNET_2 =
   '010000004860eb18bf1b1620e37e9490fc8a427514416fd75159ab86688e9a8300000000d5fdcc541e25de1c7a5addedf24858b8bb665c9f36ef744ee42c316022c90f9bb0bc6649ffff001d08d2bd61';
 const MAINNET_2_HASH = '000000006a625f06636b8bb6ac7b960a8d03705d1ace08b1a19da3fdcc99ddbd';
-const REGTEST_GENESIS =
-  '0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4adae5494dffff7f2002000000';
-const REGTEST_GENESIS_HASH = '0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206';
-
-const hexOf = (b: Uint8Array): string => Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
-const u32 = (n: number): string => hexOf(Uint8Array.of(n & 0xff, (n >>> 8) & 0xff, (n >>> 16) & 0xff, (n >>> 24) & 0xff));
-
-/** Grinds the nonce until the header meets `bits` (cheap at regtest-like targets). */
-function mine(prev: string, time: number, bits: number, opts: { version?: number; tag?: number } = {}): string {
-  const merkle = hexOf(Uint8Array.from({ length: 32 }, (_, i) => (i + (opts.tag ?? 0) * 7 + time) & 0xff));
-  const target = targetFromBits(bits);
-  for (let nonce = 0; ; nonce++) {
-    const hex = `${u32(opts.version ?? 0x20000000)}${reverseHex(prev)}${merkle}${u32(time)}${u32(bits)}${u32(nonce)}`;
-    if (BigInt(`0x${parseHeader(hex).hash}`) <= target) return hex;
-  }
-}
-
-/** Mines `n` headers on top of `prevHex` with the given spacing and bits. */
-function extend(prevHex: string, n: number, spacing: number, bits: number, tag = 0): string[] {
-  const out: string[] = [];
-  let prev = parseHeader(prevHex);
-  for (let i = 0; i < n; i++) {
-    const hex = mine(prev.hash, prev.time + spacing, bits, { tag });
-    out.push(hex);
-    prev = parseHeader(hex);
-  }
-  return out;
-}
-
-const NOW = () => 2_000_000_000;
-const regtestChain = (): HeaderChain =>
-  HeaderChain.create({ params: CHAIN_PARAMS.regtest, checkpoint: { height: 0, hash: REGTEST_GENESIS_HASH, headerHex: REGTEST_GENESIS }, now: NOW });
-
 /** Small retargeting network for tests: 4-block periods, 1 s spacing. Targets stay far below 2^256 / 16. */
 const TINY: ChainParams = {
   ...CHAIN_PARAMS.regtest,
