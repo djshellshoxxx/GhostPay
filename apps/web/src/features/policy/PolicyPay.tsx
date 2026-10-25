@@ -1,10 +1,11 @@
 import { useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../../components/Common';
 import { userMessage } from '../../lib/errors';
-import { sendViaWallet } from '../../lib/wallet';
 import { useApp } from '../../state';
 import { useServices } from '../../lib/services';
 import { preparePolicyPayment, type PreparedPolicyPayment } from './pay';
+import { sendPolicyPayment } from './send';
+import type { Hex } from '@ghostpay/policy-scheme';
 import type { PolicyCtx } from './PolicyView';
 
 const DEC = /^[1-9][0-9]{0,77}$/;
@@ -20,6 +21,8 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
   const [prepared, setPrepared] = useState<PreparedPolicyPayment | undefined>(undefined);
   const [msg, setMsg] = useState<{ kind: 'ok' | 'error'; text: string } | undefined>(undefined);
   const [busy, setBusy] = useState(false);
+  const [status, setStatus] = useState<string | undefined>(undefined);
+  const [broadcast, setBroadcast] = useState<readonly Hex[]>([]);
 
   const review = (): void => {
     setMsg(undefined);
@@ -37,10 +40,17 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
     if (prepared === undefined || wallet === undefined) return;
     setBusy(true);
     setMsg(undefined);
+    setStatus(undefined);
     try {
-      if (prepared.approval !== undefined) await sendViaWallet(wallet, prepared.approval, undefined, { kind: 'approval' });
-      const hash = await sendViaWallet(wallet, prepared.built.tx, undefined, { kind: 'payment' });
-      setMsg({ kind: 'ok', text: `Payment submitted: ${hash}` });
+      const rpc = await app.getRpc(props.ctx.chain.chainId);
+      const res = await sendPolicyPayment(
+        wallet,
+        prepared,
+        { rpc, nowSeconds: () => Math.floor(services.nowMs() / 1000), sleep: services.sleep },
+        setStatus,
+        (h) => { setBroadcast((prev) => [...prev, h]); },
+      );
+      setMsg({ kind: 'ok', text: `Payment submitted: ${res.hash}${res.receipt?.status === 'success' ? ' (confirmed)' : ''}` });
       app.announce('Policy payment submitted.');
       setPrepared(undefined);
     } catch (e) {
@@ -75,6 +85,13 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
                 <button type="button" disabled={busy} onClick={() => { void send(); }}>Send payment</button>
               )}
             </>
+          )}
+          {status !== undefined && <p role="status">{status}</p>}
+          {broadcast.length > 0 && (
+            <div aria-label="Broadcast transactions">
+              <p>Transactions your wallet sent (keep these; do not resend):</p>
+              <ul className="plain">{broadcast.map((h, i) => <li key={`${h}-${String(i)}`}><Mono>{h}</Mono></li>)}</ul>
+            </div>
           )}
           {msg !== undefined && <Notice kind={msg.kind}>{msg.text}</Notice>}
         </>

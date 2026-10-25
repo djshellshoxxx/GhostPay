@@ -122,6 +122,8 @@ export interface FakeChainState {
   calls?: Record<string, unknown>;
   balances?: Record<string, bigint>;
   logs?: RpcLog[];
+  /** Answers methods first when it returns something other than undefined. */
+  extra?: (method: string, params: readonly unknown[]) => unknown;
 }
 
 const ABIS: Abi[] = [ghostPayPolicyRouterAbi, policyAccountFactoryAbi, policyAccountAbi, erc20Abi];
@@ -130,6 +132,8 @@ const ABIS: Abi[] = [ghostPayPolicyRouterAbi, policyAccountFactoryAbi, policyAcc
 export function fakeChain(chainId: number, s: FakeChainState): MockRpc {
   const head = s.head ?? 1000;
   return mockRpc(chainId, (method, params) => {
+    const x = s.extra?.(method, params);
+    if (x !== undefined) return x;
     if (method === 'eth_blockNumber') return `0x${head.toString(16)}`;
     if (method === 'eth_getBlockByNumber') {
       const n = params[0] === 'latest' ? head : Number(params[0]);
@@ -202,3 +206,19 @@ export function accountCalls(a: VectorAccount, over: Record<string, unknown> = {
 }
 
 export { getAddress };
+
+/** RPC answers that mirror what a wallet broadcast: the tx by hash and a receipt with the given status per destination. */
+export function walletMirror(wallet: { sent: Record<string, unknown> | undefined }, statusFor: (to: string) => '0x1' | '0x0' = () => '0x1') {
+  return (method: string): unknown => {
+    const sent = wallet.sent;
+    if (method === 'eth_getTransactionByHash') {
+      if (sent === undefined) return null;
+      return { hash: `0x${'9'.repeat(64)}`, from: sent['from'], to: sent['to'], input: sent['data'], value: sent['value'], chainId: sent['chainId'] };
+    }
+    if (method === 'eth_getTransactionReceipt') {
+      if (sent === undefined) return null;
+      return { to: sent['to'], status: statusFor(String(sent['to'])), blockNumber: '0x10' };
+    }
+    return undefined;
+  };
+}

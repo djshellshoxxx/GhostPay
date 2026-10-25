@@ -6,7 +6,7 @@ import { clearSession, importSession } from '../../lib/session';
 import { SETTINGS_KEY } from '../../lib/settings';
 import { makeServices, renderApp } from '../../test/render';
 import { POLICY_FLAG } from './flag';
-import { ROUTER, SEPOLIA, account, accountCalls, accountLog, clientVectors, deploymentCalls, fakeChain, fixedRng, scheme2Log, DEPLOYMENT } from './fixtures.testutil';
+import { ROUTER, SEPOLIA, account, accountCalls, accountLog, clientVectors, deploymentCalls, fakeChain, fixedRng, scheme2Log, walletMirror, DEPLOYMENT } from './fixtures.testutil';
 import { policyAccountAbi, ghostPayPolicyRouterAbi, ZERO_ADDRESS } from '@ghostpay/policy-scheme';
 import { decodeFunctionData } from 'viem/utils';
 import { MockWallet } from '../../test/mockWallet';
@@ -159,8 +159,10 @@ describe('policy view flows', () => {
     const x = a1.accountAddress.toLowerCase();
     const base = deploymentCalls();
     base.code.add(x);
+    const w = new MockWallet({ chainId: SEPOLIA });
     const rpc = fakeChain(SEPOLIA, {
       ...base,
+      extra: walletMirror(w),
       calls: { ...base.calls, ...accountCalls(a1) },
       head: 900,
       balances: { [`native@${x}`]: 3n * 10n ** 18n },
@@ -169,7 +171,6 @@ describe('policy view flows', () => {
         accountLog(a1.accountAddress, 'WithdrawRequested', { id: foreign, token: ZERO_ADDRESS, amount: 10n ** 17n, executeAfter: 1n }, 600),
       ],
     });
-    const w = new MockWallet({ chainId: SEPOLIA });
     const info: WalletInfo = { id: 'mock', name: 'Mock Wallet', kind: 'eip6963', provider: w };
     const user = await open(makeServices({ createRpc: () => Promise.resolve(rpc), discoverWallets: () => Promise.resolve([info]) }));
     await user.click(screen.getByLabelText('PolicyAccountFactory address'));
