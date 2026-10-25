@@ -399,7 +399,16 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       if (!disagree && p.checkpoints !== undefined) {
         const saved = await persistable(p, cursor, persistenceFloor);
         if (p.signal.aborted) break;
-        if (saved !== undefined) p.checkpoints.save(p.chain.chainId, p.keyId, saved);
+        if (Array.isArray(saved)) {
+          // An uncorroborated anchor is withheld, never saved from the primary alone: stop and re-scan later.
+          const conflicts = saved as readonly ProviderDiscrepancy[];
+          discrepancies.push(...conflicts);
+          p.onDiscrepancy?.(conflicts);
+          if (res.reorg !== undefined) p.checkpoints.clear(p.chain.chainId, p.keyId);
+          p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
+          break;
+        }
+        if (saved !== undefined) p.checkpoints.save(p.chain.chainId, p.keyId, saved as ScanCursor);
       }
       p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: !res.truncated, discrepancies: discrepancies.length });
       if (!res.truncated) break;
@@ -456,15 +465,45 @@ async function confirmRollback(p: ScanParams, previous: ScanCursor, replacement:
  * `pending` and live in memory alone, so the next session re-scans (and re-verifies) the tail instead of skipping it.
  * Never moves behind where this run started.
  */
-async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint): Promise<ScanCursor | undefined> {
+async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint): Promise<ScanCursor | readonly ProviderDiscrepancy[] | undefined> {
   const depth = BigInt(p.chain.finalityDepth);
   let next = cursor.nextBlock > depth ? cursor.nextBlock - depth : 0n;
   if (next < floor) next = floor;
   if (next >= cursor.nextBlock) return cursor;
   if (next === 0n) return { nextBlock: 0n };
   // Keep reorg detection for the stored position: bind it to the hash of the block just before it.
-  const ref = await p.client.getBlock(next - 1n);
-  return ref === null ? { nextBlock: next } : { nextBlock: next, last: { number: next - 1n, hash: ref.hash } };
+  const height = next - 1n;
+  if (p.secondaryClient !== undefined) {
+    // This anchor is a different block from the compared page end. A later resume treats it as the
+    // canonical record, so a primary-only hash here could fake a reorg and invalidate real history.
+    const conflicts = await corroborateAnchor(p, p.secondaryClient, height);
+    if (p.signal.aborted) return undefined;
+    return typeof conflicts === 'string' ? { nextBlock: next, last: { number: height, hash: conflicts as `0x${string}` } } : conflicts;
+  }
+  const ref = await p.client.getBlock(height);
+  return ref === null ? { nextBlock: next } : { nextBlock: next, last: { number: height, hash: ref.hash } };
+}
+
+/** Fresh primary, secondary and primary re-read of one block; returns the agreed hash or the discrepancy. */
+async function corroborateAnchor(p: ScanParams, secondary: RpcClient, height: bigint): Promise<string | readonly ProviderDiscrepancy[]> {
+  const ref = height.toString();
+  try {
+    if (secondary.chainId !== p.chain.chainId || p.client.chainId !== p.chain.chainId) return [{ kind: 'secondary_error', ref }];
+    const [primary, independent] = await Promise.all([p.client.getBlock(height), secondary.getBlock(height)]);
+    if (p.signal.aborted) return [];
+    // Re-read after the independent await so a primary that switches answers mid-check is caught.
+    const again = await p.client.getBlock(height);
+    if (p.signal.aborted) return [];
+    if (independent === null) return [{ kind: 'secondary_error', ref }];
+    const hash = primary?.hash.toLowerCase();
+    if (primary === null || again === null || primary.number !== height || independent.number !== height || again.number !== height ||
+        hash === undefined || !/^0x[0-9a-f]{64}$/.test(hash) || hash !== independent.hash.toLowerCase() || hash !== again.hash.toLowerCase()) {
+      return [{ kind: 'block_hash_differs', ref }];
+    }
+    return hash;
+  } catch {
+    return [{ kind: 'secondary_error', ref }];
+  }
 }
 
 function zeroizeBytes(b: Uint8Array): void {
