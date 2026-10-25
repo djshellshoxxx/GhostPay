@@ -21,6 +21,7 @@
     "@ghostpay/core-crypto": "0.1.0",
     "@ghostpay/invoice-schema": "0.1.0",
     "@ghostpay/net-transport": "0.1.0",
+    "@ghostpay/policy-scheme": "0.1.0",
     "@ghostpay/qr-exchange": "0.1.0",
     "@ghostpay/scan-source": "0.1.0",
     "@ghostpay/secret-box": "0.1.0",

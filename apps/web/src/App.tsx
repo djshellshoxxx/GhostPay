@@ -11,6 +11,8 @@ import { BtcView } from './features/btc/BtcView';
 import { SolanaView } from './features/solana/SolanaView';
 import { TronView } from './features/tron/TronView';
 import { RegistryView } from './features/registry/RegistryView';
+import { isPolicyFeatureEnabled } from './features/policy/flag';
+import { PolicyView } from './features/policy/PolicyView';
 import { About } from './views/About';
 import { CreateInvoice } from './views/CreateInvoice';
 import { Home } from './views/Home';
@@ -44,6 +46,9 @@ function ViewSwitch(props: { readonly view: ViewId }): ReactNode {
       return <TronView />;
     case 'registry':
       return <RegistryView />;
+    case 'policy':
+      // Experimental (ADR-0014): only reachable when the build flag is on.
+      return isPolicyFeatureEnabled() ? <PolicyView /> : <Home />;
     case 'settings':
       return <Settings />;
     case 'about':
@@ -182,7 +187,7 @@ export function App(): ReactNode {
         <p className="tagline">Stealth-address payments. Everything runs in your browser. Unaudited software.</p>
         <nav aria-label="Main">
           <ul className="nav">
-            {ORDER.map((v) => (
+            {(isPolicyFeatureEnabled() ? [...ORDER.slice(0, -2), 'policy' as const, ...ORDER.slice(-2)] : ORDER).map((v) => (
               <li key={v}>
                 <button type="button" className="nav-btn" aria-current={view === v ? 'page' : undefined} onClick={() => { setViewState(v); }}>
                   {VIEW_LABELS[v]}
