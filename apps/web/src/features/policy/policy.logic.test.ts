@@ -320,3 +320,53 @@ describe('recovery guard', () => {
     expect(r.complete).toBe(false);
   });
 });
+
+describe('edge cases', () => {
+  const acct = a1.accountAddress;
+  it('guard decodes DestinationChanged and skips unknown or malformed logs', async () => {
+    const id = `0x${'cd'.repeat(32)}`;
+    const good = accountLog(acct, 'DestinationChanged', { id, newDestination: a2.policy.destination }, 5);
+    const other = accountLog(acct, 'EIP712DomainChanged', {}, 6);
+    const junk = { ...good, topics: [`0x${'00'.repeat(32)}`], blockNumber: '0x7' };
+    const removed = { ...good, removed: true };
+    const { events } = await fetchAccountEvents(fakeChain(SEPOLIA, { head: 10, logs: [good, other, junk, removed] }), sepolia, acct, 0n, 10n);
+    expect(events).toEqual([{ kind: 'DestinationChanged', id, newDestination: a2.policy.destination, block: 5n }]);
+  });
+  it('scan passes a request cap and keeps transaction hashes optional', async () => {
+    const { log } = vectorAnnouncement();
+    const noTx: Record<string, unknown> = { ...log };
+    delete noTx['transactionHash'];
+    const client = fakeChain(SEPOLIA, { head: 1000, logs: [noTx as unknown as typeof log] });
+    const f = await fetchScheme2Announcements({ chain: sepolia, client, deployment: DEPLOYMENT, cursor: { nextBlock: 0n }, maxRequests: 1 });
+    expect(f.truncated).toBe(true);
+    const m = matchScheme2(f.announcements, secretScalarFromBytes(hexToU8(a1.viewingPrivateKey)), parseCompressedPoint(hexToU8(a1.spendingPublicKey)), [a1.policyHash], DEPLOYMENT);
+    expect(m[0]?.transactionHash).toBeUndefined();
+  });
+  it('chain reads refuse malformed answers', async () => {
+    const x = acct.toLowerCase();
+    const bad = fakeChain(SEPOLIA, { code: new Set([x]), extra: (method) => (method === 'eth_call' ? '0x1234' : undefined) });
+    await expect(readAccount(bad, acct)).rejects.toThrow(/as expected/);
+    const notHex = fakeChain(SEPOLIA, { code: new Set([x]), extra: (method) => (method === 'eth_call' ? 42 : method === 'eth_getBalance' ? 'zz' : method === 'eth_getBlockByNumber' ? { timestamp: 7 } : undefined) });
+    await expect(readAccount(notHex, acct)).rejects.toThrow(/malformed eth_call/);
+    await expect(readBalance(notHex, acct, ZERO_ADDRESS)).rejects.toThrow(/malformed balance/);
+    await expect(chainNow(notHex)).rejects.toThrow(/malformed block/);
+  });
+  it('deployment verification refuses unexpected answer types', async () => {
+    const f = DEPLOYMENT.factory.toLowerCase();
+    const calls = deploymentCalls();
+    const rpc = fakeChain(SEPOLIA, { ...calls, extra: (method, params) => {
+      const c = params[0] as { to?: string; data?: string } | undefined;
+      // FLAT_FEE() answered with an address-shaped word still decodes; IMPLEMENTATION() returning garbage does not.
+      if (method === 'eth_call' && c?.to?.toLowerCase() === f && c.data === '0x3a4741bd') return '0x';
+      return undefined;
+    } });
+    await expect(verifyPolicyDeployment(rpc, sepolia, { factory: DEPLOYMENT.factory, router: ROUTER })).rejects.toThrow(/as expected|unexpected types/);
+  });
+  it('withdraw planning rethrows unexpected errors', () => {
+    const rec1 = parsePolicyRecord(canonical('acct-001'));
+    const view = { deployed: true as const, owner: a1.ownerAddress, destination: a1.policy.destination, delay: 86400n, limitsRoot: a1.policy.limitsRoot, policyHash: a1.policyHash, pendingDestination: ZERO_ADDRESS, pendingEffectiveAt: 0n };
+    const fresh = { window: 0n, bucket: 0n, current: 0n, previous: 0n };
+    expect(() => planWithdraw({ record: rec1, view, token: '0xnot', balance: 1n, window: fresh, pendingSameToken: 0n, nowSec: 1n })).toThrow(/invalid address/);
+    expect(() => planWithdraw({ record: rec1, view, token: ZERO_ADDRESS, balance: 1n, window: { ...fresh, current: -1n }, pendingSameToken: 0n, nowSec: 1n })).toThrow(/invalid input/);
+  });
+});

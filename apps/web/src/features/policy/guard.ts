@@ -29,17 +29,20 @@ export async function fetchAccountEvents(client: RpcClient, chain: ChainConfig, 
     requests++;
     for (const log of logs) {
       if (typeof log.address !== 'string' || log.address.toLowerCase() !== account.toLowerCase() || log.removed === true) continue;
-      let d: { eventName: string; args: Record<string, unknown> };
+      let d: { eventName: string; args?: Record<string, unknown> };
       try {
         d = decodeEventLog({ abi: policyAccountAbi, topics: log.topics as [Hex, ...Hex[]], data: log.data as Hex, strict: true }) as never;
       } catch {
         continue;
       }
       const block = BigInt(log.blockNumber);
-      const id = (d.args['id'] as string).toLowerCase() as Hex;
+      const args = d.args ?? {};
+      const rawId = args['id'];
+      if (typeof rawId !== 'string') continue;
+      const id = rawId.toLowerCase() as Hex;
       switch (d.eventName) {
         case 'WithdrawRequested':
-          events.push({ kind: 'WithdrawRequested', id, token: getAddress(d.args['token'] as string), amount: d.args['amount'] as bigint, executeAfter: BigInt(d.args['executeAfter'] as bigint), block });
+          events.push({ kind: 'WithdrawRequested', id, token: getAddress(args['token'] as string), amount: args['amount'] as bigint, executeAfter: BigInt(args['executeAfter'] as bigint), block });
           break;
         case 'WithdrawExecuted':
         case 'WithdrawCancelled':
@@ -47,10 +50,10 @@ export async function fetchAccountEvents(client: RpcClient, chain: ChainConfig, 
           events.push({ kind: d.eventName, id, block });
           break;
         case 'DestinationProposed':
-          events.push({ kind: 'DestinationProposed', id, newDestination: getAddress(d.args['newDestination'] as string), effectiveAt: BigInt(d.args['effectiveAt'] as bigint), block });
+          events.push({ kind: 'DestinationProposed', id, newDestination: getAddress(args['newDestination'] as string), effectiveAt: BigInt(args['effectiveAt'] as bigint), block });
           break;
         case 'DestinationChanged':
-          events.push({ kind: 'DestinationChanged', id, newDestination: getAddress(d.args['newDestination'] as string), block });
+          events.push({ kind: 'DestinationChanged', id, newDestination: getAddress(args['newDestination'] as string), block });
           break;
         default:
           break;
