@@ -26,7 +26,7 @@ is preserved as `later-preserved`; it is not expanded further and not deleted.
 | P2 prepared buffer quote outlives 60 s TTL at send | a6a2a1c | **Fixed** `3496cab` (merged): `assertPreparedBufferFresh` in send guard and before approval. 4 payExec + 1 Pay tests failed before; expiresAt-1 passes |
 | Vault save commits after session revocation | a6a2a1c | **Fixed** `a8bc764` (merged): guard checked inside the IndexedDB transaction; post-commit change reported, not rolled back. keyVault.test:174 and SellerKeys.test:288 failed before |
 | Stale delete confirmation removes replacement vault | a6a2a1c | **Fixed** `fa3bcff` (merged): compare-and-delete in one readwrite transaction; stale confirmation shows "vault changed". Chromium two-tab script `apps/web/scripts/test-seller-vault-idb.mjs` passes (not wired into package.json) |
-| Scan replay-tail anchor from primary only | a6a2a1c | Open, re-confirmed (`persistable` reads primary only); worker `lean-scan-anchor` running |
+| Scan replay-tail anchor from primary only | a6a2a1c | **Fixed** `ba0fd59` (merged): two-provider mode reads the anchor from both providers plus a second primary read, checks chain/height; any failure raises a discrepancy, withholds the checkpoint and stops; Cancel writes nothing. Oracle failed before (fabricated anchor saved, resumed run invalidated a canonical vault record); 5/6 matrix tests failed before |
 | Direct sweep loses expected hash / re-arms signing after uncertain broadcast | edb0051 | Open, re-confirmed; worker `lean-sweep` running |
 
 ## PR #31 reuse
