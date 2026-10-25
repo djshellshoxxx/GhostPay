@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Full scripted GhostPay end-to-end on the local anvil devnet (chain 31337). Uses ONLY the public anvil dev
 // accounts (no real keys or funds). Flow: seller keygen -> signed invoices -> pay (ETH, ERC-20 approve,
-// ERC-20 permit) -> scan -> direct sweeps -> relayer-sponsored sweeps (real apps/relayer process).
+// ERC-20 permit) -> scan -> receipt verification -> direct sweeps -> relayer-sponsored sweeps (real apps/relayer process).
 //
 // Usage: node scripts/devnet/e2e.mjs [--write-log]   (run scripts/devnet/up.sh first; `npm run build:libs` done)
 // Env: DEVNET_PORT (8545), E2E_RELAYER_PORT (18787).
@@ -16,13 +16,13 @@ import { fileURLToPath } from 'node:url';
 import { createPublicClient, createWalletClient, defineChain, getAddress, http, parseAbi, parseEther, formatEther } from 'viem';
 import { mnemonicToAccount, privateKeyToAccount } from 'viem/accounts';
 import {
-  checkAnnouncement, deriveStealthPayment, deriveStealthSecret, encodeMetaAddress, generateKeySet, unsafeRevealSecret,
+  checkAnnouncement, deriveStealthPayment, deriveStealthSecret, encodeMetaAddress, generateKeySet, parseMetadata, unsafeRevealSecret,
 } from '@ghostpay/core-crypto';
 import { createInvoice, signInvoice, verifyInvoiceSignature } from '@ghostpay/invoice-schema';
 import {
   addressOfSecret, assertPreviewMatchesCalldata, buildPaymentTx, buildPermitTypedData, buildSweepTypedData, createClient,
   decodePaymentCalldata, fetchAnnouncements, findChain, loadDeployment, routerSplit, signPermit, signSweep,
-  manifestDigest, verifyObjectManifestSignature,
+  manifestDigest, verifyClaimedPayment, verifyObjectManifestSignature,
 } from '@ghostpay/chain-adapters';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -173,6 +173,37 @@ for (const m of mine) {
 }
 const secretOf = (stealth) => mine.find((m) => getAddress(m.a.stealthAddress) === getAddress(stealth)).secret;
 step('scan', `announcements=${scanned.announcements.length} matched=${mine.length} skipped=${scanned.skipped}`);
+
+// ---- receipt: every match must be independently traced on-chain, not just announced ----
+{
+  const consumed = new Set();
+  const verify = (a, metadata, consumedTransfers = consumed) => verifyClaimedPayment({
+    chain: devChain, client: rpcClient, router: manifest.router, announcer: manifest.announcer,
+    claim: { stealthAddress: getAddress(a.stealthAddress), announcement: a, metadata, viaRouter: a.caller.toLowerCase() === manifest.router.toLowerCase() },
+    consumedTransfers,
+  });
+  let received = 0;
+  for (const m of mine) {
+    const meta = parseMetadata(m.a.metadata);
+    const p = paid.find((x) => getAddress(x.stealth) === getAddress(m.a.stealthAddress));
+    assert.ok(p, 'every match corresponds to a payment this run made');
+    assert.equal(meta.netAmount, p.split.net, 'announced net equals the router split');
+    const r = await verify(m.a, meta);
+    if (meta.kind === 'native') {
+      assert.equal(r.status, 'received', `receipt for ${p.id}: ${r.reason ?? ''}`);
+      received++;
+      // A claim that inflates the amount must not verify against the same on-chain payment.
+      const forged = await verify(m.a, { ...meta, netAmount: meta.netAmount + 1n }, new Set());
+      assert.notEqual(forged.status, 'received', `forged amount for ${p.id} must not verify`);
+    } else {
+      // Fail closed: local devnet mock tokens are not in the verified token registry, so their claims
+      // stay unverified. ERC-20 receipt proof needs a verified registry entry for the chosen network.
+      assert.equal(r.status, 'unverified-claim', `${p.id} on an unregistered token must stay unverified`);
+      assert.match(r.reason ?? '', /unsupported asset/);
+    }
+  }
+  step('receipt', `${received} native payment(s) traced on-chain as received, inflated claim refused; ${mine.length - received} unregistered-token claims stay unverified (fail closed)`);
+}
 
 // ---- direct sweeps (stealth key signs its own tx) ----
 const asAccount = (secret) => privateKeyToAccount(`0x${Buffer.from(unsafeRevealSecret(secret)).toString('hex')}`);
