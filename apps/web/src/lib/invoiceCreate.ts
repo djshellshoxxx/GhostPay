@@ -4,6 +4,7 @@ import {
   createInvoice,
   encodeFragment,
   signInvoice,
+  type BufferPolicy,
   type Invoice,
   type LineItem,
   type RandomSource,
@@ -38,6 +39,8 @@ export interface InvoiceForm {
   readonly encrypt: boolean;
   /** Protect the whole invoice with a secret shared out of band. */
   readonly passphrase?: string;
+  /** Seller gas-buffer policy; when set the invoice is schema v2 (ADR-0023). No Create-page control yet. */
+  readonly bufferPolicy?: BufferPolicy;
 }
 
 export interface CreatedInvoice {
@@ -147,6 +150,7 @@ export async function buildInvoiceLink(
       feePolicy: form.feePolicy,
       ...(memo === '' ? {} : { memo }),
       signer: pub.signerPublicKey,
+      ...(form.bufferPolicy === undefined ? {} : { bufferPolicy: form.bufferPolicy }),
     },
     rng,
   );

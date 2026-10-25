@@ -23,7 +23,9 @@ import {
   type DeploymentManifest,
   type Hex,
   type PaymentRequest,
+  type PermitPreflightReader,
   type PermitReader,
+  type PermitState,
   type PermitTypedData,
   type RpcClient,
   type TokenConfig,
@@ -183,6 +185,40 @@ export interface BufferQuote {
   readonly expiresAt: number;
   /** `simulated`: gasLimit covers an `eth_estimateGas` of the token transfer; `default`: table value only. */
   readonly gasSource: 'simulated' | 'default';
+  /** Set when a v2 invoice's `bufferPolicy.minWei` raised the estimate (ADR-0023); shown to the payer. */
+  readonly raisedToSellerMinimum?: boolean;
+}
+
+/** Whether the invoice lets the payer add a gas buffer at all (v1: yes; v2: only when the seller accepted). */
+export function bufferOffered(invoice: Invoice): boolean {
+  if (invoice.token === 'native') return false;
+  return invoice.bufferPolicy === undefined || invoice.bufferPolicy.accepted;
+}
+
+/** Checks a buffer amount against the app cap and, for v2 invoices, the seller's policy (ADR-0023). */
+function assertBufferWithinPolicy(bufferWei: bigint, invoice: Invoice): void {
+  const p = invoice.bufferPolicy;
+  if (p !== undefined && !p.accepted) throw new UserFacingError('The seller does not accept a gas buffer for this invoice. Pay without one.');
+  if (bufferWei > MAX_BUFFER_WEI) throw new UserFacingError('The gas buffer exceeds the safety cap.');
+  if (p === undefined) return;
+  if (bufferWei > BigInt(p.maxWei)) throw new UserFacingError('The gas buffer would exceed the seller’s maximum for this invoice. Pay without a buffer or try later.');
+  if (bufferWei < BigInt(p.minWei)) throw new UserFacingError('The gas buffer is below the seller’s minimum for this invoice. Prepare it again.');
+}
+
+/**
+ * Applies a v2 invoice's seller `bufferPolicy` to a fresh quote (ADR-0023): declined -> refused; an estimate below
+ * `minWei` is raised to `minWei` (flagged so the UI shows it); anything above `min(maxWei, app cap)` is refused, as is a
+ * seller floor above the app cap. v1 invoices return the quote unchanged.
+ */
+export function applyBufferPolicy(quote: BufferQuote, invoice: Invoice): BufferQuote {
+  const p = invoice.bufferPolicy;
+  if (p === undefined) return quote;
+  if (!p.accepted) throw new UserFacingError('The seller does not accept a gas buffer for this invoice. Pay without one.');
+  const min = BigInt(p.minWei);
+  if (min > MAX_BUFFER_WEI) throw new UserFacingError('The seller’s minimum gas buffer is above this app’s safety cap. Pay without a buffer.');
+  const out = quote.bufferWei < min ? { ...quote, bufferWei: min, raisedToSellerMinimum: true } : quote;
+  assertBufferWithinPolicy(out.bufferWei, invoice);
+  return out;
 }
 
 /** Token transfer the seller's sweep will perform, simulated from the payer who holds the tokens now. */
@@ -258,7 +294,7 @@ export function buildFinal(ctx: PayContext, opts: FinalBuildOptions): BuiltPayme
   if (opts.buffer !== undefined) {
     if (ctx.review.invoice.token === 'native') throw new UserFacingError('A gas buffer applies to token payments only.');
     if (opts.nowSeconds >= opts.buffer.expiresAt) throw new UserFacingError('The gas buffer quote expired. Refresh it and review again.');
-    if (opts.buffer.bufferWei > MAX_BUFFER_WEI) throw new UserFacingError('The gas buffer exceeds the safety cap.');
+    assertBufferWithinPolicy(opts.buffer.bufferWei, ctx.review.invoice);
   }
   const deadline = BigInt(opts.deadlineSeconds ?? opts.nowSeconds + DEADLINE_SECONDS);
   const built = ctx.request.build({
@@ -344,6 +380,47 @@ export function permitReader(rpc: Pick<RpcClient, 'request'>, version: string): 
     async domainSeparator(token) {
       const data = encodeFunctionData({ abi: erc2612PermitAbi, functionName: 'DOMAIN_SEPARATOR' });
       return call(token, data);
+    },
+  };
+}
+
+/** Spec 04: one user-facing sentence per permit pre-flight state. Never suggests a silent retry. */
+const PERMIT_STATE_TEXT: Readonly<Record<PermitState, string>> = {
+  ok_to_permit: 'The permit checks passed: the token will accept this signature for exactly the shown amount.',
+  already_allowed: 'Your existing allowance already covers this payment, so no permit is needed and none will be used.',
+  nonce_consumed: 'This permit was already used or replaced (its nonce is spent) and your allowance does not cover the payment. Nothing was paid. Prepare the payment again, or pay with a one-time approval.',
+  sig_invalid: 'The token rejected this permit signature. Nothing was paid and it will not be retried automatically. Press Prepare again to pay with a one-time approval instead, or add a gas buffer.',
+  expired: 'The permit expired before it could be used. Nothing was paid. Prepare the payment again.',
+  unsupported_token: 'This token does not accept standard ERC-2612 permits. Nothing was signed or paid. Press Prepare again to pay with a one-time approval instead.',
+};
+
+export function permitStateMessage(state: PermitState): string {
+  return PERMIT_STATE_TEXT[state];
+}
+
+/**
+ * Reads for the spec 04 permit classifier over the user's RPC. `simulatePermit` is a static `permit(...)` call; any
+ * rejection counts as "the token would not accept it" (fail closed: the user falls back to an approval).
+ */
+export function permitPreflightReader(rpc: Pick<RpcClient, 'request'>): PermitPreflightReader {
+  const base = permitReader(rpc, '1');
+  return {
+    allowance: (token, owner, spender) => readAllowance(rpc, token, owner, spender),
+    nonce: (token, owner) => base.nonce(token, owner),
+    async domainSeparator(token) {
+      const data = encodeFunctionData({ abi: erc2612PermitAbi, functionName: 'DOMAIN_SEPARATOR' });
+      const r = await rpc.request('eth_call', [{ to: token, data }, 'latest']);
+      if (typeof r !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(r)) throw new UserFacingError('Your RPC returned an unexpected DOMAIN_SEPARATOR.');
+      return r as Hex;
+    },
+    async simulatePermit(token, a) {
+      const data = encodeFunctionData({ abi: erc2612PermitAbi, functionName: 'permit', args: [a.owner, a.spender, a.value, a.deadline, a.v, a.r, a.s] });
+      try {
+        const r = await rpc.request('eth_call', [{ from: a.owner, to: token, data }, 'latest']);
+        return typeof r === 'string' && /^0x(?:[0-9a-fA-F]{2})*$/.test(r);
+      } catch {
+        return false;
+      }
     },
   };
 }

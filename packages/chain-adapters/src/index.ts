@@ -6,6 +6,7 @@ export * from './fees.js';
 export * from './deployments.js';
 export * from './router.js';
 export * from './sweep.js';
+export * from './permit.js';
 export * from './rpc.js';
 export * from './logs.js';
 export * from './quote.js';

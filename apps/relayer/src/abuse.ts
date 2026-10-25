@@ -4,7 +4,7 @@ import { LruMap, type KeyHasher } from './limiter.js';
 export interface AbuseOptions {
   /** Costly failures tolerated per owner within the window. */
   readonly ownerMax: number;
-  /** Costly failures tolerated per destination within the window. */
+  /** Costly failures tolerated per destination within the window; 0 disables the destination key. */
   readonly destinationMax: number;
   readonly windowMs: number;
   readonly maxKeys: number;

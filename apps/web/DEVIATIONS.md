@@ -46,11 +46,20 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     `announcementId = blockHash:logIndex` instead of `transactionHash`. The per-profile HKDF salt lives in one `meta` record rather than
     in every record; each record has its own fresh 96-bit IV. The idle lock timeout locks the tag vault only; seller keys stay in memory
     until wiped or the tab closes (auto-wiping unexported keys seemed worse).
-12. **Gas buffer sizing** (Feature 1): `calculateBuffer` with a fixed 100 000 gas sweep estimate (not simulated), `2 x eth_gasPrice` as max
-    fee, `DEFAULT_BUFFER_SAFETY_BPS` (20 %), a hard cap of 0.01 native coin, and a 120 s quote lifetime. It needs the user's RPC.
-    Buffer payments go through approval (the router cannot combine a permit with a buffer).
+12. **Gas buffer sizing** (Feature 1, spec 13): `calculateBuffer` over `max(100 000, eth_estimateGas of the token transfer + 25 %)`
+    (fails closed when the simulation fails), `2 x eth_gasPrice` as max fee, `DEFAULT_BUFFER_SAFETY_BPS` (20 %), a hard cap of 0.01
+    native coin, and a 60 s quote lifetime, re-checked before the wallet is asked. It needs the user's RPC. Buffer payments go through
+    approval (permit + buffer needs a deferred router change). Invoice v2 `bufferPolicy` (ADR-0023): declined hides the buffer; accepted
+    bounds it by `min(maxWei, cap)` and raises a smaller estimate to `minWei` (shown); `buildFinal` re-checks the bounds. The Create page
+    has no control for the policy yet (v2 invoices can only be produced through `buildInvoiceLink({ bufferPolicy })`). The fiat
+    estimate stays hidden while `FEEDS` is empty.
 13. **Permit domain version** is probed as `"2"` then `"1"`; each candidate is accepted only if the locally computed domain separator equals
     the token's on-chain `DOMAIN_SEPARATOR`. The wallet's permit signature is verified to recover to the payer before it is used.
+    Spec 04 post-sign: `classifyPermit` (`chain-adapters/src/permit.ts`) re-reads allowance, nonce and domain and runs a static `permit`
+    call. A front-run permit (allowance now covers) takes the allowance path; `nonce_consumed`/`sig_invalid`/`expired` raise
+    `PermitRejectedError` with a per-state message, nothing is sent, and only the next user-pressed Prepare switches to an exact approval.
+    A reverted static `permit` call is reported as `sig_invalid` even if an RPC fault caused it (fail closed). Option C (`PermitSkipped`
+    event) is a contract change and is not done.
 14. **Independent verification needs the user's RPC.** After `eth_sendTransaction`, the app fetches the transaction from the user's own
     RPC and compares sender, target, calldata, value and chain id with the preview (this is what catches a provider that mutates the
     transaction or lies about the chain). With no RPC configured the payment still works but the result says it could not be verified.

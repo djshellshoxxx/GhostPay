@@ -572,3 +572,48 @@ describe('metadata sanity', () => {
     expect(OTHER_META).not.toBe(base.metaAddress);
   });
 });
+
+describe('v2 bufferPolicy (spec 13, ADR-0023)', () => {
+  const POLICY = { accepted: true, maxWei: '10000000000000000', minWei: '100000000000000', refund: 'none' } as const;
+  const v2 = sampleInvoice({ bufferPolicy: POLICY });
+
+  it('createInvoice emits v 2 exactly when a bufferPolicy is given; v1 stays unchanged', () => {
+    expect(v2.v).toBe(2);
+    expect(v2.bufferPolicy).toEqual(POLICY);
+    expect(base.v).toBe(1);
+    expect('bufferPolicy' in base).toBe(false);
+    expect(validateInvoice(structuredClone(v2))).toEqual(v2);
+  });
+
+  it('accepts a declined policy with zero bounds', () => {
+    const declined = sampleInvoice({ bufferPolicy: { accepted: false, maxWei: '0', minWei: '0', refund: 'none' } });
+    expect(declined.v).toBe(2);
+    expect(declined.bufferPolicy?.accepted).toBe(false);
+  });
+
+  const mutate2 = (f: (o: Record<string, unknown>, p: Record<string, unknown>) => void): Record<string, unknown> => {
+    const o = structuredClone(v2) as unknown as Record<string, unknown>;
+    f(o, o['bufferPolicy'] as Record<string, unknown>);
+    return o;
+  };
+
+  it.each([
+    ['v1 carrying a bufferPolicy', mutate2((o) => { o['v'] = 1; }), 'bufferPolicy'],
+    ['v2 without a bufferPolicy', mutate2((o) => { delete o['bufferPolicy']; }), 'v'],
+    ['v3', mutate2((o) => { o['v'] = 3; }), 'v'],
+    ['unknown policy key', mutate2((_o, p) => { p['extra'] = 1; }), 'bufferPolicy'],
+    ['missing refund', mutate2((_o, p) => { delete p['refund']; }), 'bufferPolicy.refund'],
+    ['refund other than none (no silent refunds)', mutate2((_o, p) => { p['refund'] = 'payer'; }), 'bufferPolicy.refund'],
+    ['accepted not boolean', mutate2((_o, p) => { p['accepted'] = 'yes'; }), 'bufferPolicy.accepted'],
+    ['maxWei not decimal', mutate2((_o, p) => { p['maxWei'] = '0x10'; }), 'bufferPolicy.maxWei'],
+    ['maxWei leading zero', mutate2((_o, p) => { p['maxWei'] = '010'; }), 'bufferPolicy.maxWei'],
+    ['maxWei number', mutate2((_o, p) => { p['maxWei'] = 10; }), 'bufferPolicy.maxWei'],
+    ['maxWei above uint256', mutate2((_o, p) => { p['maxWei'] = (1n << 256n).toString(); }), 'bufferPolicy.maxWei'],
+    ['minWei above maxWei', mutate2((_o, p) => { p['minWei'] = '20000000000000000'; }), 'bufferPolicy.minWei'],
+    ['accepted with zero minimum (dust)', mutate2((_o, p) => { p['minWei'] = '0'; }), 'bufferPolicy.minWei'],
+    ['declined with non-zero bounds', mutate2((_o, p) => { p['accepted'] = false; }), 'bufferPolicy.maxWei'],
+    ['accepted on a native invoice', mutate2((o) => { o['token'] = 'native'; }), 'bufferPolicy.accepted'],
+  ])('rejects %s', (_name, value, path) => {
+    expect(pathOf(() => validateInvoice(value))).toBe(path);
+  });
+});

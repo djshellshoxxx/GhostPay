@@ -31,3 +31,8 @@
 13. **Text hygiene (S3-12) is enforced at parse time** with `ForbiddenCharacterError` (`FORBIDDEN_CHARACTER`, subclass of `SchemaError`). U+180E, U+2028 and U+2029 are rejected in
    addition to the listed set (the web display sanitiser already treated them as invisible). `memo` may contain `\n`; no other field may. This is a behaviour change: memos with a line feed
    used to be rejected, and invoices containing the listed characters that older builds accepted are now rejected.
+14. **Invoice v2 (`bufferPolicy`, spec 13, ADR-0023).** `Invoice.v` is now `1 | 2`; v2 adds the required public field
+    `bufferPolicy {accepted, maxWei, minWei, refund: 'none'}` and v1 must not carry it. `createInvoice` emits v2 only when a
+    policy is given, so v1 links, signatures and vectors are unchanged. The signature domain string stays
+    `GhostPay.Invoice.v1\0` (it names the signing scheme, and `v` is inside the signed canonical invoice); the envelope stays
+    `#gpi=v1.`. Older parsers reject v2 at `v` (fail closed). The policy is enforced by the payer app only, not on-chain.
