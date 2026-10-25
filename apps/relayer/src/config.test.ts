@@ -61,7 +61,7 @@ describe('parseConfig', () => {
     const c = parse(good());
     expect(c.host).toBe('127.0.0.1');
     expect(c.port).toBe(8787);
-    expect(c.quoteTtlSeconds).toBe(120);
+    expect(c.quoteTtlSeconds).toBe(60);
     expect(c.minDeadlineSeconds).toBe(30);
     expect(c.maxDeadlineSeconds).toBe(1800);
     expect(c.queue).toEqual({ maxPending: 16, receiptTimeoutSeconds: 120 });
@@ -71,7 +71,7 @@ describe('parseConfig', () => {
     expect(c.metricsToken).toBeUndefined();
     expect(c.alertWebhookUrl).toBeUndefined();
     const ch = c.chains[0];
-    expect(c.gas).toEqual({ coverPercent: 100, maxMovePercent: 25, quoteCacheSeconds: 3 });
+    expect(c.gas).toEqual({ coverPercent: 100, maxMovePercent: 25, quoteCacheSeconds: 3, griefReserveBps: 0 });
     expect(ch?.feeTo).toBe(FEE_TO);
     expect(ch?.nativeUsdMicro).toBe(3_000_500_000n);
     expect(ch?.tokens[0]).toEqual({ address: USDC, symbol: 'USDC', decimals: 6, permit: true, usdStable: true });
@@ -83,7 +83,7 @@ describe('parseConfig', () => {
       good({
         listen: { host: '0.0.0.0', port: 9000 },
         trustedProxies: ['10.0.0.0/8', '::1'],
-        gas: { coverPercent: 120, maxMovePercent: 15, quoteCacheSeconds: 0 },
+        gas: { coverPercent: 120, maxMovePercent: 15, quoteCacheSeconds: 0, griefReserveBps: 250 },
         lossBudget: { windowSeconds: 600, perKeyWei: '1000', globalWei: '5000', maxKeys: 32 },
         metricsTokenEnv: 'M_TOK',
         alertWebhookUrlEnv: 'A_HOOK',
@@ -105,7 +105,7 @@ describe('parseConfig', () => {
     );
     expect(c.port).toBe(9000);
     expect(c.trustedProxies).toEqual(['10.0.0.0/8', '::1']);
-    expect(c.gas).toEqual({ coverPercent: 120, maxMovePercent: 15, quoteCacheSeconds: 0 });
+    expect(c.gas).toEqual({ coverPercent: 120, maxMovePercent: 15, quoteCacheSeconds: 0, griefReserveBps: 250 });
     expect(c.lossBudget).toEqual({ windowSeconds: 600, perKeyWei: 1000n, globalWei: 5000n, maxKeys: 32 });
     expect(c.metricsToken).toBe('m'.repeat(40));
     expect(c.alertWebhookUrl).toBe('https://hooks.example/x');
@@ -125,6 +125,9 @@ describe('parseConfig', () => {
 
   const bad: [string, (c: Json) => Json, RegExp?][] = [
     ['unknown top-level key', (c) => ({ ...c, extra: 1 })],
+    ['quote TTL above 60 s (spec 04)', (c) => ({ ...c, quoteTtlSeconds: 61 }), /quoteTtlSeconds/],
+    ['grief reserve above 5000 bps', (c) => ({ ...c, gas: { griefReserveBps: 5001 } }), /griefReserveBps/],
+    ['grief reserve negative', (c) => ({ ...c, gas: { griefReserveBps: -1 } }), /griefReserveBps/],
     ['not an object', () => [] as unknown as Json],
     ['no origins', (c) => ({ ...c, allowedOrigins: [] })],
     ['origins not array', (c) => ({ ...c, allowedOrigins: 'x' })],

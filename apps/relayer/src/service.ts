@@ -14,6 +14,7 @@ import {
   type LossReservation,
   type Outcome,
 } from '@ghostpay/relayer-guard';
+import { FailureBudgets } from './abuse.js';
 import { allowAllPolicy, type PolicyGate } from './policy.js';
 import { nullAlerts, type AlertSink } from './alerts.js';
 import { DailyBudget } from './budget.js';
@@ -50,6 +51,8 @@ export interface ServiceDeps {
   readonly lossBudget?: LossBudget;
   readonly alerts?: AlertSink;
   readonly metrics?: Metrics;
+  /** Spec 04 per-owner costly-failure counter (default: 3 per hour, owner key only). */
+  readonly failureBudgets?: FailureBudgets;
   /** How long a validated quote-path gas price is reused, ms (default 3000; 0 disables). */
   readonly gasPriceCacheMs?: number;
 }
@@ -137,6 +140,19 @@ const REVERT_MAP: Readonly<Record<string, readonly [number, string]>> = {
   SelfAddress: [422, 'invalid_order'],
 };
 
+/** Spec 04: costly failures tolerated per proven owner per window before sweeps are refused up front. */
+const OWNER_FAILURES_PER_WINDOW = 3;
+const OWNER_FAILURE_WINDOW_MS = 3_600_000;
+/**
+ * User-attributable classes that cost the relayer an RPC simulation (or more) and count against the owner. Excluded:
+ * `nonce_used` (honest client retries after success) and every operational class.
+ */
+const OWNER_STRIKE_CODES: ReadonlySet<string> = new Set([
+  'insufficient_token_balance', 'insufficient_allowance', 'permit_expired', 'permit_failed', 'simulation_reverted',
+  'token_transfer_failed', 'fee_below_gas_cost', 'gas_limit_too_high', 'invalid_signature', 'expired',
+  'permit_value_too_low', 'invalid_order',
+]);
+
 /** Maps a simulation revert to its HTTP class; only fixed class names leave this function. */
 export function revertToError(r: SimulationRevert): RelayerError {
   const hit = r.errorName === undefined ? undefined : REVERT_MAP[r.errorName];
@@ -161,6 +177,7 @@ export class RelayerService {
   private readonly alerts: AlertSink;
   private readonly gasCache = new Map<number, { price: bigint; at: number }>();
   private readonly quoteKeys: QuoteKeyring;
+  private readonly failures: FailureBudgets;
   private closing = false;
 
   public constructor(private readonly d: ServiceDeps) {
@@ -183,6 +200,9 @@ export class RelayerService {
         mono,
       );
     this.alerts = d.alerts ?? nullAlerts;
+    this.failures =
+      d.failureBudgets ??
+      new FailureBudgets({ ownerMax: OWNER_FAILURES_PER_WINDOW, destinationMax: 0, windowMs: OWNER_FAILURE_WINDOW_MS, maxKeys: d.config.rateLimit.maxKeys }, this.hasher, mono);
     const b = d.config.breaker;
     for (const cfg of d.config.chains) {
       const client = d.clients.get(cfg.chainId);
@@ -287,7 +307,10 @@ export class RelayerService {
     const gasPrice = await this.quoteGasPrice(rt);
     const units = token.permit ? rt.cfg.gasUnits.sweepWithPermit : rt.cfg.gasUnits.sweep;
     const gasCost = await this.d.tokenPrices.nativeToTokenUnits(req.chainId, token, units * gasPrice);
-    const { fee } = sponsorFee(req.amount, gasCost);
+    // Spec 04 grief reserve: price a margin for gas lost when the owner drains or revokes first (rounded up).
+    const griefBps = BigInt(this.d.config.gas.griefReserveBps ?? 0);
+    const pricedGas = (gasCost * (FEE_SCHEDULE.BPS + griefBps) + FEE_SCHEDULE.BPS - 1n) / FEE_SCHEDULE.BPS;
+    const { fee } = sponsorFee(req.amount, pricedGas);
     // If even the 300 bps cap cannot reimburse the gas, the sweep is uneconomical: refuse to quote.
     if (fee * 100n < gasCost * BigInt(this.d.config.gas.coverPercent))
       throw new RelayerError(422, 'amount_too_small');
@@ -367,6 +390,9 @@ export class RelayerService {
 
     const limit = this.d.ownerLimiter.take(s.owner.toLowerCase());
     if (!limit.ok) throw new RelayerError(429, 'rate_limited_owner', limit.retryAfterSeconds);
+    const ownerKey = s.owner.toLowerCase();
+    const strikes = this.failures.check(ownerKey, s.destination.toLowerCase());
+    if (!strikes.ok) throw new RelayerError(429, 'owner_failure_limit', strikes.retryAfterSeconds);
 
     let decision;
     try {
@@ -393,7 +419,18 @@ export class RelayerService {
       sweepSig: req.sweepSig,
       permit: req.permit,
     };
-    return rt.lane.submit(() => this.runJob(rt, call, ctx, keys));
+    try {
+      return await rt.lane.submit(() => this.runJob(rt, call, ctx, keys));
+    } catch (e) {
+      if (e instanceof RelayerError && OWNER_STRIKE_CODES.has(e.code)) this.strike(call);
+      throw e;
+    }
+  }
+
+  /** Records one costly, user-attributable failure against the order's owner (spec 04 failure counter). */
+  private strike(call: SweepCall): void {
+    this.failures.record(call.sweep.owner.toLowerCase(), call.sweep.destination.toLowerCase());
+    this.d.metrics?.inc('relayer_owner_failures_total');
   }
 
   /** Stops admitting work and waits for every queued/in-flight transaction to settle. */
@@ -490,7 +527,7 @@ export class RelayerService {
 
   private async runSettled(
     rt: ChainRuntime,
-    call: SweepCall,
+    requested: SweepCall,
     ctx: RequestContext,
     keys: readonly LossKey[],
     setOutcome: (o: Outcome) => void,
@@ -521,17 +558,36 @@ export class RelayerService {
       throw new RelayerError(503, 'breaker_open', this.d.config.breaker.cooldownSeconds);
     }
 
+    let call = requested;
     const state = await op(() => client.readOrderState(call));
     if (state.nonceUsed) throw new RelayerError(409, 'nonce_used');
     if (state.ownerBalance < call.sweep.amount) throw new RelayerError(422, 'insufficient_token_balance');
     if (call.permit === undefined && state.allowance < call.sweep.amount)
       throw new RelayerError(422, 'insufficient_allowance');
+    // Spec 04 fallback ladder: allowance already covers (e.g. a front-runner submitted the owner's permit) -> skip the
+    // permit and use the plain `sweep` path; otherwise an expired permit is refused before paying for a simulation.
+    if (call.permit !== undefined) {
+      if (state.allowance >= call.sweep.amount) {
+        call = { ...call, permit: undefined };
+        this.d.metrics?.inc('relayer_permit_skipped_total', { chain_id: cfg.chainId });
+      } else if (call.permit.deadline <= BigInt(Math.floor(this.now() / 1000))) {
+        throw new RelayerError(422, 'permit_expired');
+      }
+    }
+    // With a permit still in use the allowance is short, so a generic transfer revert means the permit was not
+    // accepted (bad signature, consumed nonce, non-standard token): report that class instead of a generic one.
+    const permitInUse = call.permit !== undefined;
+    const simulationError = (e: SimulationRevert): RelayerError => {
+      const mapped = revertToError(e);
+      if (permitInUse && (mapped.code === 'simulation_reverted' || mapped.code === 'token_transfer_failed')) return new RelayerError(422, 'permit_failed');
+      return mapped;
+    };
 
     let firstSimulation: Awaited<ReturnType<ChainClient['simulateSweep']>>;
     try {
       firstSimulation = await op(() => client.simulateSweep(call));
     } catch (e) {
-      if (e instanceof SimulationRevert) throw revertToError(e);
+      if (e instanceof SimulationRevert) throw simulationError(e);
       throw e;
     }
     if (firstSimulation.gasLimit > cfg.maxGasLimit) throw new RelayerError(422, 'gas_limit_too_high');
@@ -552,7 +608,7 @@ export class RelayerService {
     try {
       finalSimulation = await op(() => client.simulateSweep(call));
     } catch (e) {
-      if (e instanceof SimulationRevert) throw revertToError(e);
+      if (e instanceof SimulationRevert) throw simulationError(e);
       throw e;
     }
     if (finalSimulation.gasLimit > cfg.maxGasLimit) throw new RelayerError(422, 'gas_limit_too_high');
@@ -625,6 +681,7 @@ export class RelayerService {
         // (front-run, S3-06): the relayer paid gas and earned no fee. Charge the sources, do not
         // count it against the breaker.
         for (const held of lossReservations) held.settle(spent);
+        this.strike(call); // owner-drains-first / front-run: counts against the owner (spec 04)
         this.d.metrics?.inc('relayer_mined_reverts_total', { chain_id: cfg.chainId });
         this.alerts.send({ kind: 'mined_revert', chainId: cfg.chainId });
         this.logger.log('error', 'sweep_reverted', {

@@ -3,7 +3,7 @@
   "allowedOrigins": ["https://app.example.org"],
   "trustedProxies": ["127.0.0.1", "::1"],
   "gas": { "coverPercent": 100, "maxMovePercent": 25, "quoteCacheSeconds": 3 },
-  "quoteTtlSeconds": 120,
+  "quoteTtlSeconds": 60,
   "deadline": { "minSeconds": 30, "maxSeconds": 1800 },
   "rateLimit": { "ipPerMinute": 30, "ipBurst": 10, "ownerPerMinute": 6, "ownerBurst": 3, "maxKeys": 10000, "saltRotationHours": 24, "quoteGlobalPerMinute": 600, "quoteGlobalBurst": 100 },
   "breaker": { "windowSize": 20, "minSamples": 5, "failureRatio": 0.5, "cooldownSeconds": 60, "probeTimeoutSeconds": 60 },
