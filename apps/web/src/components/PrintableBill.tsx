@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
+import { flushSync } from 'react-dom';
 import type { Invoice } from '@ghostpay/invoice-schema';
 import { payeeFingerprint, safeText } from '../lib/displayText';
 import { formatFiat, formatUnix } from '../lib/format';
@@ -90,12 +91,31 @@ export function PrintableBill(props: PrintableBillProps): ReactNode {
   );
 }
 
-/** Button that prints the bill sheet (the print stylesheet hides everything else). */
+/**
+ * Button that prints the bill sheet (the print stylesheet hides everything else). The sheet is mounted only while
+ * printing, so the page does not hold a second copy of the invoice or its link in the DOM.
+ */
 export function PrintBillButton(props: PrintableBillProps): ReactNode {
+  const [printing, setPrinting] = useState(false);
+  useEffect(() => {
+    if (!printing) return;
+    const done = (): void => { setPrinting(false); };
+    window.addEventListener('afterprint', done);
+    return () => { window.removeEventListener('afterprint', done); };
+  }, [printing]);
   return (
     <>
-      <button type="button" className="btn" onClick={() => { window.print(); }}>Print bill</button>
-      <PrintableBill {...props} />
+      <button
+        type="button"
+        className="btn"
+        onClick={() => {
+          flushSync(() => { setPrinting(true); });
+          window.print();
+        }}
+      >
+        Print bill
+      </button>
+      {printing && <PrintableBill {...props} />}
     </>
   );
 }

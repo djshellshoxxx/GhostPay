@@ -24,6 +24,7 @@ describe('buildPaymentRequestUri', () => {
     expect(t).toContain('/transfer?');
     expect(parseEip681(t).chainId).toBe(84532);
     expect(buildPaymentRequestUri({ ...evmNative, amountAtomic: undefined })).toMatch(/^ethereum:0x/);
+    expect(buildPaymentRequestUri({ ...evmToken, amountAtomic: undefined })).not.toContain('uint256');
   });
   it('builds Solana Pay and TRON requests that re-parse', () => {
     expect(parseSolanaPay(buildPaymentRequestUri(sol)).label).toBe('Shop');
@@ -66,7 +67,7 @@ const RECEIPT: LocalReceipt = {
   version: 1,
   chainId: 84532,
   txHash: `0x${'ab'.repeat(32)}`,
-  router: EVM as LocalReceipt['router'],
+  router: EVM,
   token: 'native',
   gross: '100',
   fee: '1',
@@ -85,7 +86,7 @@ describe('PaymentProofQr', () => {
     expect(container.querySelector('.qr-frame')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'Show proof QR' }));
     expect(container.querySelector('[data-qr-kind="proof"]')).not.toBeNull();
-    expect((screen.getByLabelText('Proof of payment text') as HTMLTextAreaElement).value).toContain(RECEIPT.txHash);
+    expect(screen.getByLabelText<HTMLTextAreaElement>('Proof of payment text').value).toContain(RECEIPT.txHash);
     expect(screen.getByRole('button', { name: 'Copy proof JSON' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Hide proof QR' }));
     expect(container.querySelector('.qr-frame')).toBeNull();

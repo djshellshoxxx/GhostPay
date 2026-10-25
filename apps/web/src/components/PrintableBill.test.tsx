@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MAX_PRINT_QR_LINK_CHARS } from '../lib/qrKinds';
 import { makeParsed } from '../test/invoiceFixtures';
@@ -68,7 +68,7 @@ describe('PrintableBill', () => {
   });
 
   it('omits line item rows and memo when the invoice has none', async () => {
-    const inv = { ...(await invoice()), lineItems: [], memo: undefined };
+    const inv = { ...(await invoice()), lineItems: [], memo: '' };
     render(<PrintableBill invoice={inv} link={undefined} passphraseProtected chainName="C" tokenLabel="T" />);
     expect(screen.queryByRole('table')).toBeNull();
   });
@@ -90,8 +90,12 @@ describe('PrintBillButton', () => {
     const print = vi.fn();
     vi.stubGlobal('print', print);
     render(<PrintBillButton invoice={inv} link="#gpi=v1.x" passphraseProtected chainName="C" tokenLabel="T" />);
+    expect(screen.queryByTestId('printable-bill')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'Print bill' }));
     expect(print).toHaveBeenCalledOnce();
+    expect(screen.getByTestId('printable-bill')).toBeTruthy();
+    act(() => { window.dispatchEvent(new Event('afterprint')); });
+    expect(screen.queryByTestId('printable-bill')).toBeNull();
     vi.unstubAllGlobals();
   });
 });

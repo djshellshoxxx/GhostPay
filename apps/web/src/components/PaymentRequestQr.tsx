@@ -14,7 +14,7 @@ export type PaymentRequestSpec =
       readonly recipient: string;
       /** `'native'` or an ERC-20 token address. */
       readonly token: string;
-      readonly amountAtomic?: bigint;
+      readonly amountAtomic?: bigint | undefined;
     }
   | {
       readonly family: 'solana';
@@ -39,8 +39,8 @@ export function buildPaymentRequestUri(spec: PaymentRequestSpec): string {
   switch (spec.family) {
     case 'evm':
       return spec.token === 'native'
-        ? buildEip681Native({ address: spec.recipient, chainId: spec.chainId, value: spec.amountAtomic })
-        : buildEip681Erc20({ token: spec.token, recipient: spec.recipient, chainId: spec.chainId, amount: spec.amountAtomic });
+        ? buildEip681Native({ address: spec.recipient, chainId: spec.chainId, ...(spec.amountAtomic === undefined ? {} : { value: spec.amountAtomic }) })
+        : buildEip681Erc20({ token: spec.token, recipient: spec.recipient, chainId: spec.chainId, ...(spec.amountAtomic === undefined ? {} : { amount: spec.amountAtomic }) });
     case 'solana':
       return buildSolanaPay(spec);
     case 'tron':
@@ -126,7 +126,7 @@ export function PaymentProofQr(props: { readonly receipt: LocalReceipt }): React
 export interface PlainPaymentRequestProps {
   readonly family: 'solana' | 'tron';
   /** TRON network the URI names; `undefined` (a local test chain) has no URI form, so no request is offered. */
-  readonly tronNetwork?: TronNetwork;
+  readonly tronNetwork?: TronNetwork | undefined;
   readonly testnet: boolean;
   readonly networkLabel: string;
 }
@@ -149,8 +149,8 @@ export function PlainPaymentRequest(props: PlainPaymentRequestProps): ReactNode 
     to === ''
       ? undefined
       : props.family === 'solana'
-        ? { family: 'solana', recipient: to, amount: amt === '' ? undefined : amt }
-        : { family: 'tron', recipient: to, amount: amt === '' ? undefined : amt, network: props.tronNetwork ?? 'mainnet' };
+        ? { family: 'solana', recipient: to, ...(amt === '' ? {} : { amount: amt }) }
+        : { family: 'tron', recipient: to, network: props.tronNetwork ?? 'mainnet', ...(amt === '' ? {} : { amount: amt }) };
   return (
     <details className="plain-request">
       <summary>Plain payment request QR (optional)</summary>

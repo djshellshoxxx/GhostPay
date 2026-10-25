@@ -420,6 +420,16 @@ describe('Pay: sending', () => {
     expect(download).not.toHaveBeenCalled();
     await user.click(screen.getByRole('button', { name: 'Download local receipt' }));
     expect(download).toHaveBeenCalledTimes(1);
+    expect(screen.getByTestId('proof-disclaimer').textContent).toMatch(/not independent proof of payment/i);
+    await user.click(screen.getByRole('button', { name: 'Show proof QR' }));
+    expect(document.querySelector('[data-qr-kind="proof"], [data-qr-kind="caution"]')).not.toBeNull();
+    expect(screen.getByRole('button', { name: 'Copy proof JSON' })).toBeTruthy();
+    // The printable bill is part of the review page and carries the bearer-link warning for a non-passphrase link.
+    const printSpy = vi.fn();
+    window.print = printSpy;
+    await user.click(screen.getByRole('button', { name: 'Print bill' }));
+    expect(printSpy).toHaveBeenCalledOnce();
+    expect(screen.getByTestId('bearer-warning').textContent).toMatch(/anyone who sees this paper/i);
   });
 
   it('REFUSES (shows an error, not success) when the wallet mutates the transaction', async () => {
