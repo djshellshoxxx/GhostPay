@@ -10,6 +10,24 @@ Updated 2026-10-25 18:05 UTC. All six v29 lean findings fixed and merged; CI pen
   (`npm sbom` ESBOMPROBLEMS: `abitype@1.0.8` wants `zod@^3`, tree has `zod@4.6.7`) and `mythril` (pip metadata build error).
   Not caused by PR #30; not yet fixed.
 
+## Local full web run (all six fixes merged, head ce588bc)
+
+`cd apps/web && npx vitest run --coverage --maxWorkers=2`: exit 0, 100 files passed / 1 skipped, 1257 tests passed / 4 skipped;
+coverage 91.04 statements / 86.39 branches / 92.61 functions / 94.96 lines (thresholds 90/85/90/90 unchanged).
+Seller-vault native Chromium script `apps/web/scripts/test-seller-vault-idb.mjs` passed. Web build + bundle scan passed.
+
+## Nightly
+
+- `mythril`: root cause is the ubuntu-26.04 runner's default Python 3.14, for which `coincurve` (Mythril dependency) has no
+  wheel; its sdist build fails (`Expected exactly one LICENSE file in cffi distribution`). Fix on this branch: pin Python 3.12
+  with `actions/setup-python` v6.2.0 (`a309ff8b…`, SHA-pinned; `scripts/check-actions-pinned.sh` passes). Verified only by
+  YAML/pin checks; Nightly is scheduled on `main`, so it takes effect after merge.
+- `reproducibility` (`npm sbom` ESBOMPROBLEMS): `@0xbow/privacy-pools-core-sdk` pins `viem@2.22.14` -> `abitype@1.0.8`, whose
+  optional peer `zod ^3` is satisfied by the hoisted `zod@4.6.7`. An `abitype@1.0.8 -> 1.2.3` override makes `npm ls` clean
+  but `npm sbom` still rejects the overridden exact pin; a scoped nested `zod@3` override was not placed by npm. Reverted;
+  **still open**. Options for a reviewed follow-up: bump the SDK when a release uses a newer viem, or isolate the optional
+  privacy-pools package from the release SBOM scope. Gate not weakened.
+
 ## Scope
 
 Owner-approved lean release scope: `docs/handoffs/LEAN_RELEASE_SCOPE.md` (one EVM invoice -> pay -> detect/receipt -> sweep
