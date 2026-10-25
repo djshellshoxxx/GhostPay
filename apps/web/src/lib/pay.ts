@@ -310,10 +310,18 @@ export function assertInvoiceStillPayable(invoice: Invoice, nowSeconds: number):
   if (invoice.amountPolicy.mode === 'fiat_quote' && expiry.quoteExpired) throw new UserFacingError('The seller’s price quote has expired. Nothing was sent. Ask for a new invoice.');
 }
 
-/** One router (and permit) deadline: the 20-minute window, never past the invoice's payable limit. */
+/**
+ * Last second a deadline may name: the router and ERC-2612 accept a tx mined AT the deadline second, while
+ * `checkExpiry` treats `expiresAt` itself as expired.
+ */
+function lastPayableSecond(invoice: Invoice): number {
+  return invoicePayableUntil(invoice) - 1;
+}
+
+/** One router (and permit) deadline: the 20-minute window, never past the invoice's last payable second. */
 export function boundedDeadline(invoice: Invoice, nowSeconds: number): number {
   assertInvoiceStillPayable(invoice, nowSeconds);
-  return Math.min(nowSeconds + DEADLINE_SECONDS, invoicePayableUntil(invoice));
+  return Math.min(nowSeconds + DEADLINE_SECONDS, lastPayableSecond(invoice));
 }
 const builtPaymentContexts = new WeakMap<BuiltPayment, PayContext>();
 const builtBufferQuotes = new WeakMap<BuiltPayment, BufferQuote>();
@@ -327,7 +335,7 @@ export function buildFinal(ctx: PayContext, opts: FinalBuildOptions): BuiltPayme
   }
   const inv = ctx.review.invoice;
   assertInvoiceStillPayable(inv, opts.nowSeconds);
-  if (opts.deadlineSeconds !== undefined && opts.deadlineSeconds > invoicePayableUntil(inv)) {
+  if (opts.deadlineSeconds !== undefined && opts.deadlineSeconds > lastPayableSecond(inv)) {
     throw new UserFacingError('Blocked: the payment deadline would outlive the invoice. Prepare it again.');
   }
   const deadline = BigInt(opts.deadlineSeconds ?? boundedDeadline(inv, opts.nowSeconds));

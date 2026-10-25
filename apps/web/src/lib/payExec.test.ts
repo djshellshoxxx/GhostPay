@@ -559,11 +559,13 @@ describe('final payment guard rechecks invoice and fiat quote validity (P1)', ()
     const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
     now = quoteExpiry;
     await expect(sendPayment(session, ctx, built, rt, noStatus)).rejects.toThrow(/quote has expired/);
-    now = quoteExpiry - 1;
+    // quoteExpiry - 1 is the deadline second itself (rejected one second early by the app), so probe one second before.
+    now = quoteExpiry - 2;
     const s = delayedSession(session, wallet, (m) => { if (m === 'net_version') now = quoteExpiry; });
     await expect(sendPayment(s, ctx, built, rt, noStatus)).rejects.toThrow(/quote has expired/);
     expect(sends(wallet)).toBe(0);
-    expect(built.preview.deadline).toBeLessThanOrEqual(BigInt(quoteExpiry));
+    // The router and ERC-2612 accept a tx mined AT the deadline second, while the app treats expiresAt as expired.
+    expect(built.preview.deadline).toBeLessThan(BigInt(quoteExpiry));
   });
 
   it('fixed-token invoice with an old quote stays payable', async () => {
