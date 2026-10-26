@@ -17,10 +17,10 @@
     "viem": "2.57.7"
   },
   "devDependencies": {
-    "@types/node": "26.6.5",
+    "@types/node": "^26.6.5",
     "@vitest/coverage-v8": "5.0.5",
     "fast-check": "4.10.2",
-    "typescript": "5.9.3",
+    "typescript": "7.0.2",
     "vitest": "5.0.5"
   },
   "description": "GhostPay gas-sponsorship relay service (node:http, viem).",
