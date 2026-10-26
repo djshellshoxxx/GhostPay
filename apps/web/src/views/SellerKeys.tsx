@@ -58,6 +58,7 @@ export function SellerKeys(): ReactNode {
     operation.current?.abort(); operation.current = null;
     setBackupQr(undefined); setBusy(false); setVaultBusy(false);
     setPass(''); setPass2(''); setImportPass(''); setVaultUnlockPass(''); setImportText(undefined); setFile(undefined);
+    setVaultSavePass(''); setVaultSavePass2('');
   }, [app.session]);
   const startOperation = (): AbortController => {
     operation.current?.abort();
