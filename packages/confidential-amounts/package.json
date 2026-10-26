@@ -22,10 +22,10 @@
     "lint": "eslint --config ../../eslint.config.js src"
   },
   "dependencies": {
-    "viem": "2.57.7"
+    "viem": "2.57.10"
   },
   "optionalDependencies": {
-    "@zama-fhe/sdk": "3.7.0"
+    "@zama-fhe/sdk": "3.7.1"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

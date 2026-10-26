@@ -35,6 +35,6 @@
     "vitest": "5.0.5"
   },
   "dependencies": {
-    "viem": "2.57.7"
+    "viem": "2.57.10"
   }
 }

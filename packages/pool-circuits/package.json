@@ -40,7 +40,7 @@
     "snarkjs": "0.7.6",
     "typescript": "5.9.3",
     "typescript-eslint": "8.72.0",
-    "viem": "2.57.7",
+    "viem": "2.57.10",
     "vitest": "5.0.5"
   }
 }

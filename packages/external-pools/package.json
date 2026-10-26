@@ -24,7 +24,7 @@
   "dependencies": {
     "@ghostpay/secret-box": "0.1.0",
     "@noble/hashes": "2.4.0",
-    "viem": "2.57.7"
+    "viem": "2.57.10"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
