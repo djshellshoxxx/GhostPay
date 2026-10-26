@@ -5,6 +5,7 @@ import {
   deleteEncryptedVault,
   MemoryKeyVaultStore,
   IndexedDbKeyVaultStore,
+  type KeyVaultStore,
   readEncryptedVault,
   saveEncryptedVault,
   unlockEncryptedVault,
@@ -98,15 +99,29 @@ describe('encrypted seller vault', () => {
     const store = new MemoryKeyVaultStore();
     importSession({ spendingKeyHex: SPEND, viewingKeyHex: VIEW, signingKeyHex: SIGN });
     await saveEncryptedVault(PASS, { N: 1 << 14 }, store);
-    await deleteEncryptedVault(store);
+    await deleteEncryptedVault((await readEncryptedVault(store))!, store);
     expect(await readEncryptedVault(store)).toBeUndefined();
+  });
+
+  it('deletes only the exact ciphertext that was confirmed and preserves a replacement', async () => {
+    const store = new MemoryKeyVaultStore();
+    importSession({ spendingKeyHex: SPEND, viewingKeyHex: VIEW, signingKeyHex: SIGN });
+    await saveEncryptedVault(PASS, { N: 1 << 14 }, store);
+    const a = (await readEncryptedVault(store))!;
+    await store.delete(a);
+    await expect(deleteEncryptedVault(a, store)).rejects.toThrow(/changed since you asked to delete it/);
+    importSession({ spendingKeyHex: '44'.repeat(32), viewingKeyHex: '55'.repeat(32), signingKeyHex: '66'.repeat(32) });
+    await saveEncryptedVault(PASS, { N: 1 << 14 }, store);
+    const b = (await readEncryptedVault(store))!;
+    await expect(deleteEncryptedVault(a, store)).rejects.toThrow(/changed since you asked to delete it/);
+    expect(await readEncryptedVault(store)).toBe(b);
   });
 
   it('fails closed when IndexedDB is unavailable and handles an empty saved vault', async () => {
     const store = new IndexedDbKeyVaultStore();
     await expect(store.get()).rejects.toThrow(/storage is unavailable/);
-    await expect(store.putIfEmpty('ciphertext')).rejects.toThrow(/storage is unavailable/);
-    await expect(store.delete()).rejects.toThrow(/storage is unavailable/);
+    await expect(store.putIfEmpty('ciphertext', () => undefined)).rejects.toThrow(/storage is unavailable/);
+    await expect(store.delete('ciphertext')).rejects.toThrow(/storage is unavailable/);
     const empty = new MemoryKeyVaultStore();
     expect(await authorizeEncryptedVault(PASS, empty)).toBeUndefined();
     await expect(unlockEncryptedVault(PASS, empty)).rejects.toThrow(/No encrypted seller vault/);
@@ -149,4 +164,29 @@ describe('encrypted seller vault', () => {
     await expect(saving).rejects.toThrow(/changed during this action/);
     expect(written).toBeUndefined();
   });
+
+  for (const revoke of ['clear', 'replace'] as const) {
+    it(`does not commit ciphertext if the session is ${revoke === 'clear' ? 'cleared' : 'replaced'} while the PUT is pending`, async () => {
+      importSession({ spendingKeyHex: SPEND, viewingKeyHex: VIEW, signingKeyHex: SIGN });
+      const durable = new MemoryKeyVaultStore();
+      let reachedPut!: () => void;
+      let releasePut!: () => void;
+      const putStarted = new Promise<void>((resolve) => { reachedPut = resolve; });
+      const putGate = new Promise<void>((resolve) => { releasePut = resolve; });
+      // Models the IndexedDB adapter: the write is queued behind an async DB open, then runs the real add-if-empty.
+      const deferredPutStore: KeyVaultStore = {
+        get: () => durable.get(),
+        putIfEmpty: async (...args: Parameters<KeyVaultStore['putIfEmpty']>) => { reachedPut(); await putGate; return durable.putIfEmpty(...args); },
+        delete: (...args: Parameters<KeyVaultStore['delete']>) => durable.delete(...args),
+      };
+      const saving = saveEncryptedVault(PASS, { N: 1 << 14 }, deferredPutStore);
+      await putStarted;
+      if (revoke === 'clear') clearSession();
+      const replacement = revoke === 'replace' ? generateSession() : undefined;
+      releasePut();
+      await expect(saving).rejects.toThrow(/changed during this action/);
+      expect(await durable.get()).toBeUndefined();
+      expect(getSessionPublic()).toBe(replacement);
+    });
+  }
 });

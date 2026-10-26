@@ -195,3 +195,13 @@ describe('SolanaView', () => {
     expect(screen.getByText('Signed transaction')).toBeTruthy();
   });
 });
+
+describe('plain payment request', () => {
+  it('offers a Solana Pay request QR with text and copy', async () => {
+    const { user } = await setup();
+    await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
+    await user.type(screen.getByLabelText('Receive address'), DEST);
+    expect(screen.getByTestId('payment-request-text').textContent).toMatch(/^solana:/);
+    expect(screen.getByRole('button', { name: 'Copy payment request' })).toBeTruthy();
+  });
+});

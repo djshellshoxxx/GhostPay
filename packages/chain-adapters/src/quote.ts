@@ -27,13 +27,48 @@ export interface FeedConfig {
   readonly base: string;
   /** Quote currency of the answer, e.g. `USD`. */
   readonly quote: string;
+  /**
+   * Where the address was sourced: a `docs/chains/SOURCES-*.md` path with retrieval date. Never empty. URLs stay in
+   * comments and that file so they are not shipped in the web bundle (the bundle egress scan forbids them).
+   */
+  readonly sourceRef: string;
+  /**
+   * Heartbeat in seconds from a fetched Chainlink source. ABSENT when no source could be fetched; callers
+   * must then rely on the invoice quote TTL only (see docs/chains/SOURCES-2026-10-25.md).
+   */
+  readonly heartbeatSec?: number;
 }
 
 /**
- * Chainlink feed registry. EMPTY on purpose: no feed address could be verified against Chainlink
- * documentation in this environment (see TODO-VERIFY.md). Callers pass an explicit feed.
+ * Chainlink feed registry (testnets only). An entry exists only when its address was read from a Chainlink-owned
+ * repository; everything else stays absent so pricing fails closed. Details: docs/chains/SOURCES-2026-10-25.md.
  */
-export const FEEDS: readonly FeedConfig[] = Object.freeze([]);
+export const FEEDS: readonly FeedConfig[] = Object.freeze([
+  {
+    // Sepolia ETH / USD, 8 decimals. Heartbeat NOT sourced (docs.chain.link unreachable from the build network).
+    chainId: 11155111,
+    address: '0x694AA1769357215DE4FAC081bf1f309aDC325306',
+    base: 'ETH',
+    quote: 'USD',
+    // Sources (retrieved 2026-10-25):
+    //   github.com/smartcontractkit/hardhat-starter-kit/blob/main/contracts/PriceConsumerV3.sol
+    //   github.com/smartcontractkit/documentation/blob/main/public/samples/DataFeeds/HistoricalDataConsumer.sol
+    //   github.com/smartcontractkit/chainlink-agent-skills/blob/main/chainlink-data-feeds-skill/references/reading-price-feeds.md
+    sourceRef: 'docs/chains/SOURCES-2026-10-25.md (retrieved 2026-10-25)',
+  },
+]);
+
+/**
+ * Whether a verified feed exists for exactly this chain, base asset and quote currency.
+ *
+ * @param chainId Chain id.
+ * @param base Base asset symbol (native symbol or token symbol).
+ * @param quote Quote currency.
+ * @returns True when {@link findFeed} would return a feed.
+ */
+export function isQuoteAvailable(chainId: number, base: string, quote: string): boolean {
+  return findFeed(chainId, base, quote) !== undefined;
+}
 
 /**
  * Looks up a configured feed.

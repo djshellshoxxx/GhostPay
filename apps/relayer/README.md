@@ -38,11 +38,18 @@ chain and token allowlist (`chain_not_supported`, `token_not_supported` 422) -> 
 unexpired (`quote_expired` 410), `sweep.fee >= quote.fee` (`fee_below_quote`), `fee <= 300 bps` (`fee_above_cap`) ->
 deadline in `(now+min, now+max]`, max 1800 s (`deadline_too_soon/far`) -> contract static rules (`invalid_order`) ->
 signature recovers to `owner` (`invalid_signature`) -> per-owner rate limit (`rate_limited_owner` 429; keyed only by a
-proven owner) -> `PolicyGate` (`policy_denied` 403, `policy_unavailable` 503) -> breaker -> serial per-chain lane:
-gas price cap (`gas_price_too_high` 503), balance floor (`breaker_open`), `simulateContract` (revert class: `nonce_used`
-409, `expired`, `invalid_signature`, `token_transfer_failed`, `permit_value_too_low`, `invalid_order`,
-`simulation_reverted` 422; RPC failure `rpc_unavailable` 503), gas limit (`gas_limit_too_high`), daily budget
-(`budget_exhausted` 503 + `Retry-After`) -> send (`send_failed` 503).
+proven owner) -> per-owner failure counter (`owner_failure_limit` 429 + `Retry-After`: 3 costly user-attributable
+failures per hour, spec 04) -> `PolicyGate` (`policy_denied` 403, `policy_unavailable` 503) -> breaker -> serial per-chain lane:
+gas price cap (`gas_price_too_high` 503), balance floor (`breaker_open`), order state (`nonce_used`,
+`insufficient_token_balance`, `insufficient_allowance`), permit ladder (allowance already covers -> the permit is dropped and
+plain `sweep` is used; otherwise an expired permit -> `permit_expired` 422 before simulation), `simulateContract` (revert
+class: `nonce_used` 409, `expired`, `invalid_signature`, `token_transfer_failed`, `permit_value_too_low`, `invalid_order`,
+`simulation_reverted` 422; with a permit still needed a generic transfer revert is `permit_failed` 422; RPC failure
+`rpc_unavailable` 503), gas limit (`gas_limit_too_high`), daily budget (`budget_exhausted` 503 + `Retry-After`) -> send
+(`send_failed` 503). A mined revert also counts against the owner.
+
+Quote pricing: `gas.griefReserveBps` (default 0, max 5000) is added to the gas term before the F-SPONSOR formula, so the fee
+carries a margin for gas lost when an owner drains or revokes first. `quoteTtlSeconds` is at most 60 (default 60).
 
 Other classes: `invalid_*` 400 (field-level validation), `unsupported_media_type` 415, `body_too_large` 413,
 `rate_limited_ip` 429, `origin_not_allowed` 403, `queue_full` / `shutting_down` 503, `not_found` 404, `method_not_allowed` 405,
@@ -141,5 +148,5 @@ are placeholders.
 - Breaker: every admission is a permit settled on every path; user-attributable results (simulation revert, nonce used, caps) are neutral; `breaker.probeTimeoutSeconds` expires a stuck probe (S3-05). A mined revert after a passing simulation is charged to `lossBudget` (per network bucket and per destination, plus global; `429 loss_budget_exhausted`) and does not feed the breaker (S3-06).
 - `rateLimit.quoteGlobalPerMinute/Burst`: process-wide `/v1/quote` budget (`429 rate_limited_global`); quote-path gas price is reused for 3 s.
 - Alerts: `alertWebhookUrlEnv` names an env var holding an https URL; JSON `{kind, chainId, text}` is posted on breaker open, low balance, loss/daily budget exhaustion and mined reverts (de-duplicated per kind and chain, 60 s). No request data is ever included.
-- Metrics (`/metrics`): `relayer_http_requests_total`, `relayer_sweeps_total`, `relayer_breaker_transitions_total`, `relayer_mined_reverts_total`, `relayer_loss_budget_denied_total`, gauges `relayer_breaker_state` (0 closed, 1 half_open, 2 open), `relayer_daily_budget_used_wei`, `relayer_queue_pending`.
+- Metrics (`/metrics`): `relayer_http_requests_total`, `relayer_sweeps_total`, `relayer_breaker_transitions_total`, `relayer_mined_reverts_total`, `relayer_loss_budget_denied_total`, `relayer_owner_failures_total`, `relayer_permit_skipped_total`, gauges `relayer_breaker_state` (0 closed, 1 half_open, 2 open), `relayer_daily_budget_used_wei`, `relayer_queue_pending`.
 - Unverified: nothing here has run behind a real proxy, Prometheus or webhook receiver.

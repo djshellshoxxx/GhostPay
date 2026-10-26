@@ -55,3 +55,11 @@ Contract code wins over docs. Items for the lead to confirm or reject.
   are not followed, preventing internal-address and DNS-rebinding targets.
 - `/metrics` and the alert webhook have only been exercised with fakes (no Prometheus scrape, no real webhook receiver). `/healthz` now reports `degraded` for any non-closed breaker.
 - `getGasPrice` on the quote path is cached for 3 s (not on the sweep path).
+
+## Permit griefing (spec 04, relayer side)
+
+- Fallback ladder is server-side and needs no client change: when the owner's allowance already covers the amount the permit is dropped and plain `sweep` is used (a front-run permit therefore succeeds); an expired permit with short allowance is refused (`permit_expired`) before simulation; a generic transfer revert while the permit is still needed is reported as `permit_failed`. The relayer does not rebuild the token's EIP-712 domain (it has no domain name/version), so `sig_invalid` and `nonce_consumed` are not told apart: both are `permit_failed`.
+- The per-owner failure counter reuses `FailureBudgets` with the owner key only (`destinationMax: 0`): a destination key would let anyone block a victim's destination with self-signed failing orders, and destinations are already covered by `lossBudget`. 3 strikes per hour; `nonce_used` is not a strike (honest retries). Constants, not config.
+- `gas.griefReserveBps` defaults to 0 (UNVERIFIED, to be tuned per chain); it raises the gas term only and stays bounded by the 300 bps cap.
+- `quoteTtlSeconds` is now capped at 60 (was default 120, max 600); configs above 60 are refused at startup. `relayer.config.example.json` updated.
+- Option C (`PermitSkipped` event) needs a contract change and is not done. The anvil owner-drains-first / front-run e2e was not run here.

@@ -1,10 +1,11 @@
 import { findChain, tokensForChain } from '@ghostpay/chain-adapters';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { CopyButton, Field, Notice, downloadText, Mono } from './Common';
 import { QrFrame } from './QrFrame';
 import { formatUnits } from '../lib/format';
 import { makeQr } from '../lib/qr';
-import type { ScanMatch } from '../lib/scanClient';
+import { checkpointKeyId, type ScanMatch } from '../lib/scanClient';
+import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
 import { getSessionPublic, withSessionSecrets } from '../lib/session';
 import { receiptJson, signReceipt, type SignedReceipt } from '../lib/receipts';
 
@@ -30,6 +31,8 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
   const [receipt, setReceipt] = useState<SignedReceipt | undefined>(undefined);
   const [showReceiptQr, setShowReceiptQr] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
+  const [archive, setArchive] = useState<'idle' | 'busy' | 'done'>('idle');
+  const generation = useRef(0);
   const match = props.match;
   const txHash = match.announcement.transactionHash;
   const matchIdentity = JSON.stringify([
@@ -46,7 +49,10 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
     setReceipt(undefined);
     setShowReceiptQr(false);
     setError(undefined);
+    setArchive('idle');
+    generation.current++;
   }, [matchIdentity, props.sellerSignerPublicKey]);
+  useEffect(() => () => { generation.current++; }, []);
   const signerStillCurrent = getSessionPublic()?.signerPublicKey === props.sellerSignerPublicKey;
   const eligible = match.receipt === 'verified' && match.metadata !== undefined && signerStillCurrent;
   const chainName = findChain(match.chainId)?.name ?? `Chain ${String(match.chainId)}`;
@@ -74,6 +80,33 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
     } catch (e) {
       setError(e instanceof Error ? e.message : 'The receipt could not be signed.');
     }
+  };
+
+  /** Opt-in encrypted archive of a receipt this seller just issued. The archive is never payment evidence. */
+  const archiveReceipt = (): void => {
+    const session = getSessionPublic();
+    if (receipt === undefined || session === undefined || session.signerPublicKey !== receipt.signerPublicKey) {
+      setError('Seller keys changed. The receipt was not archived.');
+      return;
+    }
+    const current = ++generation.current;
+    setArchive('busy');
+    setError(undefined);
+    void (async () => {
+      const vault = await createCurrentReconciliationVault(receipt.chainId, checkpointKeyId(session.spendingPublicKey, session.viewingPublicKey));
+      try {
+        await vault.archiveReceipt(receipt);
+      } finally {
+        vault.lock();
+      }
+    })().then(
+      () => { if (generation.current === current) setArchive('done'); },
+      (e: unknown) => {
+        if (generation.current !== current) return;
+        setArchive('idle');
+        setError(e instanceof Error ? e.message : 'The receipt could not be archived.');
+      },
+    );
   };
 
   const receiptText = receipt === undefined ? undefined : receiptJson(receipt);
@@ -136,7 +169,11 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
                 <button type="button" className="btn" onClick={() => { downloadText('ghostpay-receipt.json', receiptText ?? '', 'application/json'); }}>Download JSON</button>
                 <button type="button" className="btn" onClick={showQr}>Show receipt QR</button>
                 <button type="button" className="btn" onClick={() => { window.print(); }}>Print receipt</button>
+                <button type="button" className="btn" onClick={archiveReceipt} disabled={archive !== 'idle'}>
+                  {archive === 'done' ? 'Receipt archived' : 'Archive in encrypted vault'}
+                </button>
               </div>
+              <p className="hint">Archiving stores this receipt encrypted with your viewing key on this device, in the reconciliation vault for this seller and chain. You can export or delete it there. An archived receipt never counts as payment evidence.</p>
               <p className="hint">This QR contains the transaction, recipient, amount and invoice digest. Show it only to the intended recipient; the signature is a seller-key attestation, not independent payment proof.</p>
               {showReceiptQr && receiptText !== undefined && <QrFrame kind="proof" text={receiptText} caption="Signed seller receipt JSON" />}
             </article>

@@ -18,10 +18,17 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
    payer) and is unit-tested with an injected feed; with no feed it fails closed with a plain message. The Create page warns about this.
 5. **Manifest signatures are not verified.** `DeploymentManifest.signature` is optional and no release key exists. The UI shows
    "carries no signature" / "whose signature this app does not verify" next to the fee recipient instead of implying verification.
-6. **Embed SDK (`public/ghostpay-embed-v1.js`)** is popup-only (GitHub Pages cannot send `frame-ancestors`) and takes a full invoice link
-   (`data-invoice`), not `data-amount/currency/token/chain/merchant-id`: the merchant-profile mode needs a signed merchant profile
-   format that does not exist yet. The link must be https (or `localhost`) and on the same origin as the script. Because the popup uses
-   `noopener`, there is no `postMessage` channel and no completion callback in v1.
+6. **Embed SDK.** `public/ghostpay-embed-v1.js` is frozen and popup-only (takes a full `data-invoice` link, no `postMessage`, so pinned
+   hashes stay valid). `public/ghostpay-embed-v2.js` adds the optional sandboxed iframe mode, a `postMessage` completion protocol
+   (`src/lib/embedProtocol.ts`, `embedHost.ts`) and a signed merchant profile (`@ghostpay/invoice-schema` `merchantProfile`). Popup stays the
+   default. Iframe mode only works on a header-capable host: the checkout answers the handshake only when built with
+   `VITE_EMBED_IFRAME=1`, served with the opt-in `deploy/nginx/security-headers-embed.conf` (explicit `frame-ancestors` allowlist), and
+   given a verified profile whose `origins` contains the embedding origin. GitHub Pages cannot send `frame-ancestors`, so the flag is
+   off there (a test enforces it), the checkout never answers, and the SDK falls back to the popup after 4 s. Still open: the SDK takes
+   an invoice link, not `data-amount/currency/token/chain/merchant-id` (profile `templates` are signed and parsed but not yet turned
+   into invoices, `data-template` is only forwarded); the profile is supplied inline (`?gpm=`) or via `fetchMerchantProfile`, with no
+   payer-facing fingerprint/"unverified identity" UI yet (`signerFingerprint` exists; Pay.tsx/locales are out of this worker's scope);
+   no SRI hash is published (no release pipeline); the Playwright hostile-host-page test is not written (jsdom tests only).
 7. WalletConnect-style adapters (optional in the playbook) are not built. Wallet paths: EIP-6963 discovery and a labelled
    `window.ethereum` EIP-1193 fallback.
 8. No network-reachable "light indexer" (Feature 5); scanning uses the user's RPC through `chain-adapters`.
@@ -39,11 +46,20 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     `announcementId = blockHash:logIndex` instead of `transactionHash`. The per-profile HKDF salt lives in one `meta` record rather than
     in every record; each record has its own fresh 96-bit IV. The idle lock timeout locks the tag vault only; seller keys stay in memory
     until wiped or the tab closes (auto-wiping unexported keys seemed worse).
-12. **Gas buffer sizing** (Feature 1): `calculateBuffer` with a fixed 100 000 gas sweep estimate (not simulated), `2 x eth_gasPrice` as max
-    fee, `DEFAULT_BUFFER_SAFETY_BPS` (20 %), a hard cap of 0.01 native coin, and a 120 s quote lifetime. It needs the user's RPC.
-    Buffer payments go through approval (the router cannot combine a permit with a buffer).
+12. **Gas buffer sizing** (Feature 1, spec 13): `calculateBuffer` over `max(100 000, eth_estimateGas of the token transfer + 25 %)`
+    (fails closed when the simulation fails), `2 x eth_gasPrice` as max fee, `DEFAULT_BUFFER_SAFETY_BPS` (20 %), a hard cap of 0.01
+    native coin, and a 60 s quote lifetime, re-checked before the wallet is asked. It needs the user's RPC. Buffer payments go through
+    approval (permit + buffer needs a deferred router change). Invoice v2 `bufferPolicy` (ADR-0024): declined hides the buffer; accepted
+    bounds it by `min(maxWei, cap)` and raises a smaller estimate to `minWei` (shown); `buildFinal` re-checks the bounds. The Create page
+    has no control for the policy yet (v2 invoices can only be produced through `buildInvoiceLink({ bufferPolicy })`). The fiat
+    estimate stays hidden while `FEEDS` is empty.
 13. **Permit domain version** is probed as `"2"` then `"1"`; each candidate is accepted only if the locally computed domain separator equals
     the token's on-chain `DOMAIN_SEPARATOR`. The wallet's permit signature is verified to recover to the payer before it is used.
+    Spec 04 post-sign: `classifyPermit` (`chain-adapters/src/permit.ts`) re-reads allowance, nonce and domain and runs a static `permit`
+    call. A front-run permit (allowance now covers) takes the allowance path; `nonce_consumed`/`sig_invalid`/`expired` raise
+    `PermitRejectedError` with a per-state message, nothing is sent, and only the next user-pressed Prepare switches to an exact approval.
+    A reverted static `permit` call is reported as `sig_invalid` even if an RPC fault caused it (fail closed). Option C (`PermitSkipped`
+    event) is a contract change and is not done.
 14. **Independent verification needs the user's RPC.** After `eth_sendTransaction`, the app fetches the transaction from the user's own
     RPC and compares sender, target, calldata, value and chain id with the preview (this is what catches a provider that mutates the
     transaction or lies about the chain). With no RPC configured the payment still works but the result says it could not be verified.

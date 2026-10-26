@@ -14,18 +14,25 @@ import { userMessage } from '../lib/errors';
 import { DelayScheduler, randomDelayMs, type ScheduleSnapshot } from '../lib/jitter';
 import {
   createPayContext,
+  applyBufferPolicy,
+  bufferOffered,
   decodeForDisplay,
   quoteBuffer,
+  assertInvoiceStillPayable,
+  assertPreparedBufferFresh,
   reviewInvoice,
   type BufferQuote,
   type SweepSimulation,
   type PayContext,
 } from '../lib/pay';
 import { verifyManifestForFlow } from '../lib/manifest';
-import { PostBroadcastError, buildReceipt, classifyPayerPermit, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, type ApprovalPlan, type Runtime, type SubmitResult } from '../lib/payExec';
+import { PaymentProofQr } from '../components/PaymentRequestQr';
+import { PrintBillButton } from '../components/PrintableBill';
+import { PermitRejectedError, PostBroadcastError, buildReceipt, classifyPayerPermit, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, type ApprovalPlan, type Runtime, type SubmitResult } from '../lib/payExec';
 import { useServices } from '../lib/services';
 import { connectWallet, walletWarnings, type WalletInfo, type WalletSession } from '../lib/wallet';
 import { useApp } from '../state';
+import { notifyEmbedDone } from '../lib/embedHost';
 import { captureSessionVersionGuard } from '../lib/session';
 import { bindReceiptToInvoice, MAX_RECEIPT_JSON_BYTES, parseVerifiedReceipt, type BoundReceipt } from '../lib/receipts';
 
@@ -82,6 +89,8 @@ export function Pay(): ReactNode {
   const [useDelay, setUseDelay] = useState(false);
   const [useBuffer, setUseBuffer] = useState(false);
   const [bufferQuote, setBufferQuote] = useState<BufferQuote | undefined>(undefined);
+  // Spec 04: after a signed permit was refused, the next (user-pressed) Prepare uses a one-time approval.
+  const [permitDeclined, setPermitDeclined] = useState(false);
   const [schedule, setSchedule] = useState<ScheduleSnapshot | undefined>(undefined);
   const [ctx, setCtx] = useState<PayContext | undefined>(undefined);
   const [ctxError, setCtxError] = useState<string | undefined>(undefined);
@@ -202,6 +211,7 @@ export function Pay(): ReactNode {
     setBroadcastKind('payment');
     setApproval(undefined);
     setGranted(undefined);
+    setPermitDeclined(false);
     setWallet(undefined);
     setStatus('');
     setError(undefined);
@@ -359,7 +369,9 @@ export function Pay(): ReactNode {
       return undefined;
     }
     try {
-      const q = await quoteBuffer(rpc, Math.floor(services.nowMs() / 1000), sweep);
+      if (invoice === undefined) return undefined;
+      // ADR-0023: a v2 invoice's seller policy bounds (or declines) the buffer before it is shown or built.
+      const q = applyBufferPolicy(await quoteBuffer(rpc, Math.floor(services.nowMs() / 1000), sweep), invoice);
       if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return undefined;
       setBufferQuote(q);
       return q;
@@ -619,7 +631,7 @@ export function Pay(): ReactNode {
           if (buffer === undefined) throw new Error('buffer');
         }
         const t = ctx.review.token;
-        let permit = t?.config?.permit === true && buffer === undefined;
+        let permit = t?.config?.permit === true && buffer === undefined && !permitDeclined;
         if (permit) {
           const state = await classifyPayerPermit(ctx, wallet, rt);
           guard();
@@ -644,6 +656,7 @@ export function Pay(): ReactNode {
       } catch (e) {
         if (!isCurrent()) return;
         setStatus('');
+        if (e instanceof PermitRejectedError) setPermitDeclined(true);
         if (!(e instanceof Error && e.message === 'buffer')) setError(userMessage(e));
         setPhase('ready');
       }
@@ -665,18 +678,32 @@ export function Pay(): ReactNode {
     const scopedStatus = (message: string): void => { if (isCurrent()) setStatus(message); };
     setError(undefined);
     setPhase('busy');
+    let actualAllowance = granted;
+    let approvalConfirmed = false;
+    let approvalBroadcastHash: string | undefined;
     void (async () => {
-      let stage: 'approval' | 'payment' = approval?.required === true && granted === undefined ? 'approval' : 'payment';
+      let stage: 'approval' | 'payment' = approval?.required === true && actualAllowance === undefined ? 'approval' : 'payment';
       try {
         const rt = await runtime();
         guard();
-        let actualAllowance = granted;
+        // Final validity gate before any wallet request (the initial approval included), rechecked after wallet awaits.
+        // Not part of `guard`: after a broadcast approval the allowance is kept and only the payment is refused.
+        const preSignGuard = (): void => {
+          guard();
+          assertInvoiceStillPayable(ctx.review.invoice, rt.nowSeconds());
+          assertPreparedBufferFresh(built, rt.nowSeconds());
+        };
+        preSignGuard();
         if (approval?.required === true && actualAllowance === undefined) {
-          actualAllowance = await grantApproval(wallet, ctx, approval, rt, scopedStatus, guard, (hash) => {
+          actualAllowance = await grantApproval(wallet, ctx, approval, rt, scopedStatus, preSignGuard, (hash) => {
+            approvalBroadcastHash = hash;
             if (!isCurrent()) setPreviousBroadcast({ hash, kind: 'approval' });
           });
-          guard();
+          approvalConfirmed = true;
           setGranted(actualAllowance);
+          // The wallet request may have remained open until the invoice or buffer expired. Preserve the approval result,
+          // then recheck expiry before starting the separate payment transaction.
+          guard();
         }
         stage = 'payment';
         const res = await sendPayment(wallet, ctx, built, rt, scopedStatus, guard);
@@ -686,6 +713,7 @@ export function Pay(): ReactNode {
           return;
         }
         setResult(res);
+        notifyEmbedDone({ status: 'submitted', chainId: ctx.review.invoice.chainId, txHash: res.hash });
         setResultForContext(ctx);
         setPhase('done');
         setStatus('');
@@ -695,6 +723,8 @@ export function Pay(): ReactNode {
           if (e instanceof PostBroadcastError) {
             setPreviousBroadcast({ hash: e.hash, kind: stage });
             app.announce('A transaction may have been submitted for the previous invoice. Check your wallet before taking further action.');
+          } else if (approvalBroadcastHash !== undefined) {
+            setPreviousBroadcast({ hash: approvalBroadcastHash, kind: 'approval' });
           }
           return;
         }
@@ -708,7 +738,13 @@ export function Pay(): ReactNode {
           app.announce(`${stage === 'approval' ? 'Approval' : 'Payment'} sent, verification failed. Do not repeat it.`);
           return;
         }
-        setError(userMessage(e));
+        if (approvalConfirmed) {
+          const reason = userMessage(e).replace(/\s*Nothing was sent\.?/g, '').trim();
+          setError(`Approval was confirmed${approvalBroadcastHash === undefined ? '' : ` (${approvalBroadcastHash})`}, but no payment was sent. ${reason}`);
+          app.announce('Approval confirmed. The payment was not sent because its final checks failed.');
+        } else {
+          setError(userMessage(e));
+        }
         setPhase('prepared');
       }
     })();
@@ -910,6 +946,14 @@ export function Pay(): ReactNode {
         </p>
       )}
 
+      <PrintBillButton
+        invoice={inv}
+        link={fragment === undefined || fragment === '' ? undefined : `${services.baseUrl()}${fragment}`}
+        passphraseProtected={parsed.passphraseProtected}
+        chainName={review.chain?.name ?? `Chain ${String(inv.chainId)}`}
+        tokenLabel={inv.token === 'native' ? (symbol === '' ? 'Native coin' : symbol) : symbol === '' ? inv.token : symbol}
+      />
+
       {ctx !== undefined && (
         <dl className="details amounts">
           <dt>You pay (gross)</dt>
@@ -988,7 +1032,10 @@ export function Pay(): ReactNode {
             </label>
           </div>
           <p className="hint">Timing friction only, not anonymity. While waiting nothing is signed or sent, and the page must stay open. You can cancel or send now.</p>
-          {isErc20 && (
+          {isErc20 && parsed !== undefined && !bufferOffered(parsed.invoice) && (
+            <p className="hint">The seller does not accept a gas buffer for this invoice.</p>
+          )}
+          {isErc20 && parsed !== undefined && bufferOffered(parsed.invoice) && (
             <>
               <div className="check">
                 <input
@@ -1005,7 +1052,7 @@ export function Pay(): ReactNode {
               </div>
               {useBuffer && (
                 <Notice kind="warn" title="Public linkage">
-                  {bufferQuote === undefined ? 'Estimating buffer…' : `Extra ${formatUnits(bufferQuote.bufferWei, 18)} ${review.chain?.nativeSymbol ?? 'native coin'} (native, not ${symbol}) is sent in the same transaction to the one-time address. This publicly links your payment, the one-time address and the buffer. It is an estimate (${String(bufferQuote.gasLimit)} gas${bufferQuote.gasSource === 'simulated' ? ', from a simulated token transfer' : ', default table value until you prepare the payment'} at up to ${String(bufferQuote.maxFeePerGas)} wei, +20 %), not a guarantee.`}
+                  {bufferQuote === undefined ? 'Estimating buffer…' : `Extra ${formatUnits(bufferQuote.bufferWei, 18)} ${review.chain?.nativeSymbol ?? 'native coin'} (native, not ${symbol}) is sent in the same transaction to the one-time address. This publicly links your payment, the one-time address and the buffer. It is an estimate (${String(bufferQuote.gasLimit)} gas${bufferQuote.gasSource === 'simulated' ? ', from a simulated token transfer' : ', default table value until you prepare the payment'} at up to ${String(bufferQuote.maxFeePerGas)} wei, +20 %), not a guarantee.${bufferQuote.raisedToSellerMinimum === true ? " Raised to the seller's minimum buffer for this invoice." : ""} It is never refunded.`}
                 </Notice>
               )}
             </>
@@ -1107,6 +1154,7 @@ export function Pay(): ReactNode {
               Download local receipt
             </button>
           </div>
+          <PaymentProofQr receipt={buildReceipt(ctx, built, result, new Date(services.nowMs()))} />
         </div>
       )}
 

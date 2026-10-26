@@ -5,6 +5,7 @@ import { userMessage } from '../../lib/errors';
 import { useServices } from '../../lib/services';
 import { connectWallet, sendViaWallet, verifySubmission, WalletBroadcastError, type WalletInfo, type WalletSession } from '../../lib/wallet';
 import { useApp } from '../../state';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
 import { buildClearRegistryCall } from '../../lib/registry';
 import { captureSessionGuard } from '../../lib/session';
 import { WalletAttempts } from '../../components/WalletAttempts';
@@ -15,29 +16,31 @@ type Msg = { readonly kind: 'ok' | 'error' | 'warn'; readonly text: string };
 
 function CallPreview(props: { readonly call: RegistryCall; readonly chainName: string }): ReactNode {
   const p = props.call.preview;
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   return (
     <dl className="kv">
-      <dt>Network</dt>
+      <dt>{t('registry.call.network')}</dt>
       <dd>{props.chainName}</dd>
-      <dt>Registry contract</dt>
+      <dt>{t('registry.call.contract')}</dt>
       <dd><Mono>{p.contract}</Mono></dd>
-      <dt>Function</dt>
-      <dd><Mono>{p.function}</Mono> with scheme id {p.schemeId.toString()}</dd>
+      <dt>{t('registry.call.function')}</dt>
+      <dd><Mono>{p.function}</Mono> {t('registry.call.schemeId', { id: p.schemeId.toString() })}</dd>
       {p.metaAddress !== undefined && (
         <>
-          <dt>Meta-address stored</dt>
+          <dt>{t('registry.call.metaStored')}</dt>
           <dd><Mono>{p.metaAddress}</Mono></dd>
         </>
       )}
       {p.registrant !== undefined && (
         <>
-          <dt>Registrant</dt>
+          <dt>{t('registry.call.registrant')}</dt>
           <dd><Mono>{p.registrant}</Mono></dd>
         </>
       )}
-      <dt>Value</dt>
-      <dd>0 (network fee only)</dd>
-      <dt>Call data</dt>
+      <dt>{t('registry.call.value')}</dt>
+      <dd>{t('registry.call.valueZero')}</dd>
+      <dt>{t('registry.call.data')}</dt>
       <dd><Mono>{props.call.data}</Mono></dd>
     </dl>
   );
@@ -47,6 +50,8 @@ function CallPreview(props: { readonly call: RegistryCall; readonly chainName: s
 export function RegistryView(): ReactNode {
   const app = useApp();
   const services = useServices();
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const chains = [...services.chains].sort((a, b) => Number(b.testnet) - Number(a.testnet));
   const [chainId, setChainId] = useState<number | undefined>(chains[0]?.chainId);
   const chain = chains.find((c) => c.chainId === chainId);
@@ -89,7 +94,7 @@ export function RegistryView(): ReactNode {
       if (!mounted.current || !current.consent || current.chainId !== expected.chainId || current.session !== expected.session ||
           current.metaAddress !== expected.metaAddress || current.wallet !== expected.wallet || current.reviewed !== expected.reviewed ||
           current.reviewAction !== expected.reviewAction || current.settings !== expected.settings) {
-        throw new Error('The registry session, network, wallet or consent changed. Review the action again.');
+        throw new Error(t('registry.sessionChanged'));
       }
     };
   };
@@ -101,7 +106,7 @@ export function RegistryView(): ReactNode {
     return rpc;
   };
   const rpcMissing = (e: unknown): boolean => e instanceof Error && e.message === 'rpc';
-  const noRpc: Msg = { kind: 'error', text: 'Set an RPC endpoint for this network in Settings first. This page refuses to continue without an independent check.' };
+  const noRpc: Msg = { kind: 'error', text: t('registry.noRpc') };
 
   const onDiscover = (): void => {
     setPub(undefined);
@@ -113,13 +118,13 @@ export function RegistryView(): ReactNode {
   const onConnect = (w: WalletInfo): void => {
     if (chainId === undefined || !consent || metaAddress === undefined || busyRef.current) return;
     const guard = captureAuthority();
-    setPub({ kind: 'ok', text: 'Waiting for your wallet…' });
+    setPub({ kind: 'ok', text: t('registry.waiting') });
     connectWallet(w, chainId).then(
       (connected) => {
         try { guard(); } catch { return; }
         setWallet(connected);
         setPub(undefined);
-        app.announce('Wallet connected.');
+        app.announce(t('registry.walletConnected'));
       },
       (e: unknown) => {
         try { guard(); } catch { return; }
@@ -165,7 +170,7 @@ export function RegistryView(): ReactNode {
         await verifyRegistry(rpc);
         guard();
         const expected = reviewAction === 'publish' ? buildRegisterKeysCall(metaAddress) : buildClearRegistryCall();
-        if (expected.to !== reviewed.to || expected.data !== reviewed.data || expected.value !== reviewed.value) throw new Error('The reviewed registry transaction changed. Review it again.');
+        if (expected.to !== reviewed.to || expected.data !== reviewed.data || expected.value !== reviewed.value) throw new Error(t('registry.txChanged'));
         const hash = await sendViaWallet(wallet, expected, guard, { kind: 'registry' });
         returnedHash = hash;
         // The journal already retained this hash, even if the user changed sessions while the wallet was open.
@@ -176,14 +181,14 @@ export function RegistryView(): ReactNode {
         setReviewAction(undefined);
         setPub({
           kind: check === 'verified' ? 'ok' : 'warn',
-          text: `${reviewAction === 'publish' ? 'Registration' : 'Clear'} submitted: ${hash}. ${check === 'verified' ? 'Your RPC saw the same transaction you reviewed.' : 'Your RPC has not seen it yet; check a block explorer.'}${reviewAction === 'clear' ? ' This removes the current entry only; public chain history remains visible.' : ''}`,
+          text: `${t('registry.submitted', { what: reviewAction === 'publish' ? t('registry.what.registration') : t('registry.what.clear'), hash })} ${check === 'verified' ? t('registry.verified') : t('registry.notSeen')}${reviewAction === 'clear' ? ` ${t('registry.clearNote')}` : ''}`,
         });
-        app.announce(`${reviewAction === 'publish' ? 'Registration' : 'Clear'} submitted.`);
+        app.announce(t('registry.announceSubmitted', { what: reviewAction === 'publish' ? t('registry.what.registration') : t('registry.what.clear') }));
       } catch (e) {
         if (e instanceof WalletBroadcastError) returnedHash = e.hash;
         if (!mounted.current) return;
         if (returnedHash !== undefined) {
-          setPub({ kind: 'warn', text: `The wallet returned transaction ${returnedHash}. The session changed or verification failed; check your wallet and the journal before another attempt. This request cannot be cancelled or rolled back by this page.` });
+          setPub({ kind: 'warn', text: t('registry.walletReturned', { hash: returnedHash }) });
           return;
         }
         try { guard(); } catch { return; }
@@ -220,13 +225,12 @@ export function RegistryView(): ReactNode {
 
   return (
     <section aria-labelledby="reg-h">
-      <h2 id="reg-h">Public registry (ERC-6538)</h2>
+      <h2 id="reg-h">{t('registry.title')}</h2>
       <WalletAttempts />
       <p className="hint">
-        Canonical registry address <Mono>{ERC6538_REGISTRY_ADDRESS}</Mono>, taken from the text of EIP-6538. The page checks that contract code exists on the
-        chosen network and checks its ERC-6538 identity before use. Test networks only until mainnets are enabled.
+        {t('registry.canonical')} <Mono>{ERC6538_REGISTRY_ADDRESS}</Mono>{t('registry.canonicalTail')}
       </p>
-      <Field label="Network">
+      <Field label={t('registry.network')}>
         {(id) => (
           <select id={id} value={chainId ?? ''} onChange={(e) => { setChainId(Number(e.target.value)); }}>
             {chains.map((c) => <option key={c.chainId} value={c.chainId}>{c.name}</option>)}
@@ -234,43 +238,41 @@ export function RegistryView(): ReactNode {
         )}
       </Field>
 
-      <h3>Publish your meta-address</h3>
+      <h3>{t('registry.publishHeading')}</h3>
       {metaAddress === undefined ? (
-        <p>Load or generate keys under Seller keys first.</p>
+        <p>{t('registry.loadKeysFirst')}</p>
       ) : (
         <>
-          <Notice kind="warn" title="This is a public association with your wallet address">
-            Registering writes your meta-address into a public contract, linked permanently to the wallet address that sends the transaction. Anyone can then
-            see that this wallet receives GhostPay payments and can look up where to pay it. This cannot be undone; you can only overwrite the entry. If that
-            link would harm your privacy, do not publish, and share the meta-address directly instead. Clearing or overwriting replaces the current value but does not erase transaction history.
+          <Notice kind="warn" title={t('registry.publicAssoc.title')}>
+            {t('registry.publicAssoc.body')}
           </Notice>
-          <p>Meta-address to publish: <Mono>{metaAddress}</Mono></p>
+          <p>{t('registry.toPublish')} <Mono>{metaAddress}</Mono></p>
           <p>
             <label>
-              <input type="checkbox" checked={consent} onChange={(e) => { setConsent(e.target.checked); }} /> I understand this publicly associates my meta-address with my wallet address.
+              <input type="checkbox" checked={consent} onChange={(e) => { setConsent(e.target.checked); }} /> {t('registry.consent')}
             </label>
           </p>
           {consent && wallet === undefined && (
             <>
-              <p><button type="button" className="btn" onClick={onDiscover}>Find wallets</button></p>
-              {wallets?.length === 0 && <Notice kind="warn">No browser wallet found.</Notice>}
+              <p><button type="button" className="btn" onClick={onDiscover}>{t('registry.findWallets')}</button></p>
+              {wallets?.length === 0 && <Notice kind="warn">{t('registry.noWallet')}</Notice>}
               {wallets?.map((w) => (
-                <button key={w.id} type="button" className="btn" onClick={() => { onConnect(w); }}>Connect {w.name}</button>
+                <button key={w.id} type="button" className="btn" onClick={() => { onConnect(w); }}>{t('registry.connect', { name: w.name })}</button>
               ))}
             </>
           )}
-          {wallet !== undefined && <p>Wallet: <Mono>{wallet.account}</Mono> on {chain?.name ?? String(wallet.chainId)}</p>}
+          {wallet !== undefined && <p>{t('registry.walletLabel')} <Mono>{wallet.account}</Mono> {t('registry.onChain', { chain: chain?.name ?? String(wallet.chainId) })}</p>}
           {wallet !== undefined && reviewed === undefined && (
             <div className="actions">
-              <button type="button" className="btn" disabled={busy || !consent} onClick={() => { onReview('publish'); }}>Review publish transaction</button>
-              <button type="button" className="btn" disabled={busy || !consent} onClick={() => { onReview('clear'); }}>Review clear transaction</button>
+              <button type="button" className="btn" disabled={busy || !consent} onClick={() => { onReview('publish'); }}>{t('registry.reviewPublish')}</button>
+              <button type="button" className="btn" disabled={busy || !consent} onClick={() => { onReview('clear'); }}>{t('registry.reviewClear')}</button>
             </div>
           )}
           {reviewed !== undefined && chain !== undefined && (
             <>
-              <h4>Transaction review</h4>
+              <h4>{t('registry.reviewHeading')}</h4>
               <CallPreview call={reviewed} chainName={chain.name} />
-              <button type="button" className="btn btn-primary" disabled={busy || !consent} onClick={onPublish}>{reviewAction === 'clear' ? 'Clear registry entry' : 'Publish to registry'}</button>
+              <button type="button" className="btn btn-primary" disabled={busy || !consent} onClick={onPublish}>{reviewAction === 'clear' ? t('registry.clearEntry') : t('registry.publishEntry')}</button>
             </>
           )}
         </>
@@ -278,9 +280,9 @@ export function RegistryView(): ReactNode {
       {pub !== undefined && <Notice kind={pub.kind}>{pub.text}</Notice>}
 
       <section className="panel" aria-label="Public meta-address QR review">
-        <h3>Read a public meta-address QR</h3>
-        <p className="hint">Scanned text is untrusted. Reading it does not change seller keys or write to the registry. Confirm the owner's identity through another channel.</p>
-        <CameraImporter key={chainId} label="Scan or paste a public meta-address" scopeKey={app.session}
+        <h3>{t('registry.qrHeadingH3')}</h3>
+        <p className="hint">{t('registry.qrHint')}</p>
+        <CameraImporter key={chainId} label={t('registry.qrLabel')} scopeKey={app.session}
           onInputChange={() => { setScannedMeta(undefined); setScanError(undefined); }}
           onText={(text, signal) => {
             if (signal.aborted) return false;
@@ -288,25 +290,25 @@ export function RegistryView(): ReactNode {
             catch (e) { setScannedMeta(undefined); setScanError(userMessage(e)); return false; }
           }} />
         {scanError !== undefined && <Notice kind="error">{scanError}</Notice>}
-        {scannedMeta !== undefined && <><h4>Scanned public meta-address (untrusted)</h4><p><Mono>{scannedMeta}</Mono></p><CopyButton text={scannedMeta} label="Copy scanned public meta-address" /></>}
+        {scannedMeta !== undefined && <><h4>{t('registry.scannedHeading')}</h4><p><Mono>{scannedMeta}</Mono></p><CopyButton text={scannedMeta} label={t('registry.copyScanned')} /></>}
       </section>
 
-      <h3>Look up a payee</h3>
-      <Field label="Wallet address (ENS names are not supported yet)">
+      <h3>{t('registry.lookupHeadingH3')}</h3>
+      <Field label={t('registry.lookupLabel')}>
         {(id) => <input id={id} type="text" autoComplete="off" spellCheck={false} value={who} onChange={(e) => { setWho(e.target.value); }} />}
       </Field>
-      <button type="button" className="btn" disabled={busy || who.trim() === ''} onClick={onLookup}>Look up</button>
+      <button type="button" className="btn" disabled={busy || who.trim() === ''} onClick={onLookup}>{t('registry.lookup')}</button>
       {look !== undefined && <Notice kind={look.kind}>{look.text}</Notice>}
       {found !== undefined && chain !== undefined && (
         <>
-          <h4>Read-only call (nothing is sent from your wallet)</h4>
+          <h4>{t('registry.readOnlyHeading')}</h4>
           <CallPreview call={found.call} chainName={chain.name} />
           {found.meta === undefined ? (
-            <Notice kind="info">No meta-address is registered for this address on {chain.name}.</Notice>
+            <Notice kind="info">{t('registry.notRegistered', { chain: chain.name })}</Notice>
           ) : (
             <>
-              <Notice kind="info" title="Registered by the owner of that address">
-                Only the wallet itself (or a signature from it) can set this entry, but you should still confirm the address with the payee out of band before sending funds.
+              <Notice kind="info" title={t('registry.registeredBy.title')}>
+                {t('registry.registeredBy.body')}
               </Notice>
               <p><Mono>{found.meta}</Mono></p>
               <p><CopyButton text={found.meta} label="Copy meta-address" /></p>

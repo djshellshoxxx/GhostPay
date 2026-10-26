@@ -43,7 +43,11 @@ export function parseAnnouncement(raw: unknown, schemeId = 1n): ScanAnnouncement
   if (scheme === undefined || scheme !== schemeId || blockNumber === undefined) return undefined;
   if (typeof logIndex !== 'number' || !Number.isInteger(logIndex) || logIndex < 0 || logIndex > 0xffff_ffff) return undefined;
   if (!stealthAddress || !caller || !ephemeralPublicKey || !metadata || !blockHash) return undefined;
+  // Optional: lets the app fetch the receipt that binds a router payment to this exact log. A malformed value is dropped,
+  // never trusted, and does not reject the record (the hash is not part of the announcement's identity).
+  const transactionHash = hexField(r['transactionHash'], 32);
   return {
+    ...(transactionHash === undefined ? {} : { transactionHash }),
     schemeId: scheme,
     stealthAddress,
     caller,

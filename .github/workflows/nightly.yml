@@ -137,6 +137,11 @@ jobs:
       - uses: ./.github/actions/setup-forge
         with:
           cache-name: mythril
+      # Mythril's coincurve dependency has no wheel for the runner's default Python 3.14 and its sdist build fails;
+      # 3.12 has published wheels. Pinning the interpreter does not change what Mythril analyses.
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.12'
       - name: Mythril symbolic analysis
         working-directory: packages/contracts
         run: |

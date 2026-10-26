@@ -15,7 +15,7 @@ import {
   xOnly,
 } from './ecc.js';
 import { fail } from './errors.js';
-import { CURVE_ORDER, wrapSecret, zeroize, type CompressedPoint, type SecretScalar } from './secret.js';
+import { CURVE_ORDER, parseCompressedPoint, wrapSecret, zeroize, type CompressedPoint, type SecretScalar } from './secret.js';
 import { smallestOutpoint, type Outpoint } from './tx.js';
 
 /** A private key of an input that is eligible for shared secret derivation. */
@@ -125,6 +125,35 @@ export interface CreateOutputsParams {
 export function createSilentPaymentOutputs(params: CreateOutputsParams): SilentPaymentOutput[] {
   const decoded = params.recipients.map((r) => decodeSilentPaymentAddress(r, params.network));
   const ctx = buildSenderContext(params.inputs, params.outpoints);
+  try {
+    return deriveOutputs(decoded, (scan) => senderEcdhSharedSecret(ctx, scan));
+  } finally {
+    zeroize(ctx.inputPrivateKeySum, ctx.inputHash);
+  }
+}
+
+/**
+ * Sender-side output derivation from ECDH shares computed elsewhere (for example by a hardware signer that
+ * holds the input keys): `shareFor(B_scan)` must return `input_hash * a * B_scan` for this transaction.
+ * Grouping, `k` order and `K_max` are exactly as in {@link createSilentPaymentOutputs}.
+ *
+ * @throws {SilentPaymentError} `INVALID_ADDRESS`, `NETWORK_MISMATCH`, `UNSUPPORTED_VERSION`,
+ * `GROUP_LIMIT_EXCEEDED`, `TWEAK_INVALID`, `DERIVED_KEY_INVALID`, `INVALID_POINT`.
+ * @security Each share is confidential (it reveals the recipient's outputs of this transaction).
+ */
+export function silentPaymentOutputsFromShares(
+  recipients: readonly string[],
+  network: SilentPaymentNetwork,
+  shareFor: (scanPublicKey: Uint8Array) => Uint8Array,
+): SilentPaymentOutput[] {
+  const decoded = recipients.map((r) => decodeSilentPaymentAddress(r, network));
+  return deriveOutputs(decoded, (scan) => parseCompressedPoint(shareFor(scan)));
+}
+
+function deriveOutputs(
+  decoded: readonly { readonly scanPublicKey: Uint8Array; readonly spendPublicKey: Uint8Array }[],
+  shareFor: (scanPublicKey: Uint8Array) => CompressedPoint,
+): SilentPaymentOutput[] {
   const groups = new Map<string, number[]>();
   decoded.forEach((d, i) => {
     const key = toHex(d.scanPublicKey);
@@ -135,29 +164,25 @@ export function createSilentPaymentOutputs(params: CreateOutputsParams): SilentP
   for (const g of groups.values()) if (g.length > K_MAX) return fail('GROUP_LIMIT_EXCEEDED');
 
   const result: SilentPaymentOutput[] = new Array<SilentPaymentOutput>(decoded.length);
-  try {
-    for (const indices of groups.values()) {
-      const first = decoded[indices[0] as number];
-      if (first === undefined) return fail('INVALID_INPUT');
-      const shared = senderEcdhSharedSecret(ctx, first.scanPublicKey);
-      try {
-        indices.forEach((recipientIndex, k) => {
-          const t = taggedHash('BIP0352/SharedSecret', shared, ser32(k));
-          const tk = strictScalar(t);
-          zeroize(t);
-          if (tk === null) return fail('TWEAK_INVALID');
-          const dest = decoded[recipientIndex];
-          if (dest === undefined) return fail('INVALID_INPUT');
-          const p = pointFromCompressed(dest.spendPublicKey).add(mulG(tk));
-          if (p.is0()) return fail('DERIVED_KEY_INVALID');
-          result[recipientIndex] = { recipientIndex, xOnlyPublicKey: xOnly(p), k };
-        });
-      } finally {
-        zeroize(shared);
-      }
+  for (const indices of groups.values()) {
+    const first = decoded[indices[0] as number];
+    if (first === undefined) return fail('INVALID_INPUT');
+    const shared = shareFor(first.scanPublicKey);
+    try {
+      indices.forEach((recipientIndex, k) => {
+        const t = taggedHash('BIP0352/SharedSecret', shared, ser32(k));
+        const tk = strictScalar(t);
+        zeroize(t);
+        if (tk === null) return fail('TWEAK_INVALID');
+        const dest = decoded[recipientIndex];
+        if (dest === undefined) return fail('INVALID_INPUT');
+        const p = pointFromCompressed(dest.spendPublicKey).add(mulG(tk));
+        if (p.is0()) return fail('DERIVED_KEY_INVALID');
+        result[recipientIndex] = { recipientIndex, xOnlyPublicKey: xOnly(p), k };
+      });
+    } finally {
+      zeroize(shared);
     }
-  } finally {
-    zeroize(ctx.inputPrivateKeySum, ctx.inputHash);
   }
   return result;
 }

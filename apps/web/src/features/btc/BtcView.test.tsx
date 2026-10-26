@@ -45,6 +45,18 @@ describe('BtcView', () => {
     expect(screen.getByRole('button', { name: 'Create new test wallet' })).toBeTruthy();
   });
 
+  it('discloses what the scan verifies, its limits and the data-source modes (hosted scanning unavailable)', async () => {
+    const { user } = await setup();
+    await importSeed(user);
+    await user.click(screen.getByText('What the scan checks, and what it does not'));
+    expect(screen.getByText(/coinbase witness commitment \(BIP-141\)/)).toBeTruthy();
+    expect(screen.getByText(/not full SPV and not best-chain validation/)).toBeTruthy();
+    const table = screen.getByRole('table', { name: 'Where scan data comes from' });
+    expect(table.textContent).toContain('Hosted scanning service');
+    expect(table.textContent).toContain('No: not implemented');
+    expect(screen.queryByText(/full SPV(?! and)/)).toBeNull();
+  });
+
   it('rejects a malformed seed with a message', async () => {
     const { user } = await setup();
     await user.type(screen.getByLabelText(/Or import a seed/), 'abc');
@@ -148,6 +160,7 @@ describe('BtcView', () => {
     await user.click(screen.getByRole('button', { name: 'Review sweep' }));
     await user.click(screen.getByRole('checkbox', { name: /I checked the destination/ }));
     await user.click(screen.getByRole('button', { name: 'Sign with software key' }));
+    await screen.findByText('Signed transaction');
     chain.failPath = '/tx';
     await user.click(screen.getByRole('button', { name: /Broadcast to/ }));
     await waitFor(() => { expect(screen.getByRole('alert').textContent).toMatch(/could not be reached|refused/); });
