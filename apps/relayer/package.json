@@ -14,7 +14,7 @@
   "dependencies": {
     "@ghostpay/chain-adapters": "0.1.0",
     "@ghostpay/relayer-guard": "0.1.0",
-    "viem": "2.57.7"
+    "viem": "2.57.10"
   },
   "devDependencies": {
     "@types/node": "26.6.5",

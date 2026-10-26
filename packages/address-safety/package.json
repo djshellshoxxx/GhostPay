@@ -36,6 +36,6 @@
   },
   "dependencies": {
     "@noble/hashes": "2.4.0",
-    "viem": "2.57.7"
+    "viem": "2.57.10"
   }
 }
