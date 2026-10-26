@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as keystore from '../lib/keystore';
 import { clearSession, exportKeystore, generateSession, getSessionPublic } from '../lib/session';
-import { MemoryKeyVaultStore, setKeyVaultStoreForTests } from '../lib/keyVault';
+import { MemoryKeyVaultStore, readEncryptedVault, setKeyVaultStoreForTests } from '../lib/keyVault';
 import { makeServices, renderApp } from '../test/render';
 
 const PASS = 'a long passphrase';
@@ -129,4 +129,61 @@ describe('SellerKeys recovery lifetime invariants', () => {
     expect(getSessionPublic()?.metaAddress).toBe(replacement);
     expect(screen.queryByText('Keystore decrypted; keys are in memory.')).toBeNull();
   });
+});
+
+describe('SellerKeys cancellation retry', () => {
+  it('after cancelling a pending file read, re-selecting the SAME file retries and imports the real keystore', async () => {
+    generateSession();
+    const original = getSessionPublic()!;
+    const originalMeta = original.metaAddress;
+    const originalSigner = original.signerPublicKey;
+    const text = await exportKeystore(PASS, { N: 1 << 14 });
+    clearSession();
+    expect(getSessionPublic()).toBeUndefined();
+
+    const user = await open();
+    await user.click(screen.getByText('Import an encrypted keystore'));
+
+    const file = new File([text], 'keys.json', { type: 'application/json' });
+    let readCount = 0;
+    let finishFirst!: (value: string) => void;
+    Object.defineProperty(file, 'text', {
+      value: () => {
+        readCount += 1;
+        if (readCount === 1) {
+          return new Promise<string>((resolve) => { finishFirst = resolve; });
+        }
+        return Promise.resolve(text);
+      },
+    });
+
+    await user.upload(screen.getByLabelText('Keystore file'), file);
+    await user.type(screen.getByLabelText('Passphrase'), PASS);
+    await user.click(screen.getByRole('button', { name: 'Decrypt and load' }));
+    await waitFor(() => { expect(readCount).toBe(1); });
+
+    await user.click(screen.getByRole('button', { name: 'Cancel keystore import' }));
+    expect(screen.getByLabelText<HTMLInputElement>('Passphrase').value).toBe('');
+
+    // The stale first read completes after cancellation and must install nothing.
+    await act(async () => { finishFirst(text); await Promise.resolve(); await Promise.resolve(); });
+    expect(getSessionPublic()).toBeUndefined();
+    expect(screen.queryByText('Keystore decrypted; keys are in memory.')).toBeNull();
+
+    // Retry with the exact same File instance through the real UI.
+    await user.upload(screen.getByLabelText('Keystore file'), file);
+    await user.type(screen.getByLabelText('Passphrase'), PASS);
+    await user.click(screen.getByRole('button', { name: 'Decrypt and load' }));
+
+    expect(screen.queryByRole('alert')).toBeNull();
+    await waitFor(() => { expect(getSessionPublic()?.metaAddress).toBe(originalMeta); }, { timeout: 15_000, onTimeout: (error) => error });
+    expect(screen.queryByText('Choose a keystore file first.')).toBeNull();
+    expect(readCount).toBe(2);
+    const restored = getSessionPublic();
+    expect(restored?.metaAddress).toBe(originalMeta);
+    expect(restored?.signerPublicKey).toBe(originalSigner);
+    expect(await readEncryptedVault()).toBeUndefined();
+    expect(window.localStorage.length).toBe(0);
+    expect(window.sessionStorage.length).toBe(0);
+  }, 30000);
 });

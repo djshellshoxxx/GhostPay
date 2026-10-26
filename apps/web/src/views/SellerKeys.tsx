@@ -25,6 +25,7 @@ export function SellerKeys(): ReactNode {
   const [importText, setImportText] = useState<string | undefined>();
   const operation = useRef<AbortController | null>(null);
   const mounted = useRef(false);
+  const fileInput = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | undefined>(undefined);
   const [backupQr, setBackupQr] = useState<string | undefined>(undefined);
   const [vaultState, setVaultState] = useState<'checking' | 'empty' | 'saved' | 'unavailable'>('checking');
@@ -46,9 +47,14 @@ export function SellerKeys(): ReactNode {
     return () => { live = false; };
   }, []);
 
+  // Reset the uncontrolled picker's FileList so the same file can be selected again (no change event otherwise).
+  const resetFilePicker = (): void => {
+    if (fileInput.current !== null) fileInput.current.value = '';
+  };
   const cancelImport = (): void => {
     operation.current?.abort(); operation.current = null;
     setBusy(false); setVaultBusy(false); setImportPass(''); setFile(undefined); setImportText(undefined); setVaultUnlockPass('');
+    resetFilePicker();
   };
   useEffect(() => {
     mounted.current = true;
@@ -59,6 +65,7 @@ export function SellerKeys(): ReactNode {
     setBackupQr(undefined); setBusy(false); setVaultBusy(false);
     setPass(''); setPass2(''); setImportPass(''); setVaultUnlockPass(''); setImportText(undefined); setFile(undefined);
     setVaultSavePass(''); setVaultSavePass2('');
+    resetFilePicker();
   }, [app.session]);
   const startOperation = (): AbortController => {
     operation.current?.abort();
@@ -291,7 +298,13 @@ export function SellerKeys(): ReactNode {
           <details onToggle={(event) => { if (!event.currentTarget.open) cancelImport(); }}>
             <summary>{t('sellerKeys.importKeystore')}</summary>
             <form onSubmit={onImportKeystore} className="stack">
-              <Field label={t('sellerKeys.keystoreFile')}>{(id) => <input id={id} type="file" accept="application/json,.json" onChange={(e) => { cancelImport(); setFile(e.target.files?.[0]); }} />}</Field>
+              <Field label={t('sellerKeys.keystoreFile')}>{(id) => <input id={id} ref={fileInput} type="file" accept="application/json,.json" onChange={(e) => {
+                // Capture the new selection first; cancel stale work without clearing the picker that holds it.
+                const chosen = e.target.files?.[0];
+                operation.current?.abort(); operation.current = null;
+                setBusy(false); setVaultBusy(false); setImportPass(''); setImportText(undefined); setVaultUnlockPass('');
+                setFile(chosen);
+              }} />}</Field>
               <Field label={t('sellerKeys.passphrase')}>{(id) => <input id={id} type="password" autoComplete="off" value={importPass} onChange={(e) => { if (busy) { operation.current?.abort(); setBusy(false); } setImportPass(e.target.value); }} />}</Field>
               <button type="submit" className="btn" disabled={busy}>{t('sellerKeys.decryptLoad')}</button>
               {busy && <button type="button" className="btn" onClick={cancelImport}>{t('sellerKeys.cancelKeystore')}</button>}
