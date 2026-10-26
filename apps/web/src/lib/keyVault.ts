@@ -1,4 +1,4 @@
-import { captureSessionGuard, captureSessionVersionGuard, exportKeystore, importKeystore, verifyVaultForCurrentSession } from './session';
+import { captureSessionGuard, captureSessionVersionGuard, exportKeystore, importKeystore, verifyVaultForCurrentSession, type SessionPublic } from './session';
 import type { KeystoreOptions } from './keystore';
 import { UserFacingError } from './errors';
 
@@ -164,13 +164,13 @@ export async function saveEncryptedVault(passphrase: string, options: KeystoreOp
   try { unchanged(); } catch { throw new VaultSavedForPreviousKeysError(); }
 }
 
-export async function unlockEncryptedVault(passphrase: string, store: KeyVaultStore = activeStore(), signal?: AbortSignal): Promise<void> {
+export async function unlockEncryptedVault(passphrase: string, store: KeyVaultStore = activeStore(), signal?: AbortSignal): Promise<SessionPublic> {
   if (signal?.aborted === true) throw new UserFacingError('The keystore import was closed.');
   const unchanged = captureSessionVersionGuard();
   const ciphertext = await store.get();
   unchanged();
   if (ciphertext === undefined) throw new UserFacingError('No encrypted seller vault is saved in this browser.');
-  await importKeystore(ciphertext, passphrase, signal);
+  return importKeystore(ciphertext, passphrase, signal);
 }
 
 export async function authorizeEncryptedVault(passphrase: string, store: KeyVaultStore = activeStore()): Promise<(() => void) | undefined> {
