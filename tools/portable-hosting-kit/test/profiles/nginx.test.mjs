@@ -11,6 +11,9 @@ import { exportStatic } from '../../src/profiles/static-export.mjs';
 import { generateNginx, nginxListen } from '../../src/profiles/nginx.mjs';
 import { GHOSTPAY_HEADERS_PATH, buildRequest, freePort, nginxAvailable, nginxTest, rawRequest, startNginx, tempDir, writeOutFiles, writeTree } from '../serve/helpers.mjs';
 
+/** Escape every RegExp metacharacter, backslash included. @param {string} s */
+const escapeRegExp = (s) => s.replace(/[\\^$.*+?()[\]{}|/-]/g, '\\$&');
+
 /** @typedef {import('../../src/types.mjs').HostConfig} HostConfig */
 /** @typedef {import('../../src/types.mjs').HeaderPolicy} HeaderPolicy */
 
@@ -86,7 +89,7 @@ test('structure: headers only at server level with "always"; no add_header insid
   }
   assert.ok(!/add_header/.test(h) && !/add_header/.test(main));
   // MIME: exactly the policy table, utf-8 for the text types, and a default that cannot be sniffed into HTML.
-  for (const [ext, type] of Object.entries(MIME_TYPES)) assert.match(h, new RegExp(`^ {2}${type.replace(/[+.]/g, '\\$&')} [^;]*\\b${ext}\\b`, 'm'), ext);
+  for (const [ext, type] of Object.entries(MIME_TYPES)) assert.match(h, new RegExp(`^ {2}${escapeRegExp(type)} [^;]*\\b${escapeRegExp(ext)}\\b`, 'm'), ext);
   assert.match(h, /^default_type text\/plain;$/m);
   assert.match(h, /^charset utf-8;$/m);
   const charsetTypes = /^charset_types (.*);$/m.exec(h)?.[1]?.split(' ') ?? [];

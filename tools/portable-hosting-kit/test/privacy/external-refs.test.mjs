@@ -42,7 +42,9 @@ const check = u.startsWith("https://");`,
   assert.ok(!r.references.some((x) => x.url === 'https://'), 'bare scheme literals are ignored');
   const findings = privacyFindings(r.references);
   assert.ok(findings.some((f) => f.rule === 'external-telemetry'));
-  assert.ok(findings.some((f) => f.rule === 'external-subresource' && f.message.includes('cdn.jsdelivr.net')));
+  const cdn = r.references.find((x) => x.host === 'cdn.jsdelivr.net');
+  assert.ok(cdn !== undefined && cdn.loadsByDefault, 'CDN script is a default-loaded subresource');
+  assert.ok(findings.some((f) => f.rule === 'external-subresource' && f.message.endsWith(`from ${cdn.host}; bundle it locally where its licence allows (${cdn.files.join(', ')})`)));
   assert.ok(findings.every((f) => f.severity === 'warning'));
 });
 
