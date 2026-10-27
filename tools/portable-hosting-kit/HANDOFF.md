@@ -13,6 +13,31 @@ Exact pushed SHA: see `git log -1 origin/claude/portable-hosting-kit`; status be
 | Real GhostPay build | `apps/web/dist` from `main` edb0051: validate/package/verify/preview/profile pass; content digest `sha256:26a0a84c8c9ea671c01fe6436eb89a780d95ef9735c3f75ee00241983ea68ef7` (stable across kit revisions); real nginx 1.24 serves it with `_headers` CSP/cache/CORP exactly; headless Chromium renders it with no CSP violations or console errors |
 | Independent review | 3 passes. Pass 1: 10 findings; pass 2: 5 + a `--git-dir` bypass; pass 3: 1 (CSP script sources). All fixed with regression tests. Accepted partials: a replaced OPERATOR.md is not detectable without the archive SHA-256 (documented); renamed Tor control sockets cannot be caught by name; I2P `eepPriv.dat` reuse is only documented |
 
+## Reconciliation with recovered GhostPay work (2026-10-27)
+Inputs (owner uploads, kept outside the repository; private, not committed): an exact recovery patch
+`edb0051 -> 0f85ee9` and a handoff with an incremental patch to tree `a1478b2c`.
+- Verified here: every embedded gzip/base64 block matches its stated length and SHA-256. In a detached worktree at
+  `edb0051` (= current `main`), the recovery patch applies and `git write-tree` = `3c0aee8d7716c4495cf363d52931681b2d3e5316`;
+  the incremental patch then gives `a1478b2cfd2321996b8a436aec6b0b04ffb1845d`; all 13 listed file hashes match.
+  These are **tree snapshots**; the producer's commit history is not reconstructed and is not claimed.
+- Ownership: that handoff names its own "root" as sole GhostPay integrator (branch not on GitHub). Its 172 changed
+  files (apps/web, packages, relayer, docs, lockfile) are **outside this task and not imported** here; publishing
+  them was not authorized by the recovery file. Its API ledger and dispatcher script were inspected as data only,
+  not executed, and are not copied anywhere.
+- Overlap with this branch: **none** (no file changed on both sides; this branch only adds `tools/portable-hosting-kit/**`
+  and `.github/workflows/hosting-kit.yml`). Hosting-relevant recovered changes: `_headers` adds
+  `/ghostpay-embed-v2.js`; `deploy/nginx` adds the v2 location and an opt-in `security-headers-embed.conf`.
+- Qualification of the recovered build (built in the isolated worktree from its own lockfile; 13 files):
+  kit validate/package/verify/profile pass; real nginx 1.24 serves `ghostpay-embed-v2.js` with CORP cross-origin and
+  `max-age=3600` from the recovered `_headers`; `HK_WEB_DIST=<recovered dist> HK_BROWSER_TESTS=1` real-build CLI test and
+  Chromium test pass (CSP served unchanged; no CSP violations/console errors). Content digest
+  `sha256:191e22dde7c3fdc608021a7e45f599e9bc5c8fb6fa59bdc7e42325f877ca712e`. No kit change was needed.
+- **Owner decision (isolated, not implemented):** the recovered iframe-embed mode (spec 14, opt-in,
+  `VITE_EMBED_IFRAME=1`) needs a per-host `frame-ancestors` allowlist of reviewed merchant origins and no
+  `X-Frame-Options`. The kit currently allows only `'none'`/`'self'` and keeps headers in the immutable site.
+  Supporting it would mean a host-config field (explicit https origins only, never `*` or scheme sources) applied as
+  a host overlay. The default build (`frame-ancestors 'none'`) is unaffected.
+
 ## Decisions and findings (reuse; do not re-investigate)
 - Zero runtime deps, Node >= 22, `.mjs` + JSDoc + `tsc --checkJs` strict; tests `node:test`. Kit-local eslint config
   (root config ignores `*.mjs`). Outside npm workspaces on purpose: no lockfile/root-config edits.
@@ -38,7 +63,7 @@ Exact pushed SHA: see `git log -1 origin/claude/portable-hosting-kit`; status be
 
 ## Remaining
 1. Confirm the GitHub CI re-run on the latest commit (secrets-and-egress, CodeQL, kit, qualify-ghostpay-web).
-2. Qualify GhostPay's newest build when it exists (only `main` edb0051 was qualified; unpublished work was not available).
+2. Recovered tree `a1478b2c` is qualified (see reconciliation). Later private work beyond it remains unavailable.
 3. Owner decisions before any public mirror: ADR-0015 gates, dedicated origin, TLS terminator, signing/publishing of digests.
 
 ## Not verified (by design or by environment)

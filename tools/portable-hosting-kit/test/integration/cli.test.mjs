@@ -228,7 +228,8 @@ test('usage errors and help', async () => {
 });
 
 // Qualification of the real GhostPay web build when one exists locally (npm run build -w @ghostpay/web).
-const webDist = fileURLToPath(new URL('../../../../apps/web/dist/', import.meta.url));
+// HK_WEB_DIST qualifies another GhostPay build (e.g. a recovered tree built in an isolated worktree).
+const webDist = process.env['HK_WEB_DIST'] ?? fileURLToPath(new URL('../../../../apps/web/dist/', import.meta.url));
 test('real GhostPay apps/web/dist: validate, package, verify, preview', { skip: existsSync(join(webDist, 'index.html')) ? false : 'apps/web/dist not built' }, async () => {
   await withTmp(async (dir) => {
     const before = await treeHash(webDist);

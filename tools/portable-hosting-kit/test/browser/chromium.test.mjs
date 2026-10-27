@@ -79,7 +79,8 @@ test('demo and GhostPay render in Chromium under their CSP (preview, root and su
       }
     }
 
-    const webDist = fileURLToPath(new URL('../../../../apps/web/dist/', import.meta.url));
+    // HK_WEB_DIST qualifies another GhostPay build (e.g. a recovered tree built in an isolated worktree).
+    const webDist = process.env['HK_WEB_DIST'] ?? fileURLToPath(new URL('../../../../apps/web/dist/', import.meta.url));
     if (existsSync(join(webDist, 'index.html'))) {
       const out = join(dir, 'gp.zip');
       assert.equal(await main(['package', webDist, '--out', out], { out: () => {}, err: () => {}, cwd: dir, env: {} }), 0);
