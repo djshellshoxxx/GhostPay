@@ -166,3 +166,16 @@ test('generator is deterministic and pure (creates nothing on disk)', () => {
     fs.rmSync(tmp, { recursive: true, force: true });
   }
 });
+
+test('review fix: unix targets may not be tor\'s own control/SOCKS sockets or live in tor state directories', () => {
+  /** @param {string} p */
+  const run = (p, extra = {}) => generateTorProfile({ hostConfig: onionHost({ listen: { kind: 'unix', path: p } }), hiddenServiceDir: HS, target: 'host-listener', ...extra });
+  for (const bad of ['/run/tor/control', '/run/tor/socks', '/var/run/tor/control', '/var/lib/tor/web.sock', '/run/tor/site.sock',
+    '/srv/x/control', '/srv/x/socks', '/srv/x/control.sock', '/srv/x/socks.sock']) {
+    throwsCode(() => run(bad), 'E_UNSUPPORTED', /tor's own|tor state/);
+  }
+  throwsCode(() => run('/srv/onion/data/web.sock', { hiddenServiceDir: '/srv/onion/hs', instance: { mode: 'dedicated', dataDirectory: '/srv/onion/data' } }), 'E_UNSUPPORTED', /tor state/);
+  throwsCode(() => run('/srv/onion/hs/web.sock', { hiddenServiceDir: '/srv/onion/hs' }), 'E_UNSUPPORTED', /tor state/);
+  assert.match(text(run('/run/ghostpay/web.sock').files, 'tor/onion-service.torrc'), /unix:\/run\/ghostpay\/web\.sock/);
+  assert.ok(run('/run/torch/web.sock'));
+});
