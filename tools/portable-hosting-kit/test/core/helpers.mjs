@@ -170,3 +170,35 @@ export function throwsCode(fn, code, message) {
   }
   throw new Error(`expected a ${code} error, nothing was thrown`);
 }
+
+/**
+ * Entries of a self-consistent archive (manifest + SHA256SUMS match the content) as an attacker without any key
+ * could produce: everything verifies unless the caller pins an expected digest.
+ * @param {{ appId?: string, label?: string, site: Record<string, string>, meta?: Record<string, string> }} spec
+ * @returns {Promise<{ name: string, data: Buffer }[]>}
+ */
+export async function forgeEntries({ appId = 'ghostpay-web', label = 'v1', site, meta = {} }) {
+  const { buildManifest, serializeManifest } = await import('../../src/core/manifest.mjs');
+  const { formatSums } = await import('../../src/core/verify.mjs');
+  const { DEFAULT_LIMITS } = await import('../../src/policy.mjs');
+  const sha = (/** @type {Buffer} */ b) => createHash('sha256').update(b).digest('hex');
+  const records = Object.entries(site).map(([p, d]) => ({ path: p, size: Buffer.byteLength(d), sha256: sha(Buffer.from(d)) }));
+  const manifest = buildManifest({
+    appId, entrypoint: 'index.html', records, limits: DEFAULT_LIMITS, allowSourceMaps: false,
+    provenance: { label, sourceDateEpoch: null, source: { kind: 'directory' }, notes: [] }, trustSensitive: [], metadataFiles: ['HOSTING-MANIFEST.json', ...Object.keys(meta)],
+  });
+  const top = `${appId}-${label}`;
+  /** @type {Map<string, string>} */
+  const hashes = new Map();
+  /** @type {{ name: string, data: Buffer }[]} */
+  const entries = [];
+  const add = (/** @type {string} */ rel, /** @type {Buffer} */ data) => {
+    if (rel !== 'SHA256SUMS') hashes.set(rel, sha(data));
+    entries.push({ name: `${top}/${rel}`, data });
+  };
+  for (const [p, d] of Object.entries(site)) add(`site/${p}`, Buffer.from(d));
+  add('HOSTING-MANIFEST.json', Buffer.from(serializeManifest(manifest)));
+  for (const [p, d] of Object.entries(meta)) add(p, Buffer.from(d));
+  add('SHA256SUMS', Buffer.from(formatSums(hashes)));
+  return entries;
+}

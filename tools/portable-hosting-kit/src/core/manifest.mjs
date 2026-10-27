@@ -5,7 +5,7 @@ import { POLICY_ID, POLICY_VERSION, extensionOf } from '../policy.mjs';
 import { KIT_NAME, KIT_VERSION, MANIFEST_SCHEMA, MANIFEST_SCHEMA_VERSION } from '../version.mjs';
 import { canonicalBytes } from './canonical-json.mjs';
 import { sha256Hex } from './hash.mjs';
-import { collisionKey, compareUtf8, validateRelativePath } from './paths.mjs';
+import { collisionKey, compareUtf8, quote, validateRelativePath } from './paths.mjs';
 
 /** @typedef {import('../types.mjs').HostingManifest} HostingManifest */
 /** @typedef {import('../types.mjs').FileRecord} FileRecord */
@@ -17,6 +17,11 @@ export const MANIFEST_NAME = 'HOSTING-MANIFEST.json';
 export const SUMS_NAME = 'SHA256SUMS';
 export const SITE_ROOT = 'site/';
 export const APP_ID_RE = /^[a-z0-9][a-z0-9._-]{0,79}$/;
+/** Release label rule (same as the CLI's --label): it becomes part of the archive top directory and is displayed. */
+export const LABEL_RE = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
+const MAX_NOTE_LENGTH = 500;
+// Controls (C0, DEL, C1), bidi controls, line/paragraph separators, BOM: anything that can steer a terminal.
+const NOTE_UNPRINTABLE_RE = /[\u0000-\u001f\u007f-\u009f\u061c\u200e\u200f\u202a-\u202e\u2066-\u2069\u2028\u2029\ufeff]/; // eslint-disable-line no-control-regex
 const HEX64_RE = /^[0-9a-f]{64}$/;
 const DIGEST_RE = /^sha256:[0-9a-f]{64}$/;
 const GIT_COMMIT_RE = /^(?:[0-9a-f]{40}|[0-9a-f]{64})$/;
@@ -158,6 +163,16 @@ export function parseManifest(bytes) {
 }
 
 /**
+ * Display an untrusted JSON value in a message without echoing control characters.
+ * @param {unknown} v
+ * @returns {string}
+ */
+function show(v) {
+  if (typeof v === 'string') return quote(v);
+  return typeof v === 'number' || typeof v === 'boolean' || v === null ? String(v) : typeof v;
+}
+
+/**
  * @param {ErrorCode} code
  * @param {string} message
  * @returns {never}
@@ -177,8 +192,8 @@ function exactObject(v, keys, where, code) {
   if (typeof v !== 'object' || v === null || Array.isArray(v)) bad(code, `${where} must be an object`);
   const rec = /** @type {Record<string, unknown>} */ (v);
   const actual = Object.keys(rec);
-  for (const k of actual) if (!keys.includes(k)) bad(code, `${where} has unknown field "${k}"`);
-  for (const k of keys) if (!Object.hasOwn(rec, k)) bad(code, `${where} is missing field "${k}"`);
+  for (const k of actual) if (!keys.includes(k)) bad(code, `${where} has unknown field ${quote(k)}`);
+  for (const k of keys) if (!Object.hasOwn(rec, k)) bad(code, `${where} is missing field ${quote(k)}`);
   return rec;
 }
 
@@ -229,16 +244,16 @@ function checkPathList(paths, limits, where, code) {
   for (let i = 0; i < paths.length; i++) {
     const p = /** @type {string} */ (paths[i]);
     const c = validateRelativePath(p, limits);
-    if (!c.ok) bad(code, `${where}: "${p}": ${c.reason}`);
+    if (!c.ok) bad(code, `${where}: ${quote(p)}: ${c.reason}`);
     if (i > 0 && compareUtf8(/** @type {string} */ (paths[i - 1]), p) >= 0) bad(code, `${where} must be sorted by UTF-8 bytes without duplicates`);
     const k = collisionKey(p);
-    if (keys.has(k)) bad(code, `${where}: "${p}" collides with another path`);
+    if (keys.has(k)) bad(code, `${where}: ${quote(p)} collides with another path`);
     keys.add(k);
   }
   for (const p of paths) {
     const segs = collisionKey(p).split('/');
     for (let d = 1; d < segs.length; d++) {
-      if (keys.has(segs.slice(0, d).join('/'))) bad(code, `${where}: "${p}" lies under a path that is a file`);
+      if (keys.has(segs.slice(0, d).join('/'))) bad(code, `${where}: ${quote(p)} lies under a path that is a file`);
     }
   }
 }
@@ -281,7 +296,7 @@ function checkFiles(v, limits, code) {
  */
 function checkContent(v, limits, code) {
   const c = exactObject(v, ['root', 'entrypoint', 'fileCount', 'totalBytes', 'digest', 'files'], 'content', code);
-  if (c.root !== SITE_ROOT) bad(code, `content.root must be "${SITE_ROOT}"`);
+  if (c.root !== SITE_ROOT) bad(code, `content.root must be ${quote(SITE_ROOT)}`);
   const files = checkFiles(c.files, limits, code);
   const entrypoint = str(c.entrypoint, 'content.entrypoint', code);
   if (!files.some((f) => f.path === entrypoint)) bad(code, 'content.entrypoint is not one of content.files');
@@ -303,9 +318,11 @@ function checkContent(v, limits, code) {
  */
 function checkProvenance(v, code) {
   const p = exactObject(v, ['label', 'sourceDateEpoch', 'source', 'notes'], 'provenance', code);
-  str(p.label, 'provenance.label', code);
+  if (!LABEL_RE.test(str(p.label, 'provenance.label', code))) bad(code, 'provenance.label must be 1-64 characters [A-Za-z0-9._-], starting with a letter or digit');
   if (p.sourceDateEpoch !== null) int(p.sourceDateEpoch, 'provenance.sourceDateEpoch', code);
-  strArray(p.notes, 'provenance.notes', code);
+  strArray(p.notes, 'provenance.notes', code).forEach((n, i) => {
+    if (n.length > MAX_NOTE_LENGTH || NOTE_UNPRINTABLE_RE.test(n)) bad(code, `provenance.notes[${i}] must be at most ${MAX_NOTE_LENGTH} printable characters (no control, bidi or separator characters)`);
+  });
   const kind = typeof p.source === 'object' && p.source !== null ? /** @type {Record<string, unknown>} */ (p.source).kind : undefined;
   if (kind === 'git') {
     const s = exactObject(p.source, ['kind', 'commit', 'dirty'], 'provenance.source', code);
@@ -329,7 +346,7 @@ function checkMetadataFiles(v, limits, code) {
   if (!names.includes(MANIFEST_NAME)) bad(code, `metadataFiles must include ${MANIFEST_NAME}`);
   for (const n of names) {
     const k = collisionKey(n);
-    if (k === collisionKey(SUMS_NAME) || k.split('/')[0] === 'site') bad(code, `metadataFiles must not contain "${n}"`);
+    if (k === collisionKey(SUMS_NAME) || k.split('/')[0] === 'site') bad(code, `metadataFiles must not contain ${quote(n)}`);
   }
 }
 
@@ -340,11 +357,11 @@ function checkMetadataFiles(v, limits, code) {
  */
 function checkManifest(v, code) {
   const m = exactObject(v, ['schema', 'schemaVersion', 'appId', 'kit', 'policy', 'content', 'provenance', 'trustSensitive', 'metadataFiles'], 'manifest', code);
-  if (m.schema !== MANIFEST_SCHEMA) bad(code, `unknown schema ${JSON.stringify(m.schema)}`);
-  if (m.schemaVersion !== MANIFEST_SCHEMA_VERSION) bad(code, `unsupported schemaVersion ${JSON.stringify(m.schemaVersion)}`);
+  if (m.schema !== MANIFEST_SCHEMA) bad(code, `unknown schema ${show(m.schema)}`);
+  if (m.schemaVersion !== MANIFEST_SCHEMA_VERSION) bad(code, `unsupported schemaVersion ${show(m.schemaVersion)}`);
   if (!APP_ID_RE.test(str(m.appId, 'appId', code))) bad(code, 'appId must match [a-z0-9][a-z0-9._-]{0,79}');
   const kit = exactObject(m.kit, ['name', 'version'], 'kit', code);
-  if (kit.name !== KIT_NAME) bad(code, `kit.name must be "${KIT_NAME}"`);
+  if (kit.name !== KIT_NAME) bad(code, `kit.name must be ${quote(KIT_NAME)}`);
   if (!VERSION_RE.test(str(kit.version, 'kit.version', code))) bad(code, 'kit.version must be a semantic version');
   const policy = exactObject(m.policy, ['id', 'version', 'limits', 'allowSourceMaps'], 'policy', code);
   if (str(policy.id, 'policy.id', code) === '') bad(code, 'policy.id must not be empty');
@@ -356,6 +373,6 @@ function checkManifest(v, code) {
   const trust = strArray(m.trustSensitive, 'trustSensitive', code);
   checkPathList(trust, limits, 'trustSensitive', code);
   const filePaths = new Set(files.map((f) => f.path));
-  for (const t of trust) if (!filePaths.has(t)) bad(code, `trustSensitive entry "${t}" is not one of content.files`);
+  for (const t of trust) if (!filePaths.has(t)) bad(code, `trustSensitive entry ${quote(t)} is not one of content.files`);
   checkMetadataFiles(m.metadataFiles, limits, code);
 }

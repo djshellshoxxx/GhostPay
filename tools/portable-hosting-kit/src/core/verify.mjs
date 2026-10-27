@@ -4,11 +4,11 @@ import fsp from 'node:fs/promises';
 import path from 'node:path';
 import { ERROR_CODES, KitError, isKitError } from '../errors.mjs';
 import { DEFAULT_LIMITS } from '../policy.mjs';
-import { replaceDirAtomic } from './atomic.mjs';
+import { createDirAtomic } from './atomic.mjs';
 import { readFileExact, sha256Hex } from './hash.mjs';
-import { walkSite } from './inventory.mjs';
+import { readInventoried, walkSite } from './inventory.mjs';
 import { MANIFEST_NAME, SITE_ROOT, SUMS_NAME, archiveTopDir, parseManifest } from './manifest.mjs';
-import { compareUtf8, isInside, validateRelativePath } from './paths.mjs';
+import { compareUtf8, isInside, quote, validateRelativePath } from './paths.mjs';
 import { policyFinding } from './validate.mjs';
 import { readZip } from './zip.mjs';
 
@@ -96,10 +96,10 @@ export function parseSums(bytes, limits) {
   let prev = null;
   for (const line of text.slice(0, -1).split('\n')) {
     const m = HASH_LINE_RE.exec(line);
-    if (!m) throw new KitError(ERROR_CODES.VERIFY, `${SUMS_NAME} has a malformed line: ${JSON.stringify(line.slice(0, 120))}`);
+    if (!m) throw new KitError(ERROR_CODES.VERIFY, `${SUMS_NAME} has a malformed line: ${quote(line.slice(0, 120))}`);
     const p = /** @type {string} */ (m[2]);
     const c = validateRelativePath(p, limits);
-    if (!c.ok) throw new KitError(ERROR_CODES.VERIFY, `${SUMS_NAME} lists an unsafe path ${JSON.stringify(p)}: ${c.reason}`);
+    if (!c.ok) throw new KitError(ERROR_CODES.VERIFY, `${SUMS_NAME} lists an unsafe path ${quote(p)}: ${c.reason}`);
     if (p === SUMS_NAME) throw new KitError(ERROR_CODES.VERIFY, `${SUMS_NAME} must not list itself`);
     if (prev !== null && compareUtf8(prev, p) >= 0) throw new KitError(ERROR_CODES.VERIFY, `${SUMS_NAME} must be sorted by UTF-8 path without duplicates`);
     out.set(p, /** @type {string} */ (m[1]));
@@ -267,7 +267,11 @@ export function inspectArchiveBytes(bytes, opts = {}) {
     if (!isKitError(e)) throw e;
     return { result: failed([...archiveErrors, err(e.code, 'archive-unreadable', e.message)], archiveSha256), topDir: null, entries: [] };
   }
-  const topDir = /** @type {string} */ ((/** @type {{ name: string }} */ (entries[0])).name.split('/')[0]);
+  const first = entries[0];
+  if (first === undefined) {
+    return { result: failed([...archiveErrors, err(ERROR_CODES.ARCHIVE, 'archive-unreadable', 'archive: contains no files (only directory entries)')], archiveSha256), topDir: null, entries: [] };
+  }
+  const topDir = /** @type {string} */ (first.name.split('/')[0]);
   /** @type {TreeInput} */
   const tree = { files: new Map(), manifestBytes: undefined, sumsBytes: undefined };
   for (const e of entries) {
@@ -279,7 +283,7 @@ export function inspectArchiveBytes(bytes, opts = {}) {
   const result = verifyTree(tree, limits, expectedDigest);
   result.archiveSha256 = archiveSha256;
   if (result.manifest && topDir !== archiveTopDir(result.manifest.appId, result.manifest.provenance.label)) {
-    archiveErrors.push(err(ERROR_CODES.VERIFY, 'top-dir-mismatch', `top-level directory "${topDir}" is not "<appId>-<label>" from the manifest`));
+    archiveErrors.push(err(ERROR_CODES.VERIFY, 'top-dir-mismatch', `top-level directory ${quote(topDir)} is not "<appId>-<label>" from the manifest`));
   }
   result.errors.unshift(...archiveErrors);
   result.ok = result.ok && archiveErrors.length === 0;
@@ -298,7 +302,7 @@ export function inspectArchiveBytes(bytes, opts = {}) {
 async function readArchiveFile(archivePath, limits, fs) {
   const real = await fs.realpath(archivePath);
   const st = await fs.stat(real);
-  if (!st.isFile()) throw new KitError(ERROR_CODES.USAGE, `not a file: ${archivePath}`, { path: archivePath });
+  if (!st.isFile()) throw new KitError(ERROR_CODES.USAGE, `not a file: ${quote(archivePath)}`, { path: archivePath });
   const cl = containerLimits(limits);
   const maxBytes = cl.maxTotalBytes + cl.maxDirEntries * (30 + 46 + 2 * cl.maxPathBytes) + 22;
   if (st.size > maxBytes) return err(ERROR_CODES.LIMIT, 'archive-too-large', `archive is ${st.size} bytes, more than the ${maxBytes} the limits allow`);
@@ -342,7 +346,7 @@ export async function verifyDirectory(topDirPath, opts = {}) {
   for (const f of walk.files) {
     let data;
     try {
-      data = await readFileExact(f.absPath, f.size, { fs });
+      data = await readInventoried(f, { fs });
     } catch (e) {
       if (!isKitError(e)) throw e;
       walkErrors.push(err(e.code, 'changed-during-verification', e.message, f.path));
@@ -360,8 +364,10 @@ export async function verifyDirectory(topDirPath, opts = {}) {
 }
 
 /**
- * Verify an archive, then extract exactly the verified bytes into `<destDir>/<topDir>` via replaceDirAtomic (the
- * extracted tree is re-verified before it is swapped in). Refuses (KitError E_VERIFY, details.result) unless ok.
+ * Verify an archive, then extract exactly the verified bytes into `<destDir>/<topDir>` via createDirAtomic (the
+ * extracted tree is re-verified before it is moved into place). Refuses with KitError E_VERIFY (details.result)
+ * unless verification is ok, and with E_USAGE when `<destDir>/<topDir>` already exists: the name comes from the
+ * (possibly hostile) archive, so an existing directory, file or symlink there is never replaced or deleted.
  * @param {string} archivePath
  * @param {string} destDir parent directory; created if missing
  * @param {{ limits?: Limits, expectedContentDigest?: string, expectedArchiveSha256?: string, fs?: Fs }} [opts]
@@ -376,10 +382,10 @@ export async function extractArchive(archivePath, destDir, opts = {}) {
   if (!result.ok || topDir === null) throw new KitError(ERROR_CODES.VERIFY, 'refusing to extract: archive failed verification', { result });
   await fs.mkdir(destDir, { recursive: true });
   const target = path.join(await fs.realpath(destDir), topDir);
-  await replaceDirAtomic(target, async (tmp) => {
+  await createDirAtomic(target, async (tmp) => {
     for (const e of entries) {
       const out = path.join(tmp, ...e.name.slice(topDir.length + 1).split('/'));
-      if (!isInside(tmp, out)) throw new KitError(ERROR_CODES.PATH, `entry escapes the destination: ${e.name}`);
+      if (!isInside(tmp, out)) throw new KitError(ERROR_CODES.PATH, `entry escapes the destination: ${quote(e.name)}`);
       await fs.mkdir(path.dirname(out), { recursive: true });
       await fs.writeFile(out, e.data, { flag: 'wx', mode: 0o644 });
     }

@@ -140,7 +140,12 @@ test('refuses a hand-built report that smuggles a disallowed or misplaced entry'
   const forged = { ...report, ok: true, findings: [], entries: [...report.entries, { path: 'run.php', size: 5, absPath: path.join(report.siteDir, 'run.php') }] };
   const out = await tmpDir(t);
   const base = { outFile: path.join(out, 'a.zip'), appId: 'ghostpay-web', provenance: PROVENANCE, limits: DEFAULT_LIMITS, allowSourceMaps: false };
-  await rejectsCode(packageSite({ ...base, report: forged }), 'E_POLICY', /run\.php/);
+  await rejectsCode(packageSite({ ...base, report: forged }), 'E_USAGE', /run\.php.*not inventoried/);
+  // An inventoried entry is re-checked against the packaging policy (source maps allowed at validation only).
+  const mapSite = await makeSite(t, { ...goodSite(), 'assets/app.js.map': '{"version":3}' });
+  const mapReport = await validateSite(mapSite, { allowSourceMaps: true });
+  assert.equal(mapReport.ok, true);
+  await rejectsCode(packageSite({ ...base, report: mapReport }), 'E_POLICY', /app\.js\.map/);
   const elsewhere = { ...report, ok: true, findings: [], entries: report.entries.map((e) => (e.path === 'LICENSE' ? { ...e, absPath: '/etc/hostname' } : e)) };
   await rejectsCode(packageSite({ ...base, report: elsewhere }), 'E_USAGE', /does not lie at its path/);
 });
@@ -172,9 +177,9 @@ test('refuses extra files under site/ or named SHA256SUMS / HOSTING-MANIFEST.jso
   await rejectsCode(packageSite({ ...base, extraFiles: [{ name: '../escape.txt', data }] }), 'E_USAGE', /invalid/);
   await rejectsCode(packageSite({ ...base, extraFiles: [{ name: 'A.md', data }, { name: 'a.md', data }] }), 'E_USAGE', /collides/);
   await rejectsCode(packageSite({ ...base, appId: 'Not Valid' }), 'E_USAGE', /appId/);
-  await rejectsCode(packageSite({ ...base, provenance: { ...PROVENANCE, label: 'x'.repeat(200) } }), 'E_USAGE', /top directory/);
-  const sanitized = await packageSite({ ...base, provenance: { ...PROVENANCE, label: 'release 1/2 ü' } });
-  assert.equal(sanitized.topDir, 'ghostpay-web-release-1-2--');
+  await rejectsCode(packageSite({ ...base, provenance: { ...PROVENANCE, label: 'x'.repeat(200) } }), 'E_USAGE', /label/);
+  await rejectsCode(packageSite({ ...base, provenance: { ...PROVENANCE, label: 'release 1/2 ü' } }), 'E_USAGE', /label/);
+  await rejectsCode(packageSite({ ...base, appId: 'a'.repeat(80), provenance: { ...PROVENANCE, label: 'b'.repeat(64) } }), 'E_USAGE', /top directory/);
 });
 
 test('detects a file that changed between validation and packaging', async (t) => {

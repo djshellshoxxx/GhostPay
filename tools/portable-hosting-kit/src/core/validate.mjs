@@ -7,9 +7,8 @@ import {
   ALLOWED_EXACT_NAMES, ALLOWED_HIDDEN_DIRS, DEFAULT_ENTRYPOINT, DEFAULT_LIMITS, DENY_RULES, MIME_TYPES,
   SECRET_CONTENT_PATTERNS, SECRET_MAGIC_PREFIXES, TEXT_EXTENSIONS, extensionOf,
 } from '../policy.mjs';
-import { readFileExact, readPrefix } from './hash.mjs';
-import { errorFinding, walkSite } from './inventory.mjs';
-import { compareUtf8, validateRelativePath } from './paths.mjs';
+import { errorFinding, readInventoried, readInventoriedPrefix, walkSite } from './inventory.mjs';
+import { compareUtf8, quote, validateRelativePath } from './paths.mjs';
 
 /** @typedef {typeof import('node:fs/promises')} Fs */
 /** @typedef {import('../types.mjs').Limits} Limits */
@@ -41,7 +40,7 @@ export function policyFinding(rel, allowSourceMaps) {
   const ext = extensionOf(rel);
   const allowed = ext === '' ? ALLOWED_EXACT_NAMES.includes(base) : Object.hasOwn(MIME_TYPES, ext);
   if (!allowed) {
-    const what = ext === '' ? `extensionless name "${base}"` : `file type ".${ext}"`;
+    const what = ext === '' ? `extensionless name ${quote(base)}` : `file type ".${ext}"`;
     return errorFinding(ERROR_CODES.POLICY, 'not-allowed', `${what} is not on the static-site allowlist`, rel);
   }
   if (ext === 'map' && !allowSourceMaps) return errorFinding(ERROR_CODES.POLICY, 'source-map', 'source maps are excluded unless allowSourceMaps is set', rel);
@@ -58,27 +57,39 @@ function isTextPath(rel) {
 }
 
 /**
- * Heuristic content checks for one accepted file. Text files are read once in full; others only their prefix.
+ * Heuristic content checks on bytes: magic prefixes (any file) and, for text types, secret patterns and
+ * trust-sensitive detection. `bytes` may be just a prefix for non-text files. packageSite runs this again on the
+ * exact bytes it stores.
+ * @param {string} rel
+ * @param {Uint8Array} bytes
+ * @returns {{ findings: Finding[], trustSensitive: boolean }}
+ */
+export function scanBytes(rel, bytes) {
+  /** @type {Finding[]} */
+  const findings = [];
+  const buf = Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  for (const m of MAGIC) {
+    if (buf.length >= m.prefix.length && buf.subarray(0, m.prefix.length).equals(m.prefix)) {
+      findings.push(errorFinding(ERROR_CODES.SECRET, m.rule, `file starts with the signature of ${m.rule}`, rel));
+    }
+  }
+  if (!isTextPath(rel)) return { findings, trustSensitive: false };
+  const content = buf.toString('utf8');
+  for (const p of SECRET_CONTENT_PATTERNS) {
+    if (p.re.test(content)) findings.push(errorFinding(ERROR_CODES.SECRET, p.rule, `content matches secret pattern ${quote(p.rule)} (heuristic)`, rel));
+  }
+  return { findings, trustSensitive: isTrustSensitive(rel, content) };
+}
+
+/**
+ * Read one accepted file (text in full, others only their prefix) through the inventory identity checks and scan it.
  * @param {InventoryEntry} entry
  * @param {Fs} fs
  * @returns {Promise<{ findings: Finding[], trustSensitive: boolean }>}
  */
 async function scanFile(entry, fs) {
-  /** @type {Finding[]} */
-  const findings = [];
-  const text = isTextPath(entry.path);
-  const bytes = text ? await readFileExact(entry.absPath, entry.size, { fs }) : await readPrefix(entry.absPath, MAGIC_LEN, { fs });
-  for (const m of MAGIC) {
-    if (bytes.length >= m.prefix.length && bytes.subarray(0, m.prefix.length).equals(m.prefix)) {
-      findings.push(errorFinding(ERROR_CODES.SECRET, m.rule, `file starts with the signature of ${m.rule}`, entry.path));
-    }
-  }
-  if (!text) return { findings, trustSensitive: false };
-  const content = bytes.toString('utf8');
-  for (const p of SECRET_CONTENT_PATTERNS) {
-    if (p.re.test(content)) findings.push(errorFinding(ERROR_CODES.SECRET, p.rule, `content matches secret pattern "${p.rule}" (heuristic)`, entry.path));
-  }
-  return { findings, trustSensitive: isTrustSensitive(entry.path, content) };
+  const bytes = isTextPath(entry.path) ? await readInventoried(entry, { fs }) : await readInventoriedPrefix(entry, MAGIC_LEN, { fs });
+  return scanBytes(entry.path, bytes);
 }
 
 /**

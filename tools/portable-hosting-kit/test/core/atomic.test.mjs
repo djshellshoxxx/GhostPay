@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
-import { commitFilesAtomic, replaceDirAtomic, writeFileAtomic } from '../../src/core/atomic.mjs';
+import { commitFilesAtomic, createDirAtomic, replaceDirAtomic, writeFileAtomic } from '../../src/core/atomic.mjs';
 import { faultyFs, rejectsCode, snapshot, tmpDir } from './helpers.mjs';
 
 test('writeFileAtomic creates and replaces files and leaves no temporaries', async (t) => {
@@ -122,4 +122,35 @@ test('replaceDirAtomic refuses to replace a file', async (t) => {
   await fsp.writeFile(path.join(parent, 'f'), 'x');
   await rejectsCode(replaceDirAtomic(path.join(parent, 'f'), async () => {}), 'E_USAGE');
   assert.deepEqual(await fsp.readdir(parent), ['f']);
+});
+
+test('createDirAtomic: never replaces an existing target; a failure at any fs call leaves nothing behind', async (t) => {
+  const parent = await tmpDir(t);
+  const target = path.join(parent, 'out');
+  const build = async (/** @type {string} */ tmp) => {
+    await fsp.mkdir(path.join(tmp, 'sub'));
+    await fsp.writeFile(path.join(tmp, 'sub', 'f.txt'), 'v1');
+  };
+  const probe = faultyFs();
+  await createDirAtomic(target, build, { fs: probe.fs });
+  assert.equal(await fsp.readFile(path.join(target, 'sub', 'f.txt'), 'utf8'), 'v1');
+  await rejectsCode(createDirAtomic(target, build), 'E_USAGE', /already exists/);
+  assert.deepEqual(await fsp.readdir(target), ['sub']);
+  await assert.rejects(createDirAtomic(path.join(parent, 'other'), async () => { throw new Error('build failed'); }), /build failed/);
+  assert.deepEqual(await fsp.readdir(parent), ['out']);
+  const total = probe.calls.length;
+  assert.ok(total >= 4, probe.calls.join(','));
+  for (let k = 1; k <= total; k++) {
+    await fsp.rm(target, { recursive: true });
+    const faulty = faultyFs(k);
+    try {
+      await createDirAtomic(target, build, { fs: faulty.fs });
+      assert.equal(await fsp.readFile(path.join(target, 'sub', 'f.txt'), 'utf8'), 'v1');
+      await fsp.rm(target, { recursive: true });
+      await fsp.mkdir(target);
+    } catch {
+      assert.deepEqual(await fsp.readdir(parent), [], `after failing ${faulty.failed()} (#${k})`);
+      await fsp.mkdir(target);
+    }
+  }
 });

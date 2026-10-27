@@ -4,7 +4,7 @@
 // single disk, methods store (0) and deflate (8), UTF-8 names.
 import zlib from 'node:zlib';
 import { ERROR_CODES, KitError, isKitError } from '../errors.mjs';
-import { collisionKey, compareUtf8, validateRelativePath } from './paths.mjs';
+import { collisionKey, compareUtf8, quote, validateRelativePath } from './paths.mjs';
 
 /** @typedef {import('../types.mjs').Limits} Limits */
 /** @typedef {{ name: string, data: Uint8Array }} ZipEntry */
@@ -31,6 +31,7 @@ const S_IFMT = 0o170000;
 const S_IFREG = 0o100000;
 const S_IFDIR = 0o040000;
 const S_IFLNK = 0o120000;
+const S_ISUGO = 0o7000; // setuid, setgid, sticky
 const MAX_U16 = 0xffff;
 const MAX_U32 = 0xffffffff;
 // Permissive structural bounds used when the writer checks its own entry names.
@@ -83,7 +84,7 @@ export function createZip(entries, opts) {
     const data = Buffer.from(e.data.buffer, e.data.byteOffset, e.data.byteLength);
     const { method, payload } = compress(data, opts.compression);
     const crc = crc32(data);
-    if (data.length >= MAX_U32 || payload.length >= MAX_U32) throw new KitError(ERROR_CODES.LIMIT, `entry too large for a ZIP without ZIP64: ${e.name}`);
+    if (data.length >= MAX_U32 || payload.length >= MAX_U32) throw new KitError(ERROR_CODES.LIMIT, `entry too large for a ZIP without ZIP64: ${quote(e.name)}`);
     const fields = { method, crc, csize: payload.length, usize: data.length, name };
     const local = localHeader(fields);
     centrals.push(centralHeader(fields, offset));
@@ -112,9 +113,9 @@ function checkWriterNames(sorted) {
   const keys = new Set();
   for (const e of sorted) {
     const c = validateRelativePath(e.name, WRITER_PATH_LIMITS);
-    if (!c.ok) throw new KitError(ERROR_CODES.PATH, `invalid entry name "${e.name}": ${c.reason}`);
+    if (!c.ok) throw new KitError(ERROR_CODES.PATH, `invalid entry name ${quote(e.name)}: ${c.reason}`);
     const k = collisionKey(e.name);
-    if (keys.has(k)) throw new KitError(ERROR_CODES.ARCHIVE, `duplicate or colliding entry name "${e.name}"`);
+    if (keys.has(k)) throw new KitError(ERROR_CODES.ARCHIVE, `duplicate or colliding entry name ${quote(e.name)}`);
     keys.add(k);
   }
 }
@@ -267,30 +268,31 @@ function decodeName(bytes, flags) {
  * @param {number} usize
  */
 function checkFeatures(name, versionNeeded, flags, method, csize, usize) {
-  if (flags & (FLAG_ENCRYPTED | FLAG_STRONG_ENCRYPTION | FLAG_MASKED_HEADERS)) malformed(`encrypted entry "${name}"`);
-  if (flags & FLAG_DATA_DESCRIPTOR) malformed(`entry "${name}" uses a data descriptor`);
-  if (flags & ~FLAGS_ALLOWED) malformed(`entry "${name}" has unsupported flags 0x${flags.toString(16)}`);
-  if (csize === MAX_U32 || usize === MAX_U32) malformed(`entry "${name}" requires ZIP64`);
-  if (versionNeeded > VERSION) malformed(`entry "${name}" needs ZIP version ${versionNeeded / 10} (ZIP64/encryption/other features unsupported)`);
-  if (method !== 0 && method !== 8) malformed(`entry "${name}" uses unsupported compression method ${method}`);
-  if (method === 0 && csize !== usize) malformed(`stored entry "${name}" has compressed size ${csize} != size ${usize}`);
+  if (flags & (FLAG_ENCRYPTED | FLAG_STRONG_ENCRYPTION | FLAG_MASKED_HEADERS)) malformed(`encrypted entry ${quote(name)}`);
+  if (flags & FLAG_DATA_DESCRIPTOR) malformed(`entry ${quote(name)} uses a data descriptor`);
+  if (flags & ~FLAGS_ALLOWED) malformed(`entry ${quote(name)} has unsupported flags 0x${flags.toString(16)}`);
+  if (csize === MAX_U32 || usize === MAX_U32) malformed(`entry ${quote(name)} requires ZIP64`);
+  if (versionNeeded > VERSION) malformed(`entry ${quote(name)} needs ZIP version ${versionNeeded / 10} (ZIP64/encryption/other features unsupported)`);
+  if (method !== 0 && method !== 8) malformed(`entry ${quote(name)} uses unsupported compression method ${method}`);
+  if (method === 0 && csize !== usize) malformed(`stored entry ${quote(name)} has compressed size ${csize} != size ${usize}`);
 }
 
 /**
- * Reject symlinks and special files declared through Unix mode bits in the external attributes.
+ * Reject symlinks, special files and setuid/setgid/sticky bits declared in the high 16 bits of the external
+ * attributes (st_mode), whatever the made-by host: Info-ZIP honours Unix modes for several hosts (Unix, VMS, Atari,
+ * BeOS, AtheOS, OS X), and other extractors may too. A zero high word (plain DOS attributes) is accepted.
  * @param {string} name
- * @param {number} madeBy
  * @param {number} external
  * @param {boolean} isDir
  */
-function checkFileType(name, madeBy, external, isDir) {
-  const host = madeBy >>> 8;
-  if (host !== 3 && host !== 19) return; // Unix, OS X: high 16 bits carry st_mode
-  const type = (external >>> 16) & S_IFMT;
-  if (type === 0) return;
-  if (type === S_IFLNK) malformed(`symlink entry "${name}"`);
-  if (type !== S_IFREG && type !== S_IFDIR) malformed(`special-file entry "${name}"`);
-  if ((type === S_IFDIR) !== isDir) malformed(`entry "${name}" type bits disagree with its name`);
+function checkFileType(name, external, isDir) {
+  const mode = external >>> 16;
+  if (mode === 0) return;
+  const type = mode & S_IFMT;
+  if (type === S_IFLNK) malformed(`symlink entry ${quote(name)}`);
+  if (type !== 0 && type !== S_IFREG && type !== S_IFDIR) malformed(`special-file entry ${quote(name)}`);
+  if (type !== 0 && (type === S_IFDIR) !== isDir) malformed(`entry ${quote(name)} type bits disagree with its name`);
+  if (mode & S_ISUGO) malformed(`entry ${quote(name)} has setuid/setgid/sticky mode bits`);
 }
 
 /**
@@ -308,7 +310,6 @@ function readCentral(buf, eocd, limits) {
   let total = 0;
   for (let i = 0; i < eocd.count; i++) {
     if (pos + CENTRAL_LEN > eocd.cdEnd || buf.readUInt32LE(pos) !== SIG_CENTRAL) malformed(`central directory entry ${i} is truncated or has a bad signature`);
-    const madeBy = buf.readUInt16LE(pos + 4);
     const versionNeeded = buf.readUInt16LE(pos + 6);
     const flags = buf.readUInt16LE(pos + 8);
     const method = buf.readUInt16LE(pos + 10);
@@ -323,18 +324,18 @@ function readCentral(buf, eocd, limits) {
     const csize = buf.readUInt32LE(pos + 20);
     const usize = buf.readUInt32LE(pos + 24);
     const offset = buf.readUInt32LE(pos + 42);
-    if (extraLen !== 0) malformed(`entry "${name}" has extra fields (unsupported; may carry ZIP64 or alternate names)`);
-    if (commentLen !== 0) malformed(`entry "${name}" has a comment (unsupported)`);
+    if (extraLen !== 0) malformed(`entry ${quote(name)} has extra fields (unsupported; may carry ZIP64 or alternate names)`);
+    if (commentLen !== 0) malformed(`entry ${quote(name)} has a comment (unsupported)`);
     if (diskStart !== 0) malformed('multi-disk archives are not supported');
-    if (offset === MAX_U32) malformed(`entry "${name}" requires ZIP64`);
+    if (offset === MAX_U32) malformed(`entry ${quote(name)} requires ZIP64`);
     checkFeatures(name, versionNeeded, flags, method, csize, usize);
     const isDir = name.endsWith('/');
-    checkFileType(name, madeBy, buf.readUInt32LE(pos + 38), isDir);
+    checkFileType(name, buf.readUInt32LE(pos + 38), isDir);
     if (isDir) {
-      if (usize !== 0 || csize !== 0) malformed(`directory entry "${name}" has data`);
+      if (usize !== 0 || csize !== 0) malformed(`directory entry ${quote(name)} has data`);
     } else {
       if (++files > limits.maxFiles) overLimit(`more than ${limits.maxFiles} files`);
-      if (usize > limits.maxFileBytes) overLimit(`entry "${name}" declares ${usize} bytes, more than maxFileBytes ${limits.maxFileBytes}`);
+      if (usize > limits.maxFileBytes) overLimit(`entry ${quote(name)} declares ${usize} bytes, more than maxFileBytes ${limits.maxFileBytes}`);
       total += usize;
       if (total > limits.maxTotalBytes) overLimit(`declared sizes exceed maxTotalBytes ${limits.maxTotalBytes}`);
     }
@@ -361,23 +362,23 @@ function checkNames(records, limits, singleTopDir) {
   for (const r of records) {
     const p = r.isDir ? r.name.slice(0, -1) : r.name;
     const c = validateRelativePath(p, limits);
-    if (!c.ok) throw new KitError(ERROR_CODES.PATH, `archive: unsafe entry name ${JSON.stringify(r.name)}: ${c.reason}`, { rule: c.rule });
-    if (exact.has(p)) malformed(`duplicate entry name "${r.name}"`);
+    if (!c.ok) throw new KitError(ERROR_CODES.PATH, `archive: unsafe entry name ${quote(r.name)}: ${c.reason}`, { rule: c.rule });
+    if (exact.has(p)) malformed(`duplicate entry name ${quote(r.name)}`);
     exact.add(p);
     const key = collisionKey(p);
-    if (kinds.has(key)) malformed(`entry name "${r.name}" collides with another entry on case-insensitive or normalizing hosts`);
+    if (kinds.has(key)) malformed(`entry name ${quote(r.name)} collides with another entry on case-insensitive or normalizing hosts`);
     kinds.set(key, r.isDir);
     const segs = p.split('/');
     if (singleTopDir) {
-      if (!r.isDir && segs.length < 2) malformed(`file "${r.name}" is not inside the top-level directory`);
+      if (!r.isDir && segs.length < 2) malformed(`file ${quote(r.name)} is not inside the top-level directory`);
       if (top === null) top = segs[0] ?? null;
-      else if (segs[0] !== top) malformed(`more than one top-level directory ("${top}", "${segs[0]}")`);
+      else if (segs[0] !== top) malformed(`more than one top-level directory (${quote(top)}, ${quote(segs[0])})`);
     }
   }
   for (const r of records) {
     const segs = collisionKey(r.isDir ? r.name.slice(0, -1) : r.name).split('/');
     for (let d = 1; d < segs.length; d++) {
-      if (kinds.get(segs.slice(0, d).join('/')) === false) malformed(`entry "${r.name}" lies under a path that is a file`);
+      if (kinds.get(segs.slice(0, d).join('/')) === false) malformed(`entry ${quote(r.name)} lies under a path that is a file`);
     }
   }
 }
@@ -396,20 +397,20 @@ function readLocals(buf, records, cdOffset) {
   const byOffset = [...records].sort((a, b) => a.offset - b.offset);
   let expected = 0;
   for (const r of byOffset) {
-    if (r.offset < expected) malformed(`entry "${r.name}" overlaps the previous entry`);
-    if (r.offset > expected) malformed(`unreferenced bytes before entry "${r.name}"`);
+    if (r.offset < expected) malformed(`entry ${quote(r.name)} overlaps the previous entry`);
+    if (r.offset > expected) malformed(`unreferenced bytes before entry ${quote(r.name)}`);
     const p = r.offset;
-    if (p + LOCAL_LEN > cdOffset || buf.readUInt32LE(p) !== SIG_LOCAL) malformed(`local header of "${r.name}" is missing or truncated`);
+    if (p + LOCAL_LEN > cdOffset || buf.readUInt32LE(p) !== SIG_LOCAL) malformed(`local header of ${quote(r.name)} is missing or truncated`);
     const nameLen = buf.readUInt16LE(p + 26);
     const extraLen = buf.readUInt16LE(p + 28);
     const same = buf.readUInt16LE(p + 4) === r.versionNeeded && buf.readUInt16LE(p + 6) === r.flags && buf.readUInt16LE(p + 8) === r.method
       && buf.readUInt16LE(p + 10) === r.time && buf.readUInt16LE(p + 12) === r.date && buf.readUInt32LE(p + 14) === r.crc
       && buf.readUInt32LE(p + 18) === r.csize && buf.readUInt32LE(p + 22) === r.usize && nameLen === r.nameBytes.length && extraLen === 0;
-    if (!same) malformed(`local header of "${r.name}" does not match its central directory entry`);
+    if (!same) malformed(`local header of ${quote(r.name)} does not match its central directory entry`);
     const dataStart = p + LOCAL_LEN + nameLen;
-    if (dataStart > cdOffset || !buf.subarray(p + LOCAL_LEN, dataStart).equals(r.nameBytes)) malformed(`local header name of "${r.name}" does not match its central directory entry`);
+    if (dataStart > cdOffset || !buf.subarray(p + LOCAL_LEN, dataStart).equals(r.nameBytes)) malformed(`local header name of ${quote(r.name)} does not match its central directory entry`);
     const dataEnd = dataStart + r.csize;
-    if (dataEnd > cdOffset) malformed(`data of "${r.name}" overruns into the central directory`);
+    if (dataEnd > cdOffset) malformed(`data of ${quote(r.name)} overruns into the central directory`);
     payloads.set(r, buf.subarray(dataStart, dataEnd));
     expected = dataEnd;
   }
@@ -429,17 +430,17 @@ function extract(r, payload) {
     try {
       const out = /** @type {{ buffer: Buffer, engine: { bytesWritten: number } }} */ (/** @type {unknown} */ (zlib.inflateRawSync(payload, { maxOutputLength: Math.max(1, r.usize), info: true })));
       // Bytes after the end of the deflate stream would be hidden data that other readers may treat differently.
-      if (out.engine.bytesWritten !== payload.length) malformed(`entry "${r.name}" has ${payload.length - out.engine.bytesWritten} bytes after the end of its deflate stream`);
+      if (out.engine.bytesWritten !== payload.length) malformed(`entry ${quote(r.name)} has ${payload.length - out.engine.bytesWritten} bytes after the end of its deflate stream`);
       data = out.buffer;
     } catch (e) {
       if (isKitError(e)) throw e;
       const code = /** @type {NodeJS.ErrnoException} */ (e).code;
-      if (code === 'ERR_BUFFER_TOO_LARGE') malformed(`entry "${r.name}" inflates beyond its declared size ${r.usize}`);
-      malformed(`entry "${r.name}" has corrupt deflate data: ${/** @type {Error} */ (e).message}`);
+      if (code === 'ERR_BUFFER_TOO_LARGE') malformed(`entry ${quote(r.name)} inflates beyond its declared size ${r.usize}`);
+      malformed(`entry ${quote(r.name)} has corrupt deflate data: ${/** @type {Error} */ (e).message}`);
     }
   }
-  if (data.length !== r.usize) malformed(`entry "${r.name}" has ${data.length} bytes, declared ${r.usize}`);
-  if (crc32(data) !== r.crc) malformed(`entry "${r.name}" fails its CRC-32 check`);
+  if (data.length !== r.usize) malformed(`entry ${quote(r.name)} has ${data.length} bytes, declared ${r.usize}`);
+  if (crc32(data) !== r.crc) malformed(`entry ${quote(r.name)} fails its CRC-32 check`);
   return data;
 }
 

@@ -43,7 +43,7 @@ function checkSegment(seg, limits) {
   }
   if (/[. ]$/.test(seg)) return fail('trailing-dot-or-space', 'segment ends with "." or " " (stripped by Windows)');
   const stem = (seg.split('.')[0] ?? '').trimEnd().toUpperCase();
-  if (WINDOWS_RESERVED.has(stem)) return fail('windows-reserved-name', `"${seg}" is a reserved device name on Windows`);
+  if (WINDOWS_RESERVED.has(stem)) return fail('windows-reserved-name', `${quote(seg)} is a reserved device name on Windows`);
   return null;
 }
 
@@ -78,6 +78,19 @@ export function validateRelativePath(p, limits) {
     if (bad) return bad;
   }
   return { ok: true, path: p };
+}
+
+// Characters JSON.stringify leaves raw that can still steer a terminal or reorder displayed text.
+const UNSAFE_DISPLAY_RE = /[\u007f-\u009f\u061c\u200e\u200f\u202a-\u202e\u2066-\u2069\u2028\u2029\ufeff]/g;
+
+/**
+ * Quote an untrusted string for an error message: JSON string syntax with every control, bidi and separator
+ * character escaped, so names from archives, manifests or the filesystem cannot inject terminal sequences.
+ * @param {unknown} s
+ * @returns {string}
+ */
+export function quote(s) {
+  return JSON.stringify(String(s)).replace(UNSAFE_DISPLAY_RE, (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, '0')}`);
 }
 
 /**
