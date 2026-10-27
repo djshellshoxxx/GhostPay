@@ -1,0 +1,78 @@
+name: Hosting kit
+on:
+  pull_request:
+    paths:
+      - 'tools/portable-hosting-kit/**'
+      - 'apps/web/public/_headers'
+      - '.github/workflows/hosting-kit.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/portable-hosting-kit/**'
+      - 'apps/web/public/_headers'
+      - '.github/workflows/hosting-kit.yml'
+  workflow_dispatch:
+
+# Read-only: no job here receives deployment, signing or hosting secrets, and nothing is published or started
+# outside the runner. nginx/tor/i2pd are installed only to validate generated configuration.
+permissions:
+  contents: read
+
+concurrency:
+  group: hosting-kit-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  kit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --ignore-scripts
+      # Real-server checks: nginx differential tests and `tor --verify-config`. Services are not started by apt
+      # (policy-rc.d) and the tests run their own loopback-only instances.
+      - name: Install validation tools (not started)
+        run: |
+          printf '#!/bin/sh\nexit 101\n' | sudo tee /usr/sbin/policy-rc.d >/dev/null
+          sudo chmod +x /usr/sbin/policy-rc.d
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq nginx tor i2pd
+      - working-directory: tools/portable-hosting-kit
+        run: npm run lint
+      - working-directory: tools/portable-hosting-kit
+        run: npm run typecheck
+      - working-directory: tools/portable-hosting-kit
+        run: npm test
+      - name: Demo workflow end to end (no services started)
+        working-directory: tools/portable-hosting-kit
+        run: |
+          node bin/ghostpay-host.mjs demo --out "$RUNNER_TEMP/hk-demo"
+          node bin/ghostpay-host.mjs verify "$RUNNER_TEMP/hk-demo/demo-site.zip"
+
+  # Qualify the real GhostPay web build: build it, then validate, package and verify it with the kit.
+  qualify-ghostpay-web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-libs
+      - run: npm run build --workspace @ghostpay/web
+      - name: Validate, package and verify apps/web/dist
+        working-directory: tools/portable-hosting-kit
+        run: |
+          node bin/ghostpay-host.mjs validate ../../apps/web/dist
+          node bin/ghostpay-host.mjs package ../../apps/web/dist --out "$RUNNER_TEMP/ghostpay-web.zip" \
+            --label "ci-${GITHUB_SHA::12}" --git-dir ../.. --license-file ../../THIRD_PARTY.md
+          node bin/ghostpay-host.mjs verify "$RUNNER_TEMP/ghostpay-web.zip"
