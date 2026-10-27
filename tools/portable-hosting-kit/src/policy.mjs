@@ -37,6 +37,7 @@ export const MIME_TYPES = Object.freeze({
   map: 'application/json',
   webmanifest: 'application/manifest+json',
   txt: 'text/plain',
+  md: 'text/markdown',
   xml: 'application/xml',
   svg: 'image/svg+xml',
   png: 'image/png',
@@ -60,6 +61,7 @@ export const UTF8_MIME_TYPES = Object.freeze([
   'application/json',
   'application/manifest+json',
   'text/plain',
+  'text/markdown',
   'application/xml',
   'image/svg+xml',
 ]);
@@ -74,10 +76,10 @@ export const NEVER_SERVED_NAMES = Object.freeze(['_headers']);
 export const ALLOWED_HIDDEN_DIRS = Object.freeze(['.well-known']);
 
 /** Extensions scanned as text for secrets and external references. */
-export const TEXT_EXTENSIONS = Object.freeze(['html', 'htm', 'css', 'js', 'mjs', 'json', 'map', 'webmanifest', 'txt', 'xml', 'svg']);
+export const TEXT_EXTENSIONS = Object.freeze(['html', 'htm', 'css', 'js', 'mjs', 'json', 'map', 'webmanifest', 'txt', 'md', 'xml', 'svg']);
 
 /** Extensions treated as data/config (name-based credential rules apply to these; code is content-scanned). */
-const DATA_LIKE_EXTENSIONS = new Set(['', 'json', 'txt', 'xml', 'yml', 'yaml', 'ini', 'conf', 'cfg', 'toml', 'properties', 'env', 'csv', 'tsv']);
+const DATA_LIKE_EXTENSIONS = new Set(['', 'json', 'txt', 'xml', 'yml', 'yaml', 'ini', 'conf', 'cfg', 'toml', 'properties', 'env', 'csv', 'tsv', 'md']);
 
 /**
  * @param {string} lowerPath
