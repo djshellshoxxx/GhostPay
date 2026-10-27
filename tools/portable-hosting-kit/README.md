@@ -63,6 +63,14 @@ counts/sizes/path lengths, no case or Unicode-normalisation collisions. Keys, wa
 databases, backups, sessions, logs, onion `hs_ed25519_*` keys, I2P `.dat` keys, VCS data and server-side code get a
 specific error. A content scan for private keys and tokens runs too; it is heuristic and is not the safety mechanism.
 
+**Response headers are checked, never weakened.** Every profile derives its headers from the site's `_headers`
+(or the kit's strict default when there is none). Validation refuses a header policy that would serve any file
+without `X-Content-Type-Options: nosniff` (it must come from a `/*` rule), any HTML/SVG/XML file or `/` without a CSP
+whose `object-src` is `'none'`, whose `base-uri`/`frame-ancestors` are `'none'`/`'self'`, and whose effective script
+sources are only `'self'`, `'none'`, hashes or explicit hosts (no `*`, scheme sources, nonces, `'strict-dynamic'`,
+`'unsafe-*'`), a Referrer-Policy outside `no-referrer`/`same-origin`/`strict-origin`/`strict-origin-when-cross-origin`,
+or a rule that detaches CSP or nosniff. Details: [docs/SERVER-PROFILES.md](docs/SERVER-PROFILES.md).
+
 **Trust configuration is never rewritten.** Chain IDs, contract addresses, RPC URLs and deployment manifests are
 part of the application build. The kit packages them byte for byte, lists JSON that looks like trust config under
 `trustSensitive`, and refuses such fields in host configuration.
