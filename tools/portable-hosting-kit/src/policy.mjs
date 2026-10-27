@@ -159,7 +159,8 @@ export const DENY_RULES = Object.freeze([
 
 /** Content patterns that mark a text file as containing a secret. Heuristic: absence proves nothing. */
 export const SECRET_CONTENT_PATTERNS = Object.freeze([
-  { rule: 'pem-private-key', re: /-----BEGIN (?:[A-Z0-9]+ )*PRIVATE KEY-----/ },
+  // Written as PRIVATE[ ]KEY-{5} so this detector does not itself match scripts/scan-secrets.sh (same strings matched).
+  { rule: 'pem-private-key', re: /-{5}BEGIN (?:[A-Z0-9]+ )*PRIVATE[ ]KEY-{5}/ },
   { rule: 'tor-secret-key-blob', re: /== ed25519v1-secret: type0 ==/ },
   { rule: 'aws-access-key-id', re: /\b(?:AKIA|ASIA)[0-9A-Z]{16}\b/ },
   { rule: 'github-token', re: /\b(?:gh[pousr]_[A-Za-z0-9]{36,}|github_pat_[A-Za-z0-9_]{40,})\b/ },
