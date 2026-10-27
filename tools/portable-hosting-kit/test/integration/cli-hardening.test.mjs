@@ -35,10 +35,10 @@ test('termSafe neutralises terminal control and bidi characters', () => {
 });
 
 test('metadataWarnings flags top-level files the kit never writes', () => {
-  const m = /** @type {import('../../src/types.mjs').HostingManifest} */ (/** @type {unknown} */ ({ metadataFiles: ['EXTERNAL-REFERENCES.json', 'HOSTING-MANIFEST.json', 'LICENSES/THIRD_PARTY.md', 'OPERATOR.md', 'install.sh'] }));
+  const m = /** @type {import('../../src/types.mjs').HostingManifest} */ (/** @type {unknown} */ ({ metadataFiles: ['EXTERNAL-REFERENCES.json', 'HOSTING-MANIFEST.json', 'LICENSES/HOSTING-KIT-NOTICE.txt', 'LICENSES/THIRD_PARTY.md', 'LICENSES/sbom.cdx.json', 'LICENSES/COPYING', 'LICENSES/install.sh', 'OPERATOR.md', 'install.sh'] }));
   const w = metadataWarnings(m);
-  assert.equal(w.length, 1);
-  assert.match(w[0] ?? '', /install\.sh/);
+  assert.equal(w.length, 2);
+  assert.ok(w.some((x) => x.includes('"LICENSES/install.sh"')) && w.some((x) => x.includes('"install.sh"')));
 });
 
 test('--git-dir does not execute repository-configured fsmonitor commands (review finding 4)', { skip: (() => { try { execFileSync('git', ['--version']); return false; } catch { return 'git not installed'; } })() }, async () => {

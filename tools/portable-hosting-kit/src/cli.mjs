@@ -363,7 +363,8 @@ async function verifyTarget(target, o) {
   return verifyArchive(target, { expectedContentDigest, expectedArchiveSha256, limits: DEFAULT_LIMITS });
 }
 
-const KNOWN_METADATA = /^(HOSTING-MANIFEST\.json|OPERATOR\.md|EXTERNAL-REFERENCES\.json|LICENSES\/[A-Za-z0-9][A-Za-z0-9._-]{0,99})$/;
+// LICENSES/ entries must look like notices (text, Markdown, JSON such as an SBOM, or an extensionless LICENSE/NOTICE).
+const KNOWN_METADATA = /^(HOSTING-MANIFEST\.json|OPERATOR\.md|EXTERNAL-REFERENCES\.json|LICENSES\/([A-Za-z0-9][A-Za-z0-9._-]{0,90}\.(txt|md|json)|[A-Za-z0-9][A-Za-z0-9_-]{0,90}))$/;
 
 /**
  * Metadata files this kit never writes. They are not covered by the content digest; treat them as untrusted.
