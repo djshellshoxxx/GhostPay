@@ -46,8 +46,8 @@ describe('AppLean', () => {
     const user = userEvent.setup();
     renderWith(<AppShell order={['home', 'btc']} />);
     const nav = screen.getByRole('navigation', { name: 'Main' });
-    await user.click(within(nav).getByRole('button', { name: 'Bitcoin' }));
-    expect(within(nav).getByRole('button', { name: 'Bitcoin' }).getAttribute('aria-current')).toBe('page');
+    await user.click(within(nav).getByRole('button', { name: 'Bitcoin (test)' }));
+    expect(within(nav).getByRole('button', { name: 'Bitcoin (test)' }).getAttribute('aria-current')).toBe('page');
     expect(screen.getByRole('heading', { level: 2, name: /^What do you want to do\?$/ })).toBeTruthy();
   });
 
