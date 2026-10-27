@@ -186,6 +186,9 @@ export function SellerKeys(): ReactNode {
         setVaultBusy(false);
         if (err instanceof VaultSavedForPreviousKeysError) { setVaultSavePass(''); setVaultSavePass2(''); setVaultState('saved'); }
         fail(err);
+        // The refusal may mean the single vault slot changed (e.g. another tab saved). Reread the actual store,
+        // never infer presence from the error message, so existing unlock/delete controls reflect reality.
+        refreshVault();
       },
     );
   };
