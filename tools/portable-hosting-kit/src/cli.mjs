@@ -196,8 +196,8 @@ export async function fullValidation(siteDir, o) {
   };
   try {
     policy = await loadHeaderPolicy(paths, async (rel) => new TextDecoder().decode(await readBytes(rel)));
-    const html = paths.filter((p) => /\.html?$/i.test(p)).map((p) => `/${p}`);
-    findings.push(...checkRequiredHeaders(policy.rules, html));
+    // Every served path: nosniff everywhere, CSP on html/htm/svg/xml (checkRequiredHeaders classifies them).
+    findings.push(...checkRequiredHeaders(policy.rules, paths.map((p) => `/${p}`)));
     if (policy.source === 'kit-default') {
       findings.push({ code: ERROR_CODES.HEADERS, rule: 'kit-default-headers', severity: 'warning', message: 'no _headers file: the kit default security headers will be served (strict CSP, no third-party origins)' });
     }
@@ -440,7 +440,7 @@ export async function openVerified(target, o) {
 async function policyFor(siteDir, manifest) {
   const paths = manifest.content.files.map((f) => f.path);
   const policy = await loadHeaderPolicy(paths, (rel) => readFile(join(siteDir, ...rel.split('/')), 'utf8'));
-  const errors = checkRequiredHeaders(policy.rules, paths.filter((p) => /\.html?$/i.test(p)).map((p) => `/${p}`)).filter((f) => f.severity === 'error');
+  const errors = checkRequiredHeaders(policy.rules, paths.map((p) => `/${p}`)).filter((f) => f.severity === 'error');
   if (errors.length > 0) throw new KitError(ERROR_CODES.HEADERS, `required response headers missing: ${errors.map((f) => f.message).join('; ')}`);
   return policy;
 }

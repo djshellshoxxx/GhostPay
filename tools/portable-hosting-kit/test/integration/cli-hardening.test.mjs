@@ -139,6 +139,19 @@ test('container profile is a self-contained stack; Tor container override valida
   });
 });
 
+test('validate refuses a _headers file that strips CSP/nosniff from SVG before anything is packaged (review pass 2)', async () => {
+  await withTmp(async (dir) => {
+    await writeDemoSite(join(dir, 'site'));
+    const h = await readFile(join(dir, 'site', '_headers'), 'utf8');
+    await writeFile(join(dir, 'site', '_headers'), `${h}\n/*.svg\n  ! Content-Security-Policy\n  ! X-Content-Type-Options\n`);
+    const v = await cli(['validate', 'site', '--json'], dir);
+    assert.equal(v.code, 1);
+    assert.ok(JSON.parse(v.out).findings.some((/** @type {{ code: string }} */ f) => f.code === 'E_HEADERS'));
+    assert.equal((await cli(['package', 'site', '--out', 'a.zip'], dir)).code, 1);
+    assert.equal(existsSync(join(dir, 'a.zip')), false);
+  });
+});
+
 test('profile writes nested output directories (nginx/, tor/, i2p/)', async () => {
   await withTmp(async (dir) => {
     await writeDemoSite(join(dir, 'site'));
