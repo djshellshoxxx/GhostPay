@@ -1,5 +1,5 @@
 import { copyFileSync, lstatSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
-import { isAbsolute, join, posix } from 'node:path';
+import { isAbsolute, join, posix, relative, resolve } from 'node:path';
 
 export const PROFILE_ENV = 'GHOSTPAY_LOCAL_BUILD_PROFILE';
 export const REPORT_ENV = 'GHOSTPAY_LOCAL_MODULE_REPORT';
@@ -24,6 +24,9 @@ export function selectAppEntry(profile, source, importer, leanPath) {
  * files are refused (never followed or copied). Returns the copied relative paths (posix separators).
  */
 export function copyPublicFiltered(srcRoot, outRoot, skipTopLevel) {
+  const rootStat = lstatSync(srcRoot);
+  if (rootStat.isSymbolicLink()) throw new Error('public source root is a symlink (refused)');
+  if (!rootStat.isDirectory()) throw new Error('public source root is not a directory (refused)');
   const skip = new Set(skipTopLevel);
   const copied = [];
   const walk = (rel) => {
@@ -59,11 +62,20 @@ export function collectChunkModules(bundle) {
     if (item.modules === null || typeof item.modules !== 'object') {
       throw new Error(`bundler module metadata unavailable for chunk ${String(item.fileName)}`);
     }
+    const modules = [];
+    for (const [id, m] of Object.entries(item.modules)) {
+      if (m === null || typeof m !== 'object') {
+        throw new Error(`malformed module entry ${id} in chunk ${String(item.fileName)}`);
+      }
+      const len = m.renderedLength;
+      if (typeof len !== 'number' || !Number.isFinite(len) || len < 0) {
+        throw new Error(`invalid renderedLength for module ${id} in chunk ${String(item.fileName)}`);
+      }
+      modules.push({ id, renderedLength: len });
+    }
     out.push({
       fileName: item.fileName,
-      modules: Object.entries(item.modules)
-        .map(([id, m]) => ({ id, renderedLength: m.renderedLength }))
-        .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)),
+      modules: modules.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)),
     });
   }
   return out.sort((a, b) => (a.fileName < b.fileName ? -1 : 1));
@@ -101,7 +113,14 @@ export function localBuildProfilePlugins(opts) {
     name: 'ghostpay-local-profile-output',
     apply: 'build',
     configResolved(config) {
-      outDir = join(config.root, config.build.outDir);
+      outDir = resolve(config.root, config.build.outDir);
+      if (reportPath !== undefined) {
+        const rel = relative(outDir, resolve(reportPath));
+        const inside = rel === '' || (!rel.startsWith('..') && !isAbsolute(rel));
+        if (inside) {
+          throw new Error(`${REPORT_ENV} must not be inside the web output directory`);
+        }
+      }
     },
     generateBundle(_o, bundle) {
       if (reportPath !== undefined) chunks = collectChunkModules(bundle);

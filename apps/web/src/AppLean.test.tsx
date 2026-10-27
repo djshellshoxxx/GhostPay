@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { FRAGMENT_PREFIX } from '@ghostpay/invoice-schema';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { AppLean } from './AppLean';
 import { AppShell } from './AppShell';
@@ -41,15 +42,17 @@ describe('AppLean', () => {
     expect(screen.getByRole('link', { name: 'Skip to content' }).getAttribute('href')).toBe('#main');
   });
 
-  it('renders Home for a view id that is not supported by the lean shell', () => {
-    renderWith(<AppShell order={['home', 'seller']} />);
-    // 'about' etc. are core, but a nav built from a limited order never offers optional ids:
-    expect(screen.queryByRole('button', { name: /Bitcoin/ })).toBeNull();
+  it('falls back to Home when navigating to a view id with no supplied extra view', async () => {
+    const user = userEvent.setup();
+    renderWith(<AppShell order={['home', 'btc']} />);
+    const nav = screen.getByRole('navigation', { name: 'Main' });
+    await user.click(within(nav).getByRole('button', { name: 'Bitcoin' }));
+    expect(within(nav).getByRole('button', { name: 'Bitcoin' }).getAttribute('aria-current')).toBe('page');
     expect(screen.getByRole('heading', { level: 2, name: /^What do you want to do\?$/ })).toBeTruthy();
   });
 
   it('opens Pay from an invoice fragment hash and clears the fragment by default', async () => {
-    setHash('#not-a-real-invoice');
+    setHash(`${FRAGMENT_PREFIX}synthetic-invoice`);
     renderWith(<AppLean />);
     const nav = screen.getByRole('navigation', { name: 'Main' });
     expect(within(nav).getByRole('button', { name: 'Pay' }).getAttribute('aria-current')).toBe('page');
@@ -60,7 +63,7 @@ describe('AppLean', () => {
     renderWith(<AppLean />);
     const nav = screen.getByRole('navigation', { name: 'Main' });
     expect(within(nav).getByRole('button', { name: 'Home' }).getAttribute('aria-current')).toBe('page');
-    setHash('#another-fragment');
+    setHash(`${FRAGMENT_PREFIX}another-synthetic-invoice`);
     window.dispatchEvent(new HashChangeEvent('hashchange'));
     await waitFor(() => {
       expect(within(nav).getByRole('button', { name: 'Pay' }).getAttribute('aria-current')).toBe('page');
