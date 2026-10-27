@@ -235,16 +235,17 @@ async function provenanceFrom(o, io) {
   const run = promisify(execFile);
   const cwd = resolve(io.cwd, gitDir);
   try {
-    // Read-only and config-proof: no fsmonitor hook (repository config could otherwise run a command), no optional
-    // index refresh/lock writes, no system/global config.
-    const git = ['-C', cwd, '-c', 'core.fsmonitor=false', '-c', 'core.untrackedCache=false', '--no-optional-locks'];
+    // Read-only and config-proof. A repository can make `git status` run commands through core.fsmonitor or through
+    // clean/smudge filters selected by .gitattributes; both are disabled: fsmonitor off, attributes read from the
+    // empty tree (--attr-source, git >= 2.40), no optional index writes, no system/global config.
+    const git = ['--attr-source=4b825dc642cb6eb9a060e54bf8d69288fbee4904', '-C', cwd, '-c', 'core.fsmonitor=false', '-c', 'core.untrackedCache=false', '-c', 'core.attributesFile=/dev/null', '--no-optional-locks'];
     const env = { ...process.env, GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null', GIT_OPTIONAL_LOCKS: '0', GIT_TERMINAL_PROMPT: '0' };
     const commit = (await run('git', [...git, 'rev-parse', 'HEAD'], { env })).stdout.trim();
     const dirty = (await run('git', [...git, 'status', '--porcelain', '--untracked-files=no'], { env })).stdout.trim() !== '';
     if (!/^[0-9a-f]{40}$/.test(commit)) throw new Error('unexpected rev-parse output');
     return { label, sourceDateEpoch, source: { kind: 'git', commit, dirty }, notes };
   } catch (e) {
-    throw new KitError(ERROR_CODES.IO, `--git-dir ${gitDir}: could not read git metadata (${e instanceof Error ? e.message : String(e)})`);
+    throw new KitError(ERROR_CODES.IO, `--git-dir ${gitDir}: could not read git metadata (git >= 2.40 is required for --attr-source): ${e instanceof Error ? e.message : String(e)}`);
   }
 }
 
@@ -569,7 +570,13 @@ export async function generateProfiles(p) {
       if (p.with.includes('nginx') || p.with.includes('container')) {
         const nginx = generateNginx({ files: served, entrypoint, hostConfig: p.host, policy, wwwRoot });
         if (p.with.includes('nginx')) await writeAll('nginx', nginx.files);
-        if (p.with.includes('container')) await writeAll('container', generateContainer({ hostConfig: p.host, nginxFiles: nginx.files }).files);
+        if (p.with.includes('container')) {
+          // container/ is a self-contained stack: compose.yaml mounts ./www and ./nginx next to itself, and a Tor
+          // container override (tor/compose.tor.yml) resolves ./tor relative to it.
+          await exportStatic({ siteDir: opened.siteDir, files, entrypoint, hostConfig: p.host, policy, outDir: join(tmp, 'container'), overlayFiles: overlay === null ? [] : [overlay] });
+          generated.push('container/www/');
+          await writeAll('container', generateContainer({ hostConfig: p.host, nginxFiles: nginx.files }).files);
+        }
       }
       if (p.with.includes('tor')) {
         const mode = /** @type {string | undefined} */ (p.o['tor-instance']) ?? 'system';
@@ -577,7 +584,10 @@ export async function generateProfiles(p) {
         let instance;
         if (mode === 'system') instance = { mode: 'system' };
         else if (mode === 'dedicated') instance = { mode: 'dedicated', dataDirectory: /** @type {string | undefined} */ (p.o['tor-data-dir']) ?? '/var/lib/tor-ghostpay-site' };
-        else if (mode === 'container') instance = { mode: 'container' };
+        else if (mode === 'container') {
+          if (!p.with.includes('container')) usage('--tor-instance container needs the container profile too (--with ...,container,tor)');
+          instance = { mode: 'container' };
+        }
         else return usage('--tor-instance must be system, dedicated or container');
         const tor = generateTorProfile({
           hostConfig: p.host,
@@ -586,7 +596,7 @@ export async function generateProfiles(p) {
           instance,
           forbiddenRoots,
         });
-        await writeAll('.', tor.files);
+        await writeAll(mode === 'container' ? 'container' : '.', tor.files);
         warnings.push(...tor.warnings);
       }
       if (p.with.includes('i2p')) {

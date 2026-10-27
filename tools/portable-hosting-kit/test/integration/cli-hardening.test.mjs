@@ -59,6 +59,29 @@ test('--git-dir does not execute repository-configured fsmonitor commands (revie
   });
 });
 
+test('--git-dir does not run clean filters selected by the repository (review pass 2, finding 4 bypass)', { skip: (() => { try { execFileSync('git', ['--version']); return false; } catch { return 'git not installed'; } })() }, async () => {
+  await withTmp(async (dir) => {
+    await writeDemoSite(join(dir, 'site'));
+    const repo = join(dir, 'repo');
+    await mkdir(repo);
+    const marker = join(dir, 'PWNED-FILTER');
+    const env = { ...process.env, GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null' };
+    const g = (/** @type {string[]} */ ...a) => execFileSync('git', ['-C', repo, ...a], { stdio: 'ignore', env });
+    g('init', '-q');
+    await writeFile(join(repo, '.gitattributes'), '* filter=evil\n');
+    await writeFile(join(repo, 'f.txt'), 'x');
+    g('add', '.gitattributes', 'f.txt');
+    g('-c', 'user.email=t@example.invalid', '-c', 'user.name=t', '-c', 'commit.gpgsign=false', 'commit', '-q', '-m', 'x');
+    g('config', 'filter.evil.clean', `touch ${marker}; cat`);
+    // Make the tracked file stat-dirty so `git status` would re-run the clean filter.
+    await new Promise((r) => setTimeout(r, 1100));
+    await writeFile(join(repo, 'f.txt'), 'x');
+    const r = await cli(['package', 'site', '--out', 'a.zip', '--git-dir', 'repo', '--json'], dir);
+    assert.equal(r.code, 0, r.err);
+    assert.equal(existsSync(marker), false, 'clean filter must not run');
+  });
+});
+
 test('--license-file goes through the inclusion policy and secret scan (review finding 10)', async () => {
   await withTmp(async (dir) => {
     await writeDemoSite(join(dir, 'site'));
@@ -93,6 +116,26 @@ test('verify output: digest match is scoped to site files; injected names are es
     const val = await cli(['validate', 'bad'], dir);
     assert.equal(val.code, 1);
     assert.equal((val.out + val.err).includes('\u001b'), false, 'no raw ESC byte reaches the terminal');
+  });
+});
+
+test('container profile is a self-contained stack; Tor container override validates with docker compose config', async () => {
+  await withTmp(async (dir) => {
+    await writeDemoSite(join(dir, 'site'));
+    assert.equal((await cli(['package', 'site', '--out', 'a.zip'], dir)).code, 0);
+    await writeFile(join(dir, 'o.json'), JSON.stringify({ schemaVersion: 1, transport: 'onion', publicOrigin: null, basePath: '/', listen: { kind: 'tcp', host: '127.0.0.1', port: 8081 }, mirrorLabel: 'o', onionLocation: null }));
+    assert.equal((await cli(['profile', 'a.zip', '--config', 'o.json', '--out', 'p', '--with', 'tor', '--tor-instance', 'container'], dir)).code, 2, 'container tor needs the container profile');
+    const r = await cli(['profile', 'a.zip', '--config', 'o.json', '--out', 'p', '--with', 'container,tor', '--tor-instance', 'container', '--hs-dir', '/var/lib/tor/site'], dir);
+    assert.equal(r.code, 0, r.err);
+    const stack = join(dir, 'p', 'container');
+    for (const f of ['compose.yaml', 'nginx/nginx.conf', 'www/index.html', 'tor/torrc', 'tor/compose.tor.yml', 'tor/Dockerfile']) assert.ok(existsSync(join(stack, f)), f);
+    let docker = false;
+    try { execFileSync('docker', ['compose', 'version'], { stdio: 'ignore' }); docker = true; } catch { /* not installed */ }
+    if (docker) {
+      const cfg = execFileSync('docker', ['compose', '-f', join(stack, 'compose.yaml'), '-f', join(stack, 'tor', 'compose.tor.yml'), 'config'], { encoding: 'utf8', cwd: stack });
+      assert.match(cfg, /site_internal/);
+      assert.match(cfg, /127\.0\.0\.1/);
+    }
   });
 });
 
