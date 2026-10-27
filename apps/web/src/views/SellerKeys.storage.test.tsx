@@ -40,7 +40,7 @@ async function generateAndFillSave(user: ReturnType<typeof userEvent.setup>): Pr
 }
 
 /** Store whose putIfEmpty refuses BEFORE any durable commit with the supplied error. */
-function refusingStore(backing: MemoryKeyVaultStore, makeError: () => unknown, observed: { puts: number }): KeyVaultStore {
+function refusingStore(backing: MemoryKeyVaultStore, makeError: () => Error, observed: { puts: number }): KeyVaultStore {
   return {
     get: () => backing.get(),
     putIfEmpty: () => { observed.puts += 1; return Promise.reject(makeError()); },
@@ -53,7 +53,7 @@ function alertText(): string {
 }
 
 describe('seller vault save storage honesty (pre-commit storage refusal)', () => {
-  const cases: { name: string; make: () => unknown }[] = [
+  const cases: { name: string; make: () => Error }[] = [
     { name: 'QuotaExceededError', make: () => new DOMException('storage quota exceeded', 'QuotaExceededError') },
     { name: 'AbortError', make: () => new DOMException('transaction aborted', 'AbortError') },
   ];

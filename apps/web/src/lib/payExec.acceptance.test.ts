@@ -136,9 +136,10 @@ describe('ERC-20 payment is bound to exact token, destination and amounts at the
     // Pre-send guards pass; only the wallet boundary alters the token.
     const p = sendPayment(session, ctx, built, rt, noStatus);
     await expect(p).rejects.toThrow(PostBroadcastError);
+    const mismatch: unknown = expect.any(SubmissionMismatchError);
     await expect(p).rejects.toMatchObject({
       hash: `0x${'9'.repeat(64)}`,
-      cause: expect.any(SubmissionMismatchError),
+      cause: mismatch,
     });
     await expect(p).rejects.toThrow(/differs from the preview \(call data\)/);
 
