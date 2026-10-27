@@ -5,6 +5,7 @@ import { randomBytes } from 'node:crypto';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
 import { ERROR_CODES, KitError } from '../errors.mjs';
+import { quote } from './paths.mjs';
 
 /** @typedef {typeof import('node:fs/promises')} Fs */
 
@@ -89,7 +90,7 @@ async function backup(fs, target) {
     if (errCode(e) === 'ENOENT') return null;
     throw e;
   }
-  if (!st.isFile() && !st.isSymbolicLink()) throw new KitError(ERROR_CODES.USAGE, `refusing to replace a non-file: ${target}`, { path: target });
+  if (!st.isFile() && !st.isSymbolicLink()) throw new KitError(ERROR_CODES.USAGE, `refusing to replace a non-file: ${quote(target)}`, { path: target });
   const bak = siblingName(target, 'bak');
   try {
     await fs.link(target, bak);
@@ -179,8 +180,98 @@ export async function writeFileAtomic(target, bytes, opts = {}) {
 }
 
 /**
- * Build a directory in a temporary sibling, then swap it into place. On failure the previous directory (if any) is
- * restored and the temporary removed. POSIX cannot rename over a non-empty directory, so the old directory is moved
+ * @param {string} target
+ * @returns {KitError}
+ */
+function alreadyExists(target) {
+  return new KitError(ERROR_CODES.USAGE, `refusing to create ${quote(target)}: it already exists`, { path: target });
+}
+
+/**
+ * Build a directory in a temporary sibling, then move it to `targetDir`, which must not exist. Nothing that exists at
+ * `targetDir` (directory, file or symlink, including one created while building) is ever replaced or deleted: the
+ * name is claimed with an exclusive mkdir and the finished tree is renamed over that empty claim (POSIX). On failure
+ * the temporary is removed and the claim is removed only while it is still empty.
+ * @param {string} targetDir
+ * @param {(tmpDir: string) => Promise<void>} build
+ * @param {{ fs?: Fs }} [opts]
+ */
+export async function createDirAtomic(targetDir, build, opts = {}) {
+  const fs = opts.fs ?? fsp;
+  const target = path.resolve(targetDir);
+  const parent = path.dirname(target);
+  if (await existsNoFollow(fs, target)) throw alreadyExists(target);
+  const base = Array.from(path.basename(target)).slice(0, 64).join('');
+  const tmp = await fs.mkdtemp(path.join(parent, `.${base}.tmp-`));
+  let claimed = false;
+  try {
+    await build(tmp);
+    try {
+      await fs.mkdir(target);
+    } catch (e) {
+      throw errCode(e) === 'EEXIST' ? alreadyExists(target) : e;
+    }
+    claimed = true;
+    await renameOntoEmptyClaim(fs, tmp, target);
+    claimed = false;
+  } catch (e) {
+    await removeQuietly(fs, tmp);
+    if (claimed) {
+      try {
+        await fs.rmdir(target); // non-recursive: fails (and keeps everything) unless our claim is still empty
+      } catch {
+        // someone else's content is there now; leave it
+      }
+    }
+    throw e;
+  }
+  await syncDir(fs, parent);
+}
+
+/**
+ * POSIX rename replaces an empty directory atomically and fails on a non-empty one. Windows refuses to rename onto
+ * any existing directory, so there the empty claim is removed first (a short window in which the name is free).
+ * @param {Fs} fs
+ * @param {string} tmp
+ * @param {string} target
+ */
+async function renameOntoEmptyClaim(fs, tmp, target) {
+  try {
+    await fs.rename(tmp, target);
+    return;
+  } catch (e) {
+    const code = errCode(e) ?? '';
+    if (code === 'ENOTEMPTY' || code === 'EEXIST') throw alreadyExists(target);
+    if (process.platform !== 'win32' || (code !== 'EPERM' && code !== 'EACCES')) throw e;
+  }
+  await fs.rmdir(target);
+  try {
+    await fs.rename(tmp, target);
+  } catch (e) {
+    throw ['EEXIST', 'EPERM', 'EACCES', 'ENOTEMPTY'].includes(errCode(e) ?? '') ? alreadyExists(target) : e;
+  }
+}
+
+/**
+ * @param {Fs} fs
+ * @param {string} p
+ * @returns {Promise<boolean>}
+ */
+async function existsNoFollow(fs, p) {
+  try {
+    await fs.lstat(p);
+    return true;
+  } catch (e) {
+    if (errCode(e) === 'ENOENT') return false;
+    throw e;
+  }
+}
+
+/**
+ * Build a directory in a temporary sibling, then swap it into place, DELETING any existing directory at
+ * `targetDir`. Callers must first establish that the existing directory is theirs to replace (the CLI checks its
+ * marker file); for trees named by untrusted input use createDirAtomic. On failure the previous directory (if any)
+ * is restored and the temporary removed. POSIX cannot rename over a non-empty directory, so the old directory is moved
  * aside first: between the two renames `targetDir` briefly does not exist (a crash there leaves the old copy under
  * a hidden `.<name>.old-*` sibling).
  * @param {string} targetDir
@@ -230,7 +321,7 @@ async function moveAsideExistingDir(fs, target) {
     if (errCode(e) === 'ENOENT') return null;
     throw e;
   }
-  if (!st.isDirectory()) throw new KitError(ERROR_CODES.USAGE, `refusing to replace a non-directory: ${target}`, { path: target });
+  if (!st.isDirectory()) throw new KitError(ERROR_CODES.USAGE, `refusing to replace a non-directory: ${quote(target)}`, { path: target });
   const old = siblingName(target, 'old');
   await fs.rename(target, old);
   return old;

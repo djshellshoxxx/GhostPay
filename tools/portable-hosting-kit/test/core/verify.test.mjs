@@ -9,7 +9,7 @@ import { validateSite } from '../../src/core/validate.mjs';
 import { extractArchive, verifyArchive, verifyDirectory } from '../../src/core/verify.mjs';
 import { createZip, readZip } from '../../src/core/zip.mjs';
 import { DEFAULT_LIMITS } from '../../src/policy.mjs';
-import { goodSite, rejectsCode, tmpDir, writeTree } from './helpers.mjs';
+import { goodSite, rejectsCode, snapshot, tmpDir, writeTree } from './helpers.mjs';
 
 /** @typedef {import('../../src/types.mjs').Provenance} Provenance */
 
@@ -200,7 +200,7 @@ test('verifyDirectory reports changed, missing and unexpected files and refuses 
   assert.deepEqual(r.missing, ['site/LICENSE']);
   assert.deepEqual(r.unexpected, ['site/extra.html']);
 
-  const again = await extractArchive(p.archivePath, dest);
+  const again = await extractArchive(p.archivePath, await tmpDir(t));
   await fsp.rm(path.join(again.topDir, 'site', 'index.html'));
   await fsp.symlink(path.join(p.site, 'index.html'), path.join(again.topDir, 'site', 'index.html'));
   await fsp.symlink(p.site, path.join(again.topDir, 'site', 'linked'));
@@ -209,13 +209,13 @@ test('verifyDirectory reports changed, missing and unexpected files and refuses 
   assert.deepEqual(s.errors.filter((e) => e.rule === 'symlink').map((e) => e.path), ['site/index.html', 'site/linked']);
   assert.deepEqual(s.missing, ['site/index.html']);
 
-  const edited = await extractArchive(p.archivePath, dest);
+  const edited = await extractArchive(p.archivePath, await tmpDir(t));
   const mpath = path.join(edited.topDir, 'HOSTING-MANIFEST.json');
   await fsp.writeFile(mpath, (await fsp.readFile(mpath, 'utf8')).replace('"label": "demo"', '"label": "evil"'));
   assert.deepEqual((await verifyDirectory(edited.topDir)).changed, ['HOSTING-MANIFEST.json']);
 });
 
-test('extractArchive refuses a tampered archive without creating anything, and replaces atomically', async (t) => {
+test('extractArchive refuses a tampered archive or an existing target without creating or changing anything', async (t) => {
   const p = await packaged(t);
   const dest = await tmpDir(t);
   const bad = await repacked(p, (es) => es.map((e) => (e.name === named(p, 'site/index.html') ? { ...e, data: Buffer.from('evil') } : e)));
@@ -226,13 +226,13 @@ test('extractArchive refuses a tampered archive without creating anything, and r
 
   const first = await extractArchive(p.archivePath, dest, { expectedArchiveSha256: p.archiveSha256 });
   assert.equal(first.result.authenticity, 'archive-sha256-matches-expected');
-  await fsp.writeFile(path.join(first.topDir, 'site', 'stale.txt'), 'left over from a previous extraction');
-  const second = await extractArchive(p.archivePath, dest);
-  assert.equal((await verifyDirectory(second.topDir)).ok, true);
-  assert.deepEqual(await fsp.readdir(dest), [p.topDir]);
   for (const [rel, content] of Object.entries(goodSite())) {
-    assert.deepEqual(await fsp.readFile(path.join(second.topDir, 'site', ...rel.split('/'))), Buffer.from(content));
+    assert.deepEqual(await fsp.readFile(path.join(first.topDir, 'site', ...rel.split('/'))), Buffer.from(content));
   }
+  await fsp.writeFile(path.join(first.topDir, 'site', 'operator-notes.txt'), 'kept');
+  const before = await snapshot(dest);
+  await rejectsCode(extractArchive(p.archivePath, dest), 'E_USAGE', /already exists/);
+  assert.deepEqual(await snapshot(dest), before);
 });
 
 test('verification limits: an archive larger than the limits allow is refused before parsing', async (t) => {

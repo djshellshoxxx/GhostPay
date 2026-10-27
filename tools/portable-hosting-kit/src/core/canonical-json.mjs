@@ -3,6 +3,7 @@
 // integers, arrays and plain objects. Anything else (non-integers, unsafe integers, undefined, lone surrogates,
 // non-plain objects) is rejected rather than approximated.
 import { ERROR_CODES, KitError } from '../errors.mjs';
+import { quote } from './paths.mjs';
 
 const LONE_SURROGATE_RE = /\p{Cs}/u;
 
@@ -47,7 +48,7 @@ function serialize(v, depth) {
     const keys = Object.keys(v).sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
     const parts = [];
     for (const k of keys) {
-      if (v[k] === undefined) throw new KitError(ERROR_CODES.USAGE, `canonical JSON: property "${k}" is undefined`);
+      if (v[k] === undefined) throw new KitError(ERROR_CODES.USAGE, `canonical JSON: property ${quote(k)} is undefined`);
       parts.push(`${serializeString(k)}:${serialize(v[k], depth + 1)}`);
     }
     return `{${parts.join(',')}}`;

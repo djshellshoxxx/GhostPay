@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { constants as fsConstants } from 'node:fs';
 import fsp from 'node:fs/promises';
 import { ERROR_CODES, KitError } from '../errors.mjs';
+import { quote } from './paths.mjs';
 
 /** @typedef {typeof import('node:fs/promises')} Fs */
 
@@ -28,7 +29,7 @@ export function sha256Hex(bytes) {
  */
 export async function sha256File(absPath, opts = {}) {
   const fs = opts.fs ?? fsp;
-  const fh = await openRegular(fs, absPath);
+  const { fh } = await openRegular(fs, absPath, undefined);
   try {
     const hash = createHash('sha256');
     const buf = Buffer.alloc(CHUNK);
@@ -44,24 +45,35 @@ export async function sha256File(absPath, opts = {}) {
 }
 
 /**
- * Open a path read-only without following a final symlink and require a regular file.
+ * Identity of an inventoried file as recorded by lstat during the walk (BigInt precision).
+ * @typedef {{ dev: bigint, ino: bigint, mtimeNs: bigint, ctimeNs: bigint }} FileIdentity
+ */
+
+/**
+ * Open a path read-only without following a final symlink and require a regular file; when `identity` is given,
+ * the opened file must be that inode with unchanged mtime/ctime (so a swapped parent directory, a rename-replace or
+ * an in-place rewrite since the inventory is detected on the very handle that is read).
  * @param {Fs} fs
  * @param {string} absPath
- * @returns {Promise<import('node:fs/promises').FileHandle>}
+ * @param {FileIdentity | undefined} identity
+ * @returns {Promise<{ fh: import('node:fs/promises').FileHandle, size: bigint }>}
  */
-async function openRegular(fs, absPath) {
+async function openRegular(fs, absPath, identity) {
   let fh;
   try {
     fh = await fs.open(absPath, OPEN_READ_NOFOLLOW);
   } catch (e) {
     const code = /** @type {NodeJS.ErrnoException} */ (e).code;
-    if (code === 'ELOOP' || code === 'EMLINK') throw new KitError(ERROR_CODES.SYMLINK, `refusing to follow symlink: ${absPath}`, { path: absPath });
+    if (code === 'ELOOP' || code === 'EMLINK') throw new KitError(ERROR_CODES.SYMLINK, `refusing to follow symlink: ${quote(absPath)}`, { path: absPath });
     throw e;
   }
   try {
-    const st = await fh.stat();
-    if (!st.isFile()) throw new KitError(ERROR_CODES.SYMLINK, `not a regular file: ${absPath}`, { path: absPath });
-    return fh;
+    const st = await fh.stat({ bigint: true });
+    if (!st.isFile()) throw new KitError(ERROR_CODES.SYMLINK, `not a regular file: ${quote(absPath)}`, { path: absPath });
+    if (identity && (st.dev !== identity.dev || st.ino !== identity.ino || st.mtimeNs !== identity.mtimeNs || st.ctimeNs !== identity.ctimeNs)) {
+      throw new KitError(ERROR_CODES.VERIFY, `file changed since it was inventoried (inode, mtime or ctime differs): ${quote(absPath)}`, { path: absPath });
+    }
+    return { fh, size: st.size };
   } catch (e) {
     await fh.close();
     throw e;
@@ -73,15 +85,14 @@ async function openRegular(fs, absPath) {
  * confirms end-of-file, so the returned bytes are exactly what the file contained while it was open.
  * @param {string} absPath
  * @param {number} expectedSize
- * @param {{ fs?: Fs }} [opts]
+ * @param {{ fs?: Fs, identity?: FileIdentity }} [opts]
  * @returns {Promise<Buffer>}
  */
 export async function readFileExact(absPath, expectedSize, opts = {}) {
   const fs = opts.fs ?? fsp;
-  const fh = await openRegular(fs, absPath);
+  const { fh, size } = await openRegular(fs, absPath, opts.identity);
   try {
-    const st = await fh.stat();
-    if (st.size !== expectedSize) throw changed(absPath, expectedSize, st.size);
+    if (size !== BigInt(expectedSize)) throw changed(absPath, expectedSize, Number(size));
     const buf = Buffer.alloc(expectedSize);
     let off = 0;
     while (off < expectedSize) {
@@ -99,15 +110,15 @@ export async function readFileExact(absPath, expectedSize, opts = {}) {
 }
 
 /**
- * Read at most `n` leading bytes of a regular file (refuses symlinks).
+ * Read at most `n` leading bytes of a regular file (refuses symlinks; checks `identity` like readFileExact).
  * @param {string} absPath
  * @param {number} n
- * @param {{ fs?: Fs }} [opts]
+ * @param {{ fs?: Fs, identity?: FileIdentity }} [opts]
  * @returns {Promise<Buffer>}
  */
 export async function readPrefix(absPath, n, opts = {}) {
   const fs = opts.fs ?? fsp;
-  const fh = await openRegular(fs, absPath);
+  const { fh } = await openRegular(fs, absPath, opts.identity);
   try {
     const buf = Buffer.alloc(n);
     let off = 0;
@@ -129,5 +140,5 @@ export async function readPrefix(absPath, n, opts = {}) {
  * @returns {KitError}
  */
 function changed(absPath, expected, actual) {
-  return new KitError(ERROR_CODES.VERIFY, `file changed since it was inventoried (size ${expected} -> ${actual}): ${absPath}`, { path: absPath, expected, actual });
+  return new KitError(ERROR_CODES.VERIFY, `file changed since it was inventoried (size ${expected} -> ${actual}): ${quote(absPath)}`, { path: absPath, expected, actual });
 }
