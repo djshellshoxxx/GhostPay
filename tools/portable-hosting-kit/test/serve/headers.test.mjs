@@ -254,10 +254,10 @@ test('R2-C: CSP values must actually restrict', () => {
   assert.ok(csp("default-src 'self'; object-src 'self'; base-uri 'none'; frame-ancestors 'none'").includes('csp-value'));
   assert.ok(csp("default-src 'self'; object-src 'none'; base-uri https:; frame-ancestors 'none'").includes('csp-value'));
   assert.ok(csp("default-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none' https://x.example").includes('csp-value'));
-  assert.ok(csp("default-src 'self'; script-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'").includes('csp-unsafe'));
-  assert.ok(csp("default-src 'self' 'unsafe-eval'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'").includes('csp-unsafe'));
+  assert.ok(csp("default-src 'self'; script-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'").includes('csp-script-source'));
+  assert.ok(csp("default-src 'self' 'unsafe-eval'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'").includes('csp-script-source'));
   assert.deepEqual(csp("default-src 'self' 'unsafe-inline'; script-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'"), [], 'default-src only matters for scripts without script-src');
-  assert.ok(csp("default-src 'self'; script-src-elem 'unsafe-inline'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'").includes('csp-unsafe'));
+  assert.ok(csp("default-src 'self'; script-src-elem 'unsafe-inline'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'").includes('csp-script-source'));
   // Two policies (comma-joined): each restricting value may come from either; an unsafe source in any one is refused.
   assert.deepEqual(csp("default-src 'self'; object-src 'none', base-uri 'none'; frame-ancestors 'none'"), []);
 });
@@ -274,4 +274,58 @@ test('the demo site _headers passes the strengthened checks', async () => {
   const files = /** @type {Array<{ path: string, data: string }>} */ (/** @type {any} */ (demoSiteFiles)());
   const text = files.find((x) => x.path === '_headers')?.data ?? '';
   assert.deepEqual(checkRequiredHeaders(parseHeadersFile(text), files.map((x) => `/${x.path}`).filter((p) => p !== '/_headers')), []);
+});
+
+// --- review round 3 regressions ---
+
+test('R3: effective script sources may only be self, explicit hosts and hashes', () => {
+  const tail = "object-src 'none'; base-uri 'none'; frame-ancestors 'none'";
+  const rules = (/** @type {string} */ csp, rp = 'no-referrer') => checkRequiredHeaders(parseHeadersFile(`/*\n  Content-Security-Policy: ${csp}\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: ${rp}\n`), ['/index.html', '/a.svg', '/b.xml', '/c.htm']).map((x) => x.rule);
+  const refused = [
+    `default-src 'self'; script-src 'self' data:; ${tail}`,
+    `default-src *; script-src * blob:; ${tail}`,
+    `default-src 'self'; script-src 'nonce-abc123'; ${tail}`,
+    `default-src 'self'; script-src 'strict-dynamic' 'sha256-AAAA'; ${tail}`,
+    `default-src 'self'; script-src 'self' 'unsafe-hashes' 'sha256-AAAA'; ${tail}`,
+    `default-src *; ${tail}`,
+    `default-src 'self' https:; ${tail}`,
+    `default-src 'self'; script-src 'self' filesystem:; ${tail}`,
+    `default-src 'self'; script-src 'self' http: ws: wss:; ${tail}`,
+    `default-src 'self'; script-src 'self' https://*; ${tail}`,
+    `default-src 'self'; script-src 'self'; script-src-elem 'self' data:; ${tail}`,
+    `default-src 'self'; script-src 'self'; script-src-attr 'unsafe-hashes'; ${tail}`,
+    `default-src 'self'; script-src-elem 'self'; ${tail}, default-src 'self' blob:`,
+    `default-src 'self'; script-src 'self' 'NONCE-abc'; ${tail}`,
+    `default-src 'self'; script-src 'self' javascript:; ${tail}`,
+    `default-src 'self'; script-src 'self' 'unsafe-inline'; ${tail}`,
+  ];
+  for (const csp of refused) assert.ok(rules(csp).includes('csp-script-source'), csp);
+  const accepted = [
+    `default-src 'self'; ${tail}`,
+    `default-src 'self'; script-src 'self' https://cdn.example.org 'sha256-AAAA' 'sha512-BBBB'; ${tail}`,
+    `default-src 'self'; script-src 'self' *.example.org cdn.example.org:443/js/; ${tail}`,
+    `default-src 'none'; script-src 'self' 'wasm-unsafe-eval' 'report-sample'; ${tail}`,
+    // Non-script directives keep broad sources (GhostPay's connect-src https: wss:).
+    `default-src 'self'; connect-src 'self' https: wss:; img-src * data: blob:; ${tail}`,
+    // default-src is irrelevant for scripts once script-src is present.
+    `default-src * data:; script-src 'self'; ${tail}`,
+  ];
+  for (const csp of accepted) assert.deepEqual(rules(csp), [], csp);
+  // Only scriptable types and "/" are checked: a broad CSP on a .js path alone is not an error.
+  const jsOnly = parseHeadersFile(`/*\n  Content-Security-Policy: default-src 'self'; ${tail}\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n/*.js\n  Content-Security-Policy: script-src *\n`);
+  assert.deepEqual(checkRequiredHeaders(jsOnly, ['/index.html', '/a.js']).filter((x) => x.rule === 'csp-script-source'), []);
+  assert.ok(checkRequiredHeaders(parseHeadersFile(`/*\n  Content-Security-Policy: default-src 'self'; ${tail}\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n/*.svg\n  Content-Security-Policy: script-src *\n`), ['/a.svg']).some((x) => x.rule === 'csp-script-source' && x.path === '/a.svg'));
+});
+
+test('R3: Referrer-Policy must be one of the non-leaking values', () => {
+  const tail = "default-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'";
+  const rules = (/** @type {string} */ rp) => checkRequiredHeaders(parseHeadersFile(`/*\n  Content-Security-Policy: ${tail}\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: ${rp}\n`), ['/index.html', '/a.js']).filter((x) => x.rule === 'referrer-policy');
+  for (const ok of ['no-referrer', 'same-origin', 'strict-origin', 'strict-origin-when-cross-origin', 'No-Referrer', 'same-origin, no-referrer']) assert.deepEqual(rules(ok), [], ok);
+  for (const bad of ['unsafe-url', 'origin', 'origin-when-cross-origin', 'no-referrer-when-downgrade', 'nonsense', 'no-referrer, unsafe-url']) assert.ok(rules(bad).length > 0, bad);
+});
+
+test('R3: a later rule cannot append a non-nosniff value to X-Content-Type-Options', () => {
+  const f = checkRequiredHeaders(parseHeadersFile(`${KIT_DEFAULT_HEADERS_FILE}/a.txt\n  X-Content-Type-Options: sniff\n`), ['/index.html', '/a.txt']);
+  assert.ok(f.some((x) => x.rule === 'nosniff' && x.path === '/a.txt'));
+  assert.deepEqual(checkRequiredHeaders(parseHeadersFile(`${KIT_DEFAULT_HEADERS_FILE}/a.txt\n  X-Content-Type-Options: NOSNIFF\n`), ['/a.txt']), []);
 });
