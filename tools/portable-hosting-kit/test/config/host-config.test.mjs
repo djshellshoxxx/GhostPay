@@ -48,12 +48,14 @@ test('validates real and generated v3 onion addresses, rejects bad checksums', (
   assert.equal(c.publicOrigin, `http://${label}.onion`);
   throwsCode(() => parseHostConfig(base({ transport: 'onion', publicOrigin: `http://${flipped}.onion` })), 'E_CONFIG', /checksum/);
   throwsCode(() => parseHostConfig(base({ transport: 'onion', publicOrigin: 'http://abc.onion' })), 'E_CONFIG');
+  throwsCode(() => parseHostConfig(base({ transport: 'onion', publicOrigin: `https://${label}.onion` })), 'E_CONFIG', /https onions/);
 });
 
-test('i2p origins: b32 and longer b33 forms', () => {
+test('i2p origins: plain http b32 only (b33 and https unsupported by the generated profiles)', () => {
   const b32addr = 'a'.repeat(52);
   assert.equal(parseHostConfig(base({ transport: 'i2p', publicOrigin: `http://${b32addr}.b32.i2p` })).transport, 'i2p');
-  assert.equal(parseHostConfig(base({ transport: 'i2p', publicOrigin: `http://${'b'.repeat(60)}.b32.i2p` })).transport, 'i2p');
+  throwsCode(() => parseHostConfig(base({ transport: 'i2p', publicOrigin: `http://${'b'.repeat(60)}.b32.i2p` })), 'E_CONFIG', /b33/);
+  throwsCode(() => parseHostConfig(base({ transport: 'i2p', publicOrigin: `https://${b32addr}.b32.i2p` })), 'E_CONFIG');
   throwsCode(() => parseHostConfig(base({ transport: 'i2p', publicOrigin: 'http://short.b32.i2p' })), 'E_CONFIG');
   throwsCode(() => parseHostConfig(base({ transport: 'i2p', publicOrigin: 'https://example.org' })), 'E_CONFIG');
 });

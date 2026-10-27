@@ -108,7 +108,9 @@ function parseOrigin(field, v) {
  */
 export function validateOnionOrigin(field, v) {
   const u = parseOrigin(field, v);
-  if (u.protocol !== 'http:' && u.protocol !== 'https:') fail(`${field} must use http: or https:`);
+  // The generated profiles map HiddenServicePort 80 to a plain-HTTP listener; an https onion needs a CA certificate
+  // and TLS termination that the kit does not generate, so it is refused rather than half-supported.
+  if (u.protocol !== 'http:') fail(`${field} must use http:// (onion services are authenticated by the address; https onions are not supported by the generated profiles)`);
   const m = /^([a-z2-7]{56})\.onion$/.exec(u.hostname);
   if (m === null || m[1] === undefined) fail(`${field} must be a v3 onion origin (56 base32 characters + .onion)`);
   if (!isValidOnionV3Label(m[1])) fail(`${field} has an invalid v3 onion checksum or version: ${u.hostname}`);
@@ -122,9 +124,10 @@ export function validateOnionOrigin(field, v) {
  */
 function validateI2pOrigin(field, v) {
   const u = parseOrigin(field, v);
-  if (u.protocol !== 'http:' && u.protocol !== 'https:') fail(`${field} must use http: or https:`);
-  // b32 = 52 chars; encrypted-leaseset "b33" addresses are 56+ chars with the same .b32.i2p suffix.
-  if (!/^[a-z2-7]{52,}\.b32\.i2p$/.test(u.hostname)) fail(`${field} must be a .b32.i2p origin (52+ base32 characters)`);
+  if (u.protocol !== 'http:') fail(`${field} must use http:// (I2P server tunnels in the generated profiles serve plain HTTP)`);
+  // Plain b32 only (52 chars). Encrypted-leaseset "b33" addresses (56+ chars, same suffix) need router settings the
+  // generated profiles do not produce, so they are refused here.
+  if (!/^[a-z2-7]{52}\.b32\.i2p$/.test(u.hostname)) fail(`${field} must be a .b32.i2p origin (exactly 52 base32 characters; encrypted-leaseset b33 addresses are not supported)`);
   return u.origin;
 }
 

@@ -65,7 +65,7 @@ validate/package: --entrypoint <path> --allow-source-maps --max-files N --max-to
 package: --app-id ID --label L --source-date-epoch N --git-dir DIR --note TEXT --license-file F --compression deflate|store
 verify:  --expect-digest sha256:<hex> --expect-sha256 <hex>
 preview: --port N (default 4173) --host 127.0.0.1|::1 --base-path /p/
-profile: --with static,nginx,container,tor,i2p --www-root /srv/... --hs-dir /var/lib/tor/<name>/ --tor-instance system|dedicated
+profile: --with static,nginx,container,tor,i2p --www-root /srv/... --hs-dir /var/lib/tor/<name> --tor-instance system|dedicated|container --tor-data-dir DIR
          --i2p-router i2pd|java-i2p --i2p-keys <file> --tunnel-name <name>
          --allow-shared-origin (required for a base path other than "/": see audit WEB-APP-03)
 wizard:  --transport clearnet|onion|i2p --public-origin URL --base-path /p/ --port N --unix-socket PATH --label L
@@ -102,6 +102,7 @@ const OPTIONS = {
   'www-root': { type: 'string' },
   'hs-dir': { type: 'string' },
   'tor-instance': { type: 'string' },
+  'tor-data-dir': { type: 'string' },
   'i2p-router': { type: 'string' },
   'i2p-keys': { type: 'string' },
   'tunnel-name': { type: 'string' },
@@ -520,9 +521,21 @@ export async function generateProfiles(p) {
         if (p.with.includes('container')) await writeAll('container', generateContainer({ hostConfig: p.host, nginxFiles: nginx.files }).files);
       }
       if (p.with.includes('tor')) {
-        const hsDir = /** @type {string | undefined} */ (p.o['hs-dir']) ?? '/var/lib/tor/ghostpay-site/';
-        const tor = generateTorProfile({ hostConfig: p.host, hiddenServiceDir: hsDir, target: p.host.listen, instance: /** @type {any} */ (p.o['tor-instance'] ?? 'system'), forbiddenRoots });
-        await writeAll('tor', tor.files);
+        const mode = /** @type {string | undefined} */ (p.o['tor-instance']) ?? 'system';
+        /** @type {Parameters<typeof generateTorProfile>[0]['instance']} */
+        let instance;
+        if (mode === 'system') instance = { mode: 'system' };
+        else if (mode === 'dedicated') instance = { mode: 'dedicated', dataDirectory: /** @type {string | undefined} */ (p.o['tor-data-dir']) ?? '/var/lib/tor-ghostpay-site' };
+        else if (mode === 'container') instance = { mode: 'container' };
+        else return usage('--tor-instance must be system, dedicated or container');
+        const tor = generateTorProfile({
+          hostConfig: p.host,
+          hiddenServiceDir: /** @type {string | undefined} */ (p.o['hs-dir']) ?? '/var/lib/tor/ghostpay-site',
+          target: mode === 'container' ? 'compose-service' : 'host-listener',
+          instance,
+          forbiddenRoots,
+        });
+        await writeAll('.', tor.files);
         warnings.push(...tor.warnings);
       }
       if (p.with.includes('i2p')) {
@@ -532,11 +545,11 @@ export async function generateProfiles(p) {
           hostConfig: p.host,
           router,
           tunnelName: /** @type {string | undefined} */ (p.o['tunnel-name']) ?? 'ghostpay-site',
-          target: p.host.listen,
+          target: 'host-listener',
           keysFile: /** @type {string | undefined} */ (p.o['i2p-keys']) ?? 'ghostpay-site.dat',
           forbiddenRoots,
         });
-        await writeAll('i2p', i2p.files);
+        await writeAll('.', i2p.files);
         warnings.push(...i2p.warnings);
       }
       await writeAll('.', [{ name: 'PROFILE-README.md', data: profileReadme(opened.manifest, p.host, generated, warnings) }]);
@@ -700,7 +713,7 @@ async function cmdDemo(o, _pos, io) {
     ]);
     for (const c of configs) {
       const host = parseHostConfig(c.host);
-      await generateProfiles({ target: pk.result.archivePath, outDir: join(tmp, 'profiles', c.name), host, with: c.with, o: { ...(c.extra ?? {}), 'hs-dir': '/var/lib/tor/hosting-kit-demo/', 'tunnel-name': 'hosting-kit-demo', 'i2p-keys': 'hosting-kit-demo.dat' } });
+      await generateProfiles({ target: pk.result.archivePath, outDir: join(tmp, 'profiles', c.name), host, with: c.with, o: { ...(c.extra ?? {}), 'hs-dir': '/var/lib/tor/hosting-kit-demo', 'tunnel-name': 'hosting-kit-demo', 'i2p-keys': 'hosting-kit-demo.dat' } });
       step(`5. profile ${c.name}: ${c.with.join(', ')} -> ${join(outDir, 'profiles', c.name)}`);
     }
     await writeFileAtomic(join(tmp, 'DEMO-README.md'), new TextEncoder().encode(`${OUTPUT_MARKER}\n# Hosting kit demo output\n\n${log.map((l) => `    ${l.replaceAll('\n', '\n    ')}`).join('\n')}\n\nNothing was installed, started or published. Preview with:\n\n    ghostpay-host preview ${archive}\n`));
