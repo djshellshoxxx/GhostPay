@@ -32,8 +32,10 @@ metadataFiles     sorted top-level files other than site/** and SHA256SUMS
 ```
 
 `content.digest` identifies the unpacked site independent of the archive container, compression, entry order and
-timestamps. It is the value to publish and compare across mirrors. The archive SHA-256 identifies one exact
-archive file.
+timestamps. It is the value to publish and compare across mirrors. It covers **site bytes and paths only**: the
+manifest's provenance, `trustSensitive`, OPERATOR.md and other metadata are not part of it, so a matching content
+digest authenticates what is served, not who built it or how. The archive SHA-256 covers one exact archive file,
+metadata included; publish both when provenance matters.
 
 ## Mapping to Replikrazy's draft ArtifactManifest
 

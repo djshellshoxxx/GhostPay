@@ -132,7 +132,8 @@ test('allowlist, deny reasons and hidden paths', async (t) => {
     '.git/config': '[core]',
     'node_modules/x/index.js': 'x',
     'cgi/contact.php': '<?php',
-    'notes.md': '# notes',
+    'notes.rtf': '{\\rtf1 notes}',
+    'deployments/README.md': '# readme',
     'README': 'readme',
     'tool.exe': 'MZ',
     '.hidden.js': 'x',
@@ -152,7 +153,8 @@ test('allowlist, deny reasons and hidden paths', async (t) => {
   assert.deepEqual(errs['.git/config'], ['vcs-or-dependencies']);
   assert.deepEqual(errs['node_modules/x/index.js'], ['vcs-or-dependencies']);
   assert.deepEqual(errs['cgi/contact.php'], ['server-side-code']);
-  assert.deepEqual(errs['notes.md'], ['not-allowed']);
+  assert.deepEqual(errs['notes.rtf'], ['not-allowed']);
+  assert.equal(errs['deployments/README.md'], undefined, 'markdown is allowlisted (GhostPay ships deployments/README.md)');
   assert.deepEqual(errs['README'], ['not-allowed']);
   assert.deepEqual(errs['tool.exe'], ['server-side-code']);
   assert.deepEqual(errs['.hidden.js'], ['hidden-path']);
