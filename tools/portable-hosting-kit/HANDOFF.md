@@ -4,17 +4,17 @@ Branch: `claude/portable-hosting-kit` (integration). Worker branches: `claude/hk
 `claude/hk-transports` (local worktrees `/workspace/hk-*`, not pushed; merged here after review).
 Exact pushed SHA: see `git log -1 origin/claude/portable-hosting-kit`; status below is per checkpoint.
 
-## Status (checkpoint 1: UNFINISHED)
+## Status (checkpoint 2: integrated; second review pass pending)
 | Area | State |
 |---|---|
-| Shared contracts (`src/{errors,types,policy,version}.mjs`, `docs/INTERFACES.md`) | done, frozen |
-| Host config, privacy scan, demo site, mirror overlay, wizard, CLI, package docs | written + unit-tested (CLI untested until core/serve/adapters merge) |
-| Core: validate/inventory/manifest/zip/atomic/package/verify | in progress (`claude/hk-core`) |
-| Serving: headers/routing/preview/static export/nginx/container | in progress (`claude/hk-serve`) |
-| Tor + I2P adapters | in progress (`claude/hk-transports`) |
-| CI workflow `.github/workflows/hosting-kit.yml` | written; not yet run on GitHub |
-| Integrated lint/typecheck/test | NOT RUN (typecheck fails until worker modules land: missing imports) |
-| Real GhostPay build qualification | `apps/web` from `main` builds locally; kit validation pending core |
+| Shared contracts, host config, privacy scan, demo, overlay, wizard, CLI | done, tested |
+| Core (validate/inventory/manifest/zip/atomic/package/verify) | merged from `claude/hk-core` incl. review fixes |
+| Serving (headers/routing/preview/static/nginx/container) | merged from `claude/hk-serve`; preview-vs-nginx differential test |
+| Tor + I2P (i2pd, Java I2P) adapters | merged from `claude/hk-transports` incl. review fixes |
+| Integrated checks (local) | lint clean; typecheck clean; `HK_DOCKER_TESTS=1 HK_BROWSER_TESTS=1 npm test`: 264 tests, 263 pass, 0 fail, 1 skip (Java I2P runtime absent) |
+| Real GhostPay build (`apps/web/dist` from `main` edb0051) | validate/package/verify/preview/profile pass; real nginx 1.24 serves the profile with `_headers` CSP/cache/CORP exactly; renders in headless Chromium with no CSP violations or console errors |
+| Independent review | pass 1: 10 findings, all fixed with regression tests; pass 2 (serving + fixes): running |
+| CI workflow `.github/workflows/hosting-kit.yml` | written; not yet observed running on GitHub |
 
 ## Decisions and findings (reuse; do not re-investigate)
 - Zero runtime deps, Node >= 22, `.mjs` + JSDoc + `tsc --checkJs` strict; tests `node:test`. Kit-local eslint config
@@ -32,11 +32,17 @@ Exact pushed SHA: see `git log -1 origin/claude/portable-hosting-kit`; status be
 - No prompt-caching controls exposed by this runner; no Caveman skill installed (`/mnt/skills` empty).
   Only one model is available for agents (no cheaper model selectable).
 
+## Findings about existing repo files (not changed; outside this task)
+- `deploy/tor/torrc`: no PoW / intro-DoS / stream limits; `web:8080` resolved once at tor start.
+- `deploy/tor/Dockerfile`: base image tag not digest-pinned; `ca-certificates` unneeded.
+- `infra/publish/torrc.example`: `Log notice file /dev/null` discards errors.
+- Debian tracker lists CVE-2026-87724 (remote crash, fixed in tor 0.4.9.12) open for trixie; tested binary 0.4.9.11.
+- `apps/web/index.html` `<noscript>` links `help.html`/`privacy.html`, which are not in `apps/web/dist` (404).
+
 ## Remaining
-1. Merge reviewed worker branches; integrated lint/typecheck/tests; CLI integration tests.
-2. Qualify `apps/web/dist` (validate/package/verify/preview/profile).
-3. Independent review agent; fix findings.
-4. README operator guide, ARTIFACT-METADATA.md, reuse/licence record.
+1. Review pass 2 findings (serving + fixes) and pass 3 on the core fixes; fix and re-run.
+2. Observe the GitHub workflow run; fix CI-only issues.
+3. Qualify GhostPay's newest unpublished build when it exists (only `main` edb0051 was qualified).
 
 ## Operator-only (never automated)
 Activating nginx/containers/Tor/I2P, creating onion/I2P identities, TLS certificates, DNS, firewall, publishing.
