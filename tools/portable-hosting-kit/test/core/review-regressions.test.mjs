@@ -292,3 +292,25 @@ test('packageSite refuses a label outside [A-Za-z0-9._-] early', async (t) => {
   const { base } = await raceSite(t);
   await rejectsCode(packageSite({ ...base, provenance: { ...PROVENANCE, label: `v1${ESC}[2J` } }), 'E_USAGE', /label/);
 });
+
+// ---------------------------------------------------------------------------------------------------------------
+// Second review pass (r2-pocBCD.mjs C2): "$" starts an nginx variable, so it is rejected in every path.
+
+test('r2 C2: a site file or directory named with "$" is rejected by validation', async (t) => {
+  const dir = await tmpDir(t);
+  await writeTree(dir, { 'index.html': '<!doctype html>', 'pay$/index.html': 'x', 'a$b.js': 'x' });
+  const report = await validateSite(dir);
+  assert.equal(report.ok, false);
+  const byPath = Object.fromEntries(report.findings.map((f) => [f.path, f]));
+  assert.equal(byPath['pay$']?.rule, 'nginx-special-char');
+  assert.equal(byPath['a$b.js']?.rule, 'nginx-special-char');
+  assert.equal(byPath['a$b.js']?.code, 'E_PATH');
+  assert.match(String(byPath['a$b.js']?.message), /nginx/);
+  assert.deepEqual(report.entries.map((e) => e.path), ['index.html']);
+  assert.deepEqual((await validateSite(dir, { entrypoint: 'pay$/index.html' })).findings.find((f) => f.rule === 'entrypoint-invalid')?.path, 'pay$/index.html');
+});
+
+test('r2 C2: readZip rejects an entry named with "$"', () => {
+  throwsCode(() => readZip(buildZip([{ name: 'top/site/pay$/index.html', data: 'x' }]), { limits: DEFAULT_LIMITS }), 'E_PATH', /nginx/);
+  throwsCode(() => readZip(buildZip([{ name: 'top$/a.txt', data: 'x' }]), { limits: DEFAULT_LIMITS }), 'E_PATH', /nginx/);
+});
