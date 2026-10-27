@@ -1,11 +1,12 @@
 // @vitest-environment jsdom
 import { ChainAdapterError, eip712DomainSeparator, erc20MetadataAbi, erc2612PermitAbi } from '@ghostpay/chain-adapters';
-import { screen, waitFor, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { encodeFunctionResult, keccak256 } from 'viem/utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Services } from '../lib/services';
 import type { DirectSweepAttempt } from '../lib/sweep';
+import * as sweepLib from '../lib/sweep';
 import { clearSession, generateSession } from '../lib/session';
 import * as appState from '../state';
 import { recordSweepAttempt } from '../state';
@@ -38,6 +39,7 @@ interface RawSink {
   raws?: string[];
   sendFail?: boolean;
   calls?: string[];
+  gasPrice?: () => unknown;
   estimateGas?: (params: readonly unknown[]) => unknown;
   send?: (raw: string) => Promise<unknown>;
   receipt?: (hash: string) => unknown;
@@ -57,7 +59,7 @@ function extra(balance: bigint, nativeBalance: bigint, rawSink: RawSink) {
       case 'eth_getBalance':
         return `0x${nativeBalance.toString(16)}`;
       case 'eth_gasPrice':
-        return '0x3b9aca00';
+        return rawSink.gasPrice?.() ?? '0x3b9aca00';
       case 'eth_getTransactionCount':
         return '0x0';
       case 'eth_estimateGas':
@@ -502,5 +504,47 @@ describe('Sweep', () => {
     await waitFor(() => { expect(screen.getByText(hashB)).toBeTruthy(); });
     expect(screen.queryByText(hashA)).toBeNull();
     expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+  });
+
+  it('refuses a direct sweep end to end when the session is cleared while the pre-handoff gas price read is held', async () => {
+    appState.resetSweepAttemptsForTests();
+    const gate = deferred<unknown>();
+    const completed = deferred<void>();
+    const original = sweepLib.directSweep;
+    const wrapper = vi.spyOn(sweepLib, 'directSweep').mockImplementation(async (...args: Parameters<typeof original>) => {
+      try {
+        return await original(...args);
+      } finally {
+        completed.resolve();
+      }
+    });
+    const raws: string[] = [];
+    const raw: RawSink = { calls: [], raws, gasPrice: () => gate.promise, send: (bytes) => Promise.resolve(keccak256(bytes as `0x${string}`)) };
+    let owner = '';
+    const user = await toSweep({ raw, onOwner: (value) => { owner = value; } });
+    try {
+      await screen.findByText('5 USDC');
+      await user.click(screen.getByLabelText(/Directly/));
+      await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      await waitFor(() => { expect(raw.calls).toContain('eth_gasPrice'); });
+      expect(raws).toHaveLength(0);
+      expect(wrapper).toHaveBeenCalledTimes(1);
+
+      await act(async () => {
+        clearSession();
+        gate.resolve('0x3b9aca00');
+        await completed.promise;
+      });
+
+      expect(screen.getByText(/Your keys are no longer in memory/)).toBeTruthy();
+      expect(raws).toHaveLength(0);
+      expect(raw.calls).not.toContain('eth_sendRawTransaction');
+      expect(appState.getSweepAttempt(84532, owner as `0x${string}`)).toBeUndefined();
+      expect(screen.queryByText('Submitted')).toBeNull();
+      expect(screen.queryByText('Outcome unknown')).toBeNull();
+    } finally {
+      gate.resolve('0x3b9aca00');
+    }
   });
 });
