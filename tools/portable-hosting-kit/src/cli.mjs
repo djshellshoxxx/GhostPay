@@ -67,6 +67,7 @@ verify:  --expect-digest sha256:<hex> --expect-sha256 <hex>
 preview: --port N (default 4173) --host 127.0.0.1|::1 --base-path /p/
 profile: --with static,nginx,container,tor,i2p --www-root /srv/... --hs-dir /var/lib/tor/<name>/ --tor-instance system|dedicated
          --i2p-router i2pd|java-i2p --i2p-keys <file> --tunnel-name <name>
+         --allow-shared-origin (required for a base path other than "/": see audit WEB-APP-03)
 wizard:  --transport clearnet|onion|i2p --public-origin URL --base-path /p/ --port N --unix-socket PATH --label L
          --onion-location URL --non-interactive --dry-run --force
 demo:    --preview --port N
@@ -111,6 +112,7 @@ const OPTIONS = {
   'non-interactive': { type: 'boolean' },
   'dry-run': { type: 'boolean' },
   force: { type: 'boolean' },
+  'allow-shared-origin': { type: 'boolean' },
   preview: { type: 'boolean' },
 };
 
@@ -492,6 +494,7 @@ export async function generateProfiles(p) {
     if (overlay === null) warnings.push('site uses _mirror/: no mirror.json overlay generated');
     const served = overlay === null ? files : [...files, overlay.path];
     const forbiddenRoots = [p.outDir, opened.topDir, wwwRoot];
+    if (p.host.basePath !== '/') warnings.push(`base path ${p.host.basePath}: the app shares its origin's storage and permissions with every other path on that host (audit WEB-APP-03); serve nothing else on this origin`);
     await assertReplaceable(p.outDir, 'PROFILE-README.md');
     await replaceDirAtomic(p.outDir, async (tmp) => {
       const enc = new TextEncoder();
@@ -589,6 +592,9 @@ async function cmdProfile(o, pos, io) {
     throw new KitError(ERROR_CODES.CONFIG, `cannot read ${config}: ${e instanceof Error ? e.message : String(e)}`);
   }
   const host = parseHostConfig(raw);
+  if (host.basePath !== '/' && o['allow-shared-origin'] !== true) {
+    usage(`basePath ${host.basePath} shares its origin (cookies, localStorage, IndexedDB, permissions) with everything else served on that host. GhostPay needs a dedicated origin (audit WEB-APP-03). Pass --allow-shared-origin only for an origin that serves nothing else.`);
+  }
   const requested = /** @type {string | undefined} */ (o['with']);
   const withList = requested === undefined ? defaultProfilesFor(host) : requested.split(',').map((s) => s.trim()).filter(Boolean);
   for (const w of withList) if (!ALL_PROFILES.includes(w)) usage(`--with: unknown profile ${w} (choose from ${ALL_PROFILES.join(', ')})`);
