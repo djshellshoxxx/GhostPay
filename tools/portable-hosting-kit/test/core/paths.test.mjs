@@ -97,3 +97,9 @@ test('isInside is strict and lexical', () => {
   assert.equal(isInside('/srv/site', '/srv/site/../x'), false);
   assert.equal(isInside('/srv/site', '/srv/site/sub/../a'), true);
 });
+
+test('"$" is rejected (it starts an nginx variable)', () => {
+  const r = validateRelativePath('pay$/index.html', DEFAULT_LIMITS);
+  assert.equal(r.ok ? 'ok' : r.rule, 'nginx-special-char');
+  assert.match(r.ok ? '' : r.reason, /nginx variable/);
+});

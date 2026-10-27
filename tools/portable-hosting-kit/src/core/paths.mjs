@@ -15,6 +15,7 @@ const CONTROL_RE = /[\u0000-\u001f\u007f-\u009f]/; // eslint-disable-line no-con
 const BIDI_RE = /[\u061c\u200e\u200f\u202a-\u202e\u2066-\u2069\u2028\u2029\ufeff]/;
 const LONE_SURROGATE_RE = /\p{Cs}/u;
 const URL_SPECIAL_RE = /[?#%]/;
+const NGINX_SPECIAL_RE = /\$/;
 const WINDOWS_INVALID_RE = /[:*"<>|]/;
 const DRIVE_RE = /^[A-Za-z]:/;
 const WINDOWS_RESERVED = new Set([
@@ -65,6 +66,7 @@ export function validateRelativePath(p, limits) {
   if (p.startsWith('/')) return fail('absolute', 'path is absolute');
   if (DRIVE_RE.test(p)) return fail('drive-letter', 'path starts with a drive letter');
   if (URL_SPECIAL_RE.test(p)) return fail('url-special-char', 'path contains "?", "#" or "%" (ambiguous in URLs)');
+  if (NGINX_SPECIAL_RE.test(p)) return fail('nginx-special-char', 'path contains "$" (starts an nginx variable; generated server configuration could not reference it safely)');
   if (WINDOWS_INVALID_RE.test(p)) return fail('windows-invalid-char', 'path contains one of : * " < > | (invalid on Windows)');
   const segs = p.split('/');
   for (const seg of segs) {
