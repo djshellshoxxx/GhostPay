@@ -41,7 +41,10 @@ skipped line can drop a security header. Additionally rejected:
 - headers the server controls (`Content-Type`, `Content-Length`, `Location`, `Allow`, `ETag`, `Last-Modified`,
   `Date`, `Server`, hop-by-hop and framing headers), set or detached;
 - pattern characters outside `[A-Za-z0-9-._~!&'()+,;=@/*]`, and non-normalized patterns (`//`, `.`, `..`);
-- header values that are not printable ASCII; header lines that are not indented; rules without headers.
+- header names other than `[A-Za-z0-9-]+` (a subset of RFC 9110 tokens; names are unquoted tokens in nginx, so
+  e.g. a `'` could otherwise swallow following directives);
+- header values that are not printable ASCII; header lines that are not indented; rules without headers;
+- a `$` in a header value is reported by `checkRequiredHeaders` as `E_UNSUPPORTED` (nginx would interpolate it).
 
 ### Where the kit differs from Cloudflare (by contract, docs/INTERFACES.md rule 8)
 
@@ -60,11 +63,25 @@ skipped line can drop a security header. Additionally rejected:
 
 ### Required headers
 
-`checkRequiredHeaders` requires `REQUIRED_HEADERS` and the `REQUIRED_CSP_DIRECTIVES` (any of several comma-joined
-CSP policies counts, since browsers enforce all of them) and `X-Content-Type-Options: nosniff`. Every profile
-(preview, export, nginx) refuses to run with `E_HEADERS` unless all served HTML files **and the site path `/`**
-pass (the latter covers error pages for invalid and out-of-base requests). GhostPay's
-`apps/web/public/_headers` parses and passes (`test/serve/headers.test.mjs` reads the real file).
+`checkRequiredHeaders(rules, sitePaths)` (run at `validate` time by the CLI and again by every profile, which
+refuse with `E_HEADERS` / `E_UNSUPPORTED`) enforces:
+
+- **No rule detaches `Content-Security-Policy` or `X-Content-Type-Options`** (anywhere, for any pattern).
+- `X-Content-Type-Options` is set by a **`/*` rule**, so every response (including 301/400/404/405 for any path)
+  is `nosniff`; and each given path and `/` gets it with first value `nosniff`.
+- **Scriptable types** — `.html`, `.htm`, `.svg`, `.xml` — and the site path `/` (whose rules apply to error
+  responses for invalid or out-of-base requests) get every `REQUIRED_HEADERS` entry and a CSP containing the
+  `REQUIRED_CSP_DIRECTIVES` with restrictive values: `object-src 'none'`; `base-uri` and `frame-ancestors` each
+  exactly `'none'` or `'self'`; no `'unsafe-inline'` or `'unsafe-eval'` in `script-src`, `script-src-elem`,
+  `script-src-attr`, or in `default-src` when there is no `script-src`. These are errors, not warnings: the kit's
+  default and GhostPay's file need neither, and a site that does must not be shipped by a kit whose purpose is to
+  preserve the app's script integrity. With comma-joined (multiple) policies, a restricting value may come from any
+  policy (all are enforced), but an unsafe source in any policy is refused.
+- No header value contains `$` (`E_UNSUPPORTED`).
+
+Callers should pass every served path (the profiles do); a caller passing only HTML paths still gets the
+file-wide rules and `/` checked. GhostPay's `apps/web/public/_headers` and the demo site's `_headers` pass
+(`test/serve/headers.test.mjs` reads the real GhostPay file and generates the demo).
 
 ### Kit defaults and transport headers
 
