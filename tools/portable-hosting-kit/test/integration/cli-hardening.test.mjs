@@ -92,7 +92,7 @@ test('verify output: digest match is scoped to site files; injected names are es
     await writeFile(join(dir, 'bad', 'x\u001b[2K.html'), 'x');
     const val = await cli(['validate', 'bad'], dir);
     assert.equal(val.code, 1);
-    assert.doesNotMatch(val.out + val.err, /\u001b/);
+    assert.equal((val.out + val.err).includes('\u001b'), false, 'no raw ESC byte reaches the terminal');
   });
 });
 

@@ -161,6 +161,7 @@ function limitsFrom(o) {
  * @returns {string}
  */
 export function termSafe(s) {
+  // eslint-disable-next-line no-control-regex -- matching control characters is the purpose of this function
   return s.replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u2028-\u202e\u2066-\u2069\ufeff]/g, (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, '0')}`);
 }
 
@@ -226,6 +227,7 @@ async function provenanceFrom(o, io) {
   const sdeRaw = /** @type {string | undefined} */ (o['source-date-epoch']) ?? io.env['SOURCE_DATE_EPOCH'];
   const sourceDateEpoch = intOpt(sdeRaw === '' ? undefined : sdeRaw, 'source-date-epoch', 0, 2 ** 40) ?? null;
   const notes = /** @type {string[] | undefined} */ (o['note']) ?? [];
+  // eslint-disable-next-line no-control-regex -- rejects control characters in operator notes
   for (const n of notes) if (n.length > 500 || /[\u0000-\u0008\u000b-\u001f]/.test(n)) usage('--note must be at most 500 printable characters');
   const gitDir = /** @type {string | undefined} */ (o['git-dir']);
   if (gitDir === undefined) return { label, sourceDateEpoch, source: { kind: 'directory' }, notes };
