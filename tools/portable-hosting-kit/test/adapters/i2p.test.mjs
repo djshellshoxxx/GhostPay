@@ -96,7 +96,7 @@ test('Java I2P: split-format i2ptunnel.config.d file without tunnel.N. prefixes'
 test('Java I2P: "#" in the mirror label cannot truncate or inject properties', () => {
   const r = generateI2pProfile(opts({ router: 'java-i2p', hostConfig: i2pHost({ mirrorLabel: 'Mirror #1 =x' }) }));
   const map = new Map(readI2pProps(text(r.files, 'i2p/java-i2p/i2ptunnel.config.d/90-ghostpay-site-i2ptunnel.config')));
-  assert.equal(map.get('description'), 'Mirror 1 =x');
+  assert.equal(map.get('description'), 'Mirror 1 x');
   const w = generateI2pProfile(opts({ router: 'java-i2p', inport: 81 })).warnings;
   assert.match(w.join('\n'), /inport is ignored for Java I2P/);
 });
@@ -174,4 +174,38 @@ test('compose-service target points at web:8080 and warns that the router must s
 test('deterministic output', () => {
   assert.deepEqual(generateI2pProfile(opts()), generateI2pProfile(opts()));
   assert.deepEqual(generateI2pProfile(opts({ router: 'java-i2p' })), generateI2pProfile(opts({ router: 'java-i2p' })));
+});
+
+test('review fix: router identity/state files cannot be used as tunnel keys', () => {
+  for (const router of /** @type {const} */ (['i2pd', 'java-i2p'])) {
+    for (const bad of ['router.keys.dat', 'router.info', 'router.keys', 'ntcp2.keys', 'ssu2.keys', 'sub/router.keys.dat']) {
+      throwsCode(() => generateI2pProfile(opts({ router, keysFile: bad })), 'E_PATH', /router/);
+    }
+  }
+  assert.ok(generateI2pProfile(opts({ keysFile: 'router-site.dat' })));
+});
+
+test('review fix: characters special in .properties / INI never reach a generated value or comment', () => {
+  for (const label of ['demo \\', 'a\\nb', 'x=y:z', '[evil]', ';semi', '!bang', 'q"uote\'s', 'a#b']) {
+    for (const router of /** @type {const} */ (['i2pd', 'java-i2p'])) {
+      const r = generateI2pProfile(opts({ router, hostConfig: i2pHost({ mirrorLabel: label }) }));
+      const t = new TextDecoder().decode(/** @type {Uint8Array} */ (r.files[0]?.data));
+      assert.doesNotMatch(t, /\\/, `${router} ${label}`);
+      for (const line of t.split('\n')) {
+        // only the structural characters the renderer itself emits may appear
+        const body = line.startsWith('#') ? line.slice(1) : line;
+        assert.doesNotMatch(body, /[\\\t"'!;#]/, `${router} ${JSON.stringify(label)}: ${line}`);
+      }
+      const props = router === 'java-i2p' ? readI2pProps(t) : [];
+      if (router === 'java-i2p') {
+        const map = new Map(props);
+        assert.equal(map.get('type'), 'httpserver');
+        assert.match(/** @type {string} */ (map.get('description')), /^[A-Za-z0-9 ._,()/-]*$/);
+      } else {
+        assert.match(t, /^type = http$/m);
+      }
+    }
+  }
+  // a raw object with a control character or a non-ASCII label is still refused at the boundary
+  for (const bad of ['a\nb', 'tab\there', 'caf\u00e9']) throwsCode(() => generateI2pProfile(opts({ hostConfig: i2pHost({ mirrorLabel: bad }) })), 'E_CONFIG');
 });

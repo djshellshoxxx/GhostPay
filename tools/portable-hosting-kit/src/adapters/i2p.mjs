@@ -33,7 +33,7 @@ import { renderJavaTunnel, renderJavaReadme, javaTunnelFileName } from './i2p-ja
  * @property {number} inport      I2P-side port (i2pd only; Java server tunnels accept every I2P port)
  * @property {string} keysFile    router-relative key file path
  * @property {string | null} b32Host  "<52>.b32.i2p" when the public origin is known
- * @property {string} description printable ASCII without "#"
+ * @property {string} description mirror label reduced to [A-Za-z0-9 ._,()/-]
  * @property {TargetKind} target
  */
 
@@ -42,6 +42,17 @@ const { USAGE, PATH, UNSUPPORTED } = ERROR_CODES;
 const I2P_ORIGIN_RE = /^http:\/\/[a-z2-7]{52}\.b32\.i2p$/;
 const TUNNEL_NAME_RE = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
 const KEYS_SEGMENT_RE = /^[A-Za-z0-9._-]+$/;
+/**
+ * Router identity and state files (Java I2P: router.keys.dat, router.info, router.keys; i2pd: router.keys,
+ * router.info, ntcp2.keys, ssu2.keys). A tunnel must never reuse them: that would tie the site to the router.
+ */
+const ROUTER_STATE_NAMES = Object.freeze(['router.keys.dat', 'router.info', 'router.keys', 'ntcp2.keys', 'ssu2.keys']);
+/**
+ * Every string written into a tunnel file (values and comments) must match this: no characters that are special in
+ * Java I2P .properties ("\\", "#", "!", "=" / ":" in keys) or i2pd INI (";", "#", "[", "]"), no quotes, no controls.
+ * ":" is allowed for the IPv6 literal "::1" in host values.
+ */
+const PLAIN_VALUE_RE = /^[A-Za-z0-9._,()/:-]+(?: [A-Za-z0-9._,()/:-]+)*$/;
 
 /**
  * i2pd ports: docs.i2pd.website user-guide/configuration (http.port 7070, httpproxy 4444, socksproxy 4447, sam 7656,
@@ -100,6 +111,10 @@ function assertKeysFile(keysFile) {
   if (keysFile.startsWith('/') || keysFile.includes('\\')) {
     throw new KitError(PATH, 'keysFile must be relative to the router data/config directory (i2pd ignores absolute paths)', { keysFile });
   }
+  const base = keysFile.slice(keysFile.lastIndexOf('/') + 1);
+  if (ROUTER_STATE_NAMES.includes(base)) {
+    throw new KitError(PATH, `keysFile ${keysFile} is a router identity/state file name; use a dedicated key file for the tunnel`, { keysFile });
+  }
   const segments = keysFile.split('/');
   if (segments.some((s) => s === '.' || s === '..' || !KEYS_SEGMENT_RE.test(s))) {
     throw new KitError(PATH, 'keysFile segments may only use A-Z a-z 0-9 . _ - and no "." or ".." segments', { keysFile });
@@ -127,6 +142,16 @@ function checkKeyLocation(keysFile, routerDataDir, forbiddenRoots, warnings) {
   // keysFile has no ".." segments, so <dir>/<keysFile> can only reach a forbidden root that overlaps <dir> itself.
   const dir = assertSafeAbsolutePath(routerDataDir, 'routerDataDir');
   assertOutsideForbiddenRoots(dir, forbiddenRoots, 'routerDataDir');
+}
+
+/**
+ * Mirror label reduced to characters that are inert in both .properties and INI files.
+ * @param {string} label
+ * @param {string} fallback
+ */
+function sanitizeDescription(label, fallback) {
+  const clean = label.replace(/[^A-Za-z0-9 ._,()/-]/g, '').replace(/ +/g, ' ').trim();
+  return clean === '' ? fallback : clean;
 }
 
 /**
@@ -181,9 +206,14 @@ export function generateI2pProfile(opts) {
     inport,
     keysFile,
     b32Host: hostConfig.publicOrigin === null ? null : hostConfig.publicOrigin.slice('http://'.length),
-    description: hostConfig.mirrorLabel.replace(/#/g, '').trim(),
+    description: sanitizeDescription(hostConfig.mirrorLabel, tunnelName),
     target: /** @type {TargetKind} */ (opts.target),
   };
+  for (const [field, value] of /** @type {Array<[string, string | null]>} */ ([['tunnelName', spec.tunnelName], ['host', spec.host], ['keysFile', spec.keysFile], ['b32Host', spec.b32Host], ['description', spec.description]])) {
+    if (value !== null && !PLAIN_VALUE_RE.test(value)) {
+      throw new KitError(ERROR_CODES.CONFIG, `${field} contains characters that are not safe in I2P configuration files`, { [field]: value });
+    }
+  }
 
   const configName = router === 'i2pd'
     ? `i2p/i2pd/tunnels.d/${tunnelName}.conf`

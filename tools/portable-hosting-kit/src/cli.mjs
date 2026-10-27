@@ -2,15 +2,16 @@
 // Command-line interface. `main(argv, io)` returns an exit code and never calls process.exit, so it is testable.
 // Commands: validate, package, verify, preview, profile (generate hosting profiles), wizard, demo.
 import { execFile } from 'node:child_process';
-import { mkdtemp, readFile, readdir, rm, stat } from 'node:fs/promises';
+import { lstat, mkdir, mkdtemp, readFile, readdir, rm, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { basename, join, resolve } from 'node:path';
+import { basename, dirname, join, resolve } from 'node:path';
 import { parseArgs, promisify } from 'node:util';
 
 import { EXIT, ERROR_CODES, KitError, isKitError } from './errors.mjs';
-import { DEFAULT_APP_ID, DEFAULT_ENTRYPOINT, DEFAULT_LIMITS } from './policy.mjs';
+import { DEFAULT_APP_ID, DEFAULT_ENTRYPOINT, DEFAULT_LIMITS, SECRET_CONTENT_PATTERNS, SECRET_MAGIC_PREFIXES } from './policy.mjs';
 import { KIT_NAME, KIT_VERSION } from './version.mjs';
-import { validateSite } from './core/validate.mjs';
+import { validateSite, policyFinding } from './core/validate.mjs';
+import { readFileExact } from './core/hash.mjs';
 import { packageSite } from './core/package.mjs';
 import { verifyArchive, verifyDirectory, extractArchive } from './core/verify.mjs';
 import { writeFileAtomic, replaceDirAtomic } from './core/atomic.mjs';
@@ -154,11 +155,22 @@ function limitsFrom(o) {
 }
 
 /**
+ * Make untrusted text (archive entry names, manifest fields, finding messages) safe to print on a terminal:
+ * C0/C1 controls, DEL and bidi/format characters are shown as \u escapes instead of being interpreted.
+ * @param {string} s
+ * @returns {string}
+ */
+export function termSafe(s) {
+  // eslint-disable-next-line no-control-regex -- matching control characters is the purpose of this function
+  return s.replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u2028-\u202e\u2066-\u2069\ufeff]/g, (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, '0')}`);
+}
+
+/**
  * @param {Finding[]} findings
  * @param {(s: string) => void} out
  */
 function printFindings(findings, out) {
-  for (const f of findings) out(`  ${f.severity === 'error' ? 'ERROR' : 'warn '} ${f.code} ${f.rule}${f.path === undefined ? '' : ` ${f.path}`}: ${f.message}\n`);
+  for (const f of findings) out(`  ${f.severity === 'error' ? 'ERROR' : 'warn '} ${f.code} ${termSafe(f.rule)}${f.path === undefined ? '' : ` ${termSafe(f.path)}`}: ${termSafe(f.message)}\n`);
 }
 
 /**
@@ -215,14 +227,19 @@ async function provenanceFrom(o, io) {
   const sdeRaw = /** @type {string | undefined} */ (o['source-date-epoch']) ?? io.env['SOURCE_DATE_EPOCH'];
   const sourceDateEpoch = intOpt(sdeRaw === '' ? undefined : sdeRaw, 'source-date-epoch', 0, 2 ** 40) ?? null;
   const notes = /** @type {string[] | undefined} */ (o['note']) ?? [];
+  // eslint-disable-next-line no-control-regex -- rejects control characters in operator notes
   for (const n of notes) if (n.length > 500 || /[\u0000-\u0008\u000b-\u001f]/.test(n)) usage('--note must be at most 500 printable characters');
   const gitDir = /** @type {string | undefined} */ (o['git-dir']);
   if (gitDir === undefined) return { label, sourceDateEpoch, source: { kind: 'directory' }, notes };
   const run = promisify(execFile);
   const cwd = resolve(io.cwd, gitDir);
   try {
-    const commit = (await run('git', ['-C', cwd, 'rev-parse', 'HEAD'])).stdout.trim();
-    const dirty = (await run('git', ['-C', cwd, 'status', '--porcelain', '--untracked-files=no'])).stdout.trim() !== '';
+    // Read-only and config-proof: no fsmonitor hook (repository config could otherwise run a command), no optional
+    // index refresh/lock writes, no system/global config.
+    const git = ['-C', cwd, '-c', 'core.fsmonitor=false', '-c', 'core.untrackedCache=false', '--no-optional-locks'];
+    const env = { ...process.env, GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null', GIT_OPTIONAL_LOCKS: '0', GIT_TERMINAL_PROMPT: '0' };
+    const commit = (await run('git', [...git, 'rev-parse', 'HEAD'], { env })).stdout.trim();
+    const dirty = (await run('git', [...git, 'status', '--porcelain', '--untracked-files=no'], { env })).stdout.trim() !== '';
     if (!/^[0-9a-f]{40}$/.test(commit)) throw new Error('unexpected rev-parse output');
     return { label, sourceDateEpoch, source: { kind: 'git', commit, dirty }, notes };
   } catch (e) {
@@ -247,6 +264,27 @@ async function cmdValidate(o, pos, io) {
     if (r.externalRefs !== null) io.out(`  info  external references: ${JSON.stringify(r.externalRefs.summary)}\n`);
   }
   return r.ok ? EXIT.OK : EXIT.FAILED;
+}
+
+const MAX_LICENSE_FILE_BYTES = 4 * 1024 * 1024;
+
+/**
+ * Read a --license-file through the same inclusion policy and secret checks as site files: regular file (no
+ * symlink), bounded, allowlisted name, no deny rule, no secret pattern or secret magic prefix.
+ * @param {string} abs
+ * @param {string} name
+ * @returns {Promise<Uint8Array>}
+ */
+async function readLicenseFile(abs, name) {
+  const st = await lstat(abs);
+  if (!st.isFile() || st.size > MAX_LICENSE_FILE_BYTES) usage(`--license-file must be a regular file (not a symlink) up to 4 MiB: ${name}`);
+  const denied = policyFinding(name, false);
+  if (denied !== null) throw new KitError(denied.code, `--license-file ${name}: ${denied.message}`);
+  const bytes = await readFileExact(abs, st.size);
+  const text = bytes.toString('utf8');
+  for (const m of SECRET_MAGIC_PREFIXES) if (text.startsWith(m.prefix)) throw new KitError(ERROR_CODES.SECRET, `--license-file ${name}: looks like ${m.rule}`);
+  for (const p of SECRET_CONTENT_PATTERNS) if (p.re.test(text)) throw new KitError(ERROR_CODES.SECRET, `--license-file ${name}: content matches secret pattern ${p.rule}`);
+  return new Uint8Array(bytes);
 }
 
 /**
@@ -280,10 +318,7 @@ export async function packageCommand(siteDir, outFile, o, io) {
   for (const lf of /** @type {string[] | undefined} */ (o['license-file']) ?? []) {
     const name = basename(lf);
     if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$/.test(name) || name === 'HOSTING-KIT-NOTICE.txt') usage(`--license-file name not allowed: ${name}`);
-    const abs = resolve(io.cwd, lf);
-    const st = await stat(abs);
-    if (!st.isFile() || st.size > 4 * 1024 * 1024) usage(`--license-file must be a regular file up to 4 MiB: ${lf}`);
-    extraFiles.push({ name: `LICENSES/${name}`, data: new Uint8Array(await readFile(abs)) });
+    extraFiles.push({ name: `LICENSES/${name}`, data: await readLicenseFile(resolve(io.cwd, lf), name) });
   }
   const result = await packageSite({ report: v.report, outFile, appId, provenance, extraFiles, compression, limits, allowSourceMaps });
   return { code: EXIT.OK, result };
@@ -326,9 +361,21 @@ async function verifyTarget(target, o) {
   return verifyArchive(target, { expectedContentDigest, expectedArchiveSha256, limits: DEFAULT_LIMITS });
 }
 
+const KNOWN_METADATA = /^(HOSTING-MANIFEST\.json|OPERATOR\.md|EXTERNAL-REFERENCES\.json|LICENSES\/[A-Za-z0-9][A-Za-z0-9._-]{0,99})$/;
+
+/**
+ * Metadata files this kit never writes. They are not covered by the content digest; treat them as untrusted.
+ * @param {HostingManifest | null} m
+ * @returns {string[]}
+ */
+export function metadataWarnings(m) {
+  if (m === null) return [];
+  return m.metadataFiles.filter((f) => !KNOWN_METADATA.test(f)).map((f) => `unexpected top-level file ${JSON.stringify(f)} (not written by this kit, not covered by the content digest: do not run or trust it)`);
+}
+
 /** @param {Awaited<ReturnType<typeof verifyArchive>>} r */
 function authenticityText(r) {
-  if (r.authenticity === 'content-digest-matches-expected') return 'content digest matches the expected value you supplied (authenticity is as strong as the channel you got it from)';
+  if (r.authenticity === 'content-digest-matches-expected') return 'site/ files match the expected content digest you supplied (as trustworthy as the channel you got it from). It does NOT cover OPERATOR.md, provenance or other metadata: use --expect-sha256 to authenticate the whole archive';
   if (r.authenticity === 'archive-sha256-matches-expected') return 'archive sha256 matches the expected value you supplied (authenticity is as strong as the channel you got it from)';
   return 'NOT ESTABLISHED: files are consistent with their own manifest, which proves nothing about who published them; pass --expect-digest from an independent channel';
 }
@@ -342,15 +389,16 @@ async function cmdVerify(o, pos, io) {
   const target = pos[0] ?? usage('verify needs <archive.zip | unpacked-dir>');
   const r = await verifyTarget(resolve(io.cwd, target), o);
   if (o['json'] === true) {
-    io.out(`${JSON.stringify({ ok: r.ok, contentDigest: r.contentDigest, archiveSha256: r.archiveSha256, changed: r.changed, missing: r.missing, unexpected: r.unexpected, errors: r.errors, authenticity: r.authenticity }, null, 2)}\n`);
+    io.out(`${JSON.stringify({ ok: r.ok, contentDigest: r.contentDigest, archiveSha256: r.archiveSha256, changed: r.changed, missing: r.missing, unexpected: r.unexpected, errors: r.errors, authenticity: r.authenticity, authenticityScope: r.authenticity === 'content-digest-matches-expected' ? 'site-files-only' : r.authenticity === 'archive-sha256-matches-expected' ? 'whole-archive' : 'none', warnings: metadataWarnings(r.manifest) }, null, 2)}\n`);
   } else {
     io.out(`${r.ok ? 'OK' : 'FAILED'}: ${target}\n`);
     if (r.contentDigest !== null) io.out(`  content digest ${r.contentDigest}\n`);
     if (r.archiveSha256 !== null) io.out(`  archive sha256 ${r.archiveSha256}\n`);
-    for (const p of r.changed) io.out(`  changed     ${p}\n`);
-    for (const p of r.missing) io.out(`  missing     ${p}\n`);
-    for (const p of r.unexpected) io.out(`  unexpected  ${p}\n`);
+    for (const p of r.changed) io.out(`  changed     ${termSafe(p)}\n`);
+    for (const p of r.missing) io.out(`  missing     ${termSafe(p)}\n`);
+    for (const p of r.unexpected) io.out(`  unexpected  ${termSafe(p)}\n`);
     printFindings(r.errors, io.out);
+    for (const w of metadataWarnings(r.manifest)) io.out(`  warn  ${termSafe(w)}\n`);
     io.out(`  authenticity: ${authenticityText(r)}\n`);
   }
   return r.ok ? EXIT.OK : EXIT.FAILED;
@@ -444,7 +492,7 @@ function untilSignal() {
 async function cmdPreview(o, pos, io) {
   const target = pos[0] ?? usage('preview needs <archive.zip | unpacked-dir>');
   const handle = await runPreview(resolve(io.cwd, target), o);
-  io.out(`preview of ${handle.manifest.appId} ${handle.manifest.provenance.label} (${handle.manifest.content.digest})\n  ${handle.url}\n  loopback only; same routing and headers as the generated nginx profile. Ctrl-C to stop.\n`);
+  io.out(`preview of ${termSafe(handle.manifest.appId)} ${termSafe(handle.manifest.provenance.label)} (${handle.manifest.content.digest})\n  ${handle.url}\n  loopback only; same routing and headers as the generated nginx profile. Ctrl-C to stop.\n`);
   try {
     await (io.waitForStop ?? untilSignal)(handle);
   } finally {
@@ -506,6 +554,7 @@ export async function generateProfiles(p) {
       const writeAll = async (sub, list) => {
         for (const f of list) {
           const target = join(tmp, sub, ...f.name.split('/'));
+          await mkdir(dirname(target), { recursive: true });
           await writeFileAtomic(target, typeof f.data === 'string' ? enc.encode(f.data) : f.data);
           generated.push(`${sub}/${f.name}`);
         }
@@ -764,7 +813,7 @@ export async function main(argv, ioIn = {}) {
     return await fn(values, positionals, io);
   } catch (e) {
     if (isKitError(e)) {
-      io.err(`error ${e.code}: ${e.message}\n`);
+      io.err(`error ${e.code}: ${termSafe(e.message)}\n`);
       return e.code === ERROR_CODES.USAGE ? EXIT.USAGE : e.code === ERROR_CODES.IO ? EXIT.INTERNAL : EXIT.FAILED;
     }
     if (e instanceof TypeError && /** @type {NodeJS.ErrnoException} */ (e).code?.startsWith('ERR_PARSE_ARGS')) {
