@@ -4,8 +4,11 @@ import { fileURLToPath } from 'node:url';
 import react from '@vitejs/plugin-react';
 import { configDefaults, defineConfig } from 'vitest/config';
 import { parseReleaseKeys, validateDeployments } from './scripts/validate-deployments.mjs';
+import { localBuildProfilePlugins, parseProfile } from './scripts/localBuildProfile.mjs';
 
 const releaseKeys = parseReleaseKeys(process.env['GHOSTPAY_RELEASE_PUBKEYS']);
+const buildProfile = parseProfile(process.env['GHOSTPAY_LOCAL_BUILD_PROFILE']);
+const webRoot = fileURLToPath(new URL('.', import.meta.url));
 const deploymentsDir = process.env['GHOSTPAY_DEPLOYMENTS_DIR'] === undefined
   ? fileURLToPath(new URL('./deployments', import.meta.url))
   : resolve(process.env['GHOSTPAY_DEPLOYMENTS_DIR']);
@@ -30,6 +33,11 @@ export default defineConfig({
   },
   plugins: [
     react(),
+    ...localBuildProfilePlugins({
+      env: process.env,
+      leanAppPath: resolve(webRoot, 'src/AppLean.tsx'),
+      publicDir: resolve(webRoot, 'public'),
+    }),
     {
       name: 'ghostpay-verify-bundled-deployments',
       apply: 'build',
@@ -47,6 +55,8 @@ export default defineConfig({
     },
   ],
   base: './',
+  // Lean copies public assets itself (minus the embed SDKs); full keeps Vite's default publicDir copy.
+  ...(buildProfile === 'lean' ? { publicDir: false as const } : {}),
   build: {
     target: 'es2022',
     sourcemap: false,
