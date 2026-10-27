@@ -203,6 +203,29 @@ export function checkManagementPort(port, ownPorts, otherPorts, warnings) {
   if (other) warnings.push(`target port ${port} is a well-known management port of another stack (${other}); make sure it really is the web server`);
 }
 
+/** Directories where tor keeps its own sockets and state (Debian/Ubuntu: /run/tor/control, /run/tor/socks, /var/lib/tor). */
+const TOR_OWN_DIRS = Object.freeze(['/run/tor', '/var/run/tor', '/var/lib/tor']);
+/** Socket names that conventionally belong to tor's ControlSocket / SocksPort unix listeners. */
+const TOR_OWN_SOCKET_NAMES = Object.freeze(['control', 'socks', 'control.sock', 'socks.sock']);
+
+/**
+ * A unix-socket target must be the web server, never tor's own control or SOCKS socket and never inside a
+ * directory that holds tor state (system dirs, this instance's DataDirectory, the HiddenServiceDir).
+ * @param {string} socketPath absolute, normalized
+ * @param {string[]} stateDirs absolute, normalized directories of this instance
+ */
+function assertNotTorOwnSocket(socketPath, stateDirs) {
+  const base = path.posix.basename(socketPath);
+  if (TOR_OWN_SOCKET_NAMES.includes(base)) {
+    throw new KitError(UNSUPPORTED, `unix target ${socketPath} looks like tor's own control/SOCKS socket; it must never be published as the site`, { path: socketPath });
+  }
+  for (const dir of [...TOR_OWN_DIRS, ...stateDirs]) {
+    if (isInsideOrEqual(dir, socketPath)) {
+      throw new KitError(UNSUPPORTED, `unix target ${socketPath} is inside tor state directory ${dir}; put the web server socket elsewhere (e.g. /run/<site>/web.sock)`, { path: socketPath, dir });
+    }
+  }
+}
+
 /**
  * @param {HostConfig} hostConfig
  * @param {unknown} target
@@ -488,6 +511,9 @@ export function generateTorProfile(opts) {
   const target = resolveWebTarget(hostConfig, opts.target);
   assertTopology(instance, opts.target);
   if (target.kind === 'tcp') checkManagementPort(target.port, TOR_MANAGEMENT_PORTS, OTHER_STACK_PORTS, warnings);
+  if (target.kind === 'unix') {
+    assertNotTorOwnSocket(target.path, [hiddenServiceDir, ...(instance.mode === 'dedicated' ? [instance.dataDirectory] : [])]);
+  }
 
   if (instance.mode === 'dedicated') {
     assertOutsideForbiddenRoots(instance.dataDirectory, opts.forbiddenRoots, 'instance.dataDirectory');
