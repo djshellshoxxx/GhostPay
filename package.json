@@ -24,7 +24,11 @@
     "build:packages": "node scripts/build-workspaces.mjs --libraries"
   },
   "overrides": {
-    "ws": "8.21.0",
-    "underscore": "1.13.8"
+    "ws@<8.21.0": "8.21.0",
+    "underscore": "1.13.8",
+    "viem@2.22.14": "file:vendor/viem-2.22.14-ghostpay-deps2.tgz",
+    "@solana/rpc-subscriptions-channel-websocket@8.5.0": {
+      "ws": "8.21.3"
+    }
   }
 }
