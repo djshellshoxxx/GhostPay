@@ -180,8 +180,9 @@ export function validateListener(v) {
     const extra = Object.keys(v).filter((k) => !['kind', 'path'].includes(k));
     if (extra.length > 0) fail(`listen has unknown fields: ${extra.join(', ')}`);
     const p = v['path'];
-    if (typeof p !== 'string' || !p.startsWith('/') || p.includes('\0') || Buffer.byteLength(p) > 100 || p.split('/').includes('..')) {
-      fail('listen.path must be an absolute unix socket path of at most 100 bytes without ".." segments');
+    // Same character set the generators accept: the path is written into nginx/Tor configuration files.
+    if (typeof p !== 'string' || !/^\/[A-Za-z0-9._/-]+$/.test(p) || Buffer.byteLength(p) > 100 || p.split('/').some((seg, i) => i > 0 && (seg === '' || seg === '.' || seg === '..'))) {
+      fail('listen.path must be an absolute unix socket path of at most 100 bytes using only A-Z a-z 0-9 . _ - /, without empty, "." or ".." segments');
     }
     return { kind: 'unix', path: p };
   }

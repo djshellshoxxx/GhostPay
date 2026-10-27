@@ -74,6 +74,10 @@ test('listeners must stay on loopback or a unix socket', () => {
   throwsCode(() => parseHostConfig(base({ listen: { kind: 'unix', path: 'relative.sock' } })), 'E_CONFIG');
   throwsCode(() => parseHostConfig(base({ listen: { kind: 'unix', path: '/run/../etc/x.sock' } })), 'E_CONFIG');
   assert.equal(parseHostConfig(base({ listen: { kind: 'unix', path: '/run/ghostpay/web.sock' } })).listen.kind, 'unix');
+  // Review finding 5: the socket path is written into nginx/Tor configuration; no directive injection characters.
+  for (const bad of ['/run/x.sock\nHiddenServiceDir /tmp', '/run/a b.sock', '/run/x.sock;', '/run/"x".sock', '/run/{x}.sock', '/run//x.sock', '/run/./x.sock']) {
+    throwsCode(() => parseHostConfig(base({ listen: { kind: 'unix', path: bad } })), 'E_CONFIG', undefined);
+  }
   assert.equal(parseHostConfig(base({ listen: { kind: 'tcp', host: '::1', port: 8443 } })).listen.kind, 'tcp');
 });
 
