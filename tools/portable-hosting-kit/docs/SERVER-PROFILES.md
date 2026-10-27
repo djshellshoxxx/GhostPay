@@ -72,11 +72,23 @@ refuse with `E_HEADERS` / `E_UNSUPPORTED`) enforces:
 - **Scriptable types** — `.html`, `.htm`, `.svg`, `.xml` — and the site path `/` (whose rules apply to error
   responses for invalid or out-of-base requests) get every `REQUIRED_HEADERS` entry and a CSP containing the
   `REQUIRED_CSP_DIRECTIVES` with restrictive values: `object-src 'none'`; `base-uri` and `frame-ancestors` each
-  exactly `'none'` or `'self'`; no `'unsafe-inline'` or `'unsafe-eval'` in `script-src`, `script-src-elem`,
-  `script-src-attr`, or in `default-src` when there is no `script-src`. These are errors, not warnings: the kit's
-  default and GhostPay's file need neither, and a site that does must not be shipped by a kit whose purpose is to
-  preserve the app's script integrity. With comma-joined (multiple) policies, a restricting value may come from any
-  policy (all are enforced), but an unsafe source in any policy is refused.
+  exactly `'none'` or `'self'`; and restricted **effective script sources**. Per policy these are the lists that
+  govern scripts: elements `script-src-elem` → `script-src` → `default-src`, attributes `script-src-attr` →
+  `script-src` → `default-src`, and `script-src` → `default-src` for the rest. Every source in them must be
+  `'self'`, `'none'`, a `'sha256-…'`/`'sha384-…'`/`'sha512-…'` hash, `'report-sample'`, `'wasm-unsafe-eval'` or
+  an explicit host source (`https://cdn.example.org`, `*.example.org`, with optional port/path). This is an
+  allowlist, so everything else is refused, in particular `*`, any scheme-only source (`data:`, `blob:`,
+  `filesystem:`, `http:`, `https:`, `ws:`, `wss:`, `javascript:`, ...), a host of `*` (`https://*`),
+  `'nonce-…'` (a nonce in a static file is public), `'strict-dynamic'` (a static site has no nonce for it to build
+  on), `'unsafe-inline'`, `'unsafe-eval'`, `'unsafe-hashes'` and unknown keywords. Other directives are not
+  restricted (GhostPay's `connect-src 'self' https: wss:` is intended). These are errors, not warnings: the kit's
+  default and GhostPay's file need none of them, and a kit whose purpose is to preserve the app's script integrity
+  must not ship them. With comma-joined (multiple) policies a restricting value may come from any policy (all are
+  enforced), but an unsafe script source in any policy is refused. A repeated directive inside one policy is
+  ignored after the first, as browsers do.
+- Wherever present, `Referrer-Policy` must consist only of `no-referrer`, `same-origin`, `strict-origin` or
+  `strict-origin-when-cross-origin` (e.g. `unsafe-url`, `origin`, `no-referrer-when-downgrade` are refused).
+- Every comma-separated value of `X-Content-Type-Options` must be `nosniff` (a later rule cannot append `sniff`).
 - No header value contains `$` (`E_UNSUPPORTED`).
 
 Callers should pass every served path (the profiles do); a caller passing only HTML paths still gets the

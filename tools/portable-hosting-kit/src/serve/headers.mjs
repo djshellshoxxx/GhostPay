@@ -243,7 +243,29 @@ export function cspDirectiveNames(csp) {
 export const SCRIPTABLE_EXTENSIONS = Object.freeze(['html', 'htm', 'svg', 'xml']);
 /** Headers no `_headers` rule may detach. */
 export const UNDETACHABLE_HEADERS = Object.freeze(['Content-Security-Policy', 'X-Content-Type-Options']);
-const SCRIPT_UNSAFE = ["'unsafe-inline'", "'unsafe-eval'"];
+/** Script keywords a static site may use; every other keyword (unsafe-*, nonces, strict-dynamic, ...) is refused. */
+const SAFE_SCRIPT_KEYWORDS = ["'self'", "'none'", "'report-sample'", "'wasm-unsafe-eval'"];
+const HASH_SOURCE_RE = /^'sha(?:256|384|512)-[a-z0-9+/_=-]+'$/;
+// [scheme://]host[:port][/path], host a name or "*.name" (lower-cased by parseCsp).
+const HOST_SOURCE_RE = /^(?:[a-z][a-z0-9+.-]*:\/\/)?(\*|\*\.[^\s:/*]+|[^\s:/*']+)(?::(?:\d+|\*))?(?:\/\S*)?$/;
+/** Referrer-Policy values that never send the full URL cross-origin or over a downgrade. */
+export const SAFE_REFERRER_POLICIES = Object.freeze(['no-referrer', 'same-origin', 'strict-origin', 'strict-origin-when-cross-origin']);
+
+/**
+ * True if a (lower-cased) CSP source may appear in an effective script source list: 'self', 'none', hashes,
+ * 'report-sample', 'wasm-unsafe-eval' or an explicit host. Refused: "*", any scheme-only source (data:, blob:,
+ * https:, ...), a host of "*", nonces (a nonce in a static file is public), 'strict-dynamic' (a static site has no
+ * nonce or hash-loaded script for it to build on), 'unsafe-inline', 'unsafe-eval', 'unsafe-hashes' and unknown
+ * keywords.
+ * @param {string} src
+ * @returns {boolean}
+ */
+export function isSafeScriptSource(src) {
+  if (SAFE_SCRIPT_KEYWORDS.includes(src) || HASH_SOURCE_RE.test(src)) return true;
+  if (src.startsWith("'")) return false;
+  const m = HOST_SOURCE_RE.exec(src);
+  return m !== null && m[1] !== '*';
+}
 
 /**
  * CSP value problems for one path (beyond directive presence).
@@ -259,11 +281,17 @@ function cspValueProblems(csp) {
   for (const d of ['base-uri', 'frame-ancestors']) {
     if (!some(d, (src) => src.length === 1 && ["'none'", "'self'"].includes(/** @type {string} */ (src[0])))) out.push(['csp-value', `${d} must be 'none' or 'self'`]);
   }
+  // Effective script source lists of each policy (an unsafe source in any policy is refused):
+  // elements script-src-elem > script-src > default-src; attributes script-src-attr > script-src > default-src;
+  // everything else (eval, workers via fallback) script-src > default-src.
   for (const m of policies) {
-    const scriptDirectives = ['script-src-elem', 'script-src-attr', m.has('script-src') ? 'script-src' : 'default-src'];
-    for (const d of scriptDirectives) {
-      const bad = (m.get(d) ?? []).filter((src) => SCRIPT_UNSAFE.includes(src));
-      if (bad.length > 0) out.push(['csp-unsafe', `${d} allows ${bad.join(' and ')}`]);
+    /** @param {string[]} chain */
+    const effective = (chain) => chain.find((d) => m.has(d));
+    const used = new Set([effective(['script-src-elem', 'script-src', 'default-src']), effective(['script-src-attr', 'script-src', 'default-src']), effective(['script-src', 'default-src'])]);
+    for (const d of used) {
+      if (d === undefined) continue;
+      const bad = /** @type {string[]} */ (m.get(d)).filter((src) => !isSafeScriptSource(src));
+      if (bad.length > 0) out.push(['csp-script-source', `${d} (effective script sources) allows ${bad.join(' ')}; only 'self', explicit hosts and hashes are accepted`]);
     }
   }
   return out;
@@ -277,7 +305,8 @@ function cspValueProblems(csp) {
  * - every given path and "/" gets X-Content-Type-Options: nosniff;
  * - every scriptable path (SCRIPTABLE_EXTENSIONS) and "/" (whose rules apply to error responses for invalid or
  *   out-of-base requests) gets REQUIRED_HEADERS and a CSP with REQUIRED_CSP_DIRECTIVES where object-src is 'none',
- *   base-uri and frame-ancestors are 'none' or 'self', and scripts allow neither 'unsafe-inline' nor 'unsafe-eval'.
+ *   base-uri and frame-ancestors are 'none' or 'self', and the effective script sources pass isSafeScriptSource;
+ * - wherever present, Referrer-Policy is one of SAFE_REFERRER_POLICIES.
  * Callers should pass every served path; passing only HTML paths still checks those, "/" and the file-wide rules.
  * @param {HeaderRule[]} rules
  * @param {string[]} sitePaths e.g. ["/index.html", "/assets/app.js", "/logo.svg"]
@@ -303,7 +332,12 @@ export function checkRequiredHeaders(rules, sitePaths) {
     const eff = effectiveHeaders(rules, path);
     const nosniff = getHeader(eff, 'X-Content-Type-Options');
     if (nosniff === undefined) add('required-header', `response for ${path} lacks X-Content-Type-Options`, path);
-    else if (nosniff.split(',')[0]?.trim().toLowerCase() !== 'nosniff') add('nosniff', `X-Content-Type-Options for ${path} must be "nosniff", got ${JSON.stringify(nosniff)}`, path);
+    // Fetch uses the first value; engines that compare the whole value need every value to be nosniff.
+    else if (!nosniff.split(',').every((v) => v.trim().toLowerCase() === 'nosniff')) add('nosniff', `X-Content-Type-Options for ${path} must be "nosniff", got ${JSON.stringify(nosniff)}`, path);
+    const referrer = getHeader(eff, 'Referrer-Policy');
+    if (referrer !== undefined && !referrer.split(',').map((t) => t.trim().toLowerCase()).every((t) => SAFE_REFERRER_POLICIES.includes(t))) {
+      add('referrer-policy', `Referrer-Policy for ${path} must be one of ${SAFE_REFERRER_POLICIES.join(', ')}, got ${JSON.stringify(referrer)}`, path);
+    }
     if (path !== '/' && !SCRIPTABLE_EXTENSIONS.includes(extensionOf(path))) continue;
     for (const name of REQUIRED_HEADERS) {
       if (name !== 'X-Content-Type-Options' && getHeader(eff, name) === undefined) add('required-header', `response for ${path} lacks ${name}`, path);
