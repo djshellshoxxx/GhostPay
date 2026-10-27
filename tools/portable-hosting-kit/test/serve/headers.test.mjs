@@ -37,7 +37,8 @@ test("GhostPay's real apps/web/public/_headers parses and satisfies the required
   const text = await fs.readFile(GHOSTPAY_HEADERS_PATH, 'utf8');
   const rules = parseHeadersFile(text);
   assert.deepEqual(rules.map((r) => r.pattern), ['/*', '/index.html', '/assets/*', '/deployments/*', '/ghostpay-embed-v1.js']);
-  assert.deepEqual(checkRequiredHeaders(rules, ['/index.html', '/about/index.html', '/assets/x.html']), []);
+  assert.deepEqual(checkRequiredHeaders(rules, ['/index.html', '/about/index.html', '/assets/x.html', '/assets/logo.svg', '/assets/app.js',
+    '/deployments/1.json', '/ghostpay-embed-v1.js', '/LICENSE', '/sitemap.xml', '/favicon.ico']), []);
   const idx = obj(effectiveHeaders(rules, '/index.html'));
   assert.equal(idx['Cache-Control'], 'no-cache');
   assert.match(idx['Content-Security-Policy'] ?? '', /^default-src 'self'; .*frame-ancestors 'none'/);
@@ -156,7 +157,9 @@ test('checkRequiredHeaders reports missing headers, CSP directives and a wrong n
   const f = checkRequiredHeaders(rules, ['/index.html', '/public/a.html']);
   assert.ok(f.every((x) => x.code === 'E_HEADERS' && x.severity === 'error'));
   const idx = f.filter((x) => x.path === '/index.html').map((x) => x.rule).sort();
-  assert.deepEqual(idx, ['csp-directive', 'csp-directive', 'nosniff', 'required-header']);
+  // base-uri and frame-ancestors missing: reported both as absent directives and as not restricting.
+  assert.deepEqual(idx, ['csp-directive', 'csp-directive', 'csp-value', 'csp-value', 'nosniff', 'required-header']);
+  assert.ok(f.some((x) => x.rule === 'detach-required' && /\/public\/\*/.test(x.message)));
   assert.ok(f.some((x) => x.path === '/public/a.html' && /Content-Security-Policy/.test(x.message) && x.rule === 'required-header'));
   // A directive present in any of several comma-joined policies counts (all policies are enforced).
   assert.deepEqual([...cspDirectiveNames("default-src 'self', object-src 'none'; base-uri 'none'")].sort(), ['base-uri', 'default-src', 'object-src']);
@@ -187,7 +190,88 @@ test('kitResponseHeaders: Cache-Control default, transport headers never overrid
 
 test('profiles also require the security headers on "/" (error responses for invalid or outside requests)', () => {
   const htmlOnly = parseHeadersFile(KIT_DEFAULT_HEADERS_FILE.replace(/^\/\*$/m, '/*.html'));
-  assert.deepEqual(checkRequiredHeaders(htmlOnly, ['/index.html']), []);
+  assert.deepEqual(checkRequiredHeaders(htmlOnly, ['/index.html']).filter((x) => x.path === '/index.html'), []);
+  assert.ok(checkRequiredHeaders(htmlOnly, ['/index.html']).some((x) => x.path === '/' && /Content-Security-Policy/.test(x.message)));
   assert.throws(() => assertServableHeaders({ rules: htmlOnly, source: 'site' }, ['index.html', 'a.js']), (e) => e instanceof KitError && e.code === 'E_HEADERS' && /for \/ lacks/.test(e.message));
   assertServableHeaders({ rules: parseHeadersFile(KIT_DEFAULT_HEADERS_FILE), source: 'kit-default' }, ['index.html', 'a.js']);
+});
+
+// --- review round 2 regressions ---
+
+const BASE = `/*
+  Content-Security-Policy: default-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+`;
+
+/**
+ * @param {string} text
+ * @param {string[]} paths
+ */
+const rulesOf = (text, paths) => checkRequiredHeaders(parseHeadersFile(text), paths);
+
+test('R2-A: header names are restricted to [A-Za-z0-9-]+ (a quote could break nginx tokenization)', () => {
+  for (const bad of ["'a", "D'", 'a"b', 'a$b', 'a{b', 'a;b', 'a_b', 'a.b', 'a#b', 'a|b', 'a~b']) {
+    throwsHeaders(() => parseHeadersFile(`${BASE}  ${bad}: 1\n`), /invalid header name/);
+    throwsHeaders(() => parseHeadersFile(`${BASE}/x\n  ! ${bad}\n`), /invalid header name/);
+  }
+  assert.equal(parseHeadersFile(`${BASE}  X-9-ok: 1\n`)[0]?.set.at(-1)?.[0], 'X-9-Ok');
+});
+
+test('R2-D: CSP and nosniff cannot be detached, and are required on scriptable types, every path and "/"', () => {
+  const detach = rulesOf(`${BASE}/*.svg\n  ! Content-Security-Policy\n  ! X-Content-Type-Options\n/*.xml\n  ! Content-Security-Policy\n`, ['/index.html', '/evil.svg', '/evil.xml']);
+  assert.ok(detach.some((f) => f.rule === 'detach-required' && /\/\*\.svg/.test(f.message) && /Content-Security-Policy/.test(f.message)));
+  assert.ok(detach.some((f) => f.rule === 'detach-required' && /X-Content-Type-Options/.test(f.message)));
+  assert.ok(detach.some((f) => f.path === '/evil.svg' && /Content-Security-Policy/.test(f.message)));
+  assert.ok(detach.some((f) => f.path === '/evil.xml' && /Content-Security-Policy/.test(f.message)));
+  // Rules only for HTML: non-HTML files, "/" and arbitrary error paths lack nosniff.
+  const htmlOnly = `/
+  Content-Security-Policy: default-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+/*.html
+  Content-Security-Policy: default-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+`;
+  const f = rulesOf(htmlOnly, ['/index.html', '/a.svg', '/LICENSE', '/x.js']);
+  assert.ok(f.some((x) => x.path === '/a.svg' && /Content-Security-Policy/.test(x.message)));
+  assert.ok(f.some((x) => x.path === '/LICENSE' && /X-Content-Type-Options/.test(x.message)));
+  assert.ok(f.some((x) => x.path === '/x.js' && /X-Content-Type-Options/.test(x.message)));
+  assert.ok(f.some((x) => x.rule === 'nosniff-global'), 'nosniff must come from a "/*" rule so every response (including 404s) has it');
+  assert.ok(!f.some((x) => x.path === '/x.js' && /Content-Security-Policy/.test(x.message)), 'CSP is not required on non-scriptable types');
+  // "/" is always checked, even when a caller passes only HTML paths.
+  assert.ok(rulesOf(`/*.html\n${BASE.split('\n').slice(1).join('\n')}`, ['/index.html']).some((x) => x.path === '/'));
+  assert.deepEqual(rulesOf(BASE, ['/index.html', '/a.svg', '/a.xml', '/a.htm', '/LICENSE', '/a.js']), []);
+});
+
+test('R2-C: CSP values must actually restrict', () => {
+  const csp = (/** @type {string} */ v) => rulesOf(`/*\n  Content-Security-Policy: ${v}\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n`, ['/index.html']).map((x) => x.rule);
+  assert.deepEqual(csp("default-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'"), []);
+  assert.deepEqual(csp("default-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self'"), []);
+  assert.deepEqual(csp("default-src 'self'; object-src 'NONE'; base-uri 'None'; frame-ancestors 'none'"), [], 'keywords are case-insensitive');
+  assert.ok(csp('default-src *; object-src *; base-uri *; frame-ancestors *').filter((r) => r === 'csp-value').length >= 3);
+  assert.ok(csp("default-src 'self'; object-src 'self'; base-uri 'none'; frame-ancestors 'none'").includes('csp-value'));
+  assert.ok(csp("default-src 'self'; object-src 'none'; base-uri https:; frame-ancestors 'none'").includes('csp-value'));
+  assert.ok(csp("default-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none' https://x.example").includes('csp-value'));
+  assert.ok(csp("default-src 'self'; script-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'").includes('csp-unsafe'));
+  assert.ok(csp("default-src 'self' 'unsafe-eval'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'").includes('csp-unsafe'));
+  assert.deepEqual(csp("default-src 'self' 'unsafe-inline'; script-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'"), [], 'default-src only matters for scripts without script-src');
+  assert.ok(csp("default-src 'self'; script-src-elem 'unsafe-inline'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'").includes('csp-unsafe'));
+  // Two policies (comma-joined): each restricting value may come from either; an unsafe source in any one is refused.
+  assert.deepEqual(csp("default-src 'self'; object-src 'none', base-uri 'none'; frame-ancestors 'none'"), []);
+});
+
+test('R2-E: "$" in a header value is reported (E_UNSUPPORTED) before any profile is generated', () => {
+  const f = rulesOf(`${BASE}/a.js\n  X-Price: $5\n`, ['/index.html']);
+  assert.ok(f.some((x) => x.code === 'E_UNSUPPORTED' && x.rule === 'header-value-dollar' && x.severity === 'error'));
+  assert.throws(() => assertServableHeaders({ rules: parseHeadersFile(`${BASE}/a.js\n  X-Price: $5\n`), source: 'site' }, ['index.html']), (e) => e instanceof KitError && e.code === 'E_UNSUPPORTED');
+});
+
+test('the demo site _headers passes the strengthened checks', async () => {
+  const { demoSiteFiles } = await import('../../src/demo/demo-site.mjs').catch(() => ({ demoSiteFiles: undefined }));
+  assert.equal(typeof demoSiteFiles, 'function', 'demo-site.mjs must export demoSiteFiles');
+  const files = /** @type {Array<{ path: string, data: string }>} */ (/** @type {any} */ (demoSiteFiles)());
+  const text = files.find((x) => x.path === '_headers')?.data ?? '';
+  assert.deepEqual(checkRequiredHeaders(parseHeadersFile(text), files.map((x) => `/${x.path}`).filter((p) => p !== '/_headers')), []);
 });

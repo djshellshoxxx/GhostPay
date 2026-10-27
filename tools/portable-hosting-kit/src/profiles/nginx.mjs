@@ -4,7 +4,11 @@
 // - Headers: every kit-controlled header is emitted ONCE, at server level, with `add_header ... always`, from a
 //   variable computed by `map` chains keyed on the final `$uri`. No location ever uses add_header, so nginx's
 //   "add_header in a location drops the server-level ones" inheritance trap cannot occur, and 301/400/404/405
-//   responses carry the same security headers as 200s. nginx omits a header whose value is empty.
+//   responses carry the same security headers as 200s. nginx omits a header whose value is empty. Header names
+//   are written unquoted, so each is re-checked against [A-Za-z0-9-]+ here; values are always quoted.
+// - Policy gate: before anything is generated, checkRequiredHeaders (serve/headers.mjs) must pass for every served
+//   file and "/": nosniff everywhere (set by "/*", never detached), a restrictive CSP on html/htm/svg/xml and "/",
+//   no "$" in values.
 // - Routing: raw-request checks (encoding, dot/empty segments, controls, backslash) on `$request_uri`, hidden-path
 //   check on `$uri`, exact locations for directory redirects, try_files for files and directory indexes, and a
 //   named location for the SPA fallback.
@@ -93,6 +97,17 @@ export function nginxQuote(s, { allowDollar = false, what = 'value' } = {}) {
     throw new KitError(ERROR_CODES.UNSUPPORTED, `${what} contains "$", which nginx would interpolate as a variable: ${JSON.stringify(s)}`);
   }
   return `"${s.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+}
+
+/**
+ * A header name as an unquoted nginx token: only [A-Za-z0-9-] (the parser enforces the same; this guards policies
+ * built by other code).
+ * @param {string} name
+ * @returns {string}
+ */
+export function nginxHeaderName(name) {
+  if (!/^[A-Za-z0-9-]+$/.test(name)) throw new KitError(ERROR_CODES.UNSUPPORTED, `header name ${JSON.stringify(name)} is not [A-Za-z0-9-]+`);
+  return name;
 }
 
 /**
@@ -308,9 +323,9 @@ function renderServer(m) {
   const defaults = headerDefaults(m.hostConfig);
   /** @type {string[]} */
   const adds = [];
-  [...ops].forEach(([, { name }], j) => adds.push(`add_header ${name} $hk_h${j} always;`));
+  [...ops].forEach(([, { name }], j) => adds.push(`add_header ${nginxHeaderName(name)} $hk_h${j} always;`));
   for (const [lower, { name, value }] of defaults) {
-    if (!ops.has(lower)) adds.push(`add_header ${name} ${nginxQuote(value, { allowDollar: true })} always;`);
+    if (!ops.has(lower)) adds.push(`add_header ${nginxHeaderName(name)} ${nginxQuote(value, { allowDollar: true })} always;`);
   }
   adds.push('add_header Allow $hk_allow always;');
   const base = m.basePath;
@@ -379,8 +394,8 @@ export function renderNginxMain({ listen, root, pidFile, tempDir, comment }) {
 }
 
 /**
- * Generate the nginx profile. Refuses non-loopback listeners (E_NETWORK_SCOPE) and header policies weaker than
- * required (E_HEADERS). `wwwRoot` is exportStatic()'s wwwRoot (files live under `<wwwRoot><basePath>`).
+ * Generate the nginx profile. Refuses non-loopback listeners (E_NETWORK_SCOPE), header policies weaker than
+ * required (E_HEADERS, see checkRequiredHeaders) and values nginx cannot express (E_UNSUPPORTED). `wwwRoot` is exportStatic()'s wwwRoot (files live under `<wwwRoot><basePath>`).
  * Run unprivileged: `nginx -p <writable runtime dir>/ -e stderr -c <dir>/nginx.conf` (pid and temp paths are
  * relative to -p).
  * @param {{ files: string[], entrypoint: string, hostConfig: HostConfig, policy: HeaderPolicy, wwwRoot: string }} a

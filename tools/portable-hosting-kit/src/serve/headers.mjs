@@ -7,7 +7,7 @@
 // ", ". Anything Cloudflare would silently skip (bad lines, placeholders, absolute URLs) is an error here.
 
 import { KitError, ERROR_CODES } from '../errors.mjs';
-import { DEFAULT_CACHE_CONTROL, KIT_DEFAULT_HEADERS_FILE, REQUIRED_CSP_DIRECTIVES, REQUIRED_HEADERS, contentTypeFor } from '../policy.mjs';
+import { DEFAULT_CACHE_CONTROL, KIT_DEFAULT_HEADERS_FILE, REQUIRED_CSP_DIRECTIVES, REQUIRED_HEADERS, extensionOf } from '../policy.mjs';
 
 /** @typedef {import('../types.mjs').HeaderRule} HeaderRule */
 /** @typedef {import('../types.mjs').HeaderPolicy} HeaderPolicy */
@@ -31,7 +31,8 @@ export const SERVER_MANAGED_HEADERS = Object.freeze([
   'transfer-encoding', 'upgrade',
 ]);
 
-const TOKEN_RE = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
+// Header names: letters, digits and hyphens (a subset of RFC 9110 tokens; nothing that nginx could tokenize).
+const TOKEN_RE = /^[A-Za-z0-9-]+$/;
 // Path characters a URL path never percent-encodes and clients send verbatim, plus the "*" splat.
 const PATTERN_RE = /^\/[A-Za-z0-9\-._~!&'()+,;=@/*]*$/;
 // Visible ASCII, space and tab.
@@ -211,75 +212,136 @@ function getHeader(headers, name) {
 }
 
 /**
- * Directive names present in a (possibly comma-joined, i.e. multi-policy) CSP value. Every policy is enforced by
- * browsers, so a directive present in any of them is enforced.
+ * Parse a (possibly comma-joined, i.e. multi-policy) CSP value: one Map per policy from lower-case directive name to
+ * its lower-cased source list. As in browsers, a repeated directive within one policy is ignored after the first.
+ * @param {string} csp
+ * @returns {Array<Map<string, string[]>>}
+ */
+export function parseCsp(csp) {
+  return csp.split(',').map((policy) => {
+    /** @type {Map<string, string[]>} */
+    const m = new Map();
+    for (const directive of policy.split(';')) {
+      const [name, ...sources] = directive.trim().toLowerCase().split(/\s+/);
+      if (name && !m.has(name)) m.set(name, sources);
+    }
+    return m;
+  });
+}
+
+/**
+ * Directive names present in a CSP value. Every policy is enforced by browsers, so a directive present in any of
+ * them is enforced.
  * @param {string} csp
  * @returns {Set<string>}
  */
 export function cspDirectiveNames(csp) {
-  const names = new Set();
-  for (const policy of csp.split(',')) {
-    for (const directive of policy.split(';')) {
-      const name = directive.trim().split(/\s+/)[0]?.toLowerCase();
-      if (name) names.add(name);
+  return new Set(parseCsp(csp).flatMap((m) => [...m.keys()]));
+}
+
+/** Extensions a browser may execute script in when served from the site's origin: CSP is required on them. */
+export const SCRIPTABLE_EXTENSIONS = Object.freeze(['html', 'htm', 'svg', 'xml']);
+/** Headers no `_headers` rule may detach. */
+export const UNDETACHABLE_HEADERS = Object.freeze(['Content-Security-Policy', 'X-Content-Type-Options']);
+const SCRIPT_UNSAFE = ["'unsafe-inline'", "'unsafe-eval'"];
+
+/**
+ * CSP value problems for one path (beyond directive presence).
+ * @param {string} csp
+ * @returns {Array<[string, string]>} [rule, message]
+ */
+function cspValueProblems(csp) {
+  const policies = parseCsp(csp);
+  /** @type {Array<[string, string]>} */
+  const out = [];
+  const some = (/** @type {string} */ d, /** @type {(src: string[]) => boolean} */ ok) => policies.some((m) => m.has(d) && ok(/** @type {string[]} */ (m.get(d))));
+  if (!some('object-src', (src) => src.length === 1 && src[0] === "'none'")) out.push(['csp-value', "object-src must be 'none'"]);
+  for (const d of ['base-uri', 'frame-ancestors']) {
+    if (!some(d, (src) => src.length === 1 && ["'none'", "'self'"].includes(/** @type {string} */ (src[0])))) out.push(['csp-value', `${d} must be 'none' or 'self'`]);
+  }
+  for (const m of policies) {
+    const scriptDirectives = ['script-src-elem', 'script-src-attr', m.has('script-src') ? 'script-src' : 'default-src'];
+    for (const d of scriptDirectives) {
+      const bad = (m.get(d) ?? []).filter((src) => SCRIPT_UNSAFE.includes(src));
+      if (bad.length > 0) out.push(['csp-unsafe', `${d} allows ${bad.join(' and ')}`]);
     }
   }
-  return names;
+  return out;
 }
 
 /**
- * Check that every HTML response would carry the required headers and CSP directives.
+ * Check a header policy against the kit's minimum:
+ * - no rule detaches Content-Security-Policy or X-Content-Type-Options; a "/*" rule sets X-Content-Type-Options
+ *   (so every response, including errors for any path, is nosniff); no header value contains "$" (E_UNSUPPORTED:
+ *   nginx would interpolate it);
+ * - every given path and "/" gets X-Content-Type-Options: nosniff;
+ * - every scriptable path (SCRIPTABLE_EXTENSIONS) and "/" (whose rules apply to error responses for invalid or
+ *   out-of-base requests) gets REQUIRED_HEADERS and a CSP with REQUIRED_CSP_DIRECTIVES where object-src is 'none',
+ *   base-uri and frame-ancestors are 'none' or 'self', and scripts allow neither 'unsafe-inline' nor 'unsafe-eval'.
+ * Callers should pass every served path; passing only HTML paths still checks those, "/" and the file-wide rules.
  * @param {HeaderRule[]} rules
- * @param {string[]} htmlSitePaths e.g. ["/index.html", "/about/index.html"]
+ * @param {string[]} sitePaths e.g. ["/index.html", "/assets/app.js", "/logo.svg"]
  * @returns {Finding[]}
  */
-export function checkRequiredHeaders(rules, htmlSitePaths) {
+export function checkRequiredHeaders(rules, sitePaths) {
   /** @type {Finding[]} */
   const findings = [];
-  /** @param {string} rule @param {string} message @param {string} path */
-  const add = (rule, message, path) => findings.push({ code: ERROR_CODES.HEADERS, rule, severity: 'error', message, path });
-  for (const path of htmlSitePaths) {
-    const eff = effectiveHeaders(rules, path);
-    for (const name of REQUIRED_HEADERS) {
-      if (getHeader(eff, name) === undefined) add('required-header', `HTML response for ${path} lacks ${name}`, path);
+  /** @param {string} rule @param {string} message @param {string} [path] @param {import('../errors.mjs').ErrorCode} [code] */
+  const add = (rule, message, path, code = ERROR_CODES.HEADERS) => findings.push({ code, rule, severity: 'error', message, ...(path === undefined ? {} : { path }) });
+  for (const rule of rules) {
+    for (const name of rule.detach) {
+      if (UNDETACHABLE_HEADERS.some((u) => u.toLowerCase() === name.toLowerCase())) add('detach-required', `rule ${rule.pattern} detaches ${name}, which every response must carry`);
     }
+    for (const [name, value] of rule.set) {
+      if (value.includes('$')) add('header-value-dollar', `rule ${rule.pattern}: ${name} value contains "$", which nginx would interpolate as a variable`, undefined, ERROR_CODES.UNSUPPORTED);
+    }
+  }
+  if (!rules.some((r) => r.pattern === '/*' && r.set.some(([n]) => n.toLowerCase() === 'x-content-type-options'))) {
+    add('nosniff-global', 'X-Content-Type-Options: nosniff must be set by a "/*" rule so that every response carries it');
+  }
+  for (const path of new Set(['/', ...sitePaths])) {
+    const eff = effectiveHeaders(rules, path);
     const nosniff = getHeader(eff, 'X-Content-Type-Options');
-    if (nosniff !== undefined && nosniff.trim().toLowerCase() !== 'nosniff') {
-      add('nosniff', `X-Content-Type-Options for ${path} must be "nosniff", got ${JSON.stringify(nosniff)}`, path);
+    if (nosniff === undefined) add('required-header', `response for ${path} lacks X-Content-Type-Options`, path);
+    else if (nosniff.split(',')[0]?.trim().toLowerCase() !== 'nosniff') add('nosniff', `X-Content-Type-Options for ${path} must be "nosniff", got ${JSON.stringify(nosniff)}`, path);
+    if (path !== '/' && !SCRIPTABLE_EXTENSIONS.includes(extensionOf(path))) continue;
+    for (const name of REQUIRED_HEADERS) {
+      if (name !== 'X-Content-Type-Options' && getHeader(eff, name) === undefined) add('required-header', `response for ${path} lacks ${name}`, path);
     }
     const csp = getHeader(eff, 'Content-Security-Policy');
-    if (csp !== undefined) {
-      const present = cspDirectiveNames(csp);
-      for (const d of REQUIRED_CSP_DIRECTIVES) {
-        if (!present.has(d)) add('csp-directive', `Content-Security-Policy for ${path} lacks the ${d} directive`, path);
-      }
+    if (csp === undefined) continue;
+    const present = cspDirectiveNames(csp);
+    for (const d of REQUIRED_CSP_DIRECTIVES) {
+      if (!present.has(d)) add('csp-directive', `Content-Security-Policy for ${path} lacks the ${d} directive`, path);
     }
+    for (const [rule, message] of cspValueProblems(csp)) add(rule, `Content-Security-Policy for ${path}: ${message}`, path);
   }
   return findings;
 }
 
 /**
- * Throw KitError(E_HEADERS) when checkRequiredHeaders reports anything. Used by every serving profile, so a site
- * whose headers are weaker than required is refused rather than served.
+ * Throw when checkRequiredHeaders reports anything (E_UNSUPPORTED if a value cannot be expressed in nginx, else
+ * E_HEADERS). Used by every serving profile, so a site whose headers are weaker than required is refused.
  * @param {HeaderPolicy} policy
- * @param {string[]} htmlSitePaths
+ * @param {string[]} sitePaths
  */
-export function assertRequiredHeaders(policy, htmlSitePaths) {
-  const findings = checkRequiredHeaders(policy.rules, htmlSitePaths);
+export function assertRequiredHeaders(policy, sitePaths) {
+  const findings = checkRequiredHeaders(policy.rules, sitePaths);
   if (findings.length > 0) {
-    throw new KitError(ERROR_CODES.HEADERS, `header policy (${policy.source}) is weaker than required: ${findings.map((f) => f.message).join('; ')}`, { findings });
+    const shown = findings.slice(0, 8).map((f) => f.message);
+    if (findings.length > shown.length) shown.push(`and ${findings.length - shown.length} more`);
+    const code = findings.some((f) => f.code === ERROR_CODES.UNSUPPORTED) ? ERROR_CODES.UNSUPPORTED : ERROR_CODES.HEADERS;
+    throw new KitError(code, `header policy (${policy.source}) is weaker than required: ${shown.join('; ')}`, { findings });
   }
 }
 
 /**
- * The gate every serving profile applies: each servable HTML file, and the site path "/" (whose rules apply to
- * error responses for invalid or out-of-base requests), must get the required headers.
+ * The gate every serving profile applies to all served files (plus "/", see checkRequiredHeaders).
  * @param {HeaderPolicy} policy
  * @param {string[]} servable relative paths of served files
  */
 export function assertServableHeaders(policy, servable) {
-  const html = servable.filter((f) => contentTypeFor(f)?.startsWith('text/html')).map((f) => `/${f}`);
-  assertRequiredHeaders(policy, ['/', ...html]);
+  assertRequiredHeaders(policy, servable.map((f) => `/${f}`));
 }
 
 /**

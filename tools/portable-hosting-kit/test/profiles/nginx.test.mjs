@@ -190,3 +190,32 @@ test('serves over a unix socket listener', { skip: NGINX_SKIP }, async () => {
     await fs.rm(sockDir, { recursive: true, force: true });
   }
 });
+
+test('R2-A: every add_header line is well-formed and each required header appears exactly once', async () => {
+  const ghostpay = { rules: parseHeadersFile(await fs.readFile(GHOSTPAY_HEADERS_PATH, 'utf8')), source: /** @type {const} */ ('site') };
+  for (const v of [gen({}), gen({ basePath: '/m/', onionLocation: `http://${'a'.repeat(56)}.onion` }, { policy: ghostpay, files: [...FILES, '_headers'] })]) {
+    const code = v.server.split('\n').filter((l) => !/^\s*#/.test(l));
+    const lines = code.filter((l) => /\badd_header\b/.test(l));
+    assert.ok(lines.length >= 5);
+    /** @type {Map<string, number>} */
+    const count = new Map();
+    for (const l of lines) {
+      const m = /^add_header ([A-Za-z0-9-]+) (\$hk_h\d+|\$hk_allow|"(?:[^"\\$]|\\.)*(?:\$request_uri)?") always;$/.exec(l);
+      assert.ok(m, `malformed add_header line: ${l}`);
+      const name = /** @type {string} */ (m[1]).toLowerCase();
+      count.set(name, (count.get(name) ?? 0) + 1);
+    }
+    for (const name of ['content-security-policy', 'x-content-type-options', 'referrer-policy', 'cache-control', 'allow']) {
+      assert.equal(count.get(name), 1, `${name} must be added exactly once`);
+    }
+    assert.ok([...count.values()].every((c) => c === 1));
+  }
+  // A policy built without the parser cannot smuggle a name with nginx metacharacters into the config.
+  const smuggled = { rules: [...POLICY.rules, { pattern: '/x', set: /** @type {Array<[string, string]>} */ ([["'a", '1'], ["D'", '2']]), detach: [] }], source: /** @type {const} */ ('site') };
+  assert.throws(() => gen({}, { policy: smuggled }), (e) => isKit(e, 'E_HEADERS') || isKit(e, 'E_UNSUPPORTED'));
+});
+
+test('R2-D: profiles refuse a policy that detaches CSP or nosniff for SVG/XML', () => {
+  const p = { rules: parseHeadersFile(`${KIT_DEFAULT_HEADERS_FILE}/*.svg\n  ! Content-Security-Policy\n  ! X-Content-Type-Options\n`), source: /** @type {const} */ ('site') };
+  assert.throws(() => gen({}, { policy: p, files: [...FILES, 'evil.svg'] }), (e) => isKit(e, 'E_HEADERS'));
+});
