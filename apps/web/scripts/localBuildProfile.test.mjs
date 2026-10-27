@@ -139,6 +139,7 @@ test('module report cannot be emitted inside the resolved web output (relative a
     };
     assert.throws(() => make(join(temp, 'dist', 'report.json')).configResolved({ root: temp, build: { outDir: 'dist' } }), /output/i);
     assert.throws(() => make(join(temp, 'abs-dist', 'r.json')).configResolved({ root: temp, build: { outDir: join(temp, 'abs-dist') } }), /output/i);
+    assert.throws(() => make(join(temp, 'dist', '..local', 'r.json')).configResolved({ root: temp, build: { outDir: 'dist' } }), /output/i);
     assert.doesNotThrow(() => make(join(temp, 'external-report.json')).configResolved({ root: temp, build: { outDir: 'dist' } }));
     assert.doesNotThrow(() => make(join(temp, 'dist-sibling', 'r.json')).configResolved({ root: temp, build: { outDir: 'dist' } }));
   } finally {

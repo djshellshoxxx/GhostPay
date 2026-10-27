@@ -1,5 +1,5 @@
 import { copyFileSync, lstatSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
-import { isAbsolute, join, posix, relative, resolve } from 'node:path';
+import { isAbsolute, join, posix, relative, resolve, sep } from 'node:path';
 
 export const PROFILE_ENV = 'GHOSTPAY_LOCAL_BUILD_PROFILE';
 export const REPORT_ENV = 'GHOSTPAY_LOCAL_MODULE_REPORT';
@@ -116,7 +116,7 @@ export function localBuildProfilePlugins(opts) {
       outDir = resolve(config.root, config.build.outDir);
       if (reportPath !== undefined) {
         const rel = relative(outDir, resolve(reportPath));
-        const inside = rel === '' || (!rel.startsWith('..') && !isAbsolute(rel));
+        const inside = rel === '' || (rel !== '..' && !rel.startsWith('..' + sep) && !isAbsolute(rel));
         if (inside) {
           throw new Error(`${REPORT_ENV} must not be inside the web output directory`);
         }
