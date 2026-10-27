@@ -545,6 +545,7 @@ export async function generateProfiles(p) {
     const forbiddenRoots = [p.outDir, opened.topDir, wwwRoot];
     if (p.host.basePath !== '/') warnings.push(`base path ${p.host.basePath}: the app shares its origin's storage and permissions with every other path on that host (audit WEB-APP-03); serve nothing else on this origin`);
     await assertReplaceable(p.outDir, 'PROFILE-README.md');
+    await mkdir(dirname(p.outDir), { recursive: true });
     await replaceDirAtomic(p.outDir, async (tmp) => {
       const enc = new TextEncoder();
       /**
