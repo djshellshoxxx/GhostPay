@@ -70,6 +70,15 @@ describe('scan-bundle', () => {
     ['eval in src', 'src/Bad.ts', 'eval("1");', /eval\/new Function/],
     ['sourcemap enabled', 'vite.config.ts', 'export default { build: { sourcemap: true } }', /sourcemap is enabled/],
     ['hidden sourcemap', 'vite.config.ts', "export default { build: { sourcemap: 'hidden' } }", /sourcemap is enabled/],
+    // Release boundary (audit L8-04): fixed strings of preserved code that one stray import would pull into the bundle.
+    ['preserved PIR client', 'dist/assets/a.js', 'throw new E("TRANSPORT","PIR server request failed")', /preserved-code marker "PIR server request failed"/],
+    ['preserved pir2 scan source', 'dist/assets/a.js', 'throw new S("OUT_OF_RANGE","window outside the PIR shard")', /preserved-code marker "window outside the PIR shard"/],
+    ['preserved light-client source', 'dist/assets/a.js', 'throw new S("HEAD_MISMATCH","light client could not confirm a block hash")', /preserved-code marker "light client could not confirm/],
+    ['preserved quorum source', 'dist/assets/a.js', 'throw new S("SOURCE_DISAGREE","sources disagree on the announcement set")', /preserved-code marker "sources disagree on the announcement set"/],
+    ['preserved scan-mode claims', 'dist/assets/a.js', 'var c={label:"Two-server PIR scanning (research PoC, testnet only)"}', /preserved-code marker "Two-server PIR scanning/],
+    ['preserved prover', 'dist/assets/a.js', 'var p={protocol:"groth16"}', /preserved-code marker "groth16"/],
+    ['preserved external pools', 'dist/assets/a.js', 'var id="privacy-pools"', /preserved-code marker "privacy-pools"/],
+    ['preserved code in the worker', 'dist/assets/scanner.worker-1.js', 'throw Error("PIR server request failed")', /scanner\.worker-1\.js: preserved-code marker/],
   ])('fails on %s', (_name, file, content, re) => {
     const b = build({ [file.replace(/^dist\//, 'dist/')]: content });
     const problems = scan(b);

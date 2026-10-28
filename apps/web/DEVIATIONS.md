@@ -94,6 +94,9 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     error-decoder text (`react.dev/errors/`), and viem error-message hints (`viem.sh`, `4byte.sourcify.dev`). None is ever fetched; each is
     listed with its reason in the script. React DOM's own `innerHTML` uses (creating a `<script>` element through a div, and applying the
     `dangerouslySetInnerHTML` prop) are matched by exact fingerprints; the app source is separately scanned and ESLint-forbidden from using them.
+    Release boundary (audit L8-04): the scan also fails on fixed strings of preserved code (PIR client and scan sources, light-client,
+    quorum, scan-mode claims, `groth16`, `privacy-pools`), and ESLint forbids importing `createScanSource`, `createPir2Source`,
+    `createLightSource`, `createQuorumSource`, `describeScanMode` and `SCAN_MODE_CLAIMS` from `@ghostpay/scan-source` in apps/web.
 22. No inline `style=` attributes are used anywhere (the CSP has no `'unsafe-inline'`): the QR code is an SVG built from React elements and CSS classes.
 
 ## Coverage exclusions (thresholds 90/85/90/90 are NOT lowered)
