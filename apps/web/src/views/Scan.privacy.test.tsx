@@ -44,6 +44,21 @@ describe('Scan privacy (spec 10)', () => {
     for (const c of scans) expect((c.params[0] as { fromBlock: bigint }).fromBlock % 1000n).toBe(0n);
   });
 
+  it('queries the second RPC in the same aligned windows, never from the exact checkpoint (L3-F5)', async () => {
+    generateSession();
+    bothRpcs();
+    const primary = chainWithLogs(84532, 2500, []);
+    const secondary = chainWithLogs(84532, 2500, []);
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: (_c, url) => Promise.resolve(url.startsWith('https://rpc2.test') ? secondary : withManifestChain(primary)) }));
+    expect(screen.getByText(/Second RPC/)).toBeTruthy();
+    await user.type(screen.getByLabelText('Start block'), '1234');
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    await waitFor(() => { expect(screen.getByText(/Finished\./)).toBeTruthy(); });
+    const scans = secondary.calls.filter((c) => c.method === 'eth_getLogs' && (c.params[0] as { address?: string }).address?.toLowerCase() === FAKE_ANNOUNCER.toLowerCase());
+    expect(scans.length).toBeGreaterThan(0);
+    for (const c of scans) expect((c.params[0] as { fromBlock: bigint }).fromBlock % 1000n).toBe(0n);
+  });
+
   it('blocks instead of scanning directly when the private path is required but the transport is Direct', async () => {
     generateSession();
     bothRpcs();

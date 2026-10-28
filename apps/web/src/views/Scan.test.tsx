@@ -374,6 +374,31 @@ describe('Scan and receive', () => {
     } finally { unlock(); finish(); runner.mockRestore(); }
   });
 
+  it('warns that a block too large for one RPC response was checked for router payments only (L4-01)', async () => {
+    const pub = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const { ChainAdapterError } = await import('@ghostpay/chain-adapters');
+    const { encodeMetaAddress, generateKeySet } = await import('@ghostpay/core-crypto');
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 1500, index: 0, caller: FAKE_ROUTER });
+    const spam = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(generateKeySet()), block: 1500, index: 1, caller: '0x9999999999999999999999999999999999999999' });
+    const logs = [mine.log, spam.log];
+    const rpc = chainWithLogs(84532, 4000, logs, (method, params) => {
+      if (method !== 'eth_getLogs') return undefined;
+      const f = params[0] as { address: string; topics: readonly (string | null)[]; fromBlock: bigint; toBlock: bigint };
+      if (f.address.toLowerCase() !== FAKE_ANNOUNCER.toLowerCase()) return undefined;
+      const caller = f.topics[3];
+      if (caller == null && f.fromBlock <= 1500n && f.toBlock >= 1500n) throw new ChainAdapterError('RESPONSE_TOO_LARGE', 'response exceeds cap');
+      return logs.filter((l) => BigInt(l.blockNumber) >= f.fromBlock && BigInt(l.blockNumber) <= f.toBlock && (caller == null || l.topics[3] === caller));
+    });
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)), createScanWorker: () => new InlineWorker() }));
+    await user.type(screen.getByLabelText('Start block'), '1000');
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    await waitFor(() => { expect(screen.getByText(/Finished\./)).toBeTruthy(); });
+    expect(screen.getByText(mine.stealthAddress)).toBeTruthy();
+    expect(screen.getByText(/Block 1500 held more announcements than one RPC response may carry/)).toBeTruthy();
+    expect(screen.getByText(/announcements there that were not posted by the GhostPay router were skipped/)).toBeTruthy();
+  });
+
   it('says so when only one RPC was used', async () => {
     generateSession();
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));

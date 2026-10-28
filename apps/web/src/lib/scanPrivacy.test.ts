@@ -23,7 +23,7 @@ const blockHash = (n: number | bigint): `0x${string}` => `0x${BigInt(n).toString
 const SCHEME_TOPIC = `0x${'1'.padStart(64, '0')}`;
 const OTHER = '0x9999999999999999999999999999999999999999' as Address;
 
-function fakeChain(head: number, logs: readonly RpcLog[], opts: { tooBigAbove?: number; forge?: RpcLog } = {}): MockRpc {
+function fakeChain(head: number, logs: readonly RpcLog[], opts: { tooBigAbove?: number; forge?: RpcLog; dense?: bigint; limitCode?: number } = {}): MockRpc {
   return mockRpc(84532, (method, params) => {
     if (method === 'eth_blockNumber') return `0x${head.toString(16)}`;
     if (method === 'eth_getBlockByNumber') {
@@ -31,9 +31,12 @@ function fakeChain(head: number, logs: readonly RpcLog[], opts: { tooBigAbove?: 
       return n > BigInt(head) ? null : { hash: blockHash(n), parentHash: blockHash(n === 0n ? 0n : n - 1n) };
     }
     if (method === 'eth_getLogs') {
-      const f = params[0] as { fromBlock: bigint; toBlock: bigint };
-      if (opts.tooBigAbove !== undefined && f.toBlock - f.fromBlock + 1n > BigInt(opts.tooBigAbove)) throw new ChainAdapterError('RESPONSE_TOO_LARGE', 'response exceeds cap');
-      const hits = logs.filter((l) => BigInt(l.blockNumber) >= f.fromBlock && BigInt(l.blockNumber) <= f.toBlock);
+      const f = params[0] as { fromBlock: bigint; toBlock: bigint; topics: readonly (string | null)[] };
+      const tooBig = (): Error => (opts.limitCode === undefined ? new ChainAdapterError('RESPONSE_TOO_LARGE', 'response exceeds cap') : new ChainAdapterError('RPC_FAILURE', `json-rpc error ${String(opts.limitCode)}`));
+      if (opts.tooBigAbove !== undefined && f.toBlock - f.fromBlock + 1n > BigInt(opts.tooBigAbove)) throw tooBig();
+      // `dense`: a spam block that no caller-unfiltered response containing it can carry.
+      if (opts.dense !== undefined && f.topics[3] == null && f.fromBlock <= opts.dense && f.toBlock >= opts.dense) throw tooBig();
+      const hits = logs.filter((l) => BigInt(l.blockNumber) >= f.fromBlock && BigInt(l.blockNumber) <= f.toBlock && (f.topics[3] == null || l.topics[3]?.toLowerCase() === f.topics[3].toLowerCase()));
       return opts.forge === undefined ? hits : [...hits, opts.forge];
     }
     throw new Error(`unexpected ${method}`);
@@ -45,15 +48,17 @@ const logFilters = (rpc: MockRpc) => rpc.calls.filter((c) => c.method === 'eth_g
 /** Deterministic "CSPRNG" for ordering tests: every draw returns the same word. */
 const fixedCrypto = (word: number) => ({ getRandomValues: <T extends ArrayBufferView | null>(a: T): T => { if (a !== null) new Uint32Array(a.buffer, a.byteOffset, a.byteLength / 4).fill(word); return a; } });
 
-function windowed(inner: MockRpc, over: Partial<{ windowBlocks: number; jitterMs: readonly [number, number] }> = {}, sleeps: number[] = [], crypto = fixedCrypto(0)) {
+function windowed(inner: MockRpc, over: Partial<{ windowBlocks: number; jitterMs: readonly [number, number]; router: Address }> = {}, sleeps: number[] = [], crypto = fixedCrypto(0)) {
   return createWindowedScanClient(inner, {
     chain,
     announcer: FAKE_ANNOUNCER,
+    ...(over.router === undefined ? {} : { router: over.router }),
     policy: { windowBlocks: over.windowBlocks ?? 1000, jitterMs: over.jitterMs ?? [0, 0] },
     sleep: (ms) => { sleeps.push(ms); return Promise.resolve(); },
     cryptoApi: crypto,
   });
 }
+const routerTopic: `0x${string}` = `0x${FAKE_ROUTER.slice(2).toLowerCase().padStart(64, '0')}`;
 
 describe('createWindowedScanClient', () => {
   it('only ever asks for whole grid-aligned windows and discards out-of-range logs locally', async () => {
@@ -150,6 +155,60 @@ describe('createWindowedScanClient', () => {
     for (const f of ok) expect(f.fromBlock % 500n).toBe(0n);
   });
 
+  it('splits only the grid window that holds a spam block; the scan reads that block for router payments only (L4-01)', async () => {
+    const meta = encodeMetaAddress(generateKeySet());
+    const routed = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 1500, index: 0, caller: FAKE_ROUTER }).log;
+    const later = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 3500, index: 1, caller: OTHER }).log;
+    const inner = fakeChain(9000, [routed, later], { dense: 1500n });
+    const client = windowed(inner, { router: FAKE_ROUTER });
+    const found: bigint[] = [];
+    const routerOnly: bigint[] = [];
+    let cursor = { nextBlock: 0n } as Parameters<typeof fetchAnnouncements>[0]['cursor'];
+    for (let i = 0; i < 20; i++) {
+      const r = await fetchAnnouncements({ chain, client, announcer: FAKE_ANNOUNCER, router: FAKE_ROUTER, cursor, toBlock: 4999n });
+      found.push(...r.announcements.map((a) => a.blockNumber));
+      routerOnly.push(...(r.routerOnlyBlocks ?? []));
+      cursor = r.cursor;
+      if (!r.truncated) break;
+    }
+    expect(found).toEqual([1500n, 3500n]);
+    expect(routerOnly).toEqual([1500n]);
+    const unfiltered = logFilters(inner).filter((f) => f.topics.length === 2);
+    // Windows away from the spam block keep their full grid size; only the spam block's window is split
+    // (into the same deterministic halves for every user), so the scan does not fall back to one-block requests.
+    for (const start of [0n, 2000n, 3000n, 4000n]) expect(unfiltered.some((f) => f.fromBlock === start && f.toBlock === start + 999n)).toBe(true);
+    expect(unfiltered.filter((f) => f.toBlock - f.fromBlock + 1n !== 1000n).every((f) => f.fromBlock >= 1000n && f.toBlock <= 1999n)).toBe(true);
+    expect(unfiltered.length).toBeLessThan(100);
+    expect(logFilters(inner).filter((f) => f.topics.length === 4).map((f) => f.topics)).toEqual([[ANNOUNCEMENT_TOPIC, SCHEME_TOPIC, null, routerTopic]]);
+  });
+
+  it('allows the router caller filter only for the configured router and keeps it out of the unfiltered cache', async () => {
+    const meta = encodeMetaAddress(generateKeySet());
+    const routed = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 100, index: 0, caller: FAKE_ROUTER }).log;
+    const open = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 100, index: 1, caller: OTHER }).log;
+    const inner = fakeChain(9000, [routed, open]);
+    const routerQuery = { address: FAKE_ANNOUNCER, topics: [ANNOUNCEMENT_TOPIC, SCHEME_TOPIC as `0x${string}`, null, routerTopic], fromBlock: 100n, toBlock: 100n };
+    await expect(windowed(inner).getLogs(routerQuery)).rejects.toThrow(/scan filter/);
+    const otherTopic: `0x${string}` = `0x${OTHER.slice(2).padStart(64, '0')}`;
+    const otherCaller = { ...routerQuery, topics: [ANNOUNCEMENT_TOPIC, SCHEME_TOPIC as `0x${string}`, null, otherTopic] };
+    const c = windowed(inner, { router: FAKE_ROUTER });
+    await expect(c.getLogs(otherCaller)).rejects.toThrow(/scan filter/);
+    expect((await c.getLogs(routerQuery)).map((l) => l.logIndex)).toEqual([routed.logIndex]);
+    const all = await c.getLogs({ address: FAKE_ANNOUNCER, topics: [ANNOUNCEMENT_TOPIC, SCHEME_TOPIC as `0x${string}`], fromBlock: 100n, toBlock: 100n });
+    expect(all).toHaveLength(2);
+    // A provider that ignores the caller filter is caught.
+    const sloppy = windowed(mockRpc(84532, (m) => (m === 'eth_blockNumber' ? '0x2328' : [open])), { router: FAKE_ROUTER });
+    await expect(sloppy.getLogs(routerQuery)).rejects.toMatchObject({ code: 'INVALID_LOG' });
+  });
+
+  it('also shrinks the grid on provider result-limit codes other than -32602/-32005 (L4-01)', async () => {
+    const meta = encodeMetaAddress(generateKeySet());
+    const logs = [10, 700].map((b, i) => makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: b, index: i, caller: OTHER }).log);
+    const inner = fakeChain(3000, logs, { tooBigAbove: 500, limitCode: -32600 });
+    const r = await fetchAnnouncements({ chain, client: windowed(inner), announcer: FAKE_ANNOUNCER, cursor: { nextBlock: 0n }, toBlock: 999n });
+    expect(r.announcements).toHaveLength(2);
+  });
+
   it('with windowBlocks 0 behaves exactly like the inner client', async () => {
     const inner = fakeChain(3000, []);
     await windowed(inner, { windowBlocks: 0 }).getLogs({ address: FAKE_ANNOUNCER, topics: [ANNOUNCEMENT_TOPIC, SCHEME_TOPIC as `0x${string}`], fromBlock: 17n, toBlock: 33n });
@@ -225,6 +284,17 @@ describe('createIndexerScanClient', () => {
     const quiet = mk((d) => { d.announcements = d.announcements.filter((a) => a['blockNumber'] !== '1650'); });
     const r = await fetchAnnouncements({ chain, client: quiet.client, announcer: FAKE_ANNOUNCER, cursor: { nextBlock: 1100n }, toBlock: 1999n });
     expect(r.announcements).toHaveLength(1);
+  });
+
+  it('applies the router caller filter to indexer records locally (L4-01)', async () => {
+    const rpc = fakeChain(2500, []);
+    const stranger = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 1300, index: 3, caller: OTHER }).log;
+    const idx = indexerFetch(2500, [...real, stranger].map(annFrom));
+    const client = createIndexerScanClient(rpc, { chain, announcer: FAKE_ANNOUNCER, router: FAKE_ROUTER, baseUrl: 'https://indexer.example.org', fetchImpl: idx.fetchImpl, windowBlocks: 1000 });
+    const filtered = await client.getLogs({ address: FAKE_ANNOUNCER, topics: [ANNOUNCEMENT_TOPIC, SCHEME_TOPIC as `0x${string}`, null, routerTopic], fromBlock: 1000n, toBlock: 1999n });
+    expect(filtered.map((l) => Number(BigInt(l.blockNumber)))).toEqual([1200, 1650]);
+    const all = await client.getLogs({ address: FAKE_ANNOUNCER, topics: [ANNOUNCEMENT_TOPIC, SCHEME_TOPIC as `0x${string}`], fromBlock: 1000n, toBlock: 1999n });
+    expect(all).toHaveLength(3);
   });
 
   it('refuses chains the indexer source does not support and malformed URLs', () => {
@@ -323,6 +393,13 @@ describe('describeScanDisclosure', () => {
     expect(tor).toContain('cannot verify');
     const idx = describeScanDisclosure(cases[2]!, { hasSecondary: false });
     expect(idx.some((r) => /indexer/i.test(r.party) && /omit/i.test(r.learns))).toBe(true);
+  });
+  it('says that block reads still show both RPCs exactly how far the scan got, even with windows (L3-F5)', () => {
+    const rows = describeScanDisclosure(base(), { hasSecondary: true });
+    const learns = (party: string): string => rows.find((r) => r.party === party)?.learns ?? '';
+    for (const party of ['Scan RPC', 'Second RPC']) expect(learns(party)).toMatch(/exactly how far you have scanned/);
+    expect(learns('Second RPC')).toMatch(/same fixed 1000-block windows/);
+    expect(learns('Second RPC')).not.toMatch(/the same scan ranges/);
   });
   function base(): ScanPrivacySettings { return { ...DEFAULT_SCAN_PRIVACY }; }
 });

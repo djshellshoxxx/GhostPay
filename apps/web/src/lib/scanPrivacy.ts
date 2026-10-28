@@ -14,6 +14,8 @@ import {
   ANNOUNCEMENT_TOPIC,
   ChainAdapterError,
   createClient,
+  isLogLimitError,
+  rawCallerTopic,
   validateRpcUrl,
   type Address,
   type ChainConfig,
@@ -226,14 +228,17 @@ export function describeScanDisclosure(s: ScanPrivacySettings, o: { readonly has
   const windows = s.windowBlocks > 0 ? `fixed ${String(s.windowBlocks)}-block windows (coarse, but they still show roughly how far you have scanned)` : 'the exact block ranges you scan';
   const ip = s.transport === 'direct' ? 'your IP address' : s.transport === 'tor-browser' ? 'your IP address unless you really opened this page in Tor Browser' : 'the IP address of your proxy\'s exit, not yours, if your proxy really forwards over Tor';
   const logsFrom = s.source === 'indexer' ? 'block hashes for the scanned windows and announcement blocks' : `that you read GhostPay announcements, ${windows}, and when`;
-  rows.push({ party: 'Scan RPC', learns: `${ip}; ${logsFrom}. Checking a router payment that matched asks for its receipt, which can reveal which announcement is yours.` });
+  // Windows cover only the eth_getLogs ranges: block reads at the checkpoint, window ends and page ends are exact.
+  const position = 'The block reads that check your checkpoint and each page still show exactly how far you have scanned.';
+  rows.push({ party: 'Scan RPC', learns: `${ip}; ${logsFrom}. ${position} Checking a router payment that matched asks for its receipt, which can reveal which announcement is yours.` });
   if (s.source === 'indexer') {
     rows.push({ party: 'Indexer operator', learns: `${ip}; ${windows}, and when. Block hashes are cross-checked against your RPC, but the indexer could still omit announcements inside blocks it reports.` });
   }
   if (s.transport === 'local-proxy') rows.push({ party: 'Your local proxy', learns: 'Everything the RPC sees, plus the destination. GhostPay cannot check that it forwards over Tor.' });
   if (s.transport === 'tor-browser') rows.push({ party: 'Tor exit', learns: `The destination host, not the TLS content. ${TOR_BROWSER_NOTICE}` });
   if (o.hasSecondary && !(s.requireProxy && s.transport === 'local-proxy')) {
-    rows.push({ party: 'Second RPC', learns: `${s.transport === 'local-proxy' ? 'Your IP address (it is contacted directly, not through the proxy)' : ip}; the same scan ranges and verification requests.` });
+    const secondWindows = s.windowBlocks > 0 ? `the same fixed ${String(s.windowBlocks)}-block windows` : 'the same exact block ranges';
+    rows.push({ party: 'Second RPC', learns: `${s.transport === 'local-proxy' ? 'Your IP address (it is contacted directly, not through the proxy)' : ip}; ${secondWindows} for announcements, the same block reads (so it also learns exactly how far you have scanned) and the same verification requests.` });
   }
   rows.push({ party: 'Everyone', learns: `Nothing on-chain is hidden: payer, amount, token, timing and the announcement are public.${s.transport === 'direct' ? '' : ` ${FIRST_USE_NOTICE}`}` });
   return rows;
@@ -244,19 +249,21 @@ export function describeScanDisclosure(s: ScanPrivacySettings, o: { readonly has
 
 const SCHEME_TOPIC = /^0x[0-9a-f]{64}$/;
 
-function isTooBig(e: unknown): boolean {
-  return e instanceof ChainAdapterError && (e.code === 'RESPONSE_TOO_LARGE' || /json-rpc error -(32602|32005)/.test(e.message));
-}
-
 function isAnnouncerQuery(f: LogFilter, announcer: Address): boolean {
   return f.address.toLowerCase() === announcer.toLowerCase() && typeof f.topics[0] === 'string' && f.topics[0].toLowerCase() === ANNOUNCEMENT_TOPIC;
 }
 
-/** Outgoing-request audit: a scan query names only the announcer, the event topic and the public scheme topic. */
-function assertScanFilter(f: LogFilter): void {
+/**
+ * Outgoing-request audit: a scan query names only the announcer, the event topic and the public scheme topic. The one
+ * exception is the public manifest router as the `caller` (topics[3]), used for a single block too large to fetch
+ * whole; it is the same for every GhostPay user and names nothing about this seller.
+ */
+function assertScanFilter(f: LogFilter, router: Address | undefined): void {
   const keys = Object.keys(f).sort().join(',');
   const scheme = f.topics[1];
-  if (keys !== 'address,fromBlock,toBlock,topics' || f.topics.length !== 2 || typeof scheme !== 'string' || !SCHEME_TOPIC.test(scheme.toLowerCase())) {
+  const caller = f.topics[3];
+  const routerOnly = f.topics.length === 4 && f.topics[2] === null && router !== undefined && typeof caller === 'string' && caller.toLowerCase() === word(router);
+  if (keys !== 'address,fromBlock,toBlock,topics' || (f.topics.length !== 2 && !routerOnly) || typeof scheme !== 'string' || !SCHEME_TOPIC.test(scheme.toLowerCase())) {
     throw new ChainAdapterError('INVALID_INPUT', 'scan filter may only name the announcer and its event topics');
   }
 }
@@ -268,6 +275,8 @@ function parseHexNumber(v: unknown): bigint | undefined {
 export interface WindowedOptions {
   readonly chain: ChainConfig;
   readonly announcer: Address;
+  /** Manifest router: the only `caller` a scan query may filter on (one oversized block). */
+  readonly router?: Address;
   readonly policy: WindowPolicy;
   readonly sleep: (ms: number) => Promise<void>;
   readonly cryptoApi?: CryptoLike;
@@ -277,41 +286,45 @@ export interface WindowedOptions {
  * Announcement `eth_getLogs` calls become whole, grid-aligned windows (so different users send identical queries), fetched
  * in CSPRNG order with CSPRNG jitter between network requests; logs outside the caller's range are dropped locally after
  * provider-fault checks. Final windows are cached for this client's lifetime. All other calls pass through unchanged.
+ *
+ * A window the provider refuses as too large (announcer spam, or a provider range or result limit) is split into
+ * halves, the same way for every user, and retried; only that window is fetched in smaller pieces for the rest of the
+ * run, so one spam block does not shrink the whole grid. A refusal reaches the scanner only for a single block, which
+ * the scanner then re-reads for router-posted announcements (`router`, the one allowed caller filter).
  */
 export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): RpcClient {
   const cryptoApi = o.cryptoApi ?? crypto;
   const [jMin, jMax] = o.policy.jitterMs;
   if (!Number.isSafeInteger(o.policy.windowBlocks) || o.policy.windowBlocks < 0) throw new RangeError('windowBlocks');
   randomDelayMs(jMin, jMax, { getRandomValues: (a) => a }); // validates the range without drawing randomness
-  let W = Math.min(o.policy.windowBlocks, o.chain.getLogsMaxRange);
+  const W = Math.min(o.policy.windowBlocks, o.chain.getLogsMaxRange);
   let head: bigint | undefined;
   let networkRequests = 0;
   const depth = BigInt(o.chain.finalityDepth);
   const cache = new Map<string, readonly RpcLog[]>();
   const CACHE_MAX = 64;
+  // Windows a provider refused as too large; they are requested as their two halves from then on.
+  const split = new Set<string>();
+  const SPLIT_MAX = 4096;
+  const nodeKey = (f: LogFilter, start: bigint, end: bigint): string => `${String(f.topics[1])}|${String(f.topics[3] ?? '')}:${start.toString()}:${end.toString()}`;
 
   async function fetchWindow(f: LogFilter, start: bigint, end: bigint): Promise<readonly RpcLog[]> {
-    const key = `${f.topics[1] ?? ''}:${start.toString()}:${end.toString()}`;
+    const key = nodeKey(f, start, end);
     const hit = cache.get(key);
     if (hit !== undefined) return hit;
     if (networkRequests > 0 && jMax > 0) await o.sleep(randomDelayMs(jMin, jMax, cryptoApi));
     networkRequests++;
-    let logs: readonly RpcLog[];
-    try {
-      logs = await inner.getLogs({ address: f.address, topics: f.topics, fromBlock: start, toBlock: end });
-    } catch (e) {
-      // Shrink the grid (still aligned, still the same for everyone) and let the scanner retry with a smaller range.
-      if (isTooBig(e) && W > 1) W = Math.max(1, Math.floor(W / 2));
-      throw e;
-    }
+    const logs = await inner.getLogs({ address: f.address, topics: f.topics, fromBlock: start, toBlock: end });
     const list: unknown = logs;
     if (!Array.isArray(list)) throw new ChainAdapterError('RPC_FAILURE', 'logs not an array');
+    const caller = f.topics[3];
     for (const raw of list as readonly unknown[]) {
       const l = typeof raw === 'object' && raw !== null ? (raw as Partial<RpcLog>) : undefined;
       const n = parseHexNumber(l?.blockNumber);
       const topics: unknown = l?.topics;
       if (typeof l?.address !== 'string' || l.address.toLowerCase() !== f.address.toLowerCase() || !Array.isArray(topics) ||
           String(topics[0]).toLowerCase() !== String(f.topics[0]).toLowerCase() || String(topics[1]).toLowerCase() !== String(f.topics[1]).toLowerCase() ||
+          (typeof caller === 'string' && rawCallerTopic(l as RpcLog) !== caller.toLowerCase()) ||
           n === undefined || n < start || n > end) {
         throw new ChainAdapterError('INVALID_LOG', 'provider returned a log outside the requested window or filter');
       }
@@ -321,6 +334,35 @@ export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): 
       cache.set(key, logs);
     }
     return logs;
+  }
+
+  /** Collects the logs of grid window [start, end] that fall in [from, to], splitting refused windows into halves. */
+  async function fetchNode(f: LogFilter, start: bigint, end: bigint, out: RpcLog[]): Promise<void> {
+    if (end < f.fromBlock || start > f.toBlock) return;
+    const key = nodeKey(f, start, end);
+    if (end > start && split.has(key)) {
+      const mid = start + (end - start + 1n) / 2n - 1n;
+      const halves: [bigint, bigint][] = [[start, mid], [mid + 1n, end]];
+      // CSPRNG order inside a split window as well.
+      if (randomDelayMs(0, 1, cryptoApi) === 1) halves.reverse();
+      for (const [s, e] of halves) await fetchNode(f, s, e, out);
+      return;
+    }
+    let logs: readonly RpcLog[];
+    try {
+      logs = await fetchWindow(f, start, end);
+    } catch (e) {
+      // Too large: split this window and retry it. Only a single block too large to return is left to the scanner.
+      if (!isLogLimitError(e) || end === start) throw e;
+      if (split.size >= SPLIT_MAX) split.delete(split.values().next().value as string);
+      split.add(key);
+      await fetchNode(f, start, end, out);
+      return;
+    }
+    for (const l of logs) {
+      const n = BigInt(l.blockNumber);
+      if (n >= f.fromBlock && n <= f.toBlock) out.push(l);
+    }
   }
 
   return {
@@ -334,7 +376,7 @@ export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): 
     },
     async getLogs(f) {
       if (!isAnnouncerQuery(f, o.announcer)) return inner.getLogs(f);
-      assertScanFilter(f);
+      assertScanFilter(f, o.router);
       if (W === 0) return inner.getLogs(f);
       if (f.fromBlock < 0n || f.toBlock < f.fromBlock) throw new ChainAdapterError('INVALID_INPUT', 'invalid scan range');
       head ??= await inner.blockNumber();
@@ -352,12 +394,7 @@ export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): 
         [windows[i], windows[j]] = [windows[j] as [bigint, bigint], windows[i] as [bigint, bigint]];
       }
       const out: RpcLog[] = [];
-      for (const [s, e] of windows) {
-        for (const l of await fetchWindow(f, s, e)) {
-          const n = BigInt(l.blockNumber);
-          if (n >= f.fromBlock && n <= f.toBlock) out.push(l);
-        }
-      }
+      for (const [s, e] of windows) await fetchNode(f, s, e, out);
       const pos = (l: RpcLog): bigint => (BigInt(l.blockNumber) << 32n) + (parseHexNumber(l.logIndex) ?? 0n);
       out.sort((a, b) => (pos(a) < pos(b) ? -1 : pos(a) > pos(b) ? 1 : 0));
       return out;
@@ -423,6 +460,8 @@ function toRpcLog(a: ScanAnnouncement, announcer: Address): RpcLog {
 export interface IndexerClientOptions {
   readonly chain: ChainConfig;
   readonly announcer: Address;
+  /** Manifest router: a router-only query is answered from the same records, filtered here by caller. */
+  readonly router?: Address;
   readonly baseUrl: string;
   readonly fetchImpl: (url: string, init: RequestInit) => Promise<Response>;
   /** Window grid for the indexer request (the chain's log range when windows are off). */
@@ -452,7 +491,7 @@ export function createIndexerScanClient(inner: RpcClient, o: IndexerClientOption
     getBlock: (n) => inner.getBlock(n),
     async getLogs(f) {
       if (!isAnnouncerQuery(f, o.announcer)) return inner.getLogs(f);
-      assertScanFilter(f);
+      assertScanFilter(f, o.router);
       let res;
       try {
         res = await source.fetch({ chainId: o.chain.chainId, fromBlock: f.fromBlock, toBlock: f.toBlock });
@@ -461,7 +500,10 @@ export function createIndexerScanClient(inner: RpcClient, o: IndexerClientOption
         throw new ChainAdapterError('RPC_FAILURE', `indexer ${e instanceof ScanSourceError ? e.code : 'failure'}`);
       }
       if (res.coverage.fromBlock > f.fromBlock || res.coverage.toBlock < f.toBlock) throw new ChainAdapterError('RPC_FAILURE', 'indexer CONTINUITY window incomplete');
-      return res.announcements.filter((a) => a.blockNumber >= f.fromBlock && a.blockNumber <= f.toBlock).map((a) => toRpcLog(a, o.announcer));
+      const caller = f.topics[3];
+      return res.announcements
+        .filter((a) => a.blockNumber >= f.fromBlock && a.blockNumber <= f.toBlock && (typeof caller !== 'string' || word(a.caller) === caller.toLowerCase()))
+        .map((a) => toRpcLog(a, o.announcer));
     },
   };
 }
@@ -473,6 +515,8 @@ export interface OpenScanOptions {
   readonly plan: Extract<ScanPlan, { kind: 'ready' }>;
   readonly chain: ChainConfig;
   readonly announcer: Address;
+  /** Manifest router: allows the router-only re-query of a single oversized block. */
+  readonly router?: Address;
   readonly appRpc: () => Promise<RpcClient | undefined>;
   readonly fetchImpl: (url: string, init: RequestInit) => Promise<Response>;
   readonly sleep: (ms: number) => Promise<void>;
@@ -506,7 +550,8 @@ export async function openScanClients(o: OpenScanOptions): Promise<ScanClients |
     base = await o.appRpc();
   }
   if (base === undefined) return undefined;
-  const logs = plan.indexerUrl === undefined ? base : createIndexerScanClient(base, { chain: o.chain, announcer: o.announcer, baseUrl: plan.indexerUrl, fetchImpl: o.fetchImpl, windowBlocks: plan.window.windowBlocks });
-  const scan = createWindowedScanClient(logs, { chain: o.chain, announcer: o.announcer, policy: plan.window, sleep: o.sleep });
+  const router = o.router === undefined ? {} : { router: o.router };
+  const logs = plan.indexerUrl === undefined ? base : createIndexerScanClient(base, { chain: o.chain, announcer: o.announcer, ...router, baseUrl: plan.indexerUrl, fetchImpl: o.fetchImpl, windowBlocks: plan.window.windowBlocks });
+  const scan = createWindowedScanClient(logs, { chain: o.chain, announcer: o.announcer, ...router, policy: plan.window, sleep: o.sleep });
   return { base, scan };
 }

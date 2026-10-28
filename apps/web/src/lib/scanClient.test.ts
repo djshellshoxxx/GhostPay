@@ -1,4 +1,4 @@
-import { CHAINS, ghostPayRouterAbi, grossForNet, type Hex, type Address, type RpcLog } from '@ghostpay/chain-adapters';
+import { CHAINS, ChainAdapterError, ghostPayRouterAbi, grossForNet, type Hex, type Address, type LogFilter, type RpcLog } from '@ghostpay/chain-adapters';
 import { encodeMetaAddress, generateKeySet, parseMetadata, unsafeRevealSecret } from '@ghostpay/core-crypto';
 import { describe, expect, it, vi } from 'vitest';
 import { decodeAbiParameters, encodeFunctionData } from 'viem/utils';
@@ -8,6 +8,7 @@ import { makeLog } from '../test/announcements';
 import { mockRpc } from '../test/mockRpc';
 import { checkpointKeyId, localCheckpointStore, runScan, type CheckpointStore, type ScanProgress } from './scanClient';
 import { ReconciliationVault } from './reconciliationVault';
+import type { ToWorker } from './scannerCore';
 
 const chain = CHAINS.find((c) => c.chainId === 84532)!;
 const hexOf = (b: Uint8Array): string => Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
@@ -41,9 +42,10 @@ function chainWith(head: number, logs: RpcLog[]) {
       return { hash: blockHash(n), parentHash: blockHash(n - 1), number: `0x${n.toString(16)}` };
     }
     if (method === 'eth_getLogs') {
-      const f = params[0] as { address?: string; fromBlock: bigint; toBlock: bigint };
+      const f = params[0] as { address?: string; fromBlock: bigint; toBlock: bigint; topics?: readonly (string | null)[] };
       const source = f.address?.toLowerCase() === '0x036cbd53842c5426634e7929541ec2318f3dcf7e' ? transfers : logs;
-      return source.filter((l) => BigInt(l.blockNumber) >= f.fromBlock && BigInt(l.blockNumber) <= f.toBlock);
+      const caller = f.topics?.[3];
+      return source.filter((l) => BigInt(l.blockNumber) >= f.fromBlock && BigInt(l.blockNumber) <= f.toBlock && (caller == null || l.topics[3] === caller));
     }
     if (method === 'eth_getTransactionReceipt' || method === 'eth_getTransactionByHash') {
       const log = logs.find((item) => item.transactionHash?.toLowerCase() === String(params[0]).toLowerCase());
@@ -417,6 +419,108 @@ describe('runScan', () => {
     });
     await expect(runScan({ chain, manifest, client: bad, cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => worker, signal: new AbortController().signal })).rejects.toThrow();
     expect(worker.terminated).toBe(true);
+  });
+
+  it('never defers the first page of a run, so a low non-router budget cannot hold the cursor for good (L3-F4)', async () => {
+    const keys = generateKeySet();
+    const stranger = encodeMetaAddress(generateKeySet());
+    const spam = Array.from({ length: 6 }, (_, i) => makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block: 100, index: i, caller: '0x9999999999999999999999999999999999999999' }).log);
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(keys), block: 60_000, index: 0, caller: FAKE_ROUTER });
+    const res = await runScan({
+      chain, manifest, client: chainWith(70_000, [...spam, mine.log]), cursor: { nextBlock: 0n }, openLaneBudget: 5,
+      spendingPublicKeyHex: hexOf(keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal,
+    });
+    expect(res.matches.map((m) => m.stealthAddress)).toEqual([mine.stealthAddress]);
+    expect(res.backlog).toBe(0);
+    expect(res.cursor.nextBlock).toBe(70_001n);
+  });
+
+  it('keeps waiting for a worker that reports progress on a long batch, and still stops one that stalls (L3-F3)', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    try {
+      for (const advancing of [true, false]) {
+        const s = setup();
+        const worker = new InlineWorker();
+        const deliver = worker.postMessage.bind(worker);
+        let held: Extract<ToWorker, { type: 'batch' }> | undefined;
+        worker.postMessage = (m): void => { if (m.type === 'batch') held = m; else deliver(m); };
+        const task = runScan({
+          chain, manifest, client: chainWith(2500, s.logs), cursor: { nextBlock: 0n },
+          spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+          createWorker: () => worker, signal: new AbortController().signal, replyTimeoutMs: 50,
+        });
+        const outcome = task.then(() => 'done', (e: unknown) => (e instanceof Error ? e.message : 'error'));
+        for (let i = 0; i < 10_000 && held === undefined; i++) await Promise.resolve();
+        const batch = held!;
+        // 200 ms in total, never 50 ms without progress: a slow device scanning a full page.
+        for (let i = 1; i <= 5; i++) {
+          await vi.advanceTimersByTimeAsync(40);
+          worker.onmessage?.({ data: { type: 'progress', batchId: batch.batchId, scanned: advancing ? i * 128 : 128 } });
+        }
+        deliver(batch);
+        await vi.advanceTimersByTimeAsync(0);
+        expect(await outcome).toBe(advancing ? 'done' : 'The scanner did not answer in time and was stopped.');
+      }
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
+
+describe('announcement spam and a second RPC (L4-01, L3-F2)', () => {
+  const OTHER = '0x9999999999999999999999999999999999999999' as Address;
+  const tooBig = (): Error => new ChainAdapterError('RESPONSE_TOO_LARGE', 'response exceeds cap');
+  /** Any announcer query without a caller filter that covers `dense` (or spans more than `maxBlocks`) exceeds the cap. */
+  const capped = (base: ReturnType<typeof chainWith>, dense: bigint | undefined, maxBlocks = 1000n): ReturnType<typeof chainWith> => ({
+    ...base,
+    getLogs: (f: LogFilter) => (f.topics.length === 2 && (f.toBlock - f.fromBlock + 1n > maxBlocks || (dense !== undefined && f.fromBlock <= dense && f.toBlock >= dense))
+      ? Promise.reject(tooBig())
+      : base.getLogs(f)),
+  });
+  const scan = (s: ReturnType<typeof setup>, extra: Partial<Parameters<typeof runScan>[0]> & Pick<Parameters<typeof runScan>[0], 'client'>) => runScan({
+    chain, manifest, cursor: { nextBlock: 0n },
+    spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+    createWorker: () => new InlineWorker(), signal: new AbortController().signal, ...extra,
+  });
+
+  it('scans the router lane of a block too large for one response, reports it, and compares it the same way', async () => {
+    const s = setup();
+    const stranger = encodeMetaAddress(generateKeySet());
+    const spam = Array.from({ length: 5 }, (_, i) => makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block: 120, index: 10 + i, caller: OTHER }).log);
+    const logs = [...s.logs, ...spam];
+    const single = await scan(s, { client: capped(chainWith(2500, logs), 120n) });
+    expect(single.routerOnlyBlocks).toEqual([120n]);
+    expect(single.matches.map((m) => m.stealthAddress)).toEqual([s.mine.stealthAddress, s.mine2.stealthAddress]);
+    expect(single.matches[0]?.receipt).toBe('verified');
+    const both = await scan(s, { client: capped(chainWith(2500, logs), 120n), secondaryClient: capped(chainWith(2500, logs), 120n) });
+    expect(both.discrepancies).toEqual([]);
+    expect(both.routerOnlyBlocks).toEqual([120n]);
+    expect(both.matches).toHaveLength(2);
+  });
+
+  it('splits dense ranges on the second RPC instead of withholding the page (L3-F2)', async () => {
+    const s = setup();
+    const res = await scan(s, { client: chainWith(2500, s.logs), secondaryClient: capped(chainWith(2500, s.logs), undefined, 100n) });
+    expect(res.discrepancies).toEqual([]);
+    expect(res.matches).toHaveLength(2);
+    expect(res.cursor.nextBlock).toBe(2501n);
+  });
+
+  it('ends each two-provider page at the lower head, so a second RPC a few blocks behind does not stall the scan (L3-F2)', async () => {
+    const s = setup();
+    const pay = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(s.keys), block: 1200, index: 0, caller: FAKE_ROUTER });
+    const upTo = (head: number) => { const base = chainWith(head, [pay.log]); return { ...base, getBlock: (n: bigint) => (n > BigInt(head) ? Promise.resolve(null) : base.getBlock(n)) }; };
+    const res = await scan(s, { client: upTo(30_000), secondaryClient: upTo(29_998), cursor: { nextBlock: 1000n } });
+    expect(res.discrepancies).toEqual([]);
+    expect(res.matches.map((m) => m.stealthAddress)).toEqual([pay.stealthAddress]);
+    expect(res.cursor.nextBlock).toBe(29_999n);
+    // A second RPC that cannot even report its head fails closed as before.
+    const dead = { ...upTo(29_998), blockNumber: () => Promise.reject(new Error('down')) };
+    const failed = await scan(s, { client: upTo(30_000), secondaryClient: dead, cursor: { nextBlock: 1000n } });
+    expect(failed.discrepancies.map((d) => d.kind)).toEqual(['secondary_error']);
+    expect(failed.matches).toEqual([]);
+    expect(failed.cursor.nextBlock).toBe(1000n);
   });
 });
 
