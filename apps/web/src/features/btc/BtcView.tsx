@@ -7,7 +7,7 @@ import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
 import { EsploraClient, normalizeEsploraUrl } from './esplora';
 import { BTC_NETWORKS, btcNetwork, type BtcNetworkId } from './network';
 import { MAX_SCAN_BLOCKS, scanForPayments, type FoundPayment, type ScanResult } from './scan';
-import { btcErrorMessage, formatBtc, reviewSweep, SIGNER_DESCRIPTION, signSweep, type SignedSweep, type SweepReview } from './sweep';
+import { btcErrorMessage, checkDestination, formatBtc, reviewSweep, SIGNER_DESCRIPTION, signSweep, type SignedSweep, type SweepReview } from './sweep';
 import { SCAN_CHECKS, SCAN_LIMITS, SCAN_MODES } from './verification';
 import { paymentUri, randomSeedHex, walletFromSeedHex, type BtcWallet } from './wallet';
 
@@ -116,7 +116,7 @@ export function BtcView(): ReactNode {
         });
         setScan(res);
         setScanNote(t('btc.scan.scanned', { from: String(res.fromHeight), to: String(res.toHeight) }));
-        setPicked(new Set(res.found.map((f) => `${f.txid}:${String(f.vout)}`)));
+        // Nothing is selected: spending outputs together links them publicly (PRIVACY-E2E-03), so each is an explicit choice.
       } catch (e) {
         setError(btcErrorMessage(e));
       } finally {
@@ -338,6 +338,7 @@ export function BtcView(): ReactNode {
                   </table>
                 </div>
               )}
+              {selected.length > 1 && <Notice kind="warn">{t('btc.scan.linkWarning', { count: String(selected.length) })}</Notice>}
             </>
           )}
         </div>
@@ -367,8 +368,8 @@ export function BtcView(): ReactNode {
                   }
                 }
                 try {
-                  // reviewSweep applies the same network/address and dust checks used before signing.
-                  reviewSweep(wallet, selected, address, Number(feeRate));
+                  // The address checks used before signing; no payment has to be selected yet (amounts are checked at review).
+                  checkDestination(wallet, address);
                   setDestination(address);
                   setReview(undefined);
                   setApproved(false);

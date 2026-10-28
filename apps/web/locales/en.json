@@ -358,6 +358,7 @@
     "btc.scan.sweepAria": "Sweep {id}",
     "btc.scan.duplicateKey": "Duplicate output key; verify this exact outpoint",
     "btc.scan.uniqueKey": "Unique in this scan",
+    "btc.scan.linkWarning": "{count} payments are selected. Spending them in one transaction links them publicly: anyone can see they have one owner. To keep them apart, sweep one payment at a time, each to a different new address (separate sweeps to the same address also link them).",
     "btc.sweep.destinationLabel": "Destination address",
     "btc.sweep.destinationHint": "A {network} address or silent payment address (tsp1...). Check it carefully: a sent transaction cannot be reversed.",
     "btc.sweep.importQr": "Import sweep destination QR",

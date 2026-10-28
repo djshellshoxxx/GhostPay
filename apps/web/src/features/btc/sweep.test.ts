@@ -1,10 +1,10 @@
-import { SilentPaymentError, taprootScriptPubKey, verifyKeyPathSpend } from '@ghostpay/btc-silent-payments';
+import { encodeSilentPaymentAddress, SilentPaymentError, taprootScriptPubKey, verifyKeyPathSpend } from '@ghostpay/btc-silent-payments';
 import { bech32 } from '@scure/base';
 import { describe, expect, it } from 'vitest';
 import { EsploraClient } from './esplora';
 import { mockChain, walletA } from './fixtures.testutil';
 import { scanForPayments, type FoundPayment } from './scan';
-import { btcErrorMessage, formatBtc, reviewSweep, signSweep } from './sweep';
+import { btcErrorMessage, checkDestination, formatBtc, reviewSweep, signSweep } from './sweep';
 import { paymentUri } from './wallet';
 
 function addr(hrp: string, byte: number): string {
@@ -14,9 +14,9 @@ const BCRT = addr('bcrt', 3);
 const TB = addr('tb', 3);
 const MAIN = addr('bc', 3);
 
-async function payments(): Promise<FoundPayment[]> {
+async function payments(count = 1): Promise<FoundPayment[]> {
   const w = walletA();
-  const chain = mockChain('regtest', w);
+  const chain = mockChain('regtest', w, { payments: count });
   const client = new EsploraClient({ baseUrl: 'https://esplora.test/api', fetchFn: chain.fetchFn });
   return [...(await scanForPayments({ client, wallet: w, fromHeight: 0 })).found];
 }
@@ -71,6 +71,37 @@ describe('reviewSweep', () => {
     expect(hi.warnings.some((x) => x.includes('10%'))).toBe(true);
     expect(reviewSweep(w, p, w.address, 1).warnings.some((x) => x.includes('own receive'))).toBe(true);
     expect(reviewSweep(w, p, w.address, 1).destinationKind).toBe('silent payment address');
+  });
+
+  it('warns that spending several payments in one transaction links them publicly', async () => {
+    const w = walletA();
+    expect(reviewSweep(w, await payments(), BCRT, 2).warnings.some((x) => x.includes('link'))).toBe(false);
+    const two = await payments(2);
+    expect(two).toHaveLength(2);
+    const r = reviewSweep(w, two, BCRT, 2);
+    expect(r.warnings.filter((x) => x.includes('spends 2 payments in one transaction') && x.includes('links them publicly'))).toHaveLength(1);
+    expect(r.warnings.some((x) => x.includes('separate sweeps to the same address also link them'))).toBe(true);
+  });
+
+  it('refuses a silent payment address for another network, or a malformed one, at review rather than at signing', async () => {
+    const w = walletA();
+    const p = await payments();
+    const mainnetSp = encodeSilentPaymentAddress('mainnet', w.keys.scanPublicKey, w.keys.spendPublicKey);
+    expect(code(() => reviewSweep(w, p, mainnetSp, 2))).toBe('INVALID_ADDRESS');
+    expect(code(() => reviewSweep(w, p, `${w.address.slice(0, -1)}${w.address.endsWith('q') ? 'p' : 'q'}`, 2))).toBe('INVALID_ADDRESS');
+    expect(code(() => reviewSweep(w, p, w.address.toUpperCase(), 2))).toBe('INVALID_ADDRESS');
+  });
+});
+
+describe('checkDestination', () => {
+  it('checks a destination for the wallet network without any selected payment', () => {
+    const w = walletA();
+    expect(checkDestination(w, ` ${BCRT} `)).toBe(BCRT);
+    expect(checkDestination(w, w.address)).toBe(w.address);
+    for (const bad of [TB, MAIN, 'garbage', encodeSilentPaymentAddress('mainnet', w.keys.scanPublicKey, w.keys.spendPublicKey)]) {
+      expect(code(() => checkDestination(w, bad))).toBe('INVALID_ADDRESS');
+    }
+    expect(code(() => checkDestination(w, '  '))).toBe('INVALID_INPUT');
   });
 });
 
