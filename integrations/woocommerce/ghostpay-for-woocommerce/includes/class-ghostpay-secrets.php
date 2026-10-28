@@ -35,7 +35,9 @@ final class GhostPay_Secrets {
 
 	/**
 	 * Upgrade step (idempotent, on every load): earlier builds could store both secrets in the gateway settings. Delete
-	 * them and keep only a SHA-256 of each, so the rotation notice stays until a different value is configured.
+	 * them and keep only a SHA-256 of each, so the rotation notice stays until a different value is configured. The
+	 * record is written first: a request that stops in between leaves the secrets for the next purge, never an
+	 * unrecorded deletion.
 	 */
 	public static function purge_stored(): void {
 		$settings = get_option( self::SETTINGS );
@@ -51,10 +53,10 @@ final class GhostPay_Secrets {
 			}
 			unset( $settings[ $which . '_secret' ] );
 		}
-		update_option( self::SETTINGS, $settings );
 		if ( array() !== $exposed ) {
 			update_option( self::EXPOSED, $exposed, false );
 		}
+		update_option( self::SETTINGS, $settings );
 	}
 
 	/** Admin notice while a secret that was stored in the database is not yet replaced by a new valid value. */

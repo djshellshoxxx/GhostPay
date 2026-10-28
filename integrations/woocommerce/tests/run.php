@@ -177,6 +177,28 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	check( 'that webhook pays the order', GhostPay_Test::$orders[1]['status'], 'processing' );
 	do_action( 'init' );
 	check( 'upgrade step is idempotent', $notice(), '' );
+	// A request can stop at any database step: the purge must never delete a secret it has not recorded for rotation.
+	for ( $step = 1; ; ++$step ) {
+		GhostPay_Test::reset();
+		update_option( 'woocommerce_ghostpay_settings', $settings + array( 'service_secret' => $old_service, 'webhook_secret' => $old_webhook ) );
+		try {
+			$stopped = GhostPay_Test::race(
+				static fn() => do_action( 'init' ),
+				static function (): void {
+					throw new RuntimeException( 'request stopped' );
+				},
+				$step
+			);
+		} catch ( RuntimeException $e ) {
+			$stopped = true;
+		}
+		if ( ! $stopped ) {
+			break;
+		}
+		list( $left, $recorded ) = GhostPay_Test::as_request( static fn(): array => array( get_option( 'woocommerce_ghostpay_settings' ), get_option( 'ghostpay_exposed_secrets' ) ) );
+		check( "purge stopped at database step $step: secrets still stored or recorded", isset( $left['service_secret'], $left['webhook_secret'] ) || ( is_array( $recorded ) && 2 === count( $recorded ) ), true );
+	}
+	check( 'purge interruption covered its database steps', $step > 3, true );
 
 	// G3-04: claims must be atomic. WordPress add_option() reads, fires 'add_option', then upserts, so two concurrent
 	// requests could both "add" the same option. Run a second request at every database step of the first one.
@@ -288,6 +310,13 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	check( 'webhook: USD 0.13 does not pay a 13 USD order (0 display decimals)', $status( 22 ), 'on-hold' );
 	$deliver( $event( 'evt_22b', 'invoice.paid', 'inv_22', 'USD', '1300' ) );
 	check( 'webhook: USD 13.00 pays it', $status( 22 ), 'processing' );
+
+	// G3-01, last because a constant cannot be undefined again: the wp-config.php constant wins over the environment.
+	define( 'GHOSTPAY_WEBHOOK_SECRET', $hex( 'e5' ) );
+	ghostpay_test_order( 30, 'pending', '12.50', 'USD', array( 'inv_30' ) );
+	$paid_30 = $event( 'evt_30', 'invoice.paid', 'inv_30', 'USD', '1250' );
+	check( 'environment secret ignored once the constant is defined', ghostpay_test_deliver( $paid_30, $sign_with( $webhook_hex, $paid_30 ) )[0], 400 );
+	check( 'webhook secret from the wp-config.php constant', ghostpay_test_deliver( $paid_30, $sign_with( $hex( 'e5' ), $paid_30 ) )[0], 200 );
 }
 
 if ( $failed > 0 ) {
