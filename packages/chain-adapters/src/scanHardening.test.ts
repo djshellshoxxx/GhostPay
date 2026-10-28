@@ -146,6 +146,14 @@ describe('L4-01: announcer spam never stops the scan for good', () => {
     await expect(fetchAnnouncements({ chain: CHAIN, client: c, announcer: ANN, cursor: { nextBlock: 5n }, maxLogs: 2 })).rejects.toThrow(/accepted log cap exceeded within one block/);
   });
 
+  it('keeps the completed windows when even the router lane of a block is too large, then fails closed there', async () => {
+    // Thirteen router announcements in one block: nothing may be skipped, so the scan cannot pass this block.
+    const c = await client(1000, Array.from({ length: 13 }, (_, i) => mkLog(7, i)), { maxBytes: 6000 });
+    const first = await fetchAnnouncements({ chain: CHAIN, client: c, announcer: ANN, router: FAKE.router, cursor: { nextBlock: 0n } });
+    expect(first).toMatchObject({ truncated: true, cursor: { nextBlock: 7n } });
+    await expect(fetchAnnouncements({ chain: CHAIN, client: c, announcer: ANN, router: FAKE.router, cursor: first.cursor })).rejects.toThrow(/RESPONSE_TOO_LARGE/);
+  });
+
   it('rejects a provider that answers the router-only query with another caller', async () => {
     const spam = Array.from({ length: 13 }, (_, i) => mkLog(7, i, OTHER));
     const c = await client(1000, spam, { maxBytes: 6000, callerAnswer: [mkLog(7, 0, OTHER)] });

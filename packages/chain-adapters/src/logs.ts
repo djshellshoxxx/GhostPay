@@ -329,7 +329,16 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
       // One block is still too large (announcer spam). Never drop a GhostPay payment silently: fetch only the
       // router's announcements for it and report the block as scanned for the router lane only.
       requests++;
-      logs = await o.client.getLogs({ address: o.announcer, topics: routerAnnouncementTopics(schemeId, o.router), fromBlock: next, toBlock: to });
+      try {
+        logs = await o.client.getLogs({ address: o.announcer, topics: routerAnnouncementTopics(schemeId, o.router), fromBlock: next, toBlock: to });
+      } catch (routerError) {
+        // Even the router lane is too large: keep the completed windows; the scan cannot pass this block.
+        if (!processed) throw routerError;
+        windows.pop();
+        canonical.delete(to);
+        truncated = true;
+        break;
+      }
       // The provider must honour the caller filter; anything else is a provider fault.
       if (logs.some((l) => rawCallerTopic(l) !== routerTopic)) return fail('INVALID_LOG', 'log outside the requested caller filter');
       routerLane = true;
