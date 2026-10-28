@@ -4,7 +4,7 @@ Static web bundle + reverse proxy (nginx, non-root, read-only fs) + API (relayer
 
 ```
 cp deploy/.env.example deploy/.env           # edit; no secrets in it
-cp apps/relayer/relayer.config.example.json deploy/config/relayer.config.json   # edit (see config/README.md)
+cp deploy/config/relayer.config.example.json deploy/config/relayer.config.json   # edit (see config/README.md)
 # create deploy/secrets/{relayer_key,quote_secret} per secrets/README.md
 # put the verified web bundle in deploy/web-dist (BUILD-WEB.md), or pass --tarball
 deploy/selfhost.sh --dry-run [--onion]       # validates prerequisites, prints the plan, changes nothing
