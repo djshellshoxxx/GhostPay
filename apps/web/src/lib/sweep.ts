@@ -3,6 +3,7 @@ import {
   assertSponsorFeeAcceptable,
   buildSweepTypedData,
   erc20Abi,
+  ghostPaySweepRelayerAbi,
   parseQuantity,
   signDigest,
   signPermit,
@@ -16,7 +17,7 @@ import {
 import { findLookalikes, parseStrictAddress, isReason, classifyDestination, type DestinationClass } from '@ghostpay/address-safety';
 import { deriveStealthSecret, zeroize, type PublicAnnouncement, type SecretScalar } from '@ghostpay/core-crypto';
 import type { TypedDataInput } from '@ghostpay/tx-review';
-import { encodeFunctionData, getAddress, keccak256, parseTransaction, serializeTransaction } from 'viem/utils';
+import { decodeFunctionResult, encodeFunctionData, getAddress, keccak256, parseTransaction, serializeTransaction } from 'viem/utils';
 import { UserFacingError } from './errors';
 import { buildPermit } from './pay';
 import { requestQuote, submitSweep, type FetchFn, type RelayerQuote } from './relayerClient';
@@ -143,6 +144,11 @@ export interface RelayedSweepInput {
   readonly nowSeconds: () => number;
   readonly fetchFn?: FetchFn;
   readonly randomNonce?: () => bigint;
+  /**
+   * Called with the signed order's on-chain identity immediately before it is posted to the relayer. It must persist
+   * the lock; if it throws, nothing is posted and the error propagates.
+   */
+  readonly onBeforeHandoff?: (order: RelayedOrderRef) => void;
 }
 
 function defaultNonce(): bigint {
@@ -232,6 +238,7 @@ export async function relayedSweep(i: RelayedSweepInput): Promise<string> {
     // already have accepted the signed order even if the seller session was locked while the request was in flight.
     assertSessionUnchanged();
     checkQuote();
+    i.onBeforeHandoff?.({ relayer: i.manifest.sweepRelayer, nonce: order.nonce, deadline: Number(deadline) });
     return await submitSweep(
       i.relayerUrl,
       {
@@ -282,11 +289,39 @@ export interface DirectSweepAttempt {
   readonly status: 'submitted' | 'unknown-after-handoff' | 'included' | 'reverted';
 }
 
-/** The fields a signing lock needs; the persisted journal keeps only these (no destination or amount). */
-export type SweepLock = Pick<DirectSweepAttempt, 'chainId' | 'owner' | 'nonce' | 'expectedHash' | 'status'>;
+/** On-chain identity of a signed relayed-sweep order: the sweep contract it was signed for, its nonce and deadline. */
+export interface RelayedOrderRef {
+  readonly relayer: Address;
+  readonly nonce: bigint;
+  /** Unix seconds; the contract rejects the order once `block.timestamp > deadline`. */
+  readonly deadline: number;
+}
+
+/**
+ * `expired`: a relayed order whose nonce was still unused in a block more than {@link RELAYED_EXPIRY_MARGIN_SECONDS}
+ * past its deadline; it can no longer execute. `refused`: the relayer answered with a client error (4xx other than
+ * 409), which by its API contract happens before anything is broadcast.
+ */
+export type SweepLockStatus = DirectSweepAttempt['status'] | 'expired' | 'refused';
+
+/**
+ * The fields a signing lock needs; the persisted journal keeps only these (no destination or amount). A direct sweep
+ * carries `expectedHash`; a relayed sweep carries `order` and, once the relayer answers, the hash it reported.
+ */
+export interface SweepLock {
+  readonly chainId: number;
+  readonly owner: Address;
+  readonly nonce?: number;
+  readonly expectedHash?: Hex;
+  readonly order?: RelayedOrderRef;
+  readonly status: SweepLockStatus;
+}
+
+/** Margin past the order deadline before an unused nonce counts as final (covers reorgs across the deadline). */
+export const RELAYED_EXPIRY_MARGIN_SECONDS = 600;
 
 /** True while an attempt may still land; signing a new transaction from the same address must stay disarmed. */
-export function isUnresolvedAttempt(a: Pick<DirectSweepAttempt, 'status'>): boolean {
+export function isUnresolvedAttempt(a: { readonly status: SweepLockStatus }): boolean {
   return a.status === 'unknown-after-handoff' || a.status === 'submitted';
 }
 
@@ -312,7 +347,7 @@ export interface DirectSweepResult {
  * Read-only receipt lookup by the exact expected hash through the configured RPC. A missing receipt, an RPC error or a
  * receipt for another hash leaves the attempt unchanged: absence is never proof that the transaction was not sent.
  */
-export async function reconcileDirectSweep<T extends Pick<DirectSweepAttempt, 'expectedHash' | 'status'>>(rpc: Rpc, attempt: T): Promise<T> {
+export async function reconcileDirectSweep<T extends { readonly expectedHash: Hex; readonly status: SweepLockStatus }>(rpc: Rpc, attempt: T): Promise<T> {
   let receipt: unknown;
   try {
     receipt = await rpc.request('eth_getTransactionReceipt', [attempt.expectedHash]);
@@ -325,6 +360,40 @@ export async function reconcileDirectSweep<T extends Pick<DirectSweepAttempt, 'e
   if (r.status === '0x1') return { ...attempt, status: 'included' };
   if (r.status === '0x0') return { ...attempt, status: 'reverted' };
   return attempt;
+}
+
+/**
+ * Read-only resolution of a relayed order from chain state alone (no relayer trust): executed when the sweep contract
+ * reports its nonce used; expired when a block safely past the deadline still shows it unused. Both reads use the
+ * same block. Any RPC error or malformed answer leaves the lock unchanged.
+ */
+export async function reconcileRelayedOrder<T extends { readonly owner: Address; readonly order?: RelayedOrderRef; readonly status: SweepLockStatus }>(rpc: Rpc, lock: T): Promise<T> {
+  const order = lock.order;
+  if (order === undefined) return lock;
+  try {
+    const block = (await rpc.request('eth_getBlockByNumber', ['latest', false])) as { number?: unknown; timestamp?: unknown } | null;
+    if (block === null || typeof block.number !== 'string' || typeof block.timestamp !== 'string') return lock;
+    const at = block.number;
+    const timestamp = parseQuantity(block.timestamp);
+    const data = encodeFunctionData({ abi: ghostPaySweepRelayerAbi, functionName: 'nonceUsed', args: [lock.owner, order.nonce] });
+    const raw = await rpc.request('eth_call', [{ to: order.relayer, data }, at]);
+    if (typeof raw !== 'string') return lock;
+    const used = decodeFunctionResult({ abi: ghostPaySweepRelayerAbi, functionName: 'nonceUsed', data: raw as Hex });
+    if (used) return { ...lock, status: 'included' };
+    if (timestamp > BigInt(order.deadline + RELAYED_EXPIRY_MARGIN_SECONDS)) return { ...lock, status: 'expired' };
+    return lock;
+  } catch {
+    return lock;
+  }
+}
+
+/** Resolves any sweep lock: relayed orders by nonce/deadline, direct sweeps by the exact expected hash's receipt. */
+export async function reconcileSweepLock<T extends SweepLock>(rpc: Rpc, lock: T): Promise<T> {
+  if (lock.order !== undefined) return reconcileRelayedOrder(rpc, lock);
+  const expectedHash = lock.expectedHash;
+  if (expectedHash === undefined) return lock;
+  const next = await reconcileDirectSweep(rpc, { expectedHash, status: lock.status });
+  return next.status === lock.status ? lock : { ...lock, status: next.status };
 }
 
 /** Signs a plain EIP-1559 transfer with the stealth key (the stealth address pays gas) and broadcasts it. */

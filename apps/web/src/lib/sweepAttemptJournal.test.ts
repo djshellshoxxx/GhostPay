@@ -23,12 +23,26 @@ describe('tab-scoped sweep attempt journal', () => {
 
   it('persists only the lock fields: never destination, asset or amount', () => {
     const s = storage();
-    const full: DirectSweepAttempt = { ...lock(1), destination: DEST, asset: 'native', amount: 123456789n };
+    const full: DirectSweepAttempt = { chainId: 84532, owner: owner(1), nonce: 3, expectedHash: `0x${'ab'.repeat(32)}`, status: 'unknown-after-handoff', destination: DEST, asset: 'native', amount: 123456789n };
     writeSweepAttempt(full, s);
     const raw = s.data.get(SWEEP_JOURNAL_KEY) ?? '';
     expect(raw).not.toContain(DEST.slice(2));
     expect(raw).not.toContain('123456789');
     expect(Object.keys((JSON.parse(raw) as object[])[0] ?? {}).sort()).toEqual(['chainId', 'expectedHash', 'nonce', 'owner', 'status']);
+  });
+
+  it('round-trips a relayed order lock (uint256 nonce as decimal) with and without the relayer-reported hash', () => {
+    const s = storage();
+    const order = { relayer: '0x4444444444444444444444444444444444444444' as `0x${string}`, nonce: 2n ** 255n + 7n, deadline: 1_800_001_200 };
+    const pending: SweepLock = { chainId: 84532, owner: owner(3), order, status: 'unknown-after-handoff' };
+    writeSweepAttempt(pending, s);
+    expect(s.data.get(SWEEP_JOURNAL_KEY)).toContain(`"nonce":"${(2n ** 255n + 7n).toString()}"`);
+    expect(readSweepAttempts(s)).toEqual([pending]);
+    for (const status of ['submitted', 'expired', 'refused', 'included'] as const) {
+      const next: SweepLock = { ...pending, expectedHash: `0x${'cd'.repeat(32)}`, status };
+      writeSweepAttempt(next, s);
+      expect(readSweepAttempts(s)).toEqual([next]);
+    }
   });
 
   it('keeps one lock per chain and owner, the latest status winning', () => {
@@ -54,6 +68,13 @@ describe('tab-scoped sweep attempt journal', () => {
     ['negative nonce', JSON.stringify([{ ...lock(1), nonce: -1 }])],
     ['string nonce', JSON.stringify([{ ...lock(1), nonce: '3' }])],
     ['duplicate owner', JSON.stringify([lock(1), { ...lock(1), status: 'submitted' }])],
+    ['neither hash nor order', JSON.stringify([{ chainId: 84532, owner: owner(1), status: 'submitted' }])],
+    ['order with extra field', JSON.stringify([{ chainId: 84532, owner: owner(1), status: 'submitted', order: { relayer: owner(4), nonce: '1', deadline: 5, x: 1 } }])],
+    ['order nonce not decimal', JSON.stringify([{ chainId: 84532, owner: owner(1), status: 'submitted', order: { relayer: owner(4), nonce: '0x1', deadline: 5 } }])],
+    ['order nonce leading zero', JSON.stringify([{ chainId: 84532, owner: owner(1), status: 'submitted', order: { relayer: owner(4), nonce: '01', deadline: 5 } }])],
+    ['order nonce >= 2^256', JSON.stringify([{ chainId: 84532, owner: owner(1), status: 'submitted', order: { relayer: owner(4), nonce: (2n ** 256n).toString(), deadline: 5 } }])],
+    ['order bad relayer', JSON.stringify([{ chainId: 84532, owner: owner(1), status: 'submitted', order: { relayer: '0x12', nonce: '1', deadline: 5 } }])],
+    ['order bad deadline', JSON.stringify([{ chainId: 84532, owner: owner(1), status: 'submitted', order: { relayer: owner(4), nonce: '1', deadline: 0 } }])],
     ['oversized', 'x'.repeat(40_000)],
   ])('fails closed on a malformed journal (%s)', (_name, raw) => {
     const s = storage();

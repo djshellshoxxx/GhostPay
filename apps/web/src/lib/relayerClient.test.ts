@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { requestQuote, submitSweep, type FetchFn, type SweepSubmission } from './relayerClient';
+import { RelayerRefusedError, requestQuote, submitSweep, type FetchFn, type SweepSubmission } from './relayerClient';
 
 const TOKEN = '0x036CbD53842c5426634e7929541eC2318f3dCF7e';
 const OWNER = '0x5555555555555555555555555555555555555555';
@@ -42,6 +42,18 @@ describe('requestQuote', () => {
     await expect(e1).rejects.toThrow('The relayer refused the request: HTTP 503 (budget_exhausted).');
     await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(json({ error: 'Has Spaces!' }, 422)))).rejects.toThrow('HTTP 422.');
     await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(new Response('<html>', { status: 500 })))).rejects.toThrow('HTTP 500.');
+  });
+  it.each([
+    [400, true], [403, true], [410, true], [422, true], [429, true], [409, false], [500, false], [503, false],
+  ])('classifies HTTP %i as a pre-broadcast refusal: %s', async (status, before) => {
+    const err = await requestQuote('https://relay.test', Q, () => Promise.resolve(json({ error: 'x' }, status))).catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(RelayerRefusedError);
+    expect((err as RelayerRefusedError).status).toBe(status);
+    expect((err as RelayerRefusedError).beforeBroadcast).toBe(before);
+  });
+  it('a transport failure is not a refusal', async () => {
+    const err = await requestQuote('https://relay.test', Q, () => Promise.reject(new TypeError('offline'))).catch((e: unknown) => e);
+    expect(err).not.toBeInstanceOf(RelayerRefusedError);
   });
   it('handles transport failures, oversized and non-JSON replies', async () => {
     await expect(requestQuote('https://relay.test', Q, () => Promise.reject(new TypeError('offline')))).rejects.toThrow(/Could not reach the relayer/);

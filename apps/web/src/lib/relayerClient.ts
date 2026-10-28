@@ -19,6 +19,25 @@ export interface QuoteRequest {
   readonly amount: bigint;
 }
 
+/**
+ * The relayer answered with an HTTP error. By the relayer API contract every 4xx except 409 is a validation refusal
+ * issued before anything is broadcast; 409 and 5xx (for example `send_failed`) may follow a broadcast.
+ */
+export class RelayerRefusedError extends UserFacingError {
+  public readonly status: number;
+
+  public constructor(message: string, status: number) {
+    super(message);
+    this.name = 'RelayerRefusedError';
+    this.status = status;
+  }
+
+  /** True only for a refusal that the relayer contract guarantees happened before any broadcast. */
+  public get beforeBroadcast(): boolean {
+    return this.status >= 400 && this.status < 500 && this.status !== 409;
+  }
+}
+
 const MAX_RESPONSE = 16 * 1024;
 const TIMEOUT_MS = 15_000;
 
@@ -48,7 +67,7 @@ async function post(base: string, path: string, body: unknown, fetchFn: FetchFn)
       } catch {
         /* class only; never echo the body */
       }
-      throw new UserFacingError(`The relayer refused the request: HTTP ${String(res.status)}${cls}.`);
+      throw new RelayerRefusedError(`The relayer refused the request: HTTP ${String(res.status)}${cls}.`, res.status);
     }
     try {
       return JSON.parse(text);

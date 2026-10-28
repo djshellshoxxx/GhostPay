@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
-import { ChainAdapterError, eip712DomainSeparator, erc20MetadataAbi, erc2612PermitAbi } from '@ghostpay/chain-adapters';
+import { ChainAdapterError, eip712DomainSeparator, erc20MetadataAbi, erc2612PermitAbi, ghostPaySweepRelayerAbi } from '@ghostpay/chain-adapters';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { encodeFunctionResult, keccak256 } from 'viem/utils';
+import { encodeFunctionData, encodeFunctionResult, keccak256 } from 'viem/utils';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { Services } from '../lib/services';
 import { clearSession, generateSession } from '../lib/session';
@@ -30,11 +30,12 @@ afterEach(() => { setKeyVaultStoreForTests(undefined); });
 
 const loaded: Services['loadManifest'] = (id) => Promise.resolve({ status: 'loaded', manifest: backedManifest(id) });
 const DEST = '0x6666666666666666666666666666666666666666';
+const NONCE_USED_SELECTOR = encodeFunctionData({ abi: ghostPaySweepRelayerAbi, functionName: 'nonceUsed', args: [DEST, 0n] }).slice(0, 10);
 const TOKEN = '0x036CbD53842c5426634e7929541eC2318f3dCF7e';
 const VAULT_PASS = 'violet comet maple lantern';
 let vaultStore = new MemoryKeyVaultStore();
 
-interface RawSink { raw?: string; sendFail?: boolean; sendHang?: boolean; receiptOk?: boolean; calls?: string[] }
+interface RawSink { raw?: string; sendFail?: boolean; sendHang?: boolean; receiptOk?: boolean; calls?: string[]; blockTimestamp?: number; nonceUsed?: boolean }
 
 function extra(balance: bigint, nativeBalance: bigint, rawSink: RawSink) {
   return (method: string, params: readonly unknown[]): unknown => {
@@ -53,10 +54,14 @@ function extra(balance: bigint, nativeBalance: bigint, rawSink: RawSink) {
         if (rawSink.sendFail === true) throw new ChainAdapterError('RPC_FAILURE', 'connection reset after write');
         if (rawSink.sendHang === true) return new Promise(() => undefined);
         return keccak256(params[0] as `0x${string}`);
+      case 'eth_getBlockByNumber':
+        if (params[0] === 'latest' && rawSink.blockTimestamp !== undefined) return { number: '0x64', timestamp: `0x${rawSink.blockTimestamp.toString(16)}` };
+        return undefined;
       case 'eth_getTransactionReceipt':
         return rawSink.receiptOk === true && rawSink.raw !== undefined ? { transactionHash: keccak256(rawSink.raw as `0x${string}`), status: '0x1' } : null;
       case 'eth_call': {
         const data = (params[0] as { data: string }).data;
+        if (data.startsWith(NONCE_USED_SELECTOR)) return encodeFunctionResult({ abi: ghostPaySweepRelayerAbi, functionName: 'nonceUsed', result: rawSink.nonceUsed === true });
         if (data.startsWith('0x70a08231')) return `0x${balance.toString(16).padStart(64, '0')}`;
         if (data.startsWith('0x06fdde03')) return encodeFunctionResult({ abi: erc20MetadataAbi, functionName: 'name', result: 'USDC' });
         if (data.startsWith('0x7ecebe00')) return encodeFunctionResult({ abi: erc2612PermitAbi, functionName: 'nonces', result: 0n });
@@ -372,5 +377,112 @@ describe('Sweep', () => {
     }
     expect(sink.calls ?? []).not.toContain('eth_sendRawTransaction');
     expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+  });
+
+  describe('M1: relayed sweep lock', () => {
+    const DEADLINE = 1_800_000_000 + 1200;
+    const quoteThen = (sweep: () => Promise<Response>): Services['fetchFn'] => (url) => {
+      if (url.endsWith('/v1/quote')) return Promise.resolve(new Response(JSON.stringify({ fee: '25000', feeTo: FAKE_FEE_RECIPIENT, expiresAt: 1_800_000_100, quoteToken: 'tok' })));
+      return sweep();
+    };
+    async function submitRelayed(fetchFn: Services['fetchFn'], sink: RawSink): Promise<ReturnType<typeof userEvent.setup>> {
+      const user = await toSweep({ relayer: true, fetchFn, raw: sink });
+      await screen.findByText('5 USDC');
+      await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+      await user.click(screen.getByRole('button', { name: 'Get relayer quote' }));
+      await screen.findByText(/Relayer fee: 0\.025 USDC/);
+      await user.click(screen.getByRole('button', { name: 'Sign and submit to relayer' }));
+      return user;
+    }
+    const directDisabled = async (user: ReturnType<typeof userEvent.setup>): Promise<boolean> => {
+      await user.click(screen.getByLabelText(/Directly/));
+      return screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled;
+    };
+
+    it('an unreachable relayer keeps signing disarmed across a reload until the order is past deadline + margin', async () => {
+      const sink: RawSink = { calls: [] };
+      const user = await submitRelayed(quoteThen(() => Promise.reject(new TypeError('connection reset'))), sink);
+      expect(await screen.findByText('Outcome unknown')).toBeTruthy();
+      expect(screen.getByText(/signed order was handed to the relayer/)).toBeTruthy();
+      const journal = window.sessionStorage.getItem(SWEEP_JOURNAL_KEY) ?? '';
+      expect(journal).toContain(`"deadline":${String(DEADLINE)}`);
+      expect(journal).not.toContain(DEST.slice(2));
+
+      appState.resetSweepAttemptsForTests({ keepStorage: true });
+      const nav = within(screen.getByRole('navigation', { name: 'Main' }));
+      await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
+      await user.click(nav.getByRole('button', { name: 'Sweep' }));
+      await screen.findByText('5 USDC');
+      expect(screen.getByText('Outcome unknown')).toBeTruthy();
+      expect(await directDisabled(user)).toBe(true);
+
+      // Within the margin after the deadline the order is not yet final.
+      sink.blockTimestamp = DEADLINE + 600;
+      await user.click(screen.getByRole('button', { name: 'Check status' }));
+      expect(await screen.findByText(/cannot yet be treated as expired/)).toBeTruthy();
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+
+      sink.blockTimestamp = DEADLINE + 601;
+      await user.click(screen.getByRole('button', { name: 'Check status' }));
+      expect(await screen.findByText('Order expired unused')).toBeTruthy();
+      expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toContain('"expired"');
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(false);
+    });
+
+    it('a used order nonce resolves the lock as executed', async () => {
+      const sink: RawSink = { calls: [] };
+      const user = await submitRelayed(quoteThen(() => Promise.resolve(new Response(JSON.stringify({ error: 'send_failed' }), { status: 503 }))), sink);
+      expect(await screen.findByText('Outcome unknown')).toBeTruthy();
+      expect(await directDisabled(user)).toBe(true);
+      sink.blockTimestamp = 1_800_000_010;
+      sink.nonceUsed = true;
+      await user.click(screen.getByRole('button', { name: 'Check status' }));
+      expect(await screen.findByText('Included on chain')).toBeTruthy();
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(false);
+    });
+
+    it.each([409, 503])('HTTP %i from the relayer may follow a broadcast: the lock stays', async (status) => {
+      const sink: RawSink = { calls: [] };
+      const user = await submitRelayed(quoteThen(() => Promise.resolve(new Response(JSON.stringify({ error: 'x' }), { status }))), sink);
+      expect(await screen.findByText('Outcome unknown')).toBeTruthy();
+      expect(await directDisabled(user)).toBe(true);
+    });
+
+    it('an explicit pre-broadcast refusal (HTTP 4xx) releases the lock', async () => {
+      const sink: RawSink = { calls: [] };
+      const user = await submitRelayed(quoteThen(() => Promise.resolve(new Response(JSON.stringify({ error: 'quote_expired' }), { status: 410 }))), sink);
+      expect(await screen.findByText('Relayer refused the order')).toBeTruthy();
+      expect(screen.getByText(/HTTP 410 \(quote_expired\)/)).toBeTruthy();
+      expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toContain('"refused"');
+      expect(await directDisabled(user)).toBe(false);
+    });
+
+    it('nothing is posted to the relayer when the lock cannot be persisted', async () => {
+      const posted: string[] = [];
+      const fetchFn: Services['fetchFn'] = (url) => {
+        posted.push(url);
+        if (url.endsWith('/v1/quote')) return Promise.resolve(new Response(JSON.stringify({ fee: '25000', feeTo: FAKE_FEE_RECIPIENT, expiresAt: 1_800_000_100, quoteToken: 'tok' })));
+        return Promise.resolve(new Response(JSON.stringify({ txHash: `0x${'34'.repeat(32)}` })));
+      };
+      const user = await toSweep({ relayer: true, fetchFn });
+      await screen.findByText('5 USDC');
+      await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+      await user.click(screen.getByRole('button', { name: 'Get relayer quote' }));
+      await screen.findByText(/Relayer fee: 0\.025 USDC/);
+      const proto = Object.getPrototypeOf(window.sessionStorage) as Storage;
+      const descriptor = Object.getOwnPropertyDescriptor(proto, 'setItem')!;
+      const original = descriptor.value as (this: Storage, k: string, v: string) => void;
+      proto.setItem = function (this: Storage, k: string, v: string): void {
+        if (k === SWEEP_JOURNAL_KEY) throw new DOMException('quota', 'QuotaExceededError');
+        original.call(this, k, v);
+      };
+      try {
+        await user.click(screen.getByRole('button', { name: 'Sign and submit to relayer' }));
+        expect(await screen.findByText('Signing disabled in this tab')).toBeTruthy();
+      } finally {
+        Object.defineProperty(proto, 'setItem', descriptor);
+      }
+      expect(posted).toEqual(['https://relay.test/v1/quote']);
+    });
   });
 });

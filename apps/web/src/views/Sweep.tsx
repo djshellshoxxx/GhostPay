@@ -7,13 +7,22 @@ import { ManifestBanner } from '../components/ManifestBanner';
 import { verifyManifestForFlow } from '../lib/manifest';
 import { UserFacingError, userMessage } from '../lib/errors';
 import { formatUnits } from '../lib/format';
-import { checkDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileDirectSweep, relayedSweep, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
+import { checkDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, RELAYED_EXPIRY_MARGIN_SECONDS, type RelayedOrderRef, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
+import { RelayerRefusedError } from '../lib/relayerClient';
 import { authorizeEncryptedVault, readEncryptedVault } from '../lib/keyVault';
 import { captureSessionGuard } from '../lib/session';
 import { useServices } from '../lib/services';
 import { beginSweepAttempt, getSweepAttempt, isSweepJournalBroken, recordSweepAttempt, useApp, useSweepAttempt, useSweepJournalBroken } from '../state';
 import { SweepJournalUnavailableError } from '../lib/sweepAttemptJournal';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
+
+const ATTEMPT_TITLES: Partial<Record<string, string>> = {
+  'unknown-after-handoff': 'Outcome unknown',
+  included: 'Included on chain',
+  reverted: 'Reverted on chain',
+  expired: 'Order expired unused',
+  refused: 'Relayer refused the order',
+};
 
 export function Sweep(): ReactNode {
   const app = useApp();
@@ -166,10 +175,26 @@ export function Sweep(): ReactNode {
       if (loaded === undefined || rpc === undefined || quote === undefined || balance === undefined || tokenAddr === 'native') throw new Error('state');
       const dest = checkDestination(destination, target.owner, loaded);
       assertNoUnresolvedAttempt();
-      const submitted = await relayedSweep({ target: { ...target, token: tokenAddr }, manifest: loaded, destination: dest, amount: balance, quote: quote.quote, relayerUrl: app.settings.relayerUrl, rpc, nowSeconds: nowSec, fetchFn: services.fetchFn });
+      // The order's lock is persisted before it is posted; a failed write aborts without contacting the relayer.
+      const handoff: { order?: RelayedOrderRef } = {};
+      const onBeforeHandoff = (order: RelayedOrderRef): void => {
+        beginSweepAttempt({ chainId, owner: target.owner, order, status: 'unknown-after-handoff' });
+        handoff.order = order;
+      };
+      let submitted: string;
+      try {
+        submitted = await relayedSweep({ target: { ...target, token: tokenAddr }, manifest: loaded, destination: dest, amount: balance, quote: quote.quote, relayerUrl: app.settings.relayerUrl, rpc, nowSeconds: nowSec, fetchFn: services.fetchFn, onBeforeHandoff });
+      } catch (e) {
+        // Only an explicit pre-broadcast refusal releases the lock; timeouts, 409 and 5xx stay unresolved until the
+        // chain shows the order executed or expired.
+        if (handoff.order !== undefined && e instanceof RelayerRefusedError && e.beforeBroadcast) {
+          recordSweepAttempt({ chainId, owner: target.owner, order: handoff.order, status: 'refused' });
+        }
+        throw e;
+      }
       setHash(submitted);
       // The relayed transaction may still land: keep signing disarmed for this address until its status is checked.
-      recordSweepAttempt({ chainId, owner: target.owner, expectedHash: submitted.toLowerCase() as `0x${string}`, status: 'submitted' });
+      recordSweepAttempt({ chainId, owner: target.owner, ...(handoff.order === undefined ? {} : { order: handoff.order }), expectedHash: submitted.toLowerCase() as `0x${string}`, status: 'submitted' });
       app.announce(t('sweep.announceRelayer'));
       return true;
     });
@@ -207,6 +232,10 @@ export function Sweep(): ReactNode {
     }
   };
 
+  const pendingNote = attempt?.order !== undefined
+    ? 'The order has not executed and cannot yet be treated as expired. That does not mean it will not execute; check again later.'
+    : 'No receipt found for this hash yet. That does not mean it was not sent; check again later.';
+
   const onCheckStatus = (): void => {
     if (attempt === undefined) return;
     setChecking(true);
@@ -214,11 +243,11 @@ export function Sweep(): ReactNode {
     void (async () => {
       try {
         const rpc = await app.getRpc(attempt.chainId);
-        const next = rpc === undefined ? attempt : await reconcileDirectSweep(rpc, attempt);
+        const next = rpc === undefined ? attempt : await reconcileSweepLock(rpc, attempt);
         if (next.status !== attempt.status) recordSweepAttempt(next);
-        else setCheckNote('No receipt found for this hash yet. That does not mean it was not sent; check again later.');
+        else setCheckNote(pendingNote);
       } catch {
-        setCheckNote('No receipt found for this hash yet. That does not mean it was not sent; check again later.');
+        setCheckNote(pendingNote);
       } finally {
         setChecking(false);
       }
@@ -312,13 +341,21 @@ export function Sweep(): ReactNode {
       {journalBroken && <Notice kind="warn" title="Signing disabled in this tab">{new SweepJournalUnavailableError().message}</Notice>}
       {attempt !== undefined && (
         <Notice
-          kind={attempt.status === 'unknown-after-handoff' || attempt.status === 'reverted' ? 'warn' : 'ok'}
-          title={attempt.status === 'submitted' ? t('sweep.submitted') : attempt.status === 'unknown-after-handoff' ? 'Outcome unknown' : attempt.status === 'included' ? 'Included on chain' : 'Reverted on chain'}
+          kind={attempt.status === 'submitted' || attempt.status === 'included' ? 'ok' : 'warn'}
+          title={ATTEMPT_TITLES[attempt.status] ?? t('sweep.submitted')}
         >
-          {attempt.status === 'unknown-after-handoff' && <>The signed transaction was handed to your RPC but its result is unknown. It may already be on the network, so signing a new one is disabled.<br /></>}
-          {t('sweep.txHash')} <Mono>{attempt.expectedHash}</Mono> <CopyButton text={attempt.expectedHash} label={t('sweep.copyHash')} />
-          <br />
-          {t('sweep.checkExplorer')}
+          {attempt.status === 'unknown-after-handoff' && (attempt.order === undefined
+            ? <>The signed transaction was handed to your RPC but its result is unknown. It may already be on the network, so signing a new one is disabled.<br /></>
+            : <>The signed order was handed to the relayer but its result is unknown. It can still execute until {new Date(attempt.order.deadline * 1000).toISOString()}; it counts as expired only {String(RELAYED_EXPIRY_MARGIN_SECONDS / 60)} minutes after that. Signing a new one is disabled until then.<br /></>)}
+          {attempt.status === 'expired' && <>The order&apos;s nonce was still unused after its deadline, so it can no longer execute and moved nothing. You can sign again.<br /></>}
+          {attempt.status === 'refused' && <>The relayer refused the order before sending it. You can sign again.<br /></>}
+          {attempt.expectedHash !== undefined && (
+            <>
+              {t('sweep.txHash')} <Mono>{attempt.expectedHash}</Mono> <CopyButton text={attempt.expectedHash} label={t('sweep.copyHash')} />
+              <br />
+              {t('sweep.checkExplorer')}
+            </>
+          )}
           {isUnresolvedAttempt(attempt) && (
             <>
               <br />

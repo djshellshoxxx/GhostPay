@@ -1,12 +1,12 @@
 import type { Address, Hex } from '@ghostpay/chain-adapters';
 import { UserFacingError } from './errors';
-import type { SweepLock } from './sweep';
+import type { RelayedOrderRef, SweepLock, SweepLockStatus } from './sweep';
 
 /*
  * Tab-scoped persistence for sweep signing locks (GP-SWEEP-OUTCOME-01 follow-up). Same storage contract as the wallet
  * duplicate-attempt journal: sessionStorage, so the lock survives a reload of this tab but is not shared with other
- * tabs. Only what the lock needs is stored (chain, stealth owner, nonce, expected hash, status): never key material,
- * destination or amount.
+ * tabs. Only what the lock needs is stored (chain, stealth owner, nonce, expected hash, relayed order nonce/deadline/
+ * contract, status): never key material, destination or amount.
  *
  * Fail closed: an unreadable, oversized or malformed journal disarms signing until the user resolves it; it is never
  * silently treated as "no pending attempt". Unresolved locks are never evicted.
@@ -16,8 +16,9 @@ export const MAX_SWEEP_ATTEMPTS = 64;
 const MAX_BYTES = 32_000;
 /** Valid JSON that is not a journal: written after a failed update so a reload cannot read an older, armed state. */
 const TOMBSTONE = '"unavailable"';
-const FIELDS = ['chainId', 'owner', 'nonce', 'expectedHash', 'status'];
-const STATUSES: readonly string[] = ['submitted', 'unknown-after-handoff', 'included', 'reverted'];
+const FIELDS = ['chainId', 'owner', 'nonce', 'expectedHash', 'order', 'status'];
+const ORDER_FIELDS = ['relayer', 'nonce', 'deadline'];
+const STATUSES: readonly string[] = ['submitted', 'unknown-after-handoff', 'included', 'reverted', 'expired', 'refused'];
 
 export interface SweepJournalStorage {
   getItem(key: string): string | null;
@@ -40,6 +41,20 @@ export const sweepAttemptKey = (chainId: number, owner: string): string => `${St
 
 const isAddress = (v: unknown): v is Address => typeof v === 'string' && /^0x[0-9a-fA-F]{40}$/.test(v);
 
+interface StoredOrder { readonly relayer: string; readonly nonce: string; readonly deadline: number }
+
+function decodeOrder(v: unknown): RelayedOrderRef | undefined {
+  if (typeof v !== 'object' || v === null || Array.isArray(v)) return undefined;
+  const o = v as Record<string, unknown>;
+  if (Object.keys(o).some((k) => !ORDER_FIELDS.includes(k))) return undefined;
+  const { relayer, nonce, deadline } = o;
+  if (!isAddress(relayer)) return undefined;
+  // uint256 nonce as a canonical decimal string.
+  if (typeof nonce !== 'string' || !/^(0|[1-9][0-9]{0,77})$/.test(nonce) || BigInt(nonce) >= 2n ** 256n) return undefined;
+  if (typeof deadline !== 'number' || !Number.isSafeInteger(deadline) || deadline <= 0) return undefined;
+  return { relayer, nonce: BigInt(nonce), deadline };
+}
+
 function decode(v: unknown): SweepLock | undefined {
   if (typeof v !== 'object' || v === null || Array.isArray(v)) return undefined;
   const a = v as Record<string, unknown>;
@@ -48,16 +63,39 @@ function decode(v: unknown): SweepLock | undefined {
   if (typeof chainId !== 'number' || !Number.isSafeInteger(chainId) || chainId <= 0) return undefined;
   if (!isAddress(owner)) return undefined;
   if (nonce !== undefined && (typeof nonce !== 'number' || !Number.isSafeInteger(nonce) || nonce < 0)) return undefined;
-  if (typeof expectedHash !== 'string' || !/^0x[0-9a-f]{64}$/.test(expectedHash)) return undefined;
+  if (expectedHash !== undefined && (typeof expectedHash !== 'string' || !/^0x[0-9a-f]{64}$/.test(expectedHash))) return undefined;
   if (typeof status !== 'string' || !STATUSES.includes(status)) return undefined;
-  const base = { chainId, owner, expectedHash: expectedHash as Hex, status: status as SweepLock['status'] };
-  return nonce === undefined ? base : { ...base, nonce };
+  const order = a['order'] === undefined ? undefined : decodeOrder(a['order']);
+  if (a['order'] !== undefined && order === undefined) return undefined;
+  // A lock must be resolvable: by the exact transaction hash (direct) or by the order's nonce and deadline (relayed).
+  if (expectedHash === undefined && order === undefined) return undefined;
+  return {
+    chainId,
+    owner,
+    status: status as SweepLockStatus,
+    ...(nonce === undefined ? {} : { nonce }),
+    ...(expectedHash === undefined ? {} : { expectedHash: expectedHash as Hex }),
+    ...(order === undefined ? {} : { order }),
+  };
 }
 
 /** Projects any attempt onto the persisted lock fields (drops destination, asset and amount). */
 export function toSweepLock(a: SweepLock): SweepLock {
-  const base = { chainId: a.chainId, owner: a.owner, expectedHash: a.expectedHash.toLowerCase() as Hex, status: a.status };
-  return a.nonce === undefined ? base : { ...base, nonce: a.nonce };
+  return {
+    chainId: a.chainId,
+    owner: a.owner,
+    status: a.status,
+    ...(a.nonce === undefined ? {} : { nonce: a.nonce }),
+    ...(a.expectedHash === undefined ? {} : { expectedHash: a.expectedHash.toLowerCase() as Hex }),
+    ...(a.order === undefined ? {} : { order: a.order }),
+  };
+}
+
+function encode(a: SweepLock): Record<string, unknown> {
+  const { order, ...rest } = toSweepLock(a);
+  if (order === undefined) return rest;
+  const stored: StoredOrder = { relayer: order.relayer, nonce: order.nonce.toString(), deadline: order.deadline };
+  return { ...rest, order: stored };
 }
 
 /** All recorded locks, oldest first. Throws {@link SweepJournalUnavailableError} on any storage or format problem. */
@@ -89,7 +127,8 @@ export function readSweepAttempts(storage: SweepJournalStorage): readonly SweepL
  */
 export function writeSweepAttempt(attempt: SweepLock, storage: SweepJournalStorage): void {
   const lock = toSweepLock(attempt);
-  if (decode(lock) === undefined) throw new SweepJournalUnavailableError();
+  const stored = encode(lock);
+  if (decode(stored) === undefined) throw new SweepJournalUnavailableError();
   const key = sweepAttemptKey(lock.chainId, lock.owner);
   const records = readSweepAttempts(storage).filter((a) => sweepAttemptKey(a.chainId, a.owner) !== key);
   if (records.length >= MAX_SWEEP_ATTEMPTS) {
@@ -97,7 +136,7 @@ export function writeSweepAttempt(attempt: SweepLock, storage: SweepJournalStora
     if (idx < 0) throw new UserFacingError('Too many sweeps are still pending in this tab. Check their status before signing another.');
     records.splice(idx, 1);
   }
-  const text = JSON.stringify([...records, lock]);
+  const text = JSON.stringify([...records.map(encode), stored]);
   try {
     if (text.length > MAX_BYTES) throw new SweepJournalUnavailableError();
     storage.setItem(SWEEP_JOURNAL_KEY, text);

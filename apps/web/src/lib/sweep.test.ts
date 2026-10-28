@@ -2,12 +2,13 @@ import { addressOfSecret, buildSweepTypedData, eip712DomainSeparator, erc20Metad
 import { deriveStealthPayment, type PublicAnnouncement } from '@ghostpay/core-crypto';
 import { recoverTransactionAddress } from 'viem';
 import { encodeFunctionResult, keccak256, recoverAddress, parseTransaction, decodeFunctionData } from 'viem/utils';
+import { encodeFunctionData } from 'viem/utils';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER, FAKE_SWEEP_RELAYER, fakeManifest } from '../test/fakeManifest';
 import { mockRpc } from '../test/mockRpc';
 import { clearSession, generateSession, requireSession } from './session';
-import { checkDestination, describeDestination, deriveVerifiedSweepKey, directSweep, getSweepQuote, readBalance, relayedSweep, type SweepTarget } from './sweep';
-import { ChainAdapterError, erc20Abi } from '@ghostpay/chain-adapters';
+import { checkDestination, describeDestination, deriveVerifiedSweepKey, directSweep, getSweepQuote, readBalance, reconcileRelayedOrder, reconcileSweepLock, RELAYED_EXPIRY_MARGIN_SECONDS, relayedSweep, type RelayedOrderRef, type SweepLock, type SweepTarget } from './sweep';
+import { ChainAdapterError, erc20Abi, ghostPaySweepRelayerAbi } from '@ghostpay/chain-adapters';
 import { userMessage } from './errors';
 import * as sweepModule from './sweep';
 
@@ -184,6 +185,30 @@ describe('relayedSweep (EIP-712 sweep + ERC-2612 permit, signed in memory)', () 
     expect(await recoverAddress({ hash: sweepDigest(td), signature: p.sweepSig })).toBe(target.owner);
     expect(p.permit['value']).toBe('1000000');
     expect([27, 28]).toContain(p.permit['v']);
+  });
+
+  it('M1: hands the order identity to onBeforeHandoff before posting, and posts nothing when the hook throws', async () => {
+    const rpc = mockRpc(84532, (_m, params) => {
+      const data = (params[0] as { data: string }).data;
+      if (data.startsWith('0x06fdde03')) return encodeFunctionResult({ abi: erc20MetadataAbi, functionName: 'name', result: 'USDC' });
+      if (data.startsWith('0x7ecebe00')) return encodeFunctionResult({ abi: erc2612PermitAbi, functionName: 'nonces', result: 4n });
+      return eip712DomainSeparator({ name: 'USDC', version: '2', chainId: 84532, verifyingContract: TOKEN });
+    });
+    const events: string[] = [];
+    let seen: RelayedOrderRef | undefined;
+    const input = {
+      target, manifest, destination: DEST, amount: 1_000_000n,
+      quote: { fee: 5000n, feeTo: FEE_TO, expiresAt: NOW + 60, quoteToken: 'tok' },
+      relayerUrl: 'https://relay.test', rpc, nowSeconds: () => NOW, randomNonce: () => 42n,
+      fetchFn: (): Promise<Response> => { events.push('post'); return Promise.resolve(new Response(JSON.stringify({ txHash: `0x${'12'.repeat(32)}` }))); },
+    };
+    await relayedSweep({ ...input, onBeforeHandoff: (o) => { events.push('lock'); seen = o; } });
+    expect(events).toEqual(['lock', 'post']);
+    expect(seen).toEqual({ relayer: manifest.sweepRelayer, nonce: 42n, deadline: NOW + 1200 });
+
+    events.length = 0;
+    await expect(relayedSweep({ ...input, onBeforeHandoff: () => { throw new Error('journal full'); } })).rejects.toThrow('journal full');
+    expect(events).toEqual([]);
   });
 
   it('wipes the stealth key even when submission fails', async () => {
@@ -504,5 +529,55 @@ describe('S3-09 / S3-12 / S3-22 integration (tx-review + address-safety)', () =>
   it('classifies destinations for the linkability warning', () => {
     expect(describeDestination(DEST, target.owner, [])).toBe('new');
     expect(describeDestination(DEST, target.owner, [DEST])).toBe('saved');
+  });
+});
+
+describe('M1: relayed orders resolve from chain state alone (nonceUsed + deadline)', () => {
+  const OWNER = '0x5555555555555555555555555555555555555555' as Address;
+  const ORDER: RelayedOrderRef = { relayer: FAKE_SWEEP_RELAYER, nonce: 42n, deadline: NOW + 1200 };
+  const lock: SweepLock = { chainId: 84532, owner: OWNER, order: ORDER, status: 'unknown-after-handoff' };
+  const nonceCall = encodeFunctionData({ abi: ghostPaySweepRelayerAbi, functionName: 'nonceUsed', args: [OWNER, 42n] });
+  const chain = (opts: { used?: boolean; timestamp: number; failCall?: boolean; badBlock?: boolean }) => mockRpc(84532, (m, params) => {
+    if (m === 'eth_getBlockByNumber') return opts.badBlock === true ? null : { number: '0x99', timestamp: `0x${opts.timestamp.toString(16)}` };
+    if (m === 'eth_call') {
+      if (opts.failCall === true) throw new Error('rpc down');
+      const [call, tag] = params as [{ to: string; data: string }, string];
+      if (call.to !== ORDER.relayer || call.data !== nonceCall || tag !== '0x99') throw new Error('unexpected call');
+      return encodeFunctionResult({ abi: ghostPaySweepRelayerAbi, functionName: 'nonceUsed', result: opts.used === true });
+    }
+    throw new Error(`unexpected ${m}`);
+  });
+
+  it('executed when the contract reports the nonce used (even before the deadline)', async () => {
+    expect((await reconcileRelayedOrder(chain({ used: true, timestamp: NOW }), lock)).status).toBe('included');
+  });
+  it('stays unresolved while the order can still execute, including the margin after the deadline', async () => {
+    expect(await reconcileRelayedOrder(chain({ timestamp: NOW }), lock)).toBe(lock);
+    expect(await reconcileRelayedOrder(chain({ timestamp: ORDER.deadline + 1 }), lock)).toBe(lock);
+    expect(await reconcileRelayedOrder(chain({ timestamp: ORDER.deadline + RELAYED_EXPIRY_MARGIN_SECONDS }), lock)).toBe(lock);
+  });
+  it('expired only when a block past deadline + margin still shows the nonce unused', async () => {
+    expect((await reconcileRelayedOrder(chain({ timestamp: ORDER.deadline + RELAYED_EXPIRY_MARGIN_SECONDS + 1 }), lock)).status).toBe('expired');
+  });
+  it('leaves the lock unchanged on RPC errors or malformed answers', async () => {
+    expect(await reconcileRelayedOrder(chain({ timestamp: NOW + 99_999, failCall: true }), lock)).toBe(lock);
+    expect(await reconcileRelayedOrder(chain({ timestamp: NOW + 99_999, badBlock: true }), lock)).toBe(lock);
+    expect(await reconcileRelayedOrder(mockRpc(84532, (m) => (m === 'eth_getBlockByNumber' ? { number: '0x99', timestamp: `0x${(NOW + 99_999).toString(16)}` } : 7)), lock)).toBe(lock);
+  });
+  it('reconcileSweepLock prefers the order over a relayer-reported hash (a reverted relayer tx does not kill the order)', async () => {
+    const withHash: SweepLock = { ...lock, expectedHash: `0x${'12'.repeat(32)}`, status: 'submitted' };
+    const rpc = mockRpc(84532, (m) => {
+      if (m === 'eth_getTransactionReceipt') return { transactionHash: `0x${'12'.repeat(32)}`, status: '0x0' };
+      if (m === 'eth_getBlockByNumber') return { number: '0x99', timestamp: `0x${NOW.toString(16)}` };
+      if (m === 'eth_call') return encodeFunctionResult({ abi: ghostPaySweepRelayerAbi, functionName: 'nonceUsed', result: false });
+      throw new Error(m);
+    });
+    expect(await reconcileSweepLock(rpc, withHash)).toBe(withHash);
+    expect(rpc.calls.map((c) => c.method)).not.toContain('eth_getTransactionReceipt');
+  });
+  it('reconcileSweepLock still resolves direct locks by receipt', async () => {
+    const direct: SweepLock = { chainId: 84532, owner: OWNER, nonce: 3, expectedHash: `0x${'ab'.repeat(32)}`, status: 'unknown-after-handoff' };
+    const rpc = mockRpc(84532, () => ({ transactionHash: `0x${'ab'.repeat(32)}`, status: '0x1' }));
+    expect((await reconcileSweepLock(rpc, direct)).status).toBe('included');
   });
 });
