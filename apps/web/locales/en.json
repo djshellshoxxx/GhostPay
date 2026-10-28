@@ -107,7 +107,7 @@
     "sweep.attempt.reverted": "Reverted on chain",
     "sweep.attempt.expired": "Order expired unused",
     "sweep.attempt.refused": "Relayer refused the order",
-    "sweep.attempt.unknownDirect": "The signed transaction was handed to your RPC but its result is unknown. It may already be on the network, so signing a new one is disabled.",
+    "sweep.attempt.unknownDirect": "The signed transaction was handed to your RPC but its result is unknown. It may already be on the network, so a new sweep is disabled; only a replacement with the same nonce can be signed.",
     "sweep.attempt.unknownRelayed": "The signed order was handed to the relayer but its result is unknown. It can still execute until {deadline}; it counts as expired only {minutes} minutes after that. Signing a new one is disabled until then.",
     "sweep.attempt.expiredBody": "The order's nonce was still unused after its deadline, so it can no longer execute and moved nothing. You can sign again.",
     "sweep.attempt.refusedBody": "The relayer reported that it refused the order before sending it. This relies on the relayer's report; the signed order stays valid until {deadline}. You can sign again.",

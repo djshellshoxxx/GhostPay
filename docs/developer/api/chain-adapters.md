@@ -25,7 +25,11 @@ Shared types (`types.ts`): `Hex`, `Address`, `ZERO_ADDRESS`, `MAX_UINT256`.
 
 ## Errors
 
-`class ChainAdapterError extends Error { readonly code: AdapterErrorCode }`; `message` is `"<CODE>: <detail>"`.
+`class ChainAdapterError extends Error { readonly code: AdapterErrorCode; readonly reverted: boolean }`; `message` is
+`"<CODE>: <detail>"`. `reverted` is `true` only on the `RPC_FAILURE` thrown by a `createClient` request whose JSON-RPC
+error reports failed execution: code 3, or -32000/-32015 whose message or string `data` says the call reverted, ran out
+of gas or hit an invalid opcode. It is a sanitized flag (the node's text and revert data are not kept); the web app's
+pre-send dry runs refuse on it. Every other error has `reverted: false`.
 Codes: `INVALID_INPUT`, `INVALID_MANIFEST`, `CHAIN_DISABLED`, `CHAIN_MISMATCH`, `PREVIEW_MISMATCH`, `UNSUPPORTED_TOKEN`,
 `FEE_REJECTED`, `RPC_URL_REJECTED`, `RPC_FAILURE`, `RESPONSE_TOO_LARGE`, `INVALID_LOG`, `QUOTE_FAILED`,
 `MANIFEST_READBACK_FAILED`, `REGISTRY_UNAVAILABLE`, `SIGNING_FAILED`.
@@ -37,6 +41,7 @@ Messages never contain secrets, RPC URLs with credentials, or raw chain payloads
 interface ChainConfig {
   chainId: number; name: string; nativeSymbol: string; nativeDecimals: 18; testnet: boolean; enabled: boolean;
   finalityDepth: number; getLogsMaxRange: number; blockTimeMs: number;
+  opStack?: boolean;   // OP Stack rollup: an L1 data fee (and an operator fee) is charged outside gas * gasPrice
 }
 const CHAINS: readonly ChainConfig[]            // frozen
 function findChain(chainId: number): ChainConfig | undefined
@@ -47,6 +52,12 @@ const TOKENS: readonly TokenConfig[]
 function tokensForChain(chainId: number): readonly TokenConfig[]
 function findToken(chainId: number, address: string): TokenConfig | undefined   // case-insensitive
 ```
+
+`opStack: true` marks Base Sepolia, OP Sepolia and the disabled Base and OP mainnets; it is absent elsewhere,
+including Arbitrum, whose gas estimate covers its L1 cost. On those chains the node refuses a transaction whose total
+cost, those fees included, exceeds the sender's balance, so before signing a direct sweep the web app prices them with
+the GasPriceOracle predeploy `0x420000000000000000000000000000000000000F` and reserves a margin over them from the
+native balance.
 
 Today: enabled = Ethereum Sepolia `11155111` and Base Sepolia `84532`; seven mainnets are listed with `enabled: false`
 (Ethereum 1, Base 8453, OP 10, Arbitrum One 42161, Polygon 137, BNB 56, Avalanche 43114). `TOKENS` holds only the two

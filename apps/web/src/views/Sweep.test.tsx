@@ -506,6 +506,19 @@ describe('Sweep', () => {
       expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(false);
     });
 
+    it('B-R7: the unknown-outcome notice of a direct lock agrees with the same-nonce replacement it offers', async () => {
+      const sink: RawSink = { calls: [], raws: [], failSends: 1 };
+      const user = await toSweep({ raw: sink });
+      await screen.findByText('5 USDC');
+      await fill(user);
+      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      expect(await screen.findByText('Outcome unknown')).toBeTruthy();
+      expect(screen.getByText(/so a new sweep is disabled; only a replacement with the same nonce can be signed/)).toBeTruthy();
+      expect(screen.queryByText(/signing a new one is disabled/i)).toBeNull();
+      expect(screen.getByRole('button', { name: RESIGN })).toBeTruthy();
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+    });
+
     it('the replacement lock is persisted before handoff: a reload during its send shows the new hash and stays disarmed', async () => {
       const sink: RawSink = { calls: [], raws: [], failSends: 1, sendHang: true };
       const user = await toSweep({ raw: sink });
