@@ -66,7 +66,7 @@ class GhostpayValidationModuleFrontController extends ModuleFrontController {
 			$this->errors[] = $this->trans( 'Payment could not be started. Please try again.', array(), 'Modules.Ghostpay.Shop' );
 			$this->redirectWithNotifications( 'index.php?controller=order&step=1' );
 		}
-		if ( ! Db::getInstance()->insert( 'ghostpay_invoice', array( 'invoice_id' => pSQL( $data['invoiceId'] ), 'id_order' => $order_id ) ) ) {
+		if ( ! $this->module->recordInvoice( $data['invoiceId'], $order_id ) ) {
 			$this->cancel_order( $order_id );
 			$this->errors[] = $this->trans( 'Payment could not be started. Please try again.', array(), 'Modules.Ghostpay.Shop' );
 			$this->redirectWithNotifications( 'index.php?controller=order&step=1' );
