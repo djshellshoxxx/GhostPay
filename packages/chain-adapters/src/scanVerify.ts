@@ -13,50 +13,12 @@ import type { RpcClient, RpcLog } from './rpc.js';
 import type { Address, Hex } from './types.js';
 
 /**
- * Receipt status shown to the seller:
- * - `verified`: attested by the manifest-verified router after moving funds, once the block is `finalityDepth` deep;
+ * Receipt status shown to the seller (decided by the scanner from `verifyClaimedPayment` evidence):
+ * - `verified`: transfer evidence bound to a router announcement, once the block is `finalityDepth` deep;
  * - `claimed`: announcement metadata only; the transfer could not be confirmed (anyone can announce anything);
- * - `pending`: the announcing block is not yet `finalityDepth` deep.
+ * - `pending`: evidence-backed, but the block is not yet `finalityDepth` deep.
  */
 export type ReceiptStatus = 'verified' | 'claimed' | 'pending';
-
-/** What an announcement asserts. */
-export interface ReceiptClaim {
-  readonly stealthAddress: Address;
-  /** `true` for the native coin; `token` is then ignored. */
-  readonly native: boolean;
-  readonly token: Address;
-  readonly amount: bigint;
-  readonly blockNumber: bigint;
-  /** Announced by the manifest's router. */
-  readonly viaRouter: boolean;
-}
-
-/**
- * Decides how much to trust one matched announcement (G-04). Never throws: any RPC failure degrades to `claimed`.
- *
- * @remarks Router announcements are trusted once final (the caller is the manifest-verified router). Direct
- * announcements remain claims: pre-existing or later balances cannot prove an incoming transfer tied to an announcement.
- * Use transaction-bound evidence before describing any direct announcement as a payment received.
- *
- * @param client Verified RPC client.
- * @param chain Chain config (supplies `finalityDepth`).
- * @param claim The announced claim.
- * @returns Receipt status.
- */
-export async function verifyReceipt(client: RpcClient, chain: ChainConfig, claim: ReceiptClaim): Promise<ReceiptStatus> {
-  if (client.chainId !== chain.chainId || claim.amount <= 0n || claim.blockNumber < 0n) return 'claimed';
-  let head: bigint;
-  try {
-    head = await client.blockNumber();
-  } catch {
-    return 'claimed';
-  }
-  const depth = BigInt(chain.finalityDepth);
-  if (head < claim.blockNumber + depth) return 'pending';
-  if (claim.viaRouter) return 'verified';
-  return 'claimed';
-}
 
 /** One disagreement between two providers. */
 export interface ProviderDiscrepancy {

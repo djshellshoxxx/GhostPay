@@ -1,55 +1,20 @@
 import { describe, expect, it } from 'vitest';
 import { ChainAdapterError } from './errors.js';
+import * as api from './index.js';
 import { validateAnnouncementLog, ANNOUNCEMENT_TOPIC, type ScannedAnnouncement } from './logs.js';
 import type { LogFilter, RpcClient, RpcLog } from './rpc.js';
-import { compareProviders, verifyReceipt, type ReceiptClaim } from './scanVerify.js';
+import { compareProviders } from './scanVerify.js';
 import { FAKE, SEPOLIA } from './fixtures.testutil.js';
 import { encodeAbiParameters } from 'viem/utils';
 import { secp256k1 } from '@noble/curves/secp256k1.js';
 
 const STEALTH = '0x00000000000000000000000000000000000000aa' as const;
-const TOKEN = '0x00000000000000000000000000000000000000bb' as const;
 const OTHER = '0x00000000000000000000000000000000000000ee' as const;
-const depth = BigInt(SEPOLIA.finalityDepth);
-const claim = (o: Partial<ReceiptClaim> = {}): ReceiptClaim => ({ stealthAddress: STEALTH, native: true, token: TOKEN, amount: 100n, blockNumber: 1000n, viaRouter: false, ...o });
 
-function rpc(head: bigint, balances: Record<string, bigint>, fail = false): RpcClient {
-  return {
-    chainId: SEPOLIA.chainId,
-    blockNumber: () => Promise.resolve(head),
-    request: (m: string, p: readonly unknown[]) => {
-      if (fail) return Promise.reject(new Error('x'));
-      const block = m === 'eth_call' ? (p[1] as string) : (p[1] as string);
-      const v = balances[BigInt(block).toString()] ?? 0n;
-      return Promise.resolve(`0x${v.toString(16)}`);
-    },
-  } as unknown as RpcClient;
-}
-
-describe('verifyReceipt', () => {
-  it('direct announcement with no funds is only "claimed" (fake receipt)', async () => {
-    expect(await verifyReceipt(rpc(2000n, {}), SEPOLIA, claim())).toBe('claimed');
-  });
-  it('pre-existing balance never proves a direct announcement (native and ERC-20)', async () => {
-    expect(await verifyReceipt(rpc(2000n, { '1000': 100n }), SEPOLIA, claim())).toBe('claimed');
-    expect(await verifyReceipt(rpc(2000n, { '1000': 100n }), SEPOLIA, claim({ native: false }))).toBe('claimed');
-  });
-  it('underfunded claim (balance < announced amount) stays claimed', async () => {
-    expect(await verifyReceipt(rpc(2000n, { '1000': 99n }), SEPOLIA, claim())).toBe('claimed');
-  });
-  it('old or later funds cannot turn a replayed direct announcement into a receipt', async () => {
-    expect(await verifyReceipt(rpc(5000n, { '1000': 100n, [String(5000n - depth)]: 0n }), SEPOLIA, claim())).toBe('claimed');
-    expect(await verifyReceipt(rpc(5000n, { [String(5000n - depth)]: 100n }), SEPOLIA, claim())).toBe('claimed');
-  });
-  it('is pending until finalityDepth blocks deep, even for router payments and funded ones', async () => {
-    expect(await verifyReceipt(rpc(1000n + depth - 1n, { '1000': 100n }), SEPOLIA, claim())).toBe('pending');
-    expect(await verifyReceipt(rpc(1000n + depth - 1n, {}), SEPOLIA, claim({ viaRouter: true }))).toBe('pending');
-    expect(await verifyReceipt(rpc(1000n + depth, {}), SEPOLIA, claim({ viaRouter: true }))).toBe('verified');
-  });
-  it('RPC failure or garbage degrades to claimed, never verified', async () => {
-    expect(await verifyReceipt(rpc(2000n, {}, true), SEPOLIA, claim())).toBe('claimed');
-    const garbage = { chainId: 1, blockNumber: () => Promise.resolve(2000n), request: () => Promise.resolve({ x: 1 }) } as unknown as RpcClient;
-    expect(await verifyReceipt(garbage, SEPOLIA, claim())).toBe('claimed');
+describe('receipt status API (F5)', () => {
+  it('no longer exports the unused router-claim verifier; payments are verified with transfer evidence only', () => {
+    expect(Object.keys(api)).not.toContain('verifyReceipt');
+    expect(Object.keys(api)).toContain('verifyClaimedPayment');
   });
 });
 
@@ -152,14 +117,3 @@ describe('compareProviders', () => {
   });
 });
 
-describe('receipt claim boundaries', () => {
-  it('never verifies a router claim through a client on another chain', async () => {
-    const wrong = { ...rpc(5000n, {}), chainId: 1 };
-    expect(await verifyReceipt(wrong, SEPOLIA, claim({ viaRouter: true }))).toBe('claimed');
-  });
-  it('never verifies nonpositive amounts or negative block positions', async () => {
-    for (const change of [{ amount: 0n }, { amount: -1n }, { blockNumber: -1n }]) {
-      expect(await verifyReceipt(rpc(5000n, {}), SEPOLIA, claim({ viaRouter: true, ...change }))).toBe('claimed');
-    }
-  });
-});
