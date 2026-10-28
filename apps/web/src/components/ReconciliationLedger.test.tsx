@@ -143,7 +143,7 @@ describe('encrypted reconciliation UI', () => {
     await user.click(screen.getByRole('button', { name: 'Preview encrypted backup' }));
     expect(await screen.findByText(/1 historical observation/)).toBeTruthy();
     // The count comes from the same merge as activation: nothing in this backup would be invalidated.
-    expect(screen.getByText(/0 would be marked invalid after a reorg/)).toBeTruthy();
+    expect(screen.getByText(/Activating would mark no observations invalid because of reorg history\./)).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Activate previewed historical records' })).toBeTruthy();
     await user.clear(screen.getByLabelText('Encrypted reconciliation backup'));
     expect(screen.queryByRole('button', { name: 'Activate previewed historical records' })).toBeNull();
@@ -180,6 +180,20 @@ describe('encrypted reconciliation UI', () => {
     await user.click(await screen.findByRole('button', { name: 'Activate previewed historical records' }));
     expect(await screen.findByText(/Imported historical observation/)).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Activate previewed historical records' })).toBeNull();
+  });
+  it('words the preview count as what activating would mark invalid, not as a future reorg (A-R4)', async () => {
+    const preview = vi.spyOn(vault, 'previewImport');
+    for (const count of [1, 3]) preview.mockResolvedValueOnce({ recordCount: 4, invalidatedCount: count, readOnly: false, invoiceCount: 0, receiptCount: 0 });
+    const user = userEvent.setup();
+    render(panel());
+    await user.click(screen.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }));
+    const input = await screen.findByLabelText('Encrypted reconciliation backup');
+    for (const [count, text] of [[1, '1 observation'], [3, '3 observations']] as const) {
+      fireEvent.change(input, { target: { value: `encrypted file ${String(count)}` } });
+      await user.click(screen.getByRole('button', { name: 'Preview encrypted backup' }));
+      expect(await screen.findByText(new RegExp(`Activating would mark ${text} invalid because of reorg history\\.`))).toBeTruthy();
+      expect(screen.queryByText(/after a reorg/)).toBeNull();
+    }
   });
   it('rejects stale preview callbacks after encrypted input changes', async () => {
     const staged = { recordCount: 4, invalidatedCount: 0, readOnly: false, invoiceCount: 0, receiptCount: 0 };

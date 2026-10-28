@@ -1,6 +1,7 @@
 import { findChain, tokensForChain } from '@ghostpay/chain-adapters';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice, downloadText } from './Common';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import {
   clearReconciliationRecords,
   exportUntrustedLegacyReconciliation,
@@ -146,6 +147,8 @@ function MatchLedgerAction(props: {
   );
 }
 export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNode {
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const [records, setRecords] = useState<readonly VaultRecord[]>([]);
   const [invoices, setInvoices] = useState<readonly RegisteredInvoice[]>([]);
   const [receipts, setReceipts] = useState<readonly ArchivedReceipt[]>([]);
@@ -592,10 +595,10 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
               )}
               <p>
                 {preview.recordCount} historical observation{preview.recordCount === 1 ? '' : 's'};{' '}
-                {preview.invalidatedCount} would be marked invalid after a reorg; {preview.invoiceCount} registered invoice
-                {preview.invoiceCount === 1 ? '' : 's'}; {preview.receiptCount} archived receipt
-                {preview.receiptCount === 1 ? '' : 's'}. Activation merges records as untrusted history,
-                preserves known invalidation and does not verify payment.
+                {preview.invoiceCount} registered invoice{preview.invoiceCount === 1 ? '' : 's'};{' '}
+                {preview.receiptCount} archived receipt{preview.receiptCount === 1 ? '' : 's'}.{' '}
+                {t('ledger.import.invalidated', { count: preview.invalidatedCount })} Activation merges records as
+                untrusted history, preserves known invalidation and does not verify payment.
               </p>
               <button
                 type="button"
