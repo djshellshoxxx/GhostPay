@@ -534,7 +534,8 @@ async function readOperatorFee(rpc: Rpc, gas: bigint): Promise<bigint> {
  * What an OP Stack node charges outside `gas * gasPrice`, read from the GasPriceOracle: the L1 data fee of the unsigned
  * serialized transaction (the oracle adds the signature's size) and the operator fee for its gas limit (none where the
  * oracle has no `getOperatorFee`), times {@link OP_STACK_FEE_RESERVE_MULTIPLIER}.
- * @throws {UserFacingError} when the oracle cannot be read: the amount to send is then unknown, so nothing is signed.
+ * @throws {UserFacingError} when the oracle cannot be read: the fee, and for a native sweep the amount to send, is then
+ *   unknown, so nothing is signed.
  */
 async function opStackFeeReserve(rpc: Rpc, unsignedTx: Hex, gas: bigint): Promise<bigint> {
   try {
@@ -542,7 +543,7 @@ async function opStackFeeReserve(rpc: Rpc, unsignedTx: Hex, gas: bigint): Promis
     const operator = await readOperatorFee(rpc, gas);
     return (l1 + operator) * OP_STACK_FEE_RESERVE_MULTIPLIER;
   } catch {
-    throw new UserFacingError('Could not read the L1 data fee from this chain\'s fee oracle, so the amount to send cannot be computed. Nothing was signed.');
+    throw new UserFacingError('Could not read the L1 data fee from this chain\'s fee oracle, so the network fee of this sweep cannot be computed. Nothing was signed.');
   }
 }
 

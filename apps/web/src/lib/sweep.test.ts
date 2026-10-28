@@ -679,6 +679,12 @@ describe('L2-F2: a native direct sweep keeps back every fee the chain charges', 
     expect(sepolia.calls.filter((c) => c.method === 'eth_call').map((c) => (c.params[0] as { to: string }).to)).toEqual([usdc]);
   });
 
+  it('B-R3: an ERC-20 sweep on OP Stack refuses when the fee oracle cannot be read, before signing', async () => {
+    const rpc = chainRpc(84532, { estimate: '0xc350', l1Fee: new Error('rpc down') }, {});
+    await expect(directSweep({ target, manifest, destination: DEST, amount: 777n, rpc })).rejects.toThrow(/fee oracle, so the network fee of this sweep cannot be computed/);
+    expect(sends(rpc)).toBe(0);
+  });
+
   it('refuses, before signing, a balance that covers the gas but not the L1 data fee', async () => {
     const rpc = chainRpc(84532, { balance: 45_000_000_000_000n }, {});
     await expect(directSweep({ target: native(), manifest, destination: DEST, amount: 1n, rpc })).rejects.toThrow(/does not cover the network fee, including the L1 data fee/);
@@ -708,7 +714,7 @@ describe('L2-F2: a native direct sweep keeps back every fee the chain charges', 
     ['the operator fee call fails', { operatorFee: new Error('rpc down') }],
     ['the operator fee call fails at the transport', { operatorFee: new ChainAdapterError('RPC_FAILURE', 'http status 429') }],
     ['the operator fee call gets a JSON-RPC error that is no revert', { operatorFee: new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32603') }],
-  ] as const)('refuses when %s: the amount to send cannot be computed', async (_n, net) => {
+  ] as const)('refuses when %s: the fee, so the amount to send, cannot be computed', async (_n, net) => {
     const rpc = chainRpc(84532, net, {});
     await expect(directSweep({ target: native(), manifest, destination: DEST, amount: 1n, rpc })).rejects.toThrow(/fee oracle/);
     expect(sends(rpc)).toBe(0);
