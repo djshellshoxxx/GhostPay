@@ -454,6 +454,19 @@ describe('Sweep', () => {
       expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
     });
 
+    it('B-R3: an ERC-20 sweep whose native coin covers the gas but not the L1 data fee is refused before signing, so no lock jams', async () => {
+      const sink: RawSink = { calls: [], raws: [], l1Fee: 5_000_000_000_000n };
+      const user = await toSweep({ raw: sink, native: 60_000n * 2_000_000_000n + 1n });
+      await screen.findByText('5 USDC');
+      await fill(user);
+      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      expect((await screen.findByRole('alert')).textContent).toMatch(/not hold enough native coin for the network fee, including the L1 data fee/);
+      expect(sink.raws).toHaveLength(0);
+      expect(screen.queryByText('Outcome unknown')).toBeNull();
+      expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toBeNull();
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(false);
+    });
+
     it('a sweep the node rejected keeps its lock; a replacement with the same nonce takes it over and can resolve it', async () => {
       const sink: RawSink = { calls: [], raws: [], failSends: 1 };
       const user = await toSweep({ raw: sink });

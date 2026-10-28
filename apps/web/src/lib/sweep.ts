@@ -576,6 +576,15 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
       if (nativeBalance < gas * maxFeePerGas) {
         throw new UserFacingError('The stealth address has no native coin for gas. Use the relayer, or send a small amount of native coin to it first.');
       }
+      // On OP Stack the native coin must also cover the L1 data fee and operator fee of this transfer, priced on its
+      // exact unsigned bytes; the node refuses a transaction it cannot pay for, and the sweep lock would jam.
+      const reserve = findChain(chainId)?.opStack === true
+        ? await opStackFeeReserve(i.rpc, serializeTransaction({ type: 'eip1559', chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value, data }), gas)
+        : 0n;
+      assertSessionUnchanged();
+      if (nativeBalance < gas * maxFeePerGas + reserve) {
+        throw new UserFacingError('The stealth address does not hold enough native coin for the network fee, including the L1 data fee. Use the relayer, or send a small amount of native coin to it first.');
+      }
     }
     const unsigned = { type: 'eip1559' as const, chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value, data };
     // Review the exact serialized bytes that will be hashed (S3-09): allowlisted token only, capped fee fields.

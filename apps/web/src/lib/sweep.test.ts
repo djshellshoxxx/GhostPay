@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER, FAKE_SWEEP_RELAYER, fakeManifest } from '../test/fakeManifest';
 import { mockRpc } from '../test/mockRpc';
 import { clearSession, generateSession, requireSession } from './session';
-import { checkDestination, describeDestination, deriveVerifiedSweepKey, directSweep, getSweepQuote, readBalance, reconcileRelayedOrder, reconcileSweepLock, RELAYED_EXPIRY_MARGIN_SECONDS, relayedSweep, type RelayedOrderRef, type SweepLock, type SweepTarget } from './sweep';
+import { checkDestination, describeDestination, deriveVerifiedSweepKey, directSweep, getSweepQuote, OP_STACK_GAS_PRICE_ORACLE, readBalance, reconcileRelayedOrder, reconcileSweepLock, RELAYED_EXPIRY_MARGIN_SECONDS, relayedSweep, type RelayedOrderRef, type SweepLock, type SweepTarget } from './sweep';
 import { ChainAdapterError, erc20Abi, ghostPaySweepRelayerAbi } from '@ghostpay/chain-adapters';
 import { userMessage } from './errors';
 import * as sweepModule from './sweep';
@@ -35,6 +35,10 @@ afterEach(() => {
 });
 
 const bodyText = (b: unknown): string => (typeof b === 'string' ? b : '');
+/** Base Sepolia is OP Stack: mocks answer its GasPriceOracle with no L1 data or operator fee unless a test prices one. */
+const feeOracleCall = (method: string, params: readonly unknown[]): boolean =>
+  method === 'eth_call' && (params[0] as { to?: unknown } | undefined)?.to === OP_STACK_GAS_PRICE_ORACLE;
+const NO_FEE = encodeAbiParameters([{ type: 'uint256' }], [0n]);
 
 describe('key derivation and destination checks', () => {
   it('derives a key that controls exactly the announced address', () => {
@@ -231,7 +235,8 @@ describe('relayedSweep (EIP-712 sweep + ERC-2612 permit, signed in memory)', () 
 
 describe('directSweep (stealth address pays gas, signs a plain transfer)', () => {
   function rpcFor(balance: bigint, sent: { raw?: `0x${string}` }, estimate = '0xc350' /* 50_000 */) {
-    return mockRpc(84532, (method) => {
+    return mockRpc(84532, (method, params) => {
+      if (feeOracleCall(method, params)) return NO_FEE;
       switch (method) {
         case 'eth_gasPrice':
           return '0x3b9aca00'; // 1 gwei
@@ -428,6 +433,7 @@ describe('GP-SWEEP-OUTCOME-01: a direct sweep keeps its expected hash across an 
 describe('S3-09 / S3-12 / S3-22 integration (tx-review + address-safety)', () => {
   const rpcWith = (over: Record<string, unknown>, balance = 10n ** 17n) =>
     mockRpc(84532, (method, params) => {
+      if (feeOracleCall(method, params)) return NO_FEE;
       if (method in over) {
         const v = over[method];
         if (v instanceof Error) throw v;
@@ -634,8 +640,43 @@ describe('L2-F2: a native direct sweep keeps back every fee the chain charges', 
     const seen: Seen = {};
     const rpc = chainRpc(84532, { estimate: '0xc350' }, seen);
     await directSweep({ target, manifest, destination: DEST, amount: 777n, rpc });
-    const dryRun = rpc.calls.find((c) => c.method === 'eth_call');
+    // The other eth_calls price the fees on the GasPriceOracle (Base Sepolia is OP Stack).
+    const dryRun = rpc.calls.find((c) => c.method === 'eth_call' && (c.params[0] as { to: string }).to === TOKEN);
     expect(dryRun?.params[0]).toMatchObject({ from: target.owner, to: TOKEN, value: '0x0', gas: `0x${(60_000).toString(16)}` });
+  });
+
+  it('B-R3: an ERC-20 sweep on OP Stack refuses, before signing, native coin that covers the gas but not the L1 data fee', async () => {
+    const seen: Seen = {};
+    const gasCost = 60_000n * MAX_FEE; // estimate 50 000, signed with 1.2x
+    const rpc = chainRpc(84532, { estimate: '0xc350', balance: gasCost + 1n, l1Fee: 5_000_000_000_000n }, seen);
+    await expect(directSweep({ target, manifest, destination: DEST, amount: 777n, rpc })).rejects.toThrow(/not hold enough native coin for the network fee, including the L1 data fee/);
+    expect(sends(rpc)).toBe(0);
+    // The oracle priced this transfer's exact unsigned bytes, at the gas limit that would be signed.
+    const priced = parseTransaction(seen.l1Tx!);
+    expect(priced.r).toBeUndefined();
+    expect(priced).toMatchObject({ type: 'eip1559', chainId: 84532, nonce: 7, gas: 60_000n, maxFeePerGas: MAX_FEE });
+    expect(priced.to?.toLowerCase()).toBe(TOKEN.toLowerCase());
+    expect(priced.data).toBe(encodeFunctionData({ abi: erc20Abi, functionName: 'transfer', args: [DEST, 777n] }));
+    expect(seen.operatorGas).toBe(60_000n);
+    // Gas alone not covered: the existing message, before the oracle is read.
+    const empty = chainRpc(84532, { estimate: '0xc350', balance: gasCost - 1n }, {});
+    await expect(directSweep({ target, manifest, destination: DEST, amount: 777n, rpc: empty })).rejects.toThrow(/no native coin for gas/);
+    expect(empty.calls.some((c) => c.method === 'eth_call')).toBe(false);
+  });
+
+  it('B-R3: an ERC-20 sweep on OP Stack is signed once the native coin covers gas at the fee cap plus the reserve', async () => {
+    const seen: Seen = {};
+    const rpc = chainRpc(84532, { estimate: '0xc350', balance: 60_000n * MAX_FEE + 2n * (5_000_000_000_000n + 7n), l1Fee: 5_000_000_000_000n, operatorFee: 7n }, seen);
+    const res = await directSweep({ target, manifest, destination: DEST, amount: 777n, rpc });
+    expect(sends(rpc)).toBe(1);
+    expect(res.sent).toBe(777n);
+    const signed = parseTransaction(seen.raw!);
+    expect(parseTransaction(seen.l1Tx!)).toMatchObject({ nonce: signed.nonce, gas: signed.gas, maxFeePerGas: signed.maxFeePerGas, maxPriorityFeePerGas: signed.maxPriorityFeePerGas, to: signed.to, data: signed.data });
+    // Off OP Stack there is no L1 data fee: the oracle is never read.
+    const sepolia = chainRpc(11155111, { estimate: '0xc350', balance: 60_000n * MAX_FEE }, {});
+    const usdc = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238' as Address;
+    await directSweep({ target: { ...target, chainId: 11155111, token: usdc }, manifest: fakeManifest(11155111), destination: DEST, amount: 777n, rpc: sepolia });
+    expect(sepolia.calls.filter((c) => c.method === 'eth_call').map((c) => (c.params[0] as { to: string }).to)).toEqual([usdc]);
   });
 
   it('refuses, before signing, a balance that covers the gas but not the L1 data fee', async () => {
