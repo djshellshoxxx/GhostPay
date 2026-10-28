@@ -170,7 +170,7 @@ describe('boxed key storage (S3-08)', () => {
 
   it('exports a keystore from the boxed keys and re-imports it', async () => {
     const pub = importSession({ spendingKeyHex: HEX_A, viewingKeyHex: HEX_B, signingKeyHex: '33'.repeat(32) });
-    const text = await exportKeystore('correct horse battery staple');
+    const text = await exportKeystore('correct horse battery staple', { N: 1 << 14 });
     clearSession();
     const again = await importKeystore(text, 'correct horse battery staple');
     expect(again.metaAddress).toBe(pub.metaAddress);

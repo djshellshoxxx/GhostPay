@@ -174,6 +174,7 @@ describe('Seller keys', () => {
   });
 
   it('exports an encrypted keystore (validating the passphrase) and wipes keys on request', async () => {
+    cheapKeystoreExport();
     const user = await open();
     await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
     const click = vi.fn();
