@@ -166,7 +166,8 @@ export async function grantApproval(session: WalletSession, ctx: PayContext, pla
   guardApprove(tx, ctx.chain.chainId, { token: plan.token, spender: plan.spender, amount: plan.need }, ctx.manifest, rt.nowSeconds());
   status(`Approve exactly ${formatUnits(plan.need, ctx.review.token?.decimals ?? 18)} ${ctx.review.token?.symbol ?? ''} for the router.`);
   assertCurrent?.();
-  const res = await submitTx(session, tx, rt, status, assertCurrent, onBroadcast, { kind: 'approval' });
+  // L2-I3: scoped to this invoice, so the identical approval for a later invoice is not refused as a duplicate.
+  const res = await submitTx(session, tx, rt, status, assertCurrent, onBroadcast, { kind: 'approval', scope: bytesToHex(invoiceDigest(ctx.review.invoice)) });
   try {
     if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError('The approval was not confirmed. Nothing was paid.');
     const after = await readAllowance(rt.rpc, plan.token, session.account, plan.spender);
@@ -185,7 +186,7 @@ export async function revokeApproval(session: WalletSession, ctx: PayContext, pl
   guardApprove(tx, ctx.chain.chainId, { token: plan.token, spender: plan.spender, amount: 0n }, ctx.manifest, rt.nowSeconds());
   status(`Revoke the router allowance for ${plan.spender}.`);
   assertCurrent?.();
-  const res = await submitTx(session, tx, rt, status, assertCurrent, onBroadcast, { kind: 'approval' });
+  const res = await submitTx(session, tx, rt, status, assertCurrent, onBroadcast, { kind: 'approval', scope: bytesToHex(invoiceDigest(ctx.review.invoice)) });
   try {
     if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError('The revoke was not confirmed. Check your allowances in your wallet.');
     const after = await readAllowance(rt.rpc, plan.token, session.account, plan.spender);

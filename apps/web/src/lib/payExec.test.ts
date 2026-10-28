@@ -404,6 +404,54 @@ describe('ERC-20 flows', () => {
   });
 });
 
+describe('approval and revoke attempts are scoped to their invoice (L2-I3)', () => {
+  /** The allowance follows the last mined approve(spender, amount); the amount is the calldata's last word. */
+  const allowanceChain = (wallet: MockWallet): MockRpc => {
+    let allowance = 0n;
+    return chainSeeing(wallet, (m) => {
+      if (m === 'eth_getTransactionByHash' && wallet.sent !== undefined) allowance = BigInt(`0x${String(wallet.sent['data']).slice(-64)}`);
+      return m === 'eth_call' ? `0x${allowance.toString(16).padStart(64, '0')}` : undefined;
+    });
+  };
+  const sends = (w: MockWallet): number => w.calls.filter((c) => c.method === 'eth_sendTransaction').length;
+
+  it('an identical approval and revoke for a later invoice are new attempts; repeating one for the same invoice is still refused', async () => {
+    const journal = stubAttemptJournal();
+    const wallet = new MockWallet();
+    const first = await setup({}, wallet);
+    // Another signed invoice for the same token, amount, router and payer: its approve and revoke calldata are identical.
+    const later = await setup({}, wallet);
+    const rt: Runtime = { rpc: allowanceChain(wallet), nowSeconds: () => NOW, sleep };
+    const planFirst = await planApproval(first.ctx, first.session, USDC_84532, rt);
+    await expect(grantApproval(first.session, first.ctx, planFirst, rt, noStatus)).resolves.toBe(planFirst.need);
+    await revokeApproval(first.session, first.ctx, planFirst, rt, noStatus);
+    const planLater = await planApproval(later.ctx, later.session, USDC_84532, rt);
+    expect(planLater).toEqual(planFirst);
+    await expect(grantApproval(later.session, later.ctx, planLater, rt, noStatus)).resolves.toBe(planLater.need);
+    await revokeApproval(later.session, later.ctx, planLater, rt, noStatus);
+    expect(sends(wallet)).toBe(4);
+    // The duplicate-attempt guard still holds within one invoice.
+    await expect(grantApproval(first.session, first.ctx, planFirst, rt, noStatus)).rejects.toThrow(/previous wallet attempt/);
+    await expect(revokeApproval(later.session, later.ctx, planLater, rt, noStatus)).rejects.toThrow(/previous wallet attempt/);
+    expect(sends(wallet)).toBe(4);
+    const attempts = JSON.parse(journal.get(ATTEMPT_JOURNAL_KEY) ?? '[]') as { key: string; kind: string; status: string }[];
+    expect(attempts.map((a) => [a.kind, a.status])).toEqual(Array.from({ length: 4 }, () => ['approval', 'submitted']));
+    expect(new Set(attempts.map((a) => a.key)).size).toBe(4);
+  });
+
+  it('a rejected approval still leaves its attempt unknown and blocks repeating it for that invoice', async () => {
+    const journal = stubAttemptJournal();
+    const wallet = new MockWallet({ rejectSend: true });
+    const { ctx, session } = await setup({}, wallet);
+    const rt: Runtime = { rpc: allowanceChain(wallet), nowSeconds: () => NOW, sleep };
+    const plan = await planApproval(ctx, session, USDC_84532, rt);
+    await expect(grantApproval(session, ctx, plan, rt, noStatus)).rejects.toThrow(/rejected the request/);
+    expect(JSON.parse(journal.get(ATTEMPT_JOURNAL_KEY) ?? '[]')).toMatchObject([{ kind: 'approval', status: 'unknown' }]);
+    await expect(grantApproval(session, ctx, plan, rt, noStatus)).rejects.toThrow(/previous wallet attempt/);
+    expect(sends(wallet)).toBe(1);
+  });
+});
+
 describe('permit post-sign pre-flight and fallback ladder (spec 04)', () => {
   const USDC = '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as const;
   const account = privateKeyToAccount(`0x${'cd'.repeat(32)}`);
