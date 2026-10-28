@@ -90,8 +90,9 @@ export type Simulation = 'ok' | 'unavailable';
 const REVERT_TEXT = /revert|execution failed|invalid opcode|out of gas/i;
 
 /**
- * Whether an RPC failure says the call reverted. The verified client (`createClient`) drops the node's text and reports a
- * revert only as `ChainAdapterError.reverted`, so its fixed-form message is never matched.
+ * Whether an RPC failure says the call reverted (or ran out of gas, or hit an invalid opcode). The verified client
+ * (`createClient`) drops the node's text and reports that only as `ChainAdapterError.reverted`, so its fixed-form
+ * message is never matched.
  */
 export function reportsRevert(e: unknown): boolean {
   if (e instanceof ChainAdapterError) return e.reverted;

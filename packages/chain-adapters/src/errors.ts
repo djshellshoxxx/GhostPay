@@ -25,8 +25,9 @@ export class ChainAdapterError extends Error {
   /** Machine-readable failure code. */
   public readonly code: AdapterErrorCode;
   /**
-   * True only when a JSON-RPC node answered that execution reverted (see `createClient`). A sanitized boolean: the
-   * node's message and revert data are never kept, so a dry run can refuse a revert without echoing node text.
+   * True only when a JSON-RPC node answered that execution failed: it reverted, ran out of gas or hit an invalid opcode
+   * (see `createClient`). A sanitized boolean: the node's message and revert data are never kept, so a dry run can
+   * refuse a failing call without echoing node text.
    */
   public readonly reverted: boolean;
 

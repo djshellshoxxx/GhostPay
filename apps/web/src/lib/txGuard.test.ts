@@ -86,8 +86,11 @@ describe('simulateCall', () => {
     it.each([
       ['code 3 with revert data', { code: 3, message: 'execution reverted: ERC20: transfer amount exceeds balance', data: '0x08c379a0' }],
       ['-32000 without revert data', { code: -32000, message: 'execution reverted' }],
+      // B-R2: with the signed gas limit in the dry run, these are the signed transaction failing too.
+      ['-32000 out of gas', { code: -32000, message: 'out of gas' }],
+      ['-32000 invalid opcode', { code: -32000, message: 'invalid opcode: INVALID' }],
     ])('refuses a node revert (%s)', async (_n, error) => {
-      await expect(simulateCall(await nodeClient(error), call)).rejects.toThrow(/would revert/);
+      await expect(simulateCall(await nodeClient(error), { ...call, gas: 21_000n })).rejects.toThrow(/would revert/);
     });
     it('a node that cannot run the call is reported unavailable, not refused', async () => {
       expect(await simulateCall(await nodeClient({ code: -32601, message: 'the method eth_call does not exist' }), call)).toBe('unavailable');

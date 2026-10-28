@@ -203,7 +203,8 @@ function toQuantity(n: bigint): string {
  * retryable HTTP statuses and JSON-RPC rate-limit errors (-32005, -32097); never on malformed
  * responses. Responses larger than the cap, batch responses and id mismatches are rejected.
  * A JSON-RPC error keeps only its code, plus `reverted` on the thrown error when the node
- * reported reverted execution (code 3, or -32000/-32015 with a revert text); no node text is kept.
+ * reported failed execution (code 3, or -32000/-32015 with a revert, out-of-gas or invalid-opcode
+ * text); no node text is kept.
  *
  * @param chain Expected chain (must be known; enablement is checked by callers that build payments).
  * @param url Endpoint; validated by {@link validateRpcUrl}.
@@ -330,17 +331,24 @@ function rethrow(e: unknown): never {
   return fail('RPC_FAILURE', 'transport failure');
 }
 
-/** Codes that mean reverted execution only together with a revert text: geth without revert data, Nethermind/OpenEthereum. */
+/** Codes that mean failed execution only together with a failure text: geth without revert data, Nethermind/OpenEthereum. */
 const REVERT_WITH_TEXT_CODES: ReadonlySet<number> = new Set([-32000, -32015]);
 
 /**
- * Whether a JSON-RPC error object reports reverted execution: code 3 (sent with revert data), or -32000/-32015 whose
- * message (or string `data`, where Nethermind and OpenEthereum put it) says "revert". Only this boolean leaves here.
+ * Failure texts of those codes: a revert, or the call running out of its gas or hitting an invalid opcode. A dry run
+ * carries the gas limit that will be signed, so the last two mean the signed transaction would fail as well.
+ */
+const FAILED_EXECUTION_TEXT = /revert|out of gas|invalid opcode/i;
+
+/**
+ * Whether a JSON-RPC error object reports failed execution: code 3 (sent with revert data), or -32000/-32015 whose
+ * message (or string `data`, where Nethermind and OpenEthereum put it) says it reverted, ran out of gas or hit an
+ * invalid opcode. Only this boolean leaves here.
  */
 function reportsRevert(code: number, err: Readonly<Record<string, unknown>>): boolean {
   if (code === 3) return true;
   if (!REVERT_WITH_TEXT_CODES.has(code)) return false;
-  return [err['message'], err['data']].some((v) => typeof v === 'string' && /revert/i.test(v));
+  return [err['message'], err['data']].some((v) => typeof v === 'string' && FAILED_EXECUTION_TEXT.test(v));
 }
 
 function isRetryable(e: unknown): boolean {
