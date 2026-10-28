@@ -1,3 +1,4 @@
+import { findChain } from '@ghostpay/chain-adapters';
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { UserFacingError, userMessage } from '../lib/errors';
 import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphrase, passphraseProblem } from '../lib/keystore';
@@ -20,6 +21,55 @@ function downloadBytes(filename: string, bytes: Uint8Array<ArrayBuffer>): void {
   a.href = url; a.download = filename; a.rel = 'noopener';
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => { URL.revokeObjectURL(url); }, 1000);
+}
+
+/** Where IdbReconciliationVaultStore (lib/reconciliationVault.ts) keeps scan history: one record per `${sellerKeyId}:${chainId}`. */
+const HISTORY_DB = 'ghostpay-reconciliation-encrypted';
+const HISTORY_STORE = 'vaults';
+
+/**
+ * Chain ids with scan history (encrypted reconciliation vaults: observations, invoice registrations and receipts) stored in
+ * this browser for `sellerKeyId`, whether or not this build supports the chain (I-2). Reads record keys only, never
+ * ciphertext, and never creates the database; without IndexedDB nothing can be stored, so the list is empty.
+ */
+export function storedHistoryChains(sellerKeyId: string, factory: IDBFactory | undefined = globalThis.indexedDB): Promise<readonly number[]> {
+  return new Promise((resolve, reject) => {
+    if (factory === undefined) { resolve([]); return; }
+    const failed = (): void => { reject(new UserFacingError('Could not list the scan history stored in this browser.')); };
+    let creating = false;
+    const request = factory.open(HISTORY_DB);
+    // Opening a database that does not exist would create it: abort that instead, since it holds no history.
+    request.onupgradeneeded = () => { creating = true; request.transaction?.abort(); };
+    request.onerror = () => { if (creating) resolve([]); else failed(); };
+    request.onsuccess = () => {
+      const db = request.result;
+      db.onversionchange = () => { db.close(); };
+      if (!db.objectStoreNames.contains(HISTORY_STORE)) { db.close(); resolve([]); return; }
+      const tx = db.transaction(HISTORY_STORE, 'readonly');
+      const keys = tx.objectStore(HISTORY_STORE).getAllKeys();
+      tx.oncomplete = () => {
+        db.close();
+        const prefix = `${sellerKeyId}:`;
+        const ids = keys.result.flatMap((key) => {
+          if (typeof key !== 'string' || !key.startsWith(prefix)) return [];
+          const id = Number(key.slice(prefix.length));
+          return Number.isSafeInteger(id) && id > 0 && String(id) === key.slice(prefix.length) ? [id] : [];
+        });
+        resolve(ids.sort((a, b) => a - b));
+      };
+      tx.onerror = tx.onabort = () => { db.close(); failed(); };
+    };
+  });
+}
+
+/** "Ethereum (chain 1)", or "chain 12345" for a chain this build does not know. */
+function chainLabel(chainId: number): string {
+  const name = findChain(chainId)?.name;
+  return name === undefined ? `chain ${String(chainId)}` : `${name} (chain ${String(chainId)})`;
+}
+
+function listed(items: readonly string[]): string {
+  return items.length < 2 ? items.join('') : `${items.slice(0, -1).join(', ')} and ${items[items.length - 1] ?? ''}`;
 }
 
 /** Encrypted tag backup, import with preview, key rotation and wipe. Everything is local; the passphrase is never stored. */
@@ -94,6 +144,17 @@ export function TagArchive(): ReactNode {
   const closeVaults = (vaults: readonly { vault: ReconciliationVault }[]): void => {
     for (const history of vaults) { history.vault.lock(); openedHistory.current.delete(history.vault); }
   };
+  /** Chains with scan history stored here for the loaded keys that this build cannot open; undefined when it cannot be listed. */
+  const unsupportedHistory = async (): Promise<readonly number[] | undefined> => {
+    const s = getSessionPublic();
+    if (s === undefined) return [];
+    try {
+      const stored = await storedHistoryChains(checkpointKeyId(s.spendingPublicKey, s.viewingPublicKey));
+      return stored.filter((id) => !chains.some((chain) => chain.chainId === id));
+    } catch {
+      return undefined;
+    }
+  };
 
   const onExport = (e: FormEvent): void => {
     e.preventDefault();
@@ -110,12 +171,15 @@ export function TagArchive(): ReactNode {
         unchanged();
         const history: Record<string, string> = {};
         let skipped = 0;
+        // History of chains this build does not support is never opened here; name it rather than leave it out silently (I-2).
+        let unsupported: readonly number[] | undefined = [];
         if (withHistory) {
           const opened = await historyVaults(c);
           vaults = opened.vaults; skipped = opened.skipped;
           for (const h of vaults) {
             try { history[String(h.chainId)] = await h.vault.exportEncrypted(); } catch { skipped++; }
           }
+          unsupported = await unsupportedHistory();
         }
         // Tags and history must come from the keys this export started with (L1-04).
         if (!current(c)) return;
@@ -125,7 +189,14 @@ export function TagArchive(): ReactNode {
         unchanged();
         downloadBytes(out.filename, out.bytes);
         setPass(''); setPass2(''); setBusy(false);
-        done(`Archive downloaded: ${String(out.recordCount)} tag(s). SHA-256 ${out.sha256}. Keep the file and the passphrase: neither can be recovered.${skipped > 0 ? ` Scan history for ${String(skipped)} chain(s) could not be read and is NOT in this archive.` : ''}`);
+        const missing = [
+          skipped > 0 ? `Scan history for ${String(skipped)} chain(s) could not be read and is NOT in this archive.` : '',
+          unsupported === undefined ? 'The scan history kept for chains this build does not support could not be listed; any such history is NOT in this archive.' : '',
+          unsupported !== undefined && unsupported.length > 0
+            ? `Scan history stored in this browser for ${listed(unsupported.map(chainLabel))} is NOT in this archive: this build does not support ${unsupported.length === 1 ? 'that chain' : 'those chains'}.`
+            : '',
+        ].filter((note) => note !== '');
+        done(`Archive downloaded: ${String(out.recordCount)} tag(s). SHA-256 ${out.sha256}. Keep the file and the passphrase: neither can be recovered.${missing.map((note) => ` ${note}`).join('')}`);
       } catch (error) {
         if (!current(c)) return;
         setBusy(false); fail(error);
