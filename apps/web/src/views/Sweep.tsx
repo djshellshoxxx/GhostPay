@@ -220,7 +220,7 @@ export function Sweep(): ReactNode {
     sweepDirectly(true);
   };
 
-  /** `resign`: sign a replacement for the unresolved direct sweep with exactly its nonce instead of a new sweep. */
+  /** `resign`: sign a replacement for the direct sweep whose handoff outcome is unknown, with exactly its nonce. */
   const sweepDirectly = (resign: boolean): void => {
     void guard(async (assertCurrent) => {
       setDryRunSkipped(false);

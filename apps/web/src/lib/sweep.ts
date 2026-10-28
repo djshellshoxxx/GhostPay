@@ -275,9 +275,9 @@ export interface DirectSweepInput {
   readonly amount: bigint;
   readonly rpc: Rpc;
   /**
-   * Re-sign an unresolved direct sweep (L2-F2): sign with exactly this owner nonce, the locked one, instead of the
-   * pending count. Only one transaction per nonce can ever be mined, so the new one can replace the recorded one but
-   * never add a second transfer. Refused once a transaction with this nonce is mined.
+   * Re-sign a direct sweep whose handoff outcome is unknown (L2-F2, B-R5): sign with exactly this owner nonce, the
+   * locked one, instead of the pending count. Only one transaction per nonce can ever be mined, so the new one can
+   * replace the recorded one but never add a second transfer. Refused once a transaction with this nonce is mined.
    */
   readonly replaceNonce?: number;
   /**
@@ -316,9 +316,9 @@ export interface RelayedOrderRef {
 /**
  * `expired`: a relayed order whose nonce was still unused in a block more than {@link RELAYED_EXPIRY_MARGIN_SECONDS}
  * past its deadline; it can no longer execute. `refused`: the relayer answered with a client error (4xx other than
- * 409), which by its API contract happens before anything is broadcast. `replaced`: a direct sweep whose recorded
- * transaction has no receipt while the owner's nonce is already used at the finalized block, so it can never be mined
- * (after a same-nonce re-sign, an earlier attempt was).
+ * 409), which by its API contract happens before anything is broadcast. `replaced`: a direct sweep none of whose
+ * recorded transactions (with a same-nonce re-sign, every attempt) has a receipt while the owner's nonce is already used
+ * at the finalized block, so none of them can ever be mined: a transaction this lock does not record was.
  */
 export type SweepLockStatus = DirectSweepAttempt['status'] | 'expired' | 'refused' | 'replaced';
 
