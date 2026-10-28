@@ -5,7 +5,9 @@ The web app is a static SPA (`apps/web/dist`). Serve exactly the released bytes.
 **Option A (recommended): use a release tarball.** Download `ghostpay-web-<ver>.tar.gz`, `SHA256SUMS`, `release-manifest.json` on a different machine than the server. Verify the signed tag, get the commit it points at, run the checks there and note the tarball's SHA-256:
 ```
 scripts/verify-release.sh ghostpay-web-<ver>.tar.gz SHA256SUMS <40-hex-commit> release-manifest.json   # separate machine
-gh attestation verify ghostpay-web-<ver>.tar.gz --repo <owner>/<repo>                                  # separate machine
+gh attestation verify ghostpay-web-<ver>.tar.gz --repo <owner>/<repo> \
+  --signer-workflow <owner>/<repo>/.github/workflows/release.yml --source-ref refs/tags/<tag> \
+  --source-digest <40-hex-commit> --deny-self-hosted-runners                                         # separate machine
 deploy/selfhost.sh --tarball ghostpay-web-<ver>.tar.gz --sums SHA256SUMS --commit <40-hex-commit> \
   --manifest release-manifest.json --expect-sha256 <tarball sha256 from the separate machine>
 ```
