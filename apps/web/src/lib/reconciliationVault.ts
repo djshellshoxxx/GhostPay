@@ -22,6 +22,8 @@ import { checkpointKeyId } from './scanClient';
 export const MAX_VAULT_BYTES = 8_000_000;
 export const RECONCILIATION_VAULT_CHANGE_EVENT = 'ghostpay:reconciliation-vault-change';
 const INVALIDATION_CHANNEL = 'ghostpay:reconciliation-invalidation';
+/** Canonical block-hash reads in flight during a reorg check (a rollback to genesis can cover every stored height). */
+const CANONICAL_READS_IN_FLIGHT = 8;
 export interface ReconciliationScope {
   readonly sellerKeyId: string;
   readonly chainId: number;
@@ -694,12 +696,24 @@ export class ReconciliationVault {
         .map((r) => r.blockNumber),
     );
     const canonical = new Map<string, string>();
-    for (const height of heights) {
-      const hash = await canonicalHash(BigInt(height));
-      this.guard(revision);
-      if (typeof hash !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(hash)) fail('Invalid canonical block hash.');
-      canonical.set(height, hash.toLowerCase());
-    }
+    // A few heights at a time: every height must be read before anything is written, and after the first failed read
+    // no further read starts; the in-flight ones settle before the failure is reported, and nothing is written.
+    const queue = [...heights];
+    const failures: unknown[] = [];
+    const reader = async (): Promise<void> => {
+      for (let height = queue.shift(); height !== undefined && failures.length === 0; height = queue.shift()) {
+        try {
+          const hash = await canonicalHash(BigInt(height));
+          this.guard(revision);
+          if (typeof hash !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(hash)) fail('Invalid canonical block hash.');
+          canonical.set(height, hash.toLowerCase());
+        } catch (error) {
+          failures.push(error);
+        }
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(CANONICAL_READS_IN_FLIGHT, queue.length) }, reader));
+    if (failures.length > 0) throw failures[0];
     // Records added meanwhile (no checked height) are fresh live observations and stay as they are.
     const replaced = (r: ReconciliationRecord): boolean => {
       const hash = canonical.get(r.blockNumber);

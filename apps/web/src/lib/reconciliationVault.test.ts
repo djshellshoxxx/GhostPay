@@ -227,6 +227,41 @@ describe('encrypted reconciliation vault', () => {
     expect((await vault.read())[0]?.evidenceStatus).toBe('verified-at-scan');
   });
 
+  it('reads canonical hashes eight heights at a time and still writes nothing when one read fails (A-R3)', async () => {
+    const store = new Store();
+    const vault = await unlocked(store);
+    const stored = Array.from({ length: 20 }, (_, i) => {
+      const blockHash = `0x${(100 + i).toString(16).padStart(64, '0')}`;
+      return variant(100 + i, '0', { blockHash, id: `${scope.sellerKeyId}:${scope.chainId}:${record.transactionHash}:${record.stealthAddress}:${blockHash}:4` });
+    });
+    for (const r of stored) await vault.save(r);
+    let inFlight = 0;
+    let peak = 0;
+    const asked: bigint[] = [];
+    const chain = (failAt?: bigint) => async (height: bigint): Promise<string> => {
+      asked.push(height);
+      peak = Math.max(peak, ++inFlight);
+      await new Promise((resolve) => setTimeout(resolve, 1));
+      inFlight--;
+      if (height === failAt) throw new Error('RPC_FAILURE: block unavailable');
+      return `0x${'2'.repeat(64)}`;
+    };
+    const before = [...store.data.values()][0];
+    await expect(vault.invalidateFrom(100n, [], chain(102n))).rejects.toThrow(/RPC_FAILURE/);
+    // No read starts after the failure, the ones in flight settle before it is reported, and nothing is written.
+    expect(inFlight).toBe(0);
+    expect(asked.length).toBeLessThan(stored.length);
+    expect([...store.data.values()][0]).toBe(before);
+    expect((await vault.read()).every((r) => r.evidenceStatus === 'verified-at-scan')).toBe(true);
+    asked.length = 0;
+    peak = 0;
+    await vault.invalidateFrom(100n, [], chain());
+    expect(asked).toHaveLength(stored.length);
+    expect(new Set(asked)).toEqual(new Set(stored.map((r) => BigInt(r.blockNumber))));
+    expect(peak).toBe(8);
+    expect((await vault.read()).every((r) => r.evidenceStatus === 'invalidated-after-reorg')).toBe(true);
+  });
+
   it('restores later canonical history unchanged and previews exactly what activation invalidates (L1-03)', async () => {
     const vault = await unlocked();
     const template = await vault.exportEncrypted();
