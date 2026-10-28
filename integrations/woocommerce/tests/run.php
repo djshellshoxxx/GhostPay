@@ -1,8 +1,9 @@
 <?php
 /**
- * CLI tests for the WordPress-independent classes. Run: php integrations/woocommerce/tests/run.php
+ * CLI tests for the WordPress-independent classes, then the gateway class on tests/wp-shim.php (needs pdo_sqlite).
+ * Run: php integrations/woocommerce/tests/run.php
  * The signature vector was produced by signWebhook() from @ghostpay/merchant-hooks (cross-language check).
- * Fake secret and events only.
+ * Fake secrets, orders and events only.
  */
 
 define( 'GHOSTPAY_CLI_TEST', true );
@@ -94,6 +95,69 @@ $bads = array(
 );
 foreach ( $bads as $i => $b ) {
 	check( "event bad #$i", GhostPay_Event::parse( $b ), null );
+}
+
+// ---- Gateway on the WordPress/WooCommerce shim (tests/wp-shim.php) -----------------------------------------------
+if ( ! extension_loaded( 'pdo_sqlite' ) ) {
+	echo "SKIP gateway tests: the pdo_sqlite extension is not available\n";
+} else {
+	require __DIR__ . '/wp-shim.php';
+	GhostPay_Test::reset();
+	require dirname( __DIR__ ) . '/ghostpay-for-woocommerce/ghostpay-for-woocommerce.php';
+	do_action( 'plugins_loaded' );
+	check( 'gateway registered', apply_filters( 'woocommerce_payment_gateways', array() ), array( 'WC_Gateway_GhostPay' ) );
+
+	$hex      = static fn( string $byte ): string => str_repeat( $byte, 32 ); // fake 32-byte secrets, hex encoded
+	$settings = array( 'enabled' => 'yes', 'service_url' => 'https://invoices.shop.test', 'pay_host' => 'pay.example.test', 'ttl' => '3600' );
+	$event    = static fn( string $id, string $type, string $invoice, string $currency, string $amount ): string => json_encode(
+		array( 'id' => $id, 'type' => $type, 'createdAt' => 1800000000, 'data' => array( 'invoiceId' => $invoice, 'currency' => $currency, 'amountMinor' => $amount ) )
+	);
+	$sign_with = static fn( string $secret_hex, string $body ): string => GhostPay_Signature::sign( hex2bin( $secret_hex ), $body, time(), bin2hex( random_bytes( 16 ) ) );
+	$notice    = static function (): string {
+		ob_start();
+		do_action( 'admin_notices' );
+		return (string) ob_get_clean();
+	};
+
+	// G3-01: secrets come only from wp-config.php constants or the environment. The settings row is returned by the
+	// WooCommerce REST API and copied into backups; with a webhook secret from there anyone can forge invoice.paid.
+	putenv( 'GHOSTPAY_SERVICE_SECRET' );
+	putenv( 'GHOSTPAY_WEBHOOK_SECRET' );
+	$old_service = $hex( 'a1' );
+	$old_webhook = $hex( 'b2' );
+	update_option( 'woocommerce_ghostpay_settings', $settings + array( 'service_secret' => $old_service, 'webhook_secret' => $old_webhook ) );
+	$gateway = new WC_Gateway_GhostPay();
+	check( 'no secret fields in the settings form', array_values( array_intersect( array( 'service_secret', 'webhook_secret' ), array_keys( $gateway->form_fields ) ) ), array() );
+	check( 'a service secret stored in the settings is not used', $gateway->is_available(), false );
+	ghostpay_test_order( 1, 'pending', '12.50', 'USD', array( 'inv_s' ) );
+	$paid_s = $event( 'evt_s', 'invoice.paid', 'inv_s', 'USD', '1250' );
+	check( 'a webhook signed with the stored webhook secret is refused', ghostpay_test_deliver( $paid_s, $sign_with( $old_webhook, $paid_s ) )[0], 400 );
+	check( 'a forged webhook does not pay the order', GhostPay_Test::$orders[1]['status'], 'pending' );
+
+	do_action( 'init' ); // upgrade step
+	$stored = get_option( 'woocommerce_ghostpay_settings' );
+	check( 'upgrade deletes the stored secrets', array_values( array_intersect( array( 'service_secret', 'webhook_secret' ), array_keys( (array) $stored ) ) ), array() );
+	check( 'upgrade keeps the other settings', $stored['service_url'] ?? null, 'https://invoices.shop.test' );
+	$raw = (string) $wpdb->get_var( "SELECT group_concat(option_value) FROM {$wpdb->options}" );
+	check( 'no copy of a stored secret is left in wp_options', str_contains( $raw, $old_service ) || str_contains( $raw, $old_webhook ), false );
+	$shown = $notice();
+	check( 'admin notice asks to rotate both secrets', str_contains( $shown, 'GHOSTPAY_SERVICE_SECRET' ) && str_contains( $shown, 'GHOSTPAY_WEBHOOK_SECRET' ), true );
+	GhostPay_Test::$can = false;
+	check( 'rotation notice only for shop managers', $notice(), '' );
+	GhostPay_Test::$can = true;
+	putenv( 'GHOSTPAY_SERVICE_SECRET=' . strtoupper( $old_service ) ); // the exposed value, merely moved
+	putenv( 'GHOSTPAY_WEBHOOK_SECRET=' . $hex( 'c3' ) );
+	$shown = $notice();
+	check( 'notice stays while the exposed service secret is still configured', str_contains( $shown, 'GHOSTPAY_SERVICE_SECRET' ), true );
+	check( 'a rotated webhook secret leaves the notice', str_contains( $shown, 'GHOSTPAY_WEBHOOK_SECRET' ), false );
+	putenv( 'GHOSTPAY_SERVICE_SECRET=' . $hex( 'd4' ) );
+	check( 'notice gone once both secrets are rotated', $notice(), '' );
+	check( 'exposure record removed after rotation', get_option( 'ghostpay_exposed_secrets' ), false );
+	check( 'secrets from the environment make the gateway available', ( new WC_Gateway_GhostPay() )->is_available(), true );
+	check( 'a webhook signed with the configured secret is accepted', ghostpay_test_deliver( $paid_s, $sign_with( $hex( 'c3' ), $paid_s ) )[0], 200 );
+	check( 'that webhook pays the order', GhostPay_Test::$orders[1]['status'], 'processing' );
+	do_action( 'init' );
+	check( 'upgrade step is idempotent', $notice(), '' );
 }
 
 if ( $failed > 0 ) {

@@ -10,18 +10,19 @@ Classic-checkout gateway. The shop never signs invoices and never loads remote c
 Why no embed script: the embed SDK is a script served from the GhostPay app origin. A plain redirect/anchor avoids any third-party script on the checkout page and works with a strict CSP.
 
 ## Install (manual)
-Copy `ghostpay-for-woocommerce/` to `wp-content/plugins/`, activate, then WooCommerce > Settings > Payments > GhostPay. Put secrets in `wp-config.php` rather than the database:
+Copy `ghostpay-for-woocommerce/` to `wp-content/plugins/`, activate, then WooCommerce > Settings > Payments > GhostPay. Secrets are read ONLY from `wp-config.php` constants (or environment variables of the same name); the settings page has no secret fields, because gateway settings are stored in `wp_options`, returned by the WooCommerce REST API (`GET /wc/v3/payment_gateways`) to any key with read access, and copied into backups:
 ```php
 define( 'GHOSTPAY_SERVICE_SECRET', '<64+ hex chars>' );   // signs requests to your invoice service
 define( 'GHOSTPAY_WEBHOOK_SECRET', '<64+ hex chars>' );   // verifies GhostPay webhooks
 ```
-Never commit those values. Invoice service contract: `POST /invoices` (JSON body, `GhostPay-Signature` header) -> `201 {"invoiceId": "...", "link": "https://<pay_host>/#gpi=v1...."}`; `GET /health` -> `200`. The service must verify the signature the same way (use `verifyWebhook` from merchant-hooks) and must itself recompute/limit amounts it is willing to sign.
+Never commit those values. Upgrading from an earlier build with secret fields: the plugin deletes secrets stored in the gateway settings and shows an admin notice until each one is replaced by a different valid value. Rotate them (new random values in `wp-config.php` AND in your invoice service): the old values may have been exposed. Invoice service contract: `POST /invoices` (JSON body, `GhostPay-Signature` header) -> `201 {"invoiceId": "...", "link": "https://<pay_host>/#gpi=v1...."}`; `GET /health` -> `200`. The service must verify the signature the same way (use `verifyWebhook` from merchant-hooks) and must itself recompute/limit amounts it is willing to sign.
 
 ## Security notes
 - "Test connection" admin action: `check_admin_referer` nonce + `manage_woocommerce` capability, `wp_safe_remote_get`, no redirects. The webhook endpoint cannot use a WP nonce (called by a server); its authentication is the HMAC.
 - All outbound calls go to the configured https service URL only (`wp_safe_remote_*`, no redirects, response size limit). No analytics, no remote assets.
 - Nonces live in `wp_options` (`ghostpay_nonce_*`), purged daily by cron; uninstall removes them.
+- Secrets never enter the database: only `GHOSTPAY_SERVICE_SECRET` / `GHOSTPAY_WEBHOOK_SECRET` (constant first, then environment). After such an upgrade, `ghostpay_exposed_secrets` holds only a SHA-256 of each deleted value until it is rotated.
 
 ## Status and limits
-- PHP 8.3 CLI checks passed in this QA run: `php -l` on every PHP file and `php integrations/woocommerce/tests/run.php` (cross-language signature vector, money conversion, and event parser).
-- NOT run inside WordPress/WooCommerce (no WP test environment here): gateway class, settings UI, redirect, HPOS meta queries and webhook order updates are untested. WooCommerce Blocks checkout is not supported (classic checkout only). No refunds. No coding-standards run (phpcs not installed).
+- PHP 8.3 CLI checks: `php -l` on every PHP file and `php integrations/woocommerce/tests/run.php` (cross-language signature vector, money conversion, event parser, and the gateway class on `tests/wp-shim.php`: a minimal WordPress/WooCommerce shim with `wp_options` and `$wpdb` on in-memory SQLite and fake orders; needs `pdo_sqlite`).
+- NOT run inside real WordPress/WooCommerce: settings UI rendering, redirect, HPOS meta queries and MySQL itself are untested. WooCommerce Blocks checkout is not supported (classic checkout only). No refunds. No coding-standards run (phpcs not installed).

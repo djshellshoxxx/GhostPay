@@ -79,17 +79,11 @@ class WC_Gateway_GhostPay extends WC_Payment_Gateway {
 				'description' => __( 'Host name only (e.g. pay.example.org). Payment links for any other host are refused.', 'ghostpay-for-woocommerce' ),
 				'default'     => '',
 			),
-			'service_secret' => array(
-				'title'       => __( 'Invoice service secret (hex)', 'ghostpay-for-woocommerce' ),
-				'type'        => 'password',
-				'description' => __( 'Prefer defining GHOSTPAY_SERVICE_SECRET in wp-config.php; the constant wins over this field.', 'ghostpay-for-woocommerce' ),
-				'default'     => '',
-			),
-			'webhook_secret' => array(
-				'title'       => __( 'Webhook secret (hex)', 'ghostpay-for-woocommerce' ),
-				'type'        => 'password',
-				'description' => __( 'At least 32 bytes (64 hex chars). Prefer GHOSTPAY_WEBHOOK_SECRET in wp-config.php.', 'ghostpay-for-woocommerce' ),
-				'default'     => '',
+			// No secret inputs: settings are stored in wp_options and returned by the WooCommerce REST API.
+			'secrets'        => array(
+				'title'       => __( 'Secrets', 'ghostpay-for-woocommerce' ),
+				'type'        => 'title',
+				'description' => __( 'Define GHOSTPAY_SERVICE_SECRET and GHOSTPAY_WEBHOOK_SECRET (hex, at least 32 bytes each) in wp-config.php or as environment variables. They are never read from or stored in these settings.', 'ghostpay-for-woocommerce' ),
 			),
 			'ttl'            => array(
 				'title'       => __( 'Invoice lifetime (seconds)', 'ghostpay-for-woocommerce' ),
@@ -138,11 +132,9 @@ class WC_Gateway_GhostPay extends WC_Payment_Gateway {
 		return preg_match( '/\A[a-z0-9]([a-z0-9.-]{0,251}[a-z0-9])?\z/', $h ) ? $h : '';
 	}
 
-	/** @param string $which 'service' or 'webhook'. @return string|null Binary secret. */
+	/** @param string $which 'service' or 'webhook'. @return string|null Binary secret from wp-config.php or the environment only. */
 	private function secret( string $which ): ?string {
-		$const = 'service' === $which ? 'GHOSTPAY_SERVICE_SECRET' : 'GHOSTPAY_WEBHOOK_SECRET';
-		$hex   = defined( $const ) ? (string) constant( $const ) : (string) $this->get_option( $which . '_secret', '' );
-		return GhostPay_Signature::secret_from_hex( $hex );
+		return GhostPay_Signature::secret_from_hex( GhostPay_Secrets::hex( $which ) );
 	}
 
 	/**
