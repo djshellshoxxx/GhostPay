@@ -212,6 +212,51 @@ describe('EsploraClient', () => {
     expect(impossible.requests.some((r) => r.includes('/txs/'))).toBe(false);
   });
 
+  it('stops reading a block as soon as its transactions weigh more than a valid block can (4,000,000 weight units)', async () => {
+    // The most transactions a block can claim, served as 25 heavy ones per page: a 10,000-byte output script makes
+    // each about 40,000 weight units, so a page of them weighs about 1,000,000.
+    const heavy = withTxid({ ...SIMPLE_TX, vout: [{ scriptpubkey: '51'.repeat(10_000), value: 1_000 }] });
+    const page = JSON.stringify(Array.from({ length: 25 }, () => heavy));
+    const hash = 'a'.repeat(64);
+    const pages: string[] = [];
+    const client = new EsploraClient({
+      baseUrl: BASE,
+      fetchFn: (url) => {
+        if (url.endsWith(`/block/${hash}`)) return Promise.resolve(new Response(JSON.stringify({ id: hash, tx_count: 16_666 })));
+        pages.push(url.slice(url.lastIndexOf('/') + 1));
+        // Ends a client that keeps reading (a transport failure) before this test downloads hundreds of pages.
+        if (pages.length > 8) return Promise.resolve(new Response('enough', { status: 500 }));
+        return Promise.resolve(new Response(page));
+      },
+    });
+    expect(await codeOf(client.blockTxs(hash))).toBe('INVALID_RESPONSE');
+    // The fourth page passes the limit; no later page is requested.
+    expect(pages).toEqual(['0', '25', '50', '75']);
+  });
+
+  it('weighs witness bytes at a quarter (BIP-141), so a block heavy with witness data is read', async () => {
+    // 1,500,000 witness bytes weigh 1,500,000 units: within the limit (at 4 units per byte they would not be).
+    const witnessHeavy = withTxid({ ...SIMPLE_TX, vin: [{ ...SIMPLE_TX.vin[0]!, witness: ['00'.repeat(1_500_000)] }] });
+    const { client, hash } = electrsBlock([witnessHeavy]);
+    const [t] = await client.blockTxs(hash);
+    expect(t?.inputs?.[0]?.witness[0]).toHaveLength(1_500_000);
+    // 82 non-witness bytes at 4 units, then marker and flag (2), item count (1), item length (5) and the item at 1.
+    expect(t?.weight).toBe(82 * 4 + 2 + 1 + 5 + 1_500_000);
+  });
+
+  it('counts the header and the transaction count in the block weight: exactly 4,000,000 is read, more is refused', async () => {
+    // One transaction whose output script has n bytes (n >= 65,536): 64 + n bytes, all at 4 weight units, after
+    // the 80-byte header and the 1-byte transaction count.
+    const block = (n: number) => electrsBlock([withTxid({ ...SIMPLE_TX, vout: [{ scriptpubkey: '51'.repeat(n), value: 1_000 }] })]);
+    const exact = block(999_855);
+    const [t] = await exact.client.blockTxs(exact.hash);
+    expect(t?.weight).toBe((64 + 999_855) * 4);
+    expect((80 + 1) * 4 + (t?.weight ?? 0)).toBe(4_000_000);
+    // One byte more: the transaction alone (3,999,680 units) is within the limit, the block is not.
+    const over = block(999_856);
+    expect(await codeOf(over.client.blockTxs(over.hash))).toBe('INVALID_RESPONSE');
+  });
+
   it('refuses a block summary or pages that disagree with the transaction count', async () => {
     const txs = Array.from({ length: 30 }, () => SIMPLE_TX);
     for (const info of [{ tx_count: 0 }, { tx_count: 1.5 }, { tx_count: '30' }, { tx_count: 31 }, { tx_count: 29 }, { id: 'b'.repeat(64) }]) {

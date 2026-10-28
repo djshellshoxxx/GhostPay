@@ -24,9 +24,12 @@ const PAGE = 25;
 const MAX_TEXT = 16 * 1024 * 1024;
 /** Default per-request deadline (headers and body), in ms. */
 const TIMEOUT_MS = 30_000;
+/** Consensus limit on a block's weight (BIP-141): its header, transaction count and transactions. */
+const MAX_BLOCK_WEIGHT = 4_000_000;
 /**
- * Most transactions a valid block can hold: 4,000,000 weight units / 240 for the smallest possible (60-byte)
- * transaction. A larger claimed count is refused before any page is downloaded; anything up to it is read in full.
+ * Most transactions a valid block can hold: {@link MAX_BLOCK_WEIGHT} / 240 for the smallest possible (60-byte)
+ * transaction. A larger claimed count is refused before any page is downloaded; anything up to it is read until the
+ * block outweighs {@link MAX_BLOCK_WEIGHT}.
  */
 const MAX_BLOCK_TXS = 16_666;
 const HEX64 = /^[0-9a-f]{64}$/;
@@ -73,6 +76,8 @@ export interface EsploraTx {
   readonly outputs: readonly { readonly scriptPubKey: Uint8Array; readonly valueSats: bigint }[];
   /** Strict re-parse of the serialized transaction (txid and wtxid recomputed). */
   readonly raw: ParsedTransaction;
+  /** BIP-141 weight of that serialization: 4 units per byte, 1 per byte of the witness, its marker and flag. */
+  readonly weight: number;
 }
 
 function hexToBytes(h: string): Uint8Array {
@@ -104,7 +109,7 @@ function witnessItems(i: Record<string, unknown>): string[] {
  * witness through the coinbase commitment ({@link verifyWitnessCommitment}). Prevout scripts are still NOT bound
  * (they live in earlier blocks): a server that alters them can hide a payment but cannot forge one.
  */
-function serializeTx(v: Record<string, unknown>, vin: readonly unknown[], vout: readonly unknown[]): string {
+function serializeTx(v: Record<string, unknown>, vin: readonly unknown[], vout: readonly unknown[]): { readonly hex: string; readonly weight: number } {
   const version = v['version'];
   const locktime = uint(v['locktime']);
   if (typeof version !== 'number' || !Number.isInteger(version) || version < -0x80000000 || version > 0xffffffff || locktime > 0xffffffff) return bad();
@@ -128,7 +133,10 @@ function serializeTx(v: Record<string, unknown>, vin: readonly unknown[], vout: 
   }
   const segwit = witnesses.some((w) => w.length > 0);
   const wit = segwit ? witnesses.map((w) => compact(w.length) + w.map((h) => compact(h.length / 2) + h).join('')).join('') : '';
-  return u32le(version >>> 0) + (segwit ? '0001' : '') + compact(vin.length) + ins + compact(vout.length) + outs + wit + u32le(locktime);
+  const hex = u32le(version >>> 0) + (segwit ? '0001' : '') + compact(vin.length) + ins + compact(vout.length) + outs + wit + u32le(locktime);
+  // Two hex characters per byte; the marker and flag ('0001') weigh like witness bytes.
+  const witnessChars = segwit ? 4 + wit.length : 0;
+  return { hex, weight: (4 * hex.length - 3 * witnessChars) / 2 };
 }
 
 function parseTx(v: unknown): EsploraTx {
@@ -138,13 +146,14 @@ function parseTx(v: unknown): EsploraTx {
   const vin = v['vin'];
   const vout = v['vout'];
   if (!Array.isArray(vin) || !Array.isArray(vout) || vin.length === 0 || vin.length > 100_000 || vout.length > 100_000) return bad();
-  const raw = parseRawTransaction(serializeTx(v, vin, vout));
+  const { hex, weight } = serializeTx(v, vin, vout);
+  const raw = parseRawTransaction(hex);
   if (raw.txid !== txid) return bad();
   const outputs = vout.map((o: unknown) => {
     if (!isRecord(o)) return bad();
     return { scriptPubKey: hexToBytes(hexStr(o['scriptpubkey'])), valueSats: BigInt(uint(o['value'])) };
   });
-  return { txid, inputs: parseInputs(vin), outputs, raw };
+  return { txid, inputs: parseInputs(vin), outputs, raw, weight };
 }
 
 function parseInputs(vin: readonly unknown[]): readonly TxInput[] | null {
@@ -307,6 +316,8 @@ export class EsploraClient {
    * All transactions of a block, in block order. The page count comes from the block's `tx_count`: electrs answers
    * a start index at or past the end with an HTTP error, not an empty page, so a full last page must not lead to
    * another request. The count itself is the server's word; the header Merkle root check catches a wrong one.
+   * Since the server picks the count, the block is refused as soon as what was read outweighs a valid block
+   * ({@link MAX_BLOCK_WEIGHT}), before another page is requested.
    */
   public async blockTxs(hash: string, signal?: AbortSignal): Promise<readonly EsploraTx[]> {
     if (!HEX64.test(hash)) throw new SilentPaymentError('INVALID_INPUT');
@@ -315,10 +326,17 @@ export class EsploraClient {
     const count = uint(info['tx_count']);
     if (count === 0 || count > MAX_BLOCK_TXS) return bad();
     const txs: EsploraTx[] = [];
+    // The 80-byte header and the transaction count are part of the block's weight too.
+    let weight = 4 * (80 + compact(count).length / 2);
     for (let start = 0; start < count; start += PAGE) {
       const body = await this.json(`/block/${hash}/txs/${String(start)}`, signal);
       if (!Array.isArray(body) || body.length !== Math.min(PAGE, count - start)) return bad();
-      for (const t of body) txs.push(parseTx(t));
+      for (const t of body) {
+        const tx = parseTx(t);
+        weight += tx.weight;
+        if (weight > MAX_BLOCK_WEIGHT) return bad();
+        txs.push(tx);
+      }
     }
     return txs;
   }
