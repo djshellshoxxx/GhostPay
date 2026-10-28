@@ -447,6 +447,27 @@ describe('Pay: sending', () => {
     expect(screen.getByTestId('bearer-warning').textContent).toMatch(/anyone who sees this paper/i);
   });
 
+  it('never says included for a mined transaction it could not compare, and marks the proof unverified (L2-F3)', async () => {
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const wallet = new MockWallet();
+    // The RPC has a receipt for the hash but never returns the transaction itself.
+    const rpc = mockRpc(84532, (method) => {
+      if (method === 'eth_getTransactionByHash') return null;
+      if (method === 'eth_getTransactionReceipt') return { status: '0x1', blockNumber: '0x64', to: wallet.sent?.['to'] };
+      if (method === 'eth_gasPrice') return '0x3b9aca00';
+      throw new Error(`unexpected ${method}`);
+    });
+    const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
+    await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    expect(await screen.findByRole('heading', { name: 'Submitted' })).toBeTruthy();
+    expect(screen.getByText(/did not return the transaction itself, so it could not be compared with the preview/)).toBeTruthy();
+    expect(screen.getByText(/Status: unverified/)).toBeTruthy();
+    expect(document.body.textContent).not.toMatch(/included in block|Independently verified/);
+    await user.click(screen.getByRole('button', { name: 'Show proof QR' }));
+    expect(document.querySelector('[data-qr-kind="caution"]')).not.toBeNull();
+    expect(screen.getByLabelText<HTMLTextAreaElement>('Proof of payment text').value).toContain('"status": "unconfirmed"');
+  });
+
   it('REFUSES (shows an error, not success) when the wallet mutates the transaction', async () => {
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
     const wallet = new MockWallet({ mutateTx: (tx) => ({ ...tx, value: '0x1' }) });

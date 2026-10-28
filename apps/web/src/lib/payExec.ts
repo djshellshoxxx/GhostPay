@@ -44,7 +44,11 @@ export interface Runtime {
 
 export interface SubmitResult {
   readonly hash: Hex;
-  readonly verification: SubmissionCheck | 'no-rpc';
+  /**
+   * `verified`: the user's RPC returned exactly the previewed transaction. `not-visible-yet`: it returned none and no
+   * receipt appeared in time. `unverified`: a receipt exists, but the RPC never returned the transaction to compare.
+   */
+  readonly verification: SubmissionCheck | 'unverified' | 'no-rpc';
   readonly receipt: ReceiptInfo | undefined;
 }
 
@@ -95,15 +99,16 @@ export async function submitTx(session: WalletSession, tx: TxRequest, rt: Runtim
       return { hash, verification: 'no-rpc', receipt: undefined };
     }
     status('Submitted. Verifying the transaction on your RPC…');
-    const verification = await verifySubmission(
-      rt.rpc,
-      hash,
-      { from: session.account, to: tx.to, data: tx.data, value: tx.value, chainId: session.chainId },
-      rt.sleep,
-    );
+    const expected = { from: session.account, to: tx.to, data: tx.data, value: tx.value, chainId: session.chainId };
+    const seen = await verifySubmission(rt.rpc, hash, expected, rt.sleep);
     status('Waiting for inclusion…');
     const receipt = await pollReceipt(rt.rpc, hash, tx.to, rt.sleep);
-    return { hash, verification, receipt };
+    if (seen === 'verified' || receipt === undefined) return { hash, verification: seen, receipt };
+    // L2-F3: the wallet decides when to broadcast and can outwait the first check. A mined transaction is fetched and
+    // compared again (a mismatch still throws), so a receipt is never reported without that comparison.
+    status('A receipt appeared. Comparing the transaction with the preview on your RPC…');
+    const late = await verifySubmission(rt.rpc, hash, expected, rt.sleep);
+    return { hash, verification: late === 'verified' ? 'verified' : 'unverified', receipt };
   } catch (e) {
     throw new PostBroadcastError(hash, e instanceof UserFacingError ? e.message : 'the RPC check failed.', e);
   }
@@ -301,7 +306,8 @@ export function buildReceipt(ctx: PayContext, built: BuiltPayment, result: Submi
     invoiceNonce: inv.nonce,
     fiat: `${inv.fiat.currency} ${inv.fiat.minorUnits}`,
     quote: { source: inv.quote.source, timestamp: inv.quote.timestamp, expiresAt: inv.quote.expiresAt },
-    status: result.receipt === undefined ? 'unconfirmed' : result.receipt.status === 'success' ? 'included' : 'reverted',
+    // L2-F3: `included` only for a receipt whose transaction was compared with the preview on the user's RPC.
+    status: result.receipt === undefined ? 'unconfirmed' : result.receipt.status !== 'success' ? 'reverted' : result.verification === 'verified' ? 'included' : 'unconfirmed',
     createdAt: now.toISOString(),
   };
 }

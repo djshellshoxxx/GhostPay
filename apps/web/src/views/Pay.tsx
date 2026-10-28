@@ -1117,14 +1117,17 @@ export function Pay(): ReactNode {
           <p>
             {result.verification === 'verified' && 'Independently verified on your RPC: the network saw exactly the previewed transaction.'}
             {result.verification === 'not-visible-yet' && 'Your RPC does not show the transaction yet, so it could not be checked against the preview. Check it in your wallet.'}
+            {result.verification === 'unverified' && 'Your RPC reports a receipt for this hash but did not return the transaction itself, so it could not be compared with the preview. Check it in your wallet and on a block explorer.'}
             {result.verification === 'no-rpc' && 'No RPC is configured, so this app could not verify the transaction independently. Check it in your wallet.'}
           </p>
           <p>
             {result.receipt === undefined
               ? 'Status: not yet confirmed (included is not the same as final).'
-              : result.receipt.status === 'success'
-                ? `Status: included in block ${result.receipt.blockNumber.toString()} (not necessarily final yet).`
-                : 'Status: the transaction reverted. Nothing was paid.'}
+              : result.receipt.status !== 'success'
+                ? 'Status: the transaction reverted. Nothing was paid.'
+                : result.verification === 'verified'
+                  ? `Status: included in block ${result.receipt.blockNumber.toString()} (not necessarily final yet).`
+                  : `Status: unverified. A transaction with this hash is in block ${result.receipt.blockNumber.toString()}, but it was not compared with the preview, so this app does not report it as this payment.`}
           </p>
           <div className="actions">
             <CopyButton text={result.hash} label="Copy hash" />

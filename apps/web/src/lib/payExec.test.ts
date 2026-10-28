@@ -508,6 +508,63 @@ describe('submitTx', () => {
   });
 });
 
+describe('submitTx compares a transaction that only became visible after it was mined (L2-F3)', () => {
+  /** The wallet controls broadcast timing: the RPC returns no transaction for its first `hidden` lookups. */
+  const lateChain = (wallet: MockWallet, hidden: number): MockRpc => {
+    let lookups = 0;
+    return chainSeeing(wallet, (m) => (m === 'eth_getTransactionByHash' && ++lookups <= hidden ? null : undefined));
+  };
+  const lookups = (rpc: MockRpc): number => rpc.calls.filter((c) => c.method === 'eth_getTransactionByHash').length;
+
+  it('delayed visibility, then the previewed transaction: verified and recorded as included', async () => {
+    const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
+    const rpc = lateChain(wallet, 6);
+    const rt: Runtime = { rpc, nowSeconds: () => NOW, sleep };
+    const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+    const res = await sendPayment(session, ctx, built, rt, noStatus);
+    expect(res).toMatchObject({ verification: 'verified', receipt: { status: 'success', blockNumber: 100n } });
+    expect(lookups(rpc)).toBe(7);
+    expect(buildReceipt(ctx, built, res, new Date()).status).toBe('included');
+  });
+
+  it('delayed visibility, then a different transaction: refused after the broadcast, never reported as included', async () => {
+    const mutate = (tx: Record<string, unknown>): Record<string, unknown> => ({ ...tx, data: `${String(tx['data']).slice(0, -2)}ff` });
+    const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' }, new MockWallet({ mutateTx: mutate }));
+    const rt: Runtime = { rpc: lateChain(wallet, 6), nowSeconds: () => NOW, sleep };
+    const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+    const p = sendPayment(session, ctx, built, rt, noStatus);
+    await expect(p).rejects.toThrow(PostBroadcastError);
+    await expect(p).rejects.toMatchObject({ cause: expect.any(SubmissionMismatchError) as unknown, hash: `0x${'9'.repeat(64)}` });
+    await expect(p).rejects.toThrow(/differs from the preview \(call data\)/);
+  });
+
+  it('a receipt for a transaction the RPC never returns: unverified, recorded as unconfirmed', async () => {
+    const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
+    const rt: Runtime = { rpc: lateChain(wallet, Number.POSITIVE_INFINITY), nowSeconds: () => NOW, sleep };
+    const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+    const res = await sendPayment(session, ctx, built, rt, noStatus);
+    expect(res).toMatchObject({ verification: 'unverified', receipt: { status: 'success' } });
+    expect(buildReceipt(ctx, built, res, new Date()).status).toBe('unconfirmed');
+  });
+
+  it('an approval whose transaction appears only after mining is compared too', async () => {
+    const { ctx, session, wallet } = await setup({}, new MockWallet({ mutateTx: (tx) => ({ ...tx, to: '0x9999999999999999999999999999999999999999' }) }));
+    let lookupsSoFar = 0;
+    const rpc = chainSeeing(wallet, (m) => {
+      if (m === 'eth_call') return `0x${'0'.repeat(64)}`;
+      if (m === 'eth_getTransactionByHash' && ++lookupsSoFar <= 6) return null;
+      // A receipt without `to`, as some nodes return it, so only the transaction comparison can catch the redirect.
+      if (m === 'eth_getTransactionReceipt') return { status: '0x1', blockNumber: '0x64', to: null };
+      return undefined;
+    });
+    const rt = { rpc, nowSeconds: () => NOW, sleep };
+    const plan = await planApproval(ctx, session, USDC_84532, rt);
+    const error: unknown = await grantApproval(session, ctx, plan, rt, noStatus).catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(PostBroadcastError);
+    expect(error).toMatchObject({ cause: { field: 'destination contract' } });
+  });
+});
+
 describe('final payment guard rechecks invoice and fiat quote validity (P1)', () => {
   const FEED: FeedConfig = { chainId: 84532, address: '0x7777777777777777777777777777777777777777', base: 'USDC', quote: 'USD', sourceRef: 'test fixture' };
   const feedRpc = (): MockRpc => mockRpc(84532, (_m, params) => {
