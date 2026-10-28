@@ -116,4 +116,3 @@ describe('compareProviders', () => {
     expect((await run(other, [])).discrepancies.map((d) => d.kind)).toEqual(['secondary_error']);
   });
 });
-
