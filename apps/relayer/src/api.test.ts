@@ -894,6 +894,93 @@ describe('simulation, replay and operational limits', () => {
   });
 });
 
+describe('receipt timeouts (L5-06)', () => {
+  const estimate = 150_000n * 1_000_000_000n; // gas limit x gas price reserved per sweep
+  const budgetUsed = (s: Harness): bigint =>
+    BigInt(/relayer_daily_budget_used_wei\{[^}]*\} (\d+)/.exec(s.relayer.metrics.render())?.[1] ?? '-1');
+
+  it('a receipt timeout records a breaker failure and alerts', async () => {
+    const alerts: string[] = [];
+    const s = await start({ alerts: { send: (e) => alerts.push(e.kind) } });
+    s.fake.receipt = { status: 'timeout', gasUsed: 0n };
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 1n })).body)).status).toBe(200);
+    await settle();
+    expect(alerts).toEqual(['receipt_timeout']);
+    s.fake.receipt = { status: 'success', gasUsed: 0n };
+    s.fake.receiptError = new Error('provider disconnected'); // a throwing wait is a timeout too
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 2n })).body)).status).toBe(200);
+    await settle();
+    // success at broadcast + failure at timeout, twice: 2 of 4 >= failureRatio 0.5 with minSamples 3
+    expect(alerts).toContain('breaker_open');
+    expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'degraded', chains: [{ breaker: 'open' }] });
+  });
+
+  it('keeps the reservations of a timed-out transaction until a later lookup finds its receipt', async () => {
+    const s = await start({
+      config: {
+        trustedProxies: ['127.0.0.1', '::1', '::ffff:127.0.0.1'],
+        lossBudget: { windowSeconds: 3600, perKeyWei: estimate, globalWei: 10n ** 18n, maxKeys: 100 },
+      },
+    });
+    const sweepFrom = async (nonce: bigint, destination: `0x${string}`, ip: string) => {
+      const r = await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce, destination })).body, { 'x-forwarded-for': ip });
+      await settle();
+      return r.status === 200 ? 200 : errCode(r);
+    };
+    s.fake.receipt = { status: 'timeout', gasUsed: 0n };
+    expect(await sweepFrom(1n, DEST, '198.51.1.1')).toBe(200);
+    expect(budgetUsed(s)).toBe(estimate);
+    s.fake.receipt = { status: 'success', gasUsed: 100_000n };
+    // not mined yet: still reserved, so the destination stays blocked
+    expect(await sweepFrom(2n, STRANGER, '198.51.2.1')).toBe(200);
+    expect(s.fake.lookups).toBe(1);
+    expect(await sweepFrom(3n, DEST, '198.51.3.1')).toBe('loss_budget_exhausted');
+    expect(budgetUsed(s)).toBe(estimate + 100_000n * 1_000_000_000n);
+    // mined after all: the next job's lookup settles it like an ordinary receipt
+    s.fake.lookup = { status: 'success', gasUsed: 100_000n };
+    expect(await sweepFrom(4n, `0x${'4'.repeat(40)}`, '198.51.4.1')).toBe(200);
+    expect(budgetUsed(s)).toBe(3n * 100_000n * 1_000_000_000n);
+    expect(await sweepFrom(5n, DEST, '198.51.5.1')).toBe(200);
+    expect(s.fake.lookups).toBe(2); // settled entries are not looked up again
+  });
+
+  it('a late reverted receipt is charged as a mined revert; a lookup failure or a lost transaction is not', async () => {
+    const alerts: string[] = [];
+    const s = await start({
+      alerts: { send: (e) => alerts.push(e.kind) },
+      config: { lossBudget: { windowSeconds: 3600, perKeyWei: 10n * estimate, globalWei: 10n ** 18n, maxKeys: 100 } },
+    });
+    s.fake.receipt = { status: 'timeout', gasUsed: 0n };
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 1n })).body)).status).toBe(200);
+    await settle();
+    s.fake.receipt = { status: 'success', gasUsed: 100_000n };
+    // A failing lookup does not fail the unrelated sweep that triggered it.
+    const lookup = s.fake.getReceipt.bind(s.fake);
+    s.fake.getReceipt = () => Promise.reject(new Error('down'));
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 2n })).body)).status).toBe(200);
+    await settle();
+    s.fake.getReceipt = lookup;
+    s.fake.lookup = { status: 'reverted', gasUsed: 90_000n };
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 3n })).body)).status).toBe(200);
+    await settle();
+    expect(alerts).toContain('mined_revert');
+    expect(s.logs.join('\n')).toContain('sweep_reverted');
+    expect(s.relayer.metrics.render()).toContain('relayer_mined_reverts_total{chain_id="11155111"} 1');
+
+    // A transaction that is never found is dropped from the ledger once its budget day and loss window are over.
+    s.fake.receipt = { status: 'timeout', gasUsed: 0n };
+    s.fake.lookup = null;
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 4n })).body)).status).toBe(200);
+    await settle();
+    s.fake.receipt = { status: 'success', gasUsed: 100_000n };
+    s.clock.ms += 25 * 3_600_000;
+    const before = s.fake.lookups;
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 5n })).body)).status).toBe(200);
+    await settle();
+    expect(s.fake.lookups).toBe(before);
+  });
+});
+
 describe('circuit breaker', () => {
   it('opens on a high error rate, reports degraded health and half-open recovers', async () => {
     const s = await start();

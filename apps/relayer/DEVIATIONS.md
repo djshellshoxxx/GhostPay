@@ -20,7 +20,9 @@ Contract code wins over docs. Items for the lead to confirm or reject.
    (`invalid_signature` class, as the contract reverts with `ECDSAInvalidSignatureS`).
 7. **One in-flight transaction means one per receipt.** The lane slot is held until the receipt (or
    `receiptTimeoutSeconds`), so throughput is about one sweep per block per chain. The HTTP response is sent as soon as the
-   transaction is broadcast. After a timeout or send failure the nonce is re-read from the pending count.
+   transaction is broadcast. After a timeout or send failure the nonce is re-read from the pending count. A receipt
+   timeout is recorded as a breaker failure and alerted; the transaction's reservations are kept until a later job's
+   receipt lookup finds it (L5-06). Fee bumping or cancelling a stuck transaction is not implemented.
 8. **Legacy (`gasPrice`) transactions** so the configured cap bounds the price on every chain type. EIP-1559 is not used.
 9. **Per-owner rate limit is applied after signature verification** so nobody can exhaust a victim's quota with forged
    requests; `/v1/quote` is IP-limited only.

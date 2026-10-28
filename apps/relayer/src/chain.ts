@@ -2,6 +2,7 @@ import {
   BaseError,
   ContractFunctionRevertedError,
   ExecutionRevertedError,
+  TransactionReceiptNotFoundError,
   type Account,
   type Address,
   type Chain,
@@ -49,6 +50,12 @@ export interface ReceiptSummary {
   readonly gasUsed: bigint;
 }
 
+/** Receipt of a mined transaction. */
+export interface MinedReceipt {
+  readonly status: 'success' | 'reverted';
+  readonly gasUsed: bigint;
+}
+
 /**
  * Everything the relayer needs from a chain for ONE chain id and ONE hot key. Injected so tests run
  * with a fake; {@link createViemChainClient} is the production implementation.
@@ -74,6 +81,8 @@ export interface ChainClient {
   sendSweep(call: SweepCall, opts: SendOptions): Promise<Hex>;
   /** Waits for inclusion (never throws; failures map to `timeout`). */
   waitForReceipt(hash: Hex, timeoutMs: number): Promise<ReceiptSummary>;
+  /** Looks a receipt up once without waiting: `null` while the node knows no receipt for `hash`. */
+  getReceipt(hash: Hex): Promise<MinedReceipt | null>;
 }
 
 /** Dependencies of {@link createViemChainClient}. */
@@ -88,13 +97,18 @@ export interface ViemChainDeps {
 /** Gas limit headroom over the node's estimate, in percent. */
 const GAS_HEADROOM_PERCENT = 20n;
 
+/** An operational RPC failure. The provider's error is not kept: its text can name the RPC URL. */
+function rpcFailure(): Error {
+  return new Error('rpc_failure');
+}
+
 function toRevert(e: unknown): Error {
   if (e instanceof BaseError) {
     const hit = e.walk((x) => x instanceof ContractFunctionRevertedError || x instanceof ExecutionRevertedError);
     if (hit instanceof ContractFunctionRevertedError) return new SimulationRevert(hit.data?.errorName);
     if (hit instanceof ExecutionRevertedError) return new SimulationRevert();
   }
-  return new Error('rpc_failure');
+  return rpcFailure();
 }
 
 function sweepTuple(s: SweepFields): {
@@ -180,6 +194,16 @@ export function createViemChainClient(d: ViemChainDeps): ChainClient {
         return { status: r.status, gasUsed: r.gasUsed };
       } catch {
         return { status: 'timeout', gasUsed: 0n };
+      }
+    },
+
+    async getReceipt(hash) {
+      try {
+        const r = await pub.getTransactionReceipt({ hash });
+        return { status: r.status, gasUsed: r.gasUsed };
+      } catch (e) {
+        if (e instanceof TransactionReceiptNotFoundError) return null;
+        throw rpcFailure();
       }
     },
   };

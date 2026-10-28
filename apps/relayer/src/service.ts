@@ -18,7 +18,7 @@ import { FailureBudgets } from './abuse.js';
 import { allowAllPolicy, type PolicyGate } from './policy.js';
 import { nullAlerts, type AlertSink } from './alerts.js';
 import { DailyBudget } from './budget.js';
-import type { ChainClient, SweepCall } from './chain.js';
+import type { ChainClient, MinedReceipt, ReceiptSummary, SweepCall } from './chain.js';
 import type { ChainRuntimeConfig, RelayerConfig } from './config.js';
 import { RelayerError, SimulationRevert } from './errors.js';
 import { ChainLane, NonceManager, type JobOutcome } from './lane.js';
@@ -115,6 +115,18 @@ interface LossKey {
   readonly group: string;
 }
 
+/** A broadcast sweep and what was reserved for it, until its receipt settles the reservations. */
+interface SentSweep {
+  readonly txHash: Hex;
+  readonly call: SweepCall;
+  readonly gasPrice: bigint;
+  readonly reserved: bigint;
+  readonly reservedDay: number;
+  readonly lossReservations: readonly LossReservation[];
+  /** Monotonic ms when the receipt wait timed out. */
+  at: number;
+}
+
 interface ChainRuntime {
   readonly cfg: ChainRuntimeConfig;
   readonly client: ChainClient;
@@ -123,6 +135,8 @@ interface ChainRuntime {
   readonly budget: DailyBudget;
   readonly breaker: GuardedBreaker;
   lastBreakerState: BreakerState;
+  /** Sweeps whose receipt wait timed out, looked up again at the start of later jobs (L5-06), oldest first. */
+  readonly pending: SentSweep[];
 }
 
 const REVERT_MAP: Readonly<Record<string, readonly [number, string]>> = {
@@ -139,6 +153,11 @@ const REVERT_MAP: Readonly<Record<string, readonly [number, string]>> = {
   ZeroAddress: [422, 'invalid_order'],
   SelfAddress: [422, 'invalid_order'],
 };
+
+/** Timed-out sweeps looked up again per chain; beyond this the oldest is dropped and keeps its reservations. */
+const MAX_PENDING_RECEIPTS = 8;
+/** A timed-out sweep never found for this long is dropped: its budget day and loss window are over by then. */
+const PENDING_RECEIPT_MAX_AGE_MS = 86_400_000;
 
 /** Spec 04: costly failures tolerated per proven owner per window before sweeps are refused up front. */
 const OWNER_FAILURES_PER_WINDOW = 3;
@@ -172,6 +191,7 @@ export class RelayerService {
   private readonly policy: PolicyGate;
   private readonly logger: Logger;
   private readonly now: () => number;
+  private readonly mono: () => number;
   private readonly hasher: KeyHasher;
   private readonly lossBudget: LossBudget;
   private readonly alerts: AlertSink;
@@ -186,6 +206,7 @@ export class RelayerService {
     this.logger = d.logger ?? nullLogger;
     this.now = d.now ?? Date.now;
     const mono = d.monotonic ?? this.now;
+    this.mono = mono;
     this.hasher = d.hasher ?? new KeyHasher(d.config.rateLimit.saltRotationHours * 3_600_000, mono);
     const lb = d.config.lossBudget;
     this.lossBudget =
@@ -224,6 +245,7 @@ export class RelayerService {
           mono,
         ),
         lastBreakerState: 'closed',
+        pending: [],
       });
     }
     d.metrics?.gauge(
@@ -538,6 +560,7 @@ export class RelayerService {
     setOutcome: (o: Outcome) => void,
   ): Promise<JobOutcome<SweepResponse>> {
     const { cfg, client, breaker, budget, nonces } = rt;
+    await this.reconcilePending(rt);
 
     // Operational (non-user) failures feed the breaker; user-caused reverts do not.
     const op = async <T>(fn: () => Promise<T>): Promise<T> => {
@@ -663,48 +686,81 @@ export class RelayerService {
     setOutcome(classifyRelayOutcome('confirmed'));
     this.logger.log('info', 'sweep_sent', { requestId: ctx.requestId, chainId: cfg.chainId, txHash });
 
+    const sent: SentSweep = { txHash, call, gasPrice: sendGasPrice, reserved, reservedDay, lossReservations, at: 0 };
     const settled = (async (): Promise<void> => {
-      let r: Awaited<ReturnType<ChainClient['waitForReceipt']>>;
+      let r: ReceiptSummary;
       try {
         r = await client.waitForReceipt(txHash, this.d.config.queue.receiptTimeoutSeconds * 1000);
       } catch {
-        nonces.invalidate();
-        this.logger.log('warn', 'receipt_timeout', {
-          chainId: cfg.chainId,
-          txHash,
-          errorClass: 'receipt_timeout',
-        });
-        return; // Broadcast may have succeeded; keep the worst-case reservation until window expiry.
+        r = { status: 'timeout', gasUsed: 0n };
       }
       if (r.status === 'timeout') {
         nonces.invalidate();
-        this.logger.log('warn', 'receipt_timeout', {
-          chainId: cfg.chainId,
-          txHash,
-          errorClass: 'receipt_timeout',
-        });
+        this.receiptTimedOut(rt, sent);
         return;
       }
-      const spent = r.gasUsed * sendGasPrice;
-      budget.release(reserved > spent ? reserved - spent : 0n, reservedDay);
-      if (r.status === 'success') {
-        for (const held of lossReservations) held.release();
-      }
-      if (r.status === 'reverted') {
-        // The simulation passed moments earlier, so a mined revert means state changed in between
-        // (front-run, S3-06): the relayer paid gas and earned no fee. Charge the sources, do not
-        // count it against the breaker.
-        for (const held of lossReservations) held.settle(spent);
-        this.strike(call); // owner-drains-first / front-run: counts against the owner (spec 04)
-        this.d.metrics?.inc('relayer_mined_reverts_total', { chain_id: cfg.chainId });
-        this.alerts.send({ kind: 'mined_revert', chainId: cfg.chainId });
-        this.logger.log('error', 'sweep_reverted', {
-          chainId: cfg.chainId,
-          txHash,
-          errorClass: 'mined_revert',
-        });
-      }
+      this.settleReceipt(rt, sent, { status: r.status, gasUsed: r.gasUsed });
     })();
     return { value: { txHash }, settled };
+  }
+
+  /**
+   * The broadcast may still be mined, so its worst-case reservations are kept and its receipt is looked up again by
+   * later jobs (L5-06). The job's breaker permit was settled at broadcast, so the failure is recorded directly.
+   * Nothing bumps or cancels the transaction (README).
+   */
+  private receiptTimedOut(rt: ChainRuntime, sent: SentSweep): void {
+    const chainId = rt.cfg.chainId;
+    this.logger.log('warn', 'receipt_timeout', { chainId, txHash: sent.txHash, errorClass: 'receipt_timeout' });
+    this.d.metrics?.inc('relayer_receipt_timeouts_total', { chain_id: chainId });
+    this.alerts.send({ kind: 'receipt_timeout', chainId });
+    rt.breaker.tryAcquire({ validated: true })?.settle(classifyRelayOutcome('receipt_timeout'));
+    this.noteBreaker(rt);
+    sent.at = this.mono();
+    rt.pending.push(sent);
+    if (rt.pending.length > MAX_PENDING_RECEIPTS) rt.pending.shift();
+  }
+
+  /** In-lane: looks up the receipts of earlier timed-out sweeps and settles the ones that were mined (L5-06). */
+  private async reconcilePending(rt: ChainRuntime): Promise<void> {
+    for (const sent of [...rt.pending]) {
+      if (this.mono() - sent.at >= PENDING_RECEIPT_MAX_AGE_MS) {
+        rt.pending.splice(rt.pending.indexOf(sent), 1);
+        continue;
+      }
+      let r: MinedReceipt | null;
+      try {
+        r = await rt.client.getReceipt(sent.txHash);
+      } catch {
+        return; // RPC trouble: this job's own reads decide; look again next time
+      }
+      if (r === null) continue;
+      rt.pending.splice(rt.pending.indexOf(sent), 1);
+      this.logger.log('info', 'receipt_late', { chainId: rt.cfg.chainId, txHash: sent.txHash });
+      this.settleReceipt(rt, sent, r);
+    }
+  }
+
+  /** Settles a mined sweep: returns unused budget and releases its loss reservations, or charges a mined revert. */
+  private settleReceipt(rt: ChainRuntime, sent: SentSweep, r: MinedReceipt): void {
+    const { cfg, budget } = rt;
+    const spent = r.gasUsed * sent.gasPrice;
+    budget.release(sent.reserved > spent ? sent.reserved - spent : 0n, sent.reservedDay);
+    if (r.status === 'success') {
+      for (const held of sent.lossReservations) held.release();
+      return;
+    }
+    // The simulation passed moments earlier, so a mined revert means state changed in between
+    // (front-run, S3-06): the relayer paid gas and earned no fee. Charge the sources, do not
+    // count it against the breaker.
+    for (const held of sent.lossReservations) held.settle(spent);
+    this.strike(sent.call); // owner-drains-first / front-run: counts against the owner (spec 04)
+    this.d.metrics?.inc('relayer_mined_reverts_total', { chain_id: cfg.chainId });
+    this.alerts.send({ kind: 'mined_revert', chainId: cfg.chainId });
+    this.logger.log('error', 'sweep_reverted', {
+      chainId: cfg.chainId,
+      txHash: sent.txHash,
+      errorClass: 'mined_revert',
+    });
   }
 }

@@ -174,5 +174,10 @@ describe('createViemChainClient', () => {
     expect(await setup({ raw: [], receipt: receipt('0x1') }).waitForReceipt(HASH, 1000)).toEqual({ status: 'success', gasUsed: 100_000n });
     expect(await setup({ raw: [], receipt: receipt('0x0') }).waitForReceipt(HASH, 1000)).toEqual({ status: 'reverted', gasUsed: 100_000n });
     expect(await setup({ raw: [] }).waitForReceipt(HASH, 60)).toEqual({ status: 'timeout', gasUsed: 0n });
+    // One lookup without waiting (L5-06): mined, not (yet) known, or an RPC failure without provider detail.
+    expect(await setup({ raw: [], receipt: receipt('0x0') }).getReceipt(HASH)).toEqual({ status: 'reverted', gasUsed: 100_000n });
+    expect(await setup({ raw: [] }).getReceipt(HASH)).toBeNull();
+    const down = setup({ raw: [], receipt: () => { throw new Error('https://rpc.example/secret-key unreachable'); } });
+    await expect(down.getReceipt(HASH)).rejects.toThrow(/^rpc_failure$/);
   });
 });

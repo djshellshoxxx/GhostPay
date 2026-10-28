@@ -6,7 +6,13 @@ import { normalizeIp } from './clientip.js';
 import { ConfigError } from './secrets.js';
 
 /** Fixed alert kinds; the payload never carries request data. */
-export type AlertKind = 'breaker_open' | 'low_balance' | 'loss_budget_exhausted' | 'daily_budget_exhausted' | 'mined_revert';
+export type AlertKind =
+  | 'breaker_open'
+  | 'low_balance'
+  | 'loss_budget_exhausted'
+  | 'daily_budget_exhausted'
+  | 'mined_revert'
+  | 'receipt_timeout';
 
 /** An operator alert. */
 export interface AlertEvent {

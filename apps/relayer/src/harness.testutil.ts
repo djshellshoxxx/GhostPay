@@ -1,7 +1,7 @@
 import type { Address, Hex } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { buildSweepTypedData } from '@ghostpay/chain-adapters';
-import type { ChainClient, OrderState, ReceiptSummary, SendOptions, SimulationResult, SweepCall } from './chain.js';
+import type { ChainClient, MinedReceipt, OrderState, ReceiptSummary, SendOptions, SimulationResult, SweepCall } from './chain.js';
 import type { RelayerConfig } from './config.js';
 import { SimulationRevert } from './errors.js';
 import type { AlertSink } from './alerts.js';
@@ -47,6 +47,9 @@ export class FakeChain implements ChainClient {
   public sendGate: Promise<void> | undefined;
   /** Awaited inside `waitForReceipt`. */
   public receiptGate: Promise<void> | undefined;
+  /** What a later `getReceipt` lookup finds (`null`: not mined yet). */
+  public lookup: MinedReceipt | null = null;
+  public lookups = 0;
   public readonly sent: { call: SweepCall; opts: SendOptions }[] = [];
   public readonly used = new Set<string>();
   public inFlight = 0;
@@ -107,6 +110,10 @@ export class FakeChain implements ChainClient {
     }
     this.inFlight -= 1;
     return this.receipt;
+  }
+  public getReceipt(): Promise<MinedReceipt | null> {
+    this.lookups += 1;
+    return this.rpcDown ? Promise.reject(new Error('down')) : Promise.resolve(this.lookup);
   }
 }
 
