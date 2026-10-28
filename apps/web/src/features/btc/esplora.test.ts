@@ -252,6 +252,18 @@ describe('EsploraClient', () => {
     })));
     expect(await codeOf(new EsploraClient({ baseUrl: BASE, fetchFn: trickle, timeoutMs: 20 }).tipHeight())).toBe('TRANSPORT_FAILURE');
     expect(stalled.cancelled).toBe(true);
+    // A cancel that lands before the body is read (the fetch ignored it) still ends the stalled download.
+    const early = new AbortController();
+    const late = { pulled: 0, cancelled: false };
+    const ignoresCancel = (): Promise<Response> => {
+      early.abort();
+      return Promise.resolve(new Response(new ReadableStream<Uint8Array>({
+        pull: () => { late.pulled++; return new Promise(() => undefined); },
+        cancel: () => { late.cancelled = true; },
+      })));
+    };
+    expect(await codeOf(new EsploraClient({ baseUrl: BASE, fetchFn: ignoresCancel }).tipHeight(early.signal))).toBe('ABORTED');
+    expect(late.cancelled).toBe(true);
   }, 10_000);
 
   it('caps the response size while the body streams', async () => {

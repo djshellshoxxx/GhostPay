@@ -201,6 +201,8 @@ async function readCapped(res: Response, max: number, signal: AbortSignal): Prom
     reader.cancel().catch(() => undefined);
   };
   signal.addEventListener('abort', stop, { once: true });
+  // Already aborted (a fetch implementation that ignored the signal): no event will come, so stop now.
+  if (signal.aborted) stop();
   try {
     const chunks: Uint8Array[] = [];
     let total = 0;
