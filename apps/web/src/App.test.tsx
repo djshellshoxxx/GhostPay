@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
-import { screen, waitFor, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it } from 'vitest';
-import { clearSession, generateSession, hasSession } from './lib/session';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { clearSession, generateSession, hasSession, revealViewingKey } from './lib/session';
 import { MemoryKeyVaultStore, setKeyVaultStoreForTests } from './lib/keyVault';
 import { SETTINGS_KEY } from './lib/settings';
 import { makeServices, renderApp, setHash } from './test/render';
@@ -73,6 +73,18 @@ describe('App shell', () => {
       vi.useRealTimers();
     }
     await waitFor(() => { expect(services.vault.unlocked).toBe(false); });
+  });
+
+  it('L1-04: locks local tags whenever the seller keys are wiped or replaced', async () => {
+    const services = makeServices();
+    renderApp(services);
+    act(() => { generateSession(); });
+    await services.vault.unlock(revealViewingKey());
+    const lock = vi.spyOn(services.vault, 'lock');
+    act(() => { clearSession(); });
+    expect(lock).toHaveBeenCalledTimes(1);
+    act(() => { generateSession(); });
+    expect(lock).toHaveBeenCalledTimes(2);
   });
 
   it('clears seller keys at idle lock while preserving the encrypted vault', async () => {

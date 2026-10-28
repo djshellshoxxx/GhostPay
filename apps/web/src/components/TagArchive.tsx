@@ -114,6 +114,9 @@ export function TagArchive(): ReactNode {
             try { history[String(h.chainId)] = await h.vault.exportEncrypted(); } catch { skipped++; }
           }
         }
+        // Tags and history must come from the keys this export started with (L1-04).
+        if (!current(c)) return;
+        unchanged();
         const out = await exportArchive(vault, revealViewingKey(), pass, { history });
         if (!current(c)) return;
         unchanged();

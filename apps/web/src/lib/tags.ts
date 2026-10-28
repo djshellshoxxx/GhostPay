@@ -1,5 +1,6 @@
 import { bytesToHex, hexToBytes, utf8ToBytes } from '@noble/hashes/utils.js';
 import { UserFacingError } from './errors';
+import { captureSessionVersionGuard } from './session';
 
 /**
  * Feature 4: encrypted local client tags.
@@ -13,6 +14,8 @@ import { UserFacingError } from './errors';
  *   created/updated times are readable by anything that can read this origin's IndexedDB; only the payload is encrypted. The lookup token is
  *   HMAC(chainId || stealth address), so no raw address or unkeyed hash is stored.
  * - The unlocked CryptoKeys live in this object only; `lock()` drops them. Nothing is sent over the network.
+ * - Unlocked keys belong to the seller keys that were loaded when `unlock` started (L1-04): once those are wiped or
+ *   replaced the vault reads as locked, drops its keys on the next use, and refuses to commit a pending write.
  */
 export interface TagPayload {
   readonly stealthAddress: string;
@@ -172,6 +175,8 @@ export function validatePayload(p: TagPayload): TagPayload {
 export class TagVault {
   private aes: CryptoKey | undefined;
   private hmac: CryptoKey | undefined;
+  /** Throws once the seller keys that unlocked the vault are wiped or replaced. */
+  private sessionUnchanged: (() => void) | undefined;
   /** Bumped by every state change (unlock, lock, write, import, rotation); a staged preview is valid for one revision only. */
   private revision = 0;
   private profileSalt: string | undefined;
@@ -183,14 +188,39 @@ export class TagVault {
   ) {}
 
   public get unlocked(): boolean {
-    return this.aes !== undefined && this.hmac !== undefined;
+    return this.aes !== undefined && this.hmac !== undefined && this.sameSession();
   }
 
-  /** Derives keys from the viewing key (consumed and zeroized). Creates the profile on first use. */
+  private sameSession(): boolean {
+    try {
+      this.sessionUnchanged?.();
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /** Tag keys derived for one seller identity never serve another: a key change locks the vault (L1-04). */
+  private assertSession(): void {
+    if (this.sameSession()) return;
+    this.lock();
+    throw new UserFacingError('Seller keys changed, so tags were locked. Unlock them again.');
+  }
+
+  /** Commit guard for store writes: the operation's revision and the seller keys must both be unchanged. */
+  private writeGuard(revision: number): () => void {
+    return () => {
+      this.assertRevision(revision);
+      this.assertSession();
+    };
+  }
+
+  /** Derives keys from the viewing key (consumed and zeroized) of the seller keys loaded now. Creates the profile on first use. */
   public async unlock(viewingKey: Uint8Array): Promise<void> {
     this.lock();
     const revision = this.revision;
-    const guard = (): void => { this.assertRevision(revision); };
+    const sessionUnchanged = captureSessionVersionGuard();
+    const guard = (): void => { this.assertRevision(revision); sessionUnchanged(); };
     try {
       const snapshot = await this.store.getSnapshot();
       guard();
@@ -219,6 +249,7 @@ export class TagVault {
       this.profileSalt = bytesToHex(salt);
       this.aes = aes;
       this.hmac = hmac;
+      this.sessionUnchanged = sessionUnchanged;
     } finally {
       viewingKey.fill(0);
     }
@@ -229,9 +260,11 @@ export class TagVault {
     this.aes = undefined;
     this.hmac = undefined;
     this.profileSalt = undefined;
+    this.sessionUnchanged = undefined;
   }
 
   private keys(): { aes: CryptoKey; hmac: CryptoKey } {
+    this.assertSession();
     if (this.aes === undefined || this.hmac === undefined) throw new UserFacingError('Tags are locked. Unlock them first.');
     return { aes: this.aes, hmac: this.hmac };
   }
@@ -280,7 +313,7 @@ export class TagVault {
       createdAt: existing?.createdAt ?? t,
       updatedAt: t,
       keyVersion,
-    }], deleteIds: [] }, snapshot, () => { this.assertRevision(revision); });
+    }], deleteIds: [] }, snapshot, this.writeGuard(revision));
     this.assertRevision(revision);
     this.revision++;
   }
@@ -303,7 +336,7 @@ export class TagVault {
         const iv = rand(12);
         const ciphertext = await subtle().encrypt({ name: 'AES-GCM', iv,
           additionalData: recordAad(r.chainId, r.recordId, r.lookupKey), tagLength: 128 }, aes, plain as Uint8Array<ArrayBuffer>);
-        await this.store.applyBatch({ puts: [{ ...r, schemaVersion: 2, iv: bytesToHex(iv), ciphertext: bytesToHex(new Uint8Array(ciphertext)) }], deleteIds: [] }, snapshot, () => { this.assertRevision(revision); });
+        await this.store.applyBatch({ puts: [{ ...r, schemaVersion: 2, iv: bytesToHex(iv), ciphertext: bytesToHex(new Uint8Array(ciphertext)) }], deleteIds: [] }, snapshot, this.writeGuard(revision));
       }
       this.assertRevision(revision);
       return payload;
@@ -349,7 +382,7 @@ export class TagVault {
     const lookup = await this.token(chainId, stealthAddress);
     const rec = snapshot.records.find((r) => r.chainId === chainId && r.lookupKey === lookup);
     if (rec === undefined) return false;
-    await this.store.applyBatch({ puts: [], deleteIds: [rec.recordId] }, snapshot, () => { this.assertRevision(revision); });
+    await this.store.applyBatch({ puts: [], deleteIds: [rec.recordId] }, snapshot, this.writeGuard(revision));
     this.assertRevision(revision);
     this.revision++;
     return true;
@@ -463,7 +496,7 @@ export class TagVault {
     const staged = this.previews.get(preview);
     if (staged === undefined || staged.revision !== this.revision) throw new UserFacingError('Tags changed since the preview. Preview the import again.');
     this.previews.delete(preview);
-    await this.store.applyBatch({ puts: staged.puts, deleteIds: staged.deleteIds }, staged.snapshot, () => { this.assertRevision(staged.revision); });
+    await this.store.applyBatch({ puts: staged.puts, deleteIds: staged.deleteIds }, staged.snapshot, this.writeGuard(staged.revision));
     this.assertRevision(staged.revision);
     this.revision++;
   }
@@ -502,7 +535,7 @@ export class TagVault {
       const checkIv = rand(12);
       const check = new Uint8Array(await subtle().encrypt({ name: 'AES-GCM', iv: checkIv, additionalData: aad(0), tagLength: 128 }, fresh.aes, CHECK_PLAINTEXT));
       if (revision !== this.revision) throw new UserFacingError('Tags changed during rotation. Nothing was changed; try again.');
-      await this.store.applyBatch({ puts, deleteIds: [], meta: { salt: bytesToHex(salt), keyVersion, check: { iv: bytesToHex(checkIv), ciphertext: bytesToHex(check) } } }, snapshot, () => { this.assertRevision(revision); });
+      await this.store.applyBatch({ puts, deleteIds: [], meta: { salt: bytesToHex(salt), keyVersion, check: { iv: bytesToHex(checkIv), ciphertext: bytesToHex(check) } } }, snapshot, this.writeGuard(revision));
       this.assertRevision(revision);
       this.revision++;
       this.profileSalt = bytesToHex(salt);

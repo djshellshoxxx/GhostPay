@@ -106,6 +106,9 @@ export function App(): ReactNode {
     else root.setAttribute('data-theme', settings.theme);
   }, [settings.theme]);
 
+  // Tag keys derived from one seller identity must never serve another: lock local tags whenever keys change (L1-04).
+  useEffect(() => subscribeSession(() => { services.vault.lock(); }), [services]);
+
   // Idle lock for local tags.
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | undefined;
