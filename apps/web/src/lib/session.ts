@@ -47,7 +47,10 @@ interface Stored {
  * like a key change to the views that reset on one.
  */
 interface Custody {
-  /** The user holds a copy outside this browser profile: the keys were imported (hex or keystore) or a keystore was downloaded. */
+  /**
+   * The user holds a copy outside this browser profile: the keys were imported (a keystore, or hex with its signing key)
+   * or a keystore was downloaded.
+   */
   readonly external: boolean;
   /** The vault record these keys were unlocked from, saved to or verified against. Kept after the record is deleted. */
   readonly vaultRecord: string | undefined;
@@ -221,7 +224,10 @@ export function generateSession(): SessionPublic {
 export interface ImportedHex {
   readonly spendingKeyHex: string;
   readonly viewingKeyHex: string;
-  /** Optional: when omitted a fresh invoice-signing key is generated (it is a separate key by design, ADR-0002). */
+  /**
+   * Optional: when omitted a fresh invoice-signing key is generated (it is a separate key by design, ADR-0002). That key
+   * exists only in this tab, so the keys count as unsaved until a keystore download or a vault save (C-R6).
+   */
   readonly signingKeyHex?: string;
 }
 
@@ -252,9 +258,10 @@ export function importSession(input: ImportedHex): SessionPublic {
   try {
     spending = scalarFromHex(input.spendingKeyHex, 'Spending key');
     viewing = scalarFromHex(input.viewingKeyHex, 'Viewing key');
-    signing = input.signingKeyHex === undefined || input.signingKeyHex.trim() === '' ? randomScalar() : scalarFromHex(input.signingKeyHex, 'Signing key');
-    // The user typed or pasted these keys, so a copy exists outside this tab.
-    return install({ keys: keySetFromScalars(spending, viewing), signingKey: signing }, { from: 'import' });
+    const generatedSigner = input.signingKeyHex === undefined || input.signingKeyHex.trim() === '';
+    signing = generatedSigner ? randomScalar() : scalarFromHex(input.signingKeyHex, 'Signing key');
+    // The user typed or pasted these keys, so a copy exists outside this tab; a signing key generated here does not.
+    return install({ keys: keySetFromScalars(spending, viewing), signingKey: signing }, { from: generatedSigner ? 'generated' : 'import' });
   } finally {
     if (spending !== undefined) zeroize(spending);
     if (viewing !== undefined) zeroize(viewing);

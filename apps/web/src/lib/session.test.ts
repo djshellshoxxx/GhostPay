@@ -204,7 +204,7 @@ describe('L1-01: backup state of the loaded keys', () => {
     expect(getSessionBackup()).toBeUndefined();
     generateSession();
     expect(getSessionBackup()).toEqual({ backedUp: false, waived: false, vaultStepUp: false });
-    importSession({ spendingKeyHex: HEX_A, viewingKeyHex: HEX_B });
+    importSession({ spendingKeyHex: HEX_A, viewingKeyHex: HEX_B, signingKeyHex: '33'.repeat(32) });
     expect(getSessionBackup()).toEqual({ backedUp: true, waived: false, vaultStepUp: false });
     const text = await exportKeystore('a long passphrase', { N: 1 << 14 });
     generateSession();
@@ -213,6 +213,15 @@ describe('L1-01: backup state of the loaded keys', () => {
     expect(getSessionBackup()).toEqual({ backedUp: true, waived: false, vaultStepUp: false });
     clearSession();
     expect(getSessionBackup()).toBeUndefined();
+  });
+
+  it('C-R6: counts a signing key generated at hex import as unsaved until a keystore download', () => {
+    importSession({ spendingKeyHex: HEX_A, viewingKeyHex: HEX_B });
+    expect(getSessionBackup()).toEqual({ backedUp: false, waived: false, vaultStepUp: false });
+    markKeystoreDownloaded(captureSessionGuard());
+    expect(getSessionBackup()?.backedUp).toBe(true);
+    importSession({ spendingKeyHex: HEX_A, viewingKeyHex: HEX_B, signingKeyHex: '33'.repeat(32) });
+    expect(getSessionBackup()?.backedUp).toBe(true);
   });
 
   it('records a downloaded keystore and the typed waiver without signalling a key change', () => {

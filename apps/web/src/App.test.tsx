@@ -91,7 +91,7 @@ describe('App shell', () => {
     const store = new MemoryKeyVaultStore();
     await store.putIfEmpty('{"ciphertext":"encrypted-only"}');
     setKeyVaultStoreForTests(store);
-    importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32) });
+    importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32), signingKeyHex: '33'.repeat(32) });
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 1 }));
     vi.useFakeTimers();
     try {
@@ -126,6 +126,23 @@ describe('App shell', () => {
       expect(services.vault.unlocked).toBe(false);
       const banner = screen.getByText('These seller keys have no backup').closest('.notice');
       expect(banner?.closest('.sr-only')).toBeNull();
+      expect(document.querySelector('[role="status"][aria-live]')?.textContent).toBe('Local tags locked after inactivity. Seller keys stay loaded because they have no backup yet.');
+    } finally {
+      vi.useRealTimers();
+      setKeyVaultStoreForTests(undefined);
+    }
+  });
+
+  it('C-R6: the idle lock keeps hex keys whose signing key was generated here, which exists nowhere else', async () => {
+    setKeyVaultStoreForTests(new MemoryKeyVaultStore());
+    const pub = importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32) });
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 1 }));
+    vi.useFakeTimers();
+    try {
+      renderApp(makeServices());
+      expect(screen.getByText('These seller keys have no backup')).toBeTruthy();
+      await act(async () => { await vi.advanceTimersByTimeAsync(61_000); });
+      expect(getSessionPublic()).toBe(pub);
       expect(document.querySelector('[role="status"][aria-live]')?.textContent).toBe('Local tags locked after inactivity. Seller keys stay loaded because they have no backup yet.');
     } finally {
       vi.useRealTimers();

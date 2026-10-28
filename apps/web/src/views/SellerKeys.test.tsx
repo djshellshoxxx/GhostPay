@@ -161,6 +161,16 @@ describe('Seller keys', () => {
     await user.click(screen.getByRole('button', { name: 'Load keys' }));
     expect(getSessionPublic()).toBeDefined();
     expect(screen.getByText('Your meta-address (public)')).toBeTruthy();
+    // C-R6: the empty signing-key field generated a key that exists only in this tab, as its hint said.
+    expect(screen.getByText('These seller keys have no backup')).toBeTruthy();
+    expect(getSessionBackup()?.backedUp).toBe(false);
+  });
+
+  it('C-R6: says that an empty signing-key field generates a key that exists only in this tab', async () => {
+    const user = await open();
+    await user.click(screen.getByText('Import existing keys (hex)'));
+    const hint = document.getElementById(screen.getByLabelText('Invoice-signing private key (optional)').getAttribute('aria-describedby') ?? '');
+    expect(hint?.textContent).toMatch(/exists only in this tab, so these keys count as not backed up until you download the encrypted keystore or save the vault/);
   });
 
   it('shows a clear error for a bad key and keeps no session', async () => {

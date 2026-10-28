@@ -287,7 +287,12 @@ describe('L1-01: only keys with a copy elsewhere may be wiped', () => {
     await deleteEncryptedVault(record, store, PASS);    // removed here: the keys count as unsaved again
     expect(getSessionBackup()?.backedUp).toBe(false);
     expect(await loadedKeysRecoverable(store)).toBe(false);
+    importSession({ spendingKeyHex: SPEND, viewingKeyHex: VIEW, signingKeyHex: SIGN });
+    expect(await loadedKeysRecoverable(store)).toBe(true);
+    // C-R6: without its signing key the import generates one that exists only in this tab, until a vault save.
     importSession({ spendingKeyHex: SPEND, viewingKeyHex: VIEW });
+    expect(await loadedKeysRecoverable(store)).toBe(false);
+    await saveEncryptedVault(PASS, { N: 1 << 14 }, store);
     expect(await loadedKeysRecoverable(store)).toBe(true);
   });
 

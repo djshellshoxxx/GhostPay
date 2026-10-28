@@ -84,7 +84,7 @@ describe('Create invoice', () => {
   });
 
   it('L1-01: opens the form directly for keys that have a copy elsewhere', async () => {
-    importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32) });
+    importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32), signingKeyHex: '33'.repeat(32) });
     await open();
     expect(screen.getByRole('button', { name: 'Create invoice link' })).toBeTruthy();
     expect(screen.queryByText('These seller keys have no backup')).toBeNull();
