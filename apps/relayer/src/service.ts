@@ -12,6 +12,7 @@ import {
   classifyRelayOutcome,
   type BreakerState,
   type LossReservation,
+  type LossSource,
   type Outcome,
 } from '@ghostpay/relayer-guard';
 import { FailureBudgets } from './abuse.js';
@@ -28,6 +29,7 @@ import { nullLogger, type Logger } from './log.js';
 import type { AllowedToken, GasPriceSource, TokenPriceSource } from './pricing.js';
 import { makeKeyring, signQuote, verifyQuote, type QuoteKeyring } from './quoteToken.js';
 import type { QuoteRequest, SweepRequest } from './validate.js';
+import { RevertRate } from './revertRate.js';
 
 /** Dependencies of {@link RelayerService}. */
 export interface ServiceDeps {
@@ -98,7 +100,12 @@ export interface InfoResponse {
 /** Response of `GET /healthz`. */
 export interface HealthResponse {
   readonly status: 'ok' | 'degraded' | 'shutting_down';
-  readonly chains: readonly { readonly chainId: number; readonly breaker: BreakerState }[];
+  readonly chains: readonly {
+    readonly chainId: number;
+    readonly breaker: BreakerState;
+    /** `sustained` while mined reverts (breaker-neutral, S3-06) are frequent; see {@link RevertRate}. */
+    readonly minedReverts: 'normal' | 'sustained';
+  }[];
 }
 
 /** Per-request context (logging only). */
@@ -110,11 +117,6 @@ export interface RequestContext {
   readonly clientGroupKey?: string;
 }
 
-interface LossKey {
-  readonly key: string;
-  readonly group: string;
-}
-
 /** A broadcast sweep and what was reserved for it, until its receipt settles the reservations. */
 interface SentSweep {
   readonly txHash: Hex;
@@ -122,7 +124,7 @@ interface SentSweep {
   readonly gasPrice: bigint;
   readonly reserved: bigint;
   readonly reservedDay: number;
-  readonly lossReservations: readonly LossReservation[];
+  readonly loss: LossReservation;
   /** Monotonic ms when the receipt wait timed out. */
   at: number;
 }
@@ -137,6 +139,7 @@ interface ChainRuntime {
   lastBreakerState: BreakerState;
   /** Sweeps whose receipt wait timed out, looked up again at the start of later jobs (L5-06), oldest first. */
   readonly pending: SentSweep[];
+  readonly reverts: RevertRate;
 }
 
 const REVERT_MAP: Readonly<Record<string, readonly [number, string]>> = {
@@ -153,6 +156,14 @@ const REVERT_MAP: Readonly<Record<string, readonly [number, string]>> = {
   ZeroAddress: [422, 'invalid_order'],
   SelfAddress: [422, 'invalid_order'],
 };
+
+/**
+ * Part of `lossBudget.globalWei` kept for sweeps whose sources lost nothing in the current window, so sources that
+ * keep losing cannot refuse everyone (L5-02).
+ */
+export function lossCleanReserve(globalWei: bigint): bigint {
+  return globalWei / 4n;
+}
 
 /** Timed-out sweeps looked up again per chain; beyond this the oldest is dropped and keeps its reservations. */
 const MAX_PENDING_RECEIPTS = 8;
@@ -217,6 +228,7 @@ export class RelayerService {
           perKeyLimit: lb.perKeyWei,
           globalLimit: lb.globalWei,
           maxKeys: lb.maxKeys,
+          cleanReserve: lossCleanReserve(lb.globalWei),
         },
         mono,
       );
@@ -246,6 +258,11 @@ export class RelayerService {
         ),
         lastBreakerState: 'closed',
         pending: [],
+        // The breaker's thresholds, applied to the mined reverts the breaker ignores (S3-06, L5-02).
+        reverts: new RevertRate(
+          { size: b.windowSize, minReverts: b.minSamples, ratio: b.failureRatio, windowMs: lb.windowSeconds * 1000 },
+          mono,
+        ),
       });
     }
     d.metrics?.gauge(
@@ -307,10 +324,15 @@ export class RelayerService {
     const chains = [...this.chains.values()].map((r) => ({
       chainId: r.cfg.chainId,
       breaker: r.breaker.state,
+      minedReverts: r.reverts.sustained ? ('sustained' as const) : ('normal' as const),
     }));
     let status: HealthResponse['status'] = 'ok';
     if (this.closing) status = 'shutting_down';
-    else if ([...this.chains.values()].some((r) => r.breaker.health() !== 'ok')) status = 'degraded';
+    else if (
+      [...this.chains.values()].some((r) => r.breaker.health() !== 'ok') ||
+      chains.some((c) => c.minedReverts === 'sustained')
+    )
+      status = 'degraded';
     return { status, chains };
   }
 
@@ -471,20 +493,23 @@ export class RelayerService {
     return { rt, token };
   }
 
-  /** Hashed per-source and per-destination loss-budget keys (the destination is free to mint, the network is not). */
-  private abuseKeys(destination: Address, ctx: RequestContext): readonly LossKey[] {
+  /**
+   * Hashed per-destination and per-source loss-budget sources (the destination is free to mint, the network is not).
+   * Their kinds keep the two apart in the loss budget's overflow entries (L5-04).
+   */
+  private abuseKeys(destination: Address, ctx: RequestContext): readonly LossSource[] {
     const dst = this.hasher.hash(destination.toLowerCase());
-    const keys: LossKey[] = [{ key: `dst:${dst}`, group: `dst:${dst}` }];
+    const keys: LossSource[] = [{ key: `dst:${dst}`, group: `dst:${dst}`, kind: 'dst' }];
     if (ctx.clientKey !== undefined) {
       const net = this.hasher.hash(ctx.clientKey);
       const group = this.hasher.hash(ctx.clientGroupKey ?? ctx.clientKey);
-      keys.push({ key: `net:${net}`, group: `net:${group}` });
+      keys.push({ key: `net:${net}`, group: `net:${group}`, kind: 'net' });
     }
     return keys;
   }
 
-  private requireLossBudget(rt: ChainRuntime, keys: readonly LossKey[]): void {
-    if (keys.every(({ key, group }) => this.lossBudget.allows(key, group))) return;
+  private requireLossBudget(rt: ChainRuntime, keys: readonly LossSource[]): void {
+    if (this.lossBudget.allowsAll(keys)) return;
     this.d.metrics?.inc('relayer_loss_budget_denied_total', { chain_id: rt.cfg.chainId });
     this.alerts.send({ kind: 'loss_budget_exhausted', chainId: rt.cfg.chainId });
     throw new RelayerError(429, 'loss_budget_exhausted', this.d.config.lossBudget.windowSeconds);
@@ -532,7 +557,7 @@ export class RelayerService {
     rt: ChainRuntime,
     call: SweepCall,
     ctx: RequestContext,
-    keys: readonly LossKey[],
+    keys: readonly LossSource[],
   ): Promise<JobOutcome<SweepResponse>> {
     const { cfg, breaker } = rt;
     const permit = breaker.tryAcquire({ validated: true });
@@ -556,7 +581,7 @@ export class RelayerService {
     rt: ChainRuntime,
     requested: SweepCall,
     ctx: RequestContext,
-    keys: readonly LossKey[],
+    keys: readonly LossSource[],
     setOutcome: (o: Outcome) => void,
   ): Promise<JobOutcome<SweepResponse>> {
     const { cfg, client, breaker, budget, nonces } = rt;
@@ -654,19 +679,16 @@ export class RelayerService {
 
     const gasLimit = finalSimulation.gasLimit;
     const reserved = gasLimit * sendGasPrice;
-    const lossReservations: LossReservation[] = [];
-    for (const { key, group } of keys) {
-      const reservation = this.lossBudget.reserve(key, reserved, group);
-      if (reservation === null) {
-        for (const held of lossReservations) held.release();
-        this.d.metrics?.inc('relayer_loss_budget_denied_total', { chain_id: cfg.chainId });
-        this.alerts.send({ kind: 'loss_budget_exhausted', chainId: cfg.chainId });
-        throw new RelayerError(429, 'loss_budget_exhausted', this.d.config.lossBudget.windowSeconds);
-      }
-      lossReservations.push(reservation);
+    // One reservation for the whole sweep: each source's key and group, and the global cap once (L5-02).
+    const loss = this.lossBudget.reserveAll(keys, reserved);
+    if (loss === null) {
+      this.d.metrics?.inc('relayer_loss_budget_denied_total', { chain_id: cfg.chainId });
+      this.alerts.send({ kind: 'loss_budget_exhausted', chainId: cfg.chainId });
+      throw new RelayerError(429, 'loss_budget_exhausted', this.d.config.lossBudget.windowSeconds);
     }
+    if (loss.overflow) this.d.metrics?.inc('relayer_loss_budget_overflow_total', { chain_id: cfg.chainId });
     if (!budget.reserve(reserved)) {
-      for (const held of lossReservations) held.release();
+      loss.release();
       this.alerts.send({ kind: 'daily_budget_exhausted', chainId: cfg.chainId });
       throw new RelayerError(503, 'budget_exhausted', budget.secondsToReset());
     }
@@ -679,14 +701,14 @@ export class RelayerService {
     } catch {
       nonces.invalidate();
       budget.release(reserved, reservedDay);
-      for (const held of lossReservations) held.release();
+      loss.release();
       setOutcome(classifyRelayOutcome('send_failed'));
       throw new RelayerError(503, 'send_failed');
     }
     setOutcome(classifyRelayOutcome('confirmed'));
     this.logger.log('info', 'sweep_sent', { requestId: ctx.requestId, chainId: cfg.chainId, txHash });
 
-    const sent: SentSweep = { txHash, call, gasPrice: sendGasPrice, reserved, reservedDay, lossReservations, at: 0 };
+    const sent: SentSweep = { txHash, call, gasPrice: sendGasPrice, reserved, reservedDay, loss, at: 0 };
     const settled = (async (): Promise<void> => {
       let r: ReceiptSummary;
       try {
@@ -747,16 +769,18 @@ export class RelayerService {
     const spent = r.gasUsed * sent.gasPrice;
     budget.release(sent.reserved > spent ? sent.reserved - spent : 0n, sent.reservedDay);
     if (r.status === 'success') {
-      for (const held of sent.lossReservations) held.release();
+      sent.loss.release();
+      rt.reverts.record(false);
       return;
     }
     // The simulation passed moments earlier, so a mined revert means state changed in between
     // (front-run, S3-06): the relayer paid gas and earned no fee. Charge the sources, do not
-    // count it against the breaker.
-    for (const held of sent.lossReservations) held.settle(spent);
+    // count it against the breaker; a sustained rate degrades health instead (L5-02).
+    sent.loss.settle(spent);
     this.strike(sent.call); // owner-drains-first / front-run: counts against the owner (spec 04)
     this.d.metrics?.inc('relayer_mined_reverts_total', { chain_id: cfg.chainId });
     this.alerts.send({ kind: 'mined_revert', chainId: cfg.chainId });
+    if (rt.reverts.record(true)) this.alerts.send({ kind: 'mined_revert_rate', chainId: cfg.chainId });
     this.logger.log('error', 'sweep_reverted', {
       chainId: cfg.chainId,
       txHash: sent.txHash,

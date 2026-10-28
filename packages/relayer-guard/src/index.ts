@@ -16,7 +16,13 @@ export type { ParsedIp, Cidr, BucketPrefixes } from './ip.js';
 export { TrustedProxies, resolveClientIp } from './client.js';
 export type { ClientSource, ResolvedClient, ResolveInput } from './client.js';
 export { TokenBucketLimiter, LossBudget, OVERFLOW_KEY } from './limiter.js';
-export type { TokenBucketOptions, TakeResult, LossBudgetOptions, LossReservation } from './limiter.js';
+export type {
+  TokenBucketOptions,
+  TakeResult,
+  LossBudgetOptions,
+  LossReservation,
+  LossSource,
+} from './limiter.js';
 export {
   createChallengeService,
   ChallengeService,

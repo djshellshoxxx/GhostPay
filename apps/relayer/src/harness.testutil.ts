@@ -238,6 +238,8 @@ export interface PrepareOptions {
   deadlineOffset?: number;
   nonce?: bigint;
   signerKey?: Hex;
+  /** Key of the order's owner (default {@link OWNER_KEY}); also the default signer. */
+  ownerKey?: Hex;
   chainId?: number;
   destination?: Address;
   permitValue?: bigint;
@@ -253,17 +255,19 @@ export async function prepare(h: Harness, o: PrepareOptions = {}): Promise<Prepa
   const amount = o.amount ?? 100_000_000n;
   const token = o.token ?? USDC;
   const destination = o.destination ?? DEST;
-  const quote = await h.relayer.service.quote({ chainId: CHAIN_ID, token, owner: OWNER, destination, amount });
+  const ownerKey = o.ownerKey ?? OWNER_KEY;
+  const owner = o.ownerKey === undefined ? OWNER : privateKeyToAccount(ownerKey).address;
+  const quote = await h.relayer.service.quote({ chainId: CHAIN_ID, token, owner, destination, amount });
   const fee = o.fee ?? BigInt(quote.fee);
   const feeTo = o.feeTo ?? quote.feeTo;
   const deadline = BigInt(Math.floor(h.clock.ms / 1000) + (o.deadlineOffset ?? 600));
-  const order = { token, owner: OWNER, destination, feeTo, amount, fee, deadline, nonce: o.nonce ?? 1n };
+  const order = { token, owner, destination, feeTo, amount, fee, deadline, nonce: o.nonce ?? 1n };
   const td = buildSweepTypedData(o.chainId ?? CHAIN_ID, SWEEP_CONTRACT, order);
-  const sig = await privateKeyToAccount(o.signerKey ?? OWNER_KEY).signTypedData({ domain: td.domain, types: td.types, primaryType: td.primaryType, message: td.message });
+  const sig = await privateKeyToAccount(o.signerKey ?? ownerKey).signTypedData({ domain: td.domain, types: td.types, primaryType: td.primaryType, message: td.message });
   const body: Record<string, unknown> = {
     chainId: CHAIN_ID,
     sweep: {
-      token, owner: OWNER, destination, feeTo,
+      token, owner, destination, feeTo,
       amount: amount.toString(), fee: fee.toString(), deadline: deadline.toString(), nonce: order.nonce.toString(),
     },
     sweepSig: sig,

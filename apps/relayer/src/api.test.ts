@@ -44,7 +44,7 @@ describe('basic routes, headers and CORS', () => {
     const s = await start();
     const r = await call(s, 'GET', '/healthz');
     expect(r.status).toBe(200);
-    expect(r.json).toEqual({ status: 'ok', chains: [{ chainId: CHAIN_ID, breaker: 'closed' }] });
+    expect(r.json).toEqual({ status: 'ok', chains: [{ chainId: CHAIN_ID, breaker: 'closed', minedReverts: 'normal' }] });
     for (const k of [
       'x-content-type-options',
       'cache-control',
@@ -891,6 +891,93 @@ describe('simulation, replay and operational limits', () => {
     expect(s.fake.sent[1]?.opts.nonce).toBe(9); // re-synced after the timeout
     expect(s.logs.join('\n')).toContain('sweep_reverted');
     expect(s.logs.join('\n')).toContain('receipt_timeout');
+  });
+});
+
+describe('loss budget accounting (L5-02, L5-04)', () => {
+  const estimate = 150_000n * 1_000_000_000n; // reserved per sweep: gas limit x gas price
+  const proxies = ['127.0.0.1', '::1', '::ffff:127.0.0.1'];
+  const dest = (i: number): `0x${string}` => `0x${(0xd000 + i).toString(16).padStart(40, '0')}`;
+  // A distinct owner per sweep, so the per-owner failure counter (3 per hour) stays out of the way.
+  const ownerKey = (i: number): `0x${string}` => `0x${(0x100 + i).toString(16).padStart(64, '0')}`;
+  const sweepAs = async (s: Harness, nonce: bigint, i: number, ip: string, amount?: bigint): Promise<string> => {
+    const body = (await prepare(s, { nonce, destination: dest(i), ownerKey: ownerKey(i), ...(amount === undefined ? {} : { amount }) })).body;
+    const r = await call(s, 'POST', '/v1/sweep', body, { 'x-forwarded-for': ip });
+    await settle();
+    return r.status === 200 ? '200' : errCode(r);
+  };
+
+  it('L5-04: stale loss groups are evicted, so newcomers do not all share one overflow group', async () => {
+    const lossBudget = { windowSeconds: 3600, perKeyWei: 200_000_000_000_000n, globalWei: 10n ** 17n, maxKeys: 16 };
+    const s = await start({ config: { lossBudget, trustedProxies: proxies } });
+    // 8 ordinary sweeps (distinct destination and /24): 16 groups seen, all stale two windows later
+    for (let i = 0; i < 8; i++) expect(await sweepAs(s, BigInt(i + 1), i, `198.51.${i + 1}.1`)).toBe('200');
+    s.clock.ms += 2 * 3_600_000;
+    s.fake.receipt = { status: 'reverted', gasUsed: 100_000n };
+    expect(await sweepAs(s, 100n, 100, '203.0.113.9')).toBe('200'); // a fresh source's revert is charged to it alone
+    s.fake.receipt = { status: 'success', gasUsed: 100_000n };
+    expect(await sweepAs(s, 101n, 200, '192.0.2.77')).toBe('200'); // an unrelated newcomer is not refused
+    const text = s.relayer.metrics.render();
+    expect(text).not.toContain('relayer_loss_budget_overflow_total');
+  });
+
+  it('L5-04: with production limits, new users are served after a day of earlier traffic', async () => {
+    const lossBudget = { windowSeconds: 3600, perKeyWei: 5_000_000_000_000_000n, globalWei: 50_000_000_000_000_000n, maxKeys: 16 };
+    const s = await start({ config: { lossBudget, trustedProxies: proxies } });
+    s.fake.gasPrice = 20_000_000_000n; // reservation 150k x 20 gwei = 3e15 per sweep
+    const amount = 1_000_000_000n; // 1000 USDC: the capped fee covers gas at 20 gwei
+    for (let i = 0; i < 8; i++) expect(await sweepAs(s, BigInt(i + 1), i, `198.51.${i + 1}.1`, amount)).toBe('200');
+    s.clock.ms += 25 * 3_600_000; // next salt epoch: every earlier entry is stale
+    for (let i = 0; i < 3; i++) expect(await sweepAs(s, BigInt(100 + i), 100 + i, `192.0.${i + 2}.77`, amount)).toBe('200');
+  });
+
+  it('L5-02: the global loss cap is charged once per sweep, not once per key', async () => {
+    const lossBudget = { windowSeconds: 3600, perKeyWei: 10n ** 18n, globalWei: 2n * estimate, maxKeys: 100 };
+    const s = await start({ config: { lossBudget, trustedProxies: proxies } });
+    s.fake.receipt = { status: 'reverted', gasUsed: 150_000n };
+    expect(await sweepAs(s, 1n, 1, '198.51.1.1')).toBe('200');
+    expect(await sweepAs(s, 2n, 2, '198.51.2.1')).toBe('200'); // was 429 at half the configured cap
+    expect(await sweepAs(s, 3n, 3, '198.51.3.1')).toBe('loss_budget_exhausted');
+  });
+
+  it('L5-02: sources that lost money in this window cannot spend the slice kept for clean sources', async () => {
+    const lossBudget = { windowSeconds: 3600, perKeyWei: 10n ** 18n, globalWei: 4n * estimate, maxKeys: 100 };
+    const s = await start({ config: { lossBudget, trustedProxies: proxies } });
+    s.fake.receipt = { status: 'reverted', gasUsed: 150_000n };
+    // one network group, a fresh destination each time, every sweep a mined revert
+    const outcomes: string[] = [];
+    for (let i = 0; i < 6 && outcomes.at(-1) !== 'loss_budget_exhausted'; i++) {
+      outcomes.push(await sweepAs(s, BigInt(10 + i), 10 + i, `203.0.113.${i + 1}`));
+    }
+    expect(outcomes).toEqual(['200', '200', '200', 'loss_budget_exhausted']); // 3/4 of the global cap
+    s.fake.receipt = { status: 'success', gasUsed: 100_000n };
+    // an unrelated, clean source is still served from the remaining quarter
+    expect(await sweepAs(s, 50n, 50, '192.0.2.10')).toBe('200');
+    expect(await sweepAs(s, 51n, 51, '192.0.3.10')).toBe('200'); // a success releases its reservation
+  });
+
+  it('L5-02: a sustained mined-revert rate alerts and degrades /healthz while the breaker stays closed', async () => {
+    const alerts: string[] = [];
+    const lossBudget = { windowSeconds: 3600, perKeyWei: 10n ** 18n, globalWei: 10n ** 18n, maxKeys: 100 };
+    const s = await start({ config: { lossBudget, trustedProxies: proxies }, alerts: { send: (e) => alerts.push(e.kind) } });
+    s.fake.receipt = { status: 'reverted', gasUsed: 150_000n };
+    for (let i = 0; i < 2; i++) expect(await sweepAs(s, BigInt(i + 1), i, `198.51.${i + 1}.1`)).toBe('200');
+    expect((await call(s, 'GET', '/healthz')).status).toBe(200); // below minSamples (3)
+    expect(await sweepAs(s, 3n, 3, '198.51.3.1')).toBe('200');
+    expect(alerts).toContain('mined_revert_rate');
+    const h = await call(s, 'GET', '/healthz');
+    expect(h.status).toBe(503);
+    expect(h.json).toEqual({ status: 'degraded', chains: [{ chainId: CHAIN_ID, breaker: 'closed', minedReverts: 'sustained' }] });
+    // successes dilute the rate below failureRatio (3 of 7 < 0.5)
+    s.fake.receipt = { status: 'success', gasUsed: 100_000n };
+    for (let i = 4; i < 8; i++) expect(await sweepAs(s, BigInt(i), i, `198.51.${i}.1`)).toBe('200');
+    expect((await call(s, 'GET', '/healthz')).status).toBe(200);
+    // and old reverts age out with the loss window
+    s.fake.receipt = { status: 'reverted', gasUsed: 150_000n };
+    for (let i = 8; i < 12; i++) await sweepAs(s, BigInt(i), i, `198.51.${i}.1`);
+    expect((await call(s, 'GET', '/healthz')).status).toBe(503);
+    s.clock.ms += 3_600_000;
+    expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'ok', chains: [{ minedReverts: 'normal' }] });
   });
 });
 

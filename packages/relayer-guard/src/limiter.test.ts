@@ -179,6 +179,108 @@ describe('LossBudget (S3-06)', () => {
     expect(b.reserve('owner', 70n)).not.toBeNull();
   });
 
+  it('L5-02: a multi-source reservation charges every key and group but the global limit once', () => {
+    const clock = { t: 0 };
+    const b = new LossBudget({ windowMs: 1000, perKeyLimit: 100n, globalLimit: 150n, maxKeys: 8 }, () => clock.t);
+    const sources = [{ key: 'dst:a', kind: 'dst' }, { key: 'net:a', group: 'net:g', kind: 'net' }];
+    const first = b.reserveAll(sources, 70n);
+    expect(first).not.toBeNull();
+    expect(first?.overflow).toBe(false);
+    expect(b.allows('dst:a')).toBe(true); // 70 of 100
+    expect(b.allows('net:other', 'net:g')).toBe(true); // the group holds 70 of 100
+    expect(b.reserveAll([{ key: 'dst:b' }, { key: 'net:b', group: 'net:h' }], 80n)).not.toBeNull(); // global 150
+    expect(b.allowsAll([{ key: 'dst:c' }])).toBe(false);
+    expect(first?.settle(70n)).toBe(true); // loss equal to the estimate: totals unchanged
+    expect(first?.settled).toBe(true);
+    expect(b.allowsAll([{ key: 'dst:c' }])).toBe(false);
+    clock.t += 1000;
+    expect(b.reserveAll(sources, 100n)).not.toBeNull();
+    expect(b.reserveAll([{ key: 'net:z', group: 'net:g' }], 1n)).toBeNull(); // shared group is full
+    expect(() => b.reserveAll([], 1n)).toThrow(GuardError);
+  });
+
+  it('L5-02: the clean reserve is only for sources with no loss in this window', () => {
+    const clock = { t: 0 };
+    const b = new LossBudget(
+      { windowMs: 1000, perKeyLimit: 1000n, globalLimit: 400n, maxKeys: 8, cleanReserve: 100n },
+      () => clock.t,
+    );
+    b.reserveAll([{ key: 'dirty' }], 50n)?.settle(50n); // a settled loss marks the source
+    expect(b.reserveAll([{ key: 'dirty' }], 251n)).toBeNull(); // 50 + 251 > 400 - 100
+    const held = b.reserveAll([{ key: 'dirty' }], 250n); // exactly up to 300
+    expect(held).not.toBeNull();
+    expect(b.allowsAll([{ key: 'dirty' }])).toBe(false);
+    expect(b.allows('clean')).toBe(true);
+    expect(b.allowsAll([{ key: 'clean' }, { key: 'dirty' }])).toBe(false); // any lossy source makes it unclean
+    const clean = b.reserveAll([{ key: 'clean' }], 100n);
+    expect(clean).not.toBeNull(); // the reserve is still available to clean sources
+    expect(b.allows('clean2')).toBe(false);
+    clean?.release();
+    held?.release(); // an unsettled reservation is not a loss
+    b.charge('other', 1n);
+    expect(b.allows('other')).toBe(true); // 51 of 300 for lossy sources
+    clock.t += 1000; // a new window forgets the loss
+    expect(b.reserveAll([{ key: 'dirty' }], 400n)).not.toBeNull();
+    expect(() => new LossBudget({ windowMs: 1, perKeyLimit: 1n, globalLimit: 1n, maxKeys: 1, cleanReserve: 2n })).toThrow(
+      GuardError,
+    );
+    expect(() => new LossBudget({ windowMs: 1, perKeyLimit: 1n, globalLimit: 1n, maxKeys: 1, cleanReserve: -1n })).toThrow(
+      GuardError,
+    );
+  });
+
+  it('L5-02: a late settlement is charged once to the current window', () => {
+    const clock = { t: 0 };
+    const b = new LossBudget({ windowMs: 1000, perKeyLimit: 1000n, globalLimit: 100n, maxKeys: 8 }, () => clock.t);
+    const r = b.reserveAll([{ key: 'dst:a' }, { key: 'net:a' }], 10n);
+    clock.t += 1000;
+    expect(r?.settle(60n)).toBe(true);
+    expect(b.reserveAll([{ key: 'x' }], 40n)).not.toBeNull(); // 60 + 40 = 100: charged once, not twice
+    expect(b.allows('y')).toBe(false);
+  });
+
+  it('L5-04: stale groups are evicted, so a full group table overflows only on live entries', () => {
+    const clock = { t: 0 };
+    const b = new LossBudget({ windowMs: 1000, perKeyLimit: 100n, globalLimit: 10_000n, maxKeys: 2 }, () => clock.t);
+    b.charge('a', 1n, 'g-a');
+    b.charge('b', 1n, 'g-b');
+    clock.t += 1000; // both groups (and keys) are stale now
+    const c = b.reserve('c', 100n, 'g-c');
+    expect(c?.overflow).toBe(false);
+    expect(b.allows('d', 'g-d')).toBe(true); // used to share one never-evicted overflow group with g-c
+    expect(b.reserve('d', 100n, 'g-d')?.overflow).toBe(false);
+    // Now both tables are full of live entries: newcomers overflow, and the reservation says so.
+    const e = b.reserve('e', 10n, 'g-e');
+    expect(e?.overflow).toBe(true);
+    expect(b.allows('f', 'g-f')).toBe(true); // 10 of 100 in the overflow entry
+  });
+
+  it('L5-04: sources of different kinds never share an overflow entry; one sweep charges it once', () => {
+    const b = new LossBudget({ windowMs: 1000, perKeyLimit: 100n, globalLimit: 10_000n, maxKeys: 1 }, () => 0);
+    b.charge('live', 1n, 'live'); // both tables full of a live entry
+    const sweep = (i: number) => [
+      { key: `dst:${String(i)}`, kind: 'dst' },
+      { key: `net:${String(i)}`, group: `net:g${String(i)}`, kind: 'net' },
+    ];
+    const r = b.reserveAll(sweep(1), 60n);
+    expect(r?.overflow).toBe(true); // a shared overflow entry would hold 120 > 100 and refuse it
+    expect(b.reserveAll(sweep(2), 50n)).toBeNull(); // each kind's overflow already holds 60
+    r?.release();
+    expect(b.reserveAll(sweep(3), 100n)).not.toBeNull();
+    for (let i = 0; i < 5; i++) b.allowsAll([{ key: `k${String(i)}`, kind: `kind${String(i)}` }]); // 8 kinds with '', dst, net
+    expect(() => b.allowsAll([{ key: 'k', kind: 'one-too-many' }])).toThrow(GuardError);
+  });
+
+  it('L5-04: a read-only probe does not keep a stale key from being evicted', () => {
+    const clock = { t: 0 };
+    const b = new LossBudget({ windowMs: 1000, perKeyLimit: 100n, globalLimit: 10_000n, maxKeys: 2 }, () => clock.t);
+    b.charge('old', 1n, 'g');
+    clock.t += 1000;
+    b.charge('live', 1n, 'g2');
+    expect(b.allows('old', 'g')).toBe(true); // probing 'old' must not make it the most recent entry
+    expect(b.reserve('new', 10n, 'g3')?.overflow).toBe(false); // evicts stale 'old', not live 'live'
+  });
+
   it('late reservation settlement is charged in the current window; release cannot reset it', () => {
     const { b, clock } = budget();
     const pending = b.reserve('owner', 80n);

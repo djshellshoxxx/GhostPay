@@ -12,6 +12,7 @@ export type AlertKind =
   | 'loss_budget_exhausted'
   | 'daily_budget_exhausted'
   | 'mined_revert'
+  | 'mined_revert_rate'
   | 'receipt_timeout';
 
 /** An operator alert. */

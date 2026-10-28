@@ -10,7 +10,7 @@ import { KeyHasher, RateLimiter } from './limiter.js';
 import type { Logger } from './log.js';
 import { FixedStablePriceSource, RpcGasPriceSource } from './pricing.js';
 import { RelayerHttpServer } from './server.js';
-import { RelayerService } from './service.js';
+import { RelayerService, lossCleanReserve } from './service.js';
 import type { PolicyGate } from './policy.js';
 import { ConfigError } from './secrets.js';
 
@@ -98,7 +98,10 @@ export async function buildRelayer(d: RuntimeDeps): Promise<Relayer> {
     d.alerts ??
     (d.config.alertWebhookUrl === undefined ? nullAlerts : createWebhookAlerts({ url: d.config.alertWebhookUrl, logger: d.logger, now: mono }));
   const lb = d.config.lossBudget;
-  const lossBudget = new LossBudget({ windowMs: lb.windowSeconds * 1000, perKeyLimit: lb.perKeyWei, globalLimit: lb.globalWei, maxKeys: lb.maxKeys }, mono);
+  const lossBudget = new LossBudget(
+    { windowMs: lb.windowSeconds * 1000, perKeyLimit: lb.perKeyWei, globalLimit: lb.globalWei, maxKeys: lb.maxKeys, cleanReserve: lossCleanReserve(lb.globalWei) },
+    mono,
+  );
   const rl = d.config.rateLimit;
   const ipLimiter = new RateLimiter({ perMinute: rl.ipPerMinute, burst: rl.ipBurst, maxKeys: rl.maxKeys }, hasher, mono);
   const ownerLimiter = new RateLimiter({ perMinute: rl.ownerPerMinute, burst: rl.ownerBurst, maxKeys: rl.maxKeys }, hasher, mono);

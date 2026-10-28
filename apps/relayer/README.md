@@ -18,7 +18,7 @@ Errors are `{"error":{"code":"<class>"}}` with a fixed class and nothing else.
 
 | Route | Purpose |
 |---|---|
-| `GET /healthz` | `{status, chains:[{chainId, breaker}]}`; `degraded` (503) when any chain's breaker is open or half-open (S3-05), `shutting_down` during shutdown |
+| `GET /healthz` | `{status, chains:[{chainId, breaker, minedReverts}]}`; `degraded` (503) when any chain's breaker is open or half-open (S3-05) or its mined reverts are `sustained` (L5-02), `shutting_down` during shutdown |
 | `GET /metrics` | Prometheus text; 404 unless `metricsTokenEnv` is configured, then requires `Authorization: Bearer <token>` |
 | `GET /v1/info` | version, fee policy (min 50 bps, cap 300 bps, gas x1.10), quote TTL, deadline window, per chain: `sweepRelayer`, `feeTo`, token allowlist |
 | `POST /v1/quote` | `{chainId, token, owner, destination, amount}` -> `{fee, feeTo, expiresAt, quoteToken}` (`fee` decimal string, `expiresAt` unix seconds) |
@@ -39,15 +39,17 @@ unexpired (`quote_expired` 410), `sweep.fee >= quote.fee` (`fee_below_quote`), `
 deadline in `(now+min, now+max]`, max 1800 s (`deadline_too_soon/far`) -> contract static rules (`invalid_order`) ->
 signature recovers to `owner` (`invalid_signature`) -> per-owner rate limit (`rate_limited_owner` 429; keyed only by a
 proven owner) -> per-owner failure counter (`owner_failure_limit` 429 + `Retry-After`: 3 costly user-attributable
-failures per hour, spec 04) -> `PolicyGate` (`policy_denied` 403, `policy_unavailable` 503) -> breaker -> serial per-chain lane:
-gas price cap (`gas_price_too_high` 503), balance floor (`breaker_open`), order state (`nonce_used`,
-`insufficient_token_balance`, `insufficient_allowance`), permit ladder (allowance already covers -> the permit is dropped and
-plain `sweep` is used; otherwise a permit that has expired or expires before `sweep.deadline` -> `permit_expired` 422 before
-simulation), `simulateContract` (revert
-class: `nonce_used` 409, `expired`, `invalid_signature`, `token_transfer_failed`, `permit_value_too_low`, `invalid_order`,
-`simulation_reverted` 422; with a permit still needed a generic transfer revert is `permit_failed` 422; RPC failure
-`rpc_unavailable` 503), gas limit (`gas_limit_too_high`), daily budget (`budget_exhausted` 503 + `Retry-After`) -> send
-(`send_failed` 503). A mined revert also counts against the owner.
+failures per hour, spec 04) -> `PolicyGate` (`policy_denied` 403, `policy_unavailable` 503) -> breaker (`breaker_open` 503) ->
+loss budget probe (`loss_budget_exhausted` 429 + `Retry-After`) -> serial per-chain lane: receipt lookups for earlier
+timed-out sweeps (never fail the job), gas price cap (`gas_price_too_high` 503), balance floor (`breaker_open`), order state
+(`nonce_used`, `insufficient_token_balance`, `insufficient_allowance`), permit ladder (allowance already covers -> the permit
+is dropped and plain `sweep` is used; otherwise a permit that has expired or expires before `sweep.deadline` ->
+`permit_expired` 422 before simulation), `simulateContract` (revert class: `nonce_used` 409, `expired`, `invalid_signature`,
+`token_transfer_failed`, `permit_value_too_low`, `invalid_order`, `simulation_reverted` 422; with a permit still needed a
+generic transfer revert is `permit_failed` 422; RPC failure `rpc_unavailable` 503), gas limit (`gas_limit_too_high`), fee
+covers the estimated gas (`fee_below_gas_cost` 422), gas price re-read (cap; `gas_price_moved` 503 beyond
+`gas.maxMovePercent`), second simulation with the same checks, loss budget reservation (`loss_budget_exhausted` 429), daily
+budget (`budget_exhausted` 503 + `Retry-After`) -> send (`send_failed` 503). A mined revert also counts against the owner.
 
 Quote pricing: `gas.griefReserveBps` (default 0, max 5000) is added to the gas term before the F-SPONSOR formula, so the fee
 carries a margin for gas lost when an owner drains or revokes first. `quoteTtlSeconds` is at most 60 (default 60).
@@ -154,8 +156,9 @@ are placeholders.
 
 - `trustedProxies` (CIDR list, default empty) replaces `trustProxyHops`. `X-Forwarded-For` is honoured only when the socket peer is listed, walked right to left; a broken chain gets `400 invalid_client_address`. Buckets are IPv4 /32 and IPv6 /64, hashed with the rotating salt (S3-07).
 - Breaker: every admission is a permit settled on every path; user-attributable results (simulation revert, nonce used, caps) are neutral; an RPC failure on any in-lane read, the gas price included, counts as a failure (L5-10), while the gas price cap (`gas_price_too_high`) stays neutral; `breaker.probeTimeoutSeconds` expires a stuck probe (S3-05). A mined revert after a passing simulation is charged to `lossBudget` (per network bucket and per destination, plus global; `429 loss_budget_exhausted`) and does not feed the breaker (S3-06).
+- Loss budget (L5-02, L5-04): each sweep makes one reservation that charges its destination, its network bucket and that bucket's group (IPv4 /24, IPv6 /48), each up to `perKeyWei`, and the global cap once. A quarter of `globalWei` is kept for sweeps whose keys and groups lost nothing in the current window, so sources that keep losing cannot refuse everyone. Keys and groups live in two tables of `maxKeys` entries that evict only entries from an earlier window; while a table is full of live entries, newcomers share one overflow entry per kind (destination, network), counted by `relayer_loss_budget_overflow_total`. Mined reverts that reach the breaker's own thresholds (at least `breaker.minSamples` reverts making up at least `breaker.failureRatio` of the last `breaker.windowSize` mined sweeps within `lossBudget.windowSeconds`) send a `mined_revert_rate` alert and report `minedReverts: "sustained"` and `degraded` on `/healthz`, without opening the breaker.
 - `rateLimit.quoteGlobalPerMinute/Burst`: process-wide `/v1/quote` budget (`429 rate_limited_global`); quote-path gas price is reused for 3 s.
-- Alerts: `alertWebhookUrlEnv` names an env var holding an https URL; JSON `{kind, chainId, text}` is posted on breaker open, low balance, loss/daily budget exhaustion, mined reverts and receipt timeouts (de-duplicated per kind and chain, 60 s). No request data is ever included.
+- Alerts: `alertWebhookUrlEnv` names an env var holding an https URL; JSON `{kind, chainId, text}` is posted on breaker open, low balance, loss/daily budget exhaustion, mined reverts, a sustained mined-revert rate (`mined_revert_rate`) and receipt timeouts (de-duplicated per kind and chain, 60 s). No request data is ever included.
 - Receipt timeouts (L5-06): a sweep whose receipt is not seen within `queue.receiptTimeoutSeconds` counts as a breaker failure (its permit was settled at broadcast, so the failure is recorded directly) and sends a `receipt_timeout` alert. Its daily-budget and loss reservations are kept, and the start of each later job on that chain looks its receipt up again (`eth_getTransactionReceipt`, at most 8 per chain, dropped after 24 h): once mined it is settled like any receipt (unused budget returned, a revert charged). Open item: nothing replaces (fee bump) or cancels a stuck transaction; the lane moves on after the timeout with the nonce re-read from the pending count.
-- Metrics (`/metrics`): `relayer_http_requests_total`, `relayer_sweeps_total`, `relayer_breaker_transitions_total`, `relayer_mined_reverts_total`, `relayer_receipt_timeouts_total`, `relayer_loss_budget_denied_total`, `relayer_owner_failures_total`, `relayer_permit_skipped_total`, gauges `relayer_breaker_state` (0 closed, 1 half_open, 2 open), `relayer_daily_budget_used_wei`, `relayer_queue_pending`.
+- Metrics (`/metrics`): `relayer_http_requests_total`, `relayer_sweeps_total`, `relayer_breaker_transitions_total`, `relayer_mined_reverts_total`, `relayer_receipt_timeouts_total`, `relayer_loss_budget_denied_total`, `relayer_loss_budget_overflow_total`, `relayer_owner_failures_total`, `relayer_permit_skipped_total`, gauges `relayer_breaker_state` (0 closed, 1 half_open, 2 open), `relayer_daily_budget_used_wei`, `relayer_queue_pending`.
 - Unverified: nothing here has run behind a real proxy, Prometheus or webhook receiver.

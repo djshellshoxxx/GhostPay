@@ -31,6 +31,11 @@ class BoundedTable<V> {
     return v;
   }
 
+  /** Reads without refreshing the entry's recency (a read-only probe is not a use). */
+  public peek(key: string): V | undefined {
+    return this.map.get(key);
+  }
+
   public groupSize(group: string): number {
     return this.groups.get(group) ?? 0;
   }
@@ -206,39 +211,74 @@ export class TokenBucketLimiter {
 export interface LossBudgetOptions {
   /** Fixed accounting window, ms > 0. */
   readonly windowMs: number;
-  /** Most unreimbursed loss charged to one key per window. */
+  /** Most unreimbursed loss charged to one key (and to one abuse group) per window. */
   readonly perKeyLimit: bigint;
-  /** Most unreimbursed loss across all keys per window. */
+  /** Most unreimbursed loss across all keys per window, charged once per reservation or charge. */
   readonly globalLimit: bigint;
-  /** Most distinct keys held, >= 1. */
+  /** Most distinct keys held, and separately most distinct groups held, >= 1. */
   readonly maxKeys: number;
   /** Maximum tracked keys per abuse group (default `max(1, ceil(maxKeys / 8))`). */
   readonly maxPerGroup?: number;
+  /**
+   * Part of `globalLimit` only clean sources may use: a reservation or charge any of whose key or group entries
+   * already lost money in the current window is admitted only up to `globalLimit - cleanReserve`, so sources that
+   * keep losing cannot exhaust the global budget for everyone (default 0, at most `globalLimit`).
+   */
+  readonly cleanReserve?: bigint;
+}
+
+/** One source of a loss: a key, the abuse group it shares a limit with, and its overflow class. */
+export interface LossSource {
+  readonly key: string;
+  /** Abuse group (default: the key itself). */
+  readonly group?: string;
+  /**
+   * Overflow class (default `''`). While a table is full of live entries, newcomers share one overflow entry per
+   * class, so sources of different classes (for example a destination and a client network) never share one.
+   */
+  readonly kind?: string;
 }
 
 interface Spend {
   window: number;
+  /** Reserved and charged in `window`. */
   spent: bigint;
+  /** Settled or charged loss in `window`; non-zero makes the source unclean (see `cleanReserve`). */
+  lost: bigint;
 }
+
+interface Resolved {
+  /** Distinct key and group entries, the first source's key entry first. */
+  readonly entries: readonly Spend[];
+  readonly overflow: boolean;
+}
+
+/** Most distinct {@link LossSource.kind} values (each holds one key and one group overflow entry). */
+const MAX_LOSS_KINDS = 8;
 
 /**
  * Caps gas the relayer paid without being reimbursed (reverted or front-run sweeps, S3-06), per
- * source key and globally, in fixed windows.
+ * source key, per abuse group and globally, in fixed windows.
  *
- * Use: before sending, `allows(key)`; after a mined revert or other unreimbursed spend,
- * `charge(key, gasCostWei)`. Successful sweeps are not charged (the fee reimbursed them).
+ * Use: before sending, `allows(key)` / `allowsAll(sources)`; reserve the worst case with `reserve` /
+ * `reserveAll` and settle the actual loss (zero for a reimbursed sweep); or record a loss directly with
+ * `charge(key, gasCostWei)`. A reservation for several sources (one sweep keyed by destination and by client
+ * network) charges each key and group once and the global limit once (audit L5-02).
  *
  * @security Key it on something costlier to mint than a fresh owner address: the client network
  *   bucket ({@link bucketKey}) and, separately, the destination. Per-owner keys alone are free to
- *   mint (S3-06). When the table is full of active keys, newcomers share {@link OVERFLOW_KEY}.
+ *   mint (S3-06). Keys and groups live in bounded tables that evict only entries from an earlier window, so they
+ *   overflow only while full of live entries (L5-04); newcomers then share one overflow entry per
+ *   {@link LossSource.kind}, and the reservation reports it.
  */
 export class LossBudget {
-  private readonly table: BoundedTable<Spend>;
-  private readonly overflowSpend: Spend = { window: -1, spent: 0n };
-  private readonly groupSpends = new Map<string, Spend>();
-  private readonly overflowGroupSpend: Spend = { window: -1, spent: 0n };
-  private readonly global: Spend = { window: -1, spent: 0n };
+  private readonly keys: BoundedTable<Spend>;
+  private readonly groups: BoundedTable<Spend>;
+  private readonly overflowKeys = new Map<string, Spend>();
+  private readonly overflowGroups = new Map<string, Spend>();
+  private readonly global: Spend = { window: -1, spent: 0n, lost: 0n };
   private readonly maxPerGroup: number;
+  private readonly cleanReserve: bigint;
 
   /**
    * @param opts Tunables (validated).
@@ -256,12 +296,24 @@ export class LossBudget {
       Number.isInteger(this.maxPerGroup) && this.maxPerGroup >= 1,
       'maxPerGroup must be an integer >= 1',
     );
-    this.table = new BoundedTable(opts.maxKeys, (s) => s.window !== this.windowIndex());
+    this.cleanReserve = opts.cleanReserve ?? 0n;
+    requireConfig(
+      this.cleanReserve >= 0n && this.cleanReserve <= opts.globalLimit,
+      'cleanReserve must be in 0..globalLimit',
+    );
+    const idle = (e: Spend): boolean => e.window !== this.windowIndex();
+    this.keys = new BoundedTable(opts.maxKeys, idle);
+    this.groups = new BoundedTable(opts.maxKeys, idle);
   }
 
-  /** @returns Whether one more unreimbursed spend is allowed for `key` (both limits strictly unspent). */
+  /** @returns Whether one more unreimbursed spend is allowed for `key` (every limit strictly unspent). */
   public allows(key: string, group = key): boolean {
-    return this.allowsAmount(key, 1n, group);
+    return this.allowsAll([{ key, group }]);
+  }
+
+  /** @returns Whether one more unreimbursed spend is allowed for a loss attributed to all of `sources`. */
+  public allowsAll(sources: readonly LossSource[]): boolean {
+    return this.admits(this.resolve(sources, false), 1n);
   }
 
   /**
@@ -273,64 +325,49 @@ export class LossBudget {
    */
   public charge(key: string, amount: bigint, group = key): bigint {
     requireConfig(amount >= 0n, 'amount must be >= 0');
-    const w = this.windowIndex();
-    let s = this.table.get(key);
-    if (s === undefined) {
-      const fresh = { window: w, spent: 0n };
-      s =
-        this.table.groupSize(group) < this.maxPerGroup && this.table.insert(key, fresh, group)
-          ? fresh
-          : this.overflowSpend;
-    }
-    const g = this.ensureGroupSpend(group, w);
-    for (const t of [s, g, this.global]) {
-      if (t.window !== w) {
-        t.window = w;
-        t.spent = 0n;
-      }
-      t.spent += amount;
-    }
-    return s.spent;
+    const r = this.resolve([{ key, group }], true);
+    this.add(r, amount, amount);
+    return (r.entries[0] as Spend).spent;
   }
 
   /** Atomically reserves a worst-case loss estimate so concurrent sends cannot overspend the budget. */
   public reserve(key: string, estimate: bigint, group = key): LossReservation | null {
+    return this.reserveAll([{ key, group }], estimate);
+  }
+
+  /**
+   * Atomically reserves a worst-case loss attributed to all of `sources` (for example a sweep's destination and
+   * client network): every key and group limit must admit it, and the global limit is charged once.
+   *
+   * @returns The reservation, or `null` when any limit would be exceeded (nothing reserved).
+   */
+  public reserveAll(sources: readonly LossSource[], estimate: bigint): LossReservation | null {
     requireConfig(estimate >= 0n, 'estimate must be >= 0');
-    if (!this.allowsAmount(key, estimate, group)) return null;
+    requireConfig(sources.length > 0, 'at least one source is required');
+    if (!this.admits(this.resolve(sources, false), estimate)) return null;
     const window = this.windowIndex();
-    const spend = this.ensureSpend(key, group, window);
-    const groupSpend = this.ensureGroupSpend(group, window);
-    spend.spent += estimate;
-    groupSpend.spent += estimate;
-    this.global.spent += estimate;
+    const held = this.resolve(sources, true);
+    this.add(held, estimate, 0n);
     let settled = false;
     const settle = (actual: bigint): boolean => {
       requireConfig(actual >= 0n, 'actual must be >= 0');
       if (settled) return false;
       settled = true;
-      const current = this.windowIndex();
-      if (current === window) {
-        spend.spent += actual - estimate;
-        groupSpend.spent += actual - estimate;
-        this.global.spent += actual - estimate;
-      } else {
-        this.charge(key, actual, group);
-      }
+      // A late settlement is a loss of the current window, charged once like any other.
+      if (this.windowIndex() === window) this.add(held, actual - estimate, actual);
+      else this.add(this.resolve(sources, true), actual, actual);
       return true;
     };
     const release = (): boolean => {
       if (settled) return false;
       settled = true;
-      if (this.windowIndex() === window) {
-        spend.spent -= estimate;
-        groupSpend.spent -= estimate;
-        this.global.spent -= estimate;
-      }
+      if (this.windowIndex() === window) this.add(held, -estimate, 0n);
       return true;
     };
     return {
       window,
       estimate,
+      overflow: held.overflow,
       get settled() {
         return settled;
       },
@@ -339,63 +376,66 @@ export class LossBudget {
     };
   }
 
-  private allowsAmount(key: string, amount: bigint, group: string): boolean {
+  /** Finds (or with `create`, inserts) the distinct entries of `sources`; a read-only probe changes nothing. */
+  private resolve(sources: readonly LossSource[], create: boolean): Resolved {
     const w = this.windowIndex();
-    const s = this.peek(key, group);
-    const keySpent = s !== undefined && s.window === w ? s.spent : 0n;
-    const groupSpend =
-      this.groupSpends.get(group) ??
-      (this.groupSpends.size >= this.opts.maxKeys ? this.overflowGroupSpend : undefined);
-    const groupSpent = groupSpend !== undefined && groupSpend.window === w ? groupSpend.spent : 0n;
-    const globalSpent = this.global.window === w ? this.global.spent : 0n;
-    return (
-      amount <= this.opts.perKeyLimit - keySpent &&
-      amount <= this.opts.perKeyLimit - groupSpent &&
-      amount <= this.opts.globalLimit - globalSpent
-    );
-  }
-
-  private ensureSpend(key: string, group: string, w: number): Spend {
-    let spend = this.table.get(key);
-    if (spend === undefined) {
-      const fresh = { window: w, spent: 0n };
-      spend =
-        this.table.groupSize(group) < this.maxPerGroup && this.table.insert(key, fresh, group)
-          ? fresh
-          : this.overflowSpend;
-    }
-    if (spend.window !== w) {
-      spend.window = w;
-      spend.spent = 0n;
-    }
-    if (this.global.window !== w) {
-      this.global.window = w;
-      this.global.spent = 0n;
-    }
-    return spend;
-  }
-
-  private ensureGroupSpend(group: string, w: number): Spend {
-    let spend = this.groupSpends.get(group);
-    if (spend === undefined) {
-      if (this.groupSpends.size < this.opts.maxKeys) {
-        spend = { window: w, spent: 0n };
-        this.groupSpends.set(group, spend);
-      } else {
-        spend = this.overflowGroupSpend;
+    const entries = new Set<Spend>();
+    let overflow = false;
+    const pick = (table: BoundedTable<Spend>, key: string, group: string, spill: Spend, partition: boolean): Spend => {
+      const hit = create ? table.get(key) : table.peek(key);
+      if (hit !== undefined) return hit;
+      if ((!partition || table.groupSize(group) < this.maxPerGroup) && table.canInsert()) {
+        const fresh = { window: w, spent: 0n, lost: 0n };
+        if (create) table.insert(key, fresh, group);
+        return fresh;
       }
+      overflow = true;
+      return spill;
+    };
+    for (const src of sources) {
+      const group = src.group ?? src.key;
+      const kind = src.kind ?? '';
+      entries.add(pick(this.keys, src.key, group, this.overflowOf(this.overflowKeys, kind), true));
+      entries.add(pick(this.groups, group, '', this.overflowOf(this.overflowGroups, kind), false));
     }
-    if (spend.window !== w) {
-      spend.window = w;
-      spend.spent = 0n;
-    }
-    return spend;
+    return { entries: [...entries], overflow };
   }
 
-  private peek(key: string, group: string): Spend | undefined {
-    if (this.table.groupSize(group) >= this.maxPerGroup && this.table.get(key) === undefined)
-      return this.overflowSpend;
-    return this.table.get(key) ?? (this.table.canInsert() ? undefined : this.overflowSpend);
+  private overflowOf(spills: Map<string, Spend>, kind: string): Spend {
+    let spill = spills.get(kind);
+    if (spill === undefined) {
+      requireConfig(spills.size < MAX_LOSS_KINDS, 'at most 8 loss source kinds');
+      spill = { window: -1, spent: 0n, lost: 0n };
+      spills.set(kind, spill);
+    }
+    return spill;
+  }
+
+  private admits(r: Resolved, amount: bigint): boolean {
+    const w = this.windowIndex();
+    let clean = true;
+    for (const e of r.entries) {
+      if (e.window !== w) continue;
+      if (amount > this.opts.perKeyLimit - e.spent) return false;
+      if (e.lost > 0n) clean = false;
+    }
+    const globalSpent = this.global.window === w ? this.global.spent : 0n;
+    const cap = clean ? this.opts.globalLimit : this.opts.globalLimit - this.cleanReserve;
+    return amount <= cap - globalSpent;
+  }
+
+  /** Adds `delta` to every entry and once to the global total; `lost` marks settled or charged loss. */
+  private add(r: Resolved, delta: bigint, lost: bigint): void {
+    const w = this.windowIndex();
+    for (const e of [...r.entries, this.global]) {
+      if (e.window !== w) {
+        e.window = w;
+        e.spent = 0n;
+        e.lost = 0n;
+      }
+      e.spent += delta;
+      e.lost += lost;
+    }
   }
 
   private windowIndex(): number {
@@ -407,6 +447,8 @@ export class LossBudget {
 export interface LossReservation {
   readonly window: number;
   readonly estimate: bigint;
+  /** True when a key or group of the reservation was charged to a shared overflow entry (tables full). */
+  readonly overflow: boolean;
   readonly settled: boolean;
   settle(actual: bigint): boolean;
   release(): boolean;
