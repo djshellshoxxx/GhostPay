@@ -33,6 +33,8 @@ interface Chain {
   fork: number;
   logs: RpcLog[];
   providerMax: number;
+  /** JSON-RPC error code for a range over `providerMax` (default -32005). */
+  limitCode?: number;
   requests: { from: bigint; to: bigint }[];
 }
 
@@ -52,7 +54,7 @@ async function client(chain: Chain, overrides: Partial<Record<string, (p: unknow
       const from = BigInt(f.fromBlock);
       const to = BigInt(f.toBlock);
       chain.requests.push({ from, to });
-      if (to - from + 1n > BigInt(chain.providerMax)) throw new FakeRpcError(-32005);
+      if (to - from + 1n > BigInt(chain.providerMax)) throw new FakeRpcError(chain.limitCode ?? -32005);
       return chain.logs.filter((l) => BigInt(l.blockNumber) >= from && BigInt(l.blockNumber) <= to);
     }
     return null;
@@ -175,9 +177,14 @@ describe('fetchAnnouncements', () => {
     expect(r.truncated).toBe(true);
     expect(chain.requests).toEqual([{ from: 0n, to: 9n }, { from: 0n, to: 4n }]);
   });
-  it('fails closed when a single block exceeds the accepted-log cap', async () => {
+  it('keeps completed windows, then fails closed when a single block alone exceeds the accepted-log cap', async () => {
     const chain = mkChain({ head: 9, logs: [mkLog({}, 3, 0), mkLog({}, 3, 1), mkLog({}, 3, 2)] });
-    await expect(fetchWith(await client(chain), { nextBlock: 0n }, { maxLogs: 2 })).rejects.toThrow(/accepted log cap exceeded within one block/);
+    const c = await client(chain);
+    const first = await fetchWith(c, { nextBlock: 0n }, { maxLogs: 2 });
+    expect(first).toMatchObject({ truncated: true, cursor: { nextBlock: 3n } });
+    await expect(fetchWith(c, first.cursor, { maxLogs: 2 })).rejects.toThrow(/accepted log cap exceeded within one block/);
+    // Router payments are never dropped: three router announcements in one block still exceed the cap.
+    await expect(fetchWith(c, first.cursor, { maxLogs: 2, router: FAKE.router })).rejects.toThrow(/accepted log cap exceeded within one block/);
   });
   it('halves the window when the provider rejects the range, down to success', async () => {
     const chain = mkChain({ head: 9, providerMax: 3, logs: [mkLog({}, 5)] });
@@ -185,6 +192,18 @@ describe('fetchAnnouncements', () => {
     expect(r.announcements).toHaveLength(1);
     expect(chain.requests.map((x) => Number(x.to - x.from + 1n))).toEqual([10, 5, 2, 2, 2, 2, 2].slice(0, chain.requests.length));
     expect(chain.requests.at(-1)?.to).toBe(9n);
+  });
+  it.each([-32600, -32614, -32000])('also halves the window on provider result-limit error %i (L4-01)', async (code) => {
+    const chain = mkChain({ head: 9, providerMax: 3, limitCode: code, logs: [mkLog({}, 5)] });
+    const r = await fetchWith(await client(chain), { nextBlock: 0n });
+    expect(r.announcements).toHaveLength(1);
+    expect(chain.requests.at(-1)?.to).toBe(9n);
+  });
+  it('rethrows other JSON-RPC errors without shrinking the window', async () => {
+    let calls = 0;
+    const c = await client(mkChain(), { eth_getLogs: () => { calls++; throw new FakeRpcError(-32603); } });
+    await expect(fetchWith(c, { nextBlock: 0n })).rejects.toThrow(/-32603/);
+    expect(calls).toBe(1);
   });
   it('gives up when even one block is rejected', async () => {
     const chain = mkChain({ head: 9, providerMax: 0 });
@@ -248,25 +267,34 @@ describe('fetchAnnouncements', () => {
       expect(r2.announcements.map((a) => a.blockNumber)).toEqual([18n]); // replayed after dropping all stored results
       expect(r2.cursor.last?.hash).toBe(bh(20, 1));
     });
-    it('missing stored block counts as a reorg; rollback never goes below 0', async () => {
-      const chain = mkChain({ head: 2 });
-      const c = await client(chain);
-      const r = await fetchWith(c, { nextBlock: 4n, last: { number: 3n, hash: bh(3) } });
-      expect(r.reorg).toEqual({ rolledBackTo: 0n });
-      expect(chain.requests[0]?.from).toBe(0n);
+    it('a missing checkpoint block is an RPC failure to retry, not a reorg (L3-F1)', async () => {
+      const chain = mkChain({ head: 20 });
+      const c = await client(chain, { eth_getBlockByNumber: (p) => (BigInt(p[0] as string) === 3n ? null : { number: p[0], hash: bh(Number(BigInt(p[0] as string))), parentHash: bh(0) }) });
+      await expect(fetchWith(c, { nextBlock: 4n, last: { number: 3n, hash: bh(3) } })).rejects.toThrow(/RPC_FAILURE: checkpoint block unavailable/);
+      expect(chain.requests).toHaveLength(0);
     });
     it('cursor far beyond the head (poisoned checkpoint) fails closed instead of saving a cursor past the real chain (CHAIN-ADAPTERS-02)', async () => {
       const chain = mkChain({ head: 10 });
       const c = await client(chain);
       await expect(fetchWith(c, { nextBlock: 31n, last: { number: 30n, hash: bh(30) } })).rejects.toThrow(/RPC_FAILURE.*ahead of the chain head/);
     });
-    it('reorg with head below the old cursor clears the stale checkpoint and rescans from genesis', async () => {
+    it('a provider whose head is still below the checkpoint fails closed instead of rolling back (L3-F1)', async () => {
       const chain = mkChain({ head: 10 });
       const c = await client(chain);
-      const r = await fetchWith(c, { nextBlock: 16n, last: { number: 15n, hash: bh(15) } });
-      expect(r.reorg).toEqual({ rolledBackTo: 0n });
-      expect(r.cursor.nextBlock).toBe(11n);
-      expect(r.cursor.last?.number).toBe(10n);
+      await expect(fetchWith(c, { nextBlock: 16n, last: { number: 15n, hash: bh(15) } })).rejects.toThrow(/checkpoint block unavailable/);
+      expect(chain.requests).toHaveLength(0);
+    });
+    it('a processed window end the provider no longer returns is an RPC failure, not a rollback (L3-F1)', async () => {
+      const chain = mkChain({ head: 25, logs: [mkLog({}, 3)] });
+      let reads = 0;
+      const c = await client(chain, {
+        eth_getBlockByNumber: (p) => {
+          const n = Number(BigInt(p[0] as string));
+          if (n === 9 && ++reads > 1) return null;
+          return { number: p[0], hash: bh(n), parentHash: bh(Math.max(0, n - 1)) };
+        },
+      });
+      await expect(fetchWith(c, { nextBlock: 0n })).rejects.toThrow(/RPC_FAILURE: window block unavailable/);
     });
     it('drops logs and rolls back when a processed truncated window reorganizes', async () => {
       const chain = mkChain({ head: 20, logs: [mkLog({}, 9)] });
@@ -286,6 +314,30 @@ describe('fetchAnnouncements', () => {
       expect(r.reorg).toEqual({ rolledBackTo: 0n });
       expect(r.announcements).toHaveLength(0);
       expect(r.cursor.nextBlock).toBe(0n);
+    });
+    it('keeps router-only blocks before a window that reorganised, on a provider result limit at one block (L4-01)', async () => {
+      const routed = mkLog({}, 3, 1);
+      const spam = mkLog({ topics: [ANNOUNCEMENT_TOPIC, word('0x1'), word(PAY.stealthAddress), word('0xee')] }, 3, 0);
+      const chain = mkChain({ head: 25, logs: [spam, routed] });
+      let reads = 0;
+      const c = await client(chain, {
+        eth_getLogs: (p) => {
+          const f = p[0] as { fromBlock: string; toBlock: string; topics: (string | null)[] };
+          const from = BigInt(f.fromBlock);
+          const to = BigInt(f.toBlock);
+          if (f.topics[3] == null && from <= 3n && to >= 3n) throw new FakeRpcError(-32005);
+          return chain.logs.filter((l) => BigInt(l.blockNumber) >= from && BigInt(l.blockNumber) <= to && (f.topics[3] == null || l.topics[3] === f.topics[3]));
+        },
+        eth_getBlockByNumber: (p) => {
+          const n = Number(BigInt(p[0] as string));
+          return { number: p[0], hash: bh(n, n === 5 && ++reads > 1 ? 1 : 0), parentHash: bh(Math.max(0, n - 1)) };
+        },
+      });
+      const r = await fetchWith(c, { nextBlock: 0n }, { router: FAKE.router });
+      expect(r.reorg).toEqual({ rolledBackTo: 5n });
+      expect(r.announcements.map((a) => a.id)).toEqual([`${bh(3)}:1`]);
+      expect(r.routerOnlyBlocks).toEqual([3n]);
+      expect(r.cursor.nextBlock).toBe(5n);
     });
     it('nothing new: keeps cursor and re-reads last hash', async () => {
       const chain = mkChain({ head: 20 });
