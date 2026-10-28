@@ -496,6 +496,11 @@ export class RelayerService {
       if (e instanceof RelayerError) throw e;
       throw new RelayerError(503, 'rpc_unavailable');
     }
+    return this.capGasPrice(rt, price);
+  }
+
+  /** The configured gas price cap; refusing above it is neutral for the breaker (a spike, not an outage). */
+  private capGasPrice(rt: ChainRuntime, price: bigint): bigint {
     if (price > rt.cfg.maxGasPriceWei) throw new RelayerError(503, 'gas_price_too_high', 30);
     return price;
   }
@@ -545,7 +550,10 @@ export class RelayerService {
       }
     };
 
-    const gasPrice = await this.gasPrice(rt);
+    // Read through op() so a failed read counts as an RPC failure (L5-10); the cap check stays neutral.
+    const readGasPrice = async (): Promise<bigint> =>
+      this.capGasPrice(rt, await op(() => this.d.gasPrices.getGasPrice(cfg.chainId)));
+    const gasPrice = await readGasPrice();
     const balance = await op(() => client.getBalance());
     if (balance < cfg.minBalanceWei) {
       breaker.trip();
@@ -606,7 +614,7 @@ export class RelayerService {
     if (!(await coversGas(firstSimulation.gasEstimate, gasPrice)))
       throw new RelayerError(422, 'fee_below_gas_cost');
 
-    const sendGasPrice = await this.gasPrice(rt);
+    const sendGasPrice = await readGasPrice();
     if (sendGasPrice * 100n > gasPrice * BigInt(100 + this.d.config.gas.maxMovePercent)) {
       throw new RelayerError(503, 'gas_price_moved', 5);
     }

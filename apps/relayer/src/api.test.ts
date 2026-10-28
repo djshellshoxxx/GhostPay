@@ -916,6 +916,22 @@ describe('circuit breaker', () => {
     expect((await call(s, 'GET', '/healthz')).status).toBe(200);
   });
 
+  it('L5-10: a full RPC outage (gas price read fails first) opens the breaker; a gas price above the cap stays neutral', async () => {
+    const s = await start();
+    const bodies = await Promise.all([1n, 2n, 3n, 4n].map(async (n) => (await prepare(s, { nonce: n })).body));
+    s.fake.rpcDown = true;
+    for (const b of bodies.slice(0, 3)) expect(errCode(await call(s, 'POST', '/v1/sweep', b))).toBe('rpc_unavailable');
+    expect(errCode(await call(s, 'POST', '/v1/sweep', bodies[3]))).toBe('breaker_open');
+    expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'degraded' });
+
+    const capped = await start();
+    const capBodies = await Promise.all([1n, 2n, 3n, 4n, 5n].map(async (n) => (await prepare(capped, { nonce: n })).body));
+    capped.fake.gasPrice = 60_000_000_000n; // above maxGasPriceWei
+    for (const b of capBodies) expect(errCode(await call(capped, 'POST', '/v1/sweep', b))).toBe('gas_price_too_high');
+    expect((await call(capped, 'GET', '/healthz')).json).toMatchObject({ status: 'ok' });
+    await capped.stop();
+  });
+
   it('re-opens when the half-open probe fails', async () => {
     const s = await start();
     s.fake.simulateError = new Error('down');
