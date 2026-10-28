@@ -227,6 +227,23 @@ describe('fetchAnnouncements', () => {
     expect(r.announcements).toHaveLength(1);
     expect(chain.requests.at(-1)?.to).toBe(9n);
   });
+  it.each([-32600, -32614, -32000])('never narrows a single block refused with range-limit code %i: the scan stops at that block (A-R5)', async (code) => {
+    // These codes say the range is too large, not the response, so there is no router-lane fallback (a documented limit).
+    const chain = mkChain({ head: 9, logs: [mkLog({}, 1), mkLog({}, 5)] });
+    const c = await client(chain, {
+      eth_getLogs: (p) => {
+        const f = p[0] as { fromBlock: string; toBlock: string };
+        const [from, to] = [BigInt(f.fromBlock), BigInt(f.toBlock)];
+        if (from <= 5n && to >= 5n) throw new FakeRpcError(code);
+        return chain.logs.filter((l) => BigInt(l.blockNumber) >= from && BigInt(l.blockNumber) <= to);
+      },
+    });
+    const first = await fetchWith(c, { nextBlock: 0n }, { router: FAKE.router });
+    expect(first).toMatchObject({ truncated: true, cursor: { nextBlock: 5n } });
+    expect(first.announcements.map((a) => a.blockNumber)).toEqual([1n]);
+    expect(first.routerOnlyBlocks).toBeUndefined();
+    await expect(fetchWith(c, first.cursor, { router: FAKE.router })).rejects.toThrow(`RPC_FAILURE: json-rpc error ${String(code)}`);
+  });
   it('classifies provider limits by code, also when the message carries provider detail (L4-01)', () => {
     const rpc = (detail: string): ChainAdapterError => new ChainAdapterError('RPC_FAILURE', detail);
     expect(isLogLimitError(new ChainAdapterError('RESPONSE_TOO_LARGE', 'response exceeds cap'))).toBe(true);
