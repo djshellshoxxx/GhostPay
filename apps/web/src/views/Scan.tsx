@@ -31,6 +31,7 @@ export function Scan(): ReactNode {
   const [done, setDone] = useState<string | undefined>(undefined);
   const [privacyNote, setPrivacyNote] = useState<string | undefined>(undefined);
   const [routerOnlyNote, setRouterOnlyNote] = useState<string | undefined>(undefined);
+  const [lagNote, setLagNote] = useState<string | undefined>(undefined);
   const [scanOwner, setScanOwner] = useState<{ readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
   const abort = useRef<AbortController | undefined>(undefined);
   const startingScope = useRef<{ readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
@@ -97,6 +98,7 @@ export function Scan(): ReactNode {
     setDone(undefined);
     setPrivacyNote(undefined);
     setRouterOnlyNote(undefined);
+    setLagNote(undefined);
     setScanOwner(undefined);
     app.setMatches([]);
     const scopeKeysAreCurrent = (): boolean => {
@@ -173,7 +175,12 @@ export function Scan(): ReactNode {
           createWorker: services.createScanWorker,
           signal: ctl.signal,
           checkpoints: services.checkpoints,
-          onProgress: (nextProgress) => { if (scopeIsCurrent()) setProgress(nextProgress); },
+          onProgress: (nextProgress) => {
+            if (!scopeIsCurrent()) return;
+            setProgress(nextProgress);
+            // Shown as pages commit, so a later error in this run cannot hide a block that was narrowed.
+            if (nextProgress.routerOnlyBlocks !== undefined) setRouterOnlyNote(describeRouterOnly(nextProgress.routerOnlyBlocks));
+          },
           onQuarantine: (to) => {
             if (!scopeIsCurrent()) return;
             // These already bounded run observations are retained only until confirmation,
@@ -219,7 +226,8 @@ export function Scan(): ReactNode {
         if (res.discrepancies.length > 0) setError(`The second RPC provider disagreed on ${String(res.discrepancies.length)} check(s). Results may be incomplete or forged; checkpoints were not advanced. Try another provider.`);
         if ((res.backlog ?? 0) > 0) setError(`${String(res.backlog)} announcements not posted by the GhostPay router were deferred by the per-scan budget (Settings). Nothing was skipped: scan again to continue from block ${res.cursor.nextBlock.toString()}.`);
         setPrivacyNote(res.telemetry?.anonymity === undefined ? undefined : describeAnonymitySet(res.telemetry.anonymity));
-        setRouterOnlyNote(describeRouterOnly(res.routerOnlyBlocks ?? []));
+        if ((res.routerOnlyBlocks ?? []).length > 0) setRouterOnlyNote(describeRouterOnly(res.routerOnlyBlocks ?? []));
+        if (res.secondaryLag !== undefined) setLagNote(`The second RPC reports block ${res.secondaryLag.secondaryHead.toString()}, ${(res.secondaryLag.head - res.secondaryLag.secondaryHead).toString()} blocks behind the scan RPC (block ${res.secondaryLag.head.toString()}). Each scan stops at the last block both providers have, so later payments appear only once the second RPC catches up. Check it in Settings if this persists.`);
         if (res.limitReached) setError(`This scan reached its safety limit. It stopped before processing the next page; resume from block ${res.cursor.nextBlock.toString()} to continue.`);
         const note = ` Started at block ${cursor.nextBlock.toString()}${resume && checkpoint !== undefined ? ' (from checkpoint)' : ''}.${rpc2 === undefined ? ' Only one RPC was used: add a second RPC in Settings to cross-check it.' : ''}`;
         setDone((ctl.signal.aborted ? `Cancelled. ${String(res.scanned)} announcements checked.` : res.limitReached ? `Stopped at the safety limit. ${String(res.scanned)} announcements checked, ${String(res.matches.length)} payments found.` : `Finished. ${String(res.scanned)} announcements checked, ${String(res.matches.length)} payments found.`) + note);
@@ -301,6 +309,7 @@ export function Scan(): ReactNode {
       {done !== undefined && <Notice kind="ok">{done}</Notice>}
       {privacyNote !== undefined && <Notice kind="info" title="Privacy set (local estimate)">{privacyNote}</Notice>}
       {routerOnlyNote !== undefined && <Notice kind="warn">{routerOnlyNote}</Notice>}
+      {lagNote !== undefined && <Notice kind="warn">{lagNote}</Notice>}
       {error !== undefined && <Notice kind="error">{error}</Notice>}
 
       <Matches

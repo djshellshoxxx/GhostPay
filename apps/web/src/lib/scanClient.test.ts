@@ -521,8 +521,11 @@ describe('announcement spam and a second RPC (L4-01, L3-F2)', () => {
     const stranger = encodeMetaAddress(generateKeySet());
     const spam = Array.from({ length: 5 }, (_, i) => makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block: 120, index: 10 + i, caller: OTHER }).log);
     const logs = [...s.logs, ...spam];
-    const single = await scan(s, { client: capped(chainWith(2500, logs), 120n) });
+    const progress: ScanProgress[] = [];
+    const single = await scan(s, { client: capped(chainWith(2500, logs), 120n), onProgress: (x) => progress.push(x) });
     expect(single.routerOnlyBlocks).toEqual([120n]);
+    // Reported with the committed page, not only in the final result.
+    expect(progress.at(-1)?.routerOnlyBlocks).toEqual([120n]);
     expect(single.matches.map((m) => m.stealthAddress)).toEqual([s.mine.stealthAddress, s.mine2.stealthAddress]);
     expect(single.matches[0]?.receipt).toBe('verified');
     const both = await scan(s, { client: capped(chainWith(2500, logs), 120n), secondaryClient: capped(chainWith(2500, logs), 120n) });
@@ -547,6 +550,12 @@ describe('announcement spam and a second RPC (L4-01, L3-F2)', () => {
     expect(res.discrepancies).toEqual([]);
     expect(res.matches.map((m) => m.stealthAddress)).toEqual([pay.stealthAddress]);
     expect(res.cursor.nextBlock).toBe(29_999n);
+    expect(res.secondaryLag).toBeUndefined();
+    // Far behind (more than finalityDepth): the scan still advances to its head, and says why it stopped there.
+    const far = await scan(s, { client: upTo(30_000), secondaryClient: upTo(29_000), cursor: { nextBlock: 1000n } });
+    expect(far.discrepancies).toEqual([]);
+    expect(far.cursor.nextBlock).toBe(29_001n);
+    expect(far.secondaryLag).toEqual({ secondaryHead: 29_000n, head: 30_000n });
     // A second RPC that cannot even report its head fails closed as before.
     const dead = { ...upTo(29_998), blockNumber: () => Promise.reject(new Error('down')) };
     const failed = await scan(s, { client: upTo(30_000), secondaryClient: dead, cursor: { nextBlock: 1000n } });

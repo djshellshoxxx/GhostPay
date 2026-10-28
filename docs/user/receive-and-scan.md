@@ -34,4 +34,11 @@ The scanner handles chain reorganisations by rolling back to a checkpoint and ig
 
 - If your RPC cannot return the block saved in the checkpoint (it is lagging or returned nothing), the scan stops with an RPC error and nothing is rolled back or invalidated; scan again later.
 - After a confirmed reorg, a saved reconciliation record is marked invalid only when its block was actually replaced (checked against your RPC, and against the second RPC when you set one). Unchanged records stay valid. With a second RPC, a reorg that only one provider reports keeps your checkpoint and stops the scan.
+- With a second RPC, each scan ends at the last block both providers have. If the second RPC falls more than the chain's confirmation depth behind, the scan says so: later payments appear only once it catches up (or after you remove it in Settings).
 - Restoring an encrypted reconciliation backup into a vault that has seen a reorg marks restored records at or above the reorg block that were recorded before it (by the recording device's clock) as invalid, because they could not be checked; adding the same payment again from a new scan makes it valid again. The preview shows how many records would be marked invalid.
+
+## Announcement spam
+
+Anyone can post announcements, so a block can hold more of them than one RPC response may carry. The scanner then checks that block only for payments posted through the GhostPay router and tells you which blocks it narrowed: a direct (non-router) payment in such a block would not be listed. Other limits (too many logs or blocks in one request) only make a scan take more steps; it continues where it stopped.
+
+Remaining limits: a block with more router-posted announcements than one response can carry stops the scan at that block with an error. The optional indexer source (Settings) always fetches whole windows, so a window the indexer cannot serve or cross-check because of spam also stops the scan with an error; switch the source back to the scan RPC to continue.

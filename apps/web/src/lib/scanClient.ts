@@ -57,6 +57,17 @@ export interface ScanProgress {
   readonly limitReached?: boolean;
   /** Spec 05: open-lane (non-router) announcements deferred by the per-scan budget; resume from `nextBlock`. */
   readonly backlog?: number;
+  /**
+   * L4-01: committed blocks too large to fetch whole, so far in this run. Only their router-posted announcements were
+   * scanned; other announcements there were skipped. Reported with every page, so a later failure cannot hide them.
+   */
+  readonly routerOnlyBlocks?: readonly bigint[];
+}
+
+/** The second RPC reported a head more than `finalityDepth` blocks below the scan RPC's: scans stop at its head. */
+export interface SecondaryLag {
+  readonly secondaryHead: bigint;
+  readonly head: bigint;
 }
 
 /** Spec 05 local telemetry for one run. Computed on this device and never sent. */
@@ -131,7 +142,7 @@ function toWire(a: ScannedAnnouncement, skipTag: boolean): WireLog {
  * Network access happens here (via chain-adapters), never in the worker. The worker receives public logs and, once,
  * the viewing key. Cancelling via `signal` stops fetching, tells the worker to stop, and terminates it.
  */
-export async function runScan(p: ScanParams): Promise<{ readonly matches: readonly ScanMatch[]; readonly cursor: ScanCursor; readonly scanned: number; readonly discrepancies: readonly ProviderDiscrepancy[]; readonly limitReached: boolean; readonly backlog?: number; readonly telemetry?: ScanTelemetry; readonly routerOnlyBlocks?: readonly bigint[] }> {
+export async function runScan(p: ScanParams): Promise<{ readonly matches: readonly ScanMatch[]; readonly cursor: ScanCursor; readonly scanned: number; readonly discrepancies: readonly ProviderDiscrepancy[]; readonly limitReached: boolean; readonly backlog?: number; readonly telemetry?: ScanTelemetry; readonly routerOnlyBlocks?: readonly bigint[]; readonly secondaryLag?: SecondaryLag }> {
   let worker: ScanWorkerLike | undefined;
   let stopped = false;
   const stopWorker = (): void => {
@@ -191,6 +202,8 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   const routerBlocks: bigint[] = [];
   // Blocks too large to fetch whole: only their router-posted announcements were scanned (bounded list).
   const routerOnlyBlocks = new Set<bigint>();
+  const narrowed = (): { readonly routerOnlyBlocks?: readonly bigint[] } => (routerOnlyBlocks.size === 0 ? {} : { routerOnlyBlocks: [...routerOnlyBlocks] });
+  let secondaryLag: SecondaryLag | undefined;
   // Payment identity, unlike a log id, survives a replay announcement at another block. Keep this
   // ledger per scan only: checkpoints never persist claimed payment data or RPC evidence.
   const claimLedger = new Map<string, number>();
@@ -246,6 +259,8 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         ...(secondaryHead === undefined ? {} : { toBlock: secondaryHead }),
       });
       if (p.signal.aborted) break;
+      // A page that reached the second RPC's head while the scan RPC is far ahead: say so, the scan stops there.
+      secondaryLag = secondaryHead !== undefined && !res.truncated && res.head > secondaryHead + BigInt(p.chain.finalityDepth) ? { secondaryHead, head: res.head } : undefined;
       const pageRouterOnly = res.routerOnlyBlocks ?? [];
       skipped += res.skipped;
       const pageFrom = res.reorg?.rolledBackTo ?? cursor.nextBlock;
@@ -458,7 +473,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         }
         if (saved !== undefined) p.checkpoints.save(p.chain.chainId, p.keyId, saved as ScanCursor);
       }
-      p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: !res.truncated, discrepancies: discrepancies.length });
+      p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: !res.truncated, discrepancies: discrepancies.length, ...narrowed() });
       if (!res.truncated) break;
     }
   } catch (e) {
@@ -470,9 +485,8 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   }
   const scanHead = cursor.last?.number ?? (cursor.nextBlock > 0n ? cursor.nextBlock - 1n : 0n);
   const anonymity = trustedSeen + openSeen === 0 && scanned === 0 ? undefined : anonymitySet({ chain: p.chain, routerBlocks, head: scanHead, scannedFrom: p.cursor.nextBlock });
-  return { matches: all, cursor, scanned, discrepancies, limitReached, backlog, routerOnlyBlocks: [...routerOnlyBlocks], telemetry: { trusted: trustedSeen, open: openSeen, suspected, anonymity } };
+  return { matches: all, cursor, scanned, discrepancies, limitReached, backlog, routerOnlyBlocks: [...routerOnlyBlocks], ...(secondaryLag === undefined ? {} : { secondaryLag }), telemetry: { trusted: trustedSeen, open: openSeen, suspected, anonymity } };
 }
-
 
 /**
  * The block hash at `height` reported by the primary and, when configured, also by the second provider. After a

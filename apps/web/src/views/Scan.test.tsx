@@ -431,6 +431,40 @@ describe('Scan and receive', () => {
     expect(screen.getByText(/announcements there that were not posted by the GhostPay router were skipped/)).toBeTruthy();
   });
 
+  it('keeps the router-only warning of committed pages when a later page of the scan fails (L4-01)', async () => {
+    generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const runner = vi.spyOn(scanClient, 'runScan').mockImplementation((p) => {
+      p.onProgress?.({ nextBlock: 1501n, scanned: 1, matches: 0, skipped: 0, caughtUp: false, routerOnlyBlocks: [1500n] });
+      p.viewingKey.fill(0);
+      return Promise.reject(new Error('page 2 failed'));
+    });
+    try {
+      const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(chainWithLogs(84532, 4000, []))) }));
+      await user.type(screen.getByLabelText('Start block'), '1000');
+      await user.click(screen.getByRole('button', { name: 'Start scan' }));
+      expect(await screen.findByText(/Something went wrong/)).toBeTruthy();
+      expect(screen.getByText(/Block 1500 held more announcements than one RPC response may carry/)).toBeTruthy();
+    } finally { runner.mockRestore(); }
+  });
+
+  it('says when the second RPC is far behind, because each scan stops at its head (L3-F2)', async () => {
+    generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const runner = vi.spyOn(scanClient, 'runScan').mockImplementation((p) => {
+      p.viewingKey.fill(0);
+      return Promise.resolve({ matches: [], cursor: { nextBlock: 29_001n }, scanned: 0, discrepancies: [], limitReached: false, routerOnlyBlocks: [], secondaryLag: { secondaryHead: 29_000n, head: 30_000n } });
+    });
+    try {
+      const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(chainWithLogs(84532, 4000, []))) }));
+      await user.type(screen.getByLabelText('Start block'), '1000');
+      await user.click(screen.getByRole('button', { name: 'Start scan' }));
+      await waitFor(() => { expect(screen.getByText(/Finished\./)).toBeTruthy(); });
+      expect(screen.getByText(/The second RPC reports block 29000, 1000 blocks behind the scan RPC \(block 30000\)/)).toBeTruthy();
+      expect(screen.queryByText(/held more announcements/)).toBeNull();
+    } finally { runner.mockRestore(); }
+  });
+
   it('says so when only one RPC was used', async () => {
     generateSession();
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
