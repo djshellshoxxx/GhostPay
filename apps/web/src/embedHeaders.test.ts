@@ -23,6 +23,14 @@ describe('embed framing headers', () => {
     expect(csp).toMatch(/script-src 'self'/);
   });
 
+  it('nginx header includes send the same Permissions-Policy as _headers (camera=(self) for the QR importer)', () => {
+    const policy = /Permissions-Policy: (.*)/.exec(read('../public/_headers'))![1]!.trim();
+    expect(policy).toContain('camera=(self)');
+    for (const f of ['../../../deploy/nginx/security-headers.conf', '../../../deploy/nginx/security-headers-embed.conf']) {
+      expect(/add_header Permissions-Policy "([^"]*)"/.exec(read(f))![1]).toBe(policy);
+    }
+  });
+
   it('serves the v2 SDK cross-origin on both header-capable hosts', () => {
     expect(read('../public/_headers')).toMatch(/\/ghostpay-embed-v2\.js\n {2}Cross-Origin-Resource-Policy: cross-origin/);
     expect(read('../../../deploy/nginx/nginx.conf')).toMatch(/location = \/ghostpay-embed-v2\.js/);

@@ -36,9 +36,9 @@ const obj = (h) => Object.fromEntries(h);
 test("GhostPay's real apps/web/public/_headers parses and satisfies the required headers", async () => {
   const text = await fs.readFile(GHOSTPAY_HEADERS_PATH, 'utf8');
   const rules = parseHeadersFile(text);
-  assert.deepEqual(rules.map((r) => r.pattern), ['/*', '/index.html', '/assets/*', '/deployments/*', '/ghostpay-embed-v1.js']);
+  assert.deepEqual(rules.map((r) => r.pattern), ['/*', '/index.html', '/assets/*', '/deployments/*', '/ghostpay-embed-v1.js', '/ghostpay-embed-v2.js']);
   assert.deepEqual(checkRequiredHeaders(rules, ['/index.html', '/about/index.html', '/assets/x.html', '/assets/logo.svg', '/assets/app.js',
-    '/deployments/1.json', '/ghostpay-embed-v1.js', '/LICENSE', '/sitemap.xml', '/favicon.ico']), []);
+    '/deployments/1.json', '/ghostpay-embed-v1.js', '/ghostpay-embed-v2.js', '/LICENSE', '/sitemap.xml', '/favicon.ico']), []);
   const idx = obj(effectiveHeaders(rules, '/index.html'));
   assert.equal(idx['Cache-Control'], 'no-cache');
   assert.match(idx['Content-Security-Policy'] ?? '', /^default-src 'self'; .*frame-ancestors 'none'/);

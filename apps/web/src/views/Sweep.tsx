@@ -11,7 +11,8 @@ import { checkDestination, directSweep, DirectSweepOutcomeUnknownError, getSweep
 import { authorizeEncryptedVault, readEncryptedVault } from '../lib/keyVault';
 import { captureSessionGuard } from '../lib/session';
 import { useServices } from '../lib/services';
-import { getSweepAttempt, recordSweepAttempt, useApp, useSweepAttempt } from '../state';
+import { getSweepAttempt, isSweepJournalBroken, recordSweepAttempt, useApp, useSweepAttempt, useSweepJournalBroken } from '../state';
+import { SweepJournalUnavailableError } from '../lib/sweepAttemptJournal';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 
 export function Sweep(): ReactNode {
@@ -36,7 +37,8 @@ export function Sweep(): ReactNode {
   const authEpoch = useRef(0);
   // GP-SWEEP-OUTCOME-01: app-session record of the last direct sweep from this address; survives navigation.
   const attempt = useSweepAttempt(chainId, sel?.match.stealthAddress);
-  const signingLocked = attempt !== undefined && isUnresolvedAttempt(attempt);
+  const journalBroken = useSweepJournalBroken();
+  const signingLocked = journalBroken || (attempt !== undefined && isUnresolvedAttempt(attempt));
   const [checking, setChecking] = useState(false);
   const [checkNote, setCheckNote] = useState<string | undefined>(undefined);
 
@@ -198,6 +200,7 @@ export function Sweep(): ReactNode {
   };
 
   const assertNoUnresolvedAttempt = (): void => {
+    if (isSweepJournalBroken()) throw new SweepJournalUnavailableError();
     const current = getSweepAttempt(chainId, target.owner);
     if (current !== undefined && isUnresolvedAttempt(current)) {
       throw new UserFacingError('A sweep from this address may still be pending. Check its status before signing anything new.');
@@ -306,6 +309,7 @@ export function Sweep(): ReactNode {
       {busy && <p role="status">{t('sweep.working')}</p>}
       {busy && vaultPhase === 'authorizing' && <button type="button" className="btn" onClick={cancelVaultCheck}>{t('sweep.cancelVault')}</button>}
       {error !== undefined && <Notice kind="error">{error}</Notice>}
+      {journalBroken && <Notice kind="warn" title="Signing disabled in this tab">{new SweepJournalUnavailableError().message}</Notice>}
       {attempt !== undefined && (
         <Notice
           kind={attempt.status === 'unknown-after-handoff' || attempt.status === 'reverted' ? 'warn' : 'ok'}

@@ -9,6 +9,7 @@ import { clearSession, generateSession } from '../lib/session';
 import * as appState from '../state';
 import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests } from '../lib/keyVault';
 import { SETTINGS_KEY } from '../lib/settings';
+import { SWEEP_JOURNAL_KEY } from '../lib/sweepAttemptJournal';
 import { makeLog } from '../test/announcements';
 import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER } from '../test/fakeManifest';
 import { FAKE_CODE, backedManifest, withManifestChain } from '../test/manifestChain';
@@ -20,6 +21,8 @@ beforeEach(() => {
   vaultStore = new MemoryKeyVaultStore();
   setKeyVaultStoreForTests(vaultStore);
   window.localStorage.clear();
+  window.sessionStorage.clear();
+  appState.resetSweepAttemptsForTests();
   window.history.replaceState(null, '', '/');
 });
 
@@ -270,5 +273,48 @@ describe('Sweep', () => {
     await user.click(again);
     expect(countOf('eth_sendRawTransaction')).toBe(sends);
     expect(countOf('eth_getTransactionCount')).toBe(nonceReads);
+  });
+
+  it('GP-SWEEP-OUTCOME-01: an uncertain broadcast keeps signing disarmed after the tab reloads', async () => {
+    const sink: RawSink = { sendFail: true, calls: [] };
+    const user = await toSweep({ raw: sink });
+    await screen.findByText('5 USDC');
+    await user.click(screen.getByLabelText(/Directly/));
+    await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    expect(await screen.findByText('Outcome unknown')).toBeTruthy();
+    const expectedHash = keccak256(sink.raw as `0x${string}`);
+    const sends = (sink.calls ?? []).filter((c) => c === 'eth_sendRawTransaction').length;
+    expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toContain(expectedHash);
+
+    // Reload: in-memory state is gone, the tab journal remains.
+    appState.resetSweepAttemptsForTests({ keepStorage: true });
+    const nav = within(screen.getByRole('navigation', { name: 'Main' }));
+    await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
+    await user.click(nav.getByRole('button', { name: 'Sweep' }));
+    await screen.findByText('5 USDC');
+    await user.click(screen.getByLabelText(/Directly/));
+    expect(screen.getByText('Outcome unknown')).toBeTruthy();
+    expect(screen.getByText(expectedHash)).toBeTruthy();
+    await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+    const again = screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' });
+    expect(again.disabled).toBe(true);
+    await user.click(again);
+    expect((sink.calls ?? []).filter((c) => c === 'eth_sendRawTransaction').length).toBe(sends);
+  });
+
+  it('GP-SWEEP-OUTCOME-01: an unreadable sweep journal disarms signing instead of trusting empty memory', async () => {
+    window.sessionStorage.setItem(SWEEP_JOURNAL_KEY, '{not json');
+    appState.resetSweepAttemptsForTests({ keepStorage: true });
+    const sink: RawSink = { calls: [] };
+    const user = await toSweep({ raw: sink });
+    await screen.findByText('5 USDC');
+    await user.click(screen.getByLabelText(/Directly/));
+    await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+    expect(screen.getByText('Signing disabled in this tab')).toBeTruthy();
+    const sign = screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' });
+    expect(sign.disabled).toBe(true);
+    await user.click(sign);
+    expect(sink.calls ?? []).not.toContain('eth_sendRawTransaction');
   });
 });

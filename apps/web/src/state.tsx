@@ -2,6 +2,7 @@ import { createContext, useContext, useSyncExternalStore } from 'react';
 import type { RpcClient } from '@ghostpay/chain-adapters';
 import type { ScanMatch } from './lib/scanClient';
 import type { DirectSweepAttempt } from './lib/sweep';
+import { browserSweepStorage, readSweepAttempts, SWEEP_JOURNAL_KEY, sweepAttemptKey, writeSweepAttempt } from './lib/sweepAttemptJournal';
 import type { SessionPublic } from './lib/session';
 import type { Settings } from './lib/settings';
 
@@ -56,33 +57,76 @@ export function useApp(): AppState {
 /*
  * App-session holder for direct-sweep attempts (GP-SWEEP-OUTCOME-01). It lives above route-local view state so that
  * navigating away and back cannot re-arm signing after an uncertain broadcast. It holds only the public descriptor
- * (never key material) and only in memory: a page reload clears it (durable persistence is out of scope).
+ * (never key material). Every record is written through to the tab-scoped journal (sessionStorage), so a reload of
+ * this tab keeps signing disarmed; other tabs do not see it (recorded limit). If the journal cannot be read or
+ * written, signing is disarmed for the rest of this page session instead of trusting memory alone.
  */
 const sweepAttempts = new Map<string, DirectSweepAttempt>();
 const sweepAttemptListeners = new Set<() => void>();
-const sweepAttemptKey = (chainId: number, owner: string): string => `${String(chainId)}:${owner.toLowerCase()}`;
+let sweepJournalHydrated = false;
+let sweepJournalBroken = false;
 
-export function recordSweepAttempt(attempt: DirectSweepAttempt): void {
-  sweepAttempts.set(sweepAttemptKey(attempt.chainId, attempt.owner), attempt);
+function notifySweepAttempts(): void {
   for (const l of sweepAttemptListeners) l();
 }
 
+function hydrateSweepAttempts(): void {
+  if (sweepJournalHydrated) return;
+  sweepJournalHydrated = true;
+  try {
+    const storage = browserSweepStorage();
+    if (storage === undefined) return;
+    for (const a of readSweepAttempts(storage)) sweepAttempts.set(sweepAttemptKey(a.chainId, a.owner), a);
+  } catch {
+    sweepJournalBroken = true;
+  }
+}
+
+export function recordSweepAttempt(attempt: DirectSweepAttempt): void {
+  hydrateSweepAttempts();
+  sweepAttempts.set(sweepAttemptKey(attempt.chainId, attempt.owner), attempt);
+  try {
+    const storage = browserSweepStorage();
+    if (storage !== undefined) writeSweepAttempt(attempt, storage);
+  } catch {
+    sweepJournalBroken = true;
+  }
+  notifySweepAttempts();
+}
+
 export function getSweepAttempt(chainId: number, owner: string): DirectSweepAttempt | undefined {
+  hydrateSweepAttempts();
   return sweepAttempts.get(sweepAttemptKey(chainId, owner));
 }
 
-/** The latest direct-sweep attempt from this stealth address in this app session, if any. */
+/** True when the tab's sweep journal could not be read or written; signing must stay disarmed. */
+export function isSweepJournalBroken(): boolean {
+  hydrateSweepAttempts();
+  return sweepJournalBroken;
+}
+
+const subscribeSweepAttempts = (listener: () => void): (() => void) => {
+  sweepAttemptListeners.add(listener);
+  return () => { sweepAttemptListeners.delete(listener); };
+};
+
+/** The latest direct-sweep attempt from this stealth address in this tab, if any. */
 export function useSweepAttempt(chainId: number | undefined, owner: string | undefined): DirectSweepAttempt | undefined {
   return useSyncExternalStore(
-    (listener) => {
-      sweepAttemptListeners.add(listener);
-      return () => { sweepAttemptListeners.delete(listener); };
-    },
+    subscribeSweepAttempts,
     () => (chainId === undefined || owner === undefined ? undefined : getSweepAttempt(chainId, owner)),
   );
 }
 
-export function resetSweepAttemptsForTests(): void {
+export function useSweepJournalBroken(): boolean {
+  return useSyncExternalStore(subscribeSweepAttempts, isSweepJournalBroken);
+}
+
+/** Clears memory and, unless `keepStorage` (simulates a page reload), the tab journal. */
+export function resetSweepAttemptsForTests(opts: { readonly keepStorage?: boolean } = {}): void {
   sweepAttempts.clear();
-  for (const l of sweepAttemptListeners) l();
+  sweepJournalHydrated = false;
+  sweepJournalBroken = false;
+  if (opts.keepStorage !== true && typeof window !== 'undefined') window.sessionStorage.removeItem(SWEEP_JOURNAL_KEY);
+  notifySweepAttempts();
 }
