@@ -13,8 +13,11 @@ import type { RelayedOrderRef, SweepLock, SweepLockStatus } from './sweep';
  */
 export const SWEEP_JOURNAL_KEY = 'ghostpay.sweep-attempts.v1';
 export const MAX_SWEEP_ATTEMPTS = 64;
-/** Most other same-nonce hashes one direct lock records (L2-F2 re-signs); a further replacement is refused. */
-export const MAX_OTHER_HASHES = 8;
+/**
+ * Most other same-nonce hashes one direct lock records (L2-F2 re-signs); a further replacement is refused. Small enough
+ * that {@link MAX_SWEEP_ATTEMPTS} locks of the largest form still fit `MAX_BYTES`: a full journal never breaks on a write.
+ */
+export const MAX_OTHER_HASHES = 3;
 const MAX_BYTES = 32_000;
 /** Valid JSON that is not a journal: written after a failed update so a reload cannot read an older, armed state. */
 const TOMBSTONE = '"unavailable"';

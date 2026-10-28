@@ -32,6 +32,17 @@ describe('tab-scoped sweep attempt journal', () => {
     expect(readSweepAttempts(s)).toEqual([resigned, most]);
   });
 
+  it('B-R5: a full journal of the largest locks still fits its byte cap, so re-signing cannot break the journal', () => {
+    const s = storage();
+    const widest = (n: number): SweepLock => ({
+      chainId: Number.MAX_SAFE_INTEGER, owner: owner(n), nonce: Number.MAX_SAFE_INTEGER, expectedHash: other(0), status: 'unknown-after-handoff',
+      otherHashes: Array.from({ length: MAX_OTHER_HASHES }, (_v, k) => other(k + 1)),
+    });
+    const all = Array.from({ length: MAX_SWEEP_ATTEMPTS }, (_v, n) => widest(n + 1));
+    for (const a of all) writeSweepAttempt(a, s);
+    expect(readSweepAttempts(s)).toEqual(all);
+  });
+
   it('persists only the lock fields: never destination, asset or amount', () => {
     const s = storage();
     const full: DirectSweepAttempt = { chainId: 84532, owner: owner(1), nonce: 3, expectedHash: `0x${'ab'.repeat(32)}`, status: 'unknown-after-handoff', destination: DEST, asset: 'native', amount: 123456789n };
