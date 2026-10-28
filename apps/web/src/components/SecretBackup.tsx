@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { Mono, Notice } from '../../components/Common';
+import { Mono, Notice } from './Common';
 
 /** A shown backup hides itself after this many milliseconds (the texts say "a minute"), and as soon as the tab is hidden. */
 export const BACKUP_VISIBLE_MS = 60_000;

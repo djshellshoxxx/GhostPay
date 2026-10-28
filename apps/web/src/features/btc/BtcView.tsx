@@ -4,6 +4,7 @@ import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { CameraImporter } from '../../components/CameraImporter';
 import { QrFrame } from '../../components/QrFrame';
+import { clearCopiedBackup, SecretBackup } from '../../components/SecretBackup';
 import { subscribeAppLock } from '../../lib/appLock';
 import { useServices } from '../../lib/services';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
@@ -11,7 +12,6 @@ import { EsploraClient, normalizeEsploraUrl } from './esplora';
 import { BTC_NETWORKS, btcNetwork, type BtcNetworkId } from './network';
 import { MAX_SCAN_BLOCKS, scanForPayments, wipeFound, type FoundPayment, type ScanResult } from './scan';
 import { btcErrorMessage, checkDestination, formatBtc, reviewSweep, SIGNER_DESCRIPTION, signSweep, type SignedSweep, type SweepReview } from './sweep';
-import { clearCopiedBackup, SecretBackup } from './SecretBackup';
 import { SCAN_CHECKS, SCAN_LIMITS, SCAN_MODES } from './verification';
 import { paymentUri, randomSeedHex, walletFromSeedHex, wipeWallet, type BtcWallet } from './wallet';
 
