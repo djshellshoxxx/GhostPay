@@ -2,7 +2,7 @@
 // Command-line interface. `main(argv, io)` returns an exit code and never calls process.exit, so it is testable.
 // Commands: validate, package, verify, preview, profile (generate hosting profiles), wizard, demo.
 import { execFile } from 'node:child_process';
-import { lstat, mkdir, mkdtemp, readFile, readdir, rm, stat } from 'node:fs/promises';
+import { lstat, mkdir, mkdtemp, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { basename, dirname, join, resolve } from 'node:path';
 import { parseArgs, promisify } from 'node:util';
@@ -12,8 +12,9 @@ import { DEFAULT_APP_ID, DEFAULT_ENTRYPOINT, DEFAULT_LIMITS, SECRET_CONTENT_PATT
 import { KIT_NAME, KIT_VERSION } from './version.mjs';
 import { validateSite, policyFinding } from './core/validate.mjs';
 import { readFileExact } from './core/hash.mjs';
+import { readInventoried, walkSite } from './core/inventory.mjs';
 import { packageSite } from './core/package.mjs';
-import { verifyArchive, verifyDirectory, extractArchive } from './core/verify.mjs';
+import { containerLimits, verifyArchive, verifyDirectory, extractArchive } from './core/verify.mjs';
 import { writeFileAtomic, replaceDirAtomic } from './core/atomic.mjs';
 import { loadHeaderPolicy, checkRequiredHeaders } from './serve/headers.mjs';
 import { startPreview } from './serve/preview.mjs';
@@ -64,7 +65,7 @@ Usage: ghostpay-host <command> [options]
 Common options: --json (machine-readable output), --help
 validate/package: --entrypoint <path> --allow-source-maps --max-files N --max-total-bytes N --max-file-bytes N
 package: --app-id ID --label L --source-date-epoch N --git-dir DIR --note TEXT --license-file F --compression deflate|store
-verify:  --expect-digest sha256:<hex> --expect-sha256 <hex>
+verify, preview, profile: --expect-digest sha256:<hex> --expect-sha256 <hex> (preview and profile refuse a mismatch)
 preview: --port N (default 4173) --host 127.0.0.1|::1 --base-path /p/
 profile: --with static,nginx,container,tor,i2p --www-root /srv/... --hs-dir /var/lib/tor/<name> --tor-instance system|dedicated|container --tor-data-dir DIR
          --i2p-router i2pd|java-i2p --i2p-keys <file> --tunnel-name <name>
@@ -72,6 +73,7 @@ profile: --with static,nginx,container,tor,i2p --www-root /srv/... --hs-dir /var
 wizard:  --transport clearnet|onion|i2p --public-origin URL --base-path /p/ --port N --unix-socket PATH --label L
          --onion-location URL --non-interactive --dry-run --force
 demo:    --preview --port N
+An option that the command does not use is a usage error.
 
 Exit codes: 0 ok, 1 validation/verification failed, 2 usage error, 3 I/O or internal error.
 `;
@@ -116,6 +118,21 @@ const OPTIONS = {
   force: { type: 'boolean' },
   'allow-shared-origin': { type: 'boolean' },
   preview: { type: 'boolean' },
+};
+
+/**
+ * Options each command reads, besides --help and --json (accepted everywhere). Anything else is a usage error, so an
+ * option such as --expect-sha256 is never silently ignored.
+ * @type {Record<string, string[]>}
+ */
+const COMMAND_OPTIONS = {
+  validate: ['entrypoint', 'allow-source-maps', 'max-files', 'max-total-bytes', 'max-file-bytes'],
+  package: ['out', 'entrypoint', 'allow-source-maps', 'max-files', 'max-total-bytes', 'max-file-bytes', 'app-id', 'label', 'source-date-epoch', 'git-dir', 'note', 'license-file', 'compression'],
+  verify: ['expect-digest', 'expect-sha256'],
+  preview: ['expect-digest', 'expect-sha256', 'port', 'host', 'base-path'],
+  profile: ['expect-digest', 'expect-sha256', 'config', 'out', 'with', 'www-root', 'hs-dir', 'tor-instance', 'tor-data-dir', 'i2p-router', 'i2p-keys', 'tunnel-name', 'allow-shared-origin'],
+  wizard: ['out', 'transport', 'public-origin', 'base-path', 'port', 'unix-socket', 'label', 'onion-location', 'non-interactive', 'dry-run', 'force'],
+  demo: ['out', 'preview', 'port', 'host', 'base-path'],
 };
 
 /**
@@ -237,14 +254,26 @@ async function provenanceFrom(o, io) {
   try {
     // Read-only and config-proof. A repository can make `git status` run commands through core.fsmonitor or through
     // clean/smudge filters selected by .gitattributes; both are disabled: fsmonitor off, attributes read from the
-    // empty tree (--attr-source, git >= 2.40), no optional index writes, no system/global config.
+    // empty tree (--attr-source, git >= 2.40), no optional index writes, no system/global config. --attr-source does
+    // not cover $GIT_DIR/info/attributes, so a repository that configures any filter driver is refused (audit L7-L2),
+    // and submodules (each with its own config and attributes) are never entered.
     const git = ['--attr-source=4b825dc642cb6eb9a060e54bf8d69288fbee4904', '-C', cwd, '-c', 'core.fsmonitor=false', '-c', 'core.untrackedCache=false', '-c', 'core.attributesFile=/dev/null', '--no-optional-locks'];
     const env = { ...process.env, GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null', GIT_OPTIONAL_LOCKS: '0', GIT_TERMINAL_PROMPT: '0' };
     const commit = (await run('git', [...git, 'rev-parse', 'HEAD'], { env })).stdout.trim();
-    const dirty = (await run('git', [...git, 'status', '--porcelain', '--untracked-files=no'], { env })).stdout.trim() !== '';
+    // `git config --get-regexp` exits 1 when nothing matches.
+    const filters = await run('git', [...git, 'config', '--get-regexp', '^filter\\..*\\.(clean|smudge|process)$'], { env }).then(
+      (r) => r.stdout.trim(),
+      (e) => { if (/** @type {{ code?: unknown }} */ (e).code === 1) return ''; throw e; },
+    );
+    if (filters !== '') {
+      const keys = filters.split('\n').map((l) => l.split(' ')[0] ?? '').join(', ');
+      throw new KitError(ERROR_CODES.UNSUPPORTED, `--git-dir ${gitDir}: the repository configures a filter driver (${keys}) that "git status" could run; refusing. Package without --git-dir, or from a clone without filter drivers.`);
+    }
+    const dirty = (await run('git', [...git, 'status', '--porcelain', '--untracked-files=no', '--ignore-submodules=all'], { env })).stdout.trim() !== '';
     if (!/^[0-9a-f]{40}$/.test(commit)) throw new Error('unexpected rev-parse output');
     return { label, sourceDateEpoch, source: { kind: 'git', commit, dirty }, notes };
   } catch (e) {
+    if (isKitError(e)) throw e;
     throw new KitError(ERROR_CODES.IO, `--git-dir ${gitDir}: could not read git metadata (git >= 2.40 is required for --attr-source): ${e instanceof Error ? e.message : String(e)}`);
   }
 }
@@ -346,20 +375,29 @@ async function cmdPackage(o, pos, io) {
 }
 
 /**
+ * --expect-digest / --expect-sha256, format-checked (shared by verify, preview and profile).
+ * @param {Record<string, unknown>} o
+ * @param {boolean} isDirectory
+ * @returns {{ expectedContentDigest: string | undefined, expectedArchiveSha256: string | undefined }}
+ */
+function expectations(o, isDirectory) {
+  const expectedContentDigest = /** @type {string | undefined} */ (o['expect-digest']);
+  const expectedArchiveSha256 = /** @type {string | undefined} */ (o['expect-sha256']);
+  if (expectedContentDigest !== undefined && !/^sha256:[0-9a-f]{64}$/.test(expectedContentDigest)) usage('--expect-digest must be sha256:<64 hex>');
+  if (expectedArchiveSha256 !== undefined && !/^[0-9a-f]{64}$/.test(expectedArchiveSha256)) usage('--expect-sha256 must be 64 lowercase hex characters');
+  if (isDirectory && expectedArchiveSha256 !== undefined) usage('--expect-sha256 applies to archives, not directories');
+  return { expectedContentDigest, expectedArchiveSha256 };
+}
+
+/**
  * Verify an archive or unpacked directory.
  * @param {string} target absolute
  * @param {Record<string, unknown>} o
  */
 async function verifyTarget(target, o) {
-  const expectedContentDigest = /** @type {string | undefined} */ (o['expect-digest']);
-  const expectedArchiveSha256 = /** @type {string | undefined} */ (o['expect-sha256']);
-  if (expectedContentDigest !== undefined && !/^sha256:[0-9a-f]{64}$/.test(expectedContentDigest)) usage('--expect-digest must be sha256:<64 hex>');
-  if (expectedArchiveSha256 !== undefined && !/^[0-9a-f]{64}$/.test(expectedArchiveSha256)) usage('--expect-sha256 must be 64 lowercase hex characters');
   const st = await stat(target);
-  if (st.isDirectory()) {
-    if (expectedArchiveSha256 !== undefined) usage('--expect-sha256 applies to archives, not directories');
-    return verifyDirectory(target, { expectedContentDigest, limits: DEFAULT_LIMITS });
-  }
+  const { expectedContentDigest, expectedArchiveSha256 } = expectations(o, st.isDirectory());
+  if (st.isDirectory()) return verifyDirectory(target, { expectedContentDigest, limits: DEFAULT_LIMITS });
   return verifyArchive(target, { expectedContentDigest, expectedArchiveSha256, limits: DEFAULT_LIMITS });
 }
 
@@ -408,27 +446,75 @@ async function cmdVerify(o, pos, io) {
 }
 
 /**
+ * The error for a failed verification, naming an --expect-* mismatch explicitly.
+ * @param {string} target
+ * @param {import('./core/verify.mjs').VerifyResult | undefined} r
+ * @param {{ expectedContentDigest: string | undefined, expectedArchiveSha256: string | undefined }} exp
+ * @returns {KitError}
+ */
+function verifyFailure(target, r, exp) {
+  const rules = new Set((r?.errors ?? []).map((f) => f.rule));
+  /** @type {string[]} */
+  const mismatches = [];
+  if (rules.has('archive-sha256-mismatch')) mismatches.push(`archive sha256 ${r?.archiveSha256 ?? '(unknown)'} does not match --expect-sha256 ${exp.expectedArchiveSha256}`);
+  if (rules.has('content-digest-mismatch')) mismatches.push(`content digest ${r?.contentDigest ?? '(unknown)'} does not match --expect-digest ${exp.expectedContentDigest}`);
+  const detail = `verification failed for ${target}; run "ghostpay-host verify" for details`;
+  return new KitError(ERROR_CODES.VERIFY, mismatches.length > 0 ? `${mismatches.join('; ')} (${detail})` : detail, { result: r });
+}
+
+/**
+ * Copy the regular files of an unpacked directory into `dest` (created, mode 0700): bounded walk that never follows
+ * symlinks, each file read once with O_NOFOLLOW and its inode, times and parent directories re-checked. Symlinks,
+ * special files and unsafe names are refused, as `verify` reports them.
+ * @param {string} src
+ * @param {string} dest
+ */
+async function copyRegularFiles(src, dest) {
+  const walk = await walkSite(src, { limits: containerLimits(DEFAULT_LIMITS) });
+  const bad = walk.findings.filter((f) => f.severity === 'error');
+  if (bad.length > 0) throw new KitError(ERROR_CODES.VERIFY, `verification failed for ${src}: ${bad.map((f) => `${f.rule} ${f.path ?? ''}`).join(', ')}; run "ghostpay-host verify" for details`);
+  await mkdir(dest, { mode: 0o700 });
+  for (const f of walk.files) {
+    const out = join(dest, ...f.path.split('/'));
+    await mkdir(dirname(out), { recursive: true, mode: 0o700 });
+    await writeFile(out, await readInventoried(f), { flag: 'wx', mode: 0o600 });
+  }
+}
+
+/**
  * Open a verified copy of an archive or unpacked directory: returns the site dir, manifest and a cleanup function.
+ * Both inputs are verified and used only as a private copy (archive: extracted bytes; directory: copied regular
+ * files), so nothing that can write to the input can change what is served or exported after verification.
+ * `inputDir` is the operator's directory for a directory input (never read again), null for an archive.
  * @param {string} target absolute
  * @param {Record<string, unknown>} o
- * @returns {Promise<{ siteDir: string, topDir: string, manifest: HostingManifest, archiveSha256: string | null, cleanup: () => Promise<void> }>}
+ * @returns {Promise<{ siteDir: string, topDir: string, inputDir: string | null, manifest: HostingManifest, archiveSha256: string | null, cleanup: () => Promise<void> }>}
  */
 export async function openVerified(target, o) {
   const st = await stat(target);
-  if (st.isDirectory()) {
-    const r = await verifyTarget(target, o);
-    if (!r.ok || r.manifest === null) throw new KitError(ERROR_CODES.VERIFY, `verification failed for ${target}; run "ghostpay-host verify" for details`);
-    return { siteDir: join(target, 'site'), topDir: target, manifest: r.manifest, archiveSha256: null, cleanup: async () => {} };
-  }
+  const exp = expectations(o, st.isDirectory());
   const tmp = await mkdtemp(join(tmpdir(), 'ghostpay-host-'));
+  const cleanup = () => rm(tmp, { recursive: true, force: true });
   try {
-    const { topDir, result } = await extractArchive(target, join(tmp, 'x'), { limits: DEFAULT_LIMITS });
+    if (st.isDirectory()) {
+      const copy = join(tmp, 'copy');
+      await copyRegularFiles(target, copy);
+      const r = await verifyDirectory(copy, { expectedContentDigest: exp.expectedContentDigest, limits: DEFAULT_LIMITS });
+      if (!r.ok || r.manifest === null) throw verifyFailure(target, r, exp);
+      return { siteDir: join(copy, 'site'), topDir: copy, inputDir: target, manifest: r.manifest, archiveSha256: null, cleanup };
+    }
+    let extracted;
+    try {
+      extracted = await extractArchive(target, join(tmp, 'x'), { limits: DEFAULT_LIMITS, ...exp });
+    } catch (e) {
+      if (isKitError(e) && e.code === ERROR_CODES.VERIFY) throw verifyFailure(target, /** @type {import('./core/verify.mjs').VerifyResult | undefined} */ (e.details['result']), exp);
+      throw e;
+    }
+    const { topDir, result } = extracted;
     if (result.manifest === null) throw new KitError(ERROR_CODES.VERIFY, 'archive has no manifest');
-    const exp = /** @type {string | undefined} */ (o['expect-digest']);
-    if (exp !== undefined && result.contentDigest !== exp) throw new KitError(ERROR_CODES.VERIFY, `content digest ${result.contentDigest} does not match --expect-digest ${exp}`);
-    return { siteDir: join(topDir, 'site'), topDir, manifest: result.manifest, archiveSha256: result.archiveSha256, cleanup: () => rm(tmp, { recursive: true, force: true }) };
+    return { siteDir: join(topDir, 'site'), topDir, inputDir: null, manifest: result.manifest, archiveSha256: result.archiveSha256, cleanup };
   } catch (e) {
-    await rm(tmp, { recursive: true, force: true });
+    await cleanup();
     throw e;
   }
 }
@@ -525,6 +611,9 @@ async function assertReplaceable(outDir, markerFile) {
 
 const ALL_PROFILES = ['static', 'nginx', 'container', 'tor', 'i2p'];
 
+/** static/www is the nginx/container document root, not an upload for a _headers host (audit L7-M1). */
+const STATIC_HEADERS_WARNING = 'static/www omits _headers (it is the document root for the nginx and container profiles, which send the headers): uploaded as is to a _headers host such as Cloudflare Pages or Netlify it would be served without CSP, X-Frame-Options, nosniff, COOP or Permissions-Policy; deploy the site directory with its _headers there instead (GhostPay: the release dist/, see docs/operators/mirror-hosting.md)';
+
 /**
  * Generate hosting profiles for a verified archive into outDir (atomic replace).
  * @param {{ target: string, outDir: string, host: HostConfig, with: string[], o: Record<string, unknown> }} p
@@ -545,7 +634,8 @@ export async function generateProfiles(p) {
     const overlay = overlayCollides(files) ? null : buildMirrorOverlay(opened.manifest, p.host, opened.archiveSha256);
     if (overlay === null) warnings.push('site uses _mirror/: no mirror.json overlay generated');
     const served = overlay === null ? files : [...files, overlay.path];
-    const forbiddenRoots = [p.outDir, opened.topDir, wwwRoot];
+    const forbiddenRoots = [p.outDir, opened.topDir, wwwRoot, ...(opened.inputDir === null ? [] : [opened.inputDir])];
+    if (p.with.includes('static')) warnings.push(STATIC_HEADERS_WARNING);
     if (p.host.basePath !== '/') warnings.push(`base path ${p.host.basePath}: the app shares its origin's storage and permissions with every other path on that host (audit WEB-APP-03); serve nothing else on this origin`);
     await assertReplaceable(p.outDir, 'PROFILE-README.md');
     await mkdir(dirname(p.outDir), { recursive: true });
@@ -642,7 +732,9 @@ then activate what you need by hand (see tools/portable-hosting-kit/README.md an
 ${generated.map((g) => `- \`${g}\``).join('\n')}
 
 ${warnings.length > 0 ? `Warnings:\n\n${warnings.map((w) => `- ${w}`).join('\n')}\n` : ''}
-- \`static/www\` is a byte-identical copy of the site under the base path plus the \`_mirror/mirror.json\` overlay.
+- \`static/www\` is a byte-identical copy of the site under the base path plus the \`_mirror/mirror.json\` overlay, with
+  **no \`_headers\` file**: it is the document root for the nginx and container profiles, which send the headers. Do not
+  upload it to a \`_headers\` host (Cloudflare Pages, Netlify): deploy the site directory with its \`_headers\` there.
   Header-less static hosts are **unsupported**: they cannot send the required CSP and other headers.
 - Keys and identities (Tor HiddenServiceDir, I2P destination keys, TLS keys) are never in this directory.
   Keep them out of it; this directory is replaced wholesale on the next \`profile\` run.
@@ -823,6 +915,8 @@ export async function main(argv, ioIn = {}) {
       io.out(USAGE);
       return EXIT.OK;
     }
+    const allowed = COMMAND_OPTIONS[command] ?? [];
+    for (const k of Object.keys(values)) if (k !== 'json' && !allowed.includes(k)) usage(`--${k} does not apply to "${command}"`);
     return await fn(values, positionals, io);
   } catch (e) {
     if (isKitError(e)) {
