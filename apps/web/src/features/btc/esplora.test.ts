@@ -4,6 +4,7 @@ import { EsploraClient, EsploraTweakSource, normalizeEsploraUrl } from './esplor
 import { coinbase, mineHeader, mockChain, paymentTx, walletA, withTxid, withWitnessCommitment, SEED_B } from './fixtures.testutil';
 import { BTC_NETWORKS, btcNetwork, MAINNET_GENESIS } from './network';
 import { MAX_SCAN_BLOCKS, scanForPayments } from './scan';
+import { SCAN_CHECKS, SCAN_LIMITS } from './verification';
 import { walletFromSeedHex } from './wallet';
 
 const BASE = 'https://esplora.test/api';
@@ -450,6 +451,27 @@ describe('EsploraTweakSource and scanning', () => {
     const res = await scanForPayments({ client, wallet: w, fromHeight: 1 });
     expect(res.found).toHaveLength(1);
     expect(chain.requests.filter((r) => r.includes('/txs/') && r.includes(chain.blocks[2]!.hash))).toHaveLength(1);
+  });
+
+  it('says exactly what links the scanned blocks: an unanchored first block with an invented payment is accepted', async () => {
+    const w = walletA();
+    const chain = mockChain('regtest', w);
+    // A block the server mined itself (cheap proof of work), extending nothing real, paying this wallet 7 BTC.
+    const txs = withWitnessCommitment([coinbase(77), paymentTx(77, w, SEED_B, 700_000_000)]);
+    const header = mineHeader('ee'.repeat(32), txs);
+    chain.blocks[4] = { hash: parseHeader(header).hash, header, txs };
+    const client = new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn });
+    const res = await scanForPayments({ client, wallet: w, fromHeight: 4 });
+    expect(res.found.map((f) => f.amountSats)).toEqual([700_000_000n]);
+    // Starting at block 1, the same range is linked to the pinned genesis, and the fork is caught.
+    expect(await codeOf(scanForPayments({ client, wallet: w, fromHeight: 1 }))).toBe('REORG_DETECTED');
+    // The disclosure must not claim more than that.
+    const text = [...SCAN_CHECKS, ...SCAN_LIMITS].join('\n');
+    expect(text).not.toMatch(/down to the pinned genesis/);
+    expect(text).not.toMatch(/cannot invent/);
+    expect(text).toMatch(/Only a scan that starts at block 0 or 1 is linked to the pinned genesis block/);
+    expect(text).toMatch(/not anchored to the genesis block or to any checkpoint/);
+    expect(text).toMatch(/can also invent one/);
   });
 
   it('validates the range', async () => {
