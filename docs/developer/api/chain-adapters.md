@@ -55,9 +55,12 @@ function findToken(chainId: number, address: string): TokenConfig | undefined   
 
 `opStack: true` marks Base Sepolia, OP Sepolia and the disabled Base and OP mainnets; it is absent elsewhere,
 including Arbitrum, whose gas estimate covers its L1 cost. On those chains the node refuses a transaction whose total
-cost, those fees included, exceeds the sender's balance, so before signing a direct sweep the web app prices them with
-the GasPriceOracle predeploy `0x420000000000000000000000000000000000000F` and reserves a margin over them from the
-native balance.
+cost, those fees included, exceeds the sender's balance, so before signing a direct sweep (native or ERC-20) the web
+app prices them for the exact unsigned transaction with the GasPriceOracle predeploy
+`0x420000000000000000000000000000000000000F` and keeps a margin over them in the native balance: a native sweep sends
+that much less, and an ERC-20 sweep is refused unless the native coin covers its gas and that margin. A `getOperatorFee`
+call that reverts (an oracle from before the Isthmus upgrade) counts as no operator fee; any other failed fee read
+refuses the sweep.
 
 Today: enabled = Ethereum Sepolia `11155111` and Base Sepolia `84532`; seven mainnets are listed with `enabled: false`
 (Ethereum 1, Base 8453, OP 10, Arbitrum One 42161, Polygon 137, BNB 56, Avalanche 43114). `TOKENS` holds only the two
