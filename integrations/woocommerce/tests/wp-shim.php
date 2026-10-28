@@ -490,11 +490,12 @@ class WC_Order {
 		return 1;
 	}
 
+	/** Like WooCommerce, the note is recorded only together with an actual status change. */
 	public function update_status( $new_status, $note = '' ) {
-		$this->data['status'] = $new_status;
-		if ( '' !== $note ) {
+		if ( $new_status !== $this->data['status'] && '' !== $note ) {
 			$this->add_order_note( $note );
 		}
+		$this->data['status'] = $new_status;
 		$this->save();
 		return true;
 	}

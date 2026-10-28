@@ -193,6 +193,49 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 		check( "replayed signature raced at step $step: paid once", GhostPay_Test::$payments, array( 2 ) );
 	}
 	check( 'replay race covered the nonce steps', $step > 3, true );
+
+	// G3-05: a transition depends on the order's state and on which of its invoices an event is for.
+	GhostPay_Test::reset();
+	update_option( 'woocommerce_ghostpay_settings', $settings );
+	$deliver = static fn( string $body ): array => ghostpay_test_deliver( $body, $sign_with( $webhook_hex, $body ) );
+	$status  = static fn( int $id ): string => GhostPay_Test::$orders[ $id ]['status'];
+	$notes   = static fn( int $id ): string => implode( "\n", GhostPay_Test::$notes[ $id ] ?? array() );
+
+	ghostpay_test_order( 10, 'processing', '12.50', 'USD', array( 'inv_10a', 'inv_10b' ) ); // paid through inv_10a
+	$deliver( $event( 'evt_10', 'invoice.paid', 'inv_10b', 'USD', '1250' ) );
+	check( 'second full payment: a paid order stays paid', $status( 10 ), 'processing' );
+	check( 'second full payment: flagged for a refund check', str_contains( $notes( 10 ), 'refund' ), true );
+	check( 'second full payment: no false underpayment note', str_contains( $notes( 10 ), 'below the order total' ), false );
+	ghostpay_test_order( 11, 'completed', '12.50', 'USD', array( 'inv_11' ) );
+	$deliver( $event( 'evt_11', 'invoice.over', 'inv_11', 'USD', '1300' ) );
+	check( 'overpayment event: a completed order stays completed', $status( 11 ), 'completed' );
+	ghostpay_test_order( 12, 'processing', '12.50', 'USD', array( 'inv_12' ) );
+	$deliver( $event( 'evt_12', 'invoice.paid', 'inv_12', 'USD', '100' ) );
+	check( 'small extra payment: a paid order is not put on hold', $status( 12 ), 'processing' );
+	check( 'small extra payment: flagged for a refund check', str_contains( $notes( 12 ), 'refund' ), true );
+	$deliver( $event( 'evt_12p', 'invoice.partial', 'inv_12', 'USD', '100' ) );
+	check( 'partial payment on a paid order: no "stays unpaid" note', str_contains( $notes( 12 ), 'stays unpaid' ), false );
+	ghostpay_test_order( 13, 'refunded', '12.50', 'USD', array( 'inv_13' ) );
+	$deliver( $event( 'evt_13', 'invoice.paid', 'inv_13', 'USD', '1250' ) );
+	check( 'payment for a refunded order: status kept', $status( 13 ), 'refunded' );
+	check( 'payment for a refunded order: not noted as confirmed', str_contains( $notes( 13 ), 'confirmed' ), false );
+	check( 'no paid or refunded order was paid again', GhostPay_Test::$payments, array() );
+
+	ghostpay_test_order( 14, 'pending', '12.50', 'USD', array( 'inv_14' ) );
+	$deliver( $event( 'evt_14', 'invoice.paid', 'inv_14', 'USD', '1000' ) );
+	check( 'underpayment of an unpaid order: on hold', $status( 14 ), 'on-hold' );
+	check( 'underpayment of an unpaid order: noted', str_contains( $notes( 14 ), 'below the order total' ), true );
+	$deliver( $event( 'evt_14b', 'invoice.paid', 'inv_14', 'USD', '1250' ) );
+	check( 'full payment after an underpayment completes the order', $status( 14 ), 'processing' );
+
+	ghostpay_test_order( 15, 'pending', '12.50', 'USD', array( 'inv_15a', 'inv_15b' ) ); // customer retried: inv_15b is current
+	$deliver( $event( 'evt_15a', 'invoice.expired', 'inv_15a', 'USD', '0' ) );
+	check( 'expiry of a superseded invoice does not cancel the order', $status( 15 ), 'pending' );
+	$deliver( $event( 'evt_15b', 'invoice.expired', 'inv_15b', 'USD', '0' ) );
+	check( 'expiry of the current invoice cancels a pending order', $status( 15 ), 'cancelled' );
+	$deliver( $event( 'evt_15c', 'invoice.paid', 'inv_15a', 'USD', '1250' ) );
+	check( 'late full payment of an older invoice completes a cancelled order', $status( 15 ), 'processing' );
+	check( 'only unpaid orders were paid', GhostPay_Test::$payments, array( 14, 15 ) );
 }
 
 if ( $failed > 0 ) {

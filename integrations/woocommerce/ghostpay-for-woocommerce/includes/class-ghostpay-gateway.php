@@ -341,6 +341,13 @@ class WC_Gateway_GhostPay extends WC_Payment_Gateway {
 		return $ok;
 	}
 
+	/** The order's newest invoice id: each customer retry adds one, and WooCommerce reads meta in meta id order. */
+	private function current_invoice_id( WC_Order $order ): string {
+		$invoices = $order->get_meta( '_ghostpay_invoice_id', false );
+		$current  = is_array( $invoices ) ? end( $invoices ) : false;
+		return $current instanceof WC_Meta_Data ? (string) $current->value : '';
+	}
+
 	/** @param array $event Validated event. */
 	private function apply_event( array $event ): string {
 		$orders = wc_get_orders(
@@ -379,21 +386,34 @@ class WC_Gateway_GhostPay extends WC_Payment_Gateway {
 		}
 		$due = GhostPay_Money::to_minor( (string) $order->get_total(), (int) wc_get_price_decimals() );
 		$cmp = null === $due ? null : GhostPay_Money::compare( $data['amountMinor'], $due );
+		// The statuses WooCommerce's own payment_complete() moves to paid (a late payment of a cancelled order too).
+		// Any other order (paid, refunded, ...) is never changed by a payment event, only flagged for a manual check.
+		$payable   = $order->has_status( apply_filters( 'woocommerce_valid_order_statuses_for_payment_complete', array( 'on-hold', 'pending', 'failed', 'cancelled' ), $order ) );
+		$unchanged = sprintf( /* translators: 1: event type, 2: event id, 3: order status */ __( 'GhostPay %1$s (event %2$s) for an order that is %3$s: the order was not changed. Check for a double payment and refund it if needed.', 'ghostpay-for-woocommerce' ), $event['type'], $event['id'], $order->get_status() );
 		switch ( $event['type'] ) {
 			case 'invoice.paid':
 			case 'invoice.over':
-				if ( null !== $cmp && $cmp >= 0 && ! $order->is_paid() ) {
+				if ( ! $payable ) {
+					$order->add_order_note( $unchanged );
+				} elseif ( null !== $cmp && $cmp >= 0 ) {
 					$order->payment_complete( $event['id'] );
 					$order->add_order_note( sprintf( /* translators: 1: event id */ __( 'GhostPay payment confirmed (event %s).', 'ghostpay-for-woocommerce' ), $event['id'] ) );
 				} else {
-					$order->update_status( 'on-hold', sprintf( /* translators: 1: event id */ __( 'GhostPay reported a payment below the order total (event %s). Check manually.', 'ghostpay-for-woocommerce' ), $event['id'] ) );
+					$order->update_status( 'on-hold' );
+					$order->add_order_note(
+						null === $cmp
+							? sprintf( /* translators: 1: event id */ __( 'GhostPay payment (event %s) could not be compared with the order total. Check manually.', 'ghostpay-for-woocommerce' ), $event['id'] )
+							: sprintf( /* translators: 1: event id */ __( 'GhostPay reported a payment below the order total (event %s). Check manually.', 'ghostpay-for-woocommerce' ), $event['id'] )
+					);
 				}
 				break;
 			case 'invoice.partial':
-				$order->add_order_note( sprintf( /* translators: 1: event id */ __( 'GhostPay partial payment received (event %s). Order stays unpaid.', 'ghostpay-for-woocommerce' ), $event['id'] ) );
+				$order->add_order_note( $payable ? sprintf( /* translators: 1: event id */ __( 'GhostPay partial payment received (event %s). Order stays unpaid.', 'ghostpay-for-woocommerce' ), $event['id'] ) : $unchanged );
 				break;
 			case 'invoice.expired':
-				if ( $order->has_status( 'pending' ) ) {
+				// Only the order's current invoice may cancel it: after a customer retry, the older invoice expiring
+				// must not cancel an order whose newer invoice is still payable.
+				if ( $order->has_status( 'pending' ) && $data['invoiceId'] === $this->current_invoice_id( $order ) ) {
 					$order->update_status( 'cancelled', __( 'GhostPay invoice expired without payment.', 'ghostpay-for-woocommerce' ) );
 				}
 				break;
