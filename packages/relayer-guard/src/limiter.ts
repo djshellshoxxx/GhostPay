@@ -60,7 +60,7 @@ class BoundedTable<V> {
     return true;
   }
 
-  private remove(key: string): void {
+  public remove(key: string): void {
     if (!this.map.delete(key)) return;
     const group = this.keyGroups.get(key) ?? '';
     this.keyGroups.delete(key);
@@ -251,6 +251,8 @@ interface Resolved {
   /** Distinct key and group entries, the first source's key entry first. */
   readonly entries: readonly Spend[];
   readonly overflow: boolean;
+  /** Removes the entries this resolution inserted. */
+  readonly undo: () => void;
 }
 
 /** Most distinct {@link LossSource.kind} values (each holds one key and one group overflow entry). */
@@ -344,9 +346,14 @@ export class LossBudget {
   public reserveAll(sources: readonly LossSource[], estimate: bigint): LossReservation | null {
     requireConfig(estimate >= 0n, 'estimate must be >= 0');
     requireConfig(sources.length > 0, 'at least one source is required');
-    if (!this.admits(this.resolve(sources, false), estimate)) return null;
     const window = this.windowIndex();
+    // Admit against the entries the reservation really gets: with one free slot left, a second new key spills into
+    // an overflow entry that a read-only probe would not have charged.
     const held = this.resolve(sources, true);
+    if (!this.admits(held, estimate)) {
+      held.undo();
+      return null;
+    }
     this.add(held, estimate, 0n);
     let settled = false;
     const settle = (actual: bigint): boolean => {
@@ -380,13 +387,17 @@ export class LossBudget {
   private resolve(sources: readonly LossSource[], create: boolean): Resolved {
     const w = this.windowIndex();
     const entries = new Set<Spend>();
+    const inserted: (() => void)[] = [];
     let overflow = false;
     const pick = (table: BoundedTable<Spend>, key: string, group: string, spill: Spend, partition: boolean): Spend => {
       const hit = create ? table.get(key) : table.peek(key);
       if (hit !== undefined) return hit;
       if ((!partition || table.groupSize(group) < this.maxPerGroup) && table.canInsert()) {
         const fresh = { window: w, spent: 0n, lost: 0n };
-        if (create) table.insert(key, fresh, group);
+        if (create) {
+          table.insert(key, fresh, group);
+          inserted.push(() => table.remove(key));
+        }
         return fresh;
       }
       overflow = true;
@@ -398,7 +409,13 @@ export class LossBudget {
       entries.add(pick(this.keys, src.key, group, this.overflowOf(this.overflowKeys, kind), true));
       entries.add(pick(this.groups, group, '', this.overflowOf(this.overflowGroups, kind), false));
     }
-    return { entries: [...entries], overflow };
+    return {
+      entries: [...entries],
+      overflow,
+      undo: () => {
+        for (const remove of inserted) remove();
+      },
+    };
   }
 
   private overflowOf(spills: Map<string, Spend>, kind: string): Spend {

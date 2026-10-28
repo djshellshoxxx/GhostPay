@@ -271,6 +271,23 @@ describe('LossBudget (S3-06)', () => {
     expect(() => b.allowsAll([{ key: 'k', kind: 'one-too-many' }])).toThrow(GuardError);
   });
 
+  it('a reservation is admitted against the entries it really gets, and leaves nothing behind when refused', () => {
+    const clock = { t: 0 };
+    const b = new LossBudget(
+      { windowMs: 1000, perKeyLimit: 100n, globalLimit: 10_000n, maxKeys: 2, maxPerGroup: 1 },
+      () => clock.t,
+    );
+    b.charge('old', 1n, 'g-old');
+    clock.t += 1000; // 'old' is now the one evictable slot
+    b.charge('a1', 1n, 'G');
+    b.charge('a2', 95n, 'G'); // G's key quota is full: a2 is charged to the overflow entry
+    // Two new keys, one free slot: the second must use the overflow entry, which has only 5 left.
+    expect(b.reserveAll([{ key: 'n1', group: 'h1' }, { key: 'n2', group: 'h2' }], 10n)).toBeNull();
+    // Nothing was kept: the one slot is still free for a single newcomer.
+    const single = b.reserve('n3', 10n, 'h3');
+    expect(single?.overflow).toBe(false);
+  });
+
   it('L5-04: a read-only probe does not keep a stale key from being evicted', () => {
     const clock = { t: 0 };
     const b = new LossBudget({ windowMs: 1000, perKeyLimit: 100n, globalLimit: 10_000n, maxKeys: 2 }, () => clock.t);
