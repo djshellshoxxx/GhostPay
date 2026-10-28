@@ -96,18 +96,18 @@ The authoritative exact-head evidence is the GitHub `hosting-kit` workflow (`kit
 ## Still open / gates
 
 1. Owner review and merge of PR #37. PR #37 supersedes #30 and #36 if accepted; close those only on the owner's decision. No merge authority is assumed.
-2. Nightly `reproducibility`: `npm sbom` ESBOMPROBLEMS (`abitype@1.0.8` from `@0xbow/privacy-pools-core-sdk@1.5.0` → exact `viem@2.22.14` wants `zod ^3`). **Still open; the gate is not weakened.** Reproduced locally: `release-build.sh` fails at `npm sbom` with exactly this error.
-   - **Rejected:** `npm sbom -w @ghostpay/web`. It omits the web app's direct deps (viem, react).
-   - **Rejected:** root `zod@3.25.76`, as a dependency or devDependency.
-     - It makes `npm sbom` and `repro-check.sh` pass: two builds were byte-identical (tarball `dabf73ec…`, SBOM `3d40940b…`), and the web tarball was unchanged.
-     - But every zod 3.x is covered by high-severity GHSA-mrhx-c7xc-m3w5 (fixed in 4.6.6), so `npm audit --omit=dev --audit-level=high` (a CI gate) fails.
-   - **Not applicable:** overriding the SDK's `viem` to 2.57.7. npm 10.9.4 keeps the locked nested `viem@2.22.14` (reports it "invalid … overridden") unless the whole lockfile is regenerated. Regenerating is broad churn and needs owner approval.
-   - **No upstream fix yet:** SDK 1.5.0 is the latest release (2026-08-31) and still pins `viem@2.22.14`.
-   - **Owner options:**
-     - (a) Approve a full lockfile regeneration with that override, then rerun every package's tests.
-     - (b) Move the later-preserved privacy-pools package out of the root workspace or release SBOM scope.
-     - (c) Wait for an SDK release on `viem >= 2.37.2`, which also clears the audit chain.
-     - (d) Document a scoped SBOM exception. This weakens the gate and needs owner/security sign-off.
+2. Nightly `reproducibility` (`npm sbom` ESBOMPROBLEMS: `abitype@1.0.8` via the privacy-pools SDK's pinned `viem@2.22.14` wants `zod ^3`) was **fixed** with owner-approved option (a).
+   - Root `overrides` maps `@0xbow/privacy-pools-core-sdk`'s `viem` to 2.57.7.
+   - Only the SDK subtree was re-resolved with npm: uninstall, then reinstall `@0xbow/privacy-pools-core-sdk@1.5.0` in its workspace. The lockfile diff is 149 lines removed and none added (the nested `viem`/`abitype`/`ox`/`@noble`/`@scure` copies). No other version changed.
+   - Verified:
+     - fresh `npm ci` 0, `npm ls` 0, `npm sbom --omit dev` 0, `npm audit --omit=dev --audit-level=high` 0;
+     - `build:libs` and all-workspace `typecheck` 0;
+     - privacy-pools tests 73 passed / 4 skipped, identical to before;
+     - `scripts/repro-check.sh --worktree` REPRODUCIBLE (tarball `1d3f0f15…`, SBOM `8f477506…`).
+   - With the old lock at the same commit, `release-build.sh` fails at `npm sbom` with exactly the Nightly error and builds the same tarball `1d3f0f15…`, so the shipped web app is unchanged.
+   - Rejected alternatives, kept for the record:
+     - root `zod@3`: every zod 3.x is covered by GHSA-mrhx-c7xc-m3w5 (high) and fails the audit gate;
+     - web-scoped SBOM: omits direct dependencies.
 3. M1 is closed (see above). A relayer status endpoint keyed by order digest would still be a UX improvement (faster resolution than waiting for the deadline), but it is not required for safety.
 4. Cross-tab sweep lock. It would need localStorage or IndexedDB, which persists the stealth-owner/tx-hash link to disk; that is a privacy decision for the owner.
 5. Policy-account send guard: an experimental feature, off by default and outside lean scope.
@@ -120,4 +120,4 @@ The authoritative exact-head evidence is the GitHub `hosting-kit` workflow (`kit
 
 ## Next bounded task
 
-Read the PR #37 CI results on the head commit and fix anything red. The Nightly SBOM fix waits on the owner choosing one of options (a)–(d) above. Translator work: the new `sweep.*` keys for es/ja/ar.
+Read the PR #37 CI results on the head commit and fix anything red. Triage and fix the findings of the 2026-10-28 AI-assisted security audit (in progress). Translator work: the new `sweep.*` keys for es/ja/ar.
