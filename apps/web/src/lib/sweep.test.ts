@@ -650,10 +650,23 @@ describe('L2-F2: a native direct sweep keeps back every fee the chain charges', 
     expect(sends(rpc)).toBe(0);
   });
 
+  it('B-R4: an OP Stack chain without getOperatorFee (before Isthmus the call reverts) charges no operator fee', async () => {
+    const seen: Seen = {};
+    const rpc = chainRpc(84532, { operatorFee: new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32000', { reverted: true }) }, seen);
+    const res = await directSweep({ target: native(), manifest, destination: DEST, amount: BALANCE, rpc });
+    const tx = parseTransaction(seen.raw!);
+    expect(tx.value).toBe(BALANCE - 21_000n * MAX_FEE - 2n * L1_FEE);
+    expect(res.sent).toBe(tx.value);
+    expect(seen.operatorGas).toBe(21_000n);
+  });
+
   it.each([
     ['the L1 fee call fails', { l1Fee: new Error('rpc down') }],
     ['the L1 fee answer is malformed', { l1Fee: '0x1234' }],
+    ['the L1 fee call reverts', { l1Fee: new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32000', { reverted: true }) }],
     ['the operator fee call fails', { operatorFee: new Error('rpc down') }],
+    ['the operator fee call fails at the transport', { operatorFee: new ChainAdapterError('RPC_FAILURE', 'http status 429') }],
+    ['the operator fee call gets a JSON-RPC error that is no revert', { operatorFee: new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32603') }],
   ] as const)('refuses when %s: the amount to send cannot be computed', async (_n, net) => {
     const rpc = chainRpc(84532, net, {});
     await expect(directSweep({ target: native(), manifest, destination: DEST, amount: 1n, rpc })).rejects.toThrow(/fee oracle/);

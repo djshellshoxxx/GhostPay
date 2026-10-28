@@ -471,15 +471,28 @@ async function readFeeOracle(rpc: Rpc, data: Hex): Promise<bigint> {
 }
 
 /**
+ * The operator fee for `gas`. An OP Stack chain before the Isthmus upgrade has no `getOperatorFee`, so the call
+ * reverts there; such a chain charges no operator fee. Any other failure is no answer and propagates.
+ */
+async function readOperatorFee(rpc: Rpc, gas: bigint): Promise<bigint> {
+  try {
+    return await readFeeOracle(rpc, encodeFunctionData({ abi: gasPriceOracleAbi, functionName: 'getOperatorFee', args: [gas] }));
+  } catch (e) {
+    if (reportsRevert(e)) return 0n;
+    throw e;
+  }
+}
+
+/**
  * What an OP Stack node charges outside `gas * gasPrice`, read from the GasPriceOracle: the L1 data fee of the unsigned
- * serialized transaction (the oracle adds the signature's size) and the operator fee for its gas limit, times
- * {@link OP_STACK_FEE_RESERVE_MULTIPLIER}.
+ * serialized transaction (the oracle adds the signature's size) and the operator fee for its gas limit (none where the
+ * oracle has no `getOperatorFee`), times {@link OP_STACK_FEE_RESERVE_MULTIPLIER}.
  * @throws {UserFacingError} when the oracle cannot be read: the amount to send is then unknown, so nothing is signed.
  */
 async function opStackFeeReserve(rpc: Rpc, unsignedTx: Hex, gas: bigint): Promise<bigint> {
   try {
     const l1 = await readFeeOracle(rpc, encodeFunctionData({ abi: gasPriceOracleAbi, functionName: 'getL1Fee', args: [unsignedTx] }));
-    const operator = await readFeeOracle(rpc, encodeFunctionData({ abi: gasPriceOracleAbi, functionName: 'getOperatorFee', args: [gas] }));
+    const operator = await readOperatorFee(rpc, gas);
     return (l1 + operator) * OP_STACK_FEE_RESERVE_MULTIPLIER;
   } catch {
     throw new UserFacingError('Could not read the L1 data fee from this chain\'s fee oracle, so the amount to send cannot be computed. Nothing was signed.');
