@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as reconciliation from '../lib/reconciliationVault';
 import { checkpointKeyId } from '../lib/scanClient';
 import { clearSession, generateSession, revealViewingKey } from '../lib/session';
+import * as tagArchive from '../lib/tagArchive';
 import { makeServices, renderApp } from '../test/render';
 import { storedHistoryChains } from './TagArchive';
 
@@ -147,6 +148,9 @@ describe('I-2: scan history kept for chains this build does not support', () => 
     vi.spyOn(reconciliation, 'createCurrentReconciliationVault').mockImplementation((chainId) => (chainId === 84532
       ? Promise.resolve({ exportEncrypted: () => Promise.resolve('history-84532'), lock: () => undefined } as unknown as reconciliation.ReconciliationVault)
       : Promise.reject(new Error('unavailable'))));
+    // The archive is encrypted for real, at scrypt N=2^14 rather than the production 2^17: two exports run here.
+    const encryptArchive = tagArchive.exportArchive;
+    vi.spyOn(tagArchive, 'exportArchive').mockImplementation((tags, viewingKey, passphrase, options) => encryptArchive(tags, viewingKey, passphrase, { ...options, N: 1 << 14 }));
     const session = generateSession();
     const keyId = checkpointKeyId(session.spendingPublicKey, session.viewingPublicKey);
     const user = userEvent.setup();
