@@ -921,6 +921,14 @@ describe('loss budget accounting (L5-02, L5-04)', () => {
     expect(text).not.toContain('relayer_loss_budget_overflow_total');
   });
 
+  it('L5-04: a reservation that has to use an overflow entry is counted', async () => {
+    // One live slot per table: a sweep's destination and network cannot both have their own entry.
+    const lossBudget = { windowSeconds: 3600, perKeyWei: 10n ** 18n, globalWei: 10n ** 18n, maxKeys: 1 };
+    const s = await start({ config: { lossBudget, trustedProxies: proxies } });
+    expect(await sweepAs(s, 1n, 1, '198.51.1.1')).toBe('200');
+    expect(s.relayer.metrics.render()).toContain('relayer_loss_budget_overflow_total{chain_id="11155111"} 1');
+  });
+
   it('L5-04: with production limits, new users are served after a day of earlier traffic', async () => {
     const lossBudget = { windowSeconds: 3600, perKeyWei: 5_000_000_000_000_000n, globalWei: 50_000_000_000_000_000n, maxKeys: 16 };
     const s = await start({ config: { lossBudget, trustedProxies: proxies } });
