@@ -15,6 +15,41 @@ function codeOf(p: Promise<unknown>): Promise<string> {
   );
 }
 
+/**
+ * One block served the way electrs serves it: `/block/:hash` reports `tx_count`, `/block/:hash/txs/:start` returns
+ * up to 25 transactions, and a start index at or past the end (or not a multiple of 25) is an HTTP 400.
+ */
+function electrsBlock(txs: readonly unknown[], info: Record<string, unknown> = {}) {
+  const hash = 'a'.repeat(64);
+  const requests: string[] = [];
+  const fetchFn = (url: string): Promise<Response> => {
+    const path = url.slice(BASE.length);
+    requests.push(path);
+    if (path === `/block/${hash}`) return Promise.resolve(new Response(JSON.stringify({ id: hash, tx_count: txs.length, ...info })));
+    const m = /^\/block\/[0-9a-f]{64}\/txs\/(\d+)$/.exec(path);
+    const start = Number(m?.[1]);
+    if (m === null || start >= txs.length || start % 25 !== 0) return Promise.resolve(new Response('start index out of range', { status: 400 }));
+    return Promise.resolve(new Response(JSON.stringify(txs.slice(start, start + 25))));
+  };
+  return { hash, requests, client: new EsploraClient({ baseUrl: BASE, fetchFn }) };
+}
+
+/** Client for block `a…a`: its summary reports `txCount` transactions and every page request returns `page` as is. */
+function servePage(page: unknown, txCount = Array.isArray(page) ? page.length : 1): EsploraClient {
+  const hash = 'a'.repeat(64);
+  return new EsploraClient({
+    baseUrl: BASE,
+    fetchFn: (url) => Promise.resolve(new Response(JSON.stringify(url.endsWith(`/block/${hash}`) ? { id: hash, tx_count: txCount } : page))),
+  });
+}
+
+const SIMPLE_TX = withTxid({
+  version: 2,
+  locktime: 0,
+  vin: [{ txid: '12'.repeat(32), vout: 0, sequence: 0xffffffff, prevout: { scriptpubkey: `0014${'6'.repeat(40)}` }, scriptsig: '', witness: [], is_coinbase: false }],
+  vout: [{ scriptpubkey: `0014${'5'.repeat(40)}`, value: 1_000 }],
+});
+
 describe('normalizeEsploraUrl', () => {
   it('accepts https and loopback http, trims trailing slashes', () => {
     expect(normalizeEsploraUrl(' https://a.example/api/ ')).toBe('https://a.example/api');
@@ -92,7 +127,7 @@ describe('EsploraClient', () => {
     expect(await codeOf(respond('{"spent":"no"}').isUnspent('a'.repeat(64), 0))).toBe('INVALID_RESPONSE');
     expect(await codeOf(respond('[1]').feeRate(1))).toBe('INVALID_RESPONSE');
     expect(await codeOf(respond('{"1":"x"}').feeRate(1).then((v) => (v === undefined ? Promise.reject(new SilentPaymentError('INVALID_RESPONSE')) : v)))).toBe('INVALID_RESPONSE');
-    expect(await codeOf(respond('{}').blockTxs('a'.repeat(64)))).toBe('INVALID_RESPONSE');
+    expect(await codeOf(servePage({}).blockTxs('a'.repeat(64)))).toBe('INVALID_RESPONSE');
   });
 
   it('rejects malformed transactions', async () => {
@@ -109,11 +144,11 @@ describe('EsploraClient', () => {
       [{ txid: h, vin: [{ txid: h, vout: 0, prevout: { scriptpubkey: '00' }, scriptsig: '', witness: 'x', is_coinbase: false }], vout: [] }],
     ];
     for (const b of bad) {
-      const c = new EsploraClient({ baseUrl: BASE, fetchFn: () => Promise.resolve(new Response(JSON.stringify(b))) });
-      expect(await codeOf(c.blockTxs(h))).toBe('INVALID_RESPONSE');
+      expect(await codeOf(servePage(b).blockTxs(h))).toBe('INVALID_RESPONSE');
     }
-    const tooMany = new EsploraClient({ baseUrl: BASE, fetchFn: () => Promise.resolve(new Response(JSON.stringify(Array.from({ length: 26 }, () => 0)))) });
-    expect(await codeOf(tooMany.blockTxs(h))).toBe('INVALID_RESPONSE');
+    // A page longer than 25, or longer than the block summary announced, is refused before any transaction is parsed.
+    expect(await codeOf(servePage(Array.from({ length: 26 }, () => SIMPLE_TX), 30).blockTxs(h))).toBe('INVALID_RESPONSE');
+    expect(await codeOf(servePage([SIMPLE_TX, SIMPLE_TX], 1).blockTxs(h))).toBe('INVALID_RESPONSE');
   });
 
   it('encodes witnesses of any size (compact size boundaries)', async () => {
@@ -128,8 +163,7 @@ describe('EsploraClient', () => {
       ],
       vout: [{ scriptpubkey: '51', value: 1 }],
     });
-    const c = new EsploraClient({ baseUrl: BASE, fetchFn: () => Promise.resolve(new Response(JSON.stringify([tx]))) });
-    const [t] = await c.blockTxs(h);
+    const [t] = await servePage([tx]).blockTxs(h);
     expect(t?.inputs?.[0]?.witness).toHaveLength(302);
     expect(t?.inputs?.[0]?.witness[0]).toHaveLength(300);
     expect(t?.inputs?.[1]?.witness).toHaveLength(0);
@@ -141,7 +175,7 @@ describe('EsploraClient', () => {
       vin: [{ txid: '12'.repeat(32), vout: 7, sequence: 0, prevout: { scriptpubkey: `0014${'6'.repeat(40)}` }, scriptsig: '00'.repeat(300), witness: [], is_coinbase: false }],
       vout: Array.from({ length: 260 }, (_, k) => ({ scriptpubkey: `0014${'5'.repeat(40)}`, value: 1_000 + k })),
     });
-    const serve = (body: unknown) => new EsploraClient({ baseUrl: BASE, fetchFn: () => Promise.resolve(new Response(JSON.stringify([body]))) });
+    const serve = (body: unknown) => servePage([body]);
     expect((await serve(tx).blockTxs('a'.repeat(64)))[0]?.txid).toBe(tx.txid);
     const edits: unknown[] = [
       { ...tx, vout: tx.vout.map((o, k) => (k === 3 ? { ...o, value: o.value + 1 } : o)) },
@@ -156,6 +190,35 @@ describe('EsploraClient', () => {
       { ...tx, vin: [] },
     ];
     for (const e of edits) expect(await codeOf(serve(e).blockTxs('a'.repeat(64)))).toBe('INVALID_RESPONSE');
+  });
+
+  it('requests exactly the pages a block has, also when its last page is full (electrs answers 400 past the end)', async () => {
+    for (const n of [1, 24, 25, 26, 50]) {
+      const { client, hash, requests } = electrsBlock(Array.from({ length: n }, () => SIMPLE_TX));
+      expect(await client.blockTxs(hash)).toHaveLength(n);
+      const pages = Array.from({ length: Math.ceil(n / 25) }, (_, k) => `/block/${hash}/txs/${String(k * 25)}`);
+      expect(requests.filter((r) => r.includes('/txs/'))).toEqual(pages);
+    }
+  });
+
+  it('reads blocks of more than 10,000 transactions in full and refuses an impossible transaction count unread', async () => {
+    const big = electrsBlock(Array.from({ length: 10_001 }, () => SIMPLE_TX));
+    expect(await big.client.blockTxs(big.hash)).toHaveLength(10_001);
+    expect(big.requests.filter((r) => r.includes('/txs/'))).toHaveLength(401);
+    // 4,000,000 weight units hold at most 16,666 of the smallest (60-byte) transactions.
+    const impossible = electrsBlock([SIMPLE_TX], { tx_count: 16_667 });
+    expect(await codeOf(impossible.client.blockTxs(impossible.hash))).toBe('INVALID_RESPONSE');
+    expect(impossible.requests.some((r) => r.includes('/txs/'))).toBe(false);
+  });
+
+  it('refuses a block summary or pages that disagree with the transaction count', async () => {
+    const txs = Array.from({ length: 30 }, () => SIMPLE_TX);
+    for (const info of [{ tx_count: 0 }, { tx_count: 1.5 }, { tx_count: '30' }, { tx_count: 31 }, { tx_count: 29 }, { id: 'b'.repeat(64) }]) {
+      const { client, hash } = electrsBlock(txs, info);
+      expect(await codeOf(client.blockTxs(hash))).toBe('INVALID_RESPONSE');
+    }
+    const notRecord = new EsploraClient({ baseUrl: BASE, fetchFn: () => Promise.resolve(new Response('[]')) });
+    expect(await codeOf(notRecord.blockTxs('a'.repeat(64)))).toBe('INVALID_RESPONSE');
   });
 
   it('checks the genesis hash and always refuses mainnet', async () => {
@@ -247,7 +310,7 @@ describe('EsploraTweakSource and scanning', () => {
     expect(res.found[0]).toMatchObject({ vout: 1, amountSats: 50_000n, height: 3, label: null });
     expect(seen).toEqual([3]);
     // The server only ever saw heights, hashes, outpoints (no key material).
-    for (const r of chain.requests) expect(r).toMatch(/^GET \/(blocks\/tip\/height|block-height\/\d+|block\/[0-9a-f]{64}\/txs\/\d+|block\/[0-9a-f]{64}\/header|tx\/[0-9a-f]{64}\/outspend\/\d+)$/);
+    for (const r of chain.requests) expect(r).toMatch(/^GET \/(blocks\/tip\/height|block-height\/\d+|block\/[0-9a-f]{64}|block\/[0-9a-f]{64}\/txs\/\d+|block\/[0-9a-f]{64}\/header|tx\/[0-9a-f]{64}\/outspend\/\d+)$/);
 
     chain.spent.add(`${res.found[0]?.txid ?? ''}:1`);
     const again = await scanForPayments({ client, wallet: w, fromHeight: 3, toHeight: 3 });
@@ -306,6 +369,15 @@ describe('EsploraTweakSource and scanning', () => {
     chain.blocks[0]!.hash = 'ee'.repeat(32);
     ({ src } = { src: new EsploraTweakSource(new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn }), btcNetwork('regtest')) });
     expect(await code(src.getOutputs(0))).toBe('NETWORK_MISMATCH');
+  });
+
+  it('scans a block whose transaction count is a multiple of 25', async () => {
+    const w = walletA();
+    const chain = mockChain('regtest', w, { block2Txs: 25 });
+    const client = new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn });
+    const res = await scanForPayments({ client, wallet: w, fromHeight: 1 });
+    expect(res.found).toHaveLength(1);
+    expect(chain.requests.filter((r) => r.includes('/txs/') && r.includes(chain.blocks[2]!.hash))).toHaveLength(1);
   });
 
   it('validates the range', async () => {

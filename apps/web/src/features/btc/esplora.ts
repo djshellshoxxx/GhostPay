@@ -21,7 +21,11 @@ export type EsploraFetch = (url: string, init: RequestInit) => Promise<Response>
 /** Esplora returns 25 transactions per `/block/:hash/txs/:start` page. */
 const PAGE = 25;
 const MAX_TEXT = 16 * 1024 * 1024;
-const MAX_PAGES = 400; // 10_000 transactions; bigger blocks are refused rather than silently truncated
+/**
+ * Most transactions a valid block can hold: 4,000,000 weight units / 240 for the smallest possible (60-byte)
+ * transaction. A larger claimed count is refused before any page is downloaded; anything up to it is read in full.
+ */
+const MAX_BLOCK_TXS = 16_666;
 const HEX64 = /^[0-9a-f]{64}$/;
 
 function bad(): never {
@@ -184,8 +188,8 @@ export interface EsploraClientOptions {
 
 /**
  * Minimal client for the Esplora REST API (the Blockstream/mempool.space style used by many servers).
- * Endpoints: `GET /blocks/tip/height`, `GET /block-height/:h`, `GET /block/:hash/txs/:start`,
- * `GET /tx/:txid/outspend/:vout`, `GET /fee-estimates`, `POST /tx`.
+ * Endpoints: `GET /blocks/tip/height`, `GET /block-height/:h`, `GET /block/:hash`, `GET /block/:hash/txs/:start`,
+ * `GET /block/:hash/header`, `GET /tx/:txid/outspend/:vout`, `GET /fee-estimates`, `POST /tx`.
  *
  * @security Responses are untrusted and validated. Only block heights, outpoints and the raw
  * transaction you broadcast are sent; no key material ever reaches this class.
@@ -237,17 +241,24 @@ export class EsploraClient {
     return HEX64.test(t) ? t : bad();
   }
 
-  /** All transactions of a block, in block order. */
+  /**
+   * All transactions of a block, in block order. The page count comes from the block's `tx_count`: electrs answers
+   * a start index at or past the end with an HTTP error, not an empty page, so a full last page must not lead to
+   * another request. The count itself is the server's word; the header Merkle root check catches a wrong one.
+   */
   public async blockTxs(hash: string, signal?: AbortSignal): Promise<readonly EsploraTx[]> {
     if (!HEX64.test(hash)) throw new SilentPaymentError('INVALID_INPUT');
+    const info = await this.json(`/block/${hash}`, signal);
+    if (!isRecord(info) || info['id'] !== hash) return bad();
+    const count = uint(info['tx_count']);
+    if (count === 0 || count > MAX_BLOCK_TXS) return bad();
     const txs: EsploraTx[] = [];
-    for (let page = 0; page < MAX_PAGES; page++) {
-      const body = await this.json(`/block/${hash}/txs/${String(page * PAGE)}`, signal);
-      if (!Array.isArray(body) || body.length > PAGE) return bad();
+    for (let start = 0; start < count; start += PAGE) {
+      const body = await this.json(`/block/${hash}/txs/${String(start)}`, signal);
+      if (!Array.isArray(body) || body.length !== Math.min(PAGE, count - start)) return bad();
       for (const t of body) txs.push(parseTx(t));
-      if (body.length < PAGE) return txs;
     }
-    return bad();
+    return txs;
   }
 
   /** The 80-byte block header as hex. */
