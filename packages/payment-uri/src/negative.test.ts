@@ -253,6 +253,26 @@ const cases: [string, () => unknown, string][] = [
   ['link bad b64', () => P.parseInvoiceLink('https://a.example/pay#gpi=v1.AA=A'), 'INVALID_LINK'],
   ['link b64 len', () => P.parseInvoiceLink('https://a.example/pay#gpi=v1.AAAAA'), 'INVALID_LINK'],
   ['link ip', () => P.parseInvoiceLink('https://10.0.0.1/pay#gpi=v1.AAAA'), 'INVALID_LINK'],
+  // G1-03: hosts the WHATWG URL parser reads as IPv4 (its "ends in a number" rule), not only dotted decimal.
+  ['link ip decimal int', () => P.parseInvoiceLink('https://2130706433/pay#gpi=v1.AAAA'), 'INVALID_LINK'],
+  ['link ip hex loopback', () => P.parseInvoiceLink('https://0x7f000001/pay#gpi=v1.AAAA'), 'INVALID_LINK'],
+  ['link ip hex short', () => P.parseInvoiceLink('https://0x7f.1/pay#gpi=v1.AAAA'), 'INVALID_LINK'],
+  ['link ip mixed', () => P.parseInvoiceLink('https://1.2.3.0x4/pay#gpi=v1.AAAA'), 'INVALID_LINK'],
+  ['link ip hex link-local', () => P.parseInvoiceLink('https://0xa9.0xfe.0xa9.0xfe/pay#gpi=v1.AAAA'), 'INVALID_LINK'],
+  ['link ip hex rfc1918', () => P.parseInvoiceLink('https://0xc0.0xa8.0.1/pay#gpi=v1.AAAA'), 'INVALID_LINK'],
+  ['link ip octal', () => P.parseInvoiceLink('https://0177.0.0.1/pay#gpi=v1.AAAA'), 'INVALID_LINK'],
+  ['link ip upper hex', () => P.parseInvoiceLink('https://0X7F000001/pay#gpi=v1.AAAA'), 'INVALID_LINK'],
+  ['link ip bare 0x label', () => P.parseInvoiceLink('https://a.example.0x/pay#gpi=v1.AAAA'), 'INVALID_LINK'],
+  [
+    'link ip hex loopback in dev',
+    () => P.parseInvoiceLink('https://0x7f000001/pay#gpi=v1.AAAA', { allowLocalDev: true }),
+    'INVALID_LINK',
+  ],
+  [
+    'link ip hex short over http in dev',
+    () => P.parseInvoiceLink('http://0x7f.1/pay#gpi=v1.AAAA', { allowLocalDev: true }),
+    'INVALID_LINK',
+  ],
   ['link localhost', () => P.parseInvoiceLink('https://localhost/pay#gpi=v1.AAAA'), 'INVALID_LINK'],
   ['link unicode host', () => P.parseInvoiceLink('https://exаmple.com/pay#gpi=v1.AAAA'), 'INVALID_LINK'],
   [
