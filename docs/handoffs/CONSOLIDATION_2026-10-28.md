@@ -93,6 +93,41 @@ A separate worker built `apps/web/dist` in an isolated worktree, using the same 
 
 The authoritative exact-head evidence is the GitHub `hosting-kit` workflow (`kit`, `qualify-ghostpay-web`) on PR #37.
 
+## AI-assisted security audit (audit 24): status and how to resume
+
+The report is [audit 24](../audits/24-ai-assisted-security-audit-2026-10-28.md). It is AI-assisted and is not a professional audit. It contains 83 verified findings: 2 High, 12 Medium, 44 Low and 25 Info. Every finding has its status, the verifier's reasoning, evidence and a recommended fix.
+
+**In this branch**
+- `e8cdb31` fixes L1-05 (sweep-lock compare-and-swap).
+- The hosting fix set is merged: kit, deploy, infra, CI, embed headers and the release boundary.
+  - Findings fixed: L7-M1, L7-M2, L7-M3, L7-M4, L7-L1, L7-L2, L7-L4, L7-L5, L7-I1, L8-04 and L3-F7.
+  - Review follow-ups fixed: `a2b8e73`, `583bfeb`, `7d0f9c1` and `f6a20af`.
+- The relayer fix set is merged.
+  - Findings fixed: L5-01, L5-02, L5-03, L5-04, L5-05, L5-06, L5-07, L5-10 and L7-L3.
+  - Docs follow-up: `1d314e4`.
+- Each fix has a test that fails before it. An AI reviewer agent approved each fix set.
+- The review follow-ups were fixed by the integrator and were not independently reviewed. Open review items are listed in the report.
+
+**Not in this branch**
+- The fix agents stopped when the account's usage limit was reached, at about 13:00 UTC and again later.
+- Clusters A (scanner), C (keys), G (BTC/Solana/TRON views) and H (merchant plugins) left partial, unreviewed commits and changes. These exist only on local branches in this session's container (`fix-A-scanner`, `fix-C-keys`, `fix-G-chains`, `fix-H-merchant`) and are lost if the container is reclaimed.
+- Clusters B (sweep guards), B2 (pay path) and C2 (secret inputs) were not started.
+- The report's recommended fixes are enough to redo any of this work.
+
+**To resume** (per cluster, in a worktree from this branch)
+1. Write a failing test first, then the minimal fix, then get an independent review. The finding IDs and recommended fixes are in the report.
+2. Ownership boundaries used so far:
+   - A: scanner, `logs.ts`, `scanVerify.ts`, `Scan.tsx` and the reconciliation vault.
+   - C: `App.tsx`, `SellerKeys.tsx`, `CreateInvoice.tsx`, the key vault, keystore, session and tags.
+   - B: `sweep.ts`, `txGuard.ts`, `Sweep.tsx` send/lock code and `rpc.ts` error classification.
+   - B2: `Pay.tsx`, `payExec.ts` submit verification, `wallet.ts`, `format.ts`, schema time caps and `payment-uri`.
+   - G: `features/btc|solana|tron` and a new `lib/appLock.ts`.
+   - H: `integrations/`, `examples/` and `merchant-hooks`.
+3. Integration-time wiring: `App.tsx` must wrap the view in the new `ErrorBoundary` (G1-01) and call `notifyAppLock('idle')` next to `clearSession()` (G2-02).
+4. Delete `requireSession` once A and C have both merged.
+5. Expected merge conflicts: `apps/web/locales/en.json`, `Sweep.tsx`, `payExec.ts` and `rpc.ts`.
+6. Run the combined suites before pushing: `build:libs`, all-workspace typecheck and lint, the web suite with coverage, relayer, guard, kit, `deploy/selftest.sh`, `scripts/tests`, `check-headers.sh`, and the PHP suites for H.
+
 ## Still open / gates
 
 1. Owner review and merge of PR #37. PR #37 supersedes #30 and #36 if accepted; close those only on the owner's decision. No merge authority is assumed.
@@ -120,4 +155,6 @@ The authoritative exact-head evidence is the GitHub `hosting-kit` workflow (`kit
 
 ## Next bounded task
 
-Read the PR #37 CI results on the head commit and fix anything red. Triage and fix the findings of the 2026-10-28 AI-assisted security audit (in progress). Translator work: the new `sweep.*` keys for es/ja/ar.
+1. Read the PR #37 CI results on the head commit and fix anything red.
+2. Resume the audit-24 fixes in this order: the two Highs (L1-01 in cluster C, L4-01 in cluster A), then L2-F2 (native sweep on OP-stack, cluster B), then the remaining Mediums.
+3. Translator work: the new `sweep.*` keys for es/ja/ar.
