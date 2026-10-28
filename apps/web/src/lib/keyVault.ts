@@ -200,9 +200,9 @@ export async function readEncryptedVault(store: KeyVaultStore = activeStore()): 
 
 /**
  * Step-up before the loaded keys leave this tab under a new passphrase (keystore download, a new vault record): when they
- * are tied to a vault (unlocked from or saved to it in this session, or a saved vault names the same meta-address) its
- * passphrase is required (L1-02). Resolves to a guard for the same keys, or to undefined when no vault is involved; a
- * store that cannot be read counts as no vault, because the record these keys were unlocked from is held in memory.
+ * are tied to a vault (unlocked from, saved to, found in or verified against it in this session, or a saved vault names
+ * the same meta-address) its passphrase is required (L1-02). Resolves to a guard for the same keys, or to undefined when no
+ * vault is involved; a store that cannot be read counts as no vault, because a record the keys are tied to is held in memory.
  */
 export async function authorizeKeyExport(vaultPassphrase: string, store: KeyVaultStore = activeStore()): Promise<(() => void) | undefined> {
   const unchanged = captureSessionGuard();
