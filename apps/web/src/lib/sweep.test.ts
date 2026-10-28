@@ -48,6 +48,13 @@ describe('key derivation and destination checks', () => {
     clearSession();
     expect(() => deriveVerifiedSweepKey(target)).toThrow(/Load or generate/);
   });
+  it('L4-02: derives the key of a deep-scan payment whose announced view tag is wrong; the address checks still apply', () => {
+    const tag = parseInt(target.announcement.metadata.slice(2, 4), 16) ^ 0x5a;
+    const wrong: SweepTarget = { ...target, announcement: { ...target.announcement, metadata: `0x${tag.toString(16).padStart(2, '0')}` } };
+    expect(addressOfSecret(deriveVerifiedSweepKey(wrong))).toBe(target.owner);
+    expect(() => deriveVerifiedSweepKey({ ...wrong, owner: '0x9999999999999999999999999999999999999999' })).toThrow(/does not control/);
+    expect(() => deriveVerifiedSweepKey({ ...wrong, announcement: { ...wrong.announcement, stealthAddress: '0x9999999999999999999999999999999999999999' } })).toThrow(/does not map to the announced address/);
+  });
   it('validates the destination', () => {
     expect(checkDestination(DEST.toLowerCase(), target.owner, manifest)).toBe(DEST);
     expect(() => checkDestination('nope', target.owner, manifest)).toThrow(/valid destination/);

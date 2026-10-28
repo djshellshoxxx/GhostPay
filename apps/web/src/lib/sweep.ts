@@ -34,9 +34,15 @@ export interface SweepTarget {
 
 type Rpc = Pick<RpcClient, 'request'>;
 
-/** Derives the stealth key in memory and proves it controls `owner` before it is ever used. */
+/**
+ * Derives the stealth key in memory and proves it controls `owner` before it is ever used.
+ *
+ * @remarks The announced view tag is not compared (L4-02): it is only a scan filter, and a payment the deep scan found
+ * despite a payer-published wrong tag is still the seller's. Control is proven by the derived address alone, inside
+ * `deriveStealthSecret` (against the announced address) and below (against the address being swept).
+ */
 export function deriveVerifiedSweepKey(target: SweepTarget): SecretScalar {
-  const secret = withSessionSecrets((s) => deriveStealthSecret(target.announcement, s.keys));
+  const secret = withSessionSecrets((s) => deriveStealthSecret(target.announcement, s.keys, { ignoreViewTag: true }));
   if (addressOfSecret(secret) !== target.owner) {
     zeroize(secret);
     throw new UserFacingError('Blocked: the derived key does not control that address.');
