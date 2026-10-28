@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import type { SilentPaymentKeys } from '@ghostpay/btc-silent-payments';
+import { SilentPaymentError, type SilentPaymentKeys } from '@ghostpay/btc-silent-payments';
 import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -7,6 +7,7 @@ import { notifyAppLock } from '../../lib/appLock';
 import { makeServices, renderWith } from '../../test/render';
 import { BtcView } from './BtcView';
 import { mockChain, SEED_A, walletA } from './fixtures.testutil';
+import type { ScanParams, ScanResult } from './scan';
 
 const observed = vi.hoisted(() => ({ keys: [] as SilentPaymentKeys[], tweaks: [] as Uint8Array[], seeds: [] as Uint8Array[] }));
 /** The seed "Create new test wallet" gets, so the bytes the view keeps for its backup can be observed. */
@@ -45,6 +46,19 @@ vi.mock('@ghostpay/btc-silent-payments', async (importOriginal) => {
   };
 });
 
+/** Lets a test wrap the view's scanForPayments; the real one is passed in. */
+const scanHook = vi.hoisted(() => ({
+  wrap: undefined as ((p: ScanParams, real: (p: ScanParams) => Promise<ScanResult>) => Promise<ScanResult>) | undefined,
+}));
+
+vi.mock('./scan', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./scan')>();
+  return {
+    ...actual,
+    scanForPayments: (p: ScanParams) => (scanHook.wrap === undefined ? actual.scanForPayments(p) : scanHook.wrap(p, actual.scanForPayments)),
+  };
+});
+
 const wiped = (b: Uint8Array | undefined): boolean => b !== undefined && b.every((x) => x === 0);
 type User = ReturnType<typeof userEvent.setup>;
 
@@ -73,6 +87,7 @@ describe('BtcView key and spend-tweak lifetime', () => {
     observed.seeds.length = 0;
   });
   afterEach(() => {
+    scanHook.wrap = undefined;
     for (const k of observed.keys) {
       k.scanSecret.fill(0);
       k.spendSecret.fill(0);
@@ -124,11 +139,17 @@ describe('BtcView key and spend-tweak lifetime', () => {
     expect(wiped(keys.scanSecret) && wiped(keys.spendSecret)).toBe(true);
   });
 
-  it('drops and wipes a scan that finishes after Lock', async () => {
+  it('Lock cancels a running scan: it ends as cancelled, wipes the spend tweaks it produced and shows nothing', async () => {
     const chain = mockChain('regtest', walletA());
     let release: () => void = () => undefined;
     const gate = new Promise<void>((r) => { release = r; });
     let held = false;
+    let ended: string | undefined;
+    scanHook.wrap = (p, real) => {
+      const r = real(p);
+      r.then(() => { ended = 'resolved'; }, (e: unknown) => { ended = e instanceof SilentPaymentError ? e.code : 'other'; });
+      return r;
+    };
     const { user } = await ready(async (url, init) => {
       if (url.includes('/outspend/')) {
         held = true;
@@ -142,10 +163,37 @@ describe('BtcView key and spend-tweak lifetime', () => {
     expect(observed.tweaks).toHaveLength(1);
     await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
     release();
-    await new Promise((r) => setTimeout(r, 50));
+    await waitFor(() => { expect(ended).toBe('ABORTED'); });
+    expect(observed.tweaks.every(wiped)).toBe(true);
     expect(screen.queryByRole('alert')).toBeNull();
     expect(screen.queryByText(/unspent payment/)).toBeNull();
-    expect(observed.tweaks.every(wiped)).toBe(true);
+    expect(screen.getByRole('button', { name: 'Create new test wallet' })).toBeTruthy();
+  });
+
+  it('drops and wipes a scan result that arrives after Lock (a scan that does not stop when cancelled)', async () => {
+    let release: () => void = () => undefined;
+    const gate = new Promise<void>((r) => { release = r; });
+    let held = false;
+    // Scans to the end without the cancel signal, then hands the result over only once released.
+    scanHook.wrap = async (p, real) => {
+      const res = await real({ client: p.client, wallet: p.wallet, fromHeight: p.fromHeight });
+      held = true;
+      await gate;
+      return res;
+    };
+    const { user } = await ready();
+    await user.type(screen.getByLabelText(/First block height/), '0');
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    await waitFor(() => { expect(held).toBe(true); });
+    expect(observed.tweaks).toHaveLength(1);
+    await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
+    // Lock cannot reach a result the view has not received yet.
+    expect(wiped(observed.tweaks[0])).toBe(false);
+    release();
+    await waitFor(() => { expect(wiped(observed.tweaks[0])).toBe(true); });
+    expect(screen.queryByRole('alert')).toBeNull();
+    expect(screen.queryByText(/unspent payment/)).toBeNull();
+    expect(screen.queryByText(/Scanned blocks/)).toBeNull();
     expect(screen.getByRole('button', { name: 'Create new test wallet' })).toBeTruthy();
   });
 
