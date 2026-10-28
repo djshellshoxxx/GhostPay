@@ -46,7 +46,8 @@ node bin/ghostpay-host.mjs profile /tmp/ghostpay-web.zip --config host.json --ou
 Exit codes: 0 ok, 1 validation/verification failed, 2 usage error, 3 I/O or internal error. `--json` gives
 machine-readable output for `validate`, `package`, `verify`, `profile`. An option the command does not use is a usage
 error (it is never silently ignored). `package --git-dir` refuses a repository that configures a filter driver
-(`filter.<name>.clean/smudge/process`) and never enters submodules, so recording provenance runs no repository-defined command.
+(`filter.<name>.clean/smudge/process`) and never enters submodules (with fsmonitor already disabled), so `git status` cannot
+run a repository-defined filter or fsmonitor command while recording provenance.
 
 ## What goes into an archive
 
