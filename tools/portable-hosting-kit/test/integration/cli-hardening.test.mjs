@@ -1,6 +1,6 @@
 // @ts-check
-// Regression tests for the independent review of the CLI (findings 4, 7, 8, 10 and the profile writeAll bug) and for
-// audit cluster E (L7-M3, L7-L5, L7-L2, L7-M1).
+// Regression tests for the independent review of the CLI (findings 4, 7, 8, 10 and the profile writeAll bug), for
+// audit cluster E (L7-M3, L7-L5, L7-L2, L7-M1) and for its review (E-R1).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
@@ -8,7 +8,7 @@ import { existsSync } from 'node:fs';
 import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { main, termSafe, metadataWarnings, openVerified, runPreview } from '../../src/cli.mjs';
+import { main, termSafe, metadataWarnings, openVerified, runPreview, OUTPUT_MARKER } from '../../src/cli.mjs';
 import { extractArchive } from '../../src/core/verify.mjs';
 import { writeDemoSite } from '../../src/demo/demo-site.mjs';
 
@@ -266,6 +266,34 @@ test('an unpacked directory is copied before it is verified and used (audit L7-L
     await symlink('/etc/hostname', join(topDir, 'site', 'linked.txt'));
     await assert.rejects(openVerified(topDir, {}), (e) => /** @type {{ code?: string }} */ (e).code === 'E_VERIFY');
     assert.equal((await cli(['preview', topDir, '--expect-sha256', 'a'.repeat(64)], dir)).code, 2);
+  });
+});
+
+test('profile refuses an --out inside or containing an unpacked-directory input (review E-R1)', async () => {
+  await withTmp(async (dir) => {
+    await writeDemoSite(join(dir, 'site'));
+    assert.equal((await cli(['package', 'site', '--out', 'a.zip'], dir)).code, 0);
+    const { topDir } = await extractArchive(join(dir, 'a.zip'), join(dir, 'in'));
+    await writeFile(join(dir, 'h.json'), CLEARNET);
+    const refused = /E_USAGE: --out .* and the input directory .* must not contain each other/;
+    // The export reads a private copy, so its own site/out check no longer sees the input: below site/, beside it, the
+    // input itself, and a path that reaches into it through a symlink.
+    await symlink(join(topDir, 'site'), join(dir, 'link'));
+    for (const out of [join(topDir, 'site', 'out'), join(topDir, 'out'), topDir, join('link', 'out')]) {
+      const r = await cli(['profile', topDir, '--config', 'h.json', '--out', out, '--with', 'static,nginx'], dir);
+      assert.equal(r.code, 2, `${out}: ${r.err}`);
+      assert.match(r.err, refused);
+    }
+    // Containing the input: a kit-generated (replaceable) directory around it would be replaced wholesale.
+    await writeFile(join(dir, 'in', 'PROFILE-README.md'), `${OUTPUT_MARKER}\n`);
+    const around = await cli(['profile', topDir, '--config', 'h.json', '--out', 'in', '--with', 'nginx'], dir);
+    assert.equal(around.code, 2, around.err);
+    assert.match(around.err, refused);
+    assert.equal(existsSync(join(dir, 'in', 'PROFILE-README.md')), true, 'the directory around the input was not replaced');
+    const v = await cli(['verify', topDir], dir);
+    assert.equal(v.code, 0, `the input is unchanged: ${v.out}`);
+    const ok = await cli(['profile', topDir, '--config', 'h.json', '--out', 'p', '--with', 'static'], dir);
+    assert.equal(ok.code, 0, ok.err);
   });
 });
 
