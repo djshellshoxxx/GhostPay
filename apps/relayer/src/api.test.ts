@@ -44,7 +44,7 @@ describe('basic routes, headers and CORS', () => {
     const s = await start();
     const r = await call(s, 'GET', '/healthz');
     expect(r.status).toBe(200);
-    expect(r.json).toEqual({ status: 'ok', chains: [{ chainId: CHAIN_ID, breaker: 'closed' }] });
+    expect(r.json).toEqual({ status: 'ok', chains: [{ chainId: CHAIN_ID, breaker: 'closed', minedReverts: 'normal' }] });
     for (const k of [
       'x-content-type-options',
       'cache-control',
@@ -569,6 +569,33 @@ describe('permit griefing fallback ladder (spec 04)', () => {
     expect(s.fake.sent).toHaveLength(0);
   });
 
+  it('L5-01: a permit that lapses before the sweep deadline is refused before any simulation', async () => {
+    // The permit is outside the sweep signature and the quote MAC and the contract swallows a failed permit, so one
+    // that expires before inclusion would be a mined revert paid by the relayer.
+    const s = await start();
+    s.fake.allowance = 0n;
+    for (const [n, offset] of [[1n, 1], [2n, 599]] as const) {
+      const { body } = await prepare(s, { permit: true, nonce: n }); // sweep deadline: now + 600
+      (body['permit'] as Record<string, string>)['deadline'] = String(NOW_SEC + offset);
+      const r = await call(s, 'POST', '/v1/sweep', body);
+      expect(r.status).toBe(422);
+      expect(errCode(r)).toBe('permit_expired');
+    }
+    expect(s.fake.simulations).toBe(0);
+    expect(s.fake.sent).toHaveLength(0);
+    // Clients sign permit.deadline == sweep.deadline (apps/web sweep.ts, hops): accepted with no margin; later is fine too.
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { permit: true, nonce: 3n })).body)).status).toBe(200);
+    const later = await prepare(s, { permit: true, nonce: 4n });
+    (later.body['permit'] as Record<string, string>)['deadline'] = String(NOW_SEC + 3600);
+    expect((await call(s, 'POST', '/v1/sweep', later.body)).status).toBe(200);
+    // The ladder still drops an unneeded permit, whatever its deadline.
+    s.fake.allowance = 10n ** 30n;
+    const covered = await prepare(s, { permit: true, nonce: 5n });
+    (covered.body['permit'] as Record<string, string>)['deadline'] = String(NOW_SEC + 1);
+    expect((await call(s, 'POST', '/v1/sweep', covered.body)).status).toBe(200);
+    expect(s.fake.sent.map((x) => x.call.permit === undefined)).toEqual([false, false, true]);
+  });
+
   it('a permit the token rejects (generic allowance revert) is reported as permit_failed, nothing sent', async () => {
     const s = await start();
     s.fake.allowance = 0n;
@@ -867,6 +894,188 @@ describe('simulation, replay and operational limits', () => {
   });
 });
 
+describe('loss budget accounting (L5-02, L5-04)', () => {
+  const estimate = 150_000n * 1_000_000_000n; // reserved per sweep: gas limit x gas price
+  const proxies = ['127.0.0.1', '::1', '::ffff:127.0.0.1'];
+  const dest = (i: number): `0x${string}` => `0x${(0xd000 + i).toString(16).padStart(40, '0')}`;
+  // A distinct owner per sweep, so the per-owner failure counter (3 per hour) stays out of the way.
+  const ownerKey = (i: number): `0x${string}` => `0x${(0x100 + i).toString(16).padStart(64, '0')}`;
+  const sweepAs = async (s: Harness, nonce: bigint, i: number, ip: string, amount?: bigint): Promise<string> => {
+    const body = (await prepare(s, { nonce, destination: dest(i), ownerKey: ownerKey(i), ...(amount === undefined ? {} : { amount }) })).body;
+    const r = await call(s, 'POST', '/v1/sweep', body, { 'x-forwarded-for': ip });
+    await settle();
+    return r.status === 200 ? '200' : errCode(r);
+  };
+
+  it('L5-04: stale loss groups are evicted, so newcomers do not all share one overflow group', async () => {
+    const lossBudget = { windowSeconds: 3600, perKeyWei: 200_000_000_000_000n, globalWei: 10n ** 17n, maxKeys: 16 };
+    const s = await start({ config: { lossBudget, trustedProxies: proxies } });
+    // 8 ordinary sweeps (distinct destination and /24): 16 groups seen, all stale two windows later
+    for (let i = 0; i < 8; i++) expect(await sweepAs(s, BigInt(i + 1), i, `198.51.${i + 1}.1`)).toBe('200');
+    s.clock.ms += 2 * 3_600_000;
+    s.fake.receipt = { status: 'reverted', gasUsed: 100_000n };
+    expect(await sweepAs(s, 100n, 100, '203.0.113.9')).toBe('200'); // a fresh source's revert is charged to it alone
+    s.fake.receipt = { status: 'success', gasUsed: 100_000n };
+    expect(await sweepAs(s, 101n, 200, '192.0.2.77')).toBe('200'); // an unrelated newcomer is not refused
+    const text = s.relayer.metrics.render();
+    expect(text).not.toContain('relayer_loss_budget_overflow_total');
+  });
+
+  it('L5-04: a reservation that has to use an overflow entry is counted', async () => {
+    // One live slot per table: a sweep's destination and network cannot both have their own entry.
+    const lossBudget = { windowSeconds: 3600, perKeyWei: 10n ** 18n, globalWei: 10n ** 18n, maxKeys: 1 };
+    const s = await start({ config: { lossBudget, trustedProxies: proxies } });
+    expect(await sweepAs(s, 1n, 1, '198.51.1.1')).toBe('200');
+    expect(s.relayer.metrics.render()).toContain('relayer_loss_budget_overflow_total{chain_id="11155111"} 1');
+  });
+
+  it('L5-04: with production limits, new users are served after a day of earlier traffic', async () => {
+    const lossBudget = { windowSeconds: 3600, perKeyWei: 5_000_000_000_000_000n, globalWei: 50_000_000_000_000_000n, maxKeys: 16 };
+    const s = await start({ config: { lossBudget, trustedProxies: proxies } });
+    s.fake.gasPrice = 20_000_000_000n; // reservation 150k x 20 gwei = 3e15 per sweep
+    const amount = 1_000_000_000n; // 1000 USDC: the capped fee covers gas at 20 gwei
+    for (let i = 0; i < 8; i++) expect(await sweepAs(s, BigInt(i + 1), i, `198.51.${i + 1}.1`, amount)).toBe('200');
+    s.clock.ms += 25 * 3_600_000; // next salt epoch: every earlier entry is stale
+    for (let i = 0; i < 3; i++) expect(await sweepAs(s, BigInt(100 + i), 100 + i, `192.0.${i + 2}.77`, amount)).toBe('200');
+  });
+
+  it('L5-02: the global loss cap is charged once per sweep, not once per key', async () => {
+    const lossBudget = { windowSeconds: 3600, perKeyWei: 10n ** 18n, globalWei: 2n * estimate, maxKeys: 100 };
+    const s = await start({ config: { lossBudget, trustedProxies: proxies } });
+    s.fake.receipt = { status: 'reverted', gasUsed: 150_000n };
+    expect(await sweepAs(s, 1n, 1, '198.51.1.1')).toBe('200');
+    expect(await sweepAs(s, 2n, 2, '198.51.2.1')).toBe('200'); // was 429 at half the configured cap
+    expect(await sweepAs(s, 3n, 3, '198.51.3.1')).toBe('loss_budget_exhausted');
+  });
+
+  it('L5-02: sources that lost money in this window cannot spend the slice kept for clean sources', async () => {
+    const lossBudget = { windowSeconds: 3600, perKeyWei: 10n ** 18n, globalWei: 4n * estimate, maxKeys: 100 };
+    const s = await start({ config: { lossBudget, trustedProxies: proxies } });
+    s.fake.receipt = { status: 'reverted', gasUsed: 150_000n };
+    // one network group, a fresh destination each time, every sweep a mined revert
+    const outcomes: string[] = [];
+    for (let i = 0; i < 6 && outcomes.at(-1) !== 'loss_budget_exhausted'; i++) {
+      outcomes.push(await sweepAs(s, BigInt(10 + i), 10 + i, `203.0.113.${i + 1}`));
+    }
+    expect(outcomes).toEqual(['200', '200', '200', 'loss_budget_exhausted']); // 3/4 of the global cap
+    s.fake.receipt = { status: 'success', gasUsed: 100_000n };
+    // an unrelated, clean source is still served from the remaining quarter
+    expect(await sweepAs(s, 50n, 50, '192.0.2.10')).toBe('200');
+    expect(await sweepAs(s, 51n, 51, '192.0.3.10')).toBe('200'); // a success releases its reservation
+  });
+
+  it('L5-02: a sustained mined-revert rate alerts and degrades /healthz while the breaker stays closed', async () => {
+    const alerts: string[] = [];
+    const lossBudget = { windowSeconds: 3600, perKeyWei: 10n ** 18n, globalWei: 10n ** 18n, maxKeys: 100 };
+    const s = await start({ config: { lossBudget, trustedProxies: proxies }, alerts: { send: (e) => alerts.push(e.kind) } });
+    s.fake.receipt = { status: 'reverted', gasUsed: 150_000n };
+    for (let i = 0; i < 2; i++) expect(await sweepAs(s, BigInt(i + 1), i, `198.51.${i + 1}.1`)).toBe('200');
+    expect((await call(s, 'GET', '/healthz')).status).toBe(200); // below minSamples (3)
+    expect(await sweepAs(s, 3n, 3, '198.51.3.1')).toBe('200');
+    expect(alerts).toContain('mined_revert_rate');
+    const h = await call(s, 'GET', '/healthz');
+    expect(h.status).toBe(503);
+    expect(h.json).toEqual({ status: 'degraded', chains: [{ chainId: CHAIN_ID, breaker: 'closed', minedReverts: 'sustained' }] });
+    // successes dilute the rate below failureRatio (3 of 7 < 0.5)
+    s.fake.receipt = { status: 'success', gasUsed: 100_000n };
+    for (let i = 4; i < 8; i++) expect(await sweepAs(s, BigInt(i), i, `198.51.${i}.1`)).toBe('200');
+    expect((await call(s, 'GET', '/healthz')).status).toBe(200);
+    // and old reverts age out with the loss window
+    s.fake.receipt = { status: 'reverted', gasUsed: 150_000n };
+    for (let i = 8; i < 12; i++) await sweepAs(s, BigInt(i), i, `198.51.${i}.1`);
+    expect((await call(s, 'GET', '/healthz')).status).toBe(503);
+    s.clock.ms += 3_600_000;
+    expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'ok', chains: [{ minedReverts: 'normal' }] });
+  });
+});
+
+describe('receipt timeouts (L5-06)', () => {
+  const estimate = 150_000n * 1_000_000_000n; // gas limit x gas price reserved per sweep
+  const budgetUsed = (s: Harness): bigint =>
+    BigInt(/relayer_daily_budget_used_wei\{[^}]*\} (\d+)/.exec(s.relayer.metrics.render())?.[1] ?? '-1');
+
+  it('a receipt timeout records a breaker failure and alerts', async () => {
+    const alerts: string[] = [];
+    const s = await start({ alerts: { send: (e) => alerts.push(e.kind) } });
+    s.fake.receipt = { status: 'timeout', gasUsed: 0n };
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 1n })).body)).status).toBe(200);
+    await settle();
+    expect(alerts).toEqual(['receipt_timeout']);
+    s.fake.receipt = { status: 'success', gasUsed: 0n };
+    s.fake.receiptError = new Error('provider disconnected'); // a throwing wait is a timeout too
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 2n })).body)).status).toBe(200);
+    await settle();
+    // success at broadcast + failure at timeout, twice: 2 of 4 >= failureRatio 0.5 with minSamples 3
+    expect(alerts).toContain('breaker_open');
+    expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'degraded', chains: [{ breaker: 'open' }] });
+  });
+
+  it('keeps the reservations of a timed-out transaction until a later lookup finds its receipt', async () => {
+    const s = await start({
+      config: {
+        trustedProxies: ['127.0.0.1', '::1', '::ffff:127.0.0.1'],
+        lossBudget: { windowSeconds: 3600, perKeyWei: estimate, globalWei: 10n ** 18n, maxKeys: 100 },
+      },
+    });
+    const sweepFrom = async (nonce: bigint, destination: `0x${string}`, ip: string) => {
+      const r = await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce, destination })).body, { 'x-forwarded-for': ip });
+      await settle();
+      return r.status === 200 ? 200 : errCode(r);
+    };
+    s.fake.receipt = { status: 'timeout', gasUsed: 0n };
+    expect(await sweepFrom(1n, DEST, '198.51.1.1')).toBe(200);
+    expect(budgetUsed(s)).toBe(estimate);
+    s.fake.receipt = { status: 'success', gasUsed: 100_000n };
+    // not mined yet: still reserved, so the destination stays blocked
+    expect(await sweepFrom(2n, STRANGER, '198.51.2.1')).toBe(200);
+    expect(s.fake.lookups).toBe(1);
+    expect(await sweepFrom(3n, DEST, '198.51.3.1')).toBe('loss_budget_exhausted');
+    expect(budgetUsed(s)).toBe(estimate + 100_000n * 1_000_000_000n);
+    // mined after all: the next job's lookup settles it like an ordinary receipt
+    s.fake.lookup = { status: 'success', gasUsed: 100_000n };
+    expect(await sweepFrom(4n, `0x${'4'.repeat(40)}`, '198.51.4.1')).toBe(200);
+    expect(budgetUsed(s)).toBe(3n * 100_000n * 1_000_000_000n);
+    expect(await sweepFrom(5n, DEST, '198.51.5.1')).toBe(200);
+    expect(s.fake.lookups).toBe(2); // settled entries are not looked up again
+  });
+
+  it('a late reverted receipt is charged as a mined revert; a lookup failure or a lost transaction is not', async () => {
+    const alerts: string[] = [];
+    const s = await start({
+      alerts: { send: (e) => alerts.push(e.kind) },
+      config: { lossBudget: { windowSeconds: 3600, perKeyWei: 10n * estimate, globalWei: 10n ** 18n, maxKeys: 100 } },
+    });
+    s.fake.receipt = { status: 'timeout', gasUsed: 0n };
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 1n })).body)).status).toBe(200);
+    await settle();
+    s.fake.receipt = { status: 'success', gasUsed: 100_000n };
+    // A failing lookup does not fail the unrelated sweep that triggered it.
+    const lookup = s.fake.getReceipt.bind(s.fake);
+    s.fake.getReceipt = () => Promise.reject(new Error('down'));
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 2n })).body)).status).toBe(200);
+    await settle();
+    s.fake.getReceipt = lookup;
+    s.fake.lookup = { status: 'reverted', gasUsed: 90_000n };
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 3n })).body)).status).toBe(200);
+    await settle();
+    expect(alerts).toContain('mined_revert');
+    expect(s.logs.join('\n')).toContain('sweep_reverted');
+    expect(s.relayer.metrics.render()).toContain('relayer_mined_reverts_total{chain_id="11155111"} 1');
+
+    // A transaction that is never found is dropped from the ledger once its budget day and loss window are over.
+    s.fake.receipt = { status: 'timeout', gasUsed: 0n };
+    s.fake.lookup = null;
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 4n })).body)).status).toBe(200);
+    await settle();
+    s.fake.receipt = { status: 'success', gasUsed: 100_000n };
+    s.clock.ms += 25 * 3_600_000;
+    const before = s.fake.lookups;
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 5n })).body)).status).toBe(200);
+    await settle();
+    expect(s.fake.lookups).toBe(before);
+  });
+});
+
 describe('circuit breaker', () => {
   it('opens on a high error rate, reports degraded health and half-open recovers', async () => {
     const s = await start();
@@ -887,6 +1096,22 @@ describe('circuit breaker', () => {
     const probe = await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 11n })).body);
     expect(probe.status).toBe(200);
     expect((await call(s, 'GET', '/healthz')).status).toBe(200);
+  });
+
+  it('L5-10: a full RPC outage (gas price read fails first) opens the breaker; a gas price above the cap stays neutral', async () => {
+    const s = await start();
+    const bodies = await Promise.all([1n, 2n, 3n, 4n].map(async (n) => (await prepare(s, { nonce: n })).body));
+    s.fake.rpcDown = true;
+    for (const b of bodies.slice(0, 3)) expect(errCode(await call(s, 'POST', '/v1/sweep', b))).toBe('rpc_unavailable');
+    expect(errCode(await call(s, 'POST', '/v1/sweep', bodies[3]))).toBe('breaker_open');
+    expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'degraded' });
+
+    const capped = await start();
+    const capBodies = await Promise.all([1n, 2n, 3n, 4n, 5n].map(async (n) => (await prepare(capped, { nonce: n })).body));
+    capped.fake.gasPrice = 60_000_000_000n; // above maxGasPriceWei
+    for (const b of capBodies) expect(errCode(await call(capped, 'POST', '/v1/sweep', b))).toBe('gas_price_too_high');
+    expect((await call(capped, 'GET', '/healthz')).json).toMatchObject({ status: 'ok' });
+    await capped.stop();
   });
 
   it('re-opens when the half-open probe fails', async () => {
@@ -962,6 +1187,8 @@ describe('rate limiting', () => {
           saltRotationHours: 24,
           quoteGlobalPerMinute: 6000,
           quoteGlobalBurst: 1000,
+          quoteGroupPerMinute: 6000,
+          quoteGroupBurst: 1000,
         },
       },
     });
@@ -989,6 +1216,8 @@ describe('rate limiting', () => {
           saltRotationHours: 24,
           quoteGlobalPerMinute: 6000,
           quoteGlobalBurst: 1000,
+          quoteGroupPerMinute: 6000,
+          quoteGroupBurst: 1000,
         },
       },
     });
@@ -1014,6 +1243,8 @@ describe('rate limiting', () => {
       saltRotationHours: 24,
       quoteGlobalPerMinute: 6000,
       quoteGlobalBurst: 1000,
+      quoteGroupPerMinute: 6000,
+      quoteGroupBurst: 1000,
     };
     const q = { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '100000000' };
     const s = await start({
@@ -1046,6 +1277,8 @@ describe('rate limiting', () => {
       saltRotationHours: 24,
       quoteGlobalPerMinute: 6000,
       quoteGlobalBurst: 1000,
+      quoteGroupPerMinute: 6000,
+      quoteGroupBurst: 1000,
     };
     const q = { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '100000000' };
     const t = await start({ config: { rateLimit: lim, trustedProxies: [] } });
@@ -1066,6 +1299,8 @@ describe('rate limiting', () => {
       saltRotationHours: 24,
       quoteGlobalPerMinute: 1,
       quoteGlobalBurst: 2,
+      quoteGroupPerMinute: 6000,
+      quoteGroupBurst: 1000,
     };
     const q = { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '100000000' };
     const s = await start({
@@ -1076,6 +1311,95 @@ describe('rate limiting', () => {
     const limited = await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '3.3.3.3' });
     expect(errCode(limited)).toBe('rate_limited_global');
     expect(limited.headers.get('retry-after')).toBeTruthy();
+  });
+
+  describe('RELAYER-01 / L5-03: one network cannot drain the global quote budget', () => {
+    // Production defaults (config.ts / relayer.config.example.json).
+    const prod = {
+      ipPerMinute: 30, ipBurst: 10, ownerPerMinute: 6, ownerBurst: 3, maxKeys: 10000, saltRotationHours: 24,
+      quoteGlobalPerMinute: 600, quoteGlobalBurst: 100, quoteGroupPerMinute: 60, quoteGroupBurst: 20,
+    };
+    const proxies = ['127.0.0.1', '::1', '::ffff:127.0.0.1'];
+    const q = { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '100000000' };
+    const tally = (into: Record<string, number>, r: Awaited<ReturnType<typeof call>>): void => {
+      const k = r.status === 200 ? '200' : `${String(r.status)}:${errCode(r)}`;
+      into[k] = (into[k] ?? 0) + 1;
+    };
+
+    it('junk and valid quotes from one IPv6 /48 leave quotes for everyone else', async () => {
+      const alerts: string[] = [];
+      const s = await start({ config: { rateLimit: prod, trustedProxies: proxies }, alerts: { send: (e) => alerts.push(e.kind) } });
+      const junk: Record<string, number> = {};
+      const valid: Record<string, number> = {};
+      for (let i = 0; i < 20; i++) {
+        const xff = { 'content-type': 'text/plain', 'x-forwarded-for': `2001:db8:1:${i.toString(16)}::1` };
+        for (let j = 0; j < 10; j++) tally(junk, await call(s, 'POST', '/v1/quote', 'x', xff));
+      }
+      // 20 /64s of one /48: the group budget (burst 20) is spent on junk; nothing reached the global budget
+      expect(junk).toEqual({ '415:unsupported_media_type': 20, '429:rate_limited_ip': 180 });
+      s.clock.ms += 1000;
+      for (let i = 20; i < 30; i++) {
+        tally(valid, await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': `2001:db8:1:${i.toString(16)}::1` }));
+      }
+      expect(valid['429:rate_limited_ip']).toBeGreaterThanOrEqual(9); // about one group token refilled per second
+      expect(valid['429:rate_limited_global']).toBeUndefined();
+      expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '198.51.100.7' })).status).toBe(200);
+      expect(alerts).not.toContain('quote_budget_exhausted');
+    });
+
+    it('takes the global token only for a well-formed quote request', async () => {
+      const s = await start({
+        config: { rateLimit: { ...prod, quoteGlobalPerMinute: 1, quoteGlobalBurst: 2 }, trustedProxies: proxies },
+      });
+      expect(errCode(await call(s, 'POST', '/v1/quote', 'x', { 'content-type': 'text/plain', 'x-forwarded-for': '1.1.1.1' }))).toBe('unsupported_media_type');
+      expect(errCode(await call(s, 'POST', '/v1/quote', '{nope', { 'x-forwarded-for': '2.2.2.2' }))).toBe('invalid_json');
+      expect(errCode(await call(s, 'POST', '/v1/quote', { ...q, extra: 1 }, { 'x-forwarded-for': '3.3.3.3' }))).toMatch(/^invalid_/);
+      expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '4.4.4.4' })).status).toBe(200);
+      expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '5.5.5.5' })).status).toBe(200);
+      expect(errCode(await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '6.6.6.6' }))).toBe('rate_limited_global');
+    });
+
+    it('alerts and counts when the global quote budget refuses', async () => {
+      const alerts: { kind: string; chainId?: number }[] = [];
+      const token = 'm'.repeat(40);
+      const s = await start({
+        config: { rateLimit: { ...prod, quoteGlobalPerMinute: 1, quoteGlobalBurst: 1 }, trustedProxies: proxies, metricsToken: token },
+        alerts: { send: (e) => alerts.push(e) },
+      });
+      expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '1.1.1.1' })).status).toBe(200);
+      expect(errCode(await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '2.2.2.2' }))).toBe('rate_limited_global');
+      expect(alerts).toEqual([{ kind: 'quote_budget_exhausted' }]);
+      const m = await call(s, 'GET', '/metrics', undefined, { authorization: `Bearer ${token}` });
+      expect(m.json as string).toContain('relayer_quote_budget_denied_total 1');
+    });
+
+    it('concurrent quotes share one gas price lookup when the cache is cold', async () => {
+      const s = await start({ config: { trustedProxies: proxies } });
+      let calls = 0;
+      let release: () => void = () => undefined;
+      const gate = new Promise<void>((r) => { release = r; });
+      const orig = s.fake.getGasPrice.bind(s.fake);
+      s.fake.getGasPrice = async () => {
+        calls += 1;
+        await gate;
+        return orig();
+      };
+      const replies = Promise.all(
+        [1, 2, 3, 4, 5].map((i) => call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': `198.51.${String(i)}.1` })),
+      );
+      for (let i = 0; i < 20 && calls === 0; i++) await settle();
+      await settle();
+      release();
+      expect((await replies).map((r) => r.status)).toEqual([200, 200, 200, 200, 200]);
+      expect(calls).toBe(1);
+      // A failed lookup is shared too, and not cached.
+      s.fake.rpcDown = true;
+      s.clock.ms += 4000;
+      const down = await Promise.all([1, 2].map(() => call(s, 'POST', '/v1/quote', q)));
+      expect(down.map(errCode)).toEqual(['rpc_unavailable', 'rpc_unavailable']);
+      s.fake.rpcDown = false;
+      expect((await call(s, 'POST', '/v1/quote', q)).status).toBe(200);
+    });
   });
 });
 

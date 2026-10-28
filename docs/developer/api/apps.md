@@ -69,7 +69,7 @@ immediately before signing.
 
 JSON file (`RELAYER_CONFIG`, default `./relayer.config.json`; example `relayer.config.example.json`) plus environment.
 Strict validation: unknown keys, wildcard or non-https origins, plain-http or credentialed RPC URLs and non-stable tokens
-stop startup. Top-level keys in the example: `listen`, `allowedOrigins`, `trustProxyHops`, `quoteTtlSeconds`,
+stop startup, with an error naming the unknown key. Top-level keys in the example: `listen`, `allowedOrigins`, `trustedProxies`, `quoteTtlSeconds`,
 `deadline { minSeconds, maxSeconds }`, `rateLimit`, `breaker`, `queue`, `shutdownGraceSeconds`, `chains[]` with
 `chainId`, `rpcUrl` or `rpcUrlEnv`, `feeTo`, `tokens[] { address, usdStable: true }`, `nativeUsdPrice`, `gasUnits
 { sweep, sweepWithPermit }`, `maxGasLimit`, `maxGasPriceWei`, `dailyBudgetWei`, `minBalanceWei`. Operator numbers have no
@@ -84,8 +84,11 @@ defaults on purpose; the example values are placeholders, not measurements.
 | `<rpcUrlEnv name>` | RPC URL kept out of the file, e.g. `RPC_URL_84532` |
 
 Chain id 31337 is accepted only with `allowDevChain: true` (and loopback http only with `allowInsecureLocalhostRpc`).
-`trustProxyHops > 0` requires a loopback `listen.host` (otherwise clients could spoof `X-Forwarded-For`); there is no
-trusted-proxy allowlist, so a container that must bind `0.0.0.0` falls back to the socket address. At startup each
+`trustedProxies` lists the reverse proxy's addresses or CIDR blocks: `X-Forwarded-For` is believed only from a listed TCP
+peer and walked from the right past listed hops; otherwise the socket address is the client. Use loopback for a proxy on
+the same host and, for the compose recipe, the backend subnet pinned in `deploy/docker-compose.yml` (`172.30.10.0/24`, as
+in `deploy/config/relayer.config.example.json`, with `listen.host` `0.0.0.0`). The former hop count `trustProxyHops` is
+refused at startup with an error naming it and pointing to `trustedProxies`. At startup each
 chain's `sweepRelayer` must have contract code on the configured RPC (`eth_getCode`); when a manifest exists for the chain the
 relayer also runs `verifyManifest` + `assertManifestVerified` once and refuses to start with `MANIFEST_READBACK_FAILED` (single
 RPC, no periodic re-check, signature not verified; `apps/relayer/DEVIATIONS.md` item 21).

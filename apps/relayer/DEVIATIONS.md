@@ -20,10 +20,12 @@ Contract code wins over docs. Items for the lead to confirm or reject.
    (`invalid_signature` class, as the contract reverts with `ECDSAInvalidSignatureS`).
 7. **One in-flight transaction means one per receipt.** The lane slot is held until the receipt (or
    `receiptTimeoutSeconds`), so throughput is about one sweep per block per chain. The HTTP response is sent as soon as the
-   transaction is broadcast. After a timeout or send failure the nonce is re-read from the pending count.
+   transaction is broadcast. After a timeout or send failure the nonce is re-read from the pending count. A receipt
+   timeout is recorded as a breaker failure and alerted; the transaction's reservations are kept until a later job's
+   receipt lookup finds it (L5-06). Fee bumping or cancelling a stuck transaction is not implemented.
 8. **Legacy (`gasPrice`) transactions** so the configured cap bounds the price on every chain type. EIP-1559 is not used.
 9. **Per-owner rate limit is applied after signature verification** so nobody can exhaust a victim's quota with forged
-   requests; `/v1/quote` is IP-limited only.
+   requests; `/v1/quote` is limited per client network only (per IP, per /24 or /48 group, and process-wide).
 10. **Mainnet gate.** `chain-adapters` marks mainnets `enabled: false` until manifests exist. The relayer starts a mainnet
     chain only with a valid manifest in `DEPLOYMENTS_DIR` AND `ALLOW_MAINNET=1`, and then does not consult the `enabled`
     flag. No mainnet token is in the adapter allowlist, so mainnet tokens must be listed in the relayer config with
@@ -45,9 +47,9 @@ Contract code wins over docs. Items for the lead to confirm or reject.
 
 ## relayer-guard wiring (audit S3-05, S3-06, S3-07)
 
-- `trustProxyHops` was removed in favour of `trustedProxies` (CIDR list): a hop count cannot tell a real proxy from a client that reached the port directly. Operators must migrate their config; an unknown `trustProxyHops` key is rejected at startup.
+- `trustProxyHops` was removed in favour of `trustedProxies` (CIDR list): a hop count cannot tell a real proxy from a client that reached the port directly. Operators must migrate their config; an unknown `trustProxyHops` key is rejected at startup with an error that names it and points to `trustedProxies` (L5-07). The compose recipe in `deploy/` trusts its pinned backend subnet (L5-05).
 - A mined revert after a passing simulation is treated as attacker-attributable (neutral for the breaker) and charged to the loss budget. A genuine relayer-side revert (for example wrong gas) therefore no longer opens the breaker; it shows up as `relayer_mined_reverts_total` and as `mined_revert` alerts instead. There is no re-simulation at the inclusion block to tell the two apart.
-- Loss budget keys: client network bucket (IPv4 /32, IPv6 /64) and destination, hashed with the rotating salt. Rotation (default daily) forgets the accounting; the per-window default is 1 hour. Defaults (0.005 / 0.05 native units) are not tuned for any chain.
+- Loss budget keys: client network bucket (IPv4 /32, IPv6 /64, grouped by /24 and /48) and destination, hashed with the rotating salt. Rotation (default daily) forgets the accounting; the per-window default is 1 hour. Defaults (0.005 / 0.05 native units) are not tuned for any chain. One reservation per sweep charges the global cap once (it used to be charged per key, so it tripped at half the configured loss, L5-02). The quarter of `globalWei` kept for clean sources and the mined-revert-rate thresholds (the breaker's) are constants, not config; neither is tuned.
 - The challenge module of relayer-guard is not wired.
 - Secret files reject symlinks and ownership outside the service user/root; production environment secrets require
   `ALLOW_SECRET_ENV=1`. Process-level failures print only a fixed class to avoid exposing RPC URLs.
@@ -58,7 +60,7 @@ Contract code wins over docs. Items for the lead to confirm or reject.
 
 ## Permit griefing (spec 04, relayer side)
 
-- Fallback ladder is server-side and needs no client change: when the owner's allowance already covers the amount the permit is dropped and plain `sweep` is used (a front-run permit therefore succeeds); an expired permit with short allowance is refused (`permit_expired`) before simulation; a generic transfer revert while the permit is still needed is reported as `permit_failed`. The relayer does not rebuild the token's EIP-712 domain (it has no domain name/version), so `sig_invalid` and `nonce_consumed` are not told apart: both are `permit_failed`.
+- Fallback ladder is server-side and needs no client change: when the owner's allowance already covers the amount the permit is dropped and plain `sweep` is used (a front-run permit therefore succeeds); an expired permit with short allowance is refused (`permit_expired`) before simulation, and so is one whose deadline is before the sweep deadline (L5-01: the permit is outside the sweep signature and the quote MAC and the contract swallows a failed permit, so a permit that lapsed before inclusion was a mined revert the relayer paid for; no margin is added because clients sign `permit.deadline == sweep.deadline`); a generic transfer revert while the permit is still needed is reported as `permit_failed`. The relayer does not rebuild the token's EIP-712 domain (it has no domain name/version), so `sig_invalid` and `nonce_consumed` are not told apart: both are `permit_failed`.
 - The per-owner failure counter reuses `FailureBudgets` with the owner key only (`destinationMax: 0`): a destination key would let anyone block a victim's destination with self-signed failing orders, and destinations are already covered by `lossBudget`. 3 strikes per hour; `nonce_used` is not a strike (honest retries). Constants, not config.
 - `gas.griefReserveBps` defaults to 0 (UNVERIFIED, to be tuned per chain); it raises the gas term only and stays bounded by the 300 bps cap.
 - `quoteTtlSeconds` is now capped at 60 (was default 120, max 600); configs above 60 are refused at startup. `relayer.config.example.json` updated.

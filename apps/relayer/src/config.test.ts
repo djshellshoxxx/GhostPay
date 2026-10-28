@@ -5,6 +5,7 @@ import { secp256k1 } from '@noble/curves/secp256k1.js';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { loadDeployment, manifestDigest, manifestSigningBytes, verifyTextManifestSignature, type ReleaseKey } from '@ghostpay/chain-adapters';
 import { describe, expect, it } from 'vitest';
+import { TrustedProxies, bucketKey, parseIp, resolveClientIp, type ParsedIp } from '@ghostpay/relayer-guard';
 import { DEV_CHAIN_ID, loadConfigFile, parseConfig, parseReleaseKeys, type ConfigContext } from './config.js';
 import { ConfigError, HOT_KEY_SOURCE, QUOTE_SECRET_PREVIOUS_SOURCE, QUOTE_SECRET_SOURCE, loadOptionalSecret, loadSecret } from './secrets.js';
 import { DEST, FEE_TO, HOT_ADDRESS, NOPERMIT, ORIGIN, STRANGER, SWEEP_CONTRACT, USDC } from './harness.testutil.js';
@@ -67,6 +68,7 @@ describe('parseConfig', () => {
     expect(c.queue).toEqual({ maxPending: 16, receiptTimeoutSeconds: 120 });
     expect(c.breaker).toEqual({ windowSize: 20, minSamples: 5, failureRatio: 0.5, cooldownSeconds: 60, probeTimeoutSeconds: 60 });
     expect(c.trustedProxies).toEqual([]);
+    expect(c.rateLimit).toMatchObject({ quoteGlobalPerMinute: 600, quoteGlobalBurst: 100, quoteGroupPerMinute: 60, quoteGroupBurst: 20 });
     expect(c.lossBudget).toEqual({ windowSeconds: 3600, perKeyWei: 5n * 10n ** 15n, globalWei: 5n * 10n ** 16n, maxKeys: 10_000 });
     expect(c.metricsToken).toBeUndefined();
     expect(c.alertWebhookUrl).toBeUndefined();
@@ -88,7 +90,7 @@ describe('parseConfig', () => {
         metricsTokenEnv: 'M_TOK',
         alertWebhookUrlEnv: 'A_HOOK',
         deadline: { minSeconds: 10, maxSeconds: 600 },
-        rateLimit: { ipPerMinute: 5, ipBurst: 2, ownerPerMinute: 1, ownerBurst: 1, maxKeys: 64, saltRotationHours: 6 },
+        rateLimit: { ipPerMinute: 5, ipBurst: 2, ownerPerMinute: 1, ownerBurst: 1, maxKeys: 64, saltRotationHours: 6, quoteGroupPerMinute: 12, quoteGroupBurst: 4 },
         breaker: { windowSize: 10, minSamples: 4, failureRatio: 0.7, cooldownSeconds: 5 },
         queue: { maxPending: 3, receiptTimeoutSeconds: 10 },
         shutdownGraceSeconds: 3,
@@ -110,6 +112,7 @@ describe('parseConfig', () => {
     expect(c.metricsToken).toBe('m'.repeat(40));
     expect(c.alertWebhookUrl).toBe('https://hooks.example/x');
     expect(c.rateLimit.saltRotationHours).toBe(6);
+    expect(c.rateLimit).toMatchObject({ quoteGroupPerMinute: 12, quoteGroupBurst: 4 });
     expect(c.chains[0]?.rpcUrl).toBe('https://rpc2.example/');
     expect(c.chains[0]?.feeTo).toBe(FEE_TO);
     expect(c.chains[0]?.tokens[1]).toMatchObject({ symbol: 'USDX', decimals: 18, permit: false });
@@ -124,7 +127,7 @@ describe('parseConfig', () => {
   });
 
   const bad: [string, (c: Json) => Json, RegExp?][] = [
-    ['unknown top-level key', (c) => ({ ...c, extra: 1 })],
+    ['unknown top-level key', (c) => ({ ...c, extra: 1 }), /^config \$\.extra: unknown key$/],
     ['quote TTL above 60 s (spec 04)', (c) => ({ ...c, quoteTtlSeconds: 61 }), /quoteTtlSeconds/],
     ['grief reserve above 5000 bps', (c) => ({ ...c, gas: { griefReserveBps: 5001 } }), /griefReserveBps/],
     ['grief reserve negative', (c) => ({ ...c, gas: { griefReserveBps: -1 } }), /griefReserveBps/],
@@ -138,7 +141,7 @@ describe('parseConfig', () => {
     ['bad listen host', (c) => ({ ...c, listen: { host: '' } })],
     ['bad port', (c) => ({ ...c, listen: { port: 70000 } })],
     ['port float', (c) => ({ ...c, listen: { port: 1.5 } })],
-    ['trustProxyHops removed', (c) => ({ ...c, trustProxyHops: 1 })],
+    ['trustProxyHops removed', (c) => ({ ...c, trustProxyHops: 1 }), /^config \$\.trustProxyHops: unknown key; it was replaced by trustedProxies/],
     ['trustedProxies not array', (c) => ({ ...c, trustedProxies: '10.0.0.1' })],
     ['trustedProxies bad entry', (c) => ({ ...c, trustedProxies: ['not-an-ip'] })],
     ['trustedProxies non-string', (c) => ({ ...c, trustedProxies: [5] })],
@@ -155,12 +158,14 @@ describe('parseConfig', () => {
     ['deadline above spec max', (c) => ({ ...c, deadline: { maxSeconds: 1801 } })],
     ['deadline min >= max', (c) => ({ ...c, deadline: { minSeconds: 100, maxSeconds: 100 } })],
     ['rate limit zero', (c) => ({ ...c, rateLimit: { ipPerMinute: 0 } })],
+    ['quote group burst zero', (c) => ({ ...c, rateLimit: { quoteGroupBurst: 0 } }), /quoteGroupBurst/],
     ['salt rotation above 24h', (c) => ({ ...c, rateLimit: { saltRotationHours: 25 } })],
-    ['unknown nested key', (c) => ({ ...c, queue: { foo: 1 } })],
+    ['unknown nested key', (c) => ({ ...c, queue: { foo: 1 } }), /^config \$\.queue\.foo: unknown key$/],
     ['nested not object', (c) => ({ ...c, queue: 5 })],
     ['no chains', (c) => ({ ...c, chains: [] })],
     ['duplicate chain', (c) => ({ ...c, chains: [chain(), chain()] })],
-    ['chain unknown key', (c) => ({ ...c, chains: [chain({ extra: 1 })] })],
+    ['chain unknown key', (c) => ({ ...c, chains: [chain({ extra: 1 })] }), /^config chains\[0\]\.extra: unknown key$/],
+    ['token unknown key', (c) => ({ ...c, chains: [chain({ tokens: [{ address: USDC, usdStable: true, extra: 1 }] })] }), /^config chains\[0\]\.tokens\[0\]\.extra: unknown key$/],
     ['chain missing key', (c) => ({ ...c, chains: [chain({ maxGasLimit: undefined })] })],
     ['chainId float', (c) => ({ ...c, chains: [chain({ chainId: 1.5 })] })],
     ['unknown chain', (c) => ({ ...c, chains: [chain({ chainId: 999999 })] }), /unknown chain/],
@@ -202,6 +207,18 @@ describe('parseConfig', () => {
     const env = { SHORT: 'abc', HOOK_HTTP: 'http://x.example/', HOOK_CRED: 'https://u:p@x.example/', HOOK_BAD: '::not a url' };
     expect(() => parse(raw, { env })).toThrow(ConfigError);
     if (re !== undefined) expect(() => parse(raw, { env })).toThrow(re);
+  });
+
+  it('L5-07: names an unknown key only when it looks like one (never echoes what could be a pasted secret)', () => {
+    const secretish = 'ab'.repeat(40);
+    let message = '';
+    try {
+      parse({ ...good(), [secretish]: 1 });
+    } catch (e) {
+      message = (e as Error).message;
+    }
+    expect(message).toBe('config $: unknown key (name not shown)');
+    expect(() => parse({ ...good(), listen: { 'not a key': 1 } })).toThrow(/^config \$\.listen: unknown key \(name not shown\)$/);
   });
 
   it('allows the local dev chain only with the explicit flag', () => {
@@ -273,6 +290,93 @@ describe('example config', () => {
     const c = parse(raw, { env: { RPC_URL_84532: 'https://rpc.example' }, releaseKeys: [KEY], readManifest: (id) => SIGNED(id) });
     expect(c.chains[0]?.chainId).toBe(84532);
     expect(c.chains[0]?.tokens[0]?.symbol).toBe('USDC');
+  });
+});
+
+describe('deploy recipe wiring (L5-05, L7-L3)', () => {
+  const deploy = (path: string): string => readFileSync(new URL(`../../../deploy/${path}`, import.meta.url), 'utf8');
+  const compose = deploy('docker-compose.yml');
+  const nginx = deploy('nginx/nginx.conf');
+  const ip = (text: string): ParsedIp => {
+    const v = parseIp(text);
+    if (v === null) throw new Error(`not an IP: ${text}`);
+    return v;
+  };
+  /** Full-length textual form, as nginx passes `$remote_addr` on. */
+  const text = (p: ParsedIp | undefined): string | undefined =>
+    p === undefined ? undefined : bucketKey(p, { v4: 32, v6: 128 }).slice(2).split('/')[0];
+  /** Pinned `ipam` subnet and gateway per compose network. */
+  const networks = (): Map<string, { subnet: string; gateway: string }> => {
+    const section = /^networks:\n((?:[ #].*\n|\n)*)/m.exec(compose)?.[1] ?? '';
+    const out = new Map<string, { subnet: string; gateway: string }>();
+    for (const m of section.matchAll(/^ {2}([a-z]+):\n((?: {4,}.*\n)*)/gm)) {
+      const subnet = /subnet:\s*(\S+)/.exec(m[2] ?? '')?.[1];
+      const gateway = /gateway:\s*(\S+)/.exec(m[2] ?? '')?.[1];
+      if (subnet !== undefined && gateway !== undefined) out.set(m[1] ?? '', { subnet, gateway });
+    }
+    return out;
+  };
+  /** Body of the first `location` block whose header matches `head` (nested blocks included). */
+  const block = (head: RegExp): string => {
+    const m = head.exec(nginx);
+    if (m === null) return '';
+    let depth = 0;
+    for (let i = nginx.indexOf('{', m.index); i < nginx.length; i++) {
+      if (nginx[i] === '{') depth += 1;
+      if (nginx[i] === '}' && --depth === 0) return nginx.slice(m.index, i + 1);
+    }
+    return '';
+  };
+  const example = (): ReturnType<typeof parseConfig> => {
+    const raw: unknown = JSON.parse(deploy('config/relayer.config.example.json'));
+    return parse(raw, { env: { RPC_URL_84532: 'https://rpc.example' }, releaseKeys: [KEY], readManifest: (id) => SIGNED(id) });
+  };
+
+  it('pins the compose subnets that nginx and the relayer trust', () => {
+    const nets = networks();
+    expect([...nets.keys()].sort()).toEqual(['backend', 'frontend']);
+    const realIpFrom = [...nginx.matchAll(/^\s*set_real_ip_from\s+(\S+);/gm)].map((m) => m[1]).sort();
+    expect(realIpFrom).toEqual([...nets.values()].map((n) => n.gateway).sort()); // the host only
+    for (const n of nets.values()) expect(new TrustedProxies([n.subnet]).has(ip(n.gateway))).toBe(true);
+    expect(nginx).toMatch(/^\s*real_ip_header X-Forwarded-For;/m);
+    expect(nginx).toMatch(/^\s*real_ip_recursive on;/m);
+    const cfg = example();
+    expect(cfg.host).toBe('0.0.0.0');
+    expect(cfg.trustedProxies).toEqual([nets.get('backend')?.subnet]);
+  });
+
+  it('gives every client its own bucket through TLS terminator, nginx and relayer, and refuses forged hops', () => {
+    const nets = networks();
+    const backend = nets.get('backend') as { subnet: string; gateway: string };
+    const frontend = nets.get('frontend') as { subnet: string; gateway: string };
+    const nginxTrust = new TrustedProxies([...nginx.matchAll(/^\s*set_real_ip_from\s+(\S+);/gm)].map((m) => m[1] ?? ''));
+    const relayerTrust = new TrustedProxies(example().trustedProxies);
+    const nginxPeer = backend.subnet.replace(/\.0\/24$/, '.3'); // the web container on the backend network
+    // nginx `real_ip_recursive on` walks X-Forwarded-For like resolveClientIp; it then sends $remote_addr on.
+    const viaNginx = (peer: string, xff?: string): string | undefined => {
+      const seen = resolveClientIp({ peer, forwardedFor: xff, trusted: nginxTrust });
+      return text(resolveClientIp({ peer: nginxPeer, forwardedFor: text(seen?.ip), trusted: relayerTrust })?.ip);
+    };
+    // TLS terminator on the host connects through the published port: a gateway peer
+    expect(viaNginx(backend.gateway, '198.51.100.7')).toBe('198.51.100.7');
+    expect(viaNginx(frontend.gateway, '2001:db8::7')).toBe(text(ip('2001:db8::7')));
+    expect(viaNginx(backend.gateway, '1.2.3.4, 198.51.100.7')).toBe('198.51.100.7'); // client-forged entry ignored
+    // the Tor container is not trusted by nginx: its own address is the client (one bucket for onion users)
+    const tor = frontend.subnet.replace(/\.0\/24$/, '.9');
+    expect(viaNginx(tor, '9.9.9.9')).toBe(tor);
+    // a client reaching the relayer port directly cannot pick its bucket
+    expect(text(resolveClientIp({ peer: '203.0.113.5', forwardedFor: '9.9.9.9', trusted: relayerTrust })?.ip)).toBe('203.0.113.5');
+  });
+
+  it('proxies exactly the four public relayer routes; /api/metrics and the rest are 404', () => {
+    const api = block(/location ~ \^\/api\/\(([^)]*)\)\$ \{/);
+    expect(/\^\/api\/\(([^)]*)\)/.exec(api)?.[1]?.split('|').sort()).toEqual(['healthz', 'v1/info', 'v1/quote', 'v1/sweep']);
+    expect(api).toContain('rewrite ^/api(/.*)$ $1 break;');
+    expect(api).toMatch(/proxy_pass http:\/\/api:8787;/);
+    expect(api).toMatch(/proxy_set_header X-Forwarded-For \$remote_addr;/);
+    expect(api).toContain('limit_except GET POST OPTIONS { deny all; }');
+    expect(block(/location \/api\/ \{/)).toMatch(/return 404;/);
+    expect(nginx.match(/proxy_pass /g)).toHaveLength(1);
   });
 });
 
