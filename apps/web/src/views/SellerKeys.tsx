@@ -67,6 +67,8 @@ export function SellerKeys(): ReactNode {
   const [deletePass, setDeletePass] = useState('');
   // Unlocking would replace keys that have no backup; set once the user asked to unlock anyway (L1-01).
   const [confirmReplace, setConfirmReplace] = useState(false);
+  // Wiping would lose keys that have no backup; set once the user asked to wipe them anyway (C-R4).
+  const [confirmWipe, setConfirmWipe] = useState(false);
   // The exact ciphertext shown when deletion was requested; Confirm deletes only this record. Never plaintext keys.
   const [deleteExpected, setDeleteExpected] = useState<string | undefined>(undefined);
   const confirmVaultDelete = deleteExpected !== undefined;
@@ -97,7 +99,7 @@ export function SellerKeys(): ReactNode {
     operation.current?.abort(); operation.current = null;
     setBackupQr(undefined); setBusy(false); setVaultBusy(false);
     suggestPass(); setImportPass(''); setVaultUnlockPass(''); setImportText(undefined); setFile(undefined);
-    setExportStepUp(''); setSaveStepUp(''); setDeletePass(''); setConfirmReplace(false); setDeleteExpected(undefined);
+    setExportStepUp(''); setSaveStepUp(''); setDeletePass(''); setConfirmReplace(false); setConfirmWipe(false); setDeleteExpected(undefined);
   }, [app.session]);
   const startOperation = (): AbortController => {
     operation.current?.abort();
@@ -254,6 +256,20 @@ export function SellerKeys(): ReactNode {
         fail(err);
       },
     );
+  };
+
+  const onWipe = (): void => {
+    // Keys with no backup exist only here, and every payment to them would be lost with them (L1-01).
+    if (getSessionBackup()?.backedUp === false) { setConfirmWipe(true); return; }
+    wipe();
+  };
+
+  const wipe = (): void => {
+    setConfirmWipe(false);
+    clearSession();
+    setBackupQr(undefined);
+    app.announce(t('sellerKeys.wiped'));
+    setMessage({ kind: 'ok', text: t('sellerKeys.wiped') });
   };
 
   const refreshVault = (): void => {
@@ -449,9 +465,16 @@ export function SellerKeys(): ReactNode {
           </section>
 
           <h3>{t('sellerKeys.forgetHeading')}</h3>
-          <button type="button" className="btn btn-danger" onClick={() => { clearSession(); setBackupQr(undefined); app.announce(t('sellerKeys.wiped')); setMessage({ kind: 'ok', text: t('sellerKeys.wiped') }); }}>
+          <button type="button" className="btn btn-danger" onClick={onWipe}>
             {t('sellerKeys.wipe')}
           </button>
+          {confirmWipe && (
+            <Notice kind="warn" title={t('sellerKeys.wipeUnsaved.title')}>
+              <p>{t('sellerKeys.wipeUnsaved.body')}</p>
+              <button type="button" className="btn btn-danger" onClick={wipe}>{t('sellerKeys.wipeUnsaved.confirm')}</button>{' '}
+              <button type="button" className="btn" onClick={() => { setConfirmWipe(false); }}>{t('sellerKeys.cancel')}</button>
+            </Notice>
+          )}
           {/* Local scan state is keyed by a hash of the public keys and outlives the wipe (audit I-1). */}
           <p className="hint">{t('sellerKeys.wipeHint')}</p>
         </>

@@ -226,6 +226,25 @@ describe('Seller keys', () => {
     expect(screen.getByRole('button', { name: 'Generate new keys' })).toBeTruthy();
   });
 
+  it('C-R4: asks before wiping keys that have no backup', async () => {
+    const user = await open();
+    await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
+    const pub = getSessionPublic();
+    await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    expect(getSessionPublic()).toBe(pub);
+    expect(screen.getByText('Wipe keys that have no backup?')).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(screen.queryByText('Wipe keys that have no backup?')).toBeNull();
+    expect(getSessionPublic()).toBe(pub);
+    await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    await user.click(screen.getByRole('button', { name: 'Wipe the unsaved keys' }));
+    expect(getSessionPublic()).toBeUndefined();
+    expect(screen.getAllByText('Keys wiped from memory.').length).toBeGreaterThan(0);
+    // New keys start without the earlier request: the first click asks again.
+    await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
+    expect(screen.queryByText('Wipe keys that have no backup?')).toBeNull();
+  });
+
   it('L1-06: pre-fills a generated keystore passphrase in clear and accepts it once typed again', async () => {
     cheapKeystoreExport();
     const user = await open();
@@ -318,6 +337,8 @@ describe('Seller keys', () => {
     const { exportKeystore } = await import('../lib/session');
     const text = await exportKeystore('a long passphrase', { N: 1 << 14 });
     await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    // The keystore was made here, not downloaded: the keys still count as unsaved (C-R4).
+    await user.click(screen.getByRole('button', { name: 'Wipe the unsaved keys' }));
     await user.click(screen.getByText('Import an encrypted keystore'));
     const input = screen.getByLabelText('Keystore file');
     await user.click(screen.getByRole('button', { name: 'Decrypt and load' }));
@@ -423,6 +444,7 @@ describe('encrypted vault save lifetime', () => {
     const user = await startSave(store);
     await act(async () => { await putStarted; });
     await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    await user.click(screen.getByRole('button', { name: 'Wipe the unsaved keys' }));
     await act(async () => { releasePut(); await Promise.resolve(); });
     await waitFor(() => { expect(screen.getByRole('alert').textContent).toMatch(/changed during this action/); }, { timeout: 15_000 });
     expect(await durable.get()).toBeUndefined();
@@ -445,7 +467,9 @@ describe('encrypted vault save lifetime', () => {
     await act(async () => { await commitSeen; });
     const ciphertext = await durable.get();
     expect(ciphertext).toBeDefined();
+    // The save has not returned yet, so the keys still count as unsaved (C-R4).
     await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    await user.click(screen.getByRole('button', { name: 'Wipe the unsaved keys' }));
     await act(async () => { finish(); await Promise.resolve(); });
     await waitFor(() => { expect(screen.getByRole('alert').textContent).toMatch(/saved for the seller keys that were loaded when you started/); }, { timeout: 15_000 });
     expect(await durable.get()).toBe(ciphertext);
