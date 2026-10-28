@@ -157,8 +157,8 @@ function optionalText(value: unknown, max: number): string | undefined {
 export function validatePayload(p: TagPayload): TagPayload {
   const label = typeof p.clientLabel === 'string' ? p.clientLabel.trim() : '';
   if (label === '' || label.length > MAX_LABEL) throw new UserFacingError(`Client label must be 1 to ${String(MAX_LABEL)} characters.`);
-  if (!/^0x[0-9a-fA-F]{40}$/.test(p.stealthAddress)) throw new UserFacingError('Invalid stealth address.');
-  if (!/^0x[0-9a-fA-F]{64}:\d{1,9}$/.test(p.announcementId)) throw new UserFacingError('Invalid announcement id.');
+  if (typeof p.stealthAddress !== 'string' || !/^0x[0-9a-fA-F]{40}$/.test(p.stealthAddress)) throw new UserFacingError('Invalid stealth address.');
+  if (typeof p.announcementId !== 'string' || !/^0x[0-9a-fA-F]{64}:\d{1,9}$/.test(p.announcementId)) throw new UserFacingError('Invalid announcement id.');
   if (!Number.isInteger(p.logIndex) || p.logIndex < 0) throw new UserFacingError('Invalid log index.');
   const invoiceLabel = optionalText(p.invoiceLabel, MAX_LABEL);
   const notes = optionalText(p.notes, MAX_NOTES);
@@ -170,6 +170,16 @@ export function validatePayload(p: TagPayload): TagPayload {
     ...(invoiceLabel === undefined ? {} : { invoiceLabel }),
     ...(notes === undefined ? {} : { notes }),
   };
+}
+
+/**
+ * A payload read back from this browser's tag store. Earlier builds stored any invoice-label or notes value they were given
+ * (I-3); such a value that is not text is dropped here, so it never reaches the page and does not fail every list and export.
+ */
+function storedPayload(raw: unknown): TagPayload {
+  if (typeof raw !== 'object' || raw === null) throw new UserFacingError('Invalid tag payload.');
+  const { invoiceLabel, notes, ...rest } = raw as Record<string, unknown>;
+  return validatePayload({ ...rest, ...(typeof invoiceLabel === 'string' ? { invoiceLabel } : {}), ...(typeof notes === 'string' ? { notes } : {}) } as unknown as TagPayload);
 }
 
 export class TagVault {
@@ -329,7 +339,7 @@ export class TagVault {
         additionalData: r.schemaVersion === 1 ? aad(r.chainId) : recordAad(r.chainId, r.recordId, r.lookupKey),
         tagLength: 128,
       }, aes, hexToBytes(r.ciphertext)));
-      const payload = validatePayload(JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(plain)) as TagPayload);
+      const payload = storedPayload(JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(plain)));
       // Old records bound only the chain. Verify their address against the keyed lookup token before upgrading.
       if (await this.token(r.chainId, payload.stealthAddress) !== r.lookupKey) throw new Error('tag lookup mismatch');
       if (r.schemaVersion === 1) {
@@ -398,7 +408,7 @@ export class TagVault {
         tagLength: 128,
       }, keys.aes, hexToBytes(r.ciphertext)));
       try {
-        const payload = validatePayload(JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(plain)) as TagPayload);
+        const payload = storedPayload(JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(plain)));
         const mac = bytesToHex(new Uint8Array(await subtle().sign('HMAC', keys.hmac, utf8ToBytes(`${String(r.chainId)}|${payload.stealthAddress}`))));
         if (mac !== r.lookupKey) throw new Error('tag lookup mismatch');
         return payload;

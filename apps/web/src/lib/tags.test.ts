@@ -147,7 +147,9 @@ describe('TagVault (Feature 4)', () => {
 
   it('I-3: accepts only text for the invoice label and notes, trimmed and bounded like the client label', async () => {
     const { vault } = await unlocked();
-    const junk: Record<string, unknown>[] = [{ invoiceLabel: null }, { invoiceLabel: 42 }, { invoiceLabel: { length: 1 } }, { notes: 7 }, { notes: ['net 30'] }, { notes: { toString: () => 'net 30' } }, { clientLabel: 5 }];
+    const junk: Record<string, unknown>[] = [{ invoiceLabel: null }, { invoiceLabel: 42 }, { invoiceLabel: { length: 1 } }, { notes: 7 }, { notes: ['net 30'] }, { notes: { toString: () => 'net 30' } }, { clientLabel: 5 },
+      // Arrays that stringify to a valid value must not pass the pattern checks either.
+      { stealthAddress: [ADDR] }, { announcementId: [`0x${'ab'.repeat(32)}:3`] }];
     for (const patch of junk) {
       const bad: TagPayload = { ...payload(), ...patch };
       expect(() => validatePayload(bad)).toThrow(UserFacingError);
@@ -215,5 +217,24 @@ describe('legacy tag migration', () => {
     if (record === undefined) throw new Error('missing record');
     await store.put({ ...record, schemaVersion: 1 });
     await expect(vault.find(84532, ADDR)).rejects.toThrow(/could not be decrypted/);
+  });
+
+  it('I-3: drops an invoice label or note that an earlier build stored as something other than text', async () => {
+    const { vault, store } = await unlocked();
+    await vault.save(84532, payload());
+    const record = (await store.getAll())[0];
+    if (record === undefined) throw new Error('missing record');
+    // Earlier builds accepted these from archive imports; reading them must neither fail nor hand them to the page.
+    await store.put(await legacyRecord(store, record, { ...payload(), invoiceLabel: null, notes: { toString: () => 'net 30' } } as unknown as TagPayload));
+    const read = await vault.find(84532, ADDR);
+    expect(read).toMatchObject({ clientLabel: payload().clientLabel, stealthAddress: ADDR.toLowerCase() });
+    expect(read).not.toHaveProperty('invoiceLabel');
+    expect(read).not.toHaveProperty('notes');
+    expect((await vault.list())[0]).not.toHaveProperty('notes');
+    const [entry] = await vault.snapshot();
+    expect(entry?.payload).toEqual({ stealthAddress: ADDR.toLowerCase(), announcementId: payload().announcementId, logIndex: 3, clientLabel: payload().clientLabel });
+    // A stored payload that is not an object at all is still refused as damaged.
+    await store.put(await legacyRecord(store, (await store.getAll())[0] ?? record, 'not a tag' as unknown as TagPayload));
+    await expect(vault.list()).rejects.toThrow(/could not be decrypted/);
   });
 });
