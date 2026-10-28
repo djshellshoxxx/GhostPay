@@ -221,6 +221,78 @@ describe('EsploraClient', () => {
     expect(await codeOf(notRecord.blockTxs('a'.repeat(64)))).toBe('INVALID_RESPONSE');
   });
 
+  it('sends no credentials, referrer or cached answer, refuses redirects and always sets a deadline', async () => {
+    const inits: RequestInit[] = [];
+    const c = new EsploraClient({ baseUrl: BASE, fetchFn: (_u, init) => { inits.push(init); return Promise.resolve(new Response('7')); } });
+    expect(await c.tipHeight()).toBe(7);
+    expect(await codeOf(c.broadcast('00'))).toBe('INVALID_RESPONSE'); // '7' is no txid; only the request matters here
+    expect(inits).toHaveLength(2);
+    for (const init of inits) {
+      expect(init).toMatchObject({ credentials: 'omit', referrerPolicy: 'no-referrer', redirect: 'error', cache: 'no-store' });
+      expect(init.signal).toBeInstanceOf(AbortSignal);
+    }
+  });
+
+  it('gives up at the deadline, also on a stalled body, and reports a user cancel as cancelled', async () => {
+    // Settles only when its signal aborts, like a server that never answers.
+    const hang = (_u: string, init: RequestInit): Promise<Response> => new Promise((_r, reject) => {
+      init.signal?.addEventListener('abort', () => { reject(new Error('aborted')); });
+    });
+    expect(await codeOf(new EsploraClient({ baseUrl: BASE, fetchFn: hang, timeoutMs: 20 }).tipHeight())).toBe('TRANSPORT_FAILURE');
+    const ac = new AbortController();
+    const pending = new EsploraClient({ baseUrl: BASE, fetchFn: hang }).tipHeight(ac.signal);
+    ac.abort();
+    expect(await codeOf(pending)).toBe('ABORTED');
+    // Headers arrive, then the body never finishes; the deadline still ends the request (even if cancelling fails).
+    const stalled = { pulled: 0, cancelled: false };
+    const trickle = (): Promise<Response> => Promise.resolve(new Response(new ReadableStream<Uint8Array>({
+      pull: () => { stalled.pulled++; return new Promise(() => undefined); },
+      cancel: () => { stalled.cancelled = true; throw new Error('cancel failed'); },
+    })));
+    expect(await codeOf(new EsploraClient({ baseUrl: BASE, fetchFn: trickle, timeoutMs: 20 }).tipHeight())).toBe('TRANSPORT_FAILURE');
+    expect(stalled.cancelled).toBe(true);
+  }, 10_000);
+
+  it('caps the response size while the body streams', async () => {
+    const MiB = 1024 * 1024;
+    /** 64 MiB in 64 KiB chunks; records how far a reader got and whether it cancelled (`failCancel`: cancel throws). */
+    const body = (seen: { pulled: number; cancelled: boolean; failCancel?: boolean }) => new ReadableStream<Uint8Array>({
+      pull(ctl) {
+        seen.pulled++;
+        if (seen.pulled > 1024) ctl.close();
+        else ctl.enqueue(new Uint8Array(64 * 1024).fill(0x20));
+      },
+      cancel() {
+        seen.cancelled = true;
+        if (seen.failCancel === true) throw new Error('cancel failed');
+      },
+    });
+    const serve = (res: () => Response) => new EsploraClient({ baseUrl: BASE, fetchFn: () => Promise.resolve(res()) });
+    // A valid answer padded past the 16 MiB cap is refused, not buffered and parsed.
+    expect(await codeOf(serve(() => new Response(`7${' '.repeat(17 * MiB)}`)).tipHeight())).toBe('INVALID_RESPONSE');
+    // The download is cancelled just past the cap instead of being read to the end.
+    const streamed = { pulled: 0, cancelled: false };
+    expect(await codeOf(serve(() => new Response(body(streamed))).tipHeight())).toBe('INVALID_RESPONSE');
+    expect(streamed.cancelled).toBe(true);
+    expect(streamed.pulled).toBeLessThan(16 * 16 + 8);
+    // A declared Content-Length above the cap is refused before the body is read.
+    const declared = { pulled: 0, cancelled: false };
+    const big = () => new Response(body(declared), { headers: { 'content-length': String(64 * MiB) } });
+    expect(await codeOf(serve(big).tipHeight())).toBe('INVALID_RESPONSE');
+    expect(declared.cancelled).toBe(true);
+    expect(declared.pulled).toBeLessThanOrEqual(1);
+    // A cancellation that fails does not hide the refusal.
+    for (const headers of [{}, { 'content-length': String(64 * MiB) }]) {
+      const failing = { pulled: 0, cancelled: false, failCancel: true };
+      expect(await codeOf(serve(() => new Response(body(failing), { headers })).tipHeight())).toBe('INVALID_RESPONSE');
+      expect(failing.cancelled).toBe(true);
+    }
+    // A body that fails while streaming is a transport failure; an empty body is not a valid answer.
+    const broken = () => new Response(new ReadableStream({ pull: (ctl) => { ctl.error(new Error('reset')); } }));
+    expect(await codeOf(serve(broken).tipHeight())).toBe('TRANSPORT_FAILURE');
+    expect(await codeOf(serve(() => new Response(null)).tipHeight())).toBe('INVALID_RESPONSE');
+  });
+
   it('checks the genesis hash and always refuses mainnet', async () => {
     const { client } = mk('regtest');
     await expect(client.checkNetwork(btcNetwork('regtest'))).resolves.toBeUndefined();

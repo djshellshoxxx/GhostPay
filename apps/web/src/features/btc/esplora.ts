@@ -20,7 +20,10 @@ export type EsploraFetch = (url: string, init: RequestInit) => Promise<Response>
 
 /** Esplora returns 25 transactions per `/block/:hash/txs/:start` page. */
 const PAGE = 25;
+/** Largest response body read, in bytes; a bigger one is cancelled while it streams. */
 const MAX_TEXT = 16 * 1024 * 1024;
+/** Default per-request deadline (headers and body), in ms. */
+const TIMEOUT_MS = 30_000;
 /**
  * Most transactions a valid block can hold: 4,000,000 weight units / 240 for the smallest possible (60-byte)
  * transaction. A larger claimed count is refused before any page is downloaded; anything up to it is read in full.
@@ -181,9 +184,54 @@ function encodeWitness(items: readonly unknown[]): string {
   }).join('');
 }
 
+/**
+ * Reads the body as UTF-8 text through a byte cap, so a hostile server cannot make the tab buffer an unbounded body:
+ * a declared `Content-Length` above it is refused unread, and the download is cancelled as soon as the streamed bytes
+ * pass it. An abort of `signal` cancels the download too, even when the fetch implementation does not.
+ * @throws {SilentPaymentError} `INVALID_RESPONSE` past the cap; stream errors and the abort reason propagate as thrown.
+ */
+async function readCapped(res: Response, max: number, signal: AbortSignal): Promise<string> {
+  if (Number(res.headers.get('content-length')) > max) {
+    await res.body?.cancel().catch(() => undefined);
+    return bad();
+  }
+  if (res.body === null) return '';
+  const reader = res.body.getReader();
+  const stop = (): void => {
+    reader.cancel().catch(() => undefined);
+  };
+  signal.addEventListener('abort', stop, { once: true });
+  try {
+    const chunks: Uint8Array[] = [];
+    let total = 0;
+    for (;;) {
+      const { done, value } = await reader.read();
+      signal.throwIfAborted();
+      if (done) break;
+      total += value.byteLength;
+      if (total > max) {
+        await reader.cancel().catch(() => undefined);
+        return bad();
+      }
+      chunks.push(value);
+    }
+    const all = new Uint8Array(total);
+    let off = 0;
+    for (const c of chunks) {
+      all.set(c, off);
+      off += c.byteLength;
+    }
+    return new TextDecoder().decode(all);
+  } finally {
+    signal.removeEventListener('abort', stop);
+  }
+}
+
 export interface EsploraClientOptions {
   readonly baseUrl: string;
   readonly fetchFn: EsploraFetch;
+  /** Deadline per request in ms, body download included (default 30 s). The caller's signal can end it sooner. */
+  readonly timeoutMs?: number;
 }
 
 /**
@@ -192,33 +240,45 @@ export interface EsploraClientOptions {
  * `GET /block/:hash/header`, `GET /tx/:txid/outspend/:vout`, `GET /fee-estimates`, `POST /tx`.
  *
  * @security Responses are untrusted and validated. Only block heights, outpoints and the raw
- * transaction you broadcast are sent; no key material ever reaches this class.
+ * transaction you broadcast are sent; no key material ever reaches this class. Requests send no
+ * credentials or referrer, bypass the HTTP cache, refuse redirects and end at a deadline; bodies are
+ * read through a size cap.
  */
 export class EsploraClient {
   public readonly baseUrl: string;
   private readonly fetchFn: EsploraFetch;
+  private readonly timeoutMs: number;
 
   public constructor(options: EsploraClientOptions) {
     this.baseUrl = normalizeEsploraUrl(options.baseUrl);
     this.fetchFn = options.fetchFn;
+    this.timeoutMs = options.timeoutMs ?? TIMEOUT_MS;
   }
 
   private async text(path: string, init: RequestInit = {}, signal?: AbortSignal): Promise<string> {
+    const timeout = AbortSignal.timeout(this.timeoutMs);
+    const combined = signal === undefined ? timeout : AbortSignal.any([signal, timeout]);
+    const failure = (): SilentPaymentError => new SilentPaymentError(signal?.aborted === true ? 'ABORTED' : 'TRANSPORT_FAILURE');
     let res: Response;
     try {
       res = await this.fetchFn(`${this.baseUrl}${path}`, {
         ...init,
         credentials: 'omit',
         referrerPolicy: 'no-referrer',
-        ...(signal === undefined ? {} : { signal }),
+        redirect: 'error',
+        cache: 'no-store',
+        signal: combined,
       });
     } catch {
-      throw new SilentPaymentError(signal?.aborted === true ? 'ABORTED' : 'TRANSPORT_FAILURE');
+      throw failure();
     }
     if (!res.ok) throw new SilentPaymentError('TRANSPORT_FAILURE');
-    const body = await res.text();
-    if (body.length > MAX_TEXT) return bad();
-    return body;
+    try {
+      return await readCapped(res, MAX_TEXT, combined);
+    } catch (e) {
+      if (e instanceof SilentPaymentError) throw e;
+      throw failure();
+    }
   }
 
   private async json(path: string, signal?: AbortSignal): Promise<unknown> {
