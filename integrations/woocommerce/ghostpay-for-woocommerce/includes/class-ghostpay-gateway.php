@@ -248,8 +248,8 @@ class WC_Gateway_GhostPay extends WC_Payment_Gateway {
 			$header,
 			time(),
 			static function ( string $nonce, int $expires ): bool {
-				// add_option fails if the option exists: atomic first-use claim. Fails closed on DB error.
-				return (bool) add_option( 'ghostpay_nonce_' . $nonce, (string) $expires, '', false );
+				// Atomic first-use claim (see insert_option_once). Fails closed on DB error.
+				return 1 === self::insert_option_once( 'ghostpay_nonce_' . $nonce, (string) $expires );
 			}
 		);
 		if ( 'ok' !== $result ) {
@@ -266,16 +266,40 @@ class WC_Gateway_GhostPay extends WC_Payment_Gateway {
 		self::reply( 200, array( 'ok' => true, 'duplicate' => 'duplicate' === $result ) );
 	}
 
-	/** Claim one identity with wp_options' unique option_name and a compare-and-swap lease takeover. */
+	/**
+	 * Atomic first-use claim of a wp_options row: INSERT IGNORE on the unique option_name. add_option() is NOT one: it
+	 * reads (non-locking, possibly cached), then INSERT ... ON DUPLICATE KEY UPDATE, so two concurrent requests could
+	 * both "add" the same name.
+	 *
+	 * @return int|false 1 when this call inserted the row, 0 when it already existed, false on a database error.
+	 */
+	private static function insert_option_once( string $name, string $value ) {
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$rows = $wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO {$wpdb->options} (option_name, option_value, autoload) VALUES (%s, %s, 'no')", $name, $value ) );
+		wp_cache_delete( $name, 'options' );
+		return $rows;
+	}
+
+	/** Current row value read from the database, not the object cache (stale under concurrency). */
+	private static function option_from_db( string $name ): ?string {
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$value = $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s", $name ) );
+		return is_string( $value ) ? $value : null;
+	}
+
+	/** Claim one identity with an atomic insert on wp_options' unique option_name and a compare-and-swap lease takeover. */
 	private function claim_identity( string $identity, string $token ): string {
 		$name = '_ghostpay_delivery_' . hash( 'sha256', $identity );
 		$now = time();
 		$value = 'processing|' . $token . '|' . ( $now + 900 );
-		if ( add_option( $name, $value, '', false ) ) {
+		$inserted = self::insert_option_once( $name, $value );
+		if ( 1 === $inserted ) {
 			return 'claimed';
 		}
-		$old = get_option( $name, false );
-		if ( ! is_string( $old ) ) {
+		$old = 0 === $inserted ? self::option_from_db( $name ) : null;
+		if ( null === $old ) {
 			return 'error';
 		}
 		if ( str_starts_with( $old, 'complete|' ) ) {
@@ -295,8 +319,8 @@ class WC_Gateway_GhostPay extends WC_Payment_Gateway {
 		if ( 1 === $changed ) {
 			return 'claimed';
 		}
-		$current = get_option( $name, false );
-		return is_string( $current ) && str_starts_with( $current, 'complete|' ) ? 'duplicate' : 'busy';
+		$current = self::option_from_db( $name );
+		return null !== $current && str_starts_with( $current, 'complete|' ) ? 'duplicate' : 'busy';
 	}
 
 	/** @param string[] $names */

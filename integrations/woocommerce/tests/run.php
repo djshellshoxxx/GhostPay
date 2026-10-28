@@ -158,6 +158,41 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	check( 'that webhook pays the order', GhostPay_Test::$orders[1]['status'], 'processing' );
 	do_action( 'init' );
 	check( 'upgrade step is idempotent', $notice(), '' );
+
+	// G3-04: claims must be atomic. WordPress add_option() reads, fires 'add_option', then upserts, so two concurrent
+	// requests could both "add" the same option. Run a second request at every database step of the first one.
+	$webhook_hex = $hex( 'c3' );
+	$race        = static function ( string $body, string $first_sig, string $second_sig, int $step ) use ( $settings ): ?array {
+		GhostPay_Test::reset();
+		update_option( 'woocommerce_ghostpay_settings', $settings );
+		ghostpay_test_order( 2, 'pending', '12.50', 'USD', array( 'inv_race' ) );
+		$replies = array();
+		$ran     = GhostPay_Test::race(
+			static function () use ( &$replies, $body, $first_sig ): void {
+				$replies[] = ghostpay_test_deliver( $body, $first_sig );
+			},
+			static function () use ( &$replies, $body, $second_sig ): void {
+				$replies[] = ghostpay_test_deliver( $body, $second_sig );
+			},
+			$step
+		);
+		$answers = array_map( static fn( array $r ): string => $r[0] . ( empty( $r[1]['duplicate'] ) ? '' : ' duplicate' ), $replies );
+		sort( $answers );
+		return $ran ? $answers : null;
+	};
+	$race_paid = $event( 'evt_race', 'invoice.paid', 'inv_race', 'USD', '1250' );
+	$outcomes  = array();
+	for ( $step = 1; null !== ( $answers = $race( $race_paid, $sign_with( $webhook_hex, $race_paid ), $sign_with( $webhook_hex, $race_paid ), $step ) ); ++$step ) {
+		check( "one event delivered twice, raced at step $step: paid once", GhostPay_Test::$payments, array( 2 ) );
+		check( "one event delivered twice, raced at step $step: other delivery is a duplicate or retryable", in_array( $answers, array( array( '200', '200 duplicate' ), array( '200', '503' ) ), true ), true );
+		$outcomes[ implode( ',', $answers ) ] = true;
+	}
+	check( 'event race hit both a finished and a live claim', isset( $outcomes['200,200 duplicate'], $outcomes['200,503'] ), true );
+	for ( $step = 1; null !== ( $answers = $race( $race_paid, $sig = $sign_with( $webhook_hex, $race_paid ), $sig, $step ) ); ++$step ) {
+		check( "replayed signature raced at step $step is refused", $answers, array( '200', '400' ) );
+		check( "replayed signature raced at step $step: paid once", GhostPay_Test::$payments, array( 2 ) );
+	}
+	check( 'replay race covered the nonce steps', $step > 3, true );
 }
 
 if ( $failed > 0 ) {
