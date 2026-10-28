@@ -15,7 +15,8 @@
 #                extract it into the web bundle directory (skipped, with a note, in --dry-run)
 #   --expect-sha256  the tarball SHA-256 you established on a separate machine (verify-release.sh, git verify-tag,
 #                gh attestation verify; docs/operators/release-and-verify.md)
-#   --attest-repo/--tag  instead, or as well, run `gh attestation verify` for OWNER/REPO's release.yml at refs/tags/TAG
+#   --attest-repo/--tag  instead, or as well, run `gh attestation verify` for OWNER/REPO's release.yml at refs/tags/TAG,
+#                built from --commit on a GitHub-hosted runner
 #   One of the two authenticity checks is required with --tarball: matching SHA256SUMS and manifest prove nothing about
 #   who built the files. After installing a verified bundle the script stops; type "start" to go on, or re-run without
 #   --tarball later.
@@ -164,8 +165,7 @@ if [ -n "$tarball" ]; then
   [ -f "$tarball" ] || bad "tarball not found: $tarball"
   [ -f "$sums" ] || bad "SHA256SUMS not found: $sums"
   [ -f "$manifest" ] || bad "release manifest not found: $manifest"
-  case "$commit" in *[!0-9a-f]*) bad "--commit must be a 40-hex SHA" ;; esac
-  [ "${#commit}" = 40 ] || bad "--commit must be a 40-hex SHA"
+  [[ "$commit" =~ ^[0-9a-f]{40}$ ]] || bad "--commit must be a full 40-hex SHA (lower case)"
   # Authenticity gate (audit L7-M2): files downloaded together are only consistent with each other.
   if [ -z "$expect_sha" ] && [ -z "$attest_repo$tag" ]; then
     bad "--tarball needs an authenticity check: --expect-sha256 HEX established on a separate machine, or --attest-repo OWNER/REPO --tag vX.Y.Z (gh attestation verify)"
@@ -226,7 +226,7 @@ if [ -n "$tarball" ]; then
   echo "  $((step++)). copy $tarball to a private temp dir and verify the copy with scripts/verify-release.sh"
   echo "     (sums: $sums, commit: $commit, manifest: $manifest); abort on any FAIL"
   if [ -n "$expect_sha" ]; then echo "  $((step++)). require its sha256 to equal --expect-sha256 $expect_sha; abort otherwise"; fi
-  if [ -n "$attest_repo" ]; then echo "  $((step++)). gh attestation verify it (repo $attest_repo, workflow release.yml, ref refs/tags/$tag); abort on failure"; fi
+  if [ -n "$attest_repo" ]; then echo "  $((step++)). gh attestation verify it (repo $attest_repo, workflow release.yml, ref refs/tags/$tag, commit $commit, GitHub-hosted runner); abort on failure"; fi
   echo "  $((step++)). extract it into $distdir (replacing old contents)"
   echo "  $((step++)). STOP: nothing is built or started until you finish the checklist verify-release.sh prints and type \"start\""
   echo "     (with --yes the run ends here: re-run without --tarball to build and start)"
@@ -263,7 +263,10 @@ if [ -n "$tarball" ]; then
     echo "PASS  tarball sha256 matches --expect-sha256"
   fi
   if [ -n "$attest_repo" ]; then
+    # --source-ref alone accepts whatever commit the tag named when release.yml ran (a re-pointed tag); --source-digest
+    # ties the attestation to --commit, the commit the signed tag you verified points at.
     gh attestation verify "$copy" --repo "$attest_repo" --signer-workflow "$attest_repo/.github/workflows/release.yml" --source-ref "refs/tags/$tag" \
+      --source-digest "$commit" --deny-self-hosted-runners \
       || die "gh attestation verify failed; aborting (nothing was changed)"
   fi
   validate_web_tarball "$copy" || die "tarball structure is unsafe; aborting (nothing was changed)"
@@ -275,6 +278,7 @@ if [ -n "$tarball" ]; then
   cp -a "$top"/. "$distdir"/
   rerun="deploy/selfhost.sh"
   if [ "$onion" = 1 ]; then rerun="$rerun --onion"; fi
+  if [ "$envfile" != "$here/.env" ]; then rerun="$rerun --env-file $(printf %q "$envfile")"; fi
   echo
   echo "Verified bundle installed in $distdir. Nothing is built or started yet."
   if [ "$yes" = 1 ]; then
