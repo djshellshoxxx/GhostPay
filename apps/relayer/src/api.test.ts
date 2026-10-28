@@ -569,6 +569,33 @@ describe('permit griefing fallback ladder (spec 04)', () => {
     expect(s.fake.sent).toHaveLength(0);
   });
 
+  it('L5-01: a permit that lapses before the sweep deadline is refused before any simulation', async () => {
+    // The permit is outside the sweep signature and the quote MAC and the contract swallows a failed permit, so one
+    // that expires before inclusion would be a mined revert paid by the relayer.
+    const s = await start();
+    s.fake.allowance = 0n;
+    for (const [n, offset] of [[1n, 1], [2n, 599]] as const) {
+      const { body } = await prepare(s, { permit: true, nonce: n }); // sweep deadline: now + 600
+      (body['permit'] as Record<string, string>)['deadline'] = String(NOW_SEC + offset);
+      const r = await call(s, 'POST', '/v1/sweep', body);
+      expect(r.status).toBe(422);
+      expect(errCode(r)).toBe('permit_expired');
+    }
+    expect(s.fake.simulations).toBe(0);
+    expect(s.fake.sent).toHaveLength(0);
+    // Clients sign permit.deadline == sweep.deadline (apps/web sweep.ts, hops): accepted with no margin; later is fine too.
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { permit: true, nonce: 3n })).body)).status).toBe(200);
+    const later = await prepare(s, { permit: true, nonce: 4n });
+    (later.body['permit'] as Record<string, string>)['deadline'] = String(NOW_SEC + 3600);
+    expect((await call(s, 'POST', '/v1/sweep', later.body)).status).toBe(200);
+    // The ladder still drops an unneeded permit, whatever its deadline.
+    s.fake.allowance = 10n ** 30n;
+    const covered = await prepare(s, { permit: true, nonce: 5n });
+    (covered.body['permit'] as Record<string, string>)['deadline'] = String(NOW_SEC + 1);
+    expect((await call(s, 'POST', '/v1/sweep', covered.body)).status).toBe(200);
+    expect(s.fake.sent.map((x) => x.call.permit === undefined)).toEqual([false, false, true]);
+  });
+
   it('a permit the token rejects (generic allowance revert) is reported as permit_failed, nothing sent', async () => {
     const s = await start();
     s.fake.allowance = 0n;

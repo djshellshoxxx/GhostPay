@@ -42,7 +42,8 @@ proven owner) -> per-owner failure counter (`owner_failure_limit` 429 + `Retry-A
 failures per hour, spec 04) -> `PolicyGate` (`policy_denied` 403, `policy_unavailable` 503) -> breaker -> serial per-chain lane:
 gas price cap (`gas_price_too_high` 503), balance floor (`breaker_open`), order state (`nonce_used`,
 `insufficient_token_balance`, `insufficient_allowance`), permit ladder (allowance already covers -> the permit is dropped and
-plain `sweep` is used; otherwise an expired permit -> `permit_expired` 422 before simulation), `simulateContract` (revert
+plain `sweep` is used; otherwise a permit that has expired or expires before `sweep.deadline` -> `permit_expired` 422 before
+simulation), `simulateContract` (revert
 class: `nonce_used` 409, `expired`, `invalid_signature`, `token_transfer_failed`, `permit_value_too_low`, `invalid_order`,
 `simulation_reverted` 422; with a permit still needed a generic transfer revert is `permit_failed` 422; RPC failure
 `rpc_unavailable` 503), gas limit (`gas_limit_too_high`), daily budget (`budget_exhausted` 503 + `Retry-After`) -> send

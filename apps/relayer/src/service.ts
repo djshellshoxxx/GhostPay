@@ -566,11 +566,17 @@ export class RelayerService {
       throw new RelayerError(422, 'insufficient_allowance');
     // Spec 04 fallback ladder: allowance already covers (e.g. a front-runner submitted the owner's permit) -> skip the
     // permit and use the plain `sweep` path; otherwise an expired permit is refused before paying for a simulation.
+    // The permit is outside the sweep signature and the quote MAC and the contract swallows a failed permit, so one
+    // that can lapse while the order is still valid would be a mined revert paid by the relayer (L5-01): it must last
+    // until the sweep deadline. No margin: clients sign `permit.deadline == sweep.deadline`.
     if (call.permit !== undefined) {
       if (state.allowance >= call.sweep.amount) {
         call = { ...call, permit: undefined };
         this.d.metrics?.inc('relayer_permit_skipped_total', { chain_id: cfg.chainId });
-      } else if (call.permit.deadline <= BigInt(Math.floor(this.now() / 1000))) {
+      } else if (
+        call.permit.deadline < call.sweep.deadline ||
+        call.permit.deadline <= BigInt(Math.floor(this.now() / 1000))
+      ) {
         throw new RelayerError(422, 'permit_expired');
       }
     }
