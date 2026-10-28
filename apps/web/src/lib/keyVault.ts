@@ -214,6 +214,7 @@ export async function authorizeKeyExport(vaultPassphrase: string, store: KeyVaul
     if (stored !== undefined && vaultMetaAddress(stored) === loaded?.metaAddress) record = stored;
   }
   if (record === undefined) return undefined;
+  if (vaultPassphrase === '') throw new UserFacingError('These seller keys are tied to an encrypted vault in this browser. Enter that vault’s passphrase to export them or save them again.');
   await provePassphrase(record, vaultPassphrase);
   unchanged();
   if (holdsLoadedKeySet(record)) armSessionVault(record, unchanged, { stored: (await store.get().catch(() => undefined)) === record });

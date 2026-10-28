@@ -147,7 +147,7 @@ describe('App shell', () => {
       renderApp(makeServices());
       await act(async () => { await vi.advanceTimersByTimeAsync(61_000); });
       expect(hasSession()).toBe(false);
-      expect(document.querySelector('[role="status"][aria-live]')?.textContent).toBe('Seller keys and local tags locked after inactivity.');
+      expect(document.querySelector('[role="status"][aria-live]')?.textContent).toBe('Seller keys wiped from memory and local tags locked after inactivity.');
       vi.useRealTimers();
       await act(async () => { await unlockEncryptedVault('violet comet maple lantern'); });
       await store.delete(record);                     // removed from another tab: the keys in memory are the only copy

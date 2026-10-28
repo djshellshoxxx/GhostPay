@@ -246,7 +246,7 @@ describe('L1-02: the vault step-up belongs to the session', () => {
     const file = await exportKeystore('cedar orbit velvet lantern meadow', { N: 1 << 14 });
     clearSession();
     await importKeystore(file, 'cedar orbit velvet lantern meadow');
-    await expect(authorizeKeyExport('', store)).rejects.toThrow(/Wrong passphrase/);
+    await expect(authorizeKeyExport('', store)).rejects.toThrow(/tied to an encrypted vault/);
     const guard = await authorizeKeyExport(PASS, store);
     importSession(OTHER);
     expect(() => guard?.()).toThrow(/changed during this action/);

@@ -41,6 +41,10 @@ describe('Seller keys', () => {
     expect(await vaultStore.get()).toBe(ciphertext);
     expect(await vaultStore.get()).not.toContain(passphrase);
     expect(screen.getByLabelText<HTMLInputElement>('Vault passphrase').value).toBe('');
+    // The unlocked keys now need the vault's step-up to be exported; that field must not also match "vault passphrase",
+    // which is how the e2e suite finds the unlock field.
+    expect(screen.getByLabelText('Passphrase of the vault these keys are tied to')).toBeTruthy();
+    expect(screen.getAllByLabelText(/vault passphrase/i)).toHaveLength(1);
   });
 
   it('keeps a saved vault locked after a wrong passphrase and clears the password field', async () => {
@@ -254,15 +258,15 @@ describe('Seller keys', () => {
     URL.revokeObjectURL = (): void => undefined;
     HTMLAnchorElement.prototype.click = click;
     const user = await open();
-    await user.type(await screen.findByLabelText('Current vault passphrase'), 'attacker chosen phrase 42!');
+    await user.type(await screen.findByLabelText('Passphrase of the vault these keys are tied to'), 'attacker chosen phrase 42!');
     await user.clear(screen.getByLabelText('Passphrase (at least 14 characters)'));
     await user.type(screen.getByLabelText('Passphrase (at least 14 characters)'), 'attacker chosen phrase 42!');
     await user.type(screen.getByLabelText('Repeat passphrase'), 'attacker chosen phrase 42!');
     await user.click(screen.getByRole('button', { name: 'Download encrypted keystore' }));
     await waitFor(() => { expect(screen.getByRole('alert').textContent).toMatch(/Wrong passphrase/); }, { timeout: 15_000 });
     expect(click).not.toHaveBeenCalled();
-    expect(screen.getByLabelText<HTMLInputElement>('Current vault passphrase').value).toBe('');
-    await user.type(screen.getByLabelText('Current vault passphrase'), 'violet comet maple lantern');
+    expect(screen.getByLabelText<HTMLInputElement>('Passphrase of the vault these keys are tied to').value).toBe('');
+    await user.type(screen.getByLabelText('Passphrase of the vault these keys are tied to'), 'violet comet maple lantern');
     await user.click(screen.getByRole('button', { name: 'Download encrypted keystore' }));
     await waitFor(() => { expect(click).toHaveBeenCalled(); }, { timeout: 30_000 });
   });

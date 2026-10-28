@@ -164,6 +164,8 @@ export function SellerKeys(): ReactNode {
         if (!currentOperation(controller)) return;
         setExportStepUp('');
         setBusy(false);
+        // A vault saved meanwhile (another tab) may be why the step-up was needed: show its field.
+        refreshVault();
         fail(err);
       },
     );
