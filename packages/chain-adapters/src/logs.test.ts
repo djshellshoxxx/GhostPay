@@ -2,7 +2,7 @@ import { encodeAbiParameters, getAddress } from 'viem/utils';
 import { describe, expect, it } from 'vitest';
 import { ChainAdapterError } from './errors.js';
 import { FAKE, SEPOLIA, payment, recipient } from './fixtures.testutil.js';
-import { ANNOUNCEMENT_TOPIC, fetchAnnouncements, MAX_PLAUSIBLE_HEAD, validateAnnouncementLog, type ScanCursor } from './logs.js';
+import { ANNOUNCEMENT_TOPIC, fetchAnnouncements, isLogLimitError, isLogSizeError, MAX_PLAUSIBLE_HEAD, validateAnnouncementLog, type ScanCursor } from './logs.js';
 import { createClient, type RpcClient, type RpcLog } from './rpc.js';
 import { FakeRpcError, fakeTransport, noSleep } from './rpc.testutil.js';
 import type { Hex } from './types.js';
@@ -122,6 +122,11 @@ describe('fetchAnnouncements', () => {
     expect(r.truncated).toBe(false);
     expect(r.reorg).toBeUndefined();
     expect(r.skipped).toBe(0);
+    expect(r.head).toBe(25n);
+  });
+  it('reports the provider head even when toBlock ends the fetch below it', async () => {
+    const r = await fetchWith(await client(mkChain({ head: 25 })), { nextBlock: 0n }, { toBlock: 12n });
+    expect(r).toMatchObject({ head: 25n, truncated: false, cursor: { nextBlock: 13n } });
   });
   it('honours a smaller maxRange but never a larger one', async () => {
     const c1 = mkChain({ head: 9 });
@@ -198,6 +203,23 @@ describe('fetchAnnouncements', () => {
     const r = await fetchWith(await client(chain), { nextBlock: 0n });
     expect(r.announcements).toHaveLength(1);
     expect(chain.requests.at(-1)?.to).toBe(9n);
+  });
+  it('classifies provider limits by code, also when the message carries provider detail (L4-01)', () => {
+    const rpc = (detail: string): ChainAdapterError => new ChainAdapterError('RPC_FAILURE', detail);
+    expect(isLogLimitError(new ChainAdapterError('RESPONSE_TOO_LARGE', 'response exceeds cap'))).toBe(true);
+    expect(isLogSizeError(new ChainAdapterError('RESPONSE_TOO_LARGE', 'response exceeds cap'))).toBe(true);
+    for (const code of [-32602, -32005]) {
+      expect(isLogSizeError(rpc(`json-rpc error ${String(code)}`))).toBe(true);
+      expect(isLogSizeError(rpc(`json-rpc error ${String(code)} (query returned more than 10000 results)`))).toBe(true);
+    }
+    for (const code of [-32600, -32614, -32000]) {
+      expect(isLogLimitError(rpc(`json-rpc error ${String(code)}: block range too large`))).toBe(true);
+      expect(isLogSizeError(rpc(`json-rpc error ${String(code)}`))).toBe(false);
+    }
+    expect(isLogLimitError(rpc('json-rpc error -320050'))).toBe(false);
+    expect(isLogLimitError(rpc('json-rpc error -32603'))).toBe(false);
+    expect(isLogLimitError(new ChainAdapterError('INVALID_LOG', 'json-rpc error -32005'))).toBe(false);
+    expect(isLogLimitError(new Error('RPC_FAILURE: json-rpc error -32005'))).toBe(false);
   });
   it('rethrows other JSON-RPC errors without shrinking the window', async () => {
     let calls = 0;

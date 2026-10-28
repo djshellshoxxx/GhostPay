@@ -51,7 +51,8 @@ export interface FetchOptions {
   /**
    * Router from the verified deployment manifest. A single block whose announcer logs exceed the response or
    * accepted-log cap (announcer spam) is then scanned for this caller only and reported in `routerOnlyBlocks`.
-   * Without it such a block fails the fetch, so nothing is skipped silently.
+   * Without it the scan stops at such a block (the fetch ends before it, or fails when it is next), so nothing is
+   * skipped silently.
    */
   readonly router?: Address;
 }
@@ -66,6 +67,8 @@ export interface FetchResult {
   readonly reorg?: { readonly rolledBackTo: bigint };
   /** Count of logs from the announcer that failed on-chain-content validation and were skipped. */
   readonly skipped: number;
+  /** Chain head the provider reported for this fetch (a `toBlock` below it ended the fetch earlier). */
+  readonly head: bigint;
   /**
    * Blocks whose full announcer response exceeded a cap: only announcements posted by `router` were fetched and
    * returned for them; any other announcement in these blocks was NOT scanned. Absent when there were none.
@@ -84,9 +87,10 @@ const MAX_LOGS_PER_FETCH = 10_000;
 const MAX_CANONICAL_BLOCK_READS = 1_000;
 // JSON-RPC codes providers use for eth_getLogs range or result limits (Alchemy, QuickNode and reth -32602; Infura, Besu
 // and Nethermind -32005; others -32600, -32614 or the generic -32000). Any of them only means "ask for a smaller range".
-const RANGE_LIMIT = /^RPC_FAILURE: json-rpc error -(32602|32005|32600|32614|32000)$/;
+// Not anchored at the end, so a message that adds provider detail after the code still matches.
+const RANGE_LIMIT = /^RPC_FAILURE: json-rpc error -(32602|32005|32600|32614|32000)(?!\d)/;
 // The subset that also means "this response is too large", so a single block is retried for the router lane only.
-const SIZE_LIMIT = /^RPC_FAILURE: json-rpc error -(32602|32005)$/;
+const SIZE_LIMIT = /^RPC_FAILURE: json-rpc error -(32602|32005)(?!\d)/;
 
 function schemeTopic(id: bigint): Hex {
   return `0x${id.toString(16).padStart(64, '0')}`;
@@ -421,6 +425,7 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
         cursor,
         truncated: true,
         skipped,
+        head,
         reorg: { rolledBackTo: rollback < w.from ? rollback : w.from },
         ...(kept.length === 0 ? {} : { routerOnlyBlocks: kept }),
       };
@@ -428,7 +433,7 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
     last = { number: doneThrough, hash: ref.hash };
   }
   const cursor: ScanCursor = last === undefined ? { nextBlock: next } : { nextBlock: next, last };
-  return finish({ announcements: out, cursor, truncated, skipped, ...(routerOnly.length === 0 ? {} : { routerOnlyBlocks: routerOnly }) }, reorg);
+  return finish({ announcements: out, cursor, truncated, skipped, head, ...(routerOnly.length === 0 ? {} : { routerOnlyBlocks: routerOnly }) }, reorg);
 }
 
 /** Validates one page of raw logs: accepted announcements not seen before (deduplicated) and the skipped count. */
