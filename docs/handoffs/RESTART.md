@@ -1,5 +1,7 @@
 # GhostPay restart — lean core
 
+> **2026-10-28:** the consolidated integration (PR #30 + PR #36 + sweep lock fixes) is draft PR #37. Its source map, missing-source record and evidence are in [CONSOLIDATION_2026-10-28](CONSOLIDATION_2026-10-28.md).
+
 **2026-10-24 UTC.** Start here before the historical [next-agent prompt](NEXT_AGENT_PROMPT.md). This handoff does not grant implementation, push, merge, release or deployment authority; follow the active owner task and supported access.
 
 ## Read and verify
