@@ -8,8 +8,9 @@ import {
 import type { BtcNetworkInfo } from './network';
 
 /**
- * In-memory software wallet. NOTHING here is ever written to storage: the seed is shown to the
- * user once (on request) so they can back it up, and the keys die with the component state.
+ * In-memory software wallet. NOTHING here is ever written to storage: the seed of a wallet created
+ * here is shown only on request so the user can back it up (the view keeps it as bytes until Lock),
+ * and the keys die with the component state.
  */
 export interface BtcWallet {
   readonly keys: SilentPaymentKeys;

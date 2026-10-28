@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import type { SolanaRpc } from '@ghostpay/solana-stealth';
+import { zeroize, type SolanaRpc } from '@ghostpay/solana-stealth';
+import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { CameraImporter } from '../../components/CameraImporter';
 import { PlainPaymentRequest } from '../../components/PaymentRequestQr';
 import { QrFrame } from '../../components/QrFrame';
 import { subscribeAppLock } from '../../lib/appLock';
 import { useServices } from '../../lib/services';
+import { clearCopiedBackup, englishBackupText, SecretBackup } from '../btc/SecretBackup';
 import { SOL_NETWORKS, solNetwork, type SolNetworkId } from './network';
 import { checkNetwork, createRpc, sendTransaction, SolViewError, solErrorMessage } from './rpc';
 import { MAX_SCAN_PAGES, scanForPayments, wipeFound, type FoundPayment, type ScanResult } from './scan';
@@ -14,7 +16,8 @@ import { randomSeedHex, walletFromSeedHex, wipeWallet, type SolWallet } from './
 
 /**
  * Solana dual-key stealth payments (ed25519), test networks only. Keys live in this component's
- * state and vanish when you leave the view; nothing secret is stored.
+ * state and vanish when you leave the view; nothing secret is stored. A created wallet's seed is kept
+ * as bytes for its backup, shown only on request, and wiped with the keys.
  */
 export function SolanaView(): ReactNode {
   const services = useServices();
@@ -22,7 +25,8 @@ export function SolanaView(): ReactNode {
   const [url, setUrl] = useState('');
   const [seedInput, setSeedInput] = useState('');
   const [wallet, setWallet] = useState<SolWallet | undefined>(undefined);
-  const [seedShown, setSeedShown] = useState<string | undefined>(undefined);
+  /** A created wallet offers its backup seed on request; an imported seed is the user's own copy already. */
+  const [hasBackup, setHasBackup] = useState(false);
   const [fromSlot, setFromSlot] = useState('');
   const [scanning, setScanning] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -41,6 +45,8 @@ export function SolanaView(): ReactNode {
   /** Bumped by every new async action and by lock/unmount: results of older actions are dropped. */
   const op = useRef(0);
   const walletRef = useRef<SolWallet | undefined>(undefined);
+  /** Seed of a created wallet, as bytes so that Lock, a new wallet and unmount can wipe it. */
+  const seedRef = useRef<Uint8Array | undefined>(undefined);
   const scanRef = useRef<ScanResult | undefined>(undefined);
   const net = solNetwork(netId);
 
@@ -64,10 +70,17 @@ export function SolanaView(): ReactNode {
       op.current++;
       abort.current?.abort();
       if (walletRef.current !== undefined) wipeWallet(walletRef.current);
+      if (seedRef.current !== undefined) zeroize(seedRef.current);
       if (scanRef.current !== undefined) wipeFound(scanRef.current.found);
     },
     [],
   );
+
+  const forgetSeed = (): void => {
+    if (seedRef.current !== undefined) zeroize(seedRef.current);
+    seedRef.current = undefined;
+    setHasBackup(false);
+  };
 
   const resetFlow = (): void => {
     if (scanRef.current !== undefined) wipeFound(scanRef.current.found);
@@ -102,17 +115,19 @@ export function SolanaView(): ReactNode {
     return rpc;
   };
 
-  const useSeed = (hex: string, reveal: boolean): void => {
+  const useSeed = (hex: string, offerBackup: boolean): void => {
     guard(() => {
       const w = walletFromSeedHex(hex, net);
       invalidate();
       if (walletRef.current !== undefined) wipeWallet(walletRef.current);
+      forgetSeed();
       resetFlow();
       walletRef.current = w;
+      if (offerBackup) seedRef.current = hexToBytes(hex);
+      setHasBackup(offerBackup);
       setWallet(w);
       setAppLocked(false);
       setSeedInput('');
-      setSeedShown(reveal ? hex : undefined);
     });
   };
 
@@ -198,11 +213,13 @@ export function SolanaView(): ReactNode {
   };
 
   const lock = (): void => {
+    // First, while a Lock click still counts as user activation (the browser allows clipboard writes only then).
+    clearCopiedBackup();
     invalidate();
     if (walletRef.current !== undefined) wipeWallet(walletRef.current);
     walletRef.current = undefined;
+    forgetSeed();
     setWallet(undefined);
-    setSeedShown(undefined);
     resetFlow();
   };
 
@@ -294,13 +311,11 @@ export function SolanaView(): ReactNode {
                 <PlainPaymentRequest family="solana" testnet={net.id !== 'mainnet'} networkLabel={net.label} />
               </>
             )}
-            {seedShown !== undefined && (
-              <Notice kind="warn" title="Backup seed (shown once)">
-                <p><Mono>{seedShown}</Mono></p>
-                <p>Anyone with this seed controls the wallet. It is not stored anywhere.</p>
-                <CopyButton text={seedShown} label="Copy seed" />{' '}
-                <button type="button" className="btn" onClick={() => { setSeedShown(undefined); }}>Hide seed</button>
-              </Notice>
+            {hasBackup && (
+              <SecretBackup
+                reveal={() => (seedRef.current === undefined ? '' : bytesToHex(seedRef.current))}
+                text={englishBackupText('seed')}
+              />
             )}
             <p>
               <button type="button" className="btn btn-danger" onClick={lock}>Lock and forget keys</button>

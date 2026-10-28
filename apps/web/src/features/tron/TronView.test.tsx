@@ -3,7 +3,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { hexToBytes } from '@noble/hashes/utils.js';
 import { decodeRawTx } from '@ghostpay/tron-adapter';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { makeServices, renderWith } from '../../test/render';
 import { BACKUP_A, DEST, mockTron, walletA, type MockTron } from './fixtures.testutil';
 import { MAINNET_GENESIS } from './network';
@@ -45,18 +45,47 @@ describe('TronView', () => {
     expect(screen.getByRole<HTMLOptionElement>('option', { name: /mainnet/i }).disabled).toBe(true);
   });
 
-  it('creates a wallet, shows the backup once, the request QR, instructions, and locks', async () => {
+  it('creates a wallet whose key backup stays hidden until asked for, the request QR, instructions, and locks', async () => {
     const { user } = await setup();
     await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
-    expect(screen.getByText(/Backup keys/)).toBeTruthy();
-    expect(screen.getAllByText(/^st:trx:0x/).length).toBeGreaterThan(0);
+    // The backup is not in the page until asked for.
+    expect(screen.queryByText(/^[0-9a-f]{128}$/)).toBeNull();
+    expect(screen.getByText('Backup keys')).toBeTruthy();
+    const meta = screen.getAllByText(/^st:trx:0x/)[0]?.textContent;
+    expect(meta).toBeTruthy();
     expect(screen.getByText(/Payment instructions/)).toBeTruthy();
     expect(screen.getAllByText(/TRON stealth payment request/).length).toBeGreaterThan(0);
+    await user.click(screen.getByRole('button', { name: 'Show backup keys' }));
+    const backup = screen.getByText(/^[0-9a-f]{128}$/).textContent ?? '';
     await user.click(screen.getByRole('button', { name: 'Hide keys' }));
-    expect(screen.queryByText(/Backup keys/)).toBeNull();
+    expect(screen.queryByText(/^[0-9a-f]{128}$/)).toBeNull();
+    // It can be shown again while the wallet is loaded, and it is this wallet's backup.
+    await user.click(screen.getByRole('button', { name: 'Show backup keys' }));
+    expect(screen.getByText(/^[0-9a-f]{128}$/).textContent).toBe(backup);
     await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
     expect(screen.getByRole('button', { name: 'Create new test wallet' })).toBeTruthy();
     expect(screen.queryByText(/Payment instructions/)).toBeNull();
+    await user.type(screen.getByLabelText(/Or import keys/), backup);
+    await user.click(screen.getByRole('button', { name: 'Import keys' }));
+    expect(screen.getAllByText(/^st:trx:0x/)[0]?.textContent).toBe(meta);
+    expect(screen.queryByRole('button', { name: 'Show backup keys' })).toBeNull();
+  });
+
+  it('copies the key backup only after a warning, and Lock empties the clipboard again', async () => {
+    const { user } = await setup();
+    const writeText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+    await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
+    await user.click(screen.getByRole('button', { name: 'Show backup keys' }));
+    const backup = screen.getByText(/^[0-9a-f]{128}$/).textContent;
+    await user.click(screen.getByRole('button', { name: 'Copy keys' }));
+    expect(writeText).not.toHaveBeenCalled();
+    expect(screen.getByText(/Other apps and web pages can read the clipboard/)).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Copy anyway' }));
+    expect(writeText).toHaveBeenCalledExactlyOnceWith(backup);
+    await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
+    expect(writeText).toHaveBeenLastCalledWith('');
+    expect(writeText).toHaveBeenCalledTimes(2);
   });
 
   it('imports the same keys that a backup describes', async () => {

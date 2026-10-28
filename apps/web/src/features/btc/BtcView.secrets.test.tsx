@@ -8,7 +8,23 @@ import { makeServices, renderWith } from '../../test/render';
 import { BtcView } from './BtcView';
 import { mockChain, SEED_A, walletA } from './fixtures.testutil';
 
-const observed = vi.hoisted(() => ({ keys: [] as SilentPaymentKeys[], tweaks: [] as Uint8Array[] }));
+const observed = vi.hoisted(() => ({ keys: [] as SilentPaymentKeys[], tweaks: [] as Uint8Array[], seeds: [] as Uint8Array[] }));
+/** The seed "Create new test wallet" gets, so the bytes the view keeps for its backup can be observed. */
+const CREATED_SEED = vi.hoisted(() => 'c3'.repeat(32));
+
+vi.mock('./wallet', async (importOriginal) => ({ ...(await importOriginal<typeof import('./wallet')>()), randomSeedHex: () => CREATED_SEED }));
+
+vi.mock('@noble/hashes/utils.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@noble/hashes/utils.js')>();
+  return {
+    ...actual,
+    hexToBytes(hex: string) {
+      const bytes = actual.hexToBytes(hex);
+      if (hex === CREATED_SEED) observed.seeds.push(bytes);
+      return bytes;
+    },
+  };
+});
 
 // Observe the real wallet secrets and spend tweaks the view holds. Derivation and scanning are not replaced.
 vi.mock('@ghostpay/btc-silent-payments', async (importOriginal) => {
@@ -54,13 +70,33 @@ describe('BtcView key and spend-tweak lifetime', () => {
   beforeEach(() => {
     observed.keys.length = 0;
     observed.tweaks.length = 0;
+    observed.seeds.length = 0;
   });
   afterEach(() => {
     for (const k of observed.keys) {
       k.scanSecret.fill(0);
       k.spendSecret.fill(0);
     }
-    for (const t of observed.tweaks) t.fill(0);
+    for (const t of [...observed.tweaks, ...observed.seeds]) t.fill(0);
+  });
+
+  it('keeps the seed of a created wallet only as bytes for its backup; Lock and leaving the view wipe them', async () => {
+    const user = userEvent.setup();
+    const view = renderWith(<BtcView />, makeServices());
+    await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
+    expect(observed.seeds).toHaveLength(1);
+    expect(screen.queryByText(CREATED_SEED)).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Show backup seed' }));
+    expect(screen.getByText(CREATED_SEED)).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
+    expect(wiped(observed.seeds[0])).toBe(true);
+    expect(screen.queryByText(CREATED_SEED)).toBeNull();
+
+    await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
+    expect(observed.seeds).toHaveLength(2);
+    expect(wiped(observed.seeds[1])).toBe(false);
+    view.unmount();
+    expect(wiped(observed.seeds[1])).toBe(true);
   });
 
   it('Lock wipes the scan and spend secrets and the spend tweaks of the scan results', async () => {

@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { zeroize } from '@ghostpay/btc-silent-payments';
+import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { CameraImporter } from '../../components/CameraImporter';
 import { QrFrame } from '../../components/QrFrame';
@@ -9,6 +11,7 @@ import { EsploraClient, normalizeEsploraUrl } from './esplora';
 import { BTC_NETWORKS, btcNetwork, type BtcNetworkId } from './network';
 import { MAX_SCAN_BLOCKS, scanForPayments, wipeFound, type FoundPayment, type ScanResult } from './scan';
 import { btcErrorMessage, checkDestination, formatBtc, reviewSweep, SIGNER_DESCRIPTION, signSweep, type SignedSweep, type SweepReview } from './sweep';
+import { clearCopiedBackup, SecretBackup } from './SecretBackup';
 import { SCAN_CHECKS, SCAN_LIMITS, SCAN_MODES } from './verification';
 import { paymentUri, randomSeedHex, walletFromSeedHex, wipeWallet, type BtcWallet } from './wallet';
 
@@ -16,6 +19,7 @@ import { paymentUri, randomSeedHex, walletFromSeedHex, wipeWallet, type BtcWalle
  * Bitcoin silent payments (BIP-352), test networks only. Keys live in this component's state and
  * vanish when you leave the view; nothing secret is stored. Lock, a new wallet and unmount wipe the
  * scan and spend secrets; a new scan, lock and unmount wipe the spend tweaks of the scan results.
+ * A created wallet's seed is kept as bytes for its backup, shown only on request, and wiped with the keys.
  */
 export function BtcView(): ReactNode {
   const services = useServices();
@@ -26,7 +30,8 @@ export function BtcView(): ReactNode {
   const [url, setUrl] = useState('');
   const [seedInput, setSeedInput] = useState('');
   const [wallet, setWallet] = useState<BtcWallet | undefined>(undefined);
-  const [seedShown, setSeedShown] = useState<string | undefined>(undefined);
+  /** A created wallet offers its backup seed on request; an imported seed is the user's own copy already. */
+  const [hasBackup, setHasBackup] = useState(false);
   const [amount, setAmount] = useState('');
   const [fromHeight, setFromHeight] = useState('');
   const [scanning, setScanning] = useState(false);
@@ -46,6 +51,8 @@ export function BtcView(): ReactNode {
   /** Bumped by every new async action and by lock/unmount: results of older actions are dropped. */
   const op = useRef(0);
   const walletRef = useRef<BtcWallet | undefined>(undefined);
+  /** Seed of a created wallet, as bytes so that Lock, a new wallet and unmount can wipe it. */
+  const seedRef = useRef<Uint8Array | undefined>(undefined);
   const scanRef = useRef<ScanResult | undefined>(undefined);
   const net = btcNetwork(netId);
 
@@ -68,10 +75,17 @@ export function BtcView(): ReactNode {
       op.current++;
       abort.current?.abort();
       if (walletRef.current !== undefined) wipeWallet(walletRef.current);
+      if (seedRef.current !== undefined) zeroize(seedRef.current);
       if (scanRef.current !== undefined) wipeFound(scanRef.current.found);
     },
     [],
   );
+
+  const forgetSeed = (): void => {
+    if (seedRef.current !== undefined) zeroize(seedRef.current);
+    seedRef.current = undefined;
+    setHasBackup(false);
+  };
 
   const resetFlow = (): void => {
     if (scanRef.current !== undefined) wipeFound(scanRef.current.found);
@@ -99,17 +113,19 @@ export function BtcView(): ReactNode {
     return new EsploraClient({ baseUrl: url, fetchFn: services.fetchFn });
   };
 
-  const useSeed = (hex: string, reveal: boolean): void => {
+  const useSeed = (hex: string, offerBackup: boolean): void => {
     guard(() => {
       const w = walletFromSeedHex(hex, net);
       invalidate();
       if (walletRef.current !== undefined) wipeWallet(walletRef.current);
+      forgetSeed();
       resetFlow();
       walletRef.current = w;
+      if (offerBackup) seedRef.current = hexToBytes(hex);
+      setHasBackup(offerBackup);
       setWallet(w);
       setAppLocked(false);
       setSeedInput('');
-      setSeedShown(reveal ? hex : undefined);
     });
   };
 
@@ -200,11 +216,13 @@ export function BtcView(): ReactNode {
   };
 
   const lock = (): void => {
+    // First, while a Lock click still counts as user activation (the browser allows clipboard writes only then).
+    clearCopiedBackup();
     invalidate();
     if (walletRef.current !== undefined) wipeWallet(walletRef.current);
     walletRef.current = undefined;
+    forgetSeed();
     setWallet(undefined);
-    setSeedShown(undefined);
     resetFlow();
   };
 
@@ -291,13 +309,23 @@ export function BtcView(): ReactNode {
                 <QrFrame kind="caution" text={uri} caption={t('btc.payment.caption', { network: net.label })} />
               </>
             )}
-            {seedShown !== undefined && (
-              <Notice kind="warn" title={t('btc.seed.title')}>
-                <p><Mono>{seedShown}</Mono></p>
-                <p>{t('btc.seed.warning')}</p>
-                <CopyButton text={seedShown} label={t('btc.seed.copy')} />{' '}
-                <button type="button" className="btn" onClick={() => { setSeedShown(undefined); }}>{t('btc.seed.hide')}</button>
-              </Notice>
+            {hasBackup && (
+              <SecretBackup
+                reveal={() => (seedRef.current === undefined ? '' : bytesToHex(seedRef.current))}
+                text={{
+                  title: t('btc.seed.heading'),
+                  warning: t('btc.seed.warning'),
+                  hiddenHint: t('btc.seed.hiddenHint'),
+                  show: t('btc.seed.show'),
+                  hide: t('btc.seed.hide'),
+                  copy: t('btc.seed.copy'),
+                  copyWarning: t('btc.seed.copyWarning'),
+                  copyConfirm: t('btc.seed.copyConfirm'),
+                  copyCancel: t('btc.seed.copyCancel'),
+                  copied: t('btc.seed.copied'),
+                  copyFailed: t('btc.seed.copyFailed'),
+                }}
+              />
             )}
             <p>
               <button type="button" className="btn btn-danger" onClick={lock}>{t('btc.lock')}</button>
