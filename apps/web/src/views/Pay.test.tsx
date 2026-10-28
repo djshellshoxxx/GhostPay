@@ -308,6 +308,35 @@ describe('Pay: invoice reading and review', () => {
     expect(screen.queryByRole('heading', { name: 'Review payment' })).toBeNull();
   });
 
+  it('shows a fixed token amount as the total, the fiat figure as the seller’s unchecked statement, and warns on a mismatch (L2-F4)', async () => {
+    const { fragment } = await makeParsed({ tokenAmount: '1000', lineItems: [{ description: 'Consulting', quantity: '1', unitPrice: '10.00' }] });
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    await screen.findByText('Seller receives (net)');
+    const row = (label: string): string | null | undefined => screen.getByText(label, { selector: 'dt' }).nextElementSibling?.textContent;
+    expect(row('Invoice total')).toBe('1000 USDC (fixed token amount)');
+    expect(row('Seller-stated fiat total')).toBe('USD 10.00 (not converted or checked by this app)');
+    expect(screen.getByText('Check the amount')).toBeTruthy();
+    expect(screen.getByText(/fixed amount of 1000 USDC differs by more than 1 % from the seller-stated total of USD 10\.00/)).toBeTruthy();
+    // A warning only: nothing blocks the payment.
+    expect(screen.queryByText('This payment cannot proceed')).toBeNull();
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Continue' }).disabled).toBe(false);
+    // The printed bill names the same amount due.
+    window.print = vi.fn();
+    await user.click(screen.getByRole('button', { name: 'Print bill' }));
+    const bill = screen.getByTestId('printable-bill');
+    expect(within(bill).getByText('Amount due', { selector: 'dt' }).nextElementSibling?.textContent).toBe('1000 USDC');
+    expect(within(bill).queryByText('Total', { selector: 'dt' })).toBeNull();
+  });
+
+  it('labels the fiat figure of a fixed-token invoice as unchecked, without a warning when it matches the stablecoin amount', async () => {
+    const { fragment } = await makeParsed();
+    openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    await screen.findByText('Seller receives (net)');
+    expect(screen.getByText('Seller-stated fiat total', { selector: 'dt' }).nextElementSibling?.textContent).toMatch(/^USD 100\.00 \(not converted or checked/);
+    expect(screen.getByText('Invoice total', { selector: 'dt' }).nextElementSibling?.textContent).toBe('100 USDC (fixed token amount)');
+    expect(screen.queryByText('Check the amount')).toBeNull();
+  });
+
   it('rejects an oversized fragment', async () => {
     openWith(`#gpi=v1.${'A'.repeat(30_000)}`, makeServices());
     expect((await screen.findByRole('alert')).textContent).toMatch(/16 KiB/);

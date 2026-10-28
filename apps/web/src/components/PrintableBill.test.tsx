@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MAX_PRINT_QR_LINK_CHARS } from '../lib/qrKinds';
 import { makeParsed } from '../test/invoiceFixtures';
@@ -31,6 +31,16 @@ describe('PrintableBill', () => {
     expect(bill.textContent).toContain('Thanks <b>x</b>');
     expect(bill.textContent).toMatch(/Seller fingerprint/);
     expect(bill.textContent).toMatch(/Expires/);
+  });
+
+  it('prints a fixed token amount as the amount due and the fiat total as the seller’s unchecked statement (L2-F4)', async () => {
+    const inv = await invoice({ tokenAmount: '1000' });
+    render(<PrintableBill invoice={inv} link={undefined} passphraseProtected={false} chainName="Base Sepolia" tokenLabel="USDC" fixedAmount="1000 USDC" />);
+    const bill = screen.getByTestId('printable-bill');
+    const row = (label: string): string | null | undefined => within(bill).getByText(label, { selector: 'dt' }).nextElementSibling?.textContent;
+    expect(row('Amount due')).toBe('1000 USDC');
+    expect(row('Seller-stated fiat total (not checked)')).toBe('USD 100.00');
+    expect(within(bill).queryByText('Total', { selector: 'dt' })).toBeNull();
   });
 
   it('prints a QR and no bearer warning for a short passphrase link', async () => {

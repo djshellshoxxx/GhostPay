@@ -854,6 +854,8 @@ export function Pay(): ReactNode {
   const ready = phase === 'ready' || phase === 'prepared' || phase === 'busy' || phase === 'submitted' || phase === 'done';
   const decimals = token?.decimals ?? 18;
   const symbol = token?.symbol ?? '';
+  // L2-F4: a fixed token amount is what the payer pays; the fiat total is then only the seller's unchecked statement.
+  const fixedAmount = inv.amountPolicy.mode === 'fixed_token' ? `${formatUnits(BigInt(inv.amountPolicy.tokenAmount), decimals)} ${symbol}` : undefined;
 
   return (
     <section aria-labelledby="pay-h">
@@ -878,6 +880,11 @@ export function Pay(): ReactNode {
         </Notice>
       )}
       {ctxError !== undefined && <Notice kind="error">{ctxError}</Notice>}
+      {review.warnings.length > 0 && (
+        <Notice kind="warn" title="Check the amount">
+          {review.warnings.map((w) => <p key={w}>{w}</p>)}
+        </Notice>
+      )}
 
       <dl className="details">
         <dt>Chain</dt>
@@ -887,11 +894,17 @@ export function Pay(): ReactNode {
           {symbol} {inv.token === 'native' ? '(native coin)' : <Mono>{inv.token}</Mono>}
         </dd>
         <dt>Invoice total</dt>
-        <dd>{formatFiat(BigInt(inv.fiat.minorUnits), inv.fiat.currency)}</dd>
+        <dd>{fixedAmount === undefined ? formatFiat(BigInt(inv.fiat.minorUnits), inv.fiat.currency) : <><strong>{fixedAmount}</strong> (fixed token amount)</>}</dd>
+        {fixedAmount !== undefined && (
+          <>
+            <dt>Seller-stated fiat total</dt>
+            <dd>{formatFiat(BigInt(inv.fiat.minorUnits), inv.fiat.currency)} (not converted or checked by this app)</dd>
+          </>
+        )}
         <dt>Pricing</dt>
         <dd>
-          {inv.amountPolicy.mode === 'fixed_token'
-            ? `Fixed: ${formatUnits(BigInt(inv.amountPolicy.tokenAmount), decimals)} ${symbol}`
+          {fixedAmount !== undefined
+            ? `Fixed: ${fixedAmount}`
             : `Fiat quote from ${inv.quote.source}, taken ${formatUnix(inv.quote.timestamp)}, valid until ${formatUnix(inv.quote.expiresAt)}, max slippage ${String(inv.quote.maxSlippageBps / 100)} %. Not a guaranteed fiat value.`}
         </dd>
         <dt>Who pays the checkout fee</dt>
@@ -938,6 +951,7 @@ export function Pay(): ReactNode {
         passphraseProtected={parsed.passphraseProtected}
         chainName={review.chain?.name ?? `Chain ${String(inv.chainId)}`}
         tokenLabel={inv.token === 'native' ? (symbol === '' ? 'Native coin' : symbol) : symbol === '' ? inv.token : symbol}
+        fixedAmount={fixedAmount}
       />
 
       {ctx !== undefined && (
