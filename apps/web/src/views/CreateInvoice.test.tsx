@@ -151,7 +151,14 @@ describe('Create invoice', () => {
     await user.type(screen.getByLabelText('Item 1 description'), 'Private design work');
     await user.type(screen.getByLabelText('Item 1 unit price'), '25.50');
     await user.click(screen.getByLabelText('Protect the entire invoice with a passphrase'));
+    // L1-06: the field starts with a generated passphrase, shown in clear until it is replaced.
+    const field = screen.getByLabelText<HTMLInputElement>('Invoice passphrase (at least 14 characters)');
+    expect(field.value).toMatch(/^[a-z]{4,8}(?:-[a-z]{4,8}){5}$/);
+    expect(field.type).toBe('text');
+    expect(screen.getByText(/Suggested: 6 random words picked on this device/)).toBeTruthy();
+    await user.clear(field);
     await user.type(screen.getByLabelText('Invoice passphrase (at least 14 characters)'), passphrase);
+    expect(field.type).toBe('password');
     await user.type(screen.getByLabelText('Repeat invoice passphrase'), passphrase);
     await user.click(screen.getByRole('button', { name: 'Create invoice link' }));
     const link = await screen.findByLabelText<HTMLTextAreaElement>('Link', {}, { timeout: 120_000 });

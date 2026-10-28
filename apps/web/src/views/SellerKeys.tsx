@@ -4,7 +4,7 @@ import { TagArchive } from '../components/TagArchive';
 import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
 import { userMessage } from '../lib/errors';
-import { MAX_KEYSTORE_BYTES, passphraseProblem, validateKeystoreEnvelope } from '../lib/keystore';
+import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphrase, MAX_KEYSTORE_BYTES, passphraseProblem, validateKeystoreEnvelope } from '../lib/keystore';
 import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, getSessionBackup, importKeystore, importSession, markKeystoreDownloaded, subscribeSessionBackup, waiveSessionBackup } from '../lib/session';
 import { authorizeKeyExport, deleteEncryptedVault, readEncryptedVault, saveEncryptedVault, unlockEncryptedVault, VaultChangedError, vaultMetaAddress, VaultSavedForPreviousKeysError } from '../lib/keyVault';
 import { useApp } from '../state';
@@ -43,7 +43,9 @@ export function SellerKeys(): ReactNode {
   const [spend, setSpend] = useState('');
   const [view, setViewKey] = useState('');
   const [signing, setSigning] = useState('');
-  const [pass, setPass] = useState('');
+  // New passphrases start as a generated suggestion (L1-06), shown in clear only while untouched.
+  const [suggestedPass, setSuggestedPass] = useState(generatePassphrase);
+  const [pass, setPass] = useState(suggestedPass);
   const [pass2, setPass2] = useState('');
   const [importPass, setImportPass] = useState('');
   const [importText, setImportText] = useState<string | undefined>();
@@ -54,7 +56,8 @@ export function SellerKeys(): ReactNode {
   const [vaultState, setVaultState] = useState<'checking' | 'empty' | 'saved' | 'unavailable'>('checking');
   // Public meta-address named by the saved vault, if it is a readable keystore.
   const [vaultMeta, setVaultMeta] = useState<string | undefined>(undefined);
-  const [vaultSavePass, setVaultSavePass] = useState('');
+  const [suggestedVaultPass, setSuggestedVaultPass] = useState(generatePassphrase);
+  const [vaultSavePass, setVaultSavePass] = useState(suggestedVaultPass);
   const [vaultSavePass2, setVaultSavePass2] = useState('');
   const [vaultUnlockPass, setVaultUnlockPass] = useState('');
   const [vaultBusy, setVaultBusy] = useState(false);
@@ -87,10 +90,13 @@ export function SellerKeys(): ReactNode {
     mounted.current = true;
     return () => { mounted.current = false; operation.current?.abort(); operation.current = null; };
   }, []);
+  const suggestPass = (): void => { const next = generatePassphrase(); setSuggestedPass(next); setPass(next); setPass2(''); };
+  const suggestVaultPass = (): void => { const next = generatePassphrase(); setSuggestedVaultPass(next); setVaultSavePass(next); setVaultSavePass2(''); };
+  const suggestedHint = t('sellerKeys.suggested', { words: GENERATED_PASSPHRASE_WORDS, bits: GENERATED_PASSPHRASE_BITS });
   useEffect(() => {
     operation.current?.abort(); operation.current = null;
     setBackupQr(undefined); setBusy(false); setVaultBusy(false);
-    setPass(''); setPass2(''); setImportPass(''); setVaultUnlockPass(''); setImportText(undefined); setFile(undefined);
+    suggestPass(); setImportPass(''); setVaultUnlockPass(''); setImportText(undefined); setFile(undefined);
     setExportStepUp(''); setSaveStepUp(''); setDeletePass(''); setConfirmReplace(false); setDeleteExpected(undefined);
   }, [app.session]);
   const startOperation = (): AbortController => {
@@ -396,7 +402,10 @@ export function SellerKeys(): ReactNode {
 
           <h3>{t('sellerKeys.backupHeading')}</h3>
           <form onSubmit={onExport} className="stack" autoComplete="off">
-            <Field label={t('sellerKeys.passphraseMin')}>{(id) => <input id={id} type="password" autoComplete="new-password" value={pass} onChange={(e) => { setPass(e.target.value); }} />}</Field>
+            <Field label={t('sellerKeys.passphraseMin')} {...(pass !== '' && pass === suggestedPass ? { hint: suggestedHint } : {})}>
+              {(id, d) => <input id={id} aria-describedby={d} type={pass !== '' && pass === suggestedPass ? 'text' : 'password'} autoComplete="new-password" spellCheck={false} value={pass} onChange={(e) => { setPass(e.target.value); }} />}
+            </Field>
+            <p><button type="button" className="btn" onClick={suggestPass}>{t('sellerKeys.suggestAnother')}</button></p>
             <Field label={t('sellerKeys.repeatPassphrase')}>{(id) => <input id={id} type="password" autoComplete="new-password" value={pass2} onChange={(e) => { setPass2(e.target.value); }} />}</Field>
             {stepUpNeeded && (
               <Field label={t('sellerKeys.stepUp.label')} hint={t('sellerKeys.stepUp.hint')}>
@@ -420,7 +429,10 @@ export function SellerKeys(): ReactNode {
             </p>
             {vaultState === 'empty' ? (
               <form onSubmit={onSaveVault} className="stack" autoComplete="off">
-                <Field label={t('sellerKeys.newVaultPass')}>{(id) => <input id={id} type="password" autoComplete="new-password" value={vaultSavePass} onChange={(e) => { setVaultSavePass(e.target.value); }} />}</Field>
+                <Field label={t('sellerKeys.newVaultPass')} {...(vaultSavePass !== '' && vaultSavePass === suggestedVaultPass ? { hint: suggestedHint } : {})}>
+                  {(id, d) => <input id={id} aria-describedby={d} type={vaultSavePass !== '' && vaultSavePass === suggestedVaultPass ? 'text' : 'password'} autoComplete="new-password" spellCheck={false} value={vaultSavePass} onChange={(e) => { setVaultSavePass(e.target.value); }} />}
+                </Field>
+                <p><button type="button" className="btn" onClick={suggestVaultPass}>{t('sellerKeys.suggestAnotherVault')}</button></p>
                 <Field label={t('sellerKeys.repeatVaultPass')}>{(id) => <input id={id} type="password" autoComplete="new-password" value={vaultSavePass2} onChange={(e) => { setVaultSavePass2(e.target.value); }} />}</Field>
                 {backup?.vaultStepUp === true && (
                   <Field label={t('sellerKeys.stepUp.label')} hint={t('sellerKeys.stepUp.hint')}>

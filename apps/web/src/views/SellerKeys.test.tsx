@@ -60,7 +60,8 @@ describe('Seller keys', () => {
     const user = await open();
     await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
     const store = vaultStore;
-    await user.type(await screen.findByLabelText('New vault passphrase (14+ characters)'), 'short');
+    await user.clear(await screen.findByLabelText('New vault passphrase (14+ characters)'));
+    await user.type(screen.getByLabelText('New vault passphrase (14+ characters)'), 'short');
     await user.type(screen.getByLabelText('Repeat vault passphrase'), 'short');
     await user.click(screen.getByRole('button', { name: 'Save encrypted vault in this browser' }));
     expect(screen.getByRole('alert').textContent).toMatch(/at least 14/);
@@ -166,6 +167,7 @@ describe('Seller keys', () => {
     };
     URL.revokeObjectURL = (): void => undefined;
     HTMLAnchorElement.prototype.click = click;
+    await user.clear(screen.getByLabelText('Passphrase (at least 14 characters)'));
     await user.type(screen.getByLabelText('Passphrase (at least 14 characters)'), 'short');
     await user.type(screen.getByLabelText('Repeat passphrase'), 'short');
     await user.click(screen.getByRole('button', { name: 'Download encrypted keystore' }));
@@ -196,6 +198,35 @@ describe('Seller keys', () => {
     expect(screen.getByRole('button', { name: 'Generate new keys' })).toBeTruthy();
   });
 
+  it('L1-06: pre-fills a generated keystore passphrase in clear and accepts it once typed again', async () => {
+    const user = await open();
+    await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
+    const field = screen.getByLabelText<HTMLInputElement>('Passphrase (at least 14 characters)');
+    const first = field.value;
+    expect(first).toMatch(/^[a-z]{4,8}(?:-[a-z]{4,8}){5}$/);
+    expect(field.type).toBe('text');
+    expect(screen.getAllByText(/Suggested: 6 random words picked on this device \(60 bits\)/).length).toBeGreaterThan(0);
+    const vaultField = screen.getByLabelText<HTMLInputElement>('New vault passphrase (14+ characters)');
+    expect(vaultField.value).toMatch(/^[a-z]{4,8}(?:-[a-z]{4,8}){5}$/);
+    expect(vaultField.value).not.toBe(first);
+    await user.type(screen.getByLabelText('Repeat passphrase'), 'typed');
+    await user.click(screen.getByRole('button', { name: 'Suggest another keystore passphrase' }));
+    expect(field.value).not.toBe(first);
+    expect(screen.getByLabelText<HTMLInputElement>('Repeat passphrase').value).toBe('');
+    // Editing turns it into the user's own passphrase, which is not shown.
+    await user.type(field, 'x');
+    expect(field.type).toBe('password');
+    await user.click(screen.getByRole('button', { name: 'Suggest another keystore passphrase' }));
+    const click = vi.fn();
+    URL.createObjectURL = (): string => 'blob:test';
+    URL.revokeObjectURL = (): void => undefined;
+    HTMLAnchorElement.prototype.click = click;
+    await user.type(screen.getByLabelText('Repeat passphrase'), field.value);
+    await user.click(screen.getByRole('button', { name: 'Download encrypted keystore' }));
+    await waitFor(() => { expect(click).toHaveBeenCalled(); }, { timeout: 30_000 });
+    expect(getSessionBackup()?.backedUp).toBe(true);
+  });
+
   it('L1-01: asks before unlocking a saved vault over keys that have no backup', async () => {
     const saved = importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32), signingKeyHex: '33'.repeat(32) });
     await saveEncryptedVault('violet comet maple lantern', { N: 1 << 14 });
@@ -224,6 +255,7 @@ describe('Seller keys', () => {
     HTMLAnchorElement.prototype.click = click;
     const user = await open();
     await user.type(await screen.findByLabelText('Current vault passphrase'), 'attacker chosen phrase 42!');
+    await user.clear(screen.getByLabelText('Passphrase (at least 14 characters)'));
     await user.type(screen.getByLabelText('Passphrase (at least 14 characters)'), 'attacker chosen phrase 42!');
     await user.type(screen.getByLabelText('Repeat passphrase'), 'attacker chosen phrase 42!');
     await user.click(screen.getByRole('button', { name: 'Download encrypted keystore' }));
@@ -327,7 +359,8 @@ describe('encrypted vault save lifetime', () => {
     setKeyVaultStoreForTests(store);
     const user = await open();
     await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
-    await user.type(await screen.findByLabelText('New vault passphrase (14+ characters)'), PASSPHRASE);
+    await user.clear(await screen.findByLabelText('New vault passphrase (14+ characters)'));
+    await user.type(screen.getByLabelText('New vault passphrase (14+ characters)'), PASSPHRASE);
     await user.type(screen.getByLabelText('Repeat vault passphrase'), PASSPHRASE);
     await user.click(screen.getByRole('button', { name: 'Save encrypted vault in this browser' }));
     return user;

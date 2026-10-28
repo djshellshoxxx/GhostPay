@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { UserFacingError, userMessage } from '../lib/errors';
-import { passphraseProblem } from '../lib/keystore';
+import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphrase, passphraseProblem } from '../lib/keystore';
 import { createCurrentReconciliationVault, type ReconciliationImportPreview, type ReconciliationVault } from '../lib/reconciliationVault';
 import { checkpointKeyId } from '../lib/scanClient';
 import { useServices } from '../lib/services';
@@ -28,7 +28,9 @@ export function TagArchive(): ReactNode {
   const { vault, chains } = useServices();
   const [message, setMessage] = useState<{ kind: 'ok' | 'error'; text: string } | undefined>(undefined);
   const [busy, setBusy] = useState(false);
-  const [pass, setPass] = useState('');
+  // The archive passphrase starts as a generated suggestion (L1-06), shown in clear only while untouched.
+  const [suggested, setSuggested] = useState(generatePassphrase);
+  const [pass, setPass] = useState(suggested);
   const [pass2, setPass2] = useState('');
   const [withHistory, setWithHistory] = useState(true);
   const [importPass, setImportPass] = useState('');
@@ -62,8 +64,9 @@ export function TagArchive(): ReactNode {
     mounted.current = true;
     return () => { mounted.current = false; operation.current?.abort(); closeHistory(); };
   }, []);
+  const suggest = (): void => { const next = generatePassphrase(); setSuggested(next); setPass(next); setPass2(''); };
   // A different or cleared seller session invalidates every pending action and staged preview.
-  useEffect(() => { reset(); }, [app.session]);
+  useEffect(() => { reset(); suggest(); }, [app.session]);
 
   const ensureUnlocked = async (): Promise<void> => {
     if (!vault.unlocked) await vault.unlock(revealViewingKey());
@@ -263,7 +266,10 @@ export function TagArchive(): ReactNode {
       {s === undefined ? <p>Load seller keys to back up or restore client tags.</p> : (
         <>
           <form onSubmit={onExport} className="stack" autoComplete="off">
-            <Field label="Archive passphrase (at least 14 characters)">{(id) => <input id={id} type="password" autoComplete="new-password" value={pass} onChange={(e) => { setPass(e.target.value); }} />}</Field>
+            <Field label="Archive passphrase (at least 14 characters)" {...(pass !== '' && pass === suggested ? { hint: `Suggested: ${String(GENERATED_PASSPHRASE_WORDS)} random words picked on this device (${String(GENERATED_PASSPHRASE_BITS)} bits). Write it down, then type it again below, or replace it with your own.` } : {})}>
+              {(id, d) => <input id={id} aria-describedby={d} type={pass !== '' && pass === suggested ? 'text' : 'password'} autoComplete="new-password" spellCheck={false} value={pass} onChange={(e) => { setPass(e.target.value); }} />}
+            </Field>
+            <p><button type="button" className="btn" onClick={suggest}>Suggest another archive passphrase</button></p>
             <Field label="Repeat archive passphrase">{(id) => <input id={id} type="password" autoComplete="new-password" value={pass2} onChange={(e) => { setPass2(e.target.value); }} />}</Field>
             <label><input type="checkbox" checked={withHistory} onChange={(e) => { setWithHistory(e.target.checked); }} /> Include scan history</label>
             <button type="submit" className="btn" disabled={busy}>Download encrypted tag archive</button>

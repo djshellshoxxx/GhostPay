@@ -30,6 +30,9 @@ async function exported(): Promise<{ user: User; services: ReturnType<typeof mak
   await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Seller keys' }));
   await services.vault.unlock(revealViewingKey());
   await services.vault.save(84532, { stealthAddress: ADDR, announcementId: `0x${'ab'.repeat(32)}:1`, logIndex: 1, clientLabel: 'Acme' });
+  // L1-06: the archive passphrase starts as a generated suggestion; these tests use their own.
+  expect(screen.getByLabelText<HTMLInputElement>('Archive passphrase (at least 14 characters)').value).toMatch(/^[a-z]{4,8}(?:-[a-z]{4,8}){5}$/);
+  await user.clear(screen.getByLabelText('Archive passphrase (at least 14 characters)'));
   await user.type(screen.getByLabelText('Archive passphrase (at least 14 characters)'), PASS);
   await user.type(screen.getByLabelText('Repeat archive passphrase'), PASS);
   await user.click(screen.getByRole('button', { name: 'Download encrypted tag archive' }));
