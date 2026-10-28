@@ -330,6 +330,7 @@
     "btc.seed.copy": "Copy seed",
     "btc.seed.hide": "Hide seed",
     "btc.lock": "Lock and forget keys",
+    "btc.appLocked": "The app locked, so this wallet's keys were wiped from memory. Import the backup seed to use it again.",
     "btc.scan.heightLabel": "First block height",
     "btc.scan.heightHint": "Scans at most {max} blocks per run up to the server tip. Whole blocks are downloaded and checked on this device.",
     "btc.scan.scanning": "Scanning",

@@ -4,6 +4,7 @@ import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { CameraImporter } from '../../components/CameraImporter';
 import { PlainPaymentRequest } from '../../components/PaymentRequestQr';
 import { QrFrame } from '../../components/QrFrame';
+import { subscribeAppLock } from '../../lib/appLock';
 import { useServices } from '../../lib/services';
 import { SOL_NETWORKS, solNetwork, type SolNetworkId } from './network';
 import { checkNetwork, createRpc, sendTransaction, SolViewError, solErrorMessage } from './rpc';
@@ -34,6 +35,8 @@ export function SolanaView(): ReactNode {
   const [signed, setSigned] = useState<SignedSweep | undefined>(undefined);
   const [broadcastId, setBroadcastId] = useState<string | undefined>(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
+  /** The app lock (idle timeout) forgot the wallet: say so instead of silently showing an empty view. */
+  const [appLocked, setAppLocked] = useState(false);
   const abort = useRef<AbortController | undefined>(undefined);
   /** Bumped by every new async action and by lock/unmount: results of older actions are dropped. */
   const op = useRef(0);
@@ -107,6 +110,7 @@ export function SolanaView(): ReactNode {
       resetFlow();
       walletRef.current = w;
       setWallet(w);
+      setAppLocked(false);
       setSeedInput('');
       setSeedShown(reveal ? hex : undefined);
     });
@@ -202,6 +206,16 @@ export function SolanaView(): ReactNode {
     resetFlow();
   };
 
+  // The app lock reaches these keys too: they live outside the tag vault and the EVM session. A seed typed into the
+  // import field goes with them.
+  useEffect(() =>
+    subscribeAppLock(() => {
+      if (walletRef.current !== undefined) setAppLocked(true);
+      setSeedInput('');
+      lock();
+    }),
+  );
+
   const clearReview = (): void => {
     setReview(undefined);
     setApproved(false);
@@ -249,6 +263,7 @@ export function SolanaView(): ReactNode {
         <h3>2. Wallet and receive address</h3>
         {wallet === undefined ? (
           <>
+            {appLocked && <Notice kind="info">The app locked, so this wallet's keys were wiped from memory. Import the backup seed to use it again.</Notice>}
             <button type="button" className="btn btn-primary" onClick={() => { useSeed(randomSeedHex(), true); }}>
               Create new test wallet
             </button>

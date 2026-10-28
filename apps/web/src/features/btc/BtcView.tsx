@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { CameraImporter } from '../../components/CameraImporter';
 import { QrFrame } from '../../components/QrFrame';
+import { subscribeAppLock } from '../../lib/appLock';
 import { useServices } from '../../lib/services';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
 import { EsploraClient, normalizeEsploraUrl } from './esplora';
@@ -39,6 +40,8 @@ export function BtcView(): ReactNode {
   const [signed, setSigned] = useState<SignedSweep | undefined>(undefined);
   const [broadcastId, setBroadcastId] = useState<string | undefined>(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
+  /** The app lock (idle timeout) forgot the wallet: say so instead of silently showing an empty view. */
+  const [appLocked, setAppLocked] = useState(false);
   const abort = useRef<AbortController | undefined>(undefined);
   /** Bumped by every new async action and by lock/unmount: results of older actions are dropped. */
   const op = useRef(0);
@@ -104,6 +107,7 @@ export function BtcView(): ReactNode {
       resetFlow();
       walletRef.current = w;
       setWallet(w);
+      setAppLocked(false);
       setSeedInput('');
       setSeedShown(reveal ? hex : undefined);
     });
@@ -204,6 +208,16 @@ export function BtcView(): ReactNode {
     resetFlow();
   };
 
+  // The app lock reaches these keys too: they live outside the tag vault and the EVM session. A seed typed into the
+  // import field goes with them.
+  useEffect(() =>
+    subscribeAppLock(() => {
+      if (walletRef.current !== undefined) setAppLocked(true);
+      setSeedInput('');
+      lock();
+    }),
+  );
+
   return (
     <section aria-labelledby="btc-h">
       <h2 id="btc-h">{t('btc.title')}</h2>
@@ -242,6 +256,7 @@ export function BtcView(): ReactNode {
         <h3>{t('btc.section.wallet')}</h3>
         {wallet === undefined ? (
           <>
+            {appLocked && <Notice kind="info">{t('btc.appLocked')}</Notice>}
             <button type="button" className="btn btn-primary" onClick={() => { useSeed(randomSeedHex(), true); }}>
               {t('btc.wallet.create')}
             </button>

@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
 import type { SilentPaymentKeys } from '@ghostpay/btc-silent-payments';
-import { screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { notifyAppLock } from '../../lib/appLock';
 import { makeServices, renderWith } from '../../test/render';
 import { BtcView } from './BtcView';
 import { mockChain, SEED_A, walletA } from './fixtures.testutil';
@@ -110,5 +111,24 @@ describe('BtcView key and spend-tweak lifetime', () => {
     expect(screen.queryByText(/unspent payment/)).toBeNull();
     expect(observed.tweaks.every(wiped)).toBe(true);
     expect(screen.getByRole('button', { name: 'Create new test wallet' })).toBeTruthy();
+  });
+
+  it('the app lock (idle timeout) wipes like Lock, clears a typed seed and says why', async () => {
+    const { user, keys } = await ready();
+    await user.type(screen.getByLabelText(/First block height/), '0');
+    await scan(user);
+    act(() => { notifyAppLock('idle'); });
+    expect(wiped(keys.scanSecret) && wiped(keys.spendSecret)).toBe(true);
+    expect(observed.tweaks).toHaveLength(1);
+    expect(observed.tweaks.every(wiped)).toBe(true);
+    expect(screen.queryByText(/unspent payment/)).toBeNull();
+    expect(screen.getByText(/The app locked, so this wallet's keys were wiped from memory/)).toBeTruthy();
+
+    await user.type(screen.getByLabelText(/Or import a seed/), SEED_A);
+    act(() => { notifyAppLock('idle'); });
+    expect(screen.getByLabelText<HTMLInputElement>(/Or import a seed/).value).toBe('');
+    await user.type(screen.getByLabelText(/Or import a seed/), SEED_A);
+    await user.click(screen.getByRole('button', { name: 'Import seed' }));
+    expect(screen.queryByText(/The app locked/)).toBeNull();
   });
 });
