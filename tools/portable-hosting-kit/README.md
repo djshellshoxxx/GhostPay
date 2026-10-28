@@ -38,13 +38,16 @@ node bin/ghostpay-host.mjs profile /tmp/ghostpay-web.zip --config host.json --ou
 | `validate <site-dir>` | Inventory with bounds, inclusion policy, secret/state detection, entrypoint, path safety and collisions, required response headers, external-reference (privacy) scan. Changes nothing. |
 | `package <site-dir> --out f.zip` | Validates, then writes a deterministic ZIP and `f.zip.sha256` atomically. The input directory is never modified; a failed run leaves any previous archive intact. |
 | `verify <f.zip \| unpacked-dir>` | Reports changed, missing and unexpected files and malformed archives. `--expect-digest` / `--expect-sha256` compare with values you obtained independently. |
-| `preview <f.zip \| unpacked-dir>` | Verifies, extracts to a temp dir and serves on 127.0.0.1 (or ::1) only, with the same routing and headers as the nginx profile. |
-| `profile <f.zip> --config host.json --out dir` | Generates hosting profiles (inert). `--with static,nginx,container,tor,i2p`. |
+| `preview <f.zip \| unpacked-dir>` | Verifies, extracts (archive) or copies (directory) to a private temp dir and serves only that copy on 127.0.0.1 (or ::1), with the same routing and headers as the nginx profile. `--expect-digest` / `--expect-sha256` refuse a mismatch. |
+| `profile <f.zip \| unpacked-dir> --config host.json --out dir` | Generates hosting profiles (inert) from the same private verified copy. `--with static,nginx,container,tor,i2p`; `--expect-digest` / `--expect-sha256` refuse a mismatch. |
 | `wizard [--out host.json]` | Interactive (or `--non-interactive`) public host configuration; every answer is validated. `--dry-run` writes nothing. |
 | `demo [--out dir]` | Runs the full workflow on a generated demo site. `--preview` serves it afterwards. |
 
 Exit codes: 0 ok, 1 validation/verification failed, 2 usage error, 3 I/O or internal error. `--json` gives
-machine-readable output for `validate`, `package`, `verify`, `profile`.
+machine-readable output for `validate`, `package`, `verify`, `profile`. An option the command does not use is a usage
+error (it is never silently ignored). `package --git-dir` refuses a repository that configures a filter driver
+(`filter.<name>.clean/smudge/process`) and never enters submodules (with fsmonitor already disabled), so `git status` cannot
+run a repository-defined filter or fsmonitor command while recording provenance.
 
 ## What goes into an archive
 
@@ -91,7 +94,7 @@ authority. See [docs/ARTIFACT-METADATA.md](docs/ARTIFACT-METADATA.md).
 
 | Profile | Status | Notes |
 |---|---|---|
-| `static` | supported for header-capable hosts | Byte-identical copy under the base path + `_mirror/mirror.json` overlay + rendered `_headers`. A host that cannot send response headers (plain file hosting) is **unsupported**: CSP, nosniff and frame-ancestors would be missing. |
+| `static` | document root for `nginx` / `container` | Byte-identical copy under the base path + `_mirror/mirror.json` overlay. It omits `_headers` (on purpose, [SERVER-PROFILES](docs/SERVER-PROFILES.md) section 4) and sends no headers by itself; `profile` warns. Do not upload `static/www` to a `_headers` host such as Cloudflare Pages or Netlify: it would be served without CSP, X-Frame-Options, nosniff, COOP or Permissions-Policy. For such a host deploy the site directory with its `_headers` (GhostPay: the release `dist/`, see `docs/operators/mirror-hosting.md`). A host that cannot send response headers (plain file hosting) is **unsupported**. |
 | `nginx` | supported, tested against nginx 1.24 | Generated from the site's `_headers`; differential-tested against the preview server. Loopback or unix-socket listener only; terminate TLS in front for clearnet. |
 | `container` | supported, tested with Docker | `nginxinc/nginx-unprivileged` pinned by digest; read-only, `cap_drop: ALL`, no-new-privileges, non-root, published on 127.0.0.1 only, network `site_internal`. |
 | `tor` | generated + `tor --verify-config` | v3 onion service: system-tor fragment, dedicated instance or sibling container. PoW and intro-DoS defences on. See [docs/TOR.md](docs/TOR.md). |

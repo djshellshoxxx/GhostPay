@@ -38,6 +38,15 @@ Inputs (owner uploads, kept outside the repository; private, not committed): an 
   Supporting it would mean a host-config field (explicit https origins only, never `*` or scheme sources) applied as
   a host overlay. The default build (`frame-ancestors 'none'`) is unaffected.
 
+## Audit fixes (2026-10-28, cluster E; regression tests in `test/integration/cli-hardening.test.mjs`)
+- L7-M3: `preview` and `profile` pass `--expect-sha256` / `--expect-digest` to `extractArchive` and fail with an explicit
+  mismatch error (exit 1); every command refuses options it does not use (exit 2) instead of ignoring them.
+- L7-L5: a directory input is copied (regular files only, O_NOFOLLOW, identity re-checked) into a private mkdtemp dir,
+  the copy is verified, and only the copy is previewed or exported; the original stays a forbidden root for keys.
+- L7-L2: `package --git-dir` refuses any `filter.<name>.clean/smudge/process` config (covers `$GIT_DIR/info/attributes`,
+  which `--attr-source` does not) and runs `git status --ignore-submodules=all`.
+- L7-M1: README and PROFILE-README say `static/www` omits `_headers`; `profile --with static` prints that warning.
+
 ## Decisions and findings (reuse; do not re-investigate)
 - Zero runtime deps, Node >= 22, `.mjs` + JSDoc + `tsc --checkJs` strict; tests `node:test`. Kit-local eslint config
   (root config ignores `*.mjs`). Outside npm workspaces on purpose: no lockfile/root-config edits.

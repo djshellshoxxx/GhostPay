@@ -5,12 +5,20 @@
  *           data-mode="iframe" data-profile="BASE64URL_SIGNED_PROFILE" data-template="t1">Pay with GhostPay</button>
  *   <script defer src="APP_ORIGIN/ghostpay-embed-v2.js" integrity="sha384-..." crossorigin="anonymous"></script>
  *
+ *   integrity: no SRI value is published yet. Compute it yourself from the exact file you reviewed and embed (ideally
+ *   the copy in a verified release tarball):  openssl dgst -sha384 -binary ghostpay-embed-v2.js | openssl base64 -A
+ *   This URL is a moving alias: when the deployment changes the file, the browser rejects the new bytes and the button
+ *   stays a plain, inert button (fails closed) until you review the new file and update the hash. SRI on a cross-origin
+ *   script needs crossorigin="anonymous" and the Access-Control-Allow-Origin header the deployment sends for this file.
+ *
  * Rules (docs/specs/14-embed-merchant-profile.md, Roadmap Feature 2):
  *  - Attributes are untrusted. The invoice link must be https (or localhost), same origin as this script, with a v1 fragment.
  *  - Default is a top-level popup (noopener, noreferrer). data-mode="iframe" opens a sandboxed iframe on the checkout origin
- *    and is used ONLY if the checkout answers a handshake: it does so only on a header-capable deployment whose
- *    frame-ancestors allowlist and signed merchant profile include this page's origin (GitHub Pages cannot, see
- *    apps/web/DEVIATIONS.md item 6). With no valid answer in 4 s the iframe is removed and the popup is used instead.
+ *    and is used ONLY if the checkout answers a handshake: it does so only on a header-capable deployment built for
+ *    iframe mode whose frame-ancestors allowlist includes this page's origin, and only if the merchant profile lists it.
+ *    frame-ancestors is the only real gate today: the profile is verified only against the key embedded in it, so it
+ *    does not authorize an origin (apps/web/DEVIATIONS.md item 6; GitHub Pages cannot send frame-ancestors at all).
+ *    With no valid answer in 4 s the iframe is removed and the popup is used instead.
  *  - postMessage: exact targetOrigin (never "*"); incoming messages must have event.origin === checkout origin, event.source ===
  *    iframe.contentWindow, a closed v1 schema, <= 2 KB and the per-instance 128-bit nonce. Completion is delivered once, as a
  *    "ghostpay:done" CustomEvent on the button with {status, chainId, txHash} only, and shown with textContent.

@@ -36,6 +36,39 @@ describe('embed framing headers', () => {
     expect(read('../../../deploy/nginx/nginx.conf')).toMatch(/location = \/ghostpay-embed-v2\.js/);
   });
 
+  // The documented snippet loads the SDK with integrity=... crossorigin="anonymous": a CORS request, blocked unless
+  // the response carries Access-Control-Allow-Origin (audit L7-L1). Every header source must send it for v1 and v2.
+  it('sends Access-Control-Allow-Origin: * and CORP cross-origin for both SDK versions from every header source', () => {
+    const headers = read('../public/_headers');
+    for (const v of ['v1', 'v2']) {
+      expect(headers).toMatch(new RegExp(`\\n/ghostpay-embed-${v}\\.js\\n {2}Cross-Origin-Resource-Policy: cross-origin\\n {2}Access-Control-Allow-Origin: \\*\\n`));
+    }
+    /** The `{ ... }` block that starts at `start` (empty if there is none). */
+    const block = (text: string, start: string): string => {
+      const at = text.indexOf(start);
+      if (at < 0) return '';
+      let depth = 0;
+      for (let i = text.indexOf('{', at); i < text.length; i++) {
+        if (text[i] === '{') depth++;
+        else if (text[i] === '}' && --depth === 0) return text.slice(at, i + 1);
+      }
+      return '';
+    };
+    const sources: [string, string][] = [
+      ['../../../deploy/nginx/nginx.conf', 'location = /ghostpay-embed-'],
+      ['../../../infra/proxy/nginx.conf', 'location = /ghostpay-embed-'],
+      ['../../../infra/proxy/Caddyfile', 'handle /ghostpay-embed-'],
+      ['../../../infra/web/Caddyfile.static', 'handle /ghostpay-embed-'],
+    ];
+    for (const [file, prefix] of sources) {
+      for (const v of ['v1', 'v2']) {
+        const b = block(read(file), `${prefix}${v}.js {`);
+        expect(b, `${file} ${v}`).toMatch(/Access-Control-Allow-Origin "\*"/);
+        expect(b, `${file} ${v}`).toMatch(/Cross-Origin-Resource-Policy "cross-origin"/);
+      }
+    }
+  });
+
   it('GitHub Pages workflow and committed env files never enable the iframe flag', () => {
     expect(read('../../../.github/workflows/pages.yml')).not.toMatch(/VITE_EMBED_IFRAME/);
     for (const f of ['../../.env', '../../.env.production', '../../.env.local']) {
