@@ -1,6 +1,6 @@
-import { encodeSilentPaymentAddress, SilentPaymentError, taprootScriptPubKey, verifyKeyPathSpend } from '@ghostpay/btc-silent-payments';
+import { encodeSilentPaymentAddress, SilentPaymentError, SoftwareSilentPaymentSigner, taprootScriptPubKey, verifyKeyPathSpend } from '@ghostpay/btc-silent-payments';
 import { bech32 } from '@scure/base';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { EsploraClient } from './esplora';
 import { mockChain, walletA } from './fixtures.testutil';
 import { scanForPayments, type FoundPayment } from './scan';
@@ -146,6 +146,25 @@ describe('signSweep', () => {
     const bad = { ...first, xOnlyPublicKey: new Uint8Array(32).fill(1) };
     const review = reviewSweep(w, [bad], BCRT, 2);
     expect(await codeAsync(() => signSweep(w, [bad], review))).toBe('INVALID_INPUT');
+  });
+
+  it('wipes the signer\'s copy of the spend secret when signing ends, also when signing fails', async () => {
+    const dispose = vi.spyOn(SoftwareSilentPaymentSigner.prototype, 'dispose');
+    try {
+      const w = walletA();
+      const p = await payments();
+      await signSweep(w, p, reviewSweep(w, p, BCRT, 2));
+      expect(dispose).toHaveBeenCalledTimes(1);
+      const first = p[0];
+      if (first === undefined) throw new Error('fixture');
+      const bad = { ...first, xOnlyPublicKey: new Uint8Array(32).fill(1) };
+      expect(await codeAsync(() => signSweep(w, [bad], reviewSweep(w, [bad], BCRT, 2)))).toBe('INVALID_INPUT');
+      expect(dispose).toHaveBeenCalledTimes(2);
+      // The wallet's own keys stay: Lock wipes those.
+      expect(w.keys.spendSecret.some((b) => b !== 0)).toBe(true);
+    } finally {
+      dispose.mockRestore();
+    }
   });
 });
 

@@ -75,7 +75,8 @@ const r = buildSpendTransaction({
 
 External signers (spec 11): `buildSpendTransactionWithSigner(params, signer)` takes a `SilentPaymentSigner`
 (spend public key, ECDH share, sign) instead of `spendSecret`. `SoftwareSilentPaymentSigner` is the reference
-implementation; no hardware wallet driver is shipped (see `DEVIATIONS.md`).
+implementation; it keeps its own copy of `b_spend`, which `dispose()` wipes (best effort) once signing is done. No
+hardware wallet driver is shipped (see `DEVIATIONS.md`).
 
 Header chain and scan state (spec 12): `HeaderChain` (retarget, MTP, chain work, most-work selection above a pinned
 checkpoint), `syncHeaderChain` / `syncHeaderChainFromSources`, `HeaderAnchoredTweakSource`, `verifyBlockTransactions`

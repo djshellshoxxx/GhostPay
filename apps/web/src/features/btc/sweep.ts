@@ -126,21 +126,26 @@ export async function signSweep(wallet: BtcWallet, selected: readonly FoundPayme
     // Stand-in for a device screen: exactly one output, to the reviewed destination.
     confirm: (s) => s.outputs.length === 1 && s.outputs[0]?.address === review.destination,
   });
-  const r = await buildSpendTransactionWithSigner(
-    {
-      outputs,
-      destinations: [{ address: review.destination }],
-      feeRate: review.feeRate,
-      network: wallet.net.spNetwork,
-      regtest: wallet.net.regtest,
-      rbf: review.rbf,
-    },
-    signer,
-  );
-  if (r.feeSats !== review.feeSats || r.vsize !== review.vsize) throw new SilentPaymentError('SIGNATURE_INVALID');
-  let hex = '';
-  for (const b of r.rawTx) hex += b.toString(16).padStart(2, '0');
-  return { txid: r.txid, rawHex: hex, feeSats: r.feeSats, vsize: r.vsize };
+  try {
+    const r = await buildSpendTransactionWithSigner(
+      {
+        outputs,
+        destinations: [{ address: review.destination }],
+        feeRate: review.feeRate,
+        network: wallet.net.spNetwork,
+        regtest: wallet.net.regtest,
+        rbf: review.rbf,
+      },
+      signer,
+    );
+    if (r.feeSats !== review.feeSats || r.vsize !== review.vsize) throw new SilentPaymentError('SIGNATURE_INVALID');
+    let hex = '';
+    for (const b of r.rawTx) hex += b.toString(16).padStart(2, '0');
+    return { txid: r.txid, rawHex: hex, feeSats: r.feeSats, vsize: r.vsize };
+  } finally {
+    // Best effort: wipes the signer's own copy of the spend secret. The wallet's keys stay until Lock.
+    signer.dispose();
+  }
 }
 
 export function formatBtc(sats: bigint): string {
