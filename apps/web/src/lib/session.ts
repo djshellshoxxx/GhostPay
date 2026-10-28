@@ -200,6 +200,9 @@ export function revealViewingKey(): Uint8Array {
  * Compatibility accessor: temporary scalars that live until the session is cleared (at most eight are kept; older
  * copies are wiped). Prefer {@link withSessionSecrets}, which wipes immediately.
  *
+ * @deprecated WEB-APP-07 / L1-07: opens all three scalars and keeps them readable until the session clears. Invoice
+ * signing no longer uses it; it stays exported only until the remaining callers (Scan, pay.test, sweep.test) move to
+ * withSessionSecrets, and is then deleted.
  * @throws {UserFacingError} when no keys are loaded.
  */
 export function requireSession(): SessionSecrets {
