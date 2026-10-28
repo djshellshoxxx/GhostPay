@@ -20,21 +20,26 @@ sha256() { if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1" | awk '{
 python3 - "$tmp/safe.tar.gz" "$tmp/link.tar.gz" "$tmp/traversal.tar.gz" <<'PY'
 import io, sys, tarfile
 
+# Modes as scripts/release-build.sh writes them (--mode='u=rwX,go=rX'). TarInfo defaults to 0644 even for a
+# directory, which a non-root extract cannot enter (root ignores the missing search bit).
 def add_file(tf, name, data):
     info = tarfile.TarInfo(name)
     info.size = len(data)
+    info.mode = 0o644
     tf.addfile(info, io.BytesIO(data))
 
+def add_dir(tf, name):
+    info = tarfile.TarInfo(name)
+    info.type = tarfile.DIRTYPE
+    info.mode = 0o755
+    tf.addfile(info)
+
 with tarfile.open(sys.argv[1], "w:gz") as tf:
-    root = tarfile.TarInfo("web/")
-    root.type = tarfile.DIRTYPE
-    tf.addfile(root)
+    add_dir(tf, "web/")
     add_file(tf, "web/index.html", b"safe")
 
 with tarfile.open(sys.argv[2], "w:gz") as tf:
-    root = tarfile.TarInfo("web/")
-    root.type = tarfile.DIRTYPE
-    tf.addfile(root)
+    add_dir(tf, "web/")
     link = tarfile.TarInfo("web/pivot")
     link.type = tarfile.SYMTYPE
     link.linkname = "../../outside"
