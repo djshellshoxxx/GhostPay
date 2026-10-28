@@ -1,4 +1,4 @@
-import { FEE_SCHEDULE, erc20Abi, type Address } from '@ghostpay/chain-adapters';
+import { ChainAdapterError, FEE_SCHEDULE, createClient, erc20Abi, findChain, type Address, type ChainConfig } from '@ghostpay/chain-adapters';
 import { encodeFunctionData } from 'viem/utils';
 import { afterEach, describe, expect, it } from 'vitest';
 import { FAKE_ROUTER, FAKE_SWEEP_RELAYER, fakeManifest } from '../test/fakeManifest';
@@ -67,6 +67,46 @@ describe('simulateCall', () => {
     expect(await simulateCall(mockRpc(84532, () => '0x'), call, true)).toBe('ok'); // non-standard token returning nothing
     await expect(simulateCall(mockRpc(84532, () => { throw new Error('execution reverted: ERC20: transfer amount exceeds balance'); }), call)).rejects.toThrow(/would revert/);
     await expect(simulateCall(mockRpc(84532, () => `0x${'0'.repeat(64)}`), call, true)).rejects.toThrow(/returned false/);
+  });
+
+  describe('L2-F1: through the verified RPC client, which drops the node text and keeps only a revert flag', () => {
+    /** A node-like JSON-RPC endpoint behind the production client; `error` answers every call but eth_chainId. */
+    const nodeClient = (error: unknown, seen: unknown[] = []) =>
+      createClient(findChain(84532) as ChainConfig, 'https://rpc.test', {
+        retries: 0,
+        transport: {
+          send: (_u, body) => {
+            const req = JSON.parse(body) as { id: number; method: string; params: unknown[] };
+            if (req.method === 'eth_chainId') return Promise.resolve(JSON.stringify({ jsonrpc: '2.0', id: req.id, result: '0x14a34' }));
+            seen.push(req.params);
+            return Promise.resolve(JSON.stringify(error === undefined ? { jsonrpc: '2.0', id: req.id, result: '0x' } : { jsonrpc: '2.0', id: req.id, error }));
+          },
+        },
+      });
+    it.each([
+      ['code 3 with revert data', { code: 3, message: 'execution reverted: ERC20: transfer amount exceeds balance', data: '0x08c379a0' }],
+      ['-32000 without revert data', { code: -32000, message: 'execution reverted' }],
+    ])('refuses a node revert (%s)', async (_n, error) => {
+      await expect(simulateCall(await nodeClient(error), call)).rejects.toThrow(/would revert/);
+    });
+    it('a node that cannot run the call is reported unavailable, not refused', async () => {
+      expect(await simulateCall(await nodeClient({ code: -32601, message: 'the method eth_call does not exist' }), call)).toBe('unavailable');
+      expect(await simulateCall(await nodeClient({ code: -32000, message: 'header not found' }), call)).toBe('unavailable');
+    });
+    it('only the flag of a verified-client error counts; its fixed text is never matched', async () => {
+      const rpc = mockRpc(84532, () => { throw new ChainAdapterError('RPC_FAILURE', 'json-rpc error 3', { reverted: true }); });
+      await expect(simulateCall(rpc, call)).rejects.toThrow(/would revert/);
+      expect(await simulateCall(mockRpc(84532, () => { throw new ChainAdapterError('RPC_FAILURE', 'json-rpc error 3'); }), call)).toBe('unavailable');
+    });
+    it('passes the gas limit to the dry run when one is given', async () => {
+      const seen: unknown[] = [];
+      expect(await simulateCall(await nodeClient(undefined, seen), { ...call, gas: 21_000n })).toBe('ok');
+      expect(await simulateCall(await nodeClient(undefined, seen), call)).toBe('ok');
+      expect(seen).toEqual([
+        [{ from: ACCOUNT, to: USDC, data: '0x', value: '0x5', gas: '0x5208' }, 'latest'],
+        [{ from: ACCOUNT, to: USDC, data: '0x', value: '0x5' }, 'latest'],
+      ]);
+    });
   });
 });
 

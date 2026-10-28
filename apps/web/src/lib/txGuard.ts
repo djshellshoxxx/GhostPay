@@ -1,4 +1,4 @@
-import { FEE_SCHEDULE, tokensForChain, type Address, type DeploymentManifest, type Hex, type RpcClient } from '@ghostpay/chain-adapters';
+import { ChainAdapterError, FEE_SCHEDULE, tokensForChain, type Address, type DeploymentManifest, type Hex, type RpcClient } from '@ghostpay/chain-adapters';
 import {
   ReviewRefusedError,
   TxReviewError,
@@ -83,30 +83,41 @@ export function guardTypedData(td: TypedDataInput, expected: Intent, policy: Rev
   }
 }
 
-/** Outcome of {@link simulateCall}. */
+/** Outcome of {@link simulateCall}. `unavailable` is not a refusal: callers show it as a warning. */
 export type Simulation = 'ok' | 'unavailable';
 
+/** Only for errors that carry the node's text (EIP-1193 wallet providers, test doubles). */
 const REVERT_TEXT = /revert|execution failed|invalid opcode|out of gas/i;
+
+/**
+ * Whether an RPC failure says the call reverted. The verified client (`createClient`) drops the node's text and reports a
+ * revert only as `ChainAdapterError.reverted`, so its fixed-form message is never matched.
+ */
+export function reportsRevert(e: unknown): boolean {
+  if (e instanceof ChainAdapterError) return e.reverted;
+  return e instanceof Error && REVERT_TEXT.test(e.message);
+}
 
 /**
  * Dry-runs a call with `eth_call` before it is signed (S3-09, S3-19).
  *
  * @param rpc User's RPC.
- * @param call Sender, target, calldata, value.
+ * @param call Sender, target, calldata, value and, when known, the gas limit that will be signed.
  * @returns `ok`, or `unavailable` when the node cannot run it (not a revert). A revert, or an ERC-20 style
  *   `false` return, throws.
  * @throws {UserFacingError} when the simulation shows the call would fail.
  */
 export async function simulateCall(
   rpc: Pick<RpcClient, 'request'>,
-  call: { readonly from: Address; readonly to: Address; readonly data: Hex; readonly value: bigint },
+  call: { readonly from: Address; readonly to: Address; readonly data: Hex; readonly value: bigint; readonly gas?: bigint },
   expectBool = false,
 ): Promise<Simulation> {
   let r: unknown;
+  const gas = call.gas === undefined ? {} : { gas: `0x${call.gas.toString(16)}` };
   try {
-    r = await rpc.request('eth_call', [{ from: call.from, to: call.to, data: call.data, value: `0x${call.value.toString(16)}` }, 'latest']);
+    r = await rpc.request('eth_call', [{ from: call.from, to: call.to, data: call.data, value: `0x${call.value.toString(16)}`, ...gas }, 'latest']);
   } catch (e) {
-    if (e instanceof Error && REVERT_TEXT.test(e.message)) throw new UserFacingError('Blocked: a dry run of this transaction fails (it would revert). Nothing was sent.');
+    if (reportsRevert(e)) throw new UserFacingError('Blocked: a dry run of this transaction fails (it would revert). Nothing was sent.');
     return 'unavailable';
   }
   if (typeof r !== 'string' || !/^0x(?:[0-9a-fA-F]{2})*$/.test(r)) return 'unavailable';

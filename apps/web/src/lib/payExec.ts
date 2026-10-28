@@ -249,6 +249,8 @@ export async function preparePayment(session: WalletSession, ctx: PayContext, op
   return buildFinal(ctx, { nowSeconds: now, deadlineSeconds: deadline, permitSignature: sig });
 }
 
+const DRY_RUN_UNAVAILABLE = '(Your RPC could not dry-run this payment, so it was not simulated before your wallet was asked.)';
+
 /** Final gate and send. The assertion runs on exactly the object that is passed to the wallet. */
 export async function sendPayment(session: WalletSession, ctx: PayContext, built: BuiltPayment, rt: Runtime, status: StatusFn, assertCurrent?: () => void): Promise<SubmitResult> {
   const guard = (): void => {
@@ -263,9 +265,11 @@ export async function sendPayment(session: WalletSession, ctx: PayContext, built
   guardRouterPayment(built.tx, built.preview, ctx.manifest, rt.nowSeconds());
   await assertBufferStillSufficient(built, rt.rpc);
   guard();
-  if (rt.rpc !== undefined) await simulateCall(rt.rpc, { from: session.account, to: built.tx.to, data: built.tx.data, value: built.tx.value });
+  const dryRun = rt.rpc === undefined ? undefined : await simulateCall(rt.rpc, { from: session.account, to: built.tx.to, data: built.tx.data, value: built.tx.value });
   guard();
-  return submitTx(session, { to: built.tx.to, data: built.tx.data, value: built.tx.value }, rt, status, guard, undefined, { kind: 'payment', scope: bytesToHex(invoiceDigest(ctx.review.invoice)) });
+  // A node that cannot run the dry run is no refusal (a revert is), but the user sees it while the wallet asks.
+  const report: StatusFn = dryRun === 'unavailable' ? (m) => { status(`${m} ${DRY_RUN_UNAVAILABLE}`); } : status;
+  return submitTx(session, { to: built.tx.to, data: built.tx.data, value: built.tx.value }, rt, report, guard, undefined, { kind: 'payment', scope: bytesToHex(invoiceDigest(ctx.review.invoice)) });
 }
 
 export interface LocalReceipt {

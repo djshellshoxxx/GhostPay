@@ -24,11 +24,17 @@ export type AdapterErrorCode =
 export class ChainAdapterError extends Error {
   /** Machine-readable failure code. */
   public readonly code: AdapterErrorCode;
+  /**
+   * True only when a JSON-RPC node answered that execution reverted (see `createClient`). A sanitized boolean: the
+   * node's message and revert data are never kept, so a dry run can refuse a revert without echoing node text.
+   */
+  public readonly reverted: boolean;
 
-  public constructor(code: AdapterErrorCode, detail: string) {
+  public constructor(code: AdapterErrorCode, detail: string, options: { readonly reverted?: boolean } = {}) {
     super(`${code}: ${detail}`);
     this.name = 'ChainAdapterError';
     this.code = code;
+    this.reverted = options.reverted === true;
   }
 }
 

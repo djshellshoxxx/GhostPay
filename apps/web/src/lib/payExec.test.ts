@@ -1,4 +1,4 @@
-import { PERMIT_STATES, chainlinkAggregatorAbi, erc2612PermitAbi, erc20MetadataAbi, eip712DomainSeparator, type FeedConfig } from '@ghostpay/chain-adapters';
+import { ChainAdapterError, PERMIT_STATES, chainlinkAggregatorAbi, erc2612PermitAbi, erc20MetadataAbi, eip712DomainSeparator, type FeedConfig } from '@ghostpay/chain-adapters';
 import { privateKeyToAccount } from 'viem/accounts';
 import { encodeFunctionResult } from 'viem/utils';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -214,6 +214,48 @@ describe('native payment end to end (mock wallet, mock RPC)', () => {
     const res = await sendPayment(session, ctx, built, rt, noStatus);
     expect(res.receipt?.status).toBe('reverted');
     expect(buildReceipt(ctx, built, res, new Date()).status).toBe('reverted');
+  });
+});
+
+describe('L2-F1: the pre-send dry run on the user RPC', () => {
+  it('refuses a revert that the verified RPC client reports only as a flag, and never asks the wallet', async () => {
+    const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
+    const rpc = chainSeeing(wallet, (m) => {
+      if (m === 'eth_call') throw new ChainAdapterError('RPC_FAILURE', 'json-rpc error 3', { reverted: true });
+      return undefined;
+    });
+    const rt: Runtime = { rpc, nowSeconds: () => NOW, sleep };
+    const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+    await expect(sendPayment(session, ctx, built, rt, noStatus)).rejects.toThrow(/would revert/);
+    expect(wallet.sent).toBeUndefined();
+  });
+
+  it('shows a dry run the node cannot run as a warning while the wallet is asked, without blocking the payment', async () => {
+    const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
+    const rpc = chainSeeing(wallet, (m) => {
+      if (m === 'eth_call') throw new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32601');
+      return undefined;
+    });
+    const rt: Runtime = { rpc, nowSeconds: () => NOW, sleep };
+    const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+    const msgs: string[] = [];
+    const res = await sendPayment(session, ctx, built, rt, (m) => msgs.push(m));
+    expect(res.verification).toBe('verified');
+    expect(wallet.sent?.['to']).toBe(FAKE_ROUTER);
+    expect(msgs[0]).toMatch(/^Waiting for wallet confirmation/);
+    expect(msgs.length).toBeGreaterThan(1);
+    for (const m of msgs) expect(m).toMatch(/could not dry-run this payment/);
+  });
+
+  it('a dry run that passes adds no warning', async () => {
+    const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
+    const rpc = chainSeeing(wallet, (m) => (m === 'eth_call' ? '0x' : undefined));
+    const rt: Runtime = { rpc, nowSeconds: () => NOW, sleep };
+    const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+    const msgs: string[] = [];
+    await sendPayment(session, ctx, built, rt, (m) => msgs.push(m));
+    expect(msgs.length).toBeGreaterThan(0);
+    for (const m of msgs) expect(m).not.toMatch(/dry-run/);
   });
 });
 
