@@ -126,7 +126,7 @@ describe('parseConfig', () => {
   });
 
   const bad: [string, (c: Json) => Json, RegExp?][] = [
-    ['unknown top-level key', (c) => ({ ...c, extra: 1 })],
+    ['unknown top-level key', (c) => ({ ...c, extra: 1 }), /^config \$\.extra: unknown key$/],
     ['quote TTL above 60 s (spec 04)', (c) => ({ ...c, quoteTtlSeconds: 61 }), /quoteTtlSeconds/],
     ['grief reserve above 5000 bps', (c) => ({ ...c, gas: { griefReserveBps: 5001 } }), /griefReserveBps/],
     ['grief reserve negative', (c) => ({ ...c, gas: { griefReserveBps: -1 } }), /griefReserveBps/],
@@ -140,7 +140,7 @@ describe('parseConfig', () => {
     ['bad listen host', (c) => ({ ...c, listen: { host: '' } })],
     ['bad port', (c) => ({ ...c, listen: { port: 70000 } })],
     ['port float', (c) => ({ ...c, listen: { port: 1.5 } })],
-    ['trustProxyHops removed', (c) => ({ ...c, trustProxyHops: 1 })],
+    ['trustProxyHops removed', (c) => ({ ...c, trustProxyHops: 1 }), /^config \$\.trustProxyHops: unknown key; it was replaced by trustedProxies/],
     ['trustedProxies not array', (c) => ({ ...c, trustedProxies: '10.0.0.1' })],
     ['trustedProxies bad entry', (c) => ({ ...c, trustedProxies: ['not-an-ip'] })],
     ['trustedProxies non-string', (c) => ({ ...c, trustedProxies: [5] })],
@@ -159,11 +159,12 @@ describe('parseConfig', () => {
     ['rate limit zero', (c) => ({ ...c, rateLimit: { ipPerMinute: 0 } })],
     ['quote group burst zero', (c) => ({ ...c, rateLimit: { quoteGroupBurst: 0 } }), /quoteGroupBurst/],
     ['salt rotation above 24h', (c) => ({ ...c, rateLimit: { saltRotationHours: 25 } })],
-    ['unknown nested key', (c) => ({ ...c, queue: { foo: 1 } })],
+    ['unknown nested key', (c) => ({ ...c, queue: { foo: 1 } }), /^config \$\.queue\.foo: unknown key$/],
     ['nested not object', (c) => ({ ...c, queue: 5 })],
     ['no chains', (c) => ({ ...c, chains: [] })],
     ['duplicate chain', (c) => ({ ...c, chains: [chain(), chain()] })],
-    ['chain unknown key', (c) => ({ ...c, chains: [chain({ extra: 1 })] })],
+    ['chain unknown key', (c) => ({ ...c, chains: [chain({ extra: 1 })] }), /^config chains\[0\]\.extra: unknown key$/],
+    ['token unknown key', (c) => ({ ...c, chains: [chain({ tokens: [{ address: USDC, usdStable: true, extra: 1 }] })] }), /^config chains\[0\]\.tokens\[0\]\.extra: unknown key$/],
     ['chain missing key', (c) => ({ ...c, chains: [chain({ maxGasLimit: undefined })] })],
     ['chainId float', (c) => ({ ...c, chains: [chain({ chainId: 1.5 })] })],
     ['unknown chain', (c) => ({ ...c, chains: [chain({ chainId: 999999 })] }), /unknown chain/],
@@ -205,6 +206,18 @@ describe('parseConfig', () => {
     const env = { SHORT: 'abc', HOOK_HTTP: 'http://x.example/', HOOK_CRED: 'https://u:p@x.example/', HOOK_BAD: '::not a url' };
     expect(() => parse(raw, { env })).toThrow(ConfigError);
     if (re !== undefined) expect(() => parse(raw, { env })).toThrow(re);
+  });
+
+  it('L5-07: names an unknown key only when it looks like one (never echoes what could be a pasted secret)', () => {
+    const secretish = 'ab'.repeat(40);
+    let message = '';
+    try {
+      parse({ ...good(), [secretish]: 1 });
+    } catch (e) {
+      message = (e as Error).message;
+    }
+    expect(message).toBe('config $: unknown key (name not shown)');
+    expect(() => parse({ ...good(), listen: { 'not a key': 1 } })).toThrow(/^config \$\.listen: unknown key \(name not shown\)$/);
   });
 
   it('allows the local dev chain only with the explicit flag', () => {
