@@ -3,7 +3,7 @@ import type { RpcClient } from '@ghostpay/chain-adapters';
 import type { ScanMatch } from './lib/scanClient';
 import type { SweepLock } from './lib/sweep';
 import { UserFacingError } from './lib/errors';
-import { browserSweepStorage, readSweepAttempts, SWEEP_JOURNAL_KEY, sweepAttemptKey, SweepJournalUnavailableError, toSweepLock, writeSweepAttempt } from './lib/sweepAttemptJournal';
+import { browserSweepStorage, MAX_OTHER_HASHES, readSweepAttempts, SWEEP_JOURNAL_KEY, sweepAttemptKey, SweepJournalUnavailableError, toSweepLock, writeSweepAttempt } from './lib/sweepAttemptJournal';
 import type { SessionPublic } from './lib/session';
 import type { Settings } from './lib/settings';
 
@@ -85,36 +85,44 @@ function hydrateSweepAttempts(): void {
 }
 
 /**
- * Persists the lock BEFORE the signed bytes leave the page. Throws (and records nothing) when the tab journal cannot
- * hold it, so the caller aborts without broadcasting.
+ * Persists the lock BEFORE the signed bytes leave the page and returns the lock as recorded. Throws (and records
+ * nothing) when the tab journal cannot hold it, so the caller aborts without broadcasting.
  *
- * `replaces` is passed only by a same-nonce re-sign of an unresolved direct sweep (L2-F2): the new lock takes over
- * exactly that lock (compare-and-swap) and only with the same owner nonce, so at most one of the two transactions can be
- * mined. Any other unresolved lock still refuses.
+ * `replaces` is passed only by a same-nonce re-sign of a direct sweep whose handoff outcome is unknown (L2-F2): the new
+ * lock takes over exactly that lock (compare-and-swap) and only with the same owner nonce, so at most one of the
+ * transactions can be mined. The new lock keeps the hashes of the transactions it replaces (B-R5): any of them may still
+ * be the one mined. A submitted lock (the node accepted its transaction) and any other unresolved lock still refuse.
  */
-export function beginSweepAttempt(attempt: SweepLock, replaces?: SweepLock): void {
+export function beginSweepAttempt(attempt: SweepLock, replaces?: SweepLock): SweepLock {
   hydrateSweepAttempts();
   if (sweepJournalBroken) throw new SweepJournalUnavailableError();
   // Re-checked here, after the signing awaits, so a lock taken meanwhile is never overwritten.
   const key = sweepAttemptKey(attempt.chainId, attempt.owner);
   const existing = sweepAttempts.get(key);
+  let lock = toSweepLock(attempt);
   if (replaces !== undefined) {
     if (existing === undefined || sweepAttemptKey(replaces.chainId, replaces.owner) !== key || !sameLock(existing, toSweepLock(replaces)) || !sameNonceReplacement(existing, attempt)) {
       throw new UserFacingError('The pending sweep this replacement was signed for has changed or cannot be replaced. Nothing was sent; check its status.');
     }
+    const otherHashes = [...(existing.otherHashes ?? []), ...(existing.expectedHash === undefined ? [] : [existing.expectedHash])].filter((h) => h !== lock.expectedHash);
+    if (otherHashes.length > MAX_OTHER_HASHES) {
+      throw new UserFacingError('This sweep was already replaced too many times. Nothing was sent; check its status.');
+    }
+    lock = { ...lock, ...(otherHashes.length === 0 ? {} : { otherHashes }) };
   } else if (existing !== undefined && isUnresolved(existing)) {
     throw new UserFacingError('A sweep from this address may still be pending. Check its status before signing anything new.');
   }
   const storage = browserSweepStorage();
   if (storage === undefined) throw new SweepJournalUnavailableError();
   try {
-    writeSweepAttempt(attempt, storage);
+    writeSweepAttempt(lock, storage);
   } catch (e) {
     if (e instanceof SweepJournalUnavailableError) { sweepJournalBroken = true; notifySweepAttempts(); }
     throw e;
   }
-  sweepAttempts.set(sweepAttemptKey(attempt.chainId, attempt.owner), toSweepLock(attempt));
+  sweepAttempts.set(key, lock);
   notifySweepAttempts();
+  return lock;
 }
 
 /** Records an outcome after handoff. Memory always keeps it; a failed write disarms signing for this page. */
@@ -134,15 +142,19 @@ function isUnresolved(a: SweepLock): boolean {
   return a.status === 'submitted' || a.status === 'unknown-after-handoff';
 }
 
-/** Only an unresolved direct lock (an owner nonce, no relayed order) may be replaced, and only with that same nonce. */
+/**
+ * Only a direct lock (an owner nonce, no relayed order) whose handoff outcome is unknown may be replaced, and only with
+ * that same nonce. A submitted transaction was accepted by the node, which would refuse a replacement without a fee bump.
+ */
 function sameNonceReplacement(existing: SweepLock, next: SweepLock): boolean {
-  return isUnresolved(existing) && existing.order === undefined && next.order === undefined && existing.nonce !== undefined && next.nonce === existing.nonce;
+  return existing.status === 'unknown-after-handoff' && existing.order === undefined && next.order === undefined && existing.nonce !== undefined && next.nonce === existing.nonce;
 }
 
 function sameLock(a: SweepLock, b: SweepLock): boolean {
   return a.status === b.status
     && a.nonce === b.nonce
     && a.expectedHash?.toLowerCase() === b.expectedHash?.toLowerCase()
+    && (a.otherHashes ?? []).join().toLowerCase() === (b.otherHashes ?? []).join().toLowerCase()
     && a.order?.relayer.toLowerCase() === b.order?.relayer.toLowerCase()
     && a.order?.nonce === b.order?.nonce
     && a.order?.deadline === b.order?.deadline;

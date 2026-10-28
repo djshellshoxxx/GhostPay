@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { SweepLock } from './lib/sweep';
-import { SWEEP_JOURNAL_KEY } from './lib/sweepAttemptJournal';
+import { MAX_OTHER_HASHES, SWEEP_JOURNAL_KEY } from './lib/sweepAttemptJournal';
 import { beginSweepAttempt, getSweepAttempt, isSweepJournalBroken, recordSweepAttempt, resetSweepAttemptsForTests, resolveSweepAttempt } from './state';
 
 const OWNER = '0x5555555555555555555555555555555555555555';
@@ -66,18 +66,45 @@ describe('L2-F2: a same-nonce re-sign takes over the unresolved direct lock by c
   it('records the new expected hash, persisted before handoff, only from the lock it started from and with its nonce', () => {
     beginSweepAttempt(locked);
     const from = getSweepAttempt(84532, OWNER)!;
-    beginSweepAttempt(resigned, from);
-    expect(getSweepAttempt(84532, OWNER)).toEqual(resigned);
-    const journal = window.sessionStorage.getItem(SWEEP_JOURNAL_KEY) ?? '';
-    expect(journal).toContain(H2);
-    expect(journal).not.toContain(H1);
+    // B-R5: the replaced transaction may still be the one that is mined, so the lock keeps its hash too.
+    const both: SweepLock = { ...resigned, otherHashes: [H1] };
+    expect(beginSweepAttempt(resigned, from)).toEqual(both);
+    expect(getSweepAttempt(84532, OWNER)).toEqual(both);
+    expect(JSON.parse(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY) ?? '')).toEqual([{ chainId: 84532, owner: OWNER, nonce: 7, expectedHash: H2, otherHashes: [H1], status: 'unknown-after-handoff' }]);
     // A reload reads the replacement, still unresolved.
     resetSweepAttemptsForTests({ keepStorage: true });
-    expect(getSweepAttempt(84532, OWNER)).toEqual(resigned);
-    // A submitted lock can be re-signed as well (it may be stuck); the result is again resolved by CAS.
-    expect(resolveSweepAttempt(resigned, { ...resigned, status: 'submitted' })).toBe(true);
-    beginSweepAttempt({ ...locked, expectedHash: `0x${'c3'.repeat(32)}` }, getSweepAttempt(84532, OWNER));
-    expect(getSweepAttempt(84532, OWNER)?.expectedHash).toBe(`0x${'c3'.repeat(32)}`);
+    expect(getSweepAttempt(84532, OWNER)).toEqual(both);
+    // A third attempt keeps both earlier hashes; one with byte-identical contents (the same hash) adds none.
+    const H3 = `0x${'c3'.repeat(32)}` as const;
+    beginSweepAttempt({ ...locked, expectedHash: H3 }, getSweepAttempt(84532, OWNER));
+    expect(getSweepAttempt(84532, OWNER)).toEqual({ ...locked, expectedHash: H3, otherHashes: [H1, H2] });
+    beginSweepAttempt({ ...locked, expectedHash: H3 }, getSweepAttempt(84532, OWNER));
+    expect(getSweepAttempt(84532, OWNER)).toEqual({ ...locked, expectedHash: H3, otherHashes: [H1, H2] });
+    // The result is again resolved by CAS, which compares the recorded hashes too.
+    const current = getSweepAttempt(84532, OWNER)!;
+    expect(resolveSweepAttempt({ ...locked, expectedHash: H3 }, { ...current, status: 'submitted' })).toBe(false);
+    expect(resolveSweepAttempt(current, { ...current, status: 'submitted' })).toBe(true);
+    expect(getSweepAttempt(84532, OWNER)).toEqual({ ...current, status: 'submitted' });
+  });
+
+  it('B-R5: a submitted lock is not replaced: the node accepted it, and a replacement without a fee bump would be refused', () => {
+    beginSweepAttempt(locked);
+    expect(resolveSweepAttempt(locked, { ...locked, status: 'submitted' })).toBe(true);
+    const journal = window.sessionStorage.getItem(SWEEP_JOURNAL_KEY);
+    expect(() => { beginSweepAttempt(resigned, getSweepAttempt(84532, OWNER)); }).toThrow(/cannot be replaced/);
+    expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toBe(journal);
+    expect(getSweepAttempt(84532, OWNER)).toEqual({ ...locked, status: 'submitted' });
+  });
+
+  it('B-R5: refuses a replacement beyond the recorded-hash bound without touching the journal', () => {
+    const hash = (n: number): `0x${string}` => `0x${n.toString(16).padStart(64, '0')}`;
+    beginSweepAttempt(locked);
+    for (let n = 1; n <= MAX_OTHER_HASHES; n += 1) beginSweepAttempt({ ...locked, expectedHash: hash(n) }, getSweepAttempt(84532, OWNER));
+    expect(getSweepAttempt(84532, OWNER)?.otherHashes).toHaveLength(MAX_OTHER_HASHES);
+    const journal = window.sessionStorage.getItem(SWEEP_JOURNAL_KEY);
+    expect(() => { beginSweepAttempt({ ...locked, expectedHash: hash(99) }, getSweepAttempt(84532, OWNER)); }).toThrow(/replaced too many times/);
+    expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toBe(journal);
+    expect(isSweepJournalBroken()).toBe(false);
   });
 
   it('refuses another nonce, a stale or resolved lock, a relayed order and a missing lock, and records nothing', () => {

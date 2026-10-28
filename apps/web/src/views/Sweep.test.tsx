@@ -49,6 +49,8 @@ interface RawSink {
   finalizedNonce?: string;
   /** The dry-run eth_call (transfer or plain value call) fails the way a node without eth_call support answers. */
   dryRunBlind?: boolean;
+  /** Index in `raws` of the transaction that is mined: only its hash has a receipt (overrides `receiptOk`). */
+  mined?: number;
 }
 
 const ORACLE = '0x420000000000000000000000000000000000000F';
@@ -86,8 +88,13 @@ function extra(balance: bigint, nativeBalance: bigint, rawSink: RawSink) {
         if (params[0] === 'finalized' && rawSink.blockTimestamp !== undefined) return { hash: `0x${'f1'.repeat(32)}`, number: '0x64', timestamp: `0x${rawSink.blockTimestamp.toString(16)}` };
         if (params[0] === 'finalized') throw new ChainAdapterError('RPC_FAILURE', 'finalized not supported');
         return undefined;
-      case 'eth_getTransactionReceipt':
+      case 'eth_getTransactionReceipt': {
+        if (rawSink.mined !== undefined) {
+          const mined = rawSink.raws?.[rawSink.mined];
+          return mined !== undefined && keccak256(mined as `0x${string}`) === params[0] ? { transactionHash: params[0], status: '0x1' } : null;
+        }
         return rawSink.receiptOk === true && rawSink.raw !== undefined ? { transactionHash: keccak256(rawSink.raw as `0x${string}`), status: '0x1' } : null;
+      }
       case 'eth_call': {
         const data = (params[0] as { data: string }).data;
         if ((params[0] as { to: string }).to === ORACLE) {
@@ -476,7 +483,7 @@ describe('Sweep', () => {
       expect(await screen.findByText('Outcome unknown')).toBeTruthy();
       const first = keccak256(sink.raws?.[0] as `0x${string}`);
       expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
-      expect(screen.getByText(/so at most one of the two can ever be included/)).toBeTruthy();
+      expect(screen.getByText(/so at most one of them can ever be included/)).toBeTruthy();
 
       sink.gasPrice = '0x77359400'; // the fee moved meanwhile, so the replacement differs from the first transaction
       await user.click(screen.getByRole('button', { name: RESIGN }));
@@ -485,10 +492,11 @@ describe('Sweep', () => {
       const second = keccak256(sink.raws?.[1] as `0x${string}`);
       expect(second).not.toBe(first);
       expect(parseTransaction(sink.raws?.[1] as `0x${string}`).nonce).toBe(parseTransaction(sink.raws?.[0] as `0x${string}`).nonce);
-      const journal = window.sessionStorage.getItem(SWEEP_JOURNAL_KEY) ?? '';
-      expect(journal).toContain(second);
-      expect(journal).not.toContain(first);
+      // B-R5: the lock tracks the replacement and still records the first transaction, which could be the one mined.
+      expect(JSON.parse(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY) ?? '')).toMatchObject([{ expectedHash: second, otherHashes: [first], status: 'submitted' }]);
       expect(screen.getByText(second)).toBeTruthy();
+      // The node accepted the replacement: no further same-nonce re-sign is offered.
+      expect(screen.queryByRole('button', { name: RESIGN })).toBeNull();
       // Still unresolved: a new sweep (another nonce) stays disarmed until the replacement's receipt is seen.
       expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
       sink.receiptOk = true;
@@ -509,8 +517,7 @@ describe('Sweep', () => {
       await user.click(screen.getByRole('button', { name: RESIGN }));
       await waitFor(() => { expect(sink.raws).toHaveLength(2); });
       const second = keccak256(sink.raws?.[1] as `0x${string}`);
-      expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toContain(second);
-      expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).not.toContain(keccak256(sink.raws?.[0] as `0x${string}`));
+      expect(JSON.parse(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY) ?? '')).toMatchObject([{ expectedHash: second, otherHashes: [keccak256(sink.raws?.[0] as `0x${string}`)], status: 'unknown-after-handoff' }]);
 
       appState.resetSweepAttemptsForTests({ keepStorage: true });
       const nav = within(screen.getByRole('navigation', { name: 'Main' }));
@@ -545,6 +552,46 @@ describe('Sweep', () => {
       }
       expect(sink.raws).toHaveLength(1);
       expect(screen.queryByRole('button', { name: RESIGN })).toBeNull();
+    });
+
+    it('B-R5: a direct sweep the node accepted (submitted) offers no same-nonce re-sign', async () => {
+      const sink: RawSink = { calls: [], raws: [] };
+      const user = await toSweep({ raw: sink });
+      await screen.findByText('5 USDC');
+      await fill(user);
+      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      expect((await screen.findAllByText('Submitted')).length).toBeGreaterThan(0);
+      expect(screen.getByRole('button', { name: 'Check status' })).toBeTruthy();
+      expect(screen.queryByRole('button', { name: RESIGN })).toBeNull();
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+    });
+
+    it('B-R5: when the first transaction reached the network after all and is mined, the re-signed lock resolves as included', async () => {
+      // The first send's answer is lost after the write: the transaction is in the mempool.
+      const sink: RawSink = { calls: [], raws: [], sendFail: true };
+      const user = await toSweep({ raw: sink });
+      await screen.findByText('5 USDC');
+      await fill(user);
+      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      expect(await screen.findByText('Outcome unknown')).toBeTruthy();
+      const first = keccak256(sink.raws?.[0] as `0x${string}`);
+      // The replacement pays 5 % more, so the node refuses it as underpriced; its outcome is unknown again.
+      sink.sendFail = false;
+      sink.failSends = 1;
+      sink.gasPrice = '0x3e95ba80';
+      await user.click(screen.getByRole('button', { name: RESIGN }));
+      await waitFor(() => { expect(sink.raws).toHaveLength(2); });
+      const second = keccak256(sink.raws?.[1] as `0x${string}`);
+      expect(await screen.findByText(second)).toBeTruthy();
+      expect(screen.getByText('Outcome unknown')).toBeTruthy();
+      // The first transaction is mined (before its nonce is final).
+      sink.mined = 0;
+      await user.click(screen.getByRole('button', { name: 'Check status' }));
+      expect(await screen.findByText('Included on chain')).toBeTruthy();
+      expect(screen.getByText(first)).toBeTruthy();
+      expect(screen.queryByText(second)).toBeNull();
+      expect(JSON.parse(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY) ?? '')).toMatchObject([{ expectedHash: first, otherHashes: [second], status: 'included' }]);
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(false);
     });
 
     it('Check status resolves the lock as replaced once its nonce is final without its own receipt', async () => {

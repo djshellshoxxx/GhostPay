@@ -798,6 +798,48 @@ describe('L2-F2: a direct lock whose nonce is final without its own receipt reso
     // Only an explicit "no receipt" for the locked hash, read after the nonce is final, means it can never be mined.
     expect((await reconcileSweepLock(rpc('0x4', [limited, null]), lock)).status).toBe('replaced');
   });
+  describe('B-R5: a re-signed lock is checked by every hash signed with its nonce', () => {
+    const E1 = `0x${'e1'.repeat(32)}` as const;
+    const E2 = `0x${'e2'.repeat(32)}` as const;
+    const resigned: SweepLock = { ...lock, otherHashes: [E1, E2] };
+    /** Receipt reads answered per hash (an Error is thrown); a hash without an entry has no receipt. */
+    const byHash = (finalized: string, receipts: Readonly<Record<string, unknown>>) =>
+      mockRpc(84532, (m, p) => {
+        if (m === 'eth_getTransactionReceipt') {
+          const r = receipts[p[0] as string] ?? null;
+          if (r instanceof Error) throw r;
+          return r;
+        }
+        if (m === 'eth_getTransactionCount') return finalized;
+        throw new Error(m);
+      });
+
+    it('an earlier transaction that was mined resolves the lock as included, under its own hash', async () => {
+      const r = byHash('0x3', { [E1]: { transactionHash: E1, status: '0x1' } });
+      expect(await reconcileSweepLock(r, resigned)).toEqual({ ...lock, expectedHash: E1, otherHashes: [H, E2], status: 'included' });
+      expect(r.calls.map((c) => c.params[0])).toEqual([H, E1]);
+      expect(await reconcileSweepLock(byHash('0x3', { [E2]: { transactionHash: E2, status: '0x0' } }), resigned)).toEqual({ ...lock, expectedHash: E2, otherHashes: [H, E1], status: 'reverted' });
+      // The current hash keeps its place when it is the one mined.
+      expect(await reconcileSweepLock(byHash('0x3', { [H]: { transactionHash: H, status: '0x1' } }), resigned)).toEqual({ ...resigned, status: 'included' });
+    });
+    it('also on the final look, after the nonce is final', async () => {
+      const receipts: Record<string, unknown> = {};
+      const r = mockRpc(84532, (m, p) => {
+        if (m === 'eth_getTransactionCount') { receipts[E2] = { transactionHash: E2, status: '0x1' }; return '0x4'; }
+        if (m === 'eth_getTransactionReceipt') return receipts[p[0] as string] ?? null;
+        throw new Error(m);
+      });
+      expect(await reconcileSweepLock(r, resigned)).toEqual({ ...lock, expectedHash: E2, otherHashes: [H, E1], status: 'included' });
+    });
+    it('replaced only when every recorded hash has explicitly no receipt once the nonce is final', async () => {
+      expect((await reconcileSweepLock(byHash('0x4', {}), resigned)).status).toBe('replaced');
+      expect(await reconcileSweepLock(byHash('0x3', {}), resigned)).toBe(resigned);
+      for (const bad of [new ChainAdapterError('RPC_FAILURE', 'http status 429'), '0x1', { transactionHash: H, status: '0x1' }]) {
+        expect(await reconcileSweepLock(byHash('0x4', { [E2]: bad }), resigned)).toBe(resigned);
+      }
+    });
+  });
+
   it('never applies to a legacy relayed lock (no owner nonce)', async () => {
     const legacy: SweepLock = { chainId: 84532, owner: OWNER, expectedHash: H, status: 'submitted' };
     const r = rpc('0x99');

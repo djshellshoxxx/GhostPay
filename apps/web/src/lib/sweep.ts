@@ -331,6 +331,11 @@ export interface SweepLock {
   readonly owner: Address;
   readonly nonce?: number;
   readonly expectedHash?: Hex;
+  /**
+   * A direct lock re-signed with the same nonce (L2-F2): the hashes of the other transactions signed for that nonce.
+   * Any one of them, or `expectedHash`, may be the transaction that is mined, so a status check looks for all of them.
+   */
+  readonly otherHashes?: readonly Hex[];
   readonly order?: RelayedOrderRef;
   readonly status: SweepLockStatus;
 }
@@ -431,24 +436,50 @@ export async function reconcileRelayedOrder<T extends { readonly owner: Address;
  * hash's receipt. A legacy hash-only lock without an owner nonce is a relayed sweep recorded before order tracking: a
  * reverted relayer transaction does not consume its order, so `reverted` does not release it.
  *
- * A direct lock whose hash has no receipt resolves as `replaced` once the owner's nonce is used at the finalized block:
- * after a same-nonce re-sign an earlier attempt may be the transaction that was mined, and no transaction with that
- * nonce can follow it. That takes an explicit "no receipt" answer read after the nonce check; a failed nonce read, or a
- * failed or malformed receipt read, leaves the lock unchanged.
+ * A direct lock re-signed with the same nonce is looked up by every hash it records: only one transaction per nonce can
+ * be mined, so the first one with a receipt settles the lock and becomes its `expectedHash`.
+ *
+ * A direct lock none of whose hashes has a receipt resolves as `replaced` once the owner's nonce is used at the
+ * finalized block: another transaction with that nonce was mined, and none can follow it. That takes an explicit "no
+ * receipt" answer for every hash, read after the nonce check; a failed nonce read, or a failed or malformed receipt
+ * read, leaves the lock unchanged.
  */
 export async function reconcileSweepLock<T extends SweepLock>(rpc: Rpc, lock: T): Promise<T> {
   if (lock.order !== undefined) return reconcileRelayedOrder(rpc, lock);
   const expectedHash = lock.expectedHash;
   if (expectedHash === undefined) return lock;
-  const next = await reconcileDirectSweep(rpc, { expectedHash, status: lock.status });
-  if (next.status === 'reverted' && lock.nonce === undefined) return lock;
-  if (next.status !== lock.status) return { ...lock, status: next.status };
+  const hashes = [expectedHash, ...(lock.otherHashes ?? [])];
+  const first = await readReceipts(rpc, hashes);
+  if (first.mined !== undefined) {
+    if (first.mined.status === 'reverted' && lock.nonce === undefined) return lock;
+    return first.mined.status === lock.status && first.mined.hash === expectedHash ? lock : settled(lock, first.mined);
+  }
   if (lock.nonce === undefined || !isUnresolvedAttempt(lock) || !(await nonceFinal(rpc, lock.owner, lock.nonce))) return lock;
-  // Look once more now that the nonce is final: a receipt for the recorded hash still wins, and an RPC error or a
+  // Look once more now that the nonce is final: a receipt for a recorded hash still wins, and an RPC error or a
   // malformed answer proves nothing (B-R1).
-  const again = await readReceipt(rpc, expectedHash);
-  if (again === 'included' || again === 'reverted') return { ...lock, status: again };
-  return again === 'absent' ? { ...lock, status: 'replaced' } : lock;
+  const again = await readReceipts(rpc, hashes);
+  if (again.mined !== undefined) return settled(lock, again.mined);
+  return again.allAbsent ? { ...lock, status: 'replaced' } : lock;
+}
+
+interface MinedTx { readonly hash: Hex; readonly status: 'included' | 'reverted' }
+
+/** Receipt reads for every hash, stopping at the first one with a receipt; `allAbsent` only when each answered null. */
+async function readReceipts(rpc: Rpc, hashes: readonly Hex[]): Promise<{ readonly mined?: MinedTx; readonly allAbsent: boolean }> {
+  let allAbsent = true;
+  for (const hash of hashes) {
+    const look = await readReceipt(rpc, hash);
+    if (look === 'included' || look === 'reverted') return { mined: { hash, status: look }, allAbsent: false };
+    if (look === 'unknown') allAbsent = false;
+  }
+  return { allAbsent };
+}
+
+/** The lock settled by the transaction that was mined; an earlier attempt's hash becomes `expectedHash`, the rest stay. */
+function settled<T extends SweepLock>(lock: T, mined: MinedTx): T {
+  if (mined.hash === lock.expectedHash) return { ...lock, status: mined.status };
+  const otherHashes = [lock.expectedHash, ...(lock.otherHashes ?? [])].filter((h): h is Hex => h !== undefined && h !== mined.hash);
+  return { ...lock, expectedHash: mined.hash, otherHashes, status: mined.status };
 }
 
 /** True only when the RPC reports the owner's nonce above `nonce` at the finalized block; a failed read means "not known". */
