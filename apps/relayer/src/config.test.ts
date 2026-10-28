@@ -67,6 +67,7 @@ describe('parseConfig', () => {
     expect(c.queue).toEqual({ maxPending: 16, receiptTimeoutSeconds: 120 });
     expect(c.breaker).toEqual({ windowSize: 20, minSamples: 5, failureRatio: 0.5, cooldownSeconds: 60, probeTimeoutSeconds: 60 });
     expect(c.trustedProxies).toEqual([]);
+    expect(c.rateLimit).toMatchObject({ quoteGlobalPerMinute: 600, quoteGlobalBurst: 100, quoteGroupPerMinute: 60, quoteGroupBurst: 20 });
     expect(c.lossBudget).toEqual({ windowSeconds: 3600, perKeyWei: 5n * 10n ** 15n, globalWei: 5n * 10n ** 16n, maxKeys: 10_000 });
     expect(c.metricsToken).toBeUndefined();
     expect(c.alertWebhookUrl).toBeUndefined();
@@ -88,7 +89,7 @@ describe('parseConfig', () => {
         metricsTokenEnv: 'M_TOK',
         alertWebhookUrlEnv: 'A_HOOK',
         deadline: { minSeconds: 10, maxSeconds: 600 },
-        rateLimit: { ipPerMinute: 5, ipBurst: 2, ownerPerMinute: 1, ownerBurst: 1, maxKeys: 64, saltRotationHours: 6 },
+        rateLimit: { ipPerMinute: 5, ipBurst: 2, ownerPerMinute: 1, ownerBurst: 1, maxKeys: 64, saltRotationHours: 6, quoteGroupPerMinute: 12, quoteGroupBurst: 4 },
         breaker: { windowSize: 10, minSamples: 4, failureRatio: 0.7, cooldownSeconds: 5 },
         queue: { maxPending: 3, receiptTimeoutSeconds: 10 },
         shutdownGraceSeconds: 3,
@@ -110,6 +111,7 @@ describe('parseConfig', () => {
     expect(c.metricsToken).toBe('m'.repeat(40));
     expect(c.alertWebhookUrl).toBe('https://hooks.example/x');
     expect(c.rateLimit.saltRotationHours).toBe(6);
+    expect(c.rateLimit).toMatchObject({ quoteGroupPerMinute: 12, quoteGroupBurst: 4 });
     expect(c.chains[0]?.rpcUrl).toBe('https://rpc2.example/');
     expect(c.chains[0]?.feeTo).toBe(FEE_TO);
     expect(c.chains[0]?.tokens[1]).toMatchObject({ symbol: 'USDX', decimals: 18, permit: false });
@@ -155,6 +157,7 @@ describe('parseConfig', () => {
     ['deadline above spec max', (c) => ({ ...c, deadline: { maxSeconds: 1801 } })],
     ['deadline min >= max', (c) => ({ ...c, deadline: { minSeconds: 100, maxSeconds: 100 } })],
     ['rate limit zero', (c) => ({ ...c, rateLimit: { ipPerMinute: 0 } })],
+    ['quote group burst zero', (c) => ({ ...c, rateLimit: { quoteGroupBurst: 0 } }), /quoteGroupBurst/],
     ['salt rotation above 24h', (c) => ({ ...c, rateLimit: { saltRotationHours: 25 } })],
     ['unknown nested key', (c) => ({ ...c, queue: { foo: 1 } })],
     ['nested not object', (c) => ({ ...c, queue: 5 })],

@@ -25,7 +25,7 @@ Contract code wins over docs. Items for the lead to confirm or reject.
    receipt lookup finds it (L5-06). Fee bumping or cancelling a stuck transaction is not implemented.
 8. **Legacy (`gasPrice`) transactions** so the configured cap bounds the price on every chain type. EIP-1559 is not used.
 9. **Per-owner rate limit is applied after signature verification** so nobody can exhaust a victim's quota with forged
-   requests; `/v1/quote` is IP-limited only.
+   requests; `/v1/quote` is limited per client network only (per IP, per /24 or /48 group, and process-wide).
 10. **Mainnet gate.** `chain-adapters` marks mainnets `enabled: false` until manifests exist. The relayer starts a mainnet
     chain only with a valid manifest in `DEPLOYMENTS_DIR` AND `ALLOW_MAINNET=1`, and then does not consult the `enabled`
     flag. No mainnet token is in the adapter allowlist, so mainnet tokens must be listed in the relayer config with

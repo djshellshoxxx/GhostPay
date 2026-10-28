@@ -1179,6 +1179,8 @@ describe('rate limiting', () => {
           saltRotationHours: 24,
           quoteGlobalPerMinute: 6000,
           quoteGlobalBurst: 1000,
+          quoteGroupPerMinute: 6000,
+          quoteGroupBurst: 1000,
         },
       },
     });
@@ -1206,6 +1208,8 @@ describe('rate limiting', () => {
           saltRotationHours: 24,
           quoteGlobalPerMinute: 6000,
           quoteGlobalBurst: 1000,
+          quoteGroupPerMinute: 6000,
+          quoteGroupBurst: 1000,
         },
       },
     });
@@ -1231,6 +1235,8 @@ describe('rate limiting', () => {
       saltRotationHours: 24,
       quoteGlobalPerMinute: 6000,
       quoteGlobalBurst: 1000,
+      quoteGroupPerMinute: 6000,
+      quoteGroupBurst: 1000,
     };
     const q = { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '100000000' };
     const s = await start({
@@ -1263,6 +1269,8 @@ describe('rate limiting', () => {
       saltRotationHours: 24,
       quoteGlobalPerMinute: 6000,
       quoteGlobalBurst: 1000,
+      quoteGroupPerMinute: 6000,
+      quoteGroupBurst: 1000,
     };
     const q = { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '100000000' };
     const t = await start({ config: { rateLimit: lim, trustedProxies: [] } });
@@ -1283,6 +1291,8 @@ describe('rate limiting', () => {
       saltRotationHours: 24,
       quoteGlobalPerMinute: 1,
       quoteGlobalBurst: 2,
+      quoteGroupPerMinute: 6000,
+      quoteGroupBurst: 1000,
     };
     const q = { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '100000000' };
     const s = await start({
@@ -1293,6 +1303,95 @@ describe('rate limiting', () => {
     const limited = await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '3.3.3.3' });
     expect(errCode(limited)).toBe('rate_limited_global');
     expect(limited.headers.get('retry-after')).toBeTruthy();
+  });
+
+  describe('RELAYER-01 / L5-03: one network cannot drain the global quote budget', () => {
+    // Production defaults (config.ts / relayer.config.example.json).
+    const prod = {
+      ipPerMinute: 30, ipBurst: 10, ownerPerMinute: 6, ownerBurst: 3, maxKeys: 10000, saltRotationHours: 24,
+      quoteGlobalPerMinute: 600, quoteGlobalBurst: 100, quoteGroupPerMinute: 60, quoteGroupBurst: 20,
+    };
+    const proxies = ['127.0.0.1', '::1', '::ffff:127.0.0.1'];
+    const q = { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '100000000' };
+    const tally = (into: Record<string, number>, r: Awaited<ReturnType<typeof call>>): void => {
+      const k = r.status === 200 ? '200' : `${String(r.status)}:${errCode(r)}`;
+      into[k] = (into[k] ?? 0) + 1;
+    };
+
+    it('junk and valid quotes from one IPv6 /48 leave quotes for everyone else', async () => {
+      const alerts: string[] = [];
+      const s = await start({ config: { rateLimit: prod, trustedProxies: proxies }, alerts: { send: (e) => alerts.push(e.kind) } });
+      const junk: Record<string, number> = {};
+      const valid: Record<string, number> = {};
+      for (let i = 0; i < 20; i++) {
+        const xff = { 'content-type': 'text/plain', 'x-forwarded-for': `2001:db8:1:${i.toString(16)}::1` };
+        for (let j = 0; j < 10; j++) tally(junk, await call(s, 'POST', '/v1/quote', 'x', xff));
+      }
+      // 20 /64s of one /48: the group budget (burst 20) is spent on junk; nothing reached the global budget
+      expect(junk).toEqual({ '415:unsupported_media_type': 20, '429:rate_limited_ip': 180 });
+      s.clock.ms += 1000;
+      for (let i = 20; i < 30; i++) {
+        tally(valid, await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': `2001:db8:1:${i.toString(16)}::1` }));
+      }
+      expect(valid['429:rate_limited_ip']).toBeGreaterThanOrEqual(9); // about one group token refilled per second
+      expect(valid['429:rate_limited_global']).toBeUndefined();
+      expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '198.51.100.7' })).status).toBe(200);
+      expect(alerts).not.toContain('quote_budget_exhausted');
+    });
+
+    it('takes the global token only for a well-formed quote request', async () => {
+      const s = await start({
+        config: { rateLimit: { ...prod, quoteGlobalPerMinute: 1, quoteGlobalBurst: 2 }, trustedProxies: proxies },
+      });
+      expect(errCode(await call(s, 'POST', '/v1/quote', 'x', { 'content-type': 'text/plain', 'x-forwarded-for': '1.1.1.1' }))).toBe('unsupported_media_type');
+      expect(errCode(await call(s, 'POST', '/v1/quote', '{nope', { 'x-forwarded-for': '2.2.2.2' }))).toBe('invalid_json');
+      expect(errCode(await call(s, 'POST', '/v1/quote', { ...q, extra: 1 }, { 'x-forwarded-for': '3.3.3.3' }))).toMatch(/^invalid_/);
+      expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '4.4.4.4' })).status).toBe(200);
+      expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '5.5.5.5' })).status).toBe(200);
+      expect(errCode(await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '6.6.6.6' }))).toBe('rate_limited_global');
+    });
+
+    it('alerts and counts when the global quote budget refuses', async () => {
+      const alerts: { kind: string; chainId?: number }[] = [];
+      const token = 'm'.repeat(40);
+      const s = await start({
+        config: { rateLimit: { ...prod, quoteGlobalPerMinute: 1, quoteGlobalBurst: 1 }, trustedProxies: proxies, metricsToken: token },
+        alerts: { send: (e) => alerts.push(e) },
+      });
+      expect((await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '1.1.1.1' })).status).toBe(200);
+      expect(errCode(await call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': '2.2.2.2' }))).toBe('rate_limited_global');
+      expect(alerts).toEqual([{ kind: 'quote_budget_exhausted' }]);
+      const m = await call(s, 'GET', '/metrics', undefined, { authorization: `Bearer ${token}` });
+      expect(m.json as string).toContain('relayer_quote_budget_denied_total 1');
+    });
+
+    it('concurrent quotes share one gas price lookup when the cache is cold', async () => {
+      const s = await start({ config: { trustedProxies: proxies } });
+      let calls = 0;
+      let release: () => void = () => undefined;
+      const gate = new Promise<void>((r) => { release = r; });
+      const orig = s.fake.getGasPrice.bind(s.fake);
+      s.fake.getGasPrice = async () => {
+        calls += 1;
+        await gate;
+        return orig();
+      };
+      const replies = Promise.all(
+        [1, 2, 3, 4, 5].map((i) => call(s, 'POST', '/v1/quote', q, { 'x-forwarded-for': `198.51.${String(i)}.1` })),
+      );
+      for (let i = 0; i < 20 && calls === 0; i++) await settle();
+      await settle();
+      release();
+      expect((await replies).map((r) => r.status)).toEqual([200, 200, 200, 200, 200]);
+      expect(calls).toBe(1);
+      // A failed lookup is shared too, and not cached.
+      s.fake.rpcDown = true;
+      s.clock.ms += 4000;
+      const down = await Promise.all([1, 2].map(() => call(s, 'POST', '/v1/quote', q)));
+      expect(down.map(errCode)).toEqual(['rpc_unavailable', 'rpc_unavailable']);
+      s.fake.rpcDown = false;
+      expect((await call(s, 'POST', '/v1/quote', q)).status).toBe(200);
+    });
   });
 });
 

@@ -13,7 +13,8 @@ export type AlertKind =
   | 'daily_budget_exhausted'
   | 'mined_revert'
   | 'mined_revert_rate'
-  | 'receipt_timeout';
+  | 'receipt_timeout'
+  | 'quote_budget_exhausted';
 
 /** An operator alert. */
 export interface AlertEvent {

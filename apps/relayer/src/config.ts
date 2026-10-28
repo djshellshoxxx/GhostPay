@@ -63,6 +63,9 @@ export interface RelayerConfig {
     /** Process-wide `/v1/quote` budget (anonymous RPC cost control, S3-07). */
     readonly quoteGlobalPerMinute: number;
     readonly quoteGlobalBurst: number;
+    /** `/v1/quote` budget per client network group (IPv4 /24, IPv6 /48), checked before the global one (L5-03). */
+    readonly quoteGroupPerMinute: number;
+    readonly quoteGroupBurst: number;
   };
   readonly breaker: {
     readonly windowSize: number;
@@ -372,7 +375,7 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
   const minDeadlineSeconds = numberOr(dl, 'minSeconds', 'deadline', 30, 1, MAX_DEADLINE_WINDOW_SECONDS);
   const maxDeadlineSeconds = numberOr(dl, 'maxSeconds', 'deadline', MAX_DEADLINE_WINDOW_SECONDS, 1, MAX_DEADLINE_WINDOW_SECONDS);
   if (minDeadlineSeconds >= maxDeadlineSeconds) return bad('deadline', 'minSeconds must be below maxSeconds');
-  const rl = sub(o, 'rateLimit', '$', ['ipPerMinute', 'ipBurst', 'ownerPerMinute', 'ownerBurst', 'maxKeys', 'saltRotationHours', 'quoteGlobalPerMinute', 'quoteGlobalBurst']);
+  const rl = sub(o, 'rateLimit', '$', ['ipPerMinute', 'ipBurst', 'ownerPerMinute', 'ownerBurst', 'maxKeys', 'saltRotationHours', 'quoteGlobalPerMinute', 'quoteGlobalBurst', 'quoteGroupPerMinute', 'quoteGroupBurst']);
   const br = sub(o, 'breaker', '$', ['windowSize', 'minSamples', 'failureRatio', 'cooldownSeconds', 'probeTimeoutSeconds']);
   const lb = sub(o, 'lossBudget', '$', ['windowSeconds', 'perKeyWei', 'globalWei', 'maxKeys']);
   const ga = sub(o, 'gas', '$', ['coverPercent', 'maxMovePercent', 'quoteCacheSeconds', 'griefReserveBps']);
@@ -413,6 +416,8 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
       saltRotationHours: numberOr(rl, 'saltRotationHours', 'rateLimit', 24, 1, 24),
       quoteGlobalPerMinute: numberOr(rl, 'quoteGlobalPerMinute', 'rateLimit', 600, 1, 1_000_000, false),
       quoteGlobalBurst: numberOr(rl, 'quoteGlobalBurst', 'rateLimit', 100, 1, 1_000_000, false),
+      quoteGroupPerMinute: numberOr(rl, 'quoteGroupPerMinute', 'rateLimit', 60, 1, 1_000_000, false),
+      quoteGroupBurst: numberOr(rl, 'quoteGroupBurst', 'rateLimit', 20, 1, 1_000_000, false),
     },
     breaker: {
       windowSize,

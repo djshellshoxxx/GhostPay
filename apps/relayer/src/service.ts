@@ -207,6 +207,7 @@ export class RelayerService {
   private readonly lossBudget: LossBudget;
   private readonly alerts: AlertSink;
   private readonly gasCache = new Map<number, { price: bigint; at: number }>();
+  private readonly gasLookups = new Map<number, Promise<bigint>>();
   private readonly quoteKeys: QuoteKeyring;
   private readonly failures: FailureBudgets;
   private closing = false;
@@ -524,14 +525,23 @@ export class RelayerService {
     if (s === 'open') this.alerts.send({ kind: 'breaker_open', chainId: rt.cfg.chainId });
   }
 
-  /** Quote path only: briefly reuses a validated price so anonymous quotes cannot force one RPC call each (S3-07). */
+  /**
+   * Quote path only: briefly reuses a validated price so anonymous quotes cannot force one RPC call each (S3-07), and
+   * concurrent quotes that find the cache cold share one lookup (L5-03).
+   */
   private async quoteGasPrice(rt: ChainRuntime): Promise<bigint> {
     const ttl = this.d.gasPriceCacheMs ?? this.d.config.gas.quoteCacheSeconds * 1000;
+    const chainId = rt.cfg.chainId;
     const t = this.now();
-    const hit = this.gasCache.get(rt.cfg.chainId);
+    const hit = this.gasCache.get(chainId);
     if (ttl > 0 && hit !== undefined && t >= hit.at && t - hit.at < ttl) return hit.price;
-    const price = await this.gasPrice(rt);
-    this.gasCache.set(rt.cfg.chainId, { price, at: t });
+    let lookup = this.gasLookups.get(chainId);
+    if (lookup === undefined) {
+      lookup = this.gasPrice(rt).finally(() => this.gasLookups.delete(chainId));
+      this.gasLookups.set(chainId, lookup);
+    }
+    const price = await lookup;
+    this.gasCache.set(chainId, { price, at: t });
     return price;
   }
 

@@ -19,7 +19,7 @@ fee, and the relayer's hot-key address. That is inherent to the product.
 
 | Data | Where | Retention |
 |---|---|---|
-| Rate-limit bucket keyed by `HMAC-SHA256(random salt, IP)` truncated to 128 bits, with a token counter and a timestamp | process memory only | until the salt rotates (config `saltRotationHours`, maximum 24 h; all buckets are dropped at rotation), until LRU eviction (bounded by `rateLimit.maxKeys`), or process exit |
+| Rate-limit bucket keyed by `HMAC-SHA256(random salt, IP)` truncated to 128 bits (for `/v1/quote` also one keyed by the same HMAC of the IPv4 /24 or IPv6 /48 network), with a token counter and a timestamp | process memory only | until the salt rotates (config `saltRotationHours`, maximum 24 h; all buckets are dropped at rotation), until LRU eviction (bounded by `rateLimit.maxKeys`), or process exit |
 | Rate-limit bucket keyed by `HMAC-SHA256(same salt, lowercase owner address)`, truncated | process memory only | same as above |
 | Per-chain daily gas spend counter, circuit-breaker outcome window and recent mined-sweep outcomes (time and reverted or not) | process memory only | UTC day / sliding window (mined outcomes: `breaker.windowSize` entries within `lossBudget.windowSeconds`); contain no user data |
 | Loss-budget entries keyed by `HMAC-SHA256(same salt, destination)` and by the hashed client network bucket and its /24 or /48 group, with amounts | process memory only | evicted for a newer entry once their `lossBudget.windowSeconds` window is over (tables bounded by `lossBudget.maxKeys`), or process exit; hashes from earlier salt periods cannot be linked |
