@@ -116,6 +116,7 @@
     "sweep.note.pendingDirect": "No receipt found for this hash yet. That does not mean it was not sent; check again later.",
     "sweep.note.noRpc": "No RPC is configured for this chain, so the status was not checked. The outcome is still unknown.",
     "sweep.note.checkFailed": "The status check failed. The outcome is still unknown; check again later.",
+    "sweep.note.lockChanged": "This sweep's record changed while the status was being checked, so the result was not applied. Check again.",
     "sweep.journalBroken.title": "Signing disabled in this tab",
     "sweep.journalBroken.body": "The sweep attempt record in this tab is unavailable or invalid. Signing stays disarmed; a sweep may still be pending. Check the address on a block explorer before trying again in a new tab.",
     "sellerKeys.loaded": "Keys loaded into memory.",

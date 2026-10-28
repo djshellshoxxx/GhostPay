@@ -7,12 +7,12 @@ import { ManifestBanner } from '../components/ManifestBanner';
 import { verifyManifestForFlow } from '../lib/manifest';
 import { UserFacingError, userMessage } from '../lib/errors';
 import { formatUnits } from '../lib/format';
-import { checkDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, RELAYED_EXPIRY_MARGIN_SECONDS, type RelayedOrderRef, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
+import { checkDestination, directSweep, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, RELAYED_EXPIRY_MARGIN_SECONDS, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
 import { RelayerRefusedError } from '../lib/relayerClient';
 import { authorizeEncryptedVault, readEncryptedVault } from '../lib/keyVault';
 import { captureSessionGuard } from '../lib/session';
 import { useServices } from '../lib/services';
-import { beginSweepAttempt, getSweepAttempt, isSweepJournalBroken, recordSweepAttempt, useApp, useSweepAttempt, useSweepJournalBroken } from '../state';
+import { beginSweepAttempt, getSweepAttempt, isSweepJournalBroken, resolveSweepAttempt, useApp, useSweepAttempt, useSweepJournalBroken } from '../state';
 import { SweepJournalUnavailableError } from '../lib/sweepAttemptJournal';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { MessageKey } from '../i18n/catalog';
@@ -177,10 +177,11 @@ export function Sweep(): ReactNode {
       const dest = checkDestination(destination, target.owner, loaded);
       assertNoUnresolvedAttempt();
       // The order's lock is persisted before it is posted; a failed write aborts without contacting the relayer.
-      const handoff: { order?: RelayedOrderRef } = {};
+      const handoff: { lock?: SweepLock } = {};
       const onBeforeHandoff = (order: RelayedOrderRef): void => {
-        beginSweepAttempt({ chainId, owner: target.owner, order, status: 'unknown-after-handoff' });
-        handoff.order = order;
+        const lock: SweepLock = { chainId, owner: target.owner, order, status: 'unknown-after-handoff' };
+        beginSweepAttempt(lock);
+        handoff.lock = lock;
       };
       let submitted: string;
       try {
@@ -188,14 +189,16 @@ export function Sweep(): ReactNode {
       } catch (e) {
         // Only an explicit pre-broadcast refusal releases the lock; timeouts, 409 and 5xx stay unresolved until the
         // chain shows the order executed or expired.
-        if (handoff.order !== undefined && e instanceof RelayerRefusedError && e.beforeBroadcast) {
-          recordSweepAttempt({ chainId, owner: target.owner, order: handoff.order, status: 'refused' });
+        if (handoff.lock !== undefined && e instanceof RelayerRefusedError && e.beforeBroadcast) {
+          resolveSweepAttempt(handoff.lock, { ...handoff.lock, status: 'refused' });
         }
         throw e;
       }
       setHash(submitted);
       // The relayed transaction may still land: keep signing disarmed for this address until its status is checked.
-      recordSweepAttempt({ chainId, owner: target.owner, ...(handoff.order === undefined ? {} : { order: handoff.order }), expectedHash: submitted.toLowerCase() as `0x${string}`, status: 'submitted' });
+      // Compare-and-swap: a status check may already have resolved this order (and a newer lock may exist) while the
+      // relayer was answering; never overwrite anything but the lock this flow created.
+      if (handoff.lock !== undefined) resolveSweepAttempt(handoff.lock, { ...handoff.lock, expectedHash: submitted.toLowerCase() as `0x${string}`, status: 'submitted' });
       app.announce(t('sweep.announceRelayer'));
       return true;
     });
@@ -211,15 +214,10 @@ export function Sweep(): ReactNode {
       if (loaded === undefined || rpc === undefined || balance === undefined) throw new Error('state');
       const dest = checkDestination(destination, target.owner, loaded);
       assertNoUnresolvedAttempt();
-      let res: Awaited<ReturnType<typeof directSweep>>;
-      try {
-        res = await directSweep({ target, manifest: loaded, destination: dest, amount: balance, rpc, onBeforeHandoff: beginSweepAttempt });
-      } catch (e) {
-        // The bytes may already be on the network: keep the lock (already persisted before handoff) disarmed.
-        if (e instanceof DirectSweepOutcomeUnknownError) recordSweepAttempt(e.attempt);
-        throw e;
-      }
-      recordSweepAttempt(res.attempt);
+      // The lock is persisted before handoff; on an uncertain outcome it simply stays as begun (unknown-after-handoff).
+      const handoff: { lock?: SweepLock } = {};
+      const res = await directSweep({ target, manifest: loaded, destination: dest, amount: balance, rpc, onBeforeHandoff: (a) => { beginSweepAttempt(a); handoff.lock = a; } });
+      if (handoff.lock !== undefined) resolveSweepAttempt(handoff.lock, res.attempt);
       app.announce(t('sweep.announceBroadcast'));
       return true;
     });
@@ -247,8 +245,8 @@ export function Sweep(): ReactNode {
           return;
         }
         const next = await reconcileSweepLock(rpc, attempt);
-        if (next.status !== attempt.status) recordSweepAttempt(next);
-        else setCheckNote(pendingNote);
+        if (next.status === attempt.status) setCheckNote(pendingNote);
+        else if (!resolveSweepAttempt(attempt, next)) setCheckNote(t('sweep.note.lockChanged'));
       } catch (e) {
         setCheckNote(e instanceof UserFacingError ? e.message : t('sweep.note.checkFailed'));
       } finally {

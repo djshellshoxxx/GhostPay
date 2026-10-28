@@ -121,6 +121,28 @@ export function recordSweepAttempt(attempt: SweepLock): void {
   notifySweepAttempts();
 }
 
+function sameLock(a: SweepLock, b: SweepLock): boolean {
+  return a.status === b.status
+    && a.nonce === b.nonce
+    && a.expectedHash?.toLowerCase() === b.expectedHash?.toLowerCase()
+    && a.order?.relayer.toLowerCase() === b.order?.relayer.toLowerCase()
+    && a.order?.nonce === b.order?.nonce
+    && a.order?.deadline === b.order?.deadline;
+}
+
+/**
+ * Compare-and-swap for status-check results: records `next` only while the stored lock for the same (chain, owner) is
+ * still the one the check started from. A check that resolves after a newer lock was taken must not overwrite it.
+ * Returns false (and records nothing) when the lock changed meanwhile.
+ */
+export function resolveSweepAttempt(from: SweepLock, next: SweepLock): boolean {
+  hydrateSweepAttempts();
+  const current = sweepAttempts.get(sweepAttemptKey(from.chainId, from.owner));
+  if (current === undefined || !sameLock(current, toSweepLock(from))) return false;
+  recordSweepAttempt(next);
+  return true;
+}
+
 export function getSweepAttempt(chainId: number, owner: string): SweepLock | undefined {
   hydrateSweepAttempts();
   return sweepAttempts.get(sweepAttemptKey(chainId, owner));
