@@ -325,7 +325,6 @@
     "btc.payment.step3": "Wait for one confirmation, then use \"Scan\" below starting a few blocks before the payment.",
     "btc.payment.copyLink": "Copy payment link",
     "btc.payment.caption": "Silent payment request ({network})",
-    "btc.seed.title": "Backup seed (shown once)",
     "btc.seed.warning": "Anyone with this seed controls the wallet. It is not stored anywhere.",
     "btc.seed.copy": "Copy seed",
     "btc.seed.hide": "Hide seed",
