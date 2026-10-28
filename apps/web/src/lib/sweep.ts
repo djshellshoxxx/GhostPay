@@ -351,11 +351,14 @@ export function isUnresolvedAttempt(a: { readonly status: SweepLockStatus }): bo
 /** Thrown when the signed bytes were handed to the RPC but the outcome could not be confirmed. */
 export class DirectSweepOutcomeUnknownError extends UserFacingError {
   public readonly attempt: DirectSweepAttempt;
+  /** As on {@link DirectSweepResult}: `unavailable` means the bytes were handed off without a dry run; show the warning. */
+  public readonly simulation: Simulation;
 
-  public constructor(message: string, attempt: DirectSweepAttempt) {
+  public constructor(message: string, attempt: DirectSweepAttempt, simulation: Simulation) {
     super(message);
     this.name = 'DirectSweepOutcomeUnknownError';
     this.attempt = attempt;
+    this.simulation = simulation;
   }
 }
 
@@ -682,12 +685,14 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
       throw new DirectSweepOutcomeUnknownError(
         `The RPC request failed after the signed transaction was handed to it, so it may already have been broadcast. Check the expected transaction hash ${expectedHash} before doing anything else.`,
         attempt,
+        simulation,
       );
     }
     if (typeof hash !== 'string' || hash.toLowerCase() !== expectedHash) {
       throw new DirectSweepOutcomeUnknownError(
         `The RPC returned a transaction hash that does not match the signed transaction. It may already have been broadcast; check the expected transaction hash ${expectedHash}.`,
         attempt,
+        simulation,
       );
     }
     return { hash: expectedHash, sent, maxGasCost: gas * maxFeePerGas, attempt: { ...attempt, status: 'submitted' }, simulation };

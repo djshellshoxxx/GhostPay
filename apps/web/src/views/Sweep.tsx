@@ -7,7 +7,7 @@ import { ManifestBanner } from '../components/ManifestBanner';
 import { verifyManifestForFlow } from '../lib/manifest';
 import { UserFacingError, userMessage } from '../lib/errors';
 import { formatUnits } from '../lib/format';
-import { checkDestination, directSweep, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, RELAYED_EXPIRY_MARGIN_SECONDS, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
+import { checkDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, RELAYED_EXPIRY_MARGIN_SECONDS, type DirectSweepResult, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
 import { RelayerRefusedError } from '../lib/relayerClient';
 import { authorizeEncryptedVault, readEncryptedVault } from '../lib/keyVault';
 import { captureSessionGuard } from '../lib/session';
@@ -237,11 +237,18 @@ export function Sweep(): ReactNode {
       // A replacement takes over the recorded lock only by compare-and-swap and only with the same nonce, and the lock
       // as recorded keeps the replaced hashes.
       const handoff: { lock?: SweepLock } = {};
-      const res = await directSweep({
-        target, manifest: loaded, destination: dest, amount: balance, rpc,
-        ...(replaces === undefined ? {} : { replaceNonce: replaces.nonce }),
-        onBeforeHandoff: (a) => { handoff.lock = beginSweepAttempt(a, replaces); },
-      });
+      let res: DirectSweepResult;
+      try {
+        res = await directSweep({
+          target, manifest: loaded, destination: dest, amount: balance, rpc,
+          ...(replaces === undefined ? {} : { replaceNonce: replaces.nonce }),
+          onBeforeHandoff: (a) => { handoff.lock = beginSweepAttempt(a, replaces); },
+        });
+      } catch (e) {
+        // The transaction may be on the network with its dry run skipped: that warning applies here too (B-R6).
+        if (e instanceof DirectSweepOutcomeUnknownError) setDryRunSkipped(e.simulation === 'unavailable');
+        throw e;
+      }
       if (handoff.lock !== undefined) resolveSweepAttempt(handoff.lock, { ...handoff.lock, status: res.attempt.status });
       setDryRunSkipped(res.simulation === 'unavailable');
       app.announce(t('sweep.announceBroadcast'));

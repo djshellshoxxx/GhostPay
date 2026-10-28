@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER, FAKE_SWEEP_RELAYER, fakeManifest } from '../test/fakeManifest';
 import { mockRpc } from '../test/mockRpc';
 import { clearSession, generateSession, requireSession } from './session';
-import { checkDestination, describeDestination, deriveVerifiedSweepKey, directSweep, getSweepQuote, OP_STACK_GAS_PRICE_ORACLE, readBalance, reconcileRelayedOrder, reconcileSweepLock, RELAYED_EXPIRY_MARGIN_SECONDS, relayedSweep, type RelayedOrderRef, type SweepLock, type SweepTarget } from './sweep';
+import { checkDestination, describeDestination, deriveVerifiedSweepKey, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, OP_STACK_GAS_PRICE_ORACLE, readBalance, reconcileRelayedOrder, reconcileSweepLock, RELAYED_EXPIRY_MARGIN_SECONDS, relayedSweep, type RelayedOrderRef, type SweepLock, type SweepTarget } from './sweep';
 import { ChainAdapterError, erc20Abi, ghostPaySweepRelayerAbi } from '@ghostpay/chain-adapters';
 import { userMessage } from './errors';
 import * as sweepModule from './sweep';
@@ -728,6 +728,18 @@ describe('L2-F2: a native direct sweep keeps back every fee the chain charges', 
     const res = await directSweep({ target: native(), manifest, destination: DEST, amount: 1n, rpc: blind });
     expect(res.simulation).toBe('unavailable');
     expect(sends(blind)).toBe(1);
+  });
+
+  it('B-R6: an outcome unknown after handoff carries the dry-run result, so a skipped dry run is still reported', async () => {
+    const lost = (net: Net) => {
+      const base = chainRpc(84532, net, {});
+      return { ...base, request: (m: string, p: readonly unknown[]) => (m === 'eth_sendRawTransaction' ? Promise.reject(new ChainAdapterError('RPC_FAILURE', 'connection reset after write')) : base.request(m, p)) };
+    };
+    const outcome = (net: Net): Promise<unknown> => directSweep({ target: native(), manifest, destination: DEST, amount: 1n, rpc: lost(net) }).then(() => undefined, (e: unknown) => e);
+    const blind = await outcome({ dryRun: new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32601') });
+    expect(blind).toBeInstanceOf(DirectSweepOutcomeUnknownError);
+    expect(blind).toMatchObject({ simulation: 'unavailable', attempt: { status: 'unknown-after-handoff' } });
+    expect(await outcome({})).toMatchObject({ simulation: 'ok', attempt: { status: 'unknown-after-handoff' } });
   });
 
   it('a same-nonce re-sign uses exactly the locked nonce, never the pending count', async () => {

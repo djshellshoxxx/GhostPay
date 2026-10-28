@@ -638,6 +638,28 @@ describe('Sweep', () => {
     expect(screen.getByText(/could not dry-run this sweep/)).toBeTruthy();
   });
 
+  it('B-R6: the skipped-dry-run warning is shown also when the outcome after handoff is unknown', async () => {
+    const sink: RawSink = { calls: [], dryRunBlind: true, sendFail: true };
+    const user = await toSweep({ raw: sink });
+    await screen.findByText('5 USDC');
+    await user.click(screen.getByLabelText(/Directly/));
+    await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    expect(await screen.findByText('Outcome unknown')).toBeTruthy();
+    expect(screen.getByText(/could not dry-run this sweep/)).toBeTruthy();
+  });
+
+  it('B-R6: an unknown outcome after a dry run that did run shows no skipped-dry-run warning', async () => {
+    const sink: RawSink = { calls: [], sendFail: true };
+    const user = await toSweep({ raw: sink });
+    await screen.findByText('5 USDC');
+    await user.click(screen.getByLabelText(/Directly/));
+    await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    expect(await screen.findByText('Outcome unknown')).toBeTruthy();
+    expect(screen.queryByText(/could not dry-run this sweep/)).toBeNull();
+  });
+
   it('L4-02: a deep-scan payment whose announced view tag is wrong can be swept', async () => {
     const sink: RawSink = { calls: [] };
     const user = await toSweep({ raw: sink, wrongTag: true });
