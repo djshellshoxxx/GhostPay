@@ -2,6 +2,7 @@
 import { act, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import * as keySession from '../lib/session';
 import { clearSession, generateSession, getSessionBackup, getSessionPublic, importSession } from '../lib/session';
 import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests, type KeyVaultStore } from '../lib/keyVault';
 import { makeServices, renderApp } from '../test/render';
@@ -17,13 +18,23 @@ beforeEach(() => {
   window.history.replaceState(null, '', '/');
 });
 
-afterEach(() => { setKeyVaultStoreForTests(undefined); });
+afterEach(() => { setKeyVaultStoreForTests(undefined); vi.restoreAllMocks(); });
 
 async function open(): Promise<ReturnType<typeof userEvent.setup>> {
   const user = userEvent.setup();
   renderApp(makeServices());
   await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Seller keys' }));
   return user;
+}
+
+/**
+ * Runs the page's keystore export at scrypt N=2^14 instead of the production 2^17, so a flow that downloads a keystore
+ * does not wait on production-cost key stretching (it timed out on a loaded machine); passphrase checks and encryption
+ * are otherwise the real ones.
+ */
+function cheapKeystoreExport(): void {
+  const actual = keySession.exportKeystore;
+  vi.spyOn(keySession, 'exportKeystore').mockImplementation((passphrase) => actual(passphrase, { N: 1 << 14 }));
 }
 
 describe('Seller keys', () => {
@@ -205,6 +216,7 @@ describe('Seller keys', () => {
   });
 
   it('L1-06: pre-fills a generated keystore passphrase in clear and accepts it once typed again', async () => {
+    cheapKeystoreExport();
     const user = await open();
     await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
     const field = screen.getByLabelText<HTMLInputElement>('Passphrase (at least 14 characters)');
@@ -255,6 +267,7 @@ describe('Seller keys', () => {
   it('L1-02: exporting keys tied to a vault needs that vault\'s passphrase', async () => {
     importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32), signingKeyHex: '33'.repeat(32) });
     await saveEncryptedVault('violet comet maple lantern', { N: 1 << 14 });
+    cheapKeystoreExport();
     const click = vi.fn();
     URL.createObjectURL = (): string => 'blob:test';
     URL.revokeObjectURL = (): void => undefined;
@@ -317,7 +330,6 @@ it('imports only an encrypted keystore QR and waits for explicit decryption', as
   await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
   expect(getSessionPublic()).toBeUndefined();
   await user.type(screen.getByLabelText('Passphrase'), 'a long passphrase');
-  const keySession = await import('../lib/session');
   const actualImport = keySession.importKeystore;
   let importPromise: ReturnType<typeof actualImport> | undefined;
   const observedImport = vi.spyOn(keySession, 'importKeystore').mockImplementation((...args) => {
