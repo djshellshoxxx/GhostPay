@@ -2,7 +2,7 @@
 // Command-line interface. `main(argv, io)` returns an exit code and never calls process.exit, so it is testable.
 // Commands: validate, package, verify, preview, profile (generate hosting profiles), wizard, demo.
 import { execFile } from 'node:child_process';
-import { lstat, mkdir, mkdtemp, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises';
+import { lstat, mkdir, mkdtemp, readFile, readdir, realpath, rm, stat, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { basename, dirname, join, resolve } from 'node:path';
 import { parseArgs, promisify } from 'node:util';
@@ -18,7 +18,7 @@ import { containerLimits, verifyArchive, verifyDirectory, extractArchive } from 
 import { writeFileAtomic, replaceDirAtomic } from './core/atomic.mjs';
 import { loadHeaderPolicy, checkRequiredHeaders } from './serve/headers.mjs';
 import { startPreview } from './serve/preview.mjs';
-import { exportStatic } from './profiles/static-export.mjs';
+import { exportStatic, resolveExisting, within } from './profiles/static-export.mjs';
 import { generateNginx } from './profiles/nginx.mjs';
 import { generateContainer } from './profiles/container.mjs';
 import { generateTorProfile } from './adapters/tor.mjs';
@@ -622,6 +622,13 @@ const STATIC_HEADERS_WARNING = 'static/www omits _headers (it is the document ro
 export async function generateProfiles(p) {
   const opened = await openVerified(p.target, p.o);
   try {
+    // exportStatic checks outDir against the site it reads, which for a directory input is the private copy: refuse an
+    // outDir inside or containing the operator's directory here, or the profile would land in (or replace) it.
+    if (opened.inputDir !== null) {
+      const inputReal = await realpath(opened.inputDir);
+      const outReal = await resolveExisting({ realpath }, p.outDir);
+      if (within(inputReal, outReal) || within(outReal, inputReal)) usage(`--out ${p.outDir} and the input directory ${opened.inputDir} must not contain each other`);
+    }
     const policy = await policyFor(opened.siteDir, opened.manifest);
     const files = opened.manifest.content.files.map((f) => f.path);
     const entrypoint = opened.manifest.content.entrypoint;

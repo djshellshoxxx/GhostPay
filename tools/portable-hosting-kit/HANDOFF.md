@@ -46,6 +46,8 @@ Inputs (owner uploads, kept outside the repository; private, not committed): an 
 - L7-L2: `package --git-dir` refuses any `filter.<name>.clean/smudge/process` config (covers `$GIT_DIR/info/attributes`,
   which `--attr-source` does not) and runs `git status --ignore-submodules=all`.
 - L7-M1: README and PROFILE-README say `static/www` omits `_headers`; `profile --with static` prints that warning.
+- Review E-R1: `profile` refuses (exit 2) an `--out` inside or containing a directory input (realpaths, the static
+  export's `within()` test): the export reads the private copy, so its own site/out check no longer covers the input.
 
 ## Decisions and findings (reuse; do not re-investigate)
 - Zero runtime deps, Node >= 22, `.mjs` + JSDoc + `tsc --checkJs` strict; tests `node:test`. Kit-local eslint config

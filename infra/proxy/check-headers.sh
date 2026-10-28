@@ -46,7 +46,7 @@ chk "$here/ghostpay-headers.conf" Permissions-Policy "Permissions-Policy \"$want
 for v in v1 v2; do
   route "$here/nginx.conf" "embed $v" "location = /ghostpay-embed-$v.js {" 'add_header Access-Control-Allow-Origin "*" always;' 'add_header Cross-Origin-Resource-Policy "cross-origin" always;'
 done
-if grep -qF 'location ~ /\. {' "$here/nginx.conf"; then :; else echo "ERROR: dotfile deny (location ~ /\\. { deny all; }) missing: $here/nginx.conf"; rc=1; fi
+if grep -qF 'location ~ /\.(?!well-known/) {' "$here/nginx.conf"; then :; else echo "ERROR: dotfile deny (location ~ /\\.(?!well-known/) { deny all; }) missing: $here/nginx.conf"; rc=1; fi
 
 # index.html meta CSP omits frame-ancestors (ignored in meta); everything else must match.
 meta_want="${want_csp/; frame-ancestors \'none\'/}"

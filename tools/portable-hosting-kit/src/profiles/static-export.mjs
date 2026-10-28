@@ -20,17 +20,17 @@ import { checkBasePath, createRouter, isServableRelPath, servableFiles } from '.
  * @param {string} child
  * @returns {boolean} child is parent or below it
  */
-function within(parent, child) {
+export function within(parent, child) {
   const rel = path.relative(parent, child);
   return rel === '' || (!rel.startsWith('..') && !path.isAbsolute(rel));
 }
 
 /**
- * @param {ExportFs} fs
+ * @param {Pick<ExportFs, 'realpath'>} fs
  * @param {string} p
  * @returns {Promise<string>} realpath of p, or of its nearest existing ancestor joined with the rest
  */
-async function resolveExisting(fs, p) {
+export async function resolveExisting(fs, p) {
   const abs = path.resolve(p);
   try {
     return await fs.realpath(abs);

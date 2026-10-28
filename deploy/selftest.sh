@@ -90,6 +90,16 @@ nothing_changed() { # label
   [ ! -e "$dist" ] || fail "$1: the web bundle directory was written"
   if grep -q 'compose.* up -d' "$log"; then fail "$1: services were started"; fi
 }
+# attested <label>: exactly one gh call, on the private copy, bound to release.yml at the tag, the --commit and
+# GitHub-hosted runners (review E-R2).
+attested() {
+  local calls copy
+  calls="$(grep '^gh ' "$log" || true)"
+  copy="$(awk '{ print $4 }' <<<"$calls")"
+  [ "$(awk '{ $4 = "FILE"; print }' <<<"$calls")" = "gh attestation verify FILE --repo owner/repo --signer-workflow owner/repo/.github/workflows/release.yml --source-ref refs/tags/v0.0.1 --source-digest $commit --deny-self-hosted-runners" ] \
+    && [ "${copy##*/}" = "$tar_name" ] && [ "$copy" != "$tmp/rel/$tar_name" ] \
+    || fail "$1: gh attestation verify not called exactly once with the release workflow, tag, commit and hosted-runner flags: ${calls:-no call}"
+}
 
 run 'yes
 ' --tarball "$tmp/rel/$tar_name" --sums "$tmp/rel/SHA256SUMS" --commit "$commit" --expect-sha256 "$tar_sha"
@@ -114,13 +124,26 @@ nothing_changed 'commit mismatch'
 SELFTEST_GH_EXIT=1 run 'yes
 ' "${release[@]}" --attest-repo owner/repo --tag v0.0.1
 [ "$code" -ne 0 ] || fail 'failed gh attestation verify: not refused'
-grep -q "gh attestation verify .*$tar_name --repo owner/repo --signer-workflow owner/repo/.github/workflows/release.yml --source-ref refs/tags/v0.0.1" "$log" || fail 'gh attestation verify not called with the release workflow and tag'
+attested 'failed attestation'
 nothing_changed 'failed attestation'
+
+run 'yes
+' --tarball "$tmp/rel/$tar_name" --sums "$tmp/rel/SHA256SUMS" --commit 0123456789ABCDEF0123456789ABCDEF01234567 --manifest "$tmp/rel/release-manifest.json" --attest-repo owner/repo --tag v0.0.1
+[ "$code" -ne 0 ] && grep -q -- '--commit must be a full 40-hex SHA' <<<"$out" || fail "upper-case --commit: not refused (exit $code)"
+if grep -q '^gh ' "$log"; then fail 'upper-case --commit: gh was called'; fi
+nothing_changed 'upper-case --commit'
 
 run '' "${release[@]}" --expect-sha256 "$tar_sha" --yes
 [ "$code" -eq 0 ] || fail "verified release with --yes: exit $code"
 [ "$(cat "$dist/index.html" 2>/dev/null)" = safe ] || fail 'verified bundle not installed'
 if grep -q 'compose.* up -d' "$log"; then fail '--yes started a bundle installed in the same run'; fi
+grep -q 'then run: deploy/selfhost.sh$' <<<"$out" || fail 'rerun hint with the default env file'
+
+# The rerun hint keeps a non-default --env-file, shell-quoted (review E-R4).
+cp "$fake/deploy/.env" "$fake/deploy/my env.env"
+run '' "${release[@]}" --expect-sha256 "$tar_sha" --yes --onion --env-file "$fake/deploy/my env.env"
+[ "$code" -eq 0 ] && grep -qF "then run: deploy/selfhost.sh --onion --env-file $(printf %q "$fake/deploy/my env.env")" <<<"$out" \
+  || fail "rerun hint drops --env-file (exit $code)"
 
 rm -rf "$dist"
 run 'yes
@@ -133,6 +156,7 @@ run 'yes
 start
 ' "${release[@]}" --attest-repo owner/repo --tag v0.0.1
 [ "$code" -eq 0 ] && grep -q 'compose.* up -d' "$log" || fail "confirmed start after a verified attestation did not start (exit $code)"
+attested 'verified attestation'
 
 run '' --yes
 [ "$code" -eq 0 ] && grep -q 'compose.* up -d' "$log" || fail "re-run without --tarball did not start the installed bundle (exit $code)"
