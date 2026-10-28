@@ -52,22 +52,27 @@ final class GhostPay_Event {
 		return $ok ? $raw : null;
 	}
 
-	/** Map a validated event to a fail-closed order action. Only a paid/over event with a sufficient amount can pay. */
-	public static function order_action( string $type, ?int $amount_cmp, bool $awaiting ): string {
+	/**
+	 * Map a validated event to a fail-closed order action. Only a paid/over event with a sufficient amount can pay, and
+	 * only an unpaid order. A payment event that must not change the order returns 'note' (manual check, refund).
+	 *
+	 * @param string   $type       Event type.
+	 * @param int|null $amount_cmp amountMinor compared with the order total, null if it cannot be compared.
+	 * @param string   $state      'awaiting' (GhostPay awaiting state), 'unpaid' (payment error, cancelled: a late
+	 *                             payment as WooCommerce allows, or an unpaid backorder) or 'closed' (paid, shipped, ...).
+	 */
+	public static function order_action( string $type, ?int $amount_cmp, string $state ): string {
 		switch ( $type ) {
 			case 'invoice.paid':
 			case 'invoice.over':
-				if ( null === $amount_cmp ) {
-					return 'ignore';
+				if ( null !== $amount_cmp && $amount_cmp >= 0 && in_array( $state, array( 'awaiting', 'unpaid' ), true ) ) {
+					return 'paid';
 				}
-			if ( $amount_cmp >= 0 ) {
-				return 'paid';
-			}
-			return $awaiting ? 'hold' : 'ignore';
+				return null !== $amount_cmp && 'awaiting' === $state ? 'hold' : 'note';
 			case 'invoice.partial':
-				return $awaiting ? 'partial' : 'ignore';
+				return 'awaiting' === $state ? 'partial' : 'note';
 			case 'invoice.expired':
-				return $awaiting ? 'cancel' : 'ignore';
+				return 'awaiting' === $state ? 'cancel' : 'ignore';
 			default:
 				return 'ignore';
 		}

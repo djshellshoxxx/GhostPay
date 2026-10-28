@@ -59,14 +59,19 @@ export function createReceiver(opts) {
       } catch {
         return reply(res, 400, { ok: false });
       }
-      // Idempotency: a retried delivery of the same event id is acknowledged but not processed twice.
-      if (!seen.claim(event.id)) return reply(res, 200, { ok: true, duplicate: true });
+      // Idempotency: a redelivery of an event already handled is acknowledged but not processed twice. A redelivery
+      // that arrives while an earlier delivery is still in onEvent() gets a retryable 503: that attempt may still
+      // fail, and a 2xx would stop the sender's retries.
+      const claim = seen.begin(event.id);
+      if (claim === 'done') return reply(res, 200, { ok: true, duplicate: true });
+      if (claim === 'processing') return reply(res, 503, { ok: false, retry: true });
       try {
         await opts.onEvent(event);
       } catch {
         seen.release(event.id); // let the sender's retry schedule try again
         return reply(res, 500, { ok: false });
       }
+      seen.complete(event.id);
       return reply(res, 200, { ok: true });
     } catch (e) {
       return reply(res, e?.status === 413 ? 413 : 400, { ok: false });

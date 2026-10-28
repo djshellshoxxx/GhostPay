@@ -123,6 +123,11 @@ class Ghostpay extends PaymentModule {
 		return GhostPay_Signature::secret_from_hex( (string) Configuration::get( 'service' === $which ? 'GHOSTPAY_SERVICE_SECRET' : 'GHOSTPAY_WEBHOOK_SECRET' ) );
 	}
 
+	/** @internal Used by the validation controller: link an invoice to its order. @return bool false if not stored */
+	public function recordInvoice( string $invoice_id, int $order_id ): bool {
+		return (bool) Db::getInstance()->insert( 'ghostpay_invoice', array( 'invoice_id' => pSQL( $invoice_id ), 'id_order' => $order_id ) );
+	}
+
 	/** Return the exact DECIMAL persisted by PrestaShop, never a float round-trip. */
 	public function exactOrderTotal( int $order_id ): ?string {
 		if ( $order_id <= 0 ) {
@@ -132,5 +137,14 @@ class Ghostpay extends PaymentModule {
 			'SELECT CAST(`total_paid` AS CHAR) FROM `' . _DB_PREFIX_ . 'orders` WHERE `id_order` = ' . (int) $order_id
 		);
 		return is_string( $value ) ? $value : null;
+	}
+
+	/**
+	 * @internal Used by both controllers: the exact order total in the GhostPay app's minor units of its currency
+	 * (GhostPay_Money::currency_minor), never scaled by the shop's display precision. Null if not exactly representable.
+	 */
+	public function orderTotalMinor( int $order_id, string $iso_code ): ?string {
+		$exact_total = $this->exactOrderTotal( $order_id );
+		return null === $exact_total ? null : GhostPay_Money::currency_minor( $exact_total, $iso_code );
 	}
 }

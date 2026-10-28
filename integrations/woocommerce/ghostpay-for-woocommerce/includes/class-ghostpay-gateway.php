@@ -79,17 +79,11 @@ class WC_Gateway_GhostPay extends WC_Payment_Gateway {
 				'description' => __( 'Host name only (e.g. pay.example.org). Payment links for any other host are refused.', 'ghostpay-for-woocommerce' ),
 				'default'     => '',
 			),
-			'service_secret' => array(
-				'title'       => __( 'Invoice service secret (hex)', 'ghostpay-for-woocommerce' ),
-				'type'        => 'password',
-				'description' => __( 'Prefer defining GHOSTPAY_SERVICE_SECRET in wp-config.php; the constant wins over this field.', 'ghostpay-for-woocommerce' ),
-				'default'     => '',
-			),
-			'webhook_secret' => array(
-				'title'       => __( 'Webhook secret (hex)', 'ghostpay-for-woocommerce' ),
-				'type'        => 'password',
-				'description' => __( 'At least 32 bytes (64 hex chars). Prefer GHOSTPAY_WEBHOOK_SECRET in wp-config.php.', 'ghostpay-for-woocommerce' ),
-				'default'     => '',
+			// No secret inputs: settings are stored in wp_options and returned by the WooCommerce REST API.
+			'secrets'        => array(
+				'title'       => __( 'Secrets', 'ghostpay-for-woocommerce' ),
+				'type'        => 'title',
+				'description' => __( 'Define GHOSTPAY_SERVICE_SECRET and GHOSTPAY_WEBHOOK_SECRET (hex, at least 32 bytes each) in wp-config.php or as environment variables. They are never read from or stored in these settings.', 'ghostpay-for-woocommerce' ),
 			),
 			'ttl'            => array(
 				'title'       => __( 'Invoice lifetime (seconds)', 'ghostpay-for-woocommerce' ),
@@ -138,11 +132,9 @@ class WC_Gateway_GhostPay extends WC_Payment_Gateway {
 		return preg_match( '/\A[a-z0-9]([a-z0-9.-]{0,251}[a-z0-9])?\z/', $h ) ? $h : '';
 	}
 
-	/** @param string $which 'service' or 'webhook'. @return string|null Binary secret. */
+	/** @param string $which 'service' or 'webhook'. @return string|null Binary secret from wp-config.php or the environment only. */
 	private function secret( string $which ): ?string {
-		$const = 'service' === $which ? 'GHOSTPAY_SERVICE_SECRET' : 'GHOSTPAY_WEBHOOK_SECRET';
-		$hex   = defined( $const ) ? (string) constant( $const ) : (string) $this->get_option( $which . '_secret', '' );
-		return GhostPay_Signature::secret_from_hex( $hex );
+		return GhostPay_Signature::secret_from_hex( GhostPay_Secrets::hex( $which ) );
 	}
 
 	/**
@@ -184,7 +176,8 @@ class WC_Gateway_GhostPay extends WC_Payment_Gateway {
 			wc_add_notice( __( 'Payment is temporarily unavailable.', 'ghostpay-for-woocommerce' ), 'error' );
 			return array( 'result' => 'failure' );
 		}
-		$minor = GhostPay_Money::to_minor( (string) $order->get_total(), (int) wc_get_price_decimals() );
+		// The GhostPay app's minor units of the currency, not the store's display decimals (wc_get_price_decimals()).
+		$minor = GhostPay_Money::currency_minor( (string) $order->get_total(), $order->get_currency() );
 		if ( null === $minor || '0' === $minor ) {
 			wc_add_notice( __( 'This order total cannot be paid with GhostPay.', 'ghostpay-for-woocommerce' ), 'error' );
 			return array( 'result' => 'failure' );
@@ -256,8 +249,8 @@ class WC_Gateway_GhostPay extends WC_Payment_Gateway {
 			$header,
 			time(),
 			static function ( string $nonce, int $expires ): bool {
-				// add_option fails if the option exists: atomic first-use claim. Fails closed on DB error.
-				return (bool) add_option( 'ghostpay_nonce_' . $nonce, (string) $expires, '', false );
+				// Atomic first-use claim (see insert_option_once). Fails closed on DB error.
+				return 1 === self::insert_option_once( 'ghostpay_nonce_' . $nonce, (string) $expires );
 			}
 		);
 		if ( 'ok' !== $result ) {
@@ -274,16 +267,40 @@ class WC_Gateway_GhostPay extends WC_Payment_Gateway {
 		self::reply( 200, array( 'ok' => true, 'duplicate' => 'duplicate' === $result ) );
 	}
 
-	/** Claim one identity with wp_options' unique option_name and a compare-and-swap lease takeover. */
+	/**
+	 * Atomic first-use claim of a wp_options row: INSERT IGNORE on the unique option_name. add_option() is NOT one: it
+	 * reads (non-locking, possibly cached), then INSERT ... ON DUPLICATE KEY UPDATE, so two concurrent requests could
+	 * both "add" the same name.
+	 *
+	 * @return int|false 1 when this call inserted the row, 0 when it already existed, false on a database error.
+	 */
+	private static function insert_option_once( string $name, string $value ) {
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$rows = $wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO {$wpdb->options} (option_name, option_value, autoload) VALUES (%s, %s, 'no')", $name, $value ) );
+		wp_cache_delete( $name, 'options' );
+		return $rows;
+	}
+
+	/** Current row value read from the database, not the object cache (stale under concurrency). */
+	private static function option_from_db( string $name ): ?string {
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$value = $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s", $name ) );
+		return is_string( $value ) ? $value : null;
+	}
+
+	/** Claim one identity with an atomic insert on wp_options' unique option_name and a compare-and-swap lease takeover. */
 	private function claim_identity( string $identity, string $token ): string {
 		$name = '_ghostpay_delivery_' . hash( 'sha256', $identity );
 		$now = time();
 		$value = 'processing|' . $token . '|' . ( $now + 900 );
-		if ( add_option( $name, $value, '', false ) ) {
+		$inserted = self::insert_option_once( $name, $value );
+		if ( 1 === $inserted ) {
 			return 'claimed';
 		}
-		$old = get_option( $name, false );
-		if ( ! is_string( $old ) ) {
+		$old = 0 === $inserted ? self::option_from_db( $name ) : null;
+		if ( null === $old ) {
 			return 'error';
 		}
 		if ( str_starts_with( $old, 'complete|' ) ) {
@@ -303,8 +320,8 @@ class WC_Gateway_GhostPay extends WC_Payment_Gateway {
 		if ( 1 === $changed ) {
 			return 'claimed';
 		}
-		$current = get_option( $name, false );
-		return is_string( $current ) && str_starts_with( $current, 'complete|' ) ? 'duplicate' : 'busy';
+		$current = self::option_from_db( $name );
+		return null !== $current && str_starts_with( $current, 'complete|' ) ? 'duplicate' : 'busy';
 	}
 
 	/** @param string[] $names */
@@ -323,6 +340,13 @@ class WC_Gateway_GhostPay extends WC_Payment_Gateway {
 			wp_cache_delete( $name, 'options' );
 		}
 		return $ok;
+	}
+
+	/** The order's newest invoice id: each customer retry adds one, and WooCommerce reads meta in meta id order. */
+	private function current_invoice_id( WC_Order $order ): string {
+		$invoices = $order->get_meta( '_ghostpay_invoice_id', false );
+		$current  = is_array( $invoices ) ? end( $invoices ) : false;
+		return $current instanceof WC_Meta_Data ? (string) $current->value : '';
 	}
 
 	/** @param array $event Validated event. */
@@ -361,23 +385,36 @@ class WC_Gateway_GhostPay extends WC_Payment_Gateway {
 			}
 			return $this->finish_identities( $names, $token, true ) ? 'done' : 'error';
 		}
-		$due = GhostPay_Money::to_minor( (string) $order->get_total(), (int) wc_get_price_decimals() );
+		$due = GhostPay_Money::currency_minor( (string) $order->get_total(), $order->get_currency() ); // same units as the invoice
 		$cmp = null === $due ? null : GhostPay_Money::compare( $data['amountMinor'], $due );
+		// The statuses WooCommerce's own payment_complete() moves to paid (a late payment of a cancelled order too).
+		// Any other order (paid, refunded, ...) is never changed by a payment event, only flagged for a manual check.
+		$payable   = $order->has_status( apply_filters( 'woocommerce_valid_order_statuses_for_payment_complete', array( 'on-hold', 'pending', 'failed', 'cancelled' ), $order ) );
+		$unchanged = sprintf( /* translators: 1: event type, 2: event id, 3: order status */ __( 'GhostPay %1$s (event %2$s) for an order that is %3$s: the order was not changed. Check for a double payment and refund it if needed.', 'ghostpay-for-woocommerce' ), $event['type'], $event['id'], $order->get_status() );
 		switch ( $event['type'] ) {
 			case 'invoice.paid':
 			case 'invoice.over':
-				if ( null !== $cmp && $cmp >= 0 && ! $order->is_paid() ) {
+				if ( ! $payable ) {
+					$order->add_order_note( $unchanged );
+				} elseif ( null !== $cmp && $cmp >= 0 ) {
 					$order->payment_complete( $event['id'] );
 					$order->add_order_note( sprintf( /* translators: 1: event id */ __( 'GhostPay payment confirmed (event %s).', 'ghostpay-for-woocommerce' ), $event['id'] ) );
 				} else {
-					$order->update_status( 'on-hold', sprintf( /* translators: 1: event id */ __( 'GhostPay reported a payment below the order total (event %s). Check manually.', 'ghostpay-for-woocommerce' ), $event['id'] ) );
+					$order->update_status( 'on-hold' );
+					$order->add_order_note(
+						null === $cmp
+							? sprintf( /* translators: 1: event id */ __( 'GhostPay payment (event %s) could not be compared with the order total. Check manually.', 'ghostpay-for-woocommerce' ), $event['id'] )
+							: sprintf( /* translators: 1: event id */ __( 'GhostPay reported a payment below the order total (event %s). Check manually.', 'ghostpay-for-woocommerce' ), $event['id'] )
+					);
 				}
 				break;
 			case 'invoice.partial':
-				$order->add_order_note( sprintf( /* translators: 1: event id */ __( 'GhostPay partial payment received (event %s). Order stays unpaid.', 'ghostpay-for-woocommerce' ), $event['id'] ) );
+				$order->add_order_note( $payable ? sprintf( /* translators: 1: event id */ __( 'GhostPay partial payment received (event %s). Order stays unpaid.', 'ghostpay-for-woocommerce' ), $event['id'] ) : $unchanged );
 				break;
 			case 'invoice.expired':
-				if ( $order->has_status( 'pending' ) ) {
+				// Only the order's current invoice may cancel it: after a customer retry, the older invoice expiring
+				// must not cancel an order whose newer invoice is still payable.
+				if ( $order->has_status( 'pending' ) && $data['invoiceId'] === $this->current_invoice_id( $order ) ) {
 					$order->update_status( 'cancelled', __( 'GhostPay invoice expired without payment.', 'ghostpay-for-woocommerce' ) );
 				}
 				break;
