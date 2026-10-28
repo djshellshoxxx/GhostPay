@@ -358,7 +358,8 @@ describe('Sweep', () => {
     await user.click(screen.getByLabelText(/Directly/));
     await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
     const proto = Object.getPrototypeOf(window.sessionStorage) as Storage;
-    const original = proto.setItem;
+    const descriptor = Object.getOwnPropertyDescriptor(proto, 'setItem')!;
+    const original = descriptor.value as (this: Storage, k: string, v: string) => void;
     proto.setItem = function (this: Storage, k: string, v: string): void {
       if (k === SWEEP_JOURNAL_KEY) throw new DOMException('quota', 'QuotaExceededError');
       original.call(this, k, v);
@@ -367,7 +368,7 @@ describe('Sweep', () => {
       await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
       expect(await screen.findByText('Signing disabled in this tab')).toBeTruthy();
     } finally {
-      proto.setItem = original;
+      Object.defineProperty(proto, 'setItem', descriptor);
     }
     expect(sink.calls ?? []).not.toContain('eth_sendRawTransaction');
     expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);

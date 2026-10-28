@@ -45,7 +45,14 @@ The independent read-only review of `4309eb8` reported H1, H2, M1, M2 and L1–L
 - `npm test` (all workspaces), started at `f44adbb`:
   - Every non-web workspace passed (counts are in the session log, for example relayer 256 pass / 2 skip and privacy-pipeline 747).
   - **`@ghostpay/confidential-contracts` failed in this environment.** Hardhat cannot download solc (`getaddrinfo ENOTFOUND binaries.soliditylang.org`); this is a network policy limit, not a code result. It is a later-preserved feature, and CI runs it.
-  - The web portion of this run is **invalid as evidence**: it overlapped in-progress edits and was stopped. The web suite was rerun on `7345904`; see the PR comment or the next handoff update for that result.
+  - The web portion of this run is **invalid as evidence**: it overlapped in-progress edits and was stopped.
+- Web suite rerun on frozen head `7345904`:
+  - `cd apps/web && npx vitest run --coverage --maxWorkers=2` → exit 0: 101 files passed / 1 skipped, 1283 tests passed / 4 skipped.
+  - Coverage 91.16 statements / 86.48 branches / 92.78 functions / 95.13 lines (thresholds 90/85/90/90, unchanged).
+  - `npx vitest run --config vitest.nocov.config.ts` (archive fuzz) → 1/1.
+- CI lint on `2f1c79b` failed on two test-file lint errors I introduced: `no-unsafe-member-access` and `unbound-method`.
+  - Fixed in the next commit.
+  - `eslint src e2e` (web) and `tsc` are clean locally, and the affected suites pass 38/38.
 - Hosting kit at `f44adbb` + headers fix: `npm test` 277 tests, 265 pass, 0 fail, 12 skip (opt-in Docker/Chromium/nginx/tor/i2pd).
 - Not run locally: forge/anvil/bitcoind/solana integration (binaries absent; the GitHub Integration workflow runs them) and Playwright e2e.
 

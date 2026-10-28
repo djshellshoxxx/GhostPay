@@ -28,7 +28,7 @@ describe('tab-scoped sweep attempt journal', () => {
     const raw = s.data.get(SWEEP_JOURNAL_KEY) ?? '';
     expect(raw).not.toContain(DEST.slice(2));
     expect(raw).not.toContain('123456789');
-    expect(Object.keys(JSON.parse(raw)[0] as object).sort()).toEqual(['chainId', 'expectedHash', 'nonce', 'owner', 'status']);
+    expect(Object.keys((JSON.parse(raw) as object[])[0] ?? {}).sort()).toEqual(['chainId', 'expectedHash', 'nonce', 'owner', 'status']);
   });
 
   it('keeps one lock per chain and owner, the latest status winning', () => {
