@@ -20,11 +20,14 @@
   Cross-Origin-Resource-Policy: same-origin
   Cache-Control: no-store
 
-# The embed SDK is loaded cross-origin by merchant pages by design; it is a static, dependency-free file.
+# The embed SDK is loaded cross-origin by merchant pages by design; it is a static, dependency-free file. CORS without
+# credentials lets the documented integrity="sha384-..." crossorigin="anonymous" snippet load it (SRI needs CORS).
 /ghostpay-embed-v1.js
   Cross-Origin-Resource-Policy: cross-origin
+  Access-Control-Allow-Origin: *
   Cache-Control: public, max-age=3600
 
 /ghostpay-embed-v2.js
   Cross-Origin-Resource-Policy: cross-origin
+  Access-Control-Allow-Origin: *
   Cache-Control: public, max-age=3600

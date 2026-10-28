@@ -23,12 +23,17 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
    (`src/lib/embedProtocol.ts`, `embedHost.ts`) and a signed merchant profile (`@ghostpay/invoice-schema` `merchantProfile`). Popup stays the
    default. Iframe mode only works on a header-capable host: the checkout answers the handshake only when built with
    `VITE_EMBED_IFRAME=1`, served with the opt-in `deploy/nginx/security-headers-embed.conf` (explicit `frame-ancestors` allowlist), and
-   given a verified profile whose `origins` contains the embedding origin. GitHub Pages cannot send `frame-ancestors`, so the flag is
+   given a profile whose `origins` contains the embedding origin. **The profile is not a security gate yet:** `verifyMerchantProfile`
+   (`invoice-schema` `merchantProfile.ts`) checks the signature only against the `signer` key embedded in the profile itself, so anyone
+   can sign a profile listing any origin. The `frame-ancestors` allowlist is the only gate today; the profile must be bound to the invoice
+   signer before it can authorize anything (audit L3-F7). GitHub Pages cannot send `frame-ancestors`, so the flag is
    off there (a test enforces it), the checkout never answers, and the SDK falls back to the popup after 4 s. Still open: the SDK takes
    an invoice link, not `data-amount/currency/token/chain/merchant-id` (profile `templates` are signed and parsed but not yet turned
    into invoices, `data-template` is only forwarded); the profile is supplied inline (`?gpm=`) or via `fetchMerchantProfile`, with no
    payer-facing fingerprint/"unverified identity" UI yet (`signerFingerprint` exists; Pay.tsx/locales are out of this worker's scope);
-   no SRI hash is published (no release pipeline); the Playwright hostile-host-page test is not written (jsdom tests only).
+   no SRI value is published (S3-10, below); the Playwright hostile-host-page test is not written (jsdom tests only). Every header
+   source (`public/_headers`, `deploy/nginx`, `infra`) sends `Access-Control-Allow-Origin: *` for both SDK files, so a merchant can use
+   `integrity=... crossorigin="anonymous"` with a hash computed from the exact file they embed (see the v2 header comment).
 7. WalletConnect-style adapters (optional in the playbook) are not built. Wallet paths: EIP-6963 discovery and a labelled
    `window.ethereum` EIP-1193 fallback.
 8. No network-reachable "light indexer" (Feature 5); scanning uses the user's RPC through `chain-adapters`.
@@ -78,6 +83,10 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     directives minus `frame-ancestors`, which browsers ignore in a meta tag). `scripts/scan-bundle.mjs` asserts the `_headers` file still
     contains the key directives and that the built `index.html` has no inline script/style/handler.
 20. `connect-src` is `'self' https: wss:` because RPC and relayer origins are user data (spec section 1); the RPC adapter allows only https/wss.
+    **Still open: audit S3-10 and S3-11.** `scripts/embed-sri.mjs` (content-addressed SDK copy, `embed-sri.json` with the SHA-384 SRI
+    value, immutable `_headers` rule) and `scripts/csp.mjs` (`GHOSTPAY_CONNECT_ORIGINS` narrows `connect-src`) are unit-tested
+    (`src/buildScripts.test.ts`) but **not wired into `npm run build`**: `dist/` has no content-addressed SDK file and no SRI value, and
+    `connect-src` stays broad whatever `GHOSTPAY_CONNECT_ORIGINS` is set to.
 21. **Bundle scan allowlist.** The scan fails on `eval`, `new Function`, `Function()`, string timers, `document.write`, `insertAdjacentHTML`,
     `outerHTML=`, `importScripts`, stray `Math.random`, any `innerHTML=` outside two React DOM fingerprints, any
     `dangerouslySetInnerHTML:`/`=` use, source maps, `@font-face`, remote CSS, inline HTML, shipped manifests and any URL host not in

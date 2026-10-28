@@ -6,7 +6,7 @@ Hosting material for operators. Nothing here is deployed; hosting is not enabled
 | Path | Purpose | Status |
 |---|---|---|
 | `proxy/Caddyfile`, `proxy/nginx.conf`, `proxy/ghostpay-headers.conf` | TLS reverse proxy: strict CSP/HSTS/COOP/COEP, static bundle, relayer on loopback behind a trusted proxy, `/metrics` never exposed | Written; **unvalidated** (no caddy/nginx in the authoring sandbox) |
-| `proxy/check-headers.sh` | Static check that proxy and `index.html` meta CSP equal `apps/web/public/_headers` | Run and passing |
+| `proxy/check-headers.sh` | Static check that the CSP and Permissions-Policy of the proxy configs, `web/Caddyfile.static` and the `index.html` meta equal `apps/web/public/_headers`, that the embed SDK routes (v1, v2) send `Access-Control-Allow-Origin: *` and CORP `cross-origin`, and that no config serves dotfiles | Passing; runs in CI (`secrets-and-egress`) |
 | `web/Dockerfile`, `web/Caddyfile.static` | Multi-stage reproducible-ish build of `apps/web`, served by Caddy on :8080 as non-root | **Unbuilt** (no docker daemon in sandbox); base images not digest-pinned |
 | `publish/ipfs-publish.sh` | Dry-run CID + per-file hashes; pinning needs `--publish` and `GP_IPFS_PUBLISH=yes` | Unrun (kubo not installed); `bash -n` only |
 | `publish/torrc.example` | Onion service example | Example only |
