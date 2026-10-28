@@ -39,7 +39,7 @@ The independent read-only review of `4309eb8` reported H1, H2, M1, M2 and L1–L
 - M1 was fixed in `f1be78f` and hardened after the second review (see the table).
 - **Open:**
   - The `refused` release still relies on the relayer's own report. A lying relayer can only execute the signed order to the user's own destination before its deadline; the UI says so.
-  - L2: the new safety strings are English only. This matches the open "localize safety strings" item from PR #30.
+  - L2 (localization) is done for the Sweep view. Its status, notice and button strings are now `en.json` keys (`sweep.attempt.*`, `sweep.note.*`, `sweep.journalBroken.*`, `sweep.checkStatus`, `sweep.pendingBlocksSigning`), checked at compile time through `MessageKey`. The es/ja/ar catalogs are machine-drafted 54-key subsets that fall back to English, so translating these keys is translator work. Errors thrown from `lib/` stay English, as elsewhere in the app.
   - L3 and the recorded limit: the lock is per tab. A new tab starts armed, so the user must check an explorer first.
 
 ## Tests actually run (this container, Node 22.22.0, npm 10.9.4)
@@ -120,4 +120,4 @@ The authoritative exact-head evidence is the GitHub `hosting-kit` workflow (`kit
 
 ## Next bounded task
 
-Read the PR #37 CI results on the head commit and fix anything red. After that, localize the new sweep safety strings (they are English only; use the `t()` keys and add `en` entries). The Nightly SBOM fix waits on the owner choosing one of options (a)–(d) above.
+Read the PR #37 CI results on the head commit and fix anything red. The Nightly SBOM fix waits on the owner choosing one of options (a)–(d) above. Translator work: the new `sweep.*` keys for es/ja/ar.

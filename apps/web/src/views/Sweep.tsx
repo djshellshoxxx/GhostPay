@@ -15,13 +15,14 @@ import { useServices } from '../lib/services';
 import { beginSweepAttempt, getSweepAttempt, isSweepJournalBroken, recordSweepAttempt, useApp, useSweepAttempt, useSweepJournalBroken } from '../state';
 import { SweepJournalUnavailableError } from '../lib/sweepAttemptJournal';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
+import type { MessageKey } from '../i18n/catalog';
 
-const ATTEMPT_TITLES: Partial<Record<string, string>> = {
-  'unknown-after-handoff': 'Outcome unknown',
-  included: 'Included on chain',
-  reverted: 'Reverted on chain',
-  expired: 'Order expired unused',
-  refused: 'Relayer refused the order',
+const ATTEMPT_TITLES: Partial<Record<string, MessageKey>> = {
+  'unknown-after-handoff': 'sweep.attempt.unknown',
+  included: 'sweep.attempt.included',
+  reverted: 'sweep.attempt.reverted',
+  expired: 'sweep.attempt.expired',
+  refused: 'sweep.attempt.refused',
 };
 
 export function Sweep(): ReactNode {
@@ -228,13 +229,11 @@ export function Sweep(): ReactNode {
     if (isSweepJournalBroken()) throw new SweepJournalUnavailableError();
     const current = getSweepAttempt(chainId, target.owner);
     if (current !== undefined && isUnresolvedAttempt(current)) {
-      throw new UserFacingError('A sweep from this address may still be pending. Check its status before signing anything new.');
+      throw new UserFacingError(t('sweep.pendingBlocksSigning'));
     }
   };
 
-  const pendingNote = attempt?.order !== undefined
-    ? 'The order has not executed yet, and no finalized block is far enough past its deadline to treat it as expired. It may still execute; check again later.'
-    : 'No receipt found for this hash yet. That does not mean it was not sent; check again later.';
+  const pendingNote = t(attempt?.order !== undefined ? 'sweep.note.pendingRelayed' : 'sweep.note.pendingDirect');
 
   const onCheckStatus = (): void => {
     if (attempt === undefined) return;
@@ -244,14 +243,14 @@ export function Sweep(): ReactNode {
       try {
         const rpc = await app.getRpc(attempt.chainId);
         if (rpc === undefined) {
-          setCheckNote('No RPC is configured for this chain, so the status was not checked. The outcome is still unknown.');
+          setCheckNote(t('sweep.note.noRpc'));
           return;
         }
         const next = await reconcileSweepLock(rpc, attempt);
         if (next.status !== attempt.status) recordSweepAttempt(next);
         else setCheckNote(pendingNote);
       } catch (e) {
-        setCheckNote(e instanceof UserFacingError ? e.message : 'The status check failed. The outcome is still unknown; check again later.');
+        setCheckNote(e instanceof UserFacingError ? e.message : t('sweep.note.checkFailed'));
       } finally {
         setChecking(false);
       }
@@ -342,21 +341,21 @@ export function Sweep(): ReactNode {
       {busy && <p role="status">{t('sweep.working')}</p>}
       {busy && vaultPhase === 'authorizing' && <button type="button" className="btn" onClick={cancelVaultCheck}>{t('sweep.cancelVault')}</button>}
       {error !== undefined && <Notice kind="error">{error}</Notice>}
-      {journalBroken && <Notice kind="warn" title="Signing disabled in this tab">{new SweepJournalUnavailableError().message}</Notice>}
+      {journalBroken && <Notice kind="warn" title={t('sweep.journalBroken.title')}>{t('sweep.journalBroken.body')}</Notice>}
       {attempt !== undefined && (
         <Notice
           kind={attempt.status === 'submitted' || attempt.status === 'included' ? 'ok' : 'warn'}
-          title={attempt.order !== undefined && attempt.status === 'included' ? 'Order executed on chain' : ATTEMPT_TITLES[attempt.status] ?? t('sweep.submitted')}
+          title={t(attempt.order !== undefined && attempt.status === 'included' ? 'sweep.attempt.executed' : ATTEMPT_TITLES[attempt.status] ?? 'sweep.submitted')}
         >
-          {attempt.status === 'unknown-after-handoff' && (attempt.order === undefined
-            ? <>The signed transaction was handed to your RPC but its result is unknown. It may already be on the network, so signing a new one is disabled.<br /></>
-            : <>The signed order was handed to the relayer but its result is unknown. It can still execute until {new Date(attempt.order.deadline * 1000).toISOString()}; it counts as expired only {String(RELAYED_EXPIRY_MARGIN_SECONDS / 60)} minutes after that. Signing a new one is disabled until then.<br /></>)}
-          {attempt.status === 'expired' && <>The order&apos;s nonce was still unused after its deadline, so it can no longer execute and moved nothing. You can sign again.<br /></>}
-          {attempt.status === 'refused' && <>The relayer reported that it refused the order before sending it. This relies on the relayer&apos;s report; the signed order stays valid until {attempt.order === undefined ? 'its deadline' : new Date(attempt.order.deadline * 1000).toISOString()}. You can sign again.<br /></>}
+          {attempt.status === 'unknown-after-handoff' && <>{attempt.order === undefined
+            ? t('sweep.attempt.unknownDirect')
+            : t('sweep.attempt.unknownRelayed', { deadline: new Date(attempt.order.deadline * 1000).toISOString(), minutes: String(RELAYED_EXPIRY_MARGIN_SECONDS / 60) })}<br /></>}
+          {attempt.status === 'expired' && <>{t('sweep.attempt.expiredBody')}<br /></>}
+          {attempt.status === 'refused' && attempt.order !== undefined && <>{t('sweep.attempt.refusedBody', { deadline: new Date(attempt.order.deadline * 1000).toISOString() })}<br /></>}
           {attempt.expectedHash !== undefined && (
             <>
               {t('sweep.txHash')} <Mono>{attempt.expectedHash}</Mono> <CopyButton text={attempt.expectedHash} label={t('sweep.copyHash')} />
-              {attempt.order !== undefined && <> (reported by the relayer, not verified)</>}
+              {attempt.order !== undefined && <> {t('sweep.attempt.relayerHashUnverified')}</>}
               <br />
               {t('sweep.checkExplorer')}
             </>
@@ -364,7 +363,7 @@ export function Sweep(): ReactNode {
           {isUnresolvedAttempt(attempt) && (
             <>
               <br />
-              <button type="button" className="btn" onClick={onCheckStatus} disabled={checking}>Check status</button>
+              <button type="button" className="btn" onClick={onCheckStatus} disabled={checking}>{t('sweep.checkStatus')}</button>
             </>
           )}
           {checkNote !== undefined && <><br />{checkNote}</>}
