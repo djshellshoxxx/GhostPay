@@ -31,3 +31,7 @@ You can attach a private label (for example "order 1042") to a match. Tags are e
 ## Reorgs and duplicates
 
 The scanner handles chain reorganisations by rolling back to a checkpoint and ignores duplicate logs. Replayed announcements can still show up as extra rows, because an attacker can copy a genuine announcement; match payments to balances, not to rows.
+
+- If your RPC cannot return the block saved in the checkpoint (it is lagging or returned nothing), the scan stops with an RPC error and nothing is rolled back or invalidated; scan again later.
+- After a confirmed reorg, a saved reconciliation record is marked invalid only when its block was actually replaced (checked against your RPC, and against the second RPC when you set one). Unchanged records stay valid. With a second RPC, a reorg that only one provider reports keeps your checkpoint and stops the scan.
+- Restoring an encrypted reconciliation backup into a vault that has seen a reorg marks restored records at or above the reorg block that were recorded before it (by the recording device's clock) as invalid, because they could not be checked; adding the same payment again from a new scan makes it valid again. The preview shows how many records would be marked invalid.

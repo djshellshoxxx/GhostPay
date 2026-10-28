@@ -1,4 +1,5 @@
 import {
+  ChainAdapterError,
   compareProviders,
   dedupeClaims,
   fetchAnnouncements,
@@ -6,6 +7,7 @@ import {
   type Address,
   type ChainConfig,
   type DeploymentManifest,
+  type Hex,
   type RpcClient,
   type ScanCursor,
   type ProviderDiscrepancy,
@@ -99,8 +101,12 @@ export interface ScanParams {
   readonly onMatch?: (m: ScanMatch) => void;
   /** Immediately hide possibly orphaned actionable matches; this does not authorize persistent invalidation. */
   readonly onQuarantine?: (rolledBackTo: bigint) => void;
-  /** A rollback was confirmed (by both providers when configured); persist invalidation before accepting replacement results. */
-  readonly onReorg?: (rolledBackTo: bigint) => void | Promise<void>;
+  /**
+   * A rollback was confirmed (by both providers when configured); persist invalidation before accepting replacement
+   * results. `canonicalHash` returns the block hash every configured provider reports at a height and throws on any
+   * doubt, so only observations whose block was actually replaced are invalidated (nothing is, if it throws).
+   */
+  readonly onReorg?: (rolledBackTo: bigint, canonicalHash: (height: bigint) => Promise<Hex>) => void | Promise<void>;
   readonly maxPages?: number;
   /** Total accepted public announcements to process in one run (default 100,000). */
   readonly maxAnnouncementsPerScan?: number;
@@ -273,13 +279,13 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
             discrepancies.push(...conflicts);
             p.onDiscrepancy?.(conflicts);
             if (p.signal.aborted) break;
-            cursor = { nextBlock: res.reorg.rolledBackTo };
-            p.checkpoints?.clear(p.chain.chainId, p.keyId);
+            // An unconfirmed fork report must not delete the saved checkpoint either: keep it and this run's
+            // position, so the next scan checks the same anchor again.
             p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
             break;
           }
         }
-        await p.onReorg?.(res.reorg.rolledBackTo);
+        await p.onReorg?.(res.reorg.rolledBackTo, (height) => canonicalHashAt(p, height));
         if (p.signal.aborted) break;
       }
       if (scanned + res.announcements.length > maxAnnouncements) {
@@ -467,6 +473,20 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   return { matches: all, cursor, scanned, discrepancies, limitReached, backlog, routerOnlyBlocks: [...routerOnlyBlocks], telemetry: { trusted: trustedSeen, open: openSeen, suspected, anonymity } };
 }
 
+
+/**
+ * The block hash at `height` reported by the primary and, when configured, also by the second provider. After a
+ * confirmed rollback it tells orphaned saved observations from unchanged ones; a missing block or any disagreement
+ * throws, so nothing is invalidated and the next scan retries.
+ */
+async function canonicalHashAt(p: ScanParams, height: bigint): Promise<Hex> {
+  const [primary, independent] = await Promise.all([p.client.getBlock(height), p.secondaryClient?.getBlock(height)]);
+  const hash = primary?.hash.toLowerCase();
+  if (hash === undefined || (p.secondaryClient !== undefined && (independent == null || independent.hash.toLowerCase() !== hash))) {
+    throw new ChainAdapterError('RPC_FAILURE', 'canonical block hash unavailable');
+  }
+  return hash as Hex;
+}
 
 /** Bounded, fresh two-provider checks immediately before irreversible historical invalidation. */
 async function confirmRollback(p: ScanParams, previous: ScanCursor, replacement: ScanCursor, rolledBackTo: bigint): Promise<readonly ProviderDiscrepancy[]> {

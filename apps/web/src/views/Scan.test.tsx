@@ -334,7 +334,11 @@ describe('Scan and receive', () => {
       expect(screen.queryByRole('button', { name: 'Sweep this payment' })).toBeNull();
       expect(screen.queryByRole('button', { name: 'Sign receipt' })).toBeNull();
       expect(vaultData.size).toBe(0);
-      await act(async () => { await params.onReorg?.(0n); });
+      // Both providers report another block at height 120: the unsaved observation is tombstoned.
+      const heights: bigint[] = [];
+      const replacedBlock: Hex = `0x${'9'.repeat(64)}`;
+      await act(async () => { await params.onReorg?.(0n, (height) => { heights.push(height); return Promise.resolve(replacedBlock); }); });
+      expect(heights).toEqual([120n]);
       const { createCurrentReconciliationVault } = await import('../lib/reconciliationVault');
       const keyId = checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey);
       const vault = await createCurrentReconciliationVault(84532, keyId);
@@ -365,13 +369,41 @@ describe('Scan and receive', () => {
       await user.type(screen.getByLabelText('Start block'), '0'); await user.click(screen.getByRole('button', { name: 'Start scan' }));
       await screen.findByRole('button', { name: 'Sweep this payment' });
       act(() => { params.onQuarantine?.(0n); });
-      const invalidation = Promise.resolve(params.onReorg?.(0n)).catch(() => undefined);
+      const replacedBlock: Hex = `0x${'9'.repeat(64)}`;
+      const invalidation = Promise.resolve(params.onReorg?.(0n, () => Promise.resolve(replacedBlock))).catch(() => undefined);
       await waitFor(() => expect(stage === 'unlock' ? vaultCreationWaiting : vaultWriteWaiting).toBe(true));
       await user.click(screen.getByRole('button', { name: 'Cancel' }));
       await act(async () => { unlock(); await invalidation; });
       expect(vaultData.size).toBe(0);
       finish(); await waitFor(() => expect(screen.getByText(/Cancelled\./)).toBeTruthy());
     } finally { unlock(); finish(); runner.mockRestore(); }
+  });
+
+  it('keeps an unsaved observation recordable when the reorg left its block unchanged (L3-F1, L1-03)', async () => {
+    const pub = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 1, caller: FAKE_ROUTER });
+    const announcement = validateAnnouncementLog(mine.log, FAKE_ANNOUNCER, 1n, 0n, 500n)!;
+    const match: scanClient.ScanMatch = { chainId: 84532, announcement, stealthAddress: mine.stealthAddress as Address, metadata: parseMetadata(announcement.metadata), viaRouter: true, tagMatches: true, receipt: 'verified' };
+    let params!: scanClient.ScanParams; let release!: () => void;
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    const runner = vi.spyOn(scanClient, 'runScan').mockImplementation(async (p) => {
+      params = p; p.onMatch?.(match); await gate; p.viewingKey.fill(0);
+      return { matches: [], cursor: { nextBlock: 0n }, scanned: 1, discrepancies: [], limitReached: false, routerOnlyBlocks: [] };
+    });
+    try {
+      const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(chainWithLogs(84532, 500, []))) }));
+      await user.type(screen.getByLabelText('Start block'), '0'); await user.click(screen.getByRole('button', { name: 'Start scan' }));
+      await screen.findByRole('button', { name: 'Sweep this payment' });
+      act(() => { params.onQuarantine?.(0n); });
+      await act(async () => { await params.onReorg?.(0n, () => Promise.resolve(announcement.blockHash)); });
+      const { createCurrentReconciliationVault } = await import('../lib/reconciliationVault');
+      const keyId = checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey);
+      const vault = await createCurrentReconciliationVault(84532, keyId);
+      await expect(vault.save(recordFromVerifiedMatch(match, keyId))).resolves.toBeUndefined();
+      vault.lock();
+      release(); await waitFor(() => expect(screen.getByText(/Finished\./)).toBeTruthy());
+    } finally { release(); runner.mockRestore(); }
   });
 
   it('warns that a block too large for one RPC response was checked for router payments only (L4-01)', async () => {

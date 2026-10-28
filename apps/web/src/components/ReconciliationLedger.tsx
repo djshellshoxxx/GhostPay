@@ -592,7 +592,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
               )}
               <p>
                 {preview.recordCount} historical observation{preview.recordCount === 1 ? '' : 's'};{' '}
-                {preview.invalidatedCount} already invalidated; {preview.invoiceCount} registered invoice
+                {preview.invalidatedCount} would be marked invalid after a reorg; {preview.invoiceCount} registered invoice
                 {preview.invoiceCount === 1 ? '' : 's'}; {preview.receiptCount} archived receipt
                 {preview.receiptCount === 1 ? '' : 's'}. Activation merges records as untrusted history,
                 preserves known invalidation and does not verify payment.

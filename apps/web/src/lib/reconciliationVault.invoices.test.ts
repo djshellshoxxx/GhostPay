@@ -145,7 +145,7 @@ describe('encrypted invoice registration and local matching', () => {
     const invoice = registrationFromInvoice(testInvoice(), 1);
     await vault.registerInvoice(invoice);
     await vault.confirmProposal(rec(1), invoice.invoiceDigest);
-    await vault.invalidateFrom(101n);
+    await vault.invalidateFrom(101n, [], () => Promise.resolve(`0x${'9'.repeat(64)}`));
     const state = await vault.readState();
     expect(state.records[0]?.evidenceStatus).toBe('invalidated-after-reorg');
     expect(state.invoices).toEqual([invoice]);

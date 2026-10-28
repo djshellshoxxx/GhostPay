@@ -193,7 +193,7 @@ describe('runScan', () => {
     };
     await vault.save(record);
     const primary = chainWith(300, []);
-    const invalidated = vi.fn((from: bigint) => vault.invalidateFrom(from));
+    const invalidated = vi.fn((from: bigint, canonical: (height: bigint) => Promise<Hex>) => vault.invalidateFrom(from, [], canonical));
     const quarantined = vi.fn(); const emitted = vi.fn(); const saved = vi.fn();
     const result = await runScan({
       chain, manifest, client: { ...primary, getBlock: (n) => Promise.resolve({ number: n, hash: blockHash(Number(n) + 10000) as Hex, parentHash: blockHash(Number(n) + 9999) as Hex }) },
@@ -419,6 +419,38 @@ describe('runScan', () => {
     });
     await expect(runScan({ chain, manifest, client: bad, cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => worker, signal: new AbortController().signal })).rejects.toThrow();
     expect(worker.terminated).toBe(true);
+  });
+
+  it('treats a checkpoint block the only RPC cannot return as unavailable: no rollback, no invalidation (L3-F1)', async () => {
+    const s = setup();
+    const base = chainWith(5000, []);
+    let nulled = false;
+    const flaky = { ...base, getBlock: (n: bigint) => { if (n === 200n && !nulled) { nulled = true; return Promise.resolve(null); } return base.getBlock(n); } };
+    const reorged = vi.fn(); const quarantined = vi.fn(); const cleared = vi.fn(); const saved = vi.fn();
+    await expect(runScan({
+      chain, manifest, client: flaky, cursor: { nextBlock: 201n, last: { number: 200n, hash: blockHash(200) as Hex } },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal, onReorg: reorged, onQuarantine: quarantined,
+      checkpoints: { load: () => undefined, save: saved, clear: cleared },
+    })).rejects.toThrow(/checkpoint block unavailable/);
+    expect(reorged).not.toHaveBeenCalled(); expect(quarantined).not.toHaveBeenCalled();
+    expect(cleared).not.toHaveBeenCalled(); expect(saved).not.toHaveBeenCalled();
+  });
+
+  it('keeps the saved checkpoint when the second RPC does not confirm the primary\'s fork report (L3-F1)', async () => {
+    const s = setup(); const primary = chainWith(300, []);
+    const cleared = vi.fn(); const saved = vi.fn();
+    const cursor = { nextBlock: 201n, last: { number: 200n, hash: blockHash(200) as Hex } };
+    const result = await runScan({
+      chain, manifest, client: { ...primary, getBlock: (n) => Promise.resolve({ number: n, hash: blockHash(Number(n) + 10000) as Hex, parentHash: blockHash(Number(n) + 9999) as Hex }) },
+      secondaryClient: chainWith(300, []), cursor,
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal,
+      checkpoints: { load: () => undefined, save: saved, clear: cleared },
+    });
+    expect(result.discrepancies.length).toBeGreaterThan(0);
+    expect(cleared).not.toHaveBeenCalled(); expect(saved).not.toHaveBeenCalled();
+    expect(result.cursor).toEqual(cursor);
   });
 
   it('never defers the first page of a run, so a low non-router budget cannot hold the cursor for good (L3-F4)', async () => {
@@ -910,7 +942,7 @@ describe('two-provider replay-tail checkpoint anchor', () => {
     expect.soft(seen).toEqual([`block_hash_differs@${TAIL.toString()}`]);
 
     const vault = await vaultWithVerifiedRecord(s, sellerKeyId);
-    const invalidated = vi.fn((from: bigint) => vault.invalidateFrom(from));
+    const invalidated = vi.fn((from: bigint, canonical: (height: bigint) => Promise<Hex>) => vault.invalidateFrom(from, [], canonical));
     const resumed = await scan(s, sellerKeyId, {
       client: chainWith(2500, [s.mine.log]), secondaryClient: chainWith(2500, [s.mine.log]),
       cursor: cp.store.load(chain.chainId, sellerKeyId) ?? { nextBlock: 0n }, checkpoints: cp.store, onReorg: invalidated,
@@ -973,7 +1005,7 @@ describe('two-provider replay-tail checkpoint anchor', () => {
     expect(cp.saves).toEqual([]);
   });
 
-  it('still invalidates through the confirmed path after a genuine two-provider reorg of the saved anchor', async () => {
+  it('after a genuine two-provider reorg invalidates only records whose block both providers replaced (L3-F1, L1-03)', async () => {
     const s = setup();
     const sellerKeyId = checkpointKeyId(hexOf(s.keys.spendingPublicKey), hexOf(s.keys.viewingPublicKey));
     const cp = memStore();
@@ -982,11 +1014,33 @@ describe('two-provider replay-tail checkpoint anchor', () => {
     expect(saved?.last).toEqual({ number: TAIL, hash: blockHash(Number(TAIL)) });
     const forked = () => { const base = chainWith(2600, [s.mine.log]); return { ...base, getBlock: (n: bigint) => (n >= TAIL ? fake(n) : base.getBlock(n)) }; };
     const vault = await vaultWithVerifiedRecord(s, sellerKeyId);
-    const invalidated = vi.fn((from: bigint) => vault.invalidateFrom(from));
+    // A second observation in a block the reorg replaced (old hash at height TAIL + 50).
+    const replaced = (await vault.read())[0]!;
+    const orphanHash = blockHash(Number(TAIL) + 50);
+    const { provenance, ...orphanBase } = { ...replaced, blockNumber: String(TAIL + 50n), blockHash: orphanHash, id: replaced.id.replace(replaced.blockHash, orphanHash) };
+    void provenance;
+    await vault.save(orphanBase);
+    const invalidated = vi.fn((from: bigint, canonical: (height: bigint) => Promise<Hex>) => vault.invalidateFrom(from, [], canonical));
     const res = await scan(s, sellerKeyId, { client: forked(), secondaryClient: forked(), cursor: saved!, checkpoints: cp.store, onReorg: invalidated });
     expect(res.discrepancies).toEqual([]);
-    expect(invalidated).toHaveBeenCalledExactlyOnceWith(0n);
-    expect((await vault.read())[0]?.evidenceStatus).toBe('invalidated-after-reorg');
+    expect(invalidated).toHaveBeenCalledOnce();
+    expect(invalidated.mock.calls[0]?.[0]).toBe(0n);
+    const after = await vault.read();
+    // Block 120 kept its hash on both providers: canonical history is not invalidated.
+    expect(after.find((r) => r.blockNumber === '120')?.evidenceStatus).toBe('verified-at-scan');
+    expect(after.find((r) => r.id === orphanBase.id)?.evidenceStatus).toBe('invalidated-after-reorg');
+    vault.lock();
+  });
+
+  it('fails closed, writing nothing, when the two providers disagree about a stored record\'s block during invalidation', async () => {
+    const s = setup();
+    const sellerKeyId = checkpointKeyId(hexOf(s.keys.spendingPublicKey), hexOf(s.keys.viewingPublicKey));
+    const vault = await vaultWithVerifiedRecord(s, sellerKeyId);
+    const forked = (lieAt120: boolean) => { const base = chainWith(2600, []); return { ...base, getBlock: (n: bigint) => (n >= TAIL || (lieAt120 && n === 120n) ? fake(n) : base.getBlock(n)) }; };
+    const invalidated = vi.fn((from: bigint, canonical: (height: bigint) => Promise<Hex>) => vault.invalidateFrom(from, [], canonical));
+    await expect(scan(s, sellerKeyId, { client: forked(false), secondaryClient: forked(true), cursor: { nextBlock: TAIL + 1n, last: { number: TAIL, hash: blockHash(Number(TAIL)) as Hex } }, onReorg: invalidated })).rejects.toThrow(/canonical block hash unavailable/);
+    expect(invalidated).toHaveBeenCalledOnce();
+    expect((await vault.read())[0]?.evidenceStatus).toBe('verified-at-scan');
     vault.lock();
   });
 });

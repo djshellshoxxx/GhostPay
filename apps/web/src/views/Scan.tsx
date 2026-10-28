@@ -183,16 +183,17 @@ export function Scan(): ReactNode {
             found = found.filter((m) => m.announcement.blockNumber < to);
             app.setMatches([...found]);
           },
-          onReorg: async (to) => {
+          onReorg: async (to, canonicalHash) => {
             if (!scopeIsCurrent()) return;
-            const invalidated = [...found, ...quarantined].filter((m) => m.announcement.blockNumber >= to && m.receipt === 'verified' && m.viaRouter && m.metadata !== undefined && m.announcement.transactionHash !== undefined).map((m) => recordFromVerifiedMatch(m, keyId));
+            // Observations of this run, saved or not; only those whose block was replaced are tombstoned.
+            const observed = [...found, ...quarantined].filter((m) => m.announcement.blockNumber >= to && m.receipt === 'verified' && m.viaRouter && m.metadata !== undefined && m.announcement.transactionHash !== undefined).map((m) => recordFromVerifiedMatch(m, keyId));
             found = found.filter((m) => m.announcement.blockNumber < to);
             app.setMatches([...found]);
             try {
               const reconciliation = await createCurrentReconciliationVault(chainId, keyId);
               const lockOnAbort = (): void => { reconciliation.lock(); };
               ctl.signal.addEventListener('abort', lockOnAbort, { once: true });
-              try { if (!scopeIsCurrent()) return; await reconciliation.invalidateFrom(to, invalidated); }
+              try { if (!scopeIsCurrent()) return; await reconciliation.invalidateFrom(to, observed, canonicalHash); }
               finally { ctl.signal.removeEventListener('abort', lockOnAbort); reconciliation.lock(); }
               quarantined = quarantined.filter((m) => m.announcement.blockNumber < to);
             } catch (cause) {
