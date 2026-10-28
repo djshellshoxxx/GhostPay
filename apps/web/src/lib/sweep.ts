@@ -364,22 +364,32 @@ export interface DirectSweepResult {
 }
 
 /**
+ * One receipt read by exact hash: its on-chain status, `absent` when the RPC answered an explicit `null` (no receipt), or
+ * `unknown` for an RPC error, malformed data or a receipt for another hash.
+ */
+async function readReceipt(rpc: Rpc, hash: Hex): Promise<'included' | 'reverted' | 'absent' | 'unknown'> {
+  let receipt: unknown;
+  try {
+    receipt = await rpc.request('eth_getTransactionReceipt', [hash]);
+  } catch {
+    return 'unknown';
+  }
+  if (receipt === null) return 'absent';
+  if (typeof receipt !== 'object') return 'unknown';
+  const r = receipt as { transactionHash?: unknown; status?: unknown };
+  if (typeof r.transactionHash !== 'string' || r.transactionHash.toLowerCase() !== hash) return 'unknown';
+  if (r.status === '0x1') return 'included';
+  if (r.status === '0x0') return 'reverted';
+  return 'unknown';
+}
+
+/**
  * Read-only receipt lookup by the exact expected hash through the configured RPC. A missing receipt, an RPC error or a
  * receipt for another hash leaves the attempt unchanged: absence is never proof that the transaction was not sent.
  */
 export async function reconcileDirectSweep<T extends { readonly expectedHash: Hex; readonly status: SweepLockStatus }>(rpc: Rpc, attempt: T): Promise<T> {
-  let receipt: unknown;
-  try {
-    receipt = await rpc.request('eth_getTransactionReceipt', [attempt.expectedHash]);
-  } catch {
-    return attempt;
-  }
-  if (typeof receipt !== 'object' || receipt === null) return attempt;
-  const r = receipt as { transactionHash?: unknown; status?: unknown };
-  if (typeof r.transactionHash !== 'string' || r.transactionHash.toLowerCase() !== attempt.expectedHash) return attempt;
-  if (r.status === '0x1') return { ...attempt, status: 'included' };
-  if (r.status === '0x0') return { ...attempt, status: 'reverted' };
-  return attempt;
+  const look = await readReceipt(rpc, attempt.expectedHash);
+  return look === 'included' || look === 'reverted' ? { ...attempt, status: look } : attempt;
 }
 
 async function nonceUsedAt(rpc: Rpc, owner: Address, order: RelayedOrderRef, block: string | { readonly blockHash: Hex; readonly requireCanonical: true }): Promise<boolean> {
@@ -423,7 +433,8 @@ export async function reconcileRelayedOrder<T extends { readonly owner: Address;
  *
  * A direct lock whose hash has no receipt resolves as `replaced` once the owner's nonce is used at the finalized block:
  * after a same-nonce re-sign an earlier attempt may be the transaction that was mined, and no transaction with that
- * nonce can follow it. A failed nonce read leaves the lock unchanged.
+ * nonce can follow it. That takes an explicit "no receipt" answer read after the nonce check; a failed nonce read, or a
+ * failed or malformed receipt read, leaves the lock unchanged.
  */
 export async function reconcileSweepLock<T extends SweepLock>(rpc: Rpc, lock: T): Promise<T> {
   if (lock.order !== undefined) return reconcileRelayedOrder(rpc, lock);
@@ -433,9 +444,11 @@ export async function reconcileSweepLock<T extends SweepLock>(rpc: Rpc, lock: T)
   if (next.status === 'reverted' && lock.nonce === undefined) return lock;
   if (next.status !== lock.status) return { ...lock, status: next.status };
   if (lock.nonce === undefined || !isUnresolvedAttempt(lock) || !(await nonceFinal(rpc, lock.owner, lock.nonce))) return lock;
-  // Look once more now that the nonce is final: a receipt for the recorded hash still wins.
-  const again = await reconcileDirectSweep(rpc, { expectedHash, status: lock.status });
-  return { ...lock, status: again.status === lock.status ? 'replaced' : again.status };
+  // Look once more now that the nonce is final: a receipt for the recorded hash still wins, and an RPC error or a
+  // malformed answer proves nothing (B-R1).
+  const again = await readReceipt(rpc, expectedHash);
+  if (again === 'included' || again === 'reverted') return { ...lock, status: again };
+  return again === 'absent' ? { ...lock, status: 'replaced' } : lock;
 }
 
 /** True only when the RPC reports the owner's nonce above `nonce` at the finalized block; a failed read means "not known". */

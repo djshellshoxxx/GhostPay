@@ -759,9 +759,14 @@ describe('L2-F2: a direct lock whose nonce is final without its own receipt reso
   const OWNER = '0x5555555555555555555555555555555555555555' as Address;
   const H = `0x${'ab'.repeat(32)}` as const;
   const lock: SweepLock = { chainId: 84532, owner: OWNER, nonce: 3, expectedHash: H, status: 'unknown-after-handoff' };
+  /** `receipts` answers the receipt reads in order (an Error is thrown); once used up, every read answers null. */
   const rpc = (finalized: string | Error, receipts: unknown[] = []) =>
     mockRpc(84532, (m, p) => {
-      if (m === 'eth_getTransactionReceipt') return receipts.shift() ?? null;
+      if (m === 'eth_getTransactionReceipt') {
+        const r = receipts.shift() ?? null;
+        if (r instanceof Error) throw r;
+        return r;
+      }
       if (m === 'eth_getTransactionCount') {
         expect(p).toEqual([OWNER, 'finalized']);
         if (finalized instanceof Error) throw finalized;
@@ -782,6 +787,16 @@ describe('L2-F2: a direct lock whose nonce is final without its own receipt reso
   it('a receipt for the recorded hash still wins, also when it appears on the second look', async () => {
     expect((await reconcileSweepLock(rpc('0x4', [{ transactionHash: H, status: '0x1' }]), lock)).status).toBe('included');
     expect((await reconcileSweepLock(rpc('0x4', [null, { transactionHash: H, status: '0x0' }]), lock)).status).toBe('reverted');
+  });
+  it('B-R1: a failed or malformed receipt read at the final look never concludes replaced', async () => {
+    const limited = new ChainAdapterError('RPC_FAILURE', 'http status 429');
+    // Every receipt read fails while the finalized nonce (4) is past the locked one (3): the locked tx may be the mined one.
+    expect(await reconcileSweepLock(rpc('0x4', [limited, limited]), lock)).toBe(lock);
+    for (const bad of [limited, '0x1', 7, [], { transactionHash: H }, { transactionHash: H, status: '0x2' }, { transactionHash: `0x${'cd'.repeat(32)}`, status: '0x1' }]) {
+      expect(await reconcileSweepLock(rpc('0x4', [null, bad]), lock)).toBe(lock);
+    }
+    // Only an explicit "no receipt" for the locked hash, read after the nonce is final, means it can never be mined.
+    expect((await reconcileSweepLock(rpc('0x4', [limited, null]), lock)).status).toBe('replaced');
   });
   it('never applies to a legacy relayed lock (no owner nonce)', async () => {
     const legacy: SweepLock = { chainId: 84532, owner: OWNER, expectedHash: H, status: 'submitted' };
