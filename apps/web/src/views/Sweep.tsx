@@ -11,7 +11,7 @@ import { checkDestination, directSweep, DirectSweepOutcomeUnknownError, getSweep
 import { authorizeEncryptedVault, readEncryptedVault } from '../lib/keyVault';
 import { captureSessionGuard } from '../lib/session';
 import { useServices } from '../lib/services';
-import { getSweepAttempt, isSweepJournalBroken, recordSweepAttempt, useApp, useSweepAttempt, useSweepJournalBroken } from '../state';
+import { beginSweepAttempt, getSweepAttempt, isSweepJournalBroken, recordSweepAttempt, useApp, useSweepAttempt, useSweepJournalBroken } from '../state';
 import { SweepJournalUnavailableError } from '../lib/sweepAttemptJournal';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 
@@ -169,7 +169,7 @@ export function Sweep(): ReactNode {
       const submitted = await relayedSweep({ target: { ...target, token: tokenAddr }, manifest: loaded, destination: dest, amount: balance, quote: quote.quote, relayerUrl: app.settings.relayerUrl, rpc, nowSeconds: nowSec, fetchFn: services.fetchFn });
       setHash(submitted);
       // The relayed transaction may still land: keep signing disarmed for this address until its status is checked.
-      recordSweepAttempt({ chainId, owner: target.owner, destination: dest, asset: tokenAddr, amount: balance, expectedHash: submitted.toLowerCase() as `0x${string}`, status: 'submitted' });
+      recordSweepAttempt({ chainId, owner: target.owner, expectedHash: submitted.toLowerCase() as `0x${string}`, status: 'submitted' });
       app.announce(t('sweep.announceRelayer'));
       return true;
     });
@@ -187,9 +187,9 @@ export function Sweep(): ReactNode {
       assertNoUnresolvedAttempt();
       let res: Awaited<ReturnType<typeof directSweep>>;
       try {
-        res = await directSweep({ target, manifest: loaded, destination: dest, amount: balance, rpc });
+        res = await directSweep({ target, manifest: loaded, destination: dest, amount: balance, rpc, onBeforeHandoff: beginSweepAttempt });
       } catch (e) {
-        // The bytes may already be on the network: keep the public descriptor so signing stays disarmed.
+        // The bytes may already be on the network: keep the lock (already persisted before handoff) disarmed.
         if (e instanceof DirectSweepOutcomeUnknownError) recordSweepAttempt(e.attempt);
         throw e;
       }

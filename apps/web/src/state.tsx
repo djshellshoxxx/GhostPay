@@ -1,8 +1,8 @@
 import { createContext, useContext, useSyncExternalStore } from 'react';
 import type { RpcClient } from '@ghostpay/chain-adapters';
 import type { ScanMatch } from './lib/scanClient';
-import type { DirectSweepAttempt } from './lib/sweep';
-import { browserSweepStorage, readSweepAttempts, SWEEP_JOURNAL_KEY, sweepAttemptKey, writeSweepAttempt } from './lib/sweepAttemptJournal';
+import type { SweepLock } from './lib/sweep';
+import { browserSweepStorage, readSweepAttempts, SWEEP_JOURNAL_KEY, sweepAttemptKey, SweepJournalUnavailableError, toSweepLock, writeSweepAttempt } from './lib/sweepAttemptJournal';
 import type { SessionPublic } from './lib/session';
 import type { Settings } from './lib/settings';
 
@@ -59,9 +59,10 @@ export function useApp(): AppState {
  * navigating away and back cannot re-arm signing after an uncertain broadcast. It holds only the public descriptor
  * (never key material). Every record is written through to the tab-scoped journal (sessionStorage), so a reload of
  * this tab keeps signing disarmed; other tabs do not see it (recorded limit). If the journal cannot be read or
- * written, signing is disarmed for the rest of this page session instead of trusting memory alone.
+ * written, signing is disarmed for the rest of this page session instead of trusting memory alone. Direct sweeps
+ * persist the lock before handoff (beginSweepAttempt); relayed sweeps record it once the relayer returns a hash.
  */
-const sweepAttempts = new Map<string, DirectSweepAttempt>();
+const sweepAttempts = new Map<string, SweepLock>();
 const sweepAttemptListeners = new Set<() => void>();
 let sweepJournalHydrated = false;
 let sweepJournalBroken = false;
@@ -82,9 +83,29 @@ function hydrateSweepAttempts(): void {
   }
 }
 
-export function recordSweepAttempt(attempt: DirectSweepAttempt): void {
+/**
+ * Persists the lock BEFORE the signed bytes leave the page. Throws (and records nothing) when the tab journal cannot
+ * hold it, so the caller aborts without broadcasting.
+ */
+export function beginSweepAttempt(attempt: SweepLock): void {
   hydrateSweepAttempts();
-  sweepAttempts.set(sweepAttemptKey(attempt.chainId, attempt.owner), attempt);
+  if (sweepJournalBroken) throw new SweepJournalUnavailableError();
+  const storage = browserSweepStorage();
+  if (storage === undefined) throw new SweepJournalUnavailableError();
+  try {
+    writeSweepAttempt(attempt, storage);
+  } catch (e) {
+    if (e instanceof SweepJournalUnavailableError) { sweepJournalBroken = true; notifySweepAttempts(); }
+    throw e;
+  }
+  sweepAttempts.set(sweepAttemptKey(attempt.chainId, attempt.owner), toSweepLock(attempt));
+  notifySweepAttempts();
+}
+
+/** Records an outcome after handoff. Memory always keeps it; a failed write disarms signing for this page. */
+export function recordSweepAttempt(attempt: SweepLock): void {
+  hydrateSweepAttempts();
+  sweepAttempts.set(sweepAttemptKey(attempt.chainId, attempt.owner), toSweepLock(attempt));
   try {
     const storage = browserSweepStorage();
     if (storage !== undefined) writeSweepAttempt(attempt, storage);
@@ -94,7 +115,7 @@ export function recordSweepAttempt(attempt: DirectSweepAttempt): void {
   notifySweepAttempts();
 }
 
-export function getSweepAttempt(chainId: number, owner: string): DirectSweepAttempt | undefined {
+export function getSweepAttempt(chainId: number, owner: string): SweepLock | undefined {
   hydrateSweepAttempts();
   return sweepAttempts.get(sweepAttemptKey(chainId, owner));
 }
@@ -111,7 +132,7 @@ const subscribeSweepAttempts = (listener: () => void): (() => void) => {
 };
 
 /** The latest direct-sweep attempt from this stealth address in this tab, if any. */
-export function useSweepAttempt(chainId: number | undefined, owner: string | undefined): DirectSweepAttempt | undefined {
+export function useSweepAttempt(chainId: number | undefined, owner: string | undefined): SweepLock | undefined {
   return useSyncExternalStore(
     subscribeSweepAttempts,
     () => (chainId === undefined || owner === undefined ? undefined : getSweepAttempt(chainId, owner)),

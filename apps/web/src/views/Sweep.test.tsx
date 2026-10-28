@@ -34,7 +34,7 @@ const TOKEN = '0x036CbD53842c5426634e7929541eC2318f3dCF7e';
 const VAULT_PASS = 'violet comet maple lantern';
 let vaultStore = new MemoryKeyVaultStore();
 
-interface RawSink { raw?: string; sendFail?: boolean; calls?: string[] }
+interface RawSink { raw?: string; sendFail?: boolean; sendHang?: boolean; receiptOk?: boolean; calls?: string[] }
 
 function extra(balance: bigint, nativeBalance: bigint, rawSink: RawSink) {
   return (method: string, params: readonly unknown[]): unknown => {
@@ -51,7 +51,10 @@ function extra(balance: bigint, nativeBalance: bigint, rawSink: RawSink) {
       case 'eth_sendRawTransaction':
         rawSink.raw = params[0] as string;
         if (rawSink.sendFail === true) throw new ChainAdapterError('RPC_FAILURE', 'connection reset after write');
+        if (rawSink.sendHang === true) return new Promise(() => undefined);
         return keccak256(params[0] as `0x${string}`);
+      case 'eth_getTransactionReceipt':
+        return rawSink.receiptOk === true && rawSink.raw !== undefined ? { transactionHash: keccak256(rawSink.raw as `0x${string}`), status: '0x1' } : null;
       case 'eth_call': {
         const data = (params[0] as { data: string }).data;
         if (data.startsWith('0x70a08231')) return `0x${balance.toString(16).padStart(64, '0')}`;
@@ -316,5 +319,57 @@ describe('Sweep', () => {
     expect(sign.disabled).toBe(true);
     await user.click(sign);
     expect(sink.calls ?? []).not.toContain('eth_sendRawTransaction');
+  });
+
+  it('GP-SWEEP-OUTCOME-01: the lock is persisted before handoff, so a reload during a pending send stays disarmed; resolving it re-arms', async () => {
+    const sink: RawSink = { sendHang: true, calls: [] };
+    const user = await toSweep({ raw: sink });
+    await screen.findByText('5 USDC');
+    await user.click(screen.getByLabelText(/Directly/));
+    await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    await waitFor(() => { expect(sink.calls).toContain('eth_sendRawTransaction'); });
+    const expectedHash = keccak256(sink.raw as `0x${string}`);
+    expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toContain(expectedHash);
+    expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).not.toContain(DEST.slice(2));
+
+    // Reload while eth_sendRawTransaction is still pending.
+    appState.resetSweepAttemptsForTests({ keepStorage: true });
+    const nav = within(screen.getByRole('navigation', { name: 'Main' }));
+    await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
+    await user.click(nav.getByRole('button', { name: 'Sweep' }));
+    await screen.findByText('5 USDC');
+    await user.click(screen.getByLabelText(/Directly/));
+    expect(screen.getByText('Outcome unknown')).toBeTruthy();
+    await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+
+    sink.receiptOk = true;
+    await user.click(screen.getByRole('button', { name: 'Check status' }));
+    expect(await screen.findByText('Included on chain')).toBeTruthy();
+    expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toContain('"included"');
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(false);
+  });
+
+  it('GP-SWEEP-OUTCOME-01: if the lock cannot be persisted before handoff, nothing is broadcast', async () => {
+    const sink: RawSink = { calls: [] };
+    const user = await toSweep({ raw: sink });
+    await screen.findByText('5 USDC');
+    await user.click(screen.getByLabelText(/Directly/));
+    await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+    const proto = Object.getPrototypeOf(window.sessionStorage) as Storage;
+    const original = proto.setItem;
+    proto.setItem = function (this: Storage, k: string, v: string): void {
+      if (k === SWEEP_JOURNAL_KEY) throw new DOMException('quota', 'QuotaExceededError');
+      original.call(this, k, v);
+    };
+    try {
+      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      expect(await screen.findByText('Signing disabled in this tab')).toBeTruthy();
+    } finally {
+      proto.setItem = original;
+    }
+    expect(sink.calls ?? []).not.toContain('eth_sendRawTransaction');
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
   });
 });

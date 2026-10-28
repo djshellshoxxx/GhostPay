@@ -257,6 +257,11 @@ export interface DirectSweepInput {
   /** For ERC-20 the amount to move; for native the whole balance minus gas is moved and this is the balance. */
   readonly amount: bigint;
   readonly rpc: Rpc;
+  /**
+   * Called with the `unknown-after-handoff` attempt immediately before the signed bytes are handed to the RPC. It must
+   * persist the lock; if it throws, nothing is broadcast and the error propagates.
+   */
+  readonly onBeforeHandoff?: (attempt: DirectSweepAttempt) => void;
 }
 
 /**
@@ -277,8 +282,11 @@ export interface DirectSweepAttempt {
   readonly status: 'submitted' | 'unknown-after-handoff' | 'included' | 'reverted';
 }
 
+/** The fields a signing lock needs; the persisted journal keeps only these (no destination or amount). */
+export type SweepLock = Pick<DirectSweepAttempt, 'chainId' | 'owner' | 'nonce' | 'expectedHash' | 'status'>;
+
 /** True while an attempt may still land; signing a new transaction from the same address must stay disarmed. */
-export function isUnresolvedAttempt(a: DirectSweepAttempt): boolean {
+export function isUnresolvedAttempt(a: Pick<DirectSweepAttempt, 'status'>): boolean {
   return a.status === 'unknown-after-handoff' || a.status === 'submitted';
 }
 
@@ -304,7 +312,7 @@ export interface DirectSweepResult {
  * Read-only receipt lookup by the exact expected hash through the configured RPC. A missing receipt, an RPC error or a
  * receipt for another hash leaves the attempt unchanged: absence is never proof that the transaction was not sent.
  */
-export async function reconcileDirectSweep(rpc: Rpc, attempt: DirectSweepAttempt): Promise<DirectSweepAttempt> {
+export async function reconcileDirectSweep<T extends Pick<DirectSweepAttempt, 'expectedHash' | 'status'>>(rpc: Rpc, attempt: T): Promise<T> {
   let receipt: unknown;
   try {
     receipt = await rpc.request('eth_getTransactionReceipt', [attempt.expectedHash]);
@@ -398,6 +406,7 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
     const attempt: DirectSweepAttempt = { chainId, owner, nonce, destination: i.destination, asset: token, amount: sent, expectedHash, status: 'unknown-after-handoff' };
     // Last pre-handoff checkpoint: a failure up to here means the signed bytes never left this page.
     assertSessionUnchanged();
+    i.onBeforeHandoff?.(attempt);
     let hash: unknown;
     try {
       hash = await i.rpc.request('eth_sendRawTransaction', [raw]);
