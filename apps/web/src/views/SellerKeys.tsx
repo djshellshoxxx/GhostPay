@@ -1,19 +1,43 @@
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
 import { TagArchive } from '../components/TagArchive';
 import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
 import { userMessage } from '../lib/errors';
 import { MAX_KEYSTORE_BYTES, passphraseProblem, validateKeystoreEnvelope } from '../lib/keystore';
-import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, importKeystore, importSession } from '../lib/session';
-import { deleteEncryptedVault, readEncryptedVault, saveEncryptedVault, unlockEncryptedVault, VaultChangedError, VaultSavedForPreviousKeysError } from '../lib/keyVault';
+import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, getSessionBackup, importKeystore, importSession, markKeystoreDownloaded, subscribeSessionBackup, waiveSessionBackup } from '../lib/session';
+import { authorizeKeyExport, deleteEncryptedVault, readEncryptedVault, saveEncryptedVault, unlockEncryptedVault, VaultChangedError, vaultMetaAddress, VaultSavedForPreviousKeysError } from '../lib/keyVault';
 import { useApp } from '../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
+
+/**
+ * Stands in for `children` (the meta-address, an invoice form) while the loaded keys have no backup and the seller has not
+ * typed the waiver (L1-01): every payment those invite is lost if the tab closes before a backup exists. The app-wide
+ * backup banner above it offers "Back up now".
+ */
+export function BackupGate(props: { readonly children: ReactNode }): ReactNode {
+  const app = useApp();
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
+  const backup = useSyncExternalStore(subscribeSessionBackup, getSessionBackup);
+  const [typed, setTyped] = useState('');
+  useEffect(() => { setTyped(''); }, [app.session]);
+  if (backup === undefined || backup.backedUp || backup.waived) return props.children;
+  const phrase = t('backupGate.waiverPhrase');
+  return (
+    <div className="panel">
+      <Notice kind="warn" title={t('backupGate.title')}>{t('backupGate.body')}</Notice>
+      <Field label={t('backupGate.waiverLabel', { phrase })}>{(id) => <input id={id} autoComplete="off" spellCheck={false} value={typed} onChange={(e) => { setTyped(e.target.value); }} />}</Field>
+      <button type="button" className="btn" disabled={typed.trim().toLowerCase() !== phrase.toLowerCase()} onClick={() => { waiveSessionBackup(); }}>{t('backupGate.waive')}</button>
+    </div>
+  );
+}
 
 export function SellerKeys(): ReactNode {
   const app = useApp();
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
+  const backup = useSyncExternalStore(subscribeSessionBackup, getSessionBackup);
   const [message, setMessage] = useState<{ kind: 'ok' | 'error'; text: string } | undefined>(undefined);
   const [busy, setBusy] = useState(false);
   const [spend, setSpend] = useState('');
@@ -28,23 +52,32 @@ export function SellerKeys(): ReactNode {
   const [file, setFile] = useState<File | undefined>(undefined);
   const [backupQr, setBackupQr] = useState<string | undefined>(undefined);
   const [vaultState, setVaultState] = useState<'checking' | 'empty' | 'saved' | 'unavailable'>('checking');
+  // Public meta-address named by the saved vault, if it is a readable keystore.
+  const [vaultMeta, setVaultMeta] = useState<string | undefined>(undefined);
   const [vaultSavePass, setVaultSavePass] = useState('');
   const [vaultSavePass2, setVaultSavePass2] = useState('');
   const [vaultUnlockPass, setVaultUnlockPass] = useState('');
   const [vaultBusy, setVaultBusy] = useState(false);
+  // Step-up passphrases of the vault the loaded keys are tied to (L1-02), and the delete confirmation's passphrase.
+  const [exportStepUp, setExportStepUp] = useState('');
+  const [saveStepUp, setSaveStepUp] = useState('');
+  const [deletePass, setDeletePass] = useState('');
+  // Unlocking would replace keys that have no backup; set once the user asked to unlock anyway (L1-01).
+  const [confirmReplace, setConfirmReplace] = useState(false);
   // The exact ciphertext shown when deletion was requested; Confirm deletes only this record. Never plaintext keys.
   const [deleteExpected, setDeleteExpected] = useState<string | undefined>(undefined);
   const confirmVaultDelete = deleteExpected !== undefined;
   const saveOperation = useRef(0);
 
+  // Read again for every key change: a saved vault for the keys loaded now arms their step-up (L1-02).
   useEffect(() => {
     let live = true;
     void readEncryptedVault().then(
-      (saved) => { if (live) setVaultState(saved === undefined ? 'empty' : 'saved'); },
+      (saved) => { if (live) { setVaultState(saved === undefined ? 'empty' : 'saved'); setVaultMeta(saved === undefined ? undefined : vaultMetaAddress(saved)); } },
       () => { if (live) setVaultState('unavailable'); },
     );
     return () => { live = false; };
-  }, []);
+  }, [app.session]);
 
   const cancelImport = (): void => {
     operation.current?.abort(); operation.current = null;
@@ -58,6 +91,7 @@ export function SellerKeys(): ReactNode {
     operation.current?.abort(); operation.current = null;
     setBackupQr(undefined); setBusy(false); setVaultBusy(false);
     setPass(''); setPass2(''); setImportPass(''); setVaultUnlockPass(''); setImportText(undefined); setFile(undefined);
+    setExportStepUp(''); setSaveStepUp(''); setDeletePass(''); setConfirmReplace(false); setDeleteExpected(undefined);
   }, [app.session]);
   const startOperation = (): AbortController => {
     operation.current?.abort();
@@ -99,21 +133,30 @@ export function SellerKeys(): ReactNode {
     }
     const controller = startOperation();
     const unchanged = captureSessionVersionGuard();
+    const stepUp = exportStepUp;
     setBusy(true);
     setMessage({ kind: 'ok', text: t('sellerKeys.encrypting') });
-    exportKeystore(pass).then(
+    void (async () => {
+      // Keys tied to a vault leave this tab only with that vault's passphrase (L1-02).
+      await authorizeKeyExport(stepUp);
+      return exportKeystore(pass);
+    })().then(
       (text) => {
         if (!currentOperation(controller)) return;
         try { unchanged(); } catch (error) { setBusy(false); fail(error); return; }
         downloadText('ghostpay-keystore.json', text, 'application/json');
+        // A downloaded keystore is a copy outside this tab: the idle lock may wipe these keys from now on (L1-01).
+        markKeystoreDownloaded(unchanged);
         setBackupQr(text);
         setPass('');
         setPass2('');
+        setExportStepUp('');
         setBusy(false);
         done(t('sellerKeys.keystoreDownloaded'));
       },
       (err: unknown) => {
         if (!currentOperation(controller)) return;
+        setExportStepUp('');
         setBusy(false);
         fail(err);
       },
@@ -154,19 +197,23 @@ export function SellerKeys(): ReactNode {
     // Only the initiating save may report; it may claim success only for the keys that were loaded when it started.
     const current = (): boolean => mounted.current && saveOperation.current === id;
     setVaultBusy(true);
-    void saveEncryptedVault(vaultSavePass).then(
+    const stepUp = saveStepUp;
+    void saveEncryptedVault(vaultSavePass, {}, undefined, stepUp).then(
       () => {
         if (!current()) return;
         setVaultSavePass('');
         setVaultSavePass2('');
+        setSaveStepUp('');
         setVaultState('saved');
         setVaultBusy(false);
         try { unchanged(); } catch { fail(new VaultSavedForPreviousKeysError()); return; }
+        refreshVault();
         done(t('sellerKeys.vaultSaved'));
       },
       (err: unknown) => {
         if (!current()) return;
         setVaultBusy(false);
+        setSaveStepUp('');
         if (err instanceof VaultSavedForPreviousKeysError) { setVaultSavePass(''); setVaultSavePass2(''); setVaultState('saved'); }
         fail(err);
       },
@@ -175,9 +222,16 @@ export function SellerKeys(): ReactNode {
 
   const onUnlockVault = (e: FormEvent): void => {
     e.preventDefault();
+    // Unlocking replaces the loaded keys; keys with no backup would be lost with every payment to them (L1-01).
+    if (getSessionBackup()?.backedUp === false) { setConfirmReplace(true); return; }
+    unlockVault(false);
+  };
+
+  const unlockVault = (replaceUnsavedKeys: boolean): void => {
     const controller = startOperation();
+    setConfirmReplace(false);
     setVaultBusy(true);
-    void unlockEncryptedVault(vaultUnlockPass, undefined, controller.signal).then(
+    void unlockEncryptedVault(vaultUnlockPass, undefined, controller.signal, { replaceUnsavedKeys }).then(
       () => {
         if (!currentOperation(controller)) return;
         setVaultUnlockPass('');
@@ -196,7 +250,7 @@ export function SellerKeys(): ReactNode {
 
   const refreshVault = (): void => {
     void readEncryptedVault().then(
-      (saved) => { if (mounted.current) setVaultState(saved === undefined ? 'empty' : 'saved'); },
+      (saved) => { if (mounted.current) { setVaultState(saved === undefined ? 'empty' : 'saved'); setVaultMeta(saved === undefined ? undefined : vaultMetaAddress(saved)); } },
       () => { if (mounted.current) setVaultState('unavailable'); },
     );
   };
@@ -206,6 +260,7 @@ export function SellerKeys(): ReactNode {
       (saved) => {
         if (!mounted.current) return;
         if (saved === undefined) { setVaultState('empty'); return; }
+        setDeletePass('');
         setDeleteExpected(saved);
       },
       (err: unknown) => { if (mounted.current) fail(err); },
@@ -215,11 +270,13 @@ export function SellerKeys(): ReactNode {
   const onDeleteVault = (): void => {
     const expected = deleteExpected;
     if (expected === undefined) return;
+    const passphrase = deletePass;
     setVaultBusy(true);
-    void deleteEncryptedVault(expected).then(
+    void deleteEncryptedVault(expected, undefined, passphrase).then(
       () => {
         if (!mounted.current) return;
         setDeleteExpected(undefined);
+        setDeletePass('');
         setVaultState('empty');
         setVaultBusy(false);
         refreshVault();
@@ -228,6 +285,7 @@ export function SellerKeys(): ReactNode {
       (err: unknown) => {
         if (!mounted.current) return;
         setVaultBusy(false);
+        setDeletePass('');
         if (err instanceof VaultChangedError) { setDeleteExpected(undefined); refreshVault(); }
         fail(err);
       },
@@ -235,6 +293,10 @@ export function SellerKeys(): ReactNode {
   };
 
   const s = app.session;
+  // Keys tied to a vault, or with a saved vault for the same meta-address, need its passphrase to be exported (L1-02).
+  const stepUpNeeded = backup?.vaultStepUp === true || (s !== undefined && vaultState === 'saved' && vaultMeta === s.metaAddress);
+  const deleteMeta = deleteExpected === undefined ? undefined : vaultMetaAddress(deleteExpected);
+  const deletesLoadedKeys = s !== undefined && deleteMeta === s.metaAddress;
   return (
     <section aria-labelledby="keys-h">
       <h2 id="keys-h">{t('sellerKeys.title')}</h2>
@@ -253,17 +315,34 @@ export function SellerKeys(): ReactNode {
           <h3 id="vault-unlock-h">{t('sellerKeys.vaultSavedHeading')}</h3>
           <p>{t('sellerKeys.unlockExplain')}</p>
           <form onSubmit={onUnlockVault} className="stack" autoComplete="off">
-            <Field label={t('sellerKeys.vaultPassphrase')}>{(id) => <input id={id} type="password" autoComplete="current-password" value={vaultUnlockPass} onChange={(e) => { if (vaultBusy) { operation.current?.abort(); setVaultBusy(false); } setVaultUnlockPass(e.target.value); }} />}</Field>
+            <Field label={t('sellerKeys.vaultPassphrase')}>{(id) => <input id={id} type="password" autoComplete="current-password" value={vaultUnlockPass} onChange={(e) => { if (vaultBusy) { operation.current?.abort(); setVaultBusy(false); } setConfirmReplace(false); setVaultUnlockPass(e.target.value); }} />}</Field>
             <button type="submit" className="btn" disabled={vaultBusy || vaultUnlockPass === ''}>{t('sellerKeys.unlockVault')}</button>
             {vaultBusy && operation.current !== null && <button type="button" className="btn" onClick={cancelImport}>{t('sellerKeys.cancelUnlock')}</button>}
           </form>
+          {confirmReplace && (
+            <Notice kind="warn" title={t('sellerKeys.unlockReplaces.title')}>
+              <p>{t('sellerKeys.unlockReplaces.body')}</p>
+              <button type="button" className="btn btn-danger" disabled={vaultBusy} onClick={() => { unlockVault(true); }}>{t('sellerKeys.unlockReplaces.confirm')}</button>{' '}
+              <button type="button" className="btn" onClick={() => { setConfirmReplace(false); }}>{t('sellerKeys.cancel')}</button>
+            </Notice>
+          )}
           {!confirmVaultDelete ? (
             <button type="button" className="btn btn-danger" disabled={vaultBusy} onClick={onRequestDeleteVault}>{t('sellerKeys.deleteVault')}</button>
           ) : (
             <div>
               <p>{t('sellerKeys.deleteExplain')}</p>
-              <button type="button" className="btn btn-danger" disabled={vaultBusy} onClick={onDeleteVault}>{t('sellerKeys.confirmDelete')}</button>{' '}
-              <button type="button" className="btn" onClick={() => { setDeleteExpected(undefined); }}>{t('sellerKeys.cancel')}</button>
+              {deleteMeta === undefined ? <p>{t('sellerKeys.deleteUnreadable')}</p> : (
+                <>
+                  <p>{t('sellerKeys.deleteHolds')}</p>
+                  <p><Mono>{deleteMeta}</Mono></p>
+                  {s !== undefined && <p>{t(deletesLoadedKeys ? 'sellerKeys.deleteLoaded' : 'sellerKeys.deleteOther')}</p>}
+                </>
+              )}
+              {deletesLoadedKeys && (
+                <Field label={t('sellerKeys.deletePassphrase')}>{(id) => <input id={id} type="password" autoComplete="current-password" value={deletePass} onChange={(e) => { setDeletePass(e.target.value); }} />}</Field>
+              )}
+              <button type="button" className="btn btn-danger" disabled={vaultBusy || (deletesLoadedKeys && deletePass === '')} onClick={onDeleteVault}>{t('sellerKeys.confirmDelete')}</button>{' '}
+              <button type="button" className="btn" onClick={() => { setDeleteExpected(undefined); setDeletePass(''); }}>{t('sellerKeys.cancel')}</button>
             </div>
           )}
         </section>
@@ -305,10 +384,12 @@ export function SellerKeys(): ReactNode {
       ) : (
         <>
           <h3>{t('sellerKeys.metaHeading')}</h3>
-          <p>{t('sellerKeys.metaShare')}</p>
-          <p><Mono>{s.metaAddress}</Mono></p>
-          <QrFrame kind="shareable" text={s.metaAddress} caption={t('sellerKeys.metaCaption')} />
-          <p><CopyButton text={s.metaAddress} label={t('sellerKeys.copyMeta')} /></p>
+          <BackupGate>
+            <p>{t('sellerKeys.metaShare')}</p>
+            <p><Mono>{s.metaAddress}</Mono></p>
+            <QrFrame kind="shareable" text={s.metaAddress} caption={t('sellerKeys.metaCaption')} />
+            <p><CopyButton text={s.metaAddress} label={t('sellerKeys.copyMeta')} /></p>
+          </BackupGate>
           <h3>{t('sellerKeys.signingKeyHeading')}</h3>
           <p><Mono>{s.signerPublicKey}</Mono></p>
           <p className="hint">{t('sellerKeys.payersSee')}</p>
@@ -317,6 +398,11 @@ export function SellerKeys(): ReactNode {
           <form onSubmit={onExport} className="stack" autoComplete="off">
             <Field label={t('sellerKeys.passphraseMin')}>{(id) => <input id={id} type="password" autoComplete="new-password" value={pass} onChange={(e) => { setPass(e.target.value); }} />}</Field>
             <Field label={t('sellerKeys.repeatPassphrase')}>{(id) => <input id={id} type="password" autoComplete="new-password" value={pass2} onChange={(e) => { setPass2(e.target.value); }} />}</Field>
+            {stepUpNeeded && (
+              <Field label={t('sellerKeys.stepUp.label')} hint={t('sellerKeys.stepUp.hint')}>
+                {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="current-password" value={exportStepUp} onChange={(e) => { setExportStepUp(e.target.value); }} />}
+              </Field>
+            )}
             <button type="submit" className="btn" disabled={busy}>{t('sellerKeys.downloadKeystore')}</button>
           </form>
           <p className="hint">{t('sellerKeys.formatNote')}</p>
@@ -336,6 +422,11 @@ export function SellerKeys(): ReactNode {
               <form onSubmit={onSaveVault} className="stack" autoComplete="off">
                 <Field label={t('sellerKeys.newVaultPass')}>{(id) => <input id={id} type="password" autoComplete="new-password" value={vaultSavePass} onChange={(e) => { setVaultSavePass(e.target.value); }} />}</Field>
                 <Field label={t('sellerKeys.repeatVaultPass')}>{(id) => <input id={id} type="password" autoComplete="new-password" value={vaultSavePass2} onChange={(e) => { setVaultSavePass2(e.target.value); }} />}</Field>
+                {backup?.vaultStepUp === true && (
+                  <Field label={t('sellerKeys.stepUp.label')} hint={t('sellerKeys.stepUp.hint')}>
+                    {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="current-password" value={saveStepUp} onChange={(e) => { setSaveStepUp(e.target.value); }} />}
+                  </Field>
+                )}
                 <button type="submit" className="btn" disabled={vaultBusy}>{t('sellerKeys.saveVault')}</button>
               </form>
             ) : vaultState === 'saved' ? (

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { captureSessionGuard, clearSession, exportKeystore, revealViewingKey, withSessionSecrets, withSessionSecretsAsync, generateSession, getSessionPublic, hasSession, importKeystore, importSession, requireSession, subscribeSession } from './session';
+import { armSessionVault, captureSessionGuard, clearSession, exportKeystore, forgetSessionVaultCopy, getSessionBackup, markKeystoreDownloaded, revealViewingKey, sessionVaultRecord, subscribeSessionBackup, waiveSessionBackup, withSessionSecrets, withSessionSecretsAsync, generateSession, getSessionPublic, hasSession, importKeystore, importSession, requireSession, subscribeSession } from './session';
 
 afterEach(() => {
   clearSession();
@@ -197,4 +197,67 @@ it('rejects reuse of an invoice-signing scalar as a spending or viewing key', ()
   for (const signingKeyHex of [HEX_A, HEX_B]) {
     expect(() => importSession({ spendingKeyHex: HEX_A, viewingKeyHex: HEX_B, signingKeyHex })).toThrow(/independent/);
   }
+});
+
+describe('L1-01: backup state of the loaded keys', () => {
+  it('starts unsaved for generated keys and saved for imported ones, and resets with every key change', async () => {
+    expect(getSessionBackup()).toBeUndefined();
+    generateSession();
+    expect(getSessionBackup()).toEqual({ backedUp: false, waived: false, vaultStepUp: false });
+    importSession({ spendingKeyHex: HEX_A, viewingKeyHex: HEX_B });
+    expect(getSessionBackup()).toEqual({ backedUp: true, waived: false, vaultStepUp: false });
+    const text = await exportKeystore('a long passphrase', { N: 1 << 14 });
+    generateSession();
+    expect(getSessionBackup()?.backedUp).toBe(false);
+    await importKeystore(text, 'a long passphrase');
+    expect(getSessionBackup()).toEqual({ backedUp: true, waived: false, vaultStepUp: false });
+    clearSession();
+    expect(getSessionBackup()).toBeUndefined();
+  });
+
+  it('records a downloaded keystore and the typed waiver without signalling a key change', () => {
+    generateSession();
+    const sessionChanged = vi.fn();
+    const backupChanged = vi.fn();
+    const offSession = subscribeSession(sessionChanged);
+    const offBackup = subscribeSessionBackup(backupChanged);
+    const before = getSessionBackup();
+    expect(getSessionBackup()).toBe(before);
+    waiveSessionBackup();
+    expect(getSessionBackup()).toEqual({ backedUp: false, waived: true, vaultStepUp: false });
+    const guard = captureSessionGuard();
+    markKeystoreDownloaded(guard);
+    expect(getSessionBackup()).toEqual({ backedUp: true, waived: true, vaultStepUp: false });
+    const stable = getSessionBackup();
+    markKeystoreDownloaded(guard);
+    expect(getSessionBackup()).toBe(stable);
+    expect(sessionChanged).not.toHaveBeenCalled();
+    expect(backupChanged).toHaveBeenCalledTimes(2);
+    generateSession();
+    expect(() => { markKeystoreDownloaded(guard); }).toThrow(/changed during this action/);
+    expect(getSessionBackup()?.backedUp).toBe(false);
+    expect(sessionChanged).toHaveBeenCalledTimes(1);
+    offSession();
+    offBackup();
+  });
+
+  it('keeps the first vault record armed, replaces it only on request, and forgets only that record\'s copy', () => {
+    generateSession();
+    const guard = captureSessionGuard();
+    armSessionVault('record-a', guard);
+    expect(getSessionBackup()).toEqual({ backedUp: false, waived: false, vaultStepUp: true });
+    armSessionVault('record-b', guard, { stored: true });
+    expect(sessionVaultRecord()).toBe('record-a');
+    expect(getSessionBackup()?.backedUp).toBe(true);
+    armSessionVault('record-b', guard, { replace: true });
+    expect(sessionVaultRecord()).toBe('record-b');
+    forgetSessionVaultCopy('record-a');
+    expect(getSessionBackup()?.backedUp).toBe(true);
+    forgetSessionVaultCopy('record-b');
+    expect(getSessionBackup()).toEqual({ backedUp: false, waived: false, vaultStepUp: true });
+    clearSession();
+    expect(sessionVaultRecord()).toBeUndefined();
+    forgetSessionVaultCopy('record-b');
+    expect(getSessionBackup()).toBeUndefined();
+  });
 });

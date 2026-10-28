@@ -20,8 +20,10 @@
 | Relayer sweep not available | No relayer URL set, token has no `permit`, or relayer does not list the token | Use the direct sweep (needs native coin for gas) or set a relayer. |
 | Relayer returns an error class such as `fee_below_quote`, `quote_expired`, `rate_limited_ip`, `breaker_open`, `budget_exhausted` | Quote older than its lifetime, rate limits, relayer paused itself, or out of daily budget | Request a fresh quote; wait; or use another relayer or the direct path. |
 | Keystore will not import | Wrong passphrase or not a GhostPay keystore | There is no recovery. Try other passphrases you may have used. |
-| Keys disappeared | Tabs forget keys on reload by design | Import your encrypted keystore. |
-| Tags gone | Browser data was cleared, or the vault was wiped; tags are local only | No recovery. There is no encrypted export yet. |
-| Tags locked | Idle lock after the minutes you set in Settings | Unlock with your loaded keys. |
+| Keys disappeared | Tabs forget keys on reload by design. The idle lock (Settings) also wipes keys from memory, but only keys that can be loaded again: imported, downloaded as a keystore, or saved in the browser vault | Import your encrypted keystore, unlock the browser vault, or enter your hex keys again. |
+| Keys still loaded after the idle time, with a "no backup" banner | The keys exist only in this tab, so the idle lock leaves them loaded instead of losing every payment to them | Back them up under Seller keys (download the encrypted keystore). Until then Create invoice and the meta-address need the typed waiver. |
+| Sweep or keystore download asks for a vault passphrase although the vault was deleted | The keys were unlocked from or saved to that vault in this tab; its passphrase stays the step-up until the keys are wiped | Enter that vault's passphrase. |
+| Tags gone | Browser data was cleared, or the vault was wiped; tags are local only | Restore an encrypted tag archive (Seller keys) if you downloaded one; otherwise there is no recovery. |
+| Tags locked | Idle lock after the minutes you set in Settings, or the seller keys were wiped or changed | Unlock with your loaded keys. |
 
 Still stuck? Do not post private keys, seed phrases, keystore files or full invoice links in a public issue. Report suspected vulnerabilities privately (see [SECURITY.md](../../SECURITY.md)).

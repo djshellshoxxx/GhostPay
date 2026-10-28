@@ -3,7 +3,8 @@ import { parseFragment } from '@ghostpay/invoice-schema';
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { clearSession, generateSession } from '../lib/session';
+import { clearSession } from '../lib/session';
+import { generateWaivedSession } from '../test/keys';
 import { checkpointKeyId } from '../lib/scanClient';
 import { registrationFromInvoice } from '../lib/reconciliationMatch';
 import { makeServices, renderApp } from '../test/render';
@@ -37,7 +38,7 @@ async function create(register: boolean, amount = '2') {
 
 describe('Create invoice: opt-in registration for local matching', () => {
   it('does not touch the reconciliation vault unless the seller opts in', async () => {
-    generateSession();
+    generateWaivedSession();
     await create(false);
     await screen.findByLabelText('Link');
     expect(factory.create).not.toHaveBeenCalled();
@@ -45,7 +46,7 @@ describe('Create invoice: opt-in registration for local matching', () => {
   });
 
   it('registers minimized invoice fields in the current seller scope and locks the vault', async () => {
-    const session = generateSession();
+    const session = generateWaivedSession();
     const vault = { registerInvoice: vi.fn().mockResolvedValue(undefined), lock: vi.fn() };
     factory.create.mockResolvedValue(vault);
     await create(true);
@@ -59,7 +60,7 @@ describe('Create invoice: opt-in registration for local matching', () => {
   });
 
   it('keeps the created link and warns when registration fails', async () => {
-    generateSession();
+    generateWaivedSession();
     const vault = { registerInvoice: vi.fn().mockRejectedValue(new Error('vault is read-only')), lock: vi.fn() };
     factory.create.mockResolvedValue(vault);
     const user = await create(true);
@@ -74,7 +75,7 @@ describe('Create invoice: opt-in registration for local matching', () => {
   });
 
   it('shows progress while the vault is opening', async () => {
-    generateSession();
+    generateWaivedSession();
     factory.create.mockReturnValue(new Promise(() => undefined));
     await create(true);
     expect(await screen.findByText(/Registering the invoice/)).toBeTruthy();

@@ -114,7 +114,7 @@ export function Settings(): ReactNode {
         </fieldset>
         <fieldset>
           <legend>{t('settings.safety.legend')}</legend>
-          <Field label={t('settings.lock.label')} hint={t('settings.lock.hint')}>
+          <Field label={t('settings.lock.idleLabel')} hint={t('settings.lock.keysHint')}>
             {(id, d) => <input id={id} aria-describedby={d} type="number" min={1} max={240} value={lock} onChange={(e) => { setLock(Number(e.target.value)); }} />}
           </Field>
           <p className="hint">{t('settings.lock.summary', { minutes: lock })}</p>

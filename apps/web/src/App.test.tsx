@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
-import { act, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { clearSession, generateSession, hasSession, revealViewingKey } from './lib/session';
-import { MemoryKeyVaultStore, setKeyVaultStoreForTests } from './lib/keyVault';
+import { clearSession, generateSession, getSessionPublic, hasSession, importSession, revealViewingKey } from './lib/session';
+import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests, unlockEncryptedVault } from './lib/keyVault';
 import { SETTINGS_KEY } from './lib/settings';
 import { makeServices, renderApp, setHash } from './test/render';
 
@@ -64,7 +64,6 @@ describe('App shell', () => {
     await services.vault.unlock(new Uint8Array(32).fill(3));
     expect(services.vault.unlocked).toBe(true);
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 1 }));
-    const { vi } = await import('vitest');
     vi.useFakeTimers();
     try {
       renderApp(services);
@@ -87,22 +86,77 @@ describe('App shell', () => {
     expect(lock).toHaveBeenCalledTimes(2);
   });
 
-  it('clears seller keys at idle lock while preserving the encrypted vault', async () => {
+  it('clears backed-up seller keys at idle lock, says so visibly and preserves the encrypted vault', async () => {
     const services = makeServices();
     const store = new MemoryKeyVaultStore();
     await store.putIfEmpty('{"ciphertext":"encrypted-only"}');
     setKeyVaultStoreForTests(store);
-    generateSession();
+    importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32) });
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 1 }));
-    const { vi } = await import('vitest');
     vi.useFakeTimers();
     try {
       renderApp(services);
       expect(hasSession()).toBe(true);
-      vi.advanceTimersByTime(61_000);
+      await act(async () => { await vi.advanceTimersByTimeAsync(61_000); });
       expect(hasSession()).toBe(false);
       expect(services.vault.unlocked).toBe(false);
       expect(await store.get()).toBe('{"ciphertext":"encrypted-only"}');
+      expect(screen.getByText(/Seller keys were wiped from memory after 1 minute without activity/)).toBeTruthy();
+    } finally {
+      vi.useRealTimers();
+      setKeyVaultStoreForTests(undefined);
+    }
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: 'Dismiss' }));
+    expect(screen.queryByText(/Seller keys were wiped from memory/)).toBeNull();
+  });
+
+  it('L1-01: the idle lock never wipes keys that exist nowhere else and keeps a visible backup banner', async () => {
+    const services = makeServices();
+    setKeyVaultStoreForTests(new MemoryKeyVaultStore());
+    const pub = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 15 }));
+    vi.useFakeTimers();
+    try {
+      renderApp(services);
+      await act(async () => { await services.vault.unlock(revealViewingKey()); });
+      await act(async () => { await vi.advanceTimersByTimeAsync(15 * 60_000 + 1000); });
+      expect(hasSession()).toBe(true);
+      expect(getSessionPublic()?.metaAddress).toBe(pub.metaAddress);
+      expect(services.vault.unlocked).toBe(false);
+      const banner = screen.getByText('These seller keys have no backup').closest('.notice');
+      expect(banner?.closest('.sr-only')).toBeNull();
+      expect(document.querySelector('[role="status"][aria-live]')?.textContent).toBe('Local tags locked after inactivity. Seller keys stay loaded because they have no backup yet.');
+    } finally {
+      vi.useRealTimers();
+      setKeyVaultStoreForTests(undefined);
+    }
+  });
+
+  it('L1-01: wipes vault-only keys at idle lock while their vault is saved, and keeps them once another tab deleted it', async () => {
+    const store = new MemoryKeyVaultStore();
+    setKeyVaultStoreForTests(store);
+    generateSession();
+    await saveEncryptedVault('violet comet maple lantern', { N: 1 << 14 });
+    const record = (await store.get())!;
+    clearSession();
+    await unlockEncryptedVault('violet comet maple lantern');
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 1 }));
+    vi.useFakeTimers();
+    try {
+      renderApp(makeServices());
+      await act(async () => { await vi.advanceTimersByTimeAsync(61_000); });
+      expect(hasSession()).toBe(false);
+      expect(document.querySelector('[role="status"][aria-live]')?.textContent).toBe('Seller keys and local tags locked after inactivity.');
+      vi.useRealTimers();
+      await act(async () => { await unlockEncryptedVault('violet comet maple lantern'); });
+      await store.delete(record);                     // removed from another tab: the keys in memory are the only copy
+      vi.useFakeTimers();
+      fireEvent.pointerDown(window);                  // activity re-arms the idle timer
+      await act(async () => { await vi.advanceTimersByTimeAsync(61_000); });
+      expect(document.querySelector('[role="status"][aria-live]')?.textContent).toBe('Local tags locked after inactivity. Seller keys stay loaded because they have no backup yet.');
+      expect(hasSession()).toBe(true);
+      expect(screen.getByText('These seller keys have no backup')).toBeTruthy();
     } finally {
       vi.useRealTimers();
       setKeyVaultStoreForTests(undefined);

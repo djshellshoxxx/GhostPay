@@ -1,5 +1,5 @@
 import { findChain, findToken, type Address } from '@ghostpay/chain-adapters';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice } from '../components/Common';
 import { CameraImporter } from '../components/CameraImporter';
 import { useManifest } from '../components/Disclosure';
@@ -10,7 +10,7 @@ import { formatUnits } from '../lib/format';
 import { checkDestination, directSweep, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, RELAYED_EXPIRY_MARGIN_SECONDS, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
 import { RelayerRefusedError } from '../lib/relayerClient';
 import { authorizeEncryptedVault, readEncryptedVault } from '../lib/keyVault';
-import { captureSessionGuard } from '../lib/session';
+import { captureSessionGuard, getSessionBackup, subscribeSessionBackup } from '../lib/session';
 import { useServices } from '../lib/services';
 import { beginSweepAttempt, getSweepAttempt, isSweepJournalBroken, resolveSweepAttempt, useApp, useSweepAttempt, useSweepJournalBroken } from '../state';
 import { SweepJournalUnavailableError } from '../lib/sweepAttemptJournal';
@@ -43,6 +43,8 @@ export function Sweep(): ReactNode {
   const [vaultState, setVaultState] = useState<'checking' | 'empty' | 'saved' | 'error'>('checking');
   const [vaultPass, setVaultPass] = useState('');
   const [vaultPhase, setVaultPhase] = useState<'idle' | 'authorizing' | 'action'>('idle');
+  // Keys tied to a vault keep needing its passphrase even after the saved record is deleted or unreadable (L1-02).
+  const vaultStepUp = useSyncExternalStore(subscribeSessionBackup, getSessionBackup)?.vaultStepUp === true;
   const operation = useRef(0);
   const authEpoch = useRef(0);
   // GP-SWEEP-OUTCOME-01: app-session record of the last direct sweep from this address; survives navigation.
@@ -283,13 +285,13 @@ export function Sweep(): ReactNode {
 
       <div className="stack">
         <Field label={t('sweep.destination.label')}>{(id) => <input id={id} spellCheck={false} value={destination} onChange={(e) => { setDestination(e.target.value); setQuote(undefined); }} placeholder="0x…" />}</Field>
-        {vaultState === 'saved' && (
+        {(vaultState === 'saved' || vaultStepUp) && (
           <Field label={t('sweep.vaultPass.label')} hint={t('sweep.vaultPass.hint')}>
             {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="current-password" value={vaultPass} onChange={(e) => { setVaultPass(e.target.value); }} />}
           </Field>
         )}
-        {vaultState === 'checking' && <p role="status">{t('sweep.vaultChecking')}</p>}
-        {vaultState === 'error' && <Notice kind="error">{t('sweep.vaultError')}</Notice>}
+        {vaultState === 'checking' && !vaultStepUp && <p role="status">{t('sweep.vaultChecking')}</p>}
+        {vaultState === 'error' && !vaultStepUp && <Notice kind="error">{t('sweep.vaultError')}</Notice>}
         {loaded !== undefined && (
           <CameraImporter
             label={t('sweep.importQr')}

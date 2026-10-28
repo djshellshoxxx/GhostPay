@@ -2,9 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore
 import type { RpcClient } from '@ghostpay/chain-adapters';
 import { startEmbedHost, readProfileFromSearch } from './lib/embedHost';
 import { clearFragment, readInvoiceFragment } from './lib/fragment';
+import { loadedKeysRecoverable } from './lib/keyVault';
 import type { ScanMatch } from './lib/scanClient';
 import { useServices } from './lib/services';
-import { clearSession, getSessionPublic, subscribeSession } from './lib/session';
+import { captureSessionVersionGuard, clearSession, getSessionBackup, getSessionPublic, hasSession, subscribeSession, subscribeSessionBackup } from './lib/session';
 import { loadSettings, saveSettings, type Settings as SettingsData } from './lib/settings';
 import { AppContext, VIEW_LABELS, type AppState, type ViewId } from './state';
 import { BtcView } from './features/btc/BtcView';
@@ -21,6 +22,8 @@ import { Scan } from './views/Scan';
 import { SellerKeys } from './views/SellerKeys';
 import { Settings } from './views/Settings';
 import { Sweep } from './views/Sweep';
+import { Notice } from './components/Common';
+import { SOURCE_TRANSLATOR, useI18nOptional } from './i18n/context';
 
 const ORDER: readonly ViewId[] = ['home', 'seller', 'create', 'pay', 'scan', 'sweep', 'btc', 'solana', 'tron', 'registry', 'settings', 'about'];
 
@@ -64,7 +67,12 @@ export function App(): ReactNode {
   const [matches, setMatches] = useState<readonly ScanMatch[]>([]);
   const [sweepTarget, selectForSweep] = useState<AppState['sweepTarget']>(undefined);
   const [live, setLive] = useState('');
+  // Minutes of the idle lock that last wiped seller keys, for a visible notice; cleared once keys are loaded again.
+  const [idleWiped, setIdleWiped] = useState<number | undefined>(undefined);
   const session = useSyncExternalStore(subscribeSession, getSessionPublic);
+  const backup = useSyncExternalStore(subscribeSessionBackup, getSessionBackup);
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const main = useRef<HTMLElement>(null);
   const first = useRef(true);
   const rpcCache = useRef(new Map<string, Promise<RpcClient>>());
@@ -107,18 +115,38 @@ export function App(): ReactNode {
   }, [settings.theme]);
 
   // Tag keys derived from one seller identity must never serve another: lock local tags whenever keys change (L1-04).
-  useEffect(() => subscribeSession(() => { services.vault.lock(); }), [services]);
+  useEffect(() => subscribeSession(() => {
+    services.vault.lock();
+    if (hasSession()) setIdleWiped(undefined);
+  }), [services]);
 
-  // Idle lock for local tags.
+  // Idle lock (L1-01). Local tags always lock. Seller keys are wiped only when a copy survives the wipe (imported keys, a
+  // downloaded keystore, or their vault still saved here); keys that exist nowhere else stay loaded under the backup
+  // banner, because wiping them would lose every payment sent to their meta-address.
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | undefined;
+    const minutes = settings.lockTimeoutMin;
+    const lock = (): void => {
+      services.vault.lock();
+      if (!hasSession()) {
+        setLive(t('app.idle.tagsLocked'));
+        return;
+      }
+      const unchanged = captureSessionVersionGuard();
+      void loadedKeysRecoverable().then((recoverable) => {
+        try { unchanged(); } catch { return; }
+        if (!recoverable) {
+          setLive(t('app.idle.kept'));
+          return;
+        }
+        clearSession();
+        setIdleWiped(minutes);
+        setLive(t('app.idle.wiped'));
+      });
+    };
     const arm = (): void => {
       if (timer !== undefined) clearTimeout(timer);
-      timer = setTimeout(() => {
-        services.vault.lock();
-        clearSession();
-        setLive('Seller keys and local tags locked after inactivity.');
-      }, settings.lockTimeoutMin * 60_000);
+      timer = setTimeout(lock, minutes * 60_000);
     };
     arm();
     window.addEventListener('pointerdown', arm);
@@ -128,7 +156,7 @@ export function App(): ReactNode {
       window.removeEventListener('pointerdown', arm);
       window.removeEventListener('keydown', arm);
     };
-  }, [services, settings.lockTimeoutMin]);
+  }, [services, settings.lockTimeoutMin, t]);
 
   useEffect(() => {
     if (first.current) {
@@ -201,6 +229,18 @@ export function App(): ReactNode {
         </nav>
       </header>
       <main id="main" tabIndex={-1} ref={main}>
+        {session !== undefined && backup?.backedUp === false && (
+          <Notice kind="warn" title={t('app.backup.title')}>
+            {t('app.backup.body')}
+            {view !== 'seller' && <> <button type="button" className="btn" onClick={() => { setViewState('seller'); }}>{t('app.backup.action')}</button></>}
+          </Notice>
+        )}
+        {session === undefined && idleWiped !== undefined && (
+          <Notice kind="info">
+            {t('app.idle.wipedNotice', { minutes: idleWiped })}{' '}
+            <button type="button" className="btn" onClick={() => { setIdleWiped(undefined); }}>{t('app.idle.dismiss')}</button>
+          </Notice>
+        )}
         <ViewSwitch view={view} />
       </main>
       <div className="sr-only" role="status" aria-live="polite">{live}</div>

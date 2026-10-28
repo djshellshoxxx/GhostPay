@@ -516,3 +516,27 @@ describe('Sweep', () => {
     });
   });
 });
+
+describe('L1-02: the vault step-up belongs to the loaded keys', () => {
+  it('keeps asking for the vault passphrase after the saved vault is deleted', async () => {
+    const raw: RawSink = {};
+    const user = await toSweep({ raw, vaultPass: VAULT_PASS });
+    await screen.findByText('5 USDC');
+    await vaultStore.delete((await vaultStore.get())!);   // another tab, or "clear site data"
+    // Leave and come back: the view now finds no saved vault, but these keys stay tied to it.
+    const nav = within(screen.getByRole('navigation', { name: 'Main' }));
+    await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
+    await user.click(nav.getByRole('button', { name: 'Sweep' }));
+    await screen.findByText('5 USDC');
+    expect(screen.getByLabelText('Vault passphrase (required for each sweep action)')).toBeTruthy();
+    await user.click(screen.getByLabelText(/Directly/));
+    await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    expect((await screen.findByRole('alert', {}, { timeout: 30_000 })).textContent).toMatch(/Wrong passphrase/);
+    expect(raw.raw).toBeUndefined();
+    await user.type(screen.getByLabelText('Vault passphrase (required for each sweep action)'), VAULT_PASS);
+    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    expect(await screen.findByText('Submitted', {}, { timeout: 30_000 })).toBeTruthy();
+    expect(raw.raw).toMatch(/^0x02/);
+  });
+});

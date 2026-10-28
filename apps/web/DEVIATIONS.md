@@ -44,8 +44,17 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     is checked to carry the hash returned by the RPC.
 11. **Local tags**: `chain-adapters` does not keep the transaction hash of an announcement, so the tag payload stores
     `announcementId = blockHash:logIndex` instead of `transactionHash`. The per-profile HKDF salt lives in one `meta` record rather than
-    in every record; each record has its own fresh 96-bit IV. The idle lock timeout locks the tag vault only; seller keys stay in memory
-    until wiped or the tab closes (auto-wiping unexported keys seemed worse).
+    in every record; each record has its own fresh 96-bit IV. Unlocked tag keys belong to the seller keys that unlocked them: any key
+    change locks the tag vault (audit L1-04). **Idle lock** (Settings, default 15 minutes without a click or key press): it always
+    locks the tag vault, and it wipes the seller keys only when a copy survives the wipe: keys imported from hex or a keystore, a
+    keystore downloaded in this tab, or the vault record they were unlocked from or saved to still saved in this browser (checked when
+    the lock fires). Keys with no copy anywhere stay in memory under a visible "no backup" banner, because wiping them would lose every
+    payment sent to their meta-address (audit L1-01); after a wipe a visible notice says what happened. Until the keys are backed up,
+    Create invoice and the meta-address text, QR and copy button on Seller keys need a backup or a typed waiver; the waiver never lets
+    the idle lock wipe them. "Unlock saved vault" over keys without a backup asks first. The ERC-6538 publish page is not gated yet
+    (it lives outside this change). Keys unlocked from or saved to the vault keep its passphrase as a step-up for sweeps, keystore
+    export and a new vault for the rest of the session, also if the saved record is deleted; deleting a vault that names the loaded
+    meta-address needs its passphrase, any other vault is deleted after its meta-address is shown (audit L1-02).
 12. **Gas buffer sizing** (Feature 1, spec 13): `calculateBuffer` over `max(100 000, eth_estimateGas of the token transfer + 25 %)`
     (fails closed when the simulation fails), `2 x eth_gasPrice` as max fee, `DEFAULT_BUFFER_SAFETY_BPS` (20 %), a hard cap of 0.01
     native coin, and a 60 s quote lifetime, re-checked before the wallet is asked. It needs the user's RPC. Buffer payments go through

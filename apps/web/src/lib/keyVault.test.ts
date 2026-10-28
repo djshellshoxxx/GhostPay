@@ -1,14 +1,17 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { clearSession, generateSession, getSessionPublic, importSession, withSessionSecrets } from './session';
+import { clearSession, exportKeystore, generateSession, getSessionBackup, getSessionPublic, importKeystore, importSession, markKeystoreDownloaded, captureSessionGuard, withSessionSecrets } from './session';
 import {
   authorizeEncryptedVault,
+  authorizeKeyExport,
   deleteEncryptedVault,
+  loadedKeysRecoverable,
   MemoryKeyVaultStore,
   IndexedDbKeyVaultStore,
   type KeyVaultStore,
   readEncryptedVault,
   saveEncryptedVault,
   unlockEncryptedVault,
+  vaultMetaAddress,
 } from './keyVault';
 
 const PASS = 'violet comet maple lantern';
@@ -99,7 +102,7 @@ describe('encrypted seller vault', () => {
     const store = new MemoryKeyVaultStore();
     importSession({ spendingKeyHex: SPEND, viewingKeyHex: VIEW, signingKeyHex: SIGN });
     await saveEncryptedVault(PASS, { N: 1 << 14 }, store);
-    await deleteEncryptedVault((await readEncryptedVault(store))!, store);
+    await deleteEncryptedVault((await readEncryptedVault(store))!, store, PASS);
     expect(await readEncryptedVault(store)).toBeUndefined();
   });
 
@@ -109,7 +112,7 @@ describe('encrypted seller vault', () => {
     await saveEncryptedVault(PASS, { N: 1 << 14 }, store);
     const a = (await readEncryptedVault(store))!;
     await store.delete(a);
-    await expect(deleteEncryptedVault(a, store)).rejects.toThrow(/changed since you asked to delete it/);
+    await expect(deleteEncryptedVault(a, store, PASS)).rejects.toThrow(/changed since you asked to delete it/);
     importSession({ spendingKeyHex: '44'.repeat(32), viewingKeyHex: '55'.repeat(32), signingKeyHex: '66'.repeat(32) });
     await saveEncryptedVault(PASS, { N: 1 << 14 }, store);
     const b = (await readEncryptedVault(store))!;
@@ -135,10 +138,11 @@ describe('encrypted seller vault', () => {
     await expect(saveEncryptedVault(`${PASS} other`, { N: 1 << 14 }, store)).rejects.toThrow(/already exists/);
     expect(await readEncryptedVault(store)).toBe(existing);
 
+    // These keys are tied to the first vault now, so a second record needs that vault's passphrase (L1-02).
     const competing = new MemoryKeyVaultStore();
     const outcomes = await Promise.allSettled([
-      saveEncryptedVault(PASS, { N: 1 << 14 }, competing),
-      saveEncryptedVault(PASS, { N: 1 << 14 }, competing),
+      saveEncryptedVault(PASS, { N: 1 << 14 }, competing, PASS),
+      saveEncryptedVault(PASS, { N: 1 << 14 }, competing, PASS),
     ]);
     expect(outcomes.filter((outcome) => outcome.status === 'fulfilled')).toHaveLength(1);
     expect(outcomes.filter((outcome) => outcome.status === 'rejected')).toHaveLength(1);
@@ -189,4 +193,113 @@ describe('encrypted seller vault', () => {
       expect(getSessionPublic()).toBe(replacement);
     });
   }
+});
+
+describe('L1-02: the vault step-up belongs to the session', () => {
+  const OTHER = { spendingKeyHex: '44'.repeat(32), viewingKeyHex: '55'.repeat(32), signingKeyHex: '66'.repeat(32) };
+
+  it('keeps the sweep step-up armed after the vault is deleted, with or without this tab', async () => {
+    const store = new MemoryKeyVaultStore();
+    importSession({ spendingKeyHex: SPEND, viewingKeyHex: VIEW, signingKeyHex: SIGN });
+    await saveEncryptedVault(PASS, { N: 1 << 14 }, store);
+    await expect(authorizeEncryptedVault('', store)).rejects.toThrow(/Wrong passphrase/);
+    await deleteEncryptedVault((await store.get())!, store, PASS);
+    expect(await store.get()).toBeUndefined();
+    await expect(authorizeEncryptedVault('', store)).rejects.toThrow(/Wrong passphrase/);
+    expect(await authorizeEncryptedVault(PASS, store)).toBeTypeOf('function');
+    // Keys unlocked from a vault stay guarded even if another tab or "clear site data" removes the record.
+    clearSession();
+    const saved = new MemoryKeyVaultStore();
+    importSession({ spendingKeyHex: SPEND, viewingKeyHex: VIEW, signingKeyHex: SIGN });
+    await saveEncryptedVault(PASS, { N: 1 << 14 }, saved);
+    const record = (await saved.get())!;
+    clearSession();
+    await unlockEncryptedVault(PASS, saved);
+    await saved.delete(record);
+    await expect(authorizeEncryptedVault('', saved)).rejects.toThrow(/Wrong passphrase/);
+    expect(getSessionBackup()?.vaultStepUp).toBe(true);
+  });
+
+  it('deletes a vault holding the loaded keys only with its passphrase; another identity\'s vault shows its meta-address and needs none', async () => {
+    const store = new MemoryKeyVaultStore();
+    const loaded = importSession({ spendingKeyHex: SPEND, viewingKeyHex: VIEW, signingKeyHex: SIGN });
+    await saveEncryptedVault(PASS, { N: 1 << 14 }, store);
+    const record = (await store.get())!;
+    expect(vaultMetaAddress(record)).toBe(loaded.metaAddress);
+    expect(vaultMetaAddress('{"not":"a keystore"}')).toBeUndefined();
+    await expect(deleteEncryptedVault(record, store)).rejects.toThrow(/Enter its passphrase/);
+    await expect(deleteEncryptedVault(record, store, 'wrong vault passphrase')).rejects.toThrow(/Wrong passphrase/);
+    expect(await store.get()).toBe(record);
+    importSession(OTHER);
+    await deleteEncryptedVault(record, store);
+    expect(await store.get()).toBeUndefined();
+  });
+
+  it('requires the vault passphrase to export keys tied to a vault, including a saved vault for the same meta-address', async () => {
+    const store = new MemoryKeyVaultStore();
+    importSession({ spendingKeyHex: SPEND, viewingKeyHex: VIEW, signingKeyHex: SIGN });
+    expect(await authorizeKeyExport('', store)).toBeUndefined();
+    await saveEncryptedVault(PASS, { N: 1 << 14 }, store);
+    await expect(authorizeKeyExport('attacker chosen phrase 42!', store)).rejects.toThrow(/Wrong passphrase/);
+    expect(await authorizeKeyExport(PASS, store)).toBeTypeOf('function');
+    // The same keys loaded from a keystore file (not armed yet) still meet the saved vault for their meta-address.
+    const file = await exportKeystore('cedar orbit velvet lantern meadow', { N: 1 << 14 });
+    clearSession();
+    await importKeystore(file, 'cedar orbit velvet lantern meadow');
+    await expect(authorizeKeyExport('', store)).rejects.toThrow(/Wrong passphrase/);
+    const guard = await authorizeKeyExport(PASS, store);
+    importSession(OTHER);
+    expect(() => guard?.()).toThrow(/changed during this action/);
+    expect(await authorizeKeyExport('', store)).toBeUndefined();
+  });
+
+  it('arms the step-up when a saved vault for exactly the loaded keys is read', async () => {
+    const store = new MemoryKeyVaultStore();
+    importSession({ spendingKeyHex: SPEND, viewingKeyHex: VIEW, signingKeyHex: SIGN });
+    await saveEncryptedVault(PASS, { N: 1 << 14 }, store);
+    const record = (await store.get())!;
+    clearSession();
+    importSession({ spendingKeyHex: SPEND, viewingKeyHex: VIEW, signingKeyHex: SIGN });
+    expect(getSessionBackup()?.vaultStepUp).toBe(false);
+    await readEncryptedVault(store);
+    expect(getSessionBackup()?.vaultStepUp).toBe(true);
+    await store.delete(record);
+    await expect(authorizeEncryptedVault('', store)).rejects.toThrow(/Wrong passphrase/);
+  });
+});
+
+describe('L1-01: only keys with a copy elsewhere may be wiped', () => {
+  it('knows which loaded keys can be recovered after a wipe', async () => {
+    const store = new MemoryKeyVaultStore();
+    expect(await loadedKeysRecoverable(store)).toBe(false);
+    generateSession();
+    expect(await loadedKeysRecoverable(store)).toBe(false);
+    markKeystoreDownloaded(captureSessionGuard());
+    expect(await loadedKeysRecoverable(store)).toBe(true);
+    generateSession();
+    await saveEncryptedVault(PASS, { N: 1 << 14 }, store);
+    expect(getSessionBackup()?.backedUp).toBe(true);
+    expect(await loadedKeysRecoverable(store)).toBe(true);
+    const record = (await store.get())!;
+    await store.delete(record);                         // removed by another tab: the only copy is gone
+    expect(await loadedKeysRecoverable(store)).toBe(false);
+    await store.putIfEmpty(record);
+    await deleteEncryptedVault(record, store, PASS);    // removed here: the keys count as unsaved again
+    expect(getSessionBackup()?.backedUp).toBe(false);
+    expect(await loadedKeysRecoverable(store)).toBe(false);
+    importSession({ spendingKeyHex: SPEND, viewingKeyHex: VIEW });
+    expect(await loadedKeysRecoverable(store)).toBe(true);
+  });
+
+  it('refuses to unlock a saved vault over keys that have no backup unless the user confirmed', async () => {
+    const store = new MemoryKeyVaultStore();
+    const saved = importSession({ spendingKeyHex: SPEND, viewingKeyHex: VIEW, signingKeyHex: SIGN });
+    await saveEncryptedVault(PASS, { N: 1 << 14 }, store);
+    const unsaved = generateSession();
+    await expect(unlockEncryptedVault(PASS, store)).rejects.toThrow(/no backup/);
+    expect(getSessionPublic()).toBe(unsaved);
+    await unlockEncryptedVault(PASS, store, undefined, { replaceUnsavedKeys: true });
+    expect(getSessionPublic()?.metaAddress).toBe(saved.metaAddress);
+    expect(getSessionBackup()).toMatchObject({ backedUp: true, vaultStepUp: true });
+  });
 });
