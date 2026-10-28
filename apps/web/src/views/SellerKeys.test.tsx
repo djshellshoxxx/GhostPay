@@ -135,6 +135,8 @@ describe('Seller keys', () => {
     expect(screen.getByRole('button', { name: 'Copy meta-address' })).toBeTruthy();
     expect(screen.getByText(pub.signerPublicKey)).toBeTruthy();
     expect(screen.getByText('These seller keys have no backup')).toBeTruthy();
+    // I-1: wiping does not remove local scan state, and the page says so next to the wipe button.
+    expect(screen.getByText(/This removes the keys from this tab only/).textContent).toMatch(/clear this site’s data/);
     expect(window.localStorage.length).toBe(0);
     expect(window.sessionStorage.length).toBe(0);
     expect(document.body.innerHTML).not.toMatch(/spendingSecret|viewingSecret/);

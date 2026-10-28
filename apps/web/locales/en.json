@@ -196,6 +196,7 @@
     "sellerKeys.checkingAvailability": "Checking vault availability…",
     "sellerKeys.forgetHeading": "Forget keys",
     "sellerKeys.wipe": "Wipe keys from memory",
+    "sellerKeys.wipeHint": "This removes the keys from this tab only. Scan checkpoints, scan history, local tags and any saved vault stay in this browser, and anyone with this browser profile and your meta-address can tell from them that these keys were used here. To remove them, clear this site’s data in your browser settings, after backing up what you need.",
     "sellerKeys.registryHeading": "Public registry",
     "sellerKeys.registryHint": "Publishing your meta-address to the ERC-6538 registry would publicly associate it with your wallet address. Publishing is optional and has its own page.",
     "sellerKeys.openRegistry": "Open public registry page",

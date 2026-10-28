@@ -25,5 +25,6 @@
 | Sweep or keystore download asks for a vault passphrase although the vault was deleted | The keys were unlocked from, saved to or found in that vault in this tab; its passphrase stays the step-up until the keys are wiped | Enter that vault's passphrase. |
 | Tags gone | Browser data was cleared, or the vault was wiped; tags are local only | Restore an encrypted tag archive (Seller keys) if you downloaded one; otherwise there is no recovery. |
 | Tags locked | Idle lock after the minutes you set in Settings, or the seller keys were wiped or changed | Unlock with your loaded keys. |
+| A seller identity still leaves traces in this browser after **Wipe keys from memory** | Wiping clears only the tab's memory. Scan checkpoints (`localStorage`), scan history, local tags and any saved vault (IndexedDB) stay, and anyone with this browser profile and your meta-address can tell from them that this browser used those keys | Back up what you still need (keystore, tag archive), then clear this site's data in your browser settings. That also deletes the browser vault and local tags. |
 
 Still stuck? Do not post private keys, seed phrases, keystore files or full invoice links in a public issue. Report suspected vulnerabilities privately (see [SECURITY.md](../../SECURITY.md)).

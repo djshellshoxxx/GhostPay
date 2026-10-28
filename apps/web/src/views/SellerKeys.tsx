@@ -452,6 +452,8 @@ export function SellerKeys(): ReactNode {
           <button type="button" className="btn btn-danger" onClick={() => { clearSession(); setBackupQr(undefined); app.announce(t('sellerKeys.wiped')); setMessage({ kind: 'ok', text: t('sellerKeys.wiped') }); }}>
             {t('sellerKeys.wipe')}
           </button>
+          {/* Local scan state is keyed by a hash of the public keys and outlives the wipe (audit I-1). */}
+          <p className="hint">{t('sellerKeys.wipeHint')}</p>
         </>
       )}
 
