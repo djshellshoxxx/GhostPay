@@ -1,6 +1,7 @@
 import { bytesToHex, hexToBytes, utf8ToBytes } from '@noble/hashes/utils.js';
 import { describe, expect, it } from 'vitest';
-import { MemoryTagStore, TagVault, type EncryptedTagRecord, type TagPayload } from './tags';
+import { UserFacingError } from './errors';
+import { MemoryTagStore, TagVault, validatePayload, type EncryptedTagRecord, type TagPayload } from './tags';
 
 const key = (n: number): Uint8Array => new Uint8Array(32).fill(n);
 const ADDR = '0xAbCdEf0123456789aBcDeF0123456789abcdef01';
@@ -142,6 +143,27 @@ describe('TagVault (Feature 4)', () => {
     await expect(vault.save(1, payload({ notes: 'x'.repeat(2001) }))).rejects.toThrow(/too long/);
     await vault.save(1, payload({ invoiceLabel: '', notes: '' }));
     expect(await vault.find(1, ADDR)).toMatchObject({ clientLabel: 'Acme Corp — invoice #42' });
+  });
+
+  it('I-3: accepts only text for the invoice label and notes, trimmed and bounded like the client label', async () => {
+    const { vault } = await unlocked();
+    const junk: Record<string, unknown>[] = [{ invoiceLabel: null }, { invoiceLabel: 42 }, { invoiceLabel: { length: 1 } }, { notes: 7 }, { notes: ['net 30'] }, { notes: { toString: () => 'net 30' } }, { clientLabel: 5 }];
+    for (const patch of junk) {
+      const bad: TagPayload = { ...payload(), ...patch };
+      expect(() => validatePayload(bad)).toThrow(UserFacingError);
+      await expect(vault.save(84532, bad)).rejects.toThrow(UserFacingError);
+      // Archive entries pass the same check before anything is staged.
+      await expect(vault.previewImport([{ chainId: 84532, createdAt: 1, updatedAt: 1, payload: bad }], 'merge')).rejects.toThrow(UserFacingError);
+    }
+    expect(await vault.list()).toEqual([]);
+    await vault.save(84532, payload({ invoiceLabel: '  INV-42  ', notes: '\n net 30 \n' }));
+    expect(await vault.find(84532, ADDR)).toMatchObject({ invoiceLabel: 'INV-42', notes: 'net 30' });
+    await vault.save(84532, payload({ invoiceLabel: '   ', notes: '\t' }));
+    const blank = await vault.find(84532, ADDR);
+    expect(blank).not.toHaveProperty('invoiceLabel');
+    expect(blank).not.toHaveProperty('notes');
+    await vault.save(84532, payload({ invoiceLabel: ` ${'x'.repeat(200)} ` }));
+    await expect(vault.save(84532, payload({ invoiceLabel: 'x'.repeat(201) }))).rejects.toThrow(/too long/);
   });
 });
 

@@ -141,20 +141,31 @@ function recordAad(chainId: number, recordId: string, lookupKey: string): Uint8A
   return utf8ToBytes(`GhostPay/tag/v2|${String(chainId)}|${recordId}|${lookupKey}`);
 }
 
+/** An optional text field: absent, or a string that is trimmed and bounded like the client label (I-3); blank means absent. */
+function optionalText(value: unknown, max: number): string | undefined {
+  if (value === undefined) return undefined;
+  if (typeof value !== 'string') throw new UserFacingError('Invoice label and notes must be text.');
+  const clean = value.trim();
+  if (clean.length > max) throw new UserFacingError('Label or notes too long.');
+  return clean === '' ? undefined : clean;
+}
+
+/** Validates a payload from the UI, storage or an archive; every field is checked by type, since archives are untrusted JSON. */
 export function validatePayload(p: TagPayload): TagPayload {
-  const label = p.clientLabel.trim();
+  const label = typeof p.clientLabel === 'string' ? p.clientLabel.trim() : '';
   if (label === '' || label.length > MAX_LABEL) throw new UserFacingError(`Client label must be 1 to ${String(MAX_LABEL)} characters.`);
   if (!/^0x[0-9a-fA-F]{40}$/.test(p.stealthAddress)) throw new UserFacingError('Invalid stealth address.');
   if (!/^0x[0-9a-fA-F]{64}:\d{1,9}$/.test(p.announcementId)) throw new UserFacingError('Invalid announcement id.');
   if (!Number.isInteger(p.logIndex) || p.logIndex < 0) throw new UserFacingError('Invalid log index.');
-  if ((p.invoiceLabel?.length ?? 0) > MAX_LABEL || (p.notes?.length ?? 0) > MAX_NOTES) throw new UserFacingError('Label or notes too long.');
+  const invoiceLabel = optionalText(p.invoiceLabel, MAX_LABEL);
+  const notes = optionalText(p.notes, MAX_NOTES);
   return {
     stealthAddress: p.stealthAddress.toLowerCase(),
     announcementId: p.announcementId.toLowerCase(),
     logIndex: p.logIndex,
     clientLabel: label,
-    ...(p.invoiceLabel === undefined || p.invoiceLabel === '' ? {} : { invoiceLabel: p.invoiceLabel }),
-    ...(p.notes === undefined || p.notes === '' ? {} : { notes: p.notes }),
+    ...(invoiceLabel === undefined ? {} : { invoiceLabel }),
+    ...(notes === undefined ? {} : { notes }),
   };
 }
 
