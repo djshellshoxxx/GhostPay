@@ -190,11 +190,18 @@ async function provePassphrase(record: string, passphrase: string): Promise<void
   secrets.signingKey.fill(0);
 }
 
-/** Reads the saved vault. A vault for the loaded keys arms their step-up for this session, so deleting it later changes nothing (L1-02). */
+/**
+ * Reads the saved vault. A vault for the loaded keys arms their step-up for this session, so deleting it later changes
+ * nothing (L1-02). When the record the keys are tied to is no longer the one saved here (deleted in another tab, site
+ * data cleared), they count as unsaved again (L1-01); their step-up stays armed.
+ */
 export async function readEncryptedVault(store: KeyVaultStore = activeStore()): Promise<string | undefined> {
+  const tied = sessionVaultRecord();
   const record = await store.get();
   // Compared with the keys loaded when the read completes, so a key change during the read cannot arm the wrong keys.
   if (record !== undefined && holdsLoadedKeySet(record)) armSessionVault(record, () => undefined);
+  // Only the record tied before the read: keys loaded or saved meanwhile are tied to another one, which this leaves alone.
+  if (tied !== undefined && record !== tied) forgetSessionVaultCopy(tied);
   return record;
 }
 
@@ -217,7 +224,13 @@ export async function authorizeKeyExport(vaultPassphrase: string, store: KeyVaul
   if (vaultPassphrase === '') throw new UserFacingError('These seller keys are tied to an encrypted vault in this browser. Enter that vault’s passphrase to export them or save them again.');
   await provePassphrase(record, vaultPassphrase);
   unchanged();
-  if (holdsLoadedKeySet(record)) armSessionVault(record, unchanged, { stored: (await store.get().catch(() => undefined)) === record });
+  if (holdsLoadedKeySet(record)) {
+    // undefined when storage cannot be read, which is not evidence that the record was deleted.
+    const saved = await store.get().then((value) => ({ value }), () => undefined);
+    armSessionVault(record, unchanged, { stored: saved?.value === record });
+    // Deleted in another tab or with the site data: the keys count as unsaved again (L1-01); the step-up stays armed.
+    if (saved !== undefined && saved.value !== record) forgetSessionVaultCopy(record);
+  }
   return unchanged;
 }
 

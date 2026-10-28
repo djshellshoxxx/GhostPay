@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as keySession from '../lib/session';
 import { clearSession, generateSession, getSessionBackup, getSessionPublic, importSession } from '../lib/session';
-import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests, type KeyVaultStore } from '../lib/keyVault';
+import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests, unlockEncryptedVault, type KeyVaultStore } from '../lib/keyVault';
 import { makeServices, renderApp } from '../test/render';
 
 let vaultStore = new MemoryKeyVaultStore();
@@ -273,6 +273,20 @@ describe('Seller keys', () => {
     await user.click(screen.getByRole('button', { name: 'Replace the unsaved keys' }));
     await waitFor(() => { expect(getSessionPublic()?.metaAddress).toBe(saved.metaAddress); }, { timeout: 30_000 });
     expect(getSessionBackup()).toMatchObject({ backedUp: true, vaultStepUp: true });
+  });
+
+  it('C-R2: shows the no-backup banner once the vault the keys were unlocked from was deleted in another tab', async () => {
+    generateSession();
+    await saveEncryptedVault('violet comet maple lantern', { N: 1 << 14 });
+    const record = (await vaultStore.get())!;
+    clearSession();
+    await unlockEncryptedVault('violet comet maple lantern');
+    expect(getSessionBackup()?.backedUp).toBe(true);
+    await vaultStore.delete(record);
+    await open();
+    expect(await screen.findByText('These seller keys have no backup')).toBeTruthy();
+    expect(screen.getByText('Back up these seller keys first')).toBeTruthy();
+    expect(getSessionBackup()).toMatchObject({ backedUp: false, vaultStepUp: true });
   });
 
   it('L1-02: exporting keys tied to a vault needs that vault\'s passphrase', async () => {

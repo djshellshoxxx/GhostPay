@@ -268,6 +268,52 @@ describe('L1-02: the vault step-up belongs to the session', () => {
   });
 });
 
+describe('C-R2: a vault copy removed outside this tab is noticed when storage is read', () => {
+  async function unlockedFromVault(store: MemoryKeyVaultStore): Promise<string> {
+    generateSession();
+    await saveEncryptedVault(PASS, { N: 1 << 14 }, store);
+    const record = (await store.get())!;
+    clearSession();
+    await unlockEncryptedVault(PASS, store);
+    expect(getSessionBackup()).toMatchObject({ backedUp: true, vaultStepUp: true });
+    return record;
+  }
+
+  it('readEncryptedVault counts the keys as unsaved once their record is gone; the sweep step-up stays armed', async () => {
+    const store = new MemoryKeyVaultStore();
+    const record = await unlockedFromVault(store);
+    await store.delete(record);                         // another tab, or cleared site data
+    expect(await readEncryptedVault(store)).toBeUndefined();
+    expect(getSessionBackup()).toMatchObject({ backedUp: false, vaultStepUp: true });
+    await expect(authorizeEncryptedVault('', store)).rejects.toThrow(/Wrong passphrase/);
+  });
+
+  it('authorizeKeyExport does the same, but an unreadable store is not taken for a deletion', async () => {
+    const store = new MemoryKeyVaultStore();
+    const record = await unlockedFromVault(store);
+    const unreadable: KeyVaultStore = { get: () => Promise.reject(new Error('blocked')), putIfEmpty: () => Promise.resolve(), delete: () => Promise.resolve() };
+    expect(await authorizeKeyExport(PASS, unreadable)).toBeTypeOf('function');
+    expect(getSessionBackup()?.backedUp).toBe(true);
+    await store.delete(record);
+    expect(await authorizeKeyExport(PASS, store)).toBeTypeOf('function');
+    expect(getSessionBackup()).toMatchObject({ backedUp: false, vaultStepUp: true });
+  });
+
+  it('a read that began for other keys never forgets the vault the keys loaded now were saved to', async () => {
+    const store = new MemoryKeyVaultStore();
+    const record = await unlockedFromVault(store);
+    let release!: (value: string | undefined) => void;
+    const pending: KeyVaultStore = { get: () => new Promise((resolve) => { release = resolve; }), putIfEmpty: () => Promise.resolve(), delete: () => Promise.resolve() };
+    const reading = readEncryptedVault(pending);
+    await store.delete(record);
+    generateSession();
+    await saveEncryptedVault(PASS, { N: 1 << 14 }, store);
+    release(undefined);                                 // what the read saw between the delete and the new save
+    await reading;
+    expect(getSessionBackup()).toMatchObject({ backedUp: true, vaultStepUp: true });
+  });
+});
+
 describe('L1-01: only keys with a copy elsewhere may be wiped', () => {
   it('knows which loaded keys can be recovered after a wipe', async () => {
     const store = new MemoryKeyVaultStore();
