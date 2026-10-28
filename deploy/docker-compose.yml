@@ -87,8 +87,24 @@ services:
 networks:
   # backend: web <-> api. The api container needs outbound access to your chain RPC endpoints, so it is not `internal`.
   # Egress filtering (allow only your RPC hosts) is a host-firewall task; see README.
-  backend: {}
-  frontend: {}
+  #
+  # Subnets are pinned so the client-address trust settings can name them (audit L5-05):
+  # - the TLS terminator on the host reaches nginx through the published port, so nginx sees the gateway of one of these
+  #   networks (the host) as the peer and believes X-Forwarded-For only from the gateways (nginx/nginx.conf
+  #   set_real_ip_from);
+  # - nginx (web) reaches the api from the backend subnet, so the relayer's trustedProxies is that subnet
+  #   (config/relayer.config.example.json).
+  # If a range collides with a network on your host, `up` fails; change it here and in both places above together.
+  backend:
+    ipam:
+      config:
+        - subnet: 172.30.10.0/24
+          gateway: 172.30.10.1
+  frontend:
+    ipam:
+      config:
+        - subnet: 172.30.11.0/24
+          gateway: 172.30.11.1
 
 volumes:
   tor-data: {}

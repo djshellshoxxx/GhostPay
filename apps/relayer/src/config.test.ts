@@ -5,6 +5,7 @@ import { secp256k1 } from '@noble/curves/secp256k1.js';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { loadDeployment, manifestDigest, manifestSigningBytes, verifyTextManifestSignature, type ReleaseKey } from '@ghostpay/chain-adapters';
 import { describe, expect, it } from 'vitest';
+import { TrustedProxies, bucketKey, parseIp, resolveClientIp, type ParsedIp } from '@ghostpay/relayer-guard';
 import { DEV_CHAIN_ID, loadConfigFile, parseConfig, parseReleaseKeys, type ConfigContext } from './config.js';
 import { ConfigError, HOT_KEY_SOURCE, QUOTE_SECRET_PREVIOUS_SOURCE, QUOTE_SECRET_SOURCE, loadOptionalSecret, loadSecret } from './secrets.js';
 import { DEST, FEE_TO, HOT_ADDRESS, NOPERMIT, ORIGIN, STRANGER, SWEEP_CONTRACT, USDC } from './harness.testutil.js';
@@ -289,6 +290,93 @@ describe('example config', () => {
     const c = parse(raw, { env: { RPC_URL_84532: 'https://rpc.example' }, releaseKeys: [KEY], readManifest: (id) => SIGNED(id) });
     expect(c.chains[0]?.chainId).toBe(84532);
     expect(c.chains[0]?.tokens[0]?.symbol).toBe('USDC');
+  });
+});
+
+describe('deploy recipe wiring (L5-05, L7-L3)', () => {
+  const deploy = (path: string): string => readFileSync(new URL(`../../../deploy/${path}`, import.meta.url), 'utf8');
+  const compose = deploy('docker-compose.yml');
+  const nginx = deploy('nginx/nginx.conf');
+  const ip = (text: string): ParsedIp => {
+    const v = parseIp(text);
+    if (v === null) throw new Error(`not an IP: ${text}`);
+    return v;
+  };
+  /** Full-length textual form, as nginx passes `$remote_addr` on. */
+  const text = (p: ParsedIp | undefined): string | undefined =>
+    p === undefined ? undefined : bucketKey(p, { v4: 32, v6: 128 }).slice(2).split('/')[0];
+  /** Pinned `ipam` subnet and gateway per compose network. */
+  const networks = (): Map<string, { subnet: string; gateway: string }> => {
+    const section = /^networks:\n((?:[ #].*\n|\n)*)/m.exec(compose)?.[1] ?? '';
+    const out = new Map<string, { subnet: string; gateway: string }>();
+    for (const m of section.matchAll(/^ {2}([a-z]+):\n((?: {4,}.*\n)*)/gm)) {
+      const subnet = /subnet:\s*(\S+)/.exec(m[2] ?? '')?.[1];
+      const gateway = /gateway:\s*(\S+)/.exec(m[2] ?? '')?.[1];
+      if (subnet !== undefined && gateway !== undefined) out.set(m[1] ?? '', { subnet, gateway });
+    }
+    return out;
+  };
+  /** Body of the first `location` block whose header matches `head` (nested blocks included). */
+  const block = (head: RegExp): string => {
+    const m = head.exec(nginx);
+    if (m === null) return '';
+    let depth = 0;
+    for (let i = nginx.indexOf('{', m.index); i < nginx.length; i++) {
+      if (nginx[i] === '{') depth += 1;
+      if (nginx[i] === '}' && --depth === 0) return nginx.slice(m.index, i + 1);
+    }
+    return '';
+  };
+  const example = (): ReturnType<typeof parseConfig> => {
+    const raw: unknown = JSON.parse(deploy('config/relayer.config.example.json'));
+    return parse(raw, { env: { RPC_URL_84532: 'https://rpc.example' }, releaseKeys: [KEY], readManifest: (id) => SIGNED(id) });
+  };
+
+  it('pins the compose subnets that nginx and the relayer trust', () => {
+    const nets = networks();
+    expect([...nets.keys()].sort()).toEqual(['backend', 'frontend']);
+    const realIpFrom = [...nginx.matchAll(/^\s*set_real_ip_from\s+(\S+);/gm)].map((m) => m[1]).sort();
+    expect(realIpFrom).toEqual([...nets.values()].map((n) => n.gateway).sort()); // the host only
+    for (const n of nets.values()) expect(new TrustedProxies([n.subnet]).has(ip(n.gateway))).toBe(true);
+    expect(nginx).toMatch(/^\s*real_ip_header X-Forwarded-For;/m);
+    expect(nginx).toMatch(/^\s*real_ip_recursive on;/m);
+    const cfg = example();
+    expect(cfg.host).toBe('0.0.0.0');
+    expect(cfg.trustedProxies).toEqual([nets.get('backend')?.subnet]);
+  });
+
+  it('gives every client its own bucket through TLS terminator, nginx and relayer, and refuses forged hops', () => {
+    const nets = networks();
+    const backend = nets.get('backend') as { subnet: string; gateway: string };
+    const frontend = nets.get('frontend') as { subnet: string; gateway: string };
+    const nginxTrust = new TrustedProxies([...nginx.matchAll(/^\s*set_real_ip_from\s+(\S+);/gm)].map((m) => m[1] ?? ''));
+    const relayerTrust = new TrustedProxies(example().trustedProxies);
+    const nginxPeer = backend.subnet.replace(/\.0\/24$/, '.3'); // the web container on the backend network
+    // nginx `real_ip_recursive on` walks X-Forwarded-For like resolveClientIp; it then sends $remote_addr on.
+    const viaNginx = (peer: string, xff?: string): string | undefined => {
+      const seen = resolveClientIp({ peer, forwardedFor: xff, trusted: nginxTrust });
+      return text(resolveClientIp({ peer: nginxPeer, forwardedFor: text(seen?.ip), trusted: relayerTrust })?.ip);
+    };
+    // TLS terminator on the host connects through the published port: a gateway peer
+    expect(viaNginx(backend.gateway, '198.51.100.7')).toBe('198.51.100.7');
+    expect(viaNginx(frontend.gateway, '2001:db8::7')).toBe(text(ip('2001:db8::7')));
+    expect(viaNginx(backend.gateway, '1.2.3.4, 198.51.100.7')).toBe('198.51.100.7'); // client-forged entry ignored
+    // the Tor container is not trusted by nginx: its own address is the client (one bucket for onion users)
+    const tor = frontend.subnet.replace(/\.0\/24$/, '.9');
+    expect(viaNginx(tor, '9.9.9.9')).toBe(tor);
+    // a client reaching the relayer port directly cannot pick its bucket
+    expect(text(resolveClientIp({ peer: '203.0.113.5', forwardedFor: '9.9.9.9', trusted: relayerTrust })?.ip)).toBe('203.0.113.5');
+  });
+
+  it('proxies exactly the four public relayer routes; /api/metrics and the rest are 404', () => {
+    const api = block(/location ~ \^\/api\/\(([^)]*)\)\$ \{/);
+    expect(/\^\/api\/\(([^)]*)\)/.exec(api)?.[1]?.split('|').sort()).toEqual(['healthz', 'v1/info', 'v1/quote', 'v1/sweep']);
+    expect(api).toContain('rewrite ^/api(/.*)$ $1 break;');
+    expect(api).toMatch(/proxy_pass http:\/\/api:8787;/);
+    expect(api).toMatch(/proxy_set_header X-Forwarded-For \$remote_addr;/);
+    expect(api).toContain('limit_except GET POST OPTIONS { deny all; }');
+    expect(block(/location \/api\/ \{/)).toMatch(/return 404;/);
+    expect(nginx.match(/proxy_pass /g)).toHaveLength(1);
   });
 });
 

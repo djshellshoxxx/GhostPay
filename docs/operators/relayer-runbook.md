@@ -29,15 +29,20 @@ Environment variable names (no values here; see also the repository's `.env.exam
 | `DEPLOYMENTS_DIR` | Directory of `<chainId>.json` manifests (default `../../deployments`). |
 | `ALLOW_MAINNET` | `1` allows non-testnet chain ids (still needs a manifest). |
 | names given by `rpcUrlEnv` (for example `RPC_URL_84532`) | RPC URL kept out of the config file. |
-| names given by `metrics.bearerTokenEnv`, `alerts.webhookUrlEnv` | **In progress.** Metrics bearer token and alert webhook URL. |
+| names given by `metricsTokenEnv`, `alertWebhookUrlEnv` | Metrics bearer token (enables `/metrics`) and https alert webhook URL. |
 
-Per chain: `rpcUrl` or `rpcUrlEnv`, `sweepRelayer` (must match the manifest if both are given), `feeTo` (default: the hot-key address), `tokens` (stablecoins only in v1, `usdStable: true`), `nativeUsdPrice`, `gasUnits`, `maxGasLimit`, `maxGasPriceWei`, `dailyBudgetWei`, `minBalanceWei`. Global: `listen` (keep `127.0.0.1` behind the proxy), `allowedOrigins` (exact https origins of your web app; no wildcard), `trustProxyHops`, `quoteTtlSeconds`, `deadline`, `rateLimit`, `breaker`, `queue`, `shutdownGraceSeconds`.
+Per chain: `rpcUrl` or `rpcUrlEnv`, `sweepRelayer` (must match the manifest if both are given), `feeTo` (default: the hot-key address), `tokens` (stablecoins only in v1, `usdStable: true`), `nativeUsdPrice`, `gasUnits`, `maxGasLimit`, `maxGasPriceWei`, `dailyBudgetWei`, `minBalanceWei`. Global: `listen` (keep `127.0.0.1` behind the proxy), `allowedOrigins` (exact https origins of your web app; no wildcard), `trustedProxies`, `quoteTtlSeconds`, `deadline`, `rateLimit`, `breaker`, `lossBudget`, `queue`, `shutdownGraceSeconds`. An unknown key stops startup with an error that names it.
 
 Fee policy is fixed by FEE_SCHEDULE: `clamp(max(gas x 1.10, 50 bps), cap 300 bps)`. If the cap cannot cover raw gas the quote is refused (`amount_too_small`). The token price is a constant 1.0 and `nativeUsdPrice` is **your number**: update it when the native coin price moves materially, or you will sponsor sweeps at a loss. There is no oracle (audit G-11, G-26).
 
-### `trustProxyHops` and the listener
+### `trustedProxies` and the listener
 
-`trustProxyHops` is the number of trusted proxies in front of the service. `0` ignores `X-Forwarded-For` and uses the socket address. If the listener is reachable without the proxy, or the number is wrong, clients can choose their own rate-limit bucket or all share one (audit S3-07). Bind to loopback or a unix socket, put the proxy in front, and test with a request carrying a forged `X-Forwarded-For`. The Docker image exposes 8787; do not publish that port directly.
+`trustedProxies` lists the addresses or CIDR blocks your reverse proxy connects from, as the relayer sees them. The relayer believes `X-Forwarded-For` only when the TCP peer is listed, walks it from the right past listed hops, and keys rate limits and the loss budget on the first other address; an empty list ignores the header (audit S3-07). Use:
+
+- `["127.0.0.1", "::1"]` with `listen.host` `127.0.0.1` when the proxy runs on the same host (`infra/proxy`, [hosting](hosting.md));
+- `["172.30.10.0/24"]` with `listen.host` `0.0.0.0` for the compose recipe in `deploy/`: the backend subnet pinned in `deploy/docker-compose.yml`, which nginx connects from. `deploy/config/relayer.config.example.json` has both; `deploy/selfhost.sh` warns when the list is empty or loopback-only (audit L5-05).
+
+If the listener is reachable without the proxy, clients can choose their own bucket; if the proxy is not listed, every client shares the proxy's single bucket. The proxy must overwrite `X-Forwarded-For` with its own peer (nginx in `deploy/` does, after taking the client address from your TLS terminator's header, believed only from the compose gateways). The old `trustProxyHops` hop count was removed: a config that still sets it is refused at startup with an error naming it. Test with a request carrying a forged `X-Forwarded-For`: it must not change the bucket, and two clients must not share one. The Docker image exposes 8787; do not publish that port directly.
 
 ## 4. Hot key handling
 
@@ -73,11 +78,11 @@ Container: `docker build -f apps/relayer/Dockerfile -t ghostpay-relayer .` from 
 
 Always available:
 
-- `GET /healthz`: `status` and per-chain breaker. Statuses at the time of writing: `ok` (all breakers closed), `degraded` (some chain open or half-open), `unhealthy` (no chain can serve), `shutting_down` (**in progress**; the earlier code reported `ok` while a breaker was `half_open`, audit S3-05). Alert on anything other than `ok`.
+- `GET /healthz`: `status` and, per chain, `breaker` and `minedReverts`. `ok` (every breaker closed, no sustained mined reverts), `degraded` with HTTP 503 (some chain's breaker open or half-open, audit S3-05, or its mined reverts `sustained`, audit L5-02), `shutting_down`. Alert on anything other than `ok`.
 - `GET /v1/info`: version, fee policy, per-chain `sweepRelayer`, `feeTo`, token allowlist. Compare with your manifest after every deploy.
 - Structured JSON logs on stdout. Fields are limited to `ts, level, event, requestId, route, status, chainId, txHash, errorClass`; no bodies, addresses, signatures, amounts or IPs.
 
-In progress (confirm in `apps/relayer/README.md`): a `/metrics` Prometheus endpoint (disabled by default; requires a bearer token when the listener is not loopback) with `ghostpay_relayer_http_requests_total`, `..._errors_total`, `..._sweeps_total`, `..._failed_gas_wei_total`, `..._breaker_state` (0 closed, 1 half_open, 2 open), `..._hot_balance_wei`, `..._daily_budget_used_wei`/`_limit_wei`, `..._queue_pending`, and an alert webhook (`low_balance`, `balance_warning`, `error_rate`) with a cooldown. Until that lands, alert on logs and `healthz` from outside.
+Metrics and alerts (names in `apps/relayer/README.md`, "Abuse controls and operations"): `/metrics` in Prometheus format, enabled only by `metricsTokenEnv` and then requiring that bearer token (the `deploy/` recipe does not route it; scrape it from the backend network), and an alert webhook (`alertWebhookUrlEnv`) for breaker open, low balance, loss and daily budget exhaustion, mined reverts and a sustained mined-revert rate, receipt timeouts, and a refusing global quote budget, de-duplicated per kind and chain for 60 s.
 
 Watch for: breaker open or half-open for more than a few minutes; balance near the floor; budget near the limit before the UTC day ends; spikes of `sweep_reverted`/`send_failed`; `rate_limited_*` surges; `gas_price_too_high` (you are refusing work during a gas spike, which is intended); the gap between `nativeUsdPrice` and the market.
 
@@ -89,7 +94,7 @@ Watch for: breaker open or half-open for more than a few minutes; balance near t
 | `open` | Recent error ratio at or above `failureRatio` (after `minSamples`), or the balance floor tripped. All sweeps get `503 breaker_open`. | Find the cause (RPC down? out of gas funds? sustained reverts?). It re-tries after `cooldownSeconds`. Fix funding or RPC; do not simply restart to reset it. |
 | `half_open` | After the cooldown, one probe request is let through; success closes, failure re-opens. | Wait. **Known issue S3-05:** in the audited commit a probe that ended early with a user-class error left the breaker stuck in `half_open` forever while `healthz` said `ok`. A fix (probe timeout that re-opens the breaker) is in the working tree; until it is released, restart the service if `half_open` persists beyond two cooldowns. |
 
-Griefing note (S3-06): reverted sweeps that the attacker front-ran count as failures and can open the breaker for everyone; per-owner limits are keyed by freely minted addresses. Treat an unexplained opening as possible abuse; check recent `errorClass` values. Per-owner and per-destination failure caps are in progress.
+Griefing note (S3-06): a sweep that reverts after a passing simulation (front-run, owner drained first) is neutral for the breaker and charged to `lossBudget` per destination, client network and globally; a sustained rate of them makes `/healthz` `degraded` and sends `mined_revert_rate` without opening the breaker (L5-02). A receipt that times out does count as a breaker failure (L5-06). Treat an unexplained opening as possible abuse or an RPC problem; check recent `errorClass` values.
 
 ## 9. Incident response
 
@@ -100,7 +105,7 @@ Griefing note (S3-06): reverted sweeps that the attacker front-ran count as fail
 | Wrong `nativeUsdPrice` (selling gas too cheaply) | Correct the config and restart; review fees collected vs gas spent. |
 | RPC provider outage or lying | Breaker will open on errors. Switch `rpcUrlEnv` target to another provider and restart. A provider that lies consistently cannot be detected by the relayer. |
 | Fee-recipient (`feeTo`) problem | `feeTo` is a config value; correct it and restart. Contract-level `FEE_RECIPIENT` on the router is separate and immutable ([deployment runbook](deployment-runbook.md)). |
-| Abuse (request floods, reverted-sweep spam) | Tighten `rateLimit`; block at the proxy; lower `queue.maxPending`. Confirm `trustProxyHops` is right first (S3-07). |
+| Abuse (request floods, reverted-sweep spam) | Tighten `rateLimit`; block at the proxy; lower `queue.maxPending`. Confirm `trustedProxies` is right first (S3-07). |
 | A user reports a sweep that did not happen | You cannot see requests after the fact (nothing is persisted); use the `requestId` if they have it, and the on-chain history of the hot key. |
 | Court order or data request | You hold almost no stored data (see section 10); what you can provide is limited to logs and proxy logs you chose to keep. Involve counsel. |
 | Suspected bug in the contracts | There is no pause. Stop the relayer service for that chain, tell users to use the direct sweep path, and follow the contract migration in the deployment runbook. |
@@ -121,7 +126,7 @@ Record every incident with timestamps, and report suspected vulnerabilities priv
 
 - [ ] Verified manifest for every chain; `GET /v1/info` matches it.
 - [ ] Numbers measured from your own testnet runs (`gasUnits`, `nativeUsdPrice`, caps, budget).
-- [ ] Listener on loopback behind HTTPS proxy; `trustProxyHops` tested with a forged header.
+- [ ] Listener reachable only through the HTTPS proxy; `trustedProxies` lists exactly that proxy and was tested with a forged header.
 - [ ] Hot key file mode 600, low balance; `feeTo` is not the hot key.
 - [ ] Alerts wired to a person; breaker `half_open` runbook understood.
 - [ ] Privacy notice and terms published; legal advice obtained; sanctions decision made.

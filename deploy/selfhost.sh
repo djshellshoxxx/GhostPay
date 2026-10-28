@@ -165,6 +165,35 @@ if [ -d "$distdir" ] && find "$distdir" -name '*.map' -print -quit 2>/dev/null |
 cfg="$here/config/relayer.config.json"
 if [ -f "$cfg" ]; then ok "relayer config present"; else bad "missing deploy/config/relayer.config.json (see deploy/config/README.md)"; fi
 if [ -f "$cfg" ] && [ -n "$origin" ] && ! grep -qF "\"$origin\"" "$cfg"; then bad "allowedOrigins in relayer config does not list $origin"; fi
+# Behind this recipe's nginx the relayer must trust the backend subnet (audit L5-05); loopback-only means one bucket.
+if [ -f "$cfg" ]; then
+  rc=0
+  python3 - "$cfg" <<'PY' || rc=$?
+import ipaddress, json, sys
+
+def loopback(entry):
+    net = ipaddress.ip_network(str(entry), strict=False)
+    mapped = net.network_address.ipv4_mapped if net.version == 6 and net.prefixlen >= 96 else None
+    if mapped is not None:
+        net = ipaddress.ip_network(f"{mapped}/{net.prefixlen - 96}", strict=False)
+    return net.is_loopback
+
+try:
+    with open(sys.argv[1], encoding="utf-8") as f:
+        entries = json.load(f).get("trustedProxies", [])
+    if not isinstance(entries, list):
+        raise ValueError("not a list")
+    lo = [loopback(e) for e in entries]
+except Exception:
+    sys.exit(2)
+sys.exit(0 if not all(lo) else 1)
+PY
+  case "$rc" in
+    0) ok "relayer trustedProxies lists a non-loopback proxy network" ;;
+    1) warn "relayer trustedProxies is empty or loopback-only: behind nginx every client would share one rate-limit bucket; set it to [\"172.30.10.0/24\"] (deploy/config/README.md)" ;;
+    *) warn "could not read trustedProxies from the relayer config (the relayer validates it at startup)" ;;
+  esac
+fi
 for s in relayer_key quote_secret; do
   f="$here/secrets/$s"
   if [ ! -f "$f" ]; then bad "missing secret file deploy/secrets/$s (see deploy/secrets/README.md)"; continue; fi

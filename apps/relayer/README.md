@@ -109,7 +109,8 @@ RELAYER_CONFIG=/etc/ghostpay/relayer.config.json node apps/relayer/dist/main.js
 ```
 
 HTTPS is terminated by the host (reverse proxy); list its IPs or CIDRs in `trustedProxies` so the rate-limit bucket can
-use `X-Forwarded-For` only when the socket peer is trusted. An empty list ignores that header. `SIGTERM`/`SIGINT` start a
+use `X-Forwarded-For` only when the socket peer is trusted. An empty list ignores that header. Behind the compose recipe's
+nginx that is the pinned backend subnet (`deploy/config/README.md`). `SIGTERM`/`SIGINT` start a
 graceful shutdown: stop listening, refuse new work, let queued and in-flight transactions settle, force-close after
 `shutdownGraceSeconds`. Deployment: `Dockerfile` (distroless, non-root; build from the repo root) and
 `deploy/ghostpay-relayer.service`.
@@ -141,7 +142,8 @@ current key.
 ## Tests
 
 `npm test -w @ghostpay/relayer` (vitest, coverage thresholds 95/90/95/95 enforced). Unit and in-process HTTP tests
-use an injected fake chain client; `src/chain.test.ts` drives the real viem client against a fake JSON-RPC transport;
+use an injected fake chain client; `src/config.test.ts` also checks that the compose recipe in `deploy/` agrees with
+itself (pinned subnets, nginx `set_real_ip_from` and `/api/` route allowlist, `deploy/config/relayer.config.example.json`); `src/chain.test.ts` drives the real viem client against a fake JSON-RPC transport;
 `src/e2e.anvil.test.ts` deploys the compiled `GhostPaySweepRelayer` and `PermitToken` from `packages/contracts/out` on a
 local anvil and sweeps through the relayer (skipped when anvil or the artifacts are missing; `ANVIL_BIN` overrides
 `/home/user/tools/foundry/anvil`; run `forge build` first). The anvil test uses throwaway keys and `anvil_setBalance`. CI sets `REQUIRE_ANVIL=1` for this workspace (`ts-test-relayer`), but `e2e.anvil.test.ts` does not read that variable yet (only `packages/policy-scheme` does), so a missing anvil still skips there.
@@ -149,7 +151,8 @@ local anvil and sweeps through the relayer (skipped when anvil or the artifacts 
 ## Unverified
 
 No test against a public testnet RPC; no load test; Docker image and systemd unit were not built or run in the authoring
-sandbox; mainnet behaviour (manifest + `ALLOW_MAINNET`) is covered by config tests only; gas units in the example config
+sandbox; the compose recipe's client-address path (TLS terminator, nginx `real_ip`, relayer `trustedProxies`) is checked
+statically only (no Docker daemon or nginx); mainnet behaviour (manifest + `ALLOW_MAINNET`) is covered by config tests only; gas units in the example config
 are placeholders.
 
 ## Abuse controls and operations (relayer-guard wiring)
