@@ -43,6 +43,11 @@ export function walletFromSeedHex(seedHex: string, net: BtcNetworkInfo): BtcWall
   }
 }
 
+/** Best-effort wipe of both secret scalars (used on lock, unmount and when another wallet replaces this one). */
+export function wipeWallet(w: BtcWallet): void {
+  zeroize(w.keys.scanSecret, w.keys.spendSecret);
+}
+
 /** `bitcoin:?sp=<address>[&amount=<btc>]` for a payer's silent-payments-capable wallet. */
 export function paymentUri(wallet: BtcWallet, amountSats?: bigint, label?: string): string {
   return buildBitcoinUri({

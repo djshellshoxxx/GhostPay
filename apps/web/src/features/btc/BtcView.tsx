@@ -6,14 +6,15 @@ import { useServices } from '../../lib/services';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
 import { EsploraClient, normalizeEsploraUrl } from './esplora';
 import { BTC_NETWORKS, btcNetwork, type BtcNetworkId } from './network';
-import { MAX_SCAN_BLOCKS, scanForPayments, type FoundPayment, type ScanResult } from './scan';
+import { MAX_SCAN_BLOCKS, scanForPayments, wipeFound, type FoundPayment, type ScanResult } from './scan';
 import { btcErrorMessage, checkDestination, formatBtc, reviewSweep, SIGNER_DESCRIPTION, signSweep, type SignedSweep, type SweepReview } from './sweep';
 import { SCAN_CHECKS, SCAN_LIMITS, SCAN_MODES } from './verification';
-import { paymentUri, randomSeedHex, walletFromSeedHex, type BtcWallet } from './wallet';
+import { paymentUri, randomSeedHex, walletFromSeedHex, wipeWallet, type BtcWallet } from './wallet';
 
 /**
  * Bitcoin silent payments (BIP-352), test networks only. Keys live in this component's state and
- * vanish when you leave the view; nothing secret is stored.
+ * vanish when you leave the view; nothing secret is stored. Lock, a new wallet and unmount wipe the
+ * scan and spend secrets; a new scan, lock and unmount wipe the spend tweaks of the scan results.
  */
 export function BtcView(): ReactNode {
   const services = useServices();
@@ -39,16 +40,39 @@ export function BtcView(): ReactNode {
   const [broadcastId, setBroadcastId] = useState<string | undefined>(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
   const abort = useRef<AbortController | undefined>(undefined);
+  /** Bumped by every new async action and by lock/unmount: results of older actions are dropped. */
+  const op = useRef(0);
+  const walletRef = useRef<BtcWallet | undefined>(undefined);
+  const scanRef = useRef<ScanResult | undefined>(undefined);
   const net = btcNetwork(netId);
+
+  const invalidate = (): void => {
+    op.current++;
+    abort.current?.abort();
+    setScanning(false);
+  };
+
+  const begin = (): { readonly signal: AbortSignal; readonly live: () => boolean } => {
+    abort.current?.abort();
+    const ac = new AbortController();
+    abort.current = ac;
+    const mine = ++op.current;
+    return { signal: ac.signal, live: () => op.current === mine };
+  };
 
   useEffect(
     () => () => {
+      op.current++;
       abort.current?.abort();
+      if (walletRef.current !== undefined) wipeWallet(walletRef.current);
+      if (scanRef.current !== undefined) wipeFound(scanRef.current.found);
     },
     [],
   );
 
   const resetFlow = (): void => {
+    if (scanRef.current !== undefined) wipeFound(scanRef.current.found);
+    scanRef.current = undefined;
     setScan(undefined);
     setPicked(new Set());
     setReview(undefined);
@@ -75,7 +99,10 @@ export function BtcView(): ReactNode {
   const useSeed = (hex: string, reveal: boolean): void => {
     guard(() => {
       const w = walletFromSeedHex(hex, net);
+      invalidate();
+      if (walletRef.current !== undefined) wipeWallet(walletRef.current);
       resetFlow();
+      walletRef.current = w;
       setWallet(w);
       setSeedInput('');
       setSeedShown(reveal ? hex : undefined);
@@ -97,30 +124,34 @@ export function BtcView(): ReactNode {
   const runScan = (): void => {
     setError(undefined);
     if (wallet === undefined) return;
+    resetFlow();
+    const { signal, live } = begin();
+    setScanning(true);
     void (async () => {
-      setScanning(true);
-      resetFlow();
-      const ac = new AbortController();
-      abort.current = ac;
       try {
         const c = client();
-        await c.checkNetwork(net, ac.signal);
+        await c.checkNetwork(net, signal);
         const from = Number(fromHeight);
         if (fromHeight.trim() === '' || !Number.isInteger(from) || from < 0) throw new Error(t('btc.scan.firstHeightRequired'));
         const res = await scanForPayments({
           client: c,
           wallet,
           fromHeight: from,
-          signal: ac.signal,
-          onBlock: (h) => { setScanNote(t('btc.scan.foundBlock', { height: String(h) })); },
+          signal,
+          onBlock: (h) => { if (live()) setScanNote(t('btc.scan.foundBlock', { height: String(h) })); },
         });
+        if (!live()) {
+          wipeFound(res.found);
+          return;
+        }
+        scanRef.current = res;
         setScan(res);
         setScanNote(t('btc.scan.scanned', { from: String(res.fromHeight), to: String(res.toHeight) }));
         // Nothing is selected: spending outputs together links them publicly (PRIVACY-E2E-03), so each is an explicit choice.
       } catch (e) {
-        setError(btcErrorMessage(e));
+        if (live()) setError(btcErrorMessage(e));
       } finally {
-        setScanning(false);
+        if (live()) setScanning(false);
       }
     })();
   };
@@ -139,11 +170,13 @@ export function BtcView(): ReactNode {
   const doSign = (): void => {
     if (wallet === undefined || review === undefined || !approved) return;
     setError(undefined);
+    const { live } = begin();
     void (async () => {
       try {
-        setSigned(await signSweep(wallet, selected, review));
+        const out = await signSweep(wallet, selected, review);
+        if (live()) setSigned(out);
       } catch (e) {
-        setError(btcErrorMessage(e));
+        if (live()) setError(btcErrorMessage(e));
       }
     })();
   };
@@ -151,18 +184,21 @@ export function BtcView(): ReactNode {
   const doBroadcast = (): void => {
     if (signed === undefined) return;
     setError(undefined);
+    const { live } = begin();
     void (async () => {
       try {
         const id = await client().broadcast(signed.rawHex);
-        setBroadcastId(id);
+        if (live()) setBroadcastId(id);
       } catch (e) {
-        setError(btcErrorMessage(e));
+        if (live()) setError(btcErrorMessage(e));
       }
     })();
   };
 
   const lock = (): void => {
-    abort.current?.abort();
+    invalidate();
+    if (walletRef.current !== undefined) wipeWallet(walletRef.current);
+    walletRef.current = undefined;
     setWallet(undefined);
     setSeedShown(undefined);
     resetFlow();
