@@ -11,7 +11,7 @@ import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests } fro
 import { SETTINGS_KEY } from '../lib/settings';
 import { SWEEP_JOURNAL_KEY } from '../lib/sweepAttemptJournal';
 import { makeLog } from '../test/announcements';
-import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER } from '../test/fakeManifest';
+import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER, FAKE_SWEEP_RELAYER } from '../test/fakeManifest';
 import { FAKE_CODE, backedManifest, withManifestChain } from '../test/manifestChain';
 import { chainWithLogs } from '../test/mockChain';
 import { makeServices, renderApp } from '../test/render';
@@ -55,13 +55,17 @@ function extra(balance: bigint, nativeBalance: bigint, rawSink: RawSink) {
         if (rawSink.sendHang === true) return new Promise(() => undefined);
         return keccak256(params[0] as `0x${string}`);
       case 'eth_getBlockByNumber':
-        if (params[0] === 'latest' && rawSink.blockTimestamp !== undefined) return { number: '0x64', timestamp: `0x${rawSink.blockTimestamp.toString(16)}` };
+        if (params[0] === 'finalized' && rawSink.blockTimestamp !== undefined) return { hash: `0x${'f1'.repeat(32)}`, number: '0x64', timestamp: `0x${rawSink.blockTimestamp.toString(16)}` };
+        if (params[0] === 'finalized') throw new ChainAdapterError('RPC_FAILURE', 'finalized not supported');
         return undefined;
       case 'eth_getTransactionReceipt':
         return rawSink.receiptOk === true && rawSink.raw !== undefined ? { transactionHash: keccak256(rawSink.raw as `0x${string}`), status: '0x1' } : null;
       case 'eth_call': {
         const data = (params[0] as { data: string }).data;
-        if (data.startsWith(NONCE_USED_SELECTOR)) return encodeFunctionResult({ abi: ghostPaySweepRelayerAbi, functionName: 'nonceUsed', result: rawSink.nonceUsed === true });
+        if (data.startsWith(NONCE_USED_SELECTOR)) {
+          if ((params[0] as { to: string }).to !== FAKE_SWEEP_RELAYER) throw new Error('nonceUsed must target the signed sweep relayer');
+          return encodeFunctionResult({ abi: ghostPaySweepRelayerAbi, functionName: 'nonceUsed', result: rawSink.nonceUsed === true });
+        }
         if (data.startsWith('0x70a08231')) return `0x${balance.toString(16).padStart(64, '0')}`;
         if (data.startsWith('0x06fdde03')) return encodeFunctionResult({ abi: erc20MetadataAbi, functionName: 'name', result: 'USDC' });
         if (data.startsWith('0x7ecebe00')) return encodeFunctionResult({ abi: erc2612PermitAbi, functionName: 'nonces', result: 0n });
@@ -419,7 +423,7 @@ describe('Sweep', () => {
       // Within the margin after the deadline the order is not yet final.
       sink.blockTimestamp = DEADLINE + 600;
       await user.click(screen.getByRole('button', { name: 'Check status' }));
-      expect(await screen.findByText(/cannot yet be treated as expired/)).toBeTruthy();
+      expect(await screen.findByText(/no finalized block is far enough past its deadline/)).toBeTruthy();
       expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
 
       sink.blockTimestamp = DEADLINE + 601;
@@ -434,24 +438,50 @@ describe('Sweep', () => {
       const user = await submitRelayed(quoteThen(() => Promise.resolve(new Response(JSON.stringify({ error: 'send_failed' }), { status: 503 }))), sink);
       expect(await screen.findByText('Outcome unknown')).toBeTruthy();
       expect(await directDisabled(user)).toBe(true);
+      // Without a finalized block the check fails honestly instead of claiming "not executed".
+      await user.click(screen.getByRole('button', { name: 'Check status' }));
+      expect(await screen.findByText(/Could not check the order on chain/)).toBeTruthy();
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
       sink.blockTimestamp = 1_800_000_010;
       sink.nonceUsed = true;
       await user.click(screen.getByRole('button', { name: 'Check status' }));
-      expect(await screen.findByText('Included on chain')).toBeTruthy();
+      expect(await screen.findByText('Order executed on chain')).toBeTruthy();
       expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(false);
     });
 
-    it.each([409, 503])('HTTP %i from the relayer may follow a broadcast: the lock stays', async (status) => {
+    it.each([
+      ['409 nonce_used', 409, JSON.stringify({ error: { code: 'nonce_used' } })],
+      ['503 send_failed', 503, JSON.stringify({ error: { code: 'send_failed' } })],
+      ['403 from a CDN/WAF without the relayer envelope', 403, '<html>blocked</html>'],
+      ['422 with an unknown class', 422, JSON.stringify({ error: { code: 'brand_new_code' } })],
+    ])('%s: the order may have been broadcast, so the lock stays', async (_n, status, body) => {
       const sink: RawSink = { calls: [] };
-      const user = await submitRelayed(quoteThen(() => Promise.resolve(new Response(JSON.stringify({ error: 'x' }), { status }))), sink);
+      const user = await submitRelayed(quoteThen(() => Promise.resolve(new Response(body, { status }))), sink);
       expect(await screen.findByText('Outcome unknown')).toBeTruthy();
       expect(await directDisabled(user)).toBe(true);
     });
 
+    it('an accepted order keeps its lock until the chain shows it executed; the relayer hash is labelled unverified', async () => {
+      const sink: RawSink = { calls: [] };
+      const user = await submitRelayed(quoteThen(() => Promise.resolve(new Response(JSON.stringify({ txHash: `0x${'36'.repeat(32)}` }), { status: 200 }))), sink);
+      expect((await screen.findAllByText('Submitted')).length).toBeGreaterThan(0);
+      expect(screen.getByText(/reported by the relayer, not verified/)).toBeTruthy();
+      expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toContain('"order"');
+      expect(await directDisabled(user)).toBe(true);
+      sink.blockTimestamp = 1_800_000_010;
+      sink.nonceUsed = true;
+      const before = (sink.calls ?? []).length;
+      await user.click(screen.getByRole('button', { name: 'Check status' }));
+      expect(await screen.findByText('Order executed on chain')).toBeTruthy();
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(false);
+      expect((sink.calls ?? []).slice(before)).not.toContain('eth_getTransactionReceipt');
+    });
+
     it('an explicit pre-broadcast refusal (HTTP 4xx) releases the lock', async () => {
       const sink: RawSink = { calls: [] };
-      const user = await submitRelayed(quoteThen(() => Promise.resolve(new Response(JSON.stringify({ error: 'quote_expired' }), { status: 410 }))), sink);
+      const user = await submitRelayed(quoteThen(() => Promise.resolve(new Response(JSON.stringify({ error: { code: 'quote_expired' } }), { status: 410 }))), sink);
       expect(await screen.findByText('Relayer refused the order')).toBeTruthy();
+      expect(screen.getByText(/relies on the relayer/)).toBeTruthy();
       expect(screen.getByText(/HTTP 410 \(quote_expired\)/)).toBeTruthy();
       expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toContain('"refused"');
       expect(await directDisabled(user)).toBe(false);

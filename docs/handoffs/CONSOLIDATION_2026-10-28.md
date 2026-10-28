@@ -30,11 +30,15 @@ It does not grant merge, release, deployment or real-funds authority. Read [REST
 | `f44adbb` | Merge PR #36 into the PR #30 head. | Typecheck, lint, build, secret scan and action pins all exit 0 on this head. |
 | `4309eb8` | Sweep "unknown outcome" lock persisted to a tab-scoped sessionStorage journal (`lib/sweepAttemptJournal.ts`), fail closed. `deploy/nginx` Permissions-Policy `camera=(self)` to match `_headers` (QR camera importer). Kit header test expects the embed-v2 route. | 2 Sweep view tests failed on the old `state.tsx`/`Sweep.tsx` and pass now. The nginx parity test failed on the old confs. Kit `headers.test.mjs` 18/18. |
 | `7345904` | Review fixes: lock persisted **before** handoff via `directSweep({ onBeforeHandoff })`, which aborts and sends nothing if the write fails. Tombstone on a failed post-handoff write. Journal keeps only `chainId/owner/nonce/expectedHash/status`. | 2 new view tests failed on `4309eb8` and pass now. Journal tests: 26 cases. `sweep`, `Sweep`, journal and `embedHeaders` suites: 76/76. |
+| `dd8f9ec` | Lint fix in the new tests; handoff docs. | CI on `dd8f9ec`: 27/27 checks green, PR mergeable. |
+| `f1be78f` | **M1 closed:** relayed sweeps persist `{relayer contract, order nonce, deadline}` before the POST (`relayedSweep({ onBeforeHandoff })`; a failed write posts nothing) and resolve from chain state only (`nonceUsed`, deadline). | 6 new Sweep view tests failed on `dd8f9ec` and pass now. Full web suite on `f1be78f`: 1313 passed / 4 skipped; coverage 91.21/86.61/92.81/95.18. |
+| next commit | Second review (of `f1be78f`, no Critical/High) fixes. **Medium:** the lock is released only on a 4xx carrying the relayer envelope `{error:{code}}` with a class from an explicit pre-broadcast list (a CDN/WAF 4xx, 409 `nonce_used`, 5xx, unknown classes and transport errors keep it). Fixed the client's error-shape bug (it parsed `{error:"…"}` while the relayer sends `{error:{code}}`). Expiry is confirmed only at the **finalized** block, with `eth_call` at `{blockHash, requireCanonical:true}`. RPC failures or no `finalized` support are reported as "outcome unknown". The relayer-reported hash is labelled unverified. Legacy hash-only relayed locks are not released by a revert. Expired/refused locks are evictable. `beginSweepAttempt` refuses to overwrite an unresolved lock. The relayer README states the pre-broadcast contract, and a web test cross-checks the list against relayer source. | relayerClient 28, sweep + journal 72, Sweep view 27, state 2: all pass. Lint and tsc clean. Full web rerun: see the PR. |
 
 The independent read-only review of `4309eb8` reported H1, H2, M1, M2 and L1–L3:
 - H1, H2, M2 and L1 are fixed in `7345904`.
+- M1 was fixed in `f1be78f` and hardened after the second review (see the table).
 - **Open:**
-  - M1: a relayed-sweep submit that errors after the relayer accepted the order records no lock. This gap predates this work.
+  - The `refused` release still relies on the relayer's own report. A lying relayer can only execute the signed order to the user's own destination before its deadline; the UI says so.
   - L2: the new safety strings are English only. This matches the open "localize safety strings" item from PR #30.
   - L3 and the recorded limit: the lock is per tab. A new tab starts armed, so the user must check an explorer first.
 
@@ -92,10 +96,19 @@ The authoritative exact-head evidence is the GitHub `hosting-kit` workflow (`kit
 ## Still open / gates
 
 1. Owner review and merge of PR #37. PR #37 supersedes #30 and #36 if accepted; close those only on the owner's decision. No merge authority is assumed.
-2. Nightly `reproducibility`: `npm sbom` ESBOMPROBLEMS (`abitype@1.0.8` from `@0xbow/privacy-pools-core-sdk` → `viem@2.22.14` wants `zod ^3`).
-   - Re-checked here: `npm sbom -w @ghostpay/web` runs, but it omits the web app's direct deps (viem, react). It is **not** a valid artifact SBOM, so it was not adopted.
-   - Still open; the gate is not weakened.
-3. Relayed-sweep uncertain-submit lock (M1). It needs a relayer-side idempotency/status contract and is not invented here.
+2. Nightly `reproducibility`: `npm sbom` ESBOMPROBLEMS (`abitype@1.0.8` from `@0xbow/privacy-pools-core-sdk@1.5.0` → exact `viem@2.22.14` wants `zod ^3`). **Still open; the gate is not weakened.** Reproduced locally: `release-build.sh` fails at `npm sbom` with exactly this error.
+   - **Rejected:** `npm sbom -w @ghostpay/web`. It omits the web app's direct deps (viem, react).
+   - **Rejected:** root `zod@3.25.76`, as a dependency or devDependency.
+     - It makes `npm sbom` and `repro-check.sh` pass: two builds were byte-identical (tarball `dabf73ec…`, SBOM `3d40940b…`), and the web tarball was unchanged.
+     - But every zod 3.x is covered by high-severity GHSA-mrhx-c7xc-m3w5 (fixed in 4.6.6), so `npm audit --omit=dev --audit-level=high` (a CI gate) fails.
+   - **Not applicable:** overriding the SDK's `viem` to 2.57.7. npm 10.9.4 keeps the locked nested `viem@2.22.14` (reports it "invalid … overridden") unless the whole lockfile is regenerated. Regenerating is broad churn and needs owner approval.
+   - **No upstream fix yet:** SDK 1.5.0 is the latest release (2026-08-31) and still pins `viem@2.22.14`.
+   - **Owner options:**
+     - (a) Approve a full lockfile regeneration with that override, then rerun every package's tests.
+     - (b) Move the later-preserved privacy-pools package out of the root workspace or release SBOM scope.
+     - (c) Wait for an SDK release on `viem >= 2.37.2`, which also clears the audit chain.
+     - (d) Document a scoped SBOM exception. This weakens the gate and needs owner/security sign-off.
+3. M1 is closed (see above). A relayer status endpoint keyed by order digest would still be a UX improvement (faster resolution than waiting for the deadline), but it is not required for safety.
 4. Cross-tab sweep lock. It would need localStorage or IndexedDB, which persists the stealth-owner/tx-hash link to disk; that is a privacy decision for the owner.
 5. Policy-account send guard: an experimental feature, off by default and outside lean scope.
 6. Lean acceptance items that remain owner/external gates (from LEAN_RELEASE_SCOPE):
@@ -107,4 +120,4 @@ The authoritative exact-head evidence is the GitHub `hosting-kit` workflow (`kit
 
 ## Next bounded task
 
-Read the PR #37 CI results on the head commit and fix anything red. Then decide M1 together with the relayer owner (`apps/relayer` status endpoint keyed by order digest).
+Read the PR #37 CI results on the head commit and fix anything red. After that, localize the new sweep safety strings (they are English only; use the `t()` keys and add `en` entries). The Nightly SBOM fix waits on the owner choosing one of options (a)–(d) above.

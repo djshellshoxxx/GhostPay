@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { RelayerRefusedError, requestQuote, submitSweep, type FetchFn, type SweepSubmission } from './relayerClient';
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { RELAYER_PRE_BROADCAST_CODES, RelayerRefusedError, requestQuote, submitSweep, type FetchFn, type SweepSubmission } from './relayerClient';
 
 const TOKEN = '0x036CbD53842c5426634e7929541eC2318f3dCF7e';
 const OWNER = '0x5555555555555555555555555555555555555555';
@@ -43,10 +46,23 @@ describe('requestQuote', () => {
     await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(json({ error: 'Has Spaces!' }, 422)))).rejects.toThrow('HTTP 422.');
     await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(new Response('<html>', { status: 500 })))).rejects.toThrow('HTTP 500.');
   });
+  it('reads the class from the relayer envelope { error: { code } }', async () => {
+    await expect(requestQuote('https://relay.test', Q, () => Promise.resolve(json({ error: { code: 'quote_expired' } }, 410)))).rejects.toThrow('HTTP 410 (quote_expired).');
+  });
   it.each([
-    [400, true], [403, true], [410, true], [422, true], [429, true], [409, false], [500, false], [503, false],
-  ])('classifies HTTP %i as a pre-broadcast refusal: %s', async (status, before) => {
-    const err = await requestQuote('https://relay.test', Q, () => Promise.resolve(json({ error: 'x' }, status))).catch((e: unknown) => e);
+    ['quote_expired 410', 410, { error: { code: 'quote_expired' } }, true],
+    ['invalid_signature 422', 422, { error: { code: 'invalid_signature' } }, true],
+    ['field validation 400', 400, { error: { code: 'invalid_sweep' } }, true],
+    ['rate limit 429', 429, { error: { code: 'rate_limited_owner' } }, true],
+    ['nonce_used 409', 409, { error: { code: 'nonce_used' } }, false],
+    ['send_failed 503', 503, { error: { code: 'send_failed' } }, false],
+    ['unknown class 422', 422, { error: { code: 'brand_new_code' } }, false],
+    ['invalid_* outside 400', 404, { error: { code: 'invalid_thing' } }, false],
+    ['CDN/WAF 403 without envelope', 403, '<html>blocked</html>', false],
+    ['envelope without code', 422, { error: {} }, false],
+  ])('pre-broadcast refusal classification: %s', async (_n, status, body, before) => {
+    const res = typeof body === 'string' ? new Response(body, { status }) : json(body, status);
+    const err = await requestQuote('https://relay.test', Q, () => Promise.resolve(res)).catch((e: unknown) => e);
     expect(err).toBeInstanceOf(RelayerRefusedError);
     expect((err as RelayerRefusedError).status).toBe(status);
     expect((err as RelayerRefusedError).beforeBroadcast).toBe(before);
@@ -54,6 +70,18 @@ describe('requestQuote', () => {
   it('a transport failure is not a refusal', async () => {
     const err = await requestQuote('https://relay.test', Q, () => Promise.reject(new TypeError('offline'))).catch((e: unknown) => e);
     expect(err).not.toBeInstanceOf(RelayerRefusedError);
+  });
+  it('every pre-broadcast class is a 4xx the relayer emits, never nonce_used or a 5xx class', () => {
+    const dir = fileURLToPath(new URL('../../../relayer/src/', import.meta.url));
+    const src = readdirSync(dir).filter((f) => f.endsWith('.ts') && !f.includes('.test') && !f.includes('testutil')).map((f) => readFileSync(join(dir, f), 'utf8')).join('\n');
+    const emitted = new Map<string, number>();
+    for (const m of src.matchAll(/(?:RelayerError\(|\[)(\d{3}), '([a-z_]+)'/g)) emitted.set(m[2]!, Number(m[1]));
+    for (const code of RELAYER_PRE_BROADCAST_CODES) {
+      expect(emitted.get(code), code).toBeGreaterThanOrEqual(400);
+      expect(emitted.get(code), code).toBeLessThan(500);
+    }
+    expect(RELAYER_PRE_BROADCAST_CODES).not.toContain('nonce_used');
+    expect(emitted.get('send_failed')).toBe(503);
   });
   it('handles transport failures, oversized and non-JSON replies', async () => {
     await expect(requestQuote('https://relay.test', Q, () => Promise.reject(new TypeError('offline')))).rejects.toThrow(/Could not reach the relayer/);

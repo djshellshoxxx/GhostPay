@@ -532,52 +532,61 @@ describe('S3-09 / S3-12 / S3-22 integration (tx-review + address-safety)', () =>
   });
 });
 
-describe('M1: relayed orders resolve from chain state alone (nonceUsed + deadline)', () => {
+describe('M1: relayed orders resolve from chain state alone (nonceUsed + finalized deadline)', () => {
   const OWNER = '0x5555555555555555555555555555555555555555' as Address;
   const ORDER: RelayedOrderRef = { relayer: FAKE_SWEEP_RELAYER, nonce: 42n, deadline: NOW + 1200 };
   const lock: SweepLock = { chainId: 84532, owner: OWNER, order: ORDER, status: 'unknown-after-handoff' };
   const nonceCall = encodeFunctionData({ abi: ghostPaySweepRelayerAbi, functionName: 'nonceUsed', args: [OWNER, 42n] });
-  const chain = (opts: { used?: boolean; timestamp: number; failCall?: boolean; badBlock?: boolean }) => mockRpc(84532, (m, params) => {
-    if (m === 'eth_getBlockByNumber') return opts.badBlock === true ? null : { number: '0x99', timestamp: `0x${opts.timestamp.toString(16)}` };
+  const FIN_HASH = `0x${'f1'.repeat(32)}`;
+  interface Opts { usedLatest?: boolean; usedFinal?: boolean; finalTs: number; failCall?: boolean; noFinalized?: boolean }
+  const chain = (o: Opts) => mockRpc(84532, (m, params) => {
+    if (m === 'eth_getBlockByNumber') {
+      if (params[0] !== 'finalized') throw new Error('expiry must use the finalized block');
+      if (o.noFinalized === true) throw new Error('unsupported block tag');
+      return { hash: FIN_HASH, number: '0x99', timestamp: `0x${o.finalTs.toString(16)}` };
+    }
     if (m === 'eth_call') {
-      if (opts.failCall === true) throw new Error('rpc down');
-      const [call, tag] = params as [{ to: string; data: string }, string];
-      if (call.to !== ORDER.relayer || call.data !== nonceCall || tag !== '0x99') throw new Error('unexpected call');
-      return encodeFunctionResult({ abi: ghostPaySweepRelayerAbi, functionName: 'nonceUsed', result: opts.used === true });
+      if (o.failCall === true) throw new Error('rpc down');
+      const [call, tag] = params as [{ to: string; data: string }, unknown];
+      if (call.to !== ORDER.relayer || call.data !== nonceCall) throw new Error('unexpected call');
+      if (tag === 'latest') return encodeFunctionResult({ abi: ghostPaySweepRelayerAbi, functionName: 'nonceUsed', result: o.usedLatest === true });
+      expect(tag).toEqual({ blockHash: FIN_HASH, requireCanonical: true });
+      return encodeFunctionResult({ abi: ghostPaySweepRelayerAbi, functionName: 'nonceUsed', result: o.usedFinal === true });
     }
     throw new Error(`unexpected ${m}`);
   });
+  const past = ORDER.deadline + RELAYED_EXPIRY_MARGIN_SECONDS + 1;
 
-  it('executed when the contract reports the nonce used (even before the deadline)', async () => {
-    expect((await reconcileRelayedOrder(chain({ used: true, timestamp: NOW }), lock)).status).toBe('included');
+  it('executed when the contract reports the nonce used at latest (even before the deadline)', async () => {
+    expect((await reconcileRelayedOrder(chain({ usedLatest: true, finalTs: NOW }), lock)).status).toBe('included');
   });
-  it('stays unresolved while the order can still execute, including the margin after the deadline', async () => {
-    expect(await reconcileRelayedOrder(chain({ timestamp: NOW }), lock)).toBe(lock);
-    expect(await reconcileRelayedOrder(chain({ timestamp: ORDER.deadline + 1 }), lock)).toBe(lock);
-    expect(await reconcileRelayedOrder(chain({ timestamp: ORDER.deadline + RELAYED_EXPIRY_MARGIN_SECONDS }), lock)).toBe(lock);
+  it('stays unresolved while the finalized block is not past deadline + margin', async () => {
+    expect(await reconcileRelayedOrder(chain({ finalTs: NOW }), lock)).toBe(lock);
+    expect(await reconcileRelayedOrder(chain({ finalTs: ORDER.deadline + RELAYED_EXPIRY_MARGIN_SECONDS }), lock)).toBe(lock);
   });
-  it('expired only when a block past deadline + margin still shows the nonce unused', async () => {
-    expect((await reconcileRelayedOrder(chain({ timestamp: ORDER.deadline + RELAYED_EXPIRY_MARGIN_SECONDS + 1 }), lock)).status).toBe('expired');
+  it('expired only when the nonce is unused at the canonical finalized block past deadline + margin', async () => {
+    expect((await reconcileRelayedOrder(chain({ finalTs: past }), lock)).status).toBe('expired');
+    // Used at the finalized block although latest (a different node/fork) said unused: executed, not expired.
+    expect((await reconcileRelayedOrder(chain({ finalTs: past, usedFinal: true }), lock)).status).toBe('included');
   });
-  it('leaves the lock unchanged on RPC errors or malformed answers', async () => {
-    expect(await reconcileRelayedOrder(chain({ timestamp: NOW + 99_999, failCall: true }), lock)).toBe(lock);
-    expect(await reconcileRelayedOrder(chain({ timestamp: NOW + 99_999, badBlock: true }), lock)).toBe(lock);
-    expect(await reconcileRelayedOrder(mockRpc(84532, (m) => (m === 'eth_getBlockByNumber' ? { number: '0x99', timestamp: `0x${(NOW + 99_999).toString(16)}` } : 7)), lock)).toBe(lock);
+  it('reports RPC errors, malformed answers and missing finalized support as an unknown outcome (throws)', async () => {
+    await expect(reconcileRelayedOrder(chain({ finalTs: past, failCall: true }), lock)).rejects.toThrow(/outcome is still unknown/);
+    await expect(reconcileRelayedOrder(chain({ finalTs: past, noFinalized: true }), lock)).rejects.toThrow(/finalized/);
+    await expect(reconcileRelayedOrder(mockRpc(84532, () => 7), lock)).rejects.toThrow(/outcome is still unknown/);
+    await expect(reconcileRelayedOrder(mockRpc(84532, (m) => (m === 'eth_call' ? '0x' : null)), lock)).rejects.toThrow(/outcome is still unknown/);
   });
   it('reconcileSweepLock prefers the order over a relayer-reported hash (a reverted relayer tx does not kill the order)', async () => {
     const withHash: SweepLock = { ...lock, expectedHash: `0x${'12'.repeat(32)}`, status: 'submitted' };
-    const rpc = mockRpc(84532, (m) => {
-      if (m === 'eth_getTransactionReceipt') return { transactionHash: `0x${'12'.repeat(32)}`, status: '0x0' };
-      if (m === 'eth_getBlockByNumber') return { number: '0x99', timestamp: `0x${NOW.toString(16)}` };
-      if (m === 'eth_call') return encodeFunctionResult({ abi: ghostPaySweepRelayerAbi, functionName: 'nonceUsed', result: false });
-      throw new Error(m);
-    });
+    const rpc = chain({ finalTs: NOW });
     expect(await reconcileSweepLock(rpc, withHash)).toBe(withHash);
     expect(rpc.calls.map((c) => c.method)).not.toContain('eth_getTransactionReceipt');
   });
-  it('reconcileSweepLock still resolves direct locks by receipt', async () => {
+  it('reconcileSweepLock resolves direct locks by receipt, but a legacy hash-only relayed lock is not released by a revert', async () => {
     const direct: SweepLock = { chainId: 84532, owner: OWNER, nonce: 3, expectedHash: `0x${'ab'.repeat(32)}`, status: 'unknown-after-handoff' };
-    const rpc = mockRpc(84532, () => ({ transactionHash: `0x${'ab'.repeat(32)}`, status: '0x1' }));
-    expect((await reconcileSweepLock(rpc, direct)).status).toBe('included');
+    expect((await reconcileSweepLock(mockRpc(84532, () => ({ transactionHash: `0x${'ab'.repeat(32)}`, status: '0x1' })), direct)).status).toBe('included');
+    expect((await reconcileSweepLock(mockRpc(84532, () => ({ transactionHash: `0x${'ab'.repeat(32)}`, status: '0x0' })), direct)).status).toBe('reverted');
+    const legacyRelayed: SweepLock = { chainId: 84532, owner: OWNER, expectedHash: `0x${'ab'.repeat(32)}`, status: 'submitted' };
+    expect(await reconcileSweepLock(mockRpc(84532, () => ({ transactionHash: `0x${'ab'.repeat(32)}`, status: '0x0' })), legacyRelayed)).toBe(legacyRelayed);
+    expect((await reconcileSweepLock(mockRpc(84532, () => ({ transactionHash: `0x${'ab'.repeat(32)}`, status: '0x1' })), legacyRelayed)).status).toBe('included');
   });
 });

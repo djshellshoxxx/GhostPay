@@ -2,6 +2,7 @@ import { createContext, useContext, useSyncExternalStore } from 'react';
 import type { RpcClient } from '@ghostpay/chain-adapters';
 import type { ScanMatch } from './lib/scanClient';
 import type { SweepLock } from './lib/sweep';
+import { UserFacingError } from './lib/errors';
 import { browserSweepStorage, readSweepAttempts, SWEEP_JOURNAL_KEY, sweepAttemptKey, SweepJournalUnavailableError, toSweepLock, writeSweepAttempt } from './lib/sweepAttemptJournal';
 import type { SessionPublic } from './lib/session';
 import type { Settings } from './lib/settings';
@@ -90,6 +91,11 @@ function hydrateSweepAttempts(): void {
 export function beginSweepAttempt(attempt: SweepLock): void {
   hydrateSweepAttempts();
   if (sweepJournalBroken) throw new SweepJournalUnavailableError();
+  // Re-checked here, after the signing awaits, so a lock taken meanwhile is never overwritten.
+  const existing = sweepAttempts.get(sweepAttemptKey(attempt.chainId, attempt.owner));
+  if (existing !== undefined && (existing.status === 'submitted' || existing.status === 'unknown-after-handoff')) {
+    throw new UserFacingError('A sweep from this address may still be pending. Check its status before signing anything new.');
+  }
   const storage = browserSweepStorage();
   if (storage === undefined) throw new SweepJournalUnavailableError();
   try {

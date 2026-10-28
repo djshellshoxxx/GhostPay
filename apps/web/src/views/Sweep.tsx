@@ -233,7 +233,7 @@ export function Sweep(): ReactNode {
   };
 
   const pendingNote = attempt?.order !== undefined
-    ? 'The order has not executed and cannot yet be treated as expired. That does not mean it will not execute; check again later.'
+    ? 'The order has not executed yet, and no finalized block is far enough past its deadline to treat it as expired. It may still execute; check again later.'
     : 'No receipt found for this hash yet. That does not mean it was not sent; check again later.';
 
   const onCheckStatus = (): void => {
@@ -243,11 +243,15 @@ export function Sweep(): ReactNode {
     void (async () => {
       try {
         const rpc = await app.getRpc(attempt.chainId);
-        const next = rpc === undefined ? attempt : await reconcileSweepLock(rpc, attempt);
+        if (rpc === undefined) {
+          setCheckNote('No RPC is configured for this chain, so the status was not checked. The outcome is still unknown.');
+          return;
+        }
+        const next = await reconcileSweepLock(rpc, attempt);
         if (next.status !== attempt.status) recordSweepAttempt(next);
         else setCheckNote(pendingNote);
-      } catch {
-        setCheckNote(pendingNote);
+      } catch (e) {
+        setCheckNote(e instanceof UserFacingError ? e.message : 'The status check failed. The outcome is still unknown; check again later.');
       } finally {
         setChecking(false);
       }
@@ -342,16 +346,17 @@ export function Sweep(): ReactNode {
       {attempt !== undefined && (
         <Notice
           kind={attempt.status === 'submitted' || attempt.status === 'included' ? 'ok' : 'warn'}
-          title={ATTEMPT_TITLES[attempt.status] ?? t('sweep.submitted')}
+          title={attempt.order !== undefined && attempt.status === 'included' ? 'Order executed on chain' : ATTEMPT_TITLES[attempt.status] ?? t('sweep.submitted')}
         >
           {attempt.status === 'unknown-after-handoff' && (attempt.order === undefined
             ? <>The signed transaction was handed to your RPC but its result is unknown. It may already be on the network, so signing a new one is disabled.<br /></>
             : <>The signed order was handed to the relayer but its result is unknown. It can still execute until {new Date(attempt.order.deadline * 1000).toISOString()}; it counts as expired only {String(RELAYED_EXPIRY_MARGIN_SECONDS / 60)} minutes after that. Signing a new one is disabled until then.<br /></>)}
           {attempt.status === 'expired' && <>The order&apos;s nonce was still unused after its deadline, so it can no longer execute and moved nothing. You can sign again.<br /></>}
-          {attempt.status === 'refused' && <>The relayer refused the order before sending it. You can sign again.<br /></>}
+          {attempt.status === 'refused' && <>The relayer reported that it refused the order before sending it. This relies on the relayer&apos;s report; the signed order stays valid until {attempt.order === undefined ? 'its deadline' : new Date(attempt.order.deadline * 1000).toISOString()}. You can sign again.<br /></>}
           {attempt.expectedHash !== undefined && (
             <>
               {t('sweep.txHash')} <Mono>{attempt.expectedHash}</Mono> <CopyButton text={attempt.expectedHash} label={t('sweep.copyHash')} />
+              {attempt.order !== undefined && <> (reported by the relayer, not verified)</>}
               <br />
               {t('sweep.checkExplorer')}
             </>

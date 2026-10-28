@@ -132,7 +132,7 @@ export function writeSweepAttempt(attempt: SweepLock, storage: SweepJournalStora
   const key = sweepAttemptKey(lock.chainId, lock.owner);
   const records = readSweepAttempts(storage).filter((a) => sweepAttemptKey(a.chainId, a.owner) !== key);
   if (records.length >= MAX_SWEEP_ATTEMPTS) {
-    const idx = records.findIndex((a) => a.status === 'included' || a.status === 'reverted');
+    const idx = records.findIndex((a) => a.status !== 'submitted' && a.status !== 'unknown-after-handoff');
     if (idx < 0) throw new UserFacingError('Too many sweeps are still pending in this tab. Check their status before signing another.');
     records.splice(idx, 1);
   }

@@ -104,6 +104,13 @@ describe('tab-scoped sweep attempt journal', () => {
     expect(() => { writeSweepAttempt(lock(2), quota); }).toThrow(SweepJournalUnavailableError);
   });
 
+  it.each(['expired', 'refused', 'included', 'reverted'] as const)('evicts a %s lock when full', (status) => {
+    const s = storage();
+    for (let i = 1; i <= MAX_SWEEP_ATTEMPTS; i += 1) writeSweepAttempt(lock(i, i === 7 ? status : 'submitted'), s);
+    writeSweepAttempt(lock(1000), s);
+    expect(readSweepAttempts(s).map((a) => a.owner)).not.toContain(owner(7));
+  });
+
   it('evicts only resolved locks when full and refuses when every lock is unresolved', () => {
     const s = storage();
     for (let i = 1; i <= MAX_SWEEP_ATTEMPTS; i += 1) writeSweepAttempt(lock(i, i === 5 ? 'reverted' : 'submitted'), s);

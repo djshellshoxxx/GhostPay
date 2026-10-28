@@ -317,7 +317,7 @@ export interface SweepLock {
   readonly status: SweepLockStatus;
 }
 
-/** Margin past the order deadline before an unused nonce counts as final (covers reorgs across the deadline). */
+/** Margin past the order deadline, measured on the finalized block, before an unused nonce counts as expired (clock skew). */
 export const RELAYED_EXPIRY_MARGIN_SECONDS = 600;
 
 /** True while an attempt may still land; signing a new transaction from the same address must stay disarmed. */
@@ -362,37 +362,51 @@ export async function reconcileDirectSweep<T extends { readonly expectedHash: He
   return attempt;
 }
 
+async function nonceUsedAt(rpc: Rpc, owner: Address, order: RelayedOrderRef, block: string | { readonly blockHash: Hex; readonly requireCanonical: true }): Promise<boolean> {
+  const data = encodeFunctionData({ abi: ghostPaySweepRelayerAbi, functionName: 'nonceUsed', args: [owner, order.nonce] });
+  const raw = await rpc.request('eth_call', [{ to: order.relayer, data }, block]);
+  if (typeof raw !== 'string' || !/^0x[0-9a-fA-F]*$/.test(raw)) throw new Error('invalid eth_call result');
+  return decodeFunctionResult({ abi: ghostPaySweepRelayerAbi, functionName: 'nonceUsed', data: raw as Hex });
+}
+
 /**
- * Read-only resolution of a relayed order from chain state alone (no relayer trust): executed when the sweep contract
- * reports its nonce used; expired when a block safely past the deadline still shows it unused. Both reads use the
- * same block. Any RPC error or malformed answer leaves the lock unchanged.
+ * Read-only resolution of a relayed order from chain state alone (no relayer trust):
+ * - executed (`included`) when the sweep contract reports the order's nonce used at `latest`;
+ * - `expired` only when the **finalized** block is more than {@link RELAYED_EXPIRY_MARGIN_SECONDS} past the deadline
+ *   and the nonce is still unused at that exact canonical block (EIP-1898 `blockHash` + `requireCanonical`), so a
+ *   reorg cannot later include the order;
+ * - otherwise unchanged.
+ * @throws {UserFacingError} when the RPC fails or answers malformed data (including no `finalized` support): the
+ *   outcome is then unknown and must not be reported as "not executed".
  */
 export async function reconcileRelayedOrder<T extends { readonly owner: Address; readonly order?: RelayedOrderRef; readonly status: SweepLockStatus }>(rpc: Rpc, lock: T): Promise<T> {
   const order = lock.order;
   if (order === undefined) return lock;
   try {
-    const block = (await rpc.request('eth_getBlockByNumber', ['latest', false])) as { number?: unknown; timestamp?: unknown } | null;
-    if (block === null || typeof block.number !== 'string' || typeof block.timestamp !== 'string') return lock;
-    const at = block.number;
-    const timestamp = parseQuantity(block.timestamp);
-    const data = encodeFunctionData({ abi: ghostPaySweepRelayerAbi, functionName: 'nonceUsed', args: [lock.owner, order.nonce] });
-    const raw = await rpc.request('eth_call', [{ to: order.relayer, data }, at]);
-    if (typeof raw !== 'string') return lock;
-    const used = decodeFunctionResult({ abi: ghostPaySweepRelayerAbi, functionName: 'nonceUsed', data: raw as Hex });
-    if (used) return { ...lock, status: 'included' };
-    if (timestamp > BigInt(order.deadline + RELAYED_EXPIRY_MARGIN_SECONDS)) return { ...lock, status: 'expired' };
-    return lock;
+    if (await nonceUsedAt(rpc, lock.owner, order, 'latest')) return { ...lock, status: 'included' };
+    const block = (await rpc.request('eth_getBlockByNumber', ['finalized', false])) as { hash?: unknown; timestamp?: unknown } | null;
+    if (block === null || typeof block.hash !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(block.hash) || typeof block.timestamp !== 'string') {
+      throw new Error('no finalized block');
+    }
+    if (parseQuantity(block.timestamp) <= BigInt(order.deadline + RELAYED_EXPIRY_MARGIN_SECONDS)) return lock;
+    const used = await nonceUsedAt(rpc, lock.owner, order, { blockHash: block.hash as Hex, requireCanonical: true });
+    return { ...lock, status: used ? 'included' : 'expired' };
   } catch {
-    return lock;
+    throw new UserFacingError('Could not check the order on chain (the RPC failed or does not report finalized blocks). Its outcome is still unknown; check again later.');
   }
 }
 
-/** Resolves any sweep lock: relayed orders by nonce/deadline, direct sweeps by the exact expected hash's receipt. */
+/**
+ * Resolves any sweep lock: relayed orders by nonce/deadline (errors propagate), direct sweeps by the exact expected
+ * hash's receipt. A legacy hash-only lock without an owner nonce is a relayed sweep recorded before order tracking: a
+ * reverted relayer transaction does not consume its order, so `reverted` does not release it.
+ */
 export async function reconcileSweepLock<T extends SweepLock>(rpc: Rpc, lock: T): Promise<T> {
   if (lock.order !== undefined) return reconcileRelayedOrder(rpc, lock);
   const expectedHash = lock.expectedHash;
   if (expectedHash === undefined) return lock;
   const next = await reconcileDirectSweep(rpc, { expectedHash, status: lock.status });
+  if (next.status === 'reverted' && lock.nonce === undefined) return lock;
   return next.status === lock.status ? lock : { ...lock, status: next.status };
 }
 

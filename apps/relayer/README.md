@@ -55,6 +55,13 @@ Other classes: `invalid_*` 400 (field-level validation), `unsupported_media_type
 `rate_limited_ip` 429, `origin_not_allowed` 403, `queue_full` / `shutting_down` 503, `not_found` 404, `method_not_allowed` 405,
 `internal_error` 500.
 
+**Client contract (pre-broadcast classes).** Every 4xx class above is returned before the relayer broadcasts: `send` is
+the last step and its failure is `send_failed` 503, and nothing after a successful send returns an error. `nonce_used` 409
+can mean the order is already on chain. Errors use the envelope `{ "error": { "code": "<class>" } }`. The web client
+releases a relayed-sweep signing lock only for a 4xx with this envelope and a class in
+`apps/web/src/lib/relayerClient.ts` `PRE_BROADCAST_CODES` (or `invalid_*` at 400); its test cross-checks that list against
+this source. Adding a 4xx after `send`, or reusing a listed class for a post-broadcast condition, breaks that contract.
+
 ## Configuration
 
 JSON file (`RELAYER_CONFIG`, default `./relayer.config.json`) plus environment. See `relayer.config.example.json`.
