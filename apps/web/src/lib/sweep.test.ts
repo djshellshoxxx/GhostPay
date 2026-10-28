@@ -1,7 +1,7 @@
 import { addressOfSecret, buildSweepTypedData, eip712DomainSeparator, erc20MetadataAbi, erc2612PermitAbi, sweepDigest, type Address } from '@ghostpay/chain-adapters';
 import { deriveStealthPayment, type PublicAnnouncement } from '@ghostpay/core-crypto';
 import { recoverTransactionAddress } from 'viem';
-import { encodeFunctionResult, keccak256, recoverAddress, parseTransaction, decodeFunctionData } from 'viem/utils';
+import { encodeAbiParameters, encodeFunctionResult, keccak256, parseAbi, recoverAddress, parseTransaction, decodeFunctionData } from 'viem/utils';
 import { encodeFunctionData } from 'viem/utils';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER, FAKE_SWEEP_RELAYER, fakeManifest } from '../test/fakeManifest';
@@ -230,7 +230,7 @@ describe('relayedSweep (EIP-712 sweep + ERC-2612 permit, signed in memory)', () 
 });
 
 describe('directSweep (stealth address pays gas, signs a plain transfer)', () => {
-  function rpcFor(balance: bigint, sent: { raw?: `0x${string}` }) {
+  function rpcFor(balance: bigint, sent: { raw?: `0x${string}` }, estimate = '0xc350' /* 50_000 */) {
     return mockRpc(84532, (method) => {
       switch (method) {
         case 'eth_gasPrice':
@@ -240,7 +240,7 @@ describe('directSweep (stealth address pays gas, signs a plain transfer)', () =>
         case 'eth_getBalance':
           return `0x${balance.toString(16)}`;
         case 'eth_estimateGas':
-          return '0xc350'; // 50_000
+          return estimate;
         case 'eth_sendRawTransaction':
           return keccak256(sent.raw ?? '0x');
         default:
@@ -268,12 +268,13 @@ describe('directSweep (stealth address pays gas, signs a plain transfer)', () =>
     expect(res.maxGasCost).toBe(60_000n * 2_000_000_000n);
   });
 
-  it('sweeps native balance minus the maximum fee', async () => {
+  it('sweeps native balance minus the maximum fee (a chain without an L1 data fee, plain-transfer destination)', async () => {
     const sent: { raw?: `0x${string}` } = {};
-    const base = rpcFor(10n ** 17n, sent);
+    const base = rpcFor(10n ** 17n, sent, '0x5208');
     const rpc = { ...base, request: (m: string, p: readonly unknown[]) => { if (m === 'eth_sendRawTransaction') sent.raw = p[0] as `0x${string}`; return base.request(m, p).then((r) => (m === 'eth_sendRawTransaction' ? keccak256(p[0] as `0x${string}`) : r)); } };
-    const res = await directSweep({ target: { ...target, token: 'native' }, manifest, destination: DEST, amount: 10n ** 17n, rpc });
+    const res = await directSweep({ target: { ...target, chainId: 11155111, token: 'native' }, manifest: fakeManifest(11155111), destination: DEST, amount: 10n ** 17n, rpc });
     const tx = parseTransaction(sent.raw!);
+    expect(tx.chainId).toBe(11155111);
     expect(tx.to?.toLowerCase()).toBe(DEST.toLowerCase());
     expect(tx.value).toBe(10n ** 17n - 21_000n * 2_000_000_000n);
     expect(res.sent).toBe(tx.value);
@@ -467,8 +468,8 @@ describe('S3-09 / S3-12 / S3-22 integration (tx-review + address-safety)', () =>
   });
 
   it('refuses a native sweep whose fee would eat most of the balance', async () => {
-    const rpc = rpcWith({}, 10n ** 14n);
-    await expect(directSweep({ target: { ...target, token: 'native' }, manifest, destination: DEST, amount: 10n ** 14n, rpc })).rejects.toThrow(/FEE_SHARE_ABOVE_CAP/);
+    const rpc = rpcWith({ eth_estimateGas: '0x5208' }, 10n ** 14n);
+    await expect(directSweep({ target: { ...target, chainId: 11155111, token: 'native' }, manifest: fakeManifest(11155111), destination: DEST, amount: 10n ** 14n, rpc })).rejects.toThrow(/FEE_SHARE_ABOVE_CAP/);
   });
 
   it('dry-runs the transfer and refuses a revert or a false return', async () => {
@@ -536,6 +537,203 @@ describe('S3-09 / S3-12 / S3-22 integration (tx-review + address-safety)', () =>
   it('classifies destinations for the linkability warning', () => {
     expect(describeDestination(DEST, target.owner, [])).toBe('new');
     expect(describeDestination(DEST, target.owner, [DEST])).toBe('saved');
+  });
+});
+
+describe('L2-F2: a native direct sweep keeps back every fee the chain charges', () => {
+  const ORACLE = '0x420000000000000000000000000000000000000F';
+  const oracleAbi = parseAbi(['function getL1Fee(bytes _data) view returns (uint256)', 'function getOperatorFee(uint256 _gasUsed) view returns (uint256)']);
+  const MAX_FEE = 2_000_000_000n; // eth_gasPrice 1 gwei, signed with twice that as maxFeePerGas
+  const BALANCE = 10n ** 17n;
+  const L1_FEE = 3_000_000_000_000n;
+  interface Net {
+    readonly balance?: bigint;
+    readonly estimate?: string | Error;
+    readonly l1Fee?: bigint | string | Error;
+    readonly operatorFee?: bigint | Error;
+    readonly dryRun?: string | Error;
+    readonly pending?: string;
+    readonly latest?: string;
+  }
+  interface Seen { raw?: `0x${string}`; l1Tx?: `0x${string}`; operatorGas?: bigint }
+  const chainRpc = (chainId: number, net: Net, seen: Seen) =>
+    mockRpc(chainId, (method, params) => {
+      switch (method) {
+        case 'eth_gasPrice':
+          return '0x3b9aca00';
+        case 'eth_getTransactionCount':
+          return params[1] === 'latest' ? (net.latest ?? '0x7') : (net.pending ?? '0x7');
+        case 'eth_getBalance':
+          return `0x${(net.balance ?? BALANCE).toString(16)}`;
+        case 'eth_estimateGas':
+          if (net.estimate instanceof Error) throw net.estimate;
+          return net.estimate ?? '0x5208';
+        case 'eth_call': {
+          const call = params[0] as { to: string; data: `0x${string}` };
+          if (call.to === ORACLE) {
+            const d = decodeFunctionData({ abi: oracleAbi, data: call.data });
+            let answer: bigint | string | Error;
+            if (d.functionName === 'getL1Fee') {
+              seen.l1Tx = d.args[0];
+              answer = net.l1Fee ?? L1_FEE;
+            } else {
+              seen.operatorGas = d.args[0];
+              answer = net.operatorFee ?? 0n;
+            }
+            if (answer instanceof Error) throw answer;
+            return typeof answer === 'string' ? answer : encodeAbiParameters([{ type: 'uint256' }], [answer]);
+          }
+          if (net.dryRun instanceof Error) throw net.dryRun;
+          return net.dryRun ?? '0x';
+        }
+        case 'eth_sendRawTransaction':
+          seen.raw = params[0] as `0x${string}`;
+          return keccak256(params[0] as `0x${string}`);
+        default:
+          throw new Error(method);
+      }
+    });
+  const native = (): SweepTarget => ({ ...target, token: 'native' });
+  const sends = (rpc: { calls: { method: string }[] }): number => rpc.calls.filter((c) => c.method === 'eth_sendRawTransaction').length;
+
+  it('on an OP Stack chain (Base Sepolia) prices the L1 data fee and operator fee on the unsigned transaction and keeps them back', async () => {
+    const seen: Seen = {};
+    const rpc = chainRpc(84532, { operatorFee: 5_000n }, seen);
+    const res = await directSweep({ target: native(), manifest, destination: DEST, amount: BALANCE, rpc });
+    const tx = parseTransaction(seen.raw!);
+    const reserve = 2n * (L1_FEE + 5_000n);
+    expect(tx.gas).toBe(21_000n);
+    expect(tx.value).toBe(BALANCE - 21_000n * MAX_FEE - reserve);
+    expect(res.sent).toBe(tx.value);
+    // What op-geth checks against the balance (gas at the fee cap + value + L1 fee + operator fee) now fits, with headroom.
+    expect(21_000n * MAX_FEE + tx.value! + L1_FEE + 5_000n).toBeLessThan(BALANCE);
+    // The oracle priced this very transaction, unsigned, carrying the largest value it could.
+    const priced = parseTransaction(seen.l1Tx!);
+    expect(priced.r).toBeUndefined();
+    expect(priced).toMatchObject({ type: 'eip1559', chainId: 84532, nonce: 7, gas: 21_000n, maxFeePerGas: tx.maxFeePerGas, maxPriorityFeePerGas: tx.maxPriorityFeePerGas, value: BALANCE - 21_000n * MAX_FEE });
+    expect(priced.to?.toLowerCase()).toBe(DEST.toLowerCase());
+    expect(seen.operatorGas).toBe(21_000n);
+  });
+
+  it('gives a contract or EIP-7702 destination its estimated gas, also in the dry run; nothing extra is kept back off OP Stack', async () => {
+    const seen: Seen = {};
+    const rpc = chainRpc(11155111, { estimate: '0xb5e2' /* 46 562 */ }, seen);
+    const res = await directSweep({ target: { ...native(), chainId: 11155111 }, manifest: fakeManifest(11155111), destination: DEST, amount: BALANCE, rpc });
+    const tx = parseTransaction(seen.raw!);
+    const gas = (46_562n * 12n) / 10n;
+    expect(tx.gas).toBe(gas);
+    expect(tx.value).toBe(BALANCE - gas * MAX_FEE);
+    expect(rpc.calls.find((c) => c.method === 'eth_estimateGas')?.params).toEqual([{ from: target.owner, to: DEST, value: `0x${(BALANCE - 21_000n * MAX_FEE).toString(16)}` }]);
+    expect(rpc.calls.filter((c) => c.method === 'eth_call').map((c) => c.params)).toEqual([
+      [{ from: target.owner, to: DEST, data: '0x', value: `0x${tx.value!.toString(16)}`, gas: `0x${gas.toString(16)}` }, 'latest'],
+    ]);
+    expect(res.simulation).toBe('ok');
+  });
+
+  it('passes the gas limit to the ERC-20 dry run too', async () => {
+    const seen: Seen = {};
+    const rpc = chainRpc(84532, { estimate: '0xc350' }, seen);
+    await directSweep({ target, manifest, destination: DEST, amount: 777n, rpc });
+    const dryRun = rpc.calls.find((c) => c.method === 'eth_call');
+    expect(dryRun?.params[0]).toMatchObject({ from: target.owner, to: TOKEN, value: '0x0', gas: `0x${(60_000).toString(16)}` });
+  });
+
+  it('refuses, before signing, a balance that covers the gas but not the L1 data fee', async () => {
+    const rpc = chainRpc(84532, { balance: 45_000_000_000_000n }, {});
+    await expect(directSweep({ target: native(), manifest, destination: DEST, amount: 1n, rpc })).rejects.toThrow(/does not cover the network fee, including the L1 data fee/);
+    expect(sends(rpc)).toBe(0);
+  });
+
+  it('refuses when the fees including the L1 data fee would exceed 10 % of the amount moved', async () => {
+    const rpc = chainRpc(84532, { balance: 10n ** 15n, l1Fee: 10n ** 14n }, {});
+    await expect(directSweep({ target: native(), manifest, destination: DEST, amount: 1n, rpc })).rejects.toThrow(/more than 10 %/);
+    expect(sends(rpc)).toBe(0);
+  });
+
+  it.each([
+    ['the L1 fee call fails', { l1Fee: new Error('rpc down') }],
+    ['the L1 fee answer is malformed', { l1Fee: '0x1234' }],
+    ['the operator fee call fails', { operatorFee: new Error('rpc down') }],
+  ] as const)('refuses when %s: the amount to send cannot be computed', async (_n, net) => {
+    const rpc = chainRpc(84532, net, {});
+    await expect(directSweep({ target: native(), manifest, destination: DEST, amount: 1n, rpc })).rejects.toThrow(/fee oracle/);
+    expect(sends(rpc)).toBe(0);
+  });
+
+  it('refuses a destination that rejects the transfer (the gas estimate reverts), before signing', async () => {
+    const rpc = chainRpc(84532, { estimate: new ChainAdapterError('RPC_FAILURE', 'json-rpc error 3', { reverted: true }) }, {});
+    await expect(directSweep({ target: native(), manifest, destination: DEST, amount: 1n, rpc })).rejects.toThrow(/would revert/);
+    expect(sends(rpc)).toBe(0);
+  });
+
+  it('L2-F1: the dry run refuses a revert the RPC client reports as a flag, and reports one it cannot run', async () => {
+    const reverting = chainRpc(84532, { dryRun: new ChainAdapterError('RPC_FAILURE', 'json-rpc error 3', { reverted: true }) }, {});
+    await expect(directSweep({ target: native(), manifest, destination: DEST, amount: 1n, rpc: reverting })).rejects.toThrow(/would revert/);
+    expect(sends(reverting)).toBe(0);
+    const blind = chainRpc(84532, { dryRun: new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32601') }, {});
+    const res = await directSweep({ target: native(), manifest, destination: DEST, amount: 1n, rpc: blind });
+    expect(res.simulation).toBe('unavailable');
+    expect(sends(blind)).toBe(1);
+  });
+
+  it('a same-nonce re-sign uses exactly the locked nonce, never the pending count', async () => {
+    const seen: Seen = {};
+    const rpc = chainRpc(84532, { pending: '0x9', latest: '0x7' }, seen);
+    const res = await directSweep({ target, manifest, destination: DEST, amount: 777n, rpc, replaceNonce: 7 });
+    expect(parseTransaction(seen.raw!).nonce).toBe(7);
+    expect(res.attempt).toMatchObject({ nonce: 7, status: 'submitted' });
+    expect(rpc.calls.filter((c) => c.method === 'eth_getTransactionCount').map((c) => c.params[1])).toEqual(['latest']);
+  });
+
+  it('refuses a re-sign once a transaction with that nonce is mined (a replacement could never be included)', async () => {
+    const rpc = chainRpc(84532, { latest: '0x8' }, {});
+    await expect(directSweep({ target, manifest, destination: DEST, amount: 777n, rpc, replaceNonce: 7 })).rejects.toThrow(/already on chain/);
+    expect(sends(rpc)).toBe(0);
+    await expect(directSweep({ target, manifest, destination: DEST, amount: 777n, rpc: chainRpc(84532, {}, {}), replaceNonce: -1 })).rejects.toThrow(/nonce/);
+  });
+
+  it('L4-02: sweeps a deep-scan payment whose announced view tag is wrong', async () => {
+    const seen: Seen = {};
+    const tag = parseInt(target.announcement.metadata.slice(2, 4), 16) ^ 0x5a;
+    const wrong: SweepTarget = { ...target, announcement: { ...target.announcement, metadata: `0x${tag.toString(16).padStart(2, '0')}` } };
+    await directSweep({ target: wrong, manifest, destination: DEST, amount: 777n, rpc: chainRpc(84532, {}, seen) });
+    expect(await recoverTransactionAddress({ serializedTransaction: seen.raw as never })).toBe(target.owner);
+  });
+});
+
+describe('L2-F2: a direct lock whose nonce is final without its own receipt resolves as replaced', () => {
+  const OWNER = '0x5555555555555555555555555555555555555555' as Address;
+  const H = `0x${'ab'.repeat(32)}` as const;
+  const lock: SweepLock = { chainId: 84532, owner: OWNER, nonce: 3, expectedHash: H, status: 'unknown-after-handoff' };
+  const rpc = (finalized: string | Error, receipts: unknown[] = []) =>
+    mockRpc(84532, (m, p) => {
+      if (m === 'eth_getTransactionReceipt') return receipts.shift() ?? null;
+      if (m === 'eth_getTransactionCount') {
+        expect(p).toEqual([OWNER, 'finalized']);
+        if (finalized instanceof Error) throw finalized;
+        return finalized;
+      }
+      throw new Error(m);
+    });
+
+  it('a finalized owner nonce above the lock nonce means no transaction with that nonce can still be mined', async () => {
+    expect((await reconcileSweepLock(rpc('0x4'), lock)).status).toBe('replaced');
+    expect((await reconcileSweepLock(rpc('0x4'), { ...lock, status: 'submitted' })).status).toBe('replaced');
+  });
+  it('stays unresolved while the nonce is not used at the finalized block, or when that cannot be read', async () => {
+    expect(await reconcileSweepLock(rpc('0x3'), lock)).toBe(lock);
+    expect(await reconcileSweepLock(rpc(new Error('unsupported block tag')), lock)).toBe(lock);
+    expect(await reconcileSweepLock(rpc('nonsense'), lock)).toBe(lock);
+  });
+  it('a receipt for the recorded hash still wins, also when it appears on the second look', async () => {
+    expect((await reconcileSweepLock(rpc('0x4', [{ transactionHash: H, status: '0x1' }]), lock)).status).toBe('included');
+    expect((await reconcileSweepLock(rpc('0x4', [null, { transactionHash: H, status: '0x0' }]), lock)).status).toBe('reverted');
+  });
+  it('never applies to a legacy relayed lock (no owner nonce)', async () => {
+    const legacy: SweepLock = { chainId: 84532, owner: OWNER, expectedHash: H, status: 'submitted' };
+    const r = rpc('0x99');
+    expect(await reconcileSweepLock(r, legacy)).toBe(legacy);
+    expect(r.calls.map((c) => c.method)).not.toContain('eth_getTransactionCount');
   });
 });
 

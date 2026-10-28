@@ -18,7 +18,7 @@ const MAX_BYTES = 32_000;
 const TOMBSTONE = '"unavailable"';
 const FIELDS = ['chainId', 'owner', 'nonce', 'expectedHash', 'order', 'status'];
 const ORDER_FIELDS = ['relayer', 'nonce', 'deadline'];
-const STATUSES: readonly string[] = ['submitted', 'unknown-after-handoff', 'included', 'reverted', 'expired', 'refused'];
+const STATUSES: readonly string[] = ['submitted', 'unknown-after-handoff', 'included', 'reverted', 'expired', 'refused', 'replaced'];
 
 export interface SweepJournalStorage {
   getItem(key: string): string | null;

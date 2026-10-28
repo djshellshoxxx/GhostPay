@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
-import { ChainAdapterError, eip712DomainSeparator, erc20MetadataAbi, erc2612PermitAbi, ghostPaySweepRelayerAbi } from '@ghostpay/chain-adapters';
+import { ANNOUNCEMENT_TOPIC, ChainAdapterError, eip712DomainSeparator, erc20MetadataAbi, erc2612PermitAbi, ghostPaySweepRelayerAbi, type RpcLog } from '@ghostpay/chain-adapters';
+import { buildNativeMetadata, deriveStealthPayment } from '@ghostpay/core-crypto';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { encodeFunctionData, encodeFunctionResult, keccak256 } from 'viem/utils';
+import { decodeFunctionData, encodeAbiParameters, encodeFunctionData, encodeFunctionResult, keccak256, parseAbi, parseTransaction } from 'viem/utils';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { Services } from '../lib/services';
 import { clearSession, generateSession } from '../lib/session';
@@ -35,7 +36,23 @@ const TOKEN = '0x036CbD53842c5426634e7929541eC2318f3dCF7e';
 const VAULT_PASS = 'violet comet maple lantern';
 let vaultStore = new MemoryKeyVaultStore();
 
-interface RawSink { raw?: string; sendFail?: boolean; sendHang?: boolean; receiptOk?: boolean; calls?: string[]; blockTimestamp?: number; nonceUsed?: boolean }
+interface RawSink {
+  raw?: string; sendFail?: boolean; sendHang?: boolean; receiptOk?: boolean; calls?: string[]; blockTimestamp?: number; nonceUsed?: boolean;
+  /** Every raw transaction handed to the RPC, in order. */
+  raws?: string[];
+  /** The node rejects this many sends first (a JSON-RPC error: nothing enters the mempool). */
+  failSends?: number;
+  /** OP Stack L1 data fee: the GasPriceOracle quotes it and, like op-geth, the node refuses a tx whose cost plus this fee exceeds the balance. */
+  l1Fee?: bigint;
+  estimate?: string;
+  gasPrice?: string;
+  finalizedNonce?: string;
+  /** The dry-run eth_call (transfer or plain value call) fails the way a node without eth_call support answers. */
+  dryRunBlind?: boolean;
+}
+
+const ORACLE = '0x420000000000000000000000000000000000000F';
+const oracleAbi = parseAbi(['function getL1Fee(bytes _data) view returns (uint256)', 'function getOperatorFee(uint256 _gasUsed) view returns (uint256)']);
 
 function extra(balance: bigint, nativeBalance: bigint, rawSink: RawSink) {
   return (method: string, params: readonly unknown[]): unknown => {
@@ -44,16 +61,27 @@ function extra(balance: bigint, nativeBalance: bigint, rawSink: RawSink) {
       case 'eth_getBalance':
         return `0x${nativeBalance.toString(16)}`;
       case 'eth_gasPrice':
-        return '0x3b9aca00';
+        return rawSink.gasPrice ?? '0x3b9aca00';
       case 'eth_getTransactionCount':
-        return '0x0';
+        return params[1] === 'finalized' && rawSink.finalizedNonce !== undefined ? rawSink.finalizedNonce : '0x0';
       case 'eth_estimateGas':
-        return '0xc350';
-      case 'eth_sendRawTransaction':
+        return rawSink.estimate ?? '0xc350';
+      case 'eth_sendRawTransaction': {
         rawSink.raw = params[0] as string;
+        rawSink.raws?.push(rawSink.raw);
+        if ((rawSink.failSends ?? 0) > 0) {
+          rawSink.failSends = (rawSink.failSends ?? 0) - 1;
+          throw new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32000');
+        }
+        if (rawSink.l1Fee !== undefined) {
+          // op-geth's txpool check: gas at the fee cap + value + L1 data fee must fit the balance.
+          const tx = parseTransaction(rawSink.raw as `0x${string}`);
+          if ((tx.gas ?? 0n) * (tx.maxFeePerGas ?? 0n) + (tx.value ?? 0n) + rawSink.l1Fee > nativeBalance) throw new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32000');
+        }
         if (rawSink.sendFail === true) throw new ChainAdapterError('RPC_FAILURE', 'connection reset after write');
         if (rawSink.sendHang === true) return new Promise(() => undefined);
         return keccak256(params[0] as `0x${string}`);
+      }
       case 'eth_getBlockByNumber':
         if (params[0] === 'finalized' && rawSink.blockTimestamp !== undefined) return { hash: `0x${'f1'.repeat(32)}`, number: '0x64', timestamp: `0x${rawSink.blockTimestamp.toString(16)}` };
         if (params[0] === 'finalized') throw new ChainAdapterError('RPC_FAILURE', 'finalized not supported');
@@ -62,6 +90,11 @@ function extra(balance: bigint, nativeBalance: bigint, rawSink: RawSink) {
         return rawSink.receiptOk === true && rawSink.raw !== undefined ? { transactionHash: keccak256(rawSink.raw as `0x${string}`), status: '0x1' } : null;
       case 'eth_call': {
         const data = (params[0] as { data: string }).data;
+        if ((params[0] as { to: string }).to === ORACLE) {
+          const d = decodeFunctionData({ abi: oracleAbi, data: data as `0x${string}` });
+          return encodeAbiParameters([{ type: 'uint256' }], [d.functionName === 'getL1Fee' ? (rawSink.l1Fee ?? 0n) : 0n]);
+        }
+        if (rawSink.dryRunBlind === true && (data === '0x' || data.startsWith('0xa9059cbb'))) throw new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32601');
         if (data.startsWith(NONCE_USED_SELECTOR)) {
           if ((params[0] as { to: string }).to !== FAKE_SWEEP_RELAYER) throw new Error('nonceUsed must target the signed sweep relayer');
           return encodeFunctionResult({ abi: ghostPaySweepRelayerAbi, functionName: 'nonceUsed', result: rawSink.nonceUsed === true });
@@ -77,18 +110,37 @@ function extra(balance: bigint, nativeBalance: bigint, rawSink: RawSink) {
   };
 }
 
+/** A router announcement for a native-coin payment (the default invoice asset), as the RPC would return it. */
+function nativeLog(metaAddress: string): RpcLog {
+  const hex = (b: Uint8Array): string => Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
+  const word = (a: string): string => `0x${a.slice(2).toLowerCase().padStart(64, '0')}`;
+  const p = deriveStealthPayment(metaAddress);
+  return {
+    address: FAKE_ANNOUNCER,
+    topics: [ANNOUNCEMENT_TOPIC, `0x${'1'.padStart(64, '0')}`, word(p.stealthAddress), word(FAKE_ROUTER)],
+    data: encodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], [`0x${hex(p.ephemeralPublicKey)}`, `0x${hex(buildNativeMetadata(p.viewTag, 10n ** 17n))}`]),
+    blockNumber: '0x32',
+    blockHash: `0x${(50).toString(16).padStart(64, '0')}`,
+    logIndex: '0x0',
+    transactionHash: `0x${'5'.repeat(64)}`,
+  };
+}
+
 /** Scans one payment, then opens the Sweep view for it. */
-async function toSweep(opts: { balance?: bigint; native?: bigint; relayer?: boolean; fetchFn?: Services['fetchFn']; raw?: RawSink; code?: Record<string, string>; unsigned?: boolean; vaultPass?: string } = {}): Promise<ReturnType<typeof userEvent.setup>> {
+async function toSweep(opts: { balance?: bigint; native?: bigint; relayer?: boolean; fetchFn?: Services['fetchFn']; raw?: RawSink; code?: Record<string, string>; unsigned?: boolean; vaultPass?: string; nativePayment?: boolean; wrongTag?: boolean } = {}): Promise<ReturnType<typeof userEvent.setup>> {
   const pub = generateSession();
   if (opts.vaultPass !== undefined) await saveEncryptedVault(opts.vaultPass, { N: 1 << 14 });
   window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' }, ...(opts.relayer === true ? { relayerUrl: 'https://relay.test' } : {}) }));
-  const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 50, index: 0, caller: FAKE_ROUTER, amount: 5_000_000n });
+  const mine = opts.nativePayment === true
+    ? { log: nativeLog(pub.metaAddress) }
+    : makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 50, index: 0, caller: FAKE_ROUTER, amount: 5_000_000n, ...(opts.wrongTag === true ? { wrongTag: true } : {}) });
   const rpc = chainWithLogs(84532, 100, [mine.log], extra(opts.balance ?? 5_000_000n, opts.native ?? 10n ** 17n, opts.raw ?? {}));
   const user = userEvent.setup();
   renderApp(makeServices({ loadManifest: opts.unsigned === true ? (id) => Promise.resolve({ status: 'loaded', manifest: backedManifest(id), trust: 'unsigned-dev', warning: 'UNSIGNED DEV MANIFEST (test)' }) : loaded, createRpc: () => Promise.resolve(withManifestChain(rpc, { code: opts.code ?? FAKE_CODE })), ...(opts.fetchFn === undefined ? {} : { fetchFn: opts.fetchFn }) }));
   await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Scan and receive' }));
   await user.selectOptions(screen.getByLabelText('Chain'), screen.getByRole('option', { name: 'Base Sepolia' }));
   await user.type(screen.getByLabelText('Start block'), '0');
+  if (opts.wrongTag === true) await user.click(screen.getByLabelText('Deep scan (also check wrong view tags)'));
   await user.click(screen.getByRole('button', { name: 'Start scan' }));
   await user.click(await screen.findByRole('button', { name: 'Sweep this payment' }));
   return user;
@@ -381,6 +433,160 @@ describe('Sweep', () => {
     }
     expect(sink.calls ?? []).not.toContain('eth_sendRawTransaction');
     expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+  });
+
+  describe('L2-F2: native sweeps on OP Stack, and unjamming a lock by a same-nonce replacement', () => {
+    const fill = async (user: ReturnType<typeof userEvent.setup>): Promise<void> => {
+      await user.click(screen.getByLabelText(/Directly/));
+      await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+    };
+    const RESIGN = 'Sign a replacement with the same nonce';
+
+    it('a native payment on Base Sepolia is swept with the L1 data fee kept back, so the node accepts it', async () => {
+      const sink: RawSink = { calls: [], estimate: '0x5208', l1Fee: 3_000_000_000_000n };
+      const user = await toSweep({ nativePayment: true, raw: sink });
+      expect(await screen.findByText('0.1 ETH')).toBeTruthy();
+      await fill(user);
+      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      expect(await screen.findByText('Submitted')).toBeTruthy();
+      const tx = parseTransaction(sink.raw as `0x${string}`);
+      expect(tx.value).toBe(10n ** 17n - 21_000n * 2_000_000_000n - 2n * 3_000_000_000_000n);
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+    });
+
+    it('a sweep the node rejected keeps its lock; a replacement with the same nonce takes it over and can resolve it', async () => {
+      const sink: RawSink = { calls: [], raws: [], failSends: 1 };
+      const user = await toSweep({ raw: sink });
+      await screen.findByText('5 USDC');
+      await fill(user);
+      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      expect(await screen.findByText('Outcome unknown')).toBeTruthy();
+      const first = keccak256(sink.raws?.[0] as `0x${string}`);
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+      expect(screen.getByText(/so at most one of the two can ever be included/)).toBeTruthy();
+
+      sink.gasPrice = '0x77359400'; // the fee moved meanwhile, so the replacement differs from the first transaction
+      await user.click(screen.getByRole('button', { name: RESIGN }));
+      expect((await screen.findAllByText('Submitted')).length).toBeGreaterThan(0);
+      expect(sink.raws).toHaveLength(2);
+      const second = keccak256(sink.raws?.[1] as `0x${string}`);
+      expect(second).not.toBe(first);
+      expect(parseTransaction(sink.raws?.[1] as `0x${string}`).nonce).toBe(parseTransaction(sink.raws?.[0] as `0x${string}`).nonce);
+      const journal = window.sessionStorage.getItem(SWEEP_JOURNAL_KEY) ?? '';
+      expect(journal).toContain(second);
+      expect(journal).not.toContain(first);
+      expect(screen.getByText(second)).toBeTruthy();
+      // Still unresolved: a new sweep (another nonce) stays disarmed until the replacement's receipt is seen.
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+      sink.receiptOk = true;
+      await user.click(screen.getByRole('button', { name: 'Check status' }));
+      expect(await screen.findByText('Included on chain')).toBeTruthy();
+      expect(screen.queryByRole('button', { name: RESIGN })).toBeNull();
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(false);
+    });
+
+    it('the replacement lock is persisted before handoff: a reload during its send shows the new hash and stays disarmed', async () => {
+      const sink: RawSink = { calls: [], raws: [], failSends: 1, sendHang: true };
+      const user = await toSweep({ raw: sink });
+      await screen.findByText('5 USDC');
+      await fill(user);
+      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      expect(await screen.findByText('Outcome unknown')).toBeTruthy();
+      sink.gasPrice = '0x77359400';
+      await user.click(screen.getByRole('button', { name: RESIGN }));
+      await waitFor(() => { expect(sink.raws).toHaveLength(2); });
+      const second = keccak256(sink.raws?.[1] as `0x${string}`);
+      expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toContain(second);
+      expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).not.toContain(keccak256(sink.raws?.[0] as `0x${string}`));
+
+      appState.resetSweepAttemptsForTests({ keepStorage: true });
+      const nav = within(screen.getByRole('navigation', { name: 'Main' }));
+      await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
+      await user.click(nav.getByRole('button', { name: 'Sweep' }));
+      await screen.findByText('5 USDC');
+      await user.click(screen.getByLabelText(/Directly/));
+      expect(screen.getByText('Outcome unknown')).toBeTruthy();
+      expect(screen.getByText(second)).toBeTruthy();
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+    });
+
+    it('if the replacement lock cannot be persisted, nothing is broadcast and signing is disarmed', async () => {
+      const sink: RawSink = { calls: [], raws: [], failSends: 1 };
+      const user = await toSweep({ raw: sink });
+      await screen.findByText('5 USDC');
+      await fill(user);
+      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      expect(await screen.findByText('Outcome unknown')).toBeTruthy();
+      const proto = Object.getPrototypeOf(window.sessionStorage) as Storage;
+      const descriptor = Object.getOwnPropertyDescriptor(proto, 'setItem')!;
+      const original = descriptor.value as (this: Storage, k: string, v: string) => void;
+      proto.setItem = function (this: Storage, k: string, v: string): void {
+        if (k === SWEEP_JOURNAL_KEY) throw new DOMException('quota', 'QuotaExceededError');
+        original.call(this, k, v);
+      };
+      try {
+        await user.click(screen.getByRole('button', { name: RESIGN }));
+        expect(await screen.findByText('Signing disabled in this tab')).toBeTruthy();
+      } finally {
+        Object.defineProperty(proto, 'setItem', descriptor);
+      }
+      expect(sink.raws).toHaveLength(1);
+      expect(screen.queryByRole('button', { name: RESIGN })).toBeNull();
+    });
+
+    it('Check status resolves the lock as replaced once its nonce is final without its own receipt', async () => {
+      const sink: RawSink = { calls: [], raws: [], failSends: 1 };
+      const user = await toSweep({ raw: sink });
+      await screen.findByText('5 USDC');
+      await fill(user);
+      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      expect(await screen.findByText('Outcome unknown')).toBeTruthy();
+      await user.click(screen.getByRole('button', { name: 'Check status' }));
+      expect(await screen.findByText(/No receipt found for this hash yet/)).toBeTruthy();
+      sink.finalizedNonce = '0x1';
+      await user.click(screen.getByRole('button', { name: 'Check status' }));
+      expect(await screen.findByText('Replaced on chain')).toBeTruthy();
+      expect(screen.getByText(/can never be included/)).toBeTruthy();
+      expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toContain('"replaced"');
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(false);
+    });
+
+    it('a relayed order lock offers no direct replacement', async () => {
+      const fetchFn: Services['fetchFn'] = (url) => {
+        if (url.endsWith('/v1/quote')) return Promise.resolve(new Response(JSON.stringify({ fee: '25000', feeTo: FAKE_FEE_RECIPIENT, expiresAt: 1_800_000_100, quoteToken: 'tok' })));
+        return Promise.reject(new TypeError('connection reset'));
+      };
+      const user = await toSweep({ relayer: true, fetchFn });
+      await screen.findByText('5 USDC');
+      await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+      await user.click(screen.getByRole('button', { name: 'Get relayer quote' }));
+      await screen.findByText(/Relayer fee: 0\.025 USDC/);
+      await user.click(screen.getByRole('button', { name: 'Sign and submit to relayer' }));
+      expect(await screen.findByText('Outcome unknown')).toBeTruthy();
+      expect(screen.queryByRole('button', { name: RESIGN })).toBeNull();
+    });
+  });
+
+  it('L2-F1: a sweep whose dry run the RPC cannot run is still sent, with a visible warning', async () => {
+    const sink: RawSink = { calls: [], dryRunBlind: true };
+    const user = await toSweep({ raw: sink });
+    await screen.findByText('5 USDC');
+    await user.click(screen.getByLabelText(/Directly/));
+    await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    expect(await screen.findByText('Submitted')).toBeTruthy();
+    expect(screen.getByText(/could not dry-run this sweep/)).toBeTruthy();
+  });
+
+  it('L4-02: a deep-scan payment whose announced view tag is wrong can be swept', async () => {
+    const sink: RawSink = { calls: [] };
+    const user = await toSweep({ raw: sink, wrongTag: true });
+    await screen.findByText('5 USDC');
+    await user.click(screen.getByLabelText(/Directly/));
+    await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    expect(await screen.findByText('Submitted')).toBeTruthy();
+    expect(sink.raw).toMatch(/^0x02/);
   });
 
   describe('M1: relayed sweep lock', () => {

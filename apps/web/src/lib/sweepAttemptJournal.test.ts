@@ -104,7 +104,13 @@ describe('tab-scoped sweep attempt journal', () => {
     expect(() => { writeSweepAttempt(lock(2), quota); }).toThrow(SweepJournalUnavailableError);
   });
 
-  it.each(['expired', 'refused', 'included', 'reverted'] as const)('evicts a %s lock when full', (status) => {
+  it('round-trips a direct lock resolved as replaced (its nonce is final under another transaction)', () => {
+    const s = storage();
+    writeSweepAttempt(lock(1, 'replaced'), s);
+    expect(readSweepAttempts(s)).toEqual([lock(1, 'replaced')]);
+  });
+
+  it.each(['expired', 'refused', 'included', 'reverted', 'replaced'] as const)('evicts a %s lock when full', (status) => {
     const s = storage();
     for (let i = 1; i <= MAX_SWEEP_ATTEMPTS; i += 1) writeSweepAttempt(lock(i, i === 7 ? status : 'submitted'), s);
     writeSweepAttempt(lock(1000), s);

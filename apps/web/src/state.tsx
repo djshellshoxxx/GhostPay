@@ -87,13 +87,22 @@ function hydrateSweepAttempts(): void {
 /**
  * Persists the lock BEFORE the signed bytes leave the page. Throws (and records nothing) when the tab journal cannot
  * hold it, so the caller aborts without broadcasting.
+ *
+ * `replaces` is passed only by a same-nonce re-sign of an unresolved direct sweep (L2-F2): the new lock takes over
+ * exactly that lock (compare-and-swap) and only with the same owner nonce, so at most one of the two transactions can be
+ * mined. Any other unresolved lock still refuses.
  */
-export function beginSweepAttempt(attempt: SweepLock): void {
+export function beginSweepAttempt(attempt: SweepLock, replaces?: SweepLock): void {
   hydrateSweepAttempts();
   if (sweepJournalBroken) throw new SweepJournalUnavailableError();
   // Re-checked here, after the signing awaits, so a lock taken meanwhile is never overwritten.
-  const existing = sweepAttempts.get(sweepAttemptKey(attempt.chainId, attempt.owner));
-  if (existing !== undefined && (existing.status === 'submitted' || existing.status === 'unknown-after-handoff')) {
+  const key = sweepAttemptKey(attempt.chainId, attempt.owner);
+  const existing = sweepAttempts.get(key);
+  if (replaces !== undefined) {
+    if (existing === undefined || sweepAttemptKey(replaces.chainId, replaces.owner) !== key || !sameLock(existing, toSweepLock(replaces)) || !sameNonceReplacement(existing, attempt)) {
+      throw new UserFacingError('The pending sweep this replacement was signed for has changed or cannot be replaced. Nothing was sent; check its status.');
+    }
+  } else if (existing !== undefined && isUnresolved(existing)) {
     throw new UserFacingError('A sweep from this address may still be pending. Check its status before signing anything new.');
   }
   const storage = browserSweepStorage();
@@ -119,6 +128,15 @@ export function recordSweepAttempt(attempt: SweepLock): void {
     sweepJournalBroken = true;
   }
   notifySweepAttempts();
+}
+
+function isUnresolved(a: SweepLock): boolean {
+  return a.status === 'submitted' || a.status === 'unknown-after-handoff';
+}
+
+/** Only an unresolved direct lock (an owner nonce, no relayed order) may be replaced, and only with that same nonce. */
+function sameNonceReplacement(existing: SweepLock, next: SweepLock): boolean {
+  return isUnresolved(existing) && existing.order === undefined && next.order === undefined && existing.nonce !== undefined && next.nonce === existing.nonce;
 }
 
 function sameLock(a: SweepLock, b: SweepLock): boolean {
