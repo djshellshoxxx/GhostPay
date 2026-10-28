@@ -1,5 +1,4 @@
 import { findChain, tokensForChain, type RpcClient } from '@ghostpay/chain-adapters';
-import { unsafeRevealSecret } from '@ghostpay/core-crypto';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../components/Common';
 import { ReceiptPanel } from '../components/ReceiptPanel';
@@ -12,7 +11,7 @@ import { checkpointKeyId, runScan, type ScanMatch, type ScanProgress } from '../
 import { browserStorage, createWindowedScanClient, describeScanDisclosure, loadScanPrivacy, openScanClients, planScan } from '../lib/scanPrivacy';
 import { describeAnonymitySet } from '../lib/scanSpam';
 import { useServices } from '../lib/services';
-import { captureSessionGuard, requireSession, subscribeSession } from '../lib/session';
+import { captureSessionGuard, revealViewingKey, subscribeSession } from '../lib/session';
 import { recordFromVerifiedMatch } from '../lib/reconciliationLedger';
 import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
 import type { TagPayload } from '../lib/tags';
@@ -155,12 +154,12 @@ export function Scan(): ReactNode {
         }
         // The second RPC gets the same aligned announcement windows as the scan RPC, never the exact checkpoint range.
         const secondary = rpc2 === undefined ? undefined : createWindowedScanClient(rpc2, { chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, policy: plan.window, sleep: services.sleep });
-        const secrets = requireSession();
         assertScopeCurrent();
         setScanOwner(scope);
-        const viewingKey = unsafeRevealSecret(secrets.keys.viewingSecret);
         let found: ScanMatch[] = [];
         let quarantined: ScanMatch[] = [];
+        // Only a copy of the viewing key leaves the session, and runScan wipes it; spending and signing keys stay boxed.
+        const viewingKey = revealViewingKey();
         const res = await runScan({
           chain,
           manifest: manifest.manifest,
@@ -408,8 +407,23 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
                     className="btn"
                     onClick={() => {
                       const payload: TagPayload = { stealthAddress: m.stealthAddress, announcementId: id, logIndex: m.announcement.logIndex, clientLabel: label[id] ?? '' };
+                      let sessionGuard: () => void;
+                      try {
+                        sessionGuard = captureSessionGuard();
+                      } catch (e) {
+                        setErr(userMessage(e));
+                        return;
+                      }
                       services.vault.save(props.chainId, payload).then(
                         () => {
+                          try {
+                            sessionGuard();
+                          } catch (e) {
+                            // The keys changed while saving: never leave the tags open for the new keys.
+                            services.vault.lock();
+                            setErr(userMessage(e));
+                            return;
+                          }
                           setErr(undefined);
                           setTags({ ...tags, [id]: payload.clientLabel.trim() });
                           app.announce('Tag saved.');
@@ -466,9 +480,19 @@ function Tags(props: { readonly chainId: number }): ReactNode {
             className="btn"
             onClick={() => {
               try {
-                const key = unsafeRevealSecret(requireSession().keys.viewingSecret);
+                const sessionGuard = captureSessionGuard();
+                const key = revealViewingKey();
                 services.vault.unlock(key).then(
                   () => {
+                    try {
+                      sessionGuard();
+                    } catch (e) {
+                      // Unlocked with the previous keys' viewing key: lock again before anything reads or writes tags.
+                      services.vault.lock();
+                      force((n) => n + 1);
+                      setErr(userMessage(e));
+                      return;
+                    }
                     setErr(undefined);
                     force((n) => n + 1);
                     refresh();

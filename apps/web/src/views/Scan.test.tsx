@@ -6,6 +6,7 @@ import { act } from '@testing-library/react';
 import { checkpointKeyId } from '../lib/scanClient';
 import * as scanClient from '../lib/scanClient';
 import { clearSession, generateSession, importSession, withSessionSecrets } from '../lib/session';
+import * as sessionModule from '../lib/session';
 import { SETTINGS_KEY } from '../lib/settings';
 import { FAKE_ANNOUNCER, FAKE_ROUTER } from '../test/fakeManifest';
 import { backedManifest, withManifestChain } from '../test/manifestChain';
@@ -463,6 +464,64 @@ describe('Scan and receive', () => {
       expect(screen.getByText(/The second RPC reports block 29000, 1000 blocks behind the scan RPC \(block 30000\)/)).toBeTruthy();
       expect(screen.queryByText(/held more announcements/)).toBeNull();
     } finally { runner.mockRestore(); }
+  });
+
+  it('opens only the viewing key for scanning and tags, never the full key set (L1-07)', async () => {
+    const pub = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 0, caller: FAKE_ROUTER });
+    const opened = vi.spyOn(sessionModule, 'requireSession');
+    const viewing = vi.spyOn(sessionModule, 'revealViewingKey');
+    try {
+      const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(chainWithLogs(84532, 500, [mine.log]))), createScanWorker: () => new InlineWorker() }));
+      await user.type(screen.getByLabelText('Start block'), '100');
+      await user.click(screen.getByRole('button', { name: 'Start scan' }));
+      await waitFor(() => { expect(screen.getByText(/Finished\./)).toBeTruthy(); });
+      expect(screen.getByText(mine.stealthAddress)).toBeTruthy();
+      await user.click(screen.getByRole('button', { name: 'Unlock tags' }));
+      expect(await screen.findByLabelText(/Client tag/)).toBeTruthy();
+      expect(opened).not.toHaveBeenCalled();
+      expect(viewing).toHaveBeenCalledTimes(2);
+    } finally { opened.mockRestore(); viewing.mockRestore(); }
+  });
+
+  it('locks tags again when the seller keys change while a tag unlock is pending (L1-04)', async () => {
+    generateSession();
+    const services = makeServices();
+    const unlock = services.vault.unlock.bind(services.vault);
+    let release!: () => void; const gate = new Promise<void>((resolve) => { release = resolve; }); let waiting = false;
+    vi.spyOn(services.vault, 'unlock').mockImplementation(async (key) => { waiting = true; await gate; return unlock(key); });
+    const user = await openScan(services);
+    await user.click(screen.getByRole('button', { name: 'Unlock tags' }));
+    await waitFor(() => expect(waiting).toBe(true));
+    act(() => { clearSession(); generateSession(); });
+    await act(async () => { release(); await gate; });
+    expect((await screen.findByRole('alert')).textContent).toMatch(/Seller keys changed/);
+    expect(services.vault.unlocked).toBe(false);
+    expect(screen.getByRole('button', { name: 'Unlock tags' })).toBeTruthy();
+  });
+
+  it('locks tags when the seller keys change while a tag save is pending (L1-04)', async () => {
+    const pub = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 0, caller: FAKE_ROUTER });
+    const services = makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(chainWithLogs(84532, 500, [mine.log]))), createScanWorker: () => new InlineWorker() });
+    const save = services.vault.save.bind(services.vault);
+    let release!: () => void; const gate = new Promise<void>((resolve) => { release = resolve; }); let waiting = false;
+    vi.spyOn(services.vault, 'save').mockImplementation(async (chainId, payload) => { waiting = true; await gate; return save(chainId, payload); });
+    const user = await openScan(services);
+    await user.type(screen.getByLabelText('Start block'), '100');
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    await waitFor(() => { expect(screen.getByText(/Finished\./)).toBeTruthy(); });
+    await user.click(screen.getByRole('button', { name: 'Unlock tags' }));
+    await user.type(await screen.findByLabelText(/Client tag/), 'Acme Corp');
+    await user.click(screen.getByRole('button', { name: 'Save tag' }));
+    await waitFor(() => expect(waiting).toBe(true));
+    act(() => { clearSession(); generateSession(); });
+    await act(async () => { release(); await gate; });
+    // The save finished under the previous keys: tags lock and no success is announced to the new session.
+    await waitFor(() => expect(services.vault.unlocked).toBe(false));
+    expect(screen.getAllByRole('status').map((node) => node.textContent ?? '').join(' ')).not.toMatch(/Tag saved/);
   });
 
   it('says so when only one RPC was used', async () => {
