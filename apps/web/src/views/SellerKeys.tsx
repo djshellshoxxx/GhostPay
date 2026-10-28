@@ -351,7 +351,7 @@ export function SellerKeys(): ReactNode {
           <h3 id="vault-unlock-h">{t('sellerKeys.vaultSavedHeading')}</h3>
           <p>{t('sellerKeys.unlockExplain')}</p>
           <form onSubmit={onUnlockVault} className="stack" autoComplete="off">
-            <Field label={t('sellerKeys.vaultPassphrase')}>{(id) => <input id={id} type="password" autoComplete="current-password" value={vaultUnlockPass} onChange={(e) => { if (vaultBusy) { operation.current?.abort(); setVaultBusy(false); } setConfirmReplace(false); setVaultUnlockPass(e.target.value); }} />}</Field>
+            <Field label={t('sellerKeys.vaultPassphrase')} hint={t('sellerKeys.vaultNoBrowserSave')}>{(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-vault-unlock" value={vaultUnlockPass} onChange={(e) => { if (vaultBusy) { operation.current?.abort(); setVaultBusy(false); } setConfirmReplace(false); setVaultUnlockPass(e.target.value); }} />}</Field>
             <button type="submit" className="btn" disabled={vaultBusy || vaultUnlockPass === ''}>{t('sellerKeys.unlockVault')}</button>
             {vaultBusy && operation.current !== null && <button type="button" className="btn" onClick={cancelImport}>{t('sellerKeys.cancelUnlock')}</button>}
           </form>
@@ -375,7 +375,7 @@ export function SellerKeys(): ReactNode {
                 </>
               )}
               {deletesLoadedKeys && (
-                <Field label={t('sellerKeys.deletePassphrase')}>{(id) => <input id={id} type="password" autoComplete="current-password" value={deletePass} onChange={(e) => { setDeletePass(e.target.value); }} />}</Field>
+                <Field label={t('sellerKeys.deletePassphrase')}>{(id) => <input id={id} type="password" autoComplete="off" name="ghostpay-vault-delete" value={deletePass} onChange={(e) => { setDeletePass(e.target.value); }} />}</Field>
               )}
               <button type="button" className="btn btn-danger" disabled={vaultBusy || (deletesLoadedKeys && deletePass === '')} onClick={onDeleteVault}>{t('sellerKeys.confirmDelete')}</button>{' '}
               <button type="button" className="btn" onClick={() => { setDeleteExpected(undefined); setDeletePass(''); }}>{t('sellerKeys.cancel')}</button>
@@ -439,7 +439,7 @@ export function SellerKeys(): ReactNode {
             <Field label={t('sellerKeys.repeatPassphrase')}>{(id) => <input id={id} type="password" autoComplete="new-password" value={pass2} onChange={(e) => { setPass2(e.target.value); }} />}</Field>
             {stepUpNeeded && (
               <Field label={t('sellerKeys.stepUp.label')} hint={t('sellerKeys.stepUp.hint')}>
-                {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="current-password" value={exportStepUp} onChange={(e) => { setExportStepUp(e.target.value); }} />}
+                {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-step-up-export" value={exportStepUp} onChange={(e) => { setExportStepUp(e.target.value); }} />}
               </Field>
             )}
             <button type="submit" className="btn" disabled={busy}>{t('sellerKeys.downloadKeystore')}</button>
@@ -459,14 +459,14 @@ export function SellerKeys(): ReactNode {
             </p>
             {vaultState === 'empty' ? (
               <form onSubmit={onSaveVault} className="stack" autoComplete="off">
-                <Field label={t('sellerKeys.newVaultPass')} {...(vaultSavePass !== '' && vaultSavePass === suggestedVaultPass ? { hint: suggestedHint } : {})}>
-                  {(id, d) => <input id={id} aria-describedby={d} type={vaultSavePass !== '' && vaultSavePass === suggestedVaultPass ? 'text' : 'password'} autoComplete="new-password" spellCheck={false} value={vaultSavePass} onChange={(e) => { setVaultSavePass(e.target.value); }} />}
+                <Field label={t('sellerKeys.newVaultPass')} hint={vaultSavePass !== '' && vaultSavePass === suggestedVaultPass ? `${suggestedHint} ${t('sellerKeys.vaultNoBrowserSave')}` : t('sellerKeys.vaultNoBrowserSave')}>
+                  {(id, d) => <input id={id} aria-describedby={d} type={vaultSavePass !== '' && vaultSavePass === suggestedVaultPass ? 'text' : 'password'} autoComplete="off" name="ghostpay-vault-new" spellCheck={false} value={vaultSavePass} onChange={(e) => { setVaultSavePass(e.target.value); }} />}
                 </Field>
                 <p><button type="button" className="btn" onClick={suggestVaultPass}>{t('sellerKeys.suggestAnotherVault')}</button></p>
-                <Field label={t('sellerKeys.repeatVaultPass')}>{(id) => <input id={id} type="password" autoComplete="new-password" value={vaultSavePass2} onChange={(e) => { setVaultSavePass2(e.target.value); }} />}</Field>
+                <Field label={t('sellerKeys.repeatVaultPass')}>{(id) => <input id={id} type="password" autoComplete="off" name="ghostpay-vault-new-again" value={vaultSavePass2} onChange={(e) => { setVaultSavePass2(e.target.value); }} />}</Field>
                 {backup?.vaultStepUp === true && (
                   <Field label={t('sellerKeys.stepUp.label')} hint={t('sellerKeys.stepUp.hint')}>
-                    {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="current-password" value={saveStepUp} onChange={(e) => { setSaveStepUp(e.target.value); }} />}
+                    {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-step-up-vault-save" value={saveStepUp} onChange={(e) => { setSaveStepUp(e.target.value); }} />}
                   </Field>
                 )}
                 <button type="submit" className="btn" disabled={vaultBusy}>{t('sellerKeys.saveVault')}</button>

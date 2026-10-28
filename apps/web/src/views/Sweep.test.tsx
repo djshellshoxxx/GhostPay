@@ -553,3 +553,14 @@ describe('G2-05: the vault passphrase field keeps nothing typed', () => {
     expect(field.getAttribute('value') ?? '').toBe('');
   });
 });
+
+describe('G2-06: the sweep step-up is not offered to the browser password manager', () => {
+  it('uses autocomplete="off" and a non-credential name, and says not to let the browser save it', async () => {
+    await toSweep({ vaultPass: VAULT_PASS });
+    await screen.findByText('5 USDC');
+    const field = screen.getByLabelText('Vault passphrase (required for each sweep action)');
+    expect(field.getAttribute('autocomplete')).toBe('off');
+    expect(field.getAttribute('name')).toBe('ghostpay-step-up-sweep');
+    expect(document.getElementById(field.getAttribute('aria-describedby') ?? '')?.textContent).toMatch(/Do not let your browser save it\.$/);
+  });
+});

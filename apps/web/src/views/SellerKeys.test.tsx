@@ -674,3 +674,36 @@ describe('G2-05: typed key hex and passphrases do not outlive their use', () => 
     }
   });
 });
+
+describe('G2-06: vault passphrases are not offered to the browser password manager', () => {
+  const PASS = 'violet comet maple lantern';
+  /** Neither a credential autocomplete token nor a shared or credential-like name, and the "do not save" copy where it is typed. */
+  const expectNotCredential = (label: string, name: string): void => {
+    const field = screen.getByLabelText<HTMLInputElement>(label);
+    expect(field.getAttribute('autocomplete')).toBe('off');
+    expect(field.getAttribute('name')).toBe(name);
+  };
+  const hintOf = (label: string): string => document.getElementById(screen.getByLabelText(label).getAttribute('aria-describedby') ?? '')?.textContent ?? '';
+
+  it('uses autocomplete="off" and distinct non-credential names on every vault and step-up field, and says not to save', async () => {
+    importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32), signingKeyHex: '33'.repeat(32) });
+    await saveEncryptedVault(PASS, { N: 1 << 14 });
+    const user = await open();
+    expectNotCredential('Vault passphrase', 'ghostpay-vault-unlock');
+    expect(hintOf('Vault passphrase')).toMatch(/Do not let your browser or password manager save this passphrase/);
+    expect(screen.getByText(/Unlocking replaces the keys currently in memory/).textContent).toMatch(/GhostPay never stores your passphrase\.$/);
+    expectNotCredential('Passphrase of the vault these keys are tied to', 'ghostpay-step-up-export');
+    await user.click(screen.getByRole('button', { name: 'Delete encrypted vault' }));
+    expectNotCredential('Passphrase of this vault', 'ghostpay-vault-delete');
+    await user.type(screen.getByLabelText('Passphrase of this vault'), PASS);
+    await user.click(screen.getByRole('button', { name: 'Confirm delete encrypted vault' }));
+    // The keys stay tied to the deleted vault, so saving a new one needs its passphrase as well (L1-02).
+    expect(await screen.findByLabelText('New vault passphrase (14+ characters)', undefined, { timeout: 15_000 })).toBeTruthy();
+    expectNotCredential('New vault passphrase (14+ characters)', 'ghostpay-vault-new');
+    expectNotCredential('Repeat vault passphrase', 'ghostpay-vault-new-again');
+    expect(hintOf('New vault passphrase (14+ characters)')).toMatch(/Do not let your browser or password manager save this passphrase/);
+    const stepUps = screen.getAllByLabelText<HTMLInputElement>('Passphrase of the vault these keys are tied to');
+    expect(stepUps.map((field) => [field.getAttribute('autocomplete'), field.getAttribute('name')])).toEqual([['off', 'ghostpay-step-up-export'], ['off', 'ghostpay-step-up-vault-save']]);
+    expect(document.querySelectorAll('input[autocomplete="current-password"], input[autocomplete="new-password"][name^="ghostpay-vault"]')).toHaveLength(0);
+  });
+});

@@ -289,7 +289,7 @@ export function Sweep(): ReactNode {
         <Field label={t('sweep.destination.label')}>{(id) => <input id={id} spellCheck={false} value={destination} onChange={(e) => { setDestination(e.target.value); setQuote(undefined); }} placeholder="0x…" />}</Field>
         {(vaultState === 'saved' || vaultStepUp) && (
           <Field label={t('sweep.vaultPass.label')} hint={t('sweep.vaultPass.hint')}>
-            {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="current-password" value={vaultPass} onChange={(e) => { setVaultPass(e.target.value); }} />}
+            {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-step-up-sweep" value={vaultPass} onChange={(e) => { setVaultPass(e.target.value); }} />}
           </Field>
         )}
         {vaultState === 'checking' && !vaultStepUp && <p role="status">{t('sweep.vaultChecking')}</p>}
