@@ -1,11 +1,11 @@
 // @vitest-environment jsdom
 import { ChainAdapterError, eip712DomainSeparator, erc20MetadataAbi, erc2612PermitAbi, ghostPaySweepRelayerAbi } from '@ghostpay/chain-adapters';
-import { screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { encodeFunctionData, encodeFunctionResult, keccak256 } from 'viem/utils';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { Services } from '../lib/services';
-import { clearSession, generateSession } from '../lib/session';
+import { clearSession, generateSession, notifyIdleLock } from '../lib/session';
 import * as appState from '../state';
 import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests } from '../lib/keyVault';
 import { SETTINGS_KEY } from '../lib/settings';
@@ -538,5 +538,18 @@ describe('L1-02: the vault step-up belongs to the loaded keys', () => {
     await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
     expect(await screen.findByText('Submitted', {}, { timeout: 30_000 })).toBeTruthy();
     expect(raw.raw).toMatch(/^0x02/);
+  });
+});
+
+describe('G2-05: the vault passphrase field keeps nothing typed', () => {
+  it('an idle lock clears a typed vault passphrase and its value attribute, also while the keys stay loaded', async () => {
+    await toSweep({ vaultPass: VAULT_PASS });
+    await screen.findByText('5 USDC');
+    const field = screen.getByLabelText<HTMLInputElement>('Vault passphrase (required for each sweep action)');
+    fireEvent.change(field, { target: { value: VAULT_PASS } });
+    expect(field.getAttribute('value')).toBe(VAULT_PASS);
+    act(() => { notifyIdleLock(); });
+    expect(field.value).toBe('');
+    expect(field.getAttribute('value') ?? '').toBe('');
   });
 });

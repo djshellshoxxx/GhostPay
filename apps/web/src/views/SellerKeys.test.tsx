@@ -3,8 +3,9 @@ import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as keySession from '../lib/session';
-import { clearSession, generateSession, getSessionBackup, getSessionPublic, importSession } from '../lib/session';
+import { clearSession, generateSession, getSessionBackup, getSessionPublic, hasSession, importSession } from '../lib/session';
 import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests, unlockEncryptedVault, type KeyVaultStore } from '../lib/keyVault';
+import { SETTINGS_KEY } from '../lib/settings';
 import { makeServices, renderApp } from '../test/render';
 
 let vaultStore = new MemoryKeyVaultStore();
@@ -607,5 +608,69 @@ describe('encrypted vault delete confirmation', () => {
     await waitFor(() => { expect(screen.getByRole('alert')).toBeTruthy(); });
     expect(screen.queryByText(DELETED)).toBeNull();
     expect(await durable.get()).toBe(a);
+  });
+});
+
+describe('G2-05: typed key hex and passphrases do not outlive their use', () => {
+  const SPEND = 'Spending private key (64 hex characters)';
+  const VIEW = 'Viewing private key (64 hex characters)';
+  const SIGN = 'Invoice-signing private key (optional)';
+  /** react-dom mirrors a controlled input's value into its value attribute, so both must be empty. */
+  const expectEmpty = (field: HTMLInputElement): void => {
+    expect(field.value).toBe('');
+    expect(field.getAttribute('value') ?? '').toBe('');
+  };
+
+  it('a failed hex import clears the typed keys and their value attributes', async () => {
+    const user = await open();
+    await user.click(screen.getByText('Import existing keys (hex)'));
+    await user.type(screen.getByLabelText(SPEND), 'abc');
+    await user.type(screen.getByLabelText(VIEW), '22'.repeat(32));
+    await user.type(screen.getByLabelText(SIGN), '33'.repeat(32));
+    expect(screen.getByLabelText(VIEW).getAttribute('value')).toBe('22'.repeat(32));
+    await user.click(screen.getByRole('button', { name: 'Load keys' }));
+    expect(screen.getByRole('alert').textContent).toMatch(/64 hexadecimal/);
+    for (const label of [SPEND, VIEW, SIGN]) expectEmpty(screen.getByLabelText<HTMLInputElement>(label));
+  });
+
+  it('typed hex keys are gone once other keys were loaded and wiped', async () => {
+    const user = await open();
+    await user.click(screen.getByText('Import existing keys (hex)'));
+    await user.type(screen.getByLabelText(VIEW), '22'.repeat(32));
+    await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
+    await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    await user.click(screen.getByRole('button', { name: 'Wipe the unsaved keys' }));
+    expectEmpty(screen.getByLabelText<HTMLInputElement>(VIEW));
+  });
+
+  it('the idle lock clears them without keys, and while unsaved keys stay loaded', async () => {
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 1 }));
+    vi.useFakeTimers();
+    try {
+      renderApp(makeServices());
+      fireEvent.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Seller keys' }));
+      fireEvent.change(screen.getByLabelText(SPEND), { target: { value: '11'.repeat(32) } });
+      fireEvent.change(screen.getByLabelText('Passphrase'), { target: { value: 'my keystore phrase' } });
+      expect(screen.getByLabelText(SPEND).getAttribute('value')).toBe('11'.repeat(32));
+      await act(async () => { await vi.advanceTimersByTimeAsync(61_000); });
+      expectEmpty(screen.getByLabelText<HTMLInputElement>(SPEND));
+      expectEmpty(screen.getByLabelText<HTMLInputElement>('Passphrase'));
+
+      fireEvent.click(screen.getByRole('button', { name: 'Generate new keys' }));
+      await act(async () => { await vi.advanceTimersByTimeAsync(0); });
+      const own = { keystore: 'my own keystore passphrase', vault: 'my own vault passphrase' };
+      fireEvent.change(screen.getByLabelText('Passphrase (at least 14 characters)'), { target: { value: own.keystore } });
+      fireEvent.change(screen.getByLabelText('New vault passphrase (14+ characters)'), { target: { value: own.vault } });
+      fireEvent.pointerDown(window);                    // activity re-arms the idle timer
+      await act(async () => { await vi.advanceTimersByTimeAsync(61_000); });
+      expect(hasSession()).toBe(true);                  // no backup, so the idle lock keeps the keys (L1-01)
+      for (const [label, typed] of [['Passphrase (at least 14 characters)', own.keystore], ['New vault passphrase (14+ characters)', own.vault]] as const) {
+        const field = screen.getByLabelText<HTMLInputElement>(label);
+        expect(field.value).not.toBe(typed);
+        expect(field.getAttribute('value')).not.toBe(typed);
+      }
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

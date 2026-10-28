@@ -5,7 +5,7 @@ import { clearFragment, readInvoiceFragment } from './lib/fragment';
 import { loadedKeysRecoverable } from './lib/keyVault';
 import type { ScanMatch } from './lib/scanClient';
 import { useServices } from './lib/services';
-import { captureSessionVersionGuard, clearSession, getSessionBackup, getSessionPublic, hasSession, subscribeSession, subscribeSessionBackup } from './lib/session';
+import { captureSessionVersionGuard, clearSession, getSessionBackup, getSessionPublic, hasSession, notifyIdleLock, subscribeSession, subscribeSessionBackup } from './lib/session';
 import { loadSettings, saveSettings, type Settings as SettingsData } from './lib/settings';
 import { AppContext, VIEW_LABELS, type AppState, type ViewId } from './state';
 import { BtcView } from './features/btc/BtcView';
@@ -128,6 +128,8 @@ export function App(): ReactNode {
     const minutes = settings.lockTimeoutMin;
     const lock = (): void => {
       services.vault.lock();
+      // Key hex and passphrases typed into a view go too, whether or not the keys are wiped below (G2-05).
+      notifyIdleLock();
       if (!hasSession()) {
         setLive(t('app.idle.tagsLocked'));
         return;

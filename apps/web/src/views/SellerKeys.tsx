@@ -5,7 +5,7 @@ import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
 import { userMessage } from '../lib/errors';
 import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphrase, MAX_KEYSTORE_BYTES, passphraseProblem, validateKeystoreEnvelope } from '../lib/keystore';
-import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, getSessionBackup, importKeystore, importSession, markKeystoreDownloaded, subscribeSessionBackup, waiveSessionBackup } from '../lib/session';
+import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, getSessionBackup, importKeystore, importSession, markKeystoreDownloaded, subscribeIdleLock, subscribeSessionBackup, waiveSessionBackup } from '../lib/session';
 import { authorizeKeyExport, deleteEncryptedVault, readEncryptedVault, saveEncryptedVault, unlockEncryptedVault, VaultChangedError, vaultMetaAddress, VaultSavedForPreviousKeysError } from '../lib/keyVault';
 import { useApp } from '../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
@@ -95,11 +95,19 @@ export function SellerKeys(): ReactNode {
   const suggestPass = (): void => { const next = generatePassphrase(); setSuggestedPass(next); setPass(next); setPass2(''); };
   const suggestVaultPass = (): void => { const next = generatePassphrase(); setSuggestedVaultPass(next); setVaultSavePass(next); setVaultSavePass2(''); };
   const suggestedHint = t('sellerKeys.suggested', { words: GENERATED_PASSPHRASE_WORDS, bits: GENERATED_PASSPHRASE_BITS });
+  // Key hex and passphrases typed here go with every key change and at every idle lock, also while unsaved keys stay
+  // loaded: react-dom mirrors a controlled input's value into its value attribute (G2-05, KL-26).
+  const forgetTyped = (): void => {
+    setSpend(''); setViewKey(''); setSigning('');
+    suggestPass(); suggestVaultPass(); setImportPass(''); setVaultUnlockPass('');
+    setExportStepUp(''); setSaveStepUp(''); setDeletePass('');
+  };
+  useEffect(() => subscribeIdleLock(forgetTyped), []);
   useEffect(() => {
     operation.current?.abort(); operation.current = null;
     setBackupQr(undefined); setBusy(false); setVaultBusy(false);
-    suggestPass(); setImportPass(''); setVaultUnlockPass(''); setImportText(undefined); setFile(undefined);
-    setExportStepUp(''); setSaveStepUp(''); setDeletePass(''); setConfirmReplace(false); setConfirmWipe(false); setDeleteExpected(undefined);
+    forgetTyped(); setImportText(undefined); setFile(undefined);
+    setConfirmReplace(false); setConfirmWipe(false); setDeleteExpected(undefined);
   }, [app.session]);
   const startOperation = (): AbortController => {
     operation.current?.abort();
@@ -124,6 +132,10 @@ export function SellerKeys(): ReactNode {
       setSigning('');
       done(t('sellerKeys.loaded'));
     } catch (err) {
+      // A failed import must not leave the typed keys behind either (G2-05).
+      setSpend('');
+      setViewKey('');
+      setSigning('');
       fail(err);
     }
   };

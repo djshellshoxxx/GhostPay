@@ -80,6 +80,7 @@ let issued: SecretScalar[] = [];
 const MAX_ISSUED = 8;
 const listeners = new Set<() => void>();
 const backupListeners = new Set<() => void>();
+const idleLockListeners = new Set<() => void>();
 
 function emit(): void {
   for (const l of listeners) l();
@@ -96,6 +97,20 @@ export function subscribeSession(listener: () => void): () => void {
 export function subscribeSessionBackup(listener: () => void): () => void {
   backupListeners.add(listener);
   return () => backupListeners.delete(listener);
+}
+
+/**
+ * Subscribes to the app's idle lock, which runs also while keys stay loaded (unsaved keys) or none are: views forget the
+ * key hex and passphrases typed into them (G2-05, KL-26).
+ */
+export function subscribeIdleLock(listener: () => void): () => void {
+  idleLockListeners.add(listener);
+  return () => idleLockListeners.delete(listener);
+}
+
+/** Called by the idle lock (App.tsx) whether or not it wipes the keys. */
+export function notifyIdleLock(): void {
+  for (const l of [...idleLockListeners]) l();
 }
 
 /** Snapshot for `useSyncExternalStore`; undefined without keys, stable identity between changes. */

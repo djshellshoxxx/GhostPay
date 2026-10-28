@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { armSessionVault, captureSessionGuard, clearSession, exportKeystore, forgetSessionVaultCopy, getSessionBackup, markKeystoreDownloaded, revealViewingKey, sessionVaultRecord, subscribeSessionBackup, waiveSessionBackup, withSessionSecrets, withSessionSecretsAsync, generateSession, getSessionPublic, hasSession, importKeystore, importSession, requireSession, subscribeSession } from './session';
+import { armSessionVault, captureSessionGuard, clearSession, exportKeystore, forgetSessionVaultCopy, getSessionBackup, markKeystoreDownloaded, notifyIdleLock, revealViewingKey, sessionVaultRecord, subscribeIdleLock, subscribeSessionBackup, waiveSessionBackup, withSessionSecrets, withSessionSecretsAsync, generateSession, getSessionPublic, hasSession, importKeystore, importSession, requireSession, subscribeSession } from './session';
 
 afterEach(() => {
   clearSession();
@@ -99,6 +99,21 @@ describe('session', () => {
     await expect(pending).rejects.toThrow(/changed while the keystore was unlocking/);
     expect(getSessionPublic()).toBe(replacement);
     expect(getSessionPublic()).not.toBe(original);
+  });
+
+  it('G2-05: tells idle-lock subscribers until they unsubscribe, and leaves the keys alone', () => {
+    const pub = generateSession();
+    const changed = vi.fn();
+    const offSession = subscribeSession(changed);
+    const locked = vi.fn();
+    const off = subscribeIdleLock(locked);
+    notifyIdleLock();
+    off();
+    notifyIdleLock();
+    offSession();
+    expect(locked).toHaveBeenCalledTimes(1);
+    expect(changed).not.toHaveBeenCalled();
+    expect(getSessionPublic()).toBe(pub);
   });
 
   it('invalidates a guard across an empty-to-loaded transition', () => {
