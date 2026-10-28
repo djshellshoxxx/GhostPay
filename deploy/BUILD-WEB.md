@@ -2,12 +2,14 @@
 
 The web app is a static SPA (`apps/web/dist`). Serve exactly the released bytes.
 
-**Option A (recommended): use a release tarball.** Download `ghostpay-web-<ver>.tar.gz`, `SHA256SUMS`, `release-manifest.json` on a different machine than the server. Verify the signed tag, get the commit it points at, then:
+**Option A (recommended): use a release tarball.** Download `ghostpay-web-<ver>.tar.gz`, `SHA256SUMS`, `release-manifest.json` on a different machine than the server. Verify the signed tag, get the commit it points at, run the checks there and note the tarball's SHA-256:
 ```
-scripts/verify-release.sh ghostpay-web-<ver>.tar.gz SHA256SUMS <40-hex-commit> release-manifest.json
-deploy/selfhost.sh --tarball ghostpay-web-<ver>.tar.gz --sums SHA256SUMS --commit <40-hex-commit>
+scripts/verify-release.sh ghostpay-web-<ver>.tar.gz SHA256SUMS <40-hex-commit> release-manifest.json   # separate machine
+gh attestation verify ghostpay-web-<ver>.tar.gz --repo <owner>/<repo>                                  # separate machine
+deploy/selfhost.sh --tarball ghostpay-web-<ver>.tar.gz --sums SHA256SUMS --commit <40-hex-commit> \
+  --manifest release-manifest.json --expect-sha256 <tarball sha256 from the separate machine>
 ```
-(CI: `.github/actions/release-verify`.) Hash checks alone do not prove authenticity; follow `docs/operators/release-and-verify.md` (signed tag, attestation).
+(CI: `.github/actions/release-verify`.) Hash checks alone do not prove authenticity; follow `docs/operators/release-and-verify.md` (signed tag, attestation). `selfhost.sh` refuses `--tarball` without `--manifest` and an authenticity check: `--expect-sha256` as above, or `--attest-repo <owner>/<repo> --tag <tag>` to run `gh attestation verify` on the server (needs `gh` and a token). It verifies a private copy, installs it, and then stops: type `start`, or re-run without `--tarball` (`--yes` never starts a bundle it installed in the same run).
 
 **Option B: build yourself, reproducibly.**
 ```

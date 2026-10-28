@@ -404,3 +404,5 @@ jobs:
         run: bash scripts/check-actions-pinned.sh
       - name: Proxy header configs match apps/web/public/_headers (static, no network)
         run: bash infra/proxy/check-headers.sh
+      - name: Self-host release gate and archive checks (fake docker/gh, no network)
+        run: bash deploy/selftest.sh

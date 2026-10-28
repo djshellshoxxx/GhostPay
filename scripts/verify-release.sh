@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
 # Verify a downloaded GhostPay release. Intended to run on a machine SEPARATE from where you use the app.
 #
-# Usage: verify-release.sh <tarball> <SHA256SUMS> <expected-commit-sha> [release-manifest.json]
+# Usage: verify-release.sh <tarball> <SHA256SUMS> <expected-commit-sha> <release-manifest.json>
 # Example: verify-release.sh ghostpay-web-v1.0.0.tar.gz SHA256SUMS 0123abcd... release-manifest.json
 #
-# Needs only bash, tar and sha256sum (or shasum). Uses node or python3 to read the manifest if one is given.
+# Needs bash, tar, sha256sum (or shasum) and node or python3 (to read the manifest). The manifest is required: the
+# expected commit is compared with the commit it records, and a commit that cannot be compared is a FAIL.
 # This script checks hashes and consistency. It does NOT prove authenticity by itself: authenticity comes from the
 # signed tag and the build attestation (checklist printed at the end).
 set -euo pipefail
 
-if [ "$#" -lt 3 ]; then sed -n '2,10p' "$0"; exit 2; fi
-tarball="$1"; sums="$2"; want_commit="$3"; manifest="${4:-}"
+if [ "$#" -lt 4 ]; then sed -n '2,10p' "$0"; exit 2; fi
+tarball="$1"; sums="$2"; want_commit="$3"; manifest="$4"
 
 sha256() { if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1" | awk '{print $1}'; else shasum -a 256 "$1" | awk '{print $1}'; fi; }
 fail=0
@@ -42,23 +43,22 @@ while read -r h f; do
   fi
 done < "$sums"
 
-# 3. Manifest commit equals the expected commit (the one in the SIGNED tag you verified).
-if [ -n "$manifest" ]; then
-  [ -f "$manifest" ] || { echo "no such file: $manifest"; exit 2; }
-  if command -v node >/dev/null 2>&1; then
-    m_commit="$(node -e 'console.log(JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).commit)' "$manifest")"
-    m_tar="$(node -e 'const m=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));console.log((m.artifacts.find(a=>a.kind==="web-bundle-tarball")||{}).sha256)' "$manifest")"
-  elif command -v python3 >/dev/null 2>&1; then
-    m_commit="$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["commit"])' "$manifest")"
-    m_tar="$(python3 -c 'import json,sys;print(next(a for a in json.load(open(sys.argv[1]))["artifacts"] if a["kind"]=="web-bundle-tarball")["sha256"])' "$manifest")"
-  else
-    m_commit=""; m_tar=""; echo "SKIP  manifest check (needs node or python3)"
-  fi
-  if [ -n "$m_commit" ]; then
-    if [ "$m_commit" = "$want_commit" ]; then ok "manifest commit equals expected commit"; else bad "manifest commit $m_commit != expected $want_commit"; fi
-    if [ "$m_tar" = "$actual" ]; then ok "manifest tarball hash matches"; else bad "manifest tarball hash $m_tar != $actual"; fi
-  fi
+# 3. Manifest commit equals the expected commit (the one in the SIGNED tag you verified). Never skipped: a release
+#    whose commit cannot be compared fails (audit L7-M2).
+[ -f "$manifest" ] || { echo "no such file: $manifest"; exit 2; }
+if command -v node >/dev/null 2>&1; then
+  m_commit="$(node -e 'console.log(JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).commit)' "$manifest")"
+  m_tar="$(node -e 'const m=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));console.log((m.artifacts.find(a=>a.kind==="web-bundle-tarball")||{}).sha256)' "$manifest")"
+elif command -v python3 >/dev/null 2>&1; then
+  m_commit="$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["commit"])' "$manifest")"
+  m_tar="$(python3 -c 'import json,sys;print(next(a for a in json.load(open(sys.argv[1]))["artifacts"] if a["kind"]=="web-bundle-tarball")["sha256"])' "$manifest")"
+else
+  m_commit=""; m_tar=""
 fi
+if [ -z "$m_commit" ]; then bad "manifest commit could not be read (needs node or python3): expected commit NOT compared"
+elif [ "$m_commit" = "$want_commit" ]; then ok "manifest commit equals expected commit"
+else bad "manifest commit $m_commit != expected $want_commit"; fi
+if [ "$m_tar" = "$actual" ]; then ok "manifest tarball hash matches"; else bad "manifest tarball hash ${m_tar:-(none)} != $actual"; fi
 
 # 4. Archive sanity: single top-level dir, no source maps, no absolute or parent paths, index.html present.
 listing="$(tar -tzf "$tarball")" || { bad "tarball is not a readable .tar.gz"; listing=""; }
