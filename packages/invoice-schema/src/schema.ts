@@ -115,6 +115,11 @@ const ADDRESS_RE = /^0x[0-9a-f]{40}$/;
 const META_RE = /^st:eth:0x([0-9a-f]{132})$/;
 const PUBKEY_RE = /^(?:02|03)[0-9a-f]{64}$/;
 const MAX_UINT256 = (1n << 256n) - 1n;
+/**
+ * Latest invoice or quote time: 9999-12-31T23:59:59Z in unix seconds. Beyond it, `new Date(s * 1000).toISOString()`
+ * renders a six-digit year and, past about 8.64e12 s, throws (G1-01), so every consumer's date code stays total.
+ */
+const MAX_INVOICE_TIME = 253_402_300_799;
 
 function fail(path: string): never {
   throw new SchemaError(path);
@@ -233,9 +238,10 @@ function validPoint(hex: string, path: string): void {
  *
  * @remarks Strict: unknown/missing keys, wrong types, non-canonical forms
  * (uppercase hex, non-NFC text, control characters), out-of-range numbers,
- * more than 50 line items, over-long strings, invalid curve points and
- * `quote.expiresAt < quote.timestamp` are all rejected. Big values are decimal
- * strings (fiat amounts up to 30 digits, token amounts up to 2^256-1).
+ * more than 50 line items, over-long strings, invalid curve points,
+ * `quote.expiresAt < quote.timestamp` and times after 9999-12-31T23:59:59Z
+ * (253402300799) are all rejected. Big values are decimal strings (fiat amounts
+ * up to 30 digits, token amounts up to 2^256-1).
  *
  * @param value Candidate invoice (parsed JSON or a programmatic object).
  * @returns A fresh, validated {@link Invoice}.
@@ -290,13 +296,13 @@ export function validateInvoice(value: unknown): Invoice {
   );
   const quote: Quote = {
     source: matching(q['source'], 'quote.source', SOURCE_RE),
-    timestamp: safeInt(q['timestamp'], 'quote.timestamp', 0, Number.MAX_SAFE_INTEGER),
-    expiresAt: safeInt(q['expiresAt'], 'quote.expiresAt', 0, Number.MAX_SAFE_INTEGER),
+    timestamp: safeInt(q['timestamp'], 'quote.timestamp', 0, MAX_INVOICE_TIME),
+    expiresAt: safeInt(q['expiresAt'], 'quote.expiresAt', 0, MAX_INVOICE_TIME),
     maxSlippageBps: safeInt(q['maxSlippageBps'], 'quote.maxSlippageBps', 0, 10_000),
   };
   if (quote.expiresAt < quote.timestamp) fail('quote.expiresAt');
 
-  const expiresAt = safeInt(r['expiresAt'], 'expiresAt', 0, Number.MAX_SAFE_INTEGER);
+  const expiresAt = safeInt(r['expiresAt'], 'expiresAt', 0, MAX_INVOICE_TIME);
   const lineItems = validateLineItems(r['lineItems'], 'lineItems');
 
   const t = record(r['tax'], 'tax', ['rateBps', 'minorUnits'], ['rateBps', 'minorUnits']);

@@ -55,9 +55,14 @@ export function formatCountdown(ms: number): string {
   return h > 0 ? `${String(h)}:${mm}:${ss}` : `${mm}:${ss}`;
 }
 
-/** UTC timestamp for a unix-seconds value, locale independent. */
+/**
+ * UTC timestamp for a unix-seconds value, locale independent. Total: a value outside the Date range (or not a number)
+ * renders as `invalid time` instead of throwing, so an untrusted time can never take down a render (G1-01).
+ */
 export function formatUnix(seconds: number): string {
-  return new Date(seconds * 1000).toISOString().replace('T', ' ').replace(/\.\d+Z$/, ' UTC');
+  const date = new Date(seconds * 1000);
+  if (Number.isNaN(date.getTime())) return 'invalid time';
+  return date.toISOString().replace('T', ' ').replace(/\.\d+Z$/, ' UTC');
 }
 
 /** Rounds `subtotal * rateBps / 10_000` half-up. */

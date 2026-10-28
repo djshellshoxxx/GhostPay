@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
-import { decodeBase64Url, encodeBase64Url, invoiceDigest, openFragment, parseFragment } from '@ghostpay/invoice-schema';
-import { bytesToHex } from '@noble/hashes/utils.js';
+import { SIGNING_DOMAIN, canonicalize, decodeBase64Url, encodeBase64Url, invoiceDigest, openFragment, parseFragment, type Invoice } from '@ghostpay/invoice-schema';
+import { keccak_256 } from '@noble/hashes/sha3.js';
+import { bytesToHex, concatBytes, utf8ToBytes } from '@noble/hashes/utils.js';
 import { secp256k1 } from '@noble/curves/secp256k1.js';
 import { act, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -291,6 +292,20 @@ describe('Pay: invoice reading and review', () => {
     expect((await screen.findAllByText(/signature is INVALID/)).length).toBeGreaterThan(0);
     expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Continue' }).disabled).toBe(true);
     void user;
+  });
+
+  it('fails closed with a rejection, not a blank page, for a validly signed link whose expiry is 2^53-1 (G1-01)', async () => {
+    // Signed by hand: the seller's own key signs a hostile invoice the schema used to accept.
+    const { parsed } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const hostile: Invoice = { ...parsed.invoice, expiresAt: Number.MAX_SAFE_INTEGER };
+    const digest = keccak_256(concatBytes(utf8ToBytes(SIGNING_DOMAIN), utf8ToBytes(canonicalize(hostile))));
+    const sig = withSessionSecrets((secrets) => bytesToHex(secp256k1.sign(digest, secrets.signingKey, { prehash: false, lowS: true })));
+    const fragment = `#gpi=v1.${encodeBase64Url(utf8ToBytes(canonicalize({ alg: 'none', inv: hostile, sig })))}`;
+    openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    expect(await screen.findByText('Invoice rejected')).toBeTruthy();
+    expect(screen.getByRole('alert').textContent).toMatch(/not valid and was rejected\. \(field: expiresAt\)/);
+    expect(screen.getByRole('heading', { name: 'Pay an invoice' })).toBeTruthy();
+    expect(screen.queryByRole('heading', { name: 'Review payment' })).toBeNull();
   });
 
   it('rejects an oversized fragment', async () => {
