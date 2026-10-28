@@ -11,7 +11,7 @@ export const SCAN_CHECKS: readonly string[] = [
 
 export const SCAN_LIMITS: readonly string[] = [
   'This is not full SPV and not best-chain validation. Difficulty retargeting, chain work and most-work fork choice exist in the library but are not used here, because no trusted checkpoint is pinned for these networks. A server can still serve a self-consistent low-work fork, and proof of work on test networks is cheap.',
-  'The scripts and amounts of the outputs being spent come from the server (they live in earlier blocks). A lying server can hide a payment. Because the scanned range is not anchored to the real chain, it can also invent one by serving a block it mined itself, which is cheap on test networks: confirm a payment with a source you trust before relying on it.',
+  'The scripts and amounts of the outputs being spent come from the server (they live in earlier blocks). A lying server can hide a payment, and it can also invent one: nothing here checks that the scanned blocks are on the most-work chain, so it can serve a block it mined itself, which is cheap on test networks. Confirm a payment with a source you trust before relying on it.',
   'Spent status comes from the server.',
   'The server learns your IP address and which block heights you scan. It never receives your keys.',
 ];
