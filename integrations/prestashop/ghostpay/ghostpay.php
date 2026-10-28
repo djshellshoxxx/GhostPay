@@ -138,4 +138,13 @@ class Ghostpay extends PaymentModule {
 		);
 		return is_string( $value ) ? $value : null;
 	}
+
+	/**
+	 * @internal Used by both controllers: the exact order total in the GhostPay app's minor units of its currency
+	 * (GhostPay_Money::currency_minor), never scaled by the shop's display precision. Null if not exactly representable.
+	 */
+	public function orderTotalMinor( int $order_id, string $iso_code ): ?string {
+		$exact_total = $this->exactOrderTotal( $order_id );
+		return null === $exact_total ? null : GhostPay_Money::currency_minor( $exact_total, $iso_code );
+	}
 }

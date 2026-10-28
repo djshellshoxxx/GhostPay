@@ -127,8 +127,7 @@ class GhostpayWebhookModuleFrontController extends ModuleFrontController {
 			$this->out( 200, array( 'ok' => true ) );
 		}
 		$currency = new Currency( (int) $order->id_currency );
-		$exact_total = $this->module->exactOrderTotal( (int) $order->id );
-		$due         = null === $exact_total ? null : GhostPay_Money::to_minor( $exact_total, (int) $currency->precision );
+		$due      = $this->module->orderTotalMinor( (int) $order->id, (string) $currency->iso_code ); // same units as the invoice
 		$cmp      = null === $due ? null : GhostPay_Money::compare( $event['data']['amountMinor'], $due );
 		$state_id  = (int) $order->current_state;
 		$backorder = $state_id === (int) Configuration::get( 'PS_OS_OUTOFSTOCK_UNPAID' );

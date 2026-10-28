@@ -176,7 +176,8 @@ class WC_Gateway_GhostPay extends WC_Payment_Gateway {
 			wc_add_notice( __( 'Payment is temporarily unavailable.', 'ghostpay-for-woocommerce' ), 'error' );
 			return array( 'result' => 'failure' );
 		}
-		$minor = GhostPay_Money::to_minor( (string) $order->get_total(), (int) wc_get_price_decimals() );
+		// The GhostPay app's minor units of the currency, not the store's display decimals (wc_get_price_decimals()).
+		$minor = GhostPay_Money::currency_minor( (string) $order->get_total(), $order->get_currency() );
 		if ( null === $minor || '0' === $minor ) {
 			wc_add_notice( __( 'This order total cannot be paid with GhostPay.', 'ghostpay-for-woocommerce' ), 'error' );
 			return array( 'result' => 'failure' );
@@ -384,7 +385,7 @@ class WC_Gateway_GhostPay extends WC_Payment_Gateway {
 			}
 			return $this->finish_identities( $names, $token, true ) ? 'done' : 'error';
 		}
-		$due = GhostPay_Money::to_minor( (string) $order->get_total(), (int) wc_get_price_decimals() );
+		$due = GhostPay_Money::currency_minor( (string) $order->get_total(), $order->get_currency() ); // same units as the invoice
 		$cmp = null === $due ? null : GhostPay_Money::compare( $data['amountMinor'], $due );
 		// The statuses WooCommerce's own payment_complete() moves to paid (a late payment of a cancelled order too).
 		// Any other order (paid, refunded, ...) is never changed by a payment event, only flagged for a manual check.

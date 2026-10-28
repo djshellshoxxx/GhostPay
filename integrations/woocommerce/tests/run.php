@@ -78,6 +78,25 @@ check( 'cmp huge', GhostPay_Money::compare( str_repeat( '9', 29 ), '1' . str_rep
 check( 'cmp bad', GhostPay_Money::compare( '01', '1' ), null );
 check( 'cmp bad2', GhostPay_Money::compare( '1', 'x' ), null );
 
+// amountMinor exponent: the GhostPay app's table (0 decimals for JPY and the other zero-decimal codes, else 2).
+check( 'currency decimals: USD', GhostPay_Money::currency_decimals( 'USD' ), 2 );
+check( 'currency decimals: JPY', GhostPay_Money::currency_decimals( 'JPY' ), 0 );
+check( 'currency decimals: KWD is 2 in the GhostPay app', GhostPay_Money::currency_decimals( 'KWD' ), 2 );
+check( 'currency decimals: malformed code', GhostPay_Money::currency_decimals( 'usd' ), null );
+foreach ( array( array( '1500.00', 'JPY', '1500' ), array( '1500.5', 'JPY', null ), array( '12.5', 'USD', '1250' ), array( '13', 'USD', '1300' ), array( '12.340', 'KWD', '1234' ), array( '12.345', 'KWD', null ), array( '1', 'US', null ), array( '1.0', 'XOF', '1' ) ) as $c ) {
+	check( "currency_minor {$c[0]} {$c[1]}", GhostPay_Money::currency_minor( $c[0], $c[1] ), $c[2] );
+}
+$app_format = dirname( __DIR__, 3 ) . '/apps/web/src/lib/format.ts'; // present when run inside the repository
+if ( is_file( $app_format ) ) {
+	$app = (string) file_get_contents( $app_format );
+	preg_match( '/ZERO_DECIMAL_CURRENCIES = new Set\(\[([^\]]*)\]\)/', $app, $m );
+	preg_match_all( "/'([A-Z]{3})'/", $m[1] ?? '', $codes );
+	check( 'zero-decimal table equals the GhostPay app table', GhostPay_Money::ZERO_DECIMAL_CURRENCIES, $codes[1] );
+	check( 'GhostPay app still uses 2 decimals for every other code', 1 === preg_match( '/return ZERO_DECIMAL_CURRENCIES\.has\(currency\) \? 0 : 2;/', $app ), true );
+} else {
+	echo "SKIP app table check: apps/web/src/lib/format.ts not found\n";
+}
+
 // Events.
 check( 'event ok', is_array( GhostPay_Event::parse( $body ) ), true );
 check( 'event with paymentId', is_array( GhostPay_Event::parse( '{"id":"e","type":"invoice.partial","createdAt":1,"data":{"invoiceId":"i","currency":"EUR","amountMinor":"0","paymentId":"p1"}}' ) ), true );
@@ -236,6 +255,39 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	$deliver( $event( 'evt_15c', 'invoice.paid', 'inv_15a', 'USD', '1250' ) );
 	check( 'late full payment of an older invoice completes a cancelled order', $status( 15 ), 'processing' );
 	check( 'only unpaid orders were paid', GhostPay_Test::$payments, array( 14, 15 ) );
+
+	// G3-02: amountMinor is in the GhostPay app's minor units of the currency (0 decimals for JPY and the other
+	// zero-decimal codes, else 2), never scaled by the store's display decimals (wc_get_price_decimals()), both in
+	// the invoice request and in the webhook comparison.
+	$invoice_amount = static function ( string $total, string $currency, int $display_decimals ): ?string {
+		GhostPay_Test::$http           = array();
+		GhostPay_Test::$notices        = array();
+		GhostPay_Test::$price_decimals = $display_decimals;
+		GhostPay_Test::$http_response  = array(
+			'response' => array( 'code' => 201 ),
+			'body'     => json_encode( array( 'invoiceId' => 'inv_new', 'link' => 'https://pay.example.test/#gpi=v1.abc' ) ),
+		);
+		ghostpay_test_order( 20, 'pending', $total, $currency, array() );
+		$result = ( new WC_Gateway_GhostPay() )->process_payment( 20 );
+		return 'success' === $result['result'] ? json_decode( GhostPay_Test::$http[0]['args']['body'], true )['amountMinor'] : null;
+	};
+	check( 'invoice amount: USD 12.50', $invoice_amount( '12.50', 'USD', 2 ), '1250' );
+	check( 'invoice amount: JPY with the default 2 display decimals', $invoice_amount( '1500.00', 'JPY', 2 ), '1500' );
+	check( 'invoice amount: JPY with 0 display decimals', $invoice_amount( '1500', 'JPY', 0 ), '1500' );
+	check( 'invoice amount: USD in a store showing 0 decimals', $invoice_amount( '13', 'USD', 0 ), '1300' );
+	check( 'invoice amount: KWD with 3 display decimals, representable', $invoice_amount( '12.340', 'KWD', 3 ), '1234' );
+	check( 'invoice amount: KWD needing the third decimal is refused', $invoice_amount( '12.345', 'KWD', 3 ), null );
+	check( 'refused total: error for the customer, no invoice request', array( GhostPay_Test::$notices[0][0] ?? '', count( GhostPay_Test::$http ) ), array( 'error', 0 ) );
+	GhostPay_Test::$price_decimals = 2;
+	ghostpay_test_order( 21, 'pending', '1500.00', 'JPY', array( 'inv_21' ) );
+	$deliver( $event( 'evt_21', 'invoice.paid', 'inv_21', 'JPY', '1500' ) );
+	check( 'webhook: JPY 1500 pays a 1500.00 JPY order', $status( 21 ), 'processing' );
+	GhostPay_Test::$price_decimals = 0;
+	ghostpay_test_order( 22, 'pending', '13', 'USD', array( 'inv_22' ) );
+	$deliver( $event( 'evt_22a', 'invoice.paid', 'inv_22', 'USD', '13' ) );
+	check( 'webhook: USD 0.13 does not pay a 13 USD order (0 display decimals)', $status( 22 ), 'on-hold' );
+	$deliver( $event( 'evt_22b', 'invoice.paid', 'inv_22', 'USD', '1300' ) );
+	check( 'webhook: USD 13.00 pays it', $status( 22 ), 'processing' );
 }
 
 if ( $failed > 0 ) {

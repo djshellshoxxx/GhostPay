@@ -32,8 +32,7 @@ class GhostpayValidationModuleFrontController extends ModuleFrontController {
 		// use that exact amount for the invoice request. No float formatting is used for the signed amount.
 		$this->module->validateOrder( (int) $cart->id, (int) Configuration::get( 'GHOSTPAY_OS_AWAITING' ), (float) $total, $this->module->displayName, null, array(), (int) $currency->id, false, $customer->secure_key );
 		$order_id = (int) $this->module->currentOrder;
-		$exact_total = $this->module->exactOrderTotal( $order_id );
-		$minor = null === $exact_total ? null : GhostPay_Money::to_minor( $exact_total, (int) $currency->precision );
+		$minor = $this->module->orderTotalMinor( $order_id, (string) $currency->iso_code );
 		if ( null === $minor || '0' === $minor ) {
 			$this->cancel_order( $order_id );
 			$this->errors[] = $this->trans( 'This order total cannot be represented safely for GhostPay.', array(), 'Modules.Ghostpay.Shop' );

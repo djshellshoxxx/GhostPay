@@ -41,6 +41,25 @@ check( 'compare equal', GhostPay_Money::compare( '1250', '1250' ), 0 );
 check( 'compare greater', GhostPay_Money::compare( '1251', '1250' ), 1 );
 check( 'compare malformed', GhostPay_Money::compare( '01', '1' ), null );
 
+// amountMinor exponent: the GhostPay app's table (0 decimals for JPY and the other zero-decimal codes, else 2).
+check( 'currency decimals: USD', GhostPay_Money::currency_decimals( 'USD' ), 2 );
+check( 'currency decimals: JPY', GhostPay_Money::currency_decimals( 'JPY' ), 0 );
+check( 'currency decimals: KWD is 2 in the GhostPay app', GhostPay_Money::currency_decimals( 'KWD' ), 2 );
+check( 'currency decimals: malformed code', GhostPay_Money::currency_decimals( 'usd' ), null );
+foreach ( array( array( '1500.00', 'JPY', '1500' ), array( '1500.5', 'JPY', null ), array( '12.5', 'USD', '1250' ), array( '13', 'USD', '1300' ), array( '12.340', 'KWD', '1234' ), array( '12.345', 'KWD', null ), array( '1', 'US', null ), array( '1.0', 'XOF', '1' ) ) as $c ) {
+	check( "currency_minor {$c[0]} {$c[1]}", GhostPay_Money::currency_minor( $c[0], $c[1] ), $c[2] );
+}
+$app_format = dirname( __DIR__, 3 ) . '/apps/web/src/lib/format.ts'; // present when run inside the repository
+if ( is_file( $app_format ) ) {
+	$app = (string) file_get_contents( $app_format );
+	preg_match( '/ZERO_DECIMAL_CURRENCIES = new Set\(\[([^\]]*)\]\)/', $app, $m );
+	preg_match_all( "/'([A-Z]{3})'/", $m[1] ?? '', $codes );
+	check( 'zero-decimal table equals the GhostPay app table', GhostPay_Money::ZERO_DECIMAL_CURRENCIES, $codes[1] );
+	check( 'GhostPay app still uses 2 decimals for every other code', 1 === preg_match( '/return ZERO_DECIMAL_CURRENCIES\.has\(currency\) \? 0 : 2;/', $app ), true );
+} else {
+	echo "SKIP app table check: apps/web/src/lib/format.ts not found\n";
+}
+
 // State policy is deliberately fail closed: only a sufficient paid/over event can complete an order, and only an
 // unpaid one. A payment event that must not change the order asks for a manual check ('note': private message).
 check( 'paid sufficient', GhostPay_Event::order_action( 'invoice.paid', 0, 'awaiting' ), 'paid' );
@@ -172,6 +191,23 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	Configuration::updateValue( 'GHOSTPAY_TEST_FAIL_WRITES', '0' );
 	check( 'retry after a failed side effect is processed', $reply( $request( $paid9 ) ), '200 {"ok":true}' );
 	check( 'retry applied the event once', $notes( 9 ), 1 );
+
+	// G3-02: amounts use the GhostPay app's minor units of the currency, not the shop's display precision.
+	$db->execute( "INSERT INTO `ps_currency` (`id_currency`, `iso_code`, `precision`) VALUES (2, 'JPY', 2), (3, 'USD', 0)" );
+	$order( 10, $awaiting, '1500.000000', 2 );
+	$request( $event( 'evt_10', 'invoice.paid', 'inv_ps_10', 'JPY', '1500' ) );
+	check( 'webhook: JPY 1500 pays a 1500 JPY order (shop shows 2 decimals)', $state( 10 ), 2 );
+	$order( 11, $awaiting, '13.000000', 3 );
+	$request( $event( 'evt_11a', 'invoice.paid', 'inv_ps_11', 'USD', '13' ) );
+	check( 'webhook: USD 0.13 does not pay a 13 USD order (shop shows 0 decimals)', $state( 11 ), 8 );
+	$request( $event( 'evt_11b', 'invoice.paid', 'inv_ps_11', 'USD', '1300' ) );
+	check( 'webhook: USD 13.00 pays it', $state( 11 ), 2 );
+	check( 'order total in minor units ignores the shop precision (JPY)', $module->orderTotalMinor( 10, 'JPY' ), '1500' );
+	$order( 12, $awaiting, '12.340000' );
+	$order( 13, $awaiting, '12.345000' );
+	check( 'order total in minor units: KWD within 2 decimals', $module->orderTotalMinor( 12, 'KWD' ), '1234' );
+	check( 'order total in minor units: KWD needing a third decimal is refused', $module->orderTotalMinor( 13, 'KWD' ), null );
+	check( 'order total in minor units: unknown order', $module->orderTotalMinor( 999, 'USD' ), null );
 
 	check( 'uninstall drops the module tables', $module->uninstall(), true );
 	check( 'no module table left', $db->getValue( "SELECT COUNT(*) FROM sqlite_master WHERE `name` LIKE 'ps_ghostpay%'" ), '0' );
