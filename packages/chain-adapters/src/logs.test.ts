@@ -195,8 +195,31 @@ describe('fetchAnnouncements', () => {
     const chain = mkChain({ head: 9, providerMax: 3, logs: [mkLog({}, 5)] });
     const r = await fetchWith(await client(chain), { nextBlock: 0n });
     expect(r.announcements).toHaveLength(1);
+    // A fixed range limit never refuses one block, so the window is not grown into it again after each success (A-R2).
     expect(chain.requests.map((x) => Number(x.to - x.from + 1n))).toEqual([10, 5, 2, 2, 2, 2, 2].slice(0, chain.requests.length));
     expect(chain.requests.at(-1)?.to).toBe(9n);
+  });
+  it('grows back after a narrowed block only up to a fixed provider range limit, then keeps that size (A-R2)', async () => {
+    const routed = mkLog({}, 3, 1);
+    const spam = mkLog({ topics: [ANNOUNCEMENT_TOPIC, word('0x1'), word(PAY.stealthAddress), word('0xee')] }, 3, 0);
+    const chain = mkChain({ head: 25, logs: [spam, routed] });
+    const c = await client(chain, {
+      eth_getLogs: (p) => {
+        const f = p[0] as { fromBlock: string; toBlock: string; topics: (string | null)[] };
+        const from = BigInt(f.fromBlock);
+        const to = BigInt(f.toBlock);
+        chain.requests.push({ from, to });
+        // A four-block range limit, and block 3 too large for one response unless filtered by caller.
+        if (to - from + 1n > 4n) throw new FakeRpcError(-32600);
+        if (f.topics[3] == null && from <= 3n && to >= 3n) throw new FakeRpcError(-32602);
+        return chain.logs.filter((l) => BigInt(l.blockNumber) >= from && BigInt(l.blockNumber) <= to && (f.topics[3] == null || l.topics[3] === f.topics[3]));
+      },
+    });
+    const r = await fetchWith(c, { nextBlock: 0n }, { router: FAKE.router });
+    expect(r).toMatchObject({ truncated: false, cursor: { nextBlock: 26n }, routerOnlyBlocks: [3n] });
+    expect(r.announcements.map((a) => a.id)).toEqual([`${bh(3)}:1`]);
+    // Down to block 3 and its router lane; past it 2, 4, one refused 8, then four-block windows to the head.
+    expect(chain.requests.map((x) => Number(x.to - x.from + 1n))).toEqual([10, 5, 2, 2, 1, 1, 1, 2, 4, 8, 4, 4, 4, 4]);
   });
   it.each([-32600, -32614, -32000])('also halves the window on provider result-limit error %i (L4-01)', async (code) => {
     const chain = mkChain({ head: 9, providerMax: 3, limitCode: code, logs: [mkLog({}, 5)] });
@@ -356,10 +379,11 @@ describe('fetchAnnouncements', () => {
         },
       });
       const r = await fetchWith(c, { nextBlock: 0n }, { router: FAKE.router });
-      expect(r.reorg).toEqual({ rolledBackTo: 5n });
+      // Past the narrowed block 3 the window grows back to two blocks, so block 5 ends the window [4, 5] (A-R2).
+      expect(r.reorg).toEqual({ rolledBackTo: 4n });
       expect(r.announcements.map((a) => a.id)).toEqual([`${bh(3)}:1`]);
       expect(r.routerOnlyBlocks).toEqual([3n]);
-      expect(r.cursor.nextBlock).toBe(5n);
+      expect(r.cursor.nextBlock).toBe(4n);
     });
     it('nothing new: keeps cursor and re-reads last hash', async () => {
       const chain = mkChain({ head: 20 });

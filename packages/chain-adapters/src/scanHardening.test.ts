@@ -159,6 +159,44 @@ describe('L4-01: announcer spam never stops the scan for good', () => {
     const c = await client(1000, spam, { maxBytes: 6000, callerAnswer: [mkLog(7, 0, OTHER)] });
     await expect(scanAll(c, { router: FAKE.router })).rejects.toThrow(/INVALID_LOG/);
   });
+
+  it('grows the window back after a narrowed block, so one spam block does not slow the rest of the fetch (A-R2)', async () => {
+    const spam = Array.from({ length: 13 }, (_, i) => mkLog(7, i, OTHER));
+    const seen: { from: bigint; to: bigint }[] = [];
+    const c = await client(5000, [...spam, mkLog(7, 13), mkLog(4000, 0, OTHER)], { maxBytes: 6000, seen });
+    const r = await fetchAnnouncements({ chain: CHAIN, client: c, announcer: ANN, router: FAKE.router, cursor: { nextBlock: 0n } });
+    // One fetch reaches the head: after block 7 the window doubles back to the 1,000-block cap.
+    expect(r).toMatchObject({ truncated: false, cursor: { nextBlock: 5001n }, routerOnlyBlocks: [7n] });
+    expect(r.announcements.map((a) => [a.blockNumber, a.logIndex])).toEqual([[7n, 13], [4000n, 0]]);
+    const sizes = seen.filter((w) => w.from > 7n).map((w) => Number(w.to - w.from + 1n));
+    expect(sizes).toEqual([2, 4, 8, 16, 32, 64, 128, 256, 512, 1000, 1000, 1000, 971]);
+    // Eight requests down to [0, 6], three more down to block 7, its router lane, then the thirteen above.
+    expect(seen).toHaveLength(25);
+  });
+
+  it('keeps full-size windows between spam blocks: a spam block every 100 blocks costs a fraction of one-block windows (A-R2)', async () => {
+    const logs = Array.from({ length: 200 }, (_, k) => [...Array.from({ length: 13 }, (_, i) => mkLog(100 * k + 50, i, OTHER)), mkLog(100 * k + 50, 13)]).flat();
+    const seen: { from: bigint; to: bigint }[] = [];
+    const c = await client(19_999, logs, { maxBytes: 6000, seen });
+    let fetches = 0;
+    let cursor: ScanCursor = { nextBlock: 0n };
+    const routerOnly: bigint[] = [];
+    const found: ScannedAnnouncement[] = [];
+    for (; fetches < 1000; ) {
+      fetches++;
+      const r = await fetchAnnouncements({ chain: CHAIN, client: c, announcer: ANN, router: FAKE.router, cursor });
+      found.push(...r.announcements);
+      routerOnly.push(...(r.routerOnlyBlocks ?? []));
+      cursor = r.cursor;
+      if (!r.truncated) break;
+    }
+    expect(cursor.nextBlock).toBe(20_000n);
+    expect(routerOnly).toEqual(Array.from({ length: 200 }, (_, k) => BigInt(100 * k + 50)));
+    expect(found).toHaveLength(200);
+    // One-block windows after each fetch's first spam block needed 201 fetches and 10,001 eth_getLogs calls here.
+    expect(fetches).toBeLessThan(80);
+    expect(seen.length).toBeLessThan(4000);
+  }, 60_000);
 });
 
 describe('A-R1: -32005 is also a rate-limit code, so a refused block is asked again before it is narrowed', () => {
@@ -198,7 +236,8 @@ describe('A-R1: -32005 is also a rate-limit code, so a refused block is asked ag
     const r = await fetch(c, { nextBlock: 7n });
     expect(r.announcements.map((a) => [a.blockNumber, a.logIndex])).toEqual([[7n, 0], [7n, 1]]);
     expect(r.routerOnlyBlocks).toBeUndefined();
-    expect(r.cursor.nextBlock).toBeGreaterThan(7n);
+    // Past that block the window grows back, so the same fetch reaches the head (A-R2).
+    expect(r).toMatchObject({ truncated: false, cursor: { nextBlock: 1001n } });
     // The whole block was asked again after its router lane.
     expect(filters.slice(30, 32).map((t) => t.length)).toEqual([4, 2]);
   });

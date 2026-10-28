@@ -244,7 +244,10 @@ export function validateAnnouncementLog(
  *   `routerOnlyBlocks`; without a router it ends the fetch at the last completed window, or fails if none.
  *   A -32005 refusal can also be a rate limit, so that block is narrowed only if the whole block is refused as
  *   too large again once its router lane has been read; another failure then ends the fetch before the block
- *   (or fails it when nothing was completed).
+ *   (or fails it when nothing was completed). Past such a single block (narrowed, or read whole once a rate
+ *   limit passed) each completed window doubles the window again, up to the cap, until a refusal halves it;
+ *   a halving that ends above one block keeps that size, so a provider's fixed range limit does not cost a
+ *   refused request on every window.
  * - A cursor more than `finalityDepth` blocks beyond the reported head is refused (`RPC_FAILURE`).
  * - Duplicate logs (same `blockHash:logIndex`) within a call are dropped.
  * - `maxRequests` bounds `eth_getLogs` calls (at most 50); `maxLogs` bounds accepted logs (at most
@@ -300,6 +303,11 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
   let skipped = 0;
   let requests = 0;
   let window = cap;
+  // Set once a refused single block is passed (announcer spam, or a rate limit that has passed): the window then
+  // doubles after each completed window, up to the cap, until a larger window is refused or overflows again. A halving
+  // that stops above one block keeps its size: a provider's fixed range limit never refuses a single block, and growing
+  // past that limit would cost a refused request per window.
+  let regrow = false;
   let doneThrough = next - 1n;
   let processed = false;
   let truncated = false;
@@ -331,6 +339,7 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
         canonical.delete(to);
         if (window > 1n) {
           window = window / 2n;
+          regrow = false;
           continue;
         }
         // One block still fails and its router lane cannot be fetched: keep the completed windows, or fail.
@@ -354,6 +363,7 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
       // The provider must honour the caller filter; anything else is a provider fault.
       if (logs.some((l) => rawCallerTopic(l) !== routerTopic)) return fail('INVALID_LOG', 'log outside the requested caller filter');
       routerLane = true;
+      regrow = true;
       if (recheck) {
         // The provider answers again, so a rate limit may have passed: narrow the block only if the whole block is
         // refused as too large once more. Any other failure holds the cursor at this block for a later retry.
@@ -377,6 +387,7 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
     if (page.length > remainingLogs) {
       if (window > 1n) {
         window = window / 2n;
+        regrow = false;
         windows.pop();
         continue;
       }
@@ -390,6 +401,7 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
         // This block alone exceeds the accepted-log cap: keep its router lane, as for an oversized response.
         ({ page, pageSkipped } = acceptPage(logs.filter((l) => rawCallerTopic(l) === routerTopic), o.announcer, schemeId, next, to, seen));
         routerLane = true;
+        regrow = true;
       }
       if (page.length > remainingLogs) return fail('RPC_FAILURE', 'accepted log cap exceeded within one block');
     }
@@ -424,6 +436,8 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
     doneThrough = to;
     processed = true;
     next = to + 1n;
+    // Past a refused single block, grow back towards the cap instead of finishing the fetch on one-block requests.
+    if (regrow) window = window * 2n > cap ? cap : window * 2n;
   }
 
   let last = reorg === undefined ? o.cursor.last : undefined;
