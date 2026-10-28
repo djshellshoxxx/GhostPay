@@ -534,6 +534,24 @@ describe('announcement spam and a second RPC (L4-01, L3-F2)', () => {
     expect(both.matches).toHaveLength(2);
   });
 
+  it('scans a block whole after a -32005 rate-limit burst, so its direct payment is found and no block is reported narrowed (A-R1)', async () => {
+    const s = setup();
+    const base = chainWith(2500, s.logs);
+    // Ten refusals take the first window down to block 2100 alone, which holds the direct (non-router) payment.
+    let burst = 10;
+    const client = {
+      ...base,
+      getLogs: (f: LogFilter) => (f.topics.length === 2 && burst-- > 0 ? Promise.reject(new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32005')) : base.getLogs(f)),
+    };
+    const progress: ScanProgress[] = [];
+    const res = await scan(s, { client, cursor: { nextBlock: 2100n }, onProgress: (x) => progress.push(x) });
+    expect(res.matches.map((m) => m.stealthAddress)).toEqual([s.mine2.stealthAddress]);
+    // The narrowed-block warning is shown from these; nothing was narrowed.
+    expect(res.routerOnlyBlocks).toEqual([]);
+    expect(progress.length).toBeGreaterThan(0);
+    expect(progress.every((p) => p.routerOnlyBlocks === undefined)).toBe(true);
+  });
+
   it('splits dense ranges on the second RPC instead of withholding the page (L3-F2)', async () => {
     const s = setup();
     const res = await scan(s, { client: chainWith(2500, s.logs), secondaryClient: capped(chainWith(2500, s.logs), undefined, 100n) });

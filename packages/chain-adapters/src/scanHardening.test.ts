@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { FAKE, SEPOLIA, payment, recipient } from './fixtures.testutil.js';
 import { ANNOUNCEMENT_TOPIC, fetchAnnouncements, rawCallerTopic, type ScanCursor, type ScannedAnnouncement } from './logs.js';
 import { createClient, type RpcClient, type RpcLog } from './rpc.js';
-import { fakeTransport, noSleep } from './rpc.testutil.js';
+import { FakeRpcError, fakeTransport, noSleep } from './rpc.testutil.js';
 import type { Hex } from './types.js';
 
 // CHAIN-ADAPTERS-01 / 02 regression tests.
@@ -158,6 +158,99 @@ describe('L4-01: announcer spam never stops the scan for good', () => {
     const spam = Array.from({ length: 13 }, (_, i) => mkLog(7, i, OTHER));
     const c = await client(1000, spam, { maxBytes: 6000, callerAnswer: [mkLog(7, 0, OTHER)] });
     await expect(scanAll(c, { router: FAKE.router })).rejects.toThrow(/INVALID_LOG/);
+  });
+});
+
+describe('A-R1: -32005 is also a rate-limit code, so a refused block is asked again before it is narrowed', () => {
+  /**
+   * Default retries (three attempts per request). The first `burst` eth_getLogs attempts are refused with -32005; after
+   * that, a caller-unfiltered query covering `dense` is refused with `denseCode` (a block too large for one response).
+   */
+  const limited = (logs: RpcLog[], o: { burst?: number; dense?: number; denseCode?: number } = {}) => {
+    let refused = 0;
+    const filters: (string | null)[][] = [];
+    const t = fakeTransport((m, p) => {
+      if (m === 'eth_chainId') return '0xaa36a7';
+      if (m === 'eth_blockNumber') return '0x3e8';
+      if (m === 'eth_getBlockByNumber') return { number: p[0], hash: bh(Number(BigInt(p[0] as string))), parentHash: bh(0) };
+      const f = p[0] as { fromBlock: string; toBlock: string; topics: (string | null)[] };
+      const from = BigInt(f.fromBlock);
+      const to = BigInt(f.toBlock);
+      filters.push(f.topics);
+      if (refused < (o.burst ?? 0)) {
+        refused++;
+        throw new FakeRpcError(-32005);
+      }
+      const caller = f.topics[3];
+      if (o.dense !== undefined && caller == null && from <= BigInt(o.dense) && to >= BigInt(o.dense)) throw new FakeRpcError(o.denseCode ?? -32005);
+      return logs.filter((l) => BigInt(l.blockNumber) >= from && BigInt(l.blockNumber) <= to && (caller == null || l.topics[3] === caller));
+    });
+    return { filters, client: createClient(CHAIN, 'https://rpc.example.test', { transport: t, sleep: noSleep }) };
+  };
+  const fetch = async (c: Promise<RpcClient>, cursor: ScanCursor, extra: { maxRequests?: number } = {}) =>
+    fetchAnnouncements({ chain: CHAIN, client: await c, announcer: ANN, router: FAKE.router, cursor, ...extra });
+  const direct = mkLog(7, 0, OTHER);
+  const routed = mkLog(7, 1);
+
+  it('scans a block whole when the refusals were a rate-limit burst that has ended (no narrowed block)', async () => {
+    // 30 refusals: ten requests from 1,000 blocks down to block 7 alone, three attempts each; the router lane then succeeds.
+    const { client: c, filters } = limited([direct, routed], { burst: 30 });
+    const r = await fetch(c, { nextBlock: 7n });
+    expect(r.announcements.map((a) => [a.blockNumber, a.logIndex])).toEqual([[7n, 0], [7n, 1]]);
+    expect(r.routerOnlyBlocks).toBeUndefined();
+    expect(r.cursor.nextBlock).toBeGreaterThan(7n);
+    // The whole block was asked again after its router lane.
+    expect(filters.slice(30, 32).map((t) => t.length)).toEqual([4, 2]);
+  });
+
+  it('narrows a block that is refused again after its router lane was read, as before', async () => {
+    const { client: c } = limited([direct, routed], { dense: 7 });
+    const r = await fetch(c, { nextBlock: 7n });
+    expect(r.announcements.map((a) => [a.blockNumber, a.logIndex])).toEqual([[7n, 1]]);
+    expect(r.routerOnlyBlocks).toEqual([7n]);
+  });
+
+  it('a rate limit that outlasts the router-lane read ends as an RPC failure, never as a narrowed block', async () => {
+    // 33 refusals: the ten requests above plus the router lane's three attempts.
+    const { client: c } = limited([direct, routed], { burst: 33 });
+    await expect(fetch(c, { nextBlock: 7n })).rejects.toThrow(/RPC_FAILURE: json-rpc error -32005/);
+    const later = await fetch(c, { nextBlock: 7n });
+    expect(later.announcements).toHaveLength(2);
+    expect(later.routerOnlyBlocks).toBeUndefined();
+  });
+
+  it('a different refusal of the second whole-block read holds the cursor at that block instead of narrowing it', async () => {
+    // -32005 burst on the way down, router lane fine, then the whole block fails with a range-limit code that has no
+    // router fallback: nothing was completed yet, so the fetch fails; with completed windows it ends before the block.
+    const { client: first } = limited([direct, routed], { burst: 30, dense: 7, denseCode: -32600 });
+    await expect(fetch(first, { nextBlock: 7n })).rejects.toThrow(/json-rpc error -32600/);
+    let routerAsked = false;
+    const t = fakeTransport((m, p) => {
+      if (m === 'eth_chainId') return '0xaa36a7';
+      if (m === 'eth_blockNumber') return '0x3e8';
+      if (m === 'eth_getBlockByNumber') return { number: p[0], hash: bh(Number(BigInt(p[0] as string))), parentHash: bh(0) };
+      const f = p[0] as { fromBlock: string; toBlock: string; topics: (string | null)[] };
+      const [from, to] = [BigInt(f.fromBlock), BigInt(f.toBlock)];
+      if (f.topics[3] != null) {
+        routerAsked = true;
+        return [routed];
+      }
+      // Refused with -32005 on the way down; the second whole-block read after the router lane fails another way.
+      if (from <= 7n && to >= 7n) throw new FakeRpcError(routerAsked ? -32603 : -32005);
+      return [];
+    });
+    const r = await fetch(createClient(CHAIN, 'https://rpc.example.test', { transport: t, sleep: noSleep, retries: 0 }), { nextBlock: 0n });
+    expect(r).toMatchObject({ truncated: true, cursor: { nextBlock: 7n } });
+    expect(r.routerOnlyBlocks).toBeUndefined();
+    expect(r.announcements).toHaveLength(0);
+  });
+
+  it('does not narrow a -32005 block when the request budget has no room to ask the whole block again', async () => {
+    // Ten requests reach block 7 alone; the router lane and the second whole-block read need two more.
+    const { client: c } = limited([direct, routed], { burst: 30 });
+    const r = await fetch(c, { nextBlock: 7n }, { maxRequests: 11 });
+    expect(r).toMatchObject({ truncated: true, cursor: { nextBlock: 7n }, announcements: [] });
+    expect(r.routerOnlyBlocks).toBeUndefined();
   });
 });
 

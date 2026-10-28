@@ -50,7 +50,8 @@ export interface FetchOptions {
   readonly maxRange?: number;
   /**
    * Router from the verified deployment manifest. A single block whose announcer logs exceed the response or
-   * accepted-log cap (announcer spam) is then scanned for this caller only and reported in `routerOnlyBlocks`.
+   * accepted-log cap (announcer spam) is then scanned for this caller only and reported in `routerOnlyBlocks`; a
+   * -32005 refusal, which can also be a rate limit, counts only when the whole block is refused again after that.
    * Without it the scan stops at such a block (the fetch ends before it, or fails when it is next), so nothing is
    * skipped silently.
    */
@@ -91,6 +92,8 @@ const MAX_CANONICAL_BLOCK_READS = 1_000;
 const RANGE_LIMIT = /^RPC_FAILURE: json-rpc error -(32602|32005|32600|32614|32000)(?!\d)/;
 // The subset that also means "this response is too large", so a single block is retried for the router lane only.
 const SIZE_LIMIT = /^RPC_FAILURE: json-rpc error -(32602|32005)(?!\d)/;
+// -32005 ("limit exceeded") is also the rate-limit code of Infura and others: alone it does not prove a block too large.
+const RATE_LIMIT = /^RPC_FAILURE: json-rpc error -32005(?!\d)/;
 
 function schemeTopic(id: bigint): Hex {
   return `0x${id.toString(16).padStart(64, '0')}`;
@@ -239,6 +242,9 @@ export function validateAnnouncementLog(
  *   response over the client's size cap, halves the window down to one block. A single block that is still
  *   too large (announcer spam) is re-queried for `opts.router`'s announcements only and listed in
  *   `routerOnlyBlocks`; without a router it ends the fetch at the last completed window, or fails if none.
+ *   A -32005 refusal can also be a rate limit, so that block is narrowed only if the whole block is refused as
+ *   too large again once its router lane has been read; another failure then ends the fetch before the block
+ *   (or fails it when nothing was completed).
  * - A cursor more than `finalityDepth` blocks beyond the reported head is refused (`RPC_FAILURE`).
  * - Duplicate logs (same `blockHash:logIndex`) within a call are dropped.
  * - `maxRequests` bounds `eth_getLogs` calls (at most 50); `maxLogs` bounds accepted logs (at most
@@ -318,7 +324,9 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
       // A provider range or result limit, or a response over the client cap (announcer spam), means "ask for less".
       if (!isLogLimitError(e)) throw e;
       const routerFallback = window === 1n && o.router !== undefined && isLogSizeError(e);
-      if (!routerFallback || requests >= maxRequests) {
+      // A -32005 refusal may be a rate limit: the whole block is asked once more after its router lane (one more request).
+      const recheck = routerFallback && e instanceof ChainAdapterError && RATE_LIMIT.test(e.message);
+      if (!routerFallback || requests + (recheck ? 2 : 1) > maxRequests) {
         windows.pop();
         canonical.delete(to);
         if (window > 1n) {
@@ -346,6 +354,23 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
       // The provider must honour the caller filter; anything else is a provider fault.
       if (logs.some((l) => rawCallerTopic(l) !== routerTopic)) return fail('INVALID_LOG', 'log outside the requested caller filter');
       routerLane = true;
+      if (recheck) {
+        // The provider answers again, so a rate limit may have passed: narrow the block only if the whole block is
+        // refused as too large once more. Any other failure holds the cursor at this block for a later retry.
+        requests++;
+        try {
+          logs = await o.client.getLogs({ address: o.announcer, topics: [ANNOUNCEMENT_TOPIC, schemeTopic(schemeId)], fromBlock: next, toBlock: to });
+          routerLane = false;
+        } catch (again) {
+          if (!isLogSizeError(again)) {
+            if (!processed) throw again;
+            windows.pop();
+            canonical.delete(to);
+            truncated = true;
+            break;
+          }
+        }
+      }
     }
     let { page, pageSkipped } = acceptPage(logs, o.announcer, schemeId, next, to, seen);
     const remainingLogs = maxLogs - out.length;
