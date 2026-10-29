@@ -24,8 +24,6 @@
     "settings.delay.max": "Retraso máximo (segundos)",
     "settings.delay.range": "Cada pago se retrasa entre {min, number} y {max, number} segundos.",
     "settings.safety.legend": "Seguridad y apariencia",
-    "settings.lock.label": "Bloquear etiquetas locales tras inactividad (min)",
-    "settings.lock.hint": "Las claves permanecen en memoria hasta que las borres o cierres la pestaña.",
     "settings.lock.summary": "Se bloquea tras {minutes, plural, one {# minuto} many {# de minutos} other {# minutos}} sin actividad.",
     "settings.theme.label": "Tema",
     "settings.theme.system": "Seguir el sistema",

@@ -26,7 +26,7 @@ This is the most important rule for sellers.
 
 ## Local client tags
 
-You can attach a private label (for example "order 1042") to a match. Tags are encrypted in this browser with keys derived from your viewing key: only ciphertext is stored in IndexedDB. The tag vault locks after the idle time you set in Settings and can be wiped. Limits: tags do not travel between devices (there is no encrypted export yet), do not survive clearing site data, and are readable while unlocked by anything running in your browser session.
+You can attach a private label (for example "order 1042") to a match. Tags are encrypted in this browser with keys derived from your viewing key: only ciphertext is stored in IndexedDB. The tag vault locks after the idle time you set in Settings and whenever the seller keys are wiped or changed, and it can be wiped. Limits: tags move between devices only in an encrypted tag archive you download and import under Seller keys, do not survive clearing site data, and are readable while unlocked by anything running in your browser session.
 
 ## Reorgs and duplicates
 
