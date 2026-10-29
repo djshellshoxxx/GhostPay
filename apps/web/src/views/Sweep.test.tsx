@@ -1,12 +1,12 @@
 // @vitest-environment jsdom
 import { ANNOUNCEMENT_TOPIC, ChainAdapterError, eip712DomainSeparator, erc20MetadataAbi, erc2612PermitAbi, ghostPaySweepRelayerAbi, type RpcLog } from '@ghostpay/chain-adapters';
 import { buildNativeMetadata, deriveStealthPayment } from '@ghostpay/core-crypto';
-import { screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { decodeFunctionData, encodeAbiParameters, encodeFunctionData, encodeFunctionResult, keccak256, parseAbi, parseTransaction } from 'viem/utils';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { Services } from '../lib/services';
-import { clearSession, generateSession } from '../lib/session';
+import { clearSession, generateSession, notifyIdleLock } from '../lib/session';
 import * as appState from '../state';
 import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests } from '../lib/keyVault';
 import { SETTINGS_KEY } from '../lib/settings';
@@ -815,5 +815,53 @@ describe('Sweep', () => {
       }
       expect(posted).toEqual(['https://relay.test/v1/quote']);
     });
+  });
+});
+
+describe('L1-02: the vault step-up belongs to the loaded keys', () => {
+  it('keeps asking for the vault passphrase after the saved vault is deleted', async () => {
+    const raw: RawSink = {};
+    const user = await toSweep({ raw, vaultPass: VAULT_PASS });
+    await screen.findByText('5 USDC');
+    await vaultStore.delete((await vaultStore.get())!);   // another tab, or "clear site data"
+    // Leave and come back: the view now finds no saved vault, but these keys stay tied to it.
+    const nav = within(screen.getByRole('navigation', { name: 'Main' }));
+    await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
+    await user.click(nav.getByRole('button', { name: 'Sweep' }));
+    await screen.findByText('5 USDC');
+    expect(screen.getByLabelText('Vault passphrase (required for each sweep action)')).toBeTruthy();
+    await user.click(screen.getByLabelText(/Directly/));
+    await user.type(screen.getByLabelText('Destination address (your own wallet)'), DEST);
+    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    expect((await screen.findByRole('alert', {}, { timeout: 30_000 })).textContent).toMatch(/Wrong passphrase/);
+    expect(raw.raw).toBeUndefined();
+    await user.type(screen.getByLabelText('Vault passphrase (required for each sweep action)'), VAULT_PASS);
+    await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+    expect(await screen.findByText('Submitted', {}, { timeout: 30_000 })).toBeTruthy();
+    expect(raw.raw).toMatch(/^0x02/);
+  });
+});
+
+describe('G2-05: the vault passphrase field keeps nothing typed', () => {
+  it('an idle lock clears a typed vault passphrase and its value attribute, also while the keys stay loaded', async () => {
+    await toSweep({ vaultPass: VAULT_PASS });
+    await screen.findByText('5 USDC');
+    const field = screen.getByLabelText<HTMLInputElement>('Vault passphrase (required for each sweep action)');
+    fireEvent.change(field, { target: { value: VAULT_PASS } });
+    expect(field.getAttribute('value')).toBe(VAULT_PASS);
+    act(() => { notifyIdleLock(); });
+    expect(field.value).toBe('');
+    expect(field.getAttribute('value') ?? '').toBe('');
+  });
+});
+
+describe('G2-06: the sweep step-up is not offered to the browser password manager', () => {
+  it('uses autocomplete="off" and a non-credential name, and says not to let the browser save it', async () => {
+    await toSweep({ vaultPass: VAULT_PASS });
+    await screen.findByText('5 USDC');
+    const field = screen.getByLabelText('Vault passphrase (required for each sweep action)');
+    expect(field.getAttribute('autocomplete')).toBe('off');
+    expect(field.getAttribute('name')).toBe('ghostpay-step-up-sweep');
+    expect(document.getElementById(field.getAttribute('aria-describedby') ?? '')?.textContent).toMatch(/Do not let your browser save it\.$/);
   });
 });

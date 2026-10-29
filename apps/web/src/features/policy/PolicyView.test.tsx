@@ -17,6 +17,8 @@ const LABEL = 'Policy accounts (experimental)';
 const a1 = account('acct-001');
 const a2 = account('acct-002');
 const canonical = (id: string): string => clientVectors.records.valid.find((v) => v.id === id)!.canonical;
+/** Imported with their signing key, the keys have a copy elsewhere, so the create form opens without the backup gate. */
+const SIGNING_KEY = '33'.repeat(32);
 
 beforeEach(() => {
   clearSession();
@@ -58,8 +60,21 @@ describe('policy view flag', () => {
 });
 
 describe('policy view flows', () => {
-  it('creates the vector meta-address and offers the record download', async () => {
+  it('C-R1: derives no policy meta-address for keys without a backup until the waiver is typed', async () => {
+    // Without its signing key the import generates one that exists only in this tab: no backup yet (C-R6).
     act(() => { importSession({ spendingKeyHex: a2.spendingPrivateKey, viewingKeyHex: a2.viewingPrivateKey }); });
+    const user = await open();
+    expect(screen.getByText('Back up these seller keys first')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Create policy meta-address' })).toBeNull();
+    expect(screen.queryByLabelText(/^Destination/)).toBeNull();
+    // Importing or restoring a record derives nothing from the loaded keys and stays available.
+    expect(screen.getByRole('button', { name: 'Import record' })).toBeTruthy();
+    await user.type(screen.getByLabelText(/To continue without a backup/), 'continue without backup');
+    await user.click(screen.getByRole('button', { name: 'Continue without a backup' }));
+    expect(screen.getByRole('button', { name: 'Create policy meta-address' })).toBeTruthy();
+  });
+  it('creates the vector meta-address and offers the record download', async () => {
+    act(() => { importSession({ spendingKeyHex: a2.spendingPrivateKey, viewingKeyHex: a2.viewingPrivateKey, signingKeyHex: SIGNING_KEY }); });
     const user = await open();
     await user.type(screen.getByLabelText(/^Destination/), a2.policy.destination);
     await user.selectOptions(screen.getByLabelText('Withdrawal delay'), '3600');
@@ -69,7 +84,7 @@ describe('policy view flows', () => {
     expect(screen.getByText('Keep the policy record')).toBeTruthy();
   });
   it('shows input errors without echoing them', async () => {
-    act(() => { importSession({ spendingKeyHex: a2.spendingPrivateKey, viewingKeyHex: a2.viewingPrivateKey }); });
+    act(() => { importSession({ spendingKeyHex: a2.spendingPrivateKey, viewingKeyHex: a2.viewingPrivateKey, signingKeyHex: SIGNING_KEY }); });
     const user = await open();
     await user.type(screen.getByLabelText(/^Destination/), '0xdeadbeef');
     await user.click(screen.getByRole('button', { name: 'Create policy meta-address' }));

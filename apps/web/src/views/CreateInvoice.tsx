@@ -7,6 +7,7 @@ import { useManifest } from '../components/Disclosure';
 import { QrFrame } from '../components/QrFrame';
 import { userMessage } from '../lib/errors';
 import { buildInvoiceLink, tokenChoices, type CreatedInvoice, type InvoiceForm, type LineItemInput } from '../lib/invoiceCreate';
+import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphrase } from '../lib/keystore';
 import { registrationFromInvoice } from '../lib/reconciliationMatch';
 import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
 import { checkpointKeyId } from '../lib/scanClient';
@@ -38,7 +39,9 @@ export function CreateInvoice(): ReactNode {
   const [memo, setMemo] = useState('');
   const [encrypt, setEncrypt] = useState(false);
   const [protectWithPassphrase, setProtectWithPassphrase] = useState(false);
-  const [passphrase, setPassphrase] = useState('');
+  // The invoice passphrase starts as a generated suggestion (L1-06), shown in clear only while untouched.
+  const [suggested, setSuggested] = useState(generatePassphrase);
+  const [passphrase, setPassphrase] = useState(suggested);
   const [passphraseAgain, setPassphraseAgain] = useState('');
   const [error, setError] = useState<string | undefined>(undefined);
   const [created, setCreated] = useState<CreatedInvoice | undefined>(undefined);
@@ -242,9 +245,13 @@ export function CreateInvoice(): ReactNode {
           </div>
           {protectWithPassphrase && (
             <>
-              <Field label="Invoice passphrase (at least 14 characters)" hint="Use several unrelated words. Send the passphrase to the payer through a different channel from the invoice link.">
-                {(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" value={passphrase} onChange={(e) => { setPassphrase(e.target.value); }} />}
+              <Field
+                label="Invoice passphrase (at least 14 characters)"
+                hint={`${passphrase !== '' && passphrase === suggested ? `Suggested: ${String(GENERATED_PASSPHRASE_WORDS)} random words picked on this device (${String(GENERATED_PASSPHRASE_BITS)} bits); type it again below, or replace it with your own (use several unrelated words).` : 'Use several unrelated words.'} Send the passphrase to the payer through a different channel from the invoice link.`}
+              >
+                {(id, d) => <input id={id} aria-describedby={d} type={passphrase !== '' && passphrase === suggested ? 'text' : 'password'} autoComplete="off" spellCheck={false} value={passphrase} onChange={(e) => { setPassphrase(e.target.value); }} />}
               </Field>
+              <p><button type="button" className="btn" onClick={() => { const next = generatePassphrase(); setSuggested(next); setPassphrase(next); setPassphraseAgain(''); }}>Suggest another invoice passphrase</button></p>
               <Field label="Repeat invoice passphrase">
                 {(id) => <input id={id} type="password" autoComplete="off" value={passphraseAgain} onChange={(e) => { setPassphraseAgain(e.target.value); }} />}
               </Field>

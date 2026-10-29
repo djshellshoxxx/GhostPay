@@ -4,12 +4,13 @@ import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { decodeFunctionData, encodeAbiParameters, keccak256, toBytes } from 'viem/utils';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { clearSession, generateSession, getSessionPublic } from '../../lib/session';
+import { captureSessionGuard, clearSession, generateSession, getSessionPublic, markKeystoreDownloaded } from '../../lib/session';
 import { buildClearRegistryCall } from '../../lib/registry';
 import { SETTINGS_KEY } from '../../lib/settings';
 import type { WalletInfo } from '../../lib/wallet';
 import { MockWallet } from '../../test/mockWallet';
 import { mockRpc } from '../../test/mockRpc';
+import { generateWaivedSession } from '../../test/keys';
 import { makeServices, renderApp } from '../../test/render';
 
 const SEPOLIA = 11155111;
@@ -65,8 +66,27 @@ describe('Registry view', () => {
     expect(screen.getByText(/Load or generate keys/)).toBeTruthy();
   });
 
+  it('C-R1: keys without a backup cannot reach publishing; once backed up they can', async () => {
+    const pub = generateSession();
+    const wallet = new MockWallet({ chainId: SEPOLIA });
+    const user = await open(makeServices({ createRpc: () => Promise.resolve(chain(wallet)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    expect(screen.getByText('Back up these seller keys first')).toBeTruthy();
+    expect(screen.queryByText(pub.metaAddress)).toBeNull();
+    expect(screen.queryByRole('checkbox')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Find wallets' })).toBeNull();
+    // The lookup and the QR review stay available: they publish nothing.
+    expect(screen.getByRole('button', { name: 'Look up' })).toBeTruthy();
+    act(() => { markKeystoreDownloaded(captureSessionGuard()); });
+    expect(screen.queryByText('Back up these seller keys first')).toBeNull();
+    expect(screen.getByText(pub.metaAddress)).toBeTruthy();
+    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('button', { name: 'Find wallets' }));
+    await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
+    expect(await screen.findByRole('button', { name: 'Review publish transaction' })).toBeTruthy();
+  });
+
   it('publishes only after explicit consent, previews the call, and verifies it on the RPC', async () => {
-    generateSession();
+    generateWaivedSession();
     const meta = getSessionPublic()!.metaAddress;
     const wallet = new MockWallet({ chainId: SEPOLIA });
     const rpc = chain(wallet);
@@ -88,7 +108,7 @@ describe('Registry view', () => {
   });
 
   it('does not publish if consent is withdrawn during the wallet network recheck', async () => {
-    generateSession();
+    generateWaivedSession();
     const wallet = new MockWallet({ chainId: SEPOLIA });
     let block = false;
     let release: (() => void) | undefined;
@@ -112,7 +132,7 @@ describe('Registry view', () => {
     expect(wallet.sent).toBeUndefined();
   });
   it('unchecking consent drops the connection and review', async () => {
-    generateSession();
+    generateWaivedSession();
     const wallet = new MockWallet({ chainId: SEPOLIA });
     const user = await open(makeServices({ createRpc: () => Promise.resolve(chain(wallet)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
     await user.click(screen.getByRole('checkbox'));
@@ -124,7 +144,7 @@ describe('Registry view', () => {
   });
 
   it('refuses to review when the registry has no code on the chain (fail closed)', async () => {
-    generateSession();
+    generateWaivedSession();
     const wallet = new MockWallet({ chainId: SEPOLIA });
     const user = await open(makeServices({ createRpc: () => Promise.resolve(chain(wallet, '0x')), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
     await user.click(screen.getByRole('checkbox'));
@@ -137,7 +157,7 @@ describe('Registry view', () => {
   });
 
   it('requires the expected ERC-6538 type hash before registry use', async () => {
-    generateSession();
+    generateWaivedSession();
     const wallet = new MockWallet({ chainId: SEPOLIA });
     const rpc = chain(wallet, '0x6001', '0x', `0x${'11'.repeat(32)}`);
     const user = await open(makeServices({ createRpc: () => Promise.resolve(rpc), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
@@ -150,7 +170,7 @@ describe('Registry view', () => {
   });
 
   it('reviews and clears the current entry through registerKeys(1, empty bytes)', async () => {
-    generateSession();
+    generateWaivedSession();
     const wallet = new MockWallet({ chainId: SEPOLIA });
     const user = await open(makeServices({ createRpc: () => Promise.resolve(chain(wallet)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
     await user.click(screen.getByRole('checkbox'));
@@ -169,7 +189,7 @@ describe('Registry view', () => {
   });
 
   it('requires an RPC endpoint', async () => {
-    generateSession();
+    generateWaivedSession();
     const wallet = new MockWallet({ chainId: SEPOLIA });
     const user = await open(makeServices({ discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }), false);
     await user.click(screen.getByRole('checkbox'));

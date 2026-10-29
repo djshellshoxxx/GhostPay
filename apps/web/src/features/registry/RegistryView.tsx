@@ -11,6 +11,7 @@ import { captureSessionGuard } from '../../lib/session';
 import { WalletAttempts } from '../../components/WalletAttempts';
 import { CameraImporter } from '../../components/CameraImporter';
 import { parsePublicMetaQr } from '../../lib/qrPayload';
+import { BackupGate } from '../../views/SellerKeys';
 
 type Msg = { readonly kind: 'ok' | 'error' | 'warn'; readonly text: string };
 
@@ -242,7 +243,8 @@ export function RegistryView(): ReactNode {
       {metaAddress === undefined ? (
         <p>{t('registry.loadKeysFirst')}</p>
       ) : (
-        <>
+        // A published meta-address invites payments that only these keys can sweep: a backup or the typed waiver first (L1-01).
+        <BackupGate>
           <Notice kind="warn" title={t('registry.publicAssoc.title')}>
             {t('registry.publicAssoc.body')}
           </Notice>
@@ -275,7 +277,7 @@ export function RegistryView(): ReactNode {
               <button type="button" className="btn btn-primary" disabled={busy || !consent} onClick={onPublish}>{reviewAction === 'clear' ? t('registry.clearEntry') : t('registry.publishEntry')}</button>
             </>
           )}
-        </>
+        </BackupGate>
       )}
       {pub !== undefined && <Notice kind={pub.kind}>{pub.text}</Notice>}
 

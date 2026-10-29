@@ -24,8 +24,6 @@
     "settings.delay.max": "الحد الأقصى للتأخير (بالثواني)",
     "settings.delay.range": "يتأخر كل دفع بين {min, number} و{max, number} ثانية.",
     "settings.safety.legend": "الأمان والمظهر",
-    "settings.lock.label": "قفل العلامات المحلية بعد دقائق من الخمول",
-    "settings.lock.hint": "تبقى المفاتيح في الذاكرة حتى تمسحها أو تغلق التبويب.",
     "settings.lock.summary": "يُقفل بعد {minutes, plural, zero {# دقيقة} one {دقيقة واحدة} two {دقيقتين} few {# دقائق} many {# دقيقة} other {# دقيقة}} دون نشاط.",
     "settings.theme.label": "السمة",
     "settings.theme.system": "اتباع النظام",

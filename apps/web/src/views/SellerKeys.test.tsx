@@ -2,8 +2,10 @@
 import { act, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { clearSession, generateSession, getSessionPublic } from '../lib/session';
-import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests, type KeyVaultStore } from '../lib/keyVault';
+import * as keySession from '../lib/session';
+import { clearSession, generateSession, getSessionBackup, getSessionPublic, hasSession, importSession } from '../lib/session';
+import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests, unlockEncryptedVault, type KeyVaultStore } from '../lib/keyVault';
+import { SETTINGS_KEY } from '../lib/settings';
 import { makeServices, renderApp } from '../test/render';
 
 let vaultStore = new MemoryKeyVaultStore();
@@ -17,13 +19,23 @@ beforeEach(() => {
   window.history.replaceState(null, '', '/');
 });
 
-afterEach(() => { setKeyVaultStoreForTests(undefined); });
+afterEach(() => { setKeyVaultStoreForTests(undefined); vi.restoreAllMocks(); });
 
 async function open(): Promise<ReturnType<typeof userEvent.setup>> {
   const user = userEvent.setup();
   renderApp(makeServices());
   await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Seller keys' }));
   return user;
+}
+
+/**
+ * Runs the page's keystore export at scrypt N=2^14 instead of the production 2^17, so a flow that downloads a keystore
+ * does not wait on production-cost key stretching (it timed out on a loaded machine); passphrase checks and encryption
+ * are otherwise the real ones.
+ */
+function cheapKeystoreExport(): void {
+  const actual = keySession.exportKeystore;
+  vi.spyOn(keySession, 'exportKeystore').mockImplementation((passphrase) => actual(passphrase, { N: 1 << 14 }));
 }
 
 describe('Seller keys', () => {
@@ -41,6 +53,10 @@ describe('Seller keys', () => {
     expect(await vaultStore.get()).toBe(ciphertext);
     expect(await vaultStore.get()).not.toContain(passphrase);
     expect(screen.getByLabelText<HTMLInputElement>('Vault passphrase').value).toBe('');
+    // The unlocked keys now need the vault's step-up to be exported; that field must not also match "vault passphrase",
+    // which is how the e2e suite finds the unlock field.
+    expect(screen.getByLabelText('Passphrase of the vault these keys are tied to')).toBeTruthy();
+    expect(screen.getAllByLabelText(/vault passphrase/i)).toHaveLength(1);
   });
 
   it('keeps a saved vault locked after a wrong passphrase and clears the password field', async () => {
@@ -60,7 +76,8 @@ describe('Seller keys', () => {
     const user = await open();
     await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
     const store = vaultStore;
-    await user.type(await screen.findByLabelText('New vault passphrase (14+ characters)'), 'short');
+    await user.clear(await screen.findByLabelText('New vault passphrase (14+ characters)'));
+    await user.type(screen.getByLabelText('New vault passphrase (14+ characters)'), 'short');
     await user.type(screen.getByLabelText('Repeat vault passphrase'), 'short');
     await user.click(screen.getByRole('button', { name: 'Save encrypted vault in this browser' }));
     expect(screen.getByRole('alert').textContent).toMatch(/at least 14/);
@@ -75,16 +92,27 @@ describe('Seller keys', () => {
   });
 
   it('supports cancelling or confirming explicit vault deletion', async () => {
-    generateSession();
+    const loaded = generateSession();
     await saveEncryptedVault('violet comet maple lantern', { N: 1 << 14 });
     const user = await open();
-    await user.click(screen.getByRole('button', { name: 'Delete encrypted vault' }));
+    await user.click(await screen.findByRole('button', { name: 'Delete encrypted vault' }));
     expect(screen.getByText(/permanently deletes the saved ciphertext/)).toBeTruthy();
     await user.click(screen.getByRole('button', { name: 'Cancel' }));
     expect(screen.getByRole('button', { name: 'Unlock saved vault' })).toBeTruthy();
     await user.click(screen.getByRole('button', { name: 'Delete encrypted vault' }));
+    // L1-02: the confirmation names the vault's meta-address; the vault of the loaded keys needs its passphrase.
+    expect(screen.getByText('This vault holds the seller keys of meta-address:')).toBeTruthy();
+    expect(screen.getAllByText(loaded.metaAddress).length).toBeGreaterThan(0);
+    expect(screen.getByText(/These are the keys loaded now/)).toBeTruthy();
+    const confirm = screen.getByRole<HTMLButtonElement>('button', { name: 'Confirm delete encrypted vault' });
+    expect(confirm.disabled).toBe(true);
+    await user.type(screen.getByLabelText('Passphrase of this vault'), 'incorrect vault phrase');
+    await user.click(confirm);
+    await waitFor(() => { expect(screen.getByRole('alert').textContent).toMatch(/Wrong passphrase/); }, { timeout: 15_000 });
+    expect(await vaultStore.get()).toBeDefined();
+    await user.type(screen.getByLabelText('Passphrase of this vault'), 'violet comet maple lantern');
     await user.click(screen.getByRole('button', { name: 'Confirm delete encrypted vault' }));
-    expect(await screen.findAllByText('Encrypted vault deleted from this browser.')).toHaveLength(2);
+    expect(await screen.findAllByText('Encrypted vault deleted from this browser.', undefined, { timeout: 15_000 })).toHaveLength(2);
     expect(await vaultStore.get()).toBeUndefined();
     expect(screen.queryByRole('button', { name: 'Unlock saved vault' })).toBeNull();
   });
@@ -106,9 +134,21 @@ describe('Seller keys', () => {
     const user = await open();
     await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
     const pub = getSessionPublic()!;
+    // L1-01: keys that exist only in this tab are not shared before a backup or the typed waiver.
+    expect(screen.getByText('These seller keys have no backup')).toBeTruthy();
+    expect(screen.getByText('Back up these seller keys first')).toBeTruthy();
+    expect(screen.queryByText(pub.metaAddress)).toBeNull();
+    expect(document.querySelector('[data-qr-kind="shareable"]')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Copy meta-address' })).toBeNull();
+    await user.type(screen.getByLabelText(/To continue without a backup/), 'continue without backup');
+    await user.click(screen.getByRole('button', { name: 'Continue without a backup' }));
     expect(screen.getByText(pub.metaAddress)).toBeTruthy();
     expect(document.querySelector('[data-qr-kind="shareable"] svg')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Copy meta-address' })).toBeTruthy();
     expect(screen.getByText(pub.signerPublicKey)).toBeTruthy();
+    expect(screen.getByText('These seller keys have no backup')).toBeTruthy();
+    // I-1: wiping does not remove local scan state, and the page says so next to the wipe button.
+    expect(screen.getByText(/This removes the keys from this tab only/).textContent).toMatch(/clear this site’s data/);
     expect(window.localStorage.length).toBe(0);
     expect(window.sessionStorage.length).toBe(0);
     expect(document.body.innerHTML).not.toMatch(/spendingSecret|viewingSecret/);
@@ -122,6 +162,47 @@ describe('Seller keys', () => {
     await user.click(screen.getByRole('button', { name: 'Load keys' }));
     expect(getSessionPublic()).toBeDefined();
     expect(screen.getByText('Your meta-address (public)')).toBeTruthy();
+    // C-R6: the empty signing-key field generated a key that exists only in this tab, as its hint said. C-R10: payments
+    // stay sweepable with the typed hex, so only that key is reported unsaved and the meta-address is shared as usual.
+    expect(getSessionBackup()).toMatchObject({ backedUp: false, signerOnly: true });
+    expect(screen.getByText('The invoice-signing key has no backup')).toBeTruthy();
+    expect(screen.queryByText('These seller keys have no backup')).toBeNull();
+    expect(screen.queryByText('Back up these seller keys first')).toBeNull();
+    expect(screen.getByText(getSessionPublic()!.metaAddress)).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Copy meta-address' })).toBeTruthy();
+  });
+
+  it('C-R6, C-R10: says that an empty signing-key field generates a key that only a backup keeps', async () => {
+    const user = await open();
+    await user.click(screen.getByText('Import existing keys (hex)'));
+    const hint = document.getElementById(screen.getByLabelText('Invoice-signing private key (optional)').getAttribute('aria-describedby') ?? '');
+    expect(hint?.textContent).toMatch(/It exists only in this tab until you download the encrypted keystore or save the vault: if the tab closes or the idle lock wipes the keys before then, your hex keys load the spending and viewing keys again, but with a new signing key\./);
+  });
+
+  it('C-R10: says that only the generated signing key is lost before keys from a hex import are replaced or wiped', async () => {
+    generateSession();
+    await saveEncryptedVault('violet comet maple lantern', { N: 1 << 14 });
+    clearSession();
+    const pub = importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32) });
+    const user = await open();
+    const sweepable = /Payments to their meta-address stay sweepable with the spending and viewing keys you imported, but the invoice-signing key generated here/;
+    await user.type(await screen.findByLabelText('Vault passphrase'), 'violet comet maple lantern');
+    await user.click(screen.getByRole('button', { name: 'Unlock saved vault' }));
+    const replace = screen.getByText('The signing key loaded now has no backup').closest('.notice');
+    expect(replace?.textContent).toMatch(sweepable);
+    expect(replace?.textContent).not.toMatch(/never be swept/);
+    expect(screen.queryByText('The keys loaded now have no backup')).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+    await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    const wipe = (await screen.findByText('Wipe keys whose signing key has no backup?')).closest('.notice');
+    expect(wipe?.textContent).toMatch(sweepable);
+    expect(wipe?.textContent).not.toMatch(/never be swept/);
+    expect(screen.queryByText('Wipe keys that have no backup?')).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(getSessionPublic()).toBe(pub);
+    await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    await user.click(await screen.findByRole('button', { name: 'Wipe the unsaved keys' }));
+    expect(getSessionPublic()).toBeUndefined();
   });
 
   it('shows a clear error for a bad key and keeps no session', async () => {
@@ -135,6 +216,7 @@ describe('Seller keys', () => {
   });
 
   it('exports an encrypted keystore (validating the passphrase) and wipes keys on request', async () => {
+    cheapKeystoreExport();
     const user = await open();
     await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
     const click = vi.fn();
@@ -145,6 +227,7 @@ describe('Seller keys', () => {
     };
     URL.revokeObjectURL = (): void => undefined;
     HTMLAnchorElement.prototype.click = click;
+    await user.clear(screen.getByLabelText('Passphrase (at least 14 characters)'));
     await user.type(screen.getByLabelText('Passphrase (at least 14 characters)'), 'short');
     await user.type(screen.getByLabelText('Repeat passphrase'), 'short');
     await user.click(screen.getByRole('button', { name: 'Download encrypted keystore' }));
@@ -166,9 +249,162 @@ describe('Seller keys', () => {
     await user.click(within(secretQr as HTMLElement).getByRole('button', { name: 'Reveal secret QR code' }));
     expect(secretQr?.querySelector('svg.qr-svg')).toBeTruthy();
     expect(window.localStorage.length).toBe(0);
+    // L1-01: the downloaded keystore is a backup, so the banner and the sharing gate are gone.
+    expect(getSessionBackup()?.backedUp).toBe(true);
+    expect(screen.queryByText('These seller keys have no backup')).toBeNull();
+    expect(screen.getByText(getSessionPublic()!.metaAddress)).toBeTruthy();
     await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
     expect(getSessionPublic()).toBeUndefined();
     expect(screen.getByRole('button', { name: 'Generate new keys' })).toBeTruthy();
+  });
+
+  it('C-R4: asks before wiping keys that have no backup', async () => {
+    const user = await open();
+    await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
+    const pub = getSessionPublic();
+    await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    expect(getSessionPublic()).toBe(pub);
+    expect(screen.getByText('Wipe keys that have no backup?')).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(screen.queryByText('Wipe keys that have no backup?')).toBeNull();
+    expect(getSessionPublic()).toBe(pub);
+    await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    await user.click(screen.getByRole('button', { name: 'Wipe the unsaved keys' }));
+    expect(getSessionPublic()).toBeUndefined();
+    expect(screen.getAllByText('Keys wiped from memory.').length).toBeGreaterThan(0);
+    // New keys start without the earlier request: the first click asks again.
+    await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
+    expect(screen.queryByText('Wipe keys that have no backup?')).toBeNull();
+  });
+
+  it('L1-06: pre-fills a generated keystore passphrase in clear and accepts it once typed again', async () => {
+    cheapKeystoreExport();
+    const user = await open();
+    await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
+    const field = screen.getByLabelText<HTMLInputElement>('Passphrase (at least 14 characters)');
+    const first = field.value;
+    expect(first).toMatch(/^[a-z]{4,8}(?:-[a-z]{4,8}){5}$/);
+    expect(field.type).toBe('text');
+    expect(screen.getAllByText(/Suggested: 6 random words picked on this device \(60 bits\)/).length).toBeGreaterThan(0);
+    const vaultField = screen.getByLabelText<HTMLInputElement>('New vault passphrase (14+ characters)');
+    expect(vaultField.value).toMatch(/^[a-z]{4,8}(?:-[a-z]{4,8}){5}$/);
+    expect(vaultField.value).not.toBe(first);
+    await user.type(screen.getByLabelText('Repeat passphrase'), 'typed');
+    await user.click(screen.getByRole('button', { name: 'Suggest another keystore passphrase' }));
+    expect(field.value).not.toBe(first);
+    expect(screen.getByLabelText<HTMLInputElement>('Repeat passphrase').value).toBe('');
+    // Editing turns it into the user's own passphrase, which is not shown.
+    await user.type(field, 'x');
+    expect(field.type).toBe('password');
+    await user.click(screen.getByRole('button', { name: 'Suggest another keystore passphrase' }));
+    const click = vi.fn();
+    URL.createObjectURL = (): string => 'blob:test';
+    URL.revokeObjectURL = (): void => undefined;
+    HTMLAnchorElement.prototype.click = click;
+    await user.type(screen.getByLabelText('Repeat passphrase'), field.value);
+    await user.click(screen.getByRole('button', { name: 'Download encrypted keystore' }));
+    await waitFor(() => { expect(click).toHaveBeenCalled(); }, { timeout: 30_000 });
+    expect(getSessionBackup()?.backedUp).toBe(true);
+  });
+
+  it('L1-01: asks before unlocking a saved vault over keys that have no backup', async () => {
+    const saved = importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32), signingKeyHex: '33'.repeat(32) });
+    await saveEncryptedVault('violet comet maple lantern', { N: 1 << 14 });
+    clearSession();
+    const unsaved = generateSession();
+    const user = await open();
+    await user.type(await screen.findByLabelText('Vault passphrase'), 'violet comet maple lantern');
+    await user.click(screen.getByRole('button', { name: 'Unlock saved vault' }));
+    expect(screen.getByText('The keys loaded now have no backup')).toBeTruthy();
+    expect(getSessionPublic()).toBe(unsaved);
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(screen.queryByText('The keys loaded now have no backup')).toBeNull();
+    expect(getSessionPublic()).toBe(unsaved);
+    await user.click(screen.getByRole('button', { name: 'Unlock saved vault' }));
+    await user.click(screen.getByRole('button', { name: 'Replace the unsaved keys' }));
+    await waitFor(() => { expect(getSessionPublic()?.metaAddress).toBe(saved.metaAddress); }, { timeout: 30_000 });
+    expect(getSessionBackup()).toMatchObject({ backedUp: true, vaultStepUp: true });
+  });
+
+  it('C-R2: shows the no-backup banner once the vault the keys were unlocked from was deleted in another tab', async () => {
+    generateSession();
+    await saveEncryptedVault('violet comet maple lantern', { N: 1 << 14 });
+    const record = (await vaultStore.get())!;
+    clearSession();
+    await unlockEncryptedVault('violet comet maple lantern');
+    expect(getSessionBackup()?.backedUp).toBe(true);
+    await vaultStore.delete(record);
+    await open();
+    expect(await screen.findByText('These seller keys have no backup')).toBeTruthy();
+    expect(screen.getByText('Back up these seller keys first')).toBeTruthy();
+    expect(getSessionBackup()).toMatchObject({ backedUp: false, vaultStepUp: true });
+  });
+
+  it('C-R9: wipes keys whose vault is still saved, and asks first once another tab deleted it while the page was open', async () => {
+    generateSession();
+    await saveEncryptedVault('violet comet maple lantern', { N: 1 << 14 });
+    const record = (await vaultStore.get())!;
+    const user = await open();
+    expect(await screen.findByRole('button', { name: 'Unlock saved vault' })).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    await waitFor(() => { expect(getSessionPublic()).toBeUndefined(); });
+    expect(screen.queryByText('Wipe keys that have no backup?')).toBeNull();
+
+    await act(async () => { await unlockEncryptedVault('violet comet maple lantern'); });
+    const pub = getSessionPublic();
+    expect(await screen.findByRole('button', { name: 'Wipe keys from memory' })).toBeTruthy();
+    expect(getSessionBackup()?.backedUp).toBe(true);
+    await vaultStore.delete(record);                    // another tab: the keys in memory are now the only copy
+    await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    expect(await screen.findByText('Wipe keys that have no backup?')).toBeTruthy();
+    expect(getSessionPublic()).toBe(pub);
+    expect(screen.getByText('These seller keys have no backup')).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(getSessionPublic()).toBe(pub);
+  });
+
+  it('C-R9: drops a wipe request when the keys change while their vault is looked up', async () => {
+    generateSession();
+    await saveEncryptedVault('violet comet maple lantern', { N: 1 << 14 });
+    const user = await open();
+    expect(await screen.findByRole('button', { name: 'Unlock saved vault' })).toBeTruthy();
+    const durable = vaultStore;
+    const held: (() => void)[] = [];
+    setKeyVaultStoreForTests({
+      get: async () => { await new Promise<void>((resolve) => { held.push(resolve); }); return durable.get(); },
+      putIfEmpty: (...args: Parameters<KeyVaultStore['putIfEmpty']>) => durable.putIfEmpty(...args),
+      delete: (...args: Parameters<KeyVaultStore['delete']>) => durable.delete(...args),
+    });
+    await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    expect(held).toHaveLength(1);
+    act(() => { generateSession(); });                 // new keys, with no backup, while the vault is read
+    const replacement = getSessionPublic();
+    await act(async () => { for (const release of held.splice(0)) release(); await new Promise((resolve) => setTimeout(resolve, 0)); });
+    expect(getSessionPublic()).toBe(replacement);
+    expect(screen.queryByText('Wipe keys that have no backup?')).toBeNull();
+    expect(screen.queryByText('Keys wiped from memory.')).toBeNull();
+  });
+
+  it('L1-02: exporting keys tied to a vault needs that vault\'s passphrase', async () => {
+    importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32), signingKeyHex: '33'.repeat(32) });
+    await saveEncryptedVault('violet comet maple lantern', { N: 1 << 14 });
+    cheapKeystoreExport();
+    const click = vi.fn();
+    URL.createObjectURL = (): string => 'blob:test';
+    URL.revokeObjectURL = (): void => undefined;
+    HTMLAnchorElement.prototype.click = click;
+    const user = await open();
+    await user.type(await screen.findByLabelText('Passphrase of the vault these keys are tied to'), 'attacker chosen phrase 42!');
+    await user.clear(screen.getByLabelText('Passphrase (at least 14 characters)'));
+    await user.type(screen.getByLabelText('Passphrase (at least 14 characters)'), 'attacker chosen phrase 42!');
+    await user.type(screen.getByLabelText('Repeat passphrase'), 'attacker chosen phrase 42!');
+    await user.click(screen.getByRole('button', { name: 'Download encrypted keystore' }));
+    await waitFor(() => { expect(screen.getByRole('alert').textContent).toMatch(/Wrong passphrase/); }, { timeout: 15_000 });
+    expect(click).not.toHaveBeenCalled();
+    expect(screen.getByLabelText<HTMLInputElement>('Passphrase of the vault these keys are tied to').value).toBe('');
+    await user.type(screen.getByLabelText('Passphrase of the vault these keys are tied to'), 'violet comet maple lantern');
+    await user.click(screen.getByRole('button', { name: 'Download encrypted keystore' }));
+    await waitFor(() => { expect(click).toHaveBeenCalled(); }, { timeout: 30_000 });
   });
 
   it('imports a keystore file with the right passphrase and rejects the wrong one', async () => {
@@ -178,6 +414,8 @@ describe('Seller keys', () => {
     const { exportKeystore } = await import('../lib/session');
     const text = await exportKeystore('a long passphrase', { N: 1 << 14 });
     await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    // The keystore was made here, not downloaded: the keys still count as unsaved (C-R4).
+    await user.click(screen.getByRole('button', { name: 'Wipe the unsaved keys' }));
     await user.click(screen.getByText('Import an encrypted keystore'));
     const input = screen.getByLabelText('Keystore file');
     await user.click(screen.getByRole('button', { name: 'Decrypt and load' }));
@@ -215,7 +453,6 @@ it('imports only an encrypted keystore QR and waits for explicit decryption', as
   await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
   expect(getSessionPublic()).toBeUndefined();
   await user.type(screen.getByLabelText('Passphrase'), 'a long passphrase');
-  const keySession = await import('../lib/session');
   const actualImport = keySession.importKeystore;
   let importPromise: ReturnType<typeof actualImport> | undefined;
   const observedImport = vi.spyOn(keySession, 'importKeystore').mockImplementation((...args) => {
@@ -263,7 +500,8 @@ describe('encrypted vault save lifetime', () => {
     setKeyVaultStoreForTests(store);
     const user = await open();
     await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
-    await user.type(await screen.findByLabelText('New vault passphrase (14+ characters)'), PASSPHRASE);
+    await user.clear(await screen.findByLabelText('New vault passphrase (14+ characters)'));
+    await user.type(screen.getByLabelText('New vault passphrase (14+ characters)'), PASSPHRASE);
     await user.type(screen.getByLabelText('Repeat vault passphrase'), PASSPHRASE);
     await user.click(screen.getByRole('button', { name: 'Save encrypted vault in this browser' }));
     return user;
@@ -283,6 +521,7 @@ describe('encrypted vault save lifetime', () => {
     const user = await startSave(store);
     await act(async () => { await putStarted; });
     await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    await user.click(screen.getByRole('button', { name: 'Wipe the unsaved keys' }));
     await act(async () => { releasePut(); await Promise.resolve(); });
     await waitFor(() => { expect(screen.getByRole('alert').textContent).toMatch(/changed during this action/); }, { timeout: 15_000 });
     expect(await durable.get()).toBeUndefined();
@@ -305,7 +544,9 @@ describe('encrypted vault save lifetime', () => {
     await act(async () => { await commitSeen; });
     const ciphertext = await durable.get();
     expect(ciphertext).toBeDefined();
+    // The save has not returned yet, so the keys still count as unsaved (C-R4).
     await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    await user.click(screen.getByRole('button', { name: 'Wipe the unsaved keys' }));
     await act(async () => { finish(); await Promise.resolve(); });
     await waitFor(() => { expect(screen.getByRole('alert').textContent).toMatch(/saved for the seller keys that were loaded when you started/); }, { timeout: 15_000 });
     expect(await durable.get()).toBe(ciphertext);
@@ -443,5 +684,102 @@ describe('encrypted vault delete confirmation', () => {
     await waitFor(() => { expect(screen.getByRole('alert')).toBeTruthy(); });
     expect(screen.queryByText(DELETED)).toBeNull();
     expect(await durable.get()).toBe(a);
+  });
+});
+
+describe('G2-05: typed key hex and passphrases do not outlive their use', () => {
+  const SPEND = 'Spending private key (64 hex characters)';
+  const VIEW = 'Viewing private key (64 hex characters)';
+  const SIGN = 'Invoice-signing private key (optional)';
+  /** react-dom mirrors a controlled input's value into its value attribute, so both must be empty. */
+  const expectEmpty = (field: HTMLInputElement): void => {
+    expect(field.value).toBe('');
+    expect(field.getAttribute('value') ?? '').toBe('');
+  };
+
+  it('a failed hex import clears the typed keys and their value attributes', async () => {
+    const user = await open();
+    await user.click(screen.getByText('Import existing keys (hex)'));
+    await user.type(screen.getByLabelText(SPEND), 'abc');
+    await user.type(screen.getByLabelText(VIEW), '22'.repeat(32));
+    await user.type(screen.getByLabelText(SIGN), '33'.repeat(32));
+    expect(screen.getByLabelText(VIEW).getAttribute('value')).toBe('22'.repeat(32));
+    await user.click(screen.getByRole('button', { name: 'Load keys' }));
+    expect(screen.getByRole('alert').textContent).toMatch(/64 hexadecimal/);
+    for (const label of [SPEND, VIEW, SIGN]) expectEmpty(screen.getByLabelText<HTMLInputElement>(label));
+  });
+
+  it('typed hex keys are gone once other keys were loaded and wiped', async () => {
+    const user = await open();
+    await user.click(screen.getByText('Import existing keys (hex)'));
+    await user.type(screen.getByLabelText(VIEW), '22'.repeat(32));
+    await user.click(screen.getByRole('button', { name: 'Generate new keys' }));
+    await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    await user.click(screen.getByRole('button', { name: 'Wipe the unsaved keys' }));
+    expectEmpty(screen.getByLabelText<HTMLInputElement>(VIEW));
+  });
+
+  it('the idle lock clears them without keys, and while unsaved keys stay loaded', async () => {
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 1 }));
+    vi.useFakeTimers();
+    try {
+      renderApp(makeServices());
+      fireEvent.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Seller keys' }));
+      fireEvent.change(screen.getByLabelText(SPEND), { target: { value: '11'.repeat(32) } });
+      fireEvent.change(screen.getByLabelText('Passphrase'), { target: { value: 'my keystore phrase' } });
+      expect(screen.getByLabelText(SPEND).getAttribute('value')).toBe('11'.repeat(32));
+      await act(async () => { await vi.advanceTimersByTimeAsync(61_000); });
+      expectEmpty(screen.getByLabelText<HTMLInputElement>(SPEND));
+      expectEmpty(screen.getByLabelText<HTMLInputElement>('Passphrase'));
+
+      fireEvent.click(screen.getByRole('button', { name: 'Generate new keys' }));
+      await act(async () => { await vi.advanceTimersByTimeAsync(0); });
+      const own = { keystore: 'my own keystore passphrase', vault: 'my own vault passphrase' };
+      fireEvent.change(screen.getByLabelText('Passphrase (at least 14 characters)'), { target: { value: own.keystore } });
+      fireEvent.change(screen.getByLabelText('New vault passphrase (14+ characters)'), { target: { value: own.vault } });
+      fireEvent.pointerDown(window);                    // activity re-arms the idle timer
+      await act(async () => { await vi.advanceTimersByTimeAsync(61_000); });
+      expect(hasSession()).toBe(true);                  // no backup, so the idle lock keeps the keys (L1-01)
+      for (const [label, typed] of [['Passphrase (at least 14 characters)', own.keystore], ['New vault passphrase (14+ characters)', own.vault]] as const) {
+        const field = screen.getByLabelText<HTMLInputElement>(label);
+        expect(field.value).not.toBe(typed);
+        expect(field.getAttribute('value')).not.toBe(typed);
+      }
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
+
+describe('G2-06: vault passphrases are not offered to the browser password manager', () => {
+  const PASS = 'violet comet maple lantern';
+  /** No credential autocomplete token and the field's own non-credential name. */
+  const expectNotCredential = (label: string, name: string): void => {
+    const field = screen.getByLabelText<HTMLInputElement>(label);
+    expect(field.getAttribute('autocomplete')).toBe('off');
+    expect(field.getAttribute('name')).toBe(name);
+  };
+  const hintOf = (label: string): string => document.getElementById(screen.getByLabelText(label).getAttribute('aria-describedby') ?? '')?.textContent ?? '';
+
+  it('uses autocomplete="off" and distinct non-credential names on every vault and step-up field, and says not to save', async () => {
+    importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32), signingKeyHex: '33'.repeat(32) });
+    await saveEncryptedVault(PASS, { N: 1 << 14 });
+    const user = await open();
+    expectNotCredential('Vault passphrase', 'ghostpay-vault-unlock');
+    expect(hintOf('Vault passphrase')).toMatch(/Do not let your browser or password manager save this passphrase/);
+    expect(screen.getByText(/Unlocking replaces the keys currently in memory/).textContent).toMatch(/GhostPay never stores your passphrase\.$/);
+    expectNotCredential('Passphrase of the vault these keys are tied to', 'ghostpay-step-up-export');
+    await user.click(screen.getByRole('button', { name: 'Delete encrypted vault' }));
+    expectNotCredential('Passphrase of this vault', 'ghostpay-vault-delete');
+    await user.type(screen.getByLabelText('Passphrase of this vault'), PASS);
+    await user.click(screen.getByRole('button', { name: 'Confirm delete encrypted vault' }));
+    // The keys stay tied to the deleted vault, so saving a new one needs its passphrase as well (L1-02).
+    expect(await screen.findByLabelText('New vault passphrase (14+ characters)', undefined, { timeout: 15_000 })).toBeTruthy();
+    expectNotCredential('New vault passphrase (14+ characters)', 'ghostpay-vault-new');
+    expectNotCredential('Repeat vault passphrase', 'ghostpay-vault-new-again');
+    expect(hintOf('New vault passphrase (14+ characters)')).toMatch(/Do not let your browser or password manager save this passphrase/);
+    const stepUps = screen.getAllByLabelText<HTMLInputElement>('Passphrase of the vault these keys are tied to');
+    expect(stepUps.map((field) => [field.getAttribute('autocomplete'), field.getAttribute('name')])).toEqual([['off', 'ghostpay-step-up-export'], ['off', 'ghostpay-step-up-vault-save']]);
+    expect(document.querySelectorAll('input[autocomplete="current-password"], input[autocomplete="new-password"][name^="ghostpay-vault"]')).toHaveLength(0);
   });
 });

@@ -27,7 +27,7 @@ Trust boundaries: browser tab (keys live here) | wallet extension | static host/
 | Anyone holding the invoice link | Entire invoice (bearer link) | Seller keys |
 | Anyone holding two invoices of one seller | They share a seller (stable meta-address, D3) | Keys |
 | Fee recipient (project owner) | Aggregate fees on-chain only | Payer or seller identity beyond public chain data |
-| Browser profile / device owner | The invoice link, if the browser's history database stored it (S3-03); settings and RPC URLs in `localStorage` | Keys, unless the browser/OS is compromised |
+| Browser profile / device owner | The invoice link, if the browser's history database stored it (S3-03); settings and RPC URLs in `localStorage`; that this browser was used with a given seller identity: scan checkpoints (`localStorage`) and the encrypted scan history (IndexedDB) are stored under an unsalted SHA-256 of the public spending and viewing keys, which anyone can compute from the meta-address, and they stay after the keys are wiped from memory until the site's data is cleared (audit I-1); if the optional encrypted seller vault is saved, its meta-address and invoice-signing public key in clear and a ciphertext open to offline passphrase guessing; the count, chain ids and timestamps of local tags; any plaintext reconciliation ledger an older build left in `localStorage` | Keys, unless the browser/OS is compromised or the vault passphrase is guessed; tag and scan-history contents |
 
 ## 3. Data-flow diagrams
 

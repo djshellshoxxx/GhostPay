@@ -47,10 +47,12 @@ Not sure where in the flow you are? Check the map first.
 
 | You see | Cause | Do |
 |---|---|---|
-| Keys disappeared | Keys live in memory only; reload forgets them | Import your encrypted keystore |
+| Keys disappeared | Keys live in memory only unless saved in the optional browser vault; reload forgets them, and the idle lock wipes keys that can be loaded again (imported from a keystore or as hex with their signing key, downloaded as a keystore, or saved in the vault) | Import your encrypted keystore, unlock the browser vault, or enter your hex keys again |
+| Keys still loaded after the idle time, with a "no backup" banner | No copy exists outside this tab (generated here, hex imported without the signing key, or their vault deleted in another tab or with the site data), so the idle lock keeps them | Download the encrypted keystore or save the vault again; until then invoices, the meta-address and registry publishing need the typed waiver, and wiping asks first |
 | Keystore will not import | Wrong passphrase or not a GhostPay keystore | No recovery exists; try passphrases you used |
-| Tags gone | Site data cleared or vault wiped; tags are local only | No recovery; no encrypted export yet |
-| Tags locked | Idle lock from Settings | Unlock with loaded keys |
+| Forgot the vault passphrase, still have the keystore | Keys loaded with that vault keep its passphrase as the sweep and export step-up | Wipe keys from memory, delete the vault while no keys are loaded (no passphrase asked; check it shows your keystore's meta-address), import the keystore again |
+| Tags gone | Site data cleared or vault wiped; tags are local only | Restore an encrypted tag archive (Seller keys) if you downloaded one; otherwise no recovery |
+| Tags locked | Idle lock from Settings, or the seller keys were wiped or changed | Unlock with loaded keys |
 
 ## Still stuck
 

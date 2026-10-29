@@ -16,6 +16,7 @@ import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
 import { getAddress, isAddress } from 'viem/utils';
 import { createPolicyMetaAddress, DELAY_PRESETS, type LimitRow } from './create';
 import type { PolicyCtx } from './PolicyView';
+import { BackupGate } from '../../views/SellerKeys';
 
 const EMPTY_ROW: LimitRow = { token: '', limit: '', windowSeconds: '' };
 
@@ -97,7 +98,8 @@ export function PolicyCreate(props: { readonly ctx: PolicyCtx }): ReactNode {
     <section aria-labelledby="policy-create">
       <h3 id="policy-create">{t('policy.create.heading')}</h3>
       {session === undefined ? <Notice kind="info">{t('policy.create.needSession')}</Notice> : (
-        <>
+        // A policy meta-address derived from these keys invites payments: a backup or the typed waiver first (L1-01).
+        <BackupGate>
           <Field label={t('policy.create.destinationLabel')} hint={t('policy.create.destinationHint')}>
             {(id, hint) => <input id={id} aria-describedby={hint} value={destination} onChange={(e) => { setDestination(e.target.value); }} spellCheck={false} />}
           </Field>
@@ -122,7 +124,7 @@ export function PolicyCreate(props: { readonly ctx: PolicyCtx }): ReactNode {
           </fieldset>
           <button type="button" onClick={create}>{t('policy.create.submit')}</button>
           {err !== undefined && <Notice kind="error">{err}</Notice>}
-        </>
+        </BackupGate>
       )}
 
       {records.length > 0 && (

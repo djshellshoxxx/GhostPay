@@ -80,7 +80,8 @@ describe('policy view: create and restore', () => {
     const spy = vi.fn<(b: Blob | MediaSource) => string>(() => 'blob:x');
     URL.createObjectURL = spy;
     URL.revokeObjectURL = vi.fn();
-    act(() => { importSession({ spendingKeyHex: a1.spendingPrivateKey, viewingKeyHex: a1.viewingPrivateKey }); });
+    // With its signing key the import is backed up, so the create form needs no waiver (C-R1).
+    act(() => { importSession({ spendingKeyHex: a1.spendingPrivateKey, viewingKeyHex: a1.viewingPrivateKey, signingKeyHex: '33'.repeat(32) }); });
     const user = await open();
     await user.type(screen.getByLabelText(/^Destination/), a1.policy.destination);
     await user.type(screen.getByLabelText('Token 1'), 'native');

@@ -1,7 +1,15 @@
 import { parseFragment } from '@ghostpay/invoice-schema';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { buildInvoiceLink, computeTotals, tokenChoices, tokenDecimals, type InvoiceForm } from './invoiceCreate';
+import * as keySession from './session';
 import { clearSession, generateSession } from './session';
+
+// Records the signing key each invoice was signed with, to check how long that copy stays readable (L1-07).
+const signingKeys = vi.hoisted(() => [] as Uint8Array[]);
+vi.mock('@ghostpay/invoice-schema', async (original) => {
+  const actual = await original<typeof import('@ghostpay/invoice-schema')>();
+  return { ...actual, signInvoice: (invoice: Parameters<typeof actual.signInvoice>[0], key: Uint8Array) => { signingKeys.push(key); return actual.signInvoice(invoice, key); } };
+});
 
 const NOW = 1_800_000_000;
 const FORM: InvoiceForm = {
@@ -88,6 +96,19 @@ describe('buildInvoiceLink', () => {
   it('refuses without keys', async () => {
     clearSession();
     await expect(buildInvoiceLink(FORM, 'https://a/', NOW)).rejects.toThrow(/Load or generate/);
+  });
+
+  it('L1-07: borrows only a temporary signing key, wiped before the link is returned', async () => {
+    const compatibility = vi.spyOn(keySession, 'requireSession');
+    try {
+      signingKeys.length = 0;
+      const c = await buildInvoiceLink(FORM, 'https://a/', NOW);
+      expect((await parseFragment(c.fragment)).verification.signatureValid).toBe(true);
+      expect(signingKeys).toHaveLength(1);
+      expect(signingKeys[0]?.every((b) => b === 0)).toBe(true);
+      // No spending, viewing or signing scalar is opened for the session's lifetime.
+      expect(compatibility).not.toHaveBeenCalled();
+    } finally { compatibility.mockRestore(); }
   });
 
   it('treats an empty tax rate as zero and handles zero-decimal currencies', async () => {

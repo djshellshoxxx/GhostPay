@@ -11,7 +11,7 @@ import {
 } from '@ghostpay/invoice-schema';
 import { UserFacingError } from './errors';
 import { fiatDecimals, parseUnits, taxFor } from './format';
-import { getSessionPublic, requireSession } from './session';
+import { getSessionPublic, withSessionSecrets } from './session';
 import { passphraseProblem } from './keystore';
 
 export interface LineItemInput {
@@ -98,7 +98,6 @@ export async function buildInvoiceLink(
   nowSeconds: number,
   rng?: RandomSource,
 ): Promise<CreatedInvoice> {
-  const session = requireSession();
   const pub = getSessionPublic();
   if (pub === undefined) throw new UserFacingError('Load or generate seller keys first (Seller keys).');
   const chain = findChain(form.chainId);
@@ -154,7 +153,8 @@ export async function buildInvoiceLink(
     },
     rng,
   );
-  const signed = signInvoice(invoice, session.signingKey);
+  // The scalars are borrowed for this call only and wiped before it returns (L1-07). Nothing above awaits, so they belong to `pub`.
+  const signed = withSessionSecrets((s) => signInvoice(invoice, s.signingKey));
   const fragment = await encodeFragment(signed, {
     encrypt: form.passphrase === undefined ? form.encrypt : true,
     ...(form.passphrase === undefined ? {} : { passphrase: form.passphrase }),

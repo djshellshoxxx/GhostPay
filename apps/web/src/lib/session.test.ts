@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { captureSessionGuard, clearSession, exportKeystore, revealViewingKey, withSessionSecrets, withSessionSecretsAsync, generateSession, getSessionPublic, hasSession, importKeystore, importSession, requireSession, subscribeSession } from './session';
+import { armSessionVault, captureSessionGuard, clearSession, exportKeystore, forgetSessionVaultCopy, getSessionBackup, markKeystoreDownloaded, notifyIdleLock, revealViewingKey, sessionVaultRecord, subscribeIdleLock, subscribeSessionBackup, waiveSessionBackup, withSessionSecrets, withSessionSecretsAsync, generateSession, getSessionPublic, hasSession, importKeystore, importSession, requireSession, subscribeSession } from './session';
 
 afterEach(() => {
   clearSession();
@@ -101,6 +101,21 @@ describe('session', () => {
     expect(getSessionPublic()).not.toBe(original);
   });
 
+  it('G2-05: tells idle-lock subscribers until they unsubscribe, and leaves the keys alone', () => {
+    const pub = generateSession();
+    const changed = vi.fn();
+    const offSession = subscribeSession(changed);
+    const locked = vi.fn();
+    const off = subscribeIdleLock(locked);
+    notifyIdleLock();
+    off();
+    notifyIdleLock();
+    offSession();
+    expect(locked).toHaveBeenCalledTimes(1);
+    expect(changed).not.toHaveBeenCalled();
+    expect(getSessionPublic()).toBe(pub);
+  });
+
   it('invalidates a guard across an empty-to-loaded transition', () => {
     generateSession();
     const check = captureSessionGuard();
@@ -170,7 +185,7 @@ describe('boxed key storage (S3-08)', () => {
 
   it('exports a keystore from the boxed keys and re-imports it', async () => {
     const pub = importSession({ spendingKeyHex: HEX_A, viewingKeyHex: HEX_B, signingKeyHex: '33'.repeat(32) });
-    const text = await exportKeystore('correct horse battery staple');
+    const text = await exportKeystore('correct horse battery staple', { N: 1 << 14 });
     clearSession();
     const again = await importKeystore(text, 'correct horse battery staple');
     expect(again.metaAddress).toBe(pub.metaAddress);
@@ -197,4 +212,83 @@ it('rejects reuse of an invoice-signing scalar as a spending or viewing key', ()
   for (const signingKeyHex of [HEX_A, HEX_B]) {
     expect(() => importSession({ spendingKeyHex: HEX_A, viewingKeyHex: HEX_B, signingKeyHex })).toThrow(/independent/);
   }
+});
+
+describe('L1-01: backup state of the loaded keys', () => {
+  it('starts unsaved for generated keys and saved for imported ones, and resets with every key change', async () => {
+    expect(getSessionBackup()).toBeUndefined();
+    generateSession();
+    expect(getSessionBackup()).toEqual({ backedUp: false, signerOnly: false, waived: false, vaultStepUp: false });
+    importSession({ spendingKeyHex: HEX_A, viewingKeyHex: HEX_B, signingKeyHex: '33'.repeat(32) });
+    expect(getSessionBackup()).toEqual({ backedUp: true, signerOnly: false, waived: false, vaultStepUp: false });
+    const text = await exportKeystore('a long passphrase', { N: 1 << 14 });
+    generateSession();
+    expect(getSessionBackup()?.backedUp).toBe(false);
+    await importKeystore(text, 'a long passphrase');
+    expect(getSessionBackup()).toEqual({ backedUp: true, signerOnly: false, waived: false, vaultStepUp: false });
+    clearSession();
+    expect(getSessionBackup()).toBeUndefined();
+  });
+
+  it('C-R6, C-R10: a hex import without its signing key leaves only that generated key unsaved, until a backup', () => {
+    importSession({ spendingKeyHex: HEX_A, viewingKeyHex: HEX_B });
+    expect(getSessionBackup()).toEqual({ backedUp: false, signerOnly: true, waived: false, vaultStepUp: false });
+    const guard = captureSessionGuard();
+    armSessionVault('record-a', guard, { stored: true });   // saved to the vault
+    expect(getSessionBackup()).toEqual({ backedUp: true, signerOnly: false, waived: false, vaultStepUp: true });
+    forgetSessionVaultCopy('record-a');                      // deleted in another tab: the typed hex still holds the rest
+    expect(getSessionBackup()).toEqual({ backedUp: false, signerOnly: true, waived: false, vaultStepUp: true });
+    markKeystoreDownloaded(guard);
+    expect(getSessionBackup()).toEqual({ backedUp: true, signerOnly: false, waived: false, vaultStepUp: true });
+    importSession({ spendingKeyHex: HEX_A, viewingKeyHex: HEX_B, signingKeyHex: '33'.repeat(32) });
+    expect(getSessionBackup()).toEqual({ backedUp: true, signerOnly: false, waived: false, vaultStepUp: false });
+    generateSession();
+    expect(getSessionBackup()).toEqual({ backedUp: false, signerOnly: false, waived: false, vaultStepUp: false });
+  });
+
+  it('records a downloaded keystore and the typed waiver without signalling a key change', () => {
+    generateSession();
+    const sessionChanged = vi.fn();
+    const backupChanged = vi.fn();
+    const offSession = subscribeSession(sessionChanged);
+    const offBackup = subscribeSessionBackup(backupChanged);
+    const before = getSessionBackup();
+    expect(getSessionBackup()).toBe(before);
+    waiveSessionBackup();
+    expect(getSessionBackup()).toEqual({ backedUp: false, signerOnly: false, waived: true, vaultStepUp: false });
+    const guard = captureSessionGuard();
+    markKeystoreDownloaded(guard);
+    expect(getSessionBackup()).toEqual({ backedUp: true, signerOnly: false, waived: true, vaultStepUp: false });
+    const stable = getSessionBackup();
+    markKeystoreDownloaded(guard);
+    expect(getSessionBackup()).toBe(stable);
+    expect(sessionChanged).not.toHaveBeenCalled();
+    expect(backupChanged).toHaveBeenCalledTimes(2);
+    generateSession();
+    expect(() => { markKeystoreDownloaded(guard); }).toThrow(/changed during this action/);
+    expect(getSessionBackup()?.backedUp).toBe(false);
+    expect(sessionChanged).toHaveBeenCalledTimes(1);
+    offSession();
+    offBackup();
+  });
+
+  it('keeps the first vault record armed, replaces it only on request, and forgets only that record\'s copy', () => {
+    generateSession();
+    const guard = captureSessionGuard();
+    armSessionVault('record-a', guard);
+    expect(getSessionBackup()).toEqual({ backedUp: false, signerOnly: false, waived: false, vaultStepUp: true });
+    armSessionVault('record-b', guard, { stored: true });
+    expect(sessionVaultRecord()).toBe('record-a');
+    expect(getSessionBackup()?.backedUp).toBe(true);
+    armSessionVault('record-b', guard, { replace: true });
+    expect(sessionVaultRecord()).toBe('record-b');
+    forgetSessionVaultCopy('record-a');
+    expect(getSessionBackup()?.backedUp).toBe(true);
+    forgetSessionVaultCopy('record-b');
+    expect(getSessionBackup()).toEqual({ backedUp: false, signerOnly: false, waived: false, vaultStepUp: true });
+    clearSession();
+    expect(sessionVaultRecord()).toBeUndefined();
+    forgetSessionVaultCopy('record-b');
+    expect(getSessionBackup()).toBeUndefined();
+  });
 });

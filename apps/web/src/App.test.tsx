@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
-import { screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it } from 'vitest';
-import { clearSession, generateSession, hasSession } from './lib/session';
-import { MemoryKeyVaultStore, setKeyVaultStoreForTests } from './lib/keyVault';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { clearSession, generateSession, getSessionPublic, hasSession, importSession, revealViewingKey } from './lib/session';
+import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests, unlockEncryptedVault } from './lib/keyVault';
 import { SETTINGS_KEY } from './lib/settings';
 import { makeServices, renderApp, setHash } from './test/render';
 
@@ -64,7 +64,6 @@ describe('App shell', () => {
     await services.vault.unlock(new Uint8Array(32).fill(3));
     expect(services.vault.unlocked).toBe(true);
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 1 }));
-    const { vi } = await import('vitest');
     vi.useFakeTimers();
     try {
       renderApp(services);
@@ -75,22 +74,128 @@ describe('App shell', () => {
     await waitFor(() => { expect(services.vault.unlocked).toBe(false); });
   });
 
-  it('clears seller keys at idle lock while preserving the encrypted vault', async () => {
+  it('L1-04: locks local tags whenever the seller keys are wiped or replaced', async () => {
+    const services = makeServices();
+    renderApp(services);
+    act(() => { generateSession(); });
+    await services.vault.unlock(revealViewingKey());
+    const lock = vi.spyOn(services.vault, 'lock');
+    act(() => { clearSession(); });
+    expect(lock).toHaveBeenCalledTimes(1);
+    act(() => { generateSession(); });
+    expect(lock).toHaveBeenCalledTimes(2);
+  });
+
+  it('clears backed-up seller keys at idle lock, says so visibly and preserves the encrypted vault', async () => {
     const services = makeServices();
     const store = new MemoryKeyVaultStore();
     await store.putIfEmpty('{"ciphertext":"encrypted-only"}');
     setKeyVaultStoreForTests(store);
-    generateSession();
+    importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32), signingKeyHex: '33'.repeat(32) });
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 1 }));
-    const { vi } = await import('vitest');
     vi.useFakeTimers();
     try {
       renderApp(services);
       expect(hasSession()).toBe(true);
-      vi.advanceTimersByTime(61_000);
+      await act(async () => { await vi.advanceTimersByTimeAsync(61_000); });
       expect(hasSession()).toBe(false);
       expect(services.vault.unlocked).toBe(false);
       expect(await store.get()).toBe('{"ciphertext":"encrypted-only"}');
+      // These keys came with their signing key: nothing was lost, so the notice names no lost signing key (C-R10).
+      expect(screen.getByText(/Seller keys were wiped from memory after 1 minute without activity/).textContent).not.toMatch(/signing key/);
+    } finally {
+      vi.useRealTimers();
+      setKeyVaultStoreForTests(undefined);
+    }
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: 'Dismiss' }));
+    expect(screen.queryByText(/Seller keys were wiped from memory/)).toBeNull();
+  });
+
+  it('L1-01: the idle lock never wipes keys that exist nowhere else and keeps a visible backup banner', async () => {
+    const services = makeServices();
+    setKeyVaultStoreForTests(new MemoryKeyVaultStore());
+    const pub = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 15 }));
+    vi.useFakeTimers();
+    try {
+      renderApp(services);
+      await act(async () => { await services.vault.unlock(revealViewingKey()); });
+      await act(async () => { await vi.advanceTimersByTimeAsync(15 * 60_000 + 1000); });
+      expect(hasSession()).toBe(true);
+      expect(getSessionPublic()?.metaAddress).toBe(pub.metaAddress);
+      expect(services.vault.unlocked).toBe(false);
+      const banner = screen.getByText('These seller keys have no backup').closest('.notice');
+      expect(banner?.closest('.sr-only')).toBeNull();
+      expect(document.querySelector('[role="status"][aria-live]')?.textContent).toBe('Local tags locked after inactivity. Seller keys stay loaded because they have no backup yet.');
+    } finally {
+      vi.useRealTimers();
+      setKeyVaultStoreForTests(undefined);
+    }
+  });
+
+  it('C-R10: the idle lock wipes hex keys whose signing key was generated here, and says that this key is gone', async () => {
+    setKeyVaultStoreForTests(new MemoryKeyVaultStore());
+    importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32) });
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 1 }));
+    vi.useFakeTimers();
+    try {
+      renderApp(makeServices());
+      // The typed hex loads the spending and viewing keys again: only the generated signing key has no copy.
+      const banner = screen.getByText('The invoice-signing key has no backup').closest('.notice');
+      expect(banner?.textContent).toMatch(/Payments to your meta-address stay sweepable with the spending and viewing keys you imported\./);
+      expect(banner?.textContent).not.toMatch(/every payment/);
+      expect(screen.queryByText('These seller keys have no backup')).toBeNull();
+      await act(async () => { await vi.advanceTimersByTimeAsync(61_000); });
+      expect(hasSession()).toBe(false);
+      expect(document.querySelector('[role="status"][aria-live]')?.textContent).toBe('Seller keys wiped from memory and local tags locked after inactivity.');
+      expect(screen.getByText(/Seller keys were wiped from memory after 1 minute without activity/).textContent)
+        .toMatch(/The invoice-signing key generated when the hex keys were imported had no backup and is gone: loading them again generates a new one\./);
+    } finally {
+      vi.useRealTimers();
+      setKeyVaultStoreForTests(undefined);
+    }
+  });
+
+  it('C-R10: keeps Create invoice behind the backup gate while the generated signing key has no backup, saying why', async () => {
+    importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32) });
+    const user = userEvent.setup();
+    renderApp(makeServices());
+    await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Create invoice' }));
+    const gate = screen.getByText('Back up these seller keys first').closest('.notice');
+    expect(gate?.textContent).toMatch(/Payments stay sweepable with the spending and viewing keys you imported, but invoices are signed with an invoice-signing key that exists only in this tab\./);
+    expect(gate?.textContent).not.toMatch(/lost for good/);
+    expect(screen.queryByRole('button', { name: 'Create invoice link' })).toBeNull();
+    await user.type(screen.getByLabelText(/To continue without a backup/), 'continue without backup');
+    await user.click(screen.getByRole('button', { name: 'Continue without a backup' }));
+    expect(screen.getByRole('button', { name: 'Create invoice link' })).toBeTruthy();
+    expect(screen.getByText('The invoice-signing key has no backup')).toBeTruthy();
+  });
+
+  it('L1-01: wipes vault-only keys at idle lock while their vault is saved, and keeps them once another tab deleted it', async () => {
+    const store = new MemoryKeyVaultStore();
+    setKeyVaultStoreForTests(store);
+    generateSession();
+    await saveEncryptedVault('violet comet maple lantern', { N: 1 << 14 });
+    const record = (await store.get())!;
+    clearSession();
+    await unlockEncryptedVault('violet comet maple lantern');
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 1 }));
+    vi.useFakeTimers();
+    try {
+      renderApp(makeServices());
+      await act(async () => { await vi.advanceTimersByTimeAsync(61_000); });
+      expect(hasSession()).toBe(false);
+      expect(document.querySelector('[role="status"][aria-live]')?.textContent).toBe('Seller keys wiped from memory and local tags locked after inactivity.');
+      vi.useRealTimers();
+      await act(async () => { await unlockEncryptedVault('violet comet maple lantern'); });
+      await store.delete(record);                     // removed from another tab: the keys in memory are the only copy
+      vi.useFakeTimers();
+      fireEvent.pointerDown(window);                  // activity re-arms the idle timer
+      await act(async () => { await vi.advanceTimersByTimeAsync(61_000); });
+      expect(document.querySelector('[role="status"][aria-live]')?.textContent).toBe('Local tags locked after inactivity. Seller keys stay loaded because they have no backup yet.');
+      expect(hasSession()).toBe(true);
+      expect(screen.getByText('These seller keys have no backup')).toBeTruthy();
     } finally {
       vi.useRealTimers();
       setKeyVaultStoreForTests(undefined);
