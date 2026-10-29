@@ -14,8 +14,9 @@ start from that file, change both:
   The relayer believes `X-Forwarded-For` only from a listed peer and keys its rate limits and loss budget on the
   address found there. nginx sets that header to the client address it took from your TLS terminator's
   `X-Forwarded-For`, believed only from the compose network gateways (`set_real_ip_from` in `nginx/nginx.conf`).
-  With an empty or loopback-only list every client shares nginx's one bucket (30 requests a minute in total by
-  default), and `selfhost.sh` warns. The old `trustProxyHops` key was replaced by this list; a config that still has it
+  With an empty or loopback-only list, or one that does not cover the backend subnet, every client shares nginx's one
+  bucket (30 requests a minute in total by default), and `selfhost.sh` warns (it reads the subnet from
+  `docker-compose.yml`). The old `trustProxyHops` key was replaced by this list; a config that still has it
   is refused at startup with an error naming it.
 
 Your TLS terminator must set `X-Forwarded-For` to the client address it sees (overwrite it, or append to it; nginx

@@ -165,32 +165,51 @@ if [ -d "$distdir" ] && find "$distdir" -name '*.map' -print -quit 2>/dev/null |
 cfg="$here/config/relayer.config.json"
 if [ -f "$cfg" ]; then ok "relayer config present"; else bad "missing deploy/config/relayer.config.json (see deploy/config/README.md)"; fi
 if [ -f "$cfg" ] && [ -n "$origin" ] && ! grep -qF "\"$origin\"" "$cfg"; then bad "allowedOrigins in relayer config does not list $origin"; fi
-# Behind this recipe's nginx the relayer must trust the backend subnet (audit L5-05); loopback-only means one bucket.
+# Behind this recipe's nginx the relayer must trust the backend subnet nginx connects from (audit L5-05); with any
+# other list every client shares one bucket. The subnet is read from docker-compose.yml (172.30.10.0/24 unless moved).
 if [ -f "$cfg" ]; then
   rc=0
-  python3 - "$cfg" <<'PY' || rc=$?
-import ipaddress, json, sys
+  backend="$(python3 - "$cfg" "$here/docker-compose.yml" <<'PY'
+import ipaddress, json, re, sys
 
-def loopback(entry):
+def network(entry):
     net = ipaddress.ip_network(str(entry), strict=False)
     mapped = net.network_address.ipv4_mapped if net.version == 6 and net.prefixlen >= 96 else None
     if mapped is not None:
         net = ipaddress.ip_network(f"{mapped}/{net.prefixlen - 96}", strict=False)
-    return net.is_loopback
+    return net
 
+backend = ipaddress.ip_network("172.30.10.0/24")
+try:
+    with open(sys.argv[2], encoding="utf-8") as f:
+        lines = f.read().splitlines()
+    for line in lines[lines.index("  backend:", lines.index("networks:")) + 1:]:
+        if re.match(r"  \S", line):
+            break
+        m = re.match(r"\s*(?:- )?subnet:\s*(\S+)\s*$", line)
+        if m:
+            backend = ipaddress.ip_network(m.group(1).strip("'\""), strict=False)
+            break
+except (OSError, ValueError):
+    pass
+print(backend)
 try:
     with open(sys.argv[1], encoding="utf-8") as f:
         entries = json.load(f).get("trustedProxies", [])
     if not isinstance(entries, list):
         raise ValueError("not a list")
-    lo = [loopback(e) for e in entries]
+    nets = [network(e) for e in entries]
 except Exception:
     sys.exit(2)
-sys.exit(0 if not all(lo) else 1)
+if all(n.is_loopback for n in nets):
+    sys.exit(1)
+sys.exit(0 if any(n.version == backend.version and n.overlaps(backend) for n in nets) else 3)
 PY
+)" || rc=$?
   case "$rc" in
-    0) ok "relayer trustedProxies lists a non-loopback proxy network" ;;
-    1) warn "relayer trustedProxies is empty or loopback-only: behind nginx every client would share one rate-limit bucket; set it to [\"172.30.10.0/24\"] (deploy/config/README.md)" ;;
+    0) ok "relayer trustedProxies covers the compose backend subnet $backend" ;;
+    1) warn "relayer trustedProxies is empty or loopback-only: behind nginx every client would share one rate-limit bucket; set it to [\"$backend\"] (deploy/config/README.md)" ;;
+    3) warn "relayer trustedProxies does not cover the compose backend subnet $backend that nginx connects from: every client would share one rate-limit bucket; add \"$backend\" (deploy/config/README.md)" ;;
     *) warn "could not read trustedProxies from the relayer config (the relayer validates it at startup)" ;;
   esac
 fi

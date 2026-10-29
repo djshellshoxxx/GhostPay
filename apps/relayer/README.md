@@ -144,7 +144,8 @@ current key.
 
 `npm test -w @ghostpay/relayer` (vitest, coverage thresholds 95/90/95/95 enforced). Unit and in-process HTTP tests
 use an injected fake chain client; `src/config.test.ts` also checks that the compose recipe in `deploy/` agrees with
-itself (pinned subnets, nginx `set_real_ip_from` and `/api/` route allowlist, `deploy/config/relayer.config.example.json`);
+itself (pinned subnets, nginx `set_real_ip_from` and `/api/` route allowlist, `deploy/config/relayer.config.example.json`)
+and runs `deploy/selfhost.sh --dry-run` on scratch copies for its `trustedProxies` warning (needs bash and python3);
 `src/chain.test.ts` drives the real viem client against a fake JSON-RPC transport;
 `src/e2e.anvil.test.ts` deploys the compiled `GhostPaySweepRelayer` and `PermitToken` from `packages/contracts/out` on a
 local anvil and sweeps through the relayer (skipped when anvil or the artifacts are missing; `ANVIL_BIN` overrides
