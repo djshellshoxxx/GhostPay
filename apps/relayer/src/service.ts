@@ -159,7 +159,8 @@ const REVERT_MAP: Readonly<Record<string, readonly [number, string]>> = {
 
 /**
  * Part of `lossBudget.globalWei` kept for sweeps whose sources lost nothing in the current window, so sources that
- * keep losing cannot refuse everyone (L5-02).
+ * keep losing cannot spend it (L5-02). A network group new to the window is clean until its first loss, so enough
+ * distinct groups, one loss each, can still use it up (README).
  */
 export function lossCleanReserve(globalWei: bigint): bigint {
   return globalWei / 4n;
