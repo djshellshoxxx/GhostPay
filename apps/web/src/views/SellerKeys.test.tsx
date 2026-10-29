@@ -677,7 +677,7 @@ describe('G2-05: typed key hex and passphrases do not outlive their use', () => 
 
 describe('G2-06: vault passphrases are not offered to the browser password manager', () => {
   const PASS = 'violet comet maple lantern';
-  /** Neither a credential autocomplete token nor a shared or credential-like name, and the "do not save" copy where it is typed. */
+  /** No credential autocomplete token and the field's own non-credential name. */
   const expectNotCredential = (label: string, name: string): void => {
     const field = screen.getByLabelText<HTMLInputElement>(label);
     expect(field.getAttribute('autocomplete')).toBe('off');
