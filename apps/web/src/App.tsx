@@ -23,6 +23,8 @@ import { BackupGate, SellerKeys } from './views/SellerKeys';
 import { Settings } from './views/Settings';
 import { Sweep } from './views/Sweep';
 import { Notice } from './components/Common';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { notifyAppLock } from './lib/appLock';
 import { SOURCE_TRANSLATOR, useI18nOptional } from './i18n/context';
 
 const ORDER: readonly ViewId[] = ['home', 'seller', 'create', 'pay', 'scan', 'sweep', 'btc', 'solana', 'tron', 'registry', 'settings', 'about'];
@@ -132,8 +134,10 @@ export function App(): ReactNode {
     const minutes = settings.lockTimeoutMin;
     const lock = (): void => {
       services.vault.lock();
-      // Key hex and passphrases typed into a view go too, whether or not the keys are wiped below (G2-05).
+      // Key hex and passphrases typed into a view go too, whether or not the keys are wiped below (G2-05). The Bitcoin,
+      // Solana and TRON views wipe their own keys, and a copied backup is emptied from the clipboard (G2-02).
       notifyIdleLock();
+      notifyAppLock('idle');
       if (!hasSession()) {
         setLive(t('app.idle.tagsLocked'));
         return;
@@ -249,7 +253,10 @@ export function App(): ReactNode {
             <button type="button" className="btn" onClick={() => { setIdleWiped(undefined); }}>{t('app.idle.dismiss')}</button>
           </Notice>
         )}
-        <ViewSwitch view={view} />
+        {/* A render error in a view shows an error panel instead of unmounting the app (G1-01). */}
+        <ErrorBoundary resetKey={view} onBack={() => { setFragment(undefined); setViewState('home'); }}>
+          <ViewSwitch view={view} />
+        </ErrorBoundary>
       </main>
       <div className="sr-only" role="status" aria-live="polite">{live}</div>
       <footer className="site-footer">

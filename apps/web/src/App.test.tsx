@@ -5,6 +5,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { clearSession, generateSession, getSessionPublic, hasSession, importSession, revealViewingKey } from './lib/session';
 import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests, unlockEncryptedVault } from './lib/keyVault';
 import { SETTINGS_KEY } from './lib/settings';
+import { subscribeAppLock } from './lib/appLock';
+import * as disclosure from './components/Disclosure';
 import { makeServices, renderApp, setHash } from './test/render';
 
 beforeEach(() => {
@@ -199,6 +201,45 @@ describe('App shell', () => {
     } finally {
       vi.useRealTimers();
       setKeyVaultStoreForTests(undefined);
+    }
+  });
+});
+
+describe('App wiring of the audit 24 fixes', () => {
+  it('G2-02: the idle lock signals the views that hold their own keys', () => {
+    const reasons: string[] = [];
+    const off = subscribeAppLock((reason) => { reasons.push(reason); });
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 1 }));
+    vi.useFakeTimers();
+    try {
+      renderApp();
+      vi.advanceTimersByTime(59_000);
+      expect(reasons).toEqual([]);
+      vi.advanceTimersByTime(2_000);
+    } finally {
+      vi.useRealTimers();
+      off();
+    }
+    expect(reasons).toEqual(['idle']);
+  });
+
+  it('G1-01: a view that fails to render shows the error panel inside the app, and Back to Home leaves it', async () => {
+    const user = userEvent.setup();
+    const failing = vi.spyOn(disclosure, 'ChainFeeList').mockImplementation(() => { throw new Error('render failed'); });
+    const quiet = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    try {
+      renderApp();
+      const nav = screen.getByRole('navigation', { name: 'Main' });
+      await user.click(within(nav).getByRole('button', { name: 'About and privacy' }));
+      expect(await screen.findByText('This page stopped after an unexpected error')).toBeTruthy();
+      expect(screen.getByRole('heading', { level: 1, name: 'GhostPay' })).toBeTruthy();
+      failing.mockRestore();
+      await user.click(screen.getByRole('button', { name: 'Back to Home' }));
+      expect(within(nav).getByRole('button', { name: 'Home' }).getAttribute('aria-current')).toBe('page');
+      expect(screen.queryByText('This page stopped after an unexpected error')).toBeNull();
+    } finally {
+      failing.mockRestore();
+      quiet.mockRestore();
     }
   });
 });
