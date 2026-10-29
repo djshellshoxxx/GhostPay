@@ -552,6 +552,24 @@ describe('announcement spam and a second RPC (L4-01, L3-F2)', () => {
     expect(progress.every((p) => p.routerOnlyBlocks === undefined)).toBe(true);
   });
 
+  it('withholds the page when the primary hid a direct payment while the second RPC was briefly rate-limited (A-R6)', async () => {
+    const s = setup();
+    // The primary hides the direct (non-router) payment in block 2100.
+    const primary = chainWith(2500, [s.mine.log, s.other.log]);
+    const base = chainWith(2500, s.logs);
+    // Nine -32005 refusals take the second RPC's comparison of [2100, 2500] down to block 2100 alone.
+    let burst = 9;
+    const secondaryClient = {
+      ...base,
+      getLogs: (f: LogFilter) => (f.topics.length === 2 && burst-- > 0 ? Promise.reject(new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32005')) : base.getLogs(f)),
+    };
+    const res = await scan(s, { client: primary, secondaryClient, cursor: { nextBlock: 2100n } });
+    // Asked for whole again after its router lane, block 2100 shows what the primary hid: the page is withheld there.
+    expect(res.discrepancies.map((d) => d.kind)).toEqual(['missing_in_primary']);
+    expect(res.matches).toEqual([]);
+    expect(res.cursor.nextBlock).toBe(2100n);
+  });
+
   it('splits dense ranges on the second RPC instead of withholding the page (L3-F2)', async () => {
     const s = setup();
     const res = await scan(s, { client: chainWith(2500, s.logs), secondaryClient: capped(chainWith(2500, s.logs), undefined, 100n) });
