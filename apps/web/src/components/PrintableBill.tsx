@@ -16,8 +16,9 @@ export interface PrintableBillProps {
   readonly chainName: string;
   readonly tokenLabel: string;
   /**
-   * Formatted token amount of a `fixed_token` invoice (for example `1000 USDC`): printed as the amount due, with the fiat
-   * total labelled as the seller's unchecked statement (L2-F4). Omit for a fiat-priced invoice.
+   * Formatted token amount of a `fixed_token` invoice (for example `1000 USDC`; for a token off the allowlist, whose
+   * decimals are unknown, its base units and address): printed as the amount due, with the fiat total labelled as the
+   * seller's unchecked statement (L2-F4, B2-R3). Omit for a fiat-priced invoice.
    */
   readonly fixedAmount?: string | undefined;
 }

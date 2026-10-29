@@ -855,7 +855,12 @@ export function Pay(): ReactNode {
   const decimals = token?.decimals ?? 18;
   const symbol = token?.symbol ?? '';
   // L2-F4: a fixed token amount is what the payer pays; the fiat total is then only the seller's unchecked statement.
-  const fixedAmount = inv.amountPolicy.mode === 'fixed_token' ? `${formatUnits(BigInt(inv.amountPolicy.tokenAmount), decimals)} ${symbol}` : undefined;
+  // B2-R3: a token off the allowlist has no known decimals or symbol, so its amount stays in base units, with its address.
+  const fixedAmount = inv.amountPolicy.mode !== 'fixed_token'
+    ? undefined
+    : token === undefined
+      ? `${inv.amountPolicy.tokenAmount} base units of token ${inv.token}`
+      : `${formatUnits(BigInt(inv.amountPolicy.tokenAmount), token.decimals)} ${token.symbol}`;
 
   return (
     <section aria-labelledby="pay-h">

@@ -42,7 +42,8 @@ function validatePrivatePart(value: unknown): { lineItems: readonly LineItem[]; 
 ```
 
 Validation highlights (`validateInvoice`): unknown or missing keys rejected; `chainId >= 1`; meta-address must be two
-distinct on-curve keys in canonical lowercase; `quote.expiresAt >= quote.timestamp`; `maxSlippageBps` and
+distinct on-curve keys in canonical lowercase; `quote.expiresAt >= quote.timestamp`; `expiresAt`, `quote.timestamp`
+and `quote.expiresAt` at most 253402300799 (9999-12-31T23:59:59Z, so `Date` code stays total); `maxSlippageBps` and
 `tax.rateBps` in `0..10000`; `fiat.minorUnits`/`tax.minorUnits` decimal strings (up to 30 digits); `quantity`
 `/^[1-9][0-9]{0,8}$/`; `fixed_token.tokenAmount` `1..2^256-1`; text is NFC, no C0/C1 control characters, no lone
 surrogates, length counted in code points. **Totals are not cross-checked** (items + tax vs `fiat.minorUnits`); the

@@ -62,10 +62,22 @@ describe('ERC-6538 registry helpers', () => {
     // One letter's case flipped: a mistyped or altered address must not silently become a different valid one.
     const bad = '0x70997970c51812dc3A010C7d01b50e0d17dc79C8';
     expect(() => buildLookupCall(bad)).toThrow(/INVALID_INPUT: registrant address checksum does not match/);
-    expect(() => buildLookupCall('0x70997970C51812DC3A010C7D01B50E0D17DC79C8')).toThrow(/checksum does not match/);
+    expect(() => buildLookupCall('0x70997970C51812dc3A010C7d01b50e0d17dc79c8')).toThrow(/checksum does not match/);
     const calls: string[] = [];
     await expect(lookupMetaAddress(client((m) => { calls.push(m); return '0x6001'; }), bad)).rejects.toThrow(/checksum does not match/);
     expect(calls).toEqual([]);
+  });
+
+  it('accepts an all-uppercase registrant, which like all-lowercase carries no EIP-55 checksum (B2-R4)', async () => {
+    const upper = '0x70997970C51812DC3A010C7D01B50E0D17DC79C8';
+    const c = buildLookupCall(upper);
+    expect(c.preview.registrant).toBe('0x70997970C51812dc3A010C7d01b50e0d17dc79C8');
+    expect(c.data).toBe(buildLookupCall(upper.toLowerCase()).data);
+    const calls: string[] = [];
+    await expect(lookupMetaAddress(client((m) => { calls.push(m); return m === 'eth_getCode' ? '0x6001' : encodeAbiParameters([{ type: 'bytes' }], ['0x']); }), upper)).resolves.toBeUndefined();
+    expect(calls).toEqual(['eth_getCode', 'eth_call']);
+    // Only the hex digits count: a 0X prefix is no address, whatever the case after it.
+    expect(() => buildLookupCall(`0X${upper.slice(2)}`)).toThrow(/registrant is not an address/);
   });
 
   it('fails closed when the registry has no code or answers garbage', async () => {

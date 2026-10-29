@@ -111,11 +111,14 @@ export function buildRegisterKeysCall(metaAddress: string): RegistryCall {
 
 /**
  * Builds the read-only `stealthMetaAddressOf(registrant, 1)` call. A mixed-case registrant must carry a valid EIP-55
- * checksum (all-lowercase is accepted): a mistyped or altered address is refused, never normalized into another one.
+ * checksum (all-lowercase and all-uppercase hex carry none and are accepted): a mistyped or altered address is refused,
+ * never normalized into another one.
  */
 export function buildLookupCall(registrant: string): RegistryCall {
   if (!isAddress(registrant, { strict: false })) return fail('INVALID_INPUT', 'registrant is not an address');
-  if (!isAddress(registrant, { strict: true })) return fail('INVALID_INPUT', 'registrant address checksum does not match');
+  const hex = registrant.slice(2);
+  const mixedCase = hex !== hex.toLowerCase() && hex !== hex.toUpperCase();
+  if (mixedCase && !isAddress(registrant, { strict: true })) return fail('INVALID_INPUT', 'registrant address checksum does not match');
   const who = getAddress(registrant);
   const data = encodeFunctionData({ abi: erc6538RegistryAbi, functionName: 'stealthMetaAddressOf', args: [who, ERC6538_SCHEME_SECP256K1] });
   return {

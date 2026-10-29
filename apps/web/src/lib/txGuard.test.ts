@@ -89,8 +89,16 @@ describe('simulateCall', () => {
       // B-R2: with the signed gas limit in the dry run, these are the signed transaction failing too.
       ['-32000 out of gas', { code: -32000, message: 'out of gas' }],
       ['-32000 invalid opcode', { code: -32000, message: 'invalid opcode: INVALID' }],
+      // B-R8: reth and op-reth answer a halted call with -32003; Nethermind names a bad opcode "invalid instruction".
+      ['-32003 out of gas (reth, op-reth)', { code: -32003, message: 'out of gas: gas required exceeds: 21000' }],
+      ['-32003 EVM halt (reth, op-reth)', { code: -32003, message: 'EVM error: OpcodeNotFound' }],
+      ['-32015 invalid instruction (nethermind)', { code: -32015, message: 'VM execution error.', data: 'invalid instruction' }],
     ])('refuses a node revert (%s)', async (_n, error) => {
       await expect(simulateCall(await nodeClient(error), { ...call, gas: 21_000n })).rejects.toThrow(/would revert/);
+    });
+    it('B-R8: a -32003 rejection before execution (reth: insufficient funds) is reported unavailable, not refused', async () => {
+      const error = { code: -32003, message: 'insufficient funds for gas * price + value: have 0 want 21005' };
+      expect(await simulateCall(await nodeClient(error), { ...call, gas: 21_000n })).toBe('unavailable');
     });
     it('a node that cannot run the call is reported unavailable, not refused', async () => {
       expect(await simulateCall(await nodeClient({ code: -32601, message: 'the method eth_call does not exist' }), call)).toBe('unavailable');

@@ -170,6 +170,8 @@ export async function grantApproval(session: WalletSession, ctx: PayContext, pla
   const res = await submitTx(session, tx, rt, status, assertCurrent, onBroadcast, { kind: 'approval', scope: bytesToHex(invoiceDigest(ctx.review.invoice)) });
   try {
     if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError('The approval was not confirmed. Nothing was paid.');
+    // B2-R2: uncompared, the mined approve may be another one (a larger one to this spender passes the readback below).
+    if (res.verification !== 'verified') throw new UserFacingError('Your RPC reports a receipt for the approval but did not return the transaction itself, so it could not be compared with the preview. Nothing was paid.');
     const after = await readAllowance(rt.rpc, plan.token, session.account, plan.spender);
     if (after < plan.need) throw new UserFacingError('The approval did not take effect. Nothing was paid.');
     return after;
@@ -189,6 +191,7 @@ export async function revokeApproval(session: WalletSession, ctx: PayContext, pl
   const res = await submitTx(session, tx, rt, status, assertCurrent, onBroadcast, { kind: 'approval', scope: bytesToHex(invoiceDigest(ctx.review.invoice)) });
   try {
     if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError('The revoke was not confirmed. Check your allowances in your wallet.');
+    if (res.verification !== 'verified') throw new UserFacingError('Your RPC reports a receipt for the revoke but did not return the transaction itself, so it could not be compared with the preview. Check your allowances in your wallet.');
     const after = await readAllowance(rt.rpc, plan.token, session.account, plan.spender);
     if (after !== 0n) throw new UserFacingError('The allowance is still not zero. Check your allowances in your wallet.');
   } catch (e) {
