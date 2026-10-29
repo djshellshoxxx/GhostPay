@@ -484,6 +484,28 @@ describe('POST /v1/sweep success and validation', () => {
     expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 3n })).body)).status).toBe(200);
   });
 
+  it('D-R8: re-checks the deadline after the final simulation, so a slow RPC cannot use up the margin before the send', async () => {
+    const breaker = { ...testConfig().breaker, minSamples: 1, failureRatio: 0.01 };
+    const s = await start({ config: { breaker } });
+    const simulate = s.fake.simulateSweep.bind(s.fake);
+    s.fake.simulateSweep = async (c) => {
+      const r = await simulate(c);
+      if (s.fake.simulations === 2) s.clock.ms += 20_000; // the final simulation (eth_call, estimateGas) on a slow RPC
+      return r;
+    };
+    // 45 s left at admission and before the final simulation, 25 s after it (minimum 30).
+    const r = await call(s, 'POST', '/v1/sweep', (await prepare(s, { deadlineOffset: 45 })).body);
+    expect(r.status).toBe(422);
+    expect(errCode(r)).toBe('deadline_too_soon');
+    expect(s.fake.simulations).toBe(2);
+    expect(s.fake.sent).toHaveLength(0);
+    // Refused before the reservations: nothing reserved, neutral for the breaker, no owner strike.
+    const metrics = s.relayer.metrics.render();
+    expect(metrics).toMatch(/relayer_daily_budget_used_wei\{[^}]*\} 0$/m);
+    expect(metrics).not.toContain('relayer_owner_failures_total');
+    expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'ok', chains: [{ breaker: 'closed' }] });
+  });
+
   it('rejects orders the contract would reject before any chain call', async () => {
     const s = await start();
     const quote = await s.relayer.service.quote({

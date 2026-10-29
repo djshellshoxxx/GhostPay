@@ -687,9 +687,11 @@ export class RelayerService {
       throw new RelayerError(503, 'gas_price_moved', 5);
     }
     // The deadline was checked before the queue wait: a sweep left with no more than the minimum could lapse before
-    // inclusion, a mined revert the relayer pays for. Refused like at admission (neutral, not the owner's doing).
-    if (call.sweep.deadline <= BigInt(Math.floor(this.now() / 1000) + this.d.config.minDeadlineSeconds))
-      throw new RelayerError(422, 'deadline_too_soon');
+    // inclusion, a mined revert the relayer pays for. Refused like at admission (neutral, not the owner's doing), here
+    // and again after the final simulation, whose RPC calls can use up the margin.
+    const deadlineTooSoon = (): boolean =>
+      call.sweep.deadline <= BigInt(Math.floor(this.now() / 1000) + this.d.config.minDeadlineSeconds);
+    if (deadlineTooSoon()) throw new RelayerError(422, 'deadline_too_soon');
     let finalSimulation: Awaited<ReturnType<ChainClient['simulateSweep']>>;
     try {
       finalSimulation = await op(() => client.simulateSweep(call));
@@ -700,6 +702,8 @@ export class RelayerService {
     if (finalSimulation.gasLimit > cfg.maxGasLimit) throw new RelayerError(422, 'gas_limit_too_high');
     if (!(await coversGas(finalSimulation.gasEstimate, sendGasPrice)))
       throw new RelayerError(422, 'fee_below_gas_cost');
+    // Next to the send and before anything is reserved: only the nonce read and the send itself follow.
+    if (deadlineTooSoon()) throw new RelayerError(422, 'deadline_too_soon');
 
     const gasLimit = finalSimulation.gasLimit;
     const reserved = gasLimit * sendGasPrice;
