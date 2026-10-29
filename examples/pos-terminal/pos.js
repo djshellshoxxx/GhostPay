@@ -20,7 +20,7 @@ function render() {
   $('status').textContent = state.status.toUpperCase();
   $('status').dataset.status = state.status;
   const due = state.dueMinor ?? 0n;
-  $('amounts').textContent = state.dueMinor === undefined ? '' : `${formatMinor(state.paidMinor)} / ${formatMinor(due)} ${state.currency}`;
+  $('amounts').textContent = state.dueMinor === undefined ? '' : `${formatMinor(state.paidMinor, state.currency)} / ${formatMinor(due, state.currency)} ${state.currency}`;
   const live = state.status === 'awaiting';
   $('start').disabled = state.status === 'awaiting';
   $('received').disabled = !live;
@@ -58,11 +58,12 @@ function drawQr(link) {
 $('start').addEventListener('click', () => {
   $('error').textContent = '';
   if (state.status !== 'idle') { state = { ...INITIAL }; clearCustomerView(); render(); $('start').textContent = 'Start sale'; return; }
-  const due = parseMinor($('amount').value);
-  const err = checkLink($('link').value.trim());
   const cur = $('currency').value.trim().toUpperCase();
-  if (due === undefined || due <= 0n) { $('error').textContent = 'Enter an amount like 12.50.'; return; }
+  const err = checkLink($('link').value.trim());
   if (!/^[A-Z]{3}$/.test(cur)) { $('error').textContent = 'Currency must be 3 letters.'; return; }
+  // Minor units in the GhostPay app's exponent for this currency (JPY 1500 -> 1500, USD 12.50 -> 1250).
+  const due = parseMinor($('amount').value, cur);
+  if (due === undefined || due <= 0n) { $('error').textContent = `Enter an amount like ${formatMinor(1250n, cur)} ${cur}.`; return; }
   if (err !== undefined) { $('error').textContent = err; return; }
   const link = $('link').value.trim();
   const now = Math.floor(Date.now() / 1000);
@@ -75,7 +76,7 @@ $('start').addEventListener('click', () => {
 // DEMO ONLY: a real terminal must get payment events from your server (webhook receiver), not from a staff click.
 $('received').addEventListener('click', () => {
   if (state.status !== 'awaiting') return;
-  const amt = parseMinor($('received-amount').value || '0');
+  const amt = parseMinor($('received-amount').value || '0', state.currency);
   if (amt === undefined || amt <= 0n) { $('error').textContent = 'Enter the received amount.'; return; }
   state = reduce(state, { type: 'payment', invoiceId: state.invoiceId, currency: state.currency, amountMinor: amt }, Math.floor(Date.now() / 1000)).state;
   render();

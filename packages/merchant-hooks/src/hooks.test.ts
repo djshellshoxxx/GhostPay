@@ -1,3 +1,4 @@
+import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { createInvoice, parseFragment, signInvoice, signerPublicKeyHex, type RandomSource } from '@ghostpay/invoice-schema';
 import {
@@ -231,6 +232,14 @@ describe('events and idempotency', () => {
     expect(g.begin('c')).toBe('processing'); // c was evicted for b; d and b are in flight
     g.release('d');
     expect(g.begin('c')).toBe('claimed');
+  });
+  const spec = new URL('../../../docs/remote/usability/specs/webhooks.md', import.meta.url);
+  it.skipIf(!existsSync(spec))('spec R6 (docs/remote/usability/specs/webhooks.md) describes this guard', () => {
+    const r6 = /^- R6 .*$/m.exec(readFileSync(spec, 'utf8'))?.[0] ?? '';
+    const methods = Object.getOwnPropertyNames(IdempotencyGuard.prototype).filter((m) => m !== 'constructor');
+    expect(new Set(methods)).toEqual(new Set(['begin', 'complete', 'release']));
+    for (const term of [...methods.map((m) => `${m}(`), 'claimed', 'processing', 'done', '503']) expect(r6).toContain(term);
+    expect(r6).not.toMatch(/\bclaim\(/); // the removed boolean API
   });
 });
 
