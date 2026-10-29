@@ -363,6 +363,49 @@ describe('Seller keys', () => {
     expect(getSessionPublic()).toBe(pub);
   });
 
+  it('C-R12: asks before an unlock replaces keys whose vault another tab replaced while the page was open', async () => {
+    // The vault another tab will save: different keys under another passphrase.
+    generateSession();
+    await saveEncryptedVault('amber harbor cobalt meadow', { N: 1 << 14 });
+    const other = (await vaultStore.get())!;
+    await vaultStore.delete(other);
+    clearSession();
+    generateSession();
+    await saveEncryptedVault('violet comet maple lantern', { N: 1 << 14 });
+    const record = (await vaultStore.get())!;
+    const pub = getSessionPublic();
+    const user = await open();
+    expect(await screen.findByRole('button', { name: 'Unlock saved vault' })).toBeTruthy();
+    expect(getSessionBackup()?.backedUp).toBe(true);
+    await vaultStore.delete(record);                    // another tab deletes the loaded keys' only copy ...
+    await vaultStore.putIfEmpty(other, () => undefined); // ... and saves a vault holding other keys
+    await user.type(screen.getByLabelText('Vault passphrase'), 'amber harbor cobalt meadow');
+    await user.click(screen.getByRole('button', { name: 'Unlock saved vault' }));
+    expect(await screen.findByText('The keys loaded now have no backup')).toBeTruthy();
+    expect(getSessionPublic()).toBe(pub);
+    expect(getSessionBackup()?.backedUp).toBe(false);
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(getSessionPublic()).toBe(pub);
+  });
+
+  it('C-R12: the unlock itself refuses to replace keys whose vault copy is gone unless the user confirmed', async () => {
+    generateSession();
+    await saveEncryptedVault('amber harbor cobalt meadow', { N: 1 << 14 });
+    const other = (await vaultStore.get())!;
+    await vaultStore.delete(other);
+    clearSession();
+    generateSession();
+    await saveEncryptedVault('violet comet maple lantern', { N: 1 << 14 });
+    const record = (await vaultStore.get())!;
+    const pub = getSessionPublic();
+    await vaultStore.delete(record);
+    await vaultStore.putIfEmpty(other, () => undefined);
+    await expect(unlockEncryptedVault('amber harbor cobalt meadow')).rejects.toThrow(/no backup/);
+    expect(getSessionPublic()).toBe(pub);
+    await unlockEncryptedVault('amber harbor cobalt meadow', undefined, undefined, { replaceUnsavedKeys: true });
+    expect(getSessionPublic()).not.toBe(pub);
+  });
+
   it('C-R9: drops a wipe request when the keys change while their vault is looked up', async () => {
     generateSession();
     await saveEncryptedVault('violet comet maple lantern', { N: 1 << 14 });

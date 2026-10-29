@@ -266,7 +266,14 @@ export async function unlockEncryptedVault(passphrase: string, store: KeyVaultSt
   const unchanged = captureSessionVersionGuard();
   const ciphertext = await store.get();
   unchanged();
+  // Another tab may have deleted or replaced the vault the loaded keys were saved to or unlocked from since this tab last
+  // read it: then they have no copy left, and replacing them needs the same confirmation as unsaved keys (C-R12).
+  const tied = sessionVaultRecord();
+  if (tied !== undefined && ciphertext !== tied) forgetSessionVaultCopy(tied);
   if (ciphertext === undefined) throw new UserFacingError('No encrypted seller vault is saved in this browser.');
+  if (getSessionBackup()?.backedUp === false && options.replaceUnsavedKeys !== true) {
+    throw new UserFacingError('The seller keys loaded now have no backup, and unlocking the vault would replace them. Back them up first, or confirm that they may be replaced.');
+  }
   await importKeystore(ciphertext, passphrase, signal, 'vault');
 }
 

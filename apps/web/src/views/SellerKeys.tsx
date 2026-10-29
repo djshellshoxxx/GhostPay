@@ -253,9 +253,16 @@ export function SellerKeys(): ReactNode {
 
   const onUnlockVault = (e: FormEvent): void => {
     e.preventDefault();
-    // Unlocking replaces the loaded keys; keys with no backup would be lost with every payment to them (L1-01).
-    if (getSessionBackup()?.backedUp === false) { setConfirmReplace(true); return; }
-    unlockVault(false);
+    // Unlocking replaces the loaded keys; keys with no backup would be lost with every payment to them (L1-01). As for a
+    // wipe, a vault copy is looked up in storage first, because another tab may have deleted or replaced it since this page
+    // last read it (C-R12). A key change during that read drops the request.
+    if (getSessionBackup() === undefined || sessionHasExternalCopy()) { unlockVault(false); return; }
+    const unchanged = captureSessionVersionGuard();
+    void loadedKeysRecoverable().then((recoverable) => {
+      if (!mounted.current) return;
+      try { unchanged(); } catch { return; }
+      if (recoverable) unlockVault(false); else setConfirmReplace(true);
+    });
   };
 
   const unlockVault = (replaceUnsavedKeys: boolean): void => {
