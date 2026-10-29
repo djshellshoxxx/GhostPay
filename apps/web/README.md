@@ -18,7 +18,7 @@ Defined in `src/App.tsx` and `src/views/`:
 | Sweep (`Sweep.tsx`) | Move a one-time address balance to a destination |
 | Bitcoin (`src/features/btc/`) | Silent payments on testnet4, signet and regtest; mainnet disabled |
 | Public registry (`src/features/registry/`) | ERC-6538 registry flow (testnet) |
-| Settings (`Settings.tsx`) | RPC URL per chain, relayer URL (https only), payment delay range, idle lock (locks local tags; wipes seller keys only when they can be loaded again, never keys with no backup), theme, pinned seller signing keys |
+| Settings (`Settings.tsx`) | RPC URL per chain, relayer URL (https only), payment delay range, idle lock (locks local tags; wipes seller keys only when they can be loaded again, never keys with no backup; hex keys imported without their signing key are wiped, and the signing key generated for them is lost with a notice), theme, pinned seller signing keys |
 | About (`About.tsx`) | Project status and limits |
 
 ## Workspace dependencies
