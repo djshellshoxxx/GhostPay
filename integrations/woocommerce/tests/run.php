@@ -150,7 +150,15 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	check( 'a service secret stored in the settings is not used', $gateway->is_available(), false );
 	ghostpay_test_order( 1, 'pending', '12.50', 'USD', array( 'inv_s' ) );
 	$paid_s = $event( 'evt_s', 'invoice.paid', 'inv_s', 'USD', '1250' );
-	check( 'a webhook signed with the stored webhook secret is refused', ghostpay_test_deliver( $paid_s, $sign_with( $old_webhook, $paid_s ) )[0], 400 );
+	// H-R1: with no valid webhook secret configured (the upgrade window, before wp-config.php has the new value) a
+	// webhook is refused with a retryable 503, not the 400 of a bad signature: a sender may treat a 4xx as final and
+	// drop the payment. The answer does not depend on the request.
+	$retry = array( 503, array( 'ok' => false, 'retry' => true ) );
+	check( 'no webhook secret configured: a webhook signed with the stored secret gets a retryable 503', ghostpay_test_deliver( $paid_s, $sign_with( $old_webhook, $paid_s ) ), $retry );
+	check( 'no webhook secret configured: an unsigned request gets the same 503', ghostpay_test_deliver( $paid_s, '' ), $retry );
+	putenv( 'GHOSTPAY_WEBHOOK_SECRET=' . str_repeat( 'ab', 16 ) ); // 16 bytes: not a valid secret
+	check( 'a too short webhook secret counts as not configured: 503', ghostpay_test_deliver( $paid_s, $sign_with( $old_webhook, $paid_s ) ), $retry );
+	putenv( 'GHOSTPAY_WEBHOOK_SECRET' );
 	check( 'a forged webhook does not pay the order', GhostPay_Test::$orders[1]['status'], 'pending' );
 
 	do_action( 'init' ); // upgrade step
@@ -173,7 +181,8 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	check( 'notice gone once both secrets are rotated', $notice(), '' );
 	check( 'exposure record removed after rotation', get_option( 'ghostpay_exposed_secrets' ), false );
 	check( 'secrets from the environment make the gateway available', ( new WC_Gateway_GhostPay() )->is_available(), true );
-	check( 'a webhook signed with the configured secret is accepted', ghostpay_test_deliver( $paid_s, $sign_with( $hex( 'c3' ), $paid_s ) )[0], 200 );
+	check( 'with a secret configured, a bad signature is a 400', ghostpay_test_deliver( $paid_s, $sign_with( $old_webhook, $paid_s ) )[0], 400 );
+	check( 'the sender retry of the upgrade-window payment is accepted', ghostpay_test_deliver( $paid_s, $sign_with( $hex( 'c3' ), $paid_s ) )[0], 200 );
 	check( 'that webhook pays the order', GhostPay_Test::$orders[1]['status'], 'processing' );
 	do_action( 'init' );
 	check( 'upgrade step is idempotent', $notice(), '' );
