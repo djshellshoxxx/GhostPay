@@ -375,8 +375,12 @@ describe('deploy recipe wiring (L5-05, L7-L3)', () => {
     expect(api).toMatch(/proxy_pass http:\/\/api:8787;/);
     expect(api).toMatch(/proxy_set_header X-Forwarded-For \$remote_addr;/);
     expect(api).toContain('limit_except GET POST OPTIONS { deny all; }');
-    expect(block(/location \/api\/ \{/)).toMatch(/return 404;/);
-    expect(nginx.match(/proxy_pass /g)).toHaveLength(1);
+    const rest = block(/location \/api\/ \{/);
+    expect(rest).toMatch(/return 404;/);
+    // Scoped to the /api/ locations and the relayer upstream; other locations in nginx.conf are not this test's.
+    expect(api.match(/proxy_pass /g)).toHaveLength(1);
+    expect(rest).not.toContain('proxy_pass');
+    expect(nginx.match(/proxy_pass http:\/\/api:8787/g)).toHaveLength(1);
   });
 });
 
