@@ -174,6 +174,20 @@ describe('L4-01: announcer spam never stops the scan for good', () => {
     expect(seen).toHaveLength(25);
   });
 
+  it('grows the window back past a dense range that overflowed the response cap, also when no single block was refused (A-R2)', async () => {
+    // Blocks 25 and 26 each fit in one response, but not together: the window halves to one block there.
+    const dense = [25, 26].flatMap((b) => Array.from({ length: 4 }, (_, i) => mkLog(b, i, OTHER)));
+    const seen: { from: bigint; to: bigint }[] = [];
+    const c = await client(5000, dense, { maxBytes: 6000, seen });
+    const r = await fetchAnnouncements({ chain: CHAIN, client: c, announcer: ANN, router: FAKE.router, cursor: { nextBlock: 0n } });
+    expect(r).toMatchObject({ truncated: false, cursor: { nextBlock: 5001n } });
+    expect(r.announcements).toHaveLength(8);
+    expect(r.routerOnlyBlocks).toBeUndefined();
+    // Past block 27, the end of the last range that overflowed, the window doubles back to the cap.
+    const sizes = seen.filter((w) => w.from > 27n).map((w) => Number(w.to - w.from + 1n));
+    expect(sizes).toEqual([2, 4, 8, 16, 32, 64, 128, 256, 512, 1000, 1000, 1000, 951]);
+  });
+
   it('keeps full-size windows between spam blocks: a spam block every 100 blocks costs a fraction of one-block windows (A-R2)', async () => {
     const logs = Array.from({ length: 200 }, (_, k) => [...Array.from({ length: 13 }, (_, i) => mkLog(100 * k + 50, i, OTHER)), mkLog(100 * k + 50, 13)]).flat();
     const seen: { from: bigint; to: bigint }[] = [];
