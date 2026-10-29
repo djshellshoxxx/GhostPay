@@ -22,6 +22,13 @@ export interface ChainConfig {
   readonly getLogsMaxRange: number;
   /** Nominal block time in milliseconds (informational; used for polling cadence only). */
   readonly blockTimeMs: number;
+  /**
+   * OP Stack rollup (Base, OP). Every transaction there also pays an L1 data fee (and, since the Isthmus upgrade, an
+   * operator fee) on top of `gas * gasPrice`, and the node refuses one whose total cost exceeds the sender's balance.
+   * A sender that spends its whole native balance (a direct native sweep) reads these fees from the GasPriceOracle
+   * predeploy and keeps them back. Absent on every other chain, including Arbitrum (its gas estimate covers L1 costs).
+   */
+  readonly opStack?: boolean;
 }
 
 const base = { nativeDecimals: 18 } as const;
@@ -32,15 +39,15 @@ const base = { nativeDecimals: 18 } as const;
  */
 export const CHAINS: readonly ChainConfig[] = Object.freeze([
   { ...base, chainId: 11155111, name: 'Ethereum Sepolia', nativeSymbol: 'ETH', testnet: true, enabled: true, finalityDepth: 64, getLogsMaxRange: 1000, blockTimeMs: 12000 },
-  { ...base, chainId: 84532, name: 'Base Sepolia', nativeSymbol: 'ETH', testnet: true, enabled: true, finalityDepth: 100, getLogsMaxRange: 1000, blockTimeMs: 2000 },
-  { ...base, chainId: 11155420, name: 'OP Sepolia', nativeSymbol: 'ETH', testnet: true, enabled: true, finalityDepth: 100, getLogsMaxRange: 1000, blockTimeMs: 2000 },
+  { ...base, chainId: 84532, name: 'Base Sepolia', nativeSymbol: 'ETH', testnet: true, enabled: true, finalityDepth: 100, getLogsMaxRange: 1000, blockTimeMs: 2000, opStack: true },
+  { ...base, chainId: 11155420, name: 'OP Sepolia', nativeSymbol: 'ETH', testnet: true, enabled: true, finalityDepth: 100, getLogsMaxRange: 1000, blockTimeMs: 2000, opStack: true },
   { ...base, chainId: 421614, name: 'Arbitrum Sepolia', nativeSymbol: 'ETH', testnet: true, enabled: true, finalityDepth: 250, getLogsMaxRange: 1000, blockTimeMs: 250 },
   { ...base, chainId: 80002, name: 'Polygon Amoy', nativeSymbol: 'POL', testnet: true, enabled: true, finalityDepth: 128, getLogsMaxRange: 1000, blockTimeMs: 2000 },
   { ...base, chainId: 97, name: 'BNB Smart Chain Testnet', nativeSymbol: 'tBNB', testnet: true, enabled: true, finalityDepth: 40, getLogsMaxRange: 1000, blockTimeMs: 750 },
   { ...base, chainId: 43113, name: 'Avalanche Fuji', nativeSymbol: 'AVAX', testnet: true, enabled: true, finalityDepth: 12, getLogsMaxRange: 1000, blockTimeMs: 2000 },
   { ...base, chainId: 1, name: 'Ethereum', nativeSymbol: 'ETH', testnet: false, enabled: false, finalityDepth: 64, getLogsMaxRange: 1000, blockTimeMs: 12000 },
-  { ...base, chainId: 8453, name: 'Base', nativeSymbol: 'ETH', testnet: false, enabled: false, finalityDepth: 100, getLogsMaxRange: 1000, blockTimeMs: 2000 },
-  { ...base, chainId: 10, name: 'OP Mainnet', nativeSymbol: 'ETH', testnet: false, enabled: false, finalityDepth: 100, getLogsMaxRange: 1000, blockTimeMs: 2000 },
+  { ...base, chainId: 8453, name: 'Base', nativeSymbol: 'ETH', testnet: false, enabled: false, finalityDepth: 100, getLogsMaxRange: 1000, blockTimeMs: 2000, opStack: true },
+  { ...base, chainId: 10, name: 'OP Mainnet', nativeSymbol: 'ETH', testnet: false, enabled: false, finalityDepth: 100, getLogsMaxRange: 1000, blockTimeMs: 2000, opStack: true },
   { ...base, chainId: 42161, name: 'Arbitrum One', nativeSymbol: 'ETH', testnet: false, enabled: false, finalityDepth: 250, getLogsMaxRange: 1000, blockTimeMs: 250 },
   { ...base, chainId: 137, name: 'Polygon PoS', nativeSymbol: 'POL', testnet: false, enabled: false, finalityDepth: 128, getLogsMaxRange: 1000, blockTimeMs: 2000 },
   { ...base, chainId: 56, name: 'BNB Smart Chain', nativeSymbol: 'BNB', testnet: false, enabled: false, finalityDepth: 40, getLogsMaxRange: 1000, blockTimeMs: 750 },

@@ -3,6 +3,7 @@ import {
   assertSponsorFeeAcceptable,
   buildSweepTypedData,
   erc20Abi,
+  findChain,
   ghostPaySweepRelayerAbi,
   parseQuantity,
   signDigest,
@@ -22,7 +23,7 @@ import { UserFacingError } from './errors';
 import { buildPermit } from './pay';
 import { requestQuote, submitSweep, type FetchFn, type RelayerQuote } from './relayerClient';
 import { captureSessionGuard, withSessionSecrets } from './session';
-import { DIRECT_MAX_FEE_SHARE_BPS, guardTx, guardTypedData, reviewPolicy, simulateCall } from './txGuard';
+import { DIRECT_MAX_FEE_SHARE_BPS, guardTx, guardTypedData, reportsRevert, reviewPolicy, simulateCall, type Simulation } from './txGuard';
 
 export interface SweepTarget {
   readonly chainId: number;
@@ -34,9 +35,15 @@ export interface SweepTarget {
 
 type Rpc = Pick<RpcClient, 'request'>;
 
-/** Derives the stealth key in memory and proves it controls `owner` before it is ever used. */
+/**
+ * Derives the stealth key in memory and proves it controls `owner` before it is ever used.
+ *
+ * @remarks The announced view tag is not compared (L4-02): it is only a scan filter, and a payment the deep scan found
+ * despite a payer-published wrong tag is still the seller's. Control is proven by the derived address alone, inside
+ * `deriveStealthSecret` (against the announced address) and below (against the address being swept).
+ */
 export function deriveVerifiedSweepKey(target: SweepTarget): SecretScalar {
-  const secret = withSessionSecrets((s) => deriveStealthSecret(target.announcement, s.keys));
+  const secret = withSessionSecrets((s) => deriveStealthSecret(target.announcement, s.keys, { ignoreViewTag: true }));
   if (addressOfSecret(secret) !== target.owner) {
     zeroize(secret);
     throw new UserFacingError('Blocked: the derived key does not control that address.');
@@ -261,9 +268,18 @@ export interface DirectSweepInput {
   /** Unix seconds (default: now). */
   readonly nowSeconds?: number;
   readonly destination: Address;
-  /** For ERC-20 the amount to move; for native the whole balance minus gas is moved and this is the balance. */
+  /**
+   * For ERC-20 the amount to move; for native the whole balance minus every fee (gas, and on OP Stack the L1 data fee)
+   * is moved and this is the balance.
+   */
   readonly amount: bigint;
   readonly rpc: Rpc;
+  /**
+   * Re-sign a direct sweep whose handoff outcome is unknown (L2-F2, B-R5): sign with exactly this owner nonce, the
+   * locked one, instead of the pending count. Only one transaction per nonce can ever be mined, so the new one can
+   * replace the recorded one but never add a second transfer. Refused once a transaction with this nonce is mined.
+   */
+  readonly replaceNonce?: number;
   /**
    * Called with the `unknown-after-handoff` attempt immediately before the signed bytes are handed to the RPC. It must
    * persist the lock; if it throws, nothing is broadcast and the error propagates.
@@ -300,9 +316,11 @@ export interface RelayedOrderRef {
 /**
  * `expired`: a relayed order whose nonce was still unused in a block more than {@link RELAYED_EXPIRY_MARGIN_SECONDS}
  * past its deadline; it can no longer execute. `refused`: the relayer answered with a client error (4xx other than
- * 409), which by its API contract happens before anything is broadcast.
+ * 409), which by its API contract happens before anything is broadcast. `replaced`: a direct sweep none of whose
+ * recorded transactions (with a same-nonce re-sign, every attempt) has a receipt while the owner's nonce is already used
+ * at the finalized block, so none of them can ever be mined: a transaction this lock does not record was.
  */
-export type SweepLockStatus = DirectSweepAttempt['status'] | 'expired' | 'refused';
+export type SweepLockStatus = DirectSweepAttempt['status'] | 'expired' | 'refused' | 'replaced';
 
 /**
  * The fields a signing lock needs; the persisted journal keeps only these (no destination or amount). A direct sweep
@@ -313,6 +331,11 @@ export interface SweepLock {
   readonly owner: Address;
   readonly nonce?: number;
   readonly expectedHash?: Hex;
+  /**
+   * A direct lock re-signed with the same nonce (L2-F2): the hashes of the other transactions signed for that nonce.
+   * Any one of them, or `expectedHash`, may be the transaction that is mined, so a status check looks for all of them.
+   */
+  readonly otherHashes?: readonly Hex[];
   readonly order?: RelayedOrderRef;
   readonly status: SweepLockStatus;
 }
@@ -328,11 +351,14 @@ export function isUnresolvedAttempt(a: { readonly status: SweepLockStatus }): bo
 /** Thrown when the signed bytes were handed to the RPC but the outcome could not be confirmed. */
 export class DirectSweepOutcomeUnknownError extends UserFacingError {
   public readonly attempt: DirectSweepAttempt;
+  /** As on {@link DirectSweepResult}: `unavailable` means the bytes were handed off without a dry run; show the warning. */
+  public readonly simulation: Simulation;
 
-  public constructor(message: string, attempt: DirectSweepAttempt) {
+  public constructor(message: string, attempt: DirectSweepAttempt, simulation: Simulation) {
     super(message);
     this.name = 'DirectSweepOutcomeUnknownError';
     this.attempt = attempt;
+    this.simulation = simulation;
   }
 }
 
@@ -341,6 +367,28 @@ export interface DirectSweepResult {
   readonly sent: bigint;
   readonly maxGasCost: bigint;
   readonly attempt: DirectSweepAttempt;
+  /** `unavailable`: the node could not run the dry run, so the transaction was sent without it; show a warning. */
+  readonly simulation: Simulation;
+}
+
+/**
+ * One receipt read by exact hash: its on-chain status, `absent` when the RPC answered an explicit `null` (no receipt), or
+ * `unknown` for an RPC error, malformed data or a receipt for another hash.
+ */
+async function readReceipt(rpc: Rpc, hash: Hex): Promise<'included' | 'reverted' | 'absent' | 'unknown'> {
+  let receipt: unknown;
+  try {
+    receipt = await rpc.request('eth_getTransactionReceipt', [hash]);
+  } catch {
+    return 'unknown';
+  }
+  if (receipt === null) return 'absent';
+  if (typeof receipt !== 'object') return 'unknown';
+  const r = receipt as { transactionHash?: unknown; status?: unknown };
+  if (typeof r.transactionHash !== 'string' || r.transactionHash.toLowerCase() !== hash) return 'unknown';
+  if (r.status === '0x1') return 'included';
+  if (r.status === '0x0') return 'reverted';
+  return 'unknown';
 }
 
 /**
@@ -348,18 +396,8 @@ export interface DirectSweepResult {
  * receipt for another hash leaves the attempt unchanged: absence is never proof that the transaction was not sent.
  */
 export async function reconcileDirectSweep<T extends { readonly expectedHash: Hex; readonly status: SweepLockStatus }>(rpc: Rpc, attempt: T): Promise<T> {
-  let receipt: unknown;
-  try {
-    receipt = await rpc.request('eth_getTransactionReceipt', [attempt.expectedHash]);
-  } catch {
-    return attempt;
-  }
-  if (typeof receipt !== 'object' || receipt === null) return attempt;
-  const r = receipt as { transactionHash?: unknown; status?: unknown };
-  if (typeof r.transactionHash !== 'string' || r.transactionHash.toLowerCase() !== attempt.expectedHash) return attempt;
-  if (r.status === '0x1') return { ...attempt, status: 'included' };
-  if (r.status === '0x0') return { ...attempt, status: 'reverted' };
-  return attempt;
+  const look = await readReceipt(rpc, attempt.expectedHash);
+  return look === 'included' || look === 'reverted' ? { ...attempt, status: look } : attempt;
 }
 
 async function nonceUsedAt(rpc: Rpc, owner: Address, order: RelayedOrderRef, block: string | { readonly blockHash: Hex; readonly requireCanonical: true }): Promise<boolean> {
@@ -400,14 +438,138 @@ export async function reconcileRelayedOrder<T extends { readonly owner: Address;
  * Resolves any sweep lock: relayed orders by nonce/deadline (errors propagate), direct sweeps by the exact expected
  * hash's receipt. A legacy hash-only lock without an owner nonce is a relayed sweep recorded before order tracking: a
  * reverted relayer transaction does not consume its order, so `reverted` does not release it.
+ *
+ * A direct lock re-signed with the same nonce is looked up by every hash it records: only one transaction per nonce can
+ * be mined, so the first one with a receipt settles the lock and becomes its `expectedHash`.
+ *
+ * A direct lock none of whose hashes has a receipt resolves as `replaced` once the owner's nonce is used at the
+ * finalized block: another transaction with that nonce was mined, and none can follow it. That takes an explicit "no
+ * receipt" answer for every hash, read after the nonce check; a failed nonce read, or a failed or malformed receipt
+ * read, leaves the lock unchanged.
  */
 export async function reconcileSweepLock<T extends SweepLock>(rpc: Rpc, lock: T): Promise<T> {
   if (lock.order !== undefined) return reconcileRelayedOrder(rpc, lock);
   const expectedHash = lock.expectedHash;
   if (expectedHash === undefined) return lock;
-  const next = await reconcileDirectSweep(rpc, { expectedHash, status: lock.status });
-  if (next.status === 'reverted' && lock.nonce === undefined) return lock;
-  return next.status === lock.status ? lock : { ...lock, status: next.status };
+  const hashes = [expectedHash, ...(lock.otherHashes ?? [])];
+  const first = await readReceipts(rpc, hashes);
+  if (first.mined !== undefined) {
+    if (first.mined.status === 'reverted' && lock.nonce === undefined) return lock;
+    return first.mined.status === lock.status && first.mined.hash === expectedHash ? lock : settled(lock, first.mined);
+  }
+  if (lock.nonce === undefined || !isUnresolvedAttempt(lock) || !(await nonceFinal(rpc, lock.owner, lock.nonce))) return lock;
+  // Look once more now that the nonce is final: a receipt for a recorded hash still wins, and an RPC error or a
+  // malformed answer proves nothing (B-R1).
+  const again = await readReceipts(rpc, hashes);
+  if (again.mined !== undefined) return settled(lock, again.mined);
+  return again.allAbsent ? { ...lock, status: 'replaced' } : lock;
+}
+
+interface MinedTx { readonly hash: Hex; readonly status: 'included' | 'reverted' }
+
+/** Receipt reads for every hash, stopping at the first one with a receipt; `allAbsent` only when each answered null. */
+async function readReceipts(rpc: Rpc, hashes: readonly Hex[]): Promise<{ readonly mined?: MinedTx; readonly allAbsent: boolean }> {
+  let allAbsent = true;
+  for (const hash of hashes) {
+    const look = await readReceipt(rpc, hash);
+    if (look === 'included' || look === 'reverted') return { mined: { hash, status: look }, allAbsent: false };
+    if (look === 'unknown') allAbsent = false;
+  }
+  return { allAbsent };
+}
+
+/** The lock settled by the transaction that was mined; an earlier attempt's hash becomes `expectedHash`, the rest stay. */
+function settled<T extends SweepLock>(lock: T, mined: MinedTx): T {
+  if (mined.hash === lock.expectedHash) return { ...lock, status: mined.status };
+  const otherHashes = [lock.expectedHash, ...(lock.otherHashes ?? [])].filter((h): h is Hex => h !== undefined && h !== mined.hash);
+  return { ...lock, expectedHash: mined.hash, otherHashes, status: mined.status };
+}
+
+/** True only when the RPC reports the owner's nonce above `nonce` at the finalized block; a failed read means "not known". */
+async function nonceFinal(rpc: Rpc, owner: Address, nonce: number): Promise<boolean> {
+  try {
+    return parseQuantity(await rpc.request('eth_getTransactionCount', [owner, 'finalized'])) > BigInt(nonce);
+  } catch {
+    return false;
+  }
+}
+
+/** Gas of a plain value transfer to an account without code: the intrinsic minimum of every transaction. */
+const TRANSFER_GAS = 21_000n;
+
+/** OP Stack GasPriceOracle predeploy: prices a transaction's L1 data fee and operator fee. */
+export const OP_STACK_GAS_PRICE_ORACLE = '0x420000000000000000000000000000000000000F' as Address;
+
+/**
+ * A native sweep on an OP Stack chain keeps back this multiple of the fees the oracle quotes now, because the L1 base fee
+ * and blob fee can rise before inclusion. The unused part stays at the one-time address.
+ */
+export const OP_STACK_FEE_RESERVE_MULTIPLIER = 2n;
+
+const gasPriceOracleAbi = [
+  { type: 'function', name: 'getL1Fee', stateMutability: 'view', inputs: [{ name: '_data', type: 'bytes' }], outputs: [{ name: '', type: 'uint256' }] },
+  { type: 'function', name: 'getOperatorFee', stateMutability: 'view', inputs: [{ name: '_gasUsed', type: 'uint256' }], outputs: [{ name: '', type: 'uint256' }] },
+] as const;
+
+async function readFeeOracle(rpc: Rpc, data: Hex): Promise<bigint> {
+  const raw = await rpc.request('eth_call', [{ to: OP_STACK_GAS_PRICE_ORACLE, data }, 'latest']);
+  if (typeof raw !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(raw)) throw new Error('invalid fee oracle answer');
+  return BigInt(raw);
+}
+
+/**
+ * The operator fee for `gas`. An OP Stack chain before the Isthmus upgrade has no `getOperatorFee`, so the call
+ * reverts there; such a chain charges no operator fee. Any other failure is no answer and propagates.
+ */
+async function readOperatorFee(rpc: Rpc, gas: bigint): Promise<bigint> {
+  try {
+    return await readFeeOracle(rpc, encodeFunctionData({ abi: gasPriceOracleAbi, functionName: 'getOperatorFee', args: [gas] }));
+  } catch (e) {
+    if (reportsRevert(e)) return 0n;
+    throw e;
+  }
+}
+
+/**
+ * What an OP Stack node charges outside `gas * gasPrice`, read from the GasPriceOracle: the L1 data fee of the unsigned
+ * serialized transaction (the oracle adds the signature's size) and the operator fee for its gas limit (none where the
+ * oracle has no `getOperatorFee`), times {@link OP_STACK_FEE_RESERVE_MULTIPLIER}.
+ * @throws {UserFacingError} when the oracle cannot be read: the fee, and for a native sweep the amount to send, is then
+ *   unknown, so nothing is signed.
+ */
+async function opStackFeeReserve(rpc: Rpc, unsignedTx: Hex, gas: bigint): Promise<bigint> {
+  try {
+    const l1 = await readFeeOracle(rpc, encodeFunctionData({ abi: gasPriceOracleAbi, functionName: 'getL1Fee', args: [unsignedTx] }));
+    const operator = await readOperatorFee(rpc, gas);
+    return (l1 + operator) * OP_STACK_FEE_RESERVE_MULTIPLIER;
+  } catch {
+    throw new UserFacingError('Could not read the L1 data fee from this chain\'s fee oracle, so the network fee of this sweep cannot be computed. Nothing was signed.');
+  }
+}
+
+/** `eth_estimateGas`; a call the node reports as reverting is refused here, before anything is signed. */
+async function estimateGas(rpc: Rpc, call: { readonly from: Address; readonly to: Address; readonly data?: Hex; readonly value?: bigint }): Promise<bigint> {
+  const value = call.value === undefined ? {} : { value: `0x${call.value.toString(16)}` };
+  let raw: unknown;
+  try {
+    raw = await rpc.request('eth_estimateGas', [{ from: call.from, to: call.to, ...(call.data === undefined ? {} : { data: call.data }), ...value }]);
+  } catch (e) {
+    if (reportsRevert(e)) throw new UserFacingError('Blocked: a dry run of this transfer fails (it would revert). Nothing was sent.');
+    throw e;
+  }
+  return parseQuantity(raw);
+}
+
+/** The owner nonce to sign with: the pending count, or for a same-nonce re-sign exactly the locked nonce while unused. */
+async function sweepNonce(i: DirectSweepInput): Promise<number> {
+  const owner = i.target.owner;
+  if (i.replaceNonce === undefined) return Number(parseQuantity(await i.rpc.request('eth_getTransactionCount', [owner, 'pending'])));
+  if (!Number.isSafeInteger(i.replaceNonce) || i.replaceNonce < 0) throw new UserFacingError('Invalid nonce for a replacement transaction.');
+  const mined = parseQuantity(await i.rpc.request('eth_getTransactionCount', [owner, 'latest']));
+  if (mined > BigInt(i.replaceNonce)) {
+    throw new UserFacingError('A transaction with this nonce is already on chain, so a replacement could never be included. Check the status of the pending sweep.');
+  }
+  return i.replaceNonce;
 }
 
 /** Signs a plain EIP-1559 transfer with the stealth key (the stealth address pays gas) and broadcasts it. */
@@ -421,7 +583,7 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
     const maxFeePerGas = gasPrice * 2n;
     let priority = gasPrice / 10n;
     if (priority > maxFeePerGas) priority = maxFeePerGas;
-    const nonce = Number(parseQuantity(await i.rpc.request('eth_getTransactionCount', [owner, 'pending'])));
+    const nonce = await sweepNonce(i);
     assertSessionUnchanged();
     const nativeBalance = parseQuantity(await i.rpc.request('eth_getBalance', [owner, 'latest']));
     assertSessionUnchanged();
@@ -430,20 +592,46 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
     let value: bigint;
     let gas: bigint;
     if (token === 'native') {
-      gas = 21_000n;
       to = i.destination;
-      const cost = gas * maxFeePerGas;
-      if (nativeBalance <= cost) throw new UserFacingError('The balance does not cover the network fee.');
-      value = nativeBalance - cost;
+      if (nativeBalance <= TRANSFER_GAS * maxFeePerGas) throw new UserFacingError('The balance does not cover the network fee.');
+      // A contract or EIP-7702 destination needs more than 21 000 gas, and Arbitrum's estimate includes its L1 cost.
+      // Estimated with the largest value this sweep could send.
+      const est = await estimateGas(i.rpc, { from: owner, to, value: nativeBalance - TRANSFER_GAS * maxFeePerGas });
+      assertSessionUnchanged();
+      gas = est <= TRANSFER_GAS ? TRANSFER_GAS : (est * 12n) / 10n;
+      const gasCost = gas * maxFeePerGas;
+      if (nativeBalance <= gasCost) throw new UserFacingError('The balance does not cover the network fee.');
+      // An OP Stack node also charges an L1 data fee (and an operator fee) outside gas * price and refuses a transaction
+      // whose total cost exceeds the balance (L2-F2). They are priced on this transaction's unsigned bytes with the
+      // largest value it can carry: the value only shrinks, so the encoding never grows.
+      const reserve = findChain(chainId)?.opStack === true
+        ? await opStackFeeReserve(i.rpc, serializeTransaction({ type: 'eip1559', chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value: nativeBalance - gasCost, data }), gas)
+        : 0n;
+      assertSessionUnchanged();
+      if (nativeBalance <= gasCost + reserve) throw new UserFacingError('The balance does not cover the network fee, including the L1 data fee.');
+      value = nativeBalance - gasCost - reserve;
+      // The review below caps gas * fee at a share of the amount moved; the L1 data fee counts towards that share too.
+      if (reserve > 0n && (gasCost + reserve) * 10_000n > value * BigInt(DIRECT_MAX_FEE_SHARE_BPS)) {
+        throw new UserFacingError(`Blocked before signing: the network fee, including the L1 data fee, would be more than ${String(DIRECT_MAX_FEE_SHARE_BPS / 100)} % of the amount moved.`);
+      }
     } else {
       to = token;
       value = 0n;
       data = encodeFunctionData({ abi: erc20Abi, functionName: 'transfer', args: [i.destination, i.amount] });
-      const est = parseQuantity(await i.rpc.request('eth_estimateGas', [{ from: owner, to, data }]));
+      const est = await estimateGas(i.rpc, { from: owner, to, data });
       assertSessionUnchanged();
       gas = (est * 12n) / 10n;
       if (nativeBalance < gas * maxFeePerGas) {
         throw new UserFacingError('The stealth address has no native coin for gas. Use the relayer, or send a small amount of native coin to it first.');
+      }
+      // On OP Stack the native coin must also cover the L1 data fee and operator fee of this transfer, priced on its
+      // exact unsigned bytes; the node refuses a transaction it cannot pay for, and the sweep lock would jam.
+      const reserve = findChain(chainId)?.opStack === true
+        ? await opStackFeeReserve(i.rpc, serializeTransaction({ type: 'eip1559', chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value, data }), gas)
+        : 0n;
+      assertSessionUnchanged();
+      if (nativeBalance < gas * maxFeePerGas + reserve) {
+        throw new UserFacingError('The stealth address does not hold enough native coin for the network fee, including the L1 data fee. Use the relayer, or send a small amount of native coin to it first.');
       }
     }
     const unsigned = { type: 'eip1559' as const, chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value, data };
@@ -474,8 +662,9 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
       reviewPolicy(i.manifest, chainId, { maxFeeShareBps: DIRECT_MAX_FEE_SHARE_BPS }),
       i.nowSeconds ?? Math.floor(Date.now() / 1000),
     );
-    // Dry run where the node supports it: a transfer that would revert is never signed (S3-09, S3-19).
-    await simulateCall(i.rpc, { from: owner, to, data, value }, token !== 'native');
+    // Dry run with the gas limit that is signed, where the node supports it: a transfer that would revert is never signed
+    // (S3-09, S3-19). A node that cannot run it is reported to the caller as a warning, not a refusal (L2-F1).
+    const simulation = await simulateCall(i.rpc, { from: owner, to, data, value, gas }, token !== 'native');
     assertSessionUnchanged();
     // Check immediately before using the secret to sign, and again before handing the raw transaction to the RPC.
     assertSessionUnchanged();
@@ -495,17 +684,19 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
       hash = await i.rpc.request('eth_sendRawTransaction', [raw]);
     } catch {
       throw new DirectSweepOutcomeUnknownError(
-        `The RPC request failed after the signed transaction was handed to it, so it may already have been broadcast. Do not sign again; check the expected transaction hash ${expectedHash}.`,
+        `The RPC request failed after the signed transaction was handed to it, so it may already have been broadcast. Check the expected transaction hash ${expectedHash} before doing anything else.`,
         attempt,
+        simulation,
       );
     }
     if (typeof hash !== 'string' || hash.toLowerCase() !== expectedHash) {
       throw new DirectSweepOutcomeUnknownError(
         `The RPC returned a transaction hash that does not match the signed transaction. It may already have been broadcast; check the expected transaction hash ${expectedHash}.`,
         attempt,
+        simulation,
       );
     }
-    return { hash: expectedHash, sent, maxGasCost: gas * maxFeePerGas, attempt: { ...attempt, status: 'submitted' } };
+    return { hash: expectedHash, sent, maxGasCost: gas * maxFeePerGas, attempt: { ...attempt, status: 'submitted' }, simulation };
   } finally {
     zeroize(secret);
   }

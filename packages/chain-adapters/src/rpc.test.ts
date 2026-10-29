@@ -169,6 +169,66 @@ describe('createClient', () => {
   });
 });
 
+describe('L2-F1: a node-reported revert is a sanitized flag on the error', () => {
+  /** A node that answers every call except eth_chainId with the given JSON-RPC error object. */
+  const failing = async (error: unknown, calls: string[] = []) =>
+    createClient(SEPOLIA, URL_OK, {
+      transport: fakeTransport((m, _p, id) => {
+        calls.push(m);
+        return m === 'eth_chainId' ? '0xaa36a7' : `RAW:${JSON.stringify({ jsonrpc: '2.0', id, error })}`;
+      }),
+      ...opts,
+    });
+  const callError = async (error: unknown, calls: string[] = []): Promise<ChainAdapterError> => {
+    const c = await failing(error, calls);
+    const e: unknown = await c.request('eth_call', [{ to: '0x0000000000000000000000000000000000000001', data: '0x' }, 'latest']).then(
+      () => undefined,
+      (x: unknown) => x,
+    );
+    expect(e).toBeInstanceOf(ChainAdapterError);
+    return e as ChainAdapterError;
+  };
+
+  it.each([
+    ['code 3 with revert data (geth, erigon, anvil)', { code: 3, message: 'execution reverted: ERC20: transfer amount exceeds balance', data: '0x08c379a000' }],
+    ['code 3 without a message', { code: 3 }],
+    ['-32000 without revert data (geth)', { code: -32000, message: 'execution reverted' }],
+    ['-32000 (besu)', { code: -32000, message: 'Execution reverted', data: '0x' }],
+    ['-32015 with the revert in data (nethermind, openethereum)', { code: -32015, message: 'VM execution error.', data: 'Reverted 0x08c379a0' }],
+    // B-R2: the dry run carries the signed gas limit, so running out of it or an invalid opcode is a failed execution too.
+    ['-32000 out of gas (geth: the signed gas limit is too low)', { code: -32000, message: 'out of gas' }],
+    ['-32000 invalid opcode (geth)', { code: -32000, message: 'invalid opcode: INVALID' }],
+    ['-32015 with out of gas in data (nethermind)', { code: -32015, message: 'VM execution error.', data: 'out of gas' }],
+  ])('flags %s and keeps none of the node text', async (_n, error) => {
+    const calls: string[] = [];
+    const e = await callError(error, calls);
+    expect(e.reverted).toBe(true);
+    expect(e.code).toBe('RPC_FAILURE');
+    expect(e.message).toBe(`RPC_FAILURE: json-rpc error ${String(error.code)}`);
+    expect(e.message).not.toMatch(/revert|ERC20|VM|0x08c3|gas|opcode/i);
+    expect(calls.filter((m) => m === 'eth_call')).toHaveLength(1); // a revert is an answer, never retried
+  });
+
+  it.each([
+    ['-32000 without a revert message', { code: -32000, message: 'insufficient funds for gas * price + value' }],
+    ['-32015 without an execution failure text', { code: -32015, message: 'Transaction execution error.', data: 'NotEnoughCash' }],
+    ['another code that mentions running out of gas', { code: -32603, message: 'internal error: out of gas' }],
+    ['another code that mentions a revert', { code: -32603, message: 'internal error: reverted' }],
+    ['-32601 method not found', { code: -32601, message: 'the method eth_call does not exist' }],
+    ['a non-object error', 'execution reverted'],
+    ['a non-string message', { code: -32000, message: { text: 'execution reverted' } }],
+  ])('does not flag %s', async (_n, error) => {
+    expect((await callError(error)).reverted).toBe(false);
+  });
+
+  it('transport, HTTP and shape failures are never a revert', async () => {
+    expect(new ChainAdapterError('RPC_FAILURE', 'x').reverted).toBe(false);
+    const t: RpcTransport = { send: () => Promise.reject(new RpcHttpError(400)) };
+    const e: unknown = await createClient(SEPOLIA, URL_OK, { transport: t, ...opts }).then(() => undefined, (x: unknown) => x);
+    expect(e).toMatchObject({ code: 'RPC_FAILURE', reverted: false });
+  });
+});
+
 describe('requestWithFallbackCheck', () => {
   it('returns the agreed result and detects disagreement / chain mismatch', async () => {
     const mkc = (v: unknown, chain = '0xaa36a7') =>

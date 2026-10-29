@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { DirectSweepAttempt, SweepLock } from './sweep';
-import { MAX_SWEEP_ATTEMPTS, readSweepAttempts, SWEEP_JOURNAL_KEY, SweepJournalUnavailableError, writeSweepAttempt, type SweepJournalStorage } from './sweepAttemptJournal';
+import { MAX_OTHER_HASHES, MAX_SWEEP_ATTEMPTS, readSweepAttempts, SWEEP_JOURNAL_KEY, SweepJournalUnavailableError, writeSweepAttempt, type SweepJournalStorage } from './sweepAttemptJournal';
 
 function storage(): SweepJournalStorage & { data: Map<string, string> } {
   const data = new Map<string, string>();
@@ -11,6 +11,7 @@ const lock = (n: number, status: SweepLock['status'] = 'unknown-after-handoff'):
   chainId: 84532, owner: owner(n), nonce: 3, expectedHash: `0x${'ab'.repeat(32)}`, status,
 });
 const DEST = '0x6666666666666666666666666666666666666666';
+const other = (n: number): `0x${string}` => `0x${n.toString(16).padStart(64, 'e')}`;
 
 describe('tab-scoped sweep attempt journal', () => {
   it('round-trips a lock exactly, with and without a nonce', () => {
@@ -19,6 +20,27 @@ describe('tab-scoped sweep attempt journal', () => {
     const relayed: SweepLock = { chainId: 84532, owner: owner(2), expectedHash: `0x${'cd'.repeat(32)}`, status: 'submitted' };
     writeSweepAttempt(relayed, s);
     expect(readSweepAttempts(s)).toEqual([lock(1), relayed]);
+  });
+
+  it('B-R5: round-trips a re-signed direct lock with the other hashes signed for its nonce', () => {
+    const s = storage();
+    const resigned: SweepLock = { ...lock(1), otherHashes: [other(1), other(2)] };
+    writeSweepAttempt({ ...resigned, otherHashes: [other(1).toUpperCase().replace('0X', '0x') as `0x${string}`, other(2)] }, s);
+    expect(readSweepAttempts(s)).toEqual([resigned]);
+    const most: SweepLock = { ...lock(2), otherHashes: Array.from({ length: MAX_OTHER_HASHES }, (_v, n) => other(n + 1)) };
+    writeSweepAttempt(most, s);
+    expect(readSweepAttempts(s)).toEqual([resigned, most]);
+  });
+
+  it('B-R5: a full journal of the largest locks still fits its byte cap, so re-signing cannot break the journal', () => {
+    const s = storage();
+    const widest = (n: number): SweepLock => ({
+      chainId: Number.MAX_SAFE_INTEGER, owner: owner(n), nonce: Number.MAX_SAFE_INTEGER, expectedHash: other(0), status: 'unknown-after-handoff',
+      otherHashes: Array.from({ length: MAX_OTHER_HASHES }, (_v, k) => other(k + 1)),
+    });
+    const all = Array.from({ length: MAX_SWEEP_ATTEMPTS }, (_v, n) => widest(n + 1));
+    for (const a of all) writeSweepAttempt(a, s);
+    expect(readSweepAttempts(s)).toEqual(all);
   });
 
   it('persists only the lock fields: never destination, asset or amount', () => {
@@ -75,6 +97,15 @@ describe('tab-scoped sweep attempt journal', () => {
     ['order nonce >= 2^256', JSON.stringify([{ chainId: 84532, owner: owner(1), status: 'submitted', order: { relayer: owner(4), nonce: (2n ** 256n).toString(), deadline: 5 } }])],
     ['order bad relayer', JSON.stringify([{ chainId: 84532, owner: owner(1), status: 'submitted', order: { relayer: '0x12', nonce: '1', deadline: 5 } }])],
     ['order bad deadline', JSON.stringify([{ chainId: 84532, owner: owner(1), status: 'submitted', order: { relayer: owner(4), nonce: '1', deadline: 0 } }])],
+    ['other hashes not an array', JSON.stringify([{ ...lock(1), otherHashes: other(1) }])],
+    ['empty other hashes', JSON.stringify([{ ...lock(1), otherHashes: [] }])],
+    ['upper-case other hash', JSON.stringify([{ ...lock(1), otherHashes: [other(1).toUpperCase().replace('0X', '0x')] }])],
+    ['bad other hash', JSON.stringify([{ ...lock(1), otherHashes: ['0x12'] }])],
+    ['duplicate other hash', JSON.stringify([{ ...lock(1), otherHashes: [other(1), other(1)] }])],
+    ['other hash equal to the expected hash', JSON.stringify([{ ...lock(1), otherHashes: [lock(1).expectedHash] }])],
+    ['too many other hashes', JSON.stringify([{ ...lock(1), otherHashes: Array.from({ length: MAX_OTHER_HASHES + 1 }, (_v, n) => other(n + 1)) }])],
+    ['other hashes without an owner nonce', JSON.stringify([{ chainId: 84532, owner: owner(1), expectedHash: `0x${'ab'.repeat(32)}`, otherHashes: [other(1)], status: 'submitted' }])],
+    ['other hashes on a relayed order', JSON.stringify([{ chainId: 84532, owner: owner(1), nonce: 3, expectedHash: `0x${'ab'.repeat(32)}`, otherHashes: [other(1)], status: 'submitted', order: { relayer: owner(4), nonce: '1', deadline: 5 } }])],
     ['oversized', 'x'.repeat(40_000)],
   ])('fails closed on a malformed journal (%s)', (_name, raw) => {
     const s = storage();
@@ -104,7 +135,13 @@ describe('tab-scoped sweep attempt journal', () => {
     expect(() => { writeSweepAttempt(lock(2), quota); }).toThrow(SweepJournalUnavailableError);
   });
 
-  it.each(['expired', 'refused', 'included', 'reverted'] as const)('evicts a %s lock when full', (status) => {
+  it('round-trips a direct lock resolved as replaced (its nonce is final under another transaction)', () => {
+    const s = storage();
+    writeSweepAttempt(lock(1, 'replaced'), s);
+    expect(readSweepAttempts(s)).toEqual([lock(1, 'replaced')]);
+  });
+
+  it.each(['expired', 'refused', 'included', 'reverted', 'replaced'] as const)('evicts a %s lock when full', (status) => {
     const s = storage();
     for (let i = 1; i <= MAX_SWEEP_ATTEMPTS; i += 1) writeSweepAttempt(lock(i, i === 7 ? status : 'submitted'), s);
     writeSweepAttempt(lock(1000), s);

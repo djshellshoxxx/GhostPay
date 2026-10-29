@@ -5,20 +5,25 @@ import type { RelayedOrderRef, SweepLock, SweepLockStatus } from './sweep';
 /*
  * Tab-scoped persistence for sweep signing locks (GP-SWEEP-OUTCOME-01 follow-up). Same storage contract as the wallet
  * duplicate-attempt journal: sessionStorage, so the lock survives a reload of this tab but is not shared with other
- * tabs. Only what the lock needs is stored (chain, stealth owner, nonce, expected hash, relayed order nonce/deadline/
- * contract, status): never key material, destination or amount.
+ * tabs. Only what the lock needs is stored (chain, stealth owner, nonce, expected hash and the other hashes signed for
+ * that nonce, relayed order nonce/deadline/contract, status): never key material, destination or amount.
  *
  * Fail closed: an unreadable, oversized or malformed journal disarms signing until the user resolves it; it is never
  * silently treated as "no pending attempt". Unresolved locks are never evicted.
  */
 export const SWEEP_JOURNAL_KEY = 'ghostpay.sweep-attempts.v1';
 export const MAX_SWEEP_ATTEMPTS = 64;
+/**
+ * Most other same-nonce hashes one direct lock records (L2-F2 re-signs); a further replacement is refused. Small enough
+ * that {@link MAX_SWEEP_ATTEMPTS} locks of the largest form still fit `MAX_BYTES`: a full journal never breaks on a write.
+ */
+export const MAX_OTHER_HASHES = 3;
 const MAX_BYTES = 32_000;
 /** Valid JSON that is not a journal: written after a failed update so a reload cannot read an older, armed state. */
 const TOMBSTONE = '"unavailable"';
-const FIELDS = ['chainId', 'owner', 'nonce', 'expectedHash', 'order', 'status'];
+const FIELDS = ['chainId', 'owner', 'nonce', 'expectedHash', 'otherHashes', 'order', 'status'];
 const ORDER_FIELDS = ['relayer', 'nonce', 'deadline'];
-const STATUSES: readonly string[] = ['submitted', 'unknown-after-handoff', 'included', 'reverted', 'expired', 'refused'];
+const STATUSES: readonly string[] = ['submitted', 'unknown-after-handoff', 'included', 'reverted', 'expired', 'refused', 'replaced'];
 
 export interface SweepJournalStorage {
   getItem(key: string): string | null;
@@ -40,6 +45,13 @@ export function browserSweepStorage(): SweepJournalStorage | undefined {
 export const sweepAttemptKey = (chainId: number, owner: string): string => `${String(chainId)}:${owner.toLowerCase()}`;
 
 const isAddress = (v: unknown): v is Address => typeof v === 'string' && /^0x[0-9a-fA-F]{40}$/.test(v);
+const isHash = (v: unknown): v is Hex => typeof v === 'string' && /^0x[0-9a-f]{64}$/.test(v);
+
+/** Other same-nonce hashes: 1 to {@link MAX_OTHER_HASHES} canonical hashes, distinct and none equal to `expectedHash`. */
+function decodeOtherHashes(v: unknown, expectedHash: Hex): readonly Hex[] | undefined {
+  if (!Array.isArray(v) || v.length === 0 || v.length > MAX_OTHER_HASHES || !v.every(isHash)) return undefined;
+  return new Set<string>([expectedHash, ...v]).size === v.length + 1 ? v : undefined;
+}
 
 interface StoredOrder { readonly relayer: string; readonly nonce: string; readonly deadline: number }
 
@@ -63,18 +75,26 @@ function decode(v: unknown): SweepLock | undefined {
   if (typeof chainId !== 'number' || !Number.isSafeInteger(chainId) || chainId <= 0) return undefined;
   if (!isAddress(owner)) return undefined;
   if (nonce !== undefined && (typeof nonce !== 'number' || !Number.isSafeInteger(nonce) || nonce < 0)) return undefined;
-  if (expectedHash !== undefined && (typeof expectedHash !== 'string' || !/^0x[0-9a-f]{64}$/.test(expectedHash))) return undefined;
+  if (expectedHash !== undefined && !isHash(expectedHash)) return undefined;
   if (typeof status !== 'string' || !STATUSES.includes(status)) return undefined;
   const order = a['order'] === undefined ? undefined : decodeOrder(a['order']);
   if (a['order'] !== undefined && order === undefined) return undefined;
   // A lock must be resolvable: by the exact transaction hash (direct) or by the order's nonce and deadline (relayed).
   if (expectedHash === undefined && order === undefined) return undefined;
+  // Other same-nonce hashes belong only to a direct lock (an owner nonce and a hash, no relayed order).
+  let otherHashes: readonly Hex[] | undefined;
+  if (a['otherHashes'] !== undefined) {
+    if (nonce === undefined || expectedHash === undefined || order !== undefined) return undefined;
+    otherHashes = decodeOtherHashes(a['otherHashes'], expectedHash);
+    if (otherHashes === undefined) return undefined;
+  }
   return {
     chainId,
     owner,
     status: status as SweepLockStatus,
     ...(nonce === undefined ? {} : { nonce }),
-    ...(expectedHash === undefined ? {} : { expectedHash: expectedHash as Hex }),
+    ...(expectedHash === undefined ? {} : { expectedHash }),
+    ...(otherHashes === undefined ? {} : { otherHashes }),
     ...(order === undefined ? {} : { order }),
   };
 }
@@ -87,6 +107,7 @@ export function toSweepLock(a: SweepLock): SweepLock {
     status: a.status,
     ...(a.nonce === undefined ? {} : { nonce: a.nonce }),
     ...(a.expectedHash === undefined ? {} : { expectedHash: a.expectedHash.toLowerCase() as Hex }),
+    ...(a.otherHashes === undefined || a.otherHashes.length === 0 ? {} : { otherHashes: a.otherHashes.map((h) => h.toLowerCase() as Hex) }),
     ...(a.order === undefined ? {} : { order: a.order }),
   };
 }
