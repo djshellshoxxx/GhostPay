@@ -474,7 +474,7 @@ describe('POST /v1/sweep success and validation', () => {
     const r = await queued;
     expect(r.status).toBe(422);
     expect(errCode(r)).toBe('deadline_too_soon'); // a pre-broadcast class the web client releases its lock on
-    expect(s.fake.simulations).toBe(3); // refused in the lane, before its second simulation
+    expect(s.fake.simulations).toBe(2); // refused at the head of the lane, before any of its own simulations (D3)
     expect(s.fake.sent).toHaveLength(1);
     const health = await call(s, 'GET', '/healthz');
     expect(health.json).toMatchObject({ status: 'ok', chains: [{ breaker: 'closed' }] });
@@ -482,6 +482,29 @@ describe('POST /v1/sweep success and validation', () => {
     s.fake.receiptGate = undefined;
     expect(s.relayer.metrics.render()).not.toContain('relayer_owner_failures_total');
     expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 3n })).body)).status).toBe(200);
+  });
+
+  it('D3: a sweep deadline that lapses in the lane is refused as deadline_too_soon, not as an expired permit', async () => {
+    const s = await start();
+    s.fake.allowance = 0n;
+    let release: () => void = () => undefined;
+    s.fake.receiptGate = new Promise<void>((r) => {
+      release = r;
+    });
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { permit: true, nonce: 1n })).body)).status).toBe(200);
+    // Admitted with 31 s left; the permit lasts exactly until the sweep deadline, as clients sign it.
+    const queued = call(s, 'POST', '/v1/sweep', (await prepare(s, { permit: true, nonce: 2n, deadlineOffset: 31 })).body);
+    const inLane = (): boolean =>
+      s.relayer.metrics.render().includes('relayer_queue_pending{chain_id="11155111"} 2');
+    for (let i = 0; i < 100 && !inLane(); i += 1) await settle();
+    expect(inLane()).toBe(true);
+    s.clock.ms += 40_000; // past the sweep deadline, and so past the permit's
+    release();
+    const r = await queued;
+    expect(r.status).toBe(422);
+    expect(errCode(r)).toBe('deadline_too_soon');
+    expect(s.fake.simulations).toBe(2); // only the first sweep's
+    expect(s.fake.sent).toHaveLength(1);
   });
 
   it('D-R8: re-checks the deadline after the final simulation, so a slow RPC cannot use up the margin before the send', async () => {
