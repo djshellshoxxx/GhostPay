@@ -1089,8 +1089,8 @@ describe('receipt timeouts (L5-06)', () => {
     expect(await breakerOf(s)).toBe('closed');
   });
 
-  it('a probe not confirmed within breaker.probeTimeoutSeconds re-opens the breaker; its late receipt is ignored', async () => {
-    const s = await start({ config: { queue: { maxPending: 4, receiptTimeoutSeconds: 120 } } }); // the defaults
+  /** Opens the breaker, waits out the cooldown and broadcasts a probe whose receipt wait ends on the returned call. */
+  const heldProbe = async (s: Harness): Promise<() => void> => {
     s.fake.simulateError = new Error('rpc exploded');
     for (const n of [1n, 2n, 3n]) await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: n })).body);
     s.fake.simulateError = undefined;
@@ -1100,7 +1100,27 @@ describe('receipt timeouts (L5-06)', () => {
       release = r;
     });
     expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 10n })).body)).status).toBe(200);
-    s.clock.ms += 60_000; // breaker.probeTimeoutSeconds 60, while the receipt may take up to 120 s
+    return release;
+  };
+  // breaker.probeTimeoutSeconds 60 (the harness value) and queue.receiptTimeoutSeconds 120: the defaults.
+  const defaults = { queue: { maxPending: 4, receiptTimeoutSeconds: 120 } };
+
+  it('D-R7: with the default timeouts, a probe mined 90 s after admission closes the breaker', async () => {
+    const s = await start({ config: defaults });
+    const release = await heldProbe(s);
+    s.clock.ms += 90_000; // past breaker.probeTimeoutSeconds, within queue.receiptTimeoutSeconds: the receipt decides
+    expect(await breakerOf(s)).toBe('half_open');
+    release();
+    await settle();
+    expect(await breakerOf(s)).toBe('closed');
+  });
+
+  it('a probe not settled within probeTimeoutSeconds plus receiptTimeoutSeconds re-opens the breaker; its late receipt is ignored', async () => {
+    const s = await start({ config: defaults });
+    const release = await heldProbe(s);
+    s.clock.ms += 179_000; // 60 s for the work up to the broadcast plus the 120 s receipt wait
+    expect(await breakerOf(s)).toBe('half_open');
+    s.clock.ms += 1_000;
     expect(await breakerOf(s)).toBe('open');
     release();
     await settle();
@@ -1702,7 +1722,7 @@ describe('S3-05/06 breaker integration', () => {
     s.fake.sendGate = new Promise<void>(() => undefined);
     void call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 70n })).body).catch(() => undefined);
     await settle();
-    s.clock.ms += 6_000;
+    s.clock.ms += 36_000; // probeTimeoutSeconds 5 plus queue.receiptTimeoutSeconds 30
     expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ chains: [{ breaker: 'open' }] });
     s.clock.ms += 61_000;
     expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'degraded' }); // cooldown elapsed: probe due

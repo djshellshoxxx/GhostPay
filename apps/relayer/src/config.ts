@@ -72,6 +72,7 @@ export interface RelayerConfig {
     readonly minSamples: number;
     readonly failureRatio: number;
     readonly cooldownSeconds: number;
+    /** A half-open probe's time for its in-lane work up to the broadcast; the breaker adds `queue.receiptTimeoutSeconds`. */
     readonly probeTimeoutSeconds: number;
   };
   /** Caps gas paid without reimbursement (reverted or front-run sweeps, S3-06). */

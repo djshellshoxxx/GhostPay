@@ -254,7 +254,10 @@ export class RelayerService {
             minSamples: b.minSamples,
             failureRatio: b.failureRatio,
             cooldownMs: b.cooldownSeconds * 1000,
-            probeTimeoutMs: b.probeTimeoutSeconds * 1000,
+            // A broadcast probe holds its permit until its receipt wait ends (L5-06), so it gets that wait on top of
+            // probeTimeoutSeconds, which covers the in-lane work up to the broadcast. With the probe timeout alone a
+            // probe mined late in the wait would re-open the breaker and its success would be ignored.
+            probeTimeoutMs: (b.probeTimeoutSeconds + d.config.queue.receiptTimeoutSeconds) * 1000,
           },
           mono,
         ),
