@@ -16,6 +16,8 @@ vi.mock('../lib/reconciliationVault', async (original) => ({
 }));
 const TX = `0x${'b'.repeat(64)}`;
 const BLOCK = `0x${'c'.repeat(64)}`;
+/** A reorg that replaced the block of every stored observation. */
+const orphaned = (): Promise<string> => Promise.resolve(`0x${'9'.repeat(64)}`);
 const ADDRESS = `0x${'d'.repeat(40)}`;
 function match(): ScanMatch {
   return {
@@ -140,6 +142,8 @@ describe('encrypted reconciliation UI', () => {
     });
     await user.click(screen.getByRole('button', { name: 'Preview encrypted backup' }));
     expect(await screen.findByText(/1 historical observation/)).toBeTruthy();
+    // The count comes from the same merge as activation: nothing in this backup would be invalidated.
+    expect(screen.getByText(/Activating would mark no observations invalid because of reorg history\./)).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Activate previewed historical records' })).toBeTruthy();
     await user.clear(screen.getByLabelText('Encrypted reconciliation backup'));
     expect(screen.queryByRole('button', { name: 'Activate previewed historical records' })).toBeNull();
@@ -176,6 +180,20 @@ describe('encrypted reconciliation UI', () => {
     await user.click(await screen.findByRole('button', { name: 'Activate previewed historical records' }));
     expect(await screen.findByText(/Imported historical observation/)).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Activate previewed historical records' })).toBeNull();
+  });
+  it('words the preview count as what activating would mark invalid, not as a future reorg (A-R4)', async () => {
+    const preview = vi.spyOn(vault, 'previewImport');
+    for (const count of [1, 3]) preview.mockResolvedValueOnce({ recordCount: 4, invalidatedCount: count, readOnly: false, invoiceCount: 0, receiptCount: 0 });
+    const user = userEvent.setup();
+    render(panel());
+    await user.click(screen.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }));
+    const input = await screen.findByLabelText('Encrypted reconciliation backup');
+    for (const [count, text] of [[1, '1 observation'], [3, '3 observations']] as const) {
+      fireEvent.change(input, { target: { value: `encrypted file ${String(count)}` } });
+      await user.click(screen.getByRole('button', { name: 'Preview encrypted backup' }));
+      expect(await screen.findByText(new RegExp(`Activating would mark ${text} invalid because of reorg history\\.`))).toBeTruthy();
+      expect(screen.queryByText(/after a reorg/)).toBeNull();
+    }
   });
   it('rejects stale preview callbacks after encrypted input changes', async () => {
     const staged = { recordCount: 4, invalidatedCount: 0, readOnly: false, invoiceCount: 0, receiptCount: 0 };
@@ -264,7 +282,7 @@ describe('encrypted reconciliation UI', () => {
     await screen.findByText(TX);
     const local = vi.spyOn(window, 'dispatchEvent').mockReturnValue(true);
     await act(async () => {
-      await vault.invalidateFrom(100n);
+      await vault.invalidateFrom(100n, [], orphaned);
     });
     expect(await screen.findByText(/Invalidated after a reorg/)).toBeTruthy();
     expect(payloads.length).toBeGreaterThan(0);
@@ -281,7 +299,7 @@ describe('encrypted reconciliation UI', () => {
     await user.click(screen.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }));
     await screen.findByText(TX);
     const local = vi.spyOn(window, 'dispatchEvent').mockReturnValue(true);
-    await vault.invalidateFrom(100n);
+    await vault.invalidateFrom(100n, [], orphaned);
     local.mockRestore();
     fireEvent.focus(window);
     expect(await screen.findByText(/Invalidated after a reorg/)).toBeTruthy();
@@ -296,7 +314,7 @@ describe('encrypted reconciliation UI', () => {
     await user.click(screen.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }));
     await screen.findByText(TX);
     const local = vi.spyOn(window, 'dispatchEvent').mockReturnValue(true);
-    await vault.invalidateFrom(100n);
+    await vault.invalidateFrom(100n, [], orphaned);
     local.mockRestore();
     fireEvent(document, new Event('visibilitychange'));
     expect(screen.queryByText(/Invalidated after a reorg/)).toBeNull();
@@ -316,7 +334,7 @@ describe('encrypted reconciliation UI', () => {
         id: `${keyId}:84532:${transactionHash}:${base.stealthAddress}:${base.blockHash}:3`,
       };
     });
-    await expect(vault.invalidateFrom(100n, observed)).rejects.toThrow(/read-only/);
+    await expect(vault.invalidateFrom(100n, observed, orphaned)).rejects.toThrow(/read-only/);
     await vault.clearRecords();
     const backup = await vault.exportEncrypted();
     data.clear();
@@ -361,7 +379,7 @@ describe('encrypted reconciliation UI', () => {
     await user.click(screen.getByRole('button', { name: 'Export encrypted reconciliation backup' }));
     await waitFor(() => expect(held).toHaveBeenCalled());
     await act(async () => {
-      await vault.invalidateFrom(100n);
+      await vault.invalidateFrom(100n, [], orphaned);
     });
     expect(await screen.findByText(/Invalidated after a reorg/)).toBeTruthy();
     await act(async () => {

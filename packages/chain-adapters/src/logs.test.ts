@@ -2,7 +2,7 @@ import { encodeAbiParameters, getAddress } from 'viem/utils';
 import { describe, expect, it } from 'vitest';
 import { ChainAdapterError } from './errors.js';
 import { FAKE, SEPOLIA, payment, recipient } from './fixtures.testutil.js';
-import { ANNOUNCEMENT_TOPIC, fetchAnnouncements, MAX_PLAUSIBLE_HEAD, validateAnnouncementLog, type ScanCursor } from './logs.js';
+import { ANNOUNCEMENT_TOPIC, fetchAnnouncements, isLogLimitError, isLogSizeError, MAX_PLAUSIBLE_HEAD, validateAnnouncementLog, type ScanCursor } from './logs.js';
 import { createClient, type RpcClient, type RpcLog } from './rpc.js';
 import { FakeRpcError, fakeTransport, noSleep } from './rpc.testutil.js';
 import type { Hex } from './types.js';
@@ -33,6 +33,8 @@ interface Chain {
   fork: number;
   logs: RpcLog[];
   providerMax: number;
+  /** JSON-RPC error code for a range over `providerMax` (default -32005). */
+  limitCode?: number;
   requests: { from: bigint; to: bigint }[];
 }
 
@@ -52,7 +54,7 @@ async function client(chain: Chain, overrides: Partial<Record<string, (p: unknow
       const from = BigInt(f.fromBlock);
       const to = BigInt(f.toBlock);
       chain.requests.push({ from, to });
-      if (to - from + 1n > BigInt(chain.providerMax)) throw new FakeRpcError(-32005);
+      if (to - from + 1n > BigInt(chain.providerMax)) throw new FakeRpcError(chain.limitCode ?? -32005);
       return chain.logs.filter((l) => BigInt(l.blockNumber) >= from && BigInt(l.blockNumber) <= to);
     }
     return null;
@@ -120,6 +122,11 @@ describe('fetchAnnouncements', () => {
     expect(r.truncated).toBe(false);
     expect(r.reorg).toBeUndefined();
     expect(r.skipped).toBe(0);
+    expect(r.head).toBe(25n);
+  });
+  it('reports the provider head even when toBlock ends the fetch below it', async () => {
+    const r = await fetchWith(await client(mkChain({ head: 25 })), { nextBlock: 0n }, { toBlock: 12n });
+    expect(r).toMatchObject({ head: 25n, truncated: false, cursor: { nextBlock: 13n } });
   });
   it('honours a smaller maxRange but never a larger one', async () => {
     const c1 = mkChain({ head: 9 });
@@ -175,16 +182,90 @@ describe('fetchAnnouncements', () => {
     expect(r.truncated).toBe(true);
     expect(chain.requests).toEqual([{ from: 0n, to: 9n }, { from: 0n, to: 4n }]);
   });
-  it('fails closed when a single block exceeds the accepted-log cap', async () => {
+  it('keeps completed windows, then fails closed when a single block alone exceeds the accepted-log cap', async () => {
     const chain = mkChain({ head: 9, logs: [mkLog({}, 3, 0), mkLog({}, 3, 1), mkLog({}, 3, 2)] });
-    await expect(fetchWith(await client(chain), { nextBlock: 0n }, { maxLogs: 2 })).rejects.toThrow(/accepted log cap exceeded within one block/);
+    const c = await client(chain);
+    const first = await fetchWith(c, { nextBlock: 0n }, { maxLogs: 2 });
+    expect(first).toMatchObject({ truncated: true, cursor: { nextBlock: 3n } });
+    await expect(fetchWith(c, first.cursor, { maxLogs: 2 })).rejects.toThrow(/accepted log cap exceeded within one block/);
+    // Router payments are never dropped: three router announcements in one block still exceed the cap.
+    await expect(fetchWith(c, first.cursor, { maxLogs: 2, router: FAKE.router })).rejects.toThrow(/accepted log cap exceeded within one block/);
   });
   it('halves the window when the provider rejects the range, down to success', async () => {
     const chain = mkChain({ head: 9, providerMax: 3, logs: [mkLog({}, 5)] });
     const r = await fetchWith(await client(chain), { nextBlock: 0n });
     expect(r.announcements).toHaveLength(1);
+    // A fixed range limit never refuses one block, so the window is not grown into it again after each success (A-R2).
     expect(chain.requests.map((x) => Number(x.to - x.from + 1n))).toEqual([10, 5, 2, 2, 2, 2, 2].slice(0, chain.requests.length));
     expect(chain.requests.at(-1)?.to).toBe(9n);
+  });
+  it('grows back after a narrowed block only up to a fixed provider range limit, then keeps that size (A-R2)', async () => {
+    const routed = mkLog({}, 3, 1);
+    const spam = mkLog({ topics: [ANNOUNCEMENT_TOPIC, word('0x1'), word(PAY.stealthAddress), word('0xee')] }, 3, 0);
+    const chain = mkChain({ head: 25, logs: [spam, routed] });
+    const c = await client(chain, {
+      eth_getLogs: (p) => {
+        const f = p[0] as { fromBlock: string; toBlock: string; topics: (string | null)[] };
+        const from = BigInt(f.fromBlock);
+        const to = BigInt(f.toBlock);
+        chain.requests.push({ from, to });
+        // A four-block range limit, and block 3 too large for one response unless filtered by caller.
+        if (to - from + 1n > 4n) throw new FakeRpcError(-32600);
+        if (f.topics[3] == null && from <= 3n && to >= 3n) throw new FakeRpcError(-32602);
+        return chain.logs.filter((l) => BigInt(l.blockNumber) >= from && BigInt(l.blockNumber) <= to && (f.topics[3] == null || l.topics[3] === f.topics[3]));
+      },
+    });
+    const r = await fetchWith(c, { nextBlock: 0n }, { router: FAKE.router });
+    expect(r).toMatchObject({ truncated: false, cursor: { nextBlock: 26n }, routerOnlyBlocks: [3n] });
+    expect(r.announcements.map((a) => a.id)).toEqual([`${bh(3)}:1`]);
+    // Down to block 3 and its router lane; past it 2, 4, one refused 8, then four-block windows to the head.
+    expect(chain.requests.map((x) => Number(x.to - x.from + 1n))).toEqual([10, 5, 2, 2, 1, 1, 1, 2, 4, 8, 4, 4, 4, 4]);
+  });
+  it.each([-32600, -32614, -32000])('also halves the window on provider result-limit error %i (L4-01)', async (code) => {
+    const chain = mkChain({ head: 9, providerMax: 3, limitCode: code, logs: [mkLog({}, 5)] });
+    const r = await fetchWith(await client(chain), { nextBlock: 0n });
+    expect(r.announcements).toHaveLength(1);
+    expect(chain.requests.at(-1)?.to).toBe(9n);
+  });
+  it.each([-32600, -32614, -32000])('never narrows a single block refused with range-limit code %i: the scan stops at that block (A-R5)', async (code) => {
+    // These codes say the range is too large, not the response, so there is no router-lane fallback (a documented limit).
+    const chain = mkChain({ head: 9, logs: [mkLog({}, 1), mkLog({}, 5)] });
+    const c = await client(chain, {
+      eth_getLogs: (p) => {
+        const f = p[0] as { fromBlock: string; toBlock: string };
+        const [from, to] = [BigInt(f.fromBlock), BigInt(f.toBlock)];
+        if (from <= 5n && to >= 5n) throw new FakeRpcError(code);
+        return chain.logs.filter((l) => BigInt(l.blockNumber) >= from && BigInt(l.blockNumber) <= to);
+      },
+    });
+    const first = await fetchWith(c, { nextBlock: 0n }, { router: FAKE.router });
+    expect(first).toMatchObject({ truncated: true, cursor: { nextBlock: 5n } });
+    expect(first.announcements.map((a) => a.blockNumber)).toEqual([1n]);
+    expect(first.routerOnlyBlocks).toBeUndefined();
+    await expect(fetchWith(c, first.cursor, { router: FAKE.router })).rejects.toThrow(`RPC_FAILURE: json-rpc error ${String(code)}`);
+  });
+  it('classifies provider limits by code, also when the message carries provider detail (L4-01)', () => {
+    const rpc = (detail: string): ChainAdapterError => new ChainAdapterError('RPC_FAILURE', detail);
+    expect(isLogLimitError(new ChainAdapterError('RESPONSE_TOO_LARGE', 'response exceeds cap'))).toBe(true);
+    expect(isLogSizeError(new ChainAdapterError('RESPONSE_TOO_LARGE', 'response exceeds cap'))).toBe(true);
+    for (const code of [-32602, -32005]) {
+      expect(isLogSizeError(rpc(`json-rpc error ${String(code)}`))).toBe(true);
+      expect(isLogSizeError(rpc(`json-rpc error ${String(code)} (query returned more than 10000 results)`))).toBe(true);
+    }
+    for (const code of [-32600, -32614, -32000]) {
+      expect(isLogLimitError(rpc(`json-rpc error ${String(code)}: block range too large`))).toBe(true);
+      expect(isLogSizeError(rpc(`json-rpc error ${String(code)}`))).toBe(false);
+    }
+    expect(isLogLimitError(rpc('json-rpc error -320050'))).toBe(false);
+    expect(isLogLimitError(rpc('json-rpc error -32603'))).toBe(false);
+    expect(isLogLimitError(new ChainAdapterError('INVALID_LOG', 'json-rpc error -32005'))).toBe(false);
+    expect(isLogLimitError(new Error('RPC_FAILURE: json-rpc error -32005'))).toBe(false);
+  });
+  it('rethrows other JSON-RPC errors without shrinking the window', async () => {
+    let calls = 0;
+    const c = await client(mkChain(), { eth_getLogs: () => { calls++; throw new FakeRpcError(-32603); } });
+    await expect(fetchWith(c, { nextBlock: 0n })).rejects.toThrow(/-32603/);
+    expect(calls).toBe(1);
   });
   it('gives up when even one block is rejected', async () => {
     const chain = mkChain({ head: 9, providerMax: 0 });
@@ -248,25 +329,34 @@ describe('fetchAnnouncements', () => {
       expect(r2.announcements.map((a) => a.blockNumber)).toEqual([18n]); // replayed after dropping all stored results
       expect(r2.cursor.last?.hash).toBe(bh(20, 1));
     });
-    it('missing stored block counts as a reorg; rollback never goes below 0', async () => {
-      const chain = mkChain({ head: 2 });
-      const c = await client(chain);
-      const r = await fetchWith(c, { nextBlock: 4n, last: { number: 3n, hash: bh(3) } });
-      expect(r.reorg).toEqual({ rolledBackTo: 0n });
-      expect(chain.requests[0]?.from).toBe(0n);
+    it('a missing checkpoint block is an RPC failure to retry, not a reorg (L3-F1)', async () => {
+      const chain = mkChain({ head: 20 });
+      const c = await client(chain, { eth_getBlockByNumber: (p) => (BigInt(p[0] as string) === 3n ? null : { number: p[0], hash: bh(Number(BigInt(p[0] as string))), parentHash: bh(0) }) });
+      await expect(fetchWith(c, { nextBlock: 4n, last: { number: 3n, hash: bh(3) } })).rejects.toThrow(/RPC_FAILURE: checkpoint block unavailable/);
+      expect(chain.requests).toHaveLength(0);
     });
     it('cursor far beyond the head (poisoned checkpoint) fails closed instead of saving a cursor past the real chain (CHAIN-ADAPTERS-02)', async () => {
       const chain = mkChain({ head: 10 });
       const c = await client(chain);
       await expect(fetchWith(c, { nextBlock: 31n, last: { number: 30n, hash: bh(30) } })).rejects.toThrow(/RPC_FAILURE.*ahead of the chain head/);
     });
-    it('reorg with head below the old cursor clears the stale checkpoint and rescans from genesis', async () => {
+    it('a provider whose head is still below the checkpoint fails closed instead of rolling back (L3-F1)', async () => {
       const chain = mkChain({ head: 10 });
       const c = await client(chain);
-      const r = await fetchWith(c, { nextBlock: 16n, last: { number: 15n, hash: bh(15) } });
-      expect(r.reorg).toEqual({ rolledBackTo: 0n });
-      expect(r.cursor.nextBlock).toBe(11n);
-      expect(r.cursor.last?.number).toBe(10n);
+      await expect(fetchWith(c, { nextBlock: 16n, last: { number: 15n, hash: bh(15) } })).rejects.toThrow(/checkpoint block unavailable/);
+      expect(chain.requests).toHaveLength(0);
+    });
+    it('a processed window end the provider no longer returns is an RPC failure, not a rollback (L3-F1)', async () => {
+      const chain = mkChain({ head: 25, logs: [mkLog({}, 3)] });
+      let reads = 0;
+      const c = await client(chain, {
+        eth_getBlockByNumber: (p) => {
+          const n = Number(BigInt(p[0] as string));
+          if (n === 9 && ++reads > 1) return null;
+          return { number: p[0], hash: bh(n), parentHash: bh(Math.max(0, n - 1)) };
+        },
+      });
+      await expect(fetchWith(c, { nextBlock: 0n })).rejects.toThrow(/RPC_FAILURE: window block unavailable/);
     });
     it('drops logs and rolls back when a processed truncated window reorganizes', async () => {
       const chain = mkChain({ head: 20, logs: [mkLog({}, 9)] });
@@ -286,6 +376,31 @@ describe('fetchAnnouncements', () => {
       expect(r.reorg).toEqual({ rolledBackTo: 0n });
       expect(r.announcements).toHaveLength(0);
       expect(r.cursor.nextBlock).toBe(0n);
+    });
+    it('keeps router-only blocks before a window that reorganised, on a provider result limit at one block (L4-01)', async () => {
+      const routed = mkLog({}, 3, 1);
+      const spam = mkLog({ topics: [ANNOUNCEMENT_TOPIC, word('0x1'), word(PAY.stealthAddress), word('0xee')] }, 3, 0);
+      const chain = mkChain({ head: 25, logs: [spam, routed] });
+      let reads = 0;
+      const c = await client(chain, {
+        eth_getLogs: (p) => {
+          const f = p[0] as { fromBlock: string; toBlock: string; topics: (string | null)[] };
+          const from = BigInt(f.fromBlock);
+          const to = BigInt(f.toBlock);
+          if (f.topics[3] == null && from <= 3n && to >= 3n) throw new FakeRpcError(-32005);
+          return chain.logs.filter((l) => BigInt(l.blockNumber) >= from && BigInt(l.blockNumber) <= to && (f.topics[3] == null || l.topics[3] === f.topics[3]));
+        },
+        eth_getBlockByNumber: (p) => {
+          const n = Number(BigInt(p[0] as string));
+          return { number: p[0], hash: bh(n, n === 5 && ++reads > 1 ? 1 : 0), parentHash: bh(Math.max(0, n - 1)) };
+        },
+      });
+      const r = await fetchWith(c, { nextBlock: 0n }, { router: FAKE.router });
+      // Past the narrowed block 3 the window grows back to two blocks, so block 5 ends the window [4, 5] (A-R2).
+      expect(r.reorg).toEqual({ rolledBackTo: 4n });
+      expect(r.announcements.map((a) => a.id)).toEqual([`${bh(3)}:1`]);
+      expect(r.routerOnlyBlocks).toEqual([3n]);
+      expect(r.cursor.nextBlock).toBe(4n);
     });
     it('nothing new: keeps cursor and re-reads last hash', async () => {
       const chain = mkChain({ head: 20 });

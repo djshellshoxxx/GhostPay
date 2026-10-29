@@ -1,5 +1,4 @@
 import { findChain, tokensForChain, type RpcClient } from '@ghostpay/chain-adapters';
-import { unsafeRevealSecret } from '@ghostpay/core-crypto';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../components/Common';
 import { ReceiptPanel } from '../components/ReceiptPanel';
@@ -9,10 +8,10 @@ import { verifyManifestState } from '../lib/manifest';
 import { formatUnits } from '../lib/format';
 import { UserFacingError, userMessage } from '../lib/errors';
 import { checkpointKeyId, runScan, type ScanMatch, type ScanProgress } from '../lib/scanClient';
-import { browserStorage, describeScanDisclosure, loadScanPrivacy, openScanClients, planScan } from '../lib/scanPrivacy';
+import { browserStorage, createWindowedScanClient, describeScanDisclosure, loadScanPrivacy, openScanClients, planScan } from '../lib/scanPrivacy';
 import { describeAnonymitySet } from '../lib/scanSpam';
 import { useServices } from '../lib/services';
-import { captureSessionGuard, requireSession, subscribeSession } from '../lib/session';
+import { captureSessionGuard, revealViewingKey, subscribeSession } from '../lib/session';
 import { recordFromVerifiedMatch } from '../lib/reconciliationLedger';
 import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
 import type { TagPayload } from '../lib/tags';
@@ -30,6 +29,8 @@ export function Scan(): ReactNode {
   const [error, setError] = useState<string | undefined>(undefined);
   const [done, setDone] = useState<string | undefined>(undefined);
   const [privacyNote, setPrivacyNote] = useState<string | undefined>(undefined);
+  const [routerOnlyNote, setRouterOnlyNote] = useState<string | undefined>(undefined);
+  const [lagNote, setLagNote] = useState<string | undefined>(undefined);
   const [scanOwner, setScanOwner] = useState<{ readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
   const abort = useRef<AbortController | undefined>(undefined);
   const startingScope = useRef<{ readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
@@ -95,6 +96,8 @@ export function Scan(): ReactNode {
     setError(undefined);
     setDone(undefined);
     setPrivacyNote(undefined);
+    setRouterOnlyNote(undefined);
+    setLagNote(undefined);
     setScanOwner(undefined);
     app.setMatches([]);
     const scopeKeysAreCurrent = (): boolean => {
@@ -116,7 +119,7 @@ export function Scan(): ReactNode {
           setError(plan.reason);
           return;
         }
-        const clients = await openScanClients({ plan, chain, announcer: manifest.manifest.announcer, appRpc: () => app.getRpc(chainId), fetchImpl: services.fetchFn, sleep: services.sleep });
+        const clients = await openScanClients({ plan, chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, appRpc: () => app.getRpc(chainId), fetchImpl: services.fetchFn, sleep: services.sleep });
         assertScopeCurrent();
         if (clients === undefined) {
           setError('Configure an RPC for this chain in Settings first.');
@@ -149,12 +152,14 @@ export function Scan(): ReactNode {
           setError('Scan blocked: the contracts on this chain do not match the deployment manifest.');
           return;
         }
-        const secrets = requireSession();
+        // The second RPC gets the same aligned announcement windows as the scan RPC, never the exact checkpoint range.
+        const secondary = rpc2 === undefined ? undefined : createWindowedScanClient(rpc2, { chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, policy: plan.window, sleep: services.sleep });
         assertScopeCurrent();
         setScanOwner(scope);
-        const viewingKey = unsafeRevealSecret(secrets.keys.viewingSecret);
         let found: ScanMatch[] = [];
         let quarantined: ScanMatch[] = [];
+        // Only a copy of the viewing key leaves the session, and runScan wipes it; spending and signing keys stay boxed.
+        const viewingKey = revealViewingKey();
         const res = await runScan({
           chain,
           manifest: manifest.manifest,
@@ -164,12 +169,17 @@ export function Scan(): ReactNode {
           spendingPublicKeyHex: app.session?.spendingPublicKey ?? '',
           keyId,
           deep: deepScan,
-          ...(rpc2 === undefined ? {} : { secondaryClient: rpc2 }),
+          ...(secondary === undefined ? {} : { secondaryClient: secondary }),
           viewingKey,
           createWorker: services.createScanWorker,
           signal: ctl.signal,
           checkpoints: services.checkpoints,
-          onProgress: (nextProgress) => { if (scopeIsCurrent()) setProgress(nextProgress); },
+          onProgress: (nextProgress) => {
+            if (!scopeIsCurrent()) return;
+            setProgress(nextProgress);
+            // Shown as pages commit, so a later error in this run cannot hide a block that was narrowed.
+            if (nextProgress.routerOnlyBlocks !== undefined) setRouterOnlyNote(describeRouterOnly(nextProgress.routerOnlyBlocks));
+          },
           onQuarantine: (to) => {
             if (!scopeIsCurrent()) return;
             // These already bounded run observations are retained only until confirmation,
@@ -179,16 +189,17 @@ export function Scan(): ReactNode {
             found = found.filter((m) => m.announcement.blockNumber < to);
             app.setMatches([...found]);
           },
-          onReorg: async (to) => {
+          onReorg: async (to, canonicalHash) => {
             if (!scopeIsCurrent()) return;
-            const invalidated = [...found, ...quarantined].filter((m) => m.announcement.blockNumber >= to && m.receipt === 'verified' && m.viaRouter && m.metadata !== undefined && m.announcement.transactionHash !== undefined).map((m) => recordFromVerifiedMatch(m, keyId));
+            // Observations of this run, saved or not; only those whose block was replaced are tombstoned.
+            const observed = [...found, ...quarantined].filter((m) => m.announcement.blockNumber >= to && m.receipt === 'verified' && m.viaRouter && m.metadata !== undefined && m.announcement.transactionHash !== undefined).map((m) => recordFromVerifiedMatch(m, keyId));
             found = found.filter((m) => m.announcement.blockNumber < to);
             app.setMatches([...found]);
             try {
               const reconciliation = await createCurrentReconciliationVault(chainId, keyId);
               const lockOnAbort = (): void => { reconciliation.lock(); };
               ctl.signal.addEventListener('abort', lockOnAbort, { once: true });
-              try { if (!scopeIsCurrent()) return; await reconciliation.invalidateFrom(to, invalidated); }
+              try { if (!scopeIsCurrent()) return; await reconciliation.invalidateFrom(to, observed, canonicalHash); }
               finally { ctl.signal.removeEventListener('abort', lockOnAbort); reconciliation.lock(); }
               quarantined = quarantined.filter((m) => m.announcement.blockNumber < to);
             } catch (cause) {
@@ -214,6 +225,8 @@ export function Scan(): ReactNode {
         if (res.discrepancies.length > 0) setError(`The second RPC provider disagreed on ${String(res.discrepancies.length)} check(s). Results may be incomplete or forged; checkpoints were not advanced. Try another provider.`);
         if ((res.backlog ?? 0) > 0) setError(`${String(res.backlog)} announcements not posted by the GhostPay router were deferred by the per-scan budget (Settings). Nothing was skipped: scan again to continue from block ${res.cursor.nextBlock.toString()}.`);
         setPrivacyNote(res.telemetry?.anonymity === undefined ? undefined : describeAnonymitySet(res.telemetry.anonymity));
+        if ((res.routerOnlyBlocks ?? []).length > 0) setRouterOnlyNote(describeRouterOnly(res.routerOnlyBlocks ?? []));
+        if (res.secondaryLag !== undefined) setLagNote(`The second RPC reports block ${res.secondaryLag.secondaryHead.toString()}, ${(res.secondaryLag.head - res.secondaryLag.secondaryHead).toString()} blocks behind the scan RPC (block ${res.secondaryLag.head.toString()}). Each scan stops at the last block both providers have, so later payments appear only once the second RPC catches up. Check it in Settings if this persists.`);
         if (res.limitReached) setError(`This scan reached its safety limit. It stopped before processing the next page; resume from block ${res.cursor.nextBlock.toString()} to continue.`);
         const note = ` Started at block ${cursor.nextBlock.toString()}${resume && checkpoint !== undefined ? ' (from checkpoint)' : ''}.${rpc2 === undefined ? ' Only one RPC was used: add a second RPC in Settings to cross-check it.' : ''}`;
         setDone((ctl.signal.aborted ? `Cancelled. ${String(res.scanned)} announcements checked.` : res.limitReached ? `Stopped at the safety limit. ${String(res.scanned)} announcements checked, ${String(res.matches.length)} payments found.` : `Finished. ${String(res.scanned)} announcements checked, ${String(res.matches.length)} payments found.`) + note);
@@ -294,6 +307,8 @@ export function Scan(): ReactNode {
       </div>
       {done !== undefined && <Notice kind="ok">{done}</Notice>}
       {privacyNote !== undefined && <Notice kind="info" title="Privacy set (local estimate)">{privacyNote}</Notice>}
+      {routerOnlyNote !== undefined && <Notice kind="warn">{routerOnlyNote}</Notice>}
+      {lagNote !== undefined && <Notice kind="warn">{lagNote}</Notice>}
       {error !== undefined && <Notice kind="error">{error}</Notice>}
 
       <Matches
@@ -312,6 +327,15 @@ export function Scan(): ReactNode {
       <Tags chainId={chainId} />
     </section>
   );
+}
+
+/** L4-01: blocks too large to fetch whole were checked for router-posted announcements only; say which. */
+function describeRouterOnly(blocks: readonly bigint[]): string | undefined {
+  if (blocks.length === 0) return undefined;
+  const shown = blocks.slice(0, 5).map(String).join(', ');
+  const list = blocks.length > 5 ? `${shown} and ${String(blocks.length - 5)} more` : shown;
+  const one = blocks.length === 1;
+  return `${one ? 'Block' : 'Blocks'} ${list} held more announcements than one RPC response may carry (likely announcement spam). Payments posted through the GhostPay router were still checked there, but announcements there that were not posted by the GhostPay router were skipped, so a direct payment in ${one ? 'that block' : 'those blocks'} would not be listed.`;
 }
 
 function describe(m: ScanMatch, chainId: number): string {
@@ -383,8 +407,23 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
                     className="btn"
                     onClick={() => {
                       const payload: TagPayload = { stealthAddress: m.stealthAddress, announcementId: id, logIndex: m.announcement.logIndex, clientLabel: label[id] ?? '' };
+                      let sessionGuard: () => void;
+                      try {
+                        sessionGuard = captureSessionGuard();
+                      } catch (e) {
+                        setErr(userMessage(e));
+                        return;
+                      }
                       services.vault.save(props.chainId, payload).then(
                         () => {
+                          try {
+                            sessionGuard();
+                          } catch (e) {
+                            // The keys changed while saving: never leave the tags open for the new keys.
+                            services.vault.lock();
+                            setErr(userMessage(e));
+                            return;
+                          }
                           setErr(undefined);
                           setTags({ ...tags, [id]: payload.clientLabel.trim() });
                           app.announce('Tag saved.');
@@ -441,9 +480,19 @@ function Tags(props: { readonly chainId: number }): ReactNode {
             className="btn"
             onClick={() => {
               try {
-                const key = unsafeRevealSecret(requireSession().keys.viewingSecret);
+                const sessionGuard = captureSessionGuard();
+                const key = revealViewingKey();
                 services.vault.unlock(key).then(
                   () => {
+                    try {
+                      sessionGuard();
+                    } catch (e) {
+                      // Unlocked with the previous keys' viewing key: lock again before anything reads or writes tags.
+                      services.vault.lock();
+                      force((n) => n + 1);
+                      setErr(userMessage(e));
+                      return;
+                    }
                     setErr(undefined);
                     force((n) => n + 1);
                     refresh();

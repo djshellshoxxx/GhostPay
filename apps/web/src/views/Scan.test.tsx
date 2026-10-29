@@ -6,6 +6,7 @@ import { act } from '@testing-library/react';
 import { checkpointKeyId } from '../lib/scanClient';
 import * as scanClient from '../lib/scanClient';
 import { clearSession, generateSession, importSession, withSessionSecrets } from '../lib/session';
+import * as sessionModule from '../lib/session';
 import { SETTINGS_KEY } from '../lib/settings';
 import { FAKE_ANNOUNCER, FAKE_ROUTER } from '../test/fakeManifest';
 import { backedManifest, withManifestChain } from '../test/manifestChain';
@@ -334,7 +335,11 @@ describe('Scan and receive', () => {
       expect(screen.queryByRole('button', { name: 'Sweep this payment' })).toBeNull();
       expect(screen.queryByRole('button', { name: 'Sign receipt' })).toBeNull();
       expect(vaultData.size).toBe(0);
-      await act(async () => { await params.onReorg?.(0n); });
+      // Both providers report another block at height 120: the unsaved observation is tombstoned.
+      const heights: bigint[] = [];
+      const replacedBlock: Hex = `0x${'9'.repeat(64)}`;
+      await act(async () => { await params.onReorg?.(0n, (height) => { heights.push(height); return Promise.resolve(replacedBlock); }); });
+      expect(heights).toEqual([120n]);
       const { createCurrentReconciliationVault } = await import('../lib/reconciliationVault');
       const keyId = checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey);
       const vault = await createCurrentReconciliationVault(84532, keyId);
@@ -365,13 +370,158 @@ describe('Scan and receive', () => {
       await user.type(screen.getByLabelText('Start block'), '0'); await user.click(screen.getByRole('button', { name: 'Start scan' }));
       await screen.findByRole('button', { name: 'Sweep this payment' });
       act(() => { params.onQuarantine?.(0n); });
-      const invalidation = Promise.resolve(params.onReorg?.(0n)).catch(() => undefined);
+      const replacedBlock: Hex = `0x${'9'.repeat(64)}`;
+      const invalidation = Promise.resolve(params.onReorg?.(0n, () => Promise.resolve(replacedBlock))).catch(() => undefined);
       await waitFor(() => expect(stage === 'unlock' ? vaultCreationWaiting : vaultWriteWaiting).toBe(true));
       await user.click(screen.getByRole('button', { name: 'Cancel' }));
       await act(async () => { unlock(); await invalidation; });
       expect(vaultData.size).toBe(0);
       finish(); await waitFor(() => expect(screen.getByText(/Cancelled\./)).toBeTruthy());
     } finally { unlock(); finish(); runner.mockRestore(); }
+  });
+
+  it('keeps an unsaved observation recordable when the reorg left its block unchanged (L3-F1, L1-03)', async () => {
+    const pub = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 1, caller: FAKE_ROUTER });
+    const announcement = validateAnnouncementLog(mine.log, FAKE_ANNOUNCER, 1n, 0n, 500n)!;
+    const match: scanClient.ScanMatch = { chainId: 84532, announcement, stealthAddress: mine.stealthAddress as Address, metadata: parseMetadata(announcement.metadata), viaRouter: true, tagMatches: true, receipt: 'verified' };
+    let params!: scanClient.ScanParams; let release!: () => void;
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    const runner = vi.spyOn(scanClient, 'runScan').mockImplementation(async (p) => {
+      params = p; p.onMatch?.(match); await gate; p.viewingKey.fill(0);
+      return { matches: [], cursor: { nextBlock: 0n }, scanned: 1, discrepancies: [], limitReached: false, routerOnlyBlocks: [] };
+    });
+    try {
+      const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(chainWithLogs(84532, 500, []))) }));
+      await user.type(screen.getByLabelText('Start block'), '0'); await user.click(screen.getByRole('button', { name: 'Start scan' }));
+      await screen.findByRole('button', { name: 'Sweep this payment' });
+      act(() => { params.onQuarantine?.(0n); });
+      await act(async () => { await params.onReorg?.(0n, () => Promise.resolve(announcement.blockHash)); });
+      const { createCurrentReconciliationVault } = await import('../lib/reconciliationVault');
+      const keyId = checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey);
+      const vault = await createCurrentReconciliationVault(84532, keyId);
+      await expect(vault.save(recordFromVerifiedMatch(match, keyId))).resolves.toBeUndefined();
+      vault.lock();
+      release(); await waitFor(() => expect(screen.getByText(/Finished\./)).toBeTruthy());
+    } finally { release(); runner.mockRestore(); }
+  });
+
+  it('warns that a block too large for one RPC response was checked for router payments only (L4-01)', async () => {
+    const pub = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const { ChainAdapterError } = await import('@ghostpay/chain-adapters');
+    const { encodeMetaAddress, generateKeySet } = await import('@ghostpay/core-crypto');
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 1500, index: 0, caller: FAKE_ROUTER });
+    const spam = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(generateKeySet()), block: 1500, index: 1, caller: '0x9999999999999999999999999999999999999999' });
+    const logs = [mine.log, spam.log];
+    const rpc = chainWithLogs(84532, 4000, logs, (method, params) => {
+      if (method !== 'eth_getLogs') return undefined;
+      const f = params[0] as { address: string; topics: readonly (string | null)[]; fromBlock: bigint; toBlock: bigint };
+      if (f.address.toLowerCase() !== FAKE_ANNOUNCER.toLowerCase()) return undefined;
+      const caller = f.topics[3];
+      if (caller == null && f.fromBlock <= 1500n && f.toBlock >= 1500n) throw new ChainAdapterError('RESPONSE_TOO_LARGE', 'response exceeds cap');
+      return logs.filter((l) => BigInt(l.blockNumber) >= f.fromBlock && BigInt(l.blockNumber) <= f.toBlock && (caller == null || l.topics[3] === caller));
+    });
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(rpc)), createScanWorker: () => new InlineWorker() }));
+    await user.type(screen.getByLabelText('Start block'), '1000');
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    await waitFor(() => { expect(screen.getByText(/Finished\./)).toBeTruthy(); });
+    expect(screen.getByText(mine.stealthAddress)).toBeTruthy();
+    expect(screen.getByText(/Block 1500 held more announcements than one RPC response may carry/)).toBeTruthy();
+    expect(screen.getByText(/announcements there that were not posted by the GhostPay router were skipped/)).toBeTruthy();
+  });
+
+  it('keeps the router-only warning of committed pages when a later page of the scan fails (L4-01)', async () => {
+    generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const runner = vi.spyOn(scanClient, 'runScan').mockImplementation((p) => {
+      p.onProgress?.({ nextBlock: 1501n, scanned: 1, matches: 0, skipped: 0, caughtUp: false, routerOnlyBlocks: [1500n] });
+      p.viewingKey.fill(0);
+      return Promise.reject(new Error('page 2 failed'));
+    });
+    try {
+      const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(chainWithLogs(84532, 4000, []))) }));
+      await user.type(screen.getByLabelText('Start block'), '1000');
+      await user.click(screen.getByRole('button', { name: 'Start scan' }));
+      expect(await screen.findByText(/Something went wrong/)).toBeTruthy();
+      expect(screen.getByText(/Block 1500 held more announcements than one RPC response may carry/)).toBeTruthy();
+    } finally { runner.mockRestore(); }
+  });
+
+  it('says when the second RPC is far behind, because each scan stops at its head (L3-F2)', async () => {
+    generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const runner = vi.spyOn(scanClient, 'runScan').mockImplementation((p) => {
+      p.viewingKey.fill(0);
+      return Promise.resolve({ matches: [], cursor: { nextBlock: 29_001n }, scanned: 0, discrepancies: [], limitReached: false, routerOnlyBlocks: [], secondaryLag: { secondaryHead: 29_000n, head: 30_000n } });
+    });
+    try {
+      const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(chainWithLogs(84532, 4000, []))) }));
+      await user.type(screen.getByLabelText('Start block'), '1000');
+      await user.click(screen.getByRole('button', { name: 'Start scan' }));
+      await waitFor(() => { expect(screen.getByText(/Finished\./)).toBeTruthy(); });
+      expect(screen.getByText(/The second RPC reports block 29000, 1000 blocks behind the scan RPC \(block 30000\)/)).toBeTruthy();
+      expect(screen.queryByText(/held more announcements/)).toBeNull();
+    } finally { runner.mockRestore(); }
+  });
+
+  it('opens only the viewing key for scanning and tags, never the full key set (L1-07)', async () => {
+    const pub = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 0, caller: FAKE_ROUTER });
+    const opened = vi.spyOn(sessionModule, 'requireSession');
+    const viewing = vi.spyOn(sessionModule, 'revealViewingKey');
+    try {
+      const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(chainWithLogs(84532, 500, [mine.log]))), createScanWorker: () => new InlineWorker() }));
+      await user.type(screen.getByLabelText('Start block'), '100');
+      await user.click(screen.getByRole('button', { name: 'Start scan' }));
+      await waitFor(() => { expect(screen.getByText(/Finished\./)).toBeTruthy(); });
+      expect(screen.getByText(mine.stealthAddress)).toBeTruthy();
+      await user.click(screen.getByRole('button', { name: 'Unlock tags' }));
+      expect(await screen.findByLabelText(/Client tag/)).toBeTruthy();
+      expect(opened).not.toHaveBeenCalled();
+      expect(viewing).toHaveBeenCalledTimes(2);
+    } finally { opened.mockRestore(); viewing.mockRestore(); }
+  });
+
+  it('locks tags again when the seller keys change while a tag unlock is pending (L1-04)', async () => {
+    generateSession();
+    const services = makeServices();
+    const unlock = services.vault.unlock.bind(services.vault);
+    let release!: () => void; const gate = new Promise<void>((resolve) => { release = resolve; }); let waiting = false;
+    vi.spyOn(services.vault, 'unlock').mockImplementation(async (key) => { waiting = true; await gate; return unlock(key); });
+    const user = await openScan(services);
+    await user.click(screen.getByRole('button', { name: 'Unlock tags' }));
+    await waitFor(() => expect(waiting).toBe(true));
+    act(() => { clearSession(); generateSession(); });
+    await act(async () => { release(); await gate; });
+    expect((await screen.findByRole('alert')).textContent).toMatch(/Seller keys changed/);
+    expect(services.vault.unlocked).toBe(false);
+    expect(screen.getByRole('button', { name: 'Unlock tags' })).toBeTruthy();
+  });
+
+  it('locks tags when the seller keys change while a tag save is pending (L1-04)', async () => {
+    const pub = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 0, caller: FAKE_ROUTER });
+    const services = makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(chainWithLogs(84532, 500, [mine.log]))), createScanWorker: () => new InlineWorker() });
+    const save = services.vault.save.bind(services.vault);
+    let release!: () => void; const gate = new Promise<void>((resolve) => { release = resolve; }); let waiting = false;
+    vi.spyOn(services.vault, 'save').mockImplementation(async (chainId, payload) => { waiting = true; await gate; return save(chainId, payload); });
+    const user = await openScan(services);
+    await user.type(screen.getByLabelText('Start block'), '100');
+    await user.click(screen.getByRole('button', { name: 'Start scan' }));
+    await waitFor(() => { expect(screen.getByText(/Finished\./)).toBeTruthy(); });
+    await user.click(screen.getByRole('button', { name: 'Unlock tags' }));
+    await user.type(await screen.findByLabelText(/Client tag/), 'Acme Corp');
+    await user.click(screen.getByRole('button', { name: 'Save tag' }));
+    await waitFor(() => expect(waiting).toBe(true));
+    act(() => { clearSession(); generateSession(); });
+    await act(async () => { release(); await gate; });
+    // The save finished under the previous keys: tags lock and no success is announced to the new session.
+    await waitFor(() => expect(services.vault.unlocked).toBe(false));
+    expect(screen.getAllByRole('status').map((node) => node.textContent ?? '').join(' ')).not.toMatch(/Tag saved/);
   });
 
   it('says so when only one RPC was used', async () => {

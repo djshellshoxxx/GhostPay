@@ -34,8 +34,21 @@ const record: ReconciliationRecord = {
   evidenceSource: 'verified-router-scan',
   id: `${scope.sellerKeyId}:${scope.chainId}:0x${'b'.repeat(64)}:0x${'d'.repeat(40)}:0x${'c'.repeat(64)}:4`,
 };
-async function unlocked(store = new Store(), guard = (): void => undefined): Promise<ReconciliationVault> {
-  const vault = new ReconciliationVault(store, scope, guard);
+/** The chain now has another block at every height: each stored observation is orphaned. */
+const orphanedEverywhere = (): Promise<string> => Promise.resolve(`0x${'9'.repeat(64)}`);
+/** The same observation in another block. */
+function variant(block: number, hashChar: string, over: Partial<ReconciliationRecord> = {}): ReconciliationRecord {
+  const blockHash = `0x${hashChar.repeat(64)}`;
+  return {
+    ...record,
+    blockNumber: String(block),
+    blockHash,
+    id: `${scope.sellerKeyId}:${scope.chainId}:${record.transactionHash}:${record.stealthAddress}:${blockHash}:4`,
+    ...over,
+  };
+}
+async function unlocked(store = new Store(), guard = (): void => undefined, now?: () => number): Promise<ReconciliationVault> {
+  const vault = new ReconciliationVault(store, scope, guard, now);
   const key = new Uint8Array(32).fill(7);
   await vault.unlock(key);
   expect(key.every((b) => b === 0)).toBe(true);
@@ -113,7 +126,7 @@ describe('encrypted reconciliation vault', () => {
     const vault = await unlocked(store);
     await vault.save(record);
     const old = await vault.exportEncrypted();
-    await vault.invalidateFrom(100n);
+    await vault.invalidateFrom(100n, [], orphanedEverywhere);
     expect((await vault.read())[0]?.evidenceStatus).toBe('invalidated-after-reorg');
     await vault.clearRecords();
     expect(await vault.read()).toEqual([]);
@@ -180,8 +193,125 @@ describe('encrypted reconciliation vault', () => {
 
   it('tombstones observed scan results even when a pending save has not persisted them yet', async () => {
     const vault = await unlocked();
-    await vault.invalidateFrom(100n, [record]);
+    await vault.invalidateFrom(100n, [record], orphanedEverywhere);
     await expect(vault.save(record)).rejects.toThrow(/invalidated/);
+  });
+
+  it('invalidates only observations whose block hash is no longer canonical (L1-03, L3-F1)', async () => {
+    const vault = await unlocked();
+    const kept = variant(150, 'e');
+    const orphaned = variant(160, 'f');
+    const pending = variant(170, '1');
+    await vault.save(kept);
+    await vault.save(orphaned);
+    // Providers may answer in mixed case; the comparison is on the hash value.
+    const chain = (height: bigint): Promise<string> => Promise.resolve(height === 150n ? `0x${'E'.repeat(64)}` : `0x${'2'.repeat(64)}`);
+    await vault.invalidateFrom(100n, [pending], chain);
+    const after = await vault.read();
+    expect(after.find((r) => r.id === kept.id)?.evidenceStatus).toBe('verified-at-scan');
+    expect(after.find((r) => r.id === orphaned.id)?.evidenceStatus).toBe('invalidated-after-reorg');
+    // The unchanged block can be recorded again by a later scan; orphaned observations stay blocked for good.
+    await expect(vault.save(kept)).resolves.toBeUndefined();
+    await expect(vault.save(orphaned)).rejects.toThrow(/invalidated by a reorg/);
+    await expect(vault.save(pending)).rejects.toThrow(/invalidated by a reorg/);
+  });
+
+  it('writes nothing when a canonical block hash cannot be read, so the reorg is retried later (L3-F1)', async () => {
+    const store = new Store();
+    const vault = await unlocked(store);
+    await vault.save(record);
+    const before = [...store.data.values()][0];
+    await expect(vault.invalidateFrom(100n, [], () => Promise.reject(new Error('RPC_FAILURE: block unavailable')))).rejects.toThrow(/RPC_FAILURE/);
+    await expect(vault.invalidateFrom(100n, [], () => Promise.resolve('0x1234'))).rejects.toThrow(/canonical block hash/);
+    expect([...store.data.values()][0]).toBe(before);
+    expect((await vault.read())[0]?.evidenceStatus).toBe('verified-at-scan');
+  });
+
+  it('reads canonical hashes eight heights at a time and still writes nothing when one read fails (A-R3)', async () => {
+    const store = new Store();
+    const vault = await unlocked(store);
+    const stored = Array.from({ length: 20 }, (_, i) => {
+      const blockHash = `0x${(100 + i).toString(16).padStart(64, '0')}`;
+      return variant(100 + i, '0', { blockHash, id: `${scope.sellerKeyId}:${scope.chainId}:${record.transactionHash}:${record.stealthAddress}:${blockHash}:4` });
+    });
+    for (const r of stored) await vault.save(r);
+    let inFlight = 0;
+    let peak = 0;
+    const asked: bigint[] = [];
+    const chain = (failAt?: bigint) => async (height: bigint): Promise<string> => {
+      asked.push(height);
+      peak = Math.max(peak, ++inFlight);
+      await new Promise((resolve) => setTimeout(resolve, 1));
+      inFlight--;
+      if (height === failAt) throw new Error('RPC_FAILURE: block unavailable');
+      return `0x${'2'.repeat(64)}`;
+    };
+    const before = [...store.data.values()][0];
+    await expect(vault.invalidateFrom(100n, [], chain(102n))).rejects.toThrow(/RPC_FAILURE/);
+    // No read starts after the failure, the ones in flight settle before it is reported, and nothing is written.
+    expect(inFlight).toBe(0);
+    expect(asked.length).toBeLessThan(stored.length);
+    expect([...store.data.values()][0]).toBe(before);
+    expect((await vault.read()).every((r) => r.evidenceStatus === 'verified-at-scan')).toBe(true);
+    asked.length = 0;
+    peak = 0;
+    await vault.invalidateFrom(100n, [], chain());
+    expect(asked).toHaveLength(stored.length);
+    expect(new Set(asked)).toEqual(new Set(stored.map((r) => BigInt(r.blockNumber))));
+    expect(peak).toBe(8);
+    expect((await vault.read()).every((r) => r.evidenceStatus === 'invalidated-after-reorg')).toBe(true);
+  });
+
+  it('restores later canonical history unchanged and previews exactly what activation invalidates (L1-03)', async () => {
+    const vault = await unlocked();
+    const template = await vault.exportEncrypted();
+    const orphaned = { ...variant(123, 'c'), evidenceStatus: 'invalidated-after-reorg' as const, provenance: 'live-scan' };
+    const later = { ...variant(200, 'f'), recordedAt: record.recordedAt + 1000, provenance: 'live-scan' };
+    // The source vault saw a reorg at 100 (orphaned record tombstoned), then saved a later canonical observation.
+    const backup = encryptBody(template, { version: 2, records: [orphaned, later], invalidatedFrom: '100', tombstones: [orphaned.id], saturated: false, invoices: [], receipts: [] });
+    const preview = await vault.previewImport(backup);
+    expect(preview.invalidatedCount).toBe(1);
+    await vault.activateImport(preview);
+    const restored = await vault.read();
+    expect(restored.find((r) => r.id === later.id)).toMatchObject({ evidenceStatus: 'verified-at-scan', provenance: 'imported-history' });
+    expect(restored.find((r) => r.id === orphaned.id)?.evidenceStatus).toBe('invalidated-after-reorg');
+    // A fresh rescan can still record the canonical observation as live evidence.
+    await vault.save(variant(200, 'f'));
+    expect((await vault.read()).find((r) => r.id === later.id)?.provenance).toBe('live-scan');
+  });
+
+  it('applies a local reorg cutoff only to imported observations recorded before it; a fresh scan revives them (L1-03)', async () => {
+    const at = 1_850_000_000_000;
+    const vault = await unlocked(new Store(), undefined, () => at);
+    await vault.invalidateFrom(100n, [], orphanedEverywhere);
+    const earlier = variant(150, 'e', { recordedAt: at - 1 });
+    const later = variant(160, 'f', { recordedAt: at + 1 });
+    const source = await unlocked();
+    await source.save(earlier);
+    await source.save(later);
+    const preview = await vault.previewImport(await source.exportEncrypted());
+    expect(preview.invalidatedCount).toBe(1);
+    await vault.activateImport(preview);
+    const merged = await vault.read();
+    expect(merged.find((r) => r.id === earlier.id)?.evidenceStatus).toBe('invalidated-after-reorg');
+    expect(merged.find((r) => r.id === later.id)?.evidenceStatus).toBe('verified-at-scan');
+    // The precautionary invalidation was never a tombstone: a fresh verified observation replaces it.
+    await vault.save(earlier);
+    expect((await vault.read()).find((r) => r.id === earlier.id)).toMatchObject({ evidenceStatus: 'verified-at-scan', provenance: 'live-scan' });
+  });
+
+  it('keeps applying a legacy cutoff without a recorded time to every imported observation at or above it', async () => {
+    const store = new Store();
+    const vault = await unlocked(store);
+    const template = await vault.exportEncrypted();
+    store.data.set(`${scope.sellerKeyId}:${scope.chainId}`, encryptBody(template, { version: 2, records: [], invalidatedFrom: '100', tombstones: [], saturated: false, invoices: [], receipts: [] }));
+    const source = await unlocked();
+    await source.save(variant(150, 'e', { recordedAt: 8_000_000_000_000_000 }));
+    await source.save(variant(90, 'f'));
+    const preview = await vault.previewImport(await source.exportEncrypted());
+    expect(preview.invalidatedCount).toBe(1);
+    await vault.activateImport(preview);
+    expect((await vault.read()).map((r) => [r.blockNumber, r.evidenceStatus])).toEqual([['150', 'invalidated-after-reorg'], ['90', 'verified-at-scan']]);
   });
 
   it('invalidates restored old history while preserving a freshly rescanned canonical block hash', async () => {
@@ -189,8 +319,8 @@ describe('encrypted reconciliation vault', () => {
     await old.save(record);
     const backup = await old.exportEncrypted();
     const target = await unlocked();
-    await target.invalidateFrom(100n, [record]);
     const blockHash = `0x${'e'.repeat(64)}`;
+    await target.invalidateFrom(100n, [record], () => Promise.resolve(blockHash));
     const fresh = {
       ...record,
       blockHash,
@@ -345,7 +475,7 @@ describe('encrypted reconciliation vault', () => {
         id: `${scope.sellerKeyId}:${scope.chainId}:${transactionHash}:${record.stealthAddress}:${record.blockHash}:4`,
       };
     });
-    const invalidation = vault.invalidateFrom(100n, observations);
+    const invalidation = vault.invalidateFrom(100n, observations, orphanedEverywhere);
     await expect(invalidation).rejects.toThrow(/read.only|capacity|safety limit/i);
     expect(userMessage(await invalidation.catch((error: unknown) => error))).toMatch(
       /Reorg invalidation was saved/,
@@ -371,8 +501,8 @@ describe('encrypted reconciliation vault', () => {
         id: `${scope.sellerKeyId}:${scope.chainId}:${transactionHash}:${record.stealthAddress}:${record.blockHash}:4`,
       };
     });
-    await vault.invalidateFrom(100n, observations.slice(0, MAX_RECONCILIATION_RECORDS - 1));
-    await expect(vault.invalidateFrom(100n, observations.slice(-1))).rejects.toThrow(
+    await vault.invalidateFrom(100n, observations.slice(0, MAX_RECONCILIATION_RECORDS - 1), orphanedEverywhere);
+    await expect(vault.invalidateFrom(100n, observations.slice(-1), orphanedEverywhere)).rejects.toThrow(
       /read.only|capacity|safety limit/i,
     );
     await expect(vault.save(observations.at(-1)!)).rejects.toThrow(/read.only|capacity/i);
@@ -408,7 +538,7 @@ describe('encrypted reconciliation vault', () => {
   });
   it('warns when individually writable backup histories would saturate the combined vault', async () => {
     const vault = await unlocked();
-    await vault.invalidateFrom(100n, [record]);
+    await vault.invalidateFrom(100n, [record], orphanedEverywhere);
     const template = await vault.exportEncrypted();
     const tombstones = Array.from(
       { length: MAX_RECONCILIATION_RECORDS },

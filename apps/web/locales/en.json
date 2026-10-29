@@ -525,6 +525,7 @@
     "policy.receive.scan": "Scan for policy payments",
     "policy.receive.continue": "Continue scan",
     "policy.receive.result": "{count} policy announcement(s) read, {fresh} new for your keys.",
-    "policy.receive.capped": "Stopped at a cap: scan again to continue."
+    "policy.receive.capped": "Stopped at a cap: scan again to continue.",
+    "ledger.import.invalidated": "{count, plural, =0 {Activating would mark no observations invalid because of reorg history.} one {Activating would mark # observation invalid because of reorg history.} other {Activating would mark # observations invalid because of reorg history.}}"
   }
 }

@@ -22,6 +22,8 @@ import { checkpointKeyId } from './scanClient';
 export const MAX_VAULT_BYTES = 8_000_000;
 export const RECONCILIATION_VAULT_CHANGE_EVENT = 'ghostpay:reconciliation-vault-change';
 const INVALIDATION_CHANNEL = 'ghostpay:reconciliation-invalidation';
+/** Canonical block-hash reads in flight during a reorg check (a rollback to genesis can cover every stored height). */
+const CANONICAL_READS_IN_FLIGHT = 8;
 export interface ReconciliationScope {
   readonly sellerKeyId: string;
   readonly chainId: number;
@@ -37,9 +39,16 @@ export interface ArchivedReceipt {
 }
 interface Document {
   readonly saturated: boolean;
-  readonly version: 2;
+  readonly version: 3;
   readonly records: readonly VaultRecord[];
+  /**
+   * Lowest block of any reorg this vault handled. Records the vault held then were checked against the chain; the
+   * cutoff only covers observations it did not hold, recorded before `invalidatedAt` (imported later).
+   */
   readonly invalidatedFrom: string | null;
+  /** When the cutoff was last moved (ms); null for documents written before it was recorded (applies to all). */
+  readonly invalidatedAt: number | null;
+  /** Ids of observations whose block a confirmed reorg replaced; never accepted again. */
   readonly tombstones: readonly string[];
   /** Opt-in, minimized invoice registrations for local matching. */
   readonly invoices: readonly RegisteredInvoice[];
@@ -73,9 +82,10 @@ export interface ReconciliationImportPreview {
 const encoder = new TextEncoder();
 const decoder = new TextDecoder('utf-8', { fatal: true });
 const empty = (): Document => ({
-  version: 2,
+  version: 3,
   records: [],
   invalidatedFrom: null,
+  invalidatedAt: null,
   tombstones: [],
   saturated: false,
   invoices: [],
@@ -140,14 +150,19 @@ function parseEnvelope(text: string, scope: ReconciliationScope): Envelope {
   return value as unknown as Envelope;
 }
 function validateDocument(value: unknown, scope: ReconciliationScope): Document {
-  // Version 1 documents (before invoice registration and receipt archiving) upgrade on the next write.
+  // Version 1 documents (before invoice registration and receipt archiving) and version 2 documents (before the
+  // reorg cutoff time) upgrade on the next write.
   const legacy =
     object(value) && value.version === 1 && exact(value, 'version|records|invalidatedFrom|tombstones|saturated');
+  const timed = object(value) && value.version === 3;
   if (
     !object(value) ||
     (!legacy &&
-      (value.version !== 2 ||
-        !exact(value, 'version|records|invalidatedFrom|tombstones|saturated|invoices|receipts') ||
+      ((value.version !== 2 && value.version !== 3) ||
+        !exact(
+          value,
+          `version|records|invalidatedFrom|tombstones|saturated|invoices|receipts${timed ? '|invalidatedAt' : ''}`,
+        ) ||
         !Array.isArray(value.invoices) ||
         value.invoices.length > MAX_REGISTERED_INVOICES ||
         !Array.isArray(value.receipts) ||
@@ -164,6 +179,15 @@ function validateDocument(value: unknown, scope: ReconciliationScope): Document 
     (typeof value.invalidatedFrom !== 'string' || !/^(0|[1-9][0-9]{0,15})$/.test(value.invalidatedFrom))
   )
     fail('Invalid reconciliation reorg cutoff.');
+  const invalidatedAt = timed ? value.invalidatedAt : null;
+  if (
+    invalidatedAt !== null &&
+    (value.invalidatedFrom === null ||
+      !Number.isSafeInteger(invalidatedAt) ||
+      (invalidatedAt as number) <= 0 ||
+      (invalidatedAt as number) > 8_640_000_000_000_000)
+  )
+    fail('Invalid reconciliation reorg cutoff time.');
   const records = value.records.map((item: unknown): VaultRecord => {
     if (!object(item) || (item.provenance !== 'live-scan' && item.provenance !== 'imported-history'))
       return fail('Invalid reconciliation provenance.');
@@ -192,9 +216,10 @@ function validateDocument(value: unknown, scope: ReconciliationScope): Document 
   const receipts = legacy ? [] : (value.receipts as unknown[]).map((item) => validateArchivedReceipt(item, scope));
   if (new Set(receipts.map((r) => receiptId(r.receipt))).size !== receipts.length) fail('Duplicate archived receipt.');
   return {
-    version: 2,
+    version: 3,
     records,
     invalidatedFrom: value.invalidatedFrom,
+    invalidatedAt: invalidatedAt as number | null,
     tombstones,
     saturated: value.saturated,
     invoices,
@@ -219,13 +244,15 @@ function validateArchivedReceipt(value: unknown, scope: ReconciliationScope): Ar
     fail('Invalid archived receipt timestamp.');
   return { receipt: { ...clean, signature }, archivedAt: at as number };
 }
-/** Applies a live verified observation, preserving reorg tombstones and any prior annotation. */
+/**
+ * Applies a live verified observation, preserving reorg tombstones and any prior annotation. A tombstoned id (its block
+ * was replaced) is refused for good; a precautionary invalidation without a tombstone (an imported observation under a
+ * reorg cutoff) is replaced by this fresh verified observation of the same block hash.
+ */
 function withSaved(document: Document, record: ReconciliationRecord): Document {
   if (document.saturated) throw new UserFacingError(READ_ONLY_MESSAGE);
   if (document.tombstones.includes(record.id)) fail('This historical observation was invalidated by a reorg.');
   const prior = document.records.find((r) => r.id === record.id);
-  if (prior?.evidenceStatus === 'invalidated-after-reorg')
-    fail('This historical observation was invalidated by a reorg.');
   if (
     prior?.invoiceDigest !== undefined &&
     record.invoiceDigest !== undefined &&
@@ -241,6 +268,80 @@ function withSaved(document: Document, record: ReconciliationRecord): Document {
     prior === undefined ? [...document.records, next] : document.records.map((r) => (r.id === record.id ? next : r));
   return { ...document, records };
 }
+interface Cutoff {
+  readonly from: bigint;
+  /** Null: recorded before cutoff times existed, so it covers every observation at or above `from`. */
+  readonly at: number | null;
+}
+function cutoffOf(document: Document): Cutoff | undefined {
+  return document.invalidatedFrom === null
+    ? undefined
+    : { from: BigInt(document.invalidatedFrom), at: document.invalidatedAt };
+}
+/** Whether a cutoff covers an observation its vault did not hold: at or above the block, recorded before it. */
+function covers(cutoff: Cutoff | undefined, record: ReconciliationRecord): boolean {
+  return (
+    cutoff !== undefined &&
+    BigInt(record.blockNumber) >= cutoff.from &&
+    (cutoff.at === null || record.recordedAt < cutoff.at)
+  );
+}
+/** The lower block and the later time of two cutoffs (a missing time stays missing): conservative for later imports. */
+function mergeCutoffs(a: Cutoff | undefined, b: Cutoff | undefined): Cutoff | undefined {
+  if (a === undefined || b === undefined) return a ?? b;
+  return { from: a.from < b.from ? a.from : b.from, at: a.at === null || b.at === null ? null : Math.max(a.at, b.at) };
+}
+const invalidated = (record: VaultRecord): VaultRecord => ({ ...record, evidenceStatus: 'invalidated-after-reorg' });
+/**
+ * The document an import activates; previews count from the same merge. Tombstones always apply. A cutoff covers only
+ * observations its own vault did not hold when it was set: the local cutoff applies to imported records, the imported
+ * cutoff to local imported history (to every record once tombstones are saturated). Records already invalid stay so.
+ */
+function mergeImport(document: Document, imported: Document): Document {
+  const tombstones = [...new Set([...document.tombstones, ...imported.tombstones])];
+  const saturated = document.saturated || imported.saturated || tombstones.length > MAX_RECONCILIATION_RECORDS;
+  const local = cutoffOf(document);
+  const remote = cutoffOf(imported);
+  const records = document.records.map((r): VaultRecord =>
+    tombstones.includes(r.id) || ((saturated || r.provenance === 'imported-history') && covers(remote, r))
+      ? invalidated(r)
+      : r,
+  );
+  const known = new Set(records.map((r) => r.id));
+  for (const record of imported.records) {
+    if (known.has(record.id)) continue;
+    const next: VaultRecord = { ...record, provenance: 'imported-history' };
+    records.push(
+      record.evidenceStatus === 'invalidated-after-reorg' ||
+        tombstones.includes(record.id) ||
+        covers(local, record) ||
+        (saturated && covers(remote, record))
+        ? invalidated(next)
+        : next,
+    );
+  }
+  // Registrations and archived receipts merge by identity; a nonce reused by another digest keeps the local one.
+  const invoices = [...document.invoices];
+  for (const invoice of imported.invoices)
+    if (!invoices.some((i) => i.invoiceDigest === invoice.invoiceDigest || i.nonce === invoice.nonce))
+      invoices.push(invoice);
+  const receipts = [...document.receipts];
+  for (const entry of imported.receipts)
+    if (!receipts.some((r) => receiptId(r.receipt) === receiptId(entry.receipt))) receipts.push(entry);
+  const cutoff = mergeCutoffs(local, remote);
+  return {
+    version: 3,
+    records,
+    tombstones: tombstones.slice(0, MAX_RECONCILIATION_RECORDS),
+    invalidatedFrom: cutoff?.from.toString() ?? null,
+    invalidatedAt: cutoff?.at ?? null,
+    saturated,
+    invoices,
+    receipts,
+  };
+}
+const invalidCount = (document: Document): number =>
+  document.records.filter((r) => r.evidenceStatus === 'invalidated-after-reorg').length;
 function announce(): void {
   if (typeof window === 'undefined') return;
   window.dispatchEvent(new Event(RECONCILIATION_VAULT_CHANGE_EVENT));
@@ -301,6 +402,7 @@ export class ReconciliationVault {
     private readonly store: ReconciliationVaultStore,
     scope: ReconciliationScope,
     private readonly sessionGuard: () => void,
+    private readonly now: () => number = () => Date.now(),
   ) {
     assertScope(scope);
     this.scope = Object.freeze({ ...scope });
@@ -562,9 +664,19 @@ export class ReconciliationVault {
     this.guard(revision);
     return `[${receipts.map((r) => receiptJson(r.receipt)).join(',')}]`;
   }
-  public async invalidateFrom(block: bigint, observed: readonly ReconciliationRecord[] = []): Promise<void> {
+  /**
+   * Applies a confirmed reorg at or above `block`. Each stored or `observed` (not yet saved) observation at or above it
+   * is compared with `canonicalHash(height)`, the block hash the scan's providers now report: only observations whose
+   * block was replaced are invalidated and tombstoned. Unchanged history stays as it is, so a shallow or overstated
+   * rollback cannot invalidate it. `canonicalHash` must throw when it cannot answer; nothing is written then.
+   */
+  public async invalidateFrom(
+    block: bigint,
+    observed: readonly ReconciliationRecord[],
+    canonicalHash: (height: bigint) => Promise<string>,
+  ): Promise<void> {
     if (block < 0n || block > 9_999_999_999_999_999n) fail('Invalid reorg block.');
-    const observedIds = observed.map((value) => {
+    const observedRecords = observed.map((value) => {
       const record = validateReconciliationRecord(value);
       if (
         record.chainId !== this.scope.chainId ||
@@ -572,22 +684,51 @@ export class ReconciliationVault {
         BigInt(record.blockNumber) < block
       )
         return fail('Invalid reorg observation scope.');
-      return record.id;
+      return record;
     });
+    const revision = this.revision;
+    const { document: before } = await this.snapshot();
+    this.guard(revision);
+    // Already invalid observations stay invalid; only the valid ones need their block checked.
+    const heights = new Set(
+      [...before.records.filter((r) => r.evidenceStatus === 'verified-at-scan'), ...observedRecords]
+        .filter((r) => BigInt(r.blockNumber) >= block)
+        .map((r) => r.blockNumber),
+    );
+    const canonical = new Map<string, string>();
+    // A few heights at a time: every height must be read before anything is written, and after the first failed read
+    // no further read starts; the in-flight ones settle before the failure is reported, and nothing is written.
+    const queue = [...heights];
+    const failures: unknown[] = [];
+    const reader = async (): Promise<void> => {
+      for (let height = queue.shift(); height !== undefined && failures.length === 0; height = queue.shift()) {
+        try {
+          const hash = await canonicalHash(BigInt(height));
+          this.guard(revision);
+          if (typeof hash !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(hash)) fail('Invalid canonical block hash.');
+          canonical.set(height, hash.toLowerCase());
+        } catch (error) {
+          failures.push(error);
+        }
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(CANONICAL_READS_IN_FLIGHT, queue.length) }, reader));
+    if (failures.length > 0) throw failures[0];
+    // Records added meanwhile (no checked height) are fresh live observations and stay as they are.
+    const replaced = (r: ReconciliationRecord): boolean => {
+      const hash = canonical.get(r.blockNumber);
+      return BigInt(r.blockNumber) >= block && hash !== undefined && hash !== r.blockHash;
+    };
+    const at = this.now();
     let saturated = false;
     await this.change((document) => {
-      const cutoff =
-        document.invalidatedFrom === null || block < BigInt(document.invalidatedFrom)
-          ? block
-          : BigInt(document.invalidatedFrom);
-      const records = document.records.map((r): VaultRecord =>
-        BigInt(r.blockNumber) >= block ? { ...r, evidenceStatus: 'invalidated-after-reorg' } : r,
-      );
+      const cutoff = mergeCutoffs(cutoffOf(document), { from: block, at });
+      const records = document.records.map((r): VaultRecord => (replaced(r) ? invalidated(r) : r));
       const tombstones = [
         ...new Set([
           ...document.tombstones,
-          ...observedIds,
-          ...records.filter((r) => r.evidenceStatus === 'invalidated-after-reorg').map((r) => r.id),
+          ...observedRecords.filter(replaced).map((r) => r.id),
+          ...document.records.filter(replaced).map((r) => r.id),
         ]),
       ];
       saturated = document.saturated || tombstones.length > MAX_RECONCILIATION_RECORDS;
@@ -595,7 +736,8 @@ export class ReconciliationVault {
         ...document,
         records,
         tombstones: tombstones.slice(0, MAX_RECONCILIATION_RECORDS),
-        invalidatedFrom: cutoff.toString(),
+        invalidatedFrom: cutoff!.from.toString(),
+        invalidatedAt: cutoff!.at,
         saturated,
       };
     });
@@ -617,13 +759,12 @@ export class ReconciliationVault {
     const document = await this.decrypt(text);
     const current = (await this.snapshot()).document;
     this.guard(revision);
+    // The same merge as activation: the count is what activation would mark invalid, not only what the backup says.
+    const merged = mergeImport(current, document);
     const preview = Object.freeze({
-      readOnly:
-        document.saturated ||
-        current.saturated ||
-        new Set([...document.tombstones, ...current.tombstones]).size > MAX_RECONCILIATION_RECORDS,
+      readOnly: merged.saturated,
       recordCount: document.records.length,
-      invalidatedCount: document.records.filter((r) => r.evidenceStatus === 'invalidated-after-reorg').length,
+      invalidatedCount: invalidCount(merged) - invalidCount(current),
       invoiceCount: document.invoices.length,
       receiptCount: document.receipts.length,
     });
@@ -638,61 +779,17 @@ export class ReconciliationVault {
       fail('Create a current import preview before activation.');
     const imported = await this.decrypt(staged.text);
     await this.change((document) => {
-      const tombstones = [...new Set([...document.tombstones, ...imported.tombstones])];
-      const saturated =
-        document.saturated || imported.saturated || tombstones.length > MAX_RECONCILIATION_RECORDS;
-      if (saturated && !preview.readOnly)
+      // Imported tombstones apply to existing records too; imports cannot reverse known invalidation.
+      const merged = mergeImport(document, imported);
+      if (merged.saturated && !preview.readOnly)
         throw new UserFacingError(
           'The reconciliation safety state changed. Preview this backup again before accepting a read-only vault.',
         );
-      const cutoffs = [document.invalidatedFrom, imported.invalidatedFrom]
-        .filter((n): n is string => n !== null)
-        .map(BigInt);
-      const cutoff = cutoffs.length === 0 ? null : cutoffs.reduce((a, b) => (a < b ? a : b));
-      const byId = new Map(document.records.map((r) => [r.id, r]));
-      for (const record of imported.records) {
-        if (byId.has(record.id)) continue;
-        byId.set(record.id, {
-          ...record,
-          provenance: 'imported-history',
-          evidenceStatus:
-            record.evidenceStatus === 'invalidated-after-reorg' ||
-            tombstones.includes(record.id) ||
-            (cutoff !== null && BigInt(record.blockNumber) >= cutoff)
-              ? 'invalidated-after-reorg'
-              : record.evidenceStatus,
-        });
-      }
-      // Imported tombstones apply to existing records too; imports cannot reverse known invalidation.
-      const records = [...byId.values()].map((r): VaultRecord =>
-        tombstones.includes(r.id) ||
-        ((saturated || r.provenance === 'imported-history') &&
-          cutoff !== null &&
-          BigInt(r.blockNumber) >= cutoff)
-          ? { ...r, evidenceStatus: 'invalidated-after-reorg' }
-          : r,
-      );
-      // Registrations and archived receipts merge by identity; a nonce reused by another digest keeps the local one.
-      const invoices = [...document.invoices];
-      for (const invoice of imported.invoices)
-        if (!invoices.some((i) => i.invoiceDigest === invoice.invoiceDigest || i.nonce === invoice.nonce))
-          invoices.push(invoice);
-      const receipts = [...document.receipts];
-      for (const entry of imported.receipts)
-        if (!receipts.some((r) => receiptId(r.receipt) === receiptId(entry.receipt))) receipts.push(entry);
-      if (invoices.length > MAX_REGISTERED_INVOICES || receipts.length > MAX_ARCHIVED_RECEIPTS)
+      if (merged.invoices.length > MAX_REGISTERED_INVOICES || merged.receipts.length > MAX_ARCHIVED_RECEIPTS)
         throw new UserFacingError(
           'This backup would exceed the invoice registration or receipt archive limit. Remove old entries first.',
         );
-      return {
-        version: 2,
-        records,
-        tombstones: tombstones.slice(0, MAX_RECONCILIATION_RECORDS),
-        invalidatedFrom: cutoff?.toString() ?? null,
-        saturated,
-        invoices,
-        receipts,
-      };
+      return merged;
     });
     this.previews.delete(preview);
   }
