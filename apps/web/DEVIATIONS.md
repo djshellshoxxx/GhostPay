@@ -50,12 +50,12 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     keystore downloaded in this tab, or the vault record they were unlocked from or saved to still saved in this browser (checked when
     the lock fires). Keys with no copy anywhere stay in memory under a visible "no backup" banner, because wiping them would lose every
     payment sent to their meta-address (audit L1-01); after a wipe a visible notice says what happened. Until the keys are backed up,
-    Create invoice and the meta-address text, QR and copy button on Seller keys need a backup or a typed waiver; the waiver never lets
-    the idle lock wipe them. "Unlock saved vault" over keys without a backup asks first. The ERC-6538 registry page does not apply
-    this gate yet. Keys unlocked from, saved to or found in the vault keep that record's passphrase as a step-up for sweeps,
-    keystore export and a new vault for the rest of the session, also if the saved record is deleted; deleting a vault that names
-    the loaded meta-address needs its passphrase, any other vault is deleted after its meta-address is shown (audit L1-02). Keys
-    that were never in a vault have no step-up passphrase.
+    Create invoice, the meta-address text, QR and copy button on Seller keys, the publish path of the ERC-6538 registry page and the
+    create form of the experimental policy view need a backup or a typed waiver; the waiver never lets the idle lock wipe them.
+    "Unlock saved vault" over keys without a backup asks first. Keys unlocked from, saved to or found in the vault keep that
+    record's passphrase as a step-up for sweeps, keystore export and a new vault for the rest of the session, also if the saved
+    record is deleted; deleting a vault that names the loaded meta-address needs its passphrase, any other vault is deleted after
+    its meta-address is shown (audit L1-02). Keys that were never in a vault have no step-up passphrase.
 12. **Gas buffer sizing** (Feature 1, spec 13): `calculateBuffer` over `max(100 000, eth_estimateGas of the token transfer + 25 %)`
     (fails closed when the simulation fails), `2 x eth_gasPrice` as max fee, `DEFAULT_BUFFER_SAFETY_BPS` (20 %), a hard cap of 0.01
     native coin, and a 60 s quote lifetime, re-checked before the wallet is asked. It needs the user's RPC. Buffer payments go through
