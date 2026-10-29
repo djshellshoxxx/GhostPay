@@ -23,7 +23,10 @@ function downloadBytes(filename: string, bytes: Uint8Array<ArrayBuffer>): void {
   setTimeout(() => { URL.revokeObjectURL(url); }, 1000);
 }
 
-/** Where IdbReconciliationVaultStore (lib/reconciliationVault.ts) keeps scan history: one record per `${sellerKeyId}:${chainId}`. */
+/**
+ * Where IdbReconciliationVaultStore (lib/reconciliationVault.ts) keeps scan history: one record per `${sellerKeyId}:${chainId}`.
+ * TagArchive.history.test.ts writes through that store and fails if these drift apart.
+ */
 const HISTORY_DB = 'ghostpay-reconciliation-encrypted';
 const HISTORY_STORE = 'vaults';
 
