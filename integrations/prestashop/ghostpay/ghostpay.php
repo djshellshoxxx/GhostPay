@@ -125,7 +125,27 @@ class Ghostpay extends PaymentModule {
 
 	/** @internal Used by the validation controller: link an invoice to its order. @return bool false if not stored */
 	public function recordInvoice( string $invoice_id, int $order_id ): bool {
-		return (bool) Db::getInstance()->insert( 'ghostpay_invoice', array( 'invoice_id' => pSQL( $invoice_id ), 'id_order' => $order_id ) );
+		try {
+			return (bool) Db::getInstance()->insert( 'ghostpay_invoice', array( 'invoice_id' => pSQL( $invoice_id ), 'id_order' => $order_id ) );
+		} catch ( Exception $e ) {
+			if ( self::isDuplicateKey( $e ) ) {
+				return false; // the invoice id is already linked to an order: never relink it
+			}
+			throw $e;
+		}
+	}
+
+	/**
+	 * @internal True for a duplicate key (SQLSTATE 23000). On PHP 8 PDO throws it; PrestaShop 8's DbPDO rethrows it as a
+	 * PrestaShopException with the PDOException as previous. Any other database error is not a duplicate.
+	 */
+	public static function isDuplicateKey( Throwable $e ): bool {
+		for ( $cause = $e; null !== $cause; $cause = $cause->getPrevious() ) {
+			if ( $cause instanceof PDOException && '23000' === (string) $cause->getCode() ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/** Return the exact DECIMAL persisted by PrestaShop, never a float round-trip. */

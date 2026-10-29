@@ -4,14 +4,17 @@
  *
  * Db runs the module's real SQL on a SQLite file (env GHOSTPAY_TEST_DB) shared with tests/request.php, which runs one
  * controller request per process because the controllers exit(). Only the MySQL spellings the module uses are mapped
- * to SQLite; every SQL error throws, as PHP 8's PDO does by default, so drift between the install DDL and the
- * controller queries fails the tests. Orders, currencies, order history, messages and configuration are plain tables
- * created by ghostpay_test_platform_schema(); OrderHistory::changeIdOrderState() returns nothing, like PrestaShop's.
+ * to SQLite; every SQL error throws what PrestaShop 8's DbPDO::_query() throws on PHP 8 (a PrestaShopException with the
+ * PDOException as previous), so drift between the install DDL and the controller queries fails the tests. Orders,
+ * currencies, order history, messages and configuration are plain tables created by ghostpay_test_platform_schema();
+ * OrderHistory::changeIdOrderState() returns nothing, like PrestaShop's.
  */
 
 define( '_PS_VERSION_', '8.1.0' );
 define( '_DB_PREFIX_', 'ps_' );
 define( '_MYSQL_ENGINE_', 'InnoDB' );
+
+class PrestaShopException extends Exception {}
 
 class Db {
 	const INSERT = 1;
@@ -50,6 +53,15 @@ class Db {
 		return preg_replace_callback( '/CHECK \((`\w+`) IN \(([^)]*)\)\)/', static fn( array $m ): string => 'CHECK (' . $m[1] . ' IN (' . str_replace( '"', "'", $m[2] ) . '))', $sql );
 	}
 
+	/** Like PrestaShop 8's DbPDO::_query(): a PDO error is rethrown as PrestaShopException, the PDOException as previous. */
+	private function query( string $sql ): PDOStatement {
+		try {
+			return $this->pdo->query( $sql );
+		} catch ( PDOException $exception ) {
+			throw new PrestaShopException( $exception->getMessage(), (int) $exception->getCode(), $exception );
+		}
+	}
+
 	public function execute( $sql, $use_cache = true ) {
 		$sql = self::sqlite( (string) $sql );
 		if ( preg_match( '/\A\s*(COMMIT|ROLLBACK)\s*\z/i', $sql ) ) {
@@ -58,14 +70,14 @@ class Db {
 			}
 			$this->in_transaction = false;
 		}
-		$this->pdo->exec( $sql );
+		$this->query( $sql );
 		$this->in_transaction = $this->in_transaction || 'BEGIN' === $sql;
 		return true;
 	}
 
 	/** Like PrestaShop: LIMIT 1, string values (as MySQL returns them), false when there is no row. */
 	public function getRow( $sql, $use_cache = true ) {
-		$row = $this->pdo->query( self::sqlite( rtrim( (string) $sql, " \t\n\r\0\x0B;" ) . ' LIMIT 1' ) )->fetch();
+		$row = $this->query( self::sqlite( rtrim( (string) $sql, " \t\n\r\0\x0B;" ) . ' LIMIT 1' ) )->fetch();
 		return false === $row ? false : array_map( static fn( $v ) => null === $v ? null : (string) $v, $row );
 	}
 
@@ -77,7 +89,7 @@ class Db {
 	/** Like PrestaShop: every value is quoted as-is (callers pSQL() it). */
 	public function insert( $table, $data, $null_values = false, $use_cache = true, $type = self::INSERT, $add_prefix = true ) {
 		$table = ( $add_prefix ? _DB_PREFIX_ : '' ) . $table;
-		$this->pdo->exec( 'INSERT INTO `' . $table . '` (`' . implode( '`,`', array_keys( $data ) ) . "`) VALUES ('" . implode( "','", array_values( $data ) ) . "')" );
+		$this->query( 'INSERT INTO `' . $table . '` (`' . implode( '`,`', array_keys( $data ) ) . "`) VALUES ('" . implode( "','", array_values( $data ) ) . "')" );
 		return true;
 	}
 }

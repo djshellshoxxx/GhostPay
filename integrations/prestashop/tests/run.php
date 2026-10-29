@@ -209,8 +209,39 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	check( 'order total in minor units: KWD needing a third decimal is refused', $module->orderTotalMinor( 13, 'KWD' ), null );
 	check( 'order total in minor units: unknown order', $module->orderTotalMinor( 999, 'USD' ), null );
 
+	// H-R6: PHP 8 PDO throws on a duplicate key (PrestaShop 8 rethrows it as PrestaShopException). recordInvoice() must
+	// return false as documented, so the validation controller cancels the new order instead of answering 500 and
+	// leaving it awaiting payment; the invoice stays linked to its first order.
+	$record = static function ( string $invoice_id, int $order_id ) use ( $module ) {
+		try {
+			return $module->recordInvoice( $invoice_id, $order_id );
+		} catch ( Throwable $e ) {
+			return get_class( $e ) . ': ' . $e->getMessage();
+		}
+	};
+	check( 'duplicate invoice id: recordInvoice() returns false', $record( 'inv_ps_1', 99 ), false );
+	check( 'duplicate invoice id: the invoice stays linked to its first order', $db->getValue( "SELECT `id_order` FROM `ps_ghostpay_invoice` WHERE `invoice_id` = 'inv_ps_1'" ), '1' );
+	$pdo_error = static function ( string $sql ): PDOException {
+		$pdo = new PDO( 'sqlite::memory:' );
+		$pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
+		$pdo->exec( "CREATE TABLE t (k TEXT PRIMARY KEY); INSERT INTO t VALUES ('a')" );
+		try {
+			$pdo->exec( $sql );
+		} catch ( PDOException $e ) {
+			return $e;
+		}
+		throw new LogicException( 'no PDO error' );
+	};
+	$duplicate_key = $pdo_error( "INSERT INTO t VALUES ('a')" );
+	$no_such_table = $pdo_error( 'SELECT * FROM missing' );
+	check( 'isDuplicateKey: PDOException with SQLSTATE 23000', Ghostpay::isDuplicateKey( $duplicate_key ), true );
+	check( 'isDuplicateKey: wrapped in a PrestaShopException', Ghostpay::isDuplicateKey( new PrestaShopException( $duplicate_key->getMessage(), 23000, $duplicate_key ) ), true );
+	check( 'isDuplicateKey: any other SQL error', Ghostpay::isDuplicateKey( new PrestaShopException( $no_such_table->getMessage(), 0, $no_such_table ) ), false );
+	check( 'isDuplicateKey: a non-PDO exception with code 23000', Ghostpay::isDuplicateKey( new RuntimeException( 'x', 23000 ) ), false );
+
 	check( 'uninstall drops the module tables', $module->uninstall(), true );
 	check( 'no module table left', $db->getValue( "SELECT COUNT(*) FROM sqlite_master WHERE `name` LIKE 'ps_ghostpay%'" ), '0' );
+	check( 'any other database error in recordInvoice() still throws', 0 === strpos( (string) $record( 'inv_ps_x', 98 ), 'PrestaShopException: ' ), true );
 }
 
 if ( $failed > 0 ) {
