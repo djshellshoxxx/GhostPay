@@ -1,5 +1,7 @@
 # GhostPay restart — lean core
 
+> **2026-10-29:** start with [HANDOFF_FOR_NEXT_AGENT_2026-10-29](HANDOFF_FOR_NEXT_AGENT_2026-10-29.md). It covers the state of PR #37, the audit 24 fix status, the recovered-source branches now on GitHub, the build and test tools, and the open work by priority.
+
 > **2026-10-28:** the consolidated integration (PR #30 + PR #36 + sweep lock fixes) is draft PR #37. Its source map, missing-source record and evidence are in [CONSOLIDATION_2026-10-28](CONSOLIDATION_2026-10-28.md). The AI-assisted security audit of the completed modules is [audit 24](../audits/24-ai-assisted-security-audit-2026-10-28.md); its fix status and resume steps are in the same handoff.
 
 **2026-10-24 UTC.** Start here before the historical [next-agent prompt](NEXT_AGENT_PROMPT.md). This handoff does not grant implementation, push, merge, release or deployment authority; follow the active owner task and supported access.

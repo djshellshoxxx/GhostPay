@@ -38,6 +38,7 @@
    - L8-02 and L8-03 dropped to Info because nothing ships them.
 4. **Fixes.** For each area, one AI agent wrote a test that fails on the code before the change, then the smallest fix.
    - A separate AI reviewer agent checked each fix. It re-ran the new tests against the base to confirm they fail there, and it ran the area's checks.
+   - When a reviewer approved a fix but raised issues, a follow-up round (A-R, B-R, ... items) fixed them and was reviewed again.
    - Fixes are merged only after the combined test suites pass.
    - Both the implementer and the reviewer are AI agents. Neither is a human reviewer.
 
@@ -45,43 +46,74 @@
 
 83 confirmed findings: 2 High, 12 Medium, 44 Low, 25 Info. 55 are new. 24 were already recorded as open in earlier audits and 4 were already accepted by design.
 
-| Severity | Total | Fixed | In progress | Planned | Deferred | Accepted |
-|---|---:|---:|---:|---:|---:|---:|
-| High | 2 | 0 | 2 | 0 | 0 | 0 |
-| Medium | 12 | 5 | 6 | 1 | 0 | 0 |
-| Low | 44 | 14 | 18 | 7 | 5 | 0 |
-| Info | 25 | 2 | 5 | 4 | 10 | 4 |
-| **All** | **83** | **21** | **31** | **12** | **15** | **4** |
+| Severity | Total | Fixed | Deferred | Accepted |
+|---|---:|---:|---:|---:|
+| High | 2 | 2 | 0 | 0 |
+| Medium | 12 | 12 | 0 | 0 |
+| Low | 44 | 39 | 5 | 0 |
+| Info | 25 | 10 | 11 | 4 |
+| **All** | **83** | **63** | **16** | **4** |
 
 Status meanings:
 - **Fixed:** the fix is in this branch with a test that fails before it, and an AI review approved it.
-- **In progress:** an implementer agent started the fix on a local branch, but the session's usage limit stopped it before review. That work is not in this branch.
-- **Planned:** the fix is designed and assigned, but not started.
 - **Deferred:** left open on purpose, for the stated reason.
 - **Accepted:** already accepted by design or by the owner in earlier work.
 
-### Most important open findings
+### The most important findings
 
-- **L1-01 (High), seller keys:** the idle lock can destroy the only copy of keys that were never backed up. Payments to invoices still in circulation then become unspendable. Until it is fixed, users must save a keystore or vault before sharing an invoice.
-- **L4-01 (High), scanning:** a cheap burst of ERC-5564 announcements in one block stops every EVM scan whose checkpoint is behind it. No funds are lost, but payments go undetected for all users.
-- **L2-F2 (Medium):** native-ETH direct sweeps fail on OP-stack chains, including the beta chain, because the L1 data fee is not reserved. The coins are stuck, not lost, and each failed try jams the sweep lock in that tab.
-- **L1-02 (Medium):** the per-sweep vault passphrase can be bypassed from an unlocked tab by deleting the vault or exporting a keystore.
-- **L3-F1 and L3-F2 (Medium):** with one RPC, a missing or changed checkpoint block permanently tombstones the seller's reconciliation ledger. With two RPCs, spam or head lag stalls scanning.
-- **G2-01 (Medium):** the BTC view preselects every output, so a default sweep links unrelated payments. Audit 17's closed PRIVACY-E2E-03 row was wrong.
-- **G3-01 and G3-02 (Medium):** these affect the merchant plugins, which are not packaged.
-  - G3-01: webhook secrets are stored as readable gateway settings.
-  - G3-02: amounts are scaled by the store's display decimals instead of ISO-4217 exponents.
+All High and Medium findings are fixed in this branch. The most important were:
+- **L1-01 (High), seller keys:** the idle lock could destroy the only copy of keys that were never backed up. Now each session records its custody (import, keystore download, vault save or waiver). The idle lock wipes keys only when a copy survives, otherwise it keeps them under a visible no-backup banner, and creating an invoice or publishing the meta-address waits for a backup.
+- **L4-01 (High), scanning:** a burst of ERC-5564 announcements in one block stopped every EVM scan behind it. Now read and log limits end a fetch at the last complete window, an oversized block is re-read for the manifest router only, and the scan reports the narrowed block instead of stopping.
+- **L2-F2 (Medium):** native direct sweeps failed on OP-stack chains because the L1 data fee was not reserved. The sweep now keeps back twice the oracle's L1 fee plus operator fee, and refuses clearly when the balance cannot cover it.
+- **L1-02 (Medium):** the per-sweep vault passphrase could be bypassed from an unlocked tab. The vault record is now bound to the session, and keystore export, a new vault save and deleting the loaded identity's vault all need its passphrase.
+- **L3-F1 and L3-F2 (Medium):** a missing checkpoint block could tombstone the reconciliation ledger, and spam or head lag stalled two-RPC scans. A null block is now an RPC failure, reorg invalidation compares canonical hashes from both RPCs, and pages end at the lower of the two heads.
+- **G2-01 (Medium):** the BTC view preselected every output. A scan now selects none, and selecting more than one shows a linkage warning.
+- **G3-01 and G3-02 (Medium), merchant plugins (not packaged):** webhook secrets now come only from constants or the environment, and amounts use the app's currency exponent table.
 
 ## Fixed in this branch
 
 | ID | Severity | Area | Finding | Commits |
 |---|---|---|---|---|
+| [L1-01](#l1-01) | High | Keys/session | Idle lock wipes never-backed-up keys; payments to them become unrecoverable | `e765934`, `953fcea` |
+| [L4-01](#l4-01) | High | Scanner/ledger | Announcement spam in one block stops every scan behind it | `8c6dadb`, `fe9a267`, `c6127dd`, `8969cf2`, `d0f8d38` |
+| [G2-01](#g2-01) | Medium | Chain views | BTC view preselects every output; no linkage warning | `447a5bd` |
+| [G3-01](#g3-01) | Medium | Merchant plugins | WooCommerce secrets stored as readable gateway settings | `7df1cd1`, `c92b61b` |
+| [G3-02](#g3-02) | Medium | Merchant plugins | Plugins scale amounts by display decimals, not ISO-4217 exponents | `eddb39a`, `e4e79f3` |
+| [L1-02](#l1-02) | Medium | Keys/session | Sweep passphrase gate bypassed by deleting the vault or exporting a keystore without step-up | `e765934`, `953fcea`, `72e6d1a`, `7389dea` |
+| [L2-F2](#l2-f2) | Medium | Pay/sweep | Native direct sweep on L2s with an L1 data fee; failure jams the lock | `8d4532e` |
+| [L3-F1](#l3-f1) | Medium | Scanner/ledger | A different or missing anchor hash from one RPC tombstones the ledger and rescans from 0 | `8c6dadb`, `63b48da` |
+| [L3-F2](#l3-f2) | Medium | Scanner/ledger | Second-RPC comparison stalls on log spam or head lag | `8c6dadb`, `c6127dd`, `8969cf2`, `d0f8d38` |
 | [L5-01](#l5-01) | Medium | Relayer | Permit lapsing before inclusion produces a relayer-paid revert | `6399a56` |
 | [L5-02](#l5-02) | Medium | Relayer | Shared global loss cap lets reverts deny every sweep; trips at half the cap | `a6bd2da` |
 | [L5-03](#l5-03) | Medium | Relayer | Global quote bucket exhaustible from a few addresses | `2ded69e` |
 | [L5-05](#l5-05) | Medium | Relayer | deploy/ compose puts every client in one rate-limit bucket | `b9f1e5d` |
 | [L7-M3](#l7-m3) | Medium | Hosting | Archive path ignores --expect-sha256 | `259934c` |
+| [G1-01](#g1-01) | Low | Pay/sweep | Huge expiry or quote timestamps blank the app (no error boundary) | `c8ee18c`, `9a00a7a` |
+| [G2-02](#g2-02) | Low | Chain views | App idle lock does not lock BTC/Solana/TRON views | `e0861bc`, `9a00a7a` |
+| [G2-03](#g2-03) | Low | Chain views | Chain-view secrets shown and copied without a reveal step | `1acb7d6` |
+| [G2-04](#g2-04) | Low | Chain views | BTC view never zeroizes keys or tweaks | `d199f0f` |
+| [G2-05](#g2-05) | Low | Keys/session | Controlled secret inputs mirror values into the DOM attribute | `0f74acd` |
+| [G2-06](#g2-06) | Low | Keys/session | Passphrase fields invite browser password saving | `32c5882`, `18b6beb` |
+| [G3-03](#g3-03) | Low | Merchant plugins | PrestaShop webhook selects a dropped column; every event fails | `70cd56f` |
+| [G3-04](#g3-04) | Low | Merchant plugins | WooCommerce event claim is not atomic | `4021887` |
+| [G3-05](#g3-05) | Low | Merchant plugins | WooCommerce transitions ignore order state and superseded invoices | `fc5acc2`, `e4e79f3` |
+| [G3-06](#g3-06) | Low | Merchant plugins | Example receiver acknowledges in-flight duplicates | `cc2714f`, `e4e79f3` |
+| [L1-03](#l1-03) | Low | Scanner/ledger | One-RPC checkpoint mismatch tombstones the whole reconciliation ledger (root shared with L3-F1) | `63b48da` |
+| [L1-04](#l1-04) | Low | Keys/session | "Wipe keys" leaves the tag vault unlocked for the next identity in the tab | `a2ba169`, `f6a9659` |
 | [L1-05](#l1-05) | Low | Pay/sweep | Sweep status check could overwrite a newer lock (no compare-and-swap) | `e8cdb31` |
+| [L1-06](#l1-06) | Low | Keys/session | Passphrase strength check accepts guessable phrases | `9799f9e`, `5fb88f1`, `7389dea` |
+| [L1-07](#l1-07) | Low | Keys/session | requireSession hands all plaintext scalars to callers that need one | `6986d66`, `f6a9659` |
+| [L2-F1](#l2-f1) | Low | Pay/sweep | Pre-send dry run cannot refuse a revert (node error detail dropped) | `d809dfd` |
+| [L2-F3](#l2-f3) | Low | Pay/sweep | Wallet-altered transaction check skipped when the RPC is slow | `cf5e57c` |
+| [L2-F4](#l2-f4) | Low | Pay/sweep | Seller-chosen fiat total not checked against a fixed token amount | `5f4f646` |
+| [L3-F3](#l3-f3) | Low | Scanner/ledger | Worker batch timeout on slower devices for large pages | `c6127dd` |
+| [L3-F4](#l3-f4) | Low | Scanner/ledger | Non-default open-log budget defers a page on every run | `c6127dd`, `d0f8d38` |
+| [L3-F5](#l3-f5) | Low | Scanner/ledger | Second-RPC disclosure understates what that RPC learns | `c6127dd`, `d0f8d38` |
+| [L3-F6](#l3-f6) | Low | Scanner/ledger | Indexer/Esplora/Solana/TRON bodies read without a streaming size cap | `cad187d` |
+| [L4-02](#l4-02) | Low | Pay/sweep | Deep-scan payment with a wrong view tag offers a Sweep that throws | `0eec2f7` |
+| [L4-03](#l4-03) | Low | Chain views | Esplora client aborts on blocks whose tx count is a multiple of 25 | `7dbc34b` |
+| [L4-04](#l4-04) | Low | Chain views | BTC verification text claims genesis anchoring that is not done | `49a3a44`, `1c1f5d0` |
+| [L4-05](#l4-05) | Low | Chain views | Non-EVM responses read without a streaming size limit | `cad187d`, `9470177` |
 | [L5-04](#l5-04) | Low | Relayer | Spend groups never evicted; newcomers share one overflow group | `a6bd2da`, `49c123c`, `52a294a` |
 | [L5-06](#l5-06) | Low | Relayer | Receipt timeout holds budgets and lane; breaker and health miss stuck txs | `ef3700d` |
 | [L5-07](#l5-07) | Low | Relayer | Stale trustProxyHops key in docs crash-loops the relayer | `5894f64` |
@@ -95,7 +127,15 @@ Status meanings:
 | [L7-M2](#l7-m2) | Low | Hosting | selfhost.sh never compares --commit | `111b19e` |
 | [L7-M4](#l7-m4) | Low | CI | Pages workflow restores library dist from cache | `80ac097` |
 | [L8-04](#l8-04) | Low | Packages (preserved) | PIR client would ship if createScanSource were imported | `378ec6b` |
+| [F5](#f5) | Info | Packages (preserved) | verifyReceipt marks any final router claim verified | `eaeacc5`, `ace3c65` |
+| [G1-03](#g1-03) | Info | Packages (preserved) | Payment-link host check accepts hex/short IPv4 forms | `fe9f120` |
+| [I-1](#i-1) | Info | Keys/session | Storage keys derived from public keys survive "wipe keys" (device-seller linkability) | `4d58712` |
+| [I-2](#i-2) | Info | Keys/session | Archive export silently omits chains disabled in the build | `6fc1b1b`, `2c13938` |
+| [I-3](#i-3) | Info | Keys/session | Optional tag fields not type-checked | `20b824d`, `f690464` |
+| [L2-I2](#l2-i2) | Info | Pay/sweep | Huge timestamps blank the app (same as G1-01) | `c8ee18c`, `9a00a7a` |
+| [L2-I3](#l2-i3) | Info | Pay/sweep | Wallet rejection leaves an 'unknown' payment-journal entry | `28de7d7` |
 | [L3-F7](#l3-f7) | Info | Embed | Embed profile adds no gate beyond frame-ancestors | `c4e3aea` |
+| [L4-I3](#l4-i3) | Info | Core crypto | SecretBytes does not block toHex/toBase64; registry accepts bad-checksum addresses | `f59b51e` |
 | [L7-I1](#l7-i1) | Info | Hosting | infra/proxy camera policy drift | `c4e3aea` |
 
 Notes on these fixes:
@@ -104,83 +144,57 @@ Notes on these fixes:
 - **L5-06:** replace-by-fee and cancel for a stuck relayed transaction are deferred.
 - **Not run against real servers:** no Docker daemon was available, so the nginx and Compose changes were not run end to end. The relayer review ran the new `/api/` route allowlist and real-IP handling against a real nginx 1.24 on a scratch copy.
 
-### Follow-ups from the fix reviews
+### Open follow-ups from the fix reviews
 
-The reviews approved both fix sets and raised minor and nit issues.
+Each fix cluster went through rounds of implementation and adversarial AI review until the reviewer approved. The last review of each cluster approved the fixes and raised the issues below. They are open. None is a confirmed audit finding, and none blocks the beta on test networks. 3 are minor and 26 are nits. The full text, with suggested fixes, is in `docs/audits/data/24/status.json` (`_clusters.<round>.review_issues`).
 
-**Hosting:**
-- **E-R1:** directory input exported from the private copy could write `--out` inside the input. A regression from 259934c, fixed in `a2b8e73`.
-- **E-R2:** `gh attestation verify` is now bound to `--commit` and GitHub-hosted runners (`583bfeb`).
-- **E-R3:** the bound attestation command is now shown in the docs (`7d0f9c1`).
-- **E-R4:** the re-run hint keeps `--env-file` (`583bfeb`).
-- **E-R7:** the new infra dotfile rule no longer blocks `/.well-known/` (`f6a20af`).
-- **Still open (nits):** E-R5 (`verify-release.sh` message order), E-R6 (fewer GitHub API calls in the CI change filter) and E-R8 (the ESLint rule does not catch a dynamic `import()`; the bundle marker scan still does).
-
-**Relayer:**
-- **D-R7:** the deploy README now points at the recipe's relayer config (`1d314e4`).
-- **D-R1 (minor):** a receipt timeout records a breaker failure, but the success recorded at broadcast offsets it. Timeouts alone therefore open the breaker only when `failureRatio` <= 0.5. The fix is to decide the breaker outcome at the receipt.
-- **D-R2 (minor; this gap predates the work):** the sweep deadline is not re-checked in the lane after queueing.
-- **D-R3 to D-R6 (nits):** a tighter `trustedProxies` warning, README wording, prettier formatting and a scoped config test.
-- All of the above are open.
-- E-R1, E-R2, E-R4, E-R7 and D-R7 were fixed by the integrating agent and checked with the suites listed below. They were not independently reviewed.
+| Cluster | Round | Severity | Where | Problem |
+|---|---|---|---|---|
+| A (scanning) | AR2 | minor | `packages/chain-adapters/src/logs.ts:365 (A-R7 'to - next + 1n <= served')` | `served` spans the whole fetch, so in a result-limited dense stretch after a sparse one (Infura -32005, Alchemy -32602) each regrown window is refused again (1 refused per 2 served). |
+| A (scanning) | AR2 | nit | `packages/chain-adapters/src/scanVerify.test.ts (A-R6 describe block)` | Mutation 'accept the router-lane logs before the second whole-block read' passes all 15 tests: block 7 has no router-caller log that fails validation, so skipped logs double-counted on the success path would go unnoticed. |
+| A (scanning) | AR2 | nit | `packages/chain-adapters/src/logs.ts:136 (mayBeRateLimit)` | New public export (index.ts `export *`) with no direct unit asserts, unlike isLogSizeError/isLogLimitError in logs.test.ts (-320050, non-ChainAdapterError, other codes). |
+| A (scanning) | AR2 | nit | `packages/chain-adapters/src/scanVerify.ts:125-137` | compareProviders has no request budget. |
+| A (scanning) | AR2 | nit | `apps/web/src/views/Scan.tsx:338 (outside cluster ownership)` | The narrowed-block warning says 'likely announcement spam', while the updated user doc says a residual -32005 rate limit can narrow a block that holds no spam. |
+| B (sweep guards) | BR | nit | `apps/web/src/views/Sweep.tsx:290-291; apps/web/src/lib/sweep.ts:465` | When the final look is inconclusive (a receipt read failed or was malformed), the lock comes back unchanged and the UI shows sweep.note.pendingDirect: 'No receipt found for this hash yet'. |
+| B (sweep guards) | BR | nit | `apps/web/src/views/Sweep.tsx:59,412-419; apps/web/src/state.tsx:107-110` | Once a lock records MAX_OTHER_HASHES (3) other hashes, the hint, the button and the unknownDirect copy still offer a same-nonce replacement. |
+| B (sweep guards) | BR | nit | `apps/web/src/views/Sweep.tsx:59; apps/web/src/state.tsx:149-151 (B-R5 trade-off)` | A 'submitted' tx that the node later drops (evicted or never propagated) never uses its nonce. |
+| B (sweep guards) | BR | nit | `docs/developer/api/chain-adapters.md:56-65; packages/chain-adapters/src/config/chains.ts:25-31` | The new opStack paragraph names OP Sepolia. |
+| B2 (pay) | B2R | nit | `apps/web/src/features/policy/send.ts:31-37 (sendPolicyPayment)` | Same root cause as B2-R2 remains in the experimental policy flow: after the approval it checks receipt and allowance readback but ignores res.verification, so an unverified, larger swapped approve still continues to the payment. |
+| B2 (pay) | B2R | nit | `docs/developer/api/chain-adapters.md:29-31` | The documented `reverted` contract still says code 3 or -32000/-32015 with a revert, out-of-gas or invalid-opcode text; |
+| B2 (pay) | B2R | nit | `docs/developer/api/README.md:29-30` | Repo-wide address rule says chain-adapters accepts all-lowercase or valid EIP-55 mixed case; |
+| B2 (pay) | B2R | nit | `apps/web/src/lib/sweep.ts:520-529 (readOperatorFee)` | readOperatorFee treats any `reverted` as 'no getOperatorFee'. |
+| C (seller keys) | CR2 | minor | `docs/user/troubleshooting.md:23-24; docs/guides/troubleshooting-by-symptom.md:50-51; apps/web/README.md:21 (o…` | User docs now contradict C-R10: they list hex imported without its signing key among keys the idle lock keeps and say its meta-address needs the waiver; |
+| C (seller keys) | CR2 | nit | `apps/web/src/features/registry/RegistryView.tsx:247; apps/web/src/features/policy/PolicyCreate.tsx:102 (outsi…` | Both keep BackupGate's default, so after a signer-less hex import they stay gated and show copy about invoice signing, though neither uses the signing key: over-gated and slightly confusing, not unsafe. |
+| C (seller keys) | CR2 | nit | `apps/web/src/views/SellerKeys.tsx:377,503; en.json sellerKeys.wipeUnsaved.confirm / unlockReplaces.confirm` | In the signerOnly state the confirm buttons still say 'Replace the unsaved keys' / 'Wipe the unsaved keys', while the new titles say only the signing key lacks a backup. |
+| D (relayer) | D3 | minor | `apps/relayer/src/service.ts runSettled (order-state read, permit ladder and first simulation all run before t…` | Pre-existing (implementer's open question 1). |
+| D (relayer) | D3 | nit | `deploy/selfhost.sh:213-216 (subnet_of check)` | Only one entry on its own can 'cover' the subnet. |
+| D (relayer) | D3 | nit | `docs/operators/relayer-runbook.md:95 (half_open row)` | The row now says one probe can hold half_open for up to 180 s by default. |
+| D (relayer) | D3 | nit | `deploy/selfhost.sh:188-189 (lines.index of 'networks:' and ' backend:')` | Header lines still need an exact match. |
+| D (relayer) | D3 | nit | `deploy/selfhost.sh:214 (backend.subnet_of)` | ipaddress subnet_of needs Python 3.7 or later. |
+| E (hosting) | E | nit | `scripts/verify-release.sh:48,58` | A missing manifest is caught only after steps 1-2 have printed PASS lines (then exit 2). |
+| E (hosting) | E | nit | `.github/workflows/ci.yml:41-45 (changes filter)` | The filter pages through pulls/$PR/files twice (names, then lengths) at the default 30 per page. |
+| E (hosting) | E | nit | `eslint.config.js:51-71` | no-restricted-imports does not catch dynamic import('@ghostpay/scan-source') (checked with eslint --stdin). |
+| G (non-EVM chains) | GR | nit | `apps/web/src/components/SecretBackup.tsx:22-28 (retryAtActivation)` | A refused clear is retried only on click or keydown. |
+| G (non-EVM chains) | GR | nit | `apps/web/src/components/SecretBackup.tsx:10` | The comment says 'Only a clear that worked unmarks it', but the path with no clipboard API (writeText throws synchronously, then settle(true)) also unmarks the copy. |
+| H (merchant plugins) | H3 | nit | `integrations/prestashop/ghostpay/ghostpay.php:121-122 (hookPaymentOptions) vs controllers/front/validation.ph…` | The hook copies the validation controller's checks (active, service URL, pay host, service secret) instead of sharing them. |
+| H (merchant plugins) | H3 | nit | `docs/remote/usability/specs/fiat-display.md:14,45 (outside this cluster's ownership)` | This spec still asks formatFiat to use ISO 4217 exponents ("3-dec BHD/KWD"; |
+| H (merchant plugins) | H3 | nit | `docs/remote/usability/specs/accounting-export.md:5 (R2)` | The check that R2 matches the app table was a scratch script and was not committed (no test file in scope fits). |
 
 ## Not yet fixed
 
 | ID | Severity | Area | Finding | Status |
 |---|---|---|---|---|
-| [L1-01](#l1-01) | High | Keys/session | Idle lock wipes never-backed-up keys; payments to them become unrecoverable | In progress (cluster C) |
-| [L4-01](#l4-01) | High | Scanner/ledger | Announcement spam in one block stops every scan behind it | In progress (cluster A) |
-| [G2-01](#g2-01) | Medium | Chain views | BTC view preselects every output; no linkage warning | In progress (cluster G) |
-| [G3-01](#g3-01) | Medium | Merchant plugins | WooCommerce secrets stored as readable gateway settings | In progress (cluster H) |
-| [G3-02](#g3-02) | Medium | Merchant plugins | Plugins scale amounts by display decimals, not ISO-4217 exponents | In progress (cluster H) |
-| [L1-02](#l1-02) | Medium | Keys/session | Sweep passphrase gate bypassed by deleting the vault or exporting a keystore without step-up | In progress (cluster C) |
-| [L2-F2](#l2-f2) | Medium | Pay/sweep | Native direct sweep on L2s with an L1 data fee; failure jams the lock | Planned (cluster B) |
-| [L3-F1](#l3-f1) | Medium | Scanner/ledger | A different or missing anchor hash from one RPC tombstones the ledger and rescans from 0 | In progress (cluster A) |
-| [L3-F2](#l3-f2) | Medium | Scanner/ledger | Second-RPC comparison stalls on log spam or head lag | In progress (cluster A) |
 | [F1](#f1) | Low | Contracts (flagged) | Policy factory fee waiver needs a standing allowance; any approver deploys free | Deferred: Policy-scheme contracts are behind a flag that is off, and nothing is deployed. Fix before any deployment. |
 | [F2](#f2) | Low | Contracts (flagged) | payERC20WithBuffer strands native buffer with a non-zero limits root | Deferred: Only the flagged policy-scheme builder can produce it; remove or guard the buffer option before the flag is enabled. |
 | [F3](#f3) | Low | Contracts (flagged) | Docs describe the N-01 salt ABI that consolidation dropped | Deferred: Documentation drift for flagged contracts (PRIVACY-E2E-05 stays open). |
 | [F4](#f4) | Low | Contracts (flagged) | Policy factory/router code hash not pinned | Deferred: Defense in depth for flagged contracts; tracked in DEVIATIONS R6/R9. |
-| [G1-01](#g1-01) | Low | Pay/sweep | Huge expiry or quote timestamps blank the app (no error boundary) | Planned (cluster B2) |
 | [G1-02](#g1-02) | Low | Embed | Embed profile accepts any origin (later-preserved, not reachable as shipped) | Deferred: Embedding is later-preserved and off in the shipped build; the docs now state that frame-ancestors is the only gate (c4e3aea). Bind the profile to the invoice signer before enabling it. |
-| [G2-02](#g2-02) | Low | Chain views | App idle lock does not lock BTC/Solana/TRON views | In progress (cluster G) |
-| [G2-03](#g2-03) | Low | Chain views | Chain-view secrets shown and copied without a reveal step | In progress (cluster G) |
-| [G2-04](#g2-04) | Low | Chain views | BTC view never zeroizes keys or tweaks | In progress (cluster G) |
-| [G2-05](#g2-05) | Low | Keys/session | Controlled secret inputs mirror values into the DOM attribute | Planned (cluster C2) |
-| [G2-06](#g2-06) | Low | Keys/session | Passphrase fields invite browser password saving | Planned (cluster C2) |
-| [G3-03](#g3-03) | Low | Merchant plugins | PrestaShop webhook selects a dropped column; every event fails | In progress (cluster H) |
-| [G3-04](#g3-04) | Low | Merchant plugins | WooCommerce event claim is not atomic | In progress (cluster H) |
-| [G3-05](#g3-05) | Low | Merchant plugins | WooCommerce transitions ignore order state and superseded invoices | In progress (cluster H) |
-| [G3-06](#g3-06) | Low | Merchant plugins | Example receiver acknowledges in-flight duplicates | In progress (cluster H) |
-| [L1-03](#l1-03) | Low | Scanner/ledger | One-RPC checkpoint mismatch tombstones the whole reconciliation ledger (root shared with L3-F1) | In progress (cluster A) |
-| [L1-04](#l1-04) | Low | Keys/session | "Wipe keys" leaves the tag vault unlocked for the next identity in the tab | In progress (cluster C) |
-| [L1-06](#l1-06) | Low | Keys/session | Passphrase strength check accepts guessable phrases | In progress (cluster C) |
-| [L1-07](#l1-07) | Low | Keys/session | requireSession hands all plaintext scalars to callers that need one | In progress (cluster C) |
-| [L2-F1](#l2-f1) | Low | Pay/sweep | Pre-send dry run cannot refuse a revert (node error detail dropped) | Planned (cluster B) |
-| [L2-F3](#l2-f3) | Low | Pay/sweep | Wallet-altered transaction check skipped when the RPC is slow | Planned (cluster B2) |
-| [L2-F4](#l2-f4) | Low | Pay/sweep | Seller-chosen fiat total not checked against a fixed token amount | Planned (cluster B2) |
-| [L3-F3](#l3-f3) | Low | Scanner/ledger | Worker batch timeout on slower devices for large pages | In progress (cluster A) |
-| [L3-F4](#l3-f4) | Low | Scanner/ledger | Non-default open-log budget defers a page on every run | In progress (cluster A) |
-| [L3-F5](#l3-f5) | Low | Scanner/ledger | Second-RPC disclosure understates what that RPC learns | In progress (cluster A) |
-| [L3-F6](#l3-f6) | Low | Scanner/ledger | Indexer/Esplora/Solana/TRON bodies read without a streaming size cap | In progress (cluster G) |
-| [L4-02](#l4-02) | Low | Pay/sweep | Deep-scan payment with a wrong view tag offers a Sweep that throws | Planned (cluster B) |
-| [L4-03](#l4-03) | Low | Chain views | Esplora client aborts on blocks whose tx count is a multiple of 25 | In progress (cluster G) |
-| [L4-04](#l4-04) | Low | Chain views | BTC verification text claims genesis anchoring that is not done | In progress (cluster G) |
-| [L4-05](#l4-05) | Low | Chain views | Non-EVM responses read without a streaming size limit | In progress (cluster G) |
-| [F5](#f5) | Info | Packages (preserved) | verifyReceipt marks any final router claim verified | In progress (cluster A) |
 | [F6](#f6) | Info | Contracts | Local announcer build cannot reach the canonical CREATE2 address (by design) | Accepted by design |
-| [G1-03](#g1-03) | Info | Packages (preserved) | Payment-link host check accepts hex/short IPv4 forms | Planned (cluster B2) |
-| [I-1](#i-1) | Info | Keys/session | Storage keys derived from public keys survive "wipe keys" (device-seller linkability) | In progress (cluster C) |
-| [I-2](#i-2) | Info | Keys/session | Archive export silently omits chains disabled in the build | In progress (cluster C) |
-| [I-3](#i-3) | Info | Keys/session | Optional tag fields not type-checked | In progress (cluster C) |
 | [L2-I1](#l2-i1) | Info | Pay/sweep | Fiat quote slippage shown but not enforced | Deferred: Latent: the beta chain has no price feed and fiat quotes are later-preserved. Cap the price age and re-read the price before send before any feed is enabled. |
-| [L2-I2](#l2-i2) | Info | Pay/sweep | Huge timestamps blank the app (same as G1-01) | Planned (cluster B2) |
-| [L2-I3](#l2-i3) | Info | Pay/sweep | Wallet rejection leaves an 'unknown' payment-journal entry | Planned (cluster B2) |
 | [L2-I4](#l2-i4) | Info | Pay/sweep | Live manifest read-back ignores the secondary RPC | Deferred: Info: bundled manifests are release-signed, so a lying RPC can only confirm an already-wrong signed manifest. Wire the secondary RPC into the read-back later. |
 | [L3-F8](#l3-f8) | Info | Hosting | CSP/SRI postbuild helpers are dead code since consolidation | Deferred: Dead code. The underlying CSP/SRI build steps (S3-10/S3-11) stay open and are recorded in apps/web/DEVIATIONS.md. |
-| [L3-F9](#l3-f9) | Info | Keys/session | Scan slot keys linkable to the public meta-address (duplicate of I-1) | In progress (cluster C) |
+| [L3-F9](#l3-f9) | Info | Keys/session | Scan slot keys linkable to the public meta-address (duplicate of I-1) | Deferred: Info: needs access to the browser profile and reveals the device-seller link and scan progress, no keys or funds (PRIVACY-E2E-09, ADR-0025). Open: list the identifiers in the THREAT_MODEL browser-profile row and add a confirmed "forget this seller's local scan data" action. |
 | [L4-I1](#l4-i1) | Info | Chain adapters | Manifest digest has no domain prefix | Deferred: Release-format decision: add the domain prefix before the first real release signature (build validator, web loader, relayer config, ops monitor and the e2e fixture change together). |
-| [L4-I3](#l4-i3) | Info | Core crypto | SecretBytes does not block toHex/toBase64; registry accepts bad-checksum addresses | Planned (cluster B2) |
 | [L5-08](#l5-08) | Info | Relayer | Gas reserve default 0 (no beta-chain impact) | Deferred: Pricing default for the owner to tune; no effect on the beta chain. |
 | [L8-01](#l8-01) | Info | Packages (preserved) | Dev pool ceremony makes proofs forgeable (testnet only, accepted) | Accepted by design |
 | [L8-02](#l8-02) | Info | Packages (preserved) | Plugin hooks run in the host realm (not wired) | Deferred: Preserved package with no importer; must be sandboxed before any wiring. |
@@ -193,21 +207,13 @@ The reviews approved both fix sets and raised minor and nit issues.
 
 ## Verification of the fixes in this branch
 
-These checks ran in this container on the integration head: `6a3e85c` plus `e8cdb31`, both fix sets and the review follow-ups. The machine has 4 vCPUs and Node 22.22.0.
-- **Build, typecheck and lint:** `build:libs`, all-workspace typecheck and all-workspace lint pass.
-- **Relayer guard:** 153/153 pass. Coverage is 98.67% statements, 94.08% branches, 99.23% functions and 99.31% lines.
-- **Relayer:** 277 pass, 2 skipped (they need anvil). Coverage is 97.38%, 92.33%, 96.99% and 98.43% in the same order.
-- **Pool relayer:** 29 pass, 9 skipped. It is a consumer of the changed loss budget.
-- **Hosting kit:** 284 tests, 272 pass, 0 fail, 12 skipped. Kit lint and typecheck are clean.
-- **Scripts and headers:** `deploy/selftest.sh`, `infra/proxy/check-headers.sh`, `bash -n` on the changed scripts, the secret scan and the action-pin check all pass. The new `scripts/tests` pass 7/7.
-- **Testnet script test:** `scripts/testnet/verify-sources.test.mjs` needs Foundry's `cast`, which is not installed here. The script is unchanged and runs in CI.
-- **Web app:**
-  - The production build and its bundle scan pass.
-  - The suite with coverage ran 1343 tests: 1337 passed, 4 skipped and 2 failed. The coverage-off suite passes 1/1.
-  - The two failures are time-limited tests. Their code and everything they import are unchanged from the CI-green base `6a3e85c`:
-    - A reconciliation-ledger UI test fails in 2 of 3 coverage runs on the base sources, and passed in one of two runs on this head.
-    - The one-million-log scanner fuzz test needs 207 s against its 180 s limit in this container, even alone without coverage. It was not re-run on the base sources, since it runs identical code there.
-  - The pull request's GitHub CI run is the authority for these two tests and for the web coverage thresholds. Vitest prints no coverage summary when a test fails, so the thresholds could not be confirmed locally.
+**Where the checks ran:** in the agent container, on the integration of every fix cluster: A, B, B2, C, D, E, G and H, each with its review rounds, plus `9a00a7a` and `2fcab7f`. The machine has 4 vCPUs and Node 22.22.0.
+
+- **Build and static checks:** `build:libs`, the all-workspace typecheck and the all-workspace lint pass on that integration.
+- **Each fix cluster:** the reviewer ran the area's checks and re-ran the new tests against the base, where they fail. Where a reviewer ran the full web suite with coverage, coverage stayed above the thresholds (for example 91.82/87.22/93.57/95.72 after round CR2, against 90/85/90/90).
+- **Known slow tests:** two time-limited web tests, the 1M-log scanner fuzz and the ReconciliationLedger "saturated backup" test, fail under load in this container and pass in CI. Their code is unchanged by the fixes. See `scripts/dev/README.md`.
+- **Integration commits:** `9a00a7a` (idle lock and error boundary) and `2fcab7f` (unlock confirmation) add tests that fail before the change.
+- **The authority** for the full combined suites (every package, the web suite with coverage, scripts, PHP and kit) is the GitHub CI run on the PR head that contains this report.
 - **Failing before the fix:** every fixed finding has a test that fails on the code before the change. The fix commit messages name those tests, and the reviewer re-ran them against the base.
 
 ## Limits
@@ -241,7 +247,7 @@ These checks ran in this container on the integration head: `6a3e85c` plus `e8cd
 ### L1-01
 
 **Idle lock wipes never-backed-up keys; payments to them become unrecoverable**  
-High · new · Keys/session · Fix in progress (local, unreviewed, not in this branch) (cluster C)
+High · new · Keys/session · Fixed in this branch (`e765934`, `953fcea`)
 
 - **Finding:** Reproduced in the default UI: Generate keys -> Create invoice (no backup gate or prompt) -> 15 min without pointerdown/keydown (scroll, mousemove, focus, visibilitychange do not re-arm; a background tab idles) -> clearSession() destroys the only copy. Payments to the still-valid invoice (24 h default, up to 90 d) or the shared meta-address are unspendable forever. Needs a skipped backup (not Critical), but app copy says keys stay until wipe/close: plausible fund loss = High.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** App.tsx:109-118 idle timer calls clearSession() unconditionally, re-armed only by pointerdown/keydown (121-122); settings.ts:24,108 default 15, range 1-240 (cannot disable); CreateInvoice.tsx:51 gates only on a session; en.json:28 'Keys stay in memory until you wipe them or close the tab'; DEVIATIONS.md:47-48 says no wipe. verify/B1-C/l101.adjudicate.repro.test.tsx 2/2 pass: hasSession=false, vault empty, only DIV.sr-only note, new keys checkAnnouncement {matches:false}.
@@ -250,7 +256,7 @@ High · new · Keys/session · Fix in progress (local, unreviewed, not in this b
 ### L4-01
 
 **Announcement spam in one block stops every scan behind it**  
-High · known-open · Scanner/ledger · Fix in progress (local, unreviewed, not in this branch) (cluster A)
+High · known-open · Scanner/ledger · Fixed in this branch (`8c6dadb`, `fe9a267`, `c6127dd`, `8969cf2`, `d0f8d38`)
 
 - **Finding:** Real on default stack: permissionless canonical announcer, 2 MiB client cap; logs.ts rethrows RESPONSE_TOO_LARGE at a 1-block window and its read/log caps throw, not truncate; runScan rethrows. Every seller whose cursor precedes the block fails there each run (any RPC), also hiding earlier payments in that fetch. ~12M gas once, free on Base Sepolia, repeatable; only a blind manual restart past it recovers: cheap service-wide detection outage. Audit 05 CHAIN-ADAPTERS-01; audit 17 says Closed.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** B2-C/l401.repro.test.ts 12/12 (l401.out.txt), default stack (createClient fetch cap, planScan+openScanClients, runScan+InlineWorker): 2000 logs/1 block -> 'Blocked by a safety check (RESPONSE_TOO_LARGE).' 3 runs, checkpoint 49900, payments @79500/@120000 never shown (1800 ok); start 80001 works, skips @79990; 1100 one-log blocks -> read cap x2; 6x1700 -> log-cap throw. gas/run.cjs (EDR): 2000 announces=12.1M gas, getLogs 2.10MB. logs.ts:247-253,274,281; scanClient.ts:207,418
@@ -259,7 +265,7 @@ High · known-open · Scanner/ledger · Fix in progress (local, unreviewed, not 
 ### G2-01
 
 **BTC view preselects every output; no linkage warning**  
-Medium · new · Chain views · Fix in progress (local, unreviewed, not in this branch) (cluster G)
+Medium · new · Chain views · Fixed in this branch (`447a5bd`)
 
 - **Finding:** Reachable by default (nav 'Bitcoin (test)', no flag). runScan pre-checks every output and reviewSweep has no linkage warning, so clicking through with the defaults consolidates payments. Audit 17 marks PRIVACY-E2E-03 closed, but every BtcView.tsx revision in all refs keeps the preselect line, so the closure is false. Live harm is test-coin linkage in a later-preserved view. Medium stands: a documented privacy control is silently absent and would carry into mainnet qualification.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** BtcView.tsx:119 selects all found outputs; sweep.ts:46-49 warns only on fee and self-address; audit 17:28 claims 'initializes outputs unchecked'. G2-B g201FixNuance: 2 payments -> checkboxes [true,true], review lists 2 inputs, warnings []. With only the proposed one-line change (fixcopy/BtcViewFixed), 4/9 existing BtcView tests fail. That includes the QR/paste destination test, which gets 'Some input was missing or out of range.' because the importer validates via reviewSweep(wallet, selected=[]).
@@ -268,7 +274,7 @@ Medium · new · Chain views · Fix in progress (local, unreviewed, not in this 
 ### G3-01
 
 **WooCommerce secrets stored as readable gateway settings**  
-Medium · new · Merchant plugins · Fix in progress (local, unreviewed, not in this branch) (cluster H)
+Medium · new · Merchant plugins · Fixed in this branch (`7df1cd1`, `c92b61b`)
 
 - **Finding:** Confirmed against WooCommerce trunk: v2/v3 gateway REST returns raw settings values; GET needs only key permission 'read' plus an owner with manage_woocommerce. A read-only key, or any read-only SQLi/backup of wp_options, yields webhook_secret and lets anyone complete pending orders. Needs secrets typed into the form (README only prefers wp-config). Latent: manual-install plugin, not in the release tarball, out of lean scope, no manifest ships. PS half is README-known.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** (scratch) (real WC_Gateway_GhostPay): read-key GET payment_gateways/ghostpay -> settings.webhook_secret.value 'cdcd..'; invoice.paid signed with it -> HTTP 200, order 42 pending->processing via payment_complete. WC trunk v3 controller:92, v2:314 'value' unmasked; rest-auth:758-762; wc-rest-functions:348; settings-api:466. Plugin :82-93, :144.
@@ -277,7 +283,7 @@ Medium · new · Merchant plugins · Fix in progress (local, unreviewed, not in 
 ### G3-02
 
 **Plugins scale amounts by display decimals, not ISO-4217 exponents**  
-Medium · new · Merchant plugins · Fix in progress (local, unreviewed, not in this branch) (cluster H)
+Medium · new · Merchant plugins · Fixed in this branch (`eddb39a`, `e4e79f3`)
 
 - **Finding:** Mismatch confirmed with real to_minor, formatFiat and fiatToTokenAmount: plugin scales by WC display decimals (PS: CLDR precision); the app assumes 0 for 8 codes, else 2. Acceptance follows if the service maps amountMinor to fiat.minorUnits (README/example imply) and the event echoes it. Latent: no manifest ships, mainnets disabled, Base Sepolia has no feed so fiat_quote fails closed, plugins out of scope. Example README and fiat-display spec note the gap; the contract defect is new.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** (scratch) USD 49 (dec 0) -> 49 -> app 'USD 0.49', quote 0.000245 vs 0.0245 ETH; IDR/PYG 150000 (dec 0) -> '1500.00'; JPY 1000.00 (WC default dec 2) -> 'JPY 100000'; KWD 12.500 -> 'KWD 125.00'. Plugin :187,:364; PS validation.php:36, webhook.php:106; pay.ts:142-157; quote.ts:46 FEEDS = Sepolia ETH/USD only; chains.ts:41-47.
@@ -286,7 +292,7 @@ Medium · new · Merchant plugins · Fix in progress (local, unreviewed, not in 
 ### L1-02
 
 **Sweep passphrase gate bypassed by deleting the vault or exporting a keystore without step-up**  
-Medium · new · Keys/session · Fix in progress (local, unreviewed, not in this branch) (cluster C)
+Medium · new · Keys/session · Fixed in this branch (`e765934`, `953fcea`, `72e6d1a`, `7389dea`)
 
 - **Finding:** Confirmed in the UI. With a vault saved, Sweep refuses without the passphrase. But 'Delete encrypted vault' then 'Confirm' needs none; after that Sweep shows no field and broadcasts. 'Download encrypted keystore' exports all keys under any new passphrase. So the gate labelled 'required for each sweep' does not stop the walk-up or unattended-tab attacker it targets. It needs access to an unlocked tab with keys loaded inside the 15 min window: a safety control that does not work, Medium.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** keyVault.ts:176-182: undefined when the store is empty. Sweep.tsx:129-133 skips vaultGuard; the field is only shown when a vault exists (Sweep.tsx:288). SellerKeys.tsx:204-235: delete needs no passphrase; :89-121: export has no step-up; en.json:82. Repro verify/B1-B/l102.stepup.repro.test.tsx (2/2 pass): baseline 'Wrong passphrase'; delete text shows no meta-address; then 'Submitted', raw 0x02f8..; the export decrypts with the attacker phrase to the loaded spend key. Not in audits 17/22 or PR30 status.
@@ -295,7 +301,7 @@ Medium · new · Keys/session · Fix in progress (local, unreviewed, not in this
 ### L2-F2
 
 **Native direct sweep on L2s with an L1 data fee; failure jams the lock**  
-Medium · new · Pay/sweep · Fix planned (not started) (cluster B)
+Medium · new · Pay/sweep · Fixed in this branch (`8d4532e`)
 
 - **Finding:** Native sweep sets value = balance - 21000*maxFee, so tx cost equals the balance exactly. OP-stack txpool and consensus also charge the L1 data fee (op-geth TotalTxCost, buyGas), so any L1 fee > 0 rejects it. Base Sepolia, the beta chain, is OP-stack; native ETH is the default invoice asset and has no relayer path, so native payments cannot be swept, and each try jams the tab's lock (receipt-only resolution). Funds stuck, not lost. (b) and (c) are outside the beta.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** sweep.ts:432-437,478,493-507,404-411; CreateInvoice.tsx:28 (default 'native'); Sweep.tsx:114 (relayer needs permit token). op-geth a5f16412: core/txpool/validation.go:313-320 + rollup.go TotalTxCost; core/state_transition.go:285-328. r2-l2f2.repro.test.tsx 2/2: headroom 0; node 'insufficient funds ... overshot 1' at 1 wei L1 fee; lock still unknown after 3 checks; UI sign disabled. Default build ships no manifest.
@@ -304,7 +310,7 @@ Medium · new · Pay/sweep · Fix planned (not started) (cluster B)
 ### L3-F1
 
 **A different or missing anchor hash from one RPC tombstones the ledger and rescans from 0**  
-Medium · new · Scanner/ledger · Fix in progress (local, unreviewed, not in this branch) (cluster A)
+Medium · new · Scanner/ledger · Fixed in this branch (`8c6dadb`, `63b48da`)
 
 - **Finding:** Real. Default is one RPC (settings.ts:20). A null or different hash for the saved anchor counts as a reorg to block 0; Scan.tsx persists invalidateFrom(0): every ledger record for that seller+chain is tombstoned, can't be re-saved or restored by import, no UI notice, plus a rescan from 0. Triggers: hostile RPC, stale load-balanced backend, or a node 1-100 blocks short of the anchor. Ledger integrity, no funds: Medium. THREAT_MODEL has single-RPC trust Open, not this outcome. Overlaps L1-03.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** Reran r1 (verify/B12-B): invalidateFrom ['0'], record invalidated-after-reorg, save rejects. f1-impact.verify.test.ts V1: honest run saves anchor 9900 (head 10,000 minus finalityDepth); resume on a merely lagging node at 9,850 -> invalidateFrom(0), rescan from 0-999, record invalidated; node at 9,799 fails closed (logs.ts:214). V2 (two RPCs, primary null once): no invalidation, checkpoint cleared (scanClient.ts:239-240). logs.ts:200-207; Scan.tsx:182-191; reconciliationVault.ts:583-592,225-228.
@@ -313,7 +319,7 @@ Medium · new · Scanner/ledger · Fix in progress (local, unreviewed, not in th
 ### L3-F2
 
 **Second-RPC comparison stalls on log spam or head lag**  
-Medium · new · Scanner/ledger · Fix in progress (local, unreviewed, not in this branch) (cluster A)
+Medium · new · Scanner/ledger · Fixed in this branch (`8c6dadb`, `c6127dd`, `8969cf2`, `d0f8d38`)
 
 - **Finding:** Part (b) is real: with the opt-in second RPC, compareProviders uses fixed 1000-block chunks without halving, maps any error (2 MiB cap, -32602/-32005, rate limits) to secondary_error and needs secondary head >= primary page end. Page withheld, cursor held: ~1,950 spam logs in any 1000 blocks stall it until the user drops the second RPC; head lag withholds intermittently (r6 static heads overstate 'every run'). Medium. Part (a) duplicates L4-01/CHAIN-ADAPTERS-01 (all users; arguably High).
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** Reran in verify/B12-B: r3 RESPONSE_TOO_LARGE on both runs, control finds payment; r4 secondary_error both runs, nextBlock 0, 2,687,535-byte reply for 2,500 logs (~1,075 B/log), one-RPC control finds payment; r6 secondary_behind both runs, payment 28,800 blocks old withheld. scanVerify.ts:93,98-100,120-121; scanClient.ts:334-351,381-388; rpc.ts:216. Docs: audit 17 marks CHAIN-ADAPTERS-01 Closed (single-block fail-closed); no doc covers the two-provider stall.
@@ -407,7 +413,7 @@ Low · known-open · Contracts (flagged) · Open (deferred)
 ### G1-01
 
 **Huge expiry or quote timestamps blank the app (no error boundary)**  
-Low · new · Pay/sweep · Fix planned (not started) (cluster B2)
+Low · new · Pay/sweep · Fixed in this branch (`c8ee18c`, `9a00a7a`)
 
 - **Finding:** Reproduced at HEAD on the beta-core Pay review: a signed link with expiresAt or fiat-quote times > 8.64e12 s blanks the whole React root via direct link, paste, scanned-QR open and same-tab hashchange, even with no manifest (unknown chain). Per-victim, one click, no funds or keys at risk; reload recovers (autoClearFragment default on). The opener-hashchange vector adds nothing an opener cannot do by navigating. Contradicts THREAT_MODEL 4.1 D 'fail closed: Mitigated'; undocumented.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** G1-B/g101.repro.test.tsx: formatUnix(253402300800)='+010000-01-01 00:00:00 UTC' (no throw), formatUnix(8_640_000_000_001) RangeError; App with hash -> container '' and hash '' (auto-cleared); same for fiat_quote quote.timestamp=9e12, paste+'Read invoice', hashchange. No ErrorBoundary/onUncaughtError (main.tsx:11). Pay.tsx:797 renders review once any manifest state resolves. Receipt issuedAt toISOString (ReceiptPanel:163, Ledger:788) shows only the seller's own receipts.
@@ -426,7 +432,7 @@ Low · new · Embed · Open (deferred)
 ### G2-02
 
 **App idle lock does not lock BTC/Solana/TRON views**  
-Low · new · Chain views · Fix in progress (local, unreviewed, not in this branch) (cluster G)
+Low · new · Chain views · Fixed in this branch (`e0861bc`, `9a00a7a`)
 
 - **Finding:** Reachable: chain views are in the default nav and stay mounted while shown. The idle timer only locks tags and clears the EVM session. Settings promises only 'Lock local tags after idle minutes', so no false claim is made. Leaving the view already wipes TRON/Solana keys (not BTC, see G2-04). Needs a user who leaves a chain view open on an unattended unlocked machine. The keys guard test coins in later-preserved, non-beta-core views. Low; gap vs draft KL-27.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** App.tsx:114-117 timer body: vault.lock(); clearSession(); setLive(...). G2-B g202Context (full App, default flags): nav lists Bitcoin/Solana/TRON (test); Settings label 'Lock local tags after idle minutes'. After 15 min: EVM session false, TRON backup shown, scan panel mounted, spend/view non-zero. After clicking Home the TRON keys are zero. G2-A also signed and broadcast after idle. No chain view handles visibilitychange.
@@ -435,7 +441,7 @@ Low · new · Chain views · Fix in progress (local, unreviewed, not in this bra
 ### G2-03
 
 **Chain-view secrets shown and copied without a reveal step**  
-Low · new · Chain views · Fix in progress (local, unreviewed, not in this branch) (cluster G)
+Low · new · Chain views · Fixed in this branch (`1acb7d6`)
 
 - **Finding:** Reachable by default: 'Create new test wallet' shows the plaintext seed/backup at once. It stays until Hide, Lock or leaving, and Copy puts it on the clipboard with no warning or clear. The qr-colors SECRET rule covers secret QR frames, not this text, so it shows intent rather than a broken control. Beta-core never shows or copies raw keys; these three CopyButtons are the only ones that copy wallet keys. Test-coin keys in later-preserved views: defense in depth, Low.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** TronView.tsx:290-297, SolanaView.tsx:282-289 and BtcView.tsx:243-250 render the secret on create (reveal=true). Common.tsx:47 calls writeText with no clear. Only QrFrame.tsx:116, Pay.tsx:349 and reconciliationVault.ts:280 handle visibilitychange. SellerKeys copies only the meta-address; its backup is QrFrame kind='secret'. G2-find and G2-A repros: the secret renders without a reveal, is still shown after hidden + 120 s, and the clipboard holds the key 10 min after Lock.
@@ -444,7 +450,7 @@ Low · new · Chain views · Fix in progress (local, unreviewed, not in this bra
 ### G2-04
 
 **BTC view never zeroizes keys or tweaks**  
-Low · new · Chain views · Fix in progress (local, unreviewed, not in this branch) (cluster G)
+Low · new · Chain views · Fixed in this branch (`d199f0f`)
 
 - **Finding:** BtcView has no walletRef or zeroize: Lock and unmount only drop references, and resetFlow drops spendTweak scalars without wiping them, unlike TronView/SolanaView. Exploiting it needs a later heap disclosure (dump, swap, debugger) on a test-only, later-preserved view. The wipe is best-effort anyway: seed hex strings and bigints live until GC (secret.ts:94-100, KL-23/25). Matches the WEB-APP-07 heap-residue precedent: Low, defense in depth.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** BtcView.tsx:44-49: unmount only aborts. :164-169: lock() = abort + setWallet/setSeedShown(undefined) + resetFlow(). :51-59: resetFlow drops the scan without a wipe; no zeroize import. Contrast TronView.tsx:58-65,201-208 (wipeWallet) and SolanaView.tsx:59-79 (wipeWallet, wipeFound). G2-find btcNoWipe: BTC scanSecret/spendSecret non-zero after Lock and after unmount; TRON zero after Lock.
@@ -453,7 +459,7 @@ Low · new · Chain views · Fix in progress (local, unreviewed, not in this bra
 ### G2-05
 
 **Controlled secret inputs mirror values into the DOM attribute**  
-Low · known-open · Keys/session · Fix planned (not started) (cluster C2)
+Low · known-open · Keys/session · Fixed in this branch (`0f74acd`)
 
 - **Finding:** True (react-dom 19.3.1 mirrors controlled values into the value attribute), but it adds little. The CSP (style-src 'self', img-src 'self' data:) blocks page CSS injection and exfiltration, and anyone with DevTools or an extension can read input.value anyway. The real residue is a key left after a failed import and not cleared by the idle lock, which is open S3-26 ('failed imports leave them') and draft KL-26. SellerKeys import is beta-core. Low, known-open.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** react-dom-client.production.js:1295-1298 and 1358-1359 set node.defaultValue for any controlled input, password included; apps/web/package.json pins 19.3.1. SellerKeys.tsx:76-87 clears spend/view/signing only on success; the :57-61 effect on app.session never clears them. CSP: public/_headers. S3-26 open: docs/audits/05/web-app.md:130; KL-26: key-lifecycle.md:93. G2-find and G2-A: value attribute === key after a failed import and after 15 min idle.
@@ -462,7 +468,7 @@ Low · known-open · Keys/session · Fix planned (not started) (cluster C2)
 ### G2-06
 
 **Passphrase fields invite browser password saving**  
-Low · new · Keys/session · Fix planned (not started) (cluster C2)
+Low · new · Keys/session · Fixed in this branch (`32c5882`, `18b6beb`)
 
 - **Finding:** Holds in default build (no flag). Real risk: user accepts the browser's save/generate offer for the vault passphrase; after the 15-min idle lock or a reload, one autofill+click restores the spend key to anyone at the profile, which THREAT_MODEL says that party never gets and the UI calls offline-guess only. Tokens aren't the root cause: Chrome/Firefox offer to save password fields even with autocomplete=off; new-password adds generation. Sweep-gate autofill adds ~0 (export/delete ungated). Low.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** Scratch repro gap/G2-C/autocomplete.repro.test.tsx (3/3 pass) renders default SellerKeys: unlock input current-password (form off), save inputs new-password x2; Sweep.tsx:290 static current-password. en.json has no 'password manager' text; unlockExplain: 'your passphrase is never saved'. exportKeystore needs no vault passphrase. S3-26 (2026-10-21) covers export only, predates vault fields (ecc29c1, 10-22); KL-14 is DRAFT. MDN/Chromium: save offered despite autocomplete=off.
@@ -471,7 +477,7 @@ Low · new · Keys/session · Fix planned (not started) (cluster C2)
 ### G3-03
 
 **PrestaShop webhook selects a dropped column; every event fails**  
-Low · new · Merchant plugins · Fix in progress (local, unreviewed, not in this branch) (cluster H)
+Low · new · Merchant plugins · Fixed in this branch (`70cd56f`)
 
 - **Finding:** Ran the real webhook controller over HTTP with a PS 8.2-faithful Db shim and the module's own DDL: every valid event fails at the SELECT. PHP 8: PrestaShopException, 500 on every retry. PHP 7.4 (arrow fns need 7.4; PS ships polyfill-php81): 200 {ok:true}, event dropped. Claim table never used, so audit 15's PS claim fix is unreachable. Fails closed, no forged acceptance; skeleton, not packaged, not in CI.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** (scratch) exception mode -> 'PrestaShopException: ... no such column: event_ids [HTTP 500]' x2; silent mode -> '{"ok":true} [HTTP 200]' x2; claim rows 0; SELECT id_order alone -> 42. PS 8.2.x DbPDO::getPDO sets no ERRMODE, _query rethrows; displayMessage sends 500. e4f6825 DDL had event_ids; HEAD ghostpay.php:55-57 lacks it, webhook.php:88 selects it.
@@ -480,7 +486,7 @@ Low · new · Merchant plugins · Fix in progress (local, unreviewed, not in thi
 ### G3-04
 
 **WooCommerce event claim is not atomic**  
-Low · new · Merchant plugins · Fix in progress (local, unreviewed, not in this branch) (cluster H)
+Low · new · Merchant plugins · Fixed in this branch (`4021887`)
 
 - **Finding:** Confirmed with the real claim_identity under true multi-process concurrency and WP trunk add_option semantics (check, then INSERT..ON DUPLICATE KEY UPDATE; 2 rows = true): both deliveries ran payment_complete in 3 of 4 runs; B can overwrite A's completed claim, so both may answer 200. Needs duplicate dispatch inside the check-to-insert window (wider with a persistent object cache). Duplicate side effects or a paid order on hold; no fund loss.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** (scratch) sequential control -> second '200 duplicate:true', one payment_complete. Concurrent (400 ms at the add_option hook) -> A 200, B 200 duplicate:false; log '[A] payment_complete(evt_race)', '[B] payment_complete(evt_race)'. Exact-replay control nonce_race.sh -> 200 then 400. WP trunk option.php add_option; README.md:8 claims concurrent idempotency.
@@ -489,7 +495,7 @@ Low · new · Merchant plugins · Fix in progress (local, unreviewed, not in thi
 ### G3-05
 
 **WooCommerce transitions ignore order state and superseded invoices**  
-Low · new · Merchant plugins · Fix in progress (local, unreviewed, not in this branch) (cluster H)
+Low · new · Merchant plugins · Fixed in this branch (`fc5acc2`, `e4e79f3`)
 
 - **Finding:** Reproduced with the real apply_event: a sufficient invoice.paid on a processing order, and invoice.paid then invoice.over on one invoice, flip the order to on-hold with a false 'below the order total' note; invoice.expired for an older invoice cancels a pending order whose newer invoice (retries are by design, :224) is still payable. Operational only: a later payment still completes the cancelled order; no funds lost. Out of beta scope.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** (scratch) order 43 processing + invoice.paid 4900 -> 'processing->on-hold (GhostPay reported a payment below the order total ...)'; order 47 paid -> processing, then invoice.over 5100 -> on-hold; order 44 (inv_44_old, inv_44_new) + invoice.expired inv_44_old -> 'pending->cancelled'. Code :369-374, :379-382, :224-225.
@@ -498,7 +504,7 @@ Low · new · Merchant plugins · Fix in progress (local, unreviewed, not in thi
 ### G3-06
 
 **Example receiver acknowledges in-flight duplicates**  
-Low · new · Merchant plugins · Fix in progress (local, unreviewed, not in this branch) (cluster H)
+Low · new · Merchant plugins · Fixed in this branch (`cc2714f`, `e4e79f3`)
 
 - **Finding:** Confirmed with the real receiver.mjs: a retry arriving while the first delivery is still in onEvent gets 200 duplicate; the first then fails and releases, but the sender already has a 2xx, so the event is never applied. Needs a handler slower than sender timeout plus the 15-30 s first retry (e.g. a 50 s InnoDB lock wait) or parallel duplicate dispatch. Example only, not packaged or in CI; lost order update, funds still received.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** (scratch) 'retry while attempt 1 is in flight -> HTTP 200 {"ok":true,"duplicate":true}', 'attempt 1 completes -> HTTP 500', 'orders marked paid: []'; control delivery after release -> 200, applied. receiver.mjs:63 claim -> 200 duplicate, :67 release -> 500; IdempotencyGuard (merchant-hooks webhooks.ts:222-241) has only claim/release.
@@ -507,7 +513,7 @@ Low · new · Merchant plugins · Fix in progress (local, unreviewed, not in thi
 ### L1-03
 
 **One-RPC checkpoint mismatch tombstones the whole reconciliation ledger (root shared with L3-F1)**  
-Low · new · Scanner/ledger · Fix in progress (local, unreviewed, not in this branch) (cluster A)
+Low · new · Scanner/ledger · Fixed in this branch (`63b48da`)
 
 - **Finding:** Real. Default is one RPC: a null or changed hash for the saved checkpoint block rolls back to 0, and Scan.tsx persists invalidateFrom(0): every record is tombstoned and can't be re-saved, even after Delete (same root as L3-F1). New here: after any invalidation, records verified later restore as invalidated on a fresh profile, and the preview under-counts. Correction: a real tip reorg on a consistent RPC throws 'retry'. Ledger only, but beta-core reconcile/restore: Medium.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** try2/l103.repro.test.ts 5/5: one null for block 200 -> onReorg [0], records 120,150 invalidated, re-save refused before and after clearRecords; 10-block tip reorg -> 'chain reorganised during scan; retry'; lagging null at window end 1999 -> rolledBackTo 1000, record 1500 invalidated; restore -> preview invalidatedCount 1, restored 3/3 invalidated; cutoff 0 -> all restored invalidated, preview 0. logs.ts:200-207,302-321; scanClient.ts:245; reconciliationVault.ts:583-591,626,648-673
@@ -516,7 +522,7 @@ Low · new · Scanner/ledger · Fix in progress (local, unreviewed, not in this 
 ### L1-04
 
 **"Wipe keys" leaves the tag vault unlocked for the next identity in the tab**  
-Low · new · Keys/session · Fix in progress (local, unreviewed, not in this branch) (cluster C)
+Low · new · Keys/session · Fixed in this branch (`a2ba169`, `f6a9659`)
 
 - **Finding:** Confirmed in the App UI. 'Wipe keys from memory' only calls clearSession(), so the tag vault keeps A's derived keys. Identity B loaded in the same tab finds tags already unlocked. B's tag saves (or archive imports) are encrypted under A's profile: A can read them later, and B can never open them again. Only the idle path locks tags. Export and rotate re-check the viewing key. It needs two identities in one tab or profile and leaks only labels and addresses: Low.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** SellerKeys.tsx:347: wipe is clearSession() only; App.tsx:115 locks only on idle. tags.ts:179-214: unlock has no session guard. TagArchive.tsx:68-70 reuses an unlocked vault. Repro verify/B1-B/l104.tags.repro.test.tsx: after wipe, vault.unlocked=true; B sees 'Lock tags'; A reads ['B customer: Acme @ 0xabab..']; B's unlock gives 'different viewing key'. Not in the F4 review or DEVIATIONS.
@@ -534,7 +540,7 @@ Low · new · Pay/sweep · Fixed in this branch (`e8cdb31`)
 ### L1-06
 
 **Passphrase strength check accepts guessable phrases**  
-Low · new · Keys/session · Fix in progress (local, unreviewed, not in this branch) (cluster C)
+Low · new · Keys/session · Fixed in this branch (`9799f9e`, `5fb88f1`, `7389dea`)
 
 - **Finding:** Confirmed. passphraseProblem gates the vault, keystore, tag archive and invoice passphrases. It uses only character classes, length and a 13-word denylist. Repeats of the app name, season or year with symbols, and keyboard walks pass; the estimator scores some as 'strong' (that label is not shown in the UI). Exploiting it needs the ciphertext (profile copy or keystore file) and a user who picks such a phrase. scrypt N=2^17 slows rule-based guessing but does not stop it. Low.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** keystore.ts:66,80-104. Repro verify/B1-B/l106.passphrase.repro.test.ts, all accepted: ghostpayghostpay fair 47; Summer2026!!!!! good 69; qazwsxedcrfvtgb good 71; 1qaz2wsx3edc4rfv strong 83; Ghostpay2026!!! strong 84; ghostpay-vault-1 strong 84; Football2026!! good 72. Used at SellerKeys.tsx:91,149, tagArchive.ts:72,182, invoiceCreate.ts:106. S3-13 (audit 03) asked for an estimator; how good it is was never documented.
@@ -543,7 +549,7 @@ Low · new · Keys/session · Fix in progress (local, unreviewed, not in this br
 ### L1-07
 
 **requireSession hands all plaintext scalars to callers that need one**  
-Low · known-open · Keys/session · Fix in progress (local, unreviewed, not in this branch) (cluster C)
+Low · known-open · Keys/session · Fixed in this branch (`6986d66`, `f6a9659`)
 
 - **Finding:** Confirmed. requireSession opens the spending, viewing and signing scalars and keeps them in `issued` until clearSession (at most 24). Scan needs only the viewing key and invoice creation only the signing key, so a plaintext spending key stays on the heap for the session, defeating the SecretBox design. It matters only to heap-reading attackers (debugger, extension, memory dump): defense in depth, Low. Same as audit 05 WEB-APP-07, which was never dispositioned.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** session.ts:205-211. Callers: Scan.tsx:152 and :444 (viewing key only), invoiceCreate.ts:101 (signing key only, used at :157). Repro verify/B1-B/l107.issued.repro.test.ts (2/2 pass): the spending copy is still plaintext after scan-style use and after buildInvoiceLink, while the withSessionSecrets copy is zeroed on return. docs/audits/05/web-app.md:78-80 lists WEB-APP-07 as Low and open; audit 17 covers only C/H/M.
@@ -552,7 +558,7 @@ Low · known-open · Keys/session · Fix in progress (local, unreviewed, not in 
 ### L2-F1
 
 **Pre-send dry run cannot refuse a revert (node error detail dropped)**  
-Low · new · Pay/sweep · Fix planned (not started) (cluster B)
+Low · new · Pay/sweep · Fixed in this branch (`d809dfd`)
 
 - **Finding:** Real: createClient keeps only the JSON-RPC code ('RPC_FAILURE: json-rpc error 3'), so REVERT_TEXT never matches and every revert is 'unavailable', which callers ignore. Loss is gas only and mostly covered elsewhere: eth_estimateGas stops ERC-20 direct sweeps first, wallets estimate payments, and native sweeps on Base Sepolia fail earlier (L2-F2). Defense in depth, so Low (auditor: Medium). Extends WALLET-SAFETY-05 (Low, open), which assumed regex detection works.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** rpc.ts:313-326,346-349; txGuard.ts:89,106-110; defaultServices.ts:39 (createRpc=createClient). r2-l2f1.repro.test.ts 5/5: code 3 and -32000 reverts -> 'unavailable'; Error('execution reverted') (what txGuard.test.ts:68,95 and sweep.test.ts:468 mock) -> refused; native direct sweep still reaches eth_sendRawTransaction; payment still reaches wallet eth_sendTransaction; ERC-20 sweep stops at eth_estimateGas (sweep.ts:442).
@@ -561,7 +567,7 @@ Low · new · Pay/sweep · Fix planned (not started) (cluster B)
 ### L2-F3
 
 **Wallet-altered transaction check skipped when the RPC is slow**  
-Low · new · Pay/sweep · Fix planned (not started) (cluster B2)
+Low · new · Pay/sweep · Fixed in this branch (`cf5e57c`)
 
 - **Finding:** Real: verifySubmission stops after 6 reads (7.5 s), pollReceipt checks only receipt.to, and the tx is never re-fetched, so the UI says 'included in block N' and the local receipt/proof says 'included' with previewed amounts. A malicious wallet controls broadcast timing, so it can skip the check at will; no slow RPC is needed. Still Low: it needs a malicious wallet that could steal anyway, the UI says 'could not be checked', and the proof is labelled not independent.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** payExec.ts:98-106,304; wallet.ts:401-424 (6 polls), 432-458 (to only); Pay.tsx:1118-1127. r2-l2f3.repro.test.ts 2/2: tx visible at 0 s -> SubmissionMismatchError (call data); wallet swaps the stealth arg and broadcasts at 8 s -> 'not-visible-yet', receipt 'success', local receipt 'included', eth_getTransactionByHash called 6 times only. DEVIATIONS.md #14 says this check catches mutation; WALLET-SAFETY-11 is a different gap.
@@ -570,7 +576,7 @@ Low · new · Pay/sweep · Fix planned (not started) (cluster B2)
 ### L2-F4
 
 **Seller-chosen fiat total not checked against a fixed token amount**  
-Low · known-open · Pay/sweep · Fix planned (not started) (cluster B2)
+Low · known-open · Pay/sweep · Fixed in this branch (`5f4f646`)
 
 - **Finding:** Real: in fixed_token mode the signed fiat total comes only from line items (invoiceCreate.ts:119,138) and reviewInvoice only checks items+tax vs fiat (pay.ts:81-84), so Pay shows 'Invoice total USD 10.00' beside 'Fixed: 1000 USDC' with no warning. Payee-crafted misdirection; the true token amount is shown 3+ times (Pricing, You pay, Final check) and in the wallet, so Low. Reachable in the 84532 beta (fixed_token is the only mode there). Audit 03 poc-03 said 'UI must flag', never dispositioned.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** verify/B4-B/l2f4.repro.test.tsx (real buildInvoiceLink + App, 84532 USDC, manifest+readback mocked): text 'Invoice totalUSD 10.00PricingFixed: 1000 USDC', 'You pay (gross)1002.506265 USDC', no mismatch wording, no blocker -> PASS. Code Pay.tsx:889-896, pay.ts:81-84. Prior: docs/audits/poc/poc-03-invoice-parser-fuzz.mjs:70-71 ('UI must flag; see report') but no S3 finding; display-only notes docs/remote/audits/security-tslibs.md:113-116.
@@ -579,7 +585,7 @@ Low · known-open · Pay/sweep · Fix planned (not started) (cluster B2)
 ### L3-F3
 
 **Worker batch timeout on slower devices for large pages**  
-Low · new · Scanner/ledger · Fix in progress (local, unreviewed, not in this branch) (cluster A)
+Low · new · Scanner/ledger · Fixed in this branch (`c6127dd`)
 
 - **Finding:** Mechanism real: one 60 s timer per worker batch (scanClient.ts:145,156), 'progress' replies ignored (:190-191), whole page up to 10,000 logs posted as one batch. Measured 3.37 ms/check (ECDH 86%, inherent to view tags; spending-key re-parse 3.4%): 10k page = 34 s, so devices >=1.8x slower than this 2.1 GHz Xeon time out on that page every run. Needs ~6-10k announcements in one page (spam); the cheaper L4-01 spam already halts all users. Low (lane said Low-Medium).
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** f3-timeout.verify.test.ts: a 10,000-log page arrives as one batch ([10000]); a worker posting progress every 50 ms is still killed at replyTimeoutMs ('did not answer in time'). bench-parts.mjs (node 22, Xeon 2.1 GHz): Point.fromBytes 0.116 ms, getSharedSecret 2.895 ms, checkAnnouncement 3.367 ms -> 2x slower device 67 s per 10k page; bench-copy.mjs 3.526 ms each. Scan.tsx sets no replyTimeoutMs (60 s default). THREAT_MODEL notes only that spam raises cost.
@@ -588,7 +594,7 @@ Low · new · Scanner/ledger · Fix in progress (local, unreviewed, not in this 
 ### L3-F4
 
 **Non-default open-log budget defers a page on every run**  
-Low · new · Scanner/ledger · Fix in progress (local, unreviewed, not in this branch) (cluster A)
+Low · new · Scanner/ledger · Fixed in this branch (`c6127dd`, `d0f8d38`)
 
 - **Finding:** Real but needs a non-default setting. openSeen restarts at 0 each run, so a page whose non-router logs exceed the budget is deferred with the cursor held on every run (scanClient.ts:261,389-397). Router payments inside that page still show; later ones never do. Default 20,000 exceeds the 10,000 per-page cap, so the default is safe; the ungated Settings input (1-100000) and hint 'never skipped' make it reachable. Low. Undocumented; spec 05 and tests cover only cross-page overflow.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** Reran r2 (verify/B12-B): budget 5, 6 spam logs in first page -> runs 0-2 backlog=6 nextBlock=0 matches=0; control with default budget nextBlock=70001 matches=1. Settings.tsx:245-247 input min 1, save check 1-100000 (:193); locales/en.json:214 'deferred to the next scan, never skipped'; scanPrivacy.ts:60,123. Existing scanClient.test.ts:720-744 only tests 30 open logs per page against budget 40.
@@ -597,7 +603,7 @@ Low · new · Scanner/ledger · Fix in progress (local, unreviewed, not in this 
 ### L3-F5
 
 **Second-RPC disclosure understates what that RPC learns**  
-Low · new · Scanner/ledger · Fix in progress (local, unreviewed, not in this branch) (cluster A)
+Low · new · Scanner/ledger · Fixed in this branch (`c6127dd`, `d0f8d38`)
 
 - **Finding:** Real: the second RPC gets exact getLogs ranges from the checkpoint and exact anchor reads, while the disclosure says 'the same scan ranges'. But the default 1000-block windowing barely hides position from the primary either: logs.ts and persistable() read eth_getBlockByNumber at the exact anchor, cursor+999 and new anchor. Opt-in second RPC; metadata only (scan position/cadence); verification requests are already disclosed. Low. Undocumented; ideas/05 rule 7 and line 87 state the intent.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** Reran r5: primary 123000-123999,124000-124999; secondary 123457-124456,124457-125000. f5-primary-heights.verify.test.ts with the DEFAULT_SCAN_PRIVACY plan (window 1000): primary getLogs grid-aligned, but primary getBlockByNumber heights 123456 (anchor), 124456 (cursor+999), 124900 (new anchor). scanVerify.ts:98-100; scanClient.ts:226-231,335-344,442,492; scanPrivacy.ts:229,236,329; logs.ts:201,237; docs/specs/ideas/05-private-rpc-padded-queries.md:70,87.
@@ -606,7 +612,7 @@ Low · new · Scanner/ledger · Fix in progress (local, unreviewed, not in this 
 ### L3-F6
 
 **Indexer/Esplora/Solana/TRON bodies read without a streaming size cap**  
-Low · new · Scanner/ledger · Fix in progress (local, unreviewed, not in this branch) (cluster G)
+Low · new · Scanner/ledger · Fixed in this branch (`cad187d`)
 
 - **Finding:** Real in what ships: the indexer source is a Settings option (no flag; Base Sepolia allowed) and the BTC view is in the default nav. Precondition: user picks a hostile/compromised https indexer or Esplora. Result: own-tab memory blowup or hang (Esplora has no timeout, only Cancel); no funds/keys unless unsaved in-memory keys die with the tab (user error). Doc comment promises a 'streamed size cap'. Esplora part duplicates L4-05; indexer part is new. Low.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** scanPrivacy.ts:370 'streamed size cap', :380 arrayBuffer() then :381 check; esplora.ts:205-216 no redirect/timeout, res.text() then length check. Repro verify/B13-B/f6-body-cap.verify.test.ts (64 MiB body, 16 MiB cap): indexer read 64 MiB, Esplora 64 MiB (init redirect/signal undefined), net-transport createFetchTransport 17 MiB. Reach: Settings.tsx:229-237, App.tsx:25,42. Not in docs/audits.
@@ -615,7 +621,7 @@ Low · new · Scanner/ledger · Fix in progress (local, unreviewed, not in this 
 ### L4-02
 
 **Deep-scan payment with a wrong view tag offers a Sweep that throws**  
-Low · known-open · Pay/sweep · Fix planned (not started) (cluster B)
+Low · known-open · Pay/sweep · Fixed in this branch (`0eec2f7`)
 
 - **Finding:** Real: deep scan lists a wrong-tag router payment as verified with a Sweep button, but both sweep paths call deriveStealthSecret, which throws VIEW_TAG_MISMATCH even though the address check proves control. It needs a non-GhostPay or tampered payer (the app's pay path always uses the derived tag), who gains nothing. The error is loud and the key is still derivable from the seller's keys, so funds can be recovered with exported keys or a fixed build: Low. Documented as an open gap.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** try2/l402.repro.test.ts 1/1: normal runScan -> 0 matches; deep -> {receipt:'verified',viaRouter:true,tagMatches:false}; deriveVerifiedSweepKey -> 'A cryptographic check failed (VIEW_TAG_MISMATCH).'; 1 of 256 tag bytes gives a key controlling the paid address. stealth.ts:211,219; sweep.ts:38-45,167,416; Sweep.tsx:112; Scan.tsx:369,405; router.ts:150-157. Docs: specs/ideas/02-claim-by-hash-and-spam-filter.md:14,37,333 (open); THREAT_MODEL.md:290 D4 Open.
@@ -624,7 +630,7 @@ Low · known-open · Pay/sweep · Fix planned (not started) (cluster B)
 ### L4-03
 
 **Esplora client aborts on blocks whose tx count is a multiple of 25**  
-Low · new · Chain views · Fix in progress (local, unreviewed, not in this branch) (cluster G)
+Low · new · Chain views · Fixed in this branch (`7dbc34b`)
 
 - **Finding:** Real: both electrs forks return 4xx when start >= tx count (Blockstream 400, mempool 404), so any block with a multiple of 25 txs throws TRANSPORT_FAILURE and the whole scan (always to the tip) is lost; a payment followed by such a block is undetectable in the UI. Ships in default nav, but the BTC view is test-network-only (mainnet off), later-preserved, fails loudly, coins stay recoverable: Low, not Medium. Fixture, shim and live e2e use []-semantics, hiding it.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** esplora.ts:244-250,214. electrs e863e6a schema.rs:848-851 -> 400 (rest.rs test :1911); mempool/electrs 160585b rest.rs:918-919 -> 404. verify/B10-B/l403.repro.test.ts via scanForPayments: block2 n=24/26/51 found 1; n=25,50 THROW TRANSPORT_FAILURE on both forks; fixture semantics found 1; scan from 3 works but skips the payment; count-first variant finds it on both. esplora.test.ts 19/19 pass (30-tx block only). Not in any doc.
@@ -633,7 +639,7 @@ Low · new · Chain views · Fix in progress (local, unreviewed, not in this bra
 ### L4-04
 
 **BTC verification text claims genesis anchoring that is not done**  
-Low · new · Chain views · Fix in progress (local, unreviewed, not in this branch) (cluster G)
+Low · new · Chain views · Fixed in this branch (`49a3a44`, `1c1f5d0`)
 
 - **Finding:** Real: linked starts with only genesis and a new source per scan, so only a scan from height 1 reaches genesis; UI windows are <=500 blocks to tip, so on testnet4/signet the first block's parent is never checked. Forgery itself is the known BITCOIN-03 low-work-fork limit (SCAN_LIMITS[0], user doc); anchoring would not stop a forged tip. Impact is an overclaim in a test-only view: Low (borderline Info). 'Never' is overstated: true for regtest from height 1.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** esplora.ts:319,352-356; scan.ts:47; verification.ts:9 'down to the pinned genesis', :14 'cannot invent one'. l404.repro.test.ts: signet block, prevHash abab.., mined at 0x1e0377ae in 4.28M dSHA (40 s JS) -> found 10 tBTC unspent; regtest: forged tip+1 linked to real tip found; random-parent tip found when scanned alone, REORG_DETECTED only if parent in window. Docs repeat the claim (user/bitcoin-silent-payments.md:32, SESSION_STATUS item 7).
@@ -642,7 +648,7 @@ Low · new · Chain views · Fix in progress (local, unreviewed, not in this bra
 ### L4-05
 
 **Non-EVM responses read without a streaming size limit**  
-Low · new · Chain views · Fix in progress (local, unreviewed, not in this branch) (cluster G)
+Low · new · Chain views · Fixed in this branch (`cad187d`, `9470177`)
 
 - **Finding:** Real: the Solana client has no cap; Esplora (16 MiB) and Tron (8 MiB) check only after res.text() buffered everything, and Esplora has no timeout. Needs a user-picked hostile or compromised server; result is memory blowup, freeze or crash of the user's own tab in test-only views, where such a server can already stall or lie. Defense in depth: Low. Same class is documented for BlindBit and relayerClient, not for these clients.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** solana-stealth/src/rpc.ts:77; esplora.ts:215-216; tron-adapter/src/rpc.ts:53-54; views pass plain fetch (defaultServices.ts:37). l405.repro.test.ts, 48 MiB pull-on-demand body: Esplora pulled 48.0 MiB then INVALID_RESPONSE; Solana pulled 48.0 MiB and ACCEPTED result 42; Tron pulled 48.0 MiB then INVALID_RESPONSE; EVM fetchTransport stopped at 2.0 MiB with RESPONSE_TOO_LARGE.
@@ -768,7 +774,7 @@ Low · new · Packages (preserved) · Fixed in this branch (`378ec6b`)
 ### F5
 
 **verifyReceipt marks any final router claim verified**  
-Info · known-open · Packages (preserved) · Fix in progress (local, unreviewed, not in this branch) (cluster A)
+Info · known-open · Packages (preserved) · Fixed in this branch (`eaeacc5`, `ace3c65`)
 
 - **Finding:** Confirmed. verifyReceipt returns 'verified' for any final viaRouter claim with no token allowlist, balance check or transfer evidence; the router accepts any token, so a junk-token router payment reads as verified. No callers: the web scan marks verified only when verifyClaimedPayment says received and final; apps/web's own verifyReceipt is a separate signed-receipt helper. Private package. Known as the router half of CHAIN-ADAPTERS-04; the 09 delta review calls it legacy. Info.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** f5/f5.mjs against chain-adapters dist: router claim, token 0x..dEaD, 1e30 units, no evidence -> 'verified'; the same claim sent direct -> 'claimed'; no RPC calls other than blockNumber. scanVerify.ts:49; scanVerify.test.ts:45 asserts this; exported at index.ts:23. grep finds no callers outside its tests. scanClient.ts:310-325 uses verifyClaimedPayment. docs/audits/05/chain-adapters.md:54-60; 09-security-delta-review.md:35-49.
@@ -786,7 +792,7 @@ Info · known-accepted · Contracts · Accepted by design
 ### G1-03
 
 **Payment-link host check accepts hex/short IPv4 forms**  
-Info · new · Packages (preserved) · Fix planned (not started) (cluster B2)
+Info · new · Packages (preserved) · Fixed in this branch (`fe9f120`)
 
 - **Finding:** Reproduced: 0x7f000001, 0X7F000001, 0x7f.1, 0x7f.0.0.1, 1.2.3.0x4, 0xa9.0xfe.0xa9.0xfe accepted; decimal/octal/dotted forms rejected. No shipped consumer: package is private, its DEVIATIONS 1 says not integrated, web imports only builders, the web paste path keeps only the fragment, and the web QR wrapper compares to the canonical deployment hostname. allowedHosts ('strongly recommended') already blocks it. Docstring/contract mismatch only.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** G1-B/g103.repro.test.ts: '0x7f000001 ACCEPTED .. WHATWG = 127.0.0.1', '1.2.3.0x4 ACCEPTED .. = 1.2.3.4', '0xa9.0xfe.0xa9.0xfe ACCEPTED .. = 169.254.169.254'; 2130706433, 017700000001, 127.1 rejected; allowedHosts:['ghostpay.example'] -> INVALID_LINK. invoice-link.ts:32-34 docstring vs :50 /^[0-9.]+$/. payment-uri package.json private:true; fragment.ts:24-29 ignores host; Pay.tsx:46-48 requires host === base.hostname.
@@ -795,7 +801,7 @@ Info · new · Packages (preserved) · Fix planned (not started) (cluster B2)
 ### I-1
 
 **Storage keys derived from public keys survive "wipe keys" (device-seller linkability)**  
-Info · new · Keys/session · Fix in progress (local, unreviewed, not in this branch) (cluster C)
+Info · new · Keys/session · Fixed in this branch (`4d58712`)
 
 - **Finding:** Confirmed. Wiping keys leaves localStorage checkpoint keys and IndexedDB reconciliation records named by an unsalted SHA-256 of the public spend and view keys (derivable from the meta-address), plus chain ids and scan heights. Someone with profile access and a candidate meta-address can confirm the device used that identity. No funds or secrets are exposed. The THREAT_MODEL browser-profile row does not mention it. Info.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** scanClient.ts:75-77: checkpointKeyId = sha256(spendPub|viewPub). :514-516: key ghostpay.scan.checkpoint.v2.<chain>.<keyId>. reconciliationVault.ts:25-28, 48-54, 104-106: scope key `${sellerKeyId}:${chainId}`, with the scope in the plaintext envelope. clearSession (session.ts:266-278) clears memory only. THREAT_MODEL.md:30 lists only invoice links, settings and RPC URLs.
@@ -804,7 +810,7 @@ Info · new · Keys/session · Fix in progress (local, unreviewed, not in this b
 ### I-2
 
 **Archive export silently omits chains disabled in the build**  
-Info · new · Keys/session · Fix in progress (local, unreviewed, not in this branch) (cluster C)
+Info · new · Keys/session · Fixed in this branch (`6fc1b1b`, `2c13938`)
 
 - **Finding:** Real, no direct impact. Export walks services.chains (compile-time CHAINS.filter(enabled)), so stored history, invoice registrations and receipts for a chain this build doesn't list are left out and not counted in the warning. All 7 testnets are enabled now and no mainnet ever was, so it needs a later build that narrows chains. The data stays in IndexedDB, and import fails closed on unknown chains. The panel ships (SellerKeys.tsx:353) but is later-preserved. Info.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** try2/i2archive.repro.test.tsx 1/1 (real TagArchive via renderApp; vault factory and exportArchive wrapped): stored scope 11155111 present, build lists 84532 -> vaults opened [84532], history passed ['84532'], message 'Archive downloaded: 0 tag(s). SHA-256 ...' with no 'NOT in this archive'. TagArchive.tsx:74-90,114,122,152-154; defaultServices.ts:45; chains.ts:34-47 (git log: mainnets never enabled); LEAN_RELEASE_SCOPE.md:21. Not in any doc.
@@ -813,7 +819,7 @@ Info · new · Keys/session · Fix in progress (local, unreviewed, not in this b
 ### I-3
 
 **Optional tag fields not type-checked**  
-Info · new · Keys/session · Fix in progress (local, unreviewed, not in this branch) (cluster C)
+Info · new · Keys/session · Fixed in this branch (`20b824d`, `f690464`)
 
 - **Finding:** Confirmed. validatePayload checks only `.length` of invoiceLabel and notes, so null, numbers, booleans, objects and arrays pass and survive save/list. The tag archive import path (strict JSON) feeds this function. Nothing renders these fields and the UI never sets them, so there is no current impact. Info.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** tags.ts:150-157; tagArchive.ts:139-142 (archive import calls validatePayload). Repro verify/B1-B/i3.payload.repro.test.ts: null, 42, true, {length:3} and ['a','b'] are all accepted; save then list returns invoiceLabel {length:1,nested:{..}} and notes 12345. Grep finds no UI that renders invoiceLabel or notes.
@@ -832,7 +838,7 @@ Info · known-open · Pay/sweep · Open (deferred)
 ### L2-I2
 
 **Huge timestamps blank the app (same as G1-01)**  
-Info · new · Pay/sweep · Fix planned (not started) (cluster B2)
+Info · new · Pay/sweep · Fixed in this branch (`c8ee18c`, `9a00a7a`)
 
 - **Finding:** Real: schema accepts expiresAt and quote timestamps up to 2^53-1 (schema.ts:293-299); formatUnix throws RangeError above 8.64e12 s; Pay renders it (Pay.tsx:900; :895 for fiat_quote) and apps/web has no error boundary, so React 19 unmounts the whole root. Reachable in the default build (details render without a manifest). Impact small: attacker link only blanks that tab, fragment is already cleared so reload recovers; no funds or keys. Info.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** verify/B4-B/l2i2.repro.test.tsx (self-signed invoice, encodeFragment ok, trust valid-signature): expiresAt=2^53-1 and fiat quote.expiresAt=2^53-1 -> container '' and 'RangeError: Invalid time value' (format.ts:60 via Pay.tsx:900/895); location.hash '' after crash; fresh render shows Home. 3/3 PASS. grep ErrorBoundary|componentDidCatch apps/web/src: 0. Only the 9e15 acceptance is noted (Info) in docs/remote/round-audits/core-crypto.md:87.
@@ -841,7 +847,7 @@ Info · new · Pay/sweep · Fix planned (not started) (cluster B2)
 ### L2-I3
 
 **Wallet rejection leaves an 'unknown' payment-journal entry**  
-Info · new · Pay/sweep · Fix planned (not started) (cluster B2)
+Info · new · Pay/sweep · Fixed in this branch (`28de7d7`)
 
 - **Finding:** Real: call() maps 4001 to UserFacingError, which sendViaWallet rethrows after beginAttempt, leaving 'unknown' (wallet.ts:312-330); retry needs explicit clear. That part is deliberate and test-asserted (Pay.test.tsx:472-488). Undocumented: approve/revoke keys are calldata+account (wallet.ts:270-274; payExec.ts:164,183), so an identical approval or revoke for a later invoice is blocked even after success. Approvals are only used for buffer/permit fallback on 84532. Info.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** verify/B4-B/l2i3.repro.test.ts: MockWallet 4001 -> journal [{payment,unknown}], retry -> 'previous wallet attempt'; approve(router,100250627) submitted + payment submitted, same approve for a new invoice -> blocked; revoke approve(router,0) twice -> second blocked. 2/2 PASS. Design: RECONSTRUCTION-2026-10-23.md:39 (write-ahead unknown, explicit clear).
@@ -879,11 +885,12 @@ Info · known-open · Hosting · Open (deferred)
 ### L3-F9
 
 **Scan slot keys linkable to the public meta-address (duplicate of I-1)**  
-Info · known-open · Keys/session · Fix in progress (local, unreviewed, not in this branch) (cluster C)
+Info · known-open · Keys/session · Open (deferred)
 
 - **Finding:** Real: slot key and vault scope are sha256(spendPub|viewPub), computable from the public meta-address, and 'Wipe keys from memory' (clearSession) touches no storage. Needs browser-profile access; reveals the device-seller link and scan progress only, no keys/funds. Documented: PRIVACY-E2E-09 (Info, open; written for v1 key, now more linkable) and ADR-0025 accepts the visible vault scope id. Duplicate of lane-1 I-1.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** scanClient.ts:75-77 checkpointKeyId=sha256(spend|view), :514-516 slot; reconciliationVault.ts:104-106 scopeKey, :342 HKDF info and AAD carry scope; SellerKeys.tsx:347 wipe = clearSession only. Repro f9-stored-identifier.verify.test.ts: after clearSession, slot recomputed from decodeMetaAddress(metaAddress) matches the stored key. docs/audits/05/privacy-e2e.md:133-137; ADR-LOG.md ADR-0025 Consequences.
 - **Recommended fix:** Minimal: list these identifiers in the THREAT_MODEL browser-profile row and privacy docs, and add an explicit, confirmed 'forget this seller's local scan data' action. Do not auto-clear on memory wipe: it deletes encrypted reconciliation history and forces rescans. HMAC/HKDF(viewing key) ids need migration: scope id is in vault AAD, HKDF info and record ids.
+- **Why deferred:** Info: needs access to the browser profile and reveals the device-seller link and scan progress, no keys or funds (PRIVACY-E2E-09, ADR-0025). Open: list the identifiers in the THREAT_MODEL browser-profile row and add a confirmed "forget this seller's local scan data" action.
 
 ### L4-I1
 
@@ -898,7 +905,7 @@ Info · new · Chain adapters · Open (deferred)
 ### L4-I3
 
 **SecretBytes does not block toHex/toBase64; registry accepts bad-checksum addresses**  
-Info · known-open · Core crypto · Fix planned (not started) (cluster B2)
+Info · known-open · Core crypto · Fixed in this branch (`f59b51e`)
 
 - **Finding:** Real: SecretBytes (secret.ts:29-59) blocks toString/toJSON/slice/subarray but not toHex/toBase64 (in current browsers) or ES2023 toReversed/with; secret.ts:15-18 already calls it a guardrail, not a boundary (S3-08); no shipped call site. buildLookupCall uses isAddress strict:false (registry.ts:114) on raw RegistryView input; the lookup is read-only and shows the normalized registrant, so a typo only yields a wrong or empty lookup. Info.
 - **Evidence (scratch reproductions and code locations; reproductions are not committed):** node verify/B4-B/l4/l4i3.mjs: JSON.stringify/String/slice throw; Array.from, toReversed, with and toHex (browser-equivalent polyfill; Node 22 lacks it) return secret bytes; buildLookupCall('0x6538e6bf4B0e...') accepted and normalized; viem strict:true rejects it. No .toHex()/.toBase64() in shipped src. Known: audit 03 S3-08 (Open), docs/audits/05/wallet-safety.md:44-48 (WALLET-SAFETY-03, Low disputed).
