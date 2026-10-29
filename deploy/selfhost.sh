@@ -193,32 +193,68 @@ if [ -d "$distdir" ] && find "$distdir" -name '*.map' -print -quit 2>/dev/null |
 cfg="$here/config/relayer.config.json"
 if [ -f "$cfg" ]; then ok "relayer config present"; else bad "missing deploy/config/relayer.config.json (see deploy/config/README.md)"; fi
 if [ -f "$cfg" ] && [ -n "$origin" ] && ! grep -qF "\"$origin\"" "$cfg"; then bad "allowedOrigins in relayer config does not list $origin"; fi
-# Behind this recipe's nginx the relayer must trust the backend subnet (audit L5-05); loopback-only means one bucket.
+# Behind this recipe's nginx the relayer must trust the backend subnet nginx connects from (audit L5-05); with any
+# other list every client shares one bucket. Docker assigns nginx's address in it, so only an entry holding the whole
+# subnet covers it. The subnet is read from docker-compose.yml; when none can be read, the recipe's default
+# 172.30.10.0/24 is assumed and the output says so.
 if [ -f "$cfg" ]; then
   rc=0
-  python3 - "$cfg" <<'PY' || rc=$?
-import ipaddress, json, sys
+  backend="$(python3 - "$cfg" "$here/docker-compose.yml" <<'PY'
+import ipaddress, json, re, sys
 
-def loopback(entry):
+def network(entry):
     net = ipaddress.ip_network(str(entry), strict=False)
     mapped = net.network_address.ipv4_mapped if net.version == 6 and net.prefixlen >= 96 else None
     if mapped is not None:
         net = ipaddress.ip_network(f"{mapped}/{net.prefixlen - 96}", strict=False)
-    return net.is_loopback
+    return net
 
+backend = None
+try:
+    with open(sys.argv[2], encoding="utf-8") as f:
+        lines = f.read().splitlines()
+    for line in lines[lines.index("  backend:", lines.index("networks:")) + 1:]:
+        if re.match(r"  \S", line):
+            break
+        # Only the CIDR token: quotes around it and a trailing comment are allowed.
+        m = re.match(r"\s*(?:-\s+)?subnet:\s*['\"]?([0-9A-Fa-f:.]+/\d+)", line)
+        if m:
+            backend = ipaddress.ip_network(m.group(1), strict=False)
+            break
+except (OSError, ValueError):
+    pass
+if backend is None:
+    backend = ipaddress.ip_network("172.30.10.0/24")
+    print(backend, "assumed")
+else:
+    print(backend)
 try:
     with open(sys.argv[1], encoding="utf-8") as f:
         entries = json.load(f).get("trustedProxies", [])
     if not isinstance(entries, list):
         raise ValueError("not a list")
-    lo = [loopback(e) for e in entries]
+    nets = [network(e) for e in entries]
 except Exception:
     sys.exit(2)
-sys.exit(0 if not all(lo) else 1)
+if all(n.is_loopback for n in nets):
+    sys.exit(1)
+same = [n for n in nets if n.version == backend.version]
+if any(backend.subnet_of(n) for n in same):
+    sys.exit(0)
+sys.exit(4 if any(n.overlaps(backend) for n in same) else 3)
 PY
+)" || rc=$?
+  read -r backend assumed <<<"$backend"
+  subnet="the compose backend subnet $backend"
+  if [ -n "$assumed" ]; then
+    subnet="the assumed backend subnet $backend"
+    warn "could not read the backend subnet from docker-compose.yml; checking trustedProxies against the recipe's default $backend instead"
+  fi
   case "$rc" in
-    0) ok "relayer trustedProxies lists a non-loopback proxy network" ;;
-    1) warn "relayer trustedProxies is empty or loopback-only: behind nginx every client would share one rate-limit bucket; set it to [\"172.30.10.0/24\"] (deploy/config/README.md)" ;;
+    0) ok "relayer trustedProxies covers $subnet" ;;
+    1) warn "relayer trustedProxies is empty or loopback-only: behind nginx every client would share one rate-limit bucket; set it to [\"$backend\"] (deploy/config/README.md)" ;;
+    3) warn "relayer trustedProxies does not cover $subnet that nginx connects from: every client would share one rate-limit bucket; add \"$backend\" (deploy/config/README.md)" ;;
+    4) warn "relayer trustedProxies lists only part of $subnet: Docker assigns nginx's address there, and outside the listed part every client would share one rate-limit bucket; make sure it is listed, or list \"$backend\" (deploy/config/README.md)" ;;
     *) warn "could not read trustedProxies from the relayer config (the relayer validates it at startup)" ;;
   esac
 fi

@@ -20,6 +20,7 @@ import {
   testConfig,
   type Harness,
 } from './harness.testutil.js';
+import type { ReceiptSummary } from './chain.js';
 import type { QuoteResponse } from './service.js';
 import { SimulationRevert } from './errors.js';
 
@@ -451,6 +452,58 @@ describe('POST /v1/sweep success and validation', () => {
     expect(
       (await call(s, 'POST', '/v1/sweep', (await prepare(s, { deadlineOffset: 1800 })).body)).status,
     ).toBe(200);
+  });
+
+  it('D-R2: re-checks the deadline in the lane, so a queue wait cannot send a sweep about to lapse', async () => {
+    // A single breaker failure would open it: the refusal must be neutral (nothing was wrong with the RPC).
+    const breaker = { ...testConfig().breaker, minSamples: 1, failureRatio: 0.01 };
+    const s = await start({ config: { breaker } });
+    let release: () => void = () => undefined;
+    s.fake.receiptGate = new Promise<void>((r) => {
+      release = r;
+    });
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 1n })).body)).status).toBe(200);
+    // Admitted with 31 s left (minimum 30), then queued behind the first sweep's receipt for 2 s.
+    const queued = call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 2n, deadlineOffset: 31 })).body);
+    const inLane = (): boolean =>
+      s.relayer.metrics.render().includes('relayer_queue_pending{chain_id="11155111"} 2');
+    for (let i = 0; i < 100 && !inLane(); i += 1) await settle();
+    expect(inLane()).toBe(true); // admitted before the clock moves
+    s.clock.ms += 2_000;
+    release();
+    const r = await queued;
+    expect(r.status).toBe(422);
+    expect(errCode(r)).toBe('deadline_too_soon'); // a pre-broadcast class the web client releases its lock on
+    expect(s.fake.simulations).toBe(3); // refused in the lane, before its second simulation
+    expect(s.fake.sent).toHaveLength(1);
+    const health = await call(s, 'GET', '/healthz');
+    expect(health.json).toMatchObject({ status: 'ok', chains: [{ breaker: 'closed' }] });
+    // Not the owner's doing: no strike, and a sweep with time left still goes through.
+    s.fake.receiptGate = undefined;
+    expect(s.relayer.metrics.render()).not.toContain('relayer_owner_failures_total');
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 3n })).body)).status).toBe(200);
+  });
+
+  it('D-R8: re-checks the deadline after the final simulation, so a slow RPC cannot use up the margin before the send', async () => {
+    const breaker = { ...testConfig().breaker, minSamples: 1, failureRatio: 0.01 };
+    const s = await start({ config: { breaker } });
+    const simulate = s.fake.simulateSweep.bind(s.fake);
+    s.fake.simulateSweep = async (c) => {
+      const r = await simulate(c);
+      if (s.fake.simulations === 2) s.clock.ms += 20_000; // the final simulation (eth_call, estimateGas) on a slow RPC
+      return r;
+    };
+    // 45 s left at admission and before the final simulation, 25 s after it (minimum 30).
+    const r = await call(s, 'POST', '/v1/sweep', (await prepare(s, { deadlineOffset: 45 })).body);
+    expect(r.status).toBe(422);
+    expect(errCode(r)).toBe('deadline_too_soon');
+    expect(s.fake.simulations).toBe(2);
+    expect(s.fake.sent).toHaveLength(0);
+    // Refused before the reservations: nothing reserved, neutral for the breaker, no owner strike.
+    const metrics = s.relayer.metrics.render();
+    expect(metrics).toMatch(/relayer_daily_budget_used_wei\{[^}]*\} 0$/m);
+    expect(metrics).not.toContain('relayer_owner_failures_total');
+    expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'ok', chains: [{ breaker: 'closed' }] });
   });
 
   it('rejects orders the contract would reject before any chain call', async () => {
@@ -994,20 +1047,106 @@ describe('receipt timeouts (L5-06)', () => {
   const budgetUsed = (s: Harness): bigint =>
     BigInt(/relayer_daily_budget_used_wei\{[^}]*\} (\d+)/.exec(s.relayer.metrics.render())?.[1] ?? '-1');
 
-  it('a receipt timeout records a breaker failure and alerts', async () => {
+  /** One sweep whose receipt wait ends only after the HTTP reply, as in production, with `receipt` or a throwing wait. */
+  const sweepWithReceipt = async (s: Harness, nonce: bigint, receipt: ReceiptSummary | Error) => {
+    let release: () => void = () => undefined;
+    s.fake.receiptGate = new Promise<void>((r) => {
+      release = r;
+    });
+    s.fake.receiptError = receipt instanceof Error ? receipt : undefined;
+    if (!(receipt instanceof Error)) s.fake.receipt = receipt;
+    const r = await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce })).body);
+    release();
+    await settle();
+    return r.status;
+  };
+  const breakerOf = async (s: Harness): Promise<string | undefined> =>
+    ((await call(s, 'GET', '/healthz')).json as { chains: { breaker: string }[] }).chains[0]?.breaker;
+
+  it.each([0.5, 0.6])('receipt timeouts alone open the breaker at failureRatio %s', async (ratio) => {
     const alerts: string[] = [];
-    const s = await start({ alerts: { send: (e) => alerts.push(e.kind) } });
+    const breaker = { ...testConfig().breaker, failureRatio: ratio }; // windowSize 10, minSamples 3
+    const s = await start({ config: { breaker }, alerts: { send: (e) => alerts.push(e.kind) } });
+    const timeout = { status: 'timeout', gasUsed: 0n } as const;
+    expect(await sweepWithReceipt(s, 1n, timeout)).toBe(200);
+    expect(await sweepWithReceipt(s, 2n, new Error('provider disconnected'))).toBe(200); // a timeout too
+    // Nothing is recorded at broadcast: two timeouts are two failures of two outcomes, still below minSamples.
+    expect(alerts).toEqual(['receipt_timeout', 'receipt_timeout']);
+    expect(await breakerOf(s)).toBe('closed');
+    expect(await sweepWithReceipt(s, 3n, timeout)).toBe(200);
+    expect(alerts).toEqual(['receipt_timeout', 'receipt_timeout', 'receipt_timeout', 'breaker_open']);
+    expect(await breakerOf(s)).toBe('open');
+    expect((await call(s, 'GET', '/healthz')).status).toBe(503);
+    const refused = await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 4n })).body);
+    expect(errCode(refused)).toBe('breaker_open');
+    const metrics = s.relayer.metrics.render(); // counted when the receipt wait ends, with the receipt's outcome
+    expect(metrics).toContain('relayer_sweeps_total{chain_id="11155111",outcome="failure"} 3');
+  });
+
+  it('a half-open probe stays in flight until its receipt; only a mined sweep closes the breaker', async () => {
+    const s = await start();
+    s.fake.simulateError = new Error('rpc exploded');
+    for (const n of [1n, 2n, 3n]) await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: n })).body);
+    s.fake.simulateError = undefined;
+    expect(await breakerOf(s)).toBe('open');
+    s.clock.ms += 61_000;
+    // The probe is broadcast and answered while its receipt is pending: still half-open, other sweeps refused.
+    let release: () => void = () => undefined;
+    s.fake.receiptGate = new Promise<void>((r) => {
+      release = r;
+    });
     s.fake.receipt = { status: 'timeout', gasUsed: 0n };
-    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 1n })).body)).status).toBe(200);
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 10n })).body)).status).toBe(200);
+    expect(await breakerOf(s)).toBe('half_open');
+    const refused = await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 11n })).body);
+    expect(errCode(refused)).toBe('breaker_open');
+    release();
     await settle();
-    expect(alerts).toEqual(['receipt_timeout']);
-    s.fake.receipt = { status: 'success', gasUsed: 0n };
-    s.fake.receiptError = new Error('provider disconnected'); // a throwing wait is a timeout too
-    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 2n })).body)).status).toBe(200);
+    expect(await breakerOf(s)).toBe('open'); // its receipt timed out
+    s.clock.ms += 61_000;
+    // A mined revert is neutral (S3-06): the probe is freed without closing; the next one decides.
+    expect(await sweepWithReceipt(s, 12n, { status: 'reverted', gasUsed: 100_000n })).toBe(200);
+    expect(await breakerOf(s)).toBe('half_open');
+    expect(await sweepWithReceipt(s, 13n, { status: 'success', gasUsed: 100_000n })).toBe(200);
+    expect(await breakerOf(s)).toBe('closed');
+  });
+
+  /** Opens the breaker, waits out the cooldown and broadcasts a probe whose receipt wait ends on the returned call. */
+  const heldProbe = async (s: Harness): Promise<() => void> => {
+    s.fake.simulateError = new Error('rpc exploded');
+    for (const n of [1n, 2n, 3n]) await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: n })).body);
+    s.fake.simulateError = undefined;
+    s.clock.ms += 61_000;
+    let release: () => void = () => undefined;
+    s.fake.receiptGate = new Promise<void>((r) => {
+      release = r;
+    });
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 10n })).body)).status).toBe(200);
+    return release;
+  };
+  // breaker.probeTimeoutSeconds 60 (the harness value) and queue.receiptTimeoutSeconds 120: the defaults.
+  const defaults = { queue: { maxPending: 4, receiptTimeoutSeconds: 120 } };
+
+  it('D-R7: with the default timeouts, a probe mined 90 s after admission closes the breaker', async () => {
+    const s = await start({ config: defaults });
+    const release = await heldProbe(s);
+    s.clock.ms += 90_000; // past breaker.probeTimeoutSeconds, within queue.receiptTimeoutSeconds: the receipt decides
+    expect(await breakerOf(s)).toBe('half_open');
+    release();
     await settle();
-    // success at broadcast + failure at timeout, twice: 2 of 4 >= failureRatio 0.5 with minSamples 3
-    expect(alerts).toContain('breaker_open');
-    expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'degraded', chains: [{ breaker: 'open' }] });
+    expect(await breakerOf(s)).toBe('closed');
+  });
+
+  it('a probe not settled within probeTimeoutSeconds plus receiptTimeoutSeconds re-opens the breaker; its late receipt is ignored', async () => {
+    const s = await start({ config: defaults });
+    const release = await heldProbe(s);
+    s.clock.ms += 179_000; // 60 s for the work up to the broadcast plus the 120 s receipt wait
+    expect(await breakerOf(s)).toBe('half_open');
+    s.clock.ms += 1_000;
+    expect(await breakerOf(s)).toBe('open');
+    release();
+    await settle();
+    expect(await breakerOf(s)).toBe('open');
   });
 
   it('keeps the reservations of a timed-out transaction until a later lookup finds its receipt', async () => {
@@ -1605,7 +1744,7 @@ describe('S3-05/06 breaker integration', () => {
     s.fake.sendGate = new Promise<void>(() => undefined);
     void call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 70n })).body).catch(() => undefined);
     await settle();
-    s.clock.ms += 6_000;
+    s.clock.ms += 36_000; // probeTimeoutSeconds 5 plus queue.receiptTimeoutSeconds 30
     expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ chains: [{ breaker: 'open' }] });
     s.clock.ms += 61_000;
     expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'degraded' }); // cooldown elapsed: probe due

@@ -389,7 +389,13 @@ export class LossBudget {
     const entries = new Set<Spend>();
     const inserted: (() => void)[] = [];
     let overflow = false;
-    const pick = (table: BoundedTable<Spend>, key: string, group: string, spill: Spend, partition: boolean): Spend => {
+    const pick = (
+      table: BoundedTable<Spend>,
+      key: string,
+      group: string,
+      spill: Spend,
+      partition: boolean,
+    ): Spend => {
       const hit = create ? table.get(key) : table.peek(key);
       if (hit !== undefined) return hit;
       if ((!partition || table.groupSize(group) < this.maxPerGroup) && table.canInsert()) {

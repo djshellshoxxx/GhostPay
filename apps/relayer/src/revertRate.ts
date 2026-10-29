@@ -37,7 +37,11 @@ export class RevertRate {
   /** Whether recent mined sweeps revert at a sustained rate. */
   public get sustained(): boolean {
     const t = this.now();
-    for (let first = this.mined[0]; first !== undefined && t - first.at >= this.o.windowMs; first = this.mined[0]) {
+    for (
+      let first = this.mined[0];
+      first !== undefined && t - first.at >= this.o.windowMs;
+      first = this.mined[0]
+    ) {
       this.mined.shift();
     }
     const reverts = this.mined.filter((m) => m.reverted).length;

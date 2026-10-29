@@ -1,4 +1,5 @@
-import { chmodSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { chmodSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { secp256k1 } from '@noble/curves/secp256k1.js';
@@ -375,8 +376,65 @@ describe('deploy recipe wiring (L5-05, L7-L3)', () => {
     expect(api).toMatch(/proxy_pass http:\/\/api:8787;/);
     expect(api).toMatch(/proxy_set_header X-Forwarded-For \$remote_addr;/);
     expect(api).toContain('limit_except GET POST OPTIONS { deny all; }');
-    expect(block(/location \/api\/ \{/)).toMatch(/return 404;/);
-    expect(nginx.match(/proxy_pass /g)).toHaveLength(1);
+    const rest = block(/location \/api\/ \{/);
+    expect(rest).toMatch(/return 404;/);
+    // Scoped to the /api/ locations and the relayer upstream; other locations in nginx.conf are not this test's.
+    expect(api.match(/proxy_pass /g)).toHaveLength(1);
+    expect(rest).not.toContain('proxy_pass');
+    expect(nginx.match(/proxy_pass http:\/\/api:8787/g)).toHaveLength(1);
+  });
+
+  it('selfhost.sh warns unless trustedProxies covers the backend subnet nginx connects from', () => {
+    /** `selfhost.sh --dry-run` on a scratch copy of deploy/ (needs bash and python3); returns its trustedProxies lines. */
+    const selfhost = (trustedProxies: unknown, composeFile = compose): string => {
+      const root = mkdtempSync(join(tmpdir(), 'gp-selfhost-'));
+      const dir = join(root, 'deploy');
+      try {
+        mkdirSync(join(dir, 'config'), { recursive: true });
+        mkdirSync(join(root, 'bin'));
+        writeFileSync(join(dir, 'selfhost.sh'), deploy('selfhost.sh'));
+        writeFileSync(join(dir, 'docker-compose.yml'), composeFile);
+        writeFileSync(join(dir, 'config', 'relayer.config.json'), JSON.stringify({ trustedProxies }));
+        writeFileSync(join(root, 'bin', 'docker'), '#!/bin/sh\nexit 1\n', { mode: 0o755 }); // no real docker call
+        const env = { ...process.env, PATH: `${join(root, 'bin')}:${process.env['PATH'] ?? ''}` };
+        const out = spawnSync('bash', [join(dir, 'selfhost.sh'), '--dry-run'], { encoding: 'utf8', env });
+        const lines = out.stdout.match(/^ {2}(?:ok|warn) +.*(?:trustedProxies|backend subnet).*$/gm);
+        return lines?.map((l) => l.trim()).join('\n') ?? out.stdout + out.stderr;
+      } finally {
+        rmSync(root, { recursive: true, force: true });
+      }
+    };
+    const covers = /^ok +relayer trustedProxies covers the compose backend subnet 172\.30\.10\.0\/24/;
+    expect(selfhost(['172.30.10.0/24'])).toMatch(covers);
+    expect(selfhost(['10.0.0.0/8', '172.30.0.0/16'])).toMatch(covers); // contains it
+    expect(selfhost(['172.30.10.0/25', '172.30.0.0/16'])).toMatch(covers); // one entry contains it
+    // D-R10: Docker assigns nginx's backend address (compose pins none), so only an entry holding the whole subnet covers
+    // it; an entry holding part of it gets its own warning, an address included (here IPv4-mapped).
+    const part = /^warn +relayer trustedProxies lists only part of the compose backend subnet 172\.30\.10\.0\/24: /;
+    for (const list of [['172.30.10.200'], ['172.30.10.0/25'], ['::ffff:172.30.10.3'], ['10.0.0.0/8', '172.30.10.128/25']])
+      expect(selfhost(list)).toMatch(part);
+    const misses = /^warn +.*trustedProxies does not cover the compose backend subnet 172\.30\.10\.0\/24/;
+    expect(selfhost(['10.0.0.0/8'])).toMatch(misses);
+    expect(selfhost(['127.0.0.1', '172.30.11.0/24'])).toMatch(misses); // the frontend subnet is not nginx's peer
+    for (const list of [[], ['127.0.0.1', '::1']])
+      expect(selfhost(list)).toMatch(/^warn +relayer trustedProxies is empty or loopback-only/);
+    expect(selfhost('172.30.10.0/24')).toMatch(/^warn +could not read trustedProxies/);
+    // An operator who moved the backend subnet in docker-compose.yml is checked against the new one.
+    const moved = compose.replace('subnet: 172.30.10.0/24', 'subnet: 10.89.10.0/24');
+    expect(selfhost(['10.89.10.0/24'], moved)).toMatch(/^ok +.* 10\.89\.10\.0\/24$/);
+    expect(selfhost(['172.30.10.0/24'], moved)).toMatch(/^warn +.*does not cover .* 10\.89\.10\.0\/24/);
+    // D-R9: quotes or a trailing YAML comment around the moved subnet do not hide it.
+    for (const subnet of ['10.89.10.0/24  # moved', "'10.89.10.0/24' # moved", '"10.89.10.0/24"']) {
+      const edited = compose.replace('subnet: 172.30.10.0/24', `subnet: ${subnet}`);
+      expect(selfhost(['10.89.10.0/24'], edited)).toMatch(/^ok +.* 10\.89\.10\.0\/24$/);
+      expect(selfhost(['172.30.10.0/24'], edited)).toMatch(/^warn +.*does not cover .* 10\.89\.10\.0\/24/);
+    }
+    // D-R9: when no subnet can be read, the output says that the recipe's default was assumed.
+    const assumed = /^warn +could not read the backend subnet from docker-compose\.yml; checking trustedProxies against the recipe's default 172\.30\.10\.0\/24 instead\n/;
+    for (const unreadable of ['services: {}\n', compose.replace('subnet: 172.30.10.0/24', 'subnet: 10.89.10.0/33')]) {
+      expect(selfhost(['172.30.10.0/24'], unreadable)).toMatch(new RegExp(`${assumed.source}ok +relayer trustedProxies covers the assumed backend subnet`));
+      expect(selfhost(['10.89.10.0/24'], unreadable)).toMatch(new RegExp(`${assumed.source}warn +.*does not cover the assumed backend subnet`));
+    }
   });
 });
 

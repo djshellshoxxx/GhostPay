@@ -181,8 +181,14 @@ describe('LossBudget (S3-06)', () => {
 
   it('L5-02: a multi-source reservation charges every key and group but the global limit once', () => {
     const clock = { t: 0 };
-    const b = new LossBudget({ windowMs: 1000, perKeyLimit: 100n, globalLimit: 150n, maxKeys: 8 }, () => clock.t);
-    const sources = [{ key: 'dst:a', kind: 'dst' }, { key: 'net:a', group: 'net:g', kind: 'net' }];
+    const b = new LossBudget(
+      { windowMs: 1000, perKeyLimit: 100n, globalLimit: 150n, maxKeys: 8 },
+      () => clock.t,
+    );
+    const sources = [
+      { key: 'dst:a', kind: 'dst' },
+      { key: 'net:a', group: 'net:g', kind: 'net' },
+    ];
     const first = b.reserveAll(sources, 70n);
     expect(first).not.toBeNull();
     expect(first?.overflow).toBe(false);
@@ -221,17 +227,20 @@ describe('LossBudget (S3-06)', () => {
     expect(b.allows('other')).toBe(true); // 51 of 300 for lossy sources
     clock.t += 1000; // a new window forgets the loss
     expect(b.reserveAll([{ key: 'dirty' }], 400n)).not.toBeNull();
-    expect(() => new LossBudget({ windowMs: 1, perKeyLimit: 1n, globalLimit: 1n, maxKeys: 1, cleanReserve: 2n })).toThrow(
-      GuardError,
-    );
-    expect(() => new LossBudget({ windowMs: 1, perKeyLimit: 1n, globalLimit: 1n, maxKeys: 1, cleanReserve: -1n })).toThrow(
-      GuardError,
-    );
+    expect(
+      () => new LossBudget({ windowMs: 1, perKeyLimit: 1n, globalLimit: 1n, maxKeys: 1, cleanReserve: 2n }),
+    ).toThrow(GuardError);
+    expect(
+      () => new LossBudget({ windowMs: 1, perKeyLimit: 1n, globalLimit: 1n, maxKeys: 1, cleanReserve: -1n }),
+    ).toThrow(GuardError);
   });
 
   it('L5-02: a late settlement is charged once to the current window', () => {
     const clock = { t: 0 };
-    const b = new LossBudget({ windowMs: 1000, perKeyLimit: 1000n, globalLimit: 100n, maxKeys: 8 }, () => clock.t);
+    const b = new LossBudget(
+      { windowMs: 1000, perKeyLimit: 1000n, globalLimit: 100n, maxKeys: 8 },
+      () => clock.t,
+    );
     const r = b.reserveAll([{ key: 'dst:a' }, { key: 'net:a' }], 10n);
     clock.t += 1000;
     expect(r?.settle(60n)).toBe(true);
@@ -241,7 +250,10 @@ describe('LossBudget (S3-06)', () => {
 
   it('L5-04: stale groups are evicted, so a full group table overflows only on live entries', () => {
     const clock = { t: 0 };
-    const b = new LossBudget({ windowMs: 1000, perKeyLimit: 100n, globalLimit: 10_000n, maxKeys: 2 }, () => clock.t);
+    const b = new LossBudget(
+      { windowMs: 1000, perKeyLimit: 100n, globalLimit: 10_000n, maxKeys: 2 },
+      () => clock.t,
+    );
     b.charge('a', 1n, 'g-a');
     b.charge('b', 1n, 'g-b');
     clock.t += 1000; // both groups (and keys) are stale now
@@ -256,7 +268,10 @@ describe('LossBudget (S3-06)', () => {
   });
 
   it('L5-04: sources of different kinds never share an overflow entry; one sweep charges it once', () => {
-    const b = new LossBudget({ windowMs: 1000, perKeyLimit: 100n, globalLimit: 10_000n, maxKeys: 1 }, () => 0);
+    const b = new LossBudget(
+      { windowMs: 1000, perKeyLimit: 100n, globalLimit: 10_000n, maxKeys: 1 },
+      () => 0,
+    );
     b.charge('live', 1n, 'live'); // both tables full of a live entry
     const sweep = (i: number) => [
       { key: `dst:${String(i)}`, kind: 'dst' },
@@ -282,7 +297,15 @@ describe('LossBudget (S3-06)', () => {
     b.charge('a1', 1n, 'G');
     b.charge('a2', 95n, 'G'); // G's key quota is full: a2 is charged to the overflow entry
     // Two new keys, one free slot: the second must use the overflow entry, which has only 5 left.
-    expect(b.reserveAll([{ key: 'n1', group: 'h1' }, { key: 'n2', group: 'h2' }], 10n)).toBeNull();
+    expect(
+      b.reserveAll(
+        [
+          { key: 'n1', group: 'h1' },
+          { key: 'n2', group: 'h2' },
+        ],
+        10n,
+      ),
+    ).toBeNull();
     // Nothing was kept: the one slot is still free for a single newcomer.
     const single = b.reserve('n3', 10n, 'h3');
     expect(single?.overflow).toBe(false);
@@ -290,7 +313,10 @@ describe('LossBudget (S3-06)', () => {
 
   it('L5-04: a read-only probe does not keep a stale key from being evicted', () => {
     const clock = { t: 0 };
-    const b = new LossBudget({ windowMs: 1000, perKeyLimit: 100n, globalLimit: 10_000n, maxKeys: 2 }, () => clock.t);
+    const b = new LossBudget(
+      { windowMs: 1000, perKeyLimit: 100n, globalLimit: 10_000n, maxKeys: 2 },
+      () => clock.t,
+    );
     b.charge('old', 1n, 'g');
     clock.t += 1000;
     b.charge('live', 1n, 'g2');

@@ -159,7 +159,8 @@ const REVERT_MAP: Readonly<Record<string, readonly [number, string]>> = {
 
 /**
  * Part of `lossBudget.globalWei` kept for sweeps whose sources lost nothing in the current window, so sources that
- * keep losing cannot refuse everyone (L5-02).
+ * keep losing cannot spend it (L5-02). A network group new to the window is clean until its first loss, so enough
+ * distinct groups, one loss each, can still use it up (README).
  */
 export function lossCleanReserve(globalWei: bigint): bigint {
   return globalWei / 4n;
@@ -253,7 +254,10 @@ export class RelayerService {
             minSamples: b.minSamples,
             failureRatio: b.failureRatio,
             cooldownMs: b.cooldownSeconds * 1000,
-            probeTimeoutMs: b.probeTimeoutSeconds * 1000,
+            // A broadcast probe holds its permit until its receipt wait ends (L5-06), so it gets that wait on top of
+            // probeTimeoutSeconds, which covers the in-lane work up to the broadcast. With the probe timeout alone a
+            // probe mined late in the wait would re-open the breaker and its success would be ignored.
+            probeTimeoutMs: (b.probeTimeoutSeconds + d.config.queue.receiptTimeoutSeconds) * 1000,
           },
           mono,
         ),
@@ -574,16 +578,22 @@ export class RelayerService {
     if (permit === null) throw new RelayerError(503, 'breaker_open', this.d.config.breaker.cooldownSeconds);
     // Every exit settles the permit; anything not named below is neutral (user-attributable), so a
     // half-open probe can never wedge (S3-05) and attacker-caused failures cannot open it (S3-06).
+    // A broadcast sweep settles it when its receipt wait ends, so the receipt decides the outcome and a
+    // half-open probe stays in flight until then (L5-06).
     let outcome = classifyRelayOutcome('invalid_request');
+    const finish = (): void => {
+      permit.settle(outcome);
+      this.noteBreaker(rt);
+      this.d.metrics?.inc('relayer_sweeps_total', { chain_id: cfg.chainId, outcome });
+    };
     try {
       const out = await this.runSettled(rt, call, ctx, keys, (o) => {
         outcome = o;
       });
-      return out;
-    } finally {
-      permit.settle(outcome);
-      this.noteBreaker(rt);
-      this.d.metrics?.inc('relayer_sweeps_total', { chain_id: cfg.chainId, outcome });
+      return { value: out.value, settled: out.settled.finally(finish) };
+    } catch (e) {
+      finish();
+      throw e;
     }
   }
 
@@ -676,6 +686,12 @@ export class RelayerService {
     if (sendGasPrice * 100n > gasPrice * BigInt(100 + this.d.config.gas.maxMovePercent)) {
       throw new RelayerError(503, 'gas_price_moved', 5);
     }
+    // The deadline was checked before the queue wait: a sweep left with no more than the minimum could lapse before
+    // inclusion, a mined revert the relayer pays for. Refused like at admission (neutral, not the owner's doing), here
+    // and again after the final simulation, whose RPC calls can use up the margin.
+    const deadlineTooSoon = (): boolean =>
+      call.sweep.deadline <= BigInt(Math.floor(this.now() / 1000) + this.d.config.minDeadlineSeconds);
+    if (deadlineTooSoon()) throw new RelayerError(422, 'deadline_too_soon');
     let finalSimulation: Awaited<ReturnType<ChainClient['simulateSweep']>>;
     try {
       finalSimulation = await op(() => client.simulateSweep(call));
@@ -686,6 +702,8 @@ export class RelayerService {
     if (finalSimulation.gasLimit > cfg.maxGasLimit) throw new RelayerError(422, 'gas_limit_too_high');
     if (!(await coversGas(finalSimulation.gasEstimate, sendGasPrice)))
       throw new RelayerError(422, 'fee_below_gas_cost');
+    // Next to the send and before anything is reserved: only the nonce read and the send itself follow.
+    if (deadlineTooSoon()) throw new RelayerError(422, 'deadline_too_soon');
 
     const gasLimit = finalSimulation.gasLimit;
     const reserved = gasLimit * sendGasPrice;
@@ -715,9 +733,10 @@ export class RelayerService {
       setOutcome(classifyRelayOutcome('send_failed'));
       throw new RelayerError(503, 'send_failed');
     }
-    setOutcome(classifyRelayOutcome('confirmed'));
     this.logger.log('info', 'sweep_sent', { requestId: ctx.requestId, chainId: cfg.chainId, txHash });
 
+    // The breaker outcome is the receipt's, not the broadcast's (L5-06): a mined sweep is a success, a receipt
+    // timeout a failure, and a mined revert neutral (S3-06; attributed to a state change, not re-simulated).
     const sent: SentSweep = { txHash, call, gasPrice: sendGasPrice, reserved, reservedDay, loss, at: 0 };
     const settled = (async (): Promise<void> => {
       let r: ReceiptSummary;
@@ -728,9 +747,11 @@ export class RelayerService {
       }
       if (r.status === 'timeout') {
         nonces.invalidate();
+        setOutcome(classifyRelayOutcome('receipt_timeout'));
         this.receiptTimedOut(rt, sent);
         return;
       }
+      setOutcome(classifyRelayOutcome(r.status === 'success' ? 'confirmed' : 'mined_revert_state_changed'));
       this.settleReceipt(rt, sent, { status: r.status, gasUsed: r.gasUsed });
     })();
     return { value: { txHash }, settled };
@@ -738,16 +759,13 @@ export class RelayerService {
 
   /**
    * The broadcast may still be mined, so its worst-case reservations are kept and its receipt is looked up again by
-   * later jobs (L5-06). The job's breaker permit was settled at broadcast, so the failure is recorded directly.
-   * Nothing bumps or cancels the transaction (README).
+   * later jobs (L5-06); the job's breaker permit records the failure. Nothing bumps or cancels the transaction (README).
    */
   private receiptTimedOut(rt: ChainRuntime, sent: SentSweep): void {
     const chainId = rt.cfg.chainId;
     this.logger.log('warn', 'receipt_timeout', { chainId, txHash: sent.txHash, errorClass: 'receipt_timeout' });
     this.d.metrics?.inc('relayer_receipt_timeouts_total', { chain_id: chainId });
     this.alerts.send({ kind: 'receipt_timeout', chainId });
-    rt.breaker.tryAcquire({ validated: true })?.settle(classifyRelayOutcome('receipt_timeout'));
-    this.noteBreaker(rt);
     sent.at = this.mono();
     rt.pending.push(sent);
     if (rt.pending.length > MAX_PENDING_RECEIPTS) rt.pending.shift();
