@@ -68,15 +68,42 @@ class GhostpayWebhookModuleFrontController extends ModuleFrontController {
 		return (bool) $history->addWithemail( true );
 	}
 
-	/** Private order message for the merchant, stored like PaymentModule::validateOrder() stores its message. */
+	/**
+	 * Private note for the merchant where the PrestaShop 8 order page lists messages (the order's customer threads, not
+	 * the legacy ps_message table): a CustomerMessage in the order's CustomerThread, found or created as PrestaShop's
+	 * AddOrderCustomerMessageHandler does. It has no employee (a webhook has none), so PrestaShop shows it in the
+	 * customer's style; private keeps it out of the customer's order history. One transaction: a thread without its
+	 * message would break the order page.
+	 */
 	private function add_note( Order $order, string $text ): bool {
-		$message = new Message();
+		$db        = Db::getInstance();
+		$customer  = new Customer( (int) $order->id_customer );
+		$thread_id = (int) CustomerThread::getIdCustomerThreadByEmailAndIdOrder( (string) $customer->email, (int) $order->id );
+		if ( ! $db->execute( 'START TRANSACTION' ) ) {
+			return false;
+		}
+		if ( 0 === $thread_id ) {
+			$thread = new CustomerThread();
+			$thread->id_contact = 0;
+			$thread->id_customer = (int) $order->id_customer;
+			$thread->id_shop = (int) $this->context->shop->id;
+			$thread->id_order = (int) $order->id;
+			$thread->id_lang = (int) $order->id_lang;
+			$thread->email = (string) $customer->email;
+			$thread->status = 'open';
+			$thread->token = Tools::passwdGen( 12 );
+			$thread_id = $thread->add() ? (int) $thread->id : 0;
+		}
+		$message = new CustomerMessage();
+		$message->id_customer_thread = $thread_id;
+		$message->id_employee = 0;
 		$message->message = $text;
-		$message->id_cart = (int) $order->id_cart;
-		$message->id_customer = (int) $order->id_customer;
-		$message->id_order = (int) $order->id;
 		$message->private = 1;
-		return (bool) $message->add();
+		if ( 0 === $thread_id || ! $message->add() || ! $db->execute( 'COMMIT' ) ) {
+			$db->execute( 'ROLLBACK' );
+			return false;
+		}
+		return true;
 	}
 
 	public function postProcess() {

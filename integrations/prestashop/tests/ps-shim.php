@@ -6,8 +6,8 @@
  * controller request per process because the controllers exit(). Only the MySQL spellings the module uses are mapped
  * to SQLite; every SQL error throws what PrestaShop 8's DbPDO::_query() throws on PHP 8 (a PrestaShopException with the
  * PDOException as previous), so drift between the install DDL and the controller queries fails the tests. Orders,
- * currencies, order history, messages and configuration are plain tables created by ghostpay_test_platform_schema();
- * OrderHistory::changeIdOrderState() returns nothing, like PrestaShop's.
+ * currencies, order history, customers, customer threads with their messages, and configuration are plain tables made
+ * by ghostpay_test_platform_schema(); OrderHistory::changeIdOrderState() returns nothing, like PrestaShop's.
  */
 
 define( '_PS_VERSION_', '8.1.0' );
@@ -86,6 +86,19 @@ class Db {
 		return false === $row ? false : array_shift( $row );
 	}
 
+	/** Like PrestaShop: every row, string values. */
+	public function executeS( $sql, $array = true, $use_cache = true ) {
+		return array_map(
+			static fn( array $row ): array => array_map( static fn( $v ) => null === $v ? null : (string) $v, $row ),
+			$this->query( self::sqlite( (string) $sql ) )->fetchAll()
+		);
+	}
+
+	/** The id of the row just inserted. */
+	public function Insert_ID() {
+		return (int) $this->pdo->lastInsertId();
+	}
+
 	/** Like PrestaShop: every value is quoted as-is (callers pSQL() it). */
 	public function insert( $table, $data, $null_values = false, $use_cache = true, $type = self::INSERT, $add_prefix = true ) {
 		$table = ( $add_prefix ? _DB_PREFIX_ : '' ) . $table;
@@ -99,7 +112,7 @@ class Db {
 	}
 }
 
-/** A test sets GHOSTPAY_TEST_FAIL_WRITES to make order-history and message writes fail. */
+/** A test sets GHOSTPAY_TEST_FAIL_WRITES to make order-history and customer-message writes fail. */
 function ghostpay_test_fail_writes(): bool {
 	return '1' === Configuration::get( 'GHOSTPAY_TEST_FAIL_WRITES' );
 }
@@ -113,10 +126,101 @@ function ghostpay_test_platform_schema(): void {
 	$db = Db::getInstance();
 	$db->execute( 'CREATE TABLE `ps_configuration` (`name` TEXT PRIMARY KEY, `value` TEXT)' );
 	$db->execute( 'CREATE TABLE `ps_currency` (`id_currency` INTEGER PRIMARY KEY, `iso_code` TEXT NOT NULL, `precision` INTEGER NOT NULL)' );
-	$db->execute( 'CREATE TABLE `ps_orders` (`id_order` INTEGER PRIMARY KEY, `id_cart` INTEGER, `id_customer` INTEGER, `id_currency` INTEGER, `module` TEXT, `current_state` INTEGER, `total_paid` TEXT)' );
+	$db->execute( 'CREATE TABLE `ps_orders` (`id_order` INTEGER PRIMARY KEY, `id_cart` INTEGER, `id_customer` INTEGER, `id_currency` INTEGER, `id_lang` INTEGER NOT NULL DEFAULT 1, `module` TEXT, `current_state` INTEGER, `total_paid` TEXT)' );
 	$db->execute( 'CREATE TABLE `ps_order_history` (`id_order_history` INTEGER PRIMARY KEY AUTOINCREMENT, `id_order` INTEGER, `id_order_state` INTEGER)' );
-	$db->execute( 'CREATE TABLE `ps_message` (`id_message` INTEGER PRIMARY KEY AUTOINCREMENT, `id_cart` INTEGER, `id_customer` INTEGER, `id_order` INTEGER, `message` TEXT, `private` INTEGER)' );
 	$db->execute( 'CREATE TABLE `ps_order_state` (`id_order_state` INTEGER PRIMARY KEY, `name` TEXT)' );
+	// Customer service: also the columns PrestaShop's own order-page and storefront message queries read (run.php).
+	$db->execute( 'CREATE TABLE `ps_customer` (`id_customer` INTEGER PRIMARY KEY, `firstname` TEXT NOT NULL, `lastname` TEXT NOT NULL, `email` TEXT NOT NULL)' );
+	$db->execute( 'CREATE TABLE `ps_employee` (`id_employee` INTEGER PRIMARY KEY, `firstname` TEXT NOT NULL, `lastname` TEXT NOT NULL)' );
+	$db->execute( 'CREATE TABLE `ps_customer_thread` (`id_customer_thread` INTEGER PRIMARY KEY AUTOINCREMENT, `id_shop` INTEGER, `id_lang` INTEGER NOT NULL, `id_contact` INTEGER NOT NULL, `id_customer` INTEGER, `id_order` INTEGER, `status` TEXT, `email` TEXT, `token` TEXT NOT NULL, `date_add` TEXT, `date_upd` TEXT)' );
+	$db->execute( 'CREATE TABLE `ps_customer_message` (`id_customer_message` INTEGER PRIMARY KEY AUTOINCREMENT, `id_customer_thread` INTEGER, `id_employee` INTEGER, `message` TEXT NOT NULL, `private` INTEGER NOT NULL DEFAULT 0, `date_add` TEXT, `date_upd` TEXT)' );
+}
+
+/** The request context: one shop, one language. */
+class Context {
+	private static $instance;
+	public $shop;
+	public $language;
+
+	public static function getContext(): self {
+		if ( null === self::$instance ) {
+			self::$instance           = new self();
+			self::$instance->shop     = (object) array( 'id' => 1 );
+			self::$instance->language = (object) array( 'id' => 1 );
+		}
+		return self::$instance;
+	}
+}
+
+class Tools {
+	public static function passwdGen( $length = 8, $flag = 'ALPHANUMERIC' ) {
+		return substr( bin2hex( random_bytes( $length ) ), 0, $length );
+	}
+}
+
+class Customer {
+	public $id;
+	public $firstname;
+	public $lastname;
+	public $email;
+
+	public function __construct( $id = null ) {
+		$row = Db::getInstance()->getRow( 'SELECT * FROM `ps_customer` WHERE `id_customer` = ' . (int) $id );
+		if ( $row ) {
+			$this->id        = (int) $row['id_customer'];
+			$this->firstname = $row['firstname'];
+			$this->lastname  = $row['lastname'];
+			$this->email     = $row['email'];
+		}
+	}
+}
+
+/** PrestaShop's CustomerThread: ObjectModel::add() inserts the fields and sets the id and dates. */
+class CustomerThread {
+	public $id;
+	public $id_shop;
+	public $id_lang;
+	public $id_contact;
+	public $id_customer;
+	public $id_order;
+	public $status;
+	public $email;
+	public $token;
+
+	public function add() {
+		$db  = Db::getInstance();
+		$now = date( 'Y-m-d H:i:s' );
+		$db->insert( 'customer_thread', array( 'id_shop' => (int) $this->id_shop, 'id_lang' => (int) $this->id_lang, 'id_contact' => (int) $this->id_contact, 'id_customer' => (int) $this->id_customer, 'id_order' => (int) $this->id_order, 'status' => pSQL( $this->status ), 'email' => pSQL( $this->email ), 'token' => pSQL( $this->token ), 'date_add' => $now, 'date_upd' => $now ) );
+		$this->id = $db->Insert_ID();
+		return true;
+	}
+
+	/** PrestaShop 8.1.7's query. */
+	public static function getIdCustomerThreadByEmailAndIdOrder( $email, $id_order ) {
+		return Db::getInstance()->getValue(
+			'SELECT cm.id_customer_thread FROM ' . _DB_PREFIX_ . 'customer_thread cm WHERE cm.email = \'' . pSQL( $email ) . '\' AND cm.id_shop = ' . (int) Context::getContext()->shop->id . ' AND cm.id_order = ' . (int) $id_order
+		);
+	}
+}
+
+/** PrestaShop's CustomerMessage (ObjectModel::add()). */
+class CustomerMessage {
+	public $id;
+	public $id_customer_thread;
+	public $id_employee;
+	public $message;
+	public $private;
+
+	public function add() {
+		if ( ghostpay_test_fail_writes() ) {
+			return false;
+		}
+		$db  = Db::getInstance();
+		$now = date( 'Y-m-d H:i:s' );
+		$db->insert( 'customer_message', array( 'id_customer_thread' => (int) $this->id_customer_thread, 'id_employee' => (int) $this->id_employee, 'message' => pSQL( $this->message ), 'private' => (int) $this->private, 'date_add' => $now, 'date_upd' => $now ) );
+		$this->id = $db->Insert_ID();
+		return true;
+	}
 }
 
 class Configuration {
@@ -181,6 +285,7 @@ class Order {
 	public $id_cart;
 	public $id_customer;
 	public $id_currency;
+	public $id_lang;
 	public $module;
 	public $current_state;
 	public $total_paid; // PrestaShop exposes the DECIMAL as a float
@@ -192,6 +297,7 @@ class Order {
 			$this->id_cart       = (int) $row['id_cart'];
 			$this->id_customer   = (int) $row['id_customer'];
 			$this->id_currency   = (int) $row['id_currency'];
+			$this->id_lang       = (int) $row['id_lang'];
 			$this->module        = $row['module'];
 			$this->current_state = (int) $row['current_state'];
 			$this->total_paid    = (float) $row['total_paid'];
@@ -221,24 +327,6 @@ class OrderHistory {
 			return false;
 		}
 		return Db::getInstance()->insert( 'order_history', array( 'id_order' => (int) $this->id_order, 'id_order_state' => (int) $this->id_order_state ) );
-	}
-}
-
-class Message {
-	public $id_cart;
-	public $id_customer;
-	public $id_order;
-	public $message;
-	public $private;
-
-	public function add() {
-		if ( ghostpay_test_fail_writes() ) {
-			return false;
-		}
-		return Db::getInstance()->insert(
-			'message',
-			array( 'id_cart' => (int) $this->id_cart, 'id_customer' => (int) $this->id_customer, 'id_order' => (int) $this->id_order, 'message' => pSQL( $this->message ), 'private' => (int) $this->private )
-		);
 	}
 }
 
@@ -279,6 +367,10 @@ class ModuleFrontController {
 	public $module;
 	public $context;
 	public $errors = array();
+
+	public function __construct() {
+		$this->context = Context::getContext(); // as PrestaShop's Controller::__construct()
+	}
 
 	protected function trans( $id, array $parameters = array(), $domain = null, $locale = null ) {
 		return strtr( $id, $parameters );

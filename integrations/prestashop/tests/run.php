@@ -142,8 +142,50 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	};
 	$state   = static fn( int $id ): int => (int) $db->getValue( "SELECT `current_state` FROM `ps_orders` WHERE `id_order` = $id" );
 	$history = static fn( int $id ): int => (int) $db->getValue( "SELECT COUNT(*) FROM `ps_order_history` WHERE `id_order` = $id" );
-	$notes   = static fn( int $id ): int => (int) $db->getValue( "SELECT COUNT(*) FROM `ps_message` WHERE `id_order` = $id AND `private` = 1" );
 	$reply   = static fn( array $r ): string => $r['status'] . ' ' . $r['body'];
+	$db->execute( "INSERT INTO `ps_customer` (`id_customer`, `firstname`, `lastname`, `email`) VALUES (7, 'Ann', 'Example', 'ann@example.test')" );
+
+	// H-R2: notes for the merchant must be where the PrestaShop 8 order page reads messages. Its query, verbatim from
+	// CustomerDataProvider::getCustomerMessages() (PrestaShop 8.1.7) for the order's customer and id: the messages of
+	// the order's customer threads (the legacy ps_message table is not shown there).
+	$order_page = static function ( int $id ) use ( $db ): array {
+		$customer_id = (int) $db->getValue( "SELECT `id_customer` FROM `ps_orders` WHERE `id_order` = $id" );
+		return $db->executeS(
+			'SELECT cm.*, c.`firstname` AS cfirstname, c.`lastname` AS clastname,
+			e.`firstname` AS efirstname, e.`lastname` AS elastname
+			FROM ' . _DB_PREFIX_ . 'customer_thread ct
+			LEFT JOIN ' . _DB_PREFIX_ . 'customer_message cm
+				ON ct.id_customer_thread = cm.id_customer_thread
+			LEFT JOIN `' . _DB_PREFIX_ . 'customer` c
+				ON ct.`id_customer` = c.`id_customer`
+			LEFT OUTER JOIN `' . _DB_PREFIX_ . 'employee` e
+				ON e.`id_employee` = cm.`id_employee`
+			WHERE ct.id_customer = ' . $customer_id . ' AND ct.`id_order` = ' . $id . ' GROUP BY cm.id_customer_message
+			ORDER BY cm.date_add DESC'
+		);
+	};
+	// The customer's order history (storefront) shows CustomerMessage::getMessagesByOrderId( $id, false ): verbatim.
+	$storefront = static fn( int $id ): array => $db->executeS(
+		'SELECT cm.*,
+			c.`firstname` AS cfirstname,
+			c.`lastname` AS clastname,
+			e.`firstname` AS efirstname,
+			e.`lastname` AS elastname,
+			(COUNT(cm.id_customer_message) = 0 AND ct.id_customer != 0) AS is_new_for_me
+		FROM `' . _DB_PREFIX_ . 'customer_message` cm
+		LEFT JOIN `' . _DB_PREFIX_ . 'customer_thread` ct
+			ON ct.`id_customer_thread` = cm.`id_customer_thread`
+		LEFT JOIN `' . _DB_PREFIX_ . 'customer` c
+			ON ct.`id_customer` = c.`id_customer`
+		LEFT OUTER JOIN `' . _DB_PREFIX_ . 'employee` e
+			ON e.`id_employee` = cm.`id_employee`
+		WHERE ct.id_order = ' . $id . '
+		AND cm.`private` = 0
+		GROUP BY cm.id_customer_message
+		ORDER BY cm.date_add DESC'
+	);
+	$notes   = static fn( int $id ): int => count( array_filter( $order_page( $id ), static fn( array $m ): bool => '1' === $m['private'] ) );
+	$threads = static fn( int $id ): int => (int) $db->getValue( "SELECT COUNT(*) FROM `ps_customer_thread` WHERE `id_order` = $id" );
 
 	$order( 1, $awaiting );
 	$paid1 = $event( 'evt_1', 'invoice.paid', 'inv_ps_1', 'USD', '1250' );
@@ -162,9 +204,17 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	check( 'payment for a paid order acknowledged', $reply( $request( $event( 'evt_2', 'invoice.paid', 'inv_ps_2', 'USD', '1250' ) ) ), '200 {"ok":true}' );
 	check( 'payment for a paid order: state kept', array( $state( 2 ), $history( 2 ) ), array( 2, 0 ) );
 	check( 'payment for a paid order: private note', $notes( 2 ), 1 );
-	$order( 3, 4 ); // shipped
+	$page = $order_page( 2 );
+	check( 'the note is on the PS 8 order page: private, no employee (a webhook has none), GhostPay text', array( count( $page ), $page[0]['private'] ?? null, $page[0]['id_employee'] ?? null, str_starts_with( (string) ( $page[0]['message'] ?? '' ), 'GhostPay invoice.paid event evt_2 ' ) ), array( 1, '1', '0', true ) );
+	check( 'the note is not shown to the customer', $storefront( 2 ), array() );
+	$request( $event( 'evt_2b', 'invoice.over', 'inv_ps_2', 'USD', '1300' ) );
+	check( 'a second note goes into the same order thread', array( $notes( 2 ), $threads( 2 ) ), array( 2, 1 ) );
+	$order( 3, 4 ); // shipped; the customer left a message at checkout, which PaymentModule::validateOrder() put in a thread
+	$db->execute( "INSERT INTO `ps_customer_thread` (`id_shop`, `id_lang`, `id_contact`, `id_customer`, `id_order`, `status`, `email`, `token`) VALUES (1, 1, 0, 7, 3, 'open', 'ann@example.test', 'tok3')" );
+	$db->execute( "INSERT INTO `ps_customer_message` (`id_customer_thread`, `id_employee`, `message`, `private`, `date_add`) VALUES (last_insert_rowid(), 0, 'Please ring twice', 0, '2026-01-01 00:00:00')" );
 	$request( $event( 'evt_3', 'invoice.over', 'inv_ps_3', 'USD', '1300' ) );
 	check( 'payment for a shipped order: state kept, noted', array( $state( 3 ), $history( 3 ), $notes( 3 ) ), array( 4, 0, 1 ) );
+	check( 'the note joins the order thread found by PrestaShop (email, shop, order)', array( $threads( 3 ), count( $order_page( 3 ) ), count( $storefront( 3 ) ) ), array( 1, 2, 1 ) );
 	$order( 4, 6 ); // cancelled
 	$request( $event( 'evt_4', 'invoice.paid', 'inv_ps_4', 'USD', '1250' ) );
 	check( 'late full payment pays a cancelled order', $state( 4 ), 2 );
@@ -188,6 +238,7 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	$paid9 = $event( 'evt_9', 'invoice.paid', 'inv_ps_9', 'USD', '1250' );
 	Configuration::updateValue( 'GHOSTPAY_TEST_FAIL_WRITES', '1' );
 	check( 'failed side effect is retryable', $reply( $request( $paid9 ) ), '503 {"ok":false,"retry":true}' );
+	check( 'a failed note leaves no thread behind', $threads( 9 ), 0 );
 	Configuration::updateValue( 'GHOSTPAY_TEST_FAIL_WRITES', '0' );
 	check( 'retry after a failed side effect is processed', $reply( $request( $paid9 ) ), '200 {"ok":true}' );
 	check( 'retry applied the event once', $notes( 9 ), 1 );
@@ -249,6 +300,10 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	check( 'isDuplicateKey: wrapped in a PrestaShopException', Ghostpay::isDuplicateKey( new PrestaShopException( $duplicate_key->getMessage(), 23000, $duplicate_key ) ), true );
 	check( 'isDuplicateKey: any other SQL error', Ghostpay::isDuplicateKey( new PrestaShopException( $no_such_table->getMessage(), 0, $no_such_table ) ), false );
 	check( 'isDuplicateKey: a non-PDO exception with code 23000', Ghostpay::isDuplicateKey( new RuntimeException( 'x', 23000 ) ), false );
+
+	// A thread without a message gives the PS 8 order page a row whose message is NULL (OrderMessageForViewing takes a
+	// string): every thread the module wrote must have its note.
+	check( 'no customer thread without a message', $db->getValue( 'SELECT COUNT(*) FROM `ps_customer_thread` ct WHERE NOT EXISTS (SELECT 1 FROM `ps_customer_message` cm WHERE cm.`id_customer_thread` = ct.`id_customer_thread`)' ), '0' );
 
 	check( 'uninstall drops the module tables', $module->uninstall(), true );
 	check( 'no module table left', $db->getValue( "SELECT COUNT(*) FROM sqlite_master WHERE `name` LIKE 'ps_ghostpay%'" ), '0' );
