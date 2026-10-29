@@ -307,6 +307,89 @@ describe('A-R1: -32005 is also a rate-limit code, so a refused block is asked ag
   });
 });
 
+describe('A-R7: the window also grows back after a halving that a fixed range limit cannot explain', () => {
+  /**
+   * Default retries (three attempts per request). The first `burst` eth_getLogs attempts are refused with -32005; after
+   * that, a range over `range` blocks is refused with `rangeCode`, and a caller-unfiltered range holding both blocks of a
+   * pair (two blocks that fit one response each, but not together) with -32602. `seen` records every attempt.
+   */
+  const provider = (head: number, logs: RpcLog[], o: { burst?: number; range?: number; rangeCode?: number; pairs?: readonly number[] } = {}) => {
+    let refused = 0;
+    const seen: { from: bigint; to: bigint; refused: boolean }[] = [];
+    const t = fakeTransport((m, p) => {
+      if (m === 'eth_chainId') return '0xaa36a7';
+      if (m === 'eth_blockNumber') return `0x${head.toString(16)}`;
+      if (m === 'eth_getBlockByNumber') return { number: p[0], hash: bh(Number(BigInt(p[0] as string))), parentHash: bh(0) };
+      const f = p[0] as { fromBlock: string; toBlock: string; topics: (string | null)[] };
+      const [from, to] = [BigInt(f.fromBlock), BigInt(f.toBlock)];
+      let code: number | undefined;
+      if (refused < (o.burst ?? 0)) {
+        refused++;
+        code = -32005;
+      } else if (o.range !== undefined && to - from + 1n > BigInt(o.range)) {
+        code = o.rangeCode ?? -32600;
+      } else if (f.topics[3] == null && (o.pairs ?? []).some((b) => from <= BigInt(b) && to > BigInt(b))) {
+        code = -32602;
+      }
+      seen.push({ from, to, refused: code !== undefined });
+      if (code !== undefined) throw new FakeRpcError(code);
+      return logs.filter((l) => BigInt(l.blockNumber) >= from && BigInt(l.blockNumber) <= to && (f.topics[3] == null || l.topics[3] === f.topics[3]));
+    });
+    return { seen, client: createClient(CHAIN, 'https://rpc.example.test', { transport: t, sleep: noSleep }) };
+  };
+  /** Fetches until the head is reached; returns the number of fetches and the final cursor. */
+  const scanToHead = async (client: RpcClient) => {
+    const found: ScannedAnnouncement[] = [];
+    let cursor: ScanCursor = { nextBlock: 0n };
+    let fetches = 0;
+    for (; fetches < 1000; ) {
+      fetches++;
+      const r = await fetchAnnouncements({ chain: CHAIN, client, announcer: ANN, router: FAKE.router, cursor });
+      expect(r.routerOnlyBlocks).toBeUndefined();
+      found.push(...r.announcements);
+      cursor = r.cursor;
+      if (!r.truncated) break;
+    }
+    return { found, fetches, cursor };
+  };
+
+  it('grows back after a -32005 burst halved the window down to one block, so one fetch still reaches the head', async () => {
+    // 27 refusals: nine requests from 1,000 blocks down to [0, 2], three attempts each; the window is then one block.
+    const { client: c, seen } = provider(1000, [mkLog(7, 0, OTHER), mkLog(7, 1)], { burst: 27 });
+    const r = await fetchAnnouncements({ chain: CHAIN, client: await c, announcer: ANN, router: FAKE.router, cursor: { nextBlock: 0n } });
+    // Keeping one-block windows ended this fetch at block 41, after 50 requests.
+    expect(r).toMatchObject({ truncated: false, cursor: { nextBlock: 1001n } });
+    expect(r.announcements.map((a) => [a.blockNumber, a.logIndex])).toEqual([[7n, 0], [7n, 1]]);
+    expect(r.routerOnlyBlocks).toBeUndefined();
+    // Past [0, 2], the last refused range, the window doubles back towards the cap.
+    expect(seen.filter((w) => !w.refused).map((w) => Number(w.to - w.from + 1n))).toEqual([1, 1, 1, 2, 4, 8, 16, 32, 64, 128, 256, 488]);
+    expect(seen).toHaveLength(39);
+  });
+
+  it('grows back past a -32602 refusal of a range no larger than one already served: dense pairs every 100 blocks', async () => {
+    const pairs = Array.from({ length: 200 }, (_, k) => 100 * k + 50);
+    const { client: c, seen } = provider(19_999, pairs.flatMap((b) => [mkLog(b), mkLog(b + 1)]), { pairs });
+    const { found, fetches, cursor } = await scanToHead(await c);
+    expect(cursor.nextBlock).toBe(20_000n);
+    expect(found).toHaveLength(400);
+    // Keeping the window after each -32602 halving needed 118 fetches and 5,863 eth_getLogs calls here.
+    expect(fetches).toBe(51);
+    expect(seen).toHaveLength(2517);
+  }, 60_000);
+
+  it('keeps the size after a halving a fixed range limit explains, so the limit costs no refused request per window', async () => {
+    // A ten-block range limit coded -32005: each fetch halves 1,000 blocks down to seven (seven refused requests, three
+    // attempts each), then reads seven-block windows only.
+    const { client: c, seen } = provider(5000, [], { range: 10, rangeCode: -32005 });
+    const { fetches, cursor } = await scanToHead(await c);
+    expect(cursor.nextBlock).toBe(5001n);
+    expect(fetches).toBe(17);
+    expect(seen.filter((w) => w.refused)).toHaveLength(17 * 7 * 3);
+    expect(seen.every((w) => w.refused || w.to - w.from + 1n <= 7n)).toBe(true);
+    expect(seen).toHaveLength(1072);
+  }, 60_000);
+});
+
 describe('CHAIN-ADAPTERS-02: a cursor far beyond the reported head fails closed', () => {
   it('refuses to resume past the head (lying or poisoned checkpoint) instead of silently scanning nothing', async () => {
     const c = await client(100, []);

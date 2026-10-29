@@ -256,9 +256,11 @@ export function validateAnnouncementLog(
  *   A -32005 refusal can also be a rate limit, so that block is narrowed only if the whole block is refused as
  *   too large again once its router lane has been read; another failure then ends the fetch before the block
  *   (or fails it when nothing was completed). Past such a single block (narrowed, or read whole once a rate
- *   limit passed), or past a range whose response went over the client's size cap, each completed window
- *   doubles the window again, up to the cap, until a refusal halves it; after a provider's limit code alone
- *   the window keeps its size, so a fixed range limit does not cost a refused request on every window.
+ *   limit passed), or past a refused range that a fixed provider range limit cannot explain (a response over
+ *   the client's size cap, a range no larger than one already served in this fetch, or a halving down to one
+ *   block), each completed window doubles the window again, up to the cap, until a refusal halves it; after
+ *   any other halving the window keeps its size, so a fixed range limit does not cost a refused request on
+ *   every window.
  * - A cursor more than `finalityDepth` blocks beyond the reported head is refused (`RPC_FAILURE`).
  * - Duplicate logs (same `blockHash:logIndex`) within a call are dropped.
  * - `maxRequests` bounds `eth_getLogs` calls (at most 50); `maxLogs` bounds accepted logs (at most
@@ -315,13 +317,17 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
   let requests = 0;
   let window = cap;
   // Set once a refused single block is passed (announcer spam, or a rate limit that has passed): the window then
-  // doubles after each completed window, up to the cap, until a larger window is refused or overflows again. A halving
-  // that stops above one block keeps its size: a provider's fixed range limit never refuses a single block, and growing
-  // past that limit would cost a refused request per window.
+  // doubles after each completed window, up to the cap, until a larger window is refused or overflows again. Any other
+  // halving keeps its size unless a fixed provider range limit cannot explain it (below): growing past such a limit would
+  // cost a refused request per window.
   let regrow = false;
-  // A response over the client's own size cap depends on the blocks' content, not on the range: once the cursor is past
-  // the range that overflowed, the window grows back as well.
+  // Past a refused range that a fixed range limit cannot explain, the window grows back as well: a response over the
+  // client's own size cap (it depends on the blocks' content, not on the range), a range no larger than one already
+  // served in this fetch, or a halving down to one block (it refused two or three blocks: implausible for a range limit,
+  // typical of a burst of -32005 rate limits).
   let regrowAfter: bigint | undefined;
+  // The largest range the provider served in this fetch: a fixed range limit never refuses a range up to this size.
+  let served = 0n;
   let doneThrough = next - 1n;
   let processed = false;
   let truncated = false;
@@ -342,6 +348,7 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
     let routerLane = false;
     try {
       logs = await o.client.getLogs({ address: o.announcer, topics: [ANNOUNCEMENT_TOPIC, schemeTopic(schemeId)], fromBlock: next, toBlock: to });
+      if (to - next + 1n > served) served = to - next + 1n;
     } catch (e) {
       // A provider range or result limit, or a response over the client cap (announcer spam), means "ask for less".
       if (!isLogLimitError(e)) throw e;
@@ -354,7 +361,8 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
         if (window > 1n) {
           window = window / 2n;
           regrow = false;
-          regrowAfter = e instanceof ChainAdapterError && e.code === 'RESPONSE_TOO_LARGE' ? to : undefined;
+          // Grow back past this range unless a fixed provider range limit can explain the refusal (see `regrowAfter`).
+          regrowAfter = (e instanceof ChainAdapterError && e.code === 'RESPONSE_TOO_LARGE') || to - next + 1n <= served || window === 1n ? to : undefined;
           continue;
         }
         // One block still fails and its router lane cannot be fetched: keep the completed windows, or fail.
@@ -454,8 +462,8 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
     doneThrough = to;
     processed = true;
     next = to + 1n;
-    // Past a refused single block or an overflowed range, grow back towards the cap instead of finishing the fetch on
-    // one-block requests.
+    // Past a refused single block, or a refused range a fixed range limit cannot explain, grow back towards the cap
+    // instead of finishing the fetch on small requests.
     if (regrowAfter !== undefined && next > regrowAfter) {
       regrow = true;
       regrowAfter = undefined;
