@@ -4,6 +4,7 @@ import { EsploraClient, EsploraTweakSource, normalizeEsploraUrl } from './esplor
 import { coinbase, mineHeader, mockChain, paymentTx, walletA, withTxid, withWitnessCommitment, SEED_B } from './fixtures.testutil';
 import { BTC_NETWORKS, btcNetwork, MAINNET_GENESIS } from './network';
 import { MAX_SCAN_BLOCKS, scanForPayments } from './scan';
+import { SCAN_CHECKS, SCAN_LIMITS } from './verification';
 import { walletFromSeedHex } from './wallet';
 
 const BASE = 'https://esplora.test/api';
@@ -14,6 +15,41 @@ function codeOf(p: Promise<unknown>): Promise<string> {
     (e: unknown) => (e instanceof SilentPaymentError ? e.code : 'other'),
   );
 }
+
+/**
+ * One block served the way electrs serves it: `/block/:hash` reports `tx_count`, `/block/:hash/txs/:start` returns
+ * up to 25 transactions, and a start index at or past the end (or not a multiple of 25) is an HTTP 400.
+ */
+function electrsBlock(txs: readonly unknown[], info: Record<string, unknown> = {}) {
+  const hash = 'a'.repeat(64);
+  const requests: string[] = [];
+  const fetchFn = (url: string): Promise<Response> => {
+    const path = url.slice(BASE.length);
+    requests.push(path);
+    if (path === `/block/${hash}`) return Promise.resolve(new Response(JSON.stringify({ id: hash, tx_count: txs.length, ...info })));
+    const m = /^\/block\/[0-9a-f]{64}\/txs\/(\d+)$/.exec(path);
+    const start = Number(m?.[1]);
+    if (m === null || start >= txs.length || start % 25 !== 0) return Promise.resolve(new Response('start index out of range', { status: 400 }));
+    return Promise.resolve(new Response(JSON.stringify(txs.slice(start, start + 25))));
+  };
+  return { hash, requests, client: new EsploraClient({ baseUrl: BASE, fetchFn }) };
+}
+
+/** Client for block `a…a`: its summary reports `txCount` transactions and every page request returns `page` as is. */
+function servePage(page: unknown, txCount = Array.isArray(page) ? page.length : 1): EsploraClient {
+  const hash = 'a'.repeat(64);
+  return new EsploraClient({
+    baseUrl: BASE,
+    fetchFn: (url) => Promise.resolve(new Response(JSON.stringify(url.endsWith(`/block/${hash}`) ? { id: hash, tx_count: txCount } : page))),
+  });
+}
+
+const SIMPLE_TX = withTxid({
+  version: 2,
+  locktime: 0,
+  vin: [{ txid: '12'.repeat(32), vout: 0, sequence: 0xffffffff, prevout: { scriptpubkey: `0014${'6'.repeat(40)}` }, scriptsig: '', witness: [], is_coinbase: false }],
+  vout: [{ scriptpubkey: `0014${'5'.repeat(40)}`, value: 1_000 }],
+});
 
 describe('normalizeEsploraUrl', () => {
   it('accepts https and loopback http, trims trailing slashes', () => {
@@ -92,7 +128,7 @@ describe('EsploraClient', () => {
     expect(await codeOf(respond('{"spent":"no"}').isUnspent('a'.repeat(64), 0))).toBe('INVALID_RESPONSE');
     expect(await codeOf(respond('[1]').feeRate(1))).toBe('INVALID_RESPONSE');
     expect(await codeOf(respond('{"1":"x"}').feeRate(1).then((v) => (v === undefined ? Promise.reject(new SilentPaymentError('INVALID_RESPONSE')) : v)))).toBe('INVALID_RESPONSE');
-    expect(await codeOf(respond('{}').blockTxs('a'.repeat(64)))).toBe('INVALID_RESPONSE');
+    expect(await codeOf(servePage({}).blockTxs('a'.repeat(64)))).toBe('INVALID_RESPONSE');
   });
 
   it('rejects malformed transactions', async () => {
@@ -109,11 +145,11 @@ describe('EsploraClient', () => {
       [{ txid: h, vin: [{ txid: h, vout: 0, prevout: { scriptpubkey: '00' }, scriptsig: '', witness: 'x', is_coinbase: false }], vout: [] }],
     ];
     for (const b of bad) {
-      const c = new EsploraClient({ baseUrl: BASE, fetchFn: () => Promise.resolve(new Response(JSON.stringify(b))) });
-      expect(await codeOf(c.blockTxs(h))).toBe('INVALID_RESPONSE');
+      expect(await codeOf(servePage(b).blockTxs(h))).toBe('INVALID_RESPONSE');
     }
-    const tooMany = new EsploraClient({ baseUrl: BASE, fetchFn: () => Promise.resolve(new Response(JSON.stringify(Array.from({ length: 26 }, () => 0)))) });
-    expect(await codeOf(tooMany.blockTxs(h))).toBe('INVALID_RESPONSE');
+    // A page longer than 25, or longer than the block summary announced, is refused before any transaction is parsed.
+    expect(await codeOf(servePage(Array.from({ length: 26 }, () => SIMPLE_TX), 30).blockTxs(h))).toBe('INVALID_RESPONSE');
+    expect(await codeOf(servePage([SIMPLE_TX, SIMPLE_TX], 1).blockTxs(h))).toBe('INVALID_RESPONSE');
   });
 
   it('encodes witnesses of any size (compact size boundaries)', async () => {
@@ -128,8 +164,7 @@ describe('EsploraClient', () => {
       ],
       vout: [{ scriptpubkey: '51', value: 1 }],
     });
-    const c = new EsploraClient({ baseUrl: BASE, fetchFn: () => Promise.resolve(new Response(JSON.stringify([tx]))) });
-    const [t] = await c.blockTxs(h);
+    const [t] = await servePage([tx]).blockTxs(h);
     expect(t?.inputs?.[0]?.witness).toHaveLength(302);
     expect(t?.inputs?.[0]?.witness[0]).toHaveLength(300);
     expect(t?.inputs?.[1]?.witness).toHaveLength(0);
@@ -141,7 +176,7 @@ describe('EsploraClient', () => {
       vin: [{ txid: '12'.repeat(32), vout: 7, sequence: 0, prevout: { scriptpubkey: `0014${'6'.repeat(40)}` }, scriptsig: '00'.repeat(300), witness: [], is_coinbase: false }],
       vout: Array.from({ length: 260 }, (_, k) => ({ scriptpubkey: `0014${'5'.repeat(40)}`, value: 1_000 + k })),
     });
-    const serve = (body: unknown) => new EsploraClient({ baseUrl: BASE, fetchFn: () => Promise.resolve(new Response(JSON.stringify([body]))) });
+    const serve = (body: unknown) => servePage([body]);
     expect((await serve(tx).blockTxs('a'.repeat(64)))[0]?.txid).toBe(tx.txid);
     const edits: unknown[] = [
       { ...tx, vout: tx.vout.map((o, k) => (k === 3 ? { ...o, value: o.value + 1 } : o)) },
@@ -156,6 +191,245 @@ describe('EsploraClient', () => {
       { ...tx, vin: [] },
     ];
     for (const e of edits) expect(await codeOf(serve(e).blockTxs('a'.repeat(64)))).toBe('INVALID_RESPONSE');
+  });
+
+  it('requests exactly the pages a block has, also when its last page is full (electrs answers 400 past the end)', async () => {
+    for (const n of [1, 24, 25, 26, 50]) {
+      const { client, hash, requests } = electrsBlock(Array.from({ length: n }, () => SIMPLE_TX));
+      expect(await client.blockTxs(hash)).toHaveLength(n);
+      const pages = Array.from({ length: Math.ceil(n / 25) }, (_, k) => `/block/${hash}/txs/${String(k * 25)}`);
+      expect(requests.filter((r) => r.includes('/txs/'))).toEqual(pages);
+    }
+  });
+
+  it('reads blocks of more than 10,000 transactions in full and refuses an impossible transaction count unread', async () => {
+    const big = electrsBlock(Array.from({ length: 10_001 }, () => SIMPLE_TX));
+    expect(await big.client.blockTxs(big.hash)).toHaveLength(10_001);
+    expect(big.requests.filter((r) => r.includes('/txs/'))).toHaveLength(401);
+    // 4,000,000 weight units hold at most 16,666 of the smallest (60-byte) transactions.
+    const impossible = electrsBlock([SIMPLE_TX], { tx_count: 16_667 });
+    expect(await codeOf(impossible.client.blockTxs(impossible.hash))).toBe('INVALID_RESPONSE');
+    expect(impossible.requests.some((r) => r.includes('/txs/'))).toBe(false);
+  });
+
+  it('stops reading a block as soon as its transactions weigh more than a valid block can (4,000,000 weight units)', async () => {
+    // The most transactions a block can claim, served as 25 heavy ones per page: a 10,000-byte output script makes
+    // each about 40,000 weight units, so a page of them weighs about 1,000,000.
+    const heavy = withTxid({ ...SIMPLE_TX, vout: [{ scriptpubkey: '51'.repeat(10_000), value: 1_000 }] });
+    const page = JSON.stringify(Array.from({ length: 25 }, () => heavy));
+    const hash = 'a'.repeat(64);
+    const pages: string[] = [];
+    const client = new EsploraClient({
+      baseUrl: BASE,
+      fetchFn: (url) => {
+        if (url.endsWith(`/block/${hash}`)) return Promise.resolve(new Response(JSON.stringify({ id: hash, tx_count: 16_666 })));
+        pages.push(url.slice(url.lastIndexOf('/') + 1));
+        // Ends a client that keeps reading (a transport failure) before this test downloads hundreds of pages.
+        if (pages.length > 8) return Promise.resolve(new Response('enough', { status: 500 }));
+        return Promise.resolve(new Response(page));
+      },
+    });
+    expect(await codeOf(client.blockTxs(hash))).toBe('INVALID_RESPONSE');
+    // The fourth page passes the limit; no later page is requested.
+    expect(pages).toEqual(['0', '25', '50', '75']);
+  });
+
+  it('weighs witness bytes at a quarter (BIP-141), so a block heavy with witness data is read', async () => {
+    // 1,500,000 witness bytes weigh 1,500,000 units: within the limit (at 4 units per byte they would not be).
+    const witnessHeavy = withTxid({ ...SIMPLE_TX, vin: [{ ...SIMPLE_TX.vin[0]!, witness: ['00'.repeat(1_500_000)] }] });
+    const { client, hash } = electrsBlock([witnessHeavy]);
+    const [t] = await client.blockTxs(hash);
+    expect(t?.inputs?.[0]?.witness[0]).toHaveLength(1_500_000);
+    // 82 non-witness bytes at 4 units, then marker and flag (2), item count (1), item length (5) and the item at 1.
+    expect(t?.weight).toBe(82 * 4 + 2 + 1 + 5 + 1_500_000);
+  });
+
+  it('counts the header and the transaction count in the block weight: exactly 4,000,000 is read, more is refused', async () => {
+    // One transaction whose output script has n bytes (n >= 65,536): 64 + n bytes, all at 4 weight units, after
+    // the 80-byte header and the 1-byte transaction count.
+    const block = (n: number) => electrsBlock([withTxid({ ...SIMPLE_TX, vout: [{ scriptpubkey: '51'.repeat(n), value: 1_000 }] })]);
+    const exact = block(999_855);
+    const [t] = await exact.client.blockTxs(exact.hash);
+    expect(t?.weight).toBe((64 + 999_855) * 4);
+    expect((80 + 1) * 4 + (t?.weight ?? 0)).toBe(4_000_000);
+    // One byte more: the transaction alone (3,999,680 units) is within the limit, the block is not.
+    const over = block(999_856);
+    expect(await codeOf(over.client.blockTxs(over.hash))).toBe('INVALID_RESPONSE');
+  });
+
+  it('refuses a spent output script longer than a valid block can spend (10,000 bytes, consensus MAX_SCRIPT_SIZE)', async () => {
+    // The spent script is not part of the transaction (its txid and weight stay the same), so only this limit bounds it.
+    const spending = (bytes: number) => withTxid({ ...SIMPLE_TX, vin: [{ ...SIMPLE_TX.vin[0]!, prevout: { scriptpubkey: '51'.repeat(bytes) } }] });
+    const longest = electrsBlock([spending(10_000)]);
+    const [t] = await longest.client.blockTxs(longest.hash);
+    expect(t?.inputs?.[0]?.prevoutScriptPubKey).toHaveLength(10_000);
+    expect(t?.weight).toBe(82 * 4); // the 82 bytes of SIMPLE_TX
+    const tooLong = electrsBlock([spending(10_001)]);
+    expect(await codeOf(tooLong.client.blockTxs(tooLong.hash))).toBe('INVALID_RESPONSE');
+  });
+
+  it('reads at most 64 MiB of pages for one block: light transactions padded through their spent outputs are refused', async () => {
+    const MiB = 1024 * 1024;
+    // Each transaction spends 30 outputs whose scripts have the longest spendable size, 10,000 bytes: about 600 KB of
+    // JSON, all of it kept, for 5,084 weight units. Under the most transactions a block can claim, 25 of them per page
+    // make 14.4 MiB pages that weigh 127,100 units: the weight alone would stop the client at page 32 (462 MiB).
+    const padded = withTxid({ ...SIMPLE_TX, vin: Array.from({ length: 30 }, (_, k) => ({ ...SIMPLE_TX.vin[0]!, vout: k, prevout: { scriptpubkey: '51'.repeat(10_000) } })) });
+    const page = new TextEncoder().encode(JSON.stringify(Array.from({ length: 25 }, () => padded)));
+    expect(page.length).toBeGreaterThan(14 * MiB);
+    const hash = 'a'.repeat(64);
+    /** Per page request: how many 1 MiB chunks the server produced, and whether the client cancelled the download. */
+    const pages: { start: string; chunks: number; cancelled: boolean }[] = [];
+    const client = new EsploraClient({
+      baseUrl: BASE,
+      fetchFn: (url) => {
+        if (url.endsWith(`/block/${hash}`)) return Promise.resolve(new Response(JSON.stringify({ id: hash, tx_count: 16_666 })));
+        const seen = { start: url.slice(url.lastIndexOf('/') + 1), chunks: 0, cancelled: false };
+        pages.push(seen);
+        // Ends a client that keeps reading (a transport failure) before this test streams hundreds of pages.
+        if (pages.length > 8) return Promise.resolve(new Response('enough', { status: 500 }));
+        return Promise.resolve(new Response(new ReadableStream<Uint8Array>({
+          pull(ctl) {
+            if (seen.chunks * MiB >= page.length) {
+              ctl.close();
+              return;
+            }
+            ctl.enqueue(page.slice(seen.chunks * MiB, (seen.chunks + 1) * MiB));
+            seen.chunks++;
+          },
+          cancel() { seen.cancelled = true; },
+        })));
+      },
+    });
+    expect(await codeOf(client.blockTxs(hash))).toBe('INVALID_RESPONSE');
+    // Four whole pages (57.8 MiB); the fifth is cancelled while it streams, once the block's 64 MiB are used up.
+    expect(pages.map((p) => p.start)).toEqual(['0', '25', '50', '75', '100']);
+    expect(pages.map((p) => p.cancelled)).toEqual([false, false, false, false, true]);
+    expect(pages[4]!.chunks).toBeLessThan(Math.ceil(page.length / MiB));
+    const streamed = pages.reduce((n, p) => n + Math.min(p.chunks * MiB, page.length), 0);
+    // The budget, plus the chunk that passed it and one the stream may have queued ahead.
+    expect(streamed).toBeLessThanOrEqual(66 * MiB);
+  });
+
+  it('shares the 64 MiB between all pages of a block, whatever their bytes hold: exactly that is read, a byte more is not', async () => {
+    const MiB = 1024 * 1024;
+    /** A page of `n` simple transactions, the last padded in a field this client ignores to exactly `bytes` bytes. */
+    const pageOf = (n: number, bytes: number): string => {
+      const plain = JSON.stringify(Array.from({ length: n }, () => SIMPLE_TX));
+      // `,"x":""` adds 7 bytes before the padding itself.
+      const json = JSON.stringify([...Array.from({ length: n - 1 }, () => SIMPLE_TX), { ...SIMPLE_TX, x: ' '.repeat(bytes - plain.length - 7) }]);
+      expect(json).toHaveLength(bytes);
+      return json;
+    };
+    const block = (last: number) => {
+      // 125 transactions in five pages: three of 16 MiB (the most one response may have), then 8 MiB and `last`.
+      const bodies = [16 * MiB, 16 * MiB, 16 * MiB, 8 * MiB, last].map((size) => pageOf(25, size));
+      const hash = 'a'.repeat(64);
+      const client = new EsploraClient({
+        baseUrl: BASE,
+        fetchFn: (url) => {
+          if (url.endsWith(`/block/${hash}`)) return Promise.resolve(new Response(JSON.stringify({ id: hash, tx_count: 125 })));
+          return Promise.resolve(new Response(bodies[Number(url.slice(url.lastIndexOf('/') + 1)) / 25]));
+        },
+      });
+      return client.blockTxs(hash);
+    };
+    expect(await block(8 * MiB)).toHaveLength(125);
+    // The last page is far below the 16 MiB of one response: the block's budget refuses it.
+    expect(await codeOf(block(8 * MiB + 1))).toBe('INVALID_RESPONSE');
+  });
+
+  it('refuses a block summary or pages that disagree with the transaction count', async () => {
+    const txs = Array.from({ length: 30 }, () => SIMPLE_TX);
+    for (const info of [{ tx_count: 0 }, { tx_count: 1.5 }, { tx_count: '30' }, { tx_count: 31 }, { tx_count: 29 }, { id: 'b'.repeat(64) }]) {
+      const { client, hash } = electrsBlock(txs, info);
+      expect(await codeOf(client.blockTxs(hash))).toBe('INVALID_RESPONSE');
+    }
+    const notRecord = new EsploraClient({ baseUrl: BASE, fetchFn: () => Promise.resolve(new Response('[]')) });
+    expect(await codeOf(notRecord.blockTxs('a'.repeat(64)))).toBe('INVALID_RESPONSE');
+  });
+
+  it('sends no credentials, referrer or cached answer, refuses redirects and always sets a deadline', async () => {
+    const inits: RequestInit[] = [];
+    const c = new EsploraClient({ baseUrl: BASE, fetchFn: (_u, init) => { inits.push(init); return Promise.resolve(new Response('7')); } });
+    expect(await c.tipHeight()).toBe(7);
+    expect(await codeOf(c.broadcast('00'))).toBe('INVALID_RESPONSE'); // '7' is no txid; only the request matters here
+    expect(inits).toHaveLength(2);
+    for (const init of inits) {
+      expect(init).toMatchObject({ credentials: 'omit', referrerPolicy: 'no-referrer', redirect: 'error', cache: 'no-store' });
+      expect(init.signal).toBeInstanceOf(AbortSignal);
+    }
+  });
+
+  it('gives up at the deadline, also on a stalled body, and reports a user cancel as cancelled', async () => {
+    // Settles only when its signal aborts, like a server that never answers.
+    const hang = (_u: string, init: RequestInit): Promise<Response> => new Promise((_r, reject) => {
+      init.signal?.addEventListener('abort', () => { reject(new Error('aborted')); });
+    });
+    expect(await codeOf(new EsploraClient({ baseUrl: BASE, fetchFn: hang, timeoutMs: 20 }).tipHeight())).toBe('TRANSPORT_FAILURE');
+    const ac = new AbortController();
+    const pending = new EsploraClient({ baseUrl: BASE, fetchFn: hang }).tipHeight(ac.signal);
+    ac.abort();
+    expect(await codeOf(pending)).toBe('ABORTED');
+    // Headers arrive, then the body never finishes; the deadline still ends the request (even if cancelling fails).
+    const stalled = { pulled: 0, cancelled: false };
+    const trickle = (): Promise<Response> => Promise.resolve(new Response(new ReadableStream<Uint8Array>({
+      pull: () => { stalled.pulled++; return new Promise(() => undefined); },
+      cancel: () => { stalled.cancelled = true; throw new Error('cancel failed'); },
+    })));
+    expect(await codeOf(new EsploraClient({ baseUrl: BASE, fetchFn: trickle, timeoutMs: 20 }).tipHeight())).toBe('TRANSPORT_FAILURE');
+    expect(stalled.cancelled).toBe(true);
+    // A cancel that lands before the body is read (the fetch ignored it) still ends the stalled download.
+    const early = new AbortController();
+    const late = { pulled: 0, cancelled: false };
+    const ignoresCancel = (): Promise<Response> => {
+      early.abort();
+      return Promise.resolve(new Response(new ReadableStream<Uint8Array>({
+        pull: () => { late.pulled++; return new Promise(() => undefined); },
+        cancel: () => { late.cancelled = true; },
+      })));
+    };
+    expect(await codeOf(new EsploraClient({ baseUrl: BASE, fetchFn: ignoresCancel }).tipHeight(early.signal))).toBe('ABORTED');
+    expect(late.cancelled).toBe(true);
+  }, 10_000);
+
+  it('caps the response size while the body streams', async () => {
+    const MiB = 1024 * 1024;
+    /** 64 MiB in 64 KiB chunks; records how far a reader got and whether it cancelled (`failCancel`: cancel throws). */
+    const body = (seen: { pulled: number; cancelled: boolean; failCancel?: boolean }) => new ReadableStream<Uint8Array>({
+      pull(ctl) {
+        seen.pulled++;
+        if (seen.pulled > 1024) ctl.close();
+        else ctl.enqueue(new Uint8Array(64 * 1024).fill(0x20));
+      },
+      cancel() {
+        seen.cancelled = true;
+        if (seen.failCancel === true) throw new Error('cancel failed');
+      },
+    });
+    const serve = (res: () => Response) => new EsploraClient({ baseUrl: BASE, fetchFn: () => Promise.resolve(res()) });
+    // A valid answer padded past the 16 MiB cap is refused, not buffered and parsed.
+    expect(await codeOf(serve(() => new Response(`7${' '.repeat(17 * MiB)}`)).tipHeight())).toBe('INVALID_RESPONSE');
+    // The download is cancelled just past the cap instead of being read to the end.
+    const streamed = { pulled: 0, cancelled: false };
+    expect(await codeOf(serve(() => new Response(body(streamed))).tipHeight())).toBe('INVALID_RESPONSE');
+    expect(streamed.cancelled).toBe(true);
+    expect(streamed.pulled).toBeLessThan(16 * 16 + 8);
+    // A declared Content-Length above the cap is refused before the body is read.
+    const declared = { pulled: 0, cancelled: false };
+    const big = () => new Response(body(declared), { headers: { 'content-length': String(64 * MiB) } });
+    expect(await codeOf(serve(big).tipHeight())).toBe('INVALID_RESPONSE');
+    expect(declared.cancelled).toBe(true);
+    expect(declared.pulled).toBeLessThanOrEqual(1);
+    // A cancellation that fails does not hide the refusal.
+    for (const headers of [{}, { 'content-length': String(64 * MiB) }]) {
+      const failing = { pulled: 0, cancelled: false, failCancel: true };
+      expect(await codeOf(serve(() => new Response(body(failing), { headers })).tipHeight())).toBe('INVALID_RESPONSE');
+      expect(failing.cancelled).toBe(true);
+    }
+    // A body that fails while streaming is a transport failure; an empty body is not a valid answer.
+    const broken = () => new Response(new ReadableStream({ pull: (ctl) => { ctl.error(new Error('reset')); } }));
+    expect(await codeOf(serve(broken).tipHeight())).toBe('TRANSPORT_FAILURE');
+    expect(await codeOf(serve(() => new Response(null)).tipHeight())).toBe('INVALID_RESPONSE');
   });
 
   it('checks the genesis hash and always refuses mainnet', async () => {
@@ -247,7 +521,7 @@ describe('EsploraTweakSource and scanning', () => {
     expect(res.found[0]).toMatchObject({ vout: 1, amountSats: 50_000n, height: 3, label: null });
     expect(seen).toEqual([3]);
     // The server only ever saw heights, hashes, outpoints (no key material).
-    for (const r of chain.requests) expect(r).toMatch(/^GET \/(blocks\/tip\/height|block-height\/\d+|block\/[0-9a-f]{64}\/txs\/\d+|block\/[0-9a-f]{64}\/header|tx\/[0-9a-f]{64}\/outspend\/\d+)$/);
+    for (const r of chain.requests) expect(r).toMatch(/^GET \/(blocks\/tip\/height|block-height\/\d+|block\/[0-9a-f]{64}|block\/[0-9a-f]{64}\/txs\/\d+|block\/[0-9a-f]{64}\/header|tx\/[0-9a-f]{64}\/outspend\/\d+)$/);
 
     chain.spent.add(`${res.found[0]?.txid ?? ''}:1`);
     const again = await scanForPayments({ client, wallet: w, fromHeight: 3, toHeight: 3 });
@@ -306,6 +580,36 @@ describe('EsploraTweakSource and scanning', () => {
     chain.blocks[0]!.hash = 'ee'.repeat(32);
     ({ src } = { src: new EsploraTweakSource(new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn }), btcNetwork('regtest')) });
     expect(await code(src.getOutputs(0))).toBe('NETWORK_MISMATCH');
+  });
+
+  it('scans a block whose transaction count is a multiple of 25', async () => {
+    const w = walletA();
+    const chain = mockChain('regtest', w, { block2Txs: 25 });
+    const client = new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn });
+    const res = await scanForPayments({ client, wallet: w, fromHeight: 1 });
+    expect(res.found).toHaveLength(1);
+    expect(chain.requests.filter((r) => r.includes('/txs/') && r.includes(chain.blocks[2]!.hash))).toHaveLength(1);
+  });
+
+  it('says exactly what links the scanned blocks: an unanchored first block with an invented payment is accepted', async () => {
+    const w = walletA();
+    const chain = mockChain('regtest', w);
+    // A block the server mined itself (cheap proof of work), extending nothing real, paying this wallet 7 BTC.
+    const txs = withWitnessCommitment([coinbase(77), paymentTx(77, w, SEED_B, 700_000_000)]);
+    const header = mineHeader('ee'.repeat(32), txs);
+    chain.blocks[4] = { hash: parseHeader(header).hash, header, txs };
+    const client = new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn });
+    const res = await scanForPayments({ client, wallet: w, fromHeight: 4 });
+    expect(res.found.map((f) => f.amountSats)).toEqual([700_000_000n]);
+    // Starting at block 1, the same range is linked to the pinned genesis, and the fork is caught.
+    expect(await codeOf(scanForPayments({ client, wallet: w, fromHeight: 1 }))).toBe('REORG_DETECTED');
+    // The disclosure must not claim more than that.
+    const text = [...SCAN_CHECKS, ...SCAN_LIMITS].join('\n');
+    expect(text).not.toMatch(/down to the pinned genesis/);
+    expect(text).not.toMatch(/cannot invent/);
+    expect(text).toMatch(/Only a scan that starts at block 0 or 1 is linked to the pinned genesis block/);
+    expect(text).toMatch(/not anchored to the genesis block or to any checkpoint/);
+    expect(text).toMatch(/can also invent one/);
   });
 
   it('validates the range', async () => {

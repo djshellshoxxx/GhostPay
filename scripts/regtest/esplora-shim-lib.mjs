@@ -1,8 +1,8 @@
 // Pure request handling for the regtest Esplora shim: maps the few Esplora REST routes GhostPay uses onto
 // bitcoind JSON-RPC. `rpc(method, params)` is injected, so this file is testable without bitcoind.
 // Esplora routes used by apps/web/src/features/btc/esplora.ts:
-//   GET /blocks/tip/height, GET /block-height/:h, GET /block/:hash/header, GET /block/:hash/txs/:start (25 per page),
-//   GET /tx/:txid/outspend/:vout, GET /fee-estimates, POST /tx
+//   GET /blocks/tip/height, GET /block-height/:h, GET /block/:hash (summary with tx_count), GET /block/:hash/header,
+//   GET /block/:hash/txs/:start (25 per page), GET /tx/:txid/outspend/:vout, GET /fee-estimates, POST /tx
 // bitcoind getblock verbosity 3 includes each input's `prevout` (needs no txindex).
 
 export const PAGE = 25;
@@ -57,6 +57,11 @@ export function createHandler(rpc) {
           return text('Block not found', 404);
         }
       }
+      if (method === 'GET' && (m = /^\/block\/([0-9a-f]{64})$/.exec(path))) {
+        // The app reads the page count from `tx_count`; verbosity 1 lists txids only.
+        const block = await rpc('getblock', [m[1], 1]);
+        return json({ id: block.hash, height: block.height, tx_count: block.nTx });
+      }
       if (method === 'GET' && (m = /^\/block\/([0-9a-f]{64})\/header$/.exec(path))) {
         return text(await rpc('getblockheader', [m[1], false]));
       }
@@ -64,6 +69,8 @@ export function createHandler(rpc) {
         const start = Number(m[2]);
         if (start % PAGE !== 0) return text('start index must be a multiple of 25', 400);
         const block = await rpc('getblock', [m[1], 3]);
+        // Like electrs: a start at or past the end is an error, not an empty page.
+        if (start >= block.tx.length) return text('start index out of range', 400);
         return json(block.tx.slice(start, start + PAGE).map(mapTx));
       }
       if (method === 'GET' && (m = /^\/tx\/([0-9a-f]{64})\/outspend\/(\d{1,10})$/.exec(path))) {

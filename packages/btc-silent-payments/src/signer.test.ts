@@ -1,5 +1,5 @@
 import { Address, NETWORK, OutScript, Transaction } from '@scure/btc-signer';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { mulG, toHex, xOnly } from './ecc.js';
 import { SilentPaymentError } from './errors.js';
 import { fakeTxid, p2wpkhInput } from './fixtures.testutil.js';
@@ -19,6 +19,20 @@ import {
   type SpendableOutput,
   type SpendSummary,
 } from './spend.js';
+
+/** Every secret scalar wrapped while the tests run (the calls pass through), to observe the signer's own copy of `b_spend`. */
+const wrapped = vi.hoisted(() => [] as Uint8Array[]);
+vi.mock('./secret.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./secret.js')>();
+  return {
+    ...actual,
+    secretScalarFromBytes: (bytes: Uint8Array) => {
+      const s = actual.secretScalarFromBytes(bytes);
+      wrapped.push(s);
+      return s;
+    },
+  };
+});
 
 const wallet = generateSilentPaymentKeys(seededRng('signer-wallet'));
 const payee = generateSilentPaymentKeys(seededRng('signer-payee'));
@@ -208,5 +222,36 @@ describe('buildSpendTransactionWithSigner + SoftwareSilentPaymentSigner', () => 
 
   it('rejects an invalid spend secret at construction', () => {
     expect(() => new SoftwareSilentPaymentSigner(new Uint8Array(32) as never)).toThrow(/invalid secret scalar/);
+  });
+
+  it('dispose wipes the signer\'s own copy of the spend secret (best effort) and refuses every later request', async () => {
+    wrapped.length = 0;
+    const s = new SoftwareSilentPaymentSigner(wallet.spendSecret);
+    const own = wrapped[0];
+    if (own === undefined) throw new Error('fixture');
+    expect(own).not.toBe(wallet.spendSecret);
+    // Records the requests of a real spend, so the same valid requests can be replayed after dispose.
+    let signReq: SignSpendRequest | undefined;
+    await buildSpendTransactionWithSigner(base, {
+      kind: 'software',
+      getSpendPublicKey: (sig) => s.getSpendPublicKey(sig),
+      computeEcdhShare: (r, sig) => s.computeEcdhShare(r, sig),
+      signSpend: (r, sig) => { signReq = r; return s.signSpend(r, sig); },
+    });
+    if (signReq === undefined) throw new Error('fixture');
+    const ecdhReq = { inputs: signReq.inputs, scanPublicKey: payee.scanPublicKey };
+    expect(await code(s.computeEcdhShare(ecdhReq))).toBe('OK');
+    expect(await code(s.signSpend(signReq))).toBe('OK');
+    expect(own.some((b) => b !== 0)).toBe(true);
+    s.dispose();
+    expect(own.every((b) => b === 0)).toBe(true);
+    // The caller's copy is the caller's to wipe.
+    expect(wallet.spendSecret.some((b) => b !== 0)).toBe(true);
+    expect(await code(s.getSpendPublicKey())).toBe('SIGNER_REFUSED');
+    expect(await code(s.computeEcdhShare(ecdhReq))).toBe('SIGNER_REFUSED');
+    expect(await code(s.signSpend(signReq))).toBe('SIGNER_REFUSED');
+    expect(await code(buildSpendTransactionWithSigner(base, s))).toBe('SIGNER_REFUSED');
+    expect(() => { s.dispose(); }).not.toThrow();
+    expect(own.every((b) => b === 0)).toBe(true);
   });
 });

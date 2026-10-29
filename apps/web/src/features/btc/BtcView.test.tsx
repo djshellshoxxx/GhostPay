@@ -1,16 +1,17 @@
 // @vitest-environment jsdom
-import { screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { bech32 } from '@scure/base';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { notifyAppLock } from '../../lib/appLock';
 import { makeServices, renderWith } from '../../test/render';
 import { BtcView } from './BtcView';
 import { mockChain, SEED_A, walletA } from './fixtures.testutil';
 
 const BCRT = bech32.encode('bcrt', [0, ...bech32.toWords(new Uint8Array(20).fill(3))]);
 
-async function setup(over: Partial<{ failPath: string }> = {}) {
-  const chain = mockChain('regtest', walletA());
+async function setup(over: Partial<{ failPath: string; payments: number }> = {}) {
+  const chain = mockChain('regtest', walletA(), { payments: over.payments ?? 1 });
   if (over.failPath !== undefined) chain.failPath = over.failPath;
   const user = userEvent.setup();
   renderWith(<BtcView />, makeServices({ fetchFn: chain.fetchFn }));
@@ -24,6 +25,8 @@ async function importSeed(user: ReturnType<typeof userEvent.setup>) {
   await user.click(screen.getByRole('button', { name: 'Import seed' }));
 }
 
+const sweepBoxes = (): HTMLInputElement[] => screen.getAllByRole<HTMLInputElement>('checkbox', { name: /^Sweep / });
+
 describe('BtcView', () => {
   it('shows test-only warning and keeps mainnet disabled', () => {
     renderWith(<BtcView />, makeServices());
@@ -31,18 +34,75 @@ describe('BtcView', () => {
     expect(screen.getByRole<HTMLOptionElement>('option', { name: /mainnet/i }).disabled).toBe(true);
   });
 
-  it('creates a wallet, shows the seed once, address, payment instructions, and locks', async () => {
+  it('creates a wallet whose backup seed stays hidden until asked for, address, payment instructions, and locks', async () => {
     const { user } = await setup();
     await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
-    expect(screen.getByText(/Backup seed/)).toBeTruthy();
-    expect(screen.getByText(/^tsp1/)).toBeTruthy();
+    // The backup is not in the page until asked for.
+    expect(screen.queryByText(/^[0-9a-f]{64}$/)).toBeNull();
+    expect(screen.getByText('Backup seed')).toBeTruthy();
+    const address = screen.getByText(/^tsp1/).textContent;
     expect(screen.getByText(/Payment instructions/)).toBeTruthy();
     await user.type(screen.getByLabelText(/Optional amount/), '0.001');
     expect(screen.getAllByText(/amount=0.001/).length).toBeGreaterThan(0);
+    await user.click(screen.getByRole('button', { name: 'Show backup seed' }));
+    const seed = screen.getByText(/^[0-9a-f]{64}$/).textContent ?? '';
     await user.click(screen.getByRole('button', { name: 'Hide seed' }));
-    expect(screen.queryByText(/Backup seed/)).toBeNull();
+    expect(screen.queryByText(/^[0-9a-f]{64}$/)).toBeNull();
+    // It can be shown again while the wallet is loaded, and it is this wallet's seed.
+    await user.click(screen.getByRole('button', { name: 'Show backup seed' }));
+    expect(screen.getByText(/^[0-9a-f]{64}$/).textContent).toBe(seed);
     await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
     expect(screen.getByRole('button', { name: 'Create new test wallet' })).toBeTruthy();
+    expect(screen.queryByText('Backup seed')).toBeNull();
+    await user.type(screen.getByLabelText(/Or import a seed/), seed);
+    await user.click(screen.getByRole('button', { name: 'Import seed' }));
+    expect(screen.getByText(/^tsp1/).textContent).toBe(address);
+    // An imported seed is the user's own copy: no backup is offered.
+    expect(screen.queryByRole('button', { name: 'Show backup seed' })).toBeNull();
+  });
+
+  it('copies the backup seed only after a warning, and Lock empties the clipboard again', async () => {
+    const { user } = await setup();
+    const writeText = vi.fn<(text: string) => Promise<void>>().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+    await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
+    await user.click(screen.getByRole('button', { name: 'Show backup seed' }));
+    const seed = screen.getByText(/^[0-9a-f]{64}$/).textContent;
+    await user.click(screen.getByRole('button', { name: 'Copy seed' }));
+    expect(writeText).not.toHaveBeenCalled();
+    expect(screen.getByText(/Other apps and web pages can read the clipboard/)).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Copy anyway' }));
+    expect(writeText).toHaveBeenCalledExactlyOnceWith(seed);
+    await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
+    expect(writeText).toHaveBeenLastCalledWith('');
+    expect(writeText).toHaveBeenCalledTimes(2);
+  });
+
+  it('empties the clipboard at the next click when the app lock could not (no user activation)', async () => {
+    const { user } = await setup();
+    let refuse = false;
+    const writeText = vi.fn((text: string) => (refuse && text === '' ? Promise.reject(new DOMException('Document is not focused.', 'NotAllowedError')) : Promise.resolve()));
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+    await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
+    await user.click(screen.getByRole('button', { name: 'Show backup seed' }));
+    await user.click(screen.getByRole('button', { name: 'Copy seed' }));
+    await user.click(screen.getByRole('button', { name: 'Copy anyway' }));
+    // The idle lock runs without user activation, so the browser refuses to empty the clipboard.
+    refuse = true;
+    await act(async () => {
+      notifyAppLock('idle');
+      await Promise.resolve();
+    });
+    expect(writeText).toHaveBeenCalledTimes(2);
+    expect(writeText).toHaveBeenLastCalledWith('');
+    refuse = false;
+    // Back at the page: the first click empties it.
+    await user.click(screen.getByRole('button', { name: 'Create new test wallet' }));
+    expect(writeText).toHaveBeenCalledTimes(3);
+    expect(writeText).toHaveBeenLastCalledWith('');
+    // Emptied once: Lock leaves the clipboard alone.
+    await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
+    expect(writeText).toHaveBeenCalledTimes(3);
   });
 
   it('discloses what the scan verifies, its limits and the data-source modes (hosted scanning unavailable)', async () => {
@@ -68,6 +128,7 @@ describe('BtcView', () => {
     const { chain, user } = await setup();
     await importSeed(user);
     expect(screen.queryByText(/Backup seed/)).toBeNull();
+    expect(screen.queryByText(SEED_A)).toBeNull();
     await user.type(screen.getByLabelText(/First block height/), '0');
     await user.click(screen.getByRole('button', { name: 'Scan' }));
     await screen.findByText(/1 unspent payment/);
@@ -77,6 +138,7 @@ describe('BtcView', () => {
     expect(screen.getByRole('checkbox', { name: /Sweep [0-9a-f]{64}:1/ })).toBeTruthy();
     expect(screen.getByText('Unique in this scan')).toBeTruthy();
 
+    await user.click(screen.getByRole('checkbox', { name: /Sweep [0-9a-f]{64}:1/ }));
     await user.type(screen.getByLabelText('Destination address'), BCRT);
     const fee = screen.getByLabelText(/Fee rate/);
     await user.clear(fee);
@@ -98,12 +160,13 @@ describe('BtcView', () => {
     expect(chain.broadcasts[0]).toMatch(/^[0-9a-f]+$/);
   });
 
-  it('validates scanned Bitcoin destinations for the selected test network before filling them', async () => {
+  it('validates scanned Bitcoin destinations for the selected test network before filling them, with nothing selected', async () => {
     const { user } = await setup();
     await importSeed(user);
     await user.type(screen.getByLabelText(/First block height/), '0');
     await user.click(screen.getByRole('button', { name: 'Scan' }));
     await screen.findByText(/1 unspent payment/);
+    expect(sweepBoxes().map((b) => b.checked)).toEqual([false]);
 
     const paste = screen.getByLabelText('Or paste QR text');
     await user.type(paste, 'tb1q000000000000000000000000000000000000000');
@@ -115,6 +178,30 @@ describe('BtcView', () => {
     await user.type(paste, BCRT);
     await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
     expect(screen.getByLabelText<HTMLInputElement>('Destination address').value).toBe(BCRT);
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+
+  it('selects no payment after a scan and warns, when selecting and in review, that payments swept together are linked', async () => {
+    const { user } = await setup({ payments: 2 });
+    await importSeed(user);
+    await user.type(screen.getByLabelText(/First block height/), '0');
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    await screen.findByText(/2 unspent payment/);
+    expect(sweepBoxes().map((b) => b.checked)).toEqual([false, false]);
+    await user.type(screen.getByLabelText('Destination address'), BCRT);
+    const reviewButton = screen.getByRole<HTMLButtonElement>('button', { name: 'Review sweep' });
+    expect(reviewButton.disabled).toBe(true);
+
+    await user.click(sweepBoxes()[0]!);
+    expect(reviewButton.disabled).toBe(false);
+    expect(screen.queryByText(/links them publicly/)).toBeNull();
+    await user.click(sweepBoxes()[1]!);
+    expect(screen.getByText(/2 payments are selected\. Spending them in one transaction links them publicly/)).toBeTruthy();
+
+    await user.click(reviewButton);
+    expect(screen.getByText(/This sweep spends 2 payments in one transaction/)).toBeTruthy();
+    await user.click(sweepBoxes()[1]!);
+    expect(screen.queryByText(/links them publicly/)).toBeNull();
   });
 
   it('reports a bad destination, deselected inputs and server failures', async () => {
@@ -123,6 +210,7 @@ describe('BtcView', () => {
     await user.type(screen.getByLabelText(/First block height/), '0');
     await user.click(screen.getByRole('button', { name: 'Scan' }));
     await screen.findByText(/1 unspent payment/);
+    await user.click(screen.getByRole('checkbox', { name: /^Sweep / }));
     await user.type(screen.getByLabelText('Destination address'), 'nope');
     await user.click(screen.getByRole('button', { name: 'Review sweep' }));
     expect(screen.getByRole('alert').textContent).toMatch(/not valid for this network/);
@@ -156,6 +244,7 @@ describe('BtcView', () => {
     await user.type(screen.getByLabelText(/First block height/), '0');
     await user.click(screen.getByRole('button', { name: 'Scan' }));
     await screen.findByText(/1 unspent payment/);
+    await user.click(screen.getByRole('checkbox', { name: /^Sweep / }));
     await user.type(screen.getByLabelText('Destination address'), BCRT);
     await user.click(screen.getByRole('button', { name: 'Review sweep' }));
     await user.click(screen.getByRole('checkbox', { name: /I checked the destination/ }));

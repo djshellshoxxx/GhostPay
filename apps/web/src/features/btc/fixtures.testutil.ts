@@ -172,16 +172,25 @@ export interface MockChain {
   fetchFn: (url: string, init: RequestInit) => Promise<Response>;
 }
 
+export interface MockChainOptions {
+  /** Transactions in block 2 (default 30: two pages). 25 fills its only page exactly. At most 30. */
+  readonly block2Txs?: number;
+  /** Payments to `recipient` in block 3 (default 1): 50_000 sats, then 40_000, 30_000, ... */
+  readonly payments?: number;
+}
+
 /**
  * In-memory Esplora server at `https://esplora.test/api`. Block 0 has the genesis hash of `netId`;
  * block 3 holds one payment of 50_000 sats to `recipient`; block 2 is large enough to need 2 pages.
+ * Paging behaves like electrs: `/block/:hash` reports `tx_count`, and a start index at or past the end of the
+ * block (or not a multiple of 25) is an HTTP 400, not an empty page.
  */
-export function mockChain(netId: BtcNetworkId, recipient: BtcWallet): MockChain {
+export function mockChain(netId: BtcNetworkId, recipient: BtcWallet, opts: MockChainOptions = {}): MockChain {
   const net = btcNetwork(netId);
   const blocks: MockBlock[] = mineChain(net.genesisHash, [
     [coinbase(1), decoyTx(1, SEED_B)],
-    [coinbase(2), ...Array.from({ length: 29 }, (_, k) => decoyTx(10 + k, SEED_B))],
-    [coinbase(3), decoyTx(40, SEED_B), paymentTx(50, recipient, SEED_B, 50_000)],
+    [coinbase(2), ...Array.from({ length: (opts.block2Txs ?? 30) - 1 }, (_, k) => decoyTx(10 + k, SEED_B))],
+    [coinbase(3), decoyTx(40, SEED_B), ...Array.from({ length: opts.payments ?? 1 }, (_, k) => paymentTx(50 + k, recipient, SEED_B, 50_000 - 10_000 * k))],
     [coinbase(4)],
   ]);
   const chain: MockChain = {
@@ -204,10 +213,16 @@ export function mockChain(netId: BtcNetworkId, recipient: BtcWallet): MockChain 
         const b = blocks[Number(m[1])];
         return b === undefined ? Promise.resolve(new Response('Block not found', { status: 404 })) : text(b.hash);
       }
+      if ((m = /^\/block\/([0-9a-f]{64})$/.exec(path))) {
+        const height = blocks.findIndex((x) => x.hash === m?.[1]);
+        const b = blocks[height];
+        return b === undefined ? Promise.resolve(new Response('Block not found', { status: 404 })) : json({ id: b.hash, height, tx_count: b.txs.length });
+      }
       if ((m = /^\/block\/([0-9a-f]{64})\/txs\/(\d+)$/.exec(path))) {
         const b = blocks.find((x) => x.hash === m?.[1]);
         if (b === undefined) return Promise.resolve(new Response('nope', { status: 404 }));
         const start = Number(m[2]);
+        if (start >= b.txs.length || start % 25 !== 0) return Promise.resolve(new Response('start index out of range', { status: 400 }));
         return json(b.txs.slice(start, start + 25));
       }
       if ((m = /^\/block\/([0-9a-f]{64})\/header$/.exec(path))) {

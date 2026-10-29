@@ -10,8 +10,8 @@ import type { TronNetworkInfo } from './network';
 import { TronViewError } from './rpc';
 
 /**
- * In-memory software wallet. NOTHING here is ever written to storage: the key backup is shown to
- * the user once (on request) so they can keep it, and the keys die with the component state.
+ * In-memory software wallet. NOTHING here is ever written to storage: the key backup of a wallet
+ * created here is shown only on request so the user can keep it, and the keys die with the component state.
  * The spending and viewing scalars are redacting `SecretScalar` holders that throw if stringified.
  */
 export interface TronWallet {

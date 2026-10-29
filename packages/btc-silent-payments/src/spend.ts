@@ -537,20 +537,32 @@ export interface SoftwareSignerOptions {
 /**
  * Reference {@link SilentPaymentSigner} in software: holds `b_spend` in memory and enforces every check a
  * hardware signer must. Not a hardware wallet: the key lives in this JavaScript process (no secure element,
- * no trusted display, no constant-time guarantee).
+ * no trusted display, no constant-time guarantee). It keeps its own copy of `b_spend`: call {@link dispose}
+ * once signing is done.
  */
 export class SoftwareSilentPaymentSigner implements SilentPaymentSigner {
   public readonly kind = 'software' as const;
   readonly #spendSecret: SecretScalar;
   readonly #confirm: NonNullable<SoftwareSignerOptions['confirm']>;
+  #disposed = false;
 
   public constructor(spendSecret: SecretScalar, o: SoftwareSignerOptions = {}) {
     this.#spendSecret = secretScalarFromBytes(spendSecret);
     this.#confirm = o.confirm ?? (() => true);
   }
 
+  /**
+   * Wipes this signer's own copy of `b_spend` (best effort, as {@link zeroize}) and refuses every later request with
+   * `SIGNER_REFUSED`. The `spendSecret` passed to the constructor is the caller's to wipe. Safe to call again.
+   */
+  public dispose(): void {
+    this.#disposed = true;
+    zeroize(this.#spendSecret);
+  }
+
   public getSpendPublicKey(signal?: AbortSignal): Promise<CompressedPoint> {
     if (signal?.aborted === true) return Promise.reject(new SilentPaymentError('ABORTED'));
+    if (this.#disposed) return Promise.reject(new SilentPaymentError('SIGNER_REFUSED'));
     return Promise.resolve(publicKeyOf(this.#spendSecret));
   }
 
@@ -574,6 +586,7 @@ export class SoftwareSilentPaymentSigner implements SilentPaymentSigner {
 
   public computeEcdhShare(req: { readonly inputs: readonly SignerInput[]; readonly scanPublicKey: Uint8Array }, signal?: AbortSignal): Promise<Uint8Array> {
     if (signal?.aborted === true) return Promise.reject(new SilentPaymentError('ABORTED'));
+    if (this.#disposed) return Promise.reject(new SilentPaymentError('SIGNER_REFUSED'));
     const keys = this.#keys(req.inputs);
     try {
       const ctx = buildSenderContext(
@@ -592,6 +605,7 @@ export class SoftwareSilentPaymentSigner implements SilentPaymentSigner {
 
   public async signSpend(req: SignSpendRequest, signal?: AbortSignal): Promise<readonly Uint8Array[]> {
     if (signal?.aborted === true) return fail('ABORTED');
+    if (this.#disposed) return fail('SIGNER_REFUSED');
     let tx: Transaction;
     try {
       tx = Transaction.fromPSBT(req.psbt, { allowUnknownOutputs: true });

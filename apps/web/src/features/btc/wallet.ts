@@ -8,8 +8,9 @@ import {
 import type { BtcNetworkInfo } from './network';
 
 /**
- * In-memory software wallet. NOTHING here is ever written to storage: the seed is shown to the
- * user once (on request) so they can back it up, and the keys die with the component state.
+ * In-memory software wallet. NOTHING here is ever written to storage: the seed of a wallet created
+ * here is shown only on request so the user can back it up (the view keeps it as bytes until Lock),
+ * and the keys die with the component state.
  */
 export interface BtcWallet {
   readonly keys: SilentPaymentKeys;
@@ -41,6 +42,11 @@ export function walletFromSeedHex(seedHex: string, net: BtcNetworkInfo): BtcWall
   } finally {
     zeroize(seed);
   }
+}
+
+/** Best-effort wipe of both secret scalars (used on lock, unmount and when another wallet replaces this one). */
+export function wipeWallet(w: BtcWallet): void {
+  zeroize(w.keys.scanSecret, w.keys.spendSecret);
 }
 
 /** `bitcoin:?sp=<address>[&amount=<btc>]` for a payer's silent-payments-capable wallet. */
