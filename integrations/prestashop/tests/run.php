@@ -117,8 +117,7 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	foreach ( array( 'PS_OS_PAYMENT' => 2, 'PS_OS_SHIPPING' => 4, 'PS_OS_CANCELED' => 6, 'PS_OS_ERROR' => 8, 'PS_OS_OUTOFSTOCK_PAID' => 9, 'PS_OS_OUTOFSTOCK_UNPAID' => 12 ) as $name => $id ) {
 		Configuration::updateValue( $name, $id );
 	}
-	$webhook_secret = str_repeat( "\x5a", 32 ); // fake
-	Configuration::updateValue( 'GHOSTPAY_WEBHOOK_SECRET', bin2hex( $webhook_secret ) );
+	$webhook_secret = str_repeat( "\x5a", 32 ); // fake; configured in the environment below (H-R4)
 	$db->execute( "INSERT INTO `ps_currency` (`id_currency`, `iso_code`, `precision`) VALUES (1, 'USD', 2)" );
 	$order = static function ( int $id, int $state, string $total = '12.500000', int $currency = 1 ) use ( $db, $module ): void {
 		$db->execute( "INSERT INTO `ps_orders` (`id_order`, `id_cart`, `id_customer`, `id_currency`, `module`, `current_state`, `total_paid`) VALUES ($id, $id, 7, $currency, 'ghostpay', $state, '$total')" );
@@ -128,9 +127,9 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 		array( 'id' => $id, 'type' => $type, 'createdAt' => 1800000000, 'data' => array( 'invoiceId' => $invoice, 'currency' => $currency, 'amountMinor' => $amount ) )
 	);
 	$sign    = static fn( string $body ): string => GhostPay_Signature::sign( $webhook_secret, $body, time(), bin2hex( random_bytes( 16 ) ) );
-	$request = static function ( string $body, ?string $signature = null ) use ( $sign ): array {
+	$request = static function ( string $body, ?string $signature = null, array $define = array() ) use ( $sign ): array {
 		$proc = proc_open( array( PHP_BINARY, __DIR__ . '/request.php' ), array( array( 'pipe', 'r' ), array( 'pipe', 'w' ), array( 'pipe', 'w' ) ), $pipes );
-		fwrite( $pipes[0], (string) json_encode( array( 'body' => $body, 'signature' => $signature ?? $sign( $body ) ) ) );
+		fwrite( $pipes[0], (string) json_encode( array( 'body' => $body, 'signature' => $signature ?? $sign( $body ), 'define' => $define ) ) );
 		fclose( $pipes[0] );
 		$out = (string) stream_get_contents( $pipes[1] );
 		$err = (string) stream_get_contents( $pipes[2] );
@@ -186,6 +185,83 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	);
 	$notes   = static fn( int $id ): int => count( array_filter( $order_page( $id ), static fn( array $m ): bool => '1' === $m['private'] ) );
 	$threads = static fn( int $id ): int => (int) $db->getValue( "SELECT COUNT(*) FROM `ps_customer_thread` WHERE `id_order` = $id" );
+
+	// H-R4: secrets come only from constants (config/defines_custom.inc.php, which PrestaShop's config/config.inc.php
+	// includes) or the environment, never from Configuration: ps_configuration is copied into every database backup and
+	// served by the webservice API (configurations resource), and the webhook secret alone lets anyone forge invoice.paid.
+	putenv( 'GHOSTPAY_SERVICE_SECRET' );
+	putenv( 'GHOSTPAY_WEBHOOK_SECRET' );
+	$old_service = str_repeat( 'a1', 32 ); // fake hex secrets, as the settings form of earlier versions stored them
+	$old_webhook = str_repeat( 'b2', 32 );
+	$new_service = str_repeat( 'd4', 32 );
+	$sign_with   = static fn( string $secret_hex, string $body ): string => GhostPay_Signature::sign( hex2bin( $secret_hex ), $body, time(), bin2hex( random_bytes( 16 ) ) );
+	$retry       = '503 {"ok":false,"retry":true}';
+	Configuration::updateValue( 'GHOSTPAY_SERVICE_SECRET', $old_service );
+	Configuration::updateValue( 'GHOSTPAY_WEBHOOK_SECRET', $old_webhook );
+	check( 'a service secret stored in Configuration is not used', $module->secret( 'service' ), null );
+	check( 'a webhook secret stored in Configuration is not used', $module->secret( 'webhook' ), null );
+	$upgraded = new Ghostpay(); // the upgrade step runs whenever the module is loaded
+	check( 'upgrade deletes the stored secrets', array( Configuration::get( 'GHOSTPAY_SERVICE_SECRET' ), Configuration::get( 'GHOSTPAY_WEBHOOK_SECRET' ) ), array( false, false ) );
+	$raw = (string) $db->getValue( 'SELECT group_concat(`value`) FROM `ps_configuration`' );
+	check( 'no copy of a stored secret is left in the configuration', str_contains( $raw, $old_service ) || str_contains( $raw, $old_webhook ), false );
+	check( 'the module warns to rotate both secrets (Module Manager alert)', str_contains( (string) $upgraded->warning, 'GHOSTPAY_SERVICE_SECRET' ) && str_contains( (string) $upgraded->warning, 'GHOSTPAY_WEBHOOK_SECRET' ), true );
+	check( 'the configuration page shows the warning', str_contains( $upgraded->getContent(), 'module_warning' ), true );
+	// As in WooCommerce (H-R1): no valid webhook secret is a retryable 503, the same for every request; a 4xx may be
+	// final for the sender and lose the payments made until the secret is set.
+	$order( 20, $awaiting );
+	$paid20 = $event( 'evt_20', 'invoice.paid', 'inv_ps_20', 'USD', '1250' );
+	check( 'no webhook secret configured: a webhook signed with the stored secret gets a retryable 503', $reply( $request( $paid20, $sign_with( $old_webhook, $paid20 ) ) ), $retry );
+	check( 'no webhook secret configured: an unsigned request gets the same 503', $reply( $request( $paid20, '' ) ), $retry );
+	check( 'a forged webhook does not pay the order', $state( 20 ), $awaiting );
+	// The settings form has no secret fields: submitted ones are ignored.
+	Tools::$values = array( 'submitGhostpay' => '1', 'GHOSTPAY_SERVICE_URL' => 'https://invoices.shop.test', 'GHOSTPAY_PAY_HOST' => 'pay.example.test', 'GHOSTPAY_SERVICE_SECRET' => $new_service, 'GHOSTPAY_WEBHOOK_SECRET' => $new_service );
+	$upgraded->getContent();
+	Tools::$values = array();
+	check( 'settings form saves the service URL and pay host', array( Configuration::get( 'GHOSTPAY_SERVICE_URL' ), Configuration::get( 'GHOSTPAY_PAY_HOST' ) ), array( 'https://invoices.shop.test', 'pay.example.test' ) );
+	check( 'settings form stores no secret', array( Configuration::get( 'GHOSTPAY_SERVICE_SECRET' ), Configuration::get( 'GHOSTPAY_WEBHOOK_SECRET' ) ), array( false, false ) );
+	putenv( 'GHOSTPAY_SERVICE_SECRET=' . strtoupper( $old_service ) ); // the exposed value, merely moved
+	putenv( 'GHOSTPAY_WEBHOOK_SECRET=' . bin2hex( $webhook_secret ) );
+	$warning = (string) ( new Ghostpay() )->warning;
+	check( 'warning stays while the exposed service secret is still configured', str_contains( $warning, 'GHOSTPAY_SERVICE_SECRET' ), true );
+	check( 'a rotated webhook secret leaves the warning', str_contains( $warning, 'GHOSTPAY_WEBHOOK_SECRET' ), false );
+	putenv( 'GHOSTPAY_SERVICE_SECRET=' . $new_service );
+	check( 'no warning once both secrets are rotated', array( ( new Ghostpay() )->warning, ( new Ghostpay() )->getContent() ), array( null, '' ) );
+	check( 'exposure record removed after rotation', Configuration::get( 'GHOSTPAY_EXPOSED_SECRETS' ), false );
+	check( 'the service secret comes from the environment', $module->secret( 'service' ), hex2bin( $new_service ) );
+	check( 'with a secret configured, a bad signature is a 400', $reply( $request( $paid20, $sign_with( $old_webhook, $paid20 ) ) ), '400 {"ok":false}' );
+	check( 'the sender retry of the upgrade-window payment is processed', $reply( $request( $paid20 ) ), '200 {"ok":true}' );
+	check( 'that webhook pays the order', $state( 20 ), 2 );
+	$order( 21, $awaiting );
+	$paid21   = $event( 'evt_21', 'invoice.paid', 'inv_ps_21', 'USD', '1250' );
+	$constant = array( 'GHOSTPAY_WEBHOOK_SECRET' => str_repeat( 'e5', 32 ) ); // as config/defines_custom.inc.php defines it
+	check( 'environment secret ignored once the constant is defined', $reply( $request( $paid21, null, $constant ) ), '400 {"ok":false}' );
+	check( 'webhook secret from the constant', $reply( $request( $paid21, $sign_with( str_repeat( 'e5', 32 ), $paid21 ), $constant ) ), '200 {"ok":true}' );
+	// The upgrade step can stop at any database query: it must never delete a secret it has not recorded for rotation.
+	for ( $step = 1; ; ++$step ) {
+		Configuration::deleteByName( 'GHOSTPAY_EXPOSED_SECRETS' );
+		Configuration::updateValue( 'GHOSTPAY_SERVICE_SECRET', $old_service );
+		Configuration::updateValue( 'GHOSTPAY_WEBHOOK_SECRET', $old_webhook );
+		Db::$queries = 0;
+		Db::$stop_at = $step;
+		try {
+			new Ghostpay();
+			$stopped = false;
+		} catch ( RuntimeException $e ) {
+			$stopped = true;
+		} finally {
+			Db::$stop_at = 0;
+		}
+		if ( ! $stopped ) {
+			break;
+		}
+		$recorded = json_decode( (string) Configuration::get( 'GHOSTPAY_EXPOSED_SECRETS' ), true );
+		foreach ( array( 'SERVICE' => $old_service, 'WEBHOOK' => $old_webhook ) as $which => $hex ) {
+			$kept = $hex === Configuration::get( "GHOSTPAY_{$which}_SECRET" ) || in_array( hash( 'sha256', $hex ), (array) ( $recorded[ strtolower( $which ) ] ?? array() ), true );
+			check( "upgrade step stopped at query $step: the $which secret is still stored or recorded", $kept, true );
+		}
+	}
+	check( 'the interruption test covered the upgrade step queries', $step > 4, true );
+	check( 'after the completed upgrade step no secret is stored', array( Configuration::get( 'GHOSTPAY_SERVICE_SECRET' ), Configuration::get( 'GHOSTPAY_WEBHOOK_SECRET' ) ), array( false, false ) );
 
 	$order( 1, $awaiting );
 	$paid1 = $event( 'evt_1', 'invoice.paid', 'inv_ps_1', 'USD', '1250' );
@@ -315,7 +391,9 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	// string): every thread the module wrote must have its note.
 	check( 'no customer thread without a message', $db->getValue( 'SELECT COUNT(*) FROM `ps_customer_thread` ct WHERE NOT EXISTS (SELECT 1 FROM `ps_customer_message` cm WHERE cm.`id_customer_thread` = ct.`id_customer_thread`)' ), '0' );
 
+	Configuration::updateGlobalValue( 'GHOSTPAY_EXPOSED_SECRETS', '{"service":["' . hash( 'sha256', $old_service ) . '"]}' );
 	check( 'uninstall drops the module tables', $module->uninstall(), true );
+	check( 'uninstall removes the exposure record', Configuration::get( 'GHOSTPAY_EXPOSED_SECRETS' ), false );
 	check( 'no module table left', $db->getValue( "SELECT COUNT(*) FROM sqlite_master WHERE `name` LIKE 'ps_ghostpay%'" ), '0' );
 	check( 'any other database error in recordInvoice() still throws', 0 === strpos( (string) $record( 'inv_ps_x', 98 ), 'PrestaShopException: ' ), true );
 }

@@ -111,9 +111,14 @@ class GhostpayWebhookModuleFrontController extends ModuleFrontController {
 			$this->out( 405, array( 'ok' => false ) );
 		}
 		$secret = $this->module->secret( 'webhook' );
+		if ( null === $secret ) {
+			// No valid secret configured (e.g. upgraded, the constant or environment not set yet): a server
+			// misconfiguration, not a bad request, answered the same for every request. 503 keeps the sender retrying.
+			$this->out( 503, array( 'ok' => false, 'retry' => true ) );
+		}
 		$header = (string) ( $_SERVER['HTTP_GHOSTPAY_SIGNATURE'] ?? '' );
 		$body   = (string) file_get_contents( 'php://input', false, null, 0, 65537 );
-		if ( null === $secret || strlen( $body ) > 65536 ) {
+		if ( strlen( $body ) > 65536 ) {
 			$this->out( 400, array( 'ok' => false ) );
 		}
 		$db       = Db::getInstance();

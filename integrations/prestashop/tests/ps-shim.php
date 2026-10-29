@@ -19,6 +19,10 @@ class PrestaShopException extends Exception {}
 class Db {
 	const INSERT = 1;
 
+	/** A test stops the request at its $stop_at-th query (a crash or a timeout there): that query does not run. */
+	public static $stop_at = 0;
+	public static $queries = 0;
+
 	private static $instance;
 	private $pdo;
 	private $in_transaction = false; // PDO does not track a BEGIN sent as SQL
@@ -55,6 +59,9 @@ class Db {
 
 	/** Like PrestaShop 8's DbPDO::_query(): a PDO error is rethrown as PrestaShopException, the PDOException as previous. */
 	private function query( string $sql ): PDOStatement {
+		if ( 0 !== self::$stop_at && ++self::$queries === self::$stop_at ) {
+			throw new RuntimeException( 'request stopped' );
+		}
 		try {
 			return $this->pdo->query( $sql );
 		} catch ( PDOException $exception ) {
@@ -153,6 +160,17 @@ class Context {
 }
 
 class Tools {
+	/** The submitted form values (a test sets them). */
+	public static $values = array();
+
+	public static function isSubmit( $submit ) {
+		return isset( self::$values[ $submit ] );
+	}
+
+	public static function getValue( $key, $default_value = false ) {
+		return self::$values[ $key ] ?? $default_value;
+	}
+
 	public static function passwdGen( $length = 8, $flag = 'ALPHANUMERIC' ) {
 		return substr( bin2hex( random_bytes( $length ) ), 0, $length );
 	}
@@ -235,6 +253,15 @@ class Configuration {
 
 	public static function deleteByName( $key ) {
 		return Db::getInstance()->execute( "DELETE FROM `ps_configuration` WHERE `name` = '" . pSQL( $key ) . "'" );
+	}
+
+	/** One shop here: the global value is the value. */
+	public static function getGlobalValue( $key, $id_lang = null ) {
+		return self::get( $key );
+	}
+
+	public static function updateGlobalValue( $key, $values, $html = false ) {
+		return self::updateValue( $key, $values, $html );
 	}
 }
 
@@ -343,6 +370,7 @@ class PaymentModule {
 	public $currentOrder;
 	public $context;
 	public $active = true;
+	public $warning; // PrestaShop's Module Manager lists modules with a warning (Alerts)
 
 	public function __construct() {}
 
@@ -359,7 +387,20 @@ class PaymentModule {
 	}
 
 	public function trans( $id, array $parameters = array(), $domain = null, $locale = null ) {
-		return $id;
+		return strtr( $id, $parameters );
+	}
+
+	/** Like PrestaShop's Module::displayError() / displayWarning() / displayConfirmation(): alert markup around the text. */
+	public function displayError( $error ) {
+		return '<div class="module_error alert alert-danger">' . $error . '</div>';
+	}
+
+	public function displayWarning( $warning ) {
+		return '<div class="module_warning alert alert-warning">' . $warning . '</div>';
+	}
+
+	public function displayConfirmation( $text ) {
+		return '<div class="module_confirmation conf confirm alert alert-success">' . $text . '</div>';
 	}
 }
 
