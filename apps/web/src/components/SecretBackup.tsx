@@ -121,16 +121,16 @@ export function SecretBackup(props: { readonly reveal: () => string; readonly te
 
   const copyNow = (value: string): void => {
     const earlier = onClipboard;
-    const copy = ++copies;
+    const mine = ++copies;
     // Marked before the write, so a Hide or Lock clicked while it is pending still clears it.
-    onClipboard = copy;
+    onClipboard = mine;
     void (async () => {
       try {
         await navigator.clipboard.writeText(value);
         setCopy('copied');
       } catch {
         // Nothing was copied: an earlier copy that may still be on the clipboard stays marked.
-        if (onClipboard === copy) onClipboard = earlier;
+        if (onClipboard === mine) onClipboard = earlier;
         setCopy('failed');
       }
     })();
