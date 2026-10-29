@@ -8,7 +8,7 @@ import { NOW, USDC_84532, makeParsed } from '../test/invoiceFixtures';
 import { MOCK_ACCOUNT, MockWallet } from '../test/mockWallet';
 import { mockRpc, type MockRpc } from '../test/mockRpc';
 import { createPayContext, permitStateMessage, reviewInvoice, type BufferQuote, type PayContext } from './pay';
-import { PermitRejectedError, PostBroadcastError, buildReceipt, classifyPayerPermit, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, submitTx, type Runtime } from './payExec';
+import { PermitRejectedError, PostBroadcastError, buildReceipt, classifyPayerPermit, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, submitTx, type ApprovalPlan, type Runtime } from './payExec';
 import { clearSession } from './session';
 import { userMessage } from './errors';
 import { SubmissionMismatchError, connectWallet, type WalletInfo, type WalletSession } from './wallet';
@@ -610,6 +610,44 @@ describe('submitTx compares a transaction that only became visible after it was 
     const error: unknown = await grantApproval(session, ctx, plan, rt, noStatus).catch((e: unknown) => e);
     expect(error).toBeInstanceOf(PostBroadcastError);
     expect(error).toMatchObject({ cause: { field: 'destination contract' } });
+  });
+});
+
+describe('an approval or revoke whose transaction the RPC never returns is not relied on (B2-R2)', () => {
+  /** Receipts appear, the transaction never does; the allowance is the amount of the approve the wallet really sent. */
+  const receiptOnlyChain = (wallet: MockWallet): MockRpc =>
+    chainSeeing(wallet, (m) => {
+      if (m === 'eth_getTransactionByHash') return null;
+      return m === 'eth_call' ? `0x${wallet.sent === undefined ? '0'.repeat(64) : String(wallet.sent['data']).slice(-64)}` : undefined;
+    });
+  const sends = (w: MockWallet): number => w.calls.filter((c) => c.method === 'eth_sendTransaction').length;
+
+  it('a larger approve swapped in for the same spender passes the readback but stops before the payment', async () => {
+    const journal = stubAttemptJournal();
+    const larger = (tx: Record<string, unknown>): Record<string, unknown> => ({ ...tx, data: `${String(tx['data']).slice(0, -64)}${'f'.repeat(64)}` });
+    const { ctx, session, wallet } = await setup({}, new MockWallet({ mutateTx: larger }));
+    const rt: Runtime = { rpc: receiptOnlyChain(wallet), nowSeconds: () => NOW, sleep };
+    const plan = await planApproval(ctx, session, USDC_84532, rt);
+    const hashes: string[] = [];
+    const error: unknown = await grantApproval(session, ctx, plan, rt, noStatus, undefined, (h) => { hashes.push(h); }).catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(PostBroadcastError);
+    expect(error).toMatchObject({ hash: `0x${'9'.repeat(64)}` });
+    expect(userMessage(error)).toMatch(/did not return the transaction itself, so it could not be compared with the preview\. Nothing was paid\./);
+    expect(hashes).toEqual([`0x${'9'.repeat(64)}`]);
+    // The attempt journal is unchanged: the broadcast approval stays recorded, so repeating it for this invoice is refused.
+    expect(JSON.parse(journal.get(ATTEMPT_JOURNAL_KEY) ?? '[]')).toMatchObject([{ kind: 'approval', status: 'submitted', hash: `0x${'9'.repeat(64)}` }]);
+    await expect(grantApproval(session, ctx, plan, rt, noStatus)).rejects.toThrow(/previous wallet attempt/);
+    expect(sends(wallet)).toBe(1);
+  });
+
+  it('a revoke whose transaction the RPC never returns is not reported as revoked', async () => {
+    const { ctx, session, wallet } = await setup();
+    const rt: Runtime = { rpc: receiptOnlyChain(wallet), nowSeconds: () => NOW, sleep };
+    const plan: ApprovalPlan = { token: USDC_84532, spender: FAKE_ROUTER, need: ctx.request.grossAmount, have: ctx.request.grossAmount, required: false };
+    const error: unknown = await revokeApproval(session, ctx, plan, rt, noStatus).catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(PostBroadcastError);
+    expect(userMessage(error)).toMatch(/could not be compared with the preview\. Check your allowances in your wallet\./);
+    expect(sends(wallet)).toBe(1);
   });
 });
 
