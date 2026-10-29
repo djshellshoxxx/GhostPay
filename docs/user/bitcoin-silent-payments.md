@@ -19,7 +19,7 @@ Source: `apps/web/src/features/btc/network.ts`. The app refuses a server whose g
 
 1. Open **Bitcoin** in the web app and choose a test network.
 2. Create a wallet. The app generates a random 32-byte seed. It is not stored, and it stays hidden until you press **Show backup seed**. It hides again after 60 seconds or as soon as the tab is hidden; you can show it again while the wallet is loaded. Write it down offline.
-3. **Copy seed** asks first: other apps and web pages can read the clipboard, and it may be kept in a clipboard history or synced to your other devices. **Hide seed** and **Lock** empty the clipboard again (best effort). When the browser does not allow that at the time (for example when the app locks itself while you are away), it happens at your next click or key press in the page.
+3. **Copy seed** asks first: other apps and web pages can read the clipboard, and it may be kept in a clipboard history or synced to your other devices. **Hide seed**, **Lock**, the app lock and leaving the view empty the clipboard again (best effort). When the browser does not allow that at the time (for example when the app locks itself while you are away), it happens at your next click or key press in the page.
 4. Share the `tsp1...` address, the `bitcoin:?sp=...` link or the QR code.
 5. The keys stay in page memory. They are wiped when you press **Lock**, when the app locks, or when you leave the view.
 

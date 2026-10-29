@@ -7,7 +7,7 @@ Solana support lives in `packages/solana-stealth` (design in [ADR-0017](../adr/A
 ## Using the test view
 
 1. Open **Solana (test)** and pick devnet, testnet or local validator. Enter an RPC server you trust; the app has no default. It refuses a server whose genesis hash does not match the selected cluster.
-2. Create or import keys. Keys live in memory only. A created wallet's backup seed stays hidden until you press **Show backup seed** and hides again after 60 seconds or as soon as the tab is hidden; write it down. **Copy seed** asks first (other apps and web pages can read the clipboard), and **Hide seed** and **Lock** empty the clipboard again (best effort; when the browser does not allow that at the time, at your next click or key press in the page).
+2. Create or import keys. Keys live in memory only. A created wallet's backup seed stays hidden until you press **Show backup seed** and hides again after 60 seconds or as soon as the tab is hidden; write it down. **Copy seed** asks first (other apps and web pages can read the clipboard), and **Hide seed**, **Lock**, the app lock and leaving the view empty the clipboard again (best effort; when the browser does not allow that at the time, at your next click or key press in the page).
 3. Give the payer your `st:sol:` meta-address. The payer needs separate tooling that sends SOL with the `gpst1:` announcement memo.
 4. Scan from a little before the payment slot, choose the found payment, review the sweep, sign, then broadcast.
 

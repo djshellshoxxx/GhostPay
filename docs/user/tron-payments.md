@@ -18,7 +18,7 @@ Source: `packages/tron-adapter/src/adapter.ts`. In the web view the node URL is 
 ## Using the test view
 
 1. Open **TRON (test)**, pick Nile, Shasta or local node and enter a node URL you trust. Public TronGrid hosts may refuse some networks; use your own node if so.
-2. Create or import keys. Keys live in memory only. A created wallet's backup keys stay hidden until you press **Show backup keys** and hide again after 60 seconds or as soon as the tab is hidden; save them. **Copy keys** asks first (other apps and web pages can read the clipboard), and **Hide keys** and **Lock** empty the clipboard again (best effort; when the browser does not allow that at the time, at your next click or key press in the page).
+2. Create or import keys. Keys live in memory only. A created wallet's backup keys stay hidden until you press **Show backup keys** and hide again after 60 seconds or as soon as the tab is hidden; save them. **Copy keys** asks first (other apps and web pages can read the clipboard), and **Hide keys**, **Lock**, the app lock and leaving the view empty the clipboard again (best effort; when the browser does not allow that at the time, at your next click or key press in the page).
 3. Give the payer your `st:trx:` meta-address. The payer needs separate tooling that sends TRX with the `GPT1` announcement memo.
 4. Scan from a little before the payment block, pick a found TRX payment, review the sweep, sign, then broadcast. TRC-20 payments appear only as a count.
 

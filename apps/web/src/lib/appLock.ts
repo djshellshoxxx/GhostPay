@@ -1,7 +1,8 @@
 /**
  * App-wide lock signal. The tag vault and the EVM session are locked directly by the app; views that hold keys of
  * their own (the Bitcoin, Solana and TRON views) subscribe here and run their own lock: wipe the keys and scan
- * secrets, hide any backup and drop results that are still in flight.
+ * secrets, hide any backup and drop results that are still in flight. The backup component subscribes too, so that a
+ * backup copied to the clipboard is emptied also after the view that showed it was left.
  */
 export type AppLockReason = 'idle' | 'manual';
 

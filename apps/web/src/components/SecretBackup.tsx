@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
+import { subscribeAppLock } from '../lib/appLock';
 import { Mono, Notice } from './Common';
 
 /** A shown backup hides itself after this many milliseconds (the texts say "a minute"), and as soon as the tab is hidden. */
@@ -10,6 +11,8 @@ let copies = 0;
 let onClipboard = 0;
 /** The copy whose clear is still pending (0: none), so that a second Hide or Lock meanwhile does not write again. */
 let clearing = 0;
+/** A clear the browser refused waits for the next click or key press ({@link retryAtActivation}). */
+let retrying = false;
 
 /**
  * While a refused clear waits, the next click or key press in the page tries again: it is user activation, so the
@@ -17,6 +20,7 @@ let clearing = 0;
  * right after it copied.
  */
 function retryAtActivation(on: boolean): void {
+  retrying = on;
   for (const type of ['click', 'keydown'] as const) {
     if (on) window.addEventListener(type, clearCopiedBackup, true);
     else window.removeEventListener(type, clearCopiedBackup, true);
@@ -52,6 +56,12 @@ export function clearCopiedBackup(): void {
   }
 }
 
+// The app lock empties a copied backup too, also after the view that showed it was left: that view, and its own
+// lock, are gone by then. Without user activation the browser usually refuses, and the next click or key press retries.
+subscribeAppLock(() => {
+  clearCopiedBackup();
+});
+
 /** Every text {@link SecretBackup} shows (the Bitcoin view passes translations; Solana and TRON use English). */
 export interface SecretBackupText {
   readonly title: string;
@@ -72,7 +82,7 @@ export interface SecretBackupText {
 
 const HIDDEN_HINT = 'It is hidden. Show it only where nobody can see your screen; it hides again after a minute, or as soon as this tab is hidden.';
 const COPY_WARNING =
-  'Other apps and web pages can read the clipboard, and it may be kept in a clipboard history or synced to your other devices. Copy only to paste it straight into a password manager. Hide and Lock empty the clipboard again (best effort). When the browser does not allow that at the time (for example when the app locks itself while you are away), it happens at your next click or key press in this page.';
+  'Other apps and web pages can read the clipboard, and it may be kept in a clipboard history or synced to your other devices. Copy only to paste it straight into a password manager. Hide, Lock and leaving this view empty the clipboard again (best effort). When the browser does not allow that at the time (for example when the app locks itself while you are away), it happens at your next click or key press in this page.';
 
 /** English texts for the views without translations (Solana: `seed`, TRON: `keys`). */
 export function englishBackupText(noun: 'seed' | 'keys'): SecretBackupText {
@@ -86,7 +96,7 @@ export function englishBackupText(noun: 'seed' | 'keys'): SecretBackupText {
     copyWarning: COPY_WARNING,
     copyConfirm: 'Copy anyway',
     copyCancel: 'Do not copy',
-    copied: 'Copied. Paste it now: Hide and Lock empty the clipboard again.',
+    copied: 'Copied. Paste it now: Hide, Lock and leaving this view empty the clipboard again.',
     copyFailed: 'Copy failed: select the text manually.',
   };
 }
@@ -94,13 +104,24 @@ export function englishBackupText(noun: 'seed' | 'keys'): SecretBackupText {
 /**
  * A wallet backup (seed or keys) that is not in the page until asked for. It is shown on request, again as often as
  * needed while the wallet is loaded, and hides itself after {@link BACKUP_VISIBLE_MS} or as soon as the page is hidden.
- * Copying takes a second, warned click; Hide empties the clipboard again, and so does each view's Lock.
+ * Copying takes a second, warned click; Hide empties the clipboard again, and so do each view's Lock, the app lock
+ * and leaving the view (this component unmounts).
  * @param props.reveal Produces the backup text; called only when the user asks to see it.
  */
 export function SecretBackup(props: { readonly reveal: () => string; readonly text: SecretBackupText }): ReactNode {
   const { text } = props;
   const [shown, setShown] = useState<string | undefined>(undefined);
   const [copy, setCopy] = useState<'idle' | 'confirm' | 'copied' | 'failed'>('idle');
+
+  // Leaving the view forgets the wallet like Lock does, so it empties the clipboard like Lock: leaving takes a click,
+  // which the browser counts as user activation. Not when a refused clear already waits for the next click or key
+  // press: this unmounts without one then (the app lock), and that click runs the clear anyway.
+  useEffect(
+    () => () => {
+      if (!retrying) clearCopiedBackup();
+    },
+    [],
+  );
 
   useEffect(() => {
     if (shown === undefined) return undefined;

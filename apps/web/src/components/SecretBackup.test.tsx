@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { notifyAppLock } from '../lib/appLock';
 import { BACKUP_VISIBLE_MS, clearCopiedBackup, englishBackupText, SecretBackup } from './SecretBackup';
 
 const SECRET = 'ab'.repeat(32);
@@ -182,6 +183,69 @@ describe('SecretBackup', () => {
     expect(writeText).toHaveBeenCalledTimes(5);
     click('Hide seed');
     expect(writeText).toHaveBeenCalledTimes(6);
+    expect(writeText).toHaveBeenLastCalledWith('');
+  });
+
+  it('empties the clipboard when it unmounts (its view is left), like Lock', async () => {
+    setup();
+    await copyBackup();
+    cleanup();
+    expect(writeText).toHaveBeenCalledTimes(2);
+    expect(writeText).toHaveBeenLastCalledWith('');
+    await settle();
+    // Emptied: later clears leave the clipboard alone.
+    clearCopiedBackup();
+    expect(writeText).toHaveBeenCalledTimes(2);
+  });
+
+  it('after its view is gone, the app lock still empties a copied backup', async () => {
+    setup();
+    await copyBackup();
+    // Left without user activation (an invoice link opened another view), so the browser refused at unmount.
+    writeText.mockImplementationOnce(refused);
+    cleanup();
+    await settle();
+    expect(writeText).toHaveBeenCalledTimes(2);
+    // No view's own lock runs any more; the app lock still empties it (a focused page allows that in some browsers).
+    act(() => { notifyAppLock('idle'); });
+    expect(writeText).toHaveBeenCalledTimes(3);
+    expect(writeText).toHaveBeenLastCalledWith('');
+    await settle();
+    fireEvent.click(document.body);
+    expect(writeText).toHaveBeenCalledTimes(3);
+  });
+
+  it('after its view is gone and the app lock was refused too, the next click empties the clipboard', async () => {
+    setup();
+    await copyBackup();
+    writeText.mockImplementationOnce(refused);
+    cleanup();
+    await settle();
+    writeText.mockImplementationOnce(refused);
+    act(() => { notifyAppLock('idle'); });
+    await settle();
+    expect(writeText.mock.calls.map(([text]) => text)).toEqual([SECRET, '', '']);
+    fireEvent.click(document.body);
+    expect(writeText).toHaveBeenCalledTimes(4);
+    expect(writeText).toHaveBeenLastCalledWith('');
+    await settle();
+    fireEvent.keyDown(document.body, { key: 'a' });
+    expect(writeText).toHaveBeenCalledTimes(4);
+  });
+
+  it('unmounting while a refused clear waits for the next click or key press does not try again without one', async () => {
+    setup();
+    await copyBackup();
+    // The app lock without user activation: refused, and then it unmounts the backup (the view locks).
+    writeText.mockImplementationOnce(refused);
+    act(() => { notifyAppLock('idle'); });
+    await settle();
+    expect(writeText).toHaveBeenCalledTimes(2);
+    cleanup();
+    expect(writeText).toHaveBeenCalledTimes(2);
+    // The waiting retry runs at the next click.
+    fireEvent.click(document.body);
+    expect(writeText).toHaveBeenCalledTimes(3);
     expect(writeText).toHaveBeenLastCalledWith('');
   });
 
