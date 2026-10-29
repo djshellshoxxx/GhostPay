@@ -305,6 +305,30 @@ describe('A-R1: -32005 is also a rate-limit code, so a refused block is asked ag
     expect(r).toMatchObject({ truncated: true, cursor: { nextBlock: 7n }, announcements: [] });
     expect(r.routerOnlyBlocks).toBeUndefined();
   });
+
+  it('narrows an ordinary block when a rate limit lets its router lane through but refuses the second whole-block read (documented residual, A-R8)', async () => {
+    // -32005 on the first 33 caller-unfiltered attempts: the ten requests down to block 7 and the second whole-block read.
+    // Without the provider's error text this cannot be told from a block too large for one response.
+    let unfiltered = 0;
+    const t = fakeTransport((m, p) => {
+      if (m === 'eth_chainId') return '0xaa36a7';
+      if (m === 'eth_blockNumber') return '0x3e8';
+      if (m === 'eth_getBlockByNumber') return { number: p[0], hash: bh(Number(BigInt(p[0] as string))), parentHash: bh(0) };
+      const f = p[0] as { fromBlock: string; toBlock: string; topics: (string | null)[] };
+      const [from, to] = [BigInt(f.fromBlock), BigInt(f.toBlock)];
+      if (f.topics[3] == null && ++unfiltered <= 33) throw new FakeRpcError(-32005);
+      return [direct, routed].filter((l) => BigInt(l.blockNumber) >= from && BigInt(l.blockNumber) <= to && (f.topics[3] == null || l.topics[3] === f.topics[3]));
+    });
+    const c = createClient(CHAIN, 'https://rpc.example.test', { transport: t, sleep: noSleep });
+    const r = await fetch(c, { nextBlock: 7n });
+    // The direct announcement is skipped and the block is reported as narrowed (docs/user/receive-and-scan.md).
+    expect(r.announcements.map((a) => [a.blockNumber, a.logIndex])).toEqual([[7n, 1]]);
+    expect(r).toMatchObject({ truncated: false, cursor: { nextBlock: 1001n }, routerOnlyBlocks: [7n] });
+    // The block itself was ordinary: read again once the rate limit has lifted, it is returned whole.
+    const again = await fetch(c, { nextBlock: 7n });
+    expect(again.announcements).toHaveLength(2);
+    expect(again.routerOnlyBlocks).toBeUndefined();
+  });
 });
 
 describe('A-R7: the window also grows back after a halving that a fixed range limit cannot explain', () => {
