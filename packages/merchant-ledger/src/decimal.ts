@@ -4,17 +4,13 @@ import { LedgerError } from './errors.js';
 export type RoundingMode = 'half-up' | 'half-even' | 'down' | 'up';
 
 const MINOR_RE = /^(?:0|[1-9][0-9]{0,77})$/;
-const EXPONENTS: Readonly<Record<string, number>> = {
-  JPY: 0,
-  KRW: 0,
-  VND: 0,
-  CLP: 0,
-  BHD: 3,
-  KWD: 3,
-  JOD: 3,
-  OMR: 3,
-  TND: 3,
-};
+
+/**
+ * Codes whose GhostPay invoice minor units have no decimals: the GhostPay app's table (apps/web/src/lib/format.ts
+ * `fiatDecimals`, which defines `fiat.minorUnits`; the shop plugins use the same). Every other code has 2, the ISO
+ * three-decimal currencies such as KWD included, so ISO 4217 exponents would misplace the decimal point.
+ */
+export const ZERO_DECIMAL_CURRENCIES: readonly string[] = Object.freeze(['JPY', 'KRW', 'VND', 'CLP', 'ISK', 'UGX', 'XAF', 'XOF']);
 
 /**
  * Parse a non-negative integer decimal string (fiat minor units) into bigint.
@@ -29,14 +25,14 @@ export function parseMinor(s: unknown): bigint {
   return BigInt(s);
 }
 
-/** Number of minor-unit decimals for a currency (ISO-4217 subset; default 2). */
+/** Number of minor-unit decimals for a currency: the GhostPay app's (0 for ZERO_DECIMAL_CURRENCIES, else 2). */
 export function currencyExponent(currency: string, overrides?: Readonly<Record<string, number>>): number {
   const o = overrides?.[currency];
   if (o !== undefined) {
     if (!Number.isInteger(o) || o < 0 || o > 18) throw new LedgerError('bad-exponent');
     return o;
   }
-  return EXPONENTS[currency] ?? 2;
+  return ZERO_DECIMAL_CURRENCIES.includes(currency) ? 0 : 2;
 }
 
 /**
