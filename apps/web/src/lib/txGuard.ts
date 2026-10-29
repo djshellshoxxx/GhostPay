@@ -100,7 +100,7 @@ export function reportsRevert(e: unknown): boolean {
 }
 
 /** Only for errors that carry the node's text: a halt (out of gas, bad opcode) rather than a revert. */
-const HALT_TEXT = /execution failed|invalid opcode|out of gas/i;
+const HALT_TEXT = /execution failed|invalid opcode|invalid instruction|out of gas|EVM error/i;
 
 /**
  * Whether an RPC failure is a plain revert, which can mean the called function does not exist. A call that ran out of
