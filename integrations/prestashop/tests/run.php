@@ -192,6 +192,17 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	check( 'retry after a failed side effect is processed', $reply( $request( $paid9 ) ), '200 {"ok":true}' );
 	check( 'retry applied the event once', $notes( 9 ), 1 );
 
+	// H-R5: only a duplicate nonce (SQLSTATE 23000) is a replay and a 400. Any other database error at the nonce claim
+	// (deadlock, server gone away) says nothing about the request: a retryable 503, and the sender's retry is processed.
+	$order( 14, $awaiting );
+	$paid14 = $event( 'evt_14', 'invoice.paid', 'inv_ps_14', 'USD', '1250' );
+	Configuration::updateValue( 'GHOSTPAY_TEST_FAIL_INSERT', 'ghostpay_nonce' );
+	check( 'database error at the nonce claim: retryable 503, not a replay 400', $reply( $request( $paid14 ) ), '503 {"ok":false,"retry":true}' );
+	Configuration::deleteByName( 'GHOSTPAY_TEST_FAIL_INSERT' );
+	check( 'database error at the nonce claim: order unchanged', $state( 14 ), $awaiting );
+	check( 'the retry after the database error is processed', $reply( $request( $paid14 ) ), '200 {"ok":true}' );
+	check( 'the retry pays the order', $state( 14 ), 2 );
+
 	// G3-02: amounts use the GhostPay app's minor units of the currency, not the shop's display precision.
 	$db->execute( "INSERT INTO `ps_currency` (`id_currency`, `iso_code`, `precision`) VALUES (2, 'JPY', 2), (3, 'USD', 0)" );
 	$order( 10, $awaiting, '1500.000000', 2 );

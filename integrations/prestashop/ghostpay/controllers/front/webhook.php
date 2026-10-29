@@ -89,23 +89,29 @@ class GhostpayWebhookModuleFrontController extends ModuleFrontController {
 		if ( null === $secret || strlen( $body ) > 65536 ) {
 			$this->out( 400, array( 'ok' => false ) );
 		}
-		$db  = Db::getInstance();
-		$res = GhostPay_Signature::verify(
+		$db       = Db::getInstance();
+		$db_error = false;
+		$res      = GhostPay_Signature::verify(
 			$secret,
 			$body,
 			$header,
 			time(),
-			static function ( string $nonce, int $expires ) use ( $db ): bool {
-				$db->execute( 'DELETE FROM `' . _DB_PREFIX_ . 'ghostpay_nonce` WHERE `expires` < ' . (int) time() );
-				// Duplicate primary key => insert fails => replay. Fails closed on DB error, also when PDO throws the
-				// duplicate key (PHP 8 default) instead of returning false.
+			static function ( string $nonce, int $expires ) use ( $db, &$db_error ): bool {
+				// Duplicate primary key => insert fails => replay, also when PDO throws it (PHP 8 default; PrestaShop
+				// rethrows it as PrestaShopException). Any other database error (deadlock, server gone away) is not a
+				// replay: the claim fails closed and the request is answered 503 below so the sender retries.
 				try {
+					$db->execute( 'DELETE FROM `' . _DB_PREFIX_ . 'ghostpay_nonce` WHERE `expires` < ' . (int) time() );
 					return (bool) @$db->insert( 'ghostpay_nonce', array( 'nonce' => pSQL( $nonce ), 'expires' => (int) $expires ), false, false );
 				} catch ( Exception $e ) {
+					$db_error = ! Ghostpay::isDuplicateKey( $e );
 					return false;
 				}
 			}
 		);
+		if ( $db_error ) {
+			$this->out( 503, array( 'ok' => false, 'retry' => true ) ); // reached only with a valid signature
+		}
 		$event = 'ok' === $res ? GhostPay_Event::parse( $body ) : null;
 		if ( null === $event ) {
 			$this->out( 400, array( 'ok' => false ) );

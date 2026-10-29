@@ -89,6 +89,11 @@ class Db {
 	/** Like PrestaShop: every value is quoted as-is (callers pSQL() it). */
 	public function insert( $table, $data, $null_values = false, $use_cache = true, $type = self::INSERT, $add_prefix = true ) {
 		$table = ( $add_prefix ? _DB_PREFIX_ : '' ) . $table;
+		if ( _DB_PREFIX_ . Configuration::get( 'GHOSTPAY_TEST_FAIL_INSERT' ) === $table ) {
+			// A test makes inserts into this table fail with a database error that is not a duplicate key (a lost
+			// connection, a deadlock): here a real PDO error with SQLSTATE HY000.
+			$this->query( 'SELECT ghostpay_test_server_has_gone_away()' );
+		}
 		$this->query( 'INSERT INTO `' . $table . '` (`' . implode( '`,`', array_keys( $data ) ) . "`) VALUES ('" . implode( "','", array_values( $data ) ) . "')" );
 		return true;
 	}
