@@ -337,6 +337,27 @@ describe('Pay: invoice reading and review', () => {
     expect(screen.queryByText('Check the amount')).toBeNull();
   });
 
+  it('shows the fixed amount of a token off the allowlist in base units with its address, not scaled by assumed decimals (B2-R3)', async () => {
+    // Signed by hand: the Create page offers allowlisted tokens only.
+    const { parsed } = await makeParsed();
+    const unlisted = `0x${'ab'.repeat(20)}`;
+    const inv: Invoice = { ...parsed.invoice, token: unlisted, amountPolicy: { mode: 'fixed_token', tokenAmount: '1000000' } };
+    const digest = keccak_256(concatBytes(utf8ToBytes(SIGNING_DOMAIN), utf8ToBytes(canonicalize(inv))));
+    const sig = withSessionSecrets((secrets) => bytesToHex(secp256k1.sign(digest, secrets.signingKey, { prehash: false, lowS: true })));
+    const fragment = `#gpi=v1.${encodeBase64Url(utf8ToBytes(canonicalize({ alg: 'none', inv, sig })))}`;
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    expect(await screen.findByText('This token is not on the allowlist for this chain.')).toBeTruthy();
+    const amount = `1000000 base units of token ${unlisted}`;
+    const row = (label: string): string | null | undefined => screen.getByText(label, { selector: 'dt' }).nextElementSibling?.textContent;
+    expect(row('Invoice total')).toBe(`${amount} (fixed token amount)`);
+    expect(row('Pricing')).toBe(`Fixed: ${amount}`);
+    window.print = vi.fn();
+    await user.click(screen.getByRole('button', { name: 'Print bill' }));
+    const bill = screen.getByTestId('printable-bill');
+    expect(within(bill).getByText('Amount due', { selector: 'dt' }).nextElementSibling?.textContent).toBe(amount);
+    expect(within(bill).getByText('Pay with', { selector: 'dt' }).nextElementSibling?.textContent).toBe(unlisted);
+  });
+
   it('rejects an oversized fragment', async () => {
     openWith(`#gpi=v1.${'A'.repeat(30_000)}`, makeServices());
     expect((await screen.findByRole('alert')).textContent).toMatch(/16 KiB/);
