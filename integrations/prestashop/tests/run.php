@@ -219,6 +219,10 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	Tools::$values = array();
 	check( 'settings form saves the service URL and pay host', array( Configuration::get( 'GHOSTPAY_SERVICE_URL' ), Configuration::get( 'GHOSTPAY_PAY_HOST' ) ), array( 'https://invoices.shop.test', 'pay.example.test' ) );
 	check( 'settings form stores no secret', array( Configuration::get( 'GHOSTPAY_SERVICE_SECRET' ), Configuration::get( 'GHOSTPAY_WEBHOOK_SECRET' ) ), array( false, false ) );
+	// H-R10: as WooCommerce's is_available(), GhostPay is offered at checkout only when the validation controller can
+	// start a payment. In the upgrade window (no service secret yet) every attempt would fail ("temporarily unavailable").
+	$offered = static fn( Ghostpay $m ): array => array_map( static fn( $option ): array => array( $option->getModuleName(), $option->getAction() ), $m->hookPaymentOptions( array() ) );
+	check( 'no service secret configured: GhostPay is not offered at checkout', $offered( $upgraded ), array() );
 	putenv( 'GHOSTPAY_SERVICE_SECRET=' . strtoupper( $old_service ) ); // the exposed value, merely moved
 	putenv( 'GHOSTPAY_WEBHOOK_SECRET=' . bin2hex( $webhook_secret ) );
 	$warning = (string) ( new Ghostpay() )->warning;
@@ -228,6 +232,19 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	check( 'no warning once both secrets are rotated', array( ( new Ghostpay() )->warning, ( new Ghostpay() )->getContent() ), array( null, '' ) );
 	check( 'exposure record removed after rotation', Configuration::get( 'GHOSTPAY_EXPOSED_SECRETS' ), false );
 	check( 'the service secret comes from the environment', $module->secret( 'service' ), hex2bin( $new_service ) );
+	check( 'service secret, service URL and pay host configured: GhostPay is offered at checkout', $offered( $module ), array( array( 'ghostpay', 'https://shop.test/module/ghostpay/validation?token=test-token' ) ) );
+	Configuration::updateValue( 'GHOSTPAY_PAY_HOST', '' );
+	check( 'no pay host configured: not offered', $offered( $module ), array() );
+	Configuration::updateValue( 'GHOSTPAY_PAY_HOST', 'pay.example.test' );
+	Configuration::updateValue( 'GHOSTPAY_SERVICE_URL', '' );
+	check( 'no service URL configured: not offered', $offered( $module ), array() );
+	Configuration::updateValue( 'GHOSTPAY_SERVICE_URL', 'https://invoices.shop.test' );
+	putenv( 'GHOSTPAY_SERVICE_SECRET=' . str_repeat( 'ab', 16 ) ); // 16 bytes: not a valid secret
+	check( 'a too short service secret counts as not configured: not offered', $offered( $module ), array() );
+	putenv( 'GHOSTPAY_SERVICE_SECRET=' . $new_service );
+	$module->active = false;
+	check( 'a disabled module is not offered', $offered( $module ), array() );
+	$module->active = true;
 	check( 'with a secret configured, a bad signature is a 400', $reply( $request( $paid20, $sign_with( $old_webhook, $paid20 ) ) ), '400 {"ok":false}' );
 	check( 'the sender retry of the upgrade-window payment is processed', $reply( $request( $paid20 ) ), '200 {"ok":true}' );
 	check( 'that webhook pays the order', $state( 20 ), 2 );

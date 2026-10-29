@@ -151,16 +151,59 @@ class Context {
 	private static $instance;
 	public $shop;
 	public $language;
+	public $link;
 
 	public static function getContext(): self {
 		if ( null === self::$instance ) {
 			self::$instance           = new self();
 			self::$instance->shop     = (object) array( 'id' => 1 );
 			self::$instance->language = (object) array( 'id' => 1 );
+			self::$instance->link     = new Link();
 		}
 		return self::$instance;
 	}
 }
+
+class Link {
+	public function getModuleLink( $module, $controller = 'default', array $params = array(), $ssl = null, $id_lang = null, $id_shop = null, $relative_protocol = false ) {
+		return 'https://shop.test/module/' . $module . '/' . $controller . ( array() === $params ? '' : '?' . http_build_query( $params ) );
+	}
+}
+
+/** PrestaShop\PrestaShop\Core\Payment\PaymentOption (aliased below): the setters the module calls and their getters. */
+class GhostPay_Test_PaymentOption {
+	private $module_name;
+	private $call_to_action_text;
+	private $action;
+
+	public function setModuleName( $module_name ) {
+		$this->module_name = $module_name;
+		return $this;
+	}
+
+	public function getModuleName() {
+		return $this->module_name;
+	}
+
+	public function setCallToActionText( $call_to_action_text ) {
+		$this->call_to_action_text = $call_to_action_text;
+		return $this;
+	}
+
+	public function getCallToActionText() {
+		return $this->call_to_action_text;
+	}
+
+	public function setAction( $action ) {
+		$this->action = $action;
+		return $this;
+	}
+
+	public function getAction() {
+		return $this->action;
+	}
+}
+class_alias( 'GhostPay_Test_PaymentOption', 'PrestaShop\PrestaShop\Core\Payment\PaymentOption' );
 
 class Tools {
 	/** The submitted form values (a test sets them). */
@@ -176,6 +219,11 @@ class Tools {
 
 	public static function passwdGen( $length = 8, $flag = 'ALPHANUMERIC' ) {
 		return substr( bin2hex( random_bytes( $length ) ), 0, $length );
+	}
+
+	/** PrestaShop hashes the customer's id and password with the page; a fixed fake token here. */
+	public static function getToken( $page = true, $context = null ) {
+		return 'test-token';
 	}
 }
 
@@ -375,7 +423,9 @@ class PaymentModule {
 	public $active = true;
 	public $warning; // PrestaShop's Module Manager lists modules with a warning (Alerts)
 
-	public function __construct() {}
+	public function __construct() {
+		$this->context = Context::getContext(); // as PrestaShop's Module::__construct()
+	}
 
 	public function install() {
 		return true;
