@@ -232,6 +232,16 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	$order( 8, $awaiting );
 	$request( $event( 'evt_8', 'invoice.paid', 'inv_ps_8', 'EUR', '1250' ) );
 	check( 'currency mismatch: state kept, noted', array( $state( 8 ), $notes( 8 ) ), array( $awaiting, 1 ) );
+	// H-R7: the double-payment/refund wording only for payment events (paid, over). An expiry or a partial payment in
+	// another currency gets a neutral "ignored: currency mismatch" note, as in WooCommerce.
+	$note_text = static fn( int $id ): string => implode( "\n", array_column( $order_page( $id ), 'message' ) );
+	check( 'payment in another currency: refund wording', str_contains( $note_text( 8 ), 'refund' ), true );
+	$order( 15, $awaiting );
+	$request( $event( 'evt_15e', 'invoice.expired', 'inv_ps_15', 'EUR', '0' ) );
+	check( 'expiry in another currency: order not cancelled', $state( 15 ), $awaiting );
+	check( 'expiry in another currency: neutral note, no refund wording', array( $notes( 15 ), str_contains( $note_text( 15 ), 'ignored: currency mismatch' ), str_contains( $note_text( 15 ), 'refund' ) ), array( 1, true, false ) );
+	$request( $event( 'evt_15p', 'invoice.partial', 'inv_ps_15', 'EUR', '500' ) );
+	check( 'partial payment in another currency: neutral note, no refund wording', array( $notes( 15 ), substr_count( $note_text( 15 ), 'ignored: currency mismatch' ), str_contains( $note_text( 15 ), 'refund' ) ), array( 2, 2, false ) );
 
 	// A failed side effect releases the claim (retryable 503); the retry applies the event once.
 	$order( 9, 2 );

@@ -171,9 +171,13 @@ class GhostpayWebhookModuleFrontController extends ModuleFrontController {
 		} else {
 			$state = 'closed'; // paid, shipped, refunded, ...: never changed by a webhook.
 		}
-		$action = $event['data']['currency'] === $currency->iso_code
-			? GhostPay_Event::order_action( $event['type'], $cmp, $state )
-			: 'note';
+		// Another currency never changes the order. A payment (paid, over) gets the manual check / refund note; any other
+		// event only a neutral one.
+		if ( $event['data']['currency'] === $currency->iso_code ) {
+			$action = GhostPay_Event::order_action( $event['type'], $cmp, $state );
+		} else {
+			$action = in_array( $event['type'], array( 'invoice.paid', 'invoice.over' ), true ) ? 'note' : 'mismatch';
+		}
 		$side_effect_ok = true;
 		switch ( $action ) {
 			case 'paid':
@@ -190,6 +194,16 @@ class GhostpayWebhookModuleFrontController extends ModuleFrontController {
 					$order,
 					$this->trans(
 						'GhostPay %type% event %event% (%amount% %currency% minor units) did not change this order. Check it manually and refund a double payment if needed.',
+						array( '%type%' => $event['type'], '%event%' => $event['id'], '%amount%' => $event['data']['amountMinor'], '%currency%' => $event['data']['currency'] ),
+						'Modules.Ghostpay.Admin'
+					)
+				);
+				break;
+			case 'mismatch':
+				$side_effect_ok = $this->add_note(
+					$order,
+					$this->trans(
+						'GhostPay %type% event %event% (%amount% %currency% minor units) ignored: currency mismatch.',
 						array( '%type%' => $event['type'], '%event%' => $event['id'], '%amount%' => $event['data']['amountMinor'], '%currency%' => $event['data']['currency'] ),
 						'Modules.Ghostpay.Admin'
 					)
