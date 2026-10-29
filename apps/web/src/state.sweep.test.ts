@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { SweepLock } from './lib/sweep';
-import { beginSweepAttempt, getSweepAttempt, recordSweepAttempt, resetSweepAttemptsForTests, resolveSweepAttempt } from './state';
+import { MAX_OTHER_HASHES, SWEEP_JOURNAL_KEY } from './lib/sweepAttemptJournal';
+import { beginSweepAttempt, getSweepAttempt, isSweepJournalBroken, recordSweepAttempt, resetSweepAttemptsForTests, resolveSweepAttempt } from './state';
 
 const OWNER = '0x5555555555555555555555555555555555555555';
 const order = { relayer: '0x2222222222222222222222222222222222222222' as const, nonce: 1n, deadline: 1_800_001_200 };
@@ -53,5 +54,103 @@ describe('resolveSweepAttempt (compare-and-swap for status checks)', () => {
     const hydrated = getSweepAttempt(84532, OWNER)!;
     expect(resolveSweepAttempt(hydrated, { ...hydrated, status: 'included' })).toBe(true);
     expect(getSweepAttempt(84532, OWNER)?.status).toBe('included');
+  });
+});
+
+describe('L2-F2: a same-nonce re-sign takes over the unresolved direct lock by compare-and-swap', () => {
+  const H1 = `0x${'a1'.repeat(32)}` as const;
+  const H2 = `0x${'b2'.repeat(32)}` as const;
+  const locked: SweepLock = { chainId: 84532, owner: OWNER, nonce: 7, expectedHash: H1, status: 'unknown-after-handoff' };
+  const resigned: SweepLock = { ...locked, expectedHash: H2 };
+
+  it('records the new expected hash, persisted before handoff, only from the lock it started from and with its nonce', () => {
+    beginSweepAttempt(locked);
+    const from = getSweepAttempt(84532, OWNER)!;
+    // B-R5: the replaced transaction may still be the one that is mined, so the lock keeps its hash too.
+    const both: SweepLock = { ...resigned, otherHashes: [H1] };
+    expect(beginSweepAttempt(resigned, from)).toEqual(both);
+    expect(getSweepAttempt(84532, OWNER)).toEqual(both);
+    expect(JSON.parse(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY) ?? '')).toEqual([{ chainId: 84532, owner: OWNER, nonce: 7, expectedHash: H2, otherHashes: [H1], status: 'unknown-after-handoff' }]);
+    // A reload reads the replacement, still unresolved.
+    resetSweepAttemptsForTests({ keepStorage: true });
+    expect(getSweepAttempt(84532, OWNER)).toEqual(both);
+    // A third attempt keeps both earlier hashes; one with byte-identical contents (the same hash) adds none.
+    const H3 = `0x${'c3'.repeat(32)}` as const;
+    beginSweepAttempt({ ...locked, expectedHash: H3 }, getSweepAttempt(84532, OWNER));
+    expect(getSweepAttempt(84532, OWNER)).toEqual({ ...locked, expectedHash: H3, otherHashes: [H1, H2] });
+    beginSweepAttempt({ ...locked, expectedHash: H3 }, getSweepAttempt(84532, OWNER));
+    expect(getSweepAttempt(84532, OWNER)).toEqual({ ...locked, expectedHash: H3, otherHashes: [H1, H2] });
+    // The result is again resolved by CAS, which compares the recorded hashes too.
+    const current = getSweepAttempt(84532, OWNER)!;
+    expect(resolveSweepAttempt({ ...locked, expectedHash: H3 }, { ...current, status: 'submitted' })).toBe(false);
+    expect(resolveSweepAttempt(current, { ...current, status: 'submitted' })).toBe(true);
+    expect(getSweepAttempt(84532, OWNER)).toEqual({ ...current, status: 'submitted' });
+  });
+
+  it('B-R5: a submitted lock is not replaced: the node accepted it, and a replacement without a fee bump would be refused', () => {
+    beginSweepAttempt(locked);
+    expect(resolveSweepAttempt(locked, { ...locked, status: 'submitted' })).toBe(true);
+    const journal = window.sessionStorage.getItem(SWEEP_JOURNAL_KEY);
+    expect(() => { beginSweepAttempt(resigned, getSweepAttempt(84532, OWNER)); }).toThrow(/cannot be replaced/);
+    expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toBe(journal);
+    expect(getSweepAttempt(84532, OWNER)).toEqual({ ...locked, status: 'submitted' });
+  });
+
+  it('B-R5: refuses a replacement beyond the recorded-hash bound without touching the journal', () => {
+    const hash = (n: number): `0x${string}` => `0x${n.toString(16).padStart(64, '0')}`;
+    beginSweepAttempt(locked);
+    for (let n = 1; n <= MAX_OTHER_HASHES; n += 1) beginSweepAttempt({ ...locked, expectedHash: hash(n) }, getSweepAttempt(84532, OWNER));
+    expect(getSweepAttempt(84532, OWNER)?.otherHashes).toHaveLength(MAX_OTHER_HASHES);
+    const journal = window.sessionStorage.getItem(SWEEP_JOURNAL_KEY);
+    expect(() => { beginSweepAttempt({ ...locked, expectedHash: hash(99) }, getSweepAttempt(84532, OWNER)); }).toThrow(/replaced too many times/);
+    expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toBe(journal);
+    expect(isSweepJournalBroken()).toBe(false);
+  });
+
+  it('refuses another nonce, a stale or resolved lock, a relayed order and a missing lock, and records nothing', () => {
+    beginSweepAttempt(locked);
+    const journal = window.sessionStorage.getItem(SWEEP_JOURNAL_KEY);
+    expect(() => { beginSweepAttempt({ ...resigned, nonce: 8 }, locked); }).toThrow(/changed|pending/);
+    expect(() => { beginSweepAttempt({ chainId: 84532, owner: OWNER, expectedHash: H2, status: 'unknown-after-handoff' }, locked); }).toThrow(/changed|pending/);
+    expect(() => { beginSweepAttempt(resigned, { ...locked, expectedHash: H2 }); }).toThrow(/changed/);
+    expect(() => { beginSweepAttempt({ ...resigned, chainId: 11155111 }, locked); }).toThrow(/changed/);
+    expect(() => { beginSweepAttempt({ ...resigned, order: { relayer: order.relayer, nonce: 7n, deadline: order.deadline } }, locked); }).toThrow(/changed/);
+    // Without `replaces` an unresolved lock still refuses any new signature, same nonce or not.
+    expect(() => { beginSweepAttempt(resigned); }).toThrow(/may still be pending/);
+    expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toBe(journal);
+    expect(getSweepAttempt(84532, OWNER)).toEqual(locked);
+
+    // Resolved meanwhile (a status check won the race): the re-sign must not overwrite the result.
+    recordSweepAttempt({ ...locked, status: 'included' });
+    expect(() => { beginSweepAttempt(resigned, locked); }).toThrow(/changed/);
+    expect(getSweepAttempt(84532, OWNER)?.status).toBe('included');
+
+    // A relayed order lock is never replaced by a direct re-sign.
+    const relayed: SweepLock = { chainId: 84532, owner: '0x6666666666666666666666666666666666666666', order, status: 'unknown-after-handoff' };
+    beginSweepAttempt(relayed);
+    expect(() => { beginSweepAttempt({ chainId: 84532, owner: relayed.owner, nonce: 0, expectedHash: H2, status: 'unknown-after-handoff' }, relayed); }).toThrow(/changed/);
+    expect(() => { beginSweepAttempt({ ...resigned, owner: '0x7777777777777777777777777777777777777777' }, { ...locked, owner: '0x7777777777777777777777777777777777777777' }); }).toThrow(/changed/);
+  });
+
+  it('a failed write leaves the tombstone, keeps the old lock in memory and disarms signing; nothing may be handed off', () => {
+    beginSweepAttempt(locked);
+    const proto = Object.getPrototypeOf(window.sessionStorage) as Storage;
+    const descriptor = Object.getOwnPropertyDescriptor(proto, 'setItem')!;
+    const original = descriptor.value as (this: Storage, k: string, v: string) => void;
+    let calls = 0;
+    proto.setItem = function (this: Storage, k: string, v: string): void {
+      calls += 1;
+      if (k === SWEEP_JOURNAL_KEY && calls === 1) throw new DOMException('quota', 'QuotaExceededError');
+      original.call(this, k, v);
+    };
+    try {
+      expect(() => { beginSweepAttempt(resigned, locked); }).toThrow(/unavailable or invalid/);
+    } finally {
+      Object.defineProperty(proto, 'setItem', descriptor);
+    }
+    expect(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY)).toBe('"unavailable"');
+    expect(getSweepAttempt(84532, OWNER)).toEqual(locked);
+    expect(isSweepJournalBroken()).toBe(true);
+    expect(() => { beginSweepAttempt(resigned, locked); }).toThrow(/unavailable or invalid/);
   });
 });

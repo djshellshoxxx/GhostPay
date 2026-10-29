@@ -59,6 +59,26 @@ class GhostpayWebhookModuleFrontController extends ModuleFrontController {
 		return $ok;
 	}
 
+	/** Move the order to the state stored under $state_key. */
+	private function set_state( Order $order, string $state_key ): bool {
+		$history = new OrderHistory();
+		$history->id_order = (int) $order->id;
+		// changeIdOrderState() returns nothing (it dies or throws on failure); addWithemail() saves the history row.
+		$history->changeIdOrderState( (int) Configuration::get( $state_key ), $order );
+		return (bool) $history->addWithemail( true );
+	}
+
+	/** Private order message for the merchant, stored like PaymentModule::validateOrder() stores its message. */
+	private function add_note( Order $order, string $text ): bool {
+		$message = new Message();
+		$message->message = $text;
+		$message->id_cart = (int) $order->id_cart;
+		$message->id_customer = (int) $order->id_customer;
+		$message->id_order = (int) $order->id;
+		$message->private = 1;
+		return (bool) $message->add();
+	}
+
 	public function postProcess() {
 		if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) ) {
 			$this->out( 405, array( 'ok' => false ) );
@@ -77,15 +97,20 @@ class GhostpayWebhookModuleFrontController extends ModuleFrontController {
 			time(),
 			static function ( string $nonce, int $expires ) use ( $db ): bool {
 				$db->execute( 'DELETE FROM `' . _DB_PREFIX_ . 'ghostpay_nonce` WHERE `expires` < ' . (int) time() );
-				// Duplicate primary key => insert fails => replay. Fails closed on DB error.
-				return (bool) @$db->insert( 'ghostpay_nonce', array( 'nonce' => pSQL( $nonce ), 'expires' => (int) $expires ), false, false );
+				// Duplicate primary key => insert fails => replay. Fails closed on DB error, also when PDO throws the
+				// duplicate key (PHP 8 default) instead of returning false.
+				try {
+					return (bool) @$db->insert( 'ghostpay_nonce', array( 'nonce' => pSQL( $nonce ), 'expires' => (int) $expires ), false, false );
+				} catch ( Exception $e ) {
+					return false;
+				}
 			}
 		);
 		$event = 'ok' === $res ? GhostPay_Event::parse( $body ) : null;
 		if ( null === $event ) {
 			$this->out( 400, array( 'ok' => false ) );
 		}
-		$row = $db->getRow( 'SELECT `id_order`, `event_ids` FROM `' . _DB_PREFIX_ . 'ghostpay_invoice` WHERE `invoice_id` = \'' . pSQL( $event['data']['invoiceId'] ) . '\'' );
+		$row = $db->getRow( 'SELECT `id_order` FROM `' . _DB_PREFIX_ . 'ghostpay_invoice` WHERE `invoice_id` = \'' . pSQL( $event['data']['invoiceId'] ) . '\'' );
 		if ( ! $row ) {
 			$this->out( 200, array( 'ok' => true ) ); // unknown invoice: acknowledge.
 		}
@@ -102,29 +127,40 @@ class GhostpayWebhookModuleFrontController extends ModuleFrontController {
 			$this->out( 200, array( 'ok' => true ) );
 		}
 		$currency = new Currency( (int) $order->id_currency );
-		$exact_total = $this->module->exactOrderTotal( (int) $order->id );
-		$due         = null === $exact_total ? null : GhostPay_Money::to_minor( $exact_total, (int) $currency->precision );
+		$due      = $this->module->orderTotalMinor( (int) $order->id, (string) $currency->iso_code ); // same units as the invoice
 		$cmp      = null === $due ? null : GhostPay_Money::compare( $event['data']['amountMinor'], $due );
-		$is_awaiting = (int) $order->current_state === (int) Configuration::get( 'GHOSTPAY_OS_AWAITING' );
+		$state_id  = (int) $order->current_state;
+		$backorder = $state_id === (int) Configuration::get( 'PS_OS_OUTOFSTOCK_UNPAID' );
+		if ( $state_id === (int) Configuration::get( 'GHOSTPAY_OS_AWAITING' ) ) {
+			$state = 'awaiting';
+		} elseif ( $backorder || in_array( $state_id, array( (int) Configuration::get( 'PS_OS_ERROR' ), (int) Configuration::get( 'PS_OS_CANCELED' ) ), true ) ) {
+			$state = 'unpaid';
+		} else {
+			$state = 'closed'; // paid, shipped, refunded, ...: never changed by a webhook.
+		}
 		$action = $event['data']['currency'] === $currency->iso_code
-			? GhostPay_Event::order_action( $event['type'], $cmp, $is_awaiting )
-			: 'ignore';
+			? GhostPay_Event::order_action( $event['type'], $cmp, $state )
+			: 'note';
 		$side_effect_ok = true;
 		switch ( $action ) {
 			case 'paid':
-				$history = new OrderHistory();
-				$history->id_order = (int) $order->id;
-				$side_effect_ok = $history->changeIdOrderState( (int) Configuration::get( 'PS_OS_PAYMENT' ), $order ) && $history->addWithemail( true );
+				$side_effect_ok = $this->set_state( $order, $backorder ? 'PS_OS_OUTOFSTOCK_PAID' : 'PS_OS_PAYMENT' );
 				break;
 			case 'hold':
-				$history = new OrderHistory();
-				$history->id_order = (int) $order->id;
-				$side_effect_ok = $history->changeIdOrderState( (int) Configuration::get( 'PS_OS_ERROR' ), $order ) && $history->addWithemail( true );
+				$side_effect_ok = $this->set_state( $order, 'PS_OS_ERROR' );
 				break;
 			case 'cancel':
-				$history = new OrderHistory();
-				$history->id_order = (int) $order->id;
-				$side_effect_ok = $history->changeIdOrderState( (int) Configuration::get( 'PS_OS_CANCELED' ), $order ) && $history->addWithemail( true );
+				$side_effect_ok = $this->set_state( $order, 'PS_OS_CANCELED' );
+				break;
+			case 'note':
+				$side_effect_ok = $this->add_note(
+					$order,
+					$this->trans(
+						'GhostPay %type% event %event% (%amount% %currency% minor units) did not change this order. Check it manually and refund a double payment if needed.',
+						array( '%type%' => $event['type'], '%event%' => $event['id'], '%amount%' => $event['data']['amountMinor'], '%currency%' => $event['data']['currency'] ),
+						'Modules.Ghostpay.Admin'
+					)
+				);
 				break;
 			case 'partial':
 				// A partial payment remains unpaid and awaiting; later paid events may complete it.

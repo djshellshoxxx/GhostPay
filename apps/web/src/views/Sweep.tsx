@@ -7,7 +7,7 @@ import { ManifestBanner } from '../components/ManifestBanner';
 import { verifyManifestForFlow } from '../lib/manifest';
 import { UserFacingError, userMessage } from '../lib/errors';
 import { formatUnits } from '../lib/format';
-import { checkDestination, directSweep, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, RELAYED_EXPIRY_MARGIN_SECONDS, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
+import { checkDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, RELAYED_EXPIRY_MARGIN_SECONDS, type DirectSweepResult, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
 import { RelayerRefusedError } from '../lib/relayerClient';
 import { authorizeEncryptedVault, readEncryptedVault } from '../lib/keyVault';
 import { captureSessionGuard } from '../lib/session';
@@ -23,6 +23,7 @@ const ATTEMPT_TITLES: Partial<Record<string, MessageKey>> = {
   reverted: 'sweep.attempt.reverted',
   expired: 'sweep.attempt.expired',
   refused: 'sweep.attempt.refused',
+  replaced: 'sweep.attempt.replaced',
 };
 
 export function Sweep(): ReactNode {
@@ -51,6 +52,11 @@ export function Sweep(): ReactNode {
   const signingLocked = journalBroken || (attempt !== undefined && isUnresolvedAttempt(attempt));
   const [checking, setChecking] = useState(false);
   const [checkNote, setCheckNote] = useState<string | undefined>(undefined);
+  // L2-F1: the last direct sweep was sent although the RPC could not dry-run it (a warning, not a refusal).
+  const [dryRunSkipped, setDryRunSkipped] = useState(false);
+  // L2-F2: a direct lock whose handoff outcome is unknown may be replaced by a transaction with exactly its nonce (only
+  // one can be mined). Not a submitted one (B-R5): the node accepted it and would refuse a replacement at the same fee.
+  const resignNonce = !journalBroken && attempt !== undefined && attempt.order === undefined && attempt.status === 'unknown-after-handoff' ? attempt.nonce : undefined;
 
   useEffect(() => {
     let live = true;
@@ -206,18 +212,45 @@ export function Sweep(): ReactNode {
 
   const onDirect = (): void => {
     if (signingLocked) return;
+    sweepDirectly(false);
+  };
+
+  const onResign = (): void => {
+    if (resignNonce === undefined) return;
+    sweepDirectly(true);
+  };
+
+  /** `resign`: sign a replacement for the direct sweep whose handoff outcome is unknown, with exactly its nonce. */
+  const sweepDirectly = (resign: boolean): void => {
     void guard(async (assertCurrent) => {
+      setDryRunSkipped(false);
       const rpc = await app.getRpc(chainId);
       assertCurrent();
       await verified(rpc);
       assertCurrent();
       if (loaded === undefined || rpc === undefined || balance === undefined) throw new Error('state');
       const dest = checkDestination(destination, target.owner, loaded);
-      assertNoUnresolvedAttempt();
+      let replaces: (SweepLock & { readonly nonce: number }) | undefined;
+      if (resign) replaces = resignableLock();
+      else assertNoUnresolvedAttempt();
       // The lock is persisted before handoff; on an uncertain outcome it simply stays as begun (unknown-after-handoff).
+      // A replacement takes over the recorded lock only by compare-and-swap and only with the same nonce, and the lock
+      // as recorded keeps the replaced hashes.
       const handoff: { lock?: SweepLock } = {};
-      const res = await directSweep({ target, manifest: loaded, destination: dest, amount: balance, rpc, onBeforeHandoff: (a) => { beginSweepAttempt(a); handoff.lock = a; } });
-      if (handoff.lock !== undefined) resolveSweepAttempt(handoff.lock, res.attempt);
+      let res: DirectSweepResult;
+      try {
+        res = await directSweep({
+          target, manifest: loaded, destination: dest, amount: balance, rpc,
+          ...(replaces === undefined ? {} : { replaceNonce: replaces.nonce }),
+          onBeforeHandoff: (a) => { handoff.lock = beginSweepAttempt(a, replaces); },
+        });
+      } catch (e) {
+        // The transaction may be on the network with its dry run skipped: that warning applies here too (B-R6).
+        if (e instanceof DirectSweepOutcomeUnknownError) setDryRunSkipped(e.simulation === 'unavailable');
+        throw e;
+      }
+      if (handoff.lock !== undefined) resolveSweepAttempt(handoff.lock, { ...handoff.lock, status: res.attempt.status });
+      setDryRunSkipped(res.simulation === 'unavailable');
       app.announce(t('sweep.announceBroadcast'));
       return true;
     });
@@ -229,6 +262,16 @@ export function Sweep(): ReactNode {
     if (current !== undefined && isUnresolvedAttempt(current)) {
       throw new UserFacingError(t('sweep.pendingBlocksSigning'));
     }
+  };
+
+  /** The direct lock with an unknown handoff outcome a replacement may take over, read again at signing time. */
+  const resignableLock = (): SweepLock & { readonly nonce: number } => {
+    if (isSweepJournalBroken()) throw new SweepJournalUnavailableError();
+    const current = getSweepAttempt(chainId, target.owner);
+    if (current === undefined || current.order !== undefined || current.nonce === undefined || current.status !== 'unknown-after-handoff') {
+      throw new UserFacingError(t('sweep.resign.nothingPending'));
+    }
+    return { ...current, nonce: current.nonce };
   };
 
   const pendingNote = t(attempt?.order !== undefined ? 'sweep.note.pendingRelayed' : 'sweep.note.pendingDirect');
@@ -339,6 +382,7 @@ export function Sweep(): ReactNode {
       {busy && <p role="status">{t('sweep.working')}</p>}
       {busy && vaultPhase === 'authorizing' && <button type="button" className="btn" onClick={cancelVaultCheck}>{t('sweep.cancelVault')}</button>}
       {error !== undefined && <Notice kind="error">{error}</Notice>}
+      {dryRunSkipped && <Notice kind="warn">{t('sweep.dryRunUnavailable')}</Notice>}
       {journalBroken && <Notice kind="warn" title={t('sweep.journalBroken.title')}>{t('sweep.journalBroken.body')}</Notice>}
       {attempt !== undefined && (
         <Notice
@@ -349,6 +393,7 @@ export function Sweep(): ReactNode {
             ? t('sweep.attempt.unknownDirect')
             : t('sweep.attempt.unknownRelayed', { deadline: new Date(attempt.order.deadline * 1000).toISOString(), minutes: String(RELAYED_EXPIRY_MARGIN_SECONDS / 60) })}<br /></>}
           {attempt.status === 'expired' && <>{t('sweep.attempt.expiredBody')}<br /></>}
+          {attempt.status === 'replaced' && <>{t('sweep.attempt.replacedBody')}<br /></>}
           {attempt.status === 'refused' && attempt.order !== undefined && <>{t('sweep.attempt.refusedBody', { deadline: new Date(attempt.order.deadline * 1000).toISOString() })}<br /></>}
           {attempt.expectedHash !== undefined && (
             <>
@@ -362,6 +407,14 @@ export function Sweep(): ReactNode {
             <>
               <br />
               <button type="button" className="btn" onClick={onCheckStatus} disabled={checking}>{t('sweep.checkStatus')}</button>
+            </>
+          )}
+          {resignNonce !== undefined && (
+            <>
+              <br />
+              {t('sweep.resign.hint', { nonce: String(resignNonce) })}
+              <br />
+              <button type="button" className="btn" onClick={onResign} disabled={busy || balance === undefined || balance === 0n}>{t('sweep.resign.button')}</button>
             </>
           )}
           {checkNote !== undefined && <><br />{checkNote}</>}
