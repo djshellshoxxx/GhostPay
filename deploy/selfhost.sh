@@ -166,7 +166,8 @@ cfg="$here/config/relayer.config.json"
 if [ -f "$cfg" ]; then ok "relayer config present"; else bad "missing deploy/config/relayer.config.json (see deploy/config/README.md)"; fi
 if [ -f "$cfg" ] && [ -n "$origin" ] && ! grep -qF "\"$origin\"" "$cfg"; then bad "allowedOrigins in relayer config does not list $origin"; fi
 # Behind this recipe's nginx the relayer must trust the backend subnet nginx connects from (audit L5-05); with any
-# other list every client shares one bucket. The subnet is read from docker-compose.yml (172.30.10.0/24 unless moved).
+# other list every client shares one bucket. The subnet is read from docker-compose.yml; when none can be read, the
+# recipe's default 172.30.10.0/24 is assumed and the output says so.
 if [ -f "$cfg" ]; then
   rc=0
   backend="$(python3 - "$cfg" "$here/docker-compose.yml" <<'PY'
@@ -179,20 +180,25 @@ def network(entry):
         net = ipaddress.ip_network(f"{mapped}/{net.prefixlen - 96}", strict=False)
     return net
 
-backend = ipaddress.ip_network("172.30.10.0/24")
+backend = None
 try:
     with open(sys.argv[2], encoding="utf-8") as f:
         lines = f.read().splitlines()
     for line in lines[lines.index("  backend:", lines.index("networks:")) + 1:]:
         if re.match(r"  \S", line):
             break
-        m = re.match(r"\s*(?:- )?subnet:\s*(\S+)\s*$", line)
+        # Only the CIDR token: quotes around it and a trailing comment are allowed.
+        m = re.match(r"\s*(?:-\s+)?subnet:\s*['\"]?([0-9A-Fa-f:.]+/\d+)", line)
         if m:
-            backend = ipaddress.ip_network(m.group(1).strip("'\""), strict=False)
+            backend = ipaddress.ip_network(m.group(1), strict=False)
             break
 except (OSError, ValueError):
     pass
-print(backend)
+if backend is None:
+    backend = ipaddress.ip_network("172.30.10.0/24")
+    print(backend, "assumed")
+else:
+    print(backend)
 try:
     with open(sys.argv[1], encoding="utf-8") as f:
         entries = json.load(f).get("trustedProxies", [])
@@ -206,10 +212,16 @@ if all(n.is_loopback for n in nets):
 sys.exit(0 if any(n.version == backend.version and n.overlaps(backend) for n in nets) else 3)
 PY
 )" || rc=$?
+  read -r backend assumed <<<"$backend"
+  subnet="the compose backend subnet $backend"
+  if [ -n "$assumed" ]; then
+    subnet="the assumed backend subnet $backend"
+    warn "could not read the backend subnet from docker-compose.yml; checking trustedProxies against the recipe's default $backend instead"
+  fi
   case "$rc" in
-    0) ok "relayer trustedProxies covers the compose backend subnet $backend" ;;
+    0) ok "relayer trustedProxies covers $subnet" ;;
     1) warn "relayer trustedProxies is empty or loopback-only: behind nginx every client would share one rate-limit bucket; set it to [\"$backend\"] (deploy/config/README.md)" ;;
-    3) warn "relayer trustedProxies does not cover the compose backend subnet $backend that nginx connects from: every client would share one rate-limit bucket; add \"$backend\" (deploy/config/README.md)" ;;
+    3) warn "relayer trustedProxies does not cover $subnet that nginx connects from: every client would share one rate-limit bucket; add \"$backend\" (deploy/config/README.md)" ;;
     *) warn "could not read trustedProxies from the relayer config (the relayer validates it at startup)" ;;
   esac
 fi
