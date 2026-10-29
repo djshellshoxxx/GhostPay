@@ -162,16 +162,47 @@ describe('Seller keys', () => {
     await user.click(screen.getByRole('button', { name: 'Load keys' }));
     expect(getSessionPublic()).toBeDefined();
     expect(screen.getByText('Your meta-address (public)')).toBeTruthy();
-    // C-R6: the empty signing-key field generated a key that exists only in this tab, as its hint said.
-    expect(screen.getByText('These seller keys have no backup')).toBeTruthy();
-    expect(getSessionBackup()?.backedUp).toBe(false);
+    // C-R6: the empty signing-key field generated a key that exists only in this tab, as its hint said. C-R10: payments
+    // stay sweepable with the typed hex, so only that key is reported unsaved and the meta-address is shared as usual.
+    expect(getSessionBackup()).toMatchObject({ backedUp: false, signerOnly: true });
+    expect(screen.getByText('The invoice-signing key has no backup')).toBeTruthy();
+    expect(screen.queryByText('These seller keys have no backup')).toBeNull();
+    expect(screen.queryByText('Back up these seller keys first')).toBeNull();
+    expect(screen.getByText(getSessionPublic()!.metaAddress)).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Copy meta-address' })).toBeTruthy();
   });
 
-  it('C-R6: says that an empty signing-key field generates a key that exists only in this tab', async () => {
+  it('C-R6, C-R10: says that an empty signing-key field generates a key that only a backup keeps', async () => {
     const user = await open();
     await user.click(screen.getByText('Import existing keys (hex)'));
     const hint = document.getElementById(screen.getByLabelText('Invoice-signing private key (optional)').getAttribute('aria-describedby') ?? '');
-    expect(hint?.textContent).toMatch(/exists only in this tab, so these keys count as not backed up until you download the encrypted keystore or save the vault/);
+    expect(hint?.textContent).toMatch(/It exists only in this tab until you download the encrypted keystore or save the vault: if the tab closes or the idle lock wipes the keys before then, your hex keys load the spending and viewing keys again, but with a new signing key\./);
+  });
+
+  it('C-R10: says that only the generated signing key is lost before keys from a hex import are replaced or wiped', async () => {
+    generateSession();
+    await saveEncryptedVault('violet comet maple lantern', { N: 1 << 14 });
+    clearSession();
+    const pub = importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32) });
+    const user = await open();
+    const sweepable = /Payments to their meta-address stay sweepable with the spending and viewing keys you imported, but the invoice-signing key generated here/;
+    await user.type(await screen.findByLabelText('Vault passphrase'), 'violet comet maple lantern');
+    await user.click(screen.getByRole('button', { name: 'Unlock saved vault' }));
+    const replace = screen.getByText('The signing key loaded now has no backup').closest('.notice');
+    expect(replace?.textContent).toMatch(sweepable);
+    expect(replace?.textContent).not.toMatch(/never be swept/);
+    expect(screen.queryByText('The keys loaded now have no backup')).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+    await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    const wipe = (await screen.findByText('Wipe keys whose signing key has no backup?')).closest('.notice');
+    expect(wipe?.textContent).toMatch(sweepable);
+    expect(wipe?.textContent).not.toMatch(/never be swept/);
+    expect(screen.queryByText('Wipe keys that have no backup?')).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(getSessionPublic()).toBe(pub);
+    await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    await user.click(await screen.findByRole('button', { name: 'Wipe the unsaved keys' }));
+    expect(getSessionPublic()).toBeUndefined();
   });
 
   it('shows a clear error for a bad key and keeps no session', async () => {

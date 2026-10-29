@@ -287,8 +287,9 @@ export async function authorizeEncryptedVault(passphrase: string, store: KeyVaul
 
 /**
  * Whether the loaded keys survive a wipe (L1-01): the user holds a copy outside this browser, or the vault record they
- * were unlocked from or saved to is still the one saved here. Without keys, or when storage cannot be read, false. A vault
- * copy found missing (deleted in another tab, site data cleared) is recorded, so the keys count as unsaved again.
+ * were unlocked from or saved to is still the one saved here. Without keys, or when storage cannot be read, false; also
+ * for hex imported without its signing key, whose generated signing key would not survive (C-R10). A vault copy found
+ * missing (deleted in another tab, site data cleared) is recorded, so the keys count as unsaved again.
  */
 export async function loadedKeysRecoverable(store: KeyVaultStore = activeStore()): Promise<boolean> {
   const backup = getSessionBackup();

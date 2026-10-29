@@ -52,6 +52,11 @@ interface Custody {
    * or a keystore was downloaded.
    */
   readonly external: boolean;
+  /**
+   * The user holds the spending and viewing keys outside this browser profile, so payments to them stay sweepable without
+   * this tab: they were imported, also as hex whose signing key was generated here (C-R10).
+   */
+  readonly paymentKeysExternal: boolean;
   /** The vault record these keys were unlocked from, saved to or verified against. Kept after the record is deleted. */
   readonly vaultRecord: string | undefined;
   /** That record is still saved in this browser, as far as this tab knows. */
@@ -62,8 +67,13 @@ interface Custody {
 
 /** React-facing summary of the custody state; it holds no ciphertext. */
 export interface SessionBackup {
-  /** A copy of the loaded keys exists outside this tab's memory. Until then the idle lock never wipes them (L1-01). */
+  /** A copy of the loaded keys exists outside this tab's memory. Until then the idle lock wipes them only if `signerOnly` (L1-01). */
   readonly backedUp: boolean;
+  /**
+   * Not backed up, but only the invoice-signing key generated at a hex import lacks a copy: payments stay sweepable with
+   * the typed hex, so the idle lock may wipe the keys; nothing can be signed with that signing key afterwards (C-R10).
+   */
+  readonly signerOnly: boolean;
   /** The seller typed the waiver: invoicing and sharing are allowed, the keys are still not backed up. */
   readonly waived: boolean;
   /** Sweeps and key export need the passphrase of the vault these keys are tied to (L1-02). */
@@ -120,8 +130,9 @@ export function getSessionBackup(): SessionBackup | undefined {
 
 function setCustody(next: Custody | undefined, notify: boolean): void {
   custody = next;
-  const summary = next === undefined ? undefined : { backedUp: next.external || next.vaultStored, waived: next.waived, vaultStepUp: next.vaultRecord !== undefined };
-  const same = summary?.backedUp === backupSummary?.backedUp && summary?.waived === backupSummary?.waived && summary?.vaultStepUp === backupSummary?.vaultStepUp;
+  const backedUp = next !== undefined && (next.external || next.vaultStored);
+  const summary = next === undefined ? undefined : { backedUp, signerOnly: !backedUp && next.paymentKeysExternal, waived: next.waived, vaultStepUp: next.vaultRecord !== undefined };
+  const same = summary?.backedUp === backupSummary?.backedUp && summary?.signerOnly === backupSummary?.signerOnly && summary?.waived === backupSummary?.waived && summary?.vaultStepUp === backupSummary?.vaultStepUp;
   if (same && (summary === undefined) === (backupSummary === undefined)) return;
   backupSummary = summary;
   if (notify) for (const l of backupListeners) l();
@@ -216,8 +227,11 @@ export function getSessionPublic(): SessionPublic | undefined {
   return publicSummary;
 }
 
-/** How freshly installed keys can be recovered: generated keys exist nowhere else yet. */
-type Origin = { readonly from: 'generated' | 'import' } | { readonly from: 'vault'; readonly record: string };
+/**
+ * How freshly installed keys can be recovered: generated keys exist nowhere else yet, and hex imported without its signing
+ * key loads the spending and viewing keys again, but not the signing key generated for it here (C-R10).
+ */
+type Origin = { readonly from: 'generated' | 'import' | 'import-new-signer' } | { readonly from: 'vault'; readonly record: string };
 
 function install(next: SessionSecrets, origin: Origin): SessionPublic {
   if (next.signingKey.every((byte, i) => byte === next.keys.spendingSecret[i]) || next.signingKey.every((byte, i) => byte === next.keys.viewingSecret[i])) throw new UserFacingError('The invoice-signing key must be independent of spending and viewing keys.');
@@ -226,7 +240,8 @@ function install(next: SessionSecrets, origin: Origin): SessionPublic {
   publicSummary = summarize(next);
   current = box(next);
   const vault = origin.from === 'vault' ? origin.record : undefined;
-  setCustody({ external: origin.from === 'import', vaultRecord: vault, vaultStored: vault !== undefined, waived: false }, false);
+  const imported = origin.from === 'import' || origin.from === 'import-new-signer';
+  setCustody({ external: origin.from === 'import', paymentKeysExternal: imported, vaultRecord: vault, vaultStored: vault !== undefined, waived: false }, false);
   emit();
   return publicSummary;
 }
@@ -241,7 +256,8 @@ export interface ImportedHex {
   readonly viewingKeyHex: string;
   /**
    * Optional: when omitted a fresh invoice-signing key is generated (it is a separate key by design, ADR-0002). That key
-   * exists only in this tab, so the keys count as unsaved until a keystore download or a vault save (C-R6).
+   * exists only in this tab, so the keys count as unsaved until a keystore download or a vault save (C-R6); since the hex
+   * loads the spending and viewing keys again, only the signing key is reported missing, and the idle lock wipes them (C-R10).
    */
   readonly signingKeyHex?: string;
 }
@@ -276,7 +292,7 @@ export function importSession(input: ImportedHex): SessionPublic {
     const generatedSigner = input.signingKeyHex === undefined || input.signingKeyHex.trim() === '';
     signing = generatedSigner ? randomScalar() : scalarFromHex(input.signingKeyHex, 'Signing key');
     // The user typed or pasted these keys, so a copy exists outside this tab; a signing key generated here does not.
-    return install({ keys: keySetFromScalars(spending, viewing), signingKey: signing }, { from: generatedSigner ? 'generated' : 'import' });
+    return install({ keys: keySetFromScalars(spending, viewing), signingKey: signing }, { from: generatedSigner ? 'import-new-signer' : 'import' });
   } finally {
     if (spending !== undefined) zeroize(spending);
     if (viewing !== undefined) zeroize(viewing);

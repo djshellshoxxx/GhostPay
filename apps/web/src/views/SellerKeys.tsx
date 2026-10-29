@@ -13,9 +13,11 @@ import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 /**
  * Stands in for `children` (the meta-address, an invoice form, a whole view) while the loaded keys have no backup and the
  * seller has not typed the waiver (L1-01): every payment those invite is lost if the tab closes before a backup exists.
- * The app-wide backup banner above it offers "Back up now". `heading` keeps the title of a view it stands in for.
+ * When only the signing key generated at a hex import is unsaved, payments stay sweepable from that hex: `paymentsOnly`
+ * children, which sign nothing, are shown, and the gate in front of the rest says that only the signing key is at stake
+ * (C-R10). The app-wide backup banner above it offers "Back up now". `heading` keeps the title of a view it stands in for.
  */
-export function BackupGate(props: { readonly children: ReactNode; readonly heading?: string }): ReactNode {
+export function BackupGate(props: { readonly children: ReactNode; readonly heading?: string; readonly paymentsOnly?: boolean }): ReactNode {
   const app = useApp();
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
@@ -23,11 +25,11 @@ export function BackupGate(props: { readonly children: ReactNode; readonly headi
   const [typed, setTyped] = useState('');
   const headingId = useId();
   useEffect(() => { setTyped(''); }, [app.session]);
-  if (backup === undefined || backup.backedUp || backup.waived) return props.children;
+  if (backup === undefined || backup.backedUp || backup.waived || (backup.signerOnly && props.paymentsOnly === true)) return props.children;
   const phrase = t('backupGate.waiverPhrase');
   const gate = (
     <div className="panel">
-      <Notice kind="warn" title={t('backupGate.title')}>{t('backupGate.body')}</Notice>
+      <Notice kind="warn" title={t('backupGate.title')}>{backup.signerOnly ? t('backupGate.signerOnly.body') : t('backupGate.body')}</Notice>
       <Field label={t('backupGate.waiverLabel', { phrase })}>{(id) => <input id={id} autoComplete="off" spellCheck={false} value={typed} onChange={(e) => { setTyped(e.target.value); }} />}</Field>
       <button type="button" className="btn" disabled={typed.trim().toLowerCase() !== phrase.toLowerCase()} onClick={() => { waiveSessionBackup(); }}>{t('backupGate.waive')}</button>
     </div>
@@ -370,8 +372,8 @@ export function SellerKeys(): ReactNode {
             {vaultBusy && operation.current !== null && <button type="button" className="btn" onClick={cancelImport}>{t('sellerKeys.cancelUnlock')}</button>}
           </form>
           {confirmReplace && (
-            <Notice kind="warn" title={t('sellerKeys.unlockReplaces.title')}>
-              <p>{t('sellerKeys.unlockReplaces.body')}</p>
+            <Notice kind="warn" title={backup?.signerOnly === true ? t('sellerKeys.unlockReplacesSignerOnly.title') : t('sellerKeys.unlockReplaces.title')}>
+              <p>{backup?.signerOnly === true ? t('sellerKeys.unlockReplacesSignerOnly.body') : t('sellerKeys.unlockReplaces.body')}</p>
               <button type="button" className="btn btn-danger" disabled={vaultBusy} onClick={() => { unlockVault(true); }}>{t('sellerKeys.unlockReplaces.confirm')}</button>{' '}
               <button type="button" className="btn" onClick={() => { setConfirmReplace(false); }}>{t('sellerKeys.cancel')}</button>
             </Notice>
@@ -434,7 +436,7 @@ export function SellerKeys(): ReactNode {
       ) : (
         <>
           <h3>{t('sellerKeys.metaHeading')}</h3>
-          <BackupGate>
+          <BackupGate paymentsOnly>
             <p>{t('sellerKeys.metaShare')}</p>
             <p><Mono>{s.metaAddress}</Mono></p>
             <QrFrame kind="shareable" text={s.metaAddress} caption={t('sellerKeys.metaCaption')} />
@@ -495,8 +497,9 @@ export function SellerKeys(): ReactNode {
             {t('sellerKeys.wipe')}
           </button>
           {confirmWipe && (
-            <Notice kind="warn" title={t('sellerKeys.wipeUnsaved.title')}>
-              <p>{t('sellerKeys.wipeUnsaved.body')}</p>
+            // The typed hex still sweeps payments when only the signing key generated for it is unsaved (C-R10).
+            <Notice kind="warn" title={backup?.signerOnly === true ? t('sellerKeys.wipeSignerOnly.title') : t('sellerKeys.wipeUnsaved.title')}>
+              <p>{backup?.signerOnly === true ? t('sellerKeys.wipeSignerOnly.body') : t('sellerKeys.wipeUnsaved.body')}</p>
               <button type="button" className="btn btn-danger" onClick={wipe}>{t('sellerKeys.wipeUnsaved.confirm')}</button>{' '}
               <button type="button" className="btn" onClick={() => { setConfirmWipe(false); }}>{t('sellerKeys.cancel')}</button>
             </Notice>

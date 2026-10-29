@@ -35,6 +35,7 @@ function ViewSwitch(props: { readonly view: ViewId }): ReactNode {
       return <SellerKeys />;
     case 'create':
       // An invoice invites payments that only these keys can sweep: no invoice until they are backed up or the risk is waived (L1-01).
+      // Also when only a signing key generated at a hex import is unsaved: invoices are signed with it (C-R10).
       return <BackupGate heading="Create invoice"><CreateInvoice /></BackupGate>;
     case 'pay':
       return <Pay />;
@@ -68,8 +69,9 @@ export function App(): ReactNode {
   const [matches, setMatches] = useState<readonly ScanMatch[]>([]);
   const [sweepTarget, selectForSweep] = useState<AppState['sweepTarget']>(undefined);
   const [live, setLive] = useState('');
-  // Minutes of the idle lock that last wiped seller keys, for a visible notice; cleared once keys are loaded again.
-  const [idleWiped, setIdleWiped] = useState<number | undefined>(undefined);
+  // Minutes of the idle lock that last wiped seller keys, and whether an unsaved signing key went with them (C-R10), for a
+  // visible notice; cleared once keys are loaded again.
+  const [idleWiped, setIdleWiped] = useState<{ readonly minutes: number; readonly signerLost: boolean } | undefined>(undefined);
   const session = useSyncExternalStore(subscribeSession, getSessionPublic);
   const backup = useSyncExternalStore(subscribeSessionBackup, getSessionBackup);
   const i18n = useI18nOptional();
@@ -123,7 +125,8 @@ export function App(): ReactNode {
 
   // Idle lock (L1-01). Local tags always lock. Seller keys are wiped only when a copy survives the wipe (imported keys, a
   // downloaded keystore, or their vault still saved here); keys that exist nowhere else stay loaded under the backup
-  // banner, because wiping them would lose every payment sent to their meta-address.
+  // banner, because wiping them would lose every payment sent to their meta-address. Hex keys imported without their
+  // signing key are wiped too: the hex loads them again, and the notice says that the signing key generated here is gone (C-R10).
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | undefined;
     const minutes = settings.lockTimeoutMin;
@@ -138,12 +141,13 @@ export function App(): ReactNode {
       const unchanged = captureSessionVersionGuard();
       void loadedKeysRecoverable().then((recoverable) => {
         try { unchanged(); } catch { return; }
-        if (!recoverable) {
+        const signerLost = getSessionBackup()?.signerOnly === true;
+        if (!recoverable && !signerLost) {
           setLive(t('app.idle.kept'));
           return;
         }
         clearSession();
-        setIdleWiped(minutes);
+        setIdleWiped({ minutes, signerLost });
         setLive(t('app.idle.wiped'));
       });
     };
@@ -233,14 +237,15 @@ export function App(): ReactNode {
       </header>
       <main id="main" tabIndex={-1} ref={main}>
         {session !== undefined && backup?.backedUp === false && (
-          <Notice kind="warn" title={t('app.backup.title')}>
-            {t('app.backup.body')}
+          // Payments stay sweepable from typed hex when only the signing key generated for it is unsaved (C-R10).
+          <Notice kind="warn" title={backup.signerOnly ? t('app.backup.signerOnly.title') : t('app.backup.title')}>
+            {backup.signerOnly ? t('app.backup.signerOnly.body') : t('app.backup.body')}
             {view !== 'seller' && <> <button type="button" className="btn" onClick={() => { setViewState('seller'); }}>{t('app.backup.action')}</button></>}
           </Notice>
         )}
         {session === undefined && idleWiped !== undefined && (
           <Notice kind="info">
-            {t('app.idle.wipedNotice', { minutes: idleWiped })}{' '}
+            {t('app.idle.wipedNotice', { minutes: idleWiped.minutes })}{idleWiped.signerLost && <> {t('app.idle.signerLost')}</>}{' '}
             <button type="button" className="btn" onClick={() => { setIdleWiped(undefined); }}>{t('app.idle.dismiss')}</button>
           </Notice>
         )}

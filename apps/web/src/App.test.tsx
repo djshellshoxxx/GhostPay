@@ -101,7 +101,8 @@ describe('App shell', () => {
       expect(hasSession()).toBe(false);
       expect(services.vault.unlocked).toBe(false);
       expect(await store.get()).toBe('{"ciphertext":"encrypted-only"}');
-      expect(screen.getByText(/Seller keys were wiped from memory after 1 minute without activity/)).toBeTruthy();
+      // These keys came with their signing key: nothing was lost, so the notice names no lost signing key (C-R10).
+      expect(screen.getByText(/Seller keys were wiped from memory after 1 minute without activity/).textContent).not.toMatch(/signing key/);
     } finally {
       vi.useRealTimers();
       setKeyVaultStoreForTests(undefined);
@@ -133,21 +134,42 @@ describe('App shell', () => {
     }
   });
 
-  it('C-R6: the idle lock keeps hex keys whose signing key was generated here, which exists nowhere else', async () => {
+  it('C-R10: the idle lock wipes hex keys whose signing key was generated here, and says that this key is gone', async () => {
     setKeyVaultStoreForTests(new MemoryKeyVaultStore());
-    const pub = importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32) });
+    importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32) });
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 1 }));
     vi.useFakeTimers();
     try {
       renderApp(makeServices());
-      expect(screen.getByText('These seller keys have no backup')).toBeTruthy();
+      // The typed hex loads the spending and viewing keys again: only the generated signing key has no copy.
+      const banner = screen.getByText('The invoice-signing key has no backup').closest('.notice');
+      expect(banner?.textContent).toMatch(/Payments to your meta-address stay sweepable with the spending and viewing keys you imported\./);
+      expect(banner?.textContent).not.toMatch(/every payment/);
+      expect(screen.queryByText('These seller keys have no backup')).toBeNull();
       await act(async () => { await vi.advanceTimersByTimeAsync(61_000); });
-      expect(getSessionPublic()).toBe(pub);
-      expect(document.querySelector('[role="status"][aria-live]')?.textContent).toBe('Local tags locked after inactivity. Seller keys stay loaded because they have no backup yet.');
+      expect(hasSession()).toBe(false);
+      expect(document.querySelector('[role="status"][aria-live]')?.textContent).toBe('Seller keys wiped from memory and local tags locked after inactivity.');
+      expect(screen.getByText(/Seller keys were wiped from memory after 1 minute without activity/).textContent)
+        .toMatch(/The invoice-signing key generated when the hex keys were imported had no backup and is gone: loading them again generates a new one\./);
     } finally {
       vi.useRealTimers();
       setKeyVaultStoreForTests(undefined);
     }
+  });
+
+  it('C-R10: keeps Create invoice behind the backup gate while the generated signing key has no backup, saying why', async () => {
+    importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32) });
+    const user = userEvent.setup();
+    renderApp(makeServices());
+    await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Create invoice' }));
+    const gate = screen.getByText('Back up these seller keys first').closest('.notice');
+    expect(gate?.textContent).toMatch(/Payments stay sweepable with the spending and viewing keys you imported, but invoices are signed with an invoice-signing key that exists only in this tab\./);
+    expect(gate?.textContent).not.toMatch(/lost for good/);
+    expect(screen.queryByRole('button', { name: 'Create invoice link' })).toBeNull();
+    await user.type(screen.getByLabelText(/To continue without a backup/), 'continue without backup');
+    await user.click(screen.getByRole('button', { name: 'Continue without a backup' }));
+    expect(screen.getByRole('button', { name: 'Create invoice link' })).toBeTruthy();
+    expect(screen.getByText('The invoice-signing key has no backup')).toBeTruthy();
   });
 
   it('L1-01: wipes vault-only keys at idle lock while their vault is saved, and keeps them once another tab deleted it', async () => {
