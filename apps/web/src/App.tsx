@@ -19,7 +19,7 @@ import { CreateInvoice } from './views/CreateInvoice';
 import { Home } from './views/Home';
 import { Pay } from './views/Pay';
 import { Scan } from './views/Scan';
-import { SellerKeys } from './views/SellerKeys';
+import { BackupGate, SellerKeys } from './views/SellerKeys';
 import { Settings } from './views/Settings';
 import { Sweep } from './views/Sweep';
 import { Notice } from './components/Common';
@@ -34,7 +34,8 @@ function ViewSwitch(props: { readonly view: ViewId }): ReactNode {
     case 'seller':
       return <SellerKeys />;
     case 'create':
-      return <CreateInvoice />;
+      // An invoice invites payments that only these keys can sweep: no invoice until they are backed up or the risk is waived (L1-01).
+      return <BackupGate heading="Create invoice"><CreateInvoice /></BackupGate>;
     case 'pay':
       return <Pay />;
     case 'scan':

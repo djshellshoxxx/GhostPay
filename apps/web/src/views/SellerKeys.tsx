@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, useSyncExternalStore, type FormEvent, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
 import { TagArchive } from '../components/TagArchive';
 import { CameraImporter } from '../components/CameraImporter';
@@ -11,25 +11,32 @@ import { useApp } from '../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 
 /**
- * Stands in for `children` (the meta-address, an invoice form) while the loaded keys have no backup and the seller has not
- * typed the waiver (L1-01): every payment those invite is lost if the tab closes before a backup exists. The app-wide
- * backup banner above it offers "Back up now".
+ * Stands in for `children` (the meta-address, an invoice form, a whole view) while the loaded keys have no backup and the
+ * seller has not typed the waiver (L1-01): every payment those invite is lost if the tab closes before a backup exists.
+ * The app-wide backup banner above it offers "Back up now". `heading` keeps the title of a view it stands in for.
  */
-export function BackupGate(props: { readonly children: ReactNode }): ReactNode {
+export function BackupGate(props: { readonly children: ReactNode; readonly heading?: string }): ReactNode {
   const app = useApp();
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const backup = useSyncExternalStore(subscribeSessionBackup, getSessionBackup);
   const [typed, setTyped] = useState('');
+  const headingId = useId();
   useEffect(() => { setTyped(''); }, [app.session]);
   if (backup === undefined || backup.backedUp || backup.waived) return props.children;
   const phrase = t('backupGate.waiverPhrase');
-  return (
+  const gate = (
     <div className="panel">
       <Notice kind="warn" title={t('backupGate.title')}>{t('backupGate.body')}</Notice>
       <Field label={t('backupGate.waiverLabel', { phrase })}>{(id) => <input id={id} autoComplete="off" spellCheck={false} value={typed} onChange={(e) => { setTyped(e.target.value); }} />}</Field>
       <button type="button" className="btn" disabled={typed.trim().toLowerCase() !== phrase.toLowerCase()} onClick={() => { waiveSessionBackup(); }}>{t('backupGate.waive')}</button>
     </div>
+  );
+  return props.heading === undefined ? gate : (
+    <section aria-labelledby={headingId}>
+      <h2 id={headingId}>{props.heading}</h2>
+      {gate}
+    </section>
   );
 }
 

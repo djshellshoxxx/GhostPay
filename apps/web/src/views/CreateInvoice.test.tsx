@@ -68,6 +68,8 @@ describe('Create invoice', () => {
   it('L1-01: keeps the invoice form behind a backup or the typed waiver', async () => {
     generateSession();
     const user = await open();
+    // The gate stands in for the whole view at its call site (App.tsx) and keeps the view's heading.
+    expect(screen.getByRole('heading', { level: 2, name: 'Create invoice' })).toBeTruthy();
     expect(screen.getByText('Back up these seller keys first')).toBeTruthy();
     expect(screen.getByText('These seller keys have no backup')).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Create invoice link' })).toBeNull();
