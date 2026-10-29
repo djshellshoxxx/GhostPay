@@ -309,6 +309,51 @@ describe('Seller keys', () => {
     expect(getSessionBackup()).toMatchObject({ backedUp: false, vaultStepUp: true });
   });
 
+  it('C-R9: wipes keys whose vault is still saved, and asks first once another tab deleted it while the page was open', async () => {
+    generateSession();
+    await saveEncryptedVault('violet comet maple lantern', { N: 1 << 14 });
+    const record = (await vaultStore.get())!;
+    const user = await open();
+    expect(await screen.findByRole('button', { name: 'Unlock saved vault' })).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    await waitFor(() => { expect(getSessionPublic()).toBeUndefined(); });
+    expect(screen.queryByText('Wipe keys that have no backup?')).toBeNull();
+
+    await act(async () => { await unlockEncryptedVault('violet comet maple lantern'); });
+    const pub = getSessionPublic();
+    expect(await screen.findByRole('button', { name: 'Wipe keys from memory' })).toBeTruthy();
+    expect(getSessionBackup()?.backedUp).toBe(true);
+    await vaultStore.delete(record);                    // another tab: the keys in memory are now the only copy
+    await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    expect(await screen.findByText('Wipe keys that have no backup?')).toBeTruthy();
+    expect(getSessionPublic()).toBe(pub);
+    expect(screen.getByText('These seller keys have no backup')).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(getSessionPublic()).toBe(pub);
+  });
+
+  it('C-R9: drops a wipe request when the keys change while their vault is looked up', async () => {
+    generateSession();
+    await saveEncryptedVault('violet comet maple lantern', { N: 1 << 14 });
+    const user = await open();
+    expect(await screen.findByRole('button', { name: 'Unlock saved vault' })).toBeTruthy();
+    const durable = vaultStore;
+    const held: (() => void)[] = [];
+    setKeyVaultStoreForTests({
+      get: async () => { await new Promise<void>((resolve) => { held.push(resolve); }); return durable.get(); },
+      putIfEmpty: (...args: Parameters<KeyVaultStore['putIfEmpty']>) => durable.putIfEmpty(...args),
+      delete: (...args: Parameters<KeyVaultStore['delete']>) => durable.delete(...args),
+    });
+    await user.click(screen.getByRole('button', { name: 'Wipe keys from memory' }));
+    expect(held).toHaveLength(1);
+    act(() => { generateSession(); });                 // new keys, with no backup, while the vault is read
+    const replacement = getSessionPublic();
+    await act(async () => { for (const release of held.splice(0)) release(); await new Promise((resolve) => setTimeout(resolve, 0)); });
+    expect(getSessionPublic()).toBe(replacement);
+    expect(screen.queryByText('Wipe keys that have no backup?')).toBeNull();
+    expect(screen.queryByText('Keys wiped from memory.')).toBeNull();
+  });
+
   it('L1-02: exporting keys tied to a vault needs that vault\'s passphrase', async () => {
     importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32), signingKeyHex: '33'.repeat(32) });
     await saveEncryptedVault('violet comet maple lantern', { N: 1 << 14 });

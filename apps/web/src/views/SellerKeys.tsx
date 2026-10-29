@@ -5,8 +5,8 @@ import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
 import { userMessage } from '../lib/errors';
 import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphrase, MAX_KEYSTORE_BYTES, passphraseProblem, validateKeystoreEnvelope } from '../lib/keystore';
-import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, getSessionBackup, importKeystore, importSession, markKeystoreDownloaded, subscribeIdleLock, subscribeSessionBackup, waiveSessionBackup } from '../lib/session';
-import { authorizeKeyExport, deleteEncryptedVault, readEncryptedVault, saveEncryptedVault, unlockEncryptedVault, VaultChangedError, vaultMetaAddress, VaultSavedForPreviousKeysError } from '../lib/keyVault';
+import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, getSessionBackup, importKeystore, importSession, markKeystoreDownloaded, sessionHasExternalCopy, subscribeIdleLock, subscribeSessionBackup, waiveSessionBackup } from '../lib/session';
+import { authorizeKeyExport, deleteEncryptedVault, loadedKeysRecoverable, readEncryptedVault, saveEncryptedVault, unlockEncryptedVault, VaultChangedError, vaultMetaAddress, VaultSavedForPreviousKeysError } from '../lib/keyVault';
 import { useApp } from '../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 
@@ -278,9 +278,16 @@ export function SellerKeys(): ReactNode {
   };
 
   const onWipe = (): void => {
-    // Keys with no backup exist only here, and every payment to them would be lost with them (L1-01).
-    if (getSessionBackup()?.backedUp === false) { setConfirmWipe(true); return; }
-    wipe();
+    // Keys with no backup exist only here, and every payment to them would be lost with them (L1-01). A copy outside this
+    // browser survives the wipe; a vault copy is looked up in storage first, because another tab may have deleted it since
+    // this page last read it (C-R9). A key change during that read drops the request.
+    if (sessionHasExternalCopy()) { wipe(); return; }
+    const unchanged = captureSessionVersionGuard();
+    void loadedKeysRecoverable().then((recoverable) => {
+      if (!mounted.current) return;
+      try { unchanged(); } catch { return; }
+      if (recoverable) wipe(); else setConfirmWipe(true);
+    });
   };
 
   const wipe = (): void => {
