@@ -49,7 +49,7 @@ describe('Scan privacy (spec 10)', () => {
     bothRpcs();
     const primary = chainWithLogs(84532, 2500, []);
     const secondary = chainWithLogs(84532, 2500, []);
-    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: (_c, url) => Promise.resolve(url.startsWith('https://rpc2.test') ? secondary : withManifestChain(primary)) }));
+    const user = await openScan(makeServices({ loadManifest: loaded, createRpc: (_c, url) => Promise.resolve(new URL(url).host === 'rpc2.test' ? secondary : withManifestChain(primary)) }));
     expect(screen.getByText(/Second RPC/)).toBeTruthy();
     await user.type(screen.getByLabelText('Start block'), '1234');
     await user.click(screen.getByRole('button', { name: 'Start scan' }));

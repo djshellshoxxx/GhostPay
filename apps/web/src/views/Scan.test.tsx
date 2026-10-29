@@ -290,13 +290,13 @@ describe('Scan and receive', () => {
     const created: string[] = [];
     const createRpc: Services['createRpc'] = (_c, url) => {
       created.push(url);
-      return Promise.resolve(url.startsWith('https://rpc2.test') ? secondary : withManifestChain(primary));
+      return Promise.resolve(new URL(url).host === 'rpc2.test' ? secondary : withManifestChain(primary));
     };
     const user = await openScan(makeServices({ loadManifest: loaded, createRpc }));
     await user.type(screen.getByLabelText('Start block'), '100');
     await user.click(screen.getByRole('button', { name: 'Start scan' }));
     await waitFor(() => { expect(screen.getByText(/Finished\./)).toBeTruthy(); });
-    expect(created.some((u) => u.startsWith('https://rpc2.test'))).toBe(true);
+    expect(created.some((u) => new URL(u).host === 'rpc2.test')).toBe(true);
     expect(secondary.calls.some((c) => c.method === 'eth_getLogs')).toBe(true);
     expect(screen.queryByText(/Only one RPC was used/)).toBeNull();
   });
@@ -306,7 +306,7 @@ describe('Scan and receive', () => {
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' }, rpcUrlsSecondary: { '84532': 'https://rpc2.test' } }));
     const primary = chainWithLogs(84532, 500, []);
     const createRpc: Services['createRpc'] = (_c, url) =>
-      url.startsWith('https://rpc2.test') ? Promise.reject(new Error('CHAIN_MISMATCH: wrong chain')) : Promise.resolve(withManifestChain(primary));
+      new URL(url).host === 'rpc2.test' ? Promise.reject(new Error('CHAIN_MISMATCH: wrong chain')) : Promise.resolve(withManifestChain(primary));
     const user = await openScan(makeServices({ loadManifest: loaded, createRpc }));
     await user.type(screen.getByLabelText('Start block'), '100');
     await user.click(screen.getByRole('button', { name: 'Start scan' }));

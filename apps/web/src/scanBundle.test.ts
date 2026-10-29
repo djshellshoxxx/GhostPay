@@ -80,7 +80,7 @@ describe('scan-bundle', () => {
     ['preserved external pools', 'dist/assets/a.js', 'var id="privacy-pools"', /preserved-code marker "privacy-pools"/],
     ['preserved code in the worker', 'dist/assets/scanner.worker-1.js', 'throw Error("PIR server request failed")', /scanner\.worker-1\.js: preserved-code marker/],
   ])('fails on %s', (_name, file, content, re) => {
-    const b = build({ [file.replace(/^dist\//, 'dist/')]: content });
+    const b = build({ [file]: content });
     const problems = scan(b);
     expect(problems.join('\n')).toMatch(re);
     expect(problems.length).toBeGreaterThan(0);
