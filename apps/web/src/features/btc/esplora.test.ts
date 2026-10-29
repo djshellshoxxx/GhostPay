@@ -257,6 +257,87 @@ describe('EsploraClient', () => {
     expect(await codeOf(over.client.blockTxs(over.hash))).toBe('INVALID_RESPONSE');
   });
 
+  it('refuses a spent output script longer than a valid block can spend (10,000 bytes, consensus MAX_SCRIPT_SIZE)', async () => {
+    // The spent script is not part of the transaction (its txid and weight stay the same), so only this limit bounds it.
+    const spending = (bytes: number) => withTxid({ ...SIMPLE_TX, vin: [{ ...SIMPLE_TX.vin[0]!, prevout: { scriptpubkey: '51'.repeat(bytes) } }] });
+    const longest = electrsBlock([spending(10_000)]);
+    const [t] = await longest.client.blockTxs(longest.hash);
+    expect(t?.inputs?.[0]?.prevoutScriptPubKey).toHaveLength(10_000);
+    expect(t?.weight).toBe(82 * 4); // the 82 bytes of SIMPLE_TX
+    const tooLong = electrsBlock([spending(10_001)]);
+    expect(await codeOf(tooLong.client.blockTxs(tooLong.hash))).toBe('INVALID_RESPONSE');
+  });
+
+  it('reads at most 64 MiB of pages for one block: light transactions padded through their spent outputs are refused', async () => {
+    const MiB = 1024 * 1024;
+    // Each transaction spends 30 outputs whose scripts have the longest spendable size, 10,000 bytes: about 600 KB of
+    // JSON, all of it kept, for 5,084 weight units. Under the most transactions a block can claim, 25 of them per page
+    // make 14.4 MiB pages that weigh 127,100 units: the weight alone would stop the client at page 32 (462 MiB).
+    const padded = withTxid({ ...SIMPLE_TX, vin: Array.from({ length: 30 }, (_, k) => ({ ...SIMPLE_TX.vin[0]!, vout: k, prevout: { scriptpubkey: '51'.repeat(10_000) } })) });
+    const page = new TextEncoder().encode(JSON.stringify(Array.from({ length: 25 }, () => padded)));
+    expect(page.length).toBeGreaterThan(14 * MiB);
+    const hash = 'a'.repeat(64);
+    /** Per page request: how many 1 MiB chunks the server produced, and whether the client cancelled the download. */
+    const pages: { start: string; chunks: number; cancelled: boolean }[] = [];
+    const client = new EsploraClient({
+      baseUrl: BASE,
+      fetchFn: (url) => {
+        if (url.endsWith(`/block/${hash}`)) return Promise.resolve(new Response(JSON.stringify({ id: hash, tx_count: 16_666 })));
+        const seen = { start: url.slice(url.lastIndexOf('/') + 1), chunks: 0, cancelled: false };
+        pages.push(seen);
+        // Ends a client that keeps reading (a transport failure) before this test streams hundreds of pages.
+        if (pages.length > 8) return Promise.resolve(new Response('enough', { status: 500 }));
+        return Promise.resolve(new Response(new ReadableStream<Uint8Array>({
+          pull(ctl) {
+            if (seen.chunks * MiB >= page.length) {
+              ctl.close();
+              return;
+            }
+            ctl.enqueue(page.slice(seen.chunks * MiB, (seen.chunks + 1) * MiB));
+            seen.chunks++;
+          },
+          cancel() { seen.cancelled = true; },
+        })));
+      },
+    });
+    expect(await codeOf(client.blockTxs(hash))).toBe('INVALID_RESPONSE');
+    // Four whole pages (57.8 MiB); the fifth is cancelled while it streams, once the block's 64 MiB are used up.
+    expect(pages.map((p) => p.start)).toEqual(['0', '25', '50', '75', '100']);
+    expect(pages.map((p) => p.cancelled)).toEqual([false, false, false, false, true]);
+    expect(pages[4]!.chunks).toBeLessThan(Math.ceil(page.length / MiB));
+    const streamed = pages.reduce((n, p) => n + Math.min(p.chunks * MiB, page.length), 0);
+    // The budget, plus the chunk that passed it and one the stream may have queued ahead.
+    expect(streamed).toBeLessThanOrEqual(66 * MiB);
+  });
+
+  it('shares the 64 MiB between all pages of a block, whatever their bytes hold: exactly that is read, a byte more is not', async () => {
+    const MiB = 1024 * 1024;
+    /** A page of `n` simple transactions, the last padded in a field this client ignores to exactly `bytes` bytes. */
+    const pageOf = (n: number, bytes: number): string => {
+      const plain = JSON.stringify(Array.from({ length: n }, () => SIMPLE_TX));
+      // `,"x":""` adds 7 bytes before the padding itself.
+      const json = JSON.stringify([...Array.from({ length: n - 1 }, () => SIMPLE_TX), { ...SIMPLE_TX, x: ' '.repeat(bytes - plain.length - 7) }]);
+      expect(json).toHaveLength(bytes);
+      return json;
+    };
+    const block = (last: number) => {
+      // 125 transactions in five pages: three of 16 MiB (the most one response may have), then 8 MiB and `last`.
+      const bodies = [16 * MiB, 16 * MiB, 16 * MiB, 8 * MiB, last].map((size) => pageOf(25, size));
+      const hash = 'a'.repeat(64);
+      const client = new EsploraClient({
+        baseUrl: BASE,
+        fetchFn: (url) => {
+          if (url.endsWith(`/block/${hash}`)) return Promise.resolve(new Response(JSON.stringify({ id: hash, tx_count: 125 })));
+          return Promise.resolve(new Response(bodies[Number(url.slice(url.lastIndexOf('/') + 1)) / 25]));
+        },
+      });
+      return client.blockTxs(hash);
+    };
+    expect(await block(8 * MiB)).toHaveLength(125);
+    // The last page is far below the 16 MiB of one response: the block's budget refuses it.
+    expect(await codeOf(block(8 * MiB + 1))).toBe('INVALID_RESPONSE');
+  });
+
   it('refuses a block summary or pages that disagree with the transaction count', async () => {
     const txs = Array.from({ length: 30 }, () => SIMPLE_TX);
     for (const info of [{ tx_count: 0 }, { tx_count: 1.5 }, { tx_count: '30' }, { tx_count: 31 }, { tx_count: 29 }, { id: 'b'.repeat(64) }]) {

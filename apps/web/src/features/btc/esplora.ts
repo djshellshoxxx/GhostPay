@@ -22,6 +22,16 @@ export type EsploraFetch = (url: string, init: RequestInit) => Promise<Response>
 const PAGE = 25;
 /** Largest response body read, in bytes; a bigger one is cancelled while it streams. */
 const MAX_TEXT = 16 * 1024 * 1024;
+/**
+ * Most bytes read for the transaction pages of one block (64 MiB). A block's weight bounds its transactions, but not
+ * the rest of Esplora's JSON: the scripts of the outputs being spent, script disassembly, addresses or any unknown
+ * field, which a server could otherwise pad on every one of up to 667 pages. Each page is read through what is left.
+ * Real blocks need a fraction of it; a contrived valid block that needs more is refused, as a page over
+ * {@link MAX_TEXT} is.
+ */
+const MAX_BLOCK_JSON = 4 * MAX_TEXT;
+/** Consensus limit on a script that is run (`MAX_SCRIPT_SIZE`): a longer output script fails and is never spendable. */
+const MAX_SCRIPT_SIZE = 10_000;
 /** Default per-request deadline (headers and body), in ms. */
 const TIMEOUT_MS = 30_000;
 /** Consensus limit on a block's weight (BIP-141): its header, transaction count and transactions. */
@@ -29,7 +39,7 @@ const MAX_BLOCK_WEIGHT = 4_000_000;
 /**
  * Most transactions a valid block can hold: {@link MAX_BLOCK_WEIGHT} / 240 for the smallest possible (60-byte)
  * transaction. A larger claimed count is refused before any page is downloaded; anything up to it is read until the
- * block outweighs {@link MAX_BLOCK_WEIGHT}.
+ * block outweighs {@link MAX_BLOCK_WEIGHT} or its pages pass {@link MAX_BLOCK_JSON} bytes.
  */
 const MAX_BLOCK_TXS = 16_666;
 const HEX64 = /^[0-9a-f]{64}$/;
@@ -163,6 +173,9 @@ function parseInputs(vin: readonly unknown[]): readonly TxInput[] | null {
     if (i['is_coinbase'] === true) return null;
     const prevout = i['prevout'];
     if (!isRecord(prevout)) return bad();
+    // The spent script is not part of the transaction, so no weight bounds it: a valid block spends none longer.
+    const spent = prevout['scriptpubkey'];
+    if (typeof spent !== 'string' || spent.length > 2 * MAX_SCRIPT_SIZE) return bad();
     const witness = i['witness'];
     if (witness !== undefined && witness !== null && !Array.isArray(witness)) return bad();
     out.push(
@@ -171,7 +184,7 @@ function parseInputs(vin: readonly unknown[]): readonly TxInput[] | null {
         vout: uint(i['vout']),
         scriptSig: hexStr(i['scriptsig'] ?? ''),
         txinwitness: encodeWitness((witness ?? []) as readonly unknown[]),
-        prevoutScriptPubKey: hexStr(prevout['scriptpubkey']),
+        prevoutScriptPubKey: hexStr(spent),
       }),
     );
   }
@@ -197,14 +210,15 @@ function encodeWitness(items: readonly unknown[]): string {
  * Reads the body as UTF-8 text through a byte cap, so a hostile server cannot make the tab buffer an unbounded body:
  * a declared `Content-Length` above it is refused unread, and the download is cancelled as soon as the streamed bytes
  * pass it. An abort of `signal` cancels the download too, even when the fetch implementation does not.
+ * @returns The text and the number of bytes read.
  * @throws {SilentPaymentError} `INVALID_RESPONSE` past the cap; stream errors and the abort reason propagate as thrown.
  */
-async function readCapped(res: Response, max: number, signal: AbortSignal): Promise<string> {
+async function readCapped(res: Response, max: number, signal: AbortSignal): Promise<{ readonly text: string; readonly bytes: number }> {
   if (Number(res.headers.get('content-length')) > max) {
     await res.body?.cancel().catch(() => undefined);
     return bad();
   }
-  if (res.body === null) return '';
+  if (res.body === null) return { text: '', bytes: 0 };
   const reader = res.body.getReader();
   const stop = (): void => {
     reader.cancel().catch(() => undefined);
@@ -232,9 +246,17 @@ async function readCapped(res: Response, max: number, signal: AbortSignal): Prom
       all.set(c, off);
       off += c.byteLength;
     }
-    return new TextDecoder().decode(all);
+    return { text: new TextDecoder().decode(all), bytes: total };
   } finally {
     signal.removeEventListener('abort', stop);
+  }
+}
+
+function parseJson(text: string): unknown {
+  try {
+    return JSON.parse(text) as unknown;
+  } catch {
+    return bad();
   }
 }
 
@@ -253,7 +275,7 @@ export interface EsploraClientOptions {
  * @security Responses are untrusted and validated. Only block heights, outpoints and the raw
  * transaction you broadcast are sent; no key material ever reaches this class. Requests send no
  * credentials or referrer, bypass the HTTP cache, refuse redirects and end at a deadline; bodies are
- * read through a size cap.
+ * read through a size cap, and the pages of one block through a shared byte budget.
  */
 export class EsploraClient {
   public readonly baseUrl: string;
@@ -266,7 +288,8 @@ export class EsploraClient {
     this.timeoutMs = options.timeoutMs ?? TIMEOUT_MS;
   }
 
-  private async text(path: string, init: RequestInit = {}, signal?: AbortSignal): Promise<string> {
+  /** Requests `path` and reads the body through `max` bytes; returns the text and the bytes read. */
+  private async request(path: string, init: RequestInit, signal: AbortSignal | undefined, max: number): Promise<{ readonly text: string; readonly bytes: number }> {
     const timeout = AbortSignal.timeout(this.timeoutMs);
     const combined = signal === undefined ? timeout : AbortSignal.any([signal, timeout]);
     const failure = (): SilentPaymentError => new SilentPaymentError(signal?.aborted === true ? 'ABORTED' : 'TRANSPORT_FAILURE');
@@ -285,20 +308,19 @@ export class EsploraClient {
     }
     if (!res.ok) throw new SilentPaymentError('TRANSPORT_FAILURE');
     try {
-      return await readCapped(res, MAX_TEXT, combined);
+      return await readCapped(res, max, combined);
     } catch (e) {
       if (e instanceof SilentPaymentError) throw e;
       throw failure();
     }
   }
 
+  private async text(path: string, init: RequestInit = {}, signal?: AbortSignal): Promise<string> {
+    return (await this.request(path, init, signal, MAX_TEXT)).text;
+  }
+
   private async json(path: string, signal?: AbortSignal): Promise<unknown> {
-    const t = await this.text(path, {}, signal);
-    try {
-      return JSON.parse(t) as unknown;
-    } catch {
-      return bad();
-    }
+    return parseJson(await this.text(path, {}, signal));
   }
 
   public async tipHeight(signal?: AbortSignal): Promise<number> {
@@ -316,8 +338,10 @@ export class EsploraClient {
    * All transactions of a block, in block order. The page count comes from the block's `tx_count`: electrs answers
    * a start index at or past the end with an HTTP error, not an empty page, so a full last page must not lead to
    * another request. The count itself is the server's word; the header Merkle root check catches a wrong one.
-   * Since the server picks the count, the block is refused as soon as what was read outweighs a valid block
-   * ({@link MAX_BLOCK_WEIGHT}), before another page is requested.
+   * Since the server picks the count, what one block can make this read is bounded: the block is refused as soon as
+   * what was read outweighs a valid block ({@link MAX_BLOCK_WEIGHT}), before another page is requested, and its pages
+   * share {@link MAX_BLOCK_JSON} bytes, so a page that would pass them is cancelled while it streams. The scripts of
+   * the outputs being spent, which no weight counts, must also be ones a valid block can spend ({@link MAX_SCRIPT_SIZE}).
    */
   public async blockTxs(hash: string, signal?: AbortSignal): Promise<readonly EsploraTx[]> {
     if (!HEX64.test(hash)) throw new SilentPaymentError('INVALID_INPUT');
@@ -328,8 +352,11 @@ export class EsploraClient {
     const txs: EsploraTx[] = [];
     // The 80-byte header and the transaction count are part of the block's weight too.
     let weight = 4 * (80 + compact(count).length / 2);
+    let left = MAX_BLOCK_JSON;
     for (let start = 0; start < count; start += PAGE) {
-      const body = await this.json(`/block/${hash}/txs/${String(start)}`, signal);
+      const page = await this.request(`/block/${hash}/txs/${String(start)}`, {}, signal, Math.min(MAX_TEXT, left));
+      left -= page.bytes;
+      const body = parseJson(page.text);
       if (!Array.isArray(body) || body.length !== Math.min(PAGE, count - start)) return bad();
       for (const t of body) {
         const tx = parseTx(t);
