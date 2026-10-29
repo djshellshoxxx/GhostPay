@@ -407,7 +407,12 @@ describe('deploy recipe wiring (L5-05, L7-L3)', () => {
     const covers = /^ok +relayer trustedProxies covers the compose backend subnet 172\.30\.10\.0\/24/;
     expect(selfhost(['172.30.10.0/24'])).toMatch(covers);
     expect(selfhost(['10.0.0.0/8', '172.30.0.0/16'])).toMatch(covers); // contains it
-    expect(selfhost(['::ffff:172.30.10.3'])).toMatch(covers); // nginx's own address, IPv4-mapped
+    expect(selfhost(['172.30.10.0/25', '172.30.0.0/16'])).toMatch(covers); // one entry contains it
+    // D-R10: Docker assigns nginx's backend address (compose pins none), so only an entry holding the whole subnet covers
+    // it; an entry holding part of it gets its own warning, an address included (here IPv4-mapped).
+    const part = /^warn +relayer trustedProxies lists only part of the compose backend subnet 172\.30\.10\.0\/24: /;
+    for (const list of [['172.30.10.200'], ['172.30.10.0/25'], ['::ffff:172.30.10.3'], ['10.0.0.0/8', '172.30.10.128/25']])
+      expect(selfhost(list)).toMatch(part);
     const misses = /^warn +.*trustedProxies does not cover the compose backend subnet 172\.30\.10\.0\/24/;
     expect(selfhost(['10.0.0.0/8'])).toMatch(misses);
     expect(selfhost(['127.0.0.1', '172.30.11.0/24'])).toMatch(misses); // the frontend subnet is not nginx's peer
