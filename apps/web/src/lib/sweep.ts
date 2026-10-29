@@ -23,7 +23,7 @@ import { UserFacingError } from './errors';
 import { buildPermit } from './pay';
 import { requestQuote, submitSweep, type FetchFn, type RelayerQuote } from './relayerClient';
 import { captureSessionGuard, withSessionSecrets } from './session';
-import { DIRECT_MAX_FEE_SHARE_BPS, guardTx, guardTypedData, reportsRevert, reviewPolicy, simulateCall, type Simulation } from './txGuard';
+import { DIRECT_MAX_FEE_SHARE_BPS, guardTx, guardTypedData, reportsPlainRevert, reportsRevert, reviewPolicy, simulateCall, type Simulation } from './txGuard';
 
 export interface SweepTarget {
   readonly chainId: number;
@@ -519,13 +519,15 @@ async function readFeeOracle(rpc: Rpc, data: Hex): Promise<bigint> {
 
 /**
  * The operator fee for `gas`. An OP Stack chain before the Isthmus upgrade has no `getOperatorFee`, so the call
- * reverts there; such a chain charges no operator fee. Any other failure is no answer and propagates.
+ * reverts there (a plain revert); such a chain charges no operator fee. Any other failure, a halted call included,
+ * is no answer and propagates.
  */
 async function readOperatorFee(rpc: Rpc, gas: bigint): Promise<bigint> {
   try {
     return await readFeeOracle(rpc, encodeFunctionData({ abi: gasPriceOracleAbi, functionName: 'getOperatorFee', args: [gas] }));
   } catch (e) {
-    if (reportsRevert(e)) return 0n;
+    // Only a plain revert means the oracle has no `getOperatorFee` (before Isthmus); a halted call leaves it unknown.
+    if (reportsPlainRevert(e)) return 0n;
     throw e;
   }
 }

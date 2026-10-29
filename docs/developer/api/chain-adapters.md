@@ -25,11 +25,14 @@ Shared types (`types.ts`): `Hex`, `Address`, `ZERO_ADDRESS`, `MAX_UINT256`.
 
 ## Errors
 
-`class ChainAdapterError extends Error { readonly code: AdapterErrorCode; readonly reverted: boolean }`; `message` is
-`"<CODE>: <detail>"`. `reverted` is `true` only on the `RPC_FAILURE` thrown by a `createClient` request whose JSON-RPC
-error reports failed execution: code 3, or -32000/-32015 whose message or string `data` says the call reverted, ran out
-of gas or hit an invalid opcode. It is a sanitized flag (the node's text and revert data are not kept); the web app's
-pre-send dry runs refuse on it. Every other error has `reverted: false`.
+`class ChainAdapterError extends Error { readonly code: AdapterErrorCode; readonly reverted: boolean; readonly halted: boolean }`;
+`message` is `"<CODE>: <detail>"`. `reverted` is `true` only on the `RPC_FAILURE` thrown by a `createClient` request
+whose JSON-RPC error reports failed execution: code 3, or -32000/-32003/-32015 whose message or string `data` says the
+call reverted, ran out of gas, hit an invalid opcode or instruction, or otherwise halted (reth: `EVM error`). It is a
+sanitized flag (the node's text and revert data are not kept); the web app's pre-send dry runs refuse on it. `halted`
+is `true` only together with `reverted`, when that failure was no plain revert (no revert text, and not code 3). A plain
+revert can mean the called function is absent (the OP Stack `getOperatorFee` before Isthmus); a halt cannot, so the
+sweep fails closed on it. Every other error has `reverted: false` and `halted: false`.
 Codes: `INVALID_INPUT`, `INVALID_MANIFEST`, `CHAIN_DISABLED`, `CHAIN_MISMATCH`, `PREVIEW_MISMATCH`, `UNSUPPORTED_TOKEN`,
 `FEE_REJECTED`, `RPC_URL_REJECTED`, `RPC_FAILURE`, `RESPONSE_TOO_LARGE`, `INVALID_LOG`, `QUOTE_FAILED`,
 `MANIFEST_READBACK_FAILED`, `REGISTRY_UNAVAILABLE`, `SIGNING_FAILED`.

@@ -130,13 +130,9 @@ Port the recovered work feature by feature. For each feature, classify every fil
 These were raised by the last AI review of each cluster. They are minor issues, not confirmed findings. The full table is in the report under "Open follow-ups from the fix reviews", and the full text is in `docs/audits/data/24/status.json` under `_clusters.<round>.review_issues`.
 
 1. **CR2, fixed in `2fcab7f` (C-R12): key loss on unlock.** Unlocking could replace keys whose only vault copy another tab had deleted, without the confirmation. The unlock now re-reads the vault and asks first.
-2. **D3, minor: lapsed deadline reported as the wrong reason.** In `apps/relayer/src/service.ts` (`runSettled`), a sweep deadline that lapses while the sweep waits in the lane is refused as `permit_expired` or `expired`, not as `deadline_too_soon`. It is safe, but the reason is wrong. Re-check `sweep.deadline` at the head of `runSettled` before the order-state read.
-3. **AR2, minor: dense windows refused after a sparse stretch.**
-   - **Problem:** in `packages/chain-adapters/src/logs.ts`, `served` spans the whole fetch, so after a sparse stretch each regrown window in a dense, result-limited stretch is refused once. This costs requests only; no logs are lost.
-   - **Fix:** reset `served` when the window regrows.
-4. **B2R, nit with safety relevance: operator fee read as zero.**
-   - **Problem:** in `apps/web/src/lib/sweep.ts` (`readOperatorFee`), any `reverted` answer counts as "no `getOperatorFee`" and reads as 0. Since B-R8, `reverted` also covers reth's `-32003` out-of-gas.
-   - **Fix:** treat only a plain revert as "absent", and fail closed on the others.
+2. **D3, fixed in `363bb43`: lapsed deadline reported as the wrong reason.** `runSettled` now re-checks the sweep deadline at the lane head, before `reconcilePending` and the order-state read, so a deadline that lapsed in the queue is refused as `deadline_too_soon` (pre-broadcast, neutral) before any simulation. D-R2 now expects 2 simulations, not 3.
+3. **AR2, fixed in `9778766`: dense windows refused after a sparse stretch.** `served` in `packages/chain-adapters/src/logs.ts` resets when the window regrows. The new test counts 41 refusals on the old code and 29 now, with the same fetches and announcements; a fixed range limit is unchanged.
+4. **B2R, fixed in `8daa03c`: operator fee read as zero.** `ChainAdapterError` has a sanitized `halted` flag (a failed execution that was no plain revert). `readOperatorFee` reads 0 only on a plain revert (`reportsPlainRevert` in `txGuard.ts`) and fails closed on a halt.
 5. **BR, nits: sweep lock edge cases.** In `Sweep.tsx` and `state.tsx`:
    - after 3 other hashes, the UI still offers a same-nonce replacement;
    - a `submitted` transaction the node dropped keeps the tab's lock with no in-app recovery;

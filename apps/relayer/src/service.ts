@@ -605,6 +605,13 @@ export class RelayerService {
     setOutcome: (o: Outcome) => void,
   ): Promise<JobOutcome<SweepResponse>> {
     const { cfg, client, breaker, budget, nonces } = rt;
+    // The deadline was checked before the queue wait: a sweep left with no more than the minimum could lapse before
+    // inclusion, a mined revert the relayer pays for. Refused like at admission (neutral, not the owner's doing) first
+    // in the lane, so a deadline that lapsed in the queue is not reported as an expired permit or order (D3), before
+    // the final simulation, and again after it, whose RPC calls can use up the margin.
+    const deadlineTooSoon = (): boolean =>
+      requested.sweep.deadline <= BigInt(Math.floor(this.now() / 1000) + this.d.config.minDeadlineSeconds);
+    if (deadlineTooSoon()) throw new RelayerError(422, 'deadline_too_soon');
     await this.reconcilePending(rt);
 
     // Operational (non-user) failures feed the breaker; user-caused reverts do not.
@@ -686,11 +693,6 @@ export class RelayerService {
     if (sendGasPrice * 100n > gasPrice * BigInt(100 + this.d.config.gas.maxMovePercent)) {
       throw new RelayerError(503, 'gas_price_moved', 5);
     }
-    // The deadline was checked before the queue wait: a sweep left with no more than the minimum could lapse before
-    // inclusion, a mined revert the relayer pays for. Refused like at admission (neutral, not the owner's doing), here
-    // and again after the final simulation, whose RPC calls can use up the margin.
-    const deadlineTooSoon = (): boolean =>
-      call.sweep.deadline <= BigInt(Math.floor(this.now() / 1000) + this.d.config.minDeadlineSeconds);
     if (deadlineTooSoon()) throw new RelayerError(422, 'deadline_too_soon');
     let finalSimulation: Awaited<ReturnType<ChainClient['simulateSweep']>>;
     try {

@@ -30,12 +30,19 @@ export class ChainAdapterError extends Error {
    * refuse a failing call without echoing node text.
    */
   public readonly reverted: boolean;
+  /**
+   * True only together with `reverted`, when the failed execution was not a plain revert: the call ran out of gas, hit
+   * an invalid opcode or otherwise halted. A plain revert can mean "this function does not exist"; a halt says nothing
+   * about the contract, so callers that read an absent function as zero must not do so for a halt.
+   */
+  public readonly halted: boolean;
 
-  public constructor(code: AdapterErrorCode, detail: string, options: { readonly reverted?: boolean } = {}) {
+  public constructor(code: AdapterErrorCode, detail: string, options: { readonly reverted?: boolean; readonly halted?: boolean } = {}) {
     super(`${code}: ${detail}`);
     this.name = 'ChainAdapterError';
     this.code = code;
     this.reverted = options.reverted === true;
+    this.halted = this.reverted && options.halted === true;
   }
 }
 
