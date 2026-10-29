@@ -464,12 +464,16 @@ describe('POST /v1/sweep success and validation', () => {
     expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 1n })).body)).status).toBe(200);
     // Admitted with 31 s left (minimum 30), then queued behind the first sweep's receipt for 2 s.
     const queued = call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 2n, deadlineOffset: 31 })).body);
-    await settle();
+    const inLane = (): boolean =>
+      s.relayer.metrics.render().includes('relayer_queue_pending{chain_id="11155111"} 2');
+    for (let i = 0; i < 100 && !inLane(); i += 1) await settle();
+    expect(inLane()).toBe(true); // admitted before the clock moves
     s.clock.ms += 2_000;
     release();
     const r = await queued;
     expect(r.status).toBe(422);
     expect(errCode(r)).toBe('deadline_too_soon'); // a pre-broadcast class the web client releases its lock on
+    expect(s.fake.simulations).toBe(3); // refused in the lane, before its second simulation
     expect(s.fake.sent).toHaveLength(1);
     const health = await call(s, 'GET', '/healthz');
     expect(health.json).toMatchObject({ status: 'ok', chains: [{ breaker: 'closed' }] });
