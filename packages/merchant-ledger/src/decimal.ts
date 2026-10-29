@@ -10,7 +10,16 @@ const MINOR_RE = /^(?:0|[1-9][0-9]{0,77})$/;
  * `fiatDecimals`, which defines `fiat.minorUnits`; the shop plugins use the same). Every other code has 2, the ISO
  * three-decimal currencies such as KWD included, so ISO 4217 exponents would misplace the decimal point.
  */
-export const ZERO_DECIMAL_CURRENCIES: readonly string[] = Object.freeze(['JPY', 'KRW', 'VND', 'CLP', 'ISK', 'UGX', 'XAF', 'XOF']);
+export const ZERO_DECIMAL_CURRENCIES: readonly string[] = Object.freeze([
+  'JPY',
+  'KRW',
+  'VND',
+  'CLP',
+  'ISK',
+  'UGX',
+  'XAF',
+  'XOF',
+]);
 
 /**
  * Parse a non-negative integer decimal string (fiat minor units) into bigint.

@@ -6,8 +6,8 @@
  * controller request per process because the controllers exit(). Only the MySQL spellings the module uses are mapped
  * to SQLite; every SQL error throws what PrestaShop 8's DbPDO::_query() throws on PHP 8 (a PrestaShopException with the
  * PDOException as previous), so drift between the install DDL and the controller queries fails the tests. Orders,
- * currencies, order history, customers, customer threads with their messages, and configuration are plain tables made
- * by ghostpay_test_platform_schema(); OrderHistory::changeIdOrderState() returns nothing, like PrestaShop's.
+ * currencies, order history, customers, customer threads with their messages, the log, and configuration are plain
+ * tables made by ghostpay_test_platform_schema(); OrderHistory::changeIdOrderState() returns nothing, like PrestaShop's.
  */
 
 define( '_PS_VERSION_', '8.1.0' );
@@ -71,6 +71,9 @@ class Db {
 
 	public function execute( $sql, $use_cache = true ) {
 		$sql = self::sqlite( (string) $sql );
+		if ( preg_match( '/\A\s*DELETE\s+FROM\s+`?(\w+)`?/i', $sql, $m ) && _DB_PREFIX_ . Configuration::get( 'GHOSTPAY_TEST_FAIL_DELETE' ) === $m[1] ) {
+			$this->query( 'SELECT ghostpay_test_server_has_gone_away()' ); // as GHOSTPAY_TEST_FAIL_INSERT, for deletes
+		}
 		if ( preg_match( '/\A\s*(COMMIT|ROLLBACK)\s*\z/i', $sql ) ) {
 			if ( ! $this->in_transaction ) {
 				return true; // MySQL accepts both outside a transaction.
@@ -119,7 +122,7 @@ class Db {
 	}
 }
 
-/** A test sets GHOSTPAY_TEST_FAIL_WRITES to make order-history and customer-message writes fail. */
+/** A test sets GHOSTPAY_TEST_FAIL_WRITES to make order-history, customer-message and log writes fail. */
 function ghostpay_test_fail_writes(): bool {
 	return '1' === Configuration::get( 'GHOSTPAY_TEST_FAIL_WRITES' );
 }
@@ -141,6 +144,7 @@ function ghostpay_test_platform_schema(): void {
 	$db->execute( 'CREATE TABLE `ps_employee` (`id_employee` INTEGER PRIMARY KEY, `firstname` TEXT NOT NULL, `lastname` TEXT NOT NULL)' );
 	$db->execute( 'CREATE TABLE `ps_customer_thread` (`id_customer_thread` INTEGER PRIMARY KEY AUTOINCREMENT, `id_shop` INTEGER, `id_lang` INTEGER NOT NULL, `id_contact` INTEGER NOT NULL, `id_customer` INTEGER, `id_order` INTEGER, `status` TEXT, `email` TEXT, `token` TEXT NOT NULL, `date_add` TEXT, `date_upd` TEXT)' );
 	$db->execute( 'CREATE TABLE `ps_customer_message` (`id_customer_message` INTEGER PRIMARY KEY AUTOINCREMENT, `id_customer_thread` INTEGER, `id_employee` INTEGER, `message` TEXT NOT NULL, `private` INTEGER NOT NULL DEFAULT 0, `date_add` TEXT, `date_upd` TEXT)' );
+	$db->execute( 'CREATE TABLE `ps_log` (`id_log` INTEGER PRIMARY KEY AUTOINCREMENT, `severity` INTEGER NOT NULL, `error_code` INTEGER, `message` TEXT NOT NULL, `object_type` TEXT, `object_id` INTEGER, `id_employee` INTEGER, `date_add` TEXT, `date_upd` TEXT)' );
 }
 
 /** The request context: one shop, one language. */
@@ -148,16 +152,59 @@ class Context {
 	private static $instance;
 	public $shop;
 	public $language;
+	public $link;
 
 	public static function getContext(): self {
 		if ( null === self::$instance ) {
 			self::$instance           = new self();
 			self::$instance->shop     = (object) array( 'id' => 1 );
 			self::$instance->language = (object) array( 'id' => 1 );
+			self::$instance->link     = new Link();
 		}
 		return self::$instance;
 	}
 }
+
+class Link {
+	public function getModuleLink( $module, $controller = 'default', array $params = array(), $ssl = null, $id_lang = null, $id_shop = null, $relative_protocol = false ) {
+		return 'https://shop.test/module/' . $module . '/' . $controller . ( array() === $params ? '' : '?' . http_build_query( $params ) );
+	}
+}
+
+/** PrestaShop\PrestaShop\Core\Payment\PaymentOption (aliased below): the setters the module calls and their getters. */
+class GhostPay_Test_PaymentOption {
+	private $module_name;
+	private $call_to_action_text;
+	private $action;
+
+	public function setModuleName( $module_name ) {
+		$this->module_name = $module_name;
+		return $this;
+	}
+
+	public function getModuleName() {
+		return $this->module_name;
+	}
+
+	public function setCallToActionText( $call_to_action_text ) {
+		$this->call_to_action_text = $call_to_action_text;
+		return $this;
+	}
+
+	public function getCallToActionText() {
+		return $this->call_to_action_text;
+	}
+
+	public function setAction( $action ) {
+		$this->action = $action;
+		return $this;
+	}
+
+	public function getAction() {
+		return $this->action;
+	}
+}
+class_alias( 'GhostPay_Test_PaymentOption', 'PrestaShop\PrestaShop\Core\Payment\PaymentOption' );
 
 class Tools {
 	/** The submitted form values (a test sets them). */
@@ -173,6 +220,11 @@ class Tools {
 
 	public static function passwdGen( $length = 8, $flag = 'ALPHANUMERIC' ) {
 		return substr( bin2hex( random_bytes( $length ) ), 0, $length );
+	}
+
+	/** PrestaShop hashes the customer's id and password with the page; a fixed fake token here. */
+	public static function getToken( $page = true, $context = null ) {
+		return 'test-token';
 	}
 }
 
@@ -238,6 +290,28 @@ class CustomerMessage {
 		$db->insert( 'customer_message', array( 'id_customer_thread' => (int) $this->id_customer_thread, 'id_employee' => (int) $this->id_employee, 'message' => pSQL( $this->message ), 'private' => (int) $this->private, 'date_add' => $now, 'date_upd' => $now ) );
 		$this->id = $db->Insert_ID();
 		return true;
+	}
+}
+
+/**
+ * PrestaShop's log (Advanced Parameters > Logs). Like 8.1.7's addLog(): an entry already logged is refused (false) unless
+ * $allow_duplicate; false too when the write fails (ObjectModel::add()).
+ */
+class PrestaShopLogger {
+	const LOG_SEVERITY_LEVEL_INFORMATIVE = 1;
+	const LOG_SEVERITY_LEVEL_WARNING     = 2;
+	const LOG_SEVERITY_LEVEL_ERROR       = 3;
+	const LOG_SEVERITY_LEVEL_MAJOR       = 4;
+
+	public static function addLog( $message, $severity = 1, $error_code = null, $object_type = null, $object_id = null, $allow_duplicate = false, $id_employee = null ) {
+		$db  = Db::getInstance();
+		$log = array( 'severity' => (int) $severity, 'error_code' => (int) $error_code, 'message' => pSQL( $message ), 'object_type' => pSQL( (string) $object_type ), 'object_id' => empty( $object_type ) ? 0 : (int) $object_id );
+		$where = implode( ' AND ', array_map( static fn( string $column, $value ): string => "`$column` = '$value'", array_keys( $log ), $log ) );
+		if ( ( ! $allow_duplicate && '0' !== $db->getValue( 'SELECT COUNT(*) FROM `ps_log` WHERE ' . $where ) ) || ghostpay_test_fail_writes() ) {
+			return false;
+		}
+		$now = date( 'Y-m-d H:i:s' );
+		return $db->insert( 'log', $log + array( 'id_employee' => (int) $id_employee, 'date_add' => $now, 'date_upd' => $now ) );
 	}
 }
 
@@ -372,7 +446,9 @@ class PaymentModule {
 	public $active = true;
 	public $warning; // PrestaShop's Module Manager lists modules with a warning (Alerts)
 
-	public function __construct() {}
+	public function __construct() {
+		$this->context = Context::getContext(); // as PrestaShop's Module::__construct()
+	}
 
 	public function install() {
 		return true;

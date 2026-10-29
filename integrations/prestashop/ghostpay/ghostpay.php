@@ -116,7 +116,10 @@ class Ghostpay extends PaymentModule {
 	}
 
 	public function hookPaymentOptions( $params ) {
-		if ( ! $this->active || '' === (string) Configuration::get( 'GHOSTPAY_SERVICE_URL' ) ) {
+		// Offered only when the validation controller can start a payment, as WooCommerce's is_available(): an upgraded
+		// shop without the secret constants must not list an option whose every attempt fails.
+		if ( ! $this->active || '' === (string) Configuration::get( 'GHOSTPAY_SERVICE_URL' ) || '' === (string) Configuration::get( 'GHOSTPAY_PAY_HOST' )
+			|| null === $this->secret( 'service' ) ) {
 			return array();
 		}
 		$option = new PaymentOption();

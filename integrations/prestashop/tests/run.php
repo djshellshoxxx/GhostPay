@@ -119,8 +119,8 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	}
 	$webhook_secret = str_repeat( "\x5a", 32 ); // fake; configured in the environment below (H-R4)
 	$db->execute( "INSERT INTO `ps_currency` (`id_currency`, `iso_code`, `precision`) VALUES (1, 'USD', 2)" );
-	$order = static function ( int $id, int $state, string $total = '12.500000', int $currency = 1 ) use ( $db, $module ): void {
-		$db->execute( "INSERT INTO `ps_orders` (`id_order`, `id_cart`, `id_customer`, `id_currency`, `module`, `current_state`, `total_paid`) VALUES ($id, $id, 7, $currency, 'ghostpay', $state, '$total')" );
+	$order = static function ( int $id, int $state, string $total = '12.500000', int $currency = 1, int $customer = 7 ) use ( $db, $module ): void {
+		$db->execute( "INSERT INTO `ps_orders` (`id_order`, `id_cart`, `id_customer`, `id_currency`, `module`, `current_state`, `total_paid`) VALUES ($id, $id, $customer, $currency, 'ghostpay', $state, '$total')" );
 		check( "invoice of order $id recorded", $module->recordInvoice( "inv_ps_$id", $id ), true );
 	};
 	$event   = static fn( string $id, string $type, string $invoice, string $currency, string $amount ): string => json_encode(
@@ -219,6 +219,10 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	Tools::$values = array();
 	check( 'settings form saves the service URL and pay host', array( Configuration::get( 'GHOSTPAY_SERVICE_URL' ), Configuration::get( 'GHOSTPAY_PAY_HOST' ) ), array( 'https://invoices.shop.test', 'pay.example.test' ) );
 	check( 'settings form stores no secret', array( Configuration::get( 'GHOSTPAY_SERVICE_SECRET' ), Configuration::get( 'GHOSTPAY_WEBHOOK_SECRET' ) ), array( false, false ) );
+	// H-R10: as WooCommerce's is_available(), GhostPay is offered at checkout only when the validation controller can
+	// start a payment. In the upgrade window (no service secret yet) every attempt would fail ("temporarily unavailable").
+	$offered = static fn( Ghostpay $m ): array => array_map( static fn( $option ): array => array( $option->getModuleName(), $option->getAction() ), $m->hookPaymentOptions( array() ) );
+	check( 'no service secret configured: GhostPay is not offered at checkout', $offered( $upgraded ), array() );
 	putenv( 'GHOSTPAY_SERVICE_SECRET=' . strtoupper( $old_service ) ); // the exposed value, merely moved
 	putenv( 'GHOSTPAY_WEBHOOK_SECRET=' . bin2hex( $webhook_secret ) );
 	$warning = (string) ( new Ghostpay() )->warning;
@@ -228,6 +232,19 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	check( 'no warning once both secrets are rotated', array( ( new Ghostpay() )->warning, ( new Ghostpay() )->getContent() ), array( null, '' ) );
 	check( 'exposure record removed after rotation', Configuration::get( 'GHOSTPAY_EXPOSED_SECRETS' ), false );
 	check( 'the service secret comes from the environment', $module->secret( 'service' ), hex2bin( $new_service ) );
+	check( 'service secret, service URL and pay host configured: GhostPay is offered at checkout', $offered( $module ), array( array( 'ghostpay', 'https://shop.test/module/ghostpay/validation?token=test-token' ) ) );
+	Configuration::updateValue( 'GHOSTPAY_PAY_HOST', '' );
+	check( 'no pay host configured: not offered', $offered( $module ), array() );
+	Configuration::updateValue( 'GHOSTPAY_PAY_HOST', 'pay.example.test' );
+	Configuration::updateValue( 'GHOSTPAY_SERVICE_URL', '' );
+	check( 'no service URL configured: not offered', $offered( $module ), array() );
+	Configuration::updateValue( 'GHOSTPAY_SERVICE_URL', 'https://invoices.shop.test' );
+	putenv( 'GHOSTPAY_SERVICE_SECRET=' . str_repeat( 'ab', 16 ) ); // 16 bytes: not a valid secret
+	check( 'a too short service secret counts as not configured: not offered', $offered( $module ), array() );
+	putenv( 'GHOSTPAY_SERVICE_SECRET=' . $new_service );
+	$module->active = false;
+	check( 'a disabled module is not offered', $offered( $module ), array() );
+	$module->active = true;
 	check( 'with a secret configured, a bad signature is a 400', $reply( $request( $paid20, $sign_with( $old_webhook, $paid20 ) ) ), '400 {"ok":false}' );
 	check( 'the sender retry of the upgrade-window payment is processed', $reply( $request( $paid20 ) ), '200 {"ok":true}' );
 	check( 'that webhook pays the order', $state( 20 ), 2 );
@@ -318,6 +335,26 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	check( 'expiry in another currency: neutral note, no refund wording', array( $notes( 15 ), str_contains( $note_text( 15 ), 'ignored: currency mismatch' ), str_contains( $note_text( 15 ), 'refund' ) ), array( 1, true, false ) );
 	$request( $event( 'evt_15p', 'invoice.partial', 'inv_ps_15', 'EUR', '500' ) );
 	check( 'partial payment in another currency: neutral note, no refund wording', array( $notes( 15 ), substr_count( $note_text( 15 ), 'ignored: currency mismatch' ), str_contains( $note_text( 15 ), 'refund' ) ), array( 2, 2, false ) );
+	// H-R9: PrestaShop's Customer::delete() (8.1.7) deletes the customer and their threads with the messages but keeps
+	// their orders. A thread for such an order would be listed on the order page without a customer name, which
+	// OrderMessageForViewing (strings) rejects, so the page fails. As AddOrderCustomerMessageHandler refuses such an
+	// order, the note makes no thread: it goes to PrestaShop's log (Advanced Parameters > Logs) against the order.
+	$unviewable = static fn( int $id ): int => count( array_filter( $order_page( $id ), static fn( array $m ): bool => ! is_string( $m['message'] ) || ! is_string( $m['cfirstname'] ) || ! is_string( $m['clastname'] ) ) );
+	$logged     = static fn( int $id ): array => $db->executeS( "SELECT `severity`, `message` FROM `ps_log` WHERE `object_type` = 'Order' AND `object_id` = $id" );
+	$order( 17, 2, '12.500000', 1, 8 ); // paid; customer 8 was deleted: no ps_customer row, no thread left
+	$paid17 = $event( 'evt_17', 'invoice.paid', 'inv_ps_17', 'USD', '1250' );
+	Configuration::updateValue( 'GHOSTPAY_TEST_FAIL_WRITES', '1' );
+	check( 'deleted customer: a failed log write is retryable, as a failed note', $reply( $request( $paid17 ) ), '503 {"ok":false,"retry":true}' );
+	Configuration::updateValue( 'GHOSTPAY_TEST_FAIL_WRITES', '0' );
+	check( 'deleted customer: the retry is processed', $reply( $request( $paid17 ) ), '200 {"ok":true}' );
+	check( 'deleted customer: state kept, no thread created', array( $state( 17 ), $history( 17 ), $threads( 17 ) ), array( 2, 0, 0 ) );
+	check( 'deleted customer: the order page still shows (no row without the customer name)', $unviewable( 17 ), 0 );
+	$log = $logged( 17 );
+	check( 'deleted customer: the note is a warning in the PrestaShop log for the order, once', array( count( $log ), $log[0]['severity'] ?? null, str_starts_with( (string) ( $log[0]['message'] ?? '' ), 'GhostPay invoice.paid event evt_17 ' ) ), array( 1, '2', true ) );
+	// The same event processed again (its claim released after the note was logged) is logged again, as a note in a
+	// thread is added again; it must not be answered 503 forever because the entry exists.
+	$db->execute( 'DELETE FROM `ps_ghostpay_event_claim` WHERE `claim_key` IN (' . implode( ',', array_map( static fn( string $identity ): string => "'" . hash( 'sha256', $identity ) . "'", GhostPay_Event::identity_keys( GhostPay_Event::parse( $paid17 ) ) ) ) . ')' );
+	check( 'deleted customer: the event processed again is acknowledged', $reply( $request( $paid17 ) ), '200 {"ok":true}' );
 
 	// A failed side effect releases the claim (retryable 503); the retry applies the event once.
 	$order( 9, 2 );
@@ -339,6 +376,14 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	check( 'database error at the nonce claim: order unchanged', $state( 14 ), $awaiting );
 	check( 'the retry after the database error is processed', $reply( $request( $paid14 ) ), '200 {"ok":true}' );
 	check( 'the retry pays the order', $state( 14 ), 2 );
+	// H-R11: the claim first deletes expired nonces, inside the same try: a database error there is the same 503.
+	$order( 16, $awaiting );
+	$paid16 = $event( 'evt_16', 'invoice.paid', 'inv_ps_16', 'USD', '1250' );
+	Configuration::updateValue( 'GHOSTPAY_TEST_FAIL_DELETE', 'ghostpay_nonce' );
+	check( 'database error deleting expired nonces: retryable 503, not a replay 400', $reply( $request( $paid16 ) ), '503 {"ok":false,"retry":true}' );
+	Configuration::deleteByName( 'GHOSTPAY_TEST_FAIL_DELETE' );
+	check( 'database error deleting expired nonces: order unchanged', array( $state( 16 ), $history( 16 ) ), array( $awaiting, 0 ) );
+	check( 'the retry after that database error pays the order', array( $reply( $request( $paid16 ) ), $state( 16 ) ), array( '200 {"ok":true}', 2 ) );
 
 	// G3-02: amounts use the GhostPay app's minor units of the currency, not the shop's display precision.
 	$db->execute( "INSERT INTO `ps_currency` (`id_currency`, `iso_code`, `precision`) VALUES (2, 'JPY', 2), (3, 'USD', 0)" );
@@ -387,9 +432,10 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	check( 'isDuplicateKey: any other SQL error', Ghostpay::isDuplicateKey( new PrestaShopException( $no_such_table->getMessage(), 0, $no_such_table ) ), false );
 	check( 'isDuplicateKey: a non-PDO exception with code 23000', Ghostpay::isDuplicateKey( new RuntimeException( 'x', 23000 ) ), false );
 
-	// A thread without a message gives the PS 8 order page a row whose message is NULL (OrderMessageForViewing takes a
-	// string): every thread the module wrote must have its note.
+	// A thread without a message, or without its customer (H-R9), gives the PS 8 order page a row whose message or
+	// customer name is NULL (OrderMessageForViewing takes strings): every thread the module wrote must have both.
 	check( 'no customer thread without a message', $db->getValue( 'SELECT COUNT(*) FROM `ps_customer_thread` ct WHERE NOT EXISTS (SELECT 1 FROM `ps_customer_message` cm WHERE cm.`id_customer_thread` = ct.`id_customer_thread`)' ), '0' );
+	check( 'no customer thread without its customer', $db->getValue( 'SELECT COUNT(*) FROM `ps_customer_thread` ct LEFT JOIN `ps_customer` c ON c.`id_customer` = ct.`id_customer` WHERE c.`id_customer` IS NULL' ), '0' );
 
 	Configuration::updateGlobalValue( 'GHOSTPAY_EXPOSED_SECRETS', '{"service":["' . hash( 'sha256', $old_service ) . '"]}' );
 	check( 'uninstall drops the module tables', $module->uninstall(), true );
