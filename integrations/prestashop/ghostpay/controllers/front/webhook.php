@@ -74,10 +74,19 @@ class GhostpayWebhookModuleFrontController extends ModuleFrontController {
 	 * AddOrderCustomerMessageHandler does. It has no employee (a webhook has none), so PrestaShop shows it in the
 	 * customer's style; private keeps it out of the customer's order history. One transaction: a thread without its
 	 * message would break the order page.
+	 *
+	 * A deleted customer (Customer::delete() deletes their threads, not their orders) gets no thread: the order page
+	 * cannot list one without its customer's name, and AddOrderCustomerMessageHandler refuses such an order too. The
+	 * note goes to PrestaShop's log instead (Advanced Parameters > Logs), against the order.
 	 */
 	private function add_note( Order $order, string $text ): bool {
 		$db        = Db::getInstance();
 		$customer  = new Customer( (int) $order->id_customer );
+		if ( ! Validate::isLoadedObject( $customer ) ) {
+			// Duplicates allowed, so the same event processed again is logged again (as a thread note is added again) rather
+			// than refused with false, which would be a 503 every time. False is then a failed write: retried.
+			return (bool) PrestaShopLogger::addLog( $text, PrestaShopLogger::LOG_SEVERITY_LEVEL_WARNING, null, 'Order', (int) $order->id, true );
+		}
 		$thread_id = (int) CustomerThread::getIdCustomerThreadByEmailAndIdOrder( (string) $customer->email, (int) $order->id );
 		if ( ! $db->execute( 'START TRANSACTION' ) ) {
 			return false;
