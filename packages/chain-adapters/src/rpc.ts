@@ -203,8 +203,8 @@ function toQuantity(n: bigint): string {
  * retryable HTTP statuses and JSON-RPC rate-limit errors (-32005, -32097); never on malformed
  * responses. Responses larger than the cap, batch responses and id mismatches are rejected.
  * A JSON-RPC error keeps only its code, plus `reverted` on the thrown error when the node
- * reported failed execution (code 3, or -32000/-32015 with a revert, out-of-gas or invalid-opcode
- * text); no node text is kept.
+ * reported failed execution (code 3, or -32000/-32003/-32015 with a revert, out-of-gas,
+ * invalid-opcode or EVM-halt text); no node text is kept.
  *
  * @param chain Expected chain (must be known; enablement is checked by callers that build payments).
  * @param url Endpoint; validated by {@link validateRpcUrl}.
@@ -331,19 +331,24 @@ function rethrow(e: unknown): never {
   return fail('RPC_FAILURE', 'transport failure');
 }
 
-/** Codes that mean failed execution only together with a failure text: geth without revert data, Nethermind/OpenEthereum. */
-const REVERT_WITH_TEXT_CODES: ReadonlySet<number> = new Set([-32000, -32015]);
-
 /**
- * Failure texts of those codes: a revert, or the call running out of its gas or hitting an invalid opcode. A dry run
- * carries the gas limit that will be signed, so the last two mean the signed transaction would fail as well.
+ * Codes that mean failed execution only together with a failure text: geth without revert data (-32000),
+ * Nethermind/OpenEthereum (-32015), and reth/op-reth (-32003), which also use it for rejections before execution,
+ * such as insufficient funds.
  */
-const FAILED_EXECUTION_TEXT = /revert|out of gas|invalid opcode/i;
+const REVERT_WITH_TEXT_CODES: ReadonlySet<number> = new Set([-32000, -32003, -32015]);
 
 /**
- * Whether a JSON-RPC error object reports failed execution: code 3 (sent with revert data), or -32000/-32015 whose
- * message (or string `data`, where Nethermind and OpenEthereum put it) says it reverted, ran out of gas or hit an
- * invalid opcode. Only this boolean leaves here.
+ * Failure texts of those codes: a revert, or the call running out of its gas, hitting an invalid opcode (Nethermind:
+ * "invalid instruction") or halting otherwise (reth: "EVM error: ..."). A dry run carries the gas limit that will be
+ * signed, so the others mean the signed transaction would fail as well.
+ */
+const FAILED_EXECUTION_TEXT = /revert|out of gas|invalid opcode|invalid instruction|EVM error/i;
+
+/**
+ * Whether a JSON-RPC error object reports failed execution: code 3 (sent with revert data), or -32000/-32003/-32015
+ * whose message (or string `data`, where Nethermind and OpenEthereum put it) says it reverted, ran out of gas, hit an
+ * invalid opcode or otherwise halted. Only this boolean leaves here.
  */
 function reportsRevert(code: number, err: Readonly<Record<string, unknown>>): boolean {
   if (code === 3) return true;

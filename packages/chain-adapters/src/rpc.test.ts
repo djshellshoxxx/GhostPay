@@ -199,19 +199,27 @@ describe('L2-F1: a node-reported revert is a sanitized flag on the error', () =>
     ['-32000 out of gas (geth: the signed gas limit is too low)', { code: -32000, message: 'out of gas' }],
     ['-32000 invalid opcode (geth)', { code: -32000, message: 'invalid opcode: INVALID' }],
     ['-32015 with out of gas in data (nethermind)', { code: -32015, message: 'VM execution error.', data: 'out of gas' }],
+    // B-R8: reth and op-reth answer a halted call with -32003, and Nethermind names a bad opcode "invalid instruction".
+    ['-32003 out of gas (reth, op-reth)', { code: -32003, message: 'out of gas: gas required exceeds: 21000' }],
+    ['-32003 out of gas during memory expansion (reth)', { code: -32003, message: 'out of gas: gas exhausted during memory expansion: 21000' }],
+    ['-32003 another EVM halt (reth, op-reth)', { code: -32003, message: 'EVM error: InvalidFEOpcode' }],
+    ['-32015 with invalid instruction in data (nethermind)', { code: -32015, message: 'VM execution error.', data: 'invalid instruction' }],
   ])('flags %s and keeps none of the node text', async (_n, error) => {
     const calls: string[] = [];
     const e = await callError(error, calls);
     expect(e.reverted).toBe(true);
     expect(e.code).toBe('RPC_FAILURE');
     expect(e.message).toBe(`RPC_FAILURE: json-rpc error ${String(error.code)}`);
-    expect(e.message).not.toMatch(/revert|ERC20|VM|0x08c3|gas|opcode/i);
+    expect(e.message).not.toMatch(/revert|ERC20|VM|0x08c3|gas|opcode|instruction/i);
     expect(calls.filter((m) => m === 'eth_call')).toHaveLength(1); // a revert is an answer, never retried
   });
 
   it.each([
     ['-32000 without a revert message', { code: -32000, message: 'insufficient funds for gas * price + value' }],
     ['-32015 without an execution failure text', { code: -32015, message: 'Transaction execution error.', data: 'NotEnoughCash' }],
+    // B-R8: reth's -32003 also rejects calls before any execution; only an out-of-gas or EVM-halt text is a failure.
+    ['-32003 insufficient funds (reth, op-reth)', { code: -32003, message: 'insufficient funds for gas * price + value: have 0 want 21000' }],
+    ['-32003 without an execution failure text', { code: -32003, message: 'transaction rejected' }],
     ['another code that mentions running out of gas', { code: -32603, message: 'internal error: out of gas' }],
     ['another code that mentions a revert', { code: -32603, message: 'internal error: reverted' }],
     ['-32601 method not found', { code: -32601, message: 'the method eth_call does not exist' }],
