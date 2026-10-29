@@ -146,7 +146,6 @@ These were raised by the last AI review of each cluster. They are minor issues, 
 - **Seller-keys gate:** `RegistryView.tsx` and `PolicyCreate.tsx` should pass `paymentsOnly` to `BackupGate`, because they never use the signing key (CR2 nit). `PolicyView.test` then needs generated keys.
 - **Remove `requireSession`:** it is a deprecated compatibility API with no production caller. Remove it from `apps/web/src/lib/session.ts`, then migrate `pay.test.ts`, `session.test.ts`, `Scan.test.tsx` and `invoiceCreate.test.ts`.
 - **One idle-lock signal:** `session.ts` `subscribeIdleLock`/`notifyIdleLock` and `lib/appLock.ts` `subscribeAppLock`/`notifyAppLock('idle')` now both fire on the idle lock. Move the three subscribers (`SellerKeys`, `Sweep`, `TagArchive`) to `subscribeAppLock` and delete the session copy.
-- **Regtest shim:** `scripts/regtest/esplora-shim-lib.mjs` needs `GET /block/:hash` returning `{id, height, tx_count}`, and a 400 for `start >= tx_count`. The manual web regtest e2e needs both since L4-03. The CI integration suite does not use the shim.
 - **Docs drift.** These docs still describe behaviour from before the fixes:
   - `docs/user/troubleshooting.md` and `docs/guides/troubleshooting-by-symptom.md`: the C-R10 signer-only state;
   - `docs/user/set-up-stealth-meta-address.md` and `apps/web/README.md`: the idle-lock wording;
