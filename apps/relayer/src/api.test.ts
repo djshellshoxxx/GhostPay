@@ -453,6 +453,32 @@ describe('POST /v1/sweep success and validation', () => {
     ).toBe(200);
   });
 
+  it('D-R2: re-checks the deadline in the lane, so a queue wait cannot send a sweep about to lapse', async () => {
+    // A single breaker failure would open it: the refusal must be neutral (nothing was wrong with the RPC).
+    const breaker = { ...testConfig().breaker, minSamples: 1, failureRatio: 0.01 };
+    const s = await start({ config: { breaker } });
+    let release: () => void = () => undefined;
+    s.fake.receiptGate = new Promise<void>((r) => {
+      release = r;
+    });
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 1n })).body)).status).toBe(200);
+    // Admitted with 31 s left (minimum 30), then queued behind the first sweep's receipt for 2 s.
+    const queued = call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 2n, deadlineOffset: 31 })).body);
+    await settle();
+    s.clock.ms += 2_000;
+    release();
+    const r = await queued;
+    expect(r.status).toBe(422);
+    expect(errCode(r)).toBe('deadline_too_soon'); // a pre-broadcast class the web client releases its lock on
+    expect(s.fake.sent).toHaveLength(1);
+    const health = await call(s, 'GET', '/healthz');
+    expect(health.json).toMatchObject({ status: 'ok', chains: [{ breaker: 'closed' }] });
+    // Not the owner's doing: no strike, and a sweep with time left still goes through.
+    s.fake.receiptGate = undefined;
+    expect(s.relayer.metrics.render()).not.toContain('relayer_owner_failures_total');
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 3n })).body)).status).toBe(200);
+  });
+
   it('rejects orders the contract would reject before any chain call', async () => {
     const s = await start();
     const quote = await s.relayer.service.quote({

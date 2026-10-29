@@ -677,6 +677,10 @@ export class RelayerService {
     if (sendGasPrice * 100n > gasPrice * BigInt(100 + this.d.config.gas.maxMovePercent)) {
       throw new RelayerError(503, 'gas_price_moved', 5);
     }
+    // The deadline was checked before the queue wait: a sweep left with no more than the minimum could lapse before
+    // inclusion, a mined revert the relayer pays for. Refused like at admission (neutral, not the owner's doing).
+    if (call.sweep.deadline <= BigInt(Math.floor(this.now() / 1000) + this.d.config.minDeadlineSeconds))
+      throw new RelayerError(422, 'deadline_too_soon');
     let finalSimulation: Awaited<ReturnType<ChainClient['simulateSweep']>>;
     try {
       finalSimulation = await op(() => client.simulateSweep(call));

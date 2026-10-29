@@ -48,8 +48,9 @@ is dropped and plain `sweep` is used; otherwise a permit that has expired or exp
 `token_transfer_failed`, `permit_value_too_low`, `invalid_order`, `simulation_reverted` 422; with a permit still needed a
 generic transfer revert is `permit_failed` 422; RPC failure `rpc_unavailable` 503), gas limit (`gas_limit_too_high`), fee
 covers the estimated gas (`fee_below_gas_cost` 422), gas price re-read (cap; `gas_price_moved` 503 beyond
-`gas.maxMovePercent`), second simulation with the same checks, loss budget reservation (`loss_budget_exhausted` 429), daily
-budget (`budget_exhausted` 503 + `Retry-After`) -> send (`send_failed` 503). A mined revert also counts against the owner.
+`gas.maxMovePercent`), deadline again after the queue wait (`deadline_too_soon` 422 unless more than `deadline.minSeconds`
+remain), second simulation with the same checks, loss budget reservation (`loss_budget_exhausted` 429), daily budget
+(`budget_exhausted` 503 + `Retry-After`) -> send (`send_failed` 503). A mined revert also counts against the owner.
 
 Quote pricing: `gas.griefReserveBps` (default 0, max 5000) is added to the gas term before the F-SPONSOR formula, so the fee
 carries a margin for gas lost when an owner drains or revokes first. `quoteTtlSeconds` is at most 60 (default 60).

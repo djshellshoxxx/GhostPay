@@ -53,7 +53,8 @@ permit flag and value -> `feeTo` equals the relayer's -> quote authentic (`inval
 per-owner rate limit -> `PolicyGate` -> breaker -> **admission control** (a stateless `eth_call` pre-simulation outside
 the lane, at most 8 concurrent, `503 busy` beyond that; a client IP may hold at most `ceil(0.75 * queue.maxPending)` lane
 slots, else `429 rate_limited_ip`) -> serial per-chain lane: gas-price cap, balance floor, **fee floor** (the signed fee
-must still cover `gasUnits * current gas price` in token units, else `422 fee_below_cost`), `simulateContract`, gas limit,
+must still cover `gasUnits * current gas price` in token units, else `422 fee_below_cost`), the deadline again after the
+queue wait (`deadline_too_soon` 422 unless more than `min` remains), `simulateContract`, gas limit,
 daily budget -> send. Other classes: `invalid_*` 400, `unsupported_media_type` 415,
 `body_too_large` 413, `invalid_url` 400, `rate_limited_ip`/`rate_limited_owner` 429, `origin_not_allowed` 403,
 `queue_full`/`busy`/`shutting_down`/`rpc_unavailable`/`send_failed`/`budget_exhausted` 503, `not_found` 404,
