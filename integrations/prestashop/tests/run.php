@@ -117,8 +117,7 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	foreach ( array( 'PS_OS_PAYMENT' => 2, 'PS_OS_SHIPPING' => 4, 'PS_OS_CANCELED' => 6, 'PS_OS_ERROR' => 8, 'PS_OS_OUTOFSTOCK_PAID' => 9, 'PS_OS_OUTOFSTOCK_UNPAID' => 12 ) as $name => $id ) {
 		Configuration::updateValue( $name, $id );
 	}
-	$webhook_secret = str_repeat( "\x5a", 32 ); // fake
-	Configuration::updateValue( 'GHOSTPAY_WEBHOOK_SECRET', bin2hex( $webhook_secret ) );
+	$webhook_secret = str_repeat( "\x5a", 32 ); // fake; configured in the environment below (H-R4)
 	$db->execute( "INSERT INTO `ps_currency` (`id_currency`, `iso_code`, `precision`) VALUES (1, 'USD', 2)" );
 	$order = static function ( int $id, int $state, string $total = '12.500000', int $currency = 1 ) use ( $db, $module ): void {
 		$db->execute( "INSERT INTO `ps_orders` (`id_order`, `id_cart`, `id_customer`, `id_currency`, `module`, `current_state`, `total_paid`) VALUES ($id, $id, 7, $currency, 'ghostpay', $state, '$total')" );
@@ -128,9 +127,9 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 		array( 'id' => $id, 'type' => $type, 'createdAt' => 1800000000, 'data' => array( 'invoiceId' => $invoice, 'currency' => $currency, 'amountMinor' => $amount ) )
 	);
 	$sign    = static fn( string $body ): string => GhostPay_Signature::sign( $webhook_secret, $body, time(), bin2hex( random_bytes( 16 ) ) );
-	$request = static function ( string $body, ?string $signature = null ) use ( $sign ): array {
+	$request = static function ( string $body, ?string $signature = null, array $define = array() ) use ( $sign ): array {
 		$proc = proc_open( array( PHP_BINARY, __DIR__ . '/request.php' ), array( array( 'pipe', 'r' ), array( 'pipe', 'w' ), array( 'pipe', 'w' ) ), $pipes );
-		fwrite( $pipes[0], (string) json_encode( array( 'body' => $body, 'signature' => $signature ?? $sign( $body ) ) ) );
+		fwrite( $pipes[0], (string) json_encode( array( 'body' => $body, 'signature' => $signature ?? $sign( $body ), 'define' => $define ) ) );
 		fclose( $pipes[0] );
 		$out = (string) stream_get_contents( $pipes[1] );
 		$err = (string) stream_get_contents( $pipes[2] );
@@ -142,8 +141,127 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	};
 	$state   = static fn( int $id ): int => (int) $db->getValue( "SELECT `current_state` FROM `ps_orders` WHERE `id_order` = $id" );
 	$history = static fn( int $id ): int => (int) $db->getValue( "SELECT COUNT(*) FROM `ps_order_history` WHERE `id_order` = $id" );
-	$notes   = static fn( int $id ): int => (int) $db->getValue( "SELECT COUNT(*) FROM `ps_message` WHERE `id_order` = $id AND `private` = 1" );
 	$reply   = static fn( array $r ): string => $r['status'] . ' ' . $r['body'];
+	$db->execute( "INSERT INTO `ps_customer` (`id_customer`, `firstname`, `lastname`, `email`) VALUES (7, 'Ann', 'Example', 'ann@example.test')" );
+
+	// H-R2: notes for the merchant must be where the PrestaShop 8 order page reads messages. Its query, verbatim from
+	// CustomerDataProvider::getCustomerMessages() (PrestaShop 8.1.7) for the order's customer and id: the messages of
+	// the order's customer threads (the legacy ps_message table is not shown there).
+	$order_page = static function ( int $id ) use ( $db ): array {
+		$customer_id = (int) $db->getValue( "SELECT `id_customer` FROM `ps_orders` WHERE `id_order` = $id" );
+		return $db->executeS(
+			'SELECT cm.*, c.`firstname` AS cfirstname, c.`lastname` AS clastname,
+			e.`firstname` AS efirstname, e.`lastname` AS elastname
+			FROM ' . _DB_PREFIX_ . 'customer_thread ct
+			LEFT JOIN ' . _DB_PREFIX_ . 'customer_message cm
+				ON ct.id_customer_thread = cm.id_customer_thread
+			LEFT JOIN `' . _DB_PREFIX_ . 'customer` c
+				ON ct.`id_customer` = c.`id_customer`
+			LEFT OUTER JOIN `' . _DB_PREFIX_ . 'employee` e
+				ON e.`id_employee` = cm.`id_employee`
+			WHERE ct.id_customer = ' . $customer_id . ' AND ct.`id_order` = ' . $id . ' GROUP BY cm.id_customer_message
+			ORDER BY cm.date_add DESC'
+		);
+	};
+	// The customer's order history (storefront) shows CustomerMessage::getMessagesByOrderId( $id, false ): verbatim.
+	$storefront = static fn( int $id ): array => $db->executeS(
+		'SELECT cm.*,
+			c.`firstname` AS cfirstname,
+			c.`lastname` AS clastname,
+			e.`firstname` AS efirstname,
+			e.`lastname` AS elastname,
+			(COUNT(cm.id_customer_message) = 0 AND ct.id_customer != 0) AS is_new_for_me
+		FROM `' . _DB_PREFIX_ . 'customer_message` cm
+		LEFT JOIN `' . _DB_PREFIX_ . 'customer_thread` ct
+			ON ct.`id_customer_thread` = cm.`id_customer_thread`
+		LEFT JOIN `' . _DB_PREFIX_ . 'customer` c
+			ON ct.`id_customer` = c.`id_customer`
+		LEFT OUTER JOIN `' . _DB_PREFIX_ . 'employee` e
+			ON e.`id_employee` = cm.`id_employee`
+		WHERE ct.id_order = ' . $id . '
+		AND cm.`private` = 0
+		GROUP BY cm.id_customer_message
+		ORDER BY cm.date_add DESC'
+	);
+	$notes   = static fn( int $id ): int => count( array_filter( $order_page( $id ), static fn( array $m ): bool => '1' === $m['private'] ) );
+	$threads = static fn( int $id ): int => (int) $db->getValue( "SELECT COUNT(*) FROM `ps_customer_thread` WHERE `id_order` = $id" );
+
+	// H-R4: secrets come only from constants (config/defines_custom.inc.php, which PrestaShop's config/config.inc.php
+	// includes) or the environment, never from Configuration: ps_configuration is copied into every database backup and
+	// served by the webservice API (configurations resource), and the webhook secret alone lets anyone forge invoice.paid.
+	putenv( 'GHOSTPAY_SERVICE_SECRET' );
+	putenv( 'GHOSTPAY_WEBHOOK_SECRET' );
+	$old_service = str_repeat( 'a1', 32 ); // fake hex secrets, as the settings form of earlier versions stored them
+	$old_webhook = str_repeat( 'b2', 32 );
+	$new_service = str_repeat( 'd4', 32 );
+	$sign_with   = static fn( string $secret_hex, string $body ): string => GhostPay_Signature::sign( hex2bin( $secret_hex ), $body, time(), bin2hex( random_bytes( 16 ) ) );
+	$retry       = '503 {"ok":false,"retry":true}';
+	Configuration::updateValue( 'GHOSTPAY_SERVICE_SECRET', $old_service );
+	Configuration::updateValue( 'GHOSTPAY_WEBHOOK_SECRET', $old_webhook );
+	check( 'a service secret stored in Configuration is not used', $module->secret( 'service' ), null );
+	check( 'a webhook secret stored in Configuration is not used', $module->secret( 'webhook' ), null );
+	$upgraded = new Ghostpay(); // the upgrade step runs whenever the module is loaded
+	check( 'upgrade deletes the stored secrets', array( Configuration::get( 'GHOSTPAY_SERVICE_SECRET' ), Configuration::get( 'GHOSTPAY_WEBHOOK_SECRET' ) ), array( false, false ) );
+	$raw = (string) $db->getValue( 'SELECT group_concat(`value`) FROM `ps_configuration`' );
+	check( 'no copy of a stored secret is left in the configuration', str_contains( $raw, $old_service ) || str_contains( $raw, $old_webhook ), false );
+	check( 'the module warns to rotate both secrets (Module Manager alert)', str_contains( (string) $upgraded->warning, 'GHOSTPAY_SERVICE_SECRET' ) && str_contains( (string) $upgraded->warning, 'GHOSTPAY_WEBHOOK_SECRET' ), true );
+	check( 'the configuration page shows the warning', str_contains( $upgraded->getContent(), 'module_warning' ), true );
+	// As in WooCommerce (H-R1): no valid webhook secret is a retryable 503, the same for every request; a 4xx may be
+	// final for the sender and lose the payments made until the secret is set.
+	$order( 20, $awaiting );
+	$paid20 = $event( 'evt_20', 'invoice.paid', 'inv_ps_20', 'USD', '1250' );
+	check( 'no webhook secret configured: a webhook signed with the stored secret gets a retryable 503', $reply( $request( $paid20, $sign_with( $old_webhook, $paid20 ) ) ), $retry );
+	check( 'no webhook secret configured: an unsigned request gets the same 503', $reply( $request( $paid20, '' ) ), $retry );
+	check( 'a forged webhook does not pay the order', $state( 20 ), $awaiting );
+	// The settings form has no secret fields: submitted ones are ignored.
+	Tools::$values = array( 'submitGhostpay' => '1', 'GHOSTPAY_SERVICE_URL' => 'https://invoices.shop.test', 'GHOSTPAY_PAY_HOST' => 'pay.example.test', 'GHOSTPAY_SERVICE_SECRET' => $new_service, 'GHOSTPAY_WEBHOOK_SECRET' => $new_service );
+	$upgraded->getContent();
+	Tools::$values = array();
+	check( 'settings form saves the service URL and pay host', array( Configuration::get( 'GHOSTPAY_SERVICE_URL' ), Configuration::get( 'GHOSTPAY_PAY_HOST' ) ), array( 'https://invoices.shop.test', 'pay.example.test' ) );
+	check( 'settings form stores no secret', array( Configuration::get( 'GHOSTPAY_SERVICE_SECRET' ), Configuration::get( 'GHOSTPAY_WEBHOOK_SECRET' ) ), array( false, false ) );
+	putenv( 'GHOSTPAY_SERVICE_SECRET=' . strtoupper( $old_service ) ); // the exposed value, merely moved
+	putenv( 'GHOSTPAY_WEBHOOK_SECRET=' . bin2hex( $webhook_secret ) );
+	$warning = (string) ( new Ghostpay() )->warning;
+	check( 'warning stays while the exposed service secret is still configured', str_contains( $warning, 'GHOSTPAY_SERVICE_SECRET' ), true );
+	check( 'a rotated webhook secret leaves the warning', str_contains( $warning, 'GHOSTPAY_WEBHOOK_SECRET' ), false );
+	putenv( 'GHOSTPAY_SERVICE_SECRET=' . $new_service );
+	check( 'no warning once both secrets are rotated', array( ( new Ghostpay() )->warning, ( new Ghostpay() )->getContent() ), array( null, '' ) );
+	check( 'exposure record removed after rotation', Configuration::get( 'GHOSTPAY_EXPOSED_SECRETS' ), false );
+	check( 'the service secret comes from the environment', $module->secret( 'service' ), hex2bin( $new_service ) );
+	check( 'with a secret configured, a bad signature is a 400', $reply( $request( $paid20, $sign_with( $old_webhook, $paid20 ) ) ), '400 {"ok":false}' );
+	check( 'the sender retry of the upgrade-window payment is processed', $reply( $request( $paid20 ) ), '200 {"ok":true}' );
+	check( 'that webhook pays the order', $state( 20 ), 2 );
+	$order( 21, $awaiting );
+	$paid21   = $event( 'evt_21', 'invoice.paid', 'inv_ps_21', 'USD', '1250' );
+	$constant = array( 'GHOSTPAY_WEBHOOK_SECRET' => str_repeat( 'e5', 32 ) ); // as config/defines_custom.inc.php defines it
+	check( 'environment secret ignored once the constant is defined', $reply( $request( $paid21, null, $constant ) ), '400 {"ok":false}' );
+	check( 'webhook secret from the constant', $reply( $request( $paid21, $sign_with( str_repeat( 'e5', 32 ), $paid21 ), $constant ) ), '200 {"ok":true}' );
+	// The upgrade step can stop at any database query: it must never delete a secret it has not recorded for rotation.
+	for ( $step = 1; ; ++$step ) {
+		Configuration::deleteByName( 'GHOSTPAY_EXPOSED_SECRETS' );
+		Configuration::updateValue( 'GHOSTPAY_SERVICE_SECRET', $old_service );
+		Configuration::updateValue( 'GHOSTPAY_WEBHOOK_SECRET', $old_webhook );
+		Db::$queries = 0;
+		Db::$stop_at = $step;
+		try {
+			new Ghostpay();
+			$stopped = false;
+		} catch ( RuntimeException $e ) {
+			$stopped = true;
+		} finally {
+			Db::$stop_at = 0;
+		}
+		if ( ! $stopped ) {
+			break;
+		}
+		$recorded = json_decode( (string) Configuration::get( 'GHOSTPAY_EXPOSED_SECRETS' ), true );
+		foreach ( array( 'SERVICE' => $old_service, 'WEBHOOK' => $old_webhook ) as $which => $hex ) {
+			$kept = $hex === Configuration::get( "GHOSTPAY_{$which}_SECRET" ) || in_array( hash( 'sha256', $hex ), (array) ( $recorded[ strtolower( $which ) ] ?? array() ), true );
+			check( "upgrade step stopped at query $step: the $which secret is still stored or recorded", $kept, true );
+		}
+	}
+	check( 'the interruption test covered the upgrade step queries', $step > 4, true );
+	check( 'after the completed upgrade step no secret is stored', array( Configuration::get( 'GHOSTPAY_SERVICE_SECRET' ), Configuration::get( 'GHOSTPAY_WEBHOOK_SECRET' ) ), array( false, false ) );
 
 	$order( 1, $awaiting );
 	$paid1 = $event( 'evt_1', 'invoice.paid', 'inv_ps_1', 'USD', '1250' );
@@ -162,9 +280,17 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	check( 'payment for a paid order acknowledged', $reply( $request( $event( 'evt_2', 'invoice.paid', 'inv_ps_2', 'USD', '1250' ) ) ), '200 {"ok":true}' );
 	check( 'payment for a paid order: state kept', array( $state( 2 ), $history( 2 ) ), array( 2, 0 ) );
 	check( 'payment for a paid order: private note', $notes( 2 ), 1 );
-	$order( 3, 4 ); // shipped
+	$page = $order_page( 2 );
+	check( 'the note is on the PS 8 order page: private, no employee (a webhook has none), GhostPay text', array( count( $page ), $page[0]['private'] ?? null, $page[0]['id_employee'] ?? null, str_starts_with( (string) ( $page[0]['message'] ?? '' ), 'GhostPay invoice.paid event evt_2 ' ) ), array( 1, '1', '0', true ) );
+	check( 'the note is not shown to the customer', $storefront( 2 ), array() );
+	$request( $event( 'evt_2b', 'invoice.over', 'inv_ps_2', 'USD', '1300' ) );
+	check( 'a second note goes into the same order thread', array( $notes( 2 ), $threads( 2 ) ), array( 2, 1 ) );
+	$order( 3, 4 ); // shipped; the customer left a message at checkout, which PaymentModule::validateOrder() put in a thread
+	$db->execute( "INSERT INTO `ps_customer_thread` (`id_shop`, `id_lang`, `id_contact`, `id_customer`, `id_order`, `status`, `email`, `token`) VALUES (1, 1, 0, 7, 3, 'open', 'ann@example.test', 'tok3')" );
+	$db->execute( "INSERT INTO `ps_customer_message` (`id_customer_thread`, `id_employee`, `message`, `private`, `date_add`) VALUES (last_insert_rowid(), 0, 'Please ring twice', 0, '2026-01-01 00:00:00')" );
 	$request( $event( 'evt_3', 'invoice.over', 'inv_ps_3', 'USD', '1300' ) );
 	check( 'payment for a shipped order: state kept, noted', array( $state( 3 ), $history( 3 ), $notes( 3 ) ), array( 4, 0, 1 ) );
+	check( 'the note joins the order thread found by PrestaShop (email, shop, order)', array( $threads( 3 ), count( $order_page( 3 ) ), count( $storefront( 3 ) ) ), array( 1, 2, 1 ) );
 	$order( 4, 6 ); // cancelled
 	$request( $event( 'evt_4', 'invoice.paid', 'inv_ps_4', 'USD', '1250' ) );
 	check( 'late full payment pays a cancelled order', $state( 4 ), 2 );
@@ -182,15 +308,37 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	$order( 8, $awaiting );
 	$request( $event( 'evt_8', 'invoice.paid', 'inv_ps_8', 'EUR', '1250' ) );
 	check( 'currency mismatch: state kept, noted', array( $state( 8 ), $notes( 8 ) ), array( $awaiting, 1 ) );
+	// H-R7: the double-payment/refund wording only for payment events (paid, over). An expiry or a partial payment in
+	// another currency gets a neutral "ignored: currency mismatch" note, as in WooCommerce.
+	$note_text = static fn( int $id ): string => implode( "\n", array_column( $order_page( $id ), 'message' ) );
+	check( 'payment in another currency: refund wording', str_contains( $note_text( 8 ), 'refund' ), true );
+	$order( 15, $awaiting );
+	$request( $event( 'evt_15e', 'invoice.expired', 'inv_ps_15', 'EUR', '0' ) );
+	check( 'expiry in another currency: order not cancelled', $state( 15 ), $awaiting );
+	check( 'expiry in another currency: neutral note, no refund wording', array( $notes( 15 ), str_contains( $note_text( 15 ), 'ignored: currency mismatch' ), str_contains( $note_text( 15 ), 'refund' ) ), array( 1, true, false ) );
+	$request( $event( 'evt_15p', 'invoice.partial', 'inv_ps_15', 'EUR', '500' ) );
+	check( 'partial payment in another currency: neutral note, no refund wording', array( $notes( 15 ), substr_count( $note_text( 15 ), 'ignored: currency mismatch' ), str_contains( $note_text( 15 ), 'refund' ) ), array( 2, 2, false ) );
 
 	// A failed side effect releases the claim (retryable 503); the retry applies the event once.
 	$order( 9, 2 );
 	$paid9 = $event( 'evt_9', 'invoice.paid', 'inv_ps_9', 'USD', '1250' );
 	Configuration::updateValue( 'GHOSTPAY_TEST_FAIL_WRITES', '1' );
 	check( 'failed side effect is retryable', $reply( $request( $paid9 ) ), '503 {"ok":false,"retry":true}' );
+	check( 'a failed note leaves no thread behind', $threads( 9 ), 0 );
 	Configuration::updateValue( 'GHOSTPAY_TEST_FAIL_WRITES', '0' );
 	check( 'retry after a failed side effect is processed', $reply( $request( $paid9 ) ), '200 {"ok":true}' );
 	check( 'retry applied the event once', $notes( 9 ), 1 );
+
+	// H-R5: only a duplicate nonce (SQLSTATE 23000) is a replay and a 400. Any other database error at the nonce claim
+	// (deadlock, server gone away) says nothing about the request: a retryable 503, and the sender's retry is processed.
+	$order( 14, $awaiting );
+	$paid14 = $event( 'evt_14', 'invoice.paid', 'inv_ps_14', 'USD', '1250' );
+	Configuration::updateValue( 'GHOSTPAY_TEST_FAIL_INSERT', 'ghostpay_nonce' );
+	check( 'database error at the nonce claim: retryable 503, not a replay 400', $reply( $request( $paid14 ) ), '503 {"ok":false,"retry":true}' );
+	Configuration::deleteByName( 'GHOSTPAY_TEST_FAIL_INSERT' );
+	check( 'database error at the nonce claim: order unchanged', $state( 14 ), $awaiting );
+	check( 'the retry after the database error is processed', $reply( $request( $paid14 ) ), '200 {"ok":true}' );
+	check( 'the retry pays the order', $state( 14 ), 2 );
 
 	// G3-02: amounts use the GhostPay app's minor units of the currency, not the shop's display precision.
 	$db->execute( "INSERT INTO `ps_currency` (`id_currency`, `iso_code`, `precision`) VALUES (2, 'JPY', 2), (3, 'USD', 0)" );
@@ -209,8 +357,45 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	check( 'order total in minor units: KWD needing a third decimal is refused', $module->orderTotalMinor( 13, 'KWD' ), null );
 	check( 'order total in minor units: unknown order', $module->orderTotalMinor( 999, 'USD' ), null );
 
+	// H-R6: PHP 8 PDO throws on a duplicate key (PrestaShop 8 rethrows it as PrestaShopException). recordInvoice() must
+	// return false as documented, so the validation controller cancels the new order instead of answering 500 and
+	// leaving it awaiting payment; the invoice stays linked to its first order.
+	$record = static function ( string $invoice_id, int $order_id ) use ( $module ) {
+		try {
+			return $module->recordInvoice( $invoice_id, $order_id );
+		} catch ( Throwable $e ) {
+			return get_class( $e ) . ': ' . $e->getMessage();
+		}
+	};
+	check( 'duplicate invoice id: recordInvoice() returns false', $record( 'inv_ps_1', 99 ), false );
+	check( 'duplicate invoice id: the invoice stays linked to its first order', $db->getValue( "SELECT `id_order` FROM `ps_ghostpay_invoice` WHERE `invoice_id` = 'inv_ps_1'" ), '1' );
+	$pdo_error = static function ( string $sql ): PDOException {
+		$pdo = new PDO( 'sqlite::memory:' );
+		$pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
+		$pdo->exec( "CREATE TABLE t (k TEXT PRIMARY KEY); INSERT INTO t VALUES ('a')" );
+		try {
+			$pdo->exec( $sql );
+		} catch ( PDOException $e ) {
+			return $e;
+		}
+		throw new LogicException( 'no PDO error' );
+	};
+	$duplicate_key = $pdo_error( "INSERT INTO t VALUES ('a')" );
+	$no_such_table = $pdo_error( 'SELECT * FROM missing' );
+	check( 'isDuplicateKey: PDOException with SQLSTATE 23000', Ghostpay::isDuplicateKey( $duplicate_key ), true );
+	check( 'isDuplicateKey: wrapped in a PrestaShopException', Ghostpay::isDuplicateKey( new PrestaShopException( $duplicate_key->getMessage(), 23000, $duplicate_key ) ), true );
+	check( 'isDuplicateKey: any other SQL error', Ghostpay::isDuplicateKey( new PrestaShopException( $no_such_table->getMessage(), 0, $no_such_table ) ), false );
+	check( 'isDuplicateKey: a non-PDO exception with code 23000', Ghostpay::isDuplicateKey( new RuntimeException( 'x', 23000 ) ), false );
+
+	// A thread without a message gives the PS 8 order page a row whose message is NULL (OrderMessageForViewing takes a
+	// string): every thread the module wrote must have its note.
+	check( 'no customer thread without a message', $db->getValue( 'SELECT COUNT(*) FROM `ps_customer_thread` ct WHERE NOT EXISTS (SELECT 1 FROM `ps_customer_message` cm WHERE cm.`id_customer_thread` = ct.`id_customer_thread`)' ), '0' );
+
+	Configuration::updateGlobalValue( 'GHOSTPAY_EXPOSED_SECRETS', '{"service":["' . hash( 'sha256', $old_service ) . '"]}' );
 	check( 'uninstall drops the module tables', $module->uninstall(), true );
+	check( 'uninstall removes the exposure record', Configuration::get( 'GHOSTPAY_EXPOSED_SECRETS' ), false );
 	check( 'no module table left', $db->getValue( "SELECT COUNT(*) FROM sqlite_master WHERE `name` LIKE 'ps_ghostpay%'" ), '0' );
+	check( 'any other database error in recordInvoice() still throws', 0 === strpos( (string) $record( 'inv_ps_x', 98 ), 'PrestaShopException: ' ), true );
 }
 
 if ( $failed > 0 ) {

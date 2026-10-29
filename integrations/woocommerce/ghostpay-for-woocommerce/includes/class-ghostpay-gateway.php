@@ -238,9 +238,14 @@ class WC_Gateway_GhostPay extends WC_Payment_Gateway {
 			self::reply( 405, array( 'ok' => false ) );
 		}
 		$secret = $this->secret( 'webhook' );
+		if ( null === $secret ) {
+			// No valid secret configured (e.g. upgraded, wp-config.php not updated yet): a server misconfiguration, not a
+			// bad request, answered the same for every request. 503 keeps the sender retrying until the secret is set.
+			self::reply( 503, array( 'ok' => false, 'retry' => true ) );
+		}
 		$header = isset( $_SERVER['HTTP_GHOSTPAY_SIGNATURE'] ) ? (string) wp_unslash( $_SERVER['HTTP_GHOSTPAY_SIGNATURE'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- validated strictly by GhostPay_Signature::parse_header().
 		$body   = (string) file_get_contents( 'php://input', false, null, 0, self::MAX_BODY + 1 );
-		if ( null === $secret || strlen( $body ) > self::MAX_BODY ) {
+		if ( strlen( $body ) > self::MAX_BODY ) {
 			self::reply( 400, array( 'ok' => false ) );
 		}
 		$result = GhostPay_Signature::verify(

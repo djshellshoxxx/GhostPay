@@ -13,6 +13,7 @@ if ( ! defined( '_PS_VERSION_' ) ) {
 require_once __DIR__ . '/classes/class-ghostpay-signature.php';
 require_once __DIR__ . '/classes/class-ghostpay-money.php';
 require_once __DIR__ . '/classes/class-ghostpay-event.php';
+require_once __DIR__ . '/classes/class-ghostpay-secrets.php';
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 
@@ -29,6 +30,17 @@ class Ghostpay extends PaymentModule {
 		parent::__construct();
 		$this->displayName = $this->trans( 'GhostPay', array(), 'Modules.Ghostpay.Admin' );
 		$this->description = $this->trans( 'Private crypto payments via a GhostPay payment link.', array(), 'Modules.Ghostpay.Admin' );
+		// Secrets live only in constants or the environment: delete copies stored by earlier versions and warn until each
+		// is replaced. PrestaShop's Module Manager lists modules with a warning (Alerts); getContent() shows it too.
+		GhostPay_Secrets::purge_stored();
+		$unrotated = GhostPay_Secrets::unrotated();
+		if ( array() !== $unrotated ) {
+			$this->warning = $this->trans(
+				'An earlier version stored %names% in the shop configuration, where database backups and the webservice API expose them. They were deleted. Generate new secrets, set them in config/defines_custom.inc.php (or the environment) and in your invoice service; the old values must not be used again.',
+				array( '%names%' => implode( ', ', $unrotated ) ),
+				'Modules.Ghostpay.Admin'
+			);
+		}
 	}
 
 	public function install() {
@@ -44,6 +56,7 @@ class Ghostpay extends PaymentModule {
 			&& Configuration::deleteByName( 'GHOSTPAY_PAY_HOST' )
 			&& Configuration::deleteByName( 'GHOSTPAY_SERVICE_SECRET' )
 			&& Configuration::deleteByName( 'GHOSTPAY_WEBHOOK_SECRET' )
+			&& Configuration::deleteByName( GhostPay_Secrets::EXPOSED )
 			&& Db::getInstance()->execute( 'DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'ghostpay_invoice`' )
 			&& Db::getInstance()->execute( 'DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'ghostpay_event_claim`' )
 			&& Db::getInstance()->execute( 'DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'ghostpay_nonce`' );
@@ -81,9 +94,12 @@ class Ghostpay extends PaymentModule {
 		return $state->add() && Configuration::updateValue( 'GHOSTPAY_OS_AWAITING', (int) $state->id );
 	}
 
-	/** Back-office settings. Form posts are protected by PrestaShop's admin token; capability is the admin session. */
+	/**
+	 * Back-office settings. Form posts are protected by PrestaShop's admin token; capability is the admin session. No
+	 * secret fields: Configuration is in every database backup and the webservice API (see GhostPay_Secrets).
+	 */
 	public function getContent() {
-		$out = '';
+		$out = '' === (string) $this->warning ? '' : $this->displayWarning( $this->warning );
 		if ( Tools::isSubmit( 'submitGhostpay' ) ) {
 			$url  = trim( (string) Tools::getValue( 'GHOSTPAY_SERVICE_URL' ) );
 			$host = strtolower( trim( (string) Tools::getValue( 'GHOSTPAY_PAY_HOST' ) ) );
@@ -92,17 +108,10 @@ class Ghostpay extends PaymentModule {
 			} else {
 				Configuration::updateValue( 'GHOSTPAY_SERVICE_URL', rtrim( $url, '/' ) );
 				Configuration::updateValue( 'GHOSTPAY_PAY_HOST', $host );
-				// Secrets are only overwritten when a new non-empty value is submitted (never echoed back).
-				foreach ( array( 'GHOSTPAY_SERVICE_SECRET', 'GHOSTPAY_WEBHOOK_SECRET' ) as $k ) {
-					$v = (string) Tools::getValue( $k );
-					if ( '' !== $v && null !== GhostPay_Signature::secret_from_hex( $v ) ) {
-						Configuration::updateValue( $k, $v );
-					}
-				}
 				$out .= $this->displayConfirmation( $this->trans( 'Saved.', array(), 'Modules.Ghostpay.Admin' ) );
 			}
 		}
-		// TODO(skeleton): render the form with HelperForm (fields above; secret inputs of type password, empty value).
+		// TODO(skeleton): render the form with HelperForm (the two fields above only; never a secret input).
 		return $out;
 	}
 
@@ -118,14 +127,34 @@ class Ghostpay extends PaymentModule {
 		return array( $option );
 	}
 
-	/** @internal Used by controllers. @return string|null binary secret */
+	/** @internal Used by controllers. @param string $which 'service' or 'webhook'. @return string|null binary secret from a constant or the environment only */
 	public function secret( string $which ): ?string {
-		return GhostPay_Signature::secret_from_hex( (string) Configuration::get( 'service' === $which ? 'GHOSTPAY_SERVICE_SECRET' : 'GHOSTPAY_WEBHOOK_SECRET' ) );
+		return GhostPay_Signature::secret_from_hex( GhostPay_Secrets::hex( $which ) );
 	}
 
 	/** @internal Used by the validation controller: link an invoice to its order. @return bool false if not stored */
 	public function recordInvoice( string $invoice_id, int $order_id ): bool {
-		return (bool) Db::getInstance()->insert( 'ghostpay_invoice', array( 'invoice_id' => pSQL( $invoice_id ), 'id_order' => $order_id ) );
+		try {
+			return (bool) Db::getInstance()->insert( 'ghostpay_invoice', array( 'invoice_id' => pSQL( $invoice_id ), 'id_order' => $order_id ) );
+		} catch ( Exception $e ) {
+			if ( self::isDuplicateKey( $e ) ) {
+				return false; // the invoice id is already linked to an order: never relink it
+			}
+			throw $e;
+		}
+	}
+
+	/**
+	 * @internal True for a duplicate key (SQLSTATE 23000). On PHP 8 PDO throws it; PrestaShop 8's DbPDO rethrows it as a
+	 * PrestaShopException with the PDOException as previous. Any other database error is not a duplicate.
+	 */
+	public static function isDuplicateKey( Throwable $e ): bool {
+		for ( $cause = $e; null !== $cause; $cause = $cause->getPrevious() ) {
+			if ( $cause instanceof PDOException && '23000' === (string) $cause->getCode() ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/** Return the exact DECIMAL persisted by PrestaShop, never a float round-trip. */

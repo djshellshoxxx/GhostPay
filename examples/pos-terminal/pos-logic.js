@@ -5,16 +5,35 @@ export const MAX_TTL = 900;
 export const MAX_QR_BYTES = 2953;
 export const INITIAL = Object.freeze({ status: 'idle', paidMinor: 0n });
 
-/** "12.50" -> 1250n (string math, max 2 decimals). Returns undefined if invalid. */
-export function parseMinor(s) {
-  const m = /^(0|[1-9][0-9]{0,15})(?:\.([0-9]{1,2}))?$/.exec(s.trim());
-  if (!m) return undefined;
-  return BigInt(m[1]) * 100n + BigInt((m[2] ?? '').padEnd(2, '0') || '0');
+/**
+ * Codes the GhostPay app reads invoice minor units with 0 decimals (apps/web/src/lib/format.ts fiatDecimals; the shop
+ * plugins and merchant-checkout/money.mjs use the same table). Every other code has 2, KWD included.
+ */
+export const ZERO_DECIMAL_CURRENCIES = Object.freeze(['JPY', 'KRW', 'VND', 'CLP', 'ISK', 'UGX', 'XAF', 'XOF']);
+
+export function fiatDecimals(currency) {
+  return ZERO_DECIMAL_CURRENCIES.includes(currency) ? 0 : 2;
 }
 
-export function formatMinor(v) {
-  const s = v.toString().padStart(3, '0');
-  return `${s.slice(0, -2)}.${s.slice(-2)}`;
+/**
+ * "12.50" USD -> 1250n, "1500" JPY -> 1500n (string math). Returns undefined if invalid or when the amount needs more
+ * decimals than the currency has ("1500.5" JPY, "12.345" KWD): never rounds.
+ */
+export function parseMinor(s, currency) {
+  if (typeof currency !== 'string' || !/^[A-Z]{3}$/.test(currency)) return undefined;
+  const m = /^(0|[1-9][0-9]{0,15})(?:\.([0-9]{1,8}))?$/.exec(s.trim());
+  if (!m) return undefined;
+  const d = fiatDecimals(currency);
+  const frac = (m[2] ?? '').replace(/0+$/, '');
+  if (frac.length > d) return undefined;
+  return BigInt(m[1]) * 10n ** BigInt(d) + BigInt(frac.padEnd(d, '0') || '0');
+}
+
+export function formatMinor(v, currency) {
+  const d = fiatDecimals(currency);
+  if (d === 0) return v.toString();
+  const s = v.toString().padStart(d + 1, '0');
+  return `${s.slice(0, -d)}.${s.slice(-d)}`;
 }
 
 /** Same rules as merchant-hooks assertPaymentLink + buildQrPayload; returns an error string or undefined. */
