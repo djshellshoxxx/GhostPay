@@ -15,6 +15,11 @@ export interface PrintableBillProps {
   readonly passphraseProtected: boolean;
   readonly chainName: string;
   readonly tokenLabel: string;
+  /**
+   * Formatted token amount of a `fixed_token` invoice (for example `1000 USDC`): printed as the amount due, with the fiat
+   * total labelled as the seller's unchecked statement (L2-F4). Omit for a fiat-priced invoice.
+   */
+  readonly fixedAmount?: string | undefined;
 }
 
 /**
@@ -68,8 +73,19 @@ export function PrintableBill(props: PrintableBillProps): ReactNode {
         )}
         <dt>Tax</dt>
         <dd>{formatFiat(BigInt(inv.tax.minorUnits), inv.fiat.currency)}</dd>
-        <dt>Total</dt>
-        <dd><strong>{formatFiat(BigInt(inv.fiat.minorUnits), inv.fiat.currency)}</strong></dd>
+        {props.fixedAmount === undefined ? (
+          <>
+            <dt>Total</dt>
+            <dd><strong>{formatFiat(BigInt(inv.fiat.minorUnits), inv.fiat.currency)}</strong></dd>
+          </>
+        ) : (
+          <>
+            <dt>Seller-stated fiat total (not checked)</dt>
+            <dd>{formatFiat(BigInt(inv.fiat.minorUnits), inv.fiat.currency)}</dd>
+            <dt>Amount due</dt>
+            <dd><strong>{props.fixedAmount}</strong></dd>
+          </>
+        )}
       </dl>
       {memo !== undefined && memo !== '' && <p className="bill-memo">{memo}</p>}
       {hasLink && policy.includeQr && props.link !== undefined && (

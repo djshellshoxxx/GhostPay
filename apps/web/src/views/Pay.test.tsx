@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
-import { decodeBase64Url, encodeBase64Url, invoiceDigest, openFragment, parseFragment } from '@ghostpay/invoice-schema';
-import { bytesToHex } from '@noble/hashes/utils.js';
+import { SIGNING_DOMAIN, canonicalize, decodeBase64Url, encodeBase64Url, invoiceDigest, openFragment, parseFragment, type Invoice } from '@ghostpay/invoice-schema';
+import { keccak_256 } from '@noble/hashes/sha3.js';
+import { bytesToHex, concatBytes, utf8ToBytes } from '@noble/hashes/utils.js';
 import { secp256k1 } from '@noble/curves/secp256k1.js';
 import { act, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -293,6 +294,49 @@ describe('Pay: invoice reading and review', () => {
     void user;
   });
 
+  it('fails closed with a rejection, not a blank page, for a validly signed link whose expiry is 2^53-1 (G1-01)', async () => {
+    // Signed by hand: the seller's own key signs a hostile invoice the schema used to accept.
+    const { parsed } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const hostile: Invoice = { ...parsed.invoice, expiresAt: Number.MAX_SAFE_INTEGER };
+    const digest = keccak_256(concatBytes(utf8ToBytes(SIGNING_DOMAIN), utf8ToBytes(canonicalize(hostile))));
+    const sig = withSessionSecrets((secrets) => bytesToHex(secp256k1.sign(digest, secrets.signingKey, { prehash: false, lowS: true })));
+    const fragment = `#gpi=v1.${encodeBase64Url(utf8ToBytes(canonicalize({ alg: 'none', inv: hostile, sig })))}`;
+    openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    expect(await screen.findByText('Invoice rejected')).toBeTruthy();
+    expect(screen.getByRole('alert').textContent).toMatch(/not valid and was rejected\. \(field: expiresAt\)/);
+    expect(screen.getByRole('heading', { name: 'Pay an invoice' })).toBeTruthy();
+    expect(screen.queryByRole('heading', { name: 'Review payment' })).toBeNull();
+  });
+
+  it('shows a fixed token amount as the total, the fiat figure as the seller’s unchecked statement, and warns on a mismatch (L2-F4)', async () => {
+    const { fragment } = await makeParsed({ tokenAmount: '1000', lineItems: [{ description: 'Consulting', quantity: '1', unitPrice: '10.00' }] });
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    await screen.findByText('Seller receives (net)');
+    const row = (label: string): string | null | undefined => screen.getByText(label, { selector: 'dt' }).nextElementSibling?.textContent;
+    expect(row('Invoice total')).toBe('1000 USDC (fixed token amount)');
+    expect(row('Seller-stated fiat total')).toBe('USD 10.00 (not converted or checked by this app)');
+    expect(screen.getByText('Check the amount')).toBeTruthy();
+    expect(screen.getByText(/fixed amount of 1000 USDC differs by more than 1 % from the seller-stated total of USD 10\.00/)).toBeTruthy();
+    // A warning only: nothing blocks the payment.
+    expect(screen.queryByText('This payment cannot proceed')).toBeNull();
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Continue' }).disabled).toBe(false);
+    // The printed bill names the same amount due.
+    window.print = vi.fn();
+    await user.click(screen.getByRole('button', { name: 'Print bill' }));
+    const bill = screen.getByTestId('printable-bill');
+    expect(within(bill).getByText('Amount due', { selector: 'dt' }).nextElementSibling?.textContent).toBe('1000 USDC');
+    expect(within(bill).queryByText('Total', { selector: 'dt' })).toBeNull();
+  });
+
+  it('labels the fiat figure of a fixed-token invoice as unchecked, without a warning when it matches the stablecoin amount', async () => {
+    const { fragment } = await makeParsed();
+    openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    await screen.findByText('Seller receives (net)');
+    expect(screen.getByText('Seller-stated fiat total', { selector: 'dt' }).nextElementSibling?.textContent).toMatch(/^USD 100\.00 \(not converted or checked/);
+    expect(screen.getByText('Invoice total', { selector: 'dt' }).nextElementSibling?.textContent).toBe('100 USDC (fixed token amount)');
+    expect(screen.queryByText('Check the amount')).toBeNull();
+  });
+
   it('rejects an oversized fragment', async () => {
     openWith(`#gpi=v1.${'A'.repeat(30_000)}`, makeServices());
     expect((await screen.findByRole('alert')).textContent).toMatch(/16 KiB/);
@@ -430,6 +474,27 @@ describe('Pay: sending', () => {
     await user.click(screen.getByRole('button', { name: 'Print bill' }));
     expect(printSpy).toHaveBeenCalledOnce();
     expect(screen.getByTestId('bearer-warning').textContent).toMatch(/anyone who sees this paper/i);
+  });
+
+  it('never says included for a mined transaction it could not compare, and marks the proof unverified (L2-F3)', async () => {
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const wallet = new MockWallet();
+    // The RPC has a receipt for the hash but never returns the transaction itself.
+    const rpc = mockRpc(84532, (method) => {
+      if (method === 'eth_getTransactionByHash') return null;
+      if (method === 'eth_getTransactionReceipt') return { status: '0x1', blockNumber: '0x64', to: wallet.sent?.['to'] };
+      if (method === 'eth_gasPrice') return '0x3b9aca00';
+      throw new Error(`unexpected ${method}`);
+    });
+    const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
+    await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    expect(await screen.findByRole('heading', { name: 'Submitted' })).toBeTruthy();
+    expect(screen.getByText(/did not return the transaction itself, so it could not be compared with the preview/)).toBeTruthy();
+    expect(screen.getByText(/Status: unverified/)).toBeTruthy();
+    expect(document.body.textContent).not.toMatch(/included in block|Independently verified/);
+    await user.click(screen.getByRole('button', { name: 'Show proof QR' }));
+    expect(document.querySelector('[data-qr-kind="caution"]')).not.toBeNull();
+    expect(screen.getByLabelText<HTMLTextAreaElement>('Proof of payment text').value).toContain('"status": "unconfirmed"');
   });
 
   it('REFUSES (shows an error, not success) when the wallet mutates the transaction', async () => {

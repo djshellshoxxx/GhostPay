@@ -854,6 +854,8 @@ export function Pay(): ReactNode {
   const ready = phase === 'ready' || phase === 'prepared' || phase === 'busy' || phase === 'submitted' || phase === 'done';
   const decimals = token?.decimals ?? 18;
   const symbol = token?.symbol ?? '';
+  // L2-F4: a fixed token amount is what the payer pays; the fiat total is then only the seller's unchecked statement.
+  const fixedAmount = inv.amountPolicy.mode === 'fixed_token' ? `${formatUnits(BigInt(inv.amountPolicy.tokenAmount), decimals)} ${symbol}` : undefined;
 
   return (
     <section aria-labelledby="pay-h">
@@ -878,6 +880,11 @@ export function Pay(): ReactNode {
         </Notice>
       )}
       {ctxError !== undefined && <Notice kind="error">{ctxError}</Notice>}
+      {review.warnings.length > 0 && (
+        <Notice kind="warn" title="Check the amount">
+          {review.warnings.map((w) => <p key={w}>{w}</p>)}
+        </Notice>
+      )}
 
       <dl className="details">
         <dt>Chain</dt>
@@ -887,11 +894,17 @@ export function Pay(): ReactNode {
           {symbol} {inv.token === 'native' ? '(native coin)' : <Mono>{inv.token}</Mono>}
         </dd>
         <dt>Invoice total</dt>
-        <dd>{formatFiat(BigInt(inv.fiat.minorUnits), inv.fiat.currency)}</dd>
+        <dd>{fixedAmount === undefined ? formatFiat(BigInt(inv.fiat.minorUnits), inv.fiat.currency) : <><strong>{fixedAmount}</strong> (fixed token amount)</>}</dd>
+        {fixedAmount !== undefined && (
+          <>
+            <dt>Seller-stated fiat total</dt>
+            <dd>{formatFiat(BigInt(inv.fiat.minorUnits), inv.fiat.currency)} (not converted or checked by this app)</dd>
+          </>
+        )}
         <dt>Pricing</dt>
         <dd>
-          {inv.amountPolicy.mode === 'fixed_token'
-            ? `Fixed: ${formatUnits(BigInt(inv.amountPolicy.tokenAmount), decimals)} ${symbol}`
+          {fixedAmount !== undefined
+            ? `Fixed: ${fixedAmount}`
             : `Fiat quote from ${inv.quote.source}, taken ${formatUnix(inv.quote.timestamp)}, valid until ${formatUnix(inv.quote.expiresAt)}, max slippage ${String(inv.quote.maxSlippageBps / 100)} %. Not a guaranteed fiat value.`}
         </dd>
         <dt>Who pays the checkout fee</dt>
@@ -938,6 +951,7 @@ export function Pay(): ReactNode {
         passphraseProtected={parsed.passphraseProtected}
         chainName={review.chain?.name ?? `Chain ${String(inv.chainId)}`}
         tokenLabel={inv.token === 'native' ? (symbol === '' ? 'Native coin' : symbol) : symbol === '' ? inv.token : symbol}
+        fixedAmount={fixedAmount}
       />
 
       {ctx !== undefined && (
@@ -1117,14 +1131,17 @@ export function Pay(): ReactNode {
           <p>
             {result.verification === 'verified' && 'Independently verified on your RPC: the network saw exactly the previewed transaction.'}
             {result.verification === 'not-visible-yet' && 'Your RPC does not show the transaction yet, so it could not be checked against the preview. Check it in your wallet.'}
+            {result.verification === 'unverified' && 'Your RPC reports a receipt for this hash but did not return the transaction itself, so it could not be compared with the preview. Check it in your wallet and on a block explorer.'}
             {result.verification === 'no-rpc' && 'No RPC is configured, so this app could not verify the transaction independently. Check it in your wallet.'}
           </p>
           <p>
             {result.receipt === undefined
               ? 'Status: not yet confirmed (included is not the same as final).'
-              : result.receipt.status === 'success'
-                ? `Status: included in block ${result.receipt.blockNumber.toString()} (not necessarily final yet).`
-                : 'Status: the transaction reverted. Nothing was paid.'}
+              : result.receipt.status !== 'success'
+                ? 'Status: the transaction reverted. Nothing was paid.'
+                : result.verification === 'verified'
+                  ? `Status: included in block ${result.receipt.blockNumber.toString()} (not necessarily final yet).`
+                  : `Status: unverified. A transaction with this hash is in block ${result.receipt.blockNumber.toString()}, but it was not compared with the preview, so this app does not report it as this payment.`}
           </p>
           <div className="actions">
             <CopyButton text={result.hash} label="Copy hash" />

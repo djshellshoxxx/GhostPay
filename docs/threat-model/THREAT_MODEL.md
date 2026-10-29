@@ -139,7 +139,7 @@ Legend: S spoofing, T tampering, R repudiation, I information disclosure, D deni
 | R | Seller denies issuing an invoice | Signature by invoice-signing key | Only meaningful if the key was pinned |
 | I | Link read by a third party | AES-GCM envelope option; key in fragment; "bearer link" label | Anyone with the link reads it. Persisted in browser history DB (S3-03, **Open**), clipboard managers, messengers' link previews |
 | I | Same meta-address in every invoice | None | D3 **Open** (per-client meta-address is backlog) |
-| D | Oversized or hostile payload | 16 KiB cap, depth limit, no duplicate keys, fail closed, fuzz tests | Mitigated |
+| D | Oversized or hostile payload | 16 KiB cap, depth limit, no duplicate keys, fail closed, fuzz tests; invoice and quote times capped at 9999-12-31T23:59:59Z, so a validly signed link with a huge time is rejected instead of crashing the review render (G1-01); total time formatting in the web app | Mitigated. A view-level `ErrorBoundary` component exists; wrapping the view switch in `App.tsx` with it (so any other render error shows an error panel, not a blank app) is pending integration |
 | E | Hostile text becomes script (XSS) | React text rendering, no `innerHTML`, CSP `script-src 'self'`, lint bans, bundle scan, e2e "hostile text is rendered inert" | Bidi/zero-width characters accepted in text fields (S3-12, Low, Open) |
 
 ### 4.2 Payment flow

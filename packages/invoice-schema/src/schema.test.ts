@@ -334,6 +334,37 @@ describe('validateInvoice rejects', () => {
         o['expiresAt'] = 1.5;
       },
     ],
+    // G1-01: times past 9999-12-31T23:59:59Z (253402300799) make `new Date(s * 1000).toISOString()` throw or
+    // render a 6-digit year in every consumer; the largest safe integer used to pass.
+    [
+      'expiresAt 2^53-1',
+      'expiresAt',
+      (o) => {
+        o['expiresAt'] = Number.MAX_SAFE_INTEGER;
+      },
+    ],
+    [
+      'expiresAt after year 9999',
+      'expiresAt',
+      (o) => {
+        o['expiresAt'] = 253_402_300_800;
+      },
+    ],
+    [
+      'quote timestamp after year 9999',
+      'quote.timestamp',
+      (o) => {
+        nested(o, 'quote')['timestamp'] = 253_402_300_800;
+        nested(o, 'quote')['expiresAt'] = 253_402_300_800;
+      },
+    ],
+    [
+      'quote expiresAt 2^53-1',
+      'quote.expiresAt',
+      (o) => {
+        nested(o, 'quote')['expiresAt'] = Number.MAX_SAFE_INTEGER;
+      },
+    ],
     [
       'lineItems not array',
       'lineItems',
@@ -531,6 +562,17 @@ describe('validateInvoice accepts', () => {
       }),
     );
     expect(inv.lineItems).toHaveLength(MAX_LINE_ITEMS);
+  });
+  it('times up to 9999-12-31T23:59:59Z, which every Date consumer can render', () => {
+    const last = 253_402_300_799;
+    const inv = validateInvoice(
+      mutate((o) => {
+        o['expiresAt'] = last;
+        o['quote'] = { ...nested(o, 'quote'), timestamp: last, expiresAt: last };
+      }),
+    );
+    expect([inv.expiresAt, inv.quote.timestamp, inv.quote.expiresAt]).toEqual([last, last, last]);
+    expect(new Date(inv.expiresAt * 1000).toISOString()).toBe('9999-12-31T23:59:59.000Z');
   });
   it('empty line items and a null-prototype object', () => {
     const o = Object.assign(

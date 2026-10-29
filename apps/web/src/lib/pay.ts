@@ -33,7 +33,7 @@ import {
 import { checkExpiry, type ExpiryStatus, type Invoice, type ParsedInvoice } from '@ghostpay/invoice-schema';
 import { decodeFunctionData, decodeFunctionResult, encodeFunctionData, getAddress, recoverAddress } from 'viem/utils';
 import { UserFacingError } from './errors';
-import { fiatDecimals } from './format';
+import { fiatDecimals, formatFiat, formatUnits } from './format';
 import { computeTotals } from './invoiceCreate';
 import type { ManifestState } from './manifest';
 
@@ -67,9 +67,37 @@ export interface Review {
   readonly manifest: DeploymentManifest | undefined;
   /** Reasons payment cannot proceed. Empty means the review may continue. */
   readonly blockers: readonly string[];
+  /** Things the payer should check before paying. They never block (L2-F4). */
+  readonly warnings: readonly string[];
 }
 
-/** Resolves chain/token and collects every reason the payment must not proceed. Pure. */
+/**
+ * Fiat currency each stablecoin symbol is designed to track. Used only to compare a fixed token amount with a
+ * same-currency fiat total in the review (L2-F4): never as a price, never to block.
+ */
+const STABLECOIN_CURRENCY: ReadonlyMap<string, string> = new Map([['USDC', 'USD'], ['EURC', 'EUR']]);
+
+/**
+ * L2-F4: in `fixed_token` mode the payer pays the token amount, and the fiat total is only the seller's statement that
+ * nothing converts or checks. For a USD or EUR stablecoin and a total in that same currency, a difference of more than
+ * 1 % is flagged so the payer reads the amount they will really pay. No price feed is used; an invoice with no line
+ * items and a zero total states no fiat figure, so there is nothing to compare.
+ */
+export function fixedAmountWarnings(inv: Invoice, token: Review['token']): readonly string[] {
+  if (inv.amountPolicy.mode !== 'fixed_token' || token === undefined || STABLECOIN_CURRENCY.get(token.symbol) !== inv.fiat.currency) return [];
+  const fiat = BigInt(inv.fiat.minorUnits);
+  if (fiat === 0n && inv.lineItems.length === 0) return [];
+  const amount = BigInt(inv.amountPolicy.tokenAmount);
+  // Both at one scale: token base units times 10^fiatDecimals, fiat minor units times 10^tokenDecimals.
+  const a = amount * 10n ** BigInt(fiatDecimals(inv.fiat.currency));
+  const f = fiat * 10n ** BigInt(token.decimals);
+  if ((a > f ? a - f : f - a) * 100n <= f) return [];
+  return [
+    `${token.symbol} is a ${inv.fiat.currency} stablecoin, but the fixed amount of ${formatUnits(amount, token.decimals)} ${token.symbol} differs by more than 1 % from the seller-stated total of ${formatFiat(fiat, inv.fiat.currency)}. You pay the token amount, not the fiat figure: check it with the seller before you pay.`,
+  ];
+}
+
+/** Resolves chain/token and collects every reason the payment must not proceed, plus non-blocking warnings. Pure. */
 export function reviewInvoice(parsed: ParsedInvoice, nowSeconds: number, manifest: ManifestState): Review {
   const inv = parsed.invoice;
   const blockers: string[] = [];
@@ -102,7 +130,7 @@ export function reviewInvoice(parsed: ParsedInvoice, nowSeconds: number, manifes
         : 'Payments disabled on this chain: no deployment manifest is loaded.',
     );
   }
-  return { invoice: inv, trust, encrypted: parsed.encrypted, expiry, chain, token, totals, manifest: loaded, blockers };
+  return { invoice: inv, trust, encrypted: parsed.encrypted, expiry, chain, token, totals, manifest: loaded, blockers, warnings: fixedAmountWarnings(inv, token) };
 }
 
 /** A client that refuses all network use; lets the adapter build calldata with no RPC configured. */

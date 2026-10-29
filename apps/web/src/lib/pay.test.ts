@@ -28,6 +28,7 @@ import {
   buildPermit,
   createPayContext,
   decodeForDisplay,
+  fixedAmountWarnings,
   offlineClient,
   permitReader,
   quoteBuffer,
@@ -122,6 +123,46 @@ describe('reviewInvoice', () => {
   it('describes native tokens with the chain symbol', async () => {
     const { parsed } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
     expect(reviewInvoice(parsed, NOW, LOADED(84532)).token).toMatchObject({ symbol: 'ETH', decimals: 18, address: 'native' });
+  });
+});
+
+describe('fixed token amount against the seller-stated fiat total (L2-F4)', () => {
+  const warningsFor = async (patch: Parameters<typeof makeParsed>[0]): Promise<readonly string[]> =>
+    reviewInvoice((await makeParsed(patch)).parsed, NOW, LOADED(84532)).warnings;
+  const oneItem = (unitPrice: string): Parameters<typeof makeParsed>[0] => ({ lineItems: [{ description: 'Consulting', quantity: '1', unitPrice }] });
+
+  it('warns, without blocking, when a USD stablecoin amount is more than 1 % away from the USD total', async () => {
+    const { parsed } = await makeParsed({ ...oneItem('10.00'), tokenAmount: '1000' });
+    const r = reviewInvoice(parsed, NOW, LOADED(84532));
+    expect(r.blockers).toEqual([]);
+    expect(r.warnings).toHaveLength(1);
+    expect(r.warnings[0]).toMatch(/fixed amount of 1000 USDC differs by more than 1 % from the seller-stated total of USD 10\.00/);
+    expect(r.warnings[0]).toMatch(/You pay the token amount/);
+  });
+  it('accepts a difference of up to 1 % in either direction', async () => {
+    expect(await warningsFor({ tokenAmount: '100' })).toEqual([]);
+    expect(await warningsFor({ tokenAmount: '101' })).toEqual([]);
+    expect(await warningsFor({ tokenAmount: '99' })).toEqual([]);
+    expect(await warningsFor({ tokenAmount: '101.000001' })).toHaveLength(1);
+    expect(await warningsFor({ tokenAmount: '98.999999' })).toHaveLength(1);
+  });
+  it('compares only a stablecoin with a total in its own currency, and only in fixed-token mode', async () => {
+    expect(await warningsFor({ currency: 'EUR', tokenAmount: '1000' })).toEqual([]);
+    expect(await warningsFor({ token: 'native', tokenAmount: '1000' })).toEqual([]);
+    expect(await warningsFor({ amountMode: 'fiat_quote' })).toEqual([]);
+  });
+  it('flags zero-priced line items, but not an invoice that states no fiat figure at all', async () => {
+    expect(await warningsFor({ ...oneItem('0'), tokenAmount: '1000' })).toHaveLength(1);
+    const none = await parseOf({ lineItems: [], fiat: { currency: 'USD', minorUnits: '0' } });
+    expect(reviewInvoice(none, NOW, LOADED(84532)).warnings).toEqual([]);
+  });
+  it('knows EUR stablecoins too, at their own decimals', async () => {
+    const { parsed } = await makeParsed({ currency: 'EUR', tokenAmount: '100' });
+    const eurc = { symbol: 'EURC', decimals: 6, address: USDC_84532 as Address, config: undefined };
+    expect(fixedAmountWarnings(parsed.invoice, eurc)).toEqual([]);
+    const far = await makeParsed({ currency: 'EUR', ...oneItem('10.00'), tokenAmount: '100' });
+    expect(fixedAmountWarnings(far.parsed.invoice, eurc).join(' ')).toMatch(/EURC is a EUR stablecoin.*100 EURC.*EUR 10\.00/);
+    expect(fixedAmountWarnings(far.parsed.invoice, undefined)).toEqual([]);
   });
 });
 

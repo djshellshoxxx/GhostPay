@@ -446,6 +446,54 @@ describe('ERC-20 flows', () => {
   });
 });
 
+describe('approval and revoke attempts are scoped to their invoice (L2-I3)', () => {
+  /** The allowance follows the last mined approve(spender, amount); the amount is the calldata's last word. */
+  const allowanceChain = (wallet: MockWallet): MockRpc => {
+    let allowance = 0n;
+    return chainSeeing(wallet, (m) => {
+      if (m === 'eth_getTransactionByHash' && wallet.sent !== undefined) allowance = BigInt(`0x${String(wallet.sent['data']).slice(-64)}`);
+      return m === 'eth_call' ? `0x${allowance.toString(16).padStart(64, '0')}` : undefined;
+    });
+  };
+  const sends = (w: MockWallet): number => w.calls.filter((c) => c.method === 'eth_sendTransaction').length;
+
+  it('an identical approval and revoke for a later invoice are new attempts; repeating one for the same invoice is still refused', async () => {
+    const journal = stubAttemptJournal();
+    const wallet = new MockWallet();
+    const first = await setup({}, wallet);
+    // Another signed invoice for the same token, amount, router and payer: its approve and revoke calldata are identical.
+    const later = await setup({}, wallet);
+    const rt: Runtime = { rpc: allowanceChain(wallet), nowSeconds: () => NOW, sleep };
+    const planFirst = await planApproval(first.ctx, first.session, USDC_84532, rt);
+    await expect(grantApproval(first.session, first.ctx, planFirst, rt, noStatus)).resolves.toBe(planFirst.need);
+    await revokeApproval(first.session, first.ctx, planFirst, rt, noStatus);
+    const planLater = await planApproval(later.ctx, later.session, USDC_84532, rt);
+    expect(planLater).toEqual(planFirst);
+    await expect(grantApproval(later.session, later.ctx, planLater, rt, noStatus)).resolves.toBe(planLater.need);
+    await revokeApproval(later.session, later.ctx, planLater, rt, noStatus);
+    expect(sends(wallet)).toBe(4);
+    // The duplicate-attempt guard still holds within one invoice.
+    await expect(grantApproval(first.session, first.ctx, planFirst, rt, noStatus)).rejects.toThrow(/previous wallet attempt/);
+    await expect(revokeApproval(later.session, later.ctx, planLater, rt, noStatus)).rejects.toThrow(/previous wallet attempt/);
+    expect(sends(wallet)).toBe(4);
+    const attempts = JSON.parse(journal.get(ATTEMPT_JOURNAL_KEY) ?? '[]') as { key: string; kind: string; status: string }[];
+    expect(attempts.map((a) => [a.kind, a.status])).toEqual(Array.from({ length: 4 }, () => ['approval', 'submitted']));
+    expect(new Set(attempts.map((a) => a.key)).size).toBe(4);
+  });
+
+  it('a rejected approval still leaves its attempt unknown and blocks repeating it for that invoice', async () => {
+    const journal = stubAttemptJournal();
+    const wallet = new MockWallet({ rejectSend: true });
+    const { ctx, session } = await setup({}, wallet);
+    const rt: Runtime = { rpc: allowanceChain(wallet), nowSeconds: () => NOW, sleep };
+    const plan = await planApproval(ctx, session, USDC_84532, rt);
+    await expect(grantApproval(session, ctx, plan, rt, noStatus)).rejects.toThrow(/rejected the request/);
+    expect(JSON.parse(journal.get(ATTEMPT_JOURNAL_KEY) ?? '[]')).toMatchObject([{ kind: 'approval', status: 'unknown' }]);
+    await expect(grantApproval(session, ctx, plan, rt, noStatus)).rejects.toThrow(/previous wallet attempt/);
+    expect(sends(wallet)).toBe(1);
+  });
+});
+
 describe('permit post-sign pre-flight and fallback ladder (spec 04)', () => {
   const USDC = '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as const;
   const account = privateKeyToAccount(`0x${'cd'.repeat(32)}`);
@@ -547,6 +595,63 @@ describe('submitTx', () => {
     const res = await submitTx(session, { to: FAKE_ROUTER, data: '0x', value: 0n }, { rpc, nowSeconds: () => NOW, sleep }, noStatus);
     expect(res.verification).toBe('not-visible-yet');
     expect(res.receipt).toBeUndefined();
+  });
+});
+
+describe('submitTx compares a transaction that only became visible after it was mined (L2-F3)', () => {
+  /** The wallet controls broadcast timing: the RPC returns no transaction for its first `hidden` lookups. */
+  const lateChain = (wallet: MockWallet, hidden: number): MockRpc => {
+    let lookups = 0;
+    return chainSeeing(wallet, (m) => (m === 'eth_getTransactionByHash' && ++lookups <= hidden ? null : undefined));
+  };
+  const lookups = (rpc: MockRpc): number => rpc.calls.filter((c) => c.method === 'eth_getTransactionByHash').length;
+
+  it('delayed visibility, then the previewed transaction: verified and recorded as included', async () => {
+    const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
+    const rpc = lateChain(wallet, 6);
+    const rt: Runtime = { rpc, nowSeconds: () => NOW, sleep };
+    const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+    const res = await sendPayment(session, ctx, built, rt, noStatus);
+    expect(res).toMatchObject({ verification: 'verified', receipt: { status: 'success', blockNumber: 100n } });
+    expect(lookups(rpc)).toBe(7);
+    expect(buildReceipt(ctx, built, res, new Date()).status).toBe('included');
+  });
+
+  it('delayed visibility, then a different transaction: refused after the broadcast, never reported as included', async () => {
+    const mutate = (tx: Record<string, unknown>): Record<string, unknown> => ({ ...tx, data: `${String(tx['data']).slice(0, -2)}ff` });
+    const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' }, new MockWallet({ mutateTx: mutate }));
+    const rt: Runtime = { rpc: lateChain(wallet, 6), nowSeconds: () => NOW, sleep };
+    const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+    const p = sendPayment(session, ctx, built, rt, noStatus);
+    await expect(p).rejects.toThrow(PostBroadcastError);
+    await expect(p).rejects.toMatchObject({ cause: expect.any(SubmissionMismatchError) as unknown, hash: `0x${'9'.repeat(64)}` });
+    await expect(p).rejects.toThrow(/differs from the preview \(call data\)/);
+  });
+
+  it('a receipt for a transaction the RPC never returns: unverified, recorded as unconfirmed', async () => {
+    const { ctx, session, wallet } = await setup({ token: 'native', tokenAmount: '0.5' });
+    const rt: Runtime = { rpc: lateChain(wallet, Number.POSITIVE_INFINITY), nowSeconds: () => NOW, sleep };
+    const built = await preparePayment(session, ctx, { usePermit: false }, rt, noStatus);
+    const res = await sendPayment(session, ctx, built, rt, noStatus);
+    expect(res).toMatchObject({ verification: 'unverified', receipt: { status: 'success' } });
+    expect(buildReceipt(ctx, built, res, new Date()).status).toBe('unconfirmed');
+  });
+
+  it('an approval whose transaction appears only after mining is compared too', async () => {
+    const { ctx, session, wallet } = await setup({}, new MockWallet({ mutateTx: (tx) => ({ ...tx, to: '0x9999999999999999999999999999999999999999' }) }));
+    let lookupsSoFar = 0;
+    const rpc = chainSeeing(wallet, (m) => {
+      if (m === 'eth_call') return `0x${'0'.repeat(64)}`;
+      if (m === 'eth_getTransactionByHash' && ++lookupsSoFar <= 6) return null;
+      // A receipt without `to`, as some nodes return it, so only the transaction comparison can catch the redirect.
+      if (m === 'eth_getTransactionReceipt') return { status: '0x1', blockNumber: '0x64', to: null };
+      return undefined;
+    });
+    const rt = { rpc, nowSeconds: () => NOW, sleep };
+    const plan = await planApproval(ctx, session, USDC_84532, rt);
+    const error: unknown = await grantApproval(session, ctx, plan, rt, noStatus).catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(PostBroadcastError);
+    expect(error).toMatchObject({ cause: { field: 'destination contract' } });
   });
 });
 
