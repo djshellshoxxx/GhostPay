@@ -204,7 +204,8 @@ function toQuantity(n: bigint): string {
  * responses. Responses larger than the cap, batch responses and id mismatches are rejected.
  * A JSON-RPC error keeps only its code, plus `reverted` on the thrown error when the node
  * reported failed execution (code 3, or -32000/-32003/-32015 with a revert, out-of-gas,
- * invalid-opcode or EVM-halt text); no node text is kept.
+ * invalid-opcode or EVM-halt text), and `halted` when that failure was no plain revert; no node
+ * text is kept.
  *
  * @param chain Expected chain (must be known; enablement is checked by callers that build payments).
  * @param url Endpoint; validated by {@link validateRpcUrl}.
@@ -317,6 +318,7 @@ class JsonRpcError extends Error {
   public constructor(
     public readonly rpcCode: number,
     public readonly reverted: boolean,
+    public readonly halted: boolean,
   ) {
     super(`JSON-RPC error ${String(rpcCode)}`);
     this.name = 'JsonRpcError';
@@ -327,7 +329,7 @@ class JsonRpcError extends Error {
 function rethrow(e: unknown): never {
   if (e instanceof Error && e.name === 'ChainAdapterError') throw e;
   if (e instanceof RpcHttpError) return fail('RPC_FAILURE', `http status ${String(e.status)}`);
-  if (e instanceof JsonRpcError) throw new ChainAdapterError('RPC_FAILURE', `json-rpc error ${String(e.rpcCode)}`, { reverted: e.reverted });
+  if (e instanceof JsonRpcError) throw new ChainAdapterError('RPC_FAILURE', `json-rpc error ${String(e.rpcCode)}`, { reverted: e.reverted, halted: e.halted });
   return fail('RPC_FAILURE', 'transport failure');
 }
 
@@ -353,7 +355,17 @@ const FAILED_EXECUTION_TEXT = /revert|out of gas|invalid opcode|invalid instruct
 function reportsRevert(code: number, err: Readonly<Record<string, unknown>>): boolean {
   if (code === 3) return true;
   if (!REVERT_WITH_TEXT_CODES.has(code)) return false;
-  return [err['message'], err['data']].some((v) => typeof v === 'string' && FAILED_EXECUTION_TEXT.test(v));
+  return failureTexts(err).some((v) => FAILED_EXECUTION_TEXT.test(v));
+}
+
+/** Of a failed execution ({@link reportsRevert}): whether it halted (out of gas, bad opcode) rather than reverted. */
+function reportsHalt(code: number, err: Readonly<Record<string, unknown>>): boolean {
+  if (code === 3 || !reportsRevert(code, err)) return false;
+  return !failureTexts(err).some((v) => /revert/i.test(v));
+}
+
+function failureTexts(err: Readonly<Record<string, unknown>>): string[] {
+  return [err['message'], err['data']].filter((v): v is string => typeof v === 'string');
 }
 
 function isRetryable(e: unknown): boolean {
@@ -378,7 +390,7 @@ function parseResponse(text: string, id: number): unknown {
     const err = o['error'];
     const fields = typeof err === 'object' && err !== null ? (err as Record<string, unknown>) : {};
     const code = typeof fields['code'] === 'number' ? fields['code'] : 0;
-    throw new JsonRpcError(code, reportsRevert(code, fields));
+    throw new JsonRpcError(code, reportsRevert(code, fields), reportsHalt(code, fields));
   }
   if (!('result' in o)) return fail('RPC_FAILURE', 'missing result');
   return o['result'];

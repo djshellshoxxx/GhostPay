@@ -99,6 +99,18 @@ export function reportsRevert(e: unknown): boolean {
   return e instanceof Error && REVERT_TEXT.test(e.message);
 }
 
+/** Only for errors that carry the node's text: a halt (out of gas, bad opcode) rather than a revert. */
+const HALT_TEXT = /execution failed|invalid opcode|out of gas/i;
+
+/**
+ * Whether an RPC failure is a plain revert, which can mean the called function does not exist. A call that ran out of
+ * gas or hit an invalid opcode ({@link reportsRevert} counts those too) says nothing about the contract.
+ */
+export function reportsPlainRevert(e: unknown): boolean {
+  if (e instanceof ChainAdapterError) return e.reverted && !e.halted;
+  return e instanceof Error && /revert/i.test(e.message) && !HALT_TEXT.test(e.message);
+}
+
 /**
  * Dry-runs a call with `eth_call` before it is signed (S3-09, S3-19).
  *
