@@ -46,22 +46,24 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     `announcementId = blockHash:logIndex` instead of `transactionHash`. The per-profile HKDF salt lives in one `meta` record rather than
     in every record; each record has its own fresh 96-bit IV. Unlocked tag keys belong to the seller keys that unlocked them: any key
     change locks the tag vault (audit L1-04). **Idle lock** (Settings, default 15 minutes without a click or key press): it always
-    locks the tag vault and clears key hex and passphrases typed into Seller keys and Sweep (audit G2-05), and it wipes the seller
-    keys only when a copy survives the wipe: keys imported from a keystore or as hex, a keystore downloaded in this tab, or the vault
-    record they were unlocked from or saved to still saved in this browser (checked when the lock fires and on every read of the
-    vault, so a record deleted in another tab or with the site data makes them unsaved again). A signing key generated at a hex
-    import exists only in this tab: until a keystore download or a vault save, the banner says that this key has no backup while
-    payments stay sweepable from the hex, and the notice after an idle-lock wipe says that it is gone (review C-R10). Keys with no
-    copy anywhere stay in memory under a visible "no backup" banner, because wiping them would lose every payment sent to their
-    meta-address (audit L1-01); after a wipe a visible notice says what happened. Until the keys are backed up, Create invoice, the
-    meta-address text, QR and copy button on Seller keys, the publish path of the ERC-6538 registry page and the create form of the
-    experimental policy view need a backup or a typed waiver (when only that generated signing key lacks one, the meta-address on
-    Seller keys is shown, since nothing is signed with it); the waiver never lets the idle lock wipe keys with no copy anywhere.
-    "Unlock saved vault" and "Wipe keys from memory" over keys without a backup ask first, naming what would be lost. Keys
-    unlocked from, saved to or found in the vault keep that record's passphrase as a step-up for sweeps, keystore export and a new
-    vault for the rest of the session, also if the saved record is deleted; deleting a vault that names the loaded meta-address
-    needs its passphrase, any other vault is deleted after its meta-address is shown (audit L1-02). Keys that were never in a vault
-    have no step-up passphrase.
+    locks the tag vault and clears key hex and passphrases typed into Seller keys (its tag archive form included) and Sweep (audit
+    G2-05, review C-R11), and it wipes the seller keys only when a copy survives the wipe: keys imported from a keystore or as hex, a
+    keystore downloaded in this tab, or the vault record they were unlocked from or saved to still saved in this browser. That record
+    is looked up in storage when the lock fires, before "Wipe keys from memory" wipes the keys (review C-R9), whenever Seller keys
+    reads the saved vault, and at the step-up for a keystore download or a new vault, so a record deleted in another tab or with
+    the site data makes them unsaved again from then on; unlocking a vault and the sweep step-up do not look for it. A signing key
+    generated at a hex import exists only in this tab: until a keystore download or a vault save, the banner says that this key
+    has no backup while payments stay sweepable from the hex, and the notice after an idle-lock wipe says that it is gone (review
+    C-R10). Keys with no copy anywhere stay in memory under a visible "no backup" banner, because wiping them would lose every
+    payment sent to their meta-address (audit L1-01); after a wipe a visible notice says what happened. Until the keys are backed
+    up, Create invoice, the meta-address text, QR and copy button on Seller keys, the publish path of the ERC-6538 registry page
+    and the create form of the experimental policy view need a backup or a typed waiver (when only that generated signing key
+    lacks one, the meta-address on Seller keys is shown, since nothing is signed with it); the waiver never lets the idle lock
+    wipe keys with no copy anywhere. "Unlock saved vault" and "Wipe keys from memory" over keys without a backup ask first, naming
+    what would be lost. Keys unlocked from, saved to or found in the vault keep that record's passphrase as a step-up for sweeps,
+    keystore export and a new vault for the rest of the session, also if the saved record is deleted; deleting a vault that names
+    the loaded meta-address needs its passphrase, any other vault is deleted after its meta-address is shown (audit L1-02). Keys
+    that were never in a vault have no step-up passphrase.
 12. **Gas buffer sizing** (Feature 1, spec 13): `calculateBuffer` over `max(100 000, eth_estimateGas of the token transfer + 25 %)`
     (fails closed when the simulation fails), `2 x eth_gasPrice` as max fee, `DEFAULT_BUFFER_SAFETY_BPS` (20 %), a hard cap of 0.01
     native coin, and a 60 s quote lifetime, re-checked before the wallet is asked. It needs the user's RPC. Buffer payments go through

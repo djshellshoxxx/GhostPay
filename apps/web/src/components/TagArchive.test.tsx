@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
-import { act, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as reconciliation from '../lib/reconciliationVault';
 import { checkpointKeyId } from '../lib/scanClient';
-import { clearSession, generateSession, revealViewingKey } from '../lib/session';
+import { clearSession, generateSession, getSessionPublic, revealViewingKey } from '../lib/session';
+import { SETTINGS_KEY } from '../lib/settings';
 import * as tagArchive from '../lib/tagArchive';
 import { makeServices, renderApp } from '../test/render';
 import { storedHistoryChains } from './TagArchive';
@@ -80,6 +81,38 @@ describe('TagArchive', () => {
     expect(screen.queryByRole('button', { name: 'Apply import' })).toBeNull();
     expect(await services.vault.list()).toHaveLength(1);
   }, 120_000);
+});
+
+describe('C-R11: the idle lock clears the archive passphrases typed into Seller keys', () => {
+  it('forgets the typed archive passphrases and suggests a new one, also while unsaved keys stay loaded', async () => {
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 1 }));
+    generateSession();                                   // no backup: the idle lock keeps these keys, and the archive form with them
+    vi.useFakeTimers();
+    try {
+      renderApp(makeServices());
+      fireEvent.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Seller keys' }));
+      const own = 'my own archive passphrase';
+      const archivePass = (): HTMLInputElement => screen.getByLabelText<HTMLInputElement>('Archive passphrase (at least 14 characters)');
+      fireEvent.change(archivePass(), { target: { value: own } });
+      fireEvent.change(screen.getByLabelText('Repeat archive passphrase'), { target: { value: own } });
+      fireEvent.change(screen.getByLabelText('Archive passphrase'), { target: { value: 'the passphrase of an archive' } });
+      expect(screen.getByLabelText('Archive passphrase').getAttribute('value')).toBe('the passphrase of an archive');
+      await act(async () => { await vi.advanceTimersByTimeAsync(61_000); });
+      expect(getSessionPublic()).toBeDefined();
+      // react-dom mirrors a controlled input's value into its value attribute, so both must be gone.
+      expect(archivePass().value).toMatch(/^[a-z]{4,8}(?:-[a-z]{4,8}){5}$/);
+      expect(archivePass().getAttribute('value')).toBe(archivePass().value);
+      expect(archivePass().type).toBe('text');
+      for (const label of ['Repeat archive passphrase', 'Archive passphrase']) {
+        const field = screen.getByLabelText<HTMLInputElement>(label);
+        expect(field.value).toBe('');
+        expect(field.getAttribute('value') ?? '').toBe('');
+      }
+    } finally {
+      vi.useRealTimers();
+      window.localStorage.removeItem(SETTINGS_KEY);
+    }
+  });
 });
 
 type Handler = (() => void) | null | undefined;

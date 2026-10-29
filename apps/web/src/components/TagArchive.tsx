@@ -5,7 +5,7 @@ import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphra
 import { createCurrentReconciliationVault, type ReconciliationImportPreview, type ReconciliationVault } from '../lib/reconciliationVault';
 import { checkpointKeyId } from '../lib/scanClient';
 import { useServices } from '../lib/services';
-import { captureSessionVersionGuard, getSessionPublic, revealViewingKey } from '../lib/session';
+import { captureSessionVersionGuard, getSessionPublic, revealViewingKey, subscribeIdleLock } from '../lib/session';
 import { MAX_ARCHIVE_BYTES, exportArchive, previewArchiveImport, type ArchiveImportPreview } from '../lib/tagArchive';
 import { useApp } from '../state';
 import { Field, Notice } from './Common';
@@ -120,6 +120,9 @@ export function TagArchive(): ReactNode {
   const suggest = (): void => { const next = generatePassphrase(); setSuggested(next); setPass(next); setPass2(''); };
   // A different or cleared seller session invalidates every pending action and staged preview.
   useEffect(() => { reset(); suggest(); }, [app.session]);
+  // Archive passphrases typed here go at every idle lock too, also while unsaved keys stay loaded: react-dom mirrors a
+  // controlled input's value into its value attribute (G2-05, C-R11).
+  useEffect(() => subscribeIdleLock(() => { suggest(); setImportPass(''); }), []);
 
   const ensureUnlocked = async (): Promise<void> => {
     if (!vault.unlocked) await vault.unlock(revealViewingKey());
