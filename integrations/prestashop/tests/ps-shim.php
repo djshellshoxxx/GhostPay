@@ -71,6 +71,9 @@ class Db {
 
 	public function execute( $sql, $use_cache = true ) {
 		$sql = self::sqlite( (string) $sql );
+		if ( preg_match( '/\A\s*DELETE\s+FROM\s+`?(\w+)`?/i', $sql, $m ) && _DB_PREFIX_ . Configuration::get( 'GHOSTPAY_TEST_FAIL_DELETE' ) === $m[1] ) {
+			$this->query( 'SELECT ghostpay_test_server_has_gone_away()' ); // as GHOSTPAY_TEST_FAIL_INSERT, for deletes
+		}
 		if ( preg_match( '/\A\s*(COMMIT|ROLLBACK)\s*\z/i', $sql ) ) {
 			if ( ! $this->in_transaction ) {
 				return true; // MySQL accepts both outside a transaction.

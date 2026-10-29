@@ -339,6 +339,14 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	check( 'database error at the nonce claim: order unchanged', $state( 14 ), $awaiting );
 	check( 'the retry after the database error is processed', $reply( $request( $paid14 ) ), '200 {"ok":true}' );
 	check( 'the retry pays the order', $state( 14 ), 2 );
+	// H-R11: the claim first deletes expired nonces, inside the same try: a database error there is the same 503.
+	$order( 16, $awaiting );
+	$paid16 = $event( 'evt_16', 'invoice.paid', 'inv_ps_16', 'USD', '1250' );
+	Configuration::updateValue( 'GHOSTPAY_TEST_FAIL_DELETE', 'ghostpay_nonce' );
+	check( 'database error deleting expired nonces: retryable 503, not a replay 400', $reply( $request( $paid16 ) ), '503 {"ok":false,"retry":true}' );
+	Configuration::deleteByName( 'GHOSTPAY_TEST_FAIL_DELETE' );
+	check( 'database error deleting expired nonces: order unchanged', array( $state( 16 ), $history( 16 ) ), array( $awaiting, 0 ) );
+	check( 'the retry after that database error pays the order', array( $reply( $request( $paid16 ) ), $state( 16 ) ), array( '200 {"ok":true}', 2 ) );
 
 	// G3-02: amounts use the GhostPay app's minor units of the currency, not the shop's display precision.
 	$db->execute( "INSERT INTO `ps_currency` (`id_currency`, `iso_code`, `precision`) VALUES (2, 'JPY', 2), (3, 'USD', 0)" );
