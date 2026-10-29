@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { ChainAdapterError } from './errors.js';
 import * as api from './index.js';
 import { validateAnnouncementLog, ANNOUNCEMENT_TOPIC, type ScannedAnnouncement } from './logs.js';
-import type { LogFilter, RpcClient, RpcLog } from './rpc.js';
+import { createClient, type LogFilter, type RpcClient, type RpcLog } from './rpc.js';
+import { FakeRpcError, fakeTransport, noSleep } from './rpc.testutil.js';
 import { compareProviders } from './scanVerify.js';
 import { FAKE, SEPOLIA } from './fixtures.testutil.js';
 import { encodeAbiParameters } from 'viem/utils';
@@ -102,6 +103,71 @@ describe('compareProviders', () => {
     // Other provider errors at one block are not treated as size limits.
     const failing = limited(secondary(primary), 1000n, () => new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32603'), 120n);
     expect((await run(failing, primary, { router: FAKE.router })).discrepancies.map((d) => d.kind)).toEqual(['secondary_error']);
+  });
+  describe('A-R6: -32005 is also a rate-limit code, so the secondary asks a refused block again before narrowing it', () => {
+    /**
+     * A real client with default retries (three attempts per request), as in scanHardening's A-R1 tests: the first `burst`
+     * eth_getLogs attempts are refused with -32005; after that, a caller-unfiltered query covering `dense` fails with
+     * `denseCode`. `asked` records each attempt as [topic count, from, to].
+     */
+    const rateLimited = async (logs: RpcLog[], o: { burst?: number; dense?: bigint; denseCode?: number } = {}) => {
+      let refused = 0;
+      const asked: [number, bigint, bigint][] = [];
+      const t = fakeTransport((m, p) => {
+        if (m === 'eth_chainId') return '0xaa36a7';
+        if (m === 'eth_blockNumber') return '0x7d0';
+        if (m === 'eth_getBlockByNumber') return { number: p[0], hash: `0x${BigInt(p[0] as string).toString(16).padStart(64, '0')}`, parentHash: `0x${'0'.repeat(64)}` };
+        const f = p[0] as { fromBlock: string; toBlock: string; topics: (string | null)[] };
+        const [from, to] = [BigInt(f.fromBlock), BigInt(f.toBlock)];
+        asked.push([f.topics.length, from, to]);
+        if (refused < (o.burst ?? 0)) {
+          refused++;
+          throw new FakeRpcError(-32005);
+        }
+        const caller = f.topics[3];
+        if (o.dense !== undefined && caller == null && from <= o.dense && to >= o.dense) throw new FakeRpcError(o.denseCode ?? -32005);
+        return logs.filter((l) => BigInt(l.blockNumber) >= from && BigInt(l.blockNumber) <= to && (caller == null || l.topics[3] === caller));
+      });
+      return { asked, client: await createClient(SEPOLIA, 'https://rpc.example.test', { transport: t, sleep: noSleep }) };
+    };
+    /** Blocks 7 to 1006: ten requests from 1,000 blocks down to block 7 alone. */
+    const compare = (sec: RpcClient, primary: RpcLog[], primarySkipped = 0) =>
+      compareProviders({ chain: SEPOLIA, secondary: sec, announcer: FAKE.announcer, fromBlock: 7n, toBlock: 1006n, primaryAnnouncements: primary.map(parse), primarySkipped, primaryBlockHash: `0x${(1006).toString(16).padStart(64, '0')}`, router: FAKE.router });
+    const direct = spam(7, 0);
+    const routed = mkLog(7, 1);
+    const junk = mkLog(7, 2, { topics: [ANNOUNCEMENT_TOPIC, word('0x1')] });
+
+    it('compares a block whole when the refusals were a rate-limit burst that has ended', async () => {
+      // 30 refusals: the ten requests above, three attempts each; the router lane then succeeds.
+      const { client: c, asked } = await rateLimited([direct, routed, junk], { burst: 30 });
+      expect((await compare(c, [direct, routed], 1)).discrepancies).toEqual([]);
+      // The router lane of block 7, then the whole block once more.
+      expect(asked.slice(30, 32)).toEqual([[4, 7n, 7n], [2, 7n, 7n]]);
+    });
+
+    it('reports what a lying primary hid in that block: a direct announcement and the skipped count', async () => {
+      const { client: c } = await rateLimited([direct, routed, junk], { burst: 30 });
+      expect((await compare(c, [routed])).discrepancies).toEqual([
+        { kind: 'missing_in_primary', ref: `${direct.blockHash}:0` },
+        { kind: 'skipped_count_differs', ref: '0/1' },
+      ]);
+    });
+
+    it('compares only the router lane of a block refused as too large again after its router lane was read, as before', async () => {
+      const { client: c, asked } = await rateLimited([direct, routed, junk], { dense: 7n });
+      expect((await compare(c, [direct, routed], 1)).discrepancies).toEqual([]);
+      // Block 7 whole (three attempts), its router lane, then the whole block again (three attempts).
+      expect(asked.filter(([, from, to]) => from === 7n && to === 7n).map(([n]) => n)).toEqual([2, 2, 2, 4, 2, 2, 2]);
+    });
+
+    it('a rate limit that outlasts the router-lane read, or another failure of the second whole-block read, is a secondary_error', async () => {
+      // 33 refusals: the ten requests above plus the router lane's three attempts.
+      const { client: lasting } = await rateLimited([direct, routed], { burst: 33 });
+      expect((await compare(lasting, [routed])).discrepancies.map((d) => d.kind)).toEqual(['secondary_error']);
+      // The router lane is read, then the whole block fails with a code that is no size limit: the page is withheld.
+      const { client: failing } = await rateLimited([direct, routed], { burst: 30, dense: 7n, denseCode: -32600 });
+      expect((await compare(failing, [routed])).discrepancies.map((d) => d.kind)).toEqual(['secondary_error']);
+    });
   });
   it('reports a secondary that answers the router-only query with another caller', async () => {
     const sec = secondary([mkLog(120, 5)]);

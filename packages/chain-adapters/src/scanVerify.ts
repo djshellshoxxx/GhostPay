@@ -4,6 +4,7 @@ import {
   ANNOUNCEMENT_TOPIC,
   isLogLimitError,
   isLogSizeError,
+  mayBeRateLimit,
   rawCallerTopic,
   routerAnnouncementTopics,
   validateAnnouncementLog,
@@ -44,7 +45,9 @@ const key = (a: ScannedAnnouncement): string => [a.stealthAddress, a.ephemeralPu
  * each success). Blocks the primary could fetch for the router lane only (`primaryRouterOnlyBlocks`) are asked the
  * same way, and a single block the secondary cannot return in one response is compared on its router lane when
  * `router` is given; announcements of other callers in such blocks are not compared, nor is the skipped count when
- * only the secondary had to narrow a block. Without `router` an oversized block is a `secondary_error`.
+ * only the secondary had to narrow a block. A -32005 refusal, which can also be a rate limit, narrows a block only when
+ * the whole block is refused as too large again once its router lane was read; any other failure of that second read
+ * is a `secondary_error`. Without `router` an oversized block is a `secondary_error`.
  *
  * @param o `primary`/`secondary` must target the same chain; `primaryAnnouncements` and `primarySkipped` are what
  * the primary produced for exactly this range; `schemeId` defaults to 1.
@@ -88,12 +91,16 @@ export async function compareProviders(o: {
         else theirs.set(a.id, a);
       }
     };
+    // The router lane of one block; the provider must honour the caller filter.
+    const laneOf = async (b: bigint): Promise<readonly RpcLog[]> => {
+      const logs = await o.secondary.getLogs({ address: o.announcer, topics: routerAnnouncementTopics(schemeId, router as Address), fromBlock: b, toBlock: b });
+      if (logs.some((l) => rawCallerTopic(l) !== routerTopic)) throw new ChainAdapterError('INVALID_LOG', 'log outside the requested caller filter');
+      return logs;
+    };
     let window = cap;
     for (let from = o.fromBlock; from <= o.toBlock;) {
       if (routerOnly.has(from)) {
-        const logs = await o.secondary.getLogs({ address: o.announcer, topics: routerAnnouncementTopics(schemeId, router as Address), fromBlock: from, toBlock: from });
-        if (logs.some((l) => rawCallerTopic(l) !== routerTopic)) throw new ChainAdapterError('INVALID_LOG', 'log outside the requested caller filter');
-        accept(logs, from, from);
+        accept(await laneOf(from), from, from);
         from += 1n;
         continue;
       }
@@ -110,9 +117,24 @@ export async function compareProviders(o: {
         }
         // One block over this provider's limit: compare its router lane only, as the scanner does.
         if (router === undefined || !isLogSizeError(e)) throw e;
-        routerOnly.add(from);
-        narrowedHere = true;
-        continue;
+        if (!mayBeRateLimit(e)) {
+          routerOnly.add(from);
+          narrowedHere = true;
+          continue;
+        }
+        // -32005 may be a rate limit: as the scanner does, read the router lane, then ask for the whole block once more and
+        // narrow it only if that is refused as too large again. Any other failure is a secondary_error (page withheld).
+        const routerLogs = await laneOf(from);
+        try {
+          logs = await o.secondary.getLogs({ address: o.announcer, topics: [ANNOUNCEMENT_TOPIC, topic1], fromBlock: from, toBlock: to });
+        } catch (again) {
+          if (!isLogSizeError(again)) throw again;
+          routerOnly.add(from);
+          narrowedHere = true;
+          accept(routerLogs, from, from);
+          from += 1n;
+          continue;
+        }
       }
       accept(logs, from, to);
       from = to + 1n;

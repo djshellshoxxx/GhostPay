@@ -127,6 +127,17 @@ export function isLogSizeError(e: unknown): boolean {
 }
 
 /**
+ * Whether an `eth_getLogs` refusal carries -32005, a result-size limit for some providers and a rate limit for others:
+ * a single block refused with it is asked for whole again, after its router lane, before it is narrowed.
+ *
+ * @param e Thrown value.
+ * @returns True for a -32005 refusal.
+ */
+export function mayBeRateLimit(e: unknown): boolean {
+  return e instanceof ChainAdapterError && RATE_LIMIT.test(e.message);
+}
+
+/**
  * The filter for router-posted announcements only: `topics[3]` is the ERC-5564 `caller`, the public manifest router.
  *
  * @param schemeId Scheme id.
@@ -336,7 +347,7 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
       if (!isLogLimitError(e)) throw e;
       const routerFallback = window === 1n && o.router !== undefined && isLogSizeError(e);
       // A -32005 refusal may be a rate limit: the whole block is asked once more after its router lane (one more request).
-      const recheck = routerFallback && e instanceof ChainAdapterError && RATE_LIMIT.test(e.message);
+      const recheck = routerFallback && mayBeRateLimit(e);
       if (!routerFallback || requests + (recheck ? 2 : 1) > maxRequests) {
         windows.pop();
         canonical.delete(to);
