@@ -575,16 +575,22 @@ export class RelayerService {
     if (permit === null) throw new RelayerError(503, 'breaker_open', this.d.config.breaker.cooldownSeconds);
     // Every exit settles the permit; anything not named below is neutral (user-attributable), so a
     // half-open probe can never wedge (S3-05) and attacker-caused failures cannot open it (S3-06).
+    // A broadcast sweep settles it when its receipt wait ends, so the receipt decides the outcome and a
+    // half-open probe stays in flight until then (L5-06).
     let outcome = classifyRelayOutcome('invalid_request');
+    const finish = (): void => {
+      permit.settle(outcome);
+      this.noteBreaker(rt);
+      this.d.metrics?.inc('relayer_sweeps_total', { chain_id: cfg.chainId, outcome });
+    };
     try {
       const out = await this.runSettled(rt, call, ctx, keys, (o) => {
         outcome = o;
       });
-      return out;
-    } finally {
-      permit.settle(outcome);
-      this.noteBreaker(rt);
-      this.d.metrics?.inc('relayer_sweeps_total', { chain_id: cfg.chainId, outcome });
+      return { value: out.value, settled: out.settled.finally(finish) };
+    } catch (e) {
+      finish();
+      throw e;
     }
   }
 
@@ -720,9 +726,10 @@ export class RelayerService {
       setOutcome(classifyRelayOutcome('send_failed'));
       throw new RelayerError(503, 'send_failed');
     }
-    setOutcome(classifyRelayOutcome('confirmed'));
     this.logger.log('info', 'sweep_sent', { requestId: ctx.requestId, chainId: cfg.chainId, txHash });
 
+    // The breaker outcome is the receipt's, not the broadcast's (L5-06): a mined sweep is a success, a receipt
+    // timeout a failure, and a mined revert neutral (S3-06; attributed to a state change, not re-simulated).
     const sent: SentSweep = { txHash, call, gasPrice: sendGasPrice, reserved, reservedDay, loss, at: 0 };
     const settled = (async (): Promise<void> => {
       let r: ReceiptSummary;
@@ -733,9 +740,11 @@ export class RelayerService {
       }
       if (r.status === 'timeout') {
         nonces.invalidate();
+        setOutcome(classifyRelayOutcome('receipt_timeout'));
         this.receiptTimedOut(rt, sent);
         return;
       }
+      setOutcome(classifyRelayOutcome(r.status === 'success' ? 'confirmed' : 'mined_revert_state_changed'));
       this.settleReceipt(rt, sent, { status: r.status, gasUsed: r.gasUsed });
     })();
     return { value: { txHash }, settled };
@@ -743,16 +752,13 @@ export class RelayerService {
 
   /**
    * The broadcast may still be mined, so its worst-case reservations are kept and its receipt is looked up again by
-   * later jobs (L5-06). The job's breaker permit was settled at broadcast, so the failure is recorded directly.
-   * Nothing bumps or cancels the transaction (README).
+   * later jobs (L5-06); the job's breaker permit records the failure. Nothing bumps or cancels the transaction (README).
    */
   private receiptTimedOut(rt: ChainRuntime, sent: SentSweep): void {
     const chainId = rt.cfg.chainId;
     this.logger.log('warn', 'receipt_timeout', { chainId, txHash: sent.txHash, errorClass: 'receipt_timeout' });
     this.d.metrics?.inc('relayer_receipt_timeouts_total', { chain_id: chainId });
     this.alerts.send({ kind: 'receipt_timeout', chainId });
-    rt.breaker.tryAcquire({ validated: true })?.settle(classifyRelayOutcome('receipt_timeout'));
-    this.noteBreaker(rt);
     sent.at = this.mono();
     rt.pending.push(sent);
     if (rt.pending.length > MAX_PENDING_RECEIPTS) rt.pending.shift();

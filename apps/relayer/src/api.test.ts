@@ -20,6 +20,7 @@ import {
   testConfig,
   type Harness,
 } from './harness.testutil.js';
+import type { ReceiptSummary } from './chain.js';
 import type { QuoteResponse } from './service.js';
 import { SimulationRevert } from './errors.js';
 
@@ -1024,20 +1025,86 @@ describe('receipt timeouts (L5-06)', () => {
   const budgetUsed = (s: Harness): bigint =>
     BigInt(/relayer_daily_budget_used_wei\{[^}]*\} (\d+)/.exec(s.relayer.metrics.render())?.[1] ?? '-1');
 
-  it('a receipt timeout records a breaker failure and alerts', async () => {
+  /** One sweep whose receipt wait ends only after the HTTP reply, as in production, with `receipt` or a throwing wait. */
+  const sweepWithReceipt = async (s: Harness, nonce: bigint, receipt: ReceiptSummary | Error) => {
+    let release: () => void = () => undefined;
+    s.fake.receiptGate = new Promise<void>((r) => {
+      release = r;
+    });
+    s.fake.receiptError = receipt instanceof Error ? receipt : undefined;
+    if (!(receipt instanceof Error)) s.fake.receipt = receipt;
+    const r = await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce })).body);
+    release();
+    await settle();
+    return r.status;
+  };
+  const breakerOf = async (s: Harness): Promise<string | undefined> =>
+    ((await call(s, 'GET', '/healthz')).json as { chains: { breaker: string }[] }).chains[0]?.breaker;
+
+  it.each([0.5, 0.6])('receipt timeouts alone open the breaker at failureRatio %s', async (ratio) => {
     const alerts: string[] = [];
-    const s = await start({ alerts: { send: (e) => alerts.push(e.kind) } });
+    const breaker = { ...testConfig().breaker, failureRatio: ratio }; // windowSize 10, minSamples 3
+    const s = await start({ config: { breaker }, alerts: { send: (e) => alerts.push(e.kind) } });
+    const timeout = { status: 'timeout', gasUsed: 0n } as const;
+    expect(await sweepWithReceipt(s, 1n, timeout)).toBe(200);
+    expect(await sweepWithReceipt(s, 2n, new Error('provider disconnected'))).toBe(200); // a timeout too
+    // Nothing is recorded at broadcast: two timeouts are two failures of two outcomes, still below minSamples.
+    expect(alerts).toEqual(['receipt_timeout', 'receipt_timeout']);
+    expect(await breakerOf(s)).toBe('closed');
+    expect(await sweepWithReceipt(s, 3n, timeout)).toBe(200);
+    expect(alerts).toEqual(['receipt_timeout', 'receipt_timeout', 'receipt_timeout', 'breaker_open']);
+    expect(await breakerOf(s)).toBe('open');
+    expect((await call(s, 'GET', '/healthz')).status).toBe(503);
+    const refused = await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 4n })).body);
+    expect(errCode(refused)).toBe('breaker_open');
+    const metrics = s.relayer.metrics.render(); // counted when the receipt wait ends, with the receipt's outcome
+    expect(metrics).toContain('relayer_sweeps_total{chain_id="11155111",outcome="failure"} 3');
+  });
+
+  it('a half-open probe stays in flight until its receipt; only a mined sweep closes the breaker', async () => {
+    const s = await start();
+    s.fake.simulateError = new Error('rpc exploded');
+    for (const n of [1n, 2n, 3n]) await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: n })).body);
+    s.fake.simulateError = undefined;
+    expect(await breakerOf(s)).toBe('open');
+    s.clock.ms += 61_000;
+    // The probe is broadcast and answered while its receipt is pending: still half-open, other sweeps refused.
+    let release: () => void = () => undefined;
+    s.fake.receiptGate = new Promise<void>((r) => {
+      release = r;
+    });
     s.fake.receipt = { status: 'timeout', gasUsed: 0n };
-    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 1n })).body)).status).toBe(200);
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 10n })).body)).status).toBe(200);
+    expect(await breakerOf(s)).toBe('half_open');
+    const refused = await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 11n })).body);
+    expect(errCode(refused)).toBe('breaker_open');
+    release();
     await settle();
-    expect(alerts).toEqual(['receipt_timeout']);
-    s.fake.receipt = { status: 'success', gasUsed: 0n };
-    s.fake.receiptError = new Error('provider disconnected'); // a throwing wait is a timeout too
-    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 2n })).body)).status).toBe(200);
+    expect(await breakerOf(s)).toBe('open'); // its receipt timed out
+    s.clock.ms += 61_000;
+    // A mined revert is neutral (S3-06): the probe is freed without closing; the next one decides.
+    expect(await sweepWithReceipt(s, 12n, { status: 'reverted', gasUsed: 100_000n })).toBe(200);
+    expect(await breakerOf(s)).toBe('half_open');
+    expect(await sweepWithReceipt(s, 13n, { status: 'success', gasUsed: 100_000n })).toBe(200);
+    expect(await breakerOf(s)).toBe('closed');
+  });
+
+  it('a probe not confirmed within breaker.probeTimeoutSeconds re-opens the breaker; its late receipt is ignored', async () => {
+    const s = await start({ config: { queue: { maxPending: 4, receiptTimeoutSeconds: 120 } } }); // the defaults
+    s.fake.simulateError = new Error('rpc exploded');
+    for (const n of [1n, 2n, 3n]) await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: n })).body);
+    s.fake.simulateError = undefined;
+    s.clock.ms += 61_000;
+    let release: () => void = () => undefined;
+    s.fake.receiptGate = new Promise<void>((r) => {
+      release = r;
+    });
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 10n })).body)).status).toBe(200);
+    s.clock.ms += 60_000; // breaker.probeTimeoutSeconds 60, while the receipt may take up to 120 s
+    expect(await breakerOf(s)).toBe('open');
+    release();
     await settle();
-    // success at broadcast + failure at timeout, twice: 2 of 4 >= failureRatio 0.5 with minSamples 3
-    expect(alerts).toContain('breaker_open');
-    expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'degraded', chains: [{ breaker: 'open' }] });
+    expect(await breakerOf(s)).toBe('open');
   });
 
   it('keeps the reservations of a timed-out transaction until a later lookup finds its receipt', async () => {
