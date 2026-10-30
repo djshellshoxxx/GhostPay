@@ -170,4 +170,3 @@ describe('SellerKeys cancellation retry', () => {
     expect(window.sessionStorage.length).toBe(0);
   }, 30000);
 });
-

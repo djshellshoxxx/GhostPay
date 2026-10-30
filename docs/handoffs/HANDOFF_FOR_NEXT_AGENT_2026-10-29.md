@@ -1,5 +1,7 @@
 # GhostPay handoff for the next agent (2026-10-29)
 
+**2026-10-30 update:** see [the Codex checkpoint](CODEX_PROGRESS_2026-10-30.md) for selectively ported seller recovery and approval retention, fee hardening, relayer deadline handling, current validation and remaining environment limitations. The historical P1a list below predates those slices; the recovered tree itself has not been merged wholesale.
+
 This handoff is written for any agent that picks up the work, ChatGPT included. It is self-contained: read it first, then follow the links. It records where the work stands on the commit that adds this file. Verify every SHA with git before you rely on it.
 
 > **Authority.** This document grants no merge, release, deployment or real-funds authority. Pull request #37 is a draft, and merging it is the owner's decision.
@@ -130,13 +132,11 @@ Port the recovered work feature by feature. For each feature, classify every fil
 These were raised by the last AI review of each cluster. They are minor issues, not confirmed findings. The full table is in the report under "Open follow-ups from the fix reviews", and the full text is in `docs/audits/data/24/status.json` under `_clusters.<round>.review_issues`.
 
 1. **CR2, fixed in `2fcab7f` (C-R12): key loss on unlock.** Unlocking could replace keys whose only vault copy another tab had deleted, without the confirmation. The unlock now re-reads the vault and asks first.
-2. **D3, minor: lapsed deadline reported as the wrong reason.** In `apps/relayer/src/service.ts` (`runSettled`), a sweep deadline that lapses while the sweep waits in the lane is refused as `permit_expired` or `expired`, not as `deadline_too_soon`. It is safe, but the reason is wrong. Re-check `sweep.deadline` at the head of `runSettled` before the order-state read.
+2. **D3, fixed in `46d78b1`: lapsed deadline reported as the wrong reason.** `runSettled` now rechecks the sweep deadline at lane entry and around the order-state read, preserving `deadline_too_soon` for queue/RPC delays without striking the owner. Three new regression cases and the full relayer suite pass.
 3. **AR2, minor: dense windows refused after a sparse stretch.**
    - **Problem:** in `packages/chain-adapters/src/logs.ts`, `served` spans the whole fetch, so after a sparse stretch each regrown window in a dense, result-limited stretch is refused once. This costs requests only; no logs are lost.
    - **Fix:** reset `served` when the window regrows.
-4. **B2R, nit with safety relevance: operator fee read as zero.**
-   - **Problem:** in `apps/web/src/lib/sweep.ts` (`readOperatorFee`), any `reverted` answer counts as "no `getOperatorFee`" and reads as 0. Since B-R8, `reverted` also covers reth's `-32003` out-of-gas.
-   - **Fix:** treat only a plain revert as "absent", and fail closed on the others.
+4. **B2R, fixed in `ef9c870`: operator fee read as zero.** `readOperatorFee` now accepts only a positively identified plain revert as the absent-method fallback. A separate sanitized RPC flag preserves the existing broad dry-run failure classification; out-of-gas, opcode failures and unknown halts fail closed. Real transport-to-sweep regression cases cover the boundary.
 5. **BR, nits: sweep lock edge cases.** In `Sweep.tsx` and `state.tsx`:
    - after 3 other hashes, the UI still offers a same-nonce replacement;
    - a `submitted` transaction the node dropped keeps the tab's lock with no in-app recovery;
@@ -146,9 +146,8 @@ These were raised by the last AI review of each cluster. They are minor issues, 
 - **Seller-keys gate:** `RegistryView.tsx` and `PolicyCreate.tsx` should pass `paymentsOnly` to `BackupGate`, because they never use the signing key (CR2 nit). `PolicyView.test` then needs generated keys.
 - **Remove `requireSession`:** it is a deprecated compatibility API with no production caller. Remove it from `apps/web/src/lib/session.ts`, then migrate `pay.test.ts`, `session.test.ts`, `Scan.test.tsx` and `invoiceCreate.test.ts`.
 - **One idle-lock signal:** `session.ts` `subscribeIdleLock`/`notifyIdleLock` and `lib/appLock.ts` `subscribeAppLock`/`notifyAppLock('idle')` now both fire on the idle lock. Move the three subscribers (`SellerKeys`, `Sweep`, `TagArchive`) to `subscribeAppLock` and delete the session copy.
-- **Docs drift.** These docs still describe behaviour from before the fixes:
-  - `docs/user/troubleshooting.md` and `docs/guides/troubleshooting-by-symptom.md`: the C-R10 signer-only state;
-  - `docs/user/set-up-stealth-meta-address.md` and `apps/web/README.md`: the idle-lock wording;
+- **Docs drift.** Remaining work and known corrections:
+  - The C-R10 signer-only/idle-lock wording in the two troubleshooting guides, `docs/user/set-up-stealth-meta-address.md` and `apps/web/README.md` was already corrected in `bd45a32` (issue #38 finding 3); it is not open work.
   - `docs/user/bitcoin-silent-payments.md`, `solana-payments.md`, `tron-payments.md` and `docs/chains/bitcoin.md`: "shown once" backups and genesis-linked heights;
   - `docs/developer/api/chain-adapters.md`: the `reverted` codes, the `opStack` field and the enabled-chains line;
   - `docs/developer/api/README.md`: the address-case rule;
