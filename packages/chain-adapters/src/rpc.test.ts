@@ -215,6 +215,21 @@ describe('L2-F1: a node-reported revert is a sanitized flag on the error', () =>
   });
 
   it.each([
+    [{ code: -32000, message: 'execution reverted' }, true],
+    [{ code: 3, message: 'execution reverted', data: '0x' }, true],
+    [{ code: -32015, message: 'VM execution error.', data: 'Reverted 0x' }, true],
+    [{ code: -32000, message: 'out of gas' }, false],
+    [{ code: 3, message: 'invalid opcode' }, false],
+    [{ code: -32003, message: 'EVM error: InvalidFEOpcode' }, false],
+    [{ code: 3 }, false],
+    [{ code: -32603, message: 'internal error: reverted' }, false],
+  ])('distinguishes a plain revert from other execution failures: %j', async (error, plain) => {
+    const e = await callError(error);
+    expect(e.executionReverted).toBe(plain);
+    expect(e.message).toBe(`RPC_FAILURE: json-rpc error ${String(error.code)}`);
+  });
+
+  it.each([
     ['-32000 without a revert message', { code: -32000, message: 'insufficient funds for gas * price + value' }],
     ['-32015 without an execution failure text', { code: -32015, message: 'Transaction execution error.', data: 'NotEnoughCash' }],
     // B-R8: reth's -32003 also rejects calls before any execution; only an out-of-gas or EVM-halt text is a failure.

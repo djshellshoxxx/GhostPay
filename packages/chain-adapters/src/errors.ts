@@ -31,11 +31,15 @@ export class ChainAdapterError extends Error {
    */
   public readonly reverted: boolean;
 
-  public constructor(code: AdapterErrorCode, detail: string, options: { readonly reverted?: boolean } = {}) {
+  /** True only for a positively identified plain EVM revert, excluding gas/opcode failures and unknown halts. */
+  public readonly executionReverted: boolean;
+
+  public constructor(code: AdapterErrorCode, detail: string, options: { readonly reverted?: boolean; readonly executionReverted?: boolean } = {}) {
     super(`${code}: ${detail}`);
     this.name = 'ChainAdapterError';
     this.code = code;
     this.reverted = options.reverted === true;
+    this.executionReverted = this.reverted && options.executionReverted === true;
   }
 }
 

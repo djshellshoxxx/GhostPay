@@ -2,6 +2,7 @@ import {
   addressOfSecret,
   assertSponsorFeeAcceptable,
   buildSweepTypedData,
+  ChainAdapterError,
   erc20Abi,
   findChain,
   ghostPaySweepRelayerAbi,
@@ -525,7 +526,7 @@ async function readOperatorFee(rpc: Rpc, gas: bigint): Promise<bigint> {
   try {
     return await readFeeOracle(rpc, encodeFunctionData({ abi: gasPriceOracleAbi, functionName: 'getOperatorFee', args: [gas] }));
   } catch (e) {
-    if (reportsRevert(e)) return 0n;
+    if (e instanceof ChainAdapterError && e.executionReverted) return 0n;
     throw e;
   }
 }

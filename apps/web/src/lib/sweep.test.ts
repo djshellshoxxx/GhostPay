@@ -8,7 +8,7 @@ import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER, FAKE_SWEEP_RELAYER, fa
 import { mockRpc } from '../test/mockRpc';
 import { clearSession, generateSession, requireSession } from './session';
 import { checkDestination, describeDestination, deriveVerifiedSweepKey, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, OP_STACK_GAS_PRICE_ORACLE, readBalance, reconcileRelayedOrder, reconcileSweepLock, RELAYED_EXPIRY_MARGIN_SECONDS, relayedSweep, type RelayedOrderRef, type SweepLock, type SweepTarget } from './sweep';
-import { ChainAdapterError, erc20Abi, ghostPaySweepRelayerAbi } from '@ghostpay/chain-adapters';
+import { ChainAdapterError, createClient, findChain, erc20Abi, ghostPaySweepRelayerAbi } from '@ghostpay/chain-adapters';
 import { userMessage } from './errors';
 import * as sweepModule from './sweep';
 
@@ -699,7 +699,7 @@ describe('L2-F2: a native direct sweep keeps back every fee the chain charges', 
 
   it('B-R4: an OP Stack chain without getOperatorFee (before Isthmus the call reverts) charges no operator fee', async () => {
     const seen: Seen = {};
-    const rpc = chainRpc(84532, { operatorFee: new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32000', { reverted: true }) }, seen);
+    const rpc = chainRpc(84532, { operatorFee: new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32000', { reverted: true, executionReverted: true }) }, seen);
     const res = await directSweep({ target: native(), manifest, destination: DEST, amount: BALANCE, rpc });
     const tx = parseTransaction(seen.raw!);
     expect(tx.value).toBe(BALANCE - 21_000n * MAX_FEE - 2n * L1_FEE);
@@ -708,9 +708,42 @@ describe('L2-F2: a native direct sweep keeps back every fee the chain charges', 
   });
 
   it.each([
+    [{ code: -32000, message: 'execution reverted' }, true],
+    [{ code: 3, message: 'execution reverted', data: '0x' }, true],
+    [{ code: -32000, message: 'out of gas' }, false],
+    [{ code: -32015, message: 'VM execution error.', data: 'invalid instruction' }, false],
+    [{ code: 3, message: 'invalid opcode' }, false],
+    [{ code: -32003, message: 'EVM error: InvalidFEOpcode' }, false],
+    [{ code: 3 }, false],
+  ])('uses real RPC classification for operator oracle errors: %j', async (error, absentMethod) => {
+    const seen: Seen = {};
+    const backing = chainRpc(84532, {}, seen);
+    const rpc = await createClient(findChain(84532)!, 'https://rpc.test', {
+      transport: { send: async (_url, body) => {
+        const req = JSON.parse(body) as { id: number; method: string; params: readonly unknown[] };
+        const call = req.params[0] as { to?: string; data?: `0x${string}` } | undefined;
+        const operator = req.method === 'eth_call' && call?.to === ORACLE && call.data !== undefined &&
+          decodeFunctionData({ abi: oracleAbi, data: call.data }).functionName === 'getOperatorFee';
+        return JSON.stringify(operator ? { jsonrpc: '2.0', id: req.id, error } : {
+          jsonrpc: '2.0', id: req.id,
+          result: req.method === 'eth_chainId' ? '0x14a34' : await backing.request(req.method, req.params),
+        });
+      } },
+    });
+    const sweep = directSweep({ target: native(), manifest, destination: DEST, amount: BALANCE, rpc });
+    if (absentMethod) {
+      expect((await sweep).sent).toBe(BALANCE - 21_000n * MAX_FEE - 2n * L1_FEE);
+    } else {
+      await expect(sweep).rejects.toThrow(/fee oracle/);
+      expect(seen.raw).toBeUndefined();
+    }
+  });
+
+  it.each([
     ['the L1 fee call fails', { l1Fee: new Error('rpc down') }],
     ['the L1 fee answer is malformed', { l1Fee: '0x1234' }],
     ['the L1 fee call reverts', { l1Fee: new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32000', { reverted: true }) }],
+    ['the operator fee call has an unclassified execution failure', { operatorFee: new ChainAdapterError('RPC_FAILURE', 'json-rpc error 3', { reverted: true }) }],
     ['the operator fee call fails', { operatorFee: new Error('rpc down') }],
     ['the operator fee call fails at the transport', { operatorFee: new ChainAdapterError('RPC_FAILURE', 'http status 429') }],
     ['the operator fee call gets a JSON-RPC error that is no revert', { operatorFee: new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32603') }],
