@@ -471,8 +471,9 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
       regrowAfter = undefined;
     }
     if (regrow) {
+      // At the cap no growth occurs: retain evidence that this range was served.
+      if (window < cap) served = 0n;
       window = window * 2n > cap ? cap : window * 2n;
-      served = 0n;
     }
   }
 
