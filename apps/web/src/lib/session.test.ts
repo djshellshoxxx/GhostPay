@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { armSessionVault, captureSessionGuard, clearSession, exportKeystore, forgetSessionVaultCopy, getSessionBackup, markKeystoreDownloaded, notifyIdleLock, revealViewingKey, sessionVaultRecord, subscribeIdleLock, subscribeSessionBackup, waiveSessionBackup, withSessionSecrets, withSessionSecretsAsync, generateSession, getSessionPublic, hasSession, importKeystore, importSession, requireSession, subscribeSession } from './session';
+import { armSessionVault, captureSessionGuard, clearSession, exportKeystore, forgetSessionVaultCopy, getSessionBackup, markKeystoreDownloaded, revealViewingKey, sessionVaultRecord, subscribeSessionBackup, waiveSessionBackup, withSessionSecrets, withSessionSecretsAsync, generateSession, getSessionPublic, hasSession, importKeystore, importSession, subscribeSession } from './session';
 
 afterEach(() => {
   clearSession();
@@ -12,7 +12,7 @@ describe('session', () => {
   it('has no session initially and refuses use', () => {
     expect(hasSession()).toBe(false);
     expect(getSessionPublic()).toBeUndefined();
-    expect(() => requireSession()).toThrow(/Load or generate/);
+    expect(() => withSessionSecrets(() => undefined)).toThrow(/Load or generate/);
   });
 
   it('generates independent keys and exposes only public data', () => {
@@ -23,8 +23,10 @@ describe('session', () => {
     expect(pub.signerPublicKey).not.toBe(pub.viewingPublicKey);
     expect(getSessionPublic()).toBe(pub);
     expect(JSON.stringify(pub)).not.toMatch(/secret/i);
-    expect(() => JSON.stringify(requireSession().keys.spendingSecret)).toThrow();
-    expect(() => String(requireSession().signingKey)).toThrow();
+    withSessionSecrets((secrets) => {
+      expect(() => JSON.stringify(secrets.keys.spendingSecret)).toThrow();
+      expect(() => String(secrets.signingKey)).toThrow();
+    });
   });
 
   it('notifies subscribers on change and wipe', () => {
@@ -37,12 +39,15 @@ describe('session', () => {
     expect(fn).toHaveBeenCalledTimes(2);
   });
 
-  it('wipes secrets on clear', () => {
+  it('clears the stored session and wipes a borrowed copy when its callback ends', () => {
     generateSession();
-    const keys = requireSession();
-    const spending = keys.keys.spendingSecret;
-    clearSession();
-    expect(spending.every((b) => b === 0)).toBe(true);
+    let borrowed: Uint8Array | undefined;
+    withSessionSecrets((keys) => {
+      borrowed = keys.keys.spendingSecret;
+      clearSession();
+      expect(keys.keys.spendingSecret.some((b) => b !== 0)).toBe(true);
+    });
+    expect(borrowed?.every((b) => b === 0)).toBe(true);
     expect(hasSession()).toBe(false);
   });
 
@@ -101,21 +106,6 @@ describe('session', () => {
     expect(getSessionPublic()).not.toBe(original);
   });
 
-  it('G2-05: tells idle-lock subscribers until they unsubscribe, and leaves the keys alone', () => {
-    const pub = generateSession();
-    const changed = vi.fn();
-    const offSession = subscribeSession(changed);
-    const locked = vi.fn();
-    const off = subscribeIdleLock(locked);
-    notifyIdleLock();
-    off();
-    notifyIdleLock();
-    offSession();
-    expect(locked).toHaveBeenCalledTimes(1);
-    expect(changed).not.toHaveBeenCalled();
-    expect(getSessionPublic()).toBe(pub);
-  });
-
   it('invalidates a guard across an empty-to-loaded transition', () => {
     generateSession();
     const check = captureSessionGuard();
@@ -170,17 +160,7 @@ describe('boxed key storage (S3-08)', () => {
     clearSession();
     expect(() => revealViewingKey()).toThrow(/Load or generate/);
     expect(() => withSessionSecrets(() => 1)).toThrow(/Load or generate/);
-    expect(() => requireSession()).toThrow(/Load or generate/);
-  });
-
-  it('bounds and wipes compatibility copies from requireSession', () => {
-    generateSession();
-    const first = requireSession().keys.spendingSecret;
-    for (let i = 0; i < 10; i++) requireSession();
-    expect(first.every((b) => b === 0)).toBe(true); // evicted copies are wiped
-    const last = requireSession().keys.viewingSecret;
-    clearSession();
-    expect(last.every((b) => b === 0)).toBe(true);
+    expect(() => withSessionSecrets(() => undefined)).toThrow(/Load or generate/);
   });
 
   it('exports a keystore from the boxed keys and re-imports it', async () => {

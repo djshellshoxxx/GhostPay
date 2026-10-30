@@ -99,7 +99,7 @@ export function PolicyCreate(props: { readonly ctx: PolicyCtx }): ReactNode {
       <h3 id="policy-create">{t('policy.create.heading')}</h3>
       {session === undefined ? <Notice kind="info">{t('policy.create.needSession')}</Notice> : (
         // A policy meta-address derived from these keys invites payments: a backup or the typed waiver first (L1-01).
-        <BackupGate>
+        <BackupGate paymentsOnly>
           <Field label={t('policy.create.destinationLabel')} hint={t('policy.create.destinationHint')}>
             {(id, hint) => <input id={id} aria-describedby={hint} value={destination} onChange={(e) => { setDestination(e.target.value); }} spellCheck={false} />}
           </Field>

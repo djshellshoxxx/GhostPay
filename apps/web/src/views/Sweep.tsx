@@ -1,3 +1,4 @@
+import { subscribeAppLock } from '../lib/appLock';
 import { findChain, findToken, type Address } from '@ghostpay/chain-adapters';
 import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice } from '../components/Common';
@@ -10,7 +11,7 @@ import { formatUnits } from '../lib/format';
 import { checkDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, RELAYED_EXPIRY_MARGIN_SECONDS, type DirectSweepResult, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
 import { RelayerRefusedError } from '../lib/relayerClient';
 import { authorizeEncryptedVault, readEncryptedVault } from '../lib/keyVault';
-import { captureSessionGuard, getSessionBackup, subscribeIdleLock, subscribeSessionBackup } from '../lib/session';
+import { captureSessionGuard, getSessionBackup, subscribeSessionBackup } from '../lib/session';
 import { useServices } from '../lib/services';
 import { beginSweepAttempt, getSweepAttempt, isSweepJournalBroken, resolveSweepAttempt, useApp, useSweepAttempt, useSweepJournalBroken } from '../state';
 import { SweepJournalUnavailableError } from '../lib/sweepAttemptJournal';
@@ -75,7 +76,7 @@ export function Sweep(): ReactNode {
     return () => { authEpoch.current += 1; };
   }, [app.session]);
   // Also at every idle lock, which leaves keys without a backup loaded (G2-05).
-  useEffect(() => subscribeIdleLock(() => { setVaultPass(''); }), []);
+  useEffect(() => subscribeAppLock(() => { setVaultPass(''); }), []);
 
   const meta = sel?.match.metadata;
   const tokenAddr: Address | 'native' | undefined = meta === undefined ? undefined : meta.kind === 'native' ? 'native' : meta.token;

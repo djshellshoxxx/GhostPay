@@ -1,3 +1,4 @@
+import { subscribeAppLock } from '../lib/appLock';
 import { useEffect, useId, useRef, useState, useSyncExternalStore, type FormEvent, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
 import { TagArchive } from '../components/TagArchive';
@@ -5,7 +6,7 @@ import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
 import { userMessage } from '../lib/errors';
 import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphrase, MAX_KEYSTORE_BYTES, passphraseProblem, validateKeystoreEnvelope } from '../lib/keystore';
-import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, getSessionBackup, getSessionPublic, importKeystore, importSession, markKeystoreDownloaded, sessionHasExternalCopy, subscribeIdleLock, subscribeSessionBackup, waiveSessionBackup, type SessionPublic } from '../lib/session';
+import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, getSessionBackup, getSessionPublic, importKeystore, importSession, markKeystoreDownloaded, sessionHasExternalCopy, subscribeSessionBackup, waiveSessionBackup, type SessionPublic } from '../lib/session';
 import { authorizeKeyExport, deleteEncryptedVault, loadedKeysRecoverable, readEncryptedVault, saveEncryptedVault, unlockEncryptedVault, VaultChangedError, vaultMetaAddress, VaultSavedForPreviousKeysError } from '../lib/keyVault';
 import { useApp } from '../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
@@ -124,7 +125,7 @@ export function SellerKeys(): ReactNode {
     suggestPass(); suggestVaultPass(); setImportPass(''); setVaultUnlockPass('');
     setExportStepUp(''); setSaveStepUp(''); setDeletePass('');
   };
-  useEffect(() => subscribeIdleLock(forgetTyped), []);
+  useEffect(() => subscribeAppLock(forgetTyped), []);
   useEffect(() => {
     operation.current?.abort(); operation.current = null;
     setBackupQr(undefined); setBusy(false); setVaultBusy(false);

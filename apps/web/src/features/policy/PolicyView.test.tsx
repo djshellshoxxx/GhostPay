@@ -2,7 +2,7 @@
 import { act, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { clearSession, importSession } from '../../lib/session';
+import { clearSession, generateSession, importSession } from '../../lib/session';
 import { SETTINGS_KEY } from '../../lib/settings';
 import { makeServices, renderApp } from '../../test/render';
 import { POLICY_FLAG } from './flag';
@@ -61,8 +61,8 @@ describe('policy view flag', () => {
 
 describe('policy view flows', () => {
   it('C-R1: derives no policy meta-address for keys without a backup until the waiver is typed', async () => {
-    // Without its signing key the import generates one that exists only in this tab: no backup yet (C-R6).
-    act(() => { importSession({ spendingKeyHex: a2.spendingPrivateKey, viewingKeyHex: a2.viewingPrivateKey }); });
+    // Generated payment keys have no surviving copy and remain gated.
+    act(() => { generateSession(); });
     const user = await open();
     expect(screen.getByText('Back up these seller keys first')).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Create policy meta-address' })).toBeNull();
@@ -72,6 +72,13 @@ describe('policy view flows', () => {
     await user.type(screen.getByLabelText(/To continue without a backup/), 'continue without backup');
     await user.click(screen.getByRole('button', { name: 'Continue without a backup' }));
     expect(screen.getByRole('button', { name: 'Create policy meta-address' })).toBeTruthy();
+  });
+  it('payment keys imported without an invoice signer can create a policy record', async () => {
+    importSession({ spendingKeyHex: a2.spendingPrivateKey, viewingKeyHex: a2.viewingPrivateKey });
+    await open();
+    expect(screen.getByRole('button', { name: 'Create policy meta-address' })).toBeTruthy();
+    expect(screen.queryByText('Back up these seller keys first')).toBeNull();
+    expect(screen.getByText(/no pinned deployment on any network/)).toBeTruthy();
   });
   it('creates the vector meta-address and offers the record download', async () => {
     act(() => { importSession({ spendingKeyHex: a2.spendingPrivateKey, viewingKeyHex: a2.viewingPrivateKey, signingKeyHex: SIGNING_KEY }); });

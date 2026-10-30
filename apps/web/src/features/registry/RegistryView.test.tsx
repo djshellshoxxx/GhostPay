@@ -4,7 +4,7 @@ import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { decodeFunctionData, encodeAbiParameters, keccak256, toBytes } from 'viem/utils';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { captureSessionGuard, clearSession, generateSession, getSessionPublic, markKeystoreDownloaded } from '../../lib/session';
+import { captureSessionGuard, clearSession, generateSession, getSessionPublic, importSession, markKeystoreDownloaded } from '../../lib/session';
 import { buildClearRegistryCall } from '../../lib/registry';
 import { SETTINGS_KEY } from '../../lib/settings';
 import type { WalletInfo } from '../../lib/wallet';
@@ -83,6 +83,15 @@ describe('Registry view', () => {
     await user.click(screen.getByRole('button', { name: 'Find wallets' }));
     await user.click(await screen.findByRole('button', { name: 'Connect Mock Wallet' }));
     expect(await screen.findByRole('button', { name: 'Review publish transaction' })).toBeTruthy();
+  });
+
+  it('payment keys imported without an invoice signer can reach the registry consent gate', async () => {
+    const pub = importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32) });
+    await open();
+    expect(screen.getByText(pub.metaAddress)).toBeTruthy();
+    expect(screen.getByRole('checkbox')).toBeTruthy();
+    expect(screen.queryByText('Back up these seller keys first')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Find wallets' })).toBeNull();
   });
 
   it('publishes only after explicit consent, previews the call, and verifies it on the RPC', async () => {

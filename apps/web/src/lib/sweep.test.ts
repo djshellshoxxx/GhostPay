@@ -6,7 +6,7 @@ import { encodeFunctionData } from 'viem/utils';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER, FAKE_SWEEP_RELAYER, fakeManifest } from '../test/fakeManifest';
 import { mockRpc } from '../test/mockRpc';
-import { clearSession, generateSession, requireSession } from './session';
+import { clearSession, generateSession } from './session';
 import { checkDestination, describeDestination, deriveVerifiedSweepKey, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, OP_STACK_GAS_PRICE_ORACLE, readBalance, reconcileRelayedOrder, reconcileSweepLock, RELAYED_EXPIRY_MARGIN_SECONDS, relayedSweep, type RelayedOrderRef, type SweepLock, type SweepTarget } from './sweep';
 import { ChainAdapterError, createClient, findChain, erc20Abi, ghostPaySweepRelayerAbi } from '@ghostpay/chain-adapters';
 import { userMessage } from './errors';
@@ -229,7 +229,6 @@ describe('relayedSweep (EIP-712 sweep + ERC-2612 permit, signed in memory)', () 
     await expect(
       relayedSweep({ target, manifest, destination: DEST, amount: 1n, quote: { fee: 0n, feeTo: FEE_TO, expiresAt: NOW + 60, quoteToken: 'tok' }, relayerUrl: 'https://relay.test', rpc, nowSeconds: () => NOW }),
     ).rejects.toThrow();
-    void requireSession;
   });
 });
 

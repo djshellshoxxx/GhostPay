@@ -6,7 +6,8 @@ import userEvent from '@testing-library/user-event';
 import { decodeFunctionData, encodeAbiParameters, encodeFunctionData, encodeFunctionResult, keccak256, parseAbi, parseTransaction } from 'viem/utils';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { Services } from '../lib/services';
-import { clearSession, generateSession, notifyIdleLock } from '../lib/session';
+import { clearSession, generateSession } from '../lib/session';
+import { notifyAppLock } from '../lib/appLock';
 import * as appState from '../state';
 import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests } from '../lib/keyVault';
 import { SETTINGS_KEY } from '../lib/settings';
@@ -849,7 +850,7 @@ describe('G2-05: the vault passphrase field keeps nothing typed', () => {
     const field = screen.getByLabelText<HTMLInputElement>('Vault passphrase (required for each sweep action)');
     fireEvent.change(field, { target: { value: VAULT_PASS } });
     expect(field.getAttribute('value')).toBe(VAULT_PASS);
-    act(() => { notifyIdleLock(); });
+    act(() => { notifyAppLock('idle'); });
     expect(field.value).toBe('');
     expect(field.getAttribute('value') ?? '').toBe('');
   });

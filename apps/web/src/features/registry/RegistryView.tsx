@@ -244,7 +244,7 @@ export function RegistryView(): ReactNode {
         <p>{t('registry.loadKeysFirst')}</p>
       ) : (
         // A published meta-address invites payments that only these keys can sweep: a backup or the typed waiver first (L1-01).
-        <BackupGate>
+        <BackupGate paymentsOnly>
           <Notice kind="warn" title={t('registry.publicAssoc.title')}>
             {t('registry.publicAssoc.body')}
           </Notice>
