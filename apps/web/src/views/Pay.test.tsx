@@ -783,13 +783,14 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
 
 describe('Pay: validity is rechecked before the initial approval', () => {
   /** ERC-20 buffer flow (approval required) prepared at `startSeconds`; returns a clock setter and the wallet. */
-  async function toPreparedBuffer(startSeconds: (expiresAt: number) => number): Promise<{ user: ReturnType<typeof userEvent.setup>; wallet: MockWallet; setNow: (s: number) => void; expiresAt: number }> {
+  async function toPreparedBuffer(startSeconds: (expiresAt: number) => number, opts: { wallet?: MockWallet; allowanceAfterSend?: boolean; beforeReceipt?: () => Promise<void> } = {}): Promise<{ user: ReturnType<typeof userEvent.setup>; wallet: MockWallet; setNow: (s: number) => void; expiresAt: number }> {
     const { fragment, parsed } = await makeParsed();
-    const wallet = new MockWallet();
+    const wallet = opts.wallet ?? new MockWallet();
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
     const base = chainSeeing(wallet);
     const rpc = mockRpc(84532, (method, params) => {
-      if (method === 'eth_call') return `0x${'0'.repeat(64)}`;
+      if (method === 'eth_call') return opts.allowanceAfterSend === true && wallet.sent !== undefined ? `0x${(10n ** 12n).toString(16).padStart(64, '0')}` : `0x${'0'.repeat(64)}`;
+      if (method === 'eth_getTransactionReceipt' && opts.beforeReceipt !== undefined) return opts.beforeReceipt().then(() => base.request(method, params));
       if (method === 'eth_estimateGas') return '0xfde8';
       return base.request(method, params);
     });
@@ -819,6 +820,75 @@ describe('Pay: validity is rechecked before the initial approval', () => {
     await t.user.click(approveButton());
     await screen.findByText(/gas buffer quote expired/);
     expect(t.wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
+  });
+
+  it.each(['invoice', 'buffer'] as const)('keeps the confirmed approval and hash when the %s expires before payment', async (expiry) => {
+    let releaseSend: (() => void) | undefined;
+    class DeferredApprovalWallet extends MockWallet {
+      public override async request(args: Parameters<MockWallet['request']>[0]): Promise<unknown> {
+        const result = await super.request(args);
+        if (args.method === 'eth_sendTransaction') await new Promise<void>((resolve) => { releaseSend = resolve; });
+        return result;
+      }
+    }
+    const wallet = new DeferredApprovalWallet();
+    const t = await toPreparedBuffer((expiresAt) => expiry === 'invoice' ? expiresAt - 30 : NOW, { wallet, allowanceAfterSend: true });
+    await t.user.click(approveButton());
+    await waitFor(() => expect(releaseSend).toBeDefined());
+    t.setNow(expiry === 'invoice' ? t.expiresAt : NOW + 61);
+    act(() => { releaseSend?.(); });
+    await screen.findByText(/approval was confirmed.*but no payment was sent/i);
+    expect(document.body.textContent).toMatch(/no payment was sent/i);
+    expect(document.body.textContent).toContain(`0x${'9'.repeat(64)}`);
+    expect(document.body.textContent).not.toMatch(/Nothing was sent/i);
+    expect(screen.queryByText('Token approval needed first')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Revoke approval' })).toBeTruthy();
+    await t.user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await screen.findByText(/approval was confirmed.*but no payment was sent/i);
+    expect(screen.getByText('Token approval confirmed')).toBeTruthy();
+    expect(wallet.calls.filter((c) => c.method === 'eth_sendTransaction')).toHaveLength(1);
+  });
+
+  it('keeps payment ambiguity when the wallet loses its payment response after confirmed approval', async () => {
+    class LostPaymentResponseWallet extends MockWallet {
+      public override async request(args: Parameters<MockWallet['request']>[0]): Promise<unknown> {
+        const result = await super.request(args);
+        if (args.method === 'eth_sendTransaction' && this.calls.filter((c) => c.method === 'eth_sendTransaction').length === 2) throw new Error('wallet disconnected after handoff');
+        return result;
+      }
+    }
+    const wallet = new LostPaymentResponseWallet();
+    const t = await toPreparedBuffer(() => NOW, { wallet, allowanceAfterSend: true });
+    await t.user.click(approveButton());
+    await screen.findByText(/unknown outcome and may already have been submitted/i);
+    expect(document.body.textContent).not.toMatch(/no payment was sent/i);
+    expect(screen.getByText('Token approval confirmed')).toBeTruthy();
+    t.setNow(NOW + 61);
+    await t.user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await screen.findByText(/gas buffer quote expired/i);
+    expect(document.body.textContent).not.toMatch(/no payment was sent/i);
+    expect(wallet.calls.filter((c) => c.method === 'eth_sendTransaction')).toHaveLength(2);
+  });
+
+  it('keeps the approval hash when the invoice changes after broadcast but before confirmation', async () => {
+    let releaseReceipt: (() => void) | undefined;
+    const t = await toPreparedBuffer(() => NOW, {
+      allowanceAfterSend: true,
+      beforeReceipt: () => new Promise<void>((resolve) => { releaseReceipt = resolve; }),
+    });
+    await t.user.click(approveButton());
+    await waitFor(() => expect(releaseReceipt).toBeDefined());
+    const next = await makeParsed({ tokenAmount: '101' });
+    act(() => {
+      window.history.replaceState(null, '', `/${next.fragment}`);
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    });
+    await screen.findByRole('heading', { name: 'Review payment' });
+    act(() => { releaseReceipt?.(); });
+    const warning = await screen.findByText(/This was a approval for the invoice/);
+    expect(warning.textContent).toContain(`0x${'9'.repeat(64)}`);
+    expect(screen.queryByText('Token approval confirmed')).toBeNull();
+    expect(t.wallet.calls.filter((c) => c.method === 'eth_sendTransaction')).toHaveLength(1);
   });
 });
 

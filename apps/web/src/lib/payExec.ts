@@ -261,7 +261,7 @@ export async function preparePayment(session: WalletSession, ctx: PayContext, op
 const DRY_RUN_UNAVAILABLE = '(Your RPC could not dry-run this payment, so it was not simulated before your wallet was asked.)';
 
 /** Final gate and send. The assertion runs on exactly the object that is passed to the wallet. */
-export async function sendPayment(session: WalletSession, ctx: PayContext, built: BuiltPayment, rt: Runtime, status: StatusFn, assertCurrent?: () => void): Promise<SubmitResult> {
+export async function sendPayment(session: WalletSession, ctx: PayContext, built: BuiltPayment, rt: Runtime, status: StatusFn, assertCurrent?: () => void, onWalletRequest?: () => void): Promise<SubmitResult> {
   const guard = (): void => {
     assertCurrent?.();
     assertReadyToSend(built, ctx);
@@ -278,6 +278,8 @@ export async function sendPayment(session: WalletSession, ctx: PayContext, built
   guard();
   // A node that cannot run the dry run is no refusal (a revert is), but the user sees it while the wallet asks.
   const report: StatusFn = dryRun === 'unavailable' ? (m) => { status(`${m} ${DRY_RUN_UNAVAILABLE}`); } : status;
+  // After this boundary a wallet error can mean an unknown broadcast outcome, even without a returned hash.
+  onWalletRequest?.();
   return submitTx(session, { to: built.tx.to, data: built.tx.data, value: built.tx.value }, rt, report, guard, undefined, { kind: 'payment', scope: bytesToHex(invoiceDigest(ctx.review.invoice)) });
 }
 

@@ -111,6 +111,8 @@ export function Pay(): ReactNode {
   const receiptBusyRef = useRef(false);
   const receiptImportRevision = useRef(0);
   const [approval, setApproval] = useState<ApprovalPlan | undefined>(undefined);
+  const [approvalHash, setApprovalHash] = useState<string | undefined>(undefined);
+  const [paymentMayHaveBeenSent, setPaymentMayHaveBeenSent] = useState(false);
   const [granted, setGranted] = useState<bigint | undefined>(undefined);
   /** Set once the wallet broadcast but verification failed: terminal, Send is never offered again. */
   const [broadcast, setBroadcast] = useState<string | undefined>(undefined);
@@ -207,10 +209,12 @@ export function Pay(): ReactNode {
     setBuiltForContext(undefined);
     setResultForContext(undefined);
     setResult(undefined);
+    setPaymentMayHaveBeenSent(false);
     setBroadcast(undefined);
     setBroadcastKind('payment');
     setApproval(undefined);
     setGranted(undefined);
+    setApprovalHash(undefined);
     setPermitDeclined(false);
     setWallet(undefined);
     setStatus('');
@@ -647,6 +651,7 @@ export function Pay(): ReactNode {
         guard();
         setApproval(plan);
         setGranted(undefined);
+        setApprovalHash(undefined);
         setBuilt(b);
         setBuiltFor(invoice);
         setBuiltForContext(ctx);
@@ -678,6 +683,9 @@ export function Pay(): ReactNode {
     const scopedStatus = (message: string): void => { if (isCurrent()) setStatus(message); };
     setError(undefined);
     setPhase('busy');
+    let actualAllowance = granted;
+    let approvalBroadcastHash = approvalHash;
+    let paymentWalletRequested = paymentMayHaveBeenSent;
     void (async () => {
       let stage: 'approval' | 'payment' = approval?.required === true && granted === undefined ? 'approval' : 'payment';
       try {
@@ -691,16 +699,21 @@ export function Pay(): ReactNode {
           assertPreparedBufferFresh(built, rt.nowSeconds());
         };
         preSignGuard();
-        let actualAllowance = granted;
         if (approval?.required === true && actualAllowance === undefined) {
           actualAllowance = await grantApproval(wallet, ctx, approval, rt, scopedStatus, preSignGuard, (hash) => {
-            if (!isCurrent()) setPreviousBroadcast({ hash, kind: 'approval' });
+            approvalBroadcastHash = hash;
+            if (isCurrent()) setApprovalHash(hash);
+            else setPreviousBroadcast({ hash, kind: 'approval' });
           });
+          // Preserve the confirmed allowance before checking whether this flow is still current.
+          if (isCurrent()) setGranted(actualAllowance);
           guard();
-          setGranted(actualAllowance);
         }
         stage = 'payment';
-        const res = await sendPayment(wallet, ctx, built, rt, scopedStatus, guard);
+        const res = await sendPayment(wallet, ctx, built, rt, scopedStatus, guard, () => {
+          paymentWalletRequested = true;
+          if (isCurrent()) setPaymentMayHaveBeenSent(true);
+        });
         if (!isCurrent()) {
           setPreviousBroadcast({ hash: res.hash, kind: 'payment' });
           app.announce('A transaction may have been submitted for the previous invoice. Check your wallet before taking further action.');
@@ -717,6 +730,8 @@ export function Pay(): ReactNode {
           if (e instanceof PostBroadcastError) {
             setPreviousBroadcast({ hash: e.hash, kind: stage });
             app.announce('A transaction may have been submitted for the previous invoice. Check your wallet before taking further action.');
+          } else if (approvalBroadcastHash !== undefined) {
+            setPreviousBroadcast({ hash: approvalBroadcastHash, kind: 'approval' });
           }
           return;
         }
@@ -730,7 +745,14 @@ export function Pay(): ReactNode {
           app.announce(`${stage === 'approval' ? 'Approval' : 'Payment'} sent, verification failed. Do not repeat it.`);
           return;
         }
-        setError(userMessage(e));
+        if (actualAllowance !== undefined) {
+          const reason = userMessage(e).replace(/\s*Nothing was sent\.?/g, '').trim();
+          const paymentStatus = paymentWalletRequested ? 'the payment was not confirmed' : 'no payment was sent';
+          setError(`Approval was confirmed${approvalBroadcastHash === undefined ? '' : ` (${approvalBroadcastHash})`}, but ${paymentStatus}. ${reason}`);
+          app.announce(`Approval confirmed; ${paymentStatus}.`);
+        } else {
+          setError(userMessage(e));
+        }
         setPhase('prepared');
       }
     })();
@@ -755,6 +777,7 @@ export function Pay(): ReactNode {
         }, (hash) => { if (!isCurrent()) setPreviousBroadcast({ hash, kind: 'approval' }); });
         if (!isCurrent()) return;
         setGranted(undefined);
+        setApprovalHash(undefined);
         setApproval({ ...approval, have: 0n, required: true });
         app.announce('Approval revoked.');
       } catch (e) {
@@ -785,10 +808,12 @@ export function Pay(): ReactNode {
     setResultForContext(undefined);
     setWallet(undefined);
     setResult(undefined);
+    setPaymentMayHaveBeenSent(false);
     setBroadcast(undefined);
     setBroadcastKind('payment');
     setApproval(undefined);
     setGranted(undefined);
+    setApprovalHash(undefined);
     setPhase('input');
   };
 
@@ -1113,7 +1138,7 @@ export function Pay(): ReactNode {
       )}
 
       {built !== undefined && builtFor === parsed.invoice && builtForContext === ctx && phase !== 'done' && phase !== 'submitted' && ctx !== undefined && (
-        <FinalPreview built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} approval={approval} granted={granted} onRevoke={onRevoke} />
+        <FinalPreview built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} approval={approval} granted={granted} approvalHash={approvalHash} onRevoke={onRevoke} />
       )}
 
       {status !== '' && <p role="status" className="status">{status}</p>}
@@ -1191,6 +1216,7 @@ function FinalPreview(props: {
   readonly onSend: () => void;
   readonly busy: boolean;
   readonly approval: ApprovalPlan | undefined;
+  readonly approvalHash: string | undefined;
   readonly granted: bigint | undefined;
   readonly onRevoke: () => void;
 }): ReactNode {
@@ -1224,7 +1250,7 @@ function FinalPreview(props: {
       </dl>
       {props.approval !== undefined && (
         <div className="notice notice-warn" role="note">
-          <strong className="notice-title">Token approval{props.approval.required ? ' needed first' : ' already in place'}</strong>
+          <strong className="notice-title">{props.granted !== undefined ? 'Token approval confirmed' : props.approval.required ? 'Token approval needed first' : 'Token approval already in place'}</strong>
           <dl className="details">
             <dt>Spender (router)</dt>
             <dd><Mono>{props.approval.spender}</Mono></dd>
@@ -1233,7 +1259,9 @@ function FinalPreview(props: {
             <dt>{props.approval.required ? 'Exact amount requested' : 'Needed for this payment'}</dt>
             <dd>{formatUnits(props.approval.need, dec)} {sym}</dd>
           </dl>
-          {props.approval.required ? (
+          {props.granted !== undefined ? (
+            <p>Approval was confirmed{props.approvalHash === undefined ? '.' : <>. Transaction hash: <Mono>{props.approvalHash}</Mono></>}</p>
+          ) : props.approval.required ? (
             <p>Pressing the button first asks your wallet for this exact approval and then for the payment. Check the amount in your wallet: it must not be unlimited. The approval is public and can link to the payment that follows. Permit-capable tokens avoid a separate approval transaction.</p>
           ) : (
             <p>The router already has enough allowance. This payment does not change a larger existing allowance; you can revoke it in your wallet.</p>
