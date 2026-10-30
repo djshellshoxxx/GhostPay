@@ -605,6 +605,10 @@ export class RelayerService {
     setOutcome: (o: Outcome) => void,
   ): Promise<JobOutcome<SweepResponse>> {
     const { cfg, client, breaker, budget, nonces } = rt;
+    // Queue time can consume the sweep's margin. Keep the same neutral, pre-broadcast reason as at admission.
+    const deadlineTooSoon = (): boolean =>
+      requested.sweep.deadline <= BigInt(Math.floor(this.now() / 1000) + this.d.config.minDeadlineSeconds);
+    if (deadlineTooSoon()) throw new RelayerError(422, 'deadline_too_soon');
     await this.reconcilePending(rt);
 
     // Operational (non-user) failures feed the breaker; user-caused reverts do not.
@@ -635,7 +639,10 @@ export class RelayerService {
     }
 
     let call = requested;
+    if (deadlineTooSoon()) throw new RelayerError(422, 'deadline_too_soon');
     const state = await op(() => client.readOrderState(call));
+    // A slow RPC can also consume that margin; check before attributing a state or permit error to the owner.
+    if (deadlineTooSoon()) throw new RelayerError(422, 'deadline_too_soon');
     if (state.nonceUsed) throw new RelayerError(409, 'nonce_used');
     if (state.ownerBalance < call.sweep.amount) throw new RelayerError(422, 'insufficient_token_balance');
     if (call.permit === undefined && state.allowance < call.sweep.amount)
@@ -689,8 +696,6 @@ export class RelayerService {
     // The deadline was checked before the queue wait: a sweep left with no more than the minimum could lapse before
     // inclusion, a mined revert the relayer pays for. Refused like at admission (neutral, not the owner's doing), here
     // and again after the final simulation, whose RPC calls can use up the margin.
-    const deadlineTooSoon = (): boolean =>
-      call.sweep.deadline <= BigInt(Math.floor(this.now() / 1000) + this.d.config.minDeadlineSeconds);
     if (deadlineTooSoon()) throw new RelayerError(422, 'deadline_too_soon');
     let finalSimulation: Awaited<ReturnType<ChainClient['simulateSweep']>>;
     try {

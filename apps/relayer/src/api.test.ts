@@ -474,7 +474,7 @@ describe('POST /v1/sweep success and validation', () => {
     const r = await queued;
     expect(r.status).toBe(422);
     expect(errCode(r)).toBe('deadline_too_soon'); // a pre-broadcast class the web client releases its lock on
-    expect(s.fake.simulations).toBe(3); // refused in the lane, before its second simulation
+    expect(s.fake.simulations).toBe(2); // refused in the lane, before its order-state read or either simulation
     expect(s.fake.sent).toHaveLength(1);
     const health = await call(s, 'GET', '/healthz');
     expect(health.json).toMatchObject({ status: 'ok', chains: [{ breaker: 'closed' }] });
@@ -482,6 +482,28 @@ describe('POST /v1/sweep success and validation', () => {
     s.fake.receiptGate = undefined;
     expect(s.relayer.metrics.render()).not.toContain('relayer_owner_failures_total');
     expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 3n })).body)).status).toBe(200);
+  });
+
+  it.each([false, true])('reports deadline_too_soon when a queued sweep expires (permit: %s)', async (permit) => {
+    const s = await start();
+    let release: () => void = () => undefined;
+    s.fake.receiptGate = new Promise<void>((resolve) => { release = resolve; });
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 1n })).body)).status).toBe(200);
+    const queued = call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 2n, deadlineOffset: 31, permit })).body);
+    const inLane = (): boolean => s.relayer.metrics.render().includes('relayer_queue_pending{chain_id="11155111"} 2');
+    for (let i = 0; i < 100 && !inLane(); i += 1) await settle();
+    expect(inLane()).toBe(true);
+    const readOrderState = vi.spyOn(s.fake, 'readOrderState');
+    s.clock.ms += 32_000;
+    s.fake.allowance = permit ? 0n : s.fake.allowance;
+    release();
+    const response = await queued;
+    expect(response.status).toBe(422);
+    expect(errCode(response)).toBe('deadline_too_soon');
+    expect(readOrderState).not.toHaveBeenCalled();
+    expect(s.fake.simulations).toBe(2);
+    expect(s.fake.sent).toHaveLength(1);
+    expect(s.relayer.metrics.render()).not.toContain('relayer_owner_failures_total');
   });
 
   it('D-R8: re-checks the deadline after the final simulation, so a slow RPC cannot use up the margin before the send', async () => {
@@ -504,6 +526,23 @@ describe('POST /v1/sweep success and validation', () => {
     expect(metrics).toMatch(/relayer_daily_budget_used_wei\{[^}]*\} 0$/m);
     expect(metrics).not.toContain('relayer_owner_failures_total');
     expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'ok', chains: [{ breaker: 'closed' }] });
+  });
+
+  it('reports a deadline consumed by the order-state read without attributing an expired permit to the owner', async () => {
+    const s = await start();
+    s.fake.allowance = 0n;
+    const read = s.fake.readOrderState.bind(s.fake);
+    s.fake.readOrderState = async (sweep) => {
+      const state = await read(sweep);
+      s.clock.ms += 32_000;
+      return state;
+    };
+    const response = await call(s, 'POST', '/v1/sweep', (await prepare(s, { permit: true, deadlineOffset: 31 })).body);
+    expect(response.status).toBe(422);
+    expect(errCode(response)).toBe('deadline_too_soon');
+    expect(s.fake.simulations).toBe(0);
+    expect(s.fake.sent).toHaveLength(0);
+    expect(s.relayer.metrics.render()).not.toContain('relayer_owner_failures_total');
   });
 
   it('rejects orders the contract would reject before any chain call', async () => {
