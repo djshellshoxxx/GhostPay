@@ -320,6 +320,14 @@ with tempfile.NamedTemporaryFile(mode='w', encoding='utf8', dir=OUT.parent, pref
     staged = report.name
     report.write('\n'.join(out).rstrip() + '\n')
 try:
+    # NamedTemporaryFile is owner-only (0600); keep the existing report's mode, else the umask default.
+    try:
+        mode = OUT.stat().st_mode & 0o777
+    except FileNotFoundError:
+        umask = os.umask(0)
+        os.umask(umask)
+        mode = 0o666 & ~umask
+    os.chmod(staged, mode)
     os.replace(staged, OUT)
 finally:
     if os.path.exists(staged):
