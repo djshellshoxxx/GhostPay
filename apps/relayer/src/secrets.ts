@@ -1,4 +1,4 @@
-import { lstatSync, readFileSync, statSync } from 'node:fs';
+import { closeSync, constants, fstatSync, openSync, readSync } from 'node:fs';
 
 /** Environment view. */
 export type Env = Readonly<Record<string, string | undefined>>;
@@ -27,7 +27,8 @@ export interface SecretSource {
  *
  * @remarks The file must be a regular file whose mode has no group/world bits (`chmod 600`); otherwise
  * startup is refused, as is a symlink or a file owned by neither the service user nor root. On Windows
- * (no POSIX modes) these checks are skipped. Production secrets in environment variables require
+ * (no POSIX modes) these checks are skipped. Metadata and bounded reads use the same descriptor;
+ * replacing the pathname cannot substitute unchecked bytes. Production secrets in environment variables require
  * `ALLOW_SECRET_ENV=1`. Contents are never included in error messages or logs.
  *
  * @param env Environment.
@@ -43,26 +44,35 @@ export function loadSecret(env: Env, src: SecretSource): Uint8Array {
   }
   let text: string;
   if (path !== undefined && path !== '') {
-    let st;
+    let fd: number | undefined;
     try {
-      if (process.platform !== 'win32' && lstatSync(path).isSymbolicLink()) throw new ConfigError(`${src.fileVar}: symlinks are not accepted`);
-      st = statSync(path);
+      // NOFOLLOW refuses leaf symlinks atomically; NONBLOCK prevents a swapped FIFO from hanging startup.
+      const flags = constants.O_RDONLY | (process.platform === 'win32' ? 0 : constants.O_NOFOLLOW | constants.O_NONBLOCK);
+      fd = openSync(path, flags);
+      const st = fstatSync(fd);
+      if (!st.isFile() || st.size > 4096) throw new ConfigError(`${src.fileVar}: not a regular small file`);
+      if (process.platform !== 'win32' && (st.mode & 0o077) !== 0) {
+        throw new ConfigError(`${src.fileVar}: file mode must not allow group/world access (chmod 600)`);
+      }
+      const uid = process.getuid?.();
+      if (process.platform !== 'win32' && uid !== undefined && st.uid !== uid && st.uid !== 0) {
+        throw new ConfigError(`${src.fileVar}: file must be owned by the service user or root`);
+      }
+      // Check actual bytes too: a regular file may grow after fstat. Never read an unbounded file.
+      const bytes = Buffer.alloc(4097);
+      let size = 0;
+      while (size < bytes.length) {
+        const n = readSync(fd, bytes, size, bytes.length - size, null);
+        if (n === 0) break;
+        size += n;
+      }
+      if (size > 4096) throw new ConfigError(`${src.fileVar}: not a regular small file`);
+      text = bytes.subarray(0, size).toString('utf8');
     } catch (e) {
       if (e instanceof ConfigError) throw e;
       throw new ConfigError(`${src.fileVar}: file not readable`);
-    }
-    if (!st.isFile() || st.size > 4096) throw new ConfigError(`${src.fileVar}: not a regular small file`);
-    if (process.platform !== 'win32' && (st.mode & 0o077) !== 0) {
-      throw new ConfigError(`${src.fileVar}: file mode must not allow group/world access (chmod 600)`);
-    }
-    const uid = process.getuid?.();
-    if (process.platform !== 'win32' && uid !== undefined && st.uid !== uid && st.uid !== 0) {
-      throw new ConfigError(`${src.fileVar}: file must be owned by the service user or root`);
-    }
-    try {
-      text = readFileSync(path, 'utf8');
-    } catch {
-      throw new ConfigError(`${src.fileVar}: file not readable`);
+    } finally {
+      if (fd !== undefined) closeSync(fd);
     }
   } else if (direct !== undefined && direct !== '') {
     if (env['NODE_ENV'] === 'production' && env['ALLOW_SECRET_ENV'] !== '1') {
