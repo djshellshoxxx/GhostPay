@@ -14,7 +14,7 @@ import { authorizeEncryptedVault, readEncryptedVault } from '../lib/keyVault';
 import { captureSessionGuard, getSessionBackup, subscribeSessionBackup } from '../lib/session';
 import { useServices } from '../lib/services';
 import { beginSweepAttempt, getSweepAttempt, isSweepJournalBroken, resolveSweepAttempt, useApp, useSweepAttempt, useSweepJournalBroken } from '../state';
-import { SweepJournalUnavailableError } from '../lib/sweepAttemptJournal';
+import { MAX_OTHER_HASHES, SweepJournalUnavailableError } from '../lib/sweepAttemptJournal';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { MessageKey } from '../i18n/catalog';
 
@@ -59,7 +59,8 @@ export function Sweep(): ReactNode {
   const [dryRunSkipped, setDryRunSkipped] = useState(false);
   // L2-F2: a direct lock whose handoff outcome is unknown may be replaced by a transaction with exactly its nonce (only
   // one can be mined). Not a submitted one (B-R5): the node accepted it and would refuse a replacement at the same fee.
-  const resignNonce = !journalBroken && attempt !== undefined && attempt.order === undefined && attempt.status === 'unknown-after-handoff' ? attempt.nonce : undefined;
+  const replacementLimitReached = (attempt?.otherHashes?.length ?? 0) >= MAX_OTHER_HASHES;
+  const resignNonce = !replacementLimitReached && !journalBroken && attempt !== undefined && attempt.order === undefined && attempt.status === 'unknown-after-handoff' ? attempt.nonce : undefined;
 
   useEffect(() => {
     let live = true;
@@ -276,6 +277,7 @@ export function Sweep(): ReactNode {
     if (current === undefined || current.order !== undefined || current.nonce === undefined || current.status !== 'unknown-after-handoff') {
       throw new UserFacingError(t('sweep.resign.nothingPending'));
     }
+    if ((current.otherHashes?.length ?? 0) >= MAX_OTHER_HASHES) throw new UserFacingError(t('sweep.resign.limit'));
     return { ...current, nonce: current.nonce };
   };
 
@@ -295,6 +297,7 @@ export function Sweep(): ReactNode {
         const next = await reconcileSweepLock(rpc, attempt);
         if (next.status === attempt.status) setCheckNote(pendingNote);
         else if (!resolveSweepAttempt(attempt, next)) setCheckNote(t('sweep.note.lockChanged'));
+        else if (attempt.status === 'submitted' && next.status === 'unknown-after-handoff') setCheckNote(t('sweep.note.rpcForgot'));
       } catch (e) {
         setCheckNote(e instanceof UserFacingError ? e.message : t('sweep.note.checkFailed'));
       } finally {
@@ -414,6 +417,7 @@ export function Sweep(): ReactNode {
               <button type="button" className="btn" onClick={onCheckStatus} disabled={checking}>{t('sweep.checkStatus')}</button>
             </>
           )}
+          {replacementLimitReached && signingLocked && attempt.order === undefined && <><br />{t('sweep.resign.limit')}</>}
           {resignNonce !== undefined && (
             <>
               <br />
