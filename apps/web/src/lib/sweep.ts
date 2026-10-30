@@ -446,7 +446,8 @@ export async function reconcileRelayedOrder<T extends { readonly owner: Address;
  * A direct lock none of whose hashes has a receipt resolves as `replaced` once the owner's nonce is used at the
  * finalized block: another transaction with that nonce was mined, and none can follow it. That takes an explicit "no
  * receipt" answer for every hash, read after the nonce check; a failed nonce read, or a failed or malformed receipt
- * read, leaves the lock unchanged.
+ * read, keeps signing locked and reports uncertainty. A submitted transaction that the RPC no longer knows may be
+ * re-signed only with its original nonce; absence never releases the lock.
  */
 export async function reconcileSweepLock<T extends SweepLock>(rpc: Rpc, lock: T): Promise<T> {
   if (lock.order !== undefined) return reconcileRelayedOrder(rpc, lock);
@@ -458,12 +459,36 @@ export async function reconcileSweepLock<T extends SweepLock>(rpc: Rpc, lock: T)
     if (first.mined.status === 'reverted' && lock.nonce === undefined) return lock;
     return first.mined.status === lock.status && first.mined.hash === expectedHash ? lock : settled(lock, first.mined);
   }
-  if (lock.nonce === undefined || !isUnresolvedAttempt(lock) || !(await nonceFinal(rpc, lock.owner, lock.nonce))) return lock;
+  if (lock.nonce === undefined || !isUnresolvedAttempt(lock) || !(await nonceFinal(rpc, lock.owner, lock.nonce))) {
+    if (!first.allAbsent) throw uncertainReceipt();
+    if (lock.nonce !== undefined && lock.status === 'submitted' && await transactionsAbsent(rpc, hashes)) {
+      // The configured RPC may have forgotten them, but another node may still include one. Keep the same nonce lock.
+      return { ...lock, status: 'unknown-after-handoff' };
+    }
+    return lock;
+  }
   // Look once more now that the nonce is final: a receipt for a recorded hash still wins, and an RPC error or a
   // malformed answer proves nothing (B-R1).
   const again = await readReceipts(rpc, hashes);
   if (again.mined !== undefined) return settled(lock, again.mined);
-  return again.allAbsent ? { ...lock, status: 'replaced' } : lock;
+  if (!again.allAbsent) throw uncertainReceipt();
+  return { ...lock, status: 'replaced' };
+}
+
+function uncertainReceipt(): UserFacingError {
+  return new UserFacingError('Could not check every transaction receipt. The outcome is still unknown; signing remains locked. Check again later.');
+}
+
+/** Only explicit null for every recorded hash permits same-nonce recovery; errors and all other answers prove nothing. */
+async function transactionsAbsent(rpc: Rpc, hashes: readonly Hex[]): Promise<boolean> {
+  try {
+    for (const hash of hashes) {
+      if (await rpc.request('eth_getTransactionByHash', [hash]) !== null) return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 interface MinedTx { readonly hash: Hex; readonly status: 'included' | 'reverted' }

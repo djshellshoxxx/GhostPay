@@ -85,12 +85,8 @@ let custody: Custody | undefined;
 let backupSummary: SessionBackup | undefined;
 // Changes even across empty -> populated -> empty transitions, so an async decrypt cannot install stale keys.
 let sessionRevision = 0;
-/** Compatibility copies handed out by {@link requireSession}; wiped when the session clears (bounded). */
-let issued: SecretScalar[] = [];
-const MAX_ISSUED = 8;
 const listeners = new Set<() => void>();
 const backupListeners = new Set<() => void>();
-const idleLockListeners = new Set<() => void>();
 
 function emit(): void {
   for (const l of listeners) l();
@@ -107,20 +103,6 @@ export function subscribeSession(listener: () => void): () => void {
 export function subscribeSessionBackup(listener: () => void): () => void {
   backupListeners.add(listener);
   return () => backupListeners.delete(listener);
-}
-
-/**
- * Subscribes to the app's idle lock, which runs also while keys stay loaded (unsaved keys) or none are: views forget the
- * key hex and passphrases typed into them (G2-05, KL-26).
- */
-export function subscribeIdleLock(listener: () => void): () => void {
-  idleLockListeners.add(listener);
-  return () => idleLockListeners.delete(listener);
-}
-
-/** Called by the idle lock (App.tsx) whether or not it wipes the keys. */
-export function notifyIdleLock(): void {
-  for (const l of [...idleLockListeners]) l();
 }
 
 /** Snapshot for `useSyncExternalStore`; undefined without keys, stable identity between changes. */
@@ -333,23 +315,6 @@ export function revealViewingKey(): Uint8Array {
   return current.viewing.use((b) => b.slice());
 }
 
-/**
- * Compatibility accessor: temporary scalars that live until the session is cleared (at most eight are kept; older
- * copies are wiped). Prefer {@link withSessionSecrets}, which wipes immediately.
- *
- * @deprecated WEB-APP-07 / L1-07: opens all three scalars and keeps them readable until the session clears. Invoice
- * signing no longer uses it; it stays exported only until the remaining callers (Scan, pay.test, sweep.test) move to
- * withSessionSecrets, and is then deleted.
- * @throws {UserFacingError} when no keys are loaded.
- */
-export function requireSession(): SessionSecrets {
-  if (current === undefined) throw new UserFacingError('Load or generate seller keys first (Seller keys).');
-  const opened = open(current);
-  issued.push(opened.keys.spendingSecret, opened.keys.viewingSecret, opened.signingKey);
-  while (issued.length > MAX_ISSUED * 3) zeroize(issued.shift() as SecretScalar);
-  return opened;
-}
-
 export function hasSession(): boolean {
   return current !== undefined;
 }
@@ -410,8 +375,6 @@ export function clearSession(notify = true): void {
     current.viewing.dispose();
     current.signing.dispose();
   }
-  zeroize(...issued);
-  issued = [];
   current = undefined;
   publicSummary = undefined;
   setCustody(undefined, false);

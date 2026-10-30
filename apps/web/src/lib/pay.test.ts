@@ -43,7 +43,7 @@ import {
   typedDataJson,
   type PayContext,
 } from './pay';
-import { clearSession, generateSession, requireSession } from './session';
+import { clearSession, generateSession, withSessionSecrets } from './session';
 import type { ManifestState } from './manifest';
 import { currentSignerHex } from '../test/keys';
 
@@ -181,7 +181,7 @@ function stripId(i: object): Record<string, unknown> {
   return rest;
 }
 function signingKey(): Uint8Array {
-  return Uint8Array.from(requireSession().signingKey);
+  return withSessionSecrets((session) => Uint8Array.from(session.signingKey));
 }
 
 describe('createPayContext and amounts', () => {

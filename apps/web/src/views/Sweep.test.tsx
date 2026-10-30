@@ -6,7 +6,8 @@ import userEvent from '@testing-library/user-event';
 import { decodeFunctionData, encodeAbiParameters, encodeFunctionData, encodeFunctionResult, keccak256, parseAbi, parseTransaction } from 'viem/utils';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { Services } from '../lib/services';
-import { clearSession, generateSession, notifyIdleLock } from '../lib/session';
+import { clearSession, generateSession } from '../lib/session';
+import { notifyAppLock } from '../lib/appLock';
 import * as appState from '../state';
 import { MemoryKeyVaultStore, saveEncryptedVault, setKeyVaultStoreForTests } from '../lib/keyVault';
 import { SETTINGS_KEY } from '../lib/settings';
@@ -51,6 +52,8 @@ interface RawSink {
   dryRunBlind?: boolean;
   /** Index in `raws` of the transaction that is mined: only its hash has a receipt (overrides `receiptOk`). */
   mined?: number;
+  pendingAbsent?: boolean;
+  receiptFailed?: boolean;
 }
 
 const ORACLE = '0x420000000000000000000000000000000000000F';
@@ -88,7 +91,10 @@ function extra(balance: bigint, nativeBalance: bigint, rawSink: RawSink) {
         if (params[0] === 'finalized' && rawSink.blockTimestamp !== undefined) return { hash: `0x${'f1'.repeat(32)}`, number: '0x64', timestamp: `0x${rawSink.blockTimestamp.toString(16)}` };
         if (params[0] === 'finalized') throw new ChainAdapterError('RPC_FAILURE', 'finalized not supported');
         return undefined;
+      case 'eth_getTransactionByHash':
+        return rawSink.pendingAbsent === true ? null : { hash: params[0] };
       case 'eth_getTransactionReceipt': {
+        if (rawSink.receiptFailed === true) throw new Error('receipt unavailable');
         if (rawSink.mined !== undefined) {
           const mined = rawSink.raws?.[rawSink.mined];
           return mined !== undefined && keccak256(mined as `0x${string}`) === params[0] ? { transactionHash: params[0], status: '0x1' } : null;
@@ -506,6 +512,69 @@ describe('Sweep', () => {
       expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(false);
     });
 
+    it('refuses replacement at the journal hash limit before signing, including after reload', async () => {
+      const sink: RawSink = { calls: [], raws: [], failSends: 1 };
+      const user = await toSweep({ raw: sink });
+      await screen.findByText('5 USDC');
+      await fill(user);
+      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      await screen.findByText('Outcome unknown');
+      const lock = (JSON.parse(window.sessionStorage.getItem(SWEEP_JOURNAL_KEY) ?? '[]') as import('../lib/sweep').SweepLock[])[0]!;
+      act(() => { appState.recordSweepAttempt({ ...lock, otherHashes: [1, 2, 3].map((n) => `0x${n.toString(16).padStart(64, '0')}` as const) }); });
+      expect(screen.queryByRole('button', { name: RESIGN })).toBeNull();
+      expect(screen.getByText(/Replacement limit reached/)).toBeTruthy();
+      // A submitted-at-cap lock can become uncertain again, but still cannot gain another hash slot.
+      sink.pendingAbsent = true;
+      act(() => { appState.recordSweepAttempt({ ...appState.getSweepAttempt(lock.chainId, lock.owner)!, status: 'submitted' }); });
+      await user.click(screen.getByRole('button', { name: 'Check status' }));
+      expect(await screen.findByText(/The configured RPC no longer reports/)).toBeTruthy();
+      expect(screen.queryByRole('button', { name: RESIGN })).toBeNull();
+      appState.resetSweepAttemptsForTests({ keepStorage: true });
+      const nav = within(screen.getByRole('navigation', { name: 'Main' }));
+      await user.click(nav.getByRole('button', { name: 'Scan and receive' }));
+      await user.click(nav.getByRole('button', { name: 'Sweep' }));
+      await screen.findByText('5 USDC');
+      await user.click(screen.getByLabelText(/Directly/));
+      expect(screen.queryByRole('button', { name: RESIGN })).toBeNull();
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+      expect(sink.raws).toHaveLength(1);
+    });
+
+    it('recovers a submitted transaction absent from the RPC without unlocking a new nonce', async () => {
+      const sink: RawSink = { calls: [], raws: [], pendingAbsent: true };
+      const user = await toSweep({ raw: sink });
+      await screen.findByText('5 USDC');
+      await fill(user);
+      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      await screen.findByText('Submitted');
+      await user.click(screen.getByRole('button', { name: 'Check status' }));
+      expect(await screen.findByText('Outcome unknown')).toBeTruthy();
+      expect(screen.getByText(/does not prove they were dropped/)).toBeTruthy();
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+      sink.gasPrice = '0x77359400';
+      await user.click(screen.getByRole('button', { name: RESIGN }));
+      await waitFor(() => { expect(sink.raws).toHaveLength(2); });
+      expect(parseTransaction(sink.raws![1] as `0x${string}`).nonce).toBe(parseTransaction(sink.raws![0] as `0x${string}`).nonce);
+      // Even after recovery, the earlier transaction can still be the one mined.
+      sink.mined = 0;
+      await user.click(screen.getByRole('button', { name: 'Check status' }));
+      expect(await screen.findByText('Included on chain')).toBeTruthy();
+    });
+
+    it('reports an inconclusive receipt check without claiming no receipt was found', async () => {
+      const sink: RawSink = { calls: [], raws: [], failSends: 1 };
+      const user = await toSweep({ raw: sink });
+      await screen.findByText('5 USDC');
+      await fill(user);
+      await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
+      await screen.findByText('Outcome unknown');
+      sink.receiptFailed = true;
+      await user.click(screen.getByRole('button', { name: 'Check status' }));
+      expect(await screen.findByText(/outcome is still unknown/)).toBeTruthy();
+      expect(screen.queryByText(/No receipt found/)).toBeNull();
+      expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
+    });
+
     it('B-R7: the unknown-outcome notice of a direct lock agrees with the same-nonce replacement it offers', async () => {
       const sink: RawSink = { calls: [], raws: [], failSends: 1 };
       const user = await toSweep({ raw: sink });
@@ -513,7 +582,7 @@ describe('Sweep', () => {
       await fill(user);
       await user.click(screen.getByRole('button', { name: 'Sign and broadcast directly' }));
       expect(await screen.findByText('Outcome unknown')).toBeTruthy();
-      expect(screen.getByText(/so a new sweep is disabled; only a replacement with the same nonce can be signed/)).toBeTruthy();
+      expect(screen.getByText(/so a new sweep is disabled/)).toBeTruthy();
       expect(screen.queryByText(/signing a new one is disabled/i)).toBeNull();
       expect(screen.getByRole('button', { name: RESIGN })).toBeTruthy();
       expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign and broadcast directly' }).disabled).toBe(true);
@@ -849,7 +918,7 @@ describe('G2-05: the vault passphrase field keeps nothing typed', () => {
     const field = screen.getByLabelText<HTMLInputElement>('Vault passphrase (required for each sweep action)');
     fireEvent.change(field, { target: { value: VAULT_PASS } });
     expect(field.getAttribute('value')).toBe(VAULT_PASS);
-    act(() => { notifyIdleLock(); });
+    act(() => { notifyAppLock('idle'); });
     expect(field.value).toBe('');
     expect(field.getAttribute('value') ?? '').toBe('');
   });

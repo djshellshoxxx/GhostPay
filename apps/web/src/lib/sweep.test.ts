@@ -6,7 +6,7 @@ import { encodeFunctionData } from 'viem/utils';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER, FAKE_SWEEP_RELAYER, fakeManifest } from '../test/fakeManifest';
 import { mockRpc } from '../test/mockRpc';
-import { clearSession, generateSession, requireSession } from './session';
+import { clearSession, generateSession } from './session';
 import { checkDestination, describeDestination, deriveVerifiedSweepKey, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, OP_STACK_GAS_PRICE_ORACLE, readBalance, reconcileRelayedOrder, reconcileSweepLock, RELAYED_EXPIRY_MARGIN_SECONDS, relayedSweep, type RelayedOrderRef, type SweepLock, type SweepTarget } from './sweep';
 import { ChainAdapterError, createClient, findChain, erc20Abi, ghostPaySweepRelayerAbi } from '@ghostpay/chain-adapters';
 import { userMessage } from './errors';
@@ -229,7 +229,6 @@ describe('relayedSweep (EIP-712 sweep + ERC-2612 permit, signed in memory)', () 
     await expect(
       relayedSweep({ target, manifest, destination: DEST, amount: 1n, quote: { fee: 0n, feeTo: FEE_TO, expiresAt: NOW + 60, quoteToken: 'tok' }, relayerUrl: 'https://relay.test', rpc, nowSeconds: () => NOW }),
     ).rejects.toThrow();
-    void requireSession;
   });
 });
 
@@ -842,9 +841,9 @@ describe('L2-F2: a direct lock whose nonce is final without its own receipt reso
   it('B-R1: a failed or malformed receipt read at the final look never concludes replaced', async () => {
     const limited = new ChainAdapterError('RPC_FAILURE', 'http status 429');
     // Every receipt read fails while the finalized nonce (4) is past the locked one (3): the locked tx may be the mined one.
-    expect(await reconcileSweepLock(rpc('0x4', [limited, limited]), lock)).toBe(lock);
+    await expect(reconcileSweepLock(rpc('0x4', [limited, limited]), lock)).rejects.toThrow(/outcome is still unknown/);
     for (const bad of [limited, '0x1', 7, [], { transactionHash: H }, { transactionHash: H, status: '0x2' }, { transactionHash: `0x${'cd'.repeat(32)}`, status: '0x1' }]) {
-      expect(await reconcileSweepLock(rpc('0x4', [null, bad]), lock)).toBe(lock);
+      await expect(reconcileSweepLock(rpc('0x4', [null, bad]), lock)).rejects.toThrow(/outcome is still unknown/);
     }
     // Only an explicit "no receipt" for the locked hash, read after the nonce is final, means it can never be mined.
     expect((await reconcileSweepLock(rpc('0x4', [limited, null]), lock)).status).toBe('replaced');
@@ -886,9 +885,35 @@ describe('L2-F2: a direct lock whose nonce is final without its own receipt reso
       expect((await reconcileSweepLock(byHash('0x4', {}), resigned)).status).toBe('replaced');
       expect(await reconcileSweepLock(byHash('0x3', {}), resigned)).toBe(resigned);
       for (const bad of [new ChainAdapterError('RPC_FAILURE', 'http status 429'), '0x1', { transactionHash: H, status: '0x1' }]) {
-        expect(await reconcileSweepLock(byHash('0x4', { [E2]: bad }), resigned)).toBe(resigned);
+        await expect(reconcileSweepLock(byHash('0x4', { [E2]: bad }), resigned)).rejects.toThrow(/outcome is still unknown/);
       }
     });
+  });
+
+  it('offers only same-nonce recovery when every submitted hash is explicitly unknown to the RPC', async () => {
+    const old = `0x${'cd'.repeat(32)}` as const;
+    const submitted: SweepLock = { ...lock, status: 'submitted', otherHashes: [old] };
+    const queries: string[] = [];
+    const make = (reply: unknown) => mockRpc(84532, (method, params) => {
+      if (method === 'eth_getTransactionReceipt') return null;
+      if (method === 'eth_getTransactionCount') return '0x3';
+      if (method === 'eth_getTransactionByHash') {
+        queries.push(params[0] as string);
+        if (params[0] === old) {
+          if (reply instanceof Error) throw reply;
+          return reply;
+        }
+        return null;
+      }
+      throw new Error(method);
+    });
+    expect(await reconcileSweepLock(make(null), submitted)).toEqual({ ...submitted, status: 'unknown-after-handoff' });
+    expect(queries).toEqual([H, old]);
+    for (const answer of [{ hash: old }, {}, undefined, '0x', new Error('RPC unavailable')]) {
+      await expect(reconcileSweepLock(make(answer), submitted)).resolves.toBe(submitted);
+    }
+    // Receipt uncertainty cannot be treated as an absent pending transaction.
+    await expect(reconcileSweepLock(rpc('0x3', [new Error('receipt unavailable')]), submitted)).rejects.toThrow(/outcome is still unknown/);
   });
 
   it('never applies to a legacy relayed lock (no owner nonce)', async () => {

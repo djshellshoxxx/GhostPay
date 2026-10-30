@@ -347,7 +347,7 @@ function renderServer(m) {
     lines.push(`location = ${nginxQuote(bare, { what: 'basePath' })} { return 301 ${nginxQuote(base, { what: 'basePath' })}; }`);
     lines.push('location / { return 404; }');
   }
-  for (const dir of [...indexDirectories(m.servable)].sort()) {
+  for (const dir of [...indexDirectories(m.servable)].sort((a, b) => a < b ? -1 : a > b ? 1 : 0)) {
     lines.push(`location = ${nginxQuote(`${base}${dir}`, { what: 'directory path' })} { return 301 ${nginxQuote(encodePath(`${base}${dir}/`), { what: 'redirect' })}; }`);
   }
   lines.push(

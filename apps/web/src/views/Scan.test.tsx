@@ -470,7 +470,8 @@ describe('Scan and receive', () => {
     const pub = generateSession();
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
     const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 0, caller: FAKE_ROUTER });
-    const opened = vi.spyOn(sessionModule, 'requireSession');
+    const opened = vi.spyOn(sessionModule, 'withSessionSecrets');
+    const openedAsync = vi.spyOn(sessionModule, 'withSessionSecretsAsync');
     const viewing = vi.spyOn(sessionModule, 'revealViewingKey');
     try {
       const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(chainWithLogs(84532, 500, [mine.log]))), createScanWorker: () => new InlineWorker() }));
@@ -481,8 +482,9 @@ describe('Scan and receive', () => {
       await user.click(screen.getByRole('button', { name: 'Unlock tags' }));
       expect(await screen.findByLabelText(/Client tag/)).toBeTruthy();
       expect(opened).not.toHaveBeenCalled();
+      expect(openedAsync).not.toHaveBeenCalled();
       expect(viewing).toHaveBeenCalledTimes(2);
-    } finally { opened.mockRestore(); viewing.mockRestore(); }
+    } finally { opened.mockRestore(); openedAsync.mockRestore(); viewing.mockRestore(); }
   });
 
   it('locks tags again when the seller keys change while a tag unlock is pending (L1-04)', async () => {

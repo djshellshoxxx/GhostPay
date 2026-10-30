@@ -401,6 +401,71 @@ describe('A-R7: the window also grows back after a halving that a fixed range li
     expect(seen).toHaveLength(2517);
   }, 60_000);
 
+  it('AR2: after a sparse stretch, a dense result-limited stretch does not refuse each regrown window once', async () => {
+    // Blocks 1,000..1,999 hold one announcement each; the provider refuses a response over ten logs (-32602). The
+    // 500-block window served in the sparse stretch made every regrown window there count as "no larger than served".
+    const dense = Array.from({ length: 1000 }, (_, k) => mkLog(1000 + k, 0, OTHER));
+    let refused = 0;
+    const t = fakeTransport((m, p) => {
+      if (m === 'eth_chainId') return '0xaa36a7';
+      if (m === 'eth_blockNumber') return `0x${(2999).toString(16)}`;
+      if (m === 'eth_getBlockByNumber') return { number: p[0], hash: bh(Number(BigInt(p[0] as string))), parentHash: bh(0) };
+      const f = p[0] as { fromBlock: string; toBlock: string };
+      const [from, to] = [BigInt(f.fromBlock), BigInt(f.toBlock)];
+      const hit = dense.filter((l) => BigInt(l.blockNumber) >= from && BigInt(l.blockNumber) <= to);
+      if (hit.length > 10) {
+        refused++;
+        throw new FakeRpcError(-32602);
+      }
+      return hit;
+    });
+    const c = await createClient(CHAIN, 'https://rpc.example.test', { transport: t, sleep: noSleep, retries: 0 });
+    let cursor: ScanCursor = { nextBlock: 0n };
+    const found: ScannedAnnouncement[] = [];
+    for (let i = 0; i < 100; i++) {
+      const r = await fetchAnnouncements({ chain: CHAIN, client: c, announcer: ANN, router: FAKE.router, cursor });
+      found.push(...r.announcements);
+      cursor = r.cursor;
+      if (!r.truncated) break;
+    }
+    expect(cursor.nextBlock).toBe(3000n);
+    expect(found).toHaveLength(1000);
+    // A served size that spans the whole fetch refused 41 requests here.
+    expect(refused).toBe(29);
+  }, 60_000);
+
+  it('preserves served-range evidence at the cap after regrowth and a second transient refusal', async () => {
+    const served: bigint[] = [];
+    let initialRefusals = 3;
+    let capSuccesses = 0;
+    let secondRefusal = false;
+    const t = fakeTransport((m, p) => {
+      if (m === 'eth_chainId') return '0xaa36a7';
+      if (m === 'eth_blockNumber') return '0x3e7';
+      if (m === 'eth_getBlockByNumber') return { number: p[0], hash: bh(Number(BigInt(p[0] as string))), parentHash: bh(0) };
+      const f = p[0] as { fromBlock: string; toBlock: string };
+      const width = BigInt(f.toBlock) - BigInt(f.fromBlock) + 1n;
+      if (initialRefusals > 0) {
+        initialRefusals--;
+        throw new FakeRpcError(-32005);
+      }
+      if (width === 8n && capSuccesses === 2 && !secondRefusal) {
+        secondRefusal = true;
+        throw new FakeRpcError(-32005);
+      }
+      if (width === 8n) capSuccesses++;
+      served.push(width);
+      return [];
+    });
+    const client = await createClient(CHAIN, 'https://rpc.example.test', { transport: t, sleep: noSleep, retries: 0 });
+    const result = await fetchAnnouncements({ chain: CHAIN, client, announcer: ANN, router: FAKE.router, cursor: { nextBlock: 0n }, maxRange: 8, maxRequests: 30 });
+    expect(secondRefusal).toBe(true);
+    expect(served.slice(-3)).toEqual([8n, 8n, 8n]);
+    expect(result.cursor.nextBlock).toBe(176n);
+    expect(result.truncated).toBe(true);
+    expect(result.announcements).toEqual([]);
+  });
+
   it('keeps the size after a halving a fixed range limit explains, so the limit costs no refused request per window', async () => {
     // A ten-block range limit coded -32005: each fetch halves 1,000 blocks down to seven (seven refused requests, three
     // attempts each), then reads seven-block windows only.
