@@ -136,16 +136,21 @@ These were raised by the last AI review of each cluster. They are minor issues, 
 3. **AR2, minor: dense windows refused after a sparse stretch.**
    - **Problem:** in `packages/chain-adapters/src/logs.ts`, `served` spans the whole fetch, so after a sparse stretch each regrown window in a dense, result-limited stretch is refused once. This costs requests only; no logs are lost.
    - **Fix:** reset `served` when the window regrows.
+   - **Superseded (checked on `70d8bf6`):** the reset is in place at `packages/chain-adapters/src/logs.ts:330-331` and `:475`. See `WAVE-2-STATUS-2026-10-30.md`.
 4. **B2R, fixed in `9cd80cf`: operator fee read as zero.** `readOperatorFee` now accepts only a positively identified plain revert as the absent-method fallback. A separate sanitized RPC flag preserves the existing broad dry-run failure classification; out-of-gas, opcode failures and unknown halts fail closed. Real transport-to-sweep regression cases cover the boundary.
 5. **BR, nits: sweep lock edge cases.** In `Sweep.tsx` and `state.tsx`:
    - after 3 other hashes, the UI still offers a same-nonce replacement;
    - a `submitted` transaction the node dropped keeps the tab's lock with no in-app recovery;
    - an inconclusive final look shows the pending note.
+   - **Partly superseded (checked on `70d8bf6`):** the first bullet is covered by the hash limit at `Sweep.tsx:62-63`. The other two bullets are still open or unknown. See `WAVE-2-STATUS-2026-10-30.md`.
 
 ### P2: integration leftovers and drift
 - **Seller-keys gate:** `RegistryView.tsx` and `PolicyCreate.tsx` should pass `paymentsOnly` to `BackupGate`, because they never use the signing key (CR2 nit). `PolicyView.test` then needs generated keys.
+  - **Superseded (checked on `70d8bf6`):** both files pass `paymentsOnly` (`apps/web/src/features/registry/RegistryView.tsx:247`, `apps/web/src/features/policy/PolicyCreate.tsx:102`). See `WAVE-2-STATUS-2026-10-30.md`.
 - **Remove `requireSession`:** it is a deprecated compatibility API with no production caller. Remove it from `apps/web/src/lib/session.ts`, then migrate `pay.test.ts`, `session.test.ts`, `Scan.test.tsx` and `invoiceCreate.test.ts`.
+  - **Superseded (checked on `70d8bf6`):** no `requireSession` match under `apps/web/src`. See `WAVE-2-STATUS-2026-10-30.md`.
 - **One idle-lock signal:** `session.ts` `subscribeIdleLock`/`notifyIdleLock` and `lib/appLock.ts` `subscribeAppLock`/`notifyAppLock('idle')` now both fire on the idle lock. Move the three subscribers (`SellerKeys`, `Sweep`, `TagArchive`) to `subscribeAppLock` and delete the session copy.
+  - **Superseded (checked on `70d8bf6`):** no `subscribeIdleLock` / `notifyIdleLock` under `apps/web/src`; the subscribers use `subscribeAppLock`. See `WAVE-2-STATUS-2026-10-30.md`.
 - **Docs drift.** Remaining work and known corrections:
   - The C-R10 signer-only/idle-lock wording in the two troubleshooting guides, `docs/user/set-up-stealth-meta-address.md` and `apps/web/README.md` was already corrected in `bd45a32` (issue #38 finding 3); it is not open work.
   - `docs/user/bitcoin-silent-payments.md`, `solana-payments.md`, `tron-payments.md` and `docs/chains/bitcoin.md`: "shown once" backups and genesis-linked heights;
