@@ -132,11 +132,11 @@ Port the recovered work feature by feature. For each feature, classify every fil
 These were raised by the last AI review of each cluster. They are minor issues, not confirmed findings. The full table is in the report under "Open follow-ups from the fix reviews", and the full text is in `docs/audits/data/24/status.json` under `_clusters.<round>.review_issues`.
 
 1. **CR2, fixed in `2fcab7f` (C-R12): key loss on unlock.** Unlocking could replace keys whose only vault copy another tab had deleted, without the confirmation. The unlock now re-reads the vault and asks first.
-2. **D3, fixed in `46d78b1`: lapsed deadline reported as the wrong reason.** `runSettled` now rechecks the sweep deadline at lane entry and around the order-state read, preserving `deadline_too_soon` for queue/RPC delays without striking the owner. Three new regression cases and the full relayer suite pass.
+2. **D3, fixed in `de3ea97`: lapsed deadline reported as the wrong reason.** `runSettled` now rechecks the sweep deadline at lane entry and around the order-state read, preserving `deadline_too_soon` for queue/RPC delays without striking the owner. Three new regression cases and the full relayer suite pass.
 3. **AR2, minor: dense windows refused after a sparse stretch.**
    - **Problem:** in `packages/chain-adapters/src/logs.ts`, `served` spans the whole fetch, so after a sparse stretch each regrown window in a dense, result-limited stretch is refused once. This costs requests only; no logs are lost.
    - **Fix:** reset `served` when the window regrows.
-4. **B2R, fixed in `ef9c870`: operator fee read as zero.** `readOperatorFee` now accepts only a positively identified plain revert as the absent-method fallback. A separate sanitized RPC flag preserves the existing broad dry-run failure classification; out-of-gas, opcode failures and unknown halts fail closed. Real transport-to-sweep regression cases cover the boundary.
+4. **B2R, fixed in `9cd80cf`: operator fee read as zero.** `readOperatorFee` now accepts only a positively identified plain revert as the absent-method fallback. A separate sanitized RPC flag preserves the existing broad dry-run failure classification; out-of-gas, opcode failures and unknown halts fail closed. Real transport-to-sweep regression cases cover the boundary.
 5. **BR, nits: sweep lock edge cases.** In `Sweep.tsx` and `state.tsx`:
    - after 3 other hashes, the UI still offers a same-nonce replacement;
    - a `submitted` transaction the node dropped keeps the tab's lock with no in-app recovery;

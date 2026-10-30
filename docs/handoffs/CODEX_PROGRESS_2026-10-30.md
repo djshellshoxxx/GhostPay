@@ -6,10 +6,10 @@ Base: PR #37 at `dfd5cbdd94d982985c73551355906723ac70a97e`. This session used an
 
 | Commit | Behavior |
 |---|---|
-| `46d78b1` | A sweep whose deadline expires in the queue or during an order-state RPC read is refused as `deadline_too_soon`, without attributing an expired permit to the owner. Existing final pre-send checks remain. |
-| `286d320` | Explicit keystore cancellation resets the file picker; retrying the same file works. Import/unlock completion recognizes its own installed session while cancellation, edits, unmount and replacement sessions invalidate it. Failed vault saves refresh actual-store controls. |
-| `ef9c870` | Operator-fee fallback requires a positively identified plain revert. Out-of-gas, invalid opcode/instruction and unknown execution failures no longer become a zero operator fee. RPC text remains sanitized and existing dry-run execution-failure handling remains intact. |
-| `8ddc1dd` | Confirmed token approvals retain their transaction hash and allowance when the subsequent payment is refused. Unknown payment outcomes remain ambiguous across retries, including retries after expiry. |
+| `de3ea97` | A sweep whose deadline expires in the queue or during an order-state RPC read is refused as `deadline_too_soon`, without attributing an expired permit to the owner. Existing final pre-send checks remain. |
+| `13c77b5` | Explicit keystore cancellation resets the file picker; retrying the same file works. Import/unlock completion recognizes its own installed session while cancellation, edits, unmount and replacement sessions invalidate it. Failed vault saves refresh actual-store controls. |
+| `9cd80cf` | Operator-fee fallback requires a positively identified plain revert. Out-of-gas, invalid opcode/instruction and unknown execution failures no longer become a zero operator fee. RPC text remains sanitized and existing dry-run execution-failure handling remains intact. |
+| `1280854` | Confirmed token approvals retain their transaction hash and allowance when the subsequent payment is refused. Unknown payment outcomes remain ambiguous across retries, including retries after expiry. |
 
 These are selective ports and new regression fixes, not a merge of the recovered tree. Current custody/step-up/CAS, scan, sweep-journal and dependency guards remain in place. No trust configuration, contract address, chain enablement, relayer policy default, deployment or release was changed.
 
@@ -23,7 +23,7 @@ These are selective ports and new regression fixes, not a merge of the recovered
 
 ## Combined validation
 
-Runtime source: `8ddc1dd` plus a test-file EOF whitespace cleanup. Local Node is 24.22.1; the repository requires >=22 and GitHub CI uses Node 22.
+Runtime source: published `1280854` (tree-identical to locally tested `8ddc1dd`) plus a test-file EOF whitespace cleanup. Local Node is 24.22.1; the repository requires >=22 and GitHub CI uses Node 22.
 
 - `npm ci --ignore-scripts --no-audit --no-fund` and `npm run build:libs`: passed.
 - Full workspace typechecks: passed.
@@ -35,6 +35,20 @@ Runtime source: `8ddc1dd` plus a test-file EOF whitespace cleanup. Local Node is
 - PHP plugin tests could not run: PHP is absent, and system package installation failed on `setgroups`/UID permissions.
 - Real Chromium E2E could not run locally: no browser binary was installed and the official Playwright download produced a truncated archive. Do not count jsdom tests as real-browser evidence.
 - A fresh `npm audit` was blocked by automatic approval review because it would send dependency metadata to npm. No bypass or retry was attempted. Previously observed GitHub CI on the base reported zero production dependency vulnerabilities; that is earlier CI evidence, not a fresh local result.
+
+## Publication verification
+
+The git CLI had no write credential. The connected GitHub app created equivalent commits on the same parent chain; every returned tree SHA matched the corresponding local commit before any branch ref moved. Commit metadata changes the commit SHA, but the tested file bytes remain identical.
+
+| Local commit | GitHub equivalent |
+|---|---|
+| `46d78b12aafd43011069be8ab9748561044b2e84` | `de3ea97eba38681cfb5adfbeafaf23102dbc4d72` |
+| `286d3208d86c9527fb6e0dc00904c66ae68418e4` | `13c77b561686aec6c1220c54176af6c941134212` |
+| `ef9c870d4d64a4e478ace4cefdf3e03df3f8a21c` | `9cd80cf0f755d7bfac47dff02e0fadb9b849318e` |
+| `8ddc1dd96122ea6b7759a63a6a62d148fdd70bb0` | `1280854089221335d63dcc2e8a0500a5372abefd` |
+| `e0db32a28b600940d092c72537c78f6c9bbe317c` | `623114b1b37afe20331e9f69798fbd995d56d492` |
+
+The final publication-map change affects only these handoff documents. GitHub checks on the final published head remain the authority for the browser, contract and other hosted gates.
 
 ## Remaining work
 
