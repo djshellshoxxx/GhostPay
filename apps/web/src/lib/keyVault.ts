@@ -10,6 +10,7 @@ import {
   sessionHasExternalCopy,
   sessionVaultRecord,
   verifyVaultForCurrentSession,
+  type SessionPublic,
 } from './session';
 import { decryptKeystore, validateKeystoreEnvelope, type KeystoreOptions } from './keystore';
 import { UserFacingError } from './errors';
@@ -258,7 +259,7 @@ export async function saveEncryptedVault(passphrase: string, options: KeystoreOp
  * Unlocks the saved vault into memory. Loaded keys without any backup would be lost for good, so they are replaced only
  * when the caller passes `replaceUnsavedKeys` after the user confirmed (L1-01).
  */
-export async function unlockEncryptedVault(passphrase: string, store: KeyVaultStore = activeStore(), signal?: AbortSignal, options: { readonly replaceUnsavedKeys?: boolean } = {}): Promise<void> {
+export async function unlockEncryptedVault(passphrase: string, store: KeyVaultStore = activeStore(), signal?: AbortSignal, options: { readonly replaceUnsavedKeys?: boolean } = {}): Promise<SessionPublic> {
   if (signal?.aborted === true) throw new UserFacingError('The keystore import was closed.');
   if (getSessionBackup()?.backedUp === false && options.replaceUnsavedKeys !== true) {
     throw new UserFacingError('The seller keys loaded now have no backup, and unlocking the vault would replace them. Back them up first, or confirm that they may be replaced.');
@@ -274,7 +275,7 @@ export async function unlockEncryptedVault(passphrase: string, store: KeyVaultSt
   if (getSessionBackup()?.backedUp === false && options.replaceUnsavedKeys !== true) {
     throw new UserFacingError('The seller keys loaded now have no backup, and unlocking the vault would replace them. Back them up first, or confirm that they may be replaced.');
   }
-  await importKeystore(ciphertext, passphrase, signal, 'vault');
+  return importKeystore(ciphertext, passphrase, signal, 'vault');
 }
 
 /**

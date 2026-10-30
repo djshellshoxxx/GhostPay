@@ -5,7 +5,7 @@ import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
 import { userMessage } from '../lib/errors';
 import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphrase, MAX_KEYSTORE_BYTES, passphraseProblem, validateKeystoreEnvelope } from '../lib/keystore';
-import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, getSessionBackup, importKeystore, importSession, markKeystoreDownloaded, sessionHasExternalCopy, subscribeIdleLock, subscribeSessionBackup, waiveSessionBackup } from '../lib/session';
+import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, getSessionBackup, getSessionPublic, importKeystore, importSession, markKeystoreDownloaded, sessionHasExternalCopy, subscribeIdleLock, subscribeSessionBackup, waiveSessionBackup, type SessionPublic } from '../lib/session';
 import { authorizeKeyExport, deleteEncryptedVault, loadedKeysRecoverable, readEncryptedVault, saveEncryptedVault, unlockEncryptedVault, VaultChangedError, vaultMetaAddress, VaultSavedForPreviousKeysError } from '../lib/keyVault';
 import { useApp } from '../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
@@ -60,6 +60,8 @@ export function SellerKeys(): ReactNode {
   const [importText, setImportText] = useState<string | undefined>();
   const operation = useRef<AbortController | null>(null);
   const mounted = useRef(false);
+  const generation = useRef(0);
+  const fileInput = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | undefined>(undefined);
   const [backupQr, setBackupQr] = useState<string | undefined>(undefined);
   const [vaultState, setVaultState] = useState<'checking' | 'empty' | 'saved' | 'unavailable'>('checking');
@@ -93,13 +95,24 @@ export function SellerKeys(): ReactNode {
     return () => { live = false; };
   }, [app.session]);
 
-  const cancelImport = (): void => {
+  const resetFilePicker = (): void => {
+    if (fileInput.current !== null) fileInput.current.value = '';
+  };
+  const stopOperation = (): void => {
+    generation.current += 1;
     operation.current?.abort(); operation.current = null;
+  };
+  const clearImport = (): void => {
+    stopOperation();
     setBusy(false); setVaultBusy(false); setImportPass(''); setFile(undefined); setImportText(undefined); setVaultUnlockPass('');
+  };
+  const cancelImport = (): void => {
+    clearImport();
+    resetFilePicker();
   };
   useEffect(() => {
     mounted.current = true;
-    return () => { mounted.current = false; operation.current?.abort(); operation.current = null; };
+    return () => { mounted.current = false; stopOperation(); };
   }, []);
   const suggestPass = (): void => { const next = generatePassphrase(); setSuggestedPass(next); setPass(next); setPass2(''); };
   const suggestVaultPass = (): void => { const next = generatePassphrase(); setSuggestedVaultPass(next); setVaultSavePass(next); setVaultSavePass2(''); };
@@ -116,13 +129,18 @@ export function SellerKeys(): ReactNode {
     operation.current?.abort(); operation.current = null;
     setBackupQr(undefined); setBusy(false); setVaultBusy(false);
     forgetTyped(); setImportText(undefined); setFile(undefined);
+    resetFilePicker();
     setConfirmReplace(false); setConfirmWipe(false); setDeleteExpected(undefined);
   }, [app.session]);
   const startOperation = (): AbortController => {
-    operation.current?.abort();
+    stopOperation();
     const controller = new AbortController(); operation.current = controller; return controller;
   };
   const currentOperation = (controller: AbortController): boolean => mounted.current && operation.current === controller && !controller.signal.aborted;
+  // Installing our own keys triggers the session effect above. Only explicit cancellation, edits or another operation
+  // revoke this completion; a new session, even with identical public keys, has a different summary object.
+  const ownCompletion = (id: number, installed: SessionPublic): boolean =>
+    mounted.current && generation.current === id && getSessionPublic() === installed;
 
   const fail = (e: unknown): void => {
     setMessage({ kind: 'error', text: userMessage(e) });
@@ -199,6 +217,7 @@ export function SellerKeys(): ReactNode {
     if (file === undefined && importText === undefined) { setMessage({ kind: 'error', text: t('sellerKeys.chooseFile') }); return; }
     if (file !== undefined && file.size > MAX_KEYSTORE_BYTES) { setMessage({ kind: 'error', text: t('sellerKeys.notKeystore') }); return; }
     const controller = startOperation();
+    const id = generation.current;
     const unchanged = captureSessionVersionGuard();
     const selected = file; const pasted = importText; const passphrase = importPass;
     setBusy(true); setMessage({ kind: 'ok', text: t('sellerKeys.decrypting') });
@@ -207,8 +226,8 @@ export function SellerKeys(): ReactNode {
         const text = selected === undefined ? pasted! : await selected.text();
         if (!currentOperation(controller)) return;
         unchanged();
-        await importKeystore(text, passphrase, controller.signal);
-        if (!currentOperation(controller)) return;
+        const installed = await importKeystore(text, passphrase, controller.signal);
+        if (!ownCompletion(id, installed)) return;
         setImportPass(''); setFile(undefined); setImportText(undefined); setBusy(false);
         done(t('sellerKeys.keystoreDecrypted'));
       } catch (error) {
@@ -246,6 +265,7 @@ export function SellerKeys(): ReactNode {
         setVaultBusy(false);
         setSaveStepUp('');
         if (err instanceof VaultSavedForPreviousKeysError) { setVaultSavePass(''); setVaultSavePass2(''); setVaultState('saved'); }
+        refreshVault();
         fail(err);
       },
     );
@@ -267,11 +287,12 @@ export function SellerKeys(): ReactNode {
 
   const unlockVault = (replaceUnsavedKeys: boolean): void => {
     const controller = startOperation();
+    const id = generation.current;
     setConfirmReplace(false);
     setVaultBusy(true);
     void unlockEncryptedVault(vaultUnlockPass, undefined, controller.signal, { replaceUnsavedKeys }).then(
-      () => {
-        if (!currentOperation(controller)) return;
+      (installed) => {
+        if (!ownCompletion(id, installed)) return;
         setVaultUnlockPass('');
         setBackupQr(undefined);
         setVaultBusy(false);
@@ -374,7 +395,7 @@ export function SellerKeys(): ReactNode {
           <h3 id="vault-unlock-h">{t('sellerKeys.vaultSavedHeading')}</h3>
           <p>{t('sellerKeys.unlockExplain')}</p>
           <form onSubmit={onUnlockVault} className="stack" autoComplete="off">
-            <Field label={t('sellerKeys.vaultPassphrase')} hint={t('sellerKeys.vaultNoBrowserSave')}>{(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-vault-unlock" value={vaultUnlockPass} onChange={(e) => { if (vaultBusy) { operation.current?.abort(); setVaultBusy(false); } setConfirmReplace(false); setVaultUnlockPass(e.target.value); }} />}</Field>
+            <Field label={t('sellerKeys.vaultPassphrase')} hint={t('sellerKeys.vaultNoBrowserSave')}>{(id, d) => <input id={id} aria-describedby={d} type="password" autoComplete="off" name="ghostpay-vault-unlock" value={vaultUnlockPass} onChange={(e) => { stopOperation(); setVaultBusy(false); setConfirmReplace(false); setVaultUnlockPass(e.target.value); }} />}</Field>
             <button type="submit" className="btn" disabled={vaultBusy || vaultUnlockPass === ''}>{t('sellerKeys.unlockVault')}</button>
             {vaultBusy && operation.current !== null && <button type="button" className="btn" onClick={cancelImport}>{t('sellerKeys.cancelUnlock')}</button>}
           </form>
@@ -428,8 +449,8 @@ export function SellerKeys(): ReactNode {
           <details onToggle={(event) => { if (!event.currentTarget.open) cancelImport(); }}>
             <summary>{t('sellerKeys.importKeystore')}</summary>
             <form onSubmit={onImportKeystore} className="stack">
-              <Field label={t('sellerKeys.keystoreFile')}>{(id) => <input id={id} type="file" accept="application/json,.json" onChange={(e) => { cancelImport(); setFile(e.target.files?.[0]); }} />}</Field>
-              <Field label={t('sellerKeys.passphrase')}>{(id) => <input id={id} type="password" autoComplete="off" value={importPass} onChange={(e) => { if (busy) { operation.current?.abort(); setBusy(false); } setImportPass(e.target.value); }} />}</Field>
+              <Field label={t('sellerKeys.keystoreFile')}>{(id) => <input id={id} ref={fileInput} type="file" accept="application/json,.json" onChange={(e) => { const chosen = e.currentTarget.files?.[0]; clearImport(); setFile(chosen); }} />}</Field>
+              <Field label={t('sellerKeys.passphrase')}>{(id) => <input id={id} type="password" autoComplete="off" value={importPass} onChange={(e) => { stopOperation(); setBusy(false); setImportPass(e.target.value); }} />}</Field>
               <button type="submit" className="btn" disabled={busy}>{t('sellerKeys.decryptLoad')}</button>
               {busy && <button type="button" className="btn" onClick={cancelImport}>{t('sellerKeys.cancelKeystore')}</button>}
             </form>
