@@ -257,7 +257,7 @@ export function validateAnnouncementLog(
  *   too large again once its router lane has been read; another failure then ends the fetch before the block
  *   (or fails it when nothing was completed). Past such a single block (narrowed, or read whole once a rate
  *   limit passed), or past a refused range that a fixed provider range limit cannot explain (a response over
- *   the client's size cap, a range no larger than one already served in this fetch, or a halving down to one
+ *   the client's size cap, a range no larger than one already served since the window last grew, or a halving down to one
  *   block), each completed window doubles the window again, up to the cap, until a refusal halves it; after
  *   any other halving the window keeps its size, so a fixed range limit does not cost a refused request on
  *   every window.
@@ -323,10 +323,12 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
   let regrow = false;
   // Past a refused range that a fixed range limit cannot explain, the window grows back as well: a response over the
   // client's own size cap (it depends on the blocks' content, not on the range), a range no larger than one already
-  // served in this fetch, or a halving down to one block (it refused two or three blocks: implausible for a range limit,
+  // served since the window last grew, or a halving down to one block (it refused two or three blocks: implausible for a range limit,
   // typical of a burst of -32005 rate limits).
   let regrowAfter: bigint | undefined;
-  // The largest range the provider served in this fetch: a fixed range limit never refuses a range up to this size.
+  // The largest range the provider served since the window last grew: a fixed range limit never refuses a range up to
+  // this size. Reset on each regrowth, so a size served in an earlier sparse stretch does not make every regrown window
+  // in a dense, result-limited stretch count as unexplained and get refused once (AR2).
   let served = 0n;
   let doneThrough = next - 1n;
   let processed = false;
@@ -468,7 +470,10 @@ export async function fetchAnnouncements(o: FetchOptions): Promise<FetchResult> 
       regrow = true;
       regrowAfter = undefined;
     }
-    if (regrow) window = window * 2n > cap ? cap : window * 2n;
+    if (regrow) {
+      window = window * 2n > cap ? cap : window * 2n;
+      served = 0n;
+    }
   }
 
   let last = reorg === undefined ? o.cursor.last : undefined;
