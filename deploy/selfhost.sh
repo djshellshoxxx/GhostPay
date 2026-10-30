@@ -29,7 +29,7 @@ dry=0; onion=0; yes=0; envfile="$here/.env"; tarball=""; sums=""; commit=""; man
 
 usage() { sed -n '2,/^# Exit codes/p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; }
 die() { echo "ERROR: $*" >&2; exit 1; }
-need_arg() { [ "$#" -ge 2 ] || { echo "missing value for $1" >&2; exit 2; }; }
+need_arg() { [[ "$#" -ge 2 ]] || { echo "missing value for $1" >&2; exit 2; }; }
 
 # Check archive member types and normalized names before extracting: a checksum-valid tar can still contain symlink
 # pivots or path traversal entries. The bundle is intentionally bounded for a static web release.
@@ -83,7 +83,7 @@ except Exception as e:
 PY
 }
 
-while [ "$#" -gt 0 ]; do
+while [[ "$#" -gt 0 ]]; do
   case "$1" in
     --dry-run) dry=1 ;;
     --onion) onion=1 ;;
@@ -110,7 +110,7 @@ warn() { echo "  warn  $*"; }
 # Read KEY=VALUE from the env file without sourcing it (no code execution from a config file).
 envval() {
   local k="$1" def="$2" v=""
-  if [ -f "$envfile" ]; then
+  if [[ -f "$envfile" ]]; then
     v="$(grep -E "^${k}=" "$envfile" | tail -n 1 | cut -d= -f2- || true)"
     v="${v%\"}"; v="${v#\"}"
   fi
@@ -127,10 +127,10 @@ echo "== GhostPay self-host: prerequisite check (dry-run=$dry onion=$onion)"
 # 1. Tooling
 if command -v docker >/dev/null 2>&1; then ok "docker found"; else bad "docker not found"; fi
 if docker compose version >/dev/null 2>&1; then ok "docker compose plugin found"; else bad "docker compose v2 plugin not found"; fi
-if [ "$(id -u)" = "0" ]; then warn "running as root; the containers themselves are non-root, but prefer a normal user in the docker group"; fi
+if [[ "$(id -u)" = "0" ]]; then warn "running as root; the containers themselves are non-root, but prefer a normal user in the docker group"; fi
 
 # 2. Env file
-if [ -f "$envfile" ]; then ok "env file $envfile"; else bad "env file missing: copy deploy/.env.example to deploy/.env and edit"; fi
+if [[ -f "$envfile" ]]; then ok "env file $envfile"; else bad "env file missing: copy deploy/.env.example to deploy/.env and edit"; fi
 origin="$(envval GHOSTPAY_PUBLIC_ORIGIN '')"
 case "$origin" in
   https://*) ok "public origin $origin" ;;
@@ -159,45 +159,45 @@ else
   bad "GHOSTPAY_WEB_DIST must resolve to a child of deploy/"
   distdir="$here/web-dist"
 fi
-if [ -e "$distdir" ] && [ ! -d "$distdir" ]; then bad "web bundle path is not a directory: $distdir"; fi
-if [ -n "$tarball" ]; then
-  [ -n "$sums" ] && [ -n "$commit" ] && [ -n "$manifest" ] || die "--tarball needs --sums, --commit and --manifest"
-  [ -f "$tarball" ] || bad "tarball not found: $tarball"
-  [ -f "$sums" ] || bad "SHA256SUMS not found: $sums"
-  [ -f "$manifest" ] || bad "release manifest not found: $manifest"
+if [[ -e "$distdir" ]] && [[ ! -d "$distdir" ]]; then bad "web bundle path is not a directory: $distdir"; fi
+if [[ -n "$tarball" ]]; then
+  [[ -n "$sums" ]] && [[ -n "$commit" ]] && [[ -n "$manifest" ]] || die "--tarball needs --sums, --commit and --manifest"
+  [[ -f "$tarball" ]] || bad "tarball not found: $tarball"
+  [[ -f "$sums" ]] || bad "SHA256SUMS not found: $sums"
+  [[ -f "$manifest" ]] || bad "release manifest not found: $manifest"
   [[ "$commit" =~ ^[0-9a-f]{40}$ ]] || bad "--commit must be a full 40-hex SHA (lower case)"
   # Authenticity gate (audit L7-M2): files downloaded together are only consistent with each other.
-  if [ -z "$expect_sha" ] && [ -z "$attest_repo$tag" ]; then
+  if [[ -z "$expect_sha" ]] && [[ -z "$attest_repo$tag" ]]; then
     bad "--tarball needs an authenticity check: --expect-sha256 HEX established on a separate machine, or --attest-repo OWNER/REPO --tag vX.Y.Z (gh attestation verify)"
   fi
-  if [ -n "$expect_sha" ]; then
+  if [[ -n "$expect_sha" ]]; then
     if [[ ! "$expect_sha" =~ ^[0-9a-f]{64}$ ]]; then bad "--expect-sha256 must be 64 lowercase hex characters"
-    elif [ -f "$tarball" ] && [ "$(sha256 "$tarball")" != "$expect_sha" ]; then bad "tarball sha256 does not match --expect-sha256"
-    elif [ -f "$tarball" ]; then ok "tarball sha256 matches --expect-sha256 (checked again on the copy that is extracted)"; fi
+    elif [[ -f "$tarball" ]] && [[ "$(sha256 "$tarball")" != "$expect_sha" ]]; then bad "tarball sha256 does not match --expect-sha256"
+    elif [[ -f "$tarball" ]]; then ok "tarball sha256 matches --expect-sha256 (checked again on the copy that is extracted)"; fi
   fi
-  if [ -n "$attest_repo$tag" ]; then
+  if [[ -n "$attest_repo$tag" ]]; then
     [[ "$attest_repo" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]] || bad "--attest-repo must be OWNER/REPO"
     [[ "$tag" =~ ^v[0-9A-Za-z][0-9A-Za-z._+-]*$ ]] || bad "--tag must be a release tag such as v1.2.3"
     if command -v gh >/dev/null 2>&1; then ok "gh found (gh attestation verify)"; else bad "gh (GitHub CLI) not found: needed for --attest-repo"; fi
   fi
-  if [ -f "$tarball" ]; then
+  if [[ -f "$tarball" ]]; then
     if validate_web_tarball "$tarball"; then ok "tarball contains only safe web files"; else bad "tarball structure is unsafe"; fi
   fi
 fi
-if [ -f "$distdir/index.html" ]; then ok "web bundle present: $distdir"
-elif [ -n "$tarball" ]; then ok "web bundle will be extracted from the verified tarball into $distdir"
+if [[ -f "$distdir/index.html" ]]; then ok "web bundle present: $distdir"
+elif [[ -n "$tarball" ]]; then ok "web bundle will be extracted from the verified tarball into $distdir"
 else bad "no web bundle at $distdir/index.html (see deploy/BUILD-WEB.md, or pass --tarball)"; fi
-if [ -d "$distdir" ] && find "$distdir" -name '*.map' -print -quit 2>/dev/null | grep -q .; then bad "source maps found in web bundle"; fi
+if [[ -d "$distdir" ]] && find "$distdir" -name '*.map' -print -quit 2>/dev/null | grep -q .; then bad "source maps found in web bundle"; fi
 
 # 4. Config and secrets (existence, mode, owner; contents are never read or printed)
 cfg="$here/config/relayer.config.json"
-if [ -f "$cfg" ]; then ok "relayer config present"; else bad "missing deploy/config/relayer.config.json (see deploy/config/README.md)"; fi
-if [ -f "$cfg" ] && [ -n "$origin" ] && ! grep -qF "\"$origin\"" "$cfg"; then bad "allowedOrigins in relayer config does not list $origin"; fi
+if [[ -f "$cfg" ]]; then ok "relayer config present"; else bad "missing deploy/config/relayer.config.json (see deploy/config/README.md)"; fi
+if [[ -f "$cfg" ]] && [[ -n "$origin" ]] && ! grep -qF "\"$origin\"" "$cfg"; then bad "allowedOrigins in relayer config does not list $origin"; fi
 # Behind this recipe's nginx the relayer must trust the backend subnet nginx connects from (audit L5-05); with any
 # other list every client shares one bucket. Docker assigns nginx's address in it, so only an entry holding the whole
 # subnet covers it. The subnet is read from docker-compose.yml; when none can be read, the recipe's default
 # 172.30.10.0/24 is assumed and the output says so.
-if [ -f "$cfg" ]; then
+if [[ -f "$cfg" ]]; then
   rc=0
   backend="$(python3 - "$cfg" "$here/docker-compose.yml" <<'PY'
 import ipaddress, json, re, sys
@@ -246,7 +246,7 @@ PY
 )" || rc=$?
   read -r backend assumed <<<"$backend"
   subnet="the compose backend subnet $backend"
-  if [ -n "$assumed" ]; then
+  if [[ -n "$assumed" ]]; then
     subnet="the assumed backend subnet $backend"
     warn "could not read the backend subnet from docker-compose.yml; checking trustedProxies against the recipe's default $backend instead"
   fi
@@ -260,61 +260,61 @@ PY
 fi
 for s in relayer_key quote_secret; do
   f="$here/secrets/$s"
-  if [ ! -f "$f" ]; then bad "missing secret file deploy/secrets/$s (see deploy/secrets/README.md)"; continue; fi
+  if [[ ! -f "$f" ]]; then bad "missing secret file deploy/secrets/$s (see deploy/secrets/README.md)"; continue; fi
   m="$(file_mode "$f")"
-  if [ "$m" = "600" ] || [ "$m" = "400" ]; then ok "secrets/$s mode $m"; else bad "secrets/$s must be mode 600 (is $m)"; fi
+  if [[ "$m" = "600" ]] || [[ "$m" = "400" ]]; then ok "secrets/$s mode $m"; else bad "secrets/$s must be mode 600 (is $m)"; fi
   o="$(file_uid "$f")"
-  if [ "$o" = "$uid" ]; then ok "secrets/$s owned by uid $uid"; else warn "secrets/$s owned by uid $o, container runs as $uid (relayer may refuse to start)"; fi
+  if [[ "$o" = "$uid" ]]; then ok "secrets/$s owned by uid $uid"; else warn "secrets/$s owned by uid $o, container runs as $uid (relayer may refuse to start)"; fi
 done
-if [ -f "$here/secrets/rpc.env" ]; then
+if [[ -f "$here/secrets/rpc.env" ]]; then
   m="$(file_mode "$here/secrets/rpc.env")"
-  if [ "$m" = "600" ] || [ "$m" = "400" ]; then ok "secrets/rpc.env mode $m"; else bad "secrets/rpc.env must be mode 600 (is $m)"; fi
+  if [[ "$m" = "600" ]] || [[ "$m" = "400" ]]; then ok "secrets/rpc.env mode $m"; else bad "secrets/rpc.env must be mode 600 (is $m)"; fi
 else warn "no secrets/rpc.env: RPC URLs must then be set in the relayer config or environment"; fi
 
 # 5. Nothing secret tracked by git
 if command -v git >/dev/null 2>&1 && git -C "$repo" rev-parse --git-dir >/dev/null 2>&1; then
   tracked="$(git -C "$repo" ls-files -- deploy/secrets deploy/.env deploy/config/relayer.config.json deploy/tor-data | grep -v '^deploy/secrets/README.md$' || true)"
-  if [ -z "$tracked" ]; then ok "no secret or env files tracked by git"; else bad "tracked by git (remove them): $tracked"; fi
+  if [[ -z "$tracked" ]]; then ok "no secret or env files tracked by git"; else bad "tracked by git (remove them): $tracked"; fi
 fi
 
 # 6. Compose file validates (only if docker is usable)
 if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
-  prof=(); [ "$onion" = 1 ] && prof=(--profile onion)
-  cargs=(-f "$here/docker-compose.yml"); [ -f "$envfile" ] && cargs+=(--env-file "$envfile")
+  prof=(); [[ "$onion" = 1 ]] && prof=(--profile onion)
+  cargs=(-f "$here/docker-compose.yml"); [[ -f "$envfile" ]] && cargs+=(--env-file "$envfile")
   if docker compose "${cargs[@]}" ${prof[@]+"${prof[@]}"} config -q >/dev/null 2>&1; then ok "docker compose config validates"; else bad "docker compose config failed"; fi
 fi
 
 echo
 echo "== Plan"
 step=1
-if [ -n "$tarball" ]; then
+if [[ -n "$tarball" ]]; then
   echo "  $((step++)). copy $tarball to a private temp dir and verify the copy with scripts/verify-release.sh"
   echo "     (sums: $sums, commit: $commit, manifest: $manifest); abort on any FAIL"
-  if [ -n "$expect_sha" ]; then echo "  $((step++)). require its sha256 to equal --expect-sha256 $expect_sha; abort otherwise"; fi
-  if [ -n "$attest_repo" ]; then echo "  $((step++)). gh attestation verify it (repo $attest_repo, workflow release.yml, ref refs/tags/$tag, commit $commit, GitHub-hosted runner); abort on failure"; fi
+  if [[ -n "$expect_sha" ]]; then echo "  $((step++)). require its sha256 to equal --expect-sha256 $expect_sha; abort otherwise"; fi
+  if [[ -n "$attest_repo" ]]; then echo "  $((step++)). gh attestation verify it (repo $attest_repo, workflow release.yml, ref refs/tags/$tag, commit $commit, GitHub-hosted runner); abort on failure"; fi
   echo "  $((step++)). extract it into $distdir (replacing old contents)"
   echo "  $((step++)). STOP: nothing is built or started until you finish the checklist verify-release.sh prints and type \"start\""
   echo "     (with --yes the run ends here: re-run without --tarball to build and start)"
 fi
-echo "  $((step++)). docker compose build api$([ "$onion" = 1 ] && echo ' tor')   (builds locally from apps/relayer/Dockerfile$([ "$onion" = 1 ] && echo ' and deploy/tor/Dockerfile'))"
-echo "  $((step++)). docker compose $([ "$onion" = 1 ] && echo '--profile onion ')up -d   services: api, web (nginx, 127.0.0.1:$port)$([ "$onion" = 1 ] && echo ', tor')"
+echo "  $((step++)). docker compose build api$([[ "$onion" = 1 ]] && echo ' tor')   (builds locally from apps/relayer/Dockerfile$([[ "$onion" = 1 ]] && echo ' and deploy/tor/Dockerfile'))"
+echo "  $((step++)). docker compose $([[ "$onion" = 1 ]] && echo '--profile onion ')up -d   services: api, web (nginx, 127.0.0.1:$port)$([[ "$onion" = 1 ]] && echo ', tor')"
 echo "  $((step++)). put a TLS terminator in front of 127.0.0.1:$port for ${origin:-your origin}; no secrets or ports are exposed otherwise"
-if [ "$onion" = 1 ]; then echo "  $((step++)). read your address:  docker compose exec tor cat /var/lib/tor/ghostpay/hostname   (key stays in the tor-data volume)"; fi
+if [[ "$onion" = 1 ]]; then echo "  $((step++)). read your address:  docker compose exec tor cat /var/lib/tor/ghostpay/hostname   (key stays in the tor-data volume)"; fi
 echo "  $((step++)). verify: curl -sI http://127.0.0.1:$port/ and compare headers with apps/web/public/_headers"
 
-if [ "$fails" -gt 0 ]; then
+if [[ "$fails" -gt 0 ]]; then
   echo; echo "$fails prerequisite check(s) failed. Fix them and re-run. Nothing was changed."
   exit 1
 fi
-if [ "$dry" = 1 ]; then echo; echo "dry-run: all checks passed; nothing was changed or started."; exit 0; fi
+if [[ "$dry" = 1 ]]; then echo; echo "dry-run: all checks passed; nothing was changed or started."; exit 0; fi
 
-if [ "$yes" != 1 ]; then
+if [[ "$yes" != 1 ]]; then
   printf '\nProceed with the plan above? Type "yes" to continue: '
   read -r answer || answer=""
-  [ "$answer" = "yes" ] || { echo "aborted; nothing was changed."; exit 0; }
+  [[ "$answer" = "yes" ]] || { echo "aborted; nothing was changed."; exit 0; }
 fi
 
-if [ -n "$tarball" ]; then
+if [[ -n "$tarball" ]]; then
   tmp="$(mktemp -d)"
   trap 'rm -rf "$tmp"' EXIT
   # Hash, verify and extract one private copy, so the bytes that pass the checks are the bytes installed.
@@ -322,12 +322,12 @@ if [ -n "$tarball" ]; then
   copy="$tmp/in/$(basename "$tarball")"
   cp -- "$tarball" "$copy"
   bash "$repo/scripts/verify-release.sh" "$copy" "$sums" "$commit" "$manifest" || die "release verification failed; aborting (nothing was changed)"
-  if [ -n "$expect_sha" ]; then
+  if [[ -n "$expect_sha" ]]; then
     got="$(sha256 "$copy")"
-    [ "$got" = "$expect_sha" ] || die "tarball sha256 $got does not match --expect-sha256 $expect_sha; aborting (nothing was changed)"
+    [[ "$got" = "$expect_sha" ]] || die "tarball sha256 $got does not match --expect-sha256 $expect_sha; aborting (nothing was changed)"
     echo "PASS  tarball sha256 matches --expect-sha256"
   fi
-  if [ -n "$attest_repo" ]; then
+  if [[ -n "$attest_repo" ]]; then
     # --source-ref alone accepts whatever commit the tag named when release.yml ran (a re-pointed tag); --source-digest
     # ties the attestation to --commit, the commit the signed tag you verified points at.
     gh attestation verify "$copy" --repo "$attest_repo" --signer-workflow "$attest_repo/.github/workflows/release.yml" --source-ref "refs/tags/$tag" \
@@ -337,26 +337,26 @@ if [ -n "$tarball" ]; then
   validate_web_tarball "$copy" || die "tarball structure is unsafe; aborting (nothing was changed)"
   tar -xzf "$copy" -C "$tmp/x"
   top="$(find "$tmp/x" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
-  [ -f "$top/index.html" ] || die "extracted bundle has no index.html"
+  [[ -f "$top/index.html" ]] || die "extracted bundle has no index.html"
   mkdir -p "$distdir"
   find "$distdir" -mindepth 1 -delete
   cp -a "$top"/. "$distdir"/
   rerun="deploy/selfhost.sh"
-  if [ "$onion" = 1 ]; then rerun="$rerun --onion"; fi
-  if [ "$envfile" != "$here/.env" ]; then rerun="$rerun --env-file $(printf %q "$envfile")"; fi
+  if [[ "$onion" = 1 ]]; then rerun="$rerun --onion"; fi
+  if [[ "$envfile" != "$here/.env" ]]; then rerun="$rerun --env-file $(printf %q "$envfile")"; fi
   echo
   echo "Verified bundle installed in $distdir. Nothing is built or started yet."
-  if [ "$yes" = 1 ]; then
+  if [[ "$yes" = 1 ]]; then
     echo "--yes never starts a bundle installed in the same run. Finish the checklist above, then run: $rerun"
     exit 0
   fi
   printf 'Finish the checklist above (signed tag, deployment addresses), then type "start" to build and start: '
   read -r answer || answer=""
-  [ "$answer" = "start" ] || { echo "not started; run $rerun when ready."; exit 0; }
+  [[ "$answer" = "start" ]] || { echo "not started; run $rerun when ready."; exit 0; }
 fi
 cd "$here"
-args=(-f docker-compose.yml); [ -f "$envfile" ] && args+=(--env-file "$envfile")
-[ "$onion" = 1 ] && args+=(--profile onion)
+args=(-f docker-compose.yml); [[ -f "$envfile" ]] && args+=(--env-file "$envfile")
+[[ "$onion" = 1 ]] && args+=(--profile onion)
 docker compose "${args[@]}" build
 docker compose "${args[@]}" up -d
 echo "started. See deploy/README.md for verification and operations."

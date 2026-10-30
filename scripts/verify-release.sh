@@ -10,7 +10,7 @@
 # signed tag and the build attestation (checklist printed at the end).
 set -euo pipefail
 
-if [ "$#" -lt 4 ]; then sed -n '2,10p' "$0"; exit 2; fi
+if [[ "$#" -lt 4 ]]; then sed -n '2,10p' "$0"; exit 2; fi
 tarball="$1"; sums="$2"; want_commit="$3"; manifest="$4"
 
 sha256() { if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1" | awk '{print $1}'; else shasum -a 256 "$1" | awk '{print $1}'; fi; }
@@ -18,26 +18,26 @@ fail=0
 ok()  { echo "PASS  $*"; }
 bad() { echo "FAIL  $*"; fail=1; }
 
-[ -f "$tarball" ] || { echo "no such file: $tarball"; exit 2; }
-[ -f "$sums" ] || { echo "no such file: $sums"; exit 2; }
+[[ -f "$tarball" ]] || { echo "no such file: $tarball"; exit 2; }
+[[ -f "$sums" ]] || { echo "no such file: $sums"; exit 2; }
 if [[ ! "$want_commit" =~ ^[0-9a-f]{40}$ ]]; then echo "expected commit must be a full 40-hex SHA"; exit 2; fi
 
 # 1. Tarball hash is listed in SHA256SUMS and matches.
 name="$(basename "$tarball")"
 listed="$(awk -v n="$name" '$2==n || $2=="*"n {print $1}' "$sums")"
 actual="$(sha256 "$tarball")"
-if [ -z "$listed" ]; then bad "$name is not listed in $sums"
-elif [ "$listed" = "$actual" ]; then ok "tarball sha256 matches SHA256SUMS ($actual)"
+if [[ -z "$listed" ]]; then bad "$name is not listed in $sums"
+elif [[ "$listed" = "$actual" ]]; then ok "tarball sha256 matches SHA256SUMS ($actual)"
 else bad "tarball sha256 $actual != listed $listed"; fi
 
 # 2. Every other file named in SHA256SUMS that sits next to it must match.
 sumdir="$(cd "$(dirname "$sums")" && pwd)"
 while read -r h f; do
   f="${f#\*}"
-  [ "$f" = "$name" ] && continue
-  if [ -f "$sumdir/$f" ]; then
+  [[ "$f" = "$name" ]] && continue
+  if [[ -f "$sumdir/$f" ]]; then
     a="$(sha256 "$sumdir/$f")"
-    if [ "$a" = "$h" ]; then ok "$f matches SHA256SUMS"; else bad "$f hash mismatch"; fi
+    if [[ "$a" = "$h" ]]; then ok "$f matches SHA256SUMS"; else bad "$f hash mismatch"; fi
   else
     echo "SKIP  $f (not downloaded)"
   fi
@@ -45,7 +45,7 @@ done < "$sums"
 
 # 3. Manifest commit equals the expected commit (the one in the SIGNED tag you verified). Never skipped: a release
 #    whose commit cannot be compared fails (audit L7-M2).
-[ -f "$manifest" ] || { echo "no such file: $manifest"; exit 2; }
+[[ -f "$manifest" ]] || { echo "no such file: $manifest"; exit 2; }
 if command -v node >/dev/null 2>&1; then
   m_commit="$(node -e 'console.log(JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).commit)' "$manifest")"
   m_tar="$(node -e 'const m=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));console.log((m.artifacts.find(a=>a.kind==="web-bundle-tarball")||{}).sha256)' "$manifest")"
@@ -55,16 +55,16 @@ elif command -v python3 >/dev/null 2>&1; then
 else
   m_commit=""; m_tar=""
 fi
-if [ -z "$m_commit" ]; then bad "manifest commit could not be read (needs node or python3): expected commit NOT compared"
-elif [ "$m_commit" = "$want_commit" ]; then ok "manifest commit equals expected commit"
+if [[ -z "$m_commit" ]]; then bad "manifest commit could not be read (needs node or python3): expected commit NOT compared"
+elif [[ "$m_commit" = "$want_commit" ]]; then ok "manifest commit equals expected commit"
 else bad "manifest commit $m_commit != expected $want_commit"; fi
-if [ "$m_tar" = "$actual" ]; then ok "manifest tarball hash matches"; else bad "manifest tarball hash ${m_tar:-(none)} != $actual"; fi
+if [[ "$m_tar" = "$actual" ]]; then ok "manifest tarball hash matches"; else bad "manifest tarball hash ${m_tar:-(none)} != $actual"; fi
 
 # 4. Archive sanity: single top-level dir, no source maps, no absolute or parent paths, index.html present.
 listing="$(tar -tzf "$tarball")" || { bad "tarball is not a readable .tar.gz"; listing=""; }
-if [ -n "$listing" ]; then
+if [[ -n "$listing" ]]; then
   if grep -qE '(^/|(^|/)\.\.(/|$))' <<<"$listing"; then bad "archive has absolute or parent paths"; else ok "no absolute/parent paths"; fi
-  if [ "$(echo "$listing" | cut -d/ -f1 | sort -u | wc -l | tr -d ' ')" = "1" ]; then ok "single top-level directory"; else bad "multiple top-level entries"; fi
+  if [[ "$(echo "$listing" | cut -d/ -f1 | sort -u | wc -l | tr -d ' ')" = "1" ]]; then ok "single top-level directory"; else bad "multiple top-level entries"; fi
   if grep -qE '\.map$' <<<"$listing"; then bad "source maps present"; else ok "no source maps"; fi
   if grep -qE '(^|/)index\.html$' <<<"$listing"; then ok "index.html present"; else bad "index.html missing"; fi
 fi
@@ -83,5 +83,5 @@ Remaining steps (see docs/operators/release-and-verify.md):
   [ ] Compare deployments/*.json router/announcer/feeRecipient with addresses published through an independent channel.
 CHECKLIST
 
-if [ "$fail" -eq 0 ]; then echo "RESULT: hash checks passed"; else echo "RESULT: FAILED"; fi
+if [[ "$fail" -eq 0 ]]; then echo "RESULT: hash checks passed"; else echo "RESULT: FAILED"; fi
 exit "$fail"

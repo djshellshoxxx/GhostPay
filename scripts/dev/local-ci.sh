@@ -22,7 +22,7 @@ for p in "${PACKAGES[@]}"; do STEPS+=("pkg-$p"); done
 STEPS+=(scan-secrets check-headers deploy-selftest scripts-tests php kit web-build web-coverage web-nocov)
 
 log=""; only=""; skip=""; web_tests=""
-while [ $# -gt 0 ]; do
+while [[ $# -gt 0 ]]; do
   case "$1" in
     --log) log="${2:?--log needs a directory}"; shift 2 ;;
     --only) only="${2:?--only needs step names}"; shift 2 ;;
@@ -33,15 +33,15 @@ while [ $# -gt 0 ]; do
     *) echo "unknown argument: $1" >&2; exit 2 ;;
   esac
 done
-[ -n "$log" ] || log="$(mktemp -d "${TMPDIR:-/tmp}/ghostpay-local-ci.XXXXXX")"
+[[ -n "$log" ]] || log="$(mktemp -d "${TMPDIR:-/tmp}/ghostpay-local-ci.XXXXXX")"
 mkdir -p "$log" || exit 2
-[ -n "$web_tests" ] && STEPS+=(web-tests)
+[[ -n "$web_tests" ]] && STEPS+=(web-tests)
 
 selected() {
   local name="$1"
-  if [ -n "$only" ]; then [[ ",$only," == *",$name,"* ]] || return 1; fi
-  if [ -n "$skip" ]; then [[ ",$skip," == *",$name,"* ]] && return 1; fi
-  if [ "$name" = web-tests ] && [ -z "$web_tests" ]; then return 1; fi
+  if [[ -n "$only" ]]; then [[ ",$only," == *",$name,"* ]] || return 1; fi
+  if [[ -n "$skip" ]]; then [[ ",$skip," == *",$name,"* ]] && return 1; fi
+  if [[ "$name" = web-tests ]] && [[ -z "$web_tests" ]]; then return 1; fi
   return 0
 }
 
@@ -63,11 +63,11 @@ run_step() {
     kit) (cd tools/portable-hosting-kit && npm test) ;;
     web-build) npm run build -w @ghostpay/web ;;
     # --coverage.reportOnFailure: vitest otherwise prints no coverage summary when any test fails.
-    web-coverage) (cd apps/web && npx vitest run --coverage --coverage.reportOnFailure --maxWorkers=2) ;;
-    web-nocov) (cd apps/web && npx vitest run --config vitest.nocov.config.ts) ;;
+    web-coverage) (cd apps/web && ../../node_modules/.bin/vitest run --coverage --coverage.reportOnFailure --maxWorkers=2) ;;
+    web-nocov) (cd apps/web && ../../node_modules/.bin/vitest run --config vitest.nocov.config.ts) ;;
     # Word splitting of the file list is intended.
     # shellcheck disable=SC2086
-    web-tests) (cd apps/web && npx vitest run $web_tests --coverage.enabled=false --maxWorkers=2) ;;
+    web-tests) (cd apps/web && ../../node_modules/.bin/vitest run $web_tests --coverage.enabled=false --maxWorkers=2) ;;
     *) echo "unknown step $name" >&2; return 2 ;;
   esac
 }

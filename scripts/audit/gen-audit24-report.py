@@ -13,12 +13,15 @@ Inputs (docs/audits/data/24/):
   status.json        per-item fix outcomes and per-round review results of the fix clusters (record-cluster.py)
 Usage: python3 scripts/audit/gen-audit24-report.py [--data DIR] [OUT.md]
   defaults: --data docs/audits/data/24, OUT = docs/audits/24-ai-assisted-security-audit-2026-10-28.md
+  paths stay inside docs/audits/data and docs/audits respectively; output must end in .md
 To change a status: edit commit-map.json (fixed) or DEFERRED/ACCEPTED below (open), then re-run and review the diff.
 """
 import argparse
 import json
 import os
 import re
+import tempfile
+from pathlib import Path
 from collections import Counter
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -26,19 +29,37 @@ ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
 ap.add_argument('--data', default=os.path.join(ROOT, 'docs', 'audits', 'data', '24'))
 ap.add_argument('out', nargs='?', default=os.path.join(ROOT, 'docs', 'audits', '24-ai-assisted-security-audit-2026-10-28.md'))
 args = ap.parse_args()
-A = args.data
-OUT = args.out
+DATA_ROOT = Path(ROOT, 'docs', 'audits', 'data').resolve()
+REPORT_ROOT = Path(ROOT, 'docs', 'audits').resolve()
 
-verified = json.load(open(f'{A}/all-verified.json'))
+
+def within(value, boundary):
+    resolved = Path(value).resolve()
+    if not resolved.is_relative_to(boundary):
+        ap.error(f'path must stay within {boundary}')
+    return resolved
+
+
+A = within(args.data, DATA_ROOT)
+OUT = within(args.out, REPORT_ROOT)
+if OUT.suffix != '.md':
+    ap.error('report output must be a Markdown (.md) file')
+
+
+def audit_file(name):
+    # Fixed filenames may still be symlinks; resolve each before reading it.
+    return within(A / name, DATA_ROOT)
+
+verified = json.load(open(audit_file('all-verified.json')))
 titles = {}
 areas = {}
-for line in open(f'{A}/titles.tsv'):
+for line in open(audit_file('titles.tsv')):
     fid, area, title = line.rstrip('\n').split('\t')
     titles[fid] = title
     areas[fid] = area
-commits = json.load(open(f'{A}/commit-map.json'))
-fulltext = json.load(open(f'{A}/full-text.json'))  # untruncated verifier text
-status_data = json.load(open(f'{A}/status.json'))
+commits = json.load(open(audit_file('commit-map.json')))
+fulltext = json.load(open(audit_file('full-text.json')))  # untruncated verifier text
+status_data = json.load(open(audit_file('status.json')))
 
 SEV_ORDER = ['High', 'Medium', 'Low', 'Info']
 
@@ -252,7 +273,7 @@ w('## Not yet fixed\n')
 w(table(lambda k: st[k][0] != 'fixed', 'status') + '\n')
 w('## Verification of the fixes in this branch\n')
 # The latest integration run is recorded in verification.md next to the data, so a re-run only edits that file.
-with open(f'{A}/verification.md') as f:
+with open(audit_file('verification.md')) as f:
     w(f.read().strip() + '\n')
 w('## Limits\n')
 w('- **Model and environment:** the review was done by AI agents with read access to the repository and a local toolchain. There were no live chains, mainnet or testnet RPCs, real wallets, Docker daemon, WordPress/WooCommerce/PrestaShop runtime, or mobile browsers.')
@@ -294,5 +315,13 @@ for k in ids:
     if s == 'deferred':
         w(f'- **Why deferred:** {extra}')
     w('')
-open(OUT, 'w').write('\n'.join(out).rstrip() + '\n')
+# Publish atomically without following an output symlink inserted after argument validation.
+with tempfile.NamedTemporaryFile(mode='w', encoding='utf8', dir=OUT.parent, prefix='.audit-report-', delete=False) as report:
+    staged = report.name
+    report.write('\n'.join(out).rstrip() + '\n')
+try:
+    os.replace(staged, OUT)
+finally:
+    if os.path.exists(staged):
+        os.unlink(staged)
 print('wrote', OUT, len(out), 'lines;', dict(Counter(x[0] for x in st.values())))
