@@ -122,3 +122,14 @@ required specific authorization for external publication. No alternate write
 route, indirect upload or retry was attempted. The remote branch creation is not
 evidence that this document was delivered. Explicit approval is required before
 retrying that denied file publication; local evidence remains available.
+
+## Current publication result
+
+The user subsequently approved publication of this exact handoff. It was
+published on `checkpoint/ghostpay-source-reconciliation-20261101` at
+`de3b2132d55492d9596ef39b2b21bce90f865770` and verified against local checkpoint
+`08148b4afa71f8a16cbf20e93e43697fefa10eb9` with no tree differences. The denial
+above is historical; publication of this handoff is no longer blocked.
+Only transfer of the missing `7979e6f` source remains blocking overlapping
+implementation. Preserve that source-transfer gate and all existing release
+gates; this correction authorizes no other publication or overlapping edits.
