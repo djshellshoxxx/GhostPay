@@ -75,6 +75,8 @@ jobs:
         run: node --test apps/web/scripts/localBuildProfile.test.mjs
       - name: Merchant amount parsing and POS parity regressions
         run: node --test examples/merchant-checkout/money.test.mjs examples/pos-terminal/parity.test.mjs
+      - name: Locale catalog completeness and template safety
+        run: node scripts/i18n/check.mjs
       - run: npm audit --omit=dev --audit-level=high
 
   # Every test workspace runs once. Keep the expensive FHE stress suite independent and split the

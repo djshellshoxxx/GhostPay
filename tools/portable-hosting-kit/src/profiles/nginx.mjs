@@ -171,7 +171,7 @@ function headerDefaults(hostConfig) {
     if (typeof hostConfig.publicOrigin === 'string' && hostConfig.publicOrigin.startsWith('https://')) {
       m.set('strict-transport-security', { name: 'Strict-Transport-Security', value: HSTS_VALUE });
     }
-    if (hostConfig.onionLocation !== null && hostConfig.onionLocation !== undefined) {
+    if ((hostConfig.onionLocation ?? null) !== null) {
       m.set('onion-location', { name: 'Onion-Location', value: `${onionOrigin(hostConfig)}$request_uri` });
     }
   }

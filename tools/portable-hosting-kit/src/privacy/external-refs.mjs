@@ -106,8 +106,11 @@ function isHostCode(c) {
 function* protocolRelativeReferences(text) {
   const nextQuote = delimiterCursor(text, "\"'");
   const nextCssEnd = cssEndCursor(text);
-  for (let i = 0; i < text.length; i += 1) {
-    const prefix = referencePrefix(text, i);
+  let i = 0;
+  while (i < text.length) {
+    const index = i;
+    i += 1;
+    const prefix = referencePrefix(text, index);
     if (prefix === null || text.slice(prefix.p, prefix.p + 2) !== '//') continue;
     const start = prefix.p + 2;
     let hostEnd = start;
@@ -115,8 +118,8 @@ function* protocolRelativeReferences(text) {
     if (hostEnd === start) continue;
     const end = prefix.attribute ? nextQuote(hostEnd) : nextCssEnd(hostEnd);
     if (end < 0 || end >= text.length) continue;
-    yield { index: i, host: text.slice(start, hostEnd).toLowerCase(), context: prefix.context };
-    i = end;
+    yield { index, host: text.slice(start, hostEnd).toLowerCase(), context: prefix.context };
+    i = end + 1;
   }
 }
 

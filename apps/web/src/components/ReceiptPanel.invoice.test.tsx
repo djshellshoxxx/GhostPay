@@ -109,16 +109,17 @@ describe('ReceiptPanel invoice binding', () => {
   it.each(['cancel', 'edit', 'match', 'session', 'unmount'] as const)('ignores a parser result after %s', async (change) => {
     const { user, view, fill, match, seller, parsed } = await fixture();
     let finish!: (value: OpenFragmentResult) => void;
-    vi.mocked(openFragment).mockImplementationOnce(() => new Promise((resolve) => { finish = resolve; }));
+    const pending = new Promise<OpenFragmentResult>((resolve) => { finish = resolve; });
+    vi.mocked(openFragment).mockReturnValueOnce(pending);
     await fill();
     await user.click(screen.getByRole('button', { name: 'Validate invoice for receipt' }));
-    await waitFor(() => expect(finish).toBeDefined());
+    await waitFor(() => expect(openFragment).toHaveBeenCalledTimes(1));
     if (change === 'cancel') await user.click(screen.getByRole('button', { name: 'Cancel invoice validation' }));
     if (change === 'edit') fireEvent.change(screen.getByLabelText('Signed invoice link or fragment'), { target: { value: 'changed' } });
     if (change === 'match') view.rerender(<ReceiptPanel match={{ ...match, receipt: 'pending' }} sellerSignerPublicKey={seller.signerPublicKey} />);
     if (change === 'session') clearSession();
     if (change === 'unmount') view.unmount();
-    await act(async () => { finish({ status: 'ok', parsed }); });
+    await act(async () => { finish({ status: 'ok', parsed }); await pending; });
     expect(screen.queryByText(/Validated invoice matches this scan/)).toBeNull();
     expect(screen.queryByLabelText('Signed receipt JSON')).toBeNull();
   });
@@ -126,7 +127,8 @@ describe('ReceiptPanel invoice binding', () => {
   it.each(['cancel', 'edit', 'revoke'] as const)('retains the single-flight permit after %s until the underlying parser settles', async (change) => {
     const { user, fill, link, parsed } = await fixture();
     let finish!: (value: OpenFragmentResult) => void;
-    vi.mocked(openFragment).mockImplementationOnce(() => new Promise((resolve) => { finish = resolve; }));
+    const pending = new Promise<OpenFragmentResult>((resolve) => { finish = resolve; });
+    vi.mocked(openFragment).mockReturnValueOnce(pending);
     await fill();
     await user.click(screen.getByRole('button', { name: 'Validate invoice for receipt' }));
     await waitFor(() => expect(openFragment).toHaveBeenCalledTimes(1));
@@ -139,7 +141,7 @@ describe('ReceiptPanel invoice binding', () => {
     expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Validate invoice for receipt' }).disabled).toBe(true);
     await user.click(screen.getByRole('button', { name: 'Validate invoice for receipt' }));
     expect(openFragment).toHaveBeenCalledTimes(1);
-    await act(async () => { finish({ status: 'ok', parsed }); });
+    await act(async () => { finish({ status: 'ok', parsed }); await pending; });
     expect(screen.queryByText(/Validated invoice matches this scan/)).toBeNull();
     await waitFor(() => expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Validate invoice for receipt' }).disabled).toBe(false));
     await user.click(screen.getByRole('button', { name: 'Validate invoice for receipt' }));
@@ -150,7 +152,8 @@ describe('ReceiptPanel invoice binding', () => {
   it('keeps the parser permit across unmount/remount without installing the old result', async () => {
     const { user, view, fill, link, match, seller, parsed } = await fixture();
     let finish!: (value: OpenFragmentResult) => void;
-    vi.mocked(openFragment).mockImplementationOnce(() => new Promise((resolve) => { finish = resolve; }));
+    const pending = new Promise<OpenFragmentResult>((resolve) => { finish = resolve; });
+    vi.mocked(openFragment).mockReturnValueOnce(pending);
     await fill();
     await user.click(screen.getByRole('button', { name: 'Validate invoice for receipt' }));
     await waitFor(() => expect(openFragment).toHaveBeenCalledTimes(1));
@@ -161,7 +164,7 @@ describe('ReceiptPanel invoice binding', () => {
     await user.click(screen.getByRole('button', { name: 'Validate invoice for receipt' }));
     expect((await screen.findByRole('alert')).textContent).toContain('validation is still running');
     expect(openFragment).toHaveBeenCalledTimes(1);
-    await act(async () => { finish({ status: 'ok', parsed }); });
+    await act(async () => { finish({ status: 'ok', parsed }); await pending; });
     expect(screen.queryByText(/Validated invoice matches this scan/)).toBeNull();
     await user.click(screen.getByRole('button', { name: 'Validate invoice for receipt' }));
     await screen.findByText(/Validated invoice matches this scan/);

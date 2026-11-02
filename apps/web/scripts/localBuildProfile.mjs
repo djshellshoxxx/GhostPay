@@ -181,7 +181,6 @@ export function localBuildProfilePlugins(opts) {
   let configRoot;
   let publicCopied = [];
   let chunks;
-  let outputBundle;
   plugins.push({
     name: 'ghostpay-local-profile-output',
     apply: 'build',
@@ -192,25 +191,26 @@ export function localBuildProfilePlugins(opts) {
     },
     buildStart() {
       chunks = undefined;
-      outputBundle = undefined;
       publicCopied = [];
       if (opts.worker !== true) workerEvidence.length = 0;
     },
     generateBundle(_o, bundle) {
       chunks = profile === 'lean' ? collectLeanChunks(bundle, webRoot) : collectChunkModules(bundle);
-      outputBundle = bundle;
       if (opts.worker === true) workerEvidence.push({ chunks });
     },
-    writeBundle(o) {
+    writeBundle(o, bundle) {
       if (opts.worker === true) return;
       const dest = o.dir === undefined ? outDir : resolve(configRoot, o.dir);
       reportOutsideOutput(reportPath, dest);
       if (profile === 'lean') {
-        if (outputBundle === undefined) throw new Error('lean build module metadata is missing');
-        chunks = collectLeanChunks(outputBundle, webRoot);
+        if (chunks === undefined) throw new Error('lean build module metadata is missing');
+        if (bundle === undefined || bundle === null) throw new Error('lean final bundle metadata is missing');
+        // Vite can emit HTML after our generateBundle hook. Only final writeBundle
+        // metadata may admit emitted assets, and its chunks must pass the same proof.
+        chunks = collectLeanChunks(bundle, webRoot);
         if (workerEvidence.length === 0) throw new Error('lean Worker build evidence is missing');
         const workerChunks = new Set(workerEvidence.flatMap((worker) => worker.chunks.map((chunk) => chunk.fileName)));
-        const assets = Object.values(outputBundle).filter((item) => item.type === 'asset').map((item) => item.fileName);
+        const assets = Object.values(bundle).filter((item) => item.type === 'asset').map((item) => item.fileName);
         for (const name of assets) {
           if (/\.(?:[cm]?js|wasm)$/i.test(name) && !workerChunks.has(name)) throw new Error(`lean executable asset has no Worker module proof: ${name}`);
         }

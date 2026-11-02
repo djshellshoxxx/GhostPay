@@ -637,19 +637,23 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     // Import the product-exported bytes into the actual payer view, with its own disclosure consent and invoice binding.
     await openFresh(page, actualInvoiceLink);
     await expect(page.getByText('Seller receives (net)', { exact: true })).toBeVisible();
+    const receiptImport = page.getByRole('region', { name: 'Import a seller receipt', exact: true });
+    const acceptedReceipt = receiptImport.getByRole('note').filter({ hasText: 'Receipt matches this invoice' });
     const upload = page.getByLabel('Signed seller receipt JSON');
     await upload.setInputFiles(downloadedPath);
     await page.getByRole('button', { name: 'Check receipt against this invoice' }).click();
     await expect(page.getByText(/Consent is required before opening private receipt details/)).toBeVisible();
-    await expect(page.getByText('Receipt matches this invoice', { exact: true })).toHaveCount(0);
+    await expect(acceptedReceipt).toHaveCount(0);
     await page.getByLabel('I consent to opening private receipt details on this screen.').check();
+    await expect(receiptImport.getByRole('alert')).toHaveCount(0);
     const tampered = { ...(boundDecoded as Record<string, unknown>), amountMinorUnits: (parsed.netAmount + 1n).toString() };
     await upload.setInputFiles({ name: 'tampered-receipt.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(tampered)) });
     await page.getByRole('button', { name: 'Check receipt against this invoice' }).click();
-    await expect(page.getByText('Receipt not accepted', { exact: true })).toBeVisible();
+    await expect(receiptImport.getByRole('alert').filter({ hasText: 'Receipt not accepted' })).toBeVisible();
+    await expect(acceptedReceipt).toHaveCount(0);
     await upload.setInputFiles(downloadedPath);
     await page.getByRole('button', { name: 'Check receipt against this invoice' }).click();
-    await expect(page.getByText('Receipt matches this invoice', { exact: true })).toBeVisible();
+    await expect(acceptedReceipt).toBeVisible();
     await expect(page.getByText(/The signature matches the valid invoice-signing key/)).toBeVisible();
     expect(offOrigin).toEqual([]);
   });

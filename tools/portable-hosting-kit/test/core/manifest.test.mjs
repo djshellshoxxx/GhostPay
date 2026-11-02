@@ -102,6 +102,7 @@ test('parseManifest is strict', () => {
   throwsCode(() => parseManifest(edited((m) => { m.provenance.source = { kind: 'svn' }; })), 'E_VERIFY', /source.kind/);
   throwsCode(() => parseManifest(edited((m) => { m.policy.limits.maxFiles = 0; })), 'E_VERIFY', /maxFiles/);
   const good = Buffer.from(serializeManifest(buildManifest(input())));
+  assert.deepEqual(parseManifest(good), buildManifest(input()), 'canonical input remains accepted beside strict refusal cases');
   throwsCode(() => parseManifest(Buffer.concat([Buffer.from([0xef, 0xbb, 0xbf]), good])), 'E_VERIFY', /JSON/);
   throwsCode(() => parseManifest(Buffer.from([0xff, 0x7b])), 'E_VERIFY', /UTF-8/);
   // Same values, different serialization (duplicate key / whitespace) is not accepted.

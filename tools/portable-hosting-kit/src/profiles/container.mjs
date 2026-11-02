@@ -41,7 +41,12 @@ export const COMPOSE_FILE = 'compose.yaml';
  * @returns {string} a valid compose project name
  */
 export function composeProjectName(label) {
-  const s = label.toLowerCase().replace(/[^a-z0-9_-]+/g, '-').replace(/^[-_]+|[-_]+$/g, '').slice(0, 40);
+  const normalized = label.toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
+  let start = 0;
+  let end = normalized.length;
+  while (start < end && (normalized.charAt(start) === '-' || normalized.charAt(start) === '_')) start += 1;
+  while (end > start && (normalized.charAt(end - 1) === '-' || normalized.charAt(end - 1) === '_')) end -= 1;
+  const s = normalized.slice(start, end).slice(0, 40);
   return `hk-${s || 'site'}`;
 }
 

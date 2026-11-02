@@ -107,7 +107,7 @@ export async function makeFixtureSite() {
     '_headers': await fixtureHeadersText(),
   };
   await writeTree(siteDir, tree);
-  return { siteDir, files: Object.keys(tree).sort() };
+  return { siteDir, files: Object.keys(tree).sort((a, b) => (a < b ? -1 : a > b ? 1 : 0)) };
 }
 
 /**

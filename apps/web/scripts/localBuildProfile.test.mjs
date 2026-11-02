@@ -207,8 +207,9 @@ test('lean final output refuses missing Worker proof', () => {
   mkdirSync(publicDir);
   const plugin = leanOutput({ publicDir });
   plugin.configResolved({ root: dir, build: { outDir: 'dist' } });
-  plugin.generateBundle({}, chunk('/fixture/src/AppLean.tsx'));
-  assert.throws(() => plugin.writeBundle({}), /worker.*(proof|evidence)|missing.*worker/i);
+  const bundle = chunk('/fixture/src/AppLean.tsx');
+  plugin.generateBundle({}, bundle);
+  assert.throws(() => plugin.writeBundle({}, bundle), /worker.*(proof|evidence)|missing.*worker/i);
 });
 
 test('lean emitted evidence contains actual app/Worker facts with source-relative ids', () => {
@@ -222,8 +223,9 @@ test('lean emitted evidence contains actual app/Worker facts with source-relativ
   leanOutput({ ...opts, worker: true }).generateBundle({}, chunk(join(dir, 'src', 'lib', 'scanner.worker.ts'), 80, ['scan']));
   const plugin = leanOutput(opts);
   plugin.configResolved({ root: dir, build: { outDir: 'dist' } });
-  plugin.generateBundle({}, chunk(join(dir, 'src', 'AppLean.tsx'), 20, ['App']));
-  plugin.writeBundle({});
+  const bundle = chunk(join(dir, 'src', 'AppLean.tsx'), 20, ['App']);
+  plugin.generateBundle({}, bundle);
+  plugin.writeBundle({}, bundle);
   const text = readFileSync(join(dir, 'dist', 'ghostpay-lean-build.json'), 'utf8');
   const report = JSON.parse(text);
   assert.equal(report.profile, 'lean');
@@ -244,8 +246,9 @@ test('lean refuses a newly added uninspected executable public asset', () => {
   leanOutput({ ...opts, worker: true }).generateBundle({}, chunk(join(dir, 'src/lib/scanner.worker.ts'), 10, []));
   const plugin = leanOutput(opts);
   plugin.configResolved({ root: dir, build: { outDir: 'dist' } });
-  plugin.generateBundle({}, chunk(join(dir, 'src/AppLean.tsx'), 10, ['App']));
-  assert.throws(() => plugin.writeBundle({}), /executable|public.*asset/i);
+  const bundle = chunk(join(dir, 'src/AppLean.tsx'), 10, ['App']);
+  plugin.generateBundle({}, bundle);
+  assert.throws(() => plugin.writeBundle({}, bundle), /executable|public.*asset/i);
 });
 
 test('external evidence is rechecked against the actual output override', () => {
@@ -278,23 +281,23 @@ function outputFixture() {
 test('a later-emitted executable asset must also have Worker module proof', () => {
   const { plugin, bundle } = outputFixture();
   bundle['late.js'] = { type: 'asset', fileName: 'late.js', source: 'uninspected source, never executed' };
-  assert.throws(() => plugin.writeBundle({}), /asset.*proof/i);
+  assert.throws(() => plugin.writeBundle({}, bundle), /asset.*proof/i);
 });
 
 test('stale unreported output code is refused without deleting it', () => {
-  const { dir, plugin } = outputFixture();
+  const { dir, plugin, bundle } = outputFixture();
   mkdirSync(join(dir, 'dist'));
   writeFileSync(join(dir, 'dist', 'stale.js'), 'unreported source, never executed');
-  assert.throws(() => plugin.writeBundle({}), /output.*(module|proof|executable)/i);
+  assert.throws(() => plugin.writeBundle({}, bundle), /output.*(module|proof|executable)/i);
   assert.equal(readFileSync(join(dir, 'dist', 'stale.js'), 'utf8'), 'unreported source, never executed');
 });
 
 test('unreported stale HTML and HTM output is refused without deleting it', () => {
   for (const name of ['stale.html', 'other.HTM']) {
-    const { dir, plugin } = outputFixture();
+    const { dir, plugin, bundle } = outputFixture();
     mkdirSync(join(dir, 'dist'));
     writeFileSync(join(dir, 'dist', name), '<p>unreported inert document</p>');
-    assert.throws(() => plugin.writeBundle({}), /output.*(module|proof|executable)/i);
+    assert.throws(() => plugin.writeBundle({}, bundle), /output.*(module|proof|executable)/i);
     assert.equal(readFileSync(join(dir, 'dist', name), 'utf8'), '<p>unreported inert document</p>');
   }
 });
@@ -304,6 +307,38 @@ test('actual bundle-reported index HTML remains admitted', () => {
   bundle['index.html'] = { type: 'asset', fileName: 'index.html', source: '<p>bundler entry</p>' };
   mkdirSync(join(dir, 'dist'));
   writeFileSync(join(dir, 'dist', 'index.html'), '<p>bundler entry</p>');
-  assert.doesNotThrow(() => plugin.writeBundle({}));
+  assert.doesNotThrow(() => plugin.writeBundle({}, bundle));
   assert.equal(readFileSync(join(dir, 'dist', 'index.html'), 'utf8'), '<p>bundler entry</p>');
+});
+
+
+test('final writeBundle HTML metadata admits HTML emitted after generateBundle', () => {
+  const { dir, plugin, bundle } = outputFixture();
+  const finalBundle = { ...bundle, 'index.html': { type: 'asset', fileName: 'index.html', source: '<p>final emitted entry</p>' } };
+  mkdirSync(join(dir, 'dist'));
+  writeFileSync(join(dir, 'dist', 'index.html'), '<p>final emitted entry</p>');
+  assert.equal('index.html' in bundle, false, 'early snapshot must not supply the later HTML evidence');
+  assert.doesNotThrow(() => plugin.writeBundle({}, finalBundle));
+  assert.equal(readFileSync(join(dir, 'dist', 'index.html'), 'utf8'), '<p>final emitted entry</p>');
+});
+
+test('final reported HTML does not admit an unrelated stale HTML file', () => {
+  const { dir, plugin, bundle } = outputFixture();
+  const finalBundle = { ...bundle, 'index.html': { type: 'asset', fileName: 'index.html', source: '<p>final entry</p>' } };
+  mkdirSync(join(dir, 'dist'));
+  writeFileSync(join(dir, 'dist', 'index.html'), '<p>final entry</p>');
+  writeFileSync(join(dir, 'dist', 'stale.html'), '<p>unreported</p>');
+  assert.throws(() => plugin.writeBundle({}, finalBundle), /output.*(module|proof|executable)/i);
+  assert.equal(readFileSync(join(dir, 'dist', 'stale.html'), 'utf8'), '<p>unreported</p>');
+});
+
+test('final bundle metadata rechecks late executable assets and deferred app modules', () => {
+  const { plugin, bundle } = outputFixture();
+  assert.throws(() => plugin.writeBundle({}, { ...bundle, 'late.js': { type: 'asset', fileName: 'late.js', source: 'never executed' } }), /asset.*proof/i);
+  assert.throws(() => plugin.writeBundle({}, chunk('/fixture/src/features/btc/scan.ts')), /lean|deferred|excluded/i);
+});
+
+test('lean final output refuses absent final bundle metadata', () => {
+  const { plugin } = outputFixture();
+  assert.throws(() => plugin.writeBundle({}), /final.*metadata/i);
 });

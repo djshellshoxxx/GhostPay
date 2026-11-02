@@ -311,6 +311,8 @@ test('r2 C2: a site file or directory named with "$" is rejected by validation',
 });
 
 test('r2 C2: readZip rejects an entry named with "$"', () => {
+  const safe = buildZip([{ name: 'top/site/pay/index.html', data: 'x' }]);
+  assert.deepEqual(readZip(safe, { limits: DEFAULT_LIMITS }).entries.map((e) => [e.name, Buffer.from(e.data).toString('utf8')]), [['top/site/pay/index.html', 'x']], 'the neighboring legal path and bytes must remain readable');
   throwsCode(() => readZip(buildZip([{ name: 'top/site/pay$/index.html', data: 'x' }]), { limits: DEFAULT_LIMITS }), 'E_PATH', /nginx/);
   throwsCode(() => readZip(buildZip([{ name: 'top$/a.txt', data: 'x' }]), { limits: DEFAULT_LIMITS }), 'E_PATH', /nginx/);
 });
