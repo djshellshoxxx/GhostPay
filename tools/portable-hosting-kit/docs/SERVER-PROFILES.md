@@ -210,8 +210,8 @@ digest; cross-checked with a registry `HEAD /v2/nginxinc/nginx-unprivileged/mani
 (`docker-content-digest`, OCI image index, i.e. multi-arch). To update: resolve a new digest the same way, then
 run the opt-in container test (it runs the full differential matrix against the image).
 
-**Hardening.** `read_only: true`, `cap_drop: [ALL]`, `no-new-privileges`, `user: "101:101"`, tmpfs `/tmp`
-(16 MiB, noexec, nosuid, nodev), `mem_limit`/`memswap_limit 128m`, `cpus 0.5`, `pids_limit 64`, local logging
+**Hardening.** `read_only: true`, `cap_drop: [ALL]`, `no-new-privileges`, `user: "101:101"`, private tmpfs `/run/ghostpay-nginx`
+(16 MiB, mode0700, uid/gid101, noexec, nosuid, nodev), `mem_limit`/`memswap_limit 128m`, `cpus 0.5`, `pids_limit 64`, local logging
 with size limits, bind mounts read-only with `create_host_path: false`, no environment, env files or secrets,
 entrypoint `nginx -e stderr -c /etc/nginx/hk/nginx.conf` (the image's entrypoint scripts, which try to edit
 `/etc/nginx`, are not run). Published only as `127.0.0.1:<port>:8080` (or `[::1]:<port>:8080`); a unix-socket

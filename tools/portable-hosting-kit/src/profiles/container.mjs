@@ -32,6 +32,8 @@ export const CONTAINER_PUBLISH_NETWORK = 'site_publish';
 export const CONTAINER_WWW_ROOT = '/srv/www';
 export const CONTAINER_CONF_DIR = '/etc/nginx/hk';
 export const CONTAINER_USER = '101:101';
+/** Private runtime tmpfs, owned by the unprivileged nginx uid/gid; discarded on container teardown. */
+export const CONTAINER_RUNTIME_DIR = '/run/ghostpay-nginx';
 export const COMPOSE_FILE = 'compose.yaml';
 
 /**
@@ -79,7 +81,7 @@ function renderCompose(hostConfig) {
     '    cap_drop: ["ALL"]',
     '    security_opt: ["no-new-privileges:true"]',
     '    tmpfs:',
-    '      - "/tmp:size=16m,mode=1777,noexec,nosuid,nodev"',
+    `      - "${CONTAINER_RUNTIME_DIR}:size=16m,mode=0700,uid=101,gid=101,noexec,nosuid,nodev"`,
     '    volumes:',
     '      - type: bind',
     '        source: ./www',
@@ -143,11 +145,11 @@ export function generateContainer({ hostConfig, nginxFiles }) {
   const main = renderNginxMain({
     listen: `listen ${CONTAINER_PORT} default_server;`,
     root: CONTAINER_WWW_ROOT,
-    pidFile: '/tmp/nginx.pid',
-    tempDir: '/tmp',
+    pidFile: `${CONTAINER_RUNTIME_DIR}/nginx.pid`,
+    tempDir: CONTAINER_RUNTIME_DIR,
     comment: [
       'Container main file: listens on 8080 inside the container network namespace only; the host publishes it on',
-      'loopback (compose.yaml) and the internal network site_internal. Read-only root filesystem, /tmp is tmpfs.',
+      'loopback (compose.yaml) and the internal network site_internal. Read-only root filesystem; runtime tmpfs is private to uid/gid101.',
     ],
   });
   const enc = new TextEncoder();

@@ -143,6 +143,54 @@ describe('SecretBackup', () => {
     expect(writeText).toHaveBeenCalledTimes(3);
   });
 
+  it('keeps a copied backup marked after a synchronous clear failure and retries on activation', async () => {
+    setup();
+    await copyBackup();
+    writeText.mockImplementationOnce(() => { throw new DOMException('Clipboard unavailable.', 'NotAllowedError'); });
+    expect(() => clearCopiedBackup()).not.toThrow();
+    expect(writeText).toHaveBeenCalledTimes(2);
+    fireEvent.keyDown(document.body, { key: 'a' });
+    expect(writeText).toHaveBeenCalledTimes(3);
+    expect(writeText).toHaveBeenLastCalledWith('');
+    await settle();
+    fireEvent.keyDown(document.body, { key: 'b' });
+    clearCopiedBackup();
+    expect(writeText).toHaveBeenCalledTimes(3);
+  });
+
+  it('starts clearing synchronously and retains the mark if that promise later rejects', async () => {
+    setup();
+    await copyBackup();
+    let rejectClear!: (error: unknown) => void;
+    writeText.mockImplementationOnce(() => new Promise((_resolve, reject) => { rejectClear = reject; }));
+    clearCopiedBackup();
+    expect(writeText).toHaveBeenCalledTimes(2);
+    expect(rejectClear).toBeDefined();
+    clearCopiedBackup();
+    expect(writeText).toHaveBeenCalledTimes(2);
+    rejectClear(new DOMException('Document is not focused.', 'NotAllowedError'));
+    await settle();
+    fireEvent.click(document.body);
+    expect(writeText).toHaveBeenCalledTimes(3);
+    await settle();
+    clearCopiedBackup();
+    expect(writeText).toHaveBeenCalledTimes(3);
+  });
+
+  it('retains a copied-backup mark if the clipboard API disappears, then clears on the next available activation', async () => {
+    setup();
+    await copyBackup();
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: undefined });
+    expect(() => clearCopiedBackup()).not.toThrow();
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+    fireEvent.keyDown(document.body, { key: 'a' });
+    expect(writeText).toHaveBeenCalledTimes(2);
+    expect(writeText).toHaveBeenLastCalledWith('');
+    await settle();
+    clearCopiedBackup();
+    expect(writeText).toHaveBeenCalledTimes(2);
+  });
+
   it('retries a refused clear at the next click or key press anywhere in the page, once it worked no more', async () => {
     setup();
     await copyBackup();

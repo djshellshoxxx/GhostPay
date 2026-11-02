@@ -40,7 +40,7 @@ function ViewSwitch(props: { readonly view: ViewId; readonly extraViews: ExtraVi
     case 'create':
       // An invoice invites payments that only these keys can sweep: no invoice until they are backed up or the risk is waived (L1-01).
       // Also when only a signing key generated at a hex import is unsaved: invoices are signed with it (C-R10).
-      return <BackupGate heading="Create invoice"><CreateInvoice /></BackupGate>;
+      return <BackupGate heading="Create invoice"><CreateInvoice supportedOnly={props.profile === 'lean'} /></BackupGate>;
     case 'pay':
       return <Pay supportedOnly={props.profile === 'lean'} />;
     case 'scan':

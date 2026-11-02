@@ -38,7 +38,7 @@ function servicesWithoutEffects(): Services {
   });
 }
 
-const rejection = (): RegExp => new RegExp(UNSUPPORTED.replace(/\./g, '\\.'));
+const rejection = (): RegExp => new RegExp(UNSUPPORTED.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
 
 async function openQr(profile: 'full' | 'lean') {
   const services = servicesWithoutEffects();
@@ -89,7 +89,8 @@ describe('Supported build incoming invoice boundary', () => {
     renderWith(<AppShell order={ORDER} profile="lean" />, services);
     await user.type(await screen.findByLabelText('Invoice passphrase'), 'test-only passphrase');
     await user.click(screen.getByRole('button', { name: 'Open invoice' }));
-    expect(await screen.findByText(rejection())).toBeTruthy();
+    // Wait for the unchanged production KDF, rather than the default one-second DOM timeout.
+    expect(await screen.findByText(rejection(), {}, { timeout: 30_000 })).toBeTruthy();
     expect(screen.queryByRole('heading', { name: 'Review payment' })).toBeNull();
     expect(services.createRpc).not.toHaveBeenCalled();
     expect(services.discoverWallets).not.toHaveBeenCalled();

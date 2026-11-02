@@ -62,3 +62,22 @@ lint, application/Worker builds and browser acceptance still require successful
 checks on the exact candidate revision. The initial consolidation passed its
 other hosted checks but failed Sonar Security and Reliability at D; required A/A
 gates remain unchanged. Source review and helper tests do not qualify a release.
+
+The first combined hosted cycle exposed receipt-test TypeScript narrowing errors,
+two CodeQL findings in test helpers and a one-second DOM wait that expired during
+the unchanged production KDF. Those corrections are independently reviewed; the
+failed results remain part of the qualification history. That web pass recorded
+1,675 passing tests, one failure and the preserved Bitcoin regtest skip; it did
+not establish coverage or completion of the subsequent test pass.
+
+Follow-up source adds a matching fixed-amount creation boundary and composed
+browser assertions for opt-in invoice registration, explicit reconciliation
+confirmation, actual direct-sweep signing, the prebroadcast journal and reload
+recovery. These browser cases use authored RPC responses and require execution
+in both profiles. They are not local-chain, independent-builder or device proof.
+
+Reviewed quality fixes retain a copied-backup retry marker when clipboard clearing
+throws or becomes unavailable, replace ambiguous hosting-kit URL scanning with
+forward scanning, and isolate the unprivileged container's runtime tmpfs. Native
+container checks, application tests and Sonar A/A still need to pass on this
+combined revision; helper-level results do not substitute for them.

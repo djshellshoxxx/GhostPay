@@ -406,7 +406,7 @@ export function transportHeaders(hostConfig, requestTarget = hostConfig.basePath
   if (typeof hostConfig.publicOrigin === 'string' && hostConfig.publicOrigin.startsWith('https://')) {
     out.push(['Strict-Transport-Security', HSTS_VALUE]);
   }
-  if (hostConfig.onionLocation !== null && hostConfig.onionLocation !== undefined) {
+  if ((hostConfig.onionLocation ?? null) !== null) {
     out.push(['Onion-Location', onionOrigin(hostConfig) + requestTarget]);
   }
   return out;

@@ -47,7 +47,12 @@ export interface WithdrawPlan {
   readonly problems: readonly string[];
 }
 
-const minOf = (...v: bigint[]): bigint => v.reduce((a, b) => (b < a ? b : a));
+const minOf = (...v: bigint[]): bigint => {
+  const first = v[0];
+  if (first === undefined) throw new TypeError('At least one amount is required.');
+  // Seed from an actual amount: zero would incorrectly cap every positive withdrawal.
+  return v.reduce((a, b) => (b < a ? b : a), first);
+};
 
 /**
  * Plans a withdrawal within the account's limits. Conservative: headroom is evaluated at the

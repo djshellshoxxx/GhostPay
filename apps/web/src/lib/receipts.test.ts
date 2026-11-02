@@ -124,9 +124,10 @@ describe('invoice-bound receipt creation', () => {
     expect(() => bind({ ...match, chainId: 1 })).toThrow(/chain/);
     expect(() => bind({ ...match, viaRouter: false })).toThrow(/verified router/);
     expect(() => bind({ ...match, metadata: undefined })).toThrow(/verified router/);
-    if (match.metadata === undefined || match.metadata.kind !== 'erc20') throw new Error('ERC20 fixture required');
-    expect(() => bind({ ...match, metadata: { ...match.metadata, token: fields.asset as `0x${string}` } })).toThrow(/asset/);
-    expect(() => bind({ ...match, metadata: { ...match.metadata, netAmount: match.metadata.netAmount + 1n } })).toThrow(/amount/);
+    const metadata = match.metadata;
+    if (metadata === undefined || metadata.kind !== 'erc20') throw new Error('ERC20 fixture required');
+    expect(() => bind({ ...match, metadata: { ...metadata, token: fields.asset as `0x${string}` } })).toThrow(/asset/);
+    expect(() => bind({ ...match, metadata: { ...metadata, netAmount: metadata.netAmount + 1n } })).toThrow(/amount/);
     expect(() => bind({ ...match, stealthAddress: fields.stealthAddress as ScanMatch['stealthAddress'] })).toThrow(/recipient/);
     expect(() => bind({ ...match, announcement: { ...match.announcement, ephemeralPublicKey: `0x02${'f'.repeat(64)}` } })).toThrow(/recipient/);
     expect(() => withSessionSecrets((s) => receiptBindingForInvoice(parsed, match, 'different', s.keys, NOW))).toThrow(/signer/);

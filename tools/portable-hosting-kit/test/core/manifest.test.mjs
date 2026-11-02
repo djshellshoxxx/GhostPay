@@ -74,7 +74,9 @@ test('serialize is deterministic (2-space indent, trailing newline) and parse ro
 });
 
 test('buildManifest rejects invalid input with E_USAGE', () => {
-  throwsCode(() => buildManifest({ ...input(), appId: 'Bad App' }), 'E_USAGE', /appId/);
+  const invalid = { ...input(), appId: 'Bad App' };
+  const original = structuredClone(invalid);
+  throwsCode(() => buildManifest(invalid), 'E_USAGE', /appId/);
   throwsCode(() => buildManifest({ ...input(), entrypoint: 'missing.html' }), 'E_USAGE', /entrypoint/);
   throwsCode(() => buildManifest({ ...input(), records: [...input().records, { path: 'Index.html', size: 1, sha256: H('d') }] }), 'E_USAGE', /collides/);
   throwsCode(() => buildManifest({ ...input(), records: [...input().records, { path: '../x', size: 1, sha256: H('d') }] }), 'E_USAGE');
@@ -82,6 +84,7 @@ test('buildManifest rejects invalid input with E_USAGE', () => {
   throwsCode(() => buildManifest({ ...input(), metadataFiles: ['HOSTING-MANIFEST.json', 'SHA256SUMS'] }), 'E_USAGE', /SHA256SUMS/);
   throwsCode(() => buildManifest({ ...input(), metadataFiles: ['HOSTING-MANIFEST.json', 'site/x'] }), 'E_USAGE');
   throwsCode(() => buildManifest({ ...input(), trustSensitive: ['nope.json'] }), 'E_USAGE', /trustSensitive/);
+  assert.deepEqual(invalid, original, 'refusal must preserve the supplied manifest inputs');
 });
 
 test('parseManifest is strict', () => {

@@ -36,7 +36,103 @@ const HOST_CATEGORIES = /** @type {Array<{ re: RegExp, category: Category }>} */
 
 /** URL literals inside a quoted string, attribute or url(). */
 const URL_RE = /\b(https?|wss?):\/\/([A-Za-z0-9.-]+(?::\d+)?)?[^\s"'`<>)\\]*/g;
-const PROTOCOL_RELATIVE_RE = /(?:src|href|action)\s*=\s*["']\/\/([A-Za-z0-9.-]+)[^"']*["']|url\(\s*["']?\/\/([A-Za-z0-9.-]+)[^)"']*["']?\s*\)/gi;
+const SPACE_RE = /\s/u;
+const REFERENCE_TOKENS = new Map([['s', 'src'], ['h', 'href'], ['a', 'action'], ['u', 'url(']]);
+
+/** @param {string} text @param {number} from */
+function skipSpace(text, from) {
+  while (from < text.length && SPACE_RE.test(text.charAt(from))) from += 1;
+  return from;
+}
+
+/** Token hosts contain no prefix delimiters, so subsequent host ends never move backwards.
+ * Each cached delimiter cursor visits each input position at most once; no input-sized tables.
+ * @param {string} text @param {string} stops
+ */
+function delimiterCursor(text, stops) {
+  let end = -1;
+  return (/** @type {number} */ from) => {
+    if (from > end) {
+      end = from;
+      while (end < text.length && !stops.includes(text.charAt(end))) end += 1;
+    }
+    return end;
+  };
+}
+
+/** @param {string} text @param {number} index */
+function referencePrefix(text, index) {
+  const token = REFERENCE_TOKENS.get(text.charAt(index).toLowerCase());
+  if (token === undefined || text.slice(index, index + token.length).toLowerCase() !== token) return null;
+  let p = skipSpace(text, index + token.length);
+  let quote = '';
+  const attribute = token !== 'url(';
+  if (attribute) {
+    if (text.charAt(p) !== '=') return null;
+    p = skipSpace(text, p + 1);
+    quote = text.charAt(p);
+    if (quote !== '"' && quote !== "'") return null;
+    p += 1;
+  } else if (text.charAt(p) === '"' || text.charAt(p) === "'") {
+    quote = text.charAt(p); p += 1;
+  }
+  return { p, attribute, context: attribute ? `${token}=${quote}` : `url(${quote}` };
+}
+
+/** @param {string} text */
+function cssEndCursor(text) {
+  const next = delimiterCursor(text, ")\"'");
+  let lastQuote = -1;
+  let afterQuote = 0;
+  return (/** @type {number} */ from) => {
+    let end = next(from);
+    if (text.charAt(end) === '"' || text.charAt(end) === "'") {
+      if (lastQuote !== end) { lastQuote = end; afterQuote = skipSpace(text, end + 1); }
+      end = afterQuote;
+    }
+    return text.charAt(end) === ')' ? end : -1;
+  };
+}
+
+/** @param {number} c */
+function isHostCode(c) {
+  return (c >= 65 && c <= 90) || (c >= 97 && c <= 122) || (c >= 48 && c <= 57) || c === 45 || c === 46;
+}
+
+/** Forward literal scan, retaining legacy quote handling and global nonoverlap.
+ * Prefix/host spans and cached suffix/whitespace cursors have linear total work.
+ * @param {string} text
+ */
+function* protocolRelativeReferences(text) {
+  const nextQuote = delimiterCursor(text, "\"'");
+  const nextCssEnd = cssEndCursor(text);
+  for (let i = 0; i < text.length; i += 1) {
+    const prefix = referencePrefix(text, i);
+    if (prefix === null || text.slice(prefix.p, prefix.p + 2) !== '//') continue;
+    const start = prefix.p + 2;
+    let hostEnd = start;
+    while (hostEnd < text.length && isHostCode(text.charCodeAt(hostEnd))) hostEnd += 1;
+    if (hostEnd === start) continue;
+    const end = prefix.attribute ? nextQuote(hostEnd) : nextCssEnd(hostEnd);
+    if (end < 0 || end >= text.length) continue;
+    yield { index: i, host: text.slice(start, hostEnd).toLowerCase(), context: prefix.context };
+    i = end;
+  }
+}
+
+/** Bounded context suffix parsing, without ambiguous optional whitespace groups.
+ * @param {string} before @param {boolean} importRule
+ */
+function cssPrefix(before, importRule) {
+  let end = before.length;
+  if (before.charAt(end - 1) === '"' || before.charAt(end - 1) === "'") end -= 1;
+  while (end > 0 && SPACE_RE.test(before.charAt(end - 1))) end -= 1;
+  if (importRule && before.slice(0, end).endsWith('url(')) {
+    end -= 4;
+    while (end > 0 && SPACE_RE.test(before.charAt(end - 1))) end -= 1;
+  }
+  return before.slice(0, end).endsWith(importRule ? '@import' : 'url(');
+}
 
 /**
  * Category from the surrounding text when the host is not known.
@@ -51,8 +147,8 @@ function classifyByContext(before, ext) {
   if (/<form[^>]*\baction\s*=\s*["']?$/.test(b)) return { category: 'form', loadsByDefault: false };
   if (/<img[^>]*\bsrc(set)?\s*=\s*["']?$/.test(b)) return { category: 'image', loadsByDefault: true };
   if (/<link[^>]*\bhref\s*=\s*["']?$/.test(b)) return { category: 'style', loadsByDefault: true };
-  if (/@import\s*(url\()?\s*["']?$/.test(b)) return { category: 'style', loadsByDefault: true };
-  if (/url\(\s*["']?$/.test(b)) return { category: ext === 'css' && /@font-face|src\s*:/.test(b) ? 'font' : 'image', loadsByDefault: true };
+  if (cssPrefix(b, true)) return { category: 'style', loadsByDefault: true };
+  if (cssPrefix(b, false)) return { category: ext === 'css' && /@font-face|src\s*:/.test(b) ? 'font' : 'image', loadsByDefault: true };
   if (/<a[^>]*\bhref\s*=\s*["']?$/.test(b)) return { category: 'documentation-link', loadsByDefault: false };
   return { category: 'other', loadsByDefault: false };
 }
@@ -110,18 +206,19 @@ export async function scanExternalReferences(files, readBytes) {
       add(m[0], m[1] ?? '', host, classifyByContext(text.slice(Math.max(0, idx - 40), idx), ext), f.path);
     }
     if (ext === 'html' || ext === 'htm' || ext === 'css' || ext === 'svg') {
-      for (const m of text.matchAll(PROTOCOL_RELATIVE_RE)) {
-        const host = (m[1] ?? m[2] ?? '').toLowerCase();
+      for (const m of protocolRelativeReferences(text)) {
+        const host = m.host;
         if (host === '') continue;
-        const idx = m.index ?? 0;
-        const ctx = classifyByContext(text.slice(Math.max(0, idx - 40), idx + m[0].indexOf('//')), ext);
+        const idx = m.index;
+        const ctx = classifyByContext(text.slice(Math.max(0, idx - 40), idx) + m.context, ext);
         add(`//${host}`, '//', host, { category: ctx.category, loadsByDefault: true }, f.path);
       }
     }
   }
 
   const references = [...byUrl.values()]
-    .map((r) => ({ ...r, files: [...r.files].sort() }))
+    // Keep existing UTF-16 order, independent of host locale.
+    .map((r) => ({ ...r, files: [...r.files].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0)) }))
     .sort((a, b) => (a.category === b.category ? (a.url < b.url ? -1 : a.url > b.url ? 1 : 0) : a.category < b.category ? -1 : 1));
   /** @type {Record<string, number>} */
   const summary = {};

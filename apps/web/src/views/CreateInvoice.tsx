@@ -1,6 +1,6 @@
 import { ManifestBanner } from '../components/ManifestBanner';
 import { findChain, findToken, isQuoteAvailable } from '@ghostpay/chain-adapters';
-import { useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import type { Invoice } from '@ghostpay/invoice-schema';
 import { CopyButton, Field, Notice } from '../components/Common';
 import { useManifest } from '../components/Disclosure';
@@ -22,7 +22,11 @@ function fiatQuoteAvailable(chainId: number, token: string, currency: string): b
 
 const EMPTY_ITEM: LineItemInput = { description: '', quantity: '1', unitPrice: '' };
 
-export function CreateInvoice(): ReactNode {
+function supportsInvoice(invoice: Invoice, supportedOnly: boolean): boolean {
+  return !supportedOnly || (invoice.v === 1 && invoice.amountPolicy.mode === 'fixed_token');
+}
+
+export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnly?: boolean } = {}): ReactNode {
   const app = useApp();
   const services = useServices();
   const [chainId, setChainId] = useState<number>(services.chains[0]?.chainId ?? 84532);
@@ -50,6 +54,14 @@ export function CreateInvoice(): ReactNode {
   const [registration, setRegistration] = useState<{ readonly kind: 'busy' | 'ok' } | { readonly kind: 'error'; readonly message: string } | undefined>(undefined);
   const registrationRun = useRef(0);
   const manifest = useManifest(chainId);
+  // Each profile lifetime has its own identity, including full -> lean -> full.
+  const creationScope = useMemo(() => ({ supportedOnly }), [supportedOnly]);
+  const currentCreationScope = useRef(creationScope); currentCreationScope.current = creationScope;
+  const mounted = useRef(false);
+  useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; };
+  }, []);
 
   if (app.session === undefined) {
     return (
@@ -65,8 +77,9 @@ export function CreateInvoice(): ReactNode {
 
   const choices = tokenChoices(chainId);
   const FIAT_QUOTE_AVAILABLE = fiatQuoteAvailable(chainId, token, currency);
-  // A selection that lost its feed (chain, token or currency changed) never keeps fiat mode.
-  const effectiveAmountMode = FIAT_QUOTE_AVAILABLE ? amountMode : 'fixed_token';
+  // Retained full-profile state or a lost feed must never keep fiat mode in this build.
+  const effectiveAmountMode = !supportedOnly && FIAT_QUOTE_AVAILABLE ? amountMode : 'fixed_token';
+  const visibleCreated = created !== undefined && supportsInvoice(created.invoice, supportedOnly) ? created : undefined;
 
   const registerCreated = (invoice: Invoice): void => {
     const run = ++registrationRun.current;
@@ -114,8 +127,18 @@ export function CreateInvoice(): ReactNode {
       encrypt,
       ...(protectWithPassphrase ? { passphrase } : {}),
     };
+    const scope = creationScope;
+    const current = (): boolean => mounted.current && currentCreationScope.current === scope;
     buildInvoiceLink(form, services.baseUrl(), Math.floor(services.nowMs() / 1000)).then(
       (c) => {
+        if (!current()) return;
+        if (!supportsInvoice(c.invoice, supportedOnly)) {
+          setCreated(undefined);
+          registrationRun.current++;
+          setRegistration(undefined);
+          setError('This build supports fixed-amount invoices without a seller buffer policy.');
+          return;
+        }
         setCreated(c);
         registerCreated(c.invoice);
         setPassphrase('');
@@ -123,6 +146,7 @@ export function CreateInvoice(): ReactNode {
         app.announce('Invoice link created.');
       },
       (err: unknown) => {
+        if (!current()) return;
         setCreated(undefined);
         registrationRun.current++;
         setRegistration(undefined);
@@ -180,11 +204,11 @@ export function CreateInvoice(): ReactNode {
           <legend>Amount</legend>
           <Field label="Pricing">
             {(id) => (
-              <select id={id} value={effectiveAmountMode} onChange={(e) => { setAmountMode(FIAT_QUOTE_AVAILABLE && e.target.value === 'fiat_quote' ? 'fiat_quote' : 'fixed_token'); }}>
+              <select id={id} value={effectiveAmountMode} onChange={(e) => { setAmountMode(!supportedOnly && FIAT_QUOTE_AVAILABLE && e.target.value === 'fiat_quote' ? 'fiat_quote' : 'fixed_token'); }}>
                 <option value="fixed_token">Fixed token amount</option>
-                <option value="fiat_quote" disabled={!FIAT_QUOTE_AVAILABLE}>
+                {!supportedOnly && <option value="fiat_quote" disabled={!FIAT_QUOTE_AVAILABLE}>
                   {FIAT_QUOTE_AVAILABLE ? 'Fiat price, converted at payment time' : 'Fiat price (unavailable: no verified price feed)'}
-                </option>
+                </option>}
               </select>
             )}
           </Field>
@@ -273,20 +297,20 @@ export function CreateInvoice(): ReactNode {
 
       {error !== undefined && <Notice kind="error">{error}</Notice>}
 
-      {created !== undefined && (
+      {visibleCreated !== undefined && (
         <div className="result" aria-live="polite">
           <h3>Your invoice link</h3>
           <Notice kind="warn" title="Bearer link">
-            Anyone who has this link or its QR code can pay it. {created.passphraseProtected ? 'The invoice contents are protected by a passphrase, which you must send separately; the passphrase cannot be recovered if lost.' : created.encrypted ? 'Anyone with the link can also read the invoice because its encryption key is inside the link.' : 'Anyone with the link can read the invoice.'} Phone photo backups, clipboards, chat previews and browser history may keep a copy. Do not post it publicly unless that is intended.
+            Anyone who has this link or its QR code can pay it. {visibleCreated.passphraseProtected ? 'The invoice contents are protected by a passphrase, which you must send separately; the passphrase cannot be recovered if lost.' : visibleCreated.encrypted ? 'Anyone with the link can also read the invoice because its encryption key is inside the link.' : 'Anyone with the link can read the invoice.'} Phone photo backups, clipboards, chat previews and browser history may keep a copy. Do not post it publicly unless that is intended.
           </Notice>
           {registration?.kind === 'busy' && <Notice kind="info">Registering the invoice in your encrypted reconciliation vault…</Notice>}
           {registration?.kind === 'ok' && <Notice kind="ok">Invoice registered in your encrypted reconciliation vault for local matching.</Notice>}
           {registration?.kind === 'error' && <Notice kind="warn">The invoice link was created, but it could not be registered for local matching: {registration.message}</Notice>}
-          <Field label="Link">{(id) => <textarea id={id} readOnly rows={4} className="mono" value={created.link} onFocus={(e) => { e.currentTarget.select(); }} />}</Field>
-          <p><CopyButton text={created.link} label="Copy link" /></p>
+          <Field label="Link">{(id) => <textarea id={id} readOnly rows={4} className="mono" value={visibleCreated.link} onFocus={(e) => { e.currentTarget.select(); }} />}</Field>
+          <p><CopyButton text={visibleCreated.link} label="Copy link" /></p>
           <QrFrame
-            kind={created.encrypted && !created.passphraseProtected ? 'bearer' : 'shareable'}
-            text={created.link}
+            kind={visibleCreated.encrypted && !visibleCreated.passphraseProtected ? 'bearer' : 'shareable'}
+            text={visibleCreated.link}
             caption="QR code containing the invoice link"
           />
         </div>

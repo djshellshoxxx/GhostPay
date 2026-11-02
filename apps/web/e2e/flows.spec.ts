@@ -420,10 +420,15 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await page.getByLabel('Who pays the 0.25 % checkout fee').selectOption('payer_pays');
     await page.getByLabel('Item 1 description').fill('Receipt-bound authored fixture');
     await page.getByLabel('Item 1 unit price').fill('1.00');
+    const registerInvoice = page.getByLabel('Register this invoice in my encrypted reconciliation vault for automatic local matching');
+    await expect(registerInvoice).not.toBeChecked();
+    await registerInvoice.check();
     await page.getByRole('button', { name: 'Create invoice link' }).click();
+    await expect(page.getByText('Invoice registered in your encrypted reconciliation vault for local matching.', { exact: true })).toBeVisible();
     const actualInvoiceLink = await page.getByRole('textbox', { name: 'Link', exact: true }).inputValue();
     const actualInvoice = await parseFragment(new URL(actualInvoiceLink).hash);
     expect(actualInvoice.verification.signatureValid).toBe(true);
+    const registeredInvoiceDigest = `0x${bytesToHex(calculateInvoiceDigest(actualInvoice.invoice))}`;
     const mine = makeLog({
       announcer: FAKE_ANNOUNCER,
       metaAddress: meta,
@@ -474,6 +479,30 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     expect(workers.some((u) => u.startsWith(`${ORIGIN}/assets/scanner.worker-`))).toBe(true);
     expect(offOrigin).toEqual([]);
     expect(net.requests.length).toBeGreaterThan(0);
+
+    // The actual registered invoice is only proposed, never silently confirmed or promoted to payment proof.
+    const ledger = page.getByRole('region', { name: 'Local payment reconciliation', exact: true });
+    await ledger.getByRole('button', { name: 'Unlock encrypted reconciliation vault', exact: true }).click();
+    const proposal = ledger.getByText(/Exact local match proposed:/);
+    await expect(proposal).toContainText(registeredInvoiceDigest);
+    await expect(ledger.getByText('No records saved.', { exact: true })).toBeVisible();
+    await expect(ledger.getByText(/No linked observation\./)).toBeVisible();
+    await ledger.getByRole('button', { name: 'Confirm proposed invoice match', exact: true }).click();
+    const linkedObservation = ledger.locator('li').filter({ hasText: 'Manual invoice link (or a local match you confirmed):' });
+    await expect(linkedObservation).toHaveCount(1);
+    await expect(linkedObservation).toContainText(registeredInvoiceDigest);
+    await expect(linkedObservation).toContainText(txHash);
+    await expect(linkedObservation).toContainText(mine.stealthAddress.toLowerCase());
+    await expect(linkedObservation).toContainText('historical observation, not current payment proof');
+    await expect(ledger.getByText(/Linked to a verified observation\./)).toBeVisible();
+    await expect(ledger.getByRole('button', { name: 'Confirm proposed invoice match', exact: true })).toHaveCount(0);
+    // Reopen the real encrypted vault to prove confirmation survives beyond the transient preview state.
+    await ledger.getByRole('button', { name: 'Lock reconciliation vault', exact: true }).click();
+    await expect(ledger.getByRole('button', { name: 'Unlock encrypted reconciliation vault', exact: true })).toBeVisible();
+    await ledger.getByRole('button', { name: 'Unlock encrypted reconciliation vault', exact: true }).click();
+    await expect(linkedObservation).toContainText(registeredInvoiceDigest);
+    await expect(linkedObservation).toContainText(txHash);
+    await expect(ledger.getByText(/Linked to a verified observation\./)).toBeVisible();
 
     // The matching Transfer evidence makes this a verified payment, not a claim.
     await expect(page.getByText(/Claimed, not confirmed/)).toHaveCount(0);

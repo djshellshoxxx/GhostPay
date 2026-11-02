@@ -167,8 +167,10 @@ describe('encrypted reconciliation vault', () => {
     const vault = await unlocked();
     await vault.save(record);
     const text = await vault.exportEncrypted();
+    expect(text.startsWith('{')).toBe(true);
+    const duplicateFormat = '{"format":"ghostpay-reconciliation",' + text.slice(1);
     await expect(
-      vault.previewImport(text.replace('{', '{"format":"ghostpay-reconciliation",')),
+      vault.previewImport(duplicateFormat),
     ).rejects.toThrow(/format/);
     const envelope = JSON.parse(text) as { ciphertext: string };
     envelope.ciphertext = 'ff'.repeat(1_000_000);

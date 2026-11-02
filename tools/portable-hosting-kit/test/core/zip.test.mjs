@@ -67,6 +67,8 @@ test('header fields: fixed DOS time, Unix mode 0644, UTF-8 flag, store when defl
 test('createZip refuses unsafe or colliding names', () => {
   throwsCode(() => createZip([{ name: '../x', data: new Uint8Array(0) }], { compression: 'store' }), 'E_PATH');
   throwsCode(() => createZip([{ name: 'a/B', data: new Uint8Array(0) }, { name: 'a/b', data: new Uint8Array(0) }], { compression: 'store' }), 'E_ARCHIVE');
+  const single = readZip(createZip([{ name: 'a/B', data: Uint8Array.of(7) }], { compression: 'store' }), { limits: LIMITS });
+  assert.deepEqual(single.entries.map((e) => ({ name: e.name, data: Array.from(e.data) })), [{ name: 'a/B', data: [7] }]);
 });
 
 const PY_READ = `
@@ -207,7 +209,10 @@ const BAD = [
 
 for (const c of BAD) {
   test(`readZip rejects: ${c.title}`, () => {
-    throwsCode(() => readZip(c.zip(), { limits: c.limits ?? LIMITS }), c.code, c.message);
+    const zip = c.zip();
+    const original = Buffer.from(zip);
+    throwsCode(() => readZip(zip, { limits: c.limits ?? LIMITS }), c.code, c.message);
+    assert.deepEqual(zip, original, 'refusing input must not mutate the supplied archive');
   });
 }
 

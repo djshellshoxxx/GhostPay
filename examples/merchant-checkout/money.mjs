@@ -19,7 +19,10 @@ export function toMinorUnits(amount, currency) {
   const m = /^(0|[1-9][0-9]{0,15})(?:\.([0-9]{1,8}))?$/.exec(typeof amount === 'string' ? amount : '');
   if (m === null) return undefined;
   const d = fiatDecimals(currency);
-  const frac = (m[2] ?? '').replace(/0+$/, '');
+  const fraction = m[2] ?? '';
+  let end = fraction.length;
+  while (end > 0 && fraction[end - 1] === '0') end--;
+  const frac = fraction.slice(0, end);
   if (frac.length > d) return undefined;
   return (BigInt(m[1]) * 10n ** BigInt(d) + BigInt(frac.padEnd(d, '0') || '0')).toString();
 }

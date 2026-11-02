@@ -262,7 +262,8 @@ function isAnnouncerQuery(f: LogFilter, announcer: Address): boolean {
  * whole; it is the same for every GhostPay user and names nothing about this seller.
  */
 function assertScanFilter(f: LogFilter, router: Address | undefined): void {
-  const keys = Object.keys(f).sort().join(',');
+  // Exact request-field names use deterministic UTF-16 order, never host-locale collation.
+  const keys = Object.keys(f).sort((a, b) => a < b ? -1 : a > b ? 1 : 0).join(',');
   const scheme = f.topics[1];
   const caller = f.topics[3];
   const routerOnly = f.topics.length === 4 && f.topics[2] === null && router !== undefined && typeof caller === 'string' && caller.toLowerCase() === word(router);

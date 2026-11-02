@@ -11,7 +11,7 @@ import { startPreview } from '../../src/serve/preview.mjs';
 import { exportStatic } from '../../src/profiles/static-export.mjs';
 import { generateNginx } from '../../src/profiles/nginx.mjs';
 import {
-  CONTAINER_IMAGE, CONTAINER_IMAGE_DIGEST, CONTAINER_NETWORK, CONTAINER_PORT, CONTAINER_SERVICE, composeProjectName, generateContainer,
+  CONTAINER_IMAGE, CONTAINER_IMAGE_DIGEST, CONTAINER_NETWORK, CONTAINER_PORT, CONTAINER_RUNTIME_DIR, CONTAINER_SERVICE, composeProjectName, generateContainer,
 } from '../../src/profiles/container.mjs';
 import { buildRequest, freePort, makeFixtureSite, nginxAvailable, nginxTest, rawRequest, tempDir, writeOutFiles } from '../serve/helpers.mjs';
 import { compareServers, requestCases } from './compare.mjs';
@@ -64,7 +64,7 @@ test('compose file: pinned image, frozen names, loopback publish, hardening, no 
   assert.match(y, /ports:\n {6}- "127\.0\.0\.1:8088:8080"\n/);
   assert.equal((y.match(/:8080"/g) ?? []).length, 1, 'exactly one published port');
   for (const needle of ['read_only: true', 'cap_drop: ["ALL"]', 'security_opt: ["no-new-privileges:true"]', 'user: "101:101"',
-    '- "/tmp:size=16m,mode=1777,noexec,nosuid,nodev"', 'mem_limit: 128m', 'pids_limit: 64', 'cpus: 0.5',
+    '- "/run/ghostpay-nginx:size=16m,mode=0700,uid=101,gid=101,noexec,nosuid,nodev"', 'mem_limit: 128m', 'pids_limit: 64', 'cpus: 0.5',
     `  ${CONTAINER_NETWORK}:\n    internal: true`, 'com.docker.network.bridge.enable_ip_masquerade: "false"', 'name: "hk-my-mirror"']) {
     assert.ok(y.includes(needle), `compose lacks ${needle}`);
   }
@@ -76,7 +76,7 @@ test('compose file: pinned image, frozen names, loopback publish, hardening, no 
   const main = text(container, 'nginx/nginx.conf');
   assert.match(main, /listen 8080 default_server;/);
   assert.match(main, /root "\/srv\/www";/);
-  assert.match(main, /pid "\/tmp\/nginx.pid";/);
+  assert.match(main, /pid "\/run\/ghostpay-nginx\/nginx.pid";/);
   assert.equal(composeProjectName('---'), 'hk-site');
 });
 
@@ -96,7 +96,13 @@ test('container nginx.conf passes nginx -t', { skip: (await nginxAvailable()) ? 
   const dir = await tempDir('ctr-t');
   try {
     await writeOutFiles(dir, container.files);
-    const r = nginxTest(path.join(dir, 'nginx', 'nginx.conf'), dir);
+    // Host-only syntax check: the private container tmpfs is not mounted on this host.
+    // Keep real container ownership/mount qualification in the opt-in Docker tests below.
+    const runtime = path.join(dir, 'runtime');
+    await fs.mkdir(runtime, { mode: 0o700 });
+    const conf = path.join(dir, 'nginx', 'nginx.conf');
+    await fs.writeFile(conf, text(container, 'nginx/nginx.conf').replaceAll(CONTAINER_RUNTIME_DIR, runtime));
+    const r = nginxTest(conf, dir);
     assert.ok(r.ok, r.output);
   } finally {
     await fs.rm(dir, { recursive: true, force: true });

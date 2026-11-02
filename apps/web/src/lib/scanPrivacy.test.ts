@@ -84,6 +84,19 @@ describe('indexer path normalization', () => {
 });
 
 describe('createWindowedScanClient', () => {
+  it('accepts reordered exact request keys while refusing an extra seller field before any RPC call', async () => {
+    const inner = fakeChain(5000, []);
+    const client = windowed(inner);
+    const first = { address: FAKE_ANNOUNCER, topics: [ANNOUNCEMENT_TOPIC, SCHEME_TOPIC as `0x${string}`], fromBlock: 0n, toBlock: 999n };
+    const reversed = { toBlock: first.toBlock, fromBlock: first.fromBlock, topics: first.topics, address: first.address };
+    await expect(client.getLogs(first)).resolves.toEqual([]);
+    await expect(client.getLogs(reversed)).resolves.toEqual([]);
+    const calls = inner.calls.length;
+    const leaking = { ...first, seller: 'private-seller-field' };
+    await expect(client.getLogs(leaking)).rejects.toThrow(/scan filter/);
+    expect(inner.calls).toHaveLength(calls);
+  });
+
   it('only ever asks for whole grid-aligned windows and discards out-of-range logs locally', async () => {
     const meta = encodeMetaAddress(generateKeySet());
     const logs = [10, 990, 1005, 1999, 2400].map((b, i) => makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: b, index: i, caller: OTHER }).log);

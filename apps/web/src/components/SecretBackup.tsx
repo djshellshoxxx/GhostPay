@@ -48,12 +48,16 @@ export function clearCopiedBackup(): void {
     if (cleared && onClipboard === copy) onClipboard = 0;
     retryAtActivation(!cleared && onClipboard !== 0);
   };
-  try {
-    navigator.clipboard.writeText('').then(() => { settle(true); }, () => { settle(false); });
-  } catch {
-    // No clipboard API in this context: nothing to clear.
-    settle(true);
-  }
+  void (async () => {
+    try {
+      // The call itself runs synchronously in this activation; only settlement is awaited.
+      await navigator.clipboard.writeText('');
+      settle(true);
+    } catch {
+      // A throwing or unavailable API does not prove a previously copied backup was cleared.
+      settle(false);
+    }
+  })();
 }
 
 // The app lock empties a copied backup too, also after the view that showed it was left: that view, and its own

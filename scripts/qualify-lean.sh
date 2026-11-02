@@ -5,15 +5,15 @@ here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$here/lib-common.sh"
 repo="$(cd "$here/.." && pwd -P)"
 out="${1:-}"
-[ "$#" -eq 1 ] && [[ "$out" = /* ]] || gp_die 'provide one absolute, new output directory'
-[ ! -e "$out" ] && [ ! -L "$out" ] || gp_die 'output path already exists'
+[[ "$#" -eq 1 ]] && [[ "$out" = /* ]] || gp_die 'provide one absolute, new output directory'
+[[ ! -e "$out" ]] && [[ ! -L "$out" ]] || gp_die 'output path already exists'
 out="$(cd "$(dirname "$out")" && pwd -P)/$(basename "$out")"
 case "$out/" in "$repo/"*) gp_die 'output must be outside the source checkout';; esac
-[ -z "$(git -C "$repo" status --porcelain --untracked-files=normal)" ] || gp_die 'source checkout must be clean'
+[[ -z "$(git -C "$repo" status --porcelain --untracked-files=normal)" ]] || gp_die 'source checkout must be clean'
 commit="$(git -C "$repo" rev-parse HEAD)"
 tree="$(git -C "$repo" rev-parse HEAD^{tree})"
 epoch="$(git -C "$repo" log -1 --format=%ct HEAD)"
-[ -z "${GITHUB_SHA:-}" ] || [ "$commit" = "$GITHUB_SHA" ] || gp_die 'HEAD does not match GITHUB_SHA'
+[[ -z "${GITHUB_SHA:-}" ]] || [[ "$commit" = "$GITHUB_SHA" ]] || gp_die 'HEAD does not match GITHUB_SHA'
 mkdir "$out"
 tmp="$(mktemp -d "$out/.builds.XXXXXX")"
 trap 'rm -rf "$tmp"' EXIT
@@ -24,7 +24,7 @@ for run in first second/nested; do
   mkdir -p "$(dirname "$copy")"
   git clone --quiet --no-hardlinks --no-checkout "$repo" "$copy"
   git -C "$copy" checkout --quiet --detach "$commit"
-  [ "$(git -C "$copy" rev-parse HEAD^{tree})" = "$tree" ] || gp_die 'copied source tree mismatch'
+  [[ "$(git -C "$copy" rev-parse HEAD^{tree})" = "$tree" ]] || gp_die 'copied source tree mismatch'
   mkdir "$copy/.candidate-empty-deployments"
   label="${run%%/*}"
   # Do not inherit caller VITE_* values, release trust keys/manifests, or skip flags.

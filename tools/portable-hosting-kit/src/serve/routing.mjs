@@ -81,7 +81,8 @@ export function servableFiles(files) {
     }
     out.push(f);
   }
-  return out.sort();
+  // Preserve the existing UTF-16 code-unit order; locale collation would change generated profile bytes.
+  return out.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
 }
 
 /**
@@ -102,7 +103,7 @@ export function rawPathOf(target) {
  * @returns {string}
  */
 function decodeBytes(raw) {
-  return raw.replace(/%([0-9A-Fa-f]{2})/g, (_m, h) => String.fromCharCode(parseInt(h, 16)));
+  return raw.replace(/%([0-9A-Fa-f]{2})/g, (_m, h) => String.fromCharCode(Number.parseInt(h, 16)));
 }
 
 /**
