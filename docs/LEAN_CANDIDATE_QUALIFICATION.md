@@ -28,6 +28,15 @@ license review remain required. The npm production-dependency SBOM is broader
 than emitted lean modules and is not vulnerability or licensing clearance. Two
 builds on one runner do not establish independent or cross-platform reproducibility.
 
+After a full or lean Playwright run succeeds, CI also retains that exact `dist`
+with a browser-build record: checkout commit/tree, pull-request head, profile,
+lockfile digest, fake-deployment recipe/template digests and every built file hash.
+The checkout may be GitHub's merge-test commit; it is recorded separately from
+the pull-request head. These browser builds use the authored fake deployment,
+while the two-build candidate above is deliberately unconfigured. Their evidence
+must not be transferred between different bytes or configurations. Both records
+are available in CI logs; the recorder itself neither runs tests nor attests them.
+
 Local verification is shell syntax and source review only. Restricted dependency
 cache, network and child-process access prevent a real local build comparison;
 hosted execution is required before claiming this qualification passed.

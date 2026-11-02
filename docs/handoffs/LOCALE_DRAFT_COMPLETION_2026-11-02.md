@@ -29,3 +29,10 @@ Preserve placeholders, canonical amount displays and literal identifiers.
 Security-critical messages continue to fall back to English until the existing
 review mechanism records the required approval. Structural checks do not replace
 native, device or accessibility acceptance. This change grants no release authority.
+
+Completeness testing exposed missing runtime enforcement of that fallback. The
+implementation now explicitly classifies 303 critical and 260 neutral source keys.
+Only explicit neutral keys may use draft text; critical or future/unclassified
+keys require the supplying locale's registry approval or bundled canonical English.
+Catalog metadata, caller options and pseudo-locale labels cannot grant approval.
+The existing English Settings tamper-warning assertion remains an acceptance test.

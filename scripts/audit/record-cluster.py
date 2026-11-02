@@ -7,6 +7,7 @@ Written by Claude Code (AI agent) for GhostPay, 2026-10-29; same licence as the 
 
 Usage: python3 scripts/audit/record-cluster.py RESULT.json [--data DIR]
 RESULT.json and --data must be within this checkout's docs/audits/data directory; symlinks are refused.
+Published JSON permissions retain existing read restrictions, but never execute or group/world write bits.
 Audit directories must belong to the invoking user and disallow group/world writes.
 RESULT.json is either the result object itself or a wrapper {"result": {...}}, shaped like the output of
 scripts/agents/fix-audit-cluster.js: {cluster, branch, approved, rounds, impl: {commits, items, commands,
@@ -102,12 +103,14 @@ try:
     with directory(components(args.data)) as data_dir:
         try:
             st, previous = read_json(data_dir, 'status.json')
-            mode = stat.S_IMODE(previous.st_mode) & 0o777
+            mode = stat.S_IMODE(previous.st_mode) & 0o644
         except FileNotFoundError:
             st = {}
-            mask = os.umask(0)
+            # Python has no portable read-only umask API. This single-threaded CLI
+            # narrows it briefly, restores it immediately, and creates no file between.
+            mask = os.umask(0o777)
             os.umask(mask)
-            mode = 0o666 & ~mask
+            mode = 0o644 & ~mask
         if not isinstance(st, dict) or not isinstance(st.get('_clusters', {}), dict):
             raise ValueError('status and _clusters must be objects')
         cid = obj['cluster']

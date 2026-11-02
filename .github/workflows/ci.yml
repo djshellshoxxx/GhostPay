@@ -229,6 +229,59 @@ jobs:
       - run: npm run test:e2e --workspace @ghostpay/web
         env:
           GHOSTPAY_LOCAL_BUILD_PROFILE: ${{ matrix.profile }}
+      - name: Record the build used by the successful browser run
+        env:
+          BUILD_PROFILE: ${{ matrix.profile }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --quiet HEAD --
+          export GHOSTPAY_BROWSER_TREE="$(git rev-parse HEAD^{tree})"
+          node --input-type=module <<'NODE'
+          import { createHash } from 'node:crypto';
+          import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+          import { join, relative } from 'node:path';
+          const digest = (file) => createHash('sha256').update(readFileSync(file)).digest('hex');
+          const root = 'apps/web/dist';
+          function inventory(dir) {
+            return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+              const path = join(dir, entry.name);
+              if (entry.isDirectory()) return inventory(path);
+              if (!entry.isFile()) throw new Error('Browser artifact contains a nonregular file.');
+              return [{ path: relative(root, path), sha256: digest(path) }];
+            });
+          }
+          const files = inventory(root).sort((a, b) => a.path < b.path ? -1 : a.path > b.path ? 1 : 0);
+          if (!files.some((file) => file.path === 'index.html')) throw new Error('Browser build has no entrypoint.');
+          const bundleEvidence = process.env.BUILD_PROFILE === 'lean'
+            ? JSON.parse(readFileSync(join(root, 'ghostpay-lean-build.json'), 'utf8')) : undefined;
+          if (bundleEvidence !== undefined && (bundleEvidence.profile !== 'lean' || !bundleEvidence.chunks?.length || !bundleEvidence.workers?.length)) {
+            throw new Error('Browser build has no lean application/Worker evidence.');
+          }
+          const record = {
+            format: 'ghostpay-browser-build/1', checkoutCommit: process.env.GITHUB_SHA,
+            pullRequestHead: process.env.PR_HEAD, tree: process.env.GHOSTPAY_BROWSER_TREE,
+            profile: process.env.BUILD_PROFILE, lockfileSha256: digest('package-lock.json'),
+            testConfiguration: { chainId: 84532, kind: 'authored fake deployment; no production trust',
+              recipeSha256: digest('apps/web/e2e/prepare-manifest.mjs'),
+              templateSha256: digest('apps/web/e2e/fixtures/84532.json') },
+            files, bundleEvidence,
+            limits: 'The preceding Playwright step supplies browser evidence; this recorder only hashes its build. No attestation, signature, production configuration or publication.'
+          };
+          mkdirSync('apps/web/test-results', { recursive: true });
+          writeFileSync('apps/web/test-results/browser-build.json', JSON.stringify(record, null, 2) + '\n', { flag: 'wx' });
+          console.log('GHOSTPAY_BROWSER_RECORD=' + JSON.stringify(record));
+          NODE
+      - name: Retain the browser-tested build and its identity
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: browser-tested-web-${{ matrix.profile }}-${{ github.sha }}
+          include-hidden-files: true
+          path: |
+            apps/web/dist
+            apps/web/test-results/browser-build.json
+          if-no-files-found: error
+          retention-days: 14
       - if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -443,5 +496,6 @@ jobs:
         run: bash infra/proxy/check-headers.sh
       - name: Self-host release gate and archive checks (fake docker/gh, no network)
         run: bash deploy/selftest.sh
+      # The expanded suite inherits all 13 original CLI regressions and adds safe-mode matrices.
       - name: Audit CLI path, atomic-write and permission regressions
-        run: python3 scripts/tests/audit-cli.test.py
+        run: python3 scripts/tests/audit-permissions.test.py

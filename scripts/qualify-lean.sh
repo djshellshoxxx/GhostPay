@@ -63,6 +63,7 @@ const receipt = {
   format: 'ghostpay-lean-qualification/1', status: 'two-build-byte-comparison-passed',
   source: { commit, tree, cleanCheckout: true, lockfileSha256: hash(lockfile) },
   profile: 'lean', sourceDateEpoch: Number(epoch), tools: manifest.tools,
+  bundleEvidence: JSON.parse(readFileSync(join(out, 'candidate/ghostpay-lean-build.json'), 'utf8')),
   configuration: { deploymentManifests: 'empty', releaseVerificationKeys: 'empty' },
   builds: { count: 2, differentCleanDirectories: true, install: 'npm ci --ignore-scripts --no-audit --no-fund in each clone' },
   artifacts: readdirSync(join(out, 'candidate')).sort().map((name) => {
@@ -81,3 +82,7 @@ const receipt = {
 writeFileSync(join(out, 'qualification.json'), `${JSON.stringify(receipt, null, 2)}\n`, { flag: 'wx' });
 NODE
 printf 'Unsigned lean candidate comparison passed; evidence: %s\n' "$out"
+node --input-type=module - "$out/qualification.json" <<'NODE'
+import { readFileSync } from 'node:fs';
+console.log('GHOSTPAY_LEAN_QUALIFICATION=' + JSON.stringify(JSON.parse(readFileSync(process.argv[2], 'utf8'))));
+NODE

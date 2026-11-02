@@ -317,16 +317,19 @@ for k in ids:
         w(f'- **Why deferred:** {extra}')
     w('')
 # Publish atomically without following an output symlink inserted after argument validation.
-# PR44 preserves existing report permissions (including 0640), else the umask default.
+# Preserve PR44 read restrictions (including 0640); never publish executable or
+# group/world-writable Markdown. Fresh files also honor stricter umask read bits.
 try:
     previous = OUT.lstat()
     if not stat.S_ISREG(previous.st_mode):
         ap.error('existing report must be a regular file')
-    mode = stat.S_IMODE(previous.st_mode) & 0o777
+    mode = stat.S_IMODE(previous.st_mode) & 0o644
 except FileNotFoundError:
-    umask = os.umask(0)
+    # Python has no portable read-only umask API. This single-threaded CLI
+    # narrows it briefly, restores it immediately, and creates no file between.
+    umask = os.umask(0o777)
     os.umask(umask)
-    mode = 0o666 & ~umask
+    mode = 0o644 & ~umask
 staged = None
 try:
     with tempfile.NamedTemporaryFile(mode='w', encoding='utf8', dir=OUT.parent, prefix='.audit-report-', delete=False) as report:

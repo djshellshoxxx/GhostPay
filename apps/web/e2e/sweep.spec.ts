@@ -27,7 +27,7 @@ async function scanToSweep(page: Page, owner: string): Promise<void> {
     has: page.getByRole('button', { name: 'Sweep this payment' }),
   });
   await expect(match).toHaveCount(1);
-  await expect(match.locator('code').filter({ hasText: owner })).toHaveText(owner);
+  await expect(match.getByRole('paragraph').filter({ hasText: 'One-time address:' }).locator('code')).toHaveText(owner);
   await expect(page.getByText(/Claimed, not confirmed/)).toHaveCount(0);
   await page.getByRole('button', { name: 'Sweep this payment' }).click();
   await expect(sweep(page).getByText('5 USDC', { exact: true })).toBeVisible();
