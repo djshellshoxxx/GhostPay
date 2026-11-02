@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { chmodSync, mkdtempSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -48,4 +48,18 @@ test('audit report still generates the same report within the documented boundar
   const result = run('--data', data, out);
   assert.equal(result.status, 0, result.stderr);
   assert.equal(readFileSync(out, 'utf8'), readFileSync(join(root, 'docs/audits/24-ai-assisted-security-audit-2026-10-28.md'), 'utf8'));
+});
+
+test('audit report keeps the existing report mode and uses the umask for a new report', (t) => {
+  const dir = mkdtempSync(join(root, 'docs/audits/path-test-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const existing = join(dir, 'existing.md');
+  writeFileSync(existing, 'old');
+  chmodSync(existing, 0o640);
+  assert.equal(run('--data', data, existing).status, 0);
+  assert.equal(statSync(existing).mode & 0o777, 0o640);
+  const fresh = join(dir, 'fresh.md');
+  const umask = process.umask();
+  assert.equal(run('--data', data, fresh).status, 0);
+  assert.equal(statSync(fresh).mode & 0o777, 0o666 & ~umask);
 });

@@ -1,7 +1,6 @@
 import { subscribeAppLock } from '../lib/appLock';
 import { useEffect, useId, useRef, useState, useSyncExternalStore, type FormEvent, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
-import { TagArchive } from '../components/TagArchive';
 import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
 import { userMessage } from '../lib/errors';
@@ -43,7 +42,7 @@ export function BackupGate(props: { readonly children: ReactNode; readonly headi
   );
 }
 
-export function SellerKeys(): ReactNode {
+export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactNode {
   const app = useApp();
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
@@ -538,7 +537,7 @@ export function SellerKeys(): ReactNode {
         </>
       )}
 
-      <TagArchive />
+      {props.archive}
 
       <h3>{t('sellerKeys.registryHeading')}</h3>
       <p className="hint">{t('sellerKeys.registryHint')}</p>

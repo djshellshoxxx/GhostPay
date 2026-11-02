@@ -60,7 +60,8 @@ export function validateRegisteredInvoice(value: unknown): RegisteredInvoice {
     return fail('Invalid registered invoice.');
   // Strict JSON parsing yields null-prototype objects; keep a plain copy.
   const o = { ...(value as Record<string, unknown>) };
-  if (Object.keys(o).sort().join('|') !== KEYS || o.version !== 1) return fail('Invalid registered invoice.');
+  // Schema keys use locale-independent UTF-16 order, matching the canonical ASCII key list.
+  if (Object.keys(o).sort((a, b) => a < b ? -1 : a > b ? 1 : 0).join('|') !== KEYS || o.version !== 1) return fail('Invalid registered invoice.');
   if (typeof o.invoiceDigest !== 'string' || !/^0x[0-9a-f]{64}$/.test(o.invoiceDigest)) return fail('Invalid registered invoice digest.');
   if (typeof o.nonce !== 'string' || !/^[0-9a-f]{32}$/.test(o.nonce)) return fail('Invalid registered invoice nonce.');
   if (!Number.isSafeInteger(o.chainId) || (o.chainId as number) <= 0) return fail('Invalid registered invoice chain.');

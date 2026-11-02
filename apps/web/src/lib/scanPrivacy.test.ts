@@ -60,6 +60,29 @@ function windowed(inner: MockRpc, over: Partial<{ windowBlocks: number; jitterMs
 }
 const routerTopic: `0x${string}` = `0x${FAKE_ROUTER.slice(2).toLowerCase().padStart(64, '0')}`;
 
+describe('indexer path normalization', () => {
+  it('removes only trailing literal slashes, preserving encoded slashes and interior empty segments', () => {
+    expect(checkIndexerUrl('https://idx.example.org/', 'direct')).toBe('https://idx.example.org');
+    expect(checkIndexerUrl('https://idx.example.org/api%2F///', 'direct')).toBe('https://idx.example.org/api%2F');
+    const interior = '/api' + '/'.repeat(50_000) + 'tail';
+    expect(checkIndexerUrl('https://idx.example.org' + interior, 'direct')).toBe('https://idx.example.org' + interior);
+    expect(checkIndexerUrl('https://idx.example.org/api' + '/'.repeat(50_000), 'direct')).toBe('https://idx.example.org/api');
+  });
+
+  it('continues refusing credentials without echoing private endpoint material', () => {
+    try {
+      checkIndexerUrl('https://credential-do-not-echo:password-do-not-echo@idx.example.org/api', 'direct');
+      throw new Error('credentials were accepted');
+    } catch (error) {
+      expect(error).toBeInstanceOf(Error);
+      const message = error instanceof Error ? error.message : '';
+      expect(message).toContain('no credentials');
+      expect(message).not.toContain('credential-do-not-echo');
+      expect(message).not.toContain('password-do-not-echo');
+    }
+  });
+});
+
 describe('createWindowedScanClient', () => {
   it('only ever asks for whole grid-aligned windows and discards out-of-range logs locally', async () => {
     const meta = encodeMetaAddress(generateKeySet());

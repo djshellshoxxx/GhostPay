@@ -203,7 +203,7 @@ describe('ghostpay-embed-v2.js hygiene', () => {
   it('fuzz: random attribute values never throw, and only valid links enable the button', async () => {
     let s = 4242;
     const rnd = (): number => (s = (s * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
-    const alphabet = 'ab#:/.?&=%<>"\' \u0000‮javascript:httpsXY-_0';
+    const alphabet = 'ab#:/.?&=%<>"\' \u0000\u202ejavascript:httpsXY-_0';
     const rand = (): string => Array.from({ length: Math.floor(rnd() * 40) }, () => alphabet[Math.floor(rnd() * alphabet.length)]).join('');
     for (let i = 0; i < 30; i++) {
       const inv = rnd() < 0.5 ? `${APP}/#gpi=v1.${rand()}` : rand();

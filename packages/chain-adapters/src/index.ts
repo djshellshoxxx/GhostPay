@@ -24,7 +24,7 @@ export * from './scanVerify.js';
 export * from './registry.js';
 
 // The structured verification API complements the existing raw-JSON signing API.
-export { canonicalAnnouncer, CANONICAL_ANNOUNCER, canonicalManifestJson, manifestDigest,
+export { canonicalAnnouncer, CANONICAL_ANNOUNCER, canonicalManifestJson, manifestDigest, STRUCTURED_MANIFEST_SIGNING_DOMAIN,
   verifyManifestSignature as verifyObjectManifestSignature, verifyDeployment } from './verify.js';
 export type { ManifestSignatureResult, VerifiedDeployment, VerifyDeploymentOptions } from './verify.js';
 export * from './payments.js';

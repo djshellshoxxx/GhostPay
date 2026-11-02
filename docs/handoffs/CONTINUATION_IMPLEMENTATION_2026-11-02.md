@@ -41,3 +41,24 @@ Translations remain human work: preserve catalog gates and review status. Final
 candidate artifacts, reproducibility, private/professional review, production
 configuration, distribution terms and publication authority remain explicit
 acceptance items after these implementation slices.
+
+## Combined candidate verification
+
+The candidate now combines the reviewed lean entry/output guard, restricted
+incoming-invoice boundary, invoice-bound receipt signing and structured manifest
+signature domain. The full entry retains deferred routes and embedding. Lean
+builds reject policy/fiat invoices and require emitted application and Worker
+module evidence; the profile is selected explicitly with
+`GHOSTPAY_LOCAL_BUILD_PROFILE=lean`.
+
+CI preserves the existing coverage, contract and security checks and adds the
+build-profile guard tests and separate full/lean browser runs. The full run keeps
+embedding tests; lean omits only the embedding suite because its SDK is excluded.
+Both runs prepare an ephemeral authored fake deployment signed for the current
+manifest domain. This test key grants no production trust.
+
+Local build-profile guard tests passed (25 tests). Actual combined typecheck,
+lint, application/Worker builds and browser acceptance still require successful
+checks on the exact candidate revision. The initial consolidation passed its
+other hosted checks but failed Sonar Security and Reliability at D; required A/A
+gates remain unchanged. Source review and helper tests do not qualify a release.

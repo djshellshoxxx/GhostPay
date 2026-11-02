@@ -81,7 +81,7 @@ jobs:
           node bin/ghostpay-host.mjs verify "$RUNNER_TEMP/ghostpay-web.zip"
       # Ordinary-browser smoke test (headless Chromium): demo at / and a subpath, and the real app, under their CSP.
       # Not a Tor Browser, I2P or wallet test.
-      - run: npx playwright install --with-deps chromium
+      - run: ./node_modules/.bin/playwright install --with-deps chromium
       - name: Browser smoke test
         working-directory: tools/portable-hosting-kit
         env:

@@ -1,5 +1,8 @@
 import { expect, test, type BrowserContext, type Page, type Route } from '@playwright/test';
 import { createServer, type Server } from 'node:http';
+import { readFileSync } from 'node:fs';
+import { invoiceDigest as calculateInvoiceDigest, parseFragment } from '@ghostpay/invoice-schema';
+import { bytesToHex } from '@noble/hashes/utils.js';
 import { makeLog } from '../src/test/announcements';
 import {
   FAKE_ANNOUNCER,
@@ -409,6 +412,18 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     // Capture the seller key before scanning/signing, independently of the resulting receipt.
     const sellerSigner = ((await page.locator('code', { hasText: /^0[23][0-9a-f]{64}$/ }).textContent()) ?? '').trim();
     expect(sellerSigner).toMatch(/^0[23][0-9a-f]{64}$/);
+    // Create the actual invoice through the product. Payer-pays means the seller's exact net is 1 USDC.
+    await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Create invoice' }).click();
+    await page.getByLabel('Chain', { exact: true }).selectOption({ label: 'Base Sepolia' });
+    await page.getByLabel('Token', { exact: true }).selectOption('0x036cbd53842c5426634e7929541ec2318f3dcf7e');
+    await page.getByLabel('Token amount', { exact: true }).fill('1');
+    await page.getByLabel('Who pays the 0.25 % checkout fee').selectOption('payer_pays');
+    await page.getByLabel('Item 1 description').fill('Receipt-bound authored fixture');
+    await page.getByLabel('Item 1 unit price').fill('1.00');
+    await page.getByRole('button', { name: 'Create invoice link' }).click();
+    const actualInvoiceLink = await page.getByRole('textbox', { name: 'Link', exact: true }).inputValue();
+    const actualInvoice = await parseFragment(new URL(actualInvoiceLink).hash);
+    expect(actualInvoice.verification.signatureValid).toBe(true);
     const mine = makeLog({
       announcer: FAKE_ANNOUNCER,
       metaAddress: meta,
@@ -569,6 +584,45 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
       return n;
     });
     expect(after).toBe(0);
+
+    // The old manual attestation above remains explicitly unbound. Now exercise actual product invoice binding.
+    await panel.getByLabel('Signed invoice link or fragment').fill(actualInvoiceLink);
+    await panel.getByLabel('I consent to opening this invoice locally to bind the receipt.').check();
+    await panel.getByRole('button', { name: 'Validate invoice for receipt' }).click();
+    await expect(panel.getByText(/Validated invoice matches this scan/)).toBeVisible();
+    await expect(panel.getByRole('button', { name: 'Sign receipt', exact: true })).toBeDisabled();
+    await expect(page.getByLabel('Signed receipt JSON')).toHaveCount(0);
+    await panel.getByLabel('I consent to signing these invoice and payment facts.').check();
+    await panel.getByRole('button', { name: 'Sign receipt', exact: true }).click();
+    const boundText = await panel.getByLabel('Signed receipt JSON').inputValue();
+    const boundDecoded: unknown = JSON.parse(boundText);
+    expect(verifyReceipt(boundDecoded)).toBe(true);
+    expect(boundDecoded).toMatchObject({ invoiceDigest: `0x${bytesToHex(calculateInvoiceDigest(actualInvoice.invoice))}`, signerPublicKey: sellerSigner, chainId: 84532, amountMinorUnits: parsed.netAmount.toString(), stealthAddress: mine.stealthAddress.toLowerCase(), txHash: txHash.toLowerCase() });
+    await expect(panel.getByText(/matched to the validated signed invoice/)).toBeVisible();
+    const downloadEvent = page.waitForEvent('download');
+    await panel.getByRole('button', { name: 'Download JSON', exact: true }).click();
+    const downloadedPath = await (await downloadEvent).path();
+    if (downloadedPath === null) throw new Error('receipt download required');
+    expect(readFileSync(downloadedPath, 'utf8')).toBe(boundText);
+
+    // Import the product-exported bytes into the actual payer view, with its own disclosure consent and invoice binding.
+    await openFresh(page, actualInvoiceLink);
+    await expect(page.getByText('Seller receives (net)', { exact: true })).toBeVisible();
+    const upload = page.getByLabel('Signed seller receipt JSON');
+    await upload.setInputFiles(downloadedPath);
+    await page.getByRole('button', { name: 'Check receipt against this invoice' }).click();
+    await expect(page.getByText(/Consent is required before opening private receipt details/)).toBeVisible();
+    await expect(page.getByText('Receipt matches this invoice', { exact: true })).toHaveCount(0);
+    await page.getByLabel('I consent to opening private receipt details on this screen.').check();
+    const tampered = { ...(boundDecoded as Record<string, unknown>), amountMinorUnits: (parsed.netAmount + 1n).toString() };
+    await upload.setInputFiles({ name: 'tampered-receipt.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(tampered)) });
+    await page.getByRole('button', { name: 'Check receipt against this invoice' }).click();
+    await expect(page.getByText('Receipt not accepted', { exact: true })).toBeVisible();
+    await upload.setInputFiles(downloadedPath);
+    await page.getByRole('button', { name: 'Check receipt against this invoice' }).click();
+    await expect(page.getByText('Receipt matches this invoice', { exact: true })).toBeVisible();
+    await expect(page.getByText(/The signature matches the valid invoice-signing key/)).toBeVisible();
+    expect(offOrigin).toEqual([]);
   });
 });
 

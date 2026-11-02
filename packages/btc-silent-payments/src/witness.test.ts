@@ -48,6 +48,21 @@ function block(txs: string[]): { headerHex: string; expectedHash: string; rawTxs
 }
 
 describe('parseRawTransaction', () => {
+  it.each([
+    [0x00000000, 0],
+    [0x00000001, 1],
+    [0x7fffffff, 2147483647],
+    [0x80000000, -2147483648],
+    [0xffffffff, -1],
+  ])('preserves signed int32 version semantics for word %i', (word, signed) => {
+    const raw = u32(word) + GENESIS_COINBASE.slice(8);
+    const tx = parseRawTransaction(raw);
+    expect(tx.version).toBe(signed);
+    expect(tx.txid).toBe(reverseHex(dsha(raw)));
+    expect(tx.wtxid).toBe(tx.txid);
+    expect(tx.outputs[0]?.value).toBe(5_000_000_000n);
+  });
+
   it('reproduces the mainnet genesis coinbase txid and flags it as coinbase', () => {
     const t = parseRawTransaction(GENESIS_COINBASE);
     expect(t.txid).toBe('4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b');

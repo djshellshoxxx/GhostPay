@@ -4,7 +4,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { secp256k1 } from '@noble/curves/secp256k1.js';
 import { sha256 } from '@noble/hashes/sha2.js';
-import { loadDeployment, manifestDigest, manifestSigningBytes, verifyTextManifestSignature, type ReleaseKey } from '@ghostpay/chain-adapters';
+import { canonicalManifestJson, loadDeployment, manifestDigest, manifestSigningBytes, verifyTextManifestSignature, type ReleaseKey } from '@ghostpay/chain-adapters';
+import { keccak256, toBytes } from 'viem/utils';
 import { describe, expect, it } from 'vitest';
 import { TrustedProxies, bucketKey, parseIp, resolveClientIp, type ParsedIp } from '@ghostpay/relayer-guard';
 import { DEV_CHAIN_ID, loadConfigFile, parseConfig, parseReleaseKeys, type ConfigContext } from './config.js';
@@ -260,6 +261,15 @@ describe('parseConfig', () => {
       const raw = good({ chains: [chain({ sweepRelayer: undefined })] });
       expect(() => parse(raw, { readManifest: (id) => MANIFEST(id) })).toThrow(/signature/i);
       expect(parse(raw, { releaseKeys: [KEY], readManifest: (id) => SIGNED(id) }).chains[0]?.sweepRelayer).toBe(SWEEP_CONTRACT);
+    });
+    it.each(['', 'GhostPay/receipt/v1\n'])('refuses a structured manifest signed with foreign domain %j in relayer configuration', (domain) => {
+      const raw = good({ chains: [chain({ sweepRelayer: undefined })] });
+      const text = MANIFEST(11155111);
+      const digest = keccak256(toBytes(domain + canonicalManifestJson(loadDeployment(text, 11155111))));
+      const bytes = Uint8Array.from(digest.slice(2).match(/../g) ?? [], (h) => parseInt(h, 16));
+      const signature = `0x${Array.from(secp256k1.sign(bytes, SK, { prehash: false, lowS: true }), (b) => b.toString(16).padStart(2, '0')).join('')}`;
+      expect(parse(raw, { releaseKeys: [KEY], readManifest: (id) => SIGNED(id) }).chains[0]?.sweepRelayer).toBe(SWEEP_CONTRACT);
+      expect(() => parse(raw, { releaseKeys: [KEY], readManifest: () => JSON.stringify({ ...(JSON.parse(text) as Json), signature }) })).toThrow(/signature/i);
     });
     it('does not treat legacy raw-text signatures as valid structured signatures', () => {
       const c = good({ chains: [chain({ sweepRelayer: undefined })] });

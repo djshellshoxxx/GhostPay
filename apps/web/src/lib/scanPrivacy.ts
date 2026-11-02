@@ -92,7 +92,10 @@ export function checkIndexerUrl(raw: string, transport: ScanTransportKind): stri
     throw new UserFacingError('Indexer URL must be https:// (or http on 127.0.0.1) with no credentials, query or fragment.');
   }
   if (transport === 'local-proxy' && !loop) throw new UserFacingError('With a local proxy, the indexer must also be reached through it (an address on 127.0.0.1).');
-  return u.origin + u.pathname.replace(/\/+$/, '');
+  const path = u.pathname;
+  let end = path.length;
+  while (end > 0 && path[end - 1] === '/') end--;
+  return u.origin + path.slice(0, end);
 }
 
 function sanitizeMap(raw: unknown, check: (v: string) => string): Record<string, string> {

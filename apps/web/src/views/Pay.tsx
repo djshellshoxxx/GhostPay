@@ -10,7 +10,7 @@ import { ManifestBanner } from '../components/ManifestBanner';
 import { extractFragment } from '../lib/fragment';
 import { safeText, payeeFingerprint } from '../lib/displayText';
 import { formatCountdown, formatFiat, formatUnits, formatUnix, shortHex } from '../lib/format';
-import { userMessage } from '../lib/errors';
+import { UserFacingError, userMessage } from '../lib/errors';
 import { DelayScheduler, randomDelayMs, type ScheduleSnapshot } from '../lib/jitter';
 import {
   createPayContext,
@@ -69,7 +69,13 @@ interface InvoiceQrPreview {
   readonly assertSession: () => void;
 }
 
-export function Pay(): ReactNode {
+const SUPPORTED_INVOICE_ERROR = 'This build supports fixed-amount invoices without a seller buffer policy.';
+
+function supportsInvoice(invoice: ParsedInvoice['invoice'], supportedOnly: boolean): boolean {
+  return !supportedOnly || (invoice.v === 1 && invoice.amountPolicy.mode === 'fixed_token');
+}
+
+export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolean } = {}): ReactNode {
   const app = useApp();
   const services = useServices();
   const [parsed, setParsed] = useState<ParsedInvoice | undefined>(undefined);
@@ -124,7 +130,7 @@ export function Pay(): ReactNode {
 
   const fragment = app.fragment;
   const pinned = app.settings.pinnedSigners;
-  const invoiceQrScope = useMemo(() => ({ fragment, pinned, session: app.session, reset: invoiceQrReset }), [fragment, pinned, app.session, invoiceQrReset]);
+  const invoiceQrScope = useMemo(() => ({ fragment, pinned, session: app.session, reset: invoiceQrReset, supportedOnly }), [fragment, pinned, app.session, invoiceQrReset, supportedOnly]);
   const currentInvoiceQrScope = useRef(invoiceQrScope); currentInvoiceQrScope.current = invoiceQrScope;
   const invalidateInvoiceQr = useCallback((): void => {
     invoiceQrRevision.current += 1;
@@ -169,6 +175,7 @@ export function Pay(): ReactNode {
     try {
       const result = await openFragment(candidate, { pinnedSigners: pinned });
       if (!current()) return false;
+      if (result.status === 'ok' && !supportsInvoice(result.parsed.invoice, supportedOnly)) throw new UserFacingError(SUPPORTED_INVOICE_ERROR);
       setInvoiceQrPreview({ fragment: candidate, result, revision, scope, assertSession });
       return true;
     } catch (error) {
@@ -193,7 +200,7 @@ export function Pay(): ReactNode {
     const revision = flowRevision.current;
     const sessionGuard = captureSessionVersionGuard();
     const current = (): boolean => {
-      if (!live || flowRevision.current !== revision || latest.current.fragment !== fragment) return false;
+      if (!live || flowRevision.current !== revision || latest.current.fragment !== fragment || latest.current.supportedOnly !== supportedOnly) return false;
       try { sessionGuard(); return true; } catch { cancelInvoiceOpening(fragment, revision); return false; }
     };
     receiptImportRevision.current += 1;
@@ -241,6 +248,12 @@ export function Pay(): ReactNode {
         }
         const p = result.parsed;
         setNeedsPassphrase(false);
+        if (!supportsInvoice(p.invoice, supportedOnly)) {
+          setInvoicePassphrase('');
+          setRejected(SUPPORTED_INVOICE_ERROR);
+          setPhase('input');
+          return;
+        }
         setRejected(undefined);
         setParsed(p);
         setPhase('review');
@@ -255,7 +268,7 @@ export function Pay(): ReactNode {
     return () => {
       live = false;
     };
-  }, [fragment, pinned]);
+  }, [fragment, pinned, supportedOnly]);
 
   const manifest = useManifest(parsed?.invoice.chainId);
   const nowSeconds = Math.floor(services.nowMs() / 1000);
@@ -268,10 +281,10 @@ export function Pay(): ReactNode {
 
   // Build the payment request (amounts) as soon as the review has no blockers. The review is recomputed from the
   // latest invoice/manifest/clock every time (also when a delay ends), never from a stale closure.
-  const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent });
-  latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent };
+  const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly });
+  latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly };
   const receiptScope = useMemo(() => ({ ctx, session: app.session }), [ctx, app.session]);
-  const authorityMatches = (): boolean => latest.current.wallet === wallet && latest.current.settings === app.settings && latest.current.session === app.session;
+  const authorityMatches = (): boolean => latest.current.wallet === wallet && latest.current.settings === app.settings && latest.current.session === app.session && latest.current.supportedOnly === supportedOnly;
   const cancelInvoiceOpening = (expectedFragment: string | undefined, revision: number): void => {
     if (!invoiceQrMounted.current || flowRevision.current !== revision || latest.current.fragment !== expectedFragment) return;
     flowRevision.current += 1;
@@ -285,16 +298,18 @@ export function Pay(): ReactNode {
   };
 
   const assertCurrentInvoice = (revision: number, invoice: ParsedInvoice['invoice']): void => {
+    if (!supportsInvoice(invoice, latest.current.supportedOnly)) throw new UserFacingError(SUPPORTED_INVOICE_ERROR);
     if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice || latest.current.ctx?.review.invoice !== invoice) {
       throw new Error('The invoice changed. Review it again before continuing.');
     }
   };
   const refreshContext = useCallback(async (): Promise<PayContext | undefined> => {
     const { parsed: p, manifest: m } = latest.current;
-    if (p === undefined || m === undefined) {
+    if (p === undefined || m === undefined || !supportsInvoice(p.invoice, latest.current.supportedOnly)) {
       setCtx(undefined);
       return undefined;
     }
+    const current = (): boolean => latest.current.parsed === p && latest.current.manifest === m && supportsInvoice(p.invoice, latest.current.supportedOnly);
     const now = Math.floor(services.nowMs() / 1000);
     const fresh = reviewInvoice(p, now, m);
     if (fresh.blockers.length > 0) {
@@ -304,22 +319,22 @@ export function Pay(): ReactNode {
     }
     try {
       const rpc = await app.getRpc(p.invoice.chainId);
-      if (latest.current.parsed !== p || latest.current.manifest !== m) return undefined;
+      if (!current()) return undefined;
       // WEB-APP-01: read the manifest back from the chain before any payment is built from it.
       const checked = await verifyManifestForFlow(m, rpc);
-      if (latest.current.parsed !== p || latest.current.manifest !== m) return undefined;
+      if (!current()) return undefined;
       if (checked.status !== 'loaded') {
         setCtx(undefined);
         setCtxError(checked.status === 'invalid' ? checked.reason : 'Payments are disabled on this chain: no deployment manifest is loaded.');
         return undefined;
       }
       const c = await createPayContext(fresh, rpc, { nowSeconds: now });
-      if (latest.current.parsed !== p || latest.current.manifest !== m) return undefined;
+      if (!current()) return undefined;
       setCtx(c);
       setCtxError(undefined);
       return c;
     } catch (e) {
-      if (latest.current.parsed !== p || latest.current.manifest !== m) return undefined;
+      if (!current()) return undefined;
       setCtx(undefined);
       setCtxError(userMessage(e));
       return undefined;
@@ -406,7 +421,7 @@ export function Pay(): ReactNode {
     const sessionGuard = captureSessionVersionGuard();
     const fragmentAtStart = fragment;
     const current = (): boolean => {
-      if (!invoiceQrMounted.current || flowRevision.current !== revision || latest.current.fragment !== fragmentAtStart) return false;
+      if (!invoiceQrMounted.current || flowRevision.current !== revision || latest.current.fragment !== fragmentAtStart || latest.current.supportedOnly !== supportedOnly) return false;
       try { sessionGuard(); return true; } catch { cancelInvoiceOpening(fragmentAtStart, revision); return false; }
     };
     setUnlocking(true);
@@ -415,6 +430,15 @@ export function Pay(): ReactNode {
       (result) => {
         if (!current()) return;
         if (result.status !== 'ok') throw new Error('passphrase');
+        if (!supportsInvoice(result.parsed.invoice, latest.current.supportedOnly)) {
+          setParsed(undefined);
+          setCtx(undefined);
+          setNeedsPassphrase(false);
+          setInvoicePassphrase('');
+          setRejected(SUPPORTED_INVOICE_ERROR);
+          setPhase('input');
+          return;
+        }
         setParsed(result.parsed);
         setNeedsPassphrase(false);
         setInvoicePassphrase('');
@@ -819,7 +843,9 @@ export function Pay(): ReactNode {
 
   /* ------------------------------- rendering ------------------------------- */
 
-  if (parsed === undefined || review === undefined) {
+  const buildRejection = parsed !== undefined && !supportsInvoice(parsed.invoice, supportedOnly) ? SUPPORTED_INVOICE_ERROR : undefined;
+  const inputRejection = buildRejection ?? rejected;
+  if (parsed === undefined || review === undefined || buildRejection !== undefined) {
     return (
       <section aria-labelledby="pay-h">
         <h2 id="pay-h">Pay an invoice</h2>
@@ -829,8 +855,8 @@ export function Pay(): ReactNode {
             Check your wallet before paying again. The transaction hash is <Mono>{previousBroadcast.hash}</Mono>. This was a {previousBroadcast.kind} for the invoice that was open before you changed links.
           </Notice>
         )}
-        {rejected !== undefined && <Notice kind="error" title="Invoice rejected">{rejected} Nothing was shown or sent.</Notice>}
-        {fragment !== undefined && rejected === undefined && <p role="status">Reading invoice…</p>}
+        {inputRejection !== undefined && <Notice kind="error" title="Invoice rejected">{inputRejection}{inputRejection === SUPPORTED_INVOICE_ERROR ? ' Payment controls remain unavailable.' : ' Nothing was shown or sent.'}</Notice>}
+        {fragment !== undefined && inputRejection === undefined && <p role="status">Reading invoice…</p>}
         {needsPassphrase && (
           <form onSubmit={onUnlock} className="stack">
             <Notice kind="warn" title="Passphrase-protected invoice">

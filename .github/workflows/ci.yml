@@ -71,6 +71,8 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run build
+      - name: Build profile and emitted-output guard regressions
+        run: node --test apps/web/scripts/localBuildProfile.test.mjs
       - run: npm audit --omit=dev --audit-level=high
 
   # Every test workspace runs once. Keep the expensive FHE stress suite independent and split the
@@ -201,6 +203,10 @@ jobs:
     timeout-minutes: 30
     permissions:
       contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [full, lean]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -214,16 +220,43 @@ jobs:
           key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
       # Allowed in GitHub-hosted CI. apps/web/playwright.config.ts falls back to this managed Chromium when no
       # GHOSTPAY_CHROMIUM / preinstalled browser path exists. With a warm cache only the OS packages are installed.
-      - run: npx playwright install --with-deps chromium
+      - run: ./node_modules/.bin/playwright install --with-deps chromium
       # The suite's webServer runs `npm run build` (with bundle scan) and `vite preview` itself.
       - run: npm run test:e2e --workspace @ghostpay/web
+        env:
+          GHOSTPAY_LOCAL_BUILD_PROFILE: ${{ matrix.profile }}
       - if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: playwright-test-results
+          name: playwright-test-results-${{ matrix.profile }}
           path: apps/web/test-results
           if-no-files-found: ignore
           retention-days: 7
+
+  lean-candidate:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Compare two clean lean builds and retain unsigned candidate
+        run: bash scripts/qualify-lean.sh "$RUNNER_TEMP/ghostpay-lean-qualification"
+      - if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: unsigned-lean-candidate-${{ github.sha }}
+          path: ${{ runner.temp }}/ghostpay-lean-qualification
+          if-no-files-found: error
+          retention-days: 14
 
   contracts-test:
     needs: changes
@@ -406,3 +439,5 @@ jobs:
         run: bash infra/proxy/check-headers.sh
       - name: Self-host release gate and archive checks (fake docker/gh, no network)
         run: bash deploy/selftest.sh
+      - name: Audit CLI path, atomic-write and permission regressions
+        run: python3 scripts/tests/audit-cli.test.py

@@ -111,7 +111,9 @@ export function parseRawTransaction(input: string | Uint8Array): ParsedTransacti
   } else if (input instanceof Uint8Array) raw = input;
   else return bad();
   const r = new Reader(raw);
-  const version = r.u32() | 0;
+  // Bitcoin's nVersion is signed int32, not a truncated unsigned value.
+  const versionWord = r.u32();
+  const version = versionWord >= 0x80000000 ? versionWord - 0x100000000 : versionWord;
   let segwit = false;
   if (r.peek() === 0x00) {
     if (r.peek(1) !== 0x01) return bad(); // unknown optional data / zero-input tx

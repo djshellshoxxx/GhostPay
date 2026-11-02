@@ -13,15 +13,15 @@
 set -euo pipefail
 
 user="ghosttest"
-while [ $# -gt 0 ]; do
+while [[ $# -gt 0 ]]; do
   case "$1" in
     --user) user="${2:?--user needs a name}"; shift 2 ;;
     --) shift; break ;;
     *) echo "usage: $0 [--user NAME] -- COMMAND [ARGS...]" >&2; exit 2 ;;
   esac
 done
-[ $# -gt 0 ] || { echo "usage: $0 [--user NAME] -- COMMAND [ARGS...]" >&2; exit 2; }
-[ "$(id -u)" -eq 0 ] || { echo "run as root: it switches to the unprivileged user itself" >&2; exit 2; }
+[[ $# -gt 0 ]] || { echo "usage: $0 [--user NAME] -- COMMAND [ARGS...]" >&2; exit 2; }
+[[ "$(id -u)" -eq 0 ]] || { echo "run as root: it switches to the unprivileged user itself" >&2; exit 2; }
 case "$user" in (*[!a-z0-9_-]*|'') echo "bad user name: $user" >&2; exit 2 ;; esac
 
 root="$(git rev-parse --show-toplevel)"

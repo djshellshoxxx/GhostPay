@@ -20,6 +20,7 @@ import argparse
 import json
 import os
 import re
+import stat
 import tempfile
 from pathlib import Path
 from collections import Counter
@@ -316,12 +317,25 @@ for k in ids:
         w(f'- **Why deferred:** {extra}')
     w('')
 # Publish atomically without following an output symlink inserted after argument validation.
-with tempfile.NamedTemporaryFile(mode='w', encoding='utf8', dir=OUT.parent, prefix='.audit-report-', delete=False) as report:
-    staged = report.name
-    report.write('\n'.join(out).rstrip() + '\n')
+# PR44 preserves existing report permissions (including 0640), else the umask default.
 try:
+    previous = OUT.lstat()
+    if not stat.S_ISREG(previous.st_mode):
+        ap.error('existing report must be a regular file')
+    mode = stat.S_IMODE(previous.st_mode) & 0o777
+except FileNotFoundError:
+    umask = os.umask(0)
+    os.umask(umask)
+    mode = 0o666 & ~umask
+staged = None
+try:
+    with tempfile.NamedTemporaryFile(mode='w', encoding='utf8', dir=OUT.parent, prefix='.audit-report-', delete=False) as report:
+        staged = report.name
+        report.write('\n'.join(out).rstrip() + '\n')
+        report.flush()
+        os.fchmod(report.fileno(), mode)
     os.replace(staged, OUT)
 finally:
-    if os.path.exists(staged):
+    if staged is not None and os.path.exists(staged):
         os.unlink(staged)
 print('wrote', OUT, len(out), 'lines;', dict(Counter(x[0] for x in st.values())))

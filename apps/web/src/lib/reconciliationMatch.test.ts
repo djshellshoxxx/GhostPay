@@ -37,6 +37,19 @@ function rec(n: number, overrides: Partial<ReconciliationRecord> = {}): Reconcil
 }
 
 describe('invoice registration', () => {
+  it('validates the same exact schema under every key-order rotation without locale-dependent wire changes', () => {
+    const good = registrationFromInvoice(testInvoice(), 5);
+    const entries = Object.entries(good);
+    for (let start = 0; start < entries.length; start++) {
+      const reordered = Object.fromEntries([...entries.slice(start), ...entries.slice(0, start)]);
+      expect(validateRegisteredInvoice(reordered)).toEqual(good);
+      expect(JSON.stringify(validateRegisteredInvoice(reordered))).toBe(JSON.stringify(reordered));
+    }
+    const rest = Object.fromEntries(Object.entries(good).filter(([name]) => name !== 'asset'));
+    expect(() => validateRegisteredInvoice({ ...rest, Asset: 'native' })).toThrow(/Invalid registered invoice/);
+    expect(() => validateRegisteredInvoice({ ...rest, '\u00e1sset': 'native' })).toThrow(/Invalid registered invoice/);
+  });
+
   it('keeps only matching fields and computes the exact router net for both fee policies', () => {
     const invoice = testInvoice();
     const reg = registrationFromInvoice(invoice, 5);

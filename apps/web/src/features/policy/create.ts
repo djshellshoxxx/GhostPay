@@ -66,7 +66,7 @@ export function createPolicyMetaAddress(input: CreatePolicyInput): PolicyRecord 
   const dest = input.destination.trim();
   if (!isAddress(dest, { strict: true })) throw new UserFacingError('The destination must be a checksummed address.');
   if (input.delaySeconds < MIN_DELAY || input.delaySeconds > MAX_DELAY) throw new UserFacingError('The delay must be between 1 hour and 30 days.');
-  const limits = input.limits.filter((r) => r.token.trim() !== '' || r.limit.trim() !== '' || r.windowSeconds.trim() !== '').map(row);
+  const limits = input.limits.filter((r) => r.token.trim() !== '' || r.limit.trim() !== '' || r.windowSeconds.trim() !== '').map((r, i) => row(r, i));
   const limitsRoot = limits.length === 0 ? ZERO_HASH : buildLimitsTree(limits).root;
   const policy = validatePolicy({ destination: getAddress(dest), delaySeconds: input.delaySeconds, limitsRoot });
   const metaAddress = encodeScheme2MetaAddress({

@@ -261,7 +261,8 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 		Db::$queries = 0;
 		Db::$stop_at = $step;
 		try {
-			new Ghostpay();
+			$upgraded_module = new Ghostpay();
+			check( 'completed upgrade returns the initialized payment module', $upgraded_module->name, 'ghostpay' );
 			$stopped = false;
 		} catch ( RuntimeException $e ) {
 			$stopped = true;

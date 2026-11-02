@@ -60,7 +60,7 @@ try {
 
   // Concurrent stale confirmations from both tabs against the current record: exactly one deletes, B is not recreated.
   const race = await Promise.all([del(tabA, 'ciphertext-b'), del(tabB, 'ciphertext-b')]);
-  assert.deepEqual(race.slice().sort(), ['VaultChangedError', 'deleted'], 'exactly one tab may delete the confirmed record');
+  assert.deepEqual(race.slice().sort((a, b) => a < b ? -1 : a > b ? 1 : 0), ['VaultChangedError', 'deleted'], 'exactly one tab may delete the confirmed record');
   assert.equal(await read(tabB), undefined);
   await put(tabB, 'ciphertext-c');
   assert.equal(await del(tabA, 'ciphertext-b'), 'VaultChangedError', 'a repeated confirm cannot delete a later vault');
