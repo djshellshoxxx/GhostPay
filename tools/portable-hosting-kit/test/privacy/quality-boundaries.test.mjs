@@ -16,7 +16,7 @@ function scan(files) {
 const host = () => ({ schemaVersion: 1, transport: 'clearnet', publicOrigin: null, basePath: '/', listen: { kind: 'tcp', host: '127.0.0.1', port: 8088 }, mirrorLabel: 'quality', onionLocation: null });
 
 test('relative literals preserve context, legacy quotes and later matches', async () => {
-  const r = await scan({ 'index.html': `<script SRC${' '.repeat(2048)} = '//long.example.invalid/x\"> url(//broken.invalid/no-close href="//later.example.invalid/x"`, 'style.css': '@import url( "//style.example.invalid/a.css" );' });
+  const r = await scan({ 'index.html': `<script SRC${' '.repeat(2048)} = '//long.example.invalid/x"> url(//broken.invalid/no-close href="//later.example.invalid/x"`, 'style.css': '@import url( "//style.example.invalid/a.css" );' });
   const byHost = new Map(r.references.map((x) => [x.host, x]));
   assert.equal(byHost.get('long.example.invalid')?.category, 'script');
   assert.equal(byHost.get('long.example.invalid')?.url, '//long.example.invalid');

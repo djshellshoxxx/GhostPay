@@ -99,7 +99,8 @@ export async function exportStatic({ siteDir, files, entrypoint, hostConfig, pol
   createRouter({ files, entrypoint, basePath });
   const servable = servableFiles(files);
   const overlay = checkOverlay(overlayFiles, new Set(servable));
-  const written = [...servable, ...overlay.map((o) => o.path)].sort();
+  // Preserve deterministic UTF-16 ordering, not locale collation.
+  const written = [...servable, ...overlay.map((o) => o.path)].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
   assertServableHeaders(policy, written);
 
   let siteRoot;

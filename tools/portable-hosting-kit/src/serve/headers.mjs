@@ -455,5 +455,5 @@ export function kitHeaderNames(policy, hostConfig) {
     for (const n of rule.detach) names.add(n.toLowerCase());
   }
   for (const [n] of hostConfig ? transportHeaders(hostConfig) : []) names.add(n.toLowerCase());
-  return [...names].sort();
+  return [...names].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
 }

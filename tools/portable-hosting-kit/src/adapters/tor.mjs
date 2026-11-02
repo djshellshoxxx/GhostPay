@@ -152,7 +152,10 @@ export function assertSafeAbsolutePath(p, label) {
   if (!SAFE_ABS_PATH_RE.test(p)) {
     throw new KitError(PATH, `${label} must be an absolute path using only A-Z a-z 0-9 . _ - /`, { [label]: p });
   }
-  const trimmed = p.length > 1 ? p.replace(/\/+$/, '') : p;
+  // Keep the existing1024-character bound and trailing-slash semantics without backtracking.
+  let end = p.length;
+  while (end > 1 && p.charAt(end - 1) === '/') end -= 1;
+  const trimmed = p.slice(0, end);
   if (trimmed === '/' || trimmed === '' || path.posix.normalize(trimmed) !== trimmed) {
     throw new KitError(PATH, `${label} must be normalized (no "//", ".", ".." segments) and not "/"`, { [label]: p });
   }

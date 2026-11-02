@@ -22,7 +22,7 @@ export function prepareManifestFixture({ templateFile = TEMPLATE, tempRoot = tmp
   const testKey = new Uint8Array(32).fill(7);
   try {
     const publicKey = hex(secp256k1.getPublicKey(testKey, true));
-    const digest = Uint8Array.from(manifestDigest(manifest).slice(2).match(/../g) ?? [], (part) => parseInt(part, 16));
+    const digest = Uint8Array.from(manifestDigest(manifest).slice(2).match(/../g) ?? [], (part) => Number.parseInt(part, 16));
     const signature = `0x${hex(secp256k1.sign(digest, testKey, { prehash: false, lowS: true }))}`;
     const output = JSON.stringify({ ...JSON.parse(canonicalManifestJson(manifest)), signature }, null, 2) + '\n';
     if (verifyObjectManifestSignature(loadDeployment(output, 84532), [publicKey]).status !== 'valid') {

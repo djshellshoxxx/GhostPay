@@ -770,7 +770,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           return;
         }
         if (actualAllowance !== undefined) {
-          const reason = userMessage(e).replace(/\s*Nothing was sent\.?/g, '').trim();
+          const reason = userMessage(e).replaceAll('Nothing was sent.', '').replaceAll('Nothing was sent', '').trim();
           const paymentStatus = paymentWalletRequested ? 'the payment was not confirmed' : 'no payment was sent';
           setError(`Approval was confirmed${approvalBroadcastHash === undefined ? '' : ` (${approvalBroadcastHash})`}, but ${paymentStatus}. ${reason}`);
           app.announce(`Approval confirmed; ${paymentStatus}.`);

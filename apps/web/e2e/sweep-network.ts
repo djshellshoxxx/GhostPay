@@ -21,6 +21,10 @@ const TRANSFER = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523
 const erc20 = parseAbi(['function transfer(address to, uint256 amount) returns (bool)']);
 const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'POST, OPTIONS' };
 
+function isEip1559Raw(raw: Hex): raw is `0x02${string}` {
+  return raw.startsWith('0x02');
+}
+
 export interface JournalLock {
   chainId: number;
   owner: string;
@@ -112,6 +116,7 @@ export async function installSweepNetwork(context: BrowserContext, page: Page, o
       }
       case 'eth_sendRawTransaction': {
         const raw = body.params[0] as Hex;
+        if (!isEip1559Raw(raw)) throw new Error('Expected an EIP-1559 direct sweep transaction.');
         state.raws.push(raw);
         // Observe storage at the real raw-broadcast boundary, before replying to the actual directSweep request.
         const locks = await readSweepJournal(page);
