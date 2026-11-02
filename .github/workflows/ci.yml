@@ -280,6 +280,7 @@ jobs:
           path: |
             apps/web/dist
             apps/web/test-results/browser-build.json
+            apps/web/test-results/**/accessibility-audit.json
           if-no-files-found: error
           retention-days: 14
       - if: failure()

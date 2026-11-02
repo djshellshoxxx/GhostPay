@@ -15,6 +15,11 @@ import { decodeAbiParameters, encodeFunctionData, keccak256, toBytes } from 'vie
 import { ghostPayRouterAbi, grossForNet, type Address, type Hex } from '@ghostpay/chain-adapters';
 import { parseMetadata } from '@ghostpay/core-crypto';
 import { bindReceiptToInvoice, verifyReceipt } from '../src/lib/receipts';
+import { auditAccessibility, retainAccessibilityAudit } from './accessibility-audit';
+
+test.afterEach(async ({ page }, info) => {
+  await retainAccessibilityAudit(page, info);
+});
 
 /** Tiny fake runtime code per contract; the served manifest carries their real keccak256 so the on-chain read-back passes. */
 const FAKE_CODE: Record<string, `0x${string}`> = {
@@ -386,6 +391,8 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     page,
     context,
   }) => {
+    // This composed Worker/reconciliation/receipt journey also audits its actual rendered states.
+    test.setTimeout(180_000);
     const state: Parameters<typeof mockNetwork>[1] = {};
     const net = await mockNetwork(context, state);
     const workers: string[] = [];
@@ -429,6 +436,7 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     const actualInvoice = await parseFragment(new URL(actualInvoiceLink).hash);
     expect(actualInvoice.verification.signatureValid).toBe(true);
     const registeredInvoiceDigest = `0x${bytesToHex(calculateInvoiceDigest(actualInvoice.invoice))}`;
+    await auditAccessibility(page, 'flow-signed-invoice-created-and-registered');
     const mine = makeLog({
       announcer: FAKE_ANNOUNCER,
       metaAddress: meta,
@@ -479,6 +487,7 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     expect(workers.some((u) => u.startsWith(`${ORIGIN}/assets/scanner.worker-`))).toBe(true);
     expect(offOrigin).toEqual([]);
     expect(net.requests.length).toBeGreaterThan(0);
+    await auditAccessibility(page, 'flow-worker-scan-verified-payment');
 
     // The actual registered invoice is only proposed, never silently confirmed or promoted to payment proof.
     const ledger = page.getByRole('region', { name: 'Local payment reconciliation', exact: true });
@@ -487,6 +496,7 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await expect(proposal).toContainText(registeredInvoiceDigest);
     await expect(ledger.getByText('No records saved.', { exact: true })).toBeVisible();
     await expect(ledger.getByText(/No linked observation\./)).toBeVisible();
+    await auditAccessibility(page, 'flow-reconciliation-match-proposed');
     await ledger.getByRole('button', { name: 'Confirm proposed invoice match', exact: true }).click();
     const linkedObservation = ledger.locator('li').filter({ hasText: 'Manual invoice link (or a local match you confirmed):' });
     await expect(linkedObservation).toHaveCount(1);
@@ -496,6 +506,7 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await expect(linkedObservation).toContainText('historical observation, not current payment proof');
     await expect(ledger.getByText(/Linked to a verified observation\./)).toBeVisible();
     await expect(ledger.getByRole('button', { name: 'Confirm proposed invoice match', exact: true })).toHaveCount(0);
+    await auditAccessibility(page, 'flow-reconciliation-match-confirmed');
     // Reopen the real encrypted vault to prove confirmation survives beyond the transient preview state.
     await ledger.getByRole('button', { name: 'Lock reconciliation vault', exact: true }).click();
     await expect(ledger.getByRole('button', { name: 'Unlock encrypted reconciliation vault', exact: true })).toBeVisible();
@@ -621,6 +632,7 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await expect(panel.getByText(/Validated invoice matches this scan/)).toBeVisible();
     await expect(panel.getByRole('button', { name: 'Sign receipt', exact: true })).toBeDisabled();
     await expect(page.getByLabel('Signed receipt JSON')).toHaveCount(0);
+    await auditAccessibility(page, 'flow-bound-receipt-awaiting-signing-consent');
     await panel.getByLabel('I consent to signing these invoice and payment facts.').check();
     await panel.getByRole('button', { name: 'Sign receipt', exact: true }).click();
     const boundText = await panel.getByLabel('Signed receipt JSON').inputValue();
@@ -633,6 +645,7 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     const downloadedPath = await (await downloadEvent).path();
     if (downloadedPath === null) throw new Error('receipt download required');
     expect(readFileSync(downloadedPath, 'utf8')).toBe(boundText);
+    await auditAccessibility(page, 'flow-bound-receipt-signed-and-exported');
 
     // Import the product-exported bytes into the actual payer view, with its own disclosure consent and invoice binding.
     await openFresh(page, actualInvoiceLink);
@@ -644,6 +657,7 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await page.getByRole('button', { name: 'Check receipt against this invoice' }).click();
     await expect(page.getByText(/Consent is required before opening private receipt details/)).toBeVisible();
     await expect(acceptedReceipt).toHaveCount(0);
+    await auditAccessibility(page, 'flow-receipt-import-consent-required');
     await page.getByLabel('I consent to opening private receipt details on this screen.').check();
     await expect(receiptImport.getByRole('alert')).toHaveCount(0);
     const tampered = { ...(boundDecoded as Record<string, unknown>), amountMinorUnits: (parsed.netAmount + 1n).toString() };
@@ -651,10 +665,14 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await page.getByRole('button', { name: 'Check receipt against this invoice' }).click();
     await expect(receiptImport.getByRole('alert').filter({ hasText: 'Receipt not accepted' })).toBeVisible();
     await expect(acceptedReceipt).toHaveCount(0);
+    await auditAccessibility(page, 'flow-tampered-receipt-refused');
     await upload.setInputFiles(downloadedPath);
     await page.getByRole('button', { name: 'Check receipt against this invoice' }).click();
     await expect(acceptedReceipt).toBeVisible();
     await expect(page.getByText(/The signature matches the valid invoice-signing key/)).toBeVisible();
+    await auditAccessibility(page, 'flow-bound-receipt-import-accepted');
+    expect(await page.evaluate(() => (window as unknown as { __csp: string[] }).__csp)).toEqual([]);
+    expect(cspConsole).toEqual([]);
     expect(offOrigin).toEqual([]);
   });
 });

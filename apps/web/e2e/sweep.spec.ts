@@ -1,10 +1,15 @@
 import { expect, test, type Page } from '@playwright/test';
 import { keccak256 } from 'viem';
 import { generateKeys } from './helpers';
+import { auditAccessibility, retainAccessibilityAudit } from './accessibility-audit';
 import { DESTINATION, installSweepNetwork, readSweepJournal, SWEEP_RPC } from './sweep-network';
 
 // Real production-cost vault KDF on save, action step-up and reload unlock. No KDF/signing substitution.
-test.setTimeout(180_000);
+// Additional default-rule axe checkpoints run inside the same real signing and reload journey.
+test.setTimeout(240_000);
+test.afterEach(async ({ page }, info) => {
+  await retainAccessibilityAudit(page, info);
+});
 const slowExpect = expect.configure({ timeout: 30_000 });
 const PASS = 'violet comet maple lantern harbor';
 const nav = (page: Page) => page.getByRole('navigation', { name: 'Main' });
@@ -38,6 +43,7 @@ async function scanToSweep(page: Page, owner: string, rescanFromStart = false): 
   await expect(match).toHaveCount(1);
   await expect(match.getByRole('paragraph').filter({ hasText: 'One-time address:' }).locator('code')).toHaveText(owner);
   await expect(page.getByText(/Claimed, not confirmed/)).toHaveCount(0);
+  await auditAccessibility(page, rescanFromStart ? 'sweep-worker-rescan-verified-payment' : 'sweep-worker-scan-verified-payment');
   await page.getByRole('button', { name: 'Sweep this payment' }).click();
   await expect(sweep(page).getByText('5 USDC', { exact: true })).toBeVisible();
   await sweep(page).getByLabel(/Directly/).check();
@@ -63,9 +69,12 @@ for (const outcome of ['success', 'unknown'] as const) {
     await sweep(page).getByLabel('Destination address (your own wallet)').fill(DESTINATION);
     await sweep(page).getByLabel('Vault passphrase (required for each sweep action)').fill(PASS);
     await expect(sign(page)).toBeEnabled();
+    await auditAccessibility(page, `sweep-${outcome}-direct-signing-ready`);
     await sign(page).click();
     // The route deliberately holds the real signed raw transaction while the UI is busy and the journal is durable.
     await slowExpect.poll(() => network.state.handoffLocks.length).toBe(1);
+    const working = sweep(page).getByRole('status').filter({ hasText: 'Working…' });
+    await expect(working).toBeVisible();
     await expect(sign(page)).toBeDisabled();
     await sign(page).dispatchEvent('click');
     expect(network.state.raws).toHaveLength(1);
@@ -73,7 +82,11 @@ for (const outcome of ['success', 'unknown'] as const) {
     await slowExpect.poll(() => network.state.releaseBroadcast !== undefined).toBe(true);
     const releaseBroadcast = network.state.releaseBroadcast;
     if (releaseBroadcast === undefined) throw new Error('Raw broadcast hold was not ready');
+    await auditAccessibility(page, `sweep-${outcome}-broadcast-held-with-durable-lock`);
     releaseBroadcast();
+    // The durable unknown lock is visible before the transport finishes its identical-byte retries.
+    // Wait for the action's own completion before taking the request-count baseline for reload/duplicate checks.
+    await slowExpect(working).toHaveCount(0);
     const title = outcome === 'success' ? 'Submitted' : 'Outcome unknown';
     await slowExpect(pendingAttempt(page)).toHaveCount(1);
     await expect(pendingAttempt(page).locator('.notice-title')).toContainText(title);
@@ -89,6 +102,7 @@ for (const outcome of ['success', 'unknown'] as const) {
     await sweep(page).getByRole('button', { name: 'Check status', exact: true }).click();
     await expect(sweep(page).getByRole('button', { name: 'Check status', exact: true })).toBeEnabled();
     await expect(sign(page)).toBeDisabled(); // An absent receipt does not erase the lock.
+    await auditAccessibility(page, `sweep-${outcome}-pending-status-lock-retained`);
 
     await page.reload();
     await nav(page).getByRole('button', { name: 'Seller keys' }).click();
@@ -111,6 +125,7 @@ for (const outcome of ['success', 'unknown'] as const) {
     await sign(page).dispatchEvent('click');
     expect(network.state.raws).toHaveLength(broadcastRequests);
     await expect.poll(() => readSweepJournal(page)).toMatchObject([{ nonce: 0, expectedHash }]);
+    await auditAccessibility(page, `sweep-${outcome}-reloaded-and-rescanned-duplicate-refused`);
 
     network.state.mined = true;
     await sweep(page).getByRole('button', { name: 'Check status', exact: true }).click();
@@ -126,5 +141,6 @@ for (const outcome of ['success', 'unknown'] as const) {
     expect(network.state.methods).toContain('eth_estimateGas');
     expect(network.state.methods).toContain('eth_call');
     expect(network.state.unexpected).toEqual([]);
+    await auditAccessibility(page, `sweep-${outcome}-included-on-chain`);
   });
 }
