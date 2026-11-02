@@ -36,11 +36,48 @@ function isLocalHost(host: string): boolean {
   return host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
 }
 
+/** Largest response body read, in bytes: a hostile server must not make the tab buffer an unbounded body. */
+const MAX_BODY_BYTES = 8 * 1024 * 1024;
+
+/**
+ * Reads the body as UTF-8 text through the byte cap: a declared `Content-Length` above it is refused unread, and the
+ * download is cancelled as soon as the streamed bytes pass it.
+ * @throws {SolanaStealthError} `INVALID_RESPONSE` past the cap; stream errors propagate as thrown.
+ */
+async function readCapped(res: Response, max: number): Promise<string> {
+  if (Number(res.headers.get('content-length')) > max) {
+    await res.body?.cancel().catch(() => undefined);
+    return fail('INVALID_RESPONSE');
+  }
+  if (res.body === null) return '';
+  const reader = res.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > max) {
+      await reader.cancel().catch(() => undefined);
+      return fail('INVALID_RESPONSE');
+    }
+    chunks.push(value);
+  }
+  const all = new Uint8Array(total);
+  let off = 0;
+  for (const c of chunks) {
+    all.set(c, off);
+    off += c.byteLength;
+  }
+  return new TextDecoder().decode(all);
+}
+
 /**
  * JSON-RPC 2.0 client over HTTP.
  *
  * @remarks No default endpoint: the caller must choose one (privacy: the RPC operator sees every
- * scanned signature and the scanner's IP). Response `id` must echo the request id.
+ * scanned signature and the scanner's IP). Response `id` must echo the request id. Bodies above 8 MiB
+ * are refused while they stream.
  * @throws {SolanaStealthError} `INVALID_INPUT` (bad URL), `TRANSPORT_FAILURE`, `INVALID_RESPONSE`,
  * `RPC_ERROR`, `ABORTED`.
  */
@@ -74,7 +111,7 @@ export function createHttpRpc(opts: HttpRpcOptions): SolanaRpc {
           redirect: 'error',
         });
         if (!res.ok) return fail('TRANSPORT_FAILURE');
-        text = await res.text();
+        text = await readCapped(res, MAX_BODY_BYTES);
       } catch (e) {
         if (e instanceof SolanaStealthError) throw e;
         return fail(isAborted(signal) ? 'ABORTED' : 'TRANSPORT_FAILURE');

@@ -24,8 +24,6 @@
     "settings.delay.max": "最大遅延（秒）",
     "settings.delay.range": "各支払いは {min, number} 秒から {max, number} 秒の間で遅延されます。",
     "settings.safety.legend": "安全性と外観",
-    "settings.lock.label": "操作がない状態が続いたらローカルタグをロックするまでの分数",
-    "settings.lock.hint": "鍵は、消去するかタブを閉じるまでメモリに保持されます。",
     "settings.lock.summary": "操作がないまま {minutes, plural, other {# 分}}経過するとロックされます。",
     "settings.theme.label": "テーマ",
     "settings.theme.system": "システムに従う",

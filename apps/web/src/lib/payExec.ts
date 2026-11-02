@@ -1,17 +1,22 @@
 import { invoiceDigest } from '@ghostpay/invoice-schema';
 import { bytesToHex } from '@noble/hashes/utils.js';
-import type { Address, BuiltPayment, Hex, RpcClient } from '@ghostpay/chain-adapters';
+import { classifyPermit, type Address, type BuiltPayment, type Hex, type PermitState, type RpcClient } from '@ghostpay/chain-adapters';
 import { UserFacingError } from './errors';
 import { formatUnits } from './format';
 import { guardApprove, guardRouterPayment, simulateCall } from './txGuard';
 import {
   assertApproveTx,
+  assertInvoiceStillPayable,
   assertPermitSigner,
+  assertPreparedBufferFresh,
   assertBufferStillSufficient,
   assertReadyToSend,
   buildApproveTx,
   buildFinal,
+  boundedDeadline,
   buildPermit,
+  permitPreflightReader,
+  permitStateMessage,
   readAllowance,
   typedDataJson,
   type BufferQuote,
@@ -39,7 +44,11 @@ export interface Runtime {
 
 export interface SubmitResult {
   readonly hash: Hex;
-  readonly verification: SubmissionCheck | 'no-rpc';
+  /**
+   * `verified`: the user's RPC returned exactly the previewed transaction. `not-visible-yet`: it returned none and no
+   * receipt appeared in time. `unverified`: a receipt exists, but the RPC never returned the transaction to compare.
+   */
+  readonly verification: SubmissionCheck | 'unverified' | 'no-rpc';
   readonly receipt: ReceiptInfo | undefined;
 }
 
@@ -56,6 +65,14 @@ export class PostBroadcastError extends UserFacingError {
     super(`Your wallet already sent this transaction (hash ${hash}), but it could not be verified: ${detail} It may still go through. Check your wallet and a block explorer before doing anything else; do not send again.`);
     this.name = 'PostBroadcastError';
     this.cause = cause;
+  }
+}
+
+/** A signed permit the post-sign pre-flight (spec 04) refused. Nothing was sent; the UI must not retry it silently. */
+export class PermitRejectedError extends UserFacingError {
+  public constructor(public readonly state: Exclude<PermitState, 'ok_to_permit' | 'already_allowed'>) {
+    super(permitStateMessage(state));
+    this.name = 'PermitRejectedError';
   }
 }
 
@@ -82,15 +99,16 @@ export async function submitTx(session: WalletSession, tx: TxRequest, rt: Runtim
       return { hash, verification: 'no-rpc', receipt: undefined };
     }
     status('Submitted. Verifying the transaction on your RPC…');
-    const verification = await verifySubmission(
-      rt.rpc,
-      hash,
-      { from: session.account, to: tx.to, data: tx.data, value: tx.value, chainId: session.chainId },
-      rt.sleep,
-    );
+    const expected = { from: session.account, to: tx.to, data: tx.data, value: tx.value, chainId: session.chainId };
+    const seen = await verifySubmission(rt.rpc, hash, expected, rt.sleep);
     status('Waiting for inclusion…');
     const receipt = await pollReceipt(rt.rpc, hash, tx.to, rt.sleep);
-    return { hash, verification, receipt };
+    if (seen === 'verified' || receipt === undefined) return { hash, verification: seen, receipt };
+    // L2-F3: the wallet decides when to broadcast and can outwait the first check. A mined transaction is fetched and
+    // compared again (a mismatch still throws), so a receipt is never reported without that comparison.
+    status('A receipt appeared. Comparing the transaction with the preview on your RPC…');
+    const late = await verifySubmission(rt.rpc, hash, expected, rt.sleep);
+    return { hash, verification: late === 'verified' ? 'verified' : 'unverified', receipt };
   } catch (e) {
     throw new PostBroadcastError(hash, e instanceof UserFacingError ? e.message : 'the RPC check failed.', e);
   }
@@ -148,9 +166,12 @@ export async function grantApproval(session: WalletSession, ctx: PayContext, pla
   guardApprove(tx, ctx.chain.chainId, { token: plan.token, spender: plan.spender, amount: plan.need }, ctx.manifest, rt.nowSeconds());
   status(`Approve exactly ${formatUnits(plan.need, ctx.review.token?.decimals ?? 18)} ${ctx.review.token?.symbol ?? ''} for the router.`);
   assertCurrent?.();
-  const res = await submitTx(session, tx, rt, status, assertCurrent, onBroadcast, { kind: 'approval' });
+  // L2-I3: scoped to this invoice, so the identical approval for a later invoice is not refused as a duplicate.
+  const res = await submitTx(session, tx, rt, status, assertCurrent, onBroadcast, { kind: 'approval', scope: bytesToHex(invoiceDigest(ctx.review.invoice)) });
   try {
     if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError('The approval was not confirmed. Nothing was paid.');
+    // B2-R2: uncompared, the mined approve may be another one (a larger one to this spender passes the readback below).
+    if (res.verification !== 'verified') throw new UserFacingError('Your RPC reports a receipt for the approval but did not return the transaction itself, so it could not be compared with the preview. Nothing was paid.');
     const after = await readAllowance(rt.rpc, plan.token, session.account, plan.spender);
     if (after < plan.need) throw new UserFacingError('The approval did not take effect. Nothing was paid.');
     return after;
@@ -167,9 +188,10 @@ export async function revokeApproval(session: WalletSession, ctx: PayContext, pl
   guardApprove(tx, ctx.chain.chainId, { token: plan.token, spender: plan.spender, amount: 0n }, ctx.manifest, rt.nowSeconds());
   status(`Revoke the router allowance for ${plan.spender}.`);
   assertCurrent?.();
-  const res = await submitTx(session, tx, rt, status, assertCurrent, onBroadcast, { kind: 'approval' });
+  const res = await submitTx(session, tx, rt, status, assertCurrent, onBroadcast, { kind: 'approval', scope: bytesToHex(invoiceDigest(ctx.review.invoice)) });
   try {
     if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError('The revoke was not confirmed. Check your allowances in your wallet.');
+    if (res.verification !== 'verified') throw new UserFacingError('Your RPC reports a receipt for the revoke but did not return the transaction itself, so it could not be compared with the preview. Check your allowances in your wallet.');
     const after = await readAllowance(rt.rpc, plan.token, session.account, plan.spender);
     if (after !== 0n) throw new UserFacingError('The allowance is still not zero. Check your allowances in your wallet.');
   } catch (e) {
@@ -194,7 +216,8 @@ export async function preparePayment(session: WalletSession, ctx: PayContext, op
     return buildFinal(ctx, { nowSeconds: now, ...(opts.buffer === undefined ? {} : { buffer: opts.buffer }) });
   }
   if (rt.rpc === undefined) throw new UserFacingError('A permit payment needs an RPC to read the token. Configure one in Settings or use approval.');
-  const deadline = now + 20 * 60;
+  // One deadline for the signed permit and the router calldata, bounded by invoice/fiat validity (never clamped later).
+  const deadline = boundedDeadline(ctx.review.invoice, now);
   const td = await buildPermit(rt.rpc, {
     chainId: ctx.chain.chainId,
     token: token.address,
@@ -207,16 +230,43 @@ export async function preparePayment(session: WalletSession, ctx: PayContext, op
   assertCurrent?.();
   const sig = await signTypedDataViaWallet(session, typedDataJson(td), assertCurrent);
   assertCurrent?.();
+  // The wallet may have held the request open: re-read the clock before using the signature.
+  assertInvoiceStillPayable(ctx.review.invoice, rt.nowSeconds());
   await assertPermitSigner(td, sig, session.account);
   assertCurrent?.();
+  // Spec 04 post-sign pre-flight: nonce, recovery and a static permit call. A front-run permit (allowance now set)
+  // takes the allowance path; any other refusal stops here with its own message and nothing is sent.
+  const state = await classifyPermit(
+    {
+      token: token.address,
+      permitCapable: token.config?.permit === true,
+      owner: session.account,
+      spender: ctx.manifest.router,
+      value: ctx.request.grossAmount,
+      domain: td.domain,
+      signed: { nonce: td.message.nonce, deadline: BigInt(deadline), signature: sig },
+      now: BigInt(rt.nowSeconds()),
+    },
+    permitPreflightReader(rt.rpc),
+  );
+  assertCurrent?.();
+  if (state === 'already_allowed') {
+    status(permitStateMessage('already_allowed'));
+    return buildFinal(ctx, { nowSeconds: now });
+  }
+  if (state !== 'ok_to_permit') throw new PermitRejectedError(state);
   return buildFinal(ctx, { nowSeconds: now, deadlineSeconds: deadline, permitSignature: sig });
 }
 
+const DRY_RUN_UNAVAILABLE = '(Your RPC could not dry-run this payment, so it was not simulated before your wallet was asked.)';
+
 /** Final gate and send. The assertion runs on exactly the object that is passed to the wallet. */
-export async function sendPayment(session: WalletSession, ctx: PayContext, built: BuiltPayment, rt: Runtime, status: StatusFn, assertCurrent?: () => void): Promise<SubmitResult> {
+export async function sendPayment(session: WalletSession, ctx: PayContext, built: BuiltPayment, rt: Runtime, status: StatusFn, assertCurrent?: () => void, onWalletRequest?: () => void): Promise<SubmitResult> {
   const guard = (): void => {
     assertCurrent?.();
     assertReadyToSend(built, ctx);
+    assertInvoiceStillPayable(ctx.review.invoice, rt.nowSeconds());
+    assertPreparedBufferFresh(built, rt.nowSeconds());
     if (BigInt(rt.nowSeconds()) >= built.preview.deadline) throw new UserFacingError('The prepared payment has expired. Review again.');
   };
   guard();
@@ -224,9 +274,13 @@ export async function sendPayment(session: WalletSession, ctx: PayContext, built
   guardRouterPayment(built.tx, built.preview, ctx.manifest, rt.nowSeconds());
   await assertBufferStillSufficient(built, rt.rpc);
   guard();
-  if (rt.rpc !== undefined) await simulateCall(rt.rpc, { from: session.account, to: built.tx.to, data: built.tx.data, value: built.tx.value });
+  const dryRun = rt.rpc === undefined ? undefined : await simulateCall(rt.rpc, { from: session.account, to: built.tx.to, data: built.tx.data, value: built.tx.value });
   guard();
-  return submitTx(session, { to: built.tx.to, data: built.tx.data, value: built.tx.value }, rt, status, guard, undefined, { kind: 'payment', scope: bytesToHex(invoiceDigest(ctx.review.invoice)) });
+  // A node that cannot run the dry run is no refusal (a revert is), but the user sees it while the wallet asks.
+  const report: StatusFn = dryRun === 'unavailable' ? (m) => { status(`${m} ${DRY_RUN_UNAVAILABLE}`); } : status;
+  // After this boundary a wallet error can mean an unknown broadcast outcome, even without a returned hash.
+  onWalletRequest?.();
+  return submitTx(session, { to: built.tx.to, data: built.tx.data, value: built.tx.value }, rt, report, guard, undefined, { kind: 'payment', scope: bytesToHex(invoiceDigest(ctx.review.invoice)) });
 }
 
 export interface LocalReceipt {
@@ -262,7 +316,8 @@ export function buildReceipt(ctx: PayContext, built: BuiltPayment, result: Submi
     invoiceNonce: inv.nonce,
     fiat: `${inv.fiat.currency} ${inv.fiat.minorUnits}`,
     quote: { source: inv.quote.source, timestamp: inv.quote.timestamp, expiresAt: inv.quote.expiresAt },
-    status: result.receipt === undefined ? 'unconfirmed' : result.receipt.status === 'success' ? 'included' : 'reverted',
+    // L2-F3: `included` only for a receipt whose transaction was compared with the preview on the user's RPC.
+    status: result.receipt === undefined ? 'unconfirmed' : result.receipt.status !== 'success' ? 'reverted' : result.verification === 'verified' ? 'included' : 'unconfirmed',
     createdAt: now.toISOString(),
   };
 }

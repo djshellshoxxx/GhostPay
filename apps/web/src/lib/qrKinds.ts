@@ -211,3 +211,28 @@ export function kindForPayload(type: QrPayloadType, flags: QrPayloadFlags = {}):
   if (flags.testnet === true || flags.unsigned === true || flags.unverified === true) return 'caution';
   return base;
 }
+
+/** Longest link (characters) that is printed as a QR on a bill; longer links become dense, unscannable codes on paper. */
+export const MAX_PRINT_QR_LINK_CHARS = 500;
+
+export interface PrintQrPolicy {
+  /** Whether a QR is printed for this link. */
+  readonly includeQr: boolean;
+  /** Frame kind to use when a QR is printed. */
+  readonly kind: QrKind;
+  /** Printed bearer links are readable by anyone who sees the paper. */
+  readonly bearerWarning: boolean;
+}
+
+/**
+ * Print policy for an invoice link on paper. A QR is included only for short links. A link that is not
+ * passphrase protected may carry its own decryption key, so a printed copy is a bearer link.
+ */
+export function printQrPolicy(link: string | undefined, passphraseProtected: boolean): PrintQrPolicy {
+  const hasLink = link !== undefined && link.length > 0;
+  return {
+    includeQr: hasLink && link.length <= MAX_PRINT_QR_LINK_CHARS,
+    kind: kindForPayload(passphraseProtected ? 'invoice-link-passphrase' : 'invoice-link-with-key'),
+    bearerWarning: hasLink && !passphraseProtected,
+  };
+}

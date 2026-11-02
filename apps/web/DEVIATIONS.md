@@ -18,10 +18,22 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
    payer) and is unit-tested with an injected feed; with no feed it fails closed with a plain message. The Create page warns about this.
 5. **Manifest signatures are not verified.** `DeploymentManifest.signature` is optional and no release key exists. The UI shows
    "carries no signature" / "whose signature this app does not verify" next to the fee recipient instead of implying verification.
-6. **Embed SDK (`public/ghostpay-embed-v1.js`)** is popup-only (GitHub Pages cannot send `frame-ancestors`) and takes a full invoice link
-   (`data-invoice`), not `data-amount/currency/token/chain/merchant-id`: the merchant-profile mode needs a signed merchant profile
-   format that does not exist yet. The link must be https (or `localhost`) and on the same origin as the script. Because the popup uses
-   `noopener`, there is no `postMessage` channel and no completion callback in v1.
+6. **Embed SDK.** `public/ghostpay-embed-v1.js` is frozen and popup-only (takes a full `data-invoice` link, no `postMessage`, so pinned
+   hashes stay valid). `public/ghostpay-embed-v2.js` adds the optional sandboxed iframe mode, a `postMessage` completion protocol
+   (`src/lib/embedProtocol.ts`, `embedHost.ts`) and a signed merchant profile (`@ghostpay/invoice-schema` `merchantProfile`). Popup stays the
+   default. Iframe mode only works on a header-capable host: the checkout answers the handshake only when built with
+   `VITE_EMBED_IFRAME=1`, served with the opt-in `deploy/nginx/security-headers-embed.conf` (explicit `frame-ancestors` allowlist), and
+   given a profile whose `origins` contains the embedding origin. **The profile is not a security gate yet:** `verifyMerchantProfile`
+   (`invoice-schema` `merchantProfile.ts`) checks the signature only against the `signer` key embedded in the profile itself, so anyone
+   can sign a profile listing any origin. The `frame-ancestors` allowlist is the only gate today; the profile must be bound to the invoice
+   signer before it can authorize anything (audit L3-F7). GitHub Pages cannot send `frame-ancestors`, so the flag is
+   off there (a test enforces it), the checkout never answers, and the SDK falls back to the popup after 4 s. Still open: the SDK takes
+   an invoice link, not `data-amount/currency/token/chain/merchant-id` (profile `templates` are signed and parsed but not yet turned
+   into invoices, `data-template` is only forwarded); the profile is supplied inline (`?gpm=`) or via `fetchMerchantProfile`, with no
+   payer-facing fingerprint/"unverified identity" UI yet (`signerFingerprint` exists; Pay.tsx/locales are out of this worker's scope);
+   no SRI value is published (S3-10, below); the Playwright hostile-host-page test is not written (jsdom tests only). Every header
+   source (`public/_headers`, `deploy/nginx`, `infra`) sends `Access-Control-Allow-Origin: *` for both SDK files, so a merchant can use
+   `integrity=... crossorigin="anonymous"` with a hash computed from the exact file they embed (see the v2 header comment).
 7. WalletConnect-style adapters (optional in the playbook) are not built. Wallet paths: EIP-6963 discovery and a labelled
    `window.ethereum` EIP-1193 fallback.
 8. No network-reachable "light indexer" (Feature 5); scanning uses the user's RPC through `chain-adapters`.
@@ -37,13 +49,40 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     is checked to carry the hash returned by the RPC.
 11. **Local tags**: `chain-adapters` does not keep the transaction hash of an announcement, so the tag payload stores
     `announcementId = blockHash:logIndex` instead of `transactionHash`. The per-profile HKDF salt lives in one `meta` record rather than
-    in every record; each record has its own fresh 96-bit IV. The idle lock timeout locks the tag vault only; seller keys stay in memory
-    until wiped or the tab closes (auto-wiping unexported keys seemed worse).
-12. **Gas buffer sizing** (Feature 1): `calculateBuffer` with a fixed 100 000 gas sweep estimate (not simulated), `2 x eth_gasPrice` as max
-    fee, `DEFAULT_BUFFER_SAFETY_BPS` (20 %), a hard cap of 0.01 native coin, and a 120 s quote lifetime. It needs the user's RPC.
-    Buffer payments go through approval (the router cannot combine a permit with a buffer).
+    in every record; each record has its own fresh 96-bit IV. Unlocked tag keys belong to the seller keys that unlocked them: any key
+    change locks the tag vault (audit L1-04). **Idle lock** (Settings, default 15 minutes without a click or key press): it always
+    locks the tag vault and clears key hex and passphrases typed into Seller keys (its tag archive form included) and Sweep (audit
+    G2-05, review C-R11), and it wipes the seller keys only when a copy survives the wipe: keys imported from a keystore or as hex, a
+    keystore downloaded in this tab, or the vault record they were unlocked from or saved to still saved in this browser. That record
+    is looked up in storage when the lock fires, before "Wipe keys from memory" wipes the keys (review C-R9), whenever Seller keys
+    reads the saved vault, and at the step-up for a keystore download or a new vault, so a record deleted in another tab or with
+    the site data makes them unsaved again from then on; unlocking a vault and the sweep step-up do not look for it. A signing key
+    generated at a hex import exists only in this tab: until a keystore download or a vault save, the banner says that this key
+    has no backup while payments stay sweepable from the hex, and the notice after an idle-lock wipe says that it is gone (review
+    C-R10). Keys with no copy anywhere stay in memory under a visible "no backup" banner, because wiping them would lose every
+    payment sent to their meta-address (audit L1-01); after a wipe a visible notice says what happened. Until the keys are backed
+    up, Create invoice, the meta-address text, QR and copy button on Seller keys, the publish path of the ERC-6538 registry page
+    and the create form of the experimental policy view need a backup or a typed waiver (when only that generated signing key
+    lacks one, the meta-address on Seller keys is shown, since nothing is signed with it); the waiver never lets the idle lock
+    wipe keys with no copy anywhere. "Unlock saved vault" and "Wipe keys from memory" over keys without a backup ask first, naming
+    what would be lost. Keys unlocked from, saved to or found in the vault keep that record's passphrase as a step-up for sweeps,
+    keystore export and a new vault for the rest of the session, also if the saved record is deleted; deleting a vault that names
+    the loaded meta-address needs its passphrase, any other vault is deleted after its meta-address is shown (audit L1-02). Keys
+    that were never in a vault have no step-up passphrase.
+12. **Gas buffer sizing** (Feature 1, spec 13): `calculateBuffer` over `max(100 000, eth_estimateGas of the token transfer + 25 %)`
+    (fails closed when the simulation fails), `2 x eth_gasPrice` as max fee, `DEFAULT_BUFFER_SAFETY_BPS` (20 %), a hard cap of 0.01
+    native coin, and a 60 s quote lifetime, re-checked before the wallet is asked. It needs the user's RPC. Buffer payments go through
+    approval (permit + buffer needs a deferred router change). Invoice v2 `bufferPolicy` (ADR-0024): declined hides the buffer; accepted
+    bounds it by `min(maxWei, cap)` and raises a smaller estimate to `minWei` (shown); `buildFinal` re-checks the bounds. The Create page
+    has no control for the policy yet (v2 invoices can only be produced through `buildInvoiceLink({ bufferPolicy })`). The fiat
+    estimate stays hidden while `FEEDS` is empty.
 13. **Permit domain version** is probed as `"2"` then `"1"`; each candidate is accepted only if the locally computed domain separator equals
     the token's on-chain `DOMAIN_SEPARATOR`. The wallet's permit signature is verified to recover to the payer before it is used.
+    Spec 04 post-sign: `classifyPermit` (`chain-adapters/src/permit.ts`) re-reads allowance, nonce and domain and runs a static `permit`
+    call. A front-run permit (allowance now covers) takes the allowance path; `nonce_consumed`/`sig_invalid`/`expired` raise
+    `PermitRejectedError` with a per-state message, nothing is sent, and only the next user-pressed Prepare switches to an exact approval.
+    A reverted static `permit` call is reported as `sig_invalid` even if an RPC fault caused it (fail closed). Option C (`PermitSkipped`
+    event) is a contract change and is not done.
 14. **Independent verification needs the user's RPC.** After `eth_sendTransaction`, the app fetches the transaction from the user's own
     RPC and compares sender, target, calldata, value and chain id with the preview (this is what catches a provider that mutates the
     transaction or lies about the chain). With no RPC configured the payment still works but the result says it could not be verified.
@@ -62,6 +101,10 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     directives minus `frame-ancestors`, which browsers ignore in a meta tag). `scripts/scan-bundle.mjs` asserts the `_headers` file still
     contains the key directives and that the built `index.html` has no inline script/style/handler.
 20. `connect-src` is `'self' https: wss:` because RPC and relayer origins are user data (spec section 1); the RPC adapter allows only https/wss.
+    **Still open: audit S3-10 and S3-11.** `scripts/embed-sri.mjs` (content-addressed SDK copy, `embed-sri.json` with the SHA-384 SRI
+    value, immutable `_headers` rule) and `scripts/csp.mjs` (`GHOSTPAY_CONNECT_ORIGINS` narrows `connect-src`) are unit-tested
+    (`src/buildScripts.test.ts`) but **not wired into `npm run build`**: `dist/` has no content-addressed SDK file and no SRI value, and
+    `connect-src` stays broad whatever `GHOSTPAY_CONNECT_ORIGINS` is set to.
 21. **Bundle scan allowlist.** The scan fails on `eval`, `new Function`, `Function()`, string timers, `document.write`, `insertAdjacentHTML`,
     `outerHTML=`, `importScripts`, stray `Math.random`, any `innerHTML=` outside two React DOM fingerprints, any
     `dangerouslySetInnerHTML:`/`=` use, source maps, `@font-face`, remote CSS, inline HTML, shipped manifests and any URL host not in
@@ -69,6 +112,9 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     error-decoder text (`react.dev/errors/`), and viem error-message hints (`viem.sh`, `4byte.sourcify.dev`). None is ever fetched; each is
     listed with its reason in the script. React DOM's own `innerHTML` uses (creating a `<script>` element through a div, and applying the
     `dangerouslySetInnerHTML` prop) are matched by exact fingerprints; the app source is separately scanned and ESLint-forbidden from using them.
+    Release boundary (audit L8-04): the scan also fails on fixed strings of preserved code (PIR client and scan sources, light-client,
+    quorum, scan-mode claims, `groth16`, `privacy-pools`), and ESLint forbids importing `createScanSource`, `createPir2Source`,
+    `createLightSource`, `createQuorumSource`, `describeScanMode` and `SCAN_MODE_CLAIMS` from `@ghostpay/scan-source` in apps/web.
 22. No inline `style=` attributes are used anywhere (the CSP has no `'unsafe-inline'`): the QR code is an SVG built from React elements and CSS classes.
 
 ## Coverage exclusions (thresholds 90/85/90/90 are NOT lowered)

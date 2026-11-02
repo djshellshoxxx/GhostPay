@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // Checks pos-logic.js (static page) against posReduce from @ghostpay/merchant-hooks on event sequences.
 import assert from 'node:assert/strict';
+import { existsSync, readFileSync } from 'node:fs';
 import { INITIAL_POS_STATE, posReduce } from '@ghostpay/merchant-hooks';
-import { INITIAL, checkLink, formatMinor, parseMinor, reduce } from './pos-logic.js';
+import { INITIAL, ZERO_DECIMAL_CURRENCIES, checkLink, formatMinor, parseMinor, reduce } from './pos-logic.js';
 
 const start = { type: 'start', sessionId: 's1', invoiceId: 'inv', currency: 'USD', dueMinor: 1000n, ttlSeconds: 60 };
 const pay = (n) => ({ type: 'payment', invoiceId: 'inv', currency: 'USD', amountMinor: BigInt(n) });
@@ -30,13 +31,32 @@ for (const bad of [{ ...start, ttlSeconds: 5 }, { ...start, ttlSeconds: 901 }, {
   assert.throws(() => posReduce(INITIAL_POS_STATE, bad, 1));
   assert.throws(() => reduce(INITIAL, bad, 1));
 }
-assert.equal(parseMinor('12.50'), 1250n);
-assert.equal(parseMinor('0.5'), 50n);
-assert.equal(parseMinor('1.234'), undefined);
-assert.equal(parseMinor('-1'), undefined);
-assert.equal(parseMinor('1e3'), undefined);
-assert.equal(formatMinor(5n), '0.05');
-assert.equal(formatMinor(123456n), '1234.56');
+// Amounts are invoice minor units in the GhostPay app's exponent (apps/web fiatDecimals): 0 decimals for JPY and the
+// other zero-decimal codes, 2 for every other code. A fixed 2 made a JPY 1500 sale due 150000.
+assert.equal(parseMinor('12.50', 'USD'), 1250n);
+assert.equal(parseMinor('0.5', 'USD'), 50n);
+assert.equal(parseMinor('1.234', 'USD'), undefined);
+assert.equal(parseMinor('-1', 'USD'), undefined);
+assert.equal(parseMinor('1e3', 'USD'), undefined);
+assert.equal(parseMinor('1500', 'JPY'), 1500n);
+assert.equal(parseMinor('1500.00', 'JPY'), 1500n);
+assert.equal(parseMinor('1500.5', 'JPY'), undefined);
+assert.equal(parseMinor('12.340', 'KWD'), 1234n);
+assert.equal(parseMinor('12.345', 'KWD'), undefined);
+assert.equal(parseMinor('12', 'usd'), undefined);
+assert.equal(formatMinor(5n, 'USD'), '0.05');
+assert.equal(formatMinor(123456n, 'USD'), '1234.56');
+assert.equal(formatMinor(1500n, 'JPY'), '1500');
+assert.equal(formatMinor(1234n, 'KWD'), '12.34');
+const appFormat = new URL('../../apps/web/src/lib/format.ts', import.meta.url);
+if (existsSync(appFormat)) {
+  const app = readFileSync(appFormat, 'utf8');
+  const set = /ZERO_DECIMAL_CURRENCIES = new Set\(\[([^\]]*)\]\)/.exec(app);
+  assert.deepEqual([...ZERO_DECIMAL_CURRENCIES], [...(set?.[1] ?? '').matchAll(/'([A-Z]{3})'/g)].map((m) => m[1]), 'table equals the GhostPay app table');
+  assert.match(app, /return ZERO_DECIMAL_CURRENCIES\.has\(currency\) \? 0 : 2;/, 'every other code has 2 decimals');
+} else {
+  console.log('SKIP app table check: apps/web is not present');
+}
 assert.equal(checkLink('http://evil.example/#gpi=v1.abc'), 'link must be https');
 assert.equal(checkLink('https://a.example/?x=1#gpi=v1.abc'), 'link must not have credentials or a query');
 assert.equal(checkLink('https://u:p@a.example/#gpi=v1.abc'), 'link must not have credentials or a query');

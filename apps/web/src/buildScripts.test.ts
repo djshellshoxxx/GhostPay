@@ -2,8 +2,10 @@ import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { secp256k1 } from '@noble/curves/secp256k1.js';
 import { manifestDigest, validateManifest } from '@ghostpay/chain-adapters';
+import { ESLint, Linter } from 'eslint';
 import { afterEach, describe, expect, it } from 'vitest';
 import { BROAD, applyConnectSrc, connectSrc, parseOrigins } from '../scripts/csp.mjs';
 import { emitEmbedSri } from '../scripts/embed-sri.mjs';
@@ -79,6 +81,40 @@ describe('connect-src tightening (S3-11)', () => {
     for (const bad of ['http://a.test', 'https://a.test/path', 'https://u:p@a.test', 'https://a.test/?q=1', 'ftp://a.test', 'nope', 'https://a.test/#x']) {
       expect(() => parseOrigins(bad)).toThrow(/GHOSTPAY_CONNECT_ORIGINS/);
     }
+  });
+});
+
+describe('release boundary: preserved scan-source code stays out of apps/web (audit L8-04)', () => {
+  const RESTRICTED = ['createScanSource', 'createPir2Source', 'createLightSource', 'createQuorumSource', 'describeScanMode', 'SCAN_MODE_CLAIMS'];
+  const web = fileURLToPath(new URL('..', import.meta.url));
+  const repo = join(web, '..', '..');
+  const ruleFor = async (cwd: string, file: string): Promise<Linter.RuleEntry | undefined> => {
+    const eslint = new ESLint({ cwd, overrideConfigFile: join(repo, 'eslint.config.js') });
+    const config = (await eslint.calculateConfigForFile(file)) as Linter.Config | undefined;
+    return config?.rules?.['no-restricted-imports'];
+  };
+
+  it('ESLint refuses the preserved factories and claims in apps/web, from the app directory and from the root', async () => {
+    const appFile = join(web, 'src', 'lib', 'scanPrivacy.ts');
+    for (const cwd of [web, repo]) {
+      const rule = await ruleFor(cwd, appFile);
+      expect(rule, cwd).toBeDefined();
+      const linter = new Linter();
+      const lint = (code: string): string[] => linter.verify(code, [{ rules: { 'no-restricted-imports': rule } }], 'probe.js').map((m) => m.message);
+      for (const name of RESTRICTED) {
+        expect(lint(`import { ${name} } from '@ghostpay/scan-source';`).join('\n'), name).toMatch(new RegExp(`'${name}' import from '@ghostpay/scan-source' is restricted`));
+      }
+      expect(lint("import * as scan from '@ghostpay/scan-source';")).toHaveLength(1);
+      expect(lint("export { createScanSource } from '@ghostpay/scan-source';")).toHaveLength(1);
+      expect(lint("import { createIndexerSource, padWindow, ScanSourceError, TESTNET_CHAIN_IDS } from '@ghostpay/scan-source';")).toEqual([]);
+    }
+    // Scoped to apps/web: the package itself (and every other workspace) may use its own factories.
+    expect(await ruleFor(repo, join(repo, 'packages', 'scan-source', 'src', 'create.ts'))).toBeUndefined();
+  });
+
+  it('every restricted name is a real export of @ghostpay/scan-source', async () => {
+    const mod = (await import('@ghostpay/scan-source')) as Record<string, unknown>;
+    for (const name of RESTRICTED) expect(mod[name], name).toBeDefined();
   });
 });
 

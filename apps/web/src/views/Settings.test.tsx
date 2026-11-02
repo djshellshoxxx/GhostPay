@@ -29,6 +29,16 @@ describe('Settings', () => {
     expect(screen.getByText(/No default RPC is built in/)).toBeTruthy();
   });
 
+  it('L1-01: says what the idle lock does to seller keys', async () => {
+    await open();
+    const hint = screen.getByLabelText(/Idle lock after minutes/).getAttribute('aria-describedby') ?? '';
+    const text = document.getElementById(hint)?.textContent ?? '';
+    expect(text).toMatch(/local tags lock/);
+    expect(text).toMatch(/Seller keys are wiped from memory at the same time only when a copy survives the wipe/);
+    expect(text).toMatch(/Keys with no backup stay loaded/);
+    expect(document.body.textContent).not.toMatch(/Keys stay in memory until you wipe them or close the tab/);
+  });
+
   it('validates and saves RPC URL, relayer, delay, lock timeout, theme, pins; applies the theme', async () => {
     const user = await open();
     const pin = `02${'ab'.repeat(32)}`;
@@ -38,8 +48,8 @@ describe('Settings', () => {
     await user.type(screen.getByLabelText('Minimum delay (seconds)'), '30');
     await user.clear(screen.getByLabelText('Maximum delay (seconds)'));
     await user.type(screen.getByLabelText('Maximum delay (seconds)'), '90');
-    await user.clear(screen.getByLabelText(/Lock local tags/));
-    await user.type(screen.getByLabelText(/Lock local tags/), '5');
+    await user.clear(screen.getByLabelText(/Idle lock after minutes/));
+    await user.type(screen.getByLabelText(/Idle lock after minutes/), '5');
     await user.selectOptions(screen.getByLabelText('Theme'), 'dark');
     await user.click(screen.getByLabelText('Remove the invoice from the address bar after reading it'));
     await user.type(screen.getByLabelText(/Pinned seller signing keys/), pin);
@@ -93,12 +103,12 @@ describe('Settings', () => {
     expect((await screen.findByRole('alert')).textContent).toMatch(/Delay range/);
     await user.clear(screen.getByLabelText('Minimum delay (seconds)'));
     await user.type(screen.getByLabelText('Minimum delay (seconds)'), '1');
-    await user.clear(screen.getByLabelText(/Lock local tags/));
-    await user.type(screen.getByLabelText(/Lock local tags/), '999');
+    await user.clear(screen.getByLabelText(/Idle lock after minutes/));
+    await user.type(screen.getByLabelText(/Idle lock after minutes/), '999');
     await user.click(screen.getByRole('button', { name: 'Save settings' }));
     await waitFor(() => { expect(screen.getByRole('alert').textContent).toMatch(/Lock timeout/); });
-    await user.clear(screen.getByLabelText(/Lock local tags/));
-    await user.type(screen.getByLabelText(/Lock local tags/), '5');
+    await user.clear(screen.getByLabelText(/Idle lock after minutes/));
+    await user.type(screen.getByLabelText(/Idle lock after minutes/), '5');
     await user.type(screen.getByLabelText(/Pinned seller signing keys/), 'not-a-key');
     await user.click(screen.getByRole('button', { name: 'Save settings' }));
     await waitFor(() => { expect(screen.getByRole('alert').textContent).toMatch(/Pinned signer keys/); });

@@ -20,6 +20,11 @@ define( 'GHOSTPAY_WC_FILE', __FILE__ );
 require_once __DIR__ . '/includes/class-ghostpay-signature.php';
 require_once __DIR__ . '/includes/class-ghostpay-money.php';
 require_once __DIR__ . '/includes/class-ghostpay-event.php';
+require_once __DIR__ . '/includes/class-ghostpay-secrets.php';
+
+// Secrets live only in wp-config.php or the environment: delete copies stored by earlier builds, ask to rotate them.
+add_action( 'init', array( 'GhostPay_Secrets', 'purge_stored' ) );
+add_action( 'admin_notices', array( 'GhostPay_Secrets', 'rotation_notice' ) );
 
 // Declare compatibility with High-Performance Order Storage.
 add_action(
