@@ -17,12 +17,21 @@ const pendingAttempt = (page: Page) => sweep(page).getByRole('note').filter({
   has: page.getByRole('button', { name: 'Check status', exact: true }),
 });
 
-async function scanToSweep(page: Page, owner: string): Promise<void> {
+async function scanToSweep(page: Page, owner: string, rescanFromStart = false): Promise<void> {
   await nav(page).getByRole('button', { name: 'Scan and receive' }).click();
   await page.getByLabel('Chain', { exact: true }).selectOption({ label: 'Base Sepolia' });
+  if (rescanFromStart) {
+    // Start block does not override a saved cursor while resume remains selected.
+    const resume = page.getByRole('checkbox', { name: 'Resume from checkpoint', exact: true });
+    await expect(resume).toBeChecked();
+    await resume.uncheck();
+    await expect(resume).not.toBeChecked();
+  }
   await page.getByLabel('Start block').fill('0');
   await page.getByRole('button', { name: 'Start scan' }).click();
-  await expect(page.getByText(/Finished\. 1 announcements checked, 1 payments found\./)).toBeVisible();
+  const finished = page.getByText(/Finished\. 1 announcements checked, 1 payments found\./);
+  await expect(finished).toBeVisible();
+  if (rescanFromStart) await expect(finished).toContainText('Started at block 0.');
   const match = page.locator('section[aria-labelledby="scan-h"] .matches > li').filter({
     has: page.getByRole('button', { name: 'Sweep this payment' }),
   });
@@ -89,7 +98,11 @@ for (const outcome of ['success', 'unknown'] as const) {
     await nav(page).getByRole('button', { name: 'Sweep', exact: true }).click();
     await expect(page.getByText('Choose a payment to sweep from Scan and receive.', { exact: true })).toBeVisible();
     // Reload retains neither a selected match nor hidden scan history. Re-establish it with an explicit built Worker scan.
-    await scanToSweep(page, mine.stealthAddress);
+    const journalBeforeRescan = await readSweepJournal(page);
+    const scannerWorkersBeforeRescan = workers.filter((url) => /\/assets\/scanner\.worker-/.test(url)).length;
+    await scanToSweep(page, mine.stealthAddress, true);
+    expect(workers.filter((url) => /\/assets\/scanner\.worker-/.test(url)).length).toBeGreaterThan(scannerWorkersBeforeRescan);
+    expect(await readSweepJournal(page)).toEqual(journalBeforeRescan);
     await expect(pendingAttempt(page)).toHaveCount(1);
     await expect(pendingAttempt(page).locator('.notice-title')).toContainText(title);
     await expect(pendingAttempt(page).locator('code')).toHaveText(expectedHash);

@@ -545,6 +545,58 @@ describe('POST /v1/sweep success and validation', () => {
     expect(s.relayer.metrics.render()).not.toContain('relayer_owner_failures_total');
   });
 
+  it.each([
+    { stage: 'cold', elapsedMs: 20_000 },
+    { stage: 'cold', elapsedMs: 46_000 },
+    { stage: 'resync', elapsedMs: 20_000 },
+    { stage: 'resync', elapsedMs: 46_000 },
+  ] as const)('refuses a deadline consumed by a $stage nonce read ($elapsedMs ms) without handoff, charges or a nonce gap', async ({ stage, elapsedMs }) => {
+    const estimate = 150_000n * 1_000_000_000n;
+    const chain = testConfig().chains[0];
+    if (chain === undefined) throw new Error('Test chain required');
+    const s = await start({ config: {
+      chains: [{ ...chain, dailyBudgetWei: estimate }],
+      lossBudget: { windowSeconds: 3600, perKeyWei: estimate, globalWei: 10n ** 18n, maxKeys: 100 },
+    } });
+    if (stage === 'resync') {
+      // Submission failure invalidates the allocated hot-key nonce. The next read must consult the node again.
+      s.fake.sendFails = true;
+      expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 1n })).body))).toBe('send_failed');
+      s.fake.sendFails = false;
+      s.fake.pendingNonce = 42;
+    }
+    const expectedNonce = s.fake.pendingNonce;
+    const readPending = s.fake.getPendingNonce.bind(s.fake);
+    let nonceReads = 0;
+    s.fake.getPendingNonce = async () => {
+      nonceReads += 1;
+      const nonce = await readPending();
+      if (nonceReads === 1) s.clock.ms += elapsedMs;
+      return nonce;
+    };
+    const send = vi.spyOn(s.fake, 'sendSweep');
+    // Both calls passed the original 30-second margin immediately before the nonce read: 25 seconds, or less than
+    // zero, remain when it returns. No simulation/state/quote policy is changed to create the refusal.
+    const response = await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 2n, deadlineOffset: 45 })).body);
+    expect(response.status).toBe(422);
+    expect(errCode(response)).toBe('deadline_too_soon');
+    expect(nonceReads).toBe(1);
+    expect(send).not.toHaveBeenCalled();
+    expect(s.fake.sent).toHaveLength(0);
+    const metrics = s.relayer.metrics.render();
+    expect(metrics).toMatch(/relayer_daily_budget_used_wei\{[^}]*\} 0$/m);
+    expect(metrics).not.toContain('relayer_owner_failures_total');
+    expect(metrics).toContain('relayer_sweeps_total{chain_id="11155111",outcome="neutral"} 1');
+    expect((await call(s, 'GET', '/healthz')).json).toMatchObject({ status: 'ok', chains: [{ breaker: 'closed' }] });
+    // One sweep exactly fills each reservation cap. A valid same-owner/destination retry proves both reservations
+    // were returned, while the node nonce must be re-read rather than skipping the unused expired allocation.
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 3n })).body)).status).toBe(200);
+    expect(nonceReads).toBe(2);
+    expect(send).toHaveBeenCalledTimes(1);
+    expect(s.fake.sent).toHaveLength(1);
+    expect(s.fake.sent[0]?.opts.nonce).toBe(expectedNonce);
+  });
+
   it('rejects orders the contract would reject before any chain call', async () => {
     const s = await start();
     const quote = await s.relayer.service.quote({

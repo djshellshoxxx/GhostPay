@@ -56,12 +56,13 @@ export function useApp(): AppState {
 }
 
 /*
- * App-session holder for direct-sweep attempts (GP-SWEEP-OUTCOME-01). It lives above route-local view state so that
+ * App-session holder for sweep attempts (GP-SWEEP-OUTCOME-01). It lives above route-local view state so that
  * navigating away and back cannot re-arm signing after an uncertain broadcast. It holds only the public descriptor
  * (never key material). Every record is written through to the tab-scoped journal (sessionStorage), so a reload of
  * this tab keeps signing disarmed; other tabs do not see it (recorded limit). If the journal cannot be read or
  * written, signing is disarmed for the rest of this page session instead of trusting memory alone. Direct sweeps
- * persist the lock before handoff (beginSweepAttempt); relayed sweeps record it once the relayer returns a hash.
+ * persist the lock before handoff (beginSweepAttempt); relayed sweeps likewise persist an order-bound lock before
+ * contacting the relayer, then add the returned transaction hash when available.
  */
 const sweepAttempts = new Map<string, SweepLock>();
 const sweepAttemptListeners = new Set<() => void>();

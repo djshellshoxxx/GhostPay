@@ -728,13 +728,21 @@ export class RelayerService {
     const reservedDay = budget.currentDay;
 
     let txHash: Hex;
+    let preHandoffRefusal: RelayerError | undefined;
     try {
       const nonce = await nonces.acquire();
+      // Cold/resync nonce acquisition is another RPC await. A deadline that lapses there is still a neutral refusal,
+      // before handoff, not a send failure. The shared cleanup below also discards this unused nonce allocation.
+      if (deadlineTooSoon()) {
+        preHandoffRefusal = new RelayerError(422, 'deadline_too_soon');
+        throw preHandoffRefusal;
+      }
       txHash = await client.sendSweep(call, { nonce, gas: gasLimit, gasPrice: sendGasPrice });
     } catch {
       nonces.invalidate();
       budget.release(reserved, reservedDay);
       loss.release();
+      if (preHandoffRefusal !== undefined) throw preHandoffRefusal;
       setOutcome(classifyRelayOutcome('send_failed'));
       throw new RelayerError(503, 'send_failed');
     }
