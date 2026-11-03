@@ -71,12 +71,12 @@ jobs:
       - name: Check API key and autonomous PR queue
         id: preflight
         env:
-          PRESENT: ${{ secrets.GHOSTPAY_OPENAI_API_KEY != '' }}
+          PRESENT: ${{ (secrets.GHOSTPAY_OPENAI_API_KEY != '' || secrets.OPENAI_API_KEY != '' || secrets.PATCHTRACE_OPENAI_API_KEY != '') }}
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           if [ "$PRESENT" != "true" ]; then
-            echo "::error::Create repository Actions secret GHOSTPAY_OPENAI_API_KEY"
+            echo "::error::No usable API key secret. Expected repository Actions secret GHOSTPAY_OPENAI_API_KEY, OPENAI_API_KEY, or PATCHTRACE_OPENAI_API_KEY"
             exit 1
           fi
           count="$(gh pr list --state open --limit 100 --json headRefName \
@@ -96,7 +96,7 @@ jobs:
         if: steps.preflight.outputs.run_agent == 'true'
         uses: openai/codex-action@bdf19a4a223ec2549a3e2274a0cf61556bc07675 # v1
         with:
-          openai-api-key: ${{ secrets.GHOSTPAY_OPENAI_API_KEY }}
+          openai-api-key: ${{ secrets.GHOSTPAY_OPENAI_API_KEY || secrets.OPENAI_API_KEY || secrets.PATCHTRACE_OPENAI_API_KEY }}
           permission-profile: ":workspace"
           output-file: ghostpay-codex-report.txt
           prompt: |
