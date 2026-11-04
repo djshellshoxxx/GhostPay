@@ -1,0 +1,12 @@
+
+- name: Run development agent
+  env:
+    OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+  run: |
+    cat .github/agent-prompts/repository-scope.md \
+        .github/agent-prompts/autonomous-development.md \
+        > /tmp/agent-instructions.md
+
+    codex exec \
+      --full-auto \
+      - < /tmp/agent-instructions.md
