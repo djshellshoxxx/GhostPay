@@ -20,22 +20,22 @@ Shared state for the 2026-11-04 consolidation run. Snapshot taken after `git fet
 | checkpoint/ghostpay-recovery-20261102 | 1dffa5a366 | - | +0/-8 | yes | C0 | IN | ancestor of accepted f819350 |
 | checkpoint/ghostpay-source-reconciliation-20261101 | 243d98d67c | - | +324/-9 | no | C3 | pending |  |
 | claude/adoring-wozniak-850ue6 | a2217ea1cc | #31 | +2/-9 | yes | C0 | IN | ancestor of accepted f819350 |
-| claude/ar-a0-pr47-green | 4a38efdfa9 | #59 | +331/-7 | no | lead | pending |  |
-| claude/ar-a4-btc-headersync | 595d78021a | #74 | +335/-7 | no | C1 | pending |  |
-| claude/ar-a5-announcer-budget | d9fe8b4e9c | #70 | +334/-7 | no | C1 | pending |  |
-| claude/ar-a6-combined-backup | f9a755f675 | #61 | +335/-7 | no | C1 | pending |  |
-| claude/ar-a7-policy-send-guard | 6e13bb981f | #65 | +335/-7 | no | C1 | pending |  |
-| claude/ar-b1-core-journey | e0a499bdd9 | #62 | +336/-7 | no | C1 | pending |  |
-| claude/ar-b2-lean-bound-receipts | 2bcfd11f9d | #64 | +335/-7 | no | C1 | pending |  |
-| claude/ar-b3-sweep-permit-states | 1b9edb1d10 | #69 | +360/-7 | no | C1 | pending |  |
-| claude/ar-b5-testnet-feeds | 76199cdac3 | #72 | +332/-7 | no | C1 | pending |  |
-| claude/ar-c1-reconciliation-adr | 1e87109119 | #71 | +335/-7 | no | C1 | pending |  |
-| claude/ar-c2-qr-pairing | 78be1730ad | #60 | +337/-7 | no | C1 | pending |  |
-| claude/ar-c4-i18n-create-b4-buffer-ui | 4fe95fc0f6 | #68 | +352/-7 | no | C1 | pending |  |
-| claude/ar-c4-i18n-pay | e02d04c754 | #66 | +334/-7 | no | C1 | pending |  |
-| claude/ar-c4-i18n-scan | 7f4702fdd3 | #67 | +340/-7 | no | C1 | pending |  |
-| claude/ar-c5-device-matrix | 0bf0f66344 | #73 | +333/-7 | no | C1 | pending |  |
-| claude/ar-c7-embed-iframe-e2e | f54f9ee372 | #63 | +334/-7 | no | C1 | pending |  |
+| claude/ar-a0-pr47-green | 4a38efdfa9 | #59 | +331/-7 | no (merged later) | lead | IN | merged into consolidation at 3aebf6a |
+| claude/ar-a4-btc-headersync | 595d78021a | #74 | +335/-7 | no (merged later) | C1 (lead) | IN | ancestor of consolidation 641fd49 (lead merge, step 3) |
+| claude/ar-a5-announcer-budget | d9fe8b4e9c | #70 | +334/-7 | no (merged later) | C1 (lead) | IN | ancestor of consolidation 641fd49 (lead merge, step 3) |
+| claude/ar-a6-combined-backup | f9a755f675 | #61 | +335/-7 | no (merged later) | C1 (lead) | IN | ancestor of consolidation 641fd49 (lead merge, step 3) |
+| claude/ar-a7-policy-send-guard | 6e13bb981f | #65 | +335/-7 | no (merged later) | C1 (lead) | IN | ancestor of consolidation 641fd49 (lead merge, step 3) |
+| claude/ar-b1-core-journey | e0a499bdd9 | #62 | +336/-7 | no (merged later) | C1 (lead) | IN | ancestor of consolidation 641fd49 (lead merge, step 3) |
+| claude/ar-b2-lean-bound-receipts | 2bcfd11f9d | #64 | +335/-7 | no (merged later) | C1 (lead) | IN | ancestor of consolidation 641fd49 (lead merge, step 3) |
+| claude/ar-b3-sweep-permit-states | 1b9edb1d10 | #69 | +360/-7 | no (merged later) | C1 (lead) | IN | ancestor of consolidation 641fd49 (lead merge, step 3) |
+| claude/ar-b5-testnet-feeds | 76199cdac3 | #72 | +332/-7 | no (merged later) | C1 (lead) | IN | ancestor of consolidation 641fd49 (lead merge, step 3) |
+| claude/ar-c1-reconciliation-adr | 1e87109119 | #71 | +335/-7 | no (merged later) | C1 (lead) | IN | ancestor of consolidation 641fd49 (lead merge, step 3) |
+| claude/ar-c2-qr-pairing | 78be1730ad | #60 | +337/-7 | no (merged later) | C1 (lead) | IN | ancestor of consolidation 641fd49 (lead merge, step 3) |
+| claude/ar-c4-i18n-create-b4-buffer-ui | 4fe95fc0f6 | #68 | +352/-7 | no (merged later) | C1 (lead) | IN | ancestor of consolidation 641fd49 (lead merge, step 3) |
+| claude/ar-c4-i18n-pay | e02d04c754 | #66 | +334/-7 | no (merged later) | C1 (lead) | IN | ancestor of consolidation 641fd49 (lead merge, step 3) |
+| claude/ar-c4-i18n-scan | 7f4702fdd3 | #67 | +340/-7 | no (merged later) | C1 (lead) | IN | ancestor of consolidation 641fd49 (lead merge, step 3) |
+| claude/ar-c5-device-matrix | 0bf0f66344 | #73 | +333/-7 | no (merged later) | C1 (lead) | IN | ancestor of consolidation 641fd49 (lead merge, step 3) |
+| claude/ar-c7-embed-iframe-e2e | f54f9ee372 | #63 | +334/-7 | no (merged later) | C1 (lead) | IN | ancestor of consolidation 641fd49 (lead merge, step 3) |
 | claude/cool-albattani-xopr89 | 7373172db4 | #30 | +89/-9 | yes | C0 | IN | ancestor of accepted f819350 |
 | claude/docs-snapshot-1 | dc2340c998 | - | +0/-249 | yes | C0 | IN | ancestor of accepted f819350 |
 | claude/docs-snapshot-2 | e1a92c876c | - | +0/-248 | yes | C0 | IN | ancestor of accepted f819350 |
@@ -94,7 +94,13 @@ Shared state for the 2026-11-04 consolidation run. Snapshot taken after `git fet
 | step | merged | consolidation tip after | gate |
 |---|---|---|---|
 | 1 | origin/main 0014bc5 into accepted f819350 (clean, 4 files) | see git log | build:packages ok; typecheck red only on A0 issue |
-| 2 | claude/ar-a0-pr47-green 4a38efd (#59) | see git log | web typecheck ok |
+| 2 | claude/ar-a0-pr47-green 4a38efd (#59) | 3aebf6a | web typecheck ok |
+| 3 | 12 ar-* branches (#60-#65, #69 (contains #66-#68), #70-#74) in listed order | 641fd49 | build:packages ok; typecheck ok; i18n check 0 errors / 206 warnings (warnings come from source branches: ar-b3 tip alone has 190, all 'identical to English' for new keys) |
+
+Step 3 conflict notes: the only conflicts were both-sides-added hunks in apps/web/locales/{en,es,ja,ar}.json,
+apps/web/src/i18n/securityKeys.ts and securityKeys.test.ts (#61, #64, #69). Resolved as a union of both sides;
+the union dropped one comma per catalog at an object boundary, repaired inside the same merge commit; each catalog
+was then checked to parse and to contain no duplicate keys. W2 re-checks that no security key moved to the neutral list.
 
 ## OWNER questions
 
