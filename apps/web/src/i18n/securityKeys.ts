@@ -317,6 +317,8 @@ export const SECURITY_KEY_GROUPS = {
     'policy.receive.needPolicy',
     'policy.receive.capped',
     'ledger.import.invalidated',
+    'receipt.lean.hint',
+    'receipt.lean.refused',
     'policy.network.none',
     'policy.create.imported',
     'policy.create.badMeta',

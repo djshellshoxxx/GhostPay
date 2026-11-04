@@ -611,6 +611,8 @@
     "backup.status.partial": "تم مع نواقص",
     "backup.status.failed": "فشل",
     "backup.keys.go": "انتقل إلى النسخ الاحتياطي لمخزن المفاتيح",
-    "backup.tags.doneNoHistory": "نُزّل أرشيف الوسوم بدون سجل المسح، كما اخترت. عدد الوسوم في الأرشيف: {count, number}. احتفظ بالملف وبعبارة المرور: لا يمكن استرداد أي منهما."
+    "backup.tags.doneNoHistory": "نُزّل أرشيف الوسوم بدون سجل المسح، كما اخترت. عدد الوسوم في الأرشيف: {count, number}. احتفظ بالملف وبعبارة المرور: لا يمكن استرداد أي منهما.",
+    "receipt.lean.hint": "This build only signs receipts bound to a validated signed invoice. Open and validate the invoice below; a manually entered digest is not accepted.",
+    "receipt.lean.refused": "This build only signs receipts bound to a validated signed invoice. Validate the invoice first."
   }
 }

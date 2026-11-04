@@ -611,6 +611,8 @@
     "backup.status.partial": "Done with gaps",
     "backup.status.failed": "Failed",
     "backup.keys.go": "Go to the keystore backup",
-    "backup.tags.doneNoHistory": "Tag archive downloaded WITHOUT scan history, as you chose. Tags in the archive: {count, number}. Keep the file and its passphrase: neither can be recovered."
+    "backup.tags.doneNoHistory": "Tag archive downloaded WITHOUT scan history, as you chose. Tags in the archive: {count, number}. Keep the file and its passphrase: neither can be recovered.",
+    "receipt.lean.hint": "This build only signs receipts bound to a validated signed invoice. Open and validate the invoice below; a manually entered digest is not accepted.",
+    "receipt.lean.refused": "This build only signs receipts bound to a validated signed invoice. Validate the invoice first."
   }
 }

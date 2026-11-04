@@ -611,6 +611,8 @@
     "backup.status.partial": "一部欠落ありで完了",
     "backup.status.failed": "失敗",
     "backup.keys.go": "キーストアのバックアップへ移動",
-    "backup.tags.doneNoHistory": "選択どおり、スキャン履歴を含めずにタグアーカイブをダウンロードしました。アーカイブ内のタグ数：{count, number}。ファイルとパスフレーズを保管してください。どちらも復元できません。"
+    "backup.tags.doneNoHistory": "選択どおり、スキャン履歴を含めずにタグアーカイブをダウンロードしました。アーカイブ内のタグ数：{count, number}。ファイルとパスフレーズを保管してください。どちらも復元できません。",
+    "receipt.lean.hint": "This build only signs receipts bound to a validated signed invoice. Open and validate the invoice below; a manually entered digest is not accepted.",
+    "receipt.lean.refused": "This build only signs receipts bound to a validated signed invoice. Validate the invoice first."
   }
 }

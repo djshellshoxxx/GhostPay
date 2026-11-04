@@ -20,6 +20,7 @@ import { Notice } from './components/Common';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { notifyAppLock } from './lib/appLock';
 import { SOURCE_TRANSLATOR, useI18nOptional } from './i18n/context';
+import { ShellProfileContext } from './lib/buildProfile';
 
 export type ExtraViews = Readonly<Partial<Record<ViewId, ReactNode>>>;
 export interface AppShellProps {
@@ -247,7 +248,9 @@ export function AppShell(props: AppShellProps): ReactNode {
         )}
         {/* A render error in a view shows an error panel instead of unmounting the app (G1-01). */}
         <ErrorBoundary resetKey={view} onBack={() => { setFragment(undefined); setViewState('home'); }}>
-          <ViewSwitch view={view} extraViews={extraViews} profile={profile} sellerArchive={props.sellerArchive} />
+          <ShellProfileContext.Provider value={profile}>
+            <ViewSwitch view={view} extraViews={extraViews} profile={profile} sellerArchive={props.sellerArchive} />
+          </ShellProfileContext.Provider>
         </ErrorBoundary>
       </main>
       <div className="sr-only" role="status" aria-live="polite">{live}</div>

@@ -611,6 +611,8 @@
     "backup.status.partial": "Hecho con lagunas",
     "backup.status.failed": "Fallido",
     "backup.keys.go": "Ir a la copia del almacén de claves",
-    "backup.tags.doneNoHistory": "Archivo de etiquetas descargado SIN historial de escaneos, como elegiste. Etiquetas en el archivo: {count, number}. Conserva el archivo y su frase de contraseña: ninguno se puede recuperar."
+    "backup.tags.doneNoHistory": "Archivo de etiquetas descargado SIN historial de escaneos, como elegiste. Etiquetas en el archivo: {count, number}. Conserva el archivo y su frase de contraseña: ninguno se puede recuperar.",
+    "receipt.lean.hint": "This build only signs receipts bound to a validated signed invoice. Open and validate the invoice below; a manually entered digest is not accepted.",
+    "receipt.lean.refused": "This build only signs receipts bound to a validated signed invoice. Validate the invoice first."
   }
 }
