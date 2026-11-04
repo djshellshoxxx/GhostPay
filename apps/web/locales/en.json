@@ -595,6 +595,22 @@
     "registry.exportHint": "This QR holds only your public meta-address, the same value you may publish. Whoever scans it can pay you privately-addressed funds; it reveals no private key and does not publish anything.",
     "registry.exportCaption": "Public meta-address for the registry",
     "sellerKeys.pairing.refused": "That is not a supported public seller config. It was too large, the wrong kind or version, altered, or it contains invalid keys. Nothing was changed.",
-    "sellerKeys.pairing.exportFailed": "The public seller config could not be prepared from the keys loaded on this device, so it is not shown. Nothing was changed."
+    "sellerKeys.pairing.exportFailed": "The public seller config could not be prepared from the keys loaded on this device, so it is not shown. Nothing was changed.",
+    "backup.title": "Backup checklist",
+    "backup.intro": "Two things need a copy outside this tab: your seller keys and your client tags. Each item shows what actually happened. Keys count as Done when a copy exists outside this tab (a downloaded keystore, imported keys or a saved vault). The tag archive counts as Done only after its file was produced and handed to your browser. Neither proves that you stored the copy somewhere safe.",
+    "backup.keys.heading": "Step 1: seller keys",
+    "backup.keys.notStarted": "No copy of these keys exists outside this tab yet. Download an encrypted keystore in the Back up (encrypted) section above, then return here.",
+    "backup.keys.done": "A copy of these keys exists outside this tab (a downloaded keystore, imported keys or a saved vault). Keep that copy and its passphrase safe: neither can be recovered.",
+    "backup.tags.heading": "Step 2: client tag archive",
+    "backup.tags.notStarted": "No tag archive was downloaded in this session yet. Use the form below.",
+    "backup.tags.done": "Tag archive downloaded. Tags in the archive: {count, number}. Keep the file and its passphrase: neither can be recovered.",
+    "backup.tags.partial": "The tag archive was downloaded, but some scan history is NOT in it. Read the message below.",
+    "backup.tags.failed": "The latest tag archive attempt failed and produced no file. Read the message below. An archive from an earlier attempt, if you made one, is not affected.",
+    "backup.status.notStarted": "Not started",
+    "backup.status.done": "Done",
+    "backup.status.partial": "Done with gaps",
+    "backup.status.failed": "Failed",
+    "backup.keys.go": "Go to the keystore backup",
+    "backup.tags.doneNoHistory": "Tag archive downloaded WITHOUT scan history, as you chose. Tags in the archive: {count, number}. Keep the file and its passphrase: neither can be recovered."
   }
 }
