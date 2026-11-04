@@ -3,7 +3,7 @@ import type { ScanCursor } from '@ghostpay/chain-adapters';
 import { useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../../components/Common';
 import { UserFacingError, userMessage } from '../../lib/errors';
-import { withSessionSecrets, withSessionSecretsAsync } from '../../lib/session';
+import { captureSessionGuard, withSessionSecrets, withSessionSecretsAsync } from '../../lib/session';
 import { sendViaWallet } from '../../lib/wallet';
 import { useApp } from '../../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
@@ -52,14 +52,17 @@ function AccountPanel(props: { readonly ctx: PolicyCtx; readonly match: Scheme2M
     if (c === undefined) throw new UserFacingError(t('policy.error.noRpc'));
     return c;
   };
-  const run = (fn: () => Promise<void>): void => {
+  // The seller-key session is captured when the action starts; every wallet request re-checks it immediately before the
+  // provider call, so a lock or key change mid-action refuses without contacting the wallet (as Pay does).
+  const run = (fn: (assertCurrent: () => void) => Promise<void>): void => {
     setBusy(true);
     setMsg(undefined);
-    fn().catch((e: unknown) => { setMsg({ kind: 'error', text: userMessage(e) }); }).finally(() => { setBusy(false); });
+    Promise.resolve().then(() => fn(captureSessionGuard())).catch((e: unknown) => { setMsg({ kind: 'error', text: userMessage(e) }); }).finally(() => { setBusy(false); });
   };
-  const send = async (tx: { to: Address; data: Hex; value: bigint }, label: string): Promise<void> => {
+  const send = async (tx: { to: Address; data: Hex; value: bigint }, label: string, assertCurrent: () => void): Promise<void> => {
     if (ctx.wallet === undefined) throw new UserFacingError(t('policy.account.walletRequired'));
-    const hash = await sendViaWallet(ctx.wallet, tx);
+    assertCurrent();
+    const hash = await sendViaWallet(ctx.wallet, tx, assertCurrent);
     setMsg({ kind: 'ok', text: t('policy.account.submitted', { label, hash }) });
   };
 
@@ -82,14 +85,14 @@ function AccountPanel(props: { readonly ctx: PolicyCtx; readonly match: Scheme2M
     setPlan({ token: tok, balance, plan: planWithdraw({ record, view: v, token: tok, balance, window, pendingSameToken, nowSec: now }) });
   });
 
-  const deploy = (): void => run(async () => {
+  const deploy = (): void => run(async (assertCurrent) => {
     if (ctx.deployment === undefined) throw new UserFacingError(t('policy.error.verifyFirst'));
     const d = deployCall(ctx.deployment, match.ownerAddress, record);
     if (d.account !== match.accountAddress) throw new UserFacingError(t('policy.account.deployMismatch'));
-    await send(d, t('policy.account.deployment'));
+    await send(d, t('policy.account.deployment'), assertCurrent);
   });
 
-  const withdraw = (): void => run(async () => {
+  const withdraw = (): void => run(async (assertCurrent) => {
     if (plan === undefined || !/^[1-9][0-9]{0,77}$/.test(amount.trim())) throw new UserFacingError(t('policy.account.amountInvalid'));
     const c = await client();
     let nonce = randomNonce();
@@ -100,13 +103,13 @@ function AccountPanel(props: { readonly ctx: PolicyCtx; readonly match: Scheme2M
       token: plan.token, amount: BigInt(amount.trim()), deadline: now + 1800n, nonce, ownerSecret: secret,
     }));
     props.remember(signed.id);
-    await send(signed.request, t('policy.account.withdrawal'));
+    await send(signed.request, t('policy.account.withdrawal'), assertCurrent);
     setPendingExec({ id: signed.id, executeAfter: now + record.policy.delaySeconds, call: signed.execute });
   });
 
-  const cancel = (kind: 'withdraw' | 'destination', id: Hex): void => run(async () => {
+  const cancel = (kind: 'withdraw' | 'destination', id: Hex): void => run(async (assertCurrent) => {
     const call = await withOwnerKey(match, ctx, (secret) => signCancel({ chainId: ctx.chain.chainId, account: match.accountAddress, owner: match.ownerAddress, kind, id, ownerSecret: secret }));
-    await send(call, t('policy.account.cancel'));
+    await send(call, t('policy.account.cancel'), assertCurrent);
   });
 
   return (
@@ -147,7 +150,7 @@ function AccountPanel(props: { readonly ctx: PolicyCtx; readonly match: Scheme2M
       {pendingExec !== undefined && (
         <p>
           {t('policy.account.executeAfter', { date: new Date(Number(pendingExec.executeAfter) * 1000).toISOString() })} <Mono>{pendingExec.id.slice(0, 10)}…</Mono>.{' '}
-          <button type="button" disabled={busy} onClick={() => { run(() => send(pendingExec.call, t('policy.account.execution'))); }}>{t('policy.account.executeWithdrawal')}</button>
+          <button type="button" disabled={busy} onClick={() => { run((assertCurrent) => send(pendingExec.call, t('policy.account.execution'), assertCurrent)); }}>{t('policy.account.executeWithdrawal')}</button>
         </p>
       )}
       {msg !== undefined && <Notice kind={msg.kind}>{msg.text}</Notice>}

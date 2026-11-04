@@ -4,10 +4,17 @@ import { userMessage } from '../../lib/errors';
 import { useApp } from '../../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
 import { useServices } from '../../lib/services';
+import { captureSessionVersionGuard } from '../../lib/session';
 import { preparePolicyPayment, type PreparedPolicyPayment } from './pay';
-import { sendPolicyPayment } from './send';
+import { reviewPolicyPayment, sendPolicyPayment, type PolicySendGuard } from './send';
 import type { Hex } from '@ghostpay/policy-scheme';
 import type { PolicyCtx } from './PolicyView';
+
+/** A prepared payment with the session guard and review snapshot captured when it was shown. */
+interface Reviewed {
+  readonly prepared: PreparedPolicyPayment;
+  readonly guard: PolicySendGuard;
+}
 
 const DEC = /^[1-9][0-9]{0,77}$/;
 
@@ -22,7 +29,8 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
   const [meta, setMeta] = useState('');
   const [token, setToken] = useState('native');
   const [amount, setAmount] = useState('');
-  const [prepared, setPrepared] = useState<PreparedPolicyPayment | undefined>(undefined);
+  const [reviewed, setReviewed] = useState<Reviewed | undefined>(undefined);
+  const prepared = reviewed?.prepared;
   const [msg, setMsg] = useState<{ kind: 'ok' | 'error'; text: string } | undefined>(undefined);
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<string | undefined>(undefined);
@@ -30,18 +38,20 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
 
   const review = (): void => {
     setMsg(undefined);
-    setPrepared(undefined);
+    setReviewed(undefined);
     if (deployment === undefined) return;
     try {
       if (!DEC.test(amount.trim())) throw new Error('amount');
-      setPrepared(preparePolicyPayment({ metaAddress: meta, deployment, token, gross: BigInt(amount.trim()), nowSec: BigInt(Math.floor(services.nowMs() / 1000)) }));
+      const assertCurrent = captureSessionVersionGuard();
+      const p = preparePolicyPayment({ metaAddress: meta, deployment, token, gross: BigInt(amount.trim()), nowSec: BigInt(Math.floor(services.nowMs() / 1000)) });
+      setReviewed({ prepared: p, guard: { assertCurrent, deployment, reviewed: reviewPolicyPayment(p, deployment) } });
     } catch (e) {
       setMsg({ kind: 'error', text: e instanceof Error && e.message === 'amount' ? t('policy.pay.amountInvalid') : userMessage(e) });
     }
   };
 
   const send = async (): Promise<void> => {
-    if (prepared === undefined || wallet === undefined) return;
+    if (reviewed === undefined || wallet === undefined) return;
     setBusy(true);
     setMsg(undefined);
     setStatus(undefined);
@@ -49,14 +59,15 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
       const rpc = await app.getRpc(props.ctx.chain.chainId);
       const res = await sendPolicyPayment(
         wallet,
-        prepared,
+        reviewed.prepared,
         { rpc, nowSeconds: () => Math.floor(services.nowMs() / 1000), sleep: services.sleep },
         setStatus,
         (h) => { setBroadcast((prev) => [...prev, h]); },
+        reviewed.guard,
       );
       setMsg({ kind: 'ok', text: `${t('policy.pay.submitted', { hash: res.hash })}${res.receipt?.status === 'success' ? ` ${t('policy.pay.confirmed')}` : ''}` });
       app.announce(t('policy.pay.announced'));
-      setPrepared(undefined);
+      setReviewed(undefined);
     } catch (e) {
       setMsg({ kind: 'error', text: userMessage(e) });
     } finally {
@@ -70,10 +81,10 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
       {deployment === undefined ? <Notice kind="info">{t('policy.pay.verifyFirst')}</Notice> : (
         <>
           <Field label={t('policy.pay.metaLabel')} hint={t('policy.pay.metaHint')}>
-            {(id, hint) => <input id={id} aria-describedby={hint} value={meta} onChange={(e) => { setMeta(e.target.value); setPrepared(undefined); }} spellCheck={false} />}
+            {(id, hint) => <input id={id} aria-describedby={hint} value={meta} onChange={(e) => { setMeta(e.target.value); setReviewed(undefined); }} spellCheck={false} />}
           </Field>
-          <Field label={t('policy.pay.tokenLabel')}>{(id) => <input id={id} value={token} onChange={(e) => { setToken(e.target.value); setPrepared(undefined); }} spellCheck={false} />}</Field>
-          <Field label={t('policy.pay.amountLabel')}>{(id) => <input id={id} inputMode="numeric" value={amount} onChange={(e) => { setAmount(e.target.value); setPrepared(undefined); }} />}</Field>
+          <Field label={t('policy.pay.tokenLabel')}>{(id) => <input id={id} value={token} onChange={(e) => { setToken(e.target.value); setReviewed(undefined); }} spellCheck={false} />}</Field>
+          <Field label={t('policy.pay.amountLabel')}>{(id) => <input id={id} inputMode="numeric" value={amount} onChange={(e) => { setAmount(e.target.value); setReviewed(undefined); }} />}</Field>
           <button type="button" onClick={review}>{t('policy.pay.review')}</button>
           {prepared !== undefined && (
             <>
