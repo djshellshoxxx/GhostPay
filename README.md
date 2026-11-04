@@ -65,13 +65,13 @@ npm run release:repro        # scripts/repro-check.sh
 
 CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs these jobs; docs-only pull requests (only `docs/` or `*.md` changed) skip the heavy ones:
 
-- `ts-check`: `npm run typecheck`, `npm run lint`, `npm run build --workspace @ghostpay/web`, `npm audit --omit=dev --audit-level=high`.
+- `ts-typecheck` (`npm run typecheck`), `ts-lint` (`npm run lint`) and `ts-check` (`npm run build`, the build-profile and example guard tests, `node scripts/i18n/check.mjs`, `npm audit --omit=dev --audit-level=high`) run in parallel.
 - `ts-test` (matrix `core-crypto`, `btc-silent-payments`, `web`, `rest`): `npm test` per workspace; `rest` is every other workspace except `apps/relayer`.
 - `ts-test-relayer`: `forge build` in `packages/contracts`, then `npm test -w apps/relayer` with `REQUIRE_ANVIL=1` (anvil e2e).
 - `e2e`: `npx playwright install --with-deps chromium`, then `npm run test:e2e --workspace @ghostpay/web`.
 - `contracts-test` (`forge build --sizes`, `forge test`), `contracts-coverage` (`forge coverage --ir-minimum --report summary --report lcov --report-file lcov.info`), `contracts-static` (`forge fmt --check`, `bash scripts/check-natspec.sh`, `forge snapshot --check`), `contracts-slither` (slither 0.11.6, solc 0.8.28, `--fail-medium`).
 - `secrets-and-egress`: `scripts/scan-secrets.sh`, `scripts/check-actions-pinned.sh`.
-- Required-check gates: `typescript` (needs `ts-check`, `ts-test`, `ts-test-relayer`) and `contracts` (needs the four contracts jobs). `e2e` is not part of either gate.
+- Required-check gates: `typescript` (needs `ts-typecheck`, `ts-lint`, `ts-check`, `ts-test`, `ts-test-relayer`) and `contracts` (needs the four contracts jobs). `e2e` is not part of either gate.
 
 Not verified by me while updating this README (read from `package.json` and the workflow only, not run): every command in this section, including the `release:*` scripts and `npm audit`.
 
