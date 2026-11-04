@@ -1,5 +1,8 @@
 import type { BrowserContext, Page, Route } from '@playwright/test';
-import { keccak256, toBytes } from 'viem';
+import { decodeAbiParameters, encodeFunctionData, keccak256, toBytes } from 'viem';
+import { ghostPayRouterAbi, grossForNet, type Address, type Hex } from '@ghostpay/chain-adapters';
+import { parseMetadata } from '@ghostpay/core-crypto';
+import { makeLog } from '../src/test/announcements';
 import { FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT, FAKE_ROUTER, FAKE_SWEEP_RELAYER, fakeManifestJson } from '../src/test/fakeManifest';
 import { ORIGIN } from './helpers';
 
@@ -151,4 +154,44 @@ export async function configureRpc(page: Page): Promise<void> {
   await page.addInitScript((rpc) => {
     window.localStorage.setItem('ghostpay.settings.v1', JSON.stringify({ rpcUrls: { '84532': rpc } }));
   }, RPC);
+}
+
+/** Mock network state that {@link mockNetwork} serves (logs plus canonical transaction/receipt evidence). */
+export type MockNetworkState = Parameters<typeof mockNetwork>[1];
+
+/**
+ * Stages one router-verified ERC-20 payment to `metaAddress` (block 120) in the mock network: the announcement,
+ * its Transfer log and full canonical evidence, derived from public data only (same shape as Scan.test.tsx).
+ */
+export function stageVerifiedErc20Payment(state: MockNetworkState, metaAddress: string): { mine: ReturnType<typeof makeLog>; parsed: { readonly token: Address; readonly netAmount: bigint }; txHash: string } {
+  const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress, block: 120, index: 1, caller: FAKE_ROUTER });
+  const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
+  const topicAddress = (a: string): string => `0x${a.slice(2).toLowerCase().padStart(64, '0')}`;
+  const [ephemeral, metadata] = decodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], mine.log.data as Hex);
+  const parsed = parseMetadata(metadata);
+  if (parsed.kind !== 'erc20') throw new Error('ERC20 fixture required');
+  const txHash = mine.log.transactionHash as string;
+  const payer = `0x${'7'.repeat(40)}`;
+  const transfer = {
+    address: parsed.token.toLowerCase(),
+    topics: [TRANSFER_TOPIC, topicAddress(payer), topicAddress(mine.stealthAddress)],
+    data: `0x${parsed.netAmount.toString(16).padStart(64, '0')}`,
+    blockNumber: mine.log.blockNumber,
+    blockHash: mine.log.blockHash,
+    transactionHash: txHash,
+    logIndex: '0x0',
+  };
+  const common = { to: FAKE_ROUTER, from: payer, blockHash: mine.log.blockHash, blockNumber: mine.log.blockNumber };
+  state.logs = [mine.log, transfer];
+  state.evidence = {
+    txHash,
+    transaction: {
+      ...common,
+      hash: txHash,
+      value: '0x0',
+      input: encodeFunctionData({ abi: ghostPayRouterAbi, functionName: 'payERC20', args: [parsed.token, mine.stealthAddress as Address, grossForNet(parsed.netAmount), parsed.netAmount, 9999999999n, ephemeral, metadata] }),
+    },
+    receipt: { ...common, status: '0x1', transactionHash: txHash, logs: [transfer, mine.log] },
+  };
+  return { mine, parsed, txHash };
 }
