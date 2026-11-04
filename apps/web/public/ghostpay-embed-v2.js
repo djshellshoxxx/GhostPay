@@ -31,6 +31,7 @@
   var MAX_PROFILE = 11000;
   var MAX_MSG = 2048;
   var HANDSHAKE_MS = 4000;
+  var HELLO_RETRY_MS = 250;
   var NONCE_RE = /^[0-9a-f]{32}$/;
   var TX_RE = /^0x[0-9a-f]{64}$/;
   var TEMPLATE_RE = /^[a-z0-9_-]{1,32}$/;
@@ -138,6 +139,7 @@
     var close = document.createElement('button');
     var settled = false;
     var timer = 0;
+    var hello = 0;
     overlay.setAttribute('role', 'dialog');
     overlay.setAttribute('aria-modal', 'true');
     overlay.setAttribute('aria-label', 'GhostPay checkout');
@@ -164,6 +166,7 @@
     function teardown() {
       settled = true;
       window.clearTimeout(timer);
+      window.clearInterval(hello);
       window.removeEventListener('message', onMessage);
       document.removeEventListener('keydown', onKey);
       if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
@@ -177,6 +180,7 @@
       if (m === null) return;
       if (m.t === 'gp:init') {
         window.clearTimeout(timer);
+        window.clearInterval(hello);
         timer = 0;
       } else if (m.t === 'gp:status') {
         el.setAttribute('data-ghostpay-phase', m.data.phase);
@@ -194,9 +198,19 @@
     close.addEventListener('click', teardown);
     document.addEventListener('keydown', onKey);
     window.addEventListener('message', onMessage);
-    frame.addEventListener('load', function () {
+    function sayHello() {
       if (settled || !frame.contentWindow) return;
-      frame.contentWindow.postMessage({ t: 'gp:hello', n: n, v: 1, data: {} }, appOrigin);
+      try {
+        frame.contentWindow.postMessage({ t: 'gp:hello', n: n, v: 1, data: {} }, appOrigin);
+      } catch (e) {
+        // Window not on the checkout origin (yet): the target-origin check refused delivery. Nothing was sent.
+      }
+    }
+    // The checkout registers its listener after its first render, which can come after the frame's load event, so one
+    // hello is not enough: repeat the same hello (same nonce; the checkout accepts only the first) until it answers.
+    frame.addEventListener('load', function () {
+      sayHello();
+      if (hello === 0 && !settled) hello = window.setInterval(sayHello, HELLO_RETRY_MS);
     });
     timer = window.setTimeout(function () {
       // No valid handshake: this host (or this merchant origin) is not enabled for framing. Use the popup instead.
@@ -204,9 +218,10 @@
       popup(el, url);
     }, HANDSHAKE_MS);
     overlay.appendChild(close);
+    // src before insertion: otherwise the initial about:blank document's load event fires first (still our own origin).
+    frame.setAttribute('src', url);
     overlay.appendChild(frame);
     document.body.appendChild(overlay);
-    frame.setAttribute('src', url);
   }
 
   function setup(el) {

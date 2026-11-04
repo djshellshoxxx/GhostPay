@@ -181,6 +181,20 @@ describe('ghostpay-embed-v2.js iframe mode', () => {
     expect(h.btn.getAttribute('title')).toMatch(/Popup blocked/);
   });
 
+  it('repeats the same hello until the checkout answers (its listener can register after the frame load event), then stops', async () => {
+    const { h, nonce } = await framed();
+    await new Promise((r) => setTimeout(r, 700));
+    expect(h.posted.length).toBeGreaterThanOrEqual(3);
+    for (const p of h.posted) {
+      expect(p.origin).toBe(APP);
+      expect((p.data as { n: string }).n).toBe(nonce);
+    }
+    h.send({ t: 'gp:init', n: nonce, v: 1, data: {} });
+    const sent = h.posted.length;
+    await new Promise((r) => setTimeout(r, 700));
+    expect(h.posted).toHaveLength(sent);
+  });
+
   it('does not fall back once the checkout answered, and stops listening after close', async () => {
     const { h, nonce } = await framed();
     h.send({ t: 'gp:init', n: nonce, v: 1, data: {} });
