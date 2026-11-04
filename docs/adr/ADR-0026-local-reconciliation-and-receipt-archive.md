@@ -258,9 +258,8 @@ These tests exercise the described behaviour. They are listed, not re-run for th
 
 ## Open items
 
-1. **Version drift in ADR-LOG.** The inline ADR-0025 entry says "Document version 2 adds them; version 1 documents
-   upgrade on the next write". The code writes version 3 (`Document.version: 3`, `mergeImport`, `invalidateFrom`), and
-   reads versions 1, 2 and 3. The entry should be corrected or amended.
+1. **Version drift in ADR-LOG (resolved).** The inline ADR-0025 entry said "Document version 2"; it now records that
+   the code writes version 3 (`Document.version: 3`, adding `invalidatedAt`) and reads versions 1, 2 and 3.
 2. **Numbering.** This file is ADR-0026 because ADR-0025 is taken by the inline ADR-LOG entry. Decide whether to renumber
    the inline entry to a standalone file, or to keep this as an expansion.
 3. **No retention policy.** Observations and receipts live until deleted. Decide whether a retention limit or an
