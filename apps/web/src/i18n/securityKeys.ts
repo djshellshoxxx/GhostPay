@@ -490,7 +490,12 @@ export const SECURITY_KEY_GROUPS = {
     'scan.match.claimedDirect',
     'scan.match.pending',
     'scan.tags.hint',
+    'scan.tag.label',
+    'scan.tags.unlocked',
+    'scan.tags.locked',
+    'scan.tags.deleteAll',
     'scan.tags.deleteConfirm',
+    'scan.tags.deleted',
   ],
 } as const satisfies Readonly<Record<string, readonly MessageKey[]>>;
 
@@ -806,17 +811,12 @@ export const NEUTRAL_KEY_LIST = [
   'scan.matches.heading',
   'scan.match.address',
   'scan.match.tag',
-  'scan.tag.label',
   'scan.tag.save',
   'scan.tag.saved',
   'scan.sweep',
   'scan.tags.heading',
   'scan.tags.unlock',
-  'scan.tags.unlocked',
   'scan.tags.lock',
-  'scan.tags.locked',
-  'scan.tags.deleteAll',
-  'scan.tags.deleted',
   'scan.tags.none',
 ] as const satisfies readonly MessageKey[];
 
