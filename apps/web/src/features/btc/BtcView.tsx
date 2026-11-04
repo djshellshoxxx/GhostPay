@@ -132,16 +132,21 @@ export function BtcView(
     setHasBackup(false);
   };
 
-  const resetFlow = (): void => {
-    if (scanRef.current !== undefined) wipeFound(scanRef.current.found);
-    scanRef.current = undefined;
-    setScan(undefined);
+  /** Clears every selection and the review, approval, signature, broadcast and scan-note state. */
+  const clearFlowState = (): void => {
     setPicked(new Set());
     setReview(undefined);
     setApproved(false);
     setSigned(undefined);
     setBroadcastId(undefined);
     setScanNote(undefined);
+  };
+
+  const resetFlow = (): void => {
+    if (scanRef.current !== undefined) wipeFound(scanRef.current.found);
+    scanRef.current = undefined;
+    setScan(undefined);
+    clearFlowState();
   };
 
   const guard = (f: () => void): void => {
@@ -228,12 +233,7 @@ export function BtcView(
     for (const d of dropped) if (!kept.has(d.spendTweak)) zeroize(d.spendTweak);
     scanRef.current = next;
     setScan(next);
-    setPicked(new Set());
-    setReview(undefined);
-    setApproved(false);
-    setSigned(undefined);
-    setBroadcastId(undefined);
-    setScanNote(undefined);
+    clearFlowState();
     return [
       next === undefined
         ? { kind: 'warn', text: t('btc.headers.scanDiscarded') }
