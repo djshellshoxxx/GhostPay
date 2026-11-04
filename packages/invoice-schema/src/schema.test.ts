@@ -558,6 +558,16 @@ describe('validateInvoice accepts', () => {
 });
 
 describe('validatePrivatePart', () => {
+  it('rejects missing line-item slots, including holes among valid items', () => {
+    const item = { description: 'x', quantity: '1', unitMinorUnits: '1' };
+    for (const index of [0, 1, 2]) {
+      const items = new Array<typeof item>(3);
+      for (let i = 0; i < items.length; i++) {
+        if (i !== index) items[i] = item;
+      }
+      expect(() => validatePrivatePart({ lineItems: items })).toThrow(SchemaError);
+    }
+  });
   it('accepts with and without memo, rejects extras', () => {
     expect(validatePrivatePart({ lineItems: [] })).toEqual({ lineItems: [] });
     expect(validatePrivatePart({ lineItems: [], memo: 'hi' })).toEqual({ lineItems: [], memo: 'hi' });
