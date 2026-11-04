@@ -76,4 +76,10 @@ describe('ReceiptPanel build profile', () => {
     render(<ShellProfileContext.Provider value="full"><ReceiptPanel match={match} sellerSignerPublicKey={seller.signerPublicKey} /></ShellProfileContext.Provider>);
     expect(screen.getByLabelText(MANUAL)).toBeTruthy();
   });
+
+  it('an explicit full prop inside a lean shell stays lean (narrow-only)', () => {
+    const seller = generateSession();
+    render(<ShellProfileContext.Provider value="lean"><ReceiptPanel match={match} sellerSignerPublicKey={seller.signerPublicKey} profile="full" /></ShellProfileContext.Provider>);
+    expect(screen.queryByLabelText(MANUAL)).toBeNull();
+  });
 });
