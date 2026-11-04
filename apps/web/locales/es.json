@@ -640,7 +640,7 @@
     "create.buffer.error.max": "Enter the maximum buffer as a whole number of wei from 1 to 2^256-1, digits only.",
     "create.buffer.error.order": "The maximum buffer must be at least the minimum buffer.",
     "create.buffer.error.cap": "The minimum buffer is above the 0.01 native coin safety cap that payers apply (10000000000000000 wei), so no payer could meet it. Enter a smaller minimum.",
-    "create.buffer.error.native": "Gas buffers can only be accepted on token invoices, not on the native coin.",
+    "create.buffer.nativeHint": "Gas buffers only apply to token invoices. A native-coin invoice never carries a buffer policy, so it stays a standard invoice that lean builds can pay.",
     "scan.title": "Analizar y recibir",
     "scan.needKeys": "Primero carga o genera las claves de vendedor.",
     "scan.goSeller": "Ir a Claves de vendedor",

@@ -96,6 +96,10 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
   const FIAT_QUOTE_AVAILABLE = fiatQuoteAvailable(chainId, token, currency);
   // Retained full-profile state or a lost feed must never keep fiat mode in this build.
   const effectiveAmountMode = !supportedOnly && FIAT_QUOTE_AVAILABLE ? amountMode : 'fixed_token';
+  // Payers never offer gas buffers on native-coin invoices, so any policy there (even "declined") would only make the
+  // invoice v2 and unpayable on lean builds for no benefit (ADR-0024). The native coin therefore always means no policy.
+  const bufferChoicesAvailable = token !== 'native';
+  const effectiveBufferMode: BufferMode = bufferChoicesAvailable ? bufferMode : 'off';
   const visibleCreated = created !== undefined && supportsInvoice(created.invoice, supportedOnly) ? created : undefined;
 
   const registerCreated = (invoice: Invoice): void => {
@@ -130,16 +134,15 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
     }
     // v2 invoices are rejected by lean builds, so the policy is only ever produced by the full profile (ADR-0024).
     let bufferPolicy: BufferPolicy | undefined;
-    if (!supportedOnly && bufferMode === 'declined') {
+    if (!supportedOnly && effectiveBufferMode === 'declined') {
       bufferPolicy = { accepted: false, maxWei: '0', minWei: '0', refund: 'none' };
-    } else if (!supportedOnly && bufferMode === 'range') {
+    } else if (!supportedOnly && effectiveBufferMode === 'range') {
       const min = parseWei(bufferMin);
       const max = parseWei(bufferMax);
       if (min === undefined) { setError(t('create.buffer.error.min')); return; }
       if (max === undefined) { setError(t('create.buffer.error.max')); return; }
       if (max < min) { setError(t('create.buffer.error.order')); return; }
       if (min > MAX_BUFFER_WEI) { setError(t('create.buffer.error.cap')); return; }
-      if (token === 'native') { setError(t('create.buffer.error.native')); return; }
       bufferPolicy = { accepted: true, maxWei: max.toString(), minWei: min.toString(), refund: 'none' };
     }
     const form: InvoiceForm = {
@@ -293,14 +296,15 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
             <>
               <Field label={t('create.buffer.label')} hint={t('create.buffer.hint')}>
                 {(id, d) => (
-                  <select id={id} aria-describedby={d} value={bufferMode} onChange={(e) => { setBufferMode(e.target.value as BufferMode); }}>
+                  <select id={id} aria-describedby={d} value={effectiveBufferMode} onChange={(e) => { setBufferMode(e.target.value as BufferMode); }}>
                     <option value="off">{t('create.buffer.off')}</option>
-                    <option value="declined">{t('create.buffer.declined')}</option>
-                    <option value="range">{t('create.buffer.range')}</option>
+                    <option value="declined" disabled={!bufferChoicesAvailable}>{t('create.buffer.declined')}</option>
+                    <option value="range" disabled={!bufferChoicesAvailable}>{t('create.buffer.range')}</option>
                   </select>
                 )}
               </Field>
-              {bufferMode === 'range' && (
+              {!bufferChoicesAvailable && <Notice kind="info">{t('create.buffer.nativeHint')}</Notice>}
+              {effectiveBufferMode === 'range' && (
                 <>
                   <Field label={t('create.buffer.min')}>{(id) => <input id={id} inputMode="numeric" autoComplete="off" value={bufferMin} onChange={(e) => { setBufferMin(e.target.value); }} />}</Field>
                   <Field label={t('create.buffer.max')}>{(id) => <input id={id} inputMode="numeric" autoComplete="off" value={bufferMax} onChange={(e) => { setBufferMax(e.target.value); }} />}</Field>

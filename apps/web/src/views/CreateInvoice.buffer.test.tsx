@@ -155,13 +155,53 @@ describe('seller gas buffer policy control (ADR-0024)', () => {
     expect(spy).not.toHaveBeenCalled();
   });
 
-  it('refuses an accepted buffer on a native-coin invoice', async () => {
+  it('emits no policy for a native-coin invoice even when "declined" was chosen, so it stays v1', async () => {
     const { user } = mount();
     fill('native');
-    choose('range', '1', '10');
+    choose('declined');
     const spy = vi.spyOn(creation, 'buildInvoiceLink');
     await user.click(screen.getByRole('button', { name: 'Create invoice link' }));
-    expect(screen.getByRole('alert').textContent).toMatch(/token invoices/);
-    expect(spy).not.toHaveBeenCalled();
+    const invoice = await parsedInvoice();
+    expect(spy.mock.calls[0]?.[0].bufferPolicy).toBeUndefined();
+    expect(invoice.v).toBe(1);
+    expect(invoice.bufferPolicy).toBeUndefined();
+  });
+
+  it('disables the declined and range choices for the native coin and explains why', () => {
+    mount();
+    const select = screen.getByLabelText<HTMLSelectElement>('Gas buffer policy');
+    const option = (value: string) => [...select.options].find((o) => o.value === value);
+    expect(option('declined')?.disabled).toBe(true);
+    expect(option('range')?.disabled).toBe(true);
+    expect(option('off')?.disabled).toBe(false);
+    expect(screen.getByText(/only apply to token invoices/)).toBeTruthy();
+    fill('erc20');
+    expect(option('declined')?.disabled).toBe(false);
+    expect(option('range')?.disabled).toBe(false);
+    expect(screen.queryByText(/only apply to token invoices/)).toBeNull();
+  });
+
+  it('never applies a range policy to a native-coin invoice', async () => {
+    const { user } = mount();
+    fill('native');
+    fireEvent.change(screen.getByLabelText('Gas buffer policy'), { target: { value: 'range' } });
+    expect(screen.queryByLabelText('Minimum buffer (wei)')).toBeNull();
+    const spy = vi.spyOn(creation, 'buildInvoiceLink');
+    await user.click(screen.getByRole('button', { name: 'Create invoice link' }));
+    const invoice = await parsedInvoice();
+    expect(spy.mock.calls[0]?.[0].bufferPolicy).toBeUndefined();
+    expect(invoice.v).toBe(1);
+  });
+
+  it('drops a token-invoice policy when the seller switches back to the native coin', async () => {
+    const { user } = mount();
+    fill('erc20');
+    choose('declined');
+    fireEvent.change(screen.getByLabelText('Token'), { target: { value: 'native' } });
+    expect(screen.getByLabelText<HTMLSelectElement>('Gas buffer policy').value).toBe('off');
+    await user.click(screen.getByRole('button', { name: 'Create invoice link' }));
+    const invoice = await parsedInvoice();
+    expect(invoice.v).toBe(1);
+    expect(invoice.bufferPolicy).toBeUndefined();
   });
 });
