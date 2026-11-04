@@ -1,15 +1,15 @@
 import { erc20Abi } from '@ghostpay/chain-adapters';
 import { ghostPayPolicyRouterAbi, type Hex } from '@ghostpay/policy-scheme';
 import { decodeFunctionData, encodeAbiParameters, encodeFunctionData } from 'viem/utils';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { PostBroadcastError } from '../../lib/payExec';
-import { reviewPolicyPayment } from './send';
+import { SOURCE_TRANSLATOR } from '../../i18n/context';
 import { captureSessionVersionGuard, clearSession } from '../../lib/session';
 import { connectWallet, type TxRequest } from '../../lib/wallet';
 import { MockWallet } from '../../test/mockWallet';
 import { DEPLOYMENT, ROUTER, SEPOLIA, account, fakeChain, walletMirror } from './fixtures.testutil';
 import { preparePolicyPayment, type PreparedPolicyPayment } from './pay';
-import { sendPolicyPayment, type PolicySendGuard } from './send';
+import { PolicyAlreadyPaidError, reviewPolicyPayment, sendPolicyPayment, type PolicySendGuard } from './send';
 
 const a1 = account('acct-001');
 const TOKEN = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
@@ -325,5 +325,20 @@ describe('policy payment sending (single use and final-gate details)', () => {
     const approval = { to: TOKEN as Hex, value: 0n, data: encodeFunctionData({ abi: erc20Abi, functionName: 'approve', args: [ROUTER, GROSS] }) };
     await expect(t.run(...consistent(t, { ...t.prepared, approval }))).rejects.toThrow(/native payment must not carry a token approval/);
     expect(t.walletSends()).toBe(0);
+  });
+});
+
+describe('policy payment sending (attempt journal lookup)', () => {
+  afterEach(() => { vi.unstubAllGlobals(); });
+  it('fails closed before any RPC read when the attempt journal cannot be read (ERC-20)', async () => {
+    const t = await setup();
+    vi.stubGlobal('window', { sessionStorage: { getItem: () => { throw new Error('blocked'); }, setItem: () => undefined } });
+    await expect(t.run()).rejects.toThrow('The wallet attempt journal is unavailable or invalid. No new wallet request was started.');
+    expect(t.reads.allowance).toBe(0);
+    expect(t.walletSends()).toBe(0);
+  });
+  it('shows the same text as the policy.pay.alreadyPaid catalog message', () => {
+    const hash = `0x${'ab'.repeat(32)}`;
+    expect(SOURCE_TRANSLATOR.t('policy.pay.alreadyPaid', { hash })).toBe(new PolicyAlreadyPaidError(hash).message);
   });
 });

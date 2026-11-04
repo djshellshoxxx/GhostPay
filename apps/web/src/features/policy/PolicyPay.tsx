@@ -8,7 +8,7 @@ import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
 import { useServices } from '../../lib/services';
 import { captureSessionVersionGuard } from '../../lib/session';
 import { preparePolicyPayment, type PreparedPolicyPayment } from './pay';
-import { reviewPolicyPayment, sendPolicyPayment, type PolicySendGuard } from './send';
+import { PolicyAlreadyPaidError, reviewPolicyPayment, sendPolicyPayment, type PolicySendGuard } from './send';
 import type { Hex } from '@ghostpay/policy-scheme';
 import type { PolicyCtx } from './PolicyView';
 
@@ -77,7 +77,7 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
         setReviewed(undefined);
         setLocked(true);
       }
-      setMsg({ kind: 'error', text: userMessage(e) });
+      setMsg({ kind: 'error', text: e instanceof PolicyAlreadyPaidError ? t('policy.pay.alreadyPaid', { hash: e.hash }) : userMessage(e) });
     } finally {
       setBusy(false);
     }

@@ -338,6 +338,7 @@ export const SECURITY_KEY_GROUPS = {
     'policy.pay.lockedTitle',
     'policy.pay.lockedBody',
     'policy.pay.unlock',
+    'policy.pay.alreadyPaid',
     'policy.account.walletRequired',
     'policy.account.submitted',
     'policy.account.partialHistory',

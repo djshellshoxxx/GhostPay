@@ -570,6 +570,7 @@
     "policy.pay.lockedTitle": "Do not send this payment again",
     "policy.pay.lockedBody": "Your wallet already sent a transaction for this payment, but it could not be verified. Keep the hashes below and check your wallet and a block explorer before doing anything else. Start over only after checking: an approval that was mined stays in effect, and a new review can use it.",
     "policy.pay.unlock": "I checked my wallet: start over",
+    "policy.pay.alreadyPaid": "You already sent this exact payment (same payee, token and amount) from this tab: transaction {hash}. Check it in your wallet or a block explorer. To pay again on purpose, clear this payment under Wallet attempts first, and for a token payment also its approval.",
     "policy.account.walletRequired": "وصّل محفظة على هذه الشبكة لترحيل المعاملة (يمكن لأي حساب ترحيلها).",
     "policy.account.submitted": "أُرسل {label}: {hash}",
     "policy.account.tokenInvalid": "يجب أن يكون الرمز \"native\" أو عنوانًا بمجموع تحقّق صحيح.",
