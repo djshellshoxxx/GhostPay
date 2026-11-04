@@ -4,6 +4,8 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { CopyButton, Field, Notice, downloadText, Mono } from './Common';
 import { QrFrame } from './QrFrame';
 import { formatUnits } from '../lib/format';
+import { BUILD_PROFILE, type BuildProfile } from '../lib/buildProfile';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { makeQr } from '../lib/qr';
 import { checkpointKeyId, type ScanMatch } from '../lib/scanClient';
 import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
@@ -14,6 +16,8 @@ export interface ReceiptPanelProps {
   readonly match: ScanMatch;
   /** Key captured when this scan started; hidden after the active seller keys change. */
   readonly sellerSignerPublicKey: string;
+  /** Build profile; defaults to the compile-time profile. Lean refuses receipts that are not bound to a validated invoice. */
+  readonly profile?: BuildProfile;
 }
 
 // openFragment's production KDF has no abort signal. Keep one permit across panels and unmounts until it settles.
@@ -31,6 +35,8 @@ function amountLabel(match: ScanMatch): string {
 
 /** Creates and displays a local signed attestation from immutable verified scan fields. */
 export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
+  const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
+  const lean = (props.profile ?? BUILD_PROFILE) === 'lean';
   const [invoiceDigest, setInvoiceDigest] = useState('');
   const [receipt, setReceipt] = useState<SignedReceipt | undefined>(undefined);
   const [showReceiptQr, setShowReceiptQr] = useState(false);
@@ -152,6 +158,7 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
     setError(undefined);
     try {
       if (!eligible || txHash === undefined || match.metadata === undefined) throw new Error('This verified match is no longer eligible for a receipt.');
+      if (lean && boundInvoice === undefined) throw new Error(t('receipt.lean.refused'));
       if (boundInvoice !== undefined) {
         if (!signConsent) throw new Error('Consent is required before signing the matched invoice and payment facts.');
         if (boundInvoice.identity !== currentIdentity.current) throw new Error('The scan changed. Validate the invoice again.');
@@ -227,7 +234,7 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
   return (
     <section className="receipt-panel" aria-label="Seller-signed receipt">
       <h4>Seller-signed receipt</h4>
-      <p className="hint">This is a seller-key attestation of the verified scan record. It does not establish seller identity or independently prove a payment. {boundInvoice === undefined ? 'The invoice digest is entered manually and is not matched against invoice contents.' : 'The loaded signed invoice and verified scan facts are checked again immediately before signing.'}</p>
+      <p className="hint">This is a seller-key attestation of the verified scan record. It does not establish seller identity or independently prove a payment. {boundInvoice === undefined ? (lean ? t('receipt.lean.hint') : 'The invoice digest is entered manually and is not matched against invoice contents.') : 'The loaded signed invoice and verified scan facts are checked again immediately before signing.'}</p>
       {!signerStillCurrent && <Notice kind="warn">Seller keys changed after this scan. Scan again with the current keys before signing.</Notice>}
       {match.receipt !== 'verified' && <Notice kind="warn">Receipts are available only for verified scan matches.</Notice>}
       {match.metadata === undefined && <Notice kind="warn">The scan metadata is unavailable, so this match cannot be used for a receipt.</Notice>}
@@ -260,11 +267,11 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
           <Field label="Signed invoice link file" hint="A text file containing the signed invoice link or fragment. The same local validation and byte limit apply.">
             {(id, describedBy) => <input id={id} aria-describedby={describedBy} type="file" accept="text/plain,.txt" disabled={!eligible || !invoiceConsent || invoiceBusy} onChange={(e) => { const file = e.currentTarget.files?.[0]; e.currentTarget.value = ''; if (file !== undefined) loadInvoice(() => file.text(), file.size); }} />}
           </Field>
-          {boundInvoice === undefined ? (
+          {boundInvoice === undefined ? (lean ? null : (
             <Field label="Invoice digest (entered manually)" hint="Paste a 0x-prefixed 32-byte invoice digest. This field is the seller’s assertion; no invoice is opened or checked here.">
               {(id, describedBy) => <input id={id} aria-describedby={describedBy} className="mono" inputMode="text" autoComplete="off" value={invoiceDigest} onChange={(e) => { invalidateInvoice(); setInvoiceDigest(e.target.value); }} disabled={!eligible || receipt !== undefined} placeholder="0x…" />}
             </Field>
-          ) : (
+          )) : (
             <>
               <Notice kind="ok">Validated invoice matches this scan. Its signature proves control of the current seller key, not seller identity or independent payment proof.</Notice>
               <dl className="details"><dt>Validated invoice digest</dt><dd><Mono>{boundInvoice.binding.invoiceDigest}</Mono></dd><dt>Invoice signer</dt><dd><Mono>{boundInvoice.binding.invoiceSignerPublicKey}</Mono></dd></dl>

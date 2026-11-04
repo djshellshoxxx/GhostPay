@@ -37,6 +37,7 @@ export default defineConfig({
   define: {
     __GHOSTPAY_RELEASE_KEYS__: JSON.stringify(releaseKeys),
     __GHOSTPAY_MANIFESTS__: JSON.stringify(readManifests(deploymentsDir)),
+    __GHOSTPAY_PROFILE__: JSON.stringify(buildProfile),
   },
   plugins: [
     react(),

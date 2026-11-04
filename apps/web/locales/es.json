@@ -567,6 +567,8 @@
     "policy.receive.continue": "Continuar análisis",
     "policy.receive.result": "Se leyeron {count} anuncios de política; {fresh} son nuevos para tus claves.",
     "policy.receive.capped": "Se detuvo por un límite: vuelve a analizar para continuar.",
-    "ledger.import.invalidated": "{count, plural, =0 {La activación no marcaría ninguna observación como inválida por el historial de reorganizaciones.} one {La activación marcaría # observación como inválida por el historial de reorganizaciones.} many {La activación marcaría # de observaciones como inválidas por el historial de reorganizaciones.} other {La activación marcaría # observaciones como inválidas por el historial de reorganizaciones.}}"
+    "ledger.import.invalidated": "{count, plural, =0 {La activación no marcaría ninguna observación como inválida por el historial de reorganizaciones.} one {La activación marcaría # observación como inválida por el historial de reorganizaciones.} many {La activación marcaría # de observaciones como inválidas por el historial de reorganizaciones.} other {La activación marcaría # observaciones como inválidas por el historial de reorganizaciones.}}",
+    "receipt.lean.hint": "This build only signs receipts bound to a validated signed invoice. Open and validate the invoice below; a manually entered digest is not accepted.",
+    "receipt.lean.refused": "This build only signs receipts bound to a validated signed invoice. Validate the invoice first."
   }
 }

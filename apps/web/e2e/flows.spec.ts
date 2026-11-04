@@ -1,4 +1,4 @@
-import { expect, test, type BrowserContext, type Page, type Route } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { createServer, type Server } from 'node:http';
 import { readFileSync } from 'node:fs';
 import { invoiceDigest as calculateInvoiceDigest, parseFragment } from '@ghostpay/invoice-schema';
@@ -8,162 +8,22 @@ import {
   FAKE_ANNOUNCER,
   FAKE_FEE_RECIPIENT,
   FAKE_ROUTER,
-  FAKE_SWEEP_RELAYER,
-  fakeManifestJson,
 } from '../src/test/fakeManifest';
-import { decodeAbiParameters, encodeFunctionData, keccak256, toBytes } from 'viem';
+import { decodeAbiParameters, encodeFunctionData } from 'viem';
 import { ghostPayRouterAbi, grossForNet, type Address, type Hex } from '@ghostpay/chain-adapters';
 import { parseMetadata } from '@ghostpay/core-crypto';
 import { bindReceiptToInvoice, verifyReceipt } from '../src/lib/receipts';
 import { auditAccessibility, retainAccessibilityAudit } from './accessibility-audit';
 
+// Lean refuses unbound (manual-digest) receipts; the manual attestation steps below run only in the full profile.
+const lean = (process.env['GHOSTPAY_LOCAL_BUILD_PROFILE'] ?? 'full') === 'lean';
+
 test.afterEach(async ({ page }, info) => {
   await retainAccessibilityAudit(page, info);
 });
 
-/** Tiny fake runtime code per contract; the served manifest carries their real keccak256 so the on-chain read-back passes. */
-const FAKE_CODE: Record<string, `0x${string}`> = {
-  [FAKE_ROUTER]: '0x60016000',
-  [FAKE_SWEEP_RELAYER]: '0x60026000',
-  [FAKE_ANNOUNCER.toLowerCase()]: '0x60036000',
-};
-const word = (hex: string): string => `0x${hex.replace(/^0x/, '').toLowerCase().padStart(64, '0')}`;
-const SEL = (sig: string): string => keccak256(toBytes(sig)).slice(0, 10);
-/** Manifest served to the app: bytecodeHashes match FAKE_CODE so the fail-closed on-chain verification succeeds. */
-function e2eManifestJson(chainId: number): string {
-  const m = JSON.parse(fakeManifestJson(chainId)) as { bytecodeHashes: Record<string, string> };
-  m.bytecodeHashes = {
-    router: keccak256(FAKE_CODE[FAKE_ROUTER] as `0x${string}`),
-    sweepRelayer: keccak256(FAKE_CODE[FAKE_SWEEP_RELAYER] as `0x${string}`),
-  };
-  return JSON.stringify(m);
-}
 import { ORIGIN, createInvoice, generateKeys, openFresh } from './helpers';
-
-const RPC = 'https://rpc.e2e.test';
-const CORS = {
-  'access-control-allow-origin': '*',
-  'access-control-allow-headers': '*',
-  'access-control-allow-methods': 'POST, OPTIONS',
-};
-
-interface SentTx {
-  from: string;
-  to: string;
-  data: string;
-  value: string;
-}
-
-/** Serves the (test-only, fake) manifest and a tiny JSON-RPC node; everything else off-origin stays blocked. */
-async function mockNetwork(
-  context: BrowserContext,
-  state: {
-    sent?: SentTx;
-    logs?: unknown[];
-    /** Optional canonical tx/receipt fixture, used only by the verified-ERC20 scan scenario. */
-    evidence?: { txHash: string; transaction: unknown; receipt: unknown };
-  },
-): Promise<{ requests: string[] }> {
-  const requests: string[] = [];
-  // Specific routes below run first; any unexpected off-origin request is refused before leaving the browser.
-  await context.route('**/*', (route) => {
-    const url = new URL(route.request().url());
-    return url.origin === ORIGIN || ['data:', 'blob:', 'about:'].includes(url.protocol) ? route.continue() : route.abort();
-  });
-  await context.route('**/deployments/84532.json', (route) =>
-    route.fulfill({ status: 200, contentType: 'application/json', body: e2eManifestJson(84532) }),
-  );
-  await context.route(`${RPC}/**`, async (route: Route) => {
-    const req = route.request();
-    requests.push(req.url());
-    if (req.method() === 'OPTIONS') {
-      await route.fulfill({ status: 204, headers: CORS });
-      return;
-    }
-    const body = JSON.parse(req.postData() ?? '{}') as { id: number; method: string; params: unknown[] };
-    const reply = (result: unknown): Promise<void> =>
-      route.fulfill({
-        status: 200,
-        headers: { ...CORS, 'content-type': 'application/json' },
-        body: JSON.stringify({ jsonrpc: '2.0', id: body.id, result }),
-      });
-    switch (body.method) {
-      case 'eth_chainId':
-        return reply('0x14a34');
-      case 'eth_blockNumber':
-        return reply('0x1f4');
-      case 'eth_getBlockByNumber': {
-        const n = parseInt(String(body.params[0]), 16);
-        const h = (x: number): string => `0x${x.toString(16).padStart(64, '0')}`;
-        return reply({ number: `0x${n.toString(16)}`, hash: h(n), parentHash: h(n - 1) });
-      }
-      case 'eth_getLogs': {
-        const f = body.params[0] as {
-          fromBlock: string;
-          toBlock: string;
-          address?: string | string[];
-          topics?: (string | string[] | null)[];
-        };
-        const from = parseInt(f.fromBlock, 16);
-        const to = parseInt(f.toBlock, 16);
-        const wantAddresses =
-          f.address === undefined ? undefined : (Array.isArray(f.address) ? f.address : [f.address]).map((a) => a.toLowerCase());
-        return reply(
-          (state.logs ?? []).filter((raw) => {
-            const l = raw as { blockNumber: string; address: string; topics: string[] };
-            const n = parseInt(l.blockNumber, 16);
-            if (n < from || n > to) return false;
-            if (wantAddresses !== undefined && !wantAddresses.includes(l.address.toLowerCase())) return false;
-            return (f.topics ?? []).every((want, i) => {
-              if (want === null || want === undefined) return true;
-              return (Array.isArray(want) ? want : [want]).some((w) => w.toLowerCase() === l.topics[i]?.toLowerCase());
-            });
-          }),
-        );
-      }
-      case 'eth_getTransactionByHash':
-        if (state.evidence !== undefined) {
-          return reply(String(body.params[0]).toLowerCase() === state.evidence.txHash.toLowerCase() ? state.evidence.transaction : null);
-        }
-        return reply(
-          state.sent === undefined
-            ? null
-            : {
-                hash: body.params[0],
-                from: state.sent.from,
-                to: state.sent.to,
-                input: state.sent.data,
-                value: state.sent.value,
-                chainId: '0x14a34',
-              },
-        );
-      case 'eth_getTransactionReceipt':
-        if (state.evidence !== undefined) {
-          return reply(String(body.params[0]).toLowerCase() === state.evidence.txHash.toLowerCase() ? state.evidence.receipt : null);
-        }
-        return reply(
-          state.sent === undefined ? null : { status: '0x1', blockNumber: '0x1f5', to: state.sent.to },
-        );
-      case 'eth_gasPrice':
-        return reply('0x3b9aca00');
-      case 'eth_getCode':
-        return reply(FAKE_CODE[String(body.params[0]).toLowerCase()] ?? '0x');
-      case 'eth_call': {
-        const call = body.params[0] as { to: string; data: string };
-        const sel = call.data.slice(0, 10);
-        if (call.to.toLowerCase() === FAKE_ROUTER) {
-          if (sel === SEL('FEE_RECIPIENT()')) return reply(word(FAKE_FEE_RECIPIENT));
-          if (sel === SEL('ANNOUNCER()')) return reply(word(FAKE_ANNOUNCER));
-          if (sel === SEL('FEE_BPS()')) return reply(word((25).toString(16)));
-        }
-        return reply(null);
-      }
-      default:
-        return reply(null);
-    }
-  });
-  return { requests };
-}
+import { RPC, configureRpc, mockNetwork, type SentTx } from './flowMocks';
 
 interface WalletControls {
   holdSend: boolean;
@@ -245,12 +105,6 @@ async function injectWallet(page: Page, state: { sent?: SentTx; sendCalls?: numb
       );
     });
   });
-}
-
-async function configureRpc(page: Page): Promise<void> {
-  await page.addInitScript((rpc) => {
-    window.localStorage.setItem('ghostpay.settings.v1', JSON.stringify({ rpcUrls: { '84532': rpc } }));
-  }, RPC);
 }
 
 test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC', () => {
@@ -519,60 +373,68 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await expect(page.getByText(/Claimed, not confirmed/)).toHaveCount(0);
     const panel = page.getByRole('region', { name: 'Seller-signed receipt' });
     await expect(panel).toBeVisible();
-    await expect(panel).toContainText('The invoice digest is entered manually and is not matched against invoice contents.');
+    if (!lean) await expect(panel).toContainText('The invoice digest is entered manually and is not matched against invoice contents.');
     // Nothing is signed without explicit consent.
     await expect(page.getByLabel('Signed receipt JSON')).toHaveCount(0);
 
-    // Invalid manual input is refused through the UI and still creates no receipt.
-    const digestInput = page.getByLabel('Invoice digest (entered manually)');
-    await digestInput.fill('not-a-digest');
-    await panel.getByRole('button', { name: 'Sign receipt' }).click();
-    await expect(page.getByRole('alert').filter({ hasText: 'Receipt invoice digest is invalid.' })).toBeVisible();
-    await expect(page.getByLabel('Signed receipt JSON')).toHaveCount(0);
+    if (lean) {
+      // Lean refuses unbound receipts: no manual-digest mode, and the sign handler itself refuses (receipt-lean.spec.ts covers this too).
+      await expect(panel.getByLabel('Invoice digest (entered manually)')).toHaveCount(0);
+      await panel.getByRole('button', { name: 'Sign receipt', exact: true }).click();
+      await expect(page.getByRole('alert').filter({ hasText: 'only signs receipts bound to a validated signed invoice' })).toBeVisible();
+      await expect(page.getByLabel('Signed receipt JSON')).toHaveCount(0);
+    } else {
+      // Invalid manual input is refused through the UI and still creates no receipt.
+      const digestInput = page.getByLabel('Invoice digest (entered manually)');
+      await digestInput.fill('not-a-digest');
+      await panel.getByRole('button', { name: 'Sign receipt' }).click();
+      await expect(page.getByRole('alert').filter({ hasText: 'Receipt invoice digest is invalid.' })).toBeVisible();
+      await expect(page.getByLabel('Signed receipt JSON')).toHaveCount(0);
 
-    const invoiceDigest = `0x${'b'.repeat(64)}`;
-    await digestInput.fill(invoiceDigest);
-    await panel.getByRole('button', { name: 'Sign receipt' }).click();
-    const jsonBox = page.getByLabel('Signed receipt JSON');
-    await expect(jsonBox).toBeVisible();
-    const decoded: unknown = JSON.parse(await jsonBox.inputValue());
-    expect(verifyReceipt(decoded)).toBe(true);
-    const article = panel.locator('article.receipt-print');
-    const fact = (label: string): string => `dt:text-is("${label}") + dd`;
-    const uiSigner = ((await article.locator(fact('Signer public key')).textContent()) ?? '').trim();
-    expect(uiSigner).toBe(sellerSigner);
-    const uiTx = ((await article.locator(fact('Transaction')).textContent()) ?? '').trim();
-    const uiRecipient = ((await article.locator(fact('Recipient')).textContent()) ?? '').trim();
-    expect(uiTx.toLowerCase()).toBe(txHash.toLowerCase());
-    expect(uiRecipient.toLowerCase()).toBe(mine.stealthAddress.toLowerCase());
-    await expect(article.locator(fact('Network'))).toContainText('84532');
-    await expect(article.locator(fact('Asset and amount'))).toContainText(`${parsed.netAmount.toString()} base units`);
-    await expect(article.locator(fact('Invoice digest'))).toContainText('seller-supplied, not matched');
-    expect(decoded).toMatchObject({
-      version: 1,
-      chainId: 84532,
-      txHash: txHash.toLowerCase(),
-      stealthAddress: mine.stealthAddress.toLowerCase(),
-      asset: parsed.token.toLowerCase(),
-      amountMinorUnits: parsed.netAmount.toString(),
-      invoiceDigest,
-      signerPublicKey: sellerSigner,
-    });
-    // Independent Node-side checks: correct facts are accepted, a mismatched fact and a tampered receipt are rejected.
-    const binding = {
-      invoiceDigest,
-      chainId: 84532,
-      asset: parsed.token.toLowerCase(),
-      amountMinorUnits: parsed.netAmount.toString(),
-      invoiceSignerPublicKey: sellerSigner,
-      invoiceSignatureValid: false,
-      trustedSignerPublicKey: sellerSigner,
-      txHash,
-      stealthAddress: mine.stealthAddress,
-    };
-    expect(bindReceiptToInvoice(decoded, binding).signerMatch).toBe('explicitly-trusted-key');
-    expect(() => bindReceiptToInvoice(decoded, { ...binding, amountMinorUnits: (parsed.netAmount + 1n).toString() })).toThrow(/amount/);
-    expect(verifyReceipt({ ...(decoded as Record<string, unknown>), amountMinorUnits: (parsed.netAmount + 1n).toString() })).toBe(false);
+      const invoiceDigest = `0x${'b'.repeat(64)}`;
+      await digestInput.fill(invoiceDigest);
+      await panel.getByRole('button', { name: 'Sign receipt' }).click();
+      const jsonBox = page.getByLabel('Signed receipt JSON');
+      await expect(jsonBox).toBeVisible();
+      const decoded: unknown = JSON.parse(await jsonBox.inputValue());
+      expect(verifyReceipt(decoded)).toBe(true);
+      const article = panel.locator('article.receipt-print');
+      const fact = (label: string): string => `dt:text-is("${label}") + dd`;
+      const uiSigner = ((await article.locator(fact('Signer public key')).textContent()) ?? '').trim();
+      expect(uiSigner).toBe(sellerSigner);
+      const uiTx = ((await article.locator(fact('Transaction')).textContent()) ?? '').trim();
+      const uiRecipient = ((await article.locator(fact('Recipient')).textContent()) ?? '').trim();
+      expect(uiTx.toLowerCase()).toBe(txHash.toLowerCase());
+      expect(uiRecipient.toLowerCase()).toBe(mine.stealthAddress.toLowerCase());
+      await expect(article.locator(fact('Network'))).toContainText('84532');
+      await expect(article.locator(fact('Asset and amount'))).toContainText(`${parsed.netAmount.toString()} base units`);
+      await expect(article.locator(fact('Invoice digest'))).toContainText('seller-supplied, not matched');
+      expect(decoded).toMatchObject({
+        version: 1,
+        chainId: 84532,
+        txHash: txHash.toLowerCase(),
+        stealthAddress: mine.stealthAddress.toLowerCase(),
+        asset: parsed.token.toLowerCase(),
+        amountMinorUnits: parsed.netAmount.toString(),
+        invoiceDigest,
+        signerPublicKey: sellerSigner,
+      });
+      // Independent Node-side checks: correct facts are accepted, a mismatched fact and a tampered receipt are rejected.
+      const binding = {
+        invoiceDigest,
+        chainId: 84532,
+        asset: parsed.token.toLowerCase(),
+        amountMinorUnits: parsed.netAmount.toString(),
+        invoiceSignerPublicKey: sellerSigner,
+        invoiceSignatureValid: false,
+        trustedSignerPublicKey: sellerSigner,
+        txHash,
+        stealthAddress: mine.stealthAddress,
+      };
+      expect(bindReceiptToInvoice(decoded, binding).signerMatch).toBe('explicitly-trusted-key');
+      expect(() => bindReceiptToInvoice(decoded, { ...binding, amountMinorUnits: (parsed.netAmount + 1n).toString() })).toThrow(/amount/);
+      expect(verifyReceipt({ ...(decoded as Record<string, unknown>), amountMinorUnits: (parsed.netAmount + 1n).toString() })).toBe(false);
+    }
 
     // Real built Worker, no off-origin surprises, no CSP violations (CSP itself unchanged).
     expect(await page.evaluate(() => (window as unknown as { __csp: string[] }).__csp)).toEqual([]);
