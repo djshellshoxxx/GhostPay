@@ -245,7 +245,7 @@ jobs:
           esac
           git apply --check --binary incoming/agent.patch
           git apply --binary incoming/agent.patch
-          git add -A
+          git add -A -- "$prefix"
           git diff --cached --name-only > published-paths.txt
           test -s published-paths.txt
           while IFS= read -r path; do
@@ -260,6 +260,7 @@ jobs:
           if grep -Fxf published-paths.txt owned.txt; then
             echo "::error::Ownership conflict after development"; exit 1
           fi
+          echo "prefix=$prefix" >> "$GITHUB_OUTPUT"
           echo "ready=true" >> "$GITHUB_OUTPUT"
       - name: Create isolated review PR
         if: steps.apply.outputs.ready == 'true'
@@ -268,6 +269,7 @@ jobs:
           token: ${{ secrets.GHOSTPAY_GITHUB_TOKEN || github.token }}
           branch: codex/ghostpay-parallel-${{ matrix.lane }}-${{ github.run_id }}
           base: main
+          add-paths: ${{ steps.apply.outputs.prefix }}
           commit-message: 'test: independent GhostPay ${{ matrix.lane }} checkpoint'
           title: 'test: GhostPay parallel ${{ matrix.lane }} checkpoint ${{ github.run_id }}'
           body: |
