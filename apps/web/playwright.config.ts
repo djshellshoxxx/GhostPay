@@ -1,5 +1,5 @@
 import { existsSync } from 'node:fs';
-import { defineConfig } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test';
 import { prepareManifestFixture } from './e2e/prepare-manifest.mjs';
 
 // Chromium is pre-installed in this environment; never run `playwright install`.
@@ -12,6 +12,16 @@ const fixture = prepareManifestFixture();
 const profile = process.env['GHOSTPAY_LOCAL_BUILD_PROFILE'] ?? 'full';
 if (profile !== 'full' && profile !== 'lean') throw new Error('Unknown Playwright build profile.');
 
+// Device projects are Chromium-engine viewport/touch/user-agent emulation ONLY. The descriptors for iPhone SE and
+// iPad Mini name WebKit; defaultBrowserType is overridden so only the installed Chromium is needed. This does NOT
+// exercise WebKit/Safari rendering or any real device; it checks responsive layout and axe accessibility at those sizes.
+const DEVICE_SPECS = [/accessibility\.spec\.ts$/, /devices\.spec\.ts$/];
+const deviceProject = (name: string, descriptor: (typeof devices)[string]) => ({
+  name,
+  testMatch: DEVICE_SPECS,
+  use: { ...descriptor, defaultBrowserType: 'chromium' as const },
+});
+
 export default defineConfig({
   testDir: './e2e',
   timeout: 60_000,
@@ -20,6 +30,13 @@ export default defineConfig({
   workers: 1,
   ...(profile === 'lean' ? { grepInvert: /embed SDK \(popup mode only\)/ } : {}),
   reporter: [['list']],
+  projects: [
+    // Desktop: every existing spec as before; the device-only spec is left to the device projects.
+    { name: 'desktop', testIgnore: /devices\.spec\.ts$/ },
+    deviceProject('pixel-7-chromium', devices['Pixel 7']!),
+    deviceProject('iphone-se-chromium', devices['iPhone SE']!),
+    deviceProject('ipad-mini-chromium', devices['iPad Mini']!),
+  ],
   use: {
     baseURL: 'http://localhost:4173',
     ...(executablePath === undefined ? {} : { launchOptions: { executablePath, args: ['--no-sandbox'] } }),
