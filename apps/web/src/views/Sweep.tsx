@@ -8,7 +8,7 @@ import { ManifestBanner } from '../components/ManifestBanner';
 import { verifyManifestForFlow } from '../lib/manifest';
 import { UserFacingError, userMessage } from '../lib/errors';
 import { formatUnits } from '../lib/format';
-import { checkDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, RELAYED_EXPIRY_MARGIN_SECONDS, type DirectSweepResult, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
+import { checkDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, sweepPermitRefusalKey, sweepPermitSuggestsDirect, RELAYED_EXPIRY_MARGIN_SECONDS, type DirectSweepResult, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
 import { RelayerRefusedError } from '../lib/relayerClient';
 import { authorizeEncryptedVault, readEncryptedVault } from '../lib/keyVault';
 import { captureSessionGuard, getSessionBackup, subscribeSessionBackup } from '../lib/session';
@@ -204,6 +204,9 @@ export function Sweep(): ReactNode {
         if (handoff.lock !== undefined && e instanceof RelayerRefusedError && e.beforeBroadcast) {
           resolveSweepAttempt(handoff.lock, { ...handoff.lock, status: 'refused' });
         }
+        // Spec 04: a permit or grief-limit refusal gets its own honest text; never retried automatically.
+        const permitKey = sweepPermitRefusalKey(e);
+        if (permitKey !== undefined) throw new UserFacingError(sweepPermitSuggestsDirect(permitKey) ? `${t(permitKey)} ${t('sweep.permit.directFallback')}` : t(permitKey));
         throw e;
       }
       setHash(submitted);
