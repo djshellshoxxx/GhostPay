@@ -18,7 +18,7 @@ export default defineConfig({
   expect: { timeout: 10_000 },
   fullyParallel: false,
   workers: 1,
-  ...(profile === 'lean' ? { grepInvert: /embed SDK \(popup mode only\)/ } : {}),
+  ...(profile === 'lean' ? { grepInvert: /embed SDK \((popup mode only|iframe mode)\)/ } : {}),
   reporter: [['list']],
   use: {
     baseURL: 'http://localhost:4173',
