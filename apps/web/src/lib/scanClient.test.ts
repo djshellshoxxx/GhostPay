@@ -952,6 +952,33 @@ describe('spec 05: spam lanes, backlog and local telemetry', () => {
     return localCheckpointStore({ getItem: (k) => m.get(k) ?? null, setItem: (k, v) => void m.set(k, v), removeItem: (k) => void m.delete(k) });
   };
 
+  /** The seller-key, worker and abort arguments every A5 run shares. */
+  const keyArgs = (keys: ReturnType<typeof generateKeySet>, worker: InlineWorker = new InlineWorker()) => ({
+    spendingPublicKeyHex: hexOf(keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(keys.viewingSecret),
+    createWorker: () => worker, signal: new AbortController().signal,
+  });
+  /**
+   * A 120,000-block chain whose block hashes all change once progress passes block 49,999 (`forkPastBlock`, a deep reorg). `logsIn` returns the
+   * announcer logs inside a filter range; each is re-stamped with the current (pre- or post-fork) hash of its block.
+   */
+  const forkingClient = (logsIn: (from: bigint, to: bigint) => RpcLog[]) => {
+    let forked = false;
+    const hashAt = (n: number): string => (forked ? blockHash(n + 5_000_000) : blockHash(n));
+    const client = mockRpc(84532, (method, params) => {
+      if (method === 'eth_blockNumber') return `0x${(120_000).toString(16)}`;
+      if (method === 'eth_getBlockByNumber') {
+        const n = Number(params[0]);
+        return { hash: hashAt(n), parentHash: hashAt(n - 1), number: `0x${n.toString(16)}` };
+      }
+      if (method === 'eth_getLogs') {
+        const f = params[0] as { fromBlock: bigint; toBlock: bigint };
+        return logsIn(f.fromBlock, f.toBlock).map((l) => ({ ...l, blockHash: hashAt(Number(BigInt(l.blockNumber))) }));
+      }
+      throw new Error(`unexpected ${method}`);
+    });
+    return { client, forkPastBlock: (p: { nextBlock: bigint }) => { if (p.nextBlock > 49_999n) forked = true; } };
+  };
+
   it('keeps a flooding caller from starving router and honest direct payments in the same page: nothing dropped, flood ordered last (A5)', async () => {
     const keys = generateKeySet();
     const meta = encodeMetaAddress(keys);
@@ -964,8 +991,7 @@ describe('spec 05: spam lanes, backlog and local telemetry', () => {
     // The budget is far below the flood, but the first page of a run is never deferred.
     const res = await runScan({
       chain, manifest, client: chainWith(2500, [...flood, direct.log, routed.log]), cursor: { nextBlock: 0n }, openLaneBudget: 1,
-      spendingPublicKeyHex: hexOf(keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(keys.viewingSecret),
-      createWorker: () => worker, signal: new AbortController().signal,
+      ...keyArgs(keys, worker),
     });
     expect(res.matches.map((m) => m.stealthAddress).sort()).toEqual([direct.stealthAddress, routed.stealthAddress].sort());
     expect(res.backlog).toBe(0);
@@ -1002,8 +1028,7 @@ describe('spec 05: spam lanes, backlog and local telemetry', () => {
       const worker = new InlineWorker();
       const res = await runScan({
         chain, manifest, client, cursor, ...budget, checkpoints: store,
-        spendingPublicKeyHex: hexOf(keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(keys.viewingSecret),
-        createWorker: () => worker, signal: new AbortController().signal,
+      ...keyArgs(keys, worker),
       });
       for (const m of res.matches) found.add(m.stealthAddress);
       for (const msg of worker.received) if (msg.type === 'batch') for (const l of msg.logs) {
@@ -1030,8 +1055,7 @@ describe('spec 05: spam lanes, backlog and local telemetry', () => {
     const store = memoryStore();
     const res = await runScan({
       chain, manifest, client, cursor: { nextBlock: 2000n }, checkpoints: store,
-      spendingPublicKeyHex: hexOf(keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(keys.viewingSecret),
-      createWorker: () => new InlineWorker(), signal: new AbortController().signal,
+      ...keyArgs(keys),
     });
     expect(res.cursor.nextBlock).toBe(5001n);
     expect(res.matches[0]?.receipt).toBe('pending');
@@ -1045,8 +1069,7 @@ describe('spec 05: spam lanes, backlog and local telemetry', () => {
     const routerOld = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block: 1000, index: 0, caller: FAKE_ROUTER });
     const res = await runScan({
       chain, manifest, client: chainWith(400_000, [routerOld.log, ...spamAt(stranger, 100, 3), ...spamAt(stranger, 60_000, 3)]), cursor: { nextBlock: 0n }, openLaneBudget: 2,
-      spendingPublicKeyHex: hexOf(keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(keys.viewingSecret),
-      createWorker: () => new InlineWorker(), signal: new AbortController().signal,
+      ...keyArgs(keys),
     });
     expect(res.backlog).toBe(3);
     expect(res.cursor.nextBlock).toBe(50_000n);
@@ -1059,24 +1082,9 @@ describe('spec 05: spam lanes, backlog and local telemetry', () => {
     const keys = generateKeySet();
     const stranger = encodeMetaAddress(generateKeySet());
     const routed = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block: 100, index: 0, caller: FAKE_ROUTER });
-    let forked = false;
-    const hashAt = (n: number): string => (forked ? blockHash(n + 5_000_000) : blockHash(n));
-    const client = mockRpc(84532, (method, params) => {
-      if (method === 'eth_blockNumber') return `0x${(120_000).toString(16)}`;
-      if (method === 'eth_getBlockByNumber') {
-        const n = Number(params[0]);
-        return { hash: hashAt(n), parentHash: hashAt(n - 1), number: `0x${n.toString(16)}` };
-      }
-      if (method === 'eth_getLogs') {
-        const f = params[0] as { fromBlock: bigint; toBlock: bigint };
-        return f.fromBlock <= 100n && f.toBlock >= 100n ? [{ ...routed.log, blockHash: hashAt(100) }] : [];
-      }
-      throw new Error(`unexpected ${method}`);
-    });
+    const { client, forkPastBlock } = forkingClient((from, to) => (from <= 100n && to >= 100n ? [routed.log] : []));
     const res = await runScan({
-      chain, manifest, client, cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(keys.spendingPublicKey), keyId: KEY,
-      viewingKey: unsafeRevealSecret(keys.viewingSecret), createWorker: () => new InlineWorker(), signal: new AbortController().signal,
-      onProgress: (p) => { if (p.nextBlock > 49_999n) forked = true; },
+      chain, manifest, client, cursor: { nextBlock: 0n }, ...keyArgs(keys), onProgress: forkPastBlock,
     });
     expect(res.cursor.nextBlock).toBe(120_001n);
     expect(res.telemetry?.anonymity).toMatchObject({ count7d: 1, count30d: 1, partial: false });
@@ -1086,20 +1094,8 @@ describe('spec 05: spam lanes, backlog and local telemetry', () => {
     const keys = generateKeySet();
     const stranger = encodeMetaAddress(generateKeySet());
     const spam = [...spamAt(stranger, 10, 2), ...spamAt(stranger, 60_000, 2)];
-    let forked = false;
-    const hashAt = (n: number): string => (forked ? blockHash(n + 5_000_000) : blockHash(n));
-    const client = mockRpc(84532, (method, params) => {
-      if (method === 'eth_blockNumber') return `0x${(120_000).toString(16)}`;
-      if (method === 'eth_getBlockByNumber') {
-        const n = Number(params[0]);
-        return { hash: hashAt(n), parentHash: hashAt(n - 1), number: `0x${n.toString(16)}` };
-      }
-      if (method === 'eth_getLogs') {
-        const f = params[0] as { fromBlock: bigint; toBlock: bigint };
-        return spam.filter((l) => BigInt(l.blockNumber) >= f.fromBlock && BigInt(l.blockNumber) <= f.toBlock).map((l) => ({ ...l, blockHash: hashAt(Number(BigInt(l.blockNumber))) }));
-      }
-      throw new Error(`unexpected ${method}`);
-    });
+    const { client, forkPastBlock } = forkingClient((from, to) =>
+      spam.filter((l) => BigInt(l.blockNumber) >= from && BigInt(l.blockNumber) <= to));
     const cleared: number[] = [];
     const saved: bigint[] = [];
     const reorgs: bigint[] = [];
@@ -1107,9 +1103,8 @@ describe('spec 05: spam lanes, backlog and local telemetry', () => {
       // The first page is never deferred; its replay after the fork is, because it no longer fits the budget.
       chain, manifest, client, openLaneBudget: 1, cursor: { nextBlock: 0n },
       checkpoints: { load: () => undefined, save: (_c, _k, c) => void saved.push(c.nextBlock), clear: (c) => void cleared.push(c) },
-      spendingPublicKeyHex: hexOf(keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(keys.viewingSecret),
-      createWorker: () => new InlineWorker(), signal: new AbortController().signal,
-      onProgress: (p) => { if (p.nextBlock > 49_999n) forked = true; },
+      ...keyArgs(keys),
+      onProgress: forkPastBlock,
       onReorg: (to) => { reorgs.push(to); },
     });
     expect(reorgs).toEqual([0n]);
