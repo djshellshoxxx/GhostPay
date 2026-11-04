@@ -29,6 +29,9 @@ function useScanT(): T {
   return i18n?.t ?? SOURCE_TRANSLATOR.t;
 }
 
+// latestT.current('key') is not seen by scripts/i18n/extract.mjs; the keys translated through it in this file:
+// i18n-use: scan.error.reorg scan.error.observationLimit scan.announce.limit scan.announce.finished
+// i18n-use: scan.tag.saved scan.tags.unlocked scan.tags.deleted
 /** The translator of the latest render, for text produced after an await (a language change may have happened since). */
 function useLatestScanT(t: T): { readonly current: T } {
   const ref = useRef(t);
@@ -39,6 +42,10 @@ function useLatestScanT(t: T): { readonly current: T } {
 /** Scan state keeps a message key and values, not text, so it renders in the language current when it is shown.
  * Text that already arrives as a finished string (privacy plan, userMessage) is kept as it is. */
 type ScanText = { readonly key: MessageKey; readonly values?: MessageValues } | { readonly text: string };
+// msg('key') descriptors are not seen by scripts/i18n/extract.mjs; the keys built through msg() in this file:
+// i18n-use: scan.error.noRpc scan.error.secondRpc scan.error.startBlock scan.error.manifestMismatch scan.error.noManifest
+// i18n-use: scan.error.discrepancy scan.error.backlog scan.error.limitReached scan.error.keysChanged scan.lag
+// i18n-use: scan.done.note scan.done.cancelled scan.done.limit scan.done.finished scan.done.cancelledEarly
 const msg = (key: MessageKey, values?: MessageValues): ScanText => (values === undefined ? { key } : { key, values });
 const literal = (text: string): ScanText => ({ text });
 const show = (m: ScanText, t: T): string => ('text' in m ? m.text : t(m.key, m.values));
