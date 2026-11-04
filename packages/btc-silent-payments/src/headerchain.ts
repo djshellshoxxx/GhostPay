@@ -220,20 +220,20 @@ export class HeaderChain {
    * Rebuilds a chain from {@link toJSON} output, re-validating every header (in batches, so any length that
    * {@link toJSON} can produce reloads).
    *
-   * `o.checkpoint` is the caller's pinned starting header. When given, the stored checkpoint (height, hash,
-   * header and previous headers) must equal it exactly, else `INVALID_HEADER`: stored data never chooses its own
-   * anchor. Callers that load from storage should always pass it.
+   * `o.checkpoint` (required) is the caller's pinned starting header. The stored checkpoint (height, hash, header
+   * and previous headers) must equal it exactly, else `INVALID_HEADER`: stored data never chooses its own anchor.
    */
   public static fromJSON(
     j: SerializedHeaderChain,
-    o: { readonly now?: () => number; readonly params?: ChainParams; readonly checkpoint?: HeaderCheckpoint } = {},
+    o: { readonly checkpoint: HeaderCheckpoint; readonly now?: () => number; readonly params?: ChainParams },
   ): HeaderChain {
+    if (typeof o !== 'object' || o === null || typeof o.checkpoint !== 'object' || o.checkpoint === null) return fail('INVALID_INPUT');
     if (typeof j !== 'object' || j === null || j.version !== 1 || !Object.hasOwn(CHAIN_PARAMS, j.network) || !Array.isArray(j.headers)) {
       return fail('INVALID_INPUT');
     }
     const params = o.params ?? CHAIN_PARAMS[j.network];
     if (params.network !== j.network) return fail('INVALID_INPUT');
-    if (o.checkpoint !== undefined && !sameCheckpoint(j.checkpoint, o.checkpoint)) invalid();
+    if (!sameCheckpoint(j.checkpoint, o.checkpoint)) invalid();
     const chain = HeaderChain.create({ params, checkpoint: j.checkpoint, ...(o.now === undefined ? {} : { now: o.now }) });
     for (let i = 0; i < j.headers.length; i += MAX_BATCH) {
       const r = chain.connect(j.headers.slice(i, i + MAX_BATCH));

@@ -2,9 +2,8 @@
 // the Esplora shim). It drives the real feature code: scan -> review -> sign -> broadcast -> rescan.
 import { writeFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { MemoryScanStateStore } from '@ghostpay/btc-silent-payments';
 import { EsploraClient } from './esplora';
-import { EsploraHeaderSource, loadHeaderChain, syncHeaders } from './headers';
+import { EsploraHeaderSource, loadHeaderChain, MemoryHeaderStore, syncHeaders } from './headers';
 import { btcNetwork } from './network';
 import { scanForPayments } from './scan';
 import { reviewSweep, signSweep } from './sweep';
@@ -25,7 +24,7 @@ describe.skipIf(url === undefined || seed === undefined || dest === undefined)('
     const client = new EsploraClient({ baseUrl: url ?? '', fetchFn: (u, i) => fetch(u, i) });
     await client.checkNetwork(net);
     // As the view does: check the shim's headers from genesis (it has no /blocks/:height, so one header at a time).
-    const store = new MemoryScanStateStore();
+    const store = new MemoryHeaderStore();
     const { chain: headers } = await loadHeaderChain(net, store);
     await syncHeaders({ chain: headers, sources: [new EsploraHeaderSource(client)], store });
 

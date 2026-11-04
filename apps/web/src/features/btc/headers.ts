@@ -1,13 +1,12 @@
 import {
   CHAIN_PARAMS,
   HeaderChain,
-  MemoryScanStateStore,
   parseHeader,
   SilentPaymentError,
   syncHeaderChainFromSources,
   type HeaderCheckpoint,
   type HeaderSource,
-  type ScanStateStore,
+  type SerializedHeaderChain,
 } from '@ghostpay/btc-silent-payments';
 import type { EsploraClient } from './esplora';
 import type { BtcNetworkId, BtcNetworkInfo } from './network';
@@ -121,8 +120,42 @@ export class EsploraHeaderSource implements HeaderSource {
   }
 }
 
-/** Storage of one network's serialized header chain (the package's scan-state persistence seam). */
-export type HeaderStoreFor = (netId: BtcNetworkId) => ScanStateStore;
+/**
+ * Storage of one network's serialized header chain (the shape of the package's `ScanStateStore` seam, plus a
+ * work-guarded save and a delete).
+ */
+export interface HeaderStore {
+  load(): Promise<string | undefined>;
+  /**
+   * Compare-and-swap on cumulative work: writes only when no stored chain has strictly more work than `tipWork`
+   * (another tab may have saved a heavier one). Resolves `true` once the write is committed, `false` when refused.
+   */
+  save(serialized: string, tipWork: bigint): Promise<boolean>;
+  /** Deletes the saved chain of this network. */
+  clear(): Promise<void>;
+}
+
+export type HeaderStoreFor = (netId: BtcNetworkId) => HeaderStore;
+
+/** In-memory {@link HeaderStore} (tests, and browsers without IndexedDB). */
+export class MemoryHeaderStore implements HeaderStore {
+  public value: string | undefined;
+  public work: bigint | undefined;
+  public load(): Promise<string | undefined> {
+    return Promise.resolve(this.value);
+  }
+  public save(serialized: string, tipWork: bigint): Promise<boolean> {
+    if (this.work !== undefined && this.work > tipWork) return Promise.resolve(false);
+    this.value = serialized;
+    this.work = tipWork;
+    return Promise.resolve(true);
+  }
+  public clear(): Promise<void> {
+    this.value = undefined;
+    this.work = undefined;
+    return Promise.resolve();
+  }
+}
 
 /** Minimal slice of `IDBFactory` used here (injectable for tests). */
 export type IdbFactoryLike = Pick<IDBFactory, 'open'>;
@@ -130,16 +163,24 @@ export type IdbFactoryLike = Pick<IDBFactory, 'open'>;
 const IDB_NAME = 'ghostpay-btc-headers';
 const IDB_STORE = 'chains';
 
-function request<T>(r: IDBRequest<T>): Promise<T> {
-  return new Promise<T>((resolve, reject) => {
-    r.onsuccess = (): void => { resolve(r.result); };
-    r.onerror = (): void => { reject(new Error('IndexedDB request failed')); };
+/** Resolves when `tx` commits; rejects when it fails or is aborted (unless `refused()` says the abort was ours). */
+function committed(tx: IDBTransaction, refused: () => boolean = () => false): Promise<boolean> {
+  return new Promise<boolean>((resolve, reject) => {
+    tx.oncomplete = (): void => { resolve(true); };
+    tx.onabort = (): void => {
+      if (refused()) resolve(false);
+      else reject(new Error('IndexedDB transaction aborted'));
+    };
+    tx.onerror = (): void => { if (!refused()) reject(new Error('IndexedDB transaction failed')); };
   });
 }
 
 /**
- * IndexedDB store of validated block headers, one record per network (`headers:v1:<network>`). Headers are public
- * chain data: no key, address, amount or scan result is stored. What is read back is validated again in full.
+ * IndexedDB store of validated block headers, per network: `headers:v1:<network>` holds the chain JSON and
+ * `headers:v1:<network>:work` its cumulative work (hex). A save reads the stored work and writes inside one
+ * transaction, so a tab never overwrites a heavier chain another tab saved, and resolves only after the transaction
+ * commits. Headers are public chain data: no key, address, amount or scan result is stored. What is read back is
+ * validated again in full.
  */
 export function idbHeaderStore(factory: IdbFactoryLike): HeaderStoreFor {
   let db: Promise<IDBDatabase> | undefined;
@@ -159,16 +200,40 @@ export function idbHeaderStore(factory: IdbFactoryLike): HeaderStoreFor {
   };
   return (netId) => {
     const key = `headers:v1:${netId}`;
+    const workKey = `${key}:work`;
     return {
       async load(): Promise<string | undefined> {
-        const d = await open();
-        const v: unknown = await request(d.transaction(IDB_STORE, 'readonly').objectStore(IDB_STORE).get(key));
+        const tx = (await open()).transaction(IDB_STORE, 'readonly');
+        const r = tx.objectStore(IDB_STORE).get(key);
+        await committed(tx);
+        const v: unknown = r.result;
         // Anything but text is corrupt: hand back text that fails validation, so it is discarded, never used.
         return v === undefined ? undefined : typeof v === 'string' ? v : '';
       },
-      async save(serialized: string): Promise<void> {
-        const d = await open();
-        await request(d.transaction(IDB_STORE, 'readwrite').objectStore(IDB_STORE).put(serialized, key));
+      async save(serialized: string, tipWork: bigint): Promise<boolean> {
+        const tx = (await open()).transaction(IDB_STORE, 'readwrite');
+        const store = tx.objectStore(IDB_STORE);
+        let refused = false;
+        const done = committed(tx, () => refused);
+        const cur = store.get(workKey);
+        cur.onsuccess = (): void => {
+          const v: unknown = cur.result;
+          const stored = typeof v === 'string' && /^[0-9a-f]{1,80}$/.test(v) ? BigInt(`0x${v}`) : undefined;
+          if (stored !== undefined && stored > tipWork) {
+            refused = true;
+            tx.abort();
+            return;
+          }
+          store.put(serialized, key);
+          store.put(tipWork.toString(16), workKey);
+        };
+        return done;
+      },
+      async clear(): Promise<void> {
+        const tx = (await open()).transaction(IDB_STORE, 'readwrite');
+        tx.objectStore(IDB_STORE).delete(key);
+        tx.objectStore(IDB_STORE).delete(workKey);
+        await committed(tx);
       },
     };
   };
@@ -176,16 +241,30 @@ export function idbHeaderStore(factory: IdbFactoryLike): HeaderStoreFor {
 
 /** Per-view memory store: nothing outlives the view. */
 export function memoryHeaderStore(): HeaderStoreFor {
-  const stores = new Map<BtcNetworkId, MemoryScanStateStore>();
+  const stores = new Map<BtcNetworkId, MemoryHeaderStore>();
   return (netId) => {
     let s = stores.get(netId);
     if (s === undefined) {
-      s = new MemoryScanStateStore();
+      s = new MemoryHeaderStore();
       stores.set(netId, s);
     }
     return s;
   };
 }
+
+/**
+ * Most headers this view keeps per network. Above it a saved chain is discarded on load and a sync fails closed
+ * (`UNSUPPORTED`): nothing above checked headers is scanned, and the tab never freezes on an unbounded chain.
+ */
+export const MAX_HEADERS = 400_000;
+/** Headers re-validated between yields to the event loop when a saved chain is loaded. */
+const LOAD_CHUNK = 2016;
+/** Rounds between saves (and at the end of every sync), so a long sync is not re-serialized every round. */
+export const SAVE_EVERY_ROUNDS = 5;
+/** Rounds per {@link syncHeaders} call (about 100 000 headers); the caller is told when more remain. */
+export const MAX_ROUNDS_PER_CALL = 25;
+
+const yieldToEventLoop = (): Promise<void> => new Promise((r) => { setTimeout(r, 0); });
 
 /** How a saved chain was found when loading. */
 export type HeaderLoad = 'none' | 'restored' | 'discarded';
@@ -193,17 +272,18 @@ export type HeaderLoad = 'none' | 'restored' | 'discarded';
 /**
  * The header chain for `net`: the saved one, if it is anchored at the pinned genesis header and every header passes
  * validation again; otherwise a fresh chain at genesis. Saved data is never trusted: a stored chain that fails any
- * check, or names another network or anchor, is discarded (and overwritten) as a whole.
+ * check, names another network or anchor, or exceeds `maxHeaders` is deleted as a whole. Re-validation yields to
+ * the event loop every {@link LOAD_CHUNK} headers and reports progress, so a long chain does not freeze the tab.
  */
 export async function loadHeaderChain(
   net: BtcNetworkInfo,
-  store: ScanStateStore,
-  now?: () => number,
+  store: HeaderStore,
+  o: { readonly now?: () => number; readonly onProgress?: (height: number) => void; readonly maxHeaders?: number } = {},
 ): Promise<{ readonly chain: HeaderChain; readonly loaded: HeaderLoad }> {
   const checkpoint = genesisCheckpoint(net);
   const params = CHAIN_PARAMS[net.id];
-  const o = now === undefined ? {} : { now };
-  const fresh = (): HeaderChain => HeaderChain.create({ params, checkpoint, ...o });
+  const nowOpt = o.now === undefined ? {} : { now: o.now };
+  const fresh = (): HeaderChain => HeaderChain.create({ params, checkpoint, ...nowOpt });
   let text: string | undefined;
   try {
     text = await store.load();
@@ -212,13 +292,21 @@ export async function loadHeaderChain(
   }
   if (text === undefined) return { chain: fresh(), loaded: 'none' };
   try {
-    const j = JSON.parse(text) as Parameters<typeof HeaderChain.fromJSON>[0];
-    if (typeof j !== 'object' || j === null || j.network !== net.id) throw new SilentPaymentError('INVALID_INPUT');
-    return { chain: HeaderChain.fromJSON(j, { params, checkpoint, ...o }), loaded: 'restored' };
+    const j = JSON.parse(text) as SerializedHeaderChain;
+    if (typeof j !== 'object' || j === null || j.network !== net.id || !Array.isArray(j.headers)) throw new SilentPaymentError('INVALID_INPUT');
+    if (j.headers.length > (o.maxHeaders ?? MAX_HEADERS)) throw new SilentPaymentError('UNSUPPORTED');
+    // Checks the stored anchor against the pinned one; the headers follow in chunks.
+    const chain = HeaderChain.fromJSON({ ...j, headers: [] }, { params, checkpoint, ...nowOpt });
+    for (let i = 0; i < j.headers.length; i += LOAD_CHUNK) {
+      const r = chain.connect(j.headers.slice(i, i + LOAD_CHUNK));
+      if (!r.adopted || r.tipHeight !== Math.min(j.headers.length, i + LOAD_CHUNK)) throw new SilentPaymentError('INVALID_HEADER');
+      o.onProgress?.(chain.tipHeight);
+      await yieldToEventLoop();
+    }
+    return { chain, loaded: 'restored' };
   } catch {
-    const chain = fresh();
-    await store.save(JSON.stringify(chain.toJSON())).catch(() => undefined);
-    return { chain, loaded: 'discarded' };
+    await store.clear().catch(() => undefined);
+    return { chain: fresh(), loaded: 'discarded' };
   }
 }
 
@@ -226,56 +314,94 @@ export interface HeaderSyncOutcome {
   readonly tipHeight: number;
   /** Lowest height above which a heavier chain replaced verified headers during this sync. */
   readonly reorgFrom: number | undefined;
-  /** A source served a competing branch with no more work than the verified chain; it was ignored. */
+  /** A source served a competing branch, compared in full, with no more work than the verified chain; it was ignored. */
   readonly lessWork: boolean;
-  /** Every round that changed the chain was saved. */
+  /** Every change was saved (false: storage failed, or another tab holds a heavier chain). */
   readonly saved: boolean;
+  /** The round limit stopped this call before the sources ran out of headers. */
+  readonly more: boolean;
+}
+
+/** A failed sync, with what had already happened to the chain before the failure. */
+export class HeaderSyncError extends SilentPaymentError {
+  public constructor(code: SilentPaymentError['code'], public readonly partial: HeaderSyncOutcome) {
+    super(code);
+  }
 }
 
 /**
- * Brings `chain` up to date with `sources`, {@link HEADERS_PER_ROUND} headers at a time, saving after every round
- * that changed it (so a cancelled or failed sync resumes from there). Fails closed: when any source fails (bad
- * proof of work, broken linkage, a rule violation, a malformed or missing answer) this throws after saving the
- * still-valid chain; an invalid batch never changes the chain.
+ * Brings `chain` up to date with `sources`, {@link HEADERS_PER_ROUND} headers per round (a competing branch is
+ * always read and compared in full, up to the package's fork limit), at most `maxRounds` rounds per call, saving
+ * every {@link SAVE_EVERY_ROUNDS} rounds and at the end. Fails closed with a {@link HeaderSyncError} when any source
+ * fails (bad proof of work, broken linkage, a rule violation, a malformed or missing answer, a fork too deep to
+ * compare) or the chain passes `maxHeaders`; the error carries what changed before (a heavier fork may already have
+ * been adopted), and the still-valid chain is saved first. An invalid batch never changes the chain.
  */
 export async function syncHeaders(p: {
   readonly chain: HeaderChain;
   readonly sources: readonly HeaderSource[];
-  readonly store: ScanStateStore;
+  readonly store: HeaderStore;
   readonly signal?: AbortSignal;
   readonly onProgress?: (height: number) => void;
+  readonly maxRounds?: number;
+  readonly maxHeaders?: number;
 }): Promise<HeaderSyncOutcome> {
   const { chain } = p;
+  const maxRounds = p.maxRounds ?? MAX_ROUNDS_PER_CALL;
+  const maxHeaders = p.maxHeaders ?? MAX_HEADERS;
   let reorgFrom: number | undefined;
   let lessWork = false;
   let saved = true;
+  let dirty = 0;
+  let more = false;
+  const outcome = (): HeaderSyncOutcome => ({ tipHeight: chain.tipHeight, reorgFrom, lessWork, saved, more });
   const save = async (): Promise<void> => {
+    dirty = 0;
+    if (chain.tipHeight > maxHeaders) return;
     try {
-      await p.store.save(JSON.stringify(chain.toJSON()));
+      if (!(await p.store.save(JSON.stringify(chain.toJSON()), chain.tipWork))) saved = false;
     } catch {
       saved = false;
     }
   };
-  for (;;) {
+  const failWith = async (code: SilentPaymentError['code']): Promise<never> => {
+    if (dirty > 0) await save();
+    throw new HeaderSyncError(code, outcome());
+  };
+  for (let round = 0; ; round++) {
+    if (round === maxRounds) {
+      more = true;
+      break;
+    }
     const before = chain.tipHash;
-    const results = await syncHeaderChainFromSources(chain, p.sources, {
-      maxHeaders: HEADERS_PER_ROUND,
-      batchSize: 1000,
-      ...(p.signal === undefined ? {} : { signal: p.signal }),
-    });
+    let results;
+    try {
+      results = await syncHeaderChainFromSources(chain, p.sources, {
+        maxHeaders: HEADERS_PER_ROUND,
+        batchSize: 1000,
+        ...(p.signal === undefined ? {} : { signal: p.signal }),
+      });
+    } catch (e) {
+      return failWith(e instanceof SilentPaymentError ? e.code : 'TRANSPORT_FAILURE');
+    }
     const changed = chain.tipHash !== before;
-    if (changed) await save();
     for (const r of results) {
-      if (!r.ok) throw new SilentPaymentError(r.code);
+      if (!r.ok) continue;
       const s = r.result;
       if (s.reorg) reorgFrom = Math.min(reorgFrom ?? s.forkHeight, s.forkHeight);
-      // A probe missed (more than one header read) and the branch was not adopted: it had no more work.
+      // A probe missed (more than one header read) and the whole branch was compared and not adopted.
       if (!s.adopted && s.fetched > 1 && s.forkHeight < chain.tipHeight) lessWork = true;
     }
+    if (changed) dirty++;
+    const failed = results.find((r) => !r.ok);
+    if (failed !== undefined && !failed.ok) return failWith(failed.code);
+    if (chain.tipHeight > maxHeaders) return failWith('UNSUPPORTED');
     if (!changed) break;
+    if (dirty >= SAVE_EVERY_ROUNDS) await save();
     p.onProgress?.(chain.tipHeight);
   }
-  return { tipHeight: chain.tipHeight, reorgFrom, lessWork, saved };
+  if (dirty > 0) await save();
+  return outcome();
 }
 
 /**

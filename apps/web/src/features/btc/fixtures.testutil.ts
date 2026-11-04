@@ -296,43 +296,97 @@ export function walletA(netId: BtcNetworkId = 'regtest'): BtcWallet {
   return walletFromSeedHex(SEED_A, btcNetwork(netId));
 }
 
-/** Just enough of IndexedDB for the header store: one database, one object store, async request callbacks. */
-export function fakeIdb(o: { failOpen?: boolean; failGet?: boolean } = {}): IdbFactoryLike & { data: Map<string, unknown>; opens: number } {
+export interface FakeIdb extends IdbFactoryLike {
+  /** Committed records. */
+  readonly data: Map<string, unknown>;
+  opens: number;
+  /** Fail the next `open`. */
+  failOpen: boolean;
+  /** Fail the next `get` request. */
+  failGet: boolean;
+  /** Abort the next read-write transaction at commit time, after its requests succeeded. */
+  failCommit: boolean;
+}
+
+/**
+ * Just enough of IndexedDB for the header store: one database, one object store, async request callbacks, and
+ * transactions that buffer writes and apply them only on commit (`oncomplete`), or drop them on `abort()`.
+ * Several stores may share one fake (two tabs).
+ */
+export function fakeIdb(): FakeIdb {
   const data = new Map<string, unknown>();
   const names = new Set<string>();
-  const req = <T,>(f: () => T, fail = false): IDBRequest<T> => {
-    const r = {} as { result: T; onsuccess?: () => void; onerror?: () => void };
-    setTimeout(() => {
-      if (fail) { r.onerror?.(); return; }
-      r.result = f();
-      r.onsuccess?.();
-    }, 0);
-    return r as unknown as IDBRequest<T>;
+  const f: FakeIdb = { data, opens: 0, failOpen: false, failGet: false, failCommit: false, open: () => undefined as never };
+  const transaction = (_store: string, mode: IDBTransactionMode = 'readonly'): IDBTransaction => {
+    const writes: (() => void)[] = [];
+    let pending = 0;
+    let finished = false;
+    const tx = {} as { oncomplete?: () => void; onabort?: () => void; onerror?: () => void; abort: () => void; objectStore: () => unknown };
+    const finish = (): void => {
+      if (finished || pending > 0) return;
+      finished = true;
+      setTimeout(() => {
+        if (mode === 'readwrite' && f.failCommit) {
+          f.failCommit = false;
+          tx.onerror?.();
+          tx.onabort?.();
+          return;
+        }
+        for (const w of writes) w();
+        tx.oncomplete?.();
+      }, 0);
+    };
+    tx.abort = (): void => {
+      finished = true;
+      setTimeout(() => { tx.onabort?.(); }, 0);
+    };
+    const req = <T,>(run: () => T, fail = false): IDBRequest<T> => {
+      const r = {} as { result: T; onsuccess?: () => void; onerror?: () => void };
+      pending++;
+      setTimeout(() => {
+        pending--;
+        if (finished) return;
+        if (fail) {
+          r.onerror?.();
+          finished = true;
+          tx.onerror?.();
+          tx.onabort?.();
+          return;
+        }
+        r.result = run();
+        r.onsuccess?.();
+        finish();
+      }, 0);
+      return r as unknown as IDBRequest<T>;
+    };
+    tx.objectStore = () => ({
+      get: (k: string) => {
+        const fail = f.failGet;
+        f.failGet = false;
+        return req(() => data.get(k), fail);
+      },
+      put: (v: unknown, k: string) => req(() => { writes.push(() => data.set(k, v)); return k; }),
+      delete: (k: string) => req(() => { writes.push(() => data.delete(k)); }),
+    });
+    return tx as unknown as IDBTransaction;
   };
   const db = {
     objectStoreNames: { contains: (n: string) => names.has(n) },
     createObjectStore: (n: string) => { names.add(n); },
-    transaction: () => ({
-      objectStore: () => ({
-        get: (k: string) => req(() => data.get(k), o.failGet),
-        put: (v: unknown, k: string) => req(() => { data.set(k, v); return k; }),
-      }),
-    }),
+    transaction,
   };
-  const f = {
-    data,
-    opens: 0,
-    open: () => {
-      f.opens++;
-      const r = {} as { result: unknown; onupgradeneeded?: () => void; onsuccess?: () => void; onerror?: () => void };
-      setTimeout(() => {
-        if (o.failOpen === true) { r.onerror?.(); return; }
-        r.result = db;
-        r.onupgradeneeded?.();
-        r.onsuccess?.();
-      }, 0);
-      return r as unknown as IDBOpenDBRequest;
-    },
+  f.open = () => {
+    f.opens++;
+    const r = {} as { result: unknown; onupgradeneeded?: () => void; onsuccess?: () => void; onerror?: () => void };
+    const fail = f.failOpen;
+    f.failOpen = false;
+    setTimeout(() => {
+      if (fail) { r.onerror?.(); return; }
+      r.result = db;
+      r.onupgradeneeded?.();
+      r.onsuccess?.();
+    }, 0);
+    return r as unknown as IDBOpenDBRequest;
   };
   return f;
 }

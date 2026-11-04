@@ -85,6 +85,40 @@ describe('syncHeaderChain', () => {
     expect((await syncHeaderChain(c, new ListHeaderSource(MAIN), { maxHeaders: 10 })).tipHeight).toBe(10);
     expect((await syncHeaderChain(c, new ListHeaderSource(MAIN), { maxHeaders: 10, toHeight: 15 })).tipHeight).toBe(15);
   });
+  it('evaluates a heavier fork deeper than maxHeaders in full and adopts it (the probe can overshoot)', async () => {
+    const LONG = [REGTEST_GENESIS, ...extend(REGTEST_GENESIS, 60, 600, 0x207fffff, 1)];
+    for (const depth of [31, 35, 39]) {
+      const c = regtestChain();
+      await syncHeaderChain(c, new ListHeaderSource(LONG));
+      const forkAt = 60 - depth;
+      const heavier = [...LONG.slice(0, forkAt + 1), ...extend(LONG[forkAt]!, depth + 1, 601, 0x207fffff, 5)];
+      const r = await syncHeaderChain(c, new ListHeaderSource(heavier), { maxHeaders: 40 });
+      expect(r, `depth ${String(depth)}`).toMatchObject({ adopted: true, reorg: true, forkHeight: forkAt, tipHeight: 61 });
+      expect(c.tipHash).toBe(parseHeader(heavier[61]!).hash);
+    }
+  });
+  it('compares a lighter fork against the whole source chain before calling it lighter', async () => {
+    const LONG = [REGTEST_GENESIS, ...extend(REGTEST_GENESIS, 60, 600, 0x207fffff, 1)];
+    const c = regtestChain();
+    await syncHeaderChain(c, new ListHeaderSource(LONG));
+    const lighter = [...LONG.slice(0, 26), ...extend(LONG[25]!, 30, 601, 0x207fffff, 6)]; // tip 55
+    const src = new ListHeaderSource(lighter);
+    const r = await syncHeaderChain(c, src, { maxHeaders: 10 });
+    expect(r).toMatchObject({ adopted: false, reorg: false, tipHeight: 60 });
+    // Every header of the competing branch up to the source tip was read.
+    expect(r.fetched).toBeGreaterThanOrEqual(30);
+    expect(c.tipHash).toBe(parseHeader(LONG[60]!).hash);
+  });
+  it('refuses to judge a fork deeper than maxForkHeaders (FORK_TOO_DEEP), changing nothing', async () => {
+    const LONG = [REGTEST_GENESIS, ...extend(REGTEST_GENESIS, 60, 600, 0x207fffff, 1)];
+    const c = regtestChain();
+    await syncHeaderChain(c, new ListHeaderSource(LONG));
+    const heavier = [...LONG.slice(0, 21), ...extend(LONG[20]!, 45, 601, 0x207fffff, 7)];
+    expect(await codeOf(syncHeaderChain(c, new ListHeaderSource(heavier), { maxForkHeaders: 30 }))).toBe('FORK_TOO_DEEP');
+    expect(c.tipHash).toBe(parseHeader(LONG[60]!).hash);
+    expect(await codeOf(syncHeaderChain(c, new ListHeaderSource(heavier), { maxForkHeaders: 0 }))).toBe('INVALID_INPUT');
+    expect((await syncHeaderChain(c, new ListHeaderSource(heavier), { maxForkHeaders: 65 })).adopted).toBe(true); // the probe overshot to genesis: 65 headers
+  });
 });
 
 describe('HeaderAnchoredTweakSource', () => {

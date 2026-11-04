@@ -248,17 +248,18 @@ describe('checkpoints and serialization', () => {
       HeaderChain.create({ params: TINY, checkpoint: { ...cp8, previousHeaders: [hs[0]!, hs[2]!] } }),
     ).toThrow(/header-chain rule/);
   });
+  const PINNED = { height: 0, hash: parseHeader(REGTEST_GENESIS).hash, headerHex: REGTEST_GENESIS };
   it('round-trips through JSON and re-validates every header on load', () => {
     const c = regtestChain();
     c.connect(extend(REGTEST_GENESIS, 4, 600, 0x207fffff));
     const json = c.toJSON();
-    const back = HeaderChain.fromJSON(JSON.parse(JSON.stringify(json)) as typeof json, { now: NOW });
+    const back = HeaderChain.fromJSON(JSON.parse(JSON.stringify(json)) as typeof json, { now: NOW, checkpoint: PINNED });
     expect(back.tipHash).toBe(c.tipHash);
     expect(back.tipWork).toBe(c.tipWork);
     const tampered = { ...json, headers: [...json.headers.slice(0, 2), json.headers[3]!, json.headers[2]!] };
-    expect(() => HeaderChain.fromJSON(tampered, { now: NOW })).toThrow(/header-chain rule/);
-    expect(() => HeaderChain.fromJSON({ ...json, network: 'litecoin' } as never)).toThrow(/invalid input/);
-    expect(() => HeaderChain.fromJSON(null as never)).toThrow(/invalid input/);
+    expect(() => HeaderChain.fromJSON(tampered, { now: NOW, checkpoint: PINNED })).toThrow(/header-chain rule/);
+    expect(() => HeaderChain.fromJSON({ ...json, network: 'litecoin' } as never, { checkpoint: PINNED })).toThrow(/invalid input/);
+    expect(() => HeaderChain.fromJSON(null as never, { checkpoint: PINNED })).toThrow(/invalid input/);
   });
   it('fromJSON refuses stored data whose checkpoint differs from the pinned one (never trusts a stored anchor)', () => {
     const pinned = { height: 0, hash: parseHeader(REGTEST_GENESIS).hash, headerHex: REGTEST_GENESIS };
@@ -269,7 +270,9 @@ describe('checkpoints and serialization', () => {
     // A self-consistent chain on a substituted anchor: valid on its own, but not anchored to what the caller pinned.
     const fake = mine('11'.repeat(32), 1_296_688_602, 0x207fffff, { tag: 9 });
     const forged = { ...json, checkpoint: { height: 0, hash: parseHeader(fake).hash, headerHex: fake, previousHeaders: [] }, headers: extend(fake, 5, 600, 0x207fffff) };
-    expect(HeaderChain.fromJSON(forged, { now: NOW }).tipHeight).toBe(5);
+    // The stored checkpoint is self-consistent, so only the pinned comparison catches it; the pin is required.
+    expect(() => HeaderChain.fromJSON(forged, { now: NOW } as never)).toThrow(/invalid input/);
+    expect(() => HeaderChain.fromJSON(forged, null as never)).toThrow(/invalid input/);
     expect(() => HeaderChain.fromJSON(forged, { now: NOW, checkpoint: pinned })).toThrow(/header-chain rule/);
     expect(() => HeaderChain.fromJSON({ ...json, checkpoint: { ...json.checkpoint, previousHeaders: [REGTEST_GENESIS] } }, { now: NOW, checkpoint: pinned })).toThrow(/header-chain rule/);
     expect(() => HeaderChain.fromJSON({ ...json, checkpoint: undefined } as never, { now: NOW, checkpoint: pinned })).toThrow(/header-chain rule/);
@@ -282,7 +285,7 @@ describe('checkpoints and serialization', () => {
     const hs = extend(REGTEST_GENESIS, 100_005, 1_201, 0x207fffff);
     for (let i = 0; i < hs.length; i += 50_000) c.connect(hs.slice(i, i + 50_000));
     expect(c.tipHeight).toBe(100_005);
-    const back = HeaderChain.fromJSON(c.toJSON(), { now: NOW });
+    const back = HeaderChain.fromJSON(c.toJSON(), { now: NOW, checkpoint: PINNED });
     expect(back.tipHash).toBe(c.tipHash);
     expect(back.tipWork).toBe(c.tipWork);
   });

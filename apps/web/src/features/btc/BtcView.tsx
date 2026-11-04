@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { zeroize } from '@ghostpay/btc-silent-payments';
+import { MAX_FORK_HEADERS, SilentPaymentError, zeroize, type HeaderChain } from '@ghostpay/btc-silent-payments';
 import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { CameraImporter } from '../../components/CameraImporter';
@@ -8,11 +8,13 @@ import { clearCopiedBackup, SecretBackup } from '../../components/SecretBackup';
 import { subscribeAppLock } from '../../lib/appLock';
 import { useServices } from '../../lib/services';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
-import type { HeaderChain } from '@ghostpay/btc-silent-payments';
 import { EsploraClient, normalizeEsploraUrl } from './esplora';
 import {
   EsploraHeaderSource,
+  HeaderSyncError,
   idbHeaderStore,
+  MAX_HEADERS,
+  type HeaderSyncOutcome,
   invalidateReorged,
   loadHeaderChain,
   memoryHeaderStore,
@@ -203,35 +205,72 @@ export function BtcView(props: { readonly headerStore?: HeaderStoreFor } = {}): 
     if (chainRef.current?.netId === net.id) {
       chain = chainRef.current.chain;
     } else {
-      const loaded = await loadHeaderChain(net, headerStorage.storeFor(net.id));
+      if (live()) setHeaderProgress(t('btc.headers.loading', { height: '0' }));
+      const loaded = await loadHeaderChain(net, headerStorage.storeFor(net.id), {
+        onProgress: (h) => { if (live()) setHeaderProgress(t('btc.headers.loading', { height: String(h) })); },
+      });
       chain = loaded.chain;
       chainRef.current = { netId: net.id, chain };
       if (loaded.loaded === 'restored') notes.push({ kind: 'info', text: t('btc.headers.restored', { count: String(chain.tipHeight) }) });
       if (loaded.loaded === 'discarded') notes.push({ kind: 'warn', text: t('btc.headers.discarded') });
     }
     if (live()) setHeaderProgress(t('btc.headers.checking'));
+    const before = chain.tipHash;
+    let out: HeaderSyncOutcome | undefined;
+    let failure: unknown;
     try {
-      const out = await syncHeaders({
+      out = await syncHeaders({
         chain,
         sources: [new EsploraHeaderSource(c)],
         store: headerStorage.storeFor(net.id),
         signal,
         onProgress: (h) => { if (live()) setHeaderProgress(t('btc.headers.progress', { height: String(h) })); },
       });
-      if (out.reorgFrom !== undefined) notes.push({ kind: 'warn', text: t('btc.headers.reorg', { height: String(out.reorgFrom) }) });
-      if (out.lessWork) notes.push({ kind: 'warn', text: t('btc.headers.lessWork') });
-      if (!headerStorage.persistent || !out.saved) notes.push({ kind: 'info', text: t('btc.headers.notSaved') });
-      notes.push({ kind: 'ok', text: t('btc.headers.verified', { height: String(chain.tipHeight), hash: chain.tipHash }) });
-      if (!live()) return undefined;
-      notes.push(...applyChainToScan(chain));
-      setHeaderNotes(notes);
-      return chain;
     } catch (e) {
-      if (live()) setHeaderNotes([...notes, { kind: 'error', text: t('btc.headers.failed', { reason: btcErrorMessage(e) }) }]);
-      return undefined;
+      failure = e;
     } finally {
       if (live()) setHeaderProgress(undefined);
     }
+    // The chain may have switched before a failure, or while this action went stale: results from replaced blocks
+    // are removed (and their tweaks wiped) whenever it changed, before anything else.
+    const dropped = chain.tipHash === before ? [] : applyChainToScan(chain);
+    const partial = out ?? (failure instanceof HeaderSyncError ? failure.partial : undefined);
+    if (partial?.reorgFrom !== undefined) notes.push({ kind: 'warn', text: t('btc.headers.reorg', { height: String(partial.reorgFrom) }) });
+    if (partial?.lessWork === true) notes.push({ kind: 'warn', text: t('btc.headers.lessWork') }, { kind: 'info', text: t('btc.headers.conflictHint') });
+    notes.push(...dropped);
+    if (out === undefined) {
+      const code = failure instanceof SilentPaymentError ? failure.code : undefined;
+      const reason =
+        code === 'FORK_TOO_DEEP' ? t('btc.headers.forkTooDeep', { max: String(MAX_FORK_HEADERS) })
+          : code === 'UNSUPPORTED' ? t('btc.headers.tooMany', { max: String(MAX_HEADERS) })
+            : btcErrorMessage(failure);
+      notes.push({ kind: 'error', text: t('btc.headers.failed', { reason }) });
+      if (code === 'FORK_TOO_DEEP') notes.push({ kind: 'info', text: t('btc.headers.conflictHint') });
+      if (live()) setHeaderNotes(notes);
+      return undefined;
+    }
+    if (!headerStorage.persistent || !out.saved) notes.push({ kind: 'info', text: t('btc.headers.notSaved') });
+    notes.push({ kind: 'ok', text: t('btc.headers.verified', { height: String(chain.tipHeight), hash: chain.tipHash }) });
+    if (out.more) notes.push({ kind: 'info', text: t('btc.headers.more', { height: String(chain.tipHeight) }) });
+    if (!live()) return undefined;
+    setHeaderNotes(notes);
+    return chain;
+  };
+
+  /** Deletes this network's saved headers and forgets the checked chain; the next check starts at genesis. */
+  const forgetHeaders = (): void => {
+    setError(undefined);
+    const { live } = begin();
+    chainRef.current = undefined;
+    void (async () => {
+      let ok = true;
+      try {
+        await headerStorage.storeFor(net.id).clear();
+      } catch {
+        ok = false;
+      }
+      if (live()) setHeaderNotes([{ kind: ok ? 'info' : 'error', text: ok ? t('btc.headers.forgotten') : t('btc.headers.forgetFailed') }]);
+    })();
   };
 
   const updateHeaders = (): void => {
@@ -283,7 +322,14 @@ export function BtcView(props: { readonly headerStore?: HeaderStoreFor } = {}): 
         setScanNote(t('btc.scan.scanned', { from: String(res.fromHeight), to: String(res.toHeight) }));
         // Nothing is selected: spending outputs together links them publicly (PRIVACY-E2E-03), so each is an explicit choice.
       } catch (e) {
-        if (live()) setError(btcErrorMessage(e));
+        if (live()) {
+          setError(btcErrorMessage(e));
+          // The server's blocks disagree with the checked headers: say how to recover if that is expected.
+          if (e instanceof SilentPaymentError && e.code === 'REORG_DETECTED') {
+            const hint = t('btc.headers.conflictHint');
+            setHeaderNotes((n) => (n.some((x) => x.text === hint) ? n : [...n, { kind: 'info', text: hint }]));
+          }
+        }
       } finally {
         if (live()) setScanning(false);
       }
@@ -471,6 +517,9 @@ export function BtcView(props: { readonly headerStore?: HeaderStoreFor } = {}): 
             {headerStorage.persistent && <p className="hint">{t('btc.headers.storageNote')}</p>}
             {headerProgress !== undefined && <p role="status">{headerProgress}</p>}
             {headerNotes.map((n) => <Notice key={n.text} kind={n.kind}>{n.text}</Notice>)}
+            <button type="button" className="btn btn-danger" disabled={scanning} onClick={forgetHeaders}>
+              {t('btc.headers.forget')}
+            </button>
           </section>
           <details>
             <summary>{t('btc.scan.details')}</summary>

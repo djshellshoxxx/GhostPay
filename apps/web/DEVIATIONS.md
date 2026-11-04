@@ -130,20 +130,41 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     is trusted for availability and can withhold a heavier chain or eclipse the device (only one source can be configured
     today; `syncHeaders` accepts several and fails closed if any fails); test-network proof of work is cheap, so a server
     can mine a heavier fork. A first sync starts at genesis (no later checkpoint is pinned): slow on testnet4/signet
-    (~10 requests per 100 headers), resumable because progress is saved every 4032 headers.
-    Persistence: IndexedDB `ghostpay-btc-headers` / store `chains`, key `headers:v1:<network>`, value the JSON of
-    `HeaderChain.toJSON()` (version, network, checkpoint, header hex list). Public chain data only: no key, address,
-    amount or scan result. Load re-validates every header with the pinned genesis as the required checkpoint; any failure
-    (bad JSON, wrong network, substituted anchor, a tampered header) discards the whole record, overwrites it with a fresh
-    genesis chain and resyncs. Without IndexedDB (or when a save fails) the view says headers are not kept. The package's
+    (~10 requests per 100 headers). One "Update headers"/scan call runs at most 25 rounds of 4032 headers (~100 000) and
+    says when more remain; progress is saved every 5 rounds and at the end of every call (also before a failure), so it
+    resumes. Size limit: `MAX_HEADERS` = 400 000 per network; a saved chain above it is deleted on load and a sync past it
+    fails closed (`UNSUPPORTED`, "longer than the 400000 headers this app keeps"): nothing above checked headers is
+    scanned. Re-validation of a saved chain yields to the event loop every 2016 headers and shows progress, so it does not
+    freeze the tab (it still costs seconds of CPU for ~300 000 headers, on the main thread).
+    Competing branches: when the server disagrees, its whole branch from the fork point to its tip is downloaded and
+    compared (strictly more cumulative work wins; review H1 fixed a window that never adopted forks deeper than ~2048).
+    "No more work" is reported only after that full comparison. A branch deeper than 100 000 headers is not evaluated: the
+    check fails with its own message ("competing chain more than 100000 headers deep ... not compared") and nothing changes.
+    Persistence: IndexedDB `ghostpay-btc-headers` / store `chains`; key `headers:v1:<network>` holds the JSON of
+    `HeaderChain.toJSON()` (version, network, checkpoint, header hex list) and `headers:v1:<network>:work` its cumulative
+    work. Public chain data only: no key, address, amount or scan result. A save reads the stored work and writes in one
+    transaction and never replaces a chain with strictly more work (another tab's); it reports success only after the
+    transaction commits (`oncomplete`). Load re-validates every header with the pinned genesis as the **required**
+    checkpoint (`HeaderChain.fromJSON` no longer accepts a call without one); any failure (bad JSON, wrong network, a
+    substituted self-consistent anchor, a tampered header, over the size limit) deletes the record and resyncs from
+    genesis. Without IndexedDB (or when a save fails or is refused) the view says headers are not kept. The package's
     `ScanState` is still **not** persisted (it is private and needs an encrypted store): scan results stay in memory.
+    Saved headers are keyed by network only, so they pin whichever server first filled them: after a deliberate server
+    change the new server may look like a lighter fork (or its blocks are refused with `REORG_DETECTED`). The view then
+    says so and offers **"Forget saved headers for this network"**, which deletes the record and the in-memory chain;
+    the next check starts at genesis from the configured server. It is never done automatically.
     Failure handling: a header that fails any rule, a malformed or missing answer, or an unreachable server fails the
     header check, keeps (and has saved) only the valid prefix, and blocks the scan. A branch with no more work is ignored
     and its blocks are refused (`REORG_DETECTED`). A branch with more work is adopted; scan results from blocks above the
     fork are removed (spend tweaks wiped), the result is cut back to the fork height (or discarded) and the view says so.
+    This happens whenever the chain changed, also when a later round of the same sync fails or the action went stale
+    (review H2): the shared chain is updated in place, so results are invalidated before anything else is reported.
     `scanForPayments` without `headers` still exists (unit tests and per-block checks); the view never calls it that way.
-    Remaining gaps: a heavier fork longer than 4032 headers beyond the fork point is not adopted in one round (the scan
-    then fails closed); `spentCount` of a cut-back scan still counts outputs from removed blocks. Unverified: the
+    Not done (review L-d): the in-memory chain keeps every active header since genesis (parsed), not only the last
+    2016 + 11 that validation needs. Fork evaluation, reorg reconciliation of scan results (`hashAt` at any scanned
+    height), the probe and persistence all read old active headers, so bounding it would need a separate hash index and
+    store-backed reads; at the 400 000 limit it is tens of MB. Remaining gaps: `spentCount` of a cut-back scan still
+    counts outputs from removed blocks. Unverified: the
     `/blocks/:height` field mapping follows the electrs/Esplora API and is exercised only against the test mock (no live
     server is contacted by tests); a mismatch fails closed (each rebuilt header must hash to the summary's `id`).
 

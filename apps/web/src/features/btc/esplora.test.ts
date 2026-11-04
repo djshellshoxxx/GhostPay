@@ -1,8 +1,8 @@
-import { MemoryScanStateStore, parseHeader, SilentPaymentError } from '@ghostpay/btc-silent-payments';
+import { parseHeader, SilentPaymentError } from '@ghostpay/btc-silent-payments';
 import { describe, expect, it } from 'vitest';
 import { EsploraClient, EsploraTweakSource, normalizeEsploraUrl } from './esplora';
 import { coinbase, mineHeader, mockChain, paymentTx, walletA, withTxid, withWitnessCommitment, SEED_B } from './fixtures.testutil';
-import { EsploraHeaderSource, loadHeaderChain, syncHeaders } from './headers';
+import { EsploraHeaderSource, loadHeaderChain, MemoryHeaderStore, syncHeaders } from './headers';
 import { BTC_NETWORKS, btcNetwork, MAINNET_GENESIS } from './network';
 import { MAX_SCAN_BLOCKS, scanForPayments } from './scan';
 import { SCAN_CHECKS, SCAN_LIMITS } from './verification';
@@ -607,9 +607,9 @@ describe('EsploraTweakSource and scanning', () => {
     // The view always scans against the checked header chain: the unanchored block cannot even enter it, and a scan
     // anchored to the honest chain refuses it.
     const honest = mockChain('regtest', w);
-    const { chain: headers } = await loadHeaderChain(btcNetwork('regtest'), new MemoryScanStateStore(), () => 2_000_000_000);
-    await syncHeaders({ chain: headers, sources: [new EsploraHeaderSource(new EsploraClient({ baseUrl: BASE, fetchFn: honest.fetchFn }))], store: new MemoryScanStateStore() });
-    expect(await codeOf(syncHeaders({ chain: headers, sources: [new EsploraHeaderSource(client)], store: new MemoryScanStateStore() }))).toBe('INVALID_HEADER');
+    const { chain: headers } = await loadHeaderChain(btcNetwork('regtest'), new MemoryHeaderStore(), { now: () => 2_000_000_000 });
+    await syncHeaders({ chain: headers, sources: [new EsploraHeaderSource(new EsploraClient({ baseUrl: BASE, fetchFn: honest.fetchFn }))], store: new MemoryHeaderStore() });
+    expect(await codeOf(syncHeaders({ chain: headers, sources: [new EsploraHeaderSource(client)], store: new MemoryHeaderStore() }))).toBe('INVALID_HEADER');
     expect(await codeOf(scanForPayments({ client, wallet: w, fromHeight: 4, headers }))).toBe('REORG_DETECTED');
     // The disclosure must not claim more than that.
     const text = [...SCAN_CHECKS, ...SCAN_LIMITS].join('\n');

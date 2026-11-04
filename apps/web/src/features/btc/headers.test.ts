@@ -1,4 +1,4 @@
-import { CHAIN_PARAMS, HeaderChain, MemoryScanStateStore, parseHeader, SilentPaymentError, wrapSecret } from '@ghostpay/btc-silent-payments';
+import { CHAIN_PARAMS, HeaderChain, MAX_FORK_HEADERS, parseHeader, SilentPaymentError, wrapSecret, type HeaderSource } from '@ghostpay/btc-silent-payments';
 import { describe, expect, it } from 'vitest';
 import { EsploraClient } from './esplora';
 import { blockSummary, coinbase, fakeIdb, forkChain, mineHeader, mockChain, walletA, type MockChain } from './fixtures.testutil';
@@ -7,11 +7,17 @@ import {
   GENESIS_HEADERS,
   genesisCheckpoint,
   HEADERS_PER_ROUND,
+  HeaderSyncError,
   idbHeaderStore,
   invalidateReorged,
   loadHeaderChain,
   memoryHeaderStore,
+  MemoryHeaderStore,
+  MAX_HEADERS,
+  MAX_ROUNDS_PER_CALL,
+  SAVE_EVERY_ROUNDS,
   syncHeaders,
+  type HeaderStore,
 } from './headers';
 import { BTC_NETWORKS, btcNetwork } from './network';
 import type { FoundPayment, ScanResult } from './scan';
@@ -29,8 +35,8 @@ function codeOf(p: Promise<unknown>): Promise<string> {
 
 const sourceOf = (chain: MockChain): EsploraHeaderSource => new EsploraHeaderSource(new EsploraClient({ baseUrl: BASE, fetchFn: chain.fetchFn }));
 
-async function synced(chain: MockChain, store = new MemoryScanStateStore()): Promise<HeaderChain> {
-  const { chain: headers } = await loadHeaderChain(regtest, store, NOW);
+async function synced(chain: MockChain, store = new MemoryHeaderStore()): Promise<HeaderChain> {
+  const { chain: headers } = await loadHeaderChain(regtest, store, { now: NOW });
   await syncHeaders({ chain: headers, sources: [sourceOf(chain)], store });
   return headers;
 }
@@ -99,66 +105,120 @@ describe('Esplora header source', () => {
   });
 });
 
+/** A store that fails every operation. */
+const brokenStore = (): HeaderStore => ({
+  load: () => Promise.reject(new Error('x')),
+  save: () => Promise.reject(new Error('quota')),
+  clear: () => Promise.reject(new Error('x')),
+});
+
 describe('loading saved headers', () => {
   it('starts at genesis with nothing saved, and when the store cannot be read', async () => {
-    const empty = await loadHeaderChain(regtest, new MemoryScanStateStore(), NOW);
+    const empty = await loadHeaderChain(regtest, new MemoryHeaderStore(), { now: NOW });
     expect(empty).toMatchObject({ loaded: 'none' });
     expect(empty.chain.tipHash).toBe(regtest.genesisHash);
-    const broken = await loadHeaderChain(regtest, { load: () => Promise.reject(new Error('x')), save: () => Promise.resolve() }, NOW);
-    expect(broken.loaded).toBe('none');
+    expect((await loadHeaderChain(regtest, brokenStore(), { now: NOW })).loaded).toBe('none');
   });
 
-  it('restores a saved chain only after checking it again, and discards (and overwrites) anything that fails', async () => {
+  it('restores a saved chain only after checking it again, and deletes anything that fails', async () => {
     const chain = mockChain('regtest', walletA());
-    const store = new MemoryScanStateStore();
+    const store = new MemoryHeaderStore();
     const first = await synced(chain, store);
     const saved = store.value ?? '';
-    const back = await loadHeaderChain(regtest, store, NOW);
+    const back = await loadHeaderChain(regtest, store, { now: NOW });
     expect(back.loaded).toBe('restored');
     expect(back.chain.tipHash).toBe(first.tipHash);
-    for (const bad of ['', 'null', '[]', saved.replace('"regtest"', '"testnet4"'), saved.replace(/("headers":\["[0-9a-f]{152})[0-9a-f]{8}/, '$1ffffffff')]) {
+    for (const bad of ['', 'null', '[]', '{"network":"regtest"}', saved.replace('"regtest"', '"testnet4"'), saved.replace(/("headers":\["[0-9a-f]{152})[0-9a-f]{8}/, '$1ffffffff')]) {
       store.value = bad;
-      const r = await loadHeaderChain(regtest, store, NOW);
+      store.work = 1n << 200n;
+      const r = await loadHeaderChain(regtest, store, { now: NOW });
       expect(r.loaded, bad.slice(0, 20)).toBe('discarded');
       expect(r.chain.tipHeight).toBe(0);
-      expect(JSON.parse(store.value)).toMatchObject({ network: 'regtest', headers: [] });
+      // Deleted outright, so a fresh genesis chain can be saved again (the work guard would refuse an overwrite).
+      expect(store.value).toBeUndefined();
+      expect(store.work).toBeUndefined();
     }
-    // A discard is reported even when the fresh chain cannot be written back.
-    const r = await loadHeaderChain(regtest, { load: () => Promise.resolve('x'), save: () => Promise.reject(new Error('quota')) }, NOW);
+    // A discard is reported even when the record cannot be deleted.
+    const r = await loadHeaderChain(regtest, { ...brokenStore(), load: () => Promise.resolve('x') }, { now: NOW });
     expect(r.loaded).toBe('discarded');
+  });
+
+  it('never accepts a self-consistent chain on a substituted anchor', async () => {
+    const chain = mockChain('regtest', walletA());
+    const store = new MemoryHeaderStore();
+    await synced(chain, store);
+    // Another "genesis" with valid regtest proof of work and five valid headers on it.
+    const fakeGenesis = mineHeader('11'.repeat(32), [coinbase(900)], 0x207fffff, 1_296_688_602);
+    const headers: string[] = [];
+    let prev = fakeGenesis;
+    for (let i = 1; i <= 5; i++) {
+      prev = mineHeader(parseHeader(prev).hash, [coinbase(900 + i)], 0x207fffff, 1_296_688_602 + 600 * i);
+      headers.push(prev);
+    }
+    const forged = { version: 1, network: 'regtest', checkpoint: { height: 0, hash: parseHeader(fakeGenesis).hash, headerHex: fakeGenesis, previousHeaders: [] }, headers };
+    store.value = JSON.stringify(forged);
+    expect((await loadHeaderChain(regtest, store, { now: NOW })).loaded).toBe('discarded');
+  });
+
+  it('re-validates in chunks, yielding and reporting progress, and refuses a chain above the size limit', async () => {
+    const chain = mockChain('regtest', walletA());
+    forkChain(chain.blocks, 5, 4100, 0);
+    const store = new MemoryHeaderStore();
+    await synced(chain, store);
+    const seen: number[] = [];
+    let ticks = 0;
+    const timer = setInterval(() => { ticks++; }, 0);
+    const r = await loadHeaderChain(regtest, store, { now: NOW, onProgress: (h) => seen.push(h) });
+    clearInterval(timer);
+    expect(r.loaded).toBe('restored');
+    expect(seen).toEqual([2016, 4032, 4104]);
+    // Other work ran while it was checking: the tab was not blocked for the whole chain.
+    expect(ticks).toBeGreaterThan(0);
+    expect((await loadHeaderChain(regtest, store, { now: NOW, maxHeaders: 4000 })).loaded).toBe('discarded');
+    expect(store.value).toBeUndefined();
   });
 });
 
 describe('syncing headers', () => {
+  const done = { reorgFrom: undefined, lessWork: false, saved: true, more: false };
   it('validates and adopts the source chain, then reports nothing new', async () => {
     const chain = mockChain('regtest', walletA());
-    const store = new MemoryScanStateStore();
-    const { chain: headers } = await loadHeaderChain(regtest, store, NOW);
+    const store = new MemoryHeaderStore();
+    const { chain: headers } = await loadHeaderChain(regtest, store, { now: NOW });
     const seen: number[] = [];
     const out = await syncHeaders({ chain: headers, sources: [sourceOf(chain)], store, onProgress: (h) => seen.push(h) });
-    expect(out).toEqual({ tipHeight: 4, reorgFrom: undefined, lessWork: false, saved: true });
+    expect(out).toEqual({ ...done, tipHeight: 4 });
     expect(seen).toEqual([4]);
     expect(headers.tipHash).toBe(chain.blocks[4]!.hash);
-    expect(await syncHeaders({ chain: headers, sources: [sourceOf(chain)], store })).toEqual({ tipHeight: 4, reorgFrom: undefined, lessWork: false, saved: true });
+    expect(store.work).toBe(headers.tipWork);
+    expect(await syncHeaders({ chain: headers, sources: [sourceOf(chain)], store })).toEqual({ ...done, tipHeight: 4 });
   });
 
-  it('works in rounds, saving after each, so a long sync resumes', async () => {
+  it('works in rounds, saves every few rounds and at the end, and stops at the round limit', async () => {
     const chain = mockChain('regtest', walletA());
-    forkChain(chain.blocks, 5, HEADERS_PER_ROUND + 20, 0);
-    const store = new MemoryScanStateStore();
-    const { chain: headers } = await loadHeaderChain(regtest, store, NOW);
+    forkChain(chain.blocks, 5, HEADERS_PER_ROUND * 6 + 20, 0);
+    const store = new MemoryHeaderStore();
+    const { chain: headers } = await loadHeaderChain(regtest, store, { now: NOW });
     const saves: number[] = [];
-    const counting = { load: () => store.load(), save: async (s: string) => { saves.push((JSON.parse(s) as { headers: unknown[] }).headers.length); await store.save(s); } };
+    const counting: HeaderStore = {
+      load: () => store.load(),
+      save: (s, w) => { saves.push((JSON.parse(s) as { headers: unknown[] }).headers.length); return store.save(s, w); },
+      clear: () => store.clear(),
+    };
     const seen: number[] = [];
-    await syncHeaders({ chain: headers, sources: [sourceOf(chain)], store: counting, onProgress: (h) => seen.push(h) });
-    expect(seen).toEqual([HEADERS_PER_ROUND, chain.blocks.length - 1]);
-    expect(saves).toEqual(seen);
-    expect((await loadHeaderChain(regtest, store, NOW)).chain.tipHash).toBe(chain.blocks.at(-1)!.hash);
+    const first = await syncHeaders({ chain: headers, sources: [sourceOf(chain)], store: counting, onProgress: (h) => seen.push(h), maxRounds: 6 });
+    expect(seen).toEqual([1, 2, 3, 4, 5, 6].map((n) => n * HEADERS_PER_ROUND));
+    expect(saves).toEqual([SAVE_EVERY_ROUNDS * HEADERS_PER_ROUND, 6 * HEADERS_PER_ROUND]);
+    expect(first).toMatchObject({ more: true, tipHeight: 6 * HEADERS_PER_ROUND });
+    // The next call resumes from the saved chain and finishes.
+    const resumed = (await loadHeaderChain(regtest, store, { now: NOW })).chain;
+    expect(await syncHeaders({ chain: resumed, sources: [sourceOf(chain)], store })).toMatchObject({ more: false, tipHeight: chain.blocks.length - 1 });
+    expect(MAX_ROUNDS_PER_CALL * HEADERS_PER_ROUND).toBeLessThanOrEqual(MAX_HEADERS);
   });
 
   it('fails closed on an invalid header, keeping (and having saved) only valid headers', async () => {
     const chain = mockChain('regtest', walletA());
-    const store = new MemoryScanStateStore();
+    const store = new MemoryHeaderStore();
     const headers = await synced(chain, store);
     const before = store.value;
     // Block 5 claims an unknown parent.
@@ -171,11 +231,52 @@ describe('syncing headers', () => {
     // A source that cannot be reached fails the check too.
     chain.failPath = '/blocks/tip/height';
     expect(await codeOf(syncHeaders({ chain: headers, sources: [sourceOf(chain)], store }))).toBe('TRANSPORT_FAILURE');
+    // So does an abort.
+    const ac = new AbortController();
+    ac.abort();
+    expect(await codeOf(syncHeaders({ chain: headers, sources: [sourceOf(chain)], store, signal: ac.signal }))).toBe('ABORTED');
+  });
+
+  it('reports what changed before a failure: a heavier fork adopted in round 1, then round 2 fails (saved first)', async () => {
+    const chain = mockChain('regtest', walletA());
+    const store = new MemoryHeaderStore();
+    const headers = await synced(chain, store);
+    forkChain(chain.blocks, 3, 3, 2);
+    let tips = 0;
+    const fetchFn: MockChain['fetchFn'] = (url, init) =>
+      url.endsWith('/blocks/tip/height') && ++tips === 2 ? Promise.resolve(new Response('x', { status: 500 })) : chain.fetchFn(url, init);
+    const src = new EsploraHeaderSource(new EsploraClient({ baseUrl: BASE, fetchFn }));
+    const e = await syncHeaders({ chain: headers, sources: [src], store }).catch((x: unknown) => x);
+    expect(e).toBeInstanceOf(HeaderSyncError);
+    expect((e as HeaderSyncError).code).toBe('TRANSPORT_FAILURE');
+    expect((e as HeaderSyncError).partial).toMatchObject({ reorgFrom: 2, tipHeight: 5 });
+    expect(headers.tipHash).toBe(chain.blocks[5]!.hash);
+    expect(store.work).toBe(headers.tipWork);
+  });
+
+  it('fails closed when the chain grows past the size limit, without saving it', async () => {
+    const chain = mockChain('regtest', walletA());
+    const store = new MemoryHeaderStore();
+    const { chain: headers } = await loadHeaderChain(regtest, store, { now: NOW });
+    const e = await syncHeaders({ chain: headers, sources: [sourceOf(chain)], store, maxHeaders: 3 }).catch((x: unknown) => x);
+    expect((e as HeaderSyncError).code).toBe('UNSUPPORTED');
+    expect(store.value).toBeUndefined();
+  });
+
+  it('a deeper competing branch than the package evaluates is a distinct failure, not "less work"', async () => {
+    const chain = mockChain('regtest', walletA());
+    const headers = await synced(chain);
+    // Shares blocks 0-2, then claims a branch longer than the package compares.
+    const at = (h: number): string => (h === 0 ? GENESIS_HEADERS.regtest : h <= 2 ? chain.blocks[h]!.header! : GENESIS_HEADERS.signet);
+    const deep: HeaderSource = { getTipHeight: () => Promise.resolve(MAX_FORK_HEADERS + 10), getHeaders: (f, n) => Promise.resolve(Array.from({ length: n }, (_, i) => at(f + i))) };
+    const e = await syncHeaders({ chain: headers, sources: [deep], store: new MemoryHeaderStore() }).catch((x: unknown) => x);
+    expect((e as HeaderSyncError).code).toBe('FORK_TOO_DEEP');
+    expect((e as HeaderSyncError).partial.lessWork).toBe(false);
   });
 
   it('keeps the heavier chain against a fork with less (or equal) work, and follows one with more', async () => {
     const chain = mockChain('regtest', walletA());
-    const store = new MemoryScanStateStore();
+    const store = new MemoryHeaderStore();
     const headers = await synced(chain, store);
     const tip = headers.tipHash;
     forkChain(chain.blocks, 3, 2, 1); // same length: equal work
@@ -184,14 +285,19 @@ describe('syncing headers', () => {
     forkChain(chain.blocks, 2, 4, 2); // longer: more work
     expect(await syncHeaders({ chain: headers, sources: [sourceOf(chain)], store })).toMatchObject({ lessWork: false, reorgFrom: 1, tipHeight: 5 });
     expect(headers.tipHash).toBe(chain.blocks[5]!.hash);
-    expect((await loadHeaderChain(regtest, store, NOW)).chain.tipHash).toBe(chain.blocks[5]!.hash);
+    expect((await loadHeaderChain(regtest, store, { now: NOW })).chain.tipHash).toBe(chain.blocks[5]!.hash);
   });
 
-  it('reports a store that cannot save without failing the check', async () => {
+  it('reports a store that cannot save, or that holds a heavier chain, without failing the check', async () => {
     const chain = mockChain('regtest', walletA());
-    const { chain: headers } = await loadHeaderChain(regtest, new MemoryScanStateStore(), NOW);
-    const out = await syncHeaders({ chain: headers, sources: [sourceOf(chain)], store: { load: () => Promise.resolve(undefined), save: () => Promise.reject(new Error('quota')) } });
-    expect(out).toMatchObject({ tipHeight: 4, saved: false });
+    const { chain: headers } = await loadHeaderChain(regtest, new MemoryHeaderStore(), { now: NOW });
+    expect(await syncHeaders({ chain: headers, sources: [sourceOf(chain)], store: brokenStore() })).toMatchObject({ tipHeight: 4, saved: false });
+    const heavier = new MemoryHeaderStore();
+    heavier.value = 'other tab';
+    heavier.work = 1n << 200n;
+    const { chain: again } = await loadHeaderChain(regtest, new MemoryHeaderStore(), { now: NOW });
+    expect(await syncHeaders({ chain: again, sources: [sourceOf(chain)], store: heavier })).toMatchObject({ tipHeight: 4, saved: false });
+    expect(heavier.value).toBe('other tab');
   });
 });
 
@@ -207,7 +313,7 @@ describe('invalidating scan results after a reorg', () => {
     const scan: ScanResult = { fromHeight: 1, toHeight: 4, found: [pay(2, chain.blocks[2]!.hash), pay(3, chain.blocks[3]!.hash)], spentCount: 0, blocks, headerAnchored: true };
     expect(invalidateReorged(scan, headers)).toEqual({ scan, dropped: [] });
     forkChain(chain.blocks, 3, 3, 4);
-    await syncHeaders({ chain: headers, sources: [sourceOf(chain)], store: new MemoryScanStateStore() });
+    await syncHeaders({ chain: headers, sources: [sourceOf(chain)], store: new MemoryHeaderStore() });
     const cut = invalidateReorged(scan, headers);
     expect(cut.scan).toMatchObject({ fromHeight: 1, toHeight: 2, found: [scan.found[0]], blocks: blocks.slice(0, 2) });
     expect(cut.dropped).toEqual([scan.found[1]]);
@@ -225,34 +331,70 @@ describe('IndexedDB header store', () => {
     const idb = fakeIdb();
     const storeFor = idbHeaderStore(idb);
     expect(await storeFor('regtest').load()).toBeUndefined();
-    await storeFor('regtest').save('{"a":1}');
-    await storeFor('signet').save('{"b":2}');
+    expect(await storeFor('regtest').save('{"a":1}', 10n)).toBe(true);
+    expect(await storeFor('signet').save('{"b":2}', 3n)).toBe(true);
     expect(await storeFor('regtest').load()).toBe('{"a":1}');
-    expect([...idb.data.keys()]).toEqual(['headers:v1:regtest', 'headers:v1:signet']);
+    expect(Object.fromEntries(idb.data)).toEqual({
+      'headers:v1:regtest': '{"a":1}', 'headers:v1:regtest:work': 'a', 'headers:v1:signet': '{"b":2}', 'headers:v1:signet:work': '3',
+    });
     expect(idb.opens).toBe(1);
-    // A non-text record reads back as text that fails validation.
+    // A non-text record reads back as text that fails validation, and the load deletes it.
     idb.data.set('headers:v1:regtest', { not: 'text' });
     expect(await storeFor('regtest').load()).toBe('');
-    expect((await loadHeaderChain(regtest, storeFor('regtest'), NOW)).loaded).toBe('discarded');
+    expect((await loadHeaderChain(regtest, storeFor('regtest'), { now: NOW })).loaded).toBe('discarded');
+    expect([...idb.data.keys()]).toEqual(['headers:v1:signet', 'headers:v1:signet:work']);
+  });
+
+  it('never overwrites a heavier chain another tab saved (compare-and-swap inside the transaction)', async () => {
+    const idb = fakeIdb();
+    const tabA = idbHeaderStore(idb)('regtest');
+    const tabB = idbHeaderStore(idb)('regtest');
+    expect(await tabA.save('heavy', 100n)).toBe(true);
+    expect(await tabB.save('light', 99n)).toBe(false);
+    expect(await tabB.load()).toBe('heavy');
+    expect(await tabB.save('same', 100n)).toBe(true);
+    expect(await tabA.save('heavier', 101n)).toBe(true);
+    expect(await tabB.load()).toBe('heavier');
+    // A corrupt work record does not block a save.
+    idb.data.set('headers:v1:regtest:work', 'zz');
+    expect(await tabB.save('ok', 1n)).toBe(true);
+  });
+
+  it('reports a save only once the transaction commits, and nothing is written when it aborts', async () => {
+    const idb = fakeIdb();
+    const s = idbHeaderStore(idb)('regtest');
+    idb.failCommit = true;
+    await expect(s.save('x', 1n)).rejects.toThrow(/IndexedDB transaction (failed|aborted)/);
+    expect(idb.data.size).toBe(0);
+    expect(await s.save('y', 1n)).toBe(true);
+    expect(idb.data.get('headers:v1:regtest')).toBe('y');
+    await s.clear();
+    expect(idb.data.size).toBe(0);
   });
 
   it('rejects when the database or a request fails, and retries opening later', async () => {
-    const closed = fakeIdb({ failOpen: true });
-    const s = idbHeaderStore(closed)('regtest');
+    const idb = fakeIdb();
+    const s = idbHeaderStore(idb)('regtest');
+    idb.failOpen = true;
     await expect(s.load()).rejects.toThrow('IndexedDB unavailable');
-    await expect(s.save('x')).rejects.toThrow('IndexedDB unavailable');
-    expect(closed.opens).toBe(2);
-    await expect(idbHeaderStore(fakeIdb({ failGet: true }))('regtest').load()).rejects.toThrow('IndexedDB request failed');
+    expect(await s.save('x', 1n)).toBe(true);
+    expect(idb.opens).toBe(2);
+    idb.failGet = true;
+    await expect(s.load()).rejects.toThrow(/IndexedDB transaction/);
   });
 
-  it('memory stores are per network and per instance', async () => {
+  it('memory stores are per network and per instance, and guard on work too', async () => {
     const a = memoryHeaderStore();
-    await a('regtest').save('r');
+    expect(await a('regtest').save('r', 5n)).toBe(true);
+    expect(await a('regtest').save('lighter', 4n)).toBe(false);
     expect(await a('regtest').load()).toBe('r');
     expect(await a('signet').load()).toBeUndefined();
     expect(await memoryHeaderStore()('regtest').load()).toBeUndefined();
+    await a('regtest').clear();
+    expect(await a('regtest').load()).toBeUndefined();
   });
 });
+
 
 describe('fixtures', () => {
   it('serve the genesis summary with no previous hash', () => {
