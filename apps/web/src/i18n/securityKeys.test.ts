@@ -31,6 +31,7 @@ describe('critical translation native-review boundary (IN-3)', () => {
       'policy.create.keepBody', 'policy.account.withdrawal', 'policy.account.cancel',
       'sweep.attempt.unknownDirect', 'sweep.note.pendingDirect', 'settings.outside.title',
       'settings.outside.body', 'errorBoundary.reloadHint', 'ledger.import.invalidated',
+      'scan.tag.label', 'scan.tags.unlocked', 'scan.tags.locked', 'scan.tags.deleted', 'scan.tags.deleteAll',
     ];
     for (const key of required) expect(SECURITY_KEYS.has(key), key).toBe(true);
   });

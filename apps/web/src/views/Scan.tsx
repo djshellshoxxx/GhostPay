@@ -17,6 +17,8 @@ import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
 import type { TagPayload } from '../lib/tags';
 import { useApp } from '../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
+import type { MessageKey } from '../i18n/catalog';
+import type { MessageValues } from '../i18n/message';
 import type { Translator } from '../i18n/translator';
 
 type T = Translator['t'];
@@ -27,8 +29,23 @@ function useScanT(): T {
   return i18n?.t ?? SOURCE_TRANSLATOR.t;
 }
 
+/** The translator of the latest render, for text produced after an await (a language change may have happened since). */
+function useLatestScanT(t: T): { readonly current: T } {
+  const ref = useRef(t);
+  ref.current = t;
+  return ref;
+}
+
+/** Scan state keeps a message key and values, not text, so it renders in the language current when it is shown.
+ * Text that already arrives as a finished string (privacy plan, userMessage) is kept as it is. */
+type ScanText = { readonly key: MessageKey; readonly values?: MessageValues } | { readonly text: string };
+const msg = (key: MessageKey, values?: MessageValues): ScanText => (values === undefined ? { key } : { key, values });
+const literal = (text: string): ScanText => ({ text });
+const show = (m: ScanText, t: T): string => ('text' in m ? m.text : t(m.key, m.values));
+
 export function Scan(): ReactNode {
   const t = useScanT();
+  const latestT = useLatestScanT(t);
   const app = useApp();
   const services = useServices();
   const [chainId, setChainId] = useState<number>(services.chains[0]?.chainId ?? 84532);
@@ -37,11 +54,11 @@ export function Scan(): ReactNode {
   const [deepScan, setDeepScan] = useState(false);
   const [running, setRunning] = useState(false);
   const [progress, setProgress] = useState<ScanProgress | undefined>(undefined);
-  const [error, setError] = useState<string | undefined>(undefined);
-  const [done, setDone] = useState<string | undefined>(undefined);
+  const [error, setError] = useState<ScanText | undefined>(undefined);
+  const [done, setDone] = useState<readonly ScanText[] | undefined>(undefined);
   const [privacyNote, setPrivacyNote] = useState<string | undefined>(undefined);
-  const [routerOnlyNote, setRouterOnlyNote] = useState<string | undefined>(undefined);
-  const [lagNote, setLagNote] = useState<string | undefined>(undefined);
+  const [routerOnlyBlocks, setRouterOnlyBlocks] = useState<readonly bigint[] | undefined>(undefined);
+  const [lagNote, setLagNote] = useState<ScanText | undefined>(undefined);
   const [scanOwner, setScanOwner] = useState<{ readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
   const abort = useRef<AbortController | undefined>(undefined);
   const startingScope = useRef<{ readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
@@ -93,6 +110,7 @@ export function Scan(): ReactNode {
 
   const scanMatchesCurrentScope = scanOwner !== undefined && scanOwner.chainId === chainId && scanOwner.keyId === keyId && scanOwner.signerPublicKey === app.session.signerPublicKey;
   const scopedMatches = scanMatchesCurrentScope ? app.matches.filter((match) => match.chainId === chainId) : [];
+  const routerOnlyNote = routerOnlyBlocks === undefined ? undefined : describeRouterOnly(routerOnlyBlocks, t);
 
   const begin = (): void => {
     if (keyId === undefined || abort.current !== undefined) return;
@@ -107,7 +125,7 @@ export function Scan(): ReactNode {
     setError(undefined);
     setDone(undefined);
     setPrivacyNote(undefined);
-    setRouterOnlyNote(undefined);
+    setRouterOnlyBlocks(undefined);
     setLagNote(undefined);
     setScanOwner(undefined);
     app.setMatches([]);
@@ -127,13 +145,13 @@ export function Scan(): ReactNode {
         const privacy = loadScanPrivacy(browserStorage());
         const plan = planScan(privacy, chain);
         if (plan.kind === 'blocked') {
-          setError(plan.reason);
+          setError(literal(plan.reason));
           return;
         }
         const clients = await openScanClients({ plan, chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, appRpc: () => app.getRpc(chainId), fetchImpl: services.fetchFn, sleep: services.sleep });
         assertScopeCurrent();
         if (clients === undefined) {
-          setError(t('scan.error.noRpc'));
+          setError(msg('scan.error.noRpc'));
           return;
         }
         const rpc: RpcClient = clients.base;
@@ -145,14 +163,14 @@ export function Scan(): ReactNode {
           rpc2 = plan.useSecondary ? await app.getSecondaryRpc(chainId) : undefined;
         } catch {
           assertScopeCurrent();
-          setError(t('scan.error.secondRpc'));
+          setError(msg('scan.error.secondRpc'));
           return;
         }
         assertScopeCurrent();
         let cursor = resume ? checkpoint : undefined;
         if (cursor === undefined) {
           if (!/^\d{1,15}$/.test(start.trim())) {
-            setError(t('scan.error.startBlock'));
+            setError(msg('scan.error.startBlock'));
             return;
           }
           cursor = { nextBlock: BigInt(start.trim()) };
@@ -160,7 +178,7 @@ export function Scan(): ReactNode {
         const checked = await verifyManifestState(manifest, rpc);
         assertScopeCurrent();
         if (checked.status !== 'loaded') {
-          setError(t('scan.error.manifestMismatch'));
+          setError(msg('scan.error.manifestMismatch'));
           return;
         }
         // The second RPC gets the same aligned announcement windows as the scan RPC, never the exact checkpoint range.
@@ -189,7 +207,7 @@ export function Scan(): ReactNode {
             if (!scopeIsCurrent()) return;
             setProgress(nextProgress);
             // Shown as pages commit, so a later error in this run cannot hide a block that was narrowed.
-            if (nextProgress.routerOnlyBlocks !== undefined) setRouterOnlyNote(describeRouterOnly(nextProgress.routerOnlyBlocks, t));
+            if (nextProgress.routerOnlyBlocks !== undefined) setRouterOnlyBlocks(nextProgress.routerOnlyBlocks);
           },
           onQuarantine: (to) => {
             if (!scopeIsCurrent()) return;
@@ -215,7 +233,7 @@ export function Scan(): ReactNode {
               quarantined = quarantined.filter((m) => m.announcement.blockNumber < to);
             } catch (cause) {
               if (cause instanceof UserFacingError) throw cause;
-              const warning = new UserFacingError(t('scan.error.reorg'));
+              const warning = new UserFacingError(latestT.current('scan.error.reorg'));
               warning.cause = cause;
               throw warning;
             }
@@ -225,7 +243,7 @@ export function Scan(): ReactNode {
             const identity = `${m.stealthAddress.toLowerCase()}|${m.announcement.ephemeralPublicKey.toLowerCase()}`;
             const prior = found.findIndex((x) => `${x.stealthAddress.toLowerCase()}|${x.announcement.ephemeralPublicKey.toLowerCase()}` === identity);
             if (prior < 0) {
-              if (found.length + quarantined.length >= 10_000) throw new UserFacingError(t('scan.error.observationLimit'));
+              if (found.length + quarantined.length >= 10_000) throw new UserFacingError(latestT.current('scan.error.observationLimit'));
               found.push(m);
             }
             else found[prior] = m;
@@ -233,24 +251,24 @@ export function Scan(): ReactNode {
           },
         });
         if (!ctl.signal.aborted) assertScopeCurrent();
-        if (res.discrepancies.length > 0) setError(t('scan.error.discrepancy', { count: String(res.discrepancies.length) }));
-        if ((res.backlog ?? 0) > 0) setError(t('scan.error.backlog', { count: String(res.backlog), block: res.cursor.nextBlock.toString() }));
+        if (res.discrepancies.length > 0) setError(msg('scan.error.discrepancy', { count: String(res.discrepancies.length) }));
+        if ((res.backlog ?? 0) > 0) setError(msg('scan.error.backlog', { count: String(res.backlog), block: res.cursor.nextBlock.toString() }));
         setPrivacyNote(res.telemetry?.anonymity === undefined ? undefined : describeAnonymitySet(res.telemetry.anonymity));
-        if ((res.routerOnlyBlocks ?? []).length > 0) setRouterOnlyNote(describeRouterOnly(res.routerOnlyBlocks ?? [], t));
-        if (res.secondaryLag !== undefined) setLagNote(t('scan.lag', { secondary: res.secondaryLag.secondaryHead.toString(), behind: (res.secondaryLag.head - res.secondaryLag.secondaryHead).toString(), head: res.secondaryLag.head.toString() }));
-        if (res.limitReached) setError(t('scan.error.limitReached', { block: res.cursor.nextBlock.toString() }));
-        const note = t('scan.done.note', { block: cursor.nextBlock.toString(), fromCheckpoint: resume && checkpoint !== undefined ? 'yes' : 'no', oneRpc: rpc2 === undefined ? 'yes' : 'no' });
+        if ((res.routerOnlyBlocks ?? []).length > 0) setRouterOnlyBlocks(res.routerOnlyBlocks ?? []);
+        if (res.secondaryLag !== undefined) setLagNote(msg('scan.lag', { secondary: res.secondaryLag.secondaryHead.toString(), behind: (res.secondaryLag.head - res.secondaryLag.secondaryHead).toString(), head: res.secondaryLag.head.toString() }));
+        if (res.limitReached) setError(msg('scan.error.limitReached', { block: res.cursor.nextBlock.toString() }));
+        const note = msg('scan.done.note', { block: cursor.nextBlock.toString(), fromCheckpoint: resume && checkpoint !== undefined ? 'yes' : 'no', oneRpc: rpc2 === undefined ? 'yes' : 'no' });
         const counts = { scanned: String(res.scanned), found: String(res.matches.length) };
-        setDone(`${ctl.signal.aborted ? t('scan.done.cancelled', counts) : res.limitReached ? t('scan.done.limit', counts) : t('scan.done.finished', counts)} ${note}`);
-        app.announce(res.limitReached ? t('scan.announce.limit') : t('scan.announce.finished'));
+        setDone([msg(ctl.signal.aborted ? 'scan.done.cancelled' : res.limitReached ? 'scan.done.limit' : 'scan.done.finished', counts), note]);
+        app.announce(latestT.current(res.limitReached ? 'scan.announce.limit' : 'scan.announce.finished'));
       } catch (e) {
         if (!scopeKeysAreCurrent()) return;
         if (e instanceof Error && (e.message === 'scan-aborted' || e.message === 'scan-session-changed')) {
-          if (e.message === 'scan-session-changed') setError(t('scan.error.keysChanged'));
-          else if (scopeKeysAreCurrent()) setDone(t('scan.done.cancelledEarly'));
+          if (e.message === 'scan-session-changed') setError(msg('scan.error.keysChanged'));
+          else if (scopeKeysAreCurrent()) setDone([msg('scan.done.cancelledEarly')]);
           return;
         }
-        setError(e instanceof Error && e.message === 'manifest' ? t('scan.error.noManifest') : userMessage(e));
+        setError(e instanceof Error && e.message === 'manifest' ? msg('scan.error.noManifest') : literal(userMessage(e)));
       } finally {
         if (abort.current === ctl) abort.current = undefined;
         if (startingScope.current === scope) startingScope.current = undefined;
@@ -317,11 +335,11 @@ export function Scan(): ReactNode {
         {progress !== undefined && t('scan.progress', { block: progress.nextBlock.toString(), scanned: String(progress.scanned), matches: String(progress.matches), hasSkipped: progress.skipped > 0 ? 'yes' : 'no', skipped: String(progress.skipped), limit: progress.limitReached ? 'yes' : 'no' })}
         {running && progress === undefined && t('scan.starting')}
       </div>
-      {done !== undefined && <Notice kind="ok">{done}</Notice>}
+      {done !== undefined && <Notice kind="ok">{done.map((m) => show(m, t)).join(' ')}</Notice>}
       {privacyNote !== undefined && <Notice kind="info" title={t('scan.privacySet.title')}>{privacyNote}</Notice>}
       {routerOnlyNote !== undefined && <Notice kind="warn">{routerOnlyNote}</Notice>}
-      {lagNote !== undefined && <Notice kind="warn">{lagNote}</Notice>}
-      {error !== undefined && <Notice kind="error">{error}</Notice>}
+      {lagNote !== undefined && <Notice kind="warn">{show(lagNote, t)}</Notice>}
+      {error !== undefined && <Notice kind="error">{show(error, t)}</Notice>}
 
       <Matches
         chainId={chainId}
@@ -358,6 +376,7 @@ function describe(m: ScanMatch, chainId: number, t: T): string {
 
 function Matches(props: { readonly chainId: number; readonly matches: readonly ScanMatch[]; readonly sellerSignerPublicKey: string; readonly receiptSignerPublicKey: string | undefined }): ReactNode {
   const t = useScanT();
+  const latestT = useLatestScanT(t);
   const app = useApp();
   const services = useServices();
   const [tags, setTags] = useState<Readonly<Record<string, string>>>({});
@@ -438,7 +457,7 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
                           }
                           setErr(undefined);
                           setTags({ ...tags, [id]: payload.clientLabel.trim() });
-                          app.announce(t('scan.tag.saved'));
+                          app.announce(latestT.current('scan.tag.saved'));
                         },
                         (e: unknown) => {
                           setErr(userMessage(e));
@@ -466,6 +485,7 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
 
 function Tags(props: { readonly chainId: number }): ReactNode {
   const t = useScanT();
+  const latestT = useLatestScanT(t);
   const app = useApp();
   const services = useServices();
   const [, force] = useState(0);
@@ -509,7 +529,7 @@ function Tags(props: { readonly chainId: number }): ReactNode {
                     setErr(undefined);
                     force((n) => n + 1);
                     refresh();
-                    app.announce(t('scan.tags.unlocked'));
+                    app.announce(latestT.current('scan.tags.unlocked'));
                   },
                   (e: unknown) => {
                     setErr(userMessage(e));
@@ -536,7 +556,7 @@ function Tags(props: { readonly chainId: number }): ReactNode {
                 () => {
                   setList(undefined);
                   force((n) => n + 1);
-                  app.announce(t('scan.tags.deleted'));
+                  app.announce(latestT.current('scan.tags.deleted'));
                 },
                 (e: unknown) => {
                   setErr(userMessage(e));
