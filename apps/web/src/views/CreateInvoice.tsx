@@ -13,6 +13,7 @@ import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
 import { checkpointKeyId } from '../lib/scanClient';
 import { useServices } from '../lib/services';
 import { useApp } from '../state';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 
 /** Fiat pricing needs a verified Chainlink feed for the exact chain, token and currency (G-03); fail closed otherwise. */
 function fiatQuoteAvailable(chainId: number, token: string, currency: string): boolean {
@@ -28,6 +29,8 @@ function supportsInvoice(invoice: Invoice, supportedOnly: boolean): boolean {
 
 export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnly?: boolean } = {}): ReactNode {
   const app = useApp();
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const services = useServices();
   const [chainId, setChainId] = useState<number>(services.chains[0]?.chainId ?? 84532);
   const [token, setToken] = useState('native');
@@ -66,10 +69,10 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
   if (app.session === undefined) {
     return (
       <section aria-labelledby="inv-h">
-        <h2 id="inv-h">Create invoice</h2>
-        <Notice kind="info">You need seller keys first.</Notice>
+        <h2 id="inv-h">{t('create.title')}</h2>
+        <Notice kind="info">{t('create.needKeys')}</Notice>
         <button type="button" className="btn btn-primary" onClick={() => { app.setView('seller'); }}>
-          Go to Seller keys
+          {t('create.goSeller')}
         </button>
       </section>
     );
@@ -108,7 +111,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
     e.preventDefault();
     setError(undefined);
     if (protectWithPassphrase && passphrase !== passphraseAgain) {
-      setError('The passphrases do not match.');
+      setError(t('create.error.passphraseMismatch'));
       return;
     }
     const form: InvoiceForm = {
@@ -136,14 +139,14 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
           setCreated(undefined);
           registrationRun.current++;
           setRegistration(undefined);
-          setError('This build supports fixed-amount invoices without a seller buffer policy.');
+          setError(t('create.error.unsupported'));
           return;
         }
         setCreated(c);
         registerCreated(c.invoice);
         setPassphrase('');
         setPassphraseAgain('');
-        app.announce('Invoice link created.');
+        app.announce(t('create.announce.created'));
       },
       (err: unknown) => {
         if (!current()) return;
@@ -161,11 +164,11 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
 
   return (
     <section aria-labelledby="inv-h">
-      <h2 id="inv-h">Create invoice</h2>
+      <h2 id="inv-h">{t('create.title')}</h2>
       <form onSubmit={onSubmit} className="stack" noValidate>
         <fieldset>
-          <legend>Where you are paid</legend>
-          <Field label="Chain">
+          <legend>{t('create.where.legend')}</legend>
+          <Field label={t('create.chain')}>
             {(id) => (
               <select
                 id={id}
@@ -185,9 +188,9 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
           </Field>
           <ManifestBanner manifest={manifest} />
           {manifest?.status !== 'loaded' && manifest !== undefined && (
-            <Notice kind="warn">Payments disabled on this chain: no deployment manifest is loaded. You can still create the invoice, but nobody can pay it from this app yet.</Notice>
+            <Notice kind="warn">{t('create.noManifest')}</Notice>
           )}
-          <Field label="Token">
+          <Field label={t('create.token')}>
             {(id) => (
               <select id={id} value={token} onChange={(e) => { setToken(e.target.value); }}>
                 {choices.map((c) => (
@@ -201,82 +204,82 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
         </fieldset>
 
         <fieldset>
-          <legend>Amount</legend>
-          <Field label="Pricing">
+          <legend>{t('create.amount.legend')}</legend>
+          <Field label={t('create.pricing')}>
             {(id) => (
               <select id={id} value={effectiveAmountMode} onChange={(e) => { setAmountMode(!supportedOnly && FIAT_QUOTE_AVAILABLE && e.target.value === 'fiat_quote' ? 'fiat_quote' : 'fixed_token'); }}>
-                <option value="fixed_token">Fixed token amount</option>
+                <option value="fixed_token">{t('create.pricing.fixed')}</option>
                 {!supportedOnly && <option value="fiat_quote" disabled={!FIAT_QUOTE_AVAILABLE}>
-                  {FIAT_QUOTE_AVAILABLE ? 'Fiat price, converted at payment time' : 'Fiat price (unavailable: no verified price feed)'}
+                  {FIAT_QUOTE_AVAILABLE ? t('create.pricing.fiat') : t('create.pricing.fiatUnavailable')}
                 </option>}
               </select>
             )}
           </Field>
           {effectiveAmountMode === 'fixed_token' ? (
-            <Field label="Token amount" hint="Decimal amount in the token's units, for example 25.50.">
+            <Field label={t('create.tokenAmount')} hint={t('create.tokenAmount.hint')}>
               {(id, d) => <input id={id} aria-describedby={d} inputMode="decimal" value={tokenAmount} onChange={(e) => { setTokenAmount(e.target.value); }} />}
             </Field>
           ) : (
             <Notice kind="info">
-              Payers convert the fiat total with a price feed at payment time. The payer's app reads the verified Chainlink feed for this chain and fails closed if the price is stale or unavailable.
+              {t('create.fiatNotice')}
             </Notice>
           )}
-          <Field label="Currency (ISO code)">{(id) => <input id={id} maxLength={3} value={currency} onChange={(e) => { setCurrency(e.target.value); }} />}</Field>
-          <Field label="Who pays the 0.25 % checkout fee">
+          <Field label={t('create.currency')}>{(id) => <input id={id} maxLength={3} value={currency} onChange={(e) => { setCurrency(e.target.value); }} />}</Field>
+          <Field label={t('create.feePolicy')}>
             {(id) => (
               <select id={id} value={feePolicy} onChange={(e) => { setFeePolicy(e.target.value as 'payer_pays' | 'seller_pays'); }}>
-                <option value="seller_pays">Seller (deducted from the amount)</option>
-                <option value="payer_pays">Payer (added on top)</option>
+                <option value="seller_pays">{t('create.feePolicy.seller')}</option>
+                <option value="payer_pays">{t('create.feePolicy.payer')}</option>
               </select>
             )}
           </Field>
         </fieldset>
 
         <fieldset>
-          <legend>Line items</legend>
+          <legend>{t('create.items.legend')}</legend>
           {items.map((it, i) => (
             <div className="row" key={i}>
-              <Field label={`Item ${String(i + 1)} description`}>{(id) => <input id={id} value={it.description} maxLength={200} onChange={(e) => { setItem(i, { description: e.target.value }); }} />}</Field>
-              <Field label={`Item ${String(i + 1)} quantity`}>{(id) => <input id={id} inputMode="numeric" value={it.quantity} onChange={(e) => { setItem(i, { quantity: e.target.value }); }} />}</Field>
-              <Field label={`Item ${String(i + 1)} unit price`}>{(id) => <input id={id} inputMode="decimal" value={it.unitPrice} onChange={(e) => { setItem(i, { unitPrice: e.target.value }); }} />}</Field>
+              <Field label={t('create.item.description', { n: String(i + 1) })}>{(id) => <input id={id} value={it.description} maxLength={200} onChange={(e) => { setItem(i, { description: e.target.value }); }} />}</Field>
+              <Field label={t('create.item.quantity', { n: String(i + 1) })}>{(id) => <input id={id} inputMode="numeric" value={it.quantity} onChange={(e) => { setItem(i, { quantity: e.target.value }); }} />}</Field>
+              <Field label={t('create.item.unitPrice', { n: String(i + 1) })}>{(id) => <input id={id} inputMode="decimal" value={it.unitPrice} onChange={(e) => { setItem(i, { unitPrice: e.target.value }); }} />}</Field>
               {items.length > 1 && (
                 <button type="button" className="btn" onClick={() => { setItems((p) => p.filter((_, idx) => idx !== i)); }}>
-                  Remove item {i + 1}
+                  {t('create.item.remove', { n: String(i + 1) })}
                 </button>
               )}
             </div>
           ))}
           <button type="button" className="btn" onClick={() => { setItems((p) => [...p, { ...EMPTY_ITEM }]); }} disabled={items.length >= 50}>
-            Add item
+            {t('create.item.add')}
           </button>
-          <Field label="Tax rate (%)">{(id) => <input id={id} inputMode="decimal" value={taxRate} onChange={(e) => { setTaxRate(e.target.value); }} />}</Field>
+          <Field label={t('create.taxRate')}>{(id) => <input id={id} inputMode="decimal" value={taxRate} onChange={(e) => { setTaxRate(e.target.value); }} />}</Field>
         </fieldset>
 
         <fieldset>
-          <legend>Validity and notes</legend>
-          <Field label="Invoice valid for (hours)">{(id) => <input id={id} type="number" min={1} max={2160} value={expiryHours} onChange={(e) => { setExpiryHours(Number(e.target.value)); }} />}</Field>
-          <Field label="Price quote valid for (minutes)">{(id) => <input id={id} type="number" min={1} max={1440} value={quoteMinutes} onChange={(e) => { setQuoteMinutes(Number(e.target.value)); }} />}</Field>
-          <Field label="Maximum slippage (basis points)">{(id) => <input id={id} type="number" min={0} max={10000} value={slippage} onChange={(e) => { setSlippage(Number(e.target.value)); }} />}</Field>
-          <Field label="Memo (optional, shown to the payer)">{(id) => <textarea id={id} rows={2} maxLength={500} value={memo} onChange={(e) => { setMemo(e.target.value); }} />}</Field>
+          <legend>{t('create.validity.legend')}</legend>
+          <Field label={t('create.expiryHours')}>{(id) => <input id={id} type="number" min={1} max={2160} value={expiryHours} onChange={(e) => { setExpiryHours(Number(e.target.value)); }} />}</Field>
+          <Field label={t('create.quoteMinutes')}>{(id) => <input id={id} type="number" min={1} max={1440} value={quoteMinutes} onChange={(e) => { setQuoteMinutes(Number(e.target.value)); }} />}</Field>
+          <Field label={t('create.slippage')}>{(id) => <input id={id} type="number" min={0} max={10000} value={slippage} onChange={(e) => { setSlippage(Number(e.target.value)); }} />}</Field>
+          <Field label={t('create.memo')}>{(id) => <textarea id={id} rows={2} maxLength={500} value={memo} onChange={(e) => { setMemo(e.target.value); }} />}</Field>
           <div className="check">
             <input id="enc" type="checkbox" checked={encrypt} disabled={protectWithPassphrase} onChange={(e) => { setEncrypt(e.target.checked); }} />
-            <label htmlFor="enc">Encrypt line items and memo with a key included in the link</label>
+            <label htmlFor="enc">{t('create.encrypt')}</label>
           </div>
-          <p className="hint">The decryption key is part of the link, so this only keeps details out of casual views. Use a passphrase below to keep the entire invoice encrypted.</p>
+          <p className="hint">{t('create.encrypt.hint')}</p>
           <div className="check">
             <input id="passphrase-protect" type="checkbox" checked={protectWithPassphrase} onChange={(e) => { setProtectWithPassphrase(e.target.checked); }} />
-            <label htmlFor="passphrase-protect">Protect the entire invoice with a passphrase</label>
+            <label htmlFor="passphrase-protect">{t('create.passphrase.protect')}</label>
           </div>
           {protectWithPassphrase && (
             <>
               <Field
-                label="Invoice passphrase (at least 14 characters)"
-                hint={`${passphrase !== '' && passphrase === suggested ? `Suggested: ${String(GENERATED_PASSPHRASE_WORDS)} random words picked on this device (${String(GENERATED_PASSPHRASE_BITS)} bits); type it again below, or replace it with your own (use several unrelated words).` : 'Use several unrelated words.'} Send the passphrase to the payer through a different channel from the invoice link.`}
+                label={t('create.passphrase.label')}
+                hint={`${passphrase !== '' && passphrase === suggested ? t('create.passphrase.hintSuggested', { words: GENERATED_PASSPHRASE_WORDS, bits: GENERATED_PASSPHRASE_BITS }) : t('create.passphrase.hintPlain')} ${t('create.passphrase.hintSend')}`}
               >
                 {(id, d) => <input id={id} aria-describedby={d} type={passphrase !== '' && passphrase === suggested ? 'text' : 'password'} autoComplete="off" spellCheck={false} value={passphrase} onChange={(e) => { setPassphrase(e.target.value); }} />}
               </Field>
-              <p><button type="button" className="btn" onClick={() => { const next = generatePassphrase(); setSuggested(next); setPassphrase(next); setPassphraseAgain(''); }}>Suggest another invoice passphrase</button></p>
-              <Field label="Repeat invoice passphrase">
+              <p><button type="button" className="btn" onClick={() => { const next = generatePassphrase(); setSuggested(next); setPassphrase(next); setPassphraseAgain(''); }}>{t('create.passphrase.another')}</button></p>
+              <Field label={t('create.passphrase.repeat')}>
                 {(id) => <input id={id} type="password" autoComplete="off" value={passphraseAgain} onChange={(e) => { setPassphraseAgain(e.target.value); }} />}
               </Field>
             </>
@@ -284,34 +287,34 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
         </fieldset>
 
         <fieldset>
-          <legend>Local payment matching (optional)</legend>
+          <legend>{t('create.matching.legend')}</legend>
           <div className="check">
             <input id="register-matching" type="checkbox" checked={registerForMatching} onChange={(e) => { setRegisterForMatching(e.target.checked); }} />
-            <label htmlFor="register-matching">Register this invoice in my encrypted reconciliation vault for automatic local matching</label>
+            <label htmlFor="register-matching">{t('create.matching.label')}</label>
           </div>
-          <p className="hint">Off by default. Only the invoice digest, nonce, chain, token, expected amount and validity window are stored, encrypted on this device with your viewing key; line items and memo are not. Matching happens on this device only: nothing about the invoice is added to the payment or its announcement. You can remove registrations in the Scan view.</p>
+          <p className="hint">{t('create.matching.hint')}</p>
         </fieldset>
 
-        <button type="submit" className="btn btn-primary">Create invoice link</button>
+        <button type="submit" className="btn btn-primary">{t('create.submit')}</button>
       </form>
 
       {error !== undefined && <Notice kind="error">{error}</Notice>}
 
       {visibleCreated !== undefined && (
         <div className="result" aria-live="polite">
-          <h3>Your invoice link</h3>
-          <Notice kind="warn" title="Bearer link">
-            Anyone who has this link or its QR code can pay it. {visibleCreated.passphraseProtected ? 'The invoice contents are protected by a passphrase, which you must send separately; the passphrase cannot be recovered if lost.' : visibleCreated.encrypted ? 'Anyone with the link can also read the invoice because its encryption key is inside the link.' : 'Anyone with the link can read the invoice.'} Phone photo backups, clipboards, chat previews and browser history may keep a copy. Do not post it publicly unless that is intended.
+          <h3>{t('create.result.title')}</h3>
+          <Notice kind="warn" title={t('create.bearer.title')}>
+            {t('create.bearer.lead')} {visibleCreated.passphraseProtected ? t('create.bearer.passphrase') : visibleCreated.encrypted ? t('create.bearer.encrypted') : t('create.bearer.plain')} {t('create.bearer.copies')}
           </Notice>
-          {registration?.kind === 'busy' && <Notice kind="info">Registering the invoice in your encrypted reconciliation vault…</Notice>}
-          {registration?.kind === 'ok' && <Notice kind="ok">Invoice registered in your encrypted reconciliation vault for local matching.</Notice>}
-          {registration?.kind === 'error' && <Notice kind="warn">The invoice link was created, but it could not be registered for local matching: {registration.message}</Notice>}
-          <Field label="Link">{(id) => <textarea id={id} readOnly rows={4} className="mono" value={visibleCreated.link} onFocus={(e) => { e.currentTarget.select(); }} />}</Field>
-          <p><CopyButton text={visibleCreated.link} label="Copy link" /></p>
+          {registration?.kind === 'busy' && <Notice kind="info">{t('create.registration.busy')}</Notice>}
+          {registration?.kind === 'ok' && <Notice kind="ok">{t('create.registration.ok')}</Notice>}
+          {registration?.kind === 'error' && <Notice kind="warn">{t('create.registration.error', { message: registration.message })}</Notice>}
+          <Field label={t('create.link.label')}>{(id) => <textarea id={id} readOnly rows={4} className="mono" value={visibleCreated.link} onFocus={(e) => { e.currentTarget.select(); }} />}</Field>
+          <p><CopyButton text={visibleCreated.link} label={t('create.link.copy')} /></p>
           <QrFrame
             kind={visibleCreated.encrypted && !visibleCreated.passphraseProtected ? 'bearer' : 'shareable'}
             text={visibleCreated.link}
-            caption="QR code containing the invoice link"
+            caption={t('create.qr.caption')}
           />
         </div>
       )}
