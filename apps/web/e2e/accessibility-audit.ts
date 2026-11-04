@@ -23,8 +23,11 @@ export async function auditAccessibility(page: Page, state: string): Promise<voi
   // Playwright instrumentation evaluates local audit source without changing production CSP.
   await page.evaluate(AXE_SOURCE);
   const result = await page.evaluate(async () => {
-    const auditedWindow = window as Window & { axe: { run: (context: Document) => Promise<AxeResults> } };
-    return auditedWindow.axe.run(document);
+    // axe-core is injected above as a page global that the DOM lib types do not declare.
+    // Fail loudly if injection did not define it rather than reporting an empty audit.
+    const axe = (window as unknown as { axe?: { run: (context: Document) => Promise<AxeResults> } }).axe;
+    if (axe === undefined || typeof axe.run !== 'function') throw new Error('axe-core was not injected into the page');
+    return axe.run(document);
   });
   const summary: AuditSummary = {
     version: result.testEngine.version, profile: process.env['GHOSTPAY_LOCAL_BUILD_PROFILE'] ?? 'full',
