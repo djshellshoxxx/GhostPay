@@ -987,6 +987,16 @@ describe('M1: relayed orders resolve from chain state alone (nonceUsed + finaliz
 describe('sweep permit state messages (spec 04)', () => {
   const states = ['ok_to_permit', 'already_allowed', 'nonce_consumed', 'sig_invalid', 'expired', 'unsupported_token'] as const;
 
+  // sig_invalid is a client-side pre-flight result (classifyPermit): no relayer is involved, so its text must not say
+  // a relayer reported anything, and it still points to a direct sweep.
+  it('words the client-side sig_invalid state without attributing it to the relayer, and still suggests a direct sweep', async () => {
+    const en = (await import('../../locales/en.json')).default as { messages: Record<string, string> };
+    const key = sweepModule.SWEEP_PERMIT_STATE_KEYS.sig_invalid;
+    expect(en.messages[key]).not.toMatch(/relayer/i);
+    expect(en.messages[key]).toMatch(/not valid for this sweep/);
+    expect(sweepModule.sweepPermitSuggestsDirect(key)).toBe(true);
+  });
+
   it('gives every PermitState its own catalog key under sweep.permit.*', () => {
     const keys = states.map((s) => sweepModule.SWEEP_PERMIT_STATE_KEYS[s]);
     for (const k of keys) expect(k).toMatch(/^sweep\.permit\./);
