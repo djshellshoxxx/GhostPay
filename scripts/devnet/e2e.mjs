@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Full scripted GhostPay end-to-end on the local anvil devnet (chain 31337). Uses ONLY the public anvil dev
 // accounts (no real keys or funds). Flow: seller keygen -> signed invoices -> pay (ETH, ERC-20 approve,
-// ERC-20 permit) -> scan -> receipt verification -> direct sweeps -> relayer-sponsored sweeps (real apps/relayer process).
+// ERC-20 permit) -> scan -> receipt verification -> direct sweeps -> relayer-sponsored sweeps (real apps/relayer process)
+// -> script-side scrypt/AES-GCM key backup mirroring keystore.ts -> restore rescan (fresh client; source keys retained).
 //
 // Usage: node scripts/devnet/e2e.mjs [--write-log]   (run scripts/devnet/up.sh first; `npm run build:libs` done)
 // Env: DEVNET_PORT (8545), E2E_RELAYER_PORT (18787).
@@ -10,15 +11,17 @@
 // use the real chain id 31337.
 import assert from 'node:assert/strict';
 import { spawn, execFileSync } from 'node:child_process';
+import { createCipheriv, createDecipheriv, randomBytes, scryptSync } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createPublicClient, createWalletClient, defineChain, getAddress, http, parseAbi, parseEther, formatEther } from 'viem';
 import { mnemonicToAccount, privateKeyToAccount } from 'viem/accounts';
 import {
-  checkAnnouncement, deriveStealthPayment, deriveStealthSecret, encodeMetaAddress, generateKeySet, parseMetadata, unsafeRevealSecret,
+  checkAnnouncement, deriveStealthPayment, deriveStealthSecret, encodeMetaAddress, generateKeySet, parseCompressedPoint, parseMetadata,
+  secretScalarFromBytes, unsafeRevealSecret, zeroize,
 } from '@ghostpay/core-crypto';
-import { createInvoice, signInvoice, verifyInvoiceSignature } from '@ghostpay/invoice-schema';
+import { createInvoice, signerPublicKeyHex, signInvoice, verifyInvoiceSignature } from '@ghostpay/invoice-schema';
 import {
   addressOfSecret, assertPreviewMatchesCalldata, buildPaymentTx, buildPermitTypedData, buildSweepTypedData, createClient,
   decodePaymentCalldata, fetchAnnouncements, findChain, loadDeployment, routerSplit, signPermit, signSweep,
@@ -353,6 +356,93 @@ try {
   }
 } finally {
   stopRelayer();
+}
+
+// ---- script-side backup mirroring keystore.ts -> restore rescan (source retained) ----
+// The web keystore (apps/web/src/lib/keystore.ts) is browser TypeScript with no built library export, so this script
+// cannot call it; the product's own export/import is covered by the Playwright core journey. This step re-creates the
+// same file layout (v1 envelope, scrypt N=2^17 r=8 p=1, AES-256-GCM with the tag appended, public identifiers bound as
+// AAD, plaintext {spendingKey, viewingKey, signingKey} as hex) with node:crypto. It is not the product code path; on anvil
+// it shows that keys rebuilt only from such a file and a NEW RPC client rediscover every payment from genesis.
+{
+  const KDF = { N: 1 << 17, r: 8, p: 1 };
+  const backupPass = 'devnet backup passphrase (public fixture)';
+  const metaPub = { metaAddress: meta, signer: signerHex };
+  const aadOf = (m) => Buffer.from(`GhostPay.keystore.v1|${m.metaAddress}|${m.signer}|${KDF.N}|${KDF.r}|${KDF.p}`, 'utf8');
+  const keyOfPass = (pass, salt) => scryptSync(Buffer.from(pass.normalize('NFKC'), 'utf8'), salt, 32, { ...KDF, maxmem: 2 ** 29 });
+  const secretsJson = () => {
+    const parts = [unsafeRevealSecret(keys.spendingSecret), unsafeRevealSecret(keys.viewingSecret), new Uint8Array(signingKey)];
+    const [spendingKey, viewingKey, signingKeyHex] = parts.map((b) => Buffer.from(b).toString('hex'));
+    try { return JSON.stringify({ spendingKey, viewingKey, signingKey: signingKeyHex }); } finally { zeroize(...parts); }
+  };
+  const salt = randomBytes(16);
+  const iv = randomBytes(12);
+  const encKey = keyOfPass(backupPass, salt);
+  const cipher = createCipheriv('aes-256-gcm', encKey, iv);
+  cipher.setAAD(aadOf(metaPub));
+  const plain = Buffer.from(secretsJson(), 'utf8');
+  const ciphertext = Buffer.concat([cipher.update(plain), cipher.final(), cipher.getAuthTag()]);
+  plain.fill(0);
+  encKey.fill(0);
+  const backup = JSON.stringify({
+    v: 1, kdf: 'scrypt', kdfParams: { ...KDF, salt: salt.toString('hex') }, cipher: 'AES-256-GCM', iv: iv.toString('hex'), meta: metaPub,
+    ciphertext: ciphertext.toString('hex'),
+  }, null, 2);
+  assert.ok(!backup.includes(backupPass), 'backup must not contain the passphrase');
+  assert.ok(!backup.includes(Buffer.from(unsafeRevealSecret(keys.viewingSecret)).toString('hex')), 'backup must not contain a plaintext key');
+
+  const open = (text, pass) => {
+    const f = JSON.parse(text);
+    const k = keyOfPass(pass, Buffer.from(f.kdfParams.salt, 'hex'));
+    try {
+      const body = Buffer.from(f.ciphertext, 'hex');
+      const d = createDecipheriv('aes-256-gcm', k, Buffer.from(f.iv, 'hex'));
+      d.setAAD(aadOf(f.meta));
+      d.setAuthTag(body.subarray(body.length - 16));
+      const secrets = JSON.parse(Buffer.concat([d.update(body.subarray(0, body.length - 16)), d.final()]).toString('utf8'));
+      assert.deepEqual(Object.keys(secrets).sort((a, b) => a.localeCompare(b)), ['signingKey', 'spendingKey', 'viewingKey'], 'keystore.ts plaintext shape');
+      return { meta: f.meta, secrets };
+    } finally { k.fill(0); }
+  };
+  assert.throws(() => open(backup, 'wrong devnet passphrase value'), 'a wrong passphrase must not decrypt the backup');
+  const swapped = JSON.parse(backup);
+  swapped.meta = { ...swapped.meta, signer: `02${'11'.repeat(32)}` };
+  assert.throws(() => open(JSON.stringify(swapped), backupPass), 'swapped public identifiers must not decrypt the backup');
+
+  // Independent restore: keys rebuilt only from the backup bytes, scanned through a fresh client from genesis.
+  const restored = open(backup, backupPass);
+  const [sp, vw, sg] = [restored.secrets.spendingKey, restored.secrets.viewingKey, restored.secrets.signingKey].map((h) => Uint8Array.from(Buffer.from(h, 'hex')));
+  const restoredKeys = {
+    spendingSecret: secretScalarFromBytes(sp), viewingSecret: secretScalarFromBytes(vw),
+    spendingPublicKey: parseCompressedPoint(secp256k1.getPublicKey(sp, true)), viewingPublicKey: parseCompressedPoint(secp256k1.getPublicKey(vw, true)),
+  };
+  const restoredSigner = signerPublicKeyHex(sg);
+  assert.equal(encodeMetaAddress(restoredKeys), restored.meta.metaAddress);
+  assert.equal(encodeMetaAddress(restoredKeys), meta, 'restored meta-address differs from the source');
+  assert.equal(restoredSigner, signerHex, 'restored invoice signer differs from the source');
+  const freshClient = await createClient(devChain, RPC, { allowInsecureLocalhost: true });
+  const rescan = await fetchAnnouncements({ chain: devChain, client: freshClient, announcer: manifest.announcer, cursor: { nextBlock: 0n } });
+  const recovered = rescan.announcements.filter((a) => checkAnnouncement(a, restoredKeys.viewingSecret, restoredKeys.spendingPublicKey).matches);
+  assert.equal(recovered.length, plan.length, 'restored keys must rediscover every seller payment');
+  for (const a of recovered) {
+    assert.equal(addressOfSecret(deriveStealthSecret(a, restoredKeys)), getAddress(a.stealthAddress), 'restored keys must control each one-time address');
+    assert.equal(addressOfSecret(deriveStealthSecret(a, restoredKeys)), addressOfSecret(secretOf(a.stealthAddress)));
+  }
+  const nativeRecovered = recovered.find((a) => parseMetadata(a.metadata).kind === 'native');
+  assert.ok(nativeRecovered, 'restored scan must include the native payment');
+  const nativeReceipt = await verifyClaimedPayment({
+    chain: devChain, client: freshClient, router: manifest.router, announcer: manifest.announcer,
+    claim: { stealthAddress: getAddress(nativeRecovered.stealthAddress), announcement: nativeRecovered, metadata: parseMetadata(nativeRecovered.metadata), viaRouter: true },
+  });
+  assert.equal(nativeReceipt.status, 'received', `restored receipt: ${nativeReceipt.reason ?? ''}`);
+  const restoredInvoice = signInvoice({ ...plan[0].invoice, memo: 'devnet restored signer' }, sg);
+  assert.ok(verifyInvoiceSignature(restoredInvoice), 'restored signing key must sign a verifiable invoice');
+  zeroize(sp, vw, sg);
+  // The source keys are retained and still work after the restore.
+  assert.equal(encodeMetaAddress(keys), meta);
+  assert.equal(scanned.announcements.filter((a) => checkAnnouncement(a, keys.viewingSecret, keys.spendingPublicKey).matches).length, plan.length);
+  assert.ok(verifyInvoiceSignature(signInvoice({ ...plan[0].invoice, memo: 'devnet source signer' }, signingKey)), 'source signing key still works');
+  step('script-side scrypt/AES-GCM backup mirroring keystore.ts params + restore rescan', `N=${KDF.N}; wrong passphrase and swapped identifiers refused; restored keys rediscovered ${recovered.length}/${plan.length} payments via a fresh client, native receipt verified; source retained`);
 }
 
 // ---- log ----
