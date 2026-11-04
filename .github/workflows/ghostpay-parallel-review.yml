@@ -1,0 +1,260 @@
+name: GhostPay Parallel Research and Verification
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ghostpay-parallel-review.yml'
+      - 'scripts/tests/ghostpay-parallel-review-workflow.test.mjs'
+  workflow_dispatch:
+  schedule:
+    - cron: '43 10,22 * * *'
+
+# Separate from both existing GhostPay API-funded workflows.
+# $10/agent is a target, not a guaranteed OpenAI billing cap.
+permissions: {}
+concurrency:
+  group: ghostpay-parallel-research-verification
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: node --test scripts/tests/ghostpay-parallel-review-workflow.test.mjs
+
+  research:
+    needs: validate
+    if: github.event_name != 'pull_request' && github.repository == 'djshellshoxxx/GhostPay'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      pull-requests: read
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        include:
+          - lane: security-review
+            task: "Independently examine invoice authentication, payment proof binding, EVM transaction finality, relayer abuse and sweep invariants. Propose reproducible test cases with exact source references; do not repeat fixes already in PR #47."
+          - lane: acceptance-tests
+            task: "Design executable acceptance specifications for interrupted payment, cancellation, uncertain broadcast, replay, reorg, vault restore, and stale-session boundaries. State which existing tests already cover each scenario."
+          - lane: release-qualification
+            task: "Investigate reproducible artifacts, dependency provenance, browser compatibility, build signing requirements, CI/sonar discrepancies and deployment-readiness gates. Distinguish actual evidence from unverified prerequisites."
+          - lane: documentation-ux
+            task: "Audit the documented checkout journey, privacy boundaries, error wording, mobile accessibility and onboarding. Research better UX patterns without making unreviewed product or security claims."
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Verify API funding and capture current PR ownership
+        id: preflight
+        env:
+          KEY_PRESENT: ${{ (secrets.GHOSTPAY_OPENAI_API_KEY != '' || secrets.OPENAI_API_KEY != '') }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$KEY_PRESENT" != true ]; then
+            echo "::error::GHOSTPAY_OPENAI_API_KEY or OPENAI_API_KEY is required"
+            exit 1
+          fi
+          # Live inventory, including PR #47, PR #52 and other open contributors.
+          printf '# Active PR ownership at research start\n\n' > active-pr-ownership.md
+          gh api --paginate "repos/$GITHUB_REPOSITORY/pulls?state=open&per_page=100" \
+            --jq '.[] | "- #\(.number) \(.title): \(.head.ref) (head \(.head.sha))"' \
+            >> active-pr-ownership.md
+          echo "Read active-pr-ownership.md before choosing research gaps." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: One API-funded research pass
+        id: codex
+        continue-on-error: true
+        uses: openai/codex-action@bdf19a4a223ec2549a3e2274a0cf61556bc07675 # v1
+        with:
+          openai-api-key: ${{ secrets.GHOSTPAY_OPENAI_API_KEY || secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          safety-strategy: drop-sudo
+          output-file: research-agent-log.txt
+          prompt: |
+            Independently research the djshellshoxxx/GhostPay project.
+            Lane: ${{ matrix.lane }}. Assignment: ${{ matrix.task }}
+            Read README.md, docs/handoffs/LEAN_RELEASE_SCOPE.md,
+            docs/handoffs/SOURCE_RECONCILIATION_2026-11-02.md,
+            active-pr-ownership.md, and relevant current code/tests/specs.
+            PR #47 owns the integrated client-only core; PR #52 owns a
+            separate four-agent QA workflow. Preserve both and all other
+            active contributions. Check current ownership and explain overlaps.
+            Produce ONLY research-output.md as a complete Markdown report
+            under these headings: ## Question; ## Current evidence;
+            ## Findings; ## Proposed independent tests; ## Ownership and
+            overlaps; ## Remaining uncertainties; ## Sources.
+            Include exact source paths and commit/PR references, cite public
+            authoritative specifications where available, and differentiate
+            facts from hypotheses. Identify 1-3 independently implementable
+            future tasks, marking overlaps as blocked. Do not claim to have
+            executed tests you did not run. If no nonduplicative work remains,
+            write an honest blocked report. Do not alter application code,
+            tests, dependencies, workflow files or existing documents.
+            Never invoke external agents, submit code, push branches, deploy,
+            release, make wallet transactions or edit secrets.
+            One narrow research pass only. API target $10, not a hard limit.
+
+      - name: Reject source modifications and validate report
+        id: verify
+        if: steps.codex.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s research-output.md
+          # Tracked files may not be modified, and only named report/log is allowed.
+          test -z "$(git diff --name-only HEAD)"
+          git ls-files -o --exclude-standard |
+          while IFS= read -r path; do
+            case "$path" in
+              research-output.md|research-agent-log.txt|active-pr-ownership.md) ;;
+              *) echo "::error::Agent wrote unauthorized $path"; exit 1 ;;
+            esac
+          done
+          for section in '## Question' '## Current evidence' '## Findings' \
+              '## Proposed independent tests' '## Ownership and overlaps' \
+              '## Remaining uncertainties' '## Sources'; do
+            grep -Fqx "$section" research-output.md ||
+              { echo "::error::Missing $section"; exit 1; }
+          done
+          # Reject unexpected huge dumps; reports are for review, not raw source archives.
+          test "$(wc -c < research-output.md)" -le 100000
+
+      - name: Record transparent cost target
+        if: always()
+        env:
+          LANE: ${{ matrix.lane }}
+          CODEX_RESULT: ${{ steps.codex.outcome }}
+          VERIFY_RESULT: ${{ steps.verify.outcome }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, os
+          with open('research-cost.json','w') as output:
+              json.dump({
+                  'lane':os.environ['LANE'],
+                  'run_id':os.environ['GITHUB_RUN_ID'],
+                  'target_api_usd':10,
+                  'actual_api_usd':None,
+                  'hard_spending_cap':False,
+                  'cost_source':'Not exposed by Codex GitHub Action',
+                  'codex_status':os.environ['CODEX_RESULT'],
+                  'verification_status':os.environ['VERIFY_RESULT']
+              },output,indent=2)
+          PY
+          echo "Research API target: $10; billed amount unknown, not capped." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload evidence and cost report
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ghostpay-research-evidence-${{ matrix.lane }}
+          path: |
+            research-output.md
+            research-agent-log.txt
+            research-cost.json
+            active-pr-ownership.md
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: Upload publishable research only when verified
+        if: steps.verify.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ghostpay-research-publish-${{ matrix.lane }}
+          path: research-output.md
+          retention-days: 14
+          if-no-files-found: error
+
+  publish:
+    needs: research
+    if: always() && github.event_name != 'pull_request' && github.repository == 'djshellshoxxx/GhostPay'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        lane: [security-review, acceptance-tests, release-qualification, documentation-ux]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Download verified research
+        id: download
+        continue-on-error: true
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ghostpay-research-publish-${{ matrix.lane }}
+          path: incoming
+
+      - name: Recheck open ownership and stage isolated document
+        id: stage
+        if: steps.download.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LANE: ${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s incoming/research-output.md
+          # One open research PR per lane prevents accumulating duplicate research.
+          if gh api --paginate "repos/$GITHUB_REPOSITORY/pulls?state=open&per_page=100" \
+            --jq '.[].head.ref' | grep -Eq "^codex/ghostpay-research-$LANE-"; then
+            echo "Existing research PR owns $LANE; preserve it; no new PR."
+            exit 0
+          fi
+          dest="docs/research/parallel-reviews/$LANE-$GITHUB_RUN_ID.md"
+          mkdir -p "$(dirname "$dest")"
+          cp incoming/research-output.md "$dest"
+          : > owned-paths.txt
+          gh api --paginate "repos/$GITHUB_REPOSITORY/pulls?state=open&per_page=100" --jq '.[].number' |
+          while IFS= read -r number; do
+            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$number/files?per_page=100" \
+              --jq '.[] | .filename, (.previous_filename // empty)' >> owned-paths.txt
+          done
+          if grep -Fxq "$dest" owned-paths.txt; then
+            echo "::error::Research destination is already owned by an open PR"
+            exit 1
+          fi
+          echo "dest=$dest" >> "$GITHUB_OUTPUT"
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+
+      - name: Open independent draft research PR
+        if: steps.stage.outputs.ready == 'true'
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
+        with:
+          token: ${{ secrets.GHOSTPAY_GITHUB_TOKEN || github.token }}
+          branch: codex/ghostpay-research-${{ matrix.lane }}-${{ github.run_id }}
+          base: main
+          add-paths: ${{ steps.stage.outputs.dest }}
+          commit-message: 'docs: GhostPay independent ${{ matrix.lane }} research'
+          title: 'docs: independent GhostPay ${{ matrix.lane }} research ${{ github.run_id }}'
+          body: |
+            API-funded independent research, not qualified implementation.
+            Lane: ${{ matrix.lane }}.
+            Evidence run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            $10 API target per worker; no hard spending cap or known billed cost.
+            PR remains draft pending human source verification, ownership
+            reconciliation, review and repository CI. No application code,
+            production configuration, release or deployment changed.
+            Do not automatically promote recommendations into code.
+          draft: true
+          delete-branch: true
