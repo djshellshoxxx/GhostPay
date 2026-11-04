@@ -378,6 +378,7 @@ export const SECURITY_KEY_GROUPS = {
     'create.buffer.error.min',
     'create.buffer.error.max',
     'create.buffer.error.order',
+    'create.buffer.error.cap',
     'create.buffer.error.native',
   ],
 } as const satisfies Readonly<Record<string, readonly MessageKey[]>>;

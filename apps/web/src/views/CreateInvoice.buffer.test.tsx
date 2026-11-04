@@ -117,12 +117,13 @@ describe('seller gas buffer policy control (ADR-0024)', () => {
     expect(invoice.bufferPolicy).toEqual({ accepted: true, maxWei: '5000000000000000', minWei: '1000', refund: 'none' });
   });
 
-  it('accepts the exact bounds min = max = 2^256-1', async () => {
+  it('accepts min = max = the payer safety cap (1e16 wei)', async () => {
     const { user } = mount();
     fill();
-    choose('range', MAX_UINT256, MAX_UINT256);
+    const cap = (10n ** 16n).toString();
+    choose('range', cap, cap);
     await user.click(screen.getByRole('button', { name: 'Create invoice link' }));
-    expect((await parsedInvoice()).bufferPolicy).toEqual({ accepted: true, maxWei: MAX_UINT256, minWei: MAX_UINT256, refund: 'none' });
+    expect((await parsedInvoice()).bufferPolicy).toEqual({ accepted: true, maxWei: cap, minWei: cap, refund: 'none' });
   });
 
   const refused: readonly [string, string, string][] = [
@@ -138,6 +139,8 @@ describe('seller gas buffer policy control (ADR-0024)', () => {
     ['empty maximum', '1', ''],
     ['zero maximum', '1', '0'],
     ['maximum below minimum', '11', '10'],
+    ['minimum above the payer safety cap (1e16 + 1)', (10n ** 16n + 1n).toString(), (10n ** 16n + 1n).toString()],
+    ['minimum at 2^256-1', MAX_UINT256, MAX_UINT256],
     ['minimum above 2^256-1', (2n ** 256n).toString(), (2n ** 256n).toString()],
     ['maximum above 2^256-1', '1', (2n ** 256n).toString()],
   ];

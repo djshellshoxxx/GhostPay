@@ -6,6 +6,7 @@ import { CopyButton, Field, Notice } from '../components/Common';
 import { useManifest } from '../components/Disclosure';
 import { QrFrame } from '../components/QrFrame';
 import { userMessage } from '../lib/errors';
+import { MAX_BUFFER_WEI } from '../lib/pay';
 import { buildInvoiceLink, tokenChoices, type CreatedInvoice, type InvoiceForm, type LineItemInput } from '../lib/invoiceCreate';
 import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphrase } from '../lib/keystore';
 import { registrationFromInvoice } from '../lib/reconciliationMatch';
@@ -137,6 +138,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
       if (min === undefined) { setError(t('create.buffer.error.min')); return; }
       if (max === undefined) { setError(t('create.buffer.error.max')); return; }
       if (max < min) { setError(t('create.buffer.error.order')); return; }
+      if (min > MAX_BUFFER_WEI) { setError(t('create.buffer.error.cap')); return; }
       if (token === 'native') { setError(t('create.buffer.error.native')); return; }
       bufferPolicy = { accepted: true, maxWei: max.toString(), minWei: min.toString(), refund: 'none' };
     }
