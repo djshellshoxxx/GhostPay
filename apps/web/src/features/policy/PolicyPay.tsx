@@ -1,5 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../../components/Common';
+import { WalletAttempts } from '../../components/WalletAttempts';
+import { PostBroadcastError } from '../../lib/payExec';
 import { userMessage } from '../../lib/errors';
 import { useApp } from '../../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
@@ -35,6 +37,8 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<string | undefined>(undefined);
   const [broadcast, setBroadcast] = useState<readonly Hex[]>([]);
+  // Terminal state after a broadcast whose checks failed (as Pay's 'submitted'): never offered again (M1).
+  const [locked, setLocked] = useState(false);
 
   const review = (): void => {
     setMsg(undefined);
@@ -51,7 +55,7 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
   };
 
   const send = async (): Promise<void> => {
-    if (reviewed === undefined || wallet === undefined) return;
+    if (reviewed === undefined || wallet === undefined || locked) return;
     setBusy(true);
     setMsg(undefined);
     setStatus(undefined);
@@ -69,6 +73,10 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
       app.announce(t('policy.pay.announced'));
       setReviewed(undefined);
     } catch (e) {
+      if (e instanceof PostBroadcastError) {
+        setReviewed(undefined);
+        setLocked(true);
+      }
       setMsg({ kind: 'error', text: userMessage(e) });
     } finally {
       setBusy(false);
@@ -85,8 +93,13 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
           </Field>
           <Field label={t('policy.pay.tokenLabel')}>{(id) => <input id={id} value={token} onChange={(e) => { setToken(e.target.value); setReviewed(undefined); }} spellCheck={false} />}</Field>
           <Field label={t('policy.pay.amountLabel')}>{(id) => <input id={id} inputMode="numeric" value={amount} onChange={(e) => { setAmount(e.target.value); setReviewed(undefined); }} />}</Field>
-          <button type="button" onClick={review}>{t('policy.pay.review')}</button>
-          {prepared !== undefined && (
+          {locked ? (
+            <>
+              <Notice kind="error" title={t('policy.pay.lockedTitle')}>{t('policy.pay.lockedBody')}</Notice>
+              <button type="button" onClick={() => { setLocked(false); setMsg(undefined); }}>{t('policy.pay.unlock')}</button>
+            </>
+          ) : <button type="button" onClick={review}>{t('policy.pay.review')}</button>}
+          {!locked && prepared !== undefined && (
             <>
               <dl className="kv" aria-label={t('policy.pay.reviewAria')}>
                 <dt>{t('policy.pay.method')}</dt><dd><Mono>{prepared.built.method}</Mono></dd>
@@ -109,6 +122,7 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
             </div>
           )}
           {msg !== undefined && <Notice kind={msg.kind}>{msg.text}</Notice>}
+          <WalletAttempts />
         </>
       )}
     </section>

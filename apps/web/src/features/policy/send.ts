@@ -1,6 +1,6 @@
-import { decodeFunctionData } from 'viem/utils';
+import { decodeFunctionData, keccak256, toBytes } from 'viem/utils';
 import { erc20Abi } from '@ghostpay/chain-adapters';
-import { decodePolicyPaymentCalldata, ghostPayPolicyRouterAbi } from '@ghostpay/policy-scheme';
+import { decodePolicyPaymentCalldata, ghostPayPolicyRouterAbi, type Hex } from '@ghostpay/policy-scheme';
 import { UserFacingError } from '../../lib/errors';
 import { assertApproveTx, readAllowance } from '../../lib/pay';
 import { PostBroadcastError, submitTx, type BroadcastFn, type Runtime, type StatusFn, type SubmitResult } from '../../lib/payExec';
@@ -58,10 +58,18 @@ function assertStillReviewed(session: WalletSession, prepared: PreparedPolicyPay
   if (decoded.method !== prepared.built.method || decoded.stealth !== prepared.payment.accountAddress || decoded.owner !== prepared.payment.ownerAddress || decoded.policyHash !== prepared.payment.policyHash) {
     throw new UserFacingError('Blocked: the payment calldata does not match the derived policy account. Nothing was sent.');
   }
+  const args = routerArgs(prepared);
+  const gross = prepared.built.net + prepared.built.fee;
+  const amountOk = prepared.token === 'native'
+    ? prepared.built.tx.value === gross
+    : prepared.built.tx.value === 0n && typeof args[0] === 'string' && args[0].toLowerCase() === prepared.token.toLowerCase() && args[3] === gross;
+  if (!amountOk) throw new UserFacingError('Blocked: the payment calldata token or amount does not match the prepared payment. Nothing was sent.');
   // Same boundary as Pay's sendPayment guard: refused from the deadline second on (`now >= deadline`).
-  if (BigInt(nowSeconds) >= deadlineOf(prepared)) throw new UserFacingError('The prepared payment has expired. Review again.');
+  const deadline = args[prepared.built.method === 'payNative' ? 3 : 5];
+  if (typeof deadline !== 'bigint') throw new UserFacingError('Blocked: the payment deadline could not be read. Nothing was sent.');
+  if (BigInt(nowSeconds) >= deadline) throw new UserFacingError('The prepared payment has expired. Review again.');
   if (prepared.token === 'native') {
-    if (prepared.approval !== undefined) throw new UserFacingError(REVIEW_MISMATCH);
+    if (prepared.approval !== undefined) throw new UserFacingError('Blocked: a native payment must not carry a token approval. Nothing was sent.');
   } else {
     if (prepared.approval === undefined) throw new UserFacingError('The prepared token payment has no approval. Nothing was sent.');
     assertApproveTx(prepared.approval, prepared.token, deployment.router, prepared.built.net + prepared.built.fee);
@@ -86,8 +94,12 @@ export async function sendPolicyPayment(
   guard: PolicySendGuard,
 ): Promise<SubmitResult> {
   const check = (): void => { assertStillReviewed(session, prepared, guard, rt.nowSeconds()); };
+  // Single use: once a review has reached the wallet it is never sent again, whatever the outcome (M1).
+  if (sentReviews.has(guard.reviewed) || sentReviews.has(prepared.built.tx)) throw new UserFacingError(ALREADY_SENT);
   check();
+  const scope = policyPaymentScope(session, prepared, guard.deployment);
   const router = prepared.built.tx.to;
+  let approvalHash: Hex | undefined;
   const gross = prepared.built.tx.value === 0n ? grossOf(prepared) : prepared.built.tx.value;
   if (prepared.token !== 'native') {
     const token = prepared.token;
@@ -97,7 +109,8 @@ export async function sendPolicyPayment(
     const have = await readAllowance(rt.rpc, token, session.account, router);
     if (have < gross) {
       status('Approve the router for exactly this amount.');
-      const res = await submitTx(session, approval, rt, status, check, onBroadcast, { kind: 'approval' });
+      markSent(guard, prepared);
+      const res = await submitTx(session, approval, rt, status, check, onBroadcast, { kind: 'approval', scope });
       try {
         if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError('The approval was not confirmed. Nothing was paid.');
         // Same rule as Pay's grantApproval (B2-R2): an uncompared mined approve may be another one.
@@ -107,17 +120,47 @@ export async function sendPolicyPayment(
       } catch (e) {
         throw new PostBroadcastError(res.hash, e instanceof UserFacingError ? e.message : 'the allowance check failed.', e);
       }
+      approvalHash = res.hash;
     }
   }
-  return submitTx(session, prepared.built.tx, rt, status, check, onBroadcast, { kind: 'payment' });
+  const mined = approvalHash;
+  // A refusal after a mined approval must not read as "nothing happened": the allowance stays on-chain.
+  const paymentCheck = mined === undefined ? check : (): void => {
+    try { check(); } catch (e) {
+      if (!(e instanceof UserFacingError)) throw e;
+      throw new UserFacingError(`${e.message.replaceAll(' Nothing was sent.', '')} The approval (${mined}) was already mined and the router allowance remains; no payment was sent. Revoke the allowance in your wallet if you will not pay.`);
+    }
+  };
+  paymentCheck();
+  markSent(guard, prepared);
+  return submitTx(session, prepared.built.tx, rt, status, paymentCheck, onBroadcast, { kind: 'payment', scope });
 }
 
-/** Router deadline read from the exact calldata that will be sent (`payNative` arg 3, the ERC-20 methods arg 5). */
-function deadlineOf(p: PreparedPolicyPayment): bigint {
-  const d = decodeFunctionData({ abi: ghostPayPolicyRouterAbi, data: p.built.tx.data });
-  const deadline = (d.args as readonly unknown[])[d.functionName === 'payNative' ? 3 : 5];
-  if (typeof deadline !== 'bigint') throw new UserFacingError('Blocked: the payment deadline could not be read. Nothing was sent.');
-  return deadline;
+const ALREADY_SENT = 'This review was already used for a wallet request, so it is never sent again (the payment may already have gone to your wallet). Check your wallet and a block explorer, then review a new payment only if nothing was sent.';
+/** Reviews and prepared calls that have reached the wallet (identity, per tab). */
+const sentReviews = new WeakSet<object>();
+function markSent(guard: PolicySendGuard, prepared: PreparedPolicyPayment): void {
+  sentReviews.add(guard.reviewed);
+  sentReviews.add(prepared.built.tx);
+}
+
+/**
+ * Duplicate-attempt scope of a policy payment (M2). Each review derives a fresh stealth account, so the calldata
+ * differs every time; like Pay's invoice digest, this scope is stable across re-review (chain, payer, router, payee
+ * meta-address, token, gross), so an earlier attempt with an unknown outcome blocks the wallet request until the user
+ * clears it explicitly.
+ */
+export function policyPaymentScope(session: WalletSession, prepared: PreparedPolicyPayment, deployment: PolicyChainDeployment): Hex {
+  return keccak256(toBytes(JSON.stringify([
+    'ghostpay-policy-payment-v1', session.chainId, session.account.toLowerCase(), deployment.router.toLowerCase(),
+    prepared.metaAddress.trim().toLowerCase(), prepared.token === 'native' ? 'native' : prepared.token.toLowerCase(),
+    (prepared.built.net + prepared.built.fee).toString(),
+  ])));
+}
+
+/** Arguments of the exact router calldata that will be sent. */
+function routerArgs(p: PreparedPolicyPayment): readonly unknown[] {
+  return decodeFunctionData({ abi: ghostPayPolicyRouterAbi, data: p.built.tx.data }).args as readonly unknown[];
 }
 
 /** Gross amount of an ERC-20 payment, taken from the reviewed approval (amount == gross by construction). */

@@ -3,6 +3,7 @@ import { ghostPayPolicyRouterAbi, type Hex } from '@ghostpay/policy-scheme';
 import { decodeFunctionData, encodeAbiParameters, encodeFunctionData } from 'viem/utils';
 import { describe, expect, it } from 'vitest';
 import { PostBroadcastError } from '../../lib/payExec';
+import { reviewPolicyPayment } from './send';
 import { captureSessionVersionGuard, clearSession } from '../../lib/session';
 import { connectWallet, type TxRequest } from '../../lib/wallet';
 import { MockWallet } from '../../test/mockWallet';
@@ -36,12 +37,14 @@ async function setup(opts: SetupOpts = {}) {
   const w = new MockWallet({ chainId: SEPOLIA });
   const session = await connectWallet({ id: 'mock', name: 'Mock', kind: 'eip6963', provider: w }, SEPOLIA);
   const sentLog: Record<string, unknown>[] = [];
+  const reads = { allowance: 0 };
   const mirror = walletMirror(w, (to) => (to.toLowerCase() === TOKEN.toLowerCase() ? (opts.approvalStatus ?? '0x1') : '0x1'));
   const rpc = fakeChain(SEPOLIA, {
     extra: (method, params) => {
       if (method === 'eth_call') {
         const c = params[0] as { to: string };
         if (c.to.toLowerCase() !== TOKEN.toLowerCase()) return undefined;
+        reads.allowance++;
         opts.onAllowanceRead?.();
         const approved = sentLog.some((t) => String(t['to']).toLowerCase() === TOKEN.toLowerCase());
         if (!approved) return word(opts.allowanceBefore ?? 0n);
@@ -69,7 +72,7 @@ async function setup(opts: SetupOpts = {}) {
   };
   const walletSends = (): number => w.calls.filter((c) => c.method === 'eth_sendTransaction').length;
   const run = (g: PolicySendGuard = guard, p: PreparedPolicyPayment = prepared) => sendPolicyPayment(session, p, { rpc: opts.noRpc === true ? undefined : rpc, nowSeconds: () => opts.clock?.now ?? 1, sleep: () => Promise.resolve() }, (m) => status.push(m), (h) => hashes.push(h), g);
-  return { w, sentLog, run, hashes, status, prepared, guard, walletSends };
+  return { w, sentLog, run, hashes, status, prepared, guard, walletSends, reads };
 }
 
 describe('policy payment sending (fund safety)', () => {
@@ -188,7 +191,7 @@ describe('policy payment sending (session guard and reviewed transaction)', () =
       if (args.method === 'eth_sendTransaction') clearSession();
       return r;
     };
-    await expect(t.run()).rejects.toThrow(/Seller keys changed/);
+    await expect(t.run()).rejects.toThrow(/Seller keys changed during this action\. Try again\. The approval \(0x9+\) was already mined and the router allowance remains/);
     expect(t.walletSends()).toBe(1);
     expect(t.hashes).toHaveLength(1);
   });
@@ -235,5 +238,92 @@ describe('policy payment sending (deadline, same boundary as Pay)', () => {
     await expect(t.run()).rejects.toThrow(/has expired/);
     expect(t.walletSends()).toBe(1);
     expect(t.hashes).toHaveLength(1);
+  });
+});
+
+const OTHER = '0x1111111111111111111111111111111111111111';
+/** Re-encodes a payERC20 call with its token or gross replaced (a well-formed but different call). */
+function payErc20With(data: Hex, change: { readonly token?: Hex; readonly gross?: bigint }): Hex {
+  const d = decodeFunctionData({ abi: ghostPayPolicyRouterAbi, data });
+  if (d.functionName !== 'payERC20') throw new Error('fixture is not payERC20');
+  const a = d.args;
+  return encodeFunctionData({ abi: ghostPayPolicyRouterAbi, functionName: 'payERC20', args: [change.token ?? a[0], a[1], a[2], change.gross ?? a[3], a[4], a[5], a[6], a[7]] });
+}
+/** A prepared payment changed consistently with its own review snapshot, so only the decode checks can catch it. */
+function consistent(t: Awaited<ReturnType<typeof setup>>, p: PreparedPolicyPayment): [PolicySendGuard, PreparedPolicyPayment] {
+  return [{ ...t.guard, reviewed: reviewPolicyPayment(p, DEPLOYMENT) }, p];
+}
+
+describe('policy payment sending (single use and final-gate details)', () => {
+  it('M1: refuses a second send of the same review after an unverified approval (no payment from the leftover allowance)', async () => {
+    const t = await setup({ hideApprovalTx: true });
+    await expect(t.run()).rejects.toBeInstanceOf(PostBroadcastError);
+    await expect(t.run()).rejects.toThrow(/already used for a wallet request/);
+    await expect(t.run({ ...t.guard, reviewed: reviewPolicyPayment(t.prepared, DEPLOYMENT) })).rejects.toThrow(/already used for a wallet request/);
+    expect(t.walletSends()).toBe(1);
+    expect(t.hashes).toHaveLength(1);
+  });
+  it('M1: a completed review cannot be sent again', async () => {
+    const t = await setup({ token: 'native' });
+    await t.run();
+    await expect(t.run()).rejects.toThrow(/already used for a wallet request/);
+    expect(t.walletSends()).toBe(1);
+  });
+  it('M3: refuses an ERC-20 payment before any RPC read when the session changed before send', async () => {
+    const t = await setup();
+    clearSession();
+    await expect(t.run()).rejects.toThrow(/Seller keys changed/);
+    expect(t.walletSends()).toBe(0);
+    expect(t.reads.allowance).toBe(0);
+  });
+  it('M3: refuses a tampered ERC-20 review before any RPC read', async () => {
+    const t = await setup();
+    await expect(t.run({ ...t.guard, reviewed: { ...t.guard.reviewed, chainId: SEPOLIA + 1 } })).rejects.toThrow(/differs from what you reviewed/);
+    expect(t.reads.allowance).toBe(0);
+    expect(t.walletSends()).toBe(0);
+  });
+  it('refuses a payERC20 whose token argument differs from the prepared token', async () => {
+    const t = await setup({ allowanceBefore: GROSS });
+    const p = { ...t.prepared, built: { ...t.prepared.built, tx: { ...t.prepared.built.tx, data: payErc20With(t.prepared.built.tx.data, { token: OTHER }) } } };
+    await expect(t.run(...consistent(t, p))).rejects.toThrow(/token or amount/);
+    expect(t.walletSends()).toBe(0);
+  });
+  it('refuses a payERC20 whose gross argument differs from the prepared amount', async () => {
+    const t = await setup({ allowanceBefore: GROSS * 2n });
+    const p = { ...t.prepared, built: { ...t.prepared.built, tx: { ...t.prepared.built.tx, data: payErc20With(t.prepared.built.tx.data, { gross: GROSS + 1n }) } } };
+    await expect(t.run(...consistent(t, p))).rejects.toThrow(/token or amount/);
+    expect(t.walletSends()).toBe(0);
+  });
+  it('refuses a native payment whose value differs from the prepared amount', async () => {
+    const t = await setup({ token: 'native' });
+    const p = { ...t.prepared, built: { ...t.prepared.built, tx: { ...t.prepared.built.tx, value: GROSS + 1n } } };
+    await expect(t.run(...consistent(t, p))).rejects.toThrow(/token or amount/);
+    expect(t.walletSends()).toBe(0);
+  });
+  it('refuses a payment that is not addressed to the verified router', async () => {
+    const t = await setup({ token: 'native' });
+    const p = { ...t.prepared, built: { ...t.prepared.built, tx: { ...t.prepared.built.tx, to: OTHER as Hex } } };
+    await expect(t.run(...consistent(t, p))).rejects.toThrow(/not addressed to the verified policy router/);
+    expect(t.walletSends()).toBe(0);
+  });
+  it('refuses calldata that does not match the derived account (owner, account, policy hash or method)', async () => {
+    const t = await setup({ token: 'native' });
+    const pay = t.prepared.payment;
+    const variants: PreparedPolicyPayment[] = [
+      { ...t.prepared, payment: { ...pay, ownerAddress: OTHER } },
+      { ...t.prepared, payment: { ...pay, accountAddress: OTHER } },
+      { ...t.prepared, payment: { ...pay, policyHash: `0x${'00'.repeat(32)}` } },
+      { ...t.prepared, built: { ...t.prepared.built, method: 'payERC20' as const } },
+    ];
+    for (const p of variants) {
+      await expect(t.run(...consistent(t, p))).rejects.toThrow(/derived policy account/);
+    }
+    expect(t.walletSends()).toBe(0);
+  });
+  it('refuses a native payment that carries a token approval', async () => {
+    const t = await setup({ token: 'native' });
+    const approval = { to: TOKEN as Hex, value: 0n, data: encodeFunctionData({ abi: erc20Abi, functionName: 'approve', args: [ROUTER, GROSS] }) };
+    await expect(t.run(...consistent(t, { ...t.prepared, approval }))).rejects.toThrow(/native payment must not carry a token approval/);
+    expect(t.walletSends()).toBe(0);
   });
 });

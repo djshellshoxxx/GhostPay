@@ -32,6 +32,8 @@ export interface PreparedPolicyPayment {
   /** ERC-20 only: `approve(router, gross)` that must be mined first. */
   readonly approval?: TxRequest;
   readonly token: Address | 'native';
+  /** Payee meta-address as entered (trimmed); part of the duplicate-attempt scope, which must survive re-review. */
+  readonly metaAddress: string;
 }
 
 /**
@@ -66,5 +68,5 @@ export function preparePolicyPayment(input: PolicyPayInput): PreparedPolicyPayme
     throw new UserFacingError('The prepared payment failed its self-check. Nothing was sent.');
   }
   const approval = token === 'native' ? undefined : { to: token, value: 0n, data: encodeFunctionData({ abi: erc20Abi, functionName: 'approve', args: [input.deployment.router, input.gross] }) };
-  return Object.freeze({ payment, built, token, ...(approval === undefined ? {} : { approval }) });
+  return Object.freeze({ payment, built, token, metaAddress: input.metaAddress.trim(), ...(approval === undefined ? {} : { approval }) });
 }
