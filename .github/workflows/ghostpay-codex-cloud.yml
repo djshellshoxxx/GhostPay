@@ -3,9 +3,9 @@ name: GhostPay API-Funded Cloud Development
 on:
   workflow_dispatch:
   schedule:
-    - cron: '37 8 * * *'
+    - cron: '37 8,20 * * *'
 
-# Cloud-only. One paid AI run per scheduled day while the generated PR queue is clear.
+# Cloud-only. At most two paid AI attempts per day while the generated PR queue is clear.
 # GitHub runner charges are separate from OpenAI API usage; this is NOT a dollar hard cap.
 permissions: {}
 
@@ -75,6 +75,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          echo "Cloud development preflight, run $GITHUB_RUN_ID" >> "$GITHUB_STEP_SUMMARY"
           if [ "$PRESENT" != "true" ]; then
             echo "::error::No usable API key secret. Expected repository Actions secret GHOSTPAY_OPENAI_API_KEY, OPENAI_API_KEY, or PATCHTRACE_OPENAI_API_KEY"
             exit 1
@@ -104,10 +105,11 @@ jobs:
             Read README.md, docs/handoffs/SOURCE_RECONCILIATION_2026-11-02.md,
             docs/handoffs/RESTART.md, docs/handoffs/LEAN_RELEASE_SCOPE.md,
             and relevant current specs and audits. Historical estimates and
-            unpublished branches are not proven complete. PR #47 currently
-            consolidates a large supported core; do not duplicate or replace it.
+            unpublished branches are not proven complete. Open consolidation PRs may own a large supported core;
+            inspect current owners before selecting work and do not duplicate them.
 
-            Perform ONE small, unowned, independently testable improvement
+            Continue unfinished backlog features through ONE small, unowned,
+            independently testable improvement
             toward the supported lean EVM invoice -> consent -> verified
             payment detection/receipt -> sweep -> encrypted recovery flow.
             Prefer a reproduced, testable correctness defect, actual
@@ -115,7 +117,9 @@ jobs:
             or fail-closed test coverage that does not overlap pending PRs.
             Verify branch ownership from public GitHub PR information where
             network access is available; otherwise choose a clearly
-            independent safe slice or report blocked.
+            independent safe slice or report blocked. Human-only acceptance
+            testing must not halt unrelated independently testable work.
+            Do not repeat previously completed tasks.
 
             Use test-first changes: establish a failing regression, apply a
             minimal fix, run focused checks, and leave exact evidence.
