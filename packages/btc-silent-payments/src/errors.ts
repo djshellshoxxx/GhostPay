@@ -35,6 +35,7 @@ export type SilentPaymentErrorCode =
   | 'SIGNATURE_INVALID'
   | 'INVALID_HEADER'
   | 'FORK_TOO_DEEP'
+  | 'FORK_UNRESOLVED'
   | 'SIGNER_REFUSED';
 
 const MESSAGES: Readonly<Record<SilentPaymentErrorCode, string>> = {
@@ -70,6 +71,7 @@ const MESSAGES: Readonly<Record<SilentPaymentErrorCode, string>> = {
   SIGNATURE_INVALID: 'signed transaction failed verification',
   INVALID_HEADER: 'block header violates a header-chain rule',
   FORK_TOO_DEEP: "the source's competing header branch could not be evaluated (too deep for one call); nothing was changed",
+  FORK_UNRESOLVED: "the source claims a longer competing header branch that did not overtake the checked chain within this call; it was not evaluated",
   SIGNER_REFUSED: 'the signer refused the request',
 };
 

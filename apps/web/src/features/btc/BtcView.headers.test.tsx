@@ -6,7 +6,10 @@ import { describe, expect, it, vi } from 'vitest';
 import { makeServices, renderWith } from '../../test/render';
 import { BtcView } from './BtcView';
 import { coinbase, fakeIdb, forkChain, mineHeader, mockChain, SEED_A, walletA, type MockChain } from './fixtures.testutil';
-import { MemoryHeaderStore, type HeaderStoreFor } from './headers';
+import { bech32 } from '@scure/base';
+import { EsploraClient } from './esplora';
+import { EsploraHeaderSource, loadHeaderChain, MemoryHeaderStore, syncHeaders, type HeaderStoreFor } from './headers';
+import { btcNetwork } from './network';
 
 /** One persistent store per test, shared across renders (stands in for IndexedDB). */
 function sharedStore(): { readonly storeFor: HeaderStoreFor; readonly regtest: MemoryHeaderStore } {
@@ -14,9 +17,9 @@ function sharedStore(): { readonly storeFor: HeaderStoreFor; readonly regtest: M
   return { storeFor: (id) => (id === 'regtest' ? regtest : new MemoryHeaderStore()), regtest };
 }
 
-async function open(chain: MockChain, storeFor: HeaderStoreFor) {
+async function open(chain: MockChain, storeFor: HeaderStoreFor, limits?: { maxRounds?: number; headersPerRound?: number; maxHeaders?: number }) {
   const user = userEvent.setup();
-  renderWith(<BtcView headerStore={storeFor} />, makeServices({ fetchFn: chain.fetchFn }));
+  renderWith(<BtcView headerStore={storeFor} {...(limits === undefined ? {} : { headerSyncLimits: limits })} />, makeServices({ fetchFn: chain.fetchFn }));
   await user.selectOptions(screen.getByLabelText('Network'), 'regtest');
   await user.type(screen.getByLabelText(/Esplora server URL/), 'https://esplora.test/api');
   await user.type(screen.getByLabelText(/Or import a seed/), SEED_A);
@@ -38,6 +41,180 @@ function forgedChainJson(): string {
 }
 
 const verified = (height: number): RegExp => new RegExp(`Block headers checked on this device from the pinned genesis block to height ${String(height)} `);
+
+const BCRT_DEST = bech32.encode('bcrt', [0, ...bech32.toWords(new Uint8Array(20).fill(3))]);
+
+describe('BtcView header chain: re-review fixes', () => {
+  it('F1: a transaction signed before Forget cannot be broadcast while its input is unchecked', async () => {
+    const chain = mockChain('regtest', walletA());
+    const user = await open(chain, sharedStore().storeFor, { headersPerRound: 1, maxRounds: 2 });
+    await user.click(screen.getByRole('button', { name: 'Update headers' }));
+    await screen.findByText(verified(2));
+    await user.click(screen.getByRole('button', { name: 'Update headers' }));
+    await screen.findByText(verified(4));
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    await screen.findByText(/1 unspent payment/);
+    await user.click(screen.getByRole('checkbox', { name: /Sweep [0-9a-f]{64}:1/ }));
+    await user.type(screen.getByLabelText('Destination address'), BCRT_DEST);
+    await user.click(screen.getByRole('button', { name: 'Review sweep' }));
+    await user.click(screen.getByRole('checkbox', { name: /I checked the destination/ }));
+    await user.click(screen.getByRole('button', { name: 'Sign with software key' }));
+    await screen.findByText('Signed transaction');
+    await user.click(screen.getByRole('button', { name: 'Forget saved headers for this network' }));
+    await user.click(screen.getByRole('button', { name: 'Delete saved headers' }));
+    await screen.findByText(/Saved block headers for this network were deleted/);
+    expect(screen.queryByText('Signed transaction')).toBeNull();
+    expect(screen.queryByText('Review before signing')).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Update headers' }));
+    await screen.findByText(verified(2));
+    expect(screen.queryByRole('button', { name: /Broadcast to/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Review sweep' })?.hasAttribute('disabled') ?? true).toBe(true);
+    expect(chain.broadcasts).toHaveLength(0);
+  });
+
+  it('F2: a chain loaded from storage is reconciled with on-screen results even when the sync does not move its tip', async () => {
+    const chain = mockChain('regtest', walletA());
+    const store = sharedStore();
+    const user = await open(chain, store.storeFor);
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    await screen.findByText(/1 unspent payment/);
+    await user.click(screen.getByRole('button', { name: 'Forget saved headers for this network' }));
+    await user.click(screen.getByRole('button', { name: 'Delete saved headers' }));
+    await screen.findByText(/Saved block headers for this network were deleted/);
+    // The server is now on an equal-length fork below the paying block, and another tab saved exactly that chain.
+    forkChain(chain.blocks, 2, 3, 4);
+    const other = new MemoryHeaderStore();
+    const { chain: b } = await loadHeaderChain(btcNetwork('regtest'), other);
+    await syncHeaders({ chain: b, sources: [new EsploraHeaderSource(new EsploraClient({ baseUrl: 'https://esplora.test/api', fetchFn: chain.fetchFn }))], store: other });
+    store.regtest.value = other.value;
+    store.regtest.work = other.work;
+    await user.click(screen.getByRole('button', { name: 'Update headers' }));
+    await screen.findByText(/Resumed from 4 saved block headers/);
+    expect(screen.queryByRole('checkbox', { name: /Sweep [0-9a-f]{64}:1/ })).toBeNull();
+    expect(screen.getByText(/Scan results above height 1 came from blocks that are no longer on the checked chain/)).toBeTruthy();
+  });
+
+  it('F3: forgetting during a running check re-enables Scan and Update headers', async () => {
+    const chain = mockChain('regtest', walletA());
+    let release: () => void = () => undefined;
+    const gate = new Promise<void>((r) => { release = r; });
+    let hold = false;
+    const fetchFn: MockChain['fetchFn'] = async (url, init) => {
+      if (hold && url.includes('/blocks/') && !url.endsWith('/tip/height')) await gate;
+      return chain.fetchFn(url, init);
+    };
+    const user = userEvent.setup();
+    renderWith(<BtcView headerStore={sharedStore().storeFor} />, makeServices({ fetchFn }));
+    await user.selectOptions(screen.getByLabelText('Network'), 'regtest');
+    await user.type(screen.getByLabelText(/Esplora server URL/), 'https://esplora.test/api');
+    await user.type(screen.getByLabelText(/Or import a seed/), SEED_A);
+    await user.click(screen.getByRole('button', { name: 'Import seed' }));
+    hold = true;
+    await user.click(screen.getByRole('button', { name: 'Update headers' }));
+    await screen.findByText('Checking block headers…');
+    await user.click(screen.getByRole('button', { name: 'Forget saved headers for this network' }));
+    await user.click(screen.getByRole('button', { name: 'Delete saved headers' }));
+    await screen.findByText(/Saved block headers for this network were deleted/);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Update headers' }).disabled).toBe(false);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Scan' }).disabled).toBe(false);
+    hold = false;
+    release();
+    await user.click(screen.getByRole('button', { name: 'Update headers' }));
+    await screen.findByText(verified(4));
+  });
+
+  it('F5: repeated checks never grow the chain past the size limit', async () => {
+    const chain = mockChain('regtest', walletA());
+    const store = sharedStore();
+    const user = await open(chain, store.storeFor, { maxHeaders: 3, headersPerRound: 5 });
+    for (let i = 0; i < 3; i++) {
+      await user.click(screen.getByRole('button', { name: 'Update headers' }));
+      await screen.findByText(/longer than the 3 headers this app keeps/);
+    }
+    expect((JSON.parse(store.regtest.value ?? '{}') as { headersHex: string }).headersHex.length / 160).toBe(3);
+  });
+
+  it('L6: a check that finishes after Forget changes neither the results nor the checked tip', async () => {
+    const chain = mockChain('regtest', walletA());
+    let release: () => void = () => undefined;
+    const gate = new Promise<void>((r) => { release = r; });
+    let gateOn = false;
+    let hits = 0;
+    const fetchFn: MockChain['fetchFn'] = async (url, init) => {
+      if (gateOn && url.endsWith('/blocks/5') && ++hits === 2) await gate;
+      return chain.fetchFn(url, init);
+    };
+    const user = userEvent.setup();
+    renderWith(<BtcView headerStore={sharedStore().storeFor} headerSyncLimits={{ headersPerRound: 1, maxRounds: 10 }} />, makeServices({ fetchFn }));
+    await user.selectOptions(screen.getByLabelText('Network'), 'regtest');
+    await user.type(screen.getByLabelText(/Esplora server URL/), 'https://esplora.test/api');
+    await user.type(screen.getByLabelText(/Or import a seed/), SEED_A);
+    await user.click(screen.getByRole('button', { name: 'Import seed' }));
+    await user.type(screen.getByLabelText(/First block height/), '1');
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    await screen.findByText(/1 unspent payment/);
+    // A heavier fork replacing the paying block is adopted in round 1 of a check that is still running at Forget.
+    forkChain(chain.blocks, 3, 3, 2);
+    gateOn = true;
+    await user.click(screen.getByRole('button', { name: 'Update headers' }));
+    await waitFor(() => { expect(hits).toBe(2); });
+    await user.click(screen.getByRole('button', { name: 'Forget saved headers for this network' }));
+    await user.click(screen.getByRole('button', { name: 'Delete saved headers' }));
+    await screen.findByText(/Saved block headers for this network were deleted/);
+    release();
+    await new Promise((r) => { setTimeout(r, 50); });
+    // The stale check neither removed the result nor marked it checked.
+    expect(screen.getByText(/1 unspent payment/)).toBeTruthy();
+    expect(screen.getByRole<HTMLInputElement>('checkbox', { name: /Sweep [0-9a-f]{64}:1/ }).disabled).toBe(true);
+    expect(screen.getByText(/No block headers are checked right now/)).toBeTruthy();
+  });
+
+  it('L6: a chain still loading from storage at Forget is not kept as the checked chain', async () => {
+    const chain = mockChain('regtest', walletA());
+    const store = new MemoryHeaderStore();
+    let release: () => void = () => undefined;
+    const gate = new Promise<void>((r) => { release = r; });
+    let holdLoad = false;
+    const load = store.load.bind(store);
+    store.load = async () => {
+      const v = await load();
+      if (holdLoad) await gate;
+      return v;
+    };
+    // Saved headers reach height 2 only.
+    let user = await open(chain, () => store, { headersPerRound: 1, maxRounds: 2 });
+    await user.click(screen.getByRole('button', { name: 'Update headers' }));
+    await screen.findByText(verified(2));
+    cleanup();
+    user = await open(chain, () => store, { headersPerRound: 1, maxRounds: 1 });
+    holdLoad = true;
+    await user.click(screen.getByRole('button', { name: 'Update headers' }));
+    await screen.findByText(/Checking saved block headers again/);
+    await user.click(screen.getByRole('button', { name: 'Forget saved headers for this network' }));
+    await user.click(screen.getByRole('button', { name: 'Delete saved headers' }));
+    await screen.findByText(/Saved block headers for this network were deleted/);
+    release();
+    await new Promise((r) => { setTimeout(r, 50); });
+    holdLoad = false;
+    // The next check starts at genesis (one round of one header), not from the stale height-2 chain.
+    await user.click(screen.getByRole('button', { name: 'Update headers' }));
+    await screen.findByText(verified(1));
+  });
+
+  it('L5: a pending Forget confirmation does not survive a network switch', async () => {
+    const chain = mockChain('regtest', walletA());
+    const user = await open(chain, sharedStore().storeFor);
+    await user.click(screen.getByRole('button', { name: 'Forget saved headers for this network' }));
+    expect(screen.getByRole('button', { name: 'Delete saved headers' })).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
+    await user.selectOptions(screen.getByLabelText('Network'), 'signet');
+    await user.type(screen.getByLabelText(/Or import a seed/), SEED_A);
+    await user.click(screen.getByRole('button', { name: 'Import seed' }));
+    expect(screen.queryByRole('button', { name: 'Delete saved headers' })).toBeNull();
+    // No checked headers yet: the notice does not claim a height.
+    expect(screen.queryByText(/height 0/)).toBeNull();
+  });
+});
 
 describe('BtcView header chain: delta review fixes', () => {
   it('after forgetting headers, a capped resync keeps results above the checked tip but does not let them be swept', async () => {
@@ -252,7 +429,9 @@ describe('BtcView header chain', () => {
     chain.blocks[4]!.header = bad;
     const user = await open(chain, store.storeFor);
     await user.click(screen.getByRole('button', { name: 'Scan' }));
-    await screen.findByText(/Header check failed: a header the server sent failed validation/);
+    // Proof of work is checked while parsing (INVALID_RESPONSE): its own message, not the chain-rule one.
+    await screen.findByText(/Header check failed: The server returned data this app cannot trust\./);
+    expect(screen.queryByText(/could not be evaluated/)).toBeNull();
     expect(chain.requests.some((r) => r.includes('/txs/'))).toBe(false);
   });
 

@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { SilentPaymentError } from '../errors.js';
 import { parseHeader } from '../header.js';
-import { REGTEST_GENESIS, extend, regtestChain } from '../headers.testutil.js';
+import { REGTEST_GENESIS, extend, mine, regtestChain } from '../headers.testutil.js';
+import { CHAIN_PARAMS, HeaderChain, type ChainParams } from '../headerchain.js';
 import { HeaderAnchoredTweakSource, syncHeaderChain, syncHeaderChainFromSources, type HeaderSource } from './headersync.js';
 import type { BlockOutputs, BlockTweaks, TweakSource } from './types.js';
 
@@ -136,6 +137,62 @@ describe('syncHeaderChain', () => {
     expect(src.calls.filter((x) => /^\d+\+\d+$/.test(x) && x.split('+')[1] !== '1' && Number(x.split('+')[0]) > 48)).toEqual([]);
     expect(c.tipHash).toBe(parseHeader(LONG[60]!).hash);
   });
+  it('F4: a source that answers the probe correctly but serves a branch from below the tip is refused', async () => {
+    const LONG = [REGTEST_GENESIS, ...extend(REGTEST_GENESIS, 100, 600, 0x207fffff, 1)];
+    const c = regtestChain();
+    await syncHeaderChain(c, new ListHeaderSource(LONG));
+    const alt = extend(LONG[95]!, 10, 601, 0x207fffff, 4); // heights 96..105, heavier
+    const tricky: HeaderSource = {
+      getTipHeight: () => Promise.resolve(105),
+      getHeaders: (from, n) => Promise.resolve(from === 100 && n === 1 ? [LONG[100]!] : alt.slice(0, n)),
+    };
+    expect(await codeOf(syncHeaderChain(c, tricky))).toBe('INVALID_HEADER');
+    expect(c.tipHash).toBe(parseHeader(LONG[100]!).hash);
+  });
+  it('L2: finds the fork point exactly, so the budget counts the real depth', async () => {
+    const LONG = [REGTEST_GENESIS, ...extend(REGTEST_GENESIS, 60, 600, 0x207fffff, 1)];
+    const c = regtestChain();
+    await syncHeaderChain(c, new ListHeaderSource(LONG));
+    // Fork after 40: depth 20. The doubling probe lands at 29 (31 deep); a binary search narrows it to 40.
+    const heavier = [...LONG.slice(0, 41), ...extend(LONG[40]!, 21, 601, 0x207fffff, 2)];
+    expect((await syncHeaderChain(c, new ListHeaderSource(heavier), { maxForkHeaders: 20 })).adopted).toBe(true);
+  });
+  it('L2: a longer but lighter branch that has not overtaken within maxHeaders is FORK_UNRESOLVED, not "too deep"', async () => {
+    // Tiny retarget periods: fast blocks make our chain harder (more work each), slow blocks make the branch easier.
+    const TINY: ChainParams = { ...CHAIN_PARAMS.regtest, interval: 4, targetSpacing: 1, targetTimespan: 4, allowMinDifficultyBlocks: false, noRetargeting: false };
+    const genesis = mine('0'.repeat(64), 1_700_000_000, 0x200fffff, { version: 1 });
+    const fresh = (): HeaderChain =>
+      HeaderChain.create({ params: TINY, checkpoint: { height: 0, hash: parseHeader(genesis).hash, headerHex: genesis }, now: () => 2_000_000_000 });
+    const grow = (n: number, spacing: number, tag: number): string[] => {
+      const g = fresh();
+      const out = [genesis];
+      for (let i = 0; i < n; i++) {
+        const tip = g.headerAt(g.tipHeight)!;
+        const hex = mine(tip.hash, tip.time + spacing, g.nextBits(tip.time + spacing), { tag });
+        g.connect([hex]);
+        out.push(hex);
+      }
+      return out;
+    };
+    const ours = grow(12, 1, 1);
+    const lighter = grow(30, 100, 2);
+    const c = fresh();
+    await syncHeaderChain(c, new ListHeaderSource(ours));
+    expect(await codeOf(syncHeaderChain(c, new ListHeaderSource(lighter), { maxHeaders: 2 }))).toBe('FORK_UNRESOLVED');
+    expect(c.tipHash).toBe(parseHeader(ours[12]!).hash);
+    // Compared to the source tip, it is simply lighter.
+    expect(await syncHeaderChain(c, new ListHeaderSource(lighter), { maxHeaders: 100 })).toMatchObject({ adopted: false, tipHeight: 12 });
+  });
+  it('L7: a valid prefix that already has more work is adopted before an invalid header is reported', async () => {
+    const LONG = [REGTEST_GENESIS, ...extend(REGTEST_GENESIS, 60, 600, 0x207fffff, 1)];
+    const c = regtestChain();
+    await syncHeaderChain(c, new ListHeaderSource(LONG));
+    const side = [...LONG.slice(0, 51), ...extend(LONG[50]!, 20, 601, 0x207fffff, 6)]; // fork after 50, tip 70
+    side[65] = `${side[65]!.slice(0, 8)}${'ab'.repeat(32)}${side[65]!.slice(72)}`; // broken at 65
+    expect(await codeOf(syncHeaderChain(c, new ListHeaderSource(side), { batchSize: 100 }))).toMatch(/INVALID_HEADER|INVALID_RESPONSE/);
+    expect(c.tipHeight).toBe(64);
+    expect(c.tipHash).toBe(parseHeader(side[64]!).hash);
+  });
   it('refuses to judge a fork deeper than maxForkHeaders (FORK_TOO_DEEP), changing nothing', async () => {
     const LONG = [REGTEST_GENESIS, ...extend(REGTEST_GENESIS, 60, 600, 0x207fffff, 1)];
     const c = regtestChain();
@@ -144,7 +201,9 @@ describe('syncHeaderChain', () => {
     expect(await codeOf(syncHeaderChain(c, new ListHeaderSource(heavier), { maxForkHeaders: 30 }))).toBe('FORK_TOO_DEEP');
     expect(c.tipHash).toBe(parseHeader(LONG[60]!).hash);
     expect(await codeOf(syncHeaderChain(c, new ListHeaderSource(heavier), { maxForkHeaders: 0 }))).toBe('INVALID_INPUT');
-    expect((await syncHeaderChain(c, new ListHeaderSource(heavier), { maxForkHeaders: 65 })).adopted).toBe(true); // the probe overshot to genesis: 65 headers
+    // The binary search finds the fork at 20 exactly: 40 active headers would be replaced.
+    expect(await codeOf(syncHeaderChain(c, new ListHeaderSource(heavier), { maxForkHeaders: 39 }))).toBe('FORK_TOO_DEEP');
+    expect((await syncHeaderChain(c, new ListHeaderSource(heavier), { maxForkHeaders: 40 })).adopted).toBe(true);
   });
 });
 

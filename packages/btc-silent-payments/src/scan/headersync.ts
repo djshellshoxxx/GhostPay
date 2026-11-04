@@ -63,11 +63,13 @@ async function fetchHeaders(source: HeaderSource, from: number, count: number, s
 
 /**
  * Brings `chain` up to date with one header source: finds the last header both share (probing back in
- * doubling steps, never below the checkpoint), downloads the source's headers above it and lets
- * {@link HeaderChain.connect} validate them and keep whichever chain has more work.
+ * doubling steps, never below the checkpoint, then a binary search), then either extends the tip chunk by chunk or
+ * streams the competing branch into a {@link HeaderBranch} and adopts it once it has strictly more work.
  *
  * @throws {SilentPaymentError} `INVALID_INPUT`, `ABORTED`, `TRANSPORT_FAILURE`, `INVALID_RESPONSE`,
- * `INVALID_HEADER` (also when the source disagrees with the pinned checkpoint).
+ * `INVALID_HEADER` (also when the source disagrees with the pinned checkpoint, or an extension chunk does not build
+ * on the tip), `FORK_TOO_DEEP` (the branch would replace more than `maxForkHeaders`), `FORK_UNRESOLVED` (a branch
+ * that did not overtake within `maxHeaders` past the tip while the source claims more).
  * @security The source learns which header ranges are requested, nothing else.
  */
 export async function syncHeaderChain(chain: HeaderChain, source: HeaderSource, o: SyncOptions = {}): Promise<SyncResult> {
@@ -85,43 +87,68 @@ export async function syncHeaderChain(chain: HeaderChain, source: HeaderSource, 
   let h = Math.min(chain.tipHeight, sourceTip);
   let step = 1;
   let forked = false;
+  let miss = h;
   for (;;) {
     const [hex] = await fetchHeaders(source, h, 1, o.signal);
     fetched++;
     if (parseHeader(hex as string).hash === chain.hashAt(h)) break;
     if (h === cp) return fail('INVALID_HEADER');
     forked = true;
+    miss = h;
     h = Math.max(cp, h - step);
     step *= 2;
   }
+  if (forked) {
+    // The doubling probe can land up to twice the fork depth low: narrow down to the last shared header, so the fork
+    // budget below counts the real depth.
+    while (miss - h > 1) {
+      const mid = h + Math.floor((miss - h) / 2);
+      const [hex] = await fetchHeaders(source, mid, 1, o.signal);
+      fetched++;
+      if (parseHeader(hex as string).hash === chain.hashAt(mid)) h = mid;
+      else miss = mid;
+    }
+  }
   if (!forked) {
-    // Extending the active chain: each downloaded chunk is validated and connected before the next is requested.
+    // Extending the active chain: each chunk must build on the current tip (a chunk that branches off lower down is
+    // refused, never connected as a silent reorg), and is validated and connected before the next is requested.
     const last = Math.min(sourceTip, h + max);
     let adopted = false;
     for (let from = h + 1; from <= last; from += batch) {
       const n = Math.min(batch, last - from + 1);
       const chunk = await fetchHeaders(source, from, n, o.signal);
       fetched += n;
-      adopted = chain.connect(chunk).adopted || adopted;
+      if (parseHeader(chunk[0] as string).prevHash !== chain.tipHash) return fail('INVALID_HEADER');
+      const before = chain.tipHeight;
+      const r = chain.connect(chunk);
+      if (!r.adopted || r.reorg || r.tipHeight !== before + n) return fail('INVALID_HEADER');
+      adopted = true;
     }
     return { adopted, reorg: false, forkHeight: h, tipHeight: chain.tipHeight, fetched };
   }
-  // A competing branch. What must be compared is the active chain above the probe point (the probe can land up to
-  // twice the fork depth low); more than `maxFork` of it is not evaluated. The branch is streamed chunk by chunk into
-  // a compact validation context (any invalid header stops it) and adopted as soon as its cumulative work is strictly
-  // greater; later calls extend it normally. A branch that has not won by `max` headers past the active tip, while the
-  // source claims more, cannot be evaluated in this call either.
+  // A competing branch. What must be compared is the active chain above the fork point; more than `maxFork` of it is
+  // not evaluated (`FORK_TOO_DEEP`). The branch is streamed chunk by chunk into a compact validation context and
+  // adopted as soon as its cumulative work is strictly greater; later calls extend it normally. At the first invalid
+  // header the valid prefix is still adopted if it already has more work, then the error is reported. A branch that
+  // has not overtaken `max` headers past the active tip, while the source claims more, is not evaluated in this call
+  // (`FORK_UNRESOLVED`).
   if (chain.tipHeight - h > maxFork) return fail('FORK_TOO_DEEP');
   const branch = chain.branchAt(h);
   const last = Math.min(sourceTip, chain.tipHeight + max);
   for (let from = h + 1; from <= last; ) {
     const n = Math.min(batch, last - from + 1);
-    branch.add(await fetchHeaders(source, from, n, o.signal));
+    const chunk = await fetchHeaders(source, from, n, o.signal);
+    try {
+      branch.add(chunk);
+    } catch (e) {
+      if (branch.length > 0 && branch.beatsActive) branch.adopt();
+      throw e;
+    }
     fetched += n;
     from += n;
     if (branch.beatsActive) return { ...branch.adopt(), fetched };
   }
-  if (last < sourceTip) return fail('FORK_TOO_DEEP');
+  if (last < sourceTip) return fail('FORK_UNRESOLVED');
   return { adopted: false, reorg: false, forkHeight: branch.forkHeight, tipHeight: chain.tipHeight, fetched };
 }
 

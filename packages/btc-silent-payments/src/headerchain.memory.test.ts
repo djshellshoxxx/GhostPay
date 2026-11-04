@@ -15,7 +15,7 @@ const used = (): number => {
 };
 
 describe('HeaderChain memory', () => {
-  it('retains well under 400 bytes per active header', () => {
+  it('retains under 250 bytes per active header (about 112 B of data plus array growth slack)', () => {
     const N = 20_000;
     const held: { chain?: ReturnType<typeof regtestChain> } = {};
     const build = (): void => {
@@ -29,6 +29,6 @@ describe('HeaderChain memory', () => {
     const alive = used();
     delete held.chain;
     const perHeader = (alive - used()) / N;
-    expect(perHeader).toBeLessThan(400);
+    expect(perHeader).toBeLessThan(250);
   });
 });

@@ -141,6 +141,12 @@ Frigate (Sparrow) / Electrum Silent Payments protocol:
   shallow reorg is followed however far ahead the source is; a deeper one, or a branch that has not won `maxHeaders`
   past the active tip while the source claims more, fails with `FORK_TOO_DEEP` ("could not be evaluated") and changes
   nothing. Extending the active chain connects each downloaded chunk before requesting the next.
+  Re-review (2026-11-04): an extension chunk must build on the current tip (else `INVALID_HEADER`; before, a source
+  that answered the probe correctly could serve a branch from below the tip and reorg unreported, past the budget);
+  after the doubling probe a binary search finds the exact fork point, so the budget counts the real depth; a branch
+  that has not overtaken within `maxHeaders` past the tip while the source claims more is the new `FORK_UNRESOLVED`
+  (not `FORK_TOO_DEEP`); at an invalid header a `HeaderBranch`'s validated prefix can still be adopted when it already
+  has more work, and the sync then reports the error.
 - **HeaderChain memory (2026-11-04).** Active headers were kept as parsed objects with hex strings (built with `+=`,
   so ropes of tiny strings) and a hash map: ~2 040 bytes per header measured. They are now 80 raw + 32 hash bytes in
   growable typed arrays with cumulative work every 2016 headers (no hash map; a parent is found by scanning back from

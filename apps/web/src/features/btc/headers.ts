@@ -397,6 +397,10 @@ export async function syncHeaders(p: {
       if (!(await p.store.save(serializeHeaderChain(chain), chain.tipWork))) {
         saved = false;
         refused = true;
+      } else {
+        // The stored chain now matches this one: earlier failures no longer apply.
+        saved = true;
+        refused = false;
       }
     } catch {
       saved = false;
@@ -411,11 +415,14 @@ export async function syncHeaders(p: {
       more = true;
       break;
     }
+    // Hard size limit: never fetch past it (a round is capped to what is left), and fail closed once it is reached.
+    const left = maxHeaders - chain.tipHeight;
+    if (left <= 0) return failWith('UNSUPPORTED');
     const before = chain.tipHash;
     let results;
     try {
       results = await syncHeaderChainFromSources(chain, p.sources, {
-        maxHeaders: p.headersPerRound ?? HEADERS_PER_ROUND,
+        maxHeaders: Math.min(p.headersPerRound ?? HEADERS_PER_ROUND, left),
         batchSize: 1000,
         ...(p.signal === undefined ? {} : { signal: p.signal }),
       });

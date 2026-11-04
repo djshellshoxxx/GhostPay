@@ -2,10 +2,10 @@
 // Run after `npm run build`:  node --expose-gc scripts/bench-headerchain-memory.mjs [count]
 // Mines `count` regtest headers (cheap proof of work), connects them in 2016-header batches, drops the inputs, then
 // compares the GC'd heap with the chain alive and after dropping it. Prints bytes per header; exits 1 above
-// MAX_BYTES_PER_HEADER (default 400).
+// MAX_BYTES_PER_HEADER (default 250).
 import { CHAIN_PARAMS, HeaderChain, parseHeader, reverseHex, targetFromBits } from '../dist/index.js';
 
-const MAX_BYTES_PER_HEADER = Number(process.env['MAX_BYTES_PER_HEADER'] ?? '400');
+const MAX_BYTES_PER_HEADER = Number(process.env['MAX_BYTES_PER_HEADER'] ?? '250');
 const N = Number(process.argv[2] ?? '100000');
 const GENESIS =
   '0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4adae5494dffff7f2002000000';
