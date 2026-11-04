@@ -119,3 +119,26 @@ test('Pages mirror builds every workspace lib from source, never from the Action
   assert.ok(order.every((at) => at >= 0), `missing step: ${JSON.stringify(order)}`);
   assert.deepEqual([...order].sort((a, b) => a - b), order, 'install, clean, build libs, then build the app');
 });
+
+test('hosting-kit qualification runs for app-only changes and ties the package to the commit', () => {
+  const wf = read('.github/workflows/hosting-kit.yml');
+  const onBlock = wf.slice(wf.indexOf('\non:'), wf.indexOf('\npermissions:'));
+  const pathsOf = (event) => {
+    const m = new RegExp(`\\n  ${event}:\\n(?:    branches:.*\\n)?    paths:\\n((?:      (?:- |#).*\\n)+)`).exec(onBlock + '\n');
+    assert.ok(m, `${event} paths not found`);
+    return [...m[1].matchAll(/- '([^']+)'/g)].map((x) => x[1]);
+  };
+  const existing = ['tools/portable-hosting-kit/**', 'apps/web/public/_headers', '.github/workflows/hosting-kit.yml'];
+  const appInputs = ['apps/web/src/**', 'apps/web/index.html', 'apps/web/vite.config.ts', 'apps/web/scripts/**', 'apps/web/package.json', 'packages/**/src/**', 'package-lock.json'];
+  for (const event of ['pull_request', 'push']) {
+    const paths = pathsOf(event);
+    for (const p of [...existing, ...appInputs]) assert.ok(paths.includes(p), `${event} paths must include ${p}`);
+  }
+  assert.match(onBlock, /\n  workflow_dispatch:/, 'manual trigger stays');
+  assert.match(wf, /concurrency:\n  group: .*\n  cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}/, 'cancel only for pull_request');
+  const qualify = wf.slice(wf.indexOf('\n  qualify-ghostpay-web:'));
+  // Existing behavior: the package records the commit (manifest source.commit via --git-dir) and a SHA label; verify re-checks the archive.
+  assert.match(qualify, /--label "ci-\$\{GITHUB_SHA::12\}"/, 'label carries the commit SHA');
+  assert.match(qualify, /--git-dir \.\.\/\.\./, 'manifest records the git commit');
+  assert.match(qualify, /ghostpay-host\.mjs verify "\$RUNNER_TEMP\/ghostpay-web\.zip"/, 'archive is verified');
+});

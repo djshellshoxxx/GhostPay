@@ -4,12 +4,28 @@ on:
     paths:
       - 'tools/portable-hosting-kit/**'
       - 'apps/web/public/_headers'
+      # Inputs of the hosted web artifact: an app-only change must still be qualified.
+      - 'apps/web/src/**'
+      - 'apps/web/index.html'
+      - 'apps/web/vite.config.ts'
+      - 'apps/web/scripts/**'
+      - 'apps/web/package.json'
+      - 'packages/**/src/**'
+      - 'package-lock.json'
       - '.github/workflows/hosting-kit.yml'
   push:
     branches: [main]
     paths:
       - 'tools/portable-hosting-kit/**'
       - 'apps/web/public/_headers'
+      # Inputs of the hosted web artifact: an app-only change must still be qualified.
+      - 'apps/web/src/**'
+      - 'apps/web/index.html'
+      - 'apps/web/vite.config.ts'
+      - 'apps/web/scripts/**'
+      - 'apps/web/package.json'
+      - 'packages/**/src/**'
+      - 'package-lock.json'
       - '.github/workflows/hosting-kit.yml'
   workflow_dispatch:
 

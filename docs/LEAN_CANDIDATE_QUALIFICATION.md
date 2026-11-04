@@ -40,3 +40,13 @@ are available in CI logs; the recorder itself neither runs tests nor attests the
 Local verification is shell syntax and source review only. Restricted dependency
 cache, network and child-process access prevent a real local build comparison;
 hosted execution is required before claiming this qualification passed.
+
+The Hosting kit workflow (`.github/workflows/hosting-kit.yml`) also qualifies the
+hosted web artifact: it builds `apps/web`, then validates, packages and verifies
+`apps/web/dist` with the portable hosting kit. It runs on pull requests and pushes
+to `main` that touch the kit, `apps/web/public/_headers`, or any input of that
+artifact (`apps/web/src/**`, `index.html`, `vite.config.ts`, `scripts/**`,
+`package.json`, `packages/**/src/**`, `package-lock.json`), so app-only changes
+are qualified too. The package is labelled `ci-<12-char commit SHA>` and its
+manifest records the git commit; the content digest and archive sha256 are
+printed by the package step in the job log, not uploaded as an artifact.
