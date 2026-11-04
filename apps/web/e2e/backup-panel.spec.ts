@@ -34,7 +34,8 @@ test.describe('combined backup panel', () => {
     const archive = page.waitForEvent('download', { timeout: 60_000 });
     await tags.getByRole('button', { name: 'Download encrypted tag archive' }).click();
     expect((await archive).suggestedFilename()).toMatch(/\.gpa$/);
-    await expect(tags.getByRole('status').first()).toContainText('Done');
+    await expect(tags.getByRole('status').first()).toContainText('Downloaded');
+    await expect(tags.getByRole('status').first()).not.toContainText('Done');
   });
 });
 

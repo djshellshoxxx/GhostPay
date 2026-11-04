@@ -110,8 +110,6 @@ export interface TagImportPreview {
 
 const INFO_AES = utf8ToBytes('GhostPay/local-tags/v1/aes-gcm');
 const INFO_HMAC = utf8ToBytes('GhostPay/local-tags/v1/hmac');
-/** Separates the change digest from the lookup tokens, which are signed with the same key. */
-const FINGERPRINT_DOMAIN = 'GhostPay/local-tags/v1/fingerprint';
 const CHECK_PLAINTEXT = utf8ToBytes('ghostpay-tag-profile-ok');
 const MAX_LABEL = 200;
 const MAX_NOTES = 2000;
@@ -454,23 +452,6 @@ export class TagVault {
     if ((await this.currentSnapshot(revision)).revision !== snapshot.revision) throw new UserFacingError('Tags changed while reading them. Try again.');
     this.assertRevision(revision);
     return out;
-  }
-
-  /**
-   * A keyed digest (HMAC-SHA-256 under this profile's non-extractable key) of every tag's chain, update time and content, so a
-   * later change can be told from an earlier backup without keeping any plaintext or unkeyed hash. Requires an unlocked vault
-   * and never unlocks it. A key rotation changes it.
-   */
-  public async fingerprint(): Promise<string> {
-    const { hmac } = this.keys();
-    const lines = (await this.snapshot()).map((e) => JSON.stringify([e.chainId, e.updatedAt, e.payload])).sort((a, b) => Number(a > b) - Number(a < b));
-    return bytesToHex(new Uint8Array(await subtle().sign('HMAC', hmac, utf8ToBytes(`${FINGERPRINT_DOMAIN}\0${JSON.stringify(lines)}`))));
-  }
-
-  /** True when the store holds neither a profile nor any record. Reads stored metadata only: needs no key and never unlocks. */
-  public async storeIsEmpty(): Promise<boolean> {
-    const snapshot = await this.store.getSnapshot();
-    return snapshot.meta === undefined && snapshot.records.length === 0;
   }
 
   /** Key generation of the current profile (1 until the first rotation). */

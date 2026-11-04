@@ -1,66 +1,29 @@
 import { useEffect, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { getSessionBackup, subscribeSessionBackup } from '../lib/session';
-import { useServices } from '../lib/services';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { useApp } from '../state';
 import { Notice } from './Common';
-import type { TagVault } from '../lib/tags';
 import { TagArchive, type ArchiveExportResult } from './TagArchive';
 
-type ItemStatus = 'notStarted' | 'checking' | 'locked' | 'unreadable' | 'done' | 'partial' | 'stale' | 'deleted' | 'failed';
+type ItemStatus = 'notStarted' | 'done' | 'downloaded' | 'downloadedGaps' | 'deleted' | 'failed';
 
 /** What the last tag archive export of one set of loaded keys did, with its details; kept here so leaving the view does not reset the checklist. */
-let lastTagOutcome: { readonly session: unknown; readonly result: ArchiveExportResult } | undefined;
-
-const LOCKED = 'locked';
-const UNREADABLE = 'unreadable';
-const EMPTY = 'empty';
-
-/**
- * The keyed digest of the tags as they are now. Never unlocks: while locked, only whether the store holds nothing at all
- * (no tags, no profile) can be told, without a key; anything else is "locked". A store that cannot be read is "unreadable".
- */
-async function currentDigest(vault: TagVault): Promise<string> {
-  try {
-    if (vault.unlocked) return await vault.fingerprint();
-    return (await vault.storeIsEmpty()) ? EMPTY : LOCKED;
-  } catch {
-    return UNREADABLE;
-  }
-}
+let lastTagOutcome: { readonly session: unknown; readonly result: ArchiveExportResult; readonly at: number; /** Tags were deleted in this panel after the archive. */ readonly deleted: boolean } | undefined;
 
 /**
  * Full profile only: one guided checklist for the two things that need a copy outside this tab, the seller keys and the
- * client tags. Each item reports what actually happened. Keys are "done" only when the session reports a copy outside
- * this tab (downloaded keystore, imported keys or saved vault), made with the keystore form of this same view; tags are
- * "done" only after the tag archive export finished and only while the tags are still the ones it was made from
- * (otherwise "changed since last archive"), "failed" after an attempt that did not finish. It adds no cryptography and
- * copies no form. The lean profile never imports this module (App.tsx only), so it keeps just the keystore backup.
+ * client tags. Keys are "done" only when the session reports a copy outside this tab (downloaded keystore, imported keys
+ * or saved vault), made with the keystore form of this same view. The tag item never says "done": the tags can change
+ * afterwards, here or in another tab, and nothing here can see that without unlocking them. It states facts instead: what
+ * the last archive held and when, that later changes are not in it, and what is missing or failed. It adds no cryptography
+ * and copies no form. The lean profile never imports this module (App.tsx only), so it keeps just the keystore backup.
  */
 export function BackupPanel(): ReactNode {
   const app = useApp();
-  const { vault } = useServices();
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const backup = useSyncExternalStore(subscribeSessionBackup, getSessionBackup);
   const [tagResult, setTagResult] = useState(lastTagOutcome);
-  // The tags as they are now, read again on mount, on focus, and after an import or wipe done here (undefined: not read yet).
-  const [now, setNow] = useState<string | undefined>(undefined);
-  const [tick, setTick] = useState(0);
-  // An outcome belongs to the keys it was made for.
-  const tags = tagResult !== undefined && tagResult.session === app.session ? tagResult.result : undefined;
-  const archived = tags?.ok === true ? tags.fingerprint : undefined;
-
-  useEffect(() => {
-    const again = (): void => { setTick((n) => n + 1); };
-    const onVisibility = (): void => { if (document.visibilityState === 'visible') again(); };
-    window.addEventListener('focus', again);
-    document.addEventListener('visibilitychange', onVisibility);
-    return () => {
-      window.removeEventListener('focus', again);
-      document.removeEventListener('visibilitychange', onVisibility);
-    };
-  }, []);
   // Keys that replaced the ones an outcome belongs to also end it.
   useEffect(() => {
     if (lastTagOutcome !== undefined && lastTagOutcome.session !== app.session) {
@@ -68,38 +31,31 @@ export function BackupPanel(): ReactNode {
       setTagResult(undefined);
     }
   }, [app.session]);
-  useEffect(() => {
-    if (archived === undefined) return undefined;
-    let live = true;
-    // Whatever was known before no longer counts while this read is pending.
-    setNow(undefined);
-    void currentDigest(vault).then((digest) => { if (live) setNow(digest); });
-    return () => { live = false; };
-  }, [vault, archived, tick, app.session]);
 
   if (app.session === undefined) return <TagArchive />;
 
+  const tags = tagResult !== undefined && tagResult.session === app.session ? tagResult : undefined;
+  const result = tags?.result;
   const keyStatus: ItemStatus = backup?.backedUp === true ? 'done' : 'notStarted';
-  // Done only when the tags now are the ones the archive was made from; anything not yet known is never Done.
-  const tagStatus: ItemStatus = tags === undefined ? 'notStarted'
-    : !tags.ok ? 'failed'
-    : now === undefined ? 'checking'
-    : now === LOCKED ? 'locked'
-    : now === UNREADABLE ? 'unreadable'
-    : now === EMPTY ? (tags.recordCount > 0 ? 'deleted' : tags.gaps ? 'partial' : 'done')
-    : now !== archived ? 'stale'
-    : tags.gaps ? 'partial' : 'done';
-  const tagNote = tags === undefined ? t('backup.tags.notStarted')
-    : !tags.ok ? t('backup.tags.failed', { reason: tags.message })
-    : tagStatus === 'stale' ? t('backup.tags.stale', { count: tags.recordCount })
-    : tagStatus === 'deleted' ? t('backup.tags.deleted', { count: tags.recordCount })
-    : tagStatus === 'checking' ? t('backup.tags.checking')
-    : tagStatus === 'locked' ? t('backup.tags.locked')
-    : tagStatus === 'unreadable' ? t('backup.tags.unreadable')
-    : tags.gaps ? t('backup.tags.partial')
-    : tags.history ? t('backup.tags.done', { count: tags.recordCount })
-    : t('backup.tags.doneNoHistory', { count: tags.recordCount });
-  const label = { notStarted: t('backup.status.notStarted'), checking: t('backup.status.checking'), locked: t('backup.status.locked'), unreadable: t('backup.status.unreadable'), done: t('backup.status.done'), partial: t('backup.status.partial'), stale: t('backup.status.stale'), deleted: t('backup.status.deleted'), failed: t('backup.status.failed') };
+  const tagStatus: ItemStatus = result === undefined ? 'notStarted'
+    : !result.ok ? 'failed'
+    : tags?.deleted === true && result.recordCount > 0 ? 'deleted'
+    : result.gaps ? 'downloadedGaps' : 'downloaded';
+  const time = tags === undefined ? '' : new Date(tags.at).toLocaleString();
+  const tagNote = result === undefined ? t('backup.tags.notStarted')
+    : !result.ok ? t('backup.tags.failed', { reason: result.message })
+    : tagStatus === 'deleted' ? t('backup.tags.deleted', { count: result.recordCount })
+    : result.gaps ? t('backup.tags.partial', { time, count: result.recordCount })
+    : result.history ? t('backup.tags.archived', { time, count: result.recordCount })
+    : t('backup.tags.archivedNoHistory', { time, count: result.recordCount });
+  const label = {
+    notStarted: t('backup.status.notStarted'),
+    done: t('backup.status.done'),
+    downloaded: t('backup.status.downloaded'),
+    downloadedGaps: t('backup.status.downloadedGaps'),
+    deleted: t('backup.status.deleted'),
+    failed: t('backup.status.failed'),
+  };
   const status = (s: ItemStatus, note: string): ReactNode => <p role="status"><strong data-status={s}>{label[s]}</strong>: {note}</p>;
 
   const goToKeystore = (): void => {
@@ -121,10 +77,12 @@ export function BackupPanel(): ReactNode {
         <li data-testid="backup-item-tags">
           <p><strong>{t('backup.tags.heading')}</strong></p>
           {status(tagStatus, tagNote)}
-          {tags?.ok === true && tags.notes.length > 0 && <ul>{tags.notes.map((note) => <li key={note}>{note}</li>)}</ul>}
+          {result?.ok === true && result.notes.length > 0 && <ul>{result.notes.map((note) => <li key={note}>{note}</li>)}</ul>}
           <TagArchive
-            onExport={(result) => { lastTagOutcome = { session: app.session, result }; setTagResult(lastTagOutcome); setNow(undefined); setTick((n) => n + 1); }}
-            onTagsChanged={() => { setTick((n) => n + 1); }}
+            onExport={(next) => { lastTagOutcome = { session: app.session, result: next, at: Date.now(), deleted: false }; setTagResult(lastTagOutcome); }}
+            onTagsWiped={() => {
+              if (lastTagOutcome !== undefined) { lastTagOutcome = { ...lastTagOutcome, deleted: true }; setTagResult(lastTagOutcome); }
+            }}
           />
         </li>
       </ol>
