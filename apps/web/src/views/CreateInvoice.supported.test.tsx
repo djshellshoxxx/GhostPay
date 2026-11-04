@@ -52,7 +52,7 @@ async function parsedLink() {
 describe('supported invoice creation', () => {
   it('creates a signed v1 fixed-token invoice even on the actual feed-enabled chain', async () => {
     expect(isQuoteAvailable(11155111, 'ETH', 'USD')).toBe(true);
-    expect(isQuoteAvailable(84532, 'ETH', 'USD')).toBe(false);
+    expect(isQuoteAvailable(84532, 'ETH', 'USD')).toBe(true);
     const { user } = mount(true);
     expect(screen.getByLabelText<HTMLSelectElement>('Chain').value).toBe('11155111');
     expect(screen.queryByRole('option', { name: /Fiat price/ })).toBeNull();

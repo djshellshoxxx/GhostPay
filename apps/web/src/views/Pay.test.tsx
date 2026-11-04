@@ -401,10 +401,11 @@ describe('Pay: invoice reading and review', () => {
   });
 
   it('shows the no-feed message for fiat-priced invoices', async () => {
-    const { fragment } = await makeParsed({ amountMode: 'fiat_quote' });
-    const rpc = mockRpc(84532, () => '0x');
-    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
-    openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
+    // OP Sepolia has no registered feed (Base Sepolia gained ETH/USD and USDC/USD from the saved Chainlink evidence).
+    const { fragment } = await makeParsed({ amountMode: 'fiat_quote', chainId: 11155420, token: '0x5fd84259d66cd46123540766be93dfe6d43130d7' });
+    const rpc = mockRpc(11155420, () => '0x');
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '11155420': 'https://rpc.test' } }));
+    openWith(fragment, makeServices({ loadManifest: loaded(11155420), createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
     expect(await screen.findByText(/No price feed is configured for USDC\/USD/)).toBeTruthy();
   });
 });
