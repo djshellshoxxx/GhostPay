@@ -21,7 +21,7 @@ import { nullAlerts, type AlertSink } from './alerts.js';
 import { DailyBudget } from './budget.js';
 import type { ChainClient, MinedReceipt, ReceiptSummary, SweepCall } from './chain.js';
 import type { ChainRuntimeConfig, RelayerConfig } from './config.js';
-import { RelayerError, SimulationRevert } from './errors.js';
+import { RelayerError, SendOutcomeUnknown, SendRefused, SimulationRevert } from './errors.js';
 import { ChainLane, NonceManager, type JobOutcome } from './lane.js';
 import { KeyHasher, type RateLimiter } from './limiter.js';
 import type { Metrics } from './metrics.js';
@@ -129,6 +129,25 @@ interface SentSweep {
   at: number;
 }
 
+/**
+ * A send whose outcome is unknown (EVM-3): the signed transaction may be in a mempool. Its worst-case reservations are
+ * kept and no transaction is sent on the chain until reconciliation tells whether its hot-key nonce was used.
+ */
+interface UnknownSend {
+  /** Hash of the signed bytes when the chain client knew it; without it no receipt can be looked up. */
+  readonly txHash: Hex | undefined;
+  readonly nonce: number;
+  readonly call: SweepCall;
+  readonly gasPrice: bigint;
+  readonly reserved: bigint;
+  readonly reservedDay: number;
+  readonly loss: LossReservation;
+  /** Monotonic ms of the failed send. */
+  readonly at: number;
+  /** True once a receipt settled the reservations; the nonce stays blocked until the node's pending count passes it. */
+  mined: boolean;
+}
+
 interface ChainRuntime {
   readonly cfg: ChainRuntimeConfig;
   readonly client: ChainClient;
@@ -140,6 +159,8 @@ interface ChainRuntime {
   /** Sweeps whose receipt wait timed out, looked up again at the start of later jobs (L5-06), oldest first. */
   readonly pending: SentSweep[];
   readonly reverts: RevertRate;
+  /** At most one: while set, the lane refuses to send (`send_unsettled`), so no nonce is handed out twice or skipped. */
+  unknownSend: UnknownSend | undefined;
 }
 
 const REVERT_MAP: Readonly<Record<string, readonly [number, string]>> = {
@@ -263,6 +284,7 @@ export class RelayerService {
         ),
         lastBreakerState: 'closed',
         pending: [],
+        unknownSend: undefined,
         // The breaker's thresholds, applied to the mined reverts the breaker ignores (S3-06, L5-02).
         reverts: new RevertRate(
           { size: b.windowSize, minReverts: b.minSamples, ratio: b.failureRatio, windowMs: lb.windowSeconds * 1000 },
@@ -610,6 +632,13 @@ export class RelayerService {
       requested.sweep.deadline <= BigInt(Math.floor(this.now() / 1000) + this.d.config.minDeadlineSeconds);
     if (deadlineTooSoon()) throw new RelayerError(422, 'deadline_too_soon');
     await this.reconcilePending(rt);
+    // EVM-3: an earlier send may hold the next nonce. Refused before any simulation or reservation (neutral).
+    await this.reconcileUnknownSend(rt);
+    const unsettled = rt.unknownSend;
+    if (unsettled !== undefined) {
+      const waitMs = this.unknownSendGraceMs() - (this.mono() - unsettled.at);
+      throw new RelayerError(503, 'send_unsettled', Math.max(1, Math.ceil(waitMs / 1000)));
+    }
 
     // Operational (non-user) failures feed the breaker; user-caused reverts do not.
     const op = async <T>(fn: () => Promise<T>): Promise<T> => {
@@ -729,8 +758,9 @@ export class RelayerService {
 
     let txHash: Hex;
     let preHandoffRefusal: RelayerError | undefined;
+    let nonce: number | undefined;
     try {
-      const nonce = await nonces.acquire();
+      nonce = await nonces.acquire();
       // Cold/resync nonce acquisition is another RPC await. A deadline that lapses there is still a neutral refusal,
       // before handoff, not a send failure. The shared cleanup below also discards this unused nonce allocation.
       if (deadlineTooSoon()) {
@@ -738,11 +768,20 @@ export class RelayerService {
         throw preHandoffRefusal;
       }
       txHash = await client.sendSweep(call, { nonce, gas: gasLimit, gasPrice: sendGasPrice });
-    } catch {
+    } catch (e) {
       nonces.invalidate();
-      budget.release(reserved, reservedDay);
-      loss.release();
-      if (preHandoffRefusal !== undefined) throw preHandoffRefusal;
+      // Fail closed (EVM-3): only a refusal before the handoff, or one the chain client proves, frees the reservations
+      // and the nonce. Any other error may follow a broadcast, so both stay held until reconciliation.
+      if (preHandoffRefusal !== undefined || nonce === undefined || e instanceof SendRefused) {
+        budget.release(reserved, reservedDay);
+        loss.release();
+        if (preHandoffRefusal !== undefined) throw preHandoffRefusal;
+      } else {
+        const hash = e instanceof SendOutcomeUnknown ? e.txHash : undefined;
+        this.sendOutcomeUnknown(rt, {
+          txHash: hash, nonce, call, gasPrice: sendGasPrice, reserved, reservedDay, loss, at: this.mono(), mined: false,
+        });
+      }
       setOutcome(classifyRelayOutcome('send_failed'));
       throw new RelayerError(503, 'send_failed');
     }
@@ -802,6 +841,68 @@ export class RelayerService {
       this.logger.log('info', 'receipt_late', { chainId: rt.cfg.chainId, txHash: sent.txHash });
       this.settleReceipt(rt, sent, r);
     }
+  }
+
+  /** How long a free pending nonce slot must persist before an unknown send counts as never broadcast. */
+  private unknownSendGraceMs(): number {
+    return this.d.config.queue.receiptTimeoutSeconds * 1000;
+  }
+
+  private sendOutcomeUnknown(rt: ChainRuntime, u: UnknownSend): void {
+    const chainId = rt.cfg.chainId;
+    rt.unknownSend = u;
+    this.logger.log('warn', 'send_outcome_unknown', {
+      chainId,
+      ...(u.txHash === undefined ? {} : { txHash: u.txHash }),
+      errorClass: 'send_outcome_unknown',
+    });
+    this.d.metrics?.inc('relayer_send_outcome_unknown_total', { chain_id: chainId });
+  }
+
+  /**
+   * In-lane (EVM-3): settles an outcome-unknown send. A receipt for its hash settles the reservations as usual. The
+   * node's pending count decides the nonce: above it, a transaction holds that nonce (only this send was signed with
+   * it), so it was broadcast and an unmined one joins the receipt lookups (without a hash its reservations are kept
+   * until they lapse). At or below it for the whole grace, the nonce is unused on chain and in the node's pool: never
+   * broadcast, so the reservations are released and the nonce is free again. RPC trouble leaves it unsettled.
+   */
+  private async reconcileUnknownSend(rt: ChainRuntime): Promise<void> {
+    const u = rt.unknownSend;
+    if (u === undefined) return;
+    const chainId = rt.cfg.chainId;
+    try {
+      if (u.txHash !== undefined && !u.mined) {
+        const r = await rt.client.getReceipt(u.txHash);
+        if (r !== null) {
+          u.mined = true;
+          this.logger.log('info', 'receipt_late', { chainId, txHash: u.txHash });
+          this.settleReceipt(rt, { ...u, txHash: u.txHash }, r);
+        }
+      }
+      const pendingNonce = await rt.client.getPendingNonce();
+      if (pendingNonce > u.nonce) {
+        rt.unknownSend = undefined;
+        rt.nonces.invalidate();
+        this.logger.log('info', 'send_broadcast_confirmed', {
+          chainId,
+          ...(u.txHash === undefined ? {} : { txHash: u.txHash }),
+        });
+        if (!u.mined && u.txHash !== undefined) {
+          rt.pending.push({ ...u, txHash: u.txHash, at: this.mono() });
+          if (rt.pending.length > MAX_PENDING_RECEIPTS) rt.pending.shift();
+        }
+        return;
+      }
+    } catch {
+      return; // RPC trouble: stays unsettled, looked at again by the next job
+    }
+    if (u.mined || this.mono() - u.at < this.unknownSendGraceMs()) return;
+    rt.unknownSend = undefined;
+    rt.nonces.invalidate();
+    rt.budget.release(u.reserved, u.reservedDay);
+    u.loss.release();
+    this.logger.log('info', 'send_not_broadcast', { chainId, errorClass: 'send_not_broadcast' });
+    this.d.metrics?.inc('relayer_send_not_broadcast_total', { chain_id: chainId });
   }
 
   /** Settles a mined sweep: returns unused budget and releases its loss reservations, or charges a mined revert. */

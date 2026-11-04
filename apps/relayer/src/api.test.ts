@@ -1,4 +1,4 @@
-import { request as httpRequest } from 'node:http';
+import { createServer as createHttpServer, request as httpRequest } from 'node:http';
 import { connect } from 'node:net';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
@@ -20,9 +20,11 @@ import {
   testConfig,
   type Harness,
 } from './harness.testutil.js';
-import type { ReceiptSummary } from './chain.js';
+import { createPublicClient, createWalletClient, custom, defineChain, http, keccak256, toHex, type Hex, type Transport } from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
+import { createViemChainClient, type ChainClient, type ReceiptSummary, type SweepCall } from './chain.js';
 import type { QuoteResponse } from './service.js';
-import { SimulationRevert } from './errors.js';
+import { SendOutcomeUnknown, SendRefused, SimulationRevert } from './errors.js';
 
 let h: Harness | undefined;
 afterEach(async () => {
@@ -1952,5 +1954,237 @@ describe('S3-05/06 breaker integration', () => {
     s.clock.ms += 4000;
     await call(s, 'POST', '/v1/quote', q);
     expect(calls).toBe(2);
+  });
+});
+
+describe('unknown broadcast outcome (EVM-3)', () => {
+  const estimate = 150_000n * 1_000_000_000n; // gas limit x gas price reserved per sweep
+  const budgetUsed = (s: Harness): bigint =>
+    BigInt(/relayer_daily_budget_used_wei\{[^}]*\} (\d+)/.exec(s.relayer.metrics.render())?.[1] ?? '-1');
+  const startRoomy = (sweeps = 2n): Promise<Harness> => {
+    const chain = testConfig().chains[0];
+    if (chain === undefined) throw new Error('Test chain required');
+    return start({ config: {
+      chains: [{ ...chain, dailyBudgetWei: sweeps * estimate }],
+      lossBudget: { windowSeconds: 3600, perKeyWei: 2n * estimate, globalWei: 10n ** 18n, maxKeys: 100 },
+    } });
+  };
+
+  it('sendSweep throws after node accepted the tx: reservation retained, nonce not reused, reconciled later', async () => {
+    const s = await startRoomy();
+    s.fake.sendUnknown = { accepted: true };
+    const first = await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 1n })).body);
+    expect(first.status).toBe(503);
+    expect(errCode(first)).toBe('send_failed'); // a 5xx: clients keep their lock, the order may be on chain
+    s.fake.sendUnknown = undefined;
+    expect(s.fake.sent.map((x) => x.opts.nonce)).toEqual([7]);
+    // Fail closed: the error carries no proof that nothing was broadcast, so the worst case stays reserved.
+    expect(budgetUsed(s)).toBe(estimate);
+
+    // The node's pending count does not show the transaction yet: nonce 7 must not be handed out again.
+    const blocked = await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 2n })).body);
+    expect(blocked.status).toBe(503);
+    expect(errCode(blocked)).toBe('send_unsettled');
+    expect(Number(blocked.headers.get('retry-after'))).toBeGreaterThan(0);
+    expect(s.fake.sent).toHaveLength(1);
+    expect(budgetUsed(s)).toBe(estimate);
+
+    // Reconciled later: the node now holds a transaction at nonce 7, so it was broadcast. The lane moves on at 8 and
+    // the unknown send keeps its worst-case reservation (no hash to look a receipt up by).
+    s.fake.pendingNonce = 8;
+    const next = await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 3n })).body);
+    expect(next.status).toBe(200);
+    await settle();
+    expect(s.fake.sent.map((x) => x.opts.nonce)).toEqual([7, 8]);
+    expect(budgetUsed(s)).toBe(estimate + 100_000n * 1_000_000_000n);
+    const logs = s.logs.join('\n');
+    expect(logs).toContain('send_outcome_unknown');
+    expect(logs).toContain('send_broadcast_confirmed');
+    expect(s.relayer.metrics.render()).toContain('relayer_send_outcome_unknown_total{chain_id="11155111"} 1');
+  });
+
+  it('a send that never reached the node is released only once its nonce is confirmed unused after the grace', async () => {
+    const s = await startRoomy();
+    s.fake.sendUnknown = { accepted: false };
+    expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 1n })).body))).toBe('send_failed');
+    s.fake.sendUnknown = undefined;
+    expect(s.fake.sent).toHaveLength(0);
+    expect(budgetUsed(s)).toBe(estimate);
+
+    // Within the receipt-timeout grace an empty pending slot is not yet proof: still blocked, still reserved.
+    s.clock.ms += 29_000;
+    const early = await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 2n })).body);
+    expect(errCode(early)).toBe('send_unsettled');
+    expect(s.fake.sent).toHaveLength(0);
+    expect(budgetUsed(s)).toBe(estimate);
+
+    s.clock.ms += 1_000;
+    const later = await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 3n })).body);
+    expect(later.status).toBe(200);
+    await settle();
+    expect(s.fake.sent.map((x) => x.opts.nonce)).toEqual([7]); // confirmed unused, so 7 is free again
+    expect(budgetUsed(s)).toBe(100_000n * 1_000_000_000n);
+    expect(s.logs.join('\n')).toContain('send_not_broadcast');
+  });
+
+  it('with the signed hash, a receipt settles the unknown send while its nonce stays blocked until the node passes it', async () => {
+    const s = await startRoomy();
+    s.fake.sendUnknown = { accepted: true, withHash: true };
+    expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 1n })).body))).toBe('send_failed');
+    s.fake.sendUnknown = undefined;
+    expect(budgetUsed(s)).toBe(estimate);
+
+    // Mined, but this node's pending count lags: the reservations settle, nonce 7 is still not handed out.
+    s.fake.lookup = { status: 'success', gasUsed: 100_000n };
+    const lagging = await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 2n })).body);
+    expect(errCode(lagging)).toBe('send_unsettled');
+    expect(budgetUsed(s)).toBe(100_000n * 1_000_000_000n);
+    expect(s.fake.sent).toHaveLength(1);
+
+    s.fake.pendingNonce = 8;
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 3n })).body)).status).toBe(200);
+    await settle();
+    expect(s.fake.sent.map((x) => x.opts.nonce)).toEqual([7, 8]);
+    expect(budgetUsed(s)).toBe(2n * 100_000n * 1_000_000_000n);
+  });
+
+  it('a broadcast confirmed by the pending count but not mined joins the receipt lookups and settles later', async () => {
+    const s = await startRoomy(3n);
+    s.fake.sendUnknown = { accepted: true, withHash: true };
+    expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 1n })).body))).toBe('send_failed');
+    s.fake.sendUnknown = undefined;
+    s.fake.pendingNonce = 8;
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 2n })).body)).status).toBe(200);
+    await settle();
+    expect(budgetUsed(s)).toBe(estimate + 100_000n * 1_000_000_000n); // the unknown send is still fully reserved
+
+    s.fake.lookup = { status: 'reverted', gasUsed: 90_000n };
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 3n })).body)).status).toBe(200);
+    await settle();
+    expect(s.fake.sent.map((x) => x.opts.nonce)).toEqual([7, 8, 9]);
+    // Settled from its receipt: 90k gas charged for the unknown send, 100k for each of the two later sweeps.
+    expect(budgetUsed(s)).toBe((90_000n + 2n * 100_000n) * 1_000_000_000n);
+    expect(s.relayer.metrics.render()).toContain('relayer_mined_reverts_total{chain_id="11155111"} 1');
+  });
+
+  it('keeps reservations and the nonce blocked while reconciliation reads fail', async () => {
+    const s = await startRoomy();
+    s.fake.sendUnknown = { accepted: true, withHash: true };
+    expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 1n })).body))).toBe('send_failed');
+    s.fake.sendUnknown = undefined;
+    s.clock.ms += 60_000;
+    s.fake.getPendingNonce = () => Promise.reject(new Error('down'));
+    expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 2n })).body))).toBe('send_unsettled');
+    expect(budgetUsed(s)).toBe(estimate);
+    expect(s.fake.sent).toHaveLength(1);
+  });
+
+  describe('viem chain client: which send errors prove a refusal', () => {
+    const order: SweepCall = {
+      sweepRelayer: SWEEP_CONTRACT,
+      sweep: { token: USDC, owner: OWNER, destination: DEST, feeTo: FEE_TO, amount: 1000n, fee: 10n, deadline: 2_000_000_000n, nonce: 4n },
+      sweepSig: `0x${'11'.repeat(65)}`,
+      permit: undefined,
+    };
+    const sendOpts = { nonce: 9, gas: 123_456n, gasPrice: 2_000_000_000n };
+
+    function client(transport: (url: string | undefined) => Transport, url?: string): ChainClient {
+      const chain = defineChain({ id: CHAIN_ID, name: 'T', nativeCurrency: { name: 'E', symbol: 'ETH', decimals: 18 }, rpcUrls: { default: { http: [url ?? 'http://unused.invalid'] } } });
+      const account = privateKeyToAccount(`0x${'33'.repeat(32)}`);
+      const t = transport(url);
+      return createViemChainClient({
+        publicClient: createPublicClient({ chain, transport: t }),
+        walletClient: createWalletClient({ chain, transport: t, account }),
+        account,
+        chain,
+      });
+    }
+
+    function withProvider(answer: () => Promise<unknown>, chainId = CHAIN_ID): { c: ChainClient; raw: Hex[] } {
+      const raw: Hex[] = [];
+      const c = client(() =>
+        custom({
+          request: (({ method, params }: { method: string; params?: unknown }) => {
+            if (method === 'eth_chainId') return Promise.resolve(toHex(chainId));
+            if (method === 'eth_sendRawTransaction') {
+              raw.push((params as Hex[])[0] as Hex);
+              return answer();
+            }
+            return Promise.reject(new Error(`unexpected ${method}`));
+          }) as never,
+        }, { retryCount: 0 }),
+      );
+      return { c, raw };
+    }
+
+    const nodeError = (code: number, message: string) => () => Promise.reject(Object.assign(new Error(message), { code }));
+
+    it.each([
+      'nonce too low: address 0x0, tx: 9 state: 10',
+      'insufficient funds for gas * price + value',
+      'replacement transaction underpriced',
+      'intrinsic gas too low',
+    ])('a node refusal "%s" is SendRefused', async (message) => {
+      const { c, raw } = withProvider(nodeError(-32000, message));
+      await expect(c.sendSweep(order, sendOpts)).rejects.toBeInstanceOf(SendRefused);
+      expect(raw).toHaveLength(1);
+    });
+
+    it.each([
+      ['already known (viem maps it to NonceTooLowError)', nodeError(-32000, 'already known')],
+      ['transaction already imported', nodeError(-32000, 'transaction already imported')],
+      ['internal error', nodeError(-32603, 'internal error')],
+      ['a code-less transport error', () => Promise.reject(new Error('socket hang up'))],
+    ])('%s is outcome-unknown and carries the signed hash', async (_label, answer) => {
+      const { c, raw } = withProvider(answer);
+      const e = await c.sendSweep(order, sendOpts).catch((x: unknown) => x);
+      expect(e).toBeInstanceOf(SendOutcomeUnknown);
+      expect(e).not.toBeInstanceOf(SendRefused);
+      expect((e as SendOutcomeUnknown).txHash).toBe(keccak256(raw[0] as Hex));
+    });
+
+    it('a failure before the handoff (chain id mismatch at signing) is SendRefused and sends nothing', async () => {
+      const { c, raw } = withProvider(() => Promise.resolve(`0x${'ab'.repeat(32)}`), CHAIN_ID + 1);
+      await expect(c.sendSweep(order, sendOpts)).rejects.toBeInstanceOf(SendRefused);
+      expect(raw).toHaveLength(0);
+    });
+
+    it('over HTTP: a JSON-RPC refusal is SendRefused; an HTTP error or a timeout after the handoff is outcome-unknown', async () => {
+      let mode: 'refuse' | 'http502' | 'hang' = 'refuse';
+      const server = createHttpServer((req, res) => {
+        let body = '';
+        req.on('data', (d: Buffer) => (body += d.toString()));
+        req.on('end', () => {
+          const msg = JSON.parse(body) as { id: number; method: string };
+          const reply = (o: unknown, status = 200) => {
+            res.writeHead(status, { 'content-type': 'application/json' });
+            res.end(JSON.stringify(o));
+          };
+          if (msg.method === 'eth_chainId') return reply({ jsonrpc: '2.0', id: msg.id, result: toHex(CHAIN_ID) });
+          if (mode === 'refuse') return reply({ jsonrpc: '2.0', id: msg.id, error: { code: -32000, message: 'nonce too low' } });
+          if (mode === 'http502') {
+            // A gateway error page, even one that names a refusal, is not the node's JSON-RPC answer.
+            res.writeHead(502, { 'content-type': 'text/html' });
+            res.end('<html>502 Bad Gateway: nonce too low</html>');
+            return;
+          }
+          // hang: never answer the send
+        });
+      });
+      await new Promise<void>((r) => server.listen(0, '127.0.0.1', r));
+      try {
+        const addr = server.address() as { port: number };
+        const url = `http://127.0.0.1:${String(addr.port)}`;
+        const c = client((u) => http(u, { timeout: 300, retryCount: 1 }), url);
+        await expect(c.sendSweep(order, sendOpts)).rejects.toBeInstanceOf(SendRefused);
+        mode = 'http502';
+        await expect(c.sendSweep(order, sendOpts)).rejects.toBeInstanceOf(SendOutcomeUnknown);
+        mode = 'hang';
+        await expect(c.sendSweep(order, sendOpts)).rejects.toBeInstanceOf(SendOutcomeUnknown);
+      } finally {
+        server.closeAllConnections();
+        await new Promise<void>((r) => server.close(() => r()));
+      }
+    });
   });
 });
