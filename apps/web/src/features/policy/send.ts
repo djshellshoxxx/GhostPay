@@ -99,7 +99,8 @@ export async function sendPolicyPayment(
   if (sentReviews.has(guard.reviewed) || sentReviews.has(prepared.built.tx)) throw new UserFacingError(ALREADY_SENT);
   check();
   const scope = policyPaymentScope(session, prepared, guard.deployment);
-  refuseIfAlreadyPaid(walletAttemptKey(session, prepared.built.tx, { kind: 'payment', scope }));
+  const paymentKey = walletAttemptKey(session, prepared.built.tx, { kind: 'payment', scope });
+  refuseIfAlreadyPaid(paymentKey, session);
   const router = prepared.built.tx.to;
   let approvalHash: Hex | undefined;
   const gross = prepared.built.tx.value === 0n ? grossOf(prepared) : prepared.built.tx.value;
@@ -162,20 +163,29 @@ export class PolicyAlreadyPaidError extends UserFacingError {
  * journal's own duplicate refusal. Otherwise an unknown payment that actually mined (consuming the allowance) would
  * lead to a fresh, orphaned approve before the wallet layer refused the payment. This refuses exactly what
  * `beginAttempt` would refuse for the payment, only earlier. Fails closed: a journal that cannot be read refuses.
- * Without tab storage the wallet layer keeps no journal either, so there is nothing to look up.
+ * A pre-scope payment record is conservative: its calldata key cannot reveal the payee or amount, so it must be inspected and explicitly cleared by the user. Without tab storage the wallet layer keeps no journal either, so there is nothing to look up.
  */
-function refuseIfAlreadyPaid(key: string): void {
+const LEGACY_PAYMENT_ATTEMPT = 'A previous payment attempt from an earlier app version exists in this tab. Inspect Wallet attempts and explicitly clear that record before sending; its payee and amount cannot be verified safely.';
+function refuseIfAlreadyPaid(key: string, session: WalletSession): void {
   let earlier: WalletAttempt | undefined;
+  let legacy: WalletAttempt | undefined;
   try {
     const storage = browserAttemptStorage();
     if (storage === undefined) return;
-    earlier = readAttempts(storage).find((a) => a.key === key);
+    const attempts = readAttempts(storage);
+    earlier = attempts.find((a) => a.key === key);
+    // Before scoped policy keys, payment records were keyed by calldata. Their hash contains no
+    // recoverable payee or amount, so any older payment record for this payer and chain is unsafe
+    // to treat as a different payment. The user must inspect and explicitly clear it.
+    legacy = attempts.find((a) => a.kind === 'payment' && a.chainId === session.chainId && a.account === session.account.toLowerCase() && a.key !== key);
   } catch (e) {
     throw e instanceof UserFacingError ? e : new UserFacingError('The wallet attempt journal is unavailable or invalid. No new wallet request was started.');
   }
-  if (earlier === undefined) return;
-  if (earlier.hash !== undefined) throw new PolicyAlreadyPaidError(earlier.hash);
-  throw new UserFacingError(DUPLICATE_ATTEMPT);
+  if (earlier !== undefined) {
+    if (earlier.hash !== undefined) throw new PolicyAlreadyPaidError(earlier.hash);
+    throw new UserFacingError(DUPLICATE_ATTEMPT);
+  }
+  if (legacy !== undefined) throw new UserFacingError(LEGACY_PAYMENT_ATTEMPT);
 }
 
 /**
