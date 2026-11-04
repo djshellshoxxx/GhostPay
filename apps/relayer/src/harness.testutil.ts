@@ -3,7 +3,7 @@ import { privateKeyToAccount } from 'viem/accounts';
 import { buildSweepTypedData } from '@ghostpay/chain-adapters';
 import type { ChainClient, MinedReceipt, OrderState, ReceiptSummary, SendOptions, SimulationResult, SweepCall } from './chain.js';
 import type { RelayerConfig } from './config.js';
-import { SimulationRevert } from './errors.js';
+import { SendOutcomeUnknown, SendRefused, SimulationRevert } from './errors.js';
 import type { AlertSink } from './alerts.js';
 import { createLogger, type Logger } from './log.js';
 import type { PolicyGate } from './policy.js';
@@ -37,7 +37,14 @@ export class FakeChain implements ChainClient {
   public allowance = 10n ** 30n;
   public receipt: ReceiptSummary = { status: 'success', gasUsed: 100_000n };
   public rpcDown = false;
+  /** The node refuses the transaction: `sendSweep` throws {@link SendRefused} (provably not broadcast). */
   public sendFails = false;
+  /**
+   * Outcome-unknown send: `accepted` records the transaction as broadcast before throwing (the node took it, the
+   * answer was lost); otherwise nothing reached the node. Neither changes `pendingNonce`: tests set the node's view.
+   * `withHash` throws {@link SendOutcomeUnknown} with the signed hash like the viem client; otherwise a plain error.
+   */
+  public sendUnknown: { readonly accepted: boolean; readonly withHash?: boolean } | undefined;
   public simulateError: Error | undefined;
   public readonly simulationFailures = new Map<number, Error>();
   /** Awaited inside simulation; useful for testing admission races before reservation. */
@@ -95,7 +102,18 @@ export class FakeChain implements ChainClient {
     if (this.sendGate !== undefined) await this.sendGate;
     if (this.sendFails) {
       this.inFlight -= 1;
-      throw new Error('send failed');
+      throw new SendRefused();
+    }
+    if (this.sendUnknown !== undefined) {
+      this.inFlight -= 1;
+      const { accepted, withHash } = this.sendUnknown;
+      this.counter += 1;
+      const hash: Hex = `0x${this.counter.toString(16).padStart(64, '0')}`;
+      if (accepted) {
+        this.sent.push({ call, opts });
+        this.used.add(`${call.sweep.owner}:${call.sweep.nonce.toString()}`);
+      }
+      throw withHash === true ? new SendOutcomeUnknown(hash) : new Error('socket hang up');
     }
     this.sent.push({ call, opts });
     this.used.add(`${call.sweep.owner}:${call.sweep.nonce.toString()}`);
