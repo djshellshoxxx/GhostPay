@@ -28,6 +28,8 @@ interface SetupOpts {
   onAllowanceRead?: () => void;
   /** The RPC never returns the approval transaction itself (only its receipt). */
   hideApprovalTx?: boolean;
+  /** Clock seen by the send (`rt.nowSeconds`); review happens at 1, so the deadline is 1 + 1200. */
+  clock?: { now: number };
 }
 
 async function setup(opts: SetupOpts = {}) {
@@ -66,7 +68,7 @@ async function setup(opts: SetupOpts = {}) {
     reviewed: { chainId: SEPOLIA, payment: copy(prepared.built.tx), ...(prepared.approval === undefined ? {} : { approval: copy(prepared.approval) }) },
   };
   const walletSends = (): number => w.calls.filter((c) => c.method === 'eth_sendTransaction').length;
-  const run = (g: PolicySendGuard = guard, p: PreparedPolicyPayment = prepared) => sendPolicyPayment(session, p, { rpc: opts.noRpc === true ? undefined : rpc, nowSeconds: () => 1, sleep: () => Promise.resolve() }, (m) => status.push(m), (h) => hashes.push(h), g);
+  const run = (g: PolicySendGuard = guard, p: PreparedPolicyPayment = prepared) => sendPolicyPayment(session, p, { rpc: opts.noRpc === true ? undefined : rpc, nowSeconds: () => opts.clock?.now ?? 1, sleep: () => Promise.resolve() }, (m) => status.push(m), (h) => hashes.push(h), g);
   return { w, sentLog, run, hashes, status, prepared, guard, walletSends };
 }
 
@@ -187,6 +189,50 @@ describe('policy payment sending (session guard and reviewed transaction)', () =
       return r;
     };
     await expect(t.run()).rejects.toThrow(/Seller keys changed/);
+    expect(t.walletSends()).toBe(1);
+    expect(t.hashes).toHaveLength(1);
+  });
+});
+
+describe('policy payment sending (deadline, same boundary as Pay)', () => {
+  const DEADLINE = 1 + 1200;
+  it('sends at deadline - 1', async () => {
+    const t = await setup({ token: 'native', clock: { now: DEADLINE - 1 } });
+    await t.run();
+    expect(t.walletSends()).toBe(1);
+  });
+  it('refuses at the deadline without contacting the wallet', async () => {
+    const t = await setup({ token: 'native', clock: { now: DEADLINE } });
+    await expect(t.run()).rejects.toThrow('The prepared payment has expired. Review again.');
+    expect(t.walletSends()).toBe(0);
+  });
+  it('refuses when the payment expires after review, during the allowance read, before any wallet request', async () => {
+    const clock = { now: 1 };
+    const t = await setup({ clock, onAllowanceRead: () => { clock.now = DEADLINE; } });
+    await expect(t.run()).rejects.toThrow(/has expired/);
+    expect(t.walletSends()).toBe(0);
+  });
+  it('refuses when the payment expires during the final wallet re-check', async () => {
+    const clock = { now: 1 };
+    const t = await setup({ token: 'native', clock });
+    const orig = t.w.request.bind(t.w);
+    t.w.request = (args) => {
+      if (args.method === 'eth_accounts') clock.now = DEADLINE;
+      return orig(args);
+    };
+    await expect(t.run()).rejects.toThrow(/has expired/);
+    expect(t.walletSends()).toBe(0);
+  });
+  it('does not send the payment when it expires while the approval is mined', async () => {
+    const clock = { now: 1 };
+    const t = await setup({ clock });
+    const orig = t.w.request.bind(t.w);
+    t.w.request = async (args) => {
+      const r = await orig(args);
+      if (args.method === 'eth_sendTransaction') clock.now = DEADLINE;
+      return r;
+    };
+    await expect(t.run()).rejects.toThrow(/has expired/);
     expect(t.walletSends()).toBe(1);
     expect(t.hashes).toHaveLength(1);
   });

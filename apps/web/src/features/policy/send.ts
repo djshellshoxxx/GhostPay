@@ -1,6 +1,6 @@
 import { decodeFunctionData } from 'viem/utils';
 import { erc20Abi } from '@ghostpay/chain-adapters';
-import { decodePolicyPaymentCalldata } from '@ghostpay/policy-scheme';
+import { decodePolicyPaymentCalldata, ghostPayPolicyRouterAbi } from '@ghostpay/policy-scheme';
 import { UserFacingError } from '../../lib/errors';
 import { assertApproveTx, readAllowance } from '../../lib/pay';
 import { PostBroadcastError, submitTx, type BroadcastFn, type Runtime, type StatusFn, type SubmitResult } from '../../lib/payExec';
@@ -41,7 +41,7 @@ const sameTx = (a: TxRequest, b: TxRequest): boolean => a.to.toLowerCase() === b
  * awaits): the session must be unchanged, the wallet on the reviewed chain, and both transactions byte-equal to the
  * review. The payment calldata is decoded again against the deployment and the approval is checked like Pay's.
  */
-function assertStillReviewed(session: WalletSession, prepared: PreparedPolicyPayment, guard: PolicySendGuard): void {
+function assertStillReviewed(session: WalletSession, prepared: PreparedPolicyPayment, guard: PolicySendGuard, nowSeconds: number): void {
   guard.assertCurrent();
   const { reviewed, deployment } = guard;
   if (session.chainId !== reviewed.chainId || reviewed.chainId !== deployment.chainId) throw new UserFacingError(REVIEW_MISMATCH);
@@ -58,6 +58,8 @@ function assertStillReviewed(session: WalletSession, prepared: PreparedPolicyPay
   if (decoded.method !== prepared.built.method || decoded.stealth !== prepared.payment.accountAddress || decoded.owner !== prepared.payment.ownerAddress || decoded.policyHash !== prepared.payment.policyHash) {
     throw new UserFacingError('Blocked: the payment calldata does not match the derived policy account. Nothing was sent.');
   }
+  // Same boundary as Pay's sendPayment guard: refused from the deadline second on (`now >= deadline`).
+  if (BigInt(nowSeconds) >= deadlineOf(prepared)) throw new UserFacingError('The prepared payment has expired. Review again.');
   if (prepared.token === 'native') {
     if (prepared.approval !== undefined) throw new UserFacingError(REVIEW_MISMATCH);
   } else {
@@ -83,7 +85,7 @@ export async function sendPolicyPayment(
   onBroadcast: BroadcastFn | undefined,
   guard: PolicySendGuard,
 ): Promise<SubmitResult> {
-  const check = (): void => { assertStillReviewed(session, prepared, guard); };
+  const check = (): void => { assertStillReviewed(session, prepared, guard, rt.nowSeconds()); };
   check();
   const router = prepared.built.tx.to;
   const gross = prepared.built.tx.value === 0n ? grossOf(prepared) : prepared.built.tx.value;
@@ -108,6 +110,14 @@ export async function sendPolicyPayment(
     }
   }
   return submitTx(session, prepared.built.tx, rt, status, check, onBroadcast, { kind: 'payment' });
+}
+
+/** Router deadline read from the exact calldata that will be sent (`payNative` arg 3, the ERC-20 methods arg 5). */
+function deadlineOf(p: PreparedPolicyPayment): bigint {
+  const d = decodeFunctionData({ abi: ghostPayPolicyRouterAbi, data: p.built.tx.data });
+  const deadline = (d.args as readonly unknown[])[d.functionName === 'payNative' ? 3 : 5];
+  if (typeof deadline !== 'bigint') throw new UserFacingError('Blocked: the payment deadline could not be read. Nothing was sent.');
+  return deadline;
 }
 
 /** Gross amount of an ERC-20 payment, taken from the reviewed approval (amount == gross by construction). */
