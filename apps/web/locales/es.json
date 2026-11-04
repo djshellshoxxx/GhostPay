@@ -595,6 +595,6 @@
     "registry.exportHint": "Este QR solo contiene tu meta-dirección pública, el mismo valor que puedes publicar. Quien lo escanee puede pagarte; no revela claves privadas ni publica nada.",
     "registry.exportCaption": "Meta-dirección pública para el registro",
     "sellerKeys.pairing.refused": "Esa no es una configuración pública del vendedor compatible. Era demasiado grande, de otro tipo o versión, estaba alterada o contiene claves no válidas. No se cambió nada.",
-    "sellerKeys.pairing.exportFailed": "No se pudo preparar la configuración pública del vendedor con los ajustes actuales, así que no se muestra. No se cambió nada. Revisa la lista de cadenas en Ajustes."
+    "sellerKeys.pairing.exportFailed": "La configuración pública del vendedor no se pudo preparar a partir de las claves cargadas en este dispositivo, así que no se muestra. No se cambió nada."
   }
 }

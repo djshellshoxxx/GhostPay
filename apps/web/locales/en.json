@@ -595,6 +595,6 @@
     "registry.exportHint": "This QR holds only your public meta-address, the same value you may publish. Whoever scans it can pay you privately-addressed funds; it reveals no private key and does not publish anything.",
     "registry.exportCaption": "Public meta-address for the registry",
     "sellerKeys.pairing.refused": "That is not a supported public seller config. It was too large, the wrong kind or version, altered, or it contains invalid keys. Nothing was changed.",
-    "sellerKeys.pairing.exportFailed": "The public seller config could not be prepared with the current settings, so it is not shown. Nothing was changed. Check the chain list in Settings."
+    "sellerKeys.pairing.exportFailed": "The public seller config could not be prepared from the keys loaded on this device, so it is not shown. Nothing was changed."
   }
 }

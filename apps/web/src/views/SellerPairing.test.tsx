@@ -199,10 +199,19 @@ describe('SellerPairing', () => {
     expect(pairingChainIds({ '1099511627776': 'https://rpc.test', '5': 'https://rpc.test', '9999999999999999': 'https://rpc.test' })).toEqual([5, 1099511627776]);
   });
 
+  it('keeps the 16 smallest chain ids when more are configured', () => {
+    const rpc: Record<string, string> = {};
+    for (let i = 1; i <= 15; i += 1) rpc[String(i)] = 'https://rpc.test';
+    rpc[String(2 ** 40 + 1)] = 'https://rpc.test';
+    rpc[String(2 ** 40)] = 'https://rpc.test';
+    expect(pairingChainIds(rpc)).toEqual([...Array.from({ length: 15 }, (_, i) => i + 1), 2 ** 40]);
+  });
+
   it('shows an error instead of silently hiding the export when it cannot be built', () => {
     const p = generateSession();
-    render(<SellerPairing session={p} chainIds={[0.5]} />);
-    expect(screen.getByText(/could not be prepared/)).toBeTruthy();
+    // Key separation failure: the signing key equals the spending key.
+    render(<SellerPairing session={{ ...p, signerPublicKey: p.spendingPublicKey }} chainIds={[]} />);
+    expect(screen.getByText(/could not be prepared from the keys loaded on this device/)).toBeTruthy();
     expect(screen.queryByLabelText('Same config as text')).toBeNull();
   });
 });
