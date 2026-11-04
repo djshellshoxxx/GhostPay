@@ -9,6 +9,9 @@ import { useServices } from '../lib/services';
 import { captureSessionVersionGuard, getSessionPublic, revealViewingKey } from '../lib/session';
 import { MAX_ARCHIVE_BYTES, exportArchive, previewArchiveImport, type ArchiveImportPreview } from '../lib/tagArchive';
 import { useApp } from '../state';
+import { sha256 } from '@noble/hashes/sha2.js';
+import { bytesToHex, utf8ToBytes } from '@noble/hashes/utils.js';
+import type { TagVault } from '../lib/tags';
 import { Field, Notice } from './Common';
 
 interface Staged {
@@ -78,15 +81,38 @@ function listed(items: readonly string[]): string {
 
 /** What an export attempt did: reported only after the file was handed to the browser, or after the attempt failed. */
 export type ArchiveExportResult =
-  | { readonly ok: true; readonly recordCount: number; readonly sha256: string; /** The seller asked for scan history to be included. */ readonly history: boolean; /** Scan history is missing from the archive for at least one chain. */ readonly gaps: boolean }
-  | { readonly ok: false };
+  | {
+    readonly ok: true;
+    readonly recordCount: number;
+    readonly sha256: string;
+    /** The seller asked for scan history to be included. */
+    readonly history: boolean;
+    /** Scan history is missing from the archive for at least one chain. */
+    readonly gaps: boolean;
+    /** Plain-language notes on what is NOT in the archive (empty when nothing is missing). */
+    readonly notes: readonly string[];
+    /** {@link tagFingerprint} of the tags this archive was made from. */
+    readonly fingerprint: string;
+  }
+  | { readonly ok: false; readonly message: string };
+
+/**
+ * A digest of the tags (chain, update time, content) as they are now, so a later change can be told from the archive
+ * that was made before it. Reads the vault, unlocking it with the loaded seller keys like an export does. Only compared,
+ * never stored in a file, and not a security boundary.
+ */
+export async function tagFingerprint(vault: TagVault): Promise<string> {
+  if (!vault.unlocked) await vault.unlock(revealViewingKey());
+  const entries = (await vault.snapshot()).map((e) => JSON.stringify([e.chainId, e.updatedAt, e.payload])).sort();
+  return bytesToHex(sha256(utf8ToBytes(JSON.stringify(entries))));
+}
 
 /**
  * Encrypted tag backup, import with preview, key rotation and wipe. Everything is local; the passphrase is never stored.
  * @param props.onExport Optional observer of export attempts (the combined backup panel); it changes no behavior here.
  */
-export function TagArchive(props: { readonly onExport?: (result: ArchiveExportResult) => void } = {}): ReactNode {
-  const { onExport: reportExport } = props;
+export function TagArchive(props: { readonly onExport?: (result: ArchiveExportResult) => void; readonly onTagsChanged?: () => void } = {}): ReactNode {
+  const { onExport: reportExport, onTagsChanged } = props;
   const app = useApp();
   const { vault, chains } = useServices();
   const [message, setMessage] = useState<{ kind: 'ok' | 'error'; text: string } | undefined>(undefined);
@@ -200,12 +226,13 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
         // Tags and history must come from the keys this export started with (L1-04).
         if (!current(c)) return;
         unchanged();
+        // Taken before the export: a tag saved while it runs shows up as a change afterwards, never as covered.
+        const fingerprint = await tagFingerprint(vault);
         const out = await exportArchive(vault, revealViewingKey(), pass, { history });
         if (!current(c)) return;
         unchanged();
         downloadBytes(out.filename, out.bytes);
         setPass(''); setPass2(''); setBusy(false);
-        reportExport?.({ ok: true, recordCount: out.recordCount, sha256: out.sha256, history: withHistory, gaps: skipped > 0 || unsupported === undefined || unsupported.length > 0 });
         const missing = [
           skipped > 0 ? `Scan history for ${String(skipped)} chain(s) could not be read and is NOT in this archive.` : '',
           unsupported === undefined ? 'The scan history kept for chains this build does not support could not be listed; any such history is NOT in this archive.' : '',
@@ -213,11 +240,12 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
             ? `Scan history stored in this browser for ${listed(unsupported.map(chainLabel))} is NOT in this archive: this build does not support ${unsupported.length === 1 ? 'that chain' : 'those chains'}.`
             : '',
         ].filter((note) => note !== '');
+        reportExport?.({ ok: true, recordCount: out.recordCount, sha256: out.sha256, history: withHistory, gaps: missing.length > 0, notes: missing, fingerprint });
         done(`Archive downloaded: ${String(out.recordCount)} tag(s). SHA-256 ${out.sha256}. Keep the file and the passphrase: neither can be recovered.${missing.map((note) => ` ${note}`).join('')}`);
       } catch (error) {
         if (!current(c)) return;
         setBusy(false); fail(error);
-        reportExport?.({ ok: false });
+        reportExport?.({ ok: false, message: userMessage(error) });
       } finally {
         closeVaults(vaults);
       }
@@ -296,6 +324,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
         }
         guard();
         setStaged(undefined); setFile(undefined); setBusy(false);
+        onTagsChanged?.();
         done(`Imported: ${String(s.archive.tags.added)} added, ${String(s.archive.tags.updated)} updated, ${String(s.archive.tags.removed)} removed. Tags committed.${s.history.length > 0 ? ` Scan history committed for ${String(s.history.length)} chain(s); restored history remains historical evidence, not a fresh scan.` : ''}`);
       } catch (error) {
         // A completed transaction cannot be cancelled, and a rejected acknowledgement
@@ -339,7 +368,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
         unchanged();
         await vault.wipe();
         if (!current(c)) return;
-        unchanged(); setBusy(false); done('All local tags deleted.');
+        unchanged(); setBusy(false); onTagsChanged?.(); done('All local tags deleted.');
       } catch (error) {
         if (!current(c)) return;
         setBusy(false); fail(error);

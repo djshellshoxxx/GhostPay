@@ -7,6 +7,7 @@ import { checkpointKeyId } from '../lib/scanClient';
 import { clearSession, generateSession, getSessionPublic } from '../lib/session';
 import * as tagArchive from '../lib/tagArchive';
 import { memoryIndexedDb } from '../test/memoryIndexedDb';
+import { userMessage } from '../lib/errors';
 import { makeServices, renderApp } from '../test/render';
 
 const PASS = 'violet comet maple lantern';
@@ -30,11 +31,13 @@ function fastKdf(): void {
 
 type User = ReturnType<typeof userEvent.setup>;
 
-async function open(): Promise<User> {
+const nav = (name: string) => within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name });
+
+async function open(services = makeServices()): Promise<User> {
   generateSession();
   const user = userEvent.setup();
-  renderApp(makeServices());
-  await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Seller keys' }));
+  renderApp(services);
+  await user.click(nav('Seller keys'));
   return user;
 }
 
@@ -122,5 +125,53 @@ describe('BackupPanel', () => {
     await exportTags(user, false);
     await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Failed: The latest tag archive attempt failed/); });
     expect(status('backup-item-tags')).not.toMatch(/not backed up/);
+  }, 120_000);
+
+  const tag = { stealthAddress: '0x1111111111111111111111111111111111111111', announcementId: `0x${'ab'.repeat(32)}:1`, logIndex: 1, clientLabel: 'Acme' };
+
+  it('does not present an archive as backing up tags saved after it', async () => {
+    fastKdf();
+    const services = makeServices();
+    const user = await open(services);
+    await exportTags(user, false);
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Done: /); }, { timeout: 60_000 });
+    await services.vault.save(84532, tag);
+    window.dispatchEvent(new Event('focus'));
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Changed since last archive: .*not in the last archive/); });
+    await exportTags(user, false);
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Done: .*Tags in the archive: 1\./); }, { timeout: 60_000 });
+  }, 120_000);
+
+  it('notices tags saved elsewhere while the checklist was not on screen', async () => {
+    fastKdf();
+    const services = makeServices();
+    const user = await open(services);
+    await exportTags(user, false);
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Done: /); }, { timeout: 60_000 });
+    await user.click(nav('Home'));
+    await services.vault.save(84532, tag);
+    await user.click(nav('Seller keys'));
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Changed since last archive/); });
+  }, 120_000);
+
+  it('keeps the gap and failure details with the outcome after the view is left and reopened', async () => {
+    fastKdf();
+    vi.spyOn(reconciliation, 'createCurrentReconciliationVault').mockRejectedValue(new Error('unavailable'));
+    const user = await open();
+    await exportTags(user, true);
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Done with gaps/); }, { timeout: 60_000 });
+    await user.click(nav('Home'));
+    await user.click(nav('Seller keys'));
+    const item = screen.getByTestId('backup-item-tags');
+    expect(status('backup-item-tags')).toMatch(/^Done with gaps/);
+    expect(item.textContent).toMatch(/could not be read and is NOT in this archive/);
+    expect(item.textContent).not.toMatch(/message below/);
+
+    vi.spyOn(tagArchive, 'exportArchive').mockRejectedValue(new Error('disk full'));
+    await exportTags(user, false);
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Failed/); });
+    await user.click(nav('Home'));
+    await user.click(nav('Seller keys'));
+    expect(screen.getByTestId('backup-item-tags').textContent).toContain(userMessage(new Error('disk full')));
   }, 120_000);
 });

@@ -149,6 +149,8 @@ export const SECURITY_KEY_GROUPS = {
     'backup.tags.failed',
     'backup.status.notStarted',
     'backup.status.done',
+    'backup.status.stale',
+    'backup.tags.stale',
     'backup.status.partial',
     'backup.status.failed',
     'backupGate.title',

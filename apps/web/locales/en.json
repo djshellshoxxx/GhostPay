@@ -576,13 +576,15 @@
     "backup.tags.heading": "Step 2: client tag archive",
     "backup.tags.notStarted": "No tag archive was downloaded in this session yet. Use the form below.",
     "backup.tags.done": "Tag archive downloaded. Tags in the archive: {count, number}. Keep the file and its passphrase: neither can be recovered.",
-    "backup.tags.partial": "The tag archive was downloaded, but some scan history is NOT in it. Read the message below.",
-    "backup.tags.failed": "The latest tag archive attempt failed and produced no file. Read the message below. An archive from an earlier attempt, if you made one, is not affected.",
+    "backup.tags.partial": "The tag archive was downloaded, but some scan history is NOT in it:",
+    "backup.tags.failed": "The latest tag archive attempt failed and produced no file: {reason} An archive from an earlier attempt, if you made one, is not affected.",
     "backup.status.notStarted": "Not started",
     "backup.status.done": "Done",
     "backup.status.partial": "Done with gaps",
     "backup.status.failed": "Failed",
     "backup.keys.go": "Go to the keystore backup",
-    "backup.tags.doneNoHistory": "Tag archive downloaded WITHOUT scan history, as you chose. Tags in the archive: {count, number}. Keep the file and its passphrase: neither can be recovered."
+    "backup.tags.doneNoHistory": "Tag archive downloaded WITHOUT scan history, as you chose. Tags in the archive: {count, number}. Keep the file and its passphrase: neither can be recovered.",
+    "backup.status.stale": "Changed since last archive",
+    "backup.tags.stale": "Your tags changed after the last tag archive, which held {count, number} tags. The changes are not in the last archive: download a new one."
   }
 }
