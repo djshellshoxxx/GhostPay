@@ -431,7 +431,11 @@ export async function syncHeaders(p: {
     }
     const changed = chain.tipHash !== before;
     for (const r of results) {
-      if (!r.ok) continue;
+      if (!r.ok) {
+        // A valid heavier prefix may have been adopted before the failure: still a reorg to report.
+        if (r.adopted?.reorg === true) reorgFrom = Math.min(reorgFrom ?? r.adopted.forkHeight, r.adopted.forkHeight);
+        continue;
+      }
       const s = r.result;
       if (s.reorg) reorgFrom = Math.min(reorgFrom ?? s.forkHeight, s.forkHeight);
       // A probe missed (more than one header read) and the whole branch was compared and not adopted.

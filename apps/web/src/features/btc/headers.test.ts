@@ -216,6 +216,19 @@ describe('syncing headers', () => {
     expect(MAX_ROUNDS_PER_CALL * HEADERS_PER_ROUND).toBeLessThanOrEqual(MAX_HEADERS);
   });
 
+  it('L-b: a heavier prefix adopted before an invalid header is reported as a reorg in the failure', async () => {
+    const chain = mockChain('regtest', walletA());
+    const store = new MemoryHeaderStore();
+    const headers = await synced(chain, store);
+    forkChain(chain.blocks, 3, 5, 2); // 3'..7'
+    const bad = mineHeader('ab'.repeat(32), chain.blocks[7]!.txs, 0x207fffff, 1_700_100_000);
+    chain.blocks[7] = { ...chain.blocks[7]!, header: bad, hash: parseHeader(bad).hash };
+    const e = await syncHeaders({ chain: headers, sources: [sourceOf(chain)], store }).catch((x: unknown) => x);
+    expect((e as HeaderSyncError).code).toBe('INVALID_HEADER');
+    expect((e as HeaderSyncError).partial).toMatchObject({ reorgFrom: 2, tipHeight: 6 });
+    expect(headers.tipHash).toBe(chain.blocks[6]!.hash);
+  });
+
   it('fails closed on an invalid header, keeping (and having saved) only valid headers', async () => {
     const chain = mockChain('regtest', walletA());
     const store = new MemoryHeaderStore();

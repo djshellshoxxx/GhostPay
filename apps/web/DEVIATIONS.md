@@ -138,7 +138,7 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     Memory (measured, `packages/btc-silent-payments/scripts/bench-headerchain-memory.mjs`: node --expose-gc, regtest
     headers connected in 2016-header batches, GC'd `heapUsed + arrayBuffers` with the chain alive minus after dropping it):
     before the compact store ~2 040 bytes per header (100 000 headers = 204 MB; review measured ~2.1 KB); now 147 B/header
-    at 100 000 and 196 B/header at 300 000 (the arrays grow by doubling): ~59 MB for 300 000, ~80 MB at the limit. The
+    at 100 000 and 196 B/header at 300 000 (the arrays grow by doubling): ~59 MB for 300 000 (at 400 000: ~59 MB of data at 147 B/header, plus up to ~29 MB transient while the arrays double). The
     chain keeps 80 raw bytes + 32 hash bytes per header in typed arrays and cumulative work every 2016 headers; parsed
     headers are built only on demand. A vitest guard (`headerchain.memory.test.ts`, 20 000 headers) fails above 250 B.
     Loading also holds the stored text (160 B/header, one flat hex string; released right after `JSON.parse`) and the
@@ -181,9 +181,13 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     silent reorg), and the fork point is found exactly (doubling probe, then binary search), so the 10 080 budget
     counts the real depth. When a competing branch hits an invalid header, its valid prefix is still adopted if it
     already has more work; the error is reported after.
-    Sweeping needs checked inputs: a review, signature or broadcast is allowed only while every input's block is at or
-    below the checked tip. Forget, or anything that drops the checked tip below a reviewed input, clears the review,
-    approval, signed transaction and selection, and the Broadcast button refuses. A chain loaded from storage (after a
+    Sweeping needs checked inputs: a review, signature or broadcast is allowed only while no check or scan is running
+    (the header chain is updated in place during a check, before the view's state catches up) and every input's block
+    is at or below the checked tip with the hash the live checked chain has at that height. Forget clears the review,
+    approval, signed transaction and every selection; a checked tip that drops below a reviewed input clears the review
+    and the selections that cannot be swept. These gates are layered on purpose (disabled buttons, the same checks in
+    the click handlers, and a clearing effect): the handler checks and the effect are backstops that the UI tests cannot
+    reach on their own, because a disabled button never fires and the results are reconciled first. A chain loaded from storage (after a
     forget, or another tab's) is always compared with the results on screen, even when the sync does not move its tip.
     A forget during a check ends the busy state at once; a check started before it may not save, set the checked tip,
     keep its loaded chain or change results. A branch with no more work is ignored and its blocks are

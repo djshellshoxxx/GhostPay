@@ -149,6 +149,27 @@ describe('syncHeaderChain', () => {
     expect(await codeOf(syncHeaderChain(c, tricky))).toBe('INVALID_HEADER');
     expect(c.tipHash).toBe(parseHeader(LONG[100]!).hash);
   });
+  it('F4: a longer off-tip chunk (which connect would adopt as a reorg) is refused before it is connected', async () => {
+    const LONG = [REGTEST_GENESIS, ...extend(REGTEST_GENESIS, 100, 600, 0x207fffff, 1)];
+    const c = regtestChain();
+    await syncHeaderChain(c, new ListHeaderSource(LONG));
+    const alt = extend(LONG[95]!, 20, 601, 0x207fffff, 4); // heights 96..115: more work than ours
+    const tricky: HeaderSource = {
+      getTipHeight: () => Promise.resolve(115),
+      getHeaders: (from, n) => Promise.resolve(from === 100 && n === 1 ? [LONG[100]!] : alt.slice(0, n)),
+    };
+    expect(await codeOf(syncHeaderChain(c, tricky))).toBe('INVALID_HEADER');
+    expect(c.tipHash).toBe(parseHeader(LONG[100]!).hash);
+  });
+  it('L-b: an adopted prefix before an invalid header is reported with the failure', async () => {
+    const LONG = [REGTEST_GENESIS, ...extend(REGTEST_GENESIS, 60, 600, 0x207fffff, 1)];
+    const c = regtestChain();
+    await syncHeaderChain(c, new ListHeaderSource(LONG));
+    const side = [...LONG.slice(0, 51), ...extend(LONG[50]!, 20, 601, 0x207fffff, 6)];
+    side[65] = `${side[65]!.slice(0, 8)}${'ab'.repeat(32)}${side[65]!.slice(72)}`;
+    const [r] = await syncHeaderChainFromSources(c, [new ListHeaderSource(side)], { batchSize: 100 });
+    expect(r).toMatchObject({ ok: false, code: 'INVALID_HEADER', adopted: { adopted: true, reorg: true, forkHeight: 50, tipHeight: 64 } });
+  });
   it('L2: finds the fork point exactly, so the budget counts the real depth', async () => {
     const LONG = [REGTEST_GENESIS, ...extend(REGTEST_GENESIS, 60, 600, 0x207fffff, 1)];
     const c = regtestChain();

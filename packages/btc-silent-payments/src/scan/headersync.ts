@@ -23,7 +23,7 @@ export interface SyncOptions {
   /** Largest number of headers one call downloads when extending the chain (default 50 000); call again to continue. */
   readonly maxHeaders?: number;
   /**
-   * Most active headers a competing branch may replace (measured from the fork probe, default 10 080, at most
+   * Most active headers a competing branch may replace (above the exact fork point, default 10 080, at most
    * 100 000). A deeper fork fails with `FORK_TOO_DEEP` and changes nothing. A branch counts as lighter only after it
    * was compared up to the source tip.
    */
@@ -40,6 +40,13 @@ export interface SyncResult extends ConnectResult {
 export const MAX_FORK_HEADERS = 100_000;
 /** Default `maxForkHeaders`: five difficulty periods of active headers may be replaced by one call. */
 export const DEFAULT_FORK_HEADERS = 10_080;
+
+/** A sync that failed after adopting a valid prefix of a heavier branch; `adopted` says what changed. */
+export class PartialAdoptError extends SilentPaymentError {
+  public constructor(code: SilentPaymentErrorCode, public readonly adopted: ConnectResult) {
+    super(code);
+  }
+}
 
 function checkAbort(signal: AbortSignal | undefined): void {
   if (signal?.aborted === true) fail('ABORTED');
@@ -121,6 +128,7 @@ export async function syncHeaderChain(chain: HeaderChain, source: HeaderSource, 
       if (parseHeader(chunk[0] as string).prevHash !== chain.tipHash) return fail('INVALID_HEADER');
       const before = chain.tipHeight;
       const r = chain.connect(chunk);
+      // Belt and braces: a chunk on the tip has more work and no active prefix, so connect() always adopts it whole.
       if (!r.adopted || r.reorg || r.tipHeight !== before + n) return fail('INVALID_HEADER');
       adopted = true;
     }
@@ -141,7 +149,7 @@ export async function syncHeaderChain(chain: HeaderChain, source: HeaderSource, 
     try {
       branch.add(chunk);
     } catch (e) {
-      if (branch.length > 0 && branch.beatsActive) branch.adopt();
+      if (branch.length > 0 && branch.beatsActive && e instanceof SilentPaymentError) throw new PartialAdoptError(e.code, branch.adopt());
       throw e;
     }
     fetched += n;
@@ -152,7 +160,14 @@ export async function syncHeaderChain(chain: HeaderChain, source: HeaderSource, 
   return { adopted: false, reorg: false, forkHeight: branch.forkHeight, tipHeight: chain.tipHeight, fetched };
 }
 
-export type SourceSyncResult = { readonly ok: true; readonly result: SyncResult } | { readonly ok: false; readonly code: SilentPaymentErrorCode };
+export type SourceSyncResult =
+  | { readonly ok: true; readonly result: SyncResult }
+  | {
+      readonly ok: false;
+      readonly code: SilentPaymentErrorCode;
+      /** What was adopted before the failure (a valid prefix of a heavier branch), if anything. */
+      readonly adopted?: ConnectResult;
+    };
 
 /**
  * Syncs from several independent sources in turn. The chain ends on the most-work valid chain any of them
@@ -170,7 +185,7 @@ export async function syncHeaderChainFromSources(
       out.push({ ok: true, result: await syncHeaderChain(chain, s, o) });
     } catch (e) {
       if (!(e instanceof SilentPaymentError) || e.code === 'ABORTED') throw e;
-      out.push({ ok: false, code: e.code });
+      out.push({ ok: false, code: e.code, ...(e instanceof PartialAdoptError ? { adopted: e.adopted } : {}) });
     }
   }
   return out;

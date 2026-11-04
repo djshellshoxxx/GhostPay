@@ -70,6 +70,105 @@ describe('BtcView header chain: re-review fixes', () => {
     expect(screen.queryByRole('button', { name: /Broadcast to/ })).toBeNull();
     expect(screen.queryByRole('button', { name: 'Review sweep' })?.hasAttribute('disabled') ?? true).toBe(true);
     expect(chain.broadcasts).toHaveLength(0);
+    // M2: after headers catch up again, the old selection is gone: nothing is re-selected and Review stays disabled.
+    await user.click(screen.getByRole('button', { name: 'Update headers' }));
+    await screen.findByText(verified(4));
+    const box = screen.getByRole<HTMLInputElement>('checkbox', { name: /Sweep [0-9a-f]{64}:1/ });
+    expect(box.disabled).toBe(false);
+    expect(box.checked).toBe(false);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Review sweep' }).disabled).toBe(true);
+  });
+
+  it('M1: while a running check has already switched to a fork without the paying block, Sign and Broadcast refuse', async () => {
+    const chain = mockChain('regtest', walletA());
+    let release: () => void = () => undefined;
+    const gate = new Promise<void>((r) => { release = r; });
+    let gateOn = false;
+    let hits = 0;
+    const fetchFn: MockChain['fetchFn'] = async (url, init) => {
+      if (gateOn && url.endsWith('/blocks/5') && ++hits === 2) await gate;
+      return chain.fetchFn(url, init);
+    };
+    const user = userEvent.setup();
+    renderWith(<BtcView headerStore={sharedStore().storeFor} headerSyncLimits={{ headersPerRound: 1, maxRounds: 10 }} />, makeServices({ fetchFn }));
+    await user.selectOptions(screen.getByLabelText('Network'), 'regtest');
+    await user.type(screen.getByLabelText(/Esplora server URL/), 'https://esplora.test/api');
+    await user.type(screen.getByLabelText(/Or import a seed/), SEED_A);
+    await user.click(screen.getByRole('button', { name: 'Import seed' }));
+    await user.type(screen.getByLabelText(/First block height/), '1');
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    await screen.findByText(/1 unspent payment/);
+    await user.click(screen.getByRole('checkbox', { name: /Sweep [0-9a-f]{64}:1/ }));
+    await user.type(screen.getByLabelText('Destination address'), BCRT_DEST);
+    await user.click(screen.getByRole('button', { name: 'Review sweep' }));
+    await user.click(screen.getByRole('checkbox', { name: /I checked the destination/ }));
+    // Round 1 of this check adopts a heavier fork that replaces the paying block; round 2 is still running.
+    forkChain(chain.blocks, 3, 3, 2);
+    gateOn = true;
+    await user.click(screen.getByRole('button', { name: 'Update headers' }));
+    await waitFor(() => { expect(hits).toBe(2); });
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign with software key' }).disabled).toBe(true);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Review sweep' }).disabled).toBe(true);
+    release();
+    await screen.findByText(verified(5));
+    expect(screen.queryByRole('button', { name: /Broadcast to/ })).toBeNull();
+    expect(screen.queryByText('Signed transaction')).toBeNull();
+    expect(chain.broadcasts).toHaveLength(0);
+  });
+
+  it('M1: a signed transaction cannot be broadcast while a check that removes its input is running', async () => {
+    const chain = mockChain('regtest', walletA());
+    let release: () => void = () => undefined;
+    const gate = new Promise<void>((r) => { release = r; });
+    let gateOn = false;
+    let hits = 0;
+    const fetchFn: MockChain['fetchFn'] = async (url, init) => {
+      if (gateOn && url.endsWith('/blocks/5') && ++hits === 2) await gate;
+      return chain.fetchFn(url, init);
+    };
+    const user = userEvent.setup();
+    renderWith(<BtcView headerStore={sharedStore().storeFor} headerSyncLimits={{ headersPerRound: 1, maxRounds: 10 }} />, makeServices({ fetchFn }));
+    await user.selectOptions(screen.getByLabelText('Network'), 'regtest');
+    await user.type(screen.getByLabelText(/Esplora server URL/), 'https://esplora.test/api');
+    await user.type(screen.getByLabelText(/Or import a seed/), SEED_A);
+    await user.click(screen.getByRole('button', { name: 'Import seed' }));
+    await user.type(screen.getByLabelText(/First block height/), '1');
+    await user.click(screen.getByRole('button', { name: 'Scan' }));
+    await screen.findByText(/1 unspent payment/);
+    await user.click(screen.getByRole('checkbox', { name: /Sweep [0-9a-f]{64}:1/ }));
+    await user.type(screen.getByLabelText('Destination address'), BCRT_DEST);
+    await user.click(screen.getByRole('button', { name: 'Review sweep' }));
+    await user.click(screen.getByRole('checkbox', { name: /I checked the destination/ }));
+    await user.click(screen.getByRole('button', { name: 'Sign with software key' }));
+    await screen.findByText('Signed transaction');
+    forkChain(chain.blocks, 3, 3, 2);
+    gateOn = true;
+    await user.click(screen.getByRole('button', { name: 'Update headers' }));
+    await waitFor(() => { expect(hits).toBe(2); });
+    const broadcast = screen.getByRole<HTMLButtonElement>('button', { name: /Broadcast to/ });
+    expect(broadcast.disabled).toBe(true);
+    await user.click(broadcast);
+    expect(chain.broadcasts).toHaveLength(0);
+    release();
+    await screen.findByText(verified(5));
+    expect(chain.broadcasts).toHaveLength(0);
+  });
+
+  it('L-e: lock and a network switch reset the Forget confirmation, the header notes and the checked tip', async () => {
+    const chain = mockChain('regtest', walletA());
+    const user = await open(chain, sharedStore().storeFor);
+    await user.click(screen.getByRole('button', { name: 'Update headers' }));
+    await screen.findByText(verified(4));
+    await user.click(screen.getByRole('button', { name: 'Forget saved headers for this network' }));
+    await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
+    await user.type(screen.getByLabelText(/Or import a seed/), SEED_A);
+    await user.click(screen.getByRole('button', { name: 'Import seed' }));
+    expect(screen.queryByRole('button', { name: 'Delete saved headers' })).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Lock and forget keys' }));
+    await user.selectOptions(screen.getByLabelText('Network'), 'signet');
+    await user.type(screen.getByLabelText(/Or import a seed/), SEED_A);
+    await user.click(screen.getByRole('button', { name: 'Import seed' }));
+    expect(screen.queryByText(verified(4))).toBeNull();
   });
 
   it('F2: a chain loaded from storage is reconciled with on-screen results even when the sync does not move its tip', async () => {
