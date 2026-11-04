@@ -124,9 +124,13 @@ function toRevert(e: unknown): Error {
 /**
  * Node answers to `eth_sendRawTransaction` that refuse THIS transaction, so it is in no mempool afterwards. A fixed
  * list matched on the JSON-RPC error message: anything else is outcome-unknown (fail closed).
+ *
+ * "nonce too low" is deliberately absent: only this send was signed with its nonce, so a used nonce can mean this very
+ * transaction already landed (an RPC gateway that forwards the request twice answers the second copy this way).
+ * Reconciliation then sees the pending count above the nonce and settles it as broadcast instead of releasing it.
  */
 const NODE_REFUSAL =
-  /nonce too low|nonce too high|nonce has max value|insufficient funds|exceeds transaction sender account balance|intrinsic gas too (?:low|high)|exceeds block gas limit|transaction underpriced|fee cap less than block base fee|max fee per gas less than block base fee|transaction type not (?:valid|supported)|execution reverted/;
+  /nonce too high|nonce has max value|insufficient funds|exceeds transaction sender account balance|intrinsic gas too (?:low|high)|exceeds block gas limit|transaction underpriced|fee cap less than block base fee|max fee per gas less than block base fee|transaction type not (?:valid|supported)|execution reverted/;
 /**
  * Answers that mean the node already holds the same transaction. Never a refusal, although viem maps some of them to
  * `NonceTooLowError`.

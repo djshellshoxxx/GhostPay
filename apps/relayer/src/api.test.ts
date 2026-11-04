@@ -2120,7 +2120,6 @@ describe('unknown broadcast outcome (EVM-3)', () => {
     const nodeError = (code: number, message: string) => () => Promise.reject(Object.assign(new Error(message), { code }));
 
     it.each([
-      'nonce too low: address 0x0, tx: 9 state: 10',
       'insufficient funds for gas * price + value',
       'replacement transaction underpriced',
       'intrinsic gas too low',
@@ -2132,6 +2131,8 @@ describe('unknown broadcast outcome (EVM-3)', () => {
 
     it.each([
       ['already known (viem maps it to NonceTooLowError)', nodeError(-32000, 'already known')],
+      // This send may already have used the nonce (a gateway that forwarded it twice), so it is not a refusal.
+      ['nonce too low', nodeError(-32000, 'nonce too low: address 0x0, tx: 9 state: 10')],
       ['transaction already imported', nodeError(-32000, 'transaction already imported')],
       ['internal error', nodeError(-32603, 'internal error')],
       ['a code-less transport error', () => Promise.reject(new Error('socket hang up'))],
@@ -2161,11 +2162,13 @@ describe('unknown broadcast outcome (EVM-3)', () => {
             res.end(JSON.stringify(o));
           };
           if (msg.method === 'eth_chainId') return reply({ jsonrpc: '2.0', id: msg.id, result: toHex(CHAIN_ID) });
-          if (mode === 'refuse') return reply({ jsonrpc: '2.0', id: msg.id, error: { code: -32000, message: 'nonce too low' } });
+          if (mode === 'refuse') {
+            return reply({ jsonrpc: '2.0', id: msg.id, error: { code: -32000, message: 'insufficient funds for gas * price + value' } });
+          }
           if (mode === 'http502') {
             // A gateway error page, even one that names a refusal, is not the node's JSON-RPC answer.
             res.writeHead(502, { 'content-type': 'text/html' });
-            res.end('<html>502 Bad Gateway: nonce too low</html>');
+            res.end('<html>502 Bad Gateway: insufficient funds</html>');
             return;
           }
           // hang: never answer the send
