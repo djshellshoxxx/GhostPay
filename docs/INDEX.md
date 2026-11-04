@@ -17,6 +17,8 @@ Nothing here is an independent audit. The project has no third-party audit, and 
 4. [CONTRACTS_SPEC](CONTRACTS_SPEC.md) and [APP_AND_RELAYER_SPEC](APP_AND_RELAYER_SPEC.md): normative contract spec and app/relayer implementation targets.
 5. [remote/STATUS](remote/STATUS.md): real local check results for the remote-extension branch.
 
+**Additional research for Claude (2026-11-03):** [deep research and code-reuse packet](research/2026-11-03-claude-handoff/README.md), with a [short handoff](handoffs/GHOSTPAY_DEEP_RESEARCH_2026-11-03.md). It reconciles current PR ownership and adds primary-source implementation, license and acceptance research across payments, recovery, hosting, private scanning and deferred features. Source inspection and unrun runtime qualification are explicitly separated.
+
 **Note on `docs/remote/*`.** These files are remote-extension work (branch `claude/remote-extensions-1`). Their claims are as stated per file. Many are haiku-written or static reviews. Check the status column before relying on any of them.
 
 ## Root and top-level docs
