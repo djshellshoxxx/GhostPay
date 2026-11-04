@@ -8,7 +8,7 @@ import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 
 /** Chain ids the user has configured an RPC for. Only the ids, never the URLs. */
 export function pairingChainIds(rpcUrls: Readonly<Record<string, string>>): readonly number[] {
-  return Object.keys(rpcUrls).map(Number).filter((n) => Number.isSafeInteger(n) && n > 0).slice(0, 16);
+  return Object.keys(rpcUrls).map(Number).filter((n) => Number.isSafeInteger(n) && n > 0).sort((a, b) => a - b).slice(0, 16);
 }
 
 /**
@@ -23,38 +23,52 @@ export function SellerPairing(props: { readonly session: SessionPublic | undefin
   const [preview, setPreview] = useState<SellerPairingConfig | undefined>();
   const [error, setError] = useState<string | undefined>();
   const fileInput = useRef<HTMLInputElement | null>(null);
-  const exported = useMemo(() => {
-    if (session === undefined) return undefined;
-    try { return exportSellerPairing(session, props.chainIds); } catch { return undefined; }
+  // Every new input (file, paste, camera, clear) and every key change starts a new generation; a late read must match it.
+  const generation = useRef(0);
+  const exported = useMemo((): { readonly text?: string; readonly failed: boolean } => {
+    if (session === undefined) return { failed: false };
+    try { return { text: exportSellerPairing(session, props.chainIds), failed: false }; } catch { return { failed: true }; }
   }, [session, props.chainIds]);
 
-  // New keys invalidate any earlier preview and its comparison.
-  useEffect(() => { setPreview(undefined); setError(undefined); if (fileInput.current !== null) fileInput.current.value = ''; }, [session]);
+  // New keys invalidate any earlier preview, its comparison and any file read still pending.
+  useEffect(() => {
+    generation.current += 1;
+    setPreview(undefined); setError(undefined);
+    if (fileInput.current !== null) fileInput.current.value = '';
+  }, [session]);
 
   const accept = (text: string): boolean => {
+    generation.current += 1;
     try { setPreview(parseSellerPairing(text)); setError(undefined); return true; }
     catch { setPreview(undefined); setError(t('sellerKeys.pairing.refused')); return false; }
   };
   const onFile = (file: File | undefined): void => {
+    const id = ++generation.current;
     setPreview(undefined); setError(undefined);
     if (file === undefined) return;
     if (file.size > MAX_SELLER_PAIRING_BYTES) { setError(t('sellerKeys.pairing.fileTooBig')); return; }
-    void file.text().then((text) => { accept(text); }, () => { setError(t('sellerKeys.pairing.fileTooBig')); });
+    const current = (): boolean => generation.current === id;
+    void file.text().then(
+      (text) => { if (current()) accept(text); },
+      () => { if (current()) setError(t('sellerKeys.pairing.fileTooBig')); },
+    );
   };
+  const exportText = exported.text;
   const verdict = preview === undefined ? undefined : compareToLoaded(preview, session);
 
   return (
     <section className="panel" aria-labelledby="pairing-h">
       <h3 id="pairing-h">{t('sellerKeys.pairing.title')}</h3>
       <p>{t('sellerKeys.pairing.intro')}</p>
-      {exported !== undefined && (
+      {exported.failed && <Notice kind="error">{t('sellerKeys.pairing.exportFailed')}</Notice>}
+      {exportText !== undefined && (
         <>
           <h4>{t('sellerKeys.pairing.exportHeading')}</h4>
-          <QrFrame kind="device" text={exported} caption={t('sellerKeys.pairing.caption')} />
-          <Field label={t('sellerKeys.pairing.textLabel')}>{(id) => <textarea id={id} readOnly rows={4} spellCheck={false} value={exported} />}</Field>
+          <QrFrame kind="device" text={exportText} caption={t('sellerKeys.pairing.caption')} />
+          <Field label={t('sellerKeys.pairing.textLabel')}>{(id) => <textarea id={id} readOnly rows={4} spellCheck={false} value={exportText} />}</Field>
           <p>
-            <CopyButton text={exported} label={t('sellerKeys.pairing.copy')} />{' '}
-            <button type="button" className="btn" onClick={() => { downloadText('ghostpay-seller-public.json', exported, 'application/json'); }}>{t('sellerKeys.pairing.download')}</button>
+            <CopyButton text={exportText} label={t('sellerKeys.pairing.copy')} />{' '}
+            <button type="button" className="btn" onClick={() => { downloadText('ghostpay-seller-public.json', exportText, 'application/json'); }}>{t('sellerKeys.pairing.download')}</button>
           </p>
         </>
       )}
@@ -62,7 +76,7 @@ export function SellerPairing(props: { readonly session: SessionPublic | undefin
       <Field label={t('sellerKeys.pairing.fileLabel')}>
         {(id) => <input id={id} ref={fileInput} type="file" accept="application/json,.json" onChange={(e) => { onFile(e.currentTarget.files?.[0]); }} />}
       </Field>
-      <CameraImporter label={t('sellerKeys.pairing.importLabel')} scopeKey={session} onInputChange={() => { setPreview(undefined); setError(undefined); }} onText={(text, signal) => (signal.aborted ? false : accept(text))} />
+      <CameraImporter label={t('sellerKeys.pairing.importLabel')} scopeKey={session} onInputChange={() => { generation.current += 1; setPreview(undefined); setError(undefined); }} onText={(text, signal) => (signal.aborted ? false : accept(text))} />
       {error !== undefined && <Notice kind="error">{error}</Notice>}
       {preview !== undefined && verdict !== undefined && (
         <section aria-label={t('sellerKeys.pairing.previewHeading')}>
@@ -78,7 +92,7 @@ export function SellerPairing(props: { readonly session: SessionPublic | undefin
           </dl>
           <p>
             <CopyButton text={preview.metaAddress} label={t('sellerKeys.pairing.copyMeta')} />{' '}
-            <button type="button" className="btn" onClick={() => { setPreview(undefined); setError(undefined); }}>{t('sellerKeys.pairing.clear')}</button>
+            <button type="button" className="btn" onClick={() => { generation.current += 1; setPreview(undefined); setError(undefined); }}>{t('sellerKeys.pairing.clear')}</button>
           </p>
         </section>
       )}

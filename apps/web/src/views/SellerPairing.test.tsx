@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act, fireEvent, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { exportSellerPairing, parseSellerPairing } from '../lib/sellerPairing';
@@ -7,6 +7,7 @@ import { clearSession, generateSession, getSessionPublic } from '../lib/session'
 import { generateWaivedSession } from '../test/keys';
 import { generateSession as generateUnsavedSession } from '../lib/session';
 import { makeServices, renderApp } from '../test/render';
+import { SellerPairing, pairingChainIds } from './SellerPairing';
 
 beforeEach(() => {
   clearSession();
@@ -136,5 +137,72 @@ describe('SellerPairing', () => {
     expect(await within(pairing()).findByText('Received config (untrusted preview)')).toBeTruthy();
     act(() => { clearSession(); generateWaivedSession(); });
     expect(within(pairing()).queryByText('Received config (untrusted preview)')).toBeNull();
+  });
+
+  /** A File whose read stays pending until released, to test late completions. */
+  function deferredFile(content: string): { file: File; release: () => void } {
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    const file = new File([content], 'late.json', { type: 'application/json' });
+    Object.defineProperty(file, 'text', { value: async () => { await gate; return content; } });
+    return { file, release };
+  }
+  const choose = (file: File): void => {
+    const input = within(pairing()).getByLabelText<HTMLInputElement>('Public config file');
+    act(() => { fireEvent.change(input, { target: { files: [file] } }); });
+  };
+
+  it('ignores a delayed file read that finishes after the keys changed', async () => {
+    const incoming = otherDevice();
+    generateWaivedSession();
+    await open();
+    const late = deferredFile(incoming);
+    choose(late.file);
+    act(() => { clearSession(); generateWaivedSession(); });
+    await act(async () => { late.release(); await Promise.resolve(); await Promise.resolve(); });
+    expect(within(pairing()).queryByText('Received config (untrusted preview)')).toBeNull();
+    expect(within(pairing()).queryByRole('button', { name: 'Copy received meta-address' })).toBeNull();
+  });
+
+  it('ignores a delayed file read that finishes after a newer paste', async () => {
+    const older = otherDevice();
+    const newer = otherDevice();
+    generateWaivedSession();
+    const user = await open();
+    const late = deferredFile(older);
+    choose(late.file);
+    await user.click(within(pairing()).getByLabelText('Or paste QR text'));
+    await user.paste(newer);
+    await user.click(within(pairing()).getByRole('button', { name: 'Use pasted text' }));
+    expect(await within(pairing()).findByText('Received config (untrusted preview)')).toBeTruthy();
+    await act(async () => { late.release(); await Promise.resolve(); await Promise.resolve(); });
+    expect(within(pairing()).getByText(parseSellerPairing(newer).metaAddress)).toBeTruthy();
+    expect(within(pairing()).queryByText(parseSellerPairing(older).metaAddress)).toBeNull();
+  });
+
+  it('ignores a delayed file read that finishes after a newer file choice', async () => {
+    const older = otherDevice();
+    const newer = otherDevice();
+    generateWaivedSession();
+    await open();
+    const first = deferredFile(older);
+    const second = deferredFile(newer);
+    choose(first.file);
+    choose(second.file);
+    await act(async () => { second.release(); await Promise.resolve(); await Promise.resolve(); });
+    await act(async () => { first.release(); await Promise.resolve(); await Promise.resolve(); });
+    expect(within(pairing()).getByText(parseSellerPairing(newer).metaAddress)).toBeTruthy();
+    expect(within(pairing()).queryByText(parseSellerPairing(older).metaAddress)).toBeNull();
+  });
+
+  it('exports safe-integer chain ids above 2**32 from settings', () => {
+    expect(pairingChainIds({ '1099511627776': 'https://rpc.test', '5': 'https://rpc.test', '9999999999999999': 'https://rpc.test' })).toEqual([5, 1099511627776]);
+  });
+
+  it('shows an error instead of silently hiding the export when it cannot be built', () => {
+    const p = generateSession();
+    render(<SellerPairing session={p} chainIds={[0.5]} />);
+    expect(screen.getByText(/could not be prepared/)).toBeTruthy();
+    expect(screen.queryByLabelText('Same config as text')).toBeNull();
   });
 });

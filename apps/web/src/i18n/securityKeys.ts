@@ -132,6 +132,7 @@ export const SECURITY_KEY_GROUPS = {
     'sellerKeys.pairing.importLabel',
     'sellerKeys.pairing.previewHeading',
     'sellerKeys.pairing.refused',
+    'sellerKeys.pairing.exportFailed',
     'sellerKeys.pairing.fileTooBig',
     'sellerKeys.pairing.compare.same',
     'sellerKeys.pairing.compare.different',

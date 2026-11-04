@@ -80,7 +80,7 @@ describe('seller public pairing schema', () => {
   it('refuses bad chain lists even when the integrity check is valid', () => {
     const p = pub();
     const tooMany = Array.from({ length: 17 }, (_, i) => i + 1);
-    for (const ids of ['1', [1.5], [-1], [0], tooMany, [2 ** 40], [2, 1], [1, 1], [1, '2']]) {
+    for (const ids of ['1', [1.5], [-1], [0], tooMany, [2, 1], [1, 1], [1, '2']]) {
       expect(() => parseSellerPairing(withValidCheck(base(p, { chainIds: ids })))).toThrow(REFUSED);
     }
     expect(() => exportSellerPairing(p, [1.5])).toThrow(REFUSED);
@@ -101,6 +101,13 @@ describe('seller public pairing schema', () => {
       expect(() => parseSellerPairing(withValidCheck(base(p, { signerPublicKey: reused })))).toThrow(REFUSED);
       expect(() => exportSellerPairing({ metaAddress: p.metaAddress, signerPublicKey: reused }, [])).toThrow(REFUSED);
     }
+  });
+  it('round-trips safe-integer chain ids above 2**32 that settings and invoices accept', () => {
+    const p = pub();
+    const ids = [1, 2 ** 40, Number.MAX_SAFE_INTEGER];
+    expect(parseSellerPairing(exportSellerPairing(p, ids)).chainIds).toEqual(ids);
+    expect(() => exportSellerPairing(p, [Number.MAX_SAFE_INTEGER + 1])).toThrow(REFUSED);
+    expect(() => parseSellerPairing(withValidCheck(base(p, { chainIds: [2 ** 53] })))).toThrow(REFUSED);
   });
   it('compares an imported config with the loaded keys', () => {
     const p = pub();
