@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { flushSync } from 'react-dom';
 import type { Invoice } from '@ghostpay/invoice-schema';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { payeeFingerprint, safeText } from '../lib/displayText';
 import { formatFiat, formatUnix } from '../lib/format';
 import { printQrPolicy } from '../lib/qrKinds';
@@ -28,31 +29,33 @@ export interface PrintableBillProps {
  * A printed link is a bearer link unless it is passphrase protected, so the sheet says so.
  */
 export function PrintableBill(props: PrintableBillProps): ReactNode {
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const inv = props.invoice;
   const policy = printQrPolicy(props.link, props.passphraseProtected);
   const memo = inv.memo === undefined ? undefined : safeText(inv.memo).text;
   const subtotal = inv.lineItems.reduce((sum, li) => sum + BigInt(li.quantity) * BigInt(li.unitMinorUnits), 0n);
   const hasLink = props.link !== undefined && props.link.length > 0;
   return (
-    <article className="bill-sheet" data-testid="printable-bill" aria-label="Printable bill">
-      <h2>Invoice</h2>
+    <article className="bill-sheet" data-testid="printable-bill" aria-label={t('bill.aria')}>
+      <h2>{t('bill.title')}</h2>
       <dl className="details">
-        <dt>Reference</dt>
-        <dd><Mono>{inv.nonce}</Mono></dd>
-        <dt>Network</dt>
+        <dt>{t('bill.reference')}</dt>
+        <dd dir="ltr"><Mono>{inv.nonce}</Mono></dd>
+        <dt>{t('bill.network')}</dt>
         <dd>{props.chainName}</dd>
-        <dt>Pay with</dt>
+        <dt>{t('bill.payWith')}</dt>
         <dd>{props.tokenLabel}</dd>
-        <dt>Seller fingerprint</dt>
-        <dd><Mono>{payeeFingerprint(inv.metaAddress)}</Mono></dd>
-        <dt>Expires</dt>
+        <dt>{t('pay.sellerFingerprint')}</dt>
+        <dd dir="ltr"><Mono>{payeeFingerprint(inv.metaAddress)}</Mono></dd>
+        <dt>{t('bill.expires')}</dt>
         <dd>{formatUnix(inv.expiresAt)}</dd>
       </dl>
       {inv.lineItems.length > 0 && (
         <table>
-          <caption>Line items</caption>
+          <caption>{t('pay.lineItems')}</caption>
           <thead>
-            <tr><th scope="col">Description</th><th scope="col">Qty</th><th scope="col">Unit</th></tr>
+            <tr><th scope="col">{t('pay.col.description')}</th><th scope="col">{t('pay.col.qty')}</th><th scope="col">{t('pay.col.unit')}</th></tr>
           </thead>
           <tbody>
             {inv.lineItems.map((li, i) => (
@@ -68,41 +71,38 @@ export function PrintableBill(props: PrintableBillProps): ReactNode {
       <dl className="details bill-totals">
         {inv.lineItems.length > 0 && (
           <>
-            <dt>Subtotal</dt>
+            <dt>{t('bill.subtotal')}</dt>
             <dd>{formatFiat(subtotal, inv.fiat.currency)}</dd>
           </>
         )}
-        <dt>Tax</dt>
+        <dt>{t('bill.tax')}</dt>
         <dd>{formatFiat(BigInt(inv.tax.minorUnits), inv.fiat.currency)}</dd>
         {props.fixedAmount === undefined ? (
           <>
-            <dt>Total</dt>
+            <dt>{t('bill.total')}</dt>
             <dd><strong>{formatFiat(BigInt(inv.fiat.minorUnits), inv.fiat.currency)}</strong></dd>
           </>
         ) : (
           <>
-            <dt>Seller-stated fiat total (not checked)</dt>
+            <dt>{t('bill.fiatStated')}</dt>
             <dd>{formatFiat(BigInt(inv.fiat.minorUnits), inv.fiat.currency)}</dd>
-            <dt>Amount due</dt>
+            <dt>{t('bill.amountDue')}</dt>
             <dd><strong>{props.fixedAmount}</strong></dd>
           </>
         )}
       </dl>
       {memo !== undefined && memo !== '' && <p className="bill-memo">{memo}</p>}
       {hasLink && policy.includeQr && props.link !== undefined && (
-        <QrFrame kind={policy.kind} text={props.link} caption="Scan to open this invoice in GhostPay" />
+        <QrFrame kind={policy.kind} text={props.link} caption={t('bill.qrCaption')} />
       )}
       {hasLink && !policy.includeQr && (
-        <p className="bill-note">The invoice link is too long to print as a QR code. Share it digitally instead.</p>
+        <p className="bill-note">{t('bill.linkTooLong')}</p>
       )}
       {hasLink && props.passphraseProtected && (
-        <p className="bill-note">This link is passphrase protected. The passphrase is not printed: give it to the payer separately.</p>
+        <p className="bill-note">{t('bill.passphraseNote')}</p>
       )}
       {policy.bearerWarning && (
-        <p className="bill-warning" data-testid="bearer-warning">
-          Warning: this printed link is a bearer link. Anyone who sees this paper can read the invoice and open the payment
-          page. Keep it private, or create a passphrase-protected link for paper copies.
-        </p>
+        <p className="bill-warning" data-testid="bearer-warning">{t('bill.bearerWarning')}</p>
       )}
     </article>
   );
@@ -113,6 +113,8 @@ export function PrintableBill(props: PrintableBillProps): ReactNode {
  * printing, so the page does not hold a second copy of the invoice or its link in the DOM.
  */
 export function PrintBillButton(props: PrintableBillProps): ReactNode {
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const [printing, setPrinting] = useState(false);
   useEffect(() => {
     if (!printing) return;
@@ -130,7 +132,7 @@ export function PrintBillButton(props: PrintableBillProps): ReactNode {
           window.print();
         }}
       >
-        Print bill
+        {t('bill.print')}
       </button>
       {printing && <PrintableBill {...props} />}
     </>

@@ -1,5 +1,6 @@
 import { useId, useState, type ReactNode } from 'react';
 import { buildEip681Erc20, buildEip681Native, buildSolanaPay, buildTronUri, type TronNetwork } from '@ghostpay/payment-uri';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { LocalReceipt } from '../lib/payExec';
 import { makeQr } from '../lib/qr';
 import { kindForPayload } from '../lib/qrKinds';
@@ -57,20 +58,22 @@ export interface PaymentRequestQrProps {
 
 /** Payment-request QR with a text alternative (the exact URI) and a copy button. Nothing leaves the device. */
 export function PaymentRequestQr(props: PaymentRequestQrProps): ReactNode {
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   let uri: string;
   try {
     uri = buildPaymentRequestUri(props.spec);
   } catch {
-    return <Notice kind="error" title="Payment request unavailable">The payment request cannot be shown because the address or amount is not valid for this chain.</Notice>;
+    return <Notice kind="error" title={t('paymentRequest.unavailable.title')}>{t('paymentRequest.unavailable.body')}</Notice>;
   }
   return (
     <div className="payment-request">
       <h4>{props.title}</h4>
       {props.note !== undefined && <p className="hint">{props.note}</p>}
       <QrFrame kind={kindForPayload('payment-request', { testnet: props.testnet })} text={uri} caption={props.title} />
-      <p>Text version of this payment request:</p>
-      <p><Mono><span data-testid="payment-request-text">{uri}</span></Mono></p>
-      <CopyButton text={uri} label="Copy payment request" />
+      <p>{t('paymentRequest.textVersion')}</p>
+      <p dir="ltr"><Mono><span data-testid="payment-request-text">{uri}</span></Mono></p>
+      <CopyButton text={uri} label={t('paymentRequest.copy')} />
     </div>
   );
 }
@@ -80,6 +83,8 @@ export function PaymentRequestQr(props: PaymentRequestQrProps): ReactNode {
  * submitted; it is not independent payment proof (only the chain, or a seller-signed receipt, is evidence).
  */
 export function PaymentProofQr(props: { readonly receipt: LocalReceipt }): ReactNode {
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const [shown, setShown] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const textId = useId();
@@ -92,31 +97,28 @@ export function PaymentProofQr(props: { readonly receipt: LocalReceipt }): React
       setShown(true);
     } catch {
       setShown(false);
-      setError('This proof is too large for one QR code. Use the JSON copy or download instead.');
+      setError(t('proof.tooLarge'));
     }
   };
   return (
-    <section className="payment-proof" aria-label="Proof of payment">
-      <h4>Proof of payment</h4>
-      <p className="hint" data-testid="proof-disclaimer">
-        This is your own record of what this device submitted. It is not independent proof of payment: it is not signed by the
-        seller and can be edited by anyone who holds it. It contains the amount and time, so show it only to the person who needs it.
-      </p>
+    <section className="payment-proof" aria-label={t('proof.heading')}>
+      <h4>{t('proof.heading')}</h4>
+      <p className="hint" data-testid="proof-disclaimer">{t('proof.disclaimer')}</p>
       <div className="actions">
         {shown ? (
-          <button type="button" className="btn" onClick={() => { setShown(false); }}>Hide proof QR</button>
+          <button type="button" className="btn" onClick={() => { setShown(false); }}>{t('proof.hide')}</button>
         ) : (
-          <button type="button" className="btn" onClick={show}>Show proof QR</button>
+          <button type="button" className="btn" onClick={show}>{t('proof.show')}</button>
         )}
-        <CopyButton text={text} label="Copy proof JSON" />
-        <button type="button" className="btn" onClick={() => { downloadText('ghostpay-proof-of-payment.json', text, 'application/json'); }}>Download proof JSON</button>
+        <CopyButton text={text} label={t('proof.copy')} />
+        <button type="button" className="btn" onClick={() => { downloadText('ghostpay-proof-of-payment.json', text, 'application/json'); }}>{t('proof.download')}</button>
       </div>
       {error !== undefined && <Notice kind="error">{error}</Notice>}
       {shown && (
         <>
-          <QrFrame kind={kindForPayload('payment-proof', { unverified: props.receipt.status !== 'included' })} text={compact} caption="Payer proof of payment (not independent proof)" />
-          <label htmlFor={textId}>Proof of payment text</label>
-          <textarea id={textId} className="mono receipt-json" readOnly rows={8} value={text} />
+          <QrFrame kind={kindForPayload('payment-proof', { unverified: props.receipt.status !== 'included' })} text={compact} caption={t('proof.qrCaption')} />
+          <label htmlFor={textId}>{t('proof.textLabel')}</label>
+          <textarea id={textId} className="mono receipt-json" dir="ltr" readOnly rows={8} value={text} />
         </>
       )}
     </section>
@@ -136,12 +138,14 @@ export interface PlainPaymentRequestProps {
  * put in a wallet payment URI, so the user supplies an ordinary receive address here.
  */
 export function PlainPaymentRequest(props: PlainPaymentRequestProps): ReactNode {
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('');
   const recipientId = useId();
   const amountId = useId();
   if (props.family === 'tron' && props.tronNetwork === undefined) {
-    return <Notice kind="info" title="No payment request">This local test chain has no payment-request link format.</Notice>;
+    return <Notice kind="info" title={t('plainRequest.none.title')}>{t('plainRequest.none.body')}</Notice>;
   }
   const to = recipient.trim();
   const amt = amount.trim();
@@ -153,20 +157,17 @@ export function PlainPaymentRequest(props: PlainPaymentRequestProps): ReactNode 
         : { family: 'tron', recipient: to, network: props.tronNetwork ?? 'mainnet', ...(amt === '' ? {} : { amount: amt }) };
   return (
     <details className="plain-request">
-      <summary>Plain payment request QR (optional)</summary>
-      <p className="hint">
-        This is a normal wallet payment link to an ordinary address on {props.networkLabel}. It is not a stealth payment: the
-        payment is visible on-chain and this app will not find it by scanning.
-      </p>
+      <summary>{t('plainRequest.summary')}</summary>
+      <p className="hint">{t('plainRequest.hint', { network: props.networkLabel })}</p>
       <div className="field">
-        <label htmlFor={recipientId}>Receive address</label>
-        <input id={recipientId} className="mono" autoComplete="off" spellCheck={false} value={recipient} onChange={(e) => { setRecipient(e.target.value); }} />
+        <label htmlFor={recipientId}>{t('plainRequest.recipient')}</label>
+        <input id={recipientId} className="mono" dir="ltr" autoComplete="off" spellCheck={false} value={recipient} onChange={(e) => { setRecipient(e.target.value); }} />
       </div>
       <div className="field">
-        <label htmlFor={amountId}>Amount (optional, whole units)</label>
+        <label htmlFor={amountId}>{t('plainRequest.amount')}</label>
         <input id={amountId} inputMode="decimal" autoComplete="off" value={amount} onChange={(e) => { setAmount(e.target.value); }} />
       </div>
-      {spec !== undefined && <PaymentRequestQr spec={spec} testnet={props.testnet} title={`${props.networkLabel} payment request`} />}
+      {spec !== undefined && <PaymentRequestQr spec={spec} testnet={props.testnet} title={t('plainRequest.title', { network: props.networkLabel })} />}
     </details>
   );
 }

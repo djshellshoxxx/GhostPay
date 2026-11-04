@@ -1,6 +1,8 @@
 import { subscribeAppLock } from '../lib/appLock';
 import { findChain } from '@ghostpay/chain-adapters';
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
+import type { Translator } from '../i18n/translator';
 import { UserFacingError, userMessage } from '../lib/errors';
 import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphrase, passphraseProblem } from '../lib/keystore';
 import { createCurrentReconciliationVault, type ReconciliationImportPreview, type ReconciliationVault } from '../lib/reconciliationVault';
@@ -67,13 +69,9 @@ export function storedHistoryChains(sellerKeyId: string, factory: IDBFactory | u
 }
 
 /** "Ethereum (chain 1)", or "chain 12345" for a chain this build does not know. */
-function chainLabel(chainId: number): string {
+function chainLabel(chainId: number, t: Translator['t']): string {
   const name = findChain(chainId)?.name;
-  return name === undefined ? `chain ${String(chainId)}` : `${name} (chain ${String(chainId)})`;
-}
-
-function listed(items: readonly string[]): string {
-  return items.length < 2 ? items.join('') : `${items.slice(0, -1).join(', ')} and ${items[items.length - 1] ?? ''}`;
+  return name === undefined ? t('tagArchive.chain.unknown', { id: String(chainId) }) : t('tagArchive.chain.named', { name, id: String(chainId) });
 }
 
 /** What an export attempt did: reported only after the file was handed to the browser, or after the attempt failed. */
@@ -87,6 +85,12 @@ export type ArchiveExportResult =
  */
 export function TagArchive(props: { readonly onExport?: (result: ArchiveExportResult) => void } = {}): ReactNode {
   const { onExport: reportExport } = props;
+  const i18n = useI18nOptional();
+  // Reached through a ref: an export or import that settles after a language change reports in the language then in effect.
+  const tr = i18n ?? SOURCE_TRANSLATOR;
+  const trRef = useRef(tr);
+  trRef.current = tr;
+  const t = (key: Parameters<Translator['t']>[0], values?: Parameters<Translator['t']>[1]): string => trRef.current.t(key, values);
   const app = useApp();
   const { vault, chains } = useServices();
   const [message, setMessage] = useState<{ kind: 'ok' | 'error'; text: string } | undefined>(undefined);
@@ -147,11 +151,11 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
     const vaults: { chainId: number; vault: ReconciliationVault }[] = [];
     let skipped = 0;
     for (const chain of chains) {
-      if (!current(c)) throw new UserFacingError('Archive operation cancelled.');
+      if (!current(c)) throw new UserFacingError(t('tagArchive.msg.cancelled'));
       let history: ReconciliationVault;
       try { history = await createCurrentReconciliationVault(chain.chainId, keyId); }
       catch { skipped++; continue; }
-      if (!current(c)) { history.lock(); throw new UserFacingError('Archive operation cancelled.'); }
+      if (!current(c)) { history.lock(); throw new UserFacingError(t('tagArchive.msg.cancelled')); }
       openedHistory.current.add(history);
       vaults.push({ chainId: chain.chainId, vault: history });
     }
@@ -176,9 +180,9 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
     e.preventDefault();
     const problem = passphraseProblem(pass);
     if (problem !== undefined) { setMessage({ kind: 'error', text: problem }); return; }
-    if (pass !== pass2) { setMessage({ kind: 'error', text: 'The two passphrases differ.' }); return; }
+    if (pass !== pass2) { setMessage({ kind: 'error', text: t('sellerKeys.passphrasesDiffer') }); return; }
     const c = start(); const unchanged = captureSessionVersionGuard();
-    setBusy(true); setMessage({ kind: 'ok', text: 'Encrypting (this takes a moment on purpose)…' });
+    setBusy(true); setMessage({ kind: 'ok', text: t('tagArchive.msg.encrypting') });
     void (async () => {
       let vaults: { chainId: number; vault: ReconciliationVault }[] = [];
       try {
@@ -207,13 +211,13 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
         setPass(''); setPass2(''); setBusy(false);
         reportExport?.({ ok: true, recordCount: out.recordCount, sha256: out.sha256, history: withHistory, gaps: skipped > 0 || unsupported === undefined || unsupported.length > 0 });
         const missing = [
-          skipped > 0 ? `Scan history for ${String(skipped)} chain(s) could not be read and is NOT in this archive.` : '',
-          unsupported === undefined ? 'The scan history kept for chains this build does not support could not be listed; any such history is NOT in this archive.' : '',
+          skipped > 0 ? t('tagArchive.missing.skipped', { count: String(skipped) }) : '',
+          unsupported === undefined ? t('tagArchive.missing.unlisted') : '',
           unsupported !== undefined && unsupported.length > 0
-            ? `Scan history stored in this browser for ${listed(unsupported.map(chainLabel))} is NOT in this archive: this build does not support ${unsupported.length === 1 ? 'that chain' : 'those chains'}.`
+            ? t(unsupported.length === 1 ? 'tagArchive.missing.unsupportedOne' : 'tagArchive.missing.unsupportedMany', { chains: trRef.current.list(unsupported.map((id) => chainLabel(id, trRef.current.t))) })
             : '',
         ].filter((note) => note !== '');
-        done(`Archive downloaded: ${String(out.recordCount)} tag(s). SHA-256 ${out.sha256}. Keep the file and the passphrase: neither can be recovered.${missing.map((note) => ` ${note}`).join('')}`);
+        done(`${t('tagArchive.msg.downloaded', { count: String(out.recordCount), sha: out.sha256 })}${missing.map((note) => ` ${note}`).join('')}`);
       } catch (error) {
         if (!current(c)) return;
         setBusy(false); fail(error);
@@ -226,11 +230,11 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
 
   const onPreview = (e: FormEvent): void => {
     e.preventDefault();
-    if (file === undefined) { setMessage({ kind: 'error', text: 'Choose an archive file first.' }); return; }
-    if (file.size > MAX_ARCHIVE_BYTES) { setMessage({ kind: 'error', text: 'This is not a valid GhostPay tag archive.' }); return; }
+    if (file === undefined) { setMessage({ kind: 'error', text: t('tagArchive.msg.chooseFile') }); return; }
+    if (file.size > MAX_ARCHIVE_BYTES) { setMessage({ kind: 'error', text: t('tagArchive.msg.invalidArchive') }); return; }
     const c = start(); const unchanged = captureSessionVersionGuard();
     const selected = file; const passphrase = importPass;
-    setBusy(true); setStaged(undefined); setMessage({ kind: 'ok', text: 'Decrypting…' });
+    setBusy(true); setStaged(undefined); setMessage({ kind: 'ok', text: t('sellerKeys.decrypting') });
     void (async () => {
       let vaults: { chainId: number; vault: ReconciliationVault }[] = [];
       let retained = false;
@@ -246,7 +250,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
         vaults = opened.vaults;
         for (const chain of archive.historyChains) {
           if (!vaults.some((h) => String(h.chainId) === chain))
-            throw new UserFacingError(`Scan history for chain ${chain} cannot be opened here. No import was started.`);
+            throw new UserFacingError(t('tagArchive.msg.historyOpen', { chain }));
         }
         const history: Staged['history'][number][] = [];
         for (const h of vaults) {
@@ -260,7 +264,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
         unchanged();
         setImportPass(''); setBusy(false); setStaged({ archive, history });
         retained = true;
-        setMessage({ kind: 'ok', text: 'Archive decrypted. Review the summary; nothing has been changed yet.' });
+        setMessage({ kind: 'ok', text: t('tagArchive.msg.decrypted') });
       } catch (error) {
         if (!current(c)) return;
         setImportPass(''); setBusy(false); fail(error);
@@ -274,37 +278,38 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
     if (staged === undefined) return;
     const c = start(true); const unchanged = captureSessionVersionGuard();
     const s = staged;
-    type Outcome = 'not started' | 'commit outcome unknown' | 'committed';
-    let tags: Outcome = 'not started';
-    const history: Outcome[] = s.history.map(() => 'not started');
+    type Outcome = 'notStarted' | 'unknown' | 'committed';
+    let tags: Outcome = 'notStarted';
+    const history: Outcome[] = s.history.map(() => 'notStarted');
     const guard = (): void => {
-      if (!current(c)) throw new UserFacingError('Import interrupted; subsequent stores were not started.');
+      if (!current(c)) throw new UserFacingError(t('tagArchive.msg.interrupted'));
       unchanged();
     };
     setBusy(true);
     void (async () => {
       try {
         guard();
-        tags = 'commit outcome unknown';
+        tags = 'unknown';
         await vault.applyImport(s.archive.tags);
         tags = 'committed';
         for (const [index, h] of s.history.entries()) {
           guard();
-          history[index] = 'commit outcome unknown';
+          history[index] = 'unknown';
           await h.vault.activateImport(h.preview);
           history[index] = 'committed';
         }
         guard();
         setStaged(undefined); setFile(undefined); setBusy(false);
-        done(`Imported: ${String(s.archive.tags.added)} added, ${String(s.archive.tags.updated)} updated, ${String(s.archive.tags.removed)} removed. Tags committed.${s.history.length > 0 ? ` Scan history committed for ${String(s.history.length)} chain(s); restored history remains historical evidence, not a fresh scan.` : ''}`);
+        done(`${t('tagArchive.msg.imported', { added: String(s.archive.tags.added), updated: String(s.archive.tags.updated), removed: String(s.archive.tags.removed) })}${s.history.length > 0 ? ` ${t('tagArchive.msg.importedHistory', { count: String(s.history.length) })}` : ''}`);
       } catch (error) {
         // A completed transaction cannot be cancelled, and a rejected acknowledgement
         // does not prove unchanged storage. Never overwrite concurrent edits with a rollback.
         if (!mounted.current || (operation.current !== c && operation.current !== null)) return;
         setStaged(undefined); setBusy(false);
-        const outcomes = s.history.map((h, index) => `Scan history ${String(h.chainId)}: ${history[index] ?? 'not started'}.`).join(' ');
-        const reason = error instanceof UserFacingError ? error.message : 'The operation stopped.';
-        setMessage({ kind: 'error', text: `Import incomplete. Tags: ${tags}. ${outcomes} ${reason} Stores commit separately; inspect local data and make a new preview before retrying.` });
+        const outcome = (o: Outcome): string => t(o === 'notStarted' ? 'tagArchive.outcome.notStarted' : o === 'unknown' ? 'tagArchive.outcome.unknown' : 'tagArchive.outcome.committed');
+        const outcomes = s.history.map((h, index) => t('tagArchive.msg.historyOutcome', { chain: String(h.chainId), outcome: outcome(history[index] ?? 'notStarted') })).join(' ');
+        const reason = error instanceof UserFacingError ? error.message : t('tagArchive.msg.stopped');
+        setMessage({ kind: 'error', text: t('tagArchive.msg.incomplete', { tags: outcome(tags), outcomes, reason }) });
       } finally {
         closeVaults(s.history);
       }
@@ -323,7 +328,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
         if (!current(c)) return;
         unchanged();
         setStaged(undefined); setBusy(false);
-        done(`Tag keys rotated (key version ${String(v)}). Archives made earlier still open with their own passphrase. This does not replace your viewing key.`);
+        done(t('tagArchive.msg.rotated', { version: String(v) }));
       } catch (error) {
         if (!current(c)) return;
         setBusy(false); fail(error);
@@ -339,7 +344,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
         unchanged();
         await vault.wipe();
         if (!current(c)) return;
-        unchanged(); setBusy(false); done('All local tags deleted.');
+        unchanged(); setBusy(false); done(t('tagArchive.msg.wiped'));
       } catch (error) {
         if (!current(c)) return;
         setBusy(false); fail(error);
@@ -350,66 +355,65 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
   const s = app.session;
   return (
     <section className="panel" aria-labelledby="tagarc-h">
-      <h3 id="tagarc-h">Client tags: encrypted backup and key rotation</h3>
+      <h3 id="tagarc-h">{t('tagArchive.heading')}</h3>
       {message !== undefined && <Notice kind={message.kind}>{message.text}</Notice>}
-      {s === undefined ? <p>Load seller keys to back up or restore client tags.</p> : (
+      {s === undefined ? <p>{t('tagArchive.loadKeys')}</p> : (
         <>
           <form onSubmit={onExport} className="stack" autoComplete="off">
-            <Field label="Archive passphrase (at least 14 characters)" {...(pass !== '' && pass === suggested ? { hint: `Suggested: ${String(GENERATED_PASSPHRASE_WORDS)} random words picked on this device (${String(GENERATED_PASSPHRASE_BITS)} bits). Write it down, then type it again below, or replace it with your own.` } : {})}>
+            <Field label={t('tagArchive.passphrase.label')} {...(pass !== '' && pass === suggested ? { hint: t('tagArchive.passphrase.suggested', { words: String(GENERATED_PASSPHRASE_WORDS), bits: String(GENERATED_PASSPHRASE_BITS) }) } : {})}>
               {(id, d) => <input id={id} aria-describedby={d} type={pass !== '' && pass === suggested ? 'text' : 'password'} autoComplete="new-password" spellCheck={false} value={pass} onChange={(e) => { setPass(e.target.value); }} />}
             </Field>
-            <p><button type="button" className="btn" onClick={suggest}>Suggest another archive passphrase</button></p>
-            <Field label="Repeat archive passphrase">{(id) => <input id={id} type="password" autoComplete="new-password" value={pass2} onChange={(e) => { setPass2(e.target.value); }} />}</Field>
-            <label><input type="checkbox" checked={withHistory} onChange={(e) => { setWithHistory(e.target.checked); }} /> Include scan history</label>
-            <button type="submit" className="btn" disabled={busy}>Download encrypted tag archive</button>
+            <p><button type="button" className="btn" onClick={suggest}>{t('tagArchive.passphrase.another')}</button></p>
+            <Field label={t('tagArchive.passphrase.repeat')}>{(id) => <input id={id} type="password" autoComplete="new-password" value={pass2} onChange={(e) => { setPass2(e.target.value); }} />}</Field>
+            <label><input type="checkbox" checked={withHistory} onChange={(e) => { setWithHistory(e.target.checked); }} /> {t('tagArchive.history.include')}</label>
+            <button type="submit" className="btn" disabled={busy}>{t('tagArchive.export')}</button>
           </form>
-          <p className="hint">Format: scrypt (N=2^17, r=8, p=1) and AES-256-GCM, .gpa file with a fixed name that never contains labels. The archive holds your tags, not your keys. Anyone with the file can try passphrases offline, so use a strong one. The page you are using can read unlocked tags: a script injected into it could too, so keep this page free of untrusted extensions.</p>
+          <p className="hint">{t('tagArchive.format')}</p>
 
           <form onSubmit={onPreview} className="stack" autoComplete="off">
-            <Field label="Archive file">{(id) => <input id={id} type="file" accept=".gpa,application/octet-stream" onChange={(e) => { reset(); setFile(e.target.files?.[0]); }} />}</Field>
-            <Field label="Archive passphrase">{(id) => <input id={id} type="password" autoComplete="off" value={importPass} onChange={(e) => { invalidate(); setImportPass(e.target.value); }} />}</Field>
-            <label><input type="radio" name="tag-import-mode" checked={mode === 'merge'} onChange={() => { invalidate(); setMode('merge'); }} /> Merge (newest wins)</label>
-            <label><input type="radio" name="tag-import-mode" checked={mode === 'replace'} onChange={() => { invalidate(); setMode('replace'); }} /> Replace all local tags</label>
-            <button type="submit" className="btn" disabled={busy}>Decrypt and preview</button>
+            <Field label={t('tagArchive.import.file')}>{(id) => <input id={id} type="file" accept=".gpa,application/octet-stream" onChange={(e) => { reset(); setFile(e.target.files?.[0]); }} />}</Field>
+            <Field label={t('tagArchive.import.passphrase')}>{(id) => <input id={id} type="password" autoComplete="off" value={importPass} onChange={(e) => { invalidate(); setImportPass(e.target.value); }} />}</Field>
+            <label><input type="radio" name="tag-import-mode" checked={mode === 'merge'} onChange={() => { invalidate(); setMode('merge'); }} /> {t('tagArchive.import.merge')}</label>
+            <label><input type="radio" name="tag-import-mode" checked={mode === 'replace'} onChange={() => { invalidate(); setMode('replace'); }} /> {t('tagArchive.import.replace')}</label>
+            <button type="submit" className="btn" disabled={busy}>{t('tagArchive.import.preview')}</button>
           </form>
           {staged !== undefined && (
             <div role="status">
               <p>
-                {String(staged.archive.tags.total)} tag(s) in the archive: {String(staged.archive.tags.added)} new, {String(staged.archive.tags.updated)} updated,
-                {' '}{String(staged.archive.tags.keptLocal)} kept because your copy is newer, {String(staged.archive.tags.removed)} local tag(s) removed.
-                {staged.history.length > 0 && ` Scan history for ${String(staged.history.length)} chain(s) will be merged in separate transactions. A failure can leave a partial import. Restored observations remain history; they are not fresh payment proof.`}
+                {t('tagArchive.import.summary', { total: String(staged.archive.tags.total), added: String(staged.archive.tags.added), updated: String(staged.archive.tags.updated), kept: String(staged.archive.tags.keptLocal), removed: String(staged.archive.tags.removed) })}
+                {staged.history.length > 0 && ` ${t('tagArchive.import.historyNote', { count: String(staged.history.length) })}`}
               </p>
-              {staged.history.map((h) => <p key={h.chainId}>Chain {String(h.chainId)}: {String(h.preview.recordCount)} history record(s), {String(h.preview.invalidatedCount)} invalidated.{h.preview.readOnly && ' This import makes the history vault read-only because its safety limit has been reached.'}</p>)}
-              <button type="button" className="btn btn-primary" disabled={busy} onClick={onApply}>Apply import</button>{' '}
-              <button type="button" className="btn" onClick={reset}>Discard</button>
+              {staged.history.map((h) => <p key={h.chainId}>{t('tagArchive.import.chainLine', { chain: String(h.chainId), records: String(h.preview.recordCount), invalidated: String(h.preview.invalidatedCount) })}{h.preview.readOnly && ` ${t('tagArchive.import.readOnly')}`}</p>)}
+              <button type="button" className="btn btn-primary" disabled={busy} onClick={onApply}>{t('tagArchive.import.apply')}</button>{' '}
+              <button type="button" className="btn" onClick={reset}>{t('tagArchive.import.discard')}</button>
             </div>
           )}
 
-          <h4>Rotate tag keys</h4>
+          <h4>{t('tagArchive.rotate.heading')}</h4>
           {confirm !== 'rotate' ? (
-            <button type="button" className="btn" disabled={busy} onClick={() => { setConfirm('rotate'); }}>Rotate tag keys</button>
+            <button type="button" className="btn" disabled={busy} onClick={() => { setConfirm('rotate'); }}>{t('tagArchive.rotate.heading')}</button>
           ) : (
             <div>
-              <p>This re-encrypts every tag under a new salt in one all-or-nothing step. It does not protect data exposed earlier and does not replace your viewing key: if the viewing key may be compromised, generate new seller keys instead.</p>
-              <button type="button" className="btn btn-danger" disabled={busy} onClick={onRotate}>Confirm rotation</button>{' '}
-              <button type="button" className="btn" onClick={() => { setConfirm('none'); }}>Cancel</button>
+              <p>{t('tagArchive.rotate.warning')}</p>
+              <button type="button" className="btn btn-danger" disabled={busy} onClick={onRotate}>{t('tagArchive.rotate.confirm')}</button>{' '}
+              <button type="button" className="btn" onClick={() => { setConfirm('none'); }}>{t('sellerKeys.cancel')}</button>
             </div>
           )}
 
-          <h4>Delete all tags</h4>
+          <h4>{t('tagArchive.wipe.heading')}</h4>
           {confirm !== 'wipe1' && confirm !== 'wipe2' ? (
-            <button type="button" className="btn btn-danger" disabled={busy} onClick={() => { setConfirm('wipe1'); }}>Delete all local tags</button>
+            <button type="button" className="btn btn-danger" disabled={busy} onClick={() => { setConfirm('wipe1'); }}>{t('tagArchive.wipe.start')}</button>
           ) : confirm === 'wipe1' ? (
             <div>
-              <p>This deletes every tag in this browser. Download an archive first if you may need them.</p>
-              <button type="button" className="btn btn-danger" disabled={busy} onClick={() => { setConfirm('wipe2'); }}>I understand, continue</button>{' '}
-              <button type="button" className="btn" onClick={() => { setConfirm('none'); }}>Cancel</button>
+              <p>{t('tagArchive.wipe.warning')}</p>
+              <button type="button" className="btn btn-danger" disabled={busy} onClick={() => { setConfirm('wipe2'); }}>{t('tagArchive.wipe.continue')}</button>{' '}
+              <button type="button" className="btn" onClick={() => { setConfirm('none'); }}>{t('sellerKeys.cancel')}</button>
             </div>
           ) : (
             <div>
-              <p>Last chance: this cannot be undone.</p>
-              <button type="button" className="btn btn-danger" disabled={busy} onClick={onWipe}>Permanently delete all tags</button>{' '}
-              <button type="button" className="btn" onClick={() => { setConfirm('none'); }}>Cancel</button>
+              <p>{t('tagArchive.wipe.last')}</p>
+              <button type="button" className="btn btn-danger" disabled={busy} onClick={onWipe}>{t('tagArchive.wipe.final')}</button>{' '}
+              <button type="button" className="btn" onClick={() => { setConfirm('none'); }}>{t('sellerKeys.cancel')}</button>
             </div>
           )}
         </>
