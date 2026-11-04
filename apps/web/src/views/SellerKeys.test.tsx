@@ -492,8 +492,10 @@ it('imports only an encrypted keystore QR and waits for explicit decryption', as
   clearSession();
   const user = await open();
   await user.click(screen.getByText('Import an encrypted keystore'));
-  fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: text } });
-  await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
+  // The public pairing importer on the same page has its own paste box; scope to the keystore disclosure.
+  const keystoreBox = within(screen.getByText('Import an encrypted keystore').closest('details')!);
+  fireEvent.change(keystoreBox.getByLabelText('Or paste QR text'), { target: { value: text } });
+  await user.click(keystoreBox.getByRole('button', { name: 'Use pasted text' }));
   expect(getSessionPublic()).toBeUndefined();
   await user.type(screen.getByLabelText('Passphrase'), 'a long passphrase');
   const actualImport = keySession.importKeystore;

@@ -12,6 +12,7 @@ import { WalletAttempts } from '../../components/WalletAttempts';
 import { CameraImporter } from '../../components/CameraImporter';
 import { parsePublicMetaQr } from '../../lib/qrPayload';
 import { BackupGate } from '../../views/SellerKeys';
+import { QrFrame } from '../../components/QrFrame';
 
 type Msg = { readonly kind: 'ok' | 'error' | 'warn'; readonly text: string };
 
@@ -249,6 +250,11 @@ export function RegistryView(): ReactNode {
             {t('registry.publicAssoc.body')}
           </Notice>
           <p>{t('registry.toPublish')} <Mono>{metaAddress}</Mono></p>
+          <section className="panel" aria-labelledby="reg-export-h">
+            <h4 id="reg-export-h">{t('registry.exportHeading')}</h4>
+            <p className="hint">{t('registry.exportHint')}</p>
+            <QrFrame kind="shareable" text={metaAddress} caption={t('registry.exportCaption')} />
+          </section>
           <p>
             <label>
               <input type="checkbox" checked={consent} onChange={(e) => { setConsent(e.target.checked); }} /> {t('registry.consent')}
