@@ -18,7 +18,7 @@ export function WalletAttempts(): ReactNode {
   if (attempts.length === 0 && error === undefined) return null;
   return <section className="panel" aria-label="Wallet attempt journal">
     <h3>Wallet attempts in this tab</h3>
-    <p className="hint">Unknown outcomes remain here until you check your wallet and explicitly clear them. A returned hash does not prove payment. Clearing this record cannot cancel an in-flight wallet request or roll back a transaction. This journal belongs to this browser tab; it does not protect attempts in other tabs or devices.</p>
+    <p className="hint">Every attempt remains here, including ones that returned a hash or were confirmed, until you check your wallet and explicitly clear it. While one remains, the same action cannot be sent again from this tab. A returned hash does not prove payment. Clearing this record cannot cancel an in-flight wallet request or roll back a transaction. This journal belongs to this browser tab; it does not protect attempts in other tabs or devices.</p>
     {error !== undefined && <Notice kind="error">{error}</Notice>}
     <ul className="plain-list">{attempts.map((attempt) => <li key={attempt.id}>
       <p>{attempt.kind} on chain {String(attempt.chainId)} · <Mono>{attempt.account}</Mono> · {attempt.hash === undefined ? 'Outcome unknown; check your wallet before retrying.' : <>Returned hash: <Mono>{attempt.hash}</Mono></>}</p>
