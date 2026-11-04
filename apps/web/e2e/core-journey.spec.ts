@@ -59,8 +59,12 @@ class ChainSim {
   head = 500;
   mineAt = 120;
   fork: number | undefined;
-  /** Applied right after block `at` is served with its pre-fork hash: a reorg that lands between two scan pages. */
-  forkAfterRead: { at: number; from: number } | undefined;
+  /**
+   * Progress-keyed reorg trigger, independent of which heights the scanner happens to read: once the payment's log has
+   * been served and its receipt looked up (verification runs after the page commit), the chain forks from `from` right
+   * before the next block-header read above the payment block, i.e. between scan pages of the same run.
+   */
+  forkPlan: { payment: Hex; block: number; from: number; stage: 'log' | 'receipt' | 'next-page' | 'forked'; forkedAtRead?: number } | undefined;
   /** How many eth_getLogs replies carried a payment's announcement (old fork included). */
   paymentLogsServed = 0;
   lookups: 'ok' | 'reset' = 'ok';
@@ -164,12 +168,13 @@ class ChainSim {
       case 'eth_getBlockByNumber': {
         const tag = String(body.params[0]);
         const n = /^0x[0-9a-f]+$/i.test(tag) ? Number.parseInt(tag, 16) : this.head;
+        if (this.forkPlan?.stage === 'next-page' && n > this.forkPlan.block) {
+          this.fork = this.forkPlan.from;
+          this.forkPlan.forkedAtRead = n;
+          this.forkPlan.stage = 'forked';
+        }
         if (n > this.head) return reply(null);
         const block = { number: quantity(n), hash: this.blockHash(n), parentHash: this.blockHash(n - 1), timestamp: quantity(Math.floor(Date.now() / 1000) - (this.head - n) * 2) };
-        if (this.forkAfterRead?.at === n) {
-          this.fork = this.forkAfterRead.from;
-          this.forkAfterRead = undefined;
-        }
         return reply(block);
       }
       case 'eth_getLogs': {
@@ -183,6 +188,8 @@ class ChainSim {
             && (filter.topics ?? []).every((topic, i) => topic === null || [topic].flat().some((t) => t.toLowerCase() === log.topics[i]?.toLowerCase()));
         });
         this.paymentLogsServed += logs.length;
+        const plan = this.forkPlan;
+        if (plan?.stage === 'log' && this.payments.some((p) => p.hash.toLowerCase() === plan.payment.toLowerCase() && logs.includes(p.log))) plan.stage = 'receipt';
         return reply(logs);
       }
       case 'eth_getCode': return reply(CODE[String(body.params[0]).toLowerCase()] ?? '0x');
@@ -222,6 +229,7 @@ class ChainSim {
         if (this.lookups === 'reset') return route.abort('connectionreset');
         const hash = String(body.params[0]).toLowerCase();
         const payment = this.canonicalPayment(hash);
+        if (this.forkPlan?.stage === 'receipt' && hash === this.forkPlan.payment.toLowerCase()) this.forkPlan.stage = 'next-page';
         if (payment !== undefined) return reply(payment.receipt);
         const raw = this.raws.find((candidate) => keccak256(candidate) === hash);
         return reply(this.sweepMined && raw !== undefined ? { transactionHash: hash, status: '0x1' } : null);
@@ -651,14 +659,17 @@ test('reorg: the payment block is replaced mid-scan, the scan withdraws the matc
 
     // A fresh multi-page scan from genesis. Its first page (blocks 0..49,999 at 50 x 1,000-block windows) is served
     // from the old fork and contains the verified payment (block 49,900: 151 confirmations at head 50,050, final; its
-    // log window still within the finality tail, so not reused from the scan client's final-window cache). Right after
-    // that page's checkpoint anchor (block 49,899 = 50,000 - finality 100 - 1) is read, the chain reorganises from just
-    // below the payment block. Only the product's own reorg handling, triggered by the next page's checkpoint-hash
-    // comparison, can withdraw the match that this run already found.
-    sim.forkAfterRead = { at: 49_899, from: payment.block - 10 };
+    // log window still within the finality tail, so not reused from the scan client's final-window cache). After that
+    // page has served the payment's log and its receipt was looked up for verification, the chain reorganises from just
+    // below the payment block at the next block-header read above it (progress-keyed, not tied to a specific checkpoint
+    // height). Only the product's own reorg handling, triggered by the next page's checkpoint-hash comparison, can
+    // withdraw the match that this run already found.
+    sim.forkPlan = { payment: payment.hash, block: payment.block, from: payment.block - 10, stage: 'log' };
     const logsBefore = sim.paymentLogsServed;
     await scan(s, { fromStart: true });
-    expect(sim.forkAfterRead).toBeUndefined(); // The reorg happened inside this run, between pages.
+    // The reorg happened inside this run, between pages.
+    expect(sim.forkPlan.stage).toBe('forked');
+    expect(sim.forkPlan.forkedAtRead).toBeLessThanOrEqual(sim.head);
     expect(sim.paymentLogsServed).toBe(logsBefore + 1); // This run did receive the payment's (old-fork) log.
     await expect(s.getByText(/Finished\. 1 announcements checked, 0 payments found\./)).toBeVisible();
     await expect(s.getByText('No payments found yet.', { exact: true })).toBeVisible();
