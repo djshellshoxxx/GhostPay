@@ -81,3 +81,52 @@ Funded deployer or fee-recipient keys; testnet or mainnet deployment; manifest s
 ## Wave log
 
 - **Wave 0** (01:10–01:40 UTC): ground truth, baseline, the A0 fix, PR #59 opened and subscribed, gap inventory, this log.
+
+## Wave 1 status (02:35 UTC)
+
+### PRs (all draft unless noted; none merged; owner merges)
+
+| Task | PR | Base | Author | A2 review | Notes |
+|---|---|---|---|---|---|
+| A0 | #59 | #47 branch | A | self (4-line) + Qodo clean | **Ready for review**; hosted CI green on run 41754732268 (all jobs, uncancelled) |
+| C2 | #60 | ar-a0 | C | 6 medium → fixed by C; delta re-review running | Keystore not QR-paired (accepted: points to existing encrypted backup) |
+| A6 | #61 | ar-a0 | C | **1 blocker** (breaks 4 SellerKeys tests + full recovery e2e), 1 high, 4 medium → sent to C | |
+| B1 | #62 | ar-a0 | B | running | |
+| C7 | #63 | ar-a0 | C | 1 medium (vacuous wrong-origin case) + lows → sent to C | Fixed a real SDK handshake race (hello retry) |
+| B2' | #64 | ar-a0 | B | 2 medium (env-dependent unit tests; locale conflict coordination) + fail-closed ask → sent to B | |
+| A7 | #65 | ar-a0 | B | running | Experimental policy send guards |
+| C4a | #66 | ar-a0 | A | 1 medium fixed | i18n stack root |
+| C4b | #67 | #66 | A | clean | |
+| C4c+B4 | #68 | #67 | A | 1 medium fixed | bufferPolicy UI full-only |
+| B3' | #69 | #68 | A | 1 medium (fail-open mapping) fixed | |
+| A5 | #70 | ar-a0 | A | clean | 4 real scan-cursor defects fixed |
+| C1 | #71 | ar-a0 | A | 1 medium fixed | Docs: ADR-0026 |
+| B5 | #72 | ar-a0 | A | clean | **Blocked**: Chainlink primary sources denied by network policy; no feed added |
+
+### Instance A combined-tree check (ran here)
+
+The tree was built by merging #66→#69, #70, #71 and #72 onto ar-a0. Results:
+
+- `apps/web: tsc --noEmit` 0
+- `eslint apps/web/src` 0
+- `node scripts/i18n/check.mjs`: 0 errors, 190 warnings (from 10 at baseline; mostly English placeholders for critical create.* keys, which render English at runtime anyway)
+- `extract.mjs`: 0 missing
+- `apps/web: npx vitest run --maxWorkers=2`: **125 files passed, 1 skipped; 1763 tests passed, 1 skipped** (baseline 1703)
+
+Not run on the combined tree: coverage, Playwright, forge.
+
+### Integration incidents (recorded honestly)
+
+- A worker committed an `apps/web/node_modules` symlink (branch of #68). Another edited the root `.gitignore` (#69). Both were reverted by follow-up commits.
+- The i18n stacking conflict resolver concatenated append/append hunks. That dropped a closing `],` in `securityKeys.ts` on the #67/#68 merge commits. The file was repaired forward with a three-way pure-insertion merge (line counts reconciled; `tsc` 0). One misfired script ran merges in the main checkout. Only local refs moved; nothing wrong was pushed.
+
+### Merge-order coordination (owner)
+
+#60, #61, #64 and the #66 stack all append after `ledger.import.invalidated` at the end of the 4 locale files. Whichever merges second conflicts. The integrator (A) will resolve each locale merge after the owner picks an order.
+
+Suggested order: #59 → #66 → #67 → #68 → #69 → #70 → #71 → #72 → then B/C PRs as their reviews close.
+
+### Blocked / owner-only additions
+
+- TRON Nile/Shasta genesis: no primary source shows the block-0 hash. Only the 4-byte chain ids were found (`tronprotocol/documentation-en` `a608b7a`). Not pinned.
+- B5 feeds: allow `reference-data-directory.vercel.app`, `docs.chain.link` and `data.chain.link` in the environment network policy, or supply dated JSON.
