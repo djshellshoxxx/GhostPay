@@ -184,7 +184,9 @@
       if (m.t === 'gp:init') {
         window.clearTimeout(timer);
         // Only the first document's ack ends the burst. After a reload the frame window and nonce are the same, so an ack
-        // queued by the previous document cannot be told from the new one: let the bounded burst run out instead.
+        // queued by the previous document cannot be told from the new one, so the burst runs its bounded tries. There is
+        // no popup fallback after the first handshake: the deadline above is armed once, and a reload must not open a
+        // second checkout beside a payment that may already be in flight.
         if (loads <= 1) window.clearInterval(hello);
         timer = 0;
       } else if (m.t === 'gp:status') {
