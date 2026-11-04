@@ -555,6 +555,11 @@ async function confirmRollback(p: ScanParams, previous: ScanCursor, replacement:
  * moves up to the cursor itself: otherwise a run held by a budget a few pages in, each page narrower than `finalityDepth`,
  * would save the same checkpoint on every resume and never pass the spam (A5). Either way it never passes this run's
  * earliest `pending` match, and never moves behind where this run started.
+ *
+ * With a second provider, whichever anchor is saved (the replay-tail block, or the page end when the cursor itself is saved)
+ * must hold the ba0fd59 invariant: its hash is read from both providers plus a second primary read after the secondary
+ * answers, and all three agree. Any failure is a discrepancy and the checkpoint is withheld: the page-end comparison in
+ * compareProviders alone does not cover a primary that switches its answer afterwards.
  */
 async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint, head: bigint, matches: readonly ScanMatch[]): Promise<ScanCursor | readonly ProviderDiscrepancy[] | undefined> {
   const depth = BigInt(p.chain.finalityDepth);
@@ -565,7 +570,14 @@ async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint, hea
   // A payment check that saw a lower head than the log fetch can leave a match pending below either edge: re-scan it.
   for (const m of matches) if (m.receipt === 'pending' && m.announcement.blockNumber < next) next = m.announcement.blockNumber;
   if (next < floor) next = floor;
-  if (next >= cursor.nextBlock) return cursor;
+  if (next >= cursor.nextBlock) {
+    if (p.secondaryClient === undefined || cursor.last === undefined) return cursor;
+    // The page end becomes the canonical record for the next resume: corroborate it afresh, as for the tail anchor.
+    const agreed = await corroborateAnchor(p, p.secondaryClient, cursor.last.number);
+    if (p.signal.aborted) return undefined;
+    if (typeof agreed !== 'string') return agreed;
+    return agreed === cursor.last.hash.toLowerCase() ? cursor : [{ kind: 'block_hash_differs', ref: cursor.last.number.toString() }];
+  }
   if (next === 0n) return { nextBlock: 0n };
   // Keep reorg detection for the stored position: bind it to the hash of the block just before it.
   const height = next - 1n;

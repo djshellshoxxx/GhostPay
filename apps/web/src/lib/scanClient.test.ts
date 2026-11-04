@@ -1216,6 +1216,52 @@ describe('two-provider replay-tail checkpoint anchor', () => {
     expect(res.discrepancies).toEqual([{ kind: 'block_hash_differs', ref: TAIL.toString() }]);
   });
 
+  describe('page-end anchor far below the head (persistable shortcut)', () => {
+    // Head 120,000 with one page: page 1 ends at 49,999, far more than finalityDepth below the head, so the
+    // checkpoint is the page-end cursor itself rather than a replay-tail anchor.
+    const HEAD = 120_000;
+    const END = 49_999n;
+    const shortcut = (s: ReturnType<typeof setup>, extra: Partial<Params> & Pick<Params, 'client'>) => scan(s, KEY, { maxPages: 1, ...extra });
+
+    it('withholds a page end the primary fabricates on every read', async () => {
+      const s = setup(); const cp = memStore(); const primary = chainWith(HEAD, s.logs);
+      const res = await shortcut(s, {
+        client: { ...primary, getBlock: (n) => (n === END ? fake(n) : primary.getBlock(n)) },
+        secondaryClient: chainWith(HEAD, s.logs), checkpoints: cp.store,
+      });
+      expect(cp.saves).toEqual([]);
+      expect(res.discrepancies).toEqual([{ kind: 'block_hash_differs', ref: END.toString() }]);
+    });
+
+    it('withholds a page end the primary changes on its re-read after the provider comparison', async () => {
+      const s = setup(); const cp = memStore(); const primary = chainWith(HEAD, s.logs); const secondary = chainWith(HEAD, s.logs);
+      // Honest for the page fetch and compareProviders (whose last step reads END from the secondary); lies afterwards.
+      const compared = () => secondary.calls.some((c) => c.method === 'eth_getBlockByNumber' && c.params[0] === END);
+      let lies = 0;
+      const res = await shortcut(s, {
+        client: { ...primary, getBlock: (n) => (n === END && compared() ? (lies++, fake(n)) : primary.getBlock(n)) },
+        secondaryClient: secondary, checkpoints: cp.store,
+      });
+      expect(cp.saves).toEqual([]);
+      expect(lies).toBeGreaterThan(0);
+      expect(res.discrepancies).toEqual([{ kind: 'block_hash_differs', ref: END.toString() }]);
+    });
+
+    it('saves the corroborated page end when both providers agree', async () => {
+      const s = setup(); const cp = memStore();
+      const res = await shortcut(s, { client: chainWith(HEAD, s.logs), secondaryClient: chainWith(HEAD, s.logs), checkpoints: cp.store });
+      expect(res.discrepancies).toEqual([]);
+      expect(cp.saves).toEqual([{ nextBlock: END + 1n, last: { number: END, hash: blockHash(Number(END)) } }]);
+    });
+
+    it('saves the page end unchanged with a single provider', async () => {
+      const s = setup(); const cp = memStore();
+      const res = await shortcut(s, { client: chainWith(HEAD, s.logs), checkpoints: cp.store });
+      expect(res.discrepancies).toEqual([]);
+      expect(cp.saves).toEqual([{ nextBlock: END + 1n, last: { number: END, hash: blockHash(Number(END)) } }]);
+    });
+  });
+
   it('writes nothing when cancelled while the tail corroboration is pending', async () => {
     const s = setup(); const cp = memStore(); const secondary = chainWith(2500, [s.mine.log]);
     let release!: () => void; const gate = new Promise<void>((resolve) => { release = resolve; }); let waiting = false;
