@@ -37,6 +37,8 @@ export default defineConfig({
   define: {
     __GHOSTPAY_RELEASE_KEYS__: JSON.stringify(releaseKeys),
     __GHOSTPAY_MANIFESTS__: JSON.stringify(readManifests(deploymentsDir)),
+    // Unit tests must not inherit the shell's e2e profile; profile-specific tests pass it explicitly.
+    __GHOSTPAY_PROFILE__: JSON.stringify(process.env['VITEST'] === undefined ? buildProfile : 'full'),
   },
   plugins: [
     react(),
