@@ -4,7 +4,10 @@ import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { CameraImporter } from '../../components/CameraImporter';
 import { PlainPaymentRequest } from '../../components/PaymentRequestQr';
 import { QrFrame } from '../../components/QrFrame';
-import { clearCopiedBackup, englishBackupText, SecretBackup } from '../../components/SecretBackup';
+import { RichText } from '../../components/RichText';
+import { clearCopiedBackup, localizedBackupText, SecretBackup } from '../../components/SecretBackup';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
+import type { Translator } from '../../i18n/translator';
 import { subscribeAppLock } from '../../lib/appLock';
 import { useServices } from '../../lib/services';
 import { TRON_NETWORK_LIST, tronNetwork, type TronNetworkId } from './network';
@@ -20,6 +23,11 @@ import { backupHex, newWallet, walletFromBackupHex, wipeWallet, type TronWallet 
  */
 export function TronView(): ReactNode {
   const services = useServices();
+  const tr = useI18nOptional() ?? SOURCE_TRANSLATOR;
+  // Through a ref: an error or note produced after an await uses the language in effect then.
+  const trRef = useRef(tr);
+  trRef.current = tr;
+  const t = (key: Parameters<Translator['t']>[0], values?: Parameters<Translator['t']>[1]): string => trRef.current.t(key, values);
   const [netId, setNetId] = useState<TronNetworkId>('nile');
   const [url, setUrl] = useState('');
   const [backupInput, setBackupInput] = useState('');
@@ -95,7 +103,7 @@ export function TronView(): ReactNode {
     try {
       rpc = createRpc(url, services.fetchFn);
     } catch {
-      throw new TronViewError('Enter the node URL (https, or http to localhost for a local node).');
+      throw new TronViewError(t('tron.node.missing'));
     }
     await checkNetwork(rpc, signal);
     return rpc;
@@ -123,17 +131,17 @@ export function TronView(): ReactNode {
     void (async () => {
       try {
         const rpc = await connect(signal);
-        if (!/^\d{1,15}$/.test(fromBlock.trim())) throw new TronViewError('Enter the first block to scan.');
+        if (!/^\d{1,15}$/.test(fromBlock.trim())) throw new TronViewError(t('tron.block.required'));
         const res = await scanForPayments({
           rpc,
           wallet,
           fromBlock: BigInt(fromBlock.trim()),
           signal,
-          onFound: (b) => { if (live()) setScanNote(`Found a payment in block ${String(b)}`); },
+          onFound: (b) => { if (live()) setScanNote(t('tron.found', { block: String(b) })); },
         });
         if (!live()) return;
         setScan(res);
-        setScanNote(`Scanned blocks ${String(res.fromBlock)} to ${String(res.toBlock)}.`);
+        setScanNote(t('tron.scanned', { from: String(res.fromBlock), to: String(res.toBlock) }));
         setPicked(res.found[0]?.stealthAddress);
       } catch (e) {
         if (live()) setError(tronErrorMessage(e));
@@ -234,16 +242,13 @@ export function TronView(): ReactNode {
 
   return (
     <section aria-labelledby="tron-h">
-      <h2 id="tron-h">TRON stealth payments (test networks)</h2>
-      <Notice kind="warn" title="Proof of concept, test networks only">
-        Unaudited. Mainnet is disabled. Use only coins that have no value (Nile, Shasta or a local node).
-        Keys are held in memory and are never saved; write down the key backup if you want to keep the wallet.
-      </Notice>
+      <h2 id="tron-h">{t('tron.title')}</h2>
+      <Notice kind="warn" title={t('btc.warning.title')}>{t('tron.warning.body')}</Notice>
       {error !== undefined && <Notice kind="error">{error}</Notice>}
 
       <div className="panel">
-        <h3>1. Network and node</h3>
-        <Field label="Network">
+        <h3>{t('tron.section.network')}</h3>
+        <Field label={t('btc.network.label')}>
           {(id) => (
             <select
               id={id}
@@ -258,8 +263,8 @@ export function TronView(): ReactNode {
           )}
         </Field>
         <Field
-          label="Node URL"
-          hint="Any TRON full node or TronGrid-style HTTP API you trust for this network (https, or http to localhost). It sees the blocks you scan, each one-time address whose balance you check, and any transaction you broadcast. It cannot see your keys. This app only refuses a node that reports mainnet; it cannot prove which test network the node is on."
+          label={t('tron.node.label')}
+          hint={t('tron.node.hint')}
         >
           {(id, d) => (
             <input id={id} aria-describedby={d} type="url" spellCheck={false} autoComplete="off" placeholder={net.urlHint} value={url} onChange={(e) => { setUrl(e.target.value); }} />
@@ -268,18 +273,18 @@ export function TronView(): ReactNode {
       </div>
 
       <div className="panel">
-        <h3>2. Wallet and receive address</h3>
+        <h3>{t('btc.section.wallet')}</h3>
         {wallet === undefined ? (
           <>
-            {appLocked && <Notice kind="info">The app locked, so this wallet's keys were wiped from memory. Import the backup keys to use it again.</Notice>}
+            {appLocked && <Notice kind="info">{t('tron.appLocked')}</Notice>}
             <button
               type="button"
               className="btn btn-primary"
               onClick={() => { guard(() => { install(newWallet(net), true); }); }}
             >
-              Create new test wallet
+              {t('btc.wallet.create')}
             </button>
-            <Field label="Or import keys" hint="128 hex characters (64 bytes) from the backup of a wallet created here. Test coins only.">
+            <Field label={t('tron.import.label')} hint={t('tron.import.hint')}>
               {(id, d) => (
                 <input id={id} aria-describedby={d} type="password" autoComplete="off" spellCheck={false} className="mono" value={backupInput} onChange={(e) => { setBackupInput(e.target.value); }} />
               )}
@@ -290,31 +295,31 @@ export function TronView(): ReactNode {
               disabled={backupInput.trim() === ''}
               onClick={() => { guard(() => { install(walletFromBackupHex(backupInput, net), false); }); }}
             >
-              Import keys
+              {t('tron.import.button')}
             </button>
           </>
         ) : (
           <>
-            <p>Stealth meta-address ({net.label}):</p>
-            <p><Mono>{wallet.metaAddress}</Mono></p>
-            <CopyButton text={wallet.metaAddress} label="Copy address" />
-            <h4>Payment instructions</h4>
+            <p>{t('chainView.metaAddress', { network: net.label })}</p>
+            <p dir="ltr"><Mono>{wallet.metaAddress}</Mono></p>
+            <CopyButton text={wallet.metaAddress} label={t('btc.wallet.copyAddress')} />
+            <h4>{t('btc.payment.heading')}</h4>
             <ol className="plain-list">
-              <li>The payer needs a tool that supports GhostPay TRON stealth payments on {net.label}. This view does not send payments.</li>
-              <li>The payer pastes the address above (or scans the QR code), derives a one-time TRON address from it, and sends TRX to that address.</li>
-              <li>The same transaction must carry the announcement memo (<Mono>GPT1</Mono>); without it this wallet cannot find the payment.</li>
-              <li>Wait for the block to be produced, then use "Scan" below starting a little before it. TRC-20 tokens are detected but not swept here.</li>
+              <li>{t('tron.instr.1', { network: net.label })}</li>
+              <li>{t('tron.instr.2')}</li>
+              <li><RichText id="tron.instr.3" tags={{ mono: (c) => <Mono>{c}</Mono> }} /></li>
+              <li>{t('tron.instr.4')}</li>
             </ol>
-            <QrFrame kind="caution" text={wallet.metaAddress} caption={`TRON stealth payment request (${net.label})`} />
+            <QrFrame kind="caution" text={wallet.metaAddress} caption={t('tron.qr.caption', { network: net.label })} />
             <PlainPaymentRequest family="tron" tronNetwork={net.id === 'local' ? undefined : net.id} testnet={net.id !== 'mainnet'} networkLabel={net.label} />
             {hasBackup && (
               <SecretBackup
                 reveal={() => (walletRef.current === undefined ? '' : backupHex(walletRef.current))}
-                text={englishBackupText('keys')}
+                text={localizedBackupText(tr.t, 'keys')}
               />
             )}
             <p>
-              <button type="button" className="btn btn-danger" onClick={lock}>Lock and forget keys</button>
+              <button type="button" className="btn btn-danger" onClick={lock}>{t('btc.lock')}</button>
             </p>
           </>
         )}
@@ -322,36 +327,34 @@ export function TronView(): ReactNode {
 
       {wallet !== undefined && (
         <div className="panel">
-          <h3>3. Scan for payments</h3>
-          <Field label="First block" hint={`Scans at most ${String(MAX_SCAN_BLOCKS)} blocks per run up to the node head. Whole blocks are downloaded and checked on this device.`}>
+          <h3>{t('btc.section.scan')}</h3>
+          <Field label={t('tron.block.label')} hint={t('tron.block.hint', { max: String(MAX_SCAN_BLOCKS) })}>
             {(id, d) => (
               <input id={id} aria-describedby={d} inputMode="numeric" value={fromBlock} onChange={(e) => { setFromBlock(e.target.value); }} />
             )}
           </Field>
           <button type="button" className="btn btn-primary" disabled={scanning || url.trim() === ''} onClick={runScan}>
-            {scanning ? 'Scanning' : 'Scan'}
+            {scanning ? t('btc.scan.scanning') : t('btc.scan.action')}
           </button>
           {scanning && (
-            <button type="button" className="btn" onClick={() => { abort.current?.abort(); }}>Cancel</button>
+            <button type="button" className="btn" onClick={() => { abort.current?.abort(); }}>{t('btc.scan.cancel')}</button>
           )}
           {scanNote !== undefined && <p role="status">{scanNote}</p>}
           {scan !== undefined && (
             <>
               <p>
                 {scan.found.length === 0
-                  ? 'No funded payments found in this range.'
-                  : `${String(scan.found.length)} funded payment(s) found.`}
-                {scan.emptiedCount > 0 && ` ${String(scan.emptiedCount)} already swept.`}
-                {scan.tokenCount > 0 && ` ${String(scan.tokenCount)} TRC-20 payment(s) not shown; this view sweeps TRX only.`}
+                  ? t('chainView.noneFound')
+                  : t('chainView.foundCount', { count: String(scan.found.length) })}
+                {scan.emptiedCount > 0 && ` ${t('chainView.alreadySwept', { count: String(scan.emptiedCount) })}`}
+                {scan.tokenCount > 0 && ` ${t('tron.tokens', { count: String(scan.tokenCount) })}`}
               </p>
               {scan.found.length > 0 && (
                 <div className="table-wrap">
-                  <p role="note">
-                    Payments and balances were checked with the configured node. This is a single-provider check, not independent verification. Select and review the exact one-time address below.
-                  </p>
+                  <p role="note">{t('tron.singleProvider')}</p>
                   <table>
                     <thead>
-                      <tr><th>Sweep</th><th>One-time address</th><th>Block</th><th>Balance</th></tr>
+                      <tr><th>{t('btc.scan.sweep')}</th><th>{t('sweep.oneTimeAddress')}</th><th>{t('btc.scan.block')}</th><th>{t('policy.account.balance')}</th></tr>
                     </thead>
                     <tbody>
                       {scan.found.map((f) => (
@@ -360,12 +363,12 @@ export function TronView(): ReactNode {
                             <input
                               type="radio"
                               name="tron-sweep"
-                              aria-label={`Sweep ${f.stealthAddress}`}
+                              aria-label={t('btc.scan.sweepAria', { id: f.stealthAddress })}
                               checked={picked === f.stealthAddress}
                               onChange={() => { setPicked(f.stealthAddress); clearReview(); }}
                             />
                           </td>
-                          <td><Mono>{f.stealthAddress}</Mono></td>
+                          <td dir="ltr"><Mono>{f.stealthAddress}</Mono></td>
                           <td>{String(f.blockNumber)}</td>
                           <td>{formatTrx(f.balanceSun)}</td>
                         </tr>
@@ -381,21 +384,21 @@ export function TronView(): ReactNode {
 
       {wallet !== undefined && scan !== undefined && scan.found.length > 0 && (
         <div className="panel">
-          <h3>4. Sweep</h3>
-          <Field label="Destination address" hint={`A ${net.label} address (T...). Check it carefully: a sent transaction cannot be reversed.`}>
+          <h3>{t('btc.section.sweep')}</h3>
+          <Field label={t('btc.sweep.destinationLabel')} hint={t('tron.destination.hint', { network: net.label })}>
             {(id, d) => (
               <input id={id} aria-describedby={d} className="mono" spellCheck={false} autoComplete="off" value={destination} onChange={(e) => { setDestination(e.target.value); clearReview(); }} />
             )}
           </Field>
           <CameraImporter
-            label="Import sweep destination QR"
+            label={t('btc.sweep.importQr')}
             scopeKey={wallet}
             onText={(scanned) => {
               const candidate = scanned.trim().replace(/^tron:/i, '').split('?')[0] ?? '';
               try {
                 decodeTronAddress(candidate);
                 if (selected !== undefined && candidate === selected.stealthAddress) {
-                  throw new TronViewError('Choose a different address than the one-time address being swept.');
+                  throw new TronViewError(t('tron.sameAddress'));
                 }
                 setDestination(candidate);
                 clearReview();
@@ -407,30 +410,30 @@ export function TronView(): ReactNode {
               }
             }}
           />
-          <p className="hint">The fee reserve is estimated from the node's chain parameters when you review.</p>
+          <p className="hint">{t('tron.fee.hint')}</p>
           <button type="button" className="btn btn-primary" disabled={selected === undefined || destination.trim() === '' || busy} onClick={doReview}>
-            Review sweep
+            {t('btc.sweep.review')}
           </button>
 
           {review !== undefined && (
             <section className="card" aria-labelledby="tron-review-h">
-              <h4 id="tron-review-h">Review before signing</h4>
+              <h4 id="tron-review-h">{t('btc.review.heading')}</h4>
               <dl>
-                <dt>Network</dt><dd>{review.networkLabel}</dd>
-                <dt>Spending from</dt><dd><Mono>{review.from}</Mono></dd>
-                <dt>Total in</dt><dd>{formatTrx(review.totalSun)}</dd>
-                <dt>Fee reserve (upper bound)</dt><dd>{formatTrx(review.feeReserveSun)} ({String(review.feeReserveSun)} sun)</dd>
-                <dt>Destination receives</dt><dd>{formatTrx(review.sendSun)}</dd>
-                <dt>Destination</dt><dd><Mono>{review.destination}</Mono></dd>
+                <dt>{t('btc.review.network')}</dt><dd>{review.networkLabel}</dd>
+                <dt>{t('sol.review.spendingFrom')}</dt><dd dir="ltr"><Mono>{review.from}</Mono></dd>
+                <dt>{t('btc.review.totalIn')}</dt><dd>{formatTrx(review.totalSun)}</dd>
+                <dt>{t('tron.review.feeReserve')}</dt><dd>{t('tron.review.feeValue', { amount: formatTrx(review.feeReserveSun), sun: String(review.feeReserveSun) })}</dd>
+                <dt>{t('btc.review.receives')}</dt><dd>{formatTrx(review.sendSun)}</dd>
+                <dt>{t('pay.destination')}</dt><dd dir="ltr"><Mono>{review.destination}</Mono></dd>
               </dl>
               {review.warnings.map((w) => <Notice key={w} kind="warn">{w}</Notice>)}
               <label>
                 <input type="checkbox" checked={approved} onChange={(e) => { setApproved(e.target.checked); }} />{' '}
-                I checked the destination address, the amount and the fee.
+                {t('btc.review.approve')}
               </label>
               <p>
                 <button type="button" className="btn btn-primary" disabled={!approved || signed !== undefined || busy} onClick={doSign}>
-                  Sign with software key
+                  {t('btc.review.sign')}
                 </button>
               </p>
             </section>
@@ -438,14 +441,14 @@ export function TronView(): ReactNode {
 
           {signed !== undefined && (
             <section className="card" aria-labelledby="tron-signed-h">
-              <h4 id="tron-signed-h">Signed transaction</h4>
-              <p>Transaction id: <Mono>{signed.txID}</Mono></p>
-              <p>Not sent yet. Broadcasting sends it to the node above.</p>
-              <CopyButton text={signed.signedHex} label="Copy raw transaction" />{' '}
+              <h4 id="tron-signed-h">{t('btc.signed.heading')}</h4>
+              <p>{t('tron.signed.txid')} <Mono>{signed.txID}</Mono></p>
+              <p>{t('tron.signed.notSent')}</p>
+              <CopyButton text={signed.signedHex} label={t('btc.signed.copyRaw')} />{' '}
               <button type="button" className="btn btn-primary" disabled={broadcastId !== undefined || busy} onClick={doBroadcast}>
-                Broadcast to {net.label}
+                {t('chainView.broadcastTo', { network: net.label })}
               </button>
-              {broadcastId !== undefined && <Notice kind="ok" title="Broadcast">The node accepted transaction <Mono>{broadcastId}</Mono>.</Notice>}
+              {broadcastId !== undefined && <Notice kind="ok" title={t('btc.broadcast.title')}>{t('tron.broadcast.accepted')} <Mono>{broadcastId}</Mono>.</Notice>}
             </section>
           )}
         </div>

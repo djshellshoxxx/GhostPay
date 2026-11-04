@@ -1,4 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
+import { SOURCE_TRANSLATOR } from '../i18n/context';
+import type { Translator } from '../i18n/translator';
 import { subscribeAppLock } from '../lib/appLock';
 import { Mono, Notice } from './Common';
 
@@ -66,7 +68,7 @@ subscribeAppLock(() => {
   clearCopiedBackup();
 });
 
-/** Every text {@link SecretBackup} shows (the Bitcoin view passes translations; Solana and TRON use English). */
+/** Every text {@link SecretBackup} shows. Build it with {@link localizedBackupText}. */
 export interface SecretBackupText {
   readonly title: string;
   /** Who controls the wallet with the backup, and that it is not stored. */
@@ -84,25 +86,29 @@ export interface SecretBackupText {
   readonly copyFailed: string;
 }
 
-const HIDDEN_HINT = 'It is hidden. Show it only where nobody can see your screen; it hides again after a minute, or as soon as this tab is hidden.';
-const COPY_WARNING =
-  'Other apps and web pages can read the clipboard, and it may be kept in a clipboard history or synced to your other devices. Copy only to paste it straight into a password manager. Hide, Lock and leaving this view empty the clipboard again (best effort). When the browser does not allow that at the time (for example when the app locks itself while you are away), it happens at your next click or key press in this page.';
-
-/** English texts for the views without translations (Solana: `seed`, TRON: `keys`). */
-export function englishBackupText(noun: 'seed' | 'keys'): SecretBackupText {
+/**
+ * Texts for the views that back up a `seed` (Solana, shared with Bitcoin: btc.seed.*) or `keys` (TRON: secret.keys.*).
+ * The warning, hint and clipboard texts are security keys, so an unreviewed locale keeps their English source.
+ */
+export function localizedBackupText(t: Translator['t'], noun: 'seed' | 'keys'): SecretBackupText {
   return {
-    title: `Backup ${noun}`,
-    warning: noun === 'seed' ? 'Anyone with this seed controls the wallet. It is not stored anywhere.' : 'Anyone with these keys controls the wallet. They are not stored anywhere.',
-    hiddenHint: HIDDEN_HINT,
-    show: `Show backup ${noun}`,
-    hide: `Hide ${noun}`,
-    copy: `Copy ${noun}`,
-    copyWarning: COPY_WARNING,
-    copyConfirm: 'Copy anyway',
-    copyCancel: 'Do not copy',
-    copied: 'Copied. Paste it now: Hide, Lock and leaving this view empty the clipboard again.',
-    copyFailed: 'Copy failed: select the text manually.',
+    title: noun === 'seed' ? t('btc.seed.heading') : t('secret.keys.title'),
+    warning: noun === 'seed' ? t('btc.seed.warning') : t('secret.keys.warning'),
+    hiddenHint: t('btc.seed.hiddenHint'),
+    show: noun === 'seed' ? t('btc.seed.show') : t('secret.keys.show'),
+    hide: noun === 'seed' ? t('btc.seed.hide') : t('secret.keys.hide'),
+    copy: noun === 'seed' ? t('btc.seed.copy') : t('secret.keys.copy'),
+    copyWarning: t('btc.seed.copyWarning'),
+    copyConfirm: t('btc.seed.copyConfirm'),
+    copyCancel: t('btc.seed.copyCancel'),
+    copied: t('btc.seed.copied'),
+    copyFailed: t('btc.seed.copyFailed'),
   };
+}
+
+/** English texts, for isolated tests without an I18nProvider. */
+export function englishBackupText(noun: 'seed' | 'keys'): SecretBackupText {
+  return localizedBackupText(SOURCE_TRANSLATOR.t, noun);
 }
 
 /**

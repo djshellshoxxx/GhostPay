@@ -5,7 +5,10 @@ import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { CameraImporter } from '../../components/CameraImporter';
 import { PlainPaymentRequest } from '../../components/PaymentRequestQr';
 import { QrFrame } from '../../components/QrFrame';
-import { clearCopiedBackup, englishBackupText, SecretBackup } from '../../components/SecretBackup';
+import { RichText } from '../../components/RichText';
+import { clearCopiedBackup, localizedBackupText, SecretBackup } from '../../components/SecretBackup';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
+import type { Translator } from '../../i18n/translator';
 import { subscribeAppLock } from '../../lib/appLock';
 import { useServices } from '../../lib/services';
 import { SOL_NETWORKS, solNetwork, type SolNetworkId } from './network';
@@ -21,6 +24,11 @@ import { randomSeedHex, walletFromSeedHex, wipeWallet, type SolWallet } from './
  */
 export function SolanaView(): ReactNode {
   const services = useServices();
+  const tr = useI18nOptional() ?? SOURCE_TRANSLATOR;
+  // Through a ref: an error or note produced after an await uses the language in effect then.
+  const trRef = useRef(tr);
+  trRef.current = tr;
+  const t = (key: Parameters<Translator['t']>[0], values?: Parameters<Translator['t']>[1]): string => trRef.current.t(key, values);
   const [netId, setNetId] = useState<SolNetworkId>('devnet');
   const [url, setUrl] = useState('');
   const [seedInput, setSeedInput] = useState('');
@@ -109,7 +117,7 @@ export function SolanaView(): ReactNode {
     try {
       rpc = createRpc(url, services.fetchFn);
     } catch {
-      throw new SolViewError('Enter the RPC server URL (https, or http to localhost for a local validator).');
+      throw new SolViewError(t('sol.rpc.missing'));
     }
     await checkNetwork(rpc, net, signal);
     return rpc;
@@ -142,13 +150,13 @@ export function SolanaView(): ReactNode {
     void (async () => {
       try {
         const rpc = await connect(signal);
-        if (!/^\d{1,15}$/.test(fromSlot.trim())) throw new SolViewError('Enter the first slot to scan.');
+        if (!/^\d{1,15}$/.test(fromSlot.trim())) throw new SolViewError(t('sol.slot.required'));
         const res = await scanForPayments({
           rpc,
           wallet,
           fromSlot: BigInt(fromSlot.trim()),
           signal,
-          onFound: (s) => { if (live()) setScanNote(`Found a payment in slot ${String(s)}`); },
+          onFound: (s) => { if (live()) setScanNote(t('sol.found', { slot: String(s) })); },
         });
         if (!live()) {
           wipeFound(res.found);
@@ -156,7 +164,7 @@ export function SolanaView(): ReactNode {
         }
         scanRef.current = res;
         setScan(res);
-        setScanNote(`Scanned finalized slots ${String(res.fromSlot)} to ${String(res.toSlot)}.`);
+        setScanNote(t('sol.scanned', { from: String(res.fromSlot), to: String(res.toSlot) }));
         setPicked(res.found[0]?.stealthAddress);
       } catch (e) {
         if (live()) setError(solErrorMessage(e));
@@ -243,16 +251,13 @@ export function SolanaView(): ReactNode {
 
   return (
     <section aria-labelledby="sol-h">
-      <h2 id="sol-h">Solana stealth payments (test networks)</h2>
-      <Notice kind="warn" title="Proof of concept, test networks only">
-        Unaudited. Mainnet is disabled. Use only coins that have no value (devnet, testnet or a local validator).
-        Keys are held in memory and are never saved; write down the seed if you want to keep the wallet.
-      </Notice>
+      <h2 id="sol-h">{t('sol.title')}</h2>
+      <Notice kind="warn" title={t('btc.warning.title')}>{t('sol.warning.body')}</Notice>
       {error !== undefined && <Notice kind="error">{error}</Notice>}
 
       <div className="panel">
-        <h3>1. Network and server</h3>
-        <Field label="Network">
+        <h3>{t('btc.section.network')}</h3>
+        <Field label={t('btc.network.label')}>
           {(id) => (
             <select
               id={id}
@@ -267,8 +272,8 @@ export function SolanaView(): ReactNode {
           )}
         </Field>
         <Field
-          label="RPC server URL"
-          hint="Any Solana JSON-RPC server you trust for this network (https, or http to localhost for a local validator). It sees the transactions you scan, each one-time address whose balance you check, and any transaction you broadcast. It cannot see your keys."
+          label={t('sol.rpc.label')}
+          hint={t('sol.rpc.hint')}
         >
           {(id, d) => (
             <input id={id} aria-describedby={d} type="url" spellCheck={false} autoComplete="off" placeholder={net.urlHint} value={url} onChange={(e) => { setUrl(e.target.value); }} />
@@ -277,48 +282,48 @@ export function SolanaView(): ReactNode {
       </div>
 
       <div className="panel">
-        <h3>2. Wallet and receive address</h3>
+        <h3>{t('btc.section.wallet')}</h3>
         {wallet === undefined ? (
           <>
-            {appLocked && <Notice kind="info">The app locked, so this wallet's keys were wiped from memory. Import the backup seed to use it again.</Notice>}
+            {appLocked && <Notice kind="info">{t('btc.appLocked')}</Notice>}
             <button type="button" className="btn btn-primary" onClick={() => { useSeed(randomSeedHex(), true); }}>
-              Create new test wallet
+              {t('btc.wallet.create')}
             </button>
-            <Field label="Or import a seed" hint="64 hex characters (32 bytes) from a wallet created here. Test coins only.">
+            <Field label={t('btc.wallet.importLabel')} hint={t('btc.wallet.importHint')}>
               {(id, d) => (
                 <input id={id} aria-describedby={d} type="password" autoComplete="off" spellCheck={false} className="mono" value={seedInput} onChange={(e) => { setSeedInput(e.target.value); }} />
               )}
             </Field>
             <button type="button" className="btn" disabled={seedInput.trim() === ''} onClick={() => { useSeed(seedInput, false); }}>
-              Import seed
+              {t('btc.wallet.import')}
             </button>
           </>
         ) : (
           <>
-            <p>Stealth meta-address ({net.label}):</p>
-            <p><Mono>{wallet.metaAddress}</Mono></p>
-            <CopyButton text={wallet.metaAddress} label="Copy address" />
+            <p>{t('chainView.metaAddress', { network: net.label })}</p>
+            <p dir="ltr"><Mono>{wallet.metaAddress}</Mono></p>
+            <CopyButton text={wallet.metaAddress} label={t('btc.wallet.copyAddress')} />
             {request !== undefined && (
               <>
-                <h4>Payment instructions</h4>
+                <h4>{t('btc.payment.heading')}</h4>
                 <ol className="plain-list">
-                  <li>The payer needs a tool that supports GhostPay Solana stealth payments on {net.label}. This view does not send payments.</li>
-                  <li>The payer pastes the address above (or scans the QR code), derives a one-time address from it, and sends SOL to that address.</li>
-                  <li>The same transaction must carry the announcement memo (<Mono>gpst1:...</Mono>); without it this wallet cannot find the payment.</li>
-                  <li>Wait for finalization, then use "Scan" below starting a little before the payment slot.</li>
+                  <li>{t('sol.instr.1', { network: net.label })}</li>
+                  <li>{t('sol.instr.2')}</li>
+                  <li><RichText id="sol.instr.3" tags={{ mono: (c) => <Mono>{c}</Mono> }} /></li>
+                  <li>{t('sol.instr.4')}</li>
                 </ol>
-                <QrFrame kind="caution" text={request} caption={`Solana stealth payment request (${net.label})`} />
+                <QrFrame kind="caution" text={request} caption={t('sol.qr.caption', { network: net.label })} />
                 <PlainPaymentRequest family="solana" testnet={net.id !== 'mainnet'} networkLabel={net.label} />
               </>
             )}
             {hasBackup && (
               <SecretBackup
                 reveal={() => (seedRef.current === undefined ? '' : bytesToHex(seedRef.current))}
-                text={englishBackupText('seed')}
+                text={localizedBackupText(tr.t, 'seed')}
               />
             )}
             <p>
-              <button type="button" className="btn btn-danger" onClick={lock}>Lock and forget keys</button>
+              <button type="button" className="btn btn-danger" onClick={lock}>{t('btc.lock')}</button>
             </p>
           </>
         )}
@@ -326,35 +331,33 @@ export function SolanaView(): ReactNode {
 
       {wallet !== undefined && (
         <div className="panel">
-          <h3>3. Scan for payments</h3>
-          <Field label="First slot" hint={`Scans finalized announcements from this slot up to the server head, at most ${String(MAX_SCAN_PAGES)} pages of 1000 transactions. Every transaction is downloaded and checked on this device.`}>
+          <h3>{t('btc.section.scan')}</h3>
+          <Field label={t('sol.slot.label')} hint={t('sol.slot.hint', { max: String(MAX_SCAN_PAGES) })}>
             {(id, d) => (
               <input id={id} aria-describedby={d} inputMode="numeric" value={fromSlot} onChange={(e) => { setFromSlot(e.target.value); }} />
             )}
           </Field>
           <button type="button" className="btn btn-primary" disabled={scanning || url.trim() === ''} onClick={runScan}>
-            {scanning ? 'Scanning' : 'Scan'}
+            {scanning ? t('btc.scan.scanning') : t('btc.scan.action')}
           </button>
           {scanning && (
-            <button type="button" className="btn" onClick={() => { abort.current?.abort(); }}>Cancel</button>
+            <button type="button" className="btn" onClick={() => { abort.current?.abort(); }}>{t('btc.scan.cancel')}</button>
           )}
           {scanNote !== undefined && <p role="status">{scanNote}</p>}
           {scan !== undefined && (
             <>
               <p>
                 {scan.found.length === 0
-                  ? 'No funded payments found in this range.'
-                  : `${String(scan.found.length)} funded payment(s) found.`}
-                {scan.emptiedCount > 0 && ` ${String(scan.emptiedCount)} already swept.`}
+                  ? t('chainView.noneFound')
+                  : t('chainView.foundCount', { count: String(scan.found.length) })}
+                {scan.emptiedCount > 0 && ` ${t('chainView.alreadySwept', { count: String(scan.emptiedCount) })}`}
               </p>
               {scan.found.length > 0 && (
                 <div className="table-wrap">
-                  <p role="note">
-                    Payments and balances were checked with the configured RPC provider. This is a single-provider check, not independent verification. Select and review the exact one-time address below.
-                  </p>
+                  <p role="note">{t('sol.singleProvider')}</p>
                   <table>
                     <thead>
-                      <tr><th>Sweep</th><th>One-time address</th><th>Slot</th><th>Balance</th></tr>
+                      <tr><th>{t('btc.scan.sweep')}</th><th>{t('sweep.oneTimeAddress')}</th><th>{t('sol.col.slot')}</th><th>{t('policy.account.balance')}</th></tr>
                     </thead>
                     <tbody>
                       {scan.found.map((f) => (
@@ -363,12 +366,12 @@ export function SolanaView(): ReactNode {
                             <input
                               type="radio"
                               name="sol-sweep"
-                              aria-label={`Sweep ${f.stealthAddress}`}
+                              aria-label={t('btc.scan.sweepAria', { id: f.stealthAddress })}
                               checked={picked === f.stealthAddress}
                               onChange={() => { setPicked(f.stealthAddress); clearReview(); }}
                             />
                           </td>
-                          <td><Mono>{f.stealthAddress}</Mono></td>
+                          <td dir="ltr"><Mono>{f.stealthAddress}</Mono></td>
                           <td>{String(f.slot)}</td>
                           <td>{formatSol(f.balanceLamports)}</td>
                         </tr>
@@ -384,20 +387,20 @@ export function SolanaView(): ReactNode {
 
       {wallet !== undefined && scan !== undefined && scan.found.length > 0 && (
         <div className="panel">
-          <h3>4. Sweep</h3>
-          <Field label="Destination address" hint={`A ${net.label} address. Check it carefully: a sent transaction cannot be reversed.`}>
+          <h3>{t('btc.section.sweep')}</h3>
+          <Field label={t('btc.sweep.destinationLabel')} hint={t('sol.destination.hint', { network: net.label })}>
             {(id, d) => (
               <input id={id} aria-describedby={d} className="mono" spellCheck={false} autoComplete="off" value={destination} onChange={(e) => { setDestination(e.target.value); clearReview(); }} />
             )}
           </Field>
           <CameraImporter
-            label="Import sweep destination QR"
+            label={t('btc.sweep.importQr')}
             scopeKey={wallet}
             onText={(scanned) => {
               const candidate = scanned.trim().replace(/^solana:/i, '').split('?')[0] ?? '';
               try {
                 // reviewSweep applies the same address and amount checks used before signing.
-                if (selected === undefined) throw new SolViewError('Select a payment first.');
+                if (selected === undefined) throw new SolViewError(t('sol.selectFirst'));
                 reviewSweep(wallet, selected, candidate);
                 setDestination(candidate);
                 clearReview();
@@ -409,31 +412,31 @@ export function SolanaView(): ReactNode {
               }
             }}
           />
-          <p className="hint">The fee is fixed at the base rate for one signature; this app has no fee oracle.</p>
+          <p className="hint">{t('sol.fee.hint')}</p>
           <button type="button" className="btn btn-primary" disabled={selected === undefined || destination.trim() === ''} onClick={doReview}>
-            Review sweep
+            {t('btc.sweep.review')}
           </button>
 
           {review !== undefined && (
             <section className="card" aria-labelledby="sol-review-h">
-              <h4 id="sol-review-h">Review before signing</h4>
+              <h4 id="sol-review-h">{t('btc.review.heading')}</h4>
               <dl>
-                <dt>Network</dt><dd>{review.networkLabel}</dd>
-                <dt>Spending from</dt><dd><Mono>{review.from}</Mono></dd>
-                <dt>Total in</dt><dd>{formatSol(review.totalLamports)}</dd>
-                <dt>Fee</dt><dd>{formatSol(review.feeLamports)} ({String(review.feeLamports)} lamports)</dd>
-                <dt>Destination receives</dt><dd>{formatSol(review.sendLamports)}</dd>
-                <dt>Destination</dt><dd><Mono>{review.destination}</Mono></dd>
-                <dt>Change</dt><dd>None (the whole balance is swept)</dd>
+                <dt>{t('btc.review.network')}</dt><dd>{review.networkLabel}</dd>
+                <dt>{t('sol.review.spendingFrom')}</dt><dd dir="ltr"><Mono>{review.from}</Mono></dd>
+                <dt>{t('btc.review.totalIn')}</dt><dd>{formatSol(review.totalLamports)}</dd>
+                <dt>{t('btc.review.fee')}</dt><dd>{t('sol.review.fee', { amount: formatSol(review.feeLamports), lamports: String(review.feeLamports) })}</dd>
+                <dt>{t('btc.review.receives')}</dt><dd>{formatSol(review.sendLamports)}</dd>
+                <dt>{t('pay.destination')}</dt><dd dir="ltr"><Mono>{review.destination}</Mono></dd>
+                <dt>{t('btc.review.change')}</dt><dd>{t('sol.review.changeNone')}</dd>
               </dl>
               {review.warnings.map((w) => <Notice key={w} kind="warn">{w}</Notice>)}
               <label>
                 <input type="checkbox" checked={approved} onChange={(e) => { setApproved(e.target.checked); }} />{' '}
-                I checked the destination address, the amount and the fee.
+                {t('btc.review.approve')}
               </label>
               <p>
                 <button type="button" className="btn btn-primary" disabled={!approved || signed !== undefined || busy} onClick={doSign}>
-                  Sign with software key
+                  {t('btc.review.sign')}
                 </button>
               </p>
             </section>
@@ -441,14 +444,14 @@ export function SolanaView(): ReactNode {
 
           {signed !== undefined && (
             <section className="card" aria-labelledby="sol-signed-h">
-              <h4 id="sol-signed-h">Signed transaction</h4>
-              <p>Signature: <Mono>{signed.signature}</Mono></p>
-              <p>Not sent yet. Broadcasting sends it to the server above.</p>
-              <CopyButton text={signed.wireBase64} label="Copy raw transaction" />{' '}
+              <h4 id="sol-signed-h">{t('btc.signed.heading')}</h4>
+              <p>{t('sol.signed.signature')} <Mono>{signed.signature}</Mono></p>
+              <p>{t('btc.signed.notSent')}</p>
+              <CopyButton text={signed.wireBase64} label={t('btc.signed.copyRaw')} />{' '}
               <button type="button" className="btn btn-primary" disabled={broadcastId !== undefined || busy} onClick={doBroadcast}>
-                Broadcast to {net.label}
+                {t('chainView.broadcastTo', { network: net.label })}
               </button>
-              {broadcastId !== undefined && <Notice kind="ok" title="Broadcast">The server accepted transaction <Mono>{broadcastId}</Mono>.</Notice>}
+              {broadcastId !== undefined && <Notice kind="ok" title={t('btc.broadcast.title')}>{t('btc.broadcast.accepted')} <Mono>{broadcastId}</Mono>.</Notice>}
             </section>
           )}
         </div>
