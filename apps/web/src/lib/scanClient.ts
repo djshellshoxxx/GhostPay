@@ -468,7 +468,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       cursor = res.cursor;
       for (const block of pageRouterOnly) if (routerOnlyBlocks.size < 1000) routerOnlyBlocks.add(block);
       if (!disagree && p.checkpoints !== undefined) {
-        const saved = await persistable(p, cursor, persistenceFloor, pageHead, all);
+        const saved = await persistable(p, cursor, persistenceFloor, pageHead, all, pageMatches);
         if (p.signal.aborted) break;
         if (Array.isArray(saved)) {
           // An uncorroborated anchor is withheld, never saved from the primary alone: stop and re-scan later.
@@ -554,14 +554,16 @@ async function confirmRollback(p: ScanParams, previous: ScanCursor, replacement:
  * Blocks already `finalityDepth` deep below `head` need no such tail, so when the scan is behind the head the checkpoint
  * moves up to the cursor itself: otherwise a run held by a budget a few pages in, each page narrower than `finalityDepth`,
  * would save the same checkpoint on every resume and never pass the spam (A5). Either way it never passes this run's
- * earliest `pending` match, and never moves behind where this run started.
+ * earliest `pending` match, and never moves behind where this run started. Router claims whose payment
+ * verification degraded to `claimed` get the same opportunity, but only while they are on the current page;
+ * this prevents an old unverified claim from pinning every later checkpoint forever.
  *
  * With a second provider, whichever anchor is saved (the replay-tail block, or the page end when the cursor itself is saved)
  * must hold the ba0fd59 invariant: its hash is read from both providers plus a second primary read after the secondary
  * answers, and all three agree. Any failure is a discrepancy and the checkpoint is withheld: the page-end comparison in
  * compareProviders alone does not cover a primary that switches its answer afterwards.
  */
-async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint, head: bigint, matches: readonly ScanMatch[]): Promise<ScanCursor | readonly ProviderDiscrepancy[] | undefined> {
+async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint, head: bigint, matches: readonly ScanMatch[], pageMatches: readonly ScanMatch[]): Promise<ScanCursor | readonly ProviderDiscrepancy[] | undefined> {
   const depth = BigInt(p.chain.finalityDepth);
   let next = cursor.nextBlock > depth ? cursor.nextBlock - depth : 0n;
   let settled = head + 1n > depth ? head + 1n - depth : 0n;
@@ -569,6 +571,11 @@ async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint, hea
   if (settled > next) next = settled;
   // A payment check that saw a lower head than the log fetch can leave a match pending below either edge: re-scan it.
   for (const m of matches) if (m.receipt === 'pending' && m.announcement.blockNumber < next) next = m.announcement.blockNumber;
+  // A transient verification failure is reported as claimed. Only replay claims from this page: retaining
+  // them from all historical matches would let an unverified router claim pin the checkpoint forever.
+  for (const m of pageMatches) {
+    if (m.viaRouter && m.receipt === 'claimed' && m.announcement.blockNumber < next) next = m.announcement.blockNumber;
+  }
   if (next < floor) next = floor;
   if (next >= cursor.nextBlock) {
     if (p.secondaryClient === undefined || cursor.last === undefined) return cursor;
