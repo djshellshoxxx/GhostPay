@@ -207,10 +207,11 @@ describe('createPayContext and amounts', () => {
     await expect(createPayContext(reviewInvoice(parsed, NOW, { status: 'absent' }), undefined, { nowSeconds: NOW })).rejects.toThrow(/blocked/);
   });
   it('fiat-quote invoices need an RPC and a configured feed (fail closed)', async () => {
-    const { parsed } = await makeParsed({ amountMode: 'fiat_quote' });
-    const review = reviewInvoice(parsed, NOW, LOADED(84532));
+    // OP Sepolia has no registered feed (Base Sepolia gained ETH/USD and USDC/USD from the saved Chainlink evidence).
+    const { parsed } = await makeParsed({ amountMode: 'fiat_quote', chainId: 11155420, token: '0x5fd84259d66cd46123540766be93dfe6d43130d7' });
+    const review = reviewInvoice(parsed, NOW, LOADED(11155420));
     await expect(createPayContext(review, undefined, { nowSeconds: NOW })).rejects.toThrow(/Configure an RPC/);
-    await expect(createPayContext(review, mockRpc(84532, () => '0x'), { nowSeconds: NOW })).rejects.toThrow(/No price feed is configured/);
+    await expect(createPayContext(review, mockRpc(11155420, () => '0x'), { nowSeconds: NOW })).rejects.toThrow(/No price feed is configured/);
   });
   it('converts fiat with a fresh feed, rounding up for the payer', async () => {
     const { parsed } = await makeParsed({ amountMode: 'fiat_quote' });
