@@ -24,12 +24,16 @@ describe('Registry public meta-address QR export', () => {
   it('shows a shareable QR whose text round-trips through the strict import parser', async () => {
     const me = generateWaivedSession();
     await open();
+    const user = userEvent.setup();
     const panel = document.getElementById('reg-export-h')!.closest('section')!;
     const frame = panel.querySelector('[data-qr-kind="shareable"]');
     expect(frame).not.toBeNull();
     expect(within(panel).getByText(/reveals no private key/)).toBeTruthy();
-    expect(within(panel).getByRole('button', { name: 'Copy as text' })).toBeTruthy();
-    expect(parsePublicMetaQr(me.metaAddress)).toBe(me.metaAddress);
+    // Parse what the page actually offers (copied text), not the fixture.
+    await user.click(within(panel).getByRole('button', { name: 'Copy as text' }));
+    const copied = await navigator.clipboard.readText();
+    expect(parsePublicMetaQr(copied)).toBe(me.metaAddress);
+    expect(within(panel).getByRole('img').getAttribute('aria-label')).toBe('Public meta-address for the registry');
   });
 
   it('is absent without keys', async () => {

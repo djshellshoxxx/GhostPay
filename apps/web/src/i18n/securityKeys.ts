@@ -127,6 +127,11 @@ export const SECURITY_KEY_GROUPS = {
     'sellerKeys.signKey.hint',
     'sellerKeys.metaShare',
     'sellerKeys.pairing.intro',
+    'sellerKeys.pairing.title',
+    'sellerKeys.pairing.caption',
+    'sellerKeys.pairing.importLabel',
+    'sellerKeys.pairing.previewHeading',
+    'sellerKeys.pairing.refused',
     'sellerKeys.pairing.fileTooBig',
     'sellerKeys.pairing.compare.same',
     'sellerKeys.pairing.compare.different',
@@ -335,16 +340,12 @@ export const SECURITY_KEYS: ReadonlySet<MessageKey> = new Set<MessageKey>(Object
 
 /** Only explicitly classified neutral UI may use an unreviewed catalog. Future keys fail closed to reviewed/source text. */
 export const NEUTRAL_KEY_LIST = [
-  'sellerKeys.pairing.title',
   'sellerKeys.pairing.exportHeading',
-  'sellerKeys.pairing.caption',
   'sellerKeys.pairing.textLabel',
   'sellerKeys.pairing.copy',
   'sellerKeys.pairing.download',
   'sellerKeys.pairing.importHeading',
   'sellerKeys.pairing.fileLabel',
-  'sellerKeys.pairing.importLabel',
-  'sellerKeys.pairing.previewHeading',
   'sellerKeys.pairing.preview.meta',
   'sellerKeys.pairing.preview.signer',
   'sellerKeys.pairing.preview.chains',

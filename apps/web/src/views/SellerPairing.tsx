@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { CameraImporter } from '../components/CameraImporter';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
 import { QrFrame } from '../components/QrFrame';
-import { userMessage } from '../lib/errors';
 import { MAX_SELLER_PAIRING_BYTES, compareToLoaded, exportSellerPairing, parseSellerPairing, type SellerPairingConfig } from '../lib/sellerPairing';
 import type { SessionPublic } from '../lib/session';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
@@ -34,7 +33,7 @@ export function SellerPairing(props: { readonly session: SessionPublic | undefin
 
   const accept = (text: string): boolean => {
     try { setPreview(parseSellerPairing(text)); setError(undefined); return true; }
-    catch (e) { setPreview(undefined); setError(userMessage(e)); return false; }
+    catch { setPreview(undefined); setError(t('sellerKeys.pairing.refused')); return false; }
   };
   const onFile = (file: File | undefined): void => {
     setPreview(undefined); setError(undefined);
@@ -68,7 +67,7 @@ export function SellerPairing(props: { readonly session: SessionPublic | undefin
       {preview !== undefined && verdict !== undefined && (
         <section aria-label={t('sellerKeys.pairing.previewHeading')}>
           <h4>{t('sellerKeys.pairing.previewHeading')}</h4>
-          <Notice kind={verdict === 'different' ? 'warn' : 'info'}>{t(`sellerKeys.pairing.compare.${verdict}`)}</Notice>
+          <Notice kind={verdict === 'same' ? 'info' : 'warn'}>{t(`sellerKeys.pairing.compare.${verdict}`)}</Notice>
           <dl className="kv">
             <dt>{t('sellerKeys.pairing.preview.meta')}</dt>
             <dd><Mono>{preview.metaAddress}</Mono></dd>

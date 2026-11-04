@@ -568,7 +568,7 @@
     "policy.receive.result": "Se leyeron {count} anuncios de política; {fresh} son nuevos para tus claves.",
     "policy.receive.capped": "Se detuvo por un límite: vuelve a analizar para continuar.",
     "ledger.import.invalidated": "{count, plural, =0 {La activación no marcaría ninguna observación como inválida por el historial de reorganizaciones.} one {La activación marcaría # observación como inválida por el historial de reorganizaciones.} many {La activación marcaría # de observaciones como inválidas por el historial de reorganizaciones.} other {La activación marcaría # observaciones como inválidas por el historial de reorganizaciones.}}",
-    "sellerKeys.pairing.title": "Vincular otro dispositivo (configuración pública)",
+    "sellerKeys.pairing.title": "Configuración pública del vendedor para tus otros dispositivos (la importación es solo vista previa)",
     "sellerKeys.pairing.intro": "Solo incluye datos públicos: tu meta-dirección, la clave pública de firma de facturas y los id de cadena. No contiene claves privadas, pero es privado para tus dispositivos: compártelo solo con un dispositivo tuyo y compara las claves en ambas pantallas. No está autenticado.",
     "sellerKeys.pairing.exportHeading": "Mostrar en este dispositivo",
     "sellerKeys.pairing.caption": "Configuración pública del vendedor para vincular",
@@ -582,7 +582,7 @@
     "sellerKeys.pairing.previewHeading": "Configuración recibida (vista previa no fiable)",
     "sellerKeys.pairing.compare.same": "Estas claves coinciden con las cargadas en este dispositivo. No se cambió nada.",
     "sellerKeys.pairing.compare.different": "Estas claves difieren de las cargadas en este dispositivo. No se cambió nada. Confirma al propietario por otro canal antes de confiar en ellas.",
-    "sellerKeys.pairing.compare.none": "No hay claves cargadas aquí, así que no hay nada que comparar. No se cambió nada; copia la meta-dirección si la necesitas.",
+    "sellerKeys.pairing.compare.none": "No hay claves cargadas aquí, así que no hay nada que comparar. No se cambió nada. Compara los valores con la pantalla del dispositivo emisor y confírmalos por otro canal antes de copiar o compartir esta meta-dirección.",
     "sellerKeys.pairing.preview.meta": "Meta-dirección",
     "sellerKeys.pairing.preview.signer": "Clave pública de firma de facturas",
     "sellerKeys.pairing.preview.chains": "Id de cadena",
@@ -593,6 +593,7 @@
     "sellerKeys.pairing.secrets.body": "Este emparejamiento nunca contiene secretos. El keystore cifrado sí contiene tus claves secretas: solo se exporta o importa con la copia de seguridad y la importación cifradas con contraseña de esta página. Quien obtenga ese archivo y la contraseña podrá gastar tus fondos.",
     "registry.exportHeading": "Comparte tu meta-dirección pública",
     "registry.exportHint": "Este QR solo contiene tu meta-dirección pública, el mismo valor que puedes publicar. Quien lo escanee puede pagarte; no revela claves privadas ni publica nada.",
-    "registry.exportCaption": "Meta-dirección pública para el registro"
+    "registry.exportCaption": "Meta-dirección pública para el registro",
+    "sellerKeys.pairing.refused": "Esa no es una configuración pública del vendedor compatible. Era demasiado grande, de otro tipo o versión, estaba alterada o contiene claves no válidas. No se cambió nada."
   }
 }

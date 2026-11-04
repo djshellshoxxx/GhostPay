@@ -568,7 +568,7 @@
     "policy.receive.result": "ポリシーのアナウンスを{count}件読み取り、そのうち自分の鍵に対応する新規分は{fresh}件です。",
     "policy.receive.capped": "上限に達して停止しました。続けるには再度スキャンしてください。",
     "ledger.import.invalidated": "{count, plural, =0 {有効化しても、再編成の履歴を理由に無効とされる観測記録はありません。} other {有効化すると、再編成の履歴を理由に#件の観測記録が無効とされます。}}",
-    "sellerKeys.pairing.title": "別の端末とペアリング（公開設定）",
+    "sellerKeys.pairing.title": "他の端末向けの販売者公開設定（インポートはプレビューのみ）",
     "sellerKeys.pairing.intro": "含まれるのは公開データのみです：メタアドレス、請求書署名の公開鍵、チェーンID。秘密鍵は含みませんが、ご自身の端末間のみで共有してください。両方の画面で鍵を照合してください。認証はされません。",
     "sellerKeys.pairing.exportHeading": "この端末で表示",
     "sellerKeys.pairing.caption": "ペアリング用の販売者公開設定",
@@ -582,7 +582,7 @@
     "sellerKeys.pairing.previewHeading": "受信した設定（未検証のプレビュー）",
     "sellerKeys.pairing.compare.same": "これらの鍵はこの端末に読み込まれた鍵と一致します。何も変更されていません。",
     "sellerKeys.pairing.compare.different": "これらの鍵はこの端末に読み込まれた鍵と異なります。何も変更されていません。信頼する前に別の経路で所有者を確認してください。",
-    "sellerKeys.pairing.compare.none": "ここには鍵が読み込まれていないため比較できません。何も変更されていません。必要ならメタアドレスをコピーしてください。",
+    "sellerKeys.pairing.compare.none": "ここには鍵が読み込まれていないため比較できません。何も変更されていません。このメタアドレスをコピーまたは共有する前に、送信側端末の画面と値を照合し、別の経路で確認してください。",
     "sellerKeys.pairing.preview.meta": "メタアドレス",
     "sellerKeys.pairing.preview.signer": "請求書署名の公開鍵",
     "sellerKeys.pairing.preview.chains": "チェーンID",
@@ -593,6 +593,7 @@
     "sellerKeys.pairing.secrets.body": "このペアリングに秘密は含まれません。暗号化キーストアには秘密鍵が含まれ、このページのパスフレーズ暗号化バックアップとインポートでのみ出し入れできます。そのファイルとパスフレーズを得た人は資金を使えます。",
     "registry.exportHeading": "公開メタアドレスを共有",
     "registry.exportHint": "このQRには公開メタアドレスのみが含まれます（公開できる値と同じです）。読み取った人はあなたに支払えます。秘密鍵は含まれず、何も公開されません。",
-    "registry.exportCaption": "レジストリー用の公開メタアドレス"
+    "registry.exportCaption": "レジストリー用の公開メタアドレス",
+    "sellerKeys.pairing.refused": "これは対応する販売者公開設定ではありません。大きすぎる、種類やバージョンが違う、改ざんされている、または無効な鍵を含んでいます。何も変更されていません。"
   }
 }

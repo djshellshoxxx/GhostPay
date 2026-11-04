@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { exportSellerPairing, parseSellerPairing } from '../lib/sellerPairing';
 import { clearSession, generateSession, getSessionPublic } from '../lib/session';
 import { generateWaivedSession } from '../test/keys';
+import { generateSession as generateUnsavedSession } from '../lib/session';
 import { makeServices, renderApp } from '../test/render';
 
 beforeEach(() => {
@@ -72,6 +73,8 @@ describe('SellerPairing', () => {
     await user.paste(incoming);
     await user.click(within(pairing()).getByRole('button', { name: 'Use pasted text' }));
     expect(await within(pairing()).findByText(/No keys are loaded here/)).toBeTruthy();
+    expect(within(pairing()).getByText(/confirm them out of band/)).toBeTruthy();
+    expect(pairing().querySelector('.notice-warn, [class*="warn"]')).not.toBeNull();
     expect(getSessionPublic()).toBeUndefined();
   });
 
@@ -89,6 +92,7 @@ describe('SellerPairing', () => {
       fireEvent.change(within(pairing()).getByLabelText('Or paste QR text'), { target: { value: bad } });
       await user.click(within(pairing()).getByRole('button', { name: 'Use pasted text' }));
       expect(await within(pairing()).findByText('That QR text was not accepted. Check it and try again.')).toBeTruthy();
+      expect(within(pairing()).getByText(/not a supported public seller config/)).toBeTruthy();
       expect(within(pairing()).queryByText('Received config (untrusted preview)')).toBeNull();
     }
   });
@@ -110,5 +114,27 @@ describe('SellerPairing', () => {
     const file = new File([incoming], 'c.json', { type: 'application/json' });
     act(() => { fireEvent.change(input, { target: { files: [file] } }); });
     expect(await within(pairing()).findByText('Received config (untrusted preview)')).toBeTruthy();
+  });
+
+  it('keeps the pairing export behind the backup gate for unsaved keys', async () => {
+    generateUnsavedSession();
+    await open();
+    expect(screen.queryByLabelText('Same config as text')).toBeNull();
+    expect(document.querySelector('[data-qr-kind="device"]')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Copy config text' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Download config file' })).toBeNull();
+    expect(document.getElementById('pairing-h')).toBeNull();
+  });
+
+  it('drops a preview when the loaded keys change', async () => {
+    const incoming = otherDevice();
+    generateWaivedSession();
+    const user = await open();
+    await user.click(within(pairing()).getByLabelText('Or paste QR text'));
+    await user.paste(incoming);
+    await user.click(within(pairing()).getByRole('button', { name: 'Use pasted text' }));
+    expect(await within(pairing()).findByText('Received config (untrusted preview)')).toBeTruthy();
+    act(() => { clearSession(); generateWaivedSession(); });
+    expect(within(pairing()).queryByText('Received config (untrusted preview)')).toBeNull();
   });
 });
