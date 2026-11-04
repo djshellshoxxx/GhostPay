@@ -3,7 +3,13 @@ import { parseFragment } from '@ghostpay/invoice-schema';
 import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import ar from '../../locales/ar.json';
+import en from '../../locales/en.json';
+import es from '../../locales/es.json';
+import ja from '../../locales/ja.json';
+import { formatUnits } from '../lib/format';
 import * as creation from '../lib/invoiceCreate';
+import { MAX_BUFFER_WEI } from '../lib/pay';
 import { clearSession } from '../lib/session';
 import { DEFAULT_SETTINGS } from '../lib/settings';
 import { ServicesContext } from '../lib/services';
@@ -203,5 +209,41 @@ describe('seller gas buffer policy control (ADR-0024)', () => {
     const invoice = await parsedInvoice();
     expect(invoice.v).toBe(1);
     expect(invoice.bufferPolicy).toBeUndefined();
+  });
+});
+
+describe('CreateInvoice: payer safety cap copy', () => {
+  const capWei = MAX_BUFFER_WEI.toString();
+  const capNative = formatUnits(MAX_BUFFER_WEI, 18);
+
+  it('renders the cap in the buffer hint from MAX_BUFFER_WEI, byte-identical to the English source text', () => {
+    mount();
+    const hintId = screen.getByLabelText('Gas buffer policy').getAttribute('aria-describedby');
+    const hint = document.getElementById(hintId ?? '')?.textContent ?? '';
+    expect(hint).toBe('Payers may add a small native-coin buffer so the one-time address can be swept without a linked wallet; each buffer publicly links the payment, the address and the payer. Amounts are whole wei, digits only, the maximum must be at least the minimum, and the minimum may not exceed 10000000000000000 wei (0.01 native coin), because payers refuse larger buffers.');
+    expect(hint).toContain(`may not exceed ${capWei} wei (${capNative} native coin)`);
+  });
+
+  it('renders the cap in the above-cap error from MAX_BUFFER_WEI, byte-identical to the English source text', async () => {
+    const { user } = mount();
+    fill();
+    const above = (MAX_BUFFER_WEI + 1n).toString();
+    choose('range', above, above);
+    await user.click(screen.getByRole('button', { name: 'Create invoice link' }));
+    const alert = screen.getByRole('alert').textContent ?? '';
+    expect(alert).toContain('The minimum buffer is above the 0.01 native coin safety cap that payers apply (10000000000000000 wei), so no payer could meet it. Enter a smaller minimum.');
+    expect(alert).toContain(`above the ${capNative} native coin safety cap that payers apply (${capWei} wei)`);
+  });
+
+  it.each([['en', en], ['es', es], ['ja', ja], ['ar', ar]] as const)('%s catalog takes the cap from placeholders, not a hard-coded figure', (_locale, catalog) => {
+    const messages = catalog.messages as Record<string, string>;
+    for (const key of ['create.buffer.hint', 'create.buffer.error.cap']) {
+      const text = messages[key] ?? '';
+      expect(text).toContain('{capWei}');
+      expect(text).toContain('{capNative}');
+      expect(text).not.toMatch(/[0-9]{16,}/);
+      expect(text).not.toContain(capWei);
+      expect(text).not.toMatch(/0\.01/);
+    }
   });
 });

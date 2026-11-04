@@ -6,6 +6,7 @@ import { CopyButton, Field, Notice } from '../components/Common';
 import { useManifest } from '../components/Disclosure';
 import { QrFrame } from '../components/QrFrame';
 import { userMessage } from '../lib/errors';
+import { formatUnits } from '../lib/format';
 import { MAX_BUFFER_WEI } from '../lib/pay';
 import { buildInvoiceLink, tokenChoices, type CreatedInvoice, type InvoiceForm, type LineItemInput } from '../lib/invoiceCreate';
 import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphrase } from '../lib/keystore';
@@ -25,6 +26,10 @@ function fiatQuoteAvailable(chainId: number, token: string, currency: string): b
 const EMPTY_ITEM: LineItemInput = { description: '', quantity: '1', unitPrice: '' };
 
 const MAX_UINT256 = 2n ** 256n - 1n;
+/** Native coins on supported chains use 18 decimals. */
+const NATIVE_DECIMALS = 18;
+/** The payer safety cap as rendered in the buffer hint and cap error, derived so the copy cannot drift from what pay.ts enforces. */
+const BUFFER_CAP_VALUES = { capWei: MAX_BUFFER_WEI.toString(), capNative: formatUnits(MAX_BUFFER_WEI, NATIVE_DECIMALS) } as const;
 type BufferMode = 'off' | 'declined' | 'range';
 
 /** Canonical positive decimal wei: ASCII digits only, no sign, padding, exponent or leading zero; at most 2^256-1. */
@@ -142,7 +147,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
       if (min === undefined) { setError(t('create.buffer.error.min')); return; }
       if (max === undefined) { setError(t('create.buffer.error.max')); return; }
       if (max < min) { setError(t('create.buffer.error.order')); return; }
-      if (min > MAX_BUFFER_WEI) { setError(t('create.buffer.error.cap')); return; }
+      if (min > MAX_BUFFER_WEI) { setError(t('create.buffer.error.cap', BUFFER_CAP_VALUES)); return; }
       bufferPolicy = { accepted: true, maxWei: max.toString(), minWei: min.toString(), refund: 'none' };
     }
     const form: InvoiceForm = {
@@ -294,7 +299,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
           <Field label={t('create.slippage')}>{(id) => <input id={id} type="number" min={0} max={10000} value={slippage} onChange={(e) => { setSlippage(Number(e.target.value)); }} />}</Field>
           {!supportedOnly && (
             <>
-              <Field label={t('create.buffer.label')} hint={t('create.buffer.hint')}>
+              <Field label={t('create.buffer.label')} hint={t('create.buffer.hint', BUFFER_CAP_VALUES)}>
                 {(id, d) => (
                   <select id={id} aria-describedby={d} value={effectiveBufferMode} onChange={(e) => { setBufferMode(e.target.value as BufferMode); }}>
                     <option value="off">{t('create.buffer.off')}</option>
