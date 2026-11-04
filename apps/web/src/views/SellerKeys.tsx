@@ -8,6 +8,7 @@ import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphra
 import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, getSessionBackup, getSessionPublic, importKeystore, importSession, markKeystoreDownloaded, sessionHasExternalCopy, subscribeSessionBackup, waiveSessionBackup, type SessionPublic } from '../lib/session';
 import { authorizeKeyExport, deleteEncryptedVault, loadedKeysRecoverable, readEncryptedVault, saveEncryptedVault, unlockEncryptedVault, VaultChangedError, vaultMetaAddress, VaultSavedForPreviousKeysError } from '../lib/keyVault';
 import { useApp } from '../state';
+import { SellerPairing, pairingChainIds } from './SellerPairing';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 
 /**
@@ -460,6 +461,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
               cancelImport(); setImportText(text); setMessage({ kind: 'ok', text: t('sellerKeys.keystoreReceived') }); return true;
             }} />
           </details>
+          <SellerPairing session={undefined} chainIds={[]} />
         </>
       ) : (
         <>
@@ -469,6 +471,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
             <p><Mono>{s.metaAddress}</Mono></p>
             <QrFrame kind="shareable" text={s.metaAddress} caption={t('sellerKeys.metaCaption')} />
             <p><CopyButton text={s.metaAddress} label={t('sellerKeys.copyMeta')} /></p>
+            <SellerPairing session={s} chainIds={pairingChainIds(app.settings.rpcUrls)} />
           </BackupGate>
           <h3>{t('sellerKeys.signingKeyHeading')}</h3>
           <p><Mono>{s.signerPublicKey}</Mono></p>
