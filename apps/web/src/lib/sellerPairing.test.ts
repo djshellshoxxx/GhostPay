@@ -21,7 +21,7 @@ describe('seller public pairing schema', () => {
     const p = pub();
     const t = text(p, [137, 1, 1, 11155111]);
     expect(parseSellerPairing(t)).toEqual({ metaAddress: p.metaAddress, signerPublicKey: p.signerPublicKey, chainIds: [1, 137, 11155111] });
-    expect(Object.keys(JSON.parse(t) as object).sort()).toEqual(['chainIds', 'check', 'format', 'metaAddress', 'signerPublicKey', 'v']);
+    expect(Object.keys(JSON.parse(t) as object).sort((a, b) => (a < b ? -1 : a > b ? 1 : 0))).toEqual(['chainIds', 'check', 'format', 'metaAddress', 'signerPublicKey', 'v']);
     expect(new TextEncoder().encode(t).byteLength).toBeLessThan(MAX_SELLER_PAIRING_BYTES);
   });
   it('refuses oversize input', () => {

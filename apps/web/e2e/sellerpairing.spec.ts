@@ -3,7 +3,8 @@ import { expect, test } from '@playwright/test';
 import { generateKeys } from './helpers';
 
 test('public seller config exports on one device and previews on another without applying anything', async ({ browser }) => {
-  const a = await (await browser.newContext({ serviceWorkers: 'block' })).newPage();
+  const ctxA = await browser.newContext({ serviceWorkers: 'block' });
+  const a = await ctxA.newPage();
   await a.goto('/');
   const meta = await generateKeys(a);
   const text = await a.getByLabel('Same config as text').inputValue();
@@ -12,7 +13,8 @@ test('public seller config exports on one device and previews on another without
   await expect(a.locator('[data-qr-kind="device"]')).toBeVisible();
   await expect(a.getByText('Moving secret keys is separate')).toBeVisible();
 
-  const b = await (await browser.newContext({ serviceWorkers: 'block' })).newPage();
+  const ctxB = await browser.newContext({ serviceWorkers: 'block' });
+  const b = await ctxB.newPage();
   await b.goto('/');
   await b.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Seller keys' }).click();
   const pairing = b.locator('section[aria-labelledby="pairing-h"]');
@@ -26,4 +28,6 @@ test('public seller config exports on one device and previews on another without
   await expect(pairing.getByText(/No keys are loaded here/)).toBeVisible();
   // Nothing was applied: this device still has no keys.
   await expect(b.getByRole('button', { name: 'Generate new keys' })).toBeVisible();
+  await ctxA.close();
+  await ctxB.close();
 });

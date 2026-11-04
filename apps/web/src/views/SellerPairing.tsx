@@ -66,7 +66,7 @@ export function SellerPairing(props: { readonly session: SessionPublic | undefin
       <CameraImporter label={t('sellerKeys.pairing.importLabel')} scopeKey={session} onInputChange={() => { setPreview(undefined); setError(undefined); }} onText={(text, signal) => (signal.aborted ? false : accept(text))} />
       {error !== undefined && <Notice kind="error">{error}</Notice>}
       {preview !== undefined && verdict !== undefined && (
-        <div role="region" aria-label={t('sellerKeys.pairing.previewHeading')}>
+        <section aria-label={t('sellerKeys.pairing.previewHeading')}>
           <h4>{t('sellerKeys.pairing.previewHeading')}</h4>
           <Notice kind={verdict === 'different' ? 'warn' : 'info'}>{t(`sellerKeys.pairing.compare.${verdict}`)}</Notice>
           <dl className="kv">
@@ -81,7 +81,7 @@ export function SellerPairing(props: { readonly session: SessionPublic | undefin
             <CopyButton text={preview.metaAddress} label={t('sellerKeys.pairing.copyMeta')} />{' '}
             <button type="button" className="btn" onClick={() => { setPreview(undefined); setError(undefined); }}>{t('sellerKeys.pairing.clear')}</button>
           </p>
-        </div>
+        </section>
       )}
       <Notice kind="warn" title={t('sellerKeys.pairing.secrets.title')}>{t('sellerKeys.pairing.secrets.body')}</Notice>
     </section>

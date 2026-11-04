@@ -15,7 +15,7 @@ export const SELLER_PAIRING_VERSION = 1;
 export const MAX_SELLER_PAIRING_BYTES = 2048;
 export const MAX_PAIRING_CHAINS = 16;
 const BAD = 'This is not a supported public seller config.';
-const KEYS = ['chainIds', 'check', 'format', 'metaAddress', 'signerPublicKey', 'v'].join('|');
+const KEYS = 'chainIds|check|format|metaAddress|signerPublicKey|v';
 const SIGNER = /^0[23][0-9a-f]{64}$/;
 
 export interface SellerPairingConfig {
@@ -60,7 +60,7 @@ export function parseSellerPairing(text: string): SellerPairingConfig {
   if (text.length > MAX_SELLER_PAIRING_BYTES || new TextEncoder().encode(text).byteLength > MAX_SELLER_PAIRING_BYTES) return bad();
   let parsed: unknown;
   try { parsed = parseStrictJson(text.trim()); } catch { return bad(); }
-  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed) || Object.keys(parsed).sort().join('|') !== KEYS) return bad();
+  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed) || Object.keys(parsed).sort((a, b) => (a < b ? -1 : a > b ? 1 : 0)).join('|') !== KEYS) return bad();
   const o = parsed as Record<string, unknown>;
   if (o['format'] !== SELLER_PAIRING_FORMAT || o['v'] !== SELLER_PAIRING_VERSION) return bad();
   const c = validate(o['metaAddress'], o['signerPublicKey'], o['chainIds']);

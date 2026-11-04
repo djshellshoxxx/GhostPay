@@ -13,7 +13,7 @@ beforeEach(() => {
   window.sessionStorage.clear();
   window.history.replaceState(null, '', '/');
 });
-afterEach(() => { vi.restoreAllMocks(); clearSession(); });
+afterEach(() => { vi.restoreAllMocks(); Reflect.deleteProperty(navigator, 'mediaDevices'); clearSession(); });
 
 async function open(): Promise<ReturnType<typeof userEvent.setup>> {
   const user = userEvent.setup();
