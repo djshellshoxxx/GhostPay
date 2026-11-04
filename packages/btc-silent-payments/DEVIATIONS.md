@@ -129,8 +129,32 @@ Frigate (Sparrow) / Electrum Silent Payments protocol:
   Core `pow_tests.cpp` retarget vectors and real mainnet headers 0-2, plus mined regtest-style chains. **Not covered:**
   block contents beyond what `verifyBlockTransactions` binds, signet block signatures, Core checkpoints/assumevalid,
   anything below the caller's pinned checkpoint (which must sit on a 2016-block boundary), withheld heavier chains
-  (ask several sources), and cheap test-network PoW. Checkpoints for testnet4/signet are not pinned in this repo, so the
-  web view does not use `HeaderChain` yet (it keeps per-block PoW/Merkle/witness checks and height linkage).
+  (ask several sources), and cheap test-network PoW. This is header-chain validation with most-work selection, **not
+  SPV and not full validation**.
+- **Deep forks (2026-11-04, review H1).** `syncHeaderChain` used to download at most `maxHeaders` above the (doubling,
+  so up to ~2x overshooting) fork probe and `connect` that prefix once: a heavier fork whose deciding headers lay past
+  that window was never adopted and looked like a lighter one. Now, once a probe misses, the competing branch is
+  streamed in `batchSize` chunks into a `HeaderBranch` (compact validation context; the first invalid header stops it)
+  and adopted as soon as its cumulative work is strictly greater; it is reported as not adopted only after it was
+  compared up to the source tip. The fork budget bounds what would be replaced (`chain.tipHeight - probe point`,
+  `maxForkHeaders`, default `DEFAULT_FORK_HEADERS` = 10 080, cap 100 000), not the distance to the source tip, so a
+  shallow reorg is followed however far ahead the source is; a deeper one, or a branch that has not won `maxHeaders`
+  past the active tip while the source claims more, fails with `FORK_TOO_DEEP` ("could not be evaluated") and changes
+  nothing. Extending the active chain connects each downloaded chunk before requesting the next.
+- **HeaderChain memory (2026-11-04).** Active headers were kept as parsed objects with hex strings (built with `+=`,
+  so ropes of tiny strings) and a hash map: ~2 040 bytes per header measured. They are now 80 raw + 32 hash bytes in
+  growable typed arrays with cumulative work every 2016 headers (no hash map; a parent is found by scanning back from
+  the tip), measured 147-196 bytes per header (`scripts/bench-headerchain-memory.mjs`, guarded by
+  `headerchain.memory.test.ts`). `headersHex()` gives all headers as one flat string for storage.
+- **Header chain persistence and the web view (2026-11-04).** `HeaderChain.fromJSON` now requires the caller's pinned
+  `checkpoint` (`INVALID_INPUT` without it) and refuses (`INVALID_HEADER`) stored data whose checkpoint (height, hash, header, previous headers)
+  differs, so stored data can never choose its own anchor; before this, `fromJSON` adopted whatever checkpoint the JSON
+  named. `fromJSON` also re-validates in batches of `MAX_BATCH`, so chains longer than 100 000 headers (signet,
+  testnet4) reload; before, they failed with `INVALID_INPUT`. The web view (`apps/web/src/features/btc/headers.ts`)
+  anchors `HeaderChain` at each test network's pinned **genesis** header (no later checkpoint is pinned), syncs it with
+  `syncHeaderChainFromSources`, stores it through a `ScanStateStore`-shaped seam (plus a work-guarded save and a
+  delete), and scans through
+  `HeaderAnchoredTweakSource`. `ScanState` itself is still not persisted by the view (see below).
 - **Witness binding (2026-10-25).** `parseRawTransaction` (txid/wtxid, strict BIP-144) and `verifyWitnessCommitment`
   (Core `CheckWitnessMalleation`: last matching commitment output, 32-byte reserved value, no witness without a
   commitment). Prevout scripts/amounts remain unbound (earlier blocks); a lying server can hide, not forge, payments.

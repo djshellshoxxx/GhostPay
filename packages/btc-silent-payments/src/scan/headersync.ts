@@ -20,8 +20,14 @@ export interface SyncOptions {
   readonly toHeight?: number;
   /** Headers per request (default 2000). */
   readonly batchSize?: number;
-  /** Largest number of headers one call downloads (default 50 000); call again to continue. */
+  /** Largest number of headers one call downloads when extending the chain (default 50 000); call again to continue. */
   readonly maxHeaders?: number;
+  /**
+   * Most active headers a competing branch may replace (measured from the fork probe, default 10 080, at most
+   * 100 000). A deeper fork fails with `FORK_TOO_DEEP` and changes nothing. A branch counts as lighter only after it
+   * was compared up to the source tip.
+   */
+  readonly maxForkHeaders?: number;
   readonly signal?: AbortSignal;
 }
 
@@ -29,6 +35,11 @@ export interface SyncResult extends ConnectResult {
   /** Headers downloaded by this call (fork probes included). */
   readonly fetched: number;
 }
+
+/** Upper bound of `maxForkHeaders`. */
+export const MAX_FORK_HEADERS = 100_000;
+/** Default `maxForkHeaders`: five difficulty periods of active headers may be replaced by one call. */
+export const DEFAULT_FORK_HEADERS = 10_080;
 
 function checkAbort(signal: AbortSignal | undefined): void {
   if (signal?.aborted === true) fail('ABORTED');
@@ -62,7 +73,9 @@ async function fetchHeaders(source: HeaderSource, from: number, count: number, s
 export async function syncHeaderChain(chain: HeaderChain, source: HeaderSource, o: SyncOptions = {}): Promise<SyncResult> {
   const batch = o.batchSize ?? 2000;
   const max = o.maxHeaders ?? 50_000;
+  const maxFork = o.maxForkHeaders ?? DEFAULT_FORK_HEADERS;
   if (!Number.isSafeInteger(batch) || batch < 1 || batch > 100_000 || !Number.isSafeInteger(max) || max < 1) return fail('INVALID_INPUT');
+  if (!Number.isSafeInteger(maxFork) || maxFork < 1 || maxFork > MAX_FORK_HEADERS) return fail('INVALID_INPUT');
   checkAbort(o.signal);
   const cp = chain.checkpointHeight;
   const sourceTip = o.toHeight ?? (await call(() => source.getTipHeight(o.signal)));
@@ -71,23 +84,45 @@ export async function syncHeaderChain(chain: HeaderChain, source: HeaderSource, 
   let fetched = 0;
   let h = Math.min(chain.tipHeight, sourceTip);
   let step = 1;
+  let forked = false;
   for (;;) {
     const [hex] = await fetchHeaders(source, h, 1, o.signal);
     fetched++;
     if (parseHeader(hex as string).hash === chain.hashAt(h)) break;
     if (h === cp) return fail('INVALID_HEADER');
+    forked = true;
     h = Math.max(cp, h - step);
     step *= 2;
   }
-  const last = Math.min(sourceTip, h + max);
-  if (last <= h) return { adopted: false, reorg: false, forkHeight: h, tipHeight: chain.tipHeight, fetched };
-  const all: string[] = [];
-  for (let from = h + 1; from <= last; from += batch) {
-    const n = Math.min(batch, last - from + 1);
-    all.push(...(await fetchHeaders(source, from, n, o.signal)));
-    fetched += n;
+  if (!forked) {
+    // Extending the active chain: each downloaded chunk is validated and connected before the next is requested.
+    const last = Math.min(sourceTip, h + max);
+    let adopted = false;
+    for (let from = h + 1; from <= last; from += batch) {
+      const n = Math.min(batch, last - from + 1);
+      const chunk = await fetchHeaders(source, from, n, o.signal);
+      fetched += n;
+      adopted = chain.connect(chunk).adopted || adopted;
+    }
+    return { adopted, reorg: false, forkHeight: h, tipHeight: chain.tipHeight, fetched };
   }
-  return { ...chain.connect(all), fetched };
+  // A competing branch. What must be compared is the active chain above the probe point (the probe can land up to
+  // twice the fork depth low); more than `maxFork` of it is not evaluated. The branch is streamed chunk by chunk into
+  // a compact validation context (any invalid header stops it) and adopted as soon as its cumulative work is strictly
+  // greater; later calls extend it normally. A branch that has not won by `max` headers past the active tip, while the
+  // source claims more, cannot be evaluated in this call either.
+  if (chain.tipHeight - h > maxFork) return fail('FORK_TOO_DEEP');
+  const branch = chain.branchAt(h);
+  const last = Math.min(sourceTip, chain.tipHeight + max);
+  for (let from = h + 1; from <= last; ) {
+    const n = Math.min(batch, last - from + 1);
+    branch.add(await fetchHeaders(source, from, n, o.signal));
+    fetched += n;
+    from += n;
+    if (branch.beatsActive) return { ...branch.adopt(), fetched };
+  }
+  if (last < sourceTip) return fail('FORK_TOO_DEEP');
+  return { adopted: false, reorg: false, forkHeight: branch.forkHeight, tipHeight: chain.tipHeight, fetched };
 }
 
 export type SourceSyncResult = { readonly ok: true; readonly result: SyncResult } | { readonly ok: false; readonly code: SilentPaymentErrorCode };

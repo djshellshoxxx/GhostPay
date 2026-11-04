@@ -81,7 +81,7 @@ hardware wallet driver is shipped (see `DEVIATIONS.md`).
 Header chain and scan state (spec 12): `HeaderChain` (retarget, MTP, chain work, most-work selection above a pinned
 checkpoint), `syncHeaderChain` / `syncHeaderChainFromSources`, `HeaderAnchoredTweakSource`, `verifyBlockTransactions`
 (txid Merkle root + BIP-141 witness commitment), and `resumeScan` with a serializable `ScanState`. These are header-only
-(SPV-style) checks, not full validation; see `DEVIATIONS.md` for exactly what they cover.
+checks with most-work selection, not SPV and not full validation; see `DEVIATIONS.md` for exactly what they cover.
 
 ## Security notes
 

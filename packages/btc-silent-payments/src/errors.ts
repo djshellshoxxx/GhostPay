@@ -34,6 +34,7 @@ export type SilentPaymentErrorCode =
   | 'FEE_TOO_HIGH'
   | 'SIGNATURE_INVALID'
   | 'INVALID_HEADER'
+  | 'FORK_TOO_DEEP'
   | 'SIGNER_REFUSED';
 
 const MESSAGES: Readonly<Record<SilentPaymentErrorCode, string>> = {
@@ -68,6 +69,7 @@ const MESSAGES: Readonly<Record<SilentPaymentErrorCode, string>> = {
   FEE_TOO_HIGH: 'fee rate or absolute fee exceeds the safety limit',
   SIGNATURE_INVALID: 'signed transaction failed verification',
   INVALID_HEADER: 'block header violates a header-chain rule',
+  FORK_TOO_DEEP: "the source's competing header branch could not be evaluated (too deep for one call); nothing was changed",
   SIGNER_REFUSED: 'the signer refused the request',
 };
 

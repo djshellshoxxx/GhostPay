@@ -116,6 +116,74 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     quorum, scan-mode claims, `groth16`, `privacy-pools`), and ESLint forbids importing `createScanSource`, `createPir2Source`,
     `createLightSource`, `createQuorumSource`, `describeScanMode` and `SCAN_MODE_CLAIMS` from `@ghostpay/scan-source` in apps/web.
 22. No inline `style=` attributes are used anywhere (the CSP has no `'unsafe-inline'`): the QR code is an SVG built from React elements and CSS classes.
+23. **Bitcoin view header chain (full build profile only; `features/btc` stays rejected by the lean profile guard).**
+    `src/features/btc/headers.ts` anchors `HeaderChain` (`@ghostpay/btc-silent-payments`) at the selected test network's
+    pinned genesis header and syncs it from the configured Esplora server (`GET /blocks/:height`, 10 headers per request,
+    falling back to `/block-height/:h` + `/block/:hash/header`). This is **header-chain validation against the chain the
+    source claims is best, with most-work selection. It is NOT SPV, NOT full validation and NOT trustless.**
+    Checked on this device: header linkage, proof of work against each header's nBits and the network limit, the exact
+    nBits the difficulty rules require, median-time-past and the 2-hour future limit, BIP-34/66/65 versions, most cumulative
+    work (strictly more) among the branches seen. Every scanned block must equal the checked chain's hash at its height
+    (`HeaderAnchoredTweakSource`); a block's transactions are bound to that header by the txid Merkle root and the BIP-141
+    witness commitment (`esplora.ts`, unchanged). **Not checked / trusted:** transactions, scripts and amounts of the
+    outputs being spent (earlier blocks), spent status, signet block signatures, Core checkpoints/assumevalid; the server
+    is trusted for availability and can withhold a heavier chain or eclipse the device (only one source can be configured
+    today; `syncHeaders` accepts several and fails closed if any fails); test-network proof of work is cheap, so a server
+    can mine a heavier fork. A first sync starts at genesis (no later checkpoint is pinned): slow on testnet4/signet
+    (~10 requests per 100 headers). One "Update headers"/scan call runs at most 25 rounds of 4032 headers (~100 000) and
+    says when more remain; progress is saved every 5 rounds and at the end of every call (also before a failure), so it
+    resumes. While headers are behind (for example after a forget and a capped resync), results from blocks above the
+    checked tip are "not yet checked": they are kept, never treated as reorged, but cannot be selected for a sweep (the
+    view says so), and a new scan never goes above the checked tip.
+    Memory (measured, `packages/btc-silent-payments/scripts/bench-headerchain-memory.mjs`: node --expose-gc, regtest
+    headers connected in 2016-header batches, GC'd `heapUsed + arrayBuffers` with the chain alive minus after dropping it):
+    before the compact store ~2 040 bytes per header (100 000 headers = 204 MB; review measured ~2.1 KB); now 147 B/header
+    at 100 000 and 196 B/header at 300 000 (the arrays grow by doubling): ~59 MB for 300 000, ~80 MB at the limit. The
+    chain keeps 80 raw bytes + 32 hash bytes per header in typed arrays and cumulative work every 2016 headers; parsed
+    headers are built only on demand. A vitest guard (`headerchain.memory.test.ts`, 20 000 headers) fails above 400 B.
+    Loading also holds the stored text (160 B/header, one flat hex string; released right after `JSON.parse`) and the
+    parsed copy while re-validating: about +64 MB transient at 400 000. Size limit: `MAX_HEADERS` = 400 000 per network; a
+    saved chain above it is deleted on load and a sync past it fails closed (`UNSUPPORTED`): nothing above checked headers
+    is scanned. Ceiling: signet grows ~52 600 headers a year and is near 325 000 now (2026-11), so it reaches the limit
+    around 2028; testnet4 (from 2024) is far below. Re-validation yields to the event loop every 2016 headers and shows
+    progress (seconds of main-thread CPU for ~300 000 headers, but no freeze).
+    Competing branches: once the server disagrees, the package streams its branch in chunks of 1000 into a compact
+    validation context (any invalid header stops it at once), adopts it as soon as its cumulative work is strictly
+    greater, and extends it in later rounds; "no more work" is reported only after the branch was compared up to the
+    source tip. The budget is what would be replaced: more than 10 080 checked headers above the probe point (which can
+    overshoot the fork by up to 2x) is not evaluated, and neither is a branch that has not won 4032 headers past the
+    checked tip while the server claims more; the check then fails with "the server's claim of a competing chain could
+    not be evaluated" and nothing changes. A shallow reorg is followed however far ahead the server is (review M3).
+    Persistence: IndexedDB `ghostpay-btc-headers` / store `chains`; key `headers:v1:<network>` holds JSON
+    `{version: 2, network, checkpoint, headersHex}` (all active headers as one hex string) and `headers:v1:<network>:work`
+    its cumulative work. Public chain data only: no key, address, amount or scan result. A save reads the stored work and
+    writes in one transaction and never replaces a chain with strictly more work; a refused save says another tab or
+    window holds a heavier chain. A save reports success only after the transaction commits (`oncomplete`). Load
+    re-validates every header with the pinned genesis as the **required** checkpoint (`HeaderChain.fromJSON` no longer
+    accepts a call without one); any failure (bad JSON, old record format, wrong network, a substituted self-consistent
+    anchor, a tampered header, over the size limit) deletes the record and resyncs from genesis. Without IndexedDB (or
+    when a save fails) the view says headers are not kept. The package's `ScanState` is still **not** persisted (it is
+    private and needs an encrypted store): scan results stay in memory.
+    Saved headers are keyed by network only, so they pin whichever server first filled them: after a deliberate server
+    change the new server may look like a lighter fork (or its blocks are refused with `REORG_DETECTED`). The view then
+    says so and offers **"Forget saved headers for this network"**, behind a confirmation, which deletes the record and the
+    in-memory chain; the next check starts at genesis from the configured server. It is never done automatically.
+    Forgetting cancels a running check and bumps a generation counter: a sync started before it may not save (its
+    fail-closed save is skipped) or change scan results.
+    Failure handling: a header that fails any rule, a malformed or missing answer, or an unreachable server fails the
+    header check ("a header the server sent failed validation, so the server's chain could not be evaluated"), keeps (and
+    has saved) only the valid prefix, and blocks the scan. A branch with no more work is ignored and its blocks are
+    refused (`REORG_DETECTED`). A branch with more work is adopted; scan results from checked blocks above the fork are
+    removed (spend tweaks wiped), the result is cut back to the fork height (or discarded) and the view says so. This
+    happens whenever the chain changed, also when a later round of the same sync fails or the action went stale (review
+    H2): the shared chain is updated in place, so results are invalidated before anything else is reported.
+    `scanForPayments` without `headers` still exists (unit tests and per-block checks); the view never calls it that way.
+    Not done (review L-d): parsed context is not limited to the last 2016 + 11 headers in the sense of dropping old ones:
+    fork evaluation, reorg checks of scan results (`hashAt` at any scanned height), the probe and persistence read old
+    active headers, so all are kept, but compactly (above). Remaining gaps: `spentCount` of a cut-back scan still
+    counts outputs from removed blocks. Unverified: the
+    `/blocks/:height` field mapping follows the electrs/Esplora API and is exercised only against the test mock (no live
+    server is contacted by tests); a mismatch fails closed (each rebuilt header must hash to the summary's `id`).
 
 ## Coverage exclusions (thresholds 90/85/90/90 are NOT lowered)
 Test files named `*.nocov.test.*` run in a second pass without coverage (`vitest.nocov.config.ts`, chained in `npm test`). Only the

@@ -2,6 +2,7 @@ import { parseHeader, SilentPaymentError } from '@ghostpay/btc-silent-payments';
 import { describe, expect, it } from 'vitest';
 import { EsploraClient, EsploraTweakSource, normalizeEsploraUrl } from './esplora';
 import { coinbase, mineHeader, mockChain, paymentTx, walletA, withTxid, withWitnessCommitment, SEED_B } from './fixtures.testutil';
+import { EsploraHeaderSource, loadHeaderChain, MemoryHeaderStore, syncHeaders } from './headers';
 import { BTC_NETWORKS, btcNetwork, MAINNET_GENESIS } from './network';
 import { MAX_SCAN_BLOCKS, scanForPayments } from './scan';
 import { SCAN_CHECKS, SCAN_LIMITS } from './verification';
@@ -603,12 +604,22 @@ describe('EsploraTweakSource and scanning', () => {
     expect(res.found.map((f) => f.amountSats)).toEqual([700_000_000n]);
     // Starting at block 1, the same range is linked to the pinned genesis, and the fork is caught.
     expect(await codeOf(scanForPayments({ client, wallet: w, fromHeight: 1 }))).toBe('REORG_DETECTED');
+    // The view always scans against the checked header chain: the unanchored block cannot even enter it, and a scan
+    // anchored to the honest chain refuses it.
+    const honest = mockChain('regtest', w);
+    const { chain: headers } = await loadHeaderChain(btcNetwork('regtest'), new MemoryHeaderStore(), { now: () => 2_000_000_000 });
+    await syncHeaders({ chain: headers, sources: [new EsploraHeaderSource(new EsploraClient({ baseUrl: BASE, fetchFn: honest.fetchFn }))], store: new MemoryHeaderStore() });
+    expect(await codeOf(syncHeaders({ chain: headers, sources: [new EsploraHeaderSource(client)], store: new MemoryHeaderStore() }))).toBe('INVALID_HEADER');
+    expect(await codeOf(scanForPayments({ client, wallet: w, fromHeight: 4, headers }))).toBe('REORG_DETECTED');
     // The disclosure must not claim more than that.
     const text = [...SCAN_CHECKS, ...SCAN_LIMITS].join('\n');
     expect(text).not.toMatch(/down to the pinned genesis/);
     expect(text).not.toMatch(/cannot invent/);
-    expect(text).toMatch(/Only a scan that starts at block 0 or 1 is linked to the pinned genesis block/);
-    expect(text).toMatch(/not anchored to the genesis block or to any checkpoint/);
+    expect(text).not.toMatch(/trustless|\bis SPV|full SPV/i);
+    expect(text).toMatch(/not SPV and not full validation/);
+    expect(text).toMatch(/starting at the pinned genesis block/);
+    expect(text).toMatch(/most cumulative work is kept/);
+    expect(text).toMatch(/hide a heavier chain or show you only its own \(an eclipse\)/);
     expect(text).toMatch(/can also invent one/);
   });
 
