@@ -396,13 +396,52 @@ async function expectVerifiedMatch(page: Page, payment: MinedPayment): Promise<v
   await expect(receiptPanel(page)).toBeVisible();
 }
 
-test('core journey: keys -> signed invoice -> consented payment -> scan -> bound receipt -> sweep -> backup -> independent restore', async ({ browser }) => {
+
+type OpenProfile = (opts?: { clock?: boolean }) => Promise<Profile>;
+
+/** Runs a body against a fresh chain simulator; asserts no unexpected RPC traffic and closes every profile it opened. */
+async function withChain(browser: Browser, body: (sim: ChainSim, open: OpenProfile) => Promise<void>): Promise<void> {
   const sim = new ChainSim();
   const profiles: Profile[] = [];
   try {
+    await body(sim, async (opts) => {
+      const profile = await newProfile(browser, sim, opts);
+      profiles.push(profile);
+      return profile;
+    });
+    expect(sim.unexpected).toEqual([]);
+  } finally {
+    for (const profile of profiles) await profile.context.close();
+  }
+}
+
+/** Opens an independent seller profile with freshly generated keys. */
+async function openSeller(open: OpenProfile): Promise<Page> {
+  const { page } = await open();
+  await page.goto('/');
+  await generateKeys(page);
+  return page;
+}
+
+/** Opens an independent payer profile with the mock wallet injected. */
+async function openPayer(open: OpenProfile, sim: ChainSim, opts: { clock?: boolean } = {}): Promise<Profile> {
+  const payer = await open(opts);
+  await injectWallet(payer.page, sim);
+  return payer;
+}
+
+/** Pays the invoice from the payer profile, then has the seller scan and see exactly that verified payment. */
+async function payAndDetect(payer: Page, sim: ChainSim, link: string, seller: Page): Promise<MinedPayment> {
+  const payment = await payThroughCheckout(payer, sim, link);
+  await scan(seller);
+  await expectVerifiedMatch(seller, payment);
+  return payment;
+}
+
+test('core journey: keys -> signed invoice -> consented payment -> scan -> bound receipt -> sweep -> backup -> independent restore', async ({ browser }) => {
+  await withChain(browser, async (sim, open) => {
     // 1. Seller keys, saved as an encrypted vault (production KDF).
-    const seller = await newProfile(browser, sim); profiles.push(seller);
-    const s = seller.page;
+    const { page: s } = await open();
     const workers: string[] = [];
     s.on('worker', (w) => workers.push(w.url()));
     await s.goto('/');
@@ -419,8 +458,7 @@ test('core journey: keys -> signed invoice -> consented payment -> scan -> bound
     const digest = `0x${bytesToHex(calculateInvoiceDigest(opened.invoice))}`;
 
     // 3. An independent payer profile reviews, consents and pays the exact previewed transaction.
-    const payer = await newProfile(browser, sim); profiles.push(payer);
-    await injectWallet(payer.page, sim);
+    const payer = await openPayer(open, sim);
     const payment = await payThroughCheckout(payer.page, sim, link);
     const sent = sim.walletTxs[0];
     expect(sent?.to.toLowerCase()).toBe(FAKE_ROUTER.toLowerCase());
@@ -500,7 +538,7 @@ test('core journey: keys -> signed invoice -> consented payment -> scan -> bound
     }
 
     // 8. Restore into an independent, fresh browser profile (no shared storage), memory only.
-    const restored = await newProfile(browser, sim); profiles.push(restored);
+    const restored = await open();
     const r = restored.page;
     await r.goto('/');
     expect(await readVault(r)).toBeNull();
@@ -518,22 +556,14 @@ test('core journey: keys -> signed invoice -> consented payment -> scan -> bound
     expect(sha256(vaultAfter ?? '')).toBe(sha256(vaultBefore ?? ''));
     const second = await parseFragment(new URL(await createInvoice(s, { description: 'After restore' })).hash);
     expect(second.verification.signatureValid).toBe(true);
-    expect(sim.unexpected).toEqual([]);
-  } finally {
-    for (const p of profiles) await p.context.close();
-  }
+  });
 });
 
 test('invoice expiry is refused at the final pay guard: nothing reaches the wallet', async ({ browser }) => {
-  const sim = new ChainSim();
-  const profiles: Profile[] = [];
-  try {
-    const seller = await newProfile(browser, sim); profiles.push(seller);
-    await seller.page.goto('/');
-    await generateKeys(seller.page);
-    const link = await createShortInvoice(seller.page, 1);
-    const payer = await newProfile(browser, sim, { clock: true }); profiles.push(payer);
-    await injectWallet(payer.page, sim);
+  await withChain(browser, async (sim, open) => {
+    const s = await openSeller(open);
+    const link = await createShortInvoice(s, 1);
+    const payer = await openPayer(open, sim, { clock: true });
     await reviewToFinalCheck(payer.page, sim, link);
     // The invoice expires between the reviewed final check and the send click.
     await payer.context.clock.setSystemTime(Date.now() + 2 * 3_600_000);
@@ -548,28 +578,17 @@ test('invoice expiry is refused at the final pay guard: nothing reaches the wall
     await expect(payer.page.getByText('This payment cannot proceed')).toBeVisible();
     await expect(payer.page.getByRole('button', { name: 'Continue' })).toBeDisabled();
     expect(sim.walletTxs).toHaveLength(0);
-    expect(sim.unexpected).toEqual([]);
-  } finally {
-    for (const p of profiles) await p.context.close();
-  }
+  });
 });
 
 test('stale session: a lock and reimport of the same keys mid-sweep refuses the in-flight sweep and drops scan results', async ({ browser }) => {
-  const sim = new ChainSim();
-  const profiles: Profile[] = [];
-  try {
-    const seller = await newProfile(browser, sim); profiles.push(seller);
-    const s = seller.page;
-    await s.goto('/');
-    await generateKeys(s);
+  await withChain(browser, async (sim, open) => {
+    const s = await openSeller(open);
     const identity = await identityOf(s);
     const keystore = await exportKeystore(s);
     const link = await createInvoice(s);
-    const payer = await newProfile(browser, sim); profiles.push(payer);
-    await injectWallet(payer.page, sim);
-    const payment = await payThroughCheckout(payer.page, sim, link);
-    await scan(s);
-    await expectVerifiedMatch(s, payment);
+    const payer = await openPayer(open, sim);
+    await payAndDetect(payer.page, sim, link, s);
 
     await scanMatches(s).getByRole('button', { name: 'Sweep this payment' }).click();
     await sweepView(s).getByLabel(/Directly/).check();
@@ -597,26 +616,15 @@ test('stale session: a lock and reimport of the same keys mid-sweep refuses the 
     expect(sim.methods).not.toContain('eth_sendRawTransaction');
     expect(sim.raws).toHaveLength(0);
     expect(await readSweepJournal(s)).toEqual([]);
-    expect(sim.unexpected).toEqual([]);
-  } finally {
-    for (const p of profiles) await p.context.close();
-  }
+  });
 });
 
 test('reorg: the payment block is replaced, the resumed scan invalidates the saved observation and offers no receipt', async ({ browser }) => {
-  const sim = new ChainSim();
-  const profiles: Profile[] = [];
-  try {
-    const seller = await newProfile(browser, sim); profiles.push(seller);
-    const s = seller.page;
-    await s.goto('/');
-    await generateKeys(s);
+  await withChain(browser, async (sim, open) => {
+    const s = await openSeller(open);
     const link = await createInvoice(s);
-    const payer = await newProfile(browser, sim); profiles.push(payer);
-    await injectWallet(payer.page, sim);
-    const payment = await payThroughCheckout(payer.page, sim, link);
-    await scan(s);
-    await expectVerifiedMatch(s, payment);
+    const payer = await openPayer(open, sim);
+    const payment = await payAndDetect(payer.page, sim, link, s);
     const ledger = s.getByRole('region', { name: 'Local payment reconciliation', exact: true });
     await ledger.getByRole('button', { name: 'Unlock encrypted reconciliation vault', exact: true }).click();
     await ledger.getByRole('button', { name: 'Add verified payment to ledger', exact: true }).click();
@@ -638,22 +646,14 @@ test('reorg: the payment block is replaced, the resumed scan invalidates the sav
     await ledger.getByRole('button', { name: 'Unlock encrypted reconciliation vault', exact: true }).click();
     await expect(record).toContainText('Invalidated after a reorg; do not rely on this observation.');
     await expect(ledger.getByText('Router-verified when scanned; historical observation, not current payment proof.')).toHaveCount(0);
-    expect(sim.unexpected).toEqual([]);
-  } finally {
-    for (const p of profiles) await p.context.close();
-  }
+  });
 });
 
 test('unknown and late outcomes are shown honestly: no false success, pending until final', async ({ browser }) => {
-  const sim = new ChainSim();
-  const profiles: Profile[] = [];
-  try {
-    const seller = await newProfile(browser, sim); profiles.push(seller);
-    const s = seller.page;
-    await s.goto('/');
-    await generateKeys(s);
+  await withChain(browser, async (sim, open) => {
+    const s = await openSeller(open);
     const link = await createInvoice(s);
-    const payer = await newProfile(browser, sim); profiles.push(payer);
+    const payer = await open();
     const p = payer.page;
     await injectWallet(p, sim);
     await reviewToFinalCheck(p, sim, link);
@@ -683,8 +683,5 @@ test('unknown and late outcomes are shown honestly: no false success, pending un
     await scan(s);
     await expectVerifiedMatch(s, payment);
     expect(sim.walletTxs).toHaveLength(1);
-    expect(sim.unexpected).toEqual([]);
-  } finally {
-    for (const p of profiles) await p.context.close();
-  }
+  });
 });
