@@ -228,8 +228,11 @@ Plaintext exports (deliberately unencrypted, each behind a confirmation):
 
 - Matching is best-effort and local. It misses payments made by other clients with a different gross, and it leaves
   identical amounts ambiguous. Late scans downgrade to ambiguous.
-- Registrations and observations are visible to anyone who can read the browser profile. The scope identifier
-  (`sellerKeyId`), the chain id and the ciphertext size are public on that device. Audit 24 records this as Info
+- Anyone who can read the browser profile sees that a vault exists, its scope identifier (`sellerKeyId`), the chain
+  id and the ciphertext size. Observations, registrations and receipts are encrypted. Only the envelope header is
+  stored in clear (`reconciliationVault.ts:ReconciliationVault.encrypt`, and the comment above
+  `ReconciliationScope`). Plaintext is visible to the page only while the vault is unlocked. Because `sellerKeyId` is a
+  hash of the public key pair, it links the device to the seller's public meta-address. Audit 24 records this as Info
   (`docs/audits/24-ai-assisted-security-audit-2026-10-28.md`, finding L3-F9), and ADR-LOG's ADR-0025 entry accepts it.
 - Plaintext exports of receipts and legacy records leak payment details if mishandled. They sit behind confirmations
   only.
