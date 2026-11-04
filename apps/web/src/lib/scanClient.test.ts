@@ -933,6 +933,185 @@ describe('spec 05: spam lanes, backlog and local telemetry', () => {
     });
     expect(res.telemetry?.anonymity).toMatchObject({ level: 'low', count7d: 2, partial: false });
   });
+
+  // A5 adversarial matrix: flood starvation, resumable budget cursor, reorg replay, honest counts.
+  /** One open-lane spam log (same ephemeral key, wrong view tag) in each of `blocks`. */
+  const spamBlocks = (stranger: string, blocks: readonly number[]): RpcLog[] => {
+    const one = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block: blocks[0] ?? 0, index: 0, caller: OTHER, wrongTag: true }).log;
+    return blocks.map((b) => ({ ...one, blockNumber: `0x${b.toString(16)}`, blockHash: blockHash(b), transactionHash: `0x${(BigInt(b) * 4096n + 77n).toString(16).padStart(64, '0')}` }));
+  };
+  /** A provider whose eth_getLogs on the announcer refuses ranges wider than `maxBlocks` (-32614, a fixed range limit). */
+  const rangeLimited = (base: ReturnType<typeof chainWith>, maxBlocks: bigint): ReturnType<typeof chainWith> => ({
+    ...base,
+    getLogs: (f: LogFilter) => (f.address.toLowerCase() === FAKE_ANNOUNCER.toLowerCase() && f.toBlock - f.fromBlock + 1n > maxBlocks
+      ? Promise.reject(new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32614'))
+      : base.getLogs(f)),
+  });
+  const memoryStore = (): CheckpointStore => {
+    const m = new Map<string, string>();
+    return localCheckpointStore({ getItem: (k) => m.get(k) ?? null, setItem: (k, v) => void m.set(k, v), removeItem: (k) => void m.delete(k) });
+  };
+
+  /** The seller-key, worker and abort arguments every A5 run shares. */
+  const keyArgs = (keys: ReturnType<typeof generateKeySet>, worker: InlineWorker = new InlineWorker()) => ({
+    spendingPublicKeyHex: hexOf(keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(keys.viewingSecret),
+    createWorker: () => worker, signal: new AbortController().signal,
+  });
+  /**
+   * A 120,000-block chain whose block hashes all change once progress passes block 49,999 (`forkPastBlock`, a deep reorg). `logsIn` returns the
+   * announcer logs inside a filter range; each is re-stamped with the current (pre- or post-fork) hash of its block.
+   */
+  const forkingClient = (logsIn: (from: bigint, to: bigint) => RpcLog[]) => {
+    let forked = false;
+    const hashAt = (n: number): string => (forked ? blockHash(n + 5_000_000) : blockHash(n));
+    const client = mockRpc(84532, (method, params) => {
+      if (method === 'eth_blockNumber') return `0x${(120_000).toString(16)}`;
+      if (method === 'eth_getBlockByNumber') {
+        const n = Number(params[0]);
+        return { hash: hashAt(n), parentHash: hashAt(n - 1), number: `0x${n.toString(16)}` };
+      }
+      if (method === 'eth_getLogs') {
+        const f = params[0] as { fromBlock: bigint; toBlock: bigint };
+        return logsIn(f.fromBlock, f.toBlock).map((l) => ({ ...l, blockHash: hashAt(Number(BigInt(l.blockNumber))) }));
+      }
+      throw new Error(`unexpected ${method}`);
+    });
+    return { client, forkPastBlock: (p: { nextBlock: bigint }) => { if (p.nextBlock > 49_999n) forked = true; } };
+  };
+
+  it('keeps a flooding caller from starving router and honest direct payments in the same page: nothing dropped, flood ordered last (A5)', async () => {
+    const keys = generateKeySet();
+    const meta = encodeMetaAddress(keys);
+    const stranger = encodeMetaAddress(generateKeySet());
+    const FLOODER = '0x5555555555555555555555555555555555555555' as Address;
+    const flood = Array.from({ length: 40 }, (_, i) => makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block: 500, index: i, caller: FLOODER, wrongTag: true }).log);
+    const direct = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 500, index: 60, caller: OTHER });
+    const routed = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 501, index: 0, caller: FAKE_ROUTER });
+    const worker = new InlineWorker();
+    // The budget is far below the flood, but the first page of a run is never deferred.
+    const res = await runScan({
+      chain, manifest, client: chainWith(2500, [...flood, direct.log, routed.log]), cursor: { nextBlock: 0n }, openLaneBudget: 1,
+      ...keyArgs(keys, worker),
+    });
+    expect(res.matches.map((m) => m.stealthAddress).sort()).toEqual([direct.stealthAddress, routed.stealthAddress].sort());
+    expect(res.backlog).toBe(0);
+    expect(res.scanned).toBe(42);
+    const batch = worker.received.find((m) => m.type === 'batch');
+    const ids = batch?.type === 'batch' ? batch.logs.map((l) => l.id) : [];
+    expect(ids).toHaveLength(42);
+    // Trusted lane first, then the clean open lane, then the flood.
+    expect(ids[0]?.startsWith(routed.log.blockHash)).toBe(true);
+    expect(ids[1]).toBe(`${direct.log.blockHash}:${String(Number(BigInt(direct.log.logIndex)) + 100)}`);
+    expect(res.telemetry).toMatchObject({ trusted: 1, open: 41, suspected: 40 });
+  });
+
+  it.each([
+    ['open-lane budget (backlog)', { openLaneBudget: 1 }],
+    ['per-run announcement budget (limitReached)', { maxAnnouncementsPerScan: 100 }],
+  ] as const)('resuming from the saved checkpoint always gets past a flood that stops every run at the %s, processing each open-lane log once (A5)', async (_name, budget) => {
+    const keys = generateKeySet();
+    const meta = encodeMetaAddress(keys);
+    const stranger = encodeMetaAddress(generateKeySet());
+    // Spam in every block of [10, 400]; a provider range limit keeps each page well under finalityDepth (100) blocks wide.
+    const spamRange = Array.from({ length: 391 }, (_, i) => 10 + i);
+    const direct = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 300, index: 5, caller: OTHER });
+    const routed = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 350, index: 6, caller: FAKE_ROUTER });
+    const client = rangeLimited(chainWith(1000, [...spamBlocks(stranger, spamRange), direct.log, routed.log]), 2n);
+    const store = memoryStore();
+    const openIds = new Map<string, number>();
+    const found = new Set<string>();
+    let finished = false;
+    let runs = 0;
+    for (; runs < 40 && !finished; runs++) {
+      // As the Scan view does on "resume": the cursor comes from the checkpoint store, never from the previous result.
+      const cursor = store.load(84532, KEY) ?? { nextBlock: 0n };
+      const worker = new InlineWorker();
+      const res = await runScan({
+        chain, manifest, client, cursor, ...budget, checkpoints: store,
+      ...keyArgs(keys, worker),
+      });
+      for (const m of res.matches) found.add(m.stealthAddress);
+      for (const msg of worker.received) if (msg.type === 'batch') for (const l of msg.logs) {
+        if (l.id !== `${blockHash(350)}:106`) openIds.set(l.id, (openIds.get(l.id) ?? 0) + 1);
+      }
+      finished = (res.backlog ?? 0) === 0 && !res.limitReached && res.cursor.nextBlock === 1001n;
+    }
+    expect(finished).toBe(true);
+    expect([...found].sort()).toEqual([direct.stealthAddress, routed.stealthAddress].sort());
+    // Every spam log and the direct payment reached the worker, none twice: all of them are final, so no finality tail is replayed.
+    expect(openIds.size).toBe(392);
+    expect([...openIds.values()].every((count) => count === 1)).toBe(true);
+    // The finished run keeps the finality tail for pending payments near the head.
+    expect(store.load(84532, KEY)?.nextBlock).toBe(901n);
+  });
+
+  it('never saves a checkpoint past a pending payment, even when the fetch head says its block is final (A5)', async () => {
+    const keys = generateKeySet();
+    const near = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(keys), block: 2495, index: 0, caller: FAKE_ROUTER });
+    const base = chainWith(2500, [near.log]);
+    // The log fetch sees head 5000; the payment check right after sees 2500 (a lagging, load-balanced backend).
+    let heads = 0;
+    const client = { ...base, blockNumber: () => Promise.resolve(heads++ === 0 ? 5000n : 2500n) };
+    const store = memoryStore();
+    const res = await runScan({
+      chain, manifest, client, cursor: { nextBlock: 2000n }, checkpoints: store,
+      ...keyArgs(keys),
+    });
+    expect(res.cursor.nextBlock).toBe(5001n);
+    expect(res.matches[0]?.receipt).toBe('pending');
+    // Not 4901 (head 5000 minus finalityDepth): the next session must re-scan block 2495 and re-verify it.
+    expect(store.load(84532, KEY)?.nextBlock).toBe(2495n);
+  });
+
+  it('reports the privacy set against the chain head, marked partial, when the budget stops the run early (A5)', async () => {
+    const keys = generateKeySet();
+    const stranger = encodeMetaAddress(generateKeySet());
+    const routerOld = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block: 1000, index: 0, caller: FAKE_ROUTER });
+    const res = await runScan({
+      chain, manifest, client: chainWith(400_000, [routerOld.log, ...spamAt(stranger, 100, 3), ...spamAt(stranger, 60_000, 3)]), cursor: { nextBlock: 0n }, openLaneBudget: 2,
+      ...keyArgs(keys),
+    });
+    expect(res.backlog).toBe(3);
+    expect(res.cursor.nextBlock).toBe(50_000n);
+    // Block 1000 is ~16 days before the chain head (400,000 at 2 s): it is not "in about the last 7 days", and the
+    // real last 7 days were never scanned, so the count is a lower bound.
+    expect(res.telemetry?.anonymity).toMatchObject({ count7d: 0, count30d: 1, partial: true });
+  });
+
+  it('counts a router announcement once in the privacy set when a mid-run reorg replays its block (A5)', async () => {
+    const keys = generateKeySet();
+    const stranger = encodeMetaAddress(generateKeySet());
+    const routed = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block: 100, index: 0, caller: FAKE_ROUTER });
+    const { client, forkPastBlock } = forkingClient((from, to) => (from <= 100n && to >= 100n ? [routed.log] : []));
+    const res = await runScan({
+      chain, manifest, client, cursor: { nextBlock: 0n }, ...keyArgs(keys), onProgress: forkPastBlock,
+    });
+    expect(res.cursor.nextBlock).toBe(120_001n);
+    expect(res.telemetry?.anonymity).toMatchObject({ count7d: 1, count30d: 1, partial: false });
+  });
+
+  it('holds the cursor at the rollback and clears the orphaned checkpoint when a reorg page is deferred by the budget (A5)', async () => {
+    const keys = generateKeySet();
+    const stranger = encodeMetaAddress(generateKeySet());
+    const spam = [...spamAt(stranger, 10, 2), ...spamAt(stranger, 60_000, 2)];
+    const { client, forkPastBlock } = forkingClient((from, to) =>
+      spam.filter((l) => BigInt(l.blockNumber) >= from && BigInt(l.blockNumber) <= to));
+    const cleared: number[] = [];
+    const saved: bigint[] = [];
+    const reorgs: bigint[] = [];
+    const res = await runScan({
+      // The first page is never deferred; its replay after the fork is, because it no longer fits the budget.
+      chain, manifest, client, openLaneBudget: 1, cursor: { nextBlock: 0n },
+      checkpoints: { load: () => undefined, save: (_c, _k, c) => void saved.push(c.nextBlock), clear: (c) => void cleared.push(c) },
+      ...keyArgs(keys),
+      onProgress: forkPastBlock,
+      onReorg: (to) => { reorgs.push(to); },
+    });
+    expect(reorgs).toEqual([0n]);
+    expect(res.backlog).toBe(2);
+    expect(res.cursor).toEqual({ nextBlock: 0n });
+    expect(cleared).toEqual([84532]);
+  });
 });
 
 describe('two-provider replay-tail checkpoint anchor', () => {
@@ -1035,6 +1214,52 @@ describe('two-provider replay-tail checkpoint anchor', () => {
     expect(cp.saves).toEqual([]);
     expect(reads).toBeGreaterThan(1);
     expect(res.discrepancies).toEqual([{ kind: 'block_hash_differs', ref: TAIL.toString() }]);
+  });
+
+  describe('page-end anchor far below the head (persistable shortcut)', () => {
+    // Head 120,000 with one page: page 1 ends at 49,999, far more than finalityDepth below the head, so the
+    // checkpoint is the page-end cursor itself rather than a replay-tail anchor.
+    const HEAD = 120_000;
+    const END = 49_999n;
+    const shortcut = (s: ReturnType<typeof setup>, extra: Partial<Params> & Pick<Params, 'client'>) => scan(s, KEY, { maxPages: 1, ...extra });
+
+    it('withholds a page end the primary fabricates on every read', async () => {
+      const s = setup(); const cp = memStore(); const primary = chainWith(HEAD, s.logs);
+      const res = await shortcut(s, {
+        client: { ...primary, getBlock: (n) => (n === END ? fake(n) : primary.getBlock(n)) },
+        secondaryClient: chainWith(HEAD, s.logs), checkpoints: cp.store,
+      });
+      expect(cp.saves).toEqual([]);
+      expect(res.discrepancies).toEqual([{ kind: 'block_hash_differs', ref: END.toString() }]);
+    });
+
+    it('withholds a page end the primary changes on its re-read after the provider comparison', async () => {
+      const s = setup(); const cp = memStore(); const primary = chainWith(HEAD, s.logs); const secondary = chainWith(HEAD, s.logs);
+      // Honest for the page fetch and compareProviders (whose last step reads END from the secondary); lies afterwards.
+      const compared = () => secondary.calls.some((c) => c.method === 'eth_getBlockByNumber' && c.params[0] === END);
+      let lies = 0;
+      const res = await shortcut(s, {
+        client: { ...primary, getBlock: (n) => (n === END && compared() ? (lies++, fake(n)) : primary.getBlock(n)) },
+        secondaryClient: secondary, checkpoints: cp.store,
+      });
+      expect(cp.saves).toEqual([]);
+      expect(lies).toBeGreaterThan(0);
+      expect(res.discrepancies).toEqual([{ kind: 'block_hash_differs', ref: END.toString() }]);
+    });
+
+    it('saves the corroborated page end when both providers agree', async () => {
+      const s = setup(); const cp = memStore();
+      const res = await shortcut(s, { client: chainWith(HEAD, s.logs), secondaryClient: chainWith(HEAD, s.logs), checkpoints: cp.store });
+      expect(res.discrepancies).toEqual([]);
+      expect(cp.saves).toEqual([{ nextBlock: END + 1n, last: { number: END, hash: blockHash(Number(END)) } }]);
+    });
+
+    it('saves the page end unchanged with a single provider', async () => {
+      const s = setup(); const cp = memStore();
+      const res = await shortcut(s, { client: chainWith(HEAD, s.logs), checkpoints: cp.store });
+      expect(res.discrepancies).toEqual([]);
+      expect(cp.saves).toEqual([{ nextBlock: END + 1n, last: { number: END, hash: blockHash(Number(END)) } }]);
+    });
   });
 
   it('writes nothing when cancelled while the tail corroboration is pending', async () => {

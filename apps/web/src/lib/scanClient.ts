@@ -204,6 +204,8 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   const routerOnlyBlocks = new Set<bigint>();
   const narrowed = (): { readonly routerOnlyBlocks?: readonly bigint[] } => (routerOnlyBlocks.size === 0 ? {} : { routerOnlyBlocks: [...routerOnlyBlocks] });
   let secondaryLag: SecondaryLag | undefined;
+  // The highest block this run could scan to (the lower of the two heads): the privacy-set window ends here.
+  let reachableHead: bigint | undefined;
   // Payment identity, unlike a log id, survives a replay announcement at another block. Keep this
   // ledger per scan only: checkpoints never persist claimed payment data or RPC evidence.
   const claimLedger = new Map<string, number>();
@@ -262,6 +264,8 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       // A page that reached the second RPC's head while the scan RPC is far ahead: say so, the scan stops there.
       secondaryLag = secondaryHead !== undefined && !res.truncated && res.head > secondaryHead + BigInt(p.chain.finalityDepth) ? { secondaryHead, head: res.head } : undefined;
       const pageRouterOnly = res.routerOnlyBlocks ?? [];
+      const pageHead = secondaryHead !== undefined && secondaryHead < res.head ? secondaryHead : res.head;
+      if (reachableHead === undefined || pageHead > reachableHead) reachableHead = pageHead;
       skipped += res.skipped;
       const pageFrom = res.reorg?.rolledBackTo ?? cursor.nextBlock;
       if (res.reorg !== undefined) {
@@ -275,6 +279,10 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         keep.forEach((match, index) => claimLedger.set(`${match.stealthAddress.toLowerCase()}|${match.announcement.ephemeralPublicKey.toLowerCase()}`, index));
         for (const [id, block] of evidenceLedger) if (block >= res.reorg.rolledBackTo) evidenceLedger.delete(id);
         for (const block of routerOnlyBlocks) if (block >= res.reorg.rolledBackTo) routerOnlyBlocks.delete(block);
+        // The replacement page re-reads these blocks: drop their router announcements so the privacy set counts each once.
+        const keptRouterBlocks = routerBlocks.filter((block) => block < res.reorg!.rolledBackTo);
+        routerBlocks.length = 0;
+        routerBlocks.push(...keptRouterBlocks);
         p.onQuarantine?.(res.reorg.rolledBackTo);
         if (p.signal.aborted) break;
         if (p.secondaryClient !== undefined) {
@@ -460,7 +468,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       cursor = res.cursor;
       for (const block of pageRouterOnly) if (routerOnlyBlocks.size < 1000) routerOnlyBlocks.add(block);
       if (!disagree && p.checkpoints !== undefined) {
-        const saved = await persistable(p, cursor, persistenceFloor);
+        const saved = await persistable(p, cursor, persistenceFloor, pageHead, all);
         if (p.signal.aborted) break;
         if (Array.isArray(saved)) {
           // An uncorroborated anchor is withheld, never saved from the primary alone: stop and re-scan later.
@@ -484,7 +492,10 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
     try { stopWorker(); } finally { zeroizeBytes(p.viewingKey); }
   }
   const scanHead = cursor.last?.number ?? (cursor.nextBlock > 0n ? cursor.nextBlock - 1n : 0n);
-  const anonymity = trustedSeen + openSeen === 0 && scanned === 0 ? undefined : anonymitySet({ chain: p.chain, routerBlocks, head: scanHead, scannedFrom: p.cursor.nextBlock });
+  // A run stopped by a budget, a discrepancy or Cancel before the head: the "last 7 days" still end at the chain head,
+  // and the blocks it did not reach make the count a lower bound.
+  const windowHead = reachableHead !== undefined && reachableHead > scanHead ? reachableHead : scanHead;
+  const anonymity = trustedSeen + openSeen === 0 && scanned === 0 ? undefined : anonymitySet({ chain: p.chain, routerBlocks, head: windowHead, scannedFrom: p.cursor.nextBlock, scannedTo: scanHead });
   return { matches: all, cursor, scanned, discrepancies, limitReached, backlog, routerOnlyBlocks: [...routerOnlyBlocks], ...(secondaryLag === undefined ? {} : { secondaryLag }), telemetry: { trusted: trustedSeen, open: openSeen, suspected, anonymity } };
 }
 
@@ -540,13 +551,33 @@ async function confirmRollback(p: ScanParams, previous: ScanCursor, replacement:
 /**
  * The cursor that is safe to persist: `finalityDepth` blocks behind the fetched position. Matches seen in that tail were only
  * `pending` and live in memory alone, so the next session re-scans (and re-verifies) the tail instead of skipping it.
- * Never moves behind where this run started.
+ * Blocks already `finalityDepth` deep below `head` need no such tail, so when the scan is behind the head the checkpoint
+ * moves up to the cursor itself: otherwise a run held by a budget a few pages in, each page narrower than `finalityDepth`,
+ * would save the same checkpoint on every resume and never pass the spam (A5). Either way it never passes this run's
+ * earliest `pending` match, and never moves behind where this run started.
+ *
+ * With a second provider, whichever anchor is saved (the replay-tail block, or the page end when the cursor itself is saved)
+ * must hold the ba0fd59 invariant: its hash is read from both providers plus a second primary read after the secondary
+ * answers, and all three agree. Any failure is a discrepancy and the checkpoint is withheld: the page-end comparison in
+ * compareProviders alone does not cover a primary that switches its answer afterwards.
  */
-async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint): Promise<ScanCursor | readonly ProviderDiscrepancy[] | undefined> {
+async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint, head: bigint, matches: readonly ScanMatch[]): Promise<ScanCursor | readonly ProviderDiscrepancy[] | undefined> {
   const depth = BigInt(p.chain.finalityDepth);
   let next = cursor.nextBlock > depth ? cursor.nextBlock - depth : 0n;
+  let settled = head + 1n > depth ? head + 1n - depth : 0n;
+  if (cursor.nextBlock < settled) settled = cursor.nextBlock;
+  if (settled > next) next = settled;
+  // A payment check that saw a lower head than the log fetch can leave a match pending below either edge: re-scan it.
+  for (const m of matches) if (m.receipt === 'pending' && m.announcement.blockNumber < next) next = m.announcement.blockNumber;
   if (next < floor) next = floor;
-  if (next >= cursor.nextBlock) return cursor;
+  if (next >= cursor.nextBlock) {
+    if (p.secondaryClient === undefined || cursor.last === undefined) return cursor;
+    // The page end becomes the canonical record for the next resume: corroborate it afresh, as for the tail anchor.
+    const agreed = await corroborateAnchor(p, p.secondaryClient, cursor.last.number);
+    if (p.signal.aborted) return undefined;
+    if (typeof agreed !== 'string') return agreed;
+    return agreed === cursor.last.hash.toLowerCase() ? cursor : [{ kind: 'block_hash_differs', ref: cursor.last.number.toString() }];
+  }
   if (next === 0n) return { nextBlock: 0n };
   // Keep reorg detection for the stored position: bind it to the hash of the block just before it.
   const height = next - 1n;

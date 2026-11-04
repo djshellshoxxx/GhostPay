@@ -1,7 +1,7 @@
 import { CHAINS, type ScannedAnnouncement } from '@ghostpay/chain-adapters';
 import { buildErc20Metadata } from '@ghostpay/core-crypto';
 import { describe, expect, it } from 'vitest';
-import { anonymitySet, describeAnonymitySet, splitLanes } from './scanSpam';
+import { FLOOD_PER_BLOCK, anonymitySet, describeAnonymitySet, splitLanes } from './scanSpam';
 
 const chain = CHAINS.find((c) => c.chainId === 84532)!; // 2 s blocks: 7 days = 302,400 blocks
 const ROUTER = '0x1111111111111111111111111111111111111111';
@@ -47,7 +47,64 @@ describe('splitLanes', () => {
   });
 });
 
+describe('splitLanes adversarial matrix (A5)', () => {
+  const FLOODER = '0x5555555555555555555555555555555555555555';
+
+  it('drops nothing: every input lands in exactly one lane, whatever the flood', () => {
+    const input = [
+      ...Array.from({ length: 100 }, () => ann({ caller: FLOODER, block: 3 })),
+      ann({ caller: ROUTER }), ann(), ann({ metadata: '0x' }),
+    ];
+    const s = splitLanes(input, ROUTER);
+    expect(s.trusted.length + s.open.length).toBe(input.length);
+    expect(new Set([...s.trusted, ...s.open])).toEqual(new Set(input));
+  });
+
+  it('flags a caller only above FLOOD_PER_BLOCK in one block, counted per caller and per block', () => {
+    const atLimit = Array.from({ length: FLOOD_PER_BLOCK }, () => ann({ caller: FLOODER, block: 4 }));
+    expect(splitLanes(atLimit, ROUTER).suspected).toBe(0);
+    const over = [...atLimit, ann({ caller: FLOODER, block: 4 })];
+    expect(splitLanes(over, ROUTER).suspected).toBe(FLOOD_PER_BLOCK + 1);
+    // The same caller spread across blocks, or many callers sharing one block, is not a per-block flood.
+    const spread = Array.from({ length: 3 * FLOOD_PER_BLOCK }, (_, i) => ann({ caller: FLOODER, block: 100 + Math.floor(i / FLOOD_PER_BLOCK) }));
+    expect(splitLanes(spread, ROUTER).suspected).toBe(0);
+    const many = Array.from({ length: 2 * FLOOD_PER_BLOCK }, (_, i) => ann({ caller: `0x${(i + 0x100).toString(16).padStart(40, '0')}`, block: 9 }));
+    expect(splitLanes(many, ROUTER).suspected).toBe(0);
+  });
+
+  it('a flooder never pushes honest open-lane announcements behind it, and keeps chain order inside each group', () => {
+    const honestA = ann({ block: 5 });
+    const flood = Array.from({ length: FLOOD_PER_BLOCK + 8 }, () => ann({ caller: FLOODER, block: 5 }));
+    const honestB = ann({ block: 6 });
+    const s = splitLanes([honestA, ...flood, honestB], ROUTER);
+    expect(s.open.slice(0, 2)).toEqual([honestA, honestB]);
+    expect(s.open.slice(2)).toEqual(flood);
+  });
+
+  it('the router lane is matched case-insensitively and is never deprioritised, even when the router posts in bulk', () => {
+    const routerFlood = Array.from({ length: FLOOD_PER_BLOCK * 2 }, () => ann({ caller: ROUTER.toUpperCase().replace('0X', '0x'), block: 7, eph: `0x02${'aa'.repeat(32)}` }));
+    const s = splitLanes([ann(), ...routerFlood], ROUTER.toLowerCase());
+    expect(s.trusted).toEqual(routerFlood);
+    expect(s.suspected).toBe(0);
+  });
+
+  it('an attacker replaying an honest ephemeral key only deprioritises it, never removes it', () => {
+    const honest = ann({ eph: `0x02${'42'.repeat(32)}` });
+    const replay = ann({ caller: FLOODER, eph: `0x02${'42'.repeat(32)}` });
+    const s = splitLanes([honest, replay], ROUTER);
+    expect(s.open).toEqual([honest, replay]);
+    expect(s.suspected).toBe(2);
+  });
+});
+
 describe('anonymitySet', () => {
+  it('is partial when the scan stopped before the head it counts back from (A5)', () => {
+    const head = 10_000_000n;
+    const a = anonymitySet({ chain, routerBlocks: [head - 400_000n], head, scannedFrom: 0n, scannedTo: head - 350_000n });
+    expect(a).toMatchObject({ count7d: 0, count30d: 1, partial: true });
+    expect(anonymitySet({ chain, routerBlocks: [], head, scannedFrom: 0n, scannedTo: head }).partial).toBe(false);
+  });
+
   it('counts router announcements in roughly the last 7 and 30 days and buckets them coarsely', () => {
     const head = 10_000_000n;
     const blocks = [head - 10n, head - 100_000n, head - 400_000n, head - 1_000_000n];

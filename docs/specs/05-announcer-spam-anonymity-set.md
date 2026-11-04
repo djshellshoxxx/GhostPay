@@ -25,3 +25,22 @@ Synthetic chain log with 1M spam + 10 real: real found within budget; trusted-la
 
 ## 5. Acceptance
 - [ ] Scan CPU for 1M spam logs under 60 s on reference laptop (target, UNVERIFIED). - [ ] No expected payment missed in spam test. - [ ] Seller privacy guide published. - [ ] Settings exposes budget and lane options.
+
+## 6. Implementation status (A5 verification, 2026-11-04)
+Scope checked: `apps/web/src/lib/scanSpam.ts` (`splitLanes`, `FLOOD_PER_BLOCK`, `anonymitySet`) and `apps/web/src/lib/scanClient.ts` (`runScan` lanes, open-lane budget, `limitReached`, checkpoints). Adversarial tests live in `scanSpam.test.ts` ("splitLanes adversarial matrix (A5)") and `scanClient.test.ts` (tests tagged "(A5)" in the spec 05 block).
+
+Held as implemented, now pinned by tests:
+- Lane split drops nothing; router lane is case-insensitive and never deprioritised; a caller is flagged only above `FLOOD_PER_BLOCK` in one block (per caller, per block); a replayed ephemeral key only deprioritises. A flooding caller in the same page as a router payment and an honest direct payment does not hide either; the flood is ordered last.
+- The first page of a run is never deferred. A deferred page holds the cursor at its start (a block boundary); a reorg page that hits the budget holds the cursor at the rollback and clears the orphaned checkpoint.
+
+Defects found and fixed (each with a failing-first test):
+1. **Saved checkpoint pinned by a flood (budget never passes the spam on resume).** The checkpoint was always written `finalityDepth` blocks behind the cursor. When pages are narrower than `finalityDepth` (a provider range limit, or a dense flood hitting the 10,000-log page cap), a run stopped by the open-lane budget or `limitReached` saved the same checkpoint every time, so resuming from it (what the Scan view does) repeated the same run forever and never reached later router or direct payments. Now blocks already `finalityDepth` deep below the head are saved up to the cursor itself, never past the run's earliest `pending` match; near the head the old tail is kept. Across resumes each open-lane log in final blocks reaches the worker exactly once.
+2. **Privacy set mislabelled when a run stopped early.** The 7/30-day windows were anchored at the last scanned block, so a run held by the budget far behind the head reported old router announcements as "in about the last 7 days" and `partial: false`. The windows now end at the head the run could reach and the result is `partial` when the scan stopped short of it (`anonymitySet` takes `scannedTo`).
+3. **Privacy set double-counted after a mid-run reorg.** Router announcements in the rolled-back range were kept and re-added by the replacement page. They are now dropped on rollback, like matches and router-only blocks.
+4. **Checkpoint could pass a pending payment.** When the payment check saw a lower head than the log fetch (a lagging, load-balanced backend), a match could be `pending` below the saved checkpoint and would not be re-listed on resume. The checkpoint is now capped at the run's earliest `pending` match.
+
+Known limits left as is (not UI-reachable or by design):
+- `maxAnnouncementsPerScan` below one page's announcement count stops every run before its first page. The Scan view does not set it; the default (100,000) exceeds the per-fetch log cap (10,000), so it cannot happen there. Not relaxed, because it is a safety limit.
+- Inside the finality window near the head, a deferred page still waits for the chain to advance (the checkpoint follows `head - finalityDepth`), so progress there is bounded by block time, not stuck.
+- `telemetry.suspected` also counts announcements in a deferred page; `scanned` re-counts the router lane of a deferred page on the next run. Neither is shown in the UI; `backlog` is the open-lane count of the deferred page only (later blocks were not fetched).
+- Section 4/5 items not covered here: the 1M-spam synthetic run and the CPU benchmark (target UNVERIFIED), and the seller privacy guide path (`docs/user/seller-privacy.md` does not exist; related copy is in `docs/user/privacy-limits.md`). Acceptance boxes are left unticked.
