@@ -5,6 +5,10 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { App } from '../App';
 import { I18nProvider } from '../i18n/context';
 import { renderWith } from '../test/render';
+import ar from '../../locales/ar.json';
+import en from '../../locales/en.json';
+import es from '../../locales/es.json';
+import ja from '../../locales/ja.json';
 
 beforeEach(() => {
   window.localStorage.clear();
@@ -29,5 +33,19 @@ describe('Pay localization', () => {
     // Critical privacy warning: no reviewed translation yet, so the English source text is shown.
     expect(screen.getByText(/Pasting is safer than clicking: a browser may keep a clicked invoice URL/)).toBeTruthy();
     expect(screen.getByText('The link is read in this page only. It is never sent to a server.')).toBeTruthy();
+  });
+
+  // The scanner disclosure and its Clear button are both neutral keys, so draft locales render them. Two different
+  // actions in one control group must never share a label (Arabic "مسح" means both "scan" and "erase").
+  it.each([
+    ['en', en.messages],
+    ['es', es.messages],
+    ['ja', ja.messages],
+    ['ar', ar.messages],
+  ] as const)('keeps the invoice-QR scan and clear actions distinguishable in %s', (_locale, messages) => {
+    const m = messages as Record<string, string>;
+    expect(m['pay.scan.summary']).toBeTruthy();
+    expect(m['pay.scan.clear']).toBeTruthy();
+    expect(m['pay.scan.summary']).not.toBe(m['pay.scan.clear']);
   });
 });
