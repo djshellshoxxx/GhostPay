@@ -18,8 +18,6 @@ import { DESTINATION, readSweepJournal } from './sweep-network';
  * only answers; built app, Worker, KDF, signing and journal code are unchanged. No real network, funds or keys.
  */
 
-// Several production-cost scrypt operations (vault save, sweep step-up, export step-up, import) run serially.
-test.setTimeout(300_000);
 const kdfExpect = expect.configure({ timeout: 45_000 });
 
 const RPC = 'https://rpc.core.e2e.test';
@@ -61,6 +59,10 @@ class ChainSim {
   head = 500;
   mineAt = 120;
   fork: number | undefined;
+  /** Applied right after block `at` is served with its pre-fork hash: a reorg that lands between two scan pages. */
+  forkAfterRead: { at: number; from: number } | undefined;
+  /** How many eth_getLogs replies carried a payment's announcement (old fork included). */
+  paymentLogsServed = 0;
   lookups: 'ok' | 'reset' = 'ok';
   walletTxs: WalletTx[] = [];
   payments: MinedPayment[] = [];
@@ -163,18 +165,25 @@ class ChainSim {
         const tag = String(body.params[0]);
         const n = /^0x[0-9a-f]+$/i.test(tag) ? Number.parseInt(tag, 16) : this.head;
         if (n > this.head) return reply(null);
-        return reply({ number: quantity(n), hash: this.blockHash(n), parentHash: this.blockHash(n - 1), timestamp: quantity(Math.floor(Date.now() / 1000) - (this.head - n) * 2) });
+        const block = { number: quantity(n), hash: this.blockHash(n), parentHash: this.blockHash(n - 1), timestamp: quantity(Math.floor(Date.now() / 1000) - (this.head - n) * 2) };
+        if (this.forkAfterRead?.at === n) {
+          this.fork = this.forkAfterRead.from;
+          this.forkAfterRead = undefined;
+        }
+        return reply(block);
       }
       case 'eth_getLogs': {
         const filter = body.params[0] as { fromBlock: string; toBlock: string; address?: string | string[]; topics?: (string | string[] | null)[] };
         const from = Number.parseInt(filter.fromBlock, 16);
         const to = Number.parseInt(filter.toBlock, 16);
         const addresses = filter.address === undefined ? undefined : [filter.address].flat().map((a) => a.toLowerCase());
-        return reply(this.payments.filter((p) => this.canonical(p) && p.block >= from && p.block <= to && p.block <= this.head).map((p) => p.log).filter((raw) => {
+        const logs = this.payments.filter((p) => this.canonical(p) && p.block >= from && p.block <= to && p.block <= this.head).map((p) => p.log).filter((raw) => {
           const log = raw as { address: string; topics: string[] };
           return (addresses === undefined || addresses.includes(log.address.toLowerCase()))
             && (filter.topics ?? []).every((topic, i) => topic === null || [topic].flat().some((t) => t.toLowerCase() === log.topics[i]?.toLowerCase()));
-        }));
+        });
+        this.paymentLogsServed += logs.length;
+        return reply(logs);
       }
       case 'eth_getCode': return reply(CODE[String(body.params[0]).toLowerCase()] ?? '0x');
       case 'eth_getBalance': {
@@ -293,13 +302,18 @@ async function saveVault(page: Page): Promise<void> {
   await kdfExpect(keysView(page).getByText('Encrypted seller vault saved in this browser. The passphrase was cleared.', { exact: true })).toBeVisible();
 }
 
-/** Downloads the encrypted keystore through the product; the step-up field appears only for vault-bound keys. */
-async function exportKeystore(page: Page): Promise<string> {
+/** Downloads the encrypted keystore through the product; vault-bound keys must show (and pass) the step-up field. */
+async function exportKeystore(page: Page, opts: { stepUp: boolean }): Promise<string> {
   await nav(page).getByRole('button', { name: 'Seller keys' }).click();
   await keysView(page).getByLabel('Passphrase (at least 14 characters)', { exact: true }).fill(BACKUP_PASS);
   await keysView(page).getByLabel('Repeat passphrase', { exact: true }).fill(BACKUP_PASS);
   const stepUp = keysView(page).locator('input[name="ghostpay-step-up-export"]');
-  if (await stepUp.isVisible()) await stepUp.fill(VAULT_PASS);
+  if (opts.stepUp) {
+    await expect(stepUp).toBeVisible();
+    await stepUp.fill(VAULT_PASS);
+  } else {
+    await expect(stepUp).toHaveCount(0);
+  }
   const download = page.waitForEvent('download', { timeout: 60_000 });
   await keysView(page).getByRole('button', { name: 'Download encrypted keystore' }).click();
   const path = await (await download).path();
@@ -439,6 +453,8 @@ async function payAndDetect(payer: Page, sim: ChainSim, link: string, seller: Pa
 }
 
 test('core journey: keys -> signed invoice -> consented payment -> scan -> bound receipt -> sweep -> backup -> independent restore', async ({ browser }) => {
+  // Several production-cost scrypt operations (vault save, sweep step-up, export step-up, import) run serially.
+  test.setTimeout(180_000);
   await withChain(browser, async (sim, open) => {
     // 1. Seller keys, saved as an encrypted vault (production KDF).
     const { page: s } = await open();
@@ -529,7 +545,7 @@ test('core journey: keys -> signed invoice -> consented payment -> scan -> bound
     expect(sim.raws).toHaveLength(1);
 
     // 7. Encrypted backup: scrypt + AES-GCM envelope, no passphrase in the file or web storage.
-    const keystore = await exportKeystore(s);
+    const keystore = await exportKeystore(s, { stepUp: true });
     const envelope = JSON.parse(keystore) as { kdf: string; kdfParams: { N: number; r: number; p: number }; cipher: string; meta: { metaAddress: string; signer: string } };
     expect(envelope).toMatchObject({ kdf: 'scrypt', kdfParams: { N: 131072, r: 8, p: 1 }, cipher: 'AES-256-GCM', meta: { metaAddress: identity.meta, signer: identity.signer } });
     for (const secret of [BACKUP_PASS, VAULT_PASS]) {
@@ -585,7 +601,7 @@ test('stale session: a lock and reimport of the same keys mid-sweep refuses the 
   await withChain(browser, async (sim, open) => {
     const s = await openSeller(open);
     const identity = await identityOf(s);
-    const keystore = await exportKeystore(s);
+    const keystore = await exportKeystore(s, { stepUp: false });
     const link = await createInvoice(s);
     const payer = await openPayer(open, sim);
     await payAndDetect(payer.page, sim, link, s);
@@ -619,8 +635,10 @@ test('stale session: a lock and reimport of the same keys mid-sweep refuses the 
   });
 });
 
-test('reorg: the payment block is replaced, the resumed scan invalidates the saved observation and offers no receipt', async ({ browser }) => {
+test('reorg: the payment block is replaced mid-scan, the scan withdraws the match, invalidates the saved observation and offers no receipt', async ({ browser }) => {
   await withChain(browser, async (sim, open) => {
+    sim.head = 50_050;
+    sim.mineAt = 49_900;
     const s = await openSeller(open);
     const link = await createInvoice(s);
     const payer = await openPayer(open, sim);
@@ -631,12 +649,18 @@ test('reorg: the payment block is replaced, the resumed scan invalidates the sav
     const record = ledger.locator('li.card').filter({ hasText: payment.hash });
     await expect(record).toContainText('Router-verified when scanned; historical observation, not current payment proof.');
 
-    // The RPC now serves a fork from below the payment block: that block and its payment are gone.
-    sim.fork = payment.block - 10;
-    const resume = s.getByRole('checkbox', { name: 'Resume from checkpoint', exact: true });
-    await expect(resume).toBeChecked();
-    await s.getByRole('button', { name: 'Start scan' }).click();
-    await expect(s.getByText(/Finished\. 0 announcements checked, 0 payments found\./)).toBeVisible({ timeout: 30_000 });
+    // A fresh multi-page scan from genesis. Its first page (blocks 0..49,999 at 50 x 1,000-block windows) is served
+    // from the old fork and contains the verified payment (block 49,900: 151 confirmations at head 50,050, final; its
+    // log window still within the finality tail, so not reused from the scan client's final-window cache). Right after
+    // that page's checkpoint anchor (block 49,899 = 50,000 - finality 100 - 1) is read, the chain reorganises from just
+    // below the payment block. Only the product's own reorg handling, triggered by the next page's checkpoint-hash
+    // comparison, can withdraw the match that this run already found.
+    sim.forkAfterRead = { at: 49_899, from: payment.block - 10 };
+    const logsBefore = sim.paymentLogsServed;
+    await scan(s, { fromStart: true });
+    expect(sim.forkAfterRead).toBeUndefined(); // The reorg happened inside this run, between pages.
+    expect(sim.paymentLogsServed).toBe(logsBefore + 1); // This run did receive the payment's (old-fork) log.
+    await expect(s.getByText(/Finished\. 1 announcements checked, 0 payments found\./)).toBeVisible();
     await expect(s.getByText('No payments found yet.', { exact: true })).toBeVisible();
     await expect(scanMatches(s)).toHaveCount(0);
     await expect(receiptPanel(s)).toHaveCount(0);
