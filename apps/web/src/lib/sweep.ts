@@ -735,6 +735,10 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
  * `already_allowed` are not refusals (the relayer skips an already-covered permit and sweeps by allowance); they have
  * text so the table is exhaustive. None of the refusal texts retries automatically.
  */
+// The relayed flow only renders the PERMIT_REFUSAL_KEYS subset below. ok_to_permit, already_allowed and nonce_consumed
+// have no relayer refusal class (the relayer folds a spent nonce into permit_failed), so these keys are reserved for
+// those PermitStates and kept so this table stays exhaustive (pinned by sweep.test.ts):
+// i18n-use: sweep.permit.ok sweep.permit.alreadyAllowed sweep.permit.nonceConsumed
 export const SWEEP_PERMIT_STATE_KEYS: Readonly<Record<PermitState, MessageKey>> = {
   ok_to_permit: 'sweep.permit.ok',
   already_allowed: 'sweep.permit.alreadyAllowed',
@@ -749,6 +753,8 @@ export const SWEEP_PERMIT_STATE_KEYS: Readonly<Record<PermitState, MessageKey>> 
  * cannot tell a bad signature from a spent nonce (both surface as `permit_failed`), so that class gets the
  * `sig_invalid` text, which covers both without claiming which.
  */
+// Rendered by Sweep.tsx through sweepPermitRefusalKey:
+// i18n-use: sweep.permit.expired sweep.permit.failed sweep.permit.unsupported sweep.permit.valueTooLow sweep.permit.noAllowance sweep.permit.ownerFailureLimit
 const PERMIT_REFUSAL_KEYS: Readonly<Record<string, MessageKey>> = {
   permit_expired: 'sweep.permit.expired',
   permit_failed: 'sweep.permit.failed',
