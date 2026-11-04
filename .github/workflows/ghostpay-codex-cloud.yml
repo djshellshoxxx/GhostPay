@@ -29,8 +29,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh pr list --state open --limit 100 --json number,headRefName,isDraft --jq \
-            '.[] | select(.headRefName | startswith("codex/ghostpay-cloud-")) | select(.isDraft == false) | .number' |
+          gh api --paginate "repos/$GITHUB_REPOSITORY/pulls?state=open&per_page=100" --jq \
+            '.[] | select(.head.ref | startswith("codex/ghostpay-cloud-")) | select(.head.repo.full_name == "djshellshoxxx/GhostPay") | select(.user.login == "github-actions[bot]" or .user.login == "djshellshoxxx") | select(.draft == false) | .number' |
           while IFS= read -r number; do
             [ -n "$number" ] || continue
             head="$(gh pr view "$number" --json headRefOid --jq '.headRefOid')"
@@ -46,7 +46,7 @@ jobs:
             done
             if [ "$valid" != true ]; then continue; fi
             # GitHub still enforces additional reviews and branch protection.
-            gh pr merge "$number" --squash --delete-branch ||
+            gh pr merge "$number" --match-head-commit "$head" --squash --delete-branch ||
               echo "::warning::PR #$number is not yet mergeable under GitHub rules"
           done
 
@@ -80,8 +80,8 @@ jobs:
             echo "::error::No usable API key secret. Expected repository Actions secret GHOSTPAY_OPENAI_API_KEY, OPENAI_API_KEY, or PATCHTRACE_OPENAI_API_KEY"
             exit 1
           fi
-          count="$(gh pr list --state open --limit 100 --json headRefName \
-            --jq '[.[] | select(.headRefName | startswith("codex/ghostpay-cloud-"))] | length')"
+          count="$(gh api --paginate "repos/$GITHUB_REPOSITORY/pulls?state=open&per_page=100" --jq \
+            '.[] | select(.head.ref | startswith("codex/ghostpay-cloud-")) | select(.head.repo.full_name == "djshellshoxxx/GhostPay") | select(.user.login == "github-actions[bot]" or .user.login == "djshellshoxxx") | .number' | wc -l)"
           if [ "$count" -ge 1 ]; then
             echo "A cloud PR is already pending; do not spend credits on duplicate work."
             echo "run_agent=false" >> "$GITHUB_OUTPUT"
@@ -99,6 +99,7 @@ jobs:
         with:
           openai-api-key: ${{ secrets.GHOSTPAY_OPENAI_API_KEY || secrets.OPENAI_API_KEY || secrets.PATCHTRACE_OPENAI_API_KEY }}
           permission-profile: ":workspace"
+          safety-strategy: drop-sudo
           output-file: ghostpay-codex-report.txt
           prompt: |
             Continue only djshellshoxxx/GhostPay from the current main commit.
