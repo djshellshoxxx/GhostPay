@@ -1,5 +1,6 @@
 import {
   computeTransactionTweak,
+  parseHeader,
   parseRawTransaction,
   reverseHex,
   SilentPaymentError,
@@ -269,7 +270,7 @@ export interface EsploraClientOptions {
 
 /**
  * Minimal client for the Esplora REST API (the Blockstream/mempool.space style used by many servers).
- * Endpoints: `GET /blocks/tip/height`, `GET /block-height/:h`, `GET /block/:hash`, `GET /block/:hash/txs/:start`,
+ * Endpoints: `GET /blocks/tip/height`, `GET /blocks/:h`, `GET /block-height/:h`, `GET /block/:hash`, `GET /block/:hash/txs/:start`,
  * `GET /block/:hash/header`, `GET /tx/:txid/outspend/:vout`, `GET /fee-estimates`, `POST /tx`.
  *
  * @security Responses are untrusted and validated. Only block heights, outpoints and the raw
@@ -373,6 +374,37 @@ export class EsploraClient {
     if (!HEX64.test(hash)) throw new SilentPaymentError('INVALID_INPUT');
     const t = (await this.text(`/block/${hash}/header`, {}, signal)).trim().toLowerCase();
     return /^[0-9a-f]{160}$/.test(t) ? t : bad();
+  }
+
+  /**
+   * Up to 10 headers at and below `height`, rebuilt as 80-byte hex from the `GET /blocks/:height` summaries
+   * (version, previous hash, Merkle root, time, bits, nonce). Each rebuilt header must hash to the summary's `id`;
+   * nothing else about them is trusted here (the header chain validates them). Keyed by height.
+   */
+  public async headersBelow(height: number, signal?: AbortSignal): Promise<ReadonlyMap<number, string>> {
+    if (!Number.isInteger(height) || height < 0 || height > 0xffffffff) throw new SilentPaymentError('INVALID_INPUT');
+    const body = await this.json(`/blocks/${String(height)}`, signal);
+    if (!Array.isArray(body) || body.length > 25) return bad();
+    const out = new Map<number, string>();
+    for (const b of body) {
+      if (!isRecord(b)) return bad();
+      const h = uint(b['height']);
+      const version = b['version'];
+      if (typeof version !== 'number' || !Number.isInteger(version) || version < -0x80000000 || version > 0xffffffff) return bad();
+      const time = uint(b['timestamp']);
+      const bits = uint(b['bits']);
+      const nonce = uint(b['nonce']);
+      if (time > 0xffffffff || bits > 0xffffffff || nonce > 0xffffffff || out.has(h)) return bad();
+      const prevRaw = b['previousblockhash'];
+      const prev = h === 0 && (prevRaw === null || prevRaw === undefined) ? '0'.repeat(64) : hexStr(prevRaw, 64);
+      const merkle = hexStr(b['merkle_root'], 64);
+      const id = hexStr(b['id'], 64);
+      if (!HEX64.test(prev) || !HEX64.test(merkle) || !HEX64.test(id)) return bad();
+      const hex = u32le(version >>> 0) + reverseHex(prev) + reverseHex(merkle) + u32le(time) + u32le(bits) + u32le(nonce);
+      if (parseHeader(hex).hash !== id) return bad();
+      out.set(h, hex);
+    }
+    return out;
   }
 
   /** True when the outpoint is unspent according to the server (mempool included). */

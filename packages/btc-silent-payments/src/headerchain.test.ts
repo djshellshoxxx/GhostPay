@@ -236,6 +236,11 @@ describe('checkpoints and serialization', () => {
     const fromCp = HeaderChain.create({ params: TINY, checkpoint: { ...cp8, previousHeaders: hs.slice(0, 7) }, now: NOW });
     expect(fromCp.tipHeight).toBe(8);
     expect(fromCp.mtpContextComplete).toBe(false); // 7 of 10 previous headers
+    // A pinned checkpoint with previous headers must match the stored one header for header.
+    const pinned = { ...cp8, previousHeaders: hs.slice(0, 7) };
+    expect(HeaderChain.fromJSON(fromCp.toJSON(), { params: TINY, now: NOW, checkpoint: pinned }).tipHeight).toBe(8);
+    const swapped = { ...pinned, previousHeaders: [...hs.slice(0, 6), hs[0]!] };
+    expect(() => HeaderChain.fromJSON(fromCp.toJSON(), { params: TINY, now: NOW, checkpoint: swapped })).toThrow(/header-chain rule/);
     const full = HeaderChain.create({ params: TINY, checkpoint: { ...cp8, previousHeaders: [tinyGenesis, ...hs.slice(0, 7)].slice(-8) }, now: NOW });
     expect(full.mtpContextComplete).toBe(true); // height 8 needs only 8 previous
     expect(() => HeaderChain.create({ params: TINY, checkpoint: { height: 3, hash: parseHeader(hs[2]!).hash, headerHex: hs[2]! } })).toThrow(/header-chain rule/);
@@ -243,16 +248,79 @@ describe('checkpoints and serialization', () => {
       HeaderChain.create({ params: TINY, checkpoint: { ...cp8, previousHeaders: [hs[0]!, hs[2]!] } }),
     ).toThrow(/header-chain rule/);
   });
+  const PINNED = { height: 0, hash: parseHeader(REGTEST_GENESIS).hash, headerHex: REGTEST_GENESIS };
   it('round-trips through JSON and re-validates every header on load', () => {
     const c = regtestChain();
     c.connect(extend(REGTEST_GENESIS, 4, 600, 0x207fffff));
     const json = c.toJSON();
-    const back = HeaderChain.fromJSON(JSON.parse(JSON.stringify(json)) as typeof json, { now: NOW });
+    const back = HeaderChain.fromJSON(JSON.parse(JSON.stringify(json)) as typeof json, { now: NOW, checkpoint: PINNED });
     expect(back.tipHash).toBe(c.tipHash);
     expect(back.tipWork).toBe(c.tipWork);
     const tampered = { ...json, headers: [...json.headers.slice(0, 2), json.headers[3]!, json.headers[2]!] };
-    expect(() => HeaderChain.fromJSON(tampered, { now: NOW })).toThrow(/header-chain rule/);
-    expect(() => HeaderChain.fromJSON({ ...json, network: 'litecoin' } as never)).toThrow(/invalid input/);
-    expect(() => HeaderChain.fromJSON(null as never)).toThrow(/invalid input/);
+    expect(() => HeaderChain.fromJSON(tampered, { now: NOW, checkpoint: PINNED })).toThrow(/header-chain rule/);
+    expect(() => HeaderChain.fromJSON({ ...json, network: 'litecoin' } as never, { checkpoint: PINNED })).toThrow(/invalid input/);
+    expect(() => HeaderChain.fromJSON(null as never, { checkpoint: PINNED })).toThrow(/invalid input/);
+  });
+  it('fromJSON refuses stored data whose checkpoint differs from the pinned one (never trusts a stored anchor)', () => {
+    const pinned = { height: 0, hash: parseHeader(REGTEST_GENESIS).hash, headerHex: REGTEST_GENESIS };
+    const c = regtestChain();
+    c.connect(extend(REGTEST_GENESIS, 3, 600, 0x207fffff));
+    const json = c.toJSON();
+    expect(HeaderChain.fromJSON(json, { now: NOW, checkpoint: pinned }).tipHash).toBe(c.tipHash);
+    // A self-consistent chain on a substituted anchor: valid on its own, but not anchored to what the caller pinned.
+    const fake = mine('11'.repeat(32), 1_296_688_602, 0x207fffff, { tag: 9 });
+    const forged = { ...json, checkpoint: { height: 0, hash: parseHeader(fake).hash, headerHex: fake, previousHeaders: [] }, headers: extend(fake, 5, 600, 0x207fffff) };
+    // The stored checkpoint is self-consistent, so only the pinned comparison catches it; the pin is required.
+    expect(() => HeaderChain.fromJSON(forged, { now: NOW } as never)).toThrow(/invalid input/);
+    expect(() => HeaderChain.fromJSON(forged, null as never)).toThrow(/invalid input/);
+    expect(() => HeaderChain.fromJSON(forged, { now: NOW, checkpoint: pinned })).toThrow(/header-chain rule/);
+    expect(() => HeaderChain.fromJSON({ ...json, checkpoint: { ...json.checkpoint, previousHeaders: [REGTEST_GENESIS] } }, { now: NOW, checkpoint: pinned })).toThrow(/header-chain rule/);
+    expect(() => HeaderChain.fromJSON({ ...json, checkpoint: undefined } as never, { now: NOW, checkpoint: pinned })).toThrow(/header-chain rule/);
+    // Upper-case hex in the pinned hash is the same anchor.
+    expect(HeaderChain.fromJSON(json, { now: NOW, checkpoint: { ...pinned, hash: pinned.hash.toUpperCase() } }).tipHeight).toBe(3);
+  });
+  it('streams a branch, adopts it only with more work, and refuses dead or stale branches', () => {
+    const c = regtestChain();
+    const main = extend(REGTEST_GENESIS, 10, 600, 0x207fffff);
+    c.connect(main);
+    expect(c.headersHex()).toBe(main.join(''));
+    expect(c.anchor()).toEqual({ network: 'regtest', checkpoint: c.toJSON().checkpoint });
+    expect(c.headerAt(3)?.hash).toBe(c.hashAt(3));
+    expect(c.headerAt(11)).toBeUndefined();
+    expect(() => c.branchAt(11)).toThrow(/invalid input/);
+    expect(() => c.branchFrom('zz')).toThrow(/header-chain rule/);
+    expect(() => c.branchFrom('00'.repeat(32))).toThrow(/header-chain rule/);
+    const side = extend(main[4]!, 8, 601, 0x207fffff, 3); // fork after height 5
+    const b = c.branchAt(2);
+    b.add([...main.slice(2, 5), ...side.slice(0, 3)]); // three active headers move the fork point to 5
+    expect(b.forkHeight).toBe(5);
+    expect(b.length).toBe(3);
+    expect(b.beatsActive).toBe(false);
+    expect(() => b.adopt()).toThrow(/invalid input/);
+    expect(() => b.add([])).toThrow(/invalid input/);
+    b.add(side.slice(3, 6));
+    expect(b.tipHeight).toBe(11);
+    expect(b.beatsActive).toBe(true);
+    const stale = c.branchAt(10);
+    expect(b.adopt()).toEqual({ adopted: true, reorg: true, forkHeight: 5, tipHeight: 11 });
+    expect(b.work).toBe(c.tipWork);
+    expect(() => b.adopt()).toThrow(/invalid input/);
+    expect(() => stale.add(side.slice(6, 7))).toThrow(/invalid input/);
+    // An invalid header kills the branch.
+    const d = c.branchAt(11);
+    expect(() => d.add([main[0]!])).toThrow(/header-chain rule/);
+    expect(() => d.add(side.slice(6, 7))).toThrow(/invalid input/);
+    expect(c.workAt(0)).toBeGreaterThan(0n);
+    expect(() => c.workAt(99)).toThrow(/invalid input/);
+  });
+  it('fromJSON reloads a stored chain longer than one connect batch', () => {
+    const c = regtestChain();
+    // Spacing above 20 minutes: each regtest header is a min-difficulty block without a walk back.
+    const hs = extend(REGTEST_GENESIS, 100_005, 1_201, 0x207fffff);
+    for (let i = 0; i < hs.length; i += 50_000) c.connect(hs.slice(i, i + 50_000));
+    expect(c.tipHeight).toBe(100_005);
+    const back = HeaderChain.fromJSON(c.toJSON(), { now: NOW, checkpoint: PINNED });
+    expect(back.tipHash).toBe(c.tipHash);
+    expect(back.tipWork).toBe(c.tipWork);
   });
 });

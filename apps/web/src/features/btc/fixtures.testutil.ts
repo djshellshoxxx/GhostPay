@@ -1,5 +1,6 @@
 import { createSilentPaymentOutputs, merkleRoot, parseHeader, reverseHex, sha256d, silentPaymentKeysFromSeed, targetFromBits } from '@ghostpay/btc-silent-payments';
 import { Transaction } from '@scure/btc-signer';
+import { GENESIS_HEADERS, type IdbFactoryLike } from './headers';
 import { btcNetwork, type BtcNetworkId } from './network';
 import { walletFromSeedHex, type BtcWallet } from './wallet';
 
@@ -47,10 +48,10 @@ export function withTxid(tx: Omit<EsploraTxJson, 'txid'>): EsploraTxJson {
 const le32 = (n: number): string => Array.from([0, 8, 16, 24], (sh) => ((n >>> sh) & 0xff).toString(16).padStart(2, '0')).join('');
 
 /** Regtest-difficulty header over the block's txids, nonce ground until it meets 0x207fffff. */
-export function mineHeader(prevHash: string, txs: readonly EsploraTxJson[], bits = 0x207fffff): string {
+export function mineHeader(prevHash: string, txs: readonly EsploraTxJson[], bits = 0x207fffff, time = 1_700_000_000): string {
   const root = merkleRoot(txs.map((t) => t.txid));
   for (let nonce = 0; ; nonce++) {
-    const hex = `${le32(0x20000000)}${reverseHex(prevHash)}${reverseHex(root)}${le32(1_700_000_000)}${le32(bits)}${le32(nonce)}`;
+    const hex = `${le32(0x20000000)}${reverseHex(prevHash)}${reverseHex(root)}${le32(time)}${le32(bits)}${le32(nonce)}`;
     if (BigInt(`0x${parseHeader(hex).hash}`) <= targetFromBits(bits)) return hex;
   }
 }
@@ -86,14 +87,47 @@ export function withWitnessCommitment(txs: readonly EsploraTxJson[]): EsploraTxJ
   return [coinbaseTx, ...rest];
 }
 
+/** Time of block `height` in mined test chains: ten minutes apart, so the header-chain timestamp rules hold. */
+export const blockTime = (height: number, offset = 0): number => 1_700_000_000 + 600 * height + offset;
+
 /** Builds linked blocks above `genesisHash` (coinbases commit to witnesses like bitcoind's). */
 export function mineChain(genesisHash: string, rawBodies: readonly EsploraTxJson[][]): MockBlock[] {
   const out: MockBlock[] = [{ hash: genesisHash, txs: [] }];
   for (const txs of rawBodies.map(withWitnessCommitment)) {
-    const header = mineHeader(out[out.length - 1]!.hash, txs);
+    const header = mineHeader(out[out.length - 1]!.hash, txs, 0x207fffff, blockTime(out.length));
     out.push({ hash: parseHeader(header).hash, header, txs });
   }
   return out;
+}
+
+/**
+ * Replaces the blocks from `fromHeight` up with a different branch of `length` blocks (coinbase only, distinct by
+ * `tag`), mined on the block below. A longer branch has more work at regtest difficulty.
+ */
+export function forkChain(blocks: MockBlock[], fromHeight: number, length: number, tag: number): void {
+  blocks.splice(fromHeight);
+  for (let i = 0; i < length; i++) {
+    const height = blocks.length;
+    const txs = [coinbase(0x500 + tag * 16 + i)];
+    const header = mineHeader(blocks[height - 1]!.hash, txs, 0x207fffff, blockTime(height, tag));
+    blocks.push({ hash: parseHeader(header).hash, header, txs });
+  }
+}
+
+/** Esplora `/blocks/:height` summary of a header (the fields the app rebuilds a header from). */
+export function blockSummary(height: number, headerHex: string): Record<string, unknown> {
+  const h = parseHeader(headerHex);
+  return {
+    id: h.hash,
+    height,
+    version: h.version,
+    timestamp: h.time,
+    bits: h.bits,
+    nonce: h.nonce,
+    merkle_root: h.merkleRoot,
+    previousblockhash: height === 0 ? null : h.prevHash,
+    tx_count: 1,
+  };
 }
 
 function toHex(b: Uint8Array): string {
@@ -169,6 +203,10 @@ export interface MockChain {
   readonly requests: string[];
   /** Makes the next request for this path fail with HTTP 500. */
   failPath: string | undefined;
+  /** Serve `GET /blocks/:height` (default true); false acts like a server without it (HTTP 404). */
+  summaries: boolean;
+  /** Rewrites each `/blocks/:height` summary before it is served (tampering tests). */
+  summaryEdit?: (s: Record<string, unknown>) => Record<string, unknown>;
   fetchFn: (url: string, init: RequestInit) => Promise<Response>;
 }
 
@@ -199,6 +237,7 @@ export function mockChain(netId: BtcNetworkId, recipient: BtcWallet, opts: MockC
     broadcasts: [],
     requests: [],
     failPath: undefined,
+    summaries: true,
     fetchFn: (url, init) => {
       const base = 'https://esplora.test/api';
       if (!url.startsWith(base)) return Promise.reject(new Error(`unexpected host ${url}`));
@@ -209,6 +248,16 @@ export function mockChain(netId: BtcNetworkId, recipient: BtcWallet, opts: MockC
       if (chain.failPath === path) return Promise.resolve(new Response('boom', { status: 500 }));
       let m: RegExpExecArray | null;
       if (path === '/blocks/tip/height') return text(String(blocks.length - 1));
+      if ((m = /^\/blocks\/(\d+)$/.exec(path)) && chain.summaries) {
+        const top = Math.min(Number(m[1]), blocks.length - 1);
+        const genesis = netId === 'mainnet' ? undefined : GENESIS_HEADERS[netId];
+        const list: unknown[] = [];
+        for (let h = top; h >= 0 && h > top - 10; h--) {
+          const hdr = h === 0 ? genesis : blocks[h]!.header;
+          if (hdr !== undefined) list.push(chain.summaryEdit?.(blockSummary(h, hdr)) ?? blockSummary(h, hdr));
+        }
+        return json(list);
+      }
       if ((m = /^\/block-height\/(\d+)$/.exec(path))) {
         const b = blocks[Number(m[1])];
         return b === undefined ? Promise.resolve(new Response('Block not found', { status: 404 })) : text(b.hash);
@@ -245,4 +294,99 @@ export function mockChain(netId: BtcNetworkId, recipient: BtcWallet, opts: MockC
 
 export function walletA(netId: BtcNetworkId = 'regtest'): BtcWallet {
   return walletFromSeedHex(SEED_A, btcNetwork(netId));
+}
+
+export interface FakeIdb extends IdbFactoryLike {
+  /** Committed records. */
+  readonly data: Map<string, unknown>;
+  opens: number;
+  /** Fail the next `open`. */
+  failOpen: boolean;
+  /** Fail the next `get` request. */
+  failGet: boolean;
+  /** Abort the next read-write transaction at commit time, after its requests succeeded. */
+  failCommit: boolean;
+}
+
+/**
+ * Just enough of IndexedDB for the header store: one database, one object store, async request callbacks, and
+ * transactions that buffer writes and apply them only on commit (`oncomplete`), or drop them on `abort()`.
+ * Several stores may share one fake (two tabs).
+ */
+export function fakeIdb(): FakeIdb {
+  const data = new Map<string, unknown>();
+  const names = new Set<string>();
+  const f: FakeIdb = { data, opens: 0, failOpen: false, failGet: false, failCommit: false, open: () => undefined as never };
+  const transaction = (_store: string, mode: IDBTransactionMode = 'readonly'): IDBTransaction => {
+    const writes: (() => void)[] = [];
+    let pending = 0;
+    let finished = false;
+    const tx = {} as { oncomplete?: () => void; onabort?: () => void; onerror?: () => void; abort: () => void; objectStore: () => unknown };
+    const finish = (): void => {
+      if (finished || pending > 0) return;
+      finished = true;
+      setTimeout(() => {
+        if (mode === 'readwrite' && f.failCommit) {
+          f.failCommit = false;
+          tx.onerror?.();
+          tx.onabort?.();
+          return;
+        }
+        for (const w of writes) w();
+        tx.oncomplete?.();
+      }, 0);
+    };
+    tx.abort = (): void => {
+      finished = true;
+      setTimeout(() => { tx.onabort?.(); }, 0);
+    };
+    const req = <T,>(run: () => T, fail = false): IDBRequest<T> => {
+      const r = {} as { result: T; onsuccess?: () => void; onerror?: () => void };
+      pending++;
+      setTimeout(() => {
+        pending--;
+        if (finished) return;
+        if (fail) {
+          r.onerror?.();
+          finished = true;
+          tx.onerror?.();
+          tx.onabort?.();
+          return;
+        }
+        r.result = run();
+        r.onsuccess?.();
+        finish();
+      }, 0);
+      return r as unknown as IDBRequest<T>;
+    };
+    tx.objectStore = () => ({
+      get: (k: string) => {
+        const fail = f.failGet;
+        f.failGet = false;
+        return req(() => data.get(k), fail);
+      },
+      put: (v: unknown, k: string) => req(() => { writes.push(() => data.set(k, v)); return k; }),
+      delete: (k: string) => req(() => { writes.push(() => data.delete(k)); }),
+    });
+    return tx as unknown as IDBTransaction;
+  };
+  const db = {
+    objectStoreNames: { contains: (n: string) => names.has(n) },
+    createObjectStore: (n: string) => { names.add(n); },
+    transaction,
+  };
+  f.open = () => {
+    f.opens++;
+    const r = {} as { result: unknown; onupgradeneeded?: () => void; onsuccess?: () => void; onerror?: () => void };
+    const fail = f.failOpen;
+    f.failOpen = false;
+    setTimeout(() => {
+      if (fail) { r.onerror?.(); return; }
+      r.result = db;
+      r.onupgradeneeded?.();
+      r.onsuccess?.();
+    }, 0);
+    return r as unknown as IDBOpenDBRequest;
+  };
+  return f;
 }
