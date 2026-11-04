@@ -119,6 +119,56 @@ describe('ghostpay-embed-v2.js popup mode (default)', () => {
   });
 });
 
+interface Armed {
+  h: Harness;
+  nonce: string;
+  /** Intervals the SDK started and has not cleared. */
+  live: Set<number>;
+  /** Runs every live interval callback once (a 250 ms tick), by hand: no sleeps. */
+  tick: (n?: number) => void;
+  reload: () => void;
+}
+
+/** Opens the iframe, lets jsdom's single own load of the frame happen (as in a browser), with setInterval under manual control. */
+async function armed(): Promise<Armed> {
+  const h = await page(`data-invoice="${GOOD}" data-mode="iframe"`);
+  const w = h.dom.window as unknown as { setInterval: (fn: () => void, ms: number) => number; clearInterval: (id: number) => void };
+  const fns = new Map<number, () => void>();
+  let next = 1;
+  w.setInterval = (fn) => {
+    fns.set(next, fn);
+    return next++;
+  };
+  w.clearInterval = (id) => {
+    fns.delete(id);
+  };
+  h.btn.click();
+  const f = h.frame()!;
+  (f.contentWindow as unknown as { postMessage: (d: unknown, o: string) => void }).postMessage = (data, origin) => h.posted.push({ data, origin });
+  await new Promise<void>((res) => {
+    f.addEventListener('load', () => { res(); }, { once: true });
+  });
+  const liveSet = new Set<number>();
+  const sync = (): Set<number> => {
+    liveSet.clear();
+    for (const k of fns.keys()) liveSet.add(k);
+    return liveSet;
+  };
+  return {
+    h,
+    nonce: (h.posted[0]!.data as { n: string }).n,
+    get live() {
+      return sync();
+    },
+    tick(n = 1) {
+      for (let i = 0; i < n; i++) for (const fn of [...fns.values()]) fn();
+    },
+    reload() {
+      f.dispatchEvent(new h.dom.window.Event('load'));
+    },
+  };
+}
+
 describe('ghostpay-embed-v2.js iframe mode', () => {
   it('opens a sandboxed no-referrer iframe on the checkout origin and posts hello to that exact origin', async () => {
     const { h } = await framed();
@@ -182,78 +232,77 @@ describe('ghostpay-embed-v2.js iframe mode', () => {
   });
 
   it('repeats the same hello until the checkout answers (its listener can register after the frame load event), then stops', async () => {
-    // Exactly one (jsdom's own) load of the frame, as in a browser's first load.
-    const h = await page(`data-invoice="${GOOD}" data-mode="iframe"`);
-    h.btn.click();
-    const f = h.frame()!;
-    (f.contentWindow as unknown as { postMessage: (d: unknown, o: string) => void }).postMessage = (data, origin) => h.posted.push({ data, origin });
-    await new Promise<void>((res) => {
-      f.addEventListener('load', () => { res(); }, { once: true });
-    });
-    const nonce = (h.posted[0]!.data as { n: string }).n;
-    await new Promise((r) => setTimeout(r, 700));
-    expect(h.posted.length).toBeGreaterThanOrEqual(3);
-    for (const p of h.posted) {
+    const a = await armed();
+    expect(a.h.posted).toHaveLength(1);
+    a.tick(3);
+    expect(a.h.posted).toHaveLength(4);
+    for (const p of a.h.posted) {
       expect(p.origin).toBe(APP);
-      expect((p.data as { n: string }).n).toBe(nonce);
+      expect((p.data as { n: string }).n).toBe(a.nonce);
     }
-    h.send({ t: 'gp:init', n: nonce, v: 1, data: {} });
-    const sent = h.posted.length;
-    await new Promise((r) => setTimeout(r, 700));
-    expect(h.posted).toHaveLength(sent);
+    a.h.send({ t: 'gp:init', n: a.nonce, v: 1, data: {} });
+    expect([...a.live]).toEqual([]);
+    a.tick(3);
+    expect(a.h.posted).toHaveLength(4);
   });
 
-  it('greets again after a reload inside the frame (new load after gp:init), with a bounded burst', async () => {
-    const { h, nonce } = await framed();
-    h.send({ t: 'gp:init', n: nonce, v: 1, data: {} });
-    await new Promise((r) => setTimeout(r, 400));
-    const before = h.posted.length;
-    h.frame()!.dispatchEvent(new h.dom.window.Event('load'));
-    expect(h.posted).toHaveLength(before + 1);
-    await new Promise((r) => setTimeout(r, 600));
-    expect(h.posted.length).toBeGreaterThanOrEqual(before + 3);
-    for (const p of h.posted) expect((p.data as { n: string }).n).toBe(nonce);
+  it('stops after exactly 16 hellos when the checkout never answers', async () => {
+    const a = await armed();
+    a.tick(40);
+    expect(a.h.posted).toHaveLength(16);
+    expect([...a.live]).toEqual([]);
   });
 
-  it('a stale gp:init (same nonce, queued by the previous document) does not end the burst of a reload', async () => {
-    const { h, nonce } = await framed();
-    await new Promise((r) => setTimeout(r, 300)); // let jsdom's own asynchronous load of the frame settle first
-    h.send({ t: 'gp:init', n: nonce, v: 1, data: {} });
-    h.frame()!.dispatchEvent(new h.dom.window.Event('load')); // reload
-    const before = h.posted.length;
-    h.send({ t: 'gp:init', n: nonce, v: 1, data: {} }); // ack from the old document arrives before the new one listens
-    await new Promise((r) => setTimeout(r, 700));
-    expect(h.posted.length).toBeGreaterThanOrEqual(before + 2);
+  it('greets again after a reload inside the frame (new load after gp:init)', async () => {
+    const a = await armed();
+    a.h.send({ t: 'gp:init', n: a.nonce, v: 1, data: {} });
+    const before = a.h.posted.length;
+    a.reload();
+    expect(a.h.posted).toHaveLength(before + 1);
+    a.tick(2);
+    expect(a.h.posted).toHaveLength(before + 3);
+    for (const p of a.h.posted) expect((p.data as { n: string }).n).toBe(a.nonce);
   });
 
-  it('leaves no retry interval running after completion, even if the frame reloads afterwards', async () => {
-    const h = await page(`data-invoice="${GOOD}" data-mode="iframe"`);
-    const w = h.dom.window as unknown as { setInterval: (fn: () => void, ms: number) => number; clearInterval: (id: number) => void };
-    const realSet = w.setInterval.bind(w);
-    const realClear = w.clearInterval.bind(w);
-    const live = new Set<number>();
-    w.setInterval = (fn, ms) => {
-      const id = realSet(fn, ms);
-      live.add(id);
-      return id;
-    };
-    w.clearInterval = (id) => {
-      live.delete(id);
-      realClear(id);
-    };
-    h.btn.click();
-    const f = h.frame()!;
-    (f.contentWindow as unknown as { postMessage: (d: unknown, o: string) => void }).postMessage = (data, origin) => h.posted.push({ data, origin });
-    f.dispatchEvent(new h.dom.window.Event('load'));
-    const nonce = (h.posted[0]!.data as { n: string }).n;
-    h.send({ t: 'gp:init', n: nonce, v: 1, data: {} });
-    h.send(done(nonce));
-    expect(h.events).toHaveLength(1);
-    const sent = h.posted.length;
-    f.dispatchEvent(new h.dom.window.Event('load')); // the finished checkout's frame reloads
-    await new Promise((r) => setTimeout(r, 600));
-    expect(h.posted).toHaveLength(sent);
-    expect([...live]).toEqual([]);
+  it('a stale gp:init (same nonce, queued by the previous document) does not end the burst of a reload; the burst is bounded', async () => {
+    const a = await armed();
+    a.h.send({ t: 'gp:init', n: a.nonce, v: 1, data: {} });
+    const before = a.h.posted.length;
+    a.reload();
+    a.h.send({ t: 'gp:init', n: a.nonce, v: 1, data: {} }); // ack from the old document, before the new one listens
+    a.tick(3);
+    expect(a.h.posted).toHaveLength(before + 4);
+    a.tick(40);
+    expect(a.h.posted).toHaveLength(before + 16); // HELLO_MAX hellos after the reload, then no more
+    expect([...a.live]).toEqual([]);
+  });
+
+  it('starts no retry interval when a finished checkout\'s frame reloads', async () => {
+    const a = await armed();
+    a.h.send({ t: 'gp:init', n: a.nonce, v: 1, data: {} });
+    a.h.send(done(a.nonce));
+    expect(a.h.events).toHaveLength(1);
+    const sent = a.h.posted.length;
+    a.reload();
+    expect([...a.live]).toEqual([]);
+    a.tick(3);
+    expect(a.h.posted).toHaveLength(sent);
+  });
+
+  it('completion clears the retry interval even when no gp:init was seen', async () => {
+    const a = await armed();
+    expect([...a.live]).toHaveLength(1);
+    a.h.send(done(a.nonce));
+    expect(a.h.events).toHaveLength(1);
+    expect([...a.live]).toEqual([]);
+  });
+
+  it('a frame that loses its window stops the retries instead of leaving the interval running', async () => {
+    const a = await armed();
+    expect([...a.live]).toHaveLength(1);
+    Object.defineProperty(a.h.frame()!, 'contentWindow', { get: () => null });
+    a.tick();
+    expect([...a.live]).toEqual([]);
   });
 
   it('does not fall back once the checkout answered, and stops listening after close', async () => {
