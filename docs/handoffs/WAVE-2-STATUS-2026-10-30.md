@@ -54,3 +54,11 @@ Checked by term search over `docs/handoffs/` and `README.md` for `requireSession
 
 - Already fixed on the frontier: P2-registry, P2-requireSession, P2-idle-lock, P1-AR2. Tasks T1, T2, T3 skipped because their rule is "only if open".
 - Still open: W-09 (deferred), policy-send caller guard (unknown), BR bullets 2 and 3.
+
+## Rechecked on the 2026-11-04 consolidation branch (`641fd49`)
+
+Added when this report was brought into `claude/consolidation-2026-11-04`. The rows above describe `70d8bf6` and are left as written. Only the items below were rechecked.
+
+- P1-AR2: still fixed. `packages/chain-adapters/src/logs.ts:328-332` (comment and `served`), `:475` (`if (window < cap) served = 0n;`). Ported in `79ae3ea` from PR 39 (`9778766`).
+- Qodo follow-on on AR2 (half-width window after a second transient `-32005`): fixed in `990a847`, which resets `served` only when the window actually grows.
+- Qodo Medium on `scripts/audit/gen-audit24-report.py` (report left owner-only): fixed. The script keeps the previous report's read bits (masked to `0644`), uses the umask for a new report and sets the mode on the open descriptor (`5a3b6aa`, then `cea3dcd`). `scripts/tests/audit-report-paths.test.mjs` covers both cases.
