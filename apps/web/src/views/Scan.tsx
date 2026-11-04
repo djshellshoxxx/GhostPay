@@ -16,8 +16,19 @@ import { recordFromVerifiedMatch } from '../lib/reconciliationLedger';
 import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
 import type { TagPayload } from '../lib/tags';
 import { useApp } from '../state';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
+import type { Translator } from '../i18n/translator';
+
+type T = Translator['t'];
+
+/** Isolated renders without a provider keep the bundled English source text. */
+function useScanT(): T {
+  const i18n = useI18nOptional();
+  return i18n?.t ?? SOURCE_TRANSLATOR.t;
+}
 
 export function Scan(): ReactNode {
+  const t = useScanT();
   const app = useApp();
   const services = useServices();
   const [chainId, setChainId] = useState<number>(services.chains[0]?.chainId ?? 84532);
@@ -73,9 +84,9 @@ export function Scan(): ReactNode {
   if (app.session === undefined) {
     return (
       <section aria-labelledby="scan-h">
-        <h2 id="scan-h">Scan and receive</h2>
-        <Notice kind="info">Load or generate seller keys first.</Notice>
-        <button type="button" className="btn btn-primary" onClick={() => { app.setView('seller'); }}>Go to Seller keys</button>
+        <h2 id="scan-h">{t('scan.title')}</h2>
+        <Notice kind="info">{t('scan.needKeys')}</Notice>
+        <button type="button" className="btn btn-primary" onClick={() => { app.setView('seller'); }}>{t('scan.goSeller')}</button>
       </section>
     );
   }
@@ -122,7 +133,7 @@ export function Scan(): ReactNode {
         const clients = await openScanClients({ plan, chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, appRpc: () => app.getRpc(chainId), fetchImpl: services.fetchFn, sleep: services.sleep });
         assertScopeCurrent();
         if (clients === undefined) {
-          setError('Configure an RPC for this chain in Settings first.');
+          setError(t('scan.error.noRpc'));
           return;
         }
         const rpc: RpcClient = clients.base;
@@ -134,14 +145,14 @@ export function Scan(): ReactNode {
           rpc2 = plan.useSecondary ? await app.getSecondaryRpc(chainId) : undefined;
         } catch {
           assertScopeCurrent();
-          setError('Scan blocked: the second RPC configured for this chain could not be used. Check it in Settings, or remove it to scan with one provider.');
+          setError(t('scan.error.secondRpc'));
           return;
         }
         assertScopeCurrent();
         let cursor = resume ? checkpoint : undefined;
         if (cursor === undefined) {
           if (!/^\d{1,15}$/.test(start.trim())) {
-            setError('Enter the block number to start scanning from.');
+            setError(t('scan.error.startBlock'));
             return;
           }
           cursor = { nextBlock: BigInt(start.trim()) };
@@ -149,7 +160,7 @@ export function Scan(): ReactNode {
         const checked = await verifyManifestState(manifest, rpc);
         assertScopeCurrent();
         if (checked.status !== 'loaded') {
-          setError('Scan blocked: the contracts on this chain do not match the deployment manifest.');
+          setError(t('scan.error.manifestMismatch'));
           return;
         }
         // The second RPC gets the same aligned announcement windows as the scan RPC, never the exact checkpoint range.
@@ -178,7 +189,7 @@ export function Scan(): ReactNode {
             if (!scopeIsCurrent()) return;
             setProgress(nextProgress);
             // Shown as pages commit, so a later error in this run cannot hide a block that was narrowed.
-            if (nextProgress.routerOnlyBlocks !== undefined) setRouterOnlyNote(describeRouterOnly(nextProgress.routerOnlyBlocks));
+            if (nextProgress.routerOnlyBlocks !== undefined) setRouterOnlyNote(describeRouterOnly(nextProgress.routerOnlyBlocks, t));
           },
           onQuarantine: (to) => {
             if (!scopeIsCurrent()) return;
@@ -204,7 +215,7 @@ export function Scan(): ReactNode {
               quarantined = quarantined.filter((m) => m.announcement.blockNumber < to);
             } catch (cause) {
               if (cause instanceof UserFacingError) throw cause;
-              const warning = new UserFacingError('A scan reorg was detected, but encrypted reconciliation invalidation could not be committed. Stop relying on historical records until this is resolved.');
+              const warning = new UserFacingError(t('scan.error.reorg'));
               warning.cause = cause;
               throw warning;
             }
@@ -214,7 +225,7 @@ export function Scan(): ReactNode {
             const identity = `${m.stealthAddress.toLowerCase()}|${m.announcement.ephemeralPublicKey.toLowerCase()}`;
             const prior = found.findIndex((x) => `${x.stealthAddress.toLowerCase()}|${x.announcement.ephemeralPublicKey.toLowerCase()}` === identity);
             if (prior < 0) {
-              if (found.length + quarantined.length >= 10_000) throw new UserFacingError('The scan observation safety limit was reached. Start a fresh scan to continue.');
+              if (found.length + quarantined.length >= 10_000) throw new UserFacingError(t('scan.error.observationLimit'));
               found.push(m);
             }
             else found[prior] = m;
@@ -222,23 +233,24 @@ export function Scan(): ReactNode {
           },
         });
         if (!ctl.signal.aborted) assertScopeCurrent();
-        if (res.discrepancies.length > 0) setError(`The second RPC provider disagreed on ${String(res.discrepancies.length)} check(s). Results may be incomplete or forged; checkpoints were not advanced. Try another provider.`);
-        if ((res.backlog ?? 0) > 0) setError(`${String(res.backlog)} announcements not posted by the GhostPay router were deferred by the per-scan budget (Settings). Nothing was skipped: scan again to continue from block ${res.cursor.nextBlock.toString()}.`);
+        if (res.discrepancies.length > 0) setError(t('scan.error.discrepancy', { count: String(res.discrepancies.length) }));
+        if ((res.backlog ?? 0) > 0) setError(t('scan.error.backlog', { count: String(res.backlog), block: res.cursor.nextBlock.toString() }));
         setPrivacyNote(res.telemetry?.anonymity === undefined ? undefined : describeAnonymitySet(res.telemetry.anonymity));
-        if ((res.routerOnlyBlocks ?? []).length > 0) setRouterOnlyNote(describeRouterOnly(res.routerOnlyBlocks ?? []));
-        if (res.secondaryLag !== undefined) setLagNote(`The second RPC reports block ${res.secondaryLag.secondaryHead.toString()}, ${(res.secondaryLag.head - res.secondaryLag.secondaryHead).toString()} blocks behind the scan RPC (block ${res.secondaryLag.head.toString()}). Each scan stops at the last block both providers have, so later payments appear only once the second RPC catches up. Check it in Settings if this persists.`);
-        if (res.limitReached) setError(`This scan reached its safety limit. It stopped before processing the next page; resume from block ${res.cursor.nextBlock.toString()} to continue.`);
-        const note = ` Started at block ${cursor.nextBlock.toString()}${resume && checkpoint !== undefined ? ' (from checkpoint)' : ''}.${rpc2 === undefined ? ' Only one RPC was used: add a second RPC in Settings to cross-check it.' : ''}`;
-        setDone((ctl.signal.aborted ? `Cancelled. ${String(res.scanned)} announcements checked.` : res.limitReached ? `Stopped at the safety limit. ${String(res.scanned)} announcements checked, ${String(res.matches.length)} payments found.` : `Finished. ${String(res.scanned)} announcements checked, ${String(res.matches.length)} payments found.`) + note);
-        app.announce(res.limitReached ? 'Scan stopped at the safety limit.' : 'Scan finished.');
+        if ((res.routerOnlyBlocks ?? []).length > 0) setRouterOnlyNote(describeRouterOnly(res.routerOnlyBlocks ?? [], t));
+        if (res.secondaryLag !== undefined) setLagNote(t('scan.lag', { secondary: res.secondaryLag.secondaryHead.toString(), behind: (res.secondaryLag.head - res.secondaryLag.secondaryHead).toString(), head: res.secondaryLag.head.toString() }));
+        if (res.limitReached) setError(t('scan.error.limitReached', { block: res.cursor.nextBlock.toString() }));
+        const note = t('scan.done.note', { block: cursor.nextBlock.toString(), fromCheckpoint: resume && checkpoint !== undefined ? 'yes' : 'no', oneRpc: rpc2 === undefined ? 'yes' : 'no' });
+        const counts = { scanned: String(res.scanned), found: String(res.matches.length) };
+        setDone(`${ctl.signal.aborted ? t('scan.done.cancelled', counts) : res.limitReached ? t('scan.done.limit', counts) : t('scan.done.finished', counts)} ${note}`);
+        app.announce(res.limitReached ? t('scan.announce.limit') : t('scan.announce.finished'));
       } catch (e) {
         if (!scopeKeysAreCurrent()) return;
         if (e instanceof Error && (e.message === 'scan-aborted' || e.message === 'scan-session-changed')) {
-          if (e.message === 'scan-session-changed') setError('Seller keys changed while the scan was starting. The scan was stopped; start again with the current keys.');
-          else if (scopeKeysAreCurrent()) setDone('Cancelled. The scan stopped before completing.');
+          if (e.message === 'scan-session-changed') setError(t('scan.error.keysChanged'));
+          else if (scopeKeysAreCurrent()) setDone(t('scan.done.cancelledEarly'));
           return;
         }
-        setError(e instanceof Error && e.message === 'manifest' ? 'Payments are disabled on this chain: no deployment manifest is loaded, so the announcer address is unknown.' : userMessage(e));
+        setError(e instanceof Error && e.message === 'manifest' ? t('scan.error.noManifest') : userMessage(e));
       } finally {
         if (abort.current === ctl) abort.current = undefined;
         if (startingScope.current === scope) startingScope.current = undefined;
@@ -249,24 +261,24 @@ export function Scan(): ReactNode {
 
   return (
     <section aria-labelledby="scan-h">
-      <h2 id="scan-h">Scan and receive</h2>
+      <h2 id="scan-h">{t('scan.title')}</h2>
       <p>
-        Announcements are downloaded from your RPC and checked inside a dedicated worker. The worker gets public logs and your viewing key for this scan only; it cannot reach the network.
+        {t('scan.intro')}
       </p>
-      <Notice kind="warn" title="RPC privacy">
-        Your RPC provider sees your IP address, scan ranges, and logs. Verifying a router payment also requests token transfer logs filtered for the one-time address, or the transaction receipt; these requests can reveal which public announcements matched your keys. A configured second provider sees the same verification evidence. Use trusted private RPC providers or your own nodes if this matters to you.
+      <Notice kind="warn" title={t('scan.rpcPrivacy.title')}>
+        {t('scan.rpcPrivacy.body')}
       </Notice>
       <details className="panel">
-        <summary>What each party learns with your scan privacy settings</summary>
+        <summary>{t('scan.disclosure.summary')}</summary>
         <ul>
           {describeScanDisclosure(scanPrivacy, { hasSecondary: (app.settings.rpcUrlsSecondary[String(chainId)] ?? '') !== '' }).map((row) => (
             <li key={row.party}><strong>{row.party}:</strong> {row.learns}</li>
           ))}
         </ul>
-        <p className="hint">Change the scan transport, windows and delays in Settings. None of these options hides anything on-chain.</p>
+        <p className="hint">{t('scan.disclosure.hint')}</p>
       </details>
       <div className="stack">
-        <Field label="Chain">
+        <Field label={t('scan.chain')}>
           {(id) => (
             <select id={id} value={chainId} onChange={(e) => { setChainId(Number(e.target.value)); }} disabled={running}>
               {services.chains.map((c) => (
@@ -275,38 +287,38 @@ export function Scan(): ReactNode {
             </select>
           )}
         </Field>
-        {manifest?.status === 'loaded' && manifest.trust === 'unsigned-dev' && <Notice kind="warn">{manifest.warning ?? 'UNSIGNED DEV MANIFEST: testnet only.'}</Notice>}
-        {manifest !== undefined && manifest.status !== 'loaded' && <Notice kind="warn">Payments disabled on this chain: no deployment manifest is loaded.</Notice>}
-        <Field label="Start block" hint={checkpoint === undefined ? 'The first block to scan from.' : `A checkpoint exists at block ${checkpoint.nextBlock.toString()}.`}>
+        {manifest?.status === 'loaded' && manifest.trust === 'unsigned-dev' && <Notice kind="warn">{manifest.warning ?? t('scan.manifest.unsignedFallback')}</Notice>}
+        {manifest !== undefined && manifest.status !== 'loaded' && <Notice kind="warn">{t('scan.manifest.disabled')}</Notice>}
+        <Field label={t('scan.startBlock')} hint={checkpoint === undefined ? t('scan.startBlock.hint') : t('scan.startBlock.checkpoint', { block: checkpoint.nextBlock.toString() })}>
           {(id, d) => <input id={id} aria-describedby={d} inputMode="numeric" value={start} onChange={(e) => { setStart(e.target.value); }} disabled={running} />}
         </Field>
         {checkpoint !== undefined && (
           <div className="check">
             <input id="resume" type="checkbox" checked={resume} onChange={(e) => { setResume(e.target.checked); }} />
-            <label htmlFor="resume">Resume from checkpoint</label>
+            <label htmlFor="resume">{t('scan.resume')}</label>
           </div>
         )}
         <div className="check">
           <input id="deep-scan" type="checkbox" checked={deepScan} onChange={(e) => { setDeepScan(e.target.checked); }} disabled={running} />
-          <label htmlFor="deep-scan">Deep scan (also check wrong view tags)</label>
+          <label htmlFor="deep-scan">{t('scan.deepScan')}</label>
         </div>
-        {deepScan && <Notice kind="warn">Deep scan spends substantially more CPU per router announcement. It still verifies the full stealth address and marks incorrect view tags for review.</Notice>}
+        {deepScan && <Notice kind="warn">{t('scan.deepScan.warn')}</Notice>}
         <div className="actions">
-          <button type="button" className="btn btn-primary" onClick={begin} disabled={running}>Start scan</button>
-          <button type="button" className="btn" onClick={() => { abort.current?.abort(); }} disabled={!running}>Cancel</button>
+          <button type="button" className="btn btn-primary" onClick={begin} disabled={running}>{t('scan.start')}</button>
+          <button type="button" className="btn" onClick={() => { abort.current?.abort(); }} disabled={!running}>{t('scan.cancel')}</button>
           {checkpoint !== undefined && (
-            <button type="button" className="btn" onClick={() => { if (keyId !== undefined) services.checkpoints.clear(chainId, keyId); setResume(false); app.announce('Checkpoint cleared.'); }} disabled={running}>
-              Clear checkpoint
+            <button type="button" className="btn" onClick={() => { if (keyId !== undefined) services.checkpoints.clear(chainId, keyId); setResume(false); app.announce(t('scan.checkpointCleared')); }} disabled={running}>
+              {t('scan.clearCheckpoint')}
             </button>
           )}
         </div>
       </div>
       <div role="status" aria-live="polite" className="status">
-        {progress !== undefined && `Scanned up to block ${progress.nextBlock.toString()}; ${String(progress.scanned)} announcements checked, ${String(progress.matches)} payments found${progress.skipped > 0 ? `, ${String(progress.skipped)} malformed logs skipped` : ''}${progress.limitReached ? '; safety limit reached' : ''}.`}
-        {running && progress === undefined && 'Starting…'}
+        {progress !== undefined && t('scan.progress', { block: progress.nextBlock.toString(), scanned: String(progress.scanned), matches: String(progress.matches), hasSkipped: progress.skipped > 0 ? 'yes' : 'no', skipped: String(progress.skipped), limit: progress.limitReached ? 'yes' : 'no' })}
+        {running && progress === undefined && t('scan.starting')}
       </div>
       {done !== undefined && <Notice kind="ok">{done}</Notice>}
-      {privacyNote !== undefined && <Notice kind="info" title="Privacy set (local estimate)">{privacyNote}</Notice>}
+      {privacyNote !== undefined && <Notice kind="info" title={t('scan.privacySet.title')}>{privacyNote}</Notice>}
       {routerOnlyNote !== undefined && <Notice kind="warn">{routerOnlyNote}</Notice>}
       {lagNote !== undefined && <Notice kind="warn">{lagNote}</Notice>}
       {error !== undefined && <Notice kind="error">{error}</Notice>}
@@ -330,22 +342,22 @@ export function Scan(): ReactNode {
 }
 
 /** L4-01: blocks too large to fetch whole were checked for router-posted announcements only; say which. */
-function describeRouterOnly(blocks: readonly bigint[]): string | undefined {
+function describeRouterOnly(blocks: readonly bigint[], t: T): string | undefined {
   if (blocks.length === 0) return undefined;
   const shown = blocks.slice(0, 5).map(String).join(', ');
-  const list = blocks.length > 5 ? `${shown} and ${String(blocks.length - 5)} more` : shown;
-  const one = blocks.length === 1;
-  return `${one ? 'Block' : 'Blocks'} ${list} held more announcements than one RPC response may carry (likely announcement spam). Payments posted through the GhostPay router were still checked there, but announcements there that were not posted by the GhostPay router were skipped, so a direct payment in ${one ? 'that block' : 'those blocks'} would not be listed.`;
+  const list = blocks.length > 5 ? t('scan.routerOnly.more', { shown, count: String(blocks.length - 5) }) : shown;
+  return t('scan.routerOnly', { list, single: blocks.length === 1 ? 'yes' : 'no' });
 }
 
-function describe(m: ScanMatch, chainId: number): string {
-  if (m.metadata === undefined) return 'Unknown payment layout';
+function describe(m: ScanMatch, chainId: number, t: T): string {
+  if (m.metadata === undefined) return t('scan.match.unknownLayout');
   if (m.metadata.kind === 'native') return `${formatUnits(m.metadata.netAmount, 18)} ${findChain(chainId)?.nativeSymbol ?? 'native'}`;
-  const t = tokensForChain(chainId).find((x) => x.address.toLowerCase() === m.metadata?.token.toLowerCase());
-  return t === undefined ? `${m.metadata.netAmount.toString()} units of unlisted token ${m.metadata.token}` : `${formatUnits(m.metadata.netAmount, t.decimals)} ${t.symbol}`;
+  const token = tokensForChain(chainId).find((x) => x.address.toLowerCase() === m.metadata?.token.toLowerCase());
+  return token === undefined ? t('scan.match.unlistedToken', { amount: m.metadata.netAmount.toString(), token: m.metadata.token }) : `${formatUnits(m.metadata.netAmount, token.decimals)} ${token.symbol}`;
 }
 
 function Matches(props: { readonly chainId: number; readonly matches: readonly ScanMatch[]; readonly sellerSignerPublicKey: string; readonly receiptSignerPublicKey: string | undefined }): ReactNode {
+  const t = useScanT();
   const app = useApp();
   const services = useServices();
   const [tags, setTags] = useState<Readonly<Record<string, string>>>({});
@@ -364,8 +376,8 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
       const next: Record<string, string> = {};
       for (const m of matches) {
         try {
-          const t = await services.vault.find(props.chainId, m.stealthAddress);
-          if (t !== undefined) next[m.announcement.id] = t.clientLabel;
+          const tag = await services.vault.find(props.chainId, m.stealthAddress);
+          if (tag !== undefined) next[m.announcement.id] = tag.clientLabel;
         } catch {
           /* undecryptable tags are reported in the tag list */
         }
@@ -377,10 +389,10 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
     };
   }, [matches, unlocked, services, props.chainId]);
 
-  if (matches.length === 0) return <p className="hint">No payments found yet.</p>;
+  if (matches.length === 0) return <p className="hint">{t('scan.matches.none')}</p>;
   return (
     <div>
-      <h3>Payments found</h3>
+      <h3>{t('scan.matches.heading')}</h3>
       {err !== undefined && <Notice kind="error">{err}</Notice>}
       <ul className="plain-list matches">
         {matches.map((m) => {
@@ -388,18 +400,18 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
           return (
             <li key={id} className="card">
               <p>
-                <strong>{m.receipt === 'verified' ? describe(m, m.chainId) : `Claimed, not confirmed: ${describe(m, m.chainId)}`}</strong> in block {m.announcement.blockNumber.toString()}
-                {m.viaRouter ? '' : ' (paid directly, no GhostPay fee)'}
-                {!m.tagMatches && ' (found by deep scan: announced view tag did not match)'}
-                {m.receipt === 'claimed' && (m.viaRouter ? ' - this announcement could not be verified as a payment; do not release goods based on it.' : ' - this is a direct announcement claim; an existing balance does not prove this payment occurred, so do not release goods based on it.')}
-                {m.receipt === 'pending' && ' - waiting for enough confirmations.'}
+                <strong>{m.receipt === 'verified' ? describe(m, m.chainId, t) : t('scan.match.claimedPrefix', { amount: describe(m, m.chainId, t) })}</strong> {t('scan.match.inBlock', { block: m.announcement.blockNumber.toString() })}
+                {m.viaRouter ? '' : ` ${t('scan.match.direct')}`}
+                {!m.tagMatches && ` ${t('scan.match.deepFound')}`}
+                {m.receipt === 'claimed' && ` - ${m.viaRouter ? t('scan.match.claimedRouter') : t('scan.match.claimedDirect')}`}
+                {m.receipt === 'pending' && ` - ${t('scan.match.pending')}`}
               </p>
-              <p>One-time address: <Mono>{m.stealthAddress}</Mono></p>
-              {tags[id] !== undefined && <p>Tag: <strong className="wrap">{tags[id]}</strong></p>}
+              <p>{t('scan.match.address')} <Mono>{m.stealthAddress}</Mono></p>
+              {tags[id] !== undefined && <p>{t('scan.match.tag')} <strong className="wrap">{tags[id]}</strong></p>}
               {unlocked && (
                 <div className="row">
                   <div className="field">
-                    <label htmlFor={`tag-${id}`}>Client tag (stored encrypted on this device)</label>
+                    <label htmlFor={`tag-${id}`}>{t('scan.tag.label')}</label>
                     <input id={`tag-${id}`} value={label[id] ?? ''} maxLength={200} onChange={(e) => { setLabel({ ...label, [id]: e.target.value }); }} />
                   </div>
                   <button
@@ -426,7 +438,7 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
                           }
                           setErr(undefined);
                           setTags({ ...tags, [id]: payload.clientLabel.trim() });
-                          app.announce('Tag saved.');
+                          app.announce(t('scan.tag.saved'));
                         },
                         (e: unknown) => {
                           setErr(userMessage(e));
@@ -434,7 +446,7 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
                       );
                     }}
                   >
-                    Save tag
+                    {t('scan.tag.save')}
                   </button>
                 </div>
               )}
@@ -442,7 +454,7 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
                 <ReceiptPanel match={m} sellerSignerPublicKey={props.receiptSignerPublicKey} />
               )}
               <button type="button" className="btn btn-primary" onClick={() => { app.selectForSweep({ match: m, chainId: m.chainId }); app.setView('sweep'); }}>
-                Sweep this payment
+                {t('scan.sweep')}
               </button>
             </li>
           );
@@ -453,6 +465,7 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
 }
 
 function Tags(props: { readonly chainId: number }): ReactNode {
+  const t = useScanT();
   const app = useApp();
   const services = useServices();
   const [, force] = useState(0);
@@ -468,9 +481,9 @@ function Tags(props: { readonly chainId: number }): ReactNode {
 
   return (
     <div>
-      <h3>Local client tags</h3>
+      <h3>{t('scan.tags.heading')}</h3>
       <p className="hint">
-        Tags never leave this browser. They are encrypted with a key derived from your viewing key and stored in IndexedDB as ciphertext. They are readable while unlocked, so lock when you step away; the vault also locks after {app.settings.lockTimeoutMin} idle minutes.
+        {t('scan.tags.hint', { minutes: String(app.settings.lockTimeoutMin) })}
       </p>
       {err !== undefined && <Notice kind="error">{err}</Notice>}
       <div className="actions">
@@ -496,7 +509,7 @@ function Tags(props: { readonly chainId: number }): ReactNode {
                     setErr(undefined);
                     force((n) => n + 1);
                     refresh();
-                    app.announce('Tags unlocked.');
+                    app.announce(t('scan.tags.unlocked'));
                   },
                   (e: unknown) => {
                     setErr(userMessage(e));
@@ -507,23 +520,23 @@ function Tags(props: { readonly chainId: number }): ReactNode {
               }
             }}
           >
-            Unlock tags
+            {t('scan.tags.unlock')}
           </button>
         ) : (
-          <button type="button" className="btn" onClick={() => { services.vault.lock(); setList(undefined); force((n) => n + 1); app.announce('Tags locked.'); }}>
-            Lock tags
+          <button type="button" className="btn" onClick={() => { services.vault.lock(); setList(undefined); force((n) => n + 1); app.announce(t('scan.tags.locked')); }}>
+            {t('scan.tags.lock')}
           </button>
         )}
         <button
           type="button"
           className="btn btn-danger"
           onClick={() => {
-            if (window.confirm('Delete every local tag on this device? This cannot be undone.')) {
+            if (window.confirm(t('scan.tags.deleteConfirm'))) {
               services.vault.wipe().then(
                 () => {
                   setList(undefined);
                   force((n) => n + 1);
-                  app.announce('All tags deleted.');
+                  app.announce(t('scan.tags.deleted'));
                 },
                 (e: unknown) => {
                   setErr(userMessage(e));
@@ -532,17 +545,17 @@ function Tags(props: { readonly chainId: number }): ReactNode {
             }
           }}
         >
-          Delete all tags
+          {t('scan.tags.deleteAll')}
         </button>
       </div>
       {unlocked && list !== undefined && (
         <ul className="plain-list">
-          {list.map((t) => (
-            <li key={t.announcementId}>
-              <span className="wrap">{t.clientLabel}</span> <Mono>{t.stealthAddress}</Mono>
+          {list.map((tg) => (
+            <li key={tg.announcementId}>
+              <span className="wrap">{tg.clientLabel}</span> <Mono>{tg.stealthAddress}</Mono>
             </li>
           ))}
-          {list.length === 0 && <li>No tags yet.</li>}
+          {list.length === 0 && <li>{t('scan.tags.none')}</li>}
         </ul>
       )}
     </div>
