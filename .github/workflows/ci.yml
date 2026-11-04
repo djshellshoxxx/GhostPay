@@ -56,7 +56,9 @@ jobs:
             echo "Docs-only change: heavy jobs skipped."
           fi
 
-  ts-check:
+  # typecheck, lint and build+guards used to run back to back in one job (about 9.5 min wall clock: 135 s + 240 s +
+  # 145 s after a ~80 s setup). They are independent, so they run as three parallel jobs; every command is unchanged.
+  ts-typecheck:
     needs: changes
     if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
@@ -69,7 +71,33 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/setup-node-libs
       - run: npm run typecheck
+
+  ts-lint:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-libs
       - run: npm run lint
+
+  ts-check:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-node-libs
       - run: npm run build
       - name: Build profile and emitted-output guard regressions
         run: node --test apps/web/scripts/localBuildProfile.test.mjs
@@ -189,7 +217,7 @@ jobs:
   # Stable required-check name: succeeds only if every TypeScript job succeeded (or was skipped as docs-only).
   typescript:
     if: always()
-    needs: [changes, ts-check, ts-test, ts-test-relayer]
+    needs: [changes, ts-typecheck, ts-lint, ts-check, ts-test, ts-test-relayer]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions: {}
