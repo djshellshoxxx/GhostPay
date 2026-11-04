@@ -112,7 +112,7 @@ Bounds, enforced on write, decrypt and import (`validateDocument`, `encrypt`, `m
 
 Never stored (`registrationFromInvoice` and its comment on `RegisteredInvoice`): invoice line items, memo, fiat totals,
 meta-address, signer public key. Never stored in any form: spending or viewing private keys. The viewing-key buffer is
-zero-filled in `ReconciliationVault.unlock`, and only the derived HKDF key material is held, in memory, while unlocked. Plaintext observations are never written to
+zero-filled in `ReconciliationVault.unlock` after it is imported with `crypto.subtle.importKey('raw', …, 'HKDF', false, ['deriveKey'])`; while unlocked the vault holds only that non-extractable WebCrypto base key (`this.base`), in memory, from which per-write AES-GCM keys are derived. Plaintext observations are never written to
 `localStorage`: the legacy write path is disabled (see below).
 
 ### Retention
@@ -194,8 +194,9 @@ Plaintext exports (deliberately unencrypted, each behind a confirmation):
 ## Why a seller-signed receipt is never payment evidence
 
 - A receipt is signed by the seller's signer key with domain `RECEIPT_DOMAIN` (`apps/web/src/lib/receipts.ts`).
-  `verifyReceipt` checks the signature only and does not read the chain. A valid signature shows that the seller issued
-  the receipt, not that a payment arrived.
+  `verifyReceipt` checks the signature only and does not read the chain. A valid signature shows only that the holder of the
+  private key for the receipt's embedded `signerPublicKey` signed these fields. It identifies the seller only after that
+  key is compared with the invoice's signer (`bindReceiptToInvoice`), and it never shows that a payment arrived.
 - Matching has no receipt input. `proposeInvoiceMatch` takes only an observation, `RegisteredInvoice` values and
   observations. `ReconciliationVault.proposals` and `confirmProposal` read `records` and `invoices` only.
   `reconciliationMatch.ts` states this at the top of the module.
@@ -217,7 +218,7 @@ Plaintext exports (deliberately unencrypted, each behind a confirmation):
 - UI: `ProposalView` (`ReconciliationLedger.tsx`) shows a confirm button only for `exact`. The text says "This is a local
   inference, not payment proof." For `ambiguous` it shows a warning and no action. Only the manual digest annotation can
   resolve an ambiguous case.
-- Server-side of the flow: `confirmProposal` refuses imported history, requires an unlinked verified observation, and
+- Vault-side enforcement (in the browser; there is no server): `confirmProposal` refuses imported history, requires an unlinked verified observation, and
   re-runs matching on the decrypted current document inside the compare-and-swap loop. A stale proposal therefore cannot
   link.
 - Saving an observation (`ReconciliationVault.save`) never links an invoice automatically. A manual digest typed in the
