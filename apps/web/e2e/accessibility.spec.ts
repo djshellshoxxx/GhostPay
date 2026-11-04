@@ -39,6 +39,7 @@ test.beforeEach(async ({ context, page }) => {
     localStorage.setItem('ghostpay.settings.v1', JSON.stringify({ rpcUrls: { '84532': rpc } }));
   }, SWEEP_RPC);
   await page.goto('/');
+  await expect(page.getByRole('link', { name: 'Skip to content', exact: true })).toBeAttached();
 });
 
 test.afterEach(async ({ page }, info) => {

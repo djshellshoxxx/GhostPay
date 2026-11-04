@@ -15,8 +15,8 @@ if (profile !== 'full' && profile !== 'lean') throw new Error('Unknown Playwrigh
 // Device projects are Chromium-engine viewport/touch/user-agent emulation ONLY. The descriptors for iPhone SE and
 // iPad Mini name WebKit; defaultBrowserType is overridden so only the installed Chromium is needed. This does NOT
 // exercise WebKit/Safari rendering or any real device; it checks responsive layout and axe accessibility at those sizes.
-const DEVICE_SPECS = [/accessibility\.spec\.ts$/, /devices\.spec\.ts$/];
-const deviceProject = (name: string, descriptor: (typeof devices)[string]) => ({
+const DEVICE_SPECS = [/accessibility\.spec\.ts$/, /devices[^/]*\.spec\.ts$/];
+const deviceProject = (name: string, descriptor: (typeof devices)[string] | undefined) => ({
   name,
   testMatch: DEVICE_SPECS,
   use: { ...descriptor, defaultBrowserType: 'chromium' as const },
@@ -32,10 +32,10 @@ export default defineConfig({
   reporter: [['list']],
   projects: [
     // Desktop: every existing spec as before; the device-only spec is left to the device projects.
-    { name: 'desktop', testIgnore: /devices\.spec\.ts$/ },
-    deviceProject('pixel-7-chromium', devices['Pixel 7']!),
-    deviceProject('iphone-se-chromium', devices['iPhone SE']!),
-    deviceProject('ipad-mini-chromium', devices['iPad Mini']!),
+    { name: 'desktop', testIgnore: /devices[^/]*\.spec\.ts$/ },
+    deviceProject('pixel-7-chromium', devices['Pixel 7']),
+    deviceProject('iphone-se-chromium', devices['iPhone SE']),
+    deviceProject('ipad-mini-chromium', devices['iPad Mini']),
   ],
   use: {
     baseURL: 'http://localhost:4173',
