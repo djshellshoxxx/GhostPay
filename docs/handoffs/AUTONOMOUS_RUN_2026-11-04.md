@@ -130,3 +130,26 @@ Suggested order: #59 → #66 → #67 → #68 → #69 → #70 → #71 → #72 →
 
 - TRON Nile/Shasta genesis: no primary source shows the block-0 hash. Only the 4-byte chain ids were found (`tronprotocol/documentation-en` `a608b7a`). Not pinned.
 - B5 feeds: allow `reference-data-directory.vercel.app`, `docs.chain.link` and `data.chain.link` in the environment network policy, or supply dated JSON.
+
+## Wave 1 review status (03:23 UTC)
+
+"A2 clean" means confirmed findings at medium or above are fixed. Where the run says "verified by mutation", the fix was reverted on purpose in a scratch worktree, the guarding test failed, and the fix was restored.
+
+| PR | Task | Head | A2 | Evidence of fix (ran here by A unless noted) |
+|---|---|---|---|---|
+| #60 | C2 QR pairing | f5c9015 | **clean** | M6 warn mutation → 1 failed/8 passed; scoped 21/21. Re-review mutation-killed M1–M5, ascending chainIds and stale-preview. |
+| #61 | A6 backup panel | f9a755f | **clean** | Delta re-review: blocker fixed (SellerKeys 50/50, unedited), 4/4 probes killed. Lean build has no panel. Lows done by C (lean guard names BackupPanel; stable heading id). |
+| #62 | B1 core journey | 10e5ff5 | **clean** | Reorg handling disabled → fails at the scan UI (:663); unmutated passes. Stale-session test 15/15 kills (refuted finding). Devnet backup relabelled script-side. |
+| #63 | C7 embed iframe | 03263ec | **clean** | `event.origin` check removed → exactly the wrong-origin case fails (1F/6P); unmutated 7/7. Hello burst bounded and restarted per load. |
+| #64 | B2' lean bound receipts | 2bcfd11 | **clean** | Explicit-wins mutation → 6 failed; 59/59 otherwise. Narrow-only resolveProfile with truth-table tests; undefined define → lean. |
+| #65 | A7 policy send guard | 6e13bb9 | **clean** | Fund-safety probes killed: lock, payment scope, up-front check, token/gross, native value, router, single-use review, approval-verified, receive guard. The approval-scope probe survives, which is harmless (narrows only). i18n now 0 errors. |
+| #73 | C5 device matrix | 0bf0f66 | **clean** | Root cause of the keyboard-focus "flake": Tab pressed before React's first commit (8/160 reproduced; 160/160 with a toBeAttached wait). Wait added to accessibility.spec and app.spec. C's 100/100 repeat accepted; lint clean. |
+| #74 | A4 BTC header sync | — | **needs_fix** | H1: heavier forks deeper than ~2047 are never adopted and are mislabelled lessWork. H2: scan results are not wiped atomically with the header switch on partial failure. M: network-only key with no "forget headers" action (permanent pinning); main-thread revalidation and full re-serialization do not scale (49 MB / 12.8 s at 300k headers). Retarget/MTP/BIP-94 consensus checks are sound. |
+| #66–#69 | i18n stack + B4 + B3' | see PRs | clean (A self-review + A2) | CI queued (runner backlog) at 03:22; 0 failures so far. |
+| #70 | A5 | a4f7a2c | clean | Sonar duplication fixed (7.4% → 0.0%): pure refactor, 60 cases before and after, 0 expect lines changed. CI queued. |
+| #71/#72 | C1 ADR / B5 blocked | — | clean | Docs-only; gates queued. |
+
+Recorded process notes:
+
+- Only the old-head `typescript`/`contracts` red checks were seen, and those were aggregate gates of runs cancelled by newer pushes. They are not test failures.
+- The #66 Sonar "1 new issue" (gate passed) cannot be read from this environment, because sonarcloud.io is denied by the network policy.
