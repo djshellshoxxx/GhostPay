@@ -153,3 +153,41 @@ Recorded process notes:
 
 - Only the old-head `typescript`/`contracts` red checks were seen, and those were aggregate gates of runs cancelled by newer pushes. They are not test failures.
 - The #66 Sonar "1 new issue" (gate passed) cannot be read from this environment, because sonarcloud.io is denied by the network policy.
+
+## Combined integration matrix (all open task PRs merged into one tree, 04:00–04:55 UTC)
+
+All of these ran here, on Instance A, not in CI. The tree merges #59 and every task branch: #69 (which contains #66–#68), #70, #71, #72, #60, #61, #62, #63, #64, #65, #73 and #74. The only conflicts were in the locale catalogs, and they were resolved losslessly: a key union with no differing values, 563 → 936 keys.
+
+**Run 1** (tree `a76f4a9`)
+
+These checks were green:
+
+- Clean install, build:libs, typecheck, lint
+- i18n check (0 errors) and extract (0 missing)
+- Secret scan and actions check
+- forge build, test 411/411, fmt and snapshot
+- Pool contracts 86/86
+- qualify-lean (two-build reproducibility)
+
+These checks were red. Each is listed with its cause:
+
+- `npm test` (all workspaces): the harness forced `REQUIRE_ANVIL=1` globally, which CI does not do. Re-run CI-style, every workspace passed: web 1893 passed, 1 skipped; coverage 92.9 / 88.65 / 94.55 / 96.57 against thresholds of 90/85/90/90; nocov 1/1.
+- payer-hiding forge: the EntryPoint was not vendored in the fresh tree. After `scripts/fetch-entrypoint.sh` it passed 108/108.
+- Playwright full and lean: one real failure. The #62 reorg journey fails when combined with #70's page-end persist shortcut. #70 was refutation-checked as safe. The `persistable()` shortcut now runs the same two-provider `corroborateAnchor`, verified by mutation. B re-keyed #62's fork trigger on scan progress (`forkPlan`, `e0a499b`).
+
+**Run 2** (tree `9ffae2f`; heads: #69 3662e1a, #70 d9fe8b4, #71 1e87109, #72 76199cd, #60 f5c9015, #61 f9a755f, #62 e0a499b, #63 03263ec, #64 2bcfd11, #65 6e13bb9, #73 0bf0f66, #74 0f80fcd)
+
+| Step | Result |
+|---|---|
+| build:libs | pass |
+| typecheck | pass |
+| i18n | 0 errors, 920 keys used, 0 missing |
+| web vitest | 1919 passed, 1 skipped (134 files) |
+| Playwright full profile | 58 passed, 1 skipped |
+| Playwright lean profile | 50 passed, 1 skipped |
+
+The #62 + #70 interaction is resolved in both profiles. The skipped cases are pre-existing conditional skips, not added by this run.
+
+**After run 2:** Qodo found that the Arabic `pay.scan.summary` and `pay.scan.clear` labels were identical. The fix is commit `e02d04c` on #66, written test-first; the new test failed for `ar` before the fix. It was merged forward to #67 (`7f4702f`), #68 (`4fe95fc`) and #69 (`1b9edb1`). It changes only one locale and adds one test. On the new #69 tip: i18n 0 errors, 0 missing; views + i18n vitest 420/420. The full matrix was not re-run for this change.
+
+**Not run here:** Real devices or wallets, mainnet, hosted deployment, CI on the final heads (queued at 04:49).
