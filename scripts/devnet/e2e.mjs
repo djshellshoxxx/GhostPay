@@ -400,7 +400,7 @@ try {
       d.setAAD(aadOf(f.meta));
       d.setAuthTag(body.subarray(body.length - 16));
       const secrets = JSON.parse(Buffer.concat([d.update(body.subarray(0, body.length - 16)), d.final()]).toString('utf8'));
-      assert.deepEqual(Object.keys(secrets).sort(), ['signingKey', 'spendingKey', 'viewingKey'], 'keystore.ts plaintext shape');
+      assert.deepEqual(Object.keys(secrets).sort((a, b) => a.localeCompare(b)), ['signingKey', 'spendingKey', 'viewingKey'], 'keystore.ts plaintext shape');
       return { meta: f.meta, secrets };
     } finally { k.fill(0); }
   };
