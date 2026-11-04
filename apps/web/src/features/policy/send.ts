@@ -4,7 +4,8 @@ import { decodePolicyPaymentCalldata, ghostPayPolicyRouterAbi, type Hex } from '
 import { UserFacingError } from '../../lib/errors';
 import { assertApproveTx, readAllowance } from '../../lib/pay';
 import { PostBroadcastError, submitTx, type BroadcastFn, type Runtime, type StatusFn, type SubmitResult } from '../../lib/payExec';
-import type { TxRequest, WalletSession } from '../../lib/wallet';
+import { browserAttemptStorage, readAttempts, type WalletAttempt } from '../../lib/duplicateAttemptJournal';
+import { walletAttemptKey, type TxRequest, type WalletSession } from '../../lib/wallet';
 import type { PolicyChainDeployment } from './chain';
 import type { PreparedPolicyPayment } from './pay';
 
@@ -98,6 +99,7 @@ export async function sendPolicyPayment(
   if (sentReviews.has(guard.reviewed) || sentReviews.has(prepared.built.tx)) throw new UserFacingError(ALREADY_SENT);
   check();
   const scope = policyPaymentScope(session, prepared, guard.deployment);
+  refuseIfAlreadyPaid(walletAttemptKey(session, prepared.built.tx, { kind: 'payment', scope }));
   const router = prepared.built.tx.to;
   let approvalHash: Hex | undefined;
   const gross = prepared.built.tx.value === 0n ? grossOf(prepared) : prepared.built.tx.value;
@@ -144,11 +146,39 @@ function markSent(guard: PolicySendGuard, prepared: PreparedPolicyPayment): void
   sentReviews.add(prepared.built.tx);
 }
 
+/** A payment with this scope already returned a hash in this tab; `hash` is that transaction. */
+export class PolicyAlreadyPaidError extends UserFacingError {
+  public constructor(public readonly hash: string) {
+    super(`You already sent this exact payment (same payee, token and amount) from this tab: transaction ${hash}. Check it in your wallet or a block explorer. To pay again on purpose, clear it under Wallet attempts first.`);
+    this.name = 'PolicyAlreadyPaidError';
+  }
+}
+
 /**
- * Duplicate-attempt scope of a policy payment (M2). Each review derives a fresh stealth account, so the calldata
- * differs every time; like Pay's invoice digest, this scope is stable across re-review (chain, payer, router, payee
- * meta-address, token, gross), so an earlier attempt with an unknown outcome blocks the wallet request until the user
- * clears it explicitly.
+ * Names the earlier transaction instead of the journal's generic duplicate refusal, before any wallet request (the
+ * approval included). Fails closed: a journal that cannot be read refuses. Without tab storage the wallet layer keeps
+ * no journal either, so there is nothing to look up.
+ */
+function refuseIfAlreadyPaid(key: string): void {
+  let earlier: WalletAttempt | undefined;
+  try {
+    const storage = browserAttemptStorage();
+    if (storage === undefined) return;
+    earlier = readAttempts(storage).find((a) => a.key === key);
+  } catch (e) {
+    throw e instanceof UserFacingError ? e : new UserFacingError('The wallet attempt journal is unavailable or invalid. No new wallet request was started.');
+  }
+  if (earlier?.status === 'submitted' && earlier.hash !== undefined) throw new PolicyAlreadyPaidError(earlier.hash);
+}
+
+/**
+ * Duplicate-attempt scope of a policy payment (M2), stable across re-review: chain, payer, router, payee
+ * meta-address, token and gross (each review derives a fresh stealth account and deadline, so the calldata differs).
+ * Any earlier attempt with this scope blocks the wallet request: one with an unknown outcome, one that returned a hash,
+ * and one that was verified and confirmed. Records do not expire; only the user clears them under Wallet attempts.
+ * Policy payments have no invoice identity and the router has no replay guard, so this record is the only thing that
+ * stops a silent second payment; a deliberate repeat needs that explicit clear (or a new tab). Matches Pay, whose
+ * scope is the invoice digest.
  */
 export function policyPaymentScope(session: WalletSession, prepared: PreparedPolicyPayment, deployment: PolicyChainDeployment): Hex {
   return keccak256(toBytes(JSON.stringify([

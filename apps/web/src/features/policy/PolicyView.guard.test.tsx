@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { clearSession, importSession } from '../../lib/session';
 import { SETTINGS_KEY } from '../../lib/settings';
 import type { WalletInfo } from '../../lib/wallet';
+import { ATTEMPT_JOURNAL_KEY } from '../../lib/duplicateAttemptJournal';
 import { MockWallet } from '../../test/mockWallet';
 import { makeServices, renderApp } from '../../test/render';
 import { POLICY_FLAG } from './flag';
@@ -173,6 +174,87 @@ describe('policy pay: no second wallet request after a broadcast or an unknown o
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
     expect(await screen.findByText(/A previous wallet attempt for this action already exists in this tab/)).toBeTruthy();
     expect(asked).toBe(1);
+  });
+});
+
+const ALREADY_PAID = /You already sent this exact payment \(same payee, token and amount\) from this tab: transaction 0x9{64}\. Check it in your wallet or a block explorer\. To pay again on purpose, clear it under Wallet attempts first\./;
+const journal = () => screen.getByRole('region', { name: 'Wallet attempt journal' });
+
+describe('policy pay: a verified repeat stays blocked until cleared (by design)', () => {
+  it('M2: after a verified successful policy payment, an identical re-review does not reach the wallet', async () => {
+    const w = new MockWallet({ chainId: SEPOLIA });
+    const rpc = fakeChain(SEPOLIA, { ...deploymentCalls(), extra: walletMirror(w) });
+    const user = await open(makeServices({ createRpc: () => Promise.resolve(rpc), discoverWallets: () => Promise.resolve([info(w)]), sleep: () => Promise.resolve() }));
+    await connect(user);
+    await reviewPay(user, 'native', '1000');
+    await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    // Verified on the RPC and confirmed by a successful receipt.
+    expect(await screen.findByText(/Payment submitted: 0x9{64} \(confirmed\)/)).toBeTruthy();
+    expect(walletSends(w)).toBe(1);
+    await reviewPay(user, 'native', '1000');
+    await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    expect(await screen.findByText(ALREADY_PAID)).toBeTruthy();
+    expect(walletSends(w)).toBe(1);
+    expect(within(journal()).getByText(`0x${'9'.repeat(64)}`)).toBeTruthy();
+  });
+
+  it('M2: an identical ERC-20 repeat is refused before its approval reaches the wallet', async () => {
+    const w = new MockWallet({ chainId: SEPOLIA });
+    const mirror = walletMirror(w);
+    const sent: string[] = [];
+    const orig = w.request.bind(w);
+    w.request = async (args) => {
+      const r = await orig(args);
+      if (args.method === 'eth_sendTransaction') sent.push(String(w.sent?.['to']).toLowerCase());
+      return r;
+    };
+    // Allowance: granted by the approve, consumed again by the payment.
+    const allowance = (): bigint => (sent.at(-1) === TOKEN.toLowerCase() ? 5000n : 0n);
+    const rpc = fakeChain(SEPOLIA, {
+      ...deploymentCalls(),
+      extra: (method, params) => {
+        if (method === 'eth_call' && (params[0] as { to: string }).to.toLowerCase() === TOKEN.toLowerCase()) return encodeAbiParameters([{ type: 'uint256' }], [allowance()]);
+        return mirror(method);
+      },
+    });
+    const user = await open(makeServices({ createRpc: () => Promise.resolve(rpc), discoverWallets: () => Promise.resolve([info(w)]), sleep: () => Promise.resolve() }));
+    await connect(user);
+    await reviewPay(user, TOKEN, '5000');
+    await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    expect(await screen.findByText(/Payment submitted: 0x9{64} \(confirmed\)/)).toBeTruthy();
+    expect(sent).toEqual([TOKEN.toLowerCase(), ROUTER.toLowerCase()]);
+    await reviewPay(user, TOKEN, '5000');
+    await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    expect(await screen.findByText(ALREADY_PAID)).toBeTruthy();
+    expect(walletSends(w)).toBe(2);
+  });
+
+  it('M2: after an explicit clear under Wallet attempts, the same payment can be sent on purpose', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const w = new MockWallet({ chainId: SEPOLIA });
+    const rpc = fakeChain(SEPOLIA, { ...deploymentCalls(), extra: walletMirror(w) });
+    const user = await open(makeServices({ createRpc: () => Promise.resolve(rpc), discoverWallets: () => Promise.resolve([info(w)]), sleep: () => Promise.resolve() }));
+    await connect(user);
+    await reviewPay(user, 'native', '1000');
+    await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    await screen.findByText(/Payment submitted/);
+    await user.click(within(journal()).getByRole('button', { name: 'Clear this attempt after checking my wallet' }));
+    expect(screen.queryByRole('region', { name: 'Wallet attempt journal' })).toBeNull();
+    await reviewPay(user, 'native', '1000');
+    await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    await vi.waitFor(() => { expect(walletSends(w)).toBe(2); });
+  });
+
+  it('fails closed when the attempt journal cannot be read: no wallet request', async () => {
+    const w = new MockWallet({ chainId: SEPOLIA });
+    const rpc = fakeChain(SEPOLIA, { ...deploymentCalls(), extra: walletMirror(w) });
+    const user = await open(makeServices({ createRpc: () => Promise.resolve(rpc), discoverWallets: () => Promise.resolve([info(w)]) }));
+    await connect(user);
+    await reviewPay(user, 'native', '1000');
+    window.sessionStorage.setItem(ATTEMPT_JOURNAL_KEY, '{not json');
+    await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    expect(await screen.findAllByText(/attempt journal is unavailable or invalid/)).not.toHaveLength(0);
+    expect(walletSends(w)).toBe(0);
   });
 });
 

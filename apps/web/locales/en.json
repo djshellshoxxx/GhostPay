@@ -531,6 +531,7 @@
     "policy.pay.lockedTitle": "Do not send this payment again",
     "policy.pay.lockedBody": "Your wallet already sent a transaction for this payment, but it could not be verified. Keep the hashes below and check your wallet and a block explorer before doing anything else. Start over only after checking: an approval that was mined stays in effect, and a new review can use it.",
     "policy.pay.unlock": "I checked my wallet: start over",
+    "policy.pay.alreadyPaid": "You already sent this exact payment (same payee, token and amount) from this tab: transaction {hash}. Check it in your wallet or a block explorer. To pay again on purpose, clear it under Wallet attempts first.",
     "policy.account.walletRequired": "Connect a wallet on this network to relay the transaction (any account may relay).",
     "policy.account.submitted": "{label} submitted: {hash}",
     "policy.account.tokenInvalid": "The token must be \"native\" or a checksummed address.",
