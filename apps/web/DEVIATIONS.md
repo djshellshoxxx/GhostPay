@@ -185,9 +185,12 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     (the header chain is updated in place during a check, before the view's state catches up) and every input's block
     is at or below the checked tip with the hash the live checked chain has at that height. Forget clears the review,
     approval, signed transaction and every selection; a checked tip that drops below a reviewed input clears the review
-    and the selections that cannot be swept. These gates are layered on purpose (disabled buttons, the same checks in
-    the click handlers, and a clearing effect): the handler checks and the effect are backstops that the UI tests cannot
-    reach on their own, because a disabled button never fires and the results are reconciled first. A chain loaded from storage (after a
+    and the selections that cannot be swept. These gates are layered on purpose: the buttons render disabled from the
+    busy state and the reviewed inputs; the click handlers check the busy state through a ref (set together with the
+    state) and the inputs against the live chain; a clearing effect drops a review whose inputs are no longer checked.
+    Tests pin the button gates mid-check (chain still unchanged) and the handler gates by calling the real handlers
+    (React props) mid-check and after a fork check. The clearing effect remains a backstop (results are reconciled
+    first), not pinned on its own. A chain loaded from storage (after a
     forget, or another tab's) is always compared with the results on screen, even when the sync does not move its tip.
     A forget during a check ends the busy state at once; a check started before it may not save, set the checked tip,
     keep its loaded chain or change results. A branch with no more work is ignored and its blocks are

@@ -44,6 +44,113 @@ const verified = (height: number): RegExp => new RegExp(`Block headers checked o
 
 const BCRT_DEST = bech32.encode('bcrt', [0, ...bech32.toWords(new Uint8Array(20).fill(3))]);
 
+/** Renders the view with a fetch that can hold the next `/blocks/<n>` request (not the tip) of a header check. */
+async function openHeld() {
+  const chain = mockChain('regtest', walletA());
+  let release: () => void = () => undefined;
+  let hold = false;
+  let held = false;
+  const fetchFn: MockChain['fetchFn'] = async (url, init) => {
+    if (hold && /\/blocks\/\d+$/.test(url)) {
+      hold = false;
+      held = true;
+      await new Promise<void>((r) => { release = r; });
+    }
+    return chain.fetchFn(url, init);
+  };
+  const user = userEvent.setup();
+  renderWith(<BtcView headerStore={sharedStore().storeFor} />, makeServices({ fetchFn }));
+  await user.selectOptions(screen.getByLabelText('Network'), 'regtest');
+  await user.type(screen.getByLabelText(/Esplora server URL/), 'https://esplora.test/api');
+  await user.type(screen.getByLabelText(/Or import a seed/), SEED_A);
+  await user.click(screen.getByRole('button', { name: 'Import seed' }));
+  await user.type(screen.getByLabelText(/First block height/), '1');
+  await user.click(screen.getByRole('button', { name: 'Scan' }));
+  await screen.findByText(/1 unspent payment/);
+  await user.click(screen.getByRole('checkbox', { name: /Sweep [0-9a-f]{64}:1/ }));
+  await user.type(screen.getByLabelText('Destination address'), BCRT_DEST);
+  await user.click(screen.getByRole('button', { name: 'Review sweep' }));
+  await user.click(screen.getByRole('checkbox', { name: /I checked the destination/ }));
+  return {
+    chain,
+    user,
+    /** Starts "Update headers" and waits until its first header request is being held (the chain is unchanged). */
+    startHeldCheck: async (): Promise<void> => {
+      hold = true;
+      held = false;
+      await user.click(screen.getByRole('button', { name: 'Update headers' }));
+      await waitFor(() => { expect(held).toBe(true); });
+    },
+    release: (): void => { release(); },
+  };
+}
+
+/** The real React onClick of a rendered element (to call a handler the UI would no longer offer). */
+function reactOnClick(el: Element): () => void {
+  const key = Object.keys(el).find((k) => k.startsWith('__reactProps$'));
+  if (key === undefined) throw new Error('no react props');
+  return (el as unknown as Record<string, { onClick: () => void }>)[key]!.onClick;
+}
+
+describe('BtcView header chain: busy state after a check', () => {
+  it('M-new/L1: Sign is disabled only while a check runs (chain unchanged), and enabled again right after it', async () => {
+    const t = await openHeld();
+    await t.startHeldCheck();
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign with software key' }).disabled).toBe(true);
+    t.release();
+    await screen.findByText(verified(4));
+    await waitFor(() => { expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Sign with software key' }).disabled).toBe(false); });
+  });
+
+  it('M-new/L1: Broadcast is disabled only while a check runs, and a clean check leaves it usable (1 broadcast)', async () => {
+    const t = await openHeld();
+    await t.user.click(screen.getByRole('button', { name: 'Sign with software key' }));
+    await screen.findByText('Signed transaction');
+    await t.startHeldCheck();
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: /Broadcast to/ }).disabled).toBe(true);
+    t.release();
+    await screen.findByText(verified(4));
+    const b = await screen.findByRole<HTMLButtonElement>('button', { name: /Broadcast to/ });
+    await waitFor(() => { expect(b.disabled).toBe(false); });
+    await t.user.click(b);
+    await screen.findByText(/The server accepted transaction/);
+    expect(t.chain.broadcasts).toHaveLength(1);
+  });
+
+  it('L1: the Sign and Broadcast handlers themselves refuse while a check runs', async () => {
+    const t = await openHeld();
+    const signClick = reactOnClick(screen.getByRole('button', { name: 'Sign with software key' }));
+    await t.startHeldCheck();
+    signClick();
+    await new Promise((r) => { setTimeout(r, 50); });
+    expect(screen.queryByText('Signed transaction')).toBeNull();
+    t.release();
+    await screen.findByText(verified(4));
+    await t.user.click(screen.getByRole('button', { name: 'Sign with software key' }));
+    await screen.findByText('Signed transaction');
+    const broadcastClick = reactOnClick(screen.getByRole('button', { name: /Broadcast to/ }));
+    await t.startHeldCheck();
+    broadcastClick();
+    await new Promise((r) => { setTimeout(r, 50); });
+    expect(t.chain.broadcasts).toHaveLength(0);
+    t.release();
+    await screen.findAllByText(verified(4));
+  });
+
+  it('L2: a stale Broadcast handler from before a fork check sends nothing (live-chain hash check)', async () => {
+    const t = await openHeld();
+    await t.user.click(screen.getByRole('button', { name: 'Sign with software key' }));
+    await screen.findByText('Signed transaction');
+    const stale = reactOnClick(screen.getByRole('button', { name: /Broadcast to/ }));
+    forkChain(t.chain.blocks, 3, 3, 2);
+    await t.user.click(screen.getByRole('button', { name: 'Update headers' }));
+    await screen.findByText(verified(5));
+    stale();
+    await new Promise((r) => { setTimeout(r, 50); });
+    expect(t.chain.broadcasts).toHaveLength(0);
+  });
+});
+
 describe('BtcView header chain: re-review fixes', () => {
   it('F1: a transaction signed before Forget cannot be broadcast while its input is unchecked', async () => {
     const chain = mockChain('regtest', walletA());
@@ -154,7 +261,7 @@ describe('BtcView header chain: re-review fixes', () => {
     expect(chain.broadcasts).toHaveLength(0);
   });
 
-  it('L-e: lock and a network switch reset the Forget confirmation, the header notes and the checked tip', async () => {
+  it('L-e: lock resets the Forget confirmation, and a network switch clears the header notes (the checked tip reset there has no visible effect: lock already cleared the results)', async () => {
     const chain = mockChain('regtest', walletA());
     const user = await open(chain, sharedStore().storeFor);
     await user.click(screen.getByRole('button', { name: 'Update headers' }));
