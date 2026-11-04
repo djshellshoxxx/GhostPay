@@ -1,19 +1,14 @@
 import { useSyncExternalStore, useState, type ReactNode } from 'react';
 import { getSessionBackup, subscribeSessionBackup } from '../lib/session';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
-import type { MessageKey } from '../i18n/catalog';
 import { useApp } from '../state';
 import { Notice } from './Common';
 import { TagArchive, type ArchiveExportResult } from './TagArchive';
 
 type ItemStatus = 'notStarted' | 'done' | 'partial' | 'failed';
 
-const STATUS_KEY = {
-  notStarted: 'backup.status.notStarted',
-  done: 'backup.status.done',
-  partial: 'backup.status.partial',
-  failed: 'backup.status.failed',
-} as const satisfies Record<ItemStatus, MessageKey>;
+/** What the last tag archive export of one set of loaded keys did; kept here so leaving the view does not reset the checklist. */
+let lastTagOutcome: { readonly session: unknown; readonly result: ArchiveExportResult } | undefined;
 
 /**
  * Full profile only: one guided checklist for the two things that need a copy outside this tab, the seller keys and the
@@ -27,18 +22,19 @@ export function BackupPanel(): ReactNode {
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const backup = useSyncExternalStore(subscribeSessionBackup, getSessionBackup);
-  const [tagResult, setTagResult] = useState<{ readonly session: unknown; readonly result: ArchiveExportResult } | undefined>(undefined);
+  const [tagResult, setTagResult] = useState(lastTagOutcome);
   if (app.session === undefined) return <TagArchive />;
 
   // An outcome belongs to the keys it was made for.
   const tags = tagResult?.session === app.session ? tagResult.result : undefined;
   const keyStatus: ItemStatus = backup?.backedUp === true ? 'done' : 'notStarted';
   const tagStatus: ItemStatus = tags === undefined ? 'notStarted' : !tags.ok ? 'failed' : tags.gaps ? 'partial' : 'done';
-  const tagNote = tags?.ok === true && !tags.gaps ? t('backup.tags.done', { count: tags.recordCount })
+  const tagNote = tags?.ok === true && !tags.gaps ? (tags.history ? t('backup.tags.done', { count: tags.recordCount }) : t('backup.tags.doneNoHistory', { count: tags.recordCount }))
     : tagStatus === 'partial' ? t('backup.tags.partial')
     : tagStatus === 'failed' ? t('backup.tags.failed')
     : t('backup.tags.notStarted');
-  const status = (s: ItemStatus, note: string): ReactNode => <p role="status"><strong data-status={s}>{t(STATUS_KEY[s])}</strong>: {note}</p>;
+  const label = { notStarted: t('backup.status.notStarted'), done: t('backup.status.done'), partial: t('backup.status.partial'), failed: t('backup.status.failed') };
+  const status = (s: ItemStatus, note: string): ReactNode => <p role="status"><strong data-status={s}>{label[s]}</strong>: {note}</p>;
 
   const goToKeystore = (): void => {
     const heading = [...document.querySelectorAll<HTMLElement>('h3')].find((h) => h.textContent === t('sellerKeys.backupHeading'));
@@ -53,14 +49,14 @@ export function BackupPanel(): ReactNode {
       <Notice kind="warn">{t('backup.intro')}</Notice>
       <ol className="stack">
         <li data-testid="backup-item-keys">
-          <h4>{t('backup.keys.heading')}</h4>
+          <p><strong>{t('backup.keys.heading')}</strong></p>
           {status(keyStatus, keyStatus === 'done' ? t('backup.keys.done') : t('backup.keys.notStarted'))}
           <button type="button" className="btn" onClick={goToKeystore}>{t('backup.keys.go')}</button>
         </li>
         <li data-testid="backup-item-tags">
-          <h4>{t('backup.tags.heading')}</h4>
+          <p><strong>{t('backup.tags.heading')}</strong></p>
           {status(tagStatus, tagNote)}
-          <TagArchive onExport={(result) => { setTagResult({ session: app.session, result }); }} />
+          <TagArchive onExport={(result) => { lastTagOutcome = { session: app.session, result }; setTagResult(lastTagOutcome); }} />
         </li>
       </ol>
     </section>

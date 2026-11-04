@@ -78,7 +78,7 @@ function listed(items: readonly string[]): string {
 
 /** What an export attempt did: reported only after the file was handed to the browser, or after the attempt failed. */
 export type ArchiveExportResult =
-  | { readonly ok: true; readonly recordCount: number; readonly sha256: string; /** Scan history is missing from the archive for at least one chain. */ readonly gaps: boolean }
+  | { readonly ok: true; readonly recordCount: number; readonly sha256: string; /** The seller asked for scan history to be included. */ readonly history: boolean; /** Scan history is missing from the archive for at least one chain. */ readonly gaps: boolean }
   | { readonly ok: false };
 
 /**
@@ -205,7 +205,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
         unchanged();
         downloadBytes(out.filename, out.bytes);
         setPass(''); setPass2(''); setBusy(false);
-        reportExport?.({ ok: true, recordCount: out.recordCount, sha256: out.sha256, gaps: skipped > 0 || unsupported === undefined || unsupported.length > 0 });
+        reportExport?.({ ok: true, recordCount: out.recordCount, sha256: out.sha256, history: withHistory, gaps: skipped > 0 || unsupported === undefined || unsupported.length > 0 });
         const missing = [
           skipped > 0 ? `Scan history for ${String(skipped)} chain(s) could not be read and is NOT in this archive.` : '',
           unsupported === undefined ? 'The scan history kept for chains this build does not support could not be listed; any such history is NOT in this archive.' : '',

@@ -2,8 +2,11 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { clearSession, generateSession } from '../lib/session';
+import * as reconciliation from '../lib/reconciliationVault';
+import { checkpointKeyId } from '../lib/scanClient';
+import { clearSession, generateSession, getSessionPublic } from '../lib/session';
 import * as tagArchive from '../lib/tagArchive';
+import { memoryIndexedDb } from '../test/memoryIndexedDb';
 import { makeServices, renderApp } from '../test/render';
 
 const PASS = 'violet comet maple lantern';
@@ -17,7 +20,13 @@ beforeEach(() => {
   URL.revokeObjectURL = vi.fn();
   HTMLAnchorElement.prototype.click = vi.fn();
 });
-afterEach(() => { vi.restoreAllMocks(); });
+afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
+
+/** The archive is still encrypted for real, at scrypt N=2^14 instead of the production 2^17, so the suite stays fast. */
+function fastKdf(): void {
+  const real = tagArchive.exportArchive;
+  vi.spyOn(tagArchive, 'exportArchive').mockImplementation((tags, key, pass, options) => real(tags, key, pass, { ...options, N: 1 << 14 }));
+}
 
 type User = ReturnType<typeof userEvent.setup>;
 
@@ -36,8 +45,10 @@ async function exportTags(user: User, withHistory: boolean): Promise<void> {
   const pass = tags.getByLabelText('Archive passphrase (at least 14 characters)');
   await user.clear(pass);
   await user.type(pass, PASS);
+  await user.clear(tags.getByLabelText('Repeat archive passphrase'));
   await user.type(tags.getByLabelText('Repeat archive passphrase'), PASS);
-  if (!withHistory) await user.click(tags.getByLabelText('Include scan history'));
+  const include = tags.getByLabelText<HTMLInputElement>('Include scan history');
+  if (include.checked !== withHistory) await user.click(include);
   await user.click(tags.getByRole('button', { name: 'Download encrypted tag archive' }));
 }
 
@@ -60,27 +71,43 @@ describe('BackupPanel', () => {
     expect(status('backup-item-tags')).toMatch(/^Not started/);
   }, 120_000);
 
-  it('marks the tag archive done after the export completed', async () => {
+  const storeHistory = async (chains: readonly number[]): Promise<void> => {
+    const session = getSessionPublic();
+    if (session === undefined) throw new Error('no session');
+    const keyId = checkpointKeyId(session.spendingPublicKey, session.viewingPublicKey);
+    for (const chainId of chains) {
+      const vault = await reconciliation.createCurrentReconciliationVault(chainId, keyId);
+      try { await vault.clearRecords(); } finally { vault.lock(); }
+    }
+  };
+
+  // The reconciliation store keeps the first IndexedDB it opens, so the case that writes history must stay the first to use the in-memory one.
+  // Each case: how the export goes, whether scan history is requested, and what the item must then say.
+  const cases: readonly { name: string; history: boolean; arrange: () => Promise<void> | void; status: RegExp; blobs: number }[] = [
+    { name: 'Done, naming the choice, when history was left out on purpose', history: false, arrange: () => undefined, status: /^Done: Tag archive downloaded WITHOUT scan history, as you chose\. Tags in the archive: 0\./, blobs: 1 },
+    { name: 'Done with gaps when history is stored for a chain this build does not support', history: true, arrange: () => storeHistory([84532, 777777]), status: /^Done with gaps: .*NOT in it/, blobs: 1 },
+    { name: 'Done with gaps when the history of a chain could not be read', history: true, arrange: () => { vi.spyOn(reconciliation, 'createCurrentReconciliationVault').mockRejectedValue(new Error('unavailable')); }, status: /^Done with gaps: .*NOT in it/, blobs: 1 },
+    { name: 'plain Done only when history was included and nothing was left out', history: true, arrange: () => undefined, status: /^Done: Tag archive downloaded\. Tags in the archive: 0\./, blobs: 1 },
+    { name: 'Failed, never Done, when the export throws', history: false, arrange: () => { vi.spyOn(tagArchive, 'exportArchive').mockRejectedValue(new Error('disk full')); }, status: /^Failed: The tag archive was not produced/, blobs: 0 },
+  ];
+  it.each(cases)('tag archive item says $name', async (c) => {
+    if (c.blobs > 0) fastKdf();
+    vi.stubGlobal('indexedDB', memoryIndexedDb());
     const user = await open();
-    await exportTags(user, false);
-    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Done: Tag archive downloaded\. Tags in the archive: 0\./); }, { timeout: 60_000 });
-    expect(blobs).toHaveLength(1);
+    await c.arrange();
+    await exportTags(user, c.history);
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(c.status); }, { timeout: 60_000 });
+    expect(blobs).toHaveLength(c.blobs);
     expect(status('backup-item-keys')).toMatch(/^Not started/);
   }, 120_000);
 
-  it('does not call the tag archive plain done when scan history could not be included', async () => {
-    // jsdom has no IndexedDB: the scan history cannot be read, and the archive says so.
-    const user = await open();
-    await exportTags(user, true);
-    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Done with gaps: .*NOT in it/); }, { timeout: 60_000 });
-    expect(blobs).toHaveLength(1);
-  }, 120_000);
-
-  it('marks the tag archive failed, never done, when the export throws', async () => {
-    vi.spyOn(tagArchive, 'exportArchive').mockRejectedValue(new Error('disk full'));
+  it('recovers from Failed after a later export completes', async () => {
+    const real = tagArchive.exportArchive;
+    vi.spyOn(tagArchive, 'exportArchive').mockRejectedValueOnce(new Error('disk full')).mockImplementation((tags, key, pass, options) => real(tags, key, pass, { ...options, N: 1 << 14 }));
     const user = await open();
     await exportTags(user, false);
-    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Failed: The tag archive was not produced/); });
-    expect(blobs).toHaveLength(0);
-  });
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Failed/); });
+    await exportTags(user, false);
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Done: /); }, { timeout: 60_000 });
+  }, 120_000);
 });

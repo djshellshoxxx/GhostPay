@@ -144,6 +144,7 @@ export const SECURITY_KEY_GROUPS = {
     'backup.keys.done',
     'backup.tags.notStarted',
     'backup.tags.done',
+    'backup.tags.doneNoHistory',
     'backup.tags.partial',
     'backup.tags.failed',
     'backup.status.notStarted',
