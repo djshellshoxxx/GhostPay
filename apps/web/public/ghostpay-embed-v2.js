@@ -32,6 +32,7 @@
   var MAX_MSG = 2048;
   var HANDSHAKE_MS = 4000;
   var HELLO_RETRY_MS = 250;
+  var HELLO_MAX = 16;
   var NONCE_RE = /^[0-9a-f]{32}$/;
   var TX_RE = /^0x[0-9a-f]{64}$/;
   var TEMPLATE_RE = /^[a-z0-9_-]{1,32}$/;
@@ -140,6 +141,7 @@
     var settled = false;
     var timer = 0;
     var hello = 0;
+    var tries = 0;
     overlay.setAttribute('role', 'dialog');
     overlay.setAttribute('aria-modal', 'true');
     overlay.setAttribute('aria-label', 'GhostPay checkout');
@@ -200,17 +202,22 @@
     window.addEventListener('message', onMessage);
     function sayHello() {
       if (settled || !frame.contentWindow) return;
+      tries++;
+      if (tries >= HELLO_MAX) window.clearInterval(hello);
       try {
         frame.contentWindow.postMessage({ t: 'gp:hello', n: n, v: 1, data: {} }, appOrigin);
       } catch (e) {
-        // Window not on the checkout origin (yet): the target-origin check refused delivery. Nothing was sent.
+        // Defensive only: never let an exception escape a timer or load handler.
       }
     }
     // The checkout registers its listener after its first render, which can come after the frame's load event, so one
-    // hello is not enough: repeat the same hello (same nonce; the checkout accepts only the first) until it answers.
+    // hello is not enough: repeat the same hello (same nonce) a bounded number of times until the checkout answers. Every
+    // load restarts the burst, so a reload inside the frame (a fresh page that has not seen the nonce) is greeted again.
     frame.addEventListener('load', function () {
+      window.clearInterval(hello);
+      tries = 0;
       sayHello();
-      if (hello === 0 && !settled) hello = window.setInterval(sayHello, HELLO_RETRY_MS);
+      hello = window.setInterval(sayHello, HELLO_RETRY_MS);
     });
     timer = window.setTimeout(function () {
       // No valid handshake: this host (or this merchant origin) is not enabled for framing. Use the popup instead.

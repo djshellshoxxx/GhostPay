@@ -195,6 +195,22 @@ describe('ghostpay-embed-v2.js iframe mode', () => {
     expect(h.posted).toHaveLength(sent);
   });
 
+  it('greets again after a reload inside the frame (new load after gp:init), with a bounded burst', async () => {
+    const { h, nonce } = await framed();
+    h.send({ t: 'gp:init', n: nonce, v: 1, data: {} });
+    await new Promise((r) => setTimeout(r, 400));
+    const before = h.posted.length;
+    h.frame()!.dispatchEvent(new h.dom.window.Event('load'));
+    expect(h.posted).toHaveLength(before + 1);
+    await new Promise((r) => setTimeout(r, 600));
+    expect(h.posted.length).toBeGreaterThanOrEqual(before + 3);
+    for (const p of h.posted) expect((p.data as { n: string }).n).toBe(nonce);
+    h.send({ t: 'gp:init', n: nonce, v: 1, data: {} });
+    const sent = h.posted.length;
+    await new Promise((r) => setTimeout(r, 600));
+    expect(h.posted).toHaveLength(sent);
+  });
+
   it('does not fall back once the checkout answered, and stops listening after close', async () => {
     const { h, nonce } = await framed();
     h.send({ t: 'gp:init', n: nonce, v: 1, data: {} });
