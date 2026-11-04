@@ -182,7 +182,15 @@ describe('ghostpay-embed-v2.js iframe mode', () => {
   });
 
   it('repeats the same hello until the checkout answers (its listener can register after the frame load event), then stops', async () => {
-    const { h, nonce } = await framed();
+    // Exactly one (jsdom's own) load of the frame, as in a browser's first load.
+    const h = await page(`data-invoice="${GOOD}" data-mode="iframe"`);
+    h.btn.click();
+    const f = h.frame()!;
+    (f.contentWindow as unknown as { postMessage: (d: unknown, o: string) => void }).postMessage = (data, origin) => h.posted.push({ data, origin });
+    await new Promise<void>((res) => {
+      f.addEventListener('load', () => { res(); }, { once: true });
+    });
+    const nonce = (h.posted[0]!.data as { n: string }).n;
     await new Promise((r) => setTimeout(r, 700));
     expect(h.posted.length).toBeGreaterThanOrEqual(3);
     for (const p of h.posted) {
@@ -205,10 +213,47 @@ describe('ghostpay-embed-v2.js iframe mode', () => {
     await new Promise((r) => setTimeout(r, 600));
     expect(h.posted.length).toBeGreaterThanOrEqual(before + 3);
     for (const p of h.posted) expect((p.data as { n: string }).n).toBe(nonce);
+  });
+
+  it('a stale gp:init (same nonce, queued by the previous document) does not end the burst of a reload', async () => {
+    const { h, nonce } = await framed();
+    await new Promise((r) => setTimeout(r, 300)); // let jsdom's own asynchronous load of the frame settle first
     h.send({ t: 'gp:init', n: nonce, v: 1, data: {} });
+    h.frame()!.dispatchEvent(new h.dom.window.Event('load')); // reload
+    const before = h.posted.length;
+    h.send({ t: 'gp:init', n: nonce, v: 1, data: {} }); // ack from the old document arrives before the new one listens
+    await new Promise((r) => setTimeout(r, 700));
+    expect(h.posted.length).toBeGreaterThanOrEqual(before + 2);
+  });
+
+  it('leaves no retry interval running after completion, even if the frame reloads afterwards', async () => {
+    const h = await page(`data-invoice="${GOOD}" data-mode="iframe"`);
+    const w = h.dom.window as unknown as { setInterval: (fn: () => void, ms: number) => number; clearInterval: (id: number) => void };
+    const realSet = w.setInterval.bind(w);
+    const realClear = w.clearInterval.bind(w);
+    const live = new Set<number>();
+    w.setInterval = (fn, ms) => {
+      const id = realSet(fn, ms);
+      live.add(id);
+      return id;
+    };
+    w.clearInterval = (id) => {
+      live.delete(id);
+      realClear(id);
+    };
+    h.btn.click();
+    const f = h.frame()!;
+    (f.contentWindow as unknown as { postMessage: (d: unknown, o: string) => void }).postMessage = (data, origin) => h.posted.push({ data, origin });
+    f.dispatchEvent(new h.dom.window.Event('load'));
+    const nonce = (h.posted[0]!.data as { n: string }).n;
+    h.send({ t: 'gp:init', n: nonce, v: 1, data: {} });
+    h.send(done(nonce));
+    expect(h.events).toHaveLength(1);
     const sent = h.posted.length;
+    f.dispatchEvent(new h.dom.window.Event('load')); // the finished checkout's frame reloads
     await new Promise((r) => setTimeout(r, 600));
     expect(h.posted).toHaveLength(sent);
+    expect([...live]).toEqual([]);
   });
 
   it('does not fall back once the checkout answered, and stops listening after close', async () => {

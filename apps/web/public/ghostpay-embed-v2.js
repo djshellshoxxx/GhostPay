@@ -142,6 +142,7 @@
     var timer = 0;
     var hello = 0;
     var tries = 0;
+    var loads = 0;
     overlay.setAttribute('role', 'dialog');
     overlay.setAttribute('aria-modal', 'true');
     overlay.setAttribute('aria-label', 'GhostPay checkout');
@@ -182,7 +183,9 @@
       if (m === null) return;
       if (m.t === 'gp:init') {
         window.clearTimeout(timer);
-        window.clearInterval(hello);
+        // Only the first document's ack ends the burst. After a reload the frame window and nonce are the same, so an ack
+        // queued by the previous document cannot be told from the new one: let the bounded burst run out instead.
+        if (loads <= 1) window.clearInterval(hello);
         timer = 0;
       } else if (m.t === 'gp:status') {
         el.setAttribute('data-ghostpay-phase', m.data.phase);
@@ -190,6 +193,7 @@
         // Single use: the nonce stops being accepted after the first completion.
         window.removeEventListener('message', onMessage);
         settled = true;
+        window.clearInterval(hello);
         var detail = { status: m.data.status, chainId: m.data.chainId };
         if (m.data.txHash) detail.txHash = m.data.txHash;
         el.setAttribute('data-ghostpay-phase', m.data.status);
@@ -201,7 +205,10 @@
     document.addEventListener('keydown', onKey);
     window.addEventListener('message', onMessage);
     function sayHello() {
-      if (settled || !frame.contentWindow) return;
+      if (settled || !frame.contentWindow) {
+        window.clearInterval(hello);
+        return;
+      }
       tries++;
       if (tries >= HELLO_MAX) window.clearInterval(hello);
       try {
@@ -214,6 +221,8 @@
     // hello is not enough: repeat the same hello (same nonce) a bounded number of times until the checkout answers. Every
     // load restarts the burst, so a reload inside the frame (a fresh page that has not seen the nonce) is greeted again.
     frame.addEventListener('load', function () {
+      if (settled) return;
+      loads++;
       window.clearInterval(hello);
       tries = 0;
       sayHello();
