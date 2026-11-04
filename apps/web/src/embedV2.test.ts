@@ -119,6 +119,56 @@ describe('ghostpay-embed-v2.js popup mode (default)', () => {
   });
 });
 
+interface Armed {
+  h: Harness;
+  nonce: string;
+  /** Intervals the SDK started and has not cleared. */
+  live: Set<number>;
+  /** Runs every live interval callback once (a 250 ms tick), by hand: no sleeps. */
+  tick: (n?: number) => void;
+  reload: () => void;
+}
+
+/** Opens the iframe, lets jsdom's single own load of the frame happen (as in a browser), with setInterval under manual control. */
+async function armed(): Promise<Armed> {
+  const h = await page(`data-invoice="${GOOD}" data-mode="iframe"`);
+  const w = h.dom.window as unknown as { setInterval: (fn: () => void, ms: number) => number; clearInterval: (id: number) => void };
+  const fns = new Map<number, () => void>();
+  let next = 1;
+  w.setInterval = (fn) => {
+    fns.set(next, fn);
+    return next++;
+  };
+  w.clearInterval = (id) => {
+    fns.delete(id);
+  };
+  h.btn.click();
+  const f = h.frame()!;
+  (f.contentWindow as unknown as { postMessage: (d: unknown, o: string) => void }).postMessage = (data, origin) => h.posted.push({ data, origin });
+  await new Promise<void>((res) => {
+    f.addEventListener('load', () => { res(); }, { once: true });
+  });
+  const liveSet = new Set<number>();
+  const sync = (): Set<number> => {
+    liveSet.clear();
+    for (const k of fns.keys()) liveSet.add(k);
+    return liveSet;
+  };
+  return {
+    h,
+    nonce: (h.posted[0]!.data as { n: string }).n,
+    get live() {
+      return sync();
+    },
+    tick(n = 1) {
+      for (let i = 0; i < n; i++) for (const fn of [...fns.values()]) fn();
+    },
+    reload() {
+      f.dispatchEvent(new h.dom.window.Event('load'));
+    },
+  };
+}
+
 describe('ghostpay-embed-v2.js iframe mode', () => {
   it('opens a sandboxed no-referrer iframe on the checkout origin and posts hello to that exact origin', async () => {
     const { h } = await framed();
@@ -179,6 +229,80 @@ describe('ghostpay-embed-v2.js iframe mode', () => {
     expect(h.frame()).toBeNull();
     expect(h.opened).toEqual([{ url: GOOD, features: 'popup,noopener,noreferrer' }]);
     expect(h.btn.getAttribute('title')).toMatch(/Popup blocked/);
+  });
+
+  it('repeats the same hello until the checkout answers (its listener can register after the frame load event), then stops', async () => {
+    const a = await armed();
+    expect(a.h.posted).toHaveLength(1);
+    a.tick(3);
+    expect(a.h.posted).toHaveLength(4);
+    for (const p of a.h.posted) {
+      expect(p.origin).toBe(APP);
+      expect((p.data as { n: string }).n).toBe(a.nonce);
+    }
+    a.h.send({ t: 'gp:init', n: a.nonce, v: 1, data: {} });
+    expect([...a.live]).toEqual([]);
+    a.tick(3);
+    expect(a.h.posted).toHaveLength(4);
+  });
+
+  it('stops after exactly 16 hellos when the checkout never answers', async () => {
+    const a = await armed();
+    a.tick(40);
+    expect(a.h.posted).toHaveLength(16);
+    expect([...a.live]).toEqual([]);
+  });
+
+  it('greets again after a reload inside the frame (new load after gp:init)', async () => {
+    const a = await armed();
+    a.h.send({ t: 'gp:init', n: a.nonce, v: 1, data: {} });
+    const before = a.h.posted.length;
+    a.reload();
+    expect(a.h.posted).toHaveLength(before + 1);
+    a.tick(2);
+    expect(a.h.posted).toHaveLength(before + 3);
+    for (const p of a.h.posted) expect((p.data as { n: string }).n).toBe(a.nonce);
+  });
+
+  it('a stale gp:init (same nonce, queued by the previous document) does not end the burst of a reload; the burst is bounded', async () => {
+    const a = await armed();
+    a.h.send({ t: 'gp:init', n: a.nonce, v: 1, data: {} });
+    const before = a.h.posted.length;
+    a.reload();
+    a.h.send({ t: 'gp:init', n: a.nonce, v: 1, data: {} }); // ack from the old document, before the new one listens
+    a.tick(3);
+    expect(a.h.posted).toHaveLength(before + 4);
+    a.tick(40);
+    expect(a.h.posted).toHaveLength(before + 16); // HELLO_MAX hellos after the reload, then no more
+    expect([...a.live]).toEqual([]);
+  });
+
+  it('starts no retry interval when a finished checkout\'s frame reloads', async () => {
+    const a = await armed();
+    a.h.send({ t: 'gp:init', n: a.nonce, v: 1, data: {} });
+    a.h.send(done(a.nonce));
+    expect(a.h.events).toHaveLength(1);
+    const sent = a.h.posted.length;
+    a.reload();
+    expect([...a.live]).toEqual([]);
+    a.tick(3);
+    expect(a.h.posted).toHaveLength(sent);
+  });
+
+  it('completion clears the retry interval even when no gp:init was seen', async () => {
+    const a = await armed();
+    expect([...a.live]).toHaveLength(1);
+    a.h.send(done(a.nonce));
+    expect(a.h.events).toHaveLength(1);
+    expect([...a.live]).toEqual([]);
+  });
+
+  it('a frame that loses its window stops the retries instead of leaving the interval running', async () => {
+    const a = await armed();
+    expect([...a.live]).toHaveLength(1);
+    Object.defineProperty(a.h.frame()!, 'contentWindow', { get: () => null });
+    a.tick();
+    expect([...a.live]).toEqual([]);
   });
 
   it('does not fall back once the checkout answered, and stops listening after close', async () => {
