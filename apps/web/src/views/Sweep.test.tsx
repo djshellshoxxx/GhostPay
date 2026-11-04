@@ -821,7 +821,7 @@ describe('Sweep', () => {
 
     it.each([
       ['permit_expired', 422, /permit had already expired/, false],
-      ['permit_failed', 422, /token rejected the permit/, true],
+      ['permit_failed', 422, /simulation failed while a permit was in use/, true],
       ['permit_not_supported', 422, /does not accept standard ERC-2612 permits/, true],
       ['permit_value_too_low', 422, /permit did not cover the full amount/, false],
       ['insufficient_allowance', 422, /no allowance and no usable permit/, true],
@@ -837,6 +837,20 @@ describe('Sweep', () => {
       else expect(screen.queryByText(/sweep directly instead/)).toBeNull();
       expect(await screen.findByText('Relayer refused the order')).toBeTruthy();
       expect(await directDisabled(user)).toBe(false);
+    });
+
+    it('permit_failed: does not claim the token rejected the permit, since the token transfer itself may have failed', async () => {
+      // The relayer maps both a generic simulation revert and token_transfer_failed (e.g. a fee-on-transfer token) to
+      // permit_failed while a permit is in use, so the copy must not assert that the permit was the cause.
+      const sink: RawSink = { calls: [] };
+      await submitRelayed(quoteThen(() => Promise.resolve(new Response(JSON.stringify({ error: { code: 'permit_failed' } }), { status: 422 }))), sink);
+      const shown = await screen.findByText(/while a permit was in use/);
+      const text = shown.textContent ?? '';
+      expect(text).not.toMatch(/token rejected the permit/i);
+      expect(text).toMatch(/token transfer itself/);
+      expect(text).toMatch(/fee on transfer/);
+      expect(text).toMatch(/Nothing was moved/);
+      expect(text).toMatch(/not be retried automatically/);
     });
 
     it.each([

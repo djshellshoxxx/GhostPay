@@ -81,6 +81,7 @@ export const SECURITY_KEY_GROUPS = {
     'sweep.permit.alreadyAllowed',
     'sweep.permit.nonceConsumed',
     'sweep.permit.failed',
+    'sweep.permit.simulationFailed',
     'sweep.permit.expired',
     'sweep.permit.unsupported',
     'sweep.permit.valueTooLow',

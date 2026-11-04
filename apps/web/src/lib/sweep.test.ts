@@ -11,6 +11,7 @@ import { checkDestination, describeDestination, deriveVerifiedSweepKey, directSw
 import { ChainAdapterError, createClient, findChain, erc20Abi, ghostPaySweepRelayerAbi } from '@ghostpay/chain-adapters';
 import { userMessage } from './errors';
 import * as sweepModule from './sweep';
+import en from '../../locales/en.json';
 
 const TOKEN = '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as Address;
 const DEST = '0x6666666666666666666666666666666666666666' as Address;
@@ -994,7 +995,7 @@ describe('sweep permit state messages (spec 04)', () => {
 
   it.each([
     ['permit_expired', 422, 'expired', false],
-    ['permit_failed', 422, 'sig_invalid', true],
+    ['permit_failed', 422, 'simulationFailed', true],
     ['permit_not_supported', 422, 'unsupported_token', true],
     ['permit_value_too_low', 422, 'valueTooLow', false],
     ['insufficient_allowance', 422, 'noAllowance', true],
@@ -1004,6 +1005,24 @@ describe('sweep permit state messages (spec 04)', () => {
     const key = sweepModule.sweepPermitRefusalKey(new RelayerRefusedError('x', status, code));
     expect(key).toMatch(/^sweep\.permit\./);
     expect(sweepModule.sweepPermitSuggestsDirect(key as never)).toBe(direct);
+  });
+
+  it('words permit_failed as a failed simulation with a permit in use, not as the token rejecting the permit', async () => {
+    // The relayer folds simulation_reverted and token_transfer_failed (SafeERC20FailedOperation, UnexpectedBalanceDelta,
+    // e.g. a fee-on-transfer token) into permit_failed whenever a permit is in use: the permit is not proven at fault.
+    const { RelayerRefusedError } = await import('./relayerClient');
+    const key = sweepModule.sweepPermitRefusalKey(new RelayerRefusedError('x', 422, 'permit_failed'));
+    expect(key).toBeDefined();
+    const messages: Record<string, string> = en.messages;
+    const text = messages[key as string];
+    expect(text).not.toMatch(/token rejected the permit/i);
+    expect(text).toMatch(/while a permit was in use/);
+    expect(text).toMatch(/token transfer itself/);
+    expect(text).toMatch(/before sending/);
+    expect(text).toMatch(/Nothing was moved/);
+    expect(text).toMatch(/not be retried automatically/);
+    // sig_invalid is a client pre-flight state that does prove the permit at fault, so it keeps its own text.
+    expect(key).not.toBe(sweepModule.SWEEP_PERMIT_STATE_KEYS.sig_invalid);
   });
 
   it('does not map unrelated refusals, other statuses or non-relayer errors', async () => {

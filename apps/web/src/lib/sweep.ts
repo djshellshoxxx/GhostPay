@@ -735,10 +735,11 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
  * `already_allowed` are not refusals (the relayer skips an already-covered permit and sweeps by allowance); they have
  * text so the table is exhaustive. None of the refusal texts retries automatically.
  */
-// The relayed flow only renders the PERMIT_REFUSAL_KEYS subset below. ok_to_permit, already_allowed and nonce_consumed
-// have no relayer refusal class (the relayer folds a spent nonce into permit_failed), so these keys are reserved for
-// those PermitStates and kept so this table stays exhaustive (pinned by sweep.test.ts):
-// i18n-use: sweep.permit.ok sweep.permit.alreadyAllowed sweep.permit.nonceConsumed
+// The relayed flow only renders the PERMIT_REFUSAL_KEYS subset below. ok_to_permit, already_allowed, nonce_consumed and
+// sig_invalid have no relayer refusal class of their own (the relayer folds a spent nonce and a bad signature into
+// permit_failed, which has its own wider text), so these keys are reserved for those PermitStates and kept so this
+// table stays exhaustive (pinned by sweep.test.ts):
+// i18n-use: sweep.permit.ok sweep.permit.alreadyAllowed sweep.permit.nonceConsumed sweep.permit.failed
 export const SWEEP_PERMIT_STATE_KEYS: Readonly<Record<PermitState, MessageKey>> = {
   ok_to_permit: 'sweep.permit.ok',
   already_allowed: 'sweep.permit.alreadyAllowed',
@@ -749,15 +750,18 @@ export const SWEEP_PERMIT_STATE_KEYS: Readonly<Record<PermitState, MessageKey>> 
 };
 
 /**
- * Relayer refusal classes (apps/relayer service.ts) that concern the permit or the owner's failure budget. The relayer
- * cannot tell a bad signature from a spent nonce (both surface as `permit_failed`), so that class gets the
- * `sig_invalid` text, which covers both without claiming which.
+ * Relayer refusal classes (apps/relayer service.ts) that concern the permit or the owner's failure budget. While a
+ * permit is in use the relayer reports every `simulation_reverted` and `token_transfer_failed` (SafeERC20FailedOperation,
+ * UnexpectedBalanceDelta, e.g. a fee-on-transfer token) as `permit_failed`. That class therefore proves only that the
+ * pre-broadcast simulation failed with a permit in use: the permit (bad signature, spent nonce, non-standard token) or
+ * the token transfer itself may be the cause. It gets its own text, which names both without claiming which, and not
+ * the `sig_invalid` text, which says the token rejected the permit.
  */
 // Rendered by Sweep.tsx through sweepPermitRefusalKey:
-// i18n-use: sweep.permit.expired sweep.permit.failed sweep.permit.unsupported sweep.permit.valueTooLow sweep.permit.noAllowance sweep.permit.ownerFailureLimit
+// i18n-use: sweep.permit.expired sweep.permit.simulationFailed sweep.permit.unsupported sweep.permit.valueTooLow sweep.permit.noAllowance sweep.permit.ownerFailureLimit
 const PERMIT_REFUSAL_KEYS: Readonly<Record<string, MessageKey>> = {
   permit_expired: 'sweep.permit.expired',
-  permit_failed: 'sweep.permit.failed',
+  permit_failed: 'sweep.permit.simulationFailed',
   permit_not_supported: 'sweep.permit.unsupported',
   permit_value_too_low: 'sweep.permit.valueTooLow',
   insufficient_allowance: 'sweep.permit.noAllowance',
@@ -770,7 +774,10 @@ export function sweepPermitRefusalKey(e: unknown): MessageKey | undefined {
   return Object.hasOwn(PERMIT_REFUSAL_KEYS, e.code) ? PERMIT_REFUSAL_KEYS[e.code] : undefined;
 }
 
-/** Spec 04 section 2 step 3: only a bad/unsupported/missing permit offers the direct-sweep (owner pays gas) fallback. */
+/**
+ * Spec 04 section 2 step 3: only a bad/unsupported/missing permit offers the direct-sweep (owner pays gas) fallback.
+ * A relayer `permit_failed` may be a bad permit, so it offers the fallback too; it never retries on its own.
+ */
 export function sweepPermitSuggestsDirect(key: MessageKey): boolean {
-  return key === 'sweep.permit.failed' || key === 'sweep.permit.unsupported' || key === 'sweep.permit.noAllowance';
+  return key === 'sweep.permit.failed' || key === 'sweep.permit.simulationFailed' || key === 'sweep.permit.unsupported' || key === 'sweep.permit.noAllowance';
 }
