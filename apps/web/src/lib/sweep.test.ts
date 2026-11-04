@@ -1012,4 +1012,9 @@ describe('sweep permit state messages (spec 04)', () => {
     expect(sweepModule.sweepPermitRefusalKey(new RelayerRefusedError('x', 403, undefined))).toBeUndefined();
     expect(sweepModule.sweepPermitRefusalKey(new Error('permit_failed'))).toBeUndefined();
   });
+
+  it.each([['permit_failed', 502], ['permit_expired', 409], ['owner_failure_limit', 500]])('does not map %s with status %i (outcome unknown, not proven pre-broadcast)', async (code, status) => {
+    const { RelayerRefusedError } = await import('./relayerClient');
+    expect(sweepModule.sweepPermitRefusalKey(new RelayerRefusedError('x', status, code))).toBeUndefined();
+  });
 });

@@ -760,7 +760,7 @@ const PERMIT_REFUSAL_KEYS: Readonly<Record<string, MessageKey>> = {
 
 /** The Sweep message key for a relayer permit/grief refusal, or `undefined` for anything else (shown generically). */
 export function sweepPermitRefusalKey(e: unknown): MessageKey | undefined {
-  if (!(e instanceof RelayerRefusedError) || e.code === undefined) return undefined;
+  if (!(e instanceof RelayerRefusedError) || e.code === undefined || !e.beforeBroadcast) return undefined;
   return Object.hasOwn(PERMIT_REFUSAL_KEYS, e.code) ? PERMIT_REFUSAL_KEYS[e.code] : undefined;
 }
 
