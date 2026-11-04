@@ -229,6 +229,24 @@ describe('L2-F1: a node-reported revert is a sanitized flag on the error', () =>
     expect(e.message).toBe(`RPC_FAILURE: json-rpc error ${String(error.code)}`);
   });
 
+  // Ported from PR 39 (8daa03c, B2R), whose `halted` flag is the inverse of `executionReverted` for a failed execution.
+  // Its row "code 3 without a message" (halted: false) is not ported: here that is no positively identified revert,
+  // so `executionReverted` stays false (asserted above) and the operator fee read fails closed.
+  it.each([
+    ['code 3 with revert data', { code: 3, message: 'execution reverted: x', data: '0x08c379a000' }, false],
+    ['-32000 execution reverted (geth)', { code: -32000, message: 'execution reverted' }, false],
+    ['-32015 with the revert in data (nethermind)', { code: -32015, message: 'VM execution error.', data: 'Reverted 0x08c379a0' }, false],
+    ['-32000 out of gas (geth)', { code: -32000, message: 'out of gas' }, true],
+    ['-32000 invalid opcode (geth)', { code: -32000, message: 'invalid opcode: INVALID' }, true],
+    ['-32003 out of gas (reth, op-reth)', { code: -32003, message: 'out of gas: gas required exceeds: 21000' }, true],
+    ['-32003 another EVM halt (reth)', { code: -32003, message: 'EVM error: InvalidFEOpcode' }, true],
+    ['-32015 with invalid instruction in data (nethermind)', { code: -32015, message: 'VM execution error.', data: 'invalid instruction' }, true],
+  ] as const)('B2R: %s is a failed execution; only a plain revert is executionReverted', async (_n, error, halted) => {
+    const e = await callError(error);
+    expect(e.reverted).toBe(true);
+    expect(e.executionReverted).toBe(!halted);
+  });
+
   it.each([
     ['-32000 without a revert message', { code: -32000, message: 'insufficient funds for gas * price + value' }],
     ['-32015 without an execution failure text', { code: -32015, message: 'Transaction execution error.', data: 'NotEnoughCash' }],
@@ -241,11 +259,14 @@ describe('L2-F1: a node-reported revert is a sanitized flag on the error', () =>
     ['a non-object error', 'execution reverted'],
     ['a non-string message', { code: -32000, message: { text: 'execution reverted' } }],
   ])('does not flag %s', async (_n, error) => {
-    expect((await callError(error)).reverted).toBe(false);
+    const e = await callError(error);
+    expect(e.reverted).toBe(false);
+    expect(e.executionReverted).toBe(false);
   });
 
   it('transport, HTTP and shape failures are never a revert', async () => {
     expect(new ChainAdapterError('RPC_FAILURE', 'x').reverted).toBe(false);
+    expect(new ChainAdapterError('RPC_FAILURE', 'x').executionReverted).toBe(false);
     const t: RpcTransport = { send: () => Promise.reject(new RpcHttpError(400)) };
     const e: unknown = await createClient(SEPOLIA, URL_OK, { transport: t, ...opts }).then(() => undefined, (x: unknown) => x);
     expect(e).toMatchObject({ code: 'RPC_FAILURE', reverted: false });

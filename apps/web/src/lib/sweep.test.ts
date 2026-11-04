@@ -746,6 +746,9 @@ describe('L2-F2: a native direct sweep keeps back every fee the chain charges', 
     ['the operator fee call fails', { operatorFee: new Error('rpc down') }],
     ['the operator fee call fails at the transport', { operatorFee: new ChainAdapterError('RPC_FAILURE', 'http status 429') }],
     ['the operator fee call gets a JSON-RPC error that is no revert', { operatorFee: new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32603') }],
+    // Ported from PR 39 (8daa03c, B2R): a halted call (reth -32003 out of gas) leaves the fee unknown.
+    ['the operator fee call runs out of gas (reth)', { operatorFee: new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32003', { reverted: true }) }],
+    ['the operator fee call reports out of gas in its text', { operatorFee: new Error('out of gas') }],
   ] as const)('refuses when %s: the fee, so the amount to send, cannot be computed', async (_n, net) => {
     const rpc = chainRpc(84532, net, {});
     await expect(directSweep({ target: native(), manifest, destination: DEST, amount: 1n, rpc })).rejects.toThrow(/fee oracle/);
