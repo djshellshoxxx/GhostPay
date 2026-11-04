@@ -372,6 +372,36 @@ describe('IndexedDB header store', () => {
     expect(idb.data.size).toBe(0);
   });
 
+  it('a sync whose save transaction aborts after the put reports saved=false and keeps nothing', async () => {
+    const chain = mockChain('regtest', walletA());
+    const idb = fakeIdb();
+    const store = idbHeaderStore(idb)('regtest');
+    const { chain: headers } = await loadHeaderChain(regtest, store, { now: NOW });
+    idb.failCommit = true;
+    expect(await syncHeaders({ chain: headers, sources: [sourceOf(chain)], store })).toMatchObject({ tipHeight: 4, saved: false });
+    expect(idb.data.size).toBe(0);
+    expect(await store.load()).toBeUndefined();
+  });
+
+  it('two writers: the lower-work sync loses and the record keeps the heavier chain', async () => {
+    const chain = mockChain('regtest', walletA());
+    const idb = fakeIdb();
+    const tabA = idbHeaderStore(idb)('regtest');
+    const tabB = idbHeaderStore(idb)('regtest');
+    const heavy = (await loadHeaderChain(regtest, tabA, { now: NOW })).chain;
+    expect(await syncHeaders({ chain: heavy, sources: [sourceOf(chain)], store: tabA })).toMatchObject({ saved: true, tipHeight: 4 });
+    // Tab B holds a shorter chain (its server is behind) and saves after A.
+    const light = HeaderChain.create({ params: CHAIN_PARAMS.regtest, checkpoint: genesisCheckpoint(regtest), now: NOW });
+    light.connect(chain.blocks.slice(1, 3).map((b) => b.header!));
+    const behind = mockChain('regtest', walletA());
+    behind.blocks.length = 3;
+    expect(await syncHeaders({ chain: light, sources: [sourceOf(behind)], store: tabB, maxRounds: 1 })).toMatchObject({ tipHeight: 2 });
+    expect(await tabB.save(JSON.stringify(light.toJSON()), light.tipWork)).toBe(false);
+    const kept = await loadHeaderChain(regtest, tabB, { now: NOW });
+    expect(kept.loaded).toBe('restored');
+    expect(kept.chain.tipHash).toBe(heavy.tipHash);
+  });
+
   it('rejects when the database or a request fails, and retries opening later', async () => {
     const idb = fakeIdb();
     const s = idbHeaderStore(idb)('regtest');
