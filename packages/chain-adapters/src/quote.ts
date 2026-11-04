@@ -19,6 +19,8 @@ export interface AggregatorReader {
   latestRoundData(feed: Address): Promise<RoundData>;
 }
 
+const SOURCE_REF = 'docs/chains/SOURCES-2026-11-04.md (retrieved 2026-11-04)';
+
 /** A configured price feed. */
 export interface FeedConfig {
   readonly chainId: number;
@@ -32,29 +34,61 @@ export interface FeedConfig {
    * comments and that file so they are not shipped in the web bundle (the bundle egress scan forbids them).
    */
   readonly sourceRef: string;
+  /** Answer decimals from the saved Chainlink source (`decimals`, not display `decimalPlaces`). `readPrice` still reads `decimals()` on chain. */
+  readonly decimals?: number;
   /**
-   * Heartbeat in seconds from a fetched Chainlink source. ABSENT when no source could be fetched; callers
-   * must then rely on the invoice quote TTL only (see docs/chains/SOURCES-2026-10-25.md).
+   * Heartbeat in seconds from the saved Chainlink source. Metadata only: it does not define the tolerated quote
+   * age (callers pass an explicit `maxAgeSeconds`) and does not prove the feed is updating.
    */
   readonly heartbeatSec?: number;
 }
 
 /**
- * Chainlink feed registry (testnets only). An entry exists only when its address was read from a Chainlink-owned
- * repository; everything else stays absent so pricing fails closed. Details: docs/chains/SOURCES-2026-10-25.md.
+ * Chainlink feed registry (testnets only). An entry exists only when its proxy address, `decimals` and `heartbeat`
+ * were read from saved Chainlink reference data (SOURCES-2026-11-04.md); everything else, mainnets included, stays
+ * absent so pricing fails closed. `heartbeatSec` is source metadata, not a freshness guarantee: `readPrice` still
+ * enforces an explicit `maxAgeSeconds` on every read.
  */
 export const FEEDS: readonly FeedConfig[] = Object.freeze([
   {
-    // Sepolia ETH / USD, 8 decimals. Heartbeat NOT sourced (docs.chain.link unreachable from the build network).
+    // Sepolia ETH / USD (`eth-usd`; not the hidden `eth-usd-nops`).
     chainId: 11155111,
     address: '0x694AA1769357215DE4FAC081bf1f309aDC325306',
     base: 'ETH',
     quote: 'USD',
-    // Sources (retrieved 2026-10-25):
-    //   github.com/smartcontractkit/hardhat-starter-kit/blob/main/contracts/PriceConsumerV3.sol
-    //   github.com/smartcontractkit/documentation/blob/main/public/samples/DataFeeds/HistoricalDataConsumer.sol
-    //   github.com/smartcontractkit/chainlink-agent-skills/blob/main/chainlink-data-feeds-skill/references/reading-price-feeds.md
-    sourceRef: 'docs/chains/SOURCES-2026-10-25.md (retrieved 2026-10-25)',
+    decimals: 8,
+    heartbeatSec: 3600,
+    sourceRef: SOURCE_REF,
+  },
+  {
+    // Sepolia USDC / USD (`usdc-usd`).
+    chainId: 11155111,
+    address: '0xA2F78ab2355fe2f984D808B5CeE7FD0A93D5270E',
+    base: 'USDC',
+    quote: 'USD',
+    decimals: 8,
+    heartbeatSec: 86_400,
+    sourceRef: SOURCE_REF,
+  },
+  {
+    // Base Sepolia ETH / USD (`eth-usd`).
+    chainId: 84532,
+    address: '0x4aDC67696bA383F43DD60A9e78F2C97Fbbfc7cb1',
+    base: 'ETH',
+    quote: 'USD',
+    decimals: 8,
+    heartbeatSec: 1200,
+    sourceRef: SOURCE_REF,
+  },
+  {
+    // Base Sepolia USDC / USD (`usdc-usd`).
+    chainId: 84532,
+    address: '0xd30e2101a97dcbAeBCBC04F14C3f624E67A35165',
+    base: 'USDC',
+    quote: 'USD',
+    decimals: 8,
+    heartbeatSec: 86_400,
+    sourceRef: SOURCE_REF,
   },
 ]);
 
