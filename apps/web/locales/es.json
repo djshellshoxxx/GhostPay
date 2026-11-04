@@ -567,6 +567,25 @@
     "policy.receive.continue": "Continuar análisis",
     "policy.receive.result": "Se leyeron {count} anuncios de política; {fresh} son nuevos para tus claves.",
     "policy.receive.capped": "Se detuvo por un límite: vuelve a analizar para continuar.",
-    "ledger.import.invalidated": "{count, plural, =0 {La activación no marcaría ninguna observación como inválida por el historial de reorganizaciones.} one {La activación marcaría # observación como inválida por el historial de reorganizaciones.} many {La activación marcaría # de observaciones como inválidas por el historial de reorganizaciones.} other {La activación marcaría # observaciones como inválidas por el historial de reorganizaciones.}}"
+    "ledger.import.invalidated": "{count, plural, =0 {La activación no marcaría ninguna observación como inválida por el historial de reorganizaciones.} one {La activación marcaría # observación como inválida por el historial de reorganizaciones.} many {La activación marcaría # de observaciones como inválidas por el historial de reorganizaciones.} other {La activación marcaría # observaciones como inválidas por el historial de reorganizaciones.}}",
+    "backup.title": "Lista de copias de seguridad",
+    "backup.intro": "Dos cosas necesitan una copia fuera de esta pestaña: tus claves de vendedor y tus etiquetas de cliente. Cada elemento muestra lo que ocurrió realmente. Las claves cuentan como Hecho cuando existe una copia fuera de esta pestaña (un almacén de claves descargado, claves importadas o una bóveda guardada). El archivo de etiquetas cuenta como Hecho solo después de generar su archivo y entregarlo al navegador. Ninguno prueba que hayas guardado la copia en un lugar seguro.",
+    "backup.keys.heading": "Paso 1: claves del vendedor",
+    "backup.keys.notStarted": "Aún no existe una copia de estas claves fuera de esta pestaña. Descarga un almacén de claves cifrado en la sección de copia cifrada de arriba y vuelve aquí.",
+    "backup.keys.done": "Existe una copia de estas claves fuera de esta pestaña (un almacén de claves descargado, claves importadas o una bóveda guardada). Conserva esa copia y su frase de contraseña: ninguna se puede recuperar.",
+    "backup.tags.heading": "Paso 2: archivo de etiquetas de cliente",
+    "backup.tags.notStarted": "En esta sesión aún no se descargó ningún archivo de etiquetas. Usa el formulario de abajo.",
+    "backup.tags.partial": "Último archivo de etiquetas descargado {time}. Etiquetas en él: {count, number}. Parte del historial de escaneos NO está incluido (ver abajo). Las etiquetas guardadas, cambiadas o eliminadas después, aquí o en otra pestaña, tampoco están en él.",
+    "backup.tags.failed": "El último intento de archivo de etiquetas falló y no generó ningún archivo: {reason} Un archivo de un intento anterior, si lo hiciste, no se ve afectado.",
+    "backup.status.notStarted": "No iniciado",
+    "backup.status.done": "Hecho",
+    "backup.status.failed": "Fallido",
+    "backup.keys.go": "Ir a la copia del almacén de claves",
+    "backup.status.deleted": "Etiquetas locales eliminadas",
+    "backup.tags.deleted": "Todas las etiquetas locales se eliminaron después del último archivo, que contiene {count, number} etiquetas. Conserva ese archivo: ahora es la única copia.",
+    "backup.status.downloaded": "Archivo descargado",
+    "backup.status.downloadedGaps": "Archivo descargado, con lagunas",
+    "backup.tags.archived": "Último archivo de etiquetas descargado {time}. Etiquetas en él: {count, number}, con historial de escaneos. Las etiquetas guardadas, cambiadas o eliminadas después, aquí o en otra pestaña, no están en él. Descarga un archivo nuevo para incluirlas.",
+    "backup.tags.archivedNoHistory": "Último archivo de etiquetas descargado {time}. Etiquetas en él: {count, number}, sin historial de escaneos. Las etiquetas guardadas, cambiadas o eliminadas después, aquí o en otra pestaña, no están en él. Descarga un archivo nuevo para incluirlas."
   }
 }

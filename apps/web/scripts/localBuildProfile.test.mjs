@@ -171,7 +171,7 @@ test('lean entry redirection is bound to the configured web root, not another ma
 
 test('lean rejects rendered optional features even when no external report was requested', () => {
   for (const id of ['/fixture/src/App.tsx', '/fixture/src/features/btc/BtcView.tsx', '/fixture/src/features/solana/SolanaView.tsx',
-    '/fixture/src/features/tron/TronView.tsx', '/fixture/src/features/policy/PolicyView.tsx', '/fixture/src/components/TagArchive.tsx',
+    '/fixture/src/features/tron/TronView.tsx', '/fixture/src/features/policy/PolicyView.tsx', '/fixture/src/components/TagArchive.tsx', '/fixture/src/components/BackupPanel.tsx',
     '/fixture/src/lib/tagArchive.ts', '/fixture/src/lib/embedProtocol.ts', '/fixture/packages/policy-scheme/src/index.ts']) {
     assert.throws(() => leanOutput().generateBundle({}, chunk(id)), /lean|deferred|excluded/i, id);
   }

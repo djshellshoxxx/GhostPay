@@ -6,7 +6,7 @@ import { SolanaView } from './features/solana/SolanaView';
 import { TronView } from './features/tron/TronView';
 import { isPolicyFeatureEnabled } from './features/policy/flag';
 import { PolicyView } from './features/policy/PolicyView';
-import { TagArchive } from './components/TagArchive';
+import { BackupPanel } from './components/BackupPanel';
 import { AppShell } from './AppShell';
 
 const ORDER: readonly ViewId[] = ['home', 'seller', 'create', 'pay', 'scan', 'sweep', 'btc', 'solana', 'tron', 'registry', 'settings', 'about'];
@@ -29,5 +29,5 @@ export function App(): ReactNode {
     tron: <TronView />,
     ...(policyOn ? { policy: <PolicyView /> } : {}),
   };
-  return <AppShell profile="full" order={order} extraViews={extraViews} sellerArchive={<TagArchive />} />;
+  return <AppShell profile="full" order={order} extraViews={extraViews} sellerArchive={<BackupPanel />} />;
 }

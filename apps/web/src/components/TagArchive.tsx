@@ -76,8 +76,27 @@ function listed(items: readonly string[]): string {
   return items.length < 2 ? items.join('') : `${items.slice(0, -1).join(', ')} and ${items[items.length - 1] ?? ''}`;
 }
 
-/** Encrypted tag backup, import with preview, key rotation and wipe. Everything is local; the passphrase is never stored. */
-export function TagArchive(): ReactNode {
+/** What an export attempt did: reported only after the file was handed to the browser, or after the attempt failed. */
+export type ArchiveExportResult =
+  | {
+    readonly ok: true;
+    readonly recordCount: number;
+    readonly sha256: string;
+    /** The seller asked for scan history to be included. */
+    readonly history: boolean;
+    /** Scan history is missing from the archive for at least one chain. */
+    readonly gaps: boolean;
+    /** Plain-language notes on what is NOT in the archive (empty when nothing is missing). */
+    readonly notes: readonly string[];
+  }
+  | { readonly ok: false; readonly message: string };
+
+/**
+ * Encrypted tag backup, import with preview, key rotation and wipe. Everything is local; the passphrase is never stored.
+ * @param props.onExport Optional observer of export attempts (the combined backup panel); it changes no behavior here.
+ */
+export function TagArchive(props: { readonly onExport?: (result: ArchiveExportResult) => void; readonly onTagsWiped?: () => void } = {}): ReactNode {
+  const { onExport: reportExport, onTagsWiped } = props;
   const app = useApp();
   const { vault, chains } = useServices();
   const [message, setMessage] = useState<{ kind: 'ok' | 'error'; text: string } | undefined>(undefined);
@@ -203,10 +222,12 @@ export function TagArchive(): ReactNode {
             ? `Scan history stored in this browser for ${listed(unsupported.map(chainLabel))} is NOT in this archive: this build does not support ${unsupported.length === 1 ? 'that chain' : 'those chains'}.`
             : '',
         ].filter((note) => note !== '');
+        reportExport?.({ ok: true, recordCount: out.recordCount, sha256: out.sha256, history: withHistory, gaps: missing.length > 0, notes: missing });
         done(`Archive downloaded: ${String(out.recordCount)} tag(s). SHA-256 ${out.sha256}. Keep the file and the passphrase: neither can be recovered.${missing.map((note) => ` ${note}`).join('')}`);
       } catch (error) {
         if (!current(c)) return;
         setBusy(false); fail(error);
+        reportExport?.({ ok: false, message: userMessage(error) });
       } finally {
         closeVaults(vaults);
       }
@@ -328,7 +349,7 @@ export function TagArchive(): ReactNode {
         unchanged();
         await vault.wipe();
         if (!current(c)) return;
-        unchanged(); setBusy(false); done('All local tags deleted.');
+        unchanged(); setBusy(false); onTagsWiped?.(); done('All local tags deleted.');
       } catch (error) {
         if (!current(c)) return;
         setBusy(false); fail(error);

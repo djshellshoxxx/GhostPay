@@ -474,7 +474,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
           <p><Mono>{s.signerPublicKey}</Mono></p>
           <p className="hint">{t('sellerKeys.payersSee')}</p>
 
-          <h3>{t('sellerKeys.backupHeading')}</h3>
+          <h3 id="keystore-backup-h" tabIndex={-1}>{t('sellerKeys.backupHeading')}</h3>
           <form onSubmit={onExport} className="stack" autoComplete="off">
             <Field label={t('sellerKeys.passphraseMin')} {...(pass !== '' && pass === suggestedPass ? { hint: suggestedHint } : {})}>
               {(id, d) => <input id={id} aria-describedby={d} type={pass !== '' && pass === suggestedPass ? 'text' : 'password'} autoComplete="new-password" spellCheck={false} value={pass} onChange={(e) => { setPass(e.target.value); }} />}
