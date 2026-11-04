@@ -262,6 +262,12 @@ export const SECURITY_KEY_GROUPS = {
     'btc.headers.forkTooDeep',
     'btc.headers.tooMany',
     'btc.headers.more',
+    'btc.headers.forgetConfirm',
+    'btc.headers.forgetYes',
+    'btc.headers.forgetNo',
+    'btc.headers.otherTab',
+    'btc.headers.claimRejected',
+    'btc.headers.uncheckedResults',
   ],
   policyConsentFeesAndRecovery: [
     'policy.title',

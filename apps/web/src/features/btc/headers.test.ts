@@ -1,4 +1,4 @@
-import { CHAIN_PARAMS, HeaderChain, MAX_FORK_HEADERS, parseHeader, SilentPaymentError, wrapSecret, type HeaderSource } from '@ghostpay/btc-silent-payments';
+import { CHAIN_PARAMS, HeaderChain, DEFAULT_FORK_HEADERS, MAX_FORK_HEADERS, parseHeader, SilentPaymentError, wrapSecret, type HeaderSource } from '@ghostpay/btc-silent-payments';
 import { describe, expect, it } from 'vitest';
 import { EsploraClient } from './esplora';
 import { blockSummary, coinbase, fakeIdb, forkChain, mineHeader, mockChain, walletA, type MockChain } from './fixtures.testutil';
@@ -128,7 +128,7 @@ describe('loading saved headers', () => {
     const back = await loadHeaderChain(regtest, store, { now: NOW });
     expect(back.loaded).toBe('restored');
     expect(back.chain.tipHash).toBe(first.tipHash);
-    for (const bad of ['', 'null', '[]', '{"network":"regtest"}', saved.replace('"regtest"', '"testnet4"'), saved.replace(/("headers":\["[0-9a-f]{152})[0-9a-f]{8}/, '$1ffffffff')]) {
+    for (const bad of ['', 'null', '[]', '{"network":"regtest"}', saved.replace('"regtest"', '"testnet4"'), saved.replace(/("headersHex":"[0-9a-f]{152})[0-9a-f]{8}/, '$1ffffffff')]) {
       store.value = bad;
       store.work = 1n << 200n;
       const r = await loadHeaderChain(regtest, store, { now: NOW });
@@ -155,7 +155,7 @@ describe('loading saved headers', () => {
       prev = mineHeader(parseHeader(prev).hash, [coinbase(900 + i)], 0x207fffff, 1_296_688_602 + 600 * i);
       headers.push(prev);
     }
-    const forged = { version: 1, network: 'regtest', checkpoint: { height: 0, hash: parseHeader(fakeGenesis).hash, headerHex: fakeGenesis, previousHeaders: [] }, headers };
+    const forged = { version: 2, network: 'regtest', checkpoint: { height: 0, hash: parseHeader(fakeGenesis).hash, headerHex: fakeGenesis, previousHeaders: [] }, headersHex: headers.join('') };
     store.value = JSON.stringify(forged);
     expect((await loadHeaderChain(regtest, store, { now: NOW })).loaded).toBe('discarded');
   });
@@ -180,7 +180,7 @@ describe('loading saved headers', () => {
 });
 
 describe('syncing headers', () => {
-  const done = { reorgFrom: undefined, lessWork: false, saved: true, more: false };
+  const done = { reorgFrom: undefined, lessWork: false, saved: true, refused: false, more: false };
   it('validates and adopts the source chain, then reports nothing new', async () => {
     const chain = mockChain('regtest', walletA());
     const store = new MemoryHeaderStore();
@@ -202,7 +202,7 @@ describe('syncing headers', () => {
     const saves: number[] = [];
     const counting: HeaderStore = {
       load: () => store.load(),
-      save: (s, w) => { saves.push((JSON.parse(s) as { headers: unknown[] }).headers.length); return store.save(s, w); },
+      save: (s, w) => { saves.push((JSON.parse(s) as { headersHex: string }).headersHex.length / 160); return store.save(s, w); },
       clear: () => store.clear(),
     };
     const seen: number[] = [];
@@ -265,8 +265,9 @@ describe('syncing headers', () => {
 
   it('a deeper competing branch than the package evaluates is a distinct failure, not "less work"', async () => {
     const chain = mockChain('regtest', walletA());
+    forkChain(chain.blocks, 5, DEFAULT_FORK_HEADERS + 100, 0);
     const headers = await synced(chain);
-    // Shares blocks 0-2, then claims a branch longer than the package compares.
+    // Shares blocks 0-2, then claims a branch that would replace more checked headers than the package compares.
     const at = (h: number): string => (h === 0 ? GENESIS_HEADERS.regtest : h <= 2 ? chain.blocks[h]!.header! : GENESIS_HEADERS.signet);
     const deep: HeaderSource = { getTipHeight: () => Promise.resolve(MAX_FORK_HEADERS + 10), getHeaders: (f, n) => Promise.resolve(Array.from({ length: n }, (_, i) => at(f + i))) };
     const e = await syncHeaders({ chain: headers, sources: [deep], store: new MemoryHeaderStore() }).catch((x: unknown) => x);
@@ -304,6 +305,22 @@ describe('syncing headers', () => {
 describe('invalidating scan results after a reorg', () => {
   const pay = (height: number, blockHash: string, tweak = wrapSecret(new Uint8Array(32).fill(height))): FoundPayment => ({
     txid: 'aa'.repeat(32), vout: height, amountSats: 1000n, xOnlyPublicKey: new Uint8Array(32), spendTweak: tweak, height, blockHash, label: null, duplicateKey: false,
+  });
+
+  it('treats blocks above the checked tip as not yet checked, not as reorged', async () => {
+    const chain = mockChain('regtest', walletA());
+    const full = await synced(chain);
+    const blocks = chain.blocks.slice(1).map((b, i) => ({ height: i + 1, hash: b.hash }));
+    const scan: ScanResult = { fromHeight: 1, toHeight: 4, found: [pay(3, chain.blocks[3]!.hash)], spentCount: 0, blocks, headerAnchored: true };
+    expect(full.tipHeight).toBe(4);
+    const short = HeaderChain.create({ params: CHAIN_PARAMS.regtest, checkpoint: genesisCheckpoint(regtest), now: NOW });
+    short.connect(chain.blocks.slice(1, 3).map((b) => b.header!));
+    expect(invalidateReorged(scan, short)).toEqual({ scan, dropped: [] });
+    // A real mismatch at or below the checked tip still cuts back.
+    forkChain(chain.blocks, 2, 1, 6);
+    const other = HeaderChain.create({ params: CHAIN_PARAMS.regtest, checkpoint: genesisCheckpoint(regtest), now: NOW });
+    other.connect(chain.blocks.slice(1, 3).map((b) => b.header!));
+    expect(invalidateReorged(scan, other)).toMatchObject({ scan: { toHeight: 1, found: [] }, dropped: scan.found });
   });
 
   it('keeps results whose blocks are still on the chain and cuts back the rest', async () => {

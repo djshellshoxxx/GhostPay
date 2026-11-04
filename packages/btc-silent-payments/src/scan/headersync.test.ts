@@ -109,6 +109,33 @@ describe('syncHeaderChain', () => {
     expect(r.fetched).toBeGreaterThanOrEqual(30);
     expect(c.tipHash).toBe(parseHeader(LONG[60]!).hash);
   });
+  it('follows a shallow reorg even when the source is far ahead (the fork budget bounds what is replaced)', async () => {
+    const LONG = [REGTEST_GENESIS, ...extend(REGTEST_GENESIS, 60, 600, 0x207fffff, 1)];
+    const c = regtestChain();
+    await syncHeaderChain(c, new ListHeaderSource(LONG));
+    // One-block reorg at 59, and the source is 50 blocks further on (more than maxForkHeaders past the fork).
+    const ahead = [...LONG.slice(0, 60), ...extend(LONG[59]!, 51, 601, 0x207fffff, 8)];
+    const src = new ListHeaderSource(ahead);
+    const r = await syncHeaderChain(c, src, { maxForkHeaders: 30, batchSize: 4 });
+    expect(r).toMatchObject({ adopted: true, reorg: true, forkHeight: 59 });
+    // Streamed: it stopped downloading once the branch had more work, and the next call extends normally.
+    expect(r.tipHeight).toBeLessThan(110);
+    expect(r.fetched).toBeLessThan(40);
+    expect((await syncHeaderChain(c, src, { maxForkHeaders: 30 })).tipHeight).toBe(110);
+    expect(c.tipHash).toBe(parseHeader(ahead[110]!).hash);
+  });
+  it('stops at the first invalid header of a competing branch', async () => {
+    const LONG = [REGTEST_GENESIS, ...extend(REGTEST_GENESIS, 60, 600, 0x207fffff, 1)];
+    const c = regtestChain();
+    await syncHeaderChain(c, new ListHeaderSource(LONG));
+    const side = [...LONG.slice(0, 41), ...extend(LONG[40]!, 40, 601, 0x207fffff, 9)];
+    side[45] = `${side[45]!.slice(0, 8)}${'ab'.repeat(32)}${side[45]!.slice(72)}`; // broken linkage at 45
+    const src = new ListHeaderSource(side);
+    expect(await codeOf(syncHeaderChain(c, src, { batchSize: 4 }))).toMatch(/INVALID_HEADER|INVALID_RESPONSE/);
+    // Nothing past the bad header's batch was requested.
+    expect(src.calls.filter((x) => /^\d+\+\d+$/.test(x) && x.split('+')[1] !== '1' && Number(x.split('+')[0]) > 48)).toEqual([]);
+    expect(c.tipHash).toBe(parseHeader(LONG[60]!).hash);
+  });
   it('refuses to judge a fork deeper than maxForkHeaders (FORK_TOO_DEEP), changing nothing', async () => {
     const LONG = [REGTEST_GENESIS, ...extend(REGTEST_GENESIS, 60, 600, 0x207fffff, 1)];
     const c = regtestChain();

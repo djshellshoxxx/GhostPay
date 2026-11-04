@@ -279,6 +279,40 @@ describe('checkpoints and serialization', () => {
     // Upper-case hex in the pinned hash is the same anchor.
     expect(HeaderChain.fromJSON(json, { now: NOW, checkpoint: { ...pinned, hash: pinned.hash.toUpperCase() } }).tipHeight).toBe(3);
   });
+  it('streams a branch, adopts it only with more work, and refuses dead or stale branches', () => {
+    const c = regtestChain();
+    const main = extend(REGTEST_GENESIS, 10, 600, 0x207fffff);
+    c.connect(main);
+    expect(c.headersHex()).toBe(main.join(''));
+    expect(c.anchor()).toEqual({ network: 'regtest', checkpoint: c.toJSON().checkpoint });
+    expect(c.headerAt(3)?.hash).toBe(c.hashAt(3));
+    expect(c.headerAt(11)).toBeUndefined();
+    expect(() => c.branchAt(11)).toThrow(/invalid input/);
+    expect(() => c.branchFrom('zz')).toThrow(/header-chain rule/);
+    expect(() => c.branchFrom('00'.repeat(32))).toThrow(/header-chain rule/);
+    const side = extend(main[4]!, 8, 601, 0x207fffff, 3); // fork after height 5
+    const b = c.branchAt(2);
+    b.add([...main.slice(2, 5), ...side.slice(0, 3)]); // three active headers move the fork point to 5
+    expect(b.forkHeight).toBe(5);
+    expect(b.length).toBe(3);
+    expect(b.beatsActive).toBe(false);
+    expect(() => b.adopt()).toThrow(/invalid input/);
+    expect(() => b.add([])).toThrow(/invalid input/);
+    b.add(side.slice(3, 6));
+    expect(b.tipHeight).toBe(11);
+    expect(b.beatsActive).toBe(true);
+    const stale = c.branchAt(10);
+    expect(b.adopt()).toEqual({ adopted: true, reorg: true, forkHeight: 5, tipHeight: 11 });
+    expect(b.work).toBe(c.tipWork);
+    expect(() => b.adopt()).toThrow(/invalid input/);
+    expect(() => stale.add(side.slice(6, 7))).toThrow(/invalid input/);
+    // An invalid header kills the branch.
+    const d = c.branchAt(11);
+    expect(() => d.add([main[0]!])).toThrow(/header-chain rule/);
+    expect(() => d.add(side.slice(6, 7))).toThrow(/invalid input/);
+    expect(c.workAt(0)).toBeGreaterThan(0n);
+    expect(() => c.workAt(99)).toThrow(/invalid input/);
+  });
   it('fromJSON reloads a stored chain longer than one connect batch', () => {
     const c = regtestChain();
     // Spacing above 20 minutes: each regtest header is a min-difficulty block without a walk back.

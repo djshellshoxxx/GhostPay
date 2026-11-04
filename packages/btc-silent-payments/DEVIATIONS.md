@@ -133,10 +133,19 @@ Frigate (Sparrow) / Electrum Silent Payments protocol:
   SPV and not full validation**.
 - **Deep forks (2026-11-04, review H1).** `syncHeaderChain` used to download at most `maxHeaders` above the (doubling,
   so up to ~2x overshooting) fork probe and `connect` that prefix once: a heavier fork whose deciding headers lay past
-  that window was never adopted and looked like a lighter one. Now, once a probe misses, the competing branch is read
-  to the source tip and compared as a whole (`connect` keeps it only with strictly more work); a branch longer than
-  `maxForkHeaders` (default and cap `MAX_FORK_HEADERS` = 100 000) fails with the new code `FORK_TOO_DEEP` and changes
-  nothing. Extending the active chain is still chunked by `maxHeaders`.
+  that window was never adopted and looked like a lighter one. Now, once a probe misses, the competing branch is
+  streamed in `batchSize` chunks into a `HeaderBranch` (compact validation context; the first invalid header stops it)
+  and adopted as soon as its cumulative work is strictly greater; it is reported as not adopted only after it was
+  compared up to the source tip. The fork budget bounds what would be replaced (`chain.tipHeight - probe point`,
+  `maxForkHeaders`, default `DEFAULT_FORK_HEADERS` = 10 080, cap 100 000), not the distance to the source tip, so a
+  shallow reorg is followed however far ahead the source is; a deeper one, or a branch that has not won `maxHeaders`
+  past the active tip while the source claims more, fails with `FORK_TOO_DEEP` ("could not be evaluated") and changes
+  nothing. Extending the active chain connects each downloaded chunk before requesting the next.
+- **HeaderChain memory (2026-11-04).** Active headers were kept as parsed objects with hex strings (built with `+=`,
+  so ropes of tiny strings) and a hash map: ~2 040 bytes per header measured. They are now 80 raw + 32 hash bytes in
+  growable typed arrays with cumulative work every 2016 headers (no hash map; a parent is found by scanning back from
+  the tip), measured 147-196 bytes per header (`scripts/bench-headerchain-memory.mjs`, guarded by
+  `headerchain.memory.test.ts`). `headersHex()` gives all headers as one flat string for storage.
 - **Header chain persistence and the web view (2026-11-04).** `HeaderChain.fromJSON` now requires the caller's pinned
   `checkpoint` (`INVALID_INPUT` without it) and refuses (`INVALID_HEADER`) stored data whose checkpoint (height, hash, header, previous headers)
   differs, so stored data can never choose its own anchor; before this, `fromJSON` adopted whatever checkpoint the JSON

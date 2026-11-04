@@ -266,6 +266,24 @@ export const MAX_ROUNDS_PER_CALL = 25;
 
 const yieldToEventLoop = (): Promise<void> => new Promise((r) => { setTimeout(r, 0); });
 
+/** Stored form: the checkpoint and all active headers as one hex string (one flat string, not 400 000 small ones). */
+interface StoredHeaderChain {
+  readonly version: 2;
+  readonly network: HeaderChain['params']['network'];
+  readonly checkpoint: SerializedHeaderChain['checkpoint'];
+  readonly headersHex: string;
+}
+
+const STORED_VERSION = 2;
+const HEADER_HEX = 160;
+
+/** Text saved for `chain` (see {@link loadHeaderChain}). */
+export function serializeHeaderChain(chain: HeaderChain): string {
+  const { network, checkpoint } = chain.anchor();
+  const s: StoredHeaderChain = { version: STORED_VERSION, network, checkpoint, headersHex: chain.headersHex() };
+  return JSON.stringify(s);
+}
+
 /** How a saved chain was found when loading. */
 export type HeaderLoad = 'none' | 'restored' | 'discarded';
 
@@ -292,14 +310,20 @@ export async function loadHeaderChain(
   }
   if (text === undefined) return { chain: fresh(), loaded: 'none' };
   try {
-    const j = JSON.parse(text) as SerializedHeaderChain;
-    if (typeof j !== 'object' || j === null || j.network !== net.id || !Array.isArray(j.headers)) throw new SilentPaymentError('INVALID_INPUT');
-    if (j.headers.length > (o.maxHeaders ?? MAX_HEADERS)) throw new SilentPaymentError('UNSUPPORTED');
+    const j = JSON.parse(text) as StoredHeaderChain;
+    text = undefined; // release the stored text before validating
+    if (typeof j !== 'object' || j === null || j.version !== STORED_VERSION || j.network !== net.id) throw new SilentPaymentError('INVALID_INPUT');
+    const hex = j.headersHex;
+    if (typeof hex !== 'string' || hex.length % HEADER_HEX !== 0) throw new SilentPaymentError('INVALID_INPUT');
+    const count = hex.length / HEADER_HEX;
+    if (count > (o.maxHeaders ?? MAX_HEADERS)) throw new SilentPaymentError('UNSUPPORTED');
     // Checks the stored anchor against the pinned one; the headers follow in chunks.
-    const chain = HeaderChain.fromJSON({ ...j, headers: [] }, { params, checkpoint, ...nowOpt });
-    for (let i = 0; i < j.headers.length; i += LOAD_CHUNK) {
-      const r = chain.connect(j.headers.slice(i, i + LOAD_CHUNK));
-      if (!r.adopted || r.tipHeight !== Math.min(j.headers.length, i + LOAD_CHUNK)) throw new SilentPaymentError('INVALID_HEADER');
+    const chain = HeaderChain.fromJSON({ version: 1, network: j.network, checkpoint: j.checkpoint, headers: [] }, { params, checkpoint, ...nowOpt });
+    for (let i = 0; i < count; i += LOAD_CHUNK) {
+      const n = Math.min(LOAD_CHUNK, count - i);
+      const chunk = Array.from({ length: n }, (_, k) => hex.slice((i + k) * HEADER_HEX, (i + k + 1) * HEADER_HEX));
+      const r = chain.connect(chunk);
+      if (!r.adopted || r.tipHeight !== i + n) throw new SilentPaymentError('INVALID_HEADER');
       o.onProgress?.(chain.tipHeight);
       await yieldToEventLoop();
     }
@@ -316,8 +340,10 @@ export interface HeaderSyncOutcome {
   readonly reorgFrom: number | undefined;
   /** A source served a competing branch, compared in full, with no more work than the verified chain; it was ignored. */
   readonly lessWork: boolean;
-  /** Every change was saved (false: storage failed, or another tab holds a heavier chain). */
+  /** Every change was saved (false: storage failed, saving was no longer allowed, or `refused`). */
   readonly saved: boolean;
+  /** The work-guarded save was refused: another tab or window saved a chain with more work. */
+  readonly refused: boolean;
   /** The round limit stopped this call before the sources ran out of headers. */
   readonly more: boolean;
 }
@@ -345,6 +371,10 @@ export async function syncHeaders(p: {
   readonly onProgress?: (height: number) => void;
   readonly maxRounds?: number;
   readonly maxHeaders?: number;
+  /** Headers per round (default {@link HEADERS_PER_ROUND}). */
+  readonly headersPerRound?: number;
+  /** Saves happen only while this returns true (a forget, or a newer action, ends this sync's right to save). */
+  readonly canSave?: () => boolean;
 }): Promise<HeaderSyncOutcome> {
   const { chain } = p;
   const maxRounds = p.maxRounds ?? MAX_ROUNDS_PER_CALL;
@@ -352,14 +382,22 @@ export async function syncHeaders(p: {
   let reorgFrom: number | undefined;
   let lessWork = false;
   let saved = true;
+  let refused = false;
   let dirty = 0;
   let more = false;
-  const outcome = (): HeaderSyncOutcome => ({ tipHeight: chain.tipHeight, reorgFrom, lessWork, saved, more });
+  const outcome = (): HeaderSyncOutcome => ({ tipHeight: chain.tipHeight, reorgFrom, lessWork, saved, refused, more });
   const save = async (): Promise<void> => {
     dirty = 0;
     if (chain.tipHeight > maxHeaders) return;
+    if (p.canSave !== undefined && !p.canSave()) {
+      saved = false;
+      return;
+    }
     try {
-      if (!(await p.store.save(JSON.stringify(chain.toJSON()), chain.tipWork))) saved = false;
+      if (!(await p.store.save(serializeHeaderChain(chain), chain.tipWork))) {
+        saved = false;
+        refused = true;
+      }
     } catch {
       saved = false;
     }
@@ -377,7 +415,7 @@ export async function syncHeaders(p: {
     let results;
     try {
       results = await syncHeaderChainFromSources(chain, p.sources, {
-        maxHeaders: HEADERS_PER_ROUND,
+        maxHeaders: p.headersPerRound ?? HEADERS_PER_ROUND,
         batchSize: 1000,
         ...(p.signal === undefined ? {} : { signal: p.signal }),
       });
@@ -408,13 +446,16 @@ export async function syncHeaders(p: {
  * Drops what a scan learned from blocks that are no longer on the verified chain: the scan is cut back to the last
  * block before the first scanned block whose hash differs from the chain's, and payments above that are removed
  * (their spend tweaks wiped by the caller via `dropped`). Returns `undefined` for `scan` when nothing is left.
+ * Only heights the chain has checked count: a block above its tip (headers not caught up yet, e.g. after a forget
+ * and a capped resync) is "not yet checked", never "reorged"; the caller keeps it but must not let it be spent.
  */
 export function invalidateReorged(
   scan: ScanResult,
   chain: HeaderChain,
 ): { readonly scan: ScanResult | undefined; readonly dropped: readonly FoundPayment[] } {
-  const stale = scan.blocks.find((b) => chain.hashAt(b.height) !== b.hash);
-  const staleFound = scan.found.filter((f) => chain.hashAt(f.height) !== f.blockHash);
+  const checked = (h: number): boolean => h <= chain.tipHeight;
+  const stale = scan.blocks.find((b) => checked(b.height) && chain.hashAt(b.height) !== b.hash);
+  const staleFound = scan.found.filter((f) => checked(f.height) && chain.hashAt(f.height) !== f.blockHash);
   if (stale === undefined && staleFound.length === 0) return { scan, dropped: [] };
   const cut = Math.min(stale?.height ?? Infinity, ...staleFound.map((f) => f.height)) - 1;
   const dropped = scan.found.filter((f) => f.height > cut);

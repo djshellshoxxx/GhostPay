@@ -69,7 +69,7 @@ const MESSAGES: Readonly<Record<SilentPaymentErrorCode, string>> = {
   FEE_TOO_HIGH: 'fee rate or absolute fee exceeds the safety limit',
   SIGNATURE_INVALID: 'signed transaction failed verification',
   INVALID_HEADER: 'block header violates a header-chain rule',
-  FORK_TOO_DEEP: 'a competing header branch is too deep to evaluate in one call; it was not compared',
+  FORK_TOO_DEEP: "the source's competing header branch could not be evaluated (too deep for one call); nothing was changed",
   SIGNER_REFUSED: 'the signer refused the request',
 };
 
