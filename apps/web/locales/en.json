@@ -591,6 +591,8 @@
     "backup.status.unreadable": "Could not check",
     "backup.tags.checking": "Checking whether your tags changed since the last archive. Until that is known this is not counted as backed up.",
     "backup.tags.locked": "Your tags are locked, so this cannot check whether they changed since the last archive. Unlock tags in Scan and receive, or download a new archive.",
-    "backup.tags.unreadable": "The current tags could not be checked, so the last archive cannot be shown to cover them. Download a new archive."
+    "backup.tags.unreadable": "The current tags could not be checked, so the last archive cannot be shown to cover them. Download a new archive.",
+    "backup.status.deleted": "Local tags deleted",
+    "backup.tags.deleted": "All local tags were deleted after the last archive, which holds {count, number} tags. Keep that archive: it is now the only copy."
   }
 }

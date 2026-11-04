@@ -217,14 +217,12 @@ describe('BackupPanel', () => {
     await services.vault.save(84532, tag);
     await exportTags(user, false);
     await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Done: .*Tags in the archive: 1\./); }, { timeout: 60_000 });
-    await user.click(screen.getByRole('button', { name: 'Delete all local tags' }));
-    await user.click(screen.getByRole('button', { name: 'I understand, continue' }));
-    await user.click(screen.getByRole('button', { name: 'Permanently delete all tags' }));
-    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Changed since last archive/); });
+    await wipeAll(user);
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Local tags deleted: All local tags were deleted after the last archive, which holds 1 tags?\. Keep that archive: it is now the only copy/); });
     await recheck();
     await user.click(nav('Home'));
     await user.click(nav('Seller keys'));
-    expect(status('backup-item-tags')).toMatch(/^Changed since last archive/);
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Local tags deleted/); });
     expect(await store.getMeta()).toBeUndefined();
     expect((await store.getSnapshot()).records).toHaveLength(0);
   }, 120_000);
@@ -283,5 +281,59 @@ describe('BackupPanel', () => {
     await exported();
     await act(async () => { clearSession(); generateSession(); await Promise.resolve(); });
     await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Not started/); });
+  }, 120_000);
+
+  const wipeAll = async (user: User): Promise<void> => {
+    await user.click(screen.getByRole('button', { name: 'Delete all local tags' }));
+    await user.click(screen.getByRole('button', { name: 'I understand, continue' }));
+    await user.click(screen.getByRole('button', { name: 'Permanently delete all tags' }));
+  };
+
+  it('is not Done for an archive of no tags once tags exist again after a wipe', async () => {
+    fastKdf();
+    const store = new MemoryTagStore();
+    const services = makeServices({ vault: new TagVault(store) });
+    const user = await open(services);
+    await exportTags(user, false);
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Done: .*Tags in the archive: 0\./); }, { timeout: 60_000 });
+    await wipeAll(user);
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Done: /); });
+    await user.click(nav('Home'));
+    await services.vault.unlock(revealViewingKey());
+    await services.vault.save(84532, tag);
+    await user.click(nav('Seller keys'));
+    await recheck();
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Changed since last archive/); });
+    services.vault.lock();
+    await recheck();
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Cannot check \(tags locked\)/); });
+  }, 120_000);
+
+  it('notices a label-only edit', async () => {
+    fastKdf();
+    const services = makeServices();
+    const user = await open(services);
+    await services.vault.unlock(revealViewingKey());
+    await services.vault.save(84532, tag);
+    await exportTags(user, false);
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Done: .*Tags in the archive: 1\./); }, { timeout: 60_000 });
+    await services.vault.save(84532, { ...tag, clientLabel: 'Renamed' });
+    await recheck();
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Changed since last archive/); });
+  }, 120_000);
+
+  it('is Done again after a second export of unchanged tags', async () => {
+    const { user } = await exported();
+    await exportTags(user, false);
+    await waitFor(() => { expect(blobs).toHaveLength(2); }, { timeout: 60_000 });
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Done: /); });
+  }, 120_000);
+
+  it('does not keep saying Done while a fresh read of changed tags is pending', async () => {
+    const { services } = await exported();
+    await services.vault.save(84532, tag);
+    vi.spyOn(services.vault, 'fingerprint').mockImplementation(() => new Promise<string>(() => undefined));
+    await recheck();
+    expect(status('backup-item-tags')).toMatch(/^Checking: /);
   }, 120_000);
 });

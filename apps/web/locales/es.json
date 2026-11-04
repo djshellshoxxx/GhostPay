@@ -591,6 +591,8 @@
     "backup.status.unreadable": "No se pudo comprobar",
     "backup.tags.checking": "Comprobando si tus etiquetas cambiaron desde el último archivo. Hasta saberlo, no se cuenta como respaldado.",
     "backup.tags.locked": "Tus etiquetas están bloqueadas, así que no se puede comprobar si cambiaron desde el último archivo. Desbloquea las etiquetas en Escanear y recibir, o descarga un archivo nuevo.",
-    "backup.tags.unreadable": "No se pudieron comprobar las etiquetas actuales, así que no se puede demostrar que el último archivo las cubra. Descarga un archivo nuevo."
+    "backup.tags.unreadable": "No se pudieron comprobar las etiquetas actuales, así que no se puede demostrar que el último archivo las cubra. Descarga un archivo nuevo.",
+    "backup.status.deleted": "Etiquetas locales eliminadas",
+    "backup.tags.deleted": "Todas las etiquetas locales se eliminaron después del último archivo, que contiene {count, number} etiquetas. Conserva ese archivo: ahora es la única copia."
   }
 }

@@ -7,19 +7,23 @@ import { Notice } from './Common';
 import type { TagVault } from '../lib/tags';
 import { TagArchive, type ArchiveExportResult } from './TagArchive';
 
-type ItemStatus = 'notStarted' | 'checking' | 'locked' | 'unreadable' | 'done' | 'partial' | 'stale' | 'failed';
+type ItemStatus = 'notStarted' | 'checking' | 'locked' | 'unreadable' | 'done' | 'partial' | 'stale' | 'deleted' | 'failed';
 
 /** What the last tag archive export of one set of loaded keys did, with its details; kept here so leaving the view does not reset the checklist. */
-let lastTagOutcome: { readonly session: unknown; readonly result: ArchiveExportResult; /** Tags were deleted here after this archive. */ readonly wiped: boolean } | undefined;
+let lastTagOutcome: { readonly session: unknown; readonly result: ArchiveExportResult } | undefined;
 
 const LOCKED = 'locked';
 const UNREADABLE = 'unreadable';
+const EMPTY = 'empty';
 
-/** The keyed digest of the tags as they are now. Never unlocks: a locked vault, or one that cannot be read, is reported as such. */
+/**
+ * The keyed digest of the tags as they are now. Never unlocks: while locked, only whether the store holds nothing at all
+ * (no tags, no profile) can be told, without a key; anything else is "locked". A store that cannot be read is "unreadable".
+ */
 async function currentDigest(vault: TagVault): Promise<string> {
-  if (!vault.unlocked) return LOCKED;
   try {
-    return await vault.fingerprint();
+    if (vault.unlocked) return await vault.fingerprint();
+    return (await vault.storeIsEmpty()) ? EMPTY : LOCKED;
   } catch {
     return UNREADABLE;
   }
@@ -46,7 +50,6 @@ export function BackupPanel(): ReactNode {
   // An outcome belongs to the keys it was made for.
   const tags = tagResult !== undefined && tagResult.session === app.session ? tagResult.result : undefined;
   const archived = tags?.ok === true ? tags.fingerprint : undefined;
-  const wiped = tagResult?.wiped === true;
 
   useEffect(() => {
     const again = (): void => { setTick((n) => n + 1); };
@@ -66,11 +69,13 @@ export function BackupPanel(): ReactNode {
     }
   }, [app.session]);
   useEffect(() => {
-    if (archived === undefined || wiped) return undefined;
+    if (archived === undefined) return undefined;
     let live = true;
+    // Whatever was known before no longer counts while this read is pending.
+    setNow(undefined);
     void currentDigest(vault).then((digest) => { if (live) setNow(digest); });
     return () => { live = false; };
-  }, [vault, archived, wiped, tick, app.session]);
+  }, [vault, archived, tick, app.session]);
 
   if (app.session === undefined) return <TagArchive />;
 
@@ -78,23 +83,23 @@ export function BackupPanel(): ReactNode {
   // Done only when the tags now are the ones the archive was made from; anything not yet known is never Done.
   const tagStatus: ItemStatus = tags === undefined ? 'notStarted'
     : !tags.ok ? 'failed'
-    : wiped && tags.recordCount > 0 ? 'stale'
-    : wiped ? (tags.gaps ? 'partial' : 'done')
     : now === undefined ? 'checking'
     : now === LOCKED ? 'locked'
     : now === UNREADABLE ? 'unreadable'
+    : now === EMPTY ? (tags.recordCount > 0 ? 'deleted' : tags.gaps ? 'partial' : 'done')
     : now !== archived ? 'stale'
     : tags.gaps ? 'partial' : 'done';
   const tagNote = tags === undefined ? t('backup.tags.notStarted')
     : !tags.ok ? t('backup.tags.failed', { reason: tags.message })
     : tagStatus === 'stale' ? t('backup.tags.stale', { count: tags.recordCount })
+    : tagStatus === 'deleted' ? t('backup.tags.deleted', { count: tags.recordCount })
     : tagStatus === 'checking' ? t('backup.tags.checking')
     : tagStatus === 'locked' ? t('backup.tags.locked')
     : tagStatus === 'unreadable' ? t('backup.tags.unreadable')
     : tags.gaps ? t('backup.tags.partial')
     : tags.history ? t('backup.tags.done', { count: tags.recordCount })
     : t('backup.tags.doneNoHistory', { count: tags.recordCount });
-  const label = { notStarted: t('backup.status.notStarted'), checking: t('backup.status.checking'), locked: t('backup.status.locked'), unreadable: t('backup.status.unreadable'), done: t('backup.status.done'), partial: t('backup.status.partial'), stale: t('backup.status.stale'), failed: t('backup.status.failed') };
+  const label = { notStarted: t('backup.status.notStarted'), checking: t('backup.status.checking'), locked: t('backup.status.locked'), unreadable: t('backup.status.unreadable'), done: t('backup.status.done'), partial: t('backup.status.partial'), stale: t('backup.status.stale'), deleted: t('backup.status.deleted'), failed: t('backup.status.failed') };
   const status = (s: ItemStatus, note: string): ReactNode => <p role="status"><strong data-status={s}>{label[s]}</strong>: {note}</p>;
 
   const goToKeystore = (): void => {
@@ -118,11 +123,8 @@ export function BackupPanel(): ReactNode {
           {status(tagStatus, tagNote)}
           {tags?.ok === true && tags.notes.length > 0 && <ul>{tags.notes.map((note) => <li key={note}>{note}</li>)}</ul>}
           <TagArchive
-            onExport={(result) => { lastTagOutcome = { session: app.session, result, wiped: false }; setTagResult(lastTagOutcome); setNow(undefined); }}
-            onTagsChanged={(kind) => {
-              if (kind === 'wiped' && lastTagOutcome !== undefined) { lastTagOutcome = { ...lastTagOutcome, wiped: true }; setTagResult(lastTagOutcome); }
-              setTick((n) => n + 1);
-            }}
+            onExport={(result) => { lastTagOutcome = { session: app.session, result }; setTagResult(lastTagOutcome); setNow(undefined); setTick((n) => n + 1); }}
+            onTagsChanged={() => { setTick((n) => n + 1); }}
           />
         </li>
       </ol>

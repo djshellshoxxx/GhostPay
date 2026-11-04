@@ -1,5 +1,5 @@
 import { bytesToHex, hexToBytes, utf8ToBytes } from '@noble/hashes/utils.js';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { UserFacingError } from './errors';
 import { MemoryTagStore, TagVault, validatePayload, type EncryptedTagRecord, type TagPayload } from './tags';
 
@@ -236,5 +236,84 @@ describe('legacy tag migration', () => {
     // A stored payload that is not an object at all is still refused as damaged.
     await store.put(await legacyRecord(store, (await store.getAll())[0] ?? record, 'not a tag' as unknown as TagPayload));
     await expect(vault.list()).rejects.toThrow(/could not be decrypted/);
+  });
+});
+
+describe('TagVault.fingerprint', () => {
+  const other = (): TagPayload => payload({ stealthAddress: '0x1111111111111111111111111111111111111111', announcementId: `0x${'cd'.repeat(32)}:0`, clientLabel: 'Other' });
+
+  it('changes with every kind of tag change and is stable otherwise', async () => {
+    const { vault } = await unlocked();
+    await vault.save(84532, payload());
+    const one = await vault.fingerprint();
+    expect(await vault.fingerprint()).toBe(one);
+    await vault.save(84532, payload({ clientLabel: 'Renamed only' }));
+    const renamed = await vault.fingerprint();
+    expect(renamed).not.toBe(one);
+    await vault.save(84532, payload({ clientLabel: 'Renamed only', notes: 'changed notes' }));
+    const noted = await vault.fingerprint();
+    expect(noted).not.toBe(renamed);
+    await vault.save(1, other());
+    const two = await vault.fingerprint();
+    expect(two).not.toBe(noted);
+    await vault.remove(1, other().stealthAddress);
+    expect(await vault.fingerprint()).toBe(noted);
+    await vault.remove(84532, ADDR);
+    expect(await vault.fingerprint()).not.toBe(noted);
+  });
+
+  it('does not depend on the order the records are stored in', async () => {
+    const { vault } = await unlocked();
+    await vault.save(84532, payload());
+    await vault.save(84532, other());
+    const both = await vault.fingerprint();
+    await vault.remove(84532, ADDR);
+    await vault.save(84532, payload());
+    expect(await vault.fingerprint()).toBe(both);
+  });
+
+  it('changes with a key rotation', async () => {
+    const { vault } = await unlocked();
+    await vault.save(84532, payload());
+    const before = await vault.fingerprint();
+    await vault.rotateKeys(key(7));
+    expect(await vault.fingerprint()).not.toBe(before);
+  });
+
+  it('is refused while locked, and never unlocks', async () => {
+    const { vault } = await unlocked();
+    await vault.save(84532, payload());
+    vault.lock();
+    await expect(vault.fingerprint()).rejects.toThrow(/locked/i);
+    expect(vault.unlocked).toBe(false);
+  });
+
+  it('is domain separated from the lookup tokens', async () => {
+    const { vault, store } = await unlocked();
+    await vault.save(84532, payload());
+    const digest = await vault.fingerprint();
+    for (const r of await store.getAll()) expect([r.lookupKey, r.recordId]).not.toContain(digest);
+    const empty = await unlocked(new MemoryTagStore(), 7);
+    expect(await empty.vault.fingerprint()).not.toBe(digest);
+    // The signed message carries its own domain label, so it can never be a lookup-token message.
+    const signed: string[] = [];
+    const real = crypto.subtle.sign.bind(crypto.subtle);
+    vi.spyOn(crypto.subtle, 'sign').mockImplementation((alg, k, data) => {
+      signed.push(new TextDecoder().decode(data));
+      return real(alg, k, data);
+    });
+    await vault.fingerprint();
+    vi.restoreAllMocks();
+    expect(signed.some((m) => m.startsWith('GhostPay/local-tags/v1/fingerprint\0'))).toBe(true);
+  });
+
+  it('can be told whether the store holds no tags and no profile, without a key', async () => {
+    const { vault, store } = await unlocked();
+    expect(await vault.storeIsEmpty()).toBe(false);
+    await vault.save(84532, payload());
+    await vault.wipe();
+    expect(await vault.storeIsEmpty()).toBe(true);
+    expect((await store.getSnapshot()).records).toHaveLength(0);
+    expect(vault.unlocked).toBe(false);
   });
 });

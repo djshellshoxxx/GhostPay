@@ -150,6 +150,8 @@ export const SECURITY_KEY_GROUPS = {
     'backup.status.notStarted',
     'backup.status.done',
     'backup.status.stale',
+    'backup.status.deleted',
+    'backup.tags.deleted',
     'backup.status.checking',
     'backup.status.locked',
     'backup.status.unreadable',

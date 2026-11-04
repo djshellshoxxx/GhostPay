@@ -97,7 +97,7 @@ export type ArchiveExportResult =
  * Encrypted tag backup, import with preview, key rotation and wipe. Everything is local; the passphrase is never stored.
  * @param props.onExport Optional observer of export attempts (the combined backup panel); it changes no behavior here.
  */
-export function TagArchive(props: { readonly onExport?: (result: ArchiveExportResult) => void; readonly onTagsChanged?: (kind: 'imported' | 'wiped') => void } = {}): ReactNode {
+export function TagArchive(props: { readonly onExport?: (result: ArchiveExportResult) => void; readonly onTagsChanged?: () => void } = {}): ReactNode {
   const { onExport: reportExport, onTagsChanged } = props;
   const app = useApp();
   const { vault, chains } = useServices();
@@ -310,7 +310,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
         }
         guard();
         setStaged(undefined); setFile(undefined); setBusy(false);
-        onTagsChanged?.('imported');
+        onTagsChanged?.();
         done(`Imported: ${String(s.archive.tags.added)} added, ${String(s.archive.tags.updated)} updated, ${String(s.archive.tags.removed)} removed. Tags committed.${s.history.length > 0 ? ` Scan history committed for ${String(s.history.length)} chain(s); restored history remains historical evidence, not a fresh scan.` : ''}`);
       } catch (error) {
         // A completed transaction cannot be cancelled, and a rejected acknowledgement
@@ -354,7 +354,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
         unchanged();
         await vault.wipe();
         if (!current(c)) return;
-        unchanged(); setBusy(false); onTagsChanged?.('wiped'); done('All local tags deleted.');
+        unchanged(); setBusy(false); onTagsChanged?.(); done('All local tags deleted.');
       } catch (error) {
         if (!current(c)) return;
         setBusy(false); fail(error);
