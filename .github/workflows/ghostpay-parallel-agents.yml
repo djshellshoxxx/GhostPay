@@ -103,14 +103,23 @@ jobs:
             whether any useful work was impossible because of active ownership.
       - name: Verify scope and fresh open-PR ownership
         id: scope
-        if: always() && steps.preflight.outputs.go == 'true'
+        if: always() && steps.preflight.outputs.go == 'true' && steps.codex.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
           PREFIX: ${{ matrix.owned_prefix }}
         shell: bash
         run: |
           set -euo pipefail
-          git add -N -- . ':!open-prs.txt' ':!owned-paths.txt' ':!parallel-agent-report.txt'
+          # Reject unauthorized edits, including untracked files, before staging.
+          git ls-files -m -o --exclude-standard |
+          while IFS= read -r path; do
+            case "$path" in
+              open-prs.txt|owned-paths.txt|parallel-agent-report.txt) ;;
+              "$PREFIX"*) ;;
+              *) echo "::error::Out-of-lane file: $path"; exit 1 ;;
+            esac
+          done
+          git add -N -- "$PREFIX"
           git diff --name-only HEAD > changed-paths.txt
           if [ ! -s changed-paths.txt ]; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
