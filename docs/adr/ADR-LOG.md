@@ -135,3 +135,5 @@ Decision:
 6. **Receipts.** Seller-issued receipts can be archived (signature verified on archive), exported as plaintext JSON after a confirmation, and deleted one by one or all at once. A receipt never counts as payment evidence and never feeds matching or links.
 7. **Lifecycle.** Removing registrations or receipts never changes observations, links or reorg tombstones. Encrypted backups carry registrations and receipts; import merges by digest or signature, keeps the local entry on a nonce conflict and refuses to exceed the bounds.
 Consequences: matching can miss payments made by other clients that compute a different gross, payments of identical amounts stay ambiguous, and late scans downgrade to ambiguous. The vault size and scope identifier remain visible to anyone with access to browser storage; plaintext receipt exports leak payment details if mishandled.
+
+Index: ADR-0026 [docs/adr/ADR-0026-local-reconciliation-and-receipt-archive.md](ADR-0026-local-reconciliation-and-receipt-archive.md) is the implementation-level description of the ADR-0025 entry above (matching, receipts, privacy and lifecycle). It records no new decision.
