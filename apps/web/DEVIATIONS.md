@@ -116,6 +116,36 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     quorum, scan-mode claims, `groth16`, `privacy-pools`), and ESLint forbids importing `createScanSource`, `createPir2Source`,
     `createLightSource`, `createQuorumSource`, `describeScanMode` and `SCAN_MODE_CLAIMS` from `@ghostpay/scan-source` in apps/web.
 22. No inline `style=` attributes are used anywhere (the CSP has no `'unsafe-inline'`): the QR code is an SVG built from React elements and CSS classes.
+23. **Bitcoin view header chain (full build profile only; `features/btc` stays rejected by the lean profile guard).**
+    `src/features/btc/headers.ts` anchors `HeaderChain` (`@ghostpay/btc-silent-payments`) at the selected test network's
+    pinned genesis header and syncs it from the configured Esplora server (`GET /blocks/:height`, 10 headers per request,
+    falling back to `/block-height/:h` + `/block/:hash/header`). This is **header-chain validation against the chain the
+    source claims is best, with most-work selection. It is NOT SPV, NOT full validation and NOT trustless.**
+    Checked on this device: header linkage, proof of work against each header's nBits and the network limit, the exact
+    nBits the difficulty rules require, median-time-past and the 2-hour future limit, BIP-34/66/65 versions, most cumulative
+    work (strictly more) among the branches seen. Every scanned block must equal the checked chain's hash at its height
+    (`HeaderAnchoredTweakSource`); a block's transactions are bound to that header by the txid Merkle root and the BIP-141
+    witness commitment (`esplora.ts`, unchanged). **Not checked / trusted:** transactions, scripts and amounts of the
+    outputs being spent (earlier blocks), spent status, signet block signatures, Core checkpoints/assumevalid; the server
+    is trusted for availability and can withhold a heavier chain or eclipse the device (only one source can be configured
+    today; `syncHeaders` accepts several and fails closed if any fails); test-network proof of work is cheap, so a server
+    can mine a heavier fork. A first sync starts at genesis (no later checkpoint is pinned): slow on testnet4/signet
+    (~10 requests per 100 headers), resumable because progress is saved every 4032 headers.
+    Persistence: IndexedDB `ghostpay-btc-headers` / store `chains`, key `headers:v1:<network>`, value the JSON of
+    `HeaderChain.toJSON()` (version, network, checkpoint, header hex list). Public chain data only: no key, address,
+    amount or scan result. Load re-validates every header with the pinned genesis as the required checkpoint; any failure
+    (bad JSON, wrong network, substituted anchor, a tampered header) discards the whole record, overwrites it with a fresh
+    genesis chain and resyncs. Without IndexedDB (or when a save fails) the view says headers are not kept. The package's
+    `ScanState` is still **not** persisted (it is private and needs an encrypted store): scan results stay in memory.
+    Failure handling: a header that fails any rule, a malformed or missing answer, or an unreachable server fails the
+    header check, keeps (and has saved) only the valid prefix, and blocks the scan. A branch with no more work is ignored
+    and its blocks are refused (`REORG_DETECTED`). A branch with more work is adopted; scan results from blocks above the
+    fork are removed (spend tweaks wiped), the result is cut back to the fork height (or discarded) and the view says so.
+    `scanForPayments` without `headers` still exists (unit tests and per-block checks); the view never calls it that way.
+    Remaining gaps: a heavier fork longer than 4032 headers beyond the fork point is not adopted in one round (the scan
+    then fails closed); `spentCount` of a cut-back scan still counts outputs from removed blocks. Unverified: the
+    `/blocks/:height` field mapping follows the electrs/Esplora API and is exercised only against the test mock (no live
+    server is contacted by tests); a mismatch fails closed (each rebuilt header must hash to the summary's `id`).
 
 ## Coverage exclusions (thresholds 90/85/90/90 are NOT lowered)
 Test files named `*.nocov.test.*` run in a second pass without coverage (`vitest.nocov.config.ts`, chained in `npm test`). Only the

@@ -1,8 +1,11 @@
 import {
+  HeaderAnchoredTweakSource,
   scanBlocks,
   SilentPaymentError,
   zeroize,
+  type HeaderChain,
   type SpendableOutput,
+  type TweakSource,
 } from '@ghostpay/btc-silent-payments';
 import type { EsploraClient } from './esplora';
 import { EsploraTweakSource } from './esplora';
@@ -28,6 +31,12 @@ export interface ScanParams {
   readonly toHeight?: number;
   readonly signal?: AbortSignal;
   readonly onBlock?: (height: number) => void;
+  /**
+   * Validated header chain (`headers.ts`). When given, the scan stops at its tip and every scanned block's hash must
+   * equal the chain's hash at that height (else `REORG_DETECTED`), so the blocks scanned are those of the most-work
+   * header chain known to this device. The view always passes it; without it blocks are only checked one by one.
+   */
+  readonly headers?: HeaderChain;
 }
 
 export interface ScanResult {
@@ -36,6 +45,10 @@ export interface ScanResult {
   readonly found: readonly FoundPayment[];
   /** Detected outputs that were already spent (not offered for sweeping). */
   readonly spentCount: number;
+  /** Every scanned block, ascending: lets a later header sync find results from blocks that left the chain. */
+  readonly blocks: readonly { readonly height: number; readonly hash: string }[];
+  /** The scanned blocks were checked against a validated header chain. */
+  readonly headerAnchored: boolean;
 }
 
 /** Best-effort wipe of the spend tweaks held by scan results (used on lock, a new scan and unmount). */
@@ -52,12 +65,16 @@ export function wipeFound(found: readonly FoundPayment[]): void {
 export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
   const { client, wallet, fromHeight, signal } = p;
   if (!Number.isInteger(fromHeight) || fromHeight < 0) throw new SilentPaymentError('INVALID_INPUT');
-  const source = new EsploraTweakSource(client, wallet.net);
-  const tip = await client.tipHeight(signal);
+  const plain = new EsploraTweakSource(client, wallet.net);
+  const source: TweakSource = p.headers === undefined ? plain : new HeaderAnchoredTweakSource(plain, p.headers);
+  const headerAnchored = p.headers !== undefined;
+  const serverTip = await client.tipHeight(signal);
+  const tip = p.headers === undefined ? serverTip : Math.min(serverTip, p.headers.tipHeight);
   const toHeight = Math.min(p.toHeight ?? tip, tip);
-  if (toHeight < fromHeight) return { fromHeight, toHeight, found: [], spentCount: 0 };
+  if (toHeight < fromHeight) return { fromHeight, toHeight, found: [], spentCount: 0, blocks: [], headerAnchored };
   if (toHeight - fromHeight + 1 > MAX_SCAN_BLOCKS) throw new SilentPaymentError('INVALID_INPUT');
 
+  const blocks: { height: number; hash: string }[] = [];
   const candidates: FoundPayment[] = [];
   const seen = new Set<string>();
   const tweaks = new Set<Uint8Array>();
@@ -70,6 +87,7 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
       fromHeight,
       toHeight,
       ...(signal === undefined ? {} : { signal }),
+      onBlock: ({ height, blockHash }) => { blocks.push({ height, hash: blockHash }); },
     });
     for await (const r of gen) {
       tweaks.add(r.spendTweak);
@@ -96,7 +114,7 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
       else spentCount++;
     }
     returned = true;
-    return { fromHeight, toHeight, found, spentCount };
+    return { fromHeight, toHeight, found, spentCount, blocks, headerAnchored };
   } finally {
     // Outputs paying the same key share one tweak buffer: keep every buffer a returned output still uses.
     const kept = new Set<Uint8Array>(returned ? found.map((f) => f.spendTweak) : []);

@@ -13,8 +13,8 @@ import { POW_LIMIT, checkProofOfWork, parseHeader, targetFromBits, type BlockHea
  *
  * What it does NOT check: anything inside blocks (transactions, scripts, signet block signatures), checkpoints
  * or assumevalid beyond the caller's pinned starting header, and headers below that starting header. It is a
- * header-only (SPV-style) view: it shows which chain has the most proof of work among the headers it was given,
- * not that the chain is valid. A source that withholds a heavier chain is not detected; ask several sources.
+ * header-only view, not SPV and not full validation: it shows which chain has the most proof of work among the
+ * headers it was given, not that the chain is valid. A source that withholds a heavier chain is not detected; ask several sources.
  * On test networks proof of work is cheap, so an attacker can out-work an honest source there.
  */
 
@@ -165,6 +165,24 @@ function invalid(): never {
   return fail('INVALID_HEADER');
 }
 
+const lowerHex = (v: unknown): string | undefined => (typeof v === 'string' ? v.toLowerCase() : undefined);
+
+/** Exact equality of a stored checkpoint (untrusted shape) with the pinned one. */
+function sameCheckpoint(stored: unknown, pinned: HeaderCheckpoint): boolean {
+  if (typeof stored !== 'object' || stored === null) return false;
+  const s = stored as Partial<Record<keyof HeaderCheckpoint, unknown>>;
+  const prev: unknown = s.previousHeaders ?? [];
+  const want = pinned.previousHeaders ?? [];
+  return (
+    s.height === pinned.height &&
+    lowerHex(s.hash) === pinned.hash.toLowerCase() &&
+    lowerHex(s.headerHex) === pinned.headerHex.toLowerCase() &&
+    Array.isArray(prev) &&
+    prev.length === want.length &&
+    prev.every((h: unknown, i) => lowerHex(h) === want[i]?.toLowerCase())
+  );
+}
+
 /** Best (most-work) header chain above a pinned checkpoint. */
 export class HeaderChain {
   private readonly active: Entry[];
@@ -198,17 +216,28 @@ export class HeaderChain {
     return new HeaderChain(o.params, cp, o.now ?? (() => Math.floor(Date.now() / 1000)));
   }
 
-  /** Rebuilds a chain from {@link toJSON} output, re-validating every header. */
-  public static fromJSON(j: SerializedHeaderChain, o: { readonly now?: () => number; readonly params?: ChainParams } = {}): HeaderChain {
+  /**
+   * Rebuilds a chain from {@link toJSON} output, re-validating every header (in batches, so any length that
+   * {@link toJSON} can produce reloads).
+   *
+   * `o.checkpoint` is the caller's pinned starting header. When given, the stored checkpoint (height, hash,
+   * header and previous headers) must equal it exactly, else `INVALID_HEADER`: stored data never chooses its own
+   * anchor. Callers that load from storage should always pass it.
+   */
+  public static fromJSON(
+    j: SerializedHeaderChain,
+    o: { readonly now?: () => number; readonly params?: ChainParams; readonly checkpoint?: HeaderCheckpoint } = {},
+  ): HeaderChain {
     if (typeof j !== 'object' || j === null || j.version !== 1 || !Object.hasOwn(CHAIN_PARAMS, j.network) || !Array.isArray(j.headers)) {
       return fail('INVALID_INPUT');
     }
     const params = o.params ?? CHAIN_PARAMS[j.network];
     if (params.network !== j.network) return fail('INVALID_INPUT');
+    if (o.checkpoint !== undefined && !sameCheckpoint(j.checkpoint, o.checkpoint)) invalid();
     const chain = HeaderChain.create({ params, checkpoint: j.checkpoint, ...(o.now === undefined ? {} : { now: o.now }) });
-    if (j.headers.length > 0) {
-      const r = chain.connect(j.headers);
-      if (r.tipHeight !== j.checkpoint.height + j.headers.length) invalid();
+    for (let i = 0; i < j.headers.length; i += MAX_BATCH) {
+      const r = chain.connect(j.headers.slice(i, i + MAX_BATCH));
+      if (r.tipHeight !== j.checkpoint.height + Math.min(j.headers.length, i + MAX_BATCH)) invalid();
     }
     return chain;
   }

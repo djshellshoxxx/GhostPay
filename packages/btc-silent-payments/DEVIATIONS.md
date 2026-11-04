@@ -129,8 +129,16 @@ Frigate (Sparrow) / Electrum Silent Payments protocol:
   Core `pow_tests.cpp` retarget vectors and real mainnet headers 0-2, plus mined regtest-style chains. **Not covered:**
   block contents beyond what `verifyBlockTransactions` binds, signet block signatures, Core checkpoints/assumevalid,
   anything below the caller's pinned checkpoint (which must sit on a 2016-block boundary), withheld heavier chains
-  (ask several sources), and cheap test-network PoW. Checkpoints for testnet4/signet are not pinned in this repo, so the
-  web view does not use `HeaderChain` yet (it keeps per-block PoW/Merkle/witness checks and height linkage).
+  (ask several sources), and cheap test-network PoW. This is header-chain validation with most-work selection, **not
+  SPV and not full validation**.
+- **Header chain persistence and the web view (2026-11-04).** `HeaderChain.fromJSON` now takes the caller's pinned
+  `checkpoint` and refuses (`INVALID_HEADER`) stored data whose checkpoint (height, hash, header, previous headers)
+  differs, so stored data can never choose its own anchor; before this, `fromJSON` adopted whatever checkpoint the JSON
+  named. `fromJSON` also re-validates in batches of `MAX_BATCH`, so chains longer than 100 000 headers (signet,
+  testnet4) reload; before, they failed with `INVALID_INPUT`. The web view (`apps/web/src/features/btc/headers.ts`)
+  anchors `HeaderChain` at each test network's pinned **genesis** header (no later checkpoint is pinned), syncs it with
+  `syncHeaderChainFromSources`, stores it through the `ScanStateStore` seam, and scans through
+  `HeaderAnchoredTweakSource`. `ScanState` itself is still not persisted by the view (see below).
 - **Witness binding (2026-10-25).** `parseRawTransaction` (txid/wtxid, strict BIP-144) and `verifyWitnessCommitment`
   (Core `CheckWitnessMalleation`: last matching commitment output, 32-byte reserved value, no witness without a
   commitment). Prevout scripts/amounts remain unbound (earlier blocks); a lying server can hide, not forge, payments.

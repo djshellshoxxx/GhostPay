@@ -110,7 +110,9 @@ describe('BtcView', () => {
     await importSeed(user);
     await user.click(screen.getByText('What the scan checks, and what it does not'));
     expect(screen.getByText(/coinbase witness commitment \(BIP-141\)/)).toBeTruthy();
-    expect(screen.getByText(/not full SPV and not best-chain validation/)).toBeTruthy();
+    expect(screen.getByText(/It is not SPV and not full validation/)).toBeTruthy();
+    expect(screen.getByText(/the one with the most cumulative work is kept/)).toBeTruthy();
+    expect(screen.queryByText(/trustless|\bis SPV/i)).toBeNull();
     const table = screen.getByRole('table', { name: 'Where scan data comes from' });
     expect(table.textContent).toContain('Hosted scanning service');
     expect(table.textContent).toContain('No: not implemented');

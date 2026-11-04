@@ -8,20 +8,44 @@ import { clearCopiedBackup, SecretBackup } from '../../components/SecretBackup';
 import { subscribeAppLock } from '../../lib/appLock';
 import { useServices } from '../../lib/services';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
+import type { HeaderChain } from '@ghostpay/btc-silent-payments';
 import { EsploraClient, normalizeEsploraUrl } from './esplora';
+import {
+  EsploraHeaderSource,
+  idbHeaderStore,
+  invalidateReorged,
+  loadHeaderChain,
+  memoryHeaderStore,
+  syncHeaders,
+  type HeaderStoreFor,
+} from './headers';
 import { BTC_NETWORKS, btcNetwork, type BtcNetworkId } from './network';
 import { MAX_SCAN_BLOCKS, scanForPayments, wipeFound, type FoundPayment, type ScanResult } from './scan';
 import { btcErrorMessage, checkDestination, formatBtc, reviewSweep, SIGNER_DESCRIPTION, signSweep, type SignedSweep, type SweepReview } from './sweep';
 import { SCAN_CHECKS, SCAN_LIMITS, SCAN_MODES } from './verification';
 import { paymentUri, randomSeedHex, walletFromSeedHex, wipeWallet, type BtcWallet } from './wallet';
 
+interface HeaderNote {
+  readonly kind: 'info' | 'warn' | 'error' | 'ok';
+  readonly text: string;
+}
+
+function defaultHeaderStore(): { readonly storeFor: HeaderStoreFor; readonly persistent: boolean } {
+  const idb = (globalThis as { indexedDB?: IDBFactory }).indexedDB;
+  return idb === undefined ? { storeFor: memoryHeaderStore(), persistent: false } : { storeFor: idbHeaderStore(idb), persistent: true };
+}
+
 /**
  * Bitcoin silent payments (BIP-352), test networks only. Keys live in this component's state and
  * vanish when you leave the view; nothing secret is stored. Lock, a new wallet and unmount wipe the
  * scan and spend secrets; a new scan, lock and unmount wipe the spend tweaks of the scan results.
  * A created wallet's seed is kept as bytes for its backup, shown only on request, and wiped with the keys.
+ *
+ * Block headers (public chain data) are checked on this device (`headers.ts`) and saved per network in IndexedDB
+ * when the browser has it; every scanned block must be on that checked chain. Saved headers are validated again
+ * on load and discarded on any failure. `headerStore` replaces that storage (tests).
  */
-export function BtcView(): ReactNode {
+export function BtcView(props: { readonly headerStore?: HeaderStoreFor } = {}): ReactNode {
   const services = useServices();
   // Test renders without an I18nProvider fall back to the source English catalog.
   const i18n = useI18nOptional();
@@ -54,6 +78,11 @@ export function BtcView(): ReactNode {
   /** Seed of a created wallet, as bytes so that Lock, a new wallet and unmount can wipe it. */
   const seedRef = useRef<Uint8Array | undefined>(undefined);
   const scanRef = useRef<ScanResult | undefined>(undefined);
+  const [headerStorage] = useState(() => (props.headerStore === undefined ? defaultHeaderStore() : { storeFor: props.headerStore, persistent: true }));
+  /** The checked header chain of the network it was loaded for (public data; kept across lock). */
+  const chainRef = useRef<{ readonly netId: BtcNetworkId; readonly chain: HeaderChain } | undefined>(undefined);
+  const [headerNotes, setHeaderNotes] = useState<readonly HeaderNote[]>([]);
+  const [headerProgress, setHeaderProgress] = useState<string | undefined>(undefined);
   const net = btcNetwork(netId);
 
   const invalidate = (): void => {
@@ -141,6 +170,87 @@ export function BtcView(): ReactNode {
 
   const selected: readonly FoundPayment[] = scan === undefined ? [] : scan.found.filter((f) => picked.has(`${f.txid}:${String(f.vout)}`));
 
+  /** Drops scan results from blocks that left the checked chain; wipes their spend tweaks. */
+  const applyChainToScan = (chain: HeaderChain): HeaderNote[] => {
+    const current = scanRef.current;
+    if (current === undefined) return [];
+    const { scan: next, dropped } = invalidateReorged(current, chain);
+    if (next === current) return [];
+    const kept = new Set((next?.found ?? []).map((f) => f.spendTweak));
+    for (const d of dropped) if (!kept.has(d.spendTweak)) zeroize(d.spendTweak);
+    scanRef.current = next;
+    setScan(next);
+    setPicked(new Set());
+    setReview(undefined);
+    setApproved(false);
+    setSigned(undefined);
+    setBroadcastId(undefined);
+    setScanNote(undefined);
+    return [
+      next === undefined
+        ? { kind: 'warn', text: t('btc.headers.scanDiscarded') }
+        : { kind: 'warn', text: t('btc.headers.resultsDropped', { height: String(next.toHeight), count: String(dropped.length) }) },
+    ];
+  };
+
+  /**
+   * Loads (or reuses) the checked header chain of the selected network and syncs it with the server. Every
+   * outcome is reported in the header notes. Returns `undefined` when the check failed (fail closed: no scan).
+   */
+  const checkHeaders = async (c: EsploraClient, signal: AbortSignal, live: () => boolean): Promise<HeaderChain | undefined> => {
+    const notes: HeaderNote[] = [];
+    let chain: HeaderChain;
+    if (chainRef.current?.netId === net.id) {
+      chain = chainRef.current.chain;
+    } else {
+      const loaded = await loadHeaderChain(net, headerStorage.storeFor(net.id));
+      chain = loaded.chain;
+      chainRef.current = { netId: net.id, chain };
+      if (loaded.loaded === 'restored') notes.push({ kind: 'info', text: t('btc.headers.restored', { count: String(chain.tipHeight) }) });
+      if (loaded.loaded === 'discarded') notes.push({ kind: 'warn', text: t('btc.headers.discarded') });
+    }
+    if (live()) setHeaderProgress(t('btc.headers.checking'));
+    try {
+      const out = await syncHeaders({
+        chain,
+        sources: [new EsploraHeaderSource(c)],
+        store: headerStorage.storeFor(net.id),
+        signal,
+        onProgress: (h) => { if (live()) setHeaderProgress(t('btc.headers.progress', { height: String(h) })); },
+      });
+      if (out.reorgFrom !== undefined) notes.push({ kind: 'warn', text: t('btc.headers.reorg', { height: String(out.reorgFrom) }) });
+      if (out.lessWork) notes.push({ kind: 'warn', text: t('btc.headers.lessWork') });
+      if (!headerStorage.persistent || !out.saved) notes.push({ kind: 'info', text: t('btc.headers.notSaved') });
+      notes.push({ kind: 'ok', text: t('btc.headers.verified', { height: String(chain.tipHeight), hash: chain.tipHash }) });
+      if (!live()) return undefined;
+      notes.push(...applyChainToScan(chain));
+      setHeaderNotes(notes);
+      return chain;
+    } catch (e) {
+      if (live()) setHeaderNotes([...notes, { kind: 'error', text: t('btc.headers.failed', { reason: btcErrorMessage(e) }) }]);
+      return undefined;
+    } finally {
+      if (live()) setHeaderProgress(undefined);
+    }
+  };
+
+  const updateHeaders = (): void => {
+    setError(undefined);
+    const { signal, live } = begin();
+    setScanning(true);
+    void (async () => {
+      try {
+        const c = client();
+        await c.checkNetwork(net, signal);
+        await checkHeaders(c, signal, live);
+      } catch (e) {
+        if (live()) setError(btcErrorMessage(e));
+      } finally {
+        if (live()) setScanning(false);
+      }
+    })();
+  };
+
   const runScan = (): void => {
     setError(undefined);
     if (wallet === undefined) return;
@@ -153,10 +263,14 @@ export function BtcView(): ReactNode {
         await c.checkNetwork(net, signal);
         const from = Number(fromHeight);
         if (fromHeight.trim() === '' || !Number.isInteger(from) || from < 0) throw new Error(t('btc.scan.firstHeightRequired'));
+        const headers = await checkHeaders(c, signal, live);
+        if (headers === undefined) return;
+        if (from > headers.tipHeight) throw new Error(t('btc.headers.behind', { height: String(headers.tipHeight) }));
         const res = await scanForPayments({
           client: c,
           wallet,
           fromHeight: from,
+          headers,
           signal,
           onBlock: (h) => { if (live()) setScanNote(t('btc.scan.foundBlock', { height: String(h) })); },
         });
@@ -345,9 +459,19 @@ export function BtcView(): ReactNode {
           <button type="button" className="btn btn-primary" disabled={scanning || url.trim() === ''} onClick={runScan}>
             {scanning ? t('btc.scan.scanning') : t('btc.scan.action')}
           </button>
+          {' '}
+          <button type="button" className="btn" disabled={scanning || url.trim() === ''} onClick={updateHeaders}>
+            {t('btc.headers.update')}
+          </button>
           {scanning && (
             <button type="button" className="btn" onClick={() => { abort.current?.abort(); }}>{t('btc.scan.cancel')}</button>
           )}
+          <section aria-labelledby="btc-headers-h">
+            <h4 id="btc-headers-h">{t('btc.headers.heading')}</h4>
+            {headerStorage.persistent && <p className="hint">{t('btc.headers.storageNote')}</p>}
+            {headerProgress !== undefined && <p role="status">{headerProgress}</p>}
+            {headerNotes.map((n) => <Notice key={n.text} kind={n.kind}>{n.text}</Notice>)}
+          </section>
           <details>
             <summary>{t('btc.scan.details')}</summary>
             <p>{t('btc.scan.checked')}</p>
