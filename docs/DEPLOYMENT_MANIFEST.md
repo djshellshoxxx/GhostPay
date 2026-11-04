@@ -23,7 +23,7 @@ One JSON file per chain, named `<chainId>.json`, at most 16 KiB (`MAX_MANIFEST_B
 | `bytecodeHashes.router`, `.sweepRelayer` | yes | `keccak256` of the **runtime** bytecode read from the chain. Format-checked only today. |
 | `date` | yes | RFC 3339 UTC, must be a real date. |
 | `policyImplementation`, `policyFactory`, `policyFeeToken`, `policyFlatFee`, `policyFeeRecipient` | optional, all-or-none | Policy account (experimental, ADR-0014). `policyFlatFee` is a decimal string. When present, `deployTx` and `bytecodeHashes` must carry `policyImplementation` and `policyFactory` too. |
-| `signature` | optional in shared schema | Web, relayer, and ops monitor require a compact low-s secp256k1 `r || s` signature (`0x` + 128 hex digits) over `manifestDigest(validatedManifest)`, which is `keccak256(canonicalManifestJson(manifest))`. Missing keys, unsigned manifests, and invalid signatures fail closed. |
+| `signature` | optional in shared schema | Web, relayer, and ops monitor require a compact low-s secp256k1 `r || s` signature (`0x` + 128 hex digits) over `manifestDigest(validatedManifest)`: `keccak256(utf8(STRUCTURED_MANIFEST_SIGNING_DOMAIN + canonicalManifestJson(manifest)))`. The exported domain is `GhostPay/structured-deployment-manifest/v1\n` with one newline byte. Missing keys, unsigned manifests, unprefixed signatures and invalid signatures fail closed. |
 
 Validation order in `loadDeployment`: size cap, JSON parse rejecting `__proto__`-style keys, strict key allowlist, and field checks above. Vite reads `apps/web/deployments/<chainId>.json`, validates filename/chain/schema/signature at build and postbuild, then compiles the raw text and public keys into the bundle. Default services call `loadBundledManifest`; the explicit fetch-based `loadManifest` helper remains for controlled tests and is not used by default runtime flows. Pay, Scan, and Sweep then call the chain adapter's on-chain readback gate. The relayer loads files from `DEPLOYMENTS_DIR`.
 
@@ -62,10 +62,15 @@ Before enabling payment on a chain, using the user's RPC (ideally two independen
 
 ### 3.3 Detached signature over the manifest
 
-- The web release key signs the exact 32-byte `manifestDigest(validatedManifest)` output. That is `keccak256(UTF-8 canonicalManifestJson(manifest))`; `canonicalManifestJson` sorts object keys, uses compact JSON, and omits `signature`. The signature is 64-byte compact low-s secp256k1 `r || s` encoded as `0x` + 128 hex digits.
+- The web release key signs the exact 32-byte `manifestDigest(validatedManifest)` output: `keccak256(utf8(STRUCTURED_MANIFEST_SIGNING_DOMAIN + canonicalManifestJson(manifest)))`. The exact exported domain is `GhostPay/structured-deployment-manifest/v1\n` with one U+000A newline byte. `canonicalManifestJson` still sorts object keys, uses compact JSON, and omits `signature`. The signature is 64-byte compact low-s secp256k1 `r || s` encoded as `0x` + 128 hex digits.
 - `verifyTextManifestSignature` remains an explicitly named legacy raw-text API for compatibility tests and downstream callers. Production web, relayer, and ops monitor paths do not accept that format; existing manifests signed with it must be re-signed using `manifestDigest` before deployment. There is no maintained signer command yet; an offline signing recipe follows below. Do not dual-accept formats.
 - The verifying public key is obtained **out of band** (published fingerprint, signed tag) and compiled into the bundle, so a host cannot substitute both manifest and key.
 - No key is currently configured. Builds with no manifest remain valid, but any deployment JSON requires a configured public key and valid signature.
+
+Structured signatures made over the old unprefixed canonical JSON must be signed
+again using the updated `manifestDigest` helper before use. They are not accepted
+by a migration fallback. This signing-byte change does not select a production
+key, change the canonical JSON/schema, or change the separate legacy text API.
 
 ### 3.4 Release linkage
 

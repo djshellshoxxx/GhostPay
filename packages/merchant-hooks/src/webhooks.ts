@@ -218,24 +218,44 @@ export function serializeWebhookEvent(e: WebhookEvent): string {
   });
 }
 
-/** Bounded at-most-once guard keyed by event id. Evicts oldest when full (documented limit). */
+/**
+ * What {@link IdempotencyGuard.begin} found: `claimed` (the caller now handles the event and must `complete()` or
+ * `release()` it), `processing` (another delivery is still handling it: answer with a retryable status, never 2xx,
+ * because that attempt may still fail) or `done` (handled: acknowledge as a duplicate).
+ */
+export type IdempotencyClaim = 'claimed' | 'processing' | 'done';
+
+/**
+ * Bounded in-memory idempotency guard keyed by event id, with an in-flight state. When full it evicts the oldest done
+ * id (a later redelivery of it is handled again: documented limit); it never evicts an in-flight id and answers
+ * `processing` (fail closed, retryable) while every entry is in flight. Lost on restart: production needs a durable
+ * store.
+ */
 export class IdempotencyGuard {
-  private readonly seen = new Set<string>();
+  private readonly inFlight = new Set<string>();
+  private readonly handled = new Set<string>();
   public constructor(private readonly maxEntries = 100_000) {}
 
-  /** @returns true the first time `eventId` is claimed, false afterwards. */
-  public claim(eventId: string): boolean {
-    if (this.seen.has(eventId)) return false;
-    if (this.seen.size >= this.maxEntries) {
-      const oldest = this.seen.values().next();
-      if (oldest.done !== true) this.seen.delete(oldest.value);
+  /** Claim `eventId` for handling unless it is in flight or done. */
+  public begin(eventId: string): IdempotencyClaim {
+    if (this.handled.has(eventId)) return 'done';
+    if (this.inFlight.has(eventId)) return 'processing';
+    if (this.inFlight.size + this.handled.size >= this.maxEntries) {
+      const oldest = this.handled.values().next();
+      if (oldest.done === true) return 'processing';
+      this.handled.delete(oldest.value);
     }
-    this.seen.add(eventId);
-    return true;
+    this.inFlight.add(eventId);
+    return 'claimed';
   }
 
-  /** Release a claim after a failed handler so a redelivery can retry. */
+  /** Mark a claimed event handled: redeliveries are duplicates from now on. */
+  public complete(eventId: string): void {
+    if (this.inFlight.delete(eventId)) this.handled.add(eventId);
+  }
+
+  /** Release a claim after a failed handler so a redelivery can retry. A done event stays done. */
   public release(eventId: string): void {
-    this.seen.delete(eventId);
+    this.inFlight.delete(eventId);
   }
 }

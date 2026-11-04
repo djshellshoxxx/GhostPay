@@ -26,6 +26,7 @@ The in-app "release hash" widget fetches the entry script from the same origin a
 
 - Upload the contents of the released `dist/` (not a build performed by the platform) so the hash you published is the hash served. If you use Git-connected builds, the platform's build environment becomes part of your trust base.
 - `public/_headers` ships inside `dist` and is applied by Cloudflare Pages (and Netlify). Verify with `curl -sI https://<host>/` and compare to the file; test `frame-ancestors` by trying to frame the page.
+- Upload `dist/` itself, not the hosting kit's `profiles/<name>/static/www`: that copy omits `_headers` (it is the document root for the kit's nginx and container profiles, which send the headers), so the host would serve it without CSP, X-Frame-Options, nosniff, COOP or Permissions-Policy.
 - Disable Cloudflare features that modify content: Auto Minify, Rocket Loader, Email Obfuscation, Web Analytics beacon, Zaraz. Any injected script is blocked by the CSP and breaks the page, or worse, hides the problem.
 - Restrict who can deploy (separate account, hardware-key 2FA, deploy tokens scoped to the project). Compromise of the Cloudflare account is compromise of the frontend (audit D7).
 - Cloudflare terminates TLS and sees all client IPs and requests; disclose it in the privacy notice.

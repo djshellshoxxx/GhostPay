@@ -1,5 +1,6 @@
-import type { CatalogLayer, MessageKey } from './catalog';
-import { SOURCE_LOCALE } from './languages';
+import { SOURCE_CATALOG, type CatalogLayer, type MessageKey } from './catalog';
+import { isReviewed, SOURCE_LOCALE } from './languages';
+import { NEUTRAL_KEYS } from './securityKeys';
 import {
   dateTimeFormat,
   formatToParts,
@@ -64,10 +65,15 @@ function usableLocale(locale: string): string {
 /**
  * Builds a translator from catalog layers (most specific first, English last). A key is looked up layer by layer, so a
  * missing or broken translation falls back to the next layer and finally to the English text, never to a blank.
+ * Critical review text uses only registry-reviewed catalog locales, with the bundled English source as its final layer.
+ * Catalog metadata or caller options cannot approve a translation; native review remains a registry/change-review gate.
  */
 export function createTranslator(locale: string, layers: readonly CatalogLayer[], options: TranslatorOptions = {}): Translator {
   // 'en-XA' / 'en-XB' are valid BCP 47 tags (private-use region codes) so Intl accepts them as 'en'.
   const intl = usableLocale(locale);
+  const source = layers.find((layer) => layer.locale === SOURCE_LOCALE && layer.messages === SOURCE_CATALOG.messages)
+    ?? { locale: SOURCE_LOCALE, messages: SOURCE_CATALOG.messages };
+  const securityLayers = [...layers.filter((layer) => layer.locale !== SOURCE_LOCALE && isReviewed(layer.locale)), source];
   const reported = new Set<string>();
   const report = (issue: I18nIssue, id: string): void => {
     if (options.onIssue === undefined || reported.has(id)) return;
@@ -76,8 +82,8 @@ export function createTranslator(locale: string, layers: readonly CatalogLayer[]
   };
 
   const parts = (key: MessageKey, values: MessageValues = {}): Part[] => {
-    let first: CatalogLayer | undefined;
-    for (const layer of layers) {
+    let first = layers[0];
+    for (const layer of NEUTRAL_KEYS.has(key) ? layers : securityLayers) {
       first ??= layer;
       const src = layer.messages[key];
       if (src === undefined) continue;

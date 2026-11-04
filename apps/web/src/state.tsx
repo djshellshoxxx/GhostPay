@@ -1,10 +1,13 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useSyncExternalStore } from 'react';
 import type { RpcClient } from '@ghostpay/chain-adapters';
 import type { ScanMatch } from './lib/scanClient';
+import type { SweepLock } from './lib/sweep';
+import { UserFacingError } from './lib/errors';
+import { browserSweepStorage, MAX_OTHER_HASHES, readSweepAttempts, SWEEP_JOURNAL_KEY, sweepAttemptKey, SweepJournalUnavailableError, toSweepLock, writeSweepAttempt } from './lib/sweepAttemptJournal';
 import type { SessionPublic } from './lib/session';
 import type { Settings } from './lib/settings';
 
-export type ViewId = 'home' | 'seller' | 'create' | 'pay' | 'scan' | 'sweep' | 'btc' | 'solana' | 'tron' | 'registry' | 'settings' | 'about';
+export type ViewId = 'home' | 'seller' | 'create' | 'pay' | 'scan' | 'sweep' | 'btc' | 'solana' | 'tron' | 'registry' | 'policy' | 'settings' | 'about';
 
 export const VIEW_LABELS: Readonly<Record<ViewId, string>> = {
   home: 'Home',
@@ -17,6 +20,7 @@ export const VIEW_LABELS: Readonly<Record<ViewId, string>> = {
   solana: 'Solana (test)',
   tron: 'TRON (test)',
   registry: 'Public registry',
+  policy: 'Policy accounts (experimental)',
   settings: 'Settings',
   about: 'About and privacy',
 };
@@ -49,4 +53,160 @@ export function useApp(): AppState {
   const s = useContext(AppContext);
   if (s === undefined) throw new Error('AppContext missing');
   return s;
+}
+
+/*
+ * App-session holder for sweep attempts (GP-SWEEP-OUTCOME-01). It lives above route-local view state so that
+ * navigating away and back cannot re-arm signing after an uncertain broadcast. It holds only the public descriptor
+ * (never key material). Every record is written through to the tab-scoped journal (sessionStorage), so a reload of
+ * this tab keeps signing disarmed; other tabs do not see it (recorded limit). If the journal cannot be read or
+ * written, signing is disarmed for the rest of this page session instead of trusting memory alone. Direct sweeps
+ * persist the lock before handoff (beginSweepAttempt); relayed sweeps likewise persist an order-bound lock before
+ * contacting the relayer, then add the returned transaction hash when available.
+ */
+const sweepAttempts = new Map<string, SweepLock>();
+const sweepAttemptListeners = new Set<() => void>();
+let sweepJournalHydrated = false;
+let sweepJournalBroken = false;
+
+function notifySweepAttempts(): void {
+  for (const l of sweepAttemptListeners) l();
+}
+
+function hydrateSweepAttempts(): void {
+  if (sweepJournalHydrated) return;
+  sweepJournalHydrated = true;
+  try {
+    const storage = browserSweepStorage();
+    if (storage === undefined) return;
+    for (const a of readSweepAttempts(storage)) sweepAttempts.set(sweepAttemptKey(a.chainId, a.owner), a);
+  } catch {
+    sweepJournalBroken = true;
+  }
+}
+
+/**
+ * Persists the lock BEFORE the signed bytes leave the page and returns the lock as recorded. Throws (and records
+ * nothing) when the tab journal cannot hold it, so the caller aborts without broadcasting.
+ *
+ * `replaces` is passed only by a same-nonce re-sign of a direct sweep whose handoff outcome is unknown (L2-F2): the new
+ * lock takes over exactly that lock (compare-and-swap) and only with the same owner nonce, so at most one of the
+ * transactions can be mined. The new lock keeps the hashes of the transactions it replaces (B-R5): any of them may still
+ * be the one mined. A submitted lock (the node accepted its transaction) and any other unresolved lock still refuse.
+ */
+export function beginSweepAttempt(attempt: SweepLock, replaces?: SweepLock): SweepLock {
+  hydrateSweepAttempts();
+  if (sweepJournalBroken) throw new SweepJournalUnavailableError();
+  // Re-checked here, after the signing awaits, so a lock taken meanwhile is never overwritten.
+  const key = sweepAttemptKey(attempt.chainId, attempt.owner);
+  const existing = sweepAttempts.get(key);
+  let lock = toSweepLock(attempt);
+  if (replaces !== undefined) {
+    if (existing === undefined || sweepAttemptKey(replaces.chainId, replaces.owner) !== key || !sameLock(existing, toSweepLock(replaces)) || !sameNonceReplacement(existing, attempt)) {
+      throw new UserFacingError('The pending sweep this replacement was signed for has changed or cannot be replaced. Nothing was sent; check its status.');
+    }
+    const otherHashes = [...(existing.otherHashes ?? []), ...(existing.expectedHash === undefined ? [] : [existing.expectedHash])].filter((h) => h !== lock.expectedHash);
+    if (otherHashes.length > MAX_OTHER_HASHES) {
+      throw new UserFacingError('This sweep was already replaced too many times. Nothing was sent; check its status.');
+    }
+    lock = { ...lock, ...(otherHashes.length === 0 ? {} : { otherHashes }) };
+  } else if (existing !== undefined && isUnresolved(existing)) {
+    throw new UserFacingError('A sweep from this address may still be pending. Check its status before signing anything new.');
+  }
+  const storage = browserSweepStorage();
+  if (storage === undefined) throw new SweepJournalUnavailableError();
+  try {
+    writeSweepAttempt(lock, storage);
+  } catch (e) {
+    if (e instanceof SweepJournalUnavailableError) { sweepJournalBroken = true; notifySweepAttempts(); }
+    throw e;
+  }
+  sweepAttempts.set(key, lock);
+  notifySweepAttempts();
+  return lock;
+}
+
+/** Records an outcome after handoff. Memory always keeps it; a failed write disarms signing for this page. */
+export function recordSweepAttempt(attempt: SweepLock): void {
+  hydrateSweepAttempts();
+  sweepAttempts.set(sweepAttemptKey(attempt.chainId, attempt.owner), toSweepLock(attempt));
+  try {
+    const storage = browserSweepStorage();
+    if (storage !== undefined) writeSweepAttempt(attempt, storage);
+  } catch {
+    sweepJournalBroken = true;
+  }
+  notifySweepAttempts();
+}
+
+function isUnresolved(a: SweepLock): boolean {
+  return a.status === 'submitted' || a.status === 'unknown-after-handoff';
+}
+
+/**
+ * Only a direct lock (an owner nonce, no relayed order) whose handoff outcome is unknown may be replaced, and only with
+ * that same nonce. A submitted transaction was accepted by the node, which would refuse a replacement without a fee bump.
+ */
+function sameNonceReplacement(existing: SweepLock, next: SweepLock): boolean {
+  return existing.status === 'unknown-after-handoff' && existing.order === undefined && next.order === undefined && existing.nonce !== undefined && next.nonce === existing.nonce;
+}
+
+function sameLock(a: SweepLock, b: SweepLock): boolean {
+  return a.status === b.status
+    && a.nonce === b.nonce
+    && a.expectedHash?.toLowerCase() === b.expectedHash?.toLowerCase()
+    && (a.otherHashes ?? []).join().toLowerCase() === (b.otherHashes ?? []).join().toLowerCase()
+    && a.order?.relayer.toLowerCase() === b.order?.relayer.toLowerCase()
+    && a.order?.nonce === b.order?.nonce
+    && a.order?.deadline === b.order?.deadline;
+}
+
+/**
+ * Compare-and-swap for status-check results: records `next` only while the stored lock for the same (chain, owner) is
+ * still the one the check started from. A check that resolves after a newer lock was taken must not overwrite it.
+ * Returns false (and records nothing) when the lock changed meanwhile.
+ */
+export function resolveSweepAttempt(from: SweepLock, next: SweepLock): boolean {
+  hydrateSweepAttempts();
+  const current = sweepAttempts.get(sweepAttemptKey(from.chainId, from.owner));
+  if (current === undefined || !sameLock(current, toSweepLock(from))) return false;
+  recordSweepAttempt(next);
+  return true;
+}
+
+export function getSweepAttempt(chainId: number, owner: string): SweepLock | undefined {
+  hydrateSweepAttempts();
+  return sweepAttempts.get(sweepAttemptKey(chainId, owner));
+}
+
+/** True when the tab's sweep journal could not be read or written; signing must stay disarmed. */
+export function isSweepJournalBroken(): boolean {
+  hydrateSweepAttempts();
+  return sweepJournalBroken;
+}
+
+const subscribeSweepAttempts = (listener: () => void): (() => void) => {
+  sweepAttemptListeners.add(listener);
+  return () => { sweepAttemptListeners.delete(listener); };
+};
+
+/** The latest direct-sweep attempt from this stealth address in this tab, if any. */
+export function useSweepAttempt(chainId: number | undefined, owner: string | undefined): SweepLock | undefined {
+  return useSyncExternalStore(
+    subscribeSweepAttempts,
+    () => (chainId === undefined || owner === undefined ? undefined : getSweepAttempt(chainId, owner)),
+  );
+}
+
+export function useSweepJournalBroken(): boolean {
+  return useSyncExternalStore(subscribeSweepAttempts, isSweepJournalBroken);
+}
+
+/** Clears memory and, unless `keepStorage` (simulates a page reload), the tab journal. */
+export function resetSweepAttemptsForTests(opts: { readonly keepStorage?: boolean } = {}): void {
+  sweepAttempts.clear();
+  sweepJournalHydrated = false;
+  sweepJournalBroken = false;
+  if (opts.keepStorage !== true && typeof window !== 'undefined') window.sessionStorage.removeItem(SWEEP_JOURNAL_KEY);
+  notifySweepAttempts();
 }

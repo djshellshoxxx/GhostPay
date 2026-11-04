@@ -1,8 +1,13 @@
 import { FEE_SCHEDULE } from '@ghostpay/chain-adapters';
 import { useEffect, useState, type ReactNode } from 'react';
+import type { MessageKey } from '../i18n/catalog';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { ManifestState } from '../lib/manifest';
 import { useServices } from '../lib/services';
 import { Mono } from './Common';
+import { RichText } from './RichText';
+
+const monoTags = { mono: (c: ReactNode): ReactNode => <bdi dir='ltr'><Mono>{c}</Mono></bdi>, strong: (c: ReactNode): ReactNode => <strong>{c}</strong> };
 
 /** Loads the manifest state for one chain from the app origin. */
 export function useManifest(chainId: number | undefined): ManifestState | undefined {
@@ -33,24 +38,26 @@ export function bpsToPercent(bps: bigint): string {
  * is none the text says payments are disabled on that chain.
  */
 export function FeeDisclosure(props: { readonly manifest: ManifestState | undefined; readonly chainName?: string | undefined }): ReactNode {
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const pct = bpsToPercent(FEE_SCHEDULE.ROUTER_FEE_BPS);
   const m = props.manifest;
+  // Each state has its own whole-sentence key, so a translation can order the clauses naturally. All are security keys.
+  let id: MessageKey;
+  let values: Record<string, string>;
+  if (m?.status === 'loaded') {
+    id = m.trust === 'signed' ? 'disclosure.fee.signed' : m.trust === 'unsigned-dev' ? 'disclosure.fee.unsigned' : 'disclosure.fee.unavailable';
+    values = { pct, recipient: m.manifest.feeRecipient };
+  } else if (m === undefined) {
+    id = 'disclosure.fee.loading';
+    values = { pct };
+  } else {
+    id = 'disclosure.fee.none';
+    values = { pct, chain: props.chainName ?? t('disclosure.thisChain') };
+  }
   return (
     <p className="fee-disclosure">
-      GhostPay charges {pct} % on payments made through its checkout contract. The fee goes to{' '}
-      {m?.status === 'loaded' ? (
-        <>
-          <Mono>{m.manifest.feeRecipient}</Mono> (shown from the deployment manifest
-          {m.trust === 'signed' ? ', whose signature was verified by a release key built into this app' : m.trust === 'unsigned-dev' ? ', which is unsigned and permitted only as a testnet development manifest' : ', with signature status unavailable'})
-        </>
-      ) : m === undefined ? (
-        <>the address in the deployment manifest (loading…)</>
-      ) : (
-        <>
-          the address in the deployment manifest, but {props.chainName === undefined ? 'this chain' : props.chainName} has none loaded: <strong>payments disabled on this chain</strong>
-        </>
-      )}
-      . Paying the stealth address directly costs no GhostPay fee.
+      <RichText id={id} values={values} tags={monoTags} />
     </p>
   );
 }
@@ -70,24 +77,31 @@ export const OBSERVERS: readonly { readonly who: string; readonly learns: string
   { who: 'Fee recipient (project owner)', learns: 'Aggregate fees on-chain only.', not: 'Payer or seller identity beyond public chain data.' },
 ];
 
+/** Catalog key of row `index` (0-based) of {@link OBSERVERS}; disclosure.test.tsx keeps the English text in step. */
+export const observerKey = (index: number, field: 'who' | 'learns' | 'not'): MessageKey => `disclosure.observer.${String(index + 1)}.${field}` as MessageKey;
+/** Catalog key of entry `index` (0-based) of {@link LIMITS}. */
+export const limitKey = (index: number): MessageKey => `disclosure.limit.${String(index + 1)}` as MessageKey;
+
 export function ObserverTable(): ReactNode {
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   return (
-    <div className="table-wrap" role="region" aria-label="Who learns what" tabIndex={0}>
+    <div className="table-wrap" role="region" aria-label={t('about.learns')} tabIndex={0}>
       <table>
-        <caption>Who learns what</caption>
+        <caption>{t('about.learns')}</caption>
         <thead>
           <tr>
-            <th scope="col">Observer</th>
-            <th scope="col">Learns</th>
-            <th scope="col">Does not learn</th>
+            <th scope="col">{t('disclosure.table.observer')}</th>
+            <th scope="col">{t('disclosure.table.learns')}</th>
+            <th scope="col">{t('disclosure.table.not')}</th>
           </tr>
         </thead>
         <tbody>
-          {OBSERVERS.map((o) => (
+          {OBSERVERS.map((o, i) => (
             <tr key={o.who}>
-              <th scope="row">{o.who}</th>
-              <td>{o.learns}</td>
-              <td>{o.not}</td>
+              <th scope="row">{t(observerKey(i, 'who'))}</th>
+              <td>{t(observerKey(i, 'learns'))}</td>
+              <td>{t(observerKey(i, 'not'))}</td>
             </tr>
           ))}
         </tbody>
@@ -105,6 +119,13 @@ export const LIMITS: readonly string[] = [
   'This app runs entirely in your browser, but your browser, extensions, wallet, RPC provider and operating system are all trusted by it. It has had no external audit.',
 ];
 
+/** The privacy limits in the language in effect (English for an unreviewed locale: they are security keys). */
+export function useLimits(): readonly string[] {
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
+  return LIMITS.map((_, i) => t(limitKey(i)));
+}
+
 function ChainFee(props: { readonly chainId: number; readonly name: string }): ReactNode {
   const manifest = useManifest(props.chainId);
   return (
@@ -113,7 +134,7 @@ function ChainFee(props: { readonly chainId: number; readonly name: string }): R
       <FeeDisclosure manifest={manifest} chainName={props.name} />
       {manifest?.status === 'loaded' && (
         <p className="hint">
-          Router <Mono>{manifest.manifest.router}</Mono>, sweep relayer <Mono>{manifest.manifest.sweepRelayer}</Mono>.
+          <RichText id="disclosure.chainFee.contracts" values={{ router: manifest.manifest.router, relayer: manifest.manifest.sweepRelayer }} tags={monoTags} />
         </p>
       )}
     </li>

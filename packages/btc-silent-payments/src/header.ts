@@ -1,5 +1,6 @@
 import { sha256 } from '@noble/hashes/sha2.js';
 import { SilentPaymentError } from './errors.js';
+import { fromHex, toHex } from './hexbytes.js';
 
 /**
  * Bitcoin block header and Merkle checks for data served by an untrusted block source.
@@ -44,17 +45,6 @@ export function sha256d(b: Uint8Array): Uint8Array {
   return sha256(sha256(b));
 }
 
-function toHex(b: Uint8Array): string {
-  let s = '';
-  for (const x of b) s += x.toString(16).padStart(2, '0');
-  return s;
-}
-
-function fromHex(h: string): Uint8Array {
-  const out = new Uint8Array(h.length / 2);
-  for (let i = 0; i < out.length; i++) out[i] = Number.parseInt(h.slice(2 * i, 2 * i + 2), 16);
-  return out;
-}
 
 /** Internal byte order <-> display order. */
 export function reverseHex(h: string): string {
@@ -65,19 +55,32 @@ function u32le(b: Uint8Array, o: number): number {
   return (b[o]! | (b[o + 1]! << 8) | (b[o + 2]! << 16) | (b[o + 3]! << 24)) >>> 0;
 }
 
+/**
+ * Parses 80 header bytes given as hex, also returning the raw bytes and the display-order hash bytes.
+ * @internal
+ */
+export function parseHeaderRaw(hex: string): { readonly header: BlockHeader; readonly raw: Uint8Array; readonly hash: Uint8Array } {
+  if (typeof hex !== 'string' || !/^[0-9a-fA-F]{160}$/.test(hex)) return bad();
+  const raw = fromHex(hex.toLowerCase());
+  const hash = sha256d(raw).reverse();
+  return {
+    header: {
+      version: u32le(raw, 0) | 0,
+      prevHash: toHex(raw.slice(4, 36).reverse()),
+      merkleRoot: toHex(raw.slice(36, 68).reverse()),
+      time: u32le(raw, 68),
+      bits: u32le(raw, 72),
+      nonce: u32le(raw, 76),
+      hash: toHex(hash),
+    },
+    raw,
+    hash,
+  };
+}
+
 /** Parses exactly 80 header bytes given as hex. */
 export function parseHeader(hex: string): BlockHeader {
-  if (typeof hex !== 'string' || !/^[0-9a-fA-F]{160}$/.test(hex)) return bad();
-  const b = fromHex(hex.toLowerCase());
-  return {
-    version: u32le(b, 0) | 0,
-    prevHash: toHex(b.slice(4, 36).reverse()),
-    merkleRoot: toHex(b.slice(36, 68).reverse()),
-    time: u32le(b, 68),
-    bits: u32le(b, 72),
-    nonce: u32le(b, 76),
-    hash: toHex(sha256d(b).reverse()),
-  };
+  return parseHeaderRaw(hex).header;
 }
 
 /**
