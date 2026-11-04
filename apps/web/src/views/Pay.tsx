@@ -1,5 +1,5 @@
 import { FRAGMENT_PREFIX, MAX_DECODED_BYTES, invoiceDigest, openFragment, type OpenFragmentResult, type ParsedInvoice } from '@ghostpay/invoice-schema';
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { BuiltPayment } from '@ghostpay/chain-adapters';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
@@ -30,11 +30,29 @@ import { PaymentProofQr } from '../components/PaymentRequestQr';
 import { PrintBillButton } from '../components/PrintableBill';
 import { PermitRejectedError, PostBroadcastError, buildReceipt, classifyPayerPermit, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, type ApprovalPlan, type Runtime, type SubmitResult } from '../lib/payExec';
 import { useServices } from '../lib/services';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
+import type { MessageValues, Part } from '../i18n/message';
+import type { Translator } from '../i18n/translator';
 import { connectWallet, walletWarnings, type WalletInfo, type WalletSession } from '../lib/wallet';
 import { useApp } from '../state';
 import { notifyEmbedDone } from '../lib/embedHost';
 import { captureSessionVersionGuard } from '../lib/session';
 import { bindReceiptToInvoice, MAX_RECEIPT_JSON_BYTES, parseVerifiedReceipt, type BoundReceipt } from '../lib/receipts';
+
+type TagMap = Readonly<Record<string, (children: ReactNode) => ReactNode>>;
+
+/** Rich catalog text ({#tag}..{/tag}) without Trans, so Pay still renders in isolated English-only tests. */
+function renderParts(parts: readonly Part[], tags: TagMap): ReactNode[] {
+  return parts.map((p, i) => {
+    if (typeof p === 'string') return p;
+    const inner = renderParts(p.children, tags);
+    const wrap = tags[p.tag];
+    return <Fragment key={i}>{wrap === undefined ? inner : wrap(inner)}</Fragment>;
+  });
+}
+
+// i18n-use: pay.previous.body pay.connected pay.sent.body pay.done.hash pay.approval.confirmedHash pay.approval.excess
+const monoTag = (name: string): TagMap => ({ [name]: (c) => <Mono>{c}</Mono> });
 
 type Phase = 'input' | 'review' | 'waiting' | 'ready' | 'prepared' | 'busy' | 'submitted' | 'done';
 
@@ -76,6 +94,10 @@ function supportsInvoice(invoice: ParsedInvoice['invoice'], supportedOnly: boole
 }
 
 export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolean } = {}): ReactNode {
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
+  const trParts = i18n?.parts ?? SOURCE_TRANSLATOR.parts;
+  const rich = (id: Parameters<Translator['parts']>[0], values: MessageValues, tags: TagMap): ReactNode => renderParts(trParts(id, values), tags);
   const app = useApp();
   const services = useServices();
   const [parsed, setParsed] = useState<ParsedInvoice | undefined>(undefined);
@@ -349,11 +371,11 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   }, [refreshContext, parsed, manifest, reviewKey]);
 
   useEffect(() => {
-    const t = setInterval(() => {
+    const timer = setInterval(() => {
       setTick((n) => n + 1);
     }, 5000);
     return () => {
-      clearInterval(t);
+      clearInterval(timer);
     };
   }, []);
 
@@ -658,8 +680,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           guard();
           if (buffer === undefined) throw new Error('buffer');
         }
-        const t = ctx.review.token;
-        let permit = t?.config?.permit === true && buffer === undefined && !permitDeclined;
+        const tk = ctx.review.token;
+        let permit = tk?.config?.permit === true && buffer === undefined && !permitDeclined;
         if (permit) {
           const state = await classifyPayerPermit(ctx, wallet, rt);
           guard();
@@ -667,8 +689,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           if (state === 'unsupported_token') scopedStatus('This token\u2019s permit could not be verified on-chain, so an exact approval is used instead.');
         }
         let plan: ApprovalPlan | undefined;
-        if (isErc20 && !permit && t?.address !== undefined && t.address !== 'native') {
-          plan = await planApproval(ctx, wallet, t.address, rt);
+        if (isErc20 && !permit && tk?.address !== undefined && tk.address !== 'native') {
+          plan = await planApproval(ctx, wallet, tk.address, rt);
           guard();
         }
         const b = await preparePayment(wallet, ctx, { usePermit: permit, ...(buffer === undefined ? {} : { buffer }) }, rt, scopedStatus, guard);
@@ -848,53 +870,53 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   if (parsed === undefined || review === undefined || buildRejection !== undefined) {
     return (
       <section aria-labelledby="pay-h">
-        <h2 id="pay-h">Pay an invoice</h2>
+        <h2 id="pay-h">{t('pay.title.input')}</h2>
         <WalletAttempts />
         {previousBroadcast !== undefined && (
-          <Notice kind="warn" title="Previous invoice transaction may have been submitted">
-            Check your wallet before paying again. The transaction hash is <Mono>{previousBroadcast.hash}</Mono>. This was a {previousBroadcast.kind} for the invoice that was open before you changed links.
+          <Notice kind="warn" title={t('pay.previous.title')}>
+            {rich('pay.previous.body', { hash: previousBroadcast.hash, kind: previousBroadcast.kind }, monoTag('hash'))}
           </Notice>
         )}
-        {inputRejection !== undefined && <Notice kind="error" title="Invoice rejected">{inputRejection}{inputRejection === SUPPORTED_INVOICE_ERROR ? ' Payment controls remain unavailable.' : ' Nothing was shown or sent.'}</Notice>}
-        {fragment !== undefined && inputRejection === undefined && <p role="status">Reading invoice…</p>}
+        {inputRejection !== undefined && <Notice kind="error" title={t('pay.rejected.title')}>{inputRejection}{` ${inputRejection === SUPPORTED_INVOICE_ERROR ? t('pay.rejected.controlsUnavailable') : t('pay.rejected.nothingSent')}`}</Notice>}
+        {fragment !== undefined && inputRejection === undefined && <p role="status">{t('pay.reading')}</p>}
         {needsPassphrase && (
           <form onSubmit={onUnlock} className="stack">
-            <Notice kind="warn" title="Passphrase-protected invoice">
-              The link header claims this invoice is protected. Its chain and signer details are unverified until the passphrase opens the invoice. The passphrase is used in this page only and is not stored.
+            <Notice kind="warn" title={t('pay.passphrase.title')}>
+              {t('pay.passphrase.body')}
             </Notice>
-            <Field label="Invoice passphrase">
+            <Field label={t('pay.passphrase.label')}>
               {(id) => <input id={id} type="password" autoComplete="off" value={invoicePassphrase} onChange={(e) => { setInvoicePassphrase(e.target.value); }} />}
             </Field>
-            <button type="submit" className="btn btn-primary" disabled={unlocking || invoicePassphrase === ''}>{unlocking ? 'Opening invoice…' : 'Open invoice'}</button>
+            <button type="submit" className="btn btn-primary" disabled={unlocking || invoicePassphrase === ''}>{unlocking ? t('pay.passphrase.opening') : t('pay.passphrase.open')}</button>
           </form>
         )}
         <details ref={invoiceQrDisclosure} onToggle={(event) => { if (!event.currentTarget.open) invalidateInvoiceQr(); }}>
-          <summary>Scan an invoice QR</summary>
-          <p>Read a GhostPay v1 invoice fragment or an HTTPS link at this app’s host and path. Scanned links stay on this page. Review the scan, then choose whether to open its payment details.</p>
-          <CameraImporter key={invoiceQrReset} label="Invoice QR import" scopeKey={invoiceQrScope} onInputChange={invalidateInvoiceQr} onText={importInvoiceQr} />
-          <button type="button" className="btn" onClick={resetInvoiceQr}>Clear invoice QR</button>
-          {invoiceQrError !== undefined && <Notice kind="error" title="Invoice QR not accepted">{invoiceQrError}</Notice>}
+          <summary>{t('pay.scan.summary')}</summary>
+          <p>{t('pay.scan.intro')}</p>
+          <CameraImporter key={invoiceQrReset} label={t('pay.scan.importLabel')} scopeKey={invoiceQrScope} onInputChange={invalidateInvoiceQr} onText={importInvoiceQr} />
+          <button type="button" className="btn" onClick={resetInvoiceQr}>{t('pay.scan.clear')}</button>
+          {invoiceQrError !== undefined && <Notice kind="error" title={t('pay.scan.rejected')}>{invoiceQrError}</Notice>}
           {invoiceQrPreview !== undefined && (
-            <section aria-label="Scanned invoice review">
-              <h3>Review scanned invoice</h3>
+            <section aria-label={t('pay.scan.reviewAria')}>
+              <h3>{t('pay.scan.reviewHeading')}</h3>
               {invoiceQrPreview.result.status === 'needsPassphrase'
-                ? <p>This invoice needs a passphrase. Its header is unverified until it opens.</p>
-                : <p>Chain {String(invoiceQrPreview.result.parsed.invoice.chainId)}. {invoiceQrPreview.result.parsed.verification.signatureValid ? 'The embedded key signed this invoice; this does not establish seller identity.' : 'The invoice signature is invalid. Payment will remain blocked.'}</p>}
-              <p>Opening shows the ordinary invoice review. It does not connect a wallet or submit a payment.</p>
-              <button type="button" className="btn" onClick={openInvoiceQr}>Open scanned invoice</button>
+                ? <p>{t('pay.scan.needsPassphrase')}</p>
+                : <p>{invoiceQrPreview.result.parsed.verification.signatureValid ? t('pay.scan.chainValid', { chain: String(invoiceQrPreview.result.parsed.invoice.chainId) }) : t('pay.scan.chainInvalid', { chain: String(invoiceQrPreview.result.parsed.invoice.chainId) })}</p>}
+              <p>{t('pay.scan.openNote')}</p>
+              <button type="button" className="btn" onClick={openInvoiceQr}>{t('pay.scan.open')}</button>
             </section>
           )}
         </details>
         <form onSubmit={onPasteSubmit} className="stack">
           <div className="field">
-            <label htmlFor="paste">{needsPassphrase ? 'Or paste a different invoice link' : 'Paste an invoice link'}</label>
+            <label htmlFor="paste">{needsPassphrase ? t('pay.paste.labelAlt') : t('pay.paste.label')}</label>
             <textarea id="paste" rows={3} value={paste} onChange={(e) => { setPaste(e.target.value); }} spellCheck={false} />
-            <p className="hint">The link is read in this page only. It is never sent to a server.</p>
+            <p className="hint">{t('pay.paste.hintLocal')}</p>
             <p className="hint">
-              Pasting is safer than clicking: a browser may keep a clicked invoice URL, including its secret part, in its history even after this page removes it from the address bar. Copy the link and paste it here, or open it in a private window.
+              {t('pay.paste.hintHistory')}
             </p>
           </div>
-          <button type="submit" className="btn btn-primary">Read invoice</button>
+          <button type="submit" className="btn btn-primary">{t('pay.read')}</button>
         </form>
       </section>
     );
@@ -910,24 +932,24 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const fixedAmount = inv.amountPolicy.mode !== 'fixed_token'
     ? undefined
     : token === undefined
-      ? `${inv.amountPolicy.tokenAmount} base units of token ${inv.token}`
+      ? t('pay.fixed.unknownToken', { amount: inv.amountPolicy.tokenAmount, token: inv.token })
       : `${formatUnits(BigInt(inv.amountPolicy.tokenAmount), token.decimals)} ${token.symbol}`;
 
   return (
     <section aria-labelledby="pay-h">
-      <h2 id="pay-h">Review payment</h2>
+      <h2 id="pay-h">{t('pay.title.review')}</h2>
       <WalletAttempts />
       {previousBroadcast !== undefined && (
-        <Notice kind="warn" title="Previous invoice transaction may have been submitted">
-          Check your wallet before paying again. The transaction hash is <Mono>{previousBroadcast.hash}</Mono>. This was a {previousBroadcast.kind} for the invoice that was open before you changed links.
+        <Notice kind="warn" title={t('pay.previous.title')}>
+          {rich('pay.previous.body', { hash: previousBroadcast.hash, kind: previousBroadcast.kind }, monoTag('hash'))}
         </Notice>
       )}
 
-      <Notice kind={review.trust.kind === 'invalid-signature' ? 'error' : review.trust.kind === 'trusted-seller' ? 'ok' : 'warn'} title="Signature">
+      <Notice kind={review.trust.kind === 'invalid-signature' ? 'error' : review.trust.kind === 'trusted-seller' ? 'ok' : 'warn'} title={t('pay.signature')}>
         {review.trust.text}
       </Notice>
       {review.blockers.filter((b) => b !== review.trust.text).length > 0 && (
-        <Notice kind="error" title="This payment cannot proceed">
+        <Notice kind="error" title={t('pay.cannotProceed')}>
           <ul>
             {review.blockers.filter((b) => b !== review.trust.text).map((b) => (
               <li key={b}>{b}</li>
@@ -937,50 +959,50 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       )}
       {ctxError !== undefined && <Notice kind="error">{ctxError}</Notice>}
       {review.warnings.length > 0 && (
-        <Notice kind="warn" title="Check the amount">
+        <Notice kind="warn" title={t('pay.checkAmount')}>
           {review.warnings.map((w) => <p key={w}>{w}</p>)}
         </Notice>
       )}
 
       <dl className="details">
-        <dt>Chain</dt>
-        <dd>{review.chain?.name ?? `Unknown (${String(inv.chainId)})`}</dd>
-        <dt>Token</dt>
+        <dt>{t('pay.chain')}</dt>
+        <dd>{review.chain?.name ?? t('pay.chain.unknown', { chain: String(inv.chainId) })}</dd>
+        <dt>{t('pay.token')}</dt>
         <dd>
-          {symbol} {inv.token === 'native' ? '(native coin)' : <Mono>{inv.token}</Mono>}
+          {symbol} {inv.token === 'native' ? t('pay.token.nativeNote') : <Mono>{inv.token}</Mono>}
         </dd>
-        <dt>Invoice total</dt>
-        <dd>{fixedAmount === undefined ? formatFiat(BigInt(inv.fiat.minorUnits), inv.fiat.currency) : <><strong>{fixedAmount}</strong> (fixed token amount)</>}</dd>
+        <dt>{t('pay.invoiceTotal')}</dt>
+        <dd>{fixedAmount === undefined ? formatFiat(BigInt(inv.fiat.minorUnits), inv.fiat.currency) : <><strong>{fixedAmount}</strong>{` ${t('pay.fixedTokenAmount')}`}</>}</dd>
         {fixedAmount !== undefined && (
           <>
-            <dt>Seller-stated fiat total</dt>
-            <dd>{formatFiat(BigInt(inv.fiat.minorUnits), inv.fiat.currency)} (not converted or checked by this app)</dd>
+            <dt>{t('pay.fiatStated')}</dt>
+            <dd>{formatFiat(BigInt(inv.fiat.minorUnits), inv.fiat.currency)}{` ${t('pay.fiatNotChecked')}`}</dd>
           </>
         )}
-        <dt>Pricing</dt>
+        <dt>{t('pay.pricing')}</dt>
         <dd>
           {fixedAmount !== undefined
-            ? `Fixed: ${fixedAmount}`
-            : `Fiat quote from ${inv.quote.source}, taken ${formatUnix(inv.quote.timestamp)}, valid until ${formatUnix(inv.quote.expiresAt)}, max slippage ${String(inv.quote.maxSlippageBps / 100)} %. Not a guaranteed fiat value.`}
+            ? t('pay.pricing.fixed', { amount: fixedAmount })
+            : t('pay.pricing.quote', { source: inv.quote.source, taken: formatUnix(inv.quote.timestamp), until: formatUnix(inv.quote.expiresAt), slippage: String(inv.quote.maxSlippageBps / 100) })}
         </dd>
-        <dt>Who pays the checkout fee</dt>
-        <dd>{inv.feePolicy === 'payer_pays' ? 'You (added on top)' : 'Seller (deducted from the amount)'}</dd>
-        <dt>Invoice expires</dt>
+        <dt>{t('pay.feePayer')}</dt>
+        <dd>{inv.feePolicy === 'payer_pays' ? t('pay.feePayer.payer') : t('pay.feePayer.seller')}</dd>
+        <dt>{t('pay.expires')}</dt>
         <dd>{formatUnix(inv.expiresAt)}</dd>
-        <dt>Seller meta-address</dt>
+        <dt>{t('pay.sellerMeta')}</dt>
         <dd><Mono>{shortHex(inv.metaAddress, 18, 8)}</Mono></dd>
-        <dt>Seller fingerprint</dt>
-        <dd><Mono>{payeeFingerprint(inv.metaAddress)}</Mono> (compare with the seller by another channel)</dd>
-        <dt>Private part</dt>
-        <dd>{parsed.passphraseProtected ? 'Entire invoice decrypted here with a passphrase' : parsed.encrypted ? 'Private invoice fields decrypted here with a key from the link' : 'Plain in the link'}</dd>
+        <dt>{t('pay.sellerFingerprint')}</dt>
+        <dd><Mono>{payeeFingerprint(inv.metaAddress)}</Mono>{` ${t('pay.sellerFingerprintNote')}`}</dd>
+        <dt>{t('pay.privatePart')}</dt>
+        <dd>{parsed.passphraseProtected ? t('pay.privatePart.passphrase') : parsed.encrypted ? t('pay.privatePart.key') : t('pay.privatePart.plain')}</dd>
       </dl>
 
       {inv.lineItems.length > 0 && (
-        <div className="table-wrap" role="region" aria-label="Line items" tabIndex={0}>
+        <div className="table-wrap" role="region" aria-label={t('pay.lineItems')} tabIndex={0}>
           <table>
-            <caption>Line items</caption>
+            <caption>{t('pay.lineItems')}</caption>
             <thead>
-              <tr><th scope="col">Description</th><th scope="col">Qty</th><th scope="col">Unit</th></tr>
+              <tr><th scope="col">{t('pay.col.description')}</th><th scope="col">{t('pay.col.qty')}</th><th scope="col">{t('pay.col.unit')}</th></tr>
             </thead>
             <tbody>
               {inv.lineItems.map((li, i) => (
@@ -992,12 +1014,12 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
               ))}
             </tbody>
           </table>
-          <p>Tax ({String(inv.tax.rateBps / 100)} %): {formatFiat(BigInt(inv.tax.minorUnits), inv.fiat.currency)}</p>
+          <p>{t('pay.tax', { rate: String(inv.tax.rateBps / 100), amount: formatFiat(BigInt(inv.tax.minorUnits), inv.fiat.currency) })}</p>
         </div>
       )}
       {inv.memo !== undefined && (
         <p className="wrap">
-          <strong>Memo:</strong> {safeText(inv.memo).text}{safeText(inv.memo).flagged ? ' (this text contained hidden or look-alike characters; they are shown as markers)' : ''}
+          <strong>{t('pay.memo.label')}</strong> {safeText(inv.memo).text}{safeText(inv.memo).flagged ? ` ${t('pay.memo.flagged')}` : ''}
         </p>
       )}
 
@@ -1006,33 +1028,33 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         link={fragment === undefined || fragment === '' ? undefined : `${services.baseUrl()}${fragment}`}
         passphraseProtected={parsed.passphraseProtected}
         chainName={review.chain?.name ?? `Chain ${String(inv.chainId)}`}
-        tokenLabel={inv.token === 'native' ? (symbol === '' ? 'Native coin' : symbol) : symbol === '' ? inv.token : symbol}
+        tokenLabel={inv.token === 'native' ? (symbol === '' ? t('pay.nativeCoinTitle') : symbol) : symbol === '' ? inv.token : symbol}
         fixedAmount={fixedAmount}
       />
 
       {ctx !== undefined && (
         <dl className="details amounts">
-          <dt>You pay (gross)</dt>
+          <dt>{t('pay.gross')}</dt>
           <dd>{formatUnits(ctx.request.grossAmount, decimals)} {symbol}</dd>
-          <dt>Checkout fee (0.25 %)</dt>
+          <dt>{t('pay.checkoutFee')}</dt>
           <dd>{formatUnits(ctx.request.feeAmount, decimals)} {symbol}</dd>
-          <dt>Seller receives (net)</dt>
+          <dt>{t('pay.netReceives')}</dt>
           <dd>{formatUnits(ctx.request.netAmount, decimals)} {symbol}</dd>
-          <dt>Contract (router)</dt>
+          <dt>{t('pay.router')}</dt>
           <dd><Mono>{ctx.manifest.router}</Mono></dd>
-          <dt>Fee recipient</dt>
+          <dt>{t('pay.feeRecipient')}</dt>
           <dd><Mono>{ctx.manifest.feeRecipient}</Mono></dd>
-          <dt>Destination</dt>
-          <dd>A fresh one-time (stealth) address is derived when the payment is prepared and shown before you send.</dd>
+          <dt>{t('pay.destination')}</dt>
+          <dd>{t('pay.destinationNote')}</dd>
         </dl>
       )}
       {ctx !== undefined && (
         <section className="panel" aria-labelledby="seller-receipt-h">
-          <h3 id="seller-receipt-h">Import a seller receipt</h3>
+          <h3 id="seller-receipt-h">{t('pay.receipt.heading')}</h3>
           <p className="hint">
-            This checks the receipt signature against the current signed invoice, chain, asset and exact seller amount. If this page has a transaction hash or prepared one-time address, those are checked too. A seller signature proves control of a key and does not independently prove an on-chain payment or seller identity.
+            {t('pay.receipt.intro')}
           </p>
-          <p className="hint">A receipt may reveal a private amount, transaction and invoice association on this screen.</p>
+          <p className="hint">{t('pay.receipt.privacy')}</p>
           <label><input type="checkbox" checked={receiptConsent} onChange={(event) => {
             setReceiptConsent(event.target.checked);
             receiptImportRevision.current += 1;
@@ -1040,19 +1062,19 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
             setReceiptBusy(false);
             setBoundReceipt(undefined);
             setReceiptError(undefined);
-          }} /> I consent to opening private receipt details on this screen.</label>
+          }} /> {t('pay.receipt.consent')}</label>
           <form className="stack" onSubmit={onImportReceipt}>
-            <Field label="Signed seller receipt JSON">
+            <Field label={t('pay.receipt.fileLabel')}>
               {(id) => <input id={id} type="file" accept="application/json,.json" />}
             </Field>
-            <Field label="Explicitly trusted signer key (optional)" hint="Use only a compressed public key you verified with the seller through another channel. Leave blank to require the receipt key to match the valid invoice-signing key.">
+            <Field label={t('pay.receipt.keyLabel')} hint={t('pay.receipt.keyHint')}>
               {(id) => <input id={id} className="mono" type="text" autoComplete="off" spellCheck={false} value={receiptTrustedKey} onChange={(event) => { setReceiptTrustedKey(event.target.value); setBoundReceipt(undefined); setReceiptError(undefined); }} placeholder="02… or 03…" />}
             </Field>
-            <button type="submit" className="btn" disabled={receiptBusy || ctx === undefined}>{receiptBusy ? 'Checking receipt…' : 'Check receipt against this invoice'}</button>
+            <button type="submit" className="btn" disabled={receiptBusy || ctx === undefined}>{receiptBusy ? t('pay.receipt.checking') : t('pay.receipt.check')}</button>
           </form>
           <CameraImporter
             key={fragment ?? ''}
-            label="Scan or paste a seller receipt"
+            label={t('pay.receipt.scanLabel')}
             active={receiptConsent && ctx !== undefined}
             scopeKey={receiptScope}
             onInputChange={() => {
@@ -1064,32 +1086,32 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
             }}
             onText={(text, signal) => importReceiptText(() => Promise.resolve(text), undefined, signal)}
           />
-          {receiptError !== undefined && <Notice kind="error" title="Receipt not accepted">{receiptError}</Notice>}
+          {receiptError !== undefined && <Notice kind="error" title={t('pay.receipt.rejected')}>{receiptError}</Notice>}
           {boundReceipt !== undefined && (
-            <Notice kind="ok" title="Receipt matches this invoice">
-              The signature matches {boundReceipt.signerMatch === 'invoice-signing-key' ? 'the valid invoice-signing key' : 'the explicitly trusted key you entered'}, and the invoice digest, chain, asset and seller amount match. This is a seller-key attestation, not independent payment proof.
+            <Notice kind="ok" title={t('pay.receipt.matches')}>
+              {boundReceipt.signerMatch === 'invoice-signing-key' ? t('pay.receipt.matchInvoiceKey') : t('pay.receipt.matchTrustedKey')}
             </Notice>
           )}
         </section>
       )}
       <ManifestBanner manifest={manifest} />
       <FeeDisclosure manifest={manifest} chainName={review.chain?.name} />
-      <Notice kind="info" title="What becomes public">
-        Your address, the token, the amounts, the fee and the time are public on-chain. The seller&rsquo;s identity is not revealed by the one-time address.
+      <Notice kind="info" title={t('pay.public.title')}>
+        {t('pay.public.body')}
       </Notice>
 
       {phase === 'review' && (
         <fieldset className="options">
-          <legend>Options</legend>
+          <legend>{t('pay.options')}</legend>
           <div className="check">
             <input id="delay" type="checkbox" checked={useDelay} onChange={(e) => { setUseDelay(e.target.checked); }} />
             <label htmlFor="delay">
-              Wait a random time first ({String(Math.round(app.settings.delayMinSec / 60))} to {String(Math.round(app.settings.delayMaxSec / 60))} minutes)
+              {t('pay.delay.label', { min: String(Math.round(app.settings.delayMinSec / 60)), max: String(Math.round(app.settings.delayMaxSec / 60)) })}
             </label>
           </div>
-          <p className="hint">Timing friction only, not anonymity. While waiting nothing is signed or sent, and the page must stay open. You can cancel or send now.</p>
+          <p className="hint">{t('pay.delay.hint')}</p>
           {isErc20 && parsed !== undefined && !bufferOffered(parsed.invoice) && (
-            <p className="hint">The seller does not accept a gas buffer for this invoice.</p>
+            <p className="hint">{t('pay.buffer.notAccepted')}</p>
           )}
           {isErc20 && parsed !== undefined && bufferOffered(parsed.invoice) && (
             <>
@@ -1104,11 +1126,11 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
                     if (e.target.checked) void refreshBuffer();
                   }}
                 />
-                <label htmlFor="buf">Add a gas buffer for the seller&rsquo;s sweep (default: off)</label>
+                <label htmlFor="buf">{t('pay.buffer.label')}</label>
               </div>
               {useBuffer && (
-                <Notice kind="warn" title="Public linkage">
-                  {bufferQuote === undefined ? 'Estimating buffer…' : `Extra ${formatUnits(bufferQuote.bufferWei, 18)} ${review.chain?.nativeSymbol ?? 'native coin'} (native, not ${symbol}) is sent in the same transaction to the one-time address. This publicly links your payment, the one-time address and the buffer. It is an estimate (${String(bufferQuote.gasLimit)} gas${bufferQuote.gasSource === 'simulated' ? ', from a simulated token transfer' : ', default table value until you prepare the payment'} at up to ${String(bufferQuote.maxFeePerGas)} wei, +20 %), not a guarantee.${bufferQuote.raisedToSellerMinimum === true ? " Raised to the seller's minimum buffer for this invoice." : ""} It is never refunded.`}
+                <Notice kind="warn" title={t('pay.buffer.title')}>
+                  {bufferQuote === undefined ? t('pay.buffer.estimating') : t('pay.buffer.estimate', { amount: formatUnits(bufferQuote.bufferWei, 18), native: review.chain?.nativeSymbol ?? t('pay.nativeCoin'), symbol, gas: String(bufferQuote.gasLimit), source: bufferQuote.gasSource === 'simulated' ? 'simulated' : 'default', fee: String(bufferQuote.maxFeePerGas), raised: bufferQuote.raisedToSellerMinimum === true ? 'yes' : 'no' })}
                 </Notice>
               )}
             </>
@@ -1119,28 +1141,28 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       {phase === 'waiting' && schedule !== undefined && (
         <div className="panel" role="status">
           <p>
-            <strong>Scheduled locally. Nothing has been signed or broadcast.</strong>
+            <strong>{t('pay.waiting.notice')}</strong>
           </p>
-          <p>Time left: {formatCountdown(schedule.remainingMs)}</p>
+          <p>{t('pay.waiting.left', { time: formatCountdown(schedule.remainingMs) })}</p>
           <div className="actions">
-            <button type="button" className="btn" onClick={() => { scheduler.current?.sendNow(); }}>Send now</button>
-            <button type="button" className="btn btn-danger" onClick={() => { scheduler.current?.cancel(); }}>Cancel</button>
+            <button type="button" className="btn" onClick={() => { scheduler.current?.sendNow(); }}>{t('pay.sendNow')}</button>
+            <button type="button" className="btn btn-danger" onClick={() => { scheduler.current?.cancel(); }}>{t('pay.cancel')}</button>
           </div>
         </div>
       )}
 
       {ready && phase !== 'done' && phase !== 'submitted' && (
         <div className="panel">
-          <h3>Wallet</h3>
+          <h3>{t('pay.wallet')}</h3>
           {wallet === undefined ? (
             <>
-              {wallets === undefined && <p>Looking for wallets…</p>}
-              {wallets?.length === 0 && <Notice kind="warn">No browser wallet found. Install or unlock one, then reload this page.</Notice>}
+              {wallets === undefined && <p>{t('pay.lookingWallets')}</p>}
+              {wallets?.length === 0 && <Notice kind="warn">{t('pay.noWallet')}</Notice>}
               <ul className="plain-list">
                 {wallets?.map((w) => (
                   <li key={w.id}>
                     <button type="button" className="btn" onClick={() => { onConnect(w); }}>
-                      {w.icon !== undefined && <img src={w.icon} alt="" width={20} height={20} />} Connect {w.name}
+                      {w.icon !== undefined && <img src={w.icon} alt="" width={20} height={20} />} {t('pay.connect', { name: w.name })}
                       {w.rdns !== undefined && <span className="hint"> ({w.rdns})</span>}
                     </button>
                     {warnings.get(w.id)?.map((message) => (
@@ -1152,12 +1174,12 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
             </>
           ) : (
             <p>
-              Connected: {wallet.wallet.name}, <Mono>{wallet.account}</Mono>, chain {wallet.chainId}
+              {rich('pay.connected', { wallet: wallet.wallet.name, account: wallet.account, chain: String(wallet.chainId) }, monoTag('account'))}
             </p>
           )}
           {wallet !== undefined && built === undefined && (
             <button type="button" className="btn btn-primary" onClick={onPrepare} disabled={phase === 'busy' || ctx === undefined}>
-              Prepare payment
+              {t('pay.prepare')}
             </button>
           )}
         </div>
@@ -1172,45 +1194,45 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
 
       {phase === 'submitted' && broadcast !== undefined && (
         <div className="panel" aria-live="polite">
-          <h3>{broadcastKind === 'approval' ? 'Approval sent, verifying' : 'Payment sent, verifying'}</h3>
-          <p>Your wallet already broadcast this {broadcastKind}. Do not repeat it. Transaction hash: <Mono>{broadcast}</Mono></p>
+          <h3>{broadcastKind === 'approval' ? t('pay.sent.approvalTitle') : t('pay.sent.paymentTitle')}</h3>
+          <p>{rich('pay.sent.body', { kind: broadcastKind, hash: broadcast }, monoTag('hash'))}</p>
           <div className="actions">
-            <CopyButton text={broadcast} label="Copy hash" />
+            <CopyButton text={broadcast} label={t('pay.copyHash')} />
           </div>
         </div>
       )}
 
       {phase === 'done' && result !== undefined && ctx !== undefined && built !== undefined && (
         <div className="panel" aria-live="polite">
-          <h3>Submitted</h3>
-          <p>Transaction hash: <Mono>{result.hash}</Mono></p>
+          <h3>{t('pay.done.heading')}</h3>
+          <p>{rich('pay.done.hash', { hash: result.hash }, monoTag('hash'))}</p>
           <p>
-            {result.verification === 'verified' && 'Independently verified on your RPC: the network saw exactly the previewed transaction.'}
-            {result.verification === 'not-visible-yet' && 'Your RPC does not show the transaction yet, so it could not be checked against the preview. Check it in your wallet.'}
-            {result.verification === 'unverified' && 'Your RPC reports a receipt for this hash but did not return the transaction itself, so it could not be compared with the preview. Check it in your wallet and on a block explorer.'}
-            {result.verification === 'no-rpc' && 'No RPC is configured, so this app could not verify the transaction independently. Check it in your wallet.'}
+            {result.verification === 'verified' && t('pay.verify.verified')}
+            {result.verification === 'not-visible-yet' && t('pay.verify.notVisible')}
+            {result.verification === 'unverified' && t('pay.verify.unverified')}
+            {result.verification === 'no-rpc' && t('pay.verify.noRpc')}
           </p>
           <p>
             {result.receipt === undefined
-              ? 'Status: not yet confirmed (included is not the same as final).'
+              ? t('pay.status.pending')
               : result.receipt.status !== 'success'
-                ? 'Status: the transaction reverted. Nothing was paid.'
+                ? t('pay.status.reverted')
                 : result.verification === 'verified'
-                  ? `Status: included in block ${result.receipt.blockNumber.toString()} (not necessarily final yet).`
-                  : `Status: unverified. A transaction with this hash is in block ${result.receipt.blockNumber.toString()}, but it was not compared with the preview, so this app does not report it as this payment.`}
+                  ? t('pay.status.included', { block: result.receipt.blockNumber.toString() })
+                  : t('pay.status.unverified', { block: result.receipt.blockNumber.toString() })}
           </p>
           <div className="actions">
-            <CopyButton text={result.hash} label="Copy hash" />
+            <CopyButton text={result.hash} label={t('pay.copyHash')} />
             <button
               type="button"
               className="btn"
               onClick={() => {
-                if (window.confirm('This receipt contains the amount and time of your payment. Keep it private. Download?')) {
+                if (window.confirm(t('pay.receipt.download.confirm'))) {
                   downloadText('ghostpay-receipt.json', JSON.stringify(buildReceipt(ctx, built, result, new Date(services.nowMs())), null, 2), 'application/json');
                 }
               }}
             >
-              Download local receipt
+              {t('pay.receipt.download')}
             </button>
           </div>
           <PaymentProofQr receipt={buildReceipt(ctx, built, result, new Date(services.nowMs()))} />
@@ -1220,15 +1242,15 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       <div className="actions">
         {phase === 'review' && (
           <button type="button" className="btn btn-primary" onClick={onContinue} disabled={review.blockers.length > 0 || ctx === undefined}>
-            {useDelay ? 'Start the delay' : 'Continue'}
+            {useDelay ? t('pay.startDelay') : t('pay.continue')}
           </button>
         )}
         {phase !== 'done' && phase !== 'submitted' && (
-          <button type="button" className="btn" onClick={forget}>Forget this invoice</button>
+          <button type="button" className="btn" onClick={forget}>{t('pay.forget')}</button>
         )}
         {!app.settings.autoClearFragment && (
           <button type="button" className="btn" onClick={() => { history.replaceState(null, '', `${location.pathname}${location.search}`); }}>
-            Remove link from address bar
+            {t('pay.removeLink')}
           </button>
         )}
       </div>
@@ -1246,62 +1268,65 @@ function FinalPreview(props: {
   readonly granted: bigint | undefined;
   readonly onRevoke: () => void;
 }): ReactNode {
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
+  const trParts = i18n?.parts ?? SOURCE_TRANSLATOR.parts;
   const { built, ctx } = props;
   const p = built.preview;
   const decoded = decodeForDisplay(built, ctx.chain.chainId);
-  const t = ctx.review.token;
-  const dec = t?.decimals ?? 18;
-  const sym = t?.symbol ?? '';
+  const tk = ctx.review.token;
+  const dec = tk?.decimals ?? 18;
+  const sym = tk?.symbol ?? '';
   return (
     <div className="panel" aria-labelledby="final-h">
-      <h3 id="final-h">Final check before your wallet</h3>
-      <p>These values are decoded from the exact transaction data your wallet will receive, and were compared to the preview.</p>
+      <h3 id="final-h">{t('pay.final.heading')}</h3>
+      <p>{t('pay.final.intro')}</p>
       <dl className="details">
-        <dt>Method</dt>
+        <dt>{t('pay.final.method')}</dt>
         <dd>{decoded.method}</dd>
-        <dt>Contract</dt>
+        <dt>{t('pay.final.contract')}</dt>
         <dd><Mono>{built.tx.to}</Mono></dd>
-        <dt>One-time destination</dt>
+        <dt>{t('pay.final.destination')}</dt>
         <dd><Mono>{decoded.stealth}</Mono></dd>
-        <dt>Gross</dt>
+        <dt>{t('pay.final.gross')}</dt>
         <dd>{formatUnits(decoded.gross, dec)} {sym}</dd>
-        <dt>Fee</dt>
-        <dd>{formatUnits(decoded.fee, dec)} {sym} to {ctx.manifest.feeRecipient} (deployment manifest verified against the chain)</dd>
-        <dt>Net to seller</dt>
-        <dd>{formatUnits(decoded.net, dec)} {sym} (minimum accepted {formatUnits(decoded.minNet, dec)})</dd>
-        <dt>Native value sent</dt>
-        <dd>{formatUnits(built.tx.value, 18)} {ctx.chain.nativeSymbol}{p.method === 'payERC20WithBuffer' ? ' (gas buffer, public)' : ''}</dd>
-        <dt>Deadline</dt>
+        <dt>{t('pay.final.fee')}</dt>
+        <dd>{t('pay.final.feeLine', { amount: formatUnits(decoded.fee, dec), symbol: sym, recipient: ctx.manifest.feeRecipient })}</dd>
+        <dt>{t('pay.final.net')}</dt>
+        <dd>{t('pay.final.netLine', { amount: formatUnits(decoded.net, dec), symbol: sym, min: formatUnits(decoded.minNet, dec) })}</dd>
+        <dt>{t('pay.final.native')}</dt>
+        <dd>{formatUnits(built.tx.value, 18)} {ctx.chain.nativeSymbol}{p.method === 'payERC20WithBuffer' ? ` ${t('pay.final.bufferNote')}` : ''}</dd>
+        <dt>{t('pay.final.deadline')}</dt>
         <dd>{formatUnix(Number(p.deadline))}</dd>
       </dl>
       {props.approval !== undefined && (
         <div className="notice notice-warn" role="note">
-          <strong className="notice-title">{props.granted !== undefined ? 'Token approval confirmed' : props.approval.required ? 'Token approval needed first' : 'Token approval already in place'}</strong>
+          <strong className="notice-title">{props.granted !== undefined ? t('pay.approval.confirmedTitle') : props.approval.required ? t('pay.approval.neededTitle') : t('pay.approval.presentTitle')}</strong>
           <dl className="details">
-            <dt>Spender (router)</dt>
+            <dt>{t('pay.approval.spender')}</dt>
             <dd><Mono>{props.approval.spender}</Mono></dd>
-            <dt>Allowance before this payment</dt>
+            <dt>{t('pay.approval.before')}</dt>
             <dd>{formatUnits(props.approval.have, dec)} {sym}</dd>
-            <dt>{props.approval.required ? 'Exact amount requested' : 'Needed for this payment'}</dt>
+            <dt>{props.approval.required ? t('pay.approval.exact') : t('pay.approval.needed')}</dt>
             <dd>{formatUnits(props.approval.need, dec)} {sym}</dd>
           </dl>
           {props.granted !== undefined ? (
-            <p>Approval was confirmed{props.approvalHash === undefined ? '.' : <>. Transaction hash: <Mono>{props.approvalHash}</Mono></>}</p>
+            <p>{props.approvalHash === undefined ? t('pay.approval.confirmed') : renderParts(trParts('pay.approval.confirmedHash', { hash: props.approvalHash }), monoTag('hash'))}</p>
           ) : props.approval.required ? (
-            <p>Pressing the button first asks your wallet for this exact approval and then for the payment. Check the amount in your wallet: it must not be unlimited. The approval is public and can link to the payment that follows. Permit-capable tokens avoid a separate approval transaction.</p>
+            <p>{t('pay.approval.explain')}</p>
           ) : (
-            <p>The router already has enough allowance. This payment does not change a larger existing allowance; you can revoke it in your wallet.</p>
+            <p>{t('pay.approval.enough')}</p>
           )}
           {props.granted !== undefined && props.granted > props.approval.need && (
-            <p role="alert"><strong>Your wallet granted {formatUnits(props.granted, dec)} {sym}, more than the {formatUnits(props.approval.need, dec)} requested.</strong> Revoke it unless you meant to allow more.</p>
+            <p role="alert">{renderParts(trParts('pay.approval.excess', { granted: formatUnits(props.granted, dec), symbol: sym, need: formatUnits(props.approval.need, dec) }), { b: (c) => <strong>{c}</strong> })}</p>
           )}
           {props.granted !== undefined && (
-            <p>Allowance now: {formatUnits(props.granted, dec)} {sym}. If you stop before payment, remove it: <button type="button" className="btn" onClick={props.onRevoke} disabled={props.busy}>Revoke approval</button></p>
+            <p>{t('pay.approval.now', { granted: formatUnits(props.granted, dec), symbol: sym })} <button type="button" className="btn" onClick={props.onRevoke} disabled={props.busy}>{t('pay.approval.revoke')}</button></p>
           )}
         </div>
       )}
       <button type="button" className="btn btn-primary" onClick={props.onSend} disabled={props.busy}>
-        {props.approval?.required === true && props.granted === undefined ? 'Approve exactly, then send payment in my wallet' : 'Send payment in my wallet'}
+        {props.approval?.required === true && props.granted === undefined ? t('pay.final.sendApprove') : t('pay.final.send')}
       </button>
     </div>
   );
