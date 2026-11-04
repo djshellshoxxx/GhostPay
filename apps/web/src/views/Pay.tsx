@@ -1174,7 +1174,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
             </>
           ) : (
             <p>
-              {rich('pay.connected', { wallet: wallet.wallet.name, account: wallet.account, chain: wallet.chainId }, monoTag('account'))}
+              {rich('pay.connected', { wallet: wallet.wallet.name, account: wallet.account, chain: String(wallet.chainId) }, monoTag('account'))}
             </p>
           )}
           {wallet !== undefined && built === undefined && (
