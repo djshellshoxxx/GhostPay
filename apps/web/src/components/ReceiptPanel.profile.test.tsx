@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { clearSession, generateSession } from '../lib/session';
 import type { ScanMatch } from '../lib/scanClient';
-import { BUILD_PROFILE } from '../lib/buildProfile';
+import { BUILD_PROFILE, ShellProfileContext } from '../lib/buildProfile';
 import { SOURCE_CATALOG } from '../i18n/catalog';
 import { ReceiptPanel } from './ReceiptPanel';
 
@@ -61,6 +61,19 @@ describe('ReceiptPanel build profile', () => {
     expect(BUILD_PROFILE).toBe('full');
     const seller = generateSession();
     render(<ReceiptPanel match={match} sellerSignerPublicKey={seller.signerPublicKey} />);
+    expect(screen.getByLabelText(MANUAL)).toBeTruthy();
+  });
+
+  it('follows a lean shell even when the compiled profile is full (no prop)', () => {
+    const seller = generateSession();
+    render(<ShellProfileContext.Provider value="lean"><ReceiptPanel match={match} sellerSignerPublicKey={seller.signerPublicKey} /></ShellProfileContext.Provider>);
+    expect(screen.queryByLabelText(MANUAL)).toBeNull();
+    expect(screen.getByText(new RegExp(LEAN_HINT.slice(0, 40)))).toBeTruthy();
+  });
+
+  it('keeps manual mode in a full shell with a full build', () => {
+    const seller = generateSession();
+    render(<ShellProfileContext.Provider value="full"><ReceiptPanel match={match} sellerSignerPublicKey={seller.signerPublicKey} /></ShellProfileContext.Provider>);
     expect(screen.getByLabelText(MANUAL)).toBeTruthy();
   });
 });

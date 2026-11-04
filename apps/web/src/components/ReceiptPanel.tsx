@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { CopyButton, Field, Notice, downloadText, Mono } from './Common';
 import { QrFrame } from './QrFrame';
 import { formatUnits } from '../lib/format';
-import { BUILD_PROFILE, type BuildProfile } from '../lib/buildProfile';
+import { useEffectiveProfile, type BuildProfile } from '../lib/buildProfile';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { makeQr } from '../lib/qr';
 import { checkpointKeyId, type ScanMatch } from '../lib/scanClient';
@@ -16,7 +16,7 @@ export interface ReceiptPanelProps {
   readonly match: ScanMatch;
   /** Key captured when this scan started; hidden after the active seller keys change. */
   readonly sellerSignerPublicKey: string;
-  /** Build profile; defaults to the compile-time profile. Lean refuses receipts that are not bound to a validated invoice. */
+  /** Build profile; defaults to the shell/compile-time profile (lean if either is lean). Lean refuses receipts that are not bound to a validated invoice. */
   readonly profile?: BuildProfile;
 }
 
@@ -36,7 +36,7 @@ function amountLabel(match: ScanMatch): string {
 /** Creates and displays a local signed attestation from immutable verified scan fields. */
 export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
   const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
-  const lean = (props.profile ?? BUILD_PROFILE) === 'lean';
+  const lean = useEffectiveProfile(props.profile) === 'lean';
   const [invoiceDigest, setInvoiceDigest] = useState('');
   const [receipt, setReceipt] = useState<SignedReceipt | undefined>(undefined);
   const [showReceiptQr, setShowReceiptQr] = useState(false);
