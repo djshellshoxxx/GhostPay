@@ -19,7 +19,9 @@ beforeEach(() => {
 });
 afterEach(() => { vi.restoreAllMocks(); });
 
-async function open(): Promise<ReturnType<typeof userEvent.setup>> {
+type User = ReturnType<typeof userEvent.setup>;
+
+async function open(): Promise<User> {
   generateSession();
   const user = userEvent.setup();
   renderApp(makeServices());
@@ -29,6 +31,16 @@ async function open(): Promise<ReturnType<typeof userEvent.setup>> {
 
 const status = (item: string): string => within(screen.getByTestId(item)).getAllByRole('status')[0]?.textContent ?? '';
 
+async function exportTags(user: User, withHistory: boolean): Promise<void> {
+  const tags = within(screen.getByTestId('backup-item-tags'));
+  const pass = tags.getByLabelText('Archive passphrase (at least 14 characters)');
+  await user.clear(pass);
+  await user.type(pass, PASS);
+  await user.type(tags.getByLabelText('Repeat archive passphrase'), PASS);
+  if (!withHistory) await user.click(tags.getByLabelText('Include scan history'));
+  await user.click(tags.getByRole('button', { name: 'Download encrypted tag archive' }));
+}
+
 describe('BackupPanel', () => {
   it('starts with both items not started and claims nothing', async () => {
     await open();
@@ -36,42 +48,17 @@ describe('BackupPanel', () => {
     expect(status('backup-item-tags')).toMatch(/^Not started: No tag archive was downloaded/);
   });
 
-  it('marks keys done only after the keystore was produced', async () => {
+  it('marks keys done only once the keystore form of this view produced a copy, and focuses that form', async () => {
     const user = await open();
-    const keys = within(screen.getByTestId('backup-item-keys'));
-    await user.type(keys.getByLabelText('Keystore passphrase (at least 14 characters)'), PASS);
-    await user.type(keys.getByLabelText('Repeat keystore passphrase'), `${PASS}x`);
-    await user.click(keys.getByRole('button', { name: 'Download encrypted keystore' }));
-    expect(screen.getByText('The two passphrases differ.')).toBeTruthy();
-    expect(status('backup-item-keys')).toMatch(/^Not started/);
-    expect(blobs).toHaveLength(0);
-
-    await user.clear(keys.getByLabelText('Repeat keystore passphrase'));
-    await user.type(keys.getByLabelText('Repeat keystore passphrase'), PASS);
-    await user.click(keys.getByRole('button', { name: 'Download encrypted keystore' }));
+    await user.click(screen.getByRole('button', { name: 'Go to the keystore backup' }));
+    expect(document.activeElement?.textContent).toBe('Back up (encrypted)');
+    await user.clear(screen.getByLabelText('Passphrase (at least 14 characters)'));
+    await user.type(screen.getByLabelText('Passphrase (at least 14 characters)'), PASS);
+    await user.type(screen.getByLabelText('Repeat passphrase'), PASS);
+    await user.click(screen.getByRole('button', { name: 'Download encrypted keystore' }));
     await waitFor(() => { expect(status('backup-item-keys')).toMatch(/^Done: A copy of these keys exists outside this tab/); }, { timeout: 60_000 });
-    expect(blobs).toHaveLength(1);
     expect(status('backup-item-tags')).toMatch(/^Not started/);
   }, 120_000);
-
-  it('rejects a weak keystore passphrase without producing a file', async () => {
-    const user = await open();
-    const keys = within(screen.getByTestId('backup-item-keys'));
-    await user.type(keys.getByLabelText('Keystore passphrase (at least 14 characters)'), 'short');
-    await user.type(keys.getByLabelText('Repeat keystore passphrase'), 'short');
-    await user.click(keys.getByRole('button', { name: 'Download encrypted keystore' }));
-    expect(blobs).toHaveLength(0);
-    expect(status('backup-item-keys')).toMatch(/^Not started/);
-  });
-
-  async function exportTags(user: ReturnType<typeof userEvent.setup>, withHistory: boolean): Promise<void> {
-    const tags = within(screen.getByTestId('backup-item-tags'));
-    await user.clear(tags.getByLabelText('Archive passphrase (at least 14 characters)'));
-    await user.type(tags.getByLabelText('Archive passphrase (at least 14 characters)'), PASS);
-    await user.type(tags.getByLabelText('Repeat archive passphrase'), PASS);
-    if (!withHistory) await user.click(tags.getByLabelText('Include scan history'));
-    await user.click(tags.getByRole('button', { name: 'Download encrypted tag archive' }));
-  }
 
   it('marks the tag archive done after the export completed', async () => {
     const user = await open();

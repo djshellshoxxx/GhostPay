@@ -571,14 +571,8 @@
     "backup.title": "Lista de copias de seguridad",
     "backup.intro": "Dos cosas necesitan una copia fuera de esta pestaña: tus claves de vendedor y tus etiquetas de cliente. Cada elemento muestra lo que ocurrió realmente. Un elemento solo dice Hecho cuando su archivo se generó y se entregó al navegador; eso no prueba que lo hayas guardado en un lugar seguro.",
     "backup.keys.heading": "Paso 1: claves del vendedor",
-    "backup.keys.notStarted": "Aún no existe una copia de estas claves fuera de esta pestaña. Descarga abajo un almacén de claves cifrado.",
+    "backup.keys.notStarted": "Aún no existe una copia de estas claves fuera de esta pestaña. Descarga un almacén de claves cifrado en la sección de copia cifrada de arriba y vuelve aquí.",
     "backup.keys.done": "Existe una copia de estas claves fuera de esta pestaña (un almacén de claves descargado, claves importadas o una bóveda guardada). Conserva esa copia y su frase de contraseña: ninguna se puede recuperar.",
-    "backup.keys.failed": "No se generó el almacén de claves, así que estas claves podrían seguir sin copia de seguridad. {reason}",
-    "backup.keys.passphrase": "Frase de contraseña del almacén de claves (al menos 14 caracteres)",
-    "backup.keys.repeat": "Repite la frase de contraseña del almacén de claves",
-    "backup.keys.stepUp": "Frase de contraseña de la bóveda (necesaria para exportar claves ligadas a la bóveda guardada)",
-    "backup.keys.download": "Descargar almacén de claves cifrado",
-    "backup.keys.encrypting": "Cifrando (esto tarda un momento a propósito)…",
     "backup.tags.heading": "Paso 2: archivo de etiquetas de cliente",
     "backup.tags.notStarted": "En esta sesión aún no se descargó ningún archivo de etiquetas. Usa el formulario de abajo.",
     "backup.tags.done": "Archivo de etiquetas descargado. Etiquetas en el archivo: {count, number}. Conserva el archivo y su frase de contraseña: ninguno se puede recuperar.",
@@ -587,6 +581,7 @@
     "backup.status.notStarted": "No iniciado",
     "backup.status.done": "Hecho",
     "backup.status.partial": "Hecho con lagunas",
-    "backup.status.failed": "Fallido"
+    "backup.status.failed": "Fallido",
+    "backup.keys.go": "Ir a la copia del almacén de claves"
   }
 }

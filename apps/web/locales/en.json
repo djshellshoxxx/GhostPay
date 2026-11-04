@@ -571,14 +571,8 @@
     "backup.title": "Backup checklist",
     "backup.intro": "Two things need a copy outside this tab: your seller keys and your client tags. Each item shows what actually happened. An item says Done only after its file was produced and handed to your browser; that does not prove you saved it somewhere safe.",
     "backup.keys.heading": "Step 1: seller keys",
-    "backup.keys.notStarted": "No copy of these keys exists outside this tab yet. Download an encrypted keystore below.",
+    "backup.keys.notStarted": "No copy of these keys exists outside this tab yet. Download an encrypted keystore in the Back up (encrypted) section above, then return here.",
     "backup.keys.done": "A copy of these keys exists outside this tab (a downloaded keystore, imported keys or a saved vault). Keep that copy and its passphrase safe: neither can be recovered.",
-    "backup.keys.failed": "The keystore was not produced, so these keys may still have no backup. {reason}",
-    "backup.keys.passphrase": "Keystore passphrase (at least 14 characters)",
-    "backup.keys.repeat": "Repeat keystore passphrase",
-    "backup.keys.stepUp": "Vault passphrase (needed to export keys tied to the saved vault)",
-    "backup.keys.download": "Download encrypted keystore",
-    "backup.keys.encrypting": "Encrypting (this takes a moment on purpose)…",
     "backup.tags.heading": "Step 2: client tag archive",
     "backup.tags.notStarted": "No tag archive was downloaded in this session yet. Use the form below.",
     "backup.tags.done": "Tag archive downloaded. Tags in the archive: {count, number}. Keep the file and its passphrase: neither can be recovered.",
@@ -587,6 +581,7 @@
     "backup.status.notStarted": "Not started",
     "backup.status.done": "Done",
     "backup.status.partial": "Done with gaps",
-    "backup.status.failed": "Failed"
+    "backup.status.failed": "Failed",
+    "backup.keys.go": "Go to the keystore backup"
   }
 }

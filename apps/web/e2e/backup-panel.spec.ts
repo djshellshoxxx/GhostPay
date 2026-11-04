@@ -19,10 +19,11 @@ test.describe('combined backup panel', () => {
     await expect(keys.getByRole('status').first()).toContainText('Not started');
     await expect(tags.getByRole('status').first()).toContainText('Not started');
 
-    await keys.getByLabel('Keystore passphrase (at least 14 characters)').fill(PASS);
-    await keys.getByLabel('Repeat keystore passphrase').fill(PASS);
+    await page.getByRole('button', { name: 'Go to the keystore backup' }).click();
+    await page.getByLabel("Passphrase (at least 14 characters)", { exact: true }).fill(PASS);
+    await page.getByLabel("Repeat passphrase", { exact: true }).fill(PASS);
     const keystore = page.waitForEvent('download');
-    await keys.getByRole('button', { name: 'Download encrypted keystore' }).click();
+    await page.getByRole('button', { name: 'Download encrypted keystore' }).click();
     expect((await keystore).suggestedFilename()).toBe('ghostpay-keystore.json');
     await expect(keys.getByRole('status').first()).toContainText('Done');
     await expect(tags.getByRole('status').first()).toContainText('Not started');
