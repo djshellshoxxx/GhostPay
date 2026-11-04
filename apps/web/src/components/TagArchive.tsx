@@ -76,8 +76,17 @@ function listed(items: readonly string[]): string {
   return items.length < 2 ? items.join('') : `${items.slice(0, -1).join(', ')} and ${items[items.length - 1] ?? ''}`;
 }
 
-/** Encrypted tag backup, import with preview, key rotation and wipe. Everything is local; the passphrase is never stored. */
-export function TagArchive(): ReactNode {
+/** What an export attempt did: reported only after the file was handed to the browser, or after the attempt failed. */
+export type ArchiveExportResult =
+  | { readonly ok: true; readonly recordCount: number; readonly sha256: string; /** Scan history is missing from the archive for at least one chain. */ readonly gaps: boolean }
+  | { readonly ok: false };
+
+/**
+ * Encrypted tag backup, import with preview, key rotation and wipe. Everything is local; the passphrase is never stored.
+ * @param props.onExport Optional observer of export attempts (the combined backup panel); it changes no behavior here.
+ */
+export function TagArchive(props: { readonly onExport?: (result: ArchiveExportResult) => void } = {}): ReactNode {
+  const { onExport: reportExport } = props;
   const app = useApp();
   const { vault, chains } = useServices();
   const [message, setMessage] = useState<{ kind: 'ok' | 'error'; text: string } | undefined>(undefined);
@@ -196,6 +205,7 @@ export function TagArchive(): ReactNode {
         unchanged();
         downloadBytes(out.filename, out.bytes);
         setPass(''); setPass2(''); setBusy(false);
+        reportExport?.({ ok: true, recordCount: out.recordCount, sha256: out.sha256, gaps: skipped > 0 || unsupported === undefined || unsupported.length > 0 });
         const missing = [
           skipped > 0 ? `Scan history for ${String(skipped)} chain(s) could not be read and is NOT in this archive.` : '',
           unsupported === undefined ? 'The scan history kept for chains this build does not support could not be listed; any such history is NOT in this archive.' : '',
@@ -207,6 +217,7 @@ export function TagArchive(): ReactNode {
       } catch (error) {
         if (!current(c)) return;
         setBusy(false); fail(error);
+        reportExport?.({ ok: false });
       } finally {
         closeVaults(vaults);
       }
