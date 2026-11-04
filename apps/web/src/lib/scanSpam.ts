@@ -59,7 +59,7 @@ export interface AnonymitySet {
   readonly level: 'low' | 'medium' | 'high';
   readonly count7d: number;
   readonly count30d: number;
-  /** The scan did not cover the whole 7-day span, so the counts are lower bounds. */
+  /** The scan did not cover the whole 7-day span up to the head, so the counts are lower bounds. */
   readonly partial: boolean;
 }
 
@@ -67,14 +67,17 @@ export interface AnonymitySet {
 const MEDIUM_AT = 20;
 const HIGH_AT = 200;
 
-/** Router announcement volume near the head, computed from blocks this device scanned. */
-export function anonymitySet(o: { readonly chain: ChainConfig; readonly routerBlocks: readonly bigint[]; readonly head: bigint; readonly scannedFrom: bigint }): AnonymitySet {
+/**
+ * Router announcement volume near the head, computed from blocks this device scanned. `head` is the chain head the windows
+ * end at; `scannedTo` (default `head`) is the last block the scan reached, so a run stopped short of the head is `partial`.
+ */
+export function anonymitySet(o: { readonly chain: ChainConfig; readonly routerBlocks: readonly bigint[]; readonly head: bigint; readonly scannedFrom: bigint; readonly scannedTo?: bigint }): AnonymitySet {
   const span = (days: number): bigint => BigInt(Math.ceil((days * 86_400_000) / Math.max(1, o.chain.blockTimeMs)));
   const from7 = o.head - span(7) + 1n;
   const from30 = o.head - span(30) + 1n;
   const count7d = o.routerBlocks.filter((b) => b >= from7 && b <= o.head).length;
   const count30d = o.routerBlocks.filter((b) => b >= from30 && b <= o.head).length;
-  return { level: count7d >= HIGH_AT ? 'high' : count7d >= MEDIUM_AT ? 'medium' : 'low', count7d, count30d, partial: o.scannedFrom > (from7 > 0n ? from7 : 0n) };
+  return { level: count7d >= HIGH_AT ? 'high' : count7d >= MEDIUM_AT ? 'medium' : 'low', count7d, count30d, partial: o.scannedFrom > (from7 > 0n ? from7 : 0n) || (o.scannedTo !== undefined && o.scannedTo < o.head) };
 }
 
 /** Banner copy for the seller. Coarse on purpose; states what shrinks the set. */
