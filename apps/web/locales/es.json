@@ -577,7 +577,7 @@
     "backup.tags.notStarted": "En esta sesión aún no se descargó ningún archivo de etiquetas. Usa el formulario de abajo.",
     "backup.tags.done": "Archivo de etiquetas descargado. Etiquetas en el archivo: {count, number}. Conserva el archivo y su frase de contraseña: ninguno se puede recuperar.",
     "backup.tags.partial": "El archivo de etiquetas se descargó, pero parte del historial de escaneos NO está incluido. Lee el mensaje de abajo.",
-    "backup.tags.failed": "No se generó el archivo de etiquetas, así que tus etiquetas no tienen copia de seguridad. Lee el mensaje de abajo.",
+    "backup.tags.failed": "El último intento de archivo de etiquetas falló y no generó ningún archivo. Lee el mensaje de abajo. Un archivo de un intento anterior, si lo hiciste, no se ve afectado.",
     "backup.status.notStarted": "No iniciado",
     "backup.status.done": "Hecho",
     "backup.status.partial": "Hecho con lagunas",

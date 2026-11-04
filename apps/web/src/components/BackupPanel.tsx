@@ -37,8 +37,7 @@ export function BackupPanel(): ReactNode {
   const status = (s: ItemStatus, note: string): ReactNode => <p role="status"><strong data-status={s}>{label[s]}</strong>: {note}</p>;
 
   const goToKeystore = (): void => {
-    const heading = [...document.querySelectorAll<HTMLElement>('h3')].find((h) => h.textContent === t('sellerKeys.backupHeading'));
-    heading?.setAttribute('tabindex', '-1');
+    const heading = document.getElementById('keystore-backup-h');
     heading?.scrollIntoView?.({ block: 'start' });
     heading?.focus();
   };

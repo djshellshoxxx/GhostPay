@@ -62,7 +62,7 @@ describe('BackupPanel', () => {
   it('marks keys done only once the keystore form of this view produced a copy, and focuses that form', async () => {
     const user = await open();
     await user.click(screen.getByRole('button', { name: 'Go to the keystore backup' }));
-    expect(document.activeElement?.textContent).toBe('Back up (encrypted)');
+    expect(document.activeElement?.id).toBe('keystore-backup-h');
     await user.clear(screen.getByLabelText('Passphrase (at least 14 characters)'));
     await user.type(screen.getByLabelText('Passphrase (at least 14 characters)'), PASS);
     await user.type(screen.getByLabelText('Repeat passphrase'), PASS);
@@ -83,12 +83,13 @@ describe('BackupPanel', () => {
 
   // The reconciliation store keeps the first IndexedDB it opens, so the case that writes history must stay the first to use the in-memory one.
   // Each case: how the export goes, whether scan history is requested, and what the item must then say.
-  const cases: readonly { name: string; history: boolean; arrange: () => Promise<void> | void; status: RegExp; blobs: number }[] = [
+  const cases: readonly { name: string; history: boolean; arrange: () => Promise<void> | void; status: RegExp; blobs: number; message?: RegExp }[] = [
     { name: 'Done, naming the choice, when history was left out on purpose', history: false, arrange: () => undefined, status: /^Done: Tag archive downloaded WITHOUT scan history, as you chose\. Tags in the archive: 0\./, blobs: 1 },
     { name: 'Done with gaps when history is stored for a chain this build does not support', history: true, arrange: () => storeHistory([84532, 777777]), status: /^Done with gaps: .*NOT in it/, blobs: 1 },
     { name: 'Done with gaps when the history of a chain could not be read', history: true, arrange: () => { vi.spyOn(reconciliation, 'createCurrentReconciliationVault').mockRejectedValue(new Error('unavailable')); }, status: /^Done with gaps: .*NOT in it/, blobs: 1 },
     { name: 'plain Done only when history was included and nothing was left out', history: true, arrange: () => undefined, status: /^Done: Tag archive downloaded\. Tags in the archive: 0\./, blobs: 1 },
-    { name: 'Failed, never Done, when the export throws', history: false, arrange: () => { vi.spyOn(tagArchive, 'exportArchive').mockRejectedValue(new Error('disk full')); }, status: /^Failed: The tag archive was not produced/, blobs: 0 },
+    { name: 'Failed, never Done, when the export throws', history: false, arrange: () => { vi.spyOn(tagArchive, 'exportArchive').mockRejectedValue(new Error('disk full')); }, status: /^Failed: The latest tag archive attempt failed and produced no file/, blobs: 0 },
+    { name: 'Done with gaps when the stored history cannot be listed', history: true, arrange: () => { vi.spyOn(reconciliation, 'createCurrentReconciliationVault').mockResolvedValue({ exportEncrypted: () => Promise.resolve('history'), lock: () => undefined } as unknown as reconciliation.ReconciliationVault); vi.stubGlobal('indexedDB', { open: () => { throw new Error('blocked'); } }); }, status: /^Done with gaps: .*NOT in it/, blobs: 1, message: /could not be listed; any such history is NOT in this archive/ },
   ];
   it.each(cases)('tag archive item says $name', async (c) => {
     if (c.blobs > 0) fastKdf();
@@ -98,6 +99,7 @@ describe('BackupPanel', () => {
     await exportTags(user, c.history);
     await waitFor(() => { expect(status('backup-item-tags')).toMatch(c.status); }, { timeout: 60_000 });
     expect(blobs).toHaveLength(c.blobs);
+    if (c.message !== undefined) expect(document.body.textContent).toMatch(c.message);
     expect(status('backup-item-keys')).toMatch(/^Not started/);
   }, 120_000);
 
@@ -109,5 +111,16 @@ describe('BackupPanel', () => {
     await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Failed/); });
     await exportTags(user, false);
     await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Done: /); }, { timeout: 60_000 });
+  }, 120_000);
+
+  it('describes only the latest attempt when an export fails after an earlier success', async () => {
+    const real = tagArchive.exportArchive;
+    vi.spyOn(tagArchive, 'exportArchive').mockImplementationOnce((tags, key, pass, options) => real(tags, key, pass, { ...options, N: 1 << 14 })).mockRejectedValueOnce(new Error('disk full'));
+    const user = await open();
+    await exportTags(user, false);
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Done: /); }, { timeout: 60_000 });
+    await exportTags(user, false);
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Failed: The latest tag archive attempt failed/); });
+    expect(status('backup-item-tags')).not.toMatch(/not backed up/);
   }, 120_000);
 });

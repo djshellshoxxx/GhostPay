@@ -116,7 +116,7 @@ function collectLeanChunks(bundle, webRoot) {
       if (module.renderedLength > 0) {
         const feature = /\/src\/features\/(?:btc|solana|tron|policy)\//.test(path);
         const entry = /\/src\/App\.tsx$/.test(path);
-        const archive = /\/src\/(?:components\/TagArchive\.tsx|lib\/tagArchive\.ts)$/.test(path);
+        const archive = /\/src\/(?:components\/(?:TagArchive|BackupPanel)\.tsx|lib\/tagArchive\.ts)$/.test(path);
         const embedProtocol = /\/src\/lib\/embedProtocol\.ts$/.test(path);
         const deferredPackage = /\/(?:packages|node_modules\/@ghostpay)\/(?:btc-silent-payments|btc-family|btc-payjoin|chain-solana|chain-tron|chain-evm-extra|solana-stealth|tron-adapter|policy-scheme|pool-[^/]+|external-pools(?:-[^/]+)?|pir-[^/]+)(?:\/|$)/.test(path);
         if (feature || entry || archive || embedProtocol || deferredPackage) throw new Error(`lean build rendered excluded module: ${id}`);
