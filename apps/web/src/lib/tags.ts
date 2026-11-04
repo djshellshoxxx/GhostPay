@@ -454,6 +454,17 @@ export class TagVault {
     return out;
   }
 
+  /**
+   * A keyed digest (HMAC-SHA-256 under this profile's non-extractable key) of every tag's chain, update time and content, so a
+   * later change can be told from an earlier backup without keeping any plaintext or unkeyed hash. Requires an unlocked vault
+   * and never unlocks it. A key rotation changes it.
+   */
+  public async fingerprint(): Promise<string> {
+    const { hmac } = this.keys();
+    const lines = (await this.snapshot()).map((e) => JSON.stringify([e.chainId, e.updatedAt, e.payload])).sort((a, b) => Number(a > b) - Number(a < b));
+    return bytesToHex(new Uint8Array(await subtle().sign('HMAC', hmac, utf8ToBytes(JSON.stringify(lines)))));
+  }
+
   /** Key generation of the current profile (1 until the first rotation). */
   public async keyVersion(): Promise<number> {
     return (await this.store.getMeta())?.keyVersion ?? 1;

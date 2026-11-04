@@ -9,9 +9,6 @@ import { useServices } from '../lib/services';
 import { captureSessionVersionGuard, getSessionPublic, revealViewingKey } from '../lib/session';
 import { MAX_ARCHIVE_BYTES, exportArchive, previewArchiveImport, type ArchiveImportPreview } from '../lib/tagArchive';
 import { useApp } from '../state';
-import { sha256 } from '@noble/hashes/sha2.js';
-import { bytesToHex, utf8ToBytes } from '@noble/hashes/utils.js';
-import type { TagVault } from '../lib/tags';
 import { Field, Notice } from './Common';
 
 interface Staged {
@@ -91,27 +88,16 @@ export type ArchiveExportResult =
     readonly gaps: boolean;
     /** Plain-language notes on what is NOT in the archive (empty when nothing is missing). */
     readonly notes: readonly string[];
-    /** {@link tagFingerprint} of the tags this archive was made from. */
+    /** `TagVault.fingerprint()` of the tags this archive was made from. */
     readonly fingerprint: string;
   }
   | { readonly ok: false; readonly message: string };
 
 /**
- * A digest of the tags (chain, update time, content) as they are now, so a later change can be told from the archive
- * that was made before it. Reads the vault, unlocking it with the loaded seller keys like an export does. Only compared,
- * never stored in a file, and not a security boundary.
- */
-export async function tagFingerprint(vault: TagVault): Promise<string> {
-  if (!vault.unlocked) await vault.unlock(revealViewingKey());
-  const entries = (await vault.snapshot()).map((e) => JSON.stringify([e.chainId, e.updatedAt, e.payload])).sort((a, b) => Number(a > b) - Number(a < b));
-  return bytesToHex(sha256(utf8ToBytes(JSON.stringify(entries))));
-}
-
-/**
  * Encrypted tag backup, import with preview, key rotation and wipe. Everything is local; the passphrase is never stored.
  * @param props.onExport Optional observer of export attempts (the combined backup panel); it changes no behavior here.
  */
-export function TagArchive(props: { readonly onExport?: (result: ArchiveExportResult) => void; readonly onTagsChanged?: () => void } = {}): ReactNode {
+export function TagArchive(props: { readonly onExport?: (result: ArchiveExportResult) => void; readonly onTagsChanged?: (kind: 'imported' | 'wiped') => void } = {}): ReactNode {
   const { onExport: reportExport, onTagsChanged } = props;
   const app = useApp();
   const { vault, chains } = useServices();
@@ -227,7 +213,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
         if (!current(c)) return;
         unchanged();
         // Taken before the export: a tag saved while it runs shows up as a change afterwards, never as covered.
-        const fingerprint = await tagFingerprint(vault);
+        const fingerprint = await vault.fingerprint();
         const out = await exportArchive(vault, revealViewingKey(), pass, { history });
         if (!current(c)) return;
         unchanged();
@@ -324,7 +310,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
         }
         guard();
         setStaged(undefined); setFile(undefined); setBusy(false);
-        onTagsChanged?.();
+        onTagsChanged?.('imported');
         done(`Imported: ${String(s.archive.tags.added)} added, ${String(s.archive.tags.updated)} updated, ${String(s.archive.tags.removed)} removed. Tags committed.${s.history.length > 0 ? ` Scan history committed for ${String(s.history.length)} chain(s); restored history remains historical evidence, not a fresh scan.` : ''}`);
       } catch (error) {
         // A completed transaction cannot be cancelled, and a rejected acknowledgement
@@ -368,7 +354,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
         unchanged();
         await vault.wipe();
         if (!current(c)) return;
-        unchanged(); setBusy(false); onTagsChanged?.(); done('All local tags deleted.');
+        unchanged(); setBusy(false); onTagsChanged?.('wiped'); done('All local tags deleted.');
       } catch (error) {
         if (!current(c)) return;
         setBusy(false); fail(error);

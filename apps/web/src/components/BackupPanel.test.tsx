@@ -1,13 +1,14 @@
 // @vitest-environment jsdom
-import { screen, waitFor, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as reconciliation from '../lib/reconciliationVault';
 import { checkpointKeyId } from '../lib/scanClient';
-import { clearSession, generateSession, getSessionPublic } from '../lib/session';
+import { clearSession, generateSession, getSessionPublic, revealViewingKey } from '../lib/session';
 import * as tagArchive from '../lib/tagArchive';
 import { memoryIndexedDb } from '../test/memoryIndexedDb';
 import { userMessage } from '../lib/errors';
+import { MemoryTagStore, TagVault } from '../lib/tags';
 import { makeServices, renderApp } from '../test/render';
 
 const PASS = 'violet comet maple lantern';
@@ -173,5 +174,114 @@ describe('BackupPanel', () => {
     await user.click(nav('Home'));
     await user.click(nav('Seller keys'));
     expect(screen.getByTestId('backup-item-tags').textContent).toContain(userMessage(new Error('disk full')));
+  }, 120_000);
+
+  /** Opens Seller keys with a shared tag store, exports once (history left out) and waits for Done. */
+  async function exported(): Promise<{ user: User; services: ReturnType<typeof makeServices>; store: MemoryTagStore }> {
+    fastKdf();
+    const store = new MemoryTagStore();
+    const services = makeServices({ vault: new TagVault(store) });
+    const user = await open(services);
+    await exportTags(user, false);
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Done: /); }, { timeout: 60_000 });
+    return { user, services, store };
+  }
+  const recheck = async (): Promise<void> => {
+    await act(async () => { window.dispatchEvent(new Event('focus')); await Promise.resolve(); });
+  };
+  const hideTab = (state: 'hidden' | 'visible'): void => {
+    Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => state });
+  };
+  afterEach(() => { hideTab('visible'); });
+
+  it('never unlocks the tag vault to check the status, and is not Done while tags are locked', async () => {
+    const { user, services } = await exported();
+    services.vault.lock();
+    const unlock = vi.spyOn(services.vault, 'unlock');
+    await recheck();
+    document.dispatchEvent(new Event('visibilitychange'));
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Cannot check \(tags locked\)/); });
+    await user.click(nav('Home'));
+    await user.click(nav('Seller keys'));
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Cannot check \(tags locked\)/); });
+    expect(unlock).not.toHaveBeenCalled();
+    expect(services.vault.unlocked).toBe(false);
+  }, 120_000);
+
+  it('after a wipe, shows the archive as changed and leaves no tag profile behind', async () => {
+    fastKdf();
+    const store = new MemoryTagStore();
+    const services = makeServices({ vault: new TagVault(store) });
+    const user = await open(services);
+    await services.vault.unlock(revealViewingKey());
+    await services.vault.save(84532, tag);
+    await exportTags(user, false);
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Done: .*Tags in the archive: 1\./); }, { timeout: 60_000 });
+    await user.click(screen.getByRole('button', { name: 'Delete all local tags' }));
+    await user.click(screen.getByRole('button', { name: 'I understand, continue' }));
+    await user.click(screen.getByRole('button', { name: 'Permanently delete all tags' }));
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Changed since last archive/); });
+    await recheck();
+    await user.click(nav('Home'));
+    await user.click(nav('Seller keys'));
+    expect(status('backup-item-tags')).toMatch(/^Changed since last archive/);
+    expect(await store.getMeta()).toBeUndefined();
+    expect((await store.getSnapshot()).records).toHaveLength(0);
+  }, 120_000);
+
+  it('is not Done while the current tags are still being read, or when they cannot be read', async () => {
+    const { user, services } = await exported();
+    await user.click(nav('Home'));
+    const read = vi.spyOn(services.vault, 'fingerprint').mockImplementation(() => new Promise<string>(() => undefined));
+    await user.click(nav('Seller keys'));
+    expect(status('backup-item-tags')).toMatch(/^Checking: /);
+    read.mockRejectedValue(new Error('damaged'));
+    await recheck();
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Could not check: .*could not be checked/); });
+  }, 120_000);
+
+  it('treats a tag saved while the export runs as not covered by that archive', async () => {
+    const real = tagArchive.exportArchive;
+    const store = new MemoryTagStore();
+    const services = makeServices({ vault: new TagVault(store) });
+    vi.spyOn(tagArchive, 'exportArchive').mockImplementation(async (tags, key, pass, options) => {
+      const out = await real(tags, key, pass, { ...options, N: 1 << 14 });
+      await services.vault.save(84532, tag);
+      return out;
+    });
+    const user = await open(services);
+    await exportTags(user, false);
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Changed since last archive/); }, { timeout: 60_000 });
+  }, 120_000);
+
+  it('lets the newest read win when an older read settles last', async () => {
+    const { services } = await exported();
+    const archived = await services.vault.fingerprint();
+    const settle: ((value: string) => void)[] = [];
+    vi.spyOn(services.vault, 'fingerprint').mockImplementation(() => new Promise<string>((resolve) => { settle.push(resolve); }));
+    await recheck();
+    await recheck();
+    expect(settle).toHaveLength(2);
+    await act(async () => { settle[1]?.(archived); await Promise.resolve(); });
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Done: /); });
+    await act(async () => { settle[0]?.('older-read-of-changed-tags'); await Promise.resolve(); });
+    expect(status('backup-item-tags')).toMatch(/^Done: /);
+  }, 120_000);
+
+  it('re-reads when the tab becomes visible, not when it is hidden', async () => {
+    const { services } = await exported();
+    const read = vi.spyOn(services.vault, 'fingerprint');
+    hideTab('hidden');
+    await act(async () => { document.dispatchEvent(new Event('visibilitychange')); await Promise.resolve(); });
+    expect(read).not.toHaveBeenCalled();
+    hideTab('visible');
+    await act(async () => { document.dispatchEvent(new Event('visibilitychange')); await Promise.resolve(); });
+    await waitFor(() => { expect(read).toHaveBeenCalledTimes(1); });
+  }, 120_000);
+
+  it('forgets the outcome when the seller keys are replaced', async () => {
+    await exported();
+    await act(async () => { clearSession(); generateSession(); await Promise.resolve(); });
+    await waitFor(() => { expect(status('backup-item-tags')).toMatch(/^Not started/); });
   }, 120_000);
 });
