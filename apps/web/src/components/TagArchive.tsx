@@ -103,7 +103,7 @@ export type ArchiveExportResult =
  */
 export async function tagFingerprint(vault: TagVault): Promise<string> {
   if (!vault.unlocked) await vault.unlock(revealViewingKey());
-  const entries = (await vault.snapshot()).map((e) => JSON.stringify([e.chainId, e.updatedAt, e.payload])).sort();
+  const entries = (await vault.snapshot()).map((e) => JSON.stringify([e.chainId, e.updatedAt, e.payload])).sort((a, b) => Number(a > b) - Number(a < b));
   return bytesToHex(sha256(utf8ToBytes(JSON.stringify(entries))));
 }
 

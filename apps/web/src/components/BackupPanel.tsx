@@ -46,7 +46,7 @@ export function BackupPanel(): ReactNode {
     if (archived === undefined) return undefined;
     let live = true;
     // Unreadable counts as changed: the archive cannot be shown to cover what is stored now.
-    void tagFingerprint(vault).then((fingerprint) => fingerprint, () => 'unreadable').then((fingerprint) => { if (live) setNow(fingerprint); });
+    void tagFingerprint(vault).catch(() => 'unreadable').then((fingerprint) => { if (live) setNow(fingerprint); });
     return () => { live = false; };
   }, [vault, archived, tick, app.session]);
 
