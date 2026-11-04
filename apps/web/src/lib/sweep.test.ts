@@ -982,3 +982,39 @@ describe('M1: relayed orders resolve from chain state alone (nonceUsed + finaliz
     expect((await reconcileSweepLock(mockRpc(84532, () => ({ transactionHash: `0x${'ab'.repeat(32)}`, status: '0x1' })), legacyRelayed)).status).toBe('included');
   });
 });
+
+describe('sweep permit state messages (spec 04)', () => {
+  const states = ['ok_to_permit', 'already_allowed', 'nonce_consumed', 'sig_invalid', 'expired', 'unsupported_token'] as const;
+
+  it('gives every PermitState its own catalog key under sweep.permit.*', () => {
+    const keys = states.map((s) => sweepModule.SWEEP_PERMIT_STATE_KEYS[s]);
+    for (const k of keys) expect(k).toMatch(/^sweep\.permit\./);
+    expect(Object.keys(sweepModule.SWEEP_PERMIT_STATE_KEYS).sort()).toEqual([...states].sort());
+  });
+
+  it.each([
+    ['permit_expired', 422, 'expired', false],
+    ['permit_failed', 422, 'sig_invalid', true],
+    ['permit_not_supported', 422, 'unsupported_token', true],
+    ['permit_value_too_low', 422, 'valueTooLow', false],
+    ['insufficient_allowance', 422, 'noAllowance', true],
+    ['owner_failure_limit', 429, 'ownerFailureLimit', false],
+  ] as const)('maps the relayer refusal %s to a specific key (direct fallback: %s)', async (code, status, _what, direct) => {
+    const { RelayerRefusedError } = await import('./relayerClient');
+    const key = sweepModule.sweepPermitRefusalKey(new RelayerRefusedError('x', status, code));
+    expect(key).toMatch(/^sweep\.permit\./);
+    expect(sweepModule.sweepPermitSuggestsDirect(key as never)).toBe(direct);
+  });
+
+  it('does not map unrelated refusals, other statuses or non-relayer errors', async () => {
+    const { RelayerRefusedError } = await import('./relayerClient');
+    expect(sweepModule.sweepPermitRefusalKey(new RelayerRefusedError('x', 503, 'send_failed'))).toBeUndefined();
+    expect(sweepModule.sweepPermitRefusalKey(new RelayerRefusedError('x', 403, undefined))).toBeUndefined();
+    expect(sweepModule.sweepPermitRefusalKey(new Error('permit_failed'))).toBeUndefined();
+  });
+
+  it.each([['permit_failed', 502], ['permit_expired', 409], ['owner_failure_limit', 500]])('does not map %s with status %i (outcome unknown, not proven pre-broadcast)', async (code, status) => {
+    const { RelayerRefusedError } = await import('./relayerClient');
+    expect(sweepModule.sweepPermitRefusalKey(new RelayerRefusedError('x', status, code))).toBeUndefined();
+  });
+});

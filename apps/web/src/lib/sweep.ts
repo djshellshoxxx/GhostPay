@@ -13,6 +13,7 @@ import {
   type Address,
   type DeploymentManifest,
   type Hex,
+  type PermitState,
   type RpcClient,
   type SweepOrder,
 } from '@ghostpay/chain-adapters';
@@ -22,7 +23,8 @@ import type { TypedDataInput } from '@ghostpay/tx-review';
 import { decodeFunctionResult, encodeFunctionData, getAddress, keccak256, parseTransaction, serializeTransaction } from 'viem/utils';
 import { UserFacingError } from './errors';
 import { buildPermit } from './pay';
-import { requestQuote, submitSweep, type FetchFn, type RelayerQuote } from './relayerClient';
+import type { MessageKey } from '../i18n/catalog';
+import { RelayerRefusedError, requestQuote, submitSweep, type FetchFn, type RelayerQuote } from './relayerClient';
 import { captureSessionGuard, withSessionSecrets } from './session';
 import { DIRECT_MAX_FEE_SHARE_BPS, guardTx, guardTypedData, reportsRevert, reviewPolicy, simulateCall, type Simulation } from './txGuard';
 
@@ -726,4 +728,49 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
   } finally {
     zeroize(secret);
   }
+}
+
+/**
+ * Spec 04: one catalog key per permit pre-flight state, as the Sweep screen words it. `ok_to_permit` and
+ * `already_allowed` are not refusals (the relayer skips an already-covered permit and sweeps by allowance); they have
+ * text so the table is exhaustive. None of the refusal texts retries automatically.
+ */
+// The relayed flow only renders the PERMIT_REFUSAL_KEYS subset below. ok_to_permit, already_allowed and nonce_consumed
+// have no relayer refusal class (the relayer folds a spent nonce into permit_failed), so these keys are reserved for
+// those PermitStates and kept so this table stays exhaustive (pinned by sweep.test.ts):
+// i18n-use: sweep.permit.ok sweep.permit.alreadyAllowed sweep.permit.nonceConsumed
+export const SWEEP_PERMIT_STATE_KEYS: Readonly<Record<PermitState, MessageKey>> = {
+  ok_to_permit: 'sweep.permit.ok',
+  already_allowed: 'sweep.permit.alreadyAllowed',
+  nonce_consumed: 'sweep.permit.nonceConsumed',
+  sig_invalid: 'sweep.permit.failed',
+  expired: 'sweep.permit.expired',
+  unsupported_token: 'sweep.permit.unsupported',
+};
+
+/**
+ * Relayer refusal classes (apps/relayer service.ts) that concern the permit or the owner's failure budget. The relayer
+ * cannot tell a bad signature from a spent nonce (both surface as `permit_failed`), so that class gets the
+ * `sig_invalid` text, which covers both without claiming which.
+ */
+// Rendered by Sweep.tsx through sweepPermitRefusalKey:
+// i18n-use: sweep.permit.expired sweep.permit.failed sweep.permit.unsupported sweep.permit.valueTooLow sweep.permit.noAllowance sweep.permit.ownerFailureLimit
+const PERMIT_REFUSAL_KEYS: Readonly<Record<string, MessageKey>> = {
+  permit_expired: 'sweep.permit.expired',
+  permit_failed: 'sweep.permit.failed',
+  permit_not_supported: 'sweep.permit.unsupported',
+  permit_value_too_low: 'sweep.permit.valueTooLow',
+  insufficient_allowance: 'sweep.permit.noAllowance',
+  owner_failure_limit: 'sweep.permit.ownerFailureLimit',
+};
+
+/** The Sweep message key for a relayer permit/grief refusal, or `undefined` for anything else (shown generically). */
+export function sweepPermitRefusalKey(e: unknown): MessageKey | undefined {
+  if (!(e instanceof RelayerRefusedError) || e.code === undefined || !e.beforeBroadcast) return undefined;
+  return Object.hasOwn(PERMIT_REFUSAL_KEYS, e.code) ? PERMIT_REFUSAL_KEYS[e.code] : undefined;
+}
+
+/** Spec 04 section 2 step 3: only a bad/unsupported/missing permit offers the direct-sweep (owner pays gas) fallback. */
+export function sweepPermitSuggestsDirect(key: MessageKey): boolean {
+  return key === 'sweep.permit.failed' || key === 'sweep.permit.unsupported' || key === 'sweep.permit.noAllowance';
 }

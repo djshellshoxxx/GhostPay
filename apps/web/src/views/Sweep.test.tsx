@@ -820,6 +820,26 @@ describe('Sweep', () => {
     });
 
     it.each([
+      ['permit_expired', 422, /permit had already expired/, false],
+      ['permit_failed', 422, /token rejected the permit/, true],
+      ['permit_not_supported', 422, /does not accept standard ERC-2612 permits/, true],
+      ['permit_value_too_low', 422, /permit did not cover the full amount/, false],
+      ['insufficient_allowance', 422, /no allowance and no usable permit/, true],
+      ['owner_failure_limit', 429, /too many failed sweep attempts/, false],
+    ])('%s: shows a specific permit message, releases the lock, and never retries', async (code, status, re, direct) => {
+      const sink: RawSink = { calls: [] };
+      let submits = 0;
+      const user = await submitRelayed(quoteThen(() => { submits += 1; return Promise.resolve(new Response(JSON.stringify({ error: { code } }), { status })); }), sink);
+      expect(await screen.findByText(re)).toBeTruthy();
+      expect(submits).toBe(1);
+      expect(screen.queryByText(/The relayer refused the request: HTTP/)).toBeNull();
+      if (direct) expect(screen.getByText(/sweep directly instead/)).toBeTruthy();
+      else expect(screen.queryByText(/sweep directly instead/)).toBeNull();
+      expect(await screen.findByText('Relayer refused the order')).toBeTruthy();
+      expect(await directDisabled(user)).toBe(false);
+    });
+
+    it.each([
       ['409 nonce_used', 409, JSON.stringify({ error: { code: 'nonce_used' } })],
       ['503 send_failed', 503, JSON.stringify({ error: { code: 'send_failed' } })],
       ['403 from a CDN/WAF without the relayer envelope', 403, '<html>blocked</html>'],

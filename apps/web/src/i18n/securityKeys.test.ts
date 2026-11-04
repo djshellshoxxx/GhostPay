@@ -33,6 +33,7 @@ describe('critical translation native-review boundary (IN-3)', () => {
       'settings.outside.body', 'errorBoundary.reloadHint', 'ledger.import.invalidated',
       'sellerKeys.pairing.title', 'sellerKeys.pairing.caption', 'sellerKeys.pairing.importLabel', 'sellerKeys.pairing.previewHeading',
       'sellerKeys.pairing.compare.none', 'sellerKeys.pairing.refused', 'sellerKeys.pairing.exportFailed', 'registry.exportHint',
+      'scan.tag.label', 'scan.tags.unlocked', 'scan.tags.locked', 'scan.tags.deleted', 'scan.tags.deleteAll',
     ];
     for (const key of required) expect(SECURITY_KEYS.has(key), key).toBe(true);
   });

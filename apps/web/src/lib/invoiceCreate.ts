@@ -39,7 +39,7 @@ export interface InvoiceForm {
   readonly encrypt: boolean;
   /** Protect the whole invoice with a secret shared out of band. */
   readonly passphrase?: string;
-  /** Seller gas-buffer policy; when set the invoice is schema v2 (ADR-0024). No Create-page control yet. */
+  /** Seller gas-buffer policy; when set the invoice is schema v2 (ADR-0024). Set by the Create page's gas buffer control (full profile, token invoices only). */
   readonly bufferPolicy?: BufferPolicy;
 }
 

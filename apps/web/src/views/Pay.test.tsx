@@ -410,6 +410,20 @@ describe('Pay: invoice reading and review', () => {
 });
 
 describe('Pay: sending', () => {
+  it('shows the connected wallet chain ID ungrouped', async () => {
+    const wallet = new MockWallet();
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const user = openWith(fragment, makeServices({
+      loadManifest: loaded(84532),
+      createRpc: readBackRpc(),
+      discoverWallets: () => Promise.resolve([walletInfo(wallet)]),
+    }));
+    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    expect(await screen.findByText(/chain 84532\b/)).toBeTruthy();
+    expect(screen.queryByText(/84,532/)).toBeNull();
+  });
+
   async function toPrepared(wallet: MockWallet, services: Services): Promise<ReturnType<typeof userEvent.setup>> {
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
     const user = openWith(fragment, { ...services, discoverWallets: () => Promise.resolve([walletInfo(wallet)]) });

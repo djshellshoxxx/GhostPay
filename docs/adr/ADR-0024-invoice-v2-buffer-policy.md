@@ -31,5 +31,5 @@ rejected by the roadmap (no silent refunds; a refund would need another linked t
 
 ## Consequences
 Older app versions fail closed on v2 links (`SchemaError` at `v`), which is the intended upgrade path. The router still
-receives `maxBufferWei = bufferWei`; the policy is enforced client-side only (no contract change). The Create page does not
-yet offer the policy (sellers can only produce v2 invoices programmatically); that UI is open work. Not audited.
+receives `maxBufferWei = bufferWei`; the policy is enforced client-side only (no contract change). The Create page offers the policy in the full profile only (never in lean builds, which reject v2 invoices), with strict
+whole-wei validation and a disclosure that lean builds cannot pay v2 invoices. Not audited.
