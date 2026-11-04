@@ -36,7 +36,7 @@ jobs:
             head="$(gh pr view "$number" --json headRefOid --jq '.headRefOid')"
             checks="$(gh api "repos/$GITHUB_REPOSITORY/commits/$head/check-runs?per_page=100")"
             valid=true
-            for name in 'typescript' 'contracts' 'e2e' 'secrets-and-egress'; do
+            for name in 'ts-check' 'contracts-test' 'e2e' 'secrets-and-egress'; do
               status="$(printf '%s' "$checks" | jq -r --arg name "$name" \
                 '([.check_runs[] | select(.name == $name)] | last | .conclusion) // "missing"')"
               if [ "$status" != "success" ]; then
