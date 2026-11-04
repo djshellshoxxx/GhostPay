@@ -74,7 +74,7 @@ describe('SellerPairing', () => {
     await user.click(within(pairing()).getByRole('button', { name: 'Use pasted text' }));
     expect(await within(pairing()).findByText(/No keys are loaded here/)).toBeTruthy();
     expect(within(pairing()).getByText(/confirm them out of band/)).toBeTruthy();
-    expect(pairing().querySelector('.notice-warn, [class*="warn"]')).not.toBeNull();
+    expect(within(pairing()).getByText(/No keys are loaded here/).closest('.notice')?.classList.contains('notice-warn')).toBe(true);
     expect(getSessionPublic()).toBeUndefined();
   });
 
