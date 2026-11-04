@@ -177,7 +177,7 @@ describe('policy pay: no second wallet request after a broadcast or an unknown o
   });
 });
 
-const ALREADY_PAID = /You already sent this exact payment \(same payee, token and amount\) from this tab: transaction 0x9{64}\. Check it in your wallet or a block explorer\. To pay again on purpose, clear it under Wallet attempts first\./;
+const ALREADY_PAID = /You already sent this exact payment \(same payee, token and amount\) from this tab: transaction 0x9{64}\. Check it in your wallet or a block explorer\. To pay again on purpose, clear this payment under Wallet attempts first, and for a token payment also its approval\./;
 const journal = () => screen.getByRole('region', { name: 'Wallet attempt journal' });
 
 describe('policy pay: a verified repeat stays blocked until cleared (by design)', () => {
@@ -255,6 +255,72 @@ describe('policy pay: a verified repeat stays blocked until cleared (by design)'
     await user.click(screen.getByRole('button', { name: 'Send payment' }));
     expect(await screen.findAllByText(/attempt journal is unavailable or invalid/)).not.toHaveLength(0);
     expect(walletSends(w)).toBe(0);
+  });
+});
+
+/** ERC-20 fixture: the approve grants 5000, a payment request consumes it (it mined, even when the wallet reply was lost). */
+async function erc20Fixture(opts: { readonly loseFirstPaymentReply?: boolean } = {}) {
+  const w = new MockWallet({ chainId: SEPOLIA });
+  const mirror = walletMirror(w);
+  const asked: string[] = [];
+  let lose = opts.loseFirstPaymentReply === true;
+  let granted = false;
+  const orig = w.request.bind(w);
+  w.request = async (args) => {
+    if (args.method !== 'eth_sendTransaction') return orig(args);
+    const to = String((args.params as [{ to: string }])[0].to).toLowerCase();
+    asked.push(to);
+    granted = to === TOKEN.toLowerCase();
+    if (lose && to === ROUTER.toLowerCase()) { lose = false; throw new Error('connection lost'); }
+    return orig(args);
+  };
+  const rpc = fakeChain(SEPOLIA, {
+    ...deploymentCalls(),
+    extra: (method, params) => {
+      if (method === 'eth_call' && (params[0] as { to: string }).to.toLowerCase() === TOKEN.toLowerCase()) return encodeAbiParameters([{ type: 'uint256' }], [granted ? 5000n : 0n]);
+      return mirror(method);
+    },
+  });
+  const user = await open(makeServices({ createRpc: () => Promise.resolve(rpc), discoverWallets: () => Promise.resolve([info(w)]), sleep: () => Promise.resolve() }));
+  await connect(user);
+  return { user, asked };
+}
+const clearRecord = async (user: ReturnType<typeof userEvent.setup>, kind: 'approval' | 'payment'): Promise<void> => {
+  const item = within(journal()).getAllByRole('listitem').find((li) => li.textContent?.startsWith(`${kind} on chain`) === true);
+  if (item === undefined) throw new Error(`no ${kind} record`);
+  await user.click(within(item).getByRole('button', { name: 'Clear this attempt after checking my wallet' }));
+};
+
+describe('policy pay: ERC-20 repeats and the attempt journal', () => {
+  it('after an unknown payment outcome, a re-review sends no new approval even when the approval record was cleared', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const { user, asked } = await erc20Fixture({ loseFirstPaymentReply: true });
+    await reviewPay(user, TOKEN, '5000');
+    await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    expect(await screen.findByText(/unknown outcome and may already have been submitted/)).toBeTruthy();
+    expect(asked).toEqual([TOKEN.toLowerCase(), ROUTER.toLowerCase()]);
+    await clearRecord(user, 'approval');
+    await reviewPay(user, TOKEN, '5000');
+    await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    expect(await screen.findByText(/A previous wallet attempt for this action already exists in this tab/)).toBeTruthy();
+    expect(asked).toHaveLength(2);
+  });
+
+  it('a deliberate ERC-20 repeat is sent after clearing both the payment and its approval', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const { user, asked } = await erc20Fixture();
+    await reviewPay(user, TOKEN, '5000');
+    await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    await screen.findByText(/Payment submitted: 0x9{64} \(confirmed\)/);
+    await reviewPay(user, TOKEN, '5000');
+    await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    expect(await screen.findByText(ALREADY_PAID)).toBeTruthy();
+    expect(asked).toHaveLength(2);
+    await clearRecord(user, 'payment');
+    await clearRecord(user, 'approval');
+    await reviewPay(user, TOKEN, '5000');
+    await user.click(screen.getByRole('button', { name: 'Send payment' }));
+    await vi.waitFor(() => { expect(asked).toEqual([TOKEN.toLowerCase(), ROUTER.toLowerCase(), TOKEN.toLowerCase(), ROUTER.toLowerCase()]); });
   });
 });
 

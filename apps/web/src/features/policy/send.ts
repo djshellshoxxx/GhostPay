@@ -138,6 +138,8 @@ export async function sendPolicyPayment(
   return submitTx(session, prepared.built.tx, rt, status, paymentCheck, onBroadcast, { kind: 'payment', scope });
 }
 
+/** Same text as `beginAttempt`'s duplicate refusal (duplicateAttemptJournal.ts). */
+const DUPLICATE_ATTEMPT = 'A previous wallet attempt for this action already exists in this tab. Check its outcome before explicitly clearing it; do not send again blindly.';
 const ALREADY_SENT = 'This review was already used for a wallet request, so it is never sent again (the payment may already have gone to your wallet). Check your wallet and a block explorer, then review a new payment only if nothing was sent.';
 /** Reviews and prepared calls that have reached the wallet (identity, per tab). */
 const sentReviews = new WeakSet<object>();
@@ -149,15 +151,18 @@ function markSent(guard: PolicySendGuard, prepared: PreparedPolicyPayment): void
 /** A payment with this scope already returned a hash in this tab; `hash` is that transaction. */
 export class PolicyAlreadyPaidError extends UserFacingError {
   public constructor(public readonly hash: string) {
-    super(`You already sent this exact payment (same payee, token and amount) from this tab: transaction ${hash}. Check it in your wallet or a block explorer. To pay again on purpose, clear it under Wallet attempts first.`);
+    super(`You already sent this exact payment (same payee, token and amount) from this tab: transaction ${hash}. Check it in your wallet or a block explorer. To pay again on purpose, clear this payment under Wallet attempts first, and for a token payment also its approval.`);
     this.name = 'PolicyAlreadyPaidError';
   }
 }
 
 /**
- * Names the earlier transaction instead of the journal's generic duplicate refusal, before any wallet request (the
- * approval included). Fails closed: a journal that cannot be read refuses. Without tab storage the wallet layer keeps
- * no journal either, so there is nothing to look up.
+ * Refuses before any wallet request (the approval included) when the journal holds any attempt with this payment's
+ * key: one that returned a hash is named ({@link PolicyAlreadyPaidError}); one with an unknown outcome gets the
+ * journal's own duplicate refusal. Otherwise an unknown payment that actually mined (consuming the allowance) would
+ * lead to a fresh, orphaned approve before the wallet layer refused the payment. This refuses exactly what
+ * `beginAttempt` would refuse for the payment, only earlier. Fails closed: a journal that cannot be read refuses.
+ * Without tab storage the wallet layer keeps no journal either, so there is nothing to look up.
  */
 function refuseIfAlreadyPaid(key: string): void {
   let earlier: WalletAttempt | undefined;
@@ -168,7 +173,9 @@ function refuseIfAlreadyPaid(key: string): void {
   } catch (e) {
     throw e instanceof UserFacingError ? e : new UserFacingError('The wallet attempt journal is unavailable or invalid. No new wallet request was started.');
   }
-  if (earlier?.status === 'submitted' && earlier.hash !== undefined) throw new PolicyAlreadyPaidError(earlier.hash);
+  if (earlier === undefined) return;
+  if (earlier.hash !== undefined) throw new PolicyAlreadyPaidError(earlier.hash);
+  throw new UserFacingError(DUPLICATE_ATTEMPT);
 }
 
 /**
@@ -177,7 +184,8 @@ function refuseIfAlreadyPaid(key: string): void {
  * Any earlier attempt with this scope blocks the wallet request: one with an unknown outcome, one that returned a hash,
  * and one that was verified and confirmed. Records do not expire; only the user clears them under Wallet attempts.
  * Policy payments have no invoice identity and the router has no replay guard, so this record is the only thing that
- * stops a silent second payment; a deliberate repeat needs that explicit clear (or a new tab). Matches Pay, whose
+ * stops a silent second payment; a deliberate repeat needs that explicit clear (or a new tab). For a token payment the
+ * approval record (same scope plus the approve calldata) must be cleared too, or the new approve is refused. Matches Pay, whose
  * scope is the invoice digest.
  */
 export function policyPaymentScope(session: WalletSession, prepared: PreparedPolicyPayment, deployment: PolicyChainDeployment): Hex {
