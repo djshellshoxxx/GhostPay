@@ -1,12 +1,38 @@
-import { captureSessionGuard, captureSessionVersionGuard, exportKeystore, importKeystore, verifyVaultForCurrentSession } from './session';
-import type { KeystoreOptions } from './keystore';
+import {
+  armSessionVault,
+  captureSessionGuard,
+  captureSessionVersionGuard,
+  exportKeystore,
+  forgetSessionVaultCopy,
+  getSessionBackup,
+  getSessionPublic,
+  importKeystore,
+  sessionHasExternalCopy,
+  sessionVaultRecord,
+  verifyVaultForCurrentSession,
+  type SessionPublic,
+} from './session';
+import { decryptKeystore, validateKeystoreEnvelope, type KeystoreOptions } from './keystore';
 import { UserFacingError } from './errors';
 
 /** Store interface kept deliberately small so the browser adapter can be replaced in tests. */
 export interface KeyVaultStore {
   get(): Promise<string | undefined>;
-  putIfEmpty(ciphertext: string): Promise<void>;
-  delete(): Promise<void>;
+  /**
+   * Atomically adds the ciphertext only if no vault exists. `stillCurrent` throws once the initiating key session is
+   * gone; adapters call it after any asynchronous wait and before the write can commit, and must not commit after it throws.
+   */
+  putIfEmpty(ciphertext: string, stillCurrent: () => void): Promise<void>;
+  /** Deletes the vault only if the stored record still equals `expected`, atomically; otherwise rejects with VaultChangedError. */
+  delete(expected: string): Promise<void>;
+}
+
+/** The stored vault is no longer the record the user confirmed deleting; nothing was deleted. */
+export class VaultChangedError extends UserFacingError {
+  public constructor() {
+    super('The saved encrypted vault changed since you asked to delete it, so nothing was deleted. Review the current vault and try again.');
+    this.name = 'VaultChangedError';
+  }
 }
 
 const DB_NAME = 'ghostpay-encrypted-seller-vault';
@@ -54,29 +80,44 @@ export class IndexedDbKeyVaultStore implements KeyVaultStore {
     });
   }
 
-  async putIfEmpty(ciphertext: string): Promise<void> {
+  async putIfEmpty(ciphertext: string, stillCurrent: () => void): Promise<void> {
     const db = await this.db();
+    stillCurrent();
     await new Promise<void>((resolve, reject) => {
       const tx = db.transaction(STORE_NAME, 'readwrite');
       let exists = false;
+      let stale: Error | undefined;
       const request = tx.objectStore(STORE_NAME).add(ciphertext, RECORD_KEY);
+      // Last point before the transaction can commit: abort it if the initiating session has been revoked meanwhile.
+      request.onsuccess = () => {
+        try { stillCurrent(); } catch (error) {
+          stale = error instanceof Error ? error : new UserFacingError('Seller keys changed during this action. Try again.');
+          tx.abort();
+        }
+      };
       request.onerror = () => { if (request.error?.name === 'ConstraintError') exists = true; };
+      const failed = (): void => {
+        reject(stale ?? new UserFacingError(exists ? 'A saved encrypted vault already exists. Delete it before saving a different key set.' : 'Could not save encrypted browser storage.'));
+      };
       tx.oncomplete = () => { resolve(); };
-      tx.onerror = () => {
-        reject(new UserFacingError(exists ? 'A saved encrypted vault already exists. Delete it before saving a different key set.' : 'Could not save encrypted browser storage.'));
-      };
-      tx.onabort = () => {
-        reject(new UserFacingError(exists ? 'A saved encrypted vault already exists. Delete it before saving a different key set.' : 'Could not save encrypted browser storage.'));
-      };
+      tx.onerror = failed;
+      tx.onabort = failed;
     });
   }
 
-  async delete(): Promise<void> {
+  async delete(expected: string): Promise<void> {
     const db = await this.db();
     await new Promise<void>((resolve, reject) => {
+      // Compare and delete inside one readwrite transaction so another tab cannot replace the record in between.
       const tx = db.transaction(STORE_NAME, 'readwrite');
-      tx.objectStore(STORE_NAME).delete(RECORD_KEY);
-      tx.oncomplete = () => { resolve(); };
+      const store = tx.objectStore(STORE_NAME);
+      const request = store.get(RECORD_KEY);
+      let changed = false;
+      request.onsuccess = () => {
+        if (request.result === expected) store.delete(RECORD_KEY);
+        else changed = true;
+      };
+      tx.oncomplete = () => { if (changed) reject(new VaultChangedError()); else resolve(); };
       tx.onerror = () => { reject(new UserFacingError('Could not delete encrypted browser storage.')); };
       tx.onabort = () => { reject(new UserFacingError('Could not delete encrypted browser storage.')); };
     });
@@ -87,12 +128,18 @@ export class IndexedDbKeyVaultStore implements KeyVaultStore {
 export class MemoryKeyVaultStore implements KeyVaultStore {
   private ciphertext: string | undefined;
   get(): Promise<string | undefined> { return Promise.resolve(this.ciphertext); }
-  putIfEmpty(ciphertext: string): Promise<void> {
+  /** The guard is optional only so tests can seed a record directly; saveEncryptedVault always passes one. */
+  putIfEmpty(ciphertext: string, stillCurrent?: () => void): Promise<void> {
+    stillCurrent?.();
     if (this.ciphertext !== undefined) throw new UserFacingError('A saved encrypted vault already exists. Delete it before saving a different key set.');
     this.ciphertext = ciphertext;
     return Promise.resolve();
   }
-  delete(): Promise<void> { this.ciphertext = undefined; return Promise.resolve(); }
+  delete(expected: string): Promise<void> {
+    if (this.ciphertext !== expected) return Promise.reject(new VaultChangedError());
+    this.ciphertext = undefined;
+    return Promise.resolve();
+  }
 }
 
 const browserStore = new IndexedDbKeyVaultStore();
@@ -107,37 +154,181 @@ function activeStore(): KeyVaultStore {
   return testStore ?? browserStore;
 }
 
-export function readEncryptedVault(store: KeyVaultStore = activeStore()): Promise<string | undefined> {
-  return store.get();
+/** The ciphertext was durably saved, but the loaded seller keys changed after the commit. */
+export class VaultSavedForPreviousKeysError extends UserFacingError {
+  public constructor() {
+    super('The encrypted vault was saved for the seller keys that were loaded when you started, but the keys in memory changed afterward. Unlock or delete the saved vault before relying on it.');
+    this.name = 'VaultSavedForPreviousKeysError';
+  }
 }
 
-export async function saveEncryptedVault(passphrase: string, options: KeystoreOptions = {}, store: KeyVaultStore = activeStore()): Promise<void> {
+/** The public meta-address a vault record names, shown before it is deleted; undefined for a record that is not a keystore. */
+export function vaultMetaAddress(record: string): string | undefined {
+  try {
+    return validateKeystoreEnvelope(record).meta.metaAddress;
+  } catch {
+    return undefined;
+  }
+}
+
+/** True when `record` names exactly the loaded key set (meta-address and invoice signer). */
+function holdsLoadedKeySet(record: string): boolean {
+  const loaded = getSessionPublic();
+  if (loaded === undefined) return false;
+  try {
+    const { meta } = validateKeystoreEnvelope(record);
+    return meta.metaAddress === loaded.metaAddress && meta.signer === loaded.signerPublicKey;
+  } catch {
+    return false;
+  }
+}
+
+/** Proves the user knows `record`'s passphrase without loading its keys; the decrypted bytes are wiped at once. */
+async function provePassphrase(record: string, passphrase: string): Promise<void> {
+  const secrets = await decryptKeystore(record, passphrase);
+  secrets.spendingKey.fill(0);
+  secrets.viewingKey.fill(0);
+  secrets.signingKey.fill(0);
+}
+
+/**
+ * Reads the saved vault. A vault for the loaded keys arms their step-up for this session, so deleting it later changes
+ * nothing (L1-02). When the record the keys are tied to is no longer the one saved here (deleted in another tab, site
+ * data cleared), they count as unsaved again (L1-01); their step-up stays armed.
+ */
+export async function readEncryptedVault(store: KeyVaultStore = activeStore()): Promise<string | undefined> {
+  const tied = sessionVaultRecord();
+  const record = await store.get();
+  // Compared with the keys loaded when the read completes, so a key change during the read cannot arm the wrong keys.
+  if (record !== undefined && holdsLoadedKeySet(record)) armSessionVault(record, () => undefined);
+  // Only the record tied before the read: keys loaded or saved meanwhile are tied to another one, which this leaves alone.
+  if (tied !== undefined && record !== tied) forgetSessionVaultCopy(tied);
+  return record;
+}
+
+/**
+ * Step-up before the loaded keys leave this tab under a new passphrase (keystore download, a new vault record): when they
+ * are tied to a vault (unlocked from, saved to, found in or verified against it in this session, or a saved vault names
+ * the same meta-address) its passphrase is required (L1-02). Resolves to a guard for the same keys, or to undefined when no
+ * vault is involved; a store that cannot be read counts as no vault, because a record the keys are tied to is held in memory.
+ */
+export async function authorizeKeyExport(vaultPassphrase: string, store: KeyVaultStore = activeStore()): Promise<(() => void) | undefined> {
   const unchanged = captureSessionGuard();
+  const loaded = getSessionPublic();
+  let record = sessionVaultRecord();
+  if (record === undefined) {
+    const stored = await store.get().catch(() => undefined);
+    unchanged();
+    if (stored !== undefined && vaultMetaAddress(stored) === loaded?.metaAddress) record = stored;
+  }
+  if (record === undefined) return undefined;
+  if (vaultPassphrase === '') throw new UserFacingError('These seller keys are tied to an encrypted vault in this browser. Enter that vault’s passphrase to export them or save them again.');
+  await provePassphrase(record, vaultPassphrase);
+  unchanged();
+  if (holdsLoadedKeySet(record)) {
+    // undefined when storage cannot be read, which is not evidence that the record was deleted.
+    const saved = await store.get().then((value) => ({ value }), () => undefined);
+    armSessionVault(record, unchanged, { stored: saved?.value === record });
+    // Deleted in another tab or with the site data: the keys count as unsaved again (L1-01); the step-up stays armed.
+    if (saved !== undefined && saved.value !== record) forgetSessionVaultCopy(record);
+  }
+  return unchanged;
+}
+
+/** Saves the loaded keys as the browser vault; keys already tied to a vault need that vault's passphrase first (L1-02). */
+export async function saveEncryptedVault(passphrase: string, options: KeystoreOptions = {}, store: KeyVaultStore = activeStore(), vaultPassphrase = ''): Promise<void> {
+  const unchanged = captureSessionGuard();
+  if (await store.get() !== undefined) throw new UserFacingError('A saved encrypted vault already exists. Delete it before saving a different key set.');
+  unchanged();
+  if (sessionVaultRecord() !== undefined) {
+    await authorizeKeyExport(vaultPassphrase, store);
+    unchanged();
+  }
   const ciphertext = await exportKeystore(passphrase, options);
   unchanged();
   if (await store.get() !== undefined) throw new UserFacingError('A saved encrypted vault already exists. Delete it before saving a different key set.');
   unchanged();
-  await store.putIfEmpty(ciphertext);
-  unchanged();
+  await store.putIfEmpty(ciphertext, unchanged);
+  // The write is durable now. Never roll it back; if the keys changed after the commit, say exactly what happened.
+  try { unchanged(); } catch { throw new VaultSavedForPreviousKeysError(); }
+  // These keys now have a copy in this browser, and its passphrase guards them from here on.
+  armSessionVault(ciphertext, unchanged, { replace: true, stored: true });
 }
 
-export async function unlockEncryptedVault(passphrase: string, store: KeyVaultStore = activeStore(), signal?: AbortSignal): Promise<void> {
+/**
+ * Unlocks the saved vault into memory. Loaded keys without any backup would be lost for good, so they are replaced only
+ * when the caller passes `replaceUnsavedKeys` after the user confirmed (L1-01).
+ */
+export async function unlockEncryptedVault(passphrase: string, store: KeyVaultStore = activeStore(), signal?: AbortSignal, options: { readonly replaceUnsavedKeys?: boolean } = {}): Promise<SessionPublic> {
   if (signal?.aborted === true) throw new UserFacingError('The keystore import was closed.');
+  if (getSessionBackup()?.backedUp === false && options.replaceUnsavedKeys !== true) {
+    throw new UserFacingError('The seller keys loaded now have no backup, and unlocking the vault would replace them. Back them up first, or confirm that they may be replaced.');
+  }
   const unchanged = captureSessionVersionGuard();
   const ciphertext = await store.get();
   unchanged();
+  // Another tab may have deleted or replaced the vault the loaded keys were saved to or unlocked from since this tab last
+  // read it: then they have no copy left, and replacing them needs the same confirmation as unsaved keys (C-R12).
+  const tied = sessionVaultRecord();
+  if (tied !== undefined && ciphertext !== tied) forgetSessionVaultCopy(tied);
   if (ciphertext === undefined) throw new UserFacingError('No encrypted seller vault is saved in this browser.');
-  await importKeystore(ciphertext, passphrase, signal);
+  if (getSessionBackup()?.backedUp === false && options.replaceUnsavedKeys !== true) {
+    throw new UserFacingError('The seller keys loaded now have no backup, and unlocking the vault would replace them. Back them up first, or confirm that they may be replaced.');
+  }
+  return importKeystore(ciphertext, passphrase, signal, 'vault');
 }
 
+/**
+ * Spending step-up for Sweep. Keys tied to a vault are always checked against that record, also after it was deleted or
+ * replaced in storage (L1-02); otherwise any saved vault must hold the loaded keys and accept the passphrase.
+ */
 export async function authorizeEncryptedVault(passphrase: string, store: KeyVaultStore = activeStore()): Promise<(() => void) | undefined> {
   const unchanged = captureSessionVersionGuard();
-  const ciphertext = await store.get();
+  const armed = sessionVaultRecord();
+  const ciphertext = armed ?? await store.get();
   unchanged();
   if (ciphertext === undefined) return undefined;
-  return verifyVaultForCurrentSession(ciphertext, passphrase);
+  const guard = await verifyVaultForCurrentSession(ciphertext, passphrase);
+  if (armed === undefined) armSessionVault(ciphertext, guard, { stored: true });
+  return guard;
 }
 
-export async function deleteEncryptedVault(store: KeyVaultStore = activeStore()): Promise<void> {
-  await store.delete();
+/**
+ * Whether the loaded keys survive a wipe (L1-01): the user holds a copy outside this browser, or the vault record they
+ * were unlocked from or saved to is still the one saved here. Without keys, or when storage cannot be read, false; also
+ * for hex imported without its signing key, whose generated signing key would not survive (C-R10). A vault copy found
+ * missing (deleted in another tab, site data cleared) is recorded, so the keys count as unsaved again.
+ */
+export async function loadedKeysRecoverable(store: KeyVaultStore = activeStore()): Promise<boolean> {
+  const backup = getSessionBackup();
+  if (backup === undefined || !backup.backedUp) return false;
+  if (sessionHasExternalCopy()) return true;
+  const record = sessionVaultRecord();
+  if (record === undefined) return false;
+  let stored: string | undefined;
+  try {
+    stored = await store.get();
+  } catch {
+    return false;
+  }
+  if (stored === record) return true;
+  forgetSessionVaultCopy(record);
+  return false;
+}
+
+/**
+ * Deletes the saved vault only if it is still exactly the `expected` ciphertext the user confirmed. A vault that names the
+ * loaded meta-address is deleted only with its passphrase, so deleting it cannot switch the spending step-up off or wipe
+ * the only copy of the loaded keys unnoticed (L1-02); any other record may go once the user saw its meta-address.
+ */
+export async function deleteEncryptedVault(expected: string, store: KeyVaultStore = activeStore(), passphrase?: string): Promise<void> {
+  const unchanged = captureSessionVersionGuard();
+  const loaded = getSessionPublic();
+  if (loaded !== undefined && vaultMetaAddress(expected) === loaded.metaAddress) {
+    if (passphrase === undefined || passphrase === '') throw new UserFacingError('This vault holds the seller keys loaded now. Enter its passphrase to delete it.');
+    await provePassphrase(expected, passphrase);
+  }
+  unchanged();
+  await store.delete(expected);
+  forgetSessionVaultCopy(expected);
 }

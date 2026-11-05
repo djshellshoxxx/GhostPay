@@ -4,13 +4,14 @@ import {
   createInvoice,
   encodeFragment,
   signInvoice,
+  type BufferPolicy,
   type Invoice,
   type LineItem,
   type RandomSource,
 } from '@ghostpay/invoice-schema';
 import { UserFacingError } from './errors';
 import { fiatDecimals, parseUnits, taxFor } from './format';
-import { getSessionPublic, requireSession } from './session';
+import { getSessionPublic, withSessionSecrets } from './session';
 import { passphraseProblem } from './keystore';
 
 export interface LineItemInput {
@@ -38,6 +39,8 @@ export interface InvoiceForm {
   readonly encrypt: boolean;
   /** Protect the whole invoice with a secret shared out of band. */
   readonly passphrase?: string;
+  /** Seller gas-buffer policy; when set the invoice is schema v2 (ADR-0024). No Create-page control yet. */
+  readonly bufferPolicy?: BufferPolicy;
 }
 
 export interface CreatedInvoice {
@@ -95,7 +98,6 @@ export async function buildInvoiceLink(
   nowSeconds: number,
   rng?: RandomSource,
 ): Promise<CreatedInvoice> {
-  const session = requireSession();
   const pub = getSessionPublic();
   if (pub === undefined) throw new UserFacingError('Load or generate seller keys first (Seller keys).');
   const chain = findChain(form.chainId);
@@ -147,10 +149,12 @@ export async function buildInvoiceLink(
       feePolicy: form.feePolicy,
       ...(memo === '' ? {} : { memo }),
       signer: pub.signerPublicKey,
+      ...(form.bufferPolicy === undefined ? {} : { bufferPolicy: form.bufferPolicy }),
     },
     rng,
   );
-  const signed = signInvoice(invoice, session.signingKey);
+  // The scalars are borrowed for this call only and wiped before it returns (L1-07). Nothing above awaits, so they belong to `pub`.
+  const signed = withSessionSecrets((s) => signInvoice(invoice, s.signingKey));
   const fragment = await encodeFragment(signed, {
     encrypt: form.passphrase === undefined ? form.encrypt : true,
     ...(form.passphrase === undefined ? {} : { passphrase: form.passphrase }),

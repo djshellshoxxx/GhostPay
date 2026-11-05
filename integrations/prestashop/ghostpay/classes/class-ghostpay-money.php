@@ -9,6 +9,36 @@ defined( '_PS_VERSION_' ) || defined( 'GHOSTPAY_CLI_TEST' ) || exit;
 
 final class GhostPay_Money {
 
+	/** ISO-4217 codes without minor units, exactly as the GhostPay app reads amounts (apps/web fiatDecimals()). */
+	const ZERO_DECIMAL_CURRENCIES = array( 'JPY', 'KRW', 'VND', 'CLP', 'ISK', 'UGX', 'XAF', 'XOF' );
+
+	/**
+	 * Minor-unit exponent of amountMinor for a currency, as the GhostPay app reads it: 0 for ZERO_DECIMAL_CURRENCIES,
+	 * 2 for every other code (three-decimal currencies such as KWD included). Never the shop's display decimals.
+	 *
+	 * @param string $currency ISO-4217 code.
+	 * @return int|null Null for a malformed code.
+	 */
+	public static function currency_decimals( string $currency ): ?int {
+		if ( ! preg_match( '/\A[A-Z]{3}\z/', $currency ) ) {
+			return null;
+		}
+		return in_array( $currency, self::ZERO_DECIMAL_CURRENCIES, true ) ? 0 : 2;
+	}
+
+	/**
+	 * Decimal amount -> amountMinor of $currency ("1500.00" JPY -> "1500", "13" USD -> "1300"). Null for a malformed
+	 * code or amount, and when the amount needs more decimals than the currency has ("12.345" KWD): fails closed
+	 * only on precision loss.
+	 *
+	 * @param string $amount   Decimal string.
+	 * @param string $currency ISO-4217 code.
+	 */
+	public static function currency_minor( string $amount, string $currency ): ?string {
+		$decimals = self::currency_decimals( $currency );
+		return null === $decimals ? null : self::to_minor( $amount, $decimals );
+	}
+
 	/**
 	 * "12.50" with 2 decimals -> "1250". Returns null for anything that is not a plain non-negative decimal
 	 * with at most $decimals fraction digits, or if the result would exceed 30 digits.

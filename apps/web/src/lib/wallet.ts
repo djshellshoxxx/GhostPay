@@ -264,13 +264,19 @@ const HASH_RE = /^0x[0-9a-fA-F]{64}$/;
 
 export interface WalletAttemptOptions {
   readonly kind: AttemptInput['kind'];
-  /** Logical action identity (for payments, the signed invoice digest), independent of fresh stealth randomness. */
+  /**
+   * Logical action identity. For payments, the signed invoice digest: it replaces the calldata, which carries fresh
+   * stealth randomness. For other kinds it narrows the calldata key, so the same approval or revoke for a later invoice
+   * is a new action while repeating it for one invoice stays a duplicate (L2-I3).
+   */
   readonly scope?: string;
 }
 export function walletAttemptKey(s: WalletSession, tx: TxRequest, options?: WalletAttemptOptions): string {
+  const call = [tx.to.toLowerCase(), tx.data.toLowerCase(), tx.value.toString()];
+  const payment = options?.kind === 'payment' && options.scope !== undefined;
   return keccak256(toBytes(JSON.stringify([
-    s.chainId, options?.kind === 'payment' && options.scope !== undefined ? 'invoice-payer' : s.account.toLowerCase(), options?.kind ?? 'transaction',
-    options?.scope ?? [tx.to.toLowerCase(), tx.data.toLowerCase(), tx.value.toString()],
+    s.chainId, payment ? 'invoice-payer' : s.account.toLowerCase(), options?.kind ?? 'transaction',
+    payment ? options.scope : options?.scope === undefined ? call : [options.scope, ...call],
   ])));
 }
 /** Returned hash is preserved even if tab storage fails after broadcast. */

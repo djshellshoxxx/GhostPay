@@ -48,6 +48,7 @@ const NOTES = {
   '@vitest/coverage-v8': ['Coverage provider for vitest.', 'Dev only.'],
   '@vitejs/plugin-react': ['React plugin for vite.', 'Dev only.'],
   jsdom: ['DOM implementation for web unit tests.', 'Dev only.'],
+  'axe-core': ['Rendered accessibility audits in Playwright for the supported core routes and key states.', 'Dev only; pinned to 4.14.0 with integrity from the official upstream lock. No product import. Automated findings do not replace screen-reader/device review.'],
   '@playwright/test': ['Browser end-to-end tests for `apps/web` (Chromium only so far).', 'Dev only. Downloads browsers outside npm (not part of the lockfile).'],
   '@testing-library/react': ['React component test helpers.', 'Dev only.'],
   '@testing-library/user-event': ['User interaction simulation in tests.', 'Dev only.'],

@@ -10,22 +10,29 @@ import { ManifestBanner } from '../components/ManifestBanner';
 import { extractFragment } from '../lib/fragment';
 import { safeText, payeeFingerprint } from '../lib/displayText';
 import { formatCountdown, formatFiat, formatUnits, formatUnix, shortHex } from '../lib/format';
-import { userMessage } from '../lib/errors';
+import { UserFacingError, userMessage } from '../lib/errors';
 import { DelayScheduler, randomDelayMs, type ScheduleSnapshot } from '../lib/jitter';
 import {
   createPayContext,
+  applyBufferPolicy,
+  bufferOffered,
   decodeForDisplay,
   quoteBuffer,
+  assertInvoiceStillPayable,
+  assertPreparedBufferFresh,
   reviewInvoice,
   type BufferQuote,
   type SweepSimulation,
   type PayContext,
 } from '../lib/pay';
 import { verifyManifestForFlow } from '../lib/manifest';
-import { PostBroadcastError, buildReceipt, classifyPayerPermit, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, type ApprovalPlan, type Runtime, type SubmitResult } from '../lib/payExec';
+import { PaymentProofQr } from '../components/PaymentRequestQr';
+import { PrintBillButton } from '../components/PrintableBill';
+import { PermitRejectedError, PostBroadcastError, buildReceipt, classifyPayerPermit, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, type ApprovalPlan, type Runtime, type SubmitResult } from '../lib/payExec';
 import { useServices } from '../lib/services';
 import { connectWallet, walletWarnings, type WalletInfo, type WalletSession } from '../lib/wallet';
 import { useApp } from '../state';
+import { notifyEmbedDone } from '../lib/embedHost';
 import { captureSessionVersionGuard } from '../lib/session';
 import { bindReceiptToInvoice, MAX_RECEIPT_JSON_BYTES, parseVerifiedReceipt, type BoundReceipt } from '../lib/receipts';
 
@@ -62,7 +69,13 @@ interface InvoiceQrPreview {
   readonly assertSession: () => void;
 }
 
-export function Pay(): ReactNode {
+const SUPPORTED_INVOICE_ERROR = 'This build supports fixed-amount invoices without a seller buffer policy.';
+
+function supportsInvoice(invoice: ParsedInvoice['invoice'], supportedOnly: boolean): boolean {
+  return !supportedOnly || (invoice.v === 1 && invoice.amountPolicy.mode === 'fixed_token');
+}
+
+export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolean } = {}): ReactNode {
   const app = useApp();
   const services = useServices();
   const [parsed, setParsed] = useState<ParsedInvoice | undefined>(undefined);
@@ -82,6 +95,8 @@ export function Pay(): ReactNode {
   const [useDelay, setUseDelay] = useState(false);
   const [useBuffer, setUseBuffer] = useState(false);
   const [bufferQuote, setBufferQuote] = useState<BufferQuote | undefined>(undefined);
+  // Spec 04: after a signed permit was refused, the next (user-pressed) Prepare uses a one-time approval.
+  const [permitDeclined, setPermitDeclined] = useState(false);
   const [schedule, setSchedule] = useState<ScheduleSnapshot | undefined>(undefined);
   const [ctx, setCtx] = useState<PayContext | undefined>(undefined);
   const [ctxError, setCtxError] = useState<string | undefined>(undefined);
@@ -102,6 +117,8 @@ export function Pay(): ReactNode {
   const receiptBusyRef = useRef(false);
   const receiptImportRevision = useRef(0);
   const [approval, setApproval] = useState<ApprovalPlan | undefined>(undefined);
+  const [approvalHash, setApprovalHash] = useState<string | undefined>(undefined);
+  const [paymentMayHaveBeenSent, setPaymentMayHaveBeenSent] = useState(false);
   const [granted, setGranted] = useState<bigint | undefined>(undefined);
   /** Set once the wallet broadcast but verification failed: terminal, Send is never offered again. */
   const [broadcast, setBroadcast] = useState<string | undefined>(undefined);
@@ -113,7 +130,7 @@ export function Pay(): ReactNode {
 
   const fragment = app.fragment;
   const pinned = app.settings.pinnedSigners;
-  const invoiceQrScope = useMemo(() => ({ fragment, pinned, session: app.session, reset: invoiceQrReset }), [fragment, pinned, app.session, invoiceQrReset]);
+  const invoiceQrScope = useMemo(() => ({ fragment, pinned, session: app.session, reset: invoiceQrReset, supportedOnly }), [fragment, pinned, app.session, invoiceQrReset, supportedOnly]);
   const currentInvoiceQrScope = useRef(invoiceQrScope); currentInvoiceQrScope.current = invoiceQrScope;
   const invalidateInvoiceQr = useCallback((): void => {
     invoiceQrRevision.current += 1;
@@ -158,6 +175,7 @@ export function Pay(): ReactNode {
     try {
       const result = await openFragment(candidate, { pinnedSigners: pinned });
       if (!current()) return false;
+      if (result.status === 'ok' && !supportsInvoice(result.parsed.invoice, supportedOnly)) throw new UserFacingError(SUPPORTED_INVOICE_ERROR);
       setInvoiceQrPreview({ fragment: candidate, result, revision, scope, assertSession });
       return true;
     } catch (error) {
@@ -182,7 +200,7 @@ export function Pay(): ReactNode {
     const revision = flowRevision.current;
     const sessionGuard = captureSessionVersionGuard();
     const current = (): boolean => {
-      if (!live || flowRevision.current !== revision || latest.current.fragment !== fragment) return false;
+      if (!live || flowRevision.current !== revision || latest.current.fragment !== fragment || latest.current.supportedOnly !== supportedOnly) return false;
       try { sessionGuard(); return true; } catch { cancelInvoiceOpening(fragment, revision); return false; }
     };
     receiptImportRevision.current += 1;
@@ -198,10 +216,13 @@ export function Pay(): ReactNode {
     setBuiltForContext(undefined);
     setResultForContext(undefined);
     setResult(undefined);
+    setPaymentMayHaveBeenSent(false);
     setBroadcast(undefined);
     setBroadcastKind('payment');
     setApproval(undefined);
     setGranted(undefined);
+    setApprovalHash(undefined);
+    setPermitDeclined(false);
     setWallet(undefined);
     setStatus('');
     setError(undefined);
@@ -227,6 +248,12 @@ export function Pay(): ReactNode {
         }
         const p = result.parsed;
         setNeedsPassphrase(false);
+        if (!supportsInvoice(p.invoice, supportedOnly)) {
+          setInvoicePassphrase('');
+          setRejected(SUPPORTED_INVOICE_ERROR);
+          setPhase('input');
+          return;
+        }
         setRejected(undefined);
         setParsed(p);
         setPhase('review');
@@ -241,7 +268,7 @@ export function Pay(): ReactNode {
     return () => {
       live = false;
     };
-  }, [fragment, pinned]);
+  }, [fragment, pinned, supportedOnly]);
 
   const manifest = useManifest(parsed?.invoice.chainId);
   const nowSeconds = Math.floor(services.nowMs() / 1000);
@@ -254,10 +281,10 @@ export function Pay(): ReactNode {
 
   // Build the payment request (amounts) as soon as the review has no blockers. The review is recomputed from the
   // latest invoice/manifest/clock every time (also when a delay ends), never from a stale closure.
-  const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent });
-  latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent };
+  const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly });
+  latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly };
   const receiptScope = useMemo(() => ({ ctx, session: app.session }), [ctx, app.session]);
-  const authorityMatches = (): boolean => latest.current.wallet === wallet && latest.current.settings === app.settings && latest.current.session === app.session;
+  const authorityMatches = (): boolean => latest.current.wallet === wallet && latest.current.settings === app.settings && latest.current.session === app.session && latest.current.supportedOnly === supportedOnly;
   const cancelInvoiceOpening = (expectedFragment: string | undefined, revision: number): void => {
     if (!invoiceQrMounted.current || flowRevision.current !== revision || latest.current.fragment !== expectedFragment) return;
     flowRevision.current += 1;
@@ -271,16 +298,18 @@ export function Pay(): ReactNode {
   };
 
   const assertCurrentInvoice = (revision: number, invoice: ParsedInvoice['invoice']): void => {
+    if (!supportsInvoice(invoice, latest.current.supportedOnly)) throw new UserFacingError(SUPPORTED_INVOICE_ERROR);
     if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice || latest.current.ctx?.review.invoice !== invoice) {
       throw new Error('The invoice changed. Review it again before continuing.');
     }
   };
   const refreshContext = useCallback(async (): Promise<PayContext | undefined> => {
     const { parsed: p, manifest: m } = latest.current;
-    if (p === undefined || m === undefined) {
+    if (p === undefined || m === undefined || !supportsInvoice(p.invoice, latest.current.supportedOnly)) {
       setCtx(undefined);
       return undefined;
     }
+    const current = (): boolean => latest.current.parsed === p && latest.current.manifest === m && supportsInvoice(p.invoice, latest.current.supportedOnly);
     const now = Math.floor(services.nowMs() / 1000);
     const fresh = reviewInvoice(p, now, m);
     if (fresh.blockers.length > 0) {
@@ -290,22 +319,22 @@ export function Pay(): ReactNode {
     }
     try {
       const rpc = await app.getRpc(p.invoice.chainId);
-      if (latest.current.parsed !== p || latest.current.manifest !== m) return undefined;
+      if (!current()) return undefined;
       // WEB-APP-01: read the manifest back from the chain before any payment is built from it.
       const checked = await verifyManifestForFlow(m, rpc);
-      if (latest.current.parsed !== p || latest.current.manifest !== m) return undefined;
+      if (!current()) return undefined;
       if (checked.status !== 'loaded') {
         setCtx(undefined);
         setCtxError(checked.status === 'invalid' ? checked.reason : 'Payments are disabled on this chain: no deployment manifest is loaded.');
         return undefined;
       }
       const c = await createPayContext(fresh, rpc, { nowSeconds: now });
-      if (latest.current.parsed !== p || latest.current.manifest !== m) return undefined;
+      if (!current()) return undefined;
       setCtx(c);
       setCtxError(undefined);
       return c;
     } catch (e) {
-      if (latest.current.parsed !== p || latest.current.manifest !== m) return undefined;
+      if (!current()) return undefined;
       setCtx(undefined);
       setCtxError(userMessage(e));
       return undefined;
@@ -359,7 +388,9 @@ export function Pay(): ReactNode {
       return undefined;
     }
     try {
-      const q = await quoteBuffer(rpc, Math.floor(services.nowMs() / 1000), sweep);
+      if (invoice === undefined) return undefined;
+      // ADR-0023: a v2 invoice's seller policy bounds (or declines) the buffer before it is shown or built.
+      const q = applyBufferPolicy(await quoteBuffer(rpc, Math.floor(services.nowMs() / 1000), sweep), invoice);
       if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return undefined;
       setBufferQuote(q);
       return q;
@@ -390,7 +421,7 @@ export function Pay(): ReactNode {
     const sessionGuard = captureSessionVersionGuard();
     const fragmentAtStart = fragment;
     const current = (): boolean => {
-      if (!invoiceQrMounted.current || flowRevision.current !== revision || latest.current.fragment !== fragmentAtStart) return false;
+      if (!invoiceQrMounted.current || flowRevision.current !== revision || latest.current.fragment !== fragmentAtStart || latest.current.supportedOnly !== supportedOnly) return false;
       try { sessionGuard(); return true; } catch { cancelInvoiceOpening(fragmentAtStart, revision); return false; }
     };
     setUnlocking(true);
@@ -399,6 +430,15 @@ export function Pay(): ReactNode {
       (result) => {
         if (!current()) return;
         if (result.status !== 'ok') throw new Error('passphrase');
+        if (!supportsInvoice(result.parsed.invoice, latest.current.supportedOnly)) {
+          setParsed(undefined);
+          setCtx(undefined);
+          setNeedsPassphrase(false);
+          setInvoicePassphrase('');
+          setRejected(SUPPORTED_INVOICE_ERROR);
+          setPhase('input');
+          return;
+        }
         setParsed(result.parsed);
         setNeedsPassphrase(false);
         setInvoicePassphrase('');
@@ -619,7 +659,7 @@ export function Pay(): ReactNode {
           if (buffer === undefined) throw new Error('buffer');
         }
         const t = ctx.review.token;
-        let permit = t?.config?.permit === true && buffer === undefined;
+        let permit = t?.config?.permit === true && buffer === undefined && !permitDeclined;
         if (permit) {
           const state = await classifyPayerPermit(ctx, wallet, rt);
           guard();
@@ -635,6 +675,7 @@ export function Pay(): ReactNode {
         guard();
         setApproval(plan);
         setGranted(undefined);
+        setApprovalHash(undefined);
         setBuilt(b);
         setBuiltFor(invoice);
         setBuiltForContext(ctx);
@@ -644,6 +685,7 @@ export function Pay(): ReactNode {
       } catch (e) {
         if (!isCurrent()) return;
         setStatus('');
+        if (e instanceof PermitRejectedError) setPermitDeclined(true);
         if (!(e instanceof Error && e.message === 'buffer')) setError(userMessage(e));
         setPhase('ready');
       }
@@ -665,27 +707,44 @@ export function Pay(): ReactNode {
     const scopedStatus = (message: string): void => { if (isCurrent()) setStatus(message); };
     setError(undefined);
     setPhase('busy');
+    let actualAllowance = granted;
+    let approvalBroadcastHash = approvalHash;
+    let paymentWalletRequested = paymentMayHaveBeenSent;
     void (async () => {
       let stage: 'approval' | 'payment' = approval?.required === true && granted === undefined ? 'approval' : 'payment';
       try {
         const rt = await runtime();
         guard();
-        let actualAllowance = granted;
-        if (approval?.required === true && actualAllowance === undefined) {
-          actualAllowance = await grantApproval(wallet, ctx, approval, rt, scopedStatus, guard, (hash) => {
-            if (!isCurrent()) setPreviousBroadcast({ hash, kind: 'approval' });
-          });
+        // Final validity gate before any wallet request (the initial approval included), rechecked after wallet awaits.
+        // Not part of `guard`: after a broadcast approval the allowance is kept and only the payment is refused.
+        const preSignGuard = (): void => {
           guard();
-          setGranted(actualAllowance);
+          assertInvoiceStillPayable(ctx.review.invoice, rt.nowSeconds());
+          assertPreparedBufferFresh(built, rt.nowSeconds());
+        };
+        preSignGuard();
+        if (approval?.required === true && actualAllowance === undefined) {
+          actualAllowance = await grantApproval(wallet, ctx, approval, rt, scopedStatus, preSignGuard, (hash) => {
+            approvalBroadcastHash = hash;
+            if (isCurrent()) setApprovalHash(hash);
+            else setPreviousBroadcast({ hash, kind: 'approval' });
+          });
+          // Preserve the confirmed allowance before checking whether this flow is still current.
+          if (isCurrent()) setGranted(actualAllowance);
+          guard();
         }
         stage = 'payment';
-        const res = await sendPayment(wallet, ctx, built, rt, scopedStatus, guard);
+        const res = await sendPayment(wallet, ctx, built, rt, scopedStatus, guard, () => {
+          paymentWalletRequested = true;
+          if (isCurrent()) setPaymentMayHaveBeenSent(true);
+        });
         if (!isCurrent()) {
           setPreviousBroadcast({ hash: res.hash, kind: 'payment' });
           app.announce('A transaction may have been submitted for the previous invoice. Check your wallet before taking further action.');
           return;
         }
         setResult(res);
+        notifyEmbedDone({ status: 'submitted', chainId: ctx.review.invoice.chainId, txHash: res.hash });
         setResultForContext(ctx);
         setPhase('done');
         setStatus('');
@@ -695,6 +754,8 @@ export function Pay(): ReactNode {
           if (e instanceof PostBroadcastError) {
             setPreviousBroadcast({ hash: e.hash, kind: stage });
             app.announce('A transaction may have been submitted for the previous invoice. Check your wallet before taking further action.');
+          } else if (approvalBroadcastHash !== undefined) {
+            setPreviousBroadcast({ hash: approvalBroadcastHash, kind: 'approval' });
           }
           return;
         }
@@ -708,7 +769,14 @@ export function Pay(): ReactNode {
           app.announce(`${stage === 'approval' ? 'Approval' : 'Payment'} sent, verification failed. Do not repeat it.`);
           return;
         }
-        setError(userMessage(e));
+        if (actualAllowance !== undefined) {
+          const reason = userMessage(e).replaceAll('Nothing was sent.', '').replaceAll('Nothing was sent', '').trim();
+          const paymentStatus = paymentWalletRequested ? 'the payment was not confirmed' : 'no payment was sent';
+          setError(`Approval was confirmed${approvalBroadcastHash === undefined ? '' : ` (${approvalBroadcastHash})`}, but ${paymentStatus}. ${reason}`);
+          app.announce(`Approval confirmed; ${paymentStatus}.`);
+        } else {
+          setError(userMessage(e));
+        }
         setPhase('prepared');
       }
     })();
@@ -733,6 +801,7 @@ export function Pay(): ReactNode {
         }, (hash) => { if (!isCurrent()) setPreviousBroadcast({ hash, kind: 'approval' }); });
         if (!isCurrent()) return;
         setGranted(undefined);
+        setApprovalHash(undefined);
         setApproval({ ...approval, have: 0n, required: true });
         app.announce('Approval revoked.');
       } catch (e) {
@@ -763,16 +832,20 @@ export function Pay(): ReactNode {
     setResultForContext(undefined);
     setWallet(undefined);
     setResult(undefined);
+    setPaymentMayHaveBeenSent(false);
     setBroadcast(undefined);
     setBroadcastKind('payment');
     setApproval(undefined);
     setGranted(undefined);
+    setApprovalHash(undefined);
     setPhase('input');
   };
 
   /* ------------------------------- rendering ------------------------------- */
 
-  if (parsed === undefined || review === undefined) {
+  const buildRejection = parsed !== undefined && !supportsInvoice(parsed.invoice, supportedOnly) ? SUPPORTED_INVOICE_ERROR : undefined;
+  const inputRejection = buildRejection ?? rejected;
+  if (parsed === undefined || review === undefined || buildRejection !== undefined) {
     return (
       <section aria-labelledby="pay-h">
         <h2 id="pay-h">Pay an invoice</h2>
@@ -782,8 +855,8 @@ export function Pay(): ReactNode {
             Check your wallet before paying again. The transaction hash is <Mono>{previousBroadcast.hash}</Mono>. This was a {previousBroadcast.kind} for the invoice that was open before you changed links.
           </Notice>
         )}
-        {rejected !== undefined && <Notice kind="error" title="Invoice rejected">{rejected} Nothing was shown or sent.</Notice>}
-        {fragment !== undefined && rejected === undefined && <p role="status">Reading invoice…</p>}
+        {inputRejection !== undefined && <Notice kind="error" title="Invoice rejected">{inputRejection}{inputRejection === SUPPORTED_INVOICE_ERROR ? ' Payment controls remain unavailable.' : ' Nothing was shown or sent.'}</Notice>}
+        {fragment !== undefined && inputRejection === undefined && <p role="status">Reading invoice…</p>}
         {needsPassphrase && (
           <form onSubmit={onUnlock} className="stack">
             <Notice kind="warn" title="Passphrase-protected invoice">
@@ -832,6 +905,13 @@ export function Pay(): ReactNode {
   const ready = phase === 'ready' || phase === 'prepared' || phase === 'busy' || phase === 'submitted' || phase === 'done';
   const decimals = token?.decimals ?? 18;
   const symbol = token?.symbol ?? '';
+  // L2-F4: a fixed token amount is what the payer pays; the fiat total is then only the seller's unchecked statement.
+  // B2-R3: a token off the allowlist has no known decimals or symbol, so its amount stays in base units, with its address.
+  const fixedAmount = inv.amountPolicy.mode !== 'fixed_token'
+    ? undefined
+    : token === undefined
+      ? `${inv.amountPolicy.tokenAmount} base units of token ${inv.token}`
+      : `${formatUnits(BigInt(inv.amountPolicy.tokenAmount), token.decimals)} ${token.symbol}`;
 
   return (
     <section aria-labelledby="pay-h">
@@ -856,6 +936,11 @@ export function Pay(): ReactNode {
         </Notice>
       )}
       {ctxError !== undefined && <Notice kind="error">{ctxError}</Notice>}
+      {review.warnings.length > 0 && (
+        <Notice kind="warn" title="Check the amount">
+          {review.warnings.map((w) => <p key={w}>{w}</p>)}
+        </Notice>
+      )}
 
       <dl className="details">
         <dt>Chain</dt>
@@ -865,11 +950,17 @@ export function Pay(): ReactNode {
           {symbol} {inv.token === 'native' ? '(native coin)' : <Mono>{inv.token}</Mono>}
         </dd>
         <dt>Invoice total</dt>
-        <dd>{formatFiat(BigInt(inv.fiat.minorUnits), inv.fiat.currency)}</dd>
+        <dd>{fixedAmount === undefined ? formatFiat(BigInt(inv.fiat.minorUnits), inv.fiat.currency) : <><strong>{fixedAmount}</strong> (fixed token amount)</>}</dd>
+        {fixedAmount !== undefined && (
+          <>
+            <dt>Seller-stated fiat total</dt>
+            <dd>{formatFiat(BigInt(inv.fiat.minorUnits), inv.fiat.currency)} (not converted or checked by this app)</dd>
+          </>
+        )}
         <dt>Pricing</dt>
         <dd>
-          {inv.amountPolicy.mode === 'fixed_token'
-            ? `Fixed: ${formatUnits(BigInt(inv.amountPolicy.tokenAmount), decimals)} ${symbol}`
+          {fixedAmount !== undefined
+            ? `Fixed: ${fixedAmount}`
             : `Fiat quote from ${inv.quote.source}, taken ${formatUnix(inv.quote.timestamp)}, valid until ${formatUnix(inv.quote.expiresAt)}, max slippage ${String(inv.quote.maxSlippageBps / 100)} %. Not a guaranteed fiat value.`}
         </dd>
         <dt>Who pays the checkout fee</dt>
@@ -909,6 +1000,15 @@ export function Pay(): ReactNode {
           <strong>Memo:</strong> {safeText(inv.memo).text}{safeText(inv.memo).flagged ? ' (this text contained hidden or look-alike characters; they are shown as markers)' : ''}
         </p>
       )}
+
+      <PrintBillButton
+        invoice={inv}
+        link={fragment === undefined || fragment === '' ? undefined : `${services.baseUrl()}${fragment}`}
+        passphraseProtected={parsed.passphraseProtected}
+        chainName={review.chain?.name ?? `Chain ${String(inv.chainId)}`}
+        tokenLabel={inv.token === 'native' ? (symbol === '' ? 'Native coin' : symbol) : symbol === '' ? inv.token : symbol}
+        fixedAmount={fixedAmount}
+      />
 
       {ctx !== undefined && (
         <dl className="details amounts">
@@ -988,7 +1088,10 @@ export function Pay(): ReactNode {
             </label>
           </div>
           <p className="hint">Timing friction only, not anonymity. While waiting nothing is signed or sent, and the page must stay open. You can cancel or send now.</p>
-          {isErc20 && (
+          {isErc20 && parsed !== undefined && !bufferOffered(parsed.invoice) && (
+            <p className="hint">The seller does not accept a gas buffer for this invoice.</p>
+          )}
+          {isErc20 && parsed !== undefined && bufferOffered(parsed.invoice) && (
             <>
               <div className="check">
                 <input
@@ -1005,7 +1108,7 @@ export function Pay(): ReactNode {
               </div>
               {useBuffer && (
                 <Notice kind="warn" title="Public linkage">
-                  {bufferQuote === undefined ? 'Estimating buffer…' : `Extra ${formatUnits(bufferQuote.bufferWei, 18)} ${review.chain?.nativeSymbol ?? 'native coin'} (native, not ${symbol}) is sent in the same transaction to the one-time address. This publicly links your payment, the one-time address and the buffer. It is an estimate (${String(bufferQuote.gasLimit)} gas${bufferQuote.gasSource === 'simulated' ? ', from a simulated token transfer' : ', default table value until you prepare the payment'} at up to ${String(bufferQuote.maxFeePerGas)} wei, +20 %), not a guarantee.`}
+                  {bufferQuote === undefined ? 'Estimating buffer…' : `Extra ${formatUnits(bufferQuote.bufferWei, 18)} ${review.chain?.nativeSymbol ?? 'native coin'} (native, not ${symbol}) is sent in the same transaction to the one-time address. This publicly links your payment, the one-time address and the buffer. It is an estimate (${String(bufferQuote.gasLimit)} gas${bufferQuote.gasSource === 'simulated' ? ', from a simulated token transfer' : ', default table value until you prepare the payment'} at up to ${String(bufferQuote.maxFeePerGas)} wei, +20 %), not a guarantee.${bufferQuote.raisedToSellerMinimum === true ? " Raised to the seller's minimum buffer for this invoice." : ""} It is never refunded.`}
                 </Notice>
               )}
             </>
@@ -1061,7 +1164,7 @@ export function Pay(): ReactNode {
       )}
 
       {built !== undefined && builtFor === parsed.invoice && builtForContext === ctx && phase !== 'done' && phase !== 'submitted' && ctx !== undefined && (
-        <FinalPreview built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} approval={approval} granted={granted} onRevoke={onRevoke} />
+        <FinalPreview built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} approval={approval} granted={granted} approvalHash={approvalHash} onRevoke={onRevoke} />
       )}
 
       {status !== '' && <p role="status" className="status">{status}</p>}
@@ -1084,14 +1187,17 @@ export function Pay(): ReactNode {
           <p>
             {result.verification === 'verified' && 'Independently verified on your RPC: the network saw exactly the previewed transaction.'}
             {result.verification === 'not-visible-yet' && 'Your RPC does not show the transaction yet, so it could not be checked against the preview. Check it in your wallet.'}
+            {result.verification === 'unverified' && 'Your RPC reports a receipt for this hash but did not return the transaction itself, so it could not be compared with the preview. Check it in your wallet and on a block explorer.'}
             {result.verification === 'no-rpc' && 'No RPC is configured, so this app could not verify the transaction independently. Check it in your wallet.'}
           </p>
           <p>
             {result.receipt === undefined
               ? 'Status: not yet confirmed (included is not the same as final).'
-              : result.receipt.status === 'success'
-                ? `Status: included in block ${result.receipt.blockNumber.toString()} (not necessarily final yet).`
-                : 'Status: the transaction reverted. Nothing was paid.'}
+              : result.receipt.status !== 'success'
+                ? 'Status: the transaction reverted. Nothing was paid.'
+                : result.verification === 'verified'
+                  ? `Status: included in block ${result.receipt.blockNumber.toString()} (not necessarily final yet).`
+                  : `Status: unverified. A transaction with this hash is in block ${result.receipt.blockNumber.toString()}, but it was not compared with the preview, so this app does not report it as this payment.`}
           </p>
           <div className="actions">
             <CopyButton text={result.hash} label="Copy hash" />
@@ -1107,6 +1213,7 @@ export function Pay(): ReactNode {
               Download local receipt
             </button>
           </div>
+          <PaymentProofQr receipt={buildReceipt(ctx, built, result, new Date(services.nowMs()))} />
         </div>
       )}
 
@@ -1135,6 +1242,7 @@ function FinalPreview(props: {
   readonly onSend: () => void;
   readonly busy: boolean;
   readonly approval: ApprovalPlan | undefined;
+  readonly approvalHash: string | undefined;
   readonly granted: bigint | undefined;
   readonly onRevoke: () => void;
 }): ReactNode {
@@ -1168,7 +1276,7 @@ function FinalPreview(props: {
       </dl>
       {props.approval !== undefined && (
         <div className="notice notice-warn" role="note">
-          <strong className="notice-title">Token approval{props.approval.required ? ' needed first' : ' already in place'}</strong>
+          <strong className="notice-title">{props.granted !== undefined ? 'Token approval confirmed' : props.approval.required ? 'Token approval needed first' : 'Token approval already in place'}</strong>
           <dl className="details">
             <dt>Spender (router)</dt>
             <dd><Mono>{props.approval.spender}</Mono></dd>
@@ -1177,7 +1285,9 @@ function FinalPreview(props: {
             <dt>{props.approval.required ? 'Exact amount requested' : 'Needed for this payment'}</dt>
             <dd>{formatUnits(props.approval.need, dec)} {sym}</dd>
           </dl>
-          {props.approval.required ? (
+          {props.granted !== undefined ? (
+            <p>Approval was confirmed{props.approvalHash === undefined ? '.' : <>. Transaction hash: <Mono>{props.approvalHash}</Mono></>}</p>
+          ) : props.approval.required ? (
             <p>Pressing the button first asks your wallet for this exact approval and then for the payment. Check the amount in your wallet: it must not be unlimited. The approval is public and can link to the payment that follows. Permit-capable tokens avoid a separate approval transaction.</p>
           ) : (
             <p>The router already has enough allowance. This payment does not change a larger existing allowance; you can revoke it in your wallet.</p>
