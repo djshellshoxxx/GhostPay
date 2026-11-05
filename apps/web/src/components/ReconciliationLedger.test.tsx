@@ -178,7 +178,7 @@ describe('encrypted reconciliation UI', () => {
     expect(screen.queryByRole('button', { name: 'Activate previewed historical records' })).toBeNull();
   });
   it('rejects stale preview callbacks after encrypted input changes', async () => {
-    const staged = { recordCount: 4, invalidatedCount: 0, readOnly: false };
+    const staged = { recordCount: 4, invalidatedCount: 0, readOnly: false, invoiceCount: 0, receiptCount: 0 };
     let release!: (value: typeof staged) => void;
     vi.spyOn(vault, 'previewImport').mockReturnValue(
       new Promise((resolve) => {

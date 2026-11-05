@@ -9,9 +9,12 @@ import {
   searchReconciliationRecords,
   type ReconciliationRecord,
 } from '../lib/reconciliationLedger';
+import { proposeInvoiceMatch, type MatchProposal, type RegisteredInvoice } from '../lib/reconciliationMatch';
 import {
   createCurrentReconciliationVault,
   MAX_VAULT_BYTES,
+  type ArchivedReceipt,
+  type ReconciliationState,
   subscribeReconciliationChanges,
   type ReconciliationImportPreview,
   type ReconciliationVault,
@@ -36,12 +39,59 @@ function assetLabel(record: ReconciliationRecord): string {
     ? `${record.amountMinorUnits} base units of ${record.asset}`
     : `${formatUnits(BigInt(record.amountMinorUnits), token.decimals)} ${token.symbol}`;
 }
+const AMBIGUITY: Record<'multiple-invoices' | 'multiple-payments' | 'late-observation', string> = {
+  'multiple-invoices': 'Several registered invoices have this chain, asset and amount.',
+  'multiple-payments': 'Several unlinked payments match the same registered invoice.',
+  'late-observation':
+    'This payment was first observed long after the invoice expired, so its payment time is unknown.',
+};
+/** Local proposal only: nothing about invoices is published, and a proposal is never payment evidence. */
+function ProposalView(props: {
+  readonly proposal: MatchProposal | undefined;
+  readonly busy: boolean;
+  readonly onConfirm: (invoiceDigest: string) => void;
+}): ReactNode {
+  const proposal = props.proposal;
+  if (proposal === undefined) return null;
+  if (proposal.kind === 'none') return <p className="hint">No registered invoice matches this payment.</p>;
+  if (proposal.kind === 'ambiguous')
+    return (
+      <Notice kind="warn" title="Ambiguous invoice match (not confirmed)">
+        {AMBIGUITY[proposal.reason]} Ambiguous matches are never confirmed automatically. Candidates:{' '}
+        {proposal.candidates.map((c, i) => (
+          <span key={c.invoiceDigest}>
+            {i > 0 && ', '}
+            <Mono>{c.invoiceDigest}</Mono>
+          </span>
+        ))}
+        . Link one manually only if you know which invoice was paid.
+      </Notice>
+    );
+  return (
+    <div className="ledger-proposal">
+      <p>
+        Exact local match proposed: invoice <Mono>{proposal.invoice.invoiceDigest}</Mono> (same chain, asset and
+        router net amount, observed within its time window). This is a local inference, not payment proof.
+      </p>
+      <button
+        type="button"
+        className="btn"
+        disabled={props.busy}
+        onClick={() => props.onConfirm(proposal.invoice.invoiceDigest)}
+      >
+        Confirm proposed invoice match
+      </button>
+    </div>
+  );
+}
 function MatchLedgerAction(props: {
   readonly match: ScanMatch;
   readonly sellerKeyId: string;
   readonly onSave: (record: ReconciliationRecord) => void;
   readonly busy: boolean;
   readonly onError: (message: string) => void;
+  readonly proposal: MatchProposal | undefined;
+  readonly onConfirm: (invoiceDigest: string) => void;
 }): ReactNode {
   const [invoiceDigest, setInvoiceDigest] = useState('');
   const match = props.match;
@@ -87,11 +137,18 @@ function MatchLedgerAction(props: {
       >
         Add verified payment to ledger
       </button>
+      <ProposalView
+        proposal={props.proposal}
+        busy={props.busy}
+        onConfirm={props.onConfirm}
+      />
     </div>
   );
 }
 export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNode {
   const [records, setRecords] = useState<readonly VaultRecord[]>([]);
+  const [invoices, setInvoices] = useState<readonly RegisteredInvoice[]>([]);
+  const [receipts, setReceipts] = useState<readonly ArchivedReceipt[]>([]);
   const [legacy, setLegacy] = useState<readonly ReconciliationRecord[] | undefined>(undefined);
   const [query, setQuery] = useState('');
   const [error, setError] = useState<string | undefined>();
@@ -112,6 +169,48 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
     () => searchReconciliationRecords(records, query) as readonly VaultRecord[],
     [records, query],
   );
+  const currentRecords = useMemo(() => {
+    const out = new Map<ScanMatch, ReconciliationRecord>();
+    const keyId = props.sellerKeyId;
+    if (!props.scanMatchesCurrentScope || keyId === undefined) return out;
+    const now = Date.now();
+    for (const match of props.matches) {
+      if (match.chainId !== props.chainId) continue;
+      try {
+        out.set(match, recordFromVerifiedMatch(match, keyId, undefined, now));
+      } catch {
+        /* Unverified, claimed or hash-less matches are never proposed. */
+      }
+    }
+    return out;
+  }, [props.matches, props.scanMatchesCurrentScope, props.sellerKeyId, props.chainId]);
+  const proposals = useMemo(() => {
+    const result = new Map<string, MatchProposal>();
+    if (invoices.length === 0) return result;
+    const stored = new Set(records.map((r) => r.id));
+    const context = [...records, ...[...currentRecords.values()].filter((r) => !stored.has(r.id))];
+    for (const record of context) result.set(record.id, proposeInvoiceMatch(record, invoices, context));
+    return result;
+  }, [records, invoices, currentRecords]);
+  const proposalFor = (record: ReconciliationRecord | undefined): MatchProposal | undefined => {
+    if (record === undefined) return undefined;
+    const stored = records.find((r) => r.id === record.id);
+    // Stored records that are linked, invalidated or imported show their own status instead.
+    if (
+      stored !== undefined &&
+      (stored.invoiceDigest !== undefined ||
+        stored.provenance !== 'live-scan' ||
+        stored.evidenceStatus !== 'verified-at-scan')
+    )
+      return undefined;
+    return proposals.get(record.id);
+  };
+  const apply = (next: ReconciliationState): void => {
+    setRecords(next.records);
+    setReadOnly(next.readOnly);
+    setInvoices(next.invoices);
+    setReceipts(next.receipts);
+  };
   const reset = (): void => {
     revision.current++;
     backupRevision.current++;
@@ -123,6 +222,8 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
     setReadOnly(false);
     setBusy(false);
     setRecords([]);
+    setInvoices([]);
+    setReceipts([]);
     setLegacy(undefined);
     setPreview(undefined);
     setBackup('');
@@ -158,14 +259,12 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
             readRevision.current === refreshId &&
             vault.current === current
           ) {
-            setRecords(next.records);
-            setReadOnly(next.readOnly);
+            apply(next);
           }
         },
         () => {
           if (mounted.current && revision.current === actionRevision && readRevision.current === refreshId) {
-            setRecords([]);
-            setReadOnly(true);
+            apply({ records: [], readOnly: true, invoices: [], receipts: [] });
             setError(
               'Encrypted reconciliation data could not be refreshed. Lock and unlock before relying on it.',
             );
@@ -213,10 +312,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
         readGeneration = ++readRevision.current;
         const next = await current.readState();
         guard();
-        if (readGeneration === readRevision.current) {
-          setRecords(next.records);
-          setReadOnly(next.readOnly);
-        }
+        if (readGeneration === readRevision.current) apply(next);
         setUnlocked(true);
       } catch (cause) {
         if (readGeneration !== undefined && readGeneration !== readRevision.current) return;
@@ -234,6 +330,18 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
       }
     })();
   };
+  const confirmMatch = (record: ReconciliationRecord, invoiceDigest: string, match?: ScanMatch): void =>
+    run(async (current, guard) => {
+      guard();
+      if (
+        match !== undefined &&
+        (!latest.current.scanMatchesCurrentScope || !latest.current.matches.includes(match))
+      )
+        throw new Error('Scan evidence is no longer current. Rescan before confirming.');
+      await current.confirmProposal(record, invoiceDigest);
+      guard();
+      props.onAnnounce?.('Invoice match confirmed in the encrypted reconciliation vault.');
+    });
   return (
     <section className="panel reconciliation-ledger" aria-labelledby="ledger-heading">
       <h3 id="ledger-heading">Local payment reconciliation</h3>
@@ -242,7 +350,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
         identifier, chain and ciphertext size remain visible. Keep an encrypted backup and your seller
         keystore; losing the seller keys loses access. Unlocked data is visible to this page. Historical
         observations are not current payment proof: rescan before relying on them. Seller-signed receipts
-        never independently prove payment. Invoice links are your annotations.
+        never independently prove payment. Invoice links are your annotations or local matches you confirmed.
       </p>
       <p className="hint">
         Invalidation history is bounded. If it reaches capacity, the encrypted vault becomes read-only;
@@ -318,6 +426,9 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
                   sellerKeyId={props.sellerKeyId!}
                   busy={busy || readOnly}
                   onError={setError}
+                  proposal={proposalFor(currentRecords.get(match))}
+                  // A proposal is shown only for a match that produced a current record.
+                  onConfirm={(digest) => confirmMatch(currentRecords.get(match)!, digest, match)}
                   onSave={(record) =>
                     run(async (current, guard) => {
                       guard();
@@ -353,9 +464,14 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
                   </p>
                   {record.invoiceDigest !== undefined && (
                     <p>
-                      Manual invoice link: <Mono>{record.invoiceDigest}</Mono>
+                      Manual invoice link (or a local match you confirmed): <Mono>{record.invoiceDigest}</Mono>
                     </p>
                   )}
+                  <ProposalView
+                    proposal={proposalFor(record)}
+                    busy={busy || readOnly}
+                    onConfirm={(digest) => confirmMatch(record, digest)}
+                  />
                   <p>
                     Transaction: <Mono>{record.transactionHash}</Mono>
                   </p>
@@ -370,6 +486,26 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
               ))}
             </ul>
           )}
+          <InvoiceRegistry
+            invoices={invoices}
+            records={records}
+            busy={busy}
+            onRemove={(digest) => run(async (current) => current.removeInvoice(digest))}
+            onClear={() => run(async (current) => current.clearInvoices())}
+          />
+          <ReceiptArchive
+            receipts={receipts}
+            busy={busy}
+            onExport={() =>
+              run(async (current, guard) => {
+                const text = await current.exportReceipts();
+                guard();
+                downloadText('ghostpay-receipts.json', text, 'application/json');
+              })
+            }
+            onRemove={(signature) => run(async (current) => current.removeReceipt(signature))}
+            onClear={() => run(async (current) => current.clearReceipts())}
+          />
           <Field
             label="Encrypted reconciliation backup"
             hint="Only this vault’s encrypted format is accepted; plaintext legacy ledgers and seller receipts are never imported."
@@ -456,8 +592,10 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
               )}
               <p>
                 {preview.recordCount} historical observation{preview.recordCount === 1 ? '' : 's'};{' '}
-                {preview.invalidatedCount} already invalidated. Activation merges records as untrusted
-                history, preserves known invalidation and does not verify payment.
+                {preview.invalidatedCount} already invalidated; {preview.invoiceCount} registered invoice
+                {preview.invoiceCount === 1 ? '' : 's'}; {preview.receiptCount} archived receipt
+                {preview.receiptCount === 1 ? '' : 's'}. Activation merges records as untrusted history,
+                preserves known invalidation and does not verify payment.
               </p>
               <button
                 type="button"
@@ -553,5 +691,141 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
         )}
       </div>
     </section>
+  );
+}
+
+function InvoiceRegistry(props: {
+  readonly invoices: readonly RegisteredInvoice[];
+  readonly records: readonly VaultRecord[];
+  readonly busy: boolean;
+  readonly onRemove: (digest: string) => void;
+  readonly onClear: () => void;
+}): ReactNode {
+  const linked = new Set(
+    props.records
+      .filter((r) => r.evidenceStatus === 'verified-at-scan' && r.invoiceDigest !== undefined)
+      .map((r) => r.invoiceDigest),
+  );
+  return (
+    <div className="panel">
+      <h4>Registered invoices</h4>
+      <p className="hint">
+        Invoices you chose to register when creating them. Only the invoice digest, nonce, chain, asset, expected
+        net amount and validity window are stored, encrypted; line items and memo are not. Matching runs on this
+        device only. Nothing about an invoice is added to the payment or its announcement.
+      </p>
+      {props.invoices.length === 0 ? (
+        <p>No invoices registered.</p>
+      ) : (
+        <>
+          <ul className="plain-list">
+            {props.invoices.map((invoice) => (
+              <li key={invoice.invoiceDigest} className="card">
+                <p>
+                  Invoice <Mono>{invoice.invoiceDigest}</Mono>
+                </p>
+                <p className="hint">
+                  {invoice.expectedNetMinorUnits} base units of {invoice.asset}; valid until{' '}
+                  {new Date(invoice.expiresAt * 1000).toISOString()}.{' '}
+                  {linked.has(invoice.invoiceDigest) ? 'Linked to a verified observation.' : 'No linked observation.'}
+                </p>
+                <button
+                  type="button"
+                  className="btn"
+                  disabled={props.busy}
+                  onClick={() => {
+                    if (window.confirm('Remove this invoice registration? Saved observations and links are kept.'))
+                      props.onRemove(invoice.invoiceDigest);
+                  }}
+                >
+                  Remove registration
+                </button>
+              </li>
+            ))}
+          </ul>
+          <button
+            type="button"
+            className="btn btn-danger"
+            disabled={props.busy}
+            onClick={() => {
+              if (window.confirm('Remove all invoice registrations in this seller and chain scope?')) props.onClear();
+            }}
+          >
+            Remove all invoice registrations
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
+function ReceiptArchive(props: {
+  readonly receipts: readonly ArchivedReceipt[];
+  readonly busy: boolean;
+  readonly onExport: () => void;
+  readonly onRemove: (signature: string) => void;
+  readonly onClear: () => void;
+}): ReactNode {
+  return (
+    <div className="panel">
+      <h4>Archived seller receipts</h4>
+      <p className="hint">
+        Receipts you issued, stored encrypted. A receipt signature is a seller-key attestation and never counts as
+        payment evidence; archived receipts do not affect matching or verification.
+      </p>
+      {props.receipts.length === 0 ? (
+        <p>No receipts archived.</p>
+      ) : (
+        <>
+          <ul className="plain-list">
+            {props.receipts.map(({ receipt, archivedAt }) => (
+              <li key={receipt.signature} className="card">
+                <p>
+                  Transaction <Mono>{receipt.txHash}</Mono> for invoice <Mono>{receipt.invoiceDigest}</Mono>
+                </p>
+                <p className="hint">
+                  {receipt.amountMinorUnits} base units of {receipt.asset}. Issued{' '}
+                  {new Date(receipt.issuedAt * 1000).toISOString()}, archived {new Date(archivedAt).toISOString()}.
+                </p>
+                <button
+                  type="button"
+                  className="btn"
+                  disabled={props.busy}
+                  onClick={() => {
+                    if (window.confirm('Delete this archived receipt from this device?'))
+                      props.onRemove(receipt.signature);
+                  }}
+                >
+                  Delete archived receipt
+                </button>
+              </li>
+            ))}
+          </ul>
+          <div className="actions">
+            <button
+              type="button"
+              className="btn"
+              disabled={props.busy}
+              onClick={() => {
+                if (window.confirm('Export archived receipts as plaintext JSON? The file reveals payment details.'))
+                  props.onExport();
+              }}
+            >
+              Export archived receipts
+            </button>
+            <button
+              type="button"
+              className="btn btn-danger"
+              disabled={props.busy}
+              onClick={() => {
+                if (window.confirm('Delete all archived receipts in this seller and chain scope?')) props.onClear();
+              }}
+            >
+              Delete all archived receipts
+            </button>
+          </div>
+        </>
+      )}
+    </div>
   );
 }

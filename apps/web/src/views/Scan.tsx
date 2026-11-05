@@ -9,6 +9,8 @@ import { verifyManifestState } from '../lib/manifest';
 import { formatUnits } from '../lib/format';
 import { UserFacingError, userMessage } from '../lib/errors';
 import { checkpointKeyId, runScan, type ScanMatch, type ScanProgress } from '../lib/scanClient';
+import { browserStorage, describeScanDisclosure, loadScanPrivacy, openScanClients, planScan } from '../lib/scanPrivacy';
+import { describeAnonymitySet } from '../lib/scanSpam';
 import { useServices } from '../lib/services';
 import { captureSessionGuard, requireSession, subscribeSession } from '../lib/session';
 import { recordFromVerifiedMatch } from '../lib/reconciliationLedger';
@@ -27,10 +29,12 @@ export function Scan(): ReactNode {
   const [progress, setProgress] = useState<ScanProgress | undefined>(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
   const [done, setDone] = useState<string | undefined>(undefined);
+  const [privacyNote, setPrivacyNote] = useState<string | undefined>(undefined);
   const [scanOwner, setScanOwner] = useState<{ readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
   const abort = useRef<AbortController | undefined>(undefined);
   const startingScope = useRef<{ readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
   const manifest = useManifest(chainId);
+  const scanPrivacy = loadScanPrivacy(browserStorage());
   const keyId = app.session === undefined ? undefined : checkpointKeyId(app.session.spendingPublicKey, app.session.viewingPublicKey);
   const checkpoint = keyId === undefined ? undefined : services.checkpoints.load(chainId, keyId);
 
@@ -90,6 +94,7 @@ export function Scan(): ReactNode {
     setRunning(true);
     setError(undefined);
     setDone(undefined);
+    setPrivacyNote(undefined);
     setScanOwner(undefined);
     app.setMatches([]);
     const scopeKeysAreCurrent = (): boolean => {
@@ -104,17 +109,26 @@ export function Scan(): ReactNode {
       try {
         const chain = findChain(chainId);
         if (chain === undefined || manifest?.status !== 'loaded') throw new Error('manifest');
-        const rpc: RpcClient | undefined = await app.getRpc(chainId);
+        // Spec 10: the scan path is planned first; a required private path that is missing blocks the scan, never downgrades.
+        const privacy = loadScanPrivacy(browserStorage());
+        const plan = planScan(privacy, chain);
+        if (plan.kind === 'blocked') {
+          setError(plan.reason);
+          return;
+        }
+        const clients = await openScanClients({ plan, chain, announcer: manifest.manifest.announcer, appRpc: () => app.getRpc(chainId), fetchImpl: services.fetchFn, sleep: services.sleep });
         assertScopeCurrent();
-        if (rpc === undefined) {
+        if (clients === undefined) {
           setError('Configure an RPC for this chain in Settings first.');
           return;
         }
+        const rpc: RpcClient = clients.base;
         // A configured second RPC is a user-chosen cross-check. If it cannot be opened (unreachable, wrong chain),
         // block instead of silently scanning with one provider; the user can remove it in Settings to opt out.
+        // Behind a required local proxy it is not contacted at all (it would be reached directly).
         let rpc2: RpcClient | undefined;
         try {
-          rpc2 = await app.getSecondaryRpc(chainId);
+          rpc2 = plan.useSecondary ? await app.getSecondaryRpc(chainId) : undefined;
         } catch {
           assertScopeCurrent();
           setError('Scan blocked: the second RPC configured for this chain could not be used. Check it in Settings, or remove it to scan with one provider.');
@@ -144,7 +158,8 @@ export function Scan(): ReactNode {
         const res = await runScan({
           chain,
           manifest: manifest.manifest,
-          client: rpc,
+          client: clients.scan,
+          openLaneBudget: privacy.openLaneBudget,
           cursor,
           spendingPublicKeyHex: app.session?.spendingPublicKey ?? '',
           keyId,
@@ -197,6 +212,8 @@ export function Scan(): ReactNode {
         });
         if (!ctl.signal.aborted) assertScopeCurrent();
         if (res.discrepancies.length > 0) setError(`The second RPC provider disagreed on ${String(res.discrepancies.length)} check(s). Results may be incomplete or forged; checkpoints were not advanced. Try another provider.`);
+        if ((res.backlog ?? 0) > 0) setError(`${String(res.backlog)} announcements not posted by the GhostPay router were deferred by the per-scan budget (Settings). Nothing was skipped: scan again to continue from block ${res.cursor.nextBlock.toString()}.`);
+        setPrivacyNote(res.telemetry?.anonymity === undefined ? undefined : describeAnonymitySet(res.telemetry.anonymity));
         if (res.limitReached) setError(`This scan reached its safety limit. It stopped before processing the next page; resume from block ${res.cursor.nextBlock.toString()} to continue.`);
         const note = ` Started at block ${cursor.nextBlock.toString()}${resume && checkpoint !== undefined ? ' (from checkpoint)' : ''}.${rpc2 === undefined ? ' Only one RPC was used: add a second RPC in Settings to cross-check it.' : ''}`;
         setDone((ctl.signal.aborted ? `Cancelled. ${String(res.scanned)} announcements checked.` : res.limitReached ? `Stopped at the safety limit. ${String(res.scanned)} announcements checked, ${String(res.matches.length)} payments found.` : `Finished. ${String(res.scanned)} announcements checked, ${String(res.matches.length)} payments found.`) + note);
@@ -226,6 +243,15 @@ export function Scan(): ReactNode {
       <Notice kind="warn" title="RPC privacy">
         Your RPC provider sees your IP address, scan ranges, and logs. Verifying a router payment also requests token transfer logs filtered for the one-time address, or the transaction receipt; these requests can reveal which public announcements matched your keys. A configured second provider sees the same verification evidence. Use trusted private RPC providers or your own nodes if this matters to you.
       </Notice>
+      <details className="panel">
+        <summary>What each party learns with your scan privacy settings</summary>
+        <ul>
+          {describeScanDisclosure(scanPrivacy, { hasSecondary: (app.settings.rpcUrlsSecondary[String(chainId)] ?? '') !== '' }).map((row) => (
+            <li key={row.party}><strong>{row.party}:</strong> {row.learns}</li>
+          ))}
+        </ul>
+        <p className="hint">Change the scan transport, windows and delays in Settings. None of these options hides anything on-chain.</p>
+      </details>
       <div className="stack">
         <Field label="Chain">
           {(id) => (
@@ -267,6 +293,7 @@ export function Scan(): ReactNode {
         {running && progress === undefined && 'Starting…'}
       </div>
       {done !== undefined && <Notice kind="ok">{done}</Notice>}
+      {privacyNote !== undefined && <Notice kind="info" title="Privacy set (local estimate)">{privacyNote}</Notice>}
       {error !== undefined && <Notice kind="error">{error}</Notice>}
 
       <Matches

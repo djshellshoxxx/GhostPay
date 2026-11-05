@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { SolanaRpc } from '@ghostpay/solana-stealth';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { CameraImporter } from '../../components/CameraImporter';
+import { PlainPaymentRequest } from '../../components/PaymentRequestQr';
 import { QrFrame } from '../../components/QrFrame';
 import { useServices } from '../../lib/services';
 import { SOL_NETWORKS, solNetwork, type SolNetworkId } from './network';
@@ -275,6 +276,7 @@ export function SolanaView(): ReactNode {
                   <li>Wait for finalization, then use "Scan" below starting a little before the payment slot.</li>
                 </ol>
                 <QrFrame kind="caution" text={request} caption={`Solana stealth payment request (${net.label})`} />
+                <PlainPaymentRequest family="solana" testnet={net.id !== 'mainnet'} networkLabel={net.label} />
               </>
             )}
             {seedShown !== undefined && (

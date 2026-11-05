@@ -73,7 +73,14 @@ const r = buildSpendTransaction({
 // r.psbt (signed), r.rawTx, r.txid, r.feeSats, r.vsize
 ```
 
-Hardware-wallet signing is out of scope (software keys only; see `DEVIATIONS.md`).
+External signers (spec 11): `buildSpendTransactionWithSigner(params, signer)` takes a `SilentPaymentSigner`
+(spend public key, ECDH share, sign) instead of `spendSecret`. `SoftwareSilentPaymentSigner` is the reference
+implementation; no hardware wallet driver is shipped (see `DEVIATIONS.md`).
+
+Header chain and scan state (spec 12): `HeaderChain` (retarget, MTP, chain work, most-work selection above a pinned
+checkpoint), `syncHeaderChain` / `syncHeaderChainFromSources`, `HeaderAnchoredTweakSource`, `verifyBlockTransactions`
+(txid Merkle root + BIP-141 witness commitment), and `resumeScan` with a serializable `ScanState`. These are header-only
+(SPV-style) checks, not full validation; see `DEVIATIONS.md` for exactly what they cover.
 
 ## Security notes
 

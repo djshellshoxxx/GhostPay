@@ -693,3 +693,196 @@ describe('localCheckpointStore', () => {
     });
   });
 });
+
+describe('spec 05: spam lanes, backlog and local telemetry', () => {
+  const OTHER = '0x9999999999999999999999999999999999999999' as Address;
+  const spamAt = (stranger: string, block: number, count: number): RpcLog[] => {
+    const one = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block, index: 0, caller: OTHER, wrongTag: true }).log;
+    return Array.from({ length: count }, (_, i) => ({ ...one, logIndex: `0x${i.toString(16)}` }));
+  };
+
+  it('sends router (trusted lane) announcements to the worker before open-lane ones', async () => {
+    const keys = generateKeySet();
+    const meta = encodeMetaAddress(keys);
+    const open = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 100, index: 0, caller: OTHER });
+    const routed = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 200, index: 1, caller: FAKE_ROUTER });
+    const worker = new InlineWorker();
+    await runScan({
+      chain, manifest, client: chainWith(2500, [open.log, routed.log]), cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(keys.viewingSecret),
+      createWorker: () => worker, signal: new AbortController().signal,
+    });
+    const batch = worker.received.find((m) => m.type === 'batch');
+    const ids = batch?.type === 'batch' ? batch.logs.map((l) => l.id.split(':')[0]) : [];
+    expect(ids).toEqual([routed.log.blockHash, open.log.blockHash]);
+  });
+
+  it('defers open-lane logs past the per-scan budget as backlog, keeps finding router payments, and resumes without a gap', async () => {
+    const keys = generateKeySet();
+    const meta = encodeMetaAddress(keys);
+    const stranger = encodeMetaAddress(generateKeySet());
+    const routerPay = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 60_000, index: 40, caller: FAKE_ROUTER });
+    const direct = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 60_010, index: 41, caller: OTHER });
+    const client = chainWith(120_000, [...spamAt(stranger, 100, 30), ...spamAt(stranger, 60_001, 30), routerPay.log, direct.log]);
+    const progress: ScanProgress[] = [];
+    const run = (cursor: { nextBlock: bigint }) => runScan({
+      chain, manifest, client, cursor,
+      spendingPublicKeyHex: hexOf(keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal, openLaneBudget: 40,
+      onProgress: (p) => progress.push(p),
+    });
+    const first = await run({ nextBlock: 0n });
+    expect(first.matches.map((m) => m.stealthAddress)).toEqual([routerPay.stealthAddress]);
+    expect(first.backlog).toBe(31);
+    // The deferred page is not checkpointed past: the cursor stays at the start of that page.
+    expect(first.cursor.nextBlock).toBe(50_000n);
+    expect(progress.at(-1)).toMatchObject({ backlog: 31, caughtUp: false });
+    expect(first.telemetry).toMatchObject({ trusted: 1, open: 30, suspected: 60 });
+    const second = await run(first.cursor);
+    expect(second.matches.map((m) => m.stealthAddress).sort()).toEqual([routerPay.stealthAddress, direct.stealthAddress].sort());
+    expect(second.backlog).toBe(0);
+  });
+
+  it('reports a local privacy-set estimate from router announcements it scanned', async () => {
+    const s = setup();
+    const res = await runScan({
+      chain, manifest, client: chainWith(2500, s.logs), cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal,
+    });
+    expect(res.telemetry?.anonymity).toMatchObject({ level: 'low', count7d: 2, partial: false });
+  });
+});
+
+describe('two-provider replay-tail checkpoint anchor', () => {
+  const TAIL = 2400n; // head 2500 - finalityDepth 100: the anchor block of the saved replay tail
+  const fake = (n: bigint) => Promise.resolve({ number: n, hash: blockHash(Number(n) + 50_000) as Hex, parentHash: blockHash(Number(n) + 49_999) as Hex });
+  const memStore = () => {
+    const map = new Map<string, string>();
+    const saves: unknown[] = [];
+    const store = localCheckpointStore({ getItem: (k) => map.get(k) ?? null, setItem: (k, v) => void map.set(k, v), removeItem: (k) => void map.delete(k) });
+    const recording: CheckpointStore = { ...store, save: (id, key, cursor) => { saves.push(cursor); store.save(id, key, cursor); } };
+    return { map, saves, store: recording };
+  };
+  async function vaultWithVerifiedRecord(s: ReturnType<typeof setup>, sellerKeyId: string) {
+    const data = new Map<string, string>();
+    const vault = new ReconciliationVault({
+      read: (key) => Promise.resolve(data.get(key) ?? null),
+      compareAndSwap: (key, expected, next, guard) => { guard(); if ((data.get(key) ?? null) !== expected) return Promise.resolve(false); data.set(key, next); return Promise.resolve(true); },
+    }, { chainId: chain.chainId, sellerKeyId }, () => undefined);
+    await vault.unlock(unsafeRevealSecret(s.keys.viewingSecret).slice());
+    const record = {
+      version: 1 as const, sellerKeyId, chainId: chain.chainId, transactionHash: blockHash(999),
+      blockHash: blockHash(120), blockNumber: '120', stealthAddress: `0x${'a'.repeat(40)}`, logIndex: 1,
+      asset: 'native', amountMinorUnits: '1', viewTagMatched: true, recordedAt: 1800000000000,
+      evidenceStatus: 'verified-at-scan' as const, evidenceSource: 'verified-router-scan' as const,
+      id: `${sellerKeyId}:${chain.chainId}:${blockHash(999)}:0x${'a'.repeat(40)}:${blockHash(120)}:1`,
+    };
+    await vault.save(record);
+    return vault;
+  }
+  type Params = Parameters<typeof runScan>[0];
+  const scan = (s: ReturnType<typeof setup>, keyId: string, extra: Partial<Params> & Pick<Params, 'client'>) => runScan({
+    chain, manifest, cursor: { nextBlock: 0n },
+    spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId,
+    viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => new InlineWorker(), signal: new AbortController().signal,
+    ...extra,
+  });
+
+  it('withholds a primary-only fabricated tail anchor so a truthful resume never invalidates canonical history', async () => {
+    const s = setup();
+    const sellerKeyId = checkpointKeyId(hexOf(s.keys.spendingPublicKey), hexOf(s.keys.viewingPublicKey));
+    const cp = memStore();
+    const primary = chainWith(2500, [s.mine.log]);
+    const seen: string[] = [];
+    // The primary lies only about the replay-tail anchor block; payment block 120 and window ends are truthful.
+    const first = await scan(s, sellerKeyId, {
+      client: { ...primary, getBlock: (n) => (n === TAIL ? fake(n) : primary.getBlock(n)) },
+      secondaryClient: chainWith(2500, [s.mine.log]), checkpoints: cp.store,
+      onDiscrepancy: (d) => seen.push(...d.map((x) => `${x.kind}@${x.ref}`)),
+    });
+    expect.soft(cp.saves.some((c) => (c as { last?: { hash: string } }).last?.hash === blockHash(Number(TAIL) + 50_000))).toBe(false);
+    expect.soft(first.discrepancies).toEqual([{ kind: 'block_hash_differs', ref: TAIL.toString() }]);
+    expect.soft(seen).toEqual([`block_hash_differs@${TAIL.toString()}`]);
+
+    const vault = await vaultWithVerifiedRecord(s, sellerKeyId);
+    const invalidated = vi.fn((from: bigint) => vault.invalidateFrom(from));
+    const resumed = await scan(s, sellerKeyId, {
+      client: chainWith(2500, [s.mine.log]), secondaryClient: chainWith(2500, [s.mine.log]),
+      cursor: cp.store.load(chain.chainId, sellerKeyId) ?? { nextBlock: 0n }, checkpoints: cp.store, onReorg: invalidated,
+    });
+    expect.soft(invalidated).not.toHaveBeenCalled();
+    expect.soft((await vault.read())[0]?.evidenceStatus).toBe('verified-at-scan');
+    expect.soft(resumed.discrepancies).toEqual([]);
+    vault.lock();
+  });
+
+  it('advances a corroborated tail anchor when both providers agree at its exact height', async () => {
+    const s = setup(); const cp = memStore(); const secondary = chainWith(2500, s.logs);
+    const res = await scan(s, KEY, { client: chainWith(2500, s.logs), secondaryClient: secondary, checkpoints: cp.store });
+    expect(res.discrepancies).toEqual([]);
+    expect(cp.store.load(chain.chainId, KEY)).toEqual({ nextBlock: TAIL + 1n, last: { number: TAIL, hash: blockHash(Number(TAIL)) } });
+    expect(secondary.calls.some((c) => c.method === 'eth_getBlockByNumber' && c.params[0] === TAIL)).toBe(true);
+  });
+
+  it('fails closed when the secondary is missing, erroring, wrong-height or wrong-chain at the tail', async () => {
+    for (const mode of ['missing', 'error', 'wrong-height', 'wrong-chain'] as const) {
+      const s = setup(); const cp = memStore(); const secondary = chainWith(2500, [s.mine.log]);
+      const res = await scan(s, KEY, {
+        client: chainWith(2500, [s.mine.log]), checkpoints: cp.store,
+        secondaryClient: { ...secondary, ...(mode === 'wrong-chain' ? { chainId: 1 } : {}), getBlock: (n) => {
+          if (n === TAIL && mode === 'missing') return Promise.resolve(null);
+          if (n === TAIL && mode === 'error') return Promise.reject(new Error('private RPC detail'));
+          if (n === TAIL && mode === 'wrong-height') return Promise.resolve({ number: n + 1n, hash: blockHash(Number(n)) as Hex, parentHash: blockHash(Number(n) - 1) as Hex });
+          return secondary.getBlock(n);
+        } },
+      });
+      expect(res.discrepancies.length, mode).toBeGreaterThan(0);
+      expect(JSON.stringify(res.discrepancies)).not.toContain('private RPC detail');
+      expect(cp.saves, mode).toEqual([]);
+      expect(cp.map.size, mode).toBe(0);
+    }
+  });
+
+  it('rejects a primary that changes its tail answer during the check', async () => {
+    const s = setup(); const cp = memStore(); const primary = chainWith(2500, [s.mine.log]);
+    let reads = 0;
+    const res = await scan(s, KEY, {
+      client: { ...primary, getBlock: (n) => (n === TAIL && reads++ > 0 ? fake(n) : primary.getBlock(n)) },
+      secondaryClient: chainWith(2500, [s.mine.log]), checkpoints: cp.store,
+    });
+    expect(cp.saves).toEqual([]);
+    expect(reads).toBeGreaterThan(1);
+    expect(res.discrepancies).toEqual([{ kind: 'block_hash_differs', ref: TAIL.toString() }]);
+  });
+
+  it('writes nothing when cancelled while the tail corroboration is pending', async () => {
+    const s = setup(); const cp = memStore(); const secondary = chainWith(2500, [s.mine.log]);
+    let release!: () => void; const gate = new Promise<void>((resolve) => { release = resolve; }); let waiting = false;
+    const ctl = new AbortController(); const key = unsafeRevealSecret(s.keys.viewingSecret);
+    const task = scan(s, KEY, {
+      client: chainWith(2500, [s.mine.log]), checkpoints: cp.store, signal: ctl.signal, viewingKey: key,
+      secondaryClient: { ...secondary, getBlock: async (n) => { if (n === TAIL) { waiting = true; await gate; } return secondary.getBlock(n); } },
+    });
+    await vi.waitFor(() => expect(waiting).toBe(true)); ctl.abort();
+    expect(key.every((b) => b === 0)).toBe(true); release(); await task;
+    expect(cp.saves).toEqual([]);
+  });
+
+  it('still invalidates through the confirmed path after a genuine two-provider reorg of the saved anchor', async () => {
+    const s = setup();
+    const sellerKeyId = checkpointKeyId(hexOf(s.keys.spendingPublicKey), hexOf(s.keys.viewingPublicKey));
+    const cp = memStore();
+    await scan(s, sellerKeyId, { client: chainWith(2500, [s.mine.log]), secondaryClient: chainWith(2500, [s.mine.log]), checkpoints: cp.store });
+    const saved = cp.store.load(chain.chainId, sellerKeyId);
+    expect(saved?.last).toEqual({ number: TAIL, hash: blockHash(Number(TAIL)) });
+    const forked = () => { const base = chainWith(2600, [s.mine.log]); return { ...base, getBlock: (n: bigint) => (n >= TAIL ? fake(n) : base.getBlock(n)) }; };
+    const vault = await vaultWithVerifiedRecord(s, sellerKeyId);
+    const invalidated = vi.fn((from: bigint) => vault.invalidateFrom(from));
+    const res = await scan(s, sellerKeyId, { client: forked(), secondaryClient: forked(), cursor: saved!, checkpoints: cp.store, onReorg: invalidated });
+    expect(res.discrepancies).toEqual([]);
+    expect(invalidated).toHaveBeenCalledExactlyOnceWith(0n);
+    expect((await vault.read())[0]?.evidenceStatus).toBe('invalidated-after-reorg');
+    vault.lock();
+  });
+});
