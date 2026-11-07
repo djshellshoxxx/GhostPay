@@ -2,13 +2,17 @@ import { expect, test, type Page } from '@playwright/test';
 import { createInvoice, generateKeys, openFresh } from './helpers';
 
 // Runs in the device projects only (Chromium-engine emulation of viewport/touch/UA; not WebKit, not real devices).
-const ROUTES = ['Home', 'Seller keys', 'Create invoice', 'Pay', 'Scan and receive', 'Sweep', 'Public registry', 'Settings', 'About and privacy'] as const;
+// Each route maps to the id of the h2 only that view renders, so a wrong view under a selected nav button cannot pass.
+const ROUTES = [
+  ['Home', 'home-h'], ['Seller keys', 'keys-h'], ['Create invoice', 'inv-h'], ['Pay', 'pay-h'], ['Scan and receive', 'scan-h'],
+  ['Sweep', 'sw-h'], ['Public registry', 'reg-h'], ['Settings', 'set-h'], ['About and privacy', 'about-h'],
+] as const;
 
-async function go(page: Page, route: typeof ROUTES[number]): Promise<void> {
+async function go(page: Page, route: string, headingId: string): Promise<void> {
   const button = page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: route, exact: true });
   await button.click();
   await expect(button).toHaveAttribute('aria-current', 'page');
-  await expect(page.getByRole('main').getByRole('heading', { level: 2 })).toBeVisible();
+  await expect(page.locator(`main h2#${headingId}`), `${route}: rendered view heading`).toBeVisible();
 }
 
 async function assertFits(page: Page, label: string): Promise<void> {
@@ -34,8 +38,8 @@ test('core routes fit the device viewport without horizontal overflow or clipped
   expect(await page.evaluate(() => document.documentElement.clientWidth), 'emulated CSS viewport width').toBe(expected);
   expect(info.project.use.isMobile, 'mobile emulation flag').toBe(true);
   await generateKeys(page);
-  for (const route of ROUTES) {
-    await go(page, route);
+  for (const [route, headingId] of ROUTES) {
+    await go(page, route, headingId);
     const label = `${info.project.name}/${route}`;
     await expect(page.getByRole('main'), `${label}: main landmark`).toBeVisible();
     await assertFits(page, label);
