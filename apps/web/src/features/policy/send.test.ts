@@ -3,13 +3,14 @@ import { ghostPayPolicyRouterAbi, type Hex } from '@ghostpay/policy-scheme';
 import { decodeFunctionData, encodeAbiParameters, encodeFunctionData } from 'viem/utils';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { PostBroadcastError } from '../../lib/payExec';
+import { beginAttempt, finishAttempt } from '../../lib/duplicateAttemptJournal';
 import { SOURCE_TRANSLATOR } from '../../i18n/context';
 import { captureSessionVersionGuard, clearSession } from '../../lib/session';
-import { connectWallet, type TxRequest } from '../../lib/wallet';
+import { connectWallet, walletAttemptKey, type TxRequest } from '../../lib/wallet';
 import { MockWallet } from '../../test/mockWallet';
 import { DEPLOYMENT, ROUTER, SEPOLIA, account, fakeChain, walletMirror } from './fixtures.testutil';
 import { preparePolicyPayment, type PreparedPolicyPayment } from './pay';
-import { PolicyAlreadyPaidError, reviewPolicyPayment, sendPolicyPayment, type PolicySendGuard } from './send';
+import { PolicyAlreadyPaidError, policyPaymentScope, reviewPolicyPayment, sendPolicyPayment, type PolicySendGuard } from './send';
 
 const a1 = account('acct-001');
 const TOKEN = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
@@ -72,7 +73,7 @@ async function setup(opts: SetupOpts = {}) {
   };
   const walletSends = (): number => w.calls.filter((c) => c.method === 'eth_sendTransaction').length;
   const run = (g: PolicySendGuard = guard, p: PreparedPolicyPayment = prepared) => sendPolicyPayment(session, p, { rpc: opts.noRpc === true ? undefined : rpc, nowSeconds: () => opts.clock?.now ?? 1, sleep: () => Promise.resolve() }, (m) => status.push(m), (h) => hashes.push(h), g);
-  return { w, sentLog, run, hashes, status, prepared, guard, walletSends, reads };
+  return { w, session, sentLog, run, hashes, status, prepared, guard, walletSends, reads };
 }
 
 describe('policy payment sending (fund safety)', () => {
@@ -330,6 +331,29 @@ describe('policy payment sending (single use and final-gate details)', () => {
 
 describe('policy payment sending (attempt journal lookup)', () => {
   afterEach(() => { vi.unstubAllGlobals(); });
+  // Regression for the rejected remediation 6b3e689: journal records carry no key version, so treating every other
+  // payment record of the payer as "legacy" blocked each later, distinct payment in the same tab.
+  it('does not block a different, already completed scoped payment by the same payer', async () => {
+    const t = await setup({ token: 'native' });
+    let raw: string | null = null;
+    const storage = { getItem: (key: string) => key === 'ghostpay.wallet-attempts.v1' ? raw : null, setItem: (_key: string, value: string) => { raw = value; } };
+    const otherKey = walletAttemptKey(t.session, t.prepared.built.tx, { kind: 'payment', scope: `0x${'cd'.repeat(32)}` });
+    const earlier = beginAttempt({ key: otherKey, chainId: SEPOLIA, account: t.session.account, kind: 'payment' }, storage);
+    finishAttempt(earlier, `0x${'ef'.repeat(32)}`, storage);
+    vi.stubGlobal('window', { sessionStorage: storage, dispatchEvent: vi.fn() });
+    await t.run();
+    expect(t.walletSends()).toBe(1);
+  });
+  it('still refuses the same scoped payment when the journal already holds its hash', async () => {
+    const t = await setup({ token: 'native' });
+    let raw: string | null = null;
+    const storage = { getItem: (key: string) => key === 'ghostpay.wallet-attempts.v1' ? raw : null, setItem: (_key: string, value: string) => { raw = value; } };
+    const key = walletAttemptKey(t.session, t.prepared.built.tx, { kind: 'payment', scope: policyPaymentScope(t.session, t.prepared, DEPLOYMENT) });
+    finishAttempt(beginAttempt({ key, chainId: SEPOLIA, account: t.session.account, kind: 'payment' }, storage), `0x${'ef'.repeat(32)}`, storage);
+    vi.stubGlobal('window', { sessionStorage: storage, dispatchEvent: vi.fn() });
+    await expect(t.run()).rejects.toBeInstanceOf(PolicyAlreadyPaidError);
+    expect(t.walletSends()).toBe(0);
+  });
   it('fails closed before any RPC read when the attempt journal cannot be read (ERC-20)', async () => {
     const t = await setup();
     vi.stubGlobal('window', { sessionStorage: { getItem: () => { throw new Error('blocked'); }, setItem: () => undefined } });
