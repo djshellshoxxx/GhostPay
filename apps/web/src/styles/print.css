@@ -1,0 +1,23 @@
+/* Printable bill. On screen the sheet is hidden; when printing, only the sheet is shown, in black on white. */
+.bill-sheet { display: none; }
+
+@media print {
+  @page { margin: 16mm; }
+  body * { visibility: hidden !important; }
+  .bill-sheet, .bill-sheet * { visibility: visible !important; }
+  .bill-sheet {
+    display: block;
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    background: #fff;
+    color: #000;
+    font-size: 11pt;
+  }
+  .bill-sheet h2 { margin: 0 0 8pt; font-size: 18pt; }
+  .bill-sheet table { width: 100%; border-collapse: collapse; margin: 8pt 0; }
+  .bill-sheet th, .bill-sheet td { border-bottom: 1px solid #000; padding: 3pt 4pt; text-align: left; }
+  .bill-sheet .qr-frame { break-inside: avoid; max-width: 70mm; }
+  .bill-sheet .qr-actions, .bill-sheet .qr-large { display: none !important; }
+  .bill-sheet .bill-warning { border: 2px solid #000; padding: 6pt; font-weight: bold; break-inside: avoid; }
+}

@@ -28,7 +28,7 @@
     "@noble/curves": "2.4.0",
     "@noble/hashes": "2.4.0",
     "@scure/base": "1.2.6",
-    "@solana/kit": "8.5.0"
+    "@solana/kit": "8.6.0"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
@@ -37,7 +37,7 @@
     "eslint": "10.13.0",
     "prettier": "3.9.10",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.72.0",
+    "typescript-eslint": "8.72.1",
     "vitest": "5.0.5"
   }
 }

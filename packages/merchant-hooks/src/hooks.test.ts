@@ -1,3 +1,4 @@
+import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { createInvoice, parseFragment, signInvoice, signerPublicKeyHex, type RandomSource } from '@ghostpay/invoice-schema';
 import {
@@ -201,15 +202,44 @@ describe('events and idempotency', () => {
     for (const b of bad) expect(() => parseWebhookEvent(typeof b === 'string' ? b : JSON.stringify(b))).toThrow(/bad-event/);
     expect(() => parseWebhookEvent('{"__proto__":1')).toThrow(/bad-event/);
   });
-  it('idempotency guard', () => {
+  it('idempotency guard: processing until complete(), done afterwards, free again after release()', () => {
     const g = new IdempotencyGuard(2);
-    expect(g.claim('a')).toBe(true);
-    expect(g.claim('a')).toBe(false);
+    expect(g.begin('a')).toBe('claimed');
+    // In flight: a redelivery must not be acknowledged yet, the first attempt may still fail.
+    expect(g.begin('a')).toBe('processing');
     g.release('a');
-    expect(g.claim('a')).toBe(true);
-    expect(g.claim('b')).toBe(true);
-    expect(g.claim('c')).toBe(true); // evicts oldest (a)
-    expect(g.claim('a')).toBe(true);
+    expect(g.begin('a')).toBe('claimed');
+    g.complete('a');
+    expect(g.begin('a')).toBe('done');
+    g.release('a'); // releasing never reopens a handled event
+    expect(g.begin('a')).toBe('done');
+    g.complete('x'); // never claimed: no effect
+    expect(g.begin('x')).toBe('claimed');
+  });
+  it('idempotency guard: bounded, evicts the oldest done id, never an in-flight one', () => {
+    const g = new IdempotencyGuard(2);
+    expect(g.begin('a')).toBe('claimed');
+    g.complete('a');
+    expect(g.begin('b')).toBe('claimed');
+    expect(g.begin('c')).toBe('claimed'); // full: evicts the oldest done id (a), not b in flight
+    expect(g.begin('b')).toBe('processing');
+    // Full of in-flight ids: fail closed (retryable) rather than forget one of them.
+    expect(g.begin('d')).toBe('processing');
+    g.complete('b');
+    g.complete('c');
+    expect(g.begin('d')).toBe('claimed'); // evicts b, the oldest done id
+    expect(g.begin('b')).toBe('claimed'); // forgotten: the documented limit of a bounded in-memory store
+    expect(g.begin('c')).toBe('processing'); // c was evicted for b; d and b are in flight
+    g.release('d');
+    expect(g.begin('c')).toBe('claimed');
+  });
+  const spec = new URL('../../../docs/remote/usability/specs/webhooks.md', import.meta.url);
+  it.skipIf(!existsSync(spec))('spec R6 (docs/remote/usability/specs/webhooks.md) describes this guard', () => {
+    const r6 = /^- R6 .*$/m.exec(readFileSync(spec, 'utf8'))?.[0] ?? '';
+    const methods = Object.getOwnPropertyNames(IdempotencyGuard.prototype).filter((m) => m !== 'constructor');
+    expect(new Set(methods)).toEqual(new Set(['begin', 'complete', 'release']));
+    for (const term of [...methods.map((m) => `${m}(`), 'claimed', 'processing', 'done', '503']) expect(r6).toContain(term);
+    expect(r6).not.toMatch(/\bclaim\(/); // the removed boolean API
   });
 });
 
