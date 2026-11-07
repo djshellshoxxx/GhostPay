@@ -27,6 +27,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "pretest": "npm run build -w @ghostpay/net-harness --if-present",
     "test": "vitest run --coverage",
+    "prelint": "npm run build -w @ghostpay/net-harness --if-present",
     "lint": "eslint --config ../../eslint.config.js src"
   },
   "devDependencies": {
