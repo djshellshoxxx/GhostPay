@@ -1207,6 +1207,8 @@ export const NEUTRAL_KEY_LIST = [
   'tron.import.label',
   'tron.import.button',
   'tron.block.label',
+  'common.copy.copied',
+  'common.copy.failed',
 ] as const satisfies readonly MessageKey[];
 
 export const NEUTRAL_KEYS: ReadonlySet<MessageKey> = new Set<MessageKey>(NEUTRAL_KEY_LIST);

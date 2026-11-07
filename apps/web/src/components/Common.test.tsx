@@ -85,3 +85,15 @@ describe('shared presentation helpers', () => {
     expect(screen.getByText('0xabc').className).toContain('mono');
   });
 });
+
+describe('CopyButton localization', () => {
+  it('shows the copy outcome in the active language (catalog draft) and English without a provider', async () => {
+    const { I18nProvider } = await import('../i18n/context');
+    const es = (await import('../../locales/es.json')).default as { messages: Record<string, string> };
+    const user = userEvent.setup();
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: () => Promise.reject(new Error('denied')) } });
+    render(<I18nProvider initialPreference="es" target={document.documentElement}><CopyButton text="x" label="Copiar" /></I18nProvider>);
+    await user.click(await screen.findByRole('button', { name: 'Copiar' }));
+    expect(await screen.findByRole('button', { name: es.messages['common.copy.failed'] ?? 'MISSING' })).toBeTruthy();
+  });
+});

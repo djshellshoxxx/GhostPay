@@ -1,5 +1,6 @@
 import { useId, useState, type ReactNode } from 'react';
 import { sanitizeDisplayText } from '../lib/sanitize';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 
 export function Notice(props: { readonly kind: 'info' | 'warn' | 'error' | 'ok'; readonly title?: string; readonly children: ReactNode }): ReactNode {
   const label = { info: 'Note', warn: 'Warning', error: 'Problem', ok: 'Done' }[props.kind];
@@ -37,6 +38,7 @@ export function Field(props: {
 
 export function CopyButton(props: { readonly text: string; readonly label: string }): ReactNode {
   const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle');
+  const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
   return (
     <button
       type="button"
@@ -52,7 +54,7 @@ export function CopyButton(props: { readonly text: string; readonly label: strin
         })();
       }}
     >
-      {state === 'copied' ? 'Copied' : state === 'failed' ? 'Copy failed: select the text manually' : props.label}
+      {state === 'copied' ? t('common.copy.copied') : state === 'failed' ? t('common.copy.failed') : props.label}
     </button>
   );
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { ChainFeeList, LIMITS } from '../components/Disclosure';
+import { ChainFeeList, useLimits } from '../components/Disclosure';
 import { Mono } from '../components/Common';
 import { computeReleaseHash, entryScriptUrl } from '../lib/release';
 import { useServices } from '../lib/services';
@@ -10,6 +10,7 @@ export function Home(): ReactNode {
   const app = useApp();
   const services = useServices();
   const i18n = useI18nOptional();
+  const limits = useLimits();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const [hash, setHash] = useState<{ file: string; sha256: string } | 'unavailable' | undefined>(undefined);
   useEffect(() => {
@@ -61,7 +62,7 @@ export function Home(): ReactNode {
 
       <h3>{t('home.limits.title')}</h3>
       <ul className="plain-list">
-        {LIMITS.slice(0, 4).map((l) => (
+        {limits.slice(0, 4).map((l) => (
           <li key={l}>{l}</li>
         ))}
       </ul>

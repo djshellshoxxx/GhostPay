@@ -1,10 +1,11 @@
 import type { ReactNode } from 'react';
-import { ChainFeeList, LIMITS, ObserverTable } from '../components/Disclosure';
+import { ChainFeeList, useLimits, ObserverTable } from '../components/Disclosure';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 
 export function About(): ReactNode {
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
+  const limits = useLimits();
   return (
     <section aria-labelledby="about-h">
       <h2 id="about-h">{t('about.title')}</h2>
@@ -14,7 +15,7 @@ export function About(): ReactNode {
 
       <h3>{t('about.hides')}</h3>
       <ul className="plain-list">
-        {LIMITS.map((l) => (
+        {limits.map((l) => (
           <li key={l}>{l}</li>
         ))}
       </ul>
