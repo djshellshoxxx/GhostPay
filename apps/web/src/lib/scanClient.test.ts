@@ -1132,6 +1132,52 @@ describe('spec 05: spam lanes, backlog and local telemetry', () => {
     expect(res.cursor).toEqual({ nextBlock: 0n });
     expect(cleared).toEqual([84532]);
   });
+
+  // An unverifiable router claim (e.g. paid through a smart wallet, so no direct router evidence) is replayed once on
+  // resume, never forever: a resume that starts at the claim's own block has already retried it and must be able to
+  // save past it even when the next page is held back by the open-lane budget or the match limit.
+  const noTransfers = (base: ReturnType<typeof chainWith>) => ({ ...base, request: (method: string, params: readonly unknown[]) => {
+    if (method === 'eth_getTransactionReceipt') return base.request(method, params).then((raw) => ({ ...(raw as object), logs: ((raw as { logs: RpcLog[] }).logs).filter((log) => log.topics[0] !== TRANSFER_TOPIC) }));
+    return base.request(method, params);
+  } });
+  const resumeRuns = async (runs: number, run: (cursor: { nextBlock: bigint }) => Promise<unknown>, store: CheckpointStore): Promise<bigint[]> => {
+    const saved: bigint[] = [];
+    let cursor: { nextBlock: bigint } = { nextBlock: 0n };
+    for (let i = 0; i < runs; i++) {
+      await run(cursor);
+      cursor = store.load(84532, KEY) ?? cursor;
+      saved.push(cursor.nextBlock);
+    }
+    return saved;
+  };
+
+  it('replays an unverifiable router claim once, then resumes past it when the budget holds the next page (A5 liveness)', async () => {
+    const keys = generateKeySet();
+    const stranger = encodeMetaAddress(generateKeySet());
+    const claim = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(keys), block: 100, index: 0, caller: FAKE_ROUTER });
+    const client = noTransfers(chainWith(400_000, [claim.log, ...spamAt(stranger, 200, 1), ...spamAt(stranger, 60_000, 3), ...spamAt(stranger, 120_000, 3)]));
+    const store = memoryStore();
+    const saved = await resumeRuns(3, (cursor) => runScan({ chain, manifest, client, cursor, openLaneBudget: 2, checkpoints: store, ...keyArgs(keys) }), store);
+    expect(saved[0]).toBe(100n); // first sighting: the claim's block is kept so the next session re-verifies it
+    expect(saved[1]).toBeGreaterThan(100n); // that session retried it at its floor and moves on
+    expect(saved[2]).toBeGreaterThan(saved[1] ?? 0n);
+  });
+
+  it('replays an unverifiable router claim once, then resumes past it when the match limit stops the run (A5 liveness)', async () => {
+    const keys = generateKeySet();
+    const meta = encodeMetaAddress(keys);
+    const OTHER_CALLER = '0x9999999999999999999999999999999999999999' as Address;
+    const logs = [
+      makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 100, index: 0, caller: FAKE_ROUTER }).log,
+      makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 200, index: 1, caller: OTHER_CALLER }).log,
+      makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 60_000, index: 2, caller: OTHER_CALLER }).log,
+    ];
+    const client = noTransfers(chainWith(400_000, logs));
+    const store = memoryStore();
+    const saved = await resumeRuns(3, (cursor) => runScan({ chain, manifest, client, cursor, maxMatchesPerScan: 2, checkpoints: store, ...keyArgs(keys) }), store);
+    expect(saved[0]).toBe(100n);
+    expect(saved[1]).toBeGreaterThan(100n);
+  });
 });
 
 describe('two-provider replay-tail checkpoint anchor', () => {
