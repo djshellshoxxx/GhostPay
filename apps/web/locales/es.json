@@ -449,6 +449,8 @@
     "btc.headers.otherTab": "Otra pestaña o ventana guardó una cadena con más trabajo para esta red, así que estas cabeceras no la sobrescribieron. Recarga para usar la cadena guardada.",
     "btc.headers.claimRejected": "una cabecera enviada por el servidor no superó la validación, así que no se pudo evaluar la cadena del servidor.",
     "btc.headers.uncheckedResults": "Algunos pagos están en bloques por encima de las cabeceras comprobadas (altura {height}) y no se pueden barrer hasta que las cabeceras los superen.",
+    "btc.headers.forkUnresolved": "el servidor afirma una cadena alternativa más larga que no superó a la comprobada en esta comprobación, así que no se pudo evaluar. No se cambió nada.",
+    "btc.headers.uncheckedNone": "Ahora no hay cabeceras comprobadas, así que no se puede barrer ningún pago hasta actualizar las cabeceras.",
     "btc.scan.sweep": "Barrido",
     "btc.scan.output": "Salida",
     "btc.scan.block": "Bloque",

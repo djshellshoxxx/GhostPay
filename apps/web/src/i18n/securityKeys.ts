@@ -307,6 +307,8 @@ export const SECURITY_KEY_GROUPS = {
     'btc.headers.otherTab',
     'btc.headers.claimRejected',
     'btc.headers.uncheckedResults',
+    'btc.headers.forkUnresolved',
+    'btc.headers.uncheckedNone',
   ],
   policyConsentFeesAndRecovery: [
     'policy.title',

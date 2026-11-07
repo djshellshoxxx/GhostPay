@@ -48,7 +48,7 @@ function defaultHeaderStore(): { readonly storeFor: HeaderStoreFor; readonly per
  * on load and discarded on any failure. `headerStore` replaces that storage (tests).
  */
 export function BtcView(
-  props: { readonly headerStore?: HeaderStoreFor; readonly headerSyncLimits?: { readonly maxRounds?: number; readonly headersPerRound?: number } } = {},
+  props: { readonly headerStore?: HeaderStoreFor; readonly headerSyncLimits?: { readonly maxRounds?: number; readonly headersPerRound?: number; readonly maxHeaders?: number } } = {},
 ): ReactNode {
   const services = useServices();
   // Test renders without an I18nProvider fall back to the source English catalog.
@@ -90,6 +90,13 @@ export function BtcView(
   /** Height the checked header chain reaches; payments above it are kept but cannot be swept. */
   const [checkedTip, setCheckedTip] = useState<number | undefined>(undefined);
   const [confirmForget, setConfirmForget] = useState(false);
+  /** Mirrors `scanning` for click handlers: no review, signature or broadcast while a check or scan runs. */
+  const scanningRef = useRef(false);
+  /** Sets the busy state and its ref together, so render and click handlers always agree. */
+  const setBusy = (b: boolean): void => {
+    scanningRef.current = b;
+    setScanning(b);
+  };
   /** Bumped by "Forget saved headers": a sync started before it may neither save nor change scan results. */
   const forgetGen = useRef(0);
   const net = btcNetwork(netId);
@@ -97,7 +104,7 @@ export function BtcView(
   const invalidate = (): void => {
     op.current++;
     abort.current?.abort();
-    setScanning(false);
+    setBusy(false);
   };
 
   const begin = (): { readonly signal: AbortSignal; readonly live: () => boolean } => {
@@ -125,16 +132,21 @@ export function BtcView(
     setHasBackup(false);
   };
 
-  const resetFlow = (): void => {
-    if (scanRef.current !== undefined) wipeFound(scanRef.current.found);
-    scanRef.current = undefined;
-    setScan(undefined);
+  /** Clears every selection and the review, approval, signature, broadcast and scan-note state. */
+  const clearFlowState = (): void => {
     setPicked(new Set());
     setReview(undefined);
     setApproved(false);
     setSigned(undefined);
     setBroadcastId(undefined);
     setScanNote(undefined);
+  };
+
+  const resetFlow = (): void => {
+    if (scanRef.current !== undefined) wipeFound(scanRef.current.found);
+    scanRef.current = undefined;
+    setScan(undefined);
+    clearFlowState();
   };
 
   const guard = (f: () => void): void => {
@@ -181,6 +193,36 @@ export function BtcView(
   const sweepable = (f: FoundPayment): boolean => checkedTip !== undefined && f.height <= checkedTip;
   const selected: readonly FoundPayment[] = scan === undefined ? [] : scan.found.filter((f) => sweepable(f) && picked.has(`${f.txid}:${String(f.vout)}`));
 
+  /** Inputs of the review all sit in blocks the checked header chain reaches. */
+  const inputsChecked = (r: SweepReview | undefined): boolean => {
+    // The live chain too: a running check updates it in place before React state catches up.
+    const live = chainRef.current?.netId === net.id ? chainRef.current.chain : undefined;
+    return (
+      r !== undefined &&
+      live !== undefined &&
+      r.inputs.every((i) => {
+        const f = scan?.found.find((x) => x.txid === i.txid && x.vout === i.vout);
+        return f !== undefined && sweepable(f) && live.hashAt(f.height) === f.blockHash;
+      })
+    );
+  };
+  /** For the click handlers: also refuse while any check or scan runs (the buttons render from `scanning`). */
+  const reviewChecked = (r: SweepReview | undefined): boolean => !scanningRef.current && inputsChecked(r);
+
+  /** Forgets the review, approval, signature and broadcast state, and every selection that cannot be swept now. */
+  const clearSweepFlow = (): void => {
+    setReview(undefined);
+    setApproved(false);
+    setSigned(undefined);
+    setBroadcastId(undefined);
+    setPicked((cur) => new Set([...cur].filter((id) => scan?.found.some((f) => `${f.txid}:${String(f.vout)}` === id && sweepable(f)) === true)));
+  };
+
+  // Whenever the checked tip drops below a reviewed input (or headers are gone), the sweep must be reviewed again.
+  useEffect(() => {
+    if (review !== undefined && !inputsChecked(review)) clearSweepFlow();
+  }, [checkedTip, scan, review]);
+
   /** Drops scan results from blocks that left the checked chain; wipes their spend tweaks. */
   const applyChainToScan = (chain: HeaderChain): HeaderNote[] => {
     const current = scanRef.current;
@@ -191,12 +233,7 @@ export function BtcView(
     for (const d of dropped) if (!kept.has(d.spendTweak)) zeroize(d.spendTweak);
     scanRef.current = next;
     setScan(next);
-    setPicked(new Set());
-    setReview(undefined);
-    setApproved(false);
-    setSigned(undefined);
-    setBroadcastId(undefined);
-    setScanNote(undefined);
+    clearFlowState();
     return [
       next === undefined
         ? { kind: 'warn', text: t('btc.headers.scanDiscarded') }
@@ -212,9 +249,11 @@ export function BtcView(
     const notes: HeaderNote[] = [];
     const gen = forgetGen.current;
     let chain: HeaderChain;
+    let fresh = false;
     if (chainRef.current?.netId === net.id) {
       chain = chainRef.current.chain;
     } else {
+      fresh = true;
       if (live()) setHeaderProgress(t('btc.headers.loading', { height: '0' }));
       const loaded = await loadHeaderChain(net, headerStorage.storeFor(net.id), {
         onProgress: (h) => { if (live()) setHeaderProgress(t('btc.headers.loading', { height: String(h) })); },
@@ -243,9 +282,10 @@ export function BtcView(
     } finally {
       if (live()) setHeaderProgress(undefined);
     }
-    // The chain may have switched before a failure, or while this action went stale: results from replaced blocks
-    // are removed (and their tweaks wiped) whenever it changed, before anything else.
-    const dropped = chain.tipHash === before || forgetGen.current !== gen ? [] : applyChainToScan(chain);
+    // The chain may have switched before a failure, or while this action went stale, or it was just loaded from
+    // storage (another tab's, or a fresh one after a forget) and never compared with what is on screen: results from
+    // blocks it does not have are removed (and their tweaks wiped), before anything else.
+    const dropped = forgetGen.current !== gen || (!fresh && chain.tipHash === before) ? [] : applyChainToScan(chain);
     if (forgetGen.current === gen) setCheckedTip(chain.tipHeight);
     const partial = out ?? (failure instanceof HeaderSyncError ? failure.partial : undefined);
     if (partial?.reorgFrom !== undefined) notes.push({ kind: 'warn', text: t('btc.headers.reorg', { height: String(partial.reorgFrom) }) });
@@ -255,11 +295,12 @@ export function BtcView(
       const code = failure instanceof SilentPaymentError ? failure.code : undefined;
       const reason =
         code === 'FORK_TOO_DEEP' ? t('btc.headers.forkTooDeep', { max: String(DEFAULT_FORK_HEADERS) })
-          : code === 'UNSUPPORTED' ? t('btc.headers.tooMany', { max: String(MAX_HEADERS) })
-            : code === 'INVALID_HEADER' || code === 'INVALID_RESPONSE' ? t('btc.headers.claimRejected')
+          : code === 'FORK_UNRESOLVED' ? t('btc.headers.forkUnresolved')
+            : code === 'UNSUPPORTED' ? t('btc.headers.tooMany', { max: String(props.headerSyncLimits?.maxHeaders ?? MAX_HEADERS) })
+              : code === 'INVALID_HEADER' ? t('btc.headers.claimRejected')
               : btcErrorMessage(failure);
       notes.push({ kind: 'error', text: t('btc.headers.failed', { reason }) });
-      if (code === 'FORK_TOO_DEEP') notes.push({ kind: 'info', text: t('btc.headers.conflictHint') });
+      if (code === 'FORK_TOO_DEEP' || code === 'FORK_UNRESOLVED') notes.push({ kind: 'info', text: t('btc.headers.conflictHint') });
       if (live()) setHeaderNotes(notes);
       return undefined;
     }
@@ -280,6 +321,10 @@ export function BtcView(
     forgetGen.current++;
     setCheckedTip(undefined);
     setConfirmForget(false);
+    setBusy(false);
+    clearSweepFlow();
+    // Every selection goes: none was made against headers that are checked now.
+    setPicked(new Set());
     void (async () => {
       let ok = true;
       try {
@@ -294,7 +339,7 @@ export function BtcView(
   const updateHeaders = (): void => {
     setError(undefined);
     const { signal, live } = begin();
-    setScanning(true);
+    setBusy(true);
     void (async () => {
       try {
         const c = client();
@@ -303,7 +348,7 @@ export function BtcView(
       } catch (e) {
         if (live()) setError(btcErrorMessage(e));
       } finally {
-        if (live()) setScanning(false);
+        if (live()) setBusy(false);
       }
     })();
   };
@@ -313,7 +358,7 @@ export function BtcView(
     if (wallet === undefined) return;
     resetFlow();
     const { signal, live } = begin();
-    setScanning(true);
+    setBusy(true);
     void (async () => {
       try {
         const c = client();
@@ -349,13 +394,13 @@ export function BtcView(
           }
         }
       } finally {
-        if (live()) setScanning(false);
+        if (live()) setBusy(false);
       }
     })();
   };
 
   const doReview = (): void => {
-    if (wallet === undefined) return;
+    if (wallet === undefined || scanningRef.current) return;
     guard(() => {
       const rate = Number(feeRate);
       setReview(reviewSweep(wallet, selected, destination, rate));
@@ -366,7 +411,7 @@ export function BtcView(
   };
 
   const doSign = (): void => {
-    if (wallet === undefined || review === undefined || !approved) return;
+    if (wallet === undefined || review === undefined || !approved || !reviewChecked(review)) return;
     setError(undefined);
     const { live } = begin();
     void (async () => {
@@ -380,7 +425,7 @@ export function BtcView(
   };
 
   const doBroadcast = (): void => {
-    if (signed === undefined) return;
+    if (signed === undefined || !reviewChecked(review)) return;
     setError(undefined);
     const { live } = begin();
     void (async () => {
@@ -394,6 +439,7 @@ export function BtcView(
   };
 
   const lock = (): void => {
+    setConfirmForget(false);
     // First, while a Lock click still counts as user activation (the browser allows clipboard writes only then).
     clearCopiedBackup();
     invalidate();
@@ -430,7 +476,12 @@ export function BtcView(
               id={id}
               value={netId}
               disabled={wallet !== undefined}
-              onChange={(e) => { setNetId(e.target.value as BtcNetworkId); }}
+              onChange={(e) => {
+                setNetId(e.target.value as BtcNetworkId);
+                setConfirmForget(false);
+                setHeaderNotes([]);
+                setCheckedTip(undefined);
+              }}
             >
               {BTC_NETWORKS.map((n) => (
                 <option key={n.id} value={n.id} disabled={!n.enabled}>{n.label}</option>
@@ -582,7 +633,7 @@ export function BtcView(
                     {t('btc.scan.singleProvider')}
                   </p>
                   {scan.found.some((f) => !sweepable(f)) && (
-                    <Notice kind="warn">{t('btc.headers.uncheckedResults', { height: String(checkedTip ?? 0) })}</Notice>
+                    <Notice kind="warn">{checkedTip === undefined ? t('btc.headers.uncheckedNone') : t('btc.headers.uncheckedResults', { height: String(checkedTip) })}</Notice>
                   )}
                   <table>
                     <thead>
@@ -670,7 +721,7 @@ export function BtcView(
               <input id={id} aria-describedby={d} inputMode="decimal" value={feeRate} onChange={(e) => { setFeeRate(e.target.value); setReview(undefined); setSigned(undefined); }} />
             )}
           </Field>
-          <button type="button" className="btn btn-primary" disabled={selected.length === 0 || destination.trim() === ''} onClick={doReview}>
+          <button type="button" className="btn btn-primary" disabled={scanning || selected.length === 0 || destination.trim() === ''} onClick={doReview}>
             {t('btc.sweep.review')}
           </button>
 
@@ -703,7 +754,7 @@ export function BtcView(
               </label>
               <p className="hint">{SIGNER_DESCRIPTION}</p>
               <p>
-                <button type="button" className="btn btn-primary" disabled={!approved || signed !== undefined} onClick={doSign}>
+                <button type="button" className="btn btn-primary" disabled={scanning || !approved || signed !== undefined || !inputsChecked(review)} onClick={doSign}>
                   {t('btc.review.sign')}
                 </button>
               </p>
@@ -716,7 +767,7 @@ export function BtcView(
               <p>{t('btc.signed.txid')} <Mono>{signed.txid}</Mono></p>
               <p>{t('btc.signed.notSent')}</p>
               <CopyButton text={signed.rawHex} label={t('btc.signed.copyRaw')} />{' '}
-              <button type="button" className="btn btn-primary" disabled={broadcastId !== undefined} onClick={doBroadcast}>
+              <button type="button" className="btn btn-primary" disabled={scanning || broadcastId !== undefined || !inputsChecked(review)} onClick={doBroadcast}>
                 {t('btc.broadcast.action', { network: net.label })}
               </button>
               {broadcastId !== undefined && <Notice kind="ok" title={t('btc.broadcast.title')}>{t('btc.broadcast.accepted')} <Mono>{broadcastId}</Mono>.</Notice>}

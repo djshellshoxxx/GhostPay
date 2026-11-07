@@ -218,6 +218,8 @@ export class HeaderBranch {
   private readonly run = new HeaderRun();
   private workValue: bigint;
   private dead = false;
+  /** An invalid header was seen: nothing more can be added, but the validated prefix may still be adopted. */
+  private failed = false;
   private lastHash: string;
 
   /** @internal */
@@ -261,7 +263,7 @@ export class HeaderBranch {
    * `INVALID_RESPONSE` (malformed header, proof of work), `INVALID_HEADER` (linkage and header-chain rules).
    */
   public add(headersHex: readonly string[]): void {
-    if (this.dead || this.epoch !== this.chain.epochValue) return fail('INVALID_INPUT');
+    if (this.dead || this.failed || this.epoch !== this.chain.epochValue) return fail('INVALID_INPUT');
     if (!Array.isArray(headersHex) || headersHex.length === 0 || headersHex.length > MAX_BATCH) return fail('INVALID_INPUT');
     try {
       for (const hex of headersHex as readonly string[]) {
@@ -278,7 +280,7 @@ export class HeaderBranch {
         this.lastHash = p.header.hash;
       }
     } catch (e) {
-      this.dead = true;
+      this.failed = true;
       throw e;
     }
   }

@@ -216,6 +216,19 @@ describe('syncing headers', () => {
     expect(MAX_ROUNDS_PER_CALL * HEADERS_PER_ROUND).toBeLessThanOrEqual(MAX_HEADERS);
   });
 
+  it('L-b: a heavier prefix adopted before an invalid header is reported as a reorg in the failure', async () => {
+    const chain = mockChain('regtest', walletA());
+    const store = new MemoryHeaderStore();
+    const headers = await synced(chain, store);
+    forkChain(chain.blocks, 3, 5, 2); // 3'..7'
+    const bad = mineHeader('ab'.repeat(32), chain.blocks[7]!.txs, 0x207fffff, 1_700_100_000);
+    chain.blocks[7] = { ...chain.blocks[7]!, header: bad, hash: parseHeader(bad).hash };
+    const e = await syncHeaders({ chain: headers, sources: [sourceOf(chain)], store }).catch((x: unknown) => x);
+    expect((e as HeaderSyncError).code).toBe('INVALID_HEADER');
+    expect((e as HeaderSyncError).partial).toMatchObject({ reorgFrom: 2, tipHeight: 6 });
+    expect(headers.tipHash).toBe(chain.blocks[6]!.hash);
+  });
+
   it('fails closed on an invalid header, keeping (and having saved) only valid headers', async () => {
     const chain = mockChain('regtest', walletA());
     const store = new MemoryHeaderStore();
@@ -254,13 +267,27 @@ describe('syncing headers', () => {
     expect(store.work).toBe(headers.tipWork);
   });
 
-  it('fails closed when the chain grows past the size limit, without saving it', async () => {
+  it('never grows the chain past the size limit (rounds are capped) and fails closed at it, every time', async () => {
     const chain = mockChain('regtest', walletA());
     const store = new MemoryHeaderStore();
     const { chain: headers } = await loadHeaderChain(regtest, store, { now: NOW });
-    const e = await syncHeaders({ chain: headers, sources: [sourceOf(chain)], store, maxHeaders: 3 }).catch((x: unknown) => x);
-    expect((e as HeaderSyncError).code).toBe('UNSUPPORTED');
-    expect(store.value).toBeUndefined();
+    for (let i = 0; i < 3; i++) {
+      const e = await syncHeaders({ chain: headers, sources: [sourceOf(chain)], store, maxHeaders: 3, headersPerRound: 5 }).catch((x: unknown) => x);
+      expect((e as HeaderSyncError).code).toBe('UNSUPPORTED');
+      expect(headers.tipHeight).toBe(3);
+    }
+    expect((JSON.parse(store.value ?? '{}') as { headersHex: string }).headersHex.length / 160).toBe(3);
+  });
+
+  it('a later successful save clears an earlier failure', async () => {
+    const chain = mockChain('regtest', walletA());
+    const store = new MemoryHeaderStore();
+    let fail = true;
+    const flaky: HeaderStore = { load: () => store.load(), save: (s, w) => (fail ? ((fail = false), Promise.reject(new Error('x'))) : store.save(s, w)), clear: () => store.clear() };
+    const { chain: headers } = await loadHeaderChain(regtest, store, { now: NOW });
+    forkChain(chain.blocks, 5, 30, 0);
+    const out = await syncHeaders({ chain: headers, sources: [sourceOf(chain)], store: flaky, headersPerRound: 5 });
+    expect(out).toMatchObject({ saved: true, refused: false, tipHeight: 34 });
   });
 
   it('a deeper competing branch than the package evaluates is a distinct failure, not "less work"', async () => {

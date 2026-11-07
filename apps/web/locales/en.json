@@ -449,6 +449,8 @@
     "btc.headers.otherTab": "Another tab or window saved a chain with more work for this network, so these headers were not saved over it. Reload to use the saved chain.",
     "btc.headers.claimRejected": "a header the server sent failed validation, so the server’s chain could not be evaluated.",
     "btc.headers.uncheckedResults": "Some payments are in blocks above the checked headers (height {height}) and cannot be swept until the headers are updated past them.",
+    "btc.headers.forkUnresolved": "the server claims a longer competing chain that did not overtake the checked one within this check, so its claim could not be evaluated. Nothing was changed.",
+    "btc.headers.uncheckedNone": "No block headers are checked right now, so no payment can be swept until the headers are updated.",
     "btc.scan.sweep": "Sweep",
     "btc.scan.output": "Output",
     "btc.scan.block": "Block",

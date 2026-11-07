@@ -138,9 +138,9 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     Memory (measured, `packages/btc-silent-payments/scripts/bench-headerchain-memory.mjs`: node --expose-gc, regtest
     headers connected in 2016-header batches, GC'd `heapUsed + arrayBuffers` with the chain alive minus after dropping it):
     before the compact store ~2 040 bytes per header (100 000 headers = 204 MB; review measured ~2.1 KB); now 147 B/header
-    at 100 000 and 196 B/header at 300 000 (the arrays grow by doubling): ~59 MB for 300 000, ~80 MB at the limit. The
+    at 100 000 and 196 B/header at 300 000 (the arrays grow by doubling): ~59 MB for 300 000 (at 400 000: ~59 MB of data at 147 B/header, plus up to ~29 MB transient while the arrays double). The
     chain keeps 80 raw bytes + 32 hash bytes per header in typed arrays and cumulative work every 2016 headers; parsed
-    headers are built only on demand. A vitest guard (`headerchain.memory.test.ts`, 20 000 headers) fails above 400 B.
+    headers are built only on demand. A vitest guard (`headerchain.memory.test.ts`, 20 000 headers) fails above 250 B.
     Loading also holds the stored text (160 B/header, one flat hex string; released right after `JSON.parse`) and the
     parsed copy while re-validating: about +64 MB transient at 400 000. Size limit: `MAX_HEADERS` = 400 000 per network; a
     saved chain above it is deleted on load and a sync past it fails closed (`UNSUPPORTED`): nothing above checked headers
@@ -150,10 +150,10 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     Competing branches: once the server disagrees, the package streams its branch in chunks of 1000 into a compact
     validation context (any invalid header stops it at once), adopts it as soon as its cumulative work is strictly
     greater, and extends it in later rounds; "no more work" is reported only after the branch was compared up to the
-    source tip. The budget is what would be replaced: more than 10 080 checked headers above the probe point (which can
-    overshoot the fork by up to 2x) is not evaluated, and neither is a branch that has not won 4032 headers past the
-    checked tip while the server claims more; the check then fails with "the server's claim of a competing chain could
-    not be evaluated" and nothing changes. A shallow reorg is followed however far ahead the server is (review M3).
+    source tip. The budget is what would be replaced: more than 10 080 checked headers above the exact fork point is not
+    evaluated ("would replace more than 10080 checked headers"); separately, a branch that has not overtaken within
+    one round (4032 headers) past the checked tip while the server claims more is "not evaluated" (`FORK_UNRESOLVED`,
+    its own message). Nothing changes in either case. A shallow reorg is followed however far ahead the server is.
     Persistence: IndexedDB `ghostpay-btc-headers` / store `chains`; key `headers:v1:<network>` holds JSON
     `{version: 2, network, checkpoint, headersHex}` (all active headers as one hex string) and `headers:v1:<network>:work`
     its cumulative work. Public chain data only: no key, address, amount or scan result. A save reads the stored work and
@@ -170,9 +170,30 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     in-memory chain; the next check starts at genesis from the configured server. It is never done automatically.
     Forgetting cancels a running check and bumps a generation counter: a sync started before it may not save (its
     fail-closed save is skipped) or change scan results.
-    Failure handling: a header that fails any rule, a malformed or missing answer, or an unreachable server fails the
-    header check ("a header the server sent failed validation, so the server's chain could not be evaluated"), keeps (and
-    has saved) only the valid prefix, and blocks the scan. A branch with no more work is ignored and its blocks are
+    Failure handling: any failure fails the header check, keeps (and has saved) only the valid prefix, and blocks the
+    scan. The reason shown depends on the error: a header that breaks a chain rule (linkage, difficulty, timestamps,
+    version) says "a header the server sent failed validation, so the server's chain could not be evaluated"; a
+    malformed answer or a header without valid proof of work (both found while parsing) says "The server returned data
+    this app cannot trust"; an unreachable server or HTTP error says "The server could not be reached or refused the
+    request" (a server without `/blocks/:height` is first retried one header at a time); a fork too deep, or a longer
+    branch that did not overtake within the round ("not evaluated", `FORK_UNRESOLVED`), and the size limit have their
+    own messages. An extension chunk that does not build on the current tip is refused (it is never connected as a
+    silent reorg), and the fork point is found exactly (doubling probe, then binary search), so the 10 080 budget
+    counts the real depth. When a competing branch hits an invalid header, its valid prefix is still adopted if it
+    already has more work; the error is reported after.
+    Sweeping needs checked inputs: a review, signature or broadcast is allowed only while no check or scan is running
+    (the header chain is updated in place during a check, before the view's state catches up) and every input's block
+    is at or below the checked tip with the hash the live checked chain has at that height. Forget clears the review,
+    approval, signed transaction and every selection; a checked tip that drops below a reviewed input clears the review
+    and the selections that cannot be swept. These gates are layered on purpose: the buttons render disabled from the
+    busy state and the reviewed inputs; the click handlers check the busy state through a ref (set together with the
+    state) and the inputs against the live chain; a clearing effect drops a review whose inputs are no longer checked.
+    Tests pin the button gates mid-check (chain still unchanged) and the handler gates by calling the real handlers
+    (React props) mid-check and after a fork check. The clearing effect remains a backstop (results are reconciled
+    first), not pinned on its own. A chain loaded from storage (after a
+    forget, or another tab's) is always compared with the results on screen, even when the sync does not move its tip.
+    A forget during a check ends the busy state at once; a check started before it may not save, set the checked tip,
+    keep its loaded chain or change results. A branch with no more work is ignored and its blocks are
     refused (`REORG_DETECTED`). A branch with more work is adopted; scan results from checked blocks above the fork are
     removed (spend tweaks wiped), the result is cut back to the fork height (or discarded) and the view says so. This
     happens whenever the chain changed, also when a later round of the same sync fails or the action went stale (review
@@ -181,7 +202,11 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     Not done (review L-d): parsed context is not limited to the last 2016 + 11 headers in the sense of dropping old ones:
     fork evaluation, reorg checks of scan results (`hashAt` at any scanned height), the probe and persistence read old
     active headers, so all are kept, but compactly (above). Remaining gaps: `spentCount` of a cut-back scan still
-    counts outputs from removed blocks. Unverified: the
+    counts outputs from removed blocks. Known costs, not fixed: each save builds the whole record in memory (one hex
+    string from `hexRange` plus its JSON copy, ~128 MB temporary at 400 000 headers); without IndexedDB the in-memory
+    store keeps one more copy of that text (so memory roughly doubles); `HeaderChain.toJSON` (a package API the view
+    no longer uses for storage) still creates one string per header. The size limit is enforced before every round:
+    a round never fetches past it, and a check at the limit fails closed every time instead of growing the chain. Unverified: the
     `/blocks/:height` field mapping follows the electrs/Esplora API and is exercised only against the test mock (no live
     server is contacted by tests); a mismatch fails closed (each rebuilt header must hash to the summary's `id`).
 
