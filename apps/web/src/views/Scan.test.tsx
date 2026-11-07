@@ -121,7 +121,7 @@ describe('Scan and receive', () => {
     expect(screen.queryByRole('button', { name: 'Sign receipt' })).toBeNull();
     expect(screen.queryByText(other.stealthAddress)).toBeNull();
     await waitFor(() => { expect(screen.getByText(/Finished\. 2 announcements checked, 1 payments found\./)).toBeTruthy(); });
-    expect(checkpoints.load(84532, checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey))?.nextBlock).toBe(401n); // head 500 + 1 - finalityDepth 100: the tail is re-scanned on resume
+    expect(checkpoints.load(84532, checkpointKeyId(pub.spendingPublicKey, pub.viewingPublicKey))?.nextBlock).toBe(120n); // the router claim at 120 could not be verified on this (only) page: resume re-scans and re-verifies it (0b213bd)
     expect(screen.getByText(/Resume from checkpoint/)).toBeTruthy();
 
     // Tags: locked by default, unlock, tag, lock hides, delete everything.
