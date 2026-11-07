@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, mkdtempSync, readFileSync, rmSync, statSync } from 'node:fs';
 import { createServer, type Server } from 'node:http';
 import { tmpdir } from 'node:os';
-import { extname, join, normalize, resolve } from 'node:path';
+import { extname, isAbsolute, join, normalize, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { merchantIdFor, signMerchantProfile, type MerchantProfile } from '@ghostpay/invoice-schema';
 import { secp256k1 } from '@noble/curves/secp256k1.js';
@@ -86,9 +86,14 @@ test.describe('embed SDK (iframe mode)', () => {
 
   test.beforeAll(async () => {
     checkout = createServer((req, res) => {
-      const path = normalize(decodeURIComponent((req.url ?? '/').split(/[?#]/)[0] ?? '/')).replace(/^([/\\])+/, '');
-      let file = join(outDir, path === '' ? 'index.html' : path);
-      if (!file.startsWith(outDir) || !existsSync(file) || !statSync(file).isFile()) file = join(outDir, 'index.html');
+      let requested = '/';
+      try { requested = decodeURIComponent((req.url ?? '/').split(/[?#]/)[0] ?? '/'); } catch { /* malformed escape: serve the shell */ }
+      const root = resolve(outDir);
+      const candidate = resolve(root, `.${normalize(`/${requested}`)}`);
+      const inside = relative(root, candidate);
+      // Containment by path relation, not string prefix: a sibling such as `${root}-x` must not be served.
+      let file = inside === '' || inside.startsWith('..') || isAbsolute(inside) ? join(root, 'index.html') : candidate;
+      if (!existsSync(file) || !statSync(file).isFile()) file = join(root, 'index.html');
       res.writeHead(200, {
         'content-type': MIME[extname(file)] ?? 'application/octet-stream',
         'content-security-policy': `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https: wss:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors ${GOOD_MERCHANT} ${OTHER_MERCHANT}; worker-src 'self'`,
