@@ -198,6 +198,15 @@ describe.skipIf(!available)('end to end on anvil (real GhostPaySweepRelayer + ER
     const hit = relayer?.metrics.render().split('\n').find((l) => l.startsWith(line));
     return hit === undefined ? 0 : Number(hit.slice(line.length).trim());
   };
+  /**
+   * Waits until the relayer itself has settled every earlier sweep. It settles a sweep (returning the unused budget
+   * reservation) after its OWN receipt wait, which can lag the test's receipt wait; a metric snapshot taken before
+   * that is off by the earlier sweep's unused reservation. The lane counts a job as pending until it is settled.
+   */
+  const laneIdle = async (): Promise<void> => {
+    for (let i = 0; i < 100 && metric('relayer_queue_pending{chain_id="31337"}') !== 0; i++) await new Promise((res) => setTimeout(res, 100));
+    expect(metric('relayer_queue_pending{chain_id="31337"}')).toBe(0);
+  };
   const erc20 = parseAbi([
     'function balanceOf(address) view returns (uint256)',
     'function nonces(address) view returns (uint256)',
@@ -263,6 +272,7 @@ describe.skipIf(!available)('end to end on anvil (real GhostPaySweepRelayer + ER
     const pub = createPublicClient({ transport: http(url) });
     const amount = 100_000_000n;
     const { body } = await prepare(amount, 3n);
+    await laneIdle();
     const revertsBefore = metric('relayer_mined_reverts_total{chain_id="31337"}');
     const strikesBefore = metric('relayer_owner_failures_total');
     const usedBefore = metric('relayer_daily_budget_used_wei{chain_id="31337"}');
