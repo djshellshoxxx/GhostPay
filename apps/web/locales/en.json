@@ -646,15 +646,12 @@
     "backup.keys.done": "A copy of these keys exists outside this tab (a downloaded keystore, imported keys or a saved vault). Keep that copy and its passphrase safe: neither can be recovered.",
     "backup.tags.heading": "Step 2: client tag archive",
     "backup.tags.notStarted": "No tag archive was downloaded in this session yet. Use the form below.",
-    "backup.tags.done": "Tag archive downloaded. Tags in the archive: {count, number}. Keep the file and its passphrase: neither can be recovered.",
-    "backup.tags.partial": "The tag archive was downloaded, but some scan history is NOT in it. Read the message below.",
-    "backup.tags.failed": "The latest tag archive attempt failed and produced no file. Read the message below. An archive from an earlier attempt, if you made one, is not affected.",
+    "backup.tags.partial": "Last tag archive downloaded {time}. Tags in it: {count, number}. Some scan history is NOT in it (see below). Tags saved, changed or deleted after that, here or in another tab, are not in it either.",
+    "backup.tags.failed": "The latest tag archive attempt failed and produced no file: {reason} An archive from an earlier attempt, if you made one, is not affected.",
     "backup.status.notStarted": "Not started",
     "backup.status.done": "Done",
-    "backup.status.partial": "Done with gaps",
     "backup.status.failed": "Failed",
     "backup.keys.go": "Go to the keystore backup",
-    "backup.tags.doneNoHistory": "Tag archive downloaded WITHOUT scan history, as you chose. Tags in the archive: {count, number}. Keep the file and its passphrase: neither can be recovered.",
     "receipt.lean.hint": "This build only signs receipts bound to a validated signed invoice. Open and validate the invoice below; a manually entered digest is not accepted.",
     "receipt.lean.refused": "This build only signs receipts bound to a validated signed invoice. Validate the invoice first.",
     "create.title": "Create invoice",
@@ -1173,6 +1170,12 @@
     "tron.review.feeValue": "{amount} ({sun} sun)",
     "tron.signed.txid": "Transaction id:",
     "tron.signed.notSent": "Not sent yet. Broadcasting sends it to the node above.",
-    "tron.broadcast.accepted": "The node accepted transaction"
+    "tron.broadcast.accepted": "The node accepted transaction",
+    "backup.status.deleted": "Local tags deleted",
+    "backup.tags.deleted": "All local tags were deleted after the last archive, which holds {count, number} tags. Keep that archive: it is now the only copy.",
+    "backup.status.downloaded": "Downloaded",
+    "backup.status.downloadedGaps": "Downloaded, with gaps",
+    "backup.tags.archived": "Last tag archive downloaded {time}. Tags in it: {count, number}, with scan history. Tags saved, changed or deleted after that, here or in another tab, are not in it. Download a new archive to include them.",
+    "backup.tags.archivedNoHistory": "Last tag archive downloaded {time}. Tags in it: {count, number}, without scan history. Tags saved, changed or deleted after that, here or in another tab, are not in it. Download a new archive to include them."
   }
 }

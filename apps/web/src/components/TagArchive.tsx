@@ -76,15 +76,25 @@ function chainLabel(chainId: number, t: Translator['t']): string {
 
 /** What an export attempt did: reported only after the file was handed to the browser, or after the attempt failed. */
 export type ArchiveExportResult =
-  | { readonly ok: true; readonly recordCount: number; readonly sha256: string; /** The seller asked for scan history to be included. */ readonly history: boolean; /** Scan history is missing from the archive for at least one chain. */ readonly gaps: boolean }
-  | { readonly ok: false };
+  | {
+    readonly ok: true;
+    readonly recordCount: number;
+    readonly sha256: string;
+    /** The seller asked for scan history to be included. */
+    readonly history: boolean;
+    /** Scan history is missing from the archive for at least one chain. */
+    readonly gaps: boolean;
+    /** Plain-language notes on what is NOT in the archive (empty when nothing is missing). */
+    readonly notes: readonly string[];
+  }
+  | { readonly ok: false; readonly message: string };
 
 /**
  * Encrypted tag backup, import with preview, key rotation and wipe. Everything is local; the passphrase is never stored.
  * @param props.onExport Optional observer of export attempts (the combined backup panel); it changes no behavior here.
  */
-export function TagArchive(props: { readonly onExport?: (result: ArchiveExportResult) => void } = {}): ReactNode {
-  const { onExport: reportExport } = props;
+export function TagArchive(props: { readonly onExport?: (result: ArchiveExportResult) => void; readonly onTagsWiped?: () => void } = {}): ReactNode {
+  const { onExport: reportExport, onTagsWiped } = props;
   const i18n = useI18nOptional();
   // Reached through a ref: an export or import that settles after a language change reports in the language then in effect.
   const tr = i18n ?? SOURCE_TRANSLATOR;
@@ -209,7 +219,6 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
         unchanged();
         downloadBytes(out.filename, out.bytes);
         setPass(''); setPass2(''); setBusy(false);
-        reportExport?.({ ok: true, recordCount: out.recordCount, sha256: out.sha256, history: withHistory, gaps: skipped > 0 || unsupported === undefined || unsupported.length > 0 });
         const missing = [
           skipped > 0 ? t('tagArchive.missing.skipped', { count: String(skipped) }) : '',
           unsupported === undefined ? t('tagArchive.missing.unlisted') : '',
@@ -217,11 +226,12 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
             ? t(unsupported.length === 1 ? 'tagArchive.missing.unsupportedOne' : 'tagArchive.missing.unsupportedMany', { chains: trRef.current.list(unsupported.map((id) => chainLabel(id, trRef.current.t))) })
             : '',
         ].filter((note) => note !== '');
+        reportExport?.({ ok: true, recordCount: out.recordCount, sha256: out.sha256, history: withHistory, gaps: missing.length > 0, notes: missing });
         done(`${t('tagArchive.msg.downloaded', { count: String(out.recordCount), sha: out.sha256 })}${missing.map((note) => ` ${note}`).join('')}`);
       } catch (error) {
         if (!current(c)) return;
         setBusy(false); fail(error);
-        reportExport?.({ ok: false });
+        reportExport?.({ ok: false, message: userMessage(error) });
       } finally {
         closeVaults(vaults);
       }
@@ -344,7 +354,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
         unchanged();
         await vault.wipe();
         if (!current(c)) return;
-        unchanged(); setBusy(false); done(t('tagArchive.msg.wiped'));
+        unchanged(); setBusy(false); onTagsWiped?.(); done(t('tagArchive.msg.wiped'));
       } catch (error) {
         if (!current(c)) return;
         setBusy(false); fail(error);

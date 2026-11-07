@@ -646,15 +646,12 @@
     "backup.keys.done": "توجد نسخة من هذه المفاتيح خارج هذا التبويب (مخزن مفاتيح منزّل أو مفاتيح مستوردة أو خزنة محفوظة). احتفظ بهذه النسخة وبعبارة المرور الخاصة بها: لا يمكن استرداد أي منهما.",
     "backup.tags.heading": "الخطوة 2: أرشيف وسوم العملاء",
     "backup.tags.notStarted": "لم يُنزَّل أي أرشيف وسوم في هذه الجلسة بعد. استخدم النموذج أدناه.",
-    "backup.tags.done": "نُزّل أرشيف الوسوم. عدد الوسوم في الأرشيف: {count, number}. احتفظ بالملف وبعبارة المرور: لا يمكن استرداد أي منهما.",
-    "backup.tags.partial": "نُزّل أرشيف الوسوم، لكن بعض سجل المسح غير موجود فيه. اقرأ الرسالة أدناه.",
-    "backup.tags.failed": "فشلت أحدث محاولة لأرشيف الوسوم ولم يُنشأ أي ملف. اقرأ الرسالة أدناه. لا يتأثر أي أرشيف أُنشئ في محاولة سابقة، إن وُجد.",
+    "backup.tags.partial": "آخر أرشيف وسوم نُزّل {time}. عدد الوسوم فيه: {count, number}. بعض سجل المسح غير موجود فيه (انظر أدناه). والوسوم التي حُفظت أو تغيّرت أو حُذفت بعد ذلك، هنا أو في تبويب آخر، ليست فيه أيضًا.",
+    "backup.tags.failed": "فشلت أحدث محاولة لأرشيف الوسوم ولم يُنشأ أي ملف: {reason} لا يتأثر أي أرشيف أُنشئ في محاولة سابقة، إن وُجد.",
     "backup.status.notStarted": "لم يبدأ",
     "backup.status.done": "تم",
-    "backup.status.partial": "تم مع نواقص",
     "backup.status.failed": "فشل",
     "backup.keys.go": "انتقل إلى النسخ الاحتياطي لمخزن المفاتيح",
-    "backup.tags.doneNoHistory": "نُزّل أرشيف الوسوم بدون سجل المسح، كما اخترت. عدد الوسوم في الأرشيف: {count, number}. احتفظ بالملف وبعبارة المرور: لا يمكن استرداد أي منهما.",
     "receipt.lean.hint": "This build only signs receipts bound to a validated signed invoice. Open and validate the invoice below; a manually entered digest is not accepted.",
     "receipt.lean.refused": "This build only signs receipts bound to a validated signed invoice. Validate the invoice first.",
     "create.title": "إنشاء فاتورة",
@@ -1173,6 +1170,12 @@
     "tron.review.feeValue": "{amount} ({sun} صن)",
     "tron.signed.txid": "معرّف المعاملة:",
     "tron.signed.notSent": "لم تُرسل بعد. يرسلها البث إلى العقدة أعلاه.",
-    "tron.broadcast.accepted": "قبلت العقدة المعاملة"
+    "tron.broadcast.accepted": "قبلت العقدة المعاملة",
+    "backup.status.deleted": "حُذفت الوسوم المحلية",
+    "backup.tags.deleted": "حُذفت كل الوسوم المحلية بعد آخر أرشيف، وهو يضم {count, number} وسمًا. احتفظ بذلك الأرشيف: فهو الآن النسخة الوحيدة.",
+    "backup.status.downloaded": "نُزّل الأرشيف",
+    "backup.status.downloadedGaps": "نُزّل الأرشيف مع نواقص",
+    "backup.tags.archived": "آخر أرشيف وسوم نُزّل {time}. عدد الوسوم فيه: {count, number}، مع سجل المسح. الوسوم التي حُفظت أو تغيّرت أو حُذفت بعد ذلك، هنا أو في تبويب آخر، ليست فيه. نزّل أرشيفًا جديدًا لتضمينها.",
+    "backup.tags.archivedNoHistory": "آخر أرشيف وسوم نُزّل {time}. عدد الوسوم فيه: {count, number}، بدون سجل المسح. الوسوم التي حُفظت أو تغيّرت أو حُذفت بعد ذلك، هنا أو في تبويب آخر، ليست فيه. نزّل أرشيفًا جديدًا لتضمينها."
   }
 }
