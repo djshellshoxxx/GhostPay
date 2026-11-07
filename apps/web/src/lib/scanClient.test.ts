@@ -827,6 +827,26 @@ describe('localCheckpointStore', () => {
       expect(res.matches[0]?.viaRouter).toBe(true);
       expect(res.matches[0]?.receipt).toBe('claimed');
     });
+    // 0b213bd: a router claim whose verification degraded to "claimed" is re-scanned on resume (its transfer may
+    // only have been unreadable), but only from the page it was found on, so an old claim cannot pin the checkpoint.
+    const dropTransfers = (base: ReturnType<typeof chainWith>) => ({ ...base, request: (method: string, params: readonly unknown[]) => {
+      if (method === 'eth_getTransactionReceipt') return base.request(method, params).then((raw) => ({ ...(raw as object), logs: ((raw as { logs: RpcLog[] }).logs).filter((log) => log.topics[0] !== TRANSFER_TOPIC) }));
+      return base.request(method, params);
+    } });
+    it('saves the checkpoint at an unverified router claim found on the last page so a resume re-verifies it', async () => {
+      const s = setup();
+      const { res, cp } = await run(s, dropTransfers(chainWith(2500, [s.mine.log])));
+      expect(res.matches[0]?.receipt).toBe('claimed');
+      const saved = cp.get(84532) as { nextBlock: bigint } | undefined;
+      expect(saved?.nextBlock).toBe(120n);
+    });
+    it('does not let an unverified router claim on an earlier page pin later checkpoints', async () => {
+      const s = setup();
+      const { res, cp } = await run(s, dropTransfers(chainWith(400_000, [s.mine.log])));
+      expect(res.matches[0]?.receipt).toBe('claimed');
+      const saved = cp.get(84532) as { nextBlock: bigint } | undefined;
+      expect(saved?.nextBlock).toBeGreaterThan(120n);
+    });
     it('records no discrepancy and advances the checkpoint when providers agree', async () => {
       const s = setup();
       const { res, cp } = await run(s, chainWith(2500, s.logs), { secondaryClient: chainWith(2500, s.logs) });
