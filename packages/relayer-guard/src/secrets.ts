@@ -1,0 +1,100 @@
+/**
+ * Descriptor-bound secret loading shared by the GhostPay relay services (apps/relayer, packages/pool-relayer).
+ * Node-only: import it from `@ghostpay/relayer-guard/secrets`, never from browser code.
+ */
+import { closeSync, constants, fstatSync, openSync, readSync } from 'node:fs';
+
+/** Environment view. */
+export type Env = Readonly<Record<string, string | undefined>>;
+
+/** Startup failure; messages name variables only, never values. */
+export class ConfigError extends Error {
+  public constructor(message: string) {
+    super(message);
+    this.name = 'ConfigError';
+  }
+}
+
+/** Where a secret comes from. */
+export interface SecretSource {
+  /** Env var holding a FILE PATH (preferred). */
+  readonly fileVar: string;
+  /** Env var holding the VALUE directly. */
+  readonly valueVar: string;
+  /** Allowed byte length range of the decoded secret. */
+  readonly minBytes: number;
+  readonly maxBytes: number;
+}
+
+/**
+ * Loads a hex secret from a file (path in `fileVar`) or an env value.
+ *
+ * @remarks The file must be a regular file whose mode has no group/world bits (`chmod 600`); otherwise
+ * startup is refused, as is a symlink or a file owned by neither the service user nor root. On Windows
+ * (no POSIX modes) these checks are skipped. Metadata and bounded reads use the same descriptor;
+ * replacing the pathname cannot substitute unchecked bytes. Production secrets in environment variables require
+ * `ALLOW_SECRET_ENV=1`. Contents are never included in error messages or logs.
+ *
+ * @param env Environment.
+ * @param src Source description.
+ * @returns Decoded bytes.
+ * @throws {ConfigError} when missing, both set, unreadable, malformed or too permissive.
+ */
+export function loadSecret(env: Env, src: SecretSource): Uint8Array {
+  const path = env[src.fileVar];
+  const direct = env[src.valueVar];
+  if (path !== undefined && path !== '' && direct !== undefined && direct !== '') {
+    throw new ConfigError(`set only one of ${src.fileVar} and ${src.valueVar}`);
+  }
+  let text: string;
+  if (path !== undefined && path !== '') {
+    let fd: number | undefined;
+    try {
+      // NOFOLLOW refuses leaf symlinks atomically; NONBLOCK prevents a swapped FIFO from hanging startup.
+      const flags = constants.O_RDONLY | (process.platform === 'win32' ? 0 : constants.O_NOFOLLOW | constants.O_NONBLOCK);
+      fd = openSync(path, flags);
+      const st = fstatSync(fd);
+      if (!st.isFile() || st.size > 4096) throw new ConfigError(`${src.fileVar}: not a regular small file`);
+      if (process.platform !== 'win32' && (st.mode & 0o077) !== 0) {
+        throw new ConfigError(`${src.fileVar}: file mode must not allow group/world access (chmod 600)`);
+      }
+      const uid = process.getuid?.();
+      if (process.platform !== 'win32' && uid !== undefined && st.uid !== uid && st.uid !== 0) {
+        throw new ConfigError(`${src.fileVar}: file must be owned by the service user or root`);
+      }
+      // Check actual bytes too: a regular file may grow after fstat. Never read an unbounded file.
+      const bytes = Buffer.alloc(4097);
+      let size = 0;
+      while (size < bytes.length) {
+        const n = readSync(fd, bytes, size, bytes.length - size, null);
+        if (n === 0) break;
+        size += n;
+      }
+      if (size > 4096) throw new ConfigError(`${src.fileVar}: not a regular small file`);
+      text = bytes.subarray(0, size).toString('utf8');
+    } catch (e) {
+      if (e instanceof ConfigError) throw e;
+      throw new ConfigError(`${src.fileVar}: file not readable`);
+    } finally {
+      if (fd !== undefined) closeSync(fd);
+    }
+  } else if (direct !== undefined && direct !== '') {
+    if (env['NODE_ENV'] === 'production' && env['ALLOW_SECRET_ENV'] !== '1') {
+      throw new ConfigError(`${src.valueVar}: secrets in environment variables are refused in production (use ${src.fileVar})`);
+    }
+    text = direct;
+  } else {
+    throw new ConfigError(`${src.fileVar} or ${src.valueVar} is required`);
+  }
+  const hex = text.trim().replace(/^0x/, '');
+  if (!/^(?:[0-9a-fA-F]{2})+$/.test(hex) || hex.length / 2 < src.minBytes || hex.length / 2 > src.maxBytes) {
+    throw new ConfigError(`${path !== undefined && path !== '' ? src.fileVar : src.valueVar}: invalid secret format`);
+  }
+  return Uint8Array.from(Buffer.from(hex, 'hex'));
+}
+
+/** Loads an optional secret (absent when neither variable is set). */
+export function loadOptionalSecret(env: Env, src: SecretSource): Uint8Array | undefined {
+  const has = (name: string): boolean => env[name] !== undefined && env[name] !== '';
+  return has(src.fileVar) || has(src.valueVar) ? loadSecret(env, src) : undefined;
+}
