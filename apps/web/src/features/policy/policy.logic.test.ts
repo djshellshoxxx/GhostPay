@@ -24,6 +24,7 @@ import { deployCall, planWithdraw, randomNonce, signCancel, signWithdraw } from 
 import {
   ANNOUNCER,
   DEPLOYMENT,
+  LOCAL_POLICY_PROFILE,
   ROUTER,
   SEPOLIA,
   account,
@@ -127,21 +128,21 @@ describe('pay via policy router', () => {
 describe('deployment verification', () => {
   const input = { factory: DEPLOYMENT.factory, router: ROUTER };
   it('reads implementation, fee recipient and announcer from the chain', async () => {
-    const d = await verifyPolicyDeployment(fakeChain(SEPOLIA, deploymentCalls()), sepolia, input);
-    expect(d).toEqual(DEPLOYMENT);
+    const d = await verifyPolicyDeployment(fakeChain(SEPOLIA, deploymentCalls()), sepolia, input, LOCAL_POLICY_PROFILE);
+    expect(d).toMatchObject(DEPLOYMENT);
   });
   it('refuses mainnets, other chains, missing code and mismatches', async () => {
-    await expect(verifyPolicyDeployment(fakeChain(1, deploymentCalls()), mainnet, input)).rejects.toThrow(/only test networks/);
-    await expect(verifyPolicyDeployment(fakeChain(84532, deploymentCalls()), sepolia, input)).rejects.toThrow(/different chain/);
-    await expect(verifyPolicyDeployment(fakeChain(SEPOLIA, { ...deploymentCalls(), code: new Set() }), sepolia, input)).rejects.toThrow(/No contract code/);
+    await expect(verifyPolicyDeployment(fakeChain(1, deploymentCalls()), mainnet, input, LOCAL_POLICY_PROFILE)).rejects.toThrow(/only test networks/);
+    await expect(verifyPolicyDeployment(fakeChain(84532, deploymentCalls()), sepolia, input, LOCAL_POLICY_PROFILE)).rejects.toThrow(/different chain/);
+    await expect(verifyPolicyDeployment(fakeChain(SEPOLIA, { ...deploymentCalls(), code: new Set() }), sepolia, input, LOCAL_POLICY_PROFILE)).rejects.toThrow(/authenticated configuration/);
     const r = ROUTER.toLowerCase();
-    await expect(verifyPolicyDeployment(fakeChain(SEPOLIA, deploymentCalls({ [`FACTORY@${r}`]: ROUTER })), sepolia, input)).rejects.toThrow(/does not use this factory/);
-    await expect(verifyPolicyDeployment(fakeChain(SEPOLIA, deploymentCalls({ [`SCHEME_ID@${r}`]: 1n })), sepolia, input)).rejects.toThrow(/scheme/);
-    await expect(verifyPolicyDeployment(fakeChain(SEPOLIA, deploymentCalls({ [`FEE_BPS@${r}`]: 30n })), sepolia, input)).rejects.toThrow(/fee differs/);
-    await expect(verifyPolicyDeployment(fakeChain(SEPOLIA, deploymentCalls()), sepolia, { ...input, router: 'nope' })).rejects.toThrow(/Router/);
+    await expect(verifyPolicyDeployment(fakeChain(SEPOLIA, deploymentCalls({ [`FACTORY@${r}`]: ROUTER })), sepolia, input, LOCAL_POLICY_PROFILE)).rejects.toThrow(/authenticated configuration/);
+    await expect(verifyPolicyDeployment(fakeChain(SEPOLIA, deploymentCalls({ [`SCHEME_ID@${r}`]: 1n })), sepolia, input, LOCAL_POLICY_PROFILE)).rejects.toThrow(/authenticated configuration/);
+    await expect(verifyPolicyDeployment(fakeChain(SEPOLIA, deploymentCalls({ [`FEE_BPS@${r}`]: 30n })), sepolia, input, LOCAL_POLICY_PROFILE)).rejects.toThrow(/authenticated configuration/);
+    await expect(verifyPolicyDeployment(fakeChain(SEPOLIA, deploymentCalls()), sepolia, { ...input, router: 'nope' }, LOCAL_POLICY_PROFILE)).rejects.toThrow(/Router/);
     const noImpl = deploymentCalls();
     noImpl.code.delete(DEPLOYMENT.implementation.toLowerCase());
-    await expect(verifyPolicyDeployment(fakeChain(SEPOLIA, noImpl), sepolia, input)).rejects.toThrow(/implementation or announcer/);
+    await expect(verifyPolicyDeployment(fakeChain(SEPOLIA, noImpl), sepolia, input, LOCAL_POLICY_PROFILE)).rejects.toThrow(/authenticated configuration/);
   });
 });
 
@@ -360,7 +361,7 @@ describe('edge cases', () => {
       if (method === 'eth_call' && c?.to?.toLowerCase() === f && c.data === '0x3a4741bd') return '0x';
       return undefined;
     } });
-    await expect(verifyPolicyDeployment(rpc, sepolia, { factory: DEPLOYMENT.factory, router: ROUTER })).rejects.toThrow(/as expected|unexpected types/);
+    await expect(verifyPolicyDeployment(rpc, sepolia, { factory: DEPLOYMENT.factory, router: ROUTER }, LOCAL_POLICY_PROFILE)).rejects.toThrow(/as expected|unexpected types/);
   });
   it('withdraw planning rethrows unexpected errors', () => {
     const rec1 = parsePolicyRecord(canonical('acct-001'));

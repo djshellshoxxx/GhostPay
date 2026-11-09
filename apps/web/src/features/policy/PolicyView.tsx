@@ -58,7 +58,7 @@ export function PolicyView(): ReactNode {
   // Test renders without an I18nProvider fall back to the source English catalog.
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
-  const testnets = services.chains.filter((c) => c.testnet);
+  const testnets = services.chains.filter((c) => c.testnet && c.enabled);
   const [chainId, setChainId] = useState<number | undefined>(testnets[0]?.chainId);
   const chain = testnets.find((c) => c.chainId === chainId);
   const [factory, setFactory] = useState('');
