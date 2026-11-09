@@ -20,9 +20,9 @@ The RPC provider sees your IP address and which blocks and addresses you ask abo
 This is the most important rule for sellers.
 
 - Anyone can derive a valid one-time address from your public meta-address and post an announcement claiming "1,000,000 USDC". The scanner will list it because the keys match. **The amount in the announcement is just the poster's claim.**
-- Only a payment that went through the GhostPay router carries router-enforced amounts. Announcements that did not come through the router are payer-supplied and unverified. Today the app still shows announced amounts without checking the chain balance (audit S3-02, D4; a fix is in progress). Until that fix ships, **always check the actual balance of the one-time address on a block explorer or your own node before delivering goods.**
+- The scanner distinguishes unverified claims from payment evidence checked against transaction/receipt data and the configured confirmation depth. Review that status and the relevant chain facts before delivering goods; a balance alone does not prove that an invoice was paid.
 - A dishonest payer can also pay the right address but publish a wrong view tag, so your tag-filtered scan never finds the payment. If a customer says they paid and you see nothing, ask for the transaction hash and look at the transaction; the address that received the tokens is the one-time address, and you can test it with your keys. To find such a payment yourself, turn on **Deep scan (also check wrong view tags)** in Scan and receive: it checks every router announcement without the view tag (at a higher CPU cost), still verifies the full one-time address, marks a match whose announced tag was wrong, and that payment can be swept like any other. Announcements that did not come through the router stay tag-filtered.
-- Wait for enough confirmations. The app shows "included", not "final".
+- The configured confirmation-depth check is distinct from independent finality verification; an RPC disagreement or reorganisation can change the result.
 
 ## Local client tags
 

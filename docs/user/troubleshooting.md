@@ -2,12 +2,12 @@
 
 | Symptom | Likely cause | What to do |
 |---|---|---|
-| "Payments disabled on this chain" | No deployment manifest loaded for that chain (true for every chain today: nothing is deployed) | Nothing to fix in the app. Wait for a published testnet deployment. |
+| "Payments disabled on this chain" | Missing or invalid deployment information, or failed RPC verification; no manifest ships in this repository | Check the reviewed build and RPC configuration. Do not bypass deployment-signature or code checks. |
 | Invoice rejected: tampered, too large or invalid | The link was cut off, edited, re-encoded by a messenger, or is bigger than 16 KiB | Ask the seller to resend the link as plain text. The app sends nothing when parsing fails. |
 | "Signature" shown as invalid | The invoice content was changed after signing | Do not pay. Ask the seller for a new link. |
 | Invoice expired | The seller's validity window passed | Ask for a new invoice. |
-| Fiat-priced invoice cannot be paid ("no feed") | No oracle price feed is configured in the app | Ask the seller for a token-priced invoice. This is expected until feeds are verified (ADR-0012). |
-| No wallet found | No browser wallet detected, or it is locked | Install/unlock a wallet and reload. Mobile wallet connection (WalletConnect) is not built. |
+| Fiat-priced invoice cannot be paid ("no feed") | No configured feed for the exact chain, asset and currency, or its required checks fail | Ask the seller for a token-priced invoice. Configured pairs still require quote and deployment checks; see [invoice review](review-and-pay-an-invoice.md). |
+| No wallet found | No browser wallet detected, or it is locked | Install/unlock a wallet and reload. This web flow has no operational WalletConnect relay integration. |
 | Wallet is on the wrong network | The invoice chain differs from the wallet's chain | Approve the network switch the app requests, or switch manually. The app refuses if the wallet will not switch. |
 | App refuses: "wallet changed the transaction" / chain mismatch | The wallet or its RPC modified the transaction, or reports another chain | Do not retry blindly. Try another wallet or RPC; report it if it repeats. This protection is intentional. |
 | "Could not verify" after sending | No RPC is configured in Settings, or the RPC has not seen the transaction yet | Set your own RPC in Settings and check the hash on a block explorer. |

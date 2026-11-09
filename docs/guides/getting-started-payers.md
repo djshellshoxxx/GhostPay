@@ -27,7 +27,7 @@ Your payer address, the token, the amounts, the time and the router use are **pu
 | Signature | "matches key" and, if you pinned it, the key you know | Invalid (hard stop) |
 | Router and fee recipient | Match reviewed deployment information; the app accepts the bundled manifest signature and on-chain readback | Addresses differ, deployment information is absent, or verification is incomplete |
 
-Fiat-priced invoices cannot be paid today (no feed); ask for a token-priced invoice.
+Fiat-priced invoices require a configured feed for the exact chain, asset and currency, a fresh valid quote, and accepted deployment information. The full build has ETH/USD and USDC/USD feed configurations for Sepolia and Base Sepolia; other pairs can remain unavailable, and the lean build uses fixed-token invoices. If a required feed is unavailable, ask for a token-priced invoice.
 
 ## Paying
 

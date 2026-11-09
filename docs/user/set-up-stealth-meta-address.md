@@ -2,7 +2,7 @@
 
 A *stealth meta-address* is the one public address you give to customers. From it, each payer's wallet or the GhostPay app derives a fresh one-time address for every payment. Only you, holding your private keys, can find and spend from those addresses.
 
-> Testnet only for now. GhostPay is pre-audit and nothing is deployed. Use test funds.
+> Testnet only for now. GhostPay is pre-audit; no deployment manifest ships, and live qualification is not established. Use test funds.
 
 ## What you create
 

@@ -31,8 +31,8 @@ Scanning needs an Esplora-compatible server URL that you supply. No public serve
 - The server sees block heights, the outputs you check for spends, and any transaction you broadcast.
 - A malicious server can hide payments, invent payments (see below) or lie about spent state. It cannot spend your funds.
 - Each scanned block is checked locally: the header hashes to the served block hash, its proof of work meets the network limit, txids recomputed from the served transactions produce the header's Merkle root, and the witness data matches the coinbase witness commitment (BIP-141). Omitted, injected or edited transactions in a block are refused.
-- Consecutive blocks in the scanned range must link to each other. That links them only within the scan: the range is anchored to the pinned genesis block only when the scan starts at block 0 or 1, and never to a checkpoint. A server can therefore invent a payment with a block it mined itself, which is cheap on test networks.
-- These checks do not pick the best chain (no difficulty retarget, chain work or fork choice). A dishonest server can still serve a self-consistent low-work fork, and the scripts and amounts of the outputs a transaction spends (they live in earlier blocks) and spent state remain its word. Treat a found payment as unconfirmed until you check it on a node you trust.
+- Before scanning, the view loads and rechecks a header chain anchored to the pinned genesis block, then checks linkage, proof of work, difficulty rules, timestamps and versions. Among branches the server supplies, it keeps the one with the most cumulative work. Every scanned block must match this checked chain at its height, even when the requested scan starts later than genesis.
+- This is header-chain validation, not SPV or full transaction/script validation. A server can hide a heavier chain or mine its own heavier fork cheaply on a test network. The scripts and amounts of the outputs a transaction spends (from earlier blocks), and spent status, remain server-supplied. Confirm a payment with a source you trust before relying on it. See the [exact scan disclosures](../../apps/web/src/features/btc/verification.ts).
 - A scan covers at most 500 blocks per run.
 
 Run your own Esplora-compatible node if you can. See [Local scanner and RPC](../operators/local-scanner-and-rpc.md).
@@ -45,7 +45,7 @@ Run your own Esplora-compatible node if you can. See [Local scanner and RPC](../
 4. The app signs with the software key and checks every signature. It aborts if the fee or size differs from what you reviewed.
 5. Broadcasting is a separate click.
 
-The sweep uses BIP-125 signalling. There is no fee-bump button. To replace a stuck sweep, scan again, pick the same inputs and sweep with a higher rate.
+The sweep uses BIP-125 signalling. The view has no fee-bump button or replacement workflow for a stuck, unconfirmed sweep.
 
 ## What is public
 
