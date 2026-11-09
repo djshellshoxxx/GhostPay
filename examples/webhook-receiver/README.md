@@ -4,7 +4,7 @@ Optional local receiver for GhostPay's existing `t,n,v1` HMAC wire format. It au
 
 ## Setup
 
-Requires Node with the built-in `node:sqlite` API (Node **22.13+**, tested here with **24.22.1**). This optional example has a stricter minor-version floor than the pure merchant-hooks package. SQLite may print its experimental API warning on Node 22. Use a local filesystem, one private state directory per merchant/sender trust domain, and a fresh test secret:
+Requires Node with the built-in `node:sqlite` API (Node **22.13+**, tested here with **24.22.1**). This optional example has a stricter minor-version floor than the pure merchant-hooks package. SQLite may print its experimental API warning on Node 22; see the [official Node API history](https://nodejs.org/download/release/v22.23.0/docs/api/sqlite.html). Use a local filesystem, one private state directory per merchant/sender trust domain, and a fresh test secret:
 
 ```sh
 npm ci --ignore-scripts

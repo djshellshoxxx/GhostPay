@@ -28,6 +28,13 @@ function worker(directory, raw, hold = false, phase) {
   return result;
 }
 
+test('accept defaults the optional clock to current unix seconds', t => {
+  const store = new DurableWebhookStore(setup(t)); t.after(() => store.close());
+  const clock = Math.floor(Date.now() / 1000);
+  const sig = signWebhook(secret, body(), { now: clock, nonce: randomBytes(16).toString('hex') });
+  assert.equal(store.accept(secret, body(), sig).kind, 'claimed');
+});
+
 test('durable nonce, body identity and completion survive reopen', t => {
   const dir = setup(t); const raw = body(); const sig = header(raw);
   let store = new DurableWebhookStore(dir); const c = store.accept(secret, raw, sig, { now });

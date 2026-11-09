@@ -51,7 +51,7 @@ export class DurableWebhookStore {
     catch (e) { this.#db.exec('ROLLBACK'); throw e; }
   }
   /** Authenticates before parsing; nonce reservation + event claim are one transaction. */
-  accept(secret, body, header, { now, toleranceSeconds } = {}) {
+  accept(secret, body, header, { now = Math.floor(Date.now() / 1000), toleranceSeconds } = {}) {
     if (typeof body !== 'string' || Buffer.byteLength(body) > 65536) return { kind: 'invalid' };
     return this.#transaction(() => {
       const nonces = {
