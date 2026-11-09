@@ -46,7 +46,7 @@ export function SolanaView(): ReactNode {
   const [approved, setApproved] = useState(false);
   const [signed, setSigned] = useState<SignedSweep | undefined>(undefined);
   const [broadcastId, setBroadcastId] = useState<string | undefined>(undefined);
-  const [error, setError] = useState<string | undefined>(undefined);
+  const [error, setError] = useState<unknown>(undefined);
   /** The app lock (idle timeout) forgot the wallet: say so instead of silently showing an empty view. */
   const [appLocked, setAppLocked] = useState(false);
   const abort = useRef<AbortController | undefined>(undefined);
@@ -107,7 +107,7 @@ export function SolanaView(): ReactNode {
     try {
       f();
     } catch (e) {
-      setError(solErrorMessage(e));
+      setError(e ?? new Error());
     }
   };
 
@@ -117,7 +117,7 @@ export function SolanaView(): ReactNode {
     try {
       rpc = createRpc(url, services.fetchFn);
     } catch {
-      throw new SolViewError(t('sol.rpc.missing'));
+      throw new SolViewError({ key: 'sol.rpc.missing' });
     }
     await checkNetwork(rpc, net, signal);
     return rpc;
@@ -150,7 +150,7 @@ export function SolanaView(): ReactNode {
     void (async () => {
       try {
         const rpc = await connect(signal);
-        if (!/^\d{1,15}$/.test(fromSlot.trim())) throw new SolViewError(t('sol.slot.required'));
+        if (!/^\d{1,15}$/.test(fromSlot.trim())) throw new SolViewError({ key: 'sol.slot.required' });
         const res = await scanForPayments({
           rpc,
           wallet,
@@ -167,7 +167,7 @@ export function SolanaView(): ReactNode {
         setScanNote(t('sol.scanned', { from: String(res.fromSlot), to: String(res.toSlot) }));
         setPicked(res.found[0]?.stealthAddress);
       } catch (e) {
-        if (live()) setError(solErrorMessage(e));
+        if (live()) setError(e ?? new Error());
       } finally {
         if (live()) setScanning(false);
       }
@@ -195,7 +195,7 @@ export function SolanaView(): ReactNode {
         const out = await signSweep({ rpc, wallet, found: selected, review, signal });
         if (live()) setSigned(out);
       } catch (e) {
-        if (live()) setError(solErrorMessage(e));
+        if (live()) setError(e ?? new Error());
       } finally {
         if (live()) setBusy(false);
       }
@@ -213,7 +213,7 @@ export function SolanaView(): ReactNode {
         const id = await sendTransaction(rpc, signed.wireBase64, signal);
         if (live()) setBroadcastId(id);
       } catch (e) {
-        if (live()) setError(solErrorMessage(e));
+        if (live()) setError(e ?? new Error());
       } finally {
         if (live()) setBusy(false);
       }
@@ -253,7 +253,7 @@ export function SolanaView(): ReactNode {
     <section aria-labelledby="sol-h">
       <h2 id="sol-h">{t('sol.title')}</h2>
       <Notice kind="warn" title={t('btc.warning.title')}>{t('sol.warning.body')}</Notice>
-      {error !== undefined && <Notice kind="error">{error}</Notice>}
+      {error !== undefined && <Notice kind="error">{solErrorMessage(error, t)}</Notice>}
 
       <div className="panel">
         <h3>{t('btc.section.network')}</h3>
@@ -400,14 +400,14 @@ export function SolanaView(): ReactNode {
               const candidate = scanned.trim().replace(/^solana:/i, '').split('?')[0] ?? '';
               try {
                 // reviewSweep applies the same address and amount checks used before signing.
-                if (selected === undefined) throw new SolViewError(t('sol.selectFirst'));
+                if (selected === undefined) throw new SolViewError({ key: 'sol.selectFirst' });
                 reviewSweep(wallet, selected, candidate);
                 setDestination(candidate);
                 clearReview();
                 setError(undefined);
                 return true;
               } catch (e) {
-                setError(solErrorMessage(e));
+                setError(e ?? new Error());
                 return false;
               }
             }}
@@ -429,7 +429,7 @@ export function SolanaView(): ReactNode {
                 <dt>{t('pay.destination')}</dt><dd dir="ltr"><Mono>{review.destination}</Mono></dd>
                 <dt>{t('btc.review.change')}</dt><dd>{t('sol.review.changeNone')}</dd>
               </dl>
-              {review.warnings.map((w) => <Notice key={w} kind="warn">{w}</Notice>)}
+              {review.warnings.map((w) => <Notice key={w.key} kind="warn">{t(w.key, w.values)}</Notice>)}
               <label>
                 <input type="checkbox" checked={approved} onChange={(e) => { setApproved(e.target.checked); }} />{' '}
                 {t('btc.review.approve')}
@@ -459,3 +459,5 @@ export function SolanaView(): ReactNode {
     </section>
   );
 }
+
+// i18n-use: sol.rpc.missing sol.slot.required sol.selectFirst

@@ -41,7 +41,7 @@ const HISTORY_STORE = 'vaults';
 export function storedHistoryChains(sellerKeyId: string, factory: IDBFactory | undefined = globalThis.indexedDB): Promise<readonly number[]> {
   return new Promise((resolve, reject) => {
     if (factory === undefined) { resolve([]); return; }
-    const failed = (): void => { reject(new UserFacingError('Could not list the scan history stored in this browser.')); };
+    const failed = (): void => { reject(new UserFacingError({ key: 'tagArchive.msg.listFailed' })); };
     let creating = false;
     const request = factory.open(HISTORY_DB);
     // Opening a database that does not exist would create it: abort that instead, since it holds no history.
@@ -151,7 +151,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
   const ensureUnlocked = async (): Promise<void> => {
     if (!vault.unlocked) await vault.unlock(revealViewingKey());
   };
-  const fail = (e: unknown): void => { setMessage({ kind: 'error', text: userMessage(e) }); };
+  const fail = (e: unknown): void => { setMessage({ kind: 'error', text: userMessage(e, t) }); };
   const done = (text: string): void => { setMessage({ kind: 'ok', text }); app.announce(text); };
 
   const historyVaults = async (c: AbortController): Promise<{ vaults: { chainId: number; vault: ReconciliationVault }[]; skipped: number }> => {
@@ -231,7 +231,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
       } catch (error) {
         if (!current(c)) return;
         setBusy(false); fail(error);
-        reportExport?.({ ok: false, message: userMessage(error) });
+        reportExport?.({ ok: false, message: userMessage(error, t) });
       } finally {
         closeVaults(vaults);
       }
@@ -431,3 +431,5 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
     </section>
   );
 }
+
+// i18n-use: tagArchive.msg.listFailed
