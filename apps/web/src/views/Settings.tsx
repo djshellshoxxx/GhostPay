@@ -264,7 +264,7 @@ function ScanPrivacySection(): ReactNode {
         <Field label={t('settings.scanPrivacy.budget')} hint={t('settings.scanPrivacy.budgetHint')}>
           {(id, d) => <input id={id} aria-describedby={d} type="number" min={1} value={Number.isNaN(cfg.openLaneBudget) ? '' : cfg.openLaneBudget} onChange={(e) => { set({ openLaneBudget: num(e.target.value) }); }} />}
         </Field>
-        <h4>{t('settings.scanPrivacy.learnsHeading')}</h4>
+        <h3>{t('settings.scanPrivacy.learnsHeading')}</h3>
         <ul>
           {describeScanDisclosure(cfg, { hasSecondary: Object.values(app.settings.rpcUrlsSecondary).some((u) => u !== '') }).map((row) => (
             <li key={row.party}><strong>{row.party}:</strong> {row.learns}</li>

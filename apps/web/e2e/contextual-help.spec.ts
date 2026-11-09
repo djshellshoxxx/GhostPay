@@ -22,20 +22,28 @@ test('contextual RPC help is described, keyboard operable and dismissible at a m
   await settings(page);
   const input = page.getByRole('textbox', { name: 'Base Sepolia RPC URL', exact: true });
   const help = page.getByRole('button', { name: 'About Base Sepolia RPC URL', exact: true });
+  const tooltip = page.locator('.context-help').filter({ has: help }).getByRole('tooltip', { includeHidden: true });
+  // Navigation left the pointer over the page; focus-driven scrolling must not turn this into a hover test.
+  await page.mouse.move(0, 0);
   const before = await input.inputValue();
   await expect(input).toHaveAccessibleDescription(/An RPC provider supplies blockchain data/);
   await help.focus();
-  await expect(page.getByRole('tooltip')).toContainText('A second, independent provider');
+  await expect(tooltip).toBeVisible();
+  await expect(tooltip).toContainText('A second, independent provider');
   await expect(help).toHaveAttribute('aria-expanded', 'true');
   await noHorizontalOverflow(page);
   await auditAccessibility(page, 'settings-help-open-375px');
   await help.press('Escape');
-  await expect(page.getByRole('tooltip')).toHaveCount(0);
+  await expect(tooltip).toBeHidden();
+  await expect(help).toHaveAttribute('aria-expanded', 'false');
   await expect(help).toBeFocused();
   await help.press('Enter');
-  await expect(page.getByRole('tooltip')).toBeVisible();
+  await expect(tooltip).toBeVisible();
+  await expect(help).toHaveAttribute('aria-expanded', 'true');
   await page.keyboard.press('Tab');
-  await expect(page.getByRole('tooltip')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Test Base Sepolia', exact: true })).toBeFocused();
+  await expect(tooltip).toBeHidden();
+  await expect(help).toHaveAttribute('aria-expanded', 'false');
   await expect(input).toHaveValue(before);
 });
 

@@ -40,6 +40,24 @@ describe('contextual help', () => {
     expect(tip.hasAttribute('hidden')).toBe(true);
   });
 
+  it('retains hovered help when keyboard focus leaves and closes it when the pointer leaves too', async () => {
+    const user = userEvent.setup();
+    render(<><ContextHelp label="About RPC">The RPC provider sees your requests.</ContextHelp><button>Next control</button></>);
+    const button = screen.getByRole('button', { name: 'About RPC' });
+    const root = button.parentElement!;
+    const tip = screen.getByRole('tooltip', { hidden: true });
+    fireEvent.pointerEnter(root, { pointerType: 'mouse' });
+    await user.tab();
+    await user.keyboard('{Enter}');
+    await user.tab();
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Next control' }));
+    expect(tip.hasAttribute('hidden')).toBe(false);
+    expect(button.getAttribute('aria-expanded')).toBe('true');
+    fireEvent.pointerLeave(root, { pointerType: 'mouse' });
+    expect(tip.hasAttribute('hidden')).toBe(true);
+    expect(button.getAttribute('aria-expanded')).toBe('false');
+  });
+
   it('supports tap toggling and outside dismissal without a hover prerequisite', () => {
     render(<><ContextHelp label="About public pairing">Public configuration does not contain private keys.</ContextHelp><button>Outside</button></>);
     const button = screen.getByRole('button', { name: 'About public pairing' });
