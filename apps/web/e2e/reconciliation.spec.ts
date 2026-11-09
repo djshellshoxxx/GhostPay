@@ -84,7 +84,13 @@ test('encrypted reconciliation keeps invoice identity through language changes a
   await expect(activate).toBeVisible();
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
-  await navigate(page, 'scan');
+  // These keys were memory-only: reloading must show the no-keys view, not an unlocked ledger.
+  const scanRoute = page.locator('nav button[data-view="scan"]');
+  await scanRoute.click();
+  await expect(scanRoute).toHaveAttribute('aria-current', 'page');
+  const scan = page.locator('section[aria-labelledby="scan-h"]');
+  await expect(scan.getByRole('note')).toContainText('قم أولاً بتحميل مفاتيح البائع أو إنشائها.');
+  await expect(scan.locator('select')).toHaveCount(0);
+  await expect(ledger).toHaveCount(0);
   await expect(activate).toHaveCount(0);
-  await expect(ledger.getByRole('button', { name: 'Unlock encrypted reconciliation vault', exact: true })).toBeDisabled();
 });
