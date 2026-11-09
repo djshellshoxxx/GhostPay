@@ -57,6 +57,7 @@ function invoice(n: number, net = '2500000'): RegisteredInvoice {
 }
 let keyId: string;
 let vault: ReconciliationVault;
+let beforeWrite: (() => Promise<void>) | undefined;
 function panel(overrides: Partial<React.ComponentProps<typeof ReconciliationLedger>> = {}) {
   return <ReconciliationLedger chainId={84532} sellerKeyId={keyId} matches={[match()]} scanMatchesCurrentScope {...overrides} />;
 }
@@ -68,17 +69,19 @@ async function open(overrides: Partial<React.ComponentProps<typeof Reconciliatio
   return user;
 }
 beforeEach(async () => {
+  beforeWrite = undefined;
   clearSession();
   const session = generateSession();
   keyId = checkpointKeyId(session.spendingPublicKey, session.viewingPublicKey);
   const data = new Map<string, string>();
   const store: ReconciliationVaultStore = {
     read: (key) => Promise.resolve(data.get(key) ?? null),
-    compareAndSwap: (key, expected, next, guard) => {
+    compareAndSwap: async (key, expected, next, guard) => {
+      await beforeWrite?.();
       guard();
-      if ((data.get(key) ?? null) !== expected) return Promise.resolve(false);
+      if ((data.get(key) ?? null) !== expected) return false;
       data.set(key, next);
-      return Promise.resolve(true);
+      return true;
     },
   };
   vault = new ReconciliationVault(store, { chainId: 84532, sellerKeyId: keyId }, () => undefined);
@@ -118,6 +121,35 @@ describe('local invoice matching UI', () => {
     await open({ matches: [match(1), match(2)] });
     expect((await screen.findAllByText(/Several unlinked payments match/)).length).toBe(2);
   });
+
+  it('shows an expired invoice observation as ambiguous without a confirmation action', async () => {
+    await vault.registerInvoice({ ...invoice(1), expiresAt: nowSeconds - 1 });
+    await open();
+    expect(await screen.findByText(/at or after the invoice expired/)).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Confirm proposed invoice match' })).toBeNull();
+  });
+
+  it.each(['Add verified payment to ledger', 'Confirm proposed invoice match'])(
+    'refuses %s if scan results change before the encrypted write', async (action) => {
+      await vault.registerInvoice(invoice(1));
+      const user = userEvent.setup();
+      const matches = [match()];
+      const view = render(panel({ matches }));
+      await user.click(screen.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }));
+      await screen.findByText(/Exact local match proposed/);
+      let release!: () => void;
+      const delayed = new Promise<void>((resolve) => { release = resolve; });
+      const pending = vi.fn(() => delayed);
+      beforeWrite = pending;
+      await user.click(screen.getByRole('button', { name: action }));
+      await waitFor(() => expect(pending).toHaveBeenCalledOnce());
+      // A competing payment becomes visible while the old confirmation is in flight.
+      view.rerender(panel({ matches: [...matches, match(2)] }));
+      release();
+      expect(await screen.findByText(/Scan evidence is no longer current/)).toBeTruthy();
+      expect((await vault.readState()).records).toEqual([]);
+    },
+  );
 
   it('reports no match and ignores matches from stale scans', async () => {
     await vault.registerInvoice(invoice(1, '7'));

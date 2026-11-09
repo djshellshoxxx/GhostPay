@@ -44,7 +44,7 @@ const AMBIGUITY: Record<'multiple-invoices' | 'multiple-payments' | 'late-observ
   'multiple-invoices': 'Several registered invoices have this chain, asset and amount.',
   'multiple-payments': 'Several unlinked payments match the same registered invoice.',
   'late-observation':
-    'This payment was first observed long after the invoice expired, so its payment time is unknown.',
+    'This payment was first observed at or after the invoice expired, so an on-time payment cannot be inferred.',
 };
 /** Local proposal only: nothing about invoices is published, and a proposal is never payment evidence. */
 function ProposalView(props: {
@@ -333,15 +333,25 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
       }
     })();
   };
-  const confirmMatch = (record: ReconciliationRecord, invoiceDigest: string, match?: ScanMatch): void =>
-    run(async (current, guard) => {
+  // A scan can change while the vault encrypts. Recheck its identity inside the storage transaction too.
+  const scanActionGuard = (guard: () => void, match?: ScanMatch): (() => void) => {
+    const scanMatches = latest.current.matches;
+    const scanCurrent = latest.current.scanMatchesCurrentScope;
+    return () => {
       guard();
       if (
-        match !== undefined &&
-        (!latest.current.scanMatchesCurrentScope || !latest.current.matches.includes(match))
+        latest.current.matches !== scanMatches ||
+        latest.current.scanMatchesCurrentScope !== scanCurrent ||
+        (match !== undefined && (!scanCurrent || !scanMatches.includes(match)))
       )
-        throw new Error('Scan evidence is no longer current. Rescan before confirming.');
-      await current.confirmProposal(record, invoiceDigest);
+        throw new Error('Scan evidence is no longer current. Rescan before saving or confirming.');
+    };
+  };
+  const confirmMatch = (record: ReconciliationRecord, invoiceDigest: string, match?: ScanMatch): void =>
+    run(async (current, guard) => {
+      const scanGuard = scanActionGuard(guard, match);
+      scanGuard();
+      await current.confirmProposal(record, invoiceDigest, { current: [...currentRecords.values()], guard: scanGuard });
       guard();
       props.onAnnounce?.('Invoice match confirmed in the encrypted reconciliation vault.');
     });
@@ -434,10 +444,9 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
                   onConfirm={(digest) => confirmMatch(currentRecords.get(match)!, digest, match)}
                   onSave={(record) =>
                     run(async (current, guard) => {
-                      guard();
-                      if (!latest.current.scanMatchesCurrentScope || !latest.current.matches.includes(match))
-                        throw new Error('Scan evidence is no longer current. Rescan before saving.');
-                      await current.save(record);
+                      const scanGuard = scanActionGuard(guard, match);
+                      scanGuard();
+                      await current.save(record, scanGuard);
                       guard();
                       props.onAnnounce?.('Observation saved in the encrypted reconciliation vault.');
                     })
@@ -773,8 +782,9 @@ function ReceiptArchive(props: {
     <div className="panel">
       <h4>Archived seller receipts</h4>
       <p className="hint">
-        Receipts you issued, stored encrypted. A receipt signature is a seller-key attestation and never counts as
-        payment evidence; archived receipts do not affect matching or verification.
+        Receipts you issued, stored encrypted until you delete them or clear this site's data. A receipt signature
+        attests to the signed fields and key control; it does not establish seller identity and never counts as
+        payment evidence. Archived receipts do not affect matching or verification.
       </p>
       {props.receipts.length === 0 ? (
         <p>No receipts archived.</p>

@@ -99,6 +99,13 @@ describe('local verified-scan reconciliation ledger', () => {
     );
   });
 
+  it('refuses a record whose recipient differs from the verified announcement', () => {
+    expect(() => recordFromVerifiedMatch(match({ stealthAddress: `0x${'9'.repeat(40)}` }), KEY))
+      .toThrow(/recipient does not match/);
+    // Normalisation does not reject the same address in a different case.
+    expect(recordFromVerifiedMatch(match({ stealthAddress: `0x${ADDRESS.slice(2).toUpperCase()}` }), KEY).stealthAddress).toBe(ADDRESS);
+  });
+
   it('preserves existing legacy records for untrusted read/export/delete without permitting a new plaintext write', () => {
     const storage = new MemoryStorage();
     const record = recordFromVerifiedMatch(match(), KEY, undefined, 1_800_000_000_000);

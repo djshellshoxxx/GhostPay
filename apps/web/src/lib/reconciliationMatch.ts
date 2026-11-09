@@ -12,11 +12,6 @@ import type { ReconciliationRecord } from './reconciliationLedger';
 export const MAX_REGISTERED_INVOICES = 500;
 /** Tolerated device clock difference between invoice creation and the scan that recorded a payment. */
 export const MATCH_CLOCK_SKEW_MS = 5 * 60_000;
-/**
- * Scans record observation time, not block time. A payment first observed this long after the invoice expired
- * may have been paid late, so it is never proposed as an exact match.
- */
-export const MATCH_LATE_GRACE_MS = 7 * 24 * 3600_000;
 
 export interface RegisteredInvoice {
   readonly version: 1;
@@ -116,7 +111,7 @@ function candidate(invoice: RegisteredInvoice, record: ContextRecord): boolean {
 
 /**
  * Proposes a registered invoice for one observation. `exact` needs a unique pairing in both directions within the
- * supplied context and an observation not long after expiry; every other overlap is `ambiguous` and must be resolved
+ * supplied context and an observation before expiry; every other overlap is `ambiguous` and must be resolved
  * by the seller. Invoices already linked to a current verified observation are not offered again.
  */
 export function proposeInvoiceMatch(
@@ -138,7 +133,8 @@ export function proposeInvoiceMatch(
   const invoice = candidates[0]!;
   const competing = all.filter((r) => r.id !== record.id && eligible(r) && candidate(invoice, r));
   if (competing.length > 0) return { kind: 'ambiguous', candidates, reason: 'multiple-payments' };
-  if (record.recordedAt > invoice.expiresAt * 1000 + MATCH_LATE_GRACE_MS)
+  // Observation time is not block time. A late scan cannot establish that payment preceded invoice expiry.
+  if (record.recordedAt >= invoice.expiresAt * 1000)
     return { kind: 'ambiguous', candidates, reason: 'late-observation' };
   return { kind: 'exact', invoice };
 }

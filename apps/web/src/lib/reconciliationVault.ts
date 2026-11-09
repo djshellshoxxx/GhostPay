@@ -528,20 +528,25 @@ export class ReconciliationVault {
     this.guard(revision);
     return { text, document: text === null ? empty() : await this.decrypt(text) };
   }
-  private async change(update: (document: Document) => Document): Promise<void> {
+  private async change(update: (document: Document) => Document, actionGuard: () => void = () => undefined): Promise<void> {
     const revision = this.revision;
-    this.guard(revision);
+    const guard = (): void => {
+      this.guard(revision);
+      actionGuard();
+    };
+    guard();
     // Bounded optimistic retries. Never replace a concurrent writer's ciphertext blindly.
     for (let attempt = 0; attempt < 4; attempt++) {
       const { text, document } = await this.snapshot();
+      guard();
       const next = await this.encrypt(update(document));
-      this.guard(revision);
-      if (await this.store.compareAndSwap(scopeKey(this.scope), text, next, () => this.guard(revision))) {
-        this.guard(revision);
+      guard();
+      if (await this.store.compareAndSwap(scopeKey(this.scope), text, next, guard)) {
+        guard();
         announce();
         return;
       }
-      this.guard(revision);
+      guard();
     }
     fail('Reconciliation data changed in another tab. Reload and try again.');
   }
@@ -559,19 +564,23 @@ export class ReconciliationVault {
     const { records, saturated, invoices, receipts } = snapshot.document;
     return { records, readOnly: saturated, invoices, receipts };
   }
-  public async save(value: ReconciliationRecord): Promise<void> {
+  public async save(value: ReconciliationRecord, actionGuard?: () => void): Promise<void> {
     const record = { ...validateReconciliationRecord(value) };
     if (record.sellerKeyId !== this.scope.sellerKeyId || record.chainId !== this.scope.chainId)
       fail('Reconciliation record has another scope.');
     if (record.evidenceStatus !== 'verified-at-scan')
       fail('Only a current verified scan observation can be saved.');
-    await this.change((document) => withSaved(document, record));
+    await this.change((document) => withSaved(document, record), actionGuard);
   }
   /**
    * Links a verified observation to a registered invoice only if local matching, re-run on the current encrypted
    * document inside the compare-and-swap loop, still yields an exact pairing. Ambiguous or missing pairs are refused.
    */
-  public async confirmProposal(value: ReconciliationRecord | VaultRecord, invoiceDigest: string): Promise<void> {
+  public async confirmProposal(
+    value: ReconciliationRecord | VaultRecord,
+    invoiceDigest: string,
+    options: { readonly current?: readonly ReconciliationRecord[]; readonly guard?: () => void } = {},
+  ): Promise<void> {
     const { provenance, ...plain } = value as VaultRecord;
     if (provenance !== undefined && provenance !== 'live-scan') fail('Imported history cannot be matched automatically.');
     const record = { ...validateReconciliationRecord(plain) };
@@ -579,10 +588,23 @@ export class ReconciliationVault {
       fail('Reconciliation record has another scope.');
     if (record.evidenceStatus !== 'verified-at-scan' || record.invoiceDigest !== undefined)
       fail('Only a current unlinked verified scan observation can be matched.');
+    if ((options.current?.length ?? 0) > MAX_RECONCILIATION_RECORDS)
+      fail('Current reconciliation observations exceed their safety limit.');
+    const context = (options.current ?? []).map((value) => {
+      const current = { ...validateReconciliationRecord(value) };
+      if (current.sellerKeyId !== this.scope.sellerKeyId || current.chainId !== this.scope.chainId)
+        fail('Reconciliation record has another scope.');
+      return current;
+    });
     await this.change((document) => {
       const saved = withSaved(document, record);
       const current = saved.records.find((r) => r.id === record.id)!;
-      const proposal = proposeInvoiceMatch(current, saved.invoices, saved.records);
+      // Unsaved scan results can make a pairing ambiguous too. Saved provenance/invalidation wins on duplicates.
+      const stored = new Set(saved.records.map((r) => r.id));
+      const proposal = proposeInvoiceMatch(current, saved.invoices, [
+        ...saved.records,
+        ...context.filter((r) => !stored.has(r.id)),
+      ]);
       if (proposal.kind !== 'exact' || proposal.invoice.invoiceDigest !== invoiceDigest)
         throw new UserFacingError(
           'This payment no longer has a single exact invoice match. Review it and link it manually if appropriate.',
@@ -591,7 +613,7 @@ export class ReconciliationVault {
         ...saved,
         records: saved.records.map((r) => (r.id === record.id ? { ...r, invoiceDigest } : r)),
       };
-    });
+    }, options.guard);
   }
   /** Proposals for stored and supplied current observations, computed from one guarded snapshot. */
   public async proposals(

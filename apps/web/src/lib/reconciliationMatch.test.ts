@@ -5,7 +5,6 @@ import { describe, expect, it } from 'vitest';
 import type { ReconciliationRecord } from './reconciliationLedger';
 import {
   MATCH_CLOCK_SKEW_MS,
-  MATCH_LATE_GRACE_MS,
   proposeInvoiceMatch,
   registrationFromInvoice,
   validateRegisteredInvoice,
@@ -74,6 +73,13 @@ describe('invoice registration', () => {
     expect(() => registrationFromInvoice(testInvoice({ amountPolicy: { mode: 'fiat_quote' }, fiat: { currency: 'USD', minorUnits: '100' } }))).toThrow(/fixed token amount/);
   });
 
+  it('revalidates the full invoice rather than trusting its TypeScript type or matching fields', () => {
+    const invoice = testInvoice();
+    expect(() => registrationFromInvoice({ ...invoice, signer: 'invalid' })).toThrow();
+    expect(() => registrationFromInvoice({ ...invoice, metaAddress: 'st:eth:invalid' })).toThrow();
+    expect(() => registrationFromInvoice({ ...invoice, expiresAt: 0 })).toThrow();
+  });
+
   it('validates stored registrations strictly', () => {
     const good = registrationFromInvoice(testInvoice(), 5);
     expect(validateRegisteredInvoice(good)).toEqual(good);
@@ -139,10 +145,12 @@ describe('local invoice matching', () => {
     expect(proposeInvoiceMatch(rec(1), [invoice], [invalidated]).kind).toBe('exact');
   });
 
-  it('downgrades observations recorded long after expiry to ambiguous', () => {
-    const late = rec(1, { recordedAt: (NOW + 3600) * 1000 + MATCH_LATE_GRACE_MS + 1 });
-    expect(proposeInvoiceMatch(late, [invoice], [])).toMatchObject({ kind: 'ambiguous', reason: 'late-observation' });
-    const edge = rec(1, { recordedAt: (NOW + 3600) * 1000 + MATCH_LATE_GRACE_MS });
+  it('downgrades every observation first recorded at or after expiry, while preserving earlier history', () => {
+    for (const offset of [0, 1, 7 * 24 * 3600_000]) {
+      const late = rec(1, { recordedAt: (NOW + 3600) * 1000 + offset });
+      expect(proposeInvoiceMatch(late, [invoice], [])).toMatchObject({ kind: 'ambiguous', reason: 'late-observation' });
+    }
+    const edge = rec(1, { recordedAt: (NOW + 3600) * 1000 - 1 });
     expect(proposeInvoiceMatch(edge, [invoice], []).kind).toBe('exact');
   });
 
