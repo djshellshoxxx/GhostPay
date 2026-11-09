@@ -4,6 +4,37 @@ import type { MessageKey } from './catalog';
  * Explicit keys, not substring/prefix heuristics. Update the exhaustive classification test with new source messages.
  */
 export const SECURITY_KEY_GROUPS = {
+  supportedChainOutcomes: [
+    'transaction.detail.walletRejected',
+    'btc.error.invalidAddress',
+    'btc.error.invalidInput',
+    'btc.error.invalidAmount',
+    'btc.error.insufficientFunds',
+    'btc.error.dustOutput',
+    'btc.error.feeTooHigh',
+    'btc.error.networkMismatch',
+    'btc.error.transportFailure',
+    'btc.error.invalidResponse',
+    'btc.error.reorgDetected',
+    'btc.error.aborted',
+    'btc.error.signatureInvalid',
+    'btc.error.signerRefused',
+    'btc.error.invalidHeader',
+    'btc.error.failed',
+    'btc.error.seed',
+    'btc.sweep.linked',
+    'btc.sweep.highFeeRate',
+    'btc.sweep.largeFee',
+    'btc.sweep.ownAddress',
+    'btc.sweep.signer',
+    'btc.destination.silent',
+    'btc.destination.regular',
+    'registry.submissionOutcome',
+    'chainView.broadcast.attempted',
+    'chainView.broadcast.unknown',
+    'chainView.broadcast.pending',
+    'chainView.broadcast.mismatch',
+  ],
   payReviewOutcomes: [
     'transaction.approved.announceUnknown',
     'transaction.approved.announceNotSent',
@@ -1549,6 +1580,8 @@ export const SECURITY_KEYS: ReadonlySet<MessageKey> = new Set<MessageKey>(Object
 
 /** Only explicitly classified neutral UI may use an unreviewed catalog. Future keys fail closed to reviewed/source text. */
 export const NEUTRAL_KEY_LIST = [
+  'footer.sources',
+  'upload.selectedFile',
   'app.shell.help',
   'app.shell.privacy',
   'app.shell.repository',

@@ -1,6 +1,6 @@
 import { invoiceDigest } from '@ghostpay/invoice-schema';
 import { bytesToHex } from '@noble/hashes/utils.js';
-import { classifyPermit, type Address, type BuiltPayment, type Hex, type PermitState, type RpcClient } from '@ghostpay/chain-adapters';
+import { ChainAdapterError, classifyPermit, type Address, type BuiltPayment, type Hex, type PermitState, type RpcClient } from '@ghostpay/chain-adapters';
 import { UserFacingError, type MessageDescriptor } from './errors';
 import { TransactionOutcomeError, reportTransactionStatus, type TransactionStatusFn } from './transactionOutcome';
 import { formatUnits } from './format';
@@ -53,6 +53,7 @@ export interface SubmitResult {
   readonly receipt: ReceiptInfo | undefined;
 }
 
+// i18n-use: transaction.code
 /**
  * Thrown when the wallet already broadcast the transaction (a hash exists) but the follow-up checks failed. The UI must
  * never offer to send again: the payment may be on its way.
@@ -63,10 +64,16 @@ export class PostBroadcastError extends TransactionOutcomeError {
     detail: string | MessageDescriptor,
     cause?: unknown,
   ) {
+    // Only typed, public diagnostics cross the boundary; arbitrary RPC error properties may contain private data.
+    const code = cause instanceof TransactionOutcomeError ? cause.outcome.code
+      : cause instanceof ChainAdapterError ? cause.code : undefined;
     super({
       phase: 'verification-incomplete', hash,
-      ...(cause instanceof TransactionOutcomeError && cause.outcome.code !== undefined ? { code: cause.outcome.code } : {}),
-      message: { key: 'transaction.postBroadcast', values: { hash, detail } },
+      ...(code === undefined ? {} : { code }),
+      message: { key: 'transaction.postBroadcast', values: {
+        hash, detail,
+        diagnostic: code === undefined ? '' : { key: 'transaction.code', values: { code: String(code) } },
+      } },
     });
     this.name = 'PostBroadcastError';
     this.cause = cause;

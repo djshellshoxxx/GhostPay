@@ -19,6 +19,7 @@ import { makeServices, renderApp, setHash } from '../test/render';
 import type { Services } from '../lib/services';
 import { receiptJson, signReceipt } from '../lib/receipts';
 import * as payExec from '../lib/payExec';
+import * as embedHost from '../lib/embedHost';
 import { withSessionSecrets } from '../lib/session';
 import { PERMIT_TYPES, eip712DomainSeparator, erc20MetadataAbi } from '@ghostpay/chain-adapters';
 import { privateKeyToAccount } from 'viem/accounts';
@@ -511,6 +512,25 @@ describe('Pay: sending', () => {
     expect(wallet.sent?.['to']).toBe(FAKE_ROUTER);
     expect(screen.getByText(/Your RPC does not show the transaction yet/)).toBeTruthy();
     expect(screen.getByText(/not yet confirmed/)).toBeTruthy();
+  });
+
+  it.each(['verified', 'pending'] as const)('retains a %s submission when notifying the embedding page fails', async (state) => {
+    const wallet = new MockWallet();
+    const notify = vi.spyOn(embedHost, 'notifyEmbedDone').mockImplementation(() => { throw new Error('parent postMessage failed'); });
+    try {
+      const createRpc = state === 'verified' ? () => Promise.resolve(withManifestChain(chainSeeing(wallet))) : readBackRpc();
+      const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532), createRpc }));
+      await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+      await screen.findByRole('heading', { name: 'Submitted' });
+      const hash = `0x${'9'.repeat(64)}`;
+      expect(notify).toHaveBeenCalledWith({ status: 'submitted', chainId: 84532, txHash: hash });
+      expect(document.body.textContent).toContain(hash);
+      expect(screen.queryByRole('button', { name: 'Send payment in my wallet' })).toBeNull();
+      expect(screen.getByRole('button', { name: 'Download local receipt' })).toBeTruthy();
+      expect(screen.getByText(state === 'verified' ? /included in block 100/ : /not yet confirmed/)).toBeTruthy();
+      expect(document.body.textContent).not.toContain('parent postMessage failed');
+      expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(1);
+    } finally { notify.mockRestore(); }
   });
 
   it('verifies on the user RPC when one is configured and offers a local receipt', async () => {

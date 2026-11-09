@@ -770,10 +770,12 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           return;
         }
         setResult(res);
-        notifyEmbedDone({ status: 'submitted', chainId: ctx.review.invoice.chainId, txHash: res.hash });
         setResultForContext(ctx);
         setPhase('done');
         setStatus('');
+        // Delivery to an embedding page cannot reverse a returned submission or re-enable the send controls.
+        try { notifyEmbedDone({ status: 'submitted', chainId: ctx.review.invoice.chainId, txHash: res.hash }); }
+        catch { /* The exact hash and verification result remain visible and available for export here. */ }
         announce({ key: 'pay.announce.submitted' });
       } catch (e) {
         if (!isCurrent()) {

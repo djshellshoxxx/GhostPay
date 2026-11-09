@@ -2,7 +2,7 @@ import { parseQuantity, type Address, type Hex } from '@ghostpay/chain-adapters'
 import { getAddress, isAddress, keccak256, toBytes } from 'viem/utils';
 import { beginAttempt, browserAttemptStorage, finishAttempt, type AttemptInput, type AttemptStorage } from './duplicateAttemptJournal';
 import { UserFacingError } from './errors';
-import { TransactionOutcomeError } from './transactionOutcome';
+import { TransactionOutcomeError, WalletRequestRejectedError } from './transactionOutcome';
 import type { MessageKey } from '../i18n/catalog';
 import { SOURCE_TRANSLATOR } from '../i18n/source';
 import type { Translator } from '../i18n/translator';
@@ -164,13 +164,8 @@ async function call(p: Eip1193Provider, method: string, params?: readonly unknow
   }
 }
 
-export class WalletRequestRejectedError extends UserFacingError {
-  public readonly rpcCode = 4001;
-  public constructor() {
-    super({ key: 'error.wallet.youRejectedTheRequestInYourWallet' });
-    this.name = 'WalletRequestRejectedError';
-  }
-}
+// Re-export preserves the public wallet API; the shared type avoids a wallet/outcome import cycle.
+export { WalletRequestRejectedError } from './transactionOutcome';
 
 /** Diagnostic codes only: EIP-1193 provider errors and standard JSON-RPC errors/server range. */
 function cleanRpcCode(code: unknown): number | undefined {

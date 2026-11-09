@@ -11,7 +11,7 @@ import { permitStateDescriptor, reviewInvoice } from './pay';
 import { PostBroadcastError, submitTx } from './payExec';
 import { clearSession } from './session';
 import { SubmissionMismatchError, WalletSubmissionUnknownError, connectWallet, sendViaWallet, type WalletInfo } from './wallet';
-import { TRANSACTION_PHASE_KEYS, approvedPaymentOutcome, type TransactionOutcome } from './transactionOutcome';
+import { TRANSACTION_PHASE_KEYS, WalletRequestRejectedError, approvedPaymentOutcome, referencedBroadcastOutcome, type TransactionOutcome } from './transactionOutcome';
 
 const HASH = `0x${'9'.repeat(64)}` as const;
 const TO = '0x1111111111111111111111111111111111111111';
@@ -42,6 +42,25 @@ describe('transaction outcomes retain meaning and exact references across locale
     expect(source.message).toContain('already sent this transaction');
     expect(source.outcome).toMatchObject({ phase: 'verification-incomplete', hash: HASH });
     expect(JSON.stringify(captured)).not.toContain('credential');
+  });
+
+  it('retains explicit wallet rejection code after a confirmed approval without discarding the approval reference', () => {
+    const result = approvedPaymentOutcome(new WalletRequestRejectedError(), true, HASH);
+    expect(result).toMatchObject({ approvalHash: HASH, code: 4001 });
+    expect(displayMessage(result.message)).toContain('rejected the payment request');
+    expect(displayMessage(result.message)).toContain('4001');
+    expect(displayMessage(result.message)).toContain('earlier approval was not cancelled');
+  });
+
+  it('keeps non-EVM references separate from EVM hashes through unknown and mismatched broadcasts', () => {
+    for (const phase of ['broadcast-unknown', 'verification-incomplete', 'pending-confirmation'] as const) {
+      const reference = 'SolanaBase58SignatureOrBitcoinTxid';
+      const result = referencedBroadcastOutcome(phase, reference);
+      expect(result).toMatchObject({ phase, reference });
+      expect(result.hash).toBeUndefined();
+      expect(displayMessage(result.message)).toContain(reference);
+      expect(displayMessage(result.message)).not.toMatch(/nothing was sent|confirmed successfully/i);
+    }
   });
 
   it('keeps approval identity separate and never turns an unknown payment into a not-sent claim', () => {
