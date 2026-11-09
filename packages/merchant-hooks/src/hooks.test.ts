@@ -125,6 +125,27 @@ describe('webhook signing', () => {
     expect(() => signWebhook(SECRET, 'b', { now: NOW, nonce: 'zz' })).toThrow(/bad-nonce/);
     expect(() => signWebhook(SECRET, 'b', { now: -1, nonce: NONCE })).toThrow(/bad-nonce/);
   });
+  it('rejects invalid runtime clock and tolerance without touching replay storage', () => {
+    const h = signWebhook(SECRET, 'b', { now: NOW, nonce: NONCE });
+    for (const now of [NaN, Infinity, -Infinity, -1, 1.5, Number.MAX_SAFE_INTEGER + 1]) {
+      expect(() => verifyWebhook(SECRET, 'b', h, { now, nonces: new MemoryNonceStore() })).toThrow(/bad-time-policy/);
+    }
+    for (const toleranceSeconds of [NaN, Infinity, -Infinity, -1, 1.5, Number.MAX_SAFE_INTEGER]) {
+      expect(() => verifyWebhook(SECRET, 'b', h, { now: NOW, toleranceSeconds, nonces: new MemoryNonceStore() })).toThrow(/bad-time-policy/);
+    }
+    expect(verifyWebhook(SECRET, 'b', h, { now: NOW, toleranceSeconds: 0, nonces: new MemoryNonceStore() }).ok).toBe(true);
+  });
+  it('rejects invalid retry policies', () => {
+    for (const value of [NaN, Infinity, -Infinity, -1]) {
+      for (const key of ['baseSeconds', 'factor', 'maxSeconds', 'maxAttempts']) {
+        expect(() => retryDelaySeconds(1, 1000, { [key]: value })).toThrow(/bad-retry/);
+      }
+    }
+    expect(() => retryDelaySeconds(1, 1000, { maxAttempts: 1.5 })).toThrow(/bad-retry/);
+    expect(() => retryDelaySeconds(1, 1000, { factor: 0.5 })).toThrow(/bad-retry/);
+    expect(() => retryDelaySeconds(Number.MAX_SAFE_INTEGER + 1)).toThrow(/bad-retry/);
+    expect(retryDelaySeconds(1025, 1000, { baseSeconds: 0, maxAttempts: 2000 })).toBe(0);
+  });
   it('constant-time compare', () => {
     expect(constantTimeEqual('abc', 'abc')).toBe(true);
     expect(constantTimeEqual('abc', 'abd')).toBe(false);

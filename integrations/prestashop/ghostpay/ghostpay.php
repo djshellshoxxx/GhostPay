@@ -94,25 +94,73 @@ class Ghostpay extends PaymentModule {
 		return $state->add() && Configuration::updateValue( 'GHOSTPAY_OS_AWAITING', (int) $state->id );
 	}
 
-	/**
-	 * Back-office settings. Form posts are protected by PrestaShop's admin token; capability is the admin session. No
-	 * secret fields: Configuration is in every database backup and the webservice API (see GhostPay_Secrets).
-	 */
+	/** Back-office configuration contains public endpoint settings only; secrets never enter Configuration. */
 	public function getContent() {
+		if ( ! isset( $this->context->employee ) || ! $this->context->employee->isLoggedBack()
+			|| ! $this->getPermission( 'configure', $this->context->employee ) ) {
+			return $this->displayError( $this->trans( 'You do not have permission to configure GhostPay.', array(), 'Modules.Ghostpay.Admin' ) );
+		}
 		$out = '' === (string) $this->warning ? '' : $this->displayWarning( $this->warning );
 		if ( Tools::isSubmit( 'submitGhostpay' ) ) {
-			$url  = trim( (string) Tools::getValue( 'GHOSTPAY_SERVICE_URL' ) );
-			$host = strtolower( trim( (string) Tools::getValue( 'GHOSTPAY_PAY_HOST' ) ) );
-			if ( ! preg_match( '#\Ahttps://[^\s/?\#@]+(/[^\s?\#]*)?\z#', $url ) || ! preg_match( '/\A[a-z0-9]([a-z0-9.-]{0,251}[a-z0-9])?\z/', $host ) ) {
-				$out .= $this->displayError( $this->trans( 'Invalid URL or host.', array(), 'Modules.Ghostpay.Admin' ) );
+			$token = Tools::getValue( 'token' );
+			if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) || ! is_string( $token )
+				|| ! hash_equals( Tools::getAdminTokenLite( 'AdminModules' ), $token ) ) {
+				$out .= $this->displayError( $this->trans( 'Invalid configuration request. Reload this page and try again.', array(), 'Modules.Ghostpay.Admin' ) );
 			} else {
-				Configuration::updateValue( 'GHOSTPAY_SERVICE_URL', rtrim( $url, '/' ) );
-				Configuration::updateValue( 'GHOSTPAY_PAY_HOST', $host );
-				$out .= $this->displayConfirmation( $this->trans( 'Saved.', array(), 'Modules.Ghostpay.Admin' ) );
+				$url  = Tools::getValue( 'GHOSTPAY_SERVICE_URL' );
+				$host = Tools::getValue( 'GHOSTPAY_PAY_HOST' );
+				$url  = is_string( $url ) ? trim( $url ) : '';
+				$host = is_string( $host ) ? strtolower( trim( $host ) ) : '';
+				if ( ! self::validServiceUrl( $url ) || ! self::validPayHost( $host ) ) {
+					$out .= $this->displayError( $this->trans( 'Invalid HTTPS invoice service URL or GhostPay host.', array(), 'Modules.Ghostpay.Admin' ) );
+				} elseif ( Configuration::updateValue( 'GHOSTPAY_SERVICE_URL', rtrim( $url, '/' ) )
+					&& Configuration::updateValue( 'GHOSTPAY_PAY_HOST', $host ) ) {
+					$out .= $this->displayConfirmation( $this->trans( 'Saved.', array(), 'Modules.Ghostpay.Admin' ) );
+				} else {
+					$out .= $this->displayError( $this->trans( 'Settings could not be saved completely. Review both values before retrying.', array(), 'Modules.Ghostpay.Admin' ) );
+				}
 			}
 		}
-		// TODO(skeleton): render the form with HelperForm (the two fields above only; never a secret input).
-		return $out;
+		return $out . $this->renderSettingsForm();
+	}
+
+	private static function validPayHost( string $host ): bool {
+		return strlen( $host ) <= 253 && 1 === preg_match( '/\A[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*\z/', $host );
+	}
+
+	private static function validServiceUrl( string $url ): bool {
+		if ( strlen( $url ) > 2048 || false === filter_var( $url, FILTER_VALIDATE_URL ) || preg_match( '/[\x00-\x20\x7f\\\\]/', $url ) ) {
+			return false;
+		}
+		$parts = parse_url( $url );
+		return is_array( $parts ) && 'https' === ( $parts['scheme'] ?? '' ) && isset( $parts['host'] )
+			&& self::validPayHost( strtolower( $parts['host'] ) )
+			&& ! isset( $parts['user'] ) && ! isset( $parts['pass'] ) && ! isset( $parts['query'] ) && ! isset( $parts['fragment'] );
+	}
+
+	private function renderSettingsForm(): string {
+		$helper                        = new HelperForm();
+		$helper->module                = $this;
+		$helper->table                 = $this->table;
+		$helper->name_controller       = $this->name;
+		$helper->token                 = Tools::getAdminTokenLite( 'AdminModules' );
+		$helper->currentIndex          = $this->context->link->getAdminLink( 'AdminModules', false ) . '&configure=' . $this->name;
+		$helper->submit_action         = 'submitGhostpay';
+		$helper->default_form_language = (int) $this->context->language->id;
+		// Never echo rejected request values or secret inputs. HelperForm escapes these stored text-field values.
+		$helper->fields_value = array(
+			'GHOSTPAY_SERVICE_URL' => (string) Configuration::get( 'GHOSTPAY_SERVICE_URL' ),
+			'GHOSTPAY_PAY_HOST'    => (string) Configuration::get( 'GHOSTPAY_PAY_HOST' ),
+		);
+		return $helper->generateForm( array( array( 'form' => array(
+			'legend' => array( 'title' => $this->trans( 'GhostPay settings', array(), 'Modules.Ghostpay.Admin' ), 'icon' => 'icon-cogs' ),
+			'description' => $this->trans( 'Set secrets in config/defines_custom.inc.php or environment variables. This form stores only the service URL and app host in the current shop configuration.', array(), 'Modules.Ghostpay.Admin' ),
+			'input' => array(
+				array( 'type' => 'text', 'name' => 'GHOSTPAY_SERVICE_URL', 'label' => $this->trans( 'Invoice service HTTPS URL', array(), 'Modules.Ghostpay.Admin' ), 'required' => true, 'maxlength' => 2048 ),
+				array( 'type' => 'text', 'name' => 'GHOSTPAY_PAY_HOST', 'label' => $this->trans( 'GhostPay app host (host name only)', array(), 'Modules.Ghostpay.Admin' ), 'required' => true, 'maxlength' => 253 ),
+			),
+			'submit' => array( 'title' => $this->trans( 'Save', array(), 'Modules.Ghostpay.Admin' ) ),
+		) ) ) );
 	}
 
 	public function hookPaymentOptions( $params ) {

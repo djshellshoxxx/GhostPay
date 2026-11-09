@@ -11,8 +11,10 @@ require $base . 'class-ghostpay-money.php';
 require $base . 'class-ghostpay-event.php';
 
 $failed = 0;
+$checked = 0;
 function check( string $name, $got, $want ): void {
-	global $failed;
+	global $failed, $checked;
+	++$checked;
 	if ( $got !== $want ) {
 		++$failed;
 		echo "FAIL $name: got " . var_export( $got, true ) . ' want ' . var_export( $want, true ) . "\n";
@@ -92,6 +94,8 @@ check( 'event identity excludes transport nonce', GhostPay_Event::identity_keys(
 check( 'same payment with fresh event ID shares transaction claim', GhostPay_Event::identity_keys( $with_payment )[1], GhostPay_Event::identity_keys( $same_payment_new_event )[1] );
 check( 'payment status transition gets distinct transaction identity', GhostPay_Event::identity_keys( $with_payment )[1] === GhostPay_Event::identity_keys( array_merge( $with_payment, array( 'type' => 'invoice.partial' ) ) )[1], false );
 
+require dirname( __DIR__, 3 ) . '/scripts/companion-merchant/shop-webhook-vectors.php';
+
 // ---- Module and webhook controller on SQLite (tests/ps-shim.php; each request runs in tests/request.php) ---------
 if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	echo "SKIP module/controller tests: the pdo_sqlite extension is not available\n";
@@ -105,6 +109,12 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	);
 	require __DIR__ . '/ps-shim.php';
 	require dirname( __DIR__ ) . '/ghostpay/ghostpay.php';
+	require dirname( __DIR__ ) . '/ghostpay/controllers/front/validation.php';
+	check( 'checkout redirect accepts configured HTTPS host', GhostpayValidationModuleFrontController::valid_link( 'https://pay.example.test/#gpi=v1.abc', 'pay.example.test' ), true );
+	foreach ( array( 'https://name@pay.example.test/#gpi=v1.abc', 'https://name:pass@pay.example.test/#gpi=v1.abc', 'https://pay.example.test:9443/#gpi=v1.abc', 'https://name:pass@pay.example.test:9443/#gpi=v1.abc', 'https://other.test/#gpi=v1.abc', 'https://pay.example.test/?x=1#gpi=v1.abc' ) as $link ) {
+		check( 'checkout redirect refuses credentials, ports, query and other hosts', GhostpayValidationModuleFrontController::valid_link( $link, 'pay.example.test' ), false );
+	}
+
 	ghostpay_test_platform_schema();
 	$db     = Db::getInstance();
 	$module = new Ghostpay();
@@ -214,11 +224,43 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	check( 'no webhook secret configured: an unsigned request gets the same 503', $reply( $request( $paid20, '' ) ), $retry );
 	check( 'a forged webhook does not pay the order', $state( 20 ), $awaiting );
 	// The settings form has no secret fields: submitted ones are ignored.
-	Tools::$values = array( 'submitGhostpay' => '1', 'GHOSTPAY_SERVICE_URL' => 'https://invoices.shop.test', 'GHOSTPAY_PAY_HOST' => 'pay.example.test', 'GHOSTPAY_SERVICE_SECRET' => $new_service, 'GHOSTPAY_WEBHOOK_SECRET' => $new_service );
+	$_SERVER['REQUEST_METHOD'] = 'POST';
+	Tools::$values = array( 'token' => 'admin-test-token', 'submitGhostpay' => '1', 'GHOSTPAY_SERVICE_URL' => 'https://invoices.shop.test', 'GHOSTPAY_PAY_HOST' => 'pay.example.test', 'GHOSTPAY_SERVICE_SECRET' => $new_service, 'GHOSTPAY_WEBHOOK_SECRET' => $new_service );
 	$upgraded->getContent();
 	Tools::$values = array();
 	check( 'settings form saves the service URL and pay host', array( Configuration::get( 'GHOSTPAY_SERVICE_URL' ), Configuration::get( 'GHOSTPAY_PAY_HOST' ) ), array( 'https://invoices.shop.test', 'pay.example.test' ) );
 	check( 'settings form stores no secret', array( Configuration::get( 'GHOSTPAY_SERVICE_SECRET' ), Configuration::get( 'GHOSTPAY_WEBHOOK_SECRET' ) ), array( false, false ) );
+	check( 'HelperForm contains only two public setting fields', array_column( HelperForm::$last['forms'][0]['form']['input'] ?? array(), 'name' ), array( 'GHOSTPAY_SERVICE_URL', 'GHOSTPAY_PAY_HOST' ) );
+	check( 'HelperForm has the AdminModules CSRF token', HelperForm::$last['helper']->token ?? null, 'admin-test-token' );
+	check( 'HelperForm posts to this module configuration', HelperForm::$last['helper']->currentIndex ?? null, 'index.php?controller=AdminModules&configure=ghostpay' );
+	check( 'HelperForm submit action matches the handler', HelperForm::$last['helper']->submit_action ?? null, 'submitGhostpay' );
+	$valid_settings = array( 'submitGhostpay' => '1', 'token' => 'admin-test-token', 'GHOSTPAY_SERVICE_URL' => 'https://new.shop.test/base/', 'GHOSTPAY_PAY_HOST' => 'pay.new.test' );
+	foreach ( array( '', 'wrong-token', array( 'admin-test-token' ) ) as $bad_token ) {
+		Tools::$values = array_replace( $valid_settings, array( 'token' => $bad_token ) );
+		check( 'invalid CSRF token is refused', str_contains( $upgraded->getContent(), 'Invalid configuration request' ), true );
+		check( 'invalid CSRF does not change service URL', Configuration::get( 'GHOSTPAY_SERVICE_URL' ), 'https://invoices.shop.test' );
+	}
+	Tools::$values = $valid_settings;
+	$_SERVER['REQUEST_METHOD'] = 'GET';
+	check( 'GET submission refused', str_contains( $upgraded->getContent(), 'Invalid configuration request' ), true );
+	$_SERVER['REQUEST_METHOD'] = 'POST';
+	Context::getContext()->employee->configure = false;
+	check( 'employee without configure capability cannot save', str_contains( $upgraded->getContent(), 'do not have permission' ), true );
+	Context::getContext()->employee->configure = true;
+	Context::getContext()->employee->logged = false;
+	check( 'logged-out employee cannot view or save settings', str_contains( $upgraded->getContent(), 'do not have permission' ), true );
+	Context::getContext()->employee->logged = true;
+	foreach ( array( 'http://service.test', 'https://user:pass@service.test', 'https://service.test/?token=secret', 'https://service.test/#bearer', 'https://bad..test', array( 'https://service.test' ), 'https://service.test/' . str_repeat( 'x', 2048 ) ) as $bad_url ) {
+		Tools::$values = array_replace( $valid_settings, array( 'GHOSTPAY_SERVICE_URL' => $bad_url ) );
+		check( 'invalid service setting refused', str_contains( $upgraded->getContent(), 'Invalid HTTPS' ), true );
+	}
+	foreach ( array( 'pay..test', '-pay.test', 'pay-.test', 'https://pay.test', 'pay.test/path', array( 'pay.test' ), str_repeat( 'x', 64 ) . '.test' ) as $bad_host ) {
+		Tools::$values = array_replace( $valid_settings, array( 'GHOSTPAY_PAY_HOST' => $bad_host ) );
+		check( 'invalid pay host refused', str_contains( $upgraded->getContent(), 'Invalid HTTPS' ), true );
+	}
+	check( 'invalid settings preserve previous values', array( Configuration::get( 'GHOSTPAY_SERVICE_URL' ), Configuration::get( 'GHOSTPAY_PAY_HOST' ) ), array( 'https://invoices.shop.test', 'pay.example.test' ) );
+	Tools::$values = array();
+
 	// H-R10: as WooCommerce's is_available(), GhostPay is offered at checkout only when the validation controller can
 	// start a payment. In the upgrade window (no service secret yet) every attempt would fail ("temporarily unavailable").
 	$offered = static fn( Ghostpay $m ): array => array_map( static fn( $option ): array => array( $option->getModuleName(), $option->getAction() ), $m->hookPaymentOptions( array() ) );
@@ -229,7 +271,7 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	check( 'warning stays while the exposed service secret is still configured', str_contains( $warning, 'GHOSTPAY_SERVICE_SECRET' ), true );
 	check( 'a rotated webhook secret leaves the warning', str_contains( $warning, 'GHOSTPAY_WEBHOOK_SECRET' ), false );
 	putenv( 'GHOSTPAY_SERVICE_SECRET=' . $new_service );
-	check( 'no warning once both secrets are rotated', array( ( new Ghostpay() )->warning, ( new Ghostpay() )->getContent() ), array( null, '' ) );
+	check( 'no warning once both secrets are rotated', array( ( new Ghostpay() )->warning, str_contains( ( new Ghostpay() )->getContent(), 'module_warning' ) ), array( null, false ) );
 	check( 'exposure record removed after rotation', Configuration::get( 'GHOSTPAY_EXPOSED_SECRETS' ), false );
 	check( 'the service secret comes from the environment', $module->secret( 'service' ), hex2bin( $new_service ) );
 	check( 'service secret, service URL and pay host configured: GhostPay is offered at checkout', $offered( $module ), array( array( 'ghostpay', 'https://shop.test/module/ghostpay/validation?token=test-token' ) ) );
@@ -449,4 +491,4 @@ if ( $failed > 0 ) {
 	echo "$failed failure(s)\n";
 	exit( 1 );
 }
-echo "prestashop php tests: ok\n";
+echo "prestashop php tests: ok ($checked assertions)\n";

@@ -27,7 +27,7 @@ const base = `http://127.0.0.1:${server.address().port}`;
 const event = (id) => serializeWebhookEvent({ id, type: 'invoice.paid', createdAt: clock, data: { invoiceId: 'inv_1', currency: 'USD', amountMinor: '1250' } });
 const nonce = () => randomBytes(16).toString('hex');
 const post = (body, sig, path = PATH) =>
-  fetch(base + path, { method: 'POST', body, headers: sig ? { 'ghostpay-signature': sig } : {} });
+  fetch(base + path, { method: 'POST', body, headers: { 'content-type': 'application/json', ...(sig ? { 'ghostpay-signature': sig } : {}) } });
 
 const body = event('evt_1');
 const sig = signWebhook(secret, body, { now: clock, nonce: nonce() });

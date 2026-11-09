@@ -1,4 +1,6 @@
-import { readFile, stat, writeFile } from 'node:fs/promises';
+import { constants } from 'node:fs';
+import { link, lstat, mkdtemp, open, rename, rm } from 'node:fs/promises';
+import { dirname, join, resolve } from 'node:path';
 import { MAX_INPUT_CHARS, type Io } from './io.js';
 
 /** The slice of `process` the adapter needs; injectable for tests. */
@@ -9,25 +11,91 @@ export interface NodeEnv {
   readonly stdin: AsyncIterable<string | Uint8Array>;
 }
 
-/** Real-world adapter. The only module besides `bin.ts` that touches the OS. No network APIs are used. */
+// A Unicode character may occupy four UTF-8 bytes; both limits are enforced.
+const MAX_INPUT_BYTES = MAX_INPUT_CHARS * 4;
+const decoder = (): TextDecoder => new TextDecoder('utf-8', { fatal: true, ignoreBOM: true });
+
+/** Read the opened regular file only, with bounded allocation even if it grows after stat. */
+async function readTextFile(path: string): Promise<string> {
+  if ((await lstat(path)).isSymbolicLink()) throw new Error('symlink input');
+  const file = await open(path, constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0) | (constants.O_NONBLOCK ?? 0));
+  try {
+    const before = await file.stat({ bigint: true });
+    if (!before.isFile() || before.size > BigInt(MAX_INPUT_BYTES)) throw new Error('invalid input');
+    const buffer = new Uint8Array(64 * 1024);
+    const utf8 = decoder();
+    let total = 0;
+    let out = '';
+    for (;;) {
+      const { bytesRead } = await file.read(buffer, 0, Math.min(buffer.length, MAX_INPUT_BYTES + 1 - total), null);
+      if (bytesRead === 0) break;
+      total += bytesRead;
+      if (total > MAX_INPUT_BYTES) throw new Error('too large');
+      out += utf8.decode(buffer.subarray(0, bytesRead), { stream: true });
+      if (out.length > MAX_INPUT_CHARS) throw new Error('too large');
+    }
+    out += utf8.decode();
+    const after = await file.stat({ bigint: true });
+    if (before.size !== after.size || before.mtimeNs !== after.mtimeNs || before.ctimeNs !== after.ctimeNs)
+      throw new Error('input changed');
+    return out;
+  } finally {
+    await file.close();
+  }
+}
+
+/** Stage privately, fsync, then publish atomically. Parent directories must be trusted. */
+async function writeTextFile(path: string, data: string, overwrite: boolean): Promise<void> {
+  const target = resolve(path);
+  const parent = dirname(target);
+  try {
+    const existing = await lstat(target);
+    if (!existing.isFile() || !overwrite) throw new Error('output exists or is not regular');
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+  }
+  const staging = await mkdtemp(join(parent, '.ghostpay-write-'));
+  try {
+    const temporary = join(staging, 'output');
+    const file = await open(temporary, 'wx', 0o600);
+    try {
+      await file.writeFile(data, 'utf8');
+      await file.sync();
+    } finally {
+      await file.close();
+    }
+    // A hard link is an atomic no-replace publication. Concurrent exclusive writers
+    // cannot both succeed. --force intentionally uses last-published-writer wins.
+    if (overwrite) await rename(temporary, target);
+    else await link(temporary, target);
+    // Windows does not support directory fsync; atomic replacement still applies.
+    if (process.platform !== 'win32') {
+      const directory = await open(parent, constants.O_RDONLY | constants.O_DIRECTORY);
+      try { await directory.sync(); } finally { await directory.close(); }
+    }
+  } finally {
+    await rm(staging, { recursive: true, force: true });
+  }
+}
+
+/** Real-world adapter. No network APIs are used. */
 export function createNodeIo(p: NodeEnv): Io {
   return {
     stdout: (t) => p.write('stdout', t),
     stderr: (t) => p.write('stderr', t),
-    readFile: async (path) => {
-      if ((await stat(path)).size > MAX_INPUT_CHARS * 4) throw new Error('too large');
-      return readFile(path, 'utf8');
-    },
-    writeFile: async (path, data, options) => {
-      await writeFile(path, data, { encoding: 'utf8', mode: 0o600, flag: options.overwrite ? 'w' : 'wx' });
-    },
+    readFile: readTextFile,
+    writeFile: (path, data, options) => writeTextFile(path, data, options.overwrite),
     readStdin: async () => {
       let out = '';
+      let bytes = 0;
+      const utf8 = decoder();
       for await (const chunk of p.stdin) {
-        out += typeof chunk === 'string' ? chunk : Buffer.from(chunk).toString('utf8');
-        if (out.length > MAX_INPUT_CHARS * 4) throw new Error('too large');
+        bytes += typeof chunk === 'string' ? Buffer.byteLength(chunk, 'utf8') : chunk.byteLength;
+        if (bytes > MAX_INPUT_BYTES) throw new Error('too large');
+        out += typeof chunk === 'string' ? utf8.decode() + chunk : utf8.decode(chunk, { stream: true });
+        if (out.length > MAX_INPUT_CHARS) throw new Error('too large');
       }
-      return out;
+      return out + utf8.decode();
     },
     env: p.env,
     nowSeconds: () => Math.floor(Date.now() / 1000),

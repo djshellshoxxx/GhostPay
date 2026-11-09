@@ -153,6 +153,7 @@ class Context {
 	public $shop;
 	public $language;
 	public $link;
+	public $employee;
 
 	public static function getContext(): self {
 		if ( null === self::$instance ) {
@@ -160,12 +161,35 @@ class Context {
 			self::$instance->shop     = (object) array( 'id' => 1 );
 			self::$instance->language = (object) array( 'id' => 1 );
 			self::$instance->link     = new Link();
+			self::$instance->employee = new GhostPay_Test_Employee();
 		}
 		return self::$instance;
 	}
 }
 
+class GhostPay_Test_Employee {
+	public $logged = true;
+	public $configure = true;
+	public function isLoggedBack() { return $this->logged; }
+}
+
+/** Captures the real HelperForm contract; this is not a Smarty/platform rendering test. */
+#[AllowDynamicProperties]
+class HelperForm {
+	public static $last;
+	public function generateForm( array $forms ) {
+		self::$last = array( 'helper' => $this, 'forms' => $forms );
+		$out = '<form method="post" action="' . htmlspecialchars( $this->currentIndex . '&token=' . $this->token, ENT_QUOTES, 'UTF-8' ) . '">';
+		foreach ( $forms[0]['form']['input'] as $input ) {
+			$out .= '<input name="' . htmlspecialchars( $input['name'], ENT_QUOTES, 'UTF-8' ) . '" value="' . htmlspecialchars( $this->fields_value[ $input['name'] ], ENT_QUOTES, 'UTF-8' ) . '">';
+		}
+		return $out . '</form>';
+	}
+}
+
 class Link {
+	public function getAdminLink( $controller, $token = true ) { return 'index.php?controller=' . $controller; }
+
 	public function getModuleLink( $module, $controller = 'default', array $params = array(), $ssl = null, $id_lang = null, $id_shop = null, $relative_protocol = false ) {
 		return 'https://shop.test/module/' . $module . '/' . $controller . ( array() === $params ? '' : '?' . http_build_query( $params ) );
 	}
@@ -207,6 +231,7 @@ class GhostPay_Test_PaymentOption {
 class_alias( 'GhostPay_Test_PaymentOption', 'PrestaShop\PrestaShop\Core\Payment\PaymentOption' );
 
 class Tools {
+	public static function getAdminTokenLite( $controller ) { return 'admin-test-token'; }
 	/** The submitted form values (a test sets them). */
 	public static $values = array();
 
@@ -432,6 +457,8 @@ class OrderHistory {
 }
 
 class PaymentModule {
+	public $table = 'module';
+	public function getPermission( $action, $employee = null ) { return $employee->configure; }
 	public $name;
 	public $tab;
 	public $version;
