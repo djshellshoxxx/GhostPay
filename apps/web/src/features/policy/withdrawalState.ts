@@ -225,3 +225,5 @@ export function recoveredExecution(snapshot: WithdrawalSnapshot, id: Hex): CallR
   if (snapshot.plan.problems.length > 0 || (snapshot.plan.limit !== null && (proof === null || (proof.limit !== UNLIMITED && r.amount > windowHeadroom(snapshot.window, proof, snapshot.block.timestamp))))) throw new UserFacingError({ key: 'policy.withdraw.notReady' });
   return encodeExecuteWithdraw(snapshot.account, id);
 }
+
+// i18n-use: policy.withdraw.historyUnavailable policy.withdraw.stateChanged policy.withdraw.unverifiedDeployment policy.withdraw.nonceUsed policy.withdraw.notReady

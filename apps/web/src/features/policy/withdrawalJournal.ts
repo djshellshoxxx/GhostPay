@@ -58,3 +58,5 @@ export async function sendPolicyAction(p: {
     return sendViaWallet(p.wallet, tx, p.assertCurrent, { kind: 'transaction', logicalAction: true, scope: p.scope, storage });
   });
 }
+
+// i18n-use: policy.withdraw.journalUnavailable policy.withdraw.previousAttempt
