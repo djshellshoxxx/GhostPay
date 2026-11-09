@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { createAccountState, executeProposal, queueProposal, validateAccountState, pruneExpired, type AccountState } from './account.js';
 import { evaluateApprovals, signProposal, validateApproval } from './approvals.js';
 import { MAX_PROPOSAL_EXCHANGE_BYTES, MAX_STATE_EXCHANGE_BYTES, parseAccountState, parseProposalExchange, serializeAccountState, serializeProposalExchange } from './exchange.js';
-import { DAY, HOUR, K1, K2, K3, T0, cancel, config, payout, policy2of3 } from './fixtures.testutil.js';
-import { validateProposal } from './proposal.js';
+import { DAY, HOUR, K1, K2, K3, T0, cancel, config, payout, policy2of3, fakeKey, pub } from './fixtures.testutil.js';
+import { MAX_TIMESTAMP, proposalDigestHex, validateProposal } from './proposal.js';
 import { validatePolicy } from './policy.js';
 
 const policy = policy2of3();
@@ -101,4 +101,33 @@ describe('proposal and approval exchange', () => {
     expect(() => validateApproval({ ...approvals[0], [Symbol('hidden')]: 1 })).toThrow();
     expect(() => evaluateApprovals(policy, proposal, Array(2))).toThrow();
   });
+});
+
+
+it('roundtrips the maximum queue with maximum signer counts and field lengths within the bounded format', () => {
+  const keys = Array.from({ length: 20 }, (_, index) => fakeKey(index + 1));
+  const policy = validatePolicy({
+    accountId: 'a'.repeat(64), chainId: '18446744073709551615', version: 0xffff_ffff,
+    signers: keys.map((key, index) => ({ publicKey: pub(key), controller: `c${String(index).padStart(2, '0')}`.padEnd(64, 'x') })),
+    threshold: 20, timelocks: { payout: 30 * DAY, refund: 30 * DAY, config: 30 * DAY },
+  });
+  const now = MAX_TIMESTAMP - 60 * DAY;
+  const queued = Array.from({ length: 64 }, (_, index) => {
+    const proposal = config(policy, {
+      nonce: (18446744073709551615n - 64n + BigInt(index)).toString(),
+      createdAt: now, expiresAt: MAX_TIMESTAMP,
+      newPolicy: { signers: policy.signers, threshold: policy.threshold, timelocks: policy.timelocks },
+    });
+    return { digest: proposalDigestHex(proposal), proposal, approvals: keys.map(key => signProposal(proposal, key)), queuedAt: now, executableAt: now + 30 * DAY };
+  });
+  const account = { policy, nextNonce: '18446744073709551615', queued };
+  const serialized = serializeAccountState(account);
+  expect(Buffer.byteLength(serialized)).toBeLessThan(MAX_STATE_EXCHANGE_BYTES);
+  const restored = parseAccountState(serialized);
+  expect(restored.queued).toHaveLength(64);
+  expect(restored.queued[63]?.approvals).toHaveLength(20);
+  const last = queued[63]!;
+  const proposalText = serializeProposalExchange(policy, last);
+  expect(Buffer.byteLength(proposalText)).toBeLessThan(MAX_PROPOSAL_EXCHANGE_BYTES);
+  expect(parseProposalExchange(proposalText, policy).approvals).toHaveLength(20);
 });

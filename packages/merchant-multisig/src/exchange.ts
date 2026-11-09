@@ -20,6 +20,11 @@ function parseBounded(text: string, max: number): unknown {
   }
 }
 
+function boundedOutput(text: string, max: number): string {
+  if (new TextEncoder().encode(text).length > max) throw new MultisigError('LIMIT', 'exchange');
+  return text;
+}
+
 function envelope(raw: unknown, format: string, keys: readonly string[]): Record<string, unknown> {
   const r = readExact(raw, ['format', 'version', ...keys], 'STATE', 'exchange');
   if (r.format !== format || r.version !== 1) throw new MultisigError('STATE', 'exchange');
@@ -28,7 +33,7 @@ function envelope(raw: unknown, format: string, keys: readonly string[]): Record
 
 /** Canonical bounded snapshot, without secrets. This is not authenticated storage. */
 export function serializeAccountState(value: AccountState): string {
-  return JSON.stringify({ format: 'ghostpay-merchant-account', version: 1, state: validateAccountState(value) });
+  return boundedOutput(JSON.stringify({ format: 'ghostpay-merchant-account', version: 1, state: validateAccountState(value) }), MAX_STATE_EXCHANGE_BYTES);
 }
 
 /**
@@ -60,7 +65,7 @@ function validateExchange(policy: MultisigPolicy, proposal: unknown, approvals: 
 /** Shares canonical proposals and verified partial or full approval sets; does not queue them. */
 export function serializeProposalExchange(policy: MultisigPolicy, value: ProposalExchange): string {
   const exchange = validateExchange(policy, value.proposal, value.approvals);
-  return JSON.stringify({ format: 'ghostpay-merchant-proposal', version: 1, ...exchange });
+  return boundedOutput(JSON.stringify({ format: 'ghostpay-merchant-proposal', version: 1, ...exchange }), MAX_PROPOSAL_EXCHANGE_BYTES);
 }
 
 /** Uses the caller's current trusted policy, not a policy supplied by the exchange. */
