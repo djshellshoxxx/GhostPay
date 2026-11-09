@@ -9,7 +9,7 @@ A map of every documentation file in GhostPay: its purpose, type and status. Lin
 
 Nothing here is an independent audit. The project has no third-party audit, and nothing is deployed (see [README](../README.md)).
 
-**Current product continuation (2026-11-09):** [PR #90 handoff](handoffs/POLICY_LOCALIZATION_CONTINUATION_2026-11-09.md), [current completion gates](audits/08-completion-gates.md), and [refreshed source/PR ledger](handoffs/SOURCE_FOLLOWUP_2026-11-09.md). These separate the unmerged #84 → #88 → #89 → #90 stack from historical migration results. The [#89 handoff](handoffs/PRODUCT_CONTINUATION_2026-11-09.md) remains its predecessor evidence.
+**Current product completion (2026-11-09):** [PR #93 completion ledger](handoffs/PRODUCT_COMPLETION_HANDOFF.md), [product guide](user/product-guide.md), [merchant setup](guides/getting-started-merchants.md), and [technology attribution](user/technology-attribution.md). The ledger separates implementation, exact-source checks and external acceptance for the unmerged #84 → #88 → #89 → #90 → #93 stack. The [#90 handoff](handoffs/POLICY_LOCALIZATION_CONTINUATION_2026-11-09.md), [current completion gates](audits/08-completion-gates.md), and [earlier source/PR ledger](handoffs/SOURCE_FOLLOWUP_2026-11-09.md) remain predecessor evidence; the separate merchant/CLI branch is not implicitly included.
 
 ## Reading order
 
@@ -160,12 +160,14 @@ Pre-audit and testnet-only. Nothing is deployed. Chain-specific notes (not user 
 | File | Purpose | Type | Status |
 |---|---|---|---|
 | [user/README](user/README.md) | Index of the user guides | user guide | n/a |
+| [user/product-guide](user/product-guide.md) | Supported web journeys, receipts, QR, repeated uploads, public pairing, backups and troubleshooting | user guide | n/a |
+| [user/technology-attribution](user/technology-attribution.md) | Source-backed project, creator, license and protocol attribution without endorsement claims | user guide | n/a |
 | [user/testnet-usage](user/testnet-usage.md) | What works today, what is blocked, and how to run a safe local test | user guide | n/a |
 | [user/ethereum-payments](user/ethereum-payments.md) | Native ETH and EVM payments; testnets enabled in code, mainnets disabled | user guide | n/a |
 | [user/stablecoin-payments](user/stablecoin-payments.md) | USDC and EURC payments from the allowlist; permit, blacklist and approve quirks | user guide | n/a |
 | [user/bitcoin-silent-payments](user/bitcoin-silent-payments.md) | Bitcoin silent payments in the web app (testnet4, signet, regtest); mainnet disabled | user guide | n/a |
-| [user/solana-payments](user/solana-payments.md) | Solana library proof of concept; not in the web app | user guide | n/a |
-| [user/tron-payments](user/tron-payments.md) | TRON library proof of concept (Nile, Shasta, local); not in the web app | user guide | n/a |
+| [user/solana-payments](user/solana-payments.md) | Historical Solana guide; current full-profile view and qualification limits are in the product guide | user guide | n/a |
+| [user/tron-payments](user/tron-payments.md) | Historical TRON guide; current full-profile view and qualification limits are in the product guide | user guide | n/a |
 | [user/set-up-stealth-meta-address](user/set-up-stealth-meta-address.md) | Creating seller keys, backing them up and getting the address to share | user guide | n/a |
 | [user/review-and-pay-an-invoice](user/review-and-pay-an-invoice.md) | Checking an invoice link before paying it | user guide | n/a |
 | [user/receive-and-scan](user/receive-and-scan.md) | How a seller scans for payments; sellers get no notification | user guide | n/a |
