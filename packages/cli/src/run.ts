@@ -37,6 +37,7 @@ function topHelp(): string {
   return [
     `ghostpay ${VERSION} - GhostPay command line (offline: no network, no telemetry)`,
     '',
+    'Requires Node >=22.',
     'Usage: ghostpay <command> [options]   (add --json for machine output, --help for details)',
     '',
     'Commands:',
