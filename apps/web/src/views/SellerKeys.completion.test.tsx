@@ -288,11 +288,24 @@ describe('SellerKeys own vault completion ownership', () => {
   it('keeps a later vault deletion busy at app lock after its own unlock return was held', async () => {
     const held = await startHeldUnlock();
     let releaseDelete!: () => void;
+    let enterStorage!: () => void;
+    let rejectStorage!: (error: unknown) => void;
+    const storageEntered = new Promise<void>((resolve, reject) => { enterStorage = resolve; rejectStorage = reject; });
+    // Observe an early authentication failure until the act() below awaits and rethrows it.
+    void storageEntered.catch(() => undefined);
     const deleteGate = new Promise<void>((resolve) => { releaseDelete = resolve; });
     const realDelete = held.store.delete.bind(held.store);
     const remove = vi.spyOn(held.store, 'delete').mockImplementation(async (expected) => {
+      enterStorage();
       await deleteGate;
       return realDelete(expected);
+    });
+    const realDeleteVault = vault.deleteEncryptedVault;
+    let deleteCompletion: Promise<void> | undefined;
+    const deleteVault = vi.spyOn(vault, 'deleteEncryptedVault').mockImplementation((...args) => {
+      deleteCompletion = realDeleteVault(...args);
+      void deleteCompletion.catch(rejectStorage);
+      return deleteCompletion;
     });
     try {
       await act(async () => { held.release(); await Promise.resolve(); });
@@ -300,8 +313,12 @@ describe('SellerKeys own vault completion ownership', () => {
       await held.user.click(screen.getByRole('button', { name: 'Delete encrypted vault' }));
       await held.user.type(await screen.findByLabelText('Passphrase of this vault'), PASS);
       await held.user.click(screen.getByRole('button', { name: 'Confirm delete encrypted vault' }));
+      expect(deleteVault).toHaveBeenCalledOnce();
+      // Real KDF work can exceed waitFor's default one-second budget under coverage. Synchronize with the
+      // authenticated storage handoff itself; the existing overall test deadline still bounds this wait.
+      await act(async () => { await storageEntered; });
       // Real deletion has authenticated the exact encrypted record and is waiting at the storage boundary.
-      await waitFor(() => { expect(remove).toHaveBeenCalledOnce(); });
+      expect(remove).toHaveBeenCalledOnce();
       expect(await held.store.get()).toBe(held.text);
 
       act(() => { notifyAppLock('idle'); });
@@ -313,7 +330,7 @@ describe('SellerKeys own vault completion ownership', () => {
       expect(screen.queryByRole('button', { name: 'Confirm delete encrypted vault' })).toBeNull();
       expect(remove).toHaveBeenCalledOnce();
 
-      await act(async () => { releaseDelete(); await Promise.resolve(); });
+      await act(async () => { releaseDelete(); await deleteCompletion; });
       await waitFor(() => { expect(rootHasText('Encrypted vault deleted from this browser.')).toBe(true); });
       expect(await held.store.get()).toBeUndefined();
       expect(getSessionPublic()).toBe(held.installed);
