@@ -21,7 +21,7 @@ commands.push(
   [process.execPath, ['packages/merchant-multisig/tools/verify-vector.cjs']],
   [php, ['integrations/woocommerce/tests/run.php']],
   [php, ['integrations/prestashop/tests/run.php']],
-  [python, ['scripts/companion-merchant/shop-packages.test.py']],
+  [python, ['-B', 'scripts/companion-merchant/shop-packages.test.py']],
   ['npm', ['run', 'ci:scan-secrets']],
   ['npm', ['run', 'ci:check-actions']],
   ['git', ['diff', '--check']],

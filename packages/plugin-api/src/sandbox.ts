@@ -20,7 +20,9 @@ export interface NetworkPort {
 
 /**
  * Host-provided key/value store. Keys are namespaced before reaching it.
- * Calls must settle only after their effect/read is complete. Share one port
+ * Calls must settle only after their effect/read is complete. The host must
+ * provide atomic per-key updates and coherent reads; a valid but torn index
+ * cannot be detected by this interface. Share one port
  * instance across all contexts that access the same backing store in this realm.
  * Cross-process/realm writers require host-level serialization; this interface
  * does not provide database transactions or multi-process quota enforcement.
