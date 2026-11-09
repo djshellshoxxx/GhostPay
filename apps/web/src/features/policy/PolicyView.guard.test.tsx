@@ -9,9 +9,12 @@ import { ATTEMPT_JOURNAL_KEY } from '../../lib/duplicateAttemptJournal';
 import { MockWallet } from '../../test/mockWallet';
 import { makeServices, renderApp } from '../../test/render';
 import { POLICY_FLAG } from './flag';
+import * as chainModule from './chain';
+const realVerifyDeployment = chainModule.verifyPolicyDeployment;
+import { withdrawalChain, installPolicyTestLocks } from './withdrawal.testutil';
 import { ZERO_ADDRESS } from '@ghostpay/policy-scheme';
 import { encodeAbiParameters } from 'viem/utils';
-import { DEPLOYMENT, ROUTER, SEPOLIA, account, accountCalls, accountLog, clientVectors, deploymentCalls, fakeChain, fixedRng, scheme2Log, walletMirror } from './fixtures.testutil';
+import { LOCAL_POLICY_PROFILE, DEPLOYMENT, ROUTER, SEPOLIA, account, accountCalls, accountLog, clientVectors, deploymentCalls, fakeChain, fixedRng, scheme2Log, walletMirror } from './fixtures.testutil';
 import { preparePolicyPayment } from './pay';
 
 const LABEL = 'Policy accounts (experimental)';
@@ -22,6 +25,8 @@ const walletSends = (w: MockWallet): number => w.calls.filter((c) => c.method ==
 const importA1 = (): void => { importSession({ spendingKeyHex: a1.spendingPrivateKey, viewingKeyHex: a1.viewingPrivateKey }); };
 
 beforeEach(() => {
+  vi.spyOn(chainModule, 'verifyPolicyDeployment').mockImplementation((client, chain, input) => realVerifyDeployment(client, chain, input, LOCAL_POLICY_PROFILE));
+  installPolicyTestLocks();
   clearSession();
   window.localStorage.clear();
   window.sessionStorage.clear();
@@ -334,7 +339,7 @@ describe('policy receive: session guard on withdraw, cancel and execute', () => 
     const base = deploymentCalls();
     base.code.add(x);
     const w = new MockWallet({ chainId: SEPOLIA });
-    const rpc = fakeChain(SEPOLIA, {
+    const rpc = withdrawalChain(SEPOLIA, {
       ...base,
       extra: walletMirror(w),
       calls: { ...base.calls, ...accountCalls(a1) },
@@ -390,7 +395,8 @@ describe('policy receive: session guard on withdraw, cancel and execute', () => 
     sends = 1;
     expect(walletSends(w)).toBe(sends);
     armed = true;
-    await user.click(screen.getByRole('button', { name: 'Execute withdrawal' }));
+    await user.click(screen.getByRole('button', { name: 'Check account' }));
+    await user.click(await screen.findByRole('button', { name: 'Execute withdrawal' }));
     await refused();
   });
 });

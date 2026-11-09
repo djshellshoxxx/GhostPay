@@ -3,16 +3,19 @@ import { spawn, spawnSync, type ChildProcess } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { CHAINS, ANNOUNCEMENT_TOPIC, type ChainConfig, type RpcClient, type RpcLog } from '@ghostpay/chain-adapters';
-import { ZERO_ADDRESS, ghostPayPolicyRouterAbi, type Address, type Hex } from '@ghostpay/policy-scheme';
+import { ZERO_ADDRESS, deriveScheme2OwnerKey, parsePolicyRecord, ghostPayPolicyRouterAbi, type Address, type Hex } from '@ghostpay/policy-scheme';
 import { createPublicClient, createWalletClient, encodeFunctionData, http, keccak256, getAddress, type Abi } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { verifyPolicyDeployment, type PolicyChainDeployment } from './chain';
 import type { PolicyDeploymentProfile } from './deploymentEvidence';
-import { account, fixedRng } from './fixtures.testutil';
+import { account, fixedRng, clientVectors, hexToU8 } from './fixtures.testutil';
 import { preparePolicyPayment } from './pay';
 import { isPolicyEvidenceBlockCanonical, verifyPolicyPaymentEvidence } from './paymentEvidence';
 import type { Scheme2Match } from './scan2';
+import { parseCompressedPoint, secretScalarFromBytes } from '@ghostpay/core-crypto';
+import { deployCall, signWithdraw, wipe } from './withdraw';
+import { readWithdrawalSnapshot, recoveredExecution } from './withdrawalState';
 
 const root = resolve(import.meta.dirname, '../../../../..');
 const out = process.env['POLICY_SCHEME_ARTIFACTS'] ?? resolve(root, 'packages/contracts/out');
@@ -49,7 +52,7 @@ describe.skipIf(!available)('scheme-2 evidence on real local contracts', () => {
       const b = await request('eth_getBlockByNumber', [`0x${number.toString(16)}`, false]) as { hash: Hex; parentHash: Hex };
       return { number, hash: b.hash, parentHash: b.parentHash };
     },
-    getLogs: () => Promise.reject(new Error('unused in direct evidence test')),
+    getLogs: async (filter) => await request('eth_getLogs', [{ address: filter.address, topics: filter.topics, fromBlock: `0x${filter.fromBlock.toString(16)}`, toBlock: `0x${filter.toBlock.toString(16)}` }]) as readonly RpcLog[],
   };
   beforeAll(async () => {
     const started = await new Promise<{ proc: ChildProcess; url: string }>((resolveStarted, reject) => {
@@ -95,6 +98,57 @@ describe.skipIf(!available)('scheme-2 evidence on real local contracts', () => {
     expect(await pub.readContract({ address: deployment.router, abi: ghostPayPolicyRouterAbi, functionName: 'FEE_BPS' })).toBe(25n);
     await expect(verifyPolicyDeployment(rpc, chain, { factory: deployment.factory, router: deployment.router }, profile)).rejects.toThrow(/authenticated configuration/);
     await request('evm_revert', [snapshot]);
+  });
+
+  it('recovers real requests across reload, competing requests, execution and a reorg', async () => {
+    const before = await request('evm_snapshot', []);
+    const pub = createPublicClient({ transport: http(url), pollingInterval: 20 });
+    const wallet = createWalletClient({ account: deployer, transport: http(url), pollingInterval: 20 });
+    const vector = account('acct-001');
+    const record = parsePolicyRecord(clientVectors.records.valid.find((r) => r.id === 'acct-001')!.canonical);
+    const now = (await pub.getBlock()).timestamp;
+    const payment = preparePolicyPayment({ metaAddress: vector.metaAddress, deployment, token: 'native', gross: 10n ** 18n, nowSec: now, rng: fixedRng(vector.ephemeralPrivateKey) });
+    const send = async (tx: { to: Address; data: Hex; value: bigint }) => {
+      const hash = await wallet.sendTransaction({ account: deployer, chain: null, to: tx.to, data: tx.data, value: tx.value });
+      const receipt = await pub.waitForTransactionReceipt({ hash });
+      expect(receipt.status).toBe('success');
+      return receipt;
+    };
+    await send(payment.built.tx);
+    const authenticated = await verifyPolicyDeployment(rpc, chain, { factory: deployment.factory, router: deployment.router }, profile);
+    await send(deployCall(authenticated, payment.payment.ownerAddress, record));
+    const args = { client: rpc, chain, deployment: authenticated, account: payment.payment.accountAddress, owner: payment.payment.ownerAddress, record, token: ZERO_ADDRESS, knownIds: new Set<string>(), assertCurrent: () => undefined };
+    const initial = await readWithdrawalSnapshot(args);
+    expect(initial.summary.pending).toEqual([]);
+    const key = deriveScheme2OwnerKey({ stealthAddress: payment.payment.accountAddress, ephemeralPublicKey: `0x${Buffer.from(payment.payment.ephemeralPublicKey).toString('hex')}`, metadata: payment.built.metadata },
+      { spendingSecret: secretScalarFromBytes(hexToU8(vector.spendingPrivateKey)), viewingSecret: secretScalarFromBytes(hexToU8(vector.viewingPrivateKey)) },
+      parseCompressedPoint(hexToU8(vector.spendingPublicKey)), [record.policyHash], authenticated);
+    try {
+      const signed = await signWithdraw({ chainId: chain.chainId, account: args.account, owner: args.owner, record, plan: initial.plan, token: ZERO_ADDRESS, amount: 10n ** 17n, deadline: initial.block.timestamp + 1800n, nonce: 1n, ownerSecret: key.ownerSecret });
+      const accepted = await send(signed.request);
+      const acceptanceBlock = await pub.getBlock({ blockNumber: accepted.blockNumber });
+      // Fresh calls contain no saved request object: chain evidence reconstructs its accepted timestamp.
+      const reloaded = await readWithdrawalSnapshot({ ...args, knownIds: new Set<string>() });
+      expect(reloaded.summary.pending).toMatchObject([{ id: signed.id, executeAfter: acceptanceBlock.timestamp + record.policy.delaySeconds, known: false }]);
+      await expect(readWithdrawalSnapshot({ ...args, nonce: 1n })).rejects.toThrow(/nonce is already used/);
+      expect(() => recoveredExecution(reloaded, signed.id)).toThrow(/still timelocked/);
+      const competing = await signWithdraw({ chainId: chain.chainId, account: args.account, owner: args.owner, record, plan: reloaded.plan, token: ZERO_ADDRESS, amount: 10n ** 17n, deadline: reloaded.block.timestamp + 1800n, nonce: 2n, ownerSecret: key.ownerSecret });
+      await send(competing.request);
+      const contested = await readWithdrawalSnapshot(args);
+      expect(contested.summary.pending).toHaveLength(2);
+      expect(contested.plan.max).toBe(initial.balance - 2n * 10n ** 17n);
+      await request('evm_increaseTime', [Number(record.policy.delaySeconds) + 1]);
+      await request('evm_mine', []);
+      const mature = await readWithdrawalSnapshot(args);
+      const beforeExecution = await request('evm_snapshot', []);
+      await send(recoveredExecution(mature, signed.id));
+      const executed = await readWithdrawalSnapshot(args);
+      expect(executed.requests.find((r) => r.id === signed.id)?.status).toBe(2);
+      expect(executed.summary.pending.map((r) => r.id)).toEqual([competing.id]);
+      await request('evm_revert', [beforeExecution]);
+      await request('evm_increaseTime', [2]); await request('evm_mine', []);
+      expect((await readWithdrawalSnapshot(args)).summary.pending).toHaveLength(2);
+    } finally { wipe(key.ownerSecret); await request('evm_revert', [before]); }
   });
 
   it.each([false, true])('authenticates runtime code and verifies a direct canonical payment (ERC20=%s)', async (erc20) => {

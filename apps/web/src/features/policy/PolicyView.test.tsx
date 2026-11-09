@@ -6,7 +6,10 @@ import { clearSession, generateSession, importSession } from '../../lib/session'
 import { SETTINGS_KEY } from '../../lib/settings';
 import { makeServices, renderApp } from '../../test/render';
 import { POLICY_FLAG } from './flag';
-import { ROUTER, SEPOLIA, account, accountCalls, accountLog, clientVectors, deploymentCalls, fakeChain, fixedRng, scheme2Log, walletMirror, DEPLOYMENT } from './fixtures.testutil';
+import * as chainModule from './chain';
+const realVerifyDeployment = chainModule.verifyPolicyDeployment;
+import { withdrawalChain, installPolicyTestLocks } from './withdrawal.testutil';
+import { LOCAL_POLICY_PROFILE, ROUTER, SEPOLIA, account, accountCalls, accountLog, clientVectors, deploymentCalls, fakeChain, fixedRng, scheme2Log, walletMirror, DEPLOYMENT } from './fixtures.testutil';
 import { policyAccountAbi, ghostPayPolicyRouterAbi, ZERO_ADDRESS } from '@ghostpay/policy-scheme';
 import { decodeFunctionData } from 'viem/utils';
 import { MockWallet } from '../../test/mockWallet';
@@ -21,6 +24,8 @@ const canonical = (id: string): string => clientVectors.records.valid.find((v) =
 const SIGNING_KEY = '33'.repeat(32);
 
 beforeEach(() => {
+  vi.spyOn(chainModule, 'verifyPolicyDeployment').mockImplementation((client, chain, input) => realVerifyDeployment(client, chain, input, LOCAL_POLICY_PROFILE));
+  installPolicyTestLocks();
   clearSession();
   window.localStorage.clear();
   window.sessionStorage.clear();
@@ -172,7 +177,7 @@ describe('policy view flows', () => {
     await user.click(screen.getByLabelText('GhostPayPolicyRouter address'));
     await user.paste(ROUTER);
     await user.click(screen.getByRole('button', { name: 'Verify on-chain' }));
-    expect(await screen.findByText('The router is not a scheme 0x47500002 router.')).toBeTruthy();
+    expect(await screen.findByText(/does not match its authenticated configuration/)).toBeTruthy();
   });
   it('pays with a wallet, flags a foreign pending withdrawal, cancels it, and withdraws within the limit', async () => {
     act(() => { importSession({ spendingKeyHex: a1.spendingPrivateKey, viewingKeyHex: a1.viewingPrivateKey }); });
@@ -182,7 +187,7 @@ describe('policy view flows', () => {
     const base = deploymentCalls();
     base.code.add(x);
     const w = new MockWallet({ chainId: SEPOLIA });
-    const rpc = fakeChain(SEPOLIA, {
+    const rpc = withdrawalChain(SEPOLIA, {
       ...base,
       extra: walletMirror(w),
       calls: { ...base.calls, ...accountCalls(a1) },
@@ -242,7 +247,10 @@ describe('policy view flows', () => {
     const req = decodeFunctionData({ abi: policyAccountAbi, data: w.sent?.['data'] as `0x${string}` });
     expect(req.functionName).toBe('requestWithdraw');
     expect((req.args[0] as { amount: bigint }).amount).toBe(5n * 10n ** 17n);
-    await user.click(screen.getByRole('button', { name: 'Execute withdrawal' }));
+    // A hash does not establish that a request was mined or when its timelock starts.
+    expect(screen.queryByRole('button', { name: 'Execute withdrawal' })).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Check account' }));
+    await user.click(await screen.findByRole('button', { name: 'Execute withdrawal' }));
     expect(await screen.findByText(/Execution submitted/)).toBeTruthy();
     expect(decodeFunctionData({ abi: policyAccountAbi, data: w.sent?.['data'] as `0x${string}` }).functionName).toBe('executeWithdraw');
   });

@@ -10,6 +10,7 @@ import type { WalletInfo } from '../../lib/wallet';
 import { MockWallet } from '../../test/mockWallet';
 import { makeServices, renderApp } from '../../test/render';
 import { POLICY_FLAG } from './flag';
+import { installPolicyTestLocks } from './withdrawal.testutil';
 import * as chainModule from './chain';
 const realVerifyDeployment = chainModule.verifyPolicyDeployment;
 import { LOCAL_POLICY_PROFILE, DEPLOYMENT, ROUTER, SEPOLIA, account, clientVectors, deploymentCalls, fakeChain, fixedRng, scheme2Log, walletMirror } from './fixtures.testutil';
@@ -22,6 +23,7 @@ const canonical = (id: string): string => clientVectors.records.valid.find((v) =
 const info = (w: MockWallet): WalletInfo => ({ id: 'mock', name: 'Mock Wallet', kind: 'eip6963', provider: w });
 
 beforeEach(() => {
+  installPolicyTestLocks();
   vi.spyOn(chainModule, 'verifyPolicyDeployment').mockImplementation((client, chain, input) => realVerifyDeployment(client, chain, input, LOCAL_POLICY_PROFILE));
   clearSession();
   window.localStorage.clear();

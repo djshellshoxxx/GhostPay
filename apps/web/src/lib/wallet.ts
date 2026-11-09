@@ -1,6 +1,6 @@
 import { parseQuantity, type Address, type Hex } from '@ghostpay/chain-adapters';
 import { getAddress, isAddress, keccak256, toBytes } from 'viem/utils';
-import { beginAttempt, browserAttemptStorage, finishAttempt, type AttemptInput } from './duplicateAttemptJournal';
+import { beginAttempt, browserAttemptStorage, finishAttempt, type AttemptInput, type AttemptStorage } from './duplicateAttemptJournal';
 import { UserFacingError } from './errors';
 
 /** Minimal EIP-1193 provider surface. */
@@ -270,13 +270,21 @@ export interface WalletAttemptOptions {
    * is a new action while repeating it for one invoice stays a duplicate (L2-I3).
    */
   readonly scope?: string;
+  /** Stable transaction identity across rebuilt calldata/nonces; requires a bounded explicit scope. */
+  readonly logicalAction?: boolean;
+  /** Explicit journal store; policy operations use durable browser storage under an exclusive lock. */
+  readonly storage?: AttemptStorage;
 }
-export function walletAttemptKey(s: WalletSession, tx: TxRequest, options?: WalletAttemptOptions): string {
+export function walletAttemptKey(s: Pick<WalletSession, 'chainId' | 'account'>, tx: TxRequest, options?: WalletAttemptOptions): string {
   const call = [tx.to.toLowerCase(), tx.data.toLowerCase(), tx.value.toString()];
   const payment = options?.kind === 'payment' && options.scope !== undefined;
+  const logicalTransaction = options?.logicalAction === true;
+  if (logicalTransaction && (options.kind !== 'transaction' || typeof options.scope !== 'string' || !/^[A-Za-z0-9:._/-]{1,1024}$/.test(options.scope))) {
+    throw new UserFacingError({ key: 'policy.withdraw.logicalScope' });
+  }
   return keccak256(toBytes(JSON.stringify([
-    s.chainId, payment ? 'invoice-payer' : s.account.toLowerCase(), options?.kind ?? 'transaction',
-    payment ? options.scope : options?.scope === undefined ? call : [options.scope, ...call],
+    s.chainId, payment ? 'invoice-payer' : logicalTransaction ? 'logical-relayer' : s.account.toLowerCase(), options?.kind ?? 'transaction',
+    payment ? options.scope : logicalTransaction ? ['logical-transaction-v1', options.scope] : options?.scope === undefined ? call : [options.scope, ...call],
   ])));
 }
 /** Returned hash is preserved even if tab storage fails after broadcast. */
@@ -320,7 +328,7 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
   try {
     await recheckWallet(s, authority.assert);
     authority.assert();
-    const storage = browserAttemptStorage();
+    const storage = options?.storage ?? browserAttemptStorage();
     const attempt = storage === undefined ? undefined : beginAttempt({
       key: walletAttemptKey(s, tx, options), chainId: s.chainId, account: s.account.toLowerCase(), kind: options?.kind ?? 'transaction',
     }, storage);
