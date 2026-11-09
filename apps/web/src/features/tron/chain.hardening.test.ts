@@ -190,4 +190,21 @@ describe('TRON scan and sweep hardening', () => {
     expect(chain.calls).not.toContain('/wallet/broadcasthex');
     wipeWallet(stranger);
   });
+  it('refuses to derive and sign after cancellation even when a node ignores AbortSignal', async () => {
+    const wallet = walletA();
+    const chain = mockTron(wallet);
+    const rpc = createRpc('http://127.0.0.1:9090', chain.fetchFn);
+    const result = await scanForPayments({ rpc, wallet, fromBlock: 500n, signal: signal() });
+    const found = result.found[0];
+    if (found === undefined) throw new Error('fixture must yield a payment');
+    const controller = new AbortController();
+    controller.abort();
+    const review = reviewSweep(wallet, found, DEST, { params: { bandwidthFeeSun: 1000n, energyFeeSun: 420n }, destinationActivated: true });
+    await expect(signSweep({
+      rpc: { post: (path, body) => rpc.post(path, body) },
+      wallet, found, review, nowMs: 1_700_000_000_000, signal: controller.signal,
+    })).rejects.toThrow('Cancelled.');
+    expect(chain.broadcasts).toEqual([]);
+  });
+
 });

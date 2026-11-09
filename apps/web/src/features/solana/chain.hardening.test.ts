@@ -172,4 +172,21 @@ describe('Solana scan and signing hardening', () => {
     expect(chain.broadcasts).toEqual([]);
     wipeFound(result.found);
   });
+  it('refuses to derive and sign after cancellation even when an RPC ignores AbortSignal', async () => {
+    const wallet = walletA();
+    const chain = mockChain('localnet', wallet);
+    const rpc = createRpc('http://127.0.0.1:8899', chain.fetchFn);
+    const result = await scanForPayments({ rpc, wallet, fromSlot: 0n });
+    const found = result.found[0];
+    if (found === undefined) throw new Error('fixture must yield a payment');
+    const controller = new AbortController();
+    controller.abort();
+    await expect(signSweep({
+      rpc: { request: (method, params) => rpc.request(method, params) },
+      wallet, found, review: reviewSweep(wallet, found, DEST), signal: controller.signal,
+    })).rejects.toThrow('Cancelled.');
+    expect(chain.broadcasts).toEqual([]);
+    wipeFound(result.found);
+  });
+
 });

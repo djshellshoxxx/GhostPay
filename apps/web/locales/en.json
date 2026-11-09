@@ -1996,6 +1996,27 @@
     "chainView.broadcast.mismatch": "The server returned a different transaction reference. GhostPay could not verify acknowledgement of {reference}. It may have been sent. Check its status before retrying.",
     "footer.sources": "Source and attribution",
     "upload.selectedFile": "Selected file",
-    "transaction.detail.walletRejected": "You rejected the payment request in your wallet (diagnostic code {code}). The earlier approval was not cancelled."
+    "transaction.detail.walletRejected": "You rejected the payment request in your wallet (diagnostic code {code}). The earlier approval was not cancelled.",
+    "btc.verification.check.header": "The block header hash equals the hash the server reported, and the header meets its own proof-of-work target and the network limit.",
+    "btc.verification.check.transactions": "Transaction ids are recomputed on this device and must produce the header Merkle root, so inputs and outputs are bound to the header.",
+    "btc.verification.check.witness": "Witness data is bound to the header through the coinbase witness commitment (BIP-141), so input keys cannot be swapped.",
+    "btc.verification.check.chain": "Block headers from the server are checked on this device starting at the pinned genesis block: each must link to the one before, meet its proof-of-work target, carry the difficulty the network rules require, and have a valid timestamp and version. Among competing branches the one with the most cumulative work is kept. Every scanned block must have the hash this checked chain has at its height, so a block that extends nothing, or sits on a branch with less work, is refused.",
+    "btc.verification.check.storage": "Checked headers are saved in this browser and checked again in full when loaded; saved headers that fail any check are discarded and downloaded again. When a chain with more work replaces blocks that were already scanned, the results from those blocks are removed.",
+    "btc.verification.limit.validation": "This is header-chain validation against the chain the server claims is best, with most-work selection among the headers it sent. It is not SPV and not full validation: no transaction or script is validated beyond the checks above. A server can hide a heavier chain or show you only its own (an eclipse), and proof of work on test networks is cheap, so a server can mine a heavier fork itself.",
+    "btc.verification.limit.prevouts": "The scripts and amounts of the outputs being spent come from the server (they live in earlier blocks). A lying server can hide a payment, and with a fork it mined itself (cheap on test networks) it can also invent one. Confirm a payment with a source you trust before relying on it.",
+    "btc.verification.limit.spent": "Spent status comes from the server.",
+    "btc.verification.limit.privacy": "The server learns your IP address, which block heights you scan and which header ranges you download. It never receives your keys.",
+    "btc.verification.mode.own.mode": "A. Your own server (an Esplora instance you run)",
+    "btc.verification.mode.own.keyLeaves": "No",
+    "btc.verification.mode.own.serverLearns": "Nothing beyond your own machine",
+    "btc.verification.mode.own.available": "Yes: enter your server URL",
+    "btc.verification.mode.other.mode": "B. Someone else's block server",
+    "btc.verification.mode.other.keyLeaves": "No",
+    "btc.verification.mode.other.serverLearns": "Your IP address, the block range, and that you scan",
+    "btc.verification.mode.other.available": "Yes: enter its URL",
+    "btc.verification.mode.hosted.mode": "C. Hosted scanning service",
+    "btc.verification.mode.hosted.keyLeaves": "Yes (scan key)",
+    "btc.verification.mode.hosted.serverLearns": "Every payment you receive",
+    "btc.verification.mode.hosted.available": "No: not implemented"
   }
 }

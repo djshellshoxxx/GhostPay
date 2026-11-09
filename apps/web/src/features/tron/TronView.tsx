@@ -1,4 +1,5 @@
-import { displayMessage } from '../../lib/errors';
+import { displayMessage, type DisplayMessage } from '../../lib/errors';
+import { referencedBroadcastOutcome, TRANSACTION_PHASE_KEYS, type TransactionOutcome } from '../../lib/transactionOutcome';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { decodeTronAddress, type TronRpc } from '@ghostpay/tron-adapter';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
@@ -12,7 +13,7 @@ import type { Translator } from '../../i18n/translator';
 import { subscribeAppLock } from '../../lib/appLock';
 import { useServices } from '../../lib/services';
 import { TRON_NETWORK_LIST, tronNetwork, type TronNetworkId } from './network';
-import { broadcastHex, checkNetwork, createRpc, getChainParams, isActivated, TronViewError, tronErrorMessage } from './rpc';
+import { broadcastHex, checkNetwork, createRpc, getChainParams, isActivated, TronViewError, captureTronErrorMessage } from './rpc';
 import { MAX_SCAN_BLOCKS, scanForPayments, type FoundPayment, type ScanResult } from './scan';
 import { formatTrx, reviewSweep, signSweep, type SignedSweep, type SweepReview } from './sweep';
 import { backupHex, newWallet, walletFromBackupHex, wipeWallet, type TronWallet } from './wallet';
@@ -38,15 +39,16 @@ export function TronView(): ReactNode {
   const [fromBlock, setFromBlock] = useState('');
   const [scanning, setScanning] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [scanNote, setScanNote] = useState<string | undefined>(undefined);
+  const [scanNote, setScanNote] = useState<DisplayMessage | undefined>(undefined);
   const [scan, setScan] = useState<ScanResult | undefined>(undefined);
   const [picked, setPicked] = useState<string | undefined>(undefined);
   const [destination, setDestination] = useState('');
   const [review, setReview] = useState<SweepReview | undefined>(undefined);
   const [approved, setApproved] = useState(false);
   const [signed, setSigned] = useState<SignedSweep | undefined>(undefined);
-  const [broadcastId, setBroadcastId] = useState<string | undefined>(undefined);
-  const [error, setError] = useState<unknown>(undefined);
+  const [broadcastOutcome, setBroadcastOutcome] = useState<TransactionOutcome | undefined>(undefined);
+  const currentBroadcast = broadcastOutcome?.reference === signed?.txID ? broadcastOutcome : undefined;
+  const [error, setError] = useState<DisplayMessage | undefined>(undefined);
   /** The app lock (idle timeout) forgot the wallet: say so instead of silently showing an empty view. */
   const [appLocked, setAppLocked] = useState(false);
   const abort = useRef<AbortController | undefined>(undefined);
@@ -85,7 +87,7 @@ export function TronView(): ReactNode {
     setReview(undefined);
     setApproved(false);
     setSigned(undefined);
-    setBroadcastId(undefined);
+    setBroadcastOutcome(undefined);
     setScanNote(undefined);
   };
 
@@ -94,7 +96,7 @@ export function TronView(): ReactNode {
     try {
       f();
     } catch (e) {
-      setError(e ?? new Error());
+      setError(captureTronErrorMessage(e));
     }
   };
 
@@ -138,14 +140,14 @@ export function TronView(): ReactNode {
           wallet,
           fromBlock: BigInt(fromBlock.trim()),
           signal,
-          onFound: (b) => { if (live()) setScanNote(t('tron.found', { block: String(b) })); },
+          onFound: (b) => { if (live()) setScanNote({ key: 'tron.found', values: { block: String(b) } }); },
         });
         if (!live()) return;
         setScan(res);
-        setScanNote(t('tron.scanned', { from: String(res.fromBlock), to: String(res.toBlock) }));
+        setScanNote({ key: 'tron.scanned', values: { from: String(res.fromBlock), to: String(res.toBlock) } });
         setPicked(res.found[0]?.stealthAddress);
       } catch (e) {
-        if (live()) setError(e ?? new Error());
+        if (live()) setError(captureTronErrorMessage(e));
       } finally {
         if (live()) setScanning(false);
       }
@@ -154,6 +156,7 @@ export function TronView(): ReactNode {
 
   const doReview = (): void => {
     if (wallet === undefined || selected === undefined || busy) return;
+    clearReview();
     setError(undefined);
     const { signal, live } = begin();
     setBusy(true);
@@ -169,9 +172,8 @@ export function TronView(): ReactNode {
         setReview(out);
         setApproved(false);
         setSigned(undefined);
-        setBroadcastId(undefined);
       } catch (e) {
-        if (live()) setError(e ?? new Error());
+        if (live()) setError(captureTronErrorMessage(e));
       } finally {
         if (live()) setBusy(false);
       }
@@ -186,10 +188,11 @@ export function TronView(): ReactNode {
     void (async () => {
       try {
         const rpc = await connect(signal);
+        if (!live()) return;
         const out = await signSweep({ rpc, wallet, found: selected, review, nowMs: services.nowMs(), signal });
         if (live()) setSigned(out);
       } catch (e) {
-        if (live()) setError(e ?? new Error());
+        if (live()) setError(captureTronErrorMessage(e));
       } finally {
         if (live()) setBusy(false);
       }
@@ -197,17 +200,23 @@ export function TronView(): ReactNode {
   };
 
   const doBroadcast = (): void => {
-    if (signed === undefined || busy) return;
+    if (signed === undefined || review === undefined || !approved || busy || currentBroadcast?.phase === 'pending-confirmation') return;
     setError(undefined);
     const { signal, live } = begin();
     setBusy(true);
     void (async () => {
+      let requested = false;
       try {
         const rpc = await connect(signal);
+        if (!live()) return;
+        requested = true;
+        setBroadcastOutcome(referencedBroadcastOutcome('broadcast-attempted', signed.txID));
         const id = await broadcastHex(rpc, signed.signedHex, signed.txID, signal);
-        if (live()) setBroadcastId(id);
+        if (live()) setBroadcastOutcome(referencedBroadcastOutcome(id === signed.txID ? 'pending-confirmation' : 'verification-incomplete', signed.txID));
       } catch (e) {
-        if (live()) setError(e ?? new Error());
+        if (!live()) return;
+        if (requested) setBroadcastOutcome(referencedBroadcastOutcome(e instanceof TronViewError && e.translation?.key === 'tron.error.differentTx' ? 'verification-incomplete' : 'broadcast-unknown', signed.txID));
+        else setError(captureTronErrorMessage(e));
       } finally {
         if (live()) setBusy(false);
       }
@@ -235,17 +244,30 @@ export function TronView(): ReactNode {
     }),
   );
 
-  const clearReview = (): void => {
-    setReview(undefined);
+  /** Authority edits invalidate pending sign/broadcast work; an attempted request keeps its public reference. */
+  const clearSigning = (): void => {
+    invalidate();
     setApproved(false);
     setSigned(undefined);
+    setBroadcastOutcome((current) => current?.phase === 'broadcast-attempted' && current.reference !== undefined
+      ? referencedBroadcastOutcome('broadcast-unknown', current.reference) : current);
+  };
+
+  const clearReview = (): void => {
+    clearSigning();
+    setReview(undefined);
   };
 
   return (
     <section aria-labelledby="tron-h">
       <h2 id="tron-h">{t('tron.title')}</h2>
       <Notice kind="warn" title={t('btc.warning.title')}>{t('tron.warning.body')}</Notice>
-      {error !== undefined && <Notice kind="error">{tronErrorMessage(error, t)}</Notice>}
+      {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
+      {broadcastOutcome !== undefined && <div data-transaction-phase={broadcastOutcome.phase}>
+                <Notice kind={broadcastOutcome.phase === 'pending-confirmation' ? 'ok' : broadcastOutcome.phase === 'broadcast-attempted' ? 'info' : 'error'} title={t(TRANSACTION_PHASE_KEYS[broadcastOutcome.phase])}>
+                  {displayMessage(broadcastOutcome.message, t)}
+                </Notice>
+              </div>}
 
       <div className="panel">
         <h3>{t('tron.section.network')}</h3>
@@ -268,7 +290,7 @@ export function TronView(): ReactNode {
           hint={t('tron.node.hint')}
         >
           {(id, d) => (
-            <input id={id} aria-describedby={d} type="url" spellCheck={false} autoComplete="off" placeholder={net.urlHint} value={url} onChange={(e) => { setUrl(e.target.value); }} />
+            <input id={id} aria-describedby={d} type="url" spellCheck={false} autoComplete="off" placeholder={net.urlHint} value={url} onChange={(e) => { setUrl(e.target.value); clearReview(); }} />
           )}
         </Field>
       </div>
@@ -340,7 +362,7 @@ export function TronView(): ReactNode {
           {scanning && (
             <button type="button" className="btn" onClick={() => { abort.current?.abort(); }}>{t('btc.scan.cancel')}</button>
           )}
-          {scanNote !== undefined && <p role="status">{scanNote}</p>}
+          {scanNote !== undefined && <p role="status">{displayMessage(scanNote, t)}</p>}
           {scan !== undefined && (
             <>
               <p>
@@ -406,7 +428,7 @@ export function TronView(): ReactNode {
                 setError(undefined);
                 return true;
               } catch (e) {
-                setError(e ?? new Error());
+                setError(captureTronErrorMessage(e));
                 return false;
               }
             }}
@@ -429,7 +451,7 @@ export function TronView(): ReactNode {
               </dl>
               {review.warnings.map((w) => <Notice key={w.key} kind="warn">{displayMessage(w, t)}</Notice>)}
               <label>
-                <input type="checkbox" checked={approved} onChange={(e) => { setApproved(e.target.checked); }} />{' '}
+                <input type="checkbox" checked={approved} onChange={(e) => { if (!e.target.checked) clearSigning(); else setApproved(true); }} />{' '}
                 {t('btc.review.approve')}
               </label>
               <p>
@@ -444,12 +466,12 @@ export function TronView(): ReactNode {
             <section className="card" aria-labelledby="tron-signed-h">
               <h4 id="tron-signed-h">{t('btc.signed.heading')}</h4>
               <p>{t('tron.signed.txid')} <Mono>{signed.txID}</Mono></p>
-              <p>{t('tron.signed.notSent')}</p>
+              {currentBroadcast === undefined && <p>{t('tron.signed.notSent')}</p>}
               <CopyButton text={signed.signedHex} label={t('btc.signed.copyRaw')} />{' '}
-              <button type="button" className="btn btn-primary" disabled={broadcastId !== undefined || busy} onClick={doBroadcast}>
+              <button type="button" className="btn btn-primary" disabled={(currentBroadcast?.phase === 'pending-confirmation' || currentBroadcast?.phase === 'broadcast-attempted') || busy} onClick={doBroadcast}>
                 {t('chainView.broadcastTo', { network: net.label })}
               </button>
-              {broadcastId !== undefined && <Notice kind="ok" title={t('btc.broadcast.title')}>{t('tron.broadcast.accepted')} <Mono>{broadcastId}</Mono>.</Notice>}
+
             </section>
           )}
         </div>
@@ -459,3 +481,5 @@ export function TronView(): ReactNode {
 }
 
 // i18n-use: tron.node.missing tron.block.required tron.sameAddress
+
+// i18n-use: tron.found tron.scanned
