@@ -152,7 +152,7 @@ files remain until separately deleted.
 
 RPC/explorer queries expose lookups to those services. A second independent RPC can identify disagreement but
 shares queries with another operator. Selecting Tor/proxy preferences does not install or prove transport.
-Stealth addressing does not hide public graphs or sweep destinations. See the [shipped privacy page](../../apps/web/public/privacy.html).
+Stealth addressing does not hide public graphs or sweep destinations. See the [shipped privacy page](../../apps/web/privacy.html).
 
 | Symptom | Next step |
 | --- | --- |

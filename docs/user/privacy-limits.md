@@ -53,5 +53,5 @@ files must be deleted separately from site storage.
 
 A second RPC adds comparison and availability while sharing queries with another operator. Explorer lookups also
 reveal the requested address or transaction. A valid receipt signature is a field attestation, and restored history
-is not fresh payment verification. See the [shipped privacy page](../../apps/web/public/privacy.html) and
+is not fresh payment verification. See the [shipped privacy page](../../apps/web/privacy.html) and
 [reconciliation guide](reconciliation-and-receipts.md).
