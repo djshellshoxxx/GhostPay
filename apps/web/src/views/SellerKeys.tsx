@@ -4,7 +4,7 @@ import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Com
 import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
 import { displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
-import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphrase, MAX_KEYSTORE_BYTES, passphraseProblem, validateKeystoreEnvelope } from '../lib/keystore';
+import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphrase, MAX_KEYSTORE_BYTES, passphraseProblemMessage, validateKeystoreEnvelope } from '../lib/keystore';
 import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, getSessionBackup, getSessionPublic, importKeystore, importSession, markKeystoreDownloaded, sessionHasExternalCopy, subscribeSessionBackup, waiveSessionBackup, type SessionPublic } from '../lib/session';
 import { authorizeKeyExport, deleteEncryptedVault, loadedKeysRecoverable, readEncryptedVault, saveEncryptedVault, unlockEncryptedVault, VaultChangedError, vaultMetaAddress, VaultSavedForPreviousKeysError } from '../lib/keyVault';
 import { useApp } from '../state';
@@ -170,7 +170,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
 
   const onExport = (e: FormEvent): void => {
     e.preventDefault();
-    const problem = passphraseProblem(pass);
+    const problem = passphraseProblemMessage(pass);
     if (problem !== undefined) {
       setMessage({ kind: 'error', text: problem });
       return;
@@ -240,7 +240,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
 
   const onSaveVault = (e: FormEvent): void => {
     e.preventDefault();
-    const problem = passphraseProblem(vaultSavePass);
+    const problem = passphraseProblemMessage(vaultSavePass);
     if (problem !== undefined) { setMessage({ kind: 'error', text: problem }); return; }
     if (vaultSavePass !== vaultSavePass2) { setMessage({ kind: 'error', text: t('sellerKeys.passphrasesDiffer') }); return; }
     const id = ++saveOperation.current;

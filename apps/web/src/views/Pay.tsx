@@ -910,7 +910,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         <form onSubmit={onPasteSubmit} className="stack">
           <div className="field">
             <label htmlFor="paste">{needsPassphrase ? t('pay.paste.labelAlt') : t('pay.paste.label')}</label>
-            <textarea id="paste" rows={3} value={paste} onChange={(e) => { setPaste(e.target.value); }} spellCheck={false} />
+            <textarea id="paste" dir="ltr" rows={3} value={paste} onChange={(e) => { setPaste(e.target.value); }} spellCheck={false} />
             <p className="hint">{t('pay.paste.hintLocal')}</p>
             <p className="hint">
               {t('pay.paste.hintHistory')}

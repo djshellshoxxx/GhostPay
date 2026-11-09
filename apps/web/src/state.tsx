@@ -6,23 +6,24 @@ import { UserFacingError } from './lib/errors';
 import { browserSweepStorage, MAX_OTHER_HASHES, readSweepAttempts, SWEEP_JOURNAL_KEY, sweepAttemptKey, SweepJournalUnavailableError, toSweepLock, writeSweepAttempt } from './lib/sweepAttemptJournal';
 import type { SessionPublic } from './lib/session';
 import type { Settings } from './lib/settings';
+import type { MessageKey } from './i18n/sourceCatalog';
 
 export type ViewId = 'home' | 'seller' | 'create' | 'pay' | 'scan' | 'sweep' | 'btc' | 'solana' | 'tron' | 'registry' | 'policy' | 'settings' | 'about';
 
-export const VIEW_LABELS: Readonly<Record<ViewId, string>> = {
-  home: 'Home',
-  seller: 'Seller keys',
-  create: 'Create invoice',
-  pay: 'Pay',
-  scan: 'Scan and receive',
-  sweep: 'Sweep',
-  btc: 'Bitcoin (test)',
-  solana: 'Solana (test)',
-  tron: 'TRON (test)',
-  registry: 'Public registry',
-  policy: 'Policy accounts (experimental)',
-  settings: 'Settings',
-  about: 'About and privacy',
+export const VIEW_LABELS: Readonly<Record<ViewId, MessageKey>> = {
+  home: 'app.nav.home',
+  seller: 'app.nav.seller',
+  create: 'app.nav.create',
+  pay: 'app.nav.pay',
+  scan: 'app.nav.scan',
+  sweep: 'app.nav.sweep',
+  btc: 'app.nav.btc',
+  solana: 'app.nav.solana',
+  tron: 'app.nav.tron',
+  registry: 'app.nav.registry',
+  policy: 'app.nav.policy',
+  settings: 'app.nav.settings',
+  about: 'app.nav.about',
 };
 
 export interface AppState {
@@ -103,15 +104,15 @@ export function beginSweepAttempt(attempt: SweepLock, replaces?: SweepLock): Swe
   let lock = toSweepLock(attempt);
   if (replaces !== undefined) {
     if (existing === undefined || sweepAttemptKey(replaces.chainId, replaces.owner) !== key || !sameLock(existing, toSweepLock(replaces)) || !sameNonceReplacement(existing, attempt)) {
-      throw new UserFacingError('The pending sweep this replacement was signed for has changed or cannot be replaced. Nothing was sent; check its status.');
+      throw new UserFacingError({ key: 'error.sweepState.replacementChanged' });
     }
     const otherHashes = [...(existing.otherHashes ?? []), ...(existing.expectedHash === undefined ? [] : [existing.expectedHash])].filter((h) => h !== lock.expectedHash);
     if (otherHashes.length > MAX_OTHER_HASHES) {
-      throw new UserFacingError('This sweep was already replaced too many times. Nothing was sent; check its status.');
+      throw new UserFacingError({ key: 'error.sweepState.replacementLimit' });
     }
     lock = { ...lock, ...(otherHashes.length === 0 ? {} : { otherHashes }) };
   } else if (existing !== undefined && isUnresolved(existing)) {
-    throw new UserFacingError('A sweep from this address may still be pending. Check its status before signing anything new.');
+    throw new UserFacingError({ key: 'error.sweepState.pending' });
   }
   const storage = browserSweepStorage();
   if (storage === undefined) throw new SweepJournalUnavailableError();
@@ -210,3 +211,5 @@ export function resetSweepAttemptsForTests(opts: { readonly keepStorage?: boolea
   if (opts.keepStorage !== true && typeof window !== 'undefined') window.sessionStorage.removeItem(SWEEP_JOURNAL_KEY);
   notifySweepAttempts();
 }
+
+// i18n-use: app.nav.home app.nav.seller app.nav.create app.nav.pay app.nav.scan app.nav.sweep app.nav.btc app.nav.solana app.nav.tron app.nav.registry app.nav.policy app.nav.settings app.nav.about error.sweepState.replacementChanged error.sweepState.replacementLimit error.sweepState.pending

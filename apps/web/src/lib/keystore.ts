@@ -2,7 +2,7 @@ import { decodeMetaAddress, encodeMetaAddress, parseCompressedPoint, secretScala
 import { parseStrictJson, signerPublicKeyHex } from '@ghostpay/invoice-schema';
 import { scryptAsync } from '@noble/hashes/scrypt.js';
 import { bytesToHex, hexToBytes, utf8ToBytes } from '@noble/hashes/utils.js';
-import { UserFacingError, type MessageDescriptor } from './errors';
+import { UserFacingError, displayMessage, type MessageDescriptor } from './errors';
 
 /** Versioned, encrypted seller key backup. The passphrase never leaves the page and is never stored. */
 export interface KeystoreFile {
@@ -172,10 +172,17 @@ export function passphraseStrength(pass: string): PassphraseStrength {
   return { score: 4, label: 'strong', bits };
 }
 
-export function passphraseProblem(pass: string): string | undefined {
-  if (Array.from(pass).length < MIN_PASSPHRASE) return `Use a passphrase of at least ${String(MIN_PASSPHRASE)} characters (four random words work well).`;
-  if (passphraseStrength(pass).score < 2) return 'That passphrase is too easy to guess: it is mostly common words or names, a year, a keyboard or alphabet pattern, or repetition. Use several unrelated words, such as a suggested passphrase.';
+/** Public diagnostics only: never retain the candidate passphrase in the descriptor. */
+export function passphraseProblemMessage(pass: string): MessageDescriptor | undefined {
+  if (Array.from(pass).length < MIN_PASSPHRASE) return { key: 'error.keystore.passphraseShort', values: { minimum: String(MIN_PASSPHRASE) } };
+  if (passphraseStrength(pass).score < 2) return { key: 'error.keystore.passphraseWeak' };
   return undefined;
+}
+
+/** Source-English compatibility API for non-UI consumers; UI retains the structured diagnostic. */
+export function passphraseProblem(pass: string): string | undefined {
+  const problem = passphraseProblemMessage(pass);
+  return problem === undefined ? undefined : displayMessage(problem);
 }
 
 /** Words for generated passphrases: 1024 (2^10) distinct lower-case words of 4 to 8 letters, none of them in COMMON. */
@@ -268,7 +275,7 @@ export async function encryptKeystore(
   passphrase: string,
   options: KeystoreOptions = {},
 ): Promise<string> {
-  const problem = passphraseProblem(passphrase);
+  const problem = passphraseProblemMessage(passphrase);
   if (problem !== undefined) throw new UserFacingError(problem);
   const { r, p } = DEFAULT_SCRYPT;
   const N = options.N ?? DEFAULT_SCRYPT.N;
@@ -386,3 +393,5 @@ export async function decryptKeystore(text: string, passphrase: string): Promise
 // i18n-use: error.keystore.thisBrowserHasNoWebCryptoSupport error.keystore.invalidScryptCost error.keystore.wrongPassphraseOrTheKeystoreWasModified error.keystore.theKeystoreMetadataDoesNotMatchItsIndependentSellerKeys
 
 // i18n-use: error.keystore.invalidFile
+
+// i18n-use: error.keystore.passphraseShort error.keystore.passphraseWeak

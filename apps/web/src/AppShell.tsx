@@ -224,8 +224,8 @@ export function AppShell(props: AppShellProps): ReactNode {
           <ul className="nav">
             {order.map((v) => (
               <li key={v}>
-                <button type="button" className="nav-btn" aria-current={view === v ? 'page' : undefined} onClick={() => { setView(v); }}>
-                  {VIEW_LABELS[v]}
+                <button type="button" className="nav-btn" data-view={v} aria-current={view === v ? 'page' : undefined} onClick={() => { setView(v); }}>
+                  {t(VIEW_LABELS[v])}
                 </button>
               </li>
             ))}

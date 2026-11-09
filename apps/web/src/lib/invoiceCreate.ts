@@ -12,7 +12,7 @@ import {
 import { UserFacingError } from './errors';
 import { fiatDecimals, parseUnits, taxFor } from './format';
 import { getSessionPublic, withSessionSecrets } from './session';
-import { passphraseProblem } from './keystore';
+import { passphraseProblemMessage } from './keystore';
 
 export interface LineItemInput {
   readonly description: string;
@@ -102,7 +102,7 @@ export async function buildInvoiceLink(
   if (pub === undefined) throw new UserFacingError({ key: 'error.invoiceCreate.loadOrGenerateSellerKeysFirstSellerKeys' });
   const chain = findChain(form.chainId);
   if (form.passphrase !== undefined) {
-    const problem = passphraseProblem(form.passphrase);
+    const problem = passphraseProblemMessage(form.passphrase);
     if (problem !== undefined) throw new UserFacingError(problem);
   }
   if (chain === undefined) throw new UserFacingError({ key: 'error.invoiceCreate.unknownChain' });

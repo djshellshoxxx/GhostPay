@@ -4,6 +4,21 @@ import type { MessageKey } from './catalog';
  * Explicit keys, not substring/prefix heuristics. Update the exhaustive classification test with new source messages.
  */
 export const SECURITY_KEY_GROUPS = {
+  auxiliaryAndPassphrase: [
+    'error.keystore.passphraseShort',
+    'error.keystore.passphraseWeak',
+    'app.nav.seller',
+    'app.nav.btc',
+    'app.nav.solana',
+    'app.nav.tron',
+    'app.nav.registry',
+    'app.nav.policy',
+    'app.nav.about',
+    'error.sweepState.replacementChanged',
+    'error.sweepState.replacementLimit',
+    'error.sweepState.pending',
+    'qrView.unavailable',
+  ],
   reconciliationAndResidualErrors: [
     'error.tags.labelLength',
     'error.tagArchive.capacity',
@@ -1390,6 +1405,15 @@ export const SECURITY_KEYS: ReadonlySet<MessageKey> = new Set<MessageKey>(Object
 
 /** Only explicitly classified neutral UI may use an unreviewed catalog. Future keys fail closed to reviewed/source text. */
 export const NEUTRAL_KEY_LIST = [
+  'app.nav.home',
+  'app.nav.create',
+  'app.nav.pay',
+  'app.nav.scan',
+  'app.nav.sweep',
+  'app.nav.settings',
+  'qrView.none',
+  'qrView.download',
+
   'ledger.title',
   'ledger.search',
   'ledger.invoices.title',

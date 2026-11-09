@@ -1786,6 +1786,27 @@
     "error.session.viewingFormat": "Viewing key must be 64 hexadecimal characters.",
     "error.session.viewingInvalid": "Viewing key is not a valid secp256k1 private key.",
     "error.session.signingFormat": "Signing key must be 64 hexadecimal characters.",
-    "error.session.signingInvalid": "Signing key is not a valid secp256k1 private key."
+    "error.session.signingInvalid": "Signing key is not a valid secp256k1 private key.",
+    "error.keystore.passphraseShort": "Use a passphrase of at least {minimum} characters (four random words work well).",
+    "error.keystore.passphraseWeak": "That passphrase is too easy to guess: it is mostly common words or names, a year, a keyboard or alphabet pattern, or repetition. Use several unrelated words, such as a suggested passphrase.",
+    "app.nav.home": "الرئيسية",
+    "app.nav.seller": "Seller keys",
+    "app.nav.create": "إنشاء فاتورة",
+    "app.nav.pay": "الدفع",
+    "app.nav.scan": "المسح والاستلام",
+    "app.nav.sweep": "تحويل الرصيد",
+    "app.nav.btc": "Bitcoin (test)",
+    "app.nav.solana": "Solana (test)",
+    "app.nav.tron": "TRON (test)",
+    "app.nav.registry": "Public registry",
+    "app.nav.policy": "Policy accounts (experimental)",
+    "app.nav.settings": "الإعدادات",
+    "app.nav.about": "About and privacy",
+    "error.sweepState.replacementChanged": "The pending sweep this replacement was signed for has changed or cannot be replaced. Nothing was sent; check its status.",
+    "error.sweepState.replacementLimit": "This sweep was already replaced too many times. Nothing was sent; check its status.",
+    "error.sweepState.pending": "A sweep from this address may still be pending. Check its status before signing anything new.",
+    "qrView.unavailable": "QR code unavailable.",
+    "qrView.none": "لا يوجد رمز QR",
+    "qrView.download": "تنزيل رمز QR ‏(SVG)"
   }
 }

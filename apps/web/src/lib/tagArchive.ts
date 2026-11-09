@@ -3,7 +3,7 @@ import { scryptAsync } from '@noble/hashes/scrypt.js';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { bytesToHex, utf8ToBytes } from '@noble/hashes/utils.js';
 import { UserFacingError, type MessageDescriptor } from './errors';
-import { DEFAULT_SCRYPT, passphraseProblem } from './keystore';
+import { DEFAULT_SCRYPT, passphraseProblemMessage } from './keystore';
 import { validatePayload, type TagImportPreview, type TagPayload, type TagSnapshotEntry, type TagVault } from './tags';
 
 /**
@@ -69,7 +69,7 @@ function header(N: number, r: number, p: number, salt: Uint8Array): Uint8Array<A
 
 /** Encrypts archive contents under a passphrase. Throws on a weak passphrase or out-of-cap contents. */
 export async function encodeArchive(contents: ArchiveContents, passphrase: string, options: ArchiveOptions = {}): Promise<Uint8Array<ArrayBuffer>> {
-  const problem = passphraseProblem(passphrase);
+  const problem = passphraseProblemMessage(passphrase);
   if (problem !== undefined) throw new UserFacingError(problem);
   const N = options.N ?? DEFAULT_SCRYPT.N;
   if (!Number.isInteger(N) || N < MIN_N || N > MAX_N || (N & (N - 1)) !== 0) throw new UserFacingError({ key: 'error.tagArchive.invalidScryptCost' });
@@ -179,7 +179,7 @@ export async function exportArchive(
 ): Promise<ExportedArchive> {
   try {
     if (!vault.unlocked) throw new UserFacingError({ key: 'error.tagArchive.tagsAreLockedUnlockThemFirst' });
-    const problem = passphraseProblem(passphrase);
+    const problem = passphraseProblemMessage(passphrase);
     if (problem !== undefined) throw new UserFacingError(problem);
     if (!(await vault.verifyKey(viewingKey.slice()))) throw new UserFacingError({ key: 'error.tagArchive.reAuthenticationFailedThatIsNotTheViewingKeyOf' });
     const records = await vault.snapshot();

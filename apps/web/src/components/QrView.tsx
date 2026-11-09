@@ -1,6 +1,7 @@
 import { useMemo, type ReactNode } from 'react';
 import { makeQr, qrPath, qrSvgText, qrViewSize } from '../lib/qr';
-import { UserFacingError } from '../lib/errors';
+import { UserFacingError, captureUserMessage, displayMessage, type DisplayMessage } from '../lib/errors';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { Notice, downloadText } from './Common';
 
 /**
@@ -9,15 +10,17 @@ import { Notice, downloadText } from './Common';
  * `bare` renders only the QR image (used by QrFrame, which supplies caption and actions).
  */
 export function QrView(props: { readonly text: string; readonly caption: string; readonly bare?: boolean }): ReactNode {
+  const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
   const result = useMemo(() => {
     try {
       const m = makeQr(props.text);
       return { ok: true as const, m };
     } catch (e) {
-      return { ok: false as const, message: e instanceof UserFacingError ? e.message : 'QR code unavailable.' };
+      const message: DisplayMessage = e instanceof UserFacingError ? captureUserMessage(e) : { key: 'qrView.unavailable' };
+      return { ok: false as const, message };
     }
   }, [props.text]);
-  if (!result.ok) return <Notice kind="info" title="No QR code">{result.message}</Notice>;
+  if (!result.ok) return <Notice kind="info" title={t('qrView.none')}>{displayMessage(result.message, t)}</Notice>;
   const n = qrViewSize(result.m);
   return (
     <figure className="qr">
@@ -35,9 +38,11 @@ export function QrView(props: { readonly text: string; readonly caption: string;
           downloadText('ghostpay-invoice-qr.svg', qrSvgText(result.m), 'image/svg+xml');
         }}
       >
-        Download QR (SVG)
+        {t('qrView.download')}
       </button>
       )}
     </figure>
   );
 }
+
+// i18n-use: qrView.unavailable
