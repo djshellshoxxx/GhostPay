@@ -16,6 +16,7 @@ import { qrCommands } from './commands/qr.js';
 import { sellerCommands } from './commands/seller.js';
 import { scanCommands } from './commands/scan.js';
 import { reconcileCommands } from './commands/reconcile.js';
+import { registryCommands } from './commands/registry.js';
 import { sandboxCommands } from './commands/sandbox.js';
 import { splitCommands } from './commands/split.js';
 import { subCommands } from './commands/sub.js';
@@ -48,6 +49,7 @@ export const COMMANDS: readonly Command[] = [
   ...sellerCommands,
   ...scanCommands,
   ...reconcileCommands,
+  ...registryCommands,
   ...webhookCommands,
   ...subCommands,
   ...splitCommands,

@@ -21,10 +21,10 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json && node stamp-build.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run --coverage",
-    "test:compiled": "node --test test/compiled.test.mjs test/operators.test.mjs",
+    "test:compiled": "node --test test/compiled.test.mjs test/operators.test.mjs test/build-info.test.mjs",
     "lint": "eslint --config ../../eslint.config.js src"
   },
   "dependencies": {

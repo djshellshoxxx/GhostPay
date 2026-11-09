@@ -23,10 +23,12 @@ async function readTextFile(path: string, secret = false, platform = process.pla
   // POSIX mode bits do not establish Windows DACL privacy. Do not quietly accept
   // a key file whose access controls this adapter cannot authenticate.
   if (secret && platform === 'win32') throw new Error('use stdin or a named environment source; private Windows ACL inspection is unavailable');
-  if ((await lstat(path)).isSymbolicLink()) throw new Error('symlink input');
+  const named = await lstat(path, { bigint: true });
+  if (named.isSymbolicLink()) throw new Error('symlink input');
   const file = await open(path, constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0) | (constants.O_NONBLOCK ?? 0));
   try {
     const before = await file.stat({ bigint: true });
+    if (before.dev !== named.dev || before.ino !== named.ino) throw new Error('input changed before opening');
     if (!before.isFile() || before.size > BigInt(MAX_INPUT_BYTES)) throw new Error('invalid input');
     if (secret && (before.nlink !== 1n || (process.platform !== 'win32' &&
       ((before.mode & 0o077n) !== 0n || (process.getuid !== undefined && before.uid !== BigInt(process.getuid()))))))
@@ -90,10 +92,12 @@ async function writeTextFile(path: string, data: string | Uint8Array, overwrite:
 
 /** Bounded binary reads preserve encrypted archives without decoding them as UTF-8. */
 async function readBinaryFile(path: string): Promise<Uint8Array> {
-  if ((await lstat(path)).isSymbolicLink()) throw new Error('symlink input');
+  const named = await lstat(path, { bigint: true });
+  if (named.isSymbolicLink()) throw new Error('symlink input');
   const file = await open(path, constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0) | (constants.O_NONBLOCK ?? 0));
   try {
     const before = await file.stat({ bigint: true });
+    if (before.dev !== named.dev || before.ino !== named.ino) throw new Error('input changed before opening');
     if (!before.isFile() || before.size > BigInt(MAX_BINARY_BYTES)) throw new Error('invalid input');
     const chunks: Uint8Array[] = []; let total = 0;
     for (;;) {

@@ -36,3 +36,4 @@ export { qrMatrix, qrSvgPath } from './generate.js';
 export type { QrMatrix } from './generate.js';
 
 export * from './seller.js';
+export * from './settings-exchange.js';

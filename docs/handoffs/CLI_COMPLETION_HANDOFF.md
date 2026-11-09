@@ -3,82 +3,115 @@
 ## Branch, publication and source
 
 - Branch: `gpt/ghostpay-cli-completion-20261109`.
-- Integration PR: https://github.com/djshellshoxxx/GhostPay/pull/92 (draft while final acceptance is in progress).
+- Integration PR: https://github.com/djshellshoxxx/GhostPay/pull/92 (draft until final hosted acceptance).
 - Starting source and unchanged parent tip: PR #91, `b748ecdce06d2dfa911144814161c31a46a09e9b`.
-- First published infrastructure checkpoint: `1a814ada642dabafdc185651454aff6e993080fa`.
-- The next source-bearing checkpoint carries the integrated command families, portable shared codecs, compiled workflows and hosted platform matrix. Its exact SHA is the PR head; final acceptance will record that tested revision explicitly.
-- Preserved parent stack: #84 → #88 → #89 → #90 → #91 → #92. No parent branch has been rewritten or merged into main.
+- Published infrastructure checkpoint: `1a814ada642dabafdc185651454aff6e993080fa`.
+- Published integrated command checkpoint: `5ee84c91ea4a88e543b12829ef89694e54b68d0e`.
+- This next source checkpoint completes the remaining applicable parity, closes independent review findings, and fixes clean-checkout library builds and Windows test portability. Its exact tested SHA and hosted runs will be recorded after publication.
+- Preserved parent stack: #84 → #88 → #89 → #90 → #91 → #92. All workers' compatible changes are integrated on this branch. No parent branch has been rewritten or merged into main.
 
-Direct engineering workers own disjoint files in one integration checkout. No Codex CLI/cloud task, paid agent workflow, recurring runner or funded transaction has been invoked.
+Direct engineering workers used disjoint files in one integration checkout, with independent cross-review of payment, receipt, recovery, registry, QR, filesystem and build-provenance boundaries. No Codex CLI/cloud task, paid agent workflow, recurring runner or funded transaction has been invoked. Only ordinary repository CI is used for hosted validation.
 
 ## Authoritative capability inventory
 
-This is the single completion inventory. The command reference is `packages/cli/README.md`. “Implemented” below describes current code; final shared GUI, hosted CI and platform acceptance are still being collected. Production deployment readiness is separate.
+This is the single completion inventory. The complete command and operator reference is [packages/cli/README.md](../../packages/cli/README.md): **68 registered command paths, 54 new and 14 preserved**, every declared option documented, and **150 example argument sets checked against the compiled parser**.
 
-| Capability | GUI available | Current CLI | Shared implementation | Evidence | Remaining work |
+The percentage measures five acceptance gates, worth 20% each: shared implementation and format parity; public command behavior/help/output; adversarial and security regressions; local compiled/shared/GUI acceptance; and hosted integration/platform acceptance on the published source. The first four gates are satisfied. Final hosted acceptance is pending, so the assignment is not yet reported as 100%. These percentages do not measure production deployment readiness.
+
+| Capability | GUI available | CLI available | Shared implementation | Test evidence | Completion / remaining work |
 |---|---|---|---|---|---|
-| Invoice creation | Yes | create/sign/link/inspect, protected links and expected fields | invoice-schema and payment-link policy | command/parity suites; compiled signing/link journey | Final hosted gates |
-| Invoice verification | Yes | strict envelope, signature/pin/chain/asset/amount/recipient/expiry checks | invoice-schema | wrong-pin expected-red regression; compiled verification | Final hosted gates |
-| Payment inspection | Yes, enabled testnets | inspect/verify/status with explicit online consent | chain-adapters canonical verifier | real verifier with bounded fixtures; compiled HTTP pending/reorg/verified journeys | Final hosted gates; public-network acceptance remains external |
-| Signed receipts | Yes | inspect/verify/export and exact invoice binding | GUI signed codec extracted to invoice-schema | shared signature vectors, GUI24-suite group, compiled SVG/file round trips | Add creation from freshly verified owned payment, then qualify |
-| QR exchange | Yes | public invoice/receipt/seller/meta SVG, multipart and strict decode | qr-exchange/jsQR and shared codecs | bounded image/parser tests; compiled SVG/multiframe round trips | Add existing encrypted-keystore/settings exchange; raster/camera adapter remains explicitly unsupported |
-| Public seller pairing | Yes | export-public/import-public with repeated-input preview | GUI public codec extracted to qr-exchange | shared round trips and compiled repeated import | Final hosted gates |
-| Encrypted backup | Yes | generate/create/inspect/verify/rekey | same core key generation, scrypt/AES-GCM, GPA and address-book codecs | full ux-vault251; recovery47; key generation5; compiled credentials/rekey | Add generated-key subprocess journey; final hosted gates |
-| Restoration | Yes | dry-run or approved immutable encrypted portable output | shared format validation and vault import | authentication/tamper/atomicity tests; compiled immutable recovery | Browser storage activation uses explicit GUI import; final hosted gates |
-| Reconciliation | Yes | inspect/create/register/propose/confirm/import/archive-receipt/export-receipts | pure GUI vault/matching extraction | recovery47; mixed-fork/manifest/provider/stale-context regressions; compiled live approval/import journey | Add verified unassociated record and tombstone-preserving local removals |
-| Transaction history | Yes | list/inspect, filter/page/report export | encrypted reconciliation vault | query/import/tombstone tests; compiled historical-vs-live labels | Final hosted gates |
-| Merchant subscriptions | Library and durable operator | schedule plus shared config/snapshot inspection; existing durable runner retained | merchant-billing validator and subscription-cron | merchant-billing263 and durable subprocess21 | Final hosted gates |
-| Installments | Library | plan/inspect, exact integers and duplicate/conflict handling | merchant-billing | malformed/schedule tests; compiled plan/inspect | Final hosted gates |
-| Webhooks | Merchant integration | sign/verify plus event/config/idempotency inspection; durable receiver retained | merchant-hooks | existing exact-byte/retry/restart suites; compiled Unicode and inspection | Final hosted gates |
-| Refunds | Off-chain fixture only | inspect/status; execute explicitly unsupported | merchant-multisig canonical account/proposal validation | threshold/timelock/expiry/nonce tests; compiled unsupported execution | Accepted real payment/refund authority is external |
-| Chain adapters | Read-only/testnet surfaces | chain/assets/deployment, EVM/BTC/Solana/TRON public inspection, pinned Bitcoin headers | existing chain packages | payment/chain/scan159; compiled deployment and RPC verifier | Final hosted gates; no experimental activation or broadcast |
-| Privacy scanning | Yes with budgets | plan/run/inspect, immutable authenticated resume reports | existing bounded canonical scanning + standard HKDF/HMAC cursor binding | budget/replay/reorg tests; compiled private scan | Final hosted gates; browser transport preferences do not auto-import |
-| Operator diagnostics/configuration | Yes | doctor/diagnostics/RPC health/config validate/version | same self-tests, validators and RPC transport | root command61-group and compiled diagnostics | Add safe settings exchange validation; final hosted gates |
+| Invoice creation | Yes | create/sign/link/inspect, protected links, expected fields | invoice-schema and payment-link policy | Public handler/parity tests; compiled signing/link journey | 80%; final hosted gate |
+| Invoice verification | Yes | strict envelope, signature/pin/chain/asset/amount/recipient/expiry checks | invoice-schema | Wrong-pin expected-red regression; compiled verification | 80%; final hosted gate |
+| Payment inspection | Enabled testnets | inspect/verify/status, explicit online consent | chain-adapters canonical verifier | Actual verifier with bounded fixtures; compiled HTTP pending/reorg/verified journeys | 80%; final hosted gate; public-network acceptance external |
+| Signed receipts | Yes | create/inspect/verify/export, exact invoice binding | GUI signed codec extracted to invoice-schema | 33 creation regressions; shared signature vectors; compiled fresh-payment creation and SVG/file round trips | 80%; final hosted gate |
+| QR exchange | Text and browser camera | invoice/receipt/seller/meta/keystore/settings; SVG, text, multipart | qr-exchange/jsQR and shared codecs | Bounded parser/image/scan tests; compiled SVG/multiframe, encrypted keystore and settings exchange | 80%; final hosted gate; camera/raster adapter outside applicable scope |
+| Public seller pairing | Yes | export-public/import-public, repeated-input preview | GUI public codec extracted to qr-exchange | Shared round trips and compiled repeated import | 80%; final hosted gate |
+| Encrypted backup | Yes | generate/create/inspect/verify/rekey | Existing core key generation, scrypt/AES-GCM, GPA and address-book codecs | ux-vault 251; key generation 5; compiled generated-key authentication and rekey | 80%; final hosted gate |
+| Restoration | Yes | dry-run or approved immutable encrypted portable output | Shared format validation and vault import | Authentication/tamper/atomicity tests; compiled immutable recovery | 80%; final hosted gate; browser activation requires GUI import |
+| Reconciliation | Yes | inspect/create/register/propose/confirm/record/import/clear-records/remove-invoice/remove-receipt/archive-receipt/export-receipts | Pure GUI vault/matching extraction | Mixed-fork/manifest/provider/stale-context regressions; compiled approval/import/record/tombstone maintenance | 80%; final hosted gate |
+| Transaction history | Yes | list/inspect, filter/page/report export | Encrypted reconciliation vault | Query/import/tombstone tests; compiled historical-vs-live labels | 80%; final hosted gate |
+| Merchant subscriptions | Library and durable operator | schedule plus config/snapshot validation and inspection; existing durable runner retained | merchant-billing validator and subscription-cron | merchant-billing 263; durable subprocess 21; compiled inspection | 80%; final hosted gate |
+| Installments | Library | plan/inspect, exact integers and conflict detection | merchant-billing | Malformed/schedule tests; compiled plan/inspect | 80%; final hosted gate |
+| Webhooks | Merchant integration | sign/verify plus event/config/idempotency inspection; durable receiver retained | merchant-hooks | Exact-byte/retry/restart suites; compiled Unicode and inspection | 80%; final hosted gate |
+| Refunds | Off-chain fixture only | inspect/status; execute explicitly unsupported | merchant-multisig canonical account/proposal validation | Threshold/timelock/expiry/nonce tests; compiled unsupported execution | 80%; final hosted gate; accepted real payment/refund authority external |
+| Chain adapters | Read-only/testnet surfaces | chain/assets/deployment, recipient/Solana announcement/Bitcoin headers, registry lookup | Existing EVM/BTC/Solana/TRON packages and registry verifier | Payment/chain/scan 159; registry 9; compiled deployment/RPC/registry workflows | 80%; final hosted gate; no experimental activation or broadcast |
+| Privacy scanning | Yes, bounded | plan/run/inspect, immutable authenticated resume reports | Existing bounded canonical scanning and standard HKDF/HMAC cursor binding | Budget/replay/reorg tests; compiled private scan | 80%; final hosted gate |
+| Operator diagnostics/configuration | Yes | doctor/diagnostics/RPC health/config validate/version; safe settings exchange; build revision | Same self-tests, validators, settings codec and RPC transport | Source fallback/settings/operator 31; build provenance 6; compiled diagnostics | 80%; final hosted gate |
 
-Browser camera capture, UI theme application, browser profile storage/session locking and browser wallet prompts are presentation/infrastructure-specific. CLI operations use portable validated files and explicit credentials. Payment sends, sweeps, registry publication and experimental policies do not gain signing authority through this work.
+### Applicability and trust boundaries
 
-## Current test evidence
+- Browser camera capture, UI theme application, browser profile storage/session locking and browser wallet prompts require their GUI infrastructure. The GUI has camera and pasted-text QR paths, not a general PNG/JPEG import workflow. CLI QR accepts bounded protocol text, its generated SVG and multipart scans; it explicitly rejects arbitrary raster/camera input. This does not remove an existing portable GUI operation.
+- Encrypted restoration creates an authenticated portable successor, reports `browserStorageChanged: false`, and requires an explicit GUI import for browser activation. CLI filesystem credentials and immutable files provide the corresponding headless boundary.
+- Payment sends, sweeps and registry publication require wallet authorization. Experimental policy execution and accepted real refund authority are not supported production flows. This work adds no transaction signing/broadcast authority. `merchant refunds execute` exits 5 with an explicit unsupported result.
+- Live verification is scoped to independently pinned, enabled testnet deployments and selected providers. RPC health and registry behavior checks do not establish provider identity/trust; registry lookup reports that its runtime code is not pinned. Imported history, announcements and signed receipts do not become proof of canonical payment.
+- Receipt creation requires a signed unexpired fixed-token invoice, exact seller/recipient ownership, authenticated encrypted keystore, explicit online approval, fresh canonical finality and an immutable new output. Its `paymentVerifiedAtCreation` describes that bounded creation check; `receiptIsPaymentProof` remains false.
+- Private scans have authenticated resume scope and finite request/log/block/byte/time budgets. Matched observations remain unverified until canonical payment verification. Settings exchange contains exactly five validated preferences; it neither imports endpoint credentials/trust pins nor applies browser state.
 
-Local runtime: Node24.22.1, npm11.9.0, Linux. `npm ci --ignore-scripts --no-audit --no-fund` installed747 packages. No coverage threshold was lowered.
+## Shared-library changes
 
-| Command / gate | Observed result |
+- `invoice-schema`: the GUI's domain-separated signed receipt codec is shared with CLI verification/creation. Existing invoice and receipt formats remain compatible.
+- `qr-exchange`: public seller, stealth-meta and settings codecs are shared with localized GUI adapters; encrypted keystore exchange reuses the existing codec and authenticates only when the relevant recovery command is invoked.
+- `ux-vault/portable`: framework-independent keystore, reconciliation, tags/GPA and address-book operations. Browser storage/session adapters remain in the GUI.
+- `merchant-billing`: the durable subscription validator is shared with the existing runner through a thin re-export. Existing state engines, replay handling and durable receiver examples are preserved.
+- `build:libs`: invokes the existing dependency-order builder with `--libraries`, ensuring shared consumers have all their workspace dependencies in clean CI checkouts.
+- Build metadata is generated once during compilation. Runtime diagnostics read a static module containing only source revision and dirty state, with explicit nulls when Git metadata is unavailable. No runtime Git lookup, timestamp, host path or credential value is embedded.
+
+## Local test evidence
+
+Runtime: Node 24.22.1, npm 11.9.0, Linux. `npm ci --ignore-scripts --no-audit --no-fund` installed 747 packages. No coverage gate or supported validation was relaxed. Coverage values below are statements / branches / functions / lines.
+
+| Exact command / gate | Observed result |
 |---|---|
-| `npm run build:cli` | Passed for integrated command families before latest small additions |
-| `npm test -w @ghostpay/cli -- --maxWorkers=2` |427 passed;98.51% statements/97.14% branches/98.99% functions/99.49% lines |
-| `npm run test:compiled -w @ghostpay/cli` |12 passed; filesystem, Unicode, signing/link, receipt/QR, encrypted recovery, controlled HTTP verification/reconciliation, scan and merchant/diagnostic journeys |
-| `npx vitest run --root packages/cli src/backup-generate.test.ts --maxWorkers=1` |5 passed after5 expected-red missing-command failures |
-| Full invoice-schema gate |705 passed;98.06/97.72/100/99.25 coverage |
-| Full qr-exchange gate |94 passed;98.73/93.06/100/99.68 coverage |
-| Full ux-vault gate |251 passed;96.18/92.90/99.68/98.61 coverage |
-| Full merchant-billing gate |263 passed;99.69/99.66/100/99.80 coverage |
-| Existing subscription-cron subprocess suite |21 passed after shared validator extraction and URL-policy fix |
-| Targeted original GUI receipt/seller/meta tests |24 passed |
-| Targeted original GUI recovery/history/tag/component suites |90+72 passed (overlapping shared parity suites are not added to a unique total) |
-| CLI/shared package typecheck and lint |Passing focused runs; final snapshot rerun pending |
-| Web typecheck and lint |Passed after removing one redundant assertion introduced by the generic shared extraction |
-| Secret scan / action pin guard / targeted build regression |Passed;91 pinned action references;1 build-scope regression |
-| Full web test and hosted platform matrix |In progress; do not count as passed |
+| `npm run build:libs` | Passed for all libraries in dependency order |
+| `npm run build -w @ghostpay/cli` | Passed; TypeScript compilation and deterministic build stamp |
+| `npm test -w @ghostpay/cli -- --maxWorkers=2` | **521 passed in 31 files**; **98.56 / 97.20 / 99.07 / 99.48%** |
+| `npm run test:compiled -w @ghostpay/cli` | **20 passed, 0 skipped**, including all six build-provenance tests |
+| Full `@ghostpay/invoice-schema` coverage gate | **705 passed**; **98.06 / 97.72 / 100 / 99.25%** |
+| Full `@ghostpay/qr-exchange` coverage gate | **130 passed**; **98.82 / 93.83 / 100 / 99.70%** |
+| Full `@ghostpay/ux-vault` coverage gate | **251 passed**; **96.18 / 92.90 / 99.68 / 98.61%** |
+| Full `@ghostpay/merchant-billing` coverage gate | **263 passed**; **99.69 / 99.66 / 100 / 99.80%** |
+| `node --test examples/subscription-cron/run.test.mjs` | **21 passed** after the shared validator extraction and URL-policy fix |
+| `npm exec -w @ghostpay/web -- vitest run --coverage --maxWorkers=2` | **2,180 passed, 8 skipped**; 148 files passed, 2 skipped; **93.21 / 88.79 / 94.70 / 96.70%** |
+| `npm exec -w @ghostpay/web -- vitest run --config vitest.nocov.config.ts --maxWorkers=2` | **1 passed** |
+| `npm run lint -w @ghostpay/cli && npm run typecheck -w @ghostpay/cli` | Passed on the final source snapshot |
+| `npm run lint -w @ghostpay/web` and `npm run typecheck -w @ghostpay/web` | Passed after the shared extractions and deterministic test-fixture correction |
+| Shared package lint/typecheck | Passed in the owning implementation lanes |
+| `node --test packages/cli/test/build-info.test.mjs` | **6 passed**, independently repeated after the foreign-Git-routing fix |
+| `git diff --check` | Passed |
+| `bash scripts/scan-secrets.sh` and `bash scripts/check-actions-pinned.sh` | Passed with all new files staged; 91 action references pinned |
 
-Controlled RPC fixtures exercise the actual canonical verifier and process/network adapter; they do not establish public-network acceptance. The new ordinary GitHub Actions matrix qualifies Node22 on Ubuntu, Windows and macOS. Its results must be attached to the final source revision.
+The compiled suite exercises the actual built executable: paths with spaces, Unicode bytes, closed output pipes, interruption-safe publication, invoice/receipt/QR interoperability, generated encrypted keys, recovery/rekey, immutable reconciliation approval/import/maintenance, real HTTP fixture RPC verification and registry lookup, privacy scans, merchant tools, diagnostics and build provenance. Controlled RPC fixtures exercise the actual canonical verifier and network adapter; they are not public-network acceptance.
 
-## Reproduced security fixes
+### Local integration skips
 
-- Group-readable signing keys were accepted; private POSIX reads now check ownership/mode/link count on the opened descriptor. Existing bounded descriptor reads and private atomic publication remain intact.
-- An explicitly wrong invoice pin returned success; it now exits1.
-- Reconciliation proposals could change pinned deployment/provider configuration between review and confirmation; the proposal now binds exact manifest and captured provider configuration.
-- Different block hashes at one height could overwrite each other in the final canonical map; the complete context now rejects mixed forks.
-- Implausible/finally changed heads and late secondary reorganization observations could survive verification; final provider checks now enforce head bounds, canonical hashes and minimum finality.
-- Signed subscription outbox URLs with injected credentials or empty query delimiters bypassed the normal link policy; the shared validator now reuses `assertPaymentLink` (two expected-red regressions).
-- An unset key/webhook environment-source error echoed the supplied variable name, which could be an accidentally pasted secret; errors are now generic. Passphrase/RPC sources already suppressed names and values.
+The eight existing GUI skips are explicit environment prerequisites, not tests disabled by this work: four `policy/paymentEvidence.anvil.test.ts` cases lack Anvil and contract artifacts; three nested `registry/registry.anvil.test.ts` cases lack Anvil/configured solc; one `btc/regtest.e2e.test.ts` case requires `GHOSTPAY_REGTEST_URL`, `GHOSTPAY_REGTEST_SEED` and `GHOSTPAY_REGTEST_DEST`. Local `REQUIRE_ANVIL` is unset. Hosted CI provisions Anvil/solc and enforces its relevant integration gates. External Bitcoin regtest remains a separate prerequisite.
 
-Keys/passphrases/endpoints are accepted only through explicitly selected file/stdin/named environment sources. On Windows private file reads fail closed because the adapter cannot qualify DACLs; use stdin/environment, including stdin for private scan reports. POSIX outputs request0600. Windows output confidentiality depends on a trusted private parent-directory ACL and is not inferred from POSIX mode bits.
+## Hosted acceptance
 
-## Known defects and external gates
+The ordinary CLI matrix runs Node 22 on Ubuntu, Windows and macOS. At checkpoint `5ee84c91ea4a88e543b12829ef89694e54b68d0e`, Ubuntu and macOS passed. Windows exposed two fault-injection tests whose POSIX-only path suffix did not match Windows separators; they now use `basename`. The intended write/sync failure assertions remain intact. Windows retains two explicitly POSIX-only permission/FIFO skips; the credential adapter fails closed on unqualified Windows file ACLs.
 
-The starting parent source is not a passing baseline: CI run42617654239 had2186 passing web tests,1 failure and1 skipped. Its actual typecheck/lint/build/package/browser jobs passed; the aggregate gate failed because of the web test. The saturated-backup component case passes focused locally, but full final acceptance must resolve any recurring failure. A separate full-web random-address fixture failure is being diagnosed before any edit.
+The same checkpoint exposed incomplete clean-checkout library builds: newly shared consumers could not resolve `merchant-hooks` or `ux-vault/portable`. The existing dependency-order builder now supplies all libraries, and its full local run passes. Exact final-source hosted run URLs/results will replace this pending status after publication. Earlier failing run IDs are CI `42718393485`, CLI platforms `42718393852`, and portable web/kit `42718393460`; they are diagnosis evidence, not final acceptance.
 
-Parent #84's Sonar gate remains independent. Production deployment pins, public-network acceptance and accepted real refund authority are external; no production key or funded transaction is needed for this assignment. Imports remain historical, receipt signatures remain attestations, and successful RPC health does not establish provider trust.
+## Reproduced security and correctness fixes
 
-## Next work
+- Group-readable signing keys were accepted. Private POSIX reads now check ownership, mode and link count on the opened descriptor.
+- Text and binary readers now bind the initial named file's device/inode to the opened descriptor, closing replacement between `lstat` and `open`; both new race tests were observed failing first.
+- An explicitly wrong invoice pin returned success; it now exits 1.
+- Reconciliation proposals now bind the exact source, observations, manifest and captured provider configuration. Confirmation requires an unexpired proposal, explicit approval and fresh full canonical checks.
+- Different block hashes at one height could overwrite each other in the final map; complete context now rejects mixed forks. Implausible/finally changed heads and late secondary reorganization observations are rejected.
+- Receipt creation rereads source material before the final canonical guard and authenticates the captured encrypted keystore, closing a late-reorganization window and an A→B→A keystore replacement gap. Selective RPC failures in receipt/reconciliation paths retain network exit code 4.
+- Signed subscription outbox URLs with credentials or empty query delimiters bypassed normal link policy. The shared validator now reuses `assertPaymentLink`, backed by two expected-red regressions.
+- An unset key/webhook environment-source error echoed the supplied variable name, potentially an accidentally pasted secret. Errors are now generic; passphrase/RPC sources already suppress names and values.
+- QR decode validates/counts each input before reading more files, preventing accumulation of an entire malformed multi-file batch. Encrypted exchange never implies password authentication or applied settings.
+- Inherited Git routing could stamp an unrelated checkout's clean revision. Build-time Git now removes ambient `GIT_*` routing/configuration overrides case-insensitively; a real two-checkout regression failed before the fix and passes afterward.
+- The full GUI gate exposed an existing randomized sweep fixture that occasionally generated an all-uppercase checksum address. Its test inputs are now deterministic: uppercase exercises strict rejection and the lowercase equivalent exercises self-destination rejection. Production address validation is unchanged; all 94 sweep tests and the full GUI suite pass.
 
-Complete the final local parity additions listed in the inventory, refresh compiled journeys and command reference, rerun changed gates on a stable snapshot, publish it, collect exact hosted checks and platform results, then mark the integration PR ready when its own gates permit. Preserve the existing parent stack and do not force-push.
+Keys, passphrases and endpoints use explicitly selected file/stdin/named environment sources. On Windows private file reads fail closed because the adapter cannot qualify DACLs; use stdin/environment, including stdin for private scan reports. POSIX outputs request 0600. Windows output confidentiality depends on a trusted private parent-directory ACL and is not inferred from POSIX mode bits. Restore and reconciliation successors never overwrite; create/rekey overwrites require explicit supported `--force` behavior.
+
+## Known defects, external gates and next action
+
+No confirmed source defect remains after independent review. Final hosted checks are still required before marking PR #92 ready. The parent snapshot's saturated-backup component failure is resolved by the successful full local GUI gate; final hosted CI must confirm it on the published source.
+
+Parent #84's Sonar gate remains an independent consolidation gate, and PR #91 remains draft. Do not merge the stack into main without checking each latest parent SHA, required checks and review state. Production deployment pins, public-network acceptance, Bitcoin regtest infrastructure and accepted real refund authority remain external. No production key or funded transaction is required to finish this CLI assignment.
+
+**Next action:** publish the final source snapshot, collect its exact hosted CI/platform results, fix any actionable failure, record the tested revision and run URLs here, then mark PR #92 ready when its own gates permit. Source code and command reference are otherwise frozen. No autonomous work continues after the active session ends without a separately configured persistent runner; none was configured.

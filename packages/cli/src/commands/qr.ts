@@ -1,6 +1,7 @@
 import type { Command } from './types.js';
 import { encodeFragment, parseStrictJson, parseVerifiedReceipt, receiptJson } from '@ghostpay/invoice-schema';
-import { Assembler, encodeMultipart, exportSellerPairing, loadJsQrDecoder, MAX_CHUNKS, MAX_PAYLOAD_BYTES, parseChunk, parsePublicMetaQr, qrMatrix, qrSvgPath } from '@ghostpay/qr-exchange';
+import { Assembler, encodeMultipart, exportSellerPairing, exportSettingsExchange, loadJsQrDecoder, MAX_CHUNKS, MAX_PAYLOAD_BYTES, parseChunk, parsePublicMetaQr, parseSettingsExchange, qrMatrix, qrSvgPath } from '@ghostpay/qr-exchange';
+import { createKeystoreApi } from '@ghostpay/ux-vault/portable';
 import { noPositionals, requireValue, type Parsed } from '../args.js';
 import { OUT_OPTS, type Ctx } from '../ctx.js';
 import { CliError, failError, usageError } from '../io.js';
@@ -8,20 +9,20 @@ import { readPassphrase } from '../secrets.js';
 import { PASSPHRASE_OPTS, parseInvoiceInput } from './invoice.js';
 import { parsePublicSeller, SUPPORTED_SELLER_CHAINS } from './seller.js';
 
-type Kind = 'invoice' | 'receipt' | 'seller' | 'meta';
-const KINDS = new Set(['invoice', 'receipt', 'seller', 'meta']);
+type Kind = 'invoice' | 'receipt' | 'seller' | 'meta' | 'keystore' | 'settings';
+const KINDS = new Set(['invoice', 'receipt', 'seller', 'meta', 'keystore', 'settings']);
 const RETENTION = 'QR codes represent serialized data. Preserve the original digital receipt or invoice file whenever possible.';
 const SVG_PREFIX = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ';
 
 function kindOf(a: Parsed): Kind {
   const kind = requireValue(a, 'kind');
-  if (!KINDS.has(kind)) throw usageError('BAD_QR_KIND', 'kind must be invoice, receipt, seller or meta. Secret backups are not supported by these public exchange commands.');
+  if (!KINDS.has(kind)) throw usageError('BAD_QR_KIND', 'kind must be invoice, receipt, seller, meta, keystore or settings. Keystore transfers accept only the existing encrypted envelope; plaintext secrets are never accepted.');
   return kind as Kind;
 }
 
 async function payloadOf(kind: Kind, raw: string, ctx: Ctx, a: Parsed): Promise<string> {
   if (raw.length > MAX_PAYLOAD_BYTES || new TextEncoder().encode(raw).byteLength > MAX_PAYLOAD_BYTES)
-    throw failError('INVALID_QR_PAYLOAD', 'public QR payload exceeds the 32 KiB transfer limit.');
+    throw failError('INVALID_QR_PAYLOAD', 'QR payload exceeds the 32 KiB transfer limit.');
   try {
     if (kind === 'invoice') {
       const passphrase = await readPassphrase(ctx, a, 'passphrase', false);
@@ -37,11 +38,23 @@ async function payloadOf(kind: Kind, raw: string, ctx: Ctx, a: Parsed): Promise<
       const config = parsePublicSeller(raw);
       return exportSellerPairing(config, config.chainIds, SUPPORTED_SELLER_CHAINS);
     }
+    if (kind === 'settings') return exportSettingsExchange(parseSettingsExchange(raw));
+    if (kind === 'keystore') return JSON.stringify(createKeystoreApi().validateKeystoreEnvelope(raw));
     return parsePublicMetaQr(raw);
   } catch (error) {
     if (error instanceof CliError && error.kind !== 'fail') throw error;
-    throw failError('INVALID_QR_PAYLOAD', 'input is not a valid supported public payload for the requested kind.');
+    throw failError('INVALID_QR_PAYLOAD', 'input is not a valid supported exchange payload for the requested kind.');
   }
+}
+
+function scope(kind: Kind): Readonly<Record<string, unknown>> {
+  return kind === 'keystore' ? { encrypted: true, authenticationVerified: false,
+    meaning: 'Structure checked only. Run backup verify with its passphrase before recovery; no ciphertext was decrypted.' }
+    : kind === 'settings' ? { settingsApplied: false, trustEstablished: false } : {};
+}
+function scopeNote(ctx: Ctx, kind: Kind): void {
+  if (kind === 'keystore') ctx.note('Encrypted envelope structure checked only. No ciphertext was authenticated or decrypted; run backup verify with its passphrase before recovery.');
+  if (kind === 'settings') ctx.note('Safe settings preview only. Device preferences, endpoints and trusted signer keys were not changed.');
 }
 
 function svgFor(text: string): string {
@@ -99,6 +112,15 @@ function assemble(chunks: readonly unknown[]): string {
   catch { throw failError('INVALID_QR_TRANSFER', 'decoded public payload is not valid UTF-8.'); }
 }
 
+/** Validate each input before accumulating more files, so malformed scans cannot amplify memory use. */
+function appendScans(scans: string[], text: string): void {
+  const next = text.split(/\r?\n/);
+  if (scans.length + next.length > MAX_CHUNKS * 2) throw failError('INVALID_QR_TRANSFER', 'transfer exceeds the 128 bounded scan limit.');
+  try { for (const line of next) parseChunk(line); }
+  catch { throw failError('INVALID_QR_TRANSFER', 'QR scans are malformed or exceed the bounded frame format.'); }
+  scans.push(...next);
+}
+
 async function encode(ctx: Ctx, a: Parsed): Promise<number> {
   noPositionals(a);
   const kind = kindOf(a);
@@ -130,7 +152,8 @@ async function encode(ctx: Ctx, a: Parsed): Promise<number> {
   }
   const wrote = await ctx.writeOut(a, `${encoded}\n`);
   ctx.note(RETENTION);
-  ctx.out({ ok: true, kind, format, ...(frameCount === undefined ? {} : { frameCount }), ...(frameValue === undefined ? {} : { frame: Number(frameValue), encodedAs: 'svg' }), paymentVerified: false, originalFileRecommended: true, ...(wrote ? { out: a.values.get('out') } : { result: encoded }), retention: RETENTION }, wrote ? 'Encoded validated public QR payload.' : encoded);
+  scopeNote(ctx, kind);
+  ctx.out({ ok: true, kind, format, ...scope(kind), ...(frameCount === undefined ? {} : { frameCount }), ...(frameValue === undefined ? {} : { frame: Number(frameValue), encodedAs: 'svg' }), paymentVerified: false, originalFileRecommended: true, ...(wrote ? { out: a.values.get('out') } : { result: encoded }), retention: RETENTION }, wrote ? 'Encoded validated QR exchange payload.' : encoded);
   return 0;
 }
 
@@ -142,10 +165,11 @@ async function decode(ctx: Ctx, a: Parsed): Promise<number> {
   let text = (await ctx.read(requireValue(a, 'in'))).trim();
   if (text.startsWith('<')) text = await decodeSvg(text);
   if (additional.length > 0) {
-    const scans = text.split(/\r?\n/);
+    const scans: string[] = [];
+    appendScans(scans, text);
     for (const path of additional) {
       const raw = (await ctx.read(path)).trim();
-      scans.push(...(raw.startsWith('<') ? await decodeSvg(raw) : raw).split(/\r?\n/));
+      appendScans(scans, raw.startsWith('<') ? await decodeSvg(raw) : raw);
     }
     text = assemble(scans);
   } else if (text.startsWith('GPQ1/')) text = assemble(text.split(/\r?\n/));
@@ -162,16 +186,17 @@ async function decode(ctx: Ctx, a: Parsed): Promise<number> {
   const payload = await payloadOf(kind, text, ctx, a);
   const wrote = await ctx.writeOut(a, `${payload}\n`);
   ctx.note(RETENTION);
-  ctx.out({ ok: true, kind, paymentVerified: false, originalFileRecommended: true, ...(wrote ? { out: a.values.get('out') } : { payload }), retention: RETENTION }, wrote ? 'Decoded and validated complete public payload.' : payload);
+  scopeNote(ctx, kind);
+  ctx.out({ ok: true, kind, ...scope(kind), paymentVerified: false, originalFileRecommended: true, ...(wrote ? { out: a.values.get('out') } : { payload }), retention: RETENTION }, wrote ? 'Decoded and validated complete exchange payload.' : payload);
   return 0;
 }
 
 const OPTIONS = { in: 'value', kind: 'value', 'allow-insecure-localhost': 'flag', ...PASSPHRASE_OPTS, ...OUT_OPTS } as const;
 export const qrCommands: readonly Command[] = [
-  { path: ['qr', 'encode'], summary: 'encode validated public invoice, receipt, seller or meta-address data',
-    usage: 'ghostpay qr encode --kind invoice|receipt|seller|meta --in FILE|- [--format svg|multipart|text] [--chunk-chars 32..700] [--frame INDEX] [--out FILE] [--force] [--passphrase-file P | --passphrase-env NAME | --passphrase-stdin] [--allow-insecure-localhost]\n  Example: ghostpay qr encode --kind receipt --in receipt.json --out receipt.svg\n  Multipart output contains scan texts for up to 64 QR frames. Add --frame 1 to render the first frame as SVG, repeating for each one-based index with identical input and chunk size. Preserve the original digital file.',
+  { path: ['qr', 'encode'], summary: 'encode public payloads, safe preferences or an encrypted seller keystore',
+    usage: 'ghostpay qr encode --kind invoice|receipt|seller|meta|keystore|settings --in FILE|- [--format svg|multipart|text] [--chunk-chars 32..700] [--frame INDEX] [--out FILE] [--force] [--passphrase-file P | --passphrase-env NAME | --passphrase-stdin] [--allow-insecure-localhost]\n  Example: ghostpay qr encode --kind receipt --in receipt.json --out receipt.svg\n  Multipart output contains scan texts for up to 64 QR frames. Add --frame 1 to render the first frame as SVG, repeating for each one-based index with identical input and chunk size. Preserve the original digital file. Keystores are structure-checked encrypted envelopes only; use backup verify for authentication. Settings exclude endpoints and trusted keys and are never applied. Passphrase options apply only to protected invoice links.',
     opts: { ...OPTIONS, format: 'value', 'chunk-chars': 'value', frame: 'value' }, handler: encode },
   { path: ['qr', 'decode'], summary: 'decode bounded generated SVGs, scanned public text or multipart QR transfers',
-    usage: 'ghostpay qr decode --kind invoice|receipt|seller|meta --in FILE|- [--frame-file FILE ...] [--out FILE] [--force] [--passphrase-file P | --passphrase-env NAME | --passphrase-stdin] [--allow-insecure-localhost]\n  Example: ghostpay qr decode --kind receipt --in receipt.svg --out receipt.json\n  Repeat --frame-file for additional multipart SVGs or scan-text files (up to 64 files total). SVG input must use the inert module-grid format generated by this CLI. PNG/JPEG/camera capture are not accepted; scanned text and GPQ1 chunks are supported. No URLs are opened.',
+    usage: 'ghostpay qr decode --kind invoice|receipt|seller|meta|keystore|settings --in FILE|- [--frame-file FILE ...] [--out FILE] [--force] [--passphrase-file P | --passphrase-env NAME | --passphrase-stdin] [--allow-insecure-localhost]\n  Example: ghostpay qr decode --kind receipt --in receipt.svg --out receipt.json\n  Repeat --frame-file for additional multipart SVGs or scan-text files (up to 64 files total). SVG input must use the inert module-grid format generated by this CLI. PNG/JPEG/camera capture are not accepted; scanned text and GPQ1 chunks are supported. No URLs are opened. Keystore structure is checked without decrypting or authenticating it; run backup verify afterward. Settings are a safe preview and are never applied.',
     opts: { ...OPTIONS, 'frame-file': 'multi' }, handler: decode },
 ];

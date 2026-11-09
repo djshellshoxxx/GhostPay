@@ -8,7 +8,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { after, before, test } from 'node:test';
 import { buildNativeMetadata, deriveStealthPayment } from '@ghostpay/core-crypto';
-import { ANNOUNCEMENT_TOPIC, CANONICAL_ANNOUNCER, ghostPayRouterAbi, manifestDigest, validateManifest } from '@ghostpay/chain-adapters';
+import { ANNOUNCEMENT_TOPIC, CANONICAL_ANNOUNCER, ERC6538_ENTRY_TYPEHASH, ERC6538_REGISTRY, buildLookupCall, ghostPayRouterAbi, manifestDigest, validateManifest } from '@ghostpay/chain-adapters';
 import { invoiceDigest, signReceipt, signerPublicKeyHex } from '@ghostpay/invoice-schema';
 import { checkpointKeyId, createTagArchiveApi } from '@ghostpay/ux-vault/portable';
 import { encodeAbiParameters, encodeFunctionData, keccak256 } from 'viem/utils';
@@ -100,6 +100,8 @@ before(async () => {
       if (data === encodeFunctionData({ abi: ghostPayRouterAbi, functionName: 'FEE_BPS' })) result = word(25);
       else if (data === encodeFunctionData({ abi: ghostPayRouterAbi, functionName: 'FEE_RECIPIENT' })) result = pad(feeRecipient);
       else if (data === encodeFunctionData({ abi: ghostPayRouterAbi, functionName: 'ANNOUNCER' })) result = pad(CANONICAL_ANNOUNCER);
+      else if (data === buildLookupCall(payer).data) result = encodeAbiParameters([{ type: 'bytes' }], [`0x${G}${G2}`]);
+      else if (params[0].to.toLowerCase() === ERC6538_REGISTRY.toLowerCase()) result = ERC6538_ENTRY_TYPEHASH;
     } else if (method === 'eth_getBlockByNumber') result = { number: params[0], hash: canonical, parentHash: `0x${'11'.repeat(32)}` };
     else if (method === 'eth_getTransactionReceipt') result = rpcReceipt;
     else if (method === 'eth_getTransactionByHash') result = rpcTransaction;
@@ -144,6 +146,11 @@ test('compiled invoice, signed receipt, SVG and multipart public exchange are in
   await cli(['seller', 'export-public', '--in', 'public-source.json', '--out', 'seller-public.json']);
   const imported = await cli(['seller', 'import-public', '--in', 'seller-public.json', '--current', 'seller-public.json']);
   assert.equal(imported.repeated, true); assert.equal(imported.applied, false); assert.equal(imported.trustEstablished, false);
+  await put('settings.json', { format: 'ghostpay-settings', v: 1, settings: { delayMinSec: 3, delayMaxSec: 8, lockTimeoutMin: 10, theme: 'dark', autoClearFragment: true } });
+  await cli(['qr', 'encode', '--kind', 'settings', '--in', 'settings.json', '--out', 'settings.svg']);
+  await cli(['qr', 'decode', '--kind', 'settings', '--in', 'settings.svg', '--out', 'settings-copy.json']);
+  const settings = await cli(['config', 'validate', '--kind', 'settings', '--in', 'settings-copy.json']);
+  assert.equal(settings.applied, false); assert.equal(settings.browserStorageChanged, false);
 });
 
 test('compiled credential, authenticated recovery and immutable output boundaries hold across formats', async () => {
@@ -162,6 +169,20 @@ test('compiled credential, authenticated recovery and immutable output boundarie
   await cli(['backup', 'restore', '--in', 'tags.gpa', '--passphrase-env', 'TEST_BACKUP_PASSPHRASE', '--approve', '--out', 'restored.gpa']);
   assert.deepEqual(await readFile(path('restored.gpa')), Buffer.from(archive));
   if (process.platform !== 'win32') assert.equal((await stat(path('restored.gpa'))).mode & 0o077, 0);
+  await cli(['qr', 'encode', '--kind', 'keystore', '--in', 'seller.json', '--out', 'keystore.svg']);
+  const decoded = await cli(['qr', 'decode', '--kind', 'keystore', '--in', 'keystore.svg', '--out', 'qr-keystore.json']);
+  assert.equal(decoded.authenticationVerified, false);
+  assert.equal((await cli(['backup', 'verify', '--in', 'qr-keystore.json', '--passphrase-env', 'TEST_BACKUP_PASSPHRASE'])).authenticated, true);
+});
+
+test('compiled seller key generation publishes only a new encrypted keystore and public metadata', async () => {
+  const generated = await cli(['backup', 'generate', '--passphrase-env', 'TEST_BACKUP_PASSPHRASE', '--out', 'generated-seller.json']);
+  assert.equal(generated.generated, true); assert.equal(generated.recordCount, 3);
+  assert.match(generated.metaAddress, /^st:eth:0x[0-9a-f]{132}$/);
+  assert.equal((await cli(['backup', 'verify', '--in', 'generated-seller.json', '--passphrase-env', 'TEST_BACKUP_PASSPHRASE'])).authenticated, true);
+  const bytes = await readFile(path('generated-seller.json'));
+  await cli(['backup', 'generate', '--passphrase-env', 'TEST_BACKUP_PASSPHRASE', '--out', 'generated-seller.json'], { code: 3 });
+  assert.deepEqual(await readFile(path('generated-seller.json')), bytes);
 });
 
 test('compiled real verifier distinguishes offline, canonical, pending and reorganized controlled RPC evidence', async () => {
@@ -176,6 +197,22 @@ test('compiled real verifier distinguishes offline, canonical, pending and reorg
   canonical = `0x${'ef'.repeat(32)}`;
   try { assert.equal((await cli(['payment', 'status', '--in', 'claim.json', ...live()], { code: 1 })).status, 'reorganization-detected'); }
   finally { canonical = block; }
+  const registry = await cli(['registry', 'lookup', '--chain', '11155111', '--registrant', payer, '--online', '--rpc-env', 'TEST_RPC_ENDPOINT', '--allow-insecure-localhost']);
+  assert.equal(registry.metaAddress, meta); assert.equal(registry.registryBehaviorChecked, true);
+  assert.equal(registry.registryCodePinned, false); assert.equal(registry.identityVerified, false);
+});
+
+test('compiled receipt creation signs only after explicit approval and fresh owned-payment verification', async () => {
+  const source = ['receipt', 'create', '--invoice', 'invoice.json', '--observation', 'claim.json', ...credentials, ...live(), '--out', 'created-receipt.json'];
+  await cli(source, { code: 2 });
+  const created = await cli([...source, '--approve']);
+  assert.equal(created.paymentVerifiedAtCreation, true); assert.equal(created.recipientOwnershipVerified, true);
+  assert.equal(created.receiptIsPaymentProof, false);
+  const verified = await cli(['receipt', 'verify', '--in', 'created-receipt.json', '--invoice', 'invoice.json', '--pin', signer]);
+  assert.equal(verified.invoiceBound, true); assert.equal(verified.paymentVerified, false);
+  const bytes = await readFile(path('created-receipt.json'));
+  await cli([...source, '--approve'], { code: 3 });
+  assert.deepEqual(await readFile(path('created-receipt.json')), bytes);
 });
 
 test('compiled reconciliation requires reviewed live context and approval while imported history remains untrusted', async () => {
@@ -196,6 +233,16 @@ test('compiled reconciliation requires reviewed live context and approval while 
   assert.equal((await cli(['reconcile', 'import', '--in', 'empty-history.json', '--backup', 'archived-history.json', ...viewSource, '--approve', '--out', 'imported-history.json'])).currentChainVerified, false);
   const imported = await cli(['history', 'list', '--in', 'imported-history.json', ...viewSource]);
   assert.equal(imported.records[0].provenance, 'imported-history');
+  const recordContext = ['--in', 'empty-history.json', '--observations', 'observations.json', ...credentials, ...live(), '--approve'];
+  const recorded = await cli(['reconcile', 'record', ...recordContext, '--out', 'unassociated-history.json']);
+  assert.equal(recorded.invoiceAssociationConfirmed, false); assert.equal(recorded.currentChainVerified, true);
+  const cleared = await cli(['reconcile', 'clear-records', '--in', 'unassociated-history.json', ...viewSource, '--approve', '--out', 'cleared-history.json']);
+  assert.equal(cleared.removed, 1); assert.equal(cleared.tombstonesRetained, true);
+  assert.equal((await cli(['history', 'list', '--in', 'cleared-history.json', ...viewSource])).total, 0);
+  const removedReceipt = await cli(['reconcile', 'remove-receipt', '--in', 'archived-history.json', ...viewSource, '--all', '--approve', '--out', 'without-receipts.json']);
+  assert.equal(removedReceipt.removed, 1); assert.equal(removedReceipt.currentChainVerified, false);
+  const removedInvoice = await cli(['reconcile', 'remove-invoice', '--in', 'without-receipts.json', ...viewSource, '--all', '--approve', '--out', 'without-invoices.json']);
+  assert.equal(removedInvoice.removed, 1); assert.equal(removedInvoice.tombstonesRetained, true);
 });
 
 test('compiled private scans authenticate their cursor and keep matches out of terminal output', async () => {

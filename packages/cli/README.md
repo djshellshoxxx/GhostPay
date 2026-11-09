@@ -5,8 +5,8 @@ recovery, merchant planning, and explicitly enabled read-only chain checks. It i
 offline by default. Live EVM verification requires `--online`, an operator-selected
 RPC endpoint, and an independently obtained deployment trust pin. No CLI command
 signs or broadcasts a funds-moving transaction, starts a payment subscription,
-sends a notification, or enables an experimental chain policy. Invoice signatures
-and webhook HMACs are supported local document-authentication operations.
+sends a notification, or enables an experimental chain policy. Invoice and seller
+receipt signatures, together with webhook HMACs, authenticate local documents.
 
 This reference covers every command in the current CLI registry. The GUI parity
 and release evidence inventories are maintained separately; command availability
@@ -25,9 +25,10 @@ node packages/cli/dist/bin.js --version
 ```
 
 `build:cli` builds the CLI and its workspace dependencies in dependency order.
-`build:packages` builds all library workspaces, including the CLI; use it when
-running the additional merchant examples below. `build:libs` alone does not build
-all CLI dependencies. This is a private workspace, not a published npm CLI; an
+`build:packages` and `build:libs` build all library workspaces, including the CLI;
+use either when running the additional merchant examples below. Every CLI build
+stamps the source revision and working-tree state after TypeScript compilation.
+This is a private workspace, not a published npm CLI; an
 unrelated registry package selected by `npx ghostpay` is not this executable.
 
 The examples below use `ghostpay` as a short name for the compiled executable.
@@ -112,6 +113,7 @@ CLI arguments.
 | Invoice signing key | `--key-file` | `--key-env` | `--key-stdin` | 32-byte hex secret scalar |
 | Webhook secret | `--secret-file` | `--secret-env` | `--secret-stdin` | 32–1024 bytes, hex |
 | Backup/link passphrase | `--passphrase-file` | `--passphrase-env` | `--passphrase-stdin` | UTF-8 text |
+| Protected invoice supplied to receipt creation | `--invoice-passphrase-file` | `--invoice-passphrase-env` | `--invoice-passphrase-stdin` | UTF-8 text, separate from the seller-keystore passphrase |
 | Replacement backup passphrase | `--new-passphrase-file` | `--new-passphrase-env` | `--new-passphrase-stdin` | UTF-8 text |
 | Seller spending key | `--spending-key-file` | `--spending-key-env` | `--spending-key-stdin` | 32-byte hex secret scalar |
 | Seller viewing key for backup/history/reconciliation | `--viewing-key-file` | `--viewing-key-env` | `--viewing-key-stdin` | 32-byte hex secret scalar |
@@ -156,7 +158,8 @@ ghostpay diagnostics rpc --chain 11155111 --online --rpc-env GHOSTPAY_RPC --seco
 | Reconciliation envelope | 8,000,000 bytes; at most 2,000 observations, 500 invoices and 500 archived receipts |
 | GPA1 tag archive | 20 MiB and at most 100,000 tag records |
 | Signed receipt JSON | 65,536 UTF-8 bytes |
-| Public QR payload | 32 KiB, up to 64 multipart frames; bounded input assembly accepts up to 128 scan texts |
+| QR payload | 32 KiB, up to 64 multipart frames; bounded input assembly accepts up to 128 scan texts |
+| Safe settings exchange | 4,096 characters and 4,096 UTF-8 bytes; exactly five supported preferences |
 | Deployment manifest / release keys | 16 KiB / at most 16 explicit compressed release public keys |
 | RPC session | 256 total requests, 16 MiB total response text, 60-second session budget, no retries |
 | Individual RPC request | At most 5 seconds and 1 MiB response; remaining session bounds can be smaller |
@@ -174,8 +177,9 @@ signing a webhook body. A hostile process controlling the file and its metadata
 is outside the snapshot guarantee; process a stable private copy.
 
 `--out FILE` normally requires a new destination. A command that lists `--force`
-may explicitly replace it. **Scan reports, backup restoration and reconciliation
-successor/proposal files require new paths.** `backup create` and `backup rekey`
+may explicitly replace it. **Scan reports, backup generation/restoration, receipt
+creation, and reconciliation successor/proposal files require new paths.**
+`backup create` and `backup rekey`
 follow the ordinary opt-in `--force` behavior; preserve older backups when
 maintaining recovery history. An output path of `-` is not a stdout shortcut;
 omit `--out` for commands that support terminal output.
@@ -224,7 +228,7 @@ separately as `{height, hash, headerHex, previousHeaders?}`. Headers are canonic
 relative to that checkpoint. It does not prove transaction inclusion, scripts,
 signet signatures, or selection of the heaviest public chain.
 
-## Invoice, receipt and public exchange workflows
+## Invoice, receipt and QR exchange workflows
 
 The following examples use existing input files and named secret variables.
 `invoice-spec.json` follows the invoice schema without generated `v`, `schemeId`
@@ -269,15 +273,24 @@ Receipt verification checks the actual seller signature. Optional `--pin`,
 and `--expected-tx` compare known facts. Here the recipient is the **stealth
 payment address**, and the amount is **seller-net token base units**. Binding a
 fixed-token invoice uses the shared router fee calculation; a fiat-quote invoice
-requires an independently supplied `--expected-amount`. The receipt result keeps
-`paymentVerified: false` and `recipientOwnershipVerified: false`. Preserve the
+requires an independently supplied `--expected-amount`. The offline receipt
+verification result keeps `paymentVerified: false` and
+`recipientOwnershipVerified: false`. Receipt creation uses the separate live
+workflow below. Preserve the
 original digital receipt file: a QR code represents its serialized bytes and is
 not a replacement for the original signed artifact.
 
-Public QR kinds are `invoice`, `receipt`, `seller` and `meta`. Only validated
-public formats enter the exchange path. Seller-key backups are handled by
-`backup`, not public QR. Single-code SVG generation uses a bounded inert module
-grid. Decoding accepts that generated SVG format, scanned text and existing
+QR kinds are `invoice`, `receipt`, `seller`, `meta`, `settings` and `keystore`.
+Each kind validates its existing format. The `keystore` kind accepts only the
+encrypted seller-keystore envelope, checks its structure and reports
+`authenticationVerified: false`; it never accepts plaintext seller secrets.
+Authenticate a decoded keystore with `backup verify` before recovery. The
+`settings` kind accepts the safe five-preference export and reports
+`settingsApplied: false` without changing browser preferences, endpoints or trust
+pins. Passphrase options on QR commands apply only to protected invoice links.
+
+Single-code SVG generation uses a bounded inert module grid. Decoding accepts
+that generated SVG format, scanned text and existing
 `GPQ1` multipart transfers. Arbitrary SVG/XML, PNG/JPEG, camera capture and browser
 clipboard/device access are unsupported.
 
@@ -285,6 +298,11 @@ clipboard/device access are unsupported.
 ghostpay qr encode --kind invoice --in invoice.json --format multipart --chunk-chars 512 --out invoice-frames.json
 ghostpay qr decode --kind invoice --in invoice-frames.json --out recovered-invoice-link.txt
 ghostpay qr encode --kind invoice --in invoice.json --format multipart --chunk-chars 512 --frame 1 --out invoice-frame-1.svg
+ghostpay qr encode --kind settings --in settings.json --out settings.svg
+ghostpay qr decode --kind settings --in settings.svg --out decoded-settings.json
+ghostpay qr encode --kind keystore --in seller.json --out encrypted-seller.svg
+ghostpay qr decode --kind keystore --in encrypted-seller.svg --out decoded-seller.json
+ghostpay backup verify --in decoded-seller.json --passphrase-env GHOSTPAY_PASSPHRASE --json
 ```
 
 The multipart result reports `frameCount`. Render every one-based frame with the
@@ -388,6 +406,47 @@ inspection is always `evidenceSource: untrusted-input`. Keep the original
 observation and independent expected facts when retaining a report; a saved
 successful report is historical evidence and does not replace a later live check.
 
+### Create an invoice-bound seller receipt
+
+Receipt creation requires an unexpired signed **fixed-token** invoice, a matching
+authenticated seller keystore, independently supplied expected payment facts,
+and a currently final owned payment. It uses the shared canonical verifier and
+router fee calculation. Invoice, observation and encrypted keystore inputs must
+be repeatable files so their contents can be checked again before signing.
+
+```sh
+ghostpay receipt create --invoice invoice.json --observation observation.json \
+  --keystore seller.json --passphrase-env GHOSTPAY_PASSPHRASE \
+  --manifest deployment.json --manifest-digest "$MANIFEST_DIGEST" \
+  --online --rpc-env GHOSTPAY_RPC --secondary-rpc-env GHOSTPAY_RPC_SECONDARY \
+  --approve --out receipt-created.json --json
+```
+
+For a passphrase-protected invoice link, add the separate
+`--invoice-passphrase-env GHOSTPAY_LINK_PASSPHRASE` option; `--passphrase-*` opens
+the seller keystore. Creation verifies the invoice signer and receiving keys,
+derives recipient ownership locally, rereads all three source files and checks
+canonical blocks/finality again before signing. The result reports
+`paymentVerifiedAtCreation: true` within the `operator-pinned-testnet` scope and
+`receiptIsPaymentProof: false`. A later holder can authenticate the receipt's
+signed fields, but must independently check current chain evidence. The new
+receipt file is published without replacing an existing destination.
+
+### Look up a public registry entry
+
+```sh
+ghostpay registry lookup --chain 11155111 \
+  --registrant 0x1111111111111111111111111111111111111111 \
+  --online --rpc-env GHOSTPAY_RPC --secondary-rpc-env GHOSTPAY_RPC_SECONDARY --json
+```
+
+Registry lookup uses the GUI's existing ERC-6538 code-presence and getter probe
+on enabled testnets. It returns the scheme-1 meta-address or `registered: false`;
+optional providers must agree on the entry. Its runtime code hash is not
+independently pinned, reflected by `registryCodePinned: false`. The entry alone
+does not establish real-world identity, exclusive key ownership, payment or
+provider trust. Registration and clearing transactions are outside this command.
+
 ## Privacy scanning and resumable pages
 
 Scan planning requires no secret or network. A live scan reads public block
@@ -457,7 +516,17 @@ historical provenance and reorganization invalidations; it cannot create fresh
 on-chain evidence. Reconciliation encryption follows the seller viewing key and
 has no passphrase-rekey operation.
 
-To wrap existing seller secrets in the GUI-compatible keystore format:
+Generate independent seller spending, viewing and signing keys directly into a
+new encrypted GUI-compatible keystore:
+
+```sh
+ghostpay backup generate --passphrase-env GHOSTPAY_PASSPHRASE --out seller-generated.json --json
+```
+
+Generation uses the shared secure random primitives and reports only public
+meta-address/signing keys and counts. Secret key bytes are cleared after use;
+there is no plaintext export. The encrypted destination must be new. To wrap
+existing seller secrets in the same keystore format instead:
 
 ```sh
 ghostpay backup create --spending-key-env GHOSTPAY_SPENDING_KEY \
@@ -465,8 +534,8 @@ ghostpay backup create --spending-key-env GHOSTPAY_SPENDING_KEY \
   --passphrase-env GHOSTPAY_PASSPHRASE --out seller.json
 ```
 
-This uses the existing scrypt/AES-GCM format and validates seller-key relationships.
-It does not generate a wallet or move funds. Keep the encrypted file and its
+Creation uses the existing scrypt/AES-GCM format and validates seller-key relationships.
+Keep the encrypted file and its
 passphrase separately. Default publication preserves existing files; `create`
 and `rekey` require explicit `--force` to replace one.
 
@@ -556,6 +625,48 @@ the seller; archive/export operations do not independently verify payment.
 Restore, import and association outputs are successors, never in-place updates
 of an earlier encrypted file.
 
+### Save current observations and maintain local records
+
+Use `reconcile record` to save currently verified seller-owned payments without
+confirming an invoice association. It verifies the entire bounded observation
+context, then saves all current records or the single ID selected by `--record`:
+
+```sh
+ghostpay reconcile record --in history-2.json --observations current.json \
+  --keystore seller.json --passphrase-env GHOSTPAY_PASSPHRASE \
+  --manifest deployment.json --manifest-digest "$MANIFEST_DIGEST" \
+  --online --rpc-env GHOSTPAY_RPC --secondary-rpc-env GHOSTPAY_RPC_SECONDARY \
+  --approve --out history-recorded.json --json
+```
+
+With `--record`, an optional `--manual-invoice-digest` stores an explicitly
+unverified annotation. The result keeps `invoiceAssociationConfirmed: false`;
+use the reviewed proposal/confirmation workflow for a verified exact match.
+Imported records and saved verification flags cannot replace current RPC and
+ownership checks.
+
+Local removal commands authenticate the encrypted source and publish a new
+successor after explicit `--approve`:
+
+```sh
+ghostpay reconcile clear-records --in history-recorded.json \
+  --viewing-key-env GHOSTPAY_VIEWING_KEY --approve --out history-cleared.json --json
+ghostpay reconcile remove-invoice --in history-recorded.json \
+  --viewing-key-env GHOSTPAY_VIEWING_KEY --invoice-digest "$INVOICE_DIGEST" \
+  --approve --out history-without-invoice.json --json
+ghostpay reconcile remove-receipt --in history-with-receipt.json \
+  --viewing-key-env GHOSTPAY_VIEWING_KEY --all --approve --out history-without-receipts.json --json
+```
+
+`clear-records` removes observations while retaining invoices, receipt archives,
+reorganization invalidation tombstones and any read-only saturation. Invoice
+removal selects either one canonical `0x`-prefixed 32-byte digest or `--all` and
+retains observation annotations. Receipt removal selects either the original
+receipt's 128-character lowercase hex signature, without `0x`, using
+`--receipt-signature`, or `--all`. All three retain reorganization invalidations
+and report `currentChainVerified: false`; clearing local history cannot erase
+its safety state or establish current payment evidence.
+
 ## Merchant planning, exports and diagnostics
 
 The CLI uses the existing merchant packages and portable schemas. Durable
@@ -635,6 +746,7 @@ ghostpay config validate --kind subscription --in subscription.json --json
 ghostpay config validate --kind merchant-account --in account.json --json
 ghostpay config validate --kind deployment --in deployment.json --chain 11155111 --json
 ghostpay config validate --kind webhook-event --in event.json --json
+ghostpay config validate --kind settings --in settings.json --json
 ghostpay diagnostics --out diagnostics.json --json
 ghostpay doctor --json
 ghostpay i18n check --json
@@ -648,10 +760,29 @@ to the receiver. `--nonce` is an optional explicit signature nonce for signing;
 `--tolerance` bounds accepted timestamp age for verification. `--header` and
 `--header-file` are mutually exclusive.
 
-`config validate` checks only one supported schema/policy shape. `diagnostics`
-exports offline package/output-schema/Node versions and cryptographic self-tests
-without endpoint configuration or user records. `doctor` performs those offline
-installation checks directly. `i18n check` accepts repeated `--catalog LOCALE=FILE`
+`config validate` checks only one supported schema/policy shape. Safe settings use
+the existing envelope below; delay values are whole seconds from 0 through
+86,400 with minimum at most maximum, idle lock is 1–240 minutes, and theme is
+`system`, `light` or `dark`:
+
+```json
+{"format":"ghostpay-settings","v":1,"settings":{"delayMinSec":0,"delayMaxSec":60,"lockTimeoutMin":15,"theme":"system","autoClearFragment":true}}
+```
+
+Unknown keys, including endpoints and trust pins, are rejected. Settings
+validation returns the canonical five-preference preview with `applied: false`
+and `browserStorageChanged: false`. `qr encode --kind settings --format text`
+can save a canonical exchange file without applying browser preferences.
+
+`diagnostics` exports offline package/output-schema/Node versions, cryptographic
+self-tests and `buildInfo: {sourceRevision, dirty}` without reading environment
+credentials, endpoint configuration or user records. The build stamp contains
+the 40-character Git revision and working-tree dirty boolean captured after
+compilation. Source execution and builds without available Git metadata return
+explicit `null` values. It contains no timestamp or host path and runs no Git
+process when the CLI is invoked. A revision with `dirty: true` identifies the
+checkout base, not the complete changed source contents. `doctor` performs the
+offline installation checks directly. `i18n check` accepts repeated `--catalog LOCALE=FILE`
 and optional `--base`; with no catalogs it checks the bundled samples. The sandbox
 uses deterministic in-memory fake funds, including an injected failed transfer.
 
@@ -752,7 +883,7 @@ From the repository root after the dependency-ordered build:
 npm run typecheck -w @ghostpay/cli
 npm run lint -w @ghostpay/cli
 npm run test -w @ghostpay/cli -- --maxWorkers=2
-node --test packages/cli/test/compiled.test.mjs
+npm run test:compiled -w @ghostpay/cli
 npm run test:cli-build
 ```
 
@@ -849,6 +980,22 @@ ghostpay invoice link --in signed.json --base https://pay.example/ --passphrase-
 ```
 
 **Options:** `--in VALUE`, `--base VALUE`, `--encrypt`, `--allow-insecure-localhost`, `--passphrase-file VALUE`, `--passphrase-env VALUE`, `--passphrase-stdin`, `--out VALUE`, `--force`
+
+### `receipt create`
+
+Sign an invoice-bound receipt after live canonical payment and seller-ownership verification.
+
+```text
+ghostpay receipt create --invoice SIGNED_INVOICE --observation PAYMENT.json --keystore SELLER.json (--passphrase-file P | --passphrase-env NAME | --passphrase-stdin) --manifest DEPLOYMENT.json (--manifest-digest HASH | --release-key PUBLIC_KEY) --online (--rpc-file P | --rpc-env NAME) --approve --out NEW_RECEIPT.json [--secondary-rpc-file P | --secondary-rpc-env NAME] [--invoice-passphrase-file P | --invoice-passphrase-env NAME | --invoice-passphrase-stdin] [--allow-insecure-localhost]
+```
+
+```sh
+ghostpay receipt create --invoice invoice.json --observation payment.json --keystore seller.json --passphrase-env SELLER_PASSPHRASE --manifest deployment.json --manifest-digest 0xDIGEST --online --rpc-env RPC_ENDPOINT --approve --out receipt.json
+```
+
+Requires an unexpired signed fixed-token invoice, matching authenticated seller keys, an owned direct payment, exact seller-net amount and fresh canonical finality. Invoice/observation/keystore inputs must be repeatable files. Existing output files are never replaced. A signed receipt is a seller attestation, not independent payment proof or real-world identity.
+
+**Options:** `--invoice VALUE`, `--observation VALUE`, `--keystore VALUE`, `--out VALUE`, `--approve`, `--passphrase-file VALUE`, `--passphrase-env VALUE`, `--passphrase-stdin`, `--invoice-passphrase-file VALUE`, `--invoice-passphrase-env VALUE`, `--invoice-passphrase-stdin`, `--manifest VALUE`, `--manifest-digest VALUE`, `--release-key VALUE ...`, `--online`, `--rpc-file VALUE`, `--rpc-env VALUE`, `--secondary-rpc-file VALUE`, `--secondary-rpc-env VALUE`, `--allow-insecure-localhost`
 
 ### `receipt inspect`
 
@@ -1090,7 +1237,7 @@ ghostpay diagnostics [--out REPORT] [--force] [--json]
 ghostpay diagnostics --out diagnostics.json --json
 ```
 
-Reports package/output-schema/Node versions and offline cryptographic self-tests. No endpoint is contacted and no provider trust is established. Use diagnostics rpc with explicit --online for RPC health.
+Reports package/output-schema/Node versions, build-time source revision and dirty state (null when unavailable), and offline cryptographic self-tests. No endpoint is contacted and no provider trust is established. Use diagnostics rpc with explicit --online for RPC health.
 
 **Options:** `--out VALUE`, `--force`
 
@@ -1099,16 +1246,32 @@ Reports package/output-schema/Node versions and offline cryptographic self-tests
 Preflight an existing GhostPay configuration or exchange schema.
 
 ```text
-ghostpay config validate --kind subscription|merchant-account|deployment|webhook-event --in FILE [--chain ID]
+ghostpay config validate --kind subscription|merchant-account|deployment|webhook-event|settings --in FILE [--chain ID]
 ```
 
 ```sh
-ghostpay config validate --kind subscription --in subscription.json --json
+ghostpay config validate --kind settings --in settings.json --json
 ```
 
-Deployment validation requires --chain. This checks schema and policy consistency only; it does not authenticate an operator policy, contact a provider, import browser settings or verify payment.
+Deployment validation requires --chain. Settings accepts only the existing ghostpay-settings v1 five-preference export. This checks schema and policy consistency only; it does not authenticate an operator policy, contact a provider, import browser settings or verify payment.
 
 **Options:** `--kind VALUE`, `--in VALUE`, `--chain VALUE`
+
+### `backup generate`
+
+Generate independent seller keys directly into a new encrypted GUI-compatible keystore.
+
+```text
+ghostpay backup generate --passphrase-file FILE|--passphrase-env NAME|--passphrase-stdin --out NEW_FILE
+```
+
+```sh
+ghostpay backup generate --passphrase-stdin --out seller.json --json
+```
+
+Uses the same key-generation primitives and encrypted format as the GUI. Existing outputs are never replaced. No plaintext key export, signing or network operation occurs; only public keys and counts are reported.
+
+**Options:** `--out VALUE`, `--passphrase-file VALUE`, `--passphrase-env VALUE`, `--passphrase-stdin`
 
 ### `backup inspect`
 
@@ -1350,17 +1513,17 @@ ghostpay history inspect --in history.json --viewing-key-file view.hex --record 
 
 ### `qr encode`
 
-Encode validated public invoice, receipt, seller or meta-address data.
+Encode public payloads, safe preferences or an encrypted seller keystore.
 
 ```text
-ghostpay qr encode --kind invoice|receipt|seller|meta --in FILE|- [--format svg|multipart|text] [--chunk-chars 32..700] [--frame INDEX] [--out FILE] [--force] [--passphrase-file P | --passphrase-env NAME | --passphrase-stdin] [--allow-insecure-localhost]
+ghostpay qr encode --kind invoice|receipt|seller|meta|keystore|settings --in FILE|- [--format svg|multipart|text] [--chunk-chars 32..700] [--frame INDEX] [--out FILE] [--force] [--passphrase-file P | --passphrase-env NAME | --passphrase-stdin] [--allow-insecure-localhost]
 ```
 
 ```sh
 ghostpay qr encode --kind receipt --in receipt.json --out receipt.svg
 ```
 
-Multipart output contains scan texts for up to 64 QR frames. Add --frame 1 to render the first frame as SVG, repeating for each one-based index with identical input and chunk size. Preserve the original digital file.
+Multipart output contains scan texts for up to 64 QR frames. Add --frame 1 to render the first frame as SVG, repeating for each one-based index with identical input and chunk size. Preserve the original digital file. Keystores are structure-checked encrypted envelopes only; use backup verify for authentication. Settings exclude endpoints and trusted keys and are never applied. Passphrase options apply only to protected invoice links.
 
 **Options:** `--in VALUE`, `--kind VALUE`, `--allow-insecure-localhost`, `--passphrase-file VALUE`, `--passphrase-env VALUE`, `--passphrase-stdin`, `--out VALUE`, `--force`, `--format VALUE`, `--chunk-chars VALUE`, `--frame VALUE`
 
@@ -1369,14 +1532,14 @@ Multipart output contains scan texts for up to 64 QR frames. Add --frame 1 to re
 Decode bounded generated SVGs, scanned public text or multipart QR transfers.
 
 ```text
-ghostpay qr decode --kind invoice|receipt|seller|meta --in FILE|- [--frame-file FILE ...] [--out FILE] [--force] [--passphrase-file P | --passphrase-env NAME | --passphrase-stdin] [--allow-insecure-localhost]
+ghostpay qr decode --kind invoice|receipt|seller|meta|keystore|settings --in FILE|- [--frame-file FILE ...] [--out FILE] [--force] [--passphrase-file P | --passphrase-env NAME | --passphrase-stdin] [--allow-insecure-localhost]
 ```
 
 ```sh
 ghostpay qr decode --kind receipt --in receipt.svg --out receipt.json
 ```
 
-Repeat --frame-file for additional multipart SVGs or scan-text files (up to 64 files total). SVG input must use the inert module-grid format generated by this CLI. PNG/JPEG/camera capture are not accepted; scanned text and GPQ1 chunks are supported. No URLs are opened.
+Repeat --frame-file for additional multipart SVGs or scan-text files (up to 64 files total). SVG input must use the inert module-grid format generated by this CLI. PNG/JPEG/camera capture are not accepted; scanned text and GPQ1 chunks are supported. No URLs are opened. Keystore structure is checked without decrypting or authenticating it; run backup verify afterward. Settings are a safe preview and are never applied.
 
 **Options:** `--in VALUE`, `--kind VALUE`, `--allow-insecure-localhost`, `--passphrase-file VALUE`, `--passphrase-env VALUE`, `--passphrase-stdin`, `--out VALUE`, `--force`, `--frame-file VALUE ...`
 
@@ -1526,11 +1689,73 @@ ghostpay reconcile confirm --in history.json --proposal proposal.json --observat
 
 Rechecks exact source bytes, all supplied current observations, seller ownership, duplicate evidence, matching context, block hashes and finality. Writes a new encrypted file; no fund movement.
 
-```sh
-use the same files and provider options as reconcile propose, then add --proposal proposal.json --approve --out next.json
-```
+Example: use the same files and provider options as reconcile propose, then add --proposal proposal.json --approve --out next.json
 
 **Options:** `--in VALUE`, `--proposal VALUE`, `--approve`, `--keystore VALUE`, `--passphrase-file VALUE`, `--passphrase-env VALUE`, `--passphrase-stdin`, `--viewing-key-file VALUE`, `--viewing-key-env VALUE`, `--viewing-key-stdin`, `--observations VALUE`, `--manifest VALUE`, `--manifest-digest VALUE`, `--release-key VALUE ...`, `--online`, `--rpc-file VALUE`, `--rpc-env VALUE`, `--secondary-rpc-file VALUE`, `--secondary-rpc-env VALUE`, `--allow-insecure-localhost`, `--out VALUE`
+
+### `reconcile record`
+
+Persist freshly verified owned payments without confirming an invoice match.
+
+```text
+ghostpay reconcile record --in history.json --observations current.json --keystore seller.json --passphrase-file pass.txt --manifest deployment.json --manifest-digest 0xHASH --online --rpc-file rpc.txt --approve --out next.json [--record ID] [--manual-invoice-digest 0xHASH]
+```
+
+Verifies the entire bounded current context and saves all its records, or the selected --record. A manual invoice annotation requires a selected record and is not verified or automatically matched. Imported files alone never supply live evidence.
+
+```sh
+ghostpay reconcile record --in history.json --observations current.json --keystore seller.json --passphrase-env SELLER_PASS --manifest deployment.json --manifest-digest 0xHASH --online --rpc-env RPC_ENDPOINT --approve --out next.json
+```
+
+**Options:** `--in VALUE`, `--record VALUE`, `--manual-invoice-digest VALUE`, `--approve`, `--keystore VALUE`, `--passphrase-file VALUE`, `--passphrase-env VALUE`, `--passphrase-stdin`, `--viewing-key-file VALUE`, `--viewing-key-env VALUE`, `--viewing-key-stdin`, `--observations VALUE`, `--manifest VALUE`, `--manifest-digest VALUE`, `--release-key VALUE ...`, `--online`, `--rpc-file VALUE`, `--rpc-env VALUE`, `--secondary-rpc-file VALUE`, `--secondary-rpc-env VALUE`, `--allow-insecure-localhost`, `--out VALUE`
+
+### `reconcile clear-records`
+
+Clear local observations while retaining reorg invalidation history.
+
+```text
+ghostpay reconcile clear-records --in history.json --viewing-key-file view.hex --approve --out next.json
+```
+
+Clears only observations. Invalidation tombstones, read-only saturation, invoices and signed receipt archives remain in the new encrypted successor.
+
+```sh
+ghostpay reconcile clear-records --in history.json --viewing-key-file view.hex --approve --out next.json
+```
+
+**Options:** `--in VALUE`, `--approve`, `--keystore VALUE`, `--passphrase-file VALUE`, `--passphrase-env VALUE`, `--passphrase-stdin`, `--viewing-key-file VALUE`, `--viewing-key-env VALUE`, `--viewing-key-stdin`, `--out VALUE`
+
+### `reconcile remove-invoice`
+
+Remove local invoice registrations from an immutable encrypted successor.
+
+```text
+ghostpay reconcile remove-invoice --in history.json --viewing-key-file view.hex (--invoice-digest 0xHASH | --all) --approve --out next.json
+```
+
+Existing observation annotations and reorg invalidation history are retained.
+
+```sh
+ghostpay reconcile remove-invoice --in history.json --viewing-key-file view.hex --all --approve --out next.json
+```
+
+**Options:** `--in VALUE`, `--invoice-digest VALUE`, `--all`, `--approve`, `--keystore VALUE`, `--passphrase-file VALUE`, `--passphrase-env VALUE`, `--passphrase-stdin`, `--viewing-key-file VALUE`, `--viewing-key-env VALUE`, `--viewing-key-stdin`, `--out VALUE`
+
+### `reconcile remove-receipt`
+
+Remove archived seller receipts from an immutable encrypted successor.
+
+```text
+ghostpay reconcile remove-receipt --in history.json --viewing-key-file view.hex (--receipt-signature HEX | --all) --approve --out next.json
+```
+
+Uses the canonical 64-byte signature from the original digital receipt. Reorg invalidation history and observations are retained.
+
+```sh
+ghostpay reconcile remove-receipt --in history.json --viewing-key-file view.hex --all --approve --out next.json
+```
+
+**Options:** `--in VALUE`, `--receipt-signature VALUE`, `--all`, `--approve`, `--keystore VALUE`, `--passphrase-file VALUE`, `--passphrase-env VALUE`, `--passphrase-stdin`, `--viewing-key-file VALUE`, `--viewing-key-env VALUE`, `--viewing-key-stdin`, `--out VALUE`
 
 ### `reconcile import`
 
@@ -1575,6 +1800,22 @@ ghostpay reconcile export-receipts --in history.json --viewing-key-file view.hex
 ```
 
 **Options:** `--in VALUE`, `--keystore VALUE`, `--passphrase-file VALUE`, `--passphrase-env VALUE`, `--passphrase-stdin`, `--viewing-key-file VALUE`, `--viewing-key-env VALUE`, `--viewing-key-stdin`, `--out VALUE`
+
+### `registry lookup`
+
+Read a public ERC-6538 scheme-1 entry with explicit bounded RPC consent.
+
+```text
+ghostpay registry lookup --chain ID --registrant ADDRESS --online (--rpc-file FILE | --rpc-env NAME) [--secondary-rpc-file FILE | --secondary-rpc-env NAME] [--allow-insecure-localhost] [--out REPORT] [--force] [--json]
+```
+
+```sh
+ghostpay registry lookup --chain 11155111 --registrant 0x1111111111111111111111111111111111111111 --online --rpc-env TESTNET_RPC --json
+```
+
+Uses the GUI registry code-presence and getter probe on enabled testnets. The runtime code hash is not independently pinned. A stored entry does not prove real-world identity, exclusive key ownership or payment. No registration or clearing transaction is signed or sent.
+
+**Options:** `--chain VALUE`, `--registrant VALUE`, `--online`, `--rpc-file VALUE`, `--rpc-env VALUE`, `--secondary-rpc-file VALUE`, `--secondary-rpc-env VALUE`, `--allow-insecure-localhost`, `--out VALUE`, `--force`
 
 ### `webhook sign`
 

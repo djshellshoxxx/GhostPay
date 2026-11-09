@@ -1,4 +1,5 @@
 import { validateRpcUrl } from '@ghostpay/chain-adapters';
+import { validateSettingsDelayRange } from '@ghostpay/qr-exchange';
 import { UserFacingError } from './errors';
 
 /** Non-secret preferences. RPC URLs are stored in plain text in this browser; the Settings page says so. */
@@ -28,7 +29,6 @@ export const DEFAULT_SETTINGS: Settings = Object.freeze({
 });
 
 export const SETTINGS_KEY = 'ghostpay.settings.v1';
-const MAX_DELAY_SEC = 24 * 3600;
 
 /** Validates a user-entered RPC URL (https/wss only, no credentials, no fragment). Returns the normalized URL. */
 export function checkRpcUrl(raw: string): string {
@@ -57,8 +57,8 @@ export function checkRelayerUrl(raw: string): string {
 
 /** Delay bounds must be whole seconds, 0 <= min <= max <= 24 h. */
 export function checkDelayRange(minSec: number, maxSec: number): void {
-  const ok = (n: number): boolean => Number.isInteger(n) && n >= 0 && n <= MAX_DELAY_SEC;
-  if (!ok(minSec) || !ok(maxSec) || minSec > maxSec) {
+  try { validateSettingsDelayRange(minSec, maxSec); }
+  catch {
     throw new UserFacingError({ key: 'error.settings.delayRangeMustBeWholeSecondsMinimumAtMostMaximum' });
   }
 }

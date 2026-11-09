@@ -20,9 +20,10 @@ export interface SellerCredentials {
   readonly signer: string;
   close(): void;
 }
-export async function loadSeller(ctx: Ctx, a: Parsed): Promise<SellerCredentials> {
+export async function loadSeller(ctx: Ctx, a: Parsed, expectedText?: string): Promise<SellerCredentials> {
   const backup = await readBackup(ctx, a, 'keystore');
   if (backup.format !== 'seller-keystore') throw usageError('SELLER_KEYSTORE_REQUIRED', '--keystore must name an encrypted seller-key backup.');
+  if (expectedText !== undefined && backup.text !== expectedText) throw failError('STALE_CONTEXT', 'the encrypted seller keystore changed after its review snapshot.');
   const secrets = await keystoreApi.decryptKeystore(backup.text, await readPassphrase(ctx, a));
   const publicKeys = decodeMetaAddress(backup.envelope.meta.metaAddress);
   const sellerKeyId = checkpointKeyId(Buffer.from(publicKeys.spendingPublicKey).toString('hex'), Buffer.from(publicKeys.viewingPublicKey).toString('hex'));
@@ -82,7 +83,7 @@ export async function currentObservations(ctx: Ctx, a: Parsed, operator: Operato
     throw failError('OBSERVATION_LIMIT', 'current context must contain 1–64 raw payment observations.');
   const parsed = list.map(value => parsePaymentObservation(JSON.stringify(value)));
   if (parsed.some(value => value.chain.chainId !== operator.input.scope.chainId)) throw failError('CHAIN_MISMATCH', 'all current observations must match the encrypted seller/chain scope.');
-  const context = await verifiedContext(ctx, a, parsed[0]!.chain);
+  const context = await chainBoundary(() => verifiedContext(ctx, a, parsed[0]!.chain));
   const records: ReconciliationRecord[] = [];
   const ids = new Set<string>();
   const evidence = new Set<string>();
@@ -91,10 +92,12 @@ export async function currentObservations(ctx: Ctx, a: Parsed, operator: Operato
   try {
     for (const item of list) {
       const result = await verifyObservation(ctx, a, JSON.stringify(item), context);
-      if (!result.output.paymentVerified || result.output.networkFailure || result.verification.evidenceId === undefined)
+      if (result.output.networkFailure)
+        throw new CliError('network', 'RPC_FAILURE', 'current payment evidence could not be verified because a configured provider failed.');
+      if (!result.output.paymentVerified || result.verification.evidenceId === undefined)
         throw failError('CURRENT_EVIDENCE_REQUIRED', 'every supplied observation must have final, current canonical payment evidence.');
       const claim = result.observation.claim;
-      const match = checkAnnouncement(claim.announcement, viewing, seller.publicKeys.spendingPublicKey);
+      const match = checkAnnouncement(claim.announcement, viewing, seller.publicKeys.spendingPublicKey, { ignoreViewTag: true });
       if (!match.matches) throw failError('SELLER_RECIPIENT_MISMATCH', 'a current observation does not belong to the authenticated seller keys.');
       const recordValue = reconciliationApi.recordFromVerifiedMatch({ chainId: result.observation.chain.chainId, ...claim, tagMatches: match.tagMatches !== false, receipt: 'verified' }, seller.sellerKeyId, undefined, ctx.io.nowSeconds() * 1000);
       const claimId = `${claim.stealthAddress.toLowerCase()}:${claim.announcement.ephemeralPublicKey.toLowerCase()}`;

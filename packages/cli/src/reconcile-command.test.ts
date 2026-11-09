@@ -96,6 +96,24 @@ it('rejects a current observation unrelated to the seller despite valid canonica
   expect(await run(['reconcile', 'propose', '--in', 'history.json', ...RECON_CREDS, ...RECON_LIVE, '--record', w.recordId, '--out', 'proposal.json', '--json'], w.io)).toBe(1);
   expect(w.io.files.has('proposal.json')).toBe(false);
 });
+it('accepts fully derived deep-scan ownership when only the public view-tag hint is wrong', async () => {
+  const { decodeAbiParameters, encodeAbiParameters, encodeFunctionData } = await import('viem/utils');
+  const { ghostPayRouterAbi } = await import('@ghostpay/chain-adapters');
+  const w = await reconciliationWorld();
+  const [ephemeral, original] = decodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], w.current.log.data);
+  const metadata = `0x${(parseInt(original.slice(2, 4), 16) ^ 0x5a).toString(16).padStart(2, '0')}${original.slice(4)}` as const;
+  const log = { ...w.current.log, data: encodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], [ephemeral, metadata]) };
+  w.io.files.set('current.json', JSON.stringify({ version: 1, observations: [{ ...w.current, log }] }));
+  w.state.receipt = { ...(w.state.receipt as Record<string, unknown>), logs: [log] };
+  w.state.tx = { ...(w.state.tx as Record<string, unknown>), input: encodeFunctionData({ abi: ghostPayRouterAbi, functionName: 'payNative', args: [w.recipient as `0x${string}`, 100n, 1_900_000_000n, ephemeral, metadata] }) };
+  expect(await run(['reconcile', 'propose', '--in', 'history.json', ...RECON_CREDS, ...RECON_LIVE, '--record', w.recordId, '--out', 'proposal.json', '--json'], w.io)).toBe(0);
+});
+it('classifies provider failure during authenticated context construction as a network error', async () => {
+  const w = await reconciliationWorld(); w.state.fail = true;
+  expect(await run(['reconcile', 'propose', '--in', 'history.json', ...RECON_CREDS, ...RECON_LIVE, '--record', w.recordId, '--out', 'proposal.json', '--json'], w.io)).toBe(4);
+  expect(JSON.parse(w.io.err.join(''))).toMatchObject({ error: { code: 'RPC_FAILURE' } });
+  expect(w.io.files.has('proposal.json')).toBe(false);
+});
 it('rejects duplicate current observations and refuses an unbounded context', async () => {
   for (const copies of [2, 65]) {
     const w = await reconciliationWorld();

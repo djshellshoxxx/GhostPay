@@ -145,6 +145,70 @@ async function confirm(ctx: Ctx, a: Parsed): Promise<number> {
     } finally { op.close(); }
   });
 }
+
+function approvedSuccessor(a: Parsed): void {
+  immutableOutput(a);
+  if (!a.flags.has('approve')) throw usageError('APPROVAL_REQUIRED', 'this local state change requires explicit --approve and a new output file.');
+  if (a.values.get('in') === '-') throw usageError('REPEATABLE_CONTEXT_REQUIRED', 'state changes need a source file so its exact bytes can be rechecked.');
+}
+
+async function recordPayments(ctx: Ctx, a: Parsed): Promise<number> {
+  approvedSuccessor(a);
+  const selectedId = a.values.get('record');
+  const annotation = a.values.get('manual-invoice-digest');
+  if (annotation !== undefined && (selectedId === undefined || !/^0x[0-9a-f]{64}$/.test(annotation)))
+    throw usageError('MANUAL_ANNOTATION_INVALID', 'a manual annotation requires --record and a canonical 32-byte lowercase --manual-invoice-digest.');
+  return withBackupErrors(async () => {
+    const op = await operatorVault(ctx, a, true);
+    try {
+      const current = await currentObservations(ctx, a, op);
+      const selected = current.records.filter(r => selectedId === undefined || r.id === selectedId);
+      if (selected.length === 0) throw failError('CURRENT_EVIDENCE_REQUIRED', 'the selected record is absent from the freshly verified observation context.');
+      await freshCanonicalContext(current);
+      for (const r of selected) await op.vault.save(reconciliationApi.validateReconciliationRecord({ ...r, ...(annotation === undefined ? {} : { invoiceDigest: annotation }) }));
+      const state = await op.vault.readState();
+      const encrypted = await op.vault.exportEncrypted();
+      await unchangedInput(ctx, a, op.input); await unchangedObservations(ctx, a, current); await freshCanonicalContext(current);
+      await ctx.writeOut(a, encrypted);
+      ctx.out({ ok: true, freshRecordCount: selected.length, recordCount: state.records.length, currentChainVerified: true,
+        invoiceAssociationConfirmed: false, manualAnnotation: annotation !== undefined, verifiedAt: ctx.io.nowSeconds(),
+        verificationScope: 'operator-pinned-testnet', manifestDigest: current.manifestDigest, parentSha256: sha256Text(op.input.text), out: a.values.get('out') },
+      `Recorded ${selected.length} freshly verified seller-owned observations in a new encrypted file. Invoice matching was not confirmed; any supplied invoice digest is an unverified manual annotation.`);
+      return 0;
+    } finally { op.close(); }
+  });
+}
+
+type Removal = 'records' | 'invoice' | 'receipt';
+async function removeLocal(ctx: Ctx, a: Parsed, kind: Removal): Promise<number> {
+  approvedSuccessor(a);
+  const selector = kind === 'invoice' ? 'invoice-digest' : 'receipt-signature';
+  const id = a.values.get(selector);
+  const all = kind === 'records' || a.flags.has('all');
+  if (kind !== 'records' && (Number(id !== undefined) + Number(all) !== 1 ||
+      (id !== undefined && !(kind === 'invoice' ? /^0x[0-9a-f]{64}$/ : /^[0-9a-f]{128}$/).test(id))))
+    throw usageError('REMOVAL_SELECTOR_INVALID', `choose either --all or one canonical --${selector}.`);
+  return withBackupErrors(async () => {
+    const op = await operatorVault(ctx, a);
+    try {
+      const before = await op.vault.readState();
+      const count = kind === 'records' ? before.records.length : kind === 'invoice' ? before.invoices.length : before.receipts.length;
+      if (!all && !(kind === 'invoice' ? before.invoices.some(i => i.invoiceDigest === id) : before.receipts.some(r => r.receipt.signature === id)))
+        throw failError('ENTRY_NOT_FOUND', 'the selected local entry does not exist in this authenticated scope.');
+      if (kind === 'records') await op.vault.clearRecords();
+      else if (kind === 'invoice') { if (all) await op.vault.clearInvoices(); else await op.vault.removeInvoice(id!); }
+      else { if (all) await op.vault.clearReceipts(); else await op.vault.removeReceipt(id!); }
+      const encrypted = await op.vault.exportEncrypted();
+      await unchangedInput(ctx, a, op.input);
+      await ctx.writeOut(a, encrypted);
+      ctx.out({ ok: true, removed: all ? count : 1, kind, currentChainVerified: false, tombstonesRetained: true,
+        readOnly: before.readOnly, parentSha256: sha256Text(op.input.text), out: a.values.get('out') },
+      `Removed ${all ? count : 1} local ${kind} entries in a new encrypted file. Reorg invalidation history and read-only saturation are retained.`);
+      return 0;
+    } finally { op.close(); }
+  });
+}
+
 async function importBackup(ctx: Ctx, a: Parsed): Promise<number> {
   noPositionals(a);
   if (!a.flags.has('dry-run')) { immutableOutput(a); if (!a.flags.has('approve')) throw usageError('APPROVAL_REQUIRED', 'import requires --approve or --dry-run.'); }
@@ -196,6 +260,10 @@ export const reconcileCommands: readonly Command[] = [
   { path: ['reconcile', 'register'], summary: 'register a signed fixed-amount invoice in the seller scope', usage: 'ghostpay reconcile register --in history.json --invoice invoice.json --keystore seller.json --passphrase-file pass.txt --out next.json\n  Example: ghostpay reconcile register --in history.json --invoice invoice.json --keystore seller.json --passphrase-file pass.txt --out next.json', opts: { in: 'value', invoice: 'value', ...CREDENTIALS, ...OUTPUT }, handler: register },
   { path: ['reconcile', 'propose'], summary: 'list local proposals or export one bound to freshly verified observations', usage: 'ghostpay reconcile propose --in history.json --viewing-key-file view.hex [--json]\n  Confirmable export: add --keystore seller.json --passphrase-file pass.txt --observations current.json --online --rpc-file rpc.txt --manifest deployment.json --manifest-digest 0xHASH --record ID --out proposal.json\n  Current input: {"version":1,"observations":[payment-observation,...]} (1–64). The shared RPC budget applies to the whole context. Proposals expire after five minutes and never confirm payment by themselves.', opts: { in: 'value', record: 'value', ...CREDENTIALS, ...LIVE, ...OUTPUT }, handler: propose },
   { path: ['reconcile', 'confirm'], summary: 'explicitly confirm a reviewed proposal after live canonical revalidation', usage: 'ghostpay reconcile confirm --in history.json --proposal proposal.json --observations current.json --keystore seller.json --passphrase-file pass.txt --manifest deployment.json --manifest-digest 0xHASH --online --rpc-file rpc.txt --approve --out next.json\n  Rechecks exact source bytes, all supplied current observations, seller ownership, duplicate evidence, matching context, block hashes and finality. Writes a new encrypted file; no fund movement.\n  Example: use the same files and provider options as reconcile propose, then add --proposal proposal.json --approve --out next.json', opts: { in: 'value', proposal: 'value', approve: 'flag', ...CREDENTIALS, ...LIVE, ...OUTPUT }, handler: confirm },
+  { path: ['reconcile', 'record'], summary: 'persist freshly verified owned payments without confirming an invoice match', usage: 'ghostpay reconcile record --in history.json --observations current.json --keystore seller.json --passphrase-file pass.txt --manifest deployment.json --manifest-digest 0xHASH --online --rpc-file rpc.txt --approve --out next.json [--record ID] [--manual-invoice-digest 0xHASH]\n  Verifies the entire bounded current context and saves all its records, or the selected --record. A manual invoice annotation requires a selected record and is not verified or automatically matched. Imported files alone never supply live evidence.\n  Example: ghostpay reconcile record --in history.json --observations current.json --keystore seller.json --passphrase-env SELLER_PASS --manifest deployment.json --manifest-digest 0xHASH --online --rpc-env RPC_ENDPOINT --approve --out next.json', opts: { in: 'value', record: 'value', 'manual-invoice-digest': 'value', approve: 'flag', ...CREDENTIALS, ...LIVE, ...OUTPUT }, handler: recordPayments },
+  { path: ['reconcile', 'clear-records'], summary: 'clear local observations while retaining reorg invalidation history', usage: 'ghostpay reconcile clear-records --in history.json --viewing-key-file view.hex --approve --out next.json\n  Clears only observations. Invalidation tombstones, read-only saturation, invoices and signed receipt archives remain in the new encrypted successor.\n  Example: ghostpay reconcile clear-records --in history.json --viewing-key-file view.hex --approve --out next.json', opts: { in: 'value', approve: 'flag', ...CREDENTIALS, ...OUTPUT }, handler: (ctx, a) => removeLocal(ctx, a, 'records') },
+  { path: ['reconcile', 'remove-invoice'], summary: 'remove local invoice registrations from an immutable encrypted successor', usage: 'ghostpay reconcile remove-invoice --in history.json --viewing-key-file view.hex (--invoice-digest 0xHASH | --all) --approve --out next.json\n  Existing observation annotations and reorg invalidation history are retained.\n  Example: ghostpay reconcile remove-invoice --in history.json --viewing-key-file view.hex --all --approve --out next.json', opts: { in: 'value', 'invoice-digest': 'value', all: 'flag', approve: 'flag', ...CREDENTIALS, ...OUTPUT }, handler: (ctx, a) => removeLocal(ctx, a, 'invoice') },
+  { path: ['reconcile', 'remove-receipt'], summary: 'remove archived seller receipts from an immutable encrypted successor', usage: 'ghostpay reconcile remove-receipt --in history.json --viewing-key-file view.hex (--receipt-signature HEX | --all) --approve --out next.json\n  Uses the canonical 64-byte signature from the original digital receipt. Reorg invalidation history and observations are retained.\n  Example: ghostpay reconcile remove-receipt --in history.json --viewing-key-file view.hex --all --approve --out next.json', opts: { in: 'value', 'receipt-signature': 'value', all: 'flag', approve: 'flag', ...CREDENTIALS, ...OUTPUT }, handler: (ctx, a) => removeLocal(ctx, a, 'receipt') },
   { path: ['reconcile', 'import'], summary: 'merge encrypted historical backup without upgrading its payment trust', usage: 'ghostpay reconcile import --in history.json --backup archive.json --viewing-key-file view.hex (--dry-run | --approve --out merged.json)\n  Example: ghostpay reconcile import --in history.json --backup archive.json --viewing-key-file view.hex --dry-run --json', opts: { in: 'value', backup: 'value', ...CREDENTIALS, approve: 'flag', 'dry-run': 'flag', ...OUTPUT }, handler: importBackup },
   { path: ['reconcile', 'archive-receipt'], summary: 'archive a valid receipt from this seller without treating it as payment proof', usage: 'ghostpay reconcile archive-receipt --in history.json --receipt receipt.json --keystore seller.json --passphrase-file pass.txt --out next.json\n  Example: ghostpay reconcile archive-receipt --in history.json --receipt receipt.json --keystore seller.json --passphrase-file pass.txt --out next.json', opts: { in: 'value', receipt: 'value', ...CREDENTIALS, ...OUTPUT }, handler: archiveReceipt },
   { path: ['reconcile', 'export-receipts'], summary: 'export archived signed digital receipts after verifying their signatures', usage: 'ghostpay reconcile export-receipts --in history.json --viewing-key-file view.hex --out receipts.json\n  Preserve the original digital receipts; QR codes only represent these serialized files.\n  Example: ghostpay reconcile export-receipts --in history.json --viewing-key-file view.hex --out receipts.json', opts: { in: 'value', ...CREDENTIALS, ...OUTPUT }, handler: exportReceipts },
