@@ -6,7 +6,7 @@ The current review stack is **#84 → #88 → the product-continuation draft**. 
 `14f9b2673ac25c7ec60a0a3a78eb17e2c7acf44d`; the application consolidation has not been merged.
 The older migration evidence below applies only to its named historical commits. It does not qualify this stack.
 See the [current consolidation ledger](../handoffs/PRODUCT_CONSOLIDATION_2026-11-09.md) for source heads,
-ancestry, review dispositions and the [Sonar investigation](../handoffs/SONAR_TRIAGE_2026-11-09.md).
+ancestry, review dispositions and the [Sonar investigation](SONAR_TRIAGE_2026-11-09.md).
 
 The previous gap list was stale: seller public-config pairing, Settings/Registry QR exchange, encrypted local
 invoice matching, and receipt archival already existed in #88. This continuation checks and hardens their remaining
