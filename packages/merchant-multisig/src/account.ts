@@ -1,8 +1,9 @@
-import { evaluateApprovals, type Approval } from './approvals.js';
+import { evaluateApprovals, MAX_APPROVALS, validateApproval, type Approval } from './approvals.js';
 import { U64_MAX } from './encoding.js';
 import { MultisigError } from './errors.js';
 import { MAX_POLICY_VERSION, validatePolicy, type MultisigPolicy } from './policy.js';
 import { MAX_TIMESTAMP, validateProposal, type Proposal } from './proposal.js';
+import { decimalString, HEX32_RE, int, readArray, readExact, str } from './validate.js';
 
 /** Maximum queued (approved, timelocked) proposals per account. */
 export const MAX_QUEUED = 64;
@@ -74,6 +75,47 @@ function timelockFor(policy: MultisigPolicy, p: Proposal): number {
 }
 
 /**
+ * Strictly validates an untrusted account snapshot and rechecks every queued quorum.
+ * This detects malformed state, not a rollback or a coherently forged local clock/history.
+ * The host must independently trust its storage and serialize transitions.
+ */
+export function validateAccountState(value: unknown): AccountState {
+  const r = readExact(value, ['policy', 'nextNonce', 'queued'], 'STATE', '');
+  const policy = validatePolicy(r.policy);
+  const nextNonce = decimalString(r.nextNonce, 0n, U64_MAX, 'STATE', 'nextNonce');
+  const entries = readArray(r.queued, MAX_QUEUED, 'STATE', 'queued');
+  const digests = new Set<string>();
+  let previousNonce = -1n;
+  const queued = entries.map((raw): QueuedProposal => {
+    const q = readExact(raw, ['digest', 'proposal', 'approvals', 'queuedAt', 'executableAt'], 'STATE', 'queued');
+    const digest = str(q.digest, HEX32_RE, 'STATE', 'digest');
+    const proposal = validateProposal(q.proposal);
+    if (proposal.kind === 'cancel') throw new MultisigError('STATE', 'queued');
+    const nonce = BigInt(proposal.nonce);
+    if (nonce <= previousNonce || nonce >= BigInt(nextNonce) || digests.has(digest)) {
+      throw new MultisigError('STATE', 'nextNonce');
+    }
+    previousNonce = nonce;
+    digests.add(digest);
+    const queuedAt = int(q.queuedAt, 0, MAX_TIMESTAMP, 'STATE', 'queuedAt');
+    const executableAt = int(q.executableAt, 0, MAX_TIMESTAMP, 'STATE', 'executableAt');
+    if (queuedAt + MAX_CLOCK_SKEW_SECONDS < proposal.createdAt || queuedAt >= proposal.expiresAt) {
+      throw new MultisigError('STATE', 'queuedAt');
+    }
+    if (executableAt !== queuedAt + timelockFor(policy, proposal) || executableAt >= proposal.expiresAt) {
+      throw new MultisigError('TIMELOCK');
+    }
+    const approvals = readArray(q.approvals, MAX_APPROVALS, 'STATE', 'approvals').map(validateApproval);
+    const evaluation = evaluateApprovals(policy, proposal, approvals);
+    if (!evaluation.thresholdMet || evaluation.rejected.length !== 0 || evaluation.digest !== digest) {
+      throw new MultisigError('THRESHOLD');
+    }
+    return Object.freeze({ digest, proposal, approvals: Object.freeze(approvals), queuedAt, executableAt });
+  });
+  return freezeState(policy, nextNonce, queued);
+}
+
+/**
  * Admits a proposal that has reached threshold.
  *
  * @remarks Checks, in order: validity, binding (account/chain/policy hash), nonce
@@ -99,7 +141,8 @@ export function queueProposal(
   now: number,
 ): QueueResult {
   checkNow(now);
-  const policy = validatePolicy(state.policy);
+  state = validateAccountState(state);
+  const policy = state.policy;
   const p = validateProposal(proposal);
   const evaluation = evaluateApprovals(policy, p, approvals); // includes binding check
   if (p.nonce !== state.nextNonce) throw new MultisigError('REPLAY', 'nonce');
@@ -131,7 +174,7 @@ export function queueProposal(
   const rejectedIdx = new Set(evaluation.rejected.map((r) => r.index));
   const counted = approvals
     .filter((_, i) => !rejectedIdx.has(i))
-    .map((a) => Object.freeze({ signer: a.signer, signature: a.signature }));
+    .map(validateApproval);
   const entry: QueuedProposal = Object.freeze({
     digest: evaluation.digest,
     proposal: p,
@@ -165,7 +208,8 @@ export function queueProposal(
  */
 export function executeProposal(state: AccountState, digest: string, now: number): ExecuteResult {
   checkNow(now);
-  const policy = validatePolicy(state.policy);
+  state = validateAccountState(state);
+  const policy = state.policy;
   const entry = state.queued.find((q) => q.digest === digest);
   if (entry === undefined) throw new MultisigError('STATE', 'digest');
   if (now >= entry.proposal.expiresAt) throw new MultisigError('EXPIRED');
@@ -210,6 +254,7 @@ export function pruneExpired(
   now: number,
 ): { readonly state: AccountState; readonly dropped: readonly string[] } {
   checkNow(now);
+  state = validateAccountState(state);
   const kept = state.queued.filter((q) => now < q.proposal.expiresAt);
   const dropped = state.queued.filter((q) => now >= q.proposal.expiresAt).map((q) => q.digest);
   return Object.freeze({

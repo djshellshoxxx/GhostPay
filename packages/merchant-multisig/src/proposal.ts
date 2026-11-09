@@ -95,7 +95,8 @@ const KIND_TAG: Readonly<Record<ProposalKind, number>> = { payout: 1, refund: 2,
  */
 export function validateProposal(value: unknown): Proposal {
   const rec = asRecord(value, 'PROPOSAL', '');
-  const kind = rec.kind;
+  const kindDescriptor = Object.getOwnPropertyDescriptor(rec, 'kind');
+  const kind: unknown = kindDescriptor !== undefined && 'value' in kindDescriptor ? kindDescriptor.value : undefined;
   if (kind !== 'payout' && kind !== 'refund' && kind !== 'config' && kind !== 'cancel') {
     throw new MultisigError('PROPOSAL', 'kind');
   }
