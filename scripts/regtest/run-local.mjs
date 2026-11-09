@@ -15,6 +15,7 @@ const exec = promisify(execFile);
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const bitcoind = process.env.BITCOIND_BIN;
 if (!bitcoind) throw new Error('Set BITCOIND_BIN to a separately verified Bitcoin Core binary.');
+if (process.platform === 'win32') throw new Error('Run this local harness on Linux, macOS, or WSL.');
 const cli = process.env.BITCOIN_CLI_BIN ?? join(dirname(bitcoind), 'bitcoin-cli');
 const children = [];
 const abort = new AbortController();
@@ -36,7 +37,8 @@ async function unusedPort() {
 }
 
 function start(command, args, env, stdio = 'inherit') {
-  const child = spawn(command, args, { cwd: root, env, stdio });
+  // Each service owns a process group, including npx/Vitest descendants of the feature runner.
+  const child = spawn(command, args, { cwd: root, env, stdio, detached: true });
   // Attach the rejection handler immediately: a missing binary must not leave a child or secret behind.
   const done = new Promise((resolveExit) => {
     child.once('error', () => resolveExit({ code: null, failed: true }));
@@ -46,6 +48,20 @@ function start(command, args, env, stdio = 'inherit') {
   void done.then(() => { entry.ended = true; });
   children.push(entry);
   return entry;
+}
+
+function signalGroup(entry, signal) {
+  if (entry.child.pid === undefined) return false;
+  try { process.kill(-entry.child.pid, signal); return true; }
+  catch (error) { if (error.code === 'ESRCH') return false; throw error; }
+}
+
+async function stop(entry) {
+  // The group can survive its original child. Keep cleaning it even when `done` already resolved.
+  signalGroup(entry, 'SIGTERM');
+  for (let tries = 0; tries < 50 && signalGroup(entry, 0); tries += 1) await delay(100);
+  if (signalGroup(entry, 0)) signalGroup(entry, 'SIGKILL');
+  await entry.done;
 }
 
 async function ready(entry, check) {
@@ -74,6 +90,7 @@ try {
     BITCOIND_RPC_URL: `http://127.0.0.1:${rpcPort}`,
     BITCOIND_RPC_USER: username, BITCOIND_RPC_PASSWORD: password,
     ESPLORA_URL: `http://127.0.0.1:${shimPort}`, SHIM_HOST: '127.0.0.1', SHIM_PORT: String(shimPort),
+    TMPDIR: directory,
   };
   const core = start(bitcoind, [`-datadir=${directory}`, '-printtoconsole=0'], env, ['ignore', 'ignore', 'inherit']);
   await ready(core, async () => {
@@ -90,20 +107,19 @@ try {
     } catch { return false; }
   });
   const test = start(process.execPath, ['scripts/regtest/e2e.mjs'], env);
-  const stopTest = () => test.child.kill('SIGTERM');
-  abort.signal.addEventListener('abort', stopTest, { once: true });
-  if (abort.signal.aborted) stopTest();
-  const result = await test.done;
-  abort.signal.removeEventListener('abort', stopTest);
+  let onAbort;
+  const interrupted = new Promise((resolveAbort) => {
+    onAbort = () => resolveAbort({ code: null, failed: true });
+    abort.signal.addEventListener('abort', onAbort, { once: true });
+    if (abort.signal.aborted) onAbort();
+  });
+  // Enter finally immediately on interruption, even if a child ignores SIGTERM.
+  const result = await Promise.race([test.done, interrupted]);
+  abort.signal.removeEventListener('abort', onAbort);
   abort.signal.throwIfAborted();
   if (result.failed) throw new Error('Live regtest feature journey failed.');
 } finally {
-  for (const { child, done, ended } of children.reverse()) {
-    if (!ended) child.kill('SIGTERM');
-    const timer = setTimeout(() => child.kill('SIGKILL'), 5000);
-    await done;
-    clearTimeout(timer);
-  }
+  for (const entry of children.reverse()) await stop(entry);
   await rm(directory, { recursive: true, force: true });
   process.removeListener('SIGINT', interrupt);
   process.removeListener('SIGTERM', interrupt);
