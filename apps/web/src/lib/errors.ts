@@ -1,7 +1,7 @@
 import { ChainAdapterError } from '@ghostpay/chain-adapters';
 import { GhostPayCryptoError } from '@ghostpay/core-crypto';
 import { InvoiceError } from '@ghostpay/invoice-schema';
-import { SOURCE_TRANSLATOR } from '../i18n/context';
+import { SOURCE_TRANSLATOR } from '../i18n/source';
 import type { MessageKey } from '../i18n/catalog';
 import type { MessageValues } from '../i18n/message';
 import type { Translator } from '../i18n/translator';

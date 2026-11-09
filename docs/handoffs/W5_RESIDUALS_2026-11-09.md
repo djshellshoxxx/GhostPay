@@ -31,3 +31,18 @@ The first focused run exposed a capacity-error mock that used plain `Error`; the
 ## Remaining scope
 
 This does not claim full-application localization. Other screens and libraries still construct English `UserFacingError` messages, and unmodified callers of `userMessage` retain its source-English default until they pass their current translator. The reconciliation ledger still has English-only controls. Native review of security copy remains required before translated critical messages can be shown. No chain, payment, deployment, signing or review registry settings changed.
+
+## Node/E2E collection follow-up
+
+Integration exposed a module-boundary regression: `receipts.ts` imports the localized error types, whose source renderer originally imported the React provider and Vite-only catalog loader. Playwright's Node process refused the English JSON import during collection.
+
+The source catalog and translator now live in pure modules. The static catalog uses the standard JSON import attribute; the translator retains the same key classification and source fallback logic. Browser catalog loading and the React provider re-export the existing public symbols, while pure error helpers no longer load either browser module.
+
+Follow-up validation:
+
+- `GHOSTPAY_CHROMIUM=/usr/bin/chromium npm run test:e2e -w @ghostpay/web -- --list`: exit 0, 59 tests in 12 files collected. Before the fix: exit 1, zero tests collected, JSON import-attribute error.
+- `npm run typecheck -w @ghostpay/web`, `npm run lint -w @ghostpay/web`, `npm run build -w @ghostpay/web`: exit 0; bundle scan passed.
+- From `apps/web`: `npx vitest run src/lib/errors*.test.ts src/lib/receipts*.test.ts src/components/ReceiptPanel.i18n.test.tsx src/i18n --maxWorkers=2`: 13 files, 97 tests passed. This follows the checked-in Vitest include/exclude rules.
+- `git diff --check`: exit 0.
+
+Collection is not an executed browser suite; the coordinator owns the integrated E2E run.

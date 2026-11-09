@@ -1,4 +1,5 @@
-import { SOURCE_CATALOG, type CatalogLayer, type MessageKey } from './catalog';
+import type { CatalogLayer } from './catalog';
+import { SOURCE_CATALOG, type MessageKey } from './sourceCatalog';
 import { isReviewed, SOURCE_LOCALE } from './languages';
 import { NEUTRAL_KEYS } from './securityKeys';
 import {

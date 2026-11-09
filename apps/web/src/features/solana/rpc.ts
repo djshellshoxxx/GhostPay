@@ -1,4 +1,4 @@
-import { SOURCE_TRANSLATOR } from '../../i18n/context';
+import { SOURCE_TRANSLATOR } from '../../i18n/source';
 import type { MessageKey } from '../../i18n/catalog';
 import type { Translator } from '../../i18n/translator';
 import { UserFacingError, userMessage, type MessageDescriptor } from '../../lib/errors';
