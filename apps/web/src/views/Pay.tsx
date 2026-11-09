@@ -7,7 +7,7 @@ import { CameraImporter } from '../components/CameraImporter';
 import { WalletAttempts } from '../components/WalletAttempts';
 import { FeeDisclosure, useManifest } from '../components/Disclosure';
 import { ManifestBanner } from '../components/ManifestBanner';
-import { extractFragment } from '../lib/fragment';
+import { clearFragment, extractFragment } from '../lib/fragment';
 import { safeText, payeeFingerprint } from '../lib/displayText';
 import { formatCountdown, formatFiat, formatUnits, formatUnix, shortHex } from '../lib/format';
 import { UserFacingError, displayMessage, captureUserMessage, type DisplayMessage, type MessageDescriptor } from '../lib/errors';
@@ -1254,7 +1254,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           <button type="button" className="btn" onClick={forget}>{t('pay.forget')}</button>
         )}
         {!app.settings.autoClearFragment && (
-          <button type="button" className="btn" onClick={() => { history.replaceState(null, '', `${location.pathname}${location.search}`); }}>
+          <button type="button" className="btn" onClick={() => { clearFragment(location, history); }}>
             {t('pay.removeLink')}
           </button>
         )}

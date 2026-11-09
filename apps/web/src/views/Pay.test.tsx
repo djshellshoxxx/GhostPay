@@ -260,6 +260,22 @@ describe('Pay: invoice reading and review', () => {
     expect(window.location.hash).toBe('');
   });
 
+  it('manually clears an invoice fragment on a double-slash pathname while preserving origin, path and query', async () => {
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ autoClearFragment: false, rpcUrls: { '84532': 'https://rpc.test' } }));
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const origin = window.location.origin;
+    const pathAndQuery = '//other.test/invoice?view=pay';
+    window.history.replaceState(null, '', `${origin}${pathAndQuery}${fragment}`);
+    renderApp(makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    const user = userEvent.setup();
+    await screen.findByRole('heading', { name: 'Review payment' });
+    expect(window.location.hash).toBe(fragment);
+    await user.click(screen.getByRole('button', { name: 'Remove link from address bar' }));
+    expect(window.location.origin).toBe(origin);
+    expect(`${window.location.pathname}${window.location.search}`).toBe(pathAndQuery);
+    expect(window.location.hash).toBe('');
+  });
+
   it('prompts for a passphrase, rejects a wrong one, and opens the invoice only after decryption', async () => {
     const passphrase = 'cedar orbit velvet lantern meadow';
     generateSession();
