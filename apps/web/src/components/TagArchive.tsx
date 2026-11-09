@@ -11,7 +11,7 @@ import { useServices } from '../lib/services';
 import { captureSessionVersionGuard, getSessionPublic, revealViewingKey } from '../lib/session';
 import { MAX_ARCHIVE_BYTES, exportArchive, previewArchiveImport, type ArchiveImportPreview } from '../lib/tagArchive';
 import { useApp } from '../state';
-import { Field, Notice } from './Common';
+import { Field, Notice, SafeText } from './Common';
 import { ContextHelp } from './ContextHelp';
 
 interface Staged {
@@ -418,12 +418,12 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
           <p className="hint">{t('tagArchive.format')}</p>
 
           <form onSubmit={onPreview} className="stack" autoComplete="off">
-            <Field label={t('tagArchive.import.file')} help={{ label: t('help.about', { control: t('tagArchive.import.file') }), text: t('help.tagArchiveFile') }}>{(id, describedBy) => <input id={id} aria-describedby={describedBy} type="file" accept=".gpa,application/octet-stream" onChange={(e) => {
+            <Field label={t('tagArchive.import.file')} help={{ label: t('help.about', { control: t('tagArchive.import.file') }), text: t('help.tagArchiveFile') }}>{(id, describedBy) => <><input id={id} aria-describedby={[describedBy, file === undefined ? undefined : `${id}-selected`].filter(Boolean).join(' ') || undefined} type="file" accept=".gpa,application/octet-stream" onChange={(e) => {
               const selected = e.currentTarget.files?.[0];
               e.currentTarget.value = '';
               if (selected === undefined) return;
               invalidate(); setImportPass(''); setMessage(undefined); setFile(selected);
-            }} />}</Field>
+            }} />{file !== undefined && <p id={`${id}-selected`} className="hint">{t('upload.selectedFile')}: <bdi dir="ltr"><SafeText value={file.name} /></bdi></p>}</>}</Field>
             <Field label={t('tagArchive.import.passphrase')}>{(id) => <input id={id} type="password" autoComplete="off" value={importPass} onChange={(e) => { invalidate(); setImportPass(e.target.value); }} />}</Field>
             <label><input type="radio" name="tag-import-mode" checked={mode === 'merge'} onChange={() => { invalidate(); setMode('merge'); }} /> {t('tagArchive.import.merge')}</label>
             <label><input type="radio" name="tag-import-mode" checked={mode === 'replace'} onChange={() => { invalidate(); setMode('replace'); }} /> {t('tagArchive.import.replace')}</label>

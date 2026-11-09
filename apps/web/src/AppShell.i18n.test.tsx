@@ -56,7 +56,7 @@ describe('navigation localization', () => {
     for (const [name, href] of [
       ['Help and getting started', './help.html'],
       ['Privacy and verification limits', './privacy.html'],
-      ['Source repository', 'https://github.com/djshellshoxxx/GhostPay'],
+      ['Source and attribution', './help.html#technology'],
     ]) {
       const link = screen.getByRole('link', { name: `${name} (opens in a new tab)` });
       expect(link.getAttribute('href')).toBe(href);

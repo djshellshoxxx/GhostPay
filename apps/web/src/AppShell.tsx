@@ -261,7 +261,7 @@ export function AppShell(props: AppShellProps): ReactNode {
         <ul className="footer-links">
           <li><a href="./help.html" target="_blank" rel="noopener noreferrer">{t('app.shell.help')} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>
           <li><a href="./privacy.html" target="_blank" rel="noopener noreferrer">{t('app.shell.privacy')} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>
-          <li><a href="https://github.com/djshellshoxxx/GhostPay" target="_blank" rel="noopener noreferrer">{t('app.shell.repository')} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>
+          <li><a href="./help.html#technology" target="_blank" rel="noopener noreferrer">{t('footer.sources')} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>
         </ul>
       </footer>
     </AppContext.Provider>

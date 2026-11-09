@@ -70,10 +70,14 @@ describe('tag archive import lifetime and repeated files', () => {
     const { user, preview } = await openArchive();
     const read = vi.spyOn(tagArchive, 'previewArchiveImport').mockResolvedValue(preview);
     await user.upload(screen.getByLabelText('Archive file'), new File(['first'], 'first.gpa'));
+    expect(screen.getByText('first.gpa')).toBeTruthy();
     fireEvent.change(screen.getByLabelText('Archive file'), { target: { files: [] } });
+    expect(screen.getByText('first.gpa')).toBeTruthy();
     await user.click(screen.getByRole('button', { name: 'Decrypt and preview' }));
     await waitFor(() => { expect(read).toHaveBeenCalledOnce(); });
     await user.upload(screen.getByLabelText('Archive file'), new File(['next'], 'next.gpa'));
+    expect(screen.queryByText('first.gpa')).toBeNull();
+    expect(screen.getByText('next.gpa')).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Apply import' })).toBeNull();
     await user.click(screen.getByRole('button', { name: 'Decrypt and preview' }));
     await waitFor(() => { expect(read).toHaveBeenCalledTimes(2); });

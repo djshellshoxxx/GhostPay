@@ -2,6 +2,7 @@
 import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { notifyAppLock } from '../lib/appLock';
 import * as session from '../lib/session';
 import * as vault from '../lib/keyVault';
 import { clearSession, exportKeystore, generateSession, getSessionPublic, type SessionPublic } from '../lib/session';
@@ -223,6 +224,7 @@ describe('SellerKeys own vault completion ownership', () => {
     installed: SessionPublic;
     release: () => void;
     text: string;
+    store: MemoryKeyVaultStore;
   }> {
     const fixture = await makeFixture();
     const store = new MemoryKeyVaultStore();
@@ -246,7 +248,7 @@ describe('SellerKeys own vault completion ownership', () => {
     await act(async () => { installed = await installedPromise; });
     await flush();
     expect(getSessionPublic()).toBe(installed);
-    return { user, installed, release, text: fixture.text };
+    return { user, installed, release, text: fixture.text, store };
   }
 
   it('announces its own unlock after session effects flush', async () => {
@@ -281,5 +283,40 @@ describe('SellerKeys own vault completion ownership', () => {
       expect(screen.getByLabelText<HTMLInputElement>('Vault passphrase').value).toBe('new attempt');
       expect(getSessionPublic()).toBe(held.installed);
     } finally { held.release(); await flush(); }
+  }, 30000);
+
+  it('keeps a later vault deletion busy at app lock after its own unlock return was held', async () => {
+    const held = await startHeldUnlock();
+    let releaseDelete!: () => void;
+    const deleteGate = new Promise<void>((resolve) => { releaseDelete = resolve; });
+    const realDelete = held.store.delete.bind(held.store);
+    const remove = vi.spyOn(held.store, 'delete').mockImplementation(async (expected) => {
+      await deleteGate;
+      return realDelete(expected);
+    });
+    try {
+      await act(async () => { held.release(); await Promise.resolve(); });
+      await waitFor(() => { expect(rootHasText(UNLOCKED)).toBe(true); });
+      await held.user.click(screen.getByRole('button', { name: 'Delete encrypted vault' }));
+      await held.user.type(await screen.findByLabelText('Passphrase of this vault'), PASS);
+      await held.user.click(screen.getByRole('button', { name: 'Confirm delete encrypted vault' }));
+      // Real deletion has authenticated the exact encrypted record and is waiting at the storage boundary.
+      await waitFor(() => { expect(remove).toHaveBeenCalledOnce(); });
+      expect(await held.store.get()).toBe(held.text);
+
+      act(() => { notifyAppLock('idle'); });
+
+      // Lock dismisses the confirmation, but the already-authorized storage operation remains pending.
+      const requestDelete = screen.getByRole<HTMLButtonElement>('button', { name: 'Delete encrypted vault' });
+      expect(requestDelete.disabled).toBe(true);
+      await held.user.click(requestDelete);
+      expect(screen.queryByRole('button', { name: 'Confirm delete encrypted vault' })).toBeNull();
+      expect(remove).toHaveBeenCalledOnce();
+
+      await act(async () => { releaseDelete(); await Promise.resolve(); });
+      await waitFor(() => { expect(rootHasText('Encrypted vault deleted from this browser.')).toBe(true); });
+      expect(await held.store.get()).toBeUndefined();
+      expect(getSessionPublic()).toBe(held.installed);
+    } finally { held.release(); releaseDelete(); await flush(); }
   }, 30000);
 });

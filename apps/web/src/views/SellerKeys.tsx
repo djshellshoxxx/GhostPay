@@ -1,6 +1,6 @@
 import { subscribeAppLock } from '../lib/appLock';
 import { useEffect, useId, useRef, useState, useSyncExternalStore, type FormEvent, type ReactNode } from 'react';
-import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
+import { CopyButton, Field, Mono, Notice, SafeText, downloadText } from '../components/Common';
 import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
 import { displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
@@ -142,6 +142,8 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   }), []);
   useEffect(() => {
     operation.current?.abort(); operation.current = null;
+    // This effect may precede our own unlock/import return; its finally block then no longer owns the controller.
+    operationKind.current = undefined;
     setBackupQr(undefined); setBusy(false); setVaultBusy(false);
     forgetTyped(); setImportText(undefined); setFile(undefined);
     resetFilePicker();
@@ -466,11 +468,14 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
           <details onToggle={(event) => { if (!event.currentTarget.open) cancelImport(); }}>
             <summary>{t('sellerKeys.importKeystore')}</summary>
             <form onSubmit={onImportKeystore} className="stack">
-              <Field label={t('sellerKeys.keystoreFile')} help={{ label: t('help.about', { control: t('sellerKeys.keystoreFile') }), text: t('help.keystoreFile') }}>{(id, describedBy) => <input id={id} aria-describedby={describedBy} ref={fileInput} type="file" accept="application/json,.json" onChange={(e) => {
-                const chosen = e.currentTarget.files?.[0]; e.currentTarget.value = '';
-                if (chosen === undefined) return;
-                clearImport(); setFile(chosen);
-              }} />}</Field>
+              <Field label={t('sellerKeys.keystoreFile')} help={{ label: t('help.about', { control: t('sellerKeys.keystoreFile') }), text: t('help.keystoreFile') }}>{(id, describedBy) => <>
+                <input id={id} aria-describedby={[describedBy, file === undefined ? undefined : `${id}-file`].filter(Boolean).join(' ') || undefined} ref={fileInput} type="file" accept="application/json,.json" onChange={(e) => {
+                  const chosen = e.currentTarget.files?.[0]; e.currentTarget.value = '';
+                  if (chosen === undefined) return;
+                  clearImport(); setFile(chosen);
+                }} />
+                {file !== undefined && <p className="hint" id={`${id}-file`}>{t('upload.selectedFile')}: <bdi><SafeText value={file.name} /></bdi></p>}
+              </>}</Field>
               <Field label={t('sellerKeys.passphrase')}>{(id) => <input id={id} type="password" autoComplete="off" value={importPass} onChange={(e) => { stopOperation(); setBusy(false); setImportPass(e.target.value); }} />}</Field>
               <button type="submit" className="btn" disabled={busy}>{t('sellerKeys.decryptLoad')}</button>
               {busy && <button type="button" className="btn" onClick={cancelImport}>{t('sellerKeys.cancelKeystore')}</button>}
