@@ -20,6 +20,7 @@ import { Notice } from './components/Common';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { notifyAppLock } from './lib/appLock';
 import { SOURCE_TRANSLATOR, useI18nOptional } from './i18n/context';
+import type { MessageKey } from './i18n/catalog';
 import { ShellProfileContext } from './lib/buildProfile';
 
 export type ExtraViews = Readonly<Partial<Record<ViewId, ReactNode>>>;
@@ -33,6 +34,7 @@ export interface AppShellProps {
 export const CORE_ORDER: readonly ViewId[] = Object.freeze<ViewId[]>(['home', 'seller', 'create', 'pay', 'scan', 'sweep', 'registry', 'settings', 'about']);
 
 function ViewSwitch(props: { readonly view: ViewId; readonly extraViews: ExtraViews; readonly profile: 'full' | 'lean'; readonly sellerArchive?: ReactNode }): ReactNode {
+  const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
   switch (props.view) {
     case 'home':
       return <Home />;
@@ -41,7 +43,7 @@ function ViewSwitch(props: { readonly view: ViewId; readonly extraViews: ExtraVi
     case 'create':
       // An invoice invites payments that only these keys can sweep: no invoice until they are backed up or the risk is waived (L1-01).
       // Also when only a signing key generated at a hex import is unsaved: invoices are signed with it (C-R10).
-      return <BackupGate heading="Create invoice"><CreateInvoice supportedOnly={props.profile === 'lean'} /></BackupGate>;
+      return <BackupGate heading={t(VIEW_LABELS.create)}><CreateInvoice supportedOnly={props.profile === 'lean'} /></BackupGate>;
     case 'pay':
       return <Pay supportedOnly={props.profile === 'lean'} />;
     case 'scan':
@@ -73,7 +75,7 @@ export function AppShell(props: AppShellProps): ReactNode {
   const [settings, setSettings] = useState<SettingsData>(() => loadSettings());
   const [matches, setMatches] = useState<readonly ScanMatch[]>([]);
   const [sweepTarget, selectForSweep] = useState<AppState['sweepTarget']>(undefined);
-  const [live, setLive] = useState('');
+  const [live, setLive] = useState<string | { readonly key: MessageKey }>('');
   // Minutes of the idle lock that last wiped seller keys, and whether an unsaved signing key went with them (C-R10), for a
   // visible notice; cleared once keys are loaded again.
   const [idleWiped, setIdleWiped] = useState<{ readonly minutes: number; readonly signerLost: boolean } | undefined>(undefined);
@@ -132,7 +134,7 @@ export function AppShell(props: AppShellProps): ReactNode {
       // Solana and TRON views wipe their own keys, and a copied backup is emptied from the clipboard (G2-02).
       notifyAppLock('idle');
       if (!hasSession()) {
-        setLive(t('app.idle.tagsLocked'));
+        setLive({ key: 'app.idle.tagsLocked' });
         return;
       }
       const unchanged = captureSessionVersionGuard();
@@ -140,12 +142,12 @@ export function AppShell(props: AppShellProps): ReactNode {
         try { unchanged(); } catch { return; }
         const signerLost = getSessionBackup()?.signerOnly === true;
         if (!recoverable && !signerLost) {
-          setLive(t('app.idle.kept'));
+          setLive({ key: 'app.idle.kept' });
           return;
         }
         clearSession();
         setIdleWiped({ minutes, signerLost });
-        setLive(t('app.idle.wiped'));
+        setLive({ key: 'app.idle.wiped' });
       });
     };
     const arm = (): void => {
@@ -160,7 +162,7 @@ export function AppShell(props: AppShellProps): ReactNode {
       window.removeEventListener('pointerdown', arm);
       window.removeEventListener('keydown', arm);
     };
-  }, [services, settings.lockTimeoutMin, t]);
+  }, [services, settings.lockTimeoutMin]);
 
   useEffect(() => {
     if (first.current) {
@@ -216,11 +218,11 @@ export function AppShell(props: AppShellProps): ReactNode {
 
   return (
     <AppContext.Provider value={state}>
-      <a className="skip" href="#main">Skip to content</a>
+      <a className="skip" href="#main" onClick={() => { main.current?.focus(); }}>{t('app.shell.skip')}</a>
       <header className="site-header">
         <h1>GhostPay</h1>
-        <p className="tagline">Stealth-address payments. Everything runs in your browser. Unaudited software.</p>
-        <nav aria-label="Main">
+        <p className="tagline">{t('app.shell.tagline')}</p>
+        <nav aria-label={t('app.shell.main')}>
           <ul className="nav">
             {order.map((v) => (
               <li key={v}>
@@ -253,10 +255,17 @@ export function AppShell(props: AppShellProps): ReactNode {
           </ShellProfileContext.Provider>
         </ErrorBoundary>
       </main>
-      <div className="sr-only" role="status" aria-live="polite">{live}</div>
+      <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">{typeof live === 'string' ? live : t(live.key)}</div>
       <footer className="site-footer">
-        <p>No analytics, no third-party scripts, no remote fonts. Fee and contract addresses come only from the deployment manifest.</p>
+        <p>{t('app.shell.footer')}</p>
+        <ul className="footer-links">
+          <li><a href="./help.html" target="_blank" rel="noopener noreferrer">{t('app.shell.help')} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>
+          <li><a href="./privacy.html" target="_blank" rel="noopener noreferrer">{t('app.shell.privacy')} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>
+          <li><a href="https://github.com/djshellshoxxx/GhostPay" target="_blank" rel="noopener noreferrer">{t('app.shell.repository')} <span className="sr-only">{t('app.shell.newTab')}</span></a></li>
+        </ul>
       </footer>
     </AppContext.Provider>
   );
 }
+
+// i18n-use: app.idle.tagsLocked app.idle.kept app.idle.wiped

@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { makeQr, qrSvgText } from '../lib/qr';
-import { QR_KINDS, qrKindClass, type QrIconId, type QrKind } from '../lib/qrKinds';
+import { localizedQrKind, qrKindClass, type QrIconId, type QrKind } from '../lib/qrKinds';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
+import type { MessageKey } from '../i18n/sourceCatalog';
 import '../styles/qr.css';
 import { CopyButton, downloadText } from './Common';
 import { QrView } from './QrView';
@@ -64,6 +66,24 @@ function prefersReducedMotion(): boolean {
   }
 }
 
+function useReducedMotion(): boolean {
+  const [reduced, setReduced] = useState(prefersReducedMotion);
+  useEffect(() => {
+    try {
+      if (typeof window.matchMedia !== 'function') return;
+      const query = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const change = (): void => { setReduced(query.matches); };
+      change();
+      if (typeof query.addEventListener !== 'function') return;
+      query.addEventListener('change', change);
+      return () => { query.removeEventListener('change', change); };
+    } catch {
+      return;
+    }
+  }, []);
+  return reduced;
+}
+
 /** Milliseconds each part stays visible when auto-advancing (slow enough for a phone camera to lock on). */
 export const PART_INTERVAL_MS = 2500;
 
@@ -76,48 +96,78 @@ export interface QrFrameProps {
   readonly chunks?: readonly string[];
 }
 
+type PayloadScope = Pick<QrFrameProps, 'kind' | 'text' | 'chunks'>;
+
+/** Equal copied chunks do not create a new scope merely because a language change rerendered a parent. */
+function samePayload(scope: PayloadScope | undefined, next: PayloadScope): boolean {
+  if (scope === undefined || scope.kind !== next.kind || scope.text !== next.text) return false;
+  const before = scope.chunks ?? [];
+  const after = next.chunks ?? [];
+  return before.length === after.length && before.every((part, index) => part === after[index]);
+}
+
+function payloadScope(props: QrFrameProps): PayloadScope {
+  return props.chunks === undefined
+    ? { kind: props.kind, text: props.text }
+    : { kind: props.kind, text: props.text, chunks: [...props.chunks] };
+}
+
 /** Colour-coded frame around a QR code: kind label, icon, border style, explanation and handling rules. */
 export function QrFrame(props: QrFrameProps): ReactNode {
-  const info = QR_KINDS[props.kind];
+  const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
+  const info = localizedQrKind(props.kind, t);
   const rules = info.rules;
   const uid = useId();
   const labelId = `${uid}-label`;
   const descId = `${uid}-desc`;
+  const largeDescId = `${uid}-large-desc`;
   const parts = props.chunks !== undefined && props.chunks.length > 1 ? props.chunks : null;
   const [index, setIndex] = useState(0);
   const [auto, setAuto] = useState(false);
-  const [revealed, setRevealed] = useState(!rules.revealRequired);
-  const [hiddenNote, setHiddenNote] = useState('');
-  const [large, setLarge] = useState(false);
-  const reduced = prefersReducedMotion();
+  const [revealedFor, setRevealedFor] = useState<PayloadScope | undefined>();
+  const [hiddenNote, setHiddenNote] = useState<MessageKey | undefined>();
+  const [largeFor, setLargeFor] = useState<PayloadScope | undefined>();
+  const revealed = samePayload(revealedFor, props);
+  const reduced = useReducedMotion();
   const openerRef = useRef<HTMLButtonElement | null>(null);
+  const revealRef = useRef<HTMLButtonElement | null>(null);
   const closeRef = useRef<HTMLButtonElement | null>(null);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
 
   const total = parts?.length ?? 1;
   // Clamp both ends when the multipart payload changes between renders.
   const safeIndex = Math.max(0, Math.min(index, total - 1));
   const current = parts !== null ? (parts[safeIndex] ?? props.text) : props.text;
   const visible = revealed || !rules.revealRequired;
+  const large = visible && samePayload(largeFor, props);
 
-  const hide = useCallback((note: string) => {
-    setRevealed(false);
-    setLarge(false);
+  const hide = useCallback((note: MessageKey) => {
+    setRevealedFor(undefined);
+    setLargeFor(undefined);
     setAuto(false);
     setHiddenNote(note);
   }, []);
 
+  // Rendering is already fail-closed above; drop stale secret snapshots after a payload change.
+  useEffect(() => {
+    if (revealedFor !== undefined && !samePayload(revealedFor, props)) setRevealedFor(undefined);
+    if (largeFor !== undefined && !samePayload(largeFor, props)) setLargeFor(undefined);
+  }, [props.kind, props.text, props.chunks, revealedFor, largeFor]);
+
+  useEffect(() => { if (reduced || !visible) setAuto(false); }, [reduced, visible]);
+
   // Secret: auto-hide after the configured time, and when the page is hidden.
   useEffect(() => {
     if (!rules.revealRequired || !revealed || rules.autoHideSeconds === null) return;
-    const t = setTimeout(() => {
-      hide('The secret QR code was hidden automatically.');
+    const timer = setTimeout(() => {
+      hide('qrFrame.hidden.auto');
     }, rules.autoHideSeconds * 1000);
     const onVis = (): void => {
-      if (document.visibilityState === 'hidden') hide('The secret QR code was hidden because the page was hidden.');
+      if (document.visibilityState === 'hidden') hide('qrFrame.hidden.page');
     };
     document.addEventListener('visibilitychange', onVis);
     return () => {
-      clearTimeout(t);
+      clearTimeout(timer);
       document.removeEventListener('visibilitychange', onVis);
     };
   }, [rules.revealRequired, rules.autoHideSeconds, revealed, hide]);
@@ -125,11 +175,11 @@ export function QrFrame(props: QrFrameProps): ReactNode {
   // Multipart auto-advance (never when the user prefers reduced motion).
   useEffect(() => {
     if (!auto || parts === null || reduced) return;
-    const t = setInterval(() => {
+    const timer = setInterval(() => {
       setIndex((i) => (i + 1) % parts.length);
     }, PART_INTERVAL_MS);
     return () => {
-      clearInterval(t);
+      clearInterval(timer);
     };
   }, [auto, parts, reduced]);
 
@@ -139,9 +189,30 @@ export function QrFrame(props: QrFrameProps): ReactNode {
     const opener = openerRef.current;
     closeRef.current?.focus();
     const onKey = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape') setLarge(false);
+      if (e.defaultPrevented) return;
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setLargeFor(undefined);
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const buttons = [...(dialogRef.current?.querySelectorAll<HTMLButtonElement>('button:not(:disabled)') ?? [])];
+      const first = buttons[0];
+      const last = buttons[buttons.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || !dialogRef.current?.contains(active))) {
+        e.preventDefault();
+        last?.focus();
+      } else if (!e.shiftKey && (active === last || !dialogRef.current?.contains(active))) {
+        e.preventDefault();
+        first?.focus();
+      }
+    };
+    const onFocus = (e: FocusEvent): void => {
+      if (e.target instanceof Node && !dialogRef.current?.contains(e.target)) closeRef.current?.focus();
     };
     document.addEventListener('keydown', onKey);
+    document.addEventListener('focusin', onFocus);
     let lock: { release: () => Promise<void> } | null = null;
     let cancelled = false;
     try {
@@ -149,7 +220,7 @@ export function QrFrame(props: QrFrameProps): ReactNode {
       if (wl !== undefined) {
         wl.request('screen').then(
           (l) => {
-            if (cancelled) void l.release();
+            if (cancelled) void l.release().catch(() => undefined);
             else lock = l;
           },
           () => undefined,
@@ -161,8 +232,10 @@ export function QrFrame(props: QrFrameProps): ReactNode {
     return () => {
       cancelled = true;
       document.removeEventListener('keydown', onKey);
+      document.removeEventListener('focusin', onFocus);
       if (lock !== null) void lock.release().catch(() => undefined);
-      opener?.focus();
+      if (opener?.isConnected) opener.focus();
+      else revealRef.current?.focus();
     };
   }, [large]);
 
@@ -176,21 +249,21 @@ export function QrFrame(props: QrFrameProps): ReactNode {
 
   const stepper =
     parts === null ? null : (
-      <div className="qr-parts" role="group" aria-label="Multipart QR code">
+      <div className="qr-parts" role="group" aria-label={t('qrFrame.multipart')}>
         <p className="qr-part-status" role="status">
-          Part {safeIndex + 1} of {total}
+          {t('qrFrame.part', { part: safeIndex + 1, total })}
         </p>
         <button type="button" className="btn" disabled={safeIndex === 0} onClick={() => { setIndex(safeIndex - 1); }}>
-          Previous part
+          {t('qrFrame.previous')}
         </button>
         <button type="button" className="btn" disabled={safeIndex === total - 1} onClick={() => { setIndex(safeIndex + 1); }}>
-          Next part
+          {t('qrFrame.next')}
         </button>
         {reduced ? (
-          <p className="qr-note">Automatic stepping is off because your device asks for reduced motion. Use Next part.</p>
+          <p className="qr-note">{t('qrFrame.reduced')}</p>
         ) : (
           <label className="qr-auto">
-            <input type="checkbox" checked={auto} onChange={(e) => { setAuto(e.target.checked); }} /> Step through the parts automatically (about every {PART_INTERVAL_MS / 1000} seconds)
+            <input type="checkbox" checked={auto} onChange={(e) => { setAuto(e.target.checked); }} /> {t('qrFrame.auto', { seconds: PART_INTERVAL_MS / 1000 })}
           </label>
         )}
       </div>
@@ -199,7 +272,7 @@ export function QrFrame(props: QrFrameProps): ReactNode {
   const image = <QrView text={current} caption={props.caption} bare />;
 
   return (
-    <section className={`qr-frame ${qrKindClass(props.kind)}`} data-qr-kind={props.kind} aria-labelledby={labelId} aria-describedby={descId}>
+    <section className={`qr-frame ${qrKindClass(props.kind)}`} data-qr-kind={props.kind} data-qr-print-note={rules.revealRequired ? t('qrFrame.secretPrint') : undefined} aria-labelledby={labelId} aria-describedby={descId}>
       <header className="qr-frame-head">
         <QrIcon icon={info.icon} />
         <span id={labelId} className="qr-label">
@@ -209,7 +282,7 @@ export function QrFrame(props: QrFrameProps): ReactNode {
       <p id={descId} className="qr-explain">
         {info.explanation}
       </p>
-      {rules.warning !== null && <p className="qr-warning">Warning: {rules.warning}</p>}
+      {rules.warning !== null && <p className="qr-warning">{t('qrFrame.warning', { warning: rules.warning })}</p>}
       {visible ? (
         <div className="qr-body">
           {image}
@@ -217,58 +290,61 @@ export function QrFrame(props: QrFrameProps): ReactNode {
           {stepper}
           <div className="qr-actions">
             {rules.revealRequired && (
-              <button type="button" className="btn" onClick={() => { hide('The secret QR code is hidden.'); }}>
-                Hide now
+              <button type="button" className="btn" onClick={() => { hide('qrFrame.hidden.manual'); }}>
+                {t('qrFrame.hide')}
               </button>
             )}
-            <button type="button" className="btn" ref={openerRef} onClick={() => { setLarge(true); }}>
-              Show larger
+            <button type="button" className="btn" ref={openerRef} onClick={() => { setLargeFor(payloadScope(props)); }}>
+              {t('qrFrame.larger')}
             </button>
-            {rules.allowCopyText && <CopyButton text={current} label="Copy as text" />}
+            {rules.allowCopyText && <CopyButton text={current} label={t('qrFrame.copy')} />}
             {rules.allowDownload && (
               <button type="button" className="btn" onClick={download}>
-                Download SVG
+                {t('qrFrame.download')}
               </button>
             )}
           </div>
         </div>
       ) : (
         <div className="qr-body qr-hidden">
-          <button type="button" className="btn btn-primary" onClick={() => { setRevealed(true); setHiddenNote(''); }}>
-            Reveal secret QR code
+          <button type="button" className="btn btn-primary" ref={revealRef} onClick={() => { setRevealedFor(payloadScope(props)); setHiddenNote(undefined); }}>
+            {t('qrFrame.reveal')}
           </button>
         </div>
       )}
       <p className="qr-note" role="status">
-        {hiddenNote}
+        {hiddenNote === undefined ? '' : t(hiddenNote)}
       </p>
       {large && visible && (
-        <div className="qr-large" role="dialog" aria-modal="true" aria-label={`${info.label} QR code, large`}>
+        <div className="qr-large" ref={dialogRef} role="dialog" aria-modal="true" aria-label={t('qrFrame.largeLabel', { kind: info.label })} aria-describedby={largeDescId}>
           <p className="qr-large-label">
             <QrIcon icon={info.icon} /> {info.label}
           </p>
+          <p id={largeDescId} className="qr-explain">{info.explanation}</p>
           {image}
           {parts !== null && (
             <p className="qr-part-status">
-              Part {safeIndex + 1} of {total}
+              {t('qrFrame.part', { part: safeIndex + 1, total })}
             </p>
           )}
-          <p className="qr-note">Turn your screen brightness up and hold your phone camera steady over the code.</p>
+          <p className="qr-note">{t('qrFrame.brightness')}</p>
           {parts !== null && (
             <div className="qr-actions">
               <button type="button" className="btn" disabled={safeIndex === 0} onClick={() => { setIndex(safeIndex - 1); }}>
-                Previous part
+                {t('qrFrame.previous')}
               </button>
               <button type="button" className="btn" disabled={safeIndex === total - 1} onClick={() => { setIndex(safeIndex + 1); }}>
-                Next part
+                {t('qrFrame.next')}
               </button>
             </div>
           )}
-          <button type="button" className="btn btn-primary" ref={closeRef} onClick={() => { setLarge(false); }}>
-            Close
+          <button type="button" className="btn btn-primary" ref={closeRef} onClick={() => { setLargeFor(undefined); }}>
+            {t('qrFrame.close')}
           </button>
         </div>
       )}
     </section>
   );
 }
+
+// i18n-use: qrFrame.hidden.auto qrFrame.hidden.page qrFrame.hidden.manual
