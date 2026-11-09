@@ -26,13 +26,13 @@ function withValidCheck(o: Record<string, unknown>): string {
   return JSON.stringify({ ...o, check: bytesToHex(sha256(utf8ToBytes(canonical))).slice(0, 8) });
 }
 const base = (p: SessionPublic, over: Record<string, unknown> = {}): Record<string, unknown> =>
-  ({ format: 'ghostpay-seller-public', v: 1, metaAddress: p.metaAddress, signerPublicKey: p.signerPublicKey, chainIds: [1], ...over });
+  ({ format: 'ghostpay-seller-public', v: 1, metaAddress: p.metaAddress, signerPublicKey: p.signerPublicKey, chainIds: [84532], ...over });
 
 describe('seller public pairing schema', () => {
   it('round-trips public config and contains no key material fields', () => {
     const p = pub();
-    const t = text(p, [137, 1, 1, 11155111]);
-    expect(parseSellerPairing(t)).toEqual({ metaAddress: p.metaAddress, signerPublicKey: p.signerPublicKey, chainIds: [1, 137, 11155111] });
+    const t = text(p, [84532, 97, 97, 11155111]);
+    expect(parseSellerPairing(t)).toEqual({ metaAddress: p.metaAddress, signerPublicKey: p.signerPublicKey, chainIds: [97, 84532, 11155111] });
     expect(Object.keys(JSON.parse(t) as object).sort(byKey)).toEqual(['chainIds', 'check', 'format', 'metaAddress', 'signerPublicKey', 'v']);
     expect(new TextEncoder().encode(t).byteLength).toBeLessThan(MAX_SELLER_PAIRING_BYTES);
   });
@@ -75,7 +75,7 @@ describe('seller public pairing schema', () => {
   });
   it('accepts a correctly checked config built by the test (control for the refusal cases below)', () => {
     const p = pub();
-    expect(parseSellerPairing(withValidCheck(base(p, { chainIds: [1, 5] })))).toMatchObject({ chainIds: [1, 5] });
+    expect(parseSellerPairing(withValidCheck(base(p, { chainIds: [84532, 11155111] })))).toMatchObject({ chainIds: [84532, 11155111] });
   });
   it('refuses bad chain lists even when the integrity check is valid', () => {
     const p = pub();
@@ -102,12 +102,12 @@ describe('seller public pairing schema', () => {
       expect(() => exportSellerPairing({ metaAddress: p.metaAddress, signerPublicKey: reused }, [])).toThrow(REFUSED);
     }
   });
-  it('round-trips safe-integer chain ids above 2**32 that settings and invoices accept', () => {
+  it('refuses unknown and disabled chains even with a valid integrity check', () => {
     const p = pub();
-    const ids = [1, 2 ** 40, Number.MAX_SAFE_INTEGER];
-    expect(parseSellerPairing(exportSellerPairing(p, ids)).chainIds).toEqual(ids);
-    expect(() => exportSellerPairing(p, [Number.MAX_SAFE_INTEGER + 1])).toThrow(REFUSED);
-    expect(() => parseSellerPairing(withValidCheck(base(p, { chainIds: [2 ** 53] })))).toThrow(REFUSED);
+    for (const id of [1, 137, 999999, 2 ** 40, Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER + 1]) {
+      expect(() => exportSellerPairing(p, [id])).toThrow(REFUSED);
+      expect(() => parseSellerPairing(withValidCheck(base(p, { chainIds: [id] })))).toThrow(REFUSED);
+    }
   });
   it('compares an imported config with the loaded keys', () => {
     const p = pub();

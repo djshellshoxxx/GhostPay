@@ -8,6 +8,7 @@
 |---|---|
 | [Testnet usage](testnet-usage.md) | See what works today, what is blocked, and how to run a safe local test |
 | [Set up a stealth meta-address](set-up-stealth-meta-address.md) | Create seller keys, back them up, and get an address to share |
+| [Share public configuration between devices](public-device-exchange.md) | Compare public seller config, transfer preferences, and review registry QR codes |
 | [Review and pay an invoice](review-and-pay-an-invoice.md) | Check an invoice link and pay it safely |
 | [Receive and scan](receive-and-scan.md) | Find payments sent to you and keep private notes about them |
 | [Sweep funds and gas privacy](sweep-and-gas-privacy.md) | Move funds to your wallet and understand what that reveals |

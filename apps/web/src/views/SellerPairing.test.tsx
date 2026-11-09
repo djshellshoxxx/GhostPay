@@ -195,16 +195,43 @@ describe('SellerPairing', () => {
     expect(within(pairing()).queryByText(parseSellerPairing(older).metaAddress)).toBeNull();
   });
 
-  it('exports safe-integer chain ids above 2**32 from settings', () => {
-    expect(pairingChainIds({ '1099511627776': 'https://rpc.test', '5': 'https://rpc.test', '9999999999999999': 'https://rpc.test' })).toEqual([5, 1099511627776]);
+  it('exports only enabled testnets with a configured endpoint, in canonical order', () => {
+    expect(pairingChainIds({
+      '11155111': 'https://rpc.test', '84532': 'https://rpc.test', '1': 'https://rpc.test',
+      '1099511627776': 'https://rpc.test', '97': ' ', '80002': '',
+    })).toEqual([84532, 11155111]);
   });
 
-  it('keeps the 16 smallest chain ids when more are configured', () => {
-    const rpc: Record<string, string> = {};
-    for (let i = 1; i <= 15; i += 1) rpc[String(i)] = 'https://rpc.test';
-    rpc[String(2 ** 40 + 1)] = 'https://rpc.test';
-    rpc[String(2 ** 40)] = 'https://rpc.test';
-    expect(pairingChainIds(rpc)).toEqual([...Array.from({ length: 15 }, (_, i) => i + 1), 2 ** 40]);
+  it('allows the same file to be selected again after clearing the preview', async () => {
+    const incoming = otherDevice();
+    generateWaivedSession();
+    const user = await open();
+    const input = within(pairing()).getByLabelText<HTMLInputElement>('Public config file');
+    const file = new File([incoming], 'public.json', { type: 'application/json' });
+    await user.upload(input, file);
+    expect(await within(pairing()).findByText('Received config (untrusted preview)')).toBeTruthy();
+    expect(input.value).toBe('');
+    await user.click(within(pairing()).getByRole('button', { name: 'Clear preview' }));
+    expect(within(pairing()).queryByText('Received config (untrusted preview)')).toBeNull();
+    await user.upload(input, file);
+    expect(await within(pairing()).findByText('Received config (untrusted preview)')).toBeTruthy();
+  });
+
+  it('clears pending file reads and pasted text without requiring a successful import first', async () => {
+    const incoming = otherDevice();
+    generateWaivedSession();
+    const user = await open();
+    const late = deferredFile(incoming);
+    choose(late.file);
+    await user.click(within(pairing()).getByRole('button', { name: 'Clear preview' }));
+    await act(async () => { late.release(); await Promise.resolve(); await Promise.resolve(); });
+    expect(within(pairing()).queryByText('Received config (untrusted preview)')).toBeNull();
+    fireEvent.change(within(pairing()).getByLabelText('Or paste QR text'), { target: { value: 'incomplete input' } });
+    await user.click(within(pairing()).getByRole('button', { name: 'Clear preview' }));
+    expect(within(pairing()).getByLabelText<HTMLTextAreaElement>('Or paste QR text').value).toBe('');
+    fireEvent.change(within(pairing()).getByLabelText('Or paste QR text'), { target: { value: incoming } });
+    await user.click(within(pairing()).getByRole('button', { name: 'Use pasted text' }));
+    expect(await within(pairing()).findByText('Received config (untrusted preview)')).toBeTruthy();
   });
 
   it('shows an error instead of silently hiding the export when it cannot be built', () => {

@@ -1,3 +1,4 @@
+import { CHAINS } from '@ghostpay/chain-adapters';
 import { decodeMetaAddress, encodeMetaAddress, parseCompressedPoint } from '@ghostpay/core-crypto';
 import { parseStrictJson } from '@ghostpay/invoice-schema';
 import { sha256 } from '@noble/hashes/sha2.js';
@@ -17,6 +18,10 @@ export const MAX_PAIRING_CHAINS = 16;
 const BAD = 'This is not a supported public seller config.';
 const KEYS = 'chainIds|check|format|metaAddress|signerPublicKey|v';
 const SIGNER = /^0[23][0-9a-f]{64}$/;
+const SUPPORTED_CHAINS = new Set(CHAINS.filter((chain) => chain.enabled && chain.testnet).map((chain) => chain.chainId));
+
+/** Public pairing must not advertise unknown or disabled payment networks as supported. */
+export function isSupportedPairingChain(chainId: number): boolean { return SUPPORTED_CHAINS.has(chainId); }
 
 export interface SellerPairingConfig {
   readonly metaAddress: string;
@@ -33,7 +38,7 @@ function bad(): never { throw new UserFacingError(BAD); }
 function chains(value: unknown, normalize: boolean): readonly number[] {
   if (!Array.isArray(value) || value.length > MAX_PAIRING_CHAINS) return bad();
   const ids = value as unknown[];
-  for (const id of ids) if (typeof id !== 'number' || !Number.isSafeInteger(id) || id < 1) return bad();
+  for (const id of ids) if (typeof id !== 'number' || !Number.isSafeInteger(id) || !isSupportedPairingChain(id)) return bad();
   const numbers = ids as number[];
   if (normalize) return [...new Set(numbers)].sort((a, b) => a - b);
   for (let i = 1; i < numbers.length; i += 1) if (numbers[i - 1]! >= numbers[i]!) return bad();
