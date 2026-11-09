@@ -2,15 +2,17 @@ import { expect, test, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { generateKeys } from './helpers';
 
-async function navigate(page: Page, name: string): Promise<void> {
-  await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name, exact: true }).click();
-  if (name === 'Scan and receive') await page.locator('section[aria-labelledby="scan-h"] select').first().selectOption('84532');
+async function navigate(page: Page, view: 'create' | 'scan' | 'settings'): Promise<void> {
+  const button = page.locator(`nav button[data-view="${view}"]`);
+  await button.click();
+  await expect(button).toHaveAttribute('aria-current', 'page');
+  if (view === 'scan') await page.locator('section[aria-labelledby="scan-h"] select').first().selectOption('84532');
 }
 
 test('encrypted reconciliation keeps invoice identity through language changes and cancels import previews on lock', async ({ page }) => {
   await page.goto('/');
   await generateKeys(page);
-  await navigate(page, 'Create invoice');
+  await navigate(page, 'create');
   await page.getByLabel('Chain', { exact: true }).selectOption({ label: 'Base Sepolia' });
   await page.getByLabel('Token amount', { exact: true }).fill('0.5');
   await page.getByLabel('Item 1 description').fill('Local matching fixture');
@@ -19,7 +21,7 @@ test('encrypted reconciliation keeps invoice identity through language changes a
   await page.getByRole('button', { name: 'Create invoice link' }).click();
   await expect(page.getByText('Invoice registered in your encrypted reconciliation vault for local matching.', { exact: true })).toBeVisible();
 
-  await navigate(page, 'Scan and receive');
+  await navigate(page, 'scan');
   const ledger = page.locator('.reconciliation-ledger');
   await ledger.getByRole('button', { name: 'Unlock encrypted reconciliation vault', exact: true }).click();
   const invoice = ledger.locator('li.card').filter({ has: page.getByRole('button', { name: 'Remove registration', exact: true }) });
@@ -58,10 +60,10 @@ test('encrypted reconciliation keeps invoice identity through language changes a
   await expect(backupInput).toHaveValue('');
   await expect(invoice.locator('code')).toHaveText(digest);
 
-  await navigate(page, 'Settings');
+  await navigate(page, 'settings');
   await page.getByLabel('Language', { exact: true }).selectOption('es');
   await expect(page.locator('html')).toHaveAttribute('lang', 'es');
-  await navigate(page, 'Scan and receive');
+  await navigate(page, 'scan');
   await expect(ledger.getByRole('heading', { name: 'Conciliación local de pagos', exact: true })).toBeVisible();
   // Consent and payment status deliberately retain reviewed English in machine-drafted locales.
   await ledger.getByRole('button', { name: 'Unlock encrypted reconciliation vault', exact: true }).click();
@@ -69,10 +71,10 @@ test('encrypted reconciliation keeps invoice identity through language changes a
   await expect(invoice.locator('p.hint')).toHaveText(meaning);
   await expect(ledger.getByLabel('Buscar registros locales', { exact: true })).toBeVisible();
 
-  await navigate(page, 'Settings');
+  await navigate(page, 'settings');
   await page.getByLabel('Idioma', { exact: true }).selectOption('ar');
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
-  await navigate(page, 'Scan and receive');
+  await navigate(page, 'scan');
   await ledger.getByRole('button', { name: 'Unlock encrypted reconciliation vault', exact: true }).click();
   await expect(invoice.locator('code')).toHaveText(digest);
   await expect(invoice.locator('p.hint')).toHaveText(meaning);
@@ -82,7 +84,7 @@ test('encrypted reconciliation keeps invoice identity through language changes a
   await expect(activate).toBeVisible();
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
-  await navigate(page, 'Scan and receive');
+  await navigate(page, 'scan');
   await expect(activate).toHaveCount(0);
   await expect(ledger.getByRole('button', { name: 'Unlock encrypted reconciliation vault', exact: true })).toBeDisabled();
 });
