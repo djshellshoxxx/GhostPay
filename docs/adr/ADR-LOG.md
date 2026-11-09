@@ -69,6 +69,8 @@ Decision and consequences, stated plainly:
 6. The fee recipient is never in source; it enters only through the deployment manifest (ADR-0007).
 
 ## ADR-0014 Policy-account scheme (`0x47500002`): status
+**Implementation inventory correction, 2026-11-09:** the historical "contracts only" description below is superseded by the existing off-by-default testnet client in `apps/web/src/features/policy` and `packages/policy-scheme`. Its create/pay/scan/deploy/withdraw and policy-record restoration pieces do not provide complete payment verification or lost-key recovery. [ADR-0027](ADR-0027-policy-end-to-end-gates.md) records the current code, required end-to-end acceptance gates and the unresolved recovery design. The original experimental/release gate remains in force.
+
 Status: **Experimental, contracts only. Not enabled. Do not market as theft-proof.**
 Context: `PolicyAccount` and `PolicyAccountFactory` exist with unit, fuzz and invariant tests, but: the router hard-codes scheme id 1 so nothing announces scheme `0x47500002` (contracts review M-02); `core-crypto`, `invoice-schema` (`schemeId: 1` literal) and `chain-adapters` have no derivation, ABI, scanner, vectors or UI; there is no guardian or recovery path, so a lost key locks funds and a stolen key can contest destination changes forever (design analysis D6, contracts DEVIATIONS); the factory's fee-token dependency can freeze counterfactual accounts (M-03); the destination becomes publicly linked after the first withdrawal (D1).
 Decision:
@@ -90,6 +92,8 @@ The release workflow therefore stops at a draft GitHub release and contains a di
 Consequences: users cannot "just try it" on a project-run site. This is intended for a pre-audit financial tool.
 
 ## ADR-0023 Policy-account recovery (spec 16): design choice and client-side measures
+**Design review, 2026-11-09:** [ADR-0027](ADR-0027-policy-end-to-end-gates.md#recovery-design-blockers-requiring-a-revised-adr-0023) identifies a continuous-owner-activity counterexample to the bounded-griefing claim below. Cancellation rate limiting does not solve an indefinitely renewed inactivity timer. This proposal is not an accepted recovery implementation and remains a blocker to enablement.
+
 Status: Proposed. **Design only for the contracts; nothing here enables scheme `0x47500002` (ADR-0014 still governs).**
 Context: spec 16 asks for an ADR choosing guardian design A, dead-man design B, or neither. Today a lost owner key locks the account (the owner key is scheme-1-derived from the seller spending and viewing keys, so losing the seller key backup loses it), and a stolen owner key can cancel every withdrawal and every destination change forever (griefing freeze; funds can still only reach the destination). Requirements: no admin (ADR-0006), bounded griefing, guardian privacy, cost, setup burden. The experimental web client (`apps/web/src/features/policy`, off unless `VITE_GHOSTPAY_EXPERIMENTAL_POLICY=1`, testnets only, no pinned deployment) needed a recovery story that works without a contract change.
 
