@@ -138,6 +138,7 @@ export class FixtureOperations {
   }
   #transaction(change) {
     this.#db.exec('BEGIN IMMEDIATE');
+    let committed = false;
     try {
       const records = this.#read();
       const result = change(records);
@@ -145,10 +146,11 @@ export class FixtureOperations {
       this.#db.prepare('UPDATE fixture_state SET data=? WHERE id=1').run(json(records));
       this.#fault('before-commit');
       this.#db.exec('COMMIT');
+      committed = true;
       this.#fault('after-commit');
       return structuredClone(result);
     } catch (error) {
-      if (this.#db.isTransaction) this.#db.exec('ROLLBACK');
+      if (!committed) this.#db.exec('ROLLBACK');
       throw error;
     }
   }
