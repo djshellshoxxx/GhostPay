@@ -204,7 +204,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   const routerOnlyBlocks = new Set<bigint>();
   const narrowed = (): { readonly routerOnlyBlocks?: readonly bigint[] } => (routerOnlyBlocks.size === 0 ? {} : { routerOnlyBlocks: [...routerOnlyBlocks] });
   let secondaryLag: SecondaryLag | undefined;
-  // The highest block this run could scan to (the lower of the two heads): the privacy-set window ends here.
+  // The latest head this run could scan to (the lower of the two heads): the privacy-set window ends here.
   let reachableHead: bigint | undefined;
   // Payment identity, unlike a log id, survives a replay announcement at another block. Keep this
   // ledger per scan only: checkpoints never persist claimed payment data or RPC evidence.
@@ -265,7 +265,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       secondaryLag = secondaryHead !== undefined && !res.truncated && res.head > secondaryHead + BigInt(p.chain.finalityDepth) ? { secondaryHead, head: res.head } : undefined;
       const pageRouterOnly = res.routerOnlyBlocks ?? [];
       const pageHead = secondaryHead !== undefined && secondaryHead < res.head ? secondaryHead : res.head;
-      if (reachableHead === undefined || pageHead > reachableHead) reachableHead = pageHead;
+      reachableHead = pageHead;
       skipped += res.skipped;
       const pageFrom = res.reorg?.rolledBackTo ?? cursor.nextBlock;
       if (res.reorg !== undefined) {
@@ -492,9 +492,10 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
     try { stopWorker(); } finally { zeroizeBytes(p.viewingKey); }
   }
   const scanHead = cursor.last?.number ?? (cursor.nextBlock > 0n ? cursor.nextBlock - 1n : 0n);
-  // A run stopped by a budget, a discrepancy or Cancel before the head: the "last 7 days" still end at the chain head,
-  // and the blocks it did not reach make the count a lower bound.
-  const windowHead = reachableHead !== undefined && reachableHead > scanHead ? reachableHead : scanHead;
+  // A budget/discrepancy/Cancel still leaves the window at the latest reported reachable head, making unscanned
+  // blocks a lower bound. A lagging provider can lower that head below a prior page or cursor; do not retain an
+  // obsolete high-water mark or count announcements beyond the current window.
+  const windowHead = reachableHead ?? scanHead;
   const anonymity = trustedSeen + openSeen === 0 && scanned === 0 ? undefined : anonymitySet({ chain: p.chain, routerBlocks, head: windowHead, scannedFrom: p.cursor.nextBlock, scannedTo: scanHead });
   return { matches: all, cursor, scanned, discrepancies, limitReached, backlog, routerOnlyBlocks: [...routerOnlyBlocks], ...(secondaryLag === undefined ? {} : { secondaryLag }), telemetry: { trusted: trustedSeen, open: openSeen, suspected, anonymity } };
 }
