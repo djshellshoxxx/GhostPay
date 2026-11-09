@@ -61,6 +61,36 @@ function chainSeeing(wallet: MockWallet) {
 }
 
 describe('Pay: invoice reading and review', () => {
+  it('allows the same receipt file after a failed read and preserves a newer selection while the old read finishes', async () => {
+    const { parsed, fragment } = await makeParsed();
+    const receipt = withSessionSecrets((secrets) => signReceipt({
+      invoiceDigest: `0x${bytesToHex(invoiceDigest(parsed.invoice))}`,
+      chainId: parsed.invoice.chainId, txHash: `0x${'a'.repeat(64)}`,
+      stealthAddress: `0x${'b'.repeat(40)}`, asset: parsed.invoice.token, amountMinorUnits: '99750000', issuedAt: NOW,
+    }, secrets.signingKey));
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    await screen.findByText('Seller receives (net)');
+    await user.click(screen.getByLabelText('I consent to opening private receipt details on this screen.'));
+    const input = screen.getByLabelText<HTMLInputElement>('Signed seller receipt JSON');
+    const file = new File([receiptJson(receipt)], 'receipt.json', { type: 'application/json' });
+    let finishRead: ((text: string) => void) | undefined;
+    const read = vi.spyOn(File.prototype, 'text').mockImplementationOnce(() => new Promise<string>((resolve) => { finishRead = resolve; })).mockResolvedValue(receiptJson(receipt));
+    try {
+      await user.upload(input, file);
+      await user.click(screen.getByRole('button', { name: 'Check receipt against this invoice' }));
+      expect(input.files).toHaveLength(0);
+      await user.upload(input, file);
+      expect(input.files?.[0]).toBe(file);
+      await act(async () => { finishRead?.('invalid JSON'); await Promise.resolve(); });
+      await screen.findByText('Receipt not accepted');
+      expect(input.files?.[0]).toBe(file);
+      await user.click(screen.getByRole('button', { name: 'Check receipt against this invoice' }));
+      await screen.findByText(/The signature matches the valid invoice-signing key/);
+      expect(read).toHaveBeenCalledTimes(2);
+      expect(input.files).toHaveLength(0);
+    } finally { read.mockRestore(); }
+  });
+
   it('accepts a signed receipt only when its invoice digest and expected payment fields match', async () => {
     const { parsed, fragment } = await makeParsed();
     const receiptFields = {

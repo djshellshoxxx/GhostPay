@@ -1,3 +1,4 @@
+import { displayMessage } from '../../lib/errors';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { decodeTronAddress, type TronRpc } from '@ghostpay/tron-adapter';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
@@ -426,7 +427,7 @@ export function TronView(): ReactNode {
                 <dt>{t('btc.review.receives')}</dt><dd>{formatTrx(review.sendSun)}</dd>
                 <dt>{t('pay.destination')}</dt><dd dir="ltr"><Mono>{review.destination}</Mono></dd>
               </dl>
-              {review.warnings.map((w) => <Notice key={w.key} kind="warn">{t(w.key, w.values)}</Notice>)}
+              {review.warnings.map((w) => <Notice key={w.key} kind="warn">{displayMessage(w, t)}</Notice>)}
               <label>
                 <input type="checkbox" checked={approved} onChange={(e) => { setApproved(e.target.checked); }} />{' '}
                 {t('btc.review.approve')}

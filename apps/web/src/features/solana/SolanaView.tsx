@@ -1,3 +1,4 @@
+import { displayMessage } from '../../lib/errors';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { zeroize, type SolanaRpc } from '@ghostpay/solana-stealth';
 import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
@@ -429,7 +430,7 @@ export function SolanaView(): ReactNode {
                 <dt>{t('pay.destination')}</dt><dd dir="ltr"><Mono>{review.destination}</Mono></dd>
                 <dt>{t('btc.review.change')}</dt><dd>{t('sol.review.changeNone')}</dd>
               </dl>
-              {review.warnings.map((w) => <Notice key={w.key} kind="warn">{t(w.key, w.values)}</Notice>)}
+              {review.warnings.map((w) => <Notice key={w.key} kind="warn">{displayMessage(w, t)}</Notice>)}
               <label>
                 <input type="checkbox" checked={approved} onChange={(e) => { setApproved(e.target.checked); }} />{' '}
                 {t('btc.review.approve')}

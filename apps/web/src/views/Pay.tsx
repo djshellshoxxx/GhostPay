@@ -1,6 +1,6 @@
 import { FRAGMENT_PREFIX, MAX_DECODED_BYTES, invoiceDigest, openFragment, type OpenFragmentResult, type ParsedInvoice } from '@ghostpay/invoice-schema';
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import type { BuiltPayment } from '@ghostpay/chain-adapters';
+import type { BuiltPayment, Hex } from '@ghostpay/chain-adapters';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
 import { CameraImporter } from '../components/CameraImporter';
@@ -10,7 +10,7 @@ import { ManifestBanner } from '../components/ManifestBanner';
 import { extractFragment } from '../lib/fragment';
 import { safeText, payeeFingerprint } from '../lib/displayText';
 import { formatCountdown, formatFiat, formatUnits, formatUnix, shortHex } from '../lib/format';
-import { UserFacingError, userMessage, displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
+import { UserFacingError, displayMessage, captureUserMessage, type DisplayMessage, type MessageDescriptor } from '../lib/errors';
 import { DelayScheduler, randomDelayMs, type ScheduleSnapshot } from '../lib/jitter';
 import {
   createPayContext,
@@ -29,6 +29,7 @@ import { verifyManifestForFlow } from '../lib/manifest';
 import { PaymentProofQr } from '../components/PaymentRequestQr';
 import { PrintBillButton } from '../components/PrintableBill';
 import { PermitRejectedError, PostBroadcastError, buildReceipt, classifyPayerPermit, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, type ApprovalPlan, type Runtime, type SubmitResult } from '../lib/payExec';
+import { approvedPaymentOutcome, type TransactionOutcome } from '../lib/transactionOutcome';
 import { useServices } from '../lib/services';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { MessageValues, Part } from '../i18n/message';
@@ -51,7 +52,6 @@ function renderParts(parts: readonly Part[], tags: TagMap): ReactNode[] {
   });
 }
 
-// i18n-use: pay.previous.body pay.connected pay.sent.body pay.done.hash pay.approval.confirmedHash pay.approval.excess
 const monoTag = (name: string): TagMap => ({ [name]: (c) => <Mono>{c}</Mono> });
 
 type Phase = 'input' | 'review' | 'waiting' | 'ready' | 'prepared' | 'busy' | 'submitted' | 'done';
@@ -87,7 +87,7 @@ interface InvoiceQrPreview {
   readonly assertSession: () => void;
 }
 
-const SUPPORTED_INVOICE_ERROR = 'This build supports fixed-amount invoices without a seller buffer policy.';
+const SUPPORTED_INVOICE_ERROR: MessageDescriptor = { key: 'pay.error.supportedInvoice' };
 
 function supportsInvoice(invoice: ParsedInvoice['invoice'], supportedOnly: boolean): boolean {
   return !supportedOnly || (invoice.v === 1 && invoice.amountPolicy.mode === 'fixed_token');
@@ -99,6 +99,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const trParts = i18n?.parts ?? SOURCE_TRANSLATOR.parts;
   const rich = (id: Parameters<Translator['parts']>[0], values: MessageValues, tags: TagMap): ReactNode => renderParts(trParts(id, values), tags);
   const app = useApp();
+  const latestT = useRef(t); latestT.current = t;
+  const announce = (message: MessageDescriptor): void => { app.announce(displayMessage(message, latestT.current)); };
   const services = useServices();
   const [parsed, setParsed] = useState<ParsedInvoice | undefined>(undefined);
   const [rejected, setRejected] = useState<DisplayMessage | undefined>(undefined);
@@ -128,7 +130,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const [builtFor, setBuiltFor] = useState<ParsedInvoice['invoice'] | undefined>(undefined);
   const [builtForContext, setBuiltForContext] = useState<PayContext | undefined>(undefined);
   const [resultForContext, setResultForContext] = useState<PayContext | undefined>(undefined);
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState<DisplayMessage>('');
   const [error, setError] = useState<DisplayMessage | undefined>(undefined);
   const [result, setResult] = useState<SubmitResult | undefined>(undefined);
   const [boundReceipt, setBoundReceipt] = useState<BoundReceipt | undefined>(undefined);
@@ -191,7 +193,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     if (!current()) return false;
     const candidate = invoiceQrFragment(text, services.baseUrl());
     if (candidate === undefined) {
-      setInvoiceQrError('Use an exact GhostPay v1 fragment or an HTTPS invoice link at this app’s host and path, without credentials, port or query.');
+      setInvoiceQrError({ key: 'pay.error.invoiceQrLink' });
       return false;
     }
     try {
@@ -316,7 +318,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setInvoicePassphrase('');
     setUnlocking(false);
     setPhase('input');
-    setRejected('Seller keys changed while opening this invoice. Scan or paste it again to review.');
+    setRejected({ key: 'pay.error.sellerKeysChanged' });
   };
 
   const assertCurrentInvoice = (revision: number, invoice: ParsedInvoice['invoice']): void => {
@@ -347,7 +349,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       if (!current()) return undefined;
       if (checked.status !== 'loaded') {
         setCtx(undefined);
-        setCtxError(checked.status === 'invalid' ? checked.reason : 'Payments are disabled on this chain: no deployment manifest is loaded.');
+        setCtxError(checked.status === 'invalid' ? checked.reason : { key: 'pay.error.noManifest' });
         return undefined;
       }
       const c = await createPayContext(fresh, rpc, { nowSeconds: now });
@@ -406,7 +408,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     const rpc = await app.getRpc(chainId);
     if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return undefined;
     if (rpc === undefined) {
-      setError('A gas buffer needs an RPC for this chain. Configure one in Settings.');
+      setError({ key: 'error.pay.aGasBufferNeedsAnRPCForThisChainTo' });
       return undefined;
     }
     try {
@@ -428,7 +430,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     resetInvoiceQr();
     const f = extractFragment(paste);
     if (f === undefined) {
-      setRejected('That is not a GhostPay v1 invoice link.');
+      setRejected({ key: 'pay.error.invoiceLink' });
       return;
     }
     setRejected(undefined);
@@ -477,7 +479,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const importReceiptText = (readText: () => Promise<string>, byteLength?: number, signal?: AbortSignal): Promise<boolean> => {
     if (receiptBusyRef.current || signal?.aborted === true) return Promise.resolve(false);
     if (!latest.current.receiptConsent) {
-      setReceiptError('Consent is required before opening private receipt details.');
+      setReceiptError({ key: 'pay.error.receiptConsent' });
       return Promise.resolve(false);
     }
     const invoiceAtStart = parsed;
@@ -487,7 +489,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     if (latest.current.fragment !== fragmentAtStart || flowRevision.current !== flowAtStart) return Promise.resolve(false);
     if (invoiceAtStart === undefined || contextAtStart === undefined) return Promise.resolve(false);
     if (contextAtStart.review.invoice !== invoiceAtStart.invoice) {
-      setReceiptError('Payment details are still updating for this invoice. Try again when they finish loading.');
+      setReceiptError({ key: 'pay.error.receiptUpdating' });
       return Promise.resolve(false);
     }
     const trustedKeyAtStart = receiptTrustedKey;
@@ -498,16 +500,16 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setReceiptError(undefined);
     return (async () => {
       try {
-        if (byteLength !== undefined && byteLength > MAX_RECEIPT_JSON_BYTES) throw new Error('Receipt file exceeds 64 KiB.');
+        if (byteLength !== undefined && byteLength > MAX_RECEIPT_JSON_BYTES) throw new UserFacingError({ key: 'pay.error.receiptTooLarge' });
         const text = await readText();
         if (text.length > MAX_RECEIPT_JSON_BYTES || new TextEncoder().encode(text).byteLength > MAX_RECEIPT_JSON_BYTES) {
-          throw new Error(byteLength === undefined ? 'Receipt QR/text exceeds 64 KiB.' : 'Receipt file exceeds 64 KiB.');
+          throw new UserFacingError({ key: 'pay.error.receiptTooLarge' });
         }
         if (signal?.aborted === true || !latest.current.receiptConsent) return false;
         const receipt = parseVerifiedReceipt(text);
         const current = latest.current;
         if (receiptImportRevision.current !== importRevision || flowRevision.current !== flowAtStart || current.fragment !== fragmentAtStart || current.parsed !== invoiceAtStart) return false;
-        if (current.ctx?.review.invoice !== invoiceAtStart.invoice) throw new Error('Payment details are still updating for this invoice. Try again when they finish loading.');
+        if (current.ctx?.review.invoice !== invoiceAtStart.invoice) throw new UserFacingError({ key: 'pay.error.receiptUpdating' });
         const binding = bindReceiptToInvoice(receipt, {
           invoiceDigest: `0x${bytesToHex(invoiceDigest(invoiceAtStart.invoice))}`,
           chainId: invoiceAtStart.invoice.chainId,
@@ -540,7 +542,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     const fileInput = e.currentTarget.querySelector<HTMLInputElement>('input[type="file"]');
     const file = fileInput?.files?.[0];
     if (file === undefined) return;
-    void importReceiptText(() => file.text(), file.size).finally(() => { if (fileInput !== null) fileInput.value = ''; });
+    // Snapshot before clearing so same-file retries work and a late import cannot clear a newer selection.
+    if (fileInput !== null) fileInput.value = '';
+    void importReceiptText(() => file.text(), file.size);
   };
 
   const startWaiting = (): void => {
@@ -563,7 +567,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       scheduler.current = s;
       setSchedule(s.snapshot());
       setPhase('waiting');
-      app.announce('Scheduled locally. Nothing has been signed or sent.');
+      announce({ key: 'pay.announce.scheduled' });
       let handled = false;
       s.subscribe((snap) => {
         if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return;
@@ -577,18 +581,18 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
             if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return;
             if (c === undefined) {
               setPhase('review');
-              setError('The invoice or its price can no longer be paid as reviewed. Check the details again.');
+              setError({ key: 'pay.error.reviewChanged' });
               return;
             }
             setPhase('ready');
-            app.announce('Delay complete. Review the updated details and confirm in your wallet.');
+            announce({ key: 'pay.announce.delayDone' });
           })();
         } else if (snap.status === 'expired') {
           setPhase('review');
-          setError('The invoice expired while waiting. Refresh and review again.');
+          setError({ key: 'pay.error.expiredWaiting' });
         } else if (snap.status === 'cancelled') {
           setPhase('review');
-          app.announce('Cancelled. Nothing was signed or sent.');
+          announce({ key: 'pay.announce.cancelled' });
         }
       });
     } catch (e) {
@@ -606,7 +610,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         const c = await refreshRef.current();
         if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return;
         if (c === undefined) {
-          setError('The invoice or its price can no longer be paid as reviewed. Check the details again.');
+          setError({ key: 'pay.error.reviewChanged' });
           return;
         }
         setPhase('ready');
@@ -637,14 +641,14 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     const sessionGuard = captureSessionVersionGuard();
     const invoice = parsed?.invoice;
     setError(undefined);
-    setStatus('Waiting for your wallet…');
+    setStatus({ key: 'pay.status.walletWaiting' });
     connectWallet(w, chainId).then(
       (s) => {
         try { sessionGuard(); } catch { return; }
         if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return;
         setWallet(s);
         setStatus('');
-        app.announce('Wallet connected.');
+        announce({ key: 'pay.announce.connected' });
       },
       (e: unknown) => {
         if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return;
@@ -665,7 +669,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       assertCurrentInvoice(revision, invoice);
       if (!authorityMatches()) throw new Error('The wallet, settings or session changed. Review again before continuing.');
     };
-    const scopedStatus = (message: string): void => { if (isCurrent()) setStatus(message); };
+    const scopedStatus = (message: string, outcome?: TransactionOutcome): void => { if (isCurrent()) setStatus(outcome?.message ?? message); };
     setError(undefined);
     setPhase('busy');
     void (async () => {
@@ -686,7 +690,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           const state = await classifyPayerPermit(ctx, wallet, rt);
           guard();
           permit = state === 'ok_to_permit';
-          if (state === 'unsupported_token') scopedStatus('This token\u2019s permit could not be verified on-chain, so an exact approval is used instead.');
+          if (state === 'unsupported_token') scopedStatus('', { phase: 'unsupported', message: { key: 'pay.status.permitUnsupported' } });
         }
         let plan: ApprovalPlan | undefined;
         if (isErc20 && !permit && tk?.address !== undefined && tk.address !== 'native') {
@@ -703,7 +707,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         setBuiltForContext(ctx);
         setStatus('');
         setPhase('prepared');
-        app.announce('Payment prepared. Check the final details, then send.');
+        announce({ key: 'pay.announce.prepared' });
       } catch (e) {
         if (!isCurrent()) return;
         setStatus('');
@@ -726,7 +730,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       if (!authorityMatches()) throw new Error('The wallet, settings or session changed. Review again before continuing.');
       if (latest.current.built !== built || latest.current.builtFor !== invoice || latest.current.builtForContext !== ctx) throw new Error('The prepared payment changed. Review it again before continuing.');
     };
-    const scopedStatus = (message: string): void => { if (isCurrent()) setStatus(message); };
+    const scopedStatus = (message: string, outcome?: TransactionOutcome): void => { if (isCurrent()) setStatus(outcome?.message ?? message); };
     setError(undefined);
     setPhase('busy');
     let actualAllowance = granted;
@@ -762,7 +766,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         });
         if (!isCurrent()) {
           setPreviousBroadcast({ hash: res.hash, kind: 'payment' });
-          app.announce('A transaction may have been submitted for the previous invoice. Check your wallet before taking further action.');
+          announce({ key: 'pay.announce.previous' });
           return;
         }
         setResult(res);
@@ -770,12 +774,12 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         setResultForContext(ctx);
         setPhase('done');
         setStatus('');
-        app.announce('Payment submitted.');
+        announce({ key: 'pay.announce.submitted' });
       } catch (e) {
         if (!isCurrent()) {
           if (e instanceof PostBroadcastError) {
             setPreviousBroadcast({ hash: e.hash, kind: stage });
-            app.announce('A transaction may have been submitted for the previous invoice. Check your wallet before taking further action.');
+            announce({ key: 'pay.announce.previous' });
           } else if (approvalBroadcastHash !== undefined) {
             setPreviousBroadcast({ hash: approvalBroadcastHash, kind: 'approval' });
           }
@@ -788,14 +792,13 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           setBroadcastKind(stage);
           setError(captureUserMessage(e));
           setPhase('submitted');
-          app.announce(`${stage === 'approval' ? 'Approval' : 'Payment'} sent, verification failed. Do not repeat it.`);
+          announce({ key: stage === 'approval' ? 'pay.announce.approvalUnverified' : 'pay.announce.paymentUnverified' });
           return;
         }
         if (actualAllowance !== undefined) {
-          const reason = userMessage(e, t).replaceAll('Nothing was sent.', '').replaceAll('Nothing was sent', '').trim();
-          const paymentStatus = paymentWalletRequested ? 'the payment was not confirmed' : 'no payment was sent';
-          setError(`Approval was confirmed${approvalBroadcastHash === undefined ? '' : ` (${approvalBroadcastHash})`}, but ${paymentStatus}. ${reason}`);
-          app.announce(`Approval confirmed; ${paymentStatus}.`);
+          const outcome = approvedPaymentOutcome(e, paymentWalletRequested, approvalBroadcastHash as Hex | undefined);
+          setError(outcome.message);
+          announce({ key: paymentWalletRequested ? 'transaction.approved.announceUnknown' : 'transaction.approved.announceNotSent' });
         } else {
           setError(captureUserMessage(e));
         }
@@ -810,7 +813,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     const sessionGuard = captureSessionVersionGuard();
     const invoice = parsed.invoice;
     const isCurrent = (): boolean => authorityMatches() && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx?.review.invoice === invoice;
-    const scopedStatus = (message: string): void => { if (isCurrent()) setStatus(message); };
+    const scopedStatus = (message: string, outcome?: TransactionOutcome): void => { if (isCurrent()) setStatus(outcome?.message ?? message); };
     setError(undefined);
     setPhase('busy');
     void (async () => {
@@ -825,7 +828,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         setGranted(undefined);
         setApprovalHash(undefined);
         setApproval({ ...approval, have: 0n, required: true });
-        app.announce('Approval revoked.');
+        announce({ key: 'pay.announce.revoked' });
       } catch (e) {
         if (!isCurrent()) {
           if (e instanceof PostBroadcastError) setPreviousBroadcast({ hash: e.hash, kind: 'approval' });
@@ -885,7 +888,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
               {t('pay.passphrase.body')}
             </Notice>
             <Field label={t('pay.passphrase.label')}>
-              {(id) => <input id={id} type="password" autoComplete="off" value={invoicePassphrase} onChange={(e) => { setInvoicePassphrase(e.target.value); }} />}
+              {(id, describedBy) => <input aria-describedby={describedBy} id={id} type="password" autoComplete="off" value={invoicePassphrase} onChange={(e) => { setInvoicePassphrase(e.target.value); }} />}
             </Field>
             <button type="submit" className="btn btn-primary" disabled={unlocking || invoicePassphrase === ''}>{unlocking ? t('pay.passphrase.opening') : t('pay.passphrase.open')}</button>
           </form>
@@ -923,7 +926,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   }
 
   const inv = parsed.invoice;
-  const warnings = walletWarnings(wallets ?? []);
+  const warnings = walletWarnings(wallets ?? [], t);
   const ready = phase === 'ready' || phase === 'prepared' || phase === 'busy' || phase === 'submitted' || phase === 'done';
   const decimals = token?.decimals ?? 18;
   const symbol = token?.symbol ?? '';
@@ -946,13 +949,13 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       )}
 
       <Notice kind={review.trust.kind === 'invalid-signature' ? 'error' : review.trust.kind === 'trusted-seller' ? 'ok' : 'warn'} title={t('pay.signature')}>
-        {review.trust.text}
+        {displayMessage(review.trust.message, t)}
       </Notice>
       {review.blockers.filter((b) => b !== review.trust.text).length > 0 && (
         <Notice kind="error" title={t('pay.cannotProceed')}>
           <ul>
-            {review.blockers.filter((b) => b !== review.trust.text).map((b) => (
-              <li key={b}>{b}</li>
+            {review.blockerMessages.filter((b) => b.key !== review.trust.message.key).map((b) => (
+              <li key={b.key}>{displayMessage(b, t)}</li>
             ))}
           </ul>
         </Notice>
@@ -960,7 +963,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       {ctxError !== undefined && <Notice kind="error">{displayMessage(ctxError, t)}</Notice>}
       {review.warnings.length > 0 && (
         <Notice kind="warn" title={t('pay.checkAmount')}>
-          {review.warnings.map((w) => <p key={w}>{w}</p>)}
+          {review.warningMessages.map((w) => <p key={w.key}>{displayMessage(w, t)}</p>)}
         </Notice>
       )}
 
@@ -1027,7 +1030,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         invoice={inv}
         link={fragment === undefined || fragment === '' ? undefined : `${services.baseUrl()}${fragment}`}
         passphraseProtected={parsed.passphraseProtected}
-        chainName={review.chain?.name ?? `Chain ${String(inv.chainId)}`}
+        chainName={review.chain?.name ?? t('pay.chain.unknown', { chain: String(inv.chainId) })}
         tokenLabel={inv.token === 'native' ? (symbol === '' ? t('pay.nativeCoinTitle') : symbol) : symbol === '' ? inv.token : symbol}
         fixedAmount={fixedAmount}
       />
@@ -1064,11 +1067,11 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
             setReceiptError(undefined);
           }} /> {t('pay.receipt.consent')}</label>
           <form className="stack" onSubmit={onImportReceipt}>
-            <Field label={t('pay.receipt.fileLabel')}>
-              {(id) => <input id={id} type="file" accept="application/json,.json" />}
+            <Field label={t('pay.receipt.fileLabel')} help={{ label: t('help.about', { control: t('pay.receipt.fileLabel') }), text: t('help.receiptFile') }}>
+              {(id, describedBy) => <input aria-describedby={describedBy} id={id} type="file" accept="application/json,.json" />}
             </Field>
             <Field label={t('pay.receipt.keyLabel')} hint={t('pay.receipt.keyHint')}>
-              {(id) => <input id={id} className="mono" type="text" autoComplete="off" spellCheck={false} value={receiptTrustedKey} onChange={(event) => { setReceiptTrustedKey(event.target.value); setBoundReceipt(undefined); setReceiptError(undefined); }} placeholder="02… or 03…" />}
+              {(id, describedBy) => <input aria-describedby={describedBy} id={id} className="mono" type="text" autoComplete="off" spellCheck={false} value={receiptTrustedKey} onChange={(event) => { setReceiptTrustedKey(event.target.value); setBoundReceipt(undefined); setReceiptError(undefined); }} placeholder="02… or 03…" />}
             </Field>
             <button type="submit" className="btn" disabled={receiptBusy || ctx === undefined}>{receiptBusy ? t('pay.receipt.checking') : t('pay.receipt.check')}</button>
           </form>
@@ -1189,7 +1192,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         <FinalPreview built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} approval={approval} granted={granted} approvalHash={approvalHash} onRevoke={onRevoke} />
       )}
 
-      {status !== '' && <p role="status" className="status">{status}</p>}
+      {status !== '' && <p role="status" className="status">{displayMessage(status, t)}</p>}
       {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
 
       {phase === 'submitted' && broadcast !== undefined && (
@@ -1331,3 +1334,5 @@ function FinalPreview(props: {
     </div>
   );
 }
+
+// i18n-use: error.pay.aGasBufferNeedsAnRPCForThisChainTo help.about help.receiptFile pay.announce.approvalUnverified pay.announce.cancelled pay.announce.connected pay.announce.delayDone pay.announce.paymentUnverified pay.announce.prepared pay.announce.previous pay.announce.revoked pay.announce.scheduled pay.announce.submitted pay.approval.before pay.approval.confirmed pay.approval.confirmedHash pay.approval.confirmedTitle pay.approval.enough pay.approval.exact pay.approval.excess pay.approval.explain pay.approval.needed pay.approval.neededTitle pay.approval.now pay.approval.presentTitle pay.approval.revoke pay.approval.spender pay.buffer.estimate pay.buffer.estimating pay.buffer.label pay.buffer.notAccepted pay.buffer.title pay.cancel pay.cannotProceed pay.chain pay.chain.unknown pay.checkAmount pay.checkoutFee pay.col.description pay.col.qty pay.col.unit pay.connect pay.connected pay.continue pay.copyHash pay.delay.hint pay.delay.label pay.destination pay.destinationNote pay.done.hash pay.done.heading pay.error.expiredWaiting pay.error.invoiceLink pay.error.invoiceQrLink pay.error.noManifest pay.error.receiptConsent pay.error.receiptTooLarge pay.error.receiptUpdating pay.error.reviewChanged pay.error.sellerKeysChanged pay.error.supportedInvoice pay.expires pay.feePayer pay.feePayer.payer pay.feePayer.seller pay.feeRecipient pay.fiatNotChecked pay.fiatStated pay.final.bufferNote pay.final.contract pay.final.deadline pay.final.destination pay.final.fee pay.final.feeLine pay.final.gross pay.final.heading pay.final.intro pay.final.method pay.final.native pay.final.net pay.final.netLine pay.final.send pay.final.sendApprove pay.fixed.unknownToken pay.fixedTokenAmount pay.forget pay.gross pay.invoiceTotal pay.lineItems pay.lookingWallets pay.memo.flagged pay.memo.label pay.nativeCoin pay.nativeCoinTitle pay.netReceives pay.noWallet pay.options pay.passphrase.body pay.passphrase.label pay.passphrase.open pay.passphrase.opening pay.passphrase.title pay.paste.hintHistory pay.paste.hintLocal pay.paste.label pay.paste.labelAlt pay.prepare pay.previous.body pay.previous.title pay.pricing pay.pricing.fixed pay.pricing.quote pay.privatePart pay.privatePart.key pay.privatePart.passphrase pay.privatePart.plain pay.public.body pay.public.title pay.read pay.reading pay.receipt.check pay.receipt.checking pay.receipt.consent pay.receipt.download pay.receipt.download.confirm pay.receipt.fileLabel pay.receipt.heading pay.receipt.intro pay.receipt.keyHint pay.receipt.keyLabel pay.receipt.matchInvoiceKey pay.receipt.matchTrustedKey pay.receipt.matches pay.receipt.privacy pay.receipt.rejected pay.receipt.scanLabel pay.rejected.controlsUnavailable pay.rejected.nothingSent pay.rejected.title pay.removeLink pay.router pay.scan.chainInvalid pay.scan.chainValid pay.scan.clear pay.scan.importLabel pay.scan.intro pay.scan.needsPassphrase pay.scan.open pay.scan.openNote pay.scan.rejected pay.scan.reviewAria pay.scan.reviewHeading pay.scan.summary pay.sellerFingerprint pay.sellerFingerprintNote pay.sellerMeta pay.sendNow pay.sent.approvalTitle pay.sent.body pay.sent.paymentTitle pay.signature pay.startDelay pay.status.included pay.status.pending pay.status.permitUnsupported pay.status.reverted pay.status.unverified pay.status.walletWaiting pay.tax pay.title.input pay.title.review pay.token pay.token.nativeNote pay.verify.noRpc pay.verify.notVisible pay.verify.unverified pay.verify.verified pay.waiting.left pay.waiting.notice pay.wallet transaction.approved.announceNotSent transaction.approved.announceUnknown

@@ -32,15 +32,18 @@ import {
 } from '@ghostpay/chain-adapters';
 import { checkExpiry, type ExpiryStatus, type Invoice, type ParsedInvoice } from '@ghostpay/invoice-schema';
 import { decodeFunctionData, decodeFunctionResult, encodeFunctionData, getAddress, recoverAddress } from 'viem/utils';
-import { UserFacingError } from './errors';
+import { UserFacingError, displayMessage, type MessageDescriptor } from './errors';
+import type { MessageKey } from '../i18n/catalog';
+import type { Translator } from '../i18n/translator';
 import { fiatDecimals, formatFiat, formatUnits } from './format';
 import { computeTotals } from './invoiceCreate';
 import type { ManifestState } from './manifest';
 
-export type TrustView =
+export type TrustView = (
   | { readonly kind: 'invalid-signature'; readonly text: string }
   | { readonly kind: 'valid-signature'; readonly text: string }
-  | { readonly kind: 'trusted-seller'; readonly text: string };
+  | { readonly kind: 'trusted-seller'; readonly text: string }
+) & { readonly message: MessageDescriptor };
 
 /**
  * ADR-0010 wording rule: a valid signature never reads as "verified seller". Only a pinned key may be called pinned.
@@ -48,12 +51,15 @@ export type TrustView =
 export function trustView(parsed: ParsedInvoice): TrustView {
   const key = parsed.invoice.signer;
   if (parsed.trust === 'invalid-signature') {
-    return { kind: 'invalid-signature', text: 'The invoice signature is INVALID. Do not pay.' };
+    const message: MessageDescriptor = { key: 'pay.review.invalidSignature' };
+    return { kind: 'invalid-signature', text: displayMessage(message), message };
   }
   if (parsed.trust === 'trusted-seller') {
-    return { kind: 'trusted-seller', text: `Signature matches key ${key} (pinned by you). This identifies the key, not a legal seller.` };
+    const message: MessageDescriptor = { key: 'pay.review.pinnedSignature', values: { key } };
+    return { kind: 'trusted-seller', text: displayMessage(message), message };
   }
-  return { kind: 'valid-signature', text: `Signature matches key ${key} (not pinned). This only shows the link was not altered by someone without that key.` };
+  const message: MessageDescriptor = { key: 'pay.review.unpinnedSignature', values: { key } };
+  return { kind: 'valid-signature', text: displayMessage(message), message };
 }
 
 export interface Review {
@@ -67,8 +73,10 @@ export interface Review {
   readonly manifest: DeploymentManifest | undefined;
   /** Reasons payment cannot proceed. Empty means the review may continue. */
   readonly blockers: readonly string[];
+  readonly blockerMessages: readonly MessageDescriptor[];
   /** Things the payer should check before paying. They never block (L2-F4). */
   readonly warnings: readonly string[];
+  readonly warningMessages: readonly MessageDescriptor[];
 }
 
 /**
@@ -84,6 +92,10 @@ const STABLECOIN_CURRENCY: ReadonlyMap<string, string> = new Map([['USDC', 'USD'
  * items and a zero total states no fiat figure, so there is nothing to compare.
  */
 export function fixedAmountWarnings(inv: Invoice, token: Review['token']): readonly string[] {
+  return fixedAmountWarningMessages(inv, token).map((message) => displayMessage(message));
+}
+
+function fixedAmountWarningMessages(inv: Invoice, token: Review['token']): readonly MessageDescriptor[] {
   if (inv.amountPolicy.mode !== 'fixed_token' || token === undefined || STABLECOIN_CURRENCY.get(token.symbol) !== inv.fiat.currency) return [];
   const fiat = BigInt(inv.fiat.minorUnits);
   if (fiat === 0n && inv.lineItems.length === 0) return [];
@@ -93,44 +105,46 @@ export function fixedAmountWarnings(inv: Invoice, token: Review['token']): reado
   const f = fiat * 10n ** BigInt(token.decimals);
   if ((a > f ? a - f : f - a) * 100n <= f) return [];
   return [
-    `${token.symbol} is a ${inv.fiat.currency} stablecoin, but the fixed amount of ${formatUnits(amount, token.decimals)} ${token.symbol} differs by more than 1 % from the seller-stated total of ${formatFiat(fiat, inv.fiat.currency)}. You pay the token amount, not the fiat figure: check it with the seller before you pay.`,
+    { key: 'pay.review.fixedAmountMismatch', values: { symbol: token.symbol, currency: inv.fiat.currency, amount: formatUnits(amount, token.decimals), fiat: formatFiat(fiat, inv.fiat.currency) } },
   ];
 }
 
 /** Resolves chain/token and collects every reason the payment must not proceed, plus non-blocking warnings. Pure. */
 export function reviewInvoice(parsed: ParsedInvoice, nowSeconds: number, manifest: ManifestState): Review {
   const inv = parsed.invoice;
-  const blockers: string[] = [];
+  const blockerMessages: MessageDescriptor[] = [];
   const trust = trustView(parsed);
-  if (trust.kind === 'invalid-signature') blockers.push(trust.text);
+  if (trust.kind === 'invalid-signature') blockerMessages.push(trust.message);
   const expiry = checkExpiry(inv, nowSeconds);
-  if (expiry.invoiceExpired) blockers.push('This invoice has expired.');
-  if (inv.amountPolicy.mode === 'fiat_quote' && expiry.quoteExpired) blockers.push('The seller’s price quote has expired. Ask for a new invoice.');
+  if (expiry.invoiceExpired) blockerMessages.push({ key: 'pay.review.invoiceExpired' });
+  if (inv.amountPolicy.mode === 'fiat_quote' && expiry.quoteExpired) blockerMessages.push({ key: 'pay.review.quoteExpired' });
   const totals = computeTotals(inv.lineItems, inv.tax.rateBps, BigInt(inv.tax.minorUnits));
   if (inv.lineItems.length > 0 && totals.total !== BigInt(inv.fiat.minorUnits)) {
-    blockers.push('The invoice totals do not add up (line items plus tax differ from the fiat total). Do not pay.');
+    blockerMessages.push({ key: 'pay.review.totalsMismatch' });
   }
   const chain = findChain(inv.chainId);
-  if (chain === undefined) blockers.push(`Unknown chain ${String(inv.chainId)}.`);
-  else if (!chain.enabled) blockers.push(`Payments are disabled on ${chain.name}: this chain is not enabled in this release.`);
+  if (chain === undefined) blockerMessages.push({ key: 'pay.review.unknownChain', values: { chain: String(inv.chainId) } });
+  else if (!chain.enabled) blockerMessages.push({ key: 'pay.review.disabledChain', values: { chain: chain.name } });
   let token: Review['token'];
   if (inv.token === 'native') {
     token = { symbol: chain?.nativeSymbol ?? 'native', decimals: 18, address: 'native', config: undefined };
   } else {
     const cfg = findToken(inv.chainId, inv.token);
-    if (cfg === undefined) blockers.push('This token is not on the allowlist for this chain.');
+    if (cfg === undefined) blockerMessages.push({ key: 'pay.review.disallowedToken' });
     else token = { symbol: cfg.symbol, decimals: cfg.decimals, address: cfg.address, config: cfg };
   }
   let loaded: DeploymentManifest | undefined;
   if (manifest.status === 'loaded') loaded = manifest.manifest;
   else if (chain?.enabled === true) {
-    blockers.push(
-      manifest.status === 'invalid'
-        ? 'Payments disabled on this chain: the deployment manifest failed validation.'
-        : 'Payments disabled on this chain: no deployment manifest is loaded.',
-    );
+    blockerMessages.push({ key: manifest.status === 'invalid' ? 'pay.review.invalidManifest' : 'pay.review.missingManifest' });
   }
-  return { invoice: inv, trust, encrypted: parsed.encrypted, expiry, chain, token, totals, manifest: loaded, blockers, warnings: fixedAmountWarnings(inv, token) };
+  const warningMessages = fixedAmountWarningMessages(inv, token);
+  return {
+    invoice: inv, trust, encrypted: parsed.encrypted, expiry, chain, token, totals, manifest: loaded,
+    blockerMessages, warningMessages,
+    blockers: blockerMessages.map((message) => displayMessage(message)),
+    warnings: warningMessages.map((message) => displayMessage(message)),
+  };
 }
 
 /** A client that refuses all network use; lets the adapter build calldata with no RPC configured. */
@@ -455,18 +469,23 @@ export function permitReader(rpc: Pick<RpcClient, 'request'>, version: string): 
 }
 
 /** Spec 04: one user-facing sentence per permit pre-flight state. Never suggests a silent retry. */
-const PERMIT_STATE_TEXT: Readonly<Record<PermitState, string>> = {
-  ok_to_permit: 'The permit checks passed: the token will accept this signature for exactly the shown amount.',
-  already_allowed: 'Your existing allowance already covers this payment, so no permit is needed and none will be used.',
-  nonce_consumed: 'This permit was already used or replaced (its nonce is spent) and your allowance does not cover the payment. Nothing was paid. Prepare the payment again, or pay with a one-time approval.',
-  sig_invalid: 'The token rejected this permit signature. Nothing was paid and it will not be retried automatically. Press Prepare again to pay with a one-time approval instead, or add a gas buffer.',
-  expired: 'The permit expired before it could be used. Nothing was paid. Prepare the payment again.',
-  unsupported_token: 'This token does not accept standard ERC-2612 permits. Nothing was signed or paid. Press Prepare again to pay with a one-time approval instead.',
+const PERMIT_STATE_KEYS: Readonly<Record<PermitState, MessageKey>> = {
+  ok_to_permit: 'pay.permit.okToPermit',
+  already_allowed: 'pay.permit.alreadyAllowed',
+  nonce_consumed: 'pay.permit.nonceConsumed',
+  sig_invalid: 'pay.permit.sigInvalid',
+  expired: 'pay.permit.expired',
+  unsupported_token: 'pay.permit.unsupportedToken',
 };
 
-export function permitStateMessage(state: PermitState): string {
-  return PERMIT_STATE_TEXT[state];
+export function permitStateDescriptor(state: PermitState): MessageDescriptor {
+  return { key: PERMIT_STATE_KEYS[state] };
 }
+
+export function permitStateMessage(state: PermitState, t?: Translator['t']): string {
+  return displayMessage(permitStateDescriptor(state), t);
+}
+
 
 /**
  * Reads for the spec 04 permit classifier over the user's RPC. `simulatePermit` is a static `permit(...)` call; any
@@ -545,6 +564,4 @@ export async function buildPermit(
   throw last instanceof Error ? last : new UserFacingError({ key: 'error.pay.couldNotBuildThePermitRequest' });
 }
 
-// i18n-use: error.pay.noRPCIsConfiguredForThisChain error.pay.thisPaymentIsBlockedResolveTheItemsInTheReview error.pay.thisInvoiceIsPricedInFiatConfigureAnRPCFor error.pay.theSellerDoesNotAcceptAGasBufferForThis error.pay.theGasBufferExceedsTheSafetyCap error.pay.theGasBufferWouldExceedTheSellerSMaximumFor error.pay.theGasBufferIsBelowTheSellerSMinimumFor error.pay.theSellerSMinimumGasBufferIsAboveThisApp error.pay.theTokenTransferCouldNotBeSimulatedSoASafe error.pay.theSimulatedTokenTransferNeedsAnUnexpectedAmountOfGas error.pay.theEstimatedGasBufferExceedsTheSafetyCapGasLooks error.pay.aGasBufferNeedsAnRPCForThisChainTo error.pay.gasPricesRoseSinceTheBufferWasQuotedSoThe error.pay.theGasBufferQuoteExpiredBeforeSendingNothingWasSent error.pay.thisInvoiceHasExpiredNothingWasSent error.pay.theSellerSPriceQuoteHasExpiredNothingWasSent error.pay.aGasBufferAppliesToTokenPaymentsOnly error.pay.theGasBufferQuoteExpiredRefreshItAndReviewAgain error.pay.blockedThePaymentDeadlineWouldOutliveTheInvoicePrepareIt error.pay.blockedThePreparedPaymentBelongsToADifferentReviewedInvoice error.pay.blockedTheTransactionDoesNotTargetTheManifestRouter error.pay.blockedChainDiffersFromTheInvoice error.pay.blockedTokenDiffersFromTheInvoice error.pay.blockedAmountsDifferFromTheReviewedAmounts error.pay.blockedApprovalCalldataCouldNotBeDecoded error.pay.blockedUnexpectedApprovalTransaction error.pay.blockedApprovalSpenderOrAmountDiffersFromThePreview error.pay.yourRPCReturnedAnUnexpectedAllowance error.pay.yourRPCReturnedAnUnexpectedResult error.pay.yourRPCReturnedAnUnexpectedDOMAINSEPARATOR error.pay.blockedThePermitSignatureDoesNotMatchYourAccount error.pay.couldNotBuildThePermitRequest
-
-// i18n-use: error.pay.missingPriceFeed
+// i18n-use: error.pay.aGasBufferAppliesToTokenPaymentsOnly error.pay.aGasBufferNeedsAnRPCForThisChainTo error.pay.blockedAmountsDifferFromTheReviewedAmounts error.pay.blockedApprovalCalldataCouldNotBeDecoded error.pay.blockedApprovalSpenderOrAmountDiffersFromThePreview error.pay.blockedChainDiffersFromTheInvoice error.pay.blockedThePaymentDeadlineWouldOutliveTheInvoicePrepareIt error.pay.blockedThePermitSignatureDoesNotMatchYourAccount error.pay.blockedThePreparedPaymentBelongsToADifferentReviewedInvoice error.pay.blockedTheTransactionDoesNotTargetTheManifestRouter error.pay.blockedTokenDiffersFromTheInvoice error.pay.blockedUnexpectedApprovalTransaction error.pay.couldNotBuildThePermitRequest error.pay.gasPricesRoseSinceTheBufferWasQuotedSoThe error.pay.missingPriceFeed error.pay.noRPCIsConfiguredForThisChain error.pay.theEstimatedGasBufferExceedsTheSafetyCapGasLooks error.pay.theGasBufferExceedsTheSafetyCap error.pay.theGasBufferIsBelowTheSellerSMinimumFor error.pay.theGasBufferQuoteExpiredBeforeSendingNothingWasSent error.pay.theGasBufferQuoteExpiredRefreshItAndReviewAgain error.pay.theGasBufferWouldExceedTheSellerSMaximumFor error.pay.theSellerDoesNotAcceptAGasBufferForThis error.pay.theSellerSMinimumGasBufferIsAboveThisApp error.pay.theSellerSPriceQuoteHasExpiredNothingWasSent error.pay.theSimulatedTokenTransferNeedsAnUnexpectedAmountOfGas error.pay.theTokenTransferCouldNotBeSimulatedSoASafe error.pay.thisInvoiceHasExpiredNothingWasSent error.pay.thisInvoiceIsPricedInFiatConfigureAnRPCFor error.pay.thisPaymentIsBlockedResolveTheItemsInTheReview error.pay.yourRPCReturnedAnUnexpectedAllowance error.pay.yourRPCReturnedAnUnexpectedDOMAINSEPARATOR error.pay.yourRPCReturnedAnUnexpectedResult pay.permit.alreadyAllowed pay.permit.expired pay.permit.nonceConsumed pay.permit.okToPermit pay.permit.sigInvalid pay.permit.unsupportedToken pay.review.disabledChain pay.review.disallowedToken pay.review.fixedAmountMismatch pay.review.invalidManifest pay.review.invalidSignature pay.review.invoiceExpired pay.review.missingManifest pay.review.pinnedSignature pay.review.quoteExpired pay.review.totalsMismatch pay.review.unknownChain pay.review.unpinnedSignature
