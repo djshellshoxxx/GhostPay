@@ -34,6 +34,11 @@ function readManifests(dir: string): Record<string, string> {
 // Static, CSP-friendly build: no inline scripts or styles, no source maps, no data: URI inlining,
 // no modulepreload polyfill (it injects inline code). Everything is emitted as same-origin files.
 export default defineConfig({
+  resolve: { alias: {
+    '@ghostpay/ux-vault/portable': resolve(webRoot, '../../packages/ux-vault/src/portable.ts'),
+    '@ghostpay/invoice-schema': resolve(webRoot, '../../packages/invoice-schema/src/index.ts'),
+    '@ghostpay/qr-exchange': resolve(webRoot, '../../packages/qr-exchange/src/index.ts'),
+  } },
   define: {
     __GHOSTPAY_RELEASE_KEYS__: JSON.stringify(releaseKeys),
     __GHOSTPAY_MANIFESTS__: JSON.stringify(readManifests(deploymentsDir)),

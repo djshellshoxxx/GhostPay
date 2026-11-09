@@ -40,7 +40,7 @@ export class Ctx {
     try {
       return this.limit(await (this.io.readSecretFile ?? this.io.readFile)(path));
     } catch {
-      throw ioError('SECRET_READ_FAILED', 'cannot read the private secret file.', 'Use an owned regular file with owner-only permissions (0600 on POSIX), or stdin.');
+      throw ioError('SECRET_READ_FAILED', 'cannot read the private secret file.', 'Use an owned regular file with owner-only permissions (0600 on POSIX). On Windows use stdin or a named environment source; this adapter cannot qualify file ACLs.');
     }
   }
 

@@ -104,7 +104,7 @@ export const doctorCommands: readonly Command[] = [
       );
       const now = ctx.io.nowSeconds();
       checks.push({ name: 'clock', ok: Number.isSafeInteger(now) && now >= MIN_SANE_TIME, detail: now >= MIN_SANE_TIME ? 'looks sane' : 'system clock looks wrong; expiry checks depend on it' });
-      checks.push({ name: 'network', ok: true, detail: 'none used: this CLI makes no network calls and sends no telemetry' });
+      checks.push({ name: 'network', ok: true, detail: 'none used: this self-test makes no network calls and sends no telemetry' });
       const ok = checks.every((c) => c.ok);
       ctx.out({ ok, checks }, [...checks.map((c) => `${c.ok ? 'ok  ' : 'FAIL'} ${c.name.padEnd(10)} ${c.detail}`), ok ? 'all checks passed' : 'some checks failed'].join('\n'));
       return ok ? 0 : 1;

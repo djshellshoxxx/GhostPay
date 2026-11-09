@@ -8,6 +8,8 @@ import { MAX_BINARY_BYTES, MAX_INPUT_CHARS, type Io } from './io.js';
 export interface NodeEnv {
   readonly env: Readonly<Record<string, string | undefined>>;
   readonly version: string;
+  /** Explicit for adapter qualification; production defaults to the actual platform. */
+  readonly platform?: NodeJS.Platform;
   readonly write: (stream: 'stdout' | 'stderr', text: string) => void;
   readonly stdin: AsyncIterable<string | Uint8Array>;
 }
@@ -17,7 +19,10 @@ const MAX_INPUT_BYTES = MAX_INPUT_CHARS * 4;
 const decoder = (): TextDecoder => new TextDecoder('utf-8', { fatal: true, ignoreBOM: true });
 
 /** Read the opened regular file only, with bounded allocation even if it grows after stat. */
-async function readTextFile(path: string, secret = false): Promise<string> {
+async function readTextFile(path: string, secret = false, platform = process.platform): Promise<string> {
+  // POSIX mode bits do not establish Windows DACL privacy. Do not quietly accept
+  // a key file whose access controls this adapter cannot authenticate.
+  if (secret && platform === 'win32') throw new Error('use stdin or a named environment source; private Windows ACL inspection is unavailable');
   if ((await lstat(path)).isSymbolicLink()) throw new Error('symlink input');
   const file = await open(path, constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0) | (constants.O_NONBLOCK ?? 0));
   try {
@@ -106,13 +111,13 @@ async function readBinaryFile(path: string): Promise<Uint8Array> {
   } finally { await file.close(); }
 }
 
-/** Real-world adapter. No network APIs are used. */
+/** Real-world adapter. Commands must require explicit online consent before using the transport. */
 export function createNodeIo(p: NodeEnv): Io {
   return {
     stdout: (t) => p.write('stdout', t),
     stderr: (t) => p.write('stderr', t),
     readFile: readTextFile,
-    readSecretFile: (path) => readTextFile(path, true),
+    readSecretFile: (path) => readTextFile(path, true, p.platform ?? process.platform),
     rpcTransport: fetchTransport,
     readBinaryFile,
     writeBinaryFile: (path, data, options) => writeTextFile(path, data, options.overwrite),

@@ -21,7 +21,9 @@
     "ci:check-actions": "bash scripts/check-actions-pinned.sh",
     "release:build": "bash scripts/release-build.sh",
     "release:repro": "bash scripts/repro-check.sh",
-    "build:packages": "node scripts/build-workspaces.mjs --libraries"
+    "build:packages": "node scripts/build-workspaces.mjs --libraries",
+    "build:cli": "node scripts/build-workspaces.mjs --workspace @ghostpay/cli",
+    "test:cli-build": "node --test scripts/tests/build-cli.test.mjs"
   },
   "overrides": {
     "ws": "8.21.0",

@@ -15,10 +15,12 @@ let dir;
 let key;
 let secret;
 let signer;
+const keySource = process.platform === 'win32' ? ['--key-env', 'CLI_TEST_SIGNING_KEY'] : ['--key-file', 'signing key.txt'];
+const secretSource = process.platform === 'win32' ? ['--secret-env', 'CLI_TEST_WEBHOOK_SECRET'] : ['--secret-file', 'webhook secret.txt'];
 const fixture = (name) => join(dir, name);
 const put = (name, data) => writeFile(fixture(name), typeof data === 'string' || data instanceof Uint8Array ? data : JSON.stringify(data), { mode: 0o600 });
 function cli(args, { input, env = {}, code = 0 } = {}) {
-  const result = spawnSync(process.execPath, [bin, ...args, '--json'], { cwd: dir, encoding: 'utf8', input, env: { ...process.env, ...env }, timeout: 20_000, maxBuffer: 8 * 1024 * 1024 });
+  const result = spawnSync(process.execPath, [bin, ...args, '--json'], { cwd: dir, encoding: 'utf8', input, env: { ...process.env, ...(process.platform === 'win32' ? { CLI_TEST_SIGNING_KEY: key, CLI_TEST_WEBHOOK_SECRET: secret } : {}), ...env }, timeout: 20_000, maxBuffer: 8 * 1024 * 1024 });
   assert.ifError(result.error);
   assert.equal(result.status, code, `${args[0]} ${args[1] ?? ''}: ${result.stderr}`);
   assert.equal(result.signal, null);
@@ -41,23 +43,23 @@ after(async () => { await rm(dir, { recursive: true, force: true }); key = undef
 test('compiled doctor and create → sign → verify → links → verify from a directory with spaces', async () => {
   assert.equal(cli(['doctor']).checks.find(c => c.name === 'node').ok, true);
   cli(['invoice', 'create', '--in', 'invoice spec.json', '--out', 'unsigned invoice.json']);
-  cli(['invoice', 'sign', '--in', 'unsigned invoice.json', '--key-file', 'signing key.txt', '--out', 'signed invoice.json'], { env: { GHOSTPAY_SIGNING_KEY: 'invalid ignored environment value' } });
+  cli(['invoice', 'sign', '--in', 'unsigned invoice.json', ...keySource, '--out', 'signed invoice.json'], { env: { GHOSTPAY_SIGNING_KEY: 'invalid ignored environment value' } });
   assert.equal(cli(['invoice', 'verify', '--in', 'signed invoice.json', '--pin', signer]).trust, 'trusted-seller');
   for (const encrypt of [false, true]) {
     const linked = cli(['invoice', 'link', '--in', 'signed invoice.json', '--base', 'https://pay.example.test', ...(encrypt ? ['--encrypt'] : [])]);
     const verified = cli(['invoice', 'verify', '--in', '-', '--pin', signer], { input: linked.link });
     assert.equal(verified.signatureValid, true); assert.equal(verified.encrypted, encrypt);
   }
-  assert.equal((await stat(fixture('signed invoice.json'))).mode & 0o077, 0);
-  assert.equal(cli(['invoice', 'sign', '--in', 'unsigned invoice.json', '--key-file', 'signing key.txt', '--out', 'signed invoice.json'], { code: 3 }).error.code, 'WRITE_FAILED');
-  cli(['invoice', 'sign', '--in', 'unsigned invoice.json', '--key-file', 'signing key.txt', '--out', 'signed invoice.json', '--force']);
+  if (process.platform !== 'win32') assert.equal((await stat(fixture('signed invoice.json'))).mode & 0o077, 0);
+  assert.equal(cli(['invoice', 'sign', '--in', 'unsigned invoice.json', ...keySource, '--out', 'signed invoice.json'], { code: 3 }).error.code, 'WRITE_FAILED');
+  cli(['invoice', 'sign', '--in', 'unsigned invoice.json', ...keySource, '--out', 'signed invoice.json', '--force']);
 });
 
 test('compiled webhook authenticates Unicode bytes but reports stateless replay checking', async () => {
   const body = '{"text":"雪 café 💳"}\n'; await put('body.json', body);
   const signed = cli(['webhook', 'sign', '--body-file', 'body.json', '--secret-env', 'TEST_WEBHOOK_SECRET'], { env: { TEST_WEBHOOK_SECRET: secret } });
   await put('signature.txt', signed.header);
-  const verify = ['webhook', 'verify', '--body-file', '-', '--header-file', 'signature.txt', '--secret-file', 'webhook secret.txt'];
+  const verify = ['webhook', 'verify', '--body-file', '-', '--header-file', 'signature.txt', ...secretSource];
   assert.equal(cli(verify, { input: body }).replayChecked, false);
   assert.equal(cli(verify, { input: body }).replayChecked, false);
   assert.equal(cli(verify, { input: body + ' ', code: 1 }).reason, 'bad-signature');
@@ -84,7 +86,7 @@ test('compiled errors stay machine-readable and secret sources are explicit', as
   await put('malformed.json', '{');
   assert.equal(cli(['invoice', 'verify', '--in', 'malformed.json'], { code: 1 }).ok, false);
   assert.equal(cli(['invoice', 'sign', '--in', 'unsigned invoice.json', '--key-env', 'MISSING_GHOSTPAY_KEY'], { code: 3 }).error.code, 'ENV_UNSET');
-  assert.equal(cli(['invoice', 'sign', '--in', 'unsigned invoice.json', '--key-env', 'TEST_KEY', '--key-file', 'signing key.txt'], { env: { TEST_KEY: key }, code: 2 }).error.code, 'SECRET_SOURCE_AMBIGUOUS');
+  assert.equal(cli(['invoice', 'sign', '--in', 'unsigned invoice.json', '--key-env', 'TEST_KEY', '--key-stdin'], { env: { TEST_KEY: key }, code: 2 }).error.code, 'SECRET_SOURCE_AMBIGUOUS');
   cli(['invoice', 'sign', '--in', 'unsigned invoice.json', '--key-stdin'], { input: key });
   cli(['invoice', 'sign', '--in', 'unsigned invoice.json', '--key-env', 'TEST_KEY'], { env: { TEST_KEY: key } });
 });
@@ -108,5 +110,5 @@ test('SIGTERM before output publication preserves the existing file and private 
   });
   child.kill('SIGTERM'); assert.equal((await closed).signal, 'SIGTERM');
   assert.equal(await readFile(fixture('interrupt.csv'), 'utf8'), 'previous complete output');
-  for (const name of await readdir(dir)) if (name.startsWith('.ghostpay-write-')) assert.equal((await stat(fixture(name))).mode & 0o077, 0);
+  if (process.platform !== 'win32') for (const name of await readdir(dir)) if (name.startsWith('.ghostpay-write-')) assert.equal((await stat(fixture(name))).mode & 0o077, 0);
 });

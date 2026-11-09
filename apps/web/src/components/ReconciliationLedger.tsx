@@ -172,7 +172,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
   const latest = useRef(props);
   latest.current = props;
   const visible = useMemo(
-    () => searchReconciliationRecords(records, query) as readonly VaultRecord[],
+    () => searchReconciliationRecords(records, query),
     [records, query],
   );
   const currentRecords = useMemo(() => {

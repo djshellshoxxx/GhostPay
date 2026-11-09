@@ -56,7 +56,7 @@ export async function readSecret(
         'Example: --' + prefix + '-env GHOSTPAY_SIGNING_KEY',
       );
     const v = ctx.io.env[name];
-    if (v === undefined || v === '') throw ioError('ENV_UNSET', `environment variable ${name} is not set.`);
+    if (v === undefined || v === '') throw ioError('ENV_UNSET', 'the requested secret environment variable is not set.');
     text = v;
   }
   const bytes = fromHex(text);
