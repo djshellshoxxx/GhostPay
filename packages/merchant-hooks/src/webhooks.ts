@@ -108,6 +108,8 @@ export function verifyWebhook(
   const p = parseHeader(header);
   if (p === undefined) return { ok: false, reason: 'malformed' };
   const tol = ctx.toleranceSeconds ?? DEFAULT_TOLERANCE_SECONDS;
+  if (!Number.isSafeInteger(ctx.now) || ctx.now < 0 || !Number.isSafeInteger(tol) || tol < 0 ||
+      !Number.isSafeInteger(p.t + tol + 1)) throw new HooksError('bad-time-policy');
   if (Math.abs(ctx.now - p.t) > tol) return { ok: false, reason: 'stale' };
   if (!constantTimeEqual(macOf(secret, p.t, p.n, body), p.v1)) return { ok: false, reason: 'bad-signature' };
   if (ctx.nonces.has(p.n, ctx.now) || !ctx.nonces.add(p.n, p.t + tol + 1, ctx.now)) return { ok: false, reason: 'replay' };
@@ -134,7 +136,9 @@ export function retryDelaySeconds(attempt: number, jitterPermille = 1000, policy
   const factor = policy.factor ?? 2;
   const max = policy.maxSeconds ?? 3600;
   const attempts = policy.maxAttempts ?? 8;
-  if (!Number.isInteger(attempt) || attempt < 1 || !Number.isInteger(jitterPermille) || jitterPermille < 0 || jitterPermille > 1000)
+  if (!Number.isSafeInteger(attempt) || attempt < 1 || !Number.isInteger(jitterPermille) || jitterPermille < 0 || jitterPermille > 1000 ||
+      !Number.isSafeInteger(base) || base < 0 || !Number.isFinite(factor) || factor < 1 ||
+      !Number.isSafeInteger(max) || max < 0 || !Number.isSafeInteger(attempts) || attempts < 0)
     throw new HooksError('bad-retry');
   if (attempt > attempts) return null;
   const raw = Math.min(base * Math.pow(factor, attempt - 1), max);
