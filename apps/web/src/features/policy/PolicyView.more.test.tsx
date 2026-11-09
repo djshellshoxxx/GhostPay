@@ -52,6 +52,20 @@ async function verify(user: ReturnType<typeof userEvent.setup>): Promise<void> {
 }
 
 describe('policy view: wallet and network', () => {
+  it('keeps an unpinned getter-compatible deployment unavailable in the actual application', async () => {
+    vi.restoreAllMocks();
+    const rpc = fakeChain(SEPOLIA, deploymentCalls());
+    const user = await open(makeServices({ createRpc: () => Promise.resolve(rpc) }));
+    await user.click(screen.getByLabelText('PolicyAccountFactory address'));
+    await user.paste(DEPLOYMENT.factory);
+    await user.click(screen.getByLabelText('GhostPayPolicyRouter address'));
+    await user.paste(ROUTER);
+    await user.click(screen.getByRole('button', { name: 'Verify on-chain' }));
+    expect(await screen.findByText('No authenticated policy deployment is configured for this network.')).toBeTruthy();
+    expect(screen.queryByLabelText('Verified policy deployment')).toBeNull();
+    expect(rpc.calls).toHaveLength(0);
+  });
+
   it('reports no wallets, discovery failures and connection failures', async () => {
     const discover = vi.fn<() => Promise<readonly WalletInfo[]>>()
       .mockResolvedValueOnce([])

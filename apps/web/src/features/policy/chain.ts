@@ -85,7 +85,11 @@ export async function verifyPolicyDeployment(
   // Copy public trust data before the first await so a caller cannot mutate a verification in flight.
   const profile: PolicyDeploymentProfile = Object.freeze({
     ...source,
-    deployment: Object.freeze({ ...source.deployment }),
+    deployment: Object.freeze({ ...source.deployment,
+      factory: getAddress(source.deployment.factory), router: getAddress(source.deployment.router),
+      implementation: getAddress(source.deployment.implementation), announcer: getAddress(source.deployment.announcer),
+      feeRecipient: getAddress(source.deployment.feeRecipient),
+    }),
     codeHashes: Object.freeze({ ...source.codeHashes }),
     assets: Object.freeze(source.assets.map((asset) => Object.freeze({ ...asset }))),
   });
