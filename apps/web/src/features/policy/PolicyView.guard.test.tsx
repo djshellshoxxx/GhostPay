@@ -108,7 +108,8 @@ describe('policy view: session guard before the wallet request', () => {
       return orig(args);
     };
     await user.click(deploy);
-    expect(await screen.findByText('Seller keys changed during this action. Try again.')).toBeTruthy();
+    // Re-importing hides the old session's account and action state immediately.
+    await vi.waitFor(() => { expect(screen.queryByRole('button', { name: 'Deploy account' })).toBeNull(); });
     expect(armed).toBe(false);
     expect(walletSends(w)).toBe(0);
   });
@@ -361,9 +362,14 @@ describe('policy receive: session guard on withdraw, cancel and execute', () => 
       return orig(args);
     };
     const refused = async (): Promise<void> => {
-      expect(await screen.findByText('Seller keys changed during this action. Try again.')).toBeTruthy();
+      await vi.waitFor(() => { expect(screen.queryByRole('button', { name: 'Check account' })).toBeNull(); });
       expect(armed).toBe(false);
       expect(walletSends(w)).toBe(sends);
+    };
+    const rescan = async (): Promise<void> => {
+      await user.click(screen.getByRole('button', { name: 'Scan for policy payments' }));
+      await user.click(await screen.findByRole('button', { name: 'Check account' }));
+      await screen.findByText(/A withdrawal you did not sign on this device is pending/);
     };
     let sends = 0;
 
@@ -371,11 +377,14 @@ describe('policy receive: session guard on withdraw, cancel and execute', () => 
     await user.click(screen.getByRole('button', { name: 'Cancel it' }));
     await refused();
 
+    await rescan();
     await user.type(screen.getByLabelText('Amount to withdraw (base units)'), '500000000000000000');
     armed = true;
     await user.click(screen.getByRole('button', { name: 'Sign and send withdrawal request' }));
     await refused();
 
+    await rescan();
+    await user.type(screen.getByLabelText('Amount to withdraw (base units)'), '500000000000000000');
     await user.click(screen.getByRole('button', { name: 'Sign and send withdrawal request' }));
     expect(await screen.findByText(/Withdrawal request submitted/)).toBeTruthy();
     sends = 1;

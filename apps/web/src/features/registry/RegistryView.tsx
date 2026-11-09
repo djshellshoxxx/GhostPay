@@ -69,6 +69,8 @@ export function RegistryView(): ReactNode {
   const [look, setLook] = useState<Msg | undefined>(undefined);
   const [scannedMeta, setScannedMeta] = useState<string | undefined>();
   const [scanError, setScanError] = useState<string | undefined>();
+  const [scanEpoch, setScanEpoch] = useState(0);
+  useEffect(() => { setScannedMeta(undefined); setScanError(undefined); }, [chainId, app.session]);
 
   // Any change to chain, consent or keys invalidates a prepared review and the wallet connection.
   const metaAddress = app.session?.metaAddress;
@@ -287,16 +289,17 @@ export function RegistryView(): ReactNode {
       )}
       {pub !== undefined && <Notice kind={pub.kind}>{pub.text}</Notice>}
 
-      <section className="panel" aria-label="Public meta-address QR review">
+      <section className="panel" aria-label={t('registry.qrReviewLabel')}>
         <h3>{t('registry.qrHeadingH3')}</h3>
         <p className="hint">{t('registry.qrHint')}</p>
-        <CameraImporter key={chainId} label={t('registry.qrLabel')} scopeKey={app.session}
+        <CameraImporter key={`${String(chainId)}:${String(scanEpoch)}`} label={t('registry.qrLabel')} scopeKey={app.session}
           onInputChange={() => { setScannedMeta(undefined); setScanError(undefined); }}
           onText={(text, signal) => {
             if (signal.aborted) return false;
             try { setScannedMeta(parsePublicMetaQr(text)); setScanError(undefined); return true; }
             catch (e) { setScannedMeta(undefined); setScanError(userMessage(e)); return false; }
           }} />
+        <button type="button" className="btn" onClick={() => { setScanEpoch((epoch) => epoch + 1); setScannedMeta(undefined); setScanError(undefined); }}>{t('registry.clearQr')}</button>
         {scanError !== undefined && <Notice kind="error">{scanError}</Notice>}
         {scannedMeta !== undefined && <><h4>{t('registry.scannedHeading')}</h4><p><Mono>{scannedMeta}</Mono></p><CopyButton text={scannedMeta} label={t('registry.copyScanned')} /></>}
       </section>

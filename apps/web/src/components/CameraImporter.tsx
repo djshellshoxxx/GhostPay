@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { QrExchangeError, scanFromVideo, startCamera, stopVideo } from '@ghostpay/qr-exchange';
 import type { MessageKey } from '../i18n/catalog';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
-import type { Translator } from '../i18n/translator';
 
 export interface CameraImporterProps {
   readonly label: string;
@@ -15,23 +14,22 @@ export interface CameraImporterProps {
   readonly onInputChange?: () => void;
 }
 
+// i18n-use: camera.status.tooLarge camera.status.accepted camera.status.rejected camera.status.unusable camera.error.denied camera.error.unavailable camera.error.scanFailed camera.error.startFailed
+// i18n-use: camera.status.requesting camera.status.active camera.status.stopped camera.status.closed camera.status.enterFirst
 /** Camera consent outcomes are security keys: an unreviewed locale shows the English source for them. */
-function cameraMessage(error: unknown, t: Translator['t']): string {
+function cameraMessage(error: unknown): MessageKey {
   if (error instanceof QrExchangeError) {
-    if (error.code === 'CAMERA_DENIED') return t('camera.error.denied');
-    if (error.code === 'CAMERA_UNAVAILABLE') return t('camera.error.unavailable');
-    if (error.code === 'SCAN_FAILED') return t('camera.error.scanFailed');
+    if (error.code === 'CAMERA_DENIED') return 'camera.error.denied';
+    if (error.code === 'CAMERA_UNAVAILABLE') return 'camera.error.unavailable';
+    if (error.code === 'SCAN_FAILED') return 'camera.error.scanFailed';
   }
-  return t('camera.error.startFailed');
+  return 'camera.error.startFailed';
 }
 
 /** Explicit camera consent, bounded input, and a shared lifetime for camera and pasted imports. */
 export function CameraImporter({ label, onText, scopeKey, active = true, onInputChange }: CameraImporterProps): ReactNode {
   const i18n = useI18nOptional();
-  // Read through a ref so a pending camera or paste action reports in the language in effect when it settles.
-  const tRef = useRef((i18n ?? SOURCE_TRANSLATOR).t);
-  tRef.current = (i18n ?? SOURCE_TRANSLATOR).t;
-  const t = (key: MessageKey): string => tRef.current(key);
+  const t = (i18n ?? SOURCE_TRANSLATOR).t;
   const root = useRef<HTMLElement | null>(null);
   const video = useRef<HTMLVideoElement | null>(null);
   const abort = useRef<AbortController | null>(null);
@@ -44,7 +42,8 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
   const [running, setRunning] = useState(false);
   const [busy, setBusy] = useState(false);
   const [text, setText] = useState('');
-  const [status, setStatus] = useState('');
+  // Keep a key, not rendered copy: changing language also updates an already displayed status.
+  const [status, setStatus] = useState<MessageKey | undefined>();
 
   const stop = useCallback((): void => {
     abort.current?.abort();
@@ -66,13 +65,13 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
   useEffect(() => {
     live.current = true;
     const disclosureChanged = (): void => {
-      if (!visible()) { stop(); setText(''); setStatus(t('camera.status.closed')); }
+      if (!visible()) { stop(); setText(''); setStatus('camera.status.closed'); }
     };
     // toggle does not bubble; capture observes every containing disclosure, including nested details.
     document.addEventListener('toggle', disclosureChanged, true);
     return () => { live.current = false; stop(); document.removeEventListener('toggle', disclosureChanged, true); };
   }, [stop]);
-  useEffect(() => { stop(); setText(''); setStatus(''); }, [active, scopeKey, stop]);
+  useEffect(() => { stop(); setText(''); setStatus(undefined); }, [active, scopeKey, stop]);
 
   const submit = async (value: string, controller: AbortController): Promise<boolean> => {
     const signal = controller.signal;
@@ -80,18 +79,18 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
     inputChanged.current?.();
     const candidate = value.trim();
     if (candidate.length > 65_536 || new TextEncoder().encode(candidate).byteLength > 65_536) {
-      setStatus(t('camera.status.tooLarge'));
+      setStatus('camera.status.tooLarge');
       return false;
     }
-    if (candidate.length === 0) { setStatus(t('camera.status.enterFirst')); return false; }
+    if (candidate.length === 0) { setStatus('camera.status.enterFirst'); return false; }
     try {
       const accepted = (await callback.current(candidate, signal)) === true;
       if (signal.aborted || !visible()) return false;
-      setStatus(t(accepted ? 'camera.status.accepted' : 'camera.status.rejected'));
+      setStatus(accepted ? 'camera.status.accepted' : 'camera.status.rejected');
       return accepted;
     } catch {
       if (signal.aborted || !visible()) return false;
-      setStatus(t('camera.status.unusable'));
+      setStatus('camera.status.unusable');
       return false;
     }
   };
@@ -100,14 +99,15 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
     const el = video.current;
     if (el === null || abort.current !== null || !visible()) return;
     pasteAbort.current?.abort();
-    setStatus(t('camera.status.requesting')); setRunning(true);
+    inputChanged.current?.();
+    setStatus('camera.status.requesting'); setRunning(true);
     const controller = new AbortController(); abort.current = controller;
     const isActive = (): boolean => abort.current === controller && !controller.signal.aborted && visible();
     void (async () => {
       try {
         await startCamera(el, navigator.mediaDevices, { signal: controller.signal });
         if (!isActive()) return;
-        setStatus(t('camera.status.active'));
+        setStatus('camera.status.active');
         await scanFromVideo(el, async (value) => {
           if (!isActive()) return false;
           const accepted = await submit(value, controller);
@@ -116,7 +116,7 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
           return false;
         }, { signal: controller.signal });
       } catch (error) {
-        if (isActive()) setStatus(cameraMessage(error, tRef.current));
+        if (isActive()) setStatus(cameraMessage(error));
       } finally {
         if (abort.current === controller) { abort.current = null; if (live.current) setRunning(false); }
       }
@@ -140,11 +140,11 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
       <p>{t('camera.consent')}</p>
       <div className="stack">
         <video ref={video} muted playsInline aria-label={t('camera.preview')} hidden={!running} style={{ width: '100%', maxWidth: '32rem' }} />
-        {running || busy ? <button type="button" className="btn" onClick={() => { stop(); setStatus(t('camera.status.stopped')); }}>{t('camera.stop')}</button>
+        {running || busy ? <button type="button" className="btn" onClick={() => { stop(); inputChanged.current?.(); setStatus('camera.status.stopped'); }}>{t('camera.stop')}</button>
           : <button type="button" className="btn" disabled={!active} onClick={begin}>{t('camera.scan')}</button>}
-        <label>{t('camera.pasteLabel')}<textarea rows={3} dir="ltr" maxLength={65_536} autoComplete="off" spellCheck={false} value={text} onChange={(event) => { inputChanged.current?.(); setText(event.target.value); }} /></label>
+        <label>{t('camera.pasteLabel')}<textarea rows={3} dir="ltr" maxLength={65_536} autoComplete="off" spellCheck={false} value={text} onChange={(event) => { stop(); inputChanged.current?.(); setStatus(undefined); setText(event.target.value); }} /></label>
         <button type="button" className="btn" disabled={!active || busy || text.trim() === ''} onClick={paste}>{t('camera.usePasted')}</button>
-        <p role="status" aria-live="polite">{status}</p>
+        <p role="status" aria-live="polite">{status === undefined ? '' : t(status)}</p>
       </div>
     </section>
   );

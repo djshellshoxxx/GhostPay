@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
 import { exportSettingsExchange, parseSettingsExchange, applySettingsExchange, type SharedSettings } from '../lib/settingsExchange';
@@ -31,6 +31,9 @@ export function Settings(): ReactNode {
   const [transfer, setTransfer] = useState<string | undefined>();
   const [preview, setPreview] = useState<SharedSettings | undefined>();
   const [checks, setChecks] = useState<Record<string, string>>({});
+
+  // A saved-settings change invalidates both an imported review and an already displayed export.
+  useEffect(() => { setPreview(undefined); setTransfer(undefined); }, [s]);
 
   const onSave = (e: FormEvent): void => {
     e.preventDefault();

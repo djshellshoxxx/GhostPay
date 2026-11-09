@@ -2,15 +2,17 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { CameraImporter } from '../components/CameraImporter';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
 import { QrFrame } from '../components/QrFrame';
-import { MAX_SELLER_PAIRING_BYTES, compareToLoaded, exportSellerPairing, parseSellerPairing, type SellerPairingConfig } from '../lib/sellerPairing';
+import { MAX_SELLER_PAIRING_BYTES, isSupportedPairingChain, compareToLoaded, exportSellerPairing, parseSellerPairing, type SellerPairingConfig } from '../lib/sellerPairing';
+import type { MessageKey } from '../i18n/catalog';
 import type { SessionPublic } from '../lib/session';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 
-/** Chain ids the user has configured an RPC for. Only the ids, never the URLs. */
+/** Enabled testnet chain ids with a configured RPC. Only the ids, never the URLs. */
 export function pairingChainIds(rpcUrls: Readonly<Record<string, string>>): readonly number[] {
-  return Object.keys(rpcUrls).map(Number).filter((n) => Number.isSafeInteger(n) && n > 0).sort((a, b) => a - b).slice(0, 16);
+  return Object.keys(rpcUrls).filter((key) => rpcUrls[key]?.trim() !== '').map(Number).filter(isSupportedPairingChain).sort((a, b) => a - b).slice(0, 16);
 }
 
+// i18n-use: sellerKeys.pairing.refused sellerKeys.pairing.fileTooBig
 /**
  * Device pairing for the PUBLIC seller config (meta-address, signing public key, chain ids): QR, text, copy and file.
  * Importing only previews; nothing is applied to this device. The encrypted keystore is not handled here: it contains
@@ -21,7 +23,9 @@ export function SellerPairing(props: { readonly session: SessionPublic | undefin
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const { session } = props;
   const [preview, setPreview] = useState<SellerPairingConfig | undefined>();
-  const [error, setError] = useState<string | undefined>();
+  const [error, setError] = useState<MessageKey | undefined>();
+  const [inputEpoch, setInputEpoch] = useState(0);
+  const importScope = useMemo(() => ({ session, inputEpoch }), [session, inputEpoch]);
   const fileInput = useRef<HTMLInputElement | null>(null);
   // Every new input (file, paste, camera, clear) and every key change starts a new generation; a late read must match it.
   const generation = useRef(0);
@@ -35,22 +39,32 @@ export function SellerPairing(props: { readonly session: SessionPublic | undefin
     generation.current += 1;
     setPreview(undefined); setError(undefined);
     if (fileInput.current !== null) fileInput.current.value = '';
+    return () => { generation.current += 1; };
   }, [session]);
+
+  const clear = (): void => {
+    generation.current += 1;
+    setInputEpoch((epoch) => epoch + 1);
+    setPreview(undefined); setError(undefined);
+    if (fileInput.current !== null) fileInput.current.value = '';
+  };
 
   const accept = (text: string): boolean => {
     generation.current += 1;
     try { setPreview(parseSellerPairing(text)); setError(undefined); return true; }
-    catch { setPreview(undefined); setError(t('sellerKeys.pairing.refused')); return false; }
+    catch { setPreview(undefined); setError('sellerKeys.pairing.refused'); return false; }
   };
   const onFile = (file: File | undefined): void => {
     const id = ++generation.current;
+    // A file choice replaces any pending camera/paste action, including a permission request.
+    setInputEpoch((epoch) => epoch + 1);
     setPreview(undefined); setError(undefined);
     if (file === undefined) return;
-    if (file.size > MAX_SELLER_PAIRING_BYTES) { setError(t('sellerKeys.pairing.fileTooBig')); return; }
+    if (file.size > MAX_SELLER_PAIRING_BYTES) { setError('sellerKeys.pairing.fileTooBig'); return; }
     const current = (): boolean => generation.current === id;
     void file.text().then(
       (text) => { if (current()) accept(text); },
-      () => { if (current()) setError(t('sellerKeys.pairing.fileTooBig')); },
+      () => { if (current()) setError('sellerKeys.pairing.fileTooBig'); },
     );
   };
   const exportText = exported.text;
@@ -74,10 +88,11 @@ export function SellerPairing(props: { readonly session: SessionPublic | undefin
       )}
       <h4>{t('sellerKeys.pairing.importHeading')}</h4>
       <Field label={t('sellerKeys.pairing.fileLabel')}>
-        {(id) => <input id={id} ref={fileInput} type="file" accept="application/json,.json" onChange={(e) => { onFile(e.currentTarget.files?.[0]); }} />}
+        {(id) => <input id={id} ref={fileInput} type="file" accept="application/json,.json" onChange={(e) => { const file = e.currentTarget.files?.[0]; e.currentTarget.value = ''; onFile(file); }} />}
       </Field>
-      <CameraImporter label={t('sellerKeys.pairing.importLabel')} scopeKey={session} onInputChange={() => { generation.current += 1; setPreview(undefined); setError(undefined); }} onText={(text, signal) => (signal.aborted ? false : accept(text))} />
-      {error !== undefined && <Notice kind="error">{error}</Notice>}
+      <CameraImporter label={t('sellerKeys.pairing.importLabel')} scopeKey={importScope} onInputChange={() => { generation.current += 1; setPreview(undefined); setError(undefined); }} onText={(text, signal) => (signal.aborted ? false : accept(text))} />
+      <button type="button" className="btn" onClick={clear}>{t('sellerKeys.pairing.clear')}</button>
+      {error !== undefined && <Notice kind="error">{t(error)}</Notice>}
       {preview !== undefined && verdict !== undefined && (
         <section aria-label={t('sellerKeys.pairing.previewHeading')}>
           <h4>{t('sellerKeys.pairing.previewHeading')}</h4>
@@ -91,8 +106,7 @@ export function SellerPairing(props: { readonly session: SessionPublic | undefin
             <dd>{preview.chainIds.length === 0 ? t('sellerKeys.pairing.preview.noChains') : preview.chainIds.join(', ')}</dd>
           </dl>
           <p>
-            <CopyButton text={preview.metaAddress} label={t('sellerKeys.pairing.copyMeta')} />{' '}
-            <button type="button" className="btn" onClick={() => { generation.current += 1; setPreview(undefined); setError(undefined); }}>{t('sellerKeys.pairing.clear')}</button>
+            <CopyButton text={preview.metaAddress} label={t('sellerKeys.pairing.copyMeta')} />
           </p>
         </section>
       )}

@@ -136,6 +136,8 @@ export function recordFromVerifiedMatch(
   if (!Number.isSafeInteger(recordedAt) || recordedAt <= 0 || recordedAt > 8_640_000_000_000_000) return fail('The ledger timestamp is invalid.');
   const chainId = match.chainId;
   const stealthAddress = match.stealthAddress.toLowerCase();
+  if (stealthAddress !== match.announcement.stealthAddress.toLowerCase())
+    return fail('The verified scan recipient does not match its announcement.');
   const blockHash = match.announcement.blockHash.toLowerCase();
   const blockNumber = match.announcement.blockNumber.toString();
   const logIndex = match.announcement.logIndex;

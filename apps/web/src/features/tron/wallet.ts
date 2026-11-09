@@ -31,7 +31,7 @@ function build(keys: StealthKeySet, net: TronNetworkInfo): TronWallet {
 
 /** Fresh random keys (global Web Crypto). */
 export function newWallet(net: TronNetworkInfo): TronWallet {
-  if (!net.enabled) throw new TronViewError('This network is disabled.');
+  if (!net.enabled) throw new TronViewError({ key: 'chainView.error.disabled' });
   return build(generateKeySet(), net);
 }
 
@@ -65,15 +65,15 @@ export function backupHex(w: TronWallet): string {
 export function walletFromBackupHex(text: string, net: TronNetworkInfo): TronWallet {
   const t = text.trim().toLowerCase();
   if (!/^[0-9a-f]{128}$/.test(t)) {
-    throw new TronViewError('The key backup must be exactly 128 hexadecimal characters (64 bytes).');
+    throw new TronViewError({ key: 'tron.error.backup' });
   }
-  if (!net.enabled) throw new TronViewError('This network is disabled.');
+  if (!net.enabled) throw new TronViewError({ key: 'chainView.error.disabled' });
   const bytes = new Uint8Array(64);
   for (let i = 0; i < 64; i++) bytes[i] = Number.parseInt(t.slice(2 * i, 2 * i + 2), 16);
   try {
     return build(generateKeySet(replayRng(bytes)), net);
   } catch {
-    throw new TronViewError('These are not valid keys.');
+    throw new TronViewError({ key: 'tron.error.keys' });
   } finally {
     zeroize(bytes);
   }
@@ -83,3 +83,5 @@ export function walletFromBackupHex(text: string, net: TronNetworkInfo): TronWal
 export function wipeWallet(w: TronWallet): void {
   zeroize(w.keys.spendingSecret, w.keys.viewingSecret);
 }
+
+// i18n-use: chainView.error.disabled tron.error.backup tron.error.keys

@@ -33,8 +33,8 @@ export function randomSeedHex(rng: Pick<Crypto, 'getRandomValues'> = globalThis.
 /** @throws {Error} with a user-safe message when the seed text is not 32 bytes of hex. */
 export function walletFromSeedHex(seedHex: string, net: SolNetworkInfo): SolWallet {
   const t = seedHex.trim().toLowerCase();
-  if (!/^[0-9a-f]{64}$/.test(t)) throw new SolViewError('The seed must be exactly 64 hexadecimal characters (32 bytes).');
-  if (!net.enabled) throw new SolViewError('This network is disabled.');
+  if (!/^[0-9a-f]{64}$/.test(t)) throw new SolViewError({ key: 'sol.error.seed' });
+  if (!net.enabled) throw new SolViewError({ key: 'chainView.error.disabled' });
   const seed = new Uint8Array(SEED_BYTES);
   for (let i = 0; i < SEED_BYTES; i++) seed[i] = Number.parseInt(t.slice(2 * i, 2 * i + 2), 16);
   try {
@@ -49,3 +49,5 @@ export function walletFromSeedHex(seedHex: string, net: SolNetworkInfo): SolWall
 export function wipeWallet(w: SolWallet): void {
   zeroize(w.keys.spendSecret, w.keys.viewSecret);
 }
+
+// i18n-use: sol.error.seed chainView.error.disabled

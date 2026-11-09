@@ -2,7 +2,7 @@
 import { cleanup, configure, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { I18nProvider } from '../i18n/context';
+import { I18nProvider, useI18n } from '../i18n/context';
 import { SOURCE_CATALOG, type MessageKey } from '../i18n/catalog';
 import { NEUTRAL_KEYS, SECURITY_KEYS } from '../i18n/securityKeys';
 import ar from '../../locales/ar.json';
@@ -105,4 +105,23 @@ describe('CameraImporter localization', () => {
     expect((box as HTMLTextAreaElement).value).toBe(address);
     expect(box.getAttribute('dir')).toBe('ltr');
   });
+});
+
+
+it('switches the current pending-camera status language and can cancel and retry without refresh', async () => {
+  mockCamera(() => new Promise<MediaStream>(() => undefined));
+  function Controls() {
+    const i18n = useI18n();
+    return <><button type="button" onClick={() => { i18n.setPreference('es'); }}>Spanish</button><CameraImporter label="Import a QR" onText={() => true} /></>;
+  }
+  render(<I18nProvider initialPreference="en"><Controls /></I18nProvider>);
+  const user = userEvent.setup();
+  await user.click(screen.getByRole('button', { name: english('camera.scan') }));
+  expect(screen.getByRole('status').textContent).toBe(english('camera.status.requesting'));
+  await user.click(screen.getByRole('button', { name: 'Spanish' }));
+  await waitFor(() => { expect(screen.getByRole('status').textContent).toBe(draft('es', 'camera.status.requesting')); });
+  await user.click(screen.getByRole('button', { name: draft('es', 'camera.stop') }));
+  await user.click(screen.getByRole('button', { name: draft('es', 'camera.scan') }));
+  expect(screen.getByRole('status').textContent).toBe(draft('es', 'camera.status.requesting'));
+  expect(screen.getByText(english('camera.consent'))).toBeTruthy();
 });

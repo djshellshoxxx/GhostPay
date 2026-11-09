@@ -2,6 +2,7 @@
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { UserFacingError } from '../lib/errors';
 import { clearSession, generateSession } from '../lib/session';
 import { checkpointKeyId, type ScanMatch } from '../lib/scanClient';
 import { verifyReceipt } from '../lib/receipts';
@@ -55,7 +56,7 @@ describe('ReceiptPanel encrypted archive', () => {
   });
 
   it('reports archive failures, still locking the vault, and allows a retry', async () => {
-    const vault = { archiveReceipt: vi.fn().mockRejectedValueOnce(new Error('At most 500 receipts can be archived.')), lock: vi.fn() };
+    const vault = { archiveReceipt: vi.fn().mockRejectedValueOnce(new UserFacingError('At most 500 receipts can be archived.')), lock: vi.fn() };
     factory.create.mockResolvedValue(vault);
     const { user } = await signed();
     await user.click(screen.getByRole('button', { name: 'Archive in encrypted vault' }));

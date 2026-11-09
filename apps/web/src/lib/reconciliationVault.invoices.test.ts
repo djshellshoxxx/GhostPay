@@ -140,6 +140,59 @@ describe('encrypted invoice registration and local matching', () => {
     await expect(vault.confirmProposal(rec(1), a.invoiceDigest)).rejects.toThrow(/no longer has a single exact/);
   });
 
+  it('includes unsaved current scan competitors when confirming and refuses foreign scope context', async () => {
+    const vault = await unlocked();
+    const invoice = registrationFromInvoice(testInvoice(), 1);
+    await vault.registerInvoice(invoice);
+    await expect(vault.confirmProposal(rec(1), invoice.invoiceDigest, { current: [rec(1), rec(2)] }))
+      .rejects.toThrow(/no longer has a single exact/);
+    expect((await vault.readState()).records).toEqual([]);
+    const foreign = rec(2, { sellerKeyId: 'b'.repeat(64) });
+    await expect(vault.confirmProposal(rec(1), invoice.invoiceDigest, {
+      current: [{ ...foreign, id: foreign.id.replace(scope.sellerKeyId, foreign.sellerKeyId) }],
+    })).rejects.toThrow(/scope/);
+    await expect(vault.confirmProposal(rec(1), invoice.invoiceDigest, { current: Array.from({ length: 2001 }, () => rec(1)) }))
+      .rejects.toThrow(/safety limit/);
+    await vault.confirmProposal(rec(1), invoice.invoiceDigest, { current: [rec(1), rec(2, { amountMinorUnits: '5' })] });
+    expect((await vault.readState()).records).toHaveLength(1);
+  });
+
+  it('refuses wrong invoice, asset, amount and expiry without saving a proposed record', async () => {
+    const vault = await unlocked();
+    const invoice = registrationFromInvoice(testInvoice(), 1);
+    await vault.registerInvoice(invoice);
+    const wrong = [
+      rec(1, { asset: `0x${'e'.repeat(40)}` }),
+      rec(1, { amountMinorUnits: '1' }),
+      rec(1, { recordedAt: invoice.expiresAt * 1000 }),
+    ];
+    for (const record of wrong)
+      await expect(vault.confirmProposal(record, invoice.invoiceDigest)).rejects.toThrow(/no longer has a single exact/);
+    await expect(vault.confirmProposal(rec(1), `0x${'f'.repeat(64)}`)).rejects.toThrow(/no longer has a single exact/);
+    expect((await vault.readState()).records).toEqual([]);
+  });
+
+  it('rechecks the scan guard inside the commit for saves and proposal confirmation', async () => {
+    const store = new Store();
+    const vault = await unlocked(store);
+    const invoice = registrationFromInvoice(testInvoice(), 1);
+    await vault.registerInvoice(invoice);
+    const original = store.compareAndSwap.bind(store);
+    let scanCurrent = true;
+    store.compareAndSwap = (key, expected, next, guard) => {
+      // A rescan/reorg arrives after encryption but before the storage transaction's guarded put.
+      scanCurrent = false;
+      return original(key, expected, next, guard);
+    };
+    const guard = (): void => { if (!scanCurrent) throw new Error('Scan changed.'); };
+    const before = await vault.exportEncrypted();
+    await expect(vault.save(rec(1), guard)).rejects.toThrow('Scan changed.');
+    scanCurrent = true;
+    await expect(vault.confirmProposal(rec(1), invoice.invoiceDigest, { guard })).rejects.toThrow('Scan changed.');
+    expect(await vault.exportEncrypted()).toBe(before);
+    expect((await vault.readState()).records).toEqual([]);
+  });
+
   it('reopens an invoice after reorg invalidation and refuses to link invalidated observations', async () => {
     const vault = await unlocked();
     const invoice = registrationFromInvoice(testInvoice(), 1);

@@ -1110,6 +1110,36 @@ describe('spec 05: spam lanes, backlog and local telemetry', () => {
     expect(res.telemetry?.anonymity).toMatchObject({ count7d: 1, count30d: 1, partial: false });
   });
 
+  it('ends the privacy window at the latest reachable head when a later page reports a lower head', async () => {
+    const keys = generateKeySet();
+    const stranger = encodeMetaAddress(generateKeySet());
+    const routed = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block: 1000, index: 0, caller: FAKE_ROUTER });
+    let head = 400_000n;
+    const client = { ...chainWith(400_000, [routed.log]), blockNumber: () => Promise.resolve(head) };
+    const res = await runScan({
+      chain, manifest, client, cursor: { nextBlock: 0n }, ...keyArgs(keys),
+      onProgress: () => { head = 250_000n; },
+    });
+    expect(res.cursor.nextBlock).toBe(250_001n);
+    // Block 1000 is in the seven-day window of the latest head, and this run reached that head.
+    expect(res.telemetry?.anonymity).toMatchObject({ count7d: 1, count30d: 1, partial: false });
+  });
+
+  it('excludes blocks above a lowered secondary head from the privacy window', async () => {
+    const keys = generateKeySet();
+    const stranger = encodeMetaAddress(generateKeySet());
+    const routed = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block: 49_975, index: 0, caller: FAKE_ROUTER });
+    const client = chainWith(400_000, [routed.log]);
+    let head = 400_000n;
+    const secondaryClient = { ...chainWith(400_000, [routed.log]), blockNumber: () => Promise.resolve(head) };
+    const res = await runScan({
+      chain, manifest, client, secondaryClient, cursor: { nextBlock: 0n }, ...keyArgs(keys),
+      onProgress: () => { head = 49_950n; },
+    });
+    expect(res.cursor.nextBlock).toBe(50_000n);
+    expect(res.telemetry?.anonymity).toMatchObject({ count7d: 0, count30d: 0, partial: false });
+  });
+
   it('holds the cursor at the rollback and clears the orphaned checkpoint when a reorg page is deferred by the budget (A5)', async () => {
     const keys = generateKeySet();
     const stranger = encodeMetaAddress(generateKeySet());

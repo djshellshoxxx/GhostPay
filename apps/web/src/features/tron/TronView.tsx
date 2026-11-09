@@ -45,7 +45,7 @@ export function TronView(): ReactNode {
   const [approved, setApproved] = useState(false);
   const [signed, setSigned] = useState<SignedSweep | undefined>(undefined);
   const [broadcastId, setBroadcastId] = useState<string | undefined>(undefined);
-  const [error, setError] = useState<string | undefined>(undefined);
+  const [error, setError] = useState<unknown>(undefined);
   /** The app lock (idle timeout) forgot the wallet: say so instead of silently showing an empty view. */
   const [appLocked, setAppLocked] = useState(false);
   const abort = useRef<AbortController | undefined>(undefined);
@@ -93,7 +93,7 @@ export function TronView(): ReactNode {
     try {
       f();
     } catch (e) {
-      setError(tronErrorMessage(e));
+      setError(e ?? new Error());
     }
   };
 
@@ -103,7 +103,7 @@ export function TronView(): ReactNode {
     try {
       rpc = createRpc(url, services.fetchFn);
     } catch {
-      throw new TronViewError(t('tron.node.missing'));
+      throw new TronViewError({ key: 'tron.node.missing' });
     }
     await checkNetwork(rpc, signal);
     return rpc;
@@ -131,7 +131,7 @@ export function TronView(): ReactNode {
     void (async () => {
       try {
         const rpc = await connect(signal);
-        if (!/^\d{1,15}$/.test(fromBlock.trim())) throw new TronViewError(t('tron.block.required'));
+        if (!/^\d{1,15}$/.test(fromBlock.trim())) throw new TronViewError({ key: 'tron.block.required' });
         const res = await scanForPayments({
           rpc,
           wallet,
@@ -144,7 +144,7 @@ export function TronView(): ReactNode {
         setScanNote(t('tron.scanned', { from: String(res.fromBlock), to: String(res.toBlock) }));
         setPicked(res.found[0]?.stealthAddress);
       } catch (e) {
-        if (live()) setError(tronErrorMessage(e));
+        if (live()) setError(e ?? new Error());
       } finally {
         if (live()) setScanning(false);
       }
@@ -170,7 +170,7 @@ export function TronView(): ReactNode {
         setSigned(undefined);
         setBroadcastId(undefined);
       } catch (e) {
-        if (live()) setError(tronErrorMessage(e));
+        if (live()) setError(e ?? new Error());
       } finally {
         if (live()) setBusy(false);
       }
@@ -188,7 +188,7 @@ export function TronView(): ReactNode {
         const out = await signSweep({ rpc, wallet, found: selected, review, nowMs: services.nowMs(), signal });
         if (live()) setSigned(out);
       } catch (e) {
-        if (live()) setError(tronErrorMessage(e));
+        if (live()) setError(e ?? new Error());
       } finally {
         if (live()) setBusy(false);
       }
@@ -206,7 +206,7 @@ export function TronView(): ReactNode {
         const id = await broadcastHex(rpc, signed.signedHex, signed.txID, signal);
         if (live()) setBroadcastId(id);
       } catch (e) {
-        if (live()) setError(tronErrorMessage(e));
+        if (live()) setError(e ?? new Error());
       } finally {
         if (live()) setBusy(false);
       }
@@ -244,7 +244,7 @@ export function TronView(): ReactNode {
     <section aria-labelledby="tron-h">
       <h2 id="tron-h">{t('tron.title')}</h2>
       <Notice kind="warn" title={t('btc.warning.title')}>{t('tron.warning.body')}</Notice>
-      {error !== undefined && <Notice kind="error">{error}</Notice>}
+      {error !== undefined && <Notice kind="error">{tronErrorMessage(error, t)}</Notice>}
 
       <div className="panel">
         <h3>{t('tron.section.network')}</h3>
@@ -398,14 +398,14 @@ export function TronView(): ReactNode {
               try {
                 decodeTronAddress(candidate);
                 if (selected !== undefined && candidate === selected.stealthAddress) {
-                  throw new TronViewError(t('tron.sameAddress'));
+                  throw new TronViewError({ key: 'tron.sameAddress' });
                 }
                 setDestination(candidate);
                 clearReview();
                 setError(undefined);
                 return true;
               } catch (e) {
-                setError(tronErrorMessage(e));
+                setError(e ?? new Error());
                 return false;
               }
             }}
@@ -426,7 +426,7 @@ export function TronView(): ReactNode {
                 <dt>{t('btc.review.receives')}</dt><dd>{formatTrx(review.sendSun)}</dd>
                 <dt>{t('pay.destination')}</dt><dd dir="ltr"><Mono>{review.destination}</Mono></dd>
               </dl>
-              {review.warnings.map((w) => <Notice key={w} kind="warn">{w}</Notice>)}
+              {review.warnings.map((w) => <Notice key={w.key} kind="warn">{t(w.key, w.values)}</Notice>)}
               <label>
                 <input type="checkbox" checked={approved} onChange={(e) => { setApproved(e.target.checked); }} />{' '}
                 {t('btc.review.approve')}
@@ -456,3 +456,5 @@ export function TronView(): ReactNode {
     </section>
   );
 }
+
+// i18n-use: tron.node.missing tron.block.required tron.sameAddress

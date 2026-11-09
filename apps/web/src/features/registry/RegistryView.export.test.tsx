@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { screen, within } from '@testing-library/react';
+import { act, fireEvent, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { parsePublicMetaQr } from '../../lib/qrPayload';
@@ -46,4 +46,26 @@ describe('Registry public meta-address QR export', () => {
     await open();
     expect(document.getElementById('reg-export-h')).toBeNull();
   });
+});
+
+
+it('clears scanned public data on network/key changes and supports repeated imports after clearing', async () => {
+  const me = generateWaivedSession();
+  await open();
+  const user = userEvent.setup();
+  const importMeta = async (): Promise<void> => {
+    fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: me.metaAddress } });
+    await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
+    expect(await screen.findByText('Scanned public meta-address (untrusted)')).toBeTruthy();
+  };
+  await importMeta();
+  await user.selectOptions(screen.getByLabelText('Network'), '84532');
+  expect(screen.queryByText('Scanned public meta-address (untrusted)')).toBeNull();
+  await importMeta();
+  act(() => { clearSession(); generateWaivedSession(); });
+  expect(screen.queryByText('Scanned public meta-address (untrusted)')).toBeNull();
+  await importMeta();
+  await user.click(screen.getByRole('button', { name: 'Clear scanned preview' }));
+  expect(screen.queryByText('Scanned public meta-address (untrusted)')).toBeNull();
+  await importMeta();
 });

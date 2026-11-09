@@ -53,15 +53,18 @@ deleting old data.
    - More than one candidate invoice: `ambiguous`, reason `multiple-invoices`.
    - For the single candidate invoice, another eligible observation that is also a candidate: `ambiguous`, reason
      `multiple-payments` (`competing`).
-   - `recordedAt > expiresAt * 1000 + MATCH_LATE_GRACE_MS` (7 days): `ambiguous`, reason `late-observation`.
-   - Otherwise `exact`. Note there is no upper bound before expiry; the window for `exact` is effectively
-     `[createdAt - 5 min, expiresAt + 7 days]`, and observations beyond the late bound are reported as ambiguous.
+   - `recordedAt >= expiresAt * 1000`: `ambiguous`, reason `late-observation`. Observation time is not block time,
+     so a payment first seen at or after expiry cannot be inferred to have arrived on time.
+   - Otherwise `exact`. The window for `exact` is `[createdAt - 5 min, expiresAt)`. An observation recorded before
+     expiry can still be proposed when read later; late scans require manual review even if payment may have been on time.
 5. **Amount is the router net amount.** `registrationFromInvoice` computes it as `routerNet(grossForNet(wanted))` for
    `feePolicy === 'payer_pays'` and `routerNet(wanted)` otherwise, both from `@ghostpay/chain-adapters`. Observations
    carry `metadata.netAmount` through `recordFromVerifiedMatch` (`apps/web/src/lib/reconciliationLedger.ts`).
 6. **Confirmation re-runs matching inside the write.** `ReconciliationVault.confirmProposal` applies `withSaved` and
-   then `proposeInvoiceMatch` on the current decrypted document inside `change()`. It links only when the result is
-   `exact` and names the requested digest; anything else throws the "no longer has a single exact invoice match" message.
+   then `proposeInvoiceMatch` on the current decrypted document and supplied unsaved scan observations inside `change()`.
+   Context records are bounded and validated for this seller and chain; stored provenance/invalidation takes precedence
+   on duplicates. It links only when the result is `exact` and names the requested digest; anything else throws the
+   "no longer has a single exact invoice match" message.
 7. **Archive is opt-in and never evidence.** The receipt panel offers an archive action (`ReceiptPanel.tsx`,
    `archiveReceipt`). Archived receipts are not read by matching (see "Why a seller-signed receipt is never payment
    evidence").
@@ -132,6 +135,10 @@ and the cutoff persist across "delete observations" (`clearRecords` keeps them).
   after each action. Writes go through `ReconciliationVaultStore.compareAndSwap` (the interface documents an exact
   previous-ciphertext comparison inside one transaction), with up to four attempts in `ReconciliationVault.change`, so a
   concurrent tab cannot be overwritten blindly.
+- Live observation saves and match confirmations pass `scanActionGuard` through `ReconciliationVault.change` to the
+  storage transaction. Changing the scan result array or its current-scope flag while encryption is pending invalidates
+  the action before the write. The guard is also checked after the commit; an error at that point does not undo a committed
+  write, so callers must refresh the vault instead of assuming every error means nothing was saved.
 
 ### Export and delete
 
@@ -211,8 +218,8 @@ Plaintext exports (deliberately unencrypted, each behind a confirmation):
 
 - The chain has no invoice reference, so every link is an inference from chain, asset, amount and time. Inference can be
   wrong. Amounts collide (two invoices can share an exact net amount), and two payments can match one invoice.
-- Time is observation time, not block time (`MATCH_LATE_GRACE_MS` comment in `reconciliationMatch.ts`). A payment first
-  seen late may have been paid late, so it is downgraded to `ambiguous` rather than `exact`.
+- Time is observation time, not block time (`proposeInvoiceMatch` in `reconciliationMatch.ts`). A payment first seen at
+  or after expiry may have been paid late, so it is downgraded to `ambiguous` rather than `exact`.
 - Another client may compute a different gross, so a real payment can be missed. A missed payment is safe. A wrong
   automatic link is not.
 - UI: `ProposalView` (`ReconciliationLedger.tsx`) shows a confirm button only for `exact`. The text says "This is a local
@@ -268,7 +275,7 @@ These tests exercise the described behaviour. They are listed, not re-run for th
    listing the identifiers in the browser-profile row of the threat model. Neither exists yet.
 5. **Manual annotations are unchecked.** A typed digest that is not a registered invoice is stored and counted as a link
    (`MatchLedgerAction`, `save`). Decide whether to require registration.
-6. **Expiry is not an upper bound.** An observation between expiry and expiry plus 7 days is `exact` with no further
-   check. Decide whether that grace window is right.
+6. **Expiry grace resolved (2026-11-09).** The seven-day exact-match grace was removed. Observations first recorded at
+   or after expiry are ambiguous; only observations recorded before expiry can yield an exact local proposal.
 7. **Plaintext exports rely on a confirmation only.** Consider a warning that the file must not be stored in shared
    locations.
