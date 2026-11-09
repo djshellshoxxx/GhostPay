@@ -49,7 +49,7 @@ export function deriveVerifiedSweepKey(target: SweepTarget): SecretScalar {
   const secret = withSessionSecrets((s) => deriveStealthSecret(target.announcement, s.keys, { ignoreViewTag: true }));
   if (addressOfSecret(secret) !== target.owner) {
     zeroize(secret);
-    throw new UserFacingError('Blocked: the derived key does not control that address.');
+    throw new UserFacingError({ key: 'error.sweep.blockedTheDerivedKeyDoesNotControlThatAddress' });
   }
   return secret;
 }
@@ -65,15 +65,15 @@ export function deriveVerifiedSweepKey(target: SweepTarget): SecretScalar {
  */
 export function checkDestination(destination: string, owner: Address, manifest: DeploymentManifest, known: readonly Address[] = []): Address {
   const parsed = parseStrictAddress(destination.trim());
-  if (isReason(parsed)) throw new UserFacingError('Enter a valid destination address (0x…). Mixed-case addresses must have a correct checksum.');
+  if (isReason(parsed)) throw new UserFacingError({ key: 'error.sweep.enterAValidDestinationAddress0xMixedCaseAddressesMust' });
   const d = parsed;
-  if (d === owner) throw new UserFacingError('The destination must differ from the stealth address.');
+  if (d === owner) throw new UserFacingError({ key: 'error.sweep.theDestinationMustDifferFromTheStealthAddress' });
   if (d === manifest.router || d === manifest.sweepRelayer || d === manifest.announcer || d === manifest.feeRecipient) {
-    throw new UserFacingError('The destination must not be a GhostPay contract or the fee recipient.');
+    throw new UserFacingError({ key: 'error.sweep.theDestinationMustNotBeAGhostPayContractOrThe' });
   }
   const trusted = [owner, manifest.router, manifest.sweepRelayer, manifest.announcer, manifest.feeRecipient, ...known];
   if (findLookalikes(d, trusted).length > 0) {
-    throw new UserFacingError('Blocked: this address looks almost identical to an address you know (address poisoning). Check every character.');
+    throw new UserFacingError({ key: 'error.sweep.blockedThisAddressLooksAlmostIdenticalToAnAddressYou' });
   }
   return d;
 }
@@ -87,7 +87,7 @@ export async function readBalance(rpc: Rpc, owner: Address, token: Address | 'na
   if (token === 'native') return parseQuantity(await rpc.request('eth_getBalance', [owner, 'latest']));
   const data = encodeFunctionData({ abi: erc20Abi, functionName: 'balanceOf', args: [owner] });
   const r = await rpc.request('eth_call', [{ to: token, data }, 'latest']);
-  if (typeof r !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(r)) throw new UserFacingError('Your RPC returned an unexpected balance.');
+  if (typeof r !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(r)) throw new UserFacingError({ key: 'error.sweep.yourRPCReturnedAnUnexpectedBalance' });
   return BigInt(r);
 }
 
@@ -105,17 +105,17 @@ function assertRelayerQuote(
   amount: bigint,
   nowSeconds: number,
 ): void {
-  if (!Number.isSafeInteger(nowSeconds) || nowSeconds < 0) throw new UserFacingError('The local clock is invalid. Refusing to sign a sweep.');
+  if (!Number.isSafeInteger(nowSeconds) || nowSeconds < 0) throw new UserFacingError({ key: 'error.sweep.theLocalClockIsInvalidRefusingToSignASweep' });
   if (quote.expiresAt <= nowSeconds + SWEEP_QUOTE_EXPIRY_SAFETY_SECONDS) {
-    throw new UserFacingError('The relayer quote has expired or is about to. Request a new quote.');
+    throw new UserFacingError({ key: 'error.sweep.theRelayerQuoteHasExpiredOrIsAboutToRequest' });
   }
   if (getAddress(quote.feeTo) !== getAddress(manifest.feeRecipient)) {
-    throw new UserFacingError('The relayer fee address does not match the deployment fee recipient. Refusing.');
+    throw new UserFacingError({ key: 'error.sweep.theRelayerFeeAddressDoesNotMatchTheDeploymentFee' });
   }
   try {
     assertSponsorFeeAcceptable(amount, quote.fee);
   } catch {
-    throw new UserFacingError('The relayer fee is above the published cap for this amount. Refusing.');
+    throw new UserFacingError({ key: 'error.sweep.theRelayerFeeIsAboveThePublishedCapForThis' });
   }
 }
 
@@ -129,16 +129,16 @@ export async function getSweepQuote(
   feeRecipient: Address,
   fetchFn?: FetchFn,
 ): Promise<SweepQuoteView> {
-  if (relayerUrl === '') throw new UserFacingError('Set a relayer URL in Settings, or sweep directly.');
+  if (relayerUrl === '') throw new UserFacingError({ key: 'error.sweep.setARelayerURLInSettingsOrSweepDirectly' });
   const quote = await requestQuote(relayerUrl, { chainId: target.chainId, token: target.token, owner: target.owner, destination, amount }, fetchFn);
   try {
     assertSponsorFeeAcceptable(amount, quote.fee);
   } catch {
-    throw new UserFacingError('The relayer asked for a fee above the published cap. Refusing.');
+    throw new UserFacingError({ key: 'error.sweep.theRelayerAskedForAFeeAboveThePublishedCap' });
   }
-  if (quote.expiresAt <= nowSeconds) throw new UserFacingError('The relayer quote has already expired.');
-  if (quote.feeTo === target.owner || quote.feeTo === destination) throw new UserFacingError('The relayer fee address is unacceptable.');
-  if (quote.feeTo !== getAddress(feeRecipient)) throw new UserFacingError('The relayer fee address does not match the deployment fee recipient. Refusing.');
+  if (quote.expiresAt <= nowSeconds) throw new UserFacingError({ key: 'error.sweep.theRelayerQuoteHasAlreadyExpired' });
+  if (quote.feeTo === target.owner || quote.feeTo === destination) throw new UserFacingError({ key: 'error.sweep.theRelayerFeeAddressIsUnacceptable' });
+  if (quote.feeTo !== getAddress(feeRecipient)) throw new UserFacingError({ key: 'error.sweep.theRelayerFeeAddressDoesNotMatchTheDeploymentFee' });
   return { quote, net: amount - quote.fee };
 }
 
@@ -433,7 +433,7 @@ export async function reconcileRelayedOrder<T extends { readonly owner: Address;
     const used = await nonceUsedAt(rpc, lock.owner, order, { blockHash: block.hash as Hex, requireCanonical: true });
     return { ...lock, status: used ? 'included' : 'expired' };
   } catch {
-    throw new UserFacingError('Could not check the order on chain (the RPC failed or does not report finalized blocks). Its outcome is still unknown; check again later.');
+    throw new UserFacingError({ key: 'error.sweep.couldNotCheckTheOrderOnChainTheRPCFailed' });
   }
 }
 
@@ -478,7 +478,7 @@ export async function reconcileSweepLock<T extends SweepLock>(rpc: Rpc, lock: T)
 }
 
 function uncertainReceipt(): UserFacingError {
-  return new UserFacingError('Could not check every transaction receipt. The outcome is still unknown; signing remains locked. Check again later.');
+  return new UserFacingError({ key: 'error.sweep.couldNotCheckEveryTransactionReceiptTheOutcomeIsStill' });
 }
 
 /** Only explicit null for every recorded hash permits same-nonce recovery; errors and all other answers prove nothing. */
@@ -571,7 +571,7 @@ async function opStackFeeReserve(rpc: Rpc, unsignedTx: Hex, gas: bigint): Promis
     const operator = await readOperatorFee(rpc, gas);
     return (l1 + operator) * OP_STACK_FEE_RESERVE_MULTIPLIER;
   } catch {
-    throw new UserFacingError('Could not read the L1 data fee from this chain\'s fee oracle, so the network fee of this sweep cannot be computed. Nothing was signed.');
+    throw new UserFacingError({ key: 'error.sweep.couldNotReadTheL1DataFeeFromThisChain' });
   }
 }
 
@@ -582,7 +582,7 @@ async function estimateGas(rpc: Rpc, call: { readonly from: Address; readonly to
   try {
     raw = await rpc.request('eth_estimateGas', [{ from: call.from, to: call.to, ...(call.data === undefined ? {} : { data: call.data }), ...value }]);
   } catch (e) {
-    if (reportsRevert(e)) throw new UserFacingError('Blocked: a dry run of this transfer fails (it would revert). Nothing was sent.');
+    if (reportsRevert(e)) throw new UserFacingError({ key: 'error.sweep.blockedADryRunOfThisTransferFailsItWould' });
     throw e;
   }
   return parseQuantity(raw);
@@ -592,10 +592,10 @@ async function estimateGas(rpc: Rpc, call: { readonly from: Address; readonly to
 async function sweepNonce(i: DirectSweepInput): Promise<number> {
   const owner = i.target.owner;
   if (i.replaceNonce === undefined) return Number(parseQuantity(await i.rpc.request('eth_getTransactionCount', [owner, 'pending'])));
-  if (!Number.isSafeInteger(i.replaceNonce) || i.replaceNonce < 0) throw new UserFacingError('Invalid nonce for a replacement transaction.');
+  if (!Number.isSafeInteger(i.replaceNonce) || i.replaceNonce < 0) throw new UserFacingError({ key: 'error.sweep.invalidNonceForAReplacementTransaction' });
   const mined = parseQuantity(await i.rpc.request('eth_getTransactionCount', [owner, 'latest']));
   if (mined > BigInt(i.replaceNonce)) {
-    throw new UserFacingError('A transaction with this nonce is already on chain, so a replacement could never be included. Check the status of the pending sweep.');
+    throw new UserFacingError({ key: 'error.sweep.aTransactionWithThisNonceIsAlreadyOnChainSo' });
   }
   return i.replaceNonce;
 }
@@ -621,14 +621,14 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
     let gas: bigint;
     if (token === 'native') {
       to = i.destination;
-      if (nativeBalance <= TRANSFER_GAS * maxFeePerGas) throw new UserFacingError('The balance does not cover the network fee.');
+      if (nativeBalance <= TRANSFER_GAS * maxFeePerGas) throw new UserFacingError({ key: 'error.sweep.theBalanceDoesNotCoverTheNetworkFee' });
       // A contract or EIP-7702 destination needs more than 21 000 gas, and Arbitrum's estimate includes its L1 cost.
       // Estimated with the largest value this sweep could send.
       const est = await estimateGas(i.rpc, { from: owner, to, value: nativeBalance - TRANSFER_GAS * maxFeePerGas });
       assertSessionUnchanged();
       gas = est <= TRANSFER_GAS ? TRANSFER_GAS : (est * 12n) / 10n;
       const gasCost = gas * maxFeePerGas;
-      if (nativeBalance <= gasCost) throw new UserFacingError('The balance does not cover the network fee.');
+      if (nativeBalance <= gasCost) throw new UserFacingError({ key: 'error.sweep.theBalanceDoesNotCoverTheNetworkFee' });
       // An OP Stack node also charges an L1 data fee (and an operator fee) outside gas * price and refuses a transaction
       // whose total cost exceeds the balance (L2-F2). They are priced on this transaction's unsigned bytes with the
       // largest value it can carry: the value only shrinks, so the encoding never grows.
@@ -636,11 +636,11 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
         ? await opStackFeeReserve(i.rpc, serializeTransaction({ type: 'eip1559', chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value: nativeBalance - gasCost, data }), gas)
         : 0n;
       assertSessionUnchanged();
-      if (nativeBalance <= gasCost + reserve) throw new UserFacingError('The balance does not cover the network fee, including the L1 data fee.');
+      if (nativeBalance <= gasCost + reserve) throw new UserFacingError({ key: 'error.sweep.theBalanceDoesNotCoverTheNetworkFeeIncludingThe' });
       value = nativeBalance - gasCost - reserve;
       // The review below caps gas * fee at a share of the amount moved; the L1 data fee counts towards that share too.
       if (reserve > 0n && (gasCost + reserve) * 10_000n > value * BigInt(DIRECT_MAX_FEE_SHARE_BPS)) {
-        throw new UserFacingError(`Blocked before signing: the network fee, including the L1 data fee, would be more than ${String(DIRECT_MAX_FEE_SHARE_BPS / 100)} % of the amount moved.`);
+        throw new UserFacingError({ key: 'error.sweep.excessiveFee', values: { maximum: String(DIRECT_MAX_FEE_SHARE_BPS / 100) } });
       }
     } else {
       to = token;
@@ -650,7 +650,7 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
       assertSessionUnchanged();
       gas = (est * 12n) / 10n;
       if (nativeBalance < gas * maxFeePerGas) {
-        throw new UserFacingError('The stealth address has no native coin for gas. Use the relayer, or send a small amount of native coin to it first.');
+        throw new UserFacingError({ key: 'error.sweep.theStealthAddressHasNoNativeCoinForGasUse' });
       }
       // On OP Stack the native coin must also cover the L1 data fee and operator fee of this transfer, priced on its
       // exact unsigned bytes; the node refuses a transaction it cannot pay for, and the sweep lock would jam.
@@ -659,7 +659,7 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
         : 0n;
       assertSessionUnchanged();
       if (nativeBalance < gas * maxFeePerGas + reserve) {
-        throw new UserFacingError('The stealth address does not hold enough native coin for the network fee, including the L1 data fee. Use the relayer, or send a small amount of native coin to it first.');
+        throw new UserFacingError({ key: 'error.sweep.theStealthAddressDoesNotHoldEnoughNativeCoinFor' });
       }
     }
     const unsigned = { type: 'eip1559' as const, chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value, data };
@@ -781,3 +781,7 @@ export function sweepPermitRefusalKey(e: unknown): MessageKey | undefined {
 export function sweepPermitSuggestsDirect(key: MessageKey): boolean {
   return key === 'sweep.permit.failed' || key === 'sweep.permit.simulationFailed' || key === 'sweep.permit.unsupported' || key === 'sweep.permit.noAllowance';
 }
+
+// i18n-use: error.sweep.blockedTheDerivedKeyDoesNotControlThatAddress error.sweep.enterAValidDestinationAddress0xMixedCaseAddressesMust error.sweep.theDestinationMustDifferFromTheStealthAddress error.sweep.theDestinationMustNotBeAGhostPayContractOrThe error.sweep.blockedThisAddressLooksAlmostIdenticalToAnAddressYou error.sweep.yourRPCReturnedAnUnexpectedBalance error.sweep.theLocalClockIsInvalidRefusingToSignASweep error.sweep.theRelayerQuoteHasExpiredOrIsAboutToRequest error.sweep.theRelayerFeeAddressDoesNotMatchTheDeploymentFee error.sweep.theRelayerFeeIsAboveThePublishedCapForThis error.sweep.setARelayerURLInSettingsOrSweepDirectly error.sweep.theRelayerAskedForAFeeAboveThePublishedCap error.sweep.theRelayerQuoteHasAlreadyExpired error.sweep.theRelayerFeeAddressIsUnacceptable error.sweep.couldNotCheckTheOrderOnChainTheRPCFailed error.sweep.couldNotCheckEveryTransactionReceiptTheOutcomeIsStill error.sweep.couldNotReadTheL1DataFeeFromThisChain error.sweep.blockedADryRunOfThisTransferFailsItWould error.sweep.invalidNonceForAReplacementTransaction error.sweep.aTransactionWithThisNonceIsAlreadyOnChainSo error.sweep.theBalanceDoesNotCoverTheNetworkFee error.sweep.theBalanceDoesNotCoverTheNetworkFeeIncludingThe error.sweep.theStealthAddressHasNoNativeCoinForGasUse error.sweep.theStealthAddressDoesNotHoldEnoughNativeCoinFor
+
+// i18n-use: error.sweep.excessiveFee

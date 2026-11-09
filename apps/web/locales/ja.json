@@ -1768,6 +1768,24 @@
     "policy.withdraw.attempts": "Saved policy wallet attempts",
     "policy.withdraw.clearAttempt": "Clear reviewed attempt",
     "policy.withdraw.clearConfirm": "Clearing this saved attempt cannot cancel a transaction and permits another submission. Have you checked its wallet and chain outcome?",
-    "policy.withdraw.storageNotice": "Policy wallet attempt hashes and public metadata are saved in this browser until you explicitly clear them. No seller secret or signed request is stored."
+    "policy.withdraw.storageNotice": "Policy wallet attempt hashes and public metadata are saved in this browser until you explicitly clear them. No seller secret or signed request is stored.",
+    "error.tags.labelLength": "Client label must be 1 to {maximum} characters.",
+    "error.tagArchive.capacity": "An archive holds at most {maximum} tags.",
+    "error.pay.missingPriceFeed": "No price feed is configured for {symbol}/{currency} on {chain}. This invoice cannot be paid from this app version.",
+    "error.txGuard.reviewRefused": "Blocked before signing: the request did not pass the safety review ({reasons}).",
+    "error.txGuard.reviewFailed": "Blocked before signing: the safety review could not run ({code}).",
+    "error.sweep.excessiveFee": "Blocked before signing: the network fee, including the L1 data fee, would be more than {maximum} % of the amount moved.",
+    "error.settingsExchange.invalid": "This is not a supported nonsecret settings transfer.",
+    "error.sellerPairing.invalid": "This is not a supported public seller config.",
+    "error.keystore.invalidFile": "This is not a valid GhostPay keystore file.",
+    "error.tagArchive.invalidFile": "This is not a valid GhostPay tag archive.",
+    "error.tagArchive.authentication": "Wrong passphrase, or the archive was modified.",
+    "error.keyVault.saveFailed": "Could not save encrypted browser storage.",
+    "error.session.spendingFormat": "Spending key must be 64 hexadecimal characters.",
+    "error.session.spendingInvalid": "Spending key is not a valid secp256k1 private key.",
+    "error.session.viewingFormat": "Viewing key must be 64 hexadecimal characters.",
+    "error.session.viewingInvalid": "Viewing key is not a valid secp256k1 private key.",
+    "error.session.signingFormat": "Signing key must be 64 hexadecimal characters.",
+    "error.session.signingInvalid": "Signing key is not a valid secp256k1 private key."
   }
 }

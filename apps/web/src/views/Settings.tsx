@@ -3,7 +3,7 @@ import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
 import { exportSettingsExchange, parseSettingsExchange, applySettingsExchange, type SharedSettings } from '../lib/settingsExchange';
 import { Field, Notice } from '../components/Common';
-import { userMessage } from '../lib/errors';
+import { displayMessage, captureUserMessage, type DisplayMessage, UserFacingError } from '../lib/errors';
 import { checkDelayRange, checkRelayerUrl, checkRpcUrl, type Settings as SettingsData } from '../lib/settings';
 import { applyParanoidPreset, browserStorage, checkIndexerUrl, checkScanEndpoint, describeScanDisclosure, loadScanPrivacy, saveScanPrivacy, type ScanPrivacySettings, type ScanTransportKind } from '../lib/scanPrivacy';
 import { useServices } from '../lib/services';
@@ -27,10 +27,10 @@ export function Settings(): ReactNode {
   const [theme, setTheme] = useState<SettingsData['theme']>(s.theme);
   const [autoClear, setAutoClear] = useState(s.autoClearFragment);
   const [pins, setPins] = useState(s.pinnedSigners.join('\n'));
-  const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: string } | undefined>(undefined);
+  const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: DisplayMessage } | undefined>(undefined);
   const [transfer, setTransfer] = useState<string | undefined>();
   const [preview, setPreview] = useState<SharedSettings | undefined>();
-  const [checks, setChecks] = useState<Record<string, string>>({});
+  const [checks, setChecks] = useState<Record<string, DisplayMessage>>({});
 
   // A saved-settings change invalidates both an imported review and an already displayed export.
   useEffect(() => { setPreview(undefined); setTransfer(undefined); }, [s]);
@@ -57,7 +57,7 @@ export function Settings(): ReactNode {
       setMessage(saved ? { kind: 'ok', text: t('settings.saved') } : { kind: 'warn', text: t('settings.storageUnavailable') });
       app.announce(t('settings.announce'));
     } catch (err) {
-      setMessage({ kind: 'error', text: err instanceof Error && err.message === 'lock' ? t('settings.error.lock') : userMessage(err) });
+      setMessage({ kind: 'error', text: err instanceof Error && err.message === 'lock' ? t('settings.error.lock') : captureUserMessage(err) });
     }
   };
 
@@ -71,7 +71,7 @@ export function Settings(): ReactNode {
         await services.createRpc(chain, checkRpcUrl(url));
         setChecks((c) => ({ ...c, [chainId]: t('settings.rpc.connected') }));
       } catch (err) {
-        setChecks((c) => ({ ...c, [chainId]: err instanceof Error && err.name === 'ChainAdapterError' ? t('settings.rpc.failed') : userMessage(err) }));
+        setChecks((c) => ({ ...c, [chainId]: err instanceof Error && err.name === 'ChainAdapterError' ? t('settings.rpc.failed') : captureUserMessage(err) }));
       }
     })();
   };
@@ -96,7 +96,7 @@ export function Settings(): ReactNode {
                 {(id) => <input id={id} type="url" spellCheck={false} value={rpc[String(c.chainId)] ?? ''} onChange={(e) => { setRpc({ ...rpc, [String(c.chainId)]: e.target.value }); }} />}
               </Field>
               <button type="button" className="btn" onClick={() => { onTest(c.chainId); }}>{t('settings.rpc.test', { chain: c.name })}</button>
-              <p role="status" className="hint">{checks[c.chainId] ?? ''}</p>
+              <p role="status" className="hint">{displayMessage(checks[c.chainId] ?? '', t)}</p>
               <Field label={t('settings.rpc.secondary.label', { chain: c.name })} hint={t('settings.rpc.secondary.hint')}>
                 {(id, d) => <input id={id} aria-describedby={d} type="url" spellCheck={false} value={rpc2[String(c.chainId)] ?? ''} onChange={(e) => { setRpc2({ ...rpc2, [String(c.chainId)]: e.target.value }); }} />}
               </Field>
@@ -167,7 +167,7 @@ export function Settings(): ReactNode {
           <button type="button" className="btn" onClick={() => { setPreview(undefined); }}>{t('settings.exchange.discard')}</button>
         </div>}
       </section>
-      {message !== undefined && <Notice kind={message.kind}>{message.text}</Notice>}
+      {message !== undefined && <Notice kind={message.kind}>{displayMessage(message.text, t)}</Notice>}
     </section>
   );
 }
@@ -179,7 +179,7 @@ function ScanPrivacySection(): ReactNode {
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const [cfg, setCfg] = useState<ScanPrivacySettings>(() => loadScanPrivacy(browserStorage()));
-  const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: string } | undefined>(undefined);
+  const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: DisplayMessage } | undefined>(undefined);
   const set = (patch: Partial<ScanPrivacySettings>): void => { setCfg((c) => ({ ...c, ...patch })); setMessage(undefined); };
   const num = (v: string): number => (v.trim() === '' ? Number.NaN : Number(v));
 
@@ -191,14 +191,14 @@ function ScanPrivacySection(): ReactNode {
       const indexerUrls: Record<string, string> = {};
       for (const [k, v] of Object.entries(cfg.indexerUrls)) if (v.trim() !== '') indexerUrls[k] = checkIndexerUrl(v, cfg.transport);
       const ok = (n: number, min: number, max: number): boolean => Number.isInteger(n) && n >= min && n <= max;
-      if (!ok(cfg.windowBlocks, 0, 100_000)) throw new Error(t('settings.scanPrivacy.errWindow'));
-      if (!ok(cfg.jitterMinMs, 0, 10_000) || !ok(cfg.jitterMaxMs, 0, 10_000) || cfg.jitterMinMs > cfg.jitterMaxMs) throw new Error(t('settings.scanPrivacy.errDelays'));
-      if (!ok(cfg.openLaneBudget, 1, 100_000)) throw new Error(t('settings.scanPrivacy.errBudget'));
+      if (!ok(cfg.windowBlocks, 0, 100_000)) throw new UserFacingError({ key: 'settings.scanPrivacy.errWindow' });
+      if (!ok(cfg.jitterMinMs, 0, 10_000) || !ok(cfg.jitterMaxMs, 0, 10_000) || cfg.jitterMinMs > cfg.jitterMaxMs) throw new UserFacingError({ key: 'settings.scanPrivacy.errDelays' });
+      if (!ok(cfg.openLaneBudget, 1, 100_000)) throw new UserFacingError({ key: 'settings.scanPrivacy.errBudget' });
       const next = { ...cfg, endpoints, indexerUrls };
       setCfg(next);
       setMessage(saveScanPrivacy(browserStorage(), next) ? { kind: 'ok', text: t('settings.scanPrivacy.saved') } : { kind: 'warn', text: t('settings.scanPrivacy.refused') });
     } catch (err) {
-      setMessage({ kind: 'error', text: err instanceof Error && !(err.name === 'ChainAdapterError') ? err.message : userMessage(err) });
+      setMessage({ kind: 'error', text: captureUserMessage(err) });
     }
   };
 
@@ -258,7 +258,7 @@ function ScanPrivacySection(): ReactNode {
           <button type="button" className="btn" onClick={() => { set(applyParanoidPreset(cfg)); }}>{t('settings.scanPrivacy.paranoid')}</button>
           <button type="submit" className="btn btn-primary">{t('settings.scanPrivacy.save')}</button>
         </div>
-        {message !== undefined && <Notice kind={message.kind}>{message.text}</Notice>}
+        {message !== undefined && <Notice kind={message.kind}>{displayMessage(message.text, t)}</Notice>}
       </fieldset>
     </form>
   );

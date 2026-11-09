@@ -2,7 +2,7 @@ import { parseStrictJson } from '@ghostpay/invoice-schema';
 import { scryptAsync } from '@noble/hashes/scrypt.js';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { bytesToHex, utf8ToBytes } from '@noble/hashes/utils.js';
-import { UserFacingError } from './errors';
+import { UserFacingError, type MessageDescriptor } from './errors';
 import { DEFAULT_SCRYPT, passphraseProblem } from './keystore';
 import { validatePayload, type TagImportPreview, type TagPayload, type TagSnapshotEntry, type TagVault } from './tags';
 
@@ -28,8 +28,8 @@ const MIN_N = 1 << 14;
 const MAX_N = 1 << 18;
 const MAX_R = 8;
 const MAX_P = 2;
-const BAD = 'This is not a valid GhostPay tag archive.';
-const AUTH = 'Wrong passphrase, or the archive was modified.';
+const BAD: MessageDescriptor = { key: 'error.tagArchive.invalidFile' };
+const AUTH: MessageDescriptor = { key: 'error.tagArchive.authentication' };
 
 export interface ArchiveContents {
   readonly createdAt: number;
@@ -46,7 +46,7 @@ export interface ArchiveOptions {
 
 function subtle(): SubtleCrypto {
   const s = (globalThis as { crypto?: Crypto }).crypto?.subtle;
-  if (s === undefined) throw new UserFacingError('This browser has no Web Crypto support.');
+  if (s === undefined) throw new UserFacingError({ key: 'error.tagArchive.thisBrowserHasNoWebCryptoSupport' });
   return s;
 }
 
@@ -72,8 +72,8 @@ export async function encodeArchive(contents: ArchiveContents, passphrase: strin
   const problem = passphraseProblem(passphrase);
   if (problem !== undefined) throw new UserFacingError(problem);
   const N = options.N ?? DEFAULT_SCRYPT.N;
-  if (!Number.isInteger(N) || N < MIN_N || N > MAX_N || (N & (N - 1)) !== 0) throw new UserFacingError('Invalid scrypt cost.');
-  if (contents.records.length > MAX_ARCHIVE_RECORDS) throw new UserFacingError(`An archive holds at most ${String(MAX_ARCHIVE_RECORDS)} tags.`);
+  if (!Number.isInteger(N) || N < MIN_N || N > MAX_N || (N & (N - 1)) !== 0) throw new UserFacingError({ key: 'error.tagArchive.invalidScryptCost' });
+  if (contents.records.length > MAX_ARCHIVE_RECORDS) throw new UserFacingError({ key: 'error.tagArchive.capacity', values: { maximum: String(MAX_ARCHIVE_RECORDS) } });
   const body = utf8ToBytes(JSON.stringify({
     version: 1,
     createdAt: contents.createdAt,
@@ -82,7 +82,7 @@ export async function encodeArchive(contents: ArchiveContents, passphrase: strin
     history: contents.history,
   })) as Uint8Array<ArrayBuffer>;
   try {
-    if (body.byteLength + HEADER + IV_LEN + 16 > MAX_ARCHIVE_BYTES) throw new UserFacingError('This archive would exceed the 20 MB limit.');
+    if (body.byteLength + HEADER + IV_LEN + 16 > MAX_ARCHIVE_BYTES) throw new UserFacingError({ key: 'error.tagArchive.thisArchiveWouldExceedThe20MBLimit' });
     const salt = new Uint8Array(16); crypto.getRandomValues(salt);
     const iv = new Uint8Array(IV_LEN); crypto.getRandomValues(iv);
     const h = header(N, DEFAULT_SCRYPT.r, DEFAULT_SCRYPT.p, salt);
@@ -119,7 +119,7 @@ function parseHeader(bytes: Uint8Array): { N: number; r: number; p: number; salt
 export async function decodeArchive(bytes: Uint8Array, passphrase: string, signal?: AbortSignal): Promise<ArchiveContents> {
   const h = parseHeader(bytes);
   const key = await derive(passphrase, h.salt, h.N, h.r, h.p);
-  if (signal?.aborted === true) throw new UserFacingError('Import cancelled.');
+  if (signal?.aborted === true) throw new UserFacingError({ key: 'error.tagArchive.importCancelled' });
   let plain: Uint8Array;
   try {
     plain = new Uint8Array(await subtle().decrypt({ name: 'AES-GCM', iv: h.iv as Uint8Array<ArrayBuffer>, additionalData: bytes.slice(0, HEADER), tagLength: 128 }, key, h.ct as Uint8Array<ArrayBuffer>));
@@ -128,7 +128,7 @@ export async function decodeArchive(bytes: Uint8Array, passphrase: string, signa
   }
   try {
     const doc = rec(parseStrictJson(new TextDecoder('utf-8', { fatal: true }).decode(plain)), ['version', 'createdAt', 'keyVersion', 'records', 'history']);
-    if (doc['version'] !== 1) throw new UserFacingError('This archive was made by a newer GhostPay and cannot be read.');
+    if (doc['version'] !== 1) throw new UserFacingError({ key: 'error.tagArchive.thisArchiveWasMadeByANewerGhostPayAndCannot' });
     const list = doc['records'];
     if (!Array.isArray(list) || list.length > MAX_ARCHIVE_RECORDS) throw new UserFacingError(BAD);
     const records: TagSnapshotEntry[] = list.map((raw: unknown) => {
@@ -178,10 +178,10 @@ export async function exportArchive(
   options: ArchiveOptions & { readonly history?: Readonly<Record<string, string>>; readonly now?: () => number } = {},
 ): Promise<ExportedArchive> {
   try {
-    if (!vault.unlocked) throw new UserFacingError('Tags are locked. Unlock them first.');
+    if (!vault.unlocked) throw new UserFacingError({ key: 'error.tagArchive.tagsAreLockedUnlockThemFirst' });
     const problem = passphraseProblem(passphrase);
     if (problem !== undefined) throw new UserFacingError(problem);
-    if (!(await vault.verifyKey(viewingKey.slice()))) throw new UserFacingError('Re-authentication failed: that is not the viewing key of these tags.');
+    if (!(await vault.verifyKey(viewingKey.slice()))) throw new UserFacingError({ key: 'error.tagArchive.reAuthenticationFailedThatIsNotTheViewingKeyOf' });
     const records = await vault.snapshot();
     const createdAt = (options.now ?? Date.now)();
     const bytes = await encodeArchive({ createdAt, keyVersion: await vault.keyVersion(), records, history: options.history ?? {} }, passphrase, options);
@@ -208,8 +208,16 @@ export interface ArchiveImportPreview {
  * rejects the preview if anything changed in between.
  */
 export async function previewArchiveImport(vault: TagVault, bytes: Uint8Array, passphrase: string, mode: 'merge' | 'replace', signal?: AbortSignal): Promise<ArchiveImportPreview> {
-  if (!vault.unlocked) throw new UserFacingError('Tags are locked. Unlock them first.');
+  if (!vault.unlocked) throw new UserFacingError({ key: 'error.tagArchive.tagsAreLockedUnlockThemFirst' });
   const contents = await decodeArchive(bytes, passphrase, signal);
   const tags = await vault.previewImport(contents.records, mode);
   return { tags, keyVersion: contents.keyVersion, createdAt: contents.createdAt, historyChains: Object.keys(contents.history), contents };
 }
+
+// i18n-use: error.tagArchive.thisBrowserHasNoWebCryptoSupport error.tagArchive.invalidScryptCost error.tagArchive.thisArchiveWouldExceedThe20MBLimit error.tagArchive.importCancelled error.tagArchive.thisArchiveWasMadeByANewerGhostPayAndCannot error.tagArchive.tagsAreLockedUnlockThemFirst error.tagArchive.reAuthenticationFailedThatIsNotTheViewingKeyOf
+
+// i18n-use: error.tagArchive.capacity
+
+// i18n-use: error.tagArchive.invalidFile
+
+// i18n-use: error.tagArchive.authentication

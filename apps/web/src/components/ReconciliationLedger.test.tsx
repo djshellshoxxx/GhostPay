@@ -227,11 +227,12 @@ describe('encrypted reconciliation UI', () => {
     expect(screen.queryByRole('button', { name: 'Lock reconciliation vault' })).toBeNull();
   });
   it('reports storage and malformed backup failures without saving plaintext or showing stale matches', async () => {
-    factory.create.mockRejectedValueOnce(new Error('Storage unavailable'));
+    factory.create.mockRejectedValueOnce(new Error('private RPC credential should never be shown'));
     const user = userEvent.setup();
     render(panel({ scanMatchesCurrentScope: false }));
     await user.click(screen.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }));
-    expect(await screen.findByText('Storage unavailable')).toBeTruthy();
+    expect(await screen.findByText('Encrypted reconciliation action failed.')).toBeTruthy();
+    expect(screen.queryByText(/private RPC credential/)).toBeNull();
     await user.click(screen.getByRole('button', { name: 'Unlock encrypted reconciliation vault' }));
     fireEvent.change(await screen.findByLabelText('Encrypted reconciliation backup'), {
       target: { value: 'untrusted plaintext' },

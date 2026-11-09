@@ -5,7 +5,7 @@ import type { BufferPolicy, Invoice } from '@ghostpay/invoice-schema';
 import { CopyButton, Field, Notice } from '../components/Common';
 import { useManifest } from '../components/Disclosure';
 import { QrFrame } from '../components/QrFrame';
-import { userMessage } from '../lib/errors';
+import { displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { formatUnits } from '../lib/format';
 import { MAX_BUFFER_WEI } from '../lib/pay';
 import { buildInvoiceLink, tokenChoices, type CreatedInvoice, type InvoiceForm, type LineItemInput } from '../lib/invoiceCreate';
@@ -69,11 +69,11 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
   const [suggested, setSuggested] = useState(generatePassphrase);
   const [passphrase, setPassphrase] = useState(suggested);
   const [passphraseAgain, setPassphraseAgain] = useState('');
-  const [error, setError] = useState<string | undefined>(undefined);
+  const [error, setError] = useState<DisplayMessage | undefined>(undefined);
   const [created, setCreated] = useState<CreatedInvoice | undefined>(undefined);
   // Opt-in, off by default: keeps minimized invoice fields in the encrypted reconciliation vault for local matching.
   const [registerForMatching, setRegisterForMatching] = useState(false);
-  const [registration, setRegistration] = useState<{ readonly kind: 'busy' | 'ok' } | { readonly kind: 'error'; readonly message: string } | undefined>(undefined);
+  const [registration, setRegistration] = useState<{ readonly kind: 'busy' | 'ok' } | { readonly kind: 'error'; readonly message: DisplayMessage } | undefined>(undefined);
   const registrationRun = useRef(0);
   const manifest = useManifest(chainId);
   // Each profile lifetime has its own identity, including full -> lean -> full.
@@ -126,7 +126,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
       }
     })().then(
       () => { if (registrationRun.current === run) setRegistration({ kind: 'ok' }); },
-      (err: unknown) => { if (registrationRun.current === run) setRegistration({ kind: 'error', message: userMessage(err) }); },
+      (err: unknown) => { if (registrationRun.current === run) setRegistration({ kind: 'error', message: captureUserMessage(err) }); },
     );
   };
 
@@ -190,7 +190,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
         setCreated(undefined);
         registrationRun.current++;
         setRegistration(undefined);
-        setError(userMessage(err));
+        setError(captureUserMessage(err));
       },
     );
   };
@@ -356,7 +356,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
         <button type="submit" className="btn btn-primary">{t('create.submit')}</button>
       </form>
 
-      {error !== undefined && <Notice kind="error">{error}</Notice>}
+      {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
 
       {visibleCreated !== undefined && (
         <div className="result" aria-live="polite">
@@ -366,7 +366,7 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
           </Notice>
           {registration?.kind === 'busy' && <Notice kind="info">{t('create.registration.busy')}</Notice>}
           {registration?.kind === 'ok' && <Notice kind="ok">{t('create.registration.ok')}</Notice>}
-          {registration?.kind === 'error' && <Notice kind="warn">{t('create.registration.error', { message: registration.message })}</Notice>}
+          {registration?.kind === 'error' && <Notice kind="warn">{t('create.registration.error', { message: displayMessage(registration.message, t) })}</Notice>}
           <Field label={t('create.link.label')}>{(id) => <textarea id={id} readOnly rows={4} className="mono" value={visibleCreated.link} onFocus={(e) => { e.currentTarget.select(); }} />}</Field>
           <p><CopyButton text={visibleCreated.link} label={t('create.link.copy')} /></p>
           <QrFrame

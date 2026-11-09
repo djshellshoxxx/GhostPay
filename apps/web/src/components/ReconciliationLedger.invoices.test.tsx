@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ScanMatch } from '../lib/scanClient';
 import { recordFromVerifiedMatch } from '../lib/reconciliationLedger';
 import type { RegisteredInvoice } from '../lib/reconciliationMatch';
+import { UserFacingError } from '../lib/errors';
 import { signReceipt } from '../lib/receipts';
 import { clearSession, generateSession } from '../lib/session';
 import { checkpointKeyId } from '../lib/scanClient';
@@ -183,7 +184,7 @@ describe('local invoice matching UI', () => {
     await vault.registerInvoice(invoice(1));
     const user = await open();
     await screen.findByText(/Exact local match proposed/);
-    vi.spyOn(vault, 'confirmProposal').mockRejectedValueOnce(new Error('This payment no longer has a single exact invoice match.'));
+    vi.spyOn(vault, 'confirmProposal').mockRejectedValueOnce(new UserFacingError({ key: 'error.reconciliationVault.thisPaymentNoLongerHasASingleExactInvoiceMatch' }));
     await user.click(screen.getByRole('button', { name: 'Confirm proposed invoice match' }));
     expect(await screen.findByText(/no longer has a single exact/)).toBeTruthy();
   });

@@ -1,7 +1,7 @@
 import { buildLookupCall, buildRegisterKeysCall, ERC6538_REGISTRY_ADDRESS, lookupMetaAddress, verifyRegistry, type RegistryCall } from '@ghostpay/chain-adapters';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
-import { userMessage } from '../../lib/errors';
+import { displayMessage, captureUserMessage, type DisplayMessage } from '../../lib/errors';
 import { useServices } from '../../lib/services';
 import { connectWallet, sendViaWallet, verifySubmission, WalletBroadcastError, type WalletInfo, type WalletSession } from '../../lib/wallet';
 import { useApp } from '../../state';
@@ -14,7 +14,7 @@ import { parsePublicMetaQr } from '../../lib/qrPayload';
 import { BackupGate } from '../../views/SellerKeys';
 import { QrFrame } from '../../components/QrFrame';
 
-type Msg = { readonly kind: 'ok' | 'error' | 'warn'; readonly text: string };
+type Msg = { readonly kind: 'ok' | 'error' | 'warn'; readonly text: DisplayMessage };
 
 function CallPreview(props: { readonly call: RegistryCall; readonly chainName: string }): ReactNode {
   const p = props.call.preview;
@@ -68,7 +68,7 @@ export function RegistryView(): ReactNode {
   const [found, setFound] = useState<{ readonly meta: string | undefined; readonly call: RegistryCall } | undefined>(undefined);
   const [look, setLook] = useState<Msg | undefined>(undefined);
   const [scannedMeta, setScannedMeta] = useState<string | undefined>();
-  const [scanError, setScanError] = useState<string | undefined>();
+  const [scanError, setScanError] = useState<DisplayMessage | undefined>();
   const [scanEpoch, setScanEpoch] = useState(0);
   useEffect(() => { setScannedMeta(undefined); setScanError(undefined); }, [chainId, app.session]);
 
@@ -132,7 +132,7 @@ export function RegistryView(): ReactNode {
       },
       (e: unknown) => {
         try { guard(); } catch { return; }
-        setPub({ kind: 'error', text: userMessage(e) });
+        setPub({ kind: 'error', text: captureUserMessage(e) });
       },
     );
   };
@@ -153,7 +153,7 @@ export function RegistryView(): ReactNode {
         setPub(undefined);
       } catch (e) {
         try { guard(); } catch { return; }
-        setPub(rpcMissing(e) ? noRpc : { kind: 'error', text: userMessage(e) });
+        setPub(rpcMissing(e) ? noRpc : { kind: 'error', text: captureUserMessage(e) });
       } finally {
         busyRef.current = false;
         if (mounted.current) setBusy(false);
@@ -196,7 +196,7 @@ export function RegistryView(): ReactNode {
           return;
         }
         try { guard(); } catch { return; }
-        setPub(rpcMissing(e) ? noRpc : { kind: 'error', text: userMessage(e) });
+        setPub(rpcMissing(e) ? noRpc : { kind: 'error', text: captureUserMessage(e) });
       } finally {
         busyRef.current = false;
         if (mounted.current) setBusy(false);
@@ -220,7 +220,7 @@ export function RegistryView(): ReactNode {
         if (!isCurrent()) return;
         setFound({ meta, call });
       } catch (e) {
-        if (isCurrent()) setLook(rpcMissing(e) ? noRpc : { kind: 'error', text: userMessage(e) });
+        if (isCurrent()) setLook(rpcMissing(e) ? noRpc : { kind: 'error', text: captureUserMessage(e) });
       } finally {
         setBusy(false);
       }
@@ -287,7 +287,7 @@ export function RegistryView(): ReactNode {
           )}
         </BackupGate>
       )}
-      {pub !== undefined && <Notice kind={pub.kind}>{pub.text}</Notice>}
+      {pub !== undefined && <Notice kind={pub.kind}>{displayMessage(pub.text, t)}</Notice>}
 
       <section className="panel" aria-label={t('registry.qrReviewLabel')}>
         <h3>{t('registry.qrHeadingH3')}</h3>
@@ -297,10 +297,10 @@ export function RegistryView(): ReactNode {
           onText={(text, signal) => {
             if (signal.aborted) return false;
             try { setScannedMeta(parsePublicMetaQr(text)); setScanError(undefined); return true; }
-            catch (e) { setScannedMeta(undefined); setScanError(userMessage(e)); return false; }
+            catch (e) { setScannedMeta(undefined); setScanError(captureUserMessage(e)); return false; }
           }} />
         <button type="button" className="btn" onClick={() => { setScanEpoch((epoch) => epoch + 1); setScannedMeta(undefined); setScanError(undefined); }}>{t('registry.clearQr')}</button>
-        {scanError !== undefined && <Notice kind="error">{scanError}</Notice>}
+        {scanError !== undefined && <Notice kind="error">{displayMessage(scanError, t)}</Notice>}
         {scannedMeta !== undefined && <><h4>{t('registry.scannedHeading')}</h4><p><Mono>{scannedMeta}</Mono></p><CopyButton text={scannedMeta} label={t('registry.copyScanned')} /></>}
       </section>
 
@@ -309,7 +309,7 @@ export function RegistryView(): ReactNode {
         {(id) => <input id={id} type="text" autoComplete="off" spellCheck={false} value={who} onChange={(e) => { setWho(e.target.value); }} />}
       </Field>
       <button type="button" className="btn" disabled={busy || who.trim() === ''} onClick={onLookup}>{t('registry.lookup')}</button>
-      {look !== undefined && <Notice kind={look.kind}>{look.text}</Notice>}
+      {look !== undefined && <Notice kind={look.kind}>{displayMessage(look.text, t)}</Notice>}
       {found !== undefined && chain !== undefined && (
         <>
           <h4>{t('registry.readOnlyHeading')}</h4>

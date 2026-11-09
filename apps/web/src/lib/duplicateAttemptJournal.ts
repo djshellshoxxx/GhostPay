@@ -20,7 +20,7 @@ export interface WalletAttempt extends AttemptInput {
   readonly status: 'unknown' | 'submitted';
   readonly hash?: string;
 }
-function fail(): never { throw new UserFacingError('The wallet attempt journal is unavailable or invalid. No new wallet request was started.'); }
+function fail(): never { throw new UserFacingError({ key: 'error.duplicateAttemptJournal.theWalletAttemptJournalIsUnavailableOrInvalidNoNew' }); }
 export function browserAttemptStorage(): AttemptStorage | undefined {
   if (typeof window === 'undefined') return undefined;
   try { return window.sessionStorage; } catch { return fail(); }
@@ -64,8 +64,8 @@ function write(records: readonly WalletAttempt[], storage: AttemptStorage): void
 export function beginAttempt(input: AttemptInput, storage?: AttemptStorage): WalletAttempt {
   const store = requiredStorage(storage);
   const records = readAttempts(store);
-  if (records.some((a) => a.key === input.key)) throw new UserFacingError('A previous wallet attempt for this action already exists in this tab. Check its outcome before explicitly clearing it; do not send again blindly.');
-  if (records.length >= MAX_ATTEMPTS) throw new UserFacingError('The wallet attempt journal reached its safety limit. Review and explicitly clear old attempts before starting another.');
+  if (records.some((a) => a.key === input.key)) throw new UserFacingError({ key: 'error.duplicateAttemptJournal.aPreviousWalletAttemptForThisActionAlreadyExistsIn' });
+  if (records.length >= MAX_ATTEMPTS) throw new UserFacingError({ key: 'error.duplicateAttemptJournal.theWalletAttemptJournalReachedItsSafetyLimitReviewAnd' });
   const attempt: WalletAttempt = { ...input, id: crypto.randomUUID(), account: input.account.toLowerCase(), createdAt: Date.now(), status: 'unknown' };
   if (!validAttempt(attempt)) return fail();
   write([...records, attempt], store);
@@ -81,7 +81,9 @@ export function finishAttempt(attempt: WalletAttempt, hash: string, storage?: At
 }
 /** Clearing is only bookkeeping; it cannot cancel or roll back a wallet request or transaction. */
 export function clearAttempt(key: string, confirmed: boolean, storage?: AttemptStorage): void {
-  if (!confirmed) throw new UserFacingError('Explicit confirmation is required to clear a wallet attempt.');
+  if (!confirmed) throw new UserFacingError({ key: 'error.duplicateAttemptJournal.explicitConfirmationIsRequiredToClearAWalletAttempt' });
   const store = requiredStorage(storage);
   write(readAttempts(store).filter((a) => a.id !== key && a.key !== key), store);
 }
+
+// i18n-use: error.duplicateAttemptJournal.theWalletAttemptJournalIsUnavailableOrInvalidNoNew error.duplicateAttemptJournal.aPreviousWalletAttemptForThisActionAlreadyExistsIn error.duplicateAttemptJournal.theWalletAttemptJournalReachedItsSafetyLimitReviewAnd error.duplicateAttemptJournal.explicitConfirmationIsRequiredToClearAWalletAttempt

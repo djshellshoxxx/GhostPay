@@ -62,7 +62,7 @@ export function CopyButton(props: { readonly text: string; readonly label: strin
 }
 
 export function Mono(props: { readonly children: ReactNode }): ReactNode {
-  return <code className="mono">{props.children}</code>;
+  return <code className="mono" dir="ltr">{props.children}</code>;
 }
 
 /** Triggers a local file download of text content (Blob URL, no network). */

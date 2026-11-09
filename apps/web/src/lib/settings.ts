@@ -35,7 +35,7 @@ export function checkRpcUrl(raw: string): string {
   try {
     return validateRpcUrl(raw.trim());
   } catch {
-    throw new UserFacingError('RPC URL rejected: use https:// or wss://, with no username, password or fragment.');
+    throw new UserFacingError({ key: 'error.settings.rPCURLRejectedUseHttpsOrWssWithNoUsername' });
   }
 }
 
@@ -47,10 +47,10 @@ export function checkRelayerUrl(raw: string): string {
   try {
     u = new URL(trimmed);
   } catch {
-    throw new UserFacingError('Relayer URL is not a valid URL.');
+    throw new UserFacingError({ key: 'error.settings.relayerURLIsNotAValidURL' });
   }
   if (u.protocol !== 'https:' || u.username !== '' || u.password !== '' || u.search !== '' || u.hash !== '') {
-    throw new UserFacingError('Relayer URL must be https:// with no credentials, query or fragment.');
+    throw new UserFacingError({ key: 'error.settings.relayerURLMustBeHttpsWithNoCredentialsQueryOr' });
   }
   return u.origin + u.pathname.replace(/\/+$/, '');
 }
@@ -59,7 +59,7 @@ export function checkRelayerUrl(raw: string): string {
 export function checkDelayRange(minSec: number, maxSec: number): void {
   const ok = (n: number): boolean => Number.isInteger(n) && n >= 0 && n <= MAX_DELAY_SEC;
   if (!ok(minSec) || !ok(maxSec) || minSec > maxSec) {
-    throw new UserFacingError('Delay range must be whole seconds, minimum at most maximum, up to 24 hours.');
+    throw new UserFacingError({ key: 'error.settings.delayRangeMustBeWholeSecondsMinimumAtMostMaximum' });
   }
 }
 
@@ -152,3 +152,5 @@ function safeLocalStorage(): Storage | undefined {
     return undefined;
   }
 }
+
+// i18n-use: error.settings.rPCURLRejectedUseHttpsOrWssWithNoUsername error.settings.relayerURLIsNotAValidURL error.settings.relayerURLMustBeHttpsWithNoCredentialsQueryOr error.settings.delayRangeMustBeWholeSecondsMinimumAtMostMaximum

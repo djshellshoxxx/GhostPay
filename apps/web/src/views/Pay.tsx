@@ -10,7 +10,7 @@ import { ManifestBanner } from '../components/ManifestBanner';
 import { extractFragment } from '../lib/fragment';
 import { safeText, payeeFingerprint } from '../lib/displayText';
 import { formatCountdown, formatFiat, formatUnits, formatUnix, shortHex } from '../lib/format';
-import { UserFacingError, userMessage } from '../lib/errors';
+import { UserFacingError, userMessage, displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { DelayScheduler, randomDelayMs, type ScheduleSnapshot } from '../lib/jitter';
 import {
   createPayContext,
@@ -101,10 +101,10 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const app = useApp();
   const services = useServices();
   const [parsed, setParsed] = useState<ParsedInvoice | undefined>(undefined);
-  const [rejected, setRejected] = useState<string | undefined>(undefined);
+  const [rejected, setRejected] = useState<DisplayMessage | undefined>(undefined);
   const [paste, setPaste] = useState('');
   const [invoiceQrPreview, setInvoiceQrPreview] = useState<InvoiceQrPreview | undefined>();
-  const [invoiceQrError, setInvoiceQrError] = useState<string | undefined>();
+  const [invoiceQrError, setInvoiceQrError] = useState<DisplayMessage | undefined>();
   const [invoiceQrReset, setInvoiceQrReset] = useState(0);
   const invoiceQrRevision = useRef(0);
   const invoiceQrMounted = useRef(true);
@@ -121,7 +121,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const [permitDeclined, setPermitDeclined] = useState(false);
   const [schedule, setSchedule] = useState<ScheduleSnapshot | undefined>(undefined);
   const [ctx, setCtx] = useState<PayContext | undefined>(undefined);
-  const [ctxError, setCtxError] = useState<string | undefined>(undefined);
+  const [ctxError, setCtxError] = useState<DisplayMessage | undefined>(undefined);
   const [wallets, setWallets] = useState<readonly WalletInfo[] | undefined>(undefined);
   const [wallet, setWallet] = useState<WalletSession | undefined>(undefined);
   const [built, setBuilt] = useState<BuiltPayment | undefined>(undefined);
@@ -129,11 +129,11 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   const [builtForContext, setBuiltForContext] = useState<PayContext | undefined>(undefined);
   const [resultForContext, setResultForContext] = useState<PayContext | undefined>(undefined);
   const [status, setStatus] = useState('');
-  const [error, setError] = useState<string | undefined>(undefined);
+  const [error, setError] = useState<DisplayMessage | undefined>(undefined);
   const [result, setResult] = useState<SubmitResult | undefined>(undefined);
   const [boundReceipt, setBoundReceipt] = useState<BoundReceipt | undefined>(undefined);
   const [receiptTrustedKey, setReceiptTrustedKey] = useState('');
-  const [receiptError, setReceiptError] = useState<string | undefined>(undefined);
+  const [receiptError, setReceiptError] = useState<DisplayMessage | undefined>(undefined);
   const [receiptBusy, setReceiptBusy] = useState(false);
   const [receiptConsent, setReceiptConsent] = useState(false);
   const receiptBusyRef = useRef(false);
@@ -201,7 +201,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       setInvoiceQrPreview({ fragment: candidate, result, revision, scope, assertSession });
       return true;
     } catch (error) {
-      if (current()) setInvoiceQrError(userMessage(error));
+      if (current()) setInvoiceQrError(captureUserMessage(error));
       return false;
     }
   };
@@ -283,7 +283,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       (e: unknown) => {
         if (!current()) return;
         setParsed(undefined);
-        setRejected(userMessage(e));
+        setRejected(captureUserMessage(e));
         setPhase('input');
       },
     );
@@ -358,7 +358,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     } catch (e) {
       if (!current()) return undefined;
       setCtx(undefined);
-      setCtxError(userMessage(e));
+      setCtxError(captureUserMessage(e));
       return undefined;
     }
   }, [app, services]);
@@ -418,7 +418,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       return q;
     } catch (e) {
       if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return undefined;
-      setError(userMessage(e));
+      setError(captureUserMessage(e));
       return undefined;
     }
   }, [chainId, app, services]);
@@ -469,7 +469,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       },
       (e: unknown) => {
         if (!current()) return;
-        setRejected(userMessage(e));
+        setRejected(captureUserMessage(e));
       },
     ).finally(() => { if (flowRevision.current === revision) setUnlocking(false); });
   };
@@ -524,7 +524,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         setBoundReceipt(binding);
         return true;
       } catch (err) {
-        if (receiptImportRevision.current === importRevision && flowRevision.current === flowAtStart && latest.current.fragment === fragmentAtStart && latest.current.parsed === invoiceAtStart && latest.current.receiptTrustedKey === trustedKeyAtStart) setReceiptError(userMessage(err));
+        if (receiptImportRevision.current === importRevision && flowRevision.current === flowAtStart && latest.current.fragment === fragmentAtStart && latest.current.parsed === invoiceAtStart && latest.current.receiptTrustedKey === trustedKeyAtStart) setReceiptError(captureUserMessage(err));
         return false;
       } finally {
         if (receiptImportRevision.current === importRevision) {
@@ -592,7 +592,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         }
       });
     } catch (e) {
-      setError(userMessage(e));
+      setError(captureUserMessage(e));
     }
   };
 
@@ -649,7 +649,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       (e: unknown) => {
         if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return;
         setStatus('');
-        setError(userMessage(e));
+        setError(captureUserMessage(e));
       },
     );
   };
@@ -708,7 +708,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         if (!isCurrent()) return;
         setStatus('');
         if (e instanceof PermitRejectedError) setPermitDeclined(true);
-        if (!(e instanceof Error && e.message === 'buffer')) setError(userMessage(e));
+        if (!(e instanceof Error && e.message === 'buffer')) setError(captureUserMessage(e));
         setPhase('ready');
       }
     })();
@@ -786,18 +786,18 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           // A broadcast that failed follow-up checks must never be offered again as though nothing was sent.
           setBroadcast(e.hash);
           setBroadcastKind(stage);
-          setError(userMessage(e));
+          setError(captureUserMessage(e));
           setPhase('submitted');
           app.announce(`${stage === 'approval' ? 'Approval' : 'Payment'} sent, verification failed. Do not repeat it.`);
           return;
         }
         if (actualAllowance !== undefined) {
-          const reason = userMessage(e).replaceAll('Nothing was sent.', '').replaceAll('Nothing was sent', '').trim();
+          const reason = userMessage(e, t).replaceAll('Nothing was sent.', '').replaceAll('Nothing was sent', '').trim();
           const paymentStatus = paymentWalletRequested ? 'the payment was not confirmed' : 'no payment was sent';
           setError(`Approval was confirmed${approvalBroadcastHash === undefined ? '' : ` (${approvalBroadcastHash})`}, but ${paymentStatus}. ${reason}`);
           app.announce(`Approval confirmed; ${paymentStatus}.`);
         } else {
-          setError(userMessage(e));
+          setError(captureUserMessage(e));
         }
         setPhase('prepared');
       }
@@ -831,7 +831,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           if (e instanceof PostBroadcastError) setPreviousBroadcast({ hash: e.hash, kind: 'approval' });
           return;
         }
-        setError(userMessage(e));
+        setError(captureUserMessage(e));
       } finally {
         if (isCurrent()) {
           setStatus('');
@@ -877,7 +877,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
             {rich('pay.previous.body', { hash: previousBroadcast.hash, kind: previousBroadcast.kind }, monoTag('hash'))}
           </Notice>
         )}
-        {inputRejection !== undefined && <Notice kind="error" title={t('pay.rejected.title')}>{inputRejection}{` ${inputRejection === SUPPORTED_INVOICE_ERROR ? t('pay.rejected.controlsUnavailable') : t('pay.rejected.nothingSent')}`}</Notice>}
+        {inputRejection !== undefined && <Notice kind="error" title={t('pay.rejected.title')}>{displayMessage(inputRejection, t)}{` ${inputRejection === SUPPORTED_INVOICE_ERROR ? t('pay.rejected.controlsUnavailable') : t('pay.rejected.nothingSent')}`}</Notice>}
         {fragment !== undefined && inputRejection === undefined && <p role="status">{t('pay.reading')}</p>}
         {needsPassphrase && (
           <form onSubmit={onUnlock} className="stack">
@@ -895,7 +895,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           <p>{t('pay.scan.intro')}</p>
           <CameraImporter key={invoiceQrReset} label={t('pay.scan.importLabel')} scopeKey={invoiceQrScope} onInputChange={invalidateInvoiceQr} onText={importInvoiceQr} />
           <button type="button" className="btn" onClick={resetInvoiceQr}>{t('pay.scan.clear')}</button>
-          {invoiceQrError !== undefined && <Notice kind="error" title={t('pay.scan.rejected')}>{invoiceQrError}</Notice>}
+          {invoiceQrError !== undefined && <Notice kind="error" title={t('pay.scan.rejected')}>{displayMessage(invoiceQrError, t)}</Notice>}
           {invoiceQrPreview !== undefined && (
             <section aria-label={t('pay.scan.reviewAria')}>
               <h3>{t('pay.scan.reviewHeading')}</h3>
@@ -957,7 +957,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           </ul>
         </Notice>
       )}
-      {ctxError !== undefined && <Notice kind="error">{ctxError}</Notice>}
+      {ctxError !== undefined && <Notice kind="error">{displayMessage(ctxError, t)}</Notice>}
       {review.warnings.length > 0 && (
         <Notice kind="warn" title={t('pay.checkAmount')}>
           {review.warnings.map((w) => <p key={w}>{w}</p>)}
@@ -1086,7 +1086,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
             }}
             onText={(text, signal) => importReceiptText(() => Promise.resolve(text), undefined, signal)}
           />
-          {receiptError !== undefined && <Notice kind="error" title={t('pay.receipt.rejected')}>{receiptError}</Notice>}
+          {receiptError !== undefined && <Notice kind="error" title={t('pay.receipt.rejected')}>{displayMessage(receiptError, t)}</Notice>}
           {boundReceipt !== undefined && (
             <Notice kind="ok" title={t('pay.receipt.matches')}>
               {boundReceipt.signerMatch === 'invoice-signing-key' ? t('pay.receipt.matchInvoiceKey') : t('pay.receipt.matchTrustedKey')}
@@ -1190,7 +1190,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
       )}
 
       {status !== '' && <p role="status" className="status">{status}</p>}
-      {error !== undefined && <Notice kind="error">{error}</Notice>}
+      {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
 
       {phase === 'submitted' && broadcast !== undefined && (
         <div className="panel" aria-live="polite">

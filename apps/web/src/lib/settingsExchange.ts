@@ -1,10 +1,10 @@
 import { parseStrictJson } from '@ghostpay/invoice-schema';
-import { UserFacingError } from './errors';
+import { UserFacingError, type MessageDescriptor } from './errors';
 import { checkDelayRange, type Settings } from './settings';
 
 export type SharedSettings = Pick<Settings, 'delayMinSec' | 'delayMaxSec' | 'lockTimeoutMin' | 'theme' | 'autoClearFragment'>;
 const FIELDS = ['autoClearFragment', 'delayMaxSec', 'delayMinSec', 'lockTimeoutMin', 'theme'];
-const BAD = 'This is not a supported nonsecret settings transfer.';
+const BAD: MessageDescriptor = { key: 'error.settingsExchange.invalid' };
 function object(value: unknown, keys: readonly string[]): Record<string, unknown> {
   if (typeof value !== 'object' || value === null || Array.isArray(value) || Object.keys(value).sort().join('|') !== [...keys].sort().join('|')) throw new UserFacingError(BAD);
   return value as Record<string, unknown>;
@@ -32,3 +32,5 @@ export function parseSettingsExchange(text: string): SharedSettings {
 export function applySettingsExchange(current: Settings, preview: SharedSettings): Settings {
   return { ...current, ...validate(preview) };
 }
+
+// i18n-use: error.settingsExchange.invalid

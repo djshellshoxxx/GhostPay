@@ -5,6 +5,25 @@ import type { MessageKey } from './catalog';
  */
 export const SECURITY_KEY_GROUPS = {
   reconciliationAndResidualErrors: [
+    'error.tags.labelLength',
+    'error.tagArchive.capacity',
+    'error.pay.missingPriceFeed',
+    'error.txGuard.reviewRefused',
+    'error.txGuard.reviewFailed',
+    'error.sweep.excessiveFee',
+    'error.settingsExchange.invalid',
+    'error.sellerPairing.invalid',
+    'error.keystore.invalidFile',
+    'error.tagArchive.invalidFile',
+    'error.tagArchive.authentication',
+    'error.keyVault.saveFailed',
+    'error.session.spendingFormat',
+    'error.session.spendingInvalid',
+    'error.session.viewingFormat',
+    'error.session.viewingInvalid',
+    'error.session.signingFormat',
+    'error.session.signingInvalid',
+
     'error.tags.thisBrowserHasNoWebCryptoSupport',
     'error.tags.invoiceLabelAndNotesMustBeText',
     'error.tags.labelOrNotesTooLong',

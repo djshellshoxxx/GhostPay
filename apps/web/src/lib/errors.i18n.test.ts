@@ -3,15 +3,28 @@ import { SolanaStealthError } from '@ghostpay/solana-stealth';
 import { TronAdapterError } from '@ghostpay/tron-adapter';
 import { describe, expect, it, vi } from 'vitest';
 import { SOURCE_CATALOG, type MessageKey } from '../i18n/catalog';
-import { SOURCE_TRANSLATOR } from '../i18n/context';
+import { SOURCE_TRANSLATOR } from '../i18n/source';
 import { SECURITY_KEYS } from '../i18n/securityKeys';
 import { createTranslator } from '../i18n/translator';
 import { solErrorMessage, SolViewError } from '../features/solana/rpc';
 import { tronErrorMessage, TronViewError } from '../features/tron/rpc';
-import { LocalizedTypeError, UserFacingError, userMessage } from './errors';
+import { LocalizedTypeError, UserFacingError, captureUserMessage, displayMessage, userMessage } from './errors';
 import { receiptInvoiceFragment } from './receipts';
 
 describe('catalog-backed errors', () => {
+  it('captures only safe structured diagnostics, never an arbitrary exception or its sensitive cause', () => {
+    const failure = new Error('RPC secret token', { cause: { bearer: 'secret' } });
+    const captured = captureUserMessage(failure);
+    expect(captured).toEqual({ key: 'error.unknown' });
+    expect(JSON.stringify(captured)).not.toContain('secret');
+    expect(displayMessage(captured)).toBe('Something went wrong. Nothing was sent.');
+    const known = captureUserMessage(new UserFacingError({ key: 'error.wallet.invoiceChainMismatch', values: { chain: '1', expected: '84532' } }));
+    const t = vi.fn(SOURCE_TRANSLATOR.t);
+    expect(displayMessage(known, t)).toContain('chain 84532');
+    expect(t).toHaveBeenCalledWith('error.wallet.invoiceChainMismatch', { chain: '1', expected: '84532' });
+  });
+
+
   it('resolves safe descriptors when displayed, preserving source Error.message and TypeError identity', () => {
     const error = new UserFacingError({ key: 'sol.error.network', values: { network: 'Devnet' } });
     expect(error.message).toBe('This server is not on the network you selected (Devnet).');

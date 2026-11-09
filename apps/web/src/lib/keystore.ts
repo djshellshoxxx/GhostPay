@@ -2,7 +2,7 @@ import { decodeMetaAddress, encodeMetaAddress, parseCompressedPoint, secretScala
 import { parseStrictJson, signerPublicKeyHex } from '@ghostpay/invoice-schema';
 import { scryptAsync } from '@noble/hashes/scrypt.js';
 import { bytesToHex, hexToBytes, utf8ToBytes } from '@noble/hashes/utils.js';
-import { UserFacingError } from './errors';
+import { UserFacingError, type MessageDescriptor } from './errors';
 
 /** Versioned, encrypted seller key backup. The passphrase never leaves the page and is never stored. */
 export interface KeystoreFile {
@@ -40,7 +40,7 @@ const HEX64 = /^[0-9a-f]{64}$/;
 
 function subtle(): SubtleCrypto {
   const s = (globalThis as { crypto?: Crypto }).crypto?.subtle;
-  if (s === undefined) throw new UserFacingError('This browser has no Web Crypto support.');
+  if (s === undefined) throw new UserFacingError({ key: 'error.keystore.thisBrowserHasNoWebCryptoSupport' });
   return s;
 }
 
@@ -272,7 +272,7 @@ export async function encryptKeystore(
   if (problem !== undefined) throw new UserFacingError(problem);
   const { r, p } = DEFAULT_SCRYPT;
   const N = options.N ?? DEFAULT_SCRYPT.N;
-  if (!Number.isInteger(N) || N < MIN_N || N > MAX_N || (N & (N - 1)) !== 0) throw new UserFacingError('Invalid scrypt cost.');
+  if (!Number.isInteger(N) || N < MIN_N || N > MAX_N || (N & (N - 1)) !== 0) throw new UserFacingError({ key: 'error.keystore.invalidScryptCost' });
   const salt = randomBytes(16);
   const iv = randomBytes(12);
   const key = await derive(passphrase, salt, N, r, p);
@@ -300,7 +300,7 @@ export async function encryptKeystore(
   }
 }
 
-const BAD = 'This is not a valid GhostPay keystore file.';
+const BAD: MessageDescriptor = { key: 'error.keystore.invalidFile' };
 
 function rec(v: unknown, keys?: readonly string[]): Record<string, unknown> {
   if (typeof v !== 'object' || v === null || Array.isArray(v)) throw new UserFacingError(BAD);
@@ -351,7 +351,7 @@ export async function decryptKeystore(text: string, passphrase: string): Promise
       ),
     );
   } catch {
-    throw new UserFacingError('Wrong passphrase, or the keystore was modified.');
+    throw new UserFacingError({ key: 'error.keystore.wrongPassphraseOrTheKeystoreWasModified' });
   }
   try {
     const body = rec(parseStrictJson(new TextDecoder('utf-8', { fatal: true }).decode(plain)), ['spendingKey', 'viewingKey', 'signingKey']);
@@ -369,7 +369,7 @@ export async function decryptKeystore(text: string, passphrase: string): Promise
       };
       const spendPub = publicOf(secrets.spendingKey); const viewPub = publicOf(secrets.viewingKey); const signingPub = publicOf(secrets.signingKey);
       const actualMeta = encodeMetaAddress({ spendingPublicKey: parseCompressedPoint(hexToBytes(spendPub)), viewingPublicKey: parseCompressedPoint(hexToBytes(viewPub)) });
-      if (actualMeta !== metaAddress || signingPub !== signer || signingPub === spendPub || signingPub === viewPub) throw new UserFacingError('The keystore metadata does not match its independent seller keys.');
+      if (actualMeta !== metaAddress || signingPub !== signer || signingPub === spendPub || signingPub === viewPub) throw new UserFacingError({ key: 'error.keystore.theKeystoreMetadataDoesNotMatchItsIndependentSellerKeys' });
       return secrets;
     } catch (error) {
       zeroize(secrets.spendingKey, secrets.viewingKey, secrets.signingKey);
@@ -382,3 +382,7 @@ export async function decryptKeystore(text: string, passphrase: string): Promise
     plain.fill(0);
   }
 }
+
+// i18n-use: error.keystore.thisBrowserHasNoWebCryptoSupport error.keystore.invalidScryptCost error.keystore.wrongPassphraseOrTheKeystoreWasModified error.keystore.theKeystoreMetadataDoesNotMatchItsIndependentSellerKeys
+
+// i18n-use: error.keystore.invalidFile

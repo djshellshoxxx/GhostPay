@@ -6,7 +6,7 @@ import { CameraImporter } from '../components/CameraImporter';
 import { useManifest } from '../components/Disclosure';
 import { ManifestBanner } from '../components/ManifestBanner';
 import { verifyManifestForFlow } from '../lib/manifest';
-import { UserFacingError, userMessage } from '../lib/errors';
+import { UserFacingError, displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { formatUnits } from '../lib/format';
 import { checkDestination, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, isUnresolvedAttempt, readBalance, reconcileSweepLock, relayedSweep, sweepPermitRefusalKey, sweepPermitSuggestsDirect, RELAYED_EXPIRY_MARGIN_SECONDS, type DirectSweepResult, type RelayedOrderRef, type SweepLock, type SweepQuoteView, type SweepTarget } from '../lib/sweep';
 import { RelayerRefusedError } from '../lib/relayerClient';
@@ -40,7 +40,7 @@ export function Sweep(): ReactNode {
   const [balance, setBalance] = useState<bigint | undefined>(undefined);
   const [quote, setQuote] = useState<SweepQuoteView | undefined>(undefined);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | undefined>(undefined);
+  const [error, setError] = useState<DisplayMessage | undefined>(undefined);
   const [hash, setHash] = useState<string | undefined>(undefined);
   const [vaultState, setVaultState] = useState<'checking' | 'empty' | 'saved' | 'error'>('checking');
   const [vaultPass, setVaultPass] = useState('');
@@ -54,7 +54,7 @@ export function Sweep(): ReactNode {
   const journalBroken = useSweepJournalBroken();
   const signingLocked = journalBroken || (attempt !== undefined && isUnresolvedAttempt(attempt));
   const [checking, setChecking] = useState(false);
-  const [checkNote, setCheckNote] = useState<string | undefined>(undefined);
+  const [checkNote, setCheckNote] = useState<DisplayMessage | undefined>(undefined);
   // L2-F1: the last direct sweep was sent although the RPC could not dry-run it (a warning, not a refusal).
   const [dryRunSkipped, setDryRunSkipped] = useState(false);
   // L2-F2: a direct lock whose handoff outcome is unknown may be replaced by a transaction with exactly its nonce (only
@@ -95,7 +95,7 @@ export function Sweep(): ReactNode {
         const b = await readBalance(rpc, sel.match.stealthAddress, tokenAddr);
         if (live) setBalance(b);
       } catch (e) {
-        if (live) setError(userMessage(e));
+        if (live) setError(captureUserMessage(e));
       }
     })();
     return () => {
@@ -147,7 +147,7 @@ export function Sweep(): ReactNode {
       // Once the transport accepts a transaction/order, a session lock cannot make it unsent.
       if (broadcast !== true) assertAuthorized();
     } catch (e) {
-      setError(userMessage(e));
+      setError(captureUserMessage(e));
     } finally {
       setVaultPass('');
       if (operation.current === id) {
@@ -302,7 +302,7 @@ export function Sweep(): ReactNode {
         else if (!resolveSweepAttempt(attempt, next)) setCheckNote(t('sweep.note.lockChanged'));
         else if (attempt.status === 'submitted' && next.status === 'unknown-after-handoff') setCheckNote(t('sweep.note.rpcForgot'));
       } catch (e) {
-        setCheckNote(e instanceof UserFacingError ? e.message : t('sweep.note.checkFailed'));
+        setCheckNote(e instanceof UserFacingError ? captureUserMessage(e) : { key: 'sweep.note.checkFailed' });
       } finally {
         setChecking(false);
       }
@@ -355,7 +355,7 @@ export function Sweep(): ReactNode {
                 setError(undefined);
                 return true;
               } catch (e) {
-                setError(userMessage(e));
+                setError(captureUserMessage(e));
                 return false;
               }
             }}
@@ -392,7 +392,7 @@ export function Sweep(): ReactNode {
 
       {busy && <p role="status">{t('sweep.working')}</p>}
       {busy && vaultPhase === 'authorizing' && <button type="button" className="btn" onClick={cancelVaultCheck}>{t('sweep.cancelVault')}</button>}
-      {error !== undefined && <Notice kind="error">{error}</Notice>}
+      {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
       {dryRunSkipped && <Notice kind="warn">{t('sweep.dryRunUnavailable')}</Notice>}
       {journalBroken && <Notice kind="warn" title={t('sweep.journalBroken.title')}>{t('sweep.journalBroken.body')}</Notice>}
       {attempt !== undefined && (
@@ -429,7 +429,7 @@ export function Sweep(): ReactNode {
               <button type="button" className="btn" onClick={onResign} disabled={busy || balance === undefined || balance === 0n}>{t('sweep.resign.button')}</button>
             </>
           )}
-          {checkNote !== undefined && <><br />{checkNote}</>}
+          {checkNote !== undefined && <><br />{displayMessage(checkNote, t)}</>}
         </Notice>
       )}
       {hash !== undefined && (

@@ -32,7 +32,7 @@ export interface SweepJournalStorage {
 
 export class SweepJournalUnavailableError extends UserFacingError {
   public constructor() {
-    super('The sweep attempt record in this tab is unavailable or invalid. Signing stays disarmed; a sweep may still be pending. Check the address on a block explorer before trying again in a new tab.');
+    super({ key: 'error.sweepAttemptJournal.theSweepAttemptRecordInThisTabIsUnavailableOr' });
     this.name = 'SweepJournalUnavailableError';
   }
 }
@@ -154,7 +154,7 @@ export function writeSweepAttempt(attempt: SweepLock, storage: SweepJournalStora
   const records = readSweepAttempts(storage).filter((a) => sweepAttemptKey(a.chainId, a.owner) !== key);
   if (records.length >= MAX_SWEEP_ATTEMPTS) {
     const idx = records.findIndex((a) => a.status !== 'submitted' && a.status !== 'unknown-after-handoff');
-    if (idx < 0) throw new UserFacingError('Too many sweeps are still pending in this tab. Check their status before signing another.');
+    if (idx < 0) throw new UserFacingError({ key: 'error.sweepAttemptJournal.tooManySweepsAreStillPendingInThisTabCheck' });
     records.splice(idx, 1);
   }
   const text = JSON.stringify([...records.map(encode), stored]);
@@ -167,3 +167,5 @@ export function writeSweepAttempt(attempt: SweepLock, storage: SweepJournalStora
     throw new SweepJournalUnavailableError();
   }
 }
+
+// i18n-use: error.sweepAttemptJournal.theSweepAttemptRecordInThisTabIsUnavailableOr error.sweepAttemptJournal.tooManySweepsAreStillPendingInThisTabCheck

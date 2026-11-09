@@ -30,7 +30,7 @@ export interface KeyVaultStore {
 /** The stored vault is no longer the record the user confirmed deleting; nothing was deleted. */
 export class VaultChangedError extends UserFacingError {
   public constructor() {
-    super('The saved encrypted vault changed since you asked to delete it, so nothing was deleted. Review the current vault and try again.');
+    super({ key: 'error.keyVault.theSavedEncryptedVaultChangedSinceYouAskedToDelete' });
     this.name = 'VaultChangedError';
   }
 }
@@ -45,15 +45,15 @@ export class IndexedDbKeyVaultStore implements KeyVaultStore {
   private dbPromise: Promise<IDBDatabase> | undefined;
 
   private db(): Promise<IDBDatabase> {
-    if (typeof indexedDB === 'undefined') return Promise.reject(new UserFacingError('Encrypted browser storage is unavailable.'));
+    if (typeof indexedDB === 'undefined') return Promise.reject(new UserFacingError({ key: 'error.keyVault.encryptedBrowserStorageIsUnavailable' }));
     this.dbPromise ??= new Promise((resolve, reject) => {
       const request = indexedDB.open(DB_NAME, DB_VERSION);
       request.onupgradeneeded = () => {
         if (!request.result.objectStoreNames.contains(STORE_NAME)) request.result.createObjectStore(STORE_NAME);
       };
       request.onsuccess = () => { resolve(request.result); };
-      request.onerror = () => { reject(new UserFacingError('Could not open encrypted browser storage.')); };
-      request.onblocked = () => { reject(new UserFacingError('Encrypted browser storage is blocked by another tab.')); };
+      request.onerror = () => { reject(new UserFacingError({ key: 'error.keyVault.couldNotOpenEncryptedBrowserStorage' })); };
+      request.onblocked = () => { reject(new UserFacingError({ key: 'error.keyVault.encryptedBrowserStorageIsBlockedByAnotherTab' })); };
     });
     return this.dbPromise;
   }
@@ -70,13 +70,13 @@ export class IndexedDbKeyVaultStore implements KeyVaultStore {
         else if (typeof request.result === 'string') result = request.result;
         else invalid = true;
       };
-      request.onerror = () => { reject(new UserFacingError('Could not read encrypted browser storage.')); };
+      request.onerror = () => { reject(new UserFacingError({ key: 'error.keyVault.couldNotReadEncryptedBrowserStorage' })); };
       tx.oncomplete = () => {
-        if (invalid) reject(new UserFacingError('The saved encrypted vault record is invalid.'));
+        if (invalid) reject(new UserFacingError({ key: 'error.keyVault.theSavedEncryptedVaultRecordIsInvalid' }));
         else resolve(result);
       };
-      tx.onerror = () => { reject(new UserFacingError('Could not read encrypted browser storage.')); };
-      tx.onabort = () => { reject(new UserFacingError('Could not read encrypted browser storage.')); };
+      tx.onerror = () => { reject(new UserFacingError({ key: 'error.keyVault.couldNotReadEncryptedBrowserStorage' })); };
+      tx.onabort = () => { reject(new UserFacingError({ key: 'error.keyVault.couldNotReadEncryptedBrowserStorage' })); };
     });
   }
 
@@ -91,13 +91,13 @@ export class IndexedDbKeyVaultStore implements KeyVaultStore {
       // Last point before the transaction can commit: abort it if the initiating session has been revoked meanwhile.
       request.onsuccess = () => {
         try { stillCurrent(); } catch (error) {
-          stale = error instanceof Error ? error : new UserFacingError('Seller keys changed during this action. Try again.');
+          stale = error instanceof Error ? error : new UserFacingError({ key: 'error.keyVault.sellerKeysChangedDuringThisActionTryAgain' });
           tx.abort();
         }
       };
       request.onerror = () => { if (request.error?.name === 'ConstraintError') exists = true; };
       const failed = (): void => {
-        reject(stale ?? new UserFacingError(exists ? 'A saved encrypted vault already exists. Delete it before saving a different key set.' : 'Could not save encrypted browser storage.'));
+        reject(stale ?? new UserFacingError({ key: exists ? 'error.keyVault.aSavedEncryptedVaultAlreadyExistsDeleteItBeforeSaving' : 'error.keyVault.saveFailed' }));
       };
       tx.oncomplete = () => { resolve(); };
       tx.onerror = failed;
@@ -118,8 +118,8 @@ export class IndexedDbKeyVaultStore implements KeyVaultStore {
         else changed = true;
       };
       tx.oncomplete = () => { if (changed) reject(new VaultChangedError()); else resolve(); };
-      tx.onerror = () => { reject(new UserFacingError('Could not delete encrypted browser storage.')); };
-      tx.onabort = () => { reject(new UserFacingError('Could not delete encrypted browser storage.')); };
+      tx.onerror = () => { reject(new UserFacingError({ key: 'error.keyVault.couldNotDeleteEncryptedBrowserStorage' })); };
+      tx.onabort = () => { reject(new UserFacingError({ key: 'error.keyVault.couldNotDeleteEncryptedBrowserStorage' })); };
     });
   }
 }
@@ -131,7 +131,7 @@ export class MemoryKeyVaultStore implements KeyVaultStore {
   /** The guard is optional only so tests can seed a record directly; saveEncryptedVault always passes one. */
   putIfEmpty(ciphertext: string, stillCurrent?: () => void): Promise<void> {
     stillCurrent?.();
-    if (this.ciphertext !== undefined) throw new UserFacingError('A saved encrypted vault already exists. Delete it before saving a different key set.');
+    if (this.ciphertext !== undefined) throw new UserFacingError({ key: 'error.keyVault.aSavedEncryptedVaultAlreadyExistsDeleteItBeforeSaving' });
     this.ciphertext = ciphertext;
     return Promise.resolve();
   }
@@ -157,7 +157,7 @@ function activeStore(): KeyVaultStore {
 /** The ciphertext was durably saved, but the loaded seller keys changed after the commit. */
 export class VaultSavedForPreviousKeysError extends UserFacingError {
   public constructor() {
-    super('The encrypted vault was saved for the seller keys that were loaded when you started, but the keys in memory changed afterward. Unlock or delete the saved vault before relying on it.');
+    super({ key: 'error.keyVault.theEncryptedVaultWasSavedForTheSellerKeysThat' });
     this.name = 'VaultSavedForPreviousKeysError';
   }
 }
@@ -222,7 +222,7 @@ export async function authorizeKeyExport(vaultPassphrase: string, store: KeyVaul
     if (stored !== undefined && vaultMetaAddress(stored) === loaded?.metaAddress) record = stored;
   }
   if (record === undefined) return undefined;
-  if (vaultPassphrase === '') throw new UserFacingError('These seller keys are tied to an encrypted vault in this browser. Enter that vault’s passphrase to export them or save them again.');
+  if (vaultPassphrase === '') throw new UserFacingError({ key: 'error.keyVault.theseSellerKeysAreTiedToAnEncryptedVaultIn' });
   await provePassphrase(record, vaultPassphrase);
   unchanged();
   if (holdsLoadedKeySet(record)) {
@@ -238,7 +238,7 @@ export async function authorizeKeyExport(vaultPassphrase: string, store: KeyVaul
 /** Saves the loaded keys as the browser vault; keys already tied to a vault need that vault's passphrase first (L1-02). */
 export async function saveEncryptedVault(passphrase: string, options: KeystoreOptions = {}, store: KeyVaultStore = activeStore(), vaultPassphrase = ''): Promise<void> {
   const unchanged = captureSessionGuard();
-  if (await store.get() !== undefined) throw new UserFacingError('A saved encrypted vault already exists. Delete it before saving a different key set.');
+  if (await store.get() !== undefined) throw new UserFacingError({ key: 'error.keyVault.aSavedEncryptedVaultAlreadyExistsDeleteItBeforeSaving' });
   unchanged();
   if (sessionVaultRecord() !== undefined) {
     await authorizeKeyExport(vaultPassphrase, store);
@@ -246,7 +246,7 @@ export async function saveEncryptedVault(passphrase: string, options: KeystoreOp
   }
   const ciphertext = await exportKeystore(passphrase, options);
   unchanged();
-  if (await store.get() !== undefined) throw new UserFacingError('A saved encrypted vault already exists. Delete it before saving a different key set.');
+  if (await store.get() !== undefined) throw new UserFacingError({ key: 'error.keyVault.aSavedEncryptedVaultAlreadyExistsDeleteItBeforeSaving' });
   unchanged();
   await store.putIfEmpty(ciphertext, unchanged);
   // The write is durable now. Never roll it back; if the keys changed after the commit, say exactly what happened.
@@ -260,9 +260,9 @@ export async function saveEncryptedVault(passphrase: string, options: KeystoreOp
  * when the caller passes `replaceUnsavedKeys` after the user confirmed (L1-01).
  */
 export async function unlockEncryptedVault(passphrase: string, store: KeyVaultStore = activeStore(), signal?: AbortSignal, options: { readonly replaceUnsavedKeys?: boolean } = {}): Promise<SessionPublic> {
-  if (signal?.aborted === true) throw new UserFacingError('The keystore import was closed.');
+  if (signal?.aborted === true) throw new UserFacingError({ key: 'error.keyVault.theKeystoreImportWasClosed' });
   if (getSessionBackup()?.backedUp === false && options.replaceUnsavedKeys !== true) {
-    throw new UserFacingError('The seller keys loaded now have no backup, and unlocking the vault would replace them. Back them up first, or confirm that they may be replaced.');
+    throw new UserFacingError({ key: 'error.keyVault.theSellerKeysLoadedNowHaveNoBackupAndUnlocking' });
   }
   const unchanged = captureSessionVersionGuard();
   const ciphertext = await store.get();
@@ -271,9 +271,9 @@ export async function unlockEncryptedVault(passphrase: string, store: KeyVaultSt
   // read it: then they have no copy left, and replacing them needs the same confirmation as unsaved keys (C-R12).
   const tied = sessionVaultRecord();
   if (tied !== undefined && ciphertext !== tied) forgetSessionVaultCopy(tied);
-  if (ciphertext === undefined) throw new UserFacingError('No encrypted seller vault is saved in this browser.');
+  if (ciphertext === undefined) throw new UserFacingError({ key: 'error.keyVault.noEncryptedSellerVaultIsSavedInThisBrowser' });
   if (getSessionBackup()?.backedUp === false && options.replaceUnsavedKeys !== true) {
-    throw new UserFacingError('The seller keys loaded now have no backup, and unlocking the vault would replace them. Back them up first, or confirm that they may be replaced.');
+    throw new UserFacingError({ key: 'error.keyVault.theSellerKeysLoadedNowHaveNoBackupAndUnlocking' });
   }
   return importKeystore(ciphertext, passphrase, signal, 'vault');
 }
@@ -325,10 +325,14 @@ export async function deleteEncryptedVault(expected: string, store: KeyVaultStor
   const unchanged = captureSessionVersionGuard();
   const loaded = getSessionPublic();
   if (loaded !== undefined && vaultMetaAddress(expected) === loaded.metaAddress) {
-    if (passphrase === undefined || passphrase === '') throw new UserFacingError('This vault holds the seller keys loaded now. Enter its passphrase to delete it.');
+    if (passphrase === undefined || passphrase === '') throw new UserFacingError({ key: 'error.keyVault.thisVaultHoldsTheSellerKeysLoadedNowEnterIts' });
     await provePassphrase(expected, passphrase);
   }
   unchanged();
   await store.delete(expected);
   forgetSessionVaultCopy(expected);
 }
+
+// i18n-use: error.keyVault.theSavedEncryptedVaultChangedSinceYouAskedToDelete error.keyVault.encryptedBrowserStorageIsUnavailable error.keyVault.couldNotOpenEncryptedBrowserStorage error.keyVault.encryptedBrowserStorageIsBlockedByAnotherTab error.keyVault.couldNotReadEncryptedBrowserStorage error.keyVault.theSavedEncryptedVaultRecordIsInvalid error.keyVault.sellerKeysChangedDuringThisActionTryAgain error.keyVault.couldNotDeleteEncryptedBrowserStorage error.keyVault.aSavedEncryptedVaultAlreadyExistsDeleteItBeforeSaving error.keyVault.theEncryptedVaultWasSavedForTheSellerKeysThat error.keyVault.theseSellerKeysAreTiedToAnEncryptedVaultIn error.keyVault.theKeystoreImportWasClosed error.keyVault.theSellerKeysLoadedNowHaveNoBackupAndUnlocking error.keyVault.noEncryptedSellerVaultIsSavedInThisBrowser error.keyVault.thisVaultHoldsTheSellerKeysLoadedNowEnterIts
+
+// i18n-use: error.keyVault.saveFailed

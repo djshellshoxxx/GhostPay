@@ -51,8 +51,8 @@ export function reviewPolicy(manifest: DeploymentManifest, chainId: number, o: P
 }
 
 function refuse(e: unknown): never {
-  if (e instanceof ReviewRefusedError) throw new UserFacingError(`Blocked before signing: the request did not pass the safety review (${e.reasons.join(', ')}).`);
-  if (e instanceof TxReviewError) throw new UserFacingError(`Blocked before signing: the safety review could not run (${e.code}).`);
+  if (e instanceof ReviewRefusedError) throw new UserFacingError({ key: 'error.txGuard.reviewRefused', values: { reasons: e.reasons.join(', ') } });
+  if (e instanceof TxReviewError) throw new UserFacingError({ key: 'error.txGuard.reviewFailed', values: { code: e.code } });
   throw e;
 }
 
@@ -118,12 +118,12 @@ export async function simulateCall(
   try {
     r = await rpc.request('eth_call', [{ from: call.from, to: call.to, data: call.data, value: `0x${call.value.toString(16)}`, ...gas }, 'latest']);
   } catch (e) {
-    if (reportsRevert(e)) throw new UserFacingError('Blocked: a dry run of this transaction fails (it would revert). Nothing was sent.');
+    if (reportsRevert(e)) throw new UserFacingError({ key: 'error.txGuard.blockedADryRunOfThisTransactionFailsItWould' });
     return 'unavailable';
   }
   if (typeof r !== 'string' || !/^0x(?:[0-9a-fA-F]{2})*$/.test(r)) return 'unavailable';
   if (expectBool && r.length === 66 && BigInt(r) === 0n) {
-    throw new UserFacingError('Blocked: a dry run says the token refuses this transfer (it returned false). Nothing was sent.');
+    throw new UserFacingError({ key: 'error.txGuard.blockedADryRunSaysTheTokenRefusesThisTransfer' });
   }
   return 'ok';
 }
@@ -200,3 +200,9 @@ export function guardRouterPayment(
   );
   return 'reviewed';
 }
+
+// i18n-use: error.txGuard.blockedADryRunOfThisTransactionFailsItWould error.txGuard.blockedADryRunSaysTheTokenRefusesThisTransfer
+
+// i18n-use: error.txGuard.reviewRefused
+
+// i18n-use: error.txGuard.reviewFailed

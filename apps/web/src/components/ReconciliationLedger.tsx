@@ -24,6 +24,13 @@ import {
 import { getSessionPublic, subscribeSession } from '../lib/session';
 import type { ScanMatch } from '../lib/scanClient';
 import { formatUnits } from '../lib/format';
+import { UserFacingError, userMessage } from '../lib/errors';
+import type { MessageKey } from '../i18n/catalog';
+import type { Translator } from '../i18n/translator';
+
+function publicLedgerError(error: unknown): UserFacingError {
+  return error instanceof UserFacingError ? error : new UserFacingError({ key: 'ledger.error.actionFailed' });
+}
 
 export interface ReconciliationLedgerProps {
   readonly chainId: number;
@@ -32,19 +39,19 @@ export interface ReconciliationLedgerProps {
   readonly scanMatchesCurrentScope: boolean;
   readonly onAnnounce?: (message: string) => void;
 }
-function assetLabel(record: ReconciliationRecord): string {
+function assetLabel(record: ReconciliationRecord, t: Translator['t']): string {
   if (record.asset === 'native')
-    return `${formatUnits(BigInt(record.amountMinorUnits), 18)} ${findChain(record.chainId)?.nativeSymbol ?? 'native'}`;
+    return `${formatUnits(BigInt(record.amountMinorUnits), 18)} ${findChain(record.chainId)?.nativeSymbol ?? t('ledger.asset.native')}`;
   const token = tokensForChain(record.chainId).find((item) => item.address.toLowerCase() === record.asset);
   return token === undefined
-    ? `${record.amountMinorUnits} base units of ${record.asset}`
+    ? t('ledger.asset.baseUnits', { amount: record.amountMinorUnits, asset: record.asset })
     : `${formatUnits(BigInt(record.amountMinorUnits), token.decimals)} ${token.symbol}`;
 }
-const AMBIGUITY: Record<'multiple-invoices' | 'multiple-payments' | 'late-observation', string> = {
-  'multiple-invoices': 'Several registered invoices have this chain, asset and amount.',
-  'multiple-payments': 'Several unlinked payments match the same registered invoice.',
+const AMBIGUITY: Record<'multiple-invoices' | 'multiple-payments' | 'late-observation', MessageKey> = {
+  'multiple-invoices': 'ledger.ambiguity.invoices',
+  'multiple-payments': 'ledger.ambiguity.payments',
   'late-observation':
-    'This payment was first observed at or after the invoice expired, so an on-time payment cannot be inferred.',
+    'ledger.ambiguity.late',
 };
 /** Local proposal only: nothing about invoices is published, and a proposal is never payment evidence. */
 function ProposalView(props: {
@@ -52,36 +59,30 @@ function ProposalView(props: {
   readonly busy: boolean;
   readonly onConfirm: (invoiceDigest: string) => void;
 }): ReactNode {
+  const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
   const proposal = props.proposal;
   if (proposal === undefined) return null;
-  if (proposal.kind === 'none') return <p className="hint">No registered invoice matches this payment.</p>;
+  if (proposal.kind === 'none') return <p className="hint">{t('ledger.ui.noRegisteredInvoiceMatchesThisPayment')}</p>;
   if (proposal.kind === 'ambiguous')
     return (
-      <Notice kind="warn" title="Ambiguous invoice match (not confirmed)">
-        {AMBIGUITY[proposal.reason]} Ambiguous matches are never confirmed automatically. Candidates:{' '}
+      <Notice kind="warn" title={t('ledger.ui.ambiguousInvoiceMatchNotConfirmed')}>
+        {t(AMBIGUITY[proposal.reason])}{t('ledger.ui.ambiguousMatchesAreNeverConfirmedAutomaticallyCandidates')}{' '}
         {proposal.candidates.map((c, i) => (
           <span key={c.invoiceDigest}>
             {i > 0 && ', '}
             <Mono>{c.invoiceDigest}</Mono>
           </span>
-        ))}
-        . Link one manually only if you know which invoice was paid.
-      </Notice>
+        ))}{t('ledger.ui.linkOneManuallyOnlyIfYouKnowWhichInvoiceWas')}</Notice>
     );
   return (
     <div className="ledger-proposal">
-      <p>
-        Exact local match proposed: invoice <Mono>{proposal.invoice.invoiceDigest}</Mono> (same chain, asset and
-        router net amount, observed within its time window). This is a local inference, not payment proof.
-      </p>
+      <p>{t('ledger.ui.exactLocalMatchProposedInvoice')}<Mono>{proposal.invoice.invoiceDigest}</Mono>{t('ledger.ui.sameChainAssetAndRouterNetAmountObservedWithinIts')}</p>
       <button
         type="button"
         className="btn"
         disabled={props.busy}
         onClick={() => props.onConfirm(proposal.invoice.invoiceDigest)}
-      >
-        Confirm proposed invoice match
-      </button>
+      >{t('ledger.ui.confirmProposedInvoiceMatch')}</button>
     </div>
   );
 }
@@ -90,10 +91,11 @@ function MatchLedgerAction(props: {
   readonly sellerKeyId: string;
   readonly onSave: (record: ReconciliationRecord) => void;
   readonly busy: boolean;
-  readonly onError: (message: string) => void;
+  readonly onError: (error: UserFacingError) => void;
   readonly proposal: MatchProposal | undefined;
   readonly onConfirm: (invoiceDigest: string) => void;
 }): ReactNode {
+  const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
   const [invoiceDigest, setInvoiceDigest] = useState('');
   const match = props.match;
   if (
@@ -106,14 +108,15 @@ function MatchLedgerAction(props: {
   return (
     <div className="ledger-save">
       <Field
-        label="Invoice digest (optional, manual link)"
-        hint="Your annotation only. The invoice is not opened or checked and this link does not prove payment."
+        label={t('ledger.ui.invoiceDigestOptionalManualLink')}
+        hint={t('ledger.ui.yourAnnotationOnlyTheInvoiceIsNotOpenedOrChecked')}
       >
         {(id, describedBy) => (
           <input
             id={id}
             aria-describedby={describedBy}
             className="mono"
+            dir="ltr"
             autoComplete="off"
             value={invoiceDigest}
             onChange={(event) => setInvoiceDigest(event.target.value)}
@@ -132,12 +135,10 @@ function MatchLedgerAction(props: {
               recordFromVerifiedMatch(match, props.sellerKeyId, digest === '' ? undefined : digest),
             );
           } catch (error) {
-            props.onError(error instanceof Error ? error.message : 'The observation could not be saved.');
+            props.onError(publicLedgerError(error));
           }
         }}
-      >
-        Add verified payment to ledger
-      </button>
+      >{t('ledger.ui.addVerifiedPaymentToLedger')}</button>
       <ProposalView
         proposal={props.proposal}
         busy={props.busy}
@@ -149,12 +150,14 @@ function MatchLedgerAction(props: {
 export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNode {
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
+  const latestT = useRef(t);
+  latestT.current = t;
   const [records, setRecords] = useState<readonly VaultRecord[]>([]);
   const [invoices, setInvoices] = useState<readonly RegisteredInvoice[]>([]);
   const [receipts, setReceipts] = useState<readonly ArchivedReceipt[]>([]);
   const [legacy, setLegacy] = useState<readonly ReconciliationRecord[] | undefined>(undefined);
   const [query, setQuery] = useState('');
-  const [error, setError] = useState<string | undefined>();
+  const [error, setError] = useState<UserFacingError | undefined>();
   const [unlocked, setUnlocked] = useState(false);
   const [readOnly, setReadOnly] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -269,7 +272,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
           if (mounted.current && revision.current === actionRevision && readRevision.current === refreshId) {
             apply({ records: [], readOnly: true, invoices: [], receipts: [] });
             setError(
-              'Encrypted reconciliation data could not be refreshed. Lock and unlock before relying on it.',
+              new UserFacingError({ key: 'ledger.ui.encryptedReconciliationDataCouldNotBeRefreshedLockAndUnlock' }),
             );
           }
         },
@@ -293,7 +296,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
         latest.current.sellerKeyId !== scope.sellerKeyId ||
         getSessionPublic() !== session
       )
-        throw new Error('Reconciliation action became stale.');
+        throw new UserFacingError({ key: 'ledger.ui.reconciliationActionBecameStale' });
     };
     pending.current = true;
     setBusy(true);
@@ -321,7 +324,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
         if (readGeneration !== undefined && readGeneration !== readRevision.current) return;
         try {
           guard();
-          setError(cause instanceof Error ? cause.message : 'Encrypted reconciliation action failed.');
+          setError(publicLedgerError(cause));
         } catch {
           if (current !== vault.current) current?.lock();
         }
@@ -344,7 +347,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
         latest.current.scanMatchesCurrentScope !== scanCurrent ||
         (match !== undefined && (!scanCurrent || !scanMatches.includes(match)))
       )
-        throw new Error('Scan evidence is no longer current. Rescan before saving or confirming.');
+        throw new UserFacingError({ key: 'ledger.ui.scanEvidenceIsNoLongerCurrentRescanBeforeSavingOr' });
     };
   };
   const confirmMatch = (record: ReconciliationRecord, invoiceDigest: string, match?: ScanMatch): void =>
@@ -353,45 +356,28 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
       scanGuard();
       await current.confirmProposal(record, invoiceDigest, { current: [...currentRecords.values()], guard: scanGuard });
       guard();
-      props.onAnnounce?.('Invoice match confirmed in the encrypted reconciliation vault.');
+      props.onAnnounce?.(latestT.current('ledger.ui.invoiceMatchConfirmedInTheEncryptedReconciliationVault'));
     });
   return (
     <section className="panel reconciliation-ledger" aria-labelledby="ledger-heading">
-      <h3 id="ledger-heading">Local payment reconciliation</h3>
-      <p className="hint">
-        Selected observations are encrypted on this device with your viewing key. The public seller-key
-        identifier, chain and ciphertext size remain visible. Keep an encrypted backup and your seller
-        keystore; losing the seller keys loses access. Unlocked data is visible to this page. Historical
-        observations are not current payment proof: rescan before relying on them. Seller-signed receipts
-        never independently prove payment. Invoice links are your annotations or local matches you confirmed.
-      </p>
-      <p className="hint">
-        Invalidation history is bounded. If it reaches capacity, the encrypted vault becomes read-only;
-        deletion and backups retain this safety state so old observations cannot revive.
-      </p>
+      <h3 id="ledger-heading">{t('ledger.title')}</h3>
+      <p className="hint">{t('ledger.ui.selectedObservationsAreEncryptedOnThisDeviceWithYourViewing')}</p>
+      <p className="hint">{t('ledger.ui.invalidationHistoryIsBoundedIfItReachesCapacityTheEncrypted')}</p>
       {unlocked && readOnly && (
-        <Notice kind="warn">
-          This reconciliation vault is read-only because invalidation history reached capacity or could not be
-          refreshed. You can read, export or delete observations; restoring backups retains the safety state.
-          Saving new observations is disabled.
-        </Notice>
+        <Notice kind="warn">{t('ledger.ui.thisReconciliationVaultIsReadOnlyBecauseInvalidationHistoryReached')}</Notice>
       )}
-      {error !== undefined && <Notice kind="error">{error}</Notice>}
+      {error !== undefined && <Notice kind="error">{userMessage(error, t)}</Notice>}
       {!unlocked ? (
         <button
           type="button"
           className="btn"
           disabled={busy || props.sellerKeyId === undefined}
           onClick={() => run(() => Promise.resolve(), true)}
-        >
-          Unlock encrypted reconciliation vault
-        </button>
+        >{t('ledger.ui.unlockEncryptedReconciliationVault')}</button>
       ) : (
         <>
           <div className="actions">
-            <button type="button" className="btn" onClick={reset}>
-              Lock reconciliation vault
-            </button>
+            <button type="button" className="btn" onClick={reset}>{t('ledger.ui.lockReconciliationVault')}</button>
             <button
               type="button"
               className="btn"
@@ -403,9 +389,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
                   downloadText('ghostpay-reconciliation-encrypted.json', encrypted, 'application/json');
                 })
               }
-            >
-              Export encrypted reconciliation backup
-            </button>
+            >{t('ledger.ui.exportEncryptedReconciliationBackup')}</button>
             <button
               type="button"
               className="btn btn-danger"
@@ -413,21 +397,19 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
               onClick={() => {
                 if (
                   window.confirm(
-                    'Delete encrypted observations in this seller and chain scope? Reorg invalidation history will be retained.',
+                    t('ledger.ui.deleteEncryptedObservationsInThisSellerAndChainScopeReorg'),
                   )
                 )
                   run(async (current) => current.clearRecords());
               }}
-            >
-              Delete encrypted observations
-            </button>
+            >{t('ledger.ui.deleteEncryptedObservations')}</button>
           </div>
-          <Field label="Search local records">
+          <Field label={t('ledger.search')}>
             {(id) => (
               <input id={id} type="search" value={query} onChange={(event) => setQuery(event.target.value)} />
             )}
           </Field>
-          <p className="hint">{records.length} stored records in the current seller and chain scope.</p>
+          <p className="hint">{t('ledger.recordCount', { count: records.length })}</p>
           {props.scanMatchesCurrentScope &&
             props.sellerKeyId !== undefined &&
             props.matches
@@ -448,35 +430,32 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
                       scanGuard();
                       await current.save(record, scanGuard);
                       guard();
-                      props.onAnnounce?.('Observation saved in the encrypted reconciliation vault.');
+                      props.onAnnounce?.(latestT.current('ledger.ui.observationSavedInTheEncryptedReconciliationVault'));
                     })
                   }
                 />
               ))}
           {!props.scanMatchesCurrentScope && (
-            <p className="hint">
-              Run a scan in the current seller and chain session before saving new observations.
-            </p>
+            <p className="hint">{t('ledger.ui.runAScanInTheCurrentSellerAndChainSession')}</p>
           )}
           {visible.length === 0 ? (
-            <p>No records saved.</p>
+            <p>{t('ledger.empty')}</p>
           ) : (
             <ul className="plain-list">
               {visible.map((record) => (
                 <li key={record.id} className="card">
                   <strong>
-                    {findChain(record.chainId)?.name ?? `Chain ${record.chainId}`} · {assetLabel(record)}
+                    {findChain(record.chainId)?.name ?? t('ledger.chain', { chain: String(record.chainId) })} · <bdi dir="ltr">{assetLabel(record, t)}</bdi>
                   </strong>
                   <p>
                     {record.evidenceStatus === 'invalidated-after-reorg'
-                      ? 'Invalidated after a reorg; do not rely on this observation.'
+                      ? t('ledger.ui.invalidatedAfterAReorgDoNotRelyOnThisObservation')
                       : record.provenance === 'imported-history'
-                        ? 'Imported historical observation — untrusted until independently rescanned.'
-                        : 'Router-verified when scanned; historical observation, not current payment proof.'}
+                        ? t('ledger.ui.importedHistoricalObservationUntrustedUntilIndependentlyRescanned')
+                        : t('ledger.ui.routerVerifiedWhenScannedHistoricalObservationNotCurrentPaymentProof')}
                   </p>
                   {record.invoiceDigest !== undefined && (
-                    <p>
-                      Manual invoice link (or a local match you confirmed): <Mono>{record.invoiceDigest}</Mono>
+                    <p>{t('ledger.ui.manualInvoiceLinkOrALocalMatchYouConfirmed')}<Mono>{record.invoiceDigest}</Mono>
                     </p>
                   )}
                   <ProposalView
@@ -484,14 +463,11 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
                     busy={busy || readOnly}
                     onConfirm={(digest) => confirmMatch(record, digest)}
                   />
-                  <p>
-                    Transaction: <Mono>{record.transactionHash}</Mono>
+                  <p>{t('ledger.ui.transaction')}<Mono>{record.transactionHash}</Mono>
                   </p>
-                  <p>
-                    Recipient: <Mono>{record.stealthAddress}</Mono>
+                  <p>{t('ledger.ui.recipient')}<Mono>{record.stealthAddress}</Mono>
                   </p>
-                  <p className="hint">
-                    Block {record.blockNumber}, log {record.logIndex}. Recorded{' '}
+                  <p className="hint">{t('ledger.ui.block')}{record.blockNumber}{t('ledger.ui.log')}{record.logIndex}{t('ledger.ui.recorded')}{' '}
                     {new Date(record.recordedAt).toISOString()}.
                   </p>
                 </li>
@@ -519,13 +495,14 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
             onClear={() => run(async (current) => current.clearReceipts())}
           />
           <Field
-            label="Encrypted reconciliation backup"
-            hint="Only this vault’s encrypted format is accepted; plaintext legacy ledgers and seller receipts are never imported."
+            label={t('ledger.ui.encryptedReconciliationBackup')}
+            hint={t('ledger.ui.onlyThisVaultSEncryptedFormatIsAcceptedPlaintextLegacy')}
           >
             {(id) => (
               <textarea
                 id={id}
                 rows={3}
+                dir="ltr"
                 maxLength={MAX_VAULT_BYTES}
                 value={backup}
                 onChange={(event) => {
@@ -536,7 +513,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
               />
             )}
           </Field>
-          <Field label="Encrypted reconciliation backup file">
+          <Field label={t('ledger.ui.encryptedReconciliationBackupFile')}>
             {(id) => (
               <input
                 id={id}
@@ -550,7 +527,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
                   setPreview(undefined);
                   if (file === undefined) return;
                   if (file.size > MAX_VAULT_BYTES) {
-                    setError('Encrypted reconciliation backup exceeds its safety limit.');
+                    setError(new UserFacingError({ key: 'ledger.ui.encryptedReconciliationBackupExceedsItsSafetyLimit' }));
                     return;
                   }
                   const actionRevision = revision.current;
@@ -569,7 +546,7 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
                         revision.current === actionRevision &&
                         backupRevision.current === backupId
                       )
-                        setError('The encrypted backup file could not be read.');
+                        setError(new UserFacingError({ key: 'ledger.ui.theEncryptedBackupFileCouldNotBeRead' }));
                     },
                   );
                 }}
@@ -589,26 +566,16 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
                 if (backupRevision.current === backupId) setPreview(staged);
               });
             }}
-          >
-            Preview encrypted backup
-          </button>
+          >{t('ledger.ui.previewEncryptedBackup')}</button>
           {preview !== undefined && (
             <div className="panel">
               {preview.readOnly && (
-                <Notice kind="warn">
-                  Activation will make this vault read-only. This backup or its combined invalidation history
-                  carries a permanent safety state: new observations cannot be saved, and deleting records or
-                  restoring another backup will not remove that state. Activate only if you accept this
-                  limitation.
-                </Notice>
+                <Notice kind="warn">{t('ledger.ui.activationWillMakeThisVaultReadOnlyThisBackupOr')}</Notice>
               )}
               <p>
-                {preview.recordCount} historical observation{preview.recordCount === 1 ? '' : 's'};{' '}
-                {preview.invoiceCount} registered invoice{preview.invoiceCount === 1 ? '' : 's'};{' '}
-                {preview.receiptCount} archived receipt{preview.receiptCount === 1 ? '' : 's'}.{' '}
-                {t('ledger.import.invalidated', { count: preview.invalidatedCount })} Activation merges records as
-                untrusted history, preserves known invalidation and does not verify payment.
-              </p>
+                {t('ledger.import.counts', { records: preview.recordCount, invoices: preview.invoiceCount, receipts: preview.receiptCount })}{' '}
+                {t('ledger.import.invalidated', { count: preview.invalidatedCount })}{' '}
+                {t('ledger.import.meaning')}</p>
               <button
                 type="button"
                 className="btn"
@@ -621,19 +588,14 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
                     setBackup('');
                   })
                 }
-              >
-                Activate previewed historical records
-              </button>
+              >{t('ledger.ui.activatePreviewedHistoricalRecords')}</button>
             </div>
           )}
         </>
       )}
       <div className="panel">
-        <h4>Legacy plaintext ledger</h4>
-        <p className="hint">
-          Legacy data is untrusted and may have been edited. It remains available for read, plaintext export
-          and deletion only. It is never imported as payment proof or copied into the encrypted vault.
-        </p>
+        <h4>{t('ledger.legacy.title')}</h4>
+        <p className="hint">{t('ledger.ui.legacyDataIsUntrustedAndMayHaveBeenEditedIt')}</p>
         <button
           type="button"
           className="btn"
@@ -642,19 +604,17 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
               setLegacy(readReconciliationRecords());
               setError(undefined);
             } catch (cause) {
-              setError(cause instanceof Error ? cause.message : 'Legacy data could not be read.');
+              setError(publicLedgerError(cause));
             }
           }}
-        >
-          Read untrusted legacy records
-        </button>
+        >{t('ledger.ui.readUntrustedLegacyRecords')}</button>
         <button
           type="button"
           className="btn"
           onClick={() => {
             if (
               !window.confirm(
-                'Export untrusted legacy records as plaintext? This reveals the stored payment details.',
+                t('ledger.ui.exportUntrustedLegacyRecordsAsPlaintextThisRevealsTheStored'),
               )
             )
               return;
@@ -665,19 +625,17 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
                 'text/plain',
               );
             } catch (cause) {
-              setError(cause instanceof Error ? cause.message : 'Legacy data could not be exported.');
+              setError(publicLedgerError(cause));
             }
           }}
-        >
-          Export untrusted legacy plaintext
-        </button>
+        >{t('ledger.ui.exportUntrustedLegacyPlaintext')}</button>
         <button
           type="button"
           className="btn btn-danger"
           onClick={() => {
             if (
               !window.confirm(
-                'Delete all legacy plaintext reconciliation data, including unreadable records?',
+                t('ledger.ui.deleteAllLegacyPlaintextReconciliationDataIncludingUnreadableRecords'),
               )
             )
               return;
@@ -686,17 +644,14 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
               setLegacy(undefined);
               setError(undefined);
             } catch {
-              setError('Legacy plaintext data could not be deleted.');
+              setError(new UserFacingError({ key: 'ledger.ui.legacyPlaintextDataCouldNotBeDeleted' }));
             }
           }}
-        >
-          Delete legacy plaintext records
-        </button>
+        >{t('ledger.ui.deleteLegacyPlaintextRecords')}</button>
         {legacy !== undefined && (
           <ul>
             {legacy.map((record) => (
-              <li key={record.id}>
-                Untrusted legacy transaction: <Mono>{record.transactionHash}</Mono>
+              <li key={record.id}>{t('ledger.ui.untrustedLegacyTransaction')}<Mono>{record.transactionHash}</Mono>
               </li>
             ))}
           </ul>
@@ -713,6 +668,7 @@ function InvoiceRegistry(props: {
   readonly onRemove: (digest: string) => void;
   readonly onClear: () => void;
 }): ReactNode {
+  const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
   const linked = new Set(
     props.records
       .filter((r) => r.evidenceStatus === 'verified-at-scan' && r.invoiceDigest !== undefined)
@@ -720,38 +676,31 @@ function InvoiceRegistry(props: {
   );
   return (
     <div className="panel">
-      <h4>Registered invoices</h4>
-      <p className="hint">
-        Invoices you chose to register when creating them. Only the invoice digest, nonce, chain, asset, expected
-        net amount and validity window are stored, encrypted; line items and memo are not. Matching runs on this
-        device only. Nothing about an invoice is added to the payment or its announcement.
-      </p>
+      <h4>{t('ledger.invoices.title')}</h4>
+      <p className="hint">{t('ledger.ui.invoicesYouChoseToRegisterWhenCreatingThemOnlyThe')}</p>
       {props.invoices.length === 0 ? (
-        <p>No invoices registered.</p>
+        <p>{t('ledger.invoices.empty')}</p>
       ) : (
         <>
           <ul className="plain-list">
             {props.invoices.map((invoice) => (
               <li key={invoice.invoiceDigest} className="card">
-                <p>
-                  Invoice <Mono>{invoice.invoiceDigest}</Mono>
+                <p>{t('ledger.ui.invoice')}<Mono>{invoice.invoiceDigest}</Mono>
                 </p>
                 <p className="hint">
-                  {invoice.expectedNetMinorUnits} base units of {invoice.asset}; valid until{' '}
+                  <bdi dir="ltr">{invoice.expectedNetMinorUnits}</bdi>{t('ledger.ui.baseUnitsOf')}<bdi dir="ltr">{invoice.asset}</bdi>{t('ledger.ui.validUntil')}{' '}
                   {new Date(invoice.expiresAt * 1000).toISOString()}.{' '}
-                  {linked.has(invoice.invoiceDigest) ? 'Linked to a verified observation.' : 'No linked observation.'}
+                  {linked.has(invoice.invoiceDigest) ? t('ledger.ui.linkedToAVerifiedObservation') : t('ledger.ui.noLinkedObservation')}
                 </p>
                 <button
                   type="button"
                   className="btn"
                   disabled={props.busy}
                   onClick={() => {
-                    if (window.confirm('Remove this invoice registration? Saved observations and links are kept.'))
+                    if (window.confirm(t('ledger.ui.removeThisInvoiceRegistrationSavedObservationsAndLinksAreKept')))
                       props.onRemove(invoice.invoiceDigest);
                   }}
-                >
-                  Remove registration
-                </button>
+                >{t('ledger.ui.removeRegistration')}</button>
               </li>
             ))}
           </ul>
@@ -760,11 +709,9 @@ function InvoiceRegistry(props: {
             className="btn btn-danger"
             disabled={props.busy}
             onClick={() => {
-              if (window.confirm('Remove all invoice registrations in this seller and chain scope?')) props.onClear();
+              if (window.confirm(t('ledger.ui.removeAllInvoiceRegistrationsInThisSellerAndChainScope'))) props.onClear();
             }}
-          >
-            Remove all invoice registrations
-          </button>
+          >{t('ledger.ui.removeAllInvoiceRegistrations')}</button>
         </>
       )}
     </div>
@@ -778,39 +725,33 @@ function ReceiptArchive(props: {
   readonly onRemove: (signature: string) => void;
   readonly onClear: () => void;
 }): ReactNode {
+  const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
   return (
     <div className="panel">
-      <h4>Archived seller receipts</h4>
-      <p className="hint">
-        Receipts you issued, stored encrypted until you delete them or clear this site's data. A receipt signature
-        attests to the signed fields and key control; it does not establish seller identity and never counts as
-        payment evidence. Archived receipts do not affect matching or verification.
-      </p>
+      <h4>{t('ledger.receipts.title')}</h4>
+      <p className="hint">{t('ledger.ui.receiptsYouIssuedStoredEncryptedUntilYouDeleteThemOr')}</p>
       {props.receipts.length === 0 ? (
-        <p>No receipts archived.</p>
+        <p>{t('ledger.receipts.empty')}</p>
       ) : (
         <>
           <ul className="plain-list">
             {props.receipts.map(({ receipt, archivedAt }) => (
               <li key={receipt.signature} className="card">
-                <p>
-                  Transaction <Mono>{receipt.txHash}</Mono> for invoice <Mono>{receipt.invoiceDigest}</Mono>
+                <p>{t('ledger.ui.transaction2')}<Mono>{receipt.txHash}</Mono>{t('ledger.ui.forInvoice')}<Mono>{receipt.invoiceDigest}</Mono>
                 </p>
                 <p className="hint">
-                  {receipt.amountMinorUnits} base units of {receipt.asset}. Issued{' '}
-                  {new Date(receipt.issuedAt * 1000).toISOString()}, archived {new Date(archivedAt).toISOString()}.
+                  <bdi dir="ltr">{receipt.amountMinorUnits}</bdi>{t('ledger.ui.baseUnitsOf')}<bdi dir="ltr">{receipt.asset}</bdi>{t('ledger.ui.issued')}{' '}
+                  {new Date(receipt.issuedAt * 1000).toISOString()}{t('ledger.ui.archived')}{new Date(archivedAt).toISOString()}.
                 </p>
                 <button
                   type="button"
                   className="btn"
                   disabled={props.busy}
                   onClick={() => {
-                    if (window.confirm('Delete this archived receipt from this device?'))
+                    if (window.confirm(t('ledger.ui.deleteThisArchivedReceiptFromThisDevice')))
                       props.onRemove(receipt.signature);
                   }}
-                >
-                  Delete archived receipt
-                </button>
+                >{t('ledger.ui.deleteArchivedReceipt')}</button>
               </li>
             ))}
           </ul>
@@ -820,25 +761,23 @@ function ReceiptArchive(props: {
               className="btn"
               disabled={props.busy}
               onClick={() => {
-                if (window.confirm('Export archived receipts as plaintext JSON? The file reveals payment details.'))
+                if (window.confirm(t('ledger.ui.exportArchivedReceiptsAsPlaintextJSONTheFileRevealsPayment')))
                   props.onExport();
               }}
-            >
-              Export archived receipts
-            </button>
+            >{t('ledger.ui.exportArchivedReceipts')}</button>
             <button
               type="button"
               className="btn btn-danger"
               disabled={props.busy}
               onClick={() => {
-                if (window.confirm('Delete all archived receipts in this seller and chain scope?')) props.onClear();
+                if (window.confirm(t('ledger.ui.deleteAllArchivedReceiptsInThisSellerAndChainScope'))) props.onClear();
               }}
-            >
-              Delete all archived receipts
-            </button>
+            >{t('ledger.ui.deleteAllArchivedReceipts')}</button>
           </div>
         </>
       )}
     </div>
   );
 }
+
+// i18n-use: ledger.ambiguity.invoices ledger.ambiguity.payments ledger.ambiguity.late
