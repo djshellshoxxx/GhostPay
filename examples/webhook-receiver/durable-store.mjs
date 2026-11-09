@@ -92,7 +92,7 @@ export class DurableWebhookStore {
    * Caller owns this evidence; this local database cannot independently establish it or prevent rollback.
    */
   reconcile(id, { token, digest, outcome, now, originalHandlerStopped }) {
-    if (!originalHandlerStopped || !['done', 'retry'].includes(outcome) || !Number.isSafeInteger(now) || now < 0) throw new Error('bad-reconciliation');
+    if (originalHandlerStopped !== true || !['done', 'retry'].includes(outcome) || !Number.isSafeInteger(now) || now < 0) throw new Error('bad-reconciliation');
     return this.#transaction(() => {
       const r = this.#db.prepare(`UPDATE events SET state=?,updated_at=? WHERE id=? AND token=? AND digest=?
         AND state IN ('processing','unresolved') AND (?='done' OR attempts<?)`).run(outcome, now, id, token, digest, outcome, this.#maxAttempts);

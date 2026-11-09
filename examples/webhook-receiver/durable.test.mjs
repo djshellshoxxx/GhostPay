@@ -57,6 +57,7 @@ test('independent processes serialize claims and crash leaves unresolved work', 
   assert.equal(store.accept(secret, body(), header(body()), { now: now + 1 }).kind, 'processing');
   const record = store.inspect('evt_1');
   assert.throws(() => store.reconcile('evt_1', { ...record, outcome: 'retry', now, originalHandlerStopped: false }), /bad-reconciliation/);
+  assert.throws(() => store.reconcile('evt_1', { ...record, outcome: 'retry', now, originalHandlerStopped: 'false' }), /bad-reconciliation/);
   assert.throws(() => store.reconcile('evt_1', { ...record, token: 'stale', outcome: 'retry', now, originalHandlerStopped: true }), /stale-reconciliation/);
   store.reconcile('evt_1', { ...record, outcome: 'retry', now, originalHandlerStopped: true });
   const retried = store.accept(secret, body(), header(body()), { now });

@@ -10,14 +10,15 @@ Requires Node with the built-in `node:sqlite` API (Node **22.13+**, tested here 
 npm ci --ignore-scripts
 npm run build -w @ghostpay/core-crypto -w @ghostpay/invoice-schema -w @ghostpay/merchant-hooks
 umask 077
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))" > webhook.secret
-mkdir -m 700 webhook-state
-WEBHOOK_SECRET_FILE=./webhook.secret WEBHOOK_STATE_DIR=./webhook-state node examples/webhook-receiver/server.mjs
+mkdir -m 700 examples/webhook-receiver/.local
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))" > examples/webhook-receiver/.local/webhook.secret
+mkdir -m 700 examples/webhook-receiver/.local/state
+WEBHOOK_SECRET_FILE=examples/webhook-receiver/.local/webhook.secret WEBHOOK_STATE_DIR=examples/webhook-receiver/.local/state node examples/webhook-receiver/server.mjs
 node examples/webhook-receiver/selftest.mjs
 node --test examples/webhook-receiver/durable.test.mjs
 ```
 
-Default binding is loopback port 8788. Only `POST /webhooks/ghostpay`, `Content-Type: application/json` (optional UTF-8 charset), and identity encoding are accepted. Limit: 64 KiB. Invalid UTF-8 is refused; valid UTF-8 is decoded without removing a BOM before HMAC verification. Exact raw text is verified **before** JSON parsing. Malformed signatures, changed bodies, stale times, replayed nonces and conflicting bodies for an existing event ID get the same coarse `400`; unsupported format gets `415`. A storage error or unresolved event gets retryable `503`. Do not parse/reserialize upstream before verification.
+The disposable `.local/` demo directory is git-ignored. Existing directories are not overwritten by these setup commands. Keep real operator secrets/state outside the checkout. Default binding is loopback port 8788. Only `POST /webhooks/ghostpay`, `Content-Type: application/json` (optional UTF-8 charset), and identity encoding are accepted. Limit: 64 KiB. Invalid UTF-8 is refused; valid UTF-8 is decoded without removing a BOM before HMAC verification. Exact raw text is verified **before** JSON parsing. Malformed signatures, changed bodies, stale times, replayed nonces and conflicting bodies for an existing event ID get the same coarse `400`; unsupported format gets `415`. A storage error or unresolved event gets retryable `503`. Do not parse/reserialize upstream before verification.
 
 Secret loading uses one regular, private, no-symlink file descriptor with a 4096-byte limit. The state directory and database must be owned by this process's user and private; the database must be a regular single-link file. Protect its parent directories too. No signing secret or body is stored in the database. Order/event/transaction references remain business data: keep state backups private. The sample handler prints event metadata, so replace it with suitable private operational logging before using customer data.
 
