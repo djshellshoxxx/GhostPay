@@ -352,7 +352,15 @@ describe('encrypted reconciliation UI', () => {
     await user.click(screen.getByRole('button', { name: 'Preview encrypted backup' }));
     expect(await screen.findByText(/Activation will make this vault read-only/)).toBeTruthy();
     expect(screen.queryByText(/This reconciliation vault is read-only/)).toBeNull();
+    // Await the durable encrypted activation, rather than assuming the UI assertion's
+    // short polling window is enough for an expensive saturated-history import.
+    const activation = vi.spyOn(vault, 'activateImport');
     await user.click(screen.getByRole('button', { name: 'Activate previewed historical records' }));
+    await waitFor(() => expect(activation).toHaveBeenCalledOnce());
+    await act(async () => {
+      await activation.mock.results[0]?.value;
+      expect((await vault.readState()).readOnly).toBe(true);
+    });
     expect(await screen.findByText(/This reconciliation vault is read-only/)).toBeTruthy();
     expect(
       screen.getByRole<HTMLButtonElement>('button', { name: 'Add verified payment to ledger' }).disabled,
