@@ -1,8 +1,8 @@
 import type { ChainConfig } from '@ghostpay/chain-adapters';
 import type { PolicyRecord } from '@ghostpay/policy-scheme';
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../../components/Common';
-import { userMessage } from '../../lib/errors';
+import { UserFacingError, userMessage } from '../../lib/errors';
 import { useServices } from '../../lib/services';
 import { connectWallet, type WalletInfo, type WalletSession } from '../../lib/wallet';
 import { useApp } from '../../state';
@@ -20,6 +20,8 @@ export interface PolicyCtx {
   readonly wallet: WalletSession | undefined;
   readonly records: readonly PolicyRecord[];
   readonly addRecord: (r: PolicyRecord) => void;
+  /** Captured deployment scope; invalidated immediately by edits, re-verification or leaving this view. */
+  readonly assertDeploymentCurrent: () => void;
 }
 
 function WalletPicker(props: { readonly chainId: number; readonly onConnected: (w: WalletSession) => void }): ReactNode {
@@ -66,20 +68,33 @@ export function PolicyView(): ReactNode {
   const [busy, setBusy] = useState(false);
   const [wallet, setWallet] = useState<WalletSession | undefined>(undefined);
   const [records, setRecords] = useState<readonly PolicyRecord[]>([]);
+  const revision = useRef(0);
+  const [scope, setScope] = useState(0);
+  useEffect(() => () => { revision.current++; }, []);
+
+  const invalidateDeployment = (): number => {
+    const next = ++revision.current;
+    setScope(next);
+    setDeployment(undefined);
+    setDepErr(undefined);
+    setBusy(false);
+    return next;
+  };
 
   const verify = async (): Promise<void> => {
     if (chain === undefined) return;
+    const started = invalidateDeployment();
     setBusy(true);
-    setDepErr(undefined);
-    setDeployment(undefined);
     try {
       const client = await app.getRpc(chain.chainId);
+      if (revision.current !== started) return;
       if (client === undefined) throw new Error('no-rpc');
-      setDeployment(await verifyPolicyDeployment(client, chain, { factory, router }));
+      const verified = await verifyPolicyDeployment(client, chain, { factory, router });
+      if (revision.current === started) setDeployment(verified);
     } catch (e) {
-      setDepErr(e instanceof Error && e.message === 'no-rpc' ? t('policy.error.noRpc') : userMessage(e));
+      if (revision.current === started) setDepErr(e instanceof Error && e.message === 'no-rpc' ? t('policy.error.noRpc') : userMessage(e));
     } finally {
-      setBusy(false);
+      if (revision.current === started) setBusy(false);
     }
   };
 
@@ -89,6 +104,9 @@ export function PolicyView(): ReactNode {
     wallet: wallet?.chainId === chain.chainId ? wallet : undefined,
     records,
     addRecord: (r) => { setRecords((prev) => (prev.some((x) => x.policyHash === r.policyHash) ? prev : [...prev, r])); },
+    assertDeploymentCurrent: () => {
+      if (revision.current !== scope || deployment === undefined) throw new UserFacingError(t('policy.error.verifyFirst'));
+    },
   };
 
   return (
@@ -102,14 +120,14 @@ export function PolicyView(): ReactNode {
         <>
           <Field label={t('policy.network.label')}>
             {(id) => (
-              <select id={id} value={chainId} onChange={(e) => { setChainId(Number(e.target.value)); setDeployment(undefined); }}>
+              <select id={id} value={chainId} onChange={(e) => { invalidateDeployment(); setChainId(Number(e.target.value)); }}>
                 {testnets.map((c) => <option key={c.chainId} value={c.chainId}>{c.name}</option>)}
               </select>
             )}
           </Field>
           <Notice kind="info">{t('policy.network.notPinned')}</Notice>
-          <Field label={t('policy.network.factory')}>{(id) => <input id={id} value={factory} onChange={(e) => { setFactory(e.target.value); }} spellCheck={false} />}</Field>
-          <Field label={t('policy.network.router')}>{(id) => <input id={id} value={router} onChange={(e) => { setRouter(e.target.value); }} spellCheck={false} />}</Field>
+          <Field label={t('policy.network.factory')}>{(id) => <input id={id} value={factory} onChange={(e) => { invalidateDeployment(); setFactory(e.target.value); }} spellCheck={false} />}</Field>
+          <Field label={t('policy.network.router')}>{(id) => <input id={id} value={router} onChange={(e) => { invalidateDeployment(); setRouter(e.target.value); }} spellCheck={false} />}</Field>
           <button type="button" disabled={busy} onClick={() => { void verify(); }}>{t('policy.network.verify')}</button>
           {depErr !== undefined && <Notice kind="error">{depErr}</Notice>}
           {deployment !== undefined && (
@@ -122,15 +140,15 @@ export function PolicyView(): ReactNode {
             </dl>
           )}
           <h3>{t('policy.wallet.heading')}</h3>
-          {ctx?.wallet !== undefined ? <p>{t('policy.wallet.connected')} <Mono>{ctx.wallet.account}</Mono></p> : chain !== undefined && <WalletPicker chainId={chain.chainId} onConnected={setWallet} />}
+          {ctx?.wallet !== undefined ? <p>{t('policy.wallet.connected')} <Mono>{ctx.wallet.account}</Mono></p> : chain !== undefined && <WalletPicker key={`wallet:${String(scope)}`} chainId={chain.chainId} onConnected={(w) => { if (revision.current === scope) setWallet(w); }} />}
         </>
       )}
 
       {ctx !== undefined && (
         <>
           <PolicyCreate ctx={ctx} />
-          <PolicyPay ctx={ctx} />
-          <PolicyReceive ctx={ctx} />
+          <PolicyPay key={`pay:${String(scope)}`} ctx={ctx} />
+          <PolicyReceive key={`receive:${String(scope)}`} ctx={ctx} />
         </>
       )}
     </section>

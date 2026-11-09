@@ -46,7 +46,10 @@ export function PolicyPay(props: { readonly ctx: PolicyCtx }): ReactNode {
     if (deployment === undefined) return;
     try {
       if (!DEC.test(amount.trim())) throw new Error('amount');
-      const assertCurrent = captureSessionVersionGuard();
+      const assertSessionCurrent = captureSessionVersionGuard();
+      const assertDeploymentCurrent = props.ctx.assertDeploymentCurrent;
+      const assertCurrent = (): void => { assertSessionCurrent(); assertDeploymentCurrent(); };
+      assertCurrent();
       const p = preparePolicyPayment({ metaAddress: meta, deployment, token, gross: BigInt(amount.trim()), nowSec: BigInt(Math.floor(services.nowMs() / 1000)) });
       setReviewed({ prepared: p, guard: { assertCurrent, deployment, reviewed: reviewPolicyPayment(p, deployment) } });
     } catch (e) {

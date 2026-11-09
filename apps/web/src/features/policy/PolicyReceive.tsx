@@ -57,7 +57,12 @@ function AccountPanel(props: { readonly ctx: PolicyCtx; readonly match: Scheme2M
   const run = (fn: (assertCurrent: () => void) => Promise<void>): void => {
     setBusy(true);
     setMsg(undefined);
-    Promise.resolve().then(() => fn(captureSessionGuard())).catch((e: unknown) => { setMsg({ kind: 'error', text: userMessage(e) }); }).finally(() => { setBusy(false); });
+    Promise.resolve().then(() => {
+      const assertSessionCurrent = captureSessionGuard();
+      const assertCurrent = (): void => { assertSessionCurrent(); ctx.assertDeploymentCurrent(); };
+      assertCurrent();
+      return fn(assertCurrent);
+    }).catch((e: unknown) => { setMsg({ kind: 'error', text: userMessage(e) }); }).finally(() => { setBusy(false); });
   };
   const send = async (tx: { to: Address; data: Hex; value: bigint }, label: string, assertCurrent: () => void): Promise<void> => {
     if (ctx.wallet === undefined) throw new UserFacingError(t('policy.account.walletRequired'));
@@ -66,9 +71,10 @@ function AccountPanel(props: { readonly ctx: PolicyCtx; readonly match: Scheme2M
     setMsg({ kind: 'ok', text: t('policy.account.submitted', { label, hash }) });
   };
 
-  const check = (): void => run(async () => {
+  const check = (): void => run(async (assertCurrent) => {
     const c = await client();
     const v = await readAccount(c, match.accountAddress);
+    assertCurrent();
     setView(v);
     const tokenInput = token.trim().toLowerCase() === 'native' ? ZERO_ADDRESS : token.trim();
     if (!isAddress(tokenInput, { strict: true })) throw new UserFacingError(t('policy.account.tokenInvalid'));
@@ -77,11 +83,13 @@ function AccountPanel(props: { readonly ctx: PolicyCtx; readonly match: Scheme2M
     let pendingSameToken = 0n;
     if (v.deployed) {
       const ev = await fetchAccountEvents(c, ctx.chain, match.accountAddress, match.blockNumber);
+      assertCurrent();
       const s = summarizeAccount(ev.events, props.knownIds, record.policy.destination);
       setSummary(s);
       pendingSameToken = s.pending.filter((p) => p.token === tok).reduce((a, p) => a + p.amount, 0n);
       if (!ev.complete) setMsg({ kind: 'warn', text: t('policy.account.partialHistory') });
     }
+    assertCurrent();
     setPlan({ token: tok, balance, plan: planWithdraw({ record, view: v, token: tok, balance, window, pendingSameToken, nowSec: now }) });
   });
 
@@ -115,7 +123,7 @@ function AccountPanel(props: { readonly ctx: PolicyCtx; readonly match: Scheme2M
   return (
     <li>
       <p>{t('policy.account.label')} <Mono>{match.accountAddress}</Mono> {t('policy.account.block', { number: match.blockNumber.toString() })}</p>
-      <Field label={t('policy.account.tokenLabel')}>{(id) => <input id={id} value={token} onChange={(e) => { setToken(e.target.value); setPlan(undefined); }} spellCheck={false} />}</Field>
+      <Field label={t('policy.account.tokenLabel')}>{(id) => <input id={id} value={token} disabled={busy} onChange={(e) => { setToken(e.target.value); setPlan(undefined); }} spellCheck={false} />}</Field>
       <button type="button" disabled={busy} onClick={check}>{t('policy.account.check')}</button>
       {view?.deployed === false && (
         <>
@@ -168,6 +176,10 @@ export function PolicyReceive(props: { readonly ctx: PolicyCtx }): ReactNode {
   const [fromBlock, setFromBlock] = useState('');
   const [cursor, setCursor] = useState<ScanCursor | undefined>(undefined);
   const [matches, setMatches] = useState<readonly Scheme2Match[]>([]);
+  const [scannedSession, setScannedSession] = useState(app.session);
+  const sameSession = scannedSession === app.session;
+  const visibleCursor = sameSession ? cursor : undefined;
+  const visibleMatches = sameSession ? matches : [];
   const [msg, setMsg] = useState<Msg | undefined>(undefined);
   const [busy, setBusy] = useState(false);
   const [knownIds] = useState(() => new Set<string>());
@@ -178,14 +190,22 @@ export function PolicyReceive(props: { readonly ctx: PolicyCtx }): ReactNode {
     setBusy(true);
     setMsg(undefined);
     try {
+      const assertSessionCurrent = captureSessionGuard();
+      ctx.assertDeploymentCurrent();
       const c = await app.getRpc(ctx.chain.chainId);
+      assertSessionCurrent();
+      ctx.assertDeploymentCurrent();
       if (c === undefined) throw new UserFacingError(t('policy.error.noRpc'));
-      const start = cursor ?? { nextBlock: /^[0-9]{1,15}$/.test(fromBlock.trim()) ? BigInt(fromBlock.trim()) : 0n };
+      const start = visibleCursor ?? { nextBlock: /^[0-9]{1,15}$/.test(fromBlock.trim()) ? BigInt(fromBlock.trim()) : 0n };
       const f = await fetchScheme2Announcements({ chain: ctx.chain, client: c, deployment: dep, cursor: start });
+      assertSessionCurrent();
+      ctx.assertDeploymentCurrent();
       const hashes = ctx.records.map((r) => r.policyHash);
       const found = withSessionSecrets((s) => matchScheme2(f.announcements, s.keys.viewingSecret, s.keys.spendingPublicKey, hashes, dep));
-      setMatches((prev) => mergeMatches(prev, found, f.reorg));
+      if (!sameSession) knownIds.clear();
+      setMatches((prev) => mergeMatches(sameSession ? prev : [], found, f.reorg));
       setCursor(f.cursor);
+      setScannedSession(app.session);
       setMsg({ kind: f.truncated ? 'warn' : 'ok', text: `${t('policy.receive.result', { count: String(f.announcements.length), fresh: String(found.length) })}${f.truncated ? ` ${t('policy.receive.capped')}` : ''}` });
     } catch (e) {
       setMsg({ kind: 'error', text: userMessage(e) });
@@ -202,11 +222,11 @@ export function PolicyReceive(props: { readonly ctx: PolicyCtx }): ReactNode {
         : ctx.records.length === 0 ? <Notice kind="info">{t('policy.receive.needPolicy')}</Notice>
         : (
           <>
-            {cursor === undefined && <Field label={t('policy.receive.startBlock')}>{(id) => <input id={id} inputMode="numeric" value={fromBlock} onChange={(e) => { setFromBlock(e.target.value); }} />}</Field>}
-            <button type="button" disabled={busy} onClick={() => { void scan(); }}>{cursor === undefined ? t('policy.receive.scan') : t('policy.receive.continue')}</button>
-            {msg !== undefined && <Notice kind={msg.kind}>{msg.text}</Notice>}
+            {visibleCursor === undefined && <Field label={t('policy.receive.startBlock')}>{(id) => <input id={id} inputMode="numeric" value={fromBlock} onChange={(e) => { setFromBlock(e.target.value); }} />}</Field>}
+            <button type="button" disabled={busy} onClick={() => { void scan(); }}>{visibleCursor === undefined ? t('policy.receive.scan') : t('policy.receive.continue')}</button>
+            {msg !== undefined && (sameSession || msg.kind === 'error') && <Notice kind={msg.kind}>{msg.text}</Notice>}
             <ul className="plain">
-              {matches.map((m) => {
+              {visibleMatches.map((m) => {
                 const record = ctx.records.find((r) => r.policyHash === m.policyHash);
                 return record === undefined ? null : <AccountPanel key={m.accountAddress} ctx={ctx} match={m} record={record} knownIds={knownIds} remember={(id) => { knownIds.add(id); }} />;
               })}
