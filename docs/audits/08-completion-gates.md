@@ -2,22 +2,25 @@
 
 ## Current product snapshot — 2026-11-09
 
-The current review stack is **#84 → #88 → the product-continuation draft**. `main` remains
+The current review stack is **#84 → #88 → #89 → #90**. `main` remains
 `14f9b2673ac25c7ec60a0a3a78eb17e2c7acf44d`; the application consolidation has not been merged.
 The older migration evidence below applies only to its named historical commits. It does not qualify this stack.
-See the [current consolidation ledger](../handoffs/PRODUCT_CONSOLIDATION_2026-11-09.md) for source heads,
-ancestry, review dispositions and the [Sonar investigation](SONAR_TRIAGE_2026-11-09.md).
+See the [current source ledger](../handoffs/SOURCE_FOLLOWUP_2026-11-09.md) for source heads,
+ancestry, review dispositions and the [Sonar access/result follow-up](SONAR_FOLLOWUP_2026-11-09.md).
 
 The previous gap list was stale: seller public-config pairing, Settings/Registry QR exchange, encrypted local
 invoice matching, and receipt archival already existed in #88. This continuation checks and hardens their remaining
-boundaries rather than introducing duplicate implementations.
+boundaries rather than introducing duplicate implementations. The [PR #90 handoff](../handoffs/POLICY_LOCALIZATION_CONTINUATION_2026-11-09.md)
+records final runtime-qualified head `42ae712f5804724b4213bed4e2e0cb129f855abf`, successful CI/Hosting/Integration,
+2,188 hosted web passes plus one separately passed live-Core test, and full/lean browser results
+(60/52 passes; one opposite-profile skip each). Local interrupted aggregate commands are not counted as passes.
 
 | Feature | Implemented behavior and current limits |
 | --- | --- |
 | Seller/device QR exchange | Strict bounded public configuration, public-key comparison, Settings preview/apply and Registry meta-address export/import exist. The continuation rejects unsupported pairing chains and invalidates stale camera/file/settings/registry previews, including repeat imports. These flows do not transfer secrets or authenticate seller identity. See [public device exchange](../user/public-device-exchange.md). |
 | Reconciliation and receipt archive | Opt-in invoice registration and an encrypted seller/chain-scoped vault propose matches and require confirmation. Receipt signatures never count as payment evidence. The continuation rechecks scan identity inside the storage transaction, includes unsaved competing observations, checks announcement recipients, and treats observations first recorded at/after invoice expiry as ambiguous. See [ADR-0026](../adr/ADR-0026-local-reconciliation-and-receipt-archive.md) and the [user guide](../user/reconciliation-and-receipts.md). |
-| Localization | Catalog-backed screens and English fallback already exist. This continuation finishes the named W5 error/receipt/history residuals. Spanish, Japanese and Arabic remain machine-drafted; security-critical copy stays English until human review. Remaining literal copy elsewhere and native review prevent a claim of complete application localization. |
-| Policy accounts / scheme 2 | Experimental create/pay/scan/deploy/withdraw components and package tests exist, behind a flag that remains off and testnet-only. This continuation guards deployment changes and stale async actions. A complete supported flow is blocked by lost-key recovery, pinned contract identity and independent scheme-2 payment verification. Existing key-control/deployment readback is not sufficient to close those gates; see [ADR-0027](../adr/ADR-0027-policy-end-to-end-gates.md). |
+| Localization | PR #90 adds ledger/static errors, current-language descriptor rendering, passphrase/sweep guards, navigation and QR copy: 430 keys, including 414 deliberately English security messages. Catalog check: 0 errors, 2,013 warnings; extraction: 0 missing. Dynamic post-broadcast/permit outcome modeling and native review remain open; no locale was promoted. |
+| Policy accounts / scheme 2 | PR #90 validates code identity/linked deployment, isolated direct native/ERC-20 payment evidence, canonical withdrawal history and durable cross-tab submission guards. The feature remains disabled/testnet-only, production pins empty, and ordinary receipt/reconciliation status isolated. Accepted deployment-bound request/record formats, other execution variants, complete browser lifecycle and lost-key recovery remain open; see [ADR-0027](../adr/ADR-0027-policy-end-to-end-gates.md) and unaccepted [ADR-0028](../adr/ADR-0028-policy-recovery-authority-model.md). |
 | Scanner privacy estimate | The continuation uses the latest reachable provider head rather than an obsolete highest head; budget-limited scans still disclose partial counts. This is a local announcement-volume heuristic, not a privacy guarantee. |
 
 No contracts, manifests, trust roots, release settings, fee policy or API-funded workflows are enabled by this work.
@@ -26,8 +29,11 @@ and draft PR; historical green runs below are not current-head evidence.
 
 ### Remaining product and owner gates
 
-- Complete the policy recovery, independent receipt verification and pinned deployment-identity design and its
-  adversarial acceptance tests before enabling scheme 2. Do not treat an announcement match as a verified payment.
+- Accept the recovery authority model before any contract implementation; obtain authorized deployment/asset pins,
+  finish versioned request/record identity and unsupported execution variants, and qualify the complete policy
+  lifecycle before enabling scheme 2. An announcement match alone remains insufficient payment evidence.
+- Preserve the real local PP/Railgun/sponsor and Bitcoin fixture evidence. Internal pool witness and ceremony-dependent
+  tests remain a separate unqualified scope; no trusted setup was regenerated.
 - Finish remaining application-wide literal-copy coverage and native review of every shipped locale. Security
   translations are deliberately held on the reviewed-English path.
 - Resolve or review the actual Sonar security issue causing #84's D rating. Retrieved GitHub annotations alone do

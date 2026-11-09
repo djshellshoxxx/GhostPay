@@ -9,7 +9,7 @@ A map of every documentation file in GhostPay: its purpose, type and status. Lin
 
 Nothing here is an independent audit. The project has no third-party audit, and nothing is deployed (see [README](../README.md)).
 
-**Current product continuation (2026-11-09):** [PR #89 handoff](handoffs/PRODUCT_CONTINUATION_2026-11-09.md), [current completion gates](audits/08-completion-gates.md), and [source/PR ledger](handoffs/PRODUCT_CONSOLIDATION_2026-11-09.md). These separate the unmerged #84/#88/#89 stack from historical migration results.
+**Current product continuation (2026-11-09):** [PR #90 handoff](handoffs/POLICY_LOCALIZATION_CONTINUATION_2026-11-09.md), [current completion gates](audits/08-completion-gates.md), and [refreshed source/PR ledger](handoffs/SOURCE_FOLLOWUP_2026-11-09.md). These separate the unmerged #84 → #88 → #89 → #90 stack from historical migration results. The [#89 handoff](handoffs/PRODUCT_CONTINUATION_2026-11-09.md) remains its predecessor evidence.
 
 ## Reading order
 
