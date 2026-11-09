@@ -115,13 +115,17 @@ describe('SecretBackup text', () => {
 
   it('translates the neutral button labels and keeps the clipboard and key-handling warnings English', async () => {
     const user = userEvent.setup();
+    const unreviewedWarning = 'Borrador de advertencia del portapapeles sin revisión.';
     function Backup(): React.ReactNode { return <SecretBackup reveal={() => 'a'.repeat(128)} text={localizedBackupText(useLocale(), 'keys')} />; }
-    render(inLocale('es', <Backup />));
+    // The shipped draft currently retains this warning in English; a distinct draft proves fallback is enforced.
+    render(<I18nProvider initialPreference="es" target={document.documentElement} loader={(locale) => Promise.resolve(locale === 'es'
+      ? { ...es, messages: { ...es.messages, 'btc.seed.copyWarning': unreviewedWarning } }
+      : SOURCE_CATALOG)}><Backup /></I18nProvider>);
     await user.click(await screen.findByRole('button', { name: draft('es', 'secret.keys.show') }));
     expect(screen.getByText(english('secret.keys.warning'))).toBeTruthy();
     await user.click(screen.getByRole('button', { name: draft('es', 'secret.keys.copy') }));
     expect(screen.getByText(english('btc.seed.copyWarning'))).toBeTruthy();
-    expect(screen.queryByText(draft('es', 'btc.seed.copyWarning'))).toBeNull();
+    expect(screen.queryByText(unreviewedWarning)).toBeNull();
     expect(screen.getByRole('button', { name: english('btc.seed.copyConfirm') })).toBeTruthy();
   });
 });
