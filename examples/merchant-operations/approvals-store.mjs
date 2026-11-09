@@ -43,7 +43,7 @@ async function readSnapshot(directory) {
         || Object.keys(snapshot).join(',') !== 'format,version,revision,account'
         || snapshot.format !== 'ghostpay-local-approvals' || snapshot.version !== 1
         || !Number.isSafeInteger(snapshot.revision) || snapshot.revision < 0
-        || snapshot.revision === Number.MAX_SAFE_INTEGER || typeof snapshot.account !== 'string'
+        || typeof snapshot.account !== 'string'
         || JSON.stringify(snapshot) !== text) throw fail('INVALID_SNAPSHOT');
     const state = parseAccountState(snapshot.account);
     return Object.freeze({ revision: snapshot.revision, state });
@@ -108,6 +108,7 @@ export async function updateApprovals(directory, expectedRevision, action, now) 
   return locked(directory, async (begin, complete) => {
     const current = await readSnapshot(directory);
     if (current.revision !== expectedRevision) throw fail('STALE_SNAPSHOT');
+    if (current.revision === Number.MAX_SAFE_INTEGER) throw fail('REVISION_LIMIT');
     let result;
     if (action?.kind === 'queue') {
       const exchange = parseProposalExchange(action.exchange, current.state.policy);

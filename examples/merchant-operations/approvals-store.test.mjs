@@ -128,3 +128,16 @@ test('kill/restart at every snapshot persistence boundary preserves one state an
     await assert.rejects(updateApprovals(directory, restored.revision, { kind: 'prune' }, fixture.now), {code:'LOCKED'});
   }
 });
+
+
+test('last safe revision remains readable and refuses overflow before commit', async t => {
+  const { directory, fixture } = await setup(t);
+  const path = join(directory, 'account.json');
+  const snapshot = JSON.parse(await readFile(path, 'utf8'));
+  snapshot.revision = Number.MAX_SAFE_INTEGER - 1;
+  await writeFile(path, JSON.stringify(snapshot));
+  await updateApprovals(directory, snapshot.revision, { kind: 'prune' }, fixture.now);
+  assert.equal((await inspectApprovals(directory)).revision, Number.MAX_SAFE_INTEGER);
+  await assert.rejects(updateApprovals(directory, Number.MAX_SAFE_INTEGER, { kind: 'prune' }, fixture.now), { code: 'REVISION_LIMIT' });
+  assert.equal((await inspectApprovals(directory)).revision, Number.MAX_SAFE_INTEGER);
+});
