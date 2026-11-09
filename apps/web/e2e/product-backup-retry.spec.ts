@@ -24,7 +24,7 @@ test('reimports the same original tag archive after a successful import without 
     await tags.getByLabel('Archive file', { exact: true }).setInputFiles(file);
     await expect(tags.getByLabel('Archive file', { exact: true })).toHaveValue('');
     await tags.getByLabel('Archive passphrase', { exact: true }).fill(passphrase);
-    await tags.getByRole('button', { name: 'Decrypt and preview' }).click();
+    await tags.getByRole('button', { name: 'Decrypt and preview', exact: true }).click();
     const apply = tags.getByRole('button', { name: 'Apply import', exact: true });
     await expect(apply).toBeVisible({ timeout: 60_000 });
     await apply.click();

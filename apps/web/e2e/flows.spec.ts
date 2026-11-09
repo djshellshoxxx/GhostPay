@@ -276,7 +276,7 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await page.getByLabel('Who pays the 0.25 % checkout fee').selectOption('payer_pays');
     await page.getByLabel('Item 1 description').fill('Receipt-bound authored fixture');
     await page.getByLabel('Item 1 unit price').fill('1.00');
-    const registerInvoice = page.getByLabel('Register this invoice in my encrypted reconciliation vault for automatic local matching');
+    const registerInvoice = page.getByRole('checkbox', { name: 'Register this invoice in my encrypted reconciliation vault for automatic local matching', exact: true });
     await expect(registerInvoice).not.toBeChecked();
     await registerInvoice.check();
     await page.getByRole('button', { name: 'Create invoice link' }).click();
@@ -475,7 +475,7 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await expect(page.getByText('Seller receives (net)', { exact: true })).toBeVisible();
     const receiptImport = page.getByRole('region', { name: 'Import a seller receipt', exact: true });
     const acceptedReceipt = receiptImport.getByRole('note').filter({ hasText: 'Receipt matches this invoice' });
-    const upload = page.getByLabel('Signed seller receipt JSON');
+    const upload = page.getByLabel('Signed seller receipt JSON', { exact: true });
     await upload.setInputFiles(downloadedPath);
     await page.getByRole('button', { name: 'Check receipt against this invoice' }).click();
     await expect(page.getByText(/Consent is required before opening private receipt details/)).toBeVisible();

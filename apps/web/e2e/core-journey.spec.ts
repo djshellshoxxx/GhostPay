@@ -332,7 +332,7 @@ async function exportKeystore(page: Page, opts: { stepUp: boolean }): Promise<st
 
 async function importKeystore(page: Page, keystore: string): Promise<void> {
   await nav(page).getByRole('button', { name: 'Seller keys' }).click();
-  const fileInput = keysView(page).getByLabel('Keystore file');
+  const fileInput = keysView(page).getByLabel('Keystore file', { exact: true });
   if (!(await fileInput.isVisible())) await keysView(page).getByText('Import an encrypted keystore', { exact: true }).click();
   await fileInput.setInputFiles({ name: 'ghostpay-keystore.json', mimeType: 'application/json', buffer: Buffer.from(keystore, 'utf8') });
   await keysView(page).getByLabel('Passphrase', { exact: true }).fill(BACKUP_PASS);
@@ -515,7 +515,7 @@ test('core journey: keys -> signed invoice -> consented payment -> scan -> bound
     // The payer checks the seller's receipt against the invoice in their own profile, with its own consent.
     await openFresh(payer.page, link);
     const receiptImport = payer.page.getByRole('region', { name: 'Import a seller receipt', exact: true });
-    await payer.page.getByLabel('Signed seller receipt JSON').setInputFiles({ name: 'receipt.json', mimeType: 'application/json', buffer: Buffer.from(receiptText) });
+    await payer.page.getByLabel('Signed seller receipt JSON', { exact: true }).setInputFiles({ name: 'receipt.json', mimeType: 'application/json', buffer: Buffer.from(receiptText) });
     await payer.page.getByLabel('I consent to opening private receipt details on this screen.').check();
     await payer.page.getByRole('button', { name: 'Check receipt against this invoice' }).click();
     await expect(receiptImport.getByRole('note').filter({ hasText: 'Receipt matches this invoice' })).toBeVisible();
