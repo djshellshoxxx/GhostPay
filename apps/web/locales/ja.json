@@ -1181,6 +1181,10 @@
     "backup.tags.archived": "最後のタグアーカイブのダウンロード：{time}。含まれるタグ数：{count, number}、スキャン履歴を含みます。その後に、ここまたは別のタブで保存・変更・削除されたタグは含まれていません。含めるには新しいアーカイブをダウンロードしてください。",
     "backup.tags.archivedNoHistory": "最後のタグアーカイブのダウンロード：{time}。含まれるタグ数：{count, number}、スキャン履歴は含みません。その後に、ここまたは別のタブで保存・変更・削除されたタグは含まれていません。含めるには新しいアーカイブをダウンロードしてください。",
     "common.copy.copied": "コピーしました",
-    "common.copy.failed": "コピーできませんでした。テキストを手動で選択してください"
+    "common.copy.failed": "コピーできませんでした。テキストを手動で選択してください",
+    "common.notice.info": "注記",
+    "common.notice.warn": "警告",
+    "common.notice.error": "問題",
+    "common.notice.ok": "完了"
   }
 }

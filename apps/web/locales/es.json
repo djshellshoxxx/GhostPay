@@ -1181,6 +1181,10 @@
     "backup.tags.archived": "Último archivo de etiquetas descargado {time}. Etiquetas en él: {count, number}, con historial de escaneos. Las etiquetas guardadas, cambiadas o eliminadas después, aquí o en otra pestaña, no están en él. Descarga un archivo nuevo para incluirlas.",
     "backup.tags.archivedNoHistory": "Último archivo de etiquetas descargado {time}. Etiquetas en él: {count, number}, sin historial de escaneos. Las etiquetas guardadas, cambiadas o eliminadas después, aquí o en otra pestaña, no están en él. Descarga un archivo nuevo para incluirlas.",
     "common.copy.copied": "Copiado",
-    "common.copy.failed": "No se pudo copiar: selecciona el texto manualmente"
+    "common.copy.failed": "No se pudo copiar: selecciona el texto manualmente",
+    "common.notice.info": "Nota",
+    "common.notice.warn": "Advertencia",
+    "common.notice.error": "Problema",
+    "common.notice.ok": "Hecho"
   }
 }
