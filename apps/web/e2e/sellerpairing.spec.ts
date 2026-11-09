@@ -31,3 +31,27 @@ test('public seller config exports on one device and previews on another without
   await ctxA.close();
   await ctxB.close();
 });
+
+test('the same public config file can be previewed again after clearing and never survives a reload as loaded keys', async ({ page }) => {
+  await page.goto('/');
+  const meta = await generateKeys(page);
+  const text = await page.getByLabel('Same config as text').inputValue();
+  const pairing = page.locator('section[aria-labelledby="pairing-h"]');
+  const file = { name: 'seller-public.json', mimeType: 'application/json', buffer: Buffer.from(text) };
+  const preview = pairing.getByRole('region', { name: 'Received config (untrusted preview)', exact: true });
+  const input = pairing.locator('input[type="file"]');
+  await input.setInputFiles(file);
+  await expect(preview.locator('code', { hasText: meta })).toBeVisible();
+  await pairing.getByRole('button', { name: 'Clear preview', exact: true }).click();
+  await expect(preview).toHaveCount(0);
+  await input.setInputFiles(file);
+  await expect(preview.locator('code', { hasText: meta })).toBeVisible();
+  await page.reload();
+  await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Seller keys', exact: true }).click();
+  await expect(preview).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Generate new keys', exact: true })).toBeVisible();
+  await input.setInputFiles(file);
+  await expect(preview.locator('code', { hasText: meta })).toBeVisible();
+  await expect(pairing.getByText(/No keys are loaded here/)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Generate new keys', exact: true })).toBeVisible();
+});
