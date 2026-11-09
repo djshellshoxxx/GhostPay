@@ -95,6 +95,6 @@ class GhostpayValidationModuleFrontController extends ModuleFrontController {
 		}
 		$p = parse_url( $link );
 		return is_array( $p ) && 'https' === ( $p['scheme'] ?? '' ) && '' !== $host && strtolower( $p['host'] ?? '' ) === $host
-			&& ! isset( $p['user'], $p['pass'], $p['port'], $p['query'] ) && 1 === preg_match( '/\Agpi=v1\.[A-Za-z0-9_-]+\z/', $p['fragment'] ?? '' );
+			&& ! isset( $p['user'] ) && ! isset( $p['pass'] ) && ! isset( $p['port'] ) && ! isset( $p['query'] ) && 1 === preg_match( '/\Agpi=v1\.[A-Za-z0-9_-]+\z/', $p['fragment'] ?? '' );
 	}
 }

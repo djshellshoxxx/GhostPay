@@ -13,8 +13,10 @@ require $base . 'class-ghostpay-money.php';
 require $base . 'class-ghostpay-event.php';
 
 $failed = 0;
+$checked = 0;
 function check( string $name, $got, $want ): void {
-	global $failed;
+	global $failed, $checked;
+	++$checked;
 	if ( $got !== $want ) {
 		++$failed;
 		echo "FAIL $name: got " . var_export( $got, true ) . ' want ' . var_export( $want, true ) . "\n";
@@ -115,6 +117,8 @@ $bads = array(
 foreach ( $bads as $i => $b ) {
 	check( "event bad #$i", GhostPay_Event::parse( $b ), null );
 }
+
+require dirname( __DIR__, 3 ) . '/scripts/companion-merchant/shop-webhook-vectors.php';
 
 // ---- Gateway on the WordPress/WooCommerce shim (tests/wp-shim.php) -----------------------------------------------
 if ( ! extension_loaded( 'pdo_sqlite' ) ) {
@@ -332,4 +336,4 @@ if ( $failed > 0 ) {
 	echo "$failed failure(s)\n";
 	exit( 1 );
 }
-echo "woocommerce php tests: ok\n";
+echo "woocommerce php tests: ok ($checked assertions)\n";
