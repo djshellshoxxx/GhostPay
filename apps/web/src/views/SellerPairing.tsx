@@ -79,7 +79,7 @@ export function SellerPairing(props: { readonly session: SessionPublic | undefin
         <>
           <h4>{t('sellerKeys.pairing.exportHeading')}</h4>
           <QrFrame kind="device" text={exportText} caption={t('sellerKeys.pairing.caption')} />
-          <Field label={t('sellerKeys.pairing.textLabel')}>{(id) => <textarea id={id} readOnly rows={4} spellCheck={false} value={exportText} />}</Field>
+          <Field label={t('sellerKeys.pairing.textLabel')}>{(id) => <textarea id={id} dir="ltr" readOnly rows={4} spellCheck={false} value={exportText} />}</Field>
           <p>
             <CopyButton text={exportText} label={t('sellerKeys.pairing.copy')} />{' '}
             <button type="button" className="btn" onClick={() => { downloadText('ghostpay-seller-public.json', exportText, 'application/json'); }}>{t('sellerKeys.pairing.download')}</button>
@@ -87,8 +87,8 @@ export function SellerPairing(props: { readonly session: SessionPublic | undefin
         </>
       )}
       <h4>{t('sellerKeys.pairing.importHeading')}</h4>
-      <Field label={t('sellerKeys.pairing.fileLabel')}>
-        {(id) => <input id={id} ref={fileInput} type="file" accept="application/json,.json" onChange={(e) => { const file = e.currentTarget.files?.[0]; e.currentTarget.value = ''; onFile(file); }} />}
+      <Field label={t('sellerKeys.pairing.fileLabel')} help={{ label: t('help.about', { control: t('sellerKeys.pairing.fileLabel') }), text: t('help.sellerConfigFile') }}>
+        {(id, describedBy) => <input id={id} aria-describedby={describedBy} ref={fileInput} type="file" accept="application/json,.json" onChange={(e) => { const file = e.currentTarget.files?.[0]; e.currentTarget.value = ''; onFile(file); }} />}
       </Field>
       <CameraImporter label={t('sellerKeys.pairing.importLabel')} scopeKey={importScope} onInputChange={() => { generation.current += 1; setPreview(undefined); setError(undefined); }} onText={(text, signal) => (signal.aborted ? false : accept(text))} />
       <button type="button" className="btn" onClick={clear}>{t('sellerKeys.pairing.clear')}</button>

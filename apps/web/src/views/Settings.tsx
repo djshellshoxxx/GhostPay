@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
 import { exportSettingsExchange, parseSettingsExchange, applySettingsExchange, type SharedSettings } from '../lib/settingsExchange';
@@ -31,9 +31,22 @@ export function Settings(): ReactNode {
   const [transfer, setTransfer] = useState<string | undefined>();
   const [preview, setPreview] = useState<SharedSettings | undefined>();
   const [checks, setChecks] = useState<Record<string, DisplayMessage>>({});
+  const testRevision = useRef(new Map<number, number>());
+  const mounted = useRef(true);
+
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
+
+  const invalidateTest = (chainId: number): void => {
+    testRevision.current.set(chainId, (testRevision.current.get(chainId) ?? 0) + 1);
+    setChecks((current) => { const next = { ...current }; delete next[chainId]; return next; });
+  };
 
   // A saved-settings change invalidates both an imported review and an already displayed export.
-  useEffect(() => { setPreview(undefined); setTransfer(undefined); }, [s]);
+  useEffect(() => {
+    setPreview(undefined); setTransfer(undefined);
+    for (const [chainId, revision] of testRevision.current) testRevision.current.set(chainId, revision + 1);
+    setChecks({});
+  }, [s]);
 
   const onSave = (e: FormEvent): void => {
     e.preventDefault();
@@ -49,15 +62,15 @@ export function Settings(): ReactNode {
         .map((l) => l.trim().toLowerCase())
         .filter((l) => l !== '');
       if (pinnedSigners.some((p) => !/^(?:02|03)[0-9a-f]{64}$/.test(p))) {
-        setMessage({ kind: 'error', text: t('settings.error.pins') });
+        setMessage({ kind: 'error', text: { key: 'settings.error.pins' } });
         return;
       }
       const next: SettingsData = { rpcUrls, rpcUrlsSecondary, relayerUrl: checkRelayerUrl(relayer), delayMinSec: minSec, delayMaxSec: maxSec, lockTimeoutMin: lock, theme, autoClearFragment: autoClear, pinnedSigners };
       const saved = app.updateSettings(next);
-      setMessage(saved ? { kind: 'ok', text: t('settings.saved') } : { kind: 'warn', text: t('settings.storageUnavailable') });
+      setMessage(saved ? { kind: 'ok', text: { key: 'settings.saved' } } : { kind: 'warn', text: { key: 'settings.storageUnavailable' } });
       app.announce(t('settings.announce'));
     } catch (err) {
-      setMessage({ kind: 'error', text: err instanceof Error && err.message === 'lock' ? t('settings.error.lock') : captureUserMessage(err) });
+      setMessage({ kind: 'error', text: err instanceof Error && err.message === 'lock' ? { key: 'settings.error.lock' } : captureUserMessage(err) });
     }
   };
 
@@ -65,13 +78,16 @@ export function Settings(): ReactNode {
     const chain = services.chains.find((c) => c.chainId === chainId);
     const url = rpc[String(chainId)] ?? '';
     if (chain === undefined) return;
-    setChecks((c) => ({ ...c, [chainId]: t('settings.rpc.checking') }));
+    const revision = (testRevision.current.get(chainId) ?? 0) + 1;
+    testRevision.current.set(chainId, revision);
+    const current = (): boolean => mounted.current && testRevision.current.get(chainId) === revision;
+    setChecks((c) => ({ ...c, [chainId]: { key: 'settings.rpc.checking' } }));
     void (async () => {
       try {
         await services.createRpc(chain, checkRpcUrl(url));
-        setChecks((c) => ({ ...c, [chainId]: t('settings.rpc.connected') }));
+        if (current()) setChecks((c) => ({ ...c, [chainId]: { key: 'settings.rpc.connected' } }));
       } catch (err) {
-        setChecks((c) => ({ ...c, [chainId]: err instanceof Error && err.name === 'ChainAdapterError' ? t('settings.rpc.failed') : captureUserMessage(err) }));
+        if (current()) setChecks((c) => ({ ...c, [chainId]: err instanceof Error && err.name === 'ChainAdapterError' ? { key: 'settings.rpc.failed' } : captureUserMessage(err) }));
       }
     })();
   };
@@ -92,8 +108,8 @@ export function Settings(): ReactNode {
           <p className="hint">{t('settings.rpc.hint')}</p>
           {services.chains.map((c) => (
             <div key={c.chainId} className="row">
-              <Field label={t('settings.rpc.url', { chain: c.name })}>
-                {(id) => <input id={id} type="url" spellCheck={false} value={rpc[String(c.chainId)] ?? ''} onChange={(e) => { setRpc({ ...rpc, [String(c.chainId)]: e.target.value }); }} />}
+              <Field label={t('settings.rpc.url', { chain: c.name })} help={{ label: t('help.about', { control: t('settings.rpc.url', { chain: c.name }) }), text: t('help.rpc') }}>
+                {(id, describedBy) => <input id={id} aria-describedby={describedBy} type="url" dir="ltr" spellCheck={false} value={rpc[String(c.chainId)] ?? ''} onChange={(e) => { invalidateTest(c.chainId); setRpc({ ...rpc, [String(c.chainId)]: e.target.value }); }} />}
               </Field>
               <button type="button" className="btn" onClick={() => { onTest(c.chainId); }}>{t('settings.rpc.test', { chain: c.name })}</button>
               <p role="status" className="hint">{displayMessage(checks[c.chainId] ?? '', t)}</p>
@@ -162,7 +178,7 @@ export function Settings(): ReactNode {
             const next = applySettingsExchange(app.settings, preview);
             const saved = app.updateSettings(next);
             setMinSec(next.delayMinSec); setMaxSec(next.delayMaxSec); setLock(next.lockTimeoutMin); setTheme(next.theme); setAutoClear(next.autoClearFragment);
-            setPreview(undefined); setMessage(saved ? { kind: 'ok', text: t('settings.saved') } : { kind: 'warn', text: t('settings.storageUnavailable') });
+            setPreview(undefined); setMessage(saved ? { kind: 'ok', text: { key: 'settings.saved' } } : { kind: 'warn', text: { key: 'settings.storageUnavailable' } });
           }}>{t('settings.exchange.apply')}</button>
           <button type="button" className="btn" onClick={() => { setPreview(undefined); }}>{t('settings.exchange.discard')}</button>
         </div>}
@@ -196,7 +212,7 @@ function ScanPrivacySection(): ReactNode {
       if (!ok(cfg.openLaneBudget, 1, 100_000)) throw new UserFacingError({ key: 'settings.scanPrivacy.errBudget' });
       const next = { ...cfg, endpoints, indexerUrls };
       setCfg(next);
-      setMessage(saveScanPrivacy(browserStorage(), next) ? { kind: 'ok', text: t('settings.scanPrivacy.saved') } : { kind: 'warn', text: t('settings.scanPrivacy.refused') });
+      setMessage(saveScanPrivacy(browserStorage(), next) ? { kind: 'ok', text: { key: 'settings.scanPrivacy.saved' } } : { kind: 'warn', text: { key: 'settings.scanPrivacy.refused' } });
     } catch (err) {
       setMessage({ kind: 'error', text: captureUserMessage(err) });
     }

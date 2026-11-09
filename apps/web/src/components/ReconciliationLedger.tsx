@@ -498,9 +498,10 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
             label={t('ledger.ui.encryptedReconciliationBackup')}
             hint={t('ledger.ui.onlyThisVaultSEncryptedFormatIsAcceptedPlaintextLegacy')}
           >
-            {(id) => (
+            {(id, describedBy) => (
               <textarea
                 id={id}
+                aria-describedby={describedBy}
                 rows={3}
                 dir="ltr"
                 maxLength={MAX_VAULT_BYTES}
@@ -513,10 +514,11 @@ export function ReconciliationLedger(props: ReconciliationLedgerProps): ReactNod
               />
             )}
           </Field>
-          <Field label={t('ledger.ui.encryptedReconciliationBackupFile')}>
-            {(id) => (
+          <Field label={t('ledger.ui.encryptedReconciliationBackupFile')} help={{ label: t('help.about', { control: t('ledger.ui.encryptedReconciliationBackupFile') }), text: t('help.ledgerBackupFile') }}>
+            {(id, describedBy) => (
               <input
                 id={id}
+                aria-describedby={describedBy}
                 type="file"
                 accept="application/json,.json"
                 disabled={busy}

@@ -3,7 +3,8 @@ import { getSessionBackup, subscribeSessionBackup } from '../lib/session';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { useApp } from '../state';
 import { Notice } from './Common';
-import { TagArchive, type ArchiveExportResult } from './TagArchive';
+import { displayMessage } from '../lib/errors';
+import { TagArchive, displayArchiveNote, type ArchiveExportResult } from './TagArchive';
 
 type ItemStatus = 'notStarted' | 'done' | 'downloaded' | 'downloadedGaps' | 'deleted' | 'failed';
 
@@ -43,7 +44,7 @@ export function BackupPanel(): ReactNode {
     : result.gaps ? 'downloadedGaps' : 'downloaded';
   const time = tags === undefined ? '' : new Date(tags.at).toLocaleString();
   const tagNote = result === undefined ? t('backup.tags.notStarted')
-    : !result.ok ? t('backup.tags.failed', { reason: result.message })
+    : !result.ok ? t('backup.tags.failed', { reason: displayMessage(result.message, t) })
     : tagStatus === 'deleted' ? t('backup.tags.deleted', { count: result.recordCount })
     : result.gaps ? t('backup.tags.partial', { time, count: result.recordCount })
     : result.history ? t('backup.tags.archived', { time, count: result.recordCount })
@@ -77,7 +78,7 @@ export function BackupPanel(): ReactNode {
         <li data-testid="backup-item-tags">
           <p><strong>{t('backup.tags.heading')}</strong></p>
           {status(tagStatus, tagNote)}
-          {result?.ok === true && result.notes.length > 0 && <ul>{result.notes.map((note) => <li key={note}>{note}</li>)}</ul>}
+          {result?.ok === true && result.notes.length > 0 && <ul>{result.notes.map((note) => <li key={note.key}>{displayArchiveNote(note, i18n ?? SOURCE_TRANSLATOR)}</li>)}</ul>}
           <TagArchive
             onExport={(next) => { lastTagOutcome = { session: app.session, result: next, at: Date.now(), deleted: false }; setTagResult(lastTagOutcome); }}
             onTagsWiped={() => {
