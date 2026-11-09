@@ -16,8 +16,8 @@ the older test counts below are historical evidence only.
 | Question | Honest answer |
 |---|---|
 | Is it audited? | **No.** Only self-run and AI-assisted reviews exist ([`docs/audits/`](docs/audits/)). There is no independent third-party audit. |
-| Is anything deployed? | **No.** No contract is deployed on any chain; [`deployments/`](deployments/) holds only a schema and a README. Without a manifest the web app disables payment. |
-| Which chains are enabled in code? | Ethereum Sepolia and Base Sepolia (testnets). Mainnets are listed in `packages/chain-adapters/src/config/chains.ts` with `enabled: false`. |
+| Are public-chain deployments qualified? | **No.** Local test deployments exist only as fixtures; [`deployments/`](deployments/) holds no qualified public deployment. Without an accepted manifest the web app disables ordinary payment. |
+| Which chains are enabled in code? | Seven testnets are enabled in [`chains.ts`](packages/chain-adapters/src/config/chains.ts): Ethereum, Base, OP and Arbitrum Sepolia, Polygon Amoy, BNB Smart Chain Testnet and Avalanche Fuji. Mainnets remain disabled. |
 | What execution evidence exists? | Unit tests, local Anvil integrations and hosted Chromium journeys are recorded in the handoffs. They do not qualify real wallets, funded public-chain operations, Safari or physical devices. |
 | Is anyone hosting it? | **No.** Hosting is intentionally not configured; see [Hosting](#hosting). |
 | Can I use it with real money? | **No.** Do not. Contracts are immutable once deployed and the audit round has open findings. |
