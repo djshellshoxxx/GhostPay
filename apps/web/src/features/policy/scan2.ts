@@ -37,7 +37,7 @@ export async function fetchScheme2Announcements(p: {
   return { announcements: r.announcements, cursor: r.cursor, truncated: r.truncated, skipped: r.skipped, ...(r.reorg === undefined ? {} : { reorg: r.reorg }) };
 }
 
-/** A scheme-2 payment to these keys. `metadata` holds the payer's (unauthenticated) amount claim. */
+/** A discovered scheme-2 announcement to these keys; not payment evidence. `metadata` holds the payer's (unauthenticated) amount claim. */
 export interface Scheme2Match {
   readonly id: string;
   readonly accountAddress: Address;
@@ -48,6 +48,8 @@ export interface Scheme2Match {
   readonly blockNumber: bigint;
   readonly caller: Address;
   readonly transactionHash?: Hex;
+  readonly blockHash?: Hex;
+  readonly logIndex?: number;
 }
 
 export function matchScheme2(
@@ -79,6 +81,8 @@ export function matchScheme2(
       ephemeralPublicKey: a.ephemeralPublicKey,
       metadata: a.metadata,
       blockNumber: a.blockNumber,
+      blockHash: a.blockHash,
+      logIndex: a.logIndex,
       caller: a.caller,
       ...(a.transactionHash === undefined ? {} : { transactionHash: a.transactionHash }),
     }));

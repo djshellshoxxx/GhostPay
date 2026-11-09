@@ -75,23 +75,23 @@ export function checkScanEndpoint(raw: string, transport: ScanTransportKind): st
     let u: URL | undefined;
     try { u = new URL(trimmed); } catch { u = undefined; }
     if (u === undefined || !LOOPBACK.has(u.hostname) || (u.protocol !== 'http:' && u.protocol !== 'https:')) {
-      throw new UserFacingError('A local proxy endpoint must be on this computer, for example port 8545 on 127.0.0.1 (plain http is allowed there).');
+      throw new UserFacingError({ key: 'error.scanPrivacy.aLocalProxyEndpointMustBeOnThisComputerFor' });
     }
-    try { return validateRpcUrl(trimmed, { allowInsecureLocalhost: true }); } catch { throw new UserFacingError('Local proxy endpoint rejected: no username, password or fragment.'); }
+    try { return validateRpcUrl(trimmed, { allowInsecureLocalhost: true }); } catch { throw new UserFacingError({ key: 'error.scanPrivacy.localProxyEndpointRejectedNoUsernamePasswordOrFragment' }); }
   }
-  try { return validateRpcUrl(trimmed); } catch { throw new UserFacingError('Scan endpoint rejected: use https:// with no username, password or fragment.'); }
+  try { return validateRpcUrl(trimmed); } catch { throw new UserFacingError({ key: 'error.scanPrivacy.scanEndpointRejectedUseHttpsWithNoUsernamePasswordOr' }); }
 }
 
 /** Validates an indexer base URL: https (loopback http only behind a local proxy), no credentials, query or fragment. */
 export function checkIndexerUrl(raw: string, transport: ScanTransportKind): string {
   let u: URL;
-  try { u = new URL(raw.trim()); } catch { throw new UserFacingError('Indexer URL is not a valid URL.'); }
+  try { u = new URL(raw.trim()); } catch { throw new UserFacingError({ key: 'error.scanPrivacy.indexerURLIsNotAValidURL' }); }
   const loop = LOOPBACK.has(u.hostname);
   const okScheme = u.protocol === 'https:' || (u.protocol === 'http:' && loop);
   if (!okScheme || u.username !== '' || u.password !== '' || u.search !== '' || u.hash !== '') {
-    throw new UserFacingError('Indexer URL must be https:// (or http on 127.0.0.1) with no credentials, query or fragment.');
+    throw new UserFacingError({ key: 'error.scanPrivacy.indexerURLMustBeHttpsOrHttpOn1270' });
   }
-  if (transport === 'local-proxy' && !loop) throw new UserFacingError('With a local proxy, the indexer must also be reached through it (an address on 127.0.0.1).');
+  if (transport === 'local-proxy' && !loop) throw new UserFacingError({ key: 'error.scanPrivacy.withALocalProxyTheIndexerMustAlsoBeReached' });
   const path = u.pathname;
   let end = path.length;
   while (end > 0 && path[end - 1] === '/') end--;
@@ -546,7 +546,7 @@ export async function openScanClients(o: OpenScanOptions): Promise<ScanClients |
     try {
       base = await createClient(o.chain, plan.endpoint, { allowInsecureLocalhost: plan.allowLoopbackHttp, transport });
     } catch (e) {
-      const blocked = new UserFacingError('Scan blocked: the private scan endpoint could not be used (unreachable or wrong chain). GhostPay did not fall back to another RPC.');
+      const blocked = new UserFacingError({ key: 'error.scanPrivacy.scanBlockedThePrivateScanEndpointCouldNotBeUsed' });
       blocked.cause = e;
       throw blocked;
     }
@@ -559,3 +559,5 @@ export async function openScanClients(o: OpenScanOptions): Promise<ScanClients |
   const scan = createWindowedScanClient(logs, { chain: o.chain, announcer: o.announcer, ...router, policy: plan.window, sleep: o.sleep });
   return { base, scan };
 }
+
+// i18n-use: error.scanPrivacy.aLocalProxyEndpointMustBeOnThisComputerFor error.scanPrivacy.localProxyEndpointRejectedNoUsernamePasswordOrFragment error.scanPrivacy.scanEndpointRejectedUseHttpsWithNoUsernamePasswordOr error.scanPrivacy.indexerURLIsNotAValidURL error.scanPrivacy.indexerURLMustBeHttpsOrHttpOn1270 error.scanPrivacy.withALocalProxyTheIndexerMustAlsoBeReached error.scanPrivacy.scanBlockedThePrivateScanEndpointCouldNotBeUsed

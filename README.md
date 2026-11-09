@@ -8,12 +8,17 @@ The goal is to reduce address reuse and limit routine exposure of invoice detail
 
 ## Status (read this first)
 
+The current development stack is **#84 → #88 → #89**, followed by the policy/localization continuation.
+It is not merged into `main`. Use the [current completion gates](docs/audits/08-completion-gates.md)
+and [November 9 handoff](docs/handoffs/PRODUCT_CONTINUATION_2026-11-09.md) for source-pinned results;
+the older test counts below are historical evidence only.
+
 | Question | Honest answer |
 |---|---|
 | Is it audited? | **No.** Only self-run and AI-assisted reviews exist ([`docs/audits/`](docs/audits/)). There is no independent third-party audit. |
-| Is anything deployed? | **No.** No contract is deployed on any chain; [`deployments/`](deployments/) holds only a schema and a README. Without a manifest the web app disables payment. |
-| Which chains are enabled in code? | Ethereum Sepolia and Base Sepolia (testnets). Mainnets are listed in `packages/chain-adapters/src/config/chains.ts` with `enabled: false`. |
-| Has it run against a real wallet, RPC provider or chain? | **No.** The wallet, RPC and relayer interactions in the test suites are mocks (the relayer additionally has a local anvil end-to-end test). |
+| Are public-chain deployments qualified? | **No.** Local test deployments exist only as fixtures; [`deployments/`](deployments/) holds no qualified public deployment. Without an accepted manifest the web app disables ordinary payment. |
+| Which chains are enabled in code? | Seven testnets are enabled in [`chains.ts`](packages/chain-adapters/src/config/chains.ts): Ethereum, Base, OP and Arbitrum Sepolia, Polygon Amoy, BNB Smart Chain Testnet and Avalanche Fuji. Mainnets remain disabled. |
+| What execution evidence exists? | Unit tests, local Anvil integrations and hosted Chromium journeys are recorded in the handoffs. They do not qualify real wallets, funded public-chain operations, Safari or physical devices. |
 | Is anyone hosting it? | **No.** Hosting is intentionally not configured; see [Hosting](#hosting). |
 | Can I use it with real money? | **No.** Do not. Contracts are immutable once deployed and the audit round has open findings. |
 
@@ -28,7 +33,7 @@ Open work is tracked in the audits: [completeness audit](docs/audits/01-complete
 | `packages/invoice-schema` | Invoice schema, strict parser, signing, AES-GCM envelope, `#gpi=v1.` link format. |
 | `packages/chain-adapters` | Chain and token allowlists, fee maths, deployment-manifest validation, RPC, log scanning, router and sweep builders, quote reading. |
 | `packages/btc-silent-payments` | BIP-352 Silent Payments: keys, addresses, sender derivation, scanning, spend-key derivation, Bitcoin `ChainAdapter`, and signed PSBT/raw-tx sweeps (`buildSpendTransaction`, software keys only). Used by the web app's Bitcoin view. Official vectors pass; mainnet stays disabled. |
-| `packages/policy-scheme` | Client side of the policy-account scheme `0x47500002` (policy hash, limits tree, scheme-2 meta-address, derivation, EIP-712, calldata, `GhostPayPolicyRouter` calldata). Experimental ([ADR-0014](docs/adr/ADR-LOG.md)); not used by the web app or relayer. |
+| `packages/policy-scheme` | Client side of the policy-account scheme `0x47500002` (policy hash, limits tree, scheme-2 meta-address, derivation, EIP-712 and calldata). Used by the web app's disabled experimental testnet feature; not ordinary invoices or the relayer. See [ADR-0027](docs/adr/ADR-0027-policy-end-to-end-gates.md). |
 | `packages/relayer-guard` | Relayer abuse controls: circuit breaker, trusted-proxy client IP, token-bucket limiter, loss budget, and a challenge module (HMAC question challenge; raises bot cost only). The relayer uses the guard controls; challenge storage is optional and is not proof of identity. |
 | `packages/secret-box` | Closure-held secret bytes with scoped wiping (guardrail, not a security boundary). Used for web session secret handling. |
 | `packages/tx-review` | Pre-sign decoder and reviewer for transactions and EIP-712 payloads. Used by web sweep transaction review. |
@@ -87,7 +92,9 @@ FOUNDRY_PROFILE=dev forge test              # quick loop
 bash scripts/check-natspec.sh
 ```
 
-> **`foundry.toml` contains a sandbox-specific line:** `solc = "/home/user/tools/solc"`. On any other machine replace it with `solc_version = "0.8.28"` locally (CI does this with `sed -i 's|^solc = .*|solc_version = "0.8.28"|' foundry.toml`). Do not commit that change without deciding how to make the file portable. Tests under `test/audit/` are adversarial proofs of concept from the contracts review (they assert that weaknesses are real); a baseline run without them is `forge test --no-match-path 'test/audit/*'`.
+`packages/contracts/foundry.toml` pins portable `solc_version = "0.8.28"`. For offline development,
+use the same compiler in Foundry's cache or set `FOUNDRY_SOLC` to its local path; no configuration edit
+is needed. Run the complete test suite, including the adversarial cases under `test/audit/`.
 
 Forge result when this README was first written: 231 tests passed without `test/audit/`, plus 43 audit PoC tests. [`docs/remote/STATUS.md`](docs/remote/STATUS.md) (2026-10-21 run) records 377 passing in 23 suites, `forge fmt --check` and `forge snapshot --check` passing, and one test failing only under `forge coverage --ir-minimum`.
 
@@ -155,11 +162,11 @@ Full text: [privacy limits](docs/user/privacy-limits.md) and the [threat model](
 - Payer, amount, token, timing and the use of the GhostPay router are public on-chain.
 - **A sweep can undo the privacy:** the payer knows the stealth address, so the payer (and anyone) can follow the funds to your destination wallet. Use a fresh destination. A relayer sees owner, destination, amount and timing. Gasless is not unlinkable (audit D1, D8).
 - An invoice link is a bearer secret: anyone with it can read the invoice. Browsers may keep the link in their history database even though the app clears the address bar (audit S3-03).
-- A compromised frontend can steal keys. The deployment manifest, which decides the router and fee-recipient addresses, is **not yet authenticated**: its signature is not verified and nothing is read back from the chain (audit S3-01, in progress). The in-app release-hash widget cannot detect a tampered host (S3-04).
-- The seller's scanner can display unverified, payer-supplied amounts for announcements that did not go through the router (S3-02, in progress).
+- A compromised frontend can steal keys. The ordinary payment path checks manifest signatures against bundled release keys and verifies deployment readback. Real release trust roots and deployment evidence remain prerequisites. The in-app release-hash widget cannot detect a tampered host.
+- Announcement discovery is separate from verified payment evidence. Unverified payer-supplied metadata, imported history and seller-signed receipts must not establish payment. The disabled scheme-2 flow has its own remaining acceptance gates.
 - The fee recipient is immutable: if it is blacklisted by a token issuer or cannot receive ETH, checkout for that asset stops until a new router is deployed (audit D5 / contracts M-01).
 - Fiat-priced invoices are disabled in practice: no oracle feed addresses are configured (ADR-0012).
-- Policy accounts (scheme `0x47500002`) are contracts only: no client support, no recovery path. Do not use them.
+- Policy accounts (scheme `0x47500002`) have an experimental testnet client behind a disabled feature flag. The complete supported flow and lost-key recovery remain unqualified; see [ADR-0027](docs/adr/ADR-0027-policy-end-to-end-gates.md).
 
 ## Hosting
 

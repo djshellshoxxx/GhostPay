@@ -17,7 +17,7 @@ export function makeQr(text: string): QrMatrix {
     for (let r = 0; r < size; r++) for (let c = 0; c < size; c++) dark.push(qr.isDark(r, c));
     return { size, dark };
   } catch {
-    throw new UserFacingError('This link is too long for a QR code. Share the link as text instead.');
+    throw new UserFacingError({ key: 'error.qr.thisLinkIsTooLongForAQRCodeShare' });
   }
 }
 
@@ -27,10 +27,10 @@ const QUIET = 4;
 /** Validate externally supplied matrices before constructing a downloadable SVG. */
 function assertQrMatrix(m: QrMatrix): void {
   if (!Number.isSafeInteger(m.size) || m.size < 1 || m.size > 177 || m.dark.length !== m.size * m.size) {
-    throw new UserFacingError('Invalid QR matrix.');
+    throw new UserFacingError({ key: 'error.qr.invalidQRMatrix' });
   }
   for (const module of m.dark) {
-    if (typeof module !== 'boolean') throw new UserFacingError('Invalid QR matrix.');
+    if (typeof module !== 'boolean') throw new UserFacingError({ key: 'error.qr.invalidQRMatrix' });
   }
 }
 
@@ -55,3 +55,5 @@ export function qrSvgText(m: QrMatrix): string {
   const n = qrViewSize(m);
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${String(n)} ${String(n)}" width="${String(n * 6)}" height="${String(n * 6)}" shape-rendering="crispEdges"><rect width="${String(n)}" height="${String(n)}" fill="#fff"/><path fill="#000" d="${qrPath(m)}"/></svg>`;
 }
+
+// i18n-use: error.qr.thisLinkIsTooLongForAQRCodeShare error.qr.invalidQRMatrix

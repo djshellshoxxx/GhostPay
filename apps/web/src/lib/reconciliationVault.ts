@@ -1,4 +1,4 @@
-import { UserFacingError } from './errors';
+import { UserFacingError, type MessageDescriptor } from './errors';
 import { parseStrictJson } from '@ghostpay/invoice-schema';
 import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
 import {
@@ -91,11 +91,10 @@ const empty = (): Document => ({
   invoices: [],
   receipts: [],
 });
-const READ_ONLY_MESSAGE =
-  'The reconciliation vault reached its invalidation capacity and is read-only. Export its encrypted history before reviewing this storage limitation. Old evidence cannot be revived.';
+const READ_ONLY_MESSAGE: MessageDescriptor = { key: 'error.reconciliationVault.theReconciliationVaultReachedItsInvalidationCapacityAndIsRead' };
 const receiptId = (receipt: SignedReceipt): string => receipt.signature;
-function fail(message: string): never {
-  throw new Error(message);
+function fail(message: MessageDescriptor): never {
+  throw new UserFacingError(message);
 }
 function object(value: unknown): value is Record<string, unknown> {
   return (
@@ -116,16 +115,16 @@ function scopeKey(scope: ReconciliationScope): string {
 }
 function assertScope(scope: ReconciliationScope): void {
   if (!/^[a-f0-9]{64}$/.test(scope.sellerKeyId) || !Number.isSafeInteger(scope.chainId) || scope.chainId <= 0)
-    fail('Invalid reconciliation scope.');
+    fail({ key: 'error.reconciliationVault.invalidReconciliationScope' });
 }
 function parseEnvelope(text: string, scope: ReconciliationScope): Envelope {
   if (text.length > MAX_VAULT_BYTES || encoder.encode(text).byteLength > MAX_VAULT_BYTES)
-    fail('Encrypted reconciliation data exceeds its safety limit.');
+    fail({ key: 'error.reconciliationVault.encryptedReconciliationDataExceedsItsSafetyLimit' });
   let value: unknown;
   try {
     value = parseStrictJson(text);
   } catch {
-    return fail('Invalid encrypted reconciliation format.');
+    return fail({ key: 'error.reconciliationVault.invalidEncryptedReconciliationFormat' });
   }
   if (
     !object(value) ||
@@ -133,9 +132,9 @@ function parseEnvelope(text: string, scope: ReconciliationScope): Envelope {
     value.format !== 'ghostpay-reconciliation' ||
     value.version !== 1
   )
-    fail('Invalid encrypted reconciliation format.');
+    fail({ key: 'error.reconciliationVault.invalidEncryptedReconciliationFormat' });
   if (value.sellerKeyId !== scope.sellerKeyId || value.chainId !== scope.chainId)
-    fail('Encrypted reconciliation data belongs to another seller or chain scope.');
+    fail({ key: 'error.reconciliationVault.encryptedReconciliationDataBelongsToAnotherSellerOrChainScope' });
   if (
     typeof value.salt !== 'string' ||
     !/^[a-f0-9]{64}$/.test(value.salt) ||
@@ -146,7 +145,7 @@ function parseEnvelope(text: string, scope: ReconciliationScope): Envelope {
     value.ciphertext.length % 2 !== 0 ||
     !/^[a-f0-9]+$/.test(value.ciphertext)
   )
-    fail('Invalid encrypted reconciliation fields.');
+    fail({ key: 'error.reconciliationVault.invalidEncryptedReconciliationFields' });
   return value as unknown as Envelope;
 }
 function validateDocument(value: unknown, scope: ReconciliationScope): Document {
@@ -173,12 +172,12 @@ function validateDocument(value: unknown, scope: ReconciliationScope): Document 
     !Array.isArray(value.tombstones) ||
     value.tombstones.length > MAX_RECONCILIATION_RECORDS
   )
-    fail('Invalid reconciliation document or record limit.');
+    fail({ key: 'error.reconciliationVault.invalidReconciliationDocumentOrRecordLimit' });
   if (
     value.invalidatedFrom !== null &&
     (typeof value.invalidatedFrom !== 'string' || !/^(0|[1-9][0-9]{0,15})$/.test(value.invalidatedFrom))
   )
-    fail('Invalid reconciliation reorg cutoff.');
+    fail({ key: 'error.reconciliationVault.invalidReconciliationReorgCutoff' });
   const invalidatedAt = timed ? value.invalidatedAt : null;
   if (
     invalidatedAt !== null &&
@@ -187,34 +186,34 @@ function validateDocument(value: unknown, scope: ReconciliationScope): Document 
       (invalidatedAt as number) <= 0 ||
       (invalidatedAt as number) > 8_640_000_000_000_000)
   )
-    fail('Invalid reconciliation reorg cutoff time.');
+    fail({ key: 'error.reconciliationVault.invalidReconciliationReorgCutoffTime' });
   const records = value.records.map((item: unknown): VaultRecord => {
     if (!object(item) || (item.provenance !== 'live-scan' && item.provenance !== 'imported-history'))
-      return fail('Invalid reconciliation provenance.');
+      return fail({ key: 'error.reconciliationVault.invalidReconciliationProvenance' });
     const { provenance, ...rest } = item;
     const record = validateReconciliationRecord(rest);
     if (record.chainId !== scope.chainId || record.sellerKeyId !== scope.sellerKeyId)
-      fail('Reconciliation record has another scope.');
+      fail({ key: 'error.reconciliationVault.reconciliationRecordHasAnotherScope' });
     return { ...record, provenance };
   });
-  if (new Set(records.map((r) => r.id)).size !== records.length) fail('Duplicate reconciliation records.');
+  if (new Set(records.map((r) => r.id)).size !== records.length) fail({ key: 'error.reconciliationVault.duplicateReconciliationRecords' });
   const tombstones = value.tombstones.map((id: unknown): string =>
     typeof id === 'string' && id.length <= 400 && id.startsWith(`${scopeKey(scope)}:`)
       ? id
-      : fail('Invalid reconciliation tombstone.'),
+      : fail({ key: 'error.reconciliationVault.invalidReconciliationTombstone' }),
   );
-  if (new Set(tombstones).size !== tombstones.length) fail('Duplicate reconciliation tombstones.');
+  if (new Set(tombstones).size !== tombstones.length) fail({ key: 'error.reconciliationVault.duplicateReconciliationTombstones' });
   const invoices = legacy
     ? []
     : (value.invoices as unknown[]).map((item) => {
         const invoice = validateRegisteredInvoice(item);
-        if (invoice.chainId !== scope.chainId) fail('Registered invoice has another scope.');
+        if (invoice.chainId !== scope.chainId) fail({ key: 'error.reconciliationVault.registeredInvoiceHasAnotherScope' });
         return invoice;
       });
-  if (new Set(invoices.map((i) => i.invoiceDigest)).size !== invoices.length) fail('Duplicate registered invoice.');
-  if (new Set(invoices.map((i) => i.nonce)).size !== invoices.length) fail('Duplicate registered invoice nonce.');
+  if (new Set(invoices.map((i) => i.invoiceDigest)).size !== invoices.length) fail({ key: 'error.reconciliationVault.duplicateRegisteredInvoice' });
+  if (new Set(invoices.map((i) => i.nonce)).size !== invoices.length) fail({ key: 'error.reconciliationVault.duplicateRegisteredInvoiceNonce' });
   const receipts = legacy ? [] : (value.receipts as unknown[]).map((item) => validateArchivedReceipt(item, scope));
-  if (new Set(receipts.map((r) => receiptId(r.receipt))).size !== receipts.length) fail('Duplicate archived receipt.');
+  if (new Set(receipts.map((r) => receiptId(r.receipt))).size !== receipts.length) fail({ key: 'error.reconciliationVault.duplicateArchivedReceipt' });
   return {
     version: 3,
     records,
@@ -229,19 +228,19 @@ function validateDocument(value: unknown, scope: ReconciliationScope): Document 
 /** Authenticated ciphertext already protects stored receipts; signatures are verified when archived. */
 function validateArchivedReceipt(value: unknown, scope: ReconciliationScope): ArchivedReceipt {
   if (!object(value) || !exact(value, 'receipt|archivedAt') || !object(value.receipt))
-    return fail('Invalid archived receipt.');
+    return fail({ key: 'error.reconciliationVault.invalidArchivedReceipt' });
   const { signature, ...payload } = value.receipt;
   let clean: ReturnType<typeof validateReceiptPayload>;
   try {
     clean = validateReceiptPayload(payload);
   } catch {
-    return fail('Invalid archived receipt.');
+    return fail({ key: 'error.reconciliationVault.invalidArchivedReceipt' });
   }
-  if (typeof signature !== 'string' || !/^[0-9a-f]{128}$/.test(signature)) return fail('Invalid archived receipt.');
-  if (clean.chainId !== scope.chainId) fail('Archived receipt has another scope.');
+  if (typeof signature !== 'string' || !/^[0-9a-f]{128}$/.test(signature)) return fail({ key: 'error.reconciliationVault.invalidArchivedReceipt' });
+  if (clean.chainId !== scope.chainId) fail({ key: 'error.reconciliationVault.archivedReceiptHasAnotherScope' });
   const at = value.archivedAt;
   if (!Number.isSafeInteger(at) || (at as number) <= 0 || (at as number) > 8_640_000_000_000_000)
-    fail('Invalid archived receipt timestamp.');
+    fail({ key: 'error.reconciliationVault.invalidArchivedReceiptTimestamp' });
   return { receipt: { ...clean, signature }, archivedAt: at as number };
 }
 /**
@@ -251,14 +250,14 @@ function validateArchivedReceipt(value: unknown, scope: ReconciliationScope): Ar
  */
 function withSaved(document: Document, record: ReconciliationRecord): Document {
   if (document.saturated) throw new UserFacingError(READ_ONLY_MESSAGE);
-  if (document.tombstones.includes(record.id)) fail('This historical observation was invalidated by a reorg.');
+  if (document.tombstones.includes(record.id)) fail({ key: 'error.reconciliationVault.thisHistoricalObservationWasInvalidatedByAReorg' });
   const prior = document.records.find((r) => r.id === record.id);
   if (
     prior?.invoiceDigest !== undefined &&
     record.invoiceDigest !== undefined &&
     prior.invoiceDigest !== record.invoiceDigest
   )
-    fail('This record already has a different invoice annotation.');
+    fail({ key: 'error.reconciliationVault.thisRecordAlreadyHasADifferentInvoiceAnnotation' });
   const next: VaultRecord = {
     ...record,
     ...(prior?.invoiceDigest === undefined ? {} : { invoiceDigest: prior.invoiceDigest }),
@@ -409,8 +408,8 @@ export class ReconciliationVault {
   }
   private guard(revision = this.revision): void {
     this.sessionGuard();
-    if (this.base === undefined) fail('The reconciliation vault is locked.');
-    if (revision !== this.revision) fail('Reconciliation vault action became stale.');
+    if (this.base === undefined) fail({ key: 'error.reconciliationVault.theReconciliationVaultIsLocked' });
+    if (revision !== this.revision) fail({ key: 'error.reconciliationVault.reconciliationVaultActionBecameStale' });
   }
   public async unlock(key: Uint8Array): Promise<void> {
     const revision = ++this.revision;
@@ -418,10 +417,10 @@ export class ReconciliationVault {
     const material = Uint8Array.from(key);
     try {
       this.sessionGuard();
-      if (key.byteLength !== 32) fail('Invalid reconciliation viewing key.');
+      if (key.byteLength !== 32) fail({ key: 'error.reconciliationVault.invalidReconciliationViewingKey' });
       const base = await crypto.subtle.importKey('raw', material, 'HKDF', false, ['deriveKey']);
       this.sessionGuard();
-      if (revision !== this.revision) fail('Reconciliation vault action became stale.');
+      if (revision !== this.revision) fail({ key: 'error.reconciliationVault.reconciliationVaultActionBecameStale' });
       this.base = base;
     } finally {
       key.fill(0);
@@ -449,7 +448,7 @@ export class ReconciliationVault {
       ['encrypt', 'decrypt'],
     );
     this.guard();
-    if (revision !== this.revision) fail('Reconciliation vault action became stale.');
+    if (revision !== this.revision) fail({ key: 'error.reconciliationVault.reconciliationVaultActionBecameStale' });
     return key;
   }
   private aad(envelope: Omit<Envelope, 'ciphertext'>): Uint8Array<ArrayBuffer> {
@@ -472,7 +471,7 @@ export class ReconciliationVault {
       );
       this.guard(revision);
       if (plaintext.byteLength > MAX_VAULT_BYTES / 2)
-        fail('Reconciliation plaintext exceeds its safety limit.');
+        fail({ key: 'error.reconciliationVault.reconciliationPlaintextExceedsItsSafetyLimit' });
       return validateDocument(parseStrictJson(decoder.decode(plaintext)), this.scope);
     } catch (error) {
       this.guard(revision);
@@ -481,7 +480,7 @@ export class ReconciliationVault {
         /scope|record|limit|document|provenance|tombstone|cutoff|invoice|receipt/.test(error.message)
       )
         throw error;
-      throw new Error('Could not decrypt or validate the reconciliation data.', { cause: error });
+      throw new UserFacingError({ key: 'error.reconciliationVault.couldNotDecryptOrValidateTheReconciliationData' });
     } finally {
       plaintext?.fill(0);
     }
@@ -515,7 +514,7 @@ export class ReconciliationVault {
       );
       this.guard(revision);
       const result = JSON.stringify({ ...header, ciphertext: bytesToHex(new Uint8Array(ciphertext)) });
-      if (result.length > MAX_VAULT_BYTES) fail('Encrypted reconciliation data exceeds its safety limit.');
+      if (result.length > MAX_VAULT_BYTES) fail({ key: 'error.reconciliationVault.encryptedReconciliationDataExceedsItsSafetyLimit' });
       return result;
     } finally {
       plaintext.fill(0);
@@ -548,7 +547,7 @@ export class ReconciliationVault {
       }
       guard();
     }
-    fail('Reconciliation data changed in another tab. Reload and try again.');
+    fail({ key: 'error.reconciliationVault.reconciliationDataChangedInAnotherTabReloadAndTryAgain' });
   }
   public async read(): Promise<readonly VaultRecord[]> {
     const revision = this.revision;
@@ -567,9 +566,9 @@ export class ReconciliationVault {
   public async save(value: ReconciliationRecord, actionGuard?: () => void): Promise<void> {
     const record = { ...validateReconciliationRecord(value) };
     if (record.sellerKeyId !== this.scope.sellerKeyId || record.chainId !== this.scope.chainId)
-      fail('Reconciliation record has another scope.');
+      fail({ key: 'error.reconciliationVault.reconciliationRecordHasAnotherScope' });
     if (record.evidenceStatus !== 'verified-at-scan')
-      fail('Only a current verified scan observation can be saved.');
+      fail({ key: 'error.reconciliationVault.onlyACurrentVerifiedScanObservationCanBeSaved' });
     await this.change((document) => withSaved(document, record), actionGuard);
   }
   /**
@@ -582,18 +581,18 @@ export class ReconciliationVault {
     options: { readonly current?: readonly ReconciliationRecord[]; readonly guard?: () => void } = {},
   ): Promise<void> {
     const { provenance, ...plain } = value as VaultRecord;
-    if (provenance !== undefined && provenance !== 'live-scan') fail('Imported history cannot be matched automatically.');
+    if (provenance !== undefined && provenance !== 'live-scan') fail({ key: 'error.reconciliationVault.importedHistoryCannotBeMatchedAutomatically' });
     const record = { ...validateReconciliationRecord(plain) };
     if (record.sellerKeyId !== this.scope.sellerKeyId || record.chainId !== this.scope.chainId)
-      fail('Reconciliation record has another scope.');
+      fail({ key: 'error.reconciliationVault.reconciliationRecordHasAnotherScope' });
     if (record.evidenceStatus !== 'verified-at-scan' || record.invoiceDigest !== undefined)
-      fail('Only a current unlinked verified scan observation can be matched.');
+      fail({ key: 'error.reconciliationVault.onlyACurrentUnlinkedVerifiedScanObservationCanBeMatched' });
     if ((options.current?.length ?? 0) > MAX_RECONCILIATION_RECORDS)
-      fail('Current reconciliation observations exceed their safety limit.');
+      fail({ key: 'error.reconciliationVault.currentReconciliationObservationsExceedTheirSafetyLimit' });
     const context = (options.current ?? []).map((value) => {
       const current = { ...validateReconciliationRecord(value) };
       if (current.sellerKeyId !== this.scope.sellerKeyId || current.chainId !== this.scope.chainId)
-        fail('Reconciliation record has another scope.');
+        fail({ key: 'error.reconciliationVault.reconciliationRecordHasAnotherScope' });
       return current;
     });
     await this.change((document) => {
@@ -607,7 +606,7 @@ export class ReconciliationVault {
       ]);
       if (proposal.kind !== 'exact' || proposal.invoice.invoiceDigest !== invoiceDigest)
         throw new UserFacingError(
-          'This payment no longer has a single exact invoice match. Review it and link it manually if appropriate.',
+          { key: 'error.reconciliationVault.thisPaymentNoLongerHasASingleExactInvoiceMatch' },
         );
       return {
         ...saved,
@@ -629,19 +628,19 @@ export class ReconciliationVault {
   /** Opt-in registration of an invoice this seller created; only matching fields are kept. */
   public async registerInvoice(value: RegisteredInvoice): Promise<void> {
     const invoice = validateRegisteredInvoice(value);
-    if (invoice.chainId !== this.scope.chainId) fail('Registered invoice has another scope.');
+    if (invoice.chainId !== this.scope.chainId) fail({ key: 'error.reconciliationVault.registeredInvoiceHasAnotherScope' });
     await this.change((document) => {
       if (document.saturated) throw new UserFacingError(READ_ONLY_MESSAGE);
       const prior = document.invoices.find(
         (i) => i.invoiceDigest === invoice.invoiceDigest || i.nonce === invoice.nonce,
       );
       if (prior !== undefined) {
-        if (prior.invoiceDigest !== invoice.invoiceDigest) fail('Another registered invoice already uses this nonce.');
+        if (prior.invoiceDigest !== invoice.invoiceDigest) fail({ key: 'error.reconciliationVault.anotherRegisteredInvoiceAlreadyUsesThisNonce' });
         return document;
       }
       if (document.invoices.length >= MAX_REGISTERED_INVOICES)
         throw new UserFacingError(
-          `At most ${String(MAX_REGISTERED_INVOICES)} invoices can be registered per seller and chain. Remove old registrations first.`,
+          { key: 'error.reconciliationVault.invoiceCapacity', values: { count: String(MAX_REGISTERED_INVOICES) } },
         );
       return { ...document, invoices: [...document.invoices, invoice] };
     });
@@ -658,14 +657,14 @@ export class ReconciliationVault {
   }
   /** Archives a receipt this seller issued. The archive is never consulted as payment evidence. */
   public async archiveReceipt(receipt: SignedReceipt, archivedAt = Date.now()): Promise<void> {
-    if (!verifyReceipt(receipt)) fail('Only a valid signed receipt can be archived.');
+    if (!verifyReceipt(receipt)) fail({ key: 'error.reconciliationVault.onlyAValidSignedReceiptCanBeArchived' });
     const entry = validateArchivedReceipt({ receipt: { ...receipt }, archivedAt }, this.scope);
     await this.change((document) => {
       if (document.saturated) throw new UserFacingError(READ_ONLY_MESSAGE);
       if (document.receipts.some((r) => receiptId(r.receipt) === receiptId(entry.receipt))) return document;
       if (document.receipts.length >= MAX_ARCHIVED_RECEIPTS)
         throw new UserFacingError(
-          `At most ${String(MAX_ARCHIVED_RECEIPTS)} receipts can be archived per seller and chain. Export and delete old receipts first.`,
+          { key: 'error.reconciliationVault.receiptCapacity', values: { count: String(MAX_ARCHIVED_RECEIPTS) } },
         );
       return { ...document, receipts: [...document.receipts, entry] };
     });
@@ -697,7 +696,7 @@ export class ReconciliationVault {
     observed: readonly ReconciliationRecord[],
     canonicalHash: (height: bigint) => Promise<string>,
   ): Promise<void> {
-    if (block < 0n || block > 9_999_999_999_999_999n) fail('Invalid reorg block.');
+    if (block < 0n || block > 9_999_999_999_999_999n) fail({ key: 'error.reconciliationVault.invalidReorgBlock' });
     const observedRecords = observed.map((value) => {
       const record = validateReconciliationRecord(value);
       if (
@@ -705,7 +704,7 @@ export class ReconciliationVault {
         record.sellerKeyId !== this.scope.sellerKeyId ||
         BigInt(record.blockNumber) < block
       )
-        return fail('Invalid reorg observation scope.');
+        return fail({ key: 'error.reconciliationVault.invalidReorgObservationScope' });
       return record;
     });
     const revision = this.revision;
@@ -727,7 +726,7 @@ export class ReconciliationVault {
         try {
           const hash = await canonicalHash(BigInt(height));
           this.guard(revision);
-          if (typeof hash !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(hash)) fail('Invalid canonical block hash.');
+          if (typeof hash !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(hash)) fail({ key: 'error.reconciliationVault.invalidCanonicalBlockHash' });
           canonical.set(height, hash.toLowerCase());
         } catch (error) {
           failures.push(error);
@@ -765,7 +764,7 @@ export class ReconciliationVault {
     });
     if (saturated)
       throw new UserFacingError(
-        'Reorg invalidation was saved, but its history reached the safety limit. The encrypted reconciliation vault is now read-only; export the history and do not rely on invalidated observations.',
+        { key: 'error.reconciliationVault.reorgInvalidationWasSavedButItsHistoryReachedTheSafety' },
       );
   }
   /** Delete observations while retaining reorg invalidation history; old backups cannot resurrect it. */
@@ -798,18 +797,18 @@ export class ReconciliationVault {
     this.guard();
     const staged = this.previews.get(preview);
     if (staged === undefined || staged.revision !== this.revision)
-      fail('Create a current import preview before activation.');
+      fail({ key: 'error.reconciliationVault.createACurrentImportPreviewBeforeActivation' });
     const imported = await this.decrypt(staged.text);
     await this.change((document) => {
       // Imported tombstones apply to existing records too; imports cannot reverse known invalidation.
       const merged = mergeImport(document, imported);
       if (merged.saturated && !preview.readOnly)
         throw new UserFacingError(
-          'The reconciliation safety state changed. Preview this backup again before accepting a read-only vault.',
+          { key: 'error.reconciliationVault.theReconciliationSafetyStateChangedPreviewThisBackupAgainBefore' },
         );
       if (merged.invoices.length > MAX_REGISTERED_INVOICES || merged.receipts.length > MAX_ARCHIVED_RECEIPTS)
         throw new UserFacingError(
-          'This backup would exceed the invoice registration or receipt archive limit. Remove old entries first.',
+          { key: 'error.reconciliationVault.thisBackupWouldExceedTheInvoiceRegistrationOrReceiptArchive' },
         );
       return merged;
     });
@@ -831,9 +830,9 @@ export class IdbReconciliationVaultStore implements ReconciliationVaultStore {
         db.onversionchange = () => db.close();
         resolve(db);
       };
-      request.onerror = () => reject(new Error('Encrypted reconciliation storage is unavailable.'));
+      request.onerror = () => reject(new UserFacingError({ key: 'error.reconciliationVault.encryptedReconciliationStorageIsUnavailable' }));
       request.onblocked = () =>
-        reject(new Error('Close other GhostPay tabs to open encrypted reconciliation storage.'));
+        reject(new UserFacingError({ key: 'error.reconciliationVault.closeOtherGhostPayTabsToOpenEncryptedReconciliationStorage' }));
     });
     return this.dbPromise;
   }
@@ -851,7 +850,7 @@ export class IdbReconciliationVaultStore implements ReconciliationVaultStore {
       };
       tx.oncomplete = () => resolve(value);
       tx.onabort = tx.onerror = () =>
-        reject(new Error('Encrypted reconciliation storage could not be read.'));
+        reject(new UserFacingError({ key: 'error.reconciliationVault.encryptedReconciliationStorageCouldNotBeRead' }));
     });
   }
   public async compareAndSwap(
@@ -860,7 +859,7 @@ export class IdbReconciliationVaultStore implements ReconciliationVaultStore {
     next: string,
     guard: () => void,
   ): Promise<boolean> {
-    if (next.length > MAX_VAULT_BYTES) fail('Encrypted reconciliation data exceeds its safety limit.');
+    if (next.length > MAX_VAULT_BYTES) fail({ key: 'error.reconciliationVault.encryptedReconciliationDataExceedsItsSafetyLimit' });
     const db = await this.db();
     guard();
     return new Promise((resolve, reject) => {
@@ -892,7 +891,7 @@ export class IdbReconciliationVaultStore implements ReconciliationVaultStore {
       tx.oncomplete = () => resolve(swapped);
       tx.onabort = tx.onerror = () =>
         reject(
-          failure instanceof Error ? failure : new Error('Encrypted reconciliation write did not commit.'),
+          failure instanceof Error ? failure : new UserFacingError({ key: 'error.reconciliationVault.encryptedReconciliationWriteDidNotCommit' }),
         );
     });
   }
@@ -908,7 +907,7 @@ export async function createCurrentReconciliationVault(
     session === undefined ||
     checkpointKeyId(session.spendingPublicKey, session.viewingPublicKey) !== sellerKeyId
   )
-    fail('The current seller scope changed.');
+    fail({ key: 'error.reconciliationVault.theCurrentSellerScopeChanged' });
   const vault = new ReconciliationVault(browserStore, { chainId, sellerKeyId }, guard);
   try {
     await vault.unlock(revealViewingKey());
@@ -919,3 +918,9 @@ export async function createCurrentReconciliationVault(
     throw error;
   }
 }
+
+// i18n-use: error.reconciliationVault.invalidReconciliationScope error.reconciliationVault.encryptedReconciliationDataExceedsItsSafetyLimit error.reconciliationVault.invalidEncryptedReconciliationFormat error.reconciliationVault.encryptedReconciliationDataBelongsToAnotherSellerOrChainScope error.reconciliationVault.invalidEncryptedReconciliationFields error.reconciliationVault.invalidReconciliationDocumentOrRecordLimit error.reconciliationVault.invalidReconciliationReorgCutoff error.reconciliationVault.invalidReconciliationReorgCutoffTime error.reconciliationVault.invalidReconciliationProvenance error.reconciliationVault.reconciliationRecordHasAnotherScope error.reconciliationVault.duplicateReconciliationRecords error.reconciliationVault.invalidReconciliationTombstone error.reconciliationVault.duplicateReconciliationTombstones error.reconciliationVault.registeredInvoiceHasAnotherScope error.reconciliationVault.duplicateRegisteredInvoice error.reconciliationVault.duplicateRegisteredInvoiceNonce error.reconciliationVault.duplicateArchivedReceipt error.reconciliationVault.invalidArchivedReceipt error.reconciliationVault.archivedReceiptHasAnotherScope error.reconciliationVault.invalidArchivedReceiptTimestamp error.reconciliationVault.thisHistoricalObservationWasInvalidatedByAReorg error.reconciliationVault.thisRecordAlreadyHasADifferentInvoiceAnnotation error.reconciliationVault.theReconciliationVaultIsLocked error.reconciliationVault.reconciliationVaultActionBecameStale error.reconciliationVault.invalidReconciliationViewingKey error.reconciliationVault.reconciliationPlaintextExceedsItsSafetyLimit error.reconciliationVault.couldNotDecryptOrValidateTheReconciliationData error.reconciliationVault.reconciliationDataChangedInAnotherTabReloadAndTryAgain error.reconciliationVault.onlyACurrentVerifiedScanObservationCanBeSaved error.reconciliationVault.importedHistoryCannotBeMatchedAutomatically error.reconciliationVault.onlyACurrentUnlinkedVerifiedScanObservationCanBeMatched error.reconciliationVault.currentReconciliationObservationsExceedTheirSafetyLimit error.reconciliationVault.thisPaymentNoLongerHasASingleExactInvoiceMatch error.reconciliationVault.anotherRegisteredInvoiceAlreadyUsesThisNonce error.reconciliationVault.onlyAValidSignedReceiptCanBeArchived error.reconciliationVault.invalidReorgBlock error.reconciliationVault.invalidReorgObservationScope error.reconciliationVault.invalidCanonicalBlockHash error.reconciliationVault.reorgInvalidationWasSavedButItsHistoryReachedTheSafety error.reconciliationVault.createACurrentImportPreviewBeforeActivation error.reconciliationVault.theReconciliationSafetyStateChangedPreviewThisBackupAgainBefore error.reconciliationVault.thisBackupWouldExceedTheInvoiceRegistrationOrReceiptArchive error.reconciliationVault.encryptedReconciliationStorageIsUnavailable error.reconciliationVault.closeOtherGhostPayTabsToOpenEncryptedReconciliationStorage error.reconciliationVault.encryptedReconciliationStorageCouldNotBeRead error.reconciliationVault.encryptedReconciliationWriteDidNotCommit error.reconciliationVault.theCurrentSellerScopeChanged error.reconciliationVault.theReconciliationVaultReachedItsInvalidationCapacityAndIsRead
+
+// i18n-use: error.reconciliationVault.invoiceCapacity
+
+// i18n-use: error.reconciliationVault.receiptCapacity

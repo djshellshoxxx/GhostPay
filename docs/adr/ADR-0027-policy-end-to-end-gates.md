@@ -4,7 +4,22 @@ Date: 2026-11-09. Status: **Proposed design; experimental feature remains disabl
 Source inspected: PR #88 `0a68a57b77a70d3bcf4635ccbc5190d735e71f40`, including PR #84.
 This supplements [ADR-0014 and ADR-0023](ADR-LOG.md), and corrects their older implementation inventory. It authorizes no deployment, release, trust-root change or mainnet use.
 
-## Current implementation, verified from code
+## Implementation update in PR #90
+
+The [continuation handoff](../handoffs/POLICY_LOCALIZATION_CONTINUATION_2026-11-09.md) records
+validated code-identity/linked-deployment authentication, isolated direct native/ERC-20 payment
+evidence, canonical withdrawal discovery and durable duplicate-attempt handling. These implement
+parts of gates 1, 4 and 5 below. Production deployment pins remain empty; unsupported execution
+variants remain unverified; ordinary paid/receipt/reconciliation status does not consume the verifier.
+Scheme 2 remains experimental, testnet-only and disabled. Complete request/record identity and the
+supported browser lifecycle remain open.
+
+[ADR-0028](ADR-0028-policy-recovery-authority-model.md) provides an executable, unaccepted
+recovery authority model and its conditional finite post-admission bound. It changes no contracts;
+actual lost-key recovery is still unavailable. The authority decision is separate from local
+policy-record/key-backup restoration and pending-operation reconstruction.
+
+## Historical implementation inventory at PR #88
 
 | Stage | Existing implementation | Remaining boundary |
 | --- | --- | --- |

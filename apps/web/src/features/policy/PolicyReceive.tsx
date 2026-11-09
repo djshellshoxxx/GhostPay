@@ -4,14 +4,14 @@ import { useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../../components/Common';
 import { UserFacingError, userMessage } from '../../lib/errors';
 import { captureSessionGuard, withSessionSecrets, withSessionSecretsAsync } from '../../lib/session';
-import { sendViaWallet } from '../../lib/wallet';
+import type { WalletAttempt } from '../../lib/duplicateAttemptJournal';
 import { useApp } from '../../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
 import { getAddress, isAddress } from 'viem/utils';
-import { chainNow, readAccount, readBalance, readNonceUsed, readWindow, type AccountView } from './chain';
-import { fetchAccountEvents, summarizeAccount, type AccountSummary } from './guard';
+import { readWithdrawalSnapshot, recoveredExecution, withdrawalActionScope, type WithdrawalSnapshot } from './withdrawalState';
+import { clearPolicyAction, policyActionAttempts, policyActionKey, sendPolicyAction } from './withdrawalJournal';
 import { fetchScheme2Announcements, matchScheme2, mergeMatches, type Scheme2Match } from './scan2';
-import { deployCall, planWithdraw, randomNonce, signCancel, signWithdraw, wipe, type WithdrawPlan } from './withdraw';
+import { deployCall, randomNonce, signCancel, signWithdraw, wipe } from './withdraw';
 import type { PolicyCtx } from './PolicyView';
 
 type Msg = { readonly kind: 'ok' | 'error' | 'warn'; readonly text: string };
@@ -38,12 +38,13 @@ function AccountPanel(props: { readonly ctx: PolicyCtx; readonly match: Scheme2M
   // Test renders without an I18nProvider fall back to the source English catalog.
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
-  const [view, setView] = useState<AccountView | undefined>(undefined);
+  const [snapshot, setSnapshot] = useState<WithdrawalSnapshot | undefined>(undefined);
+  const view = snapshot?.view;
+  const summary = snapshot?.summary;
+  const plan = snapshot === undefined ? undefined : { token: snapshot.token, balance: snapshot.balance, plan: snapshot.plan };
   const [token, setToken] = useState('native');
-  const [plan, setPlan] = useState<{ token: Address; plan: WithdrawPlan; balance: bigint } | undefined>(undefined);
   const [amount, setAmount] = useState('');
-  const [summary, setSummary] = useState<AccountSummary | undefined>(undefined);
-  const [pendingExec, setPendingExec] = useState<{ id: Hex; executeAfter: bigint; call: { to: Address; data: Hex; value: bigint } } | undefined>(undefined);
+  const [attempts, setAttempts] = useState<readonly WalletAttempt[]>([]);
   const [msg, setMsg] = useState<Msg | undefined>(undefined);
   const [busy, setBusy] = useState(false);
 
@@ -62,68 +63,127 @@ function AccountPanel(props: { readonly ctx: PolicyCtx; readonly match: Scheme2M
       const assertCurrent = (): void => { assertSessionCurrent(); ctx.assertDeploymentCurrent(); };
       assertCurrent();
       return fn(assertCurrent);
-    }).catch((e: unknown) => { setMsg({ kind: 'error', text: userMessage(e) }); }).finally(() => { setBusy(false); });
+    }).catch((e: unknown) => { setMsg({ kind: 'error', text: userMessage(e, t) }); }).finally(() => { setBusy(false); });
   };
-  const send = async (tx: { to: Address; data: Hex; value: bigint }, label: string, assertCurrent: () => void): Promise<void> => {
+  const tokenAddress = (): Address => {
+    const value = token.trim().toLowerCase() === 'native' ? ZERO_ADDRESS : token.trim();
+    if (!isAddress(value, { strict: true })) throw new UserFacingError(t('policy.account.tokenInvalid'));
+    return getAddress(value);
+  };
+  const actionScope = (tok: Address, action: string): string => {
+    if (app.session === undefined || ctx.deployment === undefined) throw new UserFacingError(t('policy.error.verifyFirst'));
+    return `${withdrawalActionScope(app.session, ctx.deployment, match.accountAddress, tok)}:${action}`;
+  };
+  const refreshAttempts = (tok: Address, current?: WithdrawalSnapshot): void => {
+    const scopes = [actionScope(tok, 'request'), actionScope(ZERO_ADDRESS, 'deploy')];
+    for (const request of current?.requests ?? []) {
+      scopes.push(actionScope(request.token, 'request'), actionScope(request.token, `execute:${request.id}`), actionScope(ZERO_ADDRESS, `cancel:withdraw:${request.id}`));
+    }
+    if (current?.summary.pendingDestination !== undefined) scopes.push(actionScope(ZERO_ADDRESS, `cancel:destination:${current.summary.pendingDestination.id}`));
+    const found = new Map<string, WalletAttempt>();
+    for (const scope of scopes) {
+      const key = policyActionKey({ chainId: ctx.chain.chainId, account: ZERO_ADDRESS }, { to: match.accountAddress, data: '0x', value: 0n }, scope);
+      for (const attempt of policyActionAttempts(key)) found.set(attempt.id, attempt);
+    }
+    setAttempts([...found.values()]);
+  };
+  const fresh = async (tok: Address, assertCurrent: () => void, nonce?: bigint): Promise<WithdrawalSnapshot> => {
+    if (ctx.deployment === undefined) throw new UserFacingError(t('policy.error.verifyFirst'));
+    const c = await client(); assertCurrent();
+    const next = await readWithdrawalSnapshot({ client: c, chain: ctx.chain, deployment: ctx.deployment, account: match.accountAddress, owner: match.ownerAddress, record, token: tok, knownIds: props.knownIds, assertCurrent, ...(nonce === undefined ? {} : { nonce }) });
+    assertCurrent();
+    setSnapshot(next);
+    refreshAttempts(tok, next);
+    return next;
+  };
+  const send = async (prepare: () => Promise<{ to: Address; data: Hex; value: bigint }>, label: string, tok: Address, action: string, assertCurrent: () => void): Promise<void> => {
     if (ctx.wallet === undefined) throw new UserFacingError(t('policy.account.walletRequired'));
     assertCurrent();
-    const hash = await sendViaWallet(ctx.wallet, tx, assertCurrent);
-    setMsg({ kind: 'ok', text: t('policy.account.submitted', { label, hash }) });
+    const scope = actionScope(tok, action);
+    try {
+      const hash = await sendPolicyAction({ wallet: ctx.wallet, prepare, scope, assertCurrent });
+      // The journal has already preserved the hash, even if this scope was replaced after broadcast.
+      assertCurrent();
+      setMsg({ kind: 'ok', text: t('policy.account.submitted', { label, hash }) });
+    } finally {
+      try { assertCurrent(); refreshAttempts(tok, snapshot); } catch { /* Never mask a returned broadcast hash with stale UI cleanup. */ }
+    }
   };
 
   const check = (): void => run(async (assertCurrent) => {
-    const c = await client();
-    const v = await readAccount(c, match.accountAddress);
-    assertCurrent();
-    setView(v);
-    const tokenInput = token.trim().toLowerCase() === 'native' ? ZERO_ADDRESS : token.trim();
-    if (!isAddress(tokenInput, { strict: true })) throw new UserFacingError(t('policy.account.tokenInvalid'));
-    const tok = getAddress(tokenInput);
-    const [balance, window, now] = await Promise.all([readBalance(c, match.accountAddress, tok), v.deployed ? readWindow(c, match.accountAddress, tok) : Promise.resolve({ window: 0n, bucket: 0n, current: 0n, previous: 0n }), chainNow(c)]);
-    let pendingSameToken = 0n;
-    if (v.deployed) {
-      const ev = await fetchAccountEvents(c, ctx.chain, match.accountAddress, match.blockNumber);
-      assertCurrent();
-      const s = summarizeAccount(ev.events, props.knownIds, record.policy.destination);
-      setSummary(s);
-      pendingSameToken = s.pending.filter((p) => p.token === tok).reduce((a, p) => a + p.amount, 0n);
-      if (!ev.complete) setMsg({ kind: 'warn', text: t('policy.account.partialHistory') });
-    }
-    assertCurrent();
-    setPlan({ token: tok, balance, plan: planWithdraw({ record, view: v, token: tok, balance, window, pendingSameToken, nowSec: now }) });
+    setSnapshot(undefined);
+    const tok = tokenAddress();
+    refreshAttempts(tok);
+    await fresh(tok, assertCurrent);
   });
 
   const deploy = (): void => run(async (assertCurrent) => {
-    if (ctx.deployment === undefined) throw new UserFacingError(t('policy.error.verifyFirst'));
-    const d = deployCall(ctx.deployment, match.ownerAddress, record);
-    if (d.account !== match.accountAddress) throw new UserFacingError(t('policy.account.deployMismatch'));
-    await send(d, t('policy.account.deployment'), assertCurrent);
+    await send(async () => {
+      const current = await fresh(ZERO_ADDRESS, assertCurrent);
+      const d = deployCall(current.deployment, match.ownerAddress, record);
+      if (current.view.deployed || d.account !== match.accountAddress) throw new UserFacingError(t('policy.account.deployMismatch'));
+      return d;
+    }, t('policy.account.deployment'), ZERO_ADDRESS, 'deploy', assertCurrent);
   });
 
   const withdraw = (): void => run(async (assertCurrent) => {
     if (plan === undefined || !/^[1-9][0-9]{0,77}$/.test(amount.trim())) throw new UserFacingError(t('policy.account.amountInvalid'));
-    const c = await client();
-    let nonce = randomNonce();
-    if (await readNonceUsed(c, match.accountAddress, nonce)) nonce = randomNonce();
-    const now = await chainNow(c);
-    const signed = await withOwnerKey(match, ctx, (secret) => signWithdraw({
-      chainId: ctx.chain.chainId, account: match.accountAddress, owner: match.ownerAddress, record, plan: plan.plan,
-      token: plan.token, amount: BigInt(amount.trim()), deadline: now + 1800n, nonce, ownerSecret: secret,
-    }));
-    props.remember(signed.id);
-    await send(signed.request, t('policy.account.withdrawal'), assertCurrent);
-    setPendingExec({ id: signed.id, executeAfter: now + record.policy.delaySeconds, call: signed.execute });
+    const tok = plan.token;
+    const requestedAmount = BigInt(amount.trim());
+    await send(async () => {
+      const nonce = randomNonce();
+      const current = await fresh(tok, assertCurrent, nonce);
+      assertCurrent();
+      const signed = await withOwnerKey(match, ctx, async (secret) => {
+        assertCurrent();
+        const result = await signWithdraw({
+          chainId: ctx.chain.chainId, account: match.accountAddress, owner: match.ownerAddress, record, plan: current.plan,
+          token: tok, amount: requestedAmount, deadline: current.block.timestamp + 1800n, nonce, ownerSecret: secret,
+        });
+        assertCurrent();
+        return result;
+      });
+      props.remember(signed.id);
+      return signed.request;
+    }, t('policy.account.withdrawal'), tok, 'request', assertCurrent);
+    // A broadcast hash gives no execution timestamp. A fresh canonical history read recovers the actual request.
+    setSnapshot(undefined);
+    setMsg((previous) => previous?.kind === 'ok' ? { kind: 'ok', text: `${previous.text} ${t('policy.withdraw.refreshRequired')}` } : previous);
   });
 
   const cancel = (kind: 'withdraw' | 'destination', id: Hex): void => run(async (assertCurrent) => {
-    const call = await withOwnerKey(match, ctx, (secret) => signCancel({ chainId: ctx.chain.chainId, account: match.accountAddress, owner: match.ownerAddress, kind, id, ownerSecret: secret }));
-    await send(call, t('policy.account.cancel'), assertCurrent);
+    await send(async () => {
+      const current = await fresh(tokenAddress(), assertCurrent);
+      const exists = kind === 'withdraw' ? current.requests.some((r) => r.id === id && r.status === 1) : current.summary.pendingDestination?.id === id;
+      if (!exists) throw new UserFacingError({ key: 'policy.withdraw.notReady' });
+      assertCurrent();
+      return withOwnerKey(match, ctx, async (secret) => {
+        assertCurrent();
+        const call = await signCancel({ chainId: ctx.chain.chainId, account: match.accountAddress, owner: match.ownerAddress, kind, id, ownerSecret: secret });
+        assertCurrent();
+        return call;
+      });
+    }, t('policy.account.cancel'), ZERO_ADDRESS, `cancel:${kind}:${id}`, assertCurrent);
+  });
+
+  const execute = (id: Hex, tok: Address): void => run(async (assertCurrent) => {
+    await send(async () => recoveredExecution(await fresh(tok, assertCurrent), id), t('policy.account.execution'), tok, `execute:${id}`, assertCurrent);
+    setSnapshot(undefined);
+  });
+
+  const clear = (key: string): void => run(async (assertCurrent) => {
+    const confirmed = window.confirm(t('policy.withdraw.clearConfirm'));
+    assertCurrent();
+    if (!confirmed) return;
+    await clearPolicyAction(key, true, undefined, undefined, assertCurrent);
+    assertCurrent();
+    refreshAttempts(tokenAddress(), snapshot);
   });
 
   return (
     <li>
       <p>{t('policy.account.label')} <Mono>{match.accountAddress}</Mono> {t('policy.account.block', { number: match.blockNumber.toString() })}</p>
-      <Field label={t('policy.account.tokenLabel')}>{(id) => <input id={id} value={token} disabled={busy} onChange={(e) => { setToken(e.target.value); setPlan(undefined); }} spellCheck={false} />}</Field>
+      <Field label={t('policy.account.tokenLabel')}>{(id) => <input id={id} dir="ltr" value={token} disabled={busy} onChange={(e) => { setToken(e.target.value); setSnapshot(undefined); setAttempts([]); }} spellCheck={false} />}</Field>
       <button type="button" disabled={busy} onClick={check}>{t('policy.account.check')}</button>
       {view?.deployed === false && (
         <>
@@ -149,18 +209,25 @@ function AccountPanel(props: { readonly ctx: PolicyCtx; readonly match: Scheme2M
           {plan.plan.problems.map((p) => <Notice key={p} kind="warn">{p}</Notice>)}
           {plan.plan.max > 0n && (
             <>
-              <Field label={t('policy.account.amountLabel')}>{(id) => <input id={id} inputMode="numeric" value={amount} onChange={(e) => { setAmount(e.target.value); }} />}</Field>
+              <Field label={t('policy.account.amountLabel')}>{(id) => <input id={id} dir="ltr" disabled={busy} inputMode="numeric" value={amount} onChange={(e) => { setAmount(e.target.value); }} />}</Field>
               <button type="button" disabled={busy} onClick={withdraw}>{t('policy.account.signWithdraw')}</button>
             </>
           )}
         </>
       )}
-      {pendingExec !== undefined && (
-        <p>
-          {t('policy.account.executeAfter', { date: new Date(Number(pendingExec.executeAfter) * 1000).toISOString() })} <Mono>{pendingExec.id.slice(0, 10)}…</Mono>.{' '}
-          <button type="button" disabled={busy} onClick={() => { run((assertCurrent) => send(pendingExec.call, t('policy.account.execution'), assertCurrent)); }}>{t('policy.account.executeWithdrawal')}</button>
+      {summary?.pending.map((pending) => (
+        <p key={pending.id}>
+          {t('policy.account.executeAfter', { date: new Date(Number(pending.executeAfter) * 1000).toISOString() })} <Mono>{pending.id.slice(0, 10)}…</Mono>.{' '}
+          <button type="button" disabled={busy} onClick={() => { execute(pending.id, pending.token); }}>{t('policy.account.executeWithdrawal')}</button>
         </p>
-      )}
+      ))}
+      <Notice kind="info">{t('policy.withdraw.storageNotice')}</Notice>
+      {attempts.length > 0 && <section aria-label={t('policy.withdraw.attempts')}>
+        {attempts.map((attempt) => <p key={attempt.id}>
+          <Mono>{attempt.hash ?? attempt.status}</Mono>{' '}
+          <button type="button" disabled={busy} onClick={() => { clear(attempt.key); }}>{t('policy.withdraw.clearAttempt')}</button>
+        </p>)}
+      </section>}
       {msg !== undefined && <Notice kind={msg.kind}>{msg.text}</Notice>}
     </li>
   );
@@ -208,7 +275,7 @@ export function PolicyReceive(props: { readonly ctx: PolicyCtx }): ReactNode {
       setScannedSession(app.session);
       setMsg({ kind: f.truncated ? 'warn' : 'ok', text: `${t('policy.receive.result', { count: String(f.announcements.length), fresh: String(found.length) })}${f.truncated ? ` ${t('policy.receive.capped')}` : ''}` });
     } catch (e) {
-      setMsg({ kind: 'error', text: userMessage(e) });
+      setMsg({ kind: 'error', text: userMessage(e, t) });
     } finally {
       setBusy(false);
     }

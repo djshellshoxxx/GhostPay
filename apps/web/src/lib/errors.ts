@@ -48,23 +48,37 @@ const INVOICE_TEXT: Readonly<Record<string, MessageKey>> = {
   PASSPHRASE_POLICY: 'error.invoice.passphrasePolicy',
 };
 
-/**
- * Maps any thrown value to text that is safe to show. Messages never include user input, links, keys or RPC URLs.
- */
-export function userMessage(error: unknown, t: Translator['t'] = SOURCE_TRANSLATOR.t): string {
-  if (error instanceof LocalizedTypeError) return t(error.translation.key, error.translation.values);
-  if (error instanceof UserFacingError) return error.translation === undefined ? error.message : t(error.translation.key, error.translation.values);
+/** A safe render-time value: no arbitrary exception or sensitive cause is retained. */
+export type DisplayMessage = string | MessageDescriptor | {
+  readonly invoiceMessage: MessageKey;
+  readonly field: string;
+};
+
+/** Capture only public diagnostics and formatting arguments for later rendering. */
+export function captureUserMessage(error: unknown): DisplayMessage {
+  if (error instanceof LocalizedTypeError) return error.translation;
+  if (error instanceof UserFacingError) return error.translation ?? error.message;
   if (error instanceof InvoiceError) {
-    const base = t(INVOICE_TEXT[error.code] ?? 'error.invoice.rejected');
-    return error.code === 'SCHEMA' && error.path !== undefined ? t('error.invoice.field', { message: base, field: error.path }) : base;
+    const key = INVOICE_TEXT[error.code] ?? 'error.invoice.rejected';
+    return error.code === 'SCHEMA' && error.path !== undefined
+      ? { invoiceMessage: key, field: error.path }
+      : { key };
   }
-  if (error instanceof ChainAdapterError) {
-    return t('error.chain', { code: error.code });
-  }
-  if (error instanceof GhostPayCryptoError) {
-    return t('error.crypto', { code: error.code });
-  }
-  return t('error.unknown');
+  if (error instanceof ChainAdapterError) return { key: 'error.chain', values: { code: error.code } };
+  if (error instanceof GhostPayCryptoError) return { key: 'error.crypto', values: { code: error.code } };
+  return { key: 'error.unknown' };
+}
+
+/** Render existing trusted copy or a public descriptor with the language current now. */
+export function displayMessage(message: DisplayMessage, t: Translator['t'] = SOURCE_TRANSLATOR.t): string {
+  if (typeof message === 'string') return message;
+  if ('invoiceMessage' in message) return t('error.invoice.field', { message: t(message.invoiceMessage), field: message.field });
+  return t(message.key, message.values);
+}
+
+/** Maps any thrown value to safe user text; raw RPC details, inputs and causes are never rendered. */
+export function userMessage(error: unknown, t: Translator['t'] = SOURCE_TRANSLATOR.t): string {
+  return displayMessage(captureUserMessage(error), t);
 }
 
 // i18n-use: error.invoice.fragmentFormat error.invoice.fragmentTooLarge error.invoice.base64url error.invoice.utf8 error.invoice.json error.invoice.schema error.invoice.nonCanonical error.invoice.decrypt error.invoice.signing error.invoice.randomness error.invoice.unsupported error.invoice.passphrase error.invoice.passphraseRequired error.invoice.passphraseUnexpected error.invoice.passphrasePolicy

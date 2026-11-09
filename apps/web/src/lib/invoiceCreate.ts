@@ -12,7 +12,7 @@ import {
 import { UserFacingError } from './errors';
 import { fiatDecimals, parseUnits, taxFor } from './format';
 import { getSessionPublic, withSessionSecrets } from './session';
-import { passphraseProblem } from './keystore';
+import { passphraseProblemMessage } from './keystore';
 
 export interface LineItemInput {
   readonly description: string;
@@ -67,7 +67,7 @@ export function computeTotals(items: readonly LineItem[], taxRateBps: number, ta
 
 function percentToBps(text: string): number {
   const v = parseUnits(text === '' ? '0' : text, 2);
-  if (v === undefined || v > 10_000n) throw new UserFacingError('Tax rate must be a percentage between 0 and 100 with at most two decimals.');
+  if (v === undefined || v > 10_000n) throw new UserFacingError({ key: 'error.invoiceCreate.taxRateMustBeAPercentageBetween0And100' });
   return Number(v);
 }
 
@@ -75,7 +75,7 @@ function percentToBps(text: string): number {
 export function tokenDecimals(chainId: number, token: string): number {
   if (token === 'native') return 18;
   const t = findToken(chainId, token);
-  if (t === undefined) throw new UserFacingError('That token is not on the allowlist for this chain.');
+  if (t === undefined) throw new UserFacingError({ key: 'error.invoiceCreate.thatTokenIsNotOnTheAllowlistForThisChain' });
   return t.decimals;
 }
 
@@ -99,19 +99,19 @@ export async function buildInvoiceLink(
   rng?: RandomSource,
 ): Promise<CreatedInvoice> {
   const pub = getSessionPublic();
-  if (pub === undefined) throw new UserFacingError('Load or generate seller keys first (Seller keys).');
+  if (pub === undefined) throw new UserFacingError({ key: 'error.invoiceCreate.loadOrGenerateSellerKeysFirstSellerKeys' });
   const chain = findChain(form.chainId);
   if (form.passphrase !== undefined) {
-    const problem = passphraseProblem(form.passphrase);
+    const problem = passphraseProblemMessage(form.passphrase);
     if (problem !== undefined) throw new UserFacingError(problem);
   }
-  if (chain === undefined) throw new UserFacingError('Unknown chain.');
-  if (!/^[A-Z]{3}$/.test(form.currency)) throw new UserFacingError('Currency must be a three-letter ISO code such as USD.');
+  if (chain === undefined) throw new UserFacingError({ key: 'error.invoiceCreate.unknownChain' });
+  if (!/^[A-Z]{3}$/.test(form.currency)) throw new UserFacingError({ key: 'error.invoiceCreate.currencyMustBeAThreeLetterISOCodeSuchAs' });
   const fd = fiatDecimals(form.currency);
   const items: LineItem[] = form.lineItems.map((li, i) => {
     const unit = parseUnits(li.unitPrice, fd);
-    if (unit === undefined) throw new UserFacingError(`Line ${String(i + 1)}: price must be a decimal with at most ${String(fd)} fractional digits.`);
-    if (!/^[1-9][0-9]{0,8}$/.test(li.quantity)) throw new UserFacingError(`Line ${String(i + 1)}: quantity must be a whole number from 1 to 999999999.`);
+    if (unit === undefined) throw new UserFacingError({ key: 'error.invoiceCreate.linePrice', values: { line: String(i + 1), digits: String(fd) } });
+    if (!/^[1-9][0-9]{0,8}$/.test(li.quantity)) throw new UserFacingError({ key: 'error.invoiceCreate.lineQuantity', values: { line: String(i + 1) } });
     return { description: li.description.normalize('NFC'), quantity: li.quantity, unitMinorUnits: unit.toString() };
   });
   const rateBps = percentToBps(form.taxRatePercent);
@@ -119,16 +119,16 @@ export async function buildInvoiceLink(
   let amountPolicy: Invoice['amountPolicy'];
   if (form.amountMode === 'fixed_token') {
     const units = parseUnits(form.tokenAmount, tokenDecimals(form.chainId, form.token));
-    if (units === undefined || units <= 0n) throw new UserFacingError('Enter a positive token amount with no more decimals than the token has.');
+    if (units === undefined || units <= 0n) throw new UserFacingError({ key: 'error.invoiceCreate.enterAPositiveTokenAmountWithNoMoreDecimalsThan' });
     amountPolicy = { mode: 'fixed_token', tokenAmount: units.toString() };
   } else {
-    if (totals.total <= 0n) throw new UserFacingError('Add at least one line item with a positive price.');
+    if (totals.total <= 0n) throw new UserFacingError({ key: 'error.invoiceCreate.addAtLeastOneLineItemWithAPositivePrice' });
     amountPolicy = { mode: 'fiat_quote' };
   }
   if (form.token !== 'native') tokenDecimals(form.chainId, form.token);
-  if (!Number.isInteger(form.expiryHours) || form.expiryHours < 1 || form.expiryHours > 24 * 90) throw new UserFacingError('Expiry must be between 1 hour and 90 days.');
-  if (!Number.isInteger(form.quoteTtlMinutes) || form.quoteTtlMinutes < 1 || form.quoteTtlMinutes > 1440) throw new UserFacingError('Quote validity must be between 1 and 1440 minutes.');
-  if (!Number.isInteger(form.maxSlippageBps) || form.maxSlippageBps < 0 || form.maxSlippageBps > 10_000) throw new UserFacingError('Slippage must be between 0 and 10000 basis points.');
+  if (!Number.isInteger(form.expiryHours) || form.expiryHours < 1 || form.expiryHours > 24 * 90) throw new UserFacingError({ key: 'error.invoiceCreate.expiryMustBeBetween1HourAnd90Days' });
+  if (!Number.isInteger(form.quoteTtlMinutes) || form.quoteTtlMinutes < 1 || form.quoteTtlMinutes > 1440) throw new UserFacingError({ key: 'error.invoiceCreate.quoteValidityMustBeBetween1And1440Minutes' });
+  if (!Number.isInteger(form.maxSlippageBps) || form.maxSlippageBps < 0 || form.maxSlippageBps > 10_000) throw new UserFacingError({ key: 'error.invoiceCreate.slippageMustBeBetween0And10000BasisPoints' });
   const memo = form.memo.trim();
   const invoice = createInvoice(
     {
@@ -160,6 +160,12 @@ export async function buildInvoiceLink(
     ...(form.passphrase === undefined ? {} : { passphrase: form.passphrase }),
     ...(rng === undefined ? {} : { rng }),
   });
-  if (!fragment.startsWith(FRAGMENT_PREFIX)) throw new UserFacingError('Internal error: unexpected fragment.');
+  if (!fragment.startsWith(FRAGMENT_PREFIX)) throw new UserFacingError({ key: 'error.invoiceCreate.internalErrorUnexpectedFragment' });
   return { invoice, fragment, link: `${baseUrl}${fragment}`, encrypted: form.encrypt || form.passphrase !== undefined, passphraseProtected: form.passphrase !== undefined };
 }
+
+// i18n-use: error.invoiceCreate.taxRateMustBeAPercentageBetween0And100 error.invoiceCreate.thatTokenIsNotOnTheAllowlistForThisChain error.invoiceCreate.loadOrGenerateSellerKeysFirstSellerKeys error.invoiceCreate.unknownChain error.invoiceCreate.currencyMustBeAThreeLetterISOCodeSuchAs error.invoiceCreate.enterAPositiveTokenAmountWithNoMoreDecimalsThan error.invoiceCreate.addAtLeastOneLineItemWithAPositivePrice error.invoiceCreate.expiryMustBeBetween1HourAnd90Days error.invoiceCreate.quoteValidityMustBeBetween1And1440Minutes error.invoiceCreate.slippageMustBeBetween0And10000BasisPoints error.invoiceCreate.internalErrorUnexpectedFragment
+
+// i18n-use: error.invoiceCreate.linePrice
+
+// i18n-use: error.invoiceCreate.lineQuantity

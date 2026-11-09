@@ -10,7 +10,10 @@ import type { WalletInfo } from '../../lib/wallet';
 import { MockWallet } from '../../test/mockWallet';
 import { makeServices, renderApp } from '../../test/render';
 import { POLICY_FLAG } from './flag';
-import { DEPLOYMENT, ROUTER, SEPOLIA, account, clientVectors, deploymentCalls, fakeChain, fixedRng, scheme2Log, walletMirror } from './fixtures.testutil';
+import { installPolicyTestLocks } from './withdrawal.testutil';
+import * as chainModule from './chain';
+const realVerifyDeployment = chainModule.verifyPolicyDeployment;
+import { LOCAL_POLICY_PROFILE, DEPLOYMENT, ROUTER, SEPOLIA, account, clientVectors, deploymentCalls, fakeChain, fixedRng, scheme2Log, walletMirror } from './fixtures.testutil';
 import { preparePolicyPayment } from './pay';
 
 const LABEL = 'Policy accounts (experimental)';
@@ -20,6 +23,8 @@ const canonical = (id: string): string => clientVectors.records.valid.find((v) =
 const info = (w: MockWallet): WalletInfo => ({ id: 'mock', name: 'Mock Wallet', kind: 'eip6963', provider: w });
 
 beforeEach(() => {
+  installPolicyTestLocks();
+  vi.spyOn(chainModule, 'verifyPolicyDeployment').mockImplementation((client, chain, input) => realVerifyDeployment(client, chain, input, LOCAL_POLICY_PROFILE));
   clearSession();
   window.localStorage.clear();
   window.sessionStorage.clear();
@@ -49,6 +54,20 @@ async function verify(user: ReturnType<typeof userEvent.setup>): Promise<void> {
 }
 
 describe('policy view: wallet and network', () => {
+  it('keeps an unpinned getter-compatible deployment unavailable in the actual application', async () => {
+    vi.restoreAllMocks();
+    const rpc = fakeChain(SEPOLIA, deploymentCalls());
+    const user = await open(makeServices({ createRpc: () => Promise.resolve(rpc) }));
+    await user.click(screen.getByLabelText('PolicyAccountFactory address'));
+    await user.paste(DEPLOYMENT.factory);
+    await user.click(screen.getByLabelText('GhostPayPolicyRouter address'));
+    await user.paste(ROUTER);
+    await user.click(screen.getByRole('button', { name: 'Verify on-chain' }));
+    expect(await screen.findByText('No authenticated policy deployment is configured for this network.')).toBeTruthy();
+    expect(screen.queryByLabelText('Verified policy deployment')).toBeNull();
+    expect(rpc.calls).toHaveLength(0);
+  });
+
   it('reports no wallets, discovery failures and connection failures', async () => {
     const discover = vi.fn<() => Promise<readonly WalletInfo[]>>()
       .mockResolvedValueOnce([])

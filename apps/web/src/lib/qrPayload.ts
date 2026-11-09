@@ -4,7 +4,7 @@ import { UserFacingError } from './errors';
 
 /** Only public scheme-1 keys. This parser never performs a registry action or accepts arbitrary URLs. */
 export function parsePublicMetaQr(text: string): string {
-  const bad = (): never => { throw new UserFacingError('This QR does not contain a supported public meta-address.'); };
+  const bad = (): never => { throw new UserFacingError({ key: 'error.qrPayload.thisQRDoesNotContainASupportedPublicMetaAddress' }); };
   if (text.length > 1024 || new TextEncoder().encode(text).byteLength > 1024) return bad();
   let candidate: unknown = text.trim();
   try {
@@ -19,3 +19,5 @@ export function parsePublicMetaQr(text: string): string {
     return encodeMetaAddress(decodeMetaAddress(candidate));
   } catch { return bad(); }
 }
+
+// i18n-use: error.qrPayload.thisQRDoesNotContainASupportedPublicMetaAddress

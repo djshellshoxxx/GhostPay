@@ -90,7 +90,7 @@ async function post(base: string, path: string, body: unknown, fetchFn: FetchFn)
       signal: ctl.signal,
     });
     const text = await res.text();
-    if (text.length > MAX_RESPONSE) throw new UserFacingError('The relayer response was too large and was ignored.');
+    if (text.length > MAX_RESPONSE) throw new UserFacingError({ key: 'error.relayerClient.theRelayerResponseWasTooLargeAndWasIgnored' });
     if (!res.ok) {
       // Class only; never echo the body.
       const code = errorClass(text);
@@ -99,18 +99,18 @@ async function post(base: string, path: string, body: unknown, fetchFn: FetchFn)
     try {
       return JSON.parse(text);
     } catch {
-      throw new UserFacingError('The relayer returned an invalid response.');
+      throw new UserFacingError({ key: 'error.relayerClient.theRelayerReturnedAnInvalidResponse' });
     }
   } catch (e) {
     if (e instanceof UserFacingError) throw e;
-    throw new UserFacingError('Could not reach the relayer.');
+    throw new UserFacingError({ key: 'error.relayerClient.couldNotReachTheRelayer' });
   } finally {
     clearTimeout(timer);
   }
 }
 
 function obj(v: unknown): Record<string, unknown> {
-  if (typeof v !== 'object' || v === null || Array.isArray(v)) throw new UserFacingError('The relayer returned an invalid response.');
+  if (typeof v !== 'object' || v === null || Array.isArray(v)) throw new UserFacingError({ key: 'error.relayerClient.theRelayerReturnedAnInvalidResponse' });
   return v as Record<string, unknown>;
 }
 
@@ -121,11 +121,11 @@ export async function requestQuote(base: string, q: QuoteRequest, fetchFn: Fetch
   const feeTo = o['feeTo'];
   const expiresAt = o['expiresAt'];
   const quoteToken = o['quoteToken'];
-  if (typeof fee !== 'string' || !/^(?:0|[1-9][0-9]{0,77})$/.test(fee)) throw new UserFacingError('The relayer returned an invalid fee.');
-  if (typeof feeTo !== 'string' || !isAddress(feeTo, { strict: false })) throw new UserFacingError('The relayer returned an invalid fee address.');
-  if (typeof expiresAt !== 'number' || !Number.isSafeInteger(expiresAt) || expiresAt <= 0) throw new UserFacingError('The relayer returned an invalid expiry.');
+  if (typeof fee !== 'string' || !/^(?:0|[1-9][0-9]{0,77})$/.test(fee)) throw new UserFacingError({ key: 'error.relayerClient.theRelayerReturnedAnInvalidFee' });
+  if (typeof feeTo !== 'string' || !isAddress(feeTo, { strict: false })) throw new UserFacingError({ key: 'error.relayerClient.theRelayerReturnedAnInvalidFeeAddress' });
+  if (typeof expiresAt !== 'number' || !Number.isSafeInteger(expiresAt) || expiresAt <= 0) throw new UserFacingError({ key: 'error.relayerClient.theRelayerReturnedAnInvalidExpiry' });
   if (typeof quoteToken !== 'string' || quoteToken.length === 0 || quoteToken.length > 2048 || !/^[A-Za-z0-9._~+/=-]+$/.test(quoteToken)) {
-    throw new UserFacingError('The relayer returned an invalid quote token.');
+    throw new UserFacingError({ key: 'error.relayerClient.theRelayerReturnedAnInvalidQuoteToken' });
   }
   return { fee: BigInt(fee), feeTo: getAddress(feeTo), expiresAt, quoteToken };
 }
@@ -150,6 +150,8 @@ export interface SweepSubmission {
 export async function submitSweep(base: string, s: SweepSubmission, fetchFn: FetchFn = (u, i) => fetch(u, i)): Promise<string> {
   const o = obj(await post(base, '/v1/sweep', s, fetchFn));
   const h = o['txHash'];
-  if (typeof h !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(h)) throw new UserFacingError('The relayer returned an invalid transaction hash.');
+  if (typeof h !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(h)) throw new UserFacingError({ key: 'error.relayerClient.theRelayerReturnedAnInvalidTransactionHash' });
   return h.toLowerCase();
 }
+
+// i18n-use: error.relayerClient.theRelayerResponseWasTooLargeAndWasIgnored error.relayerClient.theRelayerReturnedAnInvalidResponse error.relayerClient.couldNotReachTheRelayer error.relayerClient.theRelayerReturnedAnInvalidFee error.relayerClient.theRelayerReturnedAnInvalidFeeAddress error.relayerClient.theRelayerReturnedAnInvalidExpiry error.relayerClient.theRelayerReturnedAnInvalidQuoteToken error.relayerClient.theRelayerReturnedAnInvalidTransactionHash

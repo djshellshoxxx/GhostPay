@@ -3,8 +3,8 @@ import { findChain } from '@ghostpay/chain-adapters';
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { Translator } from '../i18n/translator';
-import { UserFacingError, userMessage } from '../lib/errors';
-import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphrase, passphraseProblem } from '../lib/keystore';
+import { UserFacingError, userMessage, captureUserMessage, displayMessage, type DisplayMessage } from '../lib/errors';
+import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphrase, passphraseProblemMessage } from '../lib/keystore';
 import { createCurrentReconciliationVault, type ReconciliationImportPreview, type ReconciliationVault } from '../lib/reconciliationVault';
 import { checkpointKeyId } from '../lib/scanClient';
 import { useServices } from '../lib/services';
@@ -103,7 +103,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
   const t = (key: Parameters<Translator['t']>[0], values?: Parameters<Translator['t']>[1]): string => trRef.current.t(key, values);
   const app = useApp();
   const { vault, chains } = useServices();
-  const [message, setMessage] = useState<{ kind: 'ok' | 'error'; text: string } | undefined>(undefined);
+  const [message, setMessage] = useState<{ kind: 'ok' | 'error'; text: DisplayMessage } | undefined>(undefined);
   const [busy, setBusy] = useState(false);
   // The archive passphrase starts as a generated suggestion (L1-06), shown in clear only while untouched.
   const [suggested, setSuggested] = useState(generatePassphrase);
@@ -151,7 +151,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
   const ensureUnlocked = async (): Promise<void> => {
     if (!vault.unlocked) await vault.unlock(revealViewingKey());
   };
-  const fail = (e: unknown): void => { setMessage({ kind: 'error', text: userMessage(e, t) }); };
+  const fail = (e: unknown): void => { setMessage({ kind: 'error', text: captureUserMessage(e) }); };
   const done = (text: string): void => { setMessage({ kind: 'ok', text }); app.announce(text); };
 
   const historyVaults = async (c: AbortController): Promise<{ vaults: { chainId: number; vault: ReconciliationVault }[]; skipped: number }> => {
@@ -188,7 +188,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
 
   const onExport = (e: FormEvent): void => {
     e.preventDefault();
-    const problem = passphraseProblem(pass);
+    const problem = passphraseProblemMessage(pass);
     if (problem !== undefined) { setMessage({ kind: 'error', text: problem }); return; }
     if (pass !== pass2) { setMessage({ kind: 'error', text: t('sellerKeys.passphrasesDiffer') }); return; }
     const c = start(); const unchanged = captureSessionVersionGuard();
@@ -366,7 +366,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
   return (
     <section className="panel" aria-labelledby="tagarc-h">
       <h3 id="tagarc-h">{t('tagArchive.heading')}</h3>
-      {message !== undefined && <Notice kind={message.kind}>{message.text}</Notice>}
+      {message !== undefined && <Notice kind={message.kind}>{displayMessage(message.text, t)}</Notice>}
       {s === undefined ? <p>{t('tagArchive.loadKeys')}</p> : (
         <>
           <form onSubmit={onExport} className="stack" autoComplete="off">

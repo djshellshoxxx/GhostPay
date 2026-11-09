@@ -24,7 +24,7 @@ describe('Pay localization', () => {
       </I18nProvider>,
     );
     await waitFor(() => { expect(document.documentElement.getAttribute('lang')).toBe('es'); });
-    await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: /^Pay$/ }));
+    await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: es.messages['app.nav.pay'] }));
 
     // Neutral label: the drafted es text is allowed.
     expect(await screen.findByRole('heading', { name: 'Pagar una factura' })).toBeTruthy();

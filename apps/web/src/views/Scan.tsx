@@ -6,7 +6,7 @@ import { ReconciliationLedger } from '../components/ReconciliationLedger';
 import { useManifest } from '../components/Disclosure';
 import { verifyManifestState } from '../lib/manifest';
 import { formatUnits } from '../lib/format';
-import { UserFacingError, userMessage } from '../lib/errors';
+import { UserFacingError, displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { checkpointKeyId, runScan, type ScanMatch, type ScanProgress } from '../lib/scanClient';
 import { browserStorage, createWindowedScanClient, describeScanDisclosure, loadScanPrivacy, openScanClients, planScan } from '../lib/scanPrivacy';
 import { describeAnonymitySet } from '../lib/scanSpam';
@@ -40,15 +40,15 @@ function useLatestScanT(t: T): { readonly current: T } {
 }
 
 /** Scan state keeps a message key and values, not text, so it renders in the language current when it is shown.
- * Text that already arrives as a finished string (privacy plan, userMessage) is kept as it is. */
-type ScanText = { readonly key: MessageKey; readonly values?: MessageValues } | { readonly text: string };
+ * Typed failures are rendered with the current translator; existing privacy-plan text stays literal. */
+type ScanText = { readonly key: MessageKey; readonly values?: MessageValues } | { readonly text: string } | { readonly error: DisplayMessage };
 // msg('key') descriptors are not seen by scripts/i18n/extract.mjs; the keys built through msg() in this file:
 // i18n-use: scan.error.noRpc scan.error.secondRpc scan.error.startBlock scan.error.manifestMismatch scan.error.noManifest
 // i18n-use: scan.error.discrepancy scan.error.backlog scan.error.limitReached scan.error.keysChanged scan.lag
 // i18n-use: scan.done.note scan.done.cancelled scan.done.limit scan.done.finished scan.done.cancelledEarly
 const msg = (key: MessageKey, values?: MessageValues): ScanText => (values === undefined ? { key } : { key, values });
 const literal = (text: string): ScanText => ({ text });
-const show = (m: ScanText, t: T): string => ('text' in m ? m.text : t(m.key, m.values));
+const show = (m: ScanText, t: T): string => ('text' in m ? m.text : 'error' in m ? displayMessage(m.error, t) : t(m.key, m.values));
 
 export function Scan(): ReactNode {
   const t = useScanT();
@@ -240,7 +240,7 @@ export function Scan(): ReactNode {
               quarantined = quarantined.filter((m) => m.announcement.blockNumber < to);
             } catch (cause) {
               if (cause instanceof UserFacingError) throw cause;
-              const warning = new UserFacingError(latestT.current('scan.error.reorg'));
+              const warning = new UserFacingError({ key: 'scan.error.reorg' });
               warning.cause = cause;
               throw warning;
             }
@@ -250,7 +250,7 @@ export function Scan(): ReactNode {
             const identity = `${m.stealthAddress.toLowerCase()}|${m.announcement.ephemeralPublicKey.toLowerCase()}`;
             const prior = found.findIndex((x) => `${x.stealthAddress.toLowerCase()}|${x.announcement.ephemeralPublicKey.toLowerCase()}` === identity);
             if (prior < 0) {
-              if (found.length + quarantined.length >= 10_000) throw new UserFacingError(latestT.current('scan.error.observationLimit'));
+              if (found.length + quarantined.length >= 10_000) throw new UserFacingError({ key: 'scan.error.observationLimit' });
               found.push(m);
             }
             else found[prior] = m;
@@ -275,7 +275,7 @@ export function Scan(): ReactNode {
           else if (scopeKeysAreCurrent()) setDone([msg('scan.done.cancelledEarly')]);
           return;
         }
-        setError(e instanceof Error && e.message === 'manifest' ? msg('scan.error.noManifest') : literal(userMessage(e)));
+        setError(e instanceof Error && e.message === 'manifest' ? msg('scan.error.noManifest') : { error: captureUserMessage(e) });
       } finally {
         if (abort.current === ctl) abort.current = undefined;
         if (startingScope.current === scope) startingScope.current = undefined;
@@ -388,7 +388,7 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
   const services = useServices();
   const [tags, setTags] = useState<Readonly<Record<string, string>>>({});
   const [label, setLabel] = useState<Readonly<Record<string, string>>>({});
-  const [err, setErr] = useState<string | undefined>(undefined);
+  const [err, setErr] = useState<ScanText | undefined>(undefined);
   const unlocked = services.vault.unlocked;
   const matches = props.matches;
 
@@ -419,7 +419,7 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
   return (
     <div>
       <h3>{t('scan.matches.heading')}</h3>
-      {err !== undefined && <Notice kind="error">{err}</Notice>}
+      {err !== undefined && <Notice kind="error">{show(err, t)}</Notice>}
       <ul className="plain-list matches">
         {matches.map((m) => {
           const id = m.announcement.id;
@@ -449,7 +449,7 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
                       try {
                         sessionGuard = captureSessionGuard();
                       } catch (e) {
-                        setErr(userMessage(e));
+                        setErr({ error: captureUserMessage(e) });
                         return;
                       }
                       services.vault.save(props.chainId, payload).then(
@@ -459,7 +459,7 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
                           } catch (e) {
                             // The keys changed while saving: never leave the tags open for the new keys.
                             services.vault.lock();
-                            setErr(userMessage(e));
+                            setErr({ error: captureUserMessage(e) });
                             return;
                           }
                           setErr(undefined);
@@ -467,7 +467,7 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
                           app.announce(latestT.current('scan.tag.saved'));
                         },
                         (e: unknown) => {
-                          setErr(userMessage(e));
+                          setErr({ error: captureUserMessage(e) });
                         },
                       );
                     }}
@@ -497,12 +497,12 @@ function Tags(props: { readonly chainId: number }): ReactNode {
   const services = useServices();
   const [, force] = useState(0);
   const [list, setList] = useState<readonly TagPayload[] | undefined>(undefined);
-  const [err, setErr] = useState<string | undefined>(undefined);
+  const [err, setErr] = useState<ScanText | undefined>(undefined);
   const unlocked = services.vault.unlocked;
 
   const refresh = (): void => {
     services.vault.list(props.chainId).then(setList, (e: unknown) => {
-      setErr(userMessage(e));
+      setErr({ error: captureUserMessage(e) });
     });
   };
 
@@ -512,7 +512,7 @@ function Tags(props: { readonly chainId: number }): ReactNode {
       <p className="hint">
         {t('scan.tags.hint', { minutes: String(app.settings.lockTimeoutMin) })}
       </p>
-      {err !== undefined && <Notice kind="error">{err}</Notice>}
+      {err !== undefined && <Notice kind="error">{show(err, t)}</Notice>}
       <div className="actions">
         {!unlocked ? (
           <button
@@ -530,7 +530,7 @@ function Tags(props: { readonly chainId: number }): ReactNode {
                       // Unlocked with the previous keys' viewing key: lock again before anything reads or writes tags.
                       services.vault.lock();
                       force((n) => n + 1);
-                      setErr(userMessage(e));
+                      setErr({ error: captureUserMessage(e) });
                       return;
                     }
                     setErr(undefined);
@@ -539,11 +539,11 @@ function Tags(props: { readonly chainId: number }): ReactNode {
                     app.announce(latestT.current('scan.tags.unlocked'));
                   },
                   (e: unknown) => {
-                    setErr(userMessage(e));
+                    setErr({ error: captureUserMessage(e) });
                   },
                 );
               } catch (e) {
-                setErr(userMessage(e));
+                setErr({ error: captureUserMessage(e) });
               }
             }}
           >
@@ -566,7 +566,7 @@ function Tags(props: { readonly chainId: number }): ReactNode {
                   app.announce(latestT.current('scan.tags.deleted'));
                 },
                 (e: unknown) => {
-                  setErr(userMessage(e));
+                  setErr({ error: captureUserMessage(e) });
                 },
               );
             }

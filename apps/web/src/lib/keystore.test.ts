@@ -1,13 +1,25 @@
 import { describe, expect, it, vi } from 'vitest';
 import { encodeMetaAddress, parseCompressedPoint } from '@ghostpay/core-crypto';
 import { secp256k1 } from '@noble/curves/secp256k1.js';
-import { DEFAULT_SCRYPT, decryptKeystore, encryptKeystore, generatePassphrase, GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, PASSPHRASE_WORDS, passphraseProblem, passphraseStrength } from './keystore';
+import { DEFAULT_SCRYPT, decryptKeystore, encryptKeystore, generatePassphrase, GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, PASSPHRASE_WORDS, passphraseProblem, passphraseProblemMessage, passphraseStrength } from './keystore';
 
 const META = { metaAddress: encodeMetaAddress({ spendingPublicKey: parseCompressedPoint(secp256k1.getPublicKey(new Uint8Array(32).fill(1))), viewingPublicKey: parseCompressedPoint(secp256k1.getPublicKey(new Uint8Array(32).fill(2))) }), signer: Buffer.from(secp256k1.getPublicKey(new Uint8Array(32).fill(3))).toString('hex') };
 const secrets = () => ({ spendingKey: new Uint8Array(32).fill(1), viewingKey: new Uint8Array(32).fill(2), signingKey: new Uint8Array(32).fill(3) });
 const FAST = { N: 1 << 14 };
 
 describe('keystore', () => {
+  it('provides public structured passphrase diagnostics without retaining the entered phrase', () => {
+    const short = passphraseProblemMessage('secret');
+    expect(short).toEqual({ key: 'error.keystore.passphraseShort', values: { minimum: '14' } });
+    expect(JSON.stringify(short)).not.toContain('secret');
+    const weak = passphraseProblemMessage('passwordpasswordpassword');
+    expect(weak).toEqual({ key: 'error.keystore.passphraseWeak' });
+    expect(passphraseProblem('secret')).toBe('Use a passphrase of at least 14 characters (four random words work well).');
+    expect(passphraseProblem('passwordpasswordpassword')).toMatch(/too easy to guess/);
+    expect(passphraseProblemMessage('violet comet maple lantern')).toBeUndefined();
+  });
+
+
   it('pins the documented scrypt parameters', () => {
     expect(DEFAULT_SCRYPT).toEqual({ N: 131072, r: 8, p: 1 });
   });

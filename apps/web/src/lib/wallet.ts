@@ -1,6 +1,6 @@
 import { parseQuantity, type Address, type Hex } from '@ghostpay/chain-adapters';
 import { getAddress, isAddress, keccak256, toBytes } from 'viem/utils';
-import { beginAttempt, browserAttemptStorage, finishAttempt, type AttemptInput } from './duplicateAttemptJournal';
+import { beginAttempt, browserAttemptStorage, finishAttempt, type AttemptInput, type AttemptStorage } from './duplicateAttemptJournal';
 import { UserFacingError } from './errors';
 
 /** Minimal EIP-1193 provider surface. */
@@ -101,7 +101,7 @@ export async function discoverWallets(win: WindowLike, waitMs = 150): Promise<re
     const duration = Number.isFinite(waitMs) ? Math.max(0, Math.min(MAX_DISCOVERY_MS, waitMs)) : 150;
     await new Promise((resolve) => setTimeout(resolve, duration));
   } catch {
-    throw new UserFacingError('Wallet discovery could not start. Retry or use another wallet.');
+    throw new UserFacingError({ key: 'error.wallet.walletDiscoveryCouldNotStartRetryOrUseAnotherWallet' });
   } finally {
     active = false;
     try { win.removeEventListener('eip6963:announceProvider', onAnnounce); } catch { /* Closed callback ignores late events even if cleanup fails. */ }
@@ -155,7 +155,7 @@ async function call(p: Eip1193Provider, method: string, params?: readonly unknow
   } catch (e) {
     let code: number | undefined;
     try { code = typeof e === 'object' && e !== null ? cleanRpcCode((e as { code?: unknown }).code) : undefined; } catch { /* A thrown error can itself be a hostile proxy/accessor. */ }
-    if (code === 4001) throw new UserFacingError('You rejected the request in your wallet.');
+    if (code === 4001) throw new UserFacingError({ key: 'error.wallet.youRejectedTheRequestInYourWallet' });
     throw new WalletCallError(method, code);
   }
 }
@@ -180,12 +180,12 @@ export class WalletCallError extends Error {
 }
 
 function toAccount(v: unknown): Address {
-  if (typeof v !== 'string' || !isAddress(v, { strict: false })) throw new UserFacingError('The wallet returned an invalid account.');
+  if (typeof v !== 'string' || !isAddress(v, { strict: false })) throw new UserFacingError({ key: 'error.wallet.theWalletReturnedAnInvalidAccount' });
   return getAddress(v);
 }
 
 function firstAccount(v: unknown): Address {
-  if (!Array.isArray(v) || v.length === 0) throw new UserFacingError('The wallet returned no accounts.');
+  if (!Array.isArray(v) || v.length === 0) throw new UserFacingError({ key: 'error.wallet.theWalletReturnedNoAccounts' });
   return toAccount(v[0]);
 }
 
@@ -198,9 +198,9 @@ async function readChainId(p: Eip1193Provider, assertCurrent?: () => void): Prom
     id = parseQuantity(answer);
   } catch (e) {
     if (e instanceof UserFacingError || e instanceof WalletCallError) throw e;
-    throw new UserFacingError('The wallet returned an invalid chain id.');
+    throw new UserFacingError({ key: 'error.wallet.theWalletReturnedAnInvalidChainId' });
   }
-  if (id < 1n || id > BigInt(Number.MAX_SAFE_INTEGER)) throw new UserFacingError('The wallet returned an invalid chain id.');
+  if (id < 1n || id > BigInt(Number.MAX_SAFE_INTEGER)) throw new UserFacingError({ key: 'error.wallet.theWalletReturnedAnInvalidChainId' });
   const n = Number(id);
   // Consistency probe: a provider that answers net_version must agree with eth_chainId. This cannot defeat a
   // consistently lying provider; the independent RPC check after sending covers that when an RPC is configured.
@@ -212,7 +212,7 @@ async function readChainId(p: Eip1193Provider, assertCurrent?: () => void): Prom
   }
   assertCurrent?.();
   if ((typeof net === 'string' || typeof net === 'number') && String(net) !== String(n)) {
-    throw new UserFacingError('The wallet gave contradictory chain ids. Refusing to continue.');
+    throw new UserFacingError({ key: 'error.wallet.theWalletGaveContradictoryChainIdsRefusingToContinue' });
   }
   return n;
 }
@@ -224,7 +224,7 @@ async function readChainId(p: Eip1193Provider, assertCurrent?: () => void): Prom
 export async function connectWallet(wallet: WalletInfo, expectedChainId: number): Promise<WalletSession> {
   const requested = firstAccount(await call(wallet.provider, 'eth_requestAccounts'));
   const listed = firstAccount(await call(wallet.provider, 'eth_accounts'));
-  if (requested !== listed) throw new UserFacingError('The wallet reported inconsistent accounts. Refusing to continue.');
+  if (requested !== listed) throw new UserFacingError({ key: 'error.wallet.theWalletReportedInconsistentAccountsRefusingToContinue' });
   let chainId = await readChainId(wallet.provider);
   if (chainId !== expectedChainId) {
     try {
@@ -234,7 +234,7 @@ export async function connectWallet(wallet: WalletInfo, expectedChainId: number)
     }
     chainId = await readChainId(wallet.provider);
     if (chainId !== expectedChainId) {
-      throw new UserFacingError(`Your wallet is on chain ${String(chainId)} but this invoice requires chain ${String(expectedChainId)}. Switch networks in your wallet.`);
+      throw new UserFacingError({ key: 'error.wallet.invoiceChainMismatch', values: { chain: String(chainId), expected: String(expectedChainId) } });
     }
   }
   return { wallet, account: requested, chainId };
@@ -245,13 +245,13 @@ export async function recheckWallet(s: WalletSession, assertCurrent?: () => void
   assertCurrent?.();
   const acct = firstAccount(await call(s.wallet.provider, 'eth_accounts'));
   assertCurrent?.();
-  if (acct !== s.account) throw new UserFacingError('The selected wallet account changed. Reconnect and review again.');
+  if (acct !== s.account) throw new UserFacingError({ key: 'error.wallet.theSelectedWalletAccountChangedReconnectAndReviewAgain' });
   const chainId = await readChainId(s.wallet.provider, assertCurrent);
   assertCurrent?.();
-  if (chainId !== s.chainId) throw new UserFacingError('The wallet network changed. Reconnect and review again.');
+  if (chainId !== s.chainId) throw new UserFacingError({ key: 'error.wallet.theWalletNetworkChangedReconnectAndReviewAgain' });
   const finalAccount = firstAccount(await call(s.wallet.provider, 'eth_accounts'));
   assertCurrent?.();
-  if (finalAccount !== s.account) throw new UserFacingError('The selected wallet account changed. Reconnect and review again.');
+  if (finalAccount !== s.account) throw new UserFacingError({ key: 'error.wallet.theSelectedWalletAccountChangedReconnectAndReviewAgain' });
 }
 
 export interface TxRequest {
@@ -270,13 +270,21 @@ export interface WalletAttemptOptions {
    * is a new action while repeating it for one invoice stays a duplicate (L2-I3).
    */
   readonly scope?: string;
+  /** Stable transaction identity across rebuilt calldata/nonces; requires a bounded explicit scope. */
+  readonly logicalAction?: boolean;
+  /** Explicit journal store; policy operations use durable browser storage under an exclusive lock. */
+  readonly storage?: AttemptStorage;
 }
-export function walletAttemptKey(s: WalletSession, tx: TxRequest, options?: WalletAttemptOptions): string {
+export function walletAttemptKey(s: Pick<WalletSession, 'chainId' | 'account'>, tx: TxRequest, options?: WalletAttemptOptions): string {
   const call = [tx.to.toLowerCase(), tx.data.toLowerCase(), tx.value.toString()];
   const payment = options?.kind === 'payment' && options.scope !== undefined;
+  const logicalTransaction = options?.logicalAction === true;
+  if (logicalTransaction && (options.kind !== 'transaction' || typeof options.scope !== 'string' || !/^[A-Za-z0-9:._/-]{1,1024}$/.test(options.scope))) {
+    throw new UserFacingError({ key: 'policy.withdraw.logicalScope' });
+  }
   return keccak256(toBytes(JSON.stringify([
-    s.chainId, payment ? 'invoice-payer' : s.account.toLowerCase(), options?.kind ?? 'transaction',
-    payment ? options.scope : options?.scope === undefined ? call : [options.scope, ...call],
+    s.chainId, payment ? 'invoice-payer' : logicalTransaction ? 'logical-relayer' : s.account.toLowerCase(), options?.kind ?? 'transaction',
+    payment ? options.scope : logicalTransaction ? ['logical-transaction-v1', options.scope] : options?.scope === undefined ? call : [options.scope, ...call],
   ])));
 }
 /** Returned hash is preserved even if tab storage fails after broadcast. */
@@ -301,14 +309,14 @@ function walletAuthority(s: WalletSession, assertCurrent?: () => void): { assert
   if (provider.on !== undefined && provider.removeListener !== undefined) {
     try { for (const event of events) provider.on(event, onChanged); } catch {
       dispose();
-      throw new UserFacingError('The wallet could not be monitored for account or network changes. Reconnect before continuing.');
+      throw new UserFacingError({ key: 'error.wallet.theWalletCouldNotBeMonitoredForAccountOrNetwork' });
     }
   }
   return {
     assert: () => {
       assertCurrent?.();
       if (changed || s.wallet.provider !== provider || s.account !== account || s.chainId !== chainId) {
-        throw new UserFacingError('The wallet account, network or provider changed. Reconnect and review again.');
+        throw new UserFacingError({ key: 'error.wallet.theWalletAccountNetworkOrProviderChangedReconnectAndReview' });
       }
     },
     dispose,
@@ -320,7 +328,7 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
   try {
     await recheckWallet(s, authority.assert);
     authority.assert();
-    const storage = browserAttemptStorage();
+    const storage = options?.storage ?? browserAttemptStorage();
     const attempt = storage === undefined ? undefined : beginAttempt({
       key: walletAttemptKey(s, tx, options), chainId: s.chainId, account: s.account.toLowerCase(), kind: options?.kind ?? 'transaction',
     }, storage);
@@ -333,9 +341,9 @@ export async function sendViaWallet(s: WalletSession, tx: TxRequest, assertCurre
       ]);
     } catch (e) {
       if (e instanceof UserFacingError) throw e;
-      throw new UserFacingError('The wallet request failed with an unknown outcome and may already have been submitted. Check your wallet and the chain before explicitly clearing this attempt; do not send again blindly.');
+      throw new UserFacingError({ key: 'error.wallet.theWalletRequestFailedWithAnUnknownOutcomeAndMay' });
     }
-    if (typeof hash !== 'string' || !HASH_RE.test(hash)) throw new UserFacingError('The wallet did not return a valid transaction hash. The outcome is unknown; check your wallet before another attempt.');
+    if (typeof hash !== 'string' || !HASH_RE.test(hash)) throw new UserFacingError({ key: 'error.wallet.theWalletDidNotReturnAValidTransactionHashThe' });
     const normalized = hash.toLowerCase() as Hex;
     if (attempt !== undefined) {
       try { finishAttempt(attempt, normalized, storage); } catch { throw new WalletBroadcastError(normalized); }
@@ -353,7 +361,7 @@ export async function signTypedDataViaWallet(s: WalletSession, typedDataJson: st
     authority.assert();
     const sig = await call(s.wallet.provider, 'eth_signTypedData_v4', [s.account, typedDataJson]);
     authority.assert();
-    if (typeof sig !== 'string' || !/^0x[0-9a-fA-F]{130}$/.test(sig)) throw new UserFacingError('The wallet returned an invalid signature.');
+    if (typeof sig !== 'string' || !/^0x[0-9a-fA-F]{130}$/.test(sig)) throw new UserFacingError({ key: 'error.wallet.theWalletReturnedAnInvalidSignature' });
     return sig as Hex;
   } finally { authority.dispose(); }
 
@@ -382,7 +390,7 @@ export interface SeenTx {
 
 function parseSeenTx(v: unknown): SeenTx | undefined {
   if (v === null) return undefined;
-  if (typeof v !== 'object') throw new UserFacingError('Your RPC returned an unexpected transaction shape.');
+  if (typeof v !== 'object') throw new UserFacingError({ key: 'error.wallet.yourRPCReturnedAnUnexpectedTransactionShape' });
   const o = v as Record<string, unknown>;
   try {
     return {
@@ -394,7 +402,7 @@ function parseSeenTx(v: unknown): SeenTx | undefined {
       chainId: o['chainId'] === undefined ? undefined : parseQuantity(o['chainId']),
     };
   } catch {
-    throw new UserFacingError('Your RPC returned an unexpected transaction shape.');
+    throw new UserFacingError({ key: 'error.wallet.yourRPCReturnedAnUnexpectedTransactionShape' });
   }
 }
 
@@ -445,7 +453,7 @@ export async function pollReceipt(
   for (let i = 0; i < attempts; i++) {
     const r = await rpc.request('eth_getTransactionReceipt', [hash]);
     if (r !== null) {
-      if (typeof r !== 'object') throw new UserFacingError('Your RPC returned an unexpected receipt shape.');
+      if (typeof r !== 'object') throw new UserFacingError({ key: 'error.wallet.yourRPCReturnedAnUnexpectedReceiptShape' });
       const o = r as Record<string, unknown>;
       let to: Address | undefined;
       try {
@@ -455,10 +463,15 @@ export async function pollReceipt(
         return { status: status === 1n ? 'success' : 'reverted', blockNumber: parseQuantity(o['blockNumber']) };
       } catch (e) {
         if (e instanceof UserFacingError) throw e;
-        throw new UserFacingError('Your RPC returned an unexpected receipt shape.');
+        throw new UserFacingError({ key: 'error.wallet.yourRPCReturnedAnUnexpectedReceiptShape' });
       }
     }
     await sleep(2000);
   }
   return undefined;
 }
+
+// i18n-use: error.wallet.walletDiscoveryCouldNotStartRetryOrUseAnotherWallet error.wallet.youRejectedTheRequestInYourWallet error.wallet.theWalletReturnedAnInvalidAccount error.wallet.theWalletReturnedNoAccounts error.wallet.theWalletReturnedAnInvalidChainId error.wallet.theWalletGaveContradictoryChainIdsRefusingToContinue error.wallet.theWalletReportedInconsistentAccountsRefusingToContinue error.wallet.theSelectedWalletAccountChangedReconnectAndReviewAgain error.wallet.theWalletNetworkChangedReconnectAndReviewAgain error.wallet.theWalletCouldNotBeMonitoredForAccountOrNetwork error.wallet.theWalletAccountNetworkOrProviderChangedReconnectAndReview error.wallet.theWalletRequestFailedWithAnUnknownOutcomeAndMay error.wallet.theWalletDidNotReturnAValidTransactionHashThe error.wallet.theWalletReturnedAnInvalidSignature error.wallet.yourRPCReturnedAnUnexpectedTransactionShape error.wallet.yourRPCReturnedAnUnexpectedReceiptShape
+
+// i18n-use: error.wallet.invoiceChainMismatch
+// i18n-use: policy.withdraw.logicalScope

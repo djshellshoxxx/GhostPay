@@ -172,7 +172,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         fn();
       };
       const onAbort = (): void => done(() => reject(ABORTED));
-      const expire = (): void => done(() => reject(new UserFacingError('The scanner did not answer in time and was stopped.')));
+      const expire = (): void => done(() => reject(new UserFacingError({ key: 'error.scanClient.theScannerDidNotAnswerInTimeAndWasStopped' })));
       let timer = setTimeout(expire, timeoutMs);
       let scannedSoFar = -1;
       // A whole page on a slow device can take longer than the timeout; the worker reports progress every 128
@@ -227,13 +227,13 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       else if (m.type === 'progress' && pending.has(m.batchId)) progressed?.(m.scanned);
     };
     w.onerror = (): void => {
-      failed?.(new UserFacingError('The scanner worker failed.'));
+      failed?.(new UserFacingError({ key: 'error.scanClient.theScannerWorkerFailed' }));
     };
     const started = await wait((resolve) => {
       ready = resolve;
       w.postMessage({ type: 'start', viewingKey: p.viewingKey, spendingPublicKey: p.spendingPublicKeyHex });
     });
-    if (started.type !== 'ready') throw new UserFacingError('The scanner rejected the keys.');
+    if (started.type !== 'ready') throw new UserFacingError({ key: 'error.scanClient.theScannerRejectedTheKeys' });
     const maxPages = p.maxPages ?? 10_000;
     const maxAnnouncements = Math.max(1, Math.min(100_000, Number.isSafeInteger(p.maxAnnouncementsPerScan) ? p.maxAnnouncementsPerScan! : 100_000));
     const maxMatches = Math.max(1, Math.min(10_000, Number.isSafeInteger(p.maxMatchesPerScan) ? p.maxMatchesPerScan! : 10_000));
@@ -337,7 +337,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       });
       pending.delete(id);
       if (p.signal.aborted) break;
-      if (reply.type !== 'matches') throw new UserFacingError('The scanner returned an unexpected reply.');
+      if (reply.type !== 'matches') throw new UserFacingError({ key: 'error.scanClient.theScannerReturnedAnUnexpectedReply' });
       scanned += toScan.length;
       trustedSeen += lanes.trusted.length;
       if (deferred === 0) openSeen += lanes.open.length;
@@ -679,3 +679,5 @@ export function localCheckpointStore(storage: StorageLike | undefined): Checkpoi
     },
   };
 }
+
+// i18n-use: error.scanClient.theScannerDidNotAnswerInTimeAndWasStopped error.scanClient.theScannerWorkerFailed error.scanClient.theScannerRejectedTheKeys error.scanClient.theScannerReturnedAnUnexpectedReply

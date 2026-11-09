@@ -1,5 +1,8 @@
 # GhostPay product continuation — 2026-11-09
 
+Successor: [policy/localization continuation, PR #90](POLICY_LOCALIZATION_CONTINUATION_2026-11-09.md).
+The results below remain historical evidence for #89.
+
 Draft delivery: [PR #89](https://github.com/djshellshoxxx/GhostPay/pull/89), branch
 `codex/ghostpay-product-20261109`, stacked on **#84 → #88 → #89**. No merge, release,
 contract deployment, real-wallet transaction, source-branch deletion or API-funded workflow was performed.

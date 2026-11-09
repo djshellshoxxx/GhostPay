@@ -216,7 +216,7 @@ export function getSessionPublic(): SessionPublic | undefined {
 type Origin = { readonly from: 'generated' | 'import' | 'import-new-signer' } | { readonly from: 'vault'; readonly record: string };
 
 function install(next: SessionSecrets, origin: Origin): SessionPublic {
-  if (next.signingKey.every((byte, i) => byte === next.keys.spendingSecret[i]) || next.signingKey.every((byte, i) => byte === next.keys.viewingSecret[i])) throw new UserFacingError('The invoice-signing key must be independent of spending and viewing keys.');
+  if (next.signingKey.every((byte, i) => byte === next.keys.spendingSecret[i]) || next.signingKey.every((byte, i) => byte === next.keys.viewingSecret[i])) throw new UserFacingError({ key: 'error.session.theInvoiceSigningKeyMustBeIndependentOfSpendingAnd' });
   clearSession(false);
   // Summarize first: boxing wipes the scalars.
   publicSummary = summarize(next);
@@ -244,21 +244,26 @@ export interface ImportedHex {
   readonly signingKeyHex?: string;
 }
 
-function scalarFromHex(hex: string, label: string): SecretScalar {
+const KEY_ERRORS = {
+  'Spending key': { format: 'error.session.spendingFormat', invalid: 'error.session.spendingInvalid' },
+  'Viewing key': { format: 'error.session.viewingFormat', invalid: 'error.session.viewingInvalid' },
+  'Signing key': { format: 'error.session.signingFormat', invalid: 'error.session.signingInvalid' },
+} as const;
+function scalarFromHex(hex: string, label: keyof typeof KEY_ERRORS): SecretScalar {
   const clean = hex.trim().replace(/^0x/, '');
-  if (!/^[0-9a-fA-F]{64}$/.test(clean)) throw new UserFacingError(`${label} must be 64 hexadecimal characters.`);
+  if (!/^[0-9a-fA-F]{64}$/.test(clean)) throw new UserFacingError({ key: KEY_ERRORS[label].format });
   const bytes = Uint8Array.from(clean.match(/../g) ?? [], (h) => parseInt(h, 16));
   try {
     return secretScalarFromBytes(bytes);
   } catch {
-    throw new UserFacingError(`${label} is not a valid secp256k1 private key.`);
+    throw new UserFacingError({ key: KEY_ERRORS[label].invalid });
   } finally {
     zeroize(bytes);
   }
 }
 
 function keySetFromScalars(spending: SecretScalar, viewing: SecretScalar): StealthKeySet {
-  if (spending.every((b, i) => b === viewing[i])) throw new UserFacingError('Spending and viewing keys must differ.');
+  if (spending.every((b, i) => b === viewing[i])) throw new UserFacingError({ key: 'error.session.spendingAndViewingKeysMustDiffer' });
   const pub = (secret: SecretScalar): CompressedPoint => parseCompressedPoint(hexToBytes(signerPublicKeyHex(secret)));
   return { spendingSecret: spending, viewingSecret: viewing, spendingPublicKey: pub(spending), viewingPublicKey: pub(viewing) };
 }
@@ -289,7 +294,7 @@ export function importSession(input: ImportedHex): SessionPublic {
  * @throws {UserFacingError} when no keys are loaded.
  */
 export function withSessionSecrets<T>(fn: (s: SessionSecrets) => T): T {
-  if (current === undefined) throw new UserFacingError('Load or generate seller keys first (Seller keys).');
+  if (current === undefined) throw new UserFacingError({ key: 'error.session.loadOrGenerateSellerKeysFirstSellerKeys' });
   const opened = open(current);
   try {
     return fn(opened);
@@ -300,7 +305,7 @@ export function withSessionSecrets<T>(fn: (s: SessionSecrets) => T): T {
 
 /** Async variant of {@link withSessionSecrets}: the temporaries are wiped when the promise settles. */
 export async function withSessionSecretsAsync<T>(fn: (s: SessionSecrets) => Promise<T>): Promise<T> {
-  if (current === undefined) throw new UserFacingError('Load or generate seller keys first (Seller keys).');
+  if (current === undefined) throw new UserFacingError({ key: 'error.session.loadOrGenerateSellerKeysFirstSellerKeys' });
   const opened = open(current);
   try {
     return await fn(opened);
@@ -311,7 +316,7 @@ export async function withSessionSecretsAsync<T>(fn: (s: SessionSecrets) => Prom
 
 /** A fresh plain copy of the viewing key for the scanner worker; the receiver must wipe it (runScan does). */
 export function revealViewingKey(): Uint8Array {
-  if (current === undefined) throw new UserFacingError('Load or generate seller keys first (Seller keys).');
+  if (current === undefined) throw new UserFacingError({ key: 'error.session.loadOrGenerateSellerKeysFirstSellerKeys' });
   return current.viewing.use((b) => b.slice());
 }
 
@@ -323,7 +328,7 @@ export function hasSession(): boolean {
 export function captureSessionVersionGuard(): () => void {
   const revision = sessionRevision;
   return () => {
-    if (sessionRevision !== revision) throw new UserFacingError('Seller keys changed during this action. Try again.');
+    if (sessionRevision !== revision) throw new UserFacingError({ key: 'error.session.sellerKeysChangedDuringThisActionTryAgain' });
   };
 }
 
@@ -331,9 +336,9 @@ export function captureSessionVersionGuard(): () => void {
 export function captureSessionGuard(): () => void {
   const expected = current;
   const revision = sessionRevision;
-  if (expected === undefined) throw new UserFacingError('Load or generate seller keys first (Seller keys).');
+  if (expected === undefined) throw new UserFacingError({ key: 'error.session.loadOrGenerateSellerKeysFirstSellerKeys' });
   return () => {
-    if (current !== expected || sessionRevision !== revision) throw new UserFacingError('Seller keys changed during this action. Try again.');
+    if (current !== expected || sessionRevision !== revision) throw new UserFacingError({ key: 'error.session.sellerKeysChangedDuringThisActionTryAgain' });
   };
 }
 
@@ -344,7 +349,7 @@ export function captureSessionGuard(): () => void {
 export async function verifyVaultForCurrentSession(ciphertext: string, passphrase: string): Promise<() => void> {
   const guard = captureSessionGuard();
   const expected = publicSummary;
-  if (expected === undefined) throw new UserFacingError('Load or generate seller keys first (Seller keys).');
+  if (expected === undefined) throw new UserFacingError({ key: 'error.session.loadOrGenerateSellerKeysFirstSellerKeys' });
   const secrets = await decryptKeystore(ciphertext, passphrase);
   let spending: SecretScalar | undefined;
   let viewing: SecretScalar | undefined;
@@ -355,7 +360,7 @@ export async function verifyVaultForCurrentSession(ciphertext: string, passphras
     signing = secretScalarFromBytes(secrets.signingKey);
     const candidate = summarize({ keys: keySetFromScalars(spending, viewing), signingKey: signing });
     if (candidate.metaAddress !== expected.metaAddress || candidate.signerPublicKey !== expected.signerPublicKey) {
-      throw new UserFacingError('The saved encrypted vault does not match the loaded seller keys.');
+      throw new UserFacingError({ key: 'error.session.theSavedEncryptedVaultDoesNotMatchTheLoadedSeller' });
     }
     guard();
     return guard;
@@ -383,7 +388,7 @@ export function clearSession(notify = true): void {
 
 /** Encrypted backup text. Raw keys exist only for the duration of the call. */
 export async function exportKeystore(passphrase: string, options: KeystoreOptions = {}): Promise<string> {
-  if (current === undefined) throw new UserFacingError('Load or generate seller keys first (Seller keys).');
+  if (current === undefined) throw new UserFacingError({ key: 'error.session.loadOrGenerateSellerKeysFirstSellerKeys' });
   const { spending, viewing, signing } = current;
   const pub = publicSummary as SessionPublic;
   const spendingKey = spending.use((b) => b.slice());
@@ -401,7 +406,7 @@ export async function exportKeystore(passphrase: string, options: KeystoreOption
  * spending step-up (L1-02); a keystore file is a copy outside this browser (L1-01).
  */
 export async function importKeystore(text: string, passphrase: string, signal?: AbortSignal, from: 'file' | 'vault' = 'file'): Promise<SessionPublic> {
-  const assertOpen = (): void => { if (signal?.aborted === true) throw new UserFacingError('The keystore import was closed.'); };
+  const assertOpen = (): void => { if (signal?.aborted === true) throw new UserFacingError({ key: 'error.session.theKeystoreImportWasClosed' }); };
   assertOpen();
   const revision = sessionRevision;
   const secrets = await decryptKeystore(text, passphrase);
@@ -410,14 +415,14 @@ export async function importKeystore(text: string, passphrase: string, signal?: 
   let signing: SecretScalar | undefined;
   try {
     assertOpen();
-    if (sessionRevision !== revision) throw new UserFacingError('Seller keys changed while the keystore was unlocking. Try again.');
+    if (sessionRevision !== revision) throw new UserFacingError({ key: 'error.session.sellerKeysChangedWhileTheKeystoreWasUnlockingTryAgain' });
     spending = secretScalarFromBytes(secrets.spendingKey);
     viewing = secretScalarFromBytes(secrets.viewingKey);
     signing = secretScalarFromBytes(secrets.signingKey);
     return install({ keys: keySetFromScalars(spending, viewing), signingKey: signing }, from === 'vault' ? { from: 'vault', record: text } : { from: 'import' });
   } catch (e) {
     if (e instanceof UserFacingError) throw e;
-    throw new UserFacingError('The keystore contains invalid keys.');
+    throw new UserFacingError({ key: 'error.session.theKeystoreContainsInvalidKeys' });
   } finally {
     if (spending !== undefined) zeroize(spending);
     if (viewing !== undefined) zeroize(viewing);
@@ -425,3 +430,17 @@ export async function importKeystore(text: string, passphrase: string, signal?: 
     zeroize(secrets.spendingKey, secrets.viewingKey, secrets.signingKey);
   }
 }
+
+// i18n-use: error.session.theInvoiceSigningKeyMustBeIndependentOfSpendingAnd error.session.spendingAndViewingKeysMustDiffer error.session.loadOrGenerateSellerKeysFirstSellerKeys error.session.sellerKeysChangedDuringThisActionTryAgain error.session.theSavedEncryptedVaultDoesNotMatchTheLoadedSeller error.session.theKeystoreImportWasClosed error.session.sellerKeysChangedWhileTheKeystoreWasUnlockingTryAgain error.session.theKeystoreContainsInvalidKeys
+
+// i18n-use: error.session.spendingFormat
+
+// i18n-use: error.session.spendingInvalid
+
+// i18n-use: error.session.viewingFormat
+
+// i18n-use: error.session.viewingInvalid
+
+// i18n-use: error.session.signingFormat
+
+// i18n-use: error.session.signingInvalid

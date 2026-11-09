@@ -7,7 +7,9 @@ import { SETTINGS_KEY } from '../../lib/settings';
 import { MockWallet } from '../../test/mockWallet';
 import { makeServices, renderApp } from '../../test/render';
 import { POLICY_FLAG } from './flag';
-import { DEPLOYMENT, ROUTER, SEPOLIA, account, clientVectors, deploymentCalls, fakeChain, fixedRng, scheme2Log, walletMirror } from './fixtures.testutil';
+import * as chainModule from './chain';
+const realVerifyDeployment = chainModule.verifyPolicyDeployment;
+import { LOCAL_POLICY_PROFILE, DEPLOYMENT, ROUTER, SEPOLIA, account, clientVectors, deploymentCalls, fakeChain, fixedRng, scheme2Log, walletMirror } from './fixtures.testutil';
 import { preparePolicyPayment } from './pay';
 
 function deferred<T>() {
@@ -18,6 +20,7 @@ function deferred<T>() {
 }
 
 beforeEach(() => {
+  vi.spyOn(chainModule, 'verifyPolicyDeployment').mockImplementation((client, chain, input) => realVerifyDeployment(client, chain, input, LOCAL_POLICY_PROFILE));
   clearSession();
   window.localStorage.clear();
   window.sessionStorage.clear();

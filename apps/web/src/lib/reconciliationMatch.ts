@@ -1,7 +1,7 @@
 import { grossForNet, routerNet } from '@ghostpay/chain-adapters';
 import { invoiceDigest, type Invoice } from '@ghostpay/invoice-schema';
 import { bytesToHex } from '@noble/hashes/utils.js';
-import { UserFacingError } from './errors';
+import { UserFacingError, type MessageDescriptor } from './errors';
 import type { ReconciliationRecord } from './reconciliationLedger';
 
 /**
@@ -45,36 +45,36 @@ const KEYS = 'asset|chainId|createdAt|expectedNetMinorUnits|expiresAt|invoiceDig
 const MAX_UINT256 = (1n << 256n) - 1n;
 const MAX_TIME_MS = 8_640_000_000_000_000;
 
-function fail(message: string): never {
-  throw new Error(message);
+function fail(message: MessageDescriptor): never {
+  throw new UserFacingError(message);
 }
 
 export function validateRegisteredInvoice(value: unknown): RegisteredInvoice {
   const prototype: unknown = typeof value === 'object' && value !== null ? Object.getPrototypeOf(value) : undefined;
   if (Array.isArray(value) || (prototype !== Object.prototype && prototype !== null))
-    return fail('Invalid registered invoice.');
+    return fail({ key: 'error.reconciliationMatch.invalidRegisteredInvoice' });
   // Strict JSON parsing yields null-prototype objects; keep a plain copy.
   const o = { ...(value as Record<string, unknown>) };
   // Schema keys use locale-independent UTF-16 order, matching the canonical ASCII key list.
-  if (Object.keys(o).sort((a, b) => a < b ? -1 : a > b ? 1 : 0).join('|') !== KEYS || o.version !== 1) return fail('Invalid registered invoice.');
-  if (typeof o.invoiceDigest !== 'string' || !/^0x[0-9a-f]{64}$/.test(o.invoiceDigest)) return fail('Invalid registered invoice digest.');
-  if (typeof o.nonce !== 'string' || !/^[0-9a-f]{32}$/.test(o.nonce)) return fail('Invalid registered invoice nonce.');
-  if (!Number.isSafeInteger(o.chainId) || (o.chainId as number) <= 0) return fail('Invalid registered invoice chain.');
-  if (typeof o.asset !== 'string' || (o.asset !== 'native' && !/^0x[0-9a-f]{40}$/.test(o.asset))) return fail('Invalid registered invoice asset.');
+  if (Object.keys(o).sort((a, b) => a < b ? -1 : a > b ? 1 : 0).join('|') !== KEYS || o.version !== 1) return fail({ key: 'error.reconciliationMatch.invalidRegisteredInvoice' });
+  if (typeof o.invoiceDigest !== 'string' || !/^0x[0-9a-f]{64}$/.test(o.invoiceDigest)) return fail({ key: 'error.reconciliationMatch.invalidRegisteredInvoiceDigest' });
+  if (typeof o.nonce !== 'string' || !/^[0-9a-f]{32}$/.test(o.nonce)) return fail({ key: 'error.reconciliationMatch.invalidRegisteredInvoiceNonce' });
+  if (!Number.isSafeInteger(o.chainId) || (o.chainId as number) <= 0) return fail({ key: 'error.reconciliationMatch.invalidRegisteredInvoiceChain' });
+  if (typeof o.asset !== 'string' || (o.asset !== 'native' && !/^0x[0-9a-f]{40}$/.test(o.asset))) return fail({ key: 'error.reconciliationMatch.invalidRegisteredInvoiceAsset' });
   if (typeof o.expectedNetMinorUnits !== 'string' || !/^[1-9][0-9]{0,77}$/.test(o.expectedNetMinorUnits) || BigInt(o.expectedNetMinorUnits) > MAX_UINT256)
-    return fail('Invalid registered invoice amount.');
+    return fail({ key: 'error.reconciliationMatch.invalidRegisteredInvoiceAmount' });
   const seconds = (n: unknown): boolean => Number.isSafeInteger(n) && (n as number) > 0 && (n as number) * 1000 <= MAX_TIME_MS;
   if (!seconds(o.createdAt) || !seconds(o.expiresAt) || (o.expiresAt as number) <= (o.createdAt as number))
-    return fail('Invalid registered invoice time window.');
+    return fail({ key: 'error.reconciliationMatch.invalidRegisteredInvoiceTimeWindow' });
   if (!Number.isSafeInteger(o.registeredAt) || (o.registeredAt as number) <= 0 || (o.registeredAt as number) > MAX_TIME_MS)
-    return fail('Invalid registered invoice timestamp.');
+    return fail({ key: 'error.reconciliationMatch.invalidRegisteredInvoiceTimestamp' });
   return o as unknown as RegisteredInvoice;
 }
 
 /** Keeps only the fields matching needs: no line items, memo, fiat totals, meta-address or signer key. */
 export function registrationFromInvoice(invoice: Invoice, registeredAt = Date.now()): RegisteredInvoice {
   if (invoice.amountPolicy.mode !== 'fixed_token')
-    throw new UserFacingError('Only invoices with a fixed token amount can be registered for automatic matching.');
+    throw new UserFacingError({ key: 'error.reconciliationMatch.onlyInvoicesWithAFixedTokenAmountCanBeRegistered' });
   const wanted = BigInt(invoice.amountPolicy.tokenAmount);
   const net = invoice.feePolicy === 'payer_pays' ? routerNet(grossForNet(wanted)) : routerNet(wanted);
   return validateRegisteredInvoice({
@@ -138,3 +138,5 @@ export function proposeInvoiceMatch(
     return { kind: 'ambiguous', candidates, reason: 'late-observation' };
   return { kind: 'exact', invoice };
 }
+
+// i18n-use: error.reconciliationMatch.invalidRegisteredInvoice error.reconciliationMatch.invalidRegisteredInvoiceDigest error.reconciliationMatch.invalidRegisteredInvoiceNonce error.reconciliationMatch.invalidRegisteredInvoiceChain error.reconciliationMatch.invalidRegisteredInvoiceAsset error.reconciliationMatch.invalidRegisteredInvoiceAmount error.reconciliationMatch.invalidRegisteredInvoiceTimeWindow error.reconciliationMatch.invalidRegisteredInvoiceTimestamp error.reconciliationMatch.onlyInvoicesWithAFixedTokenAmountCanBeRegistered

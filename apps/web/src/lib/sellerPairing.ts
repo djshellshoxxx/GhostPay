@@ -3,7 +3,7 @@ import { decodeMetaAddress, encodeMetaAddress, parseCompressedPoint } from '@gho
 import { parseStrictJson } from '@ghostpay/invoice-schema';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { bytesToHex, hexToBytes, utf8ToBytes } from '@noble/hashes/utils.js';
-import { UserFacingError } from './errors';
+import { UserFacingError, type MessageDescriptor } from './errors';
 
 /**
  * Public seller pairing (device to device): meta-address, signing public key and preferred chain ids. Nothing here is
@@ -15,7 +15,7 @@ export const SELLER_PAIRING_FORMAT = 'ghostpay-seller-public';
 export const SELLER_PAIRING_VERSION = 1;
 export const MAX_SELLER_PAIRING_BYTES = 2048;
 export const MAX_PAIRING_CHAINS = 16;
-const BAD = 'This is not a supported public seller config.';
+const BAD: MessageDescriptor = { key: 'error.sellerPairing.invalid' };
 const KEYS = 'chainIds|check|format|metaAddress|signerPublicKey|v';
 const SIGNER = /^0[23][0-9a-f]{64}$/;
 const SUPPORTED_CHAINS = new Set(CHAINS.filter((chain) => chain.enabled && chain.testnet).map((chain) => chain.chainId));
@@ -87,3 +87,5 @@ export function compareToLoaded(c: SellerPairingConfig, loaded: SellerPairingSou
   if (loaded === undefined) return 'none';
   return loaded.metaAddress === c.metaAddress && loaded.signerPublicKey === c.signerPublicKey ? 'same' : 'different';
 }
+
+// i18n-use: error.sellerPairing.invalid

@@ -135,7 +135,7 @@ export function reviewInvoice(parsed: ParsedInvoice, nowSeconds: number, manifes
 
 /** A client that refuses all network use; lets the adapter build calldata with no RPC configured. */
 export function offlineClient(chainId: number): RpcClient {
-  const no = (): Promise<never> => Promise.reject(new UserFacingError('No RPC is configured for this chain.'));
+  const no = (): Promise<never> => Promise.reject(new UserFacingError({ key: 'error.pay.noRPCIsConfiguredForThisChain' }));
   return { chainId, request: no, blockNumber: no, getBlock: no, getLogs: no };
 }
 
@@ -161,17 +161,17 @@ export interface FeedDeps {
 export async function createPayContext(review: Review, client: RpcClient | undefined, deps: FeedDeps): Promise<PayContext> {
   const { chain, manifest, token } = review;
   if (review.blockers.length > 0 || chain === undefined || manifest === undefined || token === undefined) {
-    throw new UserFacingError('This payment is blocked. Resolve the items in the review first.');
+    throw new UserFacingError({ key: 'error.pay.thisPaymentIsBlockedResolveTheItemsInTheReview' });
   }
   const rpc = client ?? offlineClient(chain.chainId);
   const adapter = createEvmAdapter({ chain, deployment: manifest, client: rpc });
   let quoted: bigint | undefined;
   const inv = review.invoice;
   if (inv.amountPolicy.mode === 'fiat_quote') {
-    if (client === undefined) throw new UserFacingError('This invoice is priced in fiat. Configure an RPC for this chain in Settings so the app can read the price feed.');
+    if (client === undefined) throw new UserFacingError({ key: 'error.pay.thisInvoiceIsPricedInFiatConfigureAnRPCFor' });
     const feed = (deps.findFeedFn ?? findFeed)(chain.chainId, token.symbol, inv.fiat.currency);
     if (feed === undefined) {
-      throw new UserFacingError(`No price feed is configured for ${token.symbol}/${inv.fiat.currency} on ${chain.name}. This invoice cannot be paid from this app version.`);
+      throw new UserFacingError({ key: 'error.pay.missingPriceFeed', values: { symbol: token.symbol, currency: inv.fiat.currency, chain: chain.name } });
     }
     const price = await readPrice(createAggregatorReader(client), feed.address, {
       now: BigInt(deps.nowSeconds),
@@ -226,11 +226,11 @@ export function bufferOffered(invoice: Invoice): boolean {
 /** Checks a buffer amount against the app cap and, for v2 invoices, the seller's policy (ADR-0024). */
 function assertBufferWithinPolicy(bufferWei: bigint, invoice: Invoice): void {
   const p = invoice.bufferPolicy;
-  if (p !== undefined && !p.accepted) throw new UserFacingError('The seller does not accept a gas buffer for this invoice. Pay without one.');
-  if (bufferWei > MAX_BUFFER_WEI) throw new UserFacingError('The gas buffer exceeds the safety cap.');
+  if (p !== undefined && !p.accepted) throw new UserFacingError({ key: 'error.pay.theSellerDoesNotAcceptAGasBufferForThis' });
+  if (bufferWei > MAX_BUFFER_WEI) throw new UserFacingError({ key: 'error.pay.theGasBufferExceedsTheSafetyCap' });
   if (p === undefined) return;
-  if (bufferWei > BigInt(p.maxWei)) throw new UserFacingError('The gas buffer would exceed the seller’s maximum for this invoice. Pay without a buffer or try later.');
-  if (bufferWei < BigInt(p.minWei)) throw new UserFacingError('The gas buffer is below the seller’s minimum for this invoice. Prepare it again.');
+  if (bufferWei > BigInt(p.maxWei)) throw new UserFacingError({ key: 'error.pay.theGasBufferWouldExceedTheSellerSMaximumFor' });
+  if (bufferWei < BigInt(p.minWei)) throw new UserFacingError({ key: 'error.pay.theGasBufferIsBelowTheSellerSMinimumFor' });
 }
 
 /**
@@ -241,9 +241,9 @@ function assertBufferWithinPolicy(bufferWei: bigint, invoice: Invoice): void {
 export function applyBufferPolicy(quote: BufferQuote, invoice: Invoice): BufferQuote {
   const p = invoice.bufferPolicy;
   if (p === undefined) return quote;
-  if (!p.accepted) throw new UserFacingError('The seller does not accept a gas buffer for this invoice. Pay without one.');
+  if (!p.accepted) throw new UserFacingError({ key: 'error.pay.theSellerDoesNotAcceptAGasBufferForThis' });
   const min = BigInt(p.minWei);
-  if (min > MAX_BUFFER_WEI) throw new UserFacingError('The seller’s minimum gas buffer is above this app’s safety cap. Pay without a buffer.');
+  if (min > MAX_BUFFER_WEI) throw new UserFacingError({ key: 'error.pay.theSellerSMinimumGasBufferIsAboveThisApp' });
   const out = quote.bufferWei < min ? { ...quote, bufferWei: min, raisedToSellerMinimum: true } : quote;
   assertBufferWithinPolicy(out.bufferWei, invoice);
   return out;
@@ -269,10 +269,10 @@ export async function quoteBuffer(rpc: Pick<RpcClient, 'request'>, nowSeconds: n
       const data = encodeFunctionData({ abi: erc20Abi, functionName: 'transfer', args: [SWEEP_SIMULATION_RECIPIENT, sweep.amount] });
       simulated = parseQuantity(await rpc.request('eth_estimateGas', [{ from: sweep.from, to: sweep.token, data }]));
     } catch {
-      throw new UserFacingError('The token transfer could not be simulated, so a safe gas buffer cannot be sized. Pay without a buffer or try again.');
+      throw new UserFacingError({ key: 'error.pay.theTokenTransferCouldNotBeSimulatedSoASafe' });
     }
     if (simulated === 0n || simulated > MAX_SIMULATED_SWEEP_GAS) {
-      throw new UserFacingError('The simulated token transfer needs an unexpected amount of gas. A gas buffer is not offered for this token.');
+      throw new UserFacingError({ key: 'error.pay.theSimulatedTokenTransferNeedsAnUnexpectedAmountOfGas' });
     }
     const margined = (simulated * (FEE_SCHEDULE.BPS + SWEEP_SIMULATION_MARGIN_BPS) + FEE_SCHEDULE.BPS - 1n) / FEE_SCHEDULE.BPS;
     if (margined > gasLimit) gasLimit = margined;
@@ -280,7 +280,7 @@ export async function quoteBuffer(rpc: Pick<RpcClient, 'request'>, nowSeconds: n
   const gasPrice = parseQuantity(await rpc.request('eth_gasPrice', []));
   const maxFeePerGas = gasPrice * 2n;
   const bufferWei = calculateBuffer({ estimatedSweepGas: gasLimit, maxFeePerGas, safetyBps: FEE_SCHEDULE.DEFAULT_BUFFER_SAFETY_BPS });
-  if (bufferWei > MAX_BUFFER_WEI) throw new UserFacingError('The estimated gas buffer exceeds the safety cap. Gas looks unusually high; try again later.');
+  if (bufferWei > MAX_BUFFER_WEI) throw new UserFacingError({ key: 'error.pay.theEstimatedGasBufferExceedsTheSafetyCapGasLooks' });
   return {
     bufferWei, maxFeePerGas, gasLimit, safetyBps: FEE_SCHEDULE.DEFAULT_BUFFER_SAFETY_BPS,
     quotedAt: nowSeconds, expiresAt: nowSeconds + BUFFER_QUOTE_TTL_SECONDS, gasSource: sweep === undefined ? 'default' : 'simulated',
@@ -295,13 +295,13 @@ export async function quoteBuffer(rpc: Pick<RpcClient, 'request'>, nowSeconds: n
 export async function assertBufferStillSufficient(built: BuiltPayment, rpc: Pick<RpcClient, 'request'> | undefined): Promise<void> {
   const quote = builtBufferQuotes.get(built);
   if (quote === undefined) return;
-  if (rpc === undefined) throw new UserFacingError('A gas buffer needs an RPC for this chain to re-check gas before sending.');
+  if (rpc === undefined) throw new UserFacingError({ key: 'error.pay.aGasBufferNeedsAnRPCForThisChainTo' });
   const gasPrice = parseQuantity(await rpc.request('eth_gasPrice', []));
   // The quote's safety margin exists to absorb drift, so only the margin-free requirement at today's price must fit;
   // otherwise every small fee tick would force the user to prepare again.
   const required = calculateBuffer({ estimatedSweepGas: quote.gasLimit, maxFeePerGas: gasPrice * 2n, safetyBps: 0n });
   if (required > built.tx.value) {
-    throw new UserFacingError('Gas prices rose since the buffer was quoted, so the prepared buffer may not cover the sweep. Prepare the payment again.');
+    throw new UserFacingError({ key: 'error.pay.gasPricesRoseSinceTheBufferWasQuotedSoThe' });
   }
 }
 
@@ -312,7 +312,7 @@ export async function assertBufferStillSufficient(built: BuiltPayment, rpc: Pick
 export function assertPreparedBufferFresh(built: BuiltPayment, nowSeconds: number): void {
   const quote = builtBufferQuotes.get(built);
   if (quote !== undefined && nowSeconds >= quote.expiresAt) {
-    throw new UserFacingError('The gas buffer quote expired before sending. Nothing was sent. Prepare the payment again.');
+    throw new UserFacingError({ key: 'error.pay.theGasBufferQuoteExpiredBeforeSendingNothingWasSent' });
   }
 }
 
@@ -334,8 +334,8 @@ export function invoicePayableUntil(invoice: Invoice): number {
 /** Reapplies the review-time `checkExpiry` rules; every final pre-sign/pre-submit guard calls this with a fresh clock. */
 export function assertInvoiceStillPayable(invoice: Invoice, nowSeconds: number): void {
   const expiry = checkExpiry(invoice, nowSeconds);
-  if (expiry.invoiceExpired) throw new UserFacingError('This invoice has expired. Nothing was sent.');
-  if (invoice.amountPolicy.mode === 'fiat_quote' && expiry.quoteExpired) throw new UserFacingError('The seller’s price quote has expired. Nothing was sent. Ask for a new invoice.');
+  if (expiry.invoiceExpired) throw new UserFacingError({ key: 'error.pay.thisInvoiceHasExpiredNothingWasSent' });
+  if (invoice.amountPolicy.mode === 'fiat_quote' && expiry.quoteExpired) throw new UserFacingError({ key: 'error.pay.theSellerSPriceQuoteHasExpiredNothingWasSent' });
 }
 
 /**
@@ -357,14 +357,14 @@ const builtBufferQuotes = new WeakMap<BuiltPayment, BufferQuote>();
 /** Builds the transaction and the preview from the SAME call; the UI renders `preview` and sends `tx`. */
 export function buildFinal(ctx: PayContext, opts: FinalBuildOptions): BuiltPayment {
   if (opts.buffer !== undefined) {
-    if (ctx.review.invoice.token === 'native') throw new UserFacingError('A gas buffer applies to token payments only.');
-    if (opts.nowSeconds >= opts.buffer.expiresAt) throw new UserFacingError('The gas buffer quote expired. Refresh it and review again.');
+    if (ctx.review.invoice.token === 'native') throw new UserFacingError({ key: 'error.pay.aGasBufferAppliesToTokenPaymentsOnly' });
+    if (opts.nowSeconds >= opts.buffer.expiresAt) throw new UserFacingError({ key: 'error.pay.theGasBufferQuoteExpiredRefreshItAndReviewAgain' });
     assertBufferWithinPolicy(opts.buffer.bufferWei, ctx.review.invoice);
   }
   const inv = ctx.review.invoice;
   assertInvoiceStillPayable(inv, opts.nowSeconds);
   if (opts.deadlineSeconds !== undefined && opts.deadlineSeconds > lastPayableSecond(inv)) {
-    throw new UserFacingError('Blocked: the payment deadline would outlive the invoice. Prepare it again.');
+    throw new UserFacingError({ key: 'error.pay.blockedThePaymentDeadlineWouldOutliveTheInvoicePrepareIt' });
   }
   const deadline = BigInt(opts.deadlineSeconds ?? boundedDeadline(inv, opts.nowSeconds));
   const built = ctx.request.build({
@@ -383,16 +383,16 @@ export function buildFinal(ctx: PayContext, opts: FinalBuildOptions): BuiltPayme
  * preview the user saw, and the preview is compared to the review (router from the manifest, token, gross, chain).
  */
 export function assertReadyToSend(built: BuiltPayment, ctx: PayContext): void {
-  if (builtPaymentContexts.get(built) !== ctx) throw new UserFacingError('Blocked: the prepared payment belongs to a different reviewed invoice. Prepare it again.');
+  if (builtPaymentContexts.get(built) !== ctx) throw new UserFacingError({ key: 'error.pay.blockedThePreparedPaymentBelongsToADifferentReviewedInvoice' });
   assertPreviewMatchesCalldata(built.preview, built.tx, ctx.chain.chainId);
   const p = built.preview;
   const inv = ctx.review.invoice;
   const same = (a: string, b: string): boolean => a.toLowerCase() === b.toLowerCase();
-  if (!same(built.tx.to, ctx.manifest.router) || !same(p.router, ctx.manifest.router)) throw new UserFacingError('Blocked: the transaction does not target the manifest router.');
-  if (p.chainId !== inv.chainId) throw new UserFacingError('Blocked: chain differs from the invoice.');
-  if (p.token === 'native' ? inv.token !== 'native' : !same(p.token, inv.token)) throw new UserFacingError('Blocked: token differs from the invoice.');
+  if (!same(built.tx.to, ctx.manifest.router) || !same(p.router, ctx.manifest.router)) throw new UserFacingError({ key: 'error.pay.blockedTheTransactionDoesNotTargetTheManifestRouter' });
+  if (p.chainId !== inv.chainId) throw new UserFacingError({ key: 'error.pay.blockedChainDiffersFromTheInvoice' });
+  if (p.token === 'native' ? inv.token !== 'native' : !same(p.token, inv.token)) throw new UserFacingError({ key: 'error.pay.blockedTokenDiffersFromTheInvoice' });
   if (p.gross !== ctx.request.grossAmount || p.fee !== ctx.request.feeAmount || p.net !== ctx.request.netAmount) {
-    throw new UserFacingError('Blocked: amounts differ from the reviewed amounts.');
+    throw new UserFacingError({ key: 'error.pay.blockedAmountsDifferFromTheReviewedAmounts' });
   }
 }
 
@@ -413,26 +413,26 @@ export function assertApproveTx(tx: { to: Address; data: Hex; value: bigint }, t
   try {
     decoded = decodeFunctionData({ abi: erc20Abi, data: tx.data });
   } catch {
-    throw new UserFacingError('Blocked: approval calldata could not be decoded.');
+    throw new UserFacingError({ key: 'error.pay.blockedApprovalCalldataCouldNotBeDecoded' });
   }
   if (decoded.functionName !== 'approve' || tx.value !== 0n || tx.to.toLowerCase() !== token.toLowerCase()) {
-    throw new UserFacingError('Blocked: unexpected approval transaction.');
+    throw new UserFacingError({ key: 'error.pay.blockedUnexpectedApprovalTransaction' });
   }
   const [s, a] = decoded.args;
-  if (s.toLowerCase() !== spender.toLowerCase() || a !== amount) throw new UserFacingError('Blocked: approval spender or amount differs from the preview.');
+  if (s.toLowerCase() !== spender.toLowerCase() || a !== amount) throw new UserFacingError({ key: 'error.pay.blockedApprovalSpenderOrAmountDiffersFromThePreview' });
 }
 
 export async function readAllowance(rpc: Pick<RpcClient, 'request'>, token: Address, owner: Address, spender: Address): Promise<bigint> {
   const data = encodeFunctionData({ abi: erc20Abi, functionName: 'allowance', args: [owner, spender] });
   const r = await rpc.request('eth_call', [{ to: token, data }, 'latest']);
-  if (typeof r !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(r)) throw new UserFacingError('Your RPC returned an unexpected allowance.');
+  if (typeof r !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(r)) throw new UserFacingError({ key: 'error.pay.yourRPCReturnedAnUnexpectedAllowance' });
   return BigInt(r);
 }
 
 export function permitReader(rpc: Pick<RpcClient, 'request'>, version: string): PermitReader {
   const call = async (to: Address, data: Hex): Promise<Hex> => {
     const r = await rpc.request('eth_call', [{ to, data }, 'latest']);
-    if (typeof r !== 'string' || !/^0x(?:[0-9a-fA-F]{2})*$/.test(r)) throw new UserFacingError('Your RPC returned an unexpected result.');
+    if (typeof r !== 'string' || !/^0x(?:[0-9a-fA-F]{2})*$/.test(r)) throw new UserFacingError({ key: 'error.pay.yourRPCReturnedAnUnexpectedResult' });
     return r as Hex;
   };
   return {
@@ -480,7 +480,7 @@ export function permitPreflightReader(rpc: Pick<RpcClient, 'request'>): PermitPr
     async domainSeparator(token) {
       const data = encodeFunctionData({ abi: erc2612PermitAbi, functionName: 'DOMAIN_SEPARATOR' });
       const r = await rpc.request('eth_call', [{ to: token, data }, 'latest']);
-      if (typeof r !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(r)) throw new UserFacingError('Your RPC returned an unexpected DOMAIN_SEPARATOR.');
+      if (typeof r !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(r)) throw new UserFacingError({ key: 'error.pay.yourRPCReturnedAnUnexpectedDOMAINSEPARATOR' });
       return r as Hex;
     },
     async simulatePermit(token, a) {
@@ -523,7 +523,7 @@ export function typedDataJson(td: PermitTypedData): string {
 /** Verifies a wallet-returned permit signature really recovers to the payer account. */
 export async function assertPermitSigner(td: PermitTypedData, signature: Hex, account: Address): Promise<void> {
   const recovered = await recoverAddress({ hash: permitDigest(td), signature });
-  if (getAddress(recovered) !== getAddress(account)) throw new UserFacingError('Blocked: the permit signature does not match your account.');
+  if (getAddress(recovered) !== getAddress(account)) throw new UserFacingError({ key: 'error.pay.blockedThePermitSignatureDoesNotMatchYourAccount' });
 }
 
 /**
@@ -542,5 +542,9 @@ export async function buildPermit(
       last = e;
     }
   }
-  throw last instanceof Error ? last : new UserFacingError('Could not build the permit request.');
+  throw last instanceof Error ? last : new UserFacingError({ key: 'error.pay.couldNotBuildThePermitRequest' });
 }
+
+// i18n-use: error.pay.noRPCIsConfiguredForThisChain error.pay.thisPaymentIsBlockedResolveTheItemsInTheReview error.pay.thisInvoiceIsPricedInFiatConfigureAnRPCFor error.pay.theSellerDoesNotAcceptAGasBufferForThis error.pay.theGasBufferExceedsTheSafetyCap error.pay.theGasBufferWouldExceedTheSellerSMaximumFor error.pay.theGasBufferIsBelowTheSellerSMinimumFor error.pay.theSellerSMinimumGasBufferIsAboveThisApp error.pay.theTokenTransferCouldNotBeSimulatedSoASafe error.pay.theSimulatedTokenTransferNeedsAnUnexpectedAmountOfGas error.pay.theEstimatedGasBufferExceedsTheSafetyCapGasLooks error.pay.aGasBufferNeedsAnRPCForThisChainTo error.pay.gasPricesRoseSinceTheBufferWasQuotedSoThe error.pay.theGasBufferQuoteExpiredBeforeSendingNothingWasSent error.pay.thisInvoiceHasExpiredNothingWasSent error.pay.theSellerSPriceQuoteHasExpiredNothingWasSent error.pay.aGasBufferAppliesToTokenPaymentsOnly error.pay.theGasBufferQuoteExpiredRefreshItAndReviewAgain error.pay.blockedThePaymentDeadlineWouldOutliveTheInvoicePrepareIt error.pay.blockedThePreparedPaymentBelongsToADifferentReviewedInvoice error.pay.blockedTheTransactionDoesNotTargetTheManifestRouter error.pay.blockedChainDiffersFromTheInvoice error.pay.blockedTokenDiffersFromTheInvoice error.pay.blockedAmountsDifferFromTheReviewedAmounts error.pay.blockedApprovalCalldataCouldNotBeDecoded error.pay.blockedUnexpectedApprovalTransaction error.pay.blockedApprovalSpenderOrAmountDiffersFromThePreview error.pay.yourRPCReturnedAnUnexpectedAllowance error.pay.yourRPCReturnedAnUnexpectedResult error.pay.yourRPCReturnedAnUnexpectedDOMAINSEPARATOR error.pay.blockedThePermitSignatureDoesNotMatchYourAccount error.pay.couldNotBuildThePermitRequest
+
+// i18n-use: error.pay.missingPriceFeed

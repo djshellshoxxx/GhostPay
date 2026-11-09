@@ -133,7 +133,7 @@ export type PayerPermitState = 'ok_to_permit' | 'already_allowed' | 'unsupported
  */
 export async function classifyPayerPermit(ctx: PayContext, session: WalletSession, rt: Runtime): Promise<PayerPermitState> {
   const token = ctx.review.token;
-  if (rt.rpc === undefined) throw new UserFacingError('A permit payment needs an RPC to read the token. Configure one in Settings or use approval.');
+  if (rt.rpc === undefined) throw new UserFacingError({ key: 'error.payExec.aPermitPaymentNeedsAnRPCToReadTheToken' });
   if (token === undefined || token.address === 'native') return 'unsupported_token';
   const have = await readAllowance(rt.rpc, token.address, session.account, ctx.manifest.router);
   if (have >= ctx.request.grossAmount) return 'already_allowed';
@@ -150,7 +150,7 @@ export async function classifyPayerPermit(ctx: PayContext, session: WalletSessio
 
 /** Reads the current allowance and produces the exact approval preview; sends nothing. */
 export async function planApproval(ctx: PayContext, session: WalletSession, token: Address, rt: Runtime): Promise<ApprovalPlan> {
-  if (rt.rpc === undefined) throw new UserFacingError('Approving a token needs an RPC for this chain. Configure one in Settings.');
+  if (rt.rpc === undefined) throw new UserFacingError({ key: 'error.payExec.approvingATokenNeedsAnRPCForThisChainConfigure' });
   const spender = ctx.manifest.router;
   const need = ctx.request.grossAmount;
   const have = await readAllowance(rt.rpc, token, session.account, spender);
@@ -159,7 +159,7 @@ export async function planApproval(ctx: PayContext, session: WalletSession, toke
 
 /** Sends only the exact allowance shown in the final preview and reads back what the wallet actually granted. */
 export async function grantApproval(session: WalletSession, ctx: PayContext, plan: ApprovalPlan, rt: Runtime, status: StatusFn, assertCurrent?: () => void, onBroadcast?: BroadcastFn): Promise<bigint> {
-  if (rt.rpc === undefined) throw new UserFacingError('Approving a token needs an RPC for this chain. Configure one in Settings.');
+  if (rt.rpc === undefined) throw new UserFacingError({ key: 'error.payExec.approvingATokenNeedsAnRPCForThisChainConfigure' });
   if (!plan.required) return plan.have;
   const tx = buildApproveTx(plan.token, plan.spender, plan.need);
   assertApproveTx(tx, plan.token, plan.spender, plan.need);
@@ -169,11 +169,11 @@ export async function grantApproval(session: WalletSession, ctx: PayContext, pla
   // L2-I3: scoped to this invoice, so the identical approval for a later invoice is not refused as a duplicate.
   const res = await submitTx(session, tx, rt, status, assertCurrent, onBroadcast, { kind: 'approval', scope: bytesToHex(invoiceDigest(ctx.review.invoice)) });
   try {
-    if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError('The approval was not confirmed. Nothing was paid.');
+    if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError({ key: 'error.payExec.theApprovalWasNotConfirmedNothingWasPaid' });
     // B2-R2: uncompared, the mined approve may be another one (a larger one to this spender passes the readback below).
-    if (res.verification !== 'verified') throw new UserFacingError('Your RPC reports a receipt for the approval but did not return the transaction itself, so it could not be compared with the preview. Nothing was paid.');
+    if (res.verification !== 'verified') throw new UserFacingError({ key: 'error.payExec.yourRPCReportsAReceiptForTheApprovalButDid' });
     const after = await readAllowance(rt.rpc, plan.token, session.account, plan.spender);
-    if (after < plan.need) throw new UserFacingError('The approval did not take effect. Nothing was paid.');
+    if (after < plan.need) throw new UserFacingError({ key: 'error.payExec.theApprovalDidNotTakeEffectNothingWasPaid' });
     return after;
   } catch (e) {
     throw new PostBroadcastError(res.hash, e instanceof UserFacingError ? e.message : 'the allowance check failed.', e);
@@ -182,7 +182,7 @@ export async function grantApproval(session: WalletSession, ctx: PayContext, pla
 
 /** Revokes a router allowance with approve(spender, 0), then verifies it on-chain. */
 export async function revokeApproval(session: WalletSession, ctx: PayContext, plan: ApprovalPlan, rt: Runtime, status: StatusFn, assertCurrent?: () => void, onBroadcast?: BroadcastFn): Promise<void> {
-  if (rt.rpc === undefined) throw new UserFacingError('Revoking needs an RPC for this chain. Configure one in Settings.');
+  if (rt.rpc === undefined) throw new UserFacingError({ key: 'error.payExec.revokingNeedsAnRPCForThisChainConfigureOneIn' });
   const tx = buildApproveTx(plan.token, plan.spender, 0n);
   assertApproveTx(tx, plan.token, plan.spender, 0n);
   guardApprove(tx, ctx.chain.chainId, { token: plan.token, spender: plan.spender, amount: 0n }, ctx.manifest, rt.nowSeconds());
@@ -190,10 +190,10 @@ export async function revokeApproval(session: WalletSession, ctx: PayContext, pl
   assertCurrent?.();
   const res = await submitTx(session, tx, rt, status, assertCurrent, onBroadcast, { kind: 'approval', scope: bytesToHex(invoiceDigest(ctx.review.invoice)) });
   try {
-    if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError('The revoke was not confirmed. Check your allowances in your wallet.');
-    if (res.verification !== 'verified') throw new UserFacingError('Your RPC reports a receipt for the revoke but did not return the transaction itself, so it could not be compared with the preview. Check your allowances in your wallet.');
+    if (res.receipt === undefined || res.receipt.status !== 'success') throw new UserFacingError({ key: 'error.payExec.theRevokeWasNotConfirmedCheckYourAllowancesInYour' });
+    if (res.verification !== 'verified') throw new UserFacingError({ key: 'error.payExec.yourRPCReportsAReceiptForTheRevokeButDid' });
     const after = await readAllowance(rt.rpc, plan.token, session.account, plan.spender);
-    if (after !== 0n) throw new UserFacingError('The allowance is still not zero. Check your allowances in your wallet.');
+    if (after !== 0n) throw new UserFacingError({ key: 'error.payExec.theAllowanceIsStillNotZeroCheckYourAllowancesIn' });
   } catch (e) {
     throw new PostBroadcastError(res.hash, e instanceof UserFacingError ? e.message : 'the allowance check failed.', e);
   }
@@ -211,11 +211,11 @@ export interface PrepareOptions {
 export async function preparePayment(session: WalletSession, ctx: PayContext, opts: PrepareOptions, rt: Runtime, status: StatusFn, assertCurrent?: () => void): Promise<BuiltPayment> {
   const now = rt.nowSeconds();
   const token = ctx.review.token;
-  if (opts.usePermit && opts.buffer !== undefined) throw new UserFacingError('A gas buffer cannot be combined with a permit payment.');
+  if (opts.usePermit && opts.buffer !== undefined) throw new UserFacingError({ key: 'error.payExec.aGasBufferCannotBeCombinedWithAPermitPayment' });
   if (!opts.usePermit || token === undefined || token.address === 'native') {
     return buildFinal(ctx, { nowSeconds: now, ...(opts.buffer === undefined ? {} : { buffer: opts.buffer }) });
   }
-  if (rt.rpc === undefined) throw new UserFacingError('A permit payment needs an RPC to read the token. Configure one in Settings or use approval.');
+  if (rt.rpc === undefined) throw new UserFacingError({ key: 'error.payExec.aPermitPaymentNeedsAnRPCToReadTheToken' });
   // One deadline for the signed permit and the router calldata, bounded by invoice/fiat validity (never clamped later).
   const deadline = boundedDeadline(ctx.review.invoice, now);
   const td = await buildPermit(rt.rpc, {
@@ -267,7 +267,7 @@ export async function sendPayment(session: WalletSession, ctx: PayContext, built
     assertReadyToSend(built, ctx);
     assertInvoiceStillPayable(ctx.review.invoice, rt.nowSeconds());
     assertPreparedBufferFresh(built, rt.nowSeconds());
-    if (BigInt(rt.nowSeconds()) >= built.preview.deadline) throw new UserFacingError('The prepared payment has expired. Review again.');
+    if (BigInt(rt.nowSeconds()) >= built.preview.deadline) throw new UserFacingError({ key: 'error.payExec.thePreparedPaymentHasExpiredReviewAgain' });
   };
   guard();
   // Independent decode of the exact calldata + allowlist/fee/deadline policy before the wallet is asked.
@@ -321,3 +321,5 @@ export function buildReceipt(ctx: PayContext, built: BuiltPayment, result: Submi
     createdAt: now.toISOString(),
   };
 }
+
+// i18n-use: error.payExec.aPermitPaymentNeedsAnRPCToReadTheToken error.payExec.approvingATokenNeedsAnRPCForThisChainConfigure error.payExec.theApprovalWasNotConfirmedNothingWasPaid error.payExec.yourRPCReportsAReceiptForTheApprovalButDid error.payExec.theApprovalDidNotTakeEffectNothingWasPaid error.payExec.revokingNeedsAnRPCForThisChainConfigureOneIn error.payExec.theRevokeWasNotConfirmedCheckYourAllowancesInYour error.payExec.yourRPCReportsAReceiptForTheRevokeButDid error.payExec.theAllowanceIsStillNotZeroCheckYourAllowancesIn error.payExec.aGasBufferCannotBeCombinedWithAPermitPayment error.payExec.thePreparedPaymentHasExpiredReviewAgain

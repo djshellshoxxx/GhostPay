@@ -26,7 +26,7 @@ beforeEach(() => {
 async function openScanIn(locale: string): Promise<void> {
   const user = userEvent.setup();
   renderWith(<I18nProvider initialPreference={locale} target={document.documentElement}><App /></I18nProvider>, makeServices());
-  await user.click(within(await screen.findByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Scan and receive' }));
+  await user.click(await within(await screen.findByRole('navigation', { name: 'Main' })).findByRole('button', { name: locale === 'es' ? es.messages['app.nav.scan'] : 'Scan and receive' }));
 }
 
 describe('Scan localization (neutral vs critical)', () => {

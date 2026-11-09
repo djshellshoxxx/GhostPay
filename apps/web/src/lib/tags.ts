@@ -124,7 +124,7 @@ async function deriveKeys(viewingKey: Uint8Array, salt: Uint8Array): Promise<{ a
 
 function subtle(): SubtleCrypto {
   const s = (globalThis as { crypto?: Crypto }).crypto?.subtle;
-  if (s === undefined) throw new UserFacingError('This browser has no Web Crypto support.');
+  if (s === undefined) throw new UserFacingError({ key: 'error.tags.thisBrowserHasNoWebCryptoSupport' });
   return s;
 }
 
@@ -147,19 +147,19 @@ function recordAad(chainId: number, recordId: string, lookupKey: string): Uint8A
 /** An optional text field: absent, or a string that is trimmed and bounded like the client label (I-3); blank means absent. */
 function optionalText(value: unknown, max: number): string | undefined {
   if (value === undefined) return undefined;
-  if (typeof value !== 'string') throw new UserFacingError('Invoice label and notes must be text.');
+  if (typeof value !== 'string') throw new UserFacingError({ key: 'error.tags.invoiceLabelAndNotesMustBeText' });
   const clean = value.trim();
-  if (clean.length > max) throw new UserFacingError('Label or notes too long.');
+  if (clean.length > max) throw new UserFacingError({ key: 'error.tags.labelOrNotesTooLong' });
   return clean === '' ? undefined : clean;
 }
 
 /** Validates a payload from the UI, storage or an archive; every field is checked by type, since archives are untrusted JSON. */
 export function validatePayload(p: TagPayload): TagPayload {
   const label = typeof p.clientLabel === 'string' ? p.clientLabel.trim() : '';
-  if (label === '' || label.length > MAX_LABEL) throw new UserFacingError(`Client label must be 1 to ${String(MAX_LABEL)} characters.`);
-  if (typeof p.stealthAddress !== 'string' || !/^0x[0-9a-fA-F]{40}$/.test(p.stealthAddress)) throw new UserFacingError('Invalid stealth address.');
-  if (typeof p.announcementId !== 'string' || !/^0x[0-9a-fA-F]{64}:\d{1,9}$/.test(p.announcementId)) throw new UserFacingError('Invalid announcement id.');
-  if (!Number.isInteger(p.logIndex) || p.logIndex < 0) throw new UserFacingError('Invalid log index.');
+  if (label === '' || label.length > MAX_LABEL) throw new UserFacingError({ key: 'error.tags.labelLength', values: { maximum: String(MAX_LABEL) } });
+  if (typeof p.stealthAddress !== 'string' || !/^0x[0-9a-fA-F]{40}$/.test(p.stealthAddress)) throw new UserFacingError({ key: 'error.tags.invalidStealthAddress' });
+  if (typeof p.announcementId !== 'string' || !/^0x[0-9a-fA-F]{64}:\d{1,9}$/.test(p.announcementId)) throw new UserFacingError({ key: 'error.tags.invalidAnnouncementId' });
+  if (!Number.isInteger(p.logIndex) || p.logIndex < 0) throw new UserFacingError({ key: 'error.tags.invalidLogIndex' });
   const invoiceLabel = optionalText(p.invoiceLabel, MAX_LABEL);
   const notes = optionalText(p.notes, MAX_NOTES);
   return {
@@ -177,7 +177,7 @@ export function validatePayload(p: TagPayload): TagPayload {
  * (I-3); such a value that is not text is dropped here, so it never reaches the page and does not fail every list and export.
  */
 function storedPayload(raw: unknown): TagPayload {
-  if (typeof raw !== 'object' || raw === null) throw new UserFacingError('Invalid tag payload.');
+  if (typeof raw !== 'object' || raw === null) throw new UserFacingError({ key: 'error.tags.invalidTagPayload' });
   const { invoiceLabel, notes, ...rest } = raw as Record<string, unknown>;
   return validatePayload({ ...rest, ...(typeof invoiceLabel === 'string' ? { invoiceLabel } : {}), ...(typeof notes === 'string' ? { notes } : {}) } as unknown as TagPayload);
 }
@@ -214,7 +214,7 @@ export class TagVault {
   private assertSession(): void {
     if (this.sameSession()) return;
     this.lock();
-    throw new UserFacingError('Seller keys changed, so tags were locked. Unlock them again.');
+    throw new UserFacingError({ key: 'error.tags.sellerKeysChangedSoTagsWereLockedUnlockThemAgain' });
   }
 
   /** Commit guard for store writes: the operation's revision and the seller keys must both be unchanged. */
@@ -235,7 +235,7 @@ export class TagVault {
       const snapshot = await this.store.getSnapshot();
       guard();
       const meta = snapshot.meta;
-      if (meta === undefined && snapshot.records.length !== 0) throw new UserFacingError('The tag profile is missing. Existing encrypted tags have been kept.');
+      if (meta === undefined && snapshot.records.length !== 0) throw new UserFacingError({ key: 'error.tags.theTagProfileIsMissingExistingEncryptedTagsHaveBeen' });
       const salt = meta === undefined ? rand(32) : hexToBytes(meta.salt);
       const { aes, hmac } = await deriveKeys(viewingKey, salt);
       if (meta === undefined) {
@@ -246,13 +246,13 @@ export class TagVault {
         try {
           await subtle().decrypt({ name: 'AES-GCM', iv: hexToBytes(meta.check.iv) as Uint8Array<ArrayBuffer>, additionalData: aad(0), tagLength: 128 }, aes, hexToBytes(meta.check.ciphertext));
         } catch {
-          throw new UserFacingError('These tags were created with a different viewing key.');
+          throw new UserFacingError({ key: 'error.tags.theseTagsWereCreatedWithADifferentViewingKey' });
         }
       }
       guard();
       // Existing-profile unlock must also detect a wipe/rotation during key derivation.
       if (meta !== undefined && (await this.store.getSnapshot()).revision !== snapshot.revision) {
-        throw new UserFacingError('Tags changed while unlocking. Unlock again.');
+        throw new UserFacingError({ key: 'error.tags.tagsChangedWhileUnlockingUnlockAgain' });
       }
       guard();
       this.revision++;
@@ -275,12 +275,12 @@ export class TagVault {
 
   private keys(): { aes: CryptoKey; hmac: CryptoKey } {
     this.assertSession();
-    if (this.aes === undefined || this.hmac === undefined) throw new UserFacingError('Tags are locked. Unlock them first.');
+    if (this.aes === undefined || this.hmac === undefined) throw new UserFacingError({ key: 'error.tags.tagsAreLockedUnlockThemFirst' });
     return { aes: this.aes, hmac: this.hmac };
   }
 
   private assertRevision(revision: number): void {
-    if (revision !== this.revision) throw new UserFacingError('Tags changed or were locked. Try again.');
+    if (revision !== this.revision) throw new UserFacingError({ key: 'error.tags.tagsChangedOrWereLockedTryAgain' });
   }
 
   private async currentSnapshot(revision: number): Promise<TagStoreSnapshot> {
@@ -288,7 +288,7 @@ export class TagVault {
     this.assertRevision(revision);
     if (snapshot.meta === undefined || snapshot.meta.salt !== this.profileSalt) {
       this.lock();
-      throw new UserFacingError('The tag profile changed in another tab. Unlock again.');
+      throw new UserFacingError({ key: 'error.tags.theTagProfileChangedInAnotherTabUnlockAgain' });
     }
     return snapshot;
   }
@@ -351,7 +351,7 @@ export class TagVault {
       this.assertRevision(revision);
       return payload;
     } catch {
-      throw new UserFacingError('A stored tag could not be decrypted (damaged or from another key).');
+      throw new UserFacingError({ key: 'error.tags.aStoredTagCouldNotBeDecryptedDamagedOrFrom' });
     } finally {
       plain?.fill(0);
     }
@@ -365,7 +365,7 @@ export class TagVault {
     const rec = snapshot.records.find((r) => r.chainId === chainId && r.lookupKey === lookup);
     if (rec === undefined) return undefined;
     const payload = await this.open(rec, snapshot);
-    if (payload.stealthAddress !== stealthAddress.toLowerCase()) throw new UserFacingError('A stored tag does not belong to this address and was ignored.');
+    if (payload.stealthAddress !== stealthAddress.toLowerCase()) throw new UserFacingError({ key: 'error.tags.aStoredTagDoesNotBelongToThisAddressAnd' });
     this.assertRevision(revision);
     return payload;
   }
@@ -416,7 +416,7 @@ export class TagVault {
         plain.fill(0);
       }
     } catch {
-      throw new UserFacingError('A stored tag could not be decrypted (damaged or from another key).');
+      throw new UserFacingError({ key: 'error.tags.aStoredTagCouldNotBeDecryptedDamagedOrFrom' });
     }
   }
 
@@ -449,7 +449,7 @@ export class TagVault {
     const snapshot = await this.currentSnapshot(revision);
     for (const r of snapshot.records) out.push({ chainId: r.chainId, createdAt: r.createdAt, updatedAt: r.updatedAt, payload: await this.peek(r, keys) });
     this.assertRevision(revision);
-    if ((await this.currentSnapshot(revision)).revision !== snapshot.revision) throw new UserFacingError('Tags changed while reading them. Try again.');
+    if ((await this.currentSnapshot(revision)).revision !== snapshot.revision) throw new UserFacingError({ key: 'error.tags.tagsChangedWhileReadingThemTryAgain' });
     this.assertRevision(revision);
     return out;
   }
@@ -469,7 +469,7 @@ export class TagVault {
     const revision = this.revision;
     const incoming = new Map<string, TagSnapshotEntry>();
     for (const e of entries) {
-      if (!Number.isInteger(e.chainId) || e.chainId < 0) throw new UserFacingError('Invalid chain id in archive.');
+      if (!Number.isInteger(e.chainId) || e.chainId < 0) throw new UserFacingError({ key: 'error.tags.invalidChainIdInArchive' });
       const payload = validatePayload(e.payload);
       const k = `${String(e.chainId)}|${payload.stealthAddress}`;
       const prev = incoming.get(k);
@@ -494,7 +494,7 @@ export class TagVault {
       puts.push({ schemaVersion: 2, chainId: e.chainId, recordId, lookupKey, iv: bytesToHex(iv), ciphertext: bytesToHex(ct), createdAt: local === undefined ? e.createdAt : Math.min(local.createdAt, e.createdAt), updatedAt: e.updatedAt, keyVersion });
     }
     const deleteIds = mode === 'replace' ? existing.filter((r) => !keep.has(r.recordId)).map((r) => r.recordId) : [];
-    if (revision !== this.revision) throw new UserFacingError('Tags changed while preparing the import. Preview again.');
+    if (revision !== this.revision) throw new UserFacingError({ key: 'error.tags.tagsChangedWhilePreparingTheImportPreviewAgain' });
     const preview: TagImportPreview = Object.freeze({ mode, total: incoming.size, added, updated, keptLocal, removed: deleteIds.length });
     this.previews.set(preview, { revision, snapshot, puts, deleteIds });
     return preview;
@@ -504,7 +504,7 @@ export class TagVault {
   public async applyImport(preview: TagImportPreview): Promise<void> {
     this.keys();
     const staged = this.previews.get(preview);
-    if (staged === undefined || staged.revision !== this.revision) throw new UserFacingError('Tags changed since the preview. Preview the import again.');
+    if (staged === undefined || staged.revision !== this.revision) throw new UserFacingError({ key: 'error.tags.tagsChangedSinceThePreviewPreviewTheImportAgain' });
     this.previews.delete(preview);
     await this.store.applyBatch({ puts: staged.puts, deleteIds: staged.deleteIds }, staged.snapshot, this.writeGuard(staged.revision));
     this.assertRevision(staged.revision);
@@ -524,12 +524,12 @@ export class TagVault {
       const old = this.keys();
       const snapshot = await this.currentSnapshot(revision);
       const meta = snapshot.meta;
-      if (meta === undefined) throw new UserFacingError('There is no tag profile to rotate.');
+      if (meta === undefined) throw new UserFacingError({ key: 'error.tags.thereIsNoTagProfileToRotate' });
       const probe = await deriveKeys(viewingKey, hexToBytes(meta.salt));
       try {
         await subtle().decrypt({ name: 'AES-GCM', iv: hexToBytes(meta.check.iv) as Uint8Array<ArrayBuffer>, additionalData: aad(0), tagLength: 128 }, probe.aes, hexToBytes(meta.check.ciphertext));
       } catch {
-        throw new UserFacingError('That is not the viewing key of these tags.');
+        throw new UserFacingError({ key: 'error.tags.thatIsNotTheViewingKeyOfTheseTags' });
       }
       const salt = rand(32);
       const fresh = await deriveKeys(viewingKey, salt);
@@ -544,7 +544,7 @@ export class TagVault {
       }
       const checkIv = rand(12);
       const check = new Uint8Array(await subtle().encrypt({ name: 'AES-GCM', iv: checkIv, additionalData: aad(0), tagLength: 128 }, fresh.aes, CHECK_PLAINTEXT));
-      if (revision !== this.revision) throw new UserFacingError('Tags changed during rotation. Nothing was changed; try again.');
+      if (revision !== this.revision) throw new UserFacingError({ key: 'error.tags.tagsChangedDuringRotationNothingWasChangedTryAgain' });
       await this.store.applyBatch({ puts, deleteIds: [], meta: { salt: bytesToHex(salt), keyVersion, check: { iv: bytesToHex(checkIv), ciphertext: bytesToHex(check) } } }, snapshot, this.writeGuard(revision));
       this.assertRevision(revision);
       this.revision++;
@@ -595,7 +595,7 @@ export class MemoryTagStore implements TagStore {
   public applyBatch(b: TagBatch, expected?: TagStoreSnapshot, guard?: () => void): Promise<void> {
     try {
       guard?.();
-      if (expected !== undefined && !tagSnapshotsEqual(expected, { ...(this.meta === undefined ? {} : { meta: this.meta }), records: [...this.records.values()], revision: this.revision })) throw new UserFacingError('Tags changed since the preview or operation began. Preview the import again.');
+      if (expected !== undefined && !tagSnapshotsEqual(expected, { ...(this.meta === undefined ? {} : { meta: this.meta }), records: [...this.records.values()], revision: this.revision })) throw new UserFacingError({ key: 'error.tags.tagsChangedSinceThePreviewOrOperationBeganPreviewThe' });
       guard?.();
       if (b.clear === true) { this.records.clear(); this.meta = undefined; }
       for (const id of b.deleteIds) this.records.delete(id);
@@ -619,3 +619,7 @@ export class MemoryTagStore implements TagStore {
     return Promise.resolve();
   }
 }
+
+// i18n-use: error.tags.thisBrowserHasNoWebCryptoSupport error.tags.invoiceLabelAndNotesMustBeText error.tags.labelOrNotesTooLong error.tags.invalidStealthAddress error.tags.invalidAnnouncementId error.tags.invalidLogIndex error.tags.invalidTagPayload error.tags.sellerKeysChangedSoTagsWereLockedUnlockThemAgain error.tags.theTagProfileIsMissingExistingEncryptedTagsHaveBeen error.tags.theseTagsWereCreatedWithADifferentViewingKey error.tags.tagsChangedWhileUnlockingUnlockAgain error.tags.tagsAreLockedUnlockThemFirst error.tags.tagsChangedOrWereLockedTryAgain error.tags.theTagProfileChangedInAnotherTabUnlockAgain error.tags.aStoredTagCouldNotBeDecryptedDamagedOrFrom error.tags.aStoredTagDoesNotBelongToThisAddressAnd error.tags.tagsChangedWhileReadingThemTryAgain error.tags.invalidChainIdInArchive error.tags.tagsChangedWhilePreparingTheImportPreviewAgain error.tags.tagsChangedSinceThePreviewPreviewTheImportAgain error.tags.thereIsNoTagProfileToRotate error.tags.thatIsNotTheViewingKeyOfTheseTags error.tags.tagsChangedDuringRotationNothingWasChangedTryAgain error.tags.tagsChangedSinceThePreviewOrOperationBeganPreviewThe
+
+// i18n-use: error.tags.labelLength

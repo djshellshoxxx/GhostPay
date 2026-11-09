@@ -10,9 +10,10 @@ import {
   type Hex,
 } from '@ghostpay/policy-scheme';
 import type { Abi } from 'viem';
-import { decodeFunctionData, encodeAbiParameters, encodeEventTopics, encodeFunctionResult, getAddress } from 'viem/utils';
+import { decodeFunctionData, encodeAbiParameters, encodeEventTopics, encodeFunctionResult, getAddress, keccak256 } from 'viem/utils';
 import { mockRpc, type MockRpc } from '../../test/mockRpc';
 import type { PolicyChainDeployment } from './chain';
+import type { PolicyDeploymentProfile } from './deploymentEvidence';
 
 interface VectorAccount {
   id: string;
@@ -56,6 +57,16 @@ export const DEPLOYMENT: PolicyChainDeployment = Object.freeze({
   feeRecipient: FEE_RECIPIENT,
   announcer: ANNOUNCER,
   flatFee: 0n,
+});
+
+/** Explicit in-process fixture: NEVER a published deployment/profile or production pin. */
+export const LOCAL_POLICY_PROFILE: PolicyDeploymentProfile = Object.freeze({
+  deployment: DEPLOYMENT,
+  deploymentStartBlock: 0n,
+  codeHashes: Object.freeze({ router: keccak256('0x6001'), factory: keccak256('0x6001'), implementation: keccak256('0x6001'), announcer: keccak256('0x6001') }),
+  factoryFeeToken: '0x0000000000000000000000000000000000000000',
+  factoryFeeRecipient: FEE_RECIPIENT,
+  assets: Object.freeze([{ token: '0x0000000000000000000000000000000000000000', semantics: 'native' }] as const),
 });
 
 export function account(id: string): VectorAccount {
@@ -134,6 +145,7 @@ export function fakeChain(chainId: number, s: FakeChainState): MockRpc {
   return mockRpc(chainId, (method, params) => {
     const x = s.extra?.(method, params);
     if (x !== undefined) return x;
+    if (method === 'eth_chainId') return `0x${chainId.toString(16)}`;
     if (method === 'eth_blockNumber') return `0x${head.toString(16)}`;
     if (method === 'eth_getBlockByNumber') {
       const n = params[0] === 'latest' ? head : Number(params[0]);
@@ -179,10 +191,14 @@ export function deploymentCalls(over: Record<string, unknown> = {}): { code: Set
       [`FACTORY@${r}`]: DEPLOYMENT.factory,
       [`SCHEME_ID@${r}`]: 0x47500002n,
       [`FEE_BPS@${r}`]: 25n,
+      [`BPS@${r}`]: 10_000n,
+      [`NATIVE@${r}`]: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
       [`FEE_RECIPIENT@${r}`]: FEE_RECIPIENT,
       [`ANNOUNCER@${r}`]: ANNOUNCER,
       [`IMPLEMENTATION@${f}`]: DEPLOYMENT.implementation,
       [`FLAT_FEE@${f}`]: 0n,
+      [`FEE_TOKEN@${f}`]: '0x0000000000000000000000000000000000000000',
+      [`FEE_RECIPIENT@${f}`]: FEE_RECIPIENT,
       ...over,
     },
   };
