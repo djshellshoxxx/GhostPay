@@ -28,8 +28,9 @@ recover private keys.
 ## Why the ADR-0023 bound fails
 
 ADR-0023 only permits a proposal after `now >= lastOwnerActionAt + T_rec` and resets
-`lastOwnerActionAt` on accepted owner actions. For any positive `T_rec`, an attacker
-acting every `T_rec - 1` time units maintains `now - lastOwnerActionAt < T_rec` forever.
+`lastOwnerActionAt` on accepted owner actions. An attacker using an action interval
+`Delta` with `0 < Delta < T_rec`, where chain inclusion permits it, maintains
+`now - lastOwnerActionAt < T_rec` forever.
 No proposal is admitted, so a cancellation limit is never reached. The executable test
 reproduces this for 10,000 inactivity periods; the invariant explains the unbounded trace.
 
