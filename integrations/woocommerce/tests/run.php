@@ -285,6 +285,17 @@ if ( ! extension_loaded( 'pdo_sqlite' ) ) {
 	ghostpay_test_order( 15, 'pending', '12.50', 'USD', array( 'inv_15a', 'inv_15b' ) ); // customer retried: inv_15b is current
 	$deliver( $event( 'evt_15a', 'invoice.expired', 'inv_15a', 'USD', '0' ) );
 	check( 'expiry of a superseded invoice does not cancel the order', $status( 15 ), 'pending' );
+	// Real WooCommerce 11.2.2 HPOS returned these entries in descending metadata-ID order.
+	ghostpay_test_order( 40, 'pending', '12.50', 'USD', array( 'inv_40a', 'inv_40b' ) );
+	GhostPay_Test::$orders[40]['meta'] = array(
+		array( 'id' => 102, 'key' => '_ghostpay_invoice_id', 'value' => 'inv_40b' ),
+		array( 'id' => 101, 'key' => '_ghostpay_invoice_id', 'value' => 'inv_40a' ),
+	);
+	$deliver( $event( 'evt_40a', 'invoice.expired', 'inv_40a', 'USD', '0' ) );
+	check( 'unsorted HPOS meta: older expiry preserves pending order', $status( 40 ), 'pending' );
+	$deliver( $event( 'evt_40b', 'invoice.expired', 'inv_40b', 'USD', '0' ) );
+	check( 'unsorted HPOS meta: latest expiry cancels pending order', $status( 40 ), 'cancelled' );
+
 	$deliver( $event( 'evt_15b', 'invoice.expired', 'inv_15b', 'USD', '0' ) );
 	check( 'expiry of the current invoice cancels a pending order', $status( 15 ), 'cancelled' );
 	$deliver( $event( 'evt_15c', 'invoice.paid', 'inv_15a', 'USD', '1250' ) );

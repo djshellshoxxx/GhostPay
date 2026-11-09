@@ -347,11 +347,18 @@ class WC_Gateway_GhostPay extends WC_Payment_Gateway {
 		return $ok;
 	}
 
-	/** The order's newest invoice id: each customer retry adds one, and WooCommerce reads meta in meta id order. */
+	/** The latest persisted invoice has the greatest metadata ID; HPOS does not promise enumeration order. */
 	private function current_invoice_id( WC_Order $order ): string {
 		$invoices = $order->get_meta( '_ghostpay_invoice_id', false );
-		$current  = is_array( $invoices ) ? end( $invoices ) : false;
-		return $current instanceof WC_Meta_Data ? (string) $current->value : '';
+		$current = '';
+		$latest_id = 0;
+		foreach ( is_array( $invoices ) ? $invoices : array() as $invoice ) {
+			if ( $invoice instanceof WC_Meta_Data && (int) $invoice->id > $latest_id ) {
+				$latest_id = (int) $invoice->id;
+				$current = (string) $invoice->value;
+			}
+		}
+		return $current;
 	}
 
 	/** @param array $event Validated event. */

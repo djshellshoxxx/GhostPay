@@ -422,10 +422,12 @@ class WC_Payment_Gateway extends WC_Settings_API {
 }
 
 final class WC_Meta_Data {
+	public $id;
 	public $key;
 	public $value;
 
 	public function __construct( array $meta ) {
+		$this->id    = $meta['id'];
 		$this->key   = $meta['key'];
 		$this->value = $meta['value'];
 	}
@@ -471,12 +473,12 @@ class WC_Order {
 		$this->data['meta'][] = array( 'key' => $key, 'value' => $value );
 	}
 
-	/** Meta in insertion (meta id) order, as WooCommerce reads it. */
+	/** Meta enumeration can differ between data stores. Preserve each persisted identity independently. */
 	public function get_meta( $key = '', $single = true, $context = 'view' ) {
 		$found = array();
-		foreach ( $this->data['meta'] as $meta ) {
+		foreach ( $this->data['meta'] as $index => $meta ) {
 			if ( $meta['key'] === $key ) {
-				$found[] = new WC_Meta_Data( $meta );
+				$found[] = new WC_Meta_Data( $meta + array( 'id' => $index + 1 ) );
 			}
 		}
 		if ( $single ) {
