@@ -144,6 +144,7 @@ describe('webhook signing', () => {
     expect(() => retryDelaySeconds(1, 1000, { maxAttempts: 1.5 })).toThrow(/bad-retry/);
     expect(() => retryDelaySeconds(1, 1000, { factor: 0.5 })).toThrow(/bad-retry/);
     expect(() => retryDelaySeconds(Number.MAX_SAFE_INTEGER + 1)).toThrow(/bad-retry/);
+    expect(retryDelaySeconds(1025, 1000, { baseSeconds: 0, maxAttempts: 2000 })).toBe(0);
   });
   it('constant-time compare', () => {
     expect(constantTimeEqual('abc', 'abc')).toBe(true);

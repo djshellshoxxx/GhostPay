@@ -141,7 +141,7 @@ export function retryDelaySeconds(attempt: number, jitterPermille = 1000, policy
       !Number.isSafeInteger(max) || max < 0 || !Number.isSafeInteger(attempts) || attempts < 0)
     throw new HooksError('bad-retry');
   if (attempt > attempts) return null;
-  const raw = Math.min(base * Math.pow(factor, attempt - 1), max);
+  const raw = base === 0 ? 0 : Math.min(base * Math.pow(factor, attempt - 1), max);
   return Math.floor((raw * (500 + jitterPermille / 2)) / 1000);
 }
 
