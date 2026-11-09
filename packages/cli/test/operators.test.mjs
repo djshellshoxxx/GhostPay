@@ -215,6 +215,26 @@ test('compiled receipt creation signs only after explicit approval and fresh own
   assert.deepEqual(await readFile(path('created-receipt.json')), bytes);
 });
 
+test('compiled manual-digest receipt creation verifies payment without inventing invoice binding', async () => {
+  const digest = '0x' + '56'.repeat(32);
+  const source = ['receipt', 'create', '--manual-invoice-digest', digest, '--observation', 'claim.json', ...credentials, ...live(), '--out', 'manual-receipt.json'];
+  const before = requestCount;
+  assert.equal((await cli(source, { code: 2 })).error.code, 'APPROVAL_REQUIRED');
+  assert.equal((await cli([...source, '--approve', '--invoice', 'invoice.json'], { code: 2 })).error.code, 'RECEIPT_INVOICE_SOURCE');
+  assert.equal(requestCount, before, 'invalid signing consent/mode must not contact RPC');
+  const created = await cli([...source, '--approve']);
+  assert.equal(created.invoiceBound, false); assert.equal(created.manualInvoiceDigest, true);
+  assert.equal(created.paymentVerifiedAtCreation, true); assert.equal(created.recipientOwnershipVerified, true);
+  assert.equal(created.receiptIsPaymentProof, false);
+  const bytes = await readFile(path('manual-receipt.json'));
+  assert.equal(JSON.parse(bytes.toString('utf8')).invoiceDigest, digest);
+  const verified = await cli(['receipt', 'verify', '--in', 'manual-receipt.json', '--pin', signer]);
+  assert.equal(verified.signatureValid, true); assert.equal(verified.invoiceBound, false); assert.equal(verified.paymentVerified, false);
+  await cli(['receipt', 'verify', '--in', 'manual-receipt.json', '--invoice', 'invoice.json'], { code: 1 });
+  await cli([...source, '--approve'], { code: 3 });
+  assert.deepEqual(await readFile(path('manual-receipt.json')), bytes);
+});
+
 test('compiled reconciliation requires reviewed live context and approval while imported history remains untrusted', async () => {
   await cli(['reconcile', 'create', '--chain', '11155111', ...credentials, '--out', 'empty-history.json']);
   await cli(['reconcile', 'register', '--in', 'empty-history.json', '--invoice', 'invoice.json', ...credentials, '--out', 'registered-history.json']);

@@ -11,19 +11,75 @@ import { reconciliationWorld, RECON_CREDS, RECON_PASS, VIEW_HEX } from './reconc
 
 const BASE = ['--invoice', 'invoice.json', '--observation', 'claim.json', ...RECON_CREDS,
   '--manifest', 'manifest.json', '--manifest-digest', PIN, '--online', '--rpc-file', 'rpc.txt', '--approve', '--out', 'created-receipt.json'];
+const MANUAL_DIGEST = '0x' + 'ef'.repeat(32);
 function without(option: string, value = false): string[] {
   const index = BASE.indexOf(option);
   return [...BASE.slice(0, index), ...BASE.slice(index + (value ? 2 : 1))];
 }
+const MANUAL = [...without('--invoice', true), '--manual-invoice-digest', MANUAL_DIGEST];
 
 describe('receipt creation from current owned canonical payment evidence', () => {
+  it('creates the full-GUI manual-digest attestation without claiming an invoice binding', async () => {
+    const w = await reconciliationWorld(); w.io.files.delete('invoice.json');
+    expect(await invoke(receiptCommands, 'receipt create', MANUAL, w.io)).toBe(0);
+    expect(parseVerifiedReceipt(w.io.files.get('created-receipt.json')!)).toMatchObject({ invoiceDigest: MANUAL_DIGEST,
+      chainId: 11155111, txHash: TX, stealthAddress: w.recipient, asset: 'native', amountMinorUnits: '100', signerPublicKey: SIGNER });
+    expect(result(w.io)).toMatchObject({ invoiceBound: false, manualInvoiceDigest: true, paymentVerifiedAtCreation: true,
+      recipientOwnershipVerified: true, receiptIsPaymentProof: false });
+    for (const value of [KEY_HEX, VIEW_HEX, RECON_PASS, 'PRIVATE_API_TOKEN']) expect(allOutput(w.io)).not.toContain(value);
+    w.io.out.length = 0;
+    expect(await invoke(receiptCommands, 'receipt verify', ['--in', 'created-receipt.json', '--pin', SIGNER], w.io)).toBe(0);
+    expect(result(w.io)).toMatchObject({ invoiceBound: false, signatureValid: true, paymentVerified: false });
+  });
+
+  it.each(['missing', 'both', 'malformed', 'uppercase', 'invoice-passphrase-file', 'invoice-passphrase-env', 'invoice-passphrase-stdin'])('rejects %s receipt mode inputs before reading files, credentials or RPC', async condition => {
+    const w = await reconciliationWorld();
+    const args = condition === 'missing' ? without('--invoice', true) : condition === 'both' ? [...BASE, '--manual-invoice-digest', MANUAL_DIGEST]
+      : condition === 'malformed' ? [...without('--invoice', true), '--manual-invoice-digest', 'not-a-digest']
+      : condition === 'uppercase' ? [...without('--invoice', true), '--manual-invoice-digest', MANUAL_DIGEST.toUpperCase()]
+      : [...MANUAL, `--${condition}`, ...(condition.endsWith('-stdin') ? [] : ['must-not-be-read'])];
+    Object.assign(w.io, { readFile: () => Promise.reject(new Error('no input may be read')) });
+    const code = condition === 'missing' || condition === 'both' ? 'RECEIPT_INVOICE_SOURCE'
+      : condition === 'malformed' || condition === 'uppercase' ? 'INVALID_MANUAL_INVOICE_DIGEST' : 'PASSPHRASE_UNEXPECTED';
+    await expect(invoke(receiptCommands, 'receipt create', args, w.io)).rejects.toMatchObject({ kind: 'usage', code });
+    expect(w.calls).toEqual([]); expect(w.io.files.has('created-receipt.json')).toBe(false);
+  });
+
+  it.each(['unapproved', 'offline', 'wrong-owner', 'missing-expected', 'pending', 'reorganized'])('keeps manual-digest creation closed for %s evidence', async condition => {
+    const w = await reconciliationWorld();
+    let args = MANUAL;
+    if (condition === 'unapproved') args = MANUAL.filter(value => value !== '--approve');
+    if (condition === 'offline') args = MANUAL.filter(value => value !== '--online');
+    if (condition === 'wrong-owner') w.io.files.set('claim.json', paymentWorld().io.files.get('claim.json')!);
+    if (condition === 'missing-expected') {
+      const { expected: _expected, ...claim } = w.current; void _expected;
+      w.io.files.set('claim.json', JSON.stringify(claim));
+    }
+    if (condition === 'pending') w.state.head = '0x64';
+    if (condition === 'reorganized') w.state.blockHash = '0x' + '98'.repeat(32);
+    const code = condition === 'unapproved' ? 'APPROVAL_REQUIRED' : condition === 'offline' ? 'ONLINE_REQUIRED'
+      : condition === 'wrong-owner' ? 'SELLER_RECIPIENT_MISMATCH' : condition === 'missing-expected' ? 'EXPECTED_PAYMENT_REQUIRED' : 'CURRENT_EVIDENCE_REQUIRED';
+    await expect(invoke(receiptCommands, 'receipt create', args, w.io)).rejects.toMatchObject({ code });
+    expect(w.io.files.has('created-receipt.json')).toBe(false);
+    if (!['pending', 'reorganized'].includes(condition)) expect(w.calls).toEqual([]);
+  });
+
+  it('labels the human manual digest as unmatched and preserves immutable publication', async () => {
+    const w = await reconciliationWorld();
+    expect(await invoke(receiptCommands, 'receipt create', MANUAL, w.io, false)).toBe(0);
+    expect(allOutput(w.io)).toContain('manually supplied, unmatched invoice digest');
+    const original = w.io.files.get('created-receipt.json');
+    await expect(invoke(receiptCommands, 'receipt create', MANUAL, w.io)).rejects.toMatchObject({ code: 'WRITE_FAILED' });
+    expect(w.io.files.get('created-receipt.json')).toBe(original);
+  });
+
   it('creates the exact GUI signed format after live verification and ownership binding', async () => {
     const w = await reconciliationWorld();
     expect(await invoke(receiptCommands, 'receipt create', BASE, w.io)).toBe(0);
     const receipt = parseVerifiedReceipt(w.io.files.get('created-receipt.json')!);
     expect(receipt).toMatchObject({ invoiceDigest: `0x${Buffer.from(invoiceDigest(w.signed.invoice)).toString('hex')}`,
       chainId: 11155111, txHash: TX, stealthAddress: w.recipient, asset: 'native', amountMinorUnits: '100', signerPublicKey: SIGNER, issuedAt: w.io.now });
-    expect(result(w.io)).toMatchObject({ ok: true, created: true, invoiceBound: true, currentChainVerified: true,
+    expect(result(w.io)).toMatchObject({ ok: true, created: true, invoiceBound: true, manualInvoiceDigest: false, currentChainVerified: true,
       paymentVerifiedAtCreation: true, recipientOwnershipVerified: true, receiptIsPaymentProof: false, verificationScope: 'operator-pinned-testnet' });
     for (const privateValue of [KEY_HEX, VIEW_HEX, RECON_PASS, 'PRIVATE_API_TOKEN']) expect(allOutput(w.io)).not.toContain(privateValue);
     w.io.out.length = 0;

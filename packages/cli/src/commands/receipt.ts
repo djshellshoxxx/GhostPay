@@ -23,41 +23,54 @@ function fixedNetAmount(invoice: Invoice): string | undefined {
   return routerSplit(invoice.feePolicy === 'payer_pays' ? grossForNet(wanted) : wanted).net.toString();
 }
 
-/** Mirror the GUI's invoice-bound signing path, using fresh canonical RPC evidence instead of a cached scan. */
+/** Mirror the GUI's bound and explicit manual-digest receipts, using fresh canonical RPC evidence. */
 async function create(ctx: Ctx, a: Parsed): Promise<number> {
   noPositionals(a);
   requireValue(a, 'out');
-  if (!a.flags.has('approve')) throw usageError('APPROVAL_REQUIRED', 'receipt signing requires explicit --approve after reviewing the invoice and observation.');
+  if (!a.flags.has('approve')) throw usageError('APPROVAL_REQUIRED', 'receipt signing requires explicit --approve after reviewing the invoice or manual digest and payment observation.');
   if (!a.flags.has('online')) throw usageError('ONLINE_REQUIRED', 'receipt creation requires fresh read-only RPC verification with --online.');
-  const paths = ['invoice', 'observation', 'keystore'].map(option => requireValue(a, option));
-  if (paths.includes('-')) throw usageError('REPEATABLE_CONTEXT_REQUIRED', 'receipt creation needs invoice, observation and keystore files so their exact contents can be checked again before signing.');
+  const invoicePath = a.values.get('invoice');
+  const manualDigest = a.values.get('manual-invoice-digest');
+  if (Number(invoicePath !== undefined) + Number(manualDigest !== undefined) !== 1)
+    throw usageError('RECEIPT_INVOICE_SOURCE', 'provide exactly one of --invoice or --manual-invoice-digest.');
+  if (manualDigest !== undefined && !/^0x[0-9a-f]{64}$/.test(manualDigest))
+    throw usageError('INVALID_MANUAL_INVOICE_DIGEST', 'manual invoice digest must be a canonical 0x-prefixed 32-byte lowercase hex value.');
+  if (manualDigest !== undefined && Object.keys(secretOpts('invoice-passphrase')).some(key => a.values.has(key) || a.flags.has(key)))
+    throw usageError('PASSPHRASE_UNEXPECTED', 'invoice passphrase options require --invoice and cannot accompany a manual digest.');
+  const paths = [...(invoicePath === undefined ? [] : [invoicePath]), requireValue(a, 'observation'), requireValue(a, 'keystore')];
+  if (paths.includes('-')) throw usageError('REPEATABLE_CONTEXT_REQUIRED', 'receipt creation needs repeatable observation, keystore and any supplied invoice files so their exact contents can be checked again before signing.');
   return withBackupErrors(async () => {
     const sources: string[] = [];
     for (const path of paths) sources.push(await ctx.read(path));
-    const passphrase = await readPassphrase(ctx, a, 'invoice-passphrase', false);
-    const parsed = await parseInvoiceInput(sources[0]!, { allowInsecureLocalhost: a.flags.has('allow-insecure-localhost'), ...(passphrase === undefined ? {} : { passphrase }) });
-    const invoice = parsed.invoice;
-    if (!parsed.signatureValid) throw failError('INVALID_INVOICE_SIGNATURE', 'receipt creation requires a valid signed invoice.');
+    const observationText = sources[invoicePath === undefined ? 0 : 1]!;
+    let invoice: Invoice | undefined;
+    if (invoicePath !== undefined) {
+      const passphrase = await readPassphrase(ctx, a, 'invoice-passphrase', false);
+      const parsed = await parseInvoiceInput(sources[0]!, { allowInsecureLocalhost: a.flags.has('allow-insecure-localhost'), ...(passphrase === undefined ? {} : { passphrase }) });
+      if (!parsed.signatureValid) throw failError('INVALID_INVOICE_SIGNATURE', 'invoice-bound receipt creation requires a valid signed invoice.');
+      invoice = parsed.invoice;
+    }
     const currentTime = (): number => {
       const now = ctx.io.nowSeconds();
       if (!Number.isSafeInteger(now) || now <= 0) throw failError('CLOCK_INVALID', 'receipt creation requires a valid current Unix timestamp.');
-      if (checkExpiry(invoice, now).invoiceExpired) throw failError('INVOICE_EXPIRED', 'the signed invoice expired; no receipt was created.');
+      if (invoice !== undefined && checkExpiry(invoice, now).invoiceExpired) throw failError('INVOICE_EXPIRED', 'the signed invoice expired; no receipt was created.');
       return now;
     };
     currentTime();
-    const expectedAmount = fixedNetAmount(invoice);
-    if (expectedAmount === undefined) throw new CliError('unsupported', 'FIXED_INVOICE_REQUIRED', 'invoice-bound receipt creation requires an exact fixed-token amount.');
-    const observation = await chainBoundary(() => parsePaymentObservation(sources[1]!));
-    assertExpectedPayment(observation);
-    if (invoice.chainId !== observation.chain.chainId) throw failError('INVOICE_CHAIN_MISMATCH', 'invoice and observation use different chains.');
+    const expectedAmount = invoice === undefined ? undefined : fixedNetAmount(invoice);
+    if (invoice !== undefined && expectedAmount === undefined) throw new CliError('unsupported', 'FIXED_INVOICE_REQUIRED', 'invoice-bound receipt creation requires an exact fixed-token amount.');
+    const observation = await chainBoundary(() => parsePaymentObservation(observationText));
     const metadata = observation.claim.metadata;
     if (metadata === undefined) throw failError('CURRENT_EVIDENCE_REQUIRED', 'receipt creation requires complete router payment metadata.');
+    assertExpectedPayment(observation);
+    if (invoice !== undefined && invoice.chainId !== observation.chain.chainId) throw failError('INVOICE_CHAIN_MISMATCH', 'invoice and observation use different chains.');
     const asset = metadata.kind === 'native' ? 'native' : metadata.token.toLowerCase();
-    if (invoice.token !== asset || expectedAmount !== metadata.netAmount.toString())
+    const amount = metadata.netAmount.toString();
+    if (invoice !== undefined && (invoice.token !== asset || expectedAmount !== amount))
       throw failError('INVOICE_PAYMENT_MISMATCH', 'observed asset or exact seller-net amount differs from the signed invoice.');
-    const seller = await loadSeller(ctx, a, sources[2]);
+    const seller = await loadSeller(ctx, a, sources[sources.length - 1]);
     try {
-      if (invoice.signer !== seller.signer || invoice.metaAddress !== seller.metaAddress)
+      if (invoice !== undefined && (invoice.signer !== seller.signer || invoice.metaAddress !== seller.metaAddress))
         throw failError('INVOICE_SCOPE_MISMATCH', 'the invoice signer or recipient keys differ from the authenticated seller keystore.');
       const viewing = secretScalarFromBytes(seller.secrets.viewingKey);
       try {
@@ -67,34 +80,34 @@ async function create(ctx: Ctx, a: Parsed): Promise<number> {
           throw failError('SELLER_RECIPIENT_MISMATCH', 'the payment recipient is not owned by the authenticated seller keys.');
       } finally { zeroize(viewing); }
       const context = await chainBoundary(() => verifiedContext(ctx, a, observation.chain));
-      const verified = await verifyObservation(ctx, a, sources[1]!, context);
+      const verified = await verifyObservation(ctx, a, observationText, context);
       if (verified.output.networkFailure)
         throw new CliError('network', 'RPC_FAILURE', 'current payment evidence could not be verified because a configured provider failed.');
       if (!verified.output.paymentVerified || verified.verification.evidenceId === undefined)
         throw failError('CURRENT_EVIDENCE_REQUIRED', 'receipt creation requires a current canonical direct payment with sufficient finality.');
       const claim = verified.observation.claim;
-      const binding: ReceiptInvoiceBinding = {
+      const binding: ReceiptInvoiceBinding | undefined = invoice === undefined ? undefined : {
         invoiceDigest: `0x${toHex(invoiceDigest(invoice))}`, chainId: invoice.chainId, asset,
-        amountMinorUnits: expectedAmount, invoiceSignerPublicKey: invoice.signer, invoiceSignatureValid: true,
+        amountMinorUnits: amount, invoiceSignerPublicKey: invoice.signer, invoiceSignatureValid: true,
         txHash: claim.announcement.transactionHash!, stealthAddress: claim.stealthAddress.toLowerCase(),
       };
       for (const [index, path] of paths.entries()) {
-        if (await ctx.read(path) !== sources[index]) throw failError('STALE_CONTEXT', 'invoice, observation or seller keystore changed during review; no receipt was created.');
+        if (await ctx.read(path) !== sources[index]) throw failError('STALE_CONTEXT', 'receipt inputs changed during review; no receipt was created.');
       }
       currentTime();
       await freshCanonicalContext({ context, finalityDepth: observation.chain.finalityDepth,
         records: [{ blockNumber: claim.announcement.blockNumber.toString(), blockHash: claim.announcement.blockHash }] });
-      const receipt = signReceipt({ invoiceDigest: binding.invoiceDigest, chainId: binding.chainId,
-        txHash: binding.txHash!, stealthAddress: binding.stealthAddress!, asset, amountMinorUnits: expectedAmount,
+      const receipt = signReceipt({ invoiceDigest: binding?.invoiceDigest ?? manualDigest!, chainId: observation.chain.chainId,
+        txHash: claim.announcement.transactionHash!, stealthAddress: claim.stealthAddress.toLowerCase(), asset, amountMinorUnits: amount,
         issuedAt: currentTime() }, seller.secrets.signingKey);
-      bindReceiptToInvoice(receipt, binding);
+      if (binding !== undefined) bindReceiptToInvoice(receipt, binding);
       await ctx.writeOut(a, `${receiptJson(receipt)}\n`);
-      ctx.out({ ok: true, created: true, signatureValid: true, invoiceBound: true, currentChainVerified: true,
+      ctx.out({ ok: true, created: true, signatureValid: true, invoiceBound: binding !== undefined, manualInvoiceDigest: binding === undefined, currentChainVerified: true,
         paymentVerifiedAtCreation: true, recipientOwnershipVerified: true, receiptIsPaymentProof: false,
         verificationScope: 'operator-pinned-testnet', providerTrustEstablished: false,
         manifestDigest: context.manifestDigest, out: a.values.get('out'), originalFileRecommended: true,
         meaning: MEANING, retention: RETENTION },
-      `Created an invoice-bound seller receipt after current canonical payment, finality and recipient-ownership checks.\nVerification is relative to the operator-pinned testnet deployment and configured providers.\n${MEANING}\n${RETENTION}`);
+      `${binding === undefined ? 'Created a seller receipt with a manually supplied, unmatched invoice digest. The digest was not validated against an invoice.' : 'Created an invoice-bound seller receipt.'}\nCurrent canonical payment, finality and recipient ownership were verified relative to the operator-pinned testnet deployment and configured providers.\n${MEANING}\n${RETENTION}`);
       return 0;
     } finally { seller.close(); }
   });
@@ -182,9 +195,9 @@ async function exportReceipt(ctx: Ctx, a: Parsed): Promise<number> {
 }
 
 export const receiptCommands: readonly Command[] = [
-  { path: ['receipt', 'create'], summary: 'sign an invoice-bound receipt after live canonical payment and seller-ownership verification',
-    usage: 'ghostpay receipt create --invoice SIGNED_INVOICE --observation PAYMENT.json --keystore SELLER.json (--passphrase-file P | --passphrase-env NAME | --passphrase-stdin) --manifest DEPLOYMENT.json (--manifest-digest HASH | --release-key PUBLIC_KEY) --online (--rpc-file P | --rpc-env NAME) --approve --out NEW_RECEIPT.json [--secondary-rpc-file P | --secondary-rpc-env NAME] [--invoice-passphrase-file P | --invoice-passphrase-env NAME | --invoice-passphrase-stdin] [--allow-insecure-localhost]\n  Example: ghostpay receipt create --invoice invoice.json --observation payment.json --keystore seller.json --passphrase-env SELLER_PASSPHRASE --manifest deployment.json --manifest-digest 0xDIGEST --online --rpc-env RPC_ENDPOINT --approve --out receipt.json\n  Requires an unexpired signed fixed-token invoice, matching authenticated seller keys, an owned direct payment, exact seller-net amount and fresh canonical finality. Invoice/observation/keystore inputs must be repeatable files. Existing output files are never replaced. A signed receipt is a seller attestation, not independent payment proof or real-world identity.',
-    opts: { invoice: 'value', observation: 'value', keystore: 'value', out: 'value', approve: 'flag',
+  { path: ['receipt', 'create'], summary: 'sign a bound or manual-digest seller receipt after live payment and ownership verification',
+    usage: 'ghostpay receipt create (--invoice SIGNED_INVOICE | --manual-invoice-digest 0xHASH) --observation PAYMENT.json --keystore SELLER.json (--passphrase-file P | --passphrase-env NAME | --passphrase-stdin) --manifest DEPLOYMENT.json (--manifest-digest HASH | --release-key PUBLIC_KEY) --online (--rpc-file P | --rpc-env NAME) --approve --out NEW_RECEIPT.json [--secondary-rpc-file P | --secondary-rpc-env NAME] [--invoice-passphrase-file P | --invoice-passphrase-env NAME | --invoice-passphrase-stdin] [--allow-insecure-localhost]\n  Example: ghostpay receipt create --invoice invoice.json --observation payment.json --keystore seller.json --passphrase-env SELLER_PASSPHRASE --manifest deployment.json --manifest-digest 0xDIGEST --online --rpc-env RPC_ENDPOINT --approve --out receipt.json\n  Choose exactly one invoice source. --invoice requires an unexpired signed fixed-token invoice matching the seller and exact seller-net amount. --manual-invoice-digest takes 0x plus 64 lowercase hex digits and creates an unmatched seller attestation with invoiceBound:false; the digest is not validated against any invoice. Invoice-passphrase options require --invoice. Both modes require independent expected payment facts, authenticated seller keys, full recipient ownership and fresh canonical finality. Observation, keystore and any supplied invoice must be repeatable files. Existing outputs are never replaced. Receipt signatures do not independently prove payment or real-world identity.',
+    opts: { invoice: 'value', 'manual-invoice-digest': 'value', observation: 'value', keystore: 'value', out: 'value', approve: 'flag',
       ...secretOpts('passphrase'), ...secretOpts('invoice-passphrase'), ...MANIFEST_OPTS, ...ONLINE_OPTS }, handler: create },
   { path: ['receipt', 'inspect'], summary: 'inspect a validated signed seller receipt',
     usage: 'ghostpay receipt inspect --in RECEIPT.json|-\n  Example: ghostpay receipt inspect --in receipt.json --json\n  Valid signatures attest to key control; they do not independently establish payment.',

@@ -406,13 +406,18 @@ inspection is always `evidenceSource: untrusted-input`. Keep the original
 observation and independent expected facts when retaining a report; a saved
 successful report is historical evidence and does not replace a later live check.
 
-### Create an invoice-bound seller receipt
+### Create a seller receipt
 
-Receipt creation requires an unexpired signed **fixed-token** invoice, a matching
-authenticated seller keystore, independently supplied expected payment facts,
-and a currently final owned payment. It uses the shared canonical verifier and
-router fee calculation. Invoice, observation and encrypted keystore inputs must
-be repeatable files so their contents can be checked again before signing.
+Receipt creation requires an authenticated seller keystore, independently
+supplied expected payment facts, and a currently final payment owned by that
+seller. Choose exactly one invoice-association mode:
+
+| Selector | Invoice association checked at creation | Result fields |
+| --- | --- | --- |
+| `--invoice SIGNED_INVOICE` | Valid, unexpired **fixed-token** invoice; matching seller signer and receiving keys, chain, asset and exact seller-net amount using the shared router fee calculation | `invoiceBound: true`, `manualInvoiceDigest: false` |
+| `--manual-invoice-digest 0xDIGEST` | Canonical 32-byte digest supplied by the operator; no invoice document, signature, expiry or invoice-to-payment match is verified | `invoiceBound: false`, `manualInvoiceDigest: true` |
+
+For an invoice-bound receipt:
 
 ```sh
 ghostpay receipt create --invoice invoice.json --observation observation.json \
@@ -424,13 +429,37 @@ ghostpay receipt create --invoice invoice.json --observation observation.json \
 
 For a passphrase-protected invoice link, add the separate
 `--invoice-passphrase-env GHOSTPAY_LINK_PASSPHRASE` option; `--passphrase-*` opens
-the seller keystore. Creation verifies the invoice signer and receiving keys,
-derives recipient ownership locally, rereads all three source files and checks
-canonical blocks/finality again before signing. The result reports
+the seller keystore. Manual mode rejects every `--invoice-passphrase-*` option,
+because it does not read an invoice. To attest a manually supplied digest:
+
+```sh
+ghostpay receipt create --manual-invoice-digest "$INVOICE_DIGEST" \
+  --observation observation.json --keystore seller.json \
+  --passphrase-env GHOSTPAY_PASSPHRASE \
+  --manifest deployment.json --manifest-digest "$MANIFEST_DIGEST" \
+  --online --rpc-env GHOSTPAY_RPC --secondary-rpc-env GHOSTPAY_RPC_SECONDARY \
+  --approve --out receipt-manual.json --json
+```
+
+Set `INVOICE_DIGEST` to the public digest being attested: `0x` followed by exactly
+64 lowercase hexadecimal characters. It is mutually exclusive with `--invoice`.
+The manual receipt signs that digest alongside the verified payment's transaction,
+recipient, asset and seller-net amount, while its invoice association remains
+**unmatched and unverified**. It does not establish that the digest identifies a
+valid invoice or that the payment satisfies one.
+
+Both modes derive recipient ownership locally, require explicit `--online` and
+`--approve`, and use the shared canonical payment verifier. The observation and
+encrypted keystore, plus the invoice when supplied, must be repeatable files;
+their contents are checked again before the final canonical block/finality check
+and signature. Both creation reports retain
 `paymentVerifiedAtCreation: true` within the `operator-pinned-testnet` scope and
-`receiptIsPaymentProof: false`. A later holder can authenticate the receipt's
-signed fields, but must independently check current chain evidence. The new
-receipt file is published without replacing an existing destination.
+`receiptIsPaymentProof: false`. They write the same canonical signed receipt
+format; `invoiceBound` and `manualInvoiceDigest` describe the creation report,
+not additional signed fields in the receipt. A later holder can authenticate
+those signed fields, but must independently check current chain evidence and
+any claimed invoice association. The new receipt file is published without
+replacing an existing destination.
 
 ### Look up a public registry entry
 
@@ -983,19 +1012,19 @@ ghostpay invoice link --in signed.json --base https://pay.example/ --passphrase-
 
 ### `receipt create`
 
-Sign an invoice-bound receipt after live canonical payment and seller-ownership verification.
+Sign a bound or manual-digest seller receipt after live payment and ownership verification.
 
 ```text
-ghostpay receipt create --invoice SIGNED_INVOICE --observation PAYMENT.json --keystore SELLER.json (--passphrase-file P | --passphrase-env NAME | --passphrase-stdin) --manifest DEPLOYMENT.json (--manifest-digest HASH | --release-key PUBLIC_KEY) --online (--rpc-file P | --rpc-env NAME) --approve --out NEW_RECEIPT.json [--secondary-rpc-file P | --secondary-rpc-env NAME] [--invoice-passphrase-file P | --invoice-passphrase-env NAME | --invoice-passphrase-stdin] [--allow-insecure-localhost]
+ghostpay receipt create (--invoice SIGNED_INVOICE | --manual-invoice-digest 0xHASH) --observation PAYMENT.json --keystore SELLER.json (--passphrase-file P | --passphrase-env NAME | --passphrase-stdin) --manifest DEPLOYMENT.json (--manifest-digest HASH | --release-key PUBLIC_KEY) --online (--rpc-file P | --rpc-env NAME) --approve --out NEW_RECEIPT.json [--secondary-rpc-file P | --secondary-rpc-env NAME] [--invoice-passphrase-file P | --invoice-passphrase-env NAME | --invoice-passphrase-stdin] [--allow-insecure-localhost]
 ```
 
 ```sh
 ghostpay receipt create --invoice invoice.json --observation payment.json --keystore seller.json --passphrase-env SELLER_PASSPHRASE --manifest deployment.json --manifest-digest 0xDIGEST --online --rpc-env RPC_ENDPOINT --approve --out receipt.json
 ```
 
-Requires an unexpired signed fixed-token invoice, matching authenticated seller keys, an owned direct payment, exact seller-net amount and fresh canonical finality. Invoice/observation/keystore inputs must be repeatable files. Existing output files are never replaced. A signed receipt is a seller attestation, not independent payment proof or real-world identity.
+Choose exactly one invoice source. --invoice requires an unexpired signed fixed-token invoice matching the seller and exact seller-net amount. --manual-invoice-digest takes 0x plus 64 lowercase hex digits and creates an unmatched seller attestation with invoiceBound:false; the digest is not validated against any invoice. Invoice-passphrase options require --invoice. Both modes require independent expected payment facts, authenticated seller keys, full recipient ownership and fresh canonical finality. Observation, keystore and any supplied invoice must be repeatable files. Existing outputs are never replaced. Receipt signatures do not independently prove payment or real-world identity.
 
-**Options:** `--invoice VALUE`, `--observation VALUE`, `--keystore VALUE`, `--out VALUE`, `--approve`, `--passphrase-file VALUE`, `--passphrase-env VALUE`, `--passphrase-stdin`, `--invoice-passphrase-file VALUE`, `--invoice-passphrase-env VALUE`, `--invoice-passphrase-stdin`, `--manifest VALUE`, `--manifest-digest VALUE`, `--release-key VALUE ...`, `--online`, `--rpc-file VALUE`, `--rpc-env VALUE`, `--secondary-rpc-file VALUE`, `--secondary-rpc-env VALUE`, `--allow-insecure-localhost`
+**Options:** `--invoice VALUE`, `--manual-invoice-digest VALUE`, `--observation VALUE`, `--keystore VALUE`, `--out VALUE`, `--approve`, `--passphrase-file VALUE`, `--passphrase-env VALUE`, `--passphrase-stdin`, `--invoice-passphrase-file VALUE`, `--invoice-passphrase-env VALUE`, `--invoice-passphrase-stdin`, `--manifest VALUE`, `--manifest-digest VALUE`, `--release-key VALUE ...`, `--online`, `--rpc-file VALUE`, `--rpc-env VALUE`, `--secondary-rpc-file VALUE`, `--secondary-rpc-env VALUE`, `--allow-insecure-localhost`
 
 ### `receipt inspect`
 
