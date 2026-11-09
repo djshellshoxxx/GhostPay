@@ -71,7 +71,7 @@ bounded logical-transaction option or explicit storage is supplied.
 | --- | --- | --- |
 | Coherent clone/owner/policy/asset reads | Implemented; locally validated | Unit adversarial checks and real local deployment |
 | Complete bounded request reconstruction | Implemented; locally validated | Canonical receipts, ordering, transition and storage checks; origin/cap failures block |
-| Reload and browser-restart attempt retention | Implemented; locally validated | Durable schema with cross-tab Web Lock; new-context tests preserve submitted/unknown outcomes |
+| Reload and browser-restart attempt retention | Implemented; locally validated | Durable schema with cross-tab Web Lock; new reader/wallet-session unit tests preserve submitted/unknown outcomes |
 | Competing requests and used nonce | Implemented; locally validated | Fresh conservative plan and nonce read; local Anvil exercises both |
 | Request → reload → maturity → execution → reorg | Implemented; locally validated | Real Anvil lifecycle test using unchanged contracts |
 | Session/deployment changes during asynchronous actions | Implemented; locally validated | UI session tests and post-history/queued-operation guards |
@@ -102,7 +102,7 @@ Regression evidence:
   request reconstruction.
 - Replacing only `wallet.ts` with PR #89's version makes the new persistent-attempt regression fail: the returned hash
   lands in tab-only storage and the durable store is empty. Corrected code persists it and blocks a regenerated nonce
-  or another relaying wallet after recreating the browser context.
+  or another relaying wallet after recreating the reader/wallet session. Actual browser-process restart is not claimed by this unit test.
 - Initial test-helper failures (ABI field naming, account-spread in the local Anvil sender and layered test spies)
   were corrected. They are not unresolved product failures or counted as passing executions.
 
