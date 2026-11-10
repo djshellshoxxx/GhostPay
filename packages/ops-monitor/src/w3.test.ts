@@ -97,13 +97,13 @@ describe('W3', () => {
   it('enforces the byte cap while streaming default release fetches', async () => {
     const parts = ['abcd', 'efgh', 'ijklm', 'unused'].map((part) => new TextEncoder().encode(part));
     let produced = 0;
-    const fullBuffer = vi.fn(async () => new TextEncoder().encode('abcdefghijklmunused').buffer);
+    const fullBuffer = vi.fn(() => Promise.resolve(new TextEncoder().encode('abcdefghijklmunused').buffer));
     const response = {
       ok: true, status: 200, headers: new Headers(), arrayBuffer: fullBuffer,
       body: new ReadableStream<Uint8Array>({
         pull(controller) {
           if (produced === parts.length) controller.close();
-          else controller.enqueue(parts[produced++]!);
+          else controller.enqueue(parts[produced++]);
         },
       }),
     } as unknown as Response;
