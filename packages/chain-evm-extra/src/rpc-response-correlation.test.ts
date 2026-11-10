@@ -34,7 +34,7 @@ describe('read-only JSON-RPC response correlation', () => {
 
   for (const [name, response] of [
     ['mismatched numeric id', (id: number) => ({ jsonrpc: '2.0', id: id + 1, result: '0x1' })],
-    ['missing id', (_id: number) => ({ jsonrpc: '2.0', result: '0x1' })],
+    ['missing id', () => ({ jsonrpc: '2.0', result: '0x1' })],
     ['stringified id', (id: number) => ({ jsonrpc: '2.0', id: String(id), result: '0x1' })],
     ['missing version', (id: number) => ({ id, result: '0x1' })],
     ['wrong version', (id: number) => ({ jsonrpc: '1.0', id, result: '0x1' })],
