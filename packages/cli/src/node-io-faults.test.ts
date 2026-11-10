@@ -2,24 +2,37 @@ import { execFileSync } from 'node:child_process';
 import * as fs from 'node:fs/promises';
 import type { FileHandle } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createNodeIo } from './node-io.js';
 import { MAX_INPUT_CHARS } from './io.js';
 
-const faults = vi.hoisted(() => ({ onOpen: undefined as ((file: FileHandle, path: string) => void) | undefined }));
+const faults = vi.hoisted(() => ({ onOpen: undefined as ((file: FileHandle, path: string) => void) | undefined,
+  afterLstat: undefined as ((path: string) => Promise<void>) | undefined }));
 vi.mock('node:fs/promises', async (load) => {
   const original = await load<typeof import('node:fs/promises')>();
-  return { ...original, rename: vi.fn(original.rename), open: async (...args: Parameters<typeof original.open>) => {
+  return { ...original, rename: vi.fn(original.rename), lstat: async (...args: Parameters<typeof original.lstat>) => {
+    const metadata = await original.lstat(...args); await faults.afterLstat?.(String(args[0])); return metadata;
+  }, open: async (...args: Parameters<typeof original.open>) => {
     const file = await original.open(...args); faults.onOpen?.(file, String(args[0])); return file;
   } };
 });
 const dirs: string[] = [];
 async function directory() { const dir = await fs.mkdtemp(join(tmpdir(), 'ghostpay-faults-')); dirs.push(dir); return dir; }
 const io = () => createNodeIo({ env: {}, version: '22', write: () => {}, stdin: (async function* () { yield ''; await Promise.resolve(); })() });
-afterEach(async () => { faults.onOpen = undefined; vi.restoreAllMocks(); await Promise.all(dirs.splice(0).map(d => fs.rm(d, { recursive: true, force: true }))); });
+afterEach(async () => { faults.onOpen = undefined; faults.afterLstat = undefined; vi.restoreAllMocks(); await Promise.all(dirs.splice(0).map(d => fs.rm(d, { recursive: true, force: true }))); });
 
 describe('descriptor input and atomic publication fault boundaries', () => {
+  it.each(['text', 'binary'] as const)('rejects a %s input replaced between path inspection and descriptor opening', async kind => {
+    const d = await directory(); const input = join(d, 'input'); const replacement = join(d, 'replacement');
+    await fs.writeFile(input, 'original'); await fs.writeFile(replacement, 'replacement');
+    faults.afterLstat = async path => {
+      if (path !== input) return;
+      faults.afterLstat = undefined;
+      await fs.rename(replacement, input);
+    };
+    await expect(kind === 'text' ? io().readFile(input) : io().readBinaryFile!(input)).rejects.toThrow('input changed before opening');
+  });
   it('bounds reads even when an opened file grows after fstat', async () => {
     const d = await directory(); const input = join(d, 'input'); await fs.writeFile(input, 'old');
     faults.onOpen = (file, path) => {
@@ -74,7 +87,7 @@ describe('descriptor input and atomic publication fault boundaries', () => {
     const d = await directory(); const output = join(d, 'target'); await fs.writeFile(output, 'old');
     if (stage === 'rename') vi.mocked(fs.rename).mockRejectedValueOnce(new Error('interrupted'));
     else faults.onOpen = (file, path) => {
-      if (!path.endsWith('/output')) return;
+      if (basename(path) !== 'output') return;
       if (stage === 'sync') vi.spyOn(file, 'sync').mockRejectedValueOnce(new Error('interrupted'));
       else {
         const write = file.writeFile.bind(file);

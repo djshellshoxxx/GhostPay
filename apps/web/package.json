@@ -34,7 +34,8 @@
     "qrcode-generator": "2.0.4",
     "react": "19.3.1",
     "react-dom": "19.3.1",
-    "viem": "2.57.13"
+    "viem": "2.57.13",
+    "@ghostpay/ux-vault": "0.1.0"
   },
   "devDependencies": {
     "@playwright/test": "1.64.1",

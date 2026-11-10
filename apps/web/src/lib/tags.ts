@@ -1,31 +1,9 @@
+import { createTagArchiveApi, type TagPayload, type TagSnapshotEntry } from '@ghostpay/ux-vault/portable';
+export type { TagPayload, TagSnapshotEntry } from '@ghostpay/ux-vault/portable';
+export const { validatePayload } = createTagArchiveApi(UserFacingError);
 import { bytesToHex, hexToBytes, utf8ToBytes } from '@noble/hashes/utils.js';
 import { UserFacingError } from './errors';
 import { captureSessionVersionGuard } from './session';
-
-/**
- * Feature 4: encrypted local client tags.
- *
- * - Keys: HKDF-SHA-256 over the viewing key with a random per-profile salt and distinct `info` strings produce a
- *   non-extractable AES-256-GCM key and a separate non-extractable HMAC-SHA-256 key. The viewing key is never used as a
- *   key directly.
- * - Records: AES-GCM with a fresh 96-bit IV per write; the AAD binds the schema version, chain id, record id AND lookup
- *   token, so ciphertext cannot be spliced from one record into another (S3-16), and `find` also checks that the decrypted
- *   address is the one asked for. METADATA IS IN THE CLEAR: record count, chain id, record id, lookup token, IV and the
- *   created/updated times are readable by anything that can read this origin's IndexedDB; only the payload is encrypted. The lookup token is
- *   HMAC(chainId || stealth address), so no raw address or unkeyed hash is stored.
- * - The unlocked CryptoKeys live in this object only; `lock()` drops them. Nothing is sent over the network.
- * - Unlocked keys belong to the seller keys that were loaded when `unlock` started (L1-04): once those are wiped or
- *   replaced the vault reads as locked, drops its keys on the next use, and refuses to commit a pending write.
- */
-export interface TagPayload {
-  readonly stealthAddress: string;
-  /** `blockHash:logIndex` of the announcement (the scanner does not retain transaction hashes). */
-  readonly announcementId: string;
-  readonly logIndex: number;
-  readonly clientLabel: string;
-  readonly invoiceLabel?: string;
-  readonly notes?: string;
-}
 
 export interface EncryptedTagRecord {
   readonly schemaVersion: 1 | 2;
@@ -86,14 +64,6 @@ export interface TagStore {
   applyBatch(batch: TagBatch, expected?: TagStoreSnapshot, guard?: () => void): Promise<void>;
 }
 
-/** A decrypted tag with the (non-secret) timestamps needed for backup and merge. */
-export interface TagSnapshotEntry {
-  readonly chainId: number;
-  readonly createdAt: number;
-  readonly updatedAt: number;
-  readonly payload: TagPayload;
-}
-
 export interface TagImportPreview {
   readonly mode: 'merge' | 'replace';
   /** Distinct tags in the archive. */
@@ -111,8 +81,6 @@ export interface TagImportPreview {
 const INFO_AES = utf8ToBytes('GhostPay/local-tags/v1/aes-gcm');
 const INFO_HMAC = utf8ToBytes('GhostPay/local-tags/v1/hmac');
 const CHECK_PLAINTEXT = utf8ToBytes('ghostpay-tag-profile-ok');
-const MAX_LABEL = 200;
-const MAX_NOTES = 2000;
 
 async function deriveKeys(viewingKey: Uint8Array, salt: Uint8Array): Promise<{ aes: CryptoKey; hmac: CryptoKey }> {
   const base = await subtle().importKey('raw', viewingKey as Uint8Array<ArrayBuffer>, 'HKDF', false, ['deriveKey', 'deriveBits']);
@@ -142,34 +110,6 @@ function aad(chainId: number): Uint8Array<ArrayBuffer> {
 /** AAD of a tag record: binds position (chain, record id, lookup token) to the ciphertext. */
 function recordAad(chainId: number, recordId: string, lookupKey: string): Uint8Array<ArrayBuffer> {
   return utf8ToBytes(`GhostPay/tag/v2|${String(chainId)}|${recordId}|${lookupKey}`);
-}
-
-/** An optional text field: absent, or a string that is trimmed and bounded like the client label (I-3); blank means absent. */
-function optionalText(value: unknown, max: number): string | undefined {
-  if (value === undefined) return undefined;
-  if (typeof value !== 'string') throw new UserFacingError({ key: 'error.tags.invoiceLabelAndNotesMustBeText' });
-  const clean = value.trim();
-  if (clean.length > max) throw new UserFacingError({ key: 'error.tags.labelOrNotesTooLong' });
-  return clean === '' ? undefined : clean;
-}
-
-/** Validates a payload from the UI, storage or an archive; every field is checked by type, since archives are untrusted JSON. */
-export function validatePayload(p: TagPayload): TagPayload {
-  const label = typeof p.clientLabel === 'string' ? p.clientLabel.trim() : '';
-  if (label === '' || label.length > MAX_LABEL) throw new UserFacingError({ key: 'error.tags.labelLength', values: { maximum: String(MAX_LABEL) } });
-  if (typeof p.stealthAddress !== 'string' || !/^0x[0-9a-fA-F]{40}$/.test(p.stealthAddress)) throw new UserFacingError({ key: 'error.tags.invalidStealthAddress' });
-  if (typeof p.announcementId !== 'string' || !/^0x[0-9a-fA-F]{64}:\d{1,9}$/.test(p.announcementId)) throw new UserFacingError({ key: 'error.tags.invalidAnnouncementId' });
-  if (!Number.isInteger(p.logIndex) || p.logIndex < 0) throw new UserFacingError({ key: 'error.tags.invalidLogIndex' });
-  const invoiceLabel = optionalText(p.invoiceLabel, MAX_LABEL);
-  const notes = optionalText(p.notes, MAX_NOTES);
-  return {
-    stealthAddress: p.stealthAddress.toLowerCase(),
-    announcementId: p.announcementId.toLowerCase(),
-    logIndex: p.logIndex,
-    clientLabel: label,
-    ...(invoiceLabel === undefined ? {} : { invoiceLabel }),
-    ...(notes === undefined ? {} : { notes }),
-  };
 }
 
 /**

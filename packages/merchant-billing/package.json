@@ -13,7 +13,9 @@
       "default": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "sideEffects": false,
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
@@ -24,7 +26,8 @@
   "dependencies": {
     "@ghostpay/invoice-schema": "0.1.0",
     "@noble/curves": "2.4.0",
-    "@noble/hashes": "2.4.0"
+    "@noble/hashes": "2.4.0",
+    "@ghostpay/merchant-hooks": "0.1.0"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

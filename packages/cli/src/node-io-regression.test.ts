@@ -27,7 +27,7 @@ describe('OS adapter regression boundaries', () => {
     await writeFile(target, 'old'); await chmod(target, 0o644);
     await io().writeFile(target, 'new', { overwrite: true });
     expect(await readFile(target, 'utf8')).toBe('new');
-    expect((await stat(target)).mode & 0o077).toBe(0);
+    if (process.platform !== 'win32') expect((await stat(target)).mode & 0o077).toBe(0);
   });
   it('refuses existing output symlinks without altering their target', async () => {
     const d = await directory(); const target = join(d, 'target'); const link = join(d, 'link');

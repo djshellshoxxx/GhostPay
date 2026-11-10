@@ -1,13 +1,19 @@
 import type { RandomSource } from '@ghostpay/invoice-schema';
+import type { RpcTransport } from '@ghostpay/chain-adapters';
 
 /** Process exit codes. */
 export const EXIT_OK = 0;
 export const EXIT_FAIL = 1;
 export const EXIT_USAGE = 2;
 export const EXIT_IO = 3;
+export const EXIT_NETWORK = 4;
+export const EXIT_UNSUPPORTED = 5;
+export const EXIT_CONFIG = 6;
 
 /** Maximum bytes/characters accepted from any file or stdin. */
 export const MAX_INPUT_CHARS = 1_048_576;
+/** The GUI's encrypted tag archive limit; allocation remains bounded. */
+export const MAX_BINARY_BYTES = 20 * 1024 * 1024;
 
 /** Everything the CLI may touch. Injected so `run` is pure and testable. */
 export interface Io {
@@ -15,6 +21,13 @@ export interface Io {
   readonly stderr: (text: string) => void;
   /** Reads a UTF-8 text file. Throws on any failure. */
   readonly readFile: (path: string) => Promise<string>;
+  /** Reads a private, owned regular file on the same validated descriptor. */
+  readonly readSecretFile?: (path: string) => Promise<string>;
+  /** Network adapter; only commands with explicit online consent may use it. */
+  readonly rpcTransport?: RpcTransport;
+  readonly readBinaryFile?: (path: string) => Promise<Uint8Array>;
+  readonly readBinaryStdin?: () => Promise<Uint8Array>;
+  readonly writeBinaryFile?: (path: string, data: Uint8Array, options: { readonly overwrite: boolean }) => Promise<void>;
   /** Writes a text file. Must fail if it exists and `overwrite` is false. */
   readonly writeFile: (path: string, data: string, options: { readonly overwrite: boolean }) => Promise<void>;
   /** Reads all of stdin as UTF-8. */
@@ -27,7 +40,7 @@ export interface Io {
   readonly nodeVersion: string;
 }
 
-export type ErrorKind = 'usage' | 'io' | 'fail';
+export type ErrorKind = 'usage' | 'io' | 'fail' | 'network' | 'unsupported' | 'config';
 
 /** Expected, user-facing failure. Message and hint must never contain secrets or raw untrusted input. */
 export class CliError extends Error {
@@ -42,7 +55,7 @@ export class CliError extends Error {
   }
 
   public get exitCode(): number {
-    return this.kind === 'usage' ? EXIT_USAGE : this.kind === 'io' ? EXIT_IO : EXIT_FAIL;
+    return { usage: EXIT_USAGE, io: EXIT_IO, fail: EXIT_FAIL, network: EXIT_NETWORK, unsupported: EXIT_UNSUPPORTED, config: EXIT_CONFIG }[this.kind];
   }
 }
 

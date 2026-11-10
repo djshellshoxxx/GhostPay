@@ -4,6 +4,19 @@ import { doctorCommands } from './commands/doctor.js';
 import { exportCommands } from './commands/export.js';
 import { i18nCommands } from './commands/i18n.js';
 import { invoiceCommands } from './commands/invoice.js';
+import { merchantCommands } from './commands/merchant.js';
+import { refundCommands } from './commands/merchant-refund.js';
+import { operatorCommands } from './commands/operator.js';
+import { paymentCommands } from './commands/payment.js';
+import { receiptCommands } from './commands/receipt.js';
+import { backupCommands } from './commands/backup.js';
+import { chainCommands, diagnosticsRpcCommands } from './commands/chain.js';
+import { historyCommands } from './commands/history.js';
+import { qrCommands } from './commands/qr.js';
+import { sellerCommands } from './commands/seller.js';
+import { scanCommands } from './commands/scan.js';
+import { reconcileCommands } from './commands/reconcile.js';
+import { registryCommands } from './commands/registry.js';
 import { sandboxCommands } from './commands/sandbox.js';
 import { splitCommands } from './commands/split.js';
 import { subCommands } from './commands/sub.js';
@@ -18,10 +31,25 @@ import { LedgerError } from '@ghostpay/merchant-ledger';
 import { HooksError } from '@ghostpay/merchant-hooks';
 import { SandboxError } from '@ghostpay/sandbox';
 
-export const VERSION = '0.1.0';
+import { VERSION } from './version.js';
+export { VERSION } from './version.js';
 
 export const COMMANDS: readonly Command[] = [
   ...invoiceCommands,
+  ...receiptCommands,
+  ...paymentCommands,
+  ...merchantCommands,
+  ...refundCommands,
+  ...operatorCommands,
+  ...backupCommands,
+  ...chainCommands,
+  ...diagnosticsRpcCommands,
+  ...historyCommands,
+  ...qrCommands,
+  ...sellerCommands,
+  ...scanCommands,
+  ...reconcileCommands,
+  ...registryCommands,
   ...webhookCommands,
   ...subCommands,
   ...splitCommands,
@@ -35,7 +63,7 @@ export const COMMANDS: readonly Command[] = [
 function topHelp(): string {
   const width = Math.max(...COMMANDS.map((c) => c.path.join(' ').length));
   return [
-    `ghostpay ${VERSION} - GhostPay command line (offline: no network, no telemetry)`,
+    `ghostpay ${VERSION} - GhostPay command line (offline by default; explicit read-only RPC, no telemetry)`,
     '',
     'Requires Node >=22.',
     'Usage: ghostpay <command> [options]   (add --json for machine output, --help for details)',
@@ -45,7 +73,7 @@ function topHelp(): string {
     '',
     'Secrets (keys, webhook secrets) are never accepted as arguments: use --key-file/--key-env NAME/--key-stdin',
     'and --secret-file/--secret-env NAME/--secret-stdin. Use "-" as a path to read stdin.',
-    'Exit codes: 0 ok, 1 verification or validation failed, 2 usage error, 3 I/O error.',
+    'Exit codes: 0 ok, 1 verification or validation failed, 2 usage error, 3 I/O error, 4 network failure, 5 unsupported, 6 configuration failure.',
   ].join('\n');
 }
 
@@ -81,7 +109,7 @@ function describe(e: unknown): CliError {
  *
  * @param argv Arguments after the executable name.
  * @param io Injected stdout/stderr/files/stdin/env/clock/randomness.
- * @returns Process exit code: 0 ok, 1 failed check, 2 usage, 3 I/O.
+ * @returns Process exit code: 0 ok, 1 failed check, 2 usage, 3 I/O, 4 network, 5 unsupported, 6 configuration.
  * @security Never prints secrets or raw untrusted input; secrets are accepted only from file, stdin or env var NAME.
  */
 export async function run(argv: readonly string[], io: Io): Promise<number> {

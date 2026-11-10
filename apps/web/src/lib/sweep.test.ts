@@ -61,11 +61,15 @@ describe('key derivation and destination checks', () => {
     expect(() => deriveVerifiedSweepKey({ ...wrong, announcement: { ...wrong.announcement, stealthAddress: '0x9999999999999999999999999999999999999999' } })).toThrow(/does not map to the announced address/);
   });
   it('validates the destination', () => {
-    expect(checkDestination(DEST.toLowerCase(), target.owner, manifest)).toBe(DEST);
-    expect(() => checkDestination('nope', target.owner, manifest)).toThrow(/valid destination/);
-    expect(() => checkDestination(target.owner, target.owner, manifest)).toThrow(/must differ/);
+    const owner = '0x52908400098527886E0F7030069857D2E4169EE7' as Address;
+    expect(checkDestination(DEST.toLowerCase(), owner, manifest)).toBe(DEST);
+    expect(() => checkDestination('nope', owner, manifest)).toThrow(/valid destination/);
+    // A valid EIP-55 checksum can happen to be all uppercase. The strict input policy rejects
+    // that presentation, so use accepted lowercase input to reach the separate self-payment guard.
+    expect(() => checkDestination(owner, owner, manifest)).toThrow(/valid destination/);
+    expect(() => checkDestination(owner.toLowerCase(), owner, manifest)).toThrow(/must differ/);
     for (const bad of [FAKE_ROUTER, FAKE_SWEEP_RELAYER, FAKE_ANNOUNCER, FAKE_FEE_RECIPIENT]) {
-      expect(() => checkDestination(bad, target.owner, manifest)).toThrow(/GhostPay contract or the fee recipient/);
+      expect(() => checkDestination(bad, owner, manifest)).toThrow(/GhostPay contract or the fee recipient/);
     }
   });
 });
