@@ -103,20 +103,31 @@ export async function rpcSession(ctx: Ctx, a: Parsed, chain: ChainConfig): Promi
     chainId: chain.chainId, primary, secondary: secondaryUrl ?? null, allowInsecureLocalhost,
   })).digest('hex');
   const stats = { calls: 0, bytes: 0, transportFailures: 0 };
+  // Reserve each outstanding response's *maximum* before starting transport.
+  // Both providers share this budget, including their initialization calls.
+  let reservedBytes = 0;
   const started = ctx.io.nowSeconds() * 1000;
   const bounded: RpcTransport = {
     async send(url, body, init) {
       const remaining = RPC_DEADLINE_MS - (ctx.io.nowSeconds() * 1000 - started);
-      if (++stats.calls > MAX_RPC_CALLS || remaining <= 0 || stats.bytes >= MAX_RPC_BYTES)
+      if (++stats.calls > MAX_RPC_CALLS || remaining <= 0)
         throw new ChainAdapterError('RPC_FAILURE', 'command RPC budget exhausted');
+      if (!Number.isSafeInteger(init.maxBytes) || init.maxBytes <= 0 ||
+          init.maxBytes > MAX_RPC_BYTES - stats.bytes - reservedBytes)
+        throw new ChainAdapterError('RPC_FAILURE', 'command RPC byte budget exhausted');
+      reservedBytes += init.maxBytes;
       try {
-        const text = await transport.send(url, body, { timeoutMs: Math.min(init.timeoutMs, remaining), maxBytes: Math.min(init.maxBytes, MAX_RPC_BYTES - stats.bytes) });
-        stats.bytes += new TextEncoder().encode(text).length;
-        if (stats.bytes > MAX_RPC_BYTES) throw new ChainAdapterError('RESPONSE_TOO_LARGE', 'command byte budget exhausted');
+        const text = await transport.send(url, body, { timeoutMs: Math.min(init.timeoutMs, remaining), maxBytes: init.maxBytes });
+        const bytes = new TextEncoder().encode(text).length;
+        // Do not trust injected or nonconforming transports to enforce maxBytes.
+        if (bytes > init.maxBytes) throw new ChainAdapterError('RESPONSE_TOO_LARGE', 'RPC response exceeds its reserved byte limit');
+        stats.bytes += bytes;
         return text;
       } catch {
         stats.transportFailures++;
         throw new ChainAdapterError('RPC_FAILURE', 'bounded RPC request failed');
+      } finally {
+        reservedBytes -= init.maxBytes;
       }
     },
   };
