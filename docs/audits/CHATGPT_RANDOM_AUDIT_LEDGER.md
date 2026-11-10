@@ -1,5 +1,16 @@
 # ChatGPT randomized source audit ledger — GhostPay
 
+## 2026-11-10 second rotation: operations monitor read-only review (no independent subagent)
+
+- **Source:** unmodified integration candidate PR #98 exact head `364b1f185fcc2adaedab4ce7b4b14e676b1da3b7`; previous audit branch ledger blob `076944b77ecad4c8fe42c9431287d9397d7c318b`.
+- **Selection:** 69 sorted `packages/` directories; excluded prior `secret-box`; FNV-1a 32-bit over `<source sha>|<previous ledger blob sha>|secret-box` = **4270426345**, index **29** among 68 eligible directories: `packages/ops-monitor/`. Avoid both paths on next rotation.
+- **Source read:** `src/config.ts` lines 54-69, 85-151 (strict parsing, allowlisted mirror URLs, env names and report output), `src/fetcher.ts` lines 1-33 (network boundary, redirect and response handling), `src/run.ts` lines 1-25 (probe error containment), `src/output.ts` lines 1-91 (Prometheus label escaping and webhook deduplication), `src/w1.ts` and `src/w3.ts` (manifest and release-copy integrity), `src/cli.ts` lines 1-95 (operator runner, manifests and output path), `src/types.ts` lines 20-48 (fetch interface and response caps). Read corresponding `src/config.test.ts`, `w1.test.ts`, `w3.test.ts`, `output.test.ts`, and `cli.test.ts` plus package README.
+- **Trust boundaries:** operator-controlled config/env variables versus untrusted remote RPC/HTTPS mirror bytes, read-only provenance checks, no redirect to a different origin, fixed-code errors versus raw network errors, monitored addresses as metric/webhook subjects, local operator-owned alert deduplication and output.
+- **Observed guards and limitations:** config rejects plain HTTP mirrors, embedded credentials, malformed env-variable names and many invalid sizes; the default fetch disables redirects and has a 10-second timeout; W3 reports warning on an oversized result; source comments explicitly distinguish release checks from proof when `SHA256SUMS` is taken from a mirror. The existing oversize test covers the reported finding, not memory allocation behavior on a hostile very large response. Secret handling and production network deployment were not tested.
+- **Finding:** **no independently reproduced or demonstrated exploit/security defect** in this pass. A potential resource-boundary test gap warrants future bounded-stream inspection before drawing a vulnerability conclusion. No public security issue or speculative severity was filed.
+- **Verification:** direct GitHub source reading only. **No runtime test, fuzz, live RPC/HTTPS probe, second concurrent worker or independent security review** ran. No production file or other owner's branch was edited. Any reproducible security issue must be escalated via private reporting, not a public PR.
+- **Next audit:** choose from 67 unaudited package paths with a changed seed based on the next ledger blob SHA, and inspect the selected module's callers and tests.
+
 ## 2026-11-10: scoped read-only review, no independent agent spawned
 
 - **Source:** draft PR #98, exact SHA `364b1f185fcc2adaedab4ce7b4b14e676b1da3b7`; no source mutation.
