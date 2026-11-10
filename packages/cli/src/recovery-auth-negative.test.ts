@@ -28,7 +28,7 @@ it('fails closed on a wrong viewing key or tampered encrypted receipt archive wi
   for (const [backup, key, output] of [
     ['archived.json', 'wrong-view.hex', 'wrong-key-recovery.json'],
     ['tampered.json', 'view.hex', 'tampered-recovery.json'],
-  ]) {
+  ] as const) {
     w.io.out.length = 0;
     w.io.err.length = 0;
     expect(await run(['reconcile', 'import', '--in', 'history.json', '--backup', backup,
