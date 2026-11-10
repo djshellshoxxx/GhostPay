@@ -219,3 +219,7 @@ Each package has a README and, where present, a DEVIATIONS.md (choices where the
 
 - [Handoff](./HANDOFF.md): current state, lessons, how to resume.
 - [Completion plan](./COMPLETION_PLAN.md): what remains and how to finish it.
+
+## Future-only privacy-first feature proposals
+
+- [Future-only privacy-first catalog](future/privacy-first/README.md) — **FUTURE ONLY**, not approved, scheduled, implemented by these documents, or part of current beta/release scope. Contains 18 individually scoped enhancement specifications; existing feature code and active workstreams retain their own status.
