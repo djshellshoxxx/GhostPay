@@ -1,5 +1,17 @@
 # GhostPay ChatGPT documentation-maintenance ledger
 
+## 2026-11-10 — third pass: newly qualified invoice regressions and bounded-monitor draft
+
+**Pinned source:** application candidate draft #98 remains `364b1f185fcc2adaedab4ce7b4b14e676b1da3b7` (unmerged); main previously observed at `bd2652bf1853948594522140a6a0fe0cbe54e32b`. Separate owner branches untouched. Wiki source is on isolated draft #104, not the live GitHub Wiki.
+
+**Source evidence:** test-only [draft #105](https://github.com/djshellshoxxx/GhostPay/pull/105), head `83d17adb4a07ff2120c6674a5128684e4f13776a`, now has [CI 42826481280](https://github.com/djshellshoxxx/GhostPay/actions/runs/42826481280) **24 successful jobs**, [CLI operator 42826481394](https://github.com/djshellshoxxx/GhostPay/actions/runs/42826481394) **success**, and [Hosting kit 42826481622](https://github.com/djshellshoxxx/GhostPay/actions/runs/42826481622) **success**. This validates the eleven CLI receipt-boundary regression cases, not actual payment receipt, independent audit, SonarCloud or main integration. Parent #84 SonarCloud new-code security D (A required) remains blocked by inaccessible detailed inventory. #98 has no exact-head Sonar analysis.
+
+**Documentation change:** `docs/wiki/Verification-and-Release-Gates.md` at commit **`19c73eb86904689def816d08c5aa52afcc55cd8d`**: changes #105 from pending to passed, explicitly retains draft and payment-proof caveats; adds operator-only release-mirror read cap row for test-first [draft #106](https://github.com/djshellshoxxx/GhostPay/pull/106) as **unqualified while its CI is pending**. No docs silently changed approved specifications or crypto/financial security semantics.
+
+**Wiki architecture:** `docs/wiki/Home.md` and `_Sidebar.md` continue to link prominent top-level User Guide and Developer Guide; `Verification-and-Release-Gates.md` links both. Relative targets `Home.md`, `User-Guide.md`, `Developer-Guide.md`, `Architecture-and-Design-Rationale.md`, `Codebase-Map.md`, `Verification-and-Release-Gates.md` all exist on this branch. This pass reused the previous complete 18-link static verification; no new runtime browser/site link check or live GitHub wiki publication occurred.
+
+**Open gaps:** obtain exact-head CI on new docs commit; publish and verify the live wiki via an authorized wiki-write route (not exposed by connector); later inspect remaining operator guides/README for drift. Preserve unqualified B0 and external release provenance requirements. Audit ledger and implementation branches are isolated, and no third concurrent worker was spawned.
+
 ## 2026-11-10 — second pass: release-truth and test traceability
 
 **Pin and ownership.** Source remains draft #98 exact SHA `364b1f185fcc2adaedab4ce7b4b14e676b1da3b7`, not main. Existing docs PR #104 is owned by `chatgpt/zero-codex/docs-wiki-20261110`; no implementation or other owner's branches were changed. Current main last inspected at `bd2652bf1853948594522140a6a0fe0cbe54e32b`.
