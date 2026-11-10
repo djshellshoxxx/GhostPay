@@ -67,6 +67,8 @@ if [[ -n "$listing" ]]; then
   if [[ "$(echo "$listing" | cut -d/ -f1 | sort -u | wc -l | tr -d ' ')" = "1" ]]; then ok "single top-level directory"; else bad "multiple top-level entries"; fi
   if grep -qE '\.map$' <<<"$listing"; then bad "source maps present"; else ok "no source maps"; fi
   if grep -qE '(^|/)index\.html$' <<<"$listing"; then ok "index.html present"; else bad "index.html missing"; fi
+else
+  bad "archive is empty"
 fi
 
 cat <<CHECKLIST
