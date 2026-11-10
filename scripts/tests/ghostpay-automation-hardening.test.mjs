@@ -104,6 +104,8 @@ case "$path" in
   repos/*/pulls\\?*) page="$STUB_DIR/pulls.json" ;;
   repos/*/commits/*/check-runs*) sha="\${path#*/commits/}"; page="$STUB_DIR/checks-\${sha%%/*}.json" ;;
   repos/*/pulls/*/files*) n="\${path#*/pulls/}"; page="$STUB_DIR/files-\${n%%/*}.json" ;;
+  repos/*/pulls/*/reviews*) n="\${path#*/pulls/}"; page="$STUB_DIR/reviews-\${n%%/*}.json" ;;
+  repos/*/collaborators/*/permission*) reviewer="\${path#*/collaborators/}"; page="$STUB_DIR/permission-\${reviewer%%/*}.json" ;;
   *) echo "stub gh: unexpected path $path" >&2; exit 64 ;;
 esac
 if [ -n "$filter" ]; then jq -r "$filter" "$page"; else cat "$page"; fi
@@ -121,7 +123,14 @@ function pr(number, { ref = `codex/ghostpay-cloud-${number}`, draft = false, log
   };
 }
 
-function runIntegrate(prs, { checks = {}, files = {} } = {}) {
+function approvedReview(p, {
+  login = 'safe-reviewer', state = 'APPROVED', commit_id = p.head.sha,
+  author_association = 'COLLABORATOR', submitted_at = '2026-11-09T10:00:00Z',
+} = {}) {
+  return { user: { login }, state, commit_id, author_association, submitted_at };
+}
+
+function runIntegrate(prs, { checks = {}, files = {}, reviews = {}, permissions = {} } = {}) {
   const dir = mkdtempSync(join(tmpdir(), 'w8-integrate-'));
   try {
     const bin = join(dir, 'bin');
@@ -134,6 +143,11 @@ function runIntegrate(prs, { checks = {}, files = {} } = {}) {
       writeFileSync(join(dir, `checks-${p.head.sha}.json`), JSON.stringify({ check_runs: runs }));
       const changed = files[p.number] ?? ['apps/web/src/lib/invoice.ts'];
       writeFileSync(join(dir, `files-${p.number}.json`), JSON.stringify(changed.map((filename) => ({ filename }))));
+      writeFileSync(join(dir, `reviews-${p.number}.json`),
+        JSON.stringify(reviews[p.number] ?? [approvedReview(p)]));
+    }
+    for (const [login, permission] of Object.entries({ 'safe-reviewer': 'write', ...permissions })) {
+      writeFileSync(join(dir, `permission-${login}.json`), JSON.stringify({ permission }));
     }
     writeFileSync(join(dir, 'merges'), '');
     const result = bash(stepScript(cloud, 'integrate'), {
@@ -161,6 +175,49 @@ test('integrate also accepts the repository owner (GHOSTPAY_GITHUB_TOKEN PAT ide
   const { merges } = runIntegrate([pr(2, { login: 'djshellshoxxx' })]);
   assert.equal(merges.length, 1);
   assert.match(merges[0], /^2 --match-head-commit /);
+});
+
+test('integrate refuses unreviewed CI-green bot PRs (no human approval)', () => {
+  const p = pr(21);
+  const { merges, out } = runIntegrate([p], { reviews: { 21: [] } });
+  assert.deepEqual(merges, []);
+  assert.match(out, /independent.*approval/i);
+});
+
+test('integrate refuses stale, self, bot and revoked approvals', () => {
+  const p = pr(22);
+  const owner = pr(23, { login: 'djshellshoxxx' });
+  const stale = approvedReview(p, { commit_id: 'b'.repeat(40) });
+  const bot = approvedReview(p, { login: 'some-bot[bot]' });
+  const revoked = [approvedReview(p), approvedReview(p, { state: 'CHANGES_REQUESTED', submitted_at: '2026-11-09T11:00:00Z' })];
+  const result = runIntegrate([p, owner, pr(24), pr(25)], {
+    reviews: {
+      22: [stale, bot],
+      23: [approvedReview(owner, { login: 'djshellshoxxx', author_association: 'OWNER' })],
+      24: revoked.map((x) => ({ ...x, commit_id: pr(24).head.sha })),
+      25: [approvedReview(pr(25), { login: 'outsider', author_association: 'NONE' })],
+    },
+    permissions: { 'some-bot[bot]': 'write', djshellshoxxx: 'admin', outsider: 'write' },
+  });
+  assert.deepEqual(result.merges, []);
+});
+
+test('integrate requires a reviewer with repository write permission', () => {
+  const p = pr(26);
+  const { merges } = runIntegrate([p], {
+    reviews: { 26: [approvedReview(p, { login: 'reader' })] },
+    permissions: { reader: 'read' },
+  });
+  assert.deepEqual(merges, []);
+});
+
+test('integrate accepts independent latest exact-head human approval with write access', () => {
+  const p = pr(27);
+  const { merges } = runIntegrate([p], {
+    reviews: { 27: [approvedReview(p, { login: 'reviewer', author_association: 'COLLABORATOR' })] },
+    permissions: { reviewer: 'write' },
+  });
+  assert.deepEqual(merges, [`27 --match-head-commit ${p.head.sha} --squash --delete-branch`]);
 });
 
 test('integrate ignores fork, deleted-fork, foreign-author, draft and off-prefix PRs', () => {
