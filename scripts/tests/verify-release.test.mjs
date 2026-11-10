@@ -74,3 +74,44 @@ test('verify-release.sh fails when neither node nor python3 can read the manifes
     assert.match(r.stdout, /FAIL {2}manifest commit could not be read \(needs node or python3\): expected commit NOT compared/);
   });
 });
+
+/** Keep outer hashes consistent so archive tests cannot pass by failing a hash check. */
+function refreshArchiveMetadata(dir) {
+  const sha = createHash('sha256').update(readFileSync(join(dir, TARBALL))).digest('hex');
+  writeFileSync(join(dir, 'SHA256SUMS'), `${sha}  ${TARBALL}\n`);
+  writeFileSync(join(dir, 'release-manifest.json'), JSON.stringify(good(sha)));
+}
+
+test('verify-release.sh rejects a checksum-consistent empty archive', () => {
+  withRelease(good, (dir) => {
+    execFileSync('tar', ['-czf', join(dir, TARBALL), '-T', '/dev/null']);
+    refreshArchiveMetadata(dir);
+    const r = verify(dir, [TARBALL, 'SHA256SUMS', COMMIT, 'release-manifest.json']);
+    assert.equal(r.status, 1, r.stdout + r.stderr);
+    assert.match(r.stdout, /FAIL {2}archive is empty/);
+    assert.doesNotMatch(r.stdout, /RESULT: hash checks passed/);
+  });
+});
+
+test('verify-release.sh rejects corrupt archive bytes even when outer hashes match', () => {
+  withRelease(good, (dir) => {
+    writeFileSync(join(dir, TARBALL), 'not a gzip archive');
+    refreshArchiveMetadata(dir);
+    const r = verify(dir, [TARBALL, 'SHA256SUMS', COMMIT, 'release-manifest.json']);
+    assert.equal(r.status, 1, r.stdout + r.stderr);
+    assert.match(r.stdout, /FAIL {2}tarball is not a readable \.tar\.gz/);
+    assert.doesNotMatch(r.stdout, /RESULT: hash checks passed/);
+  });
+});
+
+test('verify-release.sh rejects a nonempty archive without index.html', () => {
+  withRelease(good, (dir) => {
+    rmSync(join(dir, 'src', 'ghostpay-web', 'index.html'));
+    execFileSync('tar', ['-czf', join(dir, TARBALL), '-C', join(dir, 'src'), 'ghostpay-web']);
+    refreshArchiveMetadata(dir);
+    const r = verify(dir, [TARBALL, 'SHA256SUMS', COMMIT, 'release-manifest.json']);
+    assert.equal(r.status, 1, r.stdout + r.stderr);
+    assert.match(r.stdout, /FAIL {2}index.html missing/);
+    assert.doesNotMatch(r.stdout, /RESULT: hash checks passed/);
+  });
+});
