@@ -169,7 +169,8 @@ function text(v: unknown, path: string, max: number, allowLf = false): string {
 
 function validateLineItems(v: unknown, path: string): readonly LineItem[] {
   if (!Array.isArray(v) || v.length > MAX_LINE_ITEMS) return fail(path);
-  return (v as unknown[]).map((raw, i) => {
+  // Array#map skips holes; visit every slot so missing items fail validation too.
+  return Array.from(v as unknown[], (raw, i) => {
     const p = `${path}[${i}]`;
     const r = record(
       raw,
