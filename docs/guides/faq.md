@@ -4,19 +4,19 @@
 No. It reduces address reuse. Payer address, token, amounts, time, router use, fee flow, announcements and sweeps are public. See [Privacy limits](../user/privacy-limits.md) and the [map](../assets/diagrams/privacy-limits-map.svg).
 
 **Can I use it with real money?**
-No. It is pre-audit (self-run and AI-assisted reviews only), nothing is deployed on any chain, contracts are immutable once deployed, and the audit round has open findings.
+No. It is pre-audit (self-run and AI-assisted reviews only); no deployment manifest ships, live qualification is not established, and contracts are immutable once deployed. See the current handoff for unresolved acceptance gates.
 
 **Which chains?**
-Ethereum Sepolia and Base Sepolia (testnets) are enabled in code. Mainnets are listed with `enabled: false`.
+Seven EVM testnet configurations are enabled in code, alongside separate full-build Bitcoin, Solana and TRON test views. Mainnets remain disabled. See the [network and scope tables](../user/product-guide.md#networks-and-assets); code support does not establish qualified deployments.
 
 **Is there an official website or hosted service?**
-No. Hosting is not configured and no release is signed, so beware of lookalike sites.
+A hosted preview does not establish an official, signed release or a qualified public deployment. Verify the source and release information described in the [current completion handoff](../handoffs/PRODUCT_COMPLETION_HANDOFF.md).
 
 **What does it cost?**
 0.25% on payments through the router (rounded down; payments under 400 base units pay 0). Sponsored sweeps cost `max(gas x 1.10, 0.50%)`, capped at 3%. Scanning, tags, QR and invoices are free. Direct payments to a one-time address bypass the fee. See [Fees](../user/fees.md) and [the fee diagram](../assets/diagrams/fee-flow.svg).
 
 **Where does the fee go?**
-To a fee recipient fixed at deployment and shown from the deployment manifest. The owner has not yet chosen it.
+To a fee recipient fixed at deployment and shown from an accepted bundled manifest, with RPC verification before payment. No deployment manifest ships in this repository.
 
 **Do I get notified when someone pays?**
 No. You scan announcements ([Receivers and scanning](receivers-and-scanning.md)).
@@ -40,16 +40,16 @@ No. It pays gas so you need not fund the address. The chain still shows the link
 It cannot change the destination, amount or fee you signed. It can refuse or delay.
 
 **Are fiat-priced invoices supported?**
-Not in practice: no price feed is configured. Use token-priced invoices.
+The full build supports fiat quotes for configured chain/asset/currency pairs, with ETH/USD and USDC/USD feeds for Sepolia and Base Sepolia. Quote freshness and deployment checks still apply; lean builds use fixed-token invoices. An unavailable pair needs a token-priced invoice.
 
 **Can I pay with a phone wallet?**
-Browser wallets only; WalletConnect is not built.
+The web payment flow uses browser wallets. A separate WalletConnect session-model package is not an operational relay integration in this flow.
 
 **What are policy accounts?**
-An experimental timelocked account, contracts only. See [Policy accounts](policy-accounts.md).
+An experimental timelocked account with contracts, a library and disabled-by-default web controls; no pinned deployment is provided. See [Policy accounts](policy-accounts.md).
 
 **Does it support Bitcoin?**
-A BIP-352 library exists but is not wired into the app. See [Bitcoin silent payments](bitcoin-silent-payments.md).
+The full web build has a BIP-352 receive, scan and sweep test view; it is separate from EVM invoices and the relayer. See [Bitcoin silent payments](bitcoin-silent-payments.md).
 
 **Is the invoice link secret?**
 It is a bearer link: anyone holding it reads the invoice. The part after `#` is not sent to the web server, but browser history may store it.

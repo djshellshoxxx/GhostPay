@@ -100,6 +100,16 @@ function checkAmount(v: bigint, allowZero = false): bigint {
   return v;
 }
 
+function copyRequest(request: TransferRequest): TransferRequest {
+  return request.announce === undefined
+    ? { ...request }
+    : { ...request, announce: { ...request.announce } };
+}
+
+function copyBlock(block: Block): Block {
+  return { ...block, txHashes: [...block.txHashes] };
+}
+
 function checkToken(t: string | undefined): string {
   return t === undefined || t === NATIVE ? NATIVE : checkAddress(t);
 }
@@ -139,7 +149,7 @@ export class MockChain {
       number: 0,
       hash: mockHash(`${this.seed}:${this.chainId}:genesis`),
       parentHash: `0x${'0'.repeat(64)}`,
-      timestamp: this.clock.now(),
+      timestamp: this.now(),
       txHashes: [],
     };
     this.blocks.push(genesis);
@@ -157,7 +167,8 @@ export class MockChain {
   }
 
   public getBlock(n: number): Block | undefined {
-    return this.blocks[n];
+    const block = this.blocks[n];
+    return block === undefined ? undefined : copyBlock(block);
   }
 
   public balanceOf(address: string, token?: string): bigint {
@@ -167,7 +178,7 @@ export class MockChain {
   public getTx(hash: string): TxRecord {
     const tx = this.txs.get(hash);
     if (tx === undefined) throw new SandboxError('UNKNOWN_TX', 'unknown transaction');
-    return tx;
+    return { ...tx, request: copyRequest(tx.request) };
   }
 
   /** Confirmations of a mined tx (1 = in the head block), 0 if not mined. */
@@ -180,7 +191,7 @@ export class MockChain {
   public getEvents(filter: { fromBlock?: number; toBlock?: number; type?: ChainEvent['type'] } = {}): ChainEvent[] {
     const from = filter.fromBlock ?? 0;
     const to = filter.toBlock ?? Number.MAX_SAFE_INTEGER;
-    return this.events.filter((e) => e.blockNumber >= from && e.blockNumber <= to && (filter.type === undefined || e.type === filter.type));
+    return this.events.filter((e) => e.blockNumber >= from && e.blockNumber <= to && (filter.type === undefined || e.type === filter.type)).map((e) => ({ ...e }));
   }
 
   /**
@@ -195,15 +206,16 @@ export class MockChain {
     checkAddress(address);
     checkAmount(amount);
     if (amount > FAUCET_MAX_AMOUNT) throw new SandboxError('FAUCET_LIMIT', 'faucet amount above the per-request cap');
+    const now = this.now();
     const last = this.lastFaucet.get(address);
-    if (last !== undefined && this.clock.now() < last + FAUCET_COOLDOWN_SECONDS)
+    if (last !== undefined && now < last + FAUCET_COOLDOWN_SECONDS)
       throw new SandboxError('FAUCET_COOLDOWN', 'faucet cooldown has not elapsed');
-    this.lastFaucet.set(address, this.clock.now());
+    this.lastFaucet.set(address, now);
     const key = balKey(NATIVE, address);
     this.balances.set(key, (this.balances.get(key) ?? 0n) + amount);
     const hash = mockHash(`${this.seed}:${this.epoch}:faucet:${this.txCounter++}`);
     this.txs.set(hash, { hash, request: { from: address, to: address, amount }, kind: 'faucet', status: 'success', blockNumber: this.height + 1, readyAt: 0 });
-    this.seal([hash]);
+    this.seal([hash], now);
     return hash;
   }
 
@@ -216,11 +228,17 @@ export class MockChain {
     checkAddress(request.to);
     checkAmount(request.amount);
     const token = checkToken(request.token);
-    if (request.announce !== undefined && (request.announce.ephemeralPubKey === '' || request.announce.viewTag === ''))
+    if (request.announce !== undefined && (request.announce === null || typeof request.announce.ephemeralPubKey !== 'string' || request.announce.ephemeralPubKey === '' || typeof request.announce.viewTag !== 'string' || request.announce.viewTag === '' || (request.announce.metadata !== undefined && typeof request.announce.metadata !== 'string')))
       throw new SandboxError('INVALID_CONFIG', 'announcement fields must be non-empty');
+    const now = this.now();
+    for (const value of [this.faults.delaySeconds, this.faults.failNext, this.faults.dropNext]) {
+      if (!Number.isSafeInteger(value) || value < 0)
+        throw new SandboxError('INVALID_CONFIG', 'fault controls must be non-negative safe integers');
+    }
+    const readyAt = now + this.faults.delaySeconds;
+    if (!Number.isSafeInteger(readyAt)) throw new SandboxError('INVALID_CONFIG', 'fault delay exceeds the safe clock range');
     const hash = mockHash(`${this.seed}:${this.epoch}:tx:${this.txCounter++}`);
-    const readyAt = this.clock.now() + this.faults.delaySeconds;
-    const record: TxRecord = { hash, request: { ...request, token }, kind: 'transfer', status: 'pending', blockNumber: undefined, readyAt };
+    const record: TxRecord = { hash, request: copyRequest({ ...request, token }), kind: 'transfer', status: 'pending', blockNumber: undefined, readyAt };
     this.txs.set(hash, record);
     if (this.faults.dropNext > 0) {
       this.faults.dropNext--;
@@ -240,11 +258,12 @@ export class MockChain {
    * @returns The new block.
    */
   public mine(): Block {
-    const ready = this.pending.filter((h) => (this.txs.get(h) as TxRecord).readyAt <= this.clock.now());
+    const now = this.now();
+    const ready = this.pending.filter((h) => (this.txs.get(h) as TxRecord).readyAt <= now);
     this.pending = this.pending.filter((h) => !ready.includes(h));
     const number = this.height + 1;
     for (const h of ready) this.execute(this.txs.get(h) as TxRecord, number);
-    return this.seal(ready);
+    return copyBlock(this.seal(ready, now));
   }
 
   /** Mines `n` blocks. */
@@ -293,7 +312,7 @@ export class MockChain {
     const fromKey = balKey(token, from);
     const have = this.balances.get(fromKey) ?? 0n;
     tx.blockNumber = blockNumber;
-    if (this.failing.delete(tx.hash) || have < amount) {
+    if (this.failing.has(tx.hash) || have < amount) {
       tx.status = 'failed';
       return;
     }
@@ -317,14 +336,21 @@ export class MockChain {
       });
   }
 
-  private seal(txHashes: readonly string[]): Block {
+  private now(): number {
+    const value = this.clock.now();
+    if (!Number.isSafeInteger(value) || value < 0)
+      throw new SandboxError('INVALID_CLOCK', 'clock value must be a non-negative safe integer');
+    return value;
+  }
+
+  private seal(txHashes: readonly string[], now: number): Block {
     const parent = this.blocks[this.blocks.length - 1] as Block;
     const number = parent.number + 1;
     const block: Block = {
       number,
       hash: mockHash(`${this.seed}:${this.chainId}:${this.epoch}:${number}:${parent.hash}:${txHashes.join(',')}`),
       parentHash: parent.hash,
-      timestamp: Math.max(this.clock.now(), parent.timestamp),
+      timestamp: Math.max(now, parent.timestamp),
       txHashes,
     };
     this.blocks.push(block);

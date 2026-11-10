@@ -1,4 +1,4 @@
-import { FEE_SCHEDULE, tokensForChain, type Address, type DeploymentManifest, type Hex, type RpcClient } from '@ghostpay/chain-adapters';
+import { ChainAdapterError, FEE_SCHEDULE, tokensForChain, type Address, type DeploymentManifest, type Hex, type RpcClient } from '@ghostpay/chain-adapters';
 import {
   ReviewRefusedError,
   TxReviewError,
@@ -51,8 +51,8 @@ export function reviewPolicy(manifest: DeploymentManifest, chainId: number, o: P
 }
 
 function refuse(e: unknown): never {
-  if (e instanceof ReviewRefusedError) throw new UserFacingError(`Blocked before signing: the request did not pass the safety review (${e.reasons.join(', ')}).`);
-  if (e instanceof TxReviewError) throw new UserFacingError(`Blocked before signing: the safety review could not run (${e.code}).`);
+  if (e instanceof ReviewRefusedError) throw new UserFacingError({ key: 'error.txGuard.reviewRefused', values: { reasons: e.reasons.join(', ') } });
+  if (e instanceof TxReviewError) throw new UserFacingError({ key: 'error.txGuard.reviewFailed', values: { code: e.code } });
   throw e;
 }
 
@@ -83,35 +83,47 @@ export function guardTypedData(td: TypedDataInput, expected: Intent, policy: Rev
   }
 }
 
-/** Outcome of {@link simulateCall}. */
+/** Outcome of {@link simulateCall}. `unavailable` is not a refusal: callers show it as a warning. */
 export type Simulation = 'ok' | 'unavailable';
 
+/** Only for errors that carry the node's text (EIP-1193 wallet providers, test doubles). */
 const REVERT_TEXT = /revert|execution failed|invalid opcode|out of gas/i;
+
+/**
+ * Whether an RPC failure says the call reverted (or ran out of gas, or hit an invalid opcode). The verified client
+ * (`createClient`) drops the node's text and reports that only as `ChainAdapterError.reverted`, so its fixed-form
+ * message is never matched.
+ */
+export function reportsRevert(e: unknown): boolean {
+  if (e instanceof ChainAdapterError) return e.reverted;
+  return e instanceof Error && REVERT_TEXT.test(e.message);
+}
 
 /**
  * Dry-runs a call with `eth_call` before it is signed (S3-09, S3-19).
  *
  * @param rpc User's RPC.
- * @param call Sender, target, calldata, value.
+ * @param call Sender, target, calldata, value and, when known, the gas limit that will be signed.
  * @returns `ok`, or `unavailable` when the node cannot run it (not a revert). A revert, or an ERC-20 style
  *   `false` return, throws.
  * @throws {UserFacingError} when the simulation shows the call would fail.
  */
 export async function simulateCall(
   rpc: Pick<RpcClient, 'request'>,
-  call: { readonly from: Address; readonly to: Address; readonly data: Hex; readonly value: bigint },
+  call: { readonly from: Address; readonly to: Address; readonly data: Hex; readonly value: bigint; readonly gas?: bigint },
   expectBool = false,
 ): Promise<Simulation> {
   let r: unknown;
+  const gas = call.gas === undefined ? {} : { gas: `0x${call.gas.toString(16)}` };
   try {
-    r = await rpc.request('eth_call', [{ from: call.from, to: call.to, data: call.data, value: `0x${call.value.toString(16)}` }, 'latest']);
+    r = await rpc.request('eth_call', [{ from: call.from, to: call.to, data: call.data, value: `0x${call.value.toString(16)}`, ...gas }, 'latest']);
   } catch (e) {
-    if (e instanceof Error && REVERT_TEXT.test(e.message)) throw new UserFacingError('Blocked: a dry run of this transaction fails (it would revert). Nothing was sent.');
+    if (reportsRevert(e)) throw new UserFacingError({ key: 'error.txGuard.blockedADryRunOfThisTransactionFailsItWould' });
     return 'unavailable';
   }
   if (typeof r !== 'string' || !/^0x(?:[0-9a-fA-F]{2})*$/.test(r)) return 'unavailable';
   if (expectBool && r.length === 66 && BigInt(r) === 0n) {
-    throw new UserFacingError('Blocked: a dry run says the token refuses this transfer (it returned false). Nothing was sent.');
+    throw new UserFacingError({ key: 'error.txGuard.blockedADryRunSaysTheTokenRefusesThisTransfer' });
   }
   return 'ok';
 }
@@ -188,3 +200,9 @@ export function guardRouterPayment(
   );
   return 'reviewed';
 }
+
+// i18n-use: error.txGuard.blockedADryRunOfThisTransactionFailsItWould error.txGuard.blockedADryRunSaysTheTokenRefusesThisTransfer
+
+// i18n-use: error.txGuard.reviewRefused
+
+// i18n-use: error.txGuard.reviewFailed

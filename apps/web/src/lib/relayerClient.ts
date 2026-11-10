@@ -19,6 +19,57 @@ export interface QuoteRequest {
   readonly amount: bigint;
 }
 
+/**
+ * Error classes the GhostPay relayer only ever returns before it broadcasts (apps/relayer README "Sweep checks, in
+ * order": every 4xx precedes `send`; a failed send is `send_failed` 503). `nonce_used` (409) is excluded: the order may
+ * already be on chain. Field validation errors are `invalid_<field>` (400).
+ */
+const PRE_BROADCAST_CODES: ReadonlySet<string> = new Set([
+  'unexpected_query', 'unauthorized', 'origin_not_allowed', 'not_found', 'method_not_allowed', 'body_too_large',
+  'unsupported_media_type', 'rate_limited_ip', 'rate_limited_global', 'rate_limited_owner', 'owner_failure_limit',
+  'loss_budget_exhausted', 'chain_not_supported', 'token_not_supported', 'permit_not_supported', 'permit_value_too_low',
+  'fee_to_mismatch', 'quote_expired', 'fee_below_quote', 'fee_above_cap', 'deadline_too_soon', 'deadline_too_far',
+  'amount_too_small', 'invalid_order', 'invalid_signature', 'policy_denied', 'insufficient_token_balance',
+  'insufficient_allowance', 'permit_expired', 'permit_failed', 'expired', 'token_transfer_failed', 'simulation_reverted',
+  'gas_limit_too_high', 'fee_below_gas_cost',
+]);
+export const RELAYER_PRE_BROADCAST_CODES: readonly string[] = [...PRE_BROADCAST_CODES];
+
+/** The relayer, or something in front of it, answered with an HTTP error. */
+export class RelayerRefusedError extends UserFacingError {
+  public readonly status: number;
+  /** Error class from the relayer's `{ "error": { "code" } }` envelope, if the body had one. */
+  public readonly code: string | undefined;
+
+  public constructor(message: string, status: number, code?: string) {
+    super(message);
+    this.name = 'RelayerRefusedError';
+    this.status = status;
+    this.code = code;
+  }
+
+  /**
+   * True only for a 4xx carrying the relayer's own envelope with a class it returns before broadcasting. A bare 4xx
+   * (CDN, WAF, proxy) or an unknown class is not proof that nothing was sent. This still relies on the relayer's report.
+   */
+  public get beforeBroadcast(): boolean {
+    if (this.status < 400 || this.status >= 500 || this.status === 409 || this.code === undefined) return false;
+    return PRE_BROADCAST_CODES.has(this.code) || (this.status === 400 && /^invalid_[a-z_]{1,32}$/.test(this.code));
+  }
+}
+
+/** Reads the error class from `{ "error": { "code": "..." } }` (relayer envelope) or a legacy `{ "error": "..." }`. */
+function errorClass(text: string): string | undefined {
+  try {
+    const j = JSON.parse(text) as { error?: unknown };
+    const e = j.error;
+    const code = typeof e === 'string' ? e : typeof e === 'object' && e !== null ? (e as { code?: unknown }).code : undefined;
+    return typeof code === 'string' && /^[a-z_]{1,40}$/.test(code) ? code : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 const MAX_RESPONSE = 16 * 1024;
 const TIMEOUT_MS = 15_000;
 
@@ -39,32 +90,27 @@ async function post(base: string, path: string, body: unknown, fetchFn: FetchFn)
       signal: ctl.signal,
     });
     const text = await res.text();
-    if (text.length > MAX_RESPONSE) throw new UserFacingError('The relayer response was too large and was ignored.');
+    if (text.length > MAX_RESPONSE) throw new UserFacingError({ key: 'error.relayerClient.theRelayerResponseWasTooLargeAndWasIgnored' });
     if (!res.ok) {
-      let cls = '';
-      try {
-        const j = JSON.parse(text) as { error?: unknown };
-        if (typeof j.error === 'string' && /^[a-z_]{1,40}$/.test(j.error)) cls = ` (${j.error})`;
-      } catch {
-        /* class only; never echo the body */
-      }
-      throw new UserFacingError(`The relayer refused the request: HTTP ${String(res.status)}${cls}.`);
+      // Class only; never echo the body.
+      const code = errorClass(text);
+      throw new RelayerRefusedError(`The relayer refused the request: HTTP ${String(res.status)}${code === undefined ? '' : ` (${code})`}.`, res.status, code);
     }
     try {
       return JSON.parse(text);
     } catch {
-      throw new UserFacingError('The relayer returned an invalid response.');
+      throw new UserFacingError({ key: 'error.relayerClient.theRelayerReturnedAnInvalidResponse' });
     }
   } catch (e) {
     if (e instanceof UserFacingError) throw e;
-    throw new UserFacingError('Could not reach the relayer.');
+    throw new UserFacingError({ key: 'error.relayerClient.couldNotReachTheRelayer' });
   } finally {
     clearTimeout(timer);
   }
 }
 
 function obj(v: unknown): Record<string, unknown> {
-  if (typeof v !== 'object' || v === null || Array.isArray(v)) throw new UserFacingError('The relayer returned an invalid response.');
+  if (typeof v !== 'object' || v === null || Array.isArray(v)) throw new UserFacingError({ key: 'error.relayerClient.theRelayerReturnedAnInvalidResponse' });
   return v as Record<string, unknown>;
 }
 
@@ -75,11 +121,11 @@ export async function requestQuote(base: string, q: QuoteRequest, fetchFn: Fetch
   const feeTo = o['feeTo'];
   const expiresAt = o['expiresAt'];
   const quoteToken = o['quoteToken'];
-  if (typeof fee !== 'string' || !/^(?:0|[1-9][0-9]{0,77})$/.test(fee)) throw new UserFacingError('The relayer returned an invalid fee.');
-  if (typeof feeTo !== 'string' || !isAddress(feeTo, { strict: false })) throw new UserFacingError('The relayer returned an invalid fee address.');
-  if (typeof expiresAt !== 'number' || !Number.isSafeInteger(expiresAt) || expiresAt <= 0) throw new UserFacingError('The relayer returned an invalid expiry.');
+  if (typeof fee !== 'string' || !/^(?:0|[1-9][0-9]{0,77})$/.test(fee)) throw new UserFacingError({ key: 'error.relayerClient.theRelayerReturnedAnInvalidFee' });
+  if (typeof feeTo !== 'string' || !isAddress(feeTo, { strict: false })) throw new UserFacingError({ key: 'error.relayerClient.theRelayerReturnedAnInvalidFeeAddress' });
+  if (typeof expiresAt !== 'number' || !Number.isSafeInteger(expiresAt) || expiresAt <= 0) throw new UserFacingError({ key: 'error.relayerClient.theRelayerReturnedAnInvalidExpiry' });
   if (typeof quoteToken !== 'string' || quoteToken.length === 0 || quoteToken.length > 2048 || !/^[A-Za-z0-9._~+/=-]+$/.test(quoteToken)) {
-    throw new UserFacingError('The relayer returned an invalid quote token.');
+    throw new UserFacingError({ key: 'error.relayerClient.theRelayerReturnedAnInvalidQuoteToken' });
   }
   return { fee: BigInt(fee), feeTo: getAddress(feeTo), expiresAt, quoteToken };
 }
@@ -104,6 +150,8 @@ export interface SweepSubmission {
 export async function submitSweep(base: string, s: SweepSubmission, fetchFn: FetchFn = (u, i) => fetch(u, i)): Promise<string> {
   const o = obj(await post(base, '/v1/sweep', s, fetchFn));
   const h = o['txHash'];
-  if (typeof h !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(h)) throw new UserFacingError('The relayer returned an invalid transaction hash.');
+  if (typeof h !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(h)) throw new UserFacingError({ key: 'error.relayerClient.theRelayerReturnedAnInvalidTransactionHash' });
   return h.toLowerCase();
 }
+
+// i18n-use: error.relayerClient.theRelayerResponseWasTooLargeAndWasIgnored error.relayerClient.theRelayerReturnedAnInvalidResponse error.relayerClient.couldNotReachTheRelayer error.relayerClient.theRelayerReturnedAnInvalidFee error.relayerClient.theRelayerReturnedAnInvalidFeeAddress error.relayerClient.theRelayerReturnedAnInvalidExpiry error.relayerClient.theRelayerReturnedAnInvalidQuoteToken error.relayerClient.theRelayerReturnedAnInvalidTransactionHash

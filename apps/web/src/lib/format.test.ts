@@ -57,5 +57,12 @@ describe('display helpers', () => {
   });
   it('formats unix time in UTC', () => {
     expect(formatUnix(0)).toBe('1970-01-01 00:00:00 UTC');
+    expect(formatUnix(253_402_300_799)).toBe('9999-12-31 23:59:59 UTC');
+    expect(formatUnix(8.64e12)).toBe('+275760-09-13 00:00:00 UTC');
+  });
+  it('never throws for a time outside the Date range, so a hostile invoice cannot crash a render (G1-01)', () => {
+    for (const s of [Number.MAX_SAFE_INTEGER, 8.64e12 + 1, -8.64e12 - 1, NaN, Infinity, -Infinity]) {
+      expect(formatUnix(s)).toBe('invalid time');
+    }
   });
 });

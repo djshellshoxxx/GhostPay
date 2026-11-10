@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -86,4 +86,51 @@ describe('CameraImporter failure and acceptance paths', () => {
     unmount();
     await act(async () => { expect(await onValue?.('late')).toBe(false); });
   });
+});
+
+
+it('editing pasted input aborts a pending import before a late result can overwrite it', async () => {
+  let finish!: (value: boolean) => void;
+  const pending = new Promise<boolean>((resolve) => { finish = resolve; });
+  const onInputChange = vi.fn();
+  const signals: AbortSignal[] = [];
+  const onText = vi.fn((_text: string, signal: AbortSignal) => { signals.push(signal); return signals.length === 1 ? pending : true; });
+  const user = userEvent.setup();
+  render(<CameraImporter label="Scan code" onText={onText} onInputChange={onInputChange} />);
+  const input = screen.getByLabelText<HTMLTextAreaElement>('Or paste QR text');
+  fireEvent.change(input, { target: { value: 'first' } });
+  await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
+  fireEvent.change(input, { target: { value: 'replacement' } });
+  expect(signals[0]?.aborted).toBe(true);
+  await act(async () => { finish(true); await pending; });
+  expect(input.value).toBe('replacement');
+  expect(screen.getByRole('status').textContent).toBe('');
+  await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
+  expect(onText.mock.calls[1]?.[0]).toBe('replacement');
+  expect(await screen.findByText('QR text accepted.')).toBeTruthy();
+});
+
+it('starting or stopping a camera invalidates the parent preview, and typed input rejects late frames', async () => {
+  let onValue: ((text: string) => Promise<boolean>) | undefined;
+  exchange.scanFromVideo.mockImplementationOnce((_video: HTMLVideoElement, callback: (text: string) => Promise<boolean>) => {
+    onValue = callback;
+    return new Promise<void>(() => undefined);
+  });
+  const onInputChange = vi.fn(); const onText = vi.fn(() => true);
+  const user = userEvent.setup();
+  render(<CameraImporter label="Scan code" onText={onText} onInputChange={onInputChange} />);
+  await user.click(screen.getByRole('button', { name: 'Scan with camera' }));
+  expect(onInputChange).toHaveBeenCalledOnce();
+  await waitFor(() => { expect(onValue).toBeTypeOf('function'); });
+  fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: 'newer manual input' } });
+  await act(async () => { expect(await onValue?.('late frame')).toBe(false); });
+  expect(onText).not.toHaveBeenCalled();
+  expect(screen.getByLabelText<HTMLTextAreaElement>('Or paste QR text').value).toBe('newer manual input');
+
+  exchange.startCamera.mockImplementationOnce(() => new Promise<void>(() => undefined));
+  await user.click(screen.getByRole('button', { name: 'Scan with camera' }));
+  const beforeStop = onInputChange.mock.calls.length;
+  await user.click(screen.getByRole('button', { name: 'Stop camera' }));
+  expect(onInputChange).toHaveBeenCalledTimes(beforeStop + 1);
+  expect(screen.getByRole('button', { name: 'Scan with camera' })).toBeTruthy();
 });

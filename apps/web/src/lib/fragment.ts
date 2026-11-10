@@ -17,7 +17,10 @@ export function readInvoiceFragment(loc: LocationLike): string | undefined {
 
 /** Replaces the current history entry with the same URL minus the fragment. */
 export function clearFragment(loc: LocationLike, hist: HistoryLike): void {
-  hist.replaceState(null, '', `${loc.pathname}${loc.search}`);
+  // A pathname beginning "//" is still local, but used as a relative URL it names another host.
+  // Prefix a removable dot segment so replaceState keeps this origin and actually clears the secret.
+  const pathname = loc.pathname.startsWith('//') ? `/.${loc.pathname}` : loc.pathname;
+  hist.replaceState(null, '', `${pathname}${loc.search}`);
 }
 
 /** Normalizes pasted text (full link or bare fragment) into a `#gpi=v1.` fragment. */

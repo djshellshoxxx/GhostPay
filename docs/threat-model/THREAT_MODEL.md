@@ -27,7 +27,7 @@ Trust boundaries: browser tab (keys live here) | wallet extension | static host/
 | Anyone holding the invoice link | Entire invoice (bearer link) | Seller keys |
 | Anyone holding two invoices of one seller | They share a seller (stable meta-address, D3) | Keys |
 | Fee recipient (project owner) | Aggregate fees on-chain only | Payer or seller identity beyond public chain data |
-| Browser profile / device owner | The invoice link, if the browser's history database stored it (S3-03); settings and RPC URLs in `localStorage` | Keys, unless the browser/OS is compromised |
+| Browser profile / device owner | The invoice link, if the browser's history database stored it (S3-03); settings and RPC URLs in `localStorage`; that this browser was used with a given seller identity: scan checkpoints (`localStorage`) and the encrypted scan history (IndexedDB) are stored under an unsalted SHA-256 of the public spending and viewing keys, which anyone can compute from the meta-address, and they stay after the keys are wiped from memory until the site's data is cleared (audit I-1); if the optional encrypted seller vault is saved, its meta-address and invoice-signing public key in clear and a ciphertext open to offline passphrase guessing; the count, chain ids and timestamps of local tags; any plaintext reconciliation ledger an older build left in `localStorage` | Keys, unless the browser/OS is compromised or the vault passphrase is guessed; tag and scan-history contents |
 
 ## 3. Data-flow diagrams
 
@@ -139,7 +139,7 @@ Legend: S spoofing, T tampering, R repudiation, I information disclosure, D deni
 | R | Seller denies issuing an invoice | Signature by invoice-signing key | Only meaningful if the key was pinned |
 | I | Link read by a third party | AES-GCM envelope option; key in fragment; "bearer link" label | Anyone with the link reads it. Persisted in browser history DB (S3-03, **Open**), clipboard managers, messengers' link previews |
 | I | Same meta-address in every invoice | None | D3 **Open** (per-client meta-address is backlog) |
-| D | Oversized or hostile payload | 16 KiB cap, depth limit, no duplicate keys, fail closed, fuzz tests | Mitigated |
+| D | Oversized or hostile payload | 16 KiB cap, depth limit, no duplicate keys, fail closed, fuzz tests; invoice and quote times capped at 9999-12-31T23:59:59Z, so a validly signed link with a huge time is rejected instead of crashing the review render (G1-01); total time formatting in the web app | Mitigated. A view-level `ErrorBoundary` component exists; wrapping the view switch in `App.tsx` with it (so any other render error shows an error panel, not a blank app) is pending integration |
 | E | Hostile text becomes script (XSS) | React text rendering, no `innerHTML`, CSP `script-src 'self'`, lint bans, bundle scan, e2e "hostile text is rendered inert" | Bidi/zero-width characters accepted in text fields (S3-12, Low, Open) |
 
 ### 4.2 Payment flow
@@ -287,7 +287,7 @@ Ratings are those of [audit 04](../audits/04-independent-design-analysis.md). "S
 | D1 | Sweep destroys the privacy the product sells: payer follows stealth address to the destination | High | Use a fresh destination; payer can follow; relayer sees X; gasless is not unlinkable ([guide](../user/sweep-and-gas-privacy.md)) | Docs done. App: generic notice exists; sharper copy and destination-history warning **In progress** |
 | D2 | Single-router anonymity set and fingerprint | Medium | GhostPay payments are enumerable; anonymity set is GhostPay users | Accepted; now in the user privacy page |
 | D3 | Seller meta-address is a stable public identifier | Medium | Two invoices prove one seller; registry makes it public | Open; documented; per-client mode is backlog |
-| D4 | Payer-controlled view tag lets a payment go undetected | Medium | Payer can hide a payment from a tag-filtered scan; ask for a tx hash | Open; deep-scan mode and proof flow not built |
+| D4 | Payer-controlled view tag lets a payment go undetected | Medium | Payer can hide a payment from a tag-filtered scan; ask for a tx hash | Open; deep-scan mode built (opt-in: router announcements are checked without the view tag, a wrong tag is marked, and the payment can be swept); proof flow not built |
 | D5 | Immutable fee recipient vs token blacklist / non-payable recipient | Medium | Checkout for an asset can stop until a new router ships | Open; operator requirements and migration written ([runbook](../operators/deployment-runbook.md), ADR-0013) |
 | D6 | Policy account: stolen-key resistance is bounded, no recovery | Medium | Do not market as theft-proof; destination becomes public | Open; ADR-0014 marks it experimental, contracts only |
 | D7 | Frontend compromise is total compromise | High (inherent) | Verify releases from a separate machine; no official host | Open; release pipeline drafted; signing, manifest pinning **In progress**; hosting gated (ADR-0015) |

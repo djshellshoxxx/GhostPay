@@ -9,6 +9,8 @@ A map of every documentation file in GhostPay: its purpose, type and status. Lin
 
 Nothing here is an independent audit. The project has no third-party audit, and nothing is deployed (see [README](../README.md)).
 
+**Current product completion (2026-11-09):** [PR #93 completion ledger](handoffs/PRODUCT_COMPLETION_HANDOFF.md), [product guide](user/product-guide.md), [merchant setup](guides/getting-started-merchants.md), and [technology attribution](user/technology-attribution.md). The ledger separates implementation, exact-source checks and external acceptance for the unmerged #84 → #88 → #89 → #90 → #93 stack. The [#90 handoff](handoffs/POLICY_LOCALIZATION_CONTINUATION_2026-11-09.md), [current completion gates](audits/08-completion-gates.md), and [earlier source/PR ledger](handoffs/SOURCE_FOLLOWUP_2026-11-09.md) remain predecessor evidence; the separate merchant/CLI branch is not implicitly included.
+
 ## Reading order
 
 1. [README](../README.md): project status, what is and is not built, package map.
@@ -16,6 +18,8 @@ Nothing here is an independent audit. The project has no third-party audit, and 
 3. [SPEC_REVIEW](SPEC_REVIEW.md): corrections applied on 2026-10-21. These take precedence over the earlier specs.
 4. [CONTRACTS_SPEC](CONTRACTS_SPEC.md) and [APP_AND_RELAYER_SPEC](APP_AND_RELAYER_SPEC.md): normative contract spec and app/relayer implementation targets.
 5. [remote/STATUS](remote/STATUS.md): real local check results for the remote-extension branch.
+
+**Additional research for Claude (2026-11-03):** [deep research and code-reuse packet](research/2026-11-03-claude-handoff/README.md), with a [short handoff](handoffs/GHOSTPAY_DEEP_RESEARCH_2026-11-03.md). It reconciles current PR ownership and adds primary-source implementation, license and acceptance research across payments, recovery, hosting, private scanning and deferred features. Source inspection and unrun runtime qualification are explicitly separated.
 
 **Note on `docs/remote/*`.** These files are remote-extension work (branch `claude/remote-extensions-1`). Their claims are as stated per file. Many are haiku-written or static reviews. Check the status column before relying on any of them.
 
@@ -156,12 +160,14 @@ Pre-audit and testnet-only. Nothing is deployed. Chain-specific notes (not user 
 | File | Purpose | Type | Status |
 |---|---|---|---|
 | [user/README](user/README.md) | Index of the user guides | user guide | n/a |
+| [user/product-guide](user/product-guide.md) | Supported web journeys, receipts, QR, repeated uploads, public pairing, backups and troubleshooting | user guide | n/a |
+| [user/technology-attribution](user/technology-attribution.md) | Source-backed project, creator, license and protocol attribution without endorsement claims | user guide | n/a |
 | [user/testnet-usage](user/testnet-usage.md) | What works today, what is blocked, and how to run a safe local test | user guide | n/a |
 | [user/ethereum-payments](user/ethereum-payments.md) | Native ETH and EVM payments; testnets enabled in code, mainnets disabled | user guide | n/a |
 | [user/stablecoin-payments](user/stablecoin-payments.md) | USDC and EURC payments from the allowlist; permit, blacklist and approve quirks | user guide | n/a |
 | [user/bitcoin-silent-payments](user/bitcoin-silent-payments.md) | Bitcoin silent payments in the web app (testnet4, signet, regtest); mainnet disabled | user guide | n/a |
-| [user/solana-payments](user/solana-payments.md) | Solana library proof of concept; not in the web app | user guide | n/a |
-| [user/tron-payments](user/tron-payments.md) | TRON library proof of concept (Nile, Shasta, local); not in the web app | user guide | n/a |
+| [user/solana-payments](user/solana-payments.md) | Historical Solana guide; current full-profile view and qualification limits are in the product guide | user guide | n/a |
+| [user/tron-payments](user/tron-payments.md) | Historical TRON guide; current full-profile view and qualification limits are in the product guide | user guide | n/a |
 | [user/set-up-stealth-meta-address](user/set-up-stealth-meta-address.md) | Creating seller keys, backing them up and getting the address to share | user guide | n/a |
 | [user/review-and-pay-an-invoice](user/review-and-pay-an-invoice.md) | Checking an invoice link before paying it | user guide | n/a |
 | [user/receive-and-scan](user/receive-and-scan.md) | How a seller scans for payments; sellers get no notification | user guide | n/a |
@@ -211,6 +217,38 @@ Each package has a README and, where present, a DEVIATIONS.md (choices where the
 | web | [README](../apps/web/README.md) | Static React 19 and Vite app (keys, create, pay, scan, sweep, Bitcoin, registry, settings); wallet, RPC and relayer mocked in tests | package doc | unverified (mocked interactions, per file) |
 | web | [DEVIATIONS](../apps/web/DEVIATIONS.md) | Deviations from APP_AND_RELAYER_SPEC; wallets and RPC are mocks, Unverified section | package doc | unverified (own Unverified section) |
 | web | [public/deployments/README](../apps/web/public/deployments/README.md) | No deployment manifest is shipped; payments stay disabled until one is published | package doc | n/a |
+
+## Research and handoffs 2026-11
+
+Research and handoff prompts dated 2026-10-30 to 2026-11-04, brought into the consolidation from their source branches (see `docs/handoffs/consolidation-2026-11-04/lanes/C4.md`). They are research notes and prompts. None is release acceptance, an audit or authority to merge, deploy or enable payments. Status is `n/a` unless the file itself reports runs.
+
+| File | Purpose | Type | Status |
+|---|---|---|---|
+| [handoffs/GHOSTPAY_DEEP_RESEARCH_2026-11-03](handoffs/GHOSTPAY_DEEP_RESEARCH_2026-11-03.md) | Short handoff pointing to the deep research packet and its scope | handoff | n/a |
+| [research/2026-11-03-claude-handoff/README](research/2026-11-03-claude-handoff/README.md) | Entry point of the deep research and code-reuse packet; ownership map and task choice | research | n/a |
+| [research/2026-11-03-claude-handoff/00-repository-snapshot](research/2026-11-03-claude-handoff/00-repository-snapshot.md) | Repository state and research delta as of 2026-11-03 | research | n/a |
+| [research/2026-11-03-claude-handoff/01-evm-payment-correctness](research/2026-11-03-claude-handoff/01-evm-payment-correctness.md) | Core EVM payment path: reuse candidates and proposed acceptance criteria | research | n/a |
+| [research/2026-11-03-claude-handoff/02-recovery-wallet-mobile](research/2026-11-03-claude-handoff/02-recovery-wallet-mobile.md) | Recovery, browser custody, wallet and mobile research; not a qualification | research | n/a |
+| [research/2026-11-03-claude-handoff/03-hosting-release-provenance](research/2026-11-03-claude-handoff/03-hosting-release-provenance.md) | Hosting, release provenance and reproducible distribution research | research | n/a |
+| [research/2026-11-03-claude-handoff/04-private-scanning-indexers](research/2026-11-03-claude-handoff/04-private-scanning-indexers.md) | Private scanning, indexers, light clients and PIR implementation research | research | n/a |
+| [research/2026-11-03-claude-handoff/05-deferred-chain-interoperability](research/2026-11-03-claude-handoff/05-deferred-chain-interoperability.md) | Deferred Bitcoin, Solana and TRON interoperability notes; future-work queue | research | n/a |
+| [research/2026-11-03-claude-handoff/06-account-abstraction-permits](research/2026-11-03-claude-handoff/06-account-abstraction-permits.md) | Account abstraction, sponsorship, permits and policy-account interoperability | research | n/a |
+| [research/2026-11-03-claude-handoff/07-merchant-delivery-oracles](research/2026-11-03-claude-handoff/07-merchant-delivery-oracles.md) | Merchant delivery, billing, embeds and price-feed research and backlog | research | n/a |
+| [research/2026-11-03-claude-handoff/08-ens-escrow-design-decisions](research/2026-11-03-claude-handoff/08-ens-escrow-design-decisions.md) | Deferred ENS and milestone escrow design decisions | research | n/a |
+| [research/2026-11-03-claude-handoff/09-private-pools-confidential-amounts](research/2026-11-03-claude-handoff/09-private-pools-confidential-amounts.md) | Private-pool and confidential-amount integration follow-up | research | n/a |
+| [research/2026-11-03-claude-handoff/10-chainlink-testnet-source-evidence](research/2026-11-03-claude-handoff/10-chainlink-testnet-source-evidence.md) | Chainlink testnet reference-data retrieval evidence; unblocks PR #72 source download | research | n/a (retrieval recorded) |
+| [research/2026-11-03-claude-handoff/evidence/chainlink/feeds-ethereum-testnet-sepolia-base-1.json](research/2026-11-03-claude-handoff/evidence/chainlink/feeds-ethereum-testnet-sepolia-base-1.json) | Saved Chainlink feed reference data (Sepolia and Base testnet), byte for byte | data | n/a |
+| [research/2026-11-03-claude-handoff/evidence/chainlink/feeds-ethereum-testnet-sepolia](research/2026-11-03-claude-handoff/evidence/chainlink/feeds-ethereum-testnet-sepolia.json) | Saved Chainlink feed reference data (Ethereum testnet Sepolia), byte for byte | data | n/a |
+| [research/2026-11-03-claude-handoff/evidence/chainlink/retrieval-manifest](research/2026-11-03-claude-handoff/evidence/chainlink/retrieval-manifest.json) | Retrieval manifest (URLs, times, hashes) for the Chainlink evidence files | data | n/a |
+| [research/parallel-reviews/acceptance-tests-41750257638](research/parallel-reviews/acceptance-tests-41750257638.md) | Read-only research: executable acceptance specs for interrupted payment, replay, reorg and restore | research | n/a |
+| [research/parallel-reviews/security-review-41750257638](research/parallel-reviews/security-review-41750257638.md) | Read-only research: security evidence and proposed tests; nothing executed | research | n/a |
+| [research/parallel-reviews/documentation-ux-41750257638](research/parallel-reviews/documentation-ux-41750257638.md) | Read-only research: documented versus implemented checkout, privacy and error journey | research | n/a |
+| [research/parallel-reviews/release-qualification-41750257638](research/parallel-reviews/release-qualification-41750257638.md) | Read-only research: release-qualification evidence gaps at 0014bc5; nothing qualified | research | n/a |
+| [handoffs/AUTONOMOUS_COMPLETION_PROMPT_2026-11-04](handoffs/AUTONOMOUS_COMPLETION_PROMPT_2026-11-04.md) | Paste-in prompt and launch settings for an autonomous completion session | handoff | n/a |
+| [handoffs/AUTONOMOUS_RUN_2026-11-04](handoffs/AUTONOMOUS_RUN_2026-11-04.md) | Autonomous run log: plan, ownership map, baseline and wave 1 results | handoff | n/a (planning record) |
+| [handoffs/CONSOLIDATE_AND_BUILD_PARALLEL_PROMPT_2026-11-04](handoffs/CONSOLIDATE_AND_BUILD_PARALLEL_PROMPT_2026-11-04.md) | Prompt for consolidating branches while building in parallel | handoff | n/a |
+| [handoffs/HAIKU-WAVE-2026-10-30](handoffs/HAIKU-WAVE-2026-10-30.md) | Haiku wave prompts and Opus milestone prompt, dated 2026-10-30 | handoff | n/a |
+| [handoffs/HAIKU-WAVE-2-2026-10-30](handoffs/HAIKU-WAVE-2-2026-10-30.md) | Self-driving Haiku wave 2 prompt, dated 2026-10-30 | handoff | n/a |
 
 ## Not indexed
 

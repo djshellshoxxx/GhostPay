@@ -26,7 +26,7 @@
 1. Build the bundle (`scripts/release-build.sh`) or take the release tarball; verify `SHA256SUMS` ([release and verify](release-and-verify.md)). Unpack to `/srv/ghostpay`, read-only to the proxy user.
 2. Pick Caddy (`infra/proxy/Caddyfile`) or nginx (`infra/proxy/nginx.conf` + `ghostpay-headers.conf` in `/etc/nginx/`). Replace the `*.example.invalid` names, ACME email and certificate paths (**OWNER**).
 3. Validate: `caddy validate --config infra/proxy/Caddyfile --adapter caddyfile` or `nginx -t`. **UNVERIFIED**: these were never run.
-4. After deploy: `curl -sI https://<host>/` and compare with `apps/web/public/_headers`; try framing the page (must be refused); run `infra/proxy/check-headers.sh` in the repo to keep the three header sources identical.
+4. After deploy: `curl -sI https://<host>/` and compare with `apps/web/public/_headers`; try framing the page (must be refused); run `infra/proxy/check-headers.sh` in the repo (CI runs it too) to keep the header sources identical.
 5. COEP `require-corp` is set on documents. Same-origin assets and CORS RPC fetches are fine; if a future feature loads a cross-origin no-CORS resource it will break. That is intended.
 6. Logging is off (`log { output discard }` / `access_log off`). Enable only error logs; never full URLs with query strings.
 

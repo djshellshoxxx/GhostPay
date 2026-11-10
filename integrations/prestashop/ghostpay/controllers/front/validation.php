@@ -32,8 +32,7 @@ class GhostpayValidationModuleFrontController extends ModuleFrontController {
 		// use that exact amount for the invoice request. No float formatting is used for the signed amount.
 		$this->module->validateOrder( (int) $cart->id, (int) Configuration::get( 'GHOSTPAY_OS_AWAITING' ), (float) $total, $this->module->displayName, null, array(), (int) $currency->id, false, $customer->secure_key );
 		$order_id = (int) $this->module->currentOrder;
-		$exact_total = $this->module->exactOrderTotal( $order_id );
-		$minor = null === $exact_total ? null : GhostPay_Money::to_minor( $exact_total, (int) $currency->precision );
+		$minor = $this->module->orderTotalMinor( $order_id, (string) $currency->iso_code );
 		if ( null === $minor || '0' === $minor ) {
 			$this->cancel_order( $order_id );
 			$this->errors[] = $this->trans( 'This order total cannot be represented safely for GhostPay.', array(), 'Modules.Ghostpay.Shop' );
@@ -66,7 +65,7 @@ class GhostpayValidationModuleFrontController extends ModuleFrontController {
 			$this->errors[] = $this->trans( 'Payment could not be started. Please try again.', array(), 'Modules.Ghostpay.Shop' );
 			$this->redirectWithNotifications( 'index.php?controller=order&step=1' );
 		}
-		if ( ! Db::getInstance()->insert( 'ghostpay_invoice', array( 'invoice_id' => pSQL( $data['invoiceId'] ), 'id_order' => $order_id ) ) ) {
+		if ( ! $this->module->recordInvoice( $data['invoiceId'], $order_id ) ) {
 			$this->cancel_order( $order_id );
 			$this->errors[] = $this->trans( 'Payment could not be started. Please try again.', array(), 'Modules.Ghostpay.Shop' );
 			$this->redirectWithNotifications( 'index.php?controller=order&step=1' );
@@ -96,6 +95,6 @@ class GhostpayValidationModuleFrontController extends ModuleFrontController {
 		}
 		$p = parse_url( $link );
 		return is_array( $p ) && 'https' === ( $p['scheme'] ?? '' ) && '' !== $host && strtolower( $p['host'] ?? '' ) === $host
-			&& ! isset( $p['user'], $p['pass'], $p['port'], $p['query'] ) && 1 === preg_match( '/\Agpi=v1\.[A-Za-z0-9_-]+\z/', $p['fragment'] ?? '' );
+			&& ! isset( $p['user'] ) && ! isset( $p['pass'] ) && ! isset( $p['port'] ) && ! isset( $p['query'] ) && 1 === preg_match( '/\Agpi=v1\.[A-Za-z0-9_-]+\z/', $p['fragment'] ?? '' );
 	}
 }

@@ -16,12 +16,15 @@
       "default": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "sideEffects": false,
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json && node stamp-build.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run --coverage",
+    "test:compiled": "node --test test/compiled.test.mjs test/operators.test.mjs test/build-info.test.mjs",
     "lint": "eslint --config ../../eslint.config.js src"
   },
   "dependencies": {
@@ -30,7 +33,18 @@
     "@ghostpay/merchant-billing": "0.1.0",
     "@ghostpay/merchant-hooks": "0.1.0",
     "@ghostpay/merchant-ledger": "0.1.0",
-    "@ghostpay/sandbox": "0.1.0"
+    "@ghostpay/sandbox": "0.1.0",
+    "@ghostpay/core-crypto": "0.1.0",
+    "@ghostpay/chain-adapters": "0.1.0",
+    "@ghostpay/btc-silent-payments": "0.1.0",
+    "@ghostpay/chain-solana": "0.1.0",
+    "@ghostpay/chain-tron": "0.1.0",
+    "@ghostpay/qr-exchange": "0.1.0",
+    "@ghostpay/ux-vault": "0.1.0",
+    "@ghostpay/merchant-multisig": "0.1.0",
+    "@noble/hashes": "2.4.0",
+    "@noble/curves": "2.4.0",
+    "viem": "2.57.13"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
@@ -40,7 +54,7 @@
     "fast-check": "4.10.2",
     "prettier": "3.9.10",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.72.0",
+    "typescript-eslint": "8.72.1",
     "vitest": "5.0.5"
   }
 }
