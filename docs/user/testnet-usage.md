@@ -1,6 +1,6 @@
 # Testnet usage
 
-> **Testnet only.** GhostPay is pre-audit, nothing is deployed on any network, and no manifest ships. Use test coins that have no value. Never paste a real private key or seed phrase into the app, a script, a chat or an issue.
+> **Testnet only.** GhostPay is pre-audit and this repository ships no deployment manifest. Ordinary EVM payment requires accepted deployment signatures and on-chain verification; listed networks and test views do not establish a qualified public deployment. Use test coins that have no value. Never paste a real private key or seed phrase into the app, a script, a chat or an issue.
 
 This page explains what you can exercise today, what you cannot, and how to set up a local test run.
 
@@ -10,13 +10,14 @@ This page explains what you can exercise today, what you cannot, and how to set 
 |---|---|
 | Creating seller keys and a meta-address (web app) | Works locally |
 | Creating and reading invoice links (web app) | Works locally |
-| Scanning, sweeping and tagging in the web app | Implemented; wallet, RPC and relayer interactions are mocked in automated tests |
-| Paying an invoice on a live testnet | **Blocked**: needs a deployment manifest per chain, and none ships |
-| Relayer sweep on a live testnet | **Blocked**: no deployed relayer or manifest |
-| Bitcoin silent payments (web app) | Implemented for testnet4, signet and a local regtest node |
-| Solana and TRON | Library packages only; not in the web app |
+| Scanning, sweeping and tagging in the web app | Implemented; provider access and applicable deployment gates remain. See the handoff for executed validation |
+| Paying an invoice on a live testnet | **Blocked in the default build**: no deployment manifest ships; an accepted signed manifest and RPC verification are required |
+| Relayer sweep on a live testnet | Requires accepted deployment information and a configured relayer; no manifest ships, and live relayer qualification is not established |
+| Bitcoin silent payments (full web build) | Receive, scan and sweep implemented for testnet4, signet and a local regtest node |
+| Solana (full web build) | Receive, scan and SOL sweep implemented for localnet, devnet and testnet; no payer flow or SPL sweep |
+| TRON (full web build) | Receive, scan and TRX sweep implemented for local, Nile and Shasta; no payer flow or TRC-20 sweep |
 
-The automated test suites run against mocks and a local anvil node. They do not prove behaviour against a live wallet or public RPC.
+The full shell mounts these separate network views; the lean shell exposes a narrower workflow. Automated suites include mocks and optional local-node cases. The [current completion handoff](../handoffs/PRODUCT_COMPLETION_HANDOFF.md) records which checks ran and which were skipped; those results do not by themselves prove behaviour against a live wallet or public RPC.
 
 ## Testnets enabled in code
 

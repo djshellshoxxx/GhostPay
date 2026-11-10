@@ -7,6 +7,7 @@ export const PROFILE_ENV = 'GHOSTPAY_LOCAL_BUILD_PROFILE';
 export const REPORT_ENV = 'GHOSTPAY_LOCAL_MODULE_REPORT';
 /** Public embed SDK assets suppressed by the lean profile (exact top-level file names). */
 export const EMBED_SDK_FILES = Object.freeze(['ghostpay-embed-v1.js', 'ghostpay-embed-v2.js']);
+const HTML_ENTRY_FILES = ['index.html', 'help.html', 'privacy.html'];
 
 /** Returns 'full' (default) or 'lean'; any other supplied value is rejected. */
 export function parseProfile(value) {
@@ -156,16 +157,58 @@ function checkOutputModules(root, allowed) {
 }
 
 /**
- * Vite plugins for the profile. Full profile with no report requested returns an empty list so the
- * default build is unchanged.
+ * Vite plugins for the profile. Both app profiles build the local HTML pages as bundler entries;
+ * only lean or explicitly requested reports add module-evidence/output behavior.
  */
 export function localBuildProfilePlugins(opts) {
   const profile = parseProfile(opts.env[PROFILE_ENV]);
   const reportPath = opts.env[REPORT_ENV];
   if (reportPath !== undefined && !isAbsolute(reportPath)) throw new Error(`${REPORT_ENV} must be an absolute path`);
-  if (profile === 'full' && reportPath === undefined) return [];
   const plugins = [];
   const webRoot = dirname(dirname(opts.leanAppPath));
+  if (opts.worker !== true) {
+    const standalonePages = new Set(HTML_ENTRY_FILES.slice(1).map((file) => resolve(webRoot, file)));
+    plugins.push({
+      name: 'ghostpay-local-html-entries',
+      apply: 'build',
+      config(config) {
+        const build = config.build ??= {};
+        const bundler = build.rolldownOptions ??= build.rollupOptions ?? {};
+        const current = bundler.input ?? config.input;
+        const pages = HTML_ENTRY_FILES.map((file) => [file.slice(0, -5), resolve(webRoot, file)]);
+        // Assign the combined input once: Vite's generic array merge would otherwise duplicate existing entries.
+        if (current === undefined) bundler.input = Object.fromEntries(pages);
+        else if (typeof current === 'string' || Array.isArray(current)) {
+          bundler.input = [...new Set([...(typeof current === 'string' ? [current] : current), ...pages.map(([, path]) => path)])];
+        } else {
+          const inputs = { ...current };
+          for (const [name, path] of pages) {
+            if (Object.values(inputs).includes(path)) continue;
+            const key = `ghostpay-${name}`;
+            if (Object.hasOwn(inputs, key)) throw new Error(`web HTML entry name already used: ${key}`);
+            inputs[key] = path;
+          }
+          bundler.input = inputs;
+        }
+      },
+      transformIndexHtml: {
+        order: 'post',
+        handler(html, context) {
+          if (!standalonePages.has(context.filename) || context.bundle === undefined) return html;
+          // cssCodeSplit:false injects the app's shared reset/print CSS into every entry. These two documents
+          // explicitly load public/help.css and must not inherit the bill-only rule that hides other print content.
+          const styles = new Set(Object.values(context.bundle)
+            .filter((item) => item.type === 'asset' && item.fileName.endsWith('.css'))
+            .flatMap((item) => [item.fileName, `./${item.fileName}`]));
+          return html.replace(/<link\b[^>]*>/gi, (tag) => {
+            const href = /\bhref\s*=\s*(["'])(.*?)\1/i.exec(tag)?.[2];
+            return /\brel\s*=\s*(["'])stylesheet\1/i.test(tag) && styles.has(href) ? '' : tag;
+          });
+        },
+      },
+    });
+  }
+  if (profile === 'full' && reportPath === undefined) return plugins;
   const workerEvidence = opts.workerEvidence ?? [];
   if (profile === 'lean' && opts.worker !== true) {
     plugins.push({

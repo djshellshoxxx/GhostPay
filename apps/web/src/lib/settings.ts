@@ -134,11 +134,13 @@ export function loadSettings(storage: Pick<Storage, 'getItem'> | undefined = saf
   }
 }
 
-/** Storage-failure-tolerant save. Returns false when storage is unavailable. */
+/** Saves only validated non-secret preferences. Returns false when storage is unavailable. */
 export function saveSettings(s: Settings, storage: Pick<Storage, 'setItem'> | undefined = safeLocalStorage()): boolean {
   try {
     if (storage === undefined) return false;
-    storage.setItem(SETTINGS_KEY, JSON.stringify(s));
+    // Structural typing permits callers to carry extra fields. Never persist those fields or their
+    // toJSON hooks: this storage boundary is deliberately separate from encrypted key backups.
+    storage.setItem(SETTINGS_KEY, JSON.stringify(sanitizeSettings(s)));
     return true;
   } catch {
     return false;

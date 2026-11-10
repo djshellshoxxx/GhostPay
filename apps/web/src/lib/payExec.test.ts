@@ -589,6 +589,28 @@ describe('permit post-sign pre-flight and fallback ladder (spec 04)', () => {
 });
 
 describe('submitTx', () => {
+  it('preserves the broadcast hash and public adapter code when post-submit verification fails', async () => {
+    const { session, wallet } = await setup();
+    const rpc = mockRpc(84532, () => { throw new ChainAdapterError('RPC_FAILURE', 'private endpoint credential'); });
+    const error: unknown = await submitTx(session, { to: FAKE_ROUTER, data: '0x', value: 0n }, { rpc, nowSeconds: () => NOW, sleep }, noStatus).catch((e: unknown) => e);
+    const hash = `0x${'9'.repeat(64)}`;
+    expect(error).toBeInstanceOf(PostBroadcastError);
+    expect(error).toMatchObject({ hash, outcome: { phase: 'verification-incomplete', hash, code: 'RPC_FAILURE' } });
+    expect(userMessage(error)).toContain(hash);
+    expect(userMessage(error)).toContain('RPC_FAILURE');
+    expect(userMessage(error)).not.toMatch(/private endpoint|nothing was sent/i);
+    expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(1);
+  });
+
+  it('does not copy arbitrary error code or message properties into post-submit diagnostics', async () => {
+    const { session } = await setup();
+    const rpc = mockRpc(84532, () => { throw Object.assign(new Error('private endpoint credential'), { code: 'private diagnostic input' }); });
+    const error: unknown = await submitTx(session, { to: FAKE_ROUTER, data: '0x', value: 0n }, { rpc, nowSeconds: () => NOW, sleep }, noStatus).catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(PostBroadcastError);
+    expect((error as PostBroadcastError).outcome.code).toBeUndefined();
+    expect(userMessage(error)).not.toMatch(/private|credential|diagnostic input/i);
+  });
+
   it('reports unverifiable transactions as not-visible-yet', async () => {
     const { session } = await setup();
     const rpc = mockRpc(84532, (m) => (m === 'eth_getTransactionByHash' ? null : m === 'eth_getTransactionReceipt' ? null : undefined));

@@ -31,7 +31,7 @@ async function create(register: boolean, amount = '2') {
   if (amount !== '') await user.type(screen.getByLabelText('Token amount'), amount);
   await user.type(screen.getByLabelText('Item 1 description'), 'Design work');
   await user.type(screen.getByLabelText('Item 1 unit price'), '1.00');
-  if (register) await user.click(screen.getByLabelText(/Register this invoice in my encrypted reconciliation vault/));
+  if (register) await user.click(screen.getByRole('checkbox', { name: /Register this invoice in my encrypted reconciliation vault/ }));
   await user.click(screen.getByRole('button', { name: 'Create invoice link' }));
   return user;
 }

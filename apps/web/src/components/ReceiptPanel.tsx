@@ -3,11 +3,12 @@ import { openFragment, type ParsedInvoice } from '@ghostpay/invoice-schema';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { CopyButton, Field, Notice, downloadText, Mono } from './Common';
 import { QrFrame } from './QrFrame';
+import { ContextHelp } from './ContextHelp';
 import { formatUnits } from '../lib/format';
 import { useEffectiveProfile, type BuildProfile } from '../lib/buildProfile';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { makeQr } from '../lib/qr';
-import { LocalizedTypeError, UserFacingError, userMessage } from '../lib/errors';
+import { LocalizedTypeError, UserFacingError, captureUserMessage, displayMessage, type DisplayMessage } from '../lib/errors';
 import type { Translator } from '../i18n/translator';
 import { checkpointKeyId, type ScanMatch } from '../lib/scanClient';
 import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
@@ -45,7 +46,8 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
   const [invoiceDigest, setInvoiceDigest] = useState('');
   const [receipt, setReceipt] = useState<SignedReceipt | undefined>(undefined);
   const [showReceiptQr, setShowReceiptQr] = useState(false);
-  const [error, setError] = useState<unknown>(undefined);
+  const [error, setErrorMessage] = useState<DisplayMessage | undefined>(undefined);
+  const setError = (cause: unknown): void => { setErrorMessage(cause === undefined ? undefined : captureUserMessage(cause)); };
   const [archive, setArchive] = useState<'idle' | 'busy' | 'done'>('idle');
   const [invoiceInput, setInvoiceInput] = useState('');
   const [invoicePassphrase, setInvoicePassphrase] = useState('');
@@ -269,12 +271,12 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
             <button type="button" className="btn" disabled={!eligible || !invoiceConsent || invoiceBusy || invoiceInput.trim() === ''} onClick={() => { loadInvoice(() => Promise.resolve(invoiceInput)); }}>{t('receipt.validate')}</button>
             {invoiceBusy && <button type="button" className="btn" onClick={() => { invalidateInvoice(); setInvoicePassphrase(''); }}>{t('receipt.cancel')}</button>}
           </div>
-          <Field label={t('receipt.invoiceFile')} hint={t('receipt.invoiceFileHint')}>
+          <Field label={t('receipt.invoiceFile')} hint={t('receipt.invoiceFileHint')} help={{ label: t('help.about', { control: t('receipt.invoiceFile') }), text: t('help.receiptInvoiceFile') }}>
             {(id, describedBy) => <input id={id} aria-describedby={describedBy} type="file" accept="text/plain,.txt" disabled={!eligible || !invoiceConsent || invoiceBusy} onChange={(e) => { const file = e.currentTarget.files?.[0]; e.currentTarget.value = ''; if (file !== undefined) loadInvoice(() => file.text(), file.size); }} />}
           </Field>
           {boundInvoice === undefined ? (lean ? null : (
             <Field label={t('receipt.manualDigest')} hint={t('receipt.manualDigestHint')}>
-              {(id, describedBy) => <input id={id} aria-describedby={describedBy} className="mono" inputMode="text" autoComplete="off" value={invoiceDigest} onChange={(e) => { invalidateInvoice(); setInvoiceDigest(e.target.value); }} disabled={!eligible || receipt !== undefined} placeholder="0x…" />}
+              {(id, describedBy) => <input id={id} aria-describedby={describedBy} dir="ltr" className="mono" inputMode="text" autoComplete="off" value={invoiceDigest} onChange={(e) => { invalidateInvoice(); setInvoiceDigest(e.target.value); }} disabled={!eligible || receipt !== undefined} placeholder="0x…" />}
             </Field>
           )) : (
             <>
@@ -287,7 +289,7 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
           <div className="actions">
             <button type="button" className="btn btn-primary" onClick={createReceipt} disabled={!eligible || txHash === undefined || receipt !== undefined || invoiceBusy || (boundInvoice !== undefined && !signConsent)}>{t('receipt.sign')}</button>
           </div>
-          {error !== undefined && <Notice kind="error">{userMessage(error, t)}</Notice>}
+          {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
           {receipt !== undefined && (
             <article className="receipt-print">
               <h5>{t('receipt.paymentHeading')}</h5>
@@ -313,6 +315,7 @@ export function ReceiptPanel(props: ReceiptPanelProps): ReactNode {
               </div>
               <p className="hint">{t('receipt.archiveHint')}</p>
               <p className="hint">{t('receipt.qrHint')}</p>
+              <ContextHelp label={t('help.about', { control: t('receipt.showQr') })}>{t('help.receiptQr')}</ContextHelp>
               {showReceiptQr && receiptText !== undefined && <QrFrame kind="proof" text={receiptText} caption={t('receipt.qrCaption')} />}
             </article>
           )}

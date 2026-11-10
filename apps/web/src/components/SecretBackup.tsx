@@ -1,5 +1,5 @@
-import { useEffect, useState, type ReactNode } from 'react';
-import { SOURCE_TRANSLATOR } from '../i18n/context';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { Translator } from '../i18n/translator';
 import { subscribeAppLock } from '../lib/appLock';
 import { Mono, Notice } from './Common';
@@ -46,9 +46,12 @@ export function clearCopiedBackup(): void {
   clearing = copy;
   const settle = (cleared: boolean): void => {
     if (clearing === copy) clearing = 0;
-    // A copy started in the meantime is not this clear's to unmark.
-    if (cleared && onClipboard === copy) onClipboard = 0;
-    retryAtActivation(!cleared && onClipboard !== 0);
+    // A copy started in the meantime is not this clear's to unmark or schedule a retry for.
+    // Nor may an older successful clear cancel the retry of a newer refused clear.
+    if (onClipboard === copy) {
+      if (cleared) onClipboard = 0;
+      retryAtActivation(!cleared);
+    } else if (onClipboard === 0) retryAtActivation(false);
   };
   void (async () => {
     try {
@@ -114,31 +117,52 @@ export function englishBackupText(noun: 'seed' | 'keys'): SecretBackupText {
 /**
  * A wallet backup (seed or keys) that is not in the page until asked for. It is shown on request, again as often as
  * needed while the wallet is loaded, and hides itself after {@link BACKUP_VISIBLE_MS} or as soon as the page is hidden.
- * Copying takes a second, warned click; Hide empties the clipboard again, and so do each view's Lock, the app lock
- * and leaving the view (this component unmounts).
+ * Copying takes a second, warned click. Hiding, automatic hiding, the app lock and unmounting attempt to clear
+ * a copied backup; the browser may refuse, and clipboard history or synced copies are outside this component.
  * @param props.reveal Produces the backup text; called only when the user asks to see it.
  */
 export function SecretBackup(props: { readonly reveal: () => string; readonly text: SecretBackupText }): ReactNode {
   const { text } = props;
+  const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
   const [shown, setShown] = useState<string | undefined>(undefined);
   const [copy, setCopy] = useState<'idle' | 'confirm' | 'copied' | 'failed'>('idle');
+  const [copyPending, setCopyPending] = useState(false);
+  const mounted = useRef(true);
+  const generation = useRef(0);
+  const copyRequest = useRef(0);
+  const pending = useRef(false);
 
-  // Leaving the view forgets the wallet like Lock does, so it empties the clipboard like Lock: leaving takes a click,
+  const hide = useCallback((): void => {
+    generation.current += 1;
+    copyRequest.current += 1;
+    pending.current = false;
+    setShown(undefined);
+    setCopy('idle');
+    setCopyPending(false);
+    clearCopiedBackup();
+  }, []);
+
+  // Leaving the view forgets the wallet like Lock does, so it attempts clipboard cleanup too: leaving takes a click,
   // which the browser counts as user activation. Not when a refused clear already waits for the next click or key
   // press: this unmounts without one then (the app lock), and that click runs the clear anyway.
   useEffect(
-    () => () => {
-      if (!retrying) clearCopiedBackup();
+    () => {
+      mounted.current = true;
+      return () => {
+        mounted.current = false;
+        generation.current += 1;
+        copyRequest.current += 1;
+        pending.current = false;
+        if (!retrying) clearCopiedBackup();
+      };
     },
     [],
   );
 
+  useEffect(() => subscribeAppLock(hide), [hide]);
+
   useEffect(() => {
     if (shown === undefined) return undefined;
-    const hide = (): void => {
-      setShown(undefined);
-      setCopy('idle');
-    };
     const timer = setTimeout(hide, BACKUP_VISIBLE_MS);
     const onVisibility = (): void => {
       if (document.visibilityState === 'hidden') hide();
@@ -148,21 +172,44 @@ export function SecretBackup(props: { readonly reveal: () => string; readonly te
       clearTimeout(timer);
       document.removeEventListener('visibilitychange', onVisibility);
     };
-  }, [shown]);
+  }, [shown, hide]);
 
   const copyNow = (value: string): void => {
+    if (pending.current) return;
+    pending.current = true;
+    setCopyPending(true);
+    const revealGeneration = generation.current;
+    const request = ++copyRequest.current;
+    const current = (): boolean => mounted.current && generation.current === revealGeneration && copyRequest.current === request;
     const earlier = onClipboard;
+    const earlierNeedsClear = retrying || (earlier !== 0 && clearing === earlier);
     const mine = ++copies;
     // Marked before the write, so a Hide or Lock clicked while it is pending still clears it.
     onClipboard = mine;
+    // This fresh explicit copy owns its cleanup; a retry requested for an older copy must not empty it.
+    retryAtActivation(false);
     void (async () => {
       try {
         await navigator.clipboard.writeText(value);
-        setCopy('copied');
+        if (current()) setCopy('copied');
+        else if (copies === mine && (onClipboard === mine || onClipboard === 0)) {
+          // Hide/Lock may have completed its clear before this write settled. Retry cleanup of
+          // our late write, but never claim or clear a newer copy made by another reveal/view.
+          onClipboard = mine;
+          clearCopiedBackup();
+        }
       } catch {
         // Nothing was copied: an earlier copy that may still be on the clipboard stays marked.
-        if (onClipboard === mine) onClipboard = earlier;
-        setCopy('failed');
+        if (onClipboard === mine) {
+          onClipboard = earlier;
+          retryAtActivation(earlier !== 0 && earlierNeedsClear);
+        }
+        if (current()) setCopy('failed');
+      } finally {
+        if (current()) {
+          pending.current = false;
+          setCopyPending(false);
+        }
       }
     })();
   };
@@ -171,7 +218,7 @@ export function SecretBackup(props: { readonly reveal: () => string; readonly te
     return (
       <Notice kind="warn" title={text.title}>
         <p>{text.warning} {text.hiddenHint}</p>
-        <button type="button" className="btn" onClick={() => { setShown(props.reveal()); }}>{text.show}</button>
+        <button type="button" className="btn" onClick={() => { generation.current += 1; setCopy('idle'); setShown(props.reveal()); }}>{text.show}</button>
       </Notice>
     );
   }
@@ -182,8 +229,9 @@ export function SecretBackup(props: { readonly reveal: () => string; readonly te
       {copy === 'confirm' ? (
         <>
           <p><strong>{text.copyWarning}</strong></p>
-          <button type="button" className="btn btn-danger" onClick={() => { copyNow(shown); }}>{text.copyConfirm}</button>{' '}
-          <button type="button" className="btn" onClick={() => { setCopy('idle'); }}>{text.copyCancel}</button>{' '}
+          {copyPending && <p role="status" aria-live="polite">{t('btc.seed.copying')}</p>}
+          <button type="button" className="btn btn-danger" disabled={copyPending} onClick={() => { copyNow(shown); }}>{text.copyConfirm}</button>{' '}
+          <button type="button" className="btn" disabled={copyPending} onClick={() => { setCopy('idle'); }}>{text.copyCancel}</button>{' '}
         </>
       ) : (
         <>
@@ -194,11 +242,7 @@ export function SecretBackup(props: { readonly reveal: () => string; readonly te
       <button
         type="button"
         className="btn"
-        onClick={() => {
-          setShown(undefined);
-          setCopy('idle');
-          clearCopiedBackup();
-        }}
+        onClick={hide}
       >
         {text.hide}
       </button>

@@ -1,3 +1,5 @@
+import type { MessageKey } from '../../i18n/catalog';
+
 /**
  * User-facing statements about what a Bitcoin scan in this view verifies (spec 12). Keep them exact: they must
  * describe the code in `esplora.ts`, `headers.ts` and `scan.ts` as the view uses them, never more.
@@ -45,3 +47,42 @@ export const SCAN_MODES: readonly ScanMode[] = [
     available: 'No: not implemented',
   },
 ];
+
+/** Catalog identities for render-time copy; the source constants above remain API-compatible. */
+export const SCAN_CHECK_KEYS = [
+  'btc.verification.check.header',
+  'btc.verification.check.transactions',
+  'btc.verification.check.witness',
+  'btc.verification.check.chain',
+  'btc.verification.check.storage'
+] as const satisfies readonly MessageKey[];
+
+export const SCAN_LIMIT_KEYS = [
+  'btc.verification.limit.validation',
+  'btc.verification.limit.prevouts',
+  'btc.verification.limit.spent',
+  'btc.verification.limit.privacy'
+] as const satisfies readonly MessageKey[];
+
+export const SCAN_MODE_KEYS = [
+  {
+    'mode': 'btc.verification.mode.own.mode',
+    'keyLeaves': 'btc.verification.mode.own.keyLeaves',
+    'serverLearns': 'btc.verification.mode.own.serverLearns',
+    'available': 'btc.verification.mode.own.available'
+  },
+  {
+    'mode': 'btc.verification.mode.other.mode',
+    'keyLeaves': 'btc.verification.mode.other.keyLeaves',
+    'serverLearns': 'btc.verification.mode.other.serverLearns',
+    'available': 'btc.verification.mode.other.available'
+  },
+  {
+    'mode': 'btc.verification.mode.hosted.mode',
+    'keyLeaves': 'btc.verification.mode.hosted.keyLeaves',
+    'serverLearns': 'btc.verification.mode.hosted.serverLearns',
+    'available': 'btc.verification.mode.hosted.available'
+  }
+] as const satisfies readonly Readonly<Record<keyof ScanMode, MessageKey>>[];
+
+// i18n-use: btc.verification.check.header btc.verification.check.transactions btc.verification.check.witness btc.verification.check.chain btc.verification.check.storage btc.verification.limit.validation btc.verification.limit.prevouts btc.verification.limit.spent btc.verification.limit.privacy btc.verification.mode.own.mode btc.verification.mode.own.keyLeaves btc.verification.mode.own.serverLearns btc.verification.mode.own.available btc.verification.mode.other.mode btc.verification.mode.other.keyLeaves btc.verification.mode.other.serverLearns btc.verification.mode.other.available btc.verification.mode.hosted.mode btc.verification.mode.hosted.keyLeaves btc.verification.mode.hosted.serverLearns btc.verification.mode.hosted.available

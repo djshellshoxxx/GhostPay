@@ -5,6 +5,7 @@ import {
   zeroize,
   type SilentPaymentKeys,
 } from '@ghostpay/btc-silent-payments';
+import { UserFacingError } from '../../lib/errors';
 import type { BtcNetworkInfo } from './network';
 
 /**
@@ -32,8 +33,8 @@ export function randomSeedHex(rng: Pick<Crypto, 'getRandomValues'> = globalThis.
 /** @throws {Error} with a user-safe message when the seed text is not 32 bytes of hex. */
 export function walletFromSeedHex(seedHex: string, net: BtcNetworkInfo): BtcWallet {
   const t = seedHex.trim().toLowerCase();
-  if (!/^[0-9a-f]{64}$/.test(t)) throw new Error('The seed must be exactly 64 hexadecimal characters (32 bytes).');
-  if (!net.enabled) throw new Error('This network is disabled.');
+  if (!/^[0-9a-f]{64}$/.test(t)) throw new UserFacingError({ key: 'btc.error.seed' });
+  if (!net.enabled) throw new UserFacingError({ key: 'chainView.error.disabled' });
   const seed = new Uint8Array(SEED_BYTES);
   for (let i = 0; i < SEED_BYTES; i++) seed[i] = Number.parseInt(t.slice(2 * i, 2 * i + 2), 16);
   try {
@@ -57,3 +58,5 @@ export function paymentUri(wallet: BtcWallet, amountSats?: bigint, label?: strin
     ...(label === undefined || label === '' ? {} : { label }),
   });
 }
+
+// i18n-use: btc.error.seed chainView.error.disabled

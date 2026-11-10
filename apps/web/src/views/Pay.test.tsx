@@ -19,6 +19,7 @@ import { makeServices, renderApp, setHash } from '../test/render';
 import type { Services } from '../lib/services';
 import { receiptJson, signReceipt } from '../lib/receipts';
 import * as payExec from '../lib/payExec';
+import * as embedHost from '../lib/embedHost';
 import { withSessionSecrets } from '../lib/session';
 import { PERMIT_TYPES, eip712DomainSeparator, erc20MetadataAbi } from '@ghostpay/chain-adapters';
 import { privateKeyToAccount } from 'viem/accounts';
@@ -61,6 +62,36 @@ function chainSeeing(wallet: MockWallet) {
 }
 
 describe('Pay: invoice reading and review', () => {
+  it('allows the same receipt file after a failed read and preserves a newer selection while the old read finishes', async () => {
+    const { parsed, fragment } = await makeParsed();
+    const receipt = withSessionSecrets((secrets) => signReceipt({
+      invoiceDigest: `0x${bytesToHex(invoiceDigest(parsed.invoice))}`,
+      chainId: parsed.invoice.chainId, txHash: `0x${'a'.repeat(64)}`,
+      stealthAddress: `0x${'b'.repeat(40)}`, asset: parsed.invoice.token, amountMinorUnits: '99750000', issuedAt: NOW,
+    }, secrets.signingKey));
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    await screen.findByText('Seller receives (net)');
+    await user.click(screen.getByLabelText('I consent to opening private receipt details on this screen.'));
+    const input = screen.getByLabelText<HTMLInputElement>('Signed seller receipt JSON');
+    const file = new File([receiptJson(receipt)], 'receipt.json', { type: 'application/json' });
+    let finishRead: ((text: string) => void) | undefined;
+    const read = vi.spyOn(File.prototype, 'text').mockImplementationOnce(() => new Promise<string>((resolve) => { finishRead = resolve; })).mockResolvedValue(receiptJson(receipt));
+    try {
+      await user.upload(input, file);
+      await user.click(screen.getByRole('button', { name: 'Check receipt against this invoice' }));
+      expect(input.files).toHaveLength(0);
+      await user.upload(input, file);
+      expect(input.files?.[0]).toBe(file);
+      await act(async () => { finishRead?.('invalid JSON'); await Promise.resolve(); });
+      await screen.findByText('Receipt not accepted');
+      expect(input.files?.[0]).toBe(file);
+      await user.click(screen.getByRole('button', { name: 'Check receipt against this invoice' }));
+      await screen.findByText(/The signature matches the valid invoice-signing key/);
+      expect(read).toHaveBeenCalledTimes(2);
+      expect(input.files).toHaveLength(0);
+    } finally { read.mockRestore(); }
+  });
+
   it('accepts a signed receipt only when its invoice digest and expected payment fields match', async () => {
     const { parsed, fragment } = await makeParsed();
     const receiptFields = {
@@ -226,6 +257,22 @@ describe('Pay: invoice reading and review', () => {
     await screen.findByRole('heading', { name: 'Review payment' });
     expect(window.location.hash).toBe(fragment);
     await user.click(screen.getByRole('button', { name: 'Remove link from address bar' }));
+    expect(window.location.hash).toBe('');
+  });
+
+  it('manually clears an invoice fragment on a double-slash pathname while preserving origin, path and query', async () => {
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ autoClearFragment: false, rpcUrls: { '84532': 'https://rpc.test' } }));
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const origin = window.location.origin;
+    const pathAndQuery = '//other.test/invoice?view=pay';
+    window.history.replaceState(null, '', `${origin}${pathAndQuery}${fragment}`);
+    renderApp(makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    const user = userEvent.setup();
+    await screen.findByRole('heading', { name: 'Review payment' });
+    expect(window.location.hash).toBe(fragment);
+    await user.click(screen.getByRole('button', { name: 'Remove link from address bar' }));
+    expect(window.location.origin).toBe(origin);
+    expect(`${window.location.pathname}${window.location.search}`).toBe(pathAndQuery);
     expect(window.location.hash).toBe('');
   });
 
@@ -481,6 +528,25 @@ describe('Pay: sending', () => {
     expect(wallet.sent?.['to']).toBe(FAKE_ROUTER);
     expect(screen.getByText(/Your RPC does not show the transaction yet/)).toBeTruthy();
     expect(screen.getByText(/not yet confirmed/)).toBeTruthy();
+  });
+
+  it.each(['verified', 'pending'] as const)('retains a %s submission when notifying the embedding page fails', async (state) => {
+    const wallet = new MockWallet();
+    const notify = vi.spyOn(embedHost, 'notifyEmbedDone').mockImplementation(() => { throw new Error('parent postMessage failed'); });
+    try {
+      const createRpc = state === 'verified' ? () => Promise.resolve(withManifestChain(chainSeeing(wallet))) : readBackRpc();
+      const user = await toPrepared(wallet, makeServices({ loadManifest: loaded(84532), createRpc }));
+      await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+      await screen.findByRole('heading', { name: 'Submitted' });
+      const hash = `0x${'9'.repeat(64)}`;
+      expect(notify).toHaveBeenCalledWith({ status: 'submitted', chainId: 84532, txHash: hash });
+      expect(document.body.textContent).toContain(hash);
+      expect(screen.queryByRole('button', { name: 'Send payment in my wallet' })).toBeNull();
+      expect(screen.getByRole('button', { name: 'Download local receipt' })).toBeTruthy();
+      expect(screen.getByText(state === 'verified' ? /included in block 100/ : /not yet confirmed/)).toBeTruthy();
+      expect(document.body.textContent).not.toContain('parent postMessage failed');
+      expect(wallet.calls.filter((call) => call.method === 'eth_sendTransaction')).toHaveLength(1);
+    } finally { notify.mockRestore(); }
   });
 
   it('verifies on the user RPC when one is configured and offers a local receipt', async () => {

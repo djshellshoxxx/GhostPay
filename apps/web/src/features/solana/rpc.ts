@@ -1,7 +1,7 @@
 import { SOURCE_TRANSLATOR } from '../../i18n/source';
 import type { MessageKey } from '../../i18n/catalog';
 import type { Translator } from '../../i18n/translator';
-import { UserFacingError, userMessage, type MessageDescriptor } from '../../lib/errors';
+import { UserFacingError, displayMessage, type DisplayMessage, type MessageDescriptor } from '../../lib/errors';
 import { createHttpRpc, SolanaStealthError, toU64, type SolanaRpc } from '@ghostpay/solana-stealth';
 import { DEVNET_GENESIS, MAINNET_GENESIS, TESTNET_GENESIS, type SolNetworkInfo } from './network';
 
@@ -78,10 +78,14 @@ const FRIENDLY: Readonly<Record<string, MessageKey>> = {
   SIGNATURE_INVALID: 'sol.error.signatureInvalid',
 };
 
+/** Capture only catalog-backed public diagnostics before an async result enters view state. */
+export function captureSolErrorMessage(e: unknown): DisplayMessage {
+  if (e instanceof SolViewError) return e.translation ?? e.message;
+  return { key: e instanceof SolanaStealthError ? FRIENDLY[e.code] ?? 'error.unknown' : 'error.unknown' };
+}
+
 export function solErrorMessage(e: unknown, t: Translator['t'] = SOURCE_TRANSLATOR.t): string {
-  if (e instanceof SolViewError) return userMessage(e, t);
-  if (e instanceof SolanaStealthError) return t(FRIENDLY[e.code] ?? 'error.unknown');
-  return t('error.unknown');
+  return displayMessage(captureSolErrorMessage(e), t);
 }
 
 // i18n-use: sol.error.response sol.error.mainnet sol.error.network sol.error.invalidScalar sol.error.invalidPoint sol.error.invalidMetaAddress sol.error.badChecksum sol.error.unsupportedVersion sol.error.networkMismatch sol.error.invalidSeed sol.error.derivedKeyInvalid sol.error.invalidAnnouncement sol.error.invalidAddress sol.error.invalidAmount sol.error.belowRentExempt sol.error.invalidInput sol.error.chainMismatch sol.error.chainDisabled sol.error.rngUnavailable sol.error.rngFailure sol.error.transportFailure sol.error.invalidResponse sol.error.rpcError sol.error.aborted sol.error.unsupported sol.error.signerNotRequired sol.error.signatureInvalid
