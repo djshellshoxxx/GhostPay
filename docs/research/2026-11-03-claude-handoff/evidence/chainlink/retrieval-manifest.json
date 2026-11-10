@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "purpose": "Dated primary-source research evidence for GhostPay PR #72; not runtime feed configuration or on-chain qualification.",
+  "retrieval_method": "curl HTTPS GET through the inherited session network configuration; HTTP 200 reported for both requests.",
+  "timestamp_basis": "UTC modification time of each original completed curl output file before copying the exact bytes into this repository; repository checkout/copy modification times are not retrieval times. No HTTP Date, ETag or response-signature evidence was captured.",
+  "hash_scope": "SHA-256 over exact downloaded file bytes; original JSON formatting retained.",
+  "documentation_repository": "smartcontractkit/documentation",
+  "documentation_commit": "182823c5db0756af3b0dd6a6de6225d2675cb5cf",
+  "sources": [
+    {
+      "url": "https://reference-data-directory.vercel.app/feeds-ethereum-testnet-sepolia.json",
+      "file": "feeds-ethereum-testnet-sepolia.json",
+      "network_name": "Sepolia Testnet",
+      "chain_id": 11155111,
+      "network_binding": "Official documentation src/features/data/chains.ts binds the RDD URL to the network; src/config/data/chains.json supplies the chain ID. These are not fields in the downloaded RDD JSON.",
+      "retrieved_at_utc": "2026-11-04T02:40:56.007237+00:00",
+      "http_status": 200,
+      "bytes": 55997,
+      "sha256": "0c61b93d68190e6327d7f8418aad99a11037dc27bed6aa6ec97e92f905977652",
+      "record_count": 61,
+      "selected_records": [
+        {
+          "json_pointer": "/29",
+          "name": "ETH / USD",
+          "path": "eth-usd",
+          "proxy_address": "0x694AA1769357215DE4FAC081bf1f309aDC325306",
+          "aggregator_contract_address": "0x719E22E3D4b690E5d96cCb40619180B5427F14AE",
+          "decimals": 8,
+          "heartbeat_seconds": 3600,
+          "deviation_threshold_raw": 1,
+          "docs_hidden": false
+        },
+        {
+          "json_pointer": "/2",
+          "name": "USDC / USD",
+          "path": "usdc-usd",
+          "proxy_address": "0xA2F78ab2355fe2f984D808B5CeE7FD0A93D5270E",
+          "aggregator_contract_address": "0x0524b20f305e2e2F7990B9AfE28B4D5e4a76eA0C",
+          "decimals": 8,
+          "heartbeat_seconds": 86400,
+          "deviation_threshold_raw": 1,
+          "docs_hidden": false
+        }
+      ]
+    },
+    {
+      "url": "https://reference-data-directory.vercel.app/feeds-ethereum-testnet-sepolia-base-1.json",
+      "file": "feeds-ethereum-testnet-sepolia-base-1.json",
+      "network_name": "Base Sepolia testnet",
+      "chain_id": 84532,
+      "network_binding": "Official documentation src/features/data/chains.ts binds the RDD URL to the network; src/config/data/chains.json supplies the chain ID. These are not fields in the downloaded RDD JSON.",
+      "retrieved_at_utc": "2026-11-04T02:40:57.356696+00:00",
+      "http_status": 200,
+      "bytes": 9848,
+      "sha256": "8a170a72bcdf8bd41a977334a9ee0659bcae01b628a967052886b3fe618b34bc",
+      "record_count": 11,
+      "selected_records": [
+        {
+          "json_pointer": "/7",
+          "name": "ETH / USD",
+          "path": "eth-usd",
+          "proxy_address": "0x4aDC67696bA383F43DD60A9e78F2C97Fbbfc7cb1",
+          "aggregator_contract_address": "0xa24A68DD788e1D7eb4CA517765CFb2b7e217e7a3",
+          "decimals": 8,
+          "heartbeat_seconds": 1200,
+          "deviation_threshold_raw": 0.15,
+          "docs_hidden": false
+        },
+        {
+          "json_pointer": "/10",
+          "name": "USDC / USD",
+          "path": "usdc-usd",
+          "proxy_address": "0xd30e2101a97dcbAeBCBC04F14C3f624E67A35165",
+          "aggregator_contract_address": "0xf3138B59cAcbA1a4d7d24fA7b184c20B3941433e",
+          "decimals": 8,
+          "heartbeat_seconds": 86400,
+          "deviation_threshold_raw": 0.1,
+          "docs_hidden": false
+        }
+      ]
+    }
+  ],
+  "documentation_files": [
+    {
+      "path": "src/features/data/chains.ts",
+      "git_blob_sha": "0fc18be3d6d7bccb6d8dc16a5e56db3aa135fc28",
+      "purpose": "Network names and RDD URLs"
+    },
+    {
+      "path": "src/config/data/chains.json",
+      "git_blob_sha": "c81a9b442ff0777ec68554691bb1abb02101f405",
+      "purpose": "Network chain IDs"
+    },
+    {
+      "path": "src/features/data/api/index.ts",
+      "git_blob_sha": "e87356cc36331b1e39e489f3321eb5567ed1f145",
+      "purpose": "Fetching metadata and excluding docs.hidden feeds"
+    },
+    {
+      "path": "src/features/feeds/components/Tables.tsx",
+      "git_blob_sha": "61d0194cf9f4b3a06a762ccf092d83e88da82b8b",
+      "purpose": "Heartbeat displayed in seconds and feed decimals used separately from presentation precision"
+    }
+  ],
+  "normalization_notes": {
+    "docs_hidden": "Boolean result of source docs.hidden === true. The field is absent in each selected record, so the normalized value is false.",
+    "chain_id": "Supplied by the pinned official documentation mapping, not a field in the downloaded RDD record.",
+    "heartbeat_seconds": "Source heartbeat field, interpreted as seconds using the pinned official UI source."
+  }
+}
