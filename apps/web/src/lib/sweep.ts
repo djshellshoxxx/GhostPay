@@ -21,7 +21,8 @@ import { findLookalikes, parseStrictAddress, isReason, classifyDestination, type
 import { deriveStealthSecret, zeroize, type PublicAnnouncement, type SecretScalar } from '@ghostpay/core-crypto';
 import type { TypedDataInput } from '@ghostpay/tx-review';
 import { decodeFunctionResult, encodeFunctionData, getAddress, keccak256, parseTransaction, serializeTransaction } from 'viem/utils';
-import { UserFacingError } from './errors';
+import { UserFacingError, type MessageDescriptor } from './errors';
+import { TransactionOutcomeError } from './transactionOutcome';
 import { buildPermit } from './pay';
 import type { MessageKey } from '../i18n/catalog';
 import { RelayerRefusedError, requestQuote, submitSweep, type FetchFn, type RelayerQuote } from './relayerClient';
@@ -352,13 +353,16 @@ export function isUnresolvedAttempt(a: { readonly status: SweepLockStatus }): bo
 }
 
 /** Thrown when the signed bytes were handed to the RPC but the outcome could not be confirmed. */
-export class DirectSweepOutcomeUnknownError extends UserFacingError {
+export class DirectSweepOutcomeUnknownError extends TransactionOutcomeError {
   public readonly attempt: DirectSweepAttempt;
   /** As on {@link DirectSweepResult}: `unavailable` means the bytes were handed off without a dry run; show the warning. */
   public readonly simulation: Simulation;
 
-  public constructor(message: string, attempt: DirectSweepAttempt, simulation: Simulation) {
-    super(message);
+  public constructor(message: string | MessageDescriptor, attempt: DirectSweepAttempt, simulation: Simulation, code = 'BROADCAST_UNKNOWN') {
+    super({
+      phase: 'broadcast-unknown', hash: attempt.expectedHash, code,
+      message: typeof message === 'string' ? { key: 'transaction.sweep.legacy', values: { detail: message } } : message,
+    });
     this.name = 'DirectSweepOutcomeUnknownError';
     this.attempt = attempt;
     this.simulation = simulation;
@@ -710,18 +714,20 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
     let hash: unknown;
     try {
       hash = await i.rpc.request('eth_sendRawTransaction', [raw]);
-    } catch {
+    } catch (error) {
       throw new DirectSweepOutcomeUnknownError(
-        `The RPC request failed after the signed transaction was handed to it, so it may already have been broadcast. Check the expected transaction hash ${expectedHash} before doing anything else.`,
+        { key: 'transaction.sweep.unknown', values: { hash: expectedHash } },
         attempt,
         simulation,
+        error instanceof ChainAdapterError ? error.code : 'RPC_HANDOFF_UNKNOWN',
       );
     }
     if (typeof hash !== 'string' || hash.toLowerCase() !== expectedHash) {
       throw new DirectSweepOutcomeUnknownError(
-        `The RPC returned a transaction hash that does not match the signed transaction. It may already have been broadcast; check the expected transaction hash ${expectedHash}.`,
+        { key: 'transaction.sweep.hashMismatch', values: { hash: expectedHash } },
         attempt,
         simulation,
+        'RPC_HASH_MISMATCH',
       );
     }
     return { hash: expectedHash, sent, maxGasCost: gas * maxFeePerGas, attempt: { ...attempt, status: 'submitted' }, simulation };
@@ -739,7 +745,6 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
 // sig_invalid have no relayer refusal class of their own (the relayer folds a spent nonce and a bad signature into
 // permit_failed, which has its own wider text), so these keys are reserved for those PermitStates and kept so this
 // table stays exhaustive (pinned by sweep.test.ts):
-// i18n-use: sweep.permit.ok sweep.permit.alreadyAllowed sweep.permit.nonceConsumed sweep.permit.failed
 export const SWEEP_PERMIT_STATE_KEYS: Readonly<Record<PermitState, MessageKey>> = {
   ok_to_permit: 'sweep.permit.ok',
   already_allowed: 'sweep.permit.alreadyAllowed',
@@ -758,7 +763,6 @@ export const SWEEP_PERMIT_STATE_KEYS: Readonly<Record<PermitState, MessageKey>> 
  * the `sig_invalid` text, which says the token rejected the permit.
  */
 // Rendered by Sweep.tsx through sweepPermitRefusalKey:
-// i18n-use: sweep.permit.expired sweep.permit.simulationFailed sweep.permit.unsupported sweep.permit.valueTooLow sweep.permit.noAllowance sweep.permit.ownerFailureLimit
 const PERMIT_REFUSAL_KEYS: Readonly<Record<string, MessageKey>> = {
   permit_expired: 'sweep.permit.expired',
   permit_failed: 'sweep.permit.simulationFailed',
@@ -782,6 +786,4 @@ export function sweepPermitSuggestsDirect(key: MessageKey): boolean {
   return key === 'sweep.permit.failed' || key === 'sweep.permit.simulationFailed' || key === 'sweep.permit.unsupported' || key === 'sweep.permit.noAllowance';
 }
 
-// i18n-use: error.sweep.blockedTheDerivedKeyDoesNotControlThatAddress error.sweep.enterAValidDestinationAddress0xMixedCaseAddressesMust error.sweep.theDestinationMustDifferFromTheStealthAddress error.sweep.theDestinationMustNotBeAGhostPayContractOrThe error.sweep.blockedThisAddressLooksAlmostIdenticalToAnAddressYou error.sweep.yourRPCReturnedAnUnexpectedBalance error.sweep.theLocalClockIsInvalidRefusingToSignASweep error.sweep.theRelayerQuoteHasExpiredOrIsAboutToRequest error.sweep.theRelayerFeeAddressDoesNotMatchTheDeploymentFee error.sweep.theRelayerFeeIsAboveThePublishedCapForThis error.sweep.setARelayerURLInSettingsOrSweepDirectly error.sweep.theRelayerAskedForAFeeAboveThePublishedCap error.sweep.theRelayerQuoteHasAlreadyExpired error.sweep.theRelayerFeeAddressIsUnacceptable error.sweep.couldNotCheckTheOrderOnChainTheRPCFailed error.sweep.couldNotCheckEveryTransactionReceiptTheOutcomeIsStill error.sweep.couldNotReadTheL1DataFeeFromThisChain error.sweep.blockedADryRunOfThisTransferFailsItWould error.sweep.invalidNonceForAReplacementTransaction error.sweep.aTransactionWithThisNonceIsAlreadyOnChainSo error.sweep.theBalanceDoesNotCoverTheNetworkFee error.sweep.theBalanceDoesNotCoverTheNetworkFeeIncludingThe error.sweep.theStealthAddressHasNoNativeCoinForGasUse error.sweep.theStealthAddressDoesNotHoldEnoughNativeCoinFor
-
-// i18n-use: error.sweep.excessiveFee
+// i18n-use: error.sweep.aTransactionWithThisNonceIsAlreadyOnChainSo error.sweep.blockedADryRunOfThisTransferFailsItWould error.sweep.blockedTheDerivedKeyDoesNotControlThatAddress error.sweep.blockedThisAddressLooksAlmostIdenticalToAnAddressYou error.sweep.couldNotCheckEveryTransactionReceiptTheOutcomeIsStill error.sweep.couldNotCheckTheOrderOnChainTheRPCFailed error.sweep.couldNotReadTheL1DataFeeFromThisChain error.sweep.enterAValidDestinationAddress0xMixedCaseAddressesMust error.sweep.excessiveFee error.sweep.invalidNonceForAReplacementTransaction error.sweep.setARelayerURLInSettingsOrSweepDirectly error.sweep.theBalanceDoesNotCoverTheNetworkFee error.sweep.theBalanceDoesNotCoverTheNetworkFeeIncludingThe error.sweep.theDestinationMustDifferFromTheStealthAddress error.sweep.theDestinationMustNotBeAGhostPayContractOrThe error.sweep.theLocalClockIsInvalidRefusingToSignASweep error.sweep.theRelayerAskedForAFeeAboveThePublishedCap error.sweep.theRelayerFeeAddressDoesNotMatchTheDeploymentFee error.sweep.theRelayerFeeAddressIsUnacceptable error.sweep.theRelayerFeeIsAboveThePublishedCapForThis error.sweep.theRelayerQuoteHasAlreadyExpired error.sweep.theRelayerQuoteHasExpiredOrIsAboutToRequest error.sweep.theStealthAddressDoesNotHoldEnoughNativeCoinFor error.sweep.theStealthAddressHasNoNativeCoinForGasUse error.sweep.yourRPCReturnedAnUnexpectedBalance sweep.permit.alreadyAllowed sweep.permit.expired sweep.permit.failed sweep.permit.noAllowance sweep.permit.nonceConsumed sweep.permit.ok sweep.permit.ownerFailureLimit sweep.permit.simulationFailed sweep.permit.unsupported sweep.permit.valueTooLow transaction.sweep.hashMismatch transaction.sweep.legacy transaction.sweep.unknown

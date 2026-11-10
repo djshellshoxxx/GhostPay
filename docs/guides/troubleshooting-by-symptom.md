@@ -10,12 +10,12 @@ Not sure where in the flow you are? Check the map first.
 
 | You see | Cause | Do |
 |---|---|---|
-| "Payments disabled on this chain" | No deployment manifest for that chain (true everywhere today: nothing is deployed) | Nothing to fix; wait for a published testnet deployment |
+| "Payments disabled on this chain" | Missing or invalid deployment information, or failed RPC verification; no manifest ships in this repository | Check the reviewed build and RPC configuration. Do not bypass deployment-signature or code checks |
 | Invoice rejected: tampered, too large, invalid | Link cut off, edited, re-encoded by a messenger, or over 16 KiB | Ask the seller to resend as plain text |
 | Signature invalid | Content changed after signing | Do not pay; request a new link |
 | Invoice expired | Validity window passed | Request a new invoice |
-| "No feed" on a fiat-priced invoice | No price feed configured | Ask for a token-priced invoice |
-| No wallet found | None installed/unlocked | Install or unlock a browser wallet, reload. WalletConnect is not built |
+| "No feed" on a fiat-priced invoice | No configured feed for the exact chain, asset and currency, or its required checks fail | Ask for a token-priced invoice; a configured feed does not bypass deployment verification |
+| No wallet found | None installed/unlocked | Install or unlock a browser wallet. This web flow has no operational WalletConnect relay integration |
 | Wrong network | Wallet chain differs from invoice | Approve the switch; the app refuses if the wallet will not switch |
 | "Wallet changed the transaction" or chain mismatch | Wallet or its RPC altered the call | Do not retry blindly; try another wallet or RPC; report if repeated |
 | "Could not verify" after sending | No RPC set, or not yet seen | Set your RPC in Settings; check the hash on an explorer |
@@ -26,7 +26,7 @@ Not sure where in the flow you are? Check the map first.
 
 | You see | Cause | Do |
 |---|---|---|
-| Scan finds nothing | Start block too late, RPC range limits, wrong chain, or payer used a wrong view tag | Lower start block, try another RPC, check chain, ask for the tx hash. Deep scan is planned, not built |
+| Scan finds nothing | Start block too late, RPC range limits, wrong chain, or payer used a wrong view tag | Lower start block, try another RPC, check chain, ask for the tx hash. The opt-in deep scan also checks wrong view tags on router announcements; direct announcements remain tag-filtered |
 | Scan slow or erroring | Public RPCs limit `eth_getLogs` ranges | Use another or your own RPC ([guide](../operators/local-scanner-and-rpc.md)) |
 | A match shows but balance is zero | The match is a claim; anyone can post announcements | Check the one-time address balance; deliver nothing |
 | Duplicate rows | Replayed announcements | Trust balances, not rows |

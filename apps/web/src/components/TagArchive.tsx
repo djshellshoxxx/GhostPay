@@ -3,7 +3,7 @@ import { findChain } from '@ghostpay/chain-adapters';
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { Translator } from '../i18n/translator';
-import { UserFacingError, userMessage, captureUserMessage, displayMessage, type DisplayMessage } from '../lib/errors';
+import { UserFacingError, captureUserMessage, displayMessage, type DisplayMessage, type MessageDescriptor } from '../lib/errors';
 import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphrase, passphraseProblemMessage } from '../lib/keystore';
 import { createCurrentReconciliationVault, type ReconciliationImportPreview, type ReconciliationVault } from '../lib/reconciliationVault';
 import { checkpointKeyId } from '../lib/scanClient';
@@ -11,11 +11,47 @@ import { useServices } from '../lib/services';
 import { captureSessionVersionGuard, getSessionPublic, revealViewingKey } from '../lib/session';
 import { MAX_ARCHIVE_BYTES, exportArchive, previewArchiveImport, type ArchiveImportPreview } from '../lib/tagArchive';
 import { useApp } from '../state';
-import { Field, Notice } from './Common';
+import { Field, Notice, SafeText } from './Common';
+import { ContextHelp } from './ContextHelp';
 
 interface Staged {
   readonly archive: ArchiveImportPreview;
   readonly history: readonly { readonly chainId: number; readonly vault: ReconciliationVault; readonly preview: ReconciliationImportPreview }[];
+}
+
+type ImportOutcome = 'notStarted' | 'unknown' | 'committed';
+export type ArchiveNote = MessageDescriptor & { readonly chainIds?: readonly number[] };
+type ArchiveMessage = DisplayMessage | { readonly parts: readonly (DisplayMessage | ArchiveNote)[] } | {
+  readonly partialImport: {
+    readonly tags: ImportOutcome;
+    readonly history: readonly { readonly chainId: number; readonly outcome: ImportOutcome }[];
+    readonly reason: DisplayMessage;
+  };
+};
+
+/** Keep outcome facts separate from copy so a language change never repeats an import or freezes a warning. */
+function archiveMessage(message: ArchiveMessage, translator: Translator): string {
+  const t = translator.t;
+  if (typeof message !== 'string' && 'parts' in message) return message.parts.map((part) =>
+    typeof part !== 'string' && 'chainIds' in part ? displayArchiveNote(part, translator) : displayMessage(part, t),
+  ).join(' ');
+  if (typeof message !== 'string' && 'partialImport' in message) {
+    const { tags, history, reason } = message.partialImport;
+    const outcome = (value: ImportOutcome): string => t(value === 'notStarted' ? 'tagArchive.outcome.notStarted' : value === 'unknown' ? 'tagArchive.outcome.unknown' : 'tagArchive.outcome.committed');
+    return t('tagArchive.msg.incomplete', {
+      tags: outcome(tags),
+      outcomes: history.map((item) => t('tagArchive.msg.historyOutcome', { chain: String(item.chainId), outcome: outcome(item.outcome) })).join(' '),
+      reason: displayMessage(reason, t),
+    });
+  }
+  return displayMessage(message, t);
+}
+
+/** Render identifiers and locale-aware conjunctions without retaining already-translated gap warnings. */
+export function displayArchiveNote(note: ArchiveNote, translator: Translator): string {
+  return note.chainIds === undefined ? displayMessage(note, translator.t) : translator.t(note.key, {
+    chains: translator.list(note.chainIds.map((id) => chainLabel(id, translator.t))),
+  });
 }
 
 function downloadBytes(filename: string, bytes: Uint8Array<ArrayBuffer>): void {
@@ -85,9 +121,9 @@ export type ArchiveExportResult =
     /** Scan history is missing from the archive for at least one chain. */
     readonly gaps: boolean;
     /** Plain-language notes on what is NOT in the archive (empty when nothing is missing). */
-    readonly notes: readonly string[];
+    readonly notes: readonly ArchiveNote[];
   }
-  | { readonly ok: false; readonly message: string };
+  | { readonly ok: false; readonly message: DisplayMessage };
 
 /**
  * Encrypted tag backup, import with preview, key rotation and wipe. Everything is local; the passphrase is never stored.
@@ -103,7 +139,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
   const t = (key: Parameters<Translator['t']>[0], values?: Parameters<Translator['t']>[1]): string => trRef.current.t(key, values);
   const app = useApp();
   const { vault, chains } = useServices();
-  const [message, setMessage] = useState<{ kind: 'ok' | 'error'; text: DisplayMessage } | undefined>(undefined);
+  const [message, setMessage] = useState<{ kind: 'ok' | 'error'; text: ArchiveMessage } | undefined>(undefined);
   const [busy, setBusy] = useState(false);
   // The archive passphrase starts as a generated suggestion (L1-06), shown in clear only while untouched.
   const [suggested, setSuggested] = useState(generatePassphrase);
@@ -146,13 +182,13 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
   useEffect(() => { reset(); suggest(); }, [app.session]);
   // Archive passphrases typed here go at every idle lock too, also while unsaved keys stay loaded: react-dom mirrors a
   // controlled input's value into its value attribute (G2-05, C-R11).
-  useEffect(() => subscribeAppLock(() => { suggest(); setImportPass(''); }), []);
+  useEffect(() => subscribeAppLock(() => { reset(); suggest(); }), []);
 
   const ensureUnlocked = async (): Promise<void> => {
     if (!vault.unlocked) await vault.unlock(revealViewingKey());
   };
   const fail = (e: unknown): void => { setMessage({ kind: 'error', text: captureUserMessage(e) }); };
-  const done = (text: string): void => { setMessage({ kind: 'ok', text }); app.announce(text); };
+  const done = (text: ArchiveMessage): void => { setMessage({ kind: 'ok', text }); app.announce(archiveMessage(text, trRef.current)); };
 
   const historyVaults = async (c: AbortController): Promise<{ vaults: { chainId: number; vault: ReconciliationVault }[]; skipped: number }> => {
     const s = getSessionPublic();
@@ -161,11 +197,11 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
     const vaults: { chainId: number; vault: ReconciliationVault }[] = [];
     let skipped = 0;
     for (const chain of chains) {
-      if (!current(c)) throw new UserFacingError(t('tagArchive.msg.cancelled'));
+      if (!current(c)) throw new UserFacingError({ key: 'tagArchive.msg.cancelled' });
       let history: ReconciliationVault;
       try { history = await createCurrentReconciliationVault(chain.chainId, keyId); }
       catch { skipped++; continue; }
-      if (!current(c)) { history.lock(); throw new UserFacingError(t('tagArchive.msg.cancelled')); }
+      if (!current(c)) { history.lock(); throw new UserFacingError({ key: 'tagArchive.msg.cancelled' }); }
       openedHistory.current.add(history);
       vaults.push({ chainId: chain.chainId, vault: history });
     }
@@ -190,9 +226,9 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
     e.preventDefault();
     const problem = passphraseProblemMessage(pass);
     if (problem !== undefined) { setMessage({ kind: 'error', text: problem }); return; }
-    if (pass !== pass2) { setMessage({ kind: 'error', text: t('sellerKeys.passphrasesDiffer') }); return; }
+    if (pass !== pass2) { setMessage({ kind: 'error', text: { key: 'sellerKeys.passphrasesDiffer' } }); return; }
     const c = start(); const unchanged = captureSessionVersionGuard();
-    setBusy(true); setMessage({ kind: 'ok', text: t('tagArchive.msg.encrypting') });
+    setBusy(true); setMessage({ kind: 'ok', text: { key: 'tagArchive.msg.encrypting' } });
     void (async () => {
       let vaults: { chainId: number; vault: ReconciliationVault }[] = [];
       try {
@@ -219,19 +255,19 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
         unchanged();
         downloadBytes(out.filename, out.bytes);
         setPass(''); setPass2(''); setBusy(false);
-        const missing = [
-          skipped > 0 ? t('tagArchive.missing.skipped', { count: String(skipped) }) : '',
-          unsupported === undefined ? t('tagArchive.missing.unlisted') : '',
-          unsupported !== undefined && unsupported.length > 0
-            ? t(unsupported.length === 1 ? 'tagArchive.missing.unsupportedOne' : 'tagArchive.missing.unsupportedMany', { chains: trRef.current.list(unsupported.map((id) => chainLabel(id, trRef.current.t))) })
-            : '',
-        ].filter((note) => note !== '');
+        const missing: ArchiveNote[] = [];
+        if (skipped > 0) missing.push({ key: 'tagArchive.missing.skipped', values: { count: String(skipped) } });
+        if (unsupported === undefined) missing.push({ key: 'tagArchive.missing.unlisted' });
+        if (unsupported !== undefined && unsupported.length > 0) missing.push({
+          key: unsupported.length === 1 ? 'tagArchive.missing.unsupportedOne' : 'tagArchive.missing.unsupportedMany',
+          chainIds: unsupported,
+        });
         reportExport?.({ ok: true, recordCount: out.recordCount, sha256: out.sha256, history: withHistory, gaps: missing.length > 0, notes: missing });
-        done(`${t('tagArchive.msg.downloaded', { count: String(out.recordCount), sha: out.sha256 })}${missing.map((note) => ` ${note}`).join('')}`);
+        done({ parts: [{ key: 'tagArchive.msg.downloaded', values: { count: String(out.recordCount), sha: out.sha256 } }, ...missing] });
       } catch (error) {
         if (!current(c)) return;
         setBusy(false); fail(error);
-        reportExport?.({ ok: false, message: userMessage(error, t) });
+        reportExport?.({ ok: false, message: captureUserMessage(error) });
       } finally {
         closeVaults(vaults);
       }
@@ -240,11 +276,11 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
 
   const onPreview = (e: FormEvent): void => {
     e.preventDefault();
-    if (file === undefined) { setMessage({ kind: 'error', text: t('tagArchive.msg.chooseFile') }); return; }
-    if (file.size > MAX_ARCHIVE_BYTES) { setMessage({ kind: 'error', text: t('tagArchive.msg.invalidArchive') }); return; }
+    if (file === undefined) { setMessage({ kind: 'error', text: { key: 'tagArchive.msg.chooseFile' } }); return; }
+    if (file.size > MAX_ARCHIVE_BYTES) { setMessage({ kind: 'error', text: { key: 'tagArchive.msg.invalidArchive' } }); return; }
     const c = start(); const unchanged = captureSessionVersionGuard();
     const selected = file; const passphrase = importPass;
-    setBusy(true); setStaged(undefined); setMessage({ kind: 'ok', text: t('sellerKeys.decrypting') });
+    setBusy(true); setStaged(undefined); setMessage({ kind: 'ok', text: { key: 'sellerKeys.decrypting' } });
     void (async () => {
       let vaults: { chainId: number; vault: ReconciliationVault }[] = [];
       let retained = false;
@@ -260,7 +296,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
         vaults = opened.vaults;
         for (const chain of archive.historyChains) {
           if (!vaults.some((h) => String(h.chainId) === chain))
-            throw new UserFacingError(t('tagArchive.msg.historyOpen', { chain }));
+            throw new UserFacingError({ key: 'tagArchive.msg.historyOpen', values: { chain } });
         }
         const history: Staged['history'][number][] = [];
         for (const h of vaults) {
@@ -274,7 +310,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
         unchanged();
         setImportPass(''); setBusy(false); setStaged({ archive, history });
         retained = true;
-        setMessage({ kind: 'ok', text: t('tagArchive.msg.decrypted') });
+        setMessage({ kind: 'ok', text: { key: 'tagArchive.msg.decrypted' } });
       } catch (error) {
         if (!current(c)) return;
         setImportPass(''); setBusy(false); fail(error);
@@ -288,11 +324,10 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
     if (staged === undefined) return;
     const c = start(true); const unchanged = captureSessionVersionGuard();
     const s = staged;
-    type Outcome = 'notStarted' | 'unknown' | 'committed';
-    let tags: Outcome = 'notStarted';
-    const history: Outcome[] = s.history.map(() => 'notStarted');
+    let tags: ImportOutcome = 'notStarted';
+    const history: ImportOutcome[] = s.history.map(() => 'notStarted');
     const guard = (): void => {
-      if (!current(c)) throw new UserFacingError(t('tagArchive.msg.interrupted'));
+      if (!current(c)) throw new UserFacingError({ key: 'tagArchive.msg.interrupted' });
       unchanged();
     };
     setBusy(true);
@@ -310,16 +345,18 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
         }
         guard();
         setStaged(undefined); setFile(undefined); setBusy(false);
-        done(`${t('tagArchive.msg.imported', { added: String(s.archive.tags.added), updated: String(s.archive.tags.updated), removed: String(s.archive.tags.removed) })}${s.history.length > 0 ? ` ${t('tagArchive.msg.importedHistory', { count: String(s.history.length) })}` : ''}`);
+        const parts: DisplayMessage[] = [{ key: 'tagArchive.msg.imported', values: { added: String(s.archive.tags.added), updated: String(s.archive.tags.updated), removed: String(s.archive.tags.removed) } }];
+        if (s.history.length > 0) parts.push({ key: 'tagArchive.msg.importedHistory', values: { count: String(s.history.length) } });
+        done({ parts });
       } catch (error) {
         // A completed transaction cannot be cancelled, and a rejected acknowledgement
         // does not prove unchanged storage. Never overwrite concurrent edits with a rollback.
         if (!mounted.current || (operation.current !== c && operation.current !== null)) return;
         setStaged(undefined); setBusy(false);
-        const outcome = (o: Outcome): string => t(o === 'notStarted' ? 'tagArchive.outcome.notStarted' : o === 'unknown' ? 'tagArchive.outcome.unknown' : 'tagArchive.outcome.committed');
-        const outcomes = s.history.map((h, index) => t('tagArchive.msg.historyOutcome', { chain: String(h.chainId), outcome: outcome(history[index] ?? 'notStarted') })).join(' ');
-        const reason = error instanceof UserFacingError ? error.message : t('tagArchive.msg.stopped');
-        setMessage({ kind: 'error', text: t('tagArchive.msg.incomplete', { tags: outcome(tags), outcomes, reason }) });
+        const reason = error instanceof UserFacingError ? captureUserMessage(error) : { key: 'tagArchive.msg.stopped' } as const;
+        setMessage({ kind: 'error', text: { partialImport: {
+          tags, history: s.history.map((item, index) => ({ chainId: item.chainId, outcome: history[index] ?? 'notStarted' })), reason,
+        } } });
       } finally {
         closeVaults(s.history);
       }
@@ -338,7 +375,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
         if (!current(c)) return;
         unchanged();
         setStaged(undefined); setBusy(false);
-        done(t('tagArchive.msg.rotated', { version: String(v) }));
+        done({ key: 'tagArchive.msg.rotated', values: { version: String(v) } });
       } catch (error) {
         if (!current(c)) return;
         setBusy(false); fail(error);
@@ -354,7 +391,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
         unchanged();
         await vault.wipe();
         if (!current(c)) return;
-        unchanged(); setBusy(false); onTagsWiped?.(); done(t('tagArchive.msg.wiped'));
+        unchanged(); setBusy(false); onTagsWiped?.(); done({ key: 'tagArchive.msg.wiped' });
       } catch (error) {
         if (!current(c)) return;
         setBusy(false); fail(error);
@@ -366,7 +403,7 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
   return (
     <section className="panel" aria-labelledby="tagarc-h">
       <h3 id="tagarc-h">{t('tagArchive.heading')}</h3>
-      {message !== undefined && <Notice kind={message.kind}>{displayMessage(message.text, t)}</Notice>}
+      {message !== undefined && <Notice kind={message.kind}>{archiveMessage(message.text, trRef.current)}</Notice>}
       {s === undefined ? <p>{t('tagArchive.loadKeys')}</p> : (
         <>
           <form onSubmit={onExport} className="stack" autoComplete="off">
@@ -381,10 +418,16 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
           <p className="hint">{t('tagArchive.format')}</p>
 
           <form onSubmit={onPreview} className="stack" autoComplete="off">
-            <Field label={t('tagArchive.import.file')}>{(id) => <input id={id} type="file" accept=".gpa,application/octet-stream" onChange={(e) => { reset(); setFile(e.target.files?.[0]); }} />}</Field>
+            <Field label={t('tagArchive.import.file')} help={{ label: t('help.about', { control: t('tagArchive.import.file') }), text: t('help.tagArchiveFile') }}>{(id, describedBy) => <><input id={id} aria-describedby={[describedBy, file === undefined ? undefined : `${id}-selected`].filter(Boolean).join(' ') || undefined} type="file" accept=".gpa,application/octet-stream" onChange={(e) => {
+              const selected = e.currentTarget.files?.[0];
+              e.currentTarget.value = '';
+              if (selected === undefined) return;
+              invalidate(); setImportPass(''); setMessage(undefined); setFile(selected);
+            }} />{file !== undefined && <p id={`${id}-selected`} className="hint">{t('upload.selectedFile')}: <bdi dir="ltr"><SafeText value={file.name} /></bdi></p>}</>}</Field>
             <Field label={t('tagArchive.import.passphrase')}>{(id) => <input id={id} type="password" autoComplete="off" value={importPass} onChange={(e) => { invalidate(); setImportPass(e.target.value); }} />}</Field>
             <label><input type="radio" name="tag-import-mode" checked={mode === 'merge'} onChange={() => { invalidate(); setMode('merge'); }} /> {t('tagArchive.import.merge')}</label>
             <label><input type="radio" name="tag-import-mode" checked={mode === 'replace'} onChange={() => { invalidate(); setMode('replace'); }} /> {t('tagArchive.import.replace')}</label>
+            <ContextHelp label={t('help.about', { control: t('tagArchive.import.preview') })}>{t('help.archiveMode')}</ContextHelp>
             <button type="submit" className="btn" disabled={busy}>{t('tagArchive.import.preview')}</button>
           </form>
           {staged !== undefined && (

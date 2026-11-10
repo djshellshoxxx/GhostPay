@@ -91,6 +91,7 @@ export async function signSweep(p: SignParams): Promise<SignedSweep> {
     amount: review.sendLamports,
     lifetime,
   });
+  if (signal?.aborted === true) throw new SolViewError({ key: 'sol.error.aborted' });
   const spendKey = deriveSpendKey(wallet.keys.spendSecret, found.tweak, base58.decode(found.stealthAddress));
   try {
     const signed = signWithStealthKey(tx, spendKey);
@@ -103,3 +104,5 @@ export async function signSweep(p: SignParams): Promise<SignedSweep> {
 }
 
 // i18n-use: chainView.error.sameAddress sol.error.balanceFee chainView.sweep.links sol.sweep.minimum sol.sweep.tokensStay sol.error.balanceChanged sol.error.signing
+
+// i18n-use: sol.error.aborted

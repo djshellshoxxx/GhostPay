@@ -124,7 +124,7 @@ describe('TronView', () => {
     expect(chain.broadcasts).toHaveLength(0);
 
     await user.click(screen.getByRole('button', { name: /Broadcast to/ }));
-    await screen.findByText(/The node accepted transaction/);
+    await screen.findByText(/The server accepted transaction/);
     expect(chain.broadcasts).toHaveLength(1);
     const bytes = hexToBytes(chain.broadcasts[0] as string);
     expect(bytes[0]).toBe(0x0a);

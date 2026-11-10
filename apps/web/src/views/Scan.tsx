@@ -8,8 +8,8 @@ import { verifyManifestState } from '../lib/manifest';
 import { formatUnits } from '../lib/format';
 import { UserFacingError, displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { checkpointKeyId, runScan, type ScanMatch, type ScanProgress } from '../lib/scanClient';
-import { browserStorage, createWindowedScanClient, describeScanDisclosure, loadScanPrivacy, openScanClients, planScan } from '../lib/scanPrivacy';
-import { describeAnonymitySet } from '../lib/scanSpam';
+import { browserStorage, createWindowedScanClient, describeScanDisclosureMessages, loadScanPrivacy, openScanClients, planScan } from '../lib/scanPrivacy';
+import type { AnonymitySet } from '../lib/scanSpam';
 import { useServices } from '../lib/services';
 import { captureSessionGuard, revealViewingKey, subscribeSession } from '../lib/session';
 import { recordFromVerifiedMatch } from '../lib/reconciliationLedger';
@@ -39,16 +39,24 @@ function useLatestScanT(t: T): { readonly current: T } {
   return ref;
 }
 
-/** Scan state keeps a message key and values, not text, so it renders in the language current when it is shown.
- * Typed failures are rendered with the current translator; existing privacy-plan text stays literal. */
-type ScanText = { readonly key: MessageKey; readonly values?: MessageValues } | { readonly text: string } | { readonly error: DisplayMessage };
+/** Scan state keeps public message data so outcomes render with the current translator. */
+type ScanText = { readonly key: MessageKey; readonly values?: MessageValues } | { readonly error: DisplayMessage };
 // msg('key') descriptors are not seen by scripts/i18n/extract.mjs; the keys built through msg() in this file:
 // i18n-use: scan.error.noRpc scan.error.secondRpc scan.error.startBlock scan.error.manifestMismatch scan.error.noManifest
 // i18n-use: scan.error.discrepancy scan.error.backlog scan.error.limitReached scan.error.keysChanged scan.lag
 // i18n-use: scan.done.note scan.done.cancelled scan.done.limit scan.done.finished scan.done.cancelledEarly
 const msg = (key: MessageKey, values?: MessageValues): ScanText => (values === undefined ? { key } : { key, values });
-const literal = (text: string): ScanText => ({ text });
-const show = (m: ScanText, t: T): string => ('text' in m ? m.text : 'error' in m ? displayMessage(m.error, t) : t(m.key, m.values));
+const show = (m: ScanText, t: T): string => ('error' in m ? displayMessage(m.error, t) : t(m.key, m.values));
+
+// i18n-use: scan.privacySet.low scan.privacySet.medium scan.privacySet.high
+function describePrivacySet(a: AnonymitySet, t: T): string {
+  return t('scan.privacySet.body', {
+    level: t(a.level === 'low' ? 'scan.privacySet.low' : a.level === 'medium' ? 'scan.privacySet.medium' : 'scan.privacySet.high'),
+    count7d: String(a.count7d),
+    count30d: String(a.count30d),
+    partial: a.partial ? 'yes' : 'no',
+  });
+}
 
 export function Scan(): ReactNode {
   const t = useScanT();
@@ -63,7 +71,7 @@ export function Scan(): ReactNode {
   const [progress, setProgress] = useState<ScanProgress | undefined>(undefined);
   const [error, setError] = useState<ScanText | undefined>(undefined);
   const [done, setDone] = useState<readonly ScanText[] | undefined>(undefined);
-  const [privacyNote, setPrivacyNote] = useState<string | undefined>(undefined);
+  const [privacyNote, setPrivacyNote] = useState<AnonymitySet | undefined>(undefined);
   const [routerOnlyBlocks, setRouterOnlyBlocks] = useState<readonly bigint[] | undefined>(undefined);
   const [lagNote, setLagNote] = useState<ScanText | undefined>(undefined);
   const [scanOwner, setScanOwner] = useState<{ readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
@@ -151,10 +159,7 @@ export function Scan(): ReactNode {
         // Spec 10: the scan path is planned first; a required private path that is missing blocks the scan, never downgrades.
         const privacy = loadScanPrivacy(browserStorage());
         const plan = planScan(privacy, chain);
-        if (plan.kind === 'blocked') {
-          setError(literal(plan.reason));
-          return;
-        }
+        if (plan.kind === 'blocked') throw new UserFacingError(plan.reasonMessage);
         const clients = await openScanClients({ plan, chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, appRpc: () => app.getRpc(chainId), fetchImpl: services.fetchFn, sleep: services.sleep });
         assertScopeCurrent();
         if (clients === undefined) {
@@ -260,7 +265,7 @@ export function Scan(): ReactNode {
         if (!ctl.signal.aborted) assertScopeCurrent();
         if (res.discrepancies.length > 0) setError(msg('scan.error.discrepancy', { count: String(res.discrepancies.length) }));
         if ((res.backlog ?? 0) > 0) setError(msg('scan.error.backlog', { count: String(res.backlog), block: res.cursor.nextBlock.toString() }));
-        setPrivacyNote(res.telemetry?.anonymity === undefined ? undefined : describeAnonymitySet(res.telemetry.anonymity));
+        setPrivacyNote(res.telemetry?.anonymity);
         if ((res.routerOnlyBlocks ?? []).length > 0) setRouterOnlyBlocks(res.routerOnlyBlocks ?? []);
         if (res.secondaryLag !== undefined) setLagNote(msg('scan.lag', { secondary: res.secondaryLag.secondaryHead.toString(), behind: (res.secondaryLag.head - res.secondaryLag.secondaryHead).toString(), head: res.secondaryLag.head.toString() }));
         if (res.limitReached) setError(msg('scan.error.limitReached', { block: res.cursor.nextBlock.toString() }));
@@ -296,8 +301,8 @@ export function Scan(): ReactNode {
       <details className="panel">
         <summary>{t('scan.disclosure.summary')}</summary>
         <ul>
-          {describeScanDisclosure(scanPrivacy, { hasSecondary: (app.settings.rpcUrlsSecondary[String(chainId)] ?? '') !== '' }).map((row) => (
-            <li key={row.party}><strong>{row.party}:</strong> {row.learns}</li>
+          {describeScanDisclosureMessages(scanPrivacy, { hasSecondary: (app.settings.rpcUrlsSecondary[String(chainId)] ?? '') !== '' }).map((row) => (
+            <li key={row.party.key}><strong>{displayMessage(row.party, t)}:</strong> {displayMessage(row.learns, t)}</li>
           ))}
         </ul>
         <p className="hint">{t('scan.disclosure.hint')}</p>
@@ -343,7 +348,7 @@ export function Scan(): ReactNode {
         {running && progress === undefined && t('scan.starting')}
       </div>
       {done !== undefined && <Notice kind="ok">{done.map((m) => show(m, t)).join(' ')}</Notice>}
-      {privacyNote !== undefined && <Notice kind="info" title={t('scan.privacySet.title')}>{privacyNote}</Notice>}
+      {privacyNote !== undefined && <Notice kind="info" title={t('scan.privacySet.title')}>{describePrivacySet(privacyNote, t)}</Notice>}
       {routerOnlyNote !== undefined && <Notice kind="warn">{routerOnlyNote}</Notice>}
       {lagNote !== undefined && <Notice kind="warn">{show(lagNote, t)}</Notice>}
       {error !== undefined && <Notice kind="error">{show(error, t)}</Notice>}

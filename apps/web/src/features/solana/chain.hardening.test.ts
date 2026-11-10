@@ -1,4 +1,4 @@
-import { SOURCE_TRANSLATOR } from '../../i18n/context';
+import { displayMessage } from '../../lib/errors';
 import { base58 } from '@scure/base';
 import { SolanaStealthError, type SolanaRpc } from '@ghostpay/solana-stealth';
 import { describe, expect, it } from 'vitest';
@@ -133,7 +133,7 @@ describe('Solana scan and signing hardening', () => {
     expect(found).toBeDefined();
     if (found === undefined) throw new Error('fixture must yield a payment');
     const small = { ...found, balanceLamports: NEW_ACCOUNT_MIN_LAMPORTS, tokenReceiptCount: 1 };
-    expect(reviewSweep(wallet, small, DEST).warnings.map((w) => SOURCE_TRANSLATOR.t(w.key, w.values)).join(' ')).toMatch(/does not exist.*tokens stay/s);
+    expect(reviewSweep(wallet, small, DEST).warnings.map((w) => displayMessage(w)).join(' ')).toMatch(/does not exist.*tokens stay/s);
     expect(() => reviewSweep(wallet, { ...found, balanceLamports: SWEEP_FEE_LAMPORTS }, DEST)).toThrow(/network fee/);
     wipeFound(result.found);
     expect(found.tweak.every((byte) => byte === 0)).toBe(true);
@@ -172,4 +172,21 @@ describe('Solana scan and signing hardening', () => {
     expect(chain.broadcasts).toEqual([]);
     wipeFound(result.found);
   });
+  it('refuses to derive and sign after cancellation even when an RPC ignores AbortSignal', async () => {
+    const wallet = walletA();
+    const chain = mockChain('localnet', wallet);
+    const rpc = createRpc('http://127.0.0.1:8899', chain.fetchFn);
+    const result = await scanForPayments({ rpc, wallet, fromSlot: 0n });
+    const found = result.found[0];
+    if (found === undefined) throw new Error('fixture must yield a payment');
+    const controller = new AbortController();
+    controller.abort();
+    await expect(signSweep({
+      rpc: { request: (method, params) => rpc.request(method, params) },
+      wallet, found, review: reviewSweep(wallet, found, DEST), signal: controller.signal,
+    })).rejects.toThrow('Cancelled.');
+    expect(chain.broadcasts).toEqual([]);
+    wipeFound(result.found);
+  });
+
 });

@@ -254,7 +254,8 @@ describe('BtcView', () => {
     await screen.findByText('Signed transaction');
     chain.failPath = '/tx';
     await user.click(screen.getByRole('button', { name: /Broadcast to/ }));
-    await waitFor(() => { expect(screen.getByRole('alert').textContent).toMatch(/could not be reached|refused/); });
+    await waitFor(() => { expect(screen.getByRole('alert').textContent).toMatch(/may have been sent/); });
+    expect(screen.getByRole('alert').textContent).not.toMatch(/nothing was sent/);
     expect(screen.getByText('Signed transaction')).toBeTruthy();
   });
 });

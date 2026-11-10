@@ -161,8 +161,62 @@ function chunk(id, renderedLength = 1, renderedExports = []) {
   return { 'entry.js': { type: 'chunk', fileName: 'entry.js', modules: { [id]: { renderedLength, renderedExports } } } };
 }
 
-test('default full profile adds no output or entry behavior', () => {
-  assert.deepEqual(localBuildProfilePlugins({ env: {}, leanAppPath: '/fixture/src/AppLean.tsx', publicDir: '/fixture/public' }), []);
+test('full and lean both build Help and Privacy through the app bundler entry set', () => {
+  for (const env of [{}, { GHOSTPAY_LOCAL_BUILD_PROFILE: 'lean' }]) {
+    const plugins = localBuildProfilePlugins({ env, leanAppPath: '/fixture/src/AppLean.tsx', publicDir: '/fixture/public' });
+    const entries = plugins.find((plugin) => plugin.name === 'ghostpay-local-html-entries');
+    assert.ok(entries);
+    assert.equal(entries.apply, 'build');
+    const config = {};
+    entries.config(config);
+    assert.deepEqual(config.build.rolldownOptions.input, {
+      index: '/fixture/index.html', help: '/fixture/help.html', privacy: '/fixture/privacy.html',
+    });
+    if (env.GHOSTPAY_LOCAL_BUILD_PROFILE === undefined) {
+      assert.deepEqual(plugins.map((plugin) => plugin.name), ['ghostpay-local-html-entries']);
+    }
+  }
+});
+
+test('HTML entry wiring preserves explicit bundler inputs and stays out of Worker builds', () => {
+  const opts = { env: {}, leanAppPath: '/fixture/src/AppLean.tsx', publicDir: '/fixture/public' };
+  const entries = localBuildProfilePlugins(opts).find((plugin) => plugin.name === 'ghostpay-local-html-entries');
+  for (const input of ['/fixture/custom.html', ['/fixture/custom.html'], { checkout: '/fixture/custom.html' }]) {
+    const config = { build: { rolldownOptions: { input } } };
+    entries.config(config);
+    assert.deepEqual(new Set(Object.values(config.build.rolldownOptions.input)), new Set([
+      '/fixture/custom.html', '/fixture/index.html', '/fixture/help.html', '/fixture/privacy.html',
+    ]));
+    if (!Array.isArray(input) && typeof input === 'object') assert.equal(config.build.rolldownOptions.input.checkout, input.checkout);
+  }
+  const topLevel = { input: { custom: '/fixture/custom.html' } };
+  entries.config(topLevel);
+  assert.equal(topLevel.build.rolldownOptions.input.custom, '/fixture/custom.html');
+  const legacy = { build: { rollupOptions: { input: '/fixture/legacy.html' } } };
+  entries.config(legacy);
+  assert.ok(legacy.build.rolldownOptions.input.includes('/fixture/legacy.html'));
+  const conflicting = { build: { rolldownOptions: { input: { 'ghostpay-help': '/fixture/other.html' } } } };
+  assert.throws(() => entries.config(conflicting), /entry name already used/);
+  for (const profile of ['full', 'lean']) {
+    assert.equal(localBuildProfilePlugins({ ...opts, env: { GHOSTPAY_LOCAL_BUILD_PROFILE: profile }, worker: true })
+      .some((plugin) => plugin.name === 'ghostpay-local-html-entries'), false);
+  }
+});
+
+test('standalone document entries keep their explicit styles without inheriting the app-only print CSS', () => {
+  const entries = localBuildProfilePlugins({ env: {}, leanAppPath: '/fixture/src/AppLean.tsx', publicDir: '/fixture/public' })
+    .find((plugin) => plugin.name === 'ghostpay-local-html-entries');
+  assert.equal(entries.transformIndexHtml.order, 'post');
+  const ownStyle = '<link rel="stylesheet" href="./help.css" />';
+  const appStyle = '<link rel="stylesheet" crossorigin href="./assets/app-hash.css">';
+  const html = `<head>${ownStyle}${appStyle}</head><body>Help text</body>`;
+  const bundle = { 'assets/app-hash.css': { type: 'asset', fileName: 'assets/app-hash.css', source: 'body * { visibility: hidden }' } };
+  for (const page of ['help.html', 'privacy.html']) {
+    assert.equal(entries.transformIndexHtml.handler(html, { filename: `/fixture/${page}`, bundle }),
+      `<head>${ownStyle}</head><body>Help text</body>`);
+  }
+  assert.equal(entries.transformIndexHtml.handler(html, { filename: '/fixture/index.html', bundle }), html);
+  assert.equal(entries.transformIndexHtml.handler(html, { filename: '/fixture/help.html', bundle: {} }), html);
 });
 
 test('lean entry redirection is bound to the configured web root, not another main.tsx', () => {
@@ -282,6 +336,32 @@ test('a later-emitted executable asset must also have Worker module proof', () =
   const { plugin, bundle } = outputFixture();
   bundle['late.js'] = { type: 'asset', fileName: 'late.js', source: 'uninspected source, never executed' };
   assert.throws(() => plugin.writeBundle({}, bundle), /asset.*proof/i);
+});
+
+test('unreported public HTML remains rejected, including Help and Privacy filenames', () => {
+  for (const name of ['help.html', 'privacy.html', 'unreported.HTM']) {
+    const { dir, plugin, bundle } = outputFixture();
+    writeFileSync(join(dir, 'public', name), '<p>unreported public document</p>');
+    assert.throws(() => plugin.writeBundle({}, bundle), /public asset is executable and has no module proof/);
+    assert.equal(existsSync(join(dir, 'dist', name)), false);
+  }
+});
+
+test('bundler-reported Help and Privacy HTML are admitted at their stable URLs', () => {
+  const { dir, plugin, bundle } = outputFixture();
+  const finalBundle = { ...bundle };
+  mkdirSync(join(dir, 'dist'));
+  for (const name of ['help.html', 'privacy.html']) {
+    const source = `<p>bundler entry ${name}</p>`;
+    finalBundle[name] = { type: 'asset', fileName: name, source };
+    writeFileSync(join(dir, 'dist', name), source);
+  }
+  assert.doesNotThrow(() => plugin.writeBundle({}, finalBundle));
+  for (const name of ['help.html', 'privacy.html']) {
+    assert.equal(readFileSync(join(dir, 'dist', name), 'utf8'), `<p>bundler entry ${name}</p>`);
+  }
+  const report = JSON.parse(readFileSync(join(dir, 'dist', 'ghostpay-lean-build.json'), 'utf8'));
+  assert.deepEqual(report.publicCopied, [], 'HTML must be reported by the bundler, not copied from public');
 });
 
 test('stale unreported output code is refused without deleting it', () => {

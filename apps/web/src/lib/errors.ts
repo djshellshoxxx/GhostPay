@@ -3,19 +3,29 @@ import { GhostPayCryptoError } from '@ghostpay/core-crypto';
 import { InvoiceError } from '@ghostpay/invoice-schema';
 import { SOURCE_TRANSLATOR } from '../i18n/source';
 import type { MessageKey } from '../i18n/catalog';
-import type { MessageValues } from '../i18n/message';
+import type { ArgValue, MessageValues } from '../i18n/message';
 import type { Translator } from '../i18n/translator';
 
 /** Store public formatting arguments, never exception details or secret-bearing inputs. */
 export interface MessageDescriptor {
   readonly key: MessageKey;
-  readonly values?: MessageValues;
+  /** Nested public descriptors stay translatable until the message is actually rendered. */
+  readonly values?: Readonly<Record<string, ArgValue | MessageDescriptor>>;
+}
+
+function renderDescriptor(message: MessageDescriptor, t: Translator['t']): string {
+  const values: MessageValues | undefined = message.values === undefined ? undefined : Object.fromEntries(
+    Object.entries(message.values).map(([key, value]) => [
+      key, typeof value === 'object' && !(value instanceof Date) ? renderDescriptor(value, t) : value,
+    ]),
+  );
+  return t(message.key, values);
 }
 
 /** A typed parser failure with a catalog-backed public message; remains a TypeError. */
 export class LocalizedTypeError extends TypeError {
   public constructor(public readonly translation: MessageDescriptor) {
-    super(SOURCE_TRANSLATOR.t(translation.key, translation.values));
+    super(renderDescriptor(translation, SOURCE_TRANSLATOR.t));
     this.name = 'TypeError';
   }
 }
@@ -24,7 +34,7 @@ export class LocalizedTypeError extends TypeError {
 export class UserFacingError extends Error {
   public readonly translation: MessageDescriptor | undefined;
   public constructor(message: string | MessageDescriptor) {
-    super(typeof message === 'string' ? message : SOURCE_TRANSLATOR.t(message.key, message.values));
+    super(typeof message === 'string' ? message : renderDescriptor(message, SOURCE_TRANSLATOR.t));
     this.translation = typeof message === 'string' ? undefined : message;
     this.name = 'UserFacingError';
   }
@@ -73,7 +83,7 @@ export function captureUserMessage(error: unknown): DisplayMessage {
 export function displayMessage(message: DisplayMessage, t: Translator['t'] = SOURCE_TRANSLATOR.t): string {
   if (typeof message === 'string') return message;
   if ('invoiceMessage' in message) return t('error.invoice.field', { message: t(message.invoiceMessage), field: message.field });
-  return t(message.key, message.values);
+  return renderDescriptor(message, t);
 }
 
 /** Maps any thrown value to safe user text; raw RPC details, inputs and causes are never rendered. */
@@ -81,4 +91,4 @@ export function userMessage(error: unknown, t: Translator['t'] = SOURCE_TRANSLAT
   return displayMessage(captureUserMessage(error), t);
 }
 
-// i18n-use: error.invoice.fragmentFormat error.invoice.fragmentTooLarge error.invoice.base64url error.invoice.utf8 error.invoice.json error.invoice.schema error.invoice.nonCanonical error.invoice.decrypt error.invoice.signing error.invoice.randomness error.invoice.unsupported error.invoice.passphrase error.invoice.passphraseRequired error.invoice.passphraseUnexpected error.invoice.passphrasePolicy
+// i18n-use: error.chain error.crypto error.invoice.base64url error.invoice.decrypt error.invoice.field error.invoice.fragmentFormat error.invoice.fragmentTooLarge error.invoice.json error.invoice.nonCanonical error.invoice.passphrase error.invoice.passphrasePolicy error.invoice.passphraseRequired error.invoice.passphraseUnexpected error.invoice.randomness error.invoice.rejected error.invoice.schema error.invoice.signing error.invoice.unsupported error.invoice.utf8 error.unknown

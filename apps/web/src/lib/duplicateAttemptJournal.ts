@@ -1,3 +1,4 @@
+import { parseStrictJson } from '@ghostpay/invoice-schema';
 import { UserFacingError } from './errors';
 
 export const ATTEMPT_JOURNAL_KEY = 'ghostpay.wallet-attempts.v1';
@@ -35,7 +36,7 @@ function validAttempt(v: unknown): v is WalletAttempt {
   return typeof a['id'] === 'string' && /^[0-9a-f-]{36}$/.test(a['id']) && typeof a['key'] === 'string' && /^0x[0-9a-f]{64}$/.test(a['key']) &&
     Number.isSafeInteger(a['chainId']) && (a['chainId'] as number) > 0 &&
     typeof a['account'] === 'string' && /^0x[0-9a-f]{40}$/.test(a['account']) &&
-    ['payment', 'approval', 'registry', 'transaction'].includes(String(a['kind'])) &&
+    typeof a['kind'] === 'string' && ['payment', 'approval', 'registry', 'transaction'].includes(a['kind']) &&
     Number.isSafeInteger(a['createdAt']) && (a['createdAt'] as number) > 0 &&
     ((a['status'] === 'unknown' && a['hash'] === undefined) ||
       (a['status'] === 'submitted' && typeof a['hash'] === 'string' && /^0x[0-9a-f]{64}$/.test(a['hash'])));
@@ -47,7 +48,7 @@ export function readAttempts(storage?: AttemptStorage): readonly WalletAttempt[]
   if (raw === null) return [];
   if (raw.length > MAX_BYTES || new TextEncoder().encode(raw).byteLength > MAX_BYTES) return fail();
   let data: unknown;
-  try { data = JSON.parse(raw) as unknown; } catch { return fail(); }
+  try { data = parseStrictJson(raw); } catch { return fail(); }
   if (!Array.isArray(data) || data.length > MAX_ATTEMPTS || !data.every(validAttempt) || new Set(data.map((a) => a.id)).size !== data.length) return fail();
   return data;
 }

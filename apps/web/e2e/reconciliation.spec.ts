@@ -17,7 +17,7 @@ test('encrypted reconciliation keeps invoice identity through language changes a
   await page.getByLabel('Token amount', { exact: true }).fill('0.5');
   await page.getByLabel('Item 1 description').fill('Local matching fixture');
   await page.getByLabel('Item 1 unit price').fill('50.00');
-  await page.getByLabel('Register this invoice in my encrypted reconciliation vault for automatic local matching').check();
+  await page.getByRole('checkbox', { name: 'Register this invoice in my encrypted reconciliation vault for automatic local matching', exact: true }).check();
   await page.getByRole('button', { name: 'Create invoice link' }).click();
   await expect(page.getByText('Invoice registered in your encrypted reconciliation vault for local matching.', { exact: true })).toBeVisible();
 

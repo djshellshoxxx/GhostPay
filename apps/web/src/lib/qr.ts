@@ -6,11 +6,22 @@ export interface QrMatrix {
   readonly dark: readonly boolean[];
 }
 
-/** Generates a QR matrix locally (no network, no third-party service). Throws `UserFacingError` if the text is too long. */
+/** Version 40 at error correction L holds at most 2,953 bytes in byte mode. */
+const MAX_QR_BYTES = 2953;
+
+/** Generates a UTF-8 QR matrix locally, preserving the exact text without changing global encoder settings. */
 export function makeQr(text: string): QrMatrix {
+  if (typeof text !== 'string') throw new UserFacingError({ key: 'error.qr.invalidText' });
+  // Bound both allocation and generator work. UTF-8 cannot need fewer bytes than UTF-16 code units.
+  if (text.length > MAX_QR_BYTES) throw new UserFacingError({ key: 'error.qr.thisLinkIsTooLongForAQRCodeShare' });
+  if (/\p{Cs}/u.test(text)) throw new UserFacingError({ key: 'error.qr.invalidText' });
+  const bytes = new TextEncoder().encode(text);
+  if (bytes.length > MAX_QR_BYTES) throw new UserFacingError({ key: 'error.qr.thisLinkIsTooLongForAQRCodeShare' });
   try {
     const qr = qrcode(0, 'L');
-    qr.addData(text, 'Byte');
+    // The pinned generator's default converter takes each code unit's low byte. Give it UTF-8 bytes,
+    // not Unicode text, and leave its shared stringToBytes converter untouched for other callers.
+    qr.addData(String.fromCharCode(...bytes), 'Byte');
     qr.make();
     const size = qr.getModuleCount();
     const dark: boolean[] = [];
@@ -56,4 +67,4 @@ export function qrSvgText(m: QrMatrix): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${String(n)} ${String(n)}" width="${String(n * 6)}" height="${String(n * 6)}" shape-rendering="crispEdges"><rect width="${String(n)}" height="${String(n)}" fill="#fff"/><path fill="#000" d="${qrPath(m)}"/></svg>`;
 }
 
-// i18n-use: error.qr.thisLinkIsTooLongForAQRCodeShare error.qr.invalidQRMatrix
+// i18n-use: error.qr.thisLinkIsTooLongForAQRCodeShare error.qr.invalidQRMatrix error.qr.invalidText

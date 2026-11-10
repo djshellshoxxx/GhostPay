@@ -21,7 +21,7 @@ svg{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-s
 <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--line)"/></marker><marker id="ar-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--acc)"/></marker><marker id="ar-warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--warn)"/></marker><marker id="ar-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--bad)"/></marker><marker id="ar-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--ok)"/></marker></defs>
 <rect class="bg" width="960" height="540"/>
 <text class="t h" x="24" y="34">Fee flow</text>
-<text class="t m s" x="24" y="54">Example uses made-up numbers: 100.00 USDC. Nothing is deployed, so no fee is collected anywhere today.</text>
+<text class="t m s" x="24" y="54">Example uses made-up numbers: 100.00 USDC. No deployment manifest ships; live fee collection is not established.</text>
 <rect class="box acc" x="20" y="90" width="160" height="70" rx="8"/>
 <text class="t ta b" x="100.0" y="121.5">Payer</text>
 <text class="t ta m s" x="100.0" y="138.5">pays gross 100.00</text>
@@ -52,8 +52,8 @@ svg{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-s
 <text class="t ta m s" x="210.0" y="427.0">no GhostPay fee and none of the router's checks</text>
 <rect class="box  dash" x="430" y="380" width="230" height="80" rx="8"/>
 <text class="t ta b" x="545.0" y="408.0">Policy account creation</text>
-<text class="t ta m s" x="545.0" y="425.0">flat stablecoin fee (planned,</text>
-<text class="t ta m s" x="545.0" y="442.0">contracts only, owner to confirm)</text>
+<text class="t ta m s" x="545.0" y="425.0">flat stablecoin fee; web gate</text>
+<text class="t ta m s" x="545.0" y="442.0">disabled; no pinned deployment</text>
 <path class="ln acc" d="M180 125 L250 125" marker-end="url(#ar-acc)"/>
 <path class="ln ok" d="M450 135 L680 135" marker-end="url(#ar-ok)"/>
 <path class="ln " d="M350 190 L350 240" marker-end="url(#ar)"/>

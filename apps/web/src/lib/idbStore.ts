@@ -12,7 +12,8 @@ export class IdbTagStore implements TagStore {
   private dbPromise: Promise<IDBDatabase> | undefined;
 
   private db(): Promise<IDBDatabase> {
-    this.dbPromise ??= new Promise<IDBDatabase>((resolve, reject) => {
+    if (this.dbPromise !== undefined) return this.dbPromise;
+    const pending = new Promise<IDBDatabase>((resolve, reject) => {
       // Upgrade in place, retaining all ciphertext. A v1 writer must close before v2 can open,
       // and cannot reopen afterwards, so stale pre-CAS code cannot revive wiped records.
       const open = indexedDB.open(DB_NAME, 2);
@@ -27,17 +28,23 @@ export class IdbTagStore implements TagStore {
       };
       open.onblocked = (): void => {
         blocked = true;
-        this.dbPromise = undefined;
         reject(new UserFacingError({ key: 'error.idbStore.closeOlderGhostPayTabsBeforeOpeningTheTagVaultExisting' }));
       };
       open.onsuccess = (): void => {
         if (blocked) { open.result.close(); return; }
-        open.result.onversionchange = (): void => { open.result.close(); this.dbPromise = undefined; };
+        open.result.onversionchange = (): void => {
+          open.result.close();
+          if (this.dbPromise === pending) this.dbPromise = undefined;
+        };
         resolve(open.result);
       };
       open.onerror = (): void => { reject(new Error('IndexedDB unavailable')); };
     });
-    return this.dbPromise;
+    this.dbPromise = pending;
+    // Failed opens are retryable. Only invalidate this request: a late callback from an older
+    // blocked/open-failed attempt must not discard a newer connection or another in-flight retry.
+    void pending.catch(() => { if (this.dbPromise === pending) this.dbPromise = undefined; });
+    return pending;
   }
 
   public async getSnapshot(): Promise<TagStoreSnapshot> {

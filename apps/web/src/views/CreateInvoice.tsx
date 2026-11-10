@@ -5,6 +5,7 @@ import type { BufferPolicy, Invoice } from '@ghostpay/invoice-schema';
 import { CopyButton, Field, Notice } from '../components/Common';
 import { useManifest } from '../components/Disclosure';
 import { QrFrame } from '../components/QrFrame';
+import { ContextHelp } from '../components/ContextHelp';
 import { displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { formatUnits } from '../lib/format';
 import { MAX_BUFFER_WEI } from '../lib/pay';
@@ -347,10 +348,11 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
         <fieldset>
           <legend>{t('create.matching.legend')}</legend>
           <div className="check">
-            <input id="register-matching" type="checkbox" checked={registerForMatching} onChange={(e) => { setRegisterForMatching(e.target.checked); }} />
+            <input id="register-matching" aria-describedby="register-matching-help" type="checkbox" checked={registerForMatching} onChange={(e) => { setRegisterForMatching(e.target.checked); }} />
             <label htmlFor="register-matching">{t('create.matching.label')}</label>
           </div>
           <p className="hint">{t('create.matching.hint')}</p>
+          <ContextHelp id="register-matching-help" label={t('help.about', { control: t('create.matching.label') })}>{t('help.merchantRegistration')}</ContextHelp>
         </fieldset>
 
         <button type="submit" className="btn btn-primary">{t('create.submit')}</button>

@@ -1,6 +1,6 @@
 import { subscribeAppLock } from '../lib/appLock';
 import { useEffect, useId, useRef, useState, useSyncExternalStore, type FormEvent, type ReactNode } from 'react';
-import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
+import { CopyButton, Field, Mono, Notice, SafeText, downloadText } from '../components/Common';
 import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
 import { displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
@@ -10,6 +10,7 @@ import { authorizeKeyExport, deleteEncryptedVault, loadedKeysRecoverable, readEn
 import { useApp } from '../state';
 import { SellerPairing, pairingChainIds } from './SellerPairing';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
+import type { Translator } from '../i18n/translator';
 
 /**
  * Stands in for `children` (the meta-address, an invoice form, a whole view) while the loaded keys have no backup and the
@@ -46,7 +47,9 @@ export function BackupGate(props: { readonly children: ReactNode; readonly headi
 export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactNode {
   const app = useApp();
   const i18n = useI18nOptional();
-  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
+  const translator = useRef(i18n?.t ?? SOURCE_TRANSLATOR.t);
+  translator.current = i18n?.t ?? SOURCE_TRANSLATOR.t;
+  const t: Translator['t'] = (key, values) => translator.current(key, values);
   const backup = useSyncExternalStore(subscribeSessionBackup, getSessionBackup);
   const [message, setMessage] = useState<{ kind: 'ok' | 'error'; text: DisplayMessage } | undefined>(undefined);
   const [busy, setBusy] = useState(false);
@@ -60,6 +63,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   const [importPass, setImportPass] = useState('');
   const [importText, setImportText] = useState<string | undefined>();
   const operation = useRef<AbortController | null>(null);
+  const operationKind = useRef<'export' | 'import' | 'unlock' | undefined>(undefined);
   const mounted = useRef(false);
   const generation = useRef(0);
   const fileInput = useRef<HTMLInputElement | null>(null);
@@ -102,6 +106,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   const stopOperation = (): void => {
     generation.current += 1;
     operation.current?.abort(); operation.current = null;
+    operationKind.current = undefined;
   };
   const clearImport = (): void => {
     stopOperation();
@@ -125,17 +130,28 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
     suggestPass(); suggestVaultPass(); setImportPass(''); setVaultUnlockPass('');
     setExportStepUp(''); setSaveStepUp(''); setDeletePass('');
   };
-  useEffect(() => subscribeAppLock(forgetTyped), []);
+  useEffect(() => subscribeAppLock(() => {
+    const kind = operationKind.current;
+    stopOperation();
+    setBusy(false);
+    // A pending local-vault save/delete has its own lifetime; do not label it cancelled or enable a duplicate.
+    if (kind === 'unlock') setVaultBusy(false);
+    setImportText(undefined); setFile(undefined); resetFilePicker();
+    setConfirmReplace(false); setConfirmWipe(false); setDeleteExpected(undefined); setBackupQr(undefined);
+    forgetTyped();
+  }), []);
   useEffect(() => {
     operation.current?.abort(); operation.current = null;
+    // This effect may precede our own unlock/import return; its finally block then no longer owns the controller.
+    operationKind.current = undefined;
     setBackupQr(undefined); setBusy(false); setVaultBusy(false);
     forgetTyped(); setImportText(undefined); setFile(undefined);
     resetFilePicker();
     setConfirmReplace(false); setConfirmWipe(false); setDeleteExpected(undefined);
   }, [app.session]);
-  const startOperation = (): AbortController => {
+  const startOperation = (kind: 'export' | 'import' | 'unlock'): AbortController => {
     stopOperation();
-    const controller = new AbortController(); operation.current = controller; return controller;
+    const controller = new AbortController(); operation.current = controller; operationKind.current = kind; return controller;
   };
   const currentOperation = (controller: AbortController): boolean => mounted.current && operation.current === controller && !controller.signal.aborted;
   // Installing our own keys triggers the session effect above. Only explicit cancellation, edits or another operation
@@ -146,9 +162,9 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   const fail = (e: unknown): void => {
     setMessage({ kind: 'error', text: captureUserMessage(e) });
   };
-  const done = (text: string): void => {
+  const done = (text: DisplayMessage): void => {
     setMessage({ kind: 'ok', text });
-    app.announce(text);
+    app.announce(displayMessage(text, t));
   };
 
   const onImportRaw = (e: FormEvent): void => {
@@ -158,7 +174,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
       setSpend('');
       setViewKey('');
       setSigning('');
-      done(t('sellerKeys.loaded'));
+      done({ key: 'sellerKeys.loaded' });
     } catch (err) {
       // A failed import must not leave the typed keys behind either (G2-05).
       setSpend('');
@@ -176,14 +192,14 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
       return;
     }
     if (pass !== pass2) {
-      setMessage({ kind: 'error', text: t('sellerKeys.passphrasesDiffer') });
+      setMessage({ kind: 'error', text: { key: 'sellerKeys.passphrasesDiffer' } });
       return;
     }
-    const controller = startOperation();
+    const controller = startOperation('export');
     const unchanged = captureSessionVersionGuard();
     const stepUp = exportStepUp;
     setBusy(true);
-    setMessage({ kind: 'ok', text: t('sellerKeys.encrypting') });
+    setMessage({ kind: 'ok', text: { key: 'sellerKeys.encrypting' } });
     void (async () => {
       // Keys tied to a vault leave this tab only with that vault's passphrase (L1-02).
       await authorizeKeyExport(stepUp);
@@ -200,7 +216,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
         setPass2('');
         setExportStepUp('');
         setBusy(false);
-        done(t('sellerKeys.keystoreDownloaded'));
+        done({ key: 'sellerKeys.keystoreDownloaded' });
       },
       (err: unknown) => {
         if (!currentOperation(controller)) return;
@@ -210,18 +226,18 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
         refreshVault();
         fail(err);
       },
-    );
+    ).finally(() => { if (operation.current === controller) operationKind.current = undefined; });
   };
 
   const onImportKeystore = (e: FormEvent): void => {
     e.preventDefault();
-    if (file === undefined && importText === undefined) { setMessage({ kind: 'error', text: t('sellerKeys.chooseFile') }); return; }
-    if (file !== undefined && file.size > MAX_KEYSTORE_BYTES) { setMessage({ kind: 'error', text: t('sellerKeys.notKeystore') }); return; }
-    const controller = startOperation();
+    if (file === undefined && importText === undefined) { setMessage({ kind: 'error', text: { key: 'sellerKeys.chooseFile' } }); return; }
+    if (file !== undefined && file.size > MAX_KEYSTORE_BYTES) { setMessage({ kind: 'error', text: { key: 'sellerKeys.notKeystore' } }); return; }
+    const controller = startOperation('import');
     const id = generation.current;
     const unchanged = captureSessionVersionGuard();
     const selected = file; const pasted = importText; const passphrase = importPass;
-    setBusy(true); setMessage({ kind: 'ok', text: t('sellerKeys.decrypting') });
+    setBusy(true); setMessage({ kind: 'ok', text: { key: 'sellerKeys.decrypting' } });
     void (async () => {
       try {
         const text = selected === undefined ? pasted! : await selected.text();
@@ -230,10 +246,12 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
         const installed = await importKeystore(text, passphrase, controller.signal);
         if (!ownCompletion(id, installed)) return;
         setImportPass(''); setFile(undefined); setImportText(undefined); setBusy(false);
-        done(t('sellerKeys.keystoreDecrypted'));
+        done({ key: 'sellerKeys.keystoreDecrypted' });
       } catch (error) {
         if (!currentOperation(controller)) return;
         setImportPass(''); setBusy(false); fail(error);
+      } finally {
+        if (operation.current === controller) operationKind.current = undefined;
       }
     })();
   };
@@ -242,7 +260,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
     e.preventDefault();
     const problem = passphraseProblemMessage(vaultSavePass);
     if (problem !== undefined) { setMessage({ kind: 'error', text: problem }); return; }
-    if (vaultSavePass !== vaultSavePass2) { setMessage({ kind: 'error', text: t('sellerKeys.passphrasesDiffer') }); return; }
+    if (vaultSavePass !== vaultSavePass2) { setMessage({ kind: 'error', text: { key: 'sellerKeys.passphrasesDiffer' } }); return; }
     const id = ++saveOperation.current;
     const unchanged = captureSessionVersionGuard();
     // Only the initiating save may report; it may claim success only for the keys that were loaded when it started.
@@ -259,7 +277,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
         setVaultBusy(false);
         try { unchanged(); } catch { fail(new VaultSavedForPreviousKeysError()); return; }
         refreshVault();
-        done(t('sellerKeys.vaultSaved'));
+        done({ key: 'sellerKeys.vaultSaved' });
       },
       (err: unknown) => {
         if (!current()) return;
@@ -287,7 +305,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   };
 
   const unlockVault = (replaceUnsavedKeys: boolean): void => {
-    const controller = startOperation();
+    const controller = startOperation('unlock');
     const id = generation.current;
     setConfirmReplace(false);
     setVaultBusy(true);
@@ -297,7 +315,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
         setVaultUnlockPass('');
         setBackupQr(undefined);
         setVaultBusy(false);
-        done(t('sellerKeys.vaultUnlocked'));
+        done({ key: 'sellerKeys.vaultUnlocked' });
       },
       (err: unknown) => {
         if (!currentOperation(controller)) return;
@@ -305,7 +323,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
         setVaultBusy(false);
         fail(err);
       },
-    );
+    ).finally(() => { if (operation.current === controller) operationKind.current = undefined; });
   };
 
   const onWipe = (): void => {
@@ -326,7 +344,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
     clearSession();
     setBackupQr(undefined);
     app.announce(t('sellerKeys.wiped'));
-    setMessage({ kind: 'ok', text: t('sellerKeys.wiped') });
+    setMessage({ kind: 'ok', text: { key: 'sellerKeys.wiped' } });
   };
 
   const refreshVault = (): void => {
@@ -361,7 +379,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
         setVaultState('empty');
         setVaultBusy(false);
         refreshVault();
-        done(t('sellerKeys.vaultDeleted'));
+        done({ key: 'sellerKeys.vaultDeleted' });
       },
       (err: unknown) => {
         if (!mounted.current) return;
@@ -432,7 +450,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
       {s === undefined ? (
         <>
           <p>
-            <button type="button" className="btn btn-primary" onClick={() => { try { generateSession(); done(t('sellerKeys.generated')); } catch (err) { fail(err); } }}>
+            <button type="button" className="btn btn-primary" onClick={() => { try { generateSession(); done({ key: 'sellerKeys.generated' }); } catch (err) { fail(err); } }}>
               {t('sellerKeys.generate')}
             </button>
           </p>
@@ -450,7 +468,14 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
           <details onToggle={(event) => { if (!event.currentTarget.open) cancelImport(); }}>
             <summary>{t('sellerKeys.importKeystore')}</summary>
             <form onSubmit={onImportKeystore} className="stack">
-              <Field label={t('sellerKeys.keystoreFile')}>{(id) => <input id={id} ref={fileInput} type="file" accept="application/json,.json" onChange={(e) => { const chosen = e.currentTarget.files?.[0]; clearImport(); setFile(chosen); }} />}</Field>
+              <Field label={t('sellerKeys.keystoreFile')} help={{ label: t('help.about', { control: t('sellerKeys.keystoreFile') }), text: t('help.keystoreFile') }}>{(id, describedBy) => <>
+                <input id={id} aria-describedby={[describedBy, file === undefined ? undefined : `${id}-file`].filter(Boolean).join(' ') || undefined} ref={fileInput} type="file" accept="application/json,.json" onChange={(e) => {
+                  const chosen = e.currentTarget.files?.[0]; e.currentTarget.value = '';
+                  if (chosen === undefined) return;
+                  clearImport(); setFile(chosen);
+                }} />
+                {file !== undefined && <p className="hint" id={`${id}-file`}>{t('upload.selectedFile')}: <bdi><SafeText value={file.name} /></bdi></p>}
+              </>}</Field>
               <Field label={t('sellerKeys.passphrase')}>{(id) => <input id={id} type="password" autoComplete="off" value={importPass} onChange={(e) => { stopOperation(); setBusy(false); setImportPass(e.target.value); }} />}</Field>
               <button type="submit" className="btn" disabled={busy}>{t('sellerKeys.decryptLoad')}</button>
               {busy && <button type="button" className="btn" onClick={cancelImport}>{t('sellerKeys.cancelKeystore')}</button>}
@@ -458,7 +483,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
             <CameraImporter label={t('sellerKeys.importKeystoreQr')} scopeKey={app.session} onInputChange={cancelImport} onText={(text, signal) => {
               validateKeystoreEnvelope(text);
               if (signal.aborted) return false;
-              cancelImport(); setImportText(text); setMessage({ kind: 'ok', text: t('sellerKeys.keystoreReceived') }); return true;
+              cancelImport(); setImportText(text); setMessage({ kind: 'ok', text: { key: 'sellerKeys.keystoreReceived' } }); return true;
             }} />
           </details>
           <SellerPairing session={undefined} chainIds={[]} />

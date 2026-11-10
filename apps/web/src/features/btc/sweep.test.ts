@@ -175,7 +175,7 @@ describe('helpers', () => {
       expect(btcErrorMessage(new SilentPaymentError(c))).not.toBe('Bitcoin operation failed.');
     }
     expect(btcErrorMessage(new SilentPaymentError('RNG_FAILURE'))).toBe('Bitcoin operation failed.');
-    expect(btcErrorMessage(new Error('plain'))).toBe('plain');
+    expect(btcErrorMessage(new Error('secret seed or RPC body'))).toBe('Bitcoin operation failed.');
     expect(btcErrorMessage('x')).toBe('Bitcoin operation failed.');
   });
 
