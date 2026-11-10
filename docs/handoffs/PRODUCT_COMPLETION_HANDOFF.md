@@ -6,6 +6,45 @@ This ledger covers the product brief supplied for this assignment. It distinguis
 executed qualification and external acceptance. Percentages are engineering estimates for the bounded
 workstreams below, not measured percentages of all possible GhostPay functionality or production readiness.
 
+## Final acceptance snapshot
+
+Qualification completed on **2026-11-10 UTC**. All identified actionable defects in the owned, supported
+product scope are fixed, reviewed and published in draft [PR #93](https://github.com/djshellshoxxx/GhostPay/pull/93).
+The remaining ownership, translation, device, deployment and Sonar boundaries are recorded below.
+
+The final integrated runtime is qualified at
+[`4160c91a202d9ec50d2732bbebd5887ef9f5774f`](https://github.com/djshellshoxxx/GhostPay/commit/4160c91a202d9ec50d2732bbebd5887ef9f5774f),
+equivalent to local `9a63824f2a878ee9f09fa01a9f32ea366ed0df6d`, with exact Git tree
+`9aafe47d6c003db8fe5cabb102a2a5a90dee8f8a`. Public Git fetch verifies the published tree. The closeout update
+to this ledger contains documentation only; the qualified runtime remains pinned to that checkpoint.
+
+[CI run 42723876239](https://github.com/djshellshoxxx/GhostPay/actions/runs/42723876239) completed successfully
+with **all 24 jobs passing**. [Hosting kit run 42723875721](https://github.com/djshellshoxxx/GhostPay/actions/runs/42723875721)
+also completed successfully, with **both packaging and hosted web qualification passing**.
+
+| Final integrated check | Executed result |
+| --- | --- |
+| Web coverage pass | **2,303 tests passed, 1 skipped; 163 passing files, 1 skipped file** |
+| Separate heavy/noncoverage pass | **1 test passed in 1 file** |
+| Coverage thresholds | Statements **93.43%**, branches **89.68%**, functions **95.48%**, lines **96.89%**; all existing thresholds pass |
+| Full-profile Playwright | **66 passed, 1 intentional profile skip** |
+| Lean-profile Playwright | **57 passed, 2 intentional profile skips** |
+| Automated accessibility | **200 recorded axe states per profile, zero violations**; incomplete/manual items remain disclosed |
+| Monorepo TypeScript, ESLint and build checks | Pass, including catalog/template safety, production-dependency audit and build/output guards |
+| Secret, egress and Actions-pin checks | Pass; no gate or allowlist relaxed |
+| Contracts and local integration | Contract tests, coverage, static checks, Slither and extra contract projects pass; relayer and Anvil-backed workspace jobs pass |
+| Reproducible lean candidate | Two clean builds compare successfully; existing module/worker/executable-output proof remains enforced |
+| Hosting kit | Both jobs pass, including actual packaged web/browser qualification |
+
+The web skip is the optional live Bitcoin regtest fixture. Both registry and policy-evidence Anvil test files
+pass (four tests each), including the seven cases unavailable in the local run. Full Playwright skips the
+lean-only backup case; lean skips the full-only combined-backup and archive-reimport cases. These are
+intentional profile differences, not substituted tests.
+
+Axe still reports `label-content-name-mismatch` and `color-contrast` as incomplete/manual-review items.
+The device projects use Chromium emulation; physical devices, native assistive technologies and Safari
+were not qualified. Local/browser/Anvil fixtures do not establish public-network acceptance.
+
 ## Verified starting source and ownership
 
 - Default branch `main`: `14f9b2673ac25c7ec60a0a3a78eb17e2c7acf44d`.
@@ -16,9 +55,10 @@ workstreams below, not measured percentages of all possible GhostPay functionali
 - Dedicated branch: `gpt/ghostpay-product-completion-20261109`, based on #90. The previous runtime
   qualification belongs to #90's `42ae712f5804724b4213bed4e2e0cb129f855abf`, not this branch.
 - #91 `b748ecdce06d2dfa911144814161c31a46a09e9b` remains the separate merchant/CLI companion.
-  Its active continuation is draft [#92](https://github.com/djshellshoxxx/GhostPay/pull/92), observed at
+  Its active continuation is open [#92](https://github.com/djshellshoxxx/GhostPay/pull/92), observed at
   `1a814ada642dabafdc185651454aff6e993080fa` at startup and
-  `5ee84c91ea4a88e543b12829ef89694e54b68d0e` at the final source-boundary check; neither branch is merged into this product branch.
+  `5ee84c91ea4a88e543b12829ef89694e54b68d0e` at a subsequent source-boundary check, then
+  `3a9ce554ff6ae0231c6a41bbb163fcb5477c9e04` (no longer draft) during closeout; neither branch is merged into this product branch.
   A concurrent local CLI completion branch was observed with changes to CLI, invoice-schema,
   merchant-billing, qr-exchange, ux-vault and shared web keystore/receipt/reconciliation/tag/seller-pairing
   libraries. Those files, package manifests, the root lockfile and Vite config are reserved.
@@ -146,7 +186,7 @@ Local Chromium launch was attempted and failed before page execution with
 `process_singleton_posix.cc: socket() failed: Operation not permitted`. Collection or component tests
 are not represented as browser execution. Hosted CI is recorded separately for exact published source.
 
-## Hosted qualification and final review
+## Qualification history and resolved review findings
 
 At runtime commit `94673c7b73d3667c40b6d4c3b2e5804c8c8ccf42`,
 [Hosting kit run 42719803867](https://github.com/djshellshoxxx/GhostPay/actions/runs/42719803867)
@@ -201,17 +241,17 @@ English helper; 35 security-classified keys retain unreviewed English fallback. 
 **61 tests in 7 files, including 17 new cases**, plus whole-web TypeScript and scoped ESLint. The four mounted
 journeys cover unsaved Settings values, an already blocked scan, an endpoint failure settling during a
 locale change and a completed scan; they assert unchanged request/worker/checkpoint counts and stored data.
-Two independent read-only reviews found no concrete security, lifetime or disclosure regression. The final
-integrated source will receive hosted qualification after this last runtime follow-up and the guide corrections.
+Two independent read-only reviews found no concrete security, lifetime or disclosure regression. These
+changes and the current-guide corrections are included in the final qualified source above.
 
-Final runtime candidate: `ccdb88462000823442628a957cb188eb0145aecc`, corresponding to local
+Runtime code checkpoint: `ccdb88462000823442628a957cb188eb0145aecc`, corresponding to local
 `032270ef6e574b8aca741fa1257279a96d3d2d01`, with exact tree `20a7593bcdd0f3d182fe1ee89436b77d94e7a402`.
-This includes the current-guide corrections and scan-privacy follow-up. The accompanying ledger checkpoint
-changes documentation only. Hosted results for this final runtime will be recorded before final acceptance.
+This includes the current-guide corrections and scan-privacy follow-up. Qualification commit `4160c91`
+adds the accompanying ledger checkpoint only. Final integrated hosted results are recorded above.
 
 ## External gates
 
-1. PR #84 Sonar check `128302927200`: D Security Rating on New Code, required A. A fresh check-runs
+1. PR #84 [Sonar check `128302927200`](https://github.com/djshellshoxxx/GhostPay/runs/128302927200): D Security Rating on New Code, required A. A fresh check-runs
    read showed 31 successful checks, one Sonar failure and one skipped review. The issue inventory API
    returned HTTP 403 with CloudFront `Request blocked`; twelve annotations do not establish the causal
    rule/severity/location. No finding is invented or suppressed.
@@ -221,9 +261,10 @@ changes documentation only. Hosted results for this final runtime will be record
    scheme-2 lifecycle acceptance are separate gates; the experimental flow remains disabled.
 4. The reserved `packages/qr-exchange/src/generate.ts` uses the same pinned byte encoder pattern found
    in the web QR helper. Its active CLI owner must assess Unicode behavior before claiming that package
-   supports arbitrary Unicode end to end. Existing canonical ASCII exchange formats are a distinct scope.
+   supports arbitrary Unicode end to end. The unchanged raw `qr.addData(text, 'Byte')` path was rechecked
+   at #92's `3a9ce554ff6ae0231c6a41bbb163fcb5477c9e04`. Existing canonical ASCII exchange formats are a distinct scope.
 
-## Publication and final acceptance
+## Publication and consolidation
 
 The integrated product work is published in draft [PR #93](https://github.com/djshellshoxxx/GhostPay/pull/93),
 based on #90. The following remote commits have trees identical to their locally reviewed snapshots:
@@ -248,6 +289,7 @@ based on #90. The following remote commits have trees identical to their locally
 | `18cc88429872da10b694a034bad7a17342d16aee` | Synchronize the vault-lock regression with real authenticated storage entry and deletion completion |
 | `c0d62534f3bb4cbc039451f908baa923afc969df` | Correct current guide/diagram claims about manifests, feeds, test views, scan evidence and disabled experimental support |
 | `ccdb88462000823442628a957cb188eb0145aecc` | Render scan-privacy disclosures, blocked reasons and completed privacy-set data in the current locale |
+| `4160c91a202d9ec50d2732bbebd5887ef9f5774f` | Integrated source/evidence ledger; final fully qualified runtime checkpoint |
 
 Focused evidence for these cycles: transaction/localization 582 tests across 19 files; accessibility/help/QR/
 clipboard 115 across 12; security/persistence 86 across 11; archive follow-up 25 across 3; coordinator lock/retry/
@@ -262,7 +304,18 @@ source/attribution help section, which has an explicit repository link. No scann
 or workflow is weakened. [Failed build evidence](https://github.com/djshellshoxxx/GhostPay/actions/runs/42717252055)
 and [browser setup evidence](https://github.com/djshellshoxxx/GhostPay/actions/runs/42717251743) are preserved.
 
-Second-cycle implementation is complete: supported BTC/Solana/TRON and registry messages, exact post-submission
-code/hash retention, vault operation-kind lifecycle, visible staged filenames and the footer/build corrections
-are consolidated in this branch. The final review follow-ups and hosted browser result are described above.
+All compatible worker changes, follow-up fixes, tests and current documentation are consolidated in this
+dedicated branch. The final runtime and browser qualification are recorded at the top of this ledger.
+The final closeout commit only records acceptance evidence here; its publication is visible in PR #93's
+commit history. Source branches and the separate #91/#92 CLI lane are preserved. No main merge is attempted
+while the parent Sonar gate remains unresolved.
 This source is not merged, released, deployed, professionally audited or production-qualified.
+
+## Next acceptance milestone
+
+Obtain PR #84's Sonar issue/hotspot inventory with rule, severity and source location (the ordinary issue
+and hotspot API requests returned HTTP 403, CloudFront `Request blocked`). Reproduce and resolve the actual
+causal findings without changing the required A security rating. Then review the qualified product branch
+with the stack owners, coordinate the reserved generic QR encoder correction with #92, and run the native
+translation/device/live-fixture acceptance listed above. No deployment, recovery authority or trusted pin is
+created by this handoff.
