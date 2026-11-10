@@ -56,8 +56,8 @@ jobs:
           # END agent path policy
           # main has NO branch protection or rulesets (checked 2026-11-04: protection API 404, rulesets []),
           # so nothing outside this job requires a review. This job is the whole merge gate:
-          # same-repo head, allowlisted author, every required check green on that exact head, only
-          # agent-policy paths, and the merge pinned to the head that was checked.
+          # same-repo/main head, allowlisted author, exact-head green checks, safe paths,
+          # and an independent authorized human approval at that head before pinned merge.
           # Author allowlist, derived from the publish job: create-pull-request opens these PRs with
           # GHOSTPAY_GITHUB_TOKEN (assumed to be the repository owner's PAT) or else github.token
           # (github-actions[bot]).
@@ -67,9 +67,10 @@ jobs:
               | select(.head.ref | startswith("codex/ghostpay-cloud-"))
               | select(.draft == false)
               | select(.head.repo.full_name != null and .head.repo.full_name == .base.repo.full_name)
+              | select(.base.ref == "main")
               | select(.user.login == "github-actions[bot]" or .user.login == $owner)
-              | "\(.number) \(.head.sha)"' > "$eligible"
-          while read -r number head; do
+              | "\(.number) \(.head.sha) \(.user.login)"' > "$eligible"
+          while read -r number head author; do
             [ -n "$number" ] || continue
             checks="$(gh api "repos/$GH_REPO/commits/$head/check-runs?per_page=100")"
             valid=true
@@ -100,6 +101,27 @@ jobs:
               fi
             done <<< "$files"
             if [ "$valid" != true ]; then continue; fi
+            # Review state is from GitHub, not from a PR body/label/comment. Require the
+            # latest submitted review by an independent human to APPROVE this exact head.
+            # If any API lookup fails, no automated merge is permitted.
+            reviewers="$(gh api --paginate "repos/$GH_REPO/pulls/$number/reviews?per_page=100" \
+              --jq '.[] | {login: .user.login, state: .state, commit_id: .commit_id, author_association: .author_association, submitted_at: .submitted_at}' |
+              jq -s -r --arg head "$head" --arg author "$author" '
+                sort_by(.submitted_at // "") | group_by(.login) | .[] | last |
+                select(.state == "APPROVED" and .commit_id == $head and .login != $author) |
+                select((.login | endswith("[bot]")) | not) |
+                select(.author_association == "OWNER" or .author_association == "MEMBER" or .author_association == "COLLABORATOR") |
+                .login')" || { echo "PR #$number review API unavailable; not merged"; continue; }
+            approved=false
+            while IFS= read -r reviewer; do
+              [ -n "$reviewer" ] || continue
+              permission="$(gh api "repos/$GH_REPO/collaborators/$reviewer/permission" --jq '.permission' 2>/dev/null || true)"
+              case "$permission" in admin|maintain|write) approved=true; break ;; esac
+            done <<< "$reviewers"
+            if [ "$approved" != true ]; then
+              echo "PR #$number missing independent current-head human approval; not merged"
+              continue
+            fi
             # --match-head-commit: GitHub refuses the merge if the head moved after the checks above.
             gh pr merge "$number" --match-head-commit "$head" --squash --delete-branch ||
               echo "::warning::PR #$number was not merged (head moved or not mergeable)"
