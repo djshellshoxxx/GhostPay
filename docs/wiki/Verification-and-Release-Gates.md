@@ -1,0 +1,26 @@
+# Verification and Release Gates
+
+[Home](Home.md) · [User Guide](User-Guide.md) · [Developer Guide](Developer-Guide.md)
+
+**Source snapshot:** unmerged integration draft [#98](https://github.com/djshellshoxxx/GhostPay/pull/98), commit `364b1f185fcc2adaedab4ce7b4b14e676b1da3b7`. Last GitHub evidence inspection: 2026-11-10. This is a traceability index, not a change of approved requirements or a release approval.
+
+| Requirement / trust boundary | Source and current test evidence | Status and remaining acceptance |
+| --- | --- | --- |
+| Invoice signatures and seller receipts are distinct from actual chain payment | `packages/invoice-schema/src/receipts.ts`, `receipts.test.ts`; `packages/cli/src/commands/receipt.ts` and `receipt-parity.test.ts` | Implemented tests in #98; the additional mismatched-digest/chain/asset/amount/signer/expected-fact regression cases in [draft #105](https://github.com/djshellshoxxx/GhostPay/pull/105) are **not qualified** until its exact-head CI completes. A signed receipt alone remains no proof of payment. |
+| Local seller invoice → test payment → detection → receipt → sweep → backup/restore | `apps/web/e2e/core-journey.spec.ts`, `recovery.spec.ts`, `receipt-lean.spec.ts`; `.github/workflows/ci.yml` and `integration.yml` | Browser mocked-chain chain journey and separately hosted integration checks exist on #98; a separately recorded end-to-end **local-chain B0 payment-to-recovery** run with consistent transaction evidence, negative cases and independently pinned finality is still an acceptance gate. Never infer this from unrelated green jobs. |
+| Merchant headless operations and correct failure exits | `packages/cli/src/run.ts`, `packages/cli/src/operator-commands.test.ts`, `packages/cli/test/operators.test.mjs`; `.github/workflows/cli-operator.yml` | CLI qualified at #98 commit on Linux, macOS and Windows; not a proof of live merchant settlement, full GUI parity or future changes. |
+| Seller keys, encrypted recovery, optional relayer | `packages/secret-box/src/`, `packages/cli/src/reconcile-session.ts`, `apps/web/e2e/recovery.spec.ts`; `.github/workflows/ci.yml` | Source tests exist. A read-only audit of secret lifecycle in [draft #103](https://github.com/djshellshoxxx/GhostPay/pull/103) is not an independent cryptographic audit. Real key-handling and authority claims need independent review. |
+| Full/lean frontend, accessibility and QR data integrity | `apps/web/e2e/accessibility.spec.ts`, `receipt-lean.spec.ts`, `packages/qr-exchange/src/`; `.github/workflows/ci.yml` | Exact #98 full and lean browser jobs passed; additional real-device and manual accessibility reviews remain open. Preserve original digital receipts; QR is a representation only. |
+| Product security/SonarCloud | [Historical Sonar triage](https://github.com/djshellshoxxx/GhostPay/blob/364b1f185fcc2adaedab4ce7b4b14e676b1da3b7/docs/audits/SONAR_TRIAGE_2026-11-09.md), [check #84](https://github.com/djshellshoxxx/GhostPay/runs/128302927200) | **Blocked:** #84 new-code Security Rating **D** (required **A**). No Sonar check returned at #98's exact SHA. Authorized Sonar issue inventory and a qualifying exact-head analysis required; do not waive or reinterpret. |
+| Reproducible and authenticated release | `docs/operators/release-and-verify.md`, `.github/workflows/release.yml`, `scripts/verify-release.sh` | Procedures/scripts exist; no approved signed-tag GitHub release, independently verified distribution provenance, external audit or public-funds enablement is established. |
+| Future proposals | `docs/future/privacy-first/` on `main` (merged [#99](https://github.com/djshellshoxxx/GhostPay/pull/99)) | **Future only**, not active implementations, endorsements or release commitments. |
+
+## Exact-head hosted evidence (not a new test run)
+
+GitHub reported **34/34 successful check runs** on `364b1f185fcc2adaedab4ce7b4b14e676b1da3b7` across [CI](https://github.com/djshellshoxxx/GhostPay/actions/runs/42734552608), [Integration](https://github.com/djshellshoxxx/GhostPay/actions/runs/42734552235), [Hosting kit](https://github.com/djshellshoxxx/GhostPay/actions/runs/42734552338) and [CLI operator](https://github.com/djshellshoxxx/GhostPay/actions/runs/42734552538), plus successful Snyk combined status. This does **not** substitute for missing SonarCloud, owner sign-off or acceptance on a later commit. Documentation-only PRs #102–#104 later received successful scoped CI with most application jobs **skipped**, not a requalification of the application.
+
+## Integration and release handoff
+
+Recheck source SHA, current PR ownership, full/lean/browser/CLI/integration jobs and Sonar inventory for the **actual proposed integration head**. Obtain an external security review and approved deployment/asset pins; then require signed, reproducible and independently verifiable release artifacts. Require explicit owner approval before main merge, public deploy, release or real funds. Do not apply new payment, custody, signing or financial requirements through documentation alone.
+
+The live GitHub Wiki is separate from this version-controlled source and has not been published.
