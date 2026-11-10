@@ -1,7 +1,7 @@
 import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { sha256Hex } from './fetcher.js';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { fetchBytes, sha256Hex } from './fetcher.js';
 import type { ReleaseConfig } from './types.js';
 import { parseSha256Sums, w3Probe } from './w3.js';
 
@@ -91,6 +91,31 @@ describe('W3', () => {
       fetch: () => Promise.resolve({ ok: true, status: 200, arrayBuffer: () => Promise.resolve(new TextEncoder().encode('hello').buffer) }),
     });
     expect(g[0]?.severity).toBe('info');
+  });
+
+
+  it('enforces the byte cap while streaming default release fetches', async () => {
+    const parts = ['abcd', 'efgh', 'ijklm', 'unused'].map((part) => new TextEncoder().encode(part));
+    let produced = 0;
+    const fullBuffer = vi.fn(async () => new TextEncoder().encode('abcdefghijklmunused').buffer);
+    const response = {
+      ok: true, status: 200, headers: new Headers(), arrayBuffer: fullBuffer,
+      body: new ReadableStream<Uint8Array>({
+        pull(controller) {
+          if (produced === parts.length) controller.close();
+          else controller.enqueue(parts[produced++]!);
+        },
+      }),
+    } as unknown as Response;
+    const mock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(response);
+    try {
+      await expect(fetchBytes({ mirrors: [], sha256sums: '', files: [], maxBytes: 6 }, 'https://mirror.example', 'asset.js'))
+        .rejects.toMatchObject({ code: 'FETCH_FAILED' });
+      expect(fullBuffer).not.toHaveBeenCalled();
+      expect(produced).toBeLessThan(parts.length);
+    } finally {
+      mock.mockRestore();
+    }
   });
 
   it('missing release config warns', async () => {
