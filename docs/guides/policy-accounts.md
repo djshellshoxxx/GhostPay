@@ -1,6 +1,6 @@
 # Policy accounts (experimental)
 
-> **Experimental and not available in the app or relayer (ADR-0014).** Contracts (`PolicyAccount`, `PolicyAccountFactory`) and a client library (`@ghostpay/policy-scheme`) exist and are tested locally; nothing is deployed and nothing has been independently audited. Do not use with real money.
+> **Experimental and disabled by default (ADR-0014).** Contracts (`PolicyAccount`, `PolicyAccountFactory`), a client library (`@ghostpay/policy-scheme`) and separately gated web controls exist. There is no pinned deployment, independent audit or operational lost-key recovery service. These controls are outside the default supported workflow. Do not use with real money.
 
 ## The idea
 
@@ -32,8 +32,8 @@ The contract has no admin, no upgrade path, no generic `execute` and no `delegat
 - **It only helps if someone watches.** You must notice a malicious request and cancel it inside the delay. If you do not monitor the account, the delay only slows things down.
 - **The key still matters.** Anyone with the owner key can also sign cancels or proposals; the design relies on you acting first.
 - Creating one costs a flat stablecoin fee (design value USD 3.00 equivalent, owner to confirm). See [Fees](../user/fees.md).
-- Scheme id `0x47500002` uses its own meta-address format (`st:eth:gp2:...`); the app does not create or scan these.
+- Scheme id `0x47500002` uses its own meta-address format (`st:eth:gp2:...`). Create, pay and receive controls exist in the experimental view, which is excluded from the default interface.
 
-Planned vs built: contract and library built; app, relayer and registry support planned, not built.
+Scope: contracts, library and experimental web controls are present, but the [feature gate](../../apps/web/src/features/policy/flag.ts) is off by default. Their presence does not establish deployed relayer/registry integration, recovery authority or qualified scheme-2 lifecycle support; see the [current handoff](../handoffs/PRODUCT_COMPLETION_HANDOFF.md).
 
 Related: [Sweeping safely](sweeping-safely.md), [Privacy checklist](privacy-checklist.md), package notes in `packages/policy-scheme/README.md`.

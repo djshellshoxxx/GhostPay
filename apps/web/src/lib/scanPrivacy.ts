@@ -27,7 +27,7 @@ import {
 import { FIRST_USE_NOTICE, TOR_BROWSER_NOTICE, createFetchTransport, type FetchLike } from '@ghostpay/net-transport/browser';
 import { createIndexerSource, padWindow, ScanSourceError, TESTNET_CHAIN_IDS, type HttpTransport, type HeadSource, type ScanAnnouncement } from '@ghostpay/scan-source';
 import { encodeAbiParameters } from 'viem/utils';
-import { UserFacingError } from './errors';
+import { UserFacingError, displayMessage, type MessageDescriptor } from './errors';
 import { randomDelayMs, type CryptoLike } from './jitter';
 
 export type ScanTransportKind = 'direct' | 'tor-browser' | 'local-proxy';
@@ -174,7 +174,12 @@ export interface WindowPolicy {
 }
 
 export type ScanPlan =
-  | { readonly kind: 'blocked'; readonly reason: string }
+  | {
+      readonly kind: 'blocked';
+      /** Source-English compatibility text. UI callers render reasonMessage with their current translator. */
+      readonly reason: string;
+      readonly reasonMessage: MessageDescriptor;
+    }
   | {
       readonly kind: 'ready';
       /** Undefined: use the Settings RPC. */
@@ -185,28 +190,32 @@ export type ScanPlan =
       readonly window: WindowPolicy;
     };
 
+function blockedPlan(reasonMessage: MessageDescriptor): Extract<ScanPlan, { kind: 'blocked' }> {
+  return { kind: 'blocked', reason: displayMessage(reasonMessage), reasonMessage };
+}
+
 /** Decides how one chain is scanned. Never falls back silently: a missing private path is a blocked scan. */
 export function planScan(s: ScanPrivacySettings, chain: ChainConfig): ScanPlan {
   const id = String(chain.chainId);
   if (s.requireProxy && s.transport === 'direct') {
-    return { kind: 'blocked', reason: 'Scan blocked: "Require the private path" is on, but the scan transport is Direct. Choose Tor Browser or a local proxy in Settings, or turn the requirement off.' };
+    return blockedPlan({ key: 'scanPrivacy.blocked.requirePrivatePath' });
   }
   let endpoint: string | undefined;
   try {
     const raw = s.endpoints[id];
     endpoint = raw === undefined || raw === '' ? undefined : checkScanEndpoint(raw, s.transport);
   } catch (e) {
-    return { kind: 'blocked', reason: e instanceof Error ? e.message : 'Scan endpoint rejected.' };
+    return blockedPlan(e instanceof UserFacingError && e.translation !== undefined ? e.translation : { key: 'scanPrivacy.blocked.endpointRejected' });
   }
   if (s.transport === 'local-proxy' && endpoint === undefined) {
-    return { kind: 'blocked', reason: 'Scan blocked: the local proxy has no endpoint for this chain. GhostPay does not fall back to your normal RPC.' };
+    return blockedPlan({ key: 'scanPrivacy.blocked.proxyEndpoint' });
   }
   let indexerUrl: string | undefined;
   if (s.source === 'indexer') {
-    if (!TESTNET_CHAIN_IDS.includes(chain.chainId)) return { kind: 'blocked', reason: 'Scan blocked: the indexer source supports only Anvil, Ethereum Sepolia and Base Sepolia in this build.' };
+    if (!TESTNET_CHAIN_IDS.includes(chain.chainId)) return blockedPlan({ key: 'scanPrivacy.blocked.indexerChain' });
     const raw = s.indexerUrls[id];
-    if (raw === undefined || raw === '') return { kind: 'blocked', reason: 'Scan blocked: no indexer URL is set for this chain.' };
-    try { indexerUrl = checkIndexerUrl(raw, s.transport); } catch (e) { return { kind: 'blocked', reason: e instanceof Error ? e.message : 'Indexer URL rejected.' }; }
+    if (raw === undefined || raw === '') return blockedPlan({ key: 'scanPrivacy.blocked.indexerMissing' });
+    try { indexerUrl = checkIndexerUrl(raw, s.transport); } catch (e) { return blockedPlan(e instanceof UserFacingError && e.translation !== undefined ? e.translation : { key: 'scanPrivacy.blocked.indexerRejected' }); }
   }
   const windowBlocks = s.windowBlocks <= 0 ? 0 : Math.min(s.windowBlocks, chain.getLogsMaxRange);
   return {
@@ -225,7 +234,41 @@ export interface DisclosureRow {
   readonly learns: string;
 }
 
-/** Per-party disclosure for the status line (spec 10 section 2). Plain limits; no anonymity claims. */
+export interface DisclosureMessageRow {
+  readonly party: MessageDescriptor;
+  readonly learns: MessageDescriptor;
+}
+
+/** Public message data only: callers translate at render time, without reopening or replanning a scan. */
+export function describeScanDisclosureMessages(s: ScanPrivacySettings, o: { readonly hasSecondary: boolean }): DisclosureMessageRow[] {
+  const rows: DisclosureMessageRow[] = [];
+  const windows: MessageDescriptor = s.windowBlocks > 0
+    ? { key: 'scanPrivacy.disclosure.windowsFixed', values: { blocks: String(s.windowBlocks) } }
+    : { key: 'scanPrivacy.disclosure.windowsExact' };
+  const ip: MessageDescriptor = { key: s.transport === 'direct' ? 'scanPrivacy.disclosure.ipDirect' : s.transport === 'tor-browser' ? 'scanPrivacy.disclosure.ipTorBrowser' : 'scanPrivacy.disclosure.ipProxyExit' };
+  const logs: MessageDescriptor = s.source === 'indexer'
+    ? { key: 'scanPrivacy.disclosure.logsIndexer' }
+    : { key: 'scanPrivacy.disclosure.logsRpc', values: { windows } };
+  rows.push({ party: { key: 'scanPrivacy.disclosure.rpcParty' }, learns: { key: 'scanPrivacy.disclosure.rpc', values: { ip, logs } } });
+  if (s.source === 'indexer') {
+    rows.push({ party: { key: 'scanPrivacy.disclosure.indexerParty' }, learns: { key: 'scanPrivacy.disclosure.indexer', values: { ip, windows } } });
+  }
+  if (s.transport === 'local-proxy') rows.push({ party: { key: 'scanPrivacy.disclosure.proxyParty' }, learns: { key: 'scanPrivacy.disclosure.proxy' } });
+  if (s.transport === 'tor-browser') rows.push({ party: { key: 'scanPrivacy.disclosure.torExitParty' }, learns: { key: 'scanPrivacy.disclosure.torExit', values: { notice: { key: 'scanPrivacy.disclosure.torBrowserNotice' } } } });
+  if (o.hasSecondary && !(s.requireProxy && s.transport === 'local-proxy')) {
+    const secondWindows: MessageDescriptor = s.windowBlocks > 0
+      ? { key: 'scanPrivacy.disclosure.secondWindowsFixed', values: { blocks: String(s.windowBlocks) } }
+      : { key: 'scanPrivacy.disclosure.secondWindowsExact' };
+    const secondIp: MessageDescriptor = s.transport === 'local-proxy' ? { key: 'scanPrivacy.disclosure.secondDirectIp' } : ip;
+    rows.push({ party: { key: 'scanPrivacy.disclosure.secondParty' }, learns: { key: 'scanPrivacy.disclosure.second', values: { ip: secondIp, windows: secondWindows } } });
+  }
+  rows.push({ party: { key: 'scanPrivacy.disclosure.everyoneParty' }, learns: s.transport === 'direct'
+    ? { key: 'scanPrivacy.disclosure.everyone' }
+    : { key: 'scanPrivacy.disclosure.everyonePrivate', values: { notice: { key: 'scanPrivacy.disclosure.firstUseNotice' } } } });
+  return rows;
+}
+
+/** Source-English compatibility disclosure (spec 10 section 2); UI uses describeScanDisclosureMessages. */
 export function describeScanDisclosure(s: ScanPrivacySettings, o: { readonly hasSecondary: boolean }): DisclosureRow[] {
   const rows: DisclosureRow[] = [];
   const windows = s.windowBlocks > 0 ? `fixed ${String(s.windowBlocks)}-block windows (coarse, but they still show roughly how far you have scanned)` : 'the exact block ranges you scan';
@@ -561,3 +604,6 @@ export async function openScanClients(o: OpenScanOptions): Promise<ScanClients |
 }
 
 // i18n-use: error.scanPrivacy.aLocalProxyEndpointMustBeOnThisComputerFor error.scanPrivacy.localProxyEndpointRejectedNoUsernamePasswordOrFragment error.scanPrivacy.scanEndpointRejectedUseHttpsWithNoUsernamePasswordOr error.scanPrivacy.indexerURLIsNotAValidURL error.scanPrivacy.indexerURLMustBeHttpsOrHttpOn1270 error.scanPrivacy.withALocalProxyTheIndexerMustAlsoBeReached error.scanPrivacy.scanBlockedThePrivateScanEndpointCouldNotBeUsed
+
+// i18n-use: scanPrivacy.blocked.requirePrivatePath scanPrivacy.blocked.proxyEndpoint scanPrivacy.blocked.indexerChain scanPrivacy.blocked.indexerMissing scanPrivacy.blocked.endpointRejected scanPrivacy.blocked.indexerRejected
+// i18n-use: scanPrivacy.disclosure.windowsFixed scanPrivacy.disclosure.windowsExact scanPrivacy.disclosure.ipDirect scanPrivacy.disclosure.ipTorBrowser scanPrivacy.disclosure.ipProxyExit scanPrivacy.disclosure.logsIndexer scanPrivacy.disclosure.logsRpc scanPrivacy.disclosure.rpcParty scanPrivacy.disclosure.rpc scanPrivacy.disclosure.indexerParty scanPrivacy.disclosure.indexer scanPrivacy.disclosure.proxyParty scanPrivacy.disclosure.proxy scanPrivacy.disclosure.torExitParty scanPrivacy.disclosure.torExit scanPrivacy.disclosure.torBrowserNotice scanPrivacy.disclosure.secondParty scanPrivacy.disclosure.secondWindowsFixed scanPrivacy.disclosure.secondWindowsExact scanPrivacy.disclosure.secondDirectIp scanPrivacy.disclosure.second scanPrivacy.disclosure.everyoneParty scanPrivacy.disclosure.everyone scanPrivacy.disclosure.everyonePrivate scanPrivacy.disclosure.firstUseNotice

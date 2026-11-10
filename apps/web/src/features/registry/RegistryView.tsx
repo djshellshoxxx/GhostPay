@@ -1,7 +1,7 @@
 import { buildLookupCall, buildRegisterKeysCall, ERC6538_REGISTRY_ADDRESS, lookupMetaAddress, verifyRegistry, type RegistryCall } from '@ghostpay/chain-adapters';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
-import { displayMessage, captureUserMessage, type DisplayMessage } from '../../lib/errors';
+import { displayMessage, captureUserMessage, UserFacingError, type DisplayMessage } from '../../lib/errors';
 import { useServices } from '../../lib/services';
 import { connectWallet, sendViaWallet, verifySubmission, WalletBroadcastError, type WalletInfo, type WalletSession } from '../../lib/wallet';
 import { useApp } from '../../state';
@@ -54,6 +54,8 @@ export function RegistryView(): ReactNode {
   const services = useServices();
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
+  const tRef = useRef(t);
+  tRef.current = t;
   const chains = [...services.chains].sort((a, b) => Number(b.testnet) - Number(a.testnet));
   const [chainId, setChainId] = useState<number | undefined>(chains[0]?.chainId);
   const chain = chains.find((c) => c.chainId === chainId);
@@ -98,7 +100,7 @@ export function RegistryView(): ReactNode {
       if (!mounted.current || !current.consent || current.chainId !== expected.chainId || current.session !== expected.session ||
           current.metaAddress !== expected.metaAddress || current.wallet !== expected.wallet || current.reviewed !== expected.reviewed ||
           current.reviewAction !== expected.reviewAction || current.settings !== expected.settings) {
-        throw new Error(t('registry.sessionChanged'));
+        throw new UserFacingError({ key: 'registry.sessionChanged' });
       }
     };
   };
@@ -110,7 +112,7 @@ export function RegistryView(): ReactNode {
     return rpc;
   };
   const rpcMissing = (e: unknown): boolean => e instanceof Error && e.message === 'rpc';
-  const noRpc: Msg = { kind: 'error', text: t('registry.noRpc') };
+  const noRpc: Msg = { kind: 'error', text: { key: 'registry.noRpc' } };
 
   const onDiscover = (): void => {
     setPub(undefined);
@@ -122,13 +124,13 @@ export function RegistryView(): ReactNode {
   const onConnect = (w: WalletInfo): void => {
     if (chainId === undefined || !consent || metaAddress === undefined || busyRef.current) return;
     const guard = captureAuthority();
-    setPub({ kind: 'ok', text: t('registry.waiting') });
+    setPub({ kind: 'ok', text: { key: 'registry.waiting' } });
     connectWallet(w, chainId).then(
       (connected) => {
         try { guard(); } catch { return; }
         setWallet(connected);
         setPub(undefined);
-        app.announce(t('registry.walletConnected'));
+        app.announce(tRef.current('registry.walletConnected'));
       },
       (e: unknown) => {
         try { guard(); } catch { return; }
@@ -174,7 +176,7 @@ export function RegistryView(): ReactNode {
         await verifyRegistry(rpc);
         guard();
         const expected = reviewAction === 'publish' ? buildRegisterKeysCall(metaAddress) : buildClearRegistryCall();
-        if (expected.to !== reviewed.to || expected.data !== reviewed.data || expected.value !== reviewed.value) throw new Error(t('registry.txChanged'));
+        if (expected.to !== reviewed.to || expected.data !== reviewed.data || expected.value !== reviewed.value) throw new UserFacingError({ key: 'registry.txChanged' });
         const hash = await sendViaWallet(wallet, expected, guard, { kind: 'registry' });
         returnedHash = hash;
         // The journal already retained this hash, even if the user changed sessions while the wallet was open.
@@ -185,14 +187,22 @@ export function RegistryView(): ReactNode {
         setReviewAction(undefined);
         setPub({
           kind: check === 'verified' ? 'ok' : 'warn',
-          text: `${t('registry.submitted', { what: reviewAction === 'publish' ? t('registry.what.registration') : t('registry.what.clear'), hash })} ${check === 'verified' ? t('registry.verified') : t('registry.notSeen')}${reviewAction === 'clear' ? ` ${t('registry.clearNote')}` : ''}`,
+          text: {
+            key: 'registry.submissionOutcome',
+            values: {
+              submitted: { key: 'registry.submitted', values: { what: { key: reviewAction === 'publish' ? 'registry.what.registration' : 'registry.what.clear' }, hash } },
+              verification: { key: check === 'verified' ? 'registry.verified' : 'registry.notSeen' },
+              action: reviewAction,
+              clearNote: { key: 'registry.clearNote' },
+            },
+          },
         });
-        app.announce(t('registry.announceSubmitted', { what: reviewAction === 'publish' ? t('registry.what.registration') : t('registry.what.clear') }));
+        app.announce(displayMessage({ key: 'registry.announceSubmitted', values: { what: { key: reviewAction === 'publish' ? 'registry.what.registration' : 'registry.what.clear' } } }, tRef.current));
       } catch (e) {
         if (e instanceof WalletBroadcastError) returnedHash = e.hash;
         if (!mounted.current) return;
         if (returnedHash !== undefined) {
-          setPub({ kind: 'warn', text: t('registry.walletReturned', { hash: returnedHash }) });
+          setPub({ kind: 'warn', text: { key: 'registry.walletReturned', values: { hash: returnedHash } } });
           return;
         }
         try { guard(); } catch { return; }
@@ -322,7 +332,7 @@ export function RegistryView(): ReactNode {
                 {t('registry.registeredBy.body')}
               </Notice>
               <p><Mono>{found.meta}</Mono></p>
-              <p><CopyButton text={found.meta} label="Copy meta-address" /></p>
+              <p><CopyButton text={found.meta} label={t('registry.copyScanned')} /></p>
             </>
           )}
         </>
@@ -330,3 +340,5 @@ export function RegistryView(): ReactNode {
     </section>
   );
 }
+
+// i18n-use: registry.sessionChanged registry.txChanged registry.noRpc registry.waiting registry.walletReturned registry.submissionOutcome registry.submitted registry.what.registration registry.what.clear registry.verified registry.notSeen registry.clearNote registry.announceSubmitted

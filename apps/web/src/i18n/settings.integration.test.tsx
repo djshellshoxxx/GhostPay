@@ -23,7 +23,7 @@ describe('Settings localization in the app', () => {
     );
 
     await waitFor(() => { expect(document.documentElement.getAttribute('lang')).toBe('es'); });
-    await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Ajustes' }));
+    await user.click(within(screen.getByRole('navigation')).getByRole('button', { name: 'Ajustes' }));
     expect(await screen.findByRole('heading', { name: 'Ajustes' })).toBeTruthy();
     expect(screen.getByLabelText('Idioma')).toBeTruthy();
     expect(screen.getByText('Settings can be changed outside this page')).toBeTruthy();

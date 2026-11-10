@@ -5,6 +5,9 @@
  * an icon and a distinct border style (WCAG 1.4.1).
  */
 
+import type { MessageKey } from '../i18n/sourceCatalog';
+import type { Translator } from '../i18n/translator';
+
 export type QrKind = 'secret' | 'shareable' | 'bearer' | 'device' | 'proof' | 'caution';
 
 export type QrIconId = 'lock' | 'share' | 'key' | 'devices' | 'check-doc' | 'warning';
@@ -123,6 +126,26 @@ export const QR_KINDS: Readonly<Record<QrKind, QrKindInfo>> = {
 };
 
 export const QR_KIND_ORDER: readonly QrKind[] = ['secret', 'shareable', 'bearer', 'device', 'proof', 'caution'];
+
+/** Render-only copy: kind identity, QR payloads and handling rules never depend on the language. */
+export function localizedQrKind(kind: QrKind, t: Translator['t']): QrKindInfo {
+  const info = QR_KINDS[kind];
+  const key = (field: 'label' | 'explanation' | 'examples' | 'warning'): MessageKey => `qr.kind.${kind}.${field}` as MessageKey;
+  return {
+    ...info,
+    label: t(key('label')),
+    explanation: t(key('explanation')),
+    examples: t(key('examples')),
+    rules: { ...info.rules, warning: info.rules.warning === null ? null : t(key('warning')) },
+  };
+}
+
+// i18n-use: qr.kind.secret.label qr.kind.secret.explanation qr.kind.secret.examples qr.kind.secret.warning
+// i18n-use: qr.kind.shareable.label qr.kind.shareable.explanation qr.kind.shareable.examples
+// i18n-use: qr.kind.bearer.label qr.kind.bearer.explanation qr.kind.bearer.examples qr.kind.bearer.warning
+// i18n-use: qr.kind.device.label qr.kind.device.explanation qr.kind.device.examples
+// i18n-use: qr.kind.proof.label qr.kind.proof.explanation qr.kind.proof.examples
+// i18n-use: qr.kind.caution.label qr.kind.caution.explanation qr.kind.caution.examples qr.kind.caution.warning
 
 /**
  * Colour palette per mode (hex). MUST match apps/web/src/styles/qr.css (a test enforces this) and is

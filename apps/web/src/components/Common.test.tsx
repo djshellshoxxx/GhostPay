@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { CopyButton, Field, Mono, Notice, SafeText, downloadText } from './Common';
@@ -95,5 +95,29 @@ describe('CopyButton localization', () => {
     render(<I18nProvider initialPreference="es" target={document.documentElement}><CopyButton text="x" label="Copiar" /></I18nProvider>);
     await user.click(await screen.findByRole('button', { name: 'Copiar' }));
     expect(await screen.findByRole('button', { name: es.messages['common.copy.failed'] ?? 'MISSING' })).toBeTruthy();
+  });
+
+  it('does not report a completed copy for replacement text', async () => {
+    let complete: (() => void) | undefined;
+    const pending = new Promise<void>((resolve) => { complete = resolve; });
+    const writeText = vi.fn(() => pending);
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+    const { rerender } = render(<CopyButton text="first receipt" label="Copy receipt" />);
+    fireEvent.click(screen.getByRole('button', { name: 'Copy receipt' }));
+    rerender(<CopyButton text="second receipt" label="Copy receipt" />);
+    await act(async () => { complete?.(); await pending; });
+    expect(writeText).toHaveBeenCalledWith('first receipt');
+    expect(screen.getByRole('button', { name: 'Copy receipt' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Copied' })).toBeNull();
+  });
+
+  it('clears a previous copy result when its text changes', async () => {
+    const user = userEvent.setup();
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: () => Promise.resolve() } });
+    const { rerender } = render(<CopyButton text="first receipt" label="Copy receipt" />);
+    await user.click(screen.getByRole('button', { name: 'Copy receipt' }));
+    expect(screen.getByRole('button', { name: 'Copied' })).toBeTruthy();
+    rerender(<CopyButton text="second receipt" label="Copy receipt" />);
+    expect(screen.getByRole('button', { name: 'Copy receipt' })).toBeTruthy();
   });
 });

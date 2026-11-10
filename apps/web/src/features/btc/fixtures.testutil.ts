@@ -1,4 +1,4 @@
-import { createSilentPaymentOutputs, merkleRoot, parseHeader, reverseHex, sha256d, silentPaymentKeysFromSeed, targetFromBits } from '@ghostpay/btc-silent-payments';
+import { createSilentPaymentOutputs, merkleRoot, parseHeader, parseRawTransaction, reverseHex, sha256d, silentPaymentKeysFromSeed, targetFromBits } from '@ghostpay/btc-silent-payments';
 import { Transaction } from '@scure/btc-signer';
 import { GENESIS_HEADERS, type IdbFactoryLike } from './headers';
 import { btcNetwork, type BtcNetworkId } from './network';
@@ -284,7 +284,7 @@ export function mockChain(netId: BtcNetworkId, recipient: BtcWallet, opts: MockC
       if (path === '/fee-estimates') return json({ '1': 3.5, '6': 1.2 });
       if (path === '/tx' && init.method === 'POST') {
         chain.broadcasts.push(typeof init.body === 'string' ? init.body : '');
-        return text(HASH(0x9999));
+        return text(parseRawTransaction(typeof init.body === 'string' ? init.body : '').txid);
       }
       return Promise.resolve(new Response('not found', { status: 404 }));
     },

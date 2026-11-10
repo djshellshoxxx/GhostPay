@@ -101,9 +101,14 @@ describe('EsploraClient', () => {
   });
 
   it('broadcasts raw hex and validates the txid answer', async () => {
-    const { chain, client } = mk();
+    const broadcasts: string[] = [];
+    // This transport-level test checks encoding and response shape; the full-chain fixture accepts parsed transactions.
+    const client = new EsploraClient({ baseUrl: BASE, fetchFn: (_url, init) => {
+      broadcasts.push(typeof init.body === 'string' ? init.body : '');
+      return Promise.resolve(new Response('9'.repeat(64)));
+    } });
     expect(await client.broadcast('0200ff')).toMatch(/^[0-9a-f]{64}$/);
-    expect(chain.broadcasts).toEqual(['0200ff']);
+    expect(broadcasts).toEqual(['0200ff']);
     expect(await codeOf(client.broadcast('xyz'))).toBe('INVALID_INPUT');
     const odd = new EsploraClient({ baseUrl: BASE, fetchFn: () => Promise.resolve(new Response('not a txid')) });
     expect(await codeOf(odd.broadcast('00'))).toBe('INVALID_RESPONSE');

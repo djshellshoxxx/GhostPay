@@ -7,6 +7,10 @@ import {
   SilentPaymentError,
   type SpendableOutput,
 } from '@ghostpay/btc-silent-payments';
+import type { MessageKey } from '../../i18n/catalog';
+import { SOURCE_TRANSLATOR } from '../../i18n/source';
+import type { Translator } from '../../i18n/translator';
+import { UserFacingError, displayMessage, type MessageDescriptor } from '../../lib/errors';
 import type { FoundPayment } from './scan';
 import type { BtcWallet } from './wallet';
 
@@ -24,6 +28,8 @@ export interface SweepReview {
   readonly sendSats: bigint;
   readonly rbf: true;
   readonly warnings: readonly string[];
+  /** Public descriptors render with the language current at review time, without rebuilding the transaction. */
+  readonly warningMessages: readonly MessageDescriptor[];
 }
 
 export const HIGH_FEE_RATE = 50;
@@ -67,14 +73,14 @@ export function reviewSweep(
     regtest: wallet.net.regtest,
   });
   const totalSats = selected.reduce((a, s) => a + s.amountSats, 0n);
-  const warnings: string[] = [];
+  const warningMessages: MessageDescriptor[] = [];
   // Common-input ownership: inputs spent together are publicly attributed to one owner (PRIVACY-E2E-03).
   if (selected.length > 1) {
-    warnings.push(`This sweep spends ${String(selected.length)} payments in one transaction, which links them publicly: anyone can see they have one owner. To keep them apart, sweep one payment at a time, each to a different new address (separate sweeps to the same address also link them).`);
+    warningMessages.push({ key: 'btc.sweep.linked', values: { count: String(selected.length) } });
   }
-  if (feeRate > HIGH_FEE_RATE) warnings.push(`Fee rate ${String(feeRate)} sat/vB is high even for a test network.`);
-  if (pv.feeSats * 10n > totalSats) warnings.push('The fee is more than 10% of the swept amount.');
-  if (dest === wallet.address) warnings.push('The destination is this wallet\'s own receive address.');
+  if (feeRate > HIGH_FEE_RATE) warningMessages.push({ key: 'btc.sweep.highFeeRate', values: { rate: String(feeRate) } });
+  if (pv.feeSats * 10n > totalSats) warningMessages.push({ key: 'btc.sweep.largeFee' });
+  if (dest === wallet.address) warningMessages.push({ key: 'btc.sweep.ownAddress' });
   return {
     networkLabel: wallet.net.label,
     inputs: selected.map((s) => ({ txid: s.txid, vout: s.vout, amountSats: s.amountSats })),
@@ -86,7 +92,8 @@ export function reviewSweep(
     feeSats: pv.feeSats,
     sendSats: pv.sendSats,
     rbf: true,
-    warnings,
+    warnings: warningMessages.map((message) => displayMessage(message)),
+    warningMessages,
   };
 }
 
@@ -98,8 +105,7 @@ export interface SignedSweep {
 }
 
 /** Which signer the view uses. Hardware wallets: interface only (spec 11), no device driver is shipped. */
-export const SIGNER_DESCRIPTION =
-  'Software signer in this browser tab (reference implementation of the hardware-signer interface). It re-checks inputs, refuses non-default sighash and foreign inputs, re-derives silent-payment outputs, and confirms the reviewed destination before signing. No hardware wallet driver is included.';
+export const SIGNER_DESCRIPTION = SOURCE_TRANSLATOR.t('btc.sweep.signer');
 
 /**
  * Signs the reviewed sweep through the {@link SilentPaymentSigner} interface (here the software reference
@@ -152,26 +158,32 @@ export function formatBtc(sats: bigint): string {
   return `${satsToBtcString(sats)} BTC`;
 }
 
-/** Plain-language message for package errors; never echoes input values. */
-export function btcErrorMessage(e: unknown): string {
-  if (e instanceof SilentPaymentError) {
-    const m: Partial<Record<string, string>> = {
-      INVALID_ADDRESS: 'That address is not valid for this network.',
-      INVALID_INPUT: 'Some input was missing or out of range.',
-      INVALID_AMOUNT: 'Invalid amount.',
-      INSUFFICIENT_FUNDS: 'The selected funds do not cover the fee.',
-      DUST_OUTPUT: 'The amount left after the fee is below the dust limit.',
-      FEE_TOO_HIGH: 'The fee is too high compared with the amount.',
-      NETWORK_MISMATCH: 'The server is not on the network you selected.',
-      TRANSPORT_FAILURE: 'The server could not be reached or refused the request.',
-      INVALID_RESPONSE: 'The server returned data this app cannot trust.',
-      REORG_DETECTED: 'The chain changed while scanning. Run the scan again.',
-      ABORTED: 'Cancelled.',
-      SIGNATURE_INVALID: 'Signing check failed; nothing was produced.',
-      SIGNER_REFUSED: 'The signer refused: the transaction did not match what you reviewed.',
-      INVALID_HEADER: 'The server sent a block header that breaks the chain rules.',
-    };
-    return m[e.code] ?? 'Bitcoin operation failed.';
-  }
-  return e instanceof Error ? e.message : 'Bitcoin operation failed.';
+const FRIENDLY: Readonly<Record<string, MessageKey>> = {
+  INVALID_ADDRESS: 'btc.error.invalidAddress',
+  INVALID_INPUT: 'btc.error.invalidInput',
+  INVALID_AMOUNT: 'btc.error.invalidAmount',
+  INSUFFICIENT_FUNDS: 'btc.error.insufficientFunds',
+  DUST_OUTPUT: 'btc.error.dustOutput',
+  FEE_TOO_HIGH: 'btc.error.feeTooHigh',
+  NETWORK_MISMATCH: 'btc.error.networkMismatch',
+  TRANSPORT_FAILURE: 'btc.error.transportFailure',
+  INVALID_RESPONSE: 'btc.error.invalidResponse',
+  REORG_DETECTED: 'btc.error.reorgDetected',
+  ABORTED: 'btc.error.aborted',
+  SIGNATURE_INVALID: 'btc.error.signatureInvalid',
+  SIGNER_REFUSED: 'btc.error.signerRefused',
+  INVALID_HEADER: 'btc.error.invalidHeader',
+};
+
+/** Capture known public diagnostics only. Never retain an arbitrary exception message or a secret-bearing cause. */
+export function captureBtcErrorMessage(e: unknown): MessageDescriptor {
+  if (e instanceof UserFacingError && e.translation !== undefined) return e.translation;
+  return { key: e instanceof SilentPaymentError ? FRIENDLY[e.code] ?? 'btc.error.failed' : 'btc.error.failed' };
 }
+
+/** Compatible source-English API; UI state retains the descriptor and supplies its current translator on render. */
+export function btcErrorMessage(e: unknown, t: Translator['t'] = SOURCE_TRANSLATOR.t): string {
+  return displayMessage(captureBtcErrorMessage(e), t);
+}
+
+// i18n-use: btc.sweep.linked btc.sweep.highFeeRate btc.sweep.largeFee btc.sweep.ownAddress btc.error.invalidAddress btc.error.invalidInput btc.error.invalidAmount btc.error.insufficientFunds btc.error.dustOutput btc.error.feeTooHigh btc.error.networkMismatch btc.error.transportFailure btc.error.invalidResponse btc.error.reorgDetected btc.error.aborted btc.error.signatureInvalid btc.error.signerRefused btc.error.invalidHeader btc.error.failed

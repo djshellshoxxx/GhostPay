@@ -369,4 +369,156 @@ describe('SecretBackup', () => {
     expect(keys.show).toBe('Show backup keys');
     expect(keys.hide).toBe('Hide keys');
   });
+
+  it('ignores a stale successful copy after Hide and a new reveal, and clears the late write best-effort', async () => {
+    let finishCopy!: () => void;
+    writeText.mockImplementationOnce(() => new Promise<void>((resolve) => { finishCopy = resolve; }));
+    setup();
+    click('Show backup seed');
+    click('Copy seed');
+    click('Copy anyway');
+    click('Hide seed');
+    await settle();
+    click('Show backup seed');
+    finishCopy();
+    await settle();
+    expect(screen.queryByRole('status')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Copy seed' })).toBeTruthy();
+    expect(writeText.mock.calls.map(([value]) => value)).toEqual([SECRET, '', '']);
+  });
+
+  it('ignores a stale failed copy after Hide and a new reveal', async () => {
+    let rejectCopy!: (reason: Error) => void;
+    writeText.mockImplementationOnce(() => new Promise<void>((_resolve, reject) => { rejectCopy = reject; }));
+    setup();
+    click('Show backup seed');
+    click('Copy seed');
+    click('Copy anyway');
+    click('Hide seed');
+    await settle();
+    click('Show backup seed');
+    rejectCopy(new Error('permission refused'));
+    await settle();
+    expect(screen.queryByRole('status')).toBeNull();
+    expect(writeText.mock.calls.map(([value]) => value)).toEqual([SECRET, '']);
+  });
+
+  it('prevents duplicate confirmations while a copy is pending and keeps Hide available', async () => {
+    let finishCopy!: () => void;
+    writeText.mockImplementationOnce(() => new Promise<void>((resolve) => { finishCopy = resolve; }));
+    setup();
+    click('Show backup seed');
+    click('Copy seed');
+    click('Copy anyway');
+    expect(screen.getByRole('button', { name: 'Copy anyway' }).hasAttribute('disabled')).toBe(true);
+    expect(screen.getByRole('button', { name: 'Do not copy' }).hasAttribute('disabled')).toBe(true);
+    expect(screen.getByRole('button', { name: 'Hide seed' }).hasAttribute('disabled')).toBe(false);
+    expect(screen.getByRole('status').textContent).toBe('Copying backup to the clipboard…');
+    click('Copy anyway');
+    expect(writeText).toHaveBeenCalledExactlyOnceWith(SECRET);
+    finishCopy();
+    await settle();
+    expect(screen.getByRole('status').textContent).toMatch(/^Copied/);
+  });
+
+  it('does not clear or relabel a newer copy when an obsolete copy settles', async () => {
+    let finishFirst!: () => void;
+    writeText.mockImplementationOnce(() => new Promise<void>((resolve) => { finishFirst = resolve; }));
+    setup();
+    click('Show backup seed');
+    click('Copy seed');
+    click('Copy anyway');
+    click('Hide seed');
+    await settle();
+    await copyBackup();
+    finishFirst();
+    await settle();
+    expect(writeText.mock.calls.map(([value]) => value)).toEqual([SECRET, '', SECRET]);
+    expect(screen.getByRole('status').textContent).toMatch(/^Copied/);
+    click('Hide seed');
+    expect(writeText.mock.calls.map(([value]) => value)).toEqual([SECRET, '', SECRET, '']);
+  });
+
+  it('an older successful clear cannot cancel the retry needed by a newer refused clear', async () => {
+    setup();
+    await copyBackup();
+    let finishFirstClear!: () => void;
+    writeText.mockImplementationOnce(() => new Promise<void>((resolve) => { finishFirstClear = resolve; }));
+    click('Hide seed');
+    await copyBackup();
+    writeText.mockImplementationOnce(refused);
+    click('Hide seed');
+    await settle();
+    finishFirstClear();
+    await settle();
+    const beforeRetry = writeText.mock.calls.length;
+    fireEvent.click(document.body);
+    expect(writeText).toHaveBeenCalledTimes(beforeRetry + 1);
+    expect(writeText).toHaveBeenLastCalledWith('');
+  });
+
+  it('an older failed clear cannot schedule an unexpected clear of a newer copy', async () => {
+    setup();
+    await copyBackup();
+    let rejectFirstClear!: (reason: Error) => void;
+    writeText.mockImplementationOnce(() => new Promise<void>((_resolve, reject) => { rejectFirstClear = reject; }));
+    click('Hide seed');
+    await copyBackup();
+    rejectFirstClear(new Error('first clear refused'));
+    await settle();
+    const beforeClick = writeText.mock.calls.length;
+    fireEvent.click(document.body);
+    expect(writeText).toHaveBeenCalledTimes(beforeClick);
+    click('Hide seed');
+    expect(writeText).toHaveBeenCalledTimes(beforeClick + 1);
+  });
+
+  it('restores an earlier cleanup request if both its pending clear and the replacement copy fail', async () => {
+    setup();
+    await copyBackup();
+    let rejectClear!: (reason: Error) => void;
+    writeText.mockImplementationOnce(() => new Promise<void>((_resolve, reject) => { rejectClear = reject; }));
+    click('Hide seed');
+    let rejectCopy!: (reason: Error) => void;
+    writeText.mockImplementationOnce(() => new Promise<void>((_resolve, reject) => { rejectCopy = reject; }));
+    click('Show backup seed');
+    click('Copy seed');
+    click('Copy anyway');
+    rejectClear(new Error('earlier clear refused'));
+    await settle();
+    rejectCopy(new Error('replacement copy refused'));
+    await settle();
+    const beforeRetry = writeText.mock.calls.length;
+    fireEvent.click(document.body);
+    expect(writeText).toHaveBeenCalledTimes(beforeRetry + 1);
+    expect(writeText).toHaveBeenLastCalledWith('');
+  });
+
+  it('auto-hide clears a copied backup and app lock also hides a still-mounted reveal', async () => {
+    vi.useFakeTimers();
+    setup();
+    await copyBackup();
+    act(() => { vi.advanceTimersByTime(BACKUP_VISIBLE_MS); });
+    expect(screen.queryByText(SECRET)).toBeNull();
+    expect(writeText).toHaveBeenLastCalledWith('');
+    await settle();
+    click('Show backup seed');
+    expect(screen.getByText(SECRET)).toBeTruthy();
+    act(() => { notifyAppLock('idle'); });
+    expect(screen.queryByText(SECRET)).toBeNull();
+  });
+
+  it('attempts cleanup again when an unmounted copy completes after its first clear', async () => {
+    let finishCopy!: () => void;
+    writeText.mockImplementationOnce(() => new Promise<void>((resolve) => { finishCopy = resolve; }));
+    setup();
+    click('Show backup seed');
+    click('Copy seed');
+    click('Copy anyway');
+    cleanup();
+    await settle();
+    finishCopy();
+    await settle();
+    expect(writeText.mock.calls.map(([value]) => value)).toEqual([SECRET, '', '']);
+  });
 });

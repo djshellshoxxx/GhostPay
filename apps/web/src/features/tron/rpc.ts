@@ -1,7 +1,7 @@
 import { SOURCE_TRANSLATOR } from '../../i18n/source';
 import type { MessageKey } from '../../i18n/catalog';
 import type { Translator } from '../../i18n/translator';
-import { UserFacingError, userMessage, type MessageDescriptor } from '../../lib/errors';
+import { UserFacingError, displayMessage, type DisplayMessage, type MessageDescriptor } from '../../lib/errors';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
 import {
@@ -110,10 +110,14 @@ const FRIENDLY: Readonly<Record<string, MessageKey>> = {
   SIGNATURE_INVALID: 'tron.error.signatureInvalid',
 };
 
+/** Capture only catalog-backed public diagnostics before an async result enters view state. */
+export function captureTronErrorMessage(e: unknown): DisplayMessage {
+  if (e instanceof TronViewError) return e.translation ?? e.message;
+  return { key: e instanceof TronAdapterError ? FRIENDLY[e.code] ?? 'error.unknown' : 'error.unknown' };
+}
+
 export function tronErrorMessage(e: unknown, t: Translator['t'] = SOURCE_TRANSLATOR.t): string {
-  if (e instanceof TronViewError) return userMessage(e, t);
-  if (e instanceof TronAdapterError) return t(FRIENDLY[e.code] ?? 'error.unknown');
-  return t('error.unknown');
+  return displayMessage(captureTronErrorMessage(e), t);
 }
 
 // i18n-use: tron.error.response tron.error.firstBlock tron.error.mainnet tron.error.memo tron.error.rejected tron.error.differentTx tron.error.invalidAddress tron.error.invalidMetaAddress tron.error.invalidAmount tron.error.invalidInput tron.error.invalidMemo tron.error.invalidProtobuf tron.error.chainMismatch tron.error.chainDisabled tron.error.transportFailure tron.error.invalidResponse tron.error.insecureEndpoint tron.error.aborted tron.error.unsupported tron.error.keyMismatch tron.error.signatureInvalid

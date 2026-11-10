@@ -6,6 +6,8 @@ import { CameraImporter } from '../../components/CameraImporter';
 import { QrFrame } from '../../components/QrFrame';
 import { clearCopiedBackup, SecretBackup } from '../../components/SecretBackup';
 import { subscribeAppLock } from '../../lib/appLock';
+import { UserFacingError, displayMessage, type MessageDescriptor } from '../../lib/errors';
+import { referencedBroadcastOutcome, TRANSACTION_PHASE_KEYS, type TransactionOutcome } from '../../lib/transactionOutcome';
 import { useServices } from '../../lib/services';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../../i18n/context';
 import { EsploraClient, normalizeEsploraUrl } from './esplora';
@@ -23,13 +25,13 @@ import {
 } from './headers';
 import { BTC_NETWORKS, btcNetwork, type BtcNetworkId } from './network';
 import { MAX_SCAN_BLOCKS, scanForPayments, wipeFound, type FoundPayment, type ScanResult } from './scan';
-import { btcErrorMessage, checkDestination, formatBtc, reviewSweep, SIGNER_DESCRIPTION, signSweep, type SignedSweep, type SweepReview } from './sweep';
-import { SCAN_CHECKS, SCAN_LIMITS, SCAN_MODES } from './verification';
+import { captureBtcErrorMessage, checkDestination, formatBtc, reviewSweep, signSweep, type SignedSweep, type SweepReview } from './sweep';
+import { SCAN_CHECK_KEYS, SCAN_LIMIT_KEYS, SCAN_MODE_KEYS } from './verification';
 import { paymentUri, randomSeedHex, walletFromSeedHex, wipeWallet, type BtcWallet } from './wallet';
 
 interface HeaderNote {
   readonly kind: 'info' | 'warn' | 'error' | 'ok';
-  readonly text: string;
+  readonly text: MessageDescriptor;
 }
 
 function defaultHeaderStore(): { readonly storeFor: HeaderStoreFor; readonly persistent: boolean } {
@@ -63,7 +65,7 @@ export function BtcView(
   const [amount, setAmount] = useState('');
   const [fromHeight, setFromHeight] = useState('');
   const [scanning, setScanning] = useState(false);
-  const [scanNote, setScanNote] = useState<string | undefined>(undefined);
+  const [scanNote, setScanNote] = useState<MessageDescriptor | undefined>(undefined);
   const [scan, setScan] = useState<ScanResult | undefined>(undefined);
   const [picked, setPicked] = useState<ReadonlySet<string>>(new Set());
   const [destination, setDestination] = useState('');
@@ -71,8 +73,9 @@ export function BtcView(
   const [review, setReview] = useState<SweepReview | undefined>(undefined);
   const [approved, setApproved] = useState(false);
   const [signed, setSigned] = useState<SignedSweep | undefined>(undefined);
-  const [broadcastId, setBroadcastId] = useState<string | undefined>(undefined);
-  const [error, setError] = useState<string | undefined>(undefined);
+  const [broadcastOutcome, setBroadcastOutcome] = useState<TransactionOutcome | undefined>(undefined);
+  const currentBroadcast = broadcastOutcome?.reference === signed?.txid ? broadcastOutcome : undefined;
+  const [error, setError] = useState<MessageDescriptor | undefined>(undefined);
   /** The app lock (idle timeout) forgot the wallet: say so instead of silently showing an empty view. */
   const [appLocked, setAppLocked] = useState(false);
   const abort = useRef<AbortController | undefined>(undefined);
@@ -86,7 +89,7 @@ export function BtcView(
   /** The checked header chain of the network it was loaded for (public data; kept across lock). */
   const chainRef = useRef<{ readonly netId: BtcNetworkId; readonly chain: HeaderChain } | undefined>(undefined);
   const [headerNotes, setHeaderNotes] = useState<readonly HeaderNote[]>([]);
-  const [headerProgress, setHeaderProgress] = useState<string | undefined>(undefined);
+  const [headerProgress, setHeaderProgress] = useState<MessageDescriptor | undefined>(undefined);
   /** Height the checked header chain reaches; payments above it are kept but cannot be swept. */
   const [checkedTip, setCheckedTip] = useState<number | undefined>(undefined);
   const [confirmForget, setConfirmForget] = useState(false);
@@ -138,7 +141,7 @@ export function BtcView(
     setReview(undefined);
     setApproved(false);
     setSigned(undefined);
-    setBroadcastId(undefined);
+    setBroadcastOutcome(undefined);
     setScanNote(undefined);
   };
 
@@ -154,7 +157,7 @@ export function BtcView(
     try {
       f();
     } catch (e) {
-      setError(btcErrorMessage(e));
+      setError(captureBtcErrorMessage(e));
     }
   };
 
@@ -214,7 +217,7 @@ export function BtcView(
     setReview(undefined);
     setApproved(false);
     setSigned(undefined);
-    setBroadcastId(undefined);
+    setBroadcastOutcome(undefined);
     setPicked((cur) => new Set([...cur].filter((id) => scan?.found.some((f) => `${f.txid}:${String(f.vout)}` === id && sweepable(f)) === true)));
   };
 
@@ -236,8 +239,8 @@ export function BtcView(
     clearFlowState();
     return [
       next === undefined
-        ? { kind: 'warn', text: t('btc.headers.scanDiscarded') }
-        : { kind: 'warn', text: t('btc.headers.resultsDropped', { height: String(next.toHeight), count: String(dropped.length) }) },
+        ? { kind: 'warn', text: { key: 'btc.headers.scanDiscarded' } }
+        : { kind: 'warn', text: { key: 'btc.headers.resultsDropped', values: { height: String(next.toHeight), count: String(dropped.length) } } },
     ];
   };
 
@@ -254,16 +257,16 @@ export function BtcView(
       chain = chainRef.current.chain;
     } else {
       fresh = true;
-      if (live()) setHeaderProgress(t('btc.headers.loading', { height: '0' }));
+      if (live()) setHeaderProgress({ key: 'btc.headers.loading', values: { height: '0' } });
       const loaded = await loadHeaderChain(net, headerStorage.storeFor(net.id), {
-        onProgress: (h) => { if (live()) setHeaderProgress(t('btc.headers.loading', { height: String(h) })); },
+        onProgress: (h) => { if (live()) setHeaderProgress({ key: 'btc.headers.loading', values: { height: String(h) } }); },
       });
       chain = loaded.chain;
       if (forgetGen.current === gen) chainRef.current = { netId: net.id, chain };
-      if (loaded.loaded === 'restored') notes.push({ kind: 'info', text: t('btc.headers.restored', { count: String(chain.tipHeight) }) });
-      if (loaded.loaded === 'discarded') notes.push({ kind: 'warn', text: t('btc.headers.discarded') });
+      if (loaded.loaded === 'restored') notes.push({ kind: 'info', text: { key: 'btc.headers.restored', values: { count: String(chain.tipHeight) } } });
+      if (loaded.loaded === 'discarded') notes.push({ kind: 'warn', text: { key: 'btc.headers.discarded' } });
     }
-    if (live()) setHeaderProgress(t('btc.headers.checking'));
+    if (live()) setHeaderProgress({ key: 'btc.headers.checking' });
     const before = chain.tipHash;
     let out: HeaderSyncOutcome | undefined;
     let failure: unknown;
@@ -275,7 +278,7 @@ export function BtcView(
         signal,
         canSave: () => forgetGen.current === gen,
         ...props.headerSyncLimits,
-        onProgress: (h) => { if (live()) setHeaderProgress(t('btc.headers.progress', { height: String(h) })); },
+        onProgress: (h) => { if (live()) setHeaderProgress({ key: 'btc.headers.progress', values: { height: String(h) } }); },
       });
     } catch (e) {
       failure = e;
@@ -288,26 +291,26 @@ export function BtcView(
     const dropped = forgetGen.current !== gen || (!fresh && chain.tipHash === before) ? [] : applyChainToScan(chain);
     if (forgetGen.current === gen) setCheckedTip(chain.tipHeight);
     const partial = out ?? (failure instanceof HeaderSyncError ? failure.partial : undefined);
-    if (partial?.reorgFrom !== undefined) notes.push({ kind: 'warn', text: t('btc.headers.reorg', { height: String(partial.reorgFrom) }) });
-    if (partial?.lessWork === true) notes.push({ kind: 'warn', text: t('btc.headers.lessWork') }, { kind: 'info', text: t('btc.headers.conflictHint') });
+    if (partial?.reorgFrom !== undefined) notes.push({ kind: 'warn', text: { key: 'btc.headers.reorg', values: { height: String(partial.reorgFrom) } } });
+    if (partial?.lessWork === true) notes.push({ kind: 'warn', text: { key: 'btc.headers.lessWork' } }, { kind: 'info', text: { key: 'btc.headers.conflictHint' } });
     notes.push(...dropped);
     if (out === undefined) {
       const code = failure instanceof SilentPaymentError ? failure.code : undefined;
-      const reason =
-        code === 'FORK_TOO_DEEP' ? t('btc.headers.forkTooDeep', { max: String(DEFAULT_FORK_HEADERS) })
-          : code === 'FORK_UNRESOLVED' ? t('btc.headers.forkUnresolved')
-            : code === 'UNSUPPORTED' ? t('btc.headers.tooMany', { max: String(props.headerSyncLimits?.maxHeaders ?? MAX_HEADERS) })
-              : code === 'INVALID_HEADER' ? t('btc.headers.claimRejected')
-              : btcErrorMessage(failure);
-      notes.push({ kind: 'error', text: t('btc.headers.failed', { reason }) });
-      if (code === 'FORK_TOO_DEEP' || code === 'FORK_UNRESOLVED') notes.push({ kind: 'info', text: t('btc.headers.conflictHint') });
+      const reason: MessageDescriptor =
+        code === 'FORK_TOO_DEEP' ? { key: 'btc.headers.forkTooDeep', values: { max: String(DEFAULT_FORK_HEADERS) } }
+          : code === 'FORK_UNRESOLVED' ? { key: 'btc.headers.forkUnresolved' }
+            : code === 'UNSUPPORTED' ? { key: 'btc.headers.tooMany', values: { max: String(props.headerSyncLimits?.maxHeaders ?? MAX_HEADERS) } }
+              : code === 'INVALID_HEADER' ? { key: 'btc.headers.claimRejected' }
+              : captureBtcErrorMessage(failure);
+      notes.push({ kind: 'error', text: { key: 'btc.headers.failed', values: { reason } } });
+      if (code === 'FORK_TOO_DEEP' || code === 'FORK_UNRESOLVED') notes.push({ kind: 'info', text: { key: 'btc.headers.conflictHint' } });
       if (live()) setHeaderNotes(notes);
       return undefined;
     }
-    if (out.refused) notes.push({ kind: 'warn', text: t('btc.headers.otherTab') });
-    else if (!headerStorage.persistent || !out.saved) notes.push({ kind: 'info', text: t('btc.headers.notSaved') });
-    notes.push({ kind: 'ok', text: t('btc.headers.verified', { height: String(chain.tipHeight), hash: chain.tipHash }) });
-    if (out.more) notes.push({ kind: 'info', text: t('btc.headers.more', { height: String(chain.tipHeight) }) });
+    if (out.refused) notes.push({ kind: 'warn', text: { key: 'btc.headers.otherTab' } });
+    else if (!headerStorage.persistent || !out.saved) notes.push({ kind: 'info', text: { key: 'btc.headers.notSaved' } });
+    notes.push({ kind: 'ok', text: { key: 'btc.headers.verified', values: { height: String(chain.tipHeight), hash: chain.tipHash } } });
+    if (out.more) notes.push({ kind: 'info', text: { key: 'btc.headers.more', values: { height: String(chain.tipHeight) } } });
     if (!live()) return undefined;
     setHeaderNotes(notes);
     return chain;
@@ -332,7 +335,7 @@ export function BtcView(
       } catch {
         ok = false;
       }
-      if (live()) setHeaderNotes([{ kind: ok ? 'info' : 'error', text: ok ? t('btc.headers.forgotten') : t('btc.headers.forgetFailed') }]);
+      if (live()) setHeaderNotes([{ kind: ok ? 'info' : 'error', text: ok ? { key: 'btc.headers.forgotten' } : { key: 'btc.headers.forgetFailed' } }]);
     })();
   };
 
@@ -346,7 +349,7 @@ export function BtcView(
         await c.checkNetwork(net, signal);
         await checkHeaders(c, signal, live);
       } catch (e) {
-        if (live()) setError(btcErrorMessage(e));
+        if (live()) setError(captureBtcErrorMessage(e));
       } finally {
         if (live()) setBusy(false);
       }
@@ -364,17 +367,17 @@ export function BtcView(
         const c = client();
         await c.checkNetwork(net, signal);
         const from = Number(fromHeight);
-        if (fromHeight.trim() === '' || !Number.isInteger(from) || from < 0) throw new Error(t('btc.scan.firstHeightRequired'));
+        if (fromHeight.trim() === '' || !Number.isInteger(from) || from < 0) throw new UserFacingError({ key: 'btc.scan.firstHeightRequired' });
         const headers = await checkHeaders(c, signal, live);
         if (headers === undefined) return;
-        if (from > headers.tipHeight) throw new Error(t('btc.headers.behind', { height: String(headers.tipHeight) }));
+        if (from > headers.tipHeight) throw new UserFacingError({ key: 'btc.headers.behind', values: { height: String(headers.tipHeight) } });
         const res = await scanForPayments({
           client: c,
           wallet,
           fromHeight: from,
           headers,
           signal,
-          onBlock: (h) => { if (live()) setScanNote(t('btc.scan.foundBlock', { height: String(h) })); },
+          onBlock: (h) => { if (live()) setScanNote({ key: 'btc.scan.foundBlock', values: { height: String(h) } }); },
         });
         if (!live()) {
           wipeFound(res.found);
@@ -382,15 +385,15 @@ export function BtcView(
         }
         scanRef.current = res;
         setScan(res);
-        setScanNote(t('btc.scan.scanned', { from: String(res.fromHeight), to: String(res.toHeight) }));
+        setScanNote({ key: 'btc.scan.scanned', values: { from: String(res.fromHeight), to: String(res.toHeight) } });
         // Nothing is selected: spending outputs together links them publicly (PRIVACY-E2E-03), so each is an explicit choice.
       } catch (e) {
         if (live()) {
-          setError(btcErrorMessage(e));
+          setError(captureBtcErrorMessage(e));
           // The server's blocks disagree with the checked headers: say how to recover if that is expected.
           if (e instanceof SilentPaymentError && e.code === 'REORG_DETECTED') {
-            const hint = t('btc.headers.conflictHint');
-            setHeaderNotes((n) => (n.some((x) => x.text === hint) ? n : [...n, { kind: 'info', text: hint }]));
+            const hint: MessageDescriptor = { key: 'btc.headers.conflictHint' };
+            setHeaderNotes((n) => (n.some((x) => x.text.key === hint.key) ? n : [...n, { kind: 'info', text: hint }]));
           }
         }
       } finally {
@@ -399,14 +402,28 @@ export function BtcView(
     })();
   };
 
+  /** Authority edits invalidate pending sign/broadcast work; an attempted request keeps its public reference. */
+  const clearSigning = (): void => {
+    invalidate();
+    setApproved(false);
+    setSigned(undefined);
+    setBroadcastOutcome((current) => current?.phase === 'broadcast-attempted' && current.reference !== undefined
+      ? referencedBroadcastOutcome('broadcast-unknown', current.reference) : current);
+  };
+
+  const clearReview = (): void => {
+    clearSigning();
+    setReview(undefined);
+  };
+
   const doReview = (): void => {
     if (wallet === undefined || scanningRef.current) return;
     guard(() => {
+      clearReview();
       const rate = Number(feeRate);
       setReview(reviewSweep(wallet, selected, destination, rate));
       setApproved(false);
       setSigned(undefined);
-      setBroadcastId(undefined);
     });
   };
 
@@ -419,21 +436,27 @@ export function BtcView(
         const out = await signSweep(wallet, selected, review);
         if (live()) setSigned(out);
       } catch (e) {
-        if (live()) setError(btcErrorMessage(e));
+        if (live()) setError(captureBtcErrorMessage(e));
       }
     })();
   };
 
   const doBroadcast = (): void => {
-    if (signed === undefined || !reviewChecked(review)) return;
+    if (signed === undefined || !approved || !reviewChecked(review) || currentBroadcast?.phase === 'broadcast-attempted' || currentBroadcast?.phase === 'pending-confirmation') return;
     setError(undefined);
     const { live } = begin();
     void (async () => {
+      let requested = false;
       try {
-        const id = await client().broadcast(signed.rawHex);
-        if (live()) setBroadcastId(id);
+        const c = client();
+        requested = true;
+        setBroadcastOutcome(referencedBroadcastOutcome('broadcast-attempted', signed.txid));
+        const id = await c.broadcast(signed.rawHex);
+        if (live()) setBroadcastOutcome(referencedBroadcastOutcome(id === signed.txid ? 'pending-confirmation' : 'verification-incomplete', signed.txid));
       } catch (e) {
-        if (live()) setError(btcErrorMessage(e));
+        if (!live()) return;
+        if (requested) setBroadcastOutcome(referencedBroadcastOutcome('broadcast-unknown', signed.txid));
+        else setError(captureBtcErrorMessage(e));
       }
     })();
   };
@@ -466,7 +489,12 @@ export function BtcView(
       <Notice kind="warn" title={t('btc.warning.title')}>
         {t('btc.warning.body')}
       </Notice>
-      {error !== undefined && <Notice kind="error">{error}</Notice>}
+      {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
+      {broadcastOutcome !== undefined && <div data-transaction-phase={broadcastOutcome.phase}>
+                <Notice kind={broadcastOutcome.phase === 'pending-confirmation' ? 'ok' : broadcastOutcome.phase === 'broadcast-attempted' ? 'info' : 'error'} title={t(TRANSACTION_PHASE_KEYS[broadcastOutcome.phase])}>
+                  {displayMessage(broadcastOutcome.message, t)}
+                </Notice>
+              </div>}
 
       <div className="panel">
         <h3>{t('btc.section.network')}</h3>
@@ -494,7 +522,7 @@ export function BtcView(
           hint={t('btc.server.hint')}
         >
           {(id, d) => (
-            <input id={id} aria-describedby={d} type="url" spellCheck={false} autoComplete="off" placeholder={net.urlHint} value={url} onChange={(e) => { setUrl(e.target.value); }} />
+            <input id={id} aria-describedby={d} type="url" spellCheck={false} autoComplete="off" placeholder={net.urlHint} value={url} onChange={(e) => { setUrl(e.target.value); clearReview(); }} />
           )}
         </Field>
       </div>
@@ -584,8 +612,8 @@ export function BtcView(
           <section aria-labelledby="btc-headers-h">
             <h4 id="btc-headers-h">{t('btc.headers.heading')}</h4>
             {headerStorage.persistent && <p className="hint">{t('btc.headers.storageNote')}</p>}
-            {headerProgress !== undefined && <p role="status">{headerProgress}</p>}
-            {headerNotes.map((n) => <Notice key={n.text} kind={n.kind}>{n.text}</Notice>)}
+            {headerProgress !== undefined && <p role="status">{displayMessage(headerProgress, t)}</p>}
+            {headerNotes.map((n) => <Notice key={n.text.key} kind={n.kind}>{displayMessage(n.text, t)}</Notice>)}
             {confirmForget ? (
               <div role="group" aria-label={t('btc.headers.forget')}>
                 <p>{t('btc.headers.forgetConfirm')}</p>
@@ -601,9 +629,9 @@ export function BtcView(
           <details>
             <summary>{t('btc.scan.details')}</summary>
             <p>{t('btc.scan.checked')}</p>
-            <ul>{SCAN_CHECKS.map((c) => <li key={c}>{c}</li>)}</ul>
+            <ul>{SCAN_CHECK_KEYS.map((key) => <li key={key}>{t(key)}</li>)}</ul>
             <p>{t('btc.scan.limits')}</p>
-            <ul>{SCAN_LIMITS.map((c) => <li key={c}>{c}</li>)}</ul>
+            <ul>{SCAN_LIMIT_KEYS.map((key) => <li key={key}>{t(key)}</li>)}</ul>
             <div className="table-wrap">
               <table>
                 <caption>{t('btc.scan.sourceCaption')}</caption>
@@ -611,14 +639,14 @@ export function BtcView(
                   <tr><th>{t('btc.scan.mode')}</th><th>{t('btc.scan.keyLeaves')}</th><th>{t('btc.scan.serverLearns')}</th><th>{t('btc.scan.available')}</th></tr>
                 </thead>
                 <tbody>
-                  {SCAN_MODES.map((m) => (
-                    <tr key={m.mode}><td>{m.mode}</td><td>{m.keyLeaves}</td><td>{m.serverLearns}</td><td>{m.available}</td></tr>
+                  {SCAN_MODE_KEYS.map((m) => (
+                    <tr key={m.mode}><td>{t(m.mode)}</td><td>{t(m.keyLeaves)}</td><td>{t(m.serverLearns)}</td><td>{t(m.available)}</td></tr>
                   ))}
                 </tbody>
               </table>
             </div>
           </details>
-          {scanNote !== undefined && <p role="status">{scanNote}</p>}
+          {scanNote !== undefined && <p role="status">{displayMessage(scanNote, t)}</p>}
           {scan !== undefined && (
             <>
               <p>
@@ -655,8 +683,7 @@ export function BtcView(
                                   if (e.target.checked) next.add(id);
                                   else next.delete(id);
                                   setPicked(next);
-                                  setReview(undefined);
-                                  setSigned(undefined);
+                                  clearReview();
                                 }}
                               />
                             </td>
@@ -682,7 +709,7 @@ export function BtcView(
           <h3>{t('btc.section.sweep')}</h3>
           <Field label={t('btc.sweep.destinationLabel')} hint={t('btc.sweep.destinationHint', { network: net.label })}>
             {(id, d) => (
-              <input id={id} aria-describedby={d} className="mono" spellCheck={false} autoComplete="off" value={destination} onChange={(e) => { setDestination(e.target.value); setReview(undefined); setSigned(undefined); }} />
+              <input id={id} aria-describedby={d} className="mono" spellCheck={false} autoComplete="off" value={destination} onChange={(e) => { setDestination(e.target.value); clearReview(); }} />
             )}
           </Field>
           {wallet !== undefined && (
@@ -696,7 +723,7 @@ export function BtcView(
                     const uriParts = new URL(candidate);
                     address = uriParts.searchParams.get('sp') ?? uriParts.pathname;
                   } catch {
-                    setError(t('btc.sweep.invalidQr'));
+                    setError({ key: 'btc.sweep.invalidQr' });
                     return false;
                   }
                 }
@@ -704,13 +731,11 @@ export function BtcView(
                   // The address checks used before signing; no payment has to be selected yet (amounts are checked at review).
                   checkDestination(wallet, address);
                   setDestination(address);
-                  setReview(undefined);
-                  setApproved(false);
-                  setSigned(undefined);
+                  clearReview();
                   setError(undefined);
                   return true;
                 } catch (e) {
-                  setError(btcErrorMessage(e));
+                  setError(captureBtcErrorMessage(e));
                   return false;
                 }
               }}
@@ -718,7 +743,7 @@ export function BtcView(
           )}
           <Field label={t('btc.sweep.feeLabel')} hint={t('btc.sweep.feeHint')}>
             {(id, d) => (
-              <input id={id} aria-describedby={d} inputMode="decimal" value={feeRate} onChange={(e) => { setFeeRate(e.target.value); setReview(undefined); setSigned(undefined); }} />
+              <input id={id} aria-describedby={d} inputMode="decimal" value={feeRate} onChange={(e) => { setFeeRate(e.target.value); clearReview(); }} />
             )}
           </Field>
           <button type="button" className="btn btn-primary" disabled={scanning || selected.length === 0 || destination.trim() === ''} onClick={doReview}>
@@ -741,18 +766,18 @@ export function BtcView(
                 <dt>{t('btc.review.totalIn')}</dt><dd>{formatBtc(review.totalSats)}</dd>
                 <dt>{t('btc.review.fee')}</dt><dd>{formatBtc(review.feeSats)} {t('btc.review.feeDetail', { sats: String(review.feeSats), rate: String(review.feeRate), vsize: String(review.vsize) })}</dd>
                 <dt>{t('btc.review.receives')}</dt><dd>{formatBtc(review.sendSats)}</dd>
-                <dt>{t('btc.review.destination', { kind: review.destinationKind })}</dt><dd><Mono>{review.destination}</Mono></dd>
+                <dt>{t('btc.review.destination', { kind: t(review.destinationKind === 'silent payment address' ? 'btc.destination.silent' : 'btc.destination.regular') })}</dt><dd><Mono>{review.destination}</Mono></dd>
                 <dt>{t('btc.review.change')}</dt><dd>{t('btc.review.changeNone')}</dd>
               </dl>
               {review.destinationKind === 'silent payment address' && (
                 <p className="hint">{t('btc.review.silentKeyHint')}</p>
               )}
-              {review.warnings.map((w) => <Notice key={w} kind="warn">{w}</Notice>)}
+              {review.warningMessages.map((w) => <Notice key={w.key} kind="warn">{displayMessage(w, t)}</Notice>)}
               <label>
-                <input type="checkbox" checked={approved} onChange={(e) => { setApproved(e.target.checked); }} />{' '}
+                <input type="checkbox" checked={approved} onChange={(e) => { if (!e.target.checked) clearSigning(); else setApproved(true); }} />{' '}
                 {t('btc.review.approve')}
               </label>
-              <p className="hint">{SIGNER_DESCRIPTION}</p>
+              <p className="hint">{t('btc.sweep.signer')}</p>
               <p>
                 <button type="button" className="btn btn-primary" disabled={scanning || !approved || signed !== undefined || !inputsChecked(review)} onClick={doSign}>
                   {t('btc.review.sign')}
@@ -765,12 +790,12 @@ export function BtcView(
             <section className="card" aria-labelledby="btc-signed-h">
               <h4 id="btc-signed-h">{t('btc.signed.heading')}</h4>
               <p>{t('btc.signed.txid')} <Mono>{signed.txid}</Mono></p>
-              <p>{t('btc.signed.notSent')}</p>
+              {currentBroadcast === undefined && <p>{t('btc.signed.notSent')}</p>}
               <CopyButton text={signed.rawHex} label={t('btc.signed.copyRaw')} />{' '}
-              <button type="button" className="btn btn-primary" disabled={scanning || broadcastId !== undefined || !inputsChecked(review)} onClick={doBroadcast}>
+              <button type="button" className="btn btn-primary" disabled={scanning || (currentBroadcast?.phase === 'pending-confirmation' || currentBroadcast?.phase === 'broadcast-attempted') || !inputsChecked(review)} onClick={doBroadcast}>
                 {t('btc.broadcast.action', { network: net.label })}
               </button>
-              {broadcastId !== undefined && <Notice kind="ok" title={t('btc.broadcast.title')}>{t('btc.broadcast.accepted')} <Mono>{broadcastId}</Mono>.</Notice>}
+
             </section>
           )}
         </div>
@@ -778,3 +803,5 @@ export function BtcView(
     </section>
   );
 }
+
+// i18n-use: btc.headers.scanDiscarded btc.headers.resultsDropped btc.headers.loading btc.headers.restored btc.headers.discarded btc.headers.checking btc.headers.progress btc.headers.reorg btc.headers.lessWork btc.headers.conflictHint btc.headers.forkTooDeep btc.headers.forkUnresolved btc.headers.tooMany btc.headers.claimRejected btc.headers.failed btc.headers.otherTab btc.headers.notSaved btc.headers.verified btc.headers.more btc.headers.forgotten btc.headers.forgetFailed btc.scan.firstHeightRequired btc.headers.behind btc.scan.foundBlock btc.scan.scanned btc.sweep.invalidQr

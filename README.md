@@ -8,10 +8,13 @@ The goal is to reduce address reuse and limit routine exposure of invoice detail
 
 ## Status (read this first)
 
-The current development stack is **#84 → #88 → #89**, followed by the policy/localization continuation.
-It is not merged into `main`. Use the [current completion gates](docs/audits/08-completion-gates.md)
-and [November 9 handoff](docs/handoffs/PRODUCT_CONTINUATION_2026-11-09.md) for source-pinned results;
-the older test counts below are historical evidence only.
+The product development stack is **#84 → #88 → #89 → #90 → #93**. It is not merged into `main`.
+The [product completion ledger](docs/handoffs/PRODUCT_COMPLETION_HANDOFF.md) records the selected source,
+implemented changes, exact qualification and remaining gates. The separate merchant/CLI workstream
+has its own branches and acceptance evidence; it is not silently included in this product branch.
+Use the [current completion gates](docs/audits/08-completion-gates.md) and
+[#90 handoff](docs/handoffs/POLICY_LOCALIZATION_CONTINUATION_2026-11-09.md) for predecessor evidence.
+The older test counts below are historical snapshots only.
 
 | Question | Honest answer |
 |---|---|
@@ -19,7 +22,7 @@ the older test counts below are historical evidence only.
 | Are public-chain deployments qualified? | **No.** Local test deployments exist only as fixtures; [`deployments/`](deployments/) holds no qualified public deployment. Without an accepted manifest the web app disables ordinary payment. |
 | Which chains are enabled in code? | Seven testnets are enabled in [`chains.ts`](packages/chain-adapters/src/config/chains.ts): Ethereum, Base, OP and Arbitrum Sepolia, Polygon Amoy, BNB Smart Chain Testnet and Avalanche Fuji. Mainnets remain disabled. |
 | What execution evidence exists? | Unit tests, local Anvil integrations and hosted Chromium journeys are recorded in the handoffs. They do not qualify real wallets, funded public-chain operations, Safari or physical devices. |
-| Is anyone hosting it? | **No.** Hosting is intentionally not configured; see [Hosting](#hosting). |
+| Is production hosting qualified? | **No.** A Pages prototype is documented, but no qualified production host is recorded. See [Hosting](#hosting). |
 | Can I use it with real money? | **No.** Do not. Contracts are immutable once deployed and the audit round has open findings. |
 
 Open work is tracked in the audits: [completeness audit](docs/audits/01-completeness-audit.md) (gap list G-01..G-33), [contracts review](docs/audits/02-security-review-contracts.md), [client and relayer review](docs/audits/03-security-review-client-relayer.md) and [design analysis](docs/audits/04-independent-design-analysis.md). Several fixes are being applied by other contributors while this README is written; where a document describes a change that may not have landed yet it says so.
@@ -39,7 +42,7 @@ Open work is tracked in the audits: [completeness audit](docs/audits/01-complete
 | `packages/tx-review` | Pre-sign decoder and reviewer for transactions and EIP-712 payloads. Used by web sweep transaction review. |
 | `packages/address-safety` | Address and display-text safety checks (strict parse, lookalikes, fingerprints, payee trust, text sanitising). Used by web sweep and display-text flows. |
 | `packages/ops-monitor` | Operator-run, read-only chain-side probes (manifest drift, fee-recipient health, release integrity, hot key, announcement rate, RPC disagreement). **Not wired in anywhere; never run against a live network.** |
-| `apps/web` | React 19 + Vite static app: seller keys, invoice creation, pay, scan, sweep, settings. |
+| `apps/web` | React 19 + Vite static app: seller keys, invoice creation, pay, scan, sweep, receipt verification, public device pairing, local reconciliation, backups and settings. Full and lean builds intentionally expose different optional features; see the [product guide](docs/user/product-guide.md). |
 | `apps/relayer` | Node gas-sponsorship relay service for sweeps (stateless quotes, simulation, budgets, circuit breaker). |
 | `deployments/` | Manifest schema and format notes. No real manifests yet. See [`docs/DEPLOYMENT_MANIFEST.md`](docs/DEPLOYMENT_MANIFEST.md). |
 | `test-vectors/` | Pinned scheme-1 vectors and their provenance. |
@@ -78,7 +81,10 @@ CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs these jobs; doc
 - `secrets-and-egress`: `scripts/scan-secrets.sh`, `scripts/check-actions-pinned.sh`.
 - Required-check gates: `typescript` (needs `ts-typecheck`, `ts-lint`, `ts-check`, `ts-test`, `ts-test-relayer`) and `contracts` (needs the four contracts jobs). `e2e` is not part of either gate.
 
-Not verified by me while updating this README (read from `package.json` and the workflow only, not run): every command in this section, including the `release:*` scripts and `npm audit`.
+The commands above describe the available gates. Executed checks, source revisions and unavailable
+checks for this assignment are recorded in the [product completion ledger](docs/handoffs/PRODUCT_COMPLETION_HANDOFF.md).
+Do not interpret a listed command as a passing result. The following October results are retained as
+historical evidence; their earlier failures and skips do not establish the current branch's status.
 
 Verified on a clean checkout of an earlier `HEAD` on 2026-10-21 (Node 22.22.0, npm 10.9.4): `npm ci --ignore-scripts`, `npm run build:libs` and `npm test` succeed. Test counts at that time: btc-silent-payments 286, chain-adapters 216, core-crypto 54, invoice-schema 174, relayer 192 passed + 1 skipped, web 320. The skipped relayer test is the anvil end-to-end test; it skips when `anvil` or `packages/contracts/out` is missing (set `ANVIL_BIN`, run `forge build` first). The newer [`docs/remote/STATUS.md`](docs/remote/STATUS.md) records per-package counts and coverage from the latest local run (2026-10-21: e.g. btc-silent-payments 299, policy-scheme 60, relayer 193, forge 377 tests in 23 suites) and its failures (one `forge coverage --ir-minimum` test fails). Counts change as work lands; treat them as a snapshot, not a guarantee. Note: CI sets `REQUIRE_ANVIL=1` for the relayer, but `apps/relayer/src/e2e.anvil.test.ts` does not read it yet (only `packages/policy-scheme` does), so that e2e can still skip silently there.
 
@@ -98,7 +104,8 @@ is needed. Run the complete test suite, including the adversarial cases under `t
 
 Forge result when this README was first written: 231 tests passed without `test/audit/`, plus 43 audit PoC tests. [`docs/remote/STATUS.md`](docs/remote/STATUS.md) (2026-10-21 run) records 377 passing in 23 suites, `forge fmt --check` and `forge snapshot --check` passing, and one test failing only under `forge coverage --ir-minimum`.
 
-Not run anywhere yet: mainnet-fork tests, Firefox/Safari end-to-end, any real wallet. Run only locally (sandbox, not in CI): Echidna and mutation testing, below.
+This product work does not establish public-chain acceptance, Firefox/Safari coverage or physical-wallet
+qualification. Echidna and mutation results below belong to their linked local-run reports.
 
 ### GhostPayPolicyRouter
 
@@ -130,7 +137,7 @@ Start with these, in order:
 5. [Threat model](docs/threat-model/THREAT_MODEL.md) and [Security policy](SECURITY.md)
 6. [Deployment manifest](docs/DEPLOYMENT_MANIFEST.md) and [third-party register](THIRD_PARTY.md)
 
-For users (plain language): [docs/user/](docs/user/README.md). For operators: [docs/operators/](docs/operators/) (relayer runbook, deployment runbook, mirror hosting, local scanner and RPC, chain-enablement checklist, release and verification). Per-feature security reviews: [docs/reviews/](docs/reviews/).
+For users (plain language): the [product guide](docs/user/product-guide.md), [merchant setup](docs/guides/getting-started-merchants.md), [technology attribution](docs/user/technology-attribution.md), and [user-guide index](docs/user/README.md). The built website includes local Help and Privacy pages. For operators: [docs/operators/](docs/operators/) (relayer runbook, deployment runbook, mirror hosting, local scanner and RPC, chain-enablement checklist, release and verification). Per-feature security reviews: [docs/reviews/](docs/reviews/).
 
 Older, broader planning documents (partly superseded; stale parts are annotated in place):
 

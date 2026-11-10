@@ -24,13 +24,13 @@ View tags **save computation**. They do **not** reduce the logs you download, an
 ## Verify before you deliver (most important rule)
 
 - Anyone can derive a valid one-time address from your public meta-address and post an announcement claiming any amount. Your scanner lists it because the keys match. **The amount is the poster's claim.**
-- The app currently shows announced amounts without checking the on-chain balance (audit S3-02, D4; a fix is in progress). **Check the one-time address balance on a block explorer or your own node.**
-- Wait for enough confirmations: the app says "included", not "final".
+- The scanner distinguishes unverified claims from payment evidence checked against transaction/receipt data and the configured confirmation depth. Review that status and the relevant chain facts before delivering goods; a balance alone does not prove that an invoice was paid.
+- The configured confirmation-depth check is distinct from independent finality verification; an RPC disagreement or reorganisation can change the result.
 - Match payments to balances, not rows. Replayed announcements can appear as extra rows.
 
 ## A customer says they paid but you see nothing
 
-A dishonest or buggy payer can publish a wrong view tag, so your tag-filtered scan skips the payment. Ask for the transaction hash, find the address that received the tokens, and test it with your keys. A "deep scan" that ignores view tags is **planned, not built**.
+A dishonest or buggy payer can publish a wrong view tag, so your tag-filtered scan skips the payment. Ask for the transaction hash, find the address that received the tokens, and test it with your keys. The opt-in **Deep scan (also check wrong view tags)** checks router announcements without the view-tag filter, at higher CPU cost, while still verifying the full one-time address. Direct announcements stay tag-filtered.
 
 ## What your RPC provider learns
 
@@ -38,7 +38,7 @@ Your IP, which blocks and addresses you query (including a one-time address when
 
 ## Private tags
 
-You can label a match ("order 1042"). Tags are encrypted in this browser with keys derived from your viewing key (ciphertext in IndexedDB), lock after the idle time you set, and can be wiped. They do not sync between devices, have no encrypted export yet, and disappear if you clear site data.
+You can label a match ("order 1042"). Tags are encrypted in this browser with keys derived from your viewing key (ciphertext in IndexedDB), lock after the idle time you set, and can be wiped. They do not automatically sync between devices. The full build can export and import an encrypted tag archive under **Seller keys**; this archive is separate from the keystore. Clearing site data deletes the local copy.
 
 ## Reorgs
 

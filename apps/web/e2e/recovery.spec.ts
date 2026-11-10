@@ -160,14 +160,14 @@ async function exportBackup(page: Page, pass: string): Promise<string> {
 }
 
 async function openImport(page: Page): Promise<void> {
-  const fileInput = view(page).getByLabel('Keystore file');
+  const fileInput = view(page).getByLabel('Keystore file', { exact: true });
   if (!(await fileInput.isVisible())) await view(page).getByText('Import an encrypted keystore', { exact: true }).click();
   await expect(fileInput).toBeVisible();
 }
 
 async function submitImport(page: Page, name: string, text: string, pass: string): Promise<void> {
   await openImport(page);
-  await view(page).getByLabel('Keystore file').setInputFiles({ name, mimeType: 'application/json', buffer: Buffer.from(text, 'utf8') });
+  await view(page).getByLabel('Keystore file', { exact: true }).setInputFiles({ name, mimeType: 'application/json', buffer: Buffer.from(text, 'utf8') });
   await view(page).getByLabel('Passphrase', { exact: true }).fill(pass);
   await view(page).getByRole('button', { name: 'Decrypt and load' }).click();
 }
@@ -280,7 +280,7 @@ test('damaged backup is refused and an occupied destination vault is never overw
     expect(await vaultDigest(d.page)).toBe(digestD);
 
     // Malformed envelope: refused before any key install.
-    await view(d.page).getByLabel('Keystore file').setInputFiles({ name: 'bad.json', mimeType: 'application/json', buffer: Buffer.from('{"v":1}', 'utf8') });
+    await view(d.page).getByLabel('Keystore file', { exact: true }).setInputFiles({ name: 'bad.json', mimeType: 'application/json', buffer: Buffer.from('{"v":1}', 'utf8') });
     await view(d.page).getByLabel('Passphrase', { exact: true }).fill(PASS_A);
     await view(d.page).getByRole('button', { name: 'Decrypt and load' }).click();
     await kdfExpect(view(d.page).getByText(/not a valid GhostPay keystore/)).toBeVisible();
@@ -290,7 +290,7 @@ test('damaged backup is refused and an occupied destination vault is never overw
     expect(await vaultDigest(d.page)).toBe(digestD);
 
     // Occupied destination: valid import loads into memory only; the existing vault is neither replaced nor deleted.
-    await view(d.page).getByLabel('Keystore file').setInputFiles({ name: 'ghostpay-keystore.json', mimeType: 'application/json', buffer: Buffer.from(backup, 'utf8') });
+    await view(d.page).getByLabel('Keystore file', { exact: true }).setInputFiles({ name: 'ghostpay-keystore.json', mimeType: 'application/json', buffer: Buffer.from(backup, 'utf8') });
     await view(d.page).getByLabel('Passphrase', { exact: true }).fill(PASS_A);
     await view(d.page).getByRole('button', { name: 'Decrypt and load' }).click();
     await kdfExpect(view(d.page).getByText('Keystore decrypted; keys are in memory.', { exact: true })).toBeVisible();

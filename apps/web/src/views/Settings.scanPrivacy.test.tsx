@@ -20,6 +20,18 @@ async function open(): Promise<ReturnType<typeof userEvent.setup>> {
 const stored = (): Record<string, unknown> => JSON.parse(window.localStorage.getItem(SCAN_PRIVACY_KEY) ?? '{}') as Record<string, unknown>;
 
 describe('Settings: scan privacy', () => {
+  it('keeps a continuous heading outline for screen-reader navigation', async () => {
+    await open();
+    const headings = screen.getAllByRole('heading');
+    let previous = 0;
+    for (const heading of headings) {
+      const level = Number(heading.getAttribute('aria-level') ?? heading.tagName.slice(1));
+      expect(level, heading.textContent ?? '').toBeLessThanOrEqual(previous + 1);
+      previous = level;
+    }
+    expect(within(screen.getByRole('group', { name: 'Scan privacy' })).getByRole('heading', { name: 'What each party learns' })).toBeTruthy();
+  });
+
   it('explains the browser limits plainly and never claims anonymity', async () => {
     await open();
     const section = screen.getByRole('group', { name: 'Scan privacy' });

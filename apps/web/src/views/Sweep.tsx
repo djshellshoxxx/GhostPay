@@ -32,6 +32,7 @@ export function Sweep(): ReactNode {
   const services = useServices();
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
+  const latestT = useRef(t); latestT.current = t;
   const sel = app.sweepTarget;
   const chainId = sel?.chainId;
   const manifest = useManifest(chainId);
@@ -131,7 +132,7 @@ export function Sweep(): ReactNode {
     const epoch = authEpoch.current;
     const liveSession = captureSessionGuard();
     const assertCurrent = (): void => {
-      if (authEpoch.current !== epoch) throw new UserFacingError(t('sweep.vaultCancelledKeys'));
+      if (authEpoch.current !== epoch) throw new UserFacingError({ key: 'sweep.vaultCancelledKeys' });
       liveSession();
     };
     setBusy(true);
@@ -161,7 +162,7 @@ export function Sweep(): ReactNode {
   const verified = async (rpc: Awaited<ReturnType<typeof app.getRpc>>): Promise<void> => {
     if (manifest === undefined) throw new Error('state');
     const checked = await verifyManifestForFlow(manifest, rpc);
-    if (checked.status !== 'loaded') throw new UserFacingError(checked.status === 'invalid' ? checked.reason : t('sweep.paymentsDisabledChain'));
+    if (checked.status !== 'loaded') throw new UserFacingError(checked.status === 'invalid' ? checked.reason : { key: 'sweep.paymentsDisabledChain' });
   };
 
   const onQuote = (): void => {
@@ -206,7 +207,7 @@ export function Sweep(): ReactNode {
         }
         // Spec 04: a permit or grief-limit refusal gets its own honest text; never retried automatically.
         const permitKey = sweepPermitRefusalKey(e);
-        if (permitKey !== undefined) throw new UserFacingError(sweepPermitSuggestsDirect(permitKey) ? `${t(permitKey)} ${t('sweep.permit.directFallback')}` : t(permitKey));
+        if (permitKey !== undefined) throw new UserFacingError(sweepPermitSuggestsDirect(permitKey) ? { key: 'sweep.permit.withFallback', values: { reason: { key: permitKey }, fallback: { key: 'sweep.permit.directFallback' } } } : { key: permitKey });
         throw e;
       }
       setHash(submitted);
@@ -214,7 +215,7 @@ export function Sweep(): ReactNode {
       // Compare-and-swap: a status check may already have resolved this order (and a newer lock may exist) while the
       // relayer was answering; never overwrite anything but the lock this flow created.
       if (handoff.lock !== undefined) resolveSweepAttempt(handoff.lock, { ...handoff.lock, expectedHash: submitted.toLowerCase() as `0x${string}`, status: 'submitted' });
-      app.announce(t('sweep.announceRelayer'));
+      app.announce(latestT.current('sweep.announceRelayer'));
       return true;
     });
   };
@@ -260,7 +261,7 @@ export function Sweep(): ReactNode {
       }
       if (handoff.lock !== undefined) resolveSweepAttempt(handoff.lock, { ...handoff.lock, status: res.attempt.status });
       setDryRunSkipped(res.simulation === 'unavailable');
-      app.announce(t('sweep.announceBroadcast'));
+      app.announce(latestT.current('sweep.announceBroadcast'));
       return true;
     });
   };
@@ -269,7 +270,7 @@ export function Sweep(): ReactNode {
     if (isSweepJournalBroken()) throw new SweepJournalUnavailableError();
     const current = getSweepAttempt(chainId, target.owner);
     if (current !== undefined && isUnresolvedAttempt(current)) {
-      throw new UserFacingError(t('sweep.pendingBlocksSigning'));
+      throw new UserFacingError({ key: 'sweep.pendingBlocksSigning' });
     }
   };
 
@@ -278,13 +279,13 @@ export function Sweep(): ReactNode {
     if (isSweepJournalBroken()) throw new SweepJournalUnavailableError();
     const current = getSweepAttempt(chainId, target.owner);
     if (current === undefined || current.order !== undefined || current.nonce === undefined || current.status !== 'unknown-after-handoff') {
-      throw new UserFacingError(t('sweep.resign.nothingPending'));
+      throw new UserFacingError({ key: 'sweep.resign.nothingPending' });
     }
-    if ((current.otherHashes?.length ?? 0) >= MAX_OTHER_HASHES) throw new UserFacingError(t('sweep.resign.limit'));
+    if ((current.otherHashes?.length ?? 0) >= MAX_OTHER_HASHES) throw new UserFacingError({ key: 'sweep.resign.limit' });
     return { ...current, nonce: current.nonce };
   };
 
-  const pendingNote = t(attempt?.order !== undefined ? 'sweep.note.pendingRelayed' : 'sweep.note.pendingDirect');
+  const pendingNote: DisplayMessage = { key: attempt?.order !== undefined ? 'sweep.note.pendingRelayed' : 'sweep.note.pendingDirect' };
 
   const onCheckStatus = (): void => {
     if (attempt === undefined) return;
@@ -294,13 +295,13 @@ export function Sweep(): ReactNode {
       try {
         const rpc = await app.getRpc(attempt.chainId);
         if (rpc === undefined) {
-          setCheckNote(t('sweep.note.noRpc'));
+          setCheckNote({ key: 'sweep.note.noRpc' });
           return;
         }
         const next = await reconcileSweepLock(rpc, attempt);
         if (next.status === attempt.status) setCheckNote(pendingNote);
-        else if (!resolveSweepAttempt(attempt, next)) setCheckNote(t('sweep.note.lockChanged'));
-        else if (attempt.status === 'submitted' && next.status === 'unknown-after-handoff') setCheckNote(t('sweep.note.rpcForgot'));
+        else if (!resolveSweepAttempt(attempt, next)) setCheckNote({ key: 'sweep.note.lockChanged' });
+        else if (attempt.status === 'submitted' && next.status === 'unknown-after-handoff') setCheckNote({ key: 'sweep.note.rpcForgot' });
       } catch (e) {
         setCheckNote(e instanceof UserFacingError ? captureUserMessage(e) : { key: 'sweep.note.checkFailed' });
       } finally {
@@ -312,7 +313,7 @@ export function Sweep(): ReactNode {
   const cancelVaultCheck = (): void => {
     authEpoch.current += 1;
     setVaultPass('');
-    setError(t('sweep.vaultCancelled'));
+    setError({ key: 'sweep.vaultCancelled' });
   };
 
   return (
@@ -442,3 +443,5 @@ export function Sweep(): ReactNode {
     </section>
   );
 }
+
+// i18n-use: sweep.announceBroadcast sweep.announceRelayer sweep.asset sweep.attempt.executed sweep.attempt.expired sweep.attempt.expiredBody sweep.attempt.included sweep.attempt.refused sweep.attempt.refusedBody sweep.attempt.relayerHashUnverified sweep.attempt.replaced sweep.attempt.replacedBody sweep.attempt.reverted sweep.attempt.unknown sweep.attempt.unknownDirect sweep.attempt.unknownRelayed sweep.balanceOnChain sweep.balanceUnknown sweep.cancelVault sweep.chain sweep.checkExplorer sweep.checkStatus sweep.choosePayment sweep.copyHash sweep.destination.label sweep.dryRunUnavailable sweep.feeLegend sweep.getQuote sweep.goToScan sweep.importQr sweep.journalBroken.body sweep.journalBroken.title sweep.keysGone sweep.modeDirect sweep.modeRelayer sweep.noManifest sweep.note.checkFailed sweep.note.lockChanged sweep.note.noRpc sweep.note.pendingDirect sweep.note.pendingRelayed sweep.note.rpcForgot sweep.oneTimeAddress sweep.payerFollow.body sweep.payerFollow.title sweep.paymentsDisabledChain sweep.pendingBlocksSigning sweep.permit.directFallback sweep.permit.withFallback sweep.relayerFee sweep.relayerNeeds sweep.resign.button sweep.resign.hint sweep.resign.limit sweep.resign.nothingPending sweep.signDirect sweep.signRelayer sweep.submitted sweep.title sweep.tokenFallback sweep.tokenNotAllowed sweep.txHash sweep.vaultCancelled sweep.vaultCancelledKeys sweep.vaultChecking sweep.vaultError sweep.vaultPass.hint sweep.vaultPass.label sweep.working sweep.youReceive

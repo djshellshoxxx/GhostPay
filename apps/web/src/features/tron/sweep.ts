@@ -116,6 +116,7 @@ export async function signSweep(p: SignParams): Promise<SignedSweep> {
   if (decoded.kind !== 'trx' || decoded.owner !== found.stealthAddress || decoded.to !== review.destination || decoded.amount !== review.sendSun) {
     throw new TronViewError({ key: 'tron.error.reviewMismatch' });
   }
+  if (signal?.aborted === true) throw new TronViewError({ key: 'tron.error.aborted' });
   const key = deriveTronStealthKey(
     { stealthAddress: found.stealthAddress, memo: found.memo },
     { viewingSecret: wallet.keys.viewingSecret, spendingSecret: wallet.keys.spendingSecret },
@@ -128,3 +129,5 @@ export async function signSweep(p: SignParams): Promise<SignedSweep> {
 }
 
 // i18n-use: chainView.error.sameAddress tron.error.balanceFee chainView.sweep.links tron.sweep.feeReserve tron.sweep.activation tron.error.balanceChanged tron.error.reviewMismatch
+
+// i18n-use: tron.error.aborted
