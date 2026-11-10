@@ -1,5 +1,15 @@
 # ChatGPT randomized source audit ledger — GhostPay
 
+## 2026-11-10 third rotation: hops forwarding source inspection (no independent subagent)
+
+- **Source:** unmodified integration draft #98 exact head `364b1f185fcc2adaedab4ce7b4b14e676b1da3b7`; preceding ledger blob `2488186f20df510ef9b7e6dd0d41e679db1c2953`.
+- **Selection:** sorted 69 `packages/` directories, excluding previously inspected `secret-box` and `ops-monitor`; FNV-1a 32-bit over `<source SHA>|<prior ledger blob SHA>|secret-box,ops-monitor` = **2967400002**; index **18** of 67 eligible selects `packages/hops/`. Next rotation must exclude all three.
+- **Read-only paths:** `packages/hops/src/guard.ts`, `plan.ts`, `execute.ts`, `store.ts`, `machine.ts`, `types.ts`, `relayerSelect.ts`, `execute.test.ts`, `store.test.ts`, `follower.test.ts`, package `README.md`, `DEVIATIONS.md`; reviewed execution, persistence and state-machine caller boundaries.
+- **Trust model:** experimental **testnet-only** delayed forwarding, explicitly described as weak and **not unlinkable**. Address allocator, key-scoped accessor, RPC reads, relayer quotes and submits, clock, random source and optional sealing are caller-injected. User acknowledgement and chain allowlist are enforced at named entry points. Persist-before-sign stores nonce/deadline before sending; signatures are excluded from plan serialization; a failed submission requires nonce/deadline reconciliation instead of immediate resubmission. README expressly disclaims Anvil/real-relayer qualification. Forward-tracing negative tests do not establish privacy.
+- **Observed limitations:** `parsePlan` performs basic structure/presign-key checks but not complete plan semantic revalidation; execution assumes a trusted authenticated store and correct port implementations. No untrusted-plan injection exploit or security bypass was reproduced, so this is a trust-boundary review item **without a severity/vulnerability claim**. Package docs already disclose optional sealing and incomplete deployment/Anvil acceptance. Continue follow-up only with exact caller provenance and a reproducible negative test.
+- **Finding/evidence:** **no new demonstrated or reproduced exploitable defect** in this source-only inspection. No assertions, fuzzing, on-chain e2e, runtime tests or independent security audit executed; no secrets accessed. The separate operator-monitor bounded-network-fetch fix in draft #106 belongs to the primary development lane, not this audit branch.
+- **Concurrency/ownership:** separate sequential read-only audit phase by the same ChatGPT instance; **no second concurrent worker or paid agent**. Only this audit ledger changed. No public security issue was created. Follow SECURITY.md/private reporting for validated nonpublic findings.
+
 ## 2026-11-10 second rotation: operations monitor read-only review (no independent subagent)
 
 - **Source:** unmodified integration candidate PR #98 exact head `364b1f185fcc2adaedab4ce7b4b14e676b1da3b7`; previous audit branch ledger blob `076944b77ecad4c8fe42c9431287d9397d7c318b`.
