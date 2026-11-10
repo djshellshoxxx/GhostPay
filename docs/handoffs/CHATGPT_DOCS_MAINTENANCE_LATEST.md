@@ -1,5 +1,21 @@
 # GhostPay ChatGPT documentation-maintenance ledger
 
+## 2026-11-10 — second pass: release-truth and test traceability
+
+**Pin and ownership.** Source remains draft #98 exact SHA `364b1f185fcc2adaedab4ce7b4b14e676b1da3b7`, not main. Existing docs PR #104 is owned by `chatgpt/zero-codex/docs-wiki-20261110`; no implementation or other owner's branches were changed. Current main last inspected at `bd2652bf1853948594522140a6a0fe0cbe54e32b`.
+
+**Previous draft CI now qualified:** #104 exact preceding head `0502ec3f792f85e0f632291d9643ed92e302cd27` [run 42819503032](https://github.com/djshellshoxxx/GhostPay/actions/runs/42819503032) concluded **success**, with four completed-success guard/change-gating jobs and twelve **skipped** application jobs. This was *not* re-running application unit/browser/contract testing. Other previous docs-only [#102](https://github.com/djshellshoxxx/GhostPay/actions/runs/42819487676) and [#103](https://github.com/djshellshoxxx/GhostPay/actions/runs/42819497628) checks also concluded success under the same change gating. Source #98 retains its own 34/34 successful exact-head GitHub checks, absent Sonar analysis.
+
+**Files and exact commits in this docs branch:**
+- `docs/wiki/Verification-and-Release-Gates.md` — `a1f1b6638600ea9c851bf0938c6d4748f059d1aa`; new requirement → source/test → status matrix, with explicit mock-chain versus B0 local-chain evidence distinction.
+- `docs/operators/release-and-verify.md` — `2e1b47a846d5dba53914f2982e9d9b73ca79efb3`; correct false historical claims that no GitHub workflows ran and CodeQL was absent; **do not** claim the signed-tag release workflow ran. Retain external fingerprint and reproducibility gaps.
+- `docs/wiki/_Sidebar.md` — `f50cef62996c85c359c54d44d63a391180d5b4e5`; add link to verification matrix.
+- `docs/wiki/Developer-Guide.md` — `db88df7eb10e4e5a9f3440e3c82fe28f82c56a6e`; link developer instructions to the matrix.
+
+**Validation:** fetched actual source and exact-head [GitHub check-run API](https://github.com/djshellshoxxx/GhostPay/commit/364b1f185fcc2adaedab4ce7b4b14e676b1da3b7/checks), which reported 34 successful checks including CodeQL; confirmed #102/#103/#104 prior CI job-level success/skip breakdown. Static on-branch link scan: **18 relative markdown wiki links checked across five pages, zero missing target files**. No local tests, browser tests, Forge, npm, Sonar scanning, signed tag, packaging or live wiki publication performed by this docs update.
+
+**Gaps and next:** fresh exact-head CI on these new docs commits is pending reinspection. The live GitHub Wiki remains unsynchronized (no direct wiki-write connector); only draft version-controlled files changed. Source #98 is still draft; SonarCloud D on #84 remains unresolved, #99 remains future-only; #105 new invoice binding tests require their own CI. Future docs pass: check remaining README, operational runbooks and specs against new source heads and actual release gates; preserve owner approvals and pending independent review.
+
 ## 2026-11-10 — first isolated docs/wiki pass
 
 **Source and ownership**
