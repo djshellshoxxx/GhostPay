@@ -420,7 +420,7 @@ test('jobs that run an agent never save a shared cache', () => {
     // The existing openai-agents.yml is a non-executable step fragment with no jobs: section.
     // Do not mistake it for a running agent job; reject any NEW invalid workflow here.
     if (!/^jobs:\s*$/m.test(text)) {
-      assert.equal(file, '.github/workflows/openai-agents.yml', `unexpected workflow with no jobs: ${file}`);
+      assert.equal(file, 'openai-agents.yml', `unexpected workflow with no jobs: ${file}`);
       assert.doesNotMatch(text, /uses:\s*openai\/codex-action@/, `${file}: agent action outside valid jobs`);
       continue;
     }
