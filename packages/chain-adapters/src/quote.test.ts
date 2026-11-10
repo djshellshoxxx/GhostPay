@@ -2,7 +2,8 @@ import fc from 'fast-check';
 import { encodeAbiParameters, getAddress } from 'viem/utils';
 import { describe, expect, it } from 'vitest';
 import { ChainAdapterError } from './errors.js';
-import { FEEDS, createAggregatorReader, fiatToTokenAmount, findFeed, readPrice, type AggregatorReader, type RoundData } from './quote.js';
+import { findChain } from './config/chains.js';
+import { FEEDS, createAggregatorReader, fiatToTokenAmount, findFeed, isQuoteAvailable, readPrice, type AggregatorReader, type RoundData } from './quote.js';
 import { createClient } from './rpc.js';
 import { fakeTransport, noSleep } from './rpc.testutil.js';
 import { SEPOLIA } from './fixtures.testutil.js';
@@ -57,9 +58,26 @@ describe('readPrice', () => {
     const r: AggregatorReader = { decimals: () => Promise.reject(new Error('secret https://k@x')), latestRoundData: () => Promise.resolve(round()) };
     await expect(readPrice(r, FEED, opts)).rejects.toThrow(/^QUOTE_FAILED: feed read failed$/);
   });
-  it('registry is empty until verified', () => {
-    expect(FEEDS).toHaveLength(0);
+  it('registry holds only sourced, checksummed, testnet entries; mainnets and unsourced feeds stay absent', () => {
+    for (const f of FEEDS) {
+      expect(getAddress(f.address)).toBe(f.address);
+      expect(f.sourceRef).toMatch(/^docs\/chains\/SOURCES-\d{4}-\d{2}-\d{2}\.md \(retrieved \d{4}-\d{2}-\d{2}\)$/);
+      expect(f.sourceRef).not.toMatch(/https?:/);
+      expect(findChain(f.chainId)?.testnet).toBe(true);
+      expect(f.quote).toBe('USD');
+    }
     expect(findFeed(1, 'ETH', 'USD')).toBeUndefined();
+    expect(findFeed(8453, 'ETH', 'USD')).toBeUndefined();
+    // Base Sepolia: no Chainlink-published source could be fetched, so it must stay fail-closed.
+    expect(findFeed(84532, 'ETH', 'USD')).toBeUndefined();
+    expect(findFeed(11155111, 'ETH', 'USD')?.address).toBe('0x694AA1769357215DE4FAC081bf1f309aDC325306');
+    expect(findFeed(11155111, 'ETH', 'EUR')).toBeUndefined();
+  });
+  it('isQuoteAvailable is true only where a feed exists', () => {
+    expect(isQuoteAvailable(11155111, 'ETH', 'USD')).toBe(true);
+    expect(isQuoteAvailable(11155111, 'USDC', 'USD')).toBe(false);
+    expect(isQuoteAvailable(84532, 'ETH', 'USD')).toBe(false);
+    expect(isQuoteAvailable(1, 'ETH', 'USD')).toBe(false);
   });
 });
 
@@ -142,8 +160,9 @@ describe('createAggregatorReader (ABI round trip through a fake node)', () => {
 
 import { hasFeedsForChain as _hasFeeds, FEEDS as _FEEDS } from './quote.js';
 describe('hasFeedsForChain (G-03)', () => {
-  it('is false for every chain while FEEDS holds no verified entry, and tracks FEEDS', () => {
+  it('tracks FEEDS exactly and is false for unknown chains', () => {
     for (const c of [1, 11155111, 84532, 999]) expect(_hasFeeds(c)).toBe(_FEEDS.some((f) => f.chainId === c));
-    expect(_FEEDS).toHaveLength(0);
+    expect(_hasFeeds(999)).toBe(false);
+    expect(_hasFeeds(84532)).toBe(false);
   });
 });

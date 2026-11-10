@@ -8,6 +8,8 @@ describe('bounded HTTP burst and recovery', () => {
       rateLimit: {
         ipPerMinute: 60, ipBurst: 2, ownerPerMinute: 60, ownerBurst: 20,
         maxKeys: 1024, saltRotationHours: 24, quoteGlobalPerMinute: 20, quoteGlobalBurst: 20,
+        // one /24: keep its group budget out of the way, this exercises the global one
+        quoteGroupPerMinute: 6000, quoteGroupBurst: 1000,
       },
     } });
     try {

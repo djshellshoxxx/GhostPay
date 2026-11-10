@@ -2,7 +2,10 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { decodeTronAddress, type TronRpc } from '@ghostpay/tron-adapter';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { CameraImporter } from '../../components/CameraImporter';
+import { PlainPaymentRequest } from '../../components/PaymentRequestQr';
 import { QrFrame } from '../../components/QrFrame';
+import { clearCopiedBackup, englishBackupText, SecretBackup } from '../../components/SecretBackup';
+import { subscribeAppLock } from '../../lib/appLock';
 import { useServices } from '../../lib/services';
 import { TRON_NETWORK_LIST, tronNetwork, type TronNetworkId } from './network';
 import { broadcastHex, checkNetwork, createRpc, getChainParams, isActivated, TronViewError, tronErrorMessage } from './rpc';
@@ -12,7 +15,8 @@ import { backupHex, newWallet, walletFromBackupHex, wipeWallet, type TronWallet 
 
 /**
  * TRON stealth payments (secp256k1, ERC-5564 scheme 1), test networks only. Keys live in this
- * component's state and vanish when you leave the view; nothing secret is stored.
+ * component's state and vanish when you leave the view; nothing secret is stored. The key backup of a
+ * created wallet is shown only on request.
  */
 export function TronView(): ReactNode {
   const services = useServices();
@@ -20,7 +24,8 @@ export function TronView(): ReactNode {
   const [url, setUrl] = useState('');
   const [backupInput, setBackupInput] = useState('');
   const [wallet, setWallet] = useState<TronWallet | undefined>(undefined);
-  const [backupShown, setBackupShown] = useState<string | undefined>(undefined);
+  /** A created wallet offers its key backup on request; imported keys are the user's own copy already. */
+  const [hasBackup, setHasBackup] = useState(false);
   const [fromBlock, setFromBlock] = useState('');
   const [scanning, setScanning] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -33,6 +38,8 @@ export function TronView(): ReactNode {
   const [signed, setSigned] = useState<SignedSweep | undefined>(undefined);
   const [broadcastId, setBroadcastId] = useState<string | undefined>(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
+  /** The app lock (idle timeout) forgot the wallet: say so instead of silently showing an empty view. */
+  const [appLocked, setAppLocked] = useState(false);
   const abort = useRef<AbortController | undefined>(undefined);
   /** Bumped by every new async action and by lock/unmount: results of older actions are dropped. */
   const op = useRef(0);
@@ -94,14 +101,15 @@ export function TronView(): ReactNode {
     return rpc;
   };
 
-  const install = (w: TronWallet, reveal: boolean): void => {
+  const install = (w: TronWallet, offerBackup: boolean): void => {
     invalidate();
     if (walletRef.current !== undefined) wipeWallet(walletRef.current);
     resetFlow();
     walletRef.current = w;
     setWallet(w);
+    setAppLocked(false);
     setBackupInput('');
-    setBackupShown(reveal ? backupHex(w) : undefined);
+    setHasBackup(offerBackup);
   };
 
   const selected: FoundPayment | undefined = scan?.found.find((f) => f.stealthAddress === picked);
@@ -198,13 +206,25 @@ export function TronView(): ReactNode {
   };
 
   const lock = (): void => {
+    // First, while a Lock click still counts as user activation (the browser allows clipboard writes only then).
+    clearCopiedBackup();
     invalidate();
     if (walletRef.current !== undefined) wipeWallet(walletRef.current);
     walletRef.current = undefined;
     setWallet(undefined);
-    setBackupShown(undefined);
+    setHasBackup(false);
     resetFlow();
   };
+
+  // The app lock reaches these keys too: they live outside the tag vault and the EVM session. A key backup typed into
+  // the import field goes with them.
+  useEffect(() =>
+    subscribeAppLock(() => {
+      if (walletRef.current !== undefined) setAppLocked(true);
+      setBackupInput('');
+      lock();
+    }),
+  );
 
   const clearReview = (): void => {
     setReview(undefined);
@@ -251,6 +271,7 @@ export function TronView(): ReactNode {
         <h3>2. Wallet and receive address</h3>
         {wallet === undefined ? (
           <>
+            {appLocked && <Notice kind="info">The app locked, so this wallet's keys were wiped from memory. Import the backup keys to use it again.</Notice>}
             <button
               type="button"
               className="btn btn-primary"
@@ -285,13 +306,12 @@ export function TronView(): ReactNode {
               <li>Wait for the block to be produced, then use "Scan" below starting a little before it. TRC-20 tokens are detected but not swept here.</li>
             </ol>
             <QrFrame kind="caution" text={wallet.metaAddress} caption={`TRON stealth payment request (${net.label})`} />
-            {backupShown !== undefined && (
-              <Notice kind="warn" title="Backup keys (shown once)">
-                <p><Mono>{backupShown}</Mono></p>
-                <p>Anyone with these keys controls the wallet. They are not stored anywhere.</p>
-                <CopyButton text={backupShown} label="Copy keys" />{' '}
-                <button type="button" className="btn" onClick={() => { setBackupShown(undefined); }}>Hide keys</button>
-              </Notice>
+            <PlainPaymentRequest family="tron" tronNetwork={net.id === 'local' ? undefined : net.id} testnet={net.id !== 'mainnet'} networkLabel={net.label} />
+            {hasBackup && (
+              <SecretBackup
+                reveal={() => (walletRef.current === undefined ? '' : backupHex(walletRef.current))}
+                text={englishBackupText('keys')}
+              />
             )}
             <p>
               <button type="button" className="btn btn-danger" onClick={lock}>Lock and forget keys</button>

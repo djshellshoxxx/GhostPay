@@ -1,4 +1,6 @@
+import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { ZERO_DECIMAL_CURRENCIES } from './decimal.js';
 import {
   LedgerError,
   computeTax,
@@ -63,13 +65,24 @@ describe('decimal', () => {
     expect(formatMinor(2n ** 100n, 2)).toBe('12676506002282294014967032053.76');
   });
   it('exponents', () => {
+    // The GhostPay app's exponent for invoice minor units (apps/web fiatDecimals), not ISO 4217's.
     expect(currencyExponent('USD')).toBe(2);
     expect(currencyExponent('JPY')).toBe(0);
-    expect(currencyExponent('KWD')).toBe(3);
+    expect(currencyExponent('ISK')).toBe(0);
+    expect(currencyExponent('XOF')).toBe(0);
+    expect(currencyExponent('KWD')).toBe(2);
+    expect(currencyExponent('BHD')).toBe(2);
     expect(currencyExponent('XXX', { XXX: 4 })).toBe(4);
     expect(() => currencyExponent('USD', { USD: -1 })).toThrow(LedgerError);
     expect(() => currencyExponent('USD', { USD: 1.5 })).toThrow(LedgerError);
     expect(() => currencyExponent('USD', { USD: 19 })).toThrow(LedgerError);
+  });
+  const appFormat = new URL('../../../apps/web/src/lib/format.ts', import.meta.url);
+  it.skipIf(!existsSync(appFormat))('zero-decimal table equals the GhostPay app table (apps/web fiatDecimals)', () => {
+    const app = readFileSync(appFormat, 'utf8');
+    const set = /ZERO_DECIMAL_CURRENCIES = new Set\(\[([^\]]*)\]\)/.exec(app);
+    expect([...ZERO_DECIMAL_CURRENCIES]).toEqual([...(set?.[1] ?? '').matchAll(/'([A-Z]{3})'/g)].map((m) => m[1]));
+    expect(app).toMatch(/return ZERO_DECIMAL_CURRENCIES\.has\(currency\) \? 0 : 2;/);
   });
   it('rounds', () => {
     expect(roundDiv(10n, 5n, 'up')).toBe(2n);
@@ -286,6 +299,27 @@ describe('totals and exports', () => {
     expect(e).toMatchObject({ id: 'a'.repeat(32), customer: 'Bob', status: 'paid', paidMinor: '100', taxMinor: '0' });
     expect(fromSchemaInvoice(si).customer).toBeUndefined();
     expect(totalsOf(e).totalMinor).toBe(100n);
+  });
+  it('exports invoice minor units in the GhostPay app exponent: KWD, ISK, JPY, USD', () => {
+    const row = (currency: string, unitMinor: string): string =>
+      exportCsv([E('i', { currency, taxRateBps: 0, lineItems: [{ description: 'x', quantity: '1', unitMinor }] })]).split('\r\n')[1] ?? '';
+    expect(row('KWD', '1234')).toContain(',KWD,12.34,0,0.00,12.34,0.00,'); // the app shows KWD 12.34, not 1.234
+    expect(row('ISK', '1500')).toContain(',ISK,1500,0,0,1500,0,'); // ISK 1500, not 15.00
+    expect(row('JPY', '1500')).toContain(',JPY,1500,0,0,1500,0,');
+    expect(row('USD', '1250')).toContain(',USD,12.50,0,0.00,12.50,0.00,');
+    const schema = (currency: string, unitMinorUnits: string): Parameters<typeof fromSchemaInvoice>[0] =>
+      ({
+        nonce: 'b'.repeat(32),
+        fiat: { currency, minorUnits: unitMinorUnits },
+        quote: { timestamp: 1_800_000_000 },
+        expiresAt: 1_800_003_600,
+        lineItems: [{ description: 'd', quantity: '1', unitMinorUnits }],
+        tax: { rateBps: 0, minorUnits: '0' },
+      }) as unknown as Parameters<typeof fromSchemaInvoice>[0];
+    const total = (currency: string, minor: string): string | undefined =>
+      (JSON.parse(exportJson([fromSchemaInvoice(schema(currency, minor))])) as { total: string }[])[0]?.total;
+    expect(total('KWD', '1234')).toBe('12.34');
+    expect(total('ISK', '1500')).toBe('1500');
   });
 });
 

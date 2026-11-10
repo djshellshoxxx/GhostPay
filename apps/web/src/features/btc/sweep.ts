@@ -1,6 +1,8 @@
 import {
-  buildSpendTransaction,
+  buildSpendTransactionWithSigner,
+  decodeSilentPaymentAddress,
   previewSweep,
+  SoftwareSilentPaymentSigner,
   satsToBtcString,
   SilentPaymentError,
   type SpendableOutput,
@@ -26,6 +28,28 @@ export interface SweepReview {
 
 export const HIGH_FEE_RATE = 50;
 
+/**
+ * Checks a sweep destination for the wallet's network; no payment needs to be selected and no amount is involved.
+ * Silent payment addresses are decoded in full, as signing decodes them, not only recognised by their prefix.
+ * @returns The trimmed address.
+ * @throws {SilentPaymentError} `INVALID_INPUT` when empty, `INVALID_ADDRESS` when not valid for the network.
+ */
+export function checkDestination(wallet: BtcWallet, destination: string): string {
+  const dest = destination.trim();
+  if (dest === '') throw new SilentPaymentError('INVALID_INPUT');
+  if (/^t?sp1/i.test(dest)) {
+    try {
+      decodeSilentPaymentAddress(dest, wallet.net.spNetwork);
+    } catch {
+      throw new SilentPaymentError('INVALID_ADDRESS');
+    }
+    return dest;
+  }
+  // The same regular-address decoding as review and signing; the 1 BTC placeholder input only keeps the amount checks quiet.
+  previewSweep({ inputAmountsSats: [100_000_000n], address: dest, feeRate: 1, network: wallet.net.spNetwork, regtest: wallet.net.regtest });
+  return dest;
+}
+
 export function reviewSweep(
   wallet: BtcWallet,
   selected: readonly FoundPayment[],
@@ -34,6 +58,7 @@ export function reviewSweep(
 ): SweepReview {
   const dest = destination.trim();
   if (dest === '' || selected.length === 0) throw new SilentPaymentError('INVALID_INPUT');
+  checkDestination(wallet, dest);
   const pv = previewSweep({
     inputAmountsSats: selected.map((s) => s.amountSats),
     address: dest,
@@ -43,6 +68,10 @@ export function reviewSweep(
   });
   const totalSats = selected.reduce((a, s) => a + s.amountSats, 0n);
   const warnings: string[] = [];
+  // Common-input ownership: inputs spent together are publicly attributed to one owner (PRIVACY-E2E-03).
+  if (selected.length > 1) {
+    warnings.push(`This sweep spends ${String(selected.length)} payments in one transaction, which links them publicly: anyone can see they have one owner. To keep them apart, sweep one payment at a time, each to a different new address (separate sweeps to the same address also link them).`);
+  }
   if (feeRate > HIGH_FEE_RATE) warnings.push(`Fee rate ${String(feeRate)} sat/vB is high even for a test network.`);
   if (pv.feeSats * 10n > totalSats) warnings.push('The fee is more than 10% of the swept amount.');
   if (dest === wallet.address) warnings.push('The destination is this wallet\'s own receive address.');
@@ -68,11 +97,17 @@ export interface SignedSweep {
   readonly vsize: number;
 }
 
+/** Which signer the view uses. Hardware wallets: interface only (spec 11), no device driver is shipped. */
+export const SIGNER_DESCRIPTION =
+  'Software signer in this browser tab (reference implementation of the hardware-signer interface). It re-checks inputs, refuses non-default sighash and foreign inputs, re-derives silent-payment outputs, and confirms the reviewed destination before signing. No hardware wallet driver is included.';
+
 /**
- * Signs the reviewed sweep. Call only after the user approved the exact `review`. The result is
- * checked against the review (fee and size) and nothing is returned on any mismatch.
+ * Signs the reviewed sweep through the {@link SilentPaymentSigner} interface (here the software reference
+ * signer). Call only after the user approved the exact `review`. The signer's confirmation step re-checks that
+ * the transaction pays only the reviewed destination; the result is checked against the review (fee and size)
+ * and nothing is returned on any mismatch.
  */
-export function signSweep(wallet: BtcWallet, selected: readonly FoundPayment[], review: SweepReview): SignedSweep {
+export async function signSweep(wallet: BtcWallet, selected: readonly FoundPayment[], review: SweepReview): Promise<SignedSweep> {
   const same =
     selected.length === review.inputs.length &&
     selected.every((s, i) => {
@@ -87,19 +122,30 @@ export function signSweep(wallet: BtcWallet, selected: readonly FoundPayment[], 
     xOnlyPublicKey: s.xOnlyPublicKey,
     spendTweak: s.spendTweak,
   }));
-  const r = buildSpendTransaction({
-    outputs,
-    spendSecret: wallet.keys.spendSecret,
-    destinations: [{ address: review.destination }],
-    feeRate: review.feeRate,
-    network: wallet.net.spNetwork,
-    regtest: wallet.net.regtest,
-    rbf: review.rbf,
+  const signer = new SoftwareSilentPaymentSigner(wallet.keys.spendSecret, {
+    // Stand-in for a device screen: exactly one output, to the reviewed destination.
+    confirm: (s) => s.outputs.length === 1 && s.outputs[0]?.address === review.destination,
   });
-  if (r.feeSats !== review.feeSats || r.vsize !== review.vsize) throw new SilentPaymentError('SIGNATURE_INVALID');
-  let hex = '';
-  for (const b of r.rawTx) hex += b.toString(16).padStart(2, '0');
-  return { txid: r.txid, rawHex: hex, feeSats: r.feeSats, vsize: r.vsize };
+  try {
+    const r = await buildSpendTransactionWithSigner(
+      {
+        outputs,
+        destinations: [{ address: review.destination }],
+        feeRate: review.feeRate,
+        network: wallet.net.spNetwork,
+        regtest: wallet.net.regtest,
+        rbf: review.rbf,
+      },
+      signer,
+    );
+    if (r.feeSats !== review.feeSats || r.vsize !== review.vsize) throw new SilentPaymentError('SIGNATURE_INVALID');
+    let hex = '';
+    for (const b of r.rawTx) hex += b.toString(16).padStart(2, '0');
+    return { txid: r.txid, rawHex: hex, feeSats: r.feeSats, vsize: r.vsize };
+  } finally {
+    // Best effort: wipes the signer's own copy of the spend secret. The wallet's keys stay until Lock.
+    signer.dispose();
+  }
 }
 
 export function formatBtc(sats: bigint): string {
@@ -122,6 +168,8 @@ export function btcErrorMessage(e: unknown): string {
       REORG_DETECTED: 'The chain changed while scanning. Run the scan again.',
       ABORTED: 'Cancelled.',
       SIGNATURE_INVALID: 'Signing check failed; nothing was produced.',
+      SIGNER_REFUSED: 'The signer refused: the transaction did not match what you reviewed.',
+      INVALID_HEADER: 'The server sent a block header that breaks the chain rules.',
     };
     return m[e.code] ?? 'Bitcoin operation failed.';
   }

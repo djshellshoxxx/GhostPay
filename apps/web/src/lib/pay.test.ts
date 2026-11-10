@@ -28,10 +28,13 @@ import {
   buildPermit,
   createPayContext,
   decodeForDisplay,
+  fixedAmountWarnings,
   offlineClient,
   permitReader,
   quoteBuffer,
   assertBufferStillSufficient,
+  applyBufferPolicy,
+  bufferOffered,
   MAX_SIMULATED_SWEEP_GAS,
   SWEEP_GAS_ESTIMATE,
   readAllowance,
@@ -40,7 +43,7 @@ import {
   typedDataJson,
   type PayContext,
 } from './pay';
-import { clearSession, generateSession, requireSession } from './session';
+import { clearSession, generateSession, withSessionSecrets } from './session';
 import type { ManifestState } from './manifest';
 import { currentSignerHex } from '../test/keys';
 
@@ -123,6 +126,46 @@ describe('reviewInvoice', () => {
   });
 });
 
+describe('fixed token amount against the seller-stated fiat total (L2-F4)', () => {
+  const warningsFor = async (patch: Parameters<typeof makeParsed>[0]): Promise<readonly string[]> =>
+    reviewInvoice((await makeParsed(patch)).parsed, NOW, LOADED(84532)).warnings;
+  const oneItem = (unitPrice: string): Parameters<typeof makeParsed>[0] => ({ lineItems: [{ description: 'Consulting', quantity: '1', unitPrice }] });
+
+  it('warns, without blocking, when a USD stablecoin amount is more than 1 % away from the USD total', async () => {
+    const { parsed } = await makeParsed({ ...oneItem('10.00'), tokenAmount: '1000' });
+    const r = reviewInvoice(parsed, NOW, LOADED(84532));
+    expect(r.blockers).toEqual([]);
+    expect(r.warnings).toHaveLength(1);
+    expect(r.warnings[0]).toMatch(/fixed amount of 1000 USDC differs by more than 1 % from the seller-stated total of USD 10\.00/);
+    expect(r.warnings[0]).toMatch(/You pay the token amount/);
+  });
+  it('accepts a difference of up to 1 % in either direction', async () => {
+    expect(await warningsFor({ tokenAmount: '100' })).toEqual([]);
+    expect(await warningsFor({ tokenAmount: '101' })).toEqual([]);
+    expect(await warningsFor({ tokenAmount: '99' })).toEqual([]);
+    expect(await warningsFor({ tokenAmount: '101.000001' })).toHaveLength(1);
+    expect(await warningsFor({ tokenAmount: '98.999999' })).toHaveLength(1);
+  });
+  it('compares only a stablecoin with a total in its own currency, and only in fixed-token mode', async () => {
+    expect(await warningsFor({ currency: 'EUR', tokenAmount: '1000' })).toEqual([]);
+    expect(await warningsFor({ token: 'native', tokenAmount: '1000' })).toEqual([]);
+    expect(await warningsFor({ amountMode: 'fiat_quote' })).toEqual([]);
+  });
+  it('flags zero-priced line items, but not an invoice that states no fiat figure at all', async () => {
+    expect(await warningsFor({ ...oneItem('0'), tokenAmount: '1000' })).toHaveLength(1);
+    const none = await parseOf({ lineItems: [], fiat: { currency: 'USD', minorUnits: '0' } });
+    expect(reviewInvoice(none, NOW, LOADED(84532)).warnings).toEqual([]);
+  });
+  it('knows EUR stablecoins too, at their own decimals', async () => {
+    const { parsed } = await makeParsed({ currency: 'EUR', tokenAmount: '100' });
+    const eurc = { symbol: 'EURC', decimals: 6, address: USDC_84532 as Address, config: undefined };
+    expect(fixedAmountWarnings(parsed.invoice, eurc)).toEqual([]);
+    const far = await makeParsed({ currency: 'EUR', ...oneItem('10.00'), tokenAmount: '100' });
+    expect(fixedAmountWarnings(far.parsed.invoice, eurc).join(' ')).toMatch(/EURC is a EUR stablecoin.*100 EURC.*EUR 10\.00/);
+    expect(fixedAmountWarnings(far.parsed.invoice, undefined)).toEqual([]);
+  });
+});
+
 async function parseOf(overrides: Record<string, unknown>): Promise<Awaited<ReturnType<typeof parseFragment>>> {
   generateSession();
   const { parsed } = await makeParsed();
@@ -138,7 +181,7 @@ function stripId(i: object): Record<string, unknown> {
   return rest;
 }
 function signingKey(): Uint8Array {
-  return Uint8Array.from(requireSession().signingKey);
+  return withSessionSecrets((session) => Uint8Array.from(session.signingKey));
 }
 
 describe('createPayContext and amounts', () => {
@@ -172,7 +215,7 @@ describe('createPayContext and amounts', () => {
   it('converts fiat with a fresh feed, rounding up for the payer', async () => {
     const { parsed } = await makeParsed({ amountMode: 'fiat_quote' });
     const review = reviewInvoice(parsed, NOW, LOADED(84532));
-    const feed: FeedConfig = { chainId: 84532, address: '0x7777777777777777777777777777777777777777', base: 'USDC', quote: 'USD' };
+    const feed: FeedConfig = { chainId: 84532, address: '0x7777777777777777777777777777777777777777', base: 'USDC', quote: 'USD', sourceRef: 'docs/chains/SOURCES-2026-10-25.md (retrieved 2026-10-25)' };
     const rpc = mockRpc(84532, (method, params) => {
       expect(method).toBe('eth_call');
       const data = (params[0] as { data: string }).data;
@@ -261,6 +304,59 @@ describe('buildFinal and the preview-equals-calldata gate', () => {
     expect(() => buildFinal(ctx, { nowSeconds: NOW, buffer: { ...q, bufferWei: MAX_BUFFER_WEI + 1n } })).toThrow(/safety cap/);
     const native = await built({ token: 'native', tokenAmount: '0.1' });
     expect(() => buildFinal(native.ctx, { nowSeconds: NOW, buffer: q })).toThrow(/token payments only/);
+  });
+});
+
+describe('seller bufferPolicy (invoice v2, ADR-0024)', () => {
+  const gwei = mockRpc(84532, () => '0x3b9aca00'); // quote = 0.00024 ETH = 240_000_000_000_000 wei
+  const QUOTED = 240_000_000_000_000n;
+  async function v2ctx(policy: { accepted: boolean; maxWei: string; minWei: string }): Promise<PayContext> {
+    const { parsed } = await makeParsed({ bufferPolicy: { ...policy, refund: 'none' } });
+    expect(parsed.invoice.v).toBe(2);
+    return createPayContext(reviewInvoice(parsed, NOW, LOADED(84532)), undefined, { nowSeconds: NOW });
+  }
+
+  it('v1 invoices keep the app-only rules', async () => {
+    const { parsed } = await makeParsed();
+    const q = await quoteBuffer(gwei, NOW);
+    expect(bufferOffered(parsed.invoice)).toBe(true);
+    expect(applyBufferPolicy(q, parsed.invoice)).toBe(q);
+  });
+
+  it('declined: no buffer is offered, quoted or built', async () => {
+    const ctx = await v2ctx({ accepted: false, maxWei: '0', minWei: '0' });
+    const q = await quoteBuffer(gwei, NOW);
+    expect(bufferOffered(ctx.review.invoice)).toBe(false);
+    expect(() => applyBufferPolicy(q, ctx.review.invoice)).toThrow(/does not accept a gas buffer/);
+    expect(() => buildFinal(ctx, { nowSeconds: NOW, buffer: q })).toThrow(/does not accept a gas buffer/);
+  });
+
+  it('within bounds: the estimate is used unchanged', async () => {
+    const ctx = await v2ctx({ accepted: true, maxWei: (QUOTED * 2n).toString(), minWei: '1' });
+    const q = await quoteBuffer(gwei, NOW);
+    const p = applyBufferPolicy(q, ctx.review.invoice);
+    expect(p.bufferWei).toBe(QUOTED);
+    expect(buildFinal(ctx, { nowSeconds: NOW, buffer: p }).tx.value).toBe(QUOTED);
+  });
+
+  it('dust floor: an estimate below minWei is raised to minWei and flagged for display', async () => {
+    const min = QUOTED + 1n;
+    const ctx = await v2ctx({ accepted: true, maxWei: (QUOTED * 2n).toString(), minWei: min.toString() });
+    const p = applyBufferPolicy(await quoteBuffer(gwei, NOW), ctx.review.invoice);
+    expect(p.bufferWei).toBe(min);
+    expect(p.raisedToSellerMinimum).toBe(true);
+    expect(buildFinal(ctx, { nowSeconds: NOW, buffer: p }).tx.value).toBe(min);
+  });
+
+  it('over the seller maximum (or a floor above the app cap) is refused; buildFinal enforces the bounds too', async () => {
+    const ctx = await v2ctx({ accepted: true, maxWei: (QUOTED - 1n).toString(), minWei: '1' });
+    const q = await quoteBuffer(gwei, NOW);
+    expect(() => applyBufferPolicy(q, ctx.review.invoice)).toThrow(/seller.s maximum/);
+    expect(() => buildFinal(ctx, { nowSeconds: NOW, buffer: q })).toThrow(/seller.s maximum/);
+    const high = await v2ctx({ accepted: true, maxWei: (MAX_BUFFER_WEI * 2n).toString(), minWei: (MAX_BUFFER_WEI + 1n).toString() });
+    expect(() => applyBufferPolicy(q, high.review.invoice)).toThrow(/safety cap/);
+    const floor = await v2ctx({ accepted: true, maxWei: (QUOTED * 2n).toString(), minWei: (QUOTED + 1n).toString() });
+    expect(() => buildFinal(floor, { nowSeconds: NOW, buffer: q })).toThrow(/seller.s minimum/);
   });
 });
 

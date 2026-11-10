@@ -38,6 +38,15 @@ jobs:
           if [ "$EVENT" != "pull_request" ]; then echo "code=true" >> "$GITHUB_OUTPUT"; exit 0; fi
           files="$(gh api "repos/$REPO/pulls/$PR/files" --paginate --jq '.[] | .filename, (.previous_filename // empty)')"
           if [ -z "$files" ]; then echo "code=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          # The files API lists at most 3000 files; a truncated list must not look docs-only (audit L7-L4). Compare with
+          # the pull request's own count and run everything when the list may be incomplete.
+          total="$(gh api "repos/$REPO/pulls/$PR" --jq '.changed_files')"
+          listed="$(gh api "repos/$REPO/pulls/$PR/files" --paginate --jq 'length' | awk '{ n += $1 } END { print n + 0 }')"
+          if [[ ! "$total" =~ ^[0-9]+$ ]] || [ "$total" -ge 3000 ] || [ "$total" -gt "$listed" ]; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+            echo "Changed-file list may be incomplete ($listed listed, changed_files=$total): running every job."
+            exit 0
+          fi
           # Here-string, not a pipe: with pipefail, `grep -q` exiting early SIGPIPEs the writer on large PRs and the
           # condition turns false, which would wrongly classify a code change as docs-only and skip every job.
           if grep -qvE '^(docs/.*|.*\.md)$' <<<"$files"; then
@@ -62,6 +71,12 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run build
+      - name: Build profile and emitted-output guard regressions
+        run: node --test apps/web/scripts/localBuildProfile.test.mjs
+      - name: Merchant amount parsing and POS parity regressions
+        run: node --test examples/merchant-checkout/money.test.mjs examples/pos-terminal/parity.test.mjs
+      - name: Locale catalog completeness and template safety
+        run: node scripts/i18n/check.mjs
       - run: npm audit --omit=dev --audit-level=high
 
   # Every test workspace runs once. Keep the expensive FHE stress suite independent and split the
@@ -83,7 +98,7 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/setup-node-libs
       # anvil for the workspaces that have anvil integration tests (they otherwise skip). Pinned as in setup-forge.
-      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1.9.2
         with:
           version: v1.8.5
       - name: Install pinned Solidity compiler for the web registry integration test
@@ -139,7 +154,7 @@ jobs:
               fi
               if [[ ${#other_args[@]} -gt 0 ]]; then npm test "${other_args[@]}" --if-present; fi
               if [ "$shard" = 0 ]; then
-                node --test scripts/testnet/*.test.mjs scripts/regtest/*.test.mjs
+                node --test scripts/testnet/*.test.mjs scripts/regtest/*.test.mjs scripts/tests/*.test.mjs
               fi
               ;;
           esac
@@ -192,6 +207,10 @@ jobs:
     timeout-minutes: 30
     permissions:
       contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [full, lean]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -205,16 +224,97 @@ jobs:
           key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
       # Allowed in GitHub-hosted CI. apps/web/playwright.config.ts falls back to this managed Chromium when no
       # GHOSTPAY_CHROMIUM / preinstalled browser path exists. With a warm cache only the OS packages are installed.
-      - run: npx playwright install --with-deps chromium
+      - run: ./node_modules/.bin/playwright install --with-deps chromium
       # The suite's webServer runs `npm run build` (with bundle scan) and `vite preview` itself.
       - run: npm run test:e2e --workspace @ghostpay/web
+        env:
+          GHOSTPAY_LOCAL_BUILD_PROFILE: ${{ matrix.profile }}
+      - name: Record the build used by the successful browser run
+        env:
+          BUILD_PROFILE: ${{ matrix.profile }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --quiet HEAD --
+          export GHOSTPAY_BROWSER_TREE="$(git rev-parse HEAD^{tree})"
+          node --input-type=module <<'NODE'
+          import { createHash } from 'node:crypto';
+          import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+          import { join, relative } from 'node:path';
+          const digest = (file) => createHash('sha256').update(readFileSync(file)).digest('hex');
+          const root = 'apps/web/dist';
+          function inventory(dir) {
+            return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+              const path = join(dir, entry.name);
+              if (entry.isDirectory()) return inventory(path);
+              if (!entry.isFile()) throw new Error('Browser artifact contains a nonregular file.');
+              return [{ path: relative(root, path), sha256: digest(path) }];
+            });
+          }
+          const files = inventory(root).sort((a, b) => a.path < b.path ? -1 : a.path > b.path ? 1 : 0);
+          if (!files.some((file) => file.path === 'index.html')) throw new Error('Browser build has no entrypoint.');
+          const bundleEvidence = process.env.BUILD_PROFILE === 'lean'
+            ? JSON.parse(readFileSync(join(root, 'ghostpay-lean-build.json'), 'utf8')) : undefined;
+          if (bundleEvidence !== undefined && (bundleEvidence.profile !== 'lean' || !bundleEvidence.chunks?.length || !bundleEvidence.workers?.length)) {
+            throw new Error('Browser build has no lean application/Worker evidence.');
+          }
+          const record = {
+            format: 'ghostpay-browser-build/1', checkoutCommit: process.env.GITHUB_SHA,
+            pullRequestHead: process.env.PR_HEAD, tree: process.env.GHOSTPAY_BROWSER_TREE,
+            profile: process.env.BUILD_PROFILE, lockfileSha256: digest('package-lock.json'),
+            testConfiguration: { chainId: 84532, kind: 'authored fake deployment; no production trust',
+              recipeSha256: digest('apps/web/e2e/prepare-manifest.mjs'),
+              templateSha256: digest('apps/web/e2e/fixtures/84532.json') },
+            files, bundleEvidence,
+            limits: 'The preceding Playwright step supplies browser evidence; this recorder only hashes its build. No attestation, signature, production configuration or publication.'
+          };
+          mkdirSync('apps/web/test-results', { recursive: true });
+          writeFileSync('apps/web/test-results/browser-build.json', JSON.stringify(record, null, 2) + '\n', { flag: 'wx' });
+          console.log('GHOSTPAY_BROWSER_RECORD=' + JSON.stringify(record));
+          NODE
+      - name: Retain the browser-tested build and its identity
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: browser-tested-web-${{ matrix.profile }}-${{ github.sha }}
+          include-hidden-files: true
+          path: |
+            apps/web/dist
+            apps/web/test-results/browser-build.json
+            apps/web/test-results/**/accessibility-audit.json
+          if-no-files-found: error
+          retention-days: 14
       - if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: playwright-test-results
+          name: playwright-test-results-${{ matrix.profile }}
           path: apps/web/test-results
           if-no-files-found: ignore
           retention-days: 7
+
+  lean-candidate:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Compare two clean lean builds and retain unsigned candidate
+        run: bash scripts/qualify-lean.sh "$RUNNER_TEMP/ghostpay-lean-qualification"
+      - if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: unsigned-lean-candidate-${{ github.sha }}
+          path: ${{ runner.temp }}/ghostpay-lean-qualification
+          if-no-files-found: error
+          retention-days: 14
 
   contracts-test:
     needs: changes
@@ -343,7 +443,7 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '22'
-      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1.9.2
         with:
           version: v1.8.5
       # ERC-4337's GPL-header EntryPoint source is fetched into a gitignored test-only directory;
@@ -393,3 +493,10 @@ jobs:
         run: bash scripts/scan-secrets.sh
       - name: Every action is pinned to a full SHA with a version comment
         run: bash scripts/check-actions-pinned.sh
+      - name: Proxy header configs match apps/web/public/_headers (static, no network)
+        run: bash infra/proxy/check-headers.sh
+      - name: Self-host release gate and archive checks (fake docker/gh, no network)
+        run: bash deploy/selftest.sh
+      # The expanded suite inherits all 13 original CLI regressions and adds safe-mode matrices.
+      - name: Audit CLI path, atomic-write and permission regressions
+        run: python3 scripts/tests/audit-permissions.test.py

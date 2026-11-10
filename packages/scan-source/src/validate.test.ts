@@ -23,6 +23,15 @@ describe('parseAnnouncement', () => {
     for (const x of [null, undefined, 5, 'str', []]) expect(parseAnnouncement(x)).toBeUndefined();
     expect(parseAnnouncement(rawAnn(1, 1), 2n)).toBeUndefined();
   });
+  it('keeps a well-formed transaction hash (for receipt verification) and drops a malformed one without rejecting the record', () => {
+    const tx = `0x${'CD'.repeat(32)}`;
+    expect(parseAnnouncement({ ...rawAnn(10, 3), transactionHash: tx })?.transactionHash).toBe(tx.toLowerCase());
+    for (const bad of ['0x12', 7, `0x${'zz'.repeat(32)}`, null]) {
+      const a = parseAnnouncement({ ...rawAnn(10, 3), transactionHash: bad });
+      expect(a).toBeDefined();
+      expect(a !== undefined && 'transactionHash' in a).toBe(false);
+    }
+  });
   it('fuzz: arbitrary junk never throws', () => {
     fc.assert(fc.property(fc.anything(), (x) => { parseAnnouncement(x); }), { numRuns: 500 });
     fc.assert(fc.property(fc.object({ maxDepth: 2 }), (x) => { parseAnnouncement({ ...rawAnn(1, 1), ...x }); }), { numRuns: 300 });
