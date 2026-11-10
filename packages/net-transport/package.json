@@ -11,6 +11,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./browser": {
+      "types": "./dist/browser.d.ts",
+      "default": "./dist/browser.js"
     }
   },
   "files": [
@@ -34,12 +38,12 @@
     "fast-check": "4.10.2",
     "prettier": "3.9.10",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.72.0",
+    "typescript-eslint": "8.72.1",
     "vitest": "5.0.5"
   },
   "dependencies": {
     "@ghostpay/chain-adapters": "0.1.0",
     "@noble/hashes": "2.4.0",
-    "viem": "2.57.7"
+    "viem": "2.57.13"
   }
 }

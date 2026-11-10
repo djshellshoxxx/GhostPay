@@ -1,7 +1,7 @@
 import { TronAdapterError, type TronRpc } from '@ghostpay/tron-adapter';
 import { describe, expect, it } from 'vitest';
 import { BACKUP_A, DEST, mockTron, walletA } from './fixtures.testutil';
-import { MAINNET_GENESIS, tronNetwork } from './network';
+import { MAINNET_GENESIS, NILE_GENESIS, SHASTA_GENESIS, tronNetwork } from './network';
 import { broadcastHex, checkNetwork, createRpc, fetchMemo, getBalanceSun, isActivated, tronErrorMessage, TronViewError } from './rpc';
 import { MAX_SCAN_BLOCKS, scanForPayments } from './scan';
 import { ACTIVATION_FEE_SUN, reviewSweep, signSweep } from './sweep';
@@ -26,6 +26,19 @@ describe('TRON untrusted-node and wallet boundaries', () => {
     const chain = mockTron(walletA());
     chain.genesis = MAINNET_GENESIS.toUpperCase();
     await expect(checkNetwork(createRpc('http://127.0.0.1:9090', chain.fetchFn))).rejects.toThrow(/mainnet/);
+  });
+
+  it('pins the genesis block ids published in tronprotocol/tips tip-474 and keeps them distinct', async () => {
+    expect(MAINNET_GENESIS).toBe('00000000000000001ebf88508a03865c71d452e25f4d51194196a1d22b6653dc');
+    expect(NILE_GENESIS).toBe('0000000000000000d698d4192c56cb6be724a558448e2684802de4d6cd8690dc');
+    expect(SHASTA_GENESIS).toBe('0000000000000000de1aa88295e1fcf982742f773e0419c5a9c134c994a9059e');
+    expect(new Set([MAINNET_GENESIS, NILE_GENESIS, SHASTA_GENESIS]).size).toBe(3);
+    // A Nile or Shasta node is not mistaken for mainnet.
+    for (const g of [NILE_GENESIS, SHASTA_GENESIS]) {
+      const chain = mockTron(walletA());
+      chain.genesis = g;
+      await expect(checkNetwork(createRpc('http://127.0.0.1:9090', chain.fetchFn))).resolves.toBeUndefined();
+    }
   });
 
   it.each([null, [], { balance: -1 }, { balance: 1.5 }, { balance: '42' }, { balance: Number.MAX_SAFE_INTEGER + 1 }])('rejects malformed account balances %#', async (value) => {

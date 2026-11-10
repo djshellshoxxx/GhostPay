@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { encodeMetaAddress, parseCompressedPoint } from '@ghostpay/core-crypto';
 import { secp256k1 } from '@noble/curves/secp256k1.js';
-import { DEFAULT_SCRYPT, decryptKeystore, encryptKeystore, passphraseProblem } from './keystore';
+import { DEFAULT_SCRYPT, decryptKeystore, encryptKeystore, generatePassphrase, GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, PASSPHRASE_WORDS, passphraseProblem, passphraseStrength } from './keystore';
 
 const META = { metaAddress: encodeMetaAddress({ spendingPublicKey: parseCompressedPoint(secp256k1.getPublicKey(new Uint8Array(32).fill(1))), viewingPublicKey: parseCompressedPoint(secp256k1.getPublicKey(new Uint8Array(32).fill(2))) }), signer: Buffer.from(secp256k1.getPublicKey(new Uint8Array(32).fill(3))).toString('hex') };
 const secrets = () => ({ spendingKey: new Uint8Array(32).fill(1), viewingKey: new Uint8Array(32).fill(2), signingKey: new Uint8Array(32).fill(3) });
@@ -105,5 +105,61 @@ describe('keystore', () => {
   it('rejects a decrypted body with malformed keys', async () => {
     const text = await encryptKeystore({ spendingKey: new Uint8Array(32).fill(1), viewingKey: new Uint8Array(32).fill(2), signingKey: new Uint8Array(31) }, META, 'correct horse battery', FAST);
     await expect(decryptKeystore(text, 'correct horse battery')).rejects.toThrow(/not a valid|different length/i);
+  });
+});
+
+describe('L1-06: guessable passphrases', () => {
+  it('rejects repeated halves, padded seasons and years, keyboard walks and the app name', () => {
+    for (const guessable of ['ghostpayghostpay', 'Summer2026!!!!!', 'qazwsxedcrfvtgb', 'ghostpay-vault-1', 'Bitcoin2026Bitcoin', 'P@ssw0rd2026!!!', '1qaz2wsx3edc4rfv', 'abcdefghijklmnop']) {
+      expect({ guessable, strength: passphraseStrength(guessable) }).toMatchObject({ strength: { score: 1, label: 'weak' } });
+      expect(passphraseProblem(guessable)).toMatch(/too easy to guess/);
+    }
+  });
+
+  it('still accepts unrelated words and keeps their rating', () => {
+    expect(passphraseStrength('violet comet maple lantern').label).toBe('strong');
+    expect(passphraseStrength('cedar orbit velvet lantern meadow').label).toBe('strong');
+    expect(passphraseProblem('river copper maple starlight')).toBeUndefined();
+    expect(passphraseProblem('correct horse battery')).toBeUndefined();
+  });
+});
+
+describe('L1-06: generated passphrases', () => {
+  it('bundles 1024 distinct short lower-case words, none of them a listed weak word', () => {
+    expect(PASSPHRASE_WORDS).toHaveLength(1024);
+    expect(new Set(PASSPHRASE_WORDS).size).toBe(1024);
+    expect(PASSPHRASE_WORDS.every((w) => /^[a-z]{4,8}$/.test(w))).toBe(true);
+    expect(GENERATED_PASSPHRASE_BITS).toBe(60);
+  });
+
+  it('picks six words with crypto.getRandomValues and always offers an accepted, strong passphrase', () => {
+    const random = vi.spyOn(globalThis.crypto, 'getRandomValues');
+    try {
+      const seen = new Set<string>();
+      for (let i = 0; i < 200; i++) {
+        const phrase = generatePassphrase();
+        const words = phrase.split('-');
+        expect(words).toHaveLength(GENERATED_PASSPHRASE_WORDS);
+        expect(words.every((w) => PASSPHRASE_WORDS.includes(w))).toBe(true);
+        expect(passphraseProblem(phrase)).toBeUndefined();
+        expect(passphraseStrength(phrase).label).toBe('strong');
+        seen.add(phrase);
+      }
+      expect(seen.size).toBe(200);
+      expect(random).toHaveBeenCalled();
+    } finally { random.mockRestore(); }
+  });
+
+  it('maps each 16-bit draw to a word without bias and redraws a passphrase the estimator would refuse', () => {
+    const draws = [new Uint8Array(12), Uint8Array.from([0x00, 0x00, 0x04, 0x01, 0xff, 0xff, 0x80, 0x02, 0x12, 0x34, 0x03, 0xff])];
+    const random = vi.spyOn(globalThis.crypto, 'getRandomValues').mockImplementation(<T extends ArrayBufferView | null>(array: T): T => {
+      (array as unknown as Uint8Array).set(draws.shift() ?? new Uint8Array(12));
+      return array;
+    });
+    try {
+      // The first draw is "acorn" six times (rejected); the second maps 0x0000, 0x0401, 0xffff, 0x8002, 0x1234, 0x03ff mod 1024.
+      expect(generatePassphrase()).toBe([0, 1, 1023, 2, 0x234, 1023].map((i) => PASSPHRASE_WORDS[i]).join('-'));
+      expect(random).toHaveBeenCalledTimes(2);
+    } finally { random.mockRestore(); }
   });
 });

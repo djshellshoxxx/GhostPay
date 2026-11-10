@@ -33,7 +33,18 @@ jobs:
           persist-credentials: false
       - name: Actions are pinned to full SHAs
         run: bash scripts/check-actions-pinned.sh
-      - uses: ./.github/actions/setup-node-libs
+      # Not ./.github/actions/setup-node-libs: it restores packages/*/dist from the shared libs Actions cache and skips
+      # the build on a hit, so a poisoned cache entry would be bundled into the published site (SUPPLY-CHAIN-CI-02,
+      # audit L7-M4). Only the npm download cache is used; npm ci checks every tarball against the lockfile.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Build every workspace library from source
+        run: |
+          rm -rf packages/*/dist
+          npm run build:libs
       - name: Build apps/web (typecheck, vite build, postbuild bundle scan)
         run: npm run build -w apps/web
       - name: Bundle scan (explicit re-run on dist)

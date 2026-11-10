@@ -2,6 +2,10 @@ import {
   BaseError,
   ContractFunctionRevertedError,
   ExecutionRevertedError,
+  RpcError,
+  RpcRequestError,
+  TransactionReceiptNotFoundError,
+  UnknownRpcError,
   type Account,
   type Address,
   type Chain,
@@ -9,10 +13,12 @@ import {
   type PublicClient,
   type Transport,
   type WalletClient,
+  encodeFunctionData,
   erc20Abi,
+  keccak256,
 } from 'viem';
 import { ghostPaySweepRelayerAbi } from '@ghostpay/chain-adapters';
-import { SimulationRevert } from './errors.js';
+import { SendOutcomeUnknown, SendRefused, SimulationRevert } from './errors.js';
 import type { PermitFields, SweepFields } from './validate.js';
 
 /** One sweep submission. */
@@ -49,6 +55,12 @@ export interface ReceiptSummary {
   readonly gasUsed: bigint;
 }
 
+/** Receipt of a mined transaction. */
+export interface MinedReceipt {
+  readonly status: 'success' | 'reverted';
+  readonly gasUsed: bigint;
+}
+
 /**
  * Everything the relayer needs from a chain for ONE chain id and ONE hot key. Injected so tests run
  * with a fake; {@link createViemChainClient} is the production implementation.
@@ -70,10 +82,17 @@ export interface ChainClient {
   readOrderState(call: SweepCall): Promise<OrderState>;
   /** Simulates the sweep (`simulateContract`) and returns a gas limit to use. */
   simulateSweep(call: SweepCall): Promise<SimulationResult>;
-  /** Signs with the hot key and broadcasts. */
+  /**
+   * Signs with the hot key and broadcasts once.
+   *
+   * @throws {SendRefused} only when the transaction certainly entered no mempool (safe to release and reuse the
+   * nonce). Every other error, {@link SendOutcomeUnknown} included, means it may have been broadcast.
+   */
   sendSweep(call: SweepCall, opts: SendOptions): Promise<Hex>;
   /** Waits for inclusion (never throws; failures map to `timeout`). */
   waitForReceipt(hash: Hex, timeoutMs: number): Promise<ReceiptSummary>;
+  /** Looks a receipt up once without waiting: `null` while the node knows no receipt for `hash`. */
+  getReceipt(hash: Hex): Promise<MinedReceipt | null>;
 }
 
 /** Dependencies of {@link createViemChainClient}. */
@@ -88,13 +107,46 @@ export interface ViemChainDeps {
 /** Gas limit headroom over the node's estimate, in percent. */
 const GAS_HEADROOM_PERCENT = 20n;
 
+/** An operational RPC failure. The provider's error is not kept: its text can name the RPC URL. */
+function rpcFailure(): Error {
+  return new Error('rpc_failure');
+}
+
 function toRevert(e: unknown): Error {
   if (e instanceof BaseError) {
     const hit = e.walk((x) => x instanceof ContractFunctionRevertedError || x instanceof ExecutionRevertedError);
     if (hit instanceof ContractFunctionRevertedError) return new SimulationRevert(hit.data?.errorName);
     if (hit instanceof ExecutionRevertedError) return new SimulationRevert();
   }
-  return new Error('rpc_failure');
+  return rpcFailure();
+}
+
+/**
+ * Node answers to `eth_sendRawTransaction` that refuse THIS transaction, so it is in no mempool afterwards. A fixed
+ * list matched on the JSON-RPC error message: anything else is outcome-unknown (fail closed).
+ *
+ * "nonce too low" is deliberately absent: only this send was signed with its nonce, so a used nonce can mean this very
+ * transaction already landed (an RPC gateway that forwards the request twice answers the second copy this way).
+ * Reconciliation then sees the pending count above the nonce and settles it as broadcast instead of releasing it.
+ */
+const NODE_REFUSAL =
+  /nonce too high|nonce has max value|insufficient funds|exceeds transaction sender account balance|intrinsic gas too (?:low|high)|exceeds block gas limit|transaction underpriced|fee cap less than block base fee|max fee per gas less than block base fee|transaction type not (?:valid|supported)|execution reverted/;
+/**
+ * Answers that mean the node already holds the same transaction. Never a refusal, although viem maps some of them to
+ * `NonceTooLowError`.
+ */
+const NODE_HOLDS_TX = /already known|already imported|known transaction|already exists|already in (?:the )?(?:mem)?pool/;
+
+/**
+ * True only for a JSON-RPC error answer (not a transport, HTTP or timeout failure) whose message is a refusal of the
+ * transaction. viem sends `eth_sendRawTransaction` with `retryCount: 0`, so the answer is to this one attempt.
+ */
+function nodeRefused(e: unknown): boolean {
+  if (!(e instanceof BaseError)) return false;
+  const answer = e.walk((x) => x instanceof RpcRequestError || (x instanceof RpcError && !(x instanceof UnknownRpcError)));
+  if (!(answer instanceof BaseError)) return false;
+  const message = answer.details.toLowerCase();
+  return !NODE_HOLDS_TX.test(message) && NODE_REFUSAL.test(message);
 }
 
 function sweepTuple(s: SweepFields): {
@@ -160,18 +212,34 @@ export function createViemChainClient(d: ViemChainDeps): ChainClient {
       }
     },
 
-    sendSweep(call, opts) {
-      const s = sweepTuple(call.sweep);
-      const common = { account, chain, address: call.sweepRelayer, abi, nonce: opts.nonce, gas: opts.gas, gasPrice: opts.gasPrice } as const;
-      if (call.permit === undefined) {
-        return wallet.writeContract({ ...common, functionName: 'sweep', args: [s, call.sweepSig] });
+    async sendSweep(call, opts) {
+      // Signed here and sent raw so the hash is known before anything leaves the process: an unknown outcome can then
+      // be settled later by a receipt lookup (EVM-3).
+      let raw: Hex;
+      try {
+        const s = sweepTuple(call.sweep);
+        const p = call.permit;
+        const data =
+          p === undefined
+            ? encodeFunctionData({ abi, functionName: 'sweep', args: [s, call.sweepSig] })
+            : encodeFunctionData({
+                abi,
+                functionName: 'sweepWithPermit',
+                args: [s, call.sweepSig, { value: p.value, deadline: p.deadline, v: p.v, r: p.r, s: p.s }],
+              });
+        raw = await wallet.signTransaction({
+          account, chain, to: call.sweepRelayer, data, nonce: opts.nonce, gas: opts.gas, gasPrice: opts.gasPrice, type: 'legacy',
+        });
+      } catch {
+        throw new SendRefused(); // nothing was handed to the RPC
       }
-      const p = call.permit;
-      return wallet.writeContract({
-        ...common,
-        functionName: 'sweepWithPermit',
-        args: [s, call.sweepSig, { value: p.value, deadline: p.deadline, v: p.v, r: p.r, s: p.s }],
-      });
+      const txHash = keccak256(raw);
+      try {
+        return await wallet.sendRawTransaction({ serializedTransaction: raw });
+      } catch (e) {
+        if (nodeRefused(e)) throw new SendRefused();
+        throw new SendOutcomeUnknown(txHash);
+      }
     },
 
     async waitForReceipt(hash, timeoutMs) {
@@ -180,6 +248,16 @@ export function createViemChainClient(d: ViemChainDeps): ChainClient {
         return { status: r.status, gasUsed: r.gasUsed };
       } catch {
         return { status: 'timeout', gasUsed: 0n };
+      }
+    },
+
+    async getReceipt(hash) {
+      try {
+        const r = await pub.getTransactionReceipt({ hash });
+        return { status: r.status, gasUsed: r.gasUsed };
+      } catch (e) {
+        if (e instanceof TransactionReceiptNotFoundError) return null;
+        throw rpcFailure();
       }
     },
   };

@@ -5,6 +5,8 @@ export type JsonSchema = { readonly [key: string]: unknown };
 const SCHEMA = 'https://json-schema.org/draft/2020-12/schema';
 const dec = { type: 'string', pattern: '^(?:0|[1-9][0-9]{0,29})$' } as const;
 const unixSeconds = { type: 'integer', minimum: 0, maximum: Number.MAX_SAFE_INTEGER } as const;
+/** Invoice and quote times: `validateInvoice` stops them at 9999-12-31T23:59:59Z (253402300799) so Date code stays total. */
+const invoiceTime = { type: 'integer', minimum: 0, maximum: 253_402_300_799 } as const;
 const text = (maxCodePoints: number): JsonSchema => ({ type: 'string', minLength: 1, maxLength: maxCodePoints * 2, description: `Plain text, NFC, no control characters, at most ${maxCodePoints} code points. Never render as markup.` });
 
 /**
@@ -51,12 +53,12 @@ export const invoiceJsonSchema: JsonSchema = {
       required: ['source', 'timestamp', 'expiresAt', 'maxSlippageBps'],
       properties: {
         source: { type: 'string', pattern: '^[a-z0-9][a-z0-9._:-]{0,63}$' },
-        timestamp: unixSeconds,
-        expiresAt: unixSeconds,
+        timestamp: invoiceTime,
+        expiresAt: invoiceTime,
         maxSlippageBps: { type: 'integer', minimum: 0, maximum: 10000 },
       },
     },
-    expiresAt: unixSeconds,
+    expiresAt: invoiceTime,
     lineItems: {
       type: 'array',
       maxItems: 50,

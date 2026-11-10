@@ -104,3 +104,16 @@ export {
   type DecodedPolicyPayment,
 } from './router.js';
 export { ghostPayPolicyRouterAbi } from './abi/policyRouter.js';
+export { windowHeadroom, consumeWindow, type WindowState, type WindowLeaf } from './window.js';
+export {
+  buildPolicyRecord,
+  parsePolicyRecord,
+  serializePolicyRecord,
+  findPolicyFromCandidates,
+  POLICY_RECORD_FORMAT,
+  POLICY_RECORD_VERSION,
+  MAX_POLICY_RECORD_LENGTH,
+  type PolicyRecord,
+  type PolicyRecordInput,
+  type PolicyCandidates,
+} from './record.js';

@@ -1,4 +1,5 @@
 import {
+  ChainAdapterError,
   compareProviders,
   dedupeClaims,
   fetchAnnouncements,
@@ -6,6 +7,7 @@ import {
   type Address,
   type ChainConfig,
   type DeploymentManifest,
+  type Hex,
   type RpcClient,
   type ScanCursor,
   type ProviderDiscrepancy,
@@ -16,6 +18,7 @@ import { parseMetadata, type ParsedMetadata } from '@ghostpay/core-crypto';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { bytesToHex, utf8ToBytes } from '@noble/hashes/utils.js';
 import { UserFacingError } from './errors';
+import { anonymitySet, splitLanes, type AnonymitySet } from './scanSpam';
 import type { FromWorker, ToWorker, WireLog } from './scannerCore';
 
 export interface ScanWorkerLike {
@@ -52,6 +55,30 @@ export interface ScanProgress {
   readonly discrepancies?: number;
   /** The configured per-run announcement or match budget stopped the scan; resume from `nextBlock`. */
   readonly limitReached?: boolean;
+  /** Spec 05: open-lane (non-router) announcements deferred by the per-scan budget; resume from `nextBlock`. */
+  readonly backlog?: number;
+  /**
+   * L4-01: committed blocks too large to fetch whole, so far in this run. Only their router-posted announcements were
+   * scanned; other announcements there were skipped. Reported with every page, so a later failure cannot hide them.
+   */
+  readonly routerOnlyBlocks?: readonly bigint[];
+}
+
+/** The second RPC reported a head more than `finalityDepth` blocks below the scan RPC's: scans stop at its head. */
+export interface SecondaryLag {
+  readonly secondaryHead: bigint;
+  readonly head: bigint;
+}
+
+/** Spec 05 local telemetry for one run. Computed on this device and never sent. */
+export interface ScanTelemetry {
+  /** Router-posted announcements processed. */
+  readonly trusted: number;
+  /** Other announcements processed. */
+  readonly open: number;
+  /** Announcements that looked like spam (repeated ephemeral key, flooding caller, malformed metadata); deprioritised, not dropped. */
+  readonly suspected: number;
+  readonly anonymity: AnonymitySet | undefined;
 }
 
 /**
@@ -85,8 +112,12 @@ export interface ScanParams {
   readonly onMatch?: (m: ScanMatch) => void;
   /** Immediately hide possibly orphaned actionable matches; this does not authorize persistent invalidation. */
   readonly onQuarantine?: (rolledBackTo: bigint) => void;
-  /** A rollback was confirmed (by both providers when configured); persist invalidation before accepting replacement results. */
-  readonly onReorg?: (rolledBackTo: bigint) => void | Promise<void>;
+  /**
+   * A rollback was confirmed (by both providers when configured); persist invalidation before accepting replacement
+   * results. `canonicalHash` returns the block hash every configured provider reports at a height and throws on any
+   * doubt, so only observations whose block was actually replaced are invalidated (nothing is, if it throws).
+   */
+  readonly onReorg?: (rolledBackTo: bigint, canonicalHash: (height: bigint) => Promise<Hex>) => void | Promise<void>;
   readonly maxPages?: number;
   /** Total accepted public announcements to process in one run (default 100,000). */
   readonly maxAnnouncementsPerScan?: number;
@@ -99,6 +130,8 @@ export interface ScanParams {
   /** Independent second provider on the same chain; compared at every checkpoint. */
   readonly secondaryClient?: RpcClient;
   readonly onDiscrepancy?: (d: readonly ProviderDiscrepancy[]) => void;
+  /** Spec 05: non-router announcements processed per run (default 20,000). Overflow is deferred, never skipped. */
+  readonly openLaneBudget?: number;
 }
 
 function toWire(a: ScannedAnnouncement, skipTag: boolean): WireLog {
@@ -109,7 +142,7 @@ function toWire(a: ScannedAnnouncement, skipTag: boolean): WireLog {
  * Network access happens here (via chain-adapters), never in the worker. The worker receives public logs and, once,
  * the viewing key. Cancelling via `signal` stops fetching, tells the worker to stop, and terminates it.
  */
-export async function runScan(p: ScanParams): Promise<{ readonly matches: readonly ScanMatch[]; readonly cursor: ScanCursor; readonly scanned: number; readonly discrepancies: readonly ProviderDiscrepancy[]; readonly limitReached: boolean }> {
+export async function runScan(p: ScanParams): Promise<{ readonly matches: readonly ScanMatch[]; readonly cursor: ScanCursor; readonly scanned: number; readonly discrepancies: readonly ProviderDiscrepancy[]; readonly limitReached: boolean; readonly backlog?: number; readonly telemetry?: ScanTelemetry; readonly routerOnlyBlocks?: readonly bigint[]; readonly secondaryLag?: SecondaryLag }> {
   let worker: ScanWorkerLike | undefined;
   let stopped = false;
   const stopWorker = (): void => {
@@ -126,6 +159,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   const pending = new Map<number, (m: FromWorker) => void>();
   let ready: ((m: FromWorker) => void) | undefined;
   let failed: ((e: Error) => void) | undefined;
+  let progressed: ((scanned: number) => void) | undefined;
   const timeoutMs = p.replyTimeoutMs ?? 60_000;
   const ABORTED = new Error('scan cancelled');
   // Settles on a reply, a worker error, the reply timeout, or Cancel: a hung worker can never block the caller.
@@ -133,11 +167,22 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
     new Promise<FromWorker>((resolve, reject) => {
       const done = (fn: () => void): void => {
         clearTimeout(timer);
+        progressed = undefined;
         p.signal.removeEventListener('abort', onAbort);
         fn();
       };
       const onAbort = (): void => done(() => reject(ABORTED));
-      const timer = setTimeout(() => done(() => reject(new UserFacingError('The scanner did not answer in time and was stopped.'))), timeoutMs);
+      const expire = (): void => done(() => reject(new UserFacingError('The scanner did not answer in time and was stopped.')));
+      let timer = setTimeout(expire, timeoutMs);
+      let scannedSoFar = -1;
+      // A whole page on a slow device can take longer than the timeout; the worker reports progress every 128
+      // announcements and each step forward restarts the timer, which then only stops a worker that went silent.
+      progressed = (count) => {
+        if (count <= scannedSoFar) return;
+        scannedSoFar = count;
+        clearTimeout(timer);
+        timer = setTimeout(expire, timeoutMs);
+      };
       p.signal.addEventListener('abort', onAbort, { once: true });
       failed = (e) => done(() => reject(e));
       register((m) => done(() => resolve(m)));
@@ -150,6 +195,17 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   let scanned = 0;
   let skipped = 0;
   let limitReached = false;
+  let backlog = 0;
+  let trustedSeen = 0;
+  let openSeen = 0;
+  let suspected = 0;
+  const routerBlocks: bigint[] = [];
+  // Blocks too large to fetch whole: only their router-posted announcements were scanned (bounded list).
+  const routerOnlyBlocks = new Set<bigint>();
+  const narrowed = (): { readonly routerOnlyBlocks?: readonly bigint[] } => (routerOnlyBlocks.size === 0 ? {} : { routerOnlyBlocks: [...routerOnlyBlocks] });
+  let secondaryLag: SecondaryLag | undefined;
+  // The highest block this run could scan to (the lower of the two heads): the privacy-set window ends here.
+  let reachableHead: bigint | undefined;
   // Payment identity, unlike a log id, survives a replay announcement at another block. Keep this
   // ledger per scan only: checkpoints never persist claimed payment data or RPC evidence.
   const claimLedger = new Map<string, number>();
@@ -168,6 +224,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       const m = e.data;
       if (m.type === 'ready' || m.type === 'error' || m.type === 'ended') ready?.(m);
       else if (m.type === 'matches') pending.get(m.batchId)?.(m);
+      else if (m.type === 'progress' && pending.has(m.batchId)) progressed?.(m.scanned);
     };
     w.onerror = (): void => {
       failed?.(new UserFacingError('The scanner worker failed.'));
@@ -180,10 +237,35 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
     const maxPages = p.maxPages ?? 10_000;
     const maxAnnouncements = Math.max(1, Math.min(100_000, Number.isSafeInteger(p.maxAnnouncementsPerScan) ? p.maxAnnouncementsPerScan! : 100_000));
     const maxMatches = Math.max(1, Math.min(10_000, Number.isSafeInteger(p.maxMatchesPerScan) ? p.maxMatchesPerScan! : 10_000));
+    const openBudget = Math.max(1, Math.min(100_000, Number.isSafeInteger(p.openLaneBudget) ? p.openLaneBudget! : 20_000));
     for (let page = 0; page < maxPages; page++) {
       if (p.signal.aborted) break;
-      const res = await fetchAnnouncements({ chain: p.chain, client: p.client, announcer: p.manifest.announcer, cursor });
+      // With a second provider, end the page at the lower of the two heads: a second RPC a few blocks behind the
+      // primary can then corroborate the page instead of withholding it on every run.
+      let secondaryHead: bigint | undefined;
+      if (p.secondaryClient !== undefined) {
+        try {
+          secondaryHead = await p.secondaryClient.blockNumber();
+        } catch {
+          if (p.signal.aborted) break;
+          const conflicts: readonly ProviderDiscrepancy[] = [{ kind: 'secondary_error', ref: cursor.nextBlock.toString() }];
+          discrepancies.push(...conflicts);
+          p.onDiscrepancy?.(conflicts);
+          p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
+          break;
+        }
+        if (p.signal.aborted) break;
+      }
+      const res = await fetchAnnouncements({
+        chain: p.chain, client: p.client, announcer: p.manifest.announcer, router: p.manifest.router, cursor,
+        ...(secondaryHead === undefined ? {} : { toBlock: secondaryHead }),
+      });
       if (p.signal.aborted) break;
+      // A page that reached the second RPC's head while the scan RPC is far ahead: say so, the scan stops there.
+      secondaryLag = secondaryHead !== undefined && !res.truncated && res.head > secondaryHead + BigInt(p.chain.finalityDepth) ? { secondaryHead, head: res.head } : undefined;
+      const pageRouterOnly = res.routerOnlyBlocks ?? [];
+      const pageHead = secondaryHead !== undefined && secondaryHead < res.head ? secondaryHead : res.head;
+      if (reachableHead === undefined || pageHead > reachableHead) reachableHead = pageHead;
       skipped += res.skipped;
       const pageFrom = res.reorg?.rolledBackTo ?? cursor.nextBlock;
       if (res.reorg !== undefined) {
@@ -196,6 +278,11 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         claimLedger.clear();
         keep.forEach((match, index) => claimLedger.set(`${match.stealthAddress.toLowerCase()}|${match.announcement.ephemeralPublicKey.toLowerCase()}`, index));
         for (const [id, block] of evidenceLedger) if (block >= res.reorg.rolledBackTo) evidenceLedger.delete(id);
+        for (const block of routerOnlyBlocks) if (block >= res.reorg.rolledBackTo) routerOnlyBlocks.delete(block);
+        // The replacement page re-reads these blocks: drop their router announcements so the privacy set counts each once.
+        const keptRouterBlocks = routerBlocks.filter((block) => block < res.reorg!.rolledBackTo);
+        routerBlocks.length = 0;
+        routerBlocks.push(...keptRouterBlocks);
         p.onQuarantine?.(res.reorg.rolledBackTo);
         if (p.signal.aborted) break;
         if (p.secondaryClient !== undefined) {
@@ -206,6 +293,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
             fromBlock: pageFrom, toBlock: res.cursor.last.number,
             primaryAnnouncements: res.announcements, primarySkipped: res.skipped,
             primaryBlockHash: res.cursor.last.hash,
+            router: p.manifest.router, primaryRouterOnlyBlocks: pageRouterOnly,
           })).discrepancies;
           if (p.signal.aborted) break;
           const conflicts = pageComparison.length > 0 ? pageComparison : await confirmRollback(p, cursor, res.cursor, res.reorg.rolledBackTo);
@@ -214,13 +302,13 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
             discrepancies.push(...conflicts);
             p.onDiscrepancy?.(conflicts);
             if (p.signal.aborted) break;
-            cursor = { nextBlock: res.reorg.rolledBackTo };
-            p.checkpoints?.clear(p.chain.chainId, p.keyId);
+            // An unconfirmed fork report must not delete the saved checkpoint either: keep it and this run's
+            // position, so the next scan checks the same anchor again.
             p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
             break;
           }
         }
-        await p.onReorg?.(res.reorg.rolledBackTo);
+        await p.onReorg?.(res.reorg.rolledBackTo, (height) => canonicalHashAt(p, height));
         if (p.signal.aborted) break;
       }
       if (scanned + res.announcements.length > maxAnnouncements) {
@@ -232,18 +320,32 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, limitReached });
         break;
       }
+      // Spec 05: router-posted announcements (trusted lane) go first; the open lane has a per-run budget. A page whose open
+      // lane does not fit is processed for the trusted lane only and the cursor is held before it, so nothing is skipped.
+      const lanes = splitLanes(res.announcements, p.manifest.router);
+      suspected += lanes.suspected;
+      // The first page of a run is never deferred: with a budget below one page's open lane the cursor would
+      // otherwise stay before that page on every run. Per-run work is then at most the budget plus one page.
+      const deferred = openSeen > 0 && openSeen + lanes.open.length > openBudget ? lanes.open.length : 0;
+      const toScan = deferred > 0 ? lanes.trusted : [...lanes.trusted, ...lanes.open];
+      const position = new Map(res.announcements.map((a, i) => [a.id, i] as const));
       for (const a of res.announcements) byId.set(a.id, a);
       const id = ++batchId;
       const reply = await wait((resolve) => {
         pending.set(id, resolve);
-        w.postMessage({ type: 'batch', batchId: id, logs: res.announcements.map((a) => toWire(a, p.deep === true && a.caller.toLowerCase() === p.manifest.router.toLowerCase())) });
+        w.postMessage({ type: 'batch', batchId: id, logs: toScan.map((a) => toWire(a, p.deep === true && a.caller.toLowerCase() === p.manifest.router.toLowerCase())) });
       });
       pending.delete(id);
       if (p.signal.aborted) break;
       if (reply.type !== 'matches') throw new UserFacingError('The scanner returned an unexpected reply.');
-      scanned += res.announcements.length;
+      scanned += toScan.length;
+      trustedSeen += lanes.trusted.length;
+      if (deferred === 0) openSeen += lanes.open.length;
+      for (const a of lanes.trusted) if (routerBlocks.length < 200_000) routerBlocks.push(a.blockNumber);
       const claims: { readonly stealthAddress: Address; readonly announcement: ScannedAnnouncement; readonly metadata: ParsedMetadata | undefined; readonly viaRouter: boolean }[] = [];
-      for (const m of reply.matches) {
+      // Back to chain order, so lane ordering never changes which duplicate or match comes first.
+      const ordered = [...reply.matches].sort((x, y) => (position.get(x.id) ?? 0) - (position.get(y.id) ?? 0));
+      for (const m of ordered) {
         const announcement = byId.get(m.id);
         if (announcement === undefined) continue;
         let metadata: ParsedMetadata | undefined;
@@ -307,6 +409,8 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
           primaryAnnouncements: res.announcements,
           primarySkipped: res.skipped,
           primaryBlockHash: res.cursor.last.hash,
+          router: p.manifest.router,
+          primaryRouterOnlyBlocks: pageRouterOnly,
         });
         if (p.signal.aborted) break;
         if (cmp.discrepancies.length > 0) {
@@ -352,13 +456,32 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
         break;
       }
-      cursor = res.cursor;
-      if (!disagree && p.checkpoints !== undefined) {
-        const saved = await persistable(p, cursor, persistenceFloor);
-        if (p.signal.aborted) break;
-        if (saved !== undefined) p.checkpoints.save(p.chain.chainId, p.keyId, saved);
+      if (deferred > 0) {
+        backlog = deferred;
+        if (res.reorg !== undefined) {
+          cursor = { nextBlock: res.reorg.rolledBackTo };
+          p.checkpoints?.clear(p.chain.chainId, p.keyId);
+        }
+        p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, backlog });
+        break;
       }
-      p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: !res.truncated, discrepancies: discrepancies.length });
+      cursor = res.cursor;
+      for (const block of pageRouterOnly) if (routerOnlyBlocks.size < 1000) routerOnlyBlocks.add(block);
+      if (!disagree && p.checkpoints !== undefined) {
+        const saved = await persistable(p, cursor, persistenceFloor, pageHead, all);
+        if (p.signal.aborted) break;
+        if (Array.isArray(saved)) {
+          // An uncorroborated anchor is withheld, never saved from the primary alone: stop and re-scan later.
+          const conflicts = saved as readonly ProviderDiscrepancy[];
+          discrepancies.push(...conflicts);
+          p.onDiscrepancy?.(conflicts);
+          if (res.reorg !== undefined) p.checkpoints.clear(p.chain.chainId, p.keyId);
+          p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
+          break;
+        }
+        if (saved !== undefined) p.checkpoints.save(p.chain.chainId, p.keyId, saved as ScanCursor);
+      }
+      p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: !res.truncated, discrepancies: discrepancies.length, ...narrowed() });
       if (!res.truncated) break;
     }
   } catch (e) {
@@ -368,7 +491,26 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
     p.signal.removeEventListener('abort', stopWorker);
     try { stopWorker(); } finally { zeroizeBytes(p.viewingKey); }
   }
-  return { matches: all, cursor, scanned, discrepancies, limitReached };
+  const scanHead = cursor.last?.number ?? (cursor.nextBlock > 0n ? cursor.nextBlock - 1n : 0n);
+  // A run stopped by a budget, a discrepancy or Cancel before the head: the "last 7 days" still end at the chain head,
+  // and the blocks it did not reach make the count a lower bound.
+  const windowHead = reachableHead !== undefined && reachableHead > scanHead ? reachableHead : scanHead;
+  const anonymity = trustedSeen + openSeen === 0 && scanned === 0 ? undefined : anonymitySet({ chain: p.chain, routerBlocks, head: windowHead, scannedFrom: p.cursor.nextBlock, scannedTo: scanHead });
+  return { matches: all, cursor, scanned, discrepancies, limitReached, backlog, routerOnlyBlocks: [...routerOnlyBlocks], ...(secondaryLag === undefined ? {} : { secondaryLag }), telemetry: { trusted: trustedSeen, open: openSeen, suspected, anonymity } };
+}
+
+/**
+ * The block hash at `height` reported by the primary and, when configured, also by the second provider. After a
+ * confirmed rollback it tells orphaned saved observations from unchanged ones; a missing block or any disagreement
+ * throws, so nothing is invalidated and the next scan retries.
+ */
+async function canonicalHashAt(p: ScanParams, height: bigint): Promise<Hex> {
+  const [primary, independent] = await Promise.all([p.client.getBlock(height), p.secondaryClient?.getBlock(height)]);
+  const hash = primary?.hash.toLowerCase();
+  if (hash === undefined || (p.secondaryClient !== undefined && (independent == null || independent.hash.toLowerCase() !== hash))) {
+    throw new ChainAdapterError('RPC_FAILURE', 'canonical block hash unavailable');
+  }
+  return hash as Hex;
 }
 
 /** Bounded, fresh two-provider checks immediately before irreversible historical invalidation. */
@@ -409,17 +551,67 @@ async function confirmRollback(p: ScanParams, previous: ScanCursor, replacement:
 /**
  * The cursor that is safe to persist: `finalityDepth` blocks behind the fetched position. Matches seen in that tail were only
  * `pending` and live in memory alone, so the next session re-scans (and re-verifies) the tail instead of skipping it.
- * Never moves behind where this run started.
+ * Blocks already `finalityDepth` deep below `head` need no such tail, so when the scan is behind the head the checkpoint
+ * moves up to the cursor itself: otherwise a run held by a budget a few pages in, each page narrower than `finalityDepth`,
+ * would save the same checkpoint on every resume and never pass the spam (A5). Either way it never passes this run's
+ * earliest `pending` match, and never moves behind where this run started.
+ *
+ * With a second provider, whichever anchor is saved (the replay-tail block, or the page end when the cursor itself is saved)
+ * must hold the ba0fd59 invariant: its hash is read from both providers plus a second primary read after the secondary
+ * answers, and all three agree. Any failure is a discrepancy and the checkpoint is withheld: the page-end comparison in
+ * compareProviders alone does not cover a primary that switches its answer afterwards.
  */
-async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint): Promise<ScanCursor | undefined> {
+async function persistable(p: ScanParams, cursor: ScanCursor, floor: bigint, head: bigint, matches: readonly ScanMatch[]): Promise<ScanCursor | readonly ProviderDiscrepancy[] | undefined> {
   const depth = BigInt(p.chain.finalityDepth);
   let next = cursor.nextBlock > depth ? cursor.nextBlock - depth : 0n;
+  let settled = head + 1n > depth ? head + 1n - depth : 0n;
+  if (cursor.nextBlock < settled) settled = cursor.nextBlock;
+  if (settled > next) next = settled;
+  // A payment check that saw a lower head than the log fetch can leave a match pending below either edge: re-scan it.
+  for (const m of matches) if (m.receipt === 'pending' && m.announcement.blockNumber < next) next = m.announcement.blockNumber;
   if (next < floor) next = floor;
-  if (next >= cursor.nextBlock) return cursor;
+  if (next >= cursor.nextBlock) {
+    if (p.secondaryClient === undefined || cursor.last === undefined) return cursor;
+    // The page end becomes the canonical record for the next resume: corroborate it afresh, as for the tail anchor.
+    const agreed = await corroborateAnchor(p, p.secondaryClient, cursor.last.number);
+    if (p.signal.aborted) return undefined;
+    if (typeof agreed !== 'string') return agreed;
+    return agreed === cursor.last.hash.toLowerCase() ? cursor : [{ kind: 'block_hash_differs', ref: cursor.last.number.toString() }];
+  }
   if (next === 0n) return { nextBlock: 0n };
   // Keep reorg detection for the stored position: bind it to the hash of the block just before it.
-  const ref = await p.client.getBlock(next - 1n);
-  return ref === null ? { nextBlock: next } : { nextBlock: next, last: { number: next - 1n, hash: ref.hash } };
+  const height = next - 1n;
+  if (p.secondaryClient !== undefined) {
+    // This anchor is a different block from the compared page end. A later resume treats it as the
+    // canonical record, so a primary-only hash here could fake a reorg and invalidate real history.
+    const conflicts = await corroborateAnchor(p, p.secondaryClient, height);
+    if (p.signal.aborted) return undefined;
+    return typeof conflicts === 'string' ? { nextBlock: next, last: { number: height, hash: conflicts as `0x${string}` } } : conflicts;
+  }
+  const ref = await p.client.getBlock(height);
+  return ref === null ? { nextBlock: next } : { nextBlock: next, last: { number: height, hash: ref.hash } };
+}
+
+/** Fresh primary, secondary and primary re-read of one block; returns the agreed hash or the discrepancy. */
+async function corroborateAnchor(p: ScanParams, secondary: RpcClient, height: bigint): Promise<string | readonly ProviderDiscrepancy[]> {
+  const ref = height.toString();
+  try {
+    if (secondary.chainId !== p.chain.chainId || p.client.chainId !== p.chain.chainId) return [{ kind: 'secondary_error', ref }];
+    const [primary, independent] = await Promise.all([p.client.getBlock(height), secondary.getBlock(height)]);
+    if (p.signal.aborted) return [];
+    // Re-read after the independent await so a primary that switches answers mid-check is caught.
+    const again = await p.client.getBlock(height);
+    if (p.signal.aborted) return [];
+    if (independent === null) return [{ kind: 'secondary_error', ref }];
+    const hash = primary?.hash.toLowerCase();
+    if (primary === null || again === null || primary.number !== height || independent.number !== height || again.number !== height ||
+        hash === undefined || !/^0x[0-9a-f]{64}$/.test(hash) || hash !== independent.hash.toLowerCase() || hash !== again.hash.toLowerCase()) {
+      return [{ kind: 'block_hash_differs', ref }];
+    }
+    return hash;
+  } catch {
+    return [{ kind: 'secondary_error', ref }];
+  }
 }
 
 function zeroizeBytes(b: Uint8Array): void {
