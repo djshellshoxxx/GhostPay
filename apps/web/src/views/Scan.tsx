@@ -1,4 +1,4 @@
-import { claimPairKey, findChain, tokensForChain, type RpcClient } from '@ghostpay/chain-adapters';
+import { findChain, tokensForChain, type RpcClient } from '@ghostpay/chain-adapters';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../components/Common';
 import { ReceiptPanel } from '../components/ReceiptPanel';
