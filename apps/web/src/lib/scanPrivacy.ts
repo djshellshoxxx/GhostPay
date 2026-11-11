@@ -452,6 +452,44 @@ export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): 
 // ---------------------------------------------------------------------------------------------------------------
 // Indexer
 
+/**
+ * Reads at most `max` bytes of a response body. A declared Content-Length above the cap is refused unread; otherwise the
+ * stream is counted chunk by chunk and, once it passes the cap, the reader is cancelled and the request aborted, so at most
+ * one chunk beyond the cap is ever held. A response without a body reads as empty. (The capped readers in net-transport
+ * and the Esplora client are private and throw their own error types, so this one stays local.)
+ */
+async function readBodyCapped(res: Response, max: number, ctl: AbortController): Promise<Uint8Array> {
+  const tooLarge = (): ScanSourceError => new ScanSourceError('TRANSPORT', 'response too large');
+  const declared = Number(res.headers.get('content-length'));
+  if (Number.isFinite(declared) && declared > max) {
+    await res.body?.cancel().catch(() => undefined);
+    ctl.abort();
+    throw tooLarge();
+  }
+  if (res.body === null) return new Uint8Array(0);
+  const reader = res.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > max) {
+      await reader.cancel().catch(() => undefined);
+      ctl.abort();
+      throw tooLarge();
+    }
+    chunks.push(value);
+  }
+  const all = new Uint8Array(total);
+  let off = 0;
+  for (const c of chunks) {
+    all.set(c, off);
+    off += c.byteLength;
+  }
+  return all;
+}
+
 /** Browser GET transport for the indexer: no redirects, no cookies, no referrer, streamed size cap, timeout. */
 export function fetchHttpTransport(fetchImpl: (url: string, init: RequestInit) => Promise<Response>): HttpTransport {
   return {
@@ -462,9 +500,7 @@ export function fetchHttpTransport(fetchImpl: (url: string, init: RequestInit) =
       req.signal?.addEventListener('abort', onAbort, { once: true });
       try {
         const res = await fetchImpl(req.url, { method: req.method, signal: ctl.signal, redirect: 'error', credentials: 'omit', cache: 'no-store', referrerPolicy: 'no-referrer', headers: { accept: 'application/json' } });
-        const buf = new Uint8Array(await res.arrayBuffer());
-        if (buf.length > req.maxBytes) throw new ScanSourceError('TRANSPORT', 'response too large');
-        return { status: res.status, body: buf };
+        return { status: res.status, body: await readBodyCapped(res, req.maxBytes, ctl) };
       } finally {
         clearTimeout(timer);
         req.signal?.removeEventListener('abort', onAbort);
