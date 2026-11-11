@@ -13,6 +13,8 @@ deploy/selfhost.sh [--onion]                 # asks for "yes", then builds and `
 
 Hardening in `docker-compose.yml`: `read_only`, `cap_drop: ALL`, `no-new-privileges`, non-root users (api 65532, nginx 101, tor debian-tor), tmpfs `noexec` for `/tmp`, memory/pid limits, API not published (internal network only), web bound to `127.0.0.1` only, file-based secrets, log rotation, no access log in nginx.
 
+State: the `api-state` named volume holds the relayer's durable state (`/var/lib/ghostpay-relayer/state.json`, config key `state.file`); it is the api container's only writable path besides `/tmp`. Run one api container per volume, back it up and roll back per the [relayer runbook](../docs/operators/relayer-runbook.md). nginx limits request bodies to 16 KiB and exposes only `/api/{healthz,v1/info,v1/quote,v1/sweep}`; `/metrics` is never routed.
+
 You still must: terminate TLS in front of `127.0.0.1:${GHOSTPAY_HTTP_PORT}` (Caddy, Cloudflare Tunnel, host nginx); fund and limit the relayer hot key conservatively; set `allowedOrigins` to your origin; consider egress filtering for the api container (allow only your RPC hosts).
 
 Behind the onion service the proxy sees only the Tor container's IP, so per-IP rate limits in the relayer collapse into one bucket; that is a known trade-off, not a bug.
