@@ -231,6 +231,10 @@ export function recommendProfile(answers: unknown): Recommendation {
   if (typeof answers !== 'object' || answers === null || Array.isArray(answers)) {
     throw new AnswerError('answers must be an object');
   }
+  const prototype = Object.getPrototypeOf(answers);
+  if (prototype !== Object.prototype && prototype !== null) {
+    throw new AnswerError('answers must be a plain object');
+  }
   const scores: Scores = { everyday: 0, private: 0, maximum: 0 };
   let count = 0;
   const reasons: string[] = [];
@@ -240,6 +244,7 @@ export function recommendProfile(answers: unknown): Recommendation {
       throw new AnswerError(`unknown question: ${k.slice(0, 32)}`);
   }
   for (const q of Object.keys(QUESTIONS) as QuestionId[]) {
+    if (!Object.prototype.hasOwnProperty.call(rec, q)) continue;
     const v = rec[q];
     if (v === undefined) continue;
     const table = SCORING[q];
