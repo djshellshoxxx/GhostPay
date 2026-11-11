@@ -1410,6 +1410,8 @@ export const SECURITY_KEY_GROUPS = {
     'scan.match.claimedRouter',
     'scan.match.claimedDirect',
     'scan.match.pending',
+    'scan.match.sharedAddress',
+    'scan.matches.sharedAddress',
     'scan.tags.hint',
     'scan.tag.label',
     'scan.tags.unlocked',

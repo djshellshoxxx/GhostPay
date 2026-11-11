@@ -8,6 +8,7 @@ import { verifyManifestState } from '../lib/manifest';
 import { formatUnits } from '../lib/format';
 import { UserFacingError, displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { checkpointKeyId, runScan, type ScanMatch, type ScanProgress } from '../lib/scanClient';
+import { placeScanMatch, sharedRouterAddresses } from '../lib/scanMatches';
 import { browserStorage, createWindowedScanClient, describeScanDisclosureMessages, loadScanPrivacy, openScanClients, planScan } from '../lib/scanPrivacy';
 import type { AnonymitySet } from '../lib/scanSpam';
 import { useServices } from '../lib/services';
@@ -252,13 +253,14 @@ export function Scan(): ReactNode {
           },
           onMatch: (m) => {
             if (!scopeIsCurrent()) return;
-            const identity = `${m.stealthAddress.toLowerCase()}|${m.announcement.ephemeralPublicKey.toLowerCase()}`;
-            const prior = found.findIndex((x) => `${x.stealthAddress.toLowerCase()}|${x.announcement.ephemeralPublicKey.toLowerCase()}` === identity);
-            if (prior < 0) {
+            // F1: the same rule as runScan's result, so a front-run router record never replaces the genuine one.
+            const slot = placeScanMatch(found, m);
+            if (slot === 'skip') return;
+            if (slot === 'append') {
               if (found.length + quarantined.length >= 10_000) throw new UserFacingError({ key: 'scan.error.observationLimit' });
               found.push(m);
             }
-            else found[prior] = m;
+            else found[slot] = m;
             app.setMatches([...found]);
           },
         });
@@ -421,10 +423,12 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
   }, [matches, unlocked, services, props.chainId]);
 
   if (matches.length === 0) return <p className="hint">{t('scan.matches.none')}</p>;
+  const shared = sharedRouterAddresses(matches);
   return (
     <div>
       <h3>{t('scan.matches.heading')}</h3>
       {err !== undefined && <Notice kind="error">{show(err, t)}</Notice>}
+      {shared.size > 0 && <Notice kind="warn">{t('scan.matches.sharedAddress')}</Notice>}
       <ul className="plain-list matches">
         {matches.map((m) => {
           const id = m.announcement.id;
@@ -433,6 +437,7 @@ function Matches(props: { readonly chainId: number; readonly matches: readonly S
               <p>
                 <strong>{m.receipt === 'verified' ? describe(m, m.chainId, t) : t('scan.match.claimedPrefix', { amount: describe(m, m.chainId, t) })}</strong> {t('scan.match.inBlock', { block: m.announcement.blockNumber.toString() })}
                 {m.viaRouter ? '' : ` ${t('scan.match.direct')}`}
+                {m.viaRouter && shared.has(m.stealthAddress.toLowerCase()) && ` ${t('scan.match.sharedAddress')}`}
                 {!m.tagMatches && ` ${t('scan.match.deepFound')}`}
                 {m.receipt === 'claimed' && ` - ${m.viaRouter ? t('scan.match.claimedRouter') : t('scan.match.claimedDirect')}`}
                 {m.receipt === 'pending' && ` - ${t('scan.match.pending')}`}

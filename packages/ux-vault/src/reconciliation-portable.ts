@@ -546,8 +546,15 @@ function withSaved(document: Document, record: ReconciliationRecord): Document {
     prior.invoiceDigest !== record.invoiceDigest
   )
     fail({ key: 'error.reconciliationVault.thisRecordAlreadyHasADifferentInvoiceAnnotation' });
+  // Matching windows use first-seen time: re-saving live evidence never moves it forward. Imported or invalidated
+  // priors are not live evidence, so their revival takes the fresh time (reorg cutoffs compare against it).
+  const keepTime =
+    prior !== undefined &&
+    prior.evidenceStatus === 'verified-at-scan' &&
+    (prior.provenance === undefined || prior.provenance === 'live-scan');
   const next: VaultRecord = {
     ...record,
+    ...(keepTime ? { recordedAt: Math.min(prior.recordedAt, record.recordedAt) } : {}),
     ...(prior?.invoiceDigest === undefined ? {} : { invoiceDigest: prior.invoiceDigest }),
     provenance: 'live-scan',
   };
