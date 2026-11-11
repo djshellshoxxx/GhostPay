@@ -42,7 +42,7 @@ export interface ReceiptInvoiceBinding {
   readonly amountMinorUnits: string;
   readonly invoiceSignerPublicKey: string;
   readonly invoiceSignatureValid: boolean;
-  /** A public key the user has already verified out of band; never inferred from receipt content. */
+  /** A public key the user has already verified out of band; never inferred from receipt content. When present, the receipt must be signed by exactly this key. */
   readonly trustedSignerPublicKey?: string;
   readonly txHash?: string;
   readonly stealthAddress?: string;
@@ -151,12 +151,17 @@ export function bindReceiptToInvoice(value: unknown, binding: ReceiptInvoiceBind
   if (binding.txHash !== undefined && receipt.txHash !== binding.txHash.toLowerCase()) throw new SignedReceiptError('RECEIPT_TX_MISMATCH');
   if (binding.stealthAddress !== undefined && receipt.stealthAddress !== binding.stealthAddress.toLowerCase()) throw new SignedReceiptError('RECEIPT_RECIPIENT_MISMATCH');
 
-  const matchesInvoiceKey = binding.invoiceSignatureValid && receipt.signerPublicKey === binding.invoiceSignerPublicKey.toLowerCase();
   const trustedKey = binding.trustedSignerPublicKey?.trim().toLowerCase();
-  if (trustedKey !== undefined && !PUBKEY.test(trustedKey)) throw new SignedReceiptError('TRUSTED_KEY');
-  const matchesExplicitKey = trustedKey !== undefined && receipt.signerPublicKey === trustedKey;
-  if (!matchesInvoiceKey && !matchesExplicitKey) throw new SignedReceiptError('SIGNER_MISMATCH');
-  return { receipt, signerMatch: matchesExplicitKey ? 'explicitly-trusted-key' : 'invoice-signing-key' };
+  if (trustedKey !== undefined) {
+    if (!PUBKEY.test(trustedKey)) throw new SignedReceiptError('TRUSTED_KEY');
+    // A key the caller supplied is a requirement, not an alternative. Falling back to the invoice key here would
+    // accept a receipt signed by an unpinned invoice signer after the payer named a different key out of band.
+    if (receipt.signerPublicKey !== trustedKey) throw new SignedReceiptError('SIGNER_MISMATCH');
+    return { receipt, signerMatch: 'explicitly-trusted-key' };
+  }
+  const matchesInvoiceKey = binding.invoiceSignatureValid && receipt.signerPublicKey === binding.invoiceSignerPublicKey.toLowerCase();
+  if (!matchesInvoiceKey) throw new SignedReceiptError('SIGNER_MISMATCH');
+  return { receipt, signerMatch: 'invoice-signing-key' };
 }
 
 /** Parses a receipt export and requires a valid signature. */

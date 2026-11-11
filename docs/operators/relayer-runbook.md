@@ -6,7 +6,7 @@ Audience: someone operating `apps/relayer`, the gas-sponsorship service for `Gho
 
 ## 1. What you are operating
 
-A stateless HTTP service. It quotes a fee (`POST /v1/quote`), checks a signed sweep order, simulates it, and broadcasts it from a **hot key** that pays gas. The contract guarantees destination, amount, fee and `feeTo` are exactly what the stealth-address owner signed; you can decline or delay but not redirect. You see owner, destination, token, amount and timing for every request (inherent; see `PRIVACY.md`). You are the party who may face money-transmission, sanctions and data-protection questions (ADR-0006, audit D10): get advice before offering this publicly.
+An HTTP service with a small durable journal (daily budget and unsettled transactions, section 6a). It quotes a fee (`POST /v1/quote`), checks a signed sweep order, simulates it, and broadcasts it from a **hot key** that pays gas. The contract guarantees destination, amount, fee and `feeTo` are exactly what the stealth-address owner signed; you can decline or delay but not redirect. You see owner, destination, token, amount and timing for every request (inherent; see `PRIVACY.md`). You are the party who may face money-transmission, sanctions and data-protection questions (ADR-0006, audit D10): get advice before offering this publicly.
 
 ## 2. Prerequisites
 
@@ -31,7 +31,7 @@ Environment variable names (no values here; see also the repository's `.env.exam
 | names given by `rpcUrlEnv` (for example `RPC_URL_84532`) | RPC URL kept out of the config file. |
 | names given by `metricsTokenEnv`, `alertWebhookUrlEnv` | Metrics bearer token (enables `/metrics`) and https alert webhook URL. |
 
-Per chain: `rpcUrl` or `rpcUrlEnv`, `sweepRelayer` (must match the manifest if both are given), `feeTo` (default: the hot-key address), `tokens` (stablecoins only in v1, `usdStable: true`), `nativeUsdPrice`, `gasUnits`, `maxGasLimit`, `maxGasPriceWei`, `dailyBudgetWei`, `minBalanceWei`. Global: `listen` (keep `127.0.0.1` behind the proxy), `allowedOrigins` (exact https origins of your web app; no wildcard), `trustedProxies`, `quoteTtlSeconds`, `deadline`, `rateLimit`, `breaker`, `lossBudget`, `queue`, `shutdownGraceSeconds`. An unknown key stops startup with an error that names it.
+Per chain: `rpcUrl` or `rpcUrlEnv`, `sweepRelayer` (must match the manifest if both are given), `feeTo` (required; it may be the hot-key address only when the top-level `allowFeeToHotKey` is true), `tokens` (stablecoins only in v1, `usdStable: true`), `nativeUsdPrice`, `gasUnits`, `maxGasLimit`, `maxGasPriceWei`, `dailyBudgetWei`, `minBalanceWei`. Global: `listen` (keep `127.0.0.1` behind the proxy), `allowedOrigins` (exact https origins of your web app; no wildcard), `trustedProxies`, `quoteTtlSeconds`, `deadline`, `rateLimit`, `breaker`, `lossBudget`, `queue`, `shutdownGraceSeconds`. An unknown key stops startup with an error that names it.
 
 Fee policy is fixed by FEE_SCHEDULE: `clamp(max(gas x 1.10, 50 bps), cap 300 bps)`. If the cap cannot cover raw gas the quote is refused (`amount_too_small`). The token price is a constant 1.0 and `nativeUsdPrice` is **your number**: update it when the native coin price moves materially, or you will sponsor sweeps at a loss. There is no oracle (audit G-11, G-26).
 
@@ -49,7 +49,7 @@ If the listener is reachable without the proxy, clients can choose their own buc
 - The hot key only pays gas. Keep its balance **low** (a few days of budget). `minBalanceWei` opens the breaker when the balance falls under the floor.
 - Generate it on a machine you trust; never reuse a personal wallet key; never commit it, put it in a ticket, or pass it as a command-line argument.
 - File: `chmod 600`, owned by the service user, on an encrypted volume; systemd unit loads it via `RELAYER_KEY_FILE` (`deploy/ghostpay-relayer.service` sets `/etc/ghostpay-relayer/hot.key`). `feeTo` can be a different address from the hot key: set it to a cold or multisig address so earned fees are not sitting on the hot key.
-- Rotation: generate a new key, fund it, start a new instance or restart with the new file, drain the old key, remove the old file. Outstanding quotes are tied to the quote secret, not the hot key, but state is in memory only, so queued work does not survive a restart.
+- Rotation: generate a new key, fund it, start a new instance or restart with the new file, drain the old key, remove the old file. Outstanding quotes are tied to the quote secret, not the hot key, and the state file is tied to the hot key's nonces: rotate only with nothing unsettled (`ops.js state`), then start with a fresh state file for the new key.
 - Suspected key exposure: stop the service, sweep the remaining balance, rotate. Losses are bounded by the balance, because the contract moves user tokens only as signed by their owners.
 - Quote secret: separate file, same rules. Rotate on suspicion; effect is that open quotes become invalid.
 
@@ -70,9 +70,38 @@ npm run build:libs
 npm run build -w @ghostpay/relayer
 ```
 
-Container: `docker build -f apps/relayer/Dockerfile -t ghostpay-relayer .` from the repository root (distroless, non-root, runs `npm prune --omit=dev`). Systemd: `apps/relayer/deploy/ghostpay-relayer.service` (strict sandboxing; `EnvironmentFile` for RPC URLs). **Neither the image nor the unit has been built or run by the project**; verify both on a test host. The image is not scanned or attested by the release workflow.
+Container: `docker build -f apps/relayer/Dockerfile -t ghostpay-relayer .` from the repository root (distroless, non-root uid 65532, base images pinned by digest, `npm ci --ignore-scripts`). Run it with `--read-only --cap-drop ALL --security-opt no-new-privileges` and a volume on `/var/lib/ghostpay-relayer`: that directory is the **only** writable path (the journal writes its temporary files beside `state.json`; no tmpfs is needed). The image has a `HEALTHCHECK` (`node dist/ops.js health`; set `RELAYER_HEALTH_URL` if `listen.port` is not 8787). The self-host recipe `deploy/docker-compose.yml` already sets all of this (volume `api-state`, nginx with a 16 KiB body limit, `/metrics` unrouted). Systemd: `apps/relayer/deploy/ghostpay-relayer.service` (`StateDirectory=ghostpay-relayer`, strict sandboxing, `RestartSec=15`, `EnvironmentFile` for RPC URLs); `systemd-analyze verify` accepts it. The container flow was run end to end against a local anvil by `apps/relayer/deploy/smoke-anvil.sh` (healthz, info, ops CLI in the image, HEALTHCHECK, SIGTERM exit 0); **it has not run against a public network or real RPC provider**, and the systemd unit has not been started on a real host. The image is not scanned or attested by the release workflow.
 
-`SIGTERM`/`SIGINT` start a graceful shutdown: stop listening, refuse new work, let queued and in-flight transactions settle, force-close after `shutdownGraceSeconds`. In-memory state (rate limits, daily budget counter, breaker window) is lost on restart, so a restart resets the daily budget: do not restart in a loop.
+TLS and the proxy: the relayer speaks plain HTTP; terminate TLS in front (Caddy, Cloudflare Tunnel, host nginx) and route only `/healthz`, `/v1/info`, `/v1/quote`, `/v1/sweep`. `deploy/nginx/nginx.conf` limits bodies to 16 KiB (the relayer's own cap), sets short client and proxy timeouts, overwrites `X-Forwarded-For` with the resolved client address and returns 404 for `/api/metrics`; pair it with `trustedProxies` as in section 3. Do not publish port 8787.
+
+`SIGTERM`/`SIGINT` start a graceful shutdown: stop listening, refuse new work, let queued and in-flight transactions settle, force-close after `shutdownGraceSeconds`; the lock is released on exit. Rate limits and the breaker window are in memory and reset on restart. With `state.file` the daily budget and unsettled transactions survive restarts (section 6a); with `state.ephemeral` (development only) they do not, so a restart resets the daily budget.
+
+## 6a. State file, ops commands and upgrades
+
+**State.** `state.file` (config key `state`, required; recommended `/var/lib/ghostpay-relayer/state.json`) holds, per chain, the UTC budget day and wei reserved, plus one record per transaction that may still spend gas (status `reserved` / `signed` / `pending`, hot-key nonce, tx hash once signed, reserved wei). It holds no owner, destination, token, amount or signature (`PRIVACY.md`). The file is mode 0600, written atomically (temp file, fsync, rename), and a file that does not parse stops startup: it is never reset silently, because that would forget spent budget and broadcast transactions.
+
+**Single instance and lock.** Exactly one relayer process may use a hot key and a state file; two would hand out the same nonces and each spend the full budget. The process holds `<state.file>.lock` with a 30 s heartbeat. A second process refuses to start while the heartbeat is fresh; a lock left by a crash is taken over when it names the same host and pid (a restarted container) or after 30 s. So after a crash under systemd (new pid) expect the first restart attempts to be refused for up to 30 s; the unit's `RestartSec=15` covers that. Never delete the lock or run a second copy "to take over"; stop the first. The lock guards one host or one shared volume only: replicas on separate storage with the same hot key are unsupported.
+
+**Ops commands** (`node dist/ops.js <command>`; in the image `docker exec <container> /nodejs/bin/node dist/ops.js <command>`). All are read-only: they never take or touch the lock, never write the state file, never send a transaction, and never print secrets, RPC URLs or provider error text. Exit 0 ok, 1 failure, 2 usage.
+
+| Command | Use |
+|---|---|
+| `check-config` | Run before every deploy and restart: loads config and secrets exactly as startup does, prints chains, token count, hot-key **address** and state mode. No RPC calls. |
+| `state [--file p] [--json]` | Per chain: budget day, spent, limit, remaining today; then each unsettled record (status, nonce, tx hash, reserved wei, age). A `reserved` or `signed` record that stays for much longer than `queue.receiptTimeoutSeconds` needs a look. Default file: `state.file`, else `RELAYER_STATE_FILE`. |
+| `health [--url u]` | `GET /healthz` with a 3 s timeout; exit 0 only for HTTP 200 and `ok`. It is the Docker `HEALTHCHECK`. |
+| `reconcile-report [--json]` | For each record with a tx hash, asks the chain (configured RPC) for the receipt and the hot key's pending nonce and prints what the relayer will do at next start. |
+
+Reading `reconcile-report`: `settled` = mined; the record is removed and unused budget returned. `pending` = no receipt but the node holds that nonce; the relayer keeps tracking it (do not fund-move the hot key, do not replace the transaction by hand). `unknown` = no receipt and the nonce is free, or the RPC failed; the relayer treats it as never broadcast only after its grace period, then releases the reservation. Re-run when the RPC is healthy before drawing conclusions. `not_broadcast` = reserved but never signed: provably nothing was sent. If the hot key cannot be loaded the report lists receipts only.
+
+**Backup.** Copy `state.json` while the service is stopped, or at any time (writes are atomic, so a copy is a consistent snapshot; add `.lock` only if you need it, you do not). Keep it with the same access as the hot key's host. A backup older than the last restart is stale: restoring it forgets budget spent since.
+
+**Upgrade and rollback (stop, backup, deploy, start).**
+1. `ops.js state` and `reconcile-report`; note unsettled records.
+2. Stop the service (`systemctl stop` / `docker stop`; wait for the graceful exit and for the lock to disappear).
+3. Copy `state.json` to a dated backup.
+4. Deploy the new build; run `ops.js check-config` with the new build against the real config and secrets.
+5. Start; check `/healthz`, `/v1/info` against your manifest and `ops.js state`.
+Rollback: stop, keep the **current** `state.json` (do not restore the backup unless the file is corrupt, since the backup forgets newer spend and records), deploy the old build, start. An older build that does not know the state file's `version` refuses to start: keep the new build until its records settle. **Never delete or reset `state.json` while any record is unsettled**, and never to "clear" a budget: wait for the UTC day roll, or raise `dailyBudgetWei` deliberately and restart. If the file is corrupt, stop, keep it for diagnosis, run `reconcile-report` from a backup copy with `--file`-less env (`RELAYER_STATE_FILE`), check the hot key's on-chain pending/latest nonce and balance by hand, then start from a state with budget set to what you judge spent.
 
 ## 7. Monitoring
 
@@ -101,12 +130,12 @@ Griefing note (S3-06): a sweep that reverts after a passing simulation (front-ru
 | Situation | First steps |
 |---|---|
 | Hot key suspected compromised | Stop service; move balance to a new key; rotate key and quote secret; review on-chain transactions from the old key for sweeps you did not process; write down times. |
-| Gas spike draining budget | Lower `maxGasPriceWei` and `dailyBudgetWei`; the service already refuses above the cap. Reload by restart (resets counters; note the effect). |
+| Gas spike draining budget | Lower `maxGasPriceWei` and `dailyBudgetWei`; the service already refuses above the cap. Reload by restart (the journal keeps today's spent amount; check with `ops.js state`). |
 | Wrong `nativeUsdPrice` (selling gas too cheaply) | Correct the config and restart; review fees collected vs gas spent. |
 | RPC provider outage or lying | Breaker will open on errors. Switch `rpcUrlEnv` target to another provider and restart. A provider that lies consistently cannot be detected by the relayer. |
 | Fee-recipient (`feeTo`) problem | `feeTo` is a config value; correct it and restart. Contract-level `FEE_RECIPIENT` on the router is separate and immutable ([deployment runbook](deployment-runbook.md)). |
 | Abuse (request floods, reverted-sweep spam) | Tighten `rateLimit`; block at the proxy; lower `queue.maxPending`. Confirm `trustedProxies` is right first (S3-07). |
-| A user reports a sweep that did not happen | You cannot see requests after the fact (nothing is persisted); use the `requestId` if they have it, and the on-chain history of the hot key. |
+| A user reports a sweep that did not happen | You cannot see requests after the fact (the journal keeps only in-flight nonce/hash records); use the `requestId` if they have it, and the on-chain history of the hot key. |
 | Court order or data request | You hold almost no stored data (see section 10); what you can provide is limited to logs and proxy logs you chose to keep. Involve counsel. |
 | Suspected bug in the contracts | There is no pause. Stop the relayer service for that chain, tell users to use the direct sweep path, and follow the contract migration in the deployment runbook. |
 
@@ -114,7 +143,7 @@ Record every incident with timestamps, and report suspected vulnerabilities priv
 
 ## 10. Log retention and privacy
 
-- The relayer persists nothing: rate-limit buckets use a salted hash of the IP (or owner address) in memory and are dropped when the salt rotates (at most every 24 hours, `saltRotationHours`) or the process exits.
+- The only thing the relayer persists is the journal described in section 6a (budget numbers and, while a transaction can still cost gas, its nonce, hash and reserved wei; no addresses, amounts or IPs). Rate-limit buckets use a salted hash of the IP (or owner address) in memory and are dropped when the salt rotates (at most every 24 hours, `saltRotationHours`) or the process exits.
 - Logs go to stdout. **You** decide retention: keep it short (days, not months) and do not log request bodies at the proxy. Proxy, CDN, WAF and RPC provider logs fall under your own notice (`PRIVACY.md`, "What other parties see").
 - Publish a privacy notice for your deployment that adds anything you changed. Collect nothing else. This runbook is not legal advice.
 
@@ -130,5 +159,6 @@ Record every incident with timestamps, and report suspected vulnerabilities priv
 - [ ] Hot key file mode 600, low balance; `feeTo` is not the hot key.
 - [ ] Alerts wired to a person; breaker `half_open` runbook understood.
 - [ ] Privacy notice and terms published; legal advice obtained; sanctions decision made.
-- [ ] Docker image / systemd unit built and run on a test host (not done by the project).
+- [ ] Docker image / systemd unit built and run on a test host (the container flow passed `deploy/smoke-anvil.sh` on a local anvil; the systemd unit has not been started on a host).
+- [ ] `state.file` on durable storage, one instance only, backup procedure rehearsed (section 6a); `ops.js check-config` passes.
 - [ ] Mainnet only after independent audit and the [chain-enablement checklist](chain-enablement-checklist.md).

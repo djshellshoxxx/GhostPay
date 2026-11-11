@@ -1,5 +1,7 @@
 # 09 Chain, token, announcer/registry matrix and version pins
 
+> **Implementation status (2026-11-11, commit 364b1f18):** there is no `packages/chain-adapters/config/matrix.json` (the directory does not exist), no `docs/operators/chain-matrix.md`, and no CI lint tying `enabled` chains to verified cells. Chain and token data live directly in `packages/chain-adapters/src/config/chains.ts` and `tokens.ts`; `chains.ts` documents its finality and range values as "engineering defaults, NOT provider-verified".
+
 Priority P1 | Effort M (3-4 d docs+code) | Owner: chain-adapters + docs | Deps: network access for primary-source verification (owner/operator)
 Sources: research DOC-3, DOC-5, DOC-7, DOC-14, DOC-19; ADR-0011; MULTICHAIN s2; DEV P6/R6.
 

@@ -1,6 +1,8 @@
 import {
+  AbiDecodingDataSizeTooSmallError,
   BaseError,
   ContractFunctionRevertedError,
+  ContractFunctionZeroDataError,
   ExecutionRevertedError,
   RpcError,
   RpcRequestError,
@@ -17,7 +19,7 @@ import {
   erc20Abi,
   keccak256,
 } from 'viem';
-import { ghostPaySweepRelayerAbi } from '@ghostpay/chain-adapters';
+import { erc2612PermitAbi, ghostPaySweepRelayerAbi } from '@ghostpay/chain-adapters';
 import { SendOutcomeUnknown, SendRefused, SimulationRevert } from './errors.js';
 import type { PermitFields, SweepFields } from './validate.js';
 
@@ -34,6 +36,17 @@ export interface SendOptions {
   readonly nonce: number;
   readonly gas: bigint;
   readonly gasPrice: bigint;
+  /**
+   * Called synchronously with the signed transaction's hash after signing and before broadcast. If it throws, nothing
+   * is broadcast and `sendSweep` throws {@link SendRefused}.
+   */
+  readonly onSigned?: (txHash: Hex) => void;
+}
+
+/** Token-side permit state read for a failed permit-path simulation (spec 04); each field is null when its call reverts. */
+export interface PermitTokenState {
+  readonly nonce: bigint | null;
+  readonly domainSeparator: Hex | null;
 }
 
 /** Cheap on-chain prerequisites, checked before paying for a simulation or transaction. */
@@ -80,6 +93,11 @@ export interface ChainClient {
   getPendingNonce(): Promise<number>;
   /** Reads token balance, allowance and the sweep nonce without spending gas. */
   readOrderState(call: SweepCall): Promise<OrderState>;
+  /**
+   * Spec 04 diagnostics after a failed permit-path simulation: `token.nonces(owner)` and `token.DOMAIN_SEPARATOR()`;
+   * each null when that call reverts. Transport failures reject.
+   */
+  readPermitState(token: Address, owner: Address): Promise<PermitTokenState>;
   /** Simulates the sweep (`simulateContract`) and returns a gas limit to use. */
   simulateSweep(call: SweepCall): Promise<SimulationResult>;
   /**
@@ -119,6 +137,24 @@ function toRevert(e: unknown): Error {
     if (hit instanceof ExecutionRevertedError) return new SimulationRevert();
   }
   return rpcFailure();
+}
+
+/** True when a read failed because the callee answered with a revert, nothing, or undecodable data (not a transport failure). */
+function isCalleeAnswer(e: unknown): boolean {
+  if (!(e instanceof BaseError)) return false;
+  const hit = e.walk(
+    (x) =>
+      x instanceof ContractFunctionRevertedError ||
+      x instanceof ExecutionRevertedError ||
+      x instanceof ContractFunctionZeroDataError ||
+      x instanceof AbiDecodingDataSizeTooSmallError,
+  );
+  return hit !== null;
+}
+
+/** Case-insensitive 32-byte hash equality; false for anything that is not a string. */
+function sameHash(a: unknown, b: Hex): boolean {
+  return typeof a === 'string' && a.toLowerCase() === b.toLowerCase();
 }
 
 /**
@@ -190,6 +226,22 @@ export function createViemChainClient(d: ViemChainDeps): ChainClient {
       return { ownerBalance, allowance, nonceUsed };
     },
 
+    async readPermitState(token, owner) {
+      const read = async <T>(fn: () => Promise<T>): Promise<T | null> => {
+        try {
+          return await fn();
+        } catch (e) {
+          if (isCalleeAnswer(e)) return null;
+          throw rpcFailure();
+        }
+      };
+      const [nonce, domainSeparator] = await Promise.all([
+        read(() => pub.readContract({ address: token, abi: erc2612PermitAbi, functionName: 'nonces', args: [owner] })),
+        read(() => pub.readContract({ address: token, abi: erc2612PermitAbi, functionName: 'DOMAIN_SEPARATOR' })),
+      ]);
+      return { nonce, domainSeparator };
+    },
+
     async simulateSweep(call) {
       const s = sweepTuple(call.sweep);
       try {
@@ -235,16 +287,26 @@ export function createViemChainClient(d: ViemChainDeps): ChainClient {
       }
       const txHash = keccak256(raw);
       try {
-        return await wallet.sendRawTransaction({ serializedTransaction: raw });
+        opts.onSigned?.(txHash);
+      } catch {
+        throw new SendRefused(); // the caller could not record the hash, so nothing is broadcast
+      }
+      let answered: unknown;
+      try {
+        answered = await wallet.sendRawTransaction({ serializedTransaction: raw });
       } catch (e) {
         if (nodeRefused(e)) throw new SendRefused();
         throw new SendOutcomeUnknown(txHash);
       }
+      // The hash is fixed by the signed bytes; an RPC that names another one is not trusted (it may still have broadcast).
+      if (!sameHash(answered, txHash)) throw new SendOutcomeUnknown(txHash);
+      return txHash;
     },
 
     async waitForReceipt(hash, timeoutMs) {
       try {
         const r = await pub.waitForTransactionReceipt({ hash, timeout: timeoutMs, pollingInterval: d.receiptPollMs ?? 1000 });
+        if (!sameHash(r.transactionHash, hash)) return { status: 'timeout', gasUsed: 0n };
         return { status: r.status, gasUsed: r.gasUsed };
       } catch {
         return { status: 'timeout', gasUsed: 0n };
@@ -254,6 +316,7 @@ export function createViemChainClient(d: ViemChainDeps): ChainClient {
     async getReceipt(hash) {
       try {
         const r = await pub.getTransactionReceipt({ hash });
+        if (!sameHash(r.transactionHash, hash)) return null;
         return { status: r.status, gasUsed: r.gasUsed };
       } catch (e) {
         if (e instanceof TransactionReceiptNotFoundError) return null;

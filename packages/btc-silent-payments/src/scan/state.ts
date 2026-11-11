@@ -1,7 +1,7 @@
 import { toHex } from '../ecc.js';
 import { fail } from '../errors.js';
 import type { HeaderNetwork } from '../header.js';
-import { scanBlocks, type ReceivedOutput, type ScanBlocksParams } from './scanner.js';
+import { scanBlocks, type ReceivedOutput, type ScanBlocksParams, type SpendEvent } from './scanner.js';
 
 /** Blocks remembered for reorg detection (spec 12). */
 export const SCAN_REORG_WINDOW = 100;
@@ -19,6 +19,11 @@ export interface ScanStateMatch {
   readonly amountSats?: bigint;
   /** `pending`: its block left the best chain; it is confirmed again only if a rescan finds it. */
   readonly status: 'confirmed' | 'pending';
+  /**
+   * Where the output was spent, learned locally from the source's block spends (only a match with an outpoint can
+   * carry it). Cleared when that block is rolled back, so the output counts as unspent again.
+   */
+  readonly spent?: { readonly height: number; readonly blockHash: string; readonly spentBy: string };
 }
 
 /**
@@ -56,8 +61,18 @@ export function createScanState(network: HeaderNetwork, birthHeight: number): Sc
 const matchKey = (m: { readonly txid?: string; readonly vout?: number; readonly xOnlyPublicKey: string }): string =>
   m.txid !== undefined && m.vout !== undefined ? `${m.txid}:${String(m.vout)}` : `key:${m.xOnlyPublicKey}`;
 
-/** Appends one fully scanned block (must be `lastHeight + 1`) and its outputs. Outputs seen before are re-confirmed in place. */
-export function recordScannedBlock(state: ScanState, height: number, hash: string, found: readonly ReceivedOutput[]): ScanState {
+/**
+ * Appends one fully scanned block (must be `lastHeight + 1`), its outputs and the spends it reported. Outputs seen
+ * before are re-confirmed in place (unspent again); a spend marks the match with that outpoint and is ignored when no
+ * match has it.
+ */
+export function recordScannedBlock(
+  state: ScanState,
+  height: number,
+  hash: string,
+  found: readonly ReceivedOutput[],
+  spends: readonly SpendEvent[] = [],
+): ScanState {
   if (height !== state.lastHeight + 1 || !HEX64.test(hash)) return fail('INVALID_INPUT');
   const matches = new Map(state.matches.map((m) => [matchKey(m), m]));
   for (const f of found) {
@@ -76,6 +91,12 @@ export function recordScannedBlock(state: ScanState, height: number, hash: strin
     matches.delete(matchKey(m));
     matches.set(matchKey(m), m);
   }
+  for (const sp of spends) {
+    if (sp.height !== height || sp.blockHash !== hash) return fail('INVALID_INPUT');
+    const key = `${sp.txid}:${String(sp.vout)}`;
+    const m = matches.get(key);
+    if (m !== undefined) matches.set(key, { ...m, spent: { height, blockHash: hash, spentBy: sp.spentBy } });
+  }
   const recent = [...state.recent, { height, hash }].slice(-SCAN_REORG_WINDOW);
   return { ...state, lastHeight: height, lastHash: hash, recent, matches: [...matches.values()] };
 }
@@ -89,8 +110,9 @@ export interface ReconcileResult {
 
 /**
  * Compares remembered blocks with the current best chain (`hashAt`, e.g. a verified {@link HeaderChain}).
- * On a mismatch it rolls back to the highest remembered block still on the chain and marks every match above
- * it `pending`; with no common block inside the window it restarts from `birthHeight` and marks all `pending`.
+ * On a mismatch it rolls back to the highest remembered block still on the chain, marks every match above
+ * it `pending` and clears every spend above it (the output is unspent again until a rescan finds the spend); with no
+ * common block inside the window it restarts from `birthHeight` and marks all `pending`.
  */
 export async function reconcileScanState(
   state: ScanState,
@@ -112,7 +134,11 @@ export async function reconcileScanState(
     lastHeight: keepTo,
     lastHash: ancestor?.hash ?? null,
     recent: state.recent.filter((r) => r.height <= keepTo),
-    matches: state.matches.map((m) => (m.height > keepTo ? { ...m, status: 'pending' as const } : m)),
+    matches: state.matches.map((m) => {
+      const { spent, ...unspent } = m;
+      const kept = spent !== undefined && spent.height <= keepTo ? m : unspent;
+      return kept.height > keepTo ? { ...kept, status: 'pending' as const } : kept;
+    }),
   };
   return { state: next, rolledBack: true, resumeHeight: keepTo + 1 };
 }
@@ -129,9 +155,17 @@ function isRecord(v: unknown): v is Record<string, unknown> {
   return typeof v === 'object' && v !== null && !Array.isArray(v);
 }
 
-function parseMatch(v: unknown): ScanStateMatch {
+function parseSpent(v: unknown, matchHeight: number, lastHeight: number): NonNullable<ScanStateMatch['spent']> {
   if (!isRecord(v)) return fail('INVALID_INPUT');
-  const { height, blockHash, xOnlyPublicKey, k, label, txid, vout, amountSats, status } = v;
+  const { height, blockHash, spentBy } = v;
+  if (!isHeight(height) || height < matchHeight || height > lastHeight) return fail('INVALID_INPUT');
+  if (typeof blockHash !== 'string' || !HEX64.test(blockHash) || typeof spentBy !== 'string' || !HEX64.test(spentBy)) return fail('INVALID_INPUT');
+  return { height, blockHash, spentBy };
+}
+
+function parseMatch(v: unknown, lastHeight: number): ScanStateMatch {
+  if (!isRecord(v)) return fail('INVALID_INPUT');
+  const { height, blockHash, xOnlyPublicKey, k, label, txid, vout, amountSats, status, spent } = v;
   if (!isHeight(height) || typeof blockHash !== 'string' || !HEX64.test(blockHash) || typeof xOnlyPublicKey !== 'string' || !HEX64.test(xOnlyPublicKey)) {
     return fail('INVALID_INPUT');
   }
@@ -146,6 +180,7 @@ function parseMatch(v: unknown): ScanStateMatch {
     amount = BigInt(amountSats);
     if (amount > MAX_SATS) return fail('INVALID_INPUT');
   }
+  if (spent !== undefined && (txid === undefined || vout === undefined)) return fail('INVALID_INPUT');
   return {
     height,
     blockHash,
@@ -156,6 +191,7 @@ function parseMatch(v: unknown): ScanStateMatch {
     ...(vout === undefined ? {} : { vout: vout }),
     ...(amount === undefined ? {} : { amountSats: amount }),
     status,
+    ...(spent === undefined ? {} : { spent: parseSpent(spent, height, lastHeight) }),
   };
 }
 
@@ -181,7 +217,7 @@ export function parseScanState(text: string): ScanState {
   const empty = lastHeight === birthHeight - 1;
   if (empty ? lastHash !== null || rec.length > 0 : top === undefined || top.height !== lastHeight || top.hash !== lastHash) return fail('INVALID_INPUT');
   if (rec.some((r) => r.height < birthHeight)) return fail('INVALID_INPUT');
-  const parsed = matches.map(parseMatch);
+  const parsed = matches.map((m: unknown) => parseMatch(m, lastHeight as number));
   if (parsed.some((m) => m.height < birthHeight || (m.status === 'confirmed' && m.height > (lastHeight as number)))) return fail('INVALID_INPUT');
   return {
     version: 1,
@@ -212,7 +248,7 @@ export class MemoryScanStateStore implements ScanStateStore {
   }
 }
 
-export interface ResumeScanParams extends Omit<ScanBlocksParams, 'fromHeight' | 'onBlock'> {
+export interface ResumeScanParams extends Omit<ScanBlocksParams, 'fromHeight' | 'onBlock' | 'watchOutpoints' | 'onSpend'> {
   readonly state: ScanState;
   /**
    * Best-chain hash lookup for reorg reconciliation, ideally a verified `HeaderChain` (`h => chain.hashAt(h)`).
@@ -225,7 +261,8 @@ export interface ResumeScanParams extends Omit<ScanBlocksParams, 'fromHeight' | 
 
 /**
  * Resumable scan: reconciles `state` with the best chain, scans from the next unscanned height (never below
- * `birthHeight`) and reports progress after every block, so a crash or cancel loses at most one block.
+ * `birthHeight`) and reports progress after every block, so a crash or cancel loses at most one block. When the
+ * source implements `getSpends`, the unspent persisted matches are watched and their spends recorded in the state.
  *
  * @returns Yields received outputs; the generator's return value is the final state.
  */
@@ -238,13 +275,21 @@ export async function* resumeScan(p: ResumeScanParams): AsyncGenerator<ReceivedO
   const tip = p.toHeight ?? (await p.source.getTipHeight(p.signal));
   if (from > tip) return state;
   let pending: ReceivedOutput[] = [];
+  let spends: SpendEvent[] = [];
+  const watchOutpoints = new Set<string>();
+  for (const m of state.matches) if (m.txid !== undefined && m.vout !== undefined && m.spent === undefined) watchOutpoints.add(`${m.txid}:${String(m.vout)}`);
   for await (const r of scanBlocks({
     ...p,
     fromHeight: from,
     toHeight: tip,
+    watchOutpoints,
+    onSpend: (e) => {
+      spends.push(e);
+    },
     onBlock: async ({ height, blockHash }) => {
-      state = recordScannedBlock(state, height, blockHash, pending);
+      state = recordScannedBlock(state, height, blockHash, pending, spends);
       pending = [];
+      spends = [];
       if (p.onState !== undefined) await p.onState(state);
     },
   })) {

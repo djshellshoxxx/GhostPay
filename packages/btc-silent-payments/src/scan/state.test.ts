@@ -7,6 +7,8 @@ import { silentPaymentAddress } from '../labels.js';
 import { seededRng } from '../rng.testutil.js';
 import { unsafeRevealSecret } from '../secret.js';
 import { InMemoryTweakSource, type MemoryBlock } from './memory.js';
+import type { BlockSpend, BlockSpends, TweakSource } from './types.js';
+import { fakeTxid } from '../fixtures.testutil.js';
 import type { ReceivedOutput } from './scanner.js';
 import {
   MemoryScanStateStore,
@@ -188,5 +190,105 @@ describe('resumeScan and ScanState', () => {
     const again = await run(resumeScan({ source: new InMemoryTweakSource(blocks()), keys, state }));
     expect(again.found).toEqual([]);
     expect(again.state).toBe(state);
+  });
+});
+
+describe('local spent tracking in ScanState', () => {
+  const tx = (height: number, n: number): string => fakeTxid(`tx:${height}:${n}`);
+  type Spends = Readonly<Record<number, readonly BlockSpend[]>>;
+  /** The fixture chain plus `getSpends`; the spend of block 100's output sits in block 102 unless `spends` says otherwise. */
+  function spending(chainBlocks: MemoryBlock[], spends: Spends = { 102: [{ txid: tx(100, 0), vout: 0, spentBy: fakeTxid('spender') }] }): TweakSource {
+    const base = new InMemoryTweakSource(chainBlocks);
+    return {
+      getTipHeight: () => base.getTipHeight(),
+      getTweaks: (h) => base.getTweaks(h),
+      getOutputs: (h) => base.getOutputs(h),
+      getSpends: async (h): Promise<BlockSpends> => ({ height: h, blockHash: (await base.getTweaks(h)).blockHash, spends: spends[h] ?? [] }),
+    };
+  }
+  const spent = { height: 102, blockHash: blockHashOf(102), spentBy: fakeTxid('spender') };
+
+  it('recordScannedBlock marks the spent match; unknown outpoints and inconsistent spends are handled', async () => {
+    const { state } = await run(resumeScan({ source: new InMemoryTweakSource(blocks()), keys, state: createScanState('mainnet', 100) }));
+    expect(state.matches.every((m) => m.spent === undefined)).toBe(true);
+    const next = recordScannedBlock(state, 104, blockHashOf(104), [], [
+      { height: 104, blockHash: blockHashOf(104), txid: tx(100, 0), vout: 0, spentBy: fakeTxid('s') },
+      { height: 104, blockHash: blockHashOf(104), txid: fakeTxid('unknown'), vout: 0, spentBy: fakeTxid('s') },
+    ]);
+    expect(next.matches.map((m) => m.spent)).toEqual([{ height: 104, blockHash: blockHashOf(104), spentBy: fakeTxid('s') }, undefined]);
+    const off = { height: 103, blockHash: blockHashOf(104), txid: tx(100, 0), vout: 0, spentBy: fakeTxid('s') };
+    expect(codeOf(() => recordScannedBlock(state, 104, blockHashOf(104), [], [off]))).toBe('INVALID_INPUT');
+    expect(codeOf(() => recordScannedBlock(state, 104, blockHashOf(104), [], [{ ...off, height: 104, blockHash: blockHashOf(103) }]))).toBe('INVALID_INPUT');
+  });
+
+  it('resumeScan watches unspent persisted matches and records their spends; a spent match is not watched again', async () => {
+    const first = await run(resumeScan({ source: spending(blocks()), keys, state: createScanState('mainnet', 100) }));
+    expect(first.state.matches.map((m) => [m.height, m.status, m.spent])).toEqual([
+      [100, 'confirmed', spent],
+      [102, 'confirmed', undefined],
+    ]);
+    // Later blocks spend the second output; the first is already spent, so a (bogus) repeated spend is ignored.
+    const more = [...blocks(), makeBlock(104, []), makeBlock(105, [])];
+    const again = await run(resumeScan({
+      source: spending(more, { 104: [{ txid: tx(100, 0), vout: 0, spentBy: fakeTxid('again') }], 105: [{ txid: tx(102, 0), vout: 0, spentBy: fakeTxid('second') }] }),
+      keys,
+      state: first.state,
+    }));
+    expect(again.state.matches.map((m) => m.spent)).toEqual([spent, { height: 105, blockHash: blockHashOf(105), spentBy: fakeTxid('second') }]);
+    expect(parseScanState(serializeScanState(again.state))).toEqual(again.state);
+  });
+
+  it('a spend rolled back by a reorg makes the output unspent again; it is re-spent only if the new chain spends it', async () => {
+    const { state } = await run(resumeScan({ source: spending(blocks()), keys, state: createScanState('mainnet', 100) }));
+    const newChain = reorged(102);
+    const hashOf = new Map(newChain.map((b) => [b.tweaks.height, b.tweaks.blockHash]));
+    const rec = await reconcileScanState(state, (h) => hashOf.get(h));
+    expect(rec.resumeHeight).toBe(102);
+    expect(rec.state.matches.map((m) => [m.status, m.spent])).toEqual([['confirmed', undefined], ['pending', undefined]]);
+    // The new chain does not spend it: it stays unspent and is watched (a spend at 103 is recorded).
+    const unspent = await run(resumeScan({ source: spending(newChain, {}), keys, state, hashAt: (h) => hashOf.get(h) }));
+    expect(unspent.state.matches.map((m) => m.spent)).toEqual([undefined, undefined]);
+    const respent = await run(resumeScan({
+      source: spending(newChain, { 103: [{ txid: tx(100, 0), vout: 0, spentBy: fakeTxid('respend') }] }),
+      keys,
+      state,
+      hashAt: (h) => hashOf.get(h),
+    }));
+    expect(respent.state.matches[0]?.spent).toEqual({ height: 103, blockHash: hashOf.get(103), spentBy: fakeTxid('respend') });
+    // Rollback below the match itself clears both the spend and the confirmation.
+    const deep = await reconcileScanState(respent.state, (h) => (h < 100 ? blockHashOf(h) : undefined));
+    expect(deep.state.matches.map((m) => [m.status, m.spent])).toEqual([['pending', undefined], ['pending', undefined]]);
+  });
+
+  it('serializes the spent mark and parses it strictly', async () => {
+    const { state } = await run(resumeScan({ source: spending(blocks()), keys, state: createScanState('mainnet', 100) }));
+    const text = serializeScanState(state);
+    expect(parseScanState(text)).toEqual(state);
+    const good = JSON.parse(text) as Record<string, unknown>;
+    const ms = good['matches'] as Record<string, unknown>[];
+    const m0 = ms[0] as Record<string, unknown>;
+    const m1 = ms[1] as Record<string, unknown>;
+    const withSpent = (over: Record<string, unknown>): string => JSON.stringify({ ...good, matches: [{ ...m0, spent: { ...spent, ...over } }, m1] });
+    for (const over of [
+      { height: -1 },
+      { height: 1.5 },
+      { height: 99 }, // spent below the match's own height
+      { height: 104 }, // spent above the last scanned height (a rollback would have cleared it)
+      { blockHash: 'ab' },
+      { blockHash: 7 },
+      { spentBy: 'xyz' },
+      { spentBy: undefined },
+    ]) {
+      expect(codeOf(() => parseScanState(withSpent(over))), JSON.stringify(over)).toBe('INVALID_INPUT');
+    }
+    expect(codeOf(() => parseScanState(JSON.stringify({ ...good, matches: [{ ...m0, spent: 'yes' }, m1] })))).toBe('INVALID_INPUT');
+    // A match without an outpoint cannot carry a spend.
+    const without = (o: Record<string, unknown>, ...keys: string[]): Record<string, unknown> => Object.fromEntries(Object.entries(o).filter(([k]) => !keys.includes(k)));
+    const legacy = without(m0, 'spent');
+    const noOutpoint = without(legacy, 'txid', 'vout');
+    expect(codeOf(() => parseScanState(JSON.stringify({ ...good, matches: [{ ...noOutpoint, spent }, m1] })))).toBe('INVALID_INPUT');
+    expect(parseScanState(JSON.stringify({ ...good, matches: [noOutpoint, m1] })).matches[0]?.spent).toBeUndefined();
+    // Version-1 input without the field still parses.
+    expect(parseScanState(JSON.stringify({ ...good, matches: [legacy, m1] })).matches[0]?.spent).toBeUndefined();
   });
 });

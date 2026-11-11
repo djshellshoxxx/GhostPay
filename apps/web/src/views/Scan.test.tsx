@@ -350,6 +350,33 @@ describe('Scan and receive', () => {
     } finally { release(); runner.mockRestore(); }
   });
 
+  it('lists two router payments to one address and ephemeral key as two cards; a router record replaces a public replay', async () => {
+    const pub = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 1, caller: FAKE_ROUTER });
+    const announcement = validateAnnouncementLog(mine.log, FAKE_ANNOUNCER, 1n, 0n, 500n)!;
+    const first: scanClient.ScanMatch = { chainId: 84532, announcement, stealthAddress: mine.stealthAddress as Address, metadata: parseMetadata(announcement.metadata), viaRouter: true, tagMatches: true, receipt: 'verified' };
+    const secondHash: Hex = `0x${'7'.repeat(64)}`;
+    // Same one-time address and ephemeral key, another router transaction: a second transfer, not a replay.
+    const second: scanClient.ScanMatch = { ...first, announcement: { ...announcement, blockNumber: 121n, blockHash: secondHash, logIndex: 5, transactionHash: `0x${'8'.repeat(64)}`, id: `${secondHash}:5` } };
+    const replayHash: Hex = `0x${'6'.repeat(64)}`;
+    const replay: scanClient.ScanMatch = { ...first, viaRouter: false, receipt: 'claimed', announcement: { ...announcement, caller: '0x9999999999999999999999999999999999999999', blockNumber: 119n, blockHash: replayHash, logIndex: 0, id: `${replayHash}:0` } };
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    const runner = vi.spyOn(scanClient, 'runScan').mockImplementation(async (p) => {
+      // The scanner emits a public replay first, then the router record that outranks it, then a second router payment.
+      p.onMatch?.(replay); p.onMatch?.(first); p.onMatch?.(second); p.onMatch?.(replay);
+      await gate; p.viewingKey.fill(0);
+      return { matches: [], cursor: { nextBlock: 0n }, scanned: 1, discrepancies: [], limitReached: false };
+    });
+    try {
+      const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(chainWithLogs(84532, 500, []))) }));
+      await user.type(screen.getByLabelText('Start block'), '0'); await user.click(screen.getByRole('button', { name: 'Start scan' }));
+      await waitFor(() => { expect(screen.getAllByRole('button', { name: 'Sweep this payment' })).toHaveLength(2); });
+      release(); await waitFor(() => expect(screen.getByText(/Finished\./)).toBeTruthy());
+    } finally { release(); runner.mockRestore(); }
+  });
+
   it.each(['unlock', 'write'] as const)('does not invalidate history after cancellation while reconciliation %s is pending', async (stage) => {
     const pub = generateSession();
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
@@ -378,6 +405,32 @@ describe('Scan and receive', () => {
       expect(vaultData.size).toBe(0);
       finish(); await waitFor(() => expect(screen.getByText(/Cancelled\./)).toBeTruthy());
     } finally { unlock(); finish(); runner.mockRestore(); }
+  });
+
+  it('F1: lists every router record of one one-time address separately and warns that they share it', async () => {
+    const pub = generateSession();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const mine = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: pub.metaAddress, block: 120, index: 1, caller: FAKE_ROUTER });
+    const genuine = validateAnnouncementLog(mine.log, FAKE_ANNOUNCER, 1n, 0n, 500n)!;
+    const base = { chainId: 84532, stealthAddress: mine.stealthAddress as Address, metadata: parseMetadata(genuine.metadata), tagMatches: true } as const;
+    const replay: scanClient.ScanMatch = { ...base, announcement: { ...genuine, blockNumber: 110n, id: `${genuine.blockHash}:replay`, caller: '0x9999999999999999999999999999999999999999' }, viaRouter: false, receipt: 'claimed' };
+    const dust: scanClient.ScanMatch = { ...base, announcement: { ...genuine, blockNumber: 119n, id: `${genuine.blockHash}:dust` }, viaRouter: true, receipt: 'verified' };
+    const real: scanClient.ScanMatch = { ...base, announcement: genuine, viaRouter: true, receipt: 'verified' };
+    const runner = vi.spyOn(scanClient, 'runScan').mockImplementation((p) => {
+      // runScan's order: a public replay, the first router record replacing it, then a later router record, then a late replay.
+      for (const m of [replay, dust, real, replay, { ...replay, announcement: { ...replay.announcement, id: 'late' } }]) p.onMatch?.(m);
+      p.viewingKey.fill(0);
+      return Promise.resolve({ matches: [dust, real], cursor: { nextBlock: 0n }, scanned: 3, discrepancies: [], limitReached: false });
+    });
+    try {
+      const user = await openScan(makeServices({ loadManifest: loaded, createRpc: () => Promise.resolve(withManifestChain(chainWithLogs(84532, 500, []))) }));
+      await user.type(screen.getByLabelText('Start block'), '0'); await user.click(screen.getByRole('button', { name: 'Start scan' }));
+      await waitFor(() => expect(screen.getByText(/Finished\./)).toBeTruthy());
+      expect(screen.getAllByRole('button', { name: 'Sweep this payment' })).toHaveLength(2);
+      expect(screen.getByText(/name the same one-time address/)).toBeTruthy();
+      expect(screen.getAllByText(/shares its one-time address with another router announcement/)).toHaveLength(2);
+      expect(screen.queryByText(/paid directly, no GhostPay fee/)).toBeNull();
+    } finally { runner.mockRestore(); }
   });
 
   it('keeps an unsaved observation recordable when the reorg left its block unchanged (L3-F1, L1-03)', async () => {

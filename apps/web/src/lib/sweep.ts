@@ -4,7 +4,6 @@ import {
   buildSweepTypedData,
   ChainAdapterError,
   erc20Abi,
-  findChain,
   ghostPaySweepRelayerAbi,
   parseQuantity,
   signDigest,
@@ -22,6 +21,7 @@ import { deriveStealthSecret, zeroize, type PublicAnnouncement, type SecretScala
 import type { TypedDataInput } from '@ghostpay/tx-review';
 import { decodeFunctionResult, encodeFunctionData, getAddress, keccak256, parseTransaction, serializeTransaction } from 'viem/utils';
 import { UserFacingError, type MessageDescriptor } from './errors';
+import { sweepFeeFields, sweepFeeReserve } from './opStackFee';
 import { TransactionOutcomeError } from './transactionOutcome';
 import { buildPermit } from './pay';
 import type { MessageKey } from '../i18n/catalog';
@@ -253,6 +253,7 @@ export async function relayedSweep(i: RelayedSweepInput): Promise<string> {
     return await submitSweep(
       i.relayerUrl,
       {
+        chainId: i.target.chainId,
         sweep: order,
         sweepSig: sweepSig.signature,
         permit: { value: i.amount, deadline, v: permit.v, r: permit.r, s: permit.s },
@@ -529,55 +530,8 @@ async function nonceFinal(rpc: Rpc, owner: Address, nonce: number): Promise<bool
 /** Gas of a plain value transfer to an account without code: the intrinsic minimum of every transaction. */
 const TRANSFER_GAS = 21_000n;
 
-/** OP Stack GasPriceOracle predeploy: prices a transaction's L1 data fee and operator fee. */
-export const OP_STACK_GAS_PRICE_ORACLE = '0x420000000000000000000000000000000000000F' as Address;
-
-/**
- * A native sweep on an OP Stack chain keeps back this multiple of the fees the oracle quotes now, because the L1 base fee
- * and blob fee can rise before inclusion. The unused part stays at the one-time address.
- */
-export const OP_STACK_FEE_RESERVE_MULTIPLIER = 2n;
-
-const gasPriceOracleAbi = [
-  { type: 'function', name: 'getL1Fee', stateMutability: 'view', inputs: [{ name: '_data', type: 'bytes' }], outputs: [{ name: '', type: 'uint256' }] },
-  { type: 'function', name: 'getOperatorFee', stateMutability: 'view', inputs: [{ name: '_gasUsed', type: 'uint256' }], outputs: [{ name: '', type: 'uint256' }] },
-] as const;
-
-async function readFeeOracle(rpc: Rpc, data: Hex): Promise<bigint> {
-  const raw = await rpc.request('eth_call', [{ to: OP_STACK_GAS_PRICE_ORACLE, data }, 'latest']);
-  if (typeof raw !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(raw)) throw new Error('invalid fee oracle answer');
-  return BigInt(raw);
-}
-
-/**
- * The operator fee for `gas`. An OP Stack chain before the Isthmus upgrade has no `getOperatorFee`, so the call
- * reverts there; such a chain charges no operator fee. Any other failure is no answer and propagates.
- */
-async function readOperatorFee(rpc: Rpc, gas: bigint): Promise<bigint> {
-  try {
-    return await readFeeOracle(rpc, encodeFunctionData({ abi: gasPriceOracleAbi, functionName: 'getOperatorFee', args: [gas] }));
-  } catch (e) {
-    if (e instanceof ChainAdapterError && e.executionReverted) return 0n;
-    throw e;
-  }
-}
-
-/**
- * What an OP Stack node charges outside `gas * gasPrice`, read from the GasPriceOracle: the L1 data fee of the unsigned
- * serialized transaction (the oracle adds the signature's size) and the operator fee for its gas limit (none where the
- * oracle has no `getOperatorFee`), times {@link OP_STACK_FEE_RESERVE_MULTIPLIER}.
- * @throws {UserFacingError} when the oracle cannot be read: the fee, and for a native sweep the amount to send, is then
- *   unknown, so nothing is signed.
- */
-async function opStackFeeReserve(rpc: Rpc, unsignedTx: Hex, gas: bigint): Promise<bigint> {
-  try {
-    const l1 = await readFeeOracle(rpc, encodeFunctionData({ abi: gasPriceOracleAbi, functionName: 'getL1Fee', args: [unsignedTx] }));
-    const operator = await readOperatorFee(rpc, gas);
-    return (l1 + operator) * OP_STACK_FEE_RESERVE_MULTIPLIER;
-  } catch {
-    throw new UserFacingError({ key: 'error.sweep.couldNotReadTheL1DataFeeFromThisChain' });
-  }
-}
+// The L1 data / operator fee reserve lives in opStackFee.ts so the gas buffer quote (pay.ts) sizes it the same way.
+export { OP_STACK_FEE_RESERVE_MULTIPLIER, OP_STACK_GAS_PRICE_ORACLE } from './opStackFee';
 
 /** `eth_estimateGas`; a call the node reports as reverting is refused here, before anything is signed. */
 async function estimateGas(rpc: Rpc, call: { readonly from: Address; readonly to: Address; readonly data?: Hex; readonly value?: bigint }): Promise<bigint> {
@@ -612,9 +566,7 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
     const { owner, chainId, token } = i.target;
     const gasPrice = parseQuantity(await i.rpc.request('eth_gasPrice', []));
     assertSessionUnchanged();
-    const maxFeePerGas = gasPrice * 2n;
-    let priority = gasPrice / 10n;
-    if (priority > maxFeePerGas) priority = maxFeePerGas;
+    const { maxFeePerGas, maxPriorityFeePerGas: priority } = sweepFeeFields(gasPrice);
     const nonce = await sweepNonce(i);
     assertSessionUnchanged();
     const nativeBalance = parseQuantity(await i.rpc.request('eth_getBalance', [owner, 'latest']));
@@ -636,9 +588,7 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
       // An OP Stack node also charges an L1 data fee (and an operator fee) outside gas * price and refuses a transaction
       // whose total cost exceeds the balance (L2-F2). They are priced on this transaction's unsigned bytes with the
       // largest value it can carry: the value only shrinks, so the encoding never grows.
-      const reserve = findChain(chainId)?.opStack === true
-        ? await opStackFeeReserve(i.rpc, serializeTransaction({ type: 'eip1559', chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value: nativeBalance - gasCost, data }), gas)
-        : 0n;
+      const reserve = await sweepFeeReserve(i.rpc, { chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value: nativeBalance - gasCost, data });
       assertSessionUnchanged();
       if (nativeBalance <= gasCost + reserve) throw new UserFacingError({ key: 'error.sweep.theBalanceDoesNotCoverTheNetworkFeeIncludingThe' });
       value = nativeBalance - gasCost - reserve;
@@ -658,9 +608,7 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
       }
       // On OP Stack the native coin must also cover the L1 data fee and operator fee of this transfer, priced on its
       // exact unsigned bytes; the node refuses a transaction it cannot pay for, and the sweep lock would jam.
-      const reserve = findChain(chainId)?.opStack === true
-        ? await opStackFeeReserve(i.rpc, serializeTransaction({ type: 'eip1559', chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value, data }), gas)
-        : 0n;
+      const reserve = await sweepFeeReserve(i.rpc, { chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value, data });
       assertSessionUnchanged();
       if (nativeBalance < gas * maxFeePerGas + reserve) {
         throw new UserFacingError({ key: 'error.sweep.theStealthAddressDoesNotHoldEnoughNativeCoinFor' });
@@ -741,10 +689,11 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
  * `already_allowed` are not refusals (the relayer skips an already-covered permit and sweeps by allowance); they have
  * text so the table is exhaustive. None of the refusal texts retries automatically.
  */
-// The relayed flow only renders the PERMIT_REFUSAL_KEYS subset below. ok_to_permit, already_allowed, nonce_consumed and
-// sig_invalid have no relayer refusal class of their own (the relayer folds a spent nonce and a bad signature into
-// permit_failed, which has its own wider text), so these keys are reserved for those PermitStates and kept so this
-// table stays exhaustive (pinned by sweep.test.ts):
+// The relayed flow only renders the PERMIT_REFUSAL_KEYS subset below. ok_to_permit and already_allowed never arrive as
+// relayer refusals (an already-covered permit is skipped and the sweep uses the allowance). nonce_consumed, sig_invalid
+// and unsupported_token arrive as the relayer's diagnosed classes permit_nonce_consumed, permit_signature_invalid and
+// permit_unsupported_token (it re-checks the signature after a failed permit-path simulation); the table stays
+// exhaustive over PermitState (pinned by sweep.test.ts):
 export const SWEEP_PERMIT_STATE_KEYS: Readonly<Record<PermitState, MessageKey>> = {
   ok_to_permit: 'sweep.permit.ok',
   already_allowed: 'sweep.permit.alreadyAllowed',
@@ -760,13 +709,18 @@ export const SWEEP_PERMIT_STATE_KEYS: Readonly<Record<PermitState, MessageKey>> 
  * UnexpectedBalanceDelta, e.g. a fee-on-transfer token) as `permit_failed`. That class therefore proves only that the
  * pre-broadcast simulation failed with a permit in use: the permit (bad signature, spent nonce, non-standard token) or
  * the token transfer itself may be the cause. It gets its own text, which names both without claiming which, and not
- * the `sig_invalid` text, which says the token rejected the permit.
+ * the `sig_invalid` text, which says the token rejected the permit. When the relayer can diagnose the permit itself it
+ * answers with one of the specific `permit_nonce_consumed` / `permit_signature_invalid` / `permit_unsupported_token`
+ * classes instead, which reuse the matching PermitState texts.
  */
 // Rendered by Sweep.tsx through sweepPermitRefusalKey:
 const PERMIT_REFUSAL_KEYS: Readonly<Record<string, MessageKey>> = {
   permit_expired: 'sweep.permit.expired',
   permit_failed: 'sweep.permit.simulationFailed',
   permit_not_supported: 'sweep.permit.unsupported',
+  permit_nonce_consumed: 'sweep.permit.nonceConsumed',
+  permit_signature_invalid: 'sweep.permit.failed',
+  permit_unsupported_token: 'sweep.permit.unsupported',
   permit_value_too_low: 'sweep.permit.valueTooLow',
   insufficient_allowance: 'sweep.permit.noAllowance',
   owner_failure_limit: 'sweep.permit.ownerFailureLimit',
@@ -781,6 +735,9 @@ export function sweepPermitRefusalKey(e: unknown): MessageKey | undefined {
 /**
  * Spec 04 section 2 step 3: only a bad/unsupported/missing permit offers the direct-sweep (owner pays gas) fallback.
  * A relayer `permit_failed` may be a bad permit, so it offers the fallback too; it never retries on its own.
+ *
+ * `sweep.permit.nonceConsumed` deliberately does not: the nonce was spent by the owner's own key (or a front-runner)
+ * and no allowance covers the sweep, so its text is shown as is and the owner decides what to do next.
  */
 export function sweepPermitSuggestsDirect(key: MessageKey): boolean {
   return key === 'sweep.permit.failed' || key === 'sweep.permit.simulationFailed' || key === 'sweep.permit.unsupported' || key === 'sweep.permit.noAllowance';

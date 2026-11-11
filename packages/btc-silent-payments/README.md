@@ -78,10 +78,33 @@ External signers (spec 11): `buildSpendTransactionWithSigner(params, signer)` ta
 implementation; it keeps its own copy of `b_spend`, which `dispose()` wipes (best effort) once signing is done. No
 hardware wallet driver is shipped (see `DEVIATIONS.md`).
 
+Wallet policy (spec 11, `policy.ts`, pure; nothing is persisted by this package):
+
+```ts
+// Consolidation by label: never spend outputs of different labels together (it links the labels on-chain).
+const sel = selectOutputsForSweep({ outputs: matches, mode: 'single-label', label: 3 }); // or mode: 'all' (+ force: true)
+// sel.outputs -> buildSpendTransaction / previewSweep; sel.excludedDust: below DEFAULT_WALLET_DUST_SATS (1000, override
+// with includeDust or walletDustSats). Mixing labels in mode 'all' throws SpendPolicyError { policy: 'LABEL_MIX' }.
+// Destination reuse: the caller stores DestinationHistory (addresses only, at most 1024 entries) and asks before signing.
+const warn = checkDestinationReuse(address, parseDestinationHistory(storedJson)); // { reused, firstSeenCount, code }
+const next = recordDestination(history, address); // after the send; serializeDestinationHistory(next) to store
+```
+
+Fee guard: a fee above 50% of the inputs is `FEE_TOO_HIGH` unless `forceHighFee: true` (`MAX_FEE_RATE_SAT_PER_VB`
+still applies). Created outputs never go below `DUST_LIMIT_SATS` (546), whatever `dustLimitSats` says.
+
 Header chain and scan state (spec 12): `HeaderChain` (retarget, MTP, chain work, most-work selection above a pinned
 checkpoint), `syncHeaderChain` / `syncHeaderChainFromSources`, `HeaderAnchoredTweakSource`, `verifyBlockTransactions`
 (txid Merkle root + BIP-141 witness commitment), and `resumeScan` with a serializable `ScanState`. These are header-only
 checks with most-work selection, not SPV and not full validation; see `DEVIATIONS.md` for exactly what they cover.
+
+Spent tracking and second sources (spec 12): a `TweakSource` may implement `getSpends(height)` (every outpoint the
+block consumes); `scanBlocks({ watchOutpoints, onSpend })` then reports spends of persisted or newly found outputs
+locally, and `resumeScan` records them in `ScanState` (`match.spent`, cleared again on a reorg rollback), so a wallet
+learns confirmed spends without asking a server per outpoint (mempool spends stay unknown). `crossCheckSample:
+{ rate, random }` extends the second-source `crossCheck` to a random sample of blocks without matches.
+`syncHeaderChainFromSources` returns a `SourceAgreement` per source (`behindBy`, `lighter`, `conflicting`) and can fail
+closed with `requireAgreement`; disagreement, not withholding, is what it can show.
 
 ## Security notes
 

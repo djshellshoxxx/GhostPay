@@ -37,6 +37,8 @@ describe('critical translation native-review boundary (IN-3)', () => {
       'camera.consent', 'camera.error.denied', 'walletAttempts.confirmClear', 'disclosure.fee.signed', 'proof.disclaimer', 'bill.bearerWarning',
       'secret.keys.warning', 'tagArchive.rotate.warning', 'tagArchive.wipe.final', 'tagArchive.import.replace', 'sol.warning.body', 'sol.destination.hint',
       'tron.warning.body', 'tron.appLocked', 'tron.sameAddress',
+      'settings.exchange.privacyWarning', 'settings.exchange.signersTrustHint', 'settings.exchange.signerAdd', 'settings.exchange.signersRemove',
+      'settings.exchange.relayerTrustHint', 'settings.exchange.confirmBody', 'settings.exchange.confirm', 'settings.exchange.applyFailed',
     ];
     for (const key of required) expect(SECURITY_KEYS.has(key), key).toBe(true);
   });

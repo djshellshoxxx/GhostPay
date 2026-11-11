@@ -37,7 +37,10 @@ export const HIGH_FEE_RATE = 50;
 /**
  * Checks a sweep destination for the wallet's network; no payment needs to be selected and no amount is involved.
  * Silent payment addresses are decoded in full, as signing decodes them, not only recognised by their prefix.
- * @returns The trimmed address.
+ * A bech32/bech32m regular address is valid all-lowercase or all-uppercase (BIP-173; QR codes often use uppercase)
+ * and is returned in its canonical lowercase form, which is how the signer displays it. Mixed case is refused.
+ * Base58 addresses are case-sensitive and are returned exactly as typed.
+ * @returns The trimmed address in canonical form: the string to show the user and to sign.
  * @throws {SilentPaymentError} `INVALID_INPUT` when empty, `INVALID_ADDRESS` when not valid for the network.
  */
 export function checkDestination(wallet: BtcWallet, destination: string): string {
@@ -51,10 +54,19 @@ export function checkDestination(wallet: BtcWallet, destination: string): string
     }
     return dest;
   }
+  let canonical = dest;
+  if (BECH32_REGULAR.test(dest)) {
+    const lower = dest.toLowerCase();
+    if (dest !== lower && dest !== dest.toUpperCase()) throw new SilentPaymentError('INVALID_ADDRESS');
+    canonical = lower;
+  }
   // The same regular-address decoding as review and signing; the 1 BTC placeholder input only keeps the amount checks quiet.
-  previewSweep({ inputAmountsSats: [100_000_000n], address: dest, feeRate: 1, network: wallet.net.spNetwork, regtest: wallet.net.regtest });
-  return dest;
+  previewSweep({ inputAmountsSats: [100_000_000n], address: canonical, feeRate: 1, network: wallet.net.spNetwork, regtest: wallet.net.regtest });
+  return canonical;
 }
+
+/** Human-readable parts of the segwit address families; no base58 address on any network starts like this. */
+const BECH32_REGULAR = /^(bc|tb|bcrt)1/i;
 
 export function reviewSweep(
   wallet: BtcWallet,
@@ -62,9 +74,9 @@ export function reviewSweep(
   destination: string,
   feeRate: number,
 ): SweepReview {
-  const dest = destination.trim();
-  if (dest === '' || selected.length === 0) throw new SilentPaymentError('INVALID_INPUT');
-  checkDestination(wallet, dest);
+  if (destination.trim() === '' || selected.length === 0) throw new SilentPaymentError('INVALID_INPUT');
+  // Review, display and signing all use the one canonical spelling, so the signer's check compares like with like.
+  const dest = checkDestination(wallet, destination);
   const pv = previewSweep({
     inputAmountsSats: selected.map((s) => s.amountSats),
     address: dest,

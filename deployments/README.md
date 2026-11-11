@@ -1,7 +1,7 @@
 # Deployment manifests
 
 One JSON file per chain, named `<chainId>.json` (for example `84532.json`), validated against
-[`schema.json`](./schema.json). **This directory contains no real deployments yet.** A manifest is
+[`schema.json`](./schema.json). **This directory contains no deployment of record yet** (the only file, `31337.json`, is an unsigned local anvil record). A manifest is
 written only after a real, verified deployment and is the single source of truth the UI, relayer and
 scanner read for contract addresses and the fee recipient. The fee recipient is never hard-coded in
 source (see `docs/FEE_SCHEDULE.md`).

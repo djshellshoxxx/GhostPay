@@ -61,6 +61,56 @@ describe('receipt invoice binding', () => {
     await expect(invoke(receiptCommands, 'receipt verify', ['--in', 'receipt', '--pin', SPEC.metaAddress.slice(9, 75)], io)).rejects.toMatchObject({ code: 'RECEIPT_SIGNER_MISMATCH' });
   });
 
+  it.each([
+    ['another invoice digest', { invoiceDigest: `0x${'d'.repeat(64)}` }, 'RECEIPT_OTHER_INVOICE'],
+    ['another chain', { chainId: 1 }, 'RECEIPT_CHAIN_MISMATCH'],
+    ['another asset', { asset: `0x${'e'.repeat(40)}` }, 'RECEIPT_ASSET_MISMATCH'],
+    ['another seller-net amount', { amountMinorUnits: '999' }, 'RECEIPT_AMOUNT_MISMATCH'],
+  ] as const)('rejects a correctly signed receipt for %s against the opened invoice', async (_case, patch, code) => {
+    const { io, receipt } = bound();
+    const { invoiceDigest, chainId, txHash, stealthAddress, asset, amountMinorUnits, issuedAt } = receipt;
+    io.files.set('receipt', JSON.stringify(signReceipt(
+      { invoiceDigest, chainId, txHash, stealthAddress, asset, amountMinorUnits, issuedAt, ...patch }, KEY_BYTES,
+    )));
+    await expect(invoke(receiptCommands, 'receipt verify', ['--in', 'receipt', '--invoice', 'invoice'], io))
+      .rejects.toMatchObject({ code });
+    expect(io.out).toHaveLength(0);
+  });
+
+  it('rejects a receipt signed by a different valid key even when its payment fields match', async () => {
+    const { io, receipt } = bound();
+    const alternateKey = KEY_BYTES.slice();
+    alternateKey[31] = 8;
+    const { invoiceDigest, chainId, txHash, stealthAddress, asset, amountMinorUnits, issuedAt } = receipt;
+    io.files.set('receipt', JSON.stringify(signReceipt(
+      { invoiceDigest, chainId, txHash, stealthAddress, asset, amountMinorUnits, issuedAt }, alternateKey,
+    )));
+    await expect(invoke(receiptCommands, 'receipt verify', ['--in', 'receipt', '--invoice', 'invoice'], io))
+      .rejects.toMatchObject({ code: 'RECEIPT_SIGNER_MISMATCH' });
+    expect(io.out).toHaveLength(0);
+  });
+
+  it.each([
+    ['--expected-chain', '1'], ['--expected-asset', `0x${'e'.repeat(40)}`],
+    ['--expected-amount', '999'], ['--expected-recipient', `0x${'f'.repeat(40)}`],
+    ['--expected-tx', `0x${'f'.repeat(64)}`],
+  ] as const)('rejects mismatched independent %s expectation with no success output', async (option, value) => {
+    const { io } = bound();
+    await expect(invoke(receiptCommands, 'receipt verify',
+      ['--in', 'receipt', '--invoice', 'invoice', option, value], io))
+      .rejects.toMatchObject({ code: 'RECEIPT_EXPECTATION_MISMATCH' });
+    expect(io.out).toHaveLength(0);
+  });
+
+  it('rejects invoice signatures that have been altered after issuance', async () => {
+    const { io } = bound();
+    const signed = JSON.parse(io.files.get('invoice')!) as Record<string, unknown>;
+    io.files.set('invoice', JSON.stringify({ ...signed, signature: '0'.repeat(128) }));
+    await expect(invoke(receiptCommands, 'receipt verify', ['--in', 'receipt', '--invoice', 'invoice'], io))
+      .rejects.toMatchObject({ code: 'INVALID_INVOICE_SIGNATURE' });
+    expect(io.out).toHaveLength(0);
+  });
+
   it('exports stdout as standalone signed JSON and sends retention guidance to stderr', async () => {
     const io = makeIo({ receipt: JSON.stringify(VECTOR) });
     expect(await invoke(receiptCommands, 'receipt export', ['--in', 'receipt'], io, false)).toBe(0);

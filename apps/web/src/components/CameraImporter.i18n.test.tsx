@@ -34,8 +34,17 @@ const english = (key: string): string => {
   return text ?? '';
 };
 
-const NEUTRAL = ['camera.scan', 'camera.stop', 'camera.pasteLabel', 'camera.usePasted', 'camera.status.requesting', 'camera.status.active', 'camera.status.closed', 'camera.status.stopped', 'camera.status.enterFirst'] as const;
-const CRITICAL = ['camera.consent', 'camera.preview', 'camera.status.tooLarge', 'camera.status.accepted', 'camera.status.rejected', 'camera.status.unusable', 'camera.error.denied', 'camera.error.unavailable', 'camera.error.scanFailed', 'camera.error.startFailed'] as const;
+const NEUTRAL = [
+  'camera.scan', 'camera.stop', 'camera.pasteLabel', 'camera.usePasted', 'camera.status.requesting', 'camera.status.active', 'camera.status.closed', 'camera.status.stopped', 'camera.status.enterFirst',
+  'camera.status.hidden', 'camera.switch', 'camera.file.label', 'camera.file.reading',
+  'camera.multipart.progressLabel', 'camera.multipart.progress', 'camera.multipart.missing', 'camera.multipart.missingMore', 'camera.multipart.startOver', 'camera.multipart.restarted', 'camera.multipart.badPart', 'camera.multipart.hiddenReset',
+] as const;
+// Consent outcomes, rejected input and transfer-integrity verdicts need reviewed translations.
+const CRITICAL = [
+  'camera.consent', 'camera.preview', 'camera.status.tooLarge', 'camera.status.accepted', 'camera.status.rejected', 'camera.status.unusable', 'camera.error.denied', 'camera.error.unavailable', 'camera.error.scanFailed', 'camera.error.startFailed',
+  'camera.error.notFound', 'camera.error.inUse', 'camera.error.insecure', 'camera.file.tooLarge', 'camera.file.notImage', 'camera.file.unreadable', 'camera.file.noQr',
+  'camera.multipart.otherTransfer', 'camera.multipart.conflict', 'camera.multipart.integrity', 'camera.multipart.expired',
+] as const;
 
 function renderIn(locale: string, onText: (t: string) => boolean = () => true): void {
   render(
@@ -66,6 +75,7 @@ describe('CameraImporter localization', () => {
     expect(screen.getByText(english('camera.consent'))).toBeTruthy();
     expect(screen.queryByText(draft(locale, 'camera.consent'))).toBeNull();
     expect(screen.getByLabelText(english('camera.preview'))).toBeTruthy();
+    expect(screen.getByLabelText(draft(locale, 'camera.file.label'))).toBeTruthy();
   });
 
   it('translates the neutral camera status while the request is pending', async () => {

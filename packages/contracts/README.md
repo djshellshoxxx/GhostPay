@@ -76,7 +76,7 @@ Record the result in `deployments/<chainId>.json` (see `deployments/README.md`).
 
 ## Verification status
 
-Newer figures (2026-10-21: 377 tests in 23 suites, `forge fmt --check` and `forge snapshot --check` passing, one test failing only under `forge coverage --ir-minimum`) are in [`docs/remote/STATUS.md`](../../docs/remote/STATUS.md); Echidna and mutation results are in the section below. Older run (forge 1.8.5, solc 0.8.28, default profile: 10 000 fuzz runs, invariants 256 runs x depth 50): **274 tests in 14 suites pass**
+Newer figures (2026-10-21: 377 tests in 23 suites, `forge fmt --check` and `forge snapshot --check` passing, one test failing only under `forge coverage --ir-minimum`) are in [`docs/remote/STATUS.md`](../../docs/remote/STATUS.md); Echidna and mutation results are in the section below. Older run, historical and not re-verified (forge 1.8.5, solc 0.8.28, default profile: 10 000 fuzz runs, invariants 256 runs x depth 50): **274 tests in 14 suites pass**
 (includes the audit regression/PoC tests under `test/audit/`). `forge coverage --ir-minimum` (production sources only): lines 99.25 % (264/266),
 branches 100 % (39/39), functions 100 % (72/72); the two uncovered "lines" are the new assembly `call` statements, which the coverage instrumentation
 does not count although the tests execute them (verified by the gas-bound regression tests). Under `--ir-minimum` the instrumented bytecode differs from the
