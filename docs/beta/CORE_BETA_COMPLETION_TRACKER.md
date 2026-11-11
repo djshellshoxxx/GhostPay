@@ -100,7 +100,7 @@ A second independent review covered the whole PR diff in four dimensions; each f
 - the audit 20 note on native-ETH sweep dust was wrong (corrected);
 - a stale spec comment.
 
-Residual: the scan client's claim-ledger rebuild after a reorg is reached only by a rollback above genesis, and no existing fixture does that, so it has no direct test.
+Covered: the scan client's claim-ledger rebuild after a reorg now has direct tests (`scanClient.test.ts`, "claim ledger rebuild after a reorg on a later page") for a rollback above genesis (replay dropped, kept replay replaced in place, distinct router record appended) and a rollback to genesis from a later page (all pairs new again). Residual: a rollback above genesis never drops already-kept matches (page commits precede the fork point), so a partial drop with the array shrinking is not reachable through `fetchAnnouncements` and is not exercised.
 
 Areas the review found clean: invoice signing, digest and envelopes; tx build and guards; manifest verification; receipt binding; direct sweep; no plaintext secret persistence.
 
