@@ -32,7 +32,8 @@ export default defineConfig({
   reporter: [['list']],
   projects: [
     // Desktop: every existing spec as before; the device-only spec is left to the device projects.
-    { name: 'desktop', testIgnore: /devices[^/]*\.spec\.ts$/ },
+    // The real-anvil journey runs only under playwright.devnet.config.ts (scripts/beta/browser-devnet.sh).
+    { name: 'desktop', testIgnore: [/devices[^/]*\.spec\.ts$/, /devnet-journey\.spec\.ts$/] },
     deviceProject('pixel-7-chromium', devices['Pixel 7']),
     deviceProject('iphone-se-chromium', devices['iPhone SE']),
     deviceProject('ipad-mini-chromium', devices['iPad Mini']),

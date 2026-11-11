@@ -42,6 +42,8 @@ export default defineConfig({
     baseURL: `http://localhost:${String(port)}`,
     ...(executablePath === undefined ? {} : { launchOptions: { executablePath, args: ['--no-sandbox'] } }),
     serviceWorkers: 'block',
+    // A stuck action fails within this bound instead of consuming the whole test budget.
+    actionTimeout: 30_000,
   },
   webServer: {
     // Same gates as `npm run build` (typecheck, vite build, post-build bundle scan), into a separate output directory.

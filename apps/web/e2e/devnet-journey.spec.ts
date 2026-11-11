@@ -5,7 +5,7 @@ import { bytesToHex } from '@noble/hashes/utils.js';
 import { keccak256, parseTransaction, recoverTransactionAddress } from 'viem';
 import { verifyReceipt } from '../src/lib/receipts';
 import { generateKeys, openFresh } from './helpers';
-import { ANVIL_ACCOUNTS, Anvil, DevnetNetwork, DevnetWallet, loadDevnet } from './devnet/chain';
+import { ANVIL_ACCOUNTS, Anvil, DevnetNetwork, DevnetWallet, loadDevnet, type DevnetState } from './devnet/chain';
 import { createInvoiceAt, identityOf, nav, receiptPanel, reviewToFinalCheck, scan, scanMatches, sweepJournal, sweepView, walletJournal } from './devnet/ui';
 
 /*
@@ -16,8 +16,16 @@ import { createInvoiceAt, identityOf, nav, receiptPanel, reviewToFinalCheck, sca
  * only; no real funds, keys or networks. Run through scripts/beta/browser-devnet.sh.
  */
 
-const dn = loadDevnet();
-const anvil = new Anvil(dn.rpcUrl);
+// The mocked suite (playwright.config.ts) also collects this file; there it is reported as skipped. The devnet config
+// refuses to start without the state file, so under scripts/beta/browser-devnet.sh this condition is never true.
+test.skip(process.env['GHOSTPAY_DEVNET_STATE'] === undefined, 'Real-chain journey: run scripts/beta/browser-devnet.sh');
+
+let dn: DevnetState;
+let anvil: Anvil;
+test.beforeAll(() => {
+  dn = loadDevnet();
+  anvil = new Anvil(dn.rpcUrl);
+});
 const PRICE = 500_000_000_000_000_000n; // 0.5 ETH, the invoice's fixed native amount
 const FINALITY = 100; // Base Sepolia finalityDepth in chain-adapters' chain table
 const txHashes = new Set<string>();
@@ -57,7 +65,7 @@ async function openPayer(open: () => Promise<Profile>, account: Address): Promis
 }
 
 test.afterAll(() => {
-  console.log(`devnet journey: ${String(txHashes.size)} real anvil transactions asserted on chain: ${[...txHashes].join(', ')}`);
+  if (txHashes.size > 0) console.log(`devnet journey: ${String(txHashes.size)} real anvil transactions asserted on chain: ${[...txHashes].join(', ')}`);
 });
 
 test('real chain: keys -> signed invoice -> consented payment (pending, then included) -> reload keeps hash, no duplicate -> scan (pending, then final) -> bound receipt -> direct sweep -> no second sweep', async ({ browser, baseURL }) => {
@@ -123,9 +131,14 @@ test('real chain: keys -> signed invoice -> consented payment (pending, then inc
     expect(feePaid).toBe((PRICE * 25n) / 10_000n);
 
     // 4. Reload after submission: the hash survives in the tab journal and the same payment cannot be sent again.
+    // The app clears the invoice fragment from the address bar, so a reload lands on Home; the tab journal survives and
+    // the payer re-opens the same invoice link in the same tab.
     await p.reload();
-    const attempts = p.getByRole('region', { name: 'Wallet attempt journal' });
-    await expect(attempts).toContainText(payHash);
+    expect(new URL(p.url()).hash).toBe('');
+    await nav(p).getByRole('button', { name: 'Pay' }).click();
+    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(payHash);
+    await openFresh(p, link);
+    await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(payHash);
     await expect(p.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
     await p.getByRole('button', { name: 'Continue' }).click();
     await p.getByRole('button', { name: `Connect ${payer.wallet.name}` }).click();
@@ -143,7 +156,7 @@ test('real chain: keys -> signed invoice -> consented payment (pending, then inc
     await expect(receiptPanel(s)).toHaveCount(0);
     await anvil.mine(FINALITY + 1);
     await scan(s);
-    await expect(s.getByText(/payments found/)).toContainText('1 payments found');
+    await expect(s.getByText(/^Finished\./)).toContainText(' 1 payments found');
     await expect(scanMatches(s)).toHaveCount(1);
     await expect(scanMatches(s).getByRole('paragraph').filter({ hasText: 'One-time address:' }).locator('code')).toHaveText(stealth);
     await expect(s.getByText(/waiting for enough confirmations/)).toHaveCount(0);
@@ -205,18 +218,18 @@ test('real chain: keys -> signed invoice -> consented payment (pending, then inc
     await expect.poll(() => sweepJournal(s)).toMatchObject([{ expectedHash: sweepHash, status: 'included' }]);
 
     // 8. Already swept: a second sweep of the same one-time address is refused before signing; nothing new on chain.
-    await nav(s).getByRole('button', { name: 'Scan and receive' }).click();
-    await scanMatches(s).getByRole('button', { name: 'Sweep this payment' }).click();
+    // Leave and re-enter the Sweep view for the same selected payment, so it re-reads the (now dust) balance.
+    await nav(s).getByRole('button', { name: 'Seller keys' }).click();
+    await nav(s).getByRole('button', { name: 'Sweep' }).click();
+    await expect(sweepView(s).locator('code', { hasText: stealth })).toBeVisible();
     await sweepView(s).getByLabel(/Directly/).check();
     await sweepView(s).getByLabel('Destination address (your own wallet)').fill(ANVIL_ACCOUNTS.destination);
     const again = sweepView(s).getByRole('button', { name: 'Sign and broadcast directly' });
-    if (dust > 0n) {
-      await expect(again).toBeEnabled();
-      await again.click();
-      await expect(sweepView(s).getByText('The balance does not cover the network fee.', { exact: false })).toBeVisible({ timeout: 30_000 });
-    } else {
-      await expect(again).toBeDisabled();
-    }
+    // EIP-1559 leaves the unspent part of the max fee behind; that dust cannot pay for another transfer.
+    expect(dust).toBeGreaterThan(0n);
+    await expect(again).toBeEnabled();
+    await again.click();
+    await expect(sweepView(s).getByText('The balance does not cover the network fee.', { exact: false })).toBeVisible({ timeout: 30_000 });
     expect(net.sentRaw.length).toBe(sweepRawBefore + 1);
     expect(await anvil.nonce(stealth)).toBe(1);
     expect(await anvil.balance(ANVIL_ACCOUNTS.destination)).toBe(destBefore + destGain);
@@ -242,8 +255,10 @@ test('real chain: reload while the payment is still pending keeps its hash and b
 
     // Reload mid-flow: the transaction is still only in the mempool.
     await p.reload();
+    await nav(p).getByRole('button', { name: 'Pay' }).click();
     await expect(p.getByRole('region', { name: 'Wallet attempt journal' })).toContainText(hash);
     await expect.poll(() => walletJournal(p)).toMatchObject([{ status: 'submitted', hash }]);
+    await openFresh(p, link);
     await expect(p.getByRole('heading', { level: 2, name: 'Review payment' })).toBeVisible();
     await p.getByRole('button', { name: 'Continue' }).click();
     await p.getByRole('button', { name: `Connect ${payer.wallet.name}` }).click();
