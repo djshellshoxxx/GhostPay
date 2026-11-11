@@ -1,13 +1,32 @@
-/** Per-chain daily gas budget in wei (UTC day). Reservation-based so concurrent jobs cannot overshoot. */
+/**
+ * Per-chain daily gas budget in wei (UTC day). Reservation-based so concurrent jobs cannot overshoot.
+ *
+ * @remarks The day only moves forward: a wall clock stepped back across midnight keeps today's spending instead of
+ * granting a fresh budget (a clock rollback must not reset financial exposure). A restored snapshot from a later day
+ * than the clock (clock behind the last run) is kept for the same reason.
+ */
 export class DailyBudget {
-  private spent = 0n;
+  private spent: bigint;
   private day: number;
 
+  /**
+   * @param limitWei Daily limit.
+   * @param now Wall clock ms.
+   * @param restored Persisted `{day, spentWei}` from the state journal; ignored when from an earlier day.
+   */
   public constructor(
     private readonly limitWei: bigint,
     private readonly now: () => number,
+    restored?: { readonly day: number; readonly spentWei: bigint },
   ) {
-    this.day = this.dayOf();
+    const today = this.dayOf();
+    if (restored !== undefined && restored.day >= today) {
+      this.day = restored.day;
+      this.spent = restored.spentWei;
+    } else {
+      this.day = today;
+      this.spent = 0n;
+    }
   }
 
   private dayOf(): number {
@@ -16,7 +35,7 @@ export class DailyBudget {
 
   private roll(): void {
     const d = this.dayOf();
-    if (d !== this.day) {
+    if (d > this.day) {
       this.day = d;
       this.spent = 0n;
     }
@@ -64,6 +83,12 @@ export class DailyBudget {
   public get used(): bigint {
     this.roll();
     return this.spent;
+  }
+
+  /** @returns `{day, spentWei}` for the state journal. */
+  public snapshot(): { day: number; spentWei: bigint } {
+    this.roll();
+    return { day: this.day, spentWei: this.spent };
   }
 
   /** @returns Seconds until the next UTC midnight. */

@@ -29,7 +29,7 @@ const chain = (over: Json = {}): Json => ({
   ...over,
 });
 const custom = [{ address: NOPERMIT, usdStable: true, symbol: 'USDX', decimals: 6, permit: false }];
-const good = (over: Json = {}): Json => ({ allowedOrigins: [ORIGIN], chains: [chain()], ...over });
+const good = (over: Json = {}): Json => ({ allowedOrigins: [ORIGIN], state: { ephemeral: true }, chains: [chain()], ...over });
 const ctx = (over: Partial<ConfigContext> = {}): ConfigContext => ({ env: {}, hotKeyAddress: HOT_ADDRESS, readManifest: () => undefined, ...over });
 const parse = (raw: unknown, c: Partial<ConfigContext> = {}) => parseConfig(raw, ctx(c));
 

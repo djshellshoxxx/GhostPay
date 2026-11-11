@@ -1,6 +1,7 @@
 import { spawn, type ChildProcess } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
 import { createPublicClient, createWalletClient, getAddress, http, parseAbi, type Address, type Hex } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -63,6 +64,8 @@ describe.skipIf(!available)('end to end on anvil (real GhostPaySweepRelayer + ER
   let relayer: Relayer | undefined;
   let base = '';
   let url = '';
+  const stateDir = mkdtempSync(join(tmpdir(), 'relayer-e2e-'));
+  const stateFile = join(stateDir, 'state.json');
   let token: Address;
   let sweepContract: Address;
 
@@ -103,6 +106,7 @@ describe.skipIf(!available)('end to end on anvil (real GhostPaySweepRelayer + ER
         rateLimit: { ipBurst: 50, ownerBurst: 50, quoteGroupBurst: 50 },
         breaker: { windowSize: 10, minSamples: 3, failureRatio: 0.5, cooldownSeconds: 5 },
         queue: { maxPending: 4, receiptTimeoutSeconds: 30 },
+        state: { file: stateFile },
         chains: [
           {
             chainId: 31337,
@@ -133,6 +137,8 @@ describe.skipIf(!available)('end to end on anvil (real GhostPaySweepRelayer + ER
 
   afterAll(async () => {
     await relayer?.server.close();
+    relayer?.dispose();
+    rmSync(stateDir, { recursive: true, force: true });
     proc?.kill('SIGKILL');
   });
 

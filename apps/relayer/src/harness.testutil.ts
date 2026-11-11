@@ -9,6 +9,7 @@ import { createLogger, type Logger } from './log.js';
 import type { PolicyGate } from './policy.js';
 import { buildRelayer, type Relayer } from './runtime.js';
 import type { QuoteResponse } from './service.js';
+import type { StateJournal } from './stateStore.js';
 
 export const CHAIN_ID = 11155111;
 export const SWEEP_CONTRACT: Address = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
@@ -96,10 +97,22 @@ export class FakeChain implements ChainClient {
     if (this.used.has(`${call.sweep.owner}:${call.sweep.nonce.toString()}`)) throw new SimulationRevert('NonceAlreadyUsed');
     return { gasLimit: this.gasLimit, gasEstimate: this.gasEstimate };
   }
+  /** Hashes passed to `onSigned`, in order (the journal must see each one before its broadcast). */
+  public readonly signed: Hex[] = [];
   public async sendSweep(call: SweepCall, opts: SendOptions): Promise<Hex> {
     this.inFlight += 1;
     this.maxInFlight = Math.max(this.maxInFlight, this.inFlight);
     if (this.sendGate !== undefined) await this.sendGate;
+    // Like the viem client: the hash is known once signed, before anything reaches the node.
+    const next: Hex = `0x${(this.counter + 1).toString(16).padStart(64, '0')}`;
+    const signedHash: Hex = this.sendFails ? `0x${'ff'.repeat(31)}${(this.counter & 0xff).toString(16).padStart(2, '0')}` : next;
+    try {
+      opts.onSigned?.(signedHash);
+    } catch {
+      this.inFlight -= 1;
+      throw new SendRefused();
+    }
+    this.signed.push(signedHash);
     if (this.sendFails) {
       this.inFlight -= 1;
       throw new SendRefused();
@@ -189,6 +202,7 @@ export interface HarnessOptions {
   readonly policy?: PolicyGate;
   readonly fake?: FakeChain;
   readonly alerts?: AlertSink;
+  readonly journal?: StateJournal;
 }
 
 export async function startHarness(o: HarnessOptions = {}): Promise<Harness> {
@@ -205,6 +219,7 @@ export async function startHarness(o: HarnessOptions = {}): Promise<Harness> {
     now: () => clock.ms,
     ...(o.policy === undefined ? {} : { policy: o.policy }),
     ...(o.alerts === undefined ? {} : { alerts: o.alerts }),
+    ...(o.journal === undefined ? {} : { journal: o.journal }),
   });
   const addr = await relayer.server.listen();
   return {

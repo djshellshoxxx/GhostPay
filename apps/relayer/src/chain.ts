@@ -34,6 +34,8 @@ export interface SendOptions {
   readonly nonce: number;
   readonly gas: bigint;
   readonly gasPrice: bigint;
+  /** Called synchronously with the signed transaction's hash after signing and before broadcast. If it throws, nothing is broadcast and sendSweep throws SendRefused. */
+  readonly onSigned?: (txHash: Hex) => void;
 }
 
 /** Cheap on-chain prerequisites, checked before paying for a simulation or transaction. */

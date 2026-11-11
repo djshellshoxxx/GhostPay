@@ -47,7 +47,7 @@ describe('basic routes, headers and CORS', () => {
     const s = await start();
     const r = await call(s, 'GET', '/healthz');
     expect(r.status).toBe(200);
-    expect(r.json).toEqual({ status: 'ok', chains: [{ chainId: CHAIN_ID, breaker: 'closed', minedReverts: 'normal' }] });
+    expect(r.json).toEqual({ status: 'ok', chains: [{ chainId: CHAIN_ID, breaker: 'closed', minedReverts: 'normal', sends: 'settled' }] });
     for (const k of [
       'x-content-type-options',
       'cache-control',
@@ -361,7 +361,8 @@ describe('POST /v1/sweep success and validation', () => {
     expect(r.status).toBe(200);
     expect(r.json).toEqual({ txHash: `0x${'0'.repeat(63)}1` });
     const sent = s.fake.sent[0];
-    expect(sent?.opts).toEqual({ nonce: 7, gas: 150_000n, gasPrice: 1_000_000_000n });
+    expect(sent?.opts).toMatchObject({ nonce: 7, gas: 150_000n, gasPrice: 1_000_000_000n });
+    expect(typeof sent?.opts.onSigned).toBe('function');
     expect(sent?.call.permit).toBeUndefined();
     expect(sent?.call.sweepRelayer).toBe(SWEEP_CONTRACT);
   });
@@ -1144,7 +1145,7 @@ describe('loss budget accounting (L5-02, L5-04)', () => {
     expect(alerts).toContain('mined_revert_rate');
     const h = await call(s, 'GET', '/healthz');
     expect(h.status).toBe(503);
-    expect(h.json).toEqual({ status: 'degraded', chains: [{ chainId: CHAIN_ID, breaker: 'closed', minedReverts: 'sustained' }] });
+    expect(h.json).toEqual({ status: 'degraded', chains: [{ chainId: CHAIN_ID, breaker: 'closed', minedReverts: 'sustained', sends: 'settled' }] });
     // successes dilute the rate below failureRatio (3 of 7 < 0.5)
     s.fake.receipt = { status: 'success', gasUsed: 100_000n };
     for (let i = 4; i < 8; i++) expect(await sweepAs(s, BigInt(i), i, `198.51.${i}.1`)).toBe('200');
