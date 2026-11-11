@@ -332,8 +332,12 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
 
   // Build the payment request (amounts) as soon as the review has no blockers. The review is recomputed from the
   // latest invoice/manifest/clock every time (also when a delay ends), never from a stale closure.
-  const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly });
-  latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly };
+  // A wallet request (approval or payment) was made for this invoice, or one is in flight: expiry may stop new
+  // preparation, but must not clear the context that the submitted state, hash, receipt and proof are shown from.
+  const handedOff = result !== undefined || broadcast !== undefined || paymentMayHaveBeenSent || granted !== undefined || approvalHash !== undefined;
+  const keepContext = handedOff || phase === 'busy' || phase === 'done' || phase === 'submitted';
+  const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext });
+  latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext };
   const receiptScope = useMemo(() => ({ ctx, session: app.session }), [ctx, app.session]);
   const authorityMatches = (): boolean => latest.current.wallet === wallet && latest.current.settings === app.settings && latest.current.session === app.session && latest.current.supportedOnly === supportedOnly;
   const cancelInvoiceOpening = (expectedFragment: string | undefined, revision: number): void => {
@@ -364,7 +368,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     const now = Math.floor(services.nowMs() / 1000);
     const fresh = reviewInvoice(p, now, m);
     if (fresh.blockers.length > 0) {
-      setCtx(undefined);
+      // The blocker is still shown, and every send path rechecks validity before asking the wallet.
+      if (!latest.current.keepContext) setCtx(undefined);
       setTick((n) => n + 1);
       return undefined;
     }
@@ -398,6 +403,11 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   useEffect(() => {
     void refreshContext();
   }, [refreshContext, parsed, manifest, reviewKey]);
+  // An operation that was in flight at expiry and ended without any wallet request releases the context afterwards.
+  const blocked = review !== undefined && review.blockers.length > 0;
+  useEffect(() => {
+    if (blocked && !keepContext) setCtx(undefined);
+  }, [blocked, keepContext]);
 
   useEffect(() => {
     const timer = setInterval(() => {

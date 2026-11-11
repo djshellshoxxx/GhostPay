@@ -1134,3 +1134,56 @@ describe('Pay: a retry after a payment request with an unknown outcome never say
     await sendTwice(wallet, user);
   });
 });
+
+describe('Pay: invoice expiry never hides a payment that was already handed to the wallet (R05-2)', () => {
+  async function toPreparedAt(clock: () => number, createRpc: Services['createRpc'], wallet: MockWallet): Promise<ReturnType<typeof userEvent.setup>> {
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const user = openWith(fragment, makeServices({ nowMs: clock, loadManifest: loaded(84532), createRpc, discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' });
+    return user;
+  }
+
+  it('keeps the Submitted panel, receipt download and proof after the review tick sees the invoice expire', async () => {
+    let clock = NOW * 1000;
+    const wallet = new MockWallet();
+    const user = await toPreparedAt(() => clock, readBackRpc(), wallet);
+    await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await screen.findByRole('heading', { name: 'Submitted' });
+    expect(screen.getByRole('button', { name: 'Download local receipt' })).toBeTruthy();
+
+    clock = (NOW + 24 * 3600 + 1) * 1000;
+    // The real 5-second review tick observes the expiry.
+    await screen.findByText('This invoice has expired.', {}, { timeout: 8000 });
+    // Let the context refresh that the expiry triggers settle before checking what is still shown.
+    await act(() => new Promise((resolve) => { setTimeout(resolve, 300); }));
+    expect(screen.queryByRole('heading', { name: 'Submitted' })).not.toBeNull();
+    expect(screen.queryByRole('button', { name: 'Download local receipt' })).not.toBeNull();
+    expect(screen.getByRole('heading', { name: 'Submitted' }).parentElement?.textContent).toContain('9'.repeat(64));
+  }, 20000);
+
+  it('records a send that completes after the expiry tick as submitted for this invoice and leaves the busy state', async () => {
+    let clock = NOW * 1000;
+    let releaseLookup: (() => void) | undefined;
+    const gate = new Promise<void>((resolve) => { releaseLookup = resolve; });
+    const createRpc: Services['createRpc'] = () => Promise.resolve(withManifestChain(mockRpc(84532, (m) => {
+      if (m === 'eth_getTransactionByHash') return gate.then(() => null);
+      return m === 'eth_getTransactionReceipt' ? null : '0x';
+    })));
+    const wallet = new MockWallet();
+    const user = await toPreparedAt(() => clock, createRpc, wallet);
+    await user.click(screen.getByRole('button', { name: 'Send payment in my wallet' }));
+    await waitFor(() => { expect(wallet.sent).toBeDefined(); });
+    // The wallet returned the hash; verification is still running when the invoice expires.
+    clock = (NOW + 24 * 3600 + 1) * 1000;
+    await screen.findByText('This invoice has expired.', {}, { timeout: 8000 });
+    act(() => { releaseLookup?.(); });
+    await screen.findByRole('heading', { name: 'Submitted' }, { timeout: 5000 });
+    expect(screen.getByRole('button', { name: 'Download local receipt' })).toBeTruthy();
+    expect(screen.queryByText('Previous invoice transaction may have been submitted')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Send payment in my wallet' })).toBeNull();
+    expect(wallet.calls.filter((c) => c.method === 'eth_sendTransaction')).toHaveLength(1);
+  }, 20000);
+});
