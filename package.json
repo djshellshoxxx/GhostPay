@@ -25,6 +25,11 @@
   },
   "overrides": {
     "ws": "8.21.0",
-    "underscore": "1.13.8"
+    "underscore": "1.13.8",
+    "@0xbow/privacy-pools-core-sdk": {
+      "viem": {
+        "abitype": "1.2.3"
+      }
+    }
   }
 }
