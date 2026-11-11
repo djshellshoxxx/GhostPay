@@ -7,7 +7,7 @@ import { buildDelegatePayIntent } from '../eip7702/intent.js';
 import { buildInitCode } from '../erc4337/account.js';
 import { buildPayerCalls, buildUserOperation, type PackedUserOperation } from '../erc4337/userop.js';
 import { DUMMY_PAYMASTER_SIGNATURE, decodePaymasterAndData, encodePaymasterAndData, paymasterSignedHash, withPaymasterSignature } from '../erc4337/paymaster.js';
-import { encodeRouterPay } from '../routerTargets.js';
+import { buildErc20Metadata, encodeRouterPay, routerFee, type PayArgs } from '../routerTargets.js';
 import { parseManifest } from '../manifest.js';
 import { DEFAULT_GAS_UNITS, SponsorService } from './service.js';
 import type { Eip7702SubmitRequest, ReceiptLog, RelaySubmitRequest, SponsorUserOpRequest } from './types.js';
@@ -287,9 +287,9 @@ describe('PH-3 submitEip7702', () => {
 
 describe('PH-4 sponsorUserOp / submitUserOp', () => {
   const salt = 9n;
-  async function stage(h: Harness, tweak: { fee?: bigint; calls?: Parameters<typeof buildPayerCalls>[0]; initCode?: Hex; nonce?: bigint; gas?: Partial<{ verificationGasLimit: bigint; callGasLimit: bigint; maxFeePerGas: bigint; maxPriorityFeePerGas: bigint; preVerificationGas: bigint }>; sender?: Address } = {}) {
+  async function stage(h: Harness, tweak: { fee?: bigint; calls?: Parameters<typeof buildPayerCalls>[0]; initCode?: Hex; nonce?: bigint; gas?: Partial<{ verificationGasLimit: bigint; callGasLimit: bigint; maxFeePerGas: bigint; maxPriorityFeePerGas: bigint; preVerificationGas: bigint }>; sender?: Address; pay?: Partial<PayArgs> } = {}) {
     const q = await quoteFor(h, 'erc4337-paymaster');
-    const routerCalldata = encodeRouterPay(ROUTER, payArgs());
+    const routerCalldata = encodeRouterPay(ROUTER, { ...payArgs(), ...tweak.pay });
     const sender = getAddress(tweak.sender ?? addr(0xabc));
     h.chain.factoryAnswer = `0x${'00'.repeat(12)}${sender.slice(2).toLowerCase()}`;
     const calls = buildPayerCalls(tweak.calls ?? { token: TOKEN, router: ROUTER.address, routerCalldata, gross: GROSS, sponsorFee: tweak.fee ?? q.sponsorFee, sponsorFeeTo: q.sponsorFeeTo });
@@ -440,6 +440,46 @@ describe('PH-4 sponsorUserOp / submitUserOp', () => {
     const factoryCall = h2.chain.call;
     h2.chain.call = async (to, data) => (to.toLowerCase() === TOKEN.toLowerCase() ? '0x12' : factoryCall(to, data));
     await code(h2.svc.sponsorUserOp(CTX, st.req), 'BAD_REQUEST');
+  });
+  it('R10-1: step 1 refuses router calls that are certain to revert, before any signature', async () => {
+    let signs = 0;
+    const h = harness({ paymasterSigner: async (x) => { signs += 1; return PM_KEY.signMessage({ message: { raw: x } }); } });
+    const net = GROSS - routerFee(GROSS);
+    const now = nowSec(h);
+    const variants: [string, Partial<PayArgs>, string][] = [
+      ['minNet = gross (above the router net)', { minNet: GROSS }, 'PAYLOAD_MISMATCH'],
+      ['minNet one above the router net', { minNet: net + 1n }, 'PAYLOAD_MISMATCH'],
+      ['router deadline already in the past', { deadline: now - 1n }, 'BAD_REQUEST'],
+      ['router deadline before the paymaster signature ends', { deadline: now + 30n }, 'BAD_REQUEST'],
+      ['ephemeral key not compressed', { ephemeralPubKey: `0x04${'12'.repeat(32)}` }, 'PAYLOAD_MISMATCH'],
+      ['ephemeral key too short', { ephemeralPubKey: `0x02${'12'.repeat(31)}` }, 'PAYLOAD_MISMATCH'],
+      ['metadata names a different net', { metadata: buildErc20Metadata(1, TOKEN, net - 1n) }, 'PAYLOAD_MISMATCH'],
+      ['metadata names a different token', { metadata: buildErc20Metadata(1, addr(0x999), net) }, 'PAYLOAD_MISMATCH'],
+      ['metadata too short', { metadata: '0x01a9059cbb' }, 'PAYLOAD_MISMATCH'],
+      ['metadata has a foreign marker', { metadata: `0x0123b872dd${TOKEN.slice(2)}${net.toString(16).padStart(64, '0')}` }, 'PAYLOAD_MISMATCH'],
+      ['stealth is the zero address', { stealth: addr(0) }, 'PAYLOAD_MISMATCH'],
+      ['stealth is the router', { stealth: ROUTER.address }, 'PAYLOAD_MISMATCH'],
+    ];
+    for (const [name, pay, want] of variants) {
+      const { req } = await stage(h, { pay });
+      await expect(h.svc.sponsorUserOp(CTX, req), name).rejects.toMatchObject({ code: want });
+    }
+    expect(signs).toBe(0);
+    // controls: exact net, a lower minNet, a deadline exactly at the signature end, another view tag
+    const controls: Partial<PayArgs>[] = [{}, { minNet: 0n }, { deadline: now + 60n }, { metadata: buildErc20Metadata(0xff, TOKEN, net) }];
+    for (const pay of controls) {
+      const { req } = await stage(h, { pay });
+      await expect(h.svc.sponsorUserOp(CTX, req)).resolves.toBeDefined();
+    }
+    expect(signs).toBe(controls.length);
+  });
+  it('R10-1: step 2 measures the router deadline against the signed validUntil, not a new clock reading', async () => {
+    const h = harness();
+    const { req } = await stage(h, { pay: { deadline: nowSec(h) + 60n } });
+    const s = await signed(h, req);
+    h.clock.now += 59_000; // the signature (validUntil = now + 60) and the router deadline are both still good
+    const res = await h.svc.submitUserOp(CTX, s.req);
+    expect(res.txHash).toMatch(/^0x/);
   });
   it('step 1 needs a configured signer and a deployed PH-4', async () => {
     const noSigner = harness({ paymasterSigner: undefined });

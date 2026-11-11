@@ -30,7 +30,7 @@ import {
   type PackedUserOperation,
 } from '../erc4337/userop.js';
 import { encodeRelayPay } from '../relay/intent.js';
-import { decodeAndCheckPayload, type RouterTarget } from '../routerTargets.js';
+import { assertRouterPayCanSucceed, decodeAndCheckPayload, type RouterTarget } from '../routerTargets.js';
 import { ceilDiv, roundUpSigFigs } from '../util.js';
 import { latencyBucket, type SponsorLogEntry } from './log.js';
 import type {
@@ -303,13 +303,14 @@ export class SponsorService {
       if (q.sponsored || q.sponsoring === true) throw new PayerSponsorError('QUOTE_UNKNOWN', 'quote already used for a paymaster authorisation');
       q.sponsoring = true;
       try {
-        const pm = await this.checkUserOp(cfg, q, req);
-        const signer = this.o.paymasterSigner;
-        if (signer === undefined) throw new PayerSponsorError('MODE_UNAVAILABLE', 'paymaster signer not configured');
         // Short-lived signature (CONTRACTS-POOLS-01): minutes at most, never past the quote.
         const quoteEnd = BigInt(Math.floor(q.expiresAt / 1000));
         const sigEnd = BigInt(Math.floor(this.now() / 1000) + (this.o.paymasterValiditySeconds ?? 120));
         const validUntil = sigEnd < quoteEnd ? sigEnd : quoteEnd;
+        // R10-1: anyone may bundle the op until validUntil, so the router deadline must cover it.
+        const pm = await this.checkUserOp(cfg, q, req, validUntil);
+        const signer = this.o.paymasterSigner;
+        if (signer === undefined) throw new PayerSponsorError('MODE_UNAVAILABLE', 'paymaster signer not configured');
         const params: PaymasterParams = {
           paymaster: pm.paymaster,
           verificationGasLimit: 200_000n,
@@ -343,8 +344,8 @@ export class SponsorService {
       const cfg = this.chainConfig(req.chainId);
       this.takeToken(ctx);
       const q = this.openQuote(req.quoteId, 'erc4337-paymaster', req.chainId);
-      const pm = await this.checkUserOp(cfg, q, req);
       const decoded = decodePaymasterAndData(req.userOp.paymasterAndData);
+      const pm = await this.checkUserOp(cfg, q, req, decoded.validUntil);
       if (!isAddressEqual(decoded.paymaster, pm.paymaster) || decoded.validUntil * 1000n <= BigInt(this.now())) {
         throw new PayerSponsorError('BAD_REQUEST', 'paymaster data is not ours or has expired');
       }
@@ -439,6 +440,7 @@ export class SponsorService {
     cfg: ChainSponsorConfig,
     q: StoredQuote,
     req: SponsorUserOpRequest,
+    deadlineFloor: bigint,
   ): Promise<{ readonly paymaster: Address; readonly entryPoint: Address }> {
     const d = cfg.deployment;
     if (d.paymaster === undefined || d.entryPoint === undefined || d.accountFactory === undefined) {
@@ -452,6 +454,10 @@ export class SponsorService {
     const fields = { token: q.token, router: req.router.address, routerCalldata: req.routerCalldata, gross: q.gross, sponsorFee: req.sponsorFee, sponsorFeeTo: q.sponsorFeeTo };
     assertPayerCalls(calls, fields);
     decodeAndCheckPayload(req.router, req.routerCalldata, { token: q.token, stealth: stealthOf(req.routerCalldata), gross: q.gross });
+    // R10-1: no inner-call simulation is possible before the owner signs (the account is not deployed
+    // and the chain port only simulates from the sponsor), so refuse router calls that cannot succeed
+    // by construction. Residual risk: DEVIATIONS.md item 12.
+    assertRouterPayCanSucceed(req.router.address, req.routerCalldata, deadlineFloor);
     // Fresh account only: the first operation deploys it through our factory for the stated owner.
     if (op.nonce !== 0n) throw new PayerSponsorError('BAD_REQUEST', 'only first operations of fresh accounts are sponsored');
     if (op.initCode.toLowerCase() !== buildInitCode(d.accountFactory, req.owner, req.saltNonce).toLowerCase()) {
