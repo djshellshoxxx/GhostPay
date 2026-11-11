@@ -180,7 +180,7 @@ describe('dedupeClaims', () => {
       expect(kept.items.map((c) => c.announcement.transactionHash)).toEqual(order.map((c) => c.announcement.transactionHash));
     }
     // A free replay posted directly at the announcer is still dropped when any router payment exists for the pair.
-    const freeReplay = { ...genuine, announcement: { ...genuine.announcement, caller: FAKE.announcer, blockNumber: 50n, blockHash: `0x${'12'.repeat(32)}`, logIndex: 0 }, viaRouter: false };
+    const freeReplay = { ...genuine, announcement: { ...genuine.announcement, caller: FAKE.announcer, blockNumber: 50n, blockHash: `0x${'12'.repeat(32)}` as Hex, logIndex: 0 }, viaRouter: false };
     const mixed = dedupeClaims([freeReplay, frontRun, genuine]);
     expect(mixed.duplicates).toBe(1);
     expect(mixed.items.every((c) => c.viaRouter)).toBe(true);
