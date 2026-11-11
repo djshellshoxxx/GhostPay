@@ -36,6 +36,7 @@ For contracts: `cd packages/contracts && forge build && forge fmt --check && for
 | `packages/chain-adapters` | Chain/asset allowlists, deployment manifests, verified reads |
 | `packages/qr-exchange` | QR/text exchange, bounds and format validation |
 | `packages/cli` | Headless invoice/receipt/merchant tools and read-only inspection |
+| `packages/chain-solana`, `packages/solana-stealth` | **Two different experimental Solana formats**: CLI `gpsol:` + base64url memo versus web `st:sol:` + base58 memo. They cannot be interchanged; the former has no RPC, on-chain program, or transaction building. Inspect [the chain-solana README](https://github.com/djshellshoxxx/GhostPay/blob/364b1f185fcc2adaedab4ce7b4b14e676b1da3b7/packages/chain-solana/README.md) and ADR/implementation deviations before any integration. |
 | `packages/contracts` | Foundry payment, sweep and experimental policy contracts |
 | `packages/merchant-*` | Billing/hooks/ledger/multisig planning and operators |
 
