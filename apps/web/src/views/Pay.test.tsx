@@ -1028,3 +1028,109 @@ describe('Pay: manifest read-back and post-broadcast safety (WEB-APP-01, WEB-APP
     expect(await screen.findByText('UNSIGNED DEV MANIFEST (test)')).toBeTruthy();
   });
 });
+
+describe('Pay: a retry after a payment request with an unknown outcome never says nothing was sent (R05-1)', () => {
+  /** Records the payment as handed to the wallet, then loses the response: the outcome is unknown. */
+  class LostResponseWallet extends MockWallet {
+    public override async request(args: Parameters<MockWallet['request']>[0]): Promise<unknown> {
+      const result = await super.request(args);
+      if (args.method === 'eth_sendTransaction') throw new Error('wallet disconnected after handoff');
+      return result;
+    }
+  }
+  const sendButton = (): HTMLElement => screen.getByRole('button', { name: 'Send payment in my wallet' });
+
+  async function sendTwice(wallet: MockWallet, user: ReturnType<typeof userEvent.setup>): Promise<void> {
+    await user.click(sendButton());
+    await screen.findByText(/unknown outcome and may already have been submitted/i);
+    expect(document.body.textContent).not.toMatch(/Nothing was sent/i);
+    // The retry is refused before the wallet is asked (the first payment was mined, so the dry run reverts).
+    await user.click(sendButton());
+    await waitFor(() => { expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Send payment in my wallet' }).disabled).toBe(false); });
+    const alerts = screen.getAllByRole('alert').map((a) => a.textContent ?? '').join(' | ');
+    expect(alerts).toMatch(/may already have been submitted/i);
+    expect(alerts).toMatch(/Check your wallet/i);
+    expect(document.body.textContent).not.toMatch(/Nothing was sent/i);
+    expect(wallet.calls.filter((c) => c.method === 'eth_sendTransaction')).toHaveLength(1);
+  }
+
+  it('native payment: a failing dry run on the retry keeps the unknown-outcome warning', async () => {
+    const wallet = new LostResponseWallet();
+    const rpc = withManifestChain(mockRpc(84532, (m) => {
+      if (m === 'eth_call' && wallet.sent !== undefined) throw new Error('execution reverted');
+      return m === 'eth_getTransactionByHash' || m === 'eth_getTransactionReceipt' ? null : '0x';
+    }));
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(rpc), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' });
+    await sendTwice(wallet, user);
+  });
+
+  it('native payment: an invoice that expired before the retry keeps the unknown-outcome warning', async () => {
+    const wallet = new LostResponseWallet();
+    const { fragment, parsed } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    let clock = NOW * 1000;
+    const user = openWith(fragment, makeServices({ nowMs: () => clock, loadManifest: loaded(84532), createRpc: readBackRpc(), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' });
+    await user.click(sendButton());
+    await screen.findByText(/unknown outcome and may already have been submitted/i);
+    clock = parsed.invoice.expiresAt * 1000;
+    await user.click(sendButton());
+    await screen.findByText(/The invoice expired/);
+    expect(document.body.textContent).toMatch(/may already have been submitted/i);
+    expect(document.body.textContent).not.toMatch(/Nothing was sent/i);
+    expect(wallet.calls.filter((c) => c.method === 'eth_sendTransaction')).toHaveLength(1);
+  });
+
+  it('ERC-2612 permit payment: a failing dry run on the retry keeps the unknown-outcome warning', async () => {
+    const { fragment } = await makeParsed();
+    const payer = privateKeyToAccount(`0x${'cd'.repeat(32)}`);
+    const usdc = '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as const;
+    const domain = { name: 'USDC', version: '2', chainId: 84532, verifyingContract: usdc } as const;
+    const sig = await payer.signTypedData({ domain, types: PERMIT_TYPES, primaryType: 'Permit', message: { owner: payer.address, spender: FAKE_ROUTER, value: 100_000_000n, nonce: 0n, deadline: BigInt(NOW + 20 * 60) } });
+    const wallet = new LostResponseWallet({ account: payer.address, typedDataSignature: sig });
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const base = chainSeeing(wallet);
+    const rpc = mockRpc(84532, (method, params) => {
+      if (method !== 'eth_call') return base.request(method, params);
+      if (wallet.sent !== undefined) throw new Error('execution reverted');
+      const data = (params[0] as { data: string }).data;
+      if (data.startsWith('0x06fdde03')) return encodeFunctionResult({ abi: erc20MetadataAbi, functionName: 'name', result: 'USDC' });
+      if (data.startsWith('0x3644e515')) return eip712DomainSeparator(domain);
+      return `0x${'0'.repeat(64)}`; // allowance 0, nonces 0, permit simulation succeeds
+    });
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' }, { timeout: 5000 });
+    expect(screen.getByText('payERC20WithPermit')).toBeTruthy();
+    await sendTwice(wallet, user);
+  });
+
+  it('pre-approved ERC-20 payment: a failing dry run on the retry keeps the unknown-outcome warning', async () => {
+    const { fragment } = await makeParsed();
+    const wallet = new LostResponseWallet();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const base = chainSeeing(wallet);
+    const rpc = mockRpc(84532, (method, params) => {
+      if (method !== 'eth_call') return base.request(method, params);
+      if (wallet.sent !== undefined) throw new Error('execution reverted');
+      return `0x${(10n ** 12n).toString(16).padStart(64, '0')}`;
+    });
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' }, { timeout: 5000 });
+    expect(screen.getByText('payERC20')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Approve exactly, then send payment in my wallet' })).toBeNull();
+    await sendTwice(wallet, user);
+  });
+});
