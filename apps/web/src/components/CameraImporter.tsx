@@ -210,7 +210,8 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
       }
       if (await deliver(decoded, signal)) return 'accepted';
       // A looping animated code would otherwise rebuild and resubmit the refused payload, hiding the refusal.
-      refusedSession.current = session;
+      // Only a real refusal is remembered; an aborted delivery (stop, scope change, unmount) is not the user's answer.
+      if (!signal.aborted) refusedSession.current = session;
       return 'failed';
     }
     return 'pending';
@@ -289,6 +290,7 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
     });
   };
   const readImage = (event: ChangeEvent<HTMLInputElement>): void => {
+    refusedSession.current = null; // picking an image is a new attempt
     const input = event.currentTarget;
     const file = input.files?.[0];
     // Clear the selection so the same file can be chosen again; the File itself is only held for this decode.

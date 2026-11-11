@@ -94,6 +94,11 @@ export interface QrFrameProps {
   readonly caption: string;
   /** Multipart: one QR per entry. Shown as "Part i of n". */
   readonly chunks?: readonly string[];
+  /**
+   * Set false to withhold copy-as-text and SVG download even where the kind allows them (for example a settings QR
+   * that carries endpoint URLs, which may embed API keys). It can only narrow the kind's rules, never widen them.
+   */
+  readonly allowExport?: boolean;
 }
 
 type PayloadScope = Pick<QrFrameProps, 'kind' | 'text' | 'chunks'>;
@@ -297,8 +302,8 @@ export function QrFrame(props: QrFrameProps): ReactNode {
             <button type="button" className="btn" ref={openerRef} onClick={() => { setLargeFor(payloadScope(props)); }}>
               {t('qrFrame.larger')}
             </button>
-            {rules.allowCopyText && <CopyButton text={current} label={t('qrFrame.copy')} />}
-            {rules.allowDownload && (
+            {rules.allowCopyText && props.allowExport !== false && <CopyButton text={current} label={t('qrFrame.copy')} />}
+            {rules.allowDownload && props.allowExport !== false && (
               <button type="button" className="btn" onClick={download}>
                 {t('qrFrame.download')}
               </button>

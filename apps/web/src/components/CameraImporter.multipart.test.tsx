@@ -308,6 +308,19 @@ describe('CameraImporter image import', () => {
     await waitFor(() => { expect(progressBar().value).toBe(1); });
   });
 
+  it('treats picking an image as a new attempt for a transfer that was refused during a camera scan', async () => {
+    const parts = chunksOf(SECRET);
+    const onText = vi.fn<CameraImporterProps['onText']>(() => false);
+    render(<CameraImporter label="Import a QR" multipart onText={onText} />);
+    const user = userEvent.setup();
+    const scan = await startCamera(user);
+    for (const part of parts) await show(scan, part);
+    expect(onText).toHaveBeenCalledOnce();
+    fakes.decodeQrImage.mockResolvedValueOnce(parts[0]);
+    await user.upload(screen.getByLabelText('Read a QR from an image'), png());
+    await waitFor(() => { expect(progressBar().value).toBe(1); });
+  });
+
   it.each([
     [new QrExchangeError('TOO_LARGE'), 'That image is larger than 10 MiB. Choose a smaller image or paste the QR text.'],
     [new QrExchangeError('BAD_INPUT'), 'That file is not a supported image. Choose a photo or screenshot of the QR code, or paste the QR text.'],

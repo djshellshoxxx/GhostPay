@@ -86,6 +86,9 @@ describe('Settings exchange: export', () => {
     await user.click(within(panel()).getByRole('button', { name: 'Show settings QR' }));
     expect(within(panel()).getAllByText('MY DEVICES').length).toBeGreaterThan(0);
     expect(within(panel()).getByRole('button', { name: 'Hide settings QR' })).toBeTruthy();
+    // Endpoint URLs can hold API keys: no copy-as-text or SVG download that would leave them in the clipboard or Downloads.
+    expect(within(panel()).queryByRole('button', { name: 'Copy as text' })).toBeNull();
+    expect(within(panel()).queryByRole('button', { name: 'Download SVG' })).toBeNull();
     await user.click(box('Second RPC endpoints'));
     expect(within(panel()).queryByRole('button', { name: 'Hide settings QR' })).toBeNull();
     await user.click(box('Preferences (delay, idle lock, theme, address bar)'));
@@ -140,6 +143,11 @@ describe('Settings exchange: import', () => {
     await user.click(box('Apply Preferences (delay, idle lock, theme, address bar)'));
     await user.click(box('Apply RPC endpoints'));
     await user.click(within(panel()).getByRole('button', { name: 'Apply selected settings' }));
+    // An imported RPC endpoint is a trust change: it is listed host by host and needs a second confirmation.
+    expect(save).not.toHaveBeenCalled();
+    const dialog = within(panel()).getByRole('alertdialog', { name: 'Confirm trust changes' });
+    expect(within(dialog).getByText(/RPC endpoints: Base Sepolia \(chain 84532\) old\.example → base\.example\. This endpoint sees which addresses you check/)).toBeTruthy();
+    await user.click(within(dialog).getByRole('button', { name: 'Confirm and apply' }));
     expect(save).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenCalledWith({ ...mine, rpcUrls: { '84532': 'https://base.example/v3/KEY', '97': 'https://keep.example/', '11155111': 'https://sep.example/' } });
     expect(within(panel()).getByText('Settings saved.')).toBeTruthy();
@@ -179,6 +187,7 @@ describe('Settings exchange: import', () => {
     await importText(user, code(other));
     await user.click(box('Apply RPC endpoints'));
     await user.click(within(panel()).getByRole('button', { name: 'Apply selected settings' }));
+    await user.click(within(panel()).getByRole('button', { name: 'Confirm and apply' }));
     expect(save).toHaveBeenCalledTimes(1);
     expect(within(panel()).getByText(/Nothing was changed/)).toBeTruthy();
     expect(screen.getByLabelText<HTMLInputElement>('Base Sepolia RPC URL').value).toBe('https://old.example/');
@@ -193,6 +202,7 @@ describe('Settings exchange: import', () => {
     await importText(user, text);
     await user.click(box('Apply RPC endpoints'));
     await user.click(within(panel()).getByRole('button', { name: 'Apply selected settings' }));
+    await user.click(within(panel()).getByRole('button', { name: 'Confirm and apply' }));
     expect(stored()).toMatchObject({ theme: 'dark', rpcUrls: { '84532': 'https://base.example/v3/KEY', '11155111': 'https://sep.example/' } });
     expect(within(panel()).queryByText('Review imported settings')).toBeNull();
     await importText(user, text);
@@ -209,6 +219,10 @@ describe('Settings exchange: import', () => {
     await importText(user, v1);
     expect(within(panel()).queryByRole('group', { name: 'RPC endpoints' })).toBeNull();
     await user.click(within(panel()).getByRole('button', { name: 'Apply selected settings' }));
+    // Shorter delays, a longer idle lock and keeping invoices in the address bar weaken protection: confirm first.
+    expect(save).not.toHaveBeenCalled();
+    expect(within(within(panel()).getByRole('alertdialog', { name: 'Confirm trust changes' })).getByText(/^Weaker protection on this device:/)).toBeTruthy();
+    await user.click(within(panel()).getByRole('button', { name: 'Confirm and apply' }));
     expect(save).toHaveBeenCalledWith({ ...mine, delayMinSec: 0, delayMaxSec: 60, lockTimeoutMin: 30, theme: 'light', autoClearFragment: false });
   });
 
@@ -226,3 +240,14 @@ describe('Settings exchange: import', () => {
     expect(within(panel()).queryByText('Review imported settings')).toBeNull();
   });
 });
+
+describe('Settings exchange: export actions', () => {
+  it('keeps copy and download for a preferences-only QR', async () => {
+    const user = userEvent.setup();
+    render(<Harness initial={other} />);
+    await user.click(within(panel()).getByRole('button', { name: 'Show settings QR' }));
+    expect(within(panel()).getByRole('button', { name: 'Copy as text' })).toBeTruthy();
+    expect(within(panel()).getByRole('button', { name: 'Download SVG' })).toBeTruthy();
+  });
+});
+

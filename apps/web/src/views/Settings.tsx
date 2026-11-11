@@ -3,7 +3,7 @@ import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
 import {
   applySettingsExchange, buildSettingsExport, DEFAULT_EXPORT_SECTIONS, defaultExchangeSelection, EXCHANGE_SECTIONS, exportSectionAvailable,
-  exportSettingsExchange, needsTrustConfirmation, parseSettingsExchange, previewSettingsExchange, selectionChangesSomething,
+  exportSettingsExchange, needsTrustConfirmation, parseSettingsExchange, previewSettingsExchange, selectionChangesSomething, weakensPreferences,
   type ExchangeSection, type SettingsExchangePreview, type SettingsExchangeSelection, type SharedSettings,
 } from '../lib/settingsExchange';
 import { shortHex } from '../lib/format';
@@ -319,7 +319,7 @@ function SettingsExchangeSection({ onApplied }: { readonly onApplied: (next: Set
         <button type="button" className="btn" disabled={listing.length === 0} onClick={onExport}>{t('settings.exchange.export')}</button>
         {exportError !== undefined && <Notice kind="error">{displayMessage(exportError, t)}</Notice>}
       </fieldset>
-      {transfer !== undefined && <><QrFrame kind="device" text={transfer} caption={t('settings.exchange.title')} /><button type="button" className="btn" onClick={() => { setTransfer(undefined); }}>{t('settings.exchange.hide')}</button></>}
+      {transfer !== undefined && <><QrFrame kind="device" text={transfer} caption={t('settings.exchange.title')} allowExport={!sections.some((x) => x === 'rpcUrls' || x === 'rpcUrlsSecondary' || x === 'relayerUrl')} /><button type="button" className="btn" onClick={() => { setTransfer(undefined); }}>{t('settings.exchange.hide')}</button></>}
       <CameraImporter label={t('settings.exchange.import')} scopeKey={s} onInputChange={discard} onText={(text, signal) => {
         const incoming = parseSettingsExchange(text, chainIds);
         if (signal.aborted) return false;
@@ -366,6 +366,10 @@ function SettingsExchangeSection({ onApplied }: { readonly onApplied: (next: Set
           <h4 id={`${uid}-confirm-h`}>{t('settings.exchange.confirmTitle')}</h4>
           <p id={`${uid}-confirm-d`}>{t('settings.exchange.confirmBody')}</p>
           <ul>
+            {(['rpcUrls', 'rpcUrlsSecondary'] as const).flatMap((section) => selection[section] === true ? (preview[section]?.entries ?? []).filter((e) => e.changed).map((e) => (
+              <li key={`${section}-${e.chainId}`} dir="auto">{t('settings.exchange.confirmRpc', { section: t(SECTION_LABEL[section]), chain: chainLabel(e.chainId), chainId: e.chainId, from: e.current === undefined ? t('settings.exchange.none') : hostOf(e.current), to: hostOf(e.incoming) })}</li>
+            )) : [])}
+            {selection.preferences === true && weakensPreferences(preview.preferences) && preview.preferences !== undefined && <li>{t('settings.exchange.confirmWeaker', { value: prefsValue(preview.preferences.incoming) })}</li>}
             {selection.relayerUrl === true && preview.relayerUrl?.changed === true && <li dir="auto">{t('settings.exchange.confirmRelayer', { from: relayerValue(preview.relayerUrl.current), to: relayerValue(preview.relayerUrl.incoming) })}</li>}
             {adds.map((key) => <li key={`add-${key}`} title={key}>{t('settings.exchange.confirmPin', { fingerprint: fingerprint(key) })}</li>)}
             {selection.removeSigners === true && (signers?.removed ?? []).map((key) => <li key={`rm-${key}`} title={key}>{t('settings.exchange.confirmUnpin', { fingerprint: fingerprint(key) })}</li>)}

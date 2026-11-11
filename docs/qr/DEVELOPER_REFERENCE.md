@@ -69,9 +69,10 @@ bidi and BOM characters are refused.
 - `scanFromVideo` stops every track on finish, abort or error; it reads at a 120 ms interval and skips consecutive
   identical texts. `listVideoInputs` / `activeDeviceId` expose ids only, never labels.
 - `decodeQrImage(file, { signal })`: raster images only (SVG rejected), ≤ 10 MiB file, ≤ 40 MP bitmap, downscaled to
-  ≤ 1600 px. It tries BarcodeDetector, then jsQR. No object URLs; the bitmap is closed on every path. **Residual:**
-  the pixel cap is checked after the browser has decoded the image, so protection against decompression bombs is
-  only the 10 MiB file cap plus the browser's own limits.
+  ≤ 1600 px. It tries BarcodeDetector, then jsQR. No object URLs; the bitmap is closed on every path. For PNG, GIF,
+  JPEG and WebP the declared size is read from the header (`imageHeaderDimensions`, ≤ 256 KiB probe) and refused
+  before decoding. **Residual:** other formats (HEIC, AVIF, BMP) rely on the 10 MiB file cap, the post-decode check
+  and the browser's own limits.
 - Frames and decoded text are never logged, rendered as status, or sent.
 
 ## Settings exchange
@@ -87,8 +88,11 @@ bidi and BOM characters are refused.
 A preferences-only export still emits exact v1 text. Web `applySettingsExchange(current, preview, selection)` is pure:
 it re-validates the preview, refuses a stale basis, merges RPC entries per chain, adds only ticked signers,
 removes only on the explicit opt-in, refuses any result that `sanitizeSettings` would alter, and the view saves once.
-Trust-changing sections (relayer, signers) need a confirmation step. No network call is made to an imported endpoint
-during the preview.
+`needsTrustConfirmation` adds a confirmation step for changed RPC or second-RPC entries (listed as chain plus
+old → new host), relayer and signer changes, and preferences that `weakensPreferences` flags (longer idle lock,
+keeping the invoice in the address bar, shorter delays). No network call is made to an imported endpoint during the
+preview. A settings QR that carries endpoints is shown without copy-as-text or SVG download (`QrFrame
+allowExport={false}`).
 
 ## Secrets boundary
 

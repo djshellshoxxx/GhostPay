@@ -107,7 +107,8 @@ describe('settings exchange: preview and apply', () => {
     expect(selection).toEqual({ preferences: true, rpcUrls: false, rpcUrlsSecondary: false, relayerUrl: false, addSigners: [], removeSigners: false });
     expect(applySettingsExchange(target, preview, selection)).toEqual({ ...target, theme: 'dark', delayMinSec: 0 });
     expect(defaultExchangeSelection(all(target).preview(target)).preferences).toBe(false);
-    expect(needsTrustConfirmation(preview, selection)).toBe(false);
+    // The preselected preferences lower the minimum delay (less timing jitter), so applying them is confirmed.
+    expect(needsTrustConfirmation(preview, selection)).toBe(true);
   });
 
   it('applies only the selected sections, merging RPC chains and adding only ticked signers', () => {
@@ -121,7 +122,9 @@ describe('settings exchange: preview and apply', () => {
     expect(needsTrustConfirmation(preview, { relayerUrl: true })).toBe(true);
     expect(needsTrustConfirmation(preview, { addSigners: [PIN_A] })).toBe(true);
     expect(needsTrustConfirmation(preview, { removeSigners: true })).toBe(true);
-    expect(needsTrustConfirmation(preview, { rpcUrls: true, preferences: true })).toBe(false);
+    // An imported RPC can misreport payments and sees which addresses are checked: it is a trust change too.
+    expect(needsTrustConfirmation(preview, { rpcUrls: true })).toBe(true);
+    expect(needsTrustConfirmation(preview, { rpcUrlsSecondary: true })).toBe(true);
     expect(selectionChangesSomething(preview, {})).toBe(false);
     expect(selectionChangesSomething(preview, { rpcUrlsSecondary: true })).toBe(true);
   });
@@ -157,3 +160,31 @@ describe('settings exchange: preview and apply', () => {
     expect(() => applySettingsExchange(full, many, { addSigners: [PIN_A] })).toThrow(/Nothing was changed/);
   });
 });
+
+describe('settings exchange: preference changes that weaken protection need confirmation', () => {
+  const withPrefs = (current: Settings, incoming: Partial<Settings>) =>
+    previewSettingsExchange(current, parseSettingsExchange(exportSettingsExchange({ ...current, ...incoming }, ['preferences'], CHAINS), CHAINS), CHAINS);
+  const base: Settings = { ...DEFAULT_SETTINGS, delayMinSec: 120, delayMaxSec: 900, lockTimeoutMin: 15, autoClearFragment: true };
+
+  it.each([
+    ['a longer idle lock', { lockTimeoutMin: 240 }],
+    ['keeping invoices in the address bar', { autoClearFragment: false }],
+    ['a shorter minimum delay', { delayMinSec: 0 }],
+    ['a shorter maximum delay', { delayMaxSec: 300 }],
+  ] as const)('confirms %s', (_name, change) => {
+    expect(needsTrustConfirmation(withPrefs(base, change), { preferences: true })).toBe(true);
+  });
+
+  it.each([
+    ['a shorter idle lock', { lockTimeoutMin: 5 }],
+    ['longer delays', { delayMinSec: 300, delayMaxSec: 1800 }],
+    ['only the theme', { theme: 'dark' as const }],
+  ] as const)('does not ask again for %s', (_name, change) => {
+    expect(needsTrustConfirmation(withPrefs(base, change), { preferences: true })).toBe(false);
+  });
+
+  it('does not ask when the weaker preferences are not selected', () => {
+    expect(needsTrustConfirmation(withPrefs(base, { lockTimeoutMin: 240 }), { preferences: false })).toBe(false);
+  });
+});
+

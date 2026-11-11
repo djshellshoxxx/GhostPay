@@ -26,7 +26,7 @@ export {
   createDecoderReader,
   loadJsQrDecoder,
 } from './readers.js';
-export { decodeQrImage, MAX_IMAGE_BYTES, MAX_IMAGE_DIM, MAX_IMAGE_PIXELS } from './readers.js';
+export { decodeQrImage, imageHeaderDimensions, HEADER_PROBE_BYTES, MAX_IMAGE_BYTES, MAX_IMAGE_DIM, MAX_IMAGE_PIXELS } from './readers.js';
 export type { DecodeImageEnv, DecodeImageOptions, ImageBitmapLike, ImageFileLike } from './readers.js';
 export type {
   BarcodeDetectorLike,

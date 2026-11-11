@@ -152,3 +152,64 @@ describe('decodeQrImage', () => {
     expect(decoder.decode).toHaveBeenCalledTimes(2);
   });
 });
+
+describe('decodeQrImage header dimension pre-check (decompression bombs)', () => {
+  const be32 = (n: number): number[] => [(n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255];
+  const le16 = (n: number): number[] => [n & 255, (n >>> 8) & 255];
+  const le24 = (n: number): number[] => [n & 255, (n >>> 8) & 255, (n >>> 16) & 255];
+  const pngHeader = (w: number, h: number): number[] => [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 13, 0x49, 0x48, 0x44, 0x52, ...be32(w), ...be32(h), 8, 6, 0, 0, 0];
+  const gifHeader = (w: number, h: number): number[] => [0x47, 0x49, 0x46, 0x38, 0x39, 0x61, ...le16(w), ...le16(h), 0, 0, 0];
+  const jpegHeader = (w: number, h: number): number[] => [
+    0xff, 0xd8, 0xff, 0xe0, 0, 16, 0x4a, 0x46, 0x49, 0x46, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, // APP0 JFIF
+    0xff, 0xc0, 0, 17, 8, (h >>> 8) & 255, h & 255, (w >>> 8) & 255, w & 255, 3, 1, 0x22, 0, 2, 0x11, 1, 3, 0x11, 1,
+  ];
+  const riff = (chunk: string, body: number[]): number[] => [0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x57, 0x45, 0x42, 0x50, ...[...chunk].map((c) => c.charCodeAt(0)), ...le24(body.length), 0, ...body];
+  const webpVp8x = (w: number, h: number): number[] => riff('VP8X', [0, 0, 0, 0, ...le24(w - 1), ...le24(h - 1)]);
+  const webpVp8l = (w: number, h: number): number[] => {
+    const bits = (w - 1) | ((h - 1) << 14);
+    return riff('VP8L', [0x2f, bits & 255, (bits >>> 8) & 255, (bits >>> 16) & 255, (bits >>> 24) & 255]);
+  };
+  const webpVp8 = (w: number, h: number): number[] => riff('VP8 ', [0, 0, 0, 0x9d, 0x01, 0x2a, ...le16(w), ...le16(h)]);
+  const file = (bytes: number[], type: string) => ({
+    size: 1000,
+    type,
+    slice: (start = 0, end = bytes.length) => ({ arrayBuffer: () => Promise.resolve(Uint8Array.from(bytes.slice(start, end)).buffer) }),
+  });
+
+  it.each([
+    ['PNG', pngHeader, 'image/png'],
+    ['GIF', gifHeader, 'image/gif'],
+    ['JPEG', jpegHeader, 'image/jpeg'],
+    ['WebP VP8X', webpVp8x, 'image/webp'],
+    ['WebP VP8L', webpVp8l, 'image/webp'],
+    ['WebP VP8', webpVp8, 'image/webp'],
+  ] as const)('refuses a %s whose header declares too many pixels without decoding it', async (_name, header, type) => {
+    const s = setup();
+    expect(await codeOf(decodeQrImage(file(header(16_000, 16_000), type), { env: s.env }))).toBe('TOO_LARGE');
+    expect(s.createImageBitmap).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['PNG', pngHeader, 'image/png'],
+    ['GIF', gifHeader, 'image/gif'],
+    ['JPEG', jpegHeader, 'image/jpeg'],
+    ['WebP VP8X', webpVp8x, 'image/webp'],
+  ] as const)('decodes a %s whose header declares an acceptable size', async (_name, header, type) => {
+    const s = setup();
+    expect(await decodeQrImage(file(header(400, 300), type), { env: s.env, decoder: { decode: () => 'ok' } })).toBe('ok');
+    expect(s.createImageBitmap).toHaveBeenCalledOnce();
+  });
+
+  it('falls back to the post-decode pixel check for formats it cannot read (for example HEIC/AVIF)', async () => {
+    const s = setup({ width: 9000, height: 9000 });
+    expect(await codeOf(decodeQrImage(file([0, 0, 0, 0x1c, 0x66, 0x74, 0x79, 0x70], 'image/avif'), { env: s.env }))).toBe('TOO_LARGE');
+    expect(s.createImageBitmap).toHaveBeenCalledOnce();
+  });
+
+  it('treats a truncated or zero-size header as undecodable rather than guessing', async () => {
+    const s = setup();
+    expect(await codeOf(decodeQrImage(file(pngHeader(0, 10), 'image/png'), { env: s.env }))).toBe('SCAN_FAILED');
+    expect(await codeOf(decodeQrImage(file(pngHeader(10, 10).slice(0, 20), 'image/png'), { env: s.env }))).toBe('SCAN_FAILED');
+    expect(s.createImageBitmap).not.toHaveBeenCalled();
+  });
+});

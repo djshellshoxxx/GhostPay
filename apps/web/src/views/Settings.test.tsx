@@ -168,6 +168,8 @@ it('previews nonsecret settings before explicit application and leaves URLs and 
   expect(stored()['theme']).toBe('system');
   expect(await screen.findByText(/Review imported settings/)).toBeTruthy();
   await user.click(screen.getByRole('button', { name: 'Apply selected settings' }));
+  expect(stored()['theme']).toBe('system'); // delayMinSec 0 weakens protection: nothing is saved before confirming
+  await user.click(screen.getByRole('button', { name: 'Confirm and apply' }));
   expect(stored()['theme']).toBe('dark');
   expect(stored()['rpcUrls']).toEqual({ '84532': 'https://rpc.example/' });
   fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: exportSettingsExchange(DEFAULT_SETTINGS) } });

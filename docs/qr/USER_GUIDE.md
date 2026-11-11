@@ -89,8 +89,12 @@ On the device you are copying **to**:
 2. **Review imported settings** shows each setting as "This device" against "Imported". Nothing is applied yet.
 3. Tick only the sections you want. Imported RPC endpoints replace only the chains listed. Each new signer key has its
    own tick box. Pinning a key means invoices signed by it are shown as trusted, so only pin keys you have checked.
-4. Press **Apply selected settings**. Changes to the relayer or to pinned keys ask you to **Confirm trust changes**.
-   Everything you selected is saved together, or nothing is.
+4. Press **Apply selected settings**. If you selected new RPC endpoints, a relayer change, pinned-key changes, or
+   preferences that weaken protection (a longer idle lock, keeping the invoice in the address bar, shorter delays),
+   you are asked to **Confirm trust changes**, and each change is listed. Everything you selected is saved together,
+   or nothing is.
+
+A settings code that includes endpoints cannot be copied as text or downloaded, because RPC URLs can contain API keys.
 
 Scanning the same code again shows "No changes". Secret keys never travel in this code.
 

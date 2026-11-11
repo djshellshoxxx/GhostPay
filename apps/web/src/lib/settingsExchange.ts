@@ -151,10 +151,28 @@ export function defaultExchangeSelection(preview: SettingsExchangePreview): Sett
   return { preferences: preview.preferences?.changed === true, rpcUrls: false, rpcUrlsSecondary: false, relayerUrl: false, addSigners: [], removeSigners: false };
 }
 
-/** Relayer and signer changes alter what this device trusts and need a second, explicit confirmation. */
+/**
+ * Imported preferences that weaken local protection: a longer idle lock, keeping invoice keys in the address bar, or
+ * shorter submission delays (less timing jitter). Stronger or cosmetic changes (theme) are not weaker.
+ */
+export function weakensPreferences(diff: ValueDiff<SharedSettings> | undefined): boolean {
+  if (diff === undefined || !diff.changed) return false;
+  const { current: c, incoming: i } = diff;
+  return i.lockTimeoutMin > c.lockTimeoutMin || (c.autoClearFragment && !i.autoClearFragment) ||
+    i.delayMinSec < c.delayMinSec || i.delayMaxSec < c.delayMaxSec;
+}
+
+/**
+ * Changes to what this device trusts or how well it protects itself need a second, explicit confirmation: relayer,
+ * pinned signers, RPC endpoints (an RPC can misreport payments and sees which addresses are checked) and weaker
+ * preferences. A forged "my devices" QR must never take effect with one tick and one click.
+ */
 export function needsTrustConfirmation(preview: SettingsExchangePreview, selection: SettingsExchangeSelection): boolean {
   return (selection.relayerUrl === true && preview.relayerUrl?.changed === true) || (selection.addSigners ?? []).length > 0 ||
-    (selection.removeSigners === true && (preview.pinnedSigners?.removed.length ?? 0) > 0);
+    (selection.removeSigners === true && (preview.pinnedSigners?.removed.length ?? 0) > 0) ||
+    (selection.rpcUrls === true && preview.rpcUrls?.changed === true) ||
+    (selection.rpcUrlsSecondary === true && preview.rpcUrlsSecondary?.changed === true) ||
+    (selection.preferences === true && weakensPreferences(preview.preferences));
 }
 
 /** Whether `selection` would change anything at all. */
