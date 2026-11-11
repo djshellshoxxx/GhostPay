@@ -117,7 +117,7 @@ public network.
 
 ## 5. Evidence (sandbox)
 
-- `REQUIRE_ANVIL=1 npm test -w apps/relayer`: 12 files, 422 tests, coverage 97.3 / 93.5 / 96.6 / 98.5 (thresholds
+- `REQUIRE_ANVIL=1 npm test -w apps/relayer`: 12 files, 423 tests (incl. a 40-request concurrent sweep flood through HTTP with the journal), coverage 97.3 / 93.5 / 96.6 / 98.5 (thresholds
   95/90/95/95). Baseline before this branch: 9 files, 313 tests, 97.55 / 92.95 / 97.05 / 98.75.
 - `typecheck` and `lint`: relayer, chain-adapters, web clean.
 - Container smoke (`apps/relayer/deploy/smoke-anvil.sh`, local anvil, read-only rootfs, `--cap-drop ALL`, uid 65532):
