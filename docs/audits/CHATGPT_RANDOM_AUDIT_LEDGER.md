@@ -1,5 +1,33 @@
 # ChatGPT randomized source audit ledger — GhostPay
 
+## 2026-11-10 rotations 14–17 — recovered source-only audit checkpoints (not concurrent workers)
+
+**Ownership and CI:** Audits were completed as separate sequential, read-only phases by one ChatGPT assistant. This update appends previously withheld rotations after the prior audit-branch CI [42934175927](https://github.com/djshellshoxxx/GhostPay/actions/runs/42934175927) completed successfully. No product code, crypto, tests, deployment, or security gates were changed. Source examined in every rotation: unmerged integration [#98](https://github.com/djshellshoxxx/GhostPay/pull/98) at `364b1f185fcc2adaedab4ce7b4b14e676b1da3b7`. Prior ledger blob: `bcbc08c549102e6fe56bac023fc521167f3e4105`. Rotations 14–16 were already recorded individually as source-pinned notes in [audit PR #103](https://github.com/djshellshoxxx/GhostPay/pull/103); this entry makes coverage durable.
+
+### Rotation 14 — `packages/ux-vault/src/keystore-portable.ts`
+- **Selection:** FNV-1a seed `3421156031`; previously unaudited package index 55/56, source file index 7/17. Prior ledger blob `bcbc08c549102e6fe56bac023fc521167f3e4105`.
+- **Reviewed:** keystore headers, NFKC password handling, scrypt bounds, AES-GCM/AAD metadata authentication, key consistency checks, ephemeral plaintext clearing, `envelope.ts`, `vault.ts`, portable codec, `apps/web/src/lib/keystore.test.ts` and `packages/ux-vault/src/portable-parity.test.ts`.
+- **Outcome:** No new independently reproducible flaw established from static source review. No runtime tests, fuzzing, browser verification, or external crypto assessment executed.
+
+### Rotation 15 — `packages/tron-adapter/src/adapter.ts`
+- **Selection:** FNV-1a seed `1018100749`; previous thirteen packages plus rotation 14 excluded, package index 39/55, file index 0/11.
+- **Reviewed:** adapter, transaction, RPC, scan, address and fee modules; `docs/chains/tron.md`; associated adapter/scan/RPC tests. Boundaries checked: disabled mainnet, testnet RPC trust, local unsigned transaction construction, amount/address validation, bounded RPC responses, transaction/receipt identity, token trust and signer separation.
+- **Outcome:** No new independently reproducible defect established. TRON remains an unaudited PoC; live wallet/node acceptance and finality remain unverified.
+
+### Rotation 16 — `packages/net-harness/src/socks5Server.ts`
+- **Selection:** FNV-1a seed `653772622`; prior audited packages and rotations 14–15 excluded, package index 22/54, file index 6/7.
+- **Reviewed:** SOCKS5 negotiation, fragmented TCP, proxy-side DNS resolution, loopback restrictions, CONNECT, mock OHTTP, poisoned resolver, `connectProxy.ts`, `loopback.ts`, `ohttp.ts`, `httpEcho.ts`, README and `harness.test.ts`.
+- **Outcome:** No new reproducible defect established. Test-only SOCKS/OHTTP mocks do not prove RFC cryptography, real network egress isolation or production privacy. No runtime/packet testing.
+
+### Rotation 17 — `packages/confidential-amounts/src/backends/zama-sdk.ts`
+- **Selection:** sorted source-tree packages: 69. Excluded 20 previously inspected package directories (ledger plus rotations 14–16); 49 remained. Unsigned FNV-1a 32-bit of `<source SHA>|<prior ledger blob>|<sorted excluded package CSV>`, seed `4168356948`, package index 7/49 selected `confidential-amounts`; file index 3/15 selected `src/backends/zama-sdk.ts`.
+- **Source evidence:** entry module `src/backends/zama-sdk.ts:74-129` loads Zama SDK lazily, enforces CT-1 chain support, uses in-memory permit storage and telemetry off, creates ephemeral wallet account when no stealth key is supplied, and opens encrypt/user-/public-decrypt sessions. Surrounding `src/backends/zama.ts:60-105,121-134` validates inputs, binds decryption to a signer-scoped session, and closes sessions via `finally`. `src/manifest.ts:152-186` exposes pinned-code validation; `src/decrypt.ts:61-68,110-157` serializes decryption jobs with optional per-job isolation. Reviewed `src/zama.test.ts`, `src/manifest.test.ts`, package README, `DEVIATIONS.md`, and `docs/remote/privacy-specs/wiring/confidential-tokens.md`.
+- **Trust limits and outcome:** package README explicitly states CT-1 is **not wired into any app**, `codeHashes` remain unpinned, SDK glue was never tested against an actual Zama relayer, and the SDK has no per-request transport hook. The cleartext backend is a **nonprivacy local test double**. No newly reproduced vulnerability established; potential network, relayer, address-privacy, and SDK interoperability concerns are **qualification gaps, not demonstrated defects**. Neither local Node tests, live network/chain verification, browser runs, nor independent cryptographic review were performed.
+- **Confidence:** high in observed source and published test assertions, low in real-world security/runtime guarantees. No security issue, public vulnerability report or severity classification created absent reproduction.
+
+**Next:** exclude all twenty inspected packages in subsequent deterministic rotations; preserve exact-head CI on this ledger-only change. Audit/doc checkpoints are not independent concurrent workers. This ledger is not production acceptance or an independent security report.
+
+
 ## 2026-11-10 thirteenth rotation: QR/share intake parser trust boundaries (sequential read-only)
 
 - **Deterministic selection:** source-pinned unmerged [integration #98](https://github.com/djshellshoxxx/GhostPay/pull/98) at `364b1f185fcc2adaedab4ce7b4b14e676b1da3b7`, previous audit-ledger blob `5bcf722e0aaffeecb295bf8a1e23815c4523a72e`. GitHub source tree contained 69 sorted `packages/` directories. Excluded prior twelve selected directories in ledger order: `secret-box,ops-monitor,hops,pool-contracts,btc-family,external-pools-privacypools,chain-evm-extra,pool-circuits,ux-fees,cli,pir-two-server,solana-stealth`. Unsigned FNV-1a 32-bit over `<source SHA>|<prior ledger blob>|<excluded CSV>` produced seed **2537639079**; index **48/57** eligible selected previously unaudited `packages/ux-intake/`. Among nine sorted top-level `src/*.ts` excluding `.test.` and `.spec.`, index **6/9** selected `src/qr.ts` as starting point (0-based).
