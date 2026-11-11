@@ -173,6 +173,7 @@ Pre-audit and testnet-only. Nothing is deployed. Chain-specific notes (not user 
 | [user/receive-and-scan](user/receive-and-scan.md) | How a seller scans for payments; sellers get no notification | user guide | n/a |
 | [user/sweep-and-gas-privacy](user/sweep-and-gas-privacy.md) | Sweeping one-time addresses and where privacy is easiest to lose | user guide | n/a |
 | [user/privacy-limits](user/privacy-limits.md) | What stays public and what GhostPay does not hide | user guide | n/a |
+| [user/seller-privacy](user/seller-privacy.md) | Seller privacy set, scanner lanes, spam and funding hygiene (spec 05) | user guide | n/a |
 | [user/fees](user/fees.md) | Fee types, when they apply and where they are enforced | user guide | n/a |
 | [user/troubleshooting](user/troubleshooting.md) | Symptom-to-cause table for common errors | user guide | n/a |
 

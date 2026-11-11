@@ -210,6 +210,17 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     `/blocks/:height` field mapping follows the electrs/Esplora API and is exercised only against the test mock (no live
     server is contacted by tests); a mismatch fails closed (each rebuilt header must hash to the summary's `id`).
 
+24. **Spec 05 (announcer spam, privacy set).** The spec's prefilter order ("view-tag compare before ECDH") cannot exist: per EIP-5564 the tag is a
+    byte of the hash of the ECDH shared secret. The spec text and CPU target are corrected with measured numbers (`docs/specs/05-announcer-spam-anonymity-set.md`
+    sections 2A, 5 and 7). Deliberate choices: (a) the scanner worker memoises exact replays per session (`REPLAY_MEMO_LIMIT` 4096, keyed on ephemeral key,
+    announced tag byte, announced address and scan mode; cleared on cancel, dispose and when full), which changes no result, only the work; (b) the same-token
+    transfer estimate is opt-in and bounded (2,000 blocks, 10,000 logs, 8 requests, no sender/recipient in the query) and fails closed to `unknown`; it never
+    changes the privacy-set level; (c) lane options live under their own key `ghostpay.scanLanes.v1` (not in `ScanPrivacySettings` or the settings exchange
+    format) and the Settings "Save scan privacy" button saves both; (d) the 1M-spam acceptance test replaces only `fetchAnnouncements` with a page generator
+    (chain-adapters validates every log with an on-curve decode, ~115 us each on the development container, which alone would take ~2 minutes) and runs in the
+    nocov pass with the 120 s deadline already used there; the real fetch is covered by the smaller "(A5)" floods. Not done: the Pay-view amount-hygiene hint
+    (another stream's file) and a published endpoint list.
+
 ## Coverage exclusions (thresholds 90/85/90/90 are NOT lowered)
 Test files named `*.nocov.test.*` run in a second pass without coverage (`vitest.nocov.config.ts`, chained in `npm test`). Only the
 150-case tag-archive fuzz (`src/lib/tagArchive.fuzz.nocov.test.ts`) does: v8 block coverage deoptimises scrypt ~10x (measured 13.9 s

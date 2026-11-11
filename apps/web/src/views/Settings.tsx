@@ -6,6 +6,7 @@ import { Field, Notice } from '../components/Common';
 import { displayMessage, captureUserMessage, type DisplayMessage, UserFacingError } from '../lib/errors';
 import { checkDelayRange, checkRelayerUrl, checkRpcUrl, type Settings as SettingsData } from '../lib/settings';
 import { applyParanoidPreset, browserStorage, checkIndexerUrl, checkScanEndpoint, describeScanDisclosureMessages, loadScanPrivacy, saveScanPrivacy, type ScanPrivacySettings, type ScanTransportKind } from '../lib/scanPrivacy';
+import { MAX_FLOOD_PER_BLOCK, PRIVACY_TRANSFER_WINDOW_BLOCKS, loadScanLanes, saveScanLanes, type ScanLaneSettings } from '../lib/scanSpam';
 import { useServices } from '../lib/services';
 import { useApp } from '../state';
 import { LanguagePicker } from '../i18n/LanguagePicker';
@@ -189,14 +190,18 @@ export function Settings(): ReactNode {
 }
 
 /** Spec 10 / 05 options. Own storage key and own save, so the main settings form and its exchange format are unchanged. */
+// i18n-use: settings.scanLanes.errFlood
 function ScanPrivacySection(): ReactNode {
   const app = useApp();
   const services = useServices();
   const i18n = useI18nOptional();
   const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
   const [cfg, setCfg] = useState<ScanPrivacySettings>(() => loadScanPrivacy(browserStorage()));
+  // Spec 05 lane and privacy-set options: own key, saved by the same button.
+  const [lanes, setLanes] = useState<ScanLaneSettings>(() => loadScanLanes(browserStorage()));
   const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: DisplayMessage } | undefined>(undefined);
   const set = (patch: Partial<ScanPrivacySettings>): void => { setCfg((c) => ({ ...c, ...patch })); setMessage(undefined); };
+  const setLane = (patch: Partial<ScanLaneSettings>): void => { setLanes((c) => ({ ...c, ...patch })); setMessage(undefined); };
   const num = (v: string): number => (v.trim() === '' ? Number.NaN : Number(v));
 
   const onSave = (e: FormEvent): void => {
@@ -210,9 +215,11 @@ function ScanPrivacySection(): ReactNode {
       if (!ok(cfg.windowBlocks, 0, 100_000)) throw new UserFacingError({ key: 'settings.scanPrivacy.errWindow' });
       if (!ok(cfg.jitterMinMs, 0, 10_000) || !ok(cfg.jitterMaxMs, 0, 10_000) || cfg.jitterMinMs > cfg.jitterMaxMs) throw new UserFacingError({ key: 'settings.scanPrivacy.errDelays' });
       if (!ok(cfg.openLaneBudget, 1, 100_000)) throw new UserFacingError({ key: 'settings.scanPrivacy.errBudget' });
+      if (!ok(lanes.floodPerBlock, 1, MAX_FLOOD_PER_BLOCK)) throw new UserFacingError({ key: 'settings.scanLanes.errFlood' });
       const next = { ...cfg, endpoints, indexerUrls };
       setCfg(next);
-      setMessage(saveScanPrivacy(browserStorage(), next) ? { kind: 'ok', text: { key: 'settings.scanPrivacy.saved' } } : { kind: 'warn', text: { key: 'settings.scanPrivacy.refused' } });
+      const saved = saveScanPrivacy(browserStorage(), next) && saveScanLanes(browserStorage(), lanes);
+      setMessage(saved ? { kind: 'ok', text: { key: 'settings.scanPrivacy.saved' } } : { kind: 'warn', text: { key: 'settings.scanPrivacy.refused' } });
     } catch (err) {
       setMessage({ kind: 'error', text: captureUserMessage(err) });
     }
@@ -264,11 +271,24 @@ function ScanPrivacySection(): ReactNode {
         <Field label={t('settings.scanPrivacy.budget')} hint={t('settings.scanPrivacy.budgetHint')}>
           {(id, d) => <input id={id} aria-describedby={d} type="number" min={1} value={Number.isNaN(cfg.openLaneBudget) ? '' : cfg.openLaneBudget} onChange={(e) => { set({ openLaneBudget: num(e.target.value) }); }} />}
         </Field>
+        <Field label={t('settings.scanLanes.flood')} hint={t('settings.scanLanes.floodHint')}>
+          {(id, d) => <input id={id} aria-describedby={d} type="number" min={1} max={MAX_FLOOD_PER_BLOCK} value={Number.isNaN(lanes.floodPerBlock) ? '' : lanes.floodPerBlock} onChange={(e) => { setLane({ floodPerBlock: num(e.target.value) }); }} />}
+        </Field>
+        <div className="check">
+          <input id="scan-spam-score" type="checkbox" checked={lanes.spamScoring} onChange={(e) => { setLane({ spamScoring: e.target.checked }); }} />
+          <label htmlFor="scan-spam-score">{t('settings.scanLanes.score')}</label>
+        </div>
+        <div className="check">
+          <input id="scan-privacy-transfers" type="checkbox" checked={lanes.privacySetTransfers} onChange={(e) => { setLane({ privacySetTransfers: e.target.checked }); }} />
+          <label htmlFor="scan-privacy-transfers">{t('settings.scanLanes.transfers')}</label>
+        </div>
+        <p className="hint">{t('settings.scanLanes.transfersHint', { blocks: String(PRIVACY_TRANSFER_WINDOW_BLOCKS) })}</p>
         <h3>{t('settings.scanPrivacy.learnsHeading')}</h3>
         <ul>
           {describeScanDisclosureMessages(cfg, { hasSecondary: Object.values(app.settings.rpcUrlsSecondary).some((u) => u !== '') }).map((row) => (
             <li key={row.party.key}><strong>{displayMessage(row.party, t)}:</strong> {displayMessage(row.learns, t)}</li>
           ))}
+          {lanes.privacySetTransfers && <li><strong>{t('scanPrivacy.disclosure.rpcParty')}:</strong> {t('scanLanes.disclosure.transfers', { blocks: String(PRIVACY_TRANSFER_WINDOW_BLOCKS) })}</li>}
         </ul>
         <div className="actions">
           <button type="button" className="btn" onClick={() => { set(applyParanoidPreset(cfg)); }}>{t('settings.scanPrivacy.paranoid')}</button>
