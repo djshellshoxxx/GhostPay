@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { MOCK_ACCOUNT, MockWallet } from '../test/mockWallet';
+import { buildApproveTx } from './pay';
 import {
   SubmissionMismatchError,
   connectWallet,
@@ -9,6 +10,8 @@ import {
   sendViaWallet,
   signTypedDataViaWallet,
   verifySubmission,
+  walletAttemptKey,
+  type TxRequest,
   type WalletInfo,
   type WindowLike,
 } from './wallet';
@@ -193,6 +196,20 @@ describe('sending', () => {
     const w = new MockWallet({ rejectSend: true });
     const s = await connectWallet(info(w), 84532);
     await expect(sendViaWallet(s, { to: ROUTER, data: '0x', value: 0n })).rejects.toThrow(/rejected the request/);
+  });
+  it('keys an approval attempt by its invoice and its calldata, and a payment by its invoice only (L2-I3)', async () => {
+    const s = await connectWallet(info(new MockWallet()), 84532);
+    const approve = buildApproveTx(ROUTER, `0x${'2'.repeat(40)}`, 100n);
+    const revoke = buildApproveTx(ROUTER, `0x${'2'.repeat(40)}`, 0n);
+    const approval = (tx: TxRequest, scope?: string): string => walletAttemptKey(s, tx, scope === undefined ? { kind: 'approval' } : { kind: 'approval', scope });
+    expect(approval(approve, 'invoice-a')).toBe(approval(approve, 'invoice-a'));
+    expect(approval(approve, 'invoice-a')).not.toBe(approval(approve, 'invoice-b'));
+    // Approve and revoke for one invoice are different actions; the scope narrows the calldata key, it does not replace it.
+    expect(approval(approve, 'invoice-a')).not.toBe(approval(revoke, 'invoice-a'));
+    expect(approval(approve)).not.toBe(approval(revoke));
+    expect(approval(approve)).not.toBe(approval(approve, 'invoice-a'));
+    // A payment's calldata carries fresh stealth randomness, so one invoice stays one payment action.
+    expect(walletAttemptKey(s, approve, { kind: 'payment', scope: 'invoice-a' })).toBe(walletAttemptKey(s, revoke, { kind: 'payment', scope: 'invoice-a' }));
   });
 });
 

@@ -6,18 +6,29 @@ export interface QrMatrix {
   readonly dark: readonly boolean[];
 }
 
-/** Generates a QR matrix locally (no network, no third-party service). Throws `UserFacingError` if the text is too long. */
+/** Version 40 at error correction L holds at most 2,953 bytes in byte mode. */
+const MAX_QR_BYTES = 2953;
+
+/** Generates a UTF-8 QR matrix locally, preserving the exact text without changing global encoder settings. */
 export function makeQr(text: string): QrMatrix {
+  if (typeof text !== 'string') throw new UserFacingError({ key: 'error.qr.invalidText' });
+  // Bound both allocation and generator work. UTF-8 cannot need fewer bytes than UTF-16 code units.
+  if (text.length > MAX_QR_BYTES) throw new UserFacingError({ key: 'error.qr.thisLinkIsTooLongForAQRCodeShare' });
+  if (/\p{Cs}/u.test(text)) throw new UserFacingError({ key: 'error.qr.invalidText' });
+  const bytes = new TextEncoder().encode(text);
+  if (bytes.length > MAX_QR_BYTES) throw new UserFacingError({ key: 'error.qr.thisLinkIsTooLongForAQRCodeShare' });
   try {
     const qr = qrcode(0, 'L');
-    qr.addData(text, 'Byte');
+    // The pinned generator's default converter takes each code unit's low byte. Give it UTF-8 bytes,
+    // not Unicode text, and leave its shared stringToBytes converter untouched for other callers.
+    qr.addData(String.fromCharCode(...bytes), 'Byte');
     qr.make();
     const size = qr.getModuleCount();
     const dark: boolean[] = [];
     for (let r = 0; r < size; r++) for (let c = 0; c < size; c++) dark.push(qr.isDark(r, c));
     return { size, dark };
   } catch {
-    throw new UserFacingError('This link is too long for a QR code. Share the link as text instead.');
+    throw new UserFacingError({ key: 'error.qr.thisLinkIsTooLongForAQRCodeShare' });
   }
 }
 
@@ -27,10 +38,10 @@ const QUIET = 4;
 /** Validate externally supplied matrices before constructing a downloadable SVG. */
 function assertQrMatrix(m: QrMatrix): void {
   if (!Number.isSafeInteger(m.size) || m.size < 1 || m.size > 177 || m.dark.length !== m.size * m.size) {
-    throw new UserFacingError('Invalid QR matrix.');
+    throw new UserFacingError({ key: 'error.qr.invalidQRMatrix' });
   }
   for (const module of m.dark) {
-    if (typeof module !== 'boolean') throw new UserFacingError('Invalid QR matrix.');
+    if (typeof module !== 'boolean') throw new UserFacingError({ key: 'error.qr.invalidQRMatrix' });
   }
 }
 
@@ -55,3 +66,5 @@ export function qrSvgText(m: QrMatrix): string {
   const n = qrViewSize(m);
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${String(n)} ${String(n)}" width="${String(n * 6)}" height="${String(n * 6)}" shape-rendering="crispEdges"><rect width="${String(n)}" height="${String(n)}" fill="#fff"/><path fill="#000" d="${qrPath(m)}"/></svg>`;
 }
+
+// i18n-use: error.qr.thisLinkIsTooLongForAQRCodeShare error.qr.invalidQRMatrix error.qr.invalidText

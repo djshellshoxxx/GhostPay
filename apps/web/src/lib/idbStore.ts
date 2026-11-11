@@ -12,7 +12,8 @@ export class IdbTagStore implements TagStore {
   private dbPromise: Promise<IDBDatabase> | undefined;
 
   private db(): Promise<IDBDatabase> {
-    this.dbPromise ??= new Promise<IDBDatabase>((resolve, reject) => {
+    if (this.dbPromise !== undefined) return this.dbPromise;
+    const pending = new Promise<IDBDatabase>((resolve, reject) => {
       // Upgrade in place, retaining all ciphertext. A v1 writer must close before v2 can open,
       // and cannot reopen afterwards, so stale pre-CAS code cannot revive wiped records.
       const open = indexedDB.open(DB_NAME, 2);
@@ -27,17 +28,23 @@ export class IdbTagStore implements TagStore {
       };
       open.onblocked = (): void => {
         blocked = true;
-        this.dbPromise = undefined;
-        reject(new UserFacingError('Close older GhostPay tabs before opening the tag vault. Existing tags have been kept.'));
+        reject(new UserFacingError({ key: 'error.idbStore.closeOlderGhostPayTabsBeforeOpeningTheTagVaultExisting' }));
       };
       open.onsuccess = (): void => {
         if (blocked) { open.result.close(); return; }
-        open.result.onversionchange = (): void => { open.result.close(); this.dbPromise = undefined; };
+        open.result.onversionchange = (): void => {
+          open.result.close();
+          if (this.dbPromise === pending) this.dbPromise = undefined;
+        };
         resolve(open.result);
       };
       open.onerror = (): void => { reject(new Error('IndexedDB unavailable')); };
     });
-    return this.dbPromise;
+    this.dbPromise = pending;
+    // Failed opens are retryable. Only invalidate this request: a late callback from an older
+    // blocked/open-failed attempt must not discard a newer connection or another in-flight retry.
+    void pending.catch(() => { if (this.dbPromise === pending) this.dbPromise = undefined; });
+    return pending;
   }
 
   public async getSnapshot(): Promise<TagStoreSnapshot> {
@@ -49,7 +56,7 @@ export class IdbTagStore implements TagStore {
       const records = tx.objectStore(RECORDS).getAll(undefined, MAX_RECORDS + 1);
       tx.oncomplete = (): void => {
         const profile = meta.result as ProfileMeta | undefined;
-        if (records.result.length > MAX_RECORDS) { reject(new UserFacingError('Too many stored tags to open safely. Existing tags have been kept.')); return; }
+        if (records.result.length > MAX_RECORDS) { reject(new UserFacingError({ key: 'error.idbStore.tooManyStoredTagsToOpenSafelyExistingTagsHave' })); return; }
         resolve({ ...(profile === undefined ? {} : { meta: profile }), records: records.result as EncryptedTagRecord[], revision: (revision.result as number | undefined) ?? 0 });
       };
       tx.onabort = (): void => { reject(new Error('IndexedDB snapshot aborted')); };
@@ -88,14 +95,14 @@ export class IdbTagStore implements TagStore {
       currentRecords.onsuccess = (): void => {
         checked(() => {
           const revision = (request.result as number | undefined) ?? 0;
-          if (b.clear !== true && currentRecords.result.length > MAX_RECORDS) throw new UserFacingError('Too many stored tags to modify safely. Existing tags have been kept.');
+          if (b.clear !== true && currentRecords.result.length > MAX_RECORDS) throw new UserFacingError({ key: 'error.idbStore.tooManyStoredTagsToModifySafelyExistingTagsHave' });
           const currentMeta = profile.result as ProfileMeta | undefined;
           const current = { ...(currentMeta === undefined ? {} : { meta: currentMeta }), records: currentRecords.result as EncryptedTagRecord[], revision };
-          if (expected !== undefined && !tagSnapshotsEqual(expected, current)) throw new UserFacingError('Tags changed since the preview or operation began. Preview the import again.');
+          if (expected !== undefined && !tagSnapshotsEqual(expected, current)) throw new UserFacingError({ key: 'error.idbStore.tagsChangedSinceThePreviewOrOperationBeganPreviewThe' });
           const nextIds = new Set(b.clear === true ? [] : current.records.map((r) => r.recordId));
           for (const id of b.deleteIds) nextIds.delete(id);
           for (const r of b.puts) nextIds.add(r.recordId);
-          if (nextIds.size > MAX_RECORDS) throw new UserFacingError('Too many tags to store safely. Existing tags have been kept.');
+          if (nextIds.size > MAX_RECORDS) throw new UserFacingError({ key: 'error.idbStore.tooManyTagsToStoreSafelyExistingTagsHaveBeen' });
           const records = tx.objectStore(RECORDS);
           if (b.clear === true) { records.clear(); meta.delete('profile'); }
           for (const id of b.deleteIds) records.delete(id);
@@ -109,3 +116,5 @@ export class IdbTagStore implements TagStore {
     });
   }
 }
+
+// i18n-use: error.idbStore.closeOlderGhostPayTabsBeforeOpeningTheTagVaultExisting error.idbStore.tooManyStoredTagsToOpenSafelyExistingTagsHave error.idbStore.tooManyStoredTagsToModifySafelyExistingTagsHave error.idbStore.tagsChangedSinceThePreviewOrOperationBeganPreviewThe error.idbStore.tooManyTagsToStoreSafelyExistingTagsHaveBeen

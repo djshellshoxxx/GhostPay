@@ -76,5 +76,17 @@ describe('persistence', () => {
   });
   it('never stores key material fields', () => {
     expect(Object.keys(DEFAULT_SETTINGS).sort()).toEqual(['autoClearFragment', 'delayMaxSec', 'delayMinSec', 'lockTimeoutMin', 'pinnedSigners', 'relayerUrl', 'rpcUrls', 'rpcUrlsSecondary', 'theme']);
+    const store = new Map<string, string>();
+    const settingsWithExtraFields = { ...DEFAULT_SETTINGS, theme: 'dark' as const, spendingKey: 'secret-spend', viewingKey: 'secret-view', passphrase: 'secret-password' };
+    expect(saveSettings(settingsWithExtraFields, { setItem: (key, value) => { store.set(key, value); } })).toBe(true);
+    const saved = store.get(SETTINGS_KEY)!;
+    expect(saved).not.toMatch(/spendingKey|viewingKey|passphrase|secret-/);
+    expect(JSON.parse(saved)).toEqual({ ...DEFAULT_SETTINGS, theme: 'dark' });
+  });
+  it('does not execute a supplied serialization hook when persisting preferences', () => {
+    const store = new Map<string, string>();
+    const settingsWithHook = { ...DEFAULT_SETTINGS, toJSON: () => ({ privateKey: 'accidental-secret' }) };
+    expect(saveSettings(settingsWithHook, { setItem: (key, value) => { store.set(key, value); } })).toBe(true);
+    expect(JSON.parse(store.get(SETTINGS_KEY)!)).toEqual(DEFAULT_SETTINGS);
   });
 });

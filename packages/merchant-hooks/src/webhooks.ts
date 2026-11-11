@@ -108,6 +108,8 @@ export function verifyWebhook(
   const p = parseHeader(header);
   if (p === undefined) return { ok: false, reason: 'malformed' };
   const tol = ctx.toleranceSeconds ?? DEFAULT_TOLERANCE_SECONDS;
+  if (!Number.isSafeInteger(ctx.now) || ctx.now < 0 || !Number.isSafeInteger(tol) || tol < 0 ||
+      !Number.isSafeInteger(p.t + tol + 1)) throw new HooksError('bad-time-policy');
   if (Math.abs(ctx.now - p.t) > tol) return { ok: false, reason: 'stale' };
   if (!constantTimeEqual(macOf(secret, p.t, p.n, body), p.v1)) return { ok: false, reason: 'bad-signature' };
   if (ctx.nonces.has(p.n, ctx.now) || !ctx.nonces.add(p.n, p.t + tol + 1, ctx.now)) return { ok: false, reason: 'replay' };
@@ -134,10 +136,12 @@ export function retryDelaySeconds(attempt: number, jitterPermille = 1000, policy
   const factor = policy.factor ?? 2;
   const max = policy.maxSeconds ?? 3600;
   const attempts = policy.maxAttempts ?? 8;
-  if (!Number.isInteger(attempt) || attempt < 1 || !Number.isInteger(jitterPermille) || jitterPermille < 0 || jitterPermille > 1000)
+  if (!Number.isSafeInteger(attempt) || attempt < 1 || !Number.isInteger(jitterPermille) || jitterPermille < 0 || jitterPermille > 1000 ||
+      !Number.isSafeInteger(base) || base < 0 || !Number.isFinite(factor) || factor < 1 ||
+      !Number.isSafeInteger(max) || max < 0 || !Number.isSafeInteger(attempts) || attempts < 0)
     throw new HooksError('bad-retry');
   if (attempt > attempts) return null;
-  const raw = Math.min(base * Math.pow(factor, attempt - 1), max);
+  const raw = base === 0 ? 0 : Math.min(base * Math.pow(factor, attempt - 1), max);
   return Math.floor((raw * (500 + jitterPermille / 2)) / 1000);
 }
 
@@ -218,24 +222,44 @@ export function serializeWebhookEvent(e: WebhookEvent): string {
   });
 }
 
-/** Bounded at-most-once guard keyed by event id. Evicts oldest when full (documented limit). */
+/**
+ * What {@link IdempotencyGuard.begin} found: `claimed` (the caller now handles the event and must `complete()` or
+ * `release()` it), `processing` (another delivery is still handling it: answer with a retryable status, never 2xx,
+ * because that attempt may still fail) or `done` (handled: acknowledge as a duplicate).
+ */
+export type IdempotencyClaim = 'claimed' | 'processing' | 'done';
+
+/**
+ * Bounded in-memory idempotency guard keyed by event id, with an in-flight state. When full it evicts the oldest done
+ * id (a later redelivery of it is handled again: documented limit); it never evicts an in-flight id and answers
+ * `processing` (fail closed, retryable) while every entry is in flight. Lost on restart: production needs a durable
+ * store.
+ */
 export class IdempotencyGuard {
-  private readonly seen = new Set<string>();
+  private readonly inFlight = new Set<string>();
+  private readonly handled = new Set<string>();
   public constructor(private readonly maxEntries = 100_000) {}
 
-  /** @returns true the first time `eventId` is claimed, false afterwards. */
-  public claim(eventId: string): boolean {
-    if (this.seen.has(eventId)) return false;
-    if (this.seen.size >= this.maxEntries) {
-      const oldest = this.seen.values().next();
-      if (oldest.done !== true) this.seen.delete(oldest.value);
+  /** Claim `eventId` for handling unless it is in flight or done. */
+  public begin(eventId: string): IdempotencyClaim {
+    if (this.handled.has(eventId)) return 'done';
+    if (this.inFlight.has(eventId)) return 'processing';
+    if (this.inFlight.size + this.handled.size >= this.maxEntries) {
+      const oldest = this.handled.values().next();
+      if (oldest.done === true) return 'processing';
+      this.handled.delete(oldest.value);
     }
-    this.seen.add(eventId);
-    return true;
+    this.inFlight.add(eventId);
+    return 'claimed';
   }
 
-  /** Release a claim after a failed handler so a redelivery can retry. */
+  /** Mark a claimed event handled: redeliveries are duplicates from now on. */
+  public complete(eventId: string): void {
+    if (this.inFlight.delete(eventId)) this.handled.add(eventId);
+  }
+
+  /** Release a claim after a failed handler so a redelivery can retry. A done event stays done. */
   public release(eventId: string): void {
-    this.seen.delete(eventId);
+    this.inFlight.delete(eventId);
   }
 }

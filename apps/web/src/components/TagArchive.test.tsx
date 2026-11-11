@@ -1,9 +1,14 @@
 // @vitest-environment jsdom
-import { act, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { clearSession, generateSession, revealViewingKey } from '../lib/session';
+import * as reconciliation from '../lib/reconciliationVault';
+import { checkpointKeyId } from '../lib/scanClient';
+import { clearSession, generateSession, getSessionPublic, revealViewingKey } from '../lib/session';
+import { SETTINGS_KEY } from '../lib/settings';
+import * as tagArchive from '../lib/tagArchive';
 import { makeServices, renderApp } from '../test/render';
+import { storedHistoryChains } from './TagArchive';
 
 const PASS = 'violet comet maple lantern';
 const ADDR = '0x1111111111111111111111111111111111111111';
@@ -30,6 +35,9 @@ async function exported(): Promise<{ user: User; services: ReturnType<typeof mak
   await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Seller keys' }));
   await services.vault.unlock(revealViewingKey());
   await services.vault.save(84532, { stealthAddress: ADDR, announcementId: `0x${'ab'.repeat(32)}:1`, logIndex: 1, clientLabel: 'Acme' });
+  // L1-06: the archive passphrase starts as a generated suggestion; these tests use their own.
+  expect(screen.getByLabelText<HTMLInputElement>('Archive passphrase (at least 14 characters)').value).toMatch(/^[a-z]{4,8}(?:-[a-z]{4,8}){5}$/);
+  await user.clear(screen.getByLabelText('Archive passphrase (at least 14 characters)'));
   await user.type(screen.getByLabelText('Archive passphrase (at least 14 characters)'), PASS);
   await user.type(screen.getByLabelText('Repeat archive passphrase'), PASS);
   await user.click(screen.getByRole('button', { name: 'Download encrypted tag archive' }));
@@ -72,5 +80,131 @@ describe('TagArchive', () => {
     expect(await screen.findByText(/Wrong passphrase, or the archive was modified/, undefined, { timeout: 60_000 })).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Apply import' })).toBeNull();
     expect(await services.vault.list()).toHaveLength(1);
+  }, 120_000);
+});
+
+describe('C-R11: the idle lock clears the archive passphrases typed into Seller keys', () => {
+  it('forgets the typed archive passphrases and suggests a new one, also while unsaved keys stay loaded', async () => {
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ lockTimeoutMin: 1 }));
+    generateSession();                                   // no backup: the idle lock keeps these keys, and the archive form with them
+    vi.useFakeTimers();
+    try {
+      renderApp(makeServices());
+      fireEvent.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Seller keys' }));
+      const own = 'my own archive passphrase';
+      const archivePass = (): HTMLInputElement => screen.getByLabelText<HTMLInputElement>('Archive passphrase (at least 14 characters)');
+      fireEvent.change(archivePass(), { target: { value: own } });
+      fireEvent.change(screen.getByLabelText('Repeat archive passphrase'), { target: { value: own } });
+      fireEvent.change(screen.getByLabelText('Archive passphrase'), { target: { value: 'the passphrase of an archive' } });
+      expect(screen.getByLabelText('Archive passphrase').getAttribute('value')).toBe('the passphrase of an archive');
+      await act(async () => { await vi.advanceTimersByTimeAsync(61_000); });
+      expect(getSessionPublic()).toBeDefined();
+      // react-dom mirrors a controlled input's value into its value attribute, so both must be gone.
+      expect(archivePass().value).toMatch(/^[a-z]{4,8}(?:-[a-z]{4,8}){5}$/);
+      expect(archivePass().getAttribute('value')).toBe(archivePass().value);
+      expect(archivePass().type).toBe('text');
+      for (const label of ['Repeat archive passphrase', 'Archive passphrase']) {
+        const field = screen.getByLabelText<HTMLInputElement>(label);
+        expect(field.value).toBe('');
+        expect(field.getAttribute('value') ?? '').toBe('');
+      }
+    } finally {
+      vi.useRealTimers();
+      window.localStorage.removeItem(SETTINGS_KEY);
+    }
+  });
+});
+
+type Handler = (() => void) | null | undefined;
+
+/**
+ * Minimal IndexedDB double for the read-only listing of stored scan-history keys: a database that does not exist yet
+ * (`exists: false` runs the creation path), one without the store, stored keys, or a failing open or read. A versioned open
+ * or any other database fails, so no other storage adapter can use it by accident.
+ */
+function fakeIndexedDb(opts: { readonly exists?: boolean; readonly store?: boolean; readonly keys?: readonly unknown[]; readonly fail?: 'open' | 'read' } = {}): { readonly factory: IDBFactory; readonly opens: unknown[][]; readonly counts: { aborted: number; closed: number } } {
+  const opens: unknown[][] = [];
+  const counts = { aborted: 0, closed: 0 };
+  const factory = {
+    open: (...args: unknown[]) => {
+      opens.push(args);
+      const request: { result?: unknown; transaction?: { abort: () => void }; onsuccess?: Handler; onerror?: Handler; onupgradeneeded?: Handler } = {};
+      setTimeout(() => {
+        if (opts.fail === 'open' || args.length !== 1 || args[0] !== 'ghostpay-reconciliation-encrypted') { request.onerror?.(); return; }
+        if (opts.exists === false) {
+          request.transaction = { abort: () => { counts.aborted++; setTimeout(() => { request.onerror?.(); }); } };
+          request.onupgradeneeded?.();
+          return;
+        }
+        const tx: { oncomplete?: Handler; onerror?: Handler; onabort?: Handler; objectStore?: () => unknown } = {};
+        request.result = {
+          objectStoreNames: { contains: (name: string) => opts.store !== false && name === 'vaults' },
+          transaction: () => {
+            tx.objectStore = () => ({ getAllKeys: () => ({ result: opts.keys ?? [] }) });
+            setTimeout(() => { (opts.fail === 'read' ? tx.onerror : tx.oncomplete)?.(); });
+            return tx;
+          },
+          close: () => { counts.closed++; },
+        };
+        request.onsuccess?.();
+      });
+      return request;
+    },
+  };
+  return { factory: factory as unknown as IDBFactory, opens, counts };
+}
+
+describe('I-2: scan history kept for chains this build does not support', () => {
+  afterEach(() => { vi.unstubAllGlobals(); });
+
+  it('lists the chains stored for one seller, never creates the database and reports a failed listing', async () => {
+    const key = 'ab'.repeat(32);
+    expect(await storedHistoryChains(key)).toEqual([]);                 // no IndexedDB here, so nothing can be stored
+    const missing = fakeIndexedDb({ exists: false });
+    expect(await storedHistoryChains(key, missing.factory)).toEqual([]);
+    expect(missing.counts.aborted).toBe(1);                             // the creation was aborted, not committed
+    expect(missing.opens).toEqual([['ghostpay-reconciliation-encrypted']]);
+    const bare = fakeIndexedDb({ store: false });
+    expect(await storedHistoryChains(key, bare.factory)).toEqual([]);
+    expect(bare.counts.closed).toBe(1);
+    const stored = fakeIndexedDb({ keys: [`${key}:84532`, `${key}:1`, `${'cd'.repeat(32)}:10`, `${key}:0`, `${key}:01`, `${key}:x`, 7, `${key}:99999999999999999`] });
+    expect(await storedHistoryChains(key, stored.factory)).toEqual([1, 84532]);
+    expect(stored.counts.closed).toBe(1);
+    await expect(storedHistoryChains(key, fakeIndexedDb({ fail: 'open' }).factory)).rejects.toThrow(/Could not list/);
+    const unreadable = fakeIndexedDb({ fail: 'read' });
+    await expect(storedHistoryChains(key, unreadable.factory)).rejects.toThrow(/Could not list/);
+    expect(unreadable.counts.closed).toBe(1);
+  });
+
+  it('names the stored history of chains this build cannot export, and says so when it cannot be listed', async () => {
+    // Only Base Sepolia's history opens here; the six other chains of this build cannot be read.
+    vi.spyOn(reconciliation, 'createCurrentReconciliationVault').mockImplementation((chainId) => (chainId === 84532
+      ? Promise.resolve({ exportEncrypted: () => Promise.resolve('history-84532'), lock: () => undefined } as unknown as reconciliation.ReconciliationVault)
+      : Promise.reject(new Error('unavailable'))));
+    // The archive is encrypted for real, at scrypt N=2^14 rather than the production 2^17: two exports run here.
+    const encryptArchive = tagArchive.exportArchive;
+    vi.spyOn(tagArchive, 'exportArchive').mockImplementation((tags, viewingKey, passphrase, options) => encryptArchive(tags, viewingKey, passphrase, { ...options, N: 1 << 14 }));
+    const session = generateSession();
+    const keyId = checkpointKeyId(session.spendingPublicKey, session.viewingPublicKey);
+    const user = userEvent.setup();
+    renderApp(makeServices());
+    await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Seller keys' }));
+    const exportNow = async (): Promise<void> => {
+      await user.clear(screen.getByLabelText('Archive passphrase (at least 14 characters)'));
+      await user.type(screen.getByLabelText('Archive passphrase (at least 14 characters)'), PASS);
+      await user.type(screen.getByLabelText('Repeat archive passphrase'), PASS);
+      await user.click(screen.getByRole('button', { name: 'Download encrypted tag archive' }));
+    };
+    vi.stubGlobal('indexedDB', fakeIndexedDb({ keys: [`${keyId}:84532`, `${keyId}:1`, `${keyId}:777777`, `${'cd'.repeat(32)}:10`] }).factory);
+    await exportNow();
+    await waitFor(() => { expect(blobs).toHaveLength(1); }, { timeout: 60_000 });
+    const done = (await screen.findAllByText(/Archive downloaded/))[0]?.textContent ?? '';
+    expect(done).toContain('Scan history for 6 chain(s) could not be read and is NOT in this archive.');
+    expect(done).toContain('Scan history stored in this browser for Ethereum (chain 1) and chain 777777 is NOT in this archive: this build does not support those chains.');
+    expect(done).not.toMatch(/Base Sepolia|chain 10\b/);
+    vi.stubGlobal('indexedDB', fakeIndexedDb({ fail: 'read' }).factory);
+    await exportNow();
+    await waitFor(() => { expect(blobs).toHaveLength(2); }, { timeout: 60_000 });
+    expect((await screen.findAllByText(/could not be listed; any such history is NOT in this archive\./)).length).toBeGreaterThan(0);
   }, 120_000);
 });

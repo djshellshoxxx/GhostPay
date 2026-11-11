@@ -1,33 +1,58 @@
 import { FRAGMENT_PREFIX, MAX_DECODED_BYTES, invoiceDigest, openFragment, type OpenFragmentResult, type ParsedInvoice } from '@ghostpay/invoice-schema';
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import type { BuiltPayment } from '@ghostpay/chain-adapters';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import type { BuiltPayment, Hex } from '@ghostpay/chain-adapters';
 import { bytesToHex } from '@noble/hashes/utils.js';
 import { CopyButton, Field, Mono, Notice, downloadText } from '../components/Common';
 import { CameraImporter } from '../components/CameraImporter';
 import { WalletAttempts } from '../components/WalletAttempts';
 import { FeeDisclosure, useManifest } from '../components/Disclosure';
 import { ManifestBanner } from '../components/ManifestBanner';
-import { extractFragment } from '../lib/fragment';
+import { clearFragment, extractFragment } from '../lib/fragment';
 import { safeText, payeeFingerprint } from '../lib/displayText';
 import { formatCountdown, formatFiat, formatUnits, formatUnix, shortHex } from '../lib/format';
-import { userMessage } from '../lib/errors';
+import { UserFacingError, displayMessage, captureUserMessage, type DisplayMessage, type MessageDescriptor } from '../lib/errors';
 import { DelayScheduler, randomDelayMs, type ScheduleSnapshot } from '../lib/jitter';
 import {
   createPayContext,
+  applyBufferPolicy,
+  bufferOffered,
   decodeForDisplay,
   quoteBuffer,
+  assertInvoiceStillPayable,
+  assertPreparedBufferFresh,
   reviewInvoice,
   type BufferQuote,
   type SweepSimulation,
   type PayContext,
 } from '../lib/pay';
 import { verifyManifestForFlow } from '../lib/manifest';
-import { PostBroadcastError, buildReceipt, classifyPayerPermit, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, type ApprovalPlan, type Runtime, type SubmitResult } from '../lib/payExec';
+import { PaymentProofQr } from '../components/PaymentRequestQr';
+import { PrintBillButton } from '../components/PrintableBill';
+import { PermitRejectedError, PostBroadcastError, buildReceipt, classifyPayerPermit, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, type ApprovalPlan, type Runtime, type SubmitResult } from '../lib/payExec';
+import { approvedPaymentOutcome, type TransactionOutcome } from '../lib/transactionOutcome';
 import { useServices } from '../lib/services';
+import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
+import type { MessageValues, Part } from '../i18n/message';
+import type { Translator } from '../i18n/translator';
 import { connectWallet, walletWarnings, type WalletInfo, type WalletSession } from '../lib/wallet';
 import { useApp } from '../state';
+import { notifyEmbedDone } from '../lib/embedHost';
 import { captureSessionVersionGuard } from '../lib/session';
 import { bindReceiptToInvoice, MAX_RECEIPT_JSON_BYTES, parseVerifiedReceipt, type BoundReceipt } from '../lib/receipts';
+
+type TagMap = Readonly<Record<string, (children: ReactNode) => ReactNode>>;
+
+/** Rich catalog text ({#tag}..{/tag}) without Trans, so Pay still renders in isolated English-only tests. */
+function renderParts(parts: readonly Part[], tags: TagMap): ReactNode[] {
+  return parts.map((p, i) => {
+    if (typeof p === 'string') return p;
+    const inner = renderParts(p.children, tags);
+    const wrap = tags[p.tag];
+    return <Fragment key={i}>{wrap === undefined ? inner : wrap(inner)}</Fragment>;
+  });
+}
+
+const monoTag = (name: string): TagMap => ({ [name]: (c) => <Mono>{c}</Mono> });
 
 type Phase = 'input' | 'review' | 'waiting' | 'ready' | 'prepared' | 'busy' | 'submitted' | 'done';
 
@@ -62,14 +87,26 @@ interface InvoiceQrPreview {
   readonly assertSession: () => void;
 }
 
-export function Pay(): ReactNode {
+const SUPPORTED_INVOICE_ERROR: MessageDescriptor = { key: 'pay.error.supportedInvoice' };
+
+function supportsInvoice(invoice: ParsedInvoice['invoice'], supportedOnly: boolean): boolean {
+  return !supportedOnly || (invoice.v === 1 && invoice.amountPolicy.mode === 'fixed_token');
+}
+
+export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolean } = {}): ReactNode {
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
+  const trParts = i18n?.parts ?? SOURCE_TRANSLATOR.parts;
+  const rich = (id: Parameters<Translator['parts']>[0], values: MessageValues, tags: TagMap): ReactNode => renderParts(trParts(id, values), tags);
   const app = useApp();
+  const latestT = useRef(t); latestT.current = t;
+  const announce = (message: MessageDescriptor): void => { app.announce(displayMessage(message, latestT.current)); };
   const services = useServices();
   const [parsed, setParsed] = useState<ParsedInvoice | undefined>(undefined);
-  const [rejected, setRejected] = useState<string | undefined>(undefined);
+  const [rejected, setRejected] = useState<DisplayMessage | undefined>(undefined);
   const [paste, setPaste] = useState('');
   const [invoiceQrPreview, setInvoiceQrPreview] = useState<InvoiceQrPreview | undefined>();
-  const [invoiceQrError, setInvoiceQrError] = useState<string | undefined>();
+  const [invoiceQrError, setInvoiceQrError] = useState<DisplayMessage | undefined>();
   const [invoiceQrReset, setInvoiceQrReset] = useState(0);
   const invoiceQrRevision = useRef(0);
   const invoiceQrMounted = useRef(true);
@@ -82,26 +119,30 @@ export function Pay(): ReactNode {
   const [useDelay, setUseDelay] = useState(false);
   const [useBuffer, setUseBuffer] = useState(false);
   const [bufferQuote, setBufferQuote] = useState<BufferQuote | undefined>(undefined);
+  // Spec 04: after a signed permit was refused, the next (user-pressed) Prepare uses a one-time approval.
+  const [permitDeclined, setPermitDeclined] = useState(false);
   const [schedule, setSchedule] = useState<ScheduleSnapshot | undefined>(undefined);
   const [ctx, setCtx] = useState<PayContext | undefined>(undefined);
-  const [ctxError, setCtxError] = useState<string | undefined>(undefined);
+  const [ctxError, setCtxError] = useState<DisplayMessage | undefined>(undefined);
   const [wallets, setWallets] = useState<readonly WalletInfo[] | undefined>(undefined);
   const [wallet, setWallet] = useState<WalletSession | undefined>(undefined);
   const [built, setBuilt] = useState<BuiltPayment | undefined>(undefined);
   const [builtFor, setBuiltFor] = useState<ParsedInvoice['invoice'] | undefined>(undefined);
   const [builtForContext, setBuiltForContext] = useState<PayContext | undefined>(undefined);
   const [resultForContext, setResultForContext] = useState<PayContext | undefined>(undefined);
-  const [status, setStatus] = useState('');
-  const [error, setError] = useState<string | undefined>(undefined);
+  const [status, setStatus] = useState<DisplayMessage>('');
+  const [error, setError] = useState<DisplayMessage | undefined>(undefined);
   const [result, setResult] = useState<SubmitResult | undefined>(undefined);
   const [boundReceipt, setBoundReceipt] = useState<BoundReceipt | undefined>(undefined);
   const [receiptTrustedKey, setReceiptTrustedKey] = useState('');
-  const [receiptError, setReceiptError] = useState<string | undefined>(undefined);
+  const [receiptError, setReceiptError] = useState<DisplayMessage | undefined>(undefined);
   const [receiptBusy, setReceiptBusy] = useState(false);
   const [receiptConsent, setReceiptConsent] = useState(false);
   const receiptBusyRef = useRef(false);
   const receiptImportRevision = useRef(0);
   const [approval, setApproval] = useState<ApprovalPlan | undefined>(undefined);
+  const [approvalHash, setApprovalHash] = useState<string | undefined>(undefined);
+  const [paymentMayHaveBeenSent, setPaymentMayHaveBeenSent] = useState(false);
   const [granted, setGranted] = useState<bigint | undefined>(undefined);
   /** Set once the wallet broadcast but verification failed: terminal, Send is never offered again. */
   const [broadcast, setBroadcast] = useState<string | undefined>(undefined);
@@ -113,7 +154,7 @@ export function Pay(): ReactNode {
 
   const fragment = app.fragment;
   const pinned = app.settings.pinnedSigners;
-  const invoiceQrScope = useMemo(() => ({ fragment, pinned, session: app.session, reset: invoiceQrReset }), [fragment, pinned, app.session, invoiceQrReset]);
+  const invoiceQrScope = useMemo(() => ({ fragment, pinned, session: app.session, reset: invoiceQrReset, supportedOnly }), [fragment, pinned, app.session, invoiceQrReset, supportedOnly]);
   const currentInvoiceQrScope = useRef(invoiceQrScope); currentInvoiceQrScope.current = invoiceQrScope;
   const invalidateInvoiceQr = useCallback((): void => {
     invoiceQrRevision.current += 1;
@@ -152,16 +193,17 @@ export function Pay(): ReactNode {
     if (!current()) return false;
     const candidate = invoiceQrFragment(text, services.baseUrl());
     if (candidate === undefined) {
-      setInvoiceQrError('Use an exact GhostPay v1 fragment or an HTTPS invoice link at this app’s host and path, without credentials, port or query.');
+      setInvoiceQrError({ key: 'pay.error.invoiceQrLink' });
       return false;
     }
     try {
       const result = await openFragment(candidate, { pinnedSigners: pinned });
       if (!current()) return false;
+      if (result.status === 'ok' && !supportsInvoice(result.parsed.invoice, supportedOnly)) throw new UserFacingError(SUPPORTED_INVOICE_ERROR);
       setInvoiceQrPreview({ fragment: candidate, result, revision, scope, assertSession });
       return true;
     } catch (error) {
-      if (current()) setInvoiceQrError(userMessage(error));
+      if (current()) setInvoiceQrError(captureUserMessage(error));
       return false;
     }
   };
@@ -182,7 +224,7 @@ export function Pay(): ReactNode {
     const revision = flowRevision.current;
     const sessionGuard = captureSessionVersionGuard();
     const current = (): boolean => {
-      if (!live || flowRevision.current !== revision || latest.current.fragment !== fragment) return false;
+      if (!live || flowRevision.current !== revision || latest.current.fragment !== fragment || latest.current.supportedOnly !== supportedOnly) return false;
       try { sessionGuard(); return true; } catch { cancelInvoiceOpening(fragment, revision); return false; }
     };
     receiptImportRevision.current += 1;
@@ -198,10 +240,13 @@ export function Pay(): ReactNode {
     setBuiltForContext(undefined);
     setResultForContext(undefined);
     setResult(undefined);
+    setPaymentMayHaveBeenSent(false);
     setBroadcast(undefined);
     setBroadcastKind('payment');
     setApproval(undefined);
     setGranted(undefined);
+    setApprovalHash(undefined);
+    setPermitDeclined(false);
     setWallet(undefined);
     setStatus('');
     setError(undefined);
@@ -227,6 +272,12 @@ export function Pay(): ReactNode {
         }
         const p = result.parsed;
         setNeedsPassphrase(false);
+        if (!supportsInvoice(p.invoice, supportedOnly)) {
+          setInvoicePassphrase('');
+          setRejected(SUPPORTED_INVOICE_ERROR);
+          setPhase('input');
+          return;
+        }
         setRejected(undefined);
         setParsed(p);
         setPhase('review');
@@ -234,14 +285,14 @@ export function Pay(): ReactNode {
       (e: unknown) => {
         if (!current()) return;
         setParsed(undefined);
-        setRejected(userMessage(e));
+        setRejected(captureUserMessage(e));
         setPhase('input');
       },
     );
     return () => {
       live = false;
     };
-  }, [fragment, pinned]);
+  }, [fragment, pinned, supportedOnly]);
 
   const manifest = useManifest(parsed?.invoice.chainId);
   const nowSeconds = Math.floor(services.nowMs() / 1000);
@@ -254,10 +305,10 @@ export function Pay(): ReactNode {
 
   // Build the payment request (amounts) as soon as the review has no blockers. The review is recomputed from the
   // latest invoice/manifest/clock every time (also when a delay ends), never from a stale closure.
-  const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent });
-  latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent };
+  const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly });
+  latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly };
   const receiptScope = useMemo(() => ({ ctx, session: app.session }), [ctx, app.session]);
-  const authorityMatches = (): boolean => latest.current.wallet === wallet && latest.current.settings === app.settings && latest.current.session === app.session;
+  const authorityMatches = (): boolean => latest.current.wallet === wallet && latest.current.settings === app.settings && latest.current.session === app.session && latest.current.supportedOnly === supportedOnly;
   const cancelInvoiceOpening = (expectedFragment: string | undefined, revision: number): void => {
     if (!invoiceQrMounted.current || flowRevision.current !== revision || latest.current.fragment !== expectedFragment) return;
     flowRevision.current += 1;
@@ -267,20 +318,22 @@ export function Pay(): ReactNode {
     setInvoicePassphrase('');
     setUnlocking(false);
     setPhase('input');
-    setRejected('Seller keys changed while opening this invoice. Scan or paste it again to review.');
+    setRejected({ key: 'pay.error.sellerKeysChanged' });
   };
 
   const assertCurrentInvoice = (revision: number, invoice: ParsedInvoice['invoice']): void => {
+    if (!supportsInvoice(invoice, latest.current.supportedOnly)) throw new UserFacingError(SUPPORTED_INVOICE_ERROR);
     if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice || latest.current.ctx?.review.invoice !== invoice) {
       throw new Error('The invoice changed. Review it again before continuing.');
     }
   };
   const refreshContext = useCallback(async (): Promise<PayContext | undefined> => {
     const { parsed: p, manifest: m } = latest.current;
-    if (p === undefined || m === undefined) {
+    if (p === undefined || m === undefined || !supportsInvoice(p.invoice, latest.current.supportedOnly)) {
       setCtx(undefined);
       return undefined;
     }
+    const current = (): boolean => latest.current.parsed === p && latest.current.manifest === m && supportsInvoice(p.invoice, latest.current.supportedOnly);
     const now = Math.floor(services.nowMs() / 1000);
     const fresh = reviewInvoice(p, now, m);
     if (fresh.blockers.length > 0) {
@@ -290,24 +343,24 @@ export function Pay(): ReactNode {
     }
     try {
       const rpc = await app.getRpc(p.invoice.chainId);
-      if (latest.current.parsed !== p || latest.current.manifest !== m) return undefined;
+      if (!current()) return undefined;
       // WEB-APP-01: read the manifest back from the chain before any payment is built from it.
       const checked = await verifyManifestForFlow(m, rpc);
-      if (latest.current.parsed !== p || latest.current.manifest !== m) return undefined;
+      if (!current()) return undefined;
       if (checked.status !== 'loaded') {
         setCtx(undefined);
-        setCtxError(checked.status === 'invalid' ? checked.reason : 'Payments are disabled on this chain: no deployment manifest is loaded.');
+        setCtxError(checked.status === 'invalid' ? checked.reason : { key: 'pay.error.noManifest' });
         return undefined;
       }
       const c = await createPayContext(fresh, rpc, { nowSeconds: now });
-      if (latest.current.parsed !== p || latest.current.manifest !== m) return undefined;
+      if (!current()) return undefined;
       setCtx(c);
       setCtxError(undefined);
       return c;
     } catch (e) {
-      if (latest.current.parsed !== p || latest.current.manifest !== m) return undefined;
+      if (!current()) return undefined;
       setCtx(undefined);
-      setCtxError(userMessage(e));
+      setCtxError(captureUserMessage(e));
       return undefined;
     }
   }, [app, services]);
@@ -320,11 +373,11 @@ export function Pay(): ReactNode {
   }, [refreshContext, parsed, manifest, reviewKey]);
 
   useEffect(() => {
-    const t = setInterval(() => {
+    const timer = setInterval(() => {
       setTick((n) => n + 1);
     }, 5000);
     return () => {
-      clearInterval(t);
+      clearInterval(timer);
     };
   }, []);
 
@@ -355,17 +408,19 @@ export function Pay(): ReactNode {
     const rpc = await app.getRpc(chainId);
     if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return undefined;
     if (rpc === undefined) {
-      setError('A gas buffer needs an RPC for this chain. Configure one in Settings.');
+      setError({ key: 'error.pay.aGasBufferNeedsAnRPCForThisChainTo' });
       return undefined;
     }
     try {
-      const q = await quoteBuffer(rpc, Math.floor(services.nowMs() / 1000), sweep);
+      if (invoice === undefined) return undefined;
+      // ADR-0023: a v2 invoice's seller policy bounds (or declines) the buffer before it is shown or built.
+      const q = applyBufferPolicy(await quoteBuffer(rpc, Math.floor(services.nowMs() / 1000), sweep), invoice);
       if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return undefined;
       setBufferQuote(q);
       return q;
     } catch (e) {
       if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return undefined;
-      setError(userMessage(e));
+      setError(captureUserMessage(e));
       return undefined;
     }
   }, [chainId, app, services]);
@@ -375,7 +430,7 @@ export function Pay(): ReactNode {
     resetInvoiceQr();
     const f = extractFragment(paste);
     if (f === undefined) {
-      setRejected('That is not a GhostPay v1 invoice link.');
+      setRejected({ key: 'pay.error.invoiceLink' });
       return;
     }
     setRejected(undefined);
@@ -390,7 +445,7 @@ export function Pay(): ReactNode {
     const sessionGuard = captureSessionVersionGuard();
     const fragmentAtStart = fragment;
     const current = (): boolean => {
-      if (!invoiceQrMounted.current || flowRevision.current !== revision || latest.current.fragment !== fragmentAtStart) return false;
+      if (!invoiceQrMounted.current || flowRevision.current !== revision || latest.current.fragment !== fragmentAtStart || latest.current.supportedOnly !== supportedOnly) return false;
       try { sessionGuard(); return true; } catch { cancelInvoiceOpening(fragmentAtStart, revision); return false; }
     };
     setUnlocking(true);
@@ -399,6 +454,15 @@ export function Pay(): ReactNode {
       (result) => {
         if (!current()) return;
         if (result.status !== 'ok') throw new Error('passphrase');
+        if (!supportsInvoice(result.parsed.invoice, latest.current.supportedOnly)) {
+          setParsed(undefined);
+          setCtx(undefined);
+          setNeedsPassphrase(false);
+          setInvoicePassphrase('');
+          setRejected(SUPPORTED_INVOICE_ERROR);
+          setPhase('input');
+          return;
+        }
         setParsed(result.parsed);
         setNeedsPassphrase(false);
         setInvoicePassphrase('');
@@ -407,7 +471,7 @@ export function Pay(): ReactNode {
       },
       (e: unknown) => {
         if (!current()) return;
-        setRejected(userMessage(e));
+        setRejected(captureUserMessage(e));
       },
     ).finally(() => { if (flowRevision.current === revision) setUnlocking(false); });
   };
@@ -415,7 +479,7 @@ export function Pay(): ReactNode {
   const importReceiptText = (readText: () => Promise<string>, byteLength?: number, signal?: AbortSignal): Promise<boolean> => {
     if (receiptBusyRef.current || signal?.aborted === true) return Promise.resolve(false);
     if (!latest.current.receiptConsent) {
-      setReceiptError('Consent is required before opening private receipt details.');
+      setReceiptError({ key: 'pay.error.receiptConsent' });
       return Promise.resolve(false);
     }
     const invoiceAtStart = parsed;
@@ -425,7 +489,7 @@ export function Pay(): ReactNode {
     if (latest.current.fragment !== fragmentAtStart || flowRevision.current !== flowAtStart) return Promise.resolve(false);
     if (invoiceAtStart === undefined || contextAtStart === undefined) return Promise.resolve(false);
     if (contextAtStart.review.invoice !== invoiceAtStart.invoice) {
-      setReceiptError('Payment details are still updating for this invoice. Try again when they finish loading.');
+      setReceiptError({ key: 'pay.error.receiptUpdating' });
       return Promise.resolve(false);
     }
     const trustedKeyAtStart = receiptTrustedKey;
@@ -436,16 +500,16 @@ export function Pay(): ReactNode {
     setReceiptError(undefined);
     return (async () => {
       try {
-        if (byteLength !== undefined && byteLength > MAX_RECEIPT_JSON_BYTES) throw new Error('Receipt file exceeds 64 KiB.');
+        if (byteLength !== undefined && byteLength > MAX_RECEIPT_JSON_BYTES) throw new UserFacingError({ key: 'pay.error.receiptTooLarge' });
         const text = await readText();
         if (text.length > MAX_RECEIPT_JSON_BYTES || new TextEncoder().encode(text).byteLength > MAX_RECEIPT_JSON_BYTES) {
-          throw new Error(byteLength === undefined ? 'Receipt QR/text exceeds 64 KiB.' : 'Receipt file exceeds 64 KiB.');
+          throw new UserFacingError({ key: 'pay.error.receiptTooLarge' });
         }
         if (signal?.aborted === true || !latest.current.receiptConsent) return false;
         const receipt = parseVerifiedReceipt(text);
         const current = latest.current;
         if (receiptImportRevision.current !== importRevision || flowRevision.current !== flowAtStart || current.fragment !== fragmentAtStart || current.parsed !== invoiceAtStart) return false;
-        if (current.ctx?.review.invoice !== invoiceAtStart.invoice) throw new Error('Payment details are still updating for this invoice. Try again when they finish loading.');
+        if (current.ctx?.review.invoice !== invoiceAtStart.invoice) throw new UserFacingError({ key: 'pay.error.receiptUpdating' });
         const binding = bindReceiptToInvoice(receipt, {
           invoiceDigest: `0x${bytesToHex(invoiceDigest(invoiceAtStart.invoice))}`,
           chainId: invoiceAtStart.invoice.chainId,
@@ -462,7 +526,7 @@ export function Pay(): ReactNode {
         setBoundReceipt(binding);
         return true;
       } catch (err) {
-        if (receiptImportRevision.current === importRevision && flowRevision.current === flowAtStart && latest.current.fragment === fragmentAtStart && latest.current.parsed === invoiceAtStart && latest.current.receiptTrustedKey === trustedKeyAtStart) setReceiptError(userMessage(err));
+        if (receiptImportRevision.current === importRevision && flowRevision.current === flowAtStart && latest.current.fragment === fragmentAtStart && latest.current.parsed === invoiceAtStart && latest.current.receiptTrustedKey === trustedKeyAtStart) setReceiptError(captureUserMessage(err));
         return false;
       } finally {
         if (receiptImportRevision.current === importRevision) {
@@ -478,7 +542,9 @@ export function Pay(): ReactNode {
     const fileInput = e.currentTarget.querySelector<HTMLInputElement>('input[type="file"]');
     const file = fileInput?.files?.[0];
     if (file === undefined) return;
-    void importReceiptText(() => file.text(), file.size).finally(() => { if (fileInput !== null) fileInput.value = ''; });
+    // Snapshot before clearing so same-file retries work and a late import cannot clear a newer selection.
+    if (fileInput !== null) fileInput.value = '';
+    void importReceiptText(() => file.text(), file.size);
   };
 
   const startWaiting = (): void => {
@@ -501,7 +567,7 @@ export function Pay(): ReactNode {
       scheduler.current = s;
       setSchedule(s.snapshot());
       setPhase('waiting');
-      app.announce('Scheduled locally. Nothing has been signed or sent.');
+      announce({ key: 'pay.announce.scheduled' });
       let handled = false;
       s.subscribe((snap) => {
         if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return;
@@ -515,22 +581,22 @@ export function Pay(): ReactNode {
             if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return;
             if (c === undefined) {
               setPhase('review');
-              setError('The invoice or its price can no longer be paid as reviewed. Check the details again.');
+              setError({ key: 'pay.error.reviewChanged' });
               return;
             }
             setPhase('ready');
-            app.announce('Delay complete. Review the updated details and confirm in your wallet.');
+            announce({ key: 'pay.announce.delayDone' });
           })();
         } else if (snap.status === 'expired') {
           setPhase('review');
-          setError('The invoice expired while waiting. Refresh and review again.');
+          setError({ key: 'pay.error.expiredWaiting' });
         } else if (snap.status === 'cancelled') {
           setPhase('review');
-          app.announce('Cancelled. Nothing was signed or sent.');
+          announce({ key: 'pay.announce.cancelled' });
         }
       });
     } catch (e) {
-      setError(userMessage(e));
+      setError(captureUserMessage(e));
     }
   };
 
@@ -544,7 +610,7 @@ export function Pay(): ReactNode {
         const c = await refreshRef.current();
         if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return;
         if (c === undefined) {
-          setError('The invoice or its price can no longer be paid as reviewed. Check the details again.');
+          setError({ key: 'pay.error.reviewChanged' });
           return;
         }
         setPhase('ready');
@@ -575,19 +641,19 @@ export function Pay(): ReactNode {
     const sessionGuard = captureSessionVersionGuard();
     const invoice = parsed?.invoice;
     setError(undefined);
-    setStatus('Waiting for your wallet…');
+    setStatus({ key: 'pay.status.walletWaiting' });
     connectWallet(w, chainId).then(
       (s) => {
         try { sessionGuard(); } catch { return; }
         if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return;
         setWallet(s);
         setStatus('');
-        app.announce('Wallet connected.');
+        announce({ key: 'pay.announce.connected' });
       },
       (e: unknown) => {
         if (flowRevision.current !== revision || latest.current.parsed?.invoice !== invoice) return;
         setStatus('');
-        setError(userMessage(e));
+        setError(captureUserMessage(e));
       },
     );
   };
@@ -603,7 +669,7 @@ export function Pay(): ReactNode {
       assertCurrentInvoice(revision, invoice);
       if (!authorityMatches()) throw new Error('The wallet, settings or session changed. Review again before continuing.');
     };
-    const scopedStatus = (message: string): void => { if (isCurrent()) setStatus(message); };
+    const scopedStatus = (message: string, outcome?: TransactionOutcome): void => { if (isCurrent()) setStatus(outcome?.message ?? message); };
     setError(undefined);
     setPhase('busy');
     void (async () => {
@@ -618,33 +684,35 @@ export function Pay(): ReactNode {
           guard();
           if (buffer === undefined) throw new Error('buffer');
         }
-        const t = ctx.review.token;
-        let permit = t?.config?.permit === true && buffer === undefined;
+        const tk = ctx.review.token;
+        let permit = tk?.config?.permit === true && buffer === undefined && !permitDeclined;
         if (permit) {
           const state = await classifyPayerPermit(ctx, wallet, rt);
           guard();
           permit = state === 'ok_to_permit';
-          if (state === 'unsupported_token') scopedStatus('This token\u2019s permit could not be verified on-chain, so an exact approval is used instead.');
+          if (state === 'unsupported_token') scopedStatus('', { phase: 'unsupported', message: { key: 'pay.status.permitUnsupported' } });
         }
         let plan: ApprovalPlan | undefined;
-        if (isErc20 && !permit && t?.address !== undefined && t.address !== 'native') {
-          plan = await planApproval(ctx, wallet, t.address, rt);
+        if (isErc20 && !permit && tk?.address !== undefined && tk.address !== 'native') {
+          plan = await planApproval(ctx, wallet, tk.address, rt);
           guard();
         }
         const b = await preparePayment(wallet, ctx, { usePermit: permit, ...(buffer === undefined ? {} : { buffer }) }, rt, scopedStatus, guard);
         guard();
         setApproval(plan);
         setGranted(undefined);
+        setApprovalHash(undefined);
         setBuilt(b);
         setBuiltFor(invoice);
         setBuiltForContext(ctx);
         setStatus('');
         setPhase('prepared');
-        app.announce('Payment prepared. Check the final details, then send.');
+        announce({ key: 'pay.announce.prepared' });
       } catch (e) {
         if (!isCurrent()) return;
         setStatus('');
-        if (!(e instanceof Error && e.message === 'buffer')) setError(userMessage(e));
+        if (e instanceof PermitRejectedError) setPermitDeclined(true);
+        if (!(e instanceof Error && e.message === 'buffer')) setError(captureUserMessage(e));
         setPhase('ready');
       }
     })();
@@ -662,39 +730,60 @@ export function Pay(): ReactNode {
       if (!authorityMatches()) throw new Error('The wallet, settings or session changed. Review again before continuing.');
       if (latest.current.built !== built || latest.current.builtFor !== invoice || latest.current.builtForContext !== ctx) throw new Error('The prepared payment changed. Review it again before continuing.');
     };
-    const scopedStatus = (message: string): void => { if (isCurrent()) setStatus(message); };
+    const scopedStatus = (message: string, outcome?: TransactionOutcome): void => { if (isCurrent()) setStatus(outcome?.message ?? message); };
     setError(undefined);
     setPhase('busy');
+    let actualAllowance = granted;
+    let approvalBroadcastHash = approvalHash;
+    let paymentWalletRequested = paymentMayHaveBeenSent;
     void (async () => {
       let stage: 'approval' | 'payment' = approval?.required === true && granted === undefined ? 'approval' : 'payment';
       try {
         const rt = await runtime();
         guard();
-        let actualAllowance = granted;
-        if (approval?.required === true && actualAllowance === undefined) {
-          actualAllowance = await grantApproval(wallet, ctx, approval, rt, scopedStatus, guard, (hash) => {
-            if (!isCurrent()) setPreviousBroadcast({ hash, kind: 'approval' });
-          });
+        // Final validity gate before any wallet request (the initial approval included), rechecked after wallet awaits.
+        // Not part of `guard`: after a broadcast approval the allowance is kept and only the payment is refused.
+        const preSignGuard = (): void => {
           guard();
-          setGranted(actualAllowance);
+          assertInvoiceStillPayable(ctx.review.invoice, rt.nowSeconds());
+          assertPreparedBufferFresh(built, rt.nowSeconds());
+        };
+        preSignGuard();
+        if (approval?.required === true && actualAllowance === undefined) {
+          actualAllowance = await grantApproval(wallet, ctx, approval, rt, scopedStatus, preSignGuard, (hash) => {
+            approvalBroadcastHash = hash;
+            if (isCurrent()) setApprovalHash(hash);
+            else setPreviousBroadcast({ hash, kind: 'approval' });
+          });
+          // Preserve the confirmed allowance before checking whether this flow is still current.
+          if (isCurrent()) setGranted(actualAllowance);
+          guard();
         }
         stage = 'payment';
-        const res = await sendPayment(wallet, ctx, built, rt, scopedStatus, guard);
+        const res = await sendPayment(wallet, ctx, built, rt, scopedStatus, guard, () => {
+          paymentWalletRequested = true;
+          if (isCurrent()) setPaymentMayHaveBeenSent(true);
+        });
         if (!isCurrent()) {
           setPreviousBroadcast({ hash: res.hash, kind: 'payment' });
-          app.announce('A transaction may have been submitted for the previous invoice. Check your wallet before taking further action.');
+          announce({ key: 'pay.announce.previous' });
           return;
         }
         setResult(res);
         setResultForContext(ctx);
         setPhase('done');
         setStatus('');
-        app.announce('Payment submitted.');
+        // Delivery to an embedding page cannot reverse a returned submission or re-enable the send controls.
+        try { notifyEmbedDone({ status: 'submitted', chainId: ctx.review.invoice.chainId, txHash: res.hash }); }
+        catch { /* The exact hash and verification result remain visible and available for export here. */ }
+        announce({ key: 'pay.announce.submitted' });
       } catch (e) {
         if (!isCurrent()) {
           if (e instanceof PostBroadcastError) {
             setPreviousBroadcast({ hash: e.hash, kind: stage });
-            app.announce('A transaction may have been submitted for the previous invoice. Check your wallet before taking further action.');
+            announce({ key: 'pay.announce.previous' });
+          } else if (approvalBroadcastHash !== undefined) {
+            setPreviousBroadcast({ hash: approvalBroadcastHash, kind: 'approval' });
           }
           return;
         }
@@ -703,12 +792,18 @@ export function Pay(): ReactNode {
           // A broadcast that failed follow-up checks must never be offered again as though nothing was sent.
           setBroadcast(e.hash);
           setBroadcastKind(stage);
-          setError(userMessage(e));
+          setError(captureUserMessage(e));
           setPhase('submitted');
-          app.announce(`${stage === 'approval' ? 'Approval' : 'Payment'} sent, verification failed. Do not repeat it.`);
+          announce({ key: stage === 'approval' ? 'pay.announce.approvalUnverified' : 'pay.announce.paymentUnverified' });
           return;
         }
-        setError(userMessage(e));
+        if (actualAllowance !== undefined) {
+          const outcome = approvedPaymentOutcome(e, paymentWalletRequested, approvalBroadcastHash as Hex | undefined);
+          setError(outcome.message);
+          announce({ key: paymentWalletRequested ? 'transaction.approved.announceUnknown' : 'transaction.approved.announceNotSent' });
+        } else {
+          setError(captureUserMessage(e));
+        }
         setPhase('prepared');
       }
     })();
@@ -720,7 +815,7 @@ export function Pay(): ReactNode {
     const sessionGuard = captureSessionVersionGuard();
     const invoice = parsed.invoice;
     const isCurrent = (): boolean => authorityMatches() && flowRevision.current === revision && latest.current.parsed?.invoice === invoice && latest.current.ctx?.review.invoice === invoice;
-    const scopedStatus = (message: string): void => { if (isCurrent()) setStatus(message); };
+    const scopedStatus = (message: string, outcome?: TransactionOutcome): void => { if (isCurrent()) setStatus(outcome?.message ?? message); };
     setError(undefined);
     setPhase('busy');
     void (async () => {
@@ -733,14 +828,15 @@ export function Pay(): ReactNode {
         }, (hash) => { if (!isCurrent()) setPreviousBroadcast({ hash, kind: 'approval' }); });
         if (!isCurrent()) return;
         setGranted(undefined);
+        setApprovalHash(undefined);
         setApproval({ ...approval, have: 0n, required: true });
-        app.announce('Approval revoked.');
+        announce({ key: 'pay.announce.revoked' });
       } catch (e) {
         if (!isCurrent()) {
           if (e instanceof PostBroadcastError) setPreviousBroadcast({ hash: e.hash, kind: 'approval' });
           return;
         }
-        setError(userMessage(e));
+        setError(captureUserMessage(e));
       } finally {
         if (isCurrent()) {
           setStatus('');
@@ -763,133 +859,155 @@ export function Pay(): ReactNode {
     setResultForContext(undefined);
     setWallet(undefined);
     setResult(undefined);
+    setPaymentMayHaveBeenSent(false);
     setBroadcast(undefined);
     setBroadcastKind('payment');
     setApproval(undefined);
     setGranted(undefined);
+    setApprovalHash(undefined);
     setPhase('input');
   };
 
   /* ------------------------------- rendering ------------------------------- */
 
-  if (parsed === undefined || review === undefined) {
+  const buildRejection = parsed !== undefined && !supportsInvoice(parsed.invoice, supportedOnly) ? SUPPORTED_INVOICE_ERROR : undefined;
+  const inputRejection = buildRejection ?? rejected;
+  if (parsed === undefined || review === undefined || buildRejection !== undefined) {
     return (
       <section aria-labelledby="pay-h">
-        <h2 id="pay-h">Pay an invoice</h2>
+        <h2 id="pay-h">{t('pay.title.input')}</h2>
         <WalletAttempts />
         {previousBroadcast !== undefined && (
-          <Notice kind="warn" title="Previous invoice transaction may have been submitted">
-            Check your wallet before paying again. The transaction hash is <Mono>{previousBroadcast.hash}</Mono>. This was a {previousBroadcast.kind} for the invoice that was open before you changed links.
+          <Notice kind="warn" title={t('pay.previous.title')}>
+            {rich('pay.previous.body', { hash: previousBroadcast.hash, kind: previousBroadcast.kind }, monoTag('hash'))}
           </Notice>
         )}
-        {rejected !== undefined && <Notice kind="error" title="Invoice rejected">{rejected} Nothing was shown or sent.</Notice>}
-        {fragment !== undefined && rejected === undefined && <p role="status">Reading invoice…</p>}
+        {inputRejection !== undefined && <Notice kind="error" title={t('pay.rejected.title')}>{displayMessage(inputRejection, t)}{` ${inputRejection === SUPPORTED_INVOICE_ERROR ? t('pay.rejected.controlsUnavailable') : t('pay.rejected.nothingSent')}`}</Notice>}
+        {fragment !== undefined && inputRejection === undefined && <p role="status">{t('pay.reading')}</p>}
         {needsPassphrase && (
           <form onSubmit={onUnlock} className="stack">
-            <Notice kind="warn" title="Passphrase-protected invoice">
-              The link header claims this invoice is protected. Its chain and signer details are unverified until the passphrase opens the invoice. The passphrase is used in this page only and is not stored.
+            <Notice kind="warn" title={t('pay.passphrase.title')}>
+              {t('pay.passphrase.body')}
             </Notice>
-            <Field label="Invoice passphrase">
-              {(id) => <input id={id} type="password" autoComplete="off" value={invoicePassphrase} onChange={(e) => { setInvoicePassphrase(e.target.value); }} />}
+            <Field label={t('pay.passphrase.label')}>
+              {(id, describedBy) => <input aria-describedby={describedBy} id={id} type="password" autoComplete="off" value={invoicePassphrase} onChange={(e) => { setInvoicePassphrase(e.target.value); }} />}
             </Field>
-            <button type="submit" className="btn btn-primary" disabled={unlocking || invoicePassphrase === ''}>{unlocking ? 'Opening invoice…' : 'Open invoice'}</button>
+            <button type="submit" className="btn btn-primary" disabled={unlocking || invoicePassphrase === ''}>{unlocking ? t('pay.passphrase.opening') : t('pay.passphrase.open')}</button>
           </form>
         )}
         <details ref={invoiceQrDisclosure} onToggle={(event) => { if (!event.currentTarget.open) invalidateInvoiceQr(); }}>
-          <summary>Scan an invoice QR</summary>
-          <p>Read a GhostPay v1 invoice fragment or an HTTPS link at this app’s host and path. Scanned links stay on this page. Review the scan, then choose whether to open its payment details.</p>
-          <CameraImporter key={invoiceQrReset} label="Invoice QR import" scopeKey={invoiceQrScope} onInputChange={invalidateInvoiceQr} onText={importInvoiceQr} />
-          <button type="button" className="btn" onClick={resetInvoiceQr}>Clear invoice QR</button>
-          {invoiceQrError !== undefined && <Notice kind="error" title="Invoice QR not accepted">{invoiceQrError}</Notice>}
+          <summary>{t('pay.scan.summary')}</summary>
+          <p>{t('pay.scan.intro')}</p>
+          <CameraImporter key={invoiceQrReset} label={t('pay.scan.importLabel')} scopeKey={invoiceQrScope} onInputChange={invalidateInvoiceQr} onText={importInvoiceQr} />
+          <button type="button" className="btn" onClick={resetInvoiceQr}>{t('pay.scan.clear')}</button>
+          {invoiceQrError !== undefined && <Notice kind="error" title={t('pay.scan.rejected')}>{displayMessage(invoiceQrError, t)}</Notice>}
           {invoiceQrPreview !== undefined && (
-            <section aria-label="Scanned invoice review">
-              <h3>Review scanned invoice</h3>
+            <section aria-label={t('pay.scan.reviewAria')}>
+              <h3>{t('pay.scan.reviewHeading')}</h3>
               {invoiceQrPreview.result.status === 'needsPassphrase'
-                ? <p>This invoice needs a passphrase. Its header is unverified until it opens.</p>
-                : <p>Chain {String(invoiceQrPreview.result.parsed.invoice.chainId)}. {invoiceQrPreview.result.parsed.verification.signatureValid ? 'The embedded key signed this invoice; this does not establish seller identity.' : 'The invoice signature is invalid. Payment will remain blocked.'}</p>}
-              <p>Opening shows the ordinary invoice review. It does not connect a wallet or submit a payment.</p>
-              <button type="button" className="btn" onClick={openInvoiceQr}>Open scanned invoice</button>
+                ? <p>{t('pay.scan.needsPassphrase')}</p>
+                : <p>{invoiceQrPreview.result.parsed.verification.signatureValid ? t('pay.scan.chainValid', { chain: String(invoiceQrPreview.result.parsed.invoice.chainId) }) : t('pay.scan.chainInvalid', { chain: String(invoiceQrPreview.result.parsed.invoice.chainId) })}</p>}
+              <p>{t('pay.scan.openNote')}</p>
+              <button type="button" className="btn" onClick={openInvoiceQr}>{t('pay.scan.open')}</button>
             </section>
           )}
         </details>
         <form onSubmit={onPasteSubmit} className="stack">
           <div className="field">
-            <label htmlFor="paste">{needsPassphrase ? 'Or paste a different invoice link' : 'Paste an invoice link'}</label>
-            <textarea id="paste" rows={3} value={paste} onChange={(e) => { setPaste(e.target.value); }} spellCheck={false} />
-            <p className="hint">The link is read in this page only. It is never sent to a server.</p>
+            <label htmlFor="paste">{needsPassphrase ? t('pay.paste.labelAlt') : t('pay.paste.label')}</label>
+            <textarea id="paste" dir="ltr" rows={3} value={paste} onChange={(e) => { setPaste(e.target.value); }} spellCheck={false} />
+            <p className="hint">{t('pay.paste.hintLocal')}</p>
             <p className="hint">
-              Pasting is safer than clicking: a browser may keep a clicked invoice URL, including its secret part, in its history even after this page removes it from the address bar. Copy the link and paste it here, or open it in a private window.
+              {t('pay.paste.hintHistory')}
             </p>
           </div>
-          <button type="submit" className="btn btn-primary">Read invoice</button>
+          <button type="submit" className="btn btn-primary">{t('pay.read')}</button>
         </form>
       </section>
     );
   }
 
   const inv = parsed.invoice;
-  const warnings = walletWarnings(wallets ?? []);
+  const warnings = walletWarnings(wallets ?? [], t);
   const ready = phase === 'ready' || phase === 'prepared' || phase === 'busy' || phase === 'submitted' || phase === 'done';
   const decimals = token?.decimals ?? 18;
   const symbol = token?.symbol ?? '';
+  // L2-F4: a fixed token amount is what the payer pays; the fiat total is then only the seller's unchecked statement.
+  // B2-R3: a token off the allowlist has no known decimals or symbol, so its amount stays in base units, with its address.
+  const fixedAmount = inv.amountPolicy.mode !== 'fixed_token'
+    ? undefined
+    : token === undefined
+      ? t('pay.fixed.unknownToken', { amount: inv.amountPolicy.tokenAmount, token: inv.token })
+      : `${formatUnits(BigInt(inv.amountPolicy.tokenAmount), token.decimals)} ${token.symbol}`;
 
   return (
     <section aria-labelledby="pay-h">
-      <h2 id="pay-h">Review payment</h2>
+      <h2 id="pay-h">{t('pay.title.review')}</h2>
       <WalletAttempts />
       {previousBroadcast !== undefined && (
-        <Notice kind="warn" title="Previous invoice transaction may have been submitted">
-          Check your wallet before paying again. The transaction hash is <Mono>{previousBroadcast.hash}</Mono>. This was a {previousBroadcast.kind} for the invoice that was open before you changed links.
+        <Notice kind="warn" title={t('pay.previous.title')}>
+          {rich('pay.previous.body', { hash: previousBroadcast.hash, kind: previousBroadcast.kind }, monoTag('hash'))}
         </Notice>
       )}
 
-      <Notice kind={review.trust.kind === 'invalid-signature' ? 'error' : review.trust.kind === 'trusted-seller' ? 'ok' : 'warn'} title="Signature">
-        {review.trust.text}
+      <Notice kind={review.trust.kind === 'invalid-signature' ? 'error' : review.trust.kind === 'trusted-seller' ? 'ok' : 'warn'} title={t('pay.signature')}>
+        {displayMessage(review.trust.message, t)}
       </Notice>
       {review.blockers.filter((b) => b !== review.trust.text).length > 0 && (
-        <Notice kind="error" title="This payment cannot proceed">
+        <Notice kind="error" title={t('pay.cannotProceed')}>
           <ul>
-            {review.blockers.filter((b) => b !== review.trust.text).map((b) => (
-              <li key={b}>{b}</li>
+            {review.blockerMessages.filter((b) => b.key !== review.trust.message.key).map((b) => (
+              <li key={b.key}>{displayMessage(b, t)}</li>
             ))}
           </ul>
         </Notice>
       )}
-      {ctxError !== undefined && <Notice kind="error">{ctxError}</Notice>}
+      {ctxError !== undefined && <Notice kind="error">{displayMessage(ctxError, t)}</Notice>}
+      {review.warnings.length > 0 && (
+        <Notice kind="warn" title={t('pay.checkAmount')}>
+          {review.warningMessages.map((w) => <p key={w.key}>{displayMessage(w, t)}</p>)}
+        </Notice>
+      )}
 
       <dl className="details">
-        <dt>Chain</dt>
-        <dd>{review.chain?.name ?? `Unknown (${String(inv.chainId)})`}</dd>
-        <dt>Token</dt>
+        <dt>{t('pay.chain')}</dt>
+        <dd>{review.chain?.name ?? t('pay.chain.unknown', { chain: String(inv.chainId) })}</dd>
+        <dt>{t('pay.token')}</dt>
         <dd>
-          {symbol} {inv.token === 'native' ? '(native coin)' : <Mono>{inv.token}</Mono>}
+          {symbol} {inv.token === 'native' ? t('pay.token.nativeNote') : <Mono>{inv.token}</Mono>}
         </dd>
-        <dt>Invoice total</dt>
-        <dd>{formatFiat(BigInt(inv.fiat.minorUnits), inv.fiat.currency)}</dd>
-        <dt>Pricing</dt>
+        <dt>{t('pay.invoiceTotal')}</dt>
+        <dd>{fixedAmount === undefined ? formatFiat(BigInt(inv.fiat.minorUnits), inv.fiat.currency) : <><strong>{fixedAmount}</strong>{` ${t('pay.fixedTokenAmount')}`}</>}</dd>
+        {fixedAmount !== undefined && (
+          <>
+            <dt>{t('pay.fiatStated')}</dt>
+            <dd>{formatFiat(BigInt(inv.fiat.minorUnits), inv.fiat.currency)}{` ${t('pay.fiatNotChecked')}`}</dd>
+          </>
+        )}
+        <dt>{t('pay.pricing')}</dt>
         <dd>
-          {inv.amountPolicy.mode === 'fixed_token'
-            ? `Fixed: ${formatUnits(BigInt(inv.amountPolicy.tokenAmount), decimals)} ${symbol}`
-            : `Fiat quote from ${inv.quote.source}, taken ${formatUnix(inv.quote.timestamp)}, valid until ${formatUnix(inv.quote.expiresAt)}, max slippage ${String(inv.quote.maxSlippageBps / 100)} %. Not a guaranteed fiat value.`}
+          {fixedAmount !== undefined
+            ? t('pay.pricing.fixed', { amount: fixedAmount })
+            : t('pay.pricing.quote', { source: inv.quote.source, taken: formatUnix(inv.quote.timestamp), until: formatUnix(inv.quote.expiresAt), slippage: String(inv.quote.maxSlippageBps / 100) })}
         </dd>
-        <dt>Who pays the checkout fee</dt>
-        <dd>{inv.feePolicy === 'payer_pays' ? 'You (added on top)' : 'Seller (deducted from the amount)'}</dd>
-        <dt>Invoice expires</dt>
+        <dt>{t('pay.feePayer')}</dt>
+        <dd>{inv.feePolicy === 'payer_pays' ? t('pay.feePayer.payer') : t('pay.feePayer.seller')}</dd>
+        <dt>{t('pay.expires')}</dt>
         <dd>{formatUnix(inv.expiresAt)}</dd>
-        <dt>Seller meta-address</dt>
+        <dt>{t('pay.sellerMeta')}</dt>
         <dd><Mono>{shortHex(inv.metaAddress, 18, 8)}</Mono></dd>
-        <dt>Seller fingerprint</dt>
-        <dd><Mono>{payeeFingerprint(inv.metaAddress)}</Mono> (compare with the seller by another channel)</dd>
-        <dt>Private part</dt>
-        <dd>{parsed.passphraseProtected ? 'Entire invoice decrypted here with a passphrase' : parsed.encrypted ? 'Private invoice fields decrypted here with a key from the link' : 'Plain in the link'}</dd>
+        <dt>{t('pay.sellerFingerprint')}</dt>
+        <dd><Mono>{payeeFingerprint(inv.metaAddress)}</Mono>{` ${t('pay.sellerFingerprintNote')}`}</dd>
+        <dt>{t('pay.privatePart')}</dt>
+        <dd>{parsed.passphraseProtected ? t('pay.privatePart.passphrase') : parsed.encrypted ? t('pay.privatePart.key') : t('pay.privatePart.plain')}</dd>
       </dl>
 
       {inv.lineItems.length > 0 && (
-        <div className="table-wrap" role="region" aria-label="Line items" tabIndex={0}>
+        <div className="table-wrap" role="region" aria-label={t('pay.lineItems')} tabIndex={0}>
           <table>
-            <caption>Line items</caption>
+            <caption>{t('pay.lineItems')}</caption>
             <thead>
-              <tr><th scope="col">Description</th><th scope="col">Qty</th><th scope="col">Unit</th></tr>
+              <tr><th scope="col">{t('pay.col.description')}</th><th scope="col">{t('pay.col.qty')}</th><th scope="col">{t('pay.col.unit')}</th></tr>
             </thead>
             <tbody>
               {inv.lineItems.map((li, i) => (
@@ -901,38 +1019,47 @@ export function Pay(): ReactNode {
               ))}
             </tbody>
           </table>
-          <p>Tax ({String(inv.tax.rateBps / 100)} %): {formatFiat(BigInt(inv.tax.minorUnits), inv.fiat.currency)}</p>
+          <p>{t('pay.tax', { rate: String(inv.tax.rateBps / 100), amount: formatFiat(BigInt(inv.tax.minorUnits), inv.fiat.currency) })}</p>
         </div>
       )}
       {inv.memo !== undefined && (
         <p className="wrap">
-          <strong>Memo:</strong> {safeText(inv.memo).text}{safeText(inv.memo).flagged ? ' (this text contained hidden or look-alike characters; they are shown as markers)' : ''}
+          <strong>{t('pay.memo.label')}</strong> {safeText(inv.memo).text}{safeText(inv.memo).flagged ? ` ${t('pay.memo.flagged')}` : ''}
         </p>
       )}
 
+      <PrintBillButton
+        invoice={inv}
+        link={fragment === undefined || fragment === '' ? undefined : `${services.baseUrl()}${fragment}`}
+        passphraseProtected={parsed.passphraseProtected}
+        chainName={review.chain?.name ?? t('pay.chain.unknown', { chain: String(inv.chainId) })}
+        tokenLabel={inv.token === 'native' ? (symbol === '' ? t('pay.nativeCoinTitle') : symbol) : symbol === '' ? inv.token : symbol}
+        fixedAmount={fixedAmount}
+      />
+
       {ctx !== undefined && (
         <dl className="details amounts">
-          <dt>You pay (gross)</dt>
+          <dt>{t('pay.gross')}</dt>
           <dd>{formatUnits(ctx.request.grossAmount, decimals)} {symbol}</dd>
-          <dt>Checkout fee (0.25 %)</dt>
+          <dt>{t('pay.checkoutFee')}</dt>
           <dd>{formatUnits(ctx.request.feeAmount, decimals)} {symbol}</dd>
-          <dt>Seller receives (net)</dt>
+          <dt>{t('pay.netReceives')}</dt>
           <dd>{formatUnits(ctx.request.netAmount, decimals)} {symbol}</dd>
-          <dt>Contract (router)</dt>
+          <dt>{t('pay.router')}</dt>
           <dd><Mono>{ctx.manifest.router}</Mono></dd>
-          <dt>Fee recipient</dt>
+          <dt>{t('pay.feeRecipient')}</dt>
           <dd><Mono>{ctx.manifest.feeRecipient}</Mono></dd>
-          <dt>Destination</dt>
-          <dd>A fresh one-time (stealth) address is derived when the payment is prepared and shown before you send.</dd>
+          <dt>{t('pay.destination')}</dt>
+          <dd>{t('pay.destinationNote')}</dd>
         </dl>
       )}
       {ctx !== undefined && (
         <section className="panel" aria-labelledby="seller-receipt-h">
-          <h3 id="seller-receipt-h">Import a seller receipt</h3>
+          <h3 id="seller-receipt-h">{t('pay.receipt.heading')}</h3>
           <p className="hint">
-            This checks the receipt signature against the current signed invoice, chain, asset and exact seller amount. If this page has a transaction hash or prepared one-time address, those are checked too. A seller signature proves control of a key and does not independently prove an on-chain payment or seller identity.
+            {t('pay.receipt.intro')}
           </p>
-          <p className="hint">A receipt may reveal a private amount, transaction and invoice association on this screen.</p>
+          <p className="hint">{t('pay.receipt.privacy')}</p>
           <label><input type="checkbox" checked={receiptConsent} onChange={(event) => {
             setReceiptConsent(event.target.checked);
             receiptImportRevision.current += 1;
@@ -940,19 +1067,19 @@ export function Pay(): ReactNode {
             setReceiptBusy(false);
             setBoundReceipt(undefined);
             setReceiptError(undefined);
-          }} /> I consent to opening private receipt details on this screen.</label>
+          }} /> {t('pay.receipt.consent')}</label>
           <form className="stack" onSubmit={onImportReceipt}>
-            <Field label="Signed seller receipt JSON">
-              {(id) => <input id={id} type="file" accept="application/json,.json" />}
+            <Field label={t('pay.receipt.fileLabel')} help={{ label: t('help.about', { control: t('pay.receipt.fileLabel') }), text: t('help.receiptFile') }}>
+              {(id, describedBy) => <input aria-describedby={describedBy} id={id} type="file" accept="application/json,.json" />}
             </Field>
-            <Field label="Explicitly trusted signer key (optional)" hint="Use only a compressed public key you verified with the seller through another channel. Leave blank to require the receipt key to match the valid invoice-signing key.">
-              {(id) => <input id={id} className="mono" type="text" autoComplete="off" spellCheck={false} value={receiptTrustedKey} onChange={(event) => { setReceiptTrustedKey(event.target.value); setBoundReceipt(undefined); setReceiptError(undefined); }} placeholder="02… or 03…" />}
+            <Field label={t('pay.receipt.keyLabel')} hint={t('pay.receipt.keyHint')}>
+              {(id, describedBy) => <input aria-describedby={describedBy} id={id} className="mono" type="text" autoComplete="off" spellCheck={false} value={receiptTrustedKey} onChange={(event) => { setReceiptTrustedKey(event.target.value); setBoundReceipt(undefined); setReceiptError(undefined); }} placeholder="02… or 03…" />}
             </Field>
-            <button type="submit" className="btn" disabled={receiptBusy || ctx === undefined}>{receiptBusy ? 'Checking receipt…' : 'Check receipt against this invoice'}</button>
+            <button type="submit" className="btn" disabled={receiptBusy || ctx === undefined}>{receiptBusy ? t('pay.receipt.checking') : t('pay.receipt.check')}</button>
           </form>
           <CameraImporter
             key={fragment ?? ''}
-            label="Scan or paste a seller receipt"
+            label={t('pay.receipt.scanLabel')}
             active={receiptConsent && ctx !== undefined}
             scopeKey={receiptScope}
             onInputChange={() => {
@@ -964,31 +1091,34 @@ export function Pay(): ReactNode {
             }}
             onText={(text, signal) => importReceiptText(() => Promise.resolve(text), undefined, signal)}
           />
-          {receiptError !== undefined && <Notice kind="error" title="Receipt not accepted">{receiptError}</Notice>}
+          {receiptError !== undefined && <Notice kind="error" title={t('pay.receipt.rejected')}>{displayMessage(receiptError, t)}</Notice>}
           {boundReceipt !== undefined && (
-            <Notice kind="ok" title="Receipt matches this invoice">
-              The signature matches {boundReceipt.signerMatch === 'invoice-signing-key' ? 'the valid invoice-signing key' : 'the explicitly trusted key you entered'}, and the invoice digest, chain, asset and seller amount match. This is a seller-key attestation, not independent payment proof.
+            <Notice kind="ok" title={t('pay.receipt.matches')}>
+              {boundReceipt.signerMatch === 'invoice-signing-key' ? t('pay.receipt.matchInvoiceKey') : t('pay.receipt.matchTrustedKey')}
             </Notice>
           )}
         </section>
       )}
       <ManifestBanner manifest={manifest} />
       <FeeDisclosure manifest={manifest} chainName={review.chain?.name} />
-      <Notice kind="info" title="What becomes public">
-        Your address, the token, the amounts, the fee and the time are public on-chain. The seller&rsquo;s identity is not revealed by the one-time address.
+      <Notice kind="info" title={t('pay.public.title')}>
+        {t('pay.public.body')}
       </Notice>
 
       {phase === 'review' && (
         <fieldset className="options">
-          <legend>Options</legend>
+          <legend>{t('pay.options')}</legend>
           <div className="check">
             <input id="delay" type="checkbox" checked={useDelay} onChange={(e) => { setUseDelay(e.target.checked); }} />
             <label htmlFor="delay">
-              Wait a random time first ({String(Math.round(app.settings.delayMinSec / 60))} to {String(Math.round(app.settings.delayMaxSec / 60))} minutes)
+              {t('pay.delay.label', { min: String(Math.round(app.settings.delayMinSec / 60)), max: String(Math.round(app.settings.delayMaxSec / 60)) })}
             </label>
           </div>
-          <p className="hint">Timing friction only, not anonymity. While waiting nothing is signed or sent, and the page must stay open. You can cancel or send now.</p>
-          {isErc20 && (
+          <p className="hint">{t('pay.delay.hint')}</p>
+          {isErc20 && parsed !== undefined && !bufferOffered(parsed.invoice) && (
+            <p className="hint">{t('pay.buffer.notAccepted')}</p>
+          )}
+          {isErc20 && parsed !== undefined && bufferOffered(parsed.invoice) && (
             <>
               <div className="check">
                 <input
@@ -1001,11 +1131,11 @@ export function Pay(): ReactNode {
                     if (e.target.checked) void refreshBuffer();
                   }}
                 />
-                <label htmlFor="buf">Add a gas buffer for the seller&rsquo;s sweep (default: off)</label>
+                <label htmlFor="buf">{t('pay.buffer.label')}</label>
               </div>
               {useBuffer && (
-                <Notice kind="warn" title="Public linkage">
-                  {bufferQuote === undefined ? 'Estimating buffer…' : `Extra ${formatUnits(bufferQuote.bufferWei, 18)} ${review.chain?.nativeSymbol ?? 'native coin'} (native, not ${symbol}) is sent in the same transaction to the one-time address. This publicly links your payment, the one-time address and the buffer. It is an estimate (${String(bufferQuote.gasLimit)} gas${bufferQuote.gasSource === 'simulated' ? ', from a simulated token transfer' : ', default table value until you prepare the payment'} at up to ${String(bufferQuote.maxFeePerGas)} wei, +20 %), not a guarantee.`}
+                <Notice kind="warn" title={t('pay.buffer.title')}>
+                  {bufferQuote === undefined ? t('pay.buffer.estimating') : t('pay.buffer.estimate', { amount: formatUnits(bufferQuote.bufferWei, 18), native: review.chain?.nativeSymbol ?? t('pay.nativeCoin'), symbol, gas: String(bufferQuote.gasLimit), source: bufferQuote.gasSource === 'simulated' ? 'simulated' : 'default', fee: String(bufferQuote.maxFeePerGas), raised: bufferQuote.raisedToSellerMinimum === true ? 'yes' : 'no' })}
                 </Notice>
               )}
             </>
@@ -1016,28 +1146,28 @@ export function Pay(): ReactNode {
       {phase === 'waiting' && schedule !== undefined && (
         <div className="panel" role="status">
           <p>
-            <strong>Scheduled locally. Nothing has been signed or broadcast.</strong>
+            <strong>{t('pay.waiting.notice')}</strong>
           </p>
-          <p>Time left: {formatCountdown(schedule.remainingMs)}</p>
+          <p>{t('pay.waiting.left', { time: formatCountdown(schedule.remainingMs) })}</p>
           <div className="actions">
-            <button type="button" className="btn" onClick={() => { scheduler.current?.sendNow(); }}>Send now</button>
-            <button type="button" className="btn btn-danger" onClick={() => { scheduler.current?.cancel(); }}>Cancel</button>
+            <button type="button" className="btn" onClick={() => { scheduler.current?.sendNow(); }}>{t('pay.sendNow')}</button>
+            <button type="button" className="btn btn-danger" onClick={() => { scheduler.current?.cancel(); }}>{t('pay.cancel')}</button>
           </div>
         </div>
       )}
 
       {ready && phase !== 'done' && phase !== 'submitted' && (
         <div className="panel">
-          <h3>Wallet</h3>
+          <h3>{t('pay.wallet')}</h3>
           {wallet === undefined ? (
             <>
-              {wallets === undefined && <p>Looking for wallets…</p>}
-              {wallets?.length === 0 && <Notice kind="warn">No browser wallet found. Install or unlock one, then reload this page.</Notice>}
+              {wallets === undefined && <p>{t('pay.lookingWallets')}</p>}
+              {wallets?.length === 0 && <Notice kind="warn">{t('pay.noWallet')}</Notice>}
               <ul className="plain-list">
                 {wallets?.map((w) => (
                   <li key={w.id}>
                     <button type="button" className="btn" onClick={() => { onConnect(w); }}>
-                      {w.icon !== undefined && <img src={w.icon} alt="" width={20} height={20} />} Connect {w.name}
+                      {w.icon !== undefined && <img src={w.icon} alt="" width={20} height={20} />} {t('pay.connect', { name: w.name })}
                       {w.rdns !== undefined && <span className="hint"> ({w.rdns})</span>}
                     </button>
                     {warnings.get(w.id)?.map((message) => (
@@ -1049,79 +1179,83 @@ export function Pay(): ReactNode {
             </>
           ) : (
             <p>
-              Connected: {wallet.wallet.name}, <Mono>{wallet.account}</Mono>, chain {wallet.chainId}
+              {rich('pay.connected', { wallet: wallet.wallet.name, account: wallet.account, chain: String(wallet.chainId) }, monoTag('account'))}
             </p>
           )}
           {wallet !== undefined && built === undefined && (
             <button type="button" className="btn btn-primary" onClick={onPrepare} disabled={phase === 'busy' || ctx === undefined}>
-              Prepare payment
+              {t('pay.prepare')}
             </button>
           )}
         </div>
       )}
 
       {built !== undefined && builtFor === parsed.invoice && builtForContext === ctx && phase !== 'done' && phase !== 'submitted' && ctx !== undefined && (
-        <FinalPreview built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} approval={approval} granted={granted} onRevoke={onRevoke} />
+        <FinalPreview built={built} ctx={ctx} onSend={onSend} busy={phase === 'busy'} approval={approval} granted={granted} approvalHash={approvalHash} onRevoke={onRevoke} />
       )}
 
-      {status !== '' && <p role="status" className="status">{status}</p>}
-      {error !== undefined && <Notice kind="error">{error}</Notice>}
+      {status !== '' && <p role="status" className="status">{displayMessage(status, t)}</p>}
+      {error !== undefined && <Notice kind="error">{displayMessage(error, t)}</Notice>}
 
       {phase === 'submitted' && broadcast !== undefined && (
         <div className="panel" aria-live="polite">
-          <h3>{broadcastKind === 'approval' ? 'Approval sent, verifying' : 'Payment sent, verifying'}</h3>
-          <p>Your wallet already broadcast this {broadcastKind}. Do not repeat it. Transaction hash: <Mono>{broadcast}</Mono></p>
+          <h3>{broadcastKind === 'approval' ? t('pay.sent.approvalTitle') : t('pay.sent.paymentTitle')}</h3>
+          <p>{rich('pay.sent.body', { kind: broadcastKind, hash: broadcast }, monoTag('hash'))}</p>
           <div className="actions">
-            <CopyButton text={broadcast} label="Copy hash" />
+            <CopyButton text={broadcast} label={t('pay.copyHash')} />
           </div>
         </div>
       )}
 
       {phase === 'done' && result !== undefined && ctx !== undefined && built !== undefined && (
         <div className="panel" aria-live="polite">
-          <h3>Submitted</h3>
-          <p>Transaction hash: <Mono>{result.hash}</Mono></p>
+          <h3>{t('pay.done.heading')}</h3>
+          <p>{rich('pay.done.hash', { hash: result.hash }, monoTag('hash'))}</p>
           <p>
-            {result.verification === 'verified' && 'Independently verified on your RPC: the network saw exactly the previewed transaction.'}
-            {result.verification === 'not-visible-yet' && 'Your RPC does not show the transaction yet, so it could not be checked against the preview. Check it in your wallet.'}
-            {result.verification === 'no-rpc' && 'No RPC is configured, so this app could not verify the transaction independently. Check it in your wallet.'}
+            {result.verification === 'verified' && t('pay.verify.verified')}
+            {result.verification === 'not-visible-yet' && t('pay.verify.notVisible')}
+            {result.verification === 'unverified' && t('pay.verify.unverified')}
+            {result.verification === 'no-rpc' && t('pay.verify.noRpc')}
           </p>
           <p>
             {result.receipt === undefined
-              ? 'Status: not yet confirmed (included is not the same as final).'
-              : result.receipt.status === 'success'
-                ? `Status: included in block ${result.receipt.blockNumber.toString()} (not necessarily final yet).`
-                : 'Status: the transaction reverted. Nothing was paid.'}
+              ? t('pay.status.pending')
+              : result.receipt.status !== 'success'
+                ? t('pay.status.reverted')
+                : result.verification === 'verified'
+                  ? t('pay.status.included', { block: result.receipt.blockNumber.toString() })
+                  : t('pay.status.unverified', { block: result.receipt.blockNumber.toString() })}
           </p>
           <div className="actions">
-            <CopyButton text={result.hash} label="Copy hash" />
+            <CopyButton text={result.hash} label={t('pay.copyHash')} />
             <button
               type="button"
               className="btn"
               onClick={() => {
-                if (window.confirm('This receipt contains the amount and time of your payment. Keep it private. Download?')) {
+                if (window.confirm(t('pay.receipt.download.confirm'))) {
                   downloadText('ghostpay-receipt.json', JSON.stringify(buildReceipt(ctx, built, result, new Date(services.nowMs())), null, 2), 'application/json');
                 }
               }}
             >
-              Download local receipt
+              {t('pay.receipt.download')}
             </button>
           </div>
+          <PaymentProofQr receipt={buildReceipt(ctx, built, result, new Date(services.nowMs()))} />
         </div>
       )}
 
       <div className="actions">
         {phase === 'review' && (
           <button type="button" className="btn btn-primary" onClick={onContinue} disabled={review.blockers.length > 0 || ctx === undefined}>
-            {useDelay ? 'Start the delay' : 'Continue'}
+            {useDelay ? t('pay.startDelay') : t('pay.continue')}
           </button>
         )}
         {phase !== 'done' && phase !== 'submitted' && (
-          <button type="button" className="btn" onClick={forget}>Forget this invoice</button>
+          <button type="button" className="btn" onClick={forget}>{t('pay.forget')}</button>
         )}
         {!app.settings.autoClearFragment && (
-          <button type="button" className="btn" onClick={() => { history.replaceState(null, '', `${location.pathname}${location.search}`); }}>
-            Remove link from address bar
+          <button type="button" className="btn" onClick={() => { clearFragment(location, history); }}>
+            {t('pay.removeLink')}
           </button>
         )}
       </div>
@@ -1135,64 +1269,72 @@ function FinalPreview(props: {
   readonly onSend: () => void;
   readonly busy: boolean;
   readonly approval: ApprovalPlan | undefined;
+  readonly approvalHash: string | undefined;
   readonly granted: bigint | undefined;
   readonly onRevoke: () => void;
 }): ReactNode {
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
+  const trParts = i18n?.parts ?? SOURCE_TRANSLATOR.parts;
   const { built, ctx } = props;
   const p = built.preview;
   const decoded = decodeForDisplay(built, ctx.chain.chainId);
-  const t = ctx.review.token;
-  const dec = t?.decimals ?? 18;
-  const sym = t?.symbol ?? '';
+  const tk = ctx.review.token;
+  const dec = tk?.decimals ?? 18;
+  const sym = tk?.symbol ?? '';
   return (
     <div className="panel" aria-labelledby="final-h">
-      <h3 id="final-h">Final check before your wallet</h3>
-      <p>These values are decoded from the exact transaction data your wallet will receive, and were compared to the preview.</p>
+      <h3 id="final-h">{t('pay.final.heading')}</h3>
+      <p>{t('pay.final.intro')}</p>
       <dl className="details">
-        <dt>Method</dt>
+        <dt>{t('pay.final.method')}</dt>
         <dd>{decoded.method}</dd>
-        <dt>Contract</dt>
+        <dt>{t('pay.final.contract')}</dt>
         <dd><Mono>{built.tx.to}</Mono></dd>
-        <dt>One-time destination</dt>
+        <dt>{t('pay.final.destination')}</dt>
         <dd><Mono>{decoded.stealth}</Mono></dd>
-        <dt>Gross</dt>
+        <dt>{t('pay.final.gross')}</dt>
         <dd>{formatUnits(decoded.gross, dec)} {sym}</dd>
-        <dt>Fee</dt>
-        <dd>{formatUnits(decoded.fee, dec)} {sym} to {ctx.manifest.feeRecipient} (deployment manifest verified against the chain)</dd>
-        <dt>Net to seller</dt>
-        <dd>{formatUnits(decoded.net, dec)} {sym} (minimum accepted {formatUnits(decoded.minNet, dec)})</dd>
-        <dt>Native value sent</dt>
-        <dd>{formatUnits(built.tx.value, 18)} {ctx.chain.nativeSymbol}{p.method === 'payERC20WithBuffer' ? ' (gas buffer, public)' : ''}</dd>
-        <dt>Deadline</dt>
+        <dt>{t('pay.final.fee')}</dt>
+        <dd>{t('pay.final.feeLine', { amount: formatUnits(decoded.fee, dec), symbol: sym, recipient: ctx.manifest.feeRecipient })}</dd>
+        <dt>{t('pay.final.net')}</dt>
+        <dd>{t('pay.final.netLine', { amount: formatUnits(decoded.net, dec), symbol: sym, min: formatUnits(decoded.minNet, dec) })}</dd>
+        <dt>{t('pay.final.native')}</dt>
+        <dd>{formatUnits(built.tx.value, 18)} {ctx.chain.nativeSymbol}{p.method === 'payERC20WithBuffer' ? ` ${t('pay.final.bufferNote')}` : ''}</dd>
+        <dt>{t('pay.final.deadline')}</dt>
         <dd>{formatUnix(Number(p.deadline))}</dd>
       </dl>
       {props.approval !== undefined && (
         <div className="notice notice-warn" role="note">
-          <strong className="notice-title">Token approval{props.approval.required ? ' needed first' : ' already in place'}</strong>
+          <strong className="notice-title">{props.granted !== undefined ? t('pay.approval.confirmedTitle') : props.approval.required ? t('pay.approval.neededTitle') : t('pay.approval.presentTitle')}</strong>
           <dl className="details">
-            <dt>Spender (router)</dt>
+            <dt>{t('pay.approval.spender')}</dt>
             <dd><Mono>{props.approval.spender}</Mono></dd>
-            <dt>Allowance before this payment</dt>
+            <dt>{t('pay.approval.before')}</dt>
             <dd>{formatUnits(props.approval.have, dec)} {sym}</dd>
-            <dt>{props.approval.required ? 'Exact amount requested' : 'Needed for this payment'}</dt>
+            <dt>{props.approval.required ? t('pay.approval.exact') : t('pay.approval.needed')}</dt>
             <dd>{formatUnits(props.approval.need, dec)} {sym}</dd>
           </dl>
-          {props.approval.required ? (
-            <p>Pressing the button first asks your wallet for this exact approval and then for the payment. Check the amount in your wallet: it must not be unlimited. The approval is public and can link to the payment that follows. Permit-capable tokens avoid a separate approval transaction.</p>
+          {props.granted !== undefined ? (
+            <p>{props.approvalHash === undefined ? t('pay.approval.confirmed') : renderParts(trParts('pay.approval.confirmedHash', { hash: props.approvalHash }), monoTag('hash'))}</p>
+          ) : props.approval.required ? (
+            <p>{t('pay.approval.explain')}</p>
           ) : (
-            <p>The router already has enough allowance. This payment does not change a larger existing allowance; you can revoke it in your wallet.</p>
+            <p>{t('pay.approval.enough')}</p>
           )}
           {props.granted !== undefined && props.granted > props.approval.need && (
-            <p role="alert"><strong>Your wallet granted {formatUnits(props.granted, dec)} {sym}, more than the {formatUnits(props.approval.need, dec)} requested.</strong> Revoke it unless you meant to allow more.</p>
+            <p role="alert">{renderParts(trParts('pay.approval.excess', { granted: formatUnits(props.granted, dec), symbol: sym, need: formatUnits(props.approval.need, dec) }), { b: (c) => <strong>{c}</strong> })}</p>
           )}
           {props.granted !== undefined && (
-            <p>Allowance now: {formatUnits(props.granted, dec)} {sym}. If you stop before payment, remove it: <button type="button" className="btn" onClick={props.onRevoke} disabled={props.busy}>Revoke approval</button></p>
+            <p>{t('pay.approval.now', { granted: formatUnits(props.granted, dec), symbol: sym })} <button type="button" className="btn" onClick={props.onRevoke} disabled={props.busy}>{t('pay.approval.revoke')}</button></p>
           )}
         </div>
       )}
       <button type="button" className="btn btn-primary" onClick={props.onSend} disabled={props.busy}>
-        {props.approval?.required === true && props.granted === undefined ? 'Approve exactly, then send payment in my wallet' : 'Send payment in my wallet'}
+        {props.approval?.required === true && props.granted === undefined ? t('pay.final.sendApprove') : t('pay.final.send')}
       </button>
     </div>
   );
 }
+
+// i18n-use: error.pay.aGasBufferNeedsAnRPCForThisChainTo help.about help.receiptFile pay.announce.approvalUnverified pay.announce.cancelled pay.announce.connected pay.announce.delayDone pay.announce.paymentUnverified pay.announce.prepared pay.announce.previous pay.announce.revoked pay.announce.scheduled pay.announce.submitted pay.approval.before pay.approval.confirmed pay.approval.confirmedHash pay.approval.confirmedTitle pay.approval.enough pay.approval.exact pay.approval.excess pay.approval.explain pay.approval.needed pay.approval.neededTitle pay.approval.now pay.approval.presentTitle pay.approval.revoke pay.approval.spender pay.buffer.estimate pay.buffer.estimating pay.buffer.label pay.buffer.notAccepted pay.buffer.title pay.cancel pay.cannotProceed pay.chain pay.chain.unknown pay.checkAmount pay.checkoutFee pay.col.description pay.col.qty pay.col.unit pay.connect pay.connected pay.continue pay.copyHash pay.delay.hint pay.delay.label pay.destination pay.destinationNote pay.done.hash pay.done.heading pay.error.expiredWaiting pay.error.invoiceLink pay.error.invoiceQrLink pay.error.noManifest pay.error.receiptConsent pay.error.receiptTooLarge pay.error.receiptUpdating pay.error.reviewChanged pay.error.sellerKeysChanged pay.error.supportedInvoice pay.expires pay.feePayer pay.feePayer.payer pay.feePayer.seller pay.feeRecipient pay.fiatNotChecked pay.fiatStated pay.final.bufferNote pay.final.contract pay.final.deadline pay.final.destination pay.final.fee pay.final.feeLine pay.final.gross pay.final.heading pay.final.intro pay.final.method pay.final.native pay.final.net pay.final.netLine pay.final.send pay.final.sendApprove pay.fixed.unknownToken pay.fixedTokenAmount pay.forget pay.gross pay.invoiceTotal pay.lineItems pay.lookingWallets pay.memo.flagged pay.memo.label pay.nativeCoin pay.nativeCoinTitle pay.netReceives pay.noWallet pay.options pay.passphrase.body pay.passphrase.label pay.passphrase.open pay.passphrase.opening pay.passphrase.title pay.paste.hintHistory pay.paste.hintLocal pay.paste.label pay.paste.labelAlt pay.prepare pay.previous.body pay.previous.title pay.pricing pay.pricing.fixed pay.pricing.quote pay.privatePart pay.privatePart.key pay.privatePart.passphrase pay.privatePart.plain pay.public.body pay.public.title pay.read pay.reading pay.receipt.check pay.receipt.checking pay.receipt.consent pay.receipt.download pay.receipt.download.confirm pay.receipt.fileLabel pay.receipt.heading pay.receipt.intro pay.receipt.keyHint pay.receipt.keyLabel pay.receipt.matchInvoiceKey pay.receipt.matchTrustedKey pay.receipt.matches pay.receipt.privacy pay.receipt.rejected pay.receipt.scanLabel pay.rejected.controlsUnavailable pay.rejected.nothingSent pay.rejected.title pay.removeLink pay.router pay.scan.chainInvalid pay.scan.chainValid pay.scan.clear pay.scan.importLabel pay.scan.intro pay.scan.needsPassphrase pay.scan.open pay.scan.openNote pay.scan.rejected pay.scan.reviewAria pay.scan.reviewHeading pay.scan.summary pay.sellerFingerprint pay.sellerFingerprintNote pay.sellerMeta pay.sendNow pay.sent.approvalTitle pay.sent.body pay.sent.paymentTitle pay.signature pay.startDelay pay.status.included pay.status.pending pay.status.permitUnsupported pay.status.reverted pay.status.unverified pay.status.walletWaiting pay.tax pay.title.input pay.title.review pay.token pay.token.nativeNote pay.verify.noRpc pay.verify.notVisible pay.verify.unverified pay.verify.verified pay.waiting.left pay.waiting.notice pay.wallet transaction.approved.announceNotSent transaction.approved.announceUnknown

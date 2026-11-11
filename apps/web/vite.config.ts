@@ -4,8 +4,18 @@ import { fileURLToPath } from 'node:url';
 import react from '@vitejs/plugin-react';
 import { configDefaults, defineConfig } from 'vitest/config';
 import { parseReleaseKeys, validateDeployments } from './scripts/validate-deployments.mjs';
+import { localBuildProfilePlugins, parseProfile, type ChunkModules } from './scripts/localBuildProfile.mjs';
 
 const releaseKeys = parseReleaseKeys(process.env['GHOSTPAY_RELEASE_PUBKEYS']);
+const buildProfile = parseProfile(process.env['GHOSTPAY_LOCAL_BUILD_PROFILE']);
+const webRoot = fileURLToPath(new URL('.', import.meta.url));
+const workerEvidence: { chunks: ChunkModules[] }[] = [];
+const profileOptions = {
+  env: process.env,
+  leanAppPath: resolve(webRoot, 'src/AppLean.tsx'),
+  publicDir: resolve(webRoot, 'public'),
+  workerEvidence,
+};
 const deploymentsDir = process.env['GHOSTPAY_DEPLOYMENTS_DIR'] === undefined
   ? fileURLToPath(new URL('./deployments', import.meta.url))
   : resolve(process.env['GHOSTPAY_DEPLOYMENTS_DIR']);
@@ -24,12 +34,20 @@ function readManifests(dir: string): Record<string, string> {
 // Static, CSP-friendly build: no inline scripts or styles, no source maps, no data: URI inlining,
 // no modulepreload polyfill (it injects inline code). Everything is emitted as same-origin files.
 export default defineConfig({
+  resolve: { alias: {
+    '@ghostpay/ux-vault/portable': resolve(webRoot, '../../packages/ux-vault/src/portable.ts'),
+    '@ghostpay/invoice-schema': resolve(webRoot, '../../packages/invoice-schema/src/index.ts'),
+    '@ghostpay/qr-exchange': resolve(webRoot, '../../packages/qr-exchange/src/index.ts'),
+  } },
   define: {
     __GHOSTPAY_RELEASE_KEYS__: JSON.stringify(releaseKeys),
     __GHOSTPAY_MANIFESTS__: JSON.stringify(readManifests(deploymentsDir)),
+    // Unit tests must not inherit the shell's e2e profile; profile-specific tests pass it explicitly.
+    __GHOSTPAY_PROFILE__: JSON.stringify(process.env['VITEST'] === undefined ? buildProfile : 'full'),
   },
   plugins: [
     react(),
+    ...localBuildProfilePlugins(profileOptions),
     {
       name: 'ghostpay-verify-bundled-deployments',
       apply: 'build',
@@ -47,6 +65,8 @@ export default defineConfig({
     },
   ],
   base: './',
+  // Lean copies non-executable public assets itself, without the preserved embed SDKs.
+  ...(buildProfile === 'lean' ? { publicDir: false as const } : {}),
   build: {
     target: 'es2022',
     sourcemap: false,
@@ -55,7 +75,7 @@ export default defineConfig({
     modulePreload: { polyfill: false },
     chunkSizeWarningLimit: 1200,
   },
-  worker: { format: 'es' },
+  worker: { format: 'es', plugins: () => localBuildProfilePlugins({ ...profileOptions, worker: true }) },
   test: {
     environment: 'node',
     include: ['src/**/*.test.{ts,tsx}'],

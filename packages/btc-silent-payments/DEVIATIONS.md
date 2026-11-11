@@ -107,16 +107,72 @@ Frigate (Sparrow) / Electrum Silent Payments protocol:
 
 ## Out of scope / follow-ups
 
-- **Hardware-wallet signing is out of scope.** Spending is software signing only (`buildSpendTransaction`), on a
-  trusted device. No device protocol (and no device displays or verifies silent-payment outputs) is implemented.
+- **Hardware signers: interface and software reference only (2026-10-25, spec 11).** `SilentPaymentSigner` +
+  `buildSpendTransactionWithSigner` keep `b_spend` out of the host; `SoftwareSilentPaymentSigner` enforces the checks a
+  device must (input key = `b_spend + tweak` for the claimed key and amount, SIGHASH_DEFAULT only, no foreign inputs,
+  silent-payment outputs re-derived from its own keys, outputs it cannot display refused, confirmation required).
+  **Not implemented:** any real device driver or vendor protocol; no device has been tested. The host cannot verify an
+  ECDH share by itself (no BIP-374 DLEQ proof): a faulty signer that returns a wrong share AND skips its own
+  re-derivation at signing would pay unfindable outputs. An output whose silent-payment nature is not declared is shown
+  as its raw `bc1p`/`tb1p` address. Change to the wallet's own label-0 address is displayed, not proven to be own change
+  (that would need the scan key on the device). The web view uses the software signer.
 - Spending covers P2TR key-path spends of detected silent-payment outputs only. Not implemented: coin selection (the
   caller picks the outputs; all are swept), SIGHASH types other than DEFAULT, multi-party/PSBT combining of foreign
   inputs, Taproot script-path spends, regtest (`bcrt`) addresses (`@scure/btc-signer` ships mainnet and testnet `tb`
   parameters only; `testnet` here means `tb`/`tsp`), fee estimation from a node/mempool (the caller supplies the
   feerate; capped at 10 000 sat/vB), output shuffling (destinations then change, in order), anti-fee-sniping locktime.
-- gRPC BlindBit client; `/filter` support; own-node (`bitcoind`) `TweakSource`; reorg tracking across blocks
-  (only a per-block height/hash consistency check exists); persistence of scan progress.
-- Voluntary tip output; hosted scanning service; hardware wallet support (unsupported in v1 per spec).
+- gRPC BlindBit client; `/filter` support; own-node (`bitcoind`) `TweakSource`; Web Worker scanning.
+- **Header chain (2026-10-25, spec 12).** `HeaderChain` mirrors Core `GetNextWorkRequired` /
+  `ContextualCheckBlockHeader` for mainnet, testnet4 (BIP-94), signet and regtest: linkage, PoW vs own nBits and
+  powLimit, exact required nBits (retarget + 4x clamp, testnet min-difficulty walk-back, BIP-94 first-block bits and
+  timewarp), MTP-11, +2 h future limit, BIP-34/66/65 versions; most cumulative work wins (strictly more). Evidence:
+  Core `pow_tests.cpp` retarget vectors and real mainnet headers 0-2, plus mined regtest-style chains. **Not covered:**
+  block contents beyond what `verifyBlockTransactions` binds, signet block signatures, Core checkpoints/assumevalid,
+  anything below the caller's pinned checkpoint (which must sit on a 2016-block boundary), withheld heavier chains
+  (ask several sources), and cheap test-network PoW. This is header-chain validation with most-work selection, **not
+  SPV and not full validation**.
+- **Deep forks (2026-11-04, review H1).** `syncHeaderChain` used to download at most `maxHeaders` above the (doubling,
+  so up to ~2x overshooting) fork probe and `connect` that prefix once: a heavier fork whose deciding headers lay past
+  that window was never adopted and looked like a lighter one. Now, once a probe misses, the competing branch is
+  streamed in `batchSize` chunks into a `HeaderBranch` (compact validation context; the first invalid header stops it)
+  and adopted as soon as its cumulative work is strictly greater; it is reported as not adopted only after it was
+  compared up to the source tip. The fork budget bounds what would be replaced (`chain.tipHeight - probe point`,
+  `maxForkHeaders`, default `DEFAULT_FORK_HEADERS` = 10 080, cap 100 000), not the distance to the source tip, so a
+  shallow reorg is followed however far ahead the source is; a deeper one, or a branch that has not won `maxHeaders`
+  past the active tip while the source claims more, fails with `FORK_TOO_DEEP` ("could not be evaluated") and changes
+  nothing. Extending the active chain connects each downloaded chunk before requesting the next.
+  Re-review (2026-11-04): an extension chunk must build on the current tip (else `INVALID_HEADER`; before, a source
+  that answered the probe correctly could serve a branch from below the tip and reorg unreported, past the budget);
+  after the doubling probe a binary search finds the exact fork point, so the budget counts the real depth; a branch
+  that has not overtaken within `maxHeaders` past the tip while the source claims more is the new `FORK_UNRESOLVED`
+  (not `FORK_TOO_DEEP`); at an invalid header a `HeaderBranch`'s validated prefix can still be adopted when it already
+  has more work, and the sync then reports the error as a `PartialAdoptError` (carrying the `ConnectResult`;
+  `syncHeaderChainFromSources` passes it on as `adopted`). After an extension chunk is connected, a second check
+  (adopted whole, no reorg) is belt-and-braces: a chunk that builds on the tip always has more work and no active
+  prefix, so it cannot trip; the tip check before connecting is the guard that matters (pinned by a test with a longer
+  off-tip chunk that `connect` would otherwise adopt as a reorg).
+- **HeaderChain memory (2026-11-04).** Active headers were kept as parsed objects with hex strings (built with `+=`,
+  so ropes of tiny strings) and a hash map: ~2 040 bytes per header measured. They are now 80 raw + 32 hash bytes in
+  growable typed arrays with cumulative work every 2016 headers (no hash map; a parent is found by scanning back from
+  the tip), measured 147-196 bytes per header (`scripts/bench-headerchain-memory.mjs`, guarded by
+  `headerchain.memory.test.ts`). `headersHex()` gives all headers as one flat string for storage.
+- **Header chain persistence and the web view (2026-11-04).** `HeaderChain.fromJSON` now requires the caller's pinned
+  `checkpoint` (`INVALID_INPUT` without it) and refuses (`INVALID_HEADER`) stored data whose checkpoint (height, hash, header, previous headers)
+  differs, so stored data can never choose its own anchor; before this, `fromJSON` adopted whatever checkpoint the JSON
+  named. `fromJSON` also re-validates in batches of `MAX_BATCH`, so chains longer than 100 000 headers (signet,
+  testnet4) reload; before, they failed with `INVALID_INPUT`. The web view (`apps/web/src/features/btc/headers.ts`)
+  anchors `HeaderChain` at each test network's pinned **genesis** header (no later checkpoint is pinned), syncs it with
+  `syncHeaderChainFromSources`, stores it through a `ScanStateStore`-shaped seam (plus a work-guarded save and a
+  delete), and scans through
+  `HeaderAnchoredTweakSource`. `ScanState` itself is still not persisted by the view (see below).
+- **Witness binding (2026-10-25).** `parseRawTransaction` (txid/wtxid, strict BIP-144) and `verifyWitnessCommitment`
+  (Core `CheckWitnessMalleation`: last matching commitment output, 32-byte reserved value, no witness without a
+  commitment). Prevout scripts/amounts remain unbound (earlier blocks); a lying server can hide, not forge, payments.
+- **Scan state (2026-10-25).** `ScanState` (birth height, last height/hash, 100-block reorg window, matches with
+  `confirmed`/`pending`), `reconcileScanState`, `resumeScan` (progress after every block), strict JSON. It holds no
+  secret but is private; `ScanStateStore` implementations must encrypt at rest. **Not implemented:** an encrypted
+  IndexedDB store and its use in the web view.
+- Voluntary tip output; hosted scanning service (mode C: absent, would need an ADR).
 - Dependencies: `@scure/base@1.2.6`, devDependency `@scure/bip32@1.7.0` and (2026-10-21) `@scure/btc-signer@2.4.1`
   (exact; its dependencies are `@noble/curves` 2.4.0 and `@noble/hashes` 2.4.0, identical to this package's pins and
   hoisted as one copy; it nests its own `@scure/base` 2.4.0 and `micro-packed` 0.11.1, so two `@scure/base` majors exist

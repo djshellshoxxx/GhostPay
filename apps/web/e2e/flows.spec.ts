@@ -1,130 +1,24 @@
-import { expect, test, type BrowserContext, type Page, type Route } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { createServer, type Server } from 'node:http';
-import { makeLog } from '../src/test/announcements';
+import { readFileSync } from 'node:fs';
+import { invoiceDigest as calculateInvoiceDigest, parseFragment } from '@ghostpay/invoice-schema';
+import { bytesToHex } from '@noble/hashes/utils.js';
 import {
-  FAKE_ANNOUNCER,
   FAKE_FEE_RECIPIENT,
   FAKE_ROUTER,
-  FAKE_SWEEP_RELAYER,
-  fakeManifestJson,
 } from '../src/test/fakeManifest';
-import { keccak256, toBytes } from 'viem';
+import { bindReceiptToInvoice, verifyReceipt } from '../src/lib/receipts';
+import { auditAccessibility, retainAccessibilityAudit } from './accessibility-audit';
 
-/** Tiny fake runtime code per contract; the served manifest carries their real keccak256 so the on-chain read-back passes. */
-const FAKE_CODE: Record<string, `0x${string}`> = {
-  [FAKE_ROUTER]: '0x60016000',
-  [FAKE_SWEEP_RELAYER]: '0x60026000',
-  [FAKE_ANNOUNCER.toLowerCase()]: '0x60036000',
-};
-const word = (hex: string): string => `0x${hex.replace(/^0x/, '').toLowerCase().padStart(64, '0')}`;
-const SEL = (sig: string): string => keccak256(toBytes(sig)).slice(0, 10);
-/** Manifest served to the app: bytecodeHashes match FAKE_CODE so the fail-closed on-chain verification succeeds. */
-function e2eManifestJson(chainId: number): string {
-  const m = JSON.parse(fakeManifestJson(chainId)) as { bytecodeHashes: Record<string, string> };
-  m.bytecodeHashes = {
-    router: keccak256(FAKE_CODE[FAKE_ROUTER] as `0x${string}`),
-    sweepRelayer: keccak256(FAKE_CODE[FAKE_SWEEP_RELAYER] as `0x${string}`),
-  };
-  return JSON.stringify(m);
-}
+// Lean refuses unbound (manual-digest) receipts; the manual attestation steps below run only in the full profile.
+const lean = (process.env['GHOSTPAY_LOCAL_BUILD_PROFILE'] ?? 'full') === 'lean';
+
+test.afterEach(async ({ page }, info) => {
+  await retainAccessibilityAudit(page, info);
+});
+
 import { ORIGIN, createInvoice, generateKeys, openFresh } from './helpers';
-
-const RPC = 'https://rpc.e2e.test';
-const CORS = {
-  'access-control-allow-origin': '*',
-  'access-control-allow-headers': '*',
-  'access-control-allow-methods': 'POST, OPTIONS',
-};
-
-interface SentTx {
-  from: string;
-  to: string;
-  data: string;
-  value: string;
-}
-
-/** Serves the (test-only, fake) manifest and a tiny JSON-RPC node; everything else off-origin stays blocked. */
-async function mockNetwork(
-  context: BrowserContext,
-  state: { sent?: SentTx; logs?: unknown[] },
-): Promise<{ requests: string[] }> {
-  const requests: string[] = [];
-  await context.route('**/deployments/84532.json', (route) =>
-    route.fulfill({ status: 200, contentType: 'application/json', body: e2eManifestJson(84532) }),
-  );
-  await context.route(`${RPC}/**`, async (route: Route) => {
-    const req = route.request();
-    requests.push(req.url());
-    if (req.method() === 'OPTIONS') {
-      await route.fulfill({ status: 204, headers: CORS });
-      return;
-    }
-    const body = JSON.parse(req.postData() ?? '{}') as { id: number; method: string; params: unknown[] };
-    const reply = (result: unknown): Promise<void> =>
-      route.fulfill({
-        status: 200,
-        headers: { ...CORS, 'content-type': 'application/json' },
-        body: JSON.stringify({ jsonrpc: '2.0', id: body.id, result }),
-      });
-    switch (body.method) {
-      case 'eth_chainId':
-        return reply('0x14a34');
-      case 'eth_blockNumber':
-        return reply('0x1f4');
-      case 'eth_getBlockByNumber': {
-        const n = parseInt(String(body.params[0]), 16);
-        const h = (x: number): string => `0x${x.toString(16).padStart(64, '0')}`;
-        return reply({ number: `0x${n.toString(16)}`, hash: h(n), parentHash: h(n - 1) });
-      }
-      case 'eth_getLogs': {
-        const f = body.params[0] as { fromBlock: string; toBlock: string };
-        const from = parseInt(f.fromBlock, 16);
-        const to = parseInt(f.toBlock, 16);
-        return reply(
-          (state.logs ?? []).filter(
-            (l) =>
-              parseInt((l as { blockNumber: string }).blockNumber, 16) >= from &&
-              parseInt((l as { blockNumber: string }).blockNumber, 16) <= to,
-          ),
-        );
-      }
-      case 'eth_getTransactionByHash':
-        return reply(
-          state.sent === undefined
-            ? null
-            : {
-                hash: body.params[0],
-                from: state.sent.from,
-                to: state.sent.to,
-                input: state.sent.data,
-                value: state.sent.value,
-                chainId: '0x14a34',
-              },
-        );
-      case 'eth_getTransactionReceipt':
-        return reply(
-          state.sent === undefined ? null : { status: '0x1', blockNumber: '0x1f5', to: state.sent.to },
-        );
-      case 'eth_gasPrice':
-        return reply('0x3b9aca00');
-      case 'eth_getCode':
-        return reply(FAKE_CODE[String(body.params[0]).toLowerCase()] ?? '0x');
-      case 'eth_call': {
-        const call = body.params[0] as { to: string; data: string };
-        const sel = call.data.slice(0, 10);
-        if (call.to.toLowerCase() === FAKE_ROUTER) {
-          if (sel === SEL('FEE_RECIPIENT()')) return reply(word(FAKE_FEE_RECIPIENT));
-          if (sel === SEL('ANNOUNCER()')) return reply(word(FAKE_ANNOUNCER));
-          if (sel === SEL('FEE_BPS()')) return reply(word((25).toString(16)));
-        }
-        return reply(null);
-      }
-      default:
-        return reply(null);
-    }
-  });
-  return { requests };
-}
+import { RPC, configureRpc, mockNetwork, stageVerifiedErc20Payment, type SentTx } from './flowMocks';
 
 interface WalletControls {
   holdSend: boolean;
@@ -206,12 +100,6 @@ async function injectWallet(page: Page, state: { sent?: SentTx; sendCalls?: numb
       );
     });
   });
-}
-
-async function configureRpc(page: Page): Promise<void> {
-  await page.addInitScript((rpc) => {
-    window.localStorage.setItem('ghostpay.settings.v1', JSON.stringify({ rpcUrls: { '84532': rpc } }));
-  }, RPC);
 }
 
 test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC', () => {
@@ -348,14 +236,27 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await expect(page.getByRole('heading', { name: 'Submitted' })).toHaveCount(0);
   });
 
-  test('scans in a real Web Worker under the CSP, finds my payment, and stores tags only as ciphertext', async ({
+  test('scans in a real Web Worker under the CSP, finds my payment, verifies it, signs a receipt only on consent, and stores tags only as ciphertext', async ({
     page,
     context,
   }) => {
-    const state: { logs?: unknown[] } = {};
+    // This composed Worker/reconciliation/receipt journey also audits its actual rendered states.
+    test.setTimeout(180_000);
+    const state: Parameters<typeof mockNetwork>[1] = {};
     const net = await mockNetwork(context, state);
     const workers: string[] = [];
     page.on('worker', (w) => workers.push(w.url()));
+    const cspConsole: string[] = [];
+    page.on('console', (m) => {
+      if (/content security policy/i.test(m.text())) cspConsole.push(m.text());
+    });
+    await page.addInitScript(() => {
+      const w = window as unknown as { __csp: string[] };
+      w.__csp = [];
+      document.addEventListener('securitypolicyviolation', (e) => {
+        w.__csp.push(`${e.violatedDirective}|${e.blockedURI}`);
+      });
+    });
     const offOrigin: string[] = [];
     page.on('request', (r) => {
       const o = new URL(r.url()).origin;
@@ -364,14 +265,29 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await configureRpc(page);
     await page.goto('/');
     const meta = await generateKeys(page);
-    const mine = makeLog({
-      announcer: FAKE_ANNOUNCER,
-      metaAddress: meta,
-      block: 120,
-      index: 0,
-      caller: FAKE_ROUTER,
-    });
-    state.logs = [mine.log];
+    // Capture the seller key before scanning/signing, independently of the resulting receipt.
+    const sellerSigner = ((await page.locator('code', { hasText: /^0[23][0-9a-f]{64}$/ }).textContent()) ?? '').trim();
+    expect(sellerSigner).toMatch(/^0[23][0-9a-f]{64}$/);
+    // Create the actual invoice through the product. Payer-pays means the seller's exact net is 1 USDC.
+    await page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Create invoice' }).click();
+    await page.getByLabel('Chain', { exact: true }).selectOption({ label: 'Base Sepolia' });
+    await page.getByLabel('Token', { exact: true }).selectOption('0x036cbd53842c5426634e7929541ec2318f3dcf7e');
+    await page.getByLabel('Token amount', { exact: true }).fill('1');
+    await page.getByLabel('Who pays the 0.25 % checkout fee').selectOption('payer_pays');
+    await page.getByLabel('Item 1 description').fill('Receipt-bound authored fixture');
+    await page.getByLabel('Item 1 unit price').fill('1.00');
+    const registerInvoice = page.getByRole('checkbox', { name: 'Register this invoice in my encrypted reconciliation vault for automatic local matching', exact: true });
+    await expect(registerInvoice).not.toBeChecked();
+    await registerInvoice.check();
+    await page.getByRole('button', { name: 'Create invoice link' }).click();
+    await expect(page.getByText('Invoice registered in your encrypted reconciliation vault for local matching.', { exact: true })).toBeVisible();
+    const actualInvoiceLink = await page.getByRole('textbox', { name: 'Link', exact: true }).inputValue();
+    const actualInvoice = await parseFragment(new URL(actualInvoiceLink).hash);
+    expect(actualInvoice.verification.signatureValid).toBe(true);
+    const registeredInvoiceDigest = `0x${bytesToHex(calculateInvoiceDigest(actualInvoice.invoice))}`;
+    await auditAccessibility(page, 'flow-signed-invoice-created-and-registered');
+    // Full canonical evidence, derived on the Node side from public data only (same shape as Scan.test.tsx).
+    const { mine, parsed, txHash } = stageVerifiedErc20Payment(state, meta);
 
     await page
       .getByRole('navigation', { name: 'Main' })
@@ -381,11 +297,110 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
     await page.getByLabel('Start block').fill('0');
     await page.getByRole('button', { name: 'Start scan' }).click();
     await expect(page.getByRole('heading', { name: 'Payments found' })).toBeVisible();
-    await expect(page.getByText(mine.stealthAddress)).toBeVisible();
+    await expect(page.getByText(mine.stealthAddress).first()).toBeVisible();
     await expect(page.getByText(/Finished\. 1 announcements checked, 1 payments found\./)).toBeVisible();
     expect(workers.some((u) => u.startsWith(`${ORIGIN}/assets/scanner.worker-`))).toBe(true);
     expect(offOrigin).toEqual([]);
     expect(net.requests.length).toBeGreaterThan(0);
+    await auditAccessibility(page, 'flow-worker-scan-verified-payment');
+
+    // The actual registered invoice is only proposed, never silently confirmed or promoted to payment proof.
+    const ledger = page.getByRole('region', { name: 'Local payment reconciliation', exact: true });
+    await ledger.getByRole('button', { name: 'Unlock encrypted reconciliation vault', exact: true }).click();
+    const proposal = ledger.getByText(/Exact local match proposed:/);
+    await expect(proposal).toContainText(registeredInvoiceDigest);
+    await expect(ledger.getByText('No records saved.', { exact: true })).toBeVisible();
+    await expect(ledger.getByText(/No linked observation\./)).toBeVisible();
+    await auditAccessibility(page, 'flow-reconciliation-match-proposed');
+    await ledger.getByRole('button', { name: 'Confirm proposed invoice match', exact: true }).click();
+    const linkedObservation = ledger.locator('li').filter({ hasText: 'Manual invoice link (or a local match you confirmed):' });
+    await expect(linkedObservation).toHaveCount(1);
+    await expect(linkedObservation).toContainText(registeredInvoiceDigest);
+    await expect(linkedObservation).toContainText(txHash);
+    await expect(linkedObservation).toContainText(mine.stealthAddress.toLowerCase());
+    await expect(linkedObservation).toContainText('historical observation, not current payment proof');
+    await expect(ledger.getByText(/Linked to a verified observation\./)).toBeVisible();
+    await expect(ledger.getByRole('button', { name: 'Confirm proposed invoice match', exact: true })).toHaveCount(0);
+    await auditAccessibility(page, 'flow-reconciliation-match-confirmed');
+    // Reopen the real encrypted vault to prove confirmation survives beyond the transient preview state.
+    await ledger.getByRole('button', { name: 'Lock reconciliation vault', exact: true }).click();
+    await expect(ledger.getByRole('button', { name: 'Unlock encrypted reconciliation vault', exact: true })).toBeVisible();
+    await ledger.getByRole('button', { name: 'Unlock encrypted reconciliation vault', exact: true }).click();
+    await expect(linkedObservation).toContainText(registeredInvoiceDigest);
+    await expect(linkedObservation).toContainText(txHash);
+    await expect(ledger.getByText(/Linked to a verified observation\./)).toBeVisible();
+
+    // The matching Transfer evidence makes this a verified payment, not a claim.
+    await expect(page.getByText(/Claimed, not confirmed/)).toHaveCount(0);
+    const panel = page.getByRole('region', { name: 'Seller-signed receipt' });
+    await expect(panel).toBeVisible();
+    if (!lean) await expect(panel).toContainText('The invoice digest is entered manually and is not matched against invoice contents.');
+    // Nothing is signed without explicit consent.
+    await expect(page.getByLabel('Signed receipt JSON')).toHaveCount(0);
+
+    if (lean) {
+      // Lean refuses unbound receipts: no manual-digest mode, and the sign handler itself refuses (receipt-lean.spec.ts covers this too).
+      await expect(panel.getByLabel('Invoice digest (entered manually)')).toHaveCount(0);
+      await panel.getByRole('button', { name: 'Sign receipt', exact: true }).click();
+      await expect(page.getByRole('alert').filter({ hasText: 'only signs receipts bound to a validated signed invoice' })).toBeVisible();
+      await expect(page.getByLabel('Signed receipt JSON')).toHaveCount(0);
+    } else {
+      // Invalid manual input is refused through the UI and still creates no receipt.
+      const digestInput = page.getByLabel('Invoice digest (entered manually)');
+      await digestInput.fill('not-a-digest');
+      await panel.getByRole('button', { name: 'Sign receipt' }).click();
+      await expect(page.getByRole('alert').filter({ hasText: 'Receipt invoice digest is invalid.' })).toBeVisible();
+      await expect(page.getByLabel('Signed receipt JSON')).toHaveCount(0);
+
+      const invoiceDigest = `0x${'b'.repeat(64)}`;
+      await digestInput.fill(invoiceDigest);
+      await panel.getByRole('button', { name: 'Sign receipt' }).click();
+      const jsonBox = page.getByLabel('Signed receipt JSON');
+      await expect(jsonBox).toBeVisible();
+      const decoded: unknown = JSON.parse(await jsonBox.inputValue());
+      expect(verifyReceipt(decoded)).toBe(true);
+      const article = panel.locator('article.receipt-print');
+      const fact = (label: string): string => `dt:text-is("${label}") + dd`;
+      const uiSigner = ((await article.locator(fact('Signer public key')).textContent()) ?? '').trim();
+      expect(uiSigner).toBe(sellerSigner);
+      const uiTx = ((await article.locator(fact('Transaction')).textContent()) ?? '').trim();
+      const uiRecipient = ((await article.locator(fact('Recipient')).textContent()) ?? '').trim();
+      expect(uiTx.toLowerCase()).toBe(txHash.toLowerCase());
+      expect(uiRecipient.toLowerCase()).toBe(mine.stealthAddress.toLowerCase());
+      await expect(article.locator(fact('Network'))).toContainText('84532');
+      await expect(article.locator(fact('Asset and amount'))).toContainText(`${parsed.netAmount.toString()} base units`);
+      await expect(article.locator(fact('Invoice digest'))).toContainText('seller-supplied, not matched');
+      expect(decoded).toMatchObject({
+        version: 1,
+        chainId: 84532,
+        txHash: txHash.toLowerCase(),
+        stealthAddress: mine.stealthAddress.toLowerCase(),
+        asset: parsed.token.toLowerCase(),
+        amountMinorUnits: parsed.netAmount.toString(),
+        invoiceDigest,
+        signerPublicKey: sellerSigner,
+      });
+      // Independent Node-side checks: correct facts are accepted, a mismatched fact and a tampered receipt are rejected.
+      const binding = {
+        invoiceDigest,
+        chainId: 84532,
+        asset: parsed.token.toLowerCase(),
+        amountMinorUnits: parsed.netAmount.toString(),
+        invoiceSignerPublicKey: sellerSigner,
+        invoiceSignatureValid: false,
+        trustedSignerPublicKey: sellerSigner,
+        txHash,
+        stealthAddress: mine.stealthAddress,
+      };
+      expect(bindReceiptToInvoice(decoded, binding).signerMatch).toBe('explicitly-trusted-key');
+      expect(() => bindReceiptToInvoice(decoded, { ...binding, amountMinorUnits: (parsed.netAmount + 1n).toString() })).toThrow(/amount/);
+      expect(verifyReceipt({ ...(decoded as Record<string, unknown>), amountMinorUnits: (parsed.netAmount + 1n).toString() })).toBe(false);
+    }
+
+    // Real built Worker, no off-origin surprises, no CSP violations (CSP itself unchanged).
+    expect(await page.evaluate(() => (window as unknown as { __csp: string[] }).__csp)).toEqual([]);
+    expect(cspConsole).toEqual([]);
+    expect(offOrigin).toEqual([]);
 
     await page.getByRole('button', { name: 'Unlock tags' }).click();
     await page.getByLabel(/Client tag/).fill('Acme Corp secret client');
@@ -432,6 +447,56 @@ test.describe('with a (fake, test-only) manifest, a mock wallet and a mock RPC',
       return n;
     });
     expect(after).toBe(0);
+
+    // The old manual attestation above remains explicitly unbound. Now exercise actual product invoice binding.
+    await panel.getByLabel('Signed invoice link or fragment').fill(actualInvoiceLink);
+    await panel.getByLabel('I consent to opening this invoice locally to bind the receipt.').check();
+    await panel.getByRole('button', { name: 'Validate invoice for receipt' }).click();
+    await expect(panel.getByText(/Validated invoice matches this scan/)).toBeVisible();
+    await expect(panel.getByRole('button', { name: 'Sign receipt', exact: true })).toBeDisabled();
+    await expect(page.getByLabel('Signed receipt JSON')).toHaveCount(0);
+    await auditAccessibility(page, 'flow-bound-receipt-awaiting-signing-consent');
+    await panel.getByLabel('I consent to signing these invoice and payment facts.').check();
+    await panel.getByRole('button', { name: 'Sign receipt', exact: true }).click();
+    const boundText = await panel.getByLabel('Signed receipt JSON').inputValue();
+    const boundDecoded: unknown = JSON.parse(boundText);
+    expect(verifyReceipt(boundDecoded)).toBe(true);
+    expect(boundDecoded).toMatchObject({ invoiceDigest: `0x${bytesToHex(calculateInvoiceDigest(actualInvoice.invoice))}`, signerPublicKey: sellerSigner, chainId: 84532, amountMinorUnits: parsed.netAmount.toString(), stealthAddress: mine.stealthAddress.toLowerCase(), txHash: txHash.toLowerCase() });
+    await expect(panel.getByText(/matched to the validated signed invoice/)).toBeVisible();
+    const downloadEvent = page.waitForEvent('download');
+    await panel.getByRole('button', { name: 'Download JSON', exact: true }).click();
+    const downloadedPath = await (await downloadEvent).path();
+    if (downloadedPath === null) throw new Error('receipt download required');
+    expect(readFileSync(downloadedPath, 'utf8')).toBe(boundText);
+    await auditAccessibility(page, 'flow-bound-receipt-signed-and-exported');
+
+    // Import the product-exported bytes into the actual payer view, with its own disclosure consent and invoice binding.
+    await openFresh(page, actualInvoiceLink);
+    await expect(page.getByText('Seller receives (net)', { exact: true })).toBeVisible();
+    const receiptImport = page.getByRole('region', { name: 'Import a seller receipt', exact: true });
+    const acceptedReceipt = receiptImport.getByRole('note').filter({ hasText: 'Receipt matches this invoice' });
+    const upload = page.getByLabel('Signed seller receipt JSON', { exact: true });
+    await upload.setInputFiles(downloadedPath);
+    await page.getByRole('button', { name: 'Check receipt against this invoice' }).click();
+    await expect(page.getByText(/Consent is required before opening private receipt details/)).toBeVisible();
+    await expect(acceptedReceipt).toHaveCount(0);
+    await auditAccessibility(page, 'flow-receipt-import-consent-required');
+    await page.getByLabel('I consent to opening private receipt details on this screen.').check();
+    await expect(receiptImport.getByRole('alert')).toHaveCount(0);
+    const tampered = { ...(boundDecoded as Record<string, unknown>), amountMinorUnits: (parsed.netAmount + 1n).toString() };
+    await upload.setInputFiles({ name: 'tampered-receipt.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(tampered)) });
+    await page.getByRole('button', { name: 'Check receipt against this invoice' }).click();
+    await expect(receiptImport.getByRole('alert').filter({ hasText: 'Receipt not accepted' })).toBeVisible();
+    await expect(acceptedReceipt).toHaveCount(0);
+    await auditAccessibility(page, 'flow-tampered-receipt-refused');
+    await upload.setInputFiles(downloadedPath);
+    await page.getByRole('button', { name: 'Check receipt against this invoice' }).click();
+    await expect(acceptedReceipt).toBeVisible();
+    await expect(page.getByText(/The signature matches the valid invoice-signing key/)).toBeVisible();
+    await auditAccessibility(page, 'flow-bound-receipt-import-accepted');
+    expect(await page.evaluate(() => (window as unknown as { __csp: string[] }).__csp)).toEqual([]);
+    expect(cspConsole).toEqual([]);
+    expect(offOrigin).toEqual([]);
   });
 });
 

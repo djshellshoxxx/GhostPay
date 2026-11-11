@@ -1,10 +1,11 @@
-import { useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
 import { exportSettingsExchange, parseSettingsExchange, applySettingsExchange, type SharedSettings } from '../lib/settingsExchange';
 import { Field, Notice } from '../components/Common';
-import { userMessage } from '../lib/errors';
+import { displayMessage, captureUserMessage, type DisplayMessage, UserFacingError } from '../lib/errors';
 import { checkDelayRange, checkRelayerUrl, checkRpcUrl, type Settings as SettingsData } from '../lib/settings';
+import { applyParanoidPreset, browserStorage, checkIndexerUrl, checkScanEndpoint, describeScanDisclosureMessages, loadScanPrivacy, saveScanPrivacy, type ScanPrivacySettings, type ScanTransportKind } from '../lib/scanPrivacy';
 import { useServices } from '../lib/services';
 import { useApp } from '../state';
 import { LanguagePicker } from '../i18n/LanguagePicker';
@@ -26,10 +27,26 @@ export function Settings(): ReactNode {
   const [theme, setTheme] = useState<SettingsData['theme']>(s.theme);
   const [autoClear, setAutoClear] = useState(s.autoClearFragment);
   const [pins, setPins] = useState(s.pinnedSigners.join('\n'));
-  const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: string } | undefined>(undefined);
+  const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: DisplayMessage } | undefined>(undefined);
   const [transfer, setTransfer] = useState<string | undefined>();
   const [preview, setPreview] = useState<SharedSettings | undefined>();
-  const [checks, setChecks] = useState<Record<string, string>>({});
+  const [checks, setChecks] = useState<Record<string, DisplayMessage>>({});
+  const testRevision = useRef(new Map<number, number>());
+  const mounted = useRef(true);
+
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
+
+  const invalidateTest = (chainId: number): void => {
+    testRevision.current.set(chainId, (testRevision.current.get(chainId) ?? 0) + 1);
+    setChecks((current) => { const next = { ...current }; delete next[chainId]; return next; });
+  };
+
+  // A saved-settings change invalidates both an imported review and an already displayed export.
+  useEffect(() => {
+    setPreview(undefined); setTransfer(undefined);
+    for (const [chainId, revision] of testRevision.current) testRevision.current.set(chainId, revision + 1);
+    setChecks({});
+  }, [s]);
 
   const onSave = (e: FormEvent): void => {
     e.preventDefault();
@@ -45,15 +62,15 @@ export function Settings(): ReactNode {
         .map((l) => l.trim().toLowerCase())
         .filter((l) => l !== '');
       if (pinnedSigners.some((p) => !/^(?:02|03)[0-9a-f]{64}$/.test(p))) {
-        setMessage({ kind: 'error', text: t('settings.error.pins') });
+        setMessage({ kind: 'error', text: { key: 'settings.error.pins' } });
         return;
       }
       const next: SettingsData = { rpcUrls, rpcUrlsSecondary, relayerUrl: checkRelayerUrl(relayer), delayMinSec: minSec, delayMaxSec: maxSec, lockTimeoutMin: lock, theme, autoClearFragment: autoClear, pinnedSigners };
       const saved = app.updateSettings(next);
-      setMessage(saved ? { kind: 'ok', text: t('settings.saved') } : { kind: 'warn', text: t('settings.storageUnavailable') });
+      setMessage(saved ? { kind: 'ok', text: { key: 'settings.saved' } } : { kind: 'warn', text: { key: 'settings.storageUnavailable' } });
       app.announce(t('settings.announce'));
     } catch (err) {
-      setMessage({ kind: 'error', text: err instanceof Error && err.message === 'lock' ? t('settings.error.lock') : userMessage(err) });
+      setMessage({ kind: 'error', text: err instanceof Error && err.message === 'lock' ? { key: 'settings.error.lock' } : captureUserMessage(err) });
     }
   };
 
@@ -61,13 +78,16 @@ export function Settings(): ReactNode {
     const chain = services.chains.find((c) => c.chainId === chainId);
     const url = rpc[String(chainId)] ?? '';
     if (chain === undefined) return;
-    setChecks((c) => ({ ...c, [chainId]: t('settings.rpc.checking') }));
+    const revision = (testRevision.current.get(chainId) ?? 0) + 1;
+    testRevision.current.set(chainId, revision);
+    const current = (): boolean => mounted.current && testRevision.current.get(chainId) === revision;
+    setChecks((c) => ({ ...c, [chainId]: { key: 'settings.rpc.checking' } }));
     void (async () => {
       try {
         await services.createRpc(chain, checkRpcUrl(url));
-        setChecks((c) => ({ ...c, [chainId]: t('settings.rpc.connected') }));
+        if (current()) setChecks((c) => ({ ...c, [chainId]: { key: 'settings.rpc.connected' } }));
       } catch (err) {
-        setChecks((c) => ({ ...c, [chainId]: err instanceof Error && err.name === 'ChainAdapterError' ? t('settings.rpc.failed') : userMessage(err) }));
+        if (current()) setChecks((c) => ({ ...c, [chainId]: err instanceof Error && err.name === 'ChainAdapterError' ? { key: 'settings.rpc.failed' } : captureUserMessage(err) }));
       }
     })();
   };
@@ -79,8 +99,8 @@ export function Settings(): ReactNode {
       <Notice kind="info">
         {t('settings.notice.plaintext')}
       </Notice>
-      <Notice kind="warn" title="Settings can be changed outside this page">
-        Anything that can write to this site&rsquo;s browser storage, including another local user, malware or an extension, can change these RPC, relayer and pinned-signer settings. Review the endpoints and signer keys before relying on them. A second RPC can reveal disagreements, but it does not make either provider trustworthy by itself.
+      <Notice kind="warn" title={t('settings.outside.title')}>
+        {t('settings.outside.body')}
       </Notice>
       <form onSubmit={onSave} className="stack" noValidate>
         <fieldset>
@@ -88,11 +108,11 @@ export function Settings(): ReactNode {
           <p className="hint">{t('settings.rpc.hint')}</p>
           {services.chains.map((c) => (
             <div key={c.chainId} className="row">
-              <Field label={t('settings.rpc.url', { chain: c.name })}>
-                {(id) => <input id={id} type="url" spellCheck={false} value={rpc[String(c.chainId)] ?? ''} onChange={(e) => { setRpc({ ...rpc, [String(c.chainId)]: e.target.value }); }} />}
+              <Field label={t('settings.rpc.url', { chain: c.name })} help={{ label: t('help.about', { control: t('settings.rpc.url', { chain: c.name }) }), text: t('help.rpc') }}>
+                {(id, describedBy) => <input id={id} aria-describedby={describedBy} type="url" dir="ltr" spellCheck={false} value={rpc[String(c.chainId)] ?? ''} onChange={(e) => { invalidateTest(c.chainId); setRpc({ ...rpc, [String(c.chainId)]: e.target.value }); }} />}
               </Field>
               <button type="button" className="btn" onClick={() => { onTest(c.chainId); }}>{t('settings.rpc.test', { chain: c.name })}</button>
-              <p role="status" className="hint">{checks[c.chainId] ?? ''}</p>
+              <p role="status" className="hint">{displayMessage(checks[c.chainId] ?? '', t)}</p>
               <Field label={t('settings.rpc.secondary.label', { chain: c.name })} hint={t('settings.rpc.secondary.hint')}>
                 {(id, d) => <input id={id} aria-describedby={d} type="url" spellCheck={false} value={rpc2[String(c.chainId)] ?? ''} onChange={(e) => { setRpc2({ ...rpc2, [String(c.chainId)]: e.target.value }); }} />}
               </Field>
@@ -113,7 +133,7 @@ export function Settings(): ReactNode {
         </fieldset>
         <fieldset>
           <legend>{t('settings.safety.legend')}</legend>
-          <Field label={t('settings.lock.label')} hint={t('settings.lock.hint')}>
+          <Field label={t('settings.lock.idleLabel')} hint={t('settings.lock.keysHint')}>
             {(id, d) => <input id={id} aria-describedby={d} type="number" min={1} max={240} value={lock} onChange={(e) => { setLock(Number(e.target.value)); }} />}
           </Field>
           <p className="hint">{t('settings.lock.summary', { minutes: lock })}</p>
@@ -137,6 +157,7 @@ export function Settings(): ReactNode {
         </fieldset>
         <button type="submit" className="btn btn-primary">{t('settings.save')}</button>
       </form>
+      <ScanPrivacySection />
       <section className="panel" aria-labelledby="settings-transfer-h">
         <h3 id="settings-transfer-h">{t('settings.exchange.title')}</h3>
         <p>{t('settings.exchange.description')}</p>
@@ -157,12 +178,104 @@ export function Settings(): ReactNode {
             const next = applySettingsExchange(app.settings, preview);
             const saved = app.updateSettings(next);
             setMinSec(next.delayMinSec); setMaxSec(next.delayMaxSec); setLock(next.lockTimeoutMin); setTheme(next.theme); setAutoClear(next.autoClearFragment);
-            setPreview(undefined); setMessage(saved ? { kind: 'ok', text: t('settings.saved') } : { kind: 'warn', text: t('settings.storageUnavailable') });
+            setPreview(undefined); setMessage(saved ? { kind: 'ok', text: { key: 'settings.saved' } } : { kind: 'warn', text: { key: 'settings.storageUnavailable' } });
           }}>{t('settings.exchange.apply')}</button>
           <button type="button" className="btn" onClick={() => { setPreview(undefined); }}>{t('settings.exchange.discard')}</button>
         </div>}
       </section>
-      {message !== undefined && <Notice kind={message.kind}>{message.text}</Notice>}
+      {message !== undefined && <Notice kind={message.kind}>{displayMessage(message.text, t)}</Notice>}
     </section>
+  );
+}
+
+/** Spec 10 / 05 options. Own storage key and own save, so the main settings form and its exchange format are unchanged. */
+function ScanPrivacySection(): ReactNode {
+  const app = useApp();
+  const services = useServices();
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
+  const [cfg, setCfg] = useState<ScanPrivacySettings>(() => loadScanPrivacy(browserStorage()));
+  const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: DisplayMessage } | undefined>(undefined);
+  const set = (patch: Partial<ScanPrivacySettings>): void => { setCfg((c) => ({ ...c, ...patch })); setMessage(undefined); };
+  const num = (v: string): number => (v.trim() === '' ? Number.NaN : Number(v));
+
+  const onSave = (e: FormEvent): void => {
+    e.preventDefault();
+    try {
+      const endpoints: Record<string, string> = {};
+      for (const [k, v] of Object.entries(cfg.endpoints)) if (v.trim() !== '') endpoints[k] = checkScanEndpoint(v, cfg.transport);
+      const indexerUrls: Record<string, string> = {};
+      for (const [k, v] of Object.entries(cfg.indexerUrls)) if (v.trim() !== '') indexerUrls[k] = checkIndexerUrl(v, cfg.transport);
+      const ok = (n: number, min: number, max: number): boolean => Number.isInteger(n) && n >= min && n <= max;
+      if (!ok(cfg.windowBlocks, 0, 100_000)) throw new UserFacingError({ key: 'settings.scanPrivacy.errWindow' });
+      if (!ok(cfg.jitterMinMs, 0, 10_000) || !ok(cfg.jitterMaxMs, 0, 10_000) || cfg.jitterMinMs > cfg.jitterMaxMs) throw new UserFacingError({ key: 'settings.scanPrivacy.errDelays' });
+      if (!ok(cfg.openLaneBudget, 1, 100_000)) throw new UserFacingError({ key: 'settings.scanPrivacy.errBudget' });
+      const next = { ...cfg, endpoints, indexerUrls };
+      setCfg(next);
+      setMessage(saveScanPrivacy(browserStorage(), next) ? { kind: 'ok', text: { key: 'settings.scanPrivacy.saved' } } : { kind: 'warn', text: { key: 'settings.scanPrivacy.refused' } });
+    } catch (err) {
+      setMessage({ kind: 'error', text: captureUserMessage(err) });
+    }
+  };
+
+  return (
+    <form onSubmit={onSave} className="stack" noValidate>
+      <fieldset>
+        <legend>{t('settings.scanPrivacy.legend')}</legend>
+        <p className="hint">
+          {t('settings.scanPrivacy.hint')}
+        </p>
+        <Field label={t('settings.scanPrivacy.transport')}>
+          {(id) => (
+            <select id={id} value={cfg.transport} onChange={(e) => { set({ transport: e.target.value as ScanTransportKind }); }}>
+              <option value="direct">{t('settings.scanPrivacy.transportDirect')}</option>
+              <option value="tor-browser">{t('settings.scanPrivacy.transportTor')}</option>
+              <option value="local-proxy">{t('settings.scanPrivacy.transportProxy')}</option>
+            </select>
+          )}
+        </Field>
+        <div className="check">
+          <input id="scan-require-proxy" type="checkbox" checked={cfg.requireProxy} onChange={(e) => { set({ requireProxy: e.target.checked }); }} />
+          <label htmlFor="scan-require-proxy">{t('settings.scanPrivacy.requireProxy')}</label>
+        </div>
+        {services.chains.map((c) => (
+          <Field key={c.chainId} label={t('settings.scanPrivacy.endpoint', { chain: c.name })} hint={cfg.transport === 'local-proxy' ? t('settings.scanPrivacy.endpointRequired') : t('settings.scanPrivacy.endpointOptional')}>
+            {(id, d) => <input id={id} aria-describedby={d} type="url" spellCheck={false} value={cfg.endpoints[String(c.chainId)] ?? ''} onChange={(e) => { set({ endpoints: { ...cfg.endpoints, [String(c.chainId)]: e.target.value } }); }} />}
+          </Field>
+        ))}
+        <Field label={t('settings.scanPrivacy.source')}>
+          {(id) => (
+            <select id={id} value={cfg.source} onChange={(e) => { set({ source: e.target.value === 'indexer' ? 'indexer' : 'rpc' }); }}>
+              <option value="rpc">{t('settings.scanPrivacy.sourceRpc')}</option>
+              <option value="indexer">{t('settings.scanPrivacy.sourceIndexer')}</option>
+            </select>
+          )}
+        </Field>
+        {cfg.source === 'indexer' && services.chains.map((c) => (
+          <Field key={c.chainId} label={t('settings.scanPrivacy.indexerUrl', { chain: c.name })}>
+            {(id) => <input id={id} type="url" spellCheck={false} value={cfg.indexerUrls[String(c.chainId)] ?? ''} onChange={(e) => { set({ indexerUrls: { ...cfg.indexerUrls, [String(c.chainId)]: e.target.value } }); }} />}
+          </Field>
+        ))}
+        <Field label={t('settings.scanPrivacy.window')} hint={t('settings.scanPrivacy.windowHint')}>
+          {(id, d) => <input id={id} aria-describedby={d} type="number" min={0} value={Number.isNaN(cfg.windowBlocks) ? '' : cfg.windowBlocks} onChange={(e) => { set({ windowBlocks: num(e.target.value) }); }} />}
+        </Field>
+        <Field label={t('settings.scanPrivacy.jitterMin')}>{(id) => <input id={id} type="number" min={0} value={Number.isNaN(cfg.jitterMinMs) ? '' : cfg.jitterMinMs} onChange={(e) => { set({ jitterMinMs: num(e.target.value) }); }} />}</Field>
+        <Field label={t('settings.scanPrivacy.jitterMax')}>{(id) => <input id={id} type="number" min={0} value={Number.isNaN(cfg.jitterMaxMs) ? '' : cfg.jitterMaxMs} onChange={(e) => { set({ jitterMaxMs: num(e.target.value) }); }} />}</Field>
+        <Field label={t('settings.scanPrivacy.budget')} hint={t('settings.scanPrivacy.budgetHint')}>
+          {(id, d) => <input id={id} aria-describedby={d} type="number" min={1} value={Number.isNaN(cfg.openLaneBudget) ? '' : cfg.openLaneBudget} onChange={(e) => { set({ openLaneBudget: num(e.target.value) }); }} />}
+        </Field>
+        <h3>{t('settings.scanPrivacy.learnsHeading')}</h3>
+        <ul>
+          {describeScanDisclosureMessages(cfg, { hasSecondary: Object.values(app.settings.rpcUrlsSecondary).some((u) => u !== '') }).map((row) => (
+            <li key={row.party.key}><strong>{displayMessage(row.party, t)}:</strong> {displayMessage(row.learns, t)}</li>
+          ))}
+        </ul>
+        <div className="actions">
+          <button type="button" className="btn" onClick={() => { set(applyParanoidPreset(cfg)); }}>{t('settings.scanPrivacy.paranoid')}</button>
+          <button type="submit" className="btn btn-primary">{t('settings.scanPrivacy.save')}</button>
+        </div>
+        {message !== undefined && <Notice kind={message.kind}>{displayMessage(message.text, t)}</Notice>}
+      </fieldset>
+    </form>
   );
 }

@@ -54,7 +54,7 @@ export function wipeFound(found: readonly FoundPayment[]): void {
  */
 export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
   const { rpc, wallet, fromSlot, signal } = p;
-  if (fromSlot < 0n) throw new SolViewError('Enter the first slot to scan.');
+  if (fromSlot < 0n) throw new SolViewError({ key: 'sol.slot.required' });
   const toSlot = await getSlot(rpc, 'finalized', signal);
   if (toSlot < fromSlot) return { fromSlot, toSlot, found: [], emptiedCount: 0 };
   const records = fetchAnnouncements(rpc, {
@@ -96,3 +96,5 @@ export async function scanForPayments(p: ScanParams): Promise<ScanResult> {
   }
   return { fromSlot, toSlot, found, emptiedCount };
 }
+
+// i18n-use: sol.slot.required

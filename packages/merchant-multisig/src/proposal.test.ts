@@ -132,3 +132,10 @@ describe('proposalDigest', () => {
     );
   });
 });
+
+it('matches independently encoded minimal payout bytes and keccak vector', () => {
+  // Independently reproduced by tools/verify-vector.cjs (does not import GhostPay or noble).
+  const proposal: Proposal = { kind: 'payout', accountId: 'a', chainId: '1', policyHash: '00'.repeat(32), nonce: '0', createdAt: 1, expiresAt: 2, asset: 'a', to: 'b', amount: '1' };
+  expect(bytesToHex(canonicalProposalBytes(proposal))).toBe('01000000080000000000000001020000000161030000000800000000000000010400000020000000000000000000000000000000000000000000000000000000000000000005000000080000000000000000060000000800000000000000010700000008000000000000000230000000016131000000016232000000200000000000000000000000000000000000000000000000000000000000000001');
+  expect(proposalDigestHex(proposal)).toBe('6b85df017eb9fec758ca2ee681b5cf237dfe5c176f6a25cddc6b141dee88c208');
+});

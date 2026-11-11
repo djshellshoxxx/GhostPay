@@ -34,6 +34,7 @@ export class ManualClock implements Clock {
    */
   public advance(delta: number): number {
     ManualClock.check(delta);
+    ManualClock.check(this.seconds + delta);
     this.seconds += delta;
     return this.seconds;
   }

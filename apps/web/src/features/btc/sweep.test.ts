@@ -1,10 +1,10 @@
-import { SilentPaymentError, taprootScriptPubKey, verifyKeyPathSpend } from '@ghostpay/btc-silent-payments';
+import { encodeSilentPaymentAddress, SilentPaymentError, SoftwareSilentPaymentSigner, taprootScriptPubKey, verifyKeyPathSpend } from '@ghostpay/btc-silent-payments';
 import { bech32 } from '@scure/base';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { EsploraClient } from './esplora';
 import { mockChain, walletA } from './fixtures.testutil';
 import { scanForPayments, type FoundPayment } from './scan';
-import { btcErrorMessage, formatBtc, reviewSweep, signSweep } from './sweep';
+import { btcErrorMessage, checkDestination, formatBtc, reviewSweep, signSweep } from './sweep';
 import { paymentUri } from './wallet';
 
 function addr(hrp: string, byte: number): string {
@@ -14,9 +14,9 @@ const BCRT = addr('bcrt', 3);
 const TB = addr('tb', 3);
 const MAIN = addr('bc', 3);
 
-async function payments(): Promise<FoundPayment[]> {
+async function payments(count = 1): Promise<FoundPayment[]> {
   const w = walletA();
-  const chain = mockChain('regtest', w);
+  const chain = mockChain('regtest', w, { payments: count });
   const client = new EsploraClient({ baseUrl: 'https://esplora.test/api', fetchFn: chain.fetchFn });
   return [...(await scanForPayments({ client, wallet: w, fromHeight: 0 })).found];
 }
@@ -24,6 +24,15 @@ async function payments(): Promise<FoundPayment[]> {
 function code(f: () => unknown): string {
   try {
     f();
+  } catch (e) {
+    return e instanceof SilentPaymentError ? e.code : 'other';
+  }
+  return 'none';
+}
+
+async function codeAsync(p: () => Promise<unknown>): Promise<string> {
+  try {
+    await p();
   } catch (e) {
     return e instanceof SilentPaymentError ? e.code : 'other';
   }
@@ -63,6 +72,37 @@ describe('reviewSweep', () => {
     expect(reviewSweep(w, p, w.address, 1).warnings.some((x) => x.includes('own receive'))).toBe(true);
     expect(reviewSweep(w, p, w.address, 1).destinationKind).toBe('silent payment address');
   });
+
+  it('warns that spending several payments in one transaction links them publicly', async () => {
+    const w = walletA();
+    expect(reviewSweep(w, await payments(), BCRT, 2).warnings.some((x) => x.includes('link'))).toBe(false);
+    const two = await payments(2);
+    expect(two).toHaveLength(2);
+    const r = reviewSweep(w, two, BCRT, 2);
+    expect(r.warnings.filter((x) => x.includes('spends 2 payments in one transaction') && x.includes('links them publicly'))).toHaveLength(1);
+    expect(r.warnings.some((x) => x.includes('separate sweeps to the same address also link them'))).toBe(true);
+  });
+
+  it('refuses a silent payment address for another network, or a malformed one, at review rather than at signing', async () => {
+    const w = walletA();
+    const p = await payments();
+    const mainnetSp = encodeSilentPaymentAddress('mainnet', w.keys.scanPublicKey, w.keys.spendPublicKey);
+    expect(code(() => reviewSweep(w, p, mainnetSp, 2))).toBe('INVALID_ADDRESS');
+    expect(code(() => reviewSweep(w, p, `${w.address.slice(0, -1)}${w.address.endsWith('q') ? 'p' : 'q'}`, 2))).toBe('INVALID_ADDRESS');
+    expect(code(() => reviewSweep(w, p, w.address.toUpperCase(), 2))).toBe('INVALID_ADDRESS');
+  });
+});
+
+describe('checkDestination', () => {
+  it('checks a destination for the wallet network without any selected payment', () => {
+    const w = walletA();
+    expect(checkDestination(w, ` ${BCRT} `)).toBe(BCRT);
+    expect(checkDestination(w, w.address)).toBe(w.address);
+    for (const bad of [TB, MAIN, 'garbage', encodeSilentPaymentAddress('mainnet', w.keys.scanPublicKey, w.keys.spendPublicKey)]) {
+      expect(code(() => checkDestination(w, bad))).toBe('INVALID_ADDRESS');
+    }
+    expect(code(() => checkDestination(w, '  '))).toBe('INVALID_INPUT');
+  });
 });
 
 describe('signSweep', () => {
@@ -70,7 +110,7 @@ describe('signSweep', () => {
     const w = walletA();
     const p = await payments();
     const review = reviewSweep(w, p, BCRT, 2);
-    const s = signSweep(w, p, review);
+    const s = await signSweep(w, p, review);
     expect(s.feeSats).toBe(review.feeSats);
     expect(s.vsize).toBe(review.vsize);
     expect(s.txid).toMatch(/^[0-9a-f]{64}$/);
@@ -83,7 +123,7 @@ describe('signSweep', () => {
     const w = walletA();
     const p = await payments();
     const review = reviewSweep(w, p, w.address, 1);
-    expect(signSweep(w, p, review).rawHex.length).toBeGreaterThan(100);
+    expect((await signSweep(w, p, review)).rawHex.length).toBeGreaterThan(100);
   });
 
   it('refuses when the selection differs from the review', async () => {
@@ -92,10 +132,10 @@ describe('signSweep', () => {
     const review = reviewSweep(w, p, BCRT, 2);
     const first = p[0];
     if (first === undefined) throw new Error('fixture');
-    expect(code(() => signSweep(w, [], review))).toBe('INVALID_INPUT');
-    expect(code(() => signSweep(w, [{ ...first, amountSats: first.amountSats + 1n }], review))).toBe('INVALID_INPUT');
-    expect(code(() => signSweep(w, [{ ...first, vout: 7 }], review))).toBe('INVALID_INPUT');
-    expect(code(() => signSweep(w, p, { ...review, feeSats: review.feeSats + 1n, feeRate: review.feeRate + 5 }))).toBe('SIGNATURE_INVALID');
+    expect(await codeAsync(() => signSweep(w, [], review))).toBe('INVALID_INPUT');
+    expect(await codeAsync(() => signSweep(w, [{ ...first, amountSats: first.amountSats + 1n }], review))).toBe('INVALID_INPUT');
+    expect(await codeAsync(() => signSweep(w, [{ ...first, vout: 7 }], review))).toBe('INVALID_INPUT');
+    expect(await codeAsync(() => signSweep(w, p, { ...review, feeSats: review.feeSats + 1n, feeRate: review.feeRate + 5 }))).toBe('SIGNATURE_INVALID');
   });
 
   it('refuses a payment the wallet cannot spend (wrong output key)', async () => {
@@ -105,7 +145,26 @@ describe('signSweep', () => {
     if (first === undefined) throw new Error('fixture');
     const bad = { ...first, xOnlyPublicKey: new Uint8Array(32).fill(1) };
     const review = reviewSweep(w, [bad], BCRT, 2);
-    expect(code(() => signSweep(w, [bad], review))).toBe('INVALID_INPUT');
+    expect(await codeAsync(() => signSweep(w, [bad], review))).toBe('INVALID_INPUT');
+  });
+
+  it('wipes the signer\'s copy of the spend secret when signing ends, also when signing fails', async () => {
+    const dispose = vi.spyOn(SoftwareSilentPaymentSigner.prototype, 'dispose');
+    try {
+      const w = walletA();
+      const p = await payments();
+      await signSweep(w, p, reviewSweep(w, p, BCRT, 2));
+      expect(dispose).toHaveBeenCalledTimes(1);
+      const first = p[0];
+      if (first === undefined) throw new Error('fixture');
+      const bad = { ...first, xOnlyPublicKey: new Uint8Array(32).fill(1) };
+      expect(await codeAsync(() => signSweep(w, [bad], reviewSweep(w, [bad], BCRT, 2)))).toBe('INVALID_INPUT');
+      expect(dispose).toHaveBeenCalledTimes(2);
+      // The wallet's own keys stay: Lock wipes those.
+      expect(w.keys.spendSecret.some((b) => b !== 0)).toBe(true);
+    } finally {
+      dispose.mockRestore();
+    }
   });
 });
 
@@ -116,7 +175,7 @@ describe('helpers', () => {
       expect(btcErrorMessage(new SilentPaymentError(c))).not.toBe('Bitcoin operation failed.');
     }
     expect(btcErrorMessage(new SilentPaymentError('RNG_FAILURE'))).toBe('Bitcoin operation failed.');
-    expect(btcErrorMessage(new Error('plain'))).toBe('plain');
+    expect(btcErrorMessage(new Error('secret seed or RPC body'))).toBe('Bitcoin operation failed.');
     expect(btcErrorMessage('x')).toBe('Bitcoin operation failed.');
   });
 

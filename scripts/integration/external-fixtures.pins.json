@@ -1,0 +1,12 @@
+{
+  "privacy-pools": { "url": "https://github.com/0xbow-io/privacy-pools-core.git", "revision": "d494b63e79f33bb2b0c8ece6cdacdca465c3b884" },
+  "railgun": { "url": "https://github.com/Railgun-Privacy/contract.git", "revision": "36bcf5ed7cf94bfafb6e1a303e1832c769c16780" },
+  "packages": {
+    "pp-oz": { "spec": "@openzeppelin/contracts@5.1.0", "integrity": "sha512-p1ULhl7BXzjjbha5aqst+QMLY+4/LCWADXOCsmLHRM77AqiPjnd9vvUN9sosUfhL9JGKpZ0TjEGxgvnizmWGSA==" },
+    "pp-oz-upgradeable": { "spec": "@openzeppelin/contracts-upgradeable@5.0.2", "integrity": "sha512-0MmkHSHiW2NRFiT9/r5Lu4eJq5UJ4/tzlOgYXNAIj/ONkQTVnz22pLxDvp4C4uZ9he7ZFvGn3Driptn1/iU7tQ==" },
+    "lean-imt": { "spec": "@zk-kit/lean-imt.sol@2.0.0", "integrity": "sha512-e9pAm+IXveLPy7b1h05ipIo6U44vp8g/2E+Ocx3PIloMu7lgTXFkIeZj/qZ/iLgEMsF74T0dsg7aVIT0B0nsDA==" },
+    "poseidon": { "spec": "poseidon-solidity@0.0.5", "integrity": "sha512-NzrvSwHzvZgT4hvg2GyGqeR+UOU/eLSEt4wAoXEua+VaR7NTKKwx1X9bPlh1VMBEVEno+IWvkRBbidFGzTeAqQ==" },
+    "rg-oz": { "spec": "@openzeppelin/contracts@4.9.6", "integrity": "sha512-xSmezSupL+y9VkHZJGDoCBpmnB2ogM13ccaYDWqJTfS3dbuHkgjuwDFUmaFauBCboQMGB/S5UqUl2y54X99BmA==" },
+    "rg-oz-upgradeable": { "spec": "@openzeppelin/contracts-upgradeable@4.9.6", "integrity": "sha512-m4iHazOsOCv1DgM7eD7GupTJ+NFVujRZt1wzddDPSVGpWdKq1SKkla5htKG7+IS4d2XOCtzkUNwRZ7Vq5aEUMA==" }
+  }
+}

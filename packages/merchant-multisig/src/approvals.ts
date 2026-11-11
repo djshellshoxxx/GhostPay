@@ -3,7 +3,7 @@ import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
 import { MultisigError } from './errors.js';
 import { policyHash, validatePolicy, type MultisigPolicy } from './policy.js';
 import { proposalDigest, validateProposal, type Proposal } from './proposal.js';
-import { PUBKEY_RE, SIG_RE } from './validate.js';
+import { PUBKEY_RE, SIG_RE, readArray, readExact, str } from './validate.js';
 
 /** Hard cap on approvals evaluated per call (DoS bound). */
 export const MAX_APPROVALS = 64;
@@ -107,18 +107,16 @@ export function evaluateApprovals(
   const members = new Set(pol.signers.map((s) => s.publicKey));
   const approved = new Set<string>();
   const rejected: { index: number; reason: ApprovalRejection }[] = [];
-  approvals.forEach((a: unknown, index) => {
-    const rec = a as { signer?: unknown; signature?: unknown } | null;
-    const signer = typeof rec === 'object' && rec !== null ? rec.signer : undefined;
-    const signature = typeof rec === 'object' && rec !== null ? rec.signature : undefined;
-    if (
-      typeof signer !== 'string' ||
-      typeof signature !== 'string' ||
-      !PUBKEY_RE.test(signer) ||
-      !SIG_RE.test(signature)
-    ) {
+  readArray(approvals, MAX_APPROVALS, 'PROPOSAL', 'approvals').forEach((a: unknown, index) => {
+    let normalized: Approval;
+    try {
+      normalized = validateApproval(a);
+    } catch {
       rejected.push({ index, reason: 'MALFORMED' });
-    } else if (!members.has(signer)) {
+      return;
+    }
+    const { signer, signature } = normalized;
+    if (!members.has(signer)) {
       rejected.push({ index, reason: 'UNKNOWN_SIGNER' });
     } else if (approved.has(signer)) {
       rejected.push({ index, reason: 'DUPLICATE_SIGNER' });
@@ -135,5 +133,14 @@ export function evaluateApprovals(
     rejected: Object.freeze(rejected.map((r) => Object.freeze(r))),
     threshold: pol.threshold,
     thresholdMet: approvedBy.length >= pol.threshold,
+  });
+}
+
+/** Strict copy for persisted or exchanged approvals (signature is checked with its proposal). */
+export function validateApproval(value: unknown): Approval {
+  const r = readExact(value, ['signer', 'signature'], 'PROPOSAL', 'approval');
+  return Object.freeze({
+    signer: str(r.signer, PUBKEY_RE, 'PROPOSAL', 'approval.signer'),
+    signature: str(r.signature, SIG_RE, 'PROPOSAL', 'approval.signature'),
   });
 }
