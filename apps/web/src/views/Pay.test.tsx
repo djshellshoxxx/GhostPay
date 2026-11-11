@@ -127,6 +127,12 @@ describe('Pay: invoice reading and review', () => {
     await user.click(screen.getByRole('button', { name: 'Check receipt against this invoice' }));
     expect(await screen.findByText(/The signature matches the explicitly trusted key/)).toBeTruthy();
     expect(screen.getByText(/does not independently prove an on-chain payment/)).toBeTruthy();
+    // The trusted key is still entered. A receipt signed by the valid invoice key, but not by the key the payer
+    // named, must be refused rather than accepted through the invoice key.
+    await user.upload(upload, new File([receiptJson(correct)], 'invoice-key.json', { type: 'application/json' }));
+    await user.click(screen.getByRole('button', { name: 'Check receipt against this invoice' }));
+    expect(await screen.findByText('Receipt not accepted')).toBeTruthy();
+    expect(screen.queryByText(/The signature matches/)).toBeNull();
     const next = await makeParsed({ tokenAmount: '101' });
     window.history.replaceState(null, '', `/${next.fragment}`);
     window.dispatchEvent(new HashChangeEvent('hashchange'));

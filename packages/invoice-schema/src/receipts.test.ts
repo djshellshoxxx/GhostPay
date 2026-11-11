@@ -84,6 +84,16 @@ describe('receipt field binding is not payment evidence', () => {
     expect(() => bindReceiptToInvoice(SIGNED, { ...binding, [field]: value })).toThrow(expect.objectContaining({ code }));
   });
 
+  it('treats an explicitly supplied trusted key as a requirement and never falls back to the invoice key', () => {
+    const otherPub = signReceipt(FIELDS, Uint8Array.from([...new Array<number>(31).fill(0), 9])).signerPublicKey;
+    expect(otherPub).not.toBe(PUB);
+    // The receipt is validly signed by the invoice key, but the payer pinned a different key out of band.
+    expect(() => bindReceiptToInvoice(SIGNED, { ...binding, trustedSignerPublicKey: otherPub })).toThrow(expect.objectContaining({ code: 'SIGNER_MISMATCH' }));
+    expect(() => bindReceiptToInvoice(SIGNED, { ...binding, invoiceSignatureValid: false, trustedSignerPublicKey: otherPub })).toThrow(expect.objectContaining({ code: 'SIGNER_MISMATCH' }));
+    // A matching pin is reported as the explicitly trusted key whether or not the invoice key also matches.
+    expect(bindReceiptToInvoice(SIGNED, { ...binding, trustedSignerPublicKey: PUB }).signerMatch).toBe('explicitly-trusted-key');
+  });
+
   it('requires a valid receipt signature before checking any binding', () => {
     expect(() => bindReceiptToInvoice({ ...SIGNED, signature: '0'.repeat(128) }, binding)).toThrow(expect.objectContaining({ code: 'SIGNATURE' }));
   });
