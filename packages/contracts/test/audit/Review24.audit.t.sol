@@ -183,7 +183,7 @@ contract Review24PolicyRouterAuditTest is PolicyRouterBase {
 contract Review24RouterAuditTest is Base {
     /// @dev CONTRACTS-CORE-02 (audit 05, still open): `payERC20WithBuffer` moves arbitrary native
     /// value with no fee under a router announcement whose metadata only describes the ERC-20 leg.
-    function test_EXPLOIT_CORE02_bufferMovesUnfeedNativeValue() public {
+    function test_EXPLOIT_CORE02_bufferMovesNativeValueFeeFree() public {
         MockERC20 junk = new MockERC20("Junk", "JNK", 0);
         junk.mint(alice, 1);
         vm.startPrank(alice);
