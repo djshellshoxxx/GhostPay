@@ -1,12 +1,13 @@
 import { spawn, type ChildProcess } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { createPublicClient, createWalletClient, getAddress, http, parseAbi, type Address, type Hex } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { PERMIT_TYPES, buildSweepTypedData } from '@ghostpay/chain-adapters';
-import { parseConfig } from './config.js';
+import { parseConfig, type RelayerConfig } from './config.js';
+import { FileStateBackend, decodeState } from './stateStore.js';
 import { createLogger } from './log.js';
 import { buildRelayer, type Relayer } from './runtime.js';
 
@@ -66,6 +67,7 @@ describe.skipIf(!available)('end to end on anvil (real GhostPaySweepRelayer + ER
   let url = '';
   const stateDir = mkdtempSync(join(tmpdir(), 'relayer-e2e-'));
   const stateFile = join(stateDir, 'state.json');
+  let config: RelayerConfig | undefined;
   let token: Address;
   let sweepContract: Address;
 
@@ -96,7 +98,7 @@ describe.skipIf(!available)('end to end on anvil (real GhostPaySweepRelayer + ER
     const mint = await wallet.writeContract({ address: token, abi: parseAbi(['function mint(address to, uint256 amount)']), functionName: 'mint', args: [owner.address, 1_000_000_000n], chain: null });
     await pub.waitForTransactionReceipt({ hash: mint });
 
-    const config = parseConfig(
+    config = parseConfig(
       {
         allowedOrigins: ['http://localhost:5173'],
         allowDevChain: true,
@@ -320,5 +322,76 @@ describe.skipIf(!available)('end to end on anvil (real GhostPaySweepRelayer + ER
       await rpc('evm_setAutomine', [true]);
     }
   }, 60_000);
+
+  it('restart while a broadcast is pending: the new process keeps its reservation and never reuses its nonce', async () => {
+    if (config === undefined) throw new Error('config');
+    const pub = createPublicClient({ transport: http(url) });
+    const hot = privateKeyToAccount(HOT_KEY).address;
+    const deployer = createWalletClient({ account: privateKeyToAccount(DEPLOYER_KEY), transport: http(url), chain: undefined });
+    const mint = await deployer.writeContract({ address: token, abi: parseAbi(['function mint(address to, uint256 amount)']), functionName: 'mint', args: [owner.address, 1_000_000_000n], chain: null });
+    await pub.waitForTransactionReceipt({ hash: mint });
+    await rpc('anvil_setBalance', [owner.address, '0x56bc75e2d63100000']);
+    const ow = createWalletClient({ account: owner, transport: http(url), chain: undefined });
+    const ap = await ow.writeContract({ address: token, abi: parseAbi(['function approve(address,uint256) returns (bool)']), functionName: 'approve', args: [sweepContract, 10n ** 18n], chain: null });
+    await pub.waitForTransactionReceipt({ hash: ap });
+    await laneIdle();
+    const allowanceBody = async (nonce: bigint): Promise<Record<string, unknown>> => {
+      const { body } = await prepare(50_000_000n, nonce);
+      delete body['permit']; // allowance path: independent of the pending transaction's permit nonce
+      return body;
+    };
+    const send = async (at: string, body: unknown): Promise<{ status: number; json: Record<string, unknown> }> => {
+      const r = await fetch(`${at}/v1/sweep`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+      return { status: r.status, json: (await r.json()) as Record<string, unknown> };
+    };
+
+    const crashed = join(stateDir, 'crashed.json');
+    let second: Relayer | undefined;
+    await rpc('evm_setAutomine', [false]);
+    try {
+      const first = await send(base, await allowanceBody(20n));
+      expect(first.status).toBe(200);
+      const h1 = first.json['txHash'] as Hex;
+      // What the "crashed" process left on disk: its broadcast is accepted and still unmined.
+      copyFileSync(stateFile, crashed);
+      const left = decodeState(readFileSync(crashed, 'utf8')).get(31337);
+      expect(left?.sends).toEqual([expect.objectContaining({ status: 'pending', txHash: h1.toLowerCase() })]);
+
+      second = await buildRelayer({
+        config: { ...config, stateFile: crashed },
+        hotKey: Uint8Array.from(Buffer.from(HOT_KEY.slice(2), 'hex')),
+        quoteSecret: new Uint8Array(32).fill(7),
+        logger: createLogger(() => undefined),
+      });
+      const at = `http://127.0.0.1:${String((await second.server.listen()).port)}`;
+      const r2 = await send(at, await allowanceBody(21n));
+      expect(r2.status).toBe(200);
+      const h2 = r2.json['txHash'] as Hex;
+      const [t1, t2] = await Promise.all([pub.getTransaction({ hash: h1 }), pub.getTransaction({ hash: h2 })]);
+      expect(t1.from.toLowerCase()).toBe(hot.toLowerCase());
+      expect(t2.nonce).toBe(t1.nonce + 1); // no duplicate nonce after the restart
+
+      await rpc('evm_mine');
+      await rpc('evm_setAutomine', [true]);
+      const [r1, rr2] = await Promise.all([pub.waitForTransactionReceipt({ hash: h1 }), pub.waitForTransactionReceipt({ hash: h2 })]);
+      expect([r1.status, rr2.status]).toEqual(['success', 'success']);
+
+      // A later job of the new process looks the restored broadcast up and settles it from the journal.
+      for (let i = 0; i < 50 && (decodeState(new FileStateBackend(crashed).read() ?? '').get(31337)?.sends.length ?? 0) > 1; i++) await new Promise((res) => setTimeout(res, 100));
+      const r3 = await send(at, await allowanceBody(22n));
+      expect(r3.status).toBe(200);
+      const rr3 = await pub.waitForTransactionReceipt({ hash: r3.json['txHash'] as Hex });
+      for (let i = 0; i < 50 && (decodeState(new FileStateBackend(crashed).read() ?? '').get(31337)?.sends.length ?? 0) > 0; i++) await new Promise((res) => setTimeout(res, 100));
+      const after = decodeState(readFileSync(crashed, 'utf8')).get(31337);
+      expect(after?.sends).toEqual([]);
+      // The budget the restarted process holds is exactly the gas the three transactions paid (prior spend included).
+      const paid = [r1, rr2, rr3].reduce((sum, r) => sum + r.gasUsed * r.effectiveGasPrice, 0n);
+      expect((after?.budget.spentWei ?? 0n) - (left?.budget.spentWei ?? 0n)).toBe(paid - (left?.sends[0]?.reservedWei ?? 0n));
+    } finally {
+      await rpc('evm_setAutomine', [true]);
+      await second?.server.close();
+      second?.dispose();
+    }
+  }, 90_000);
 });
 
