@@ -1,4 +1,4 @@
-import { CHAINS, ChainAdapterError, ghostPayRouterAbi, grossForNet, type Hex, type Address, type LogFilter, type RpcLog } from '@ghostpay/chain-adapters';
+import { CHAINS, ChainAdapterError, ghostPayRouterAbi, grossForNet, type Hex, type Address, type LogFilter, type RpcLog, type ScanCursor } from '@ghostpay/chain-adapters';
 import { encodeMetaAddress, generateKeySet, parseMetadata, unsafeRevealSecret } from '@ghostpay/core-crypto';
 import { describe, expect, it, vi } from 'vitest';
 import { decodeAbiParameters, encodeFunctionData } from 'viem/utils';
@@ -758,6 +758,35 @@ describe('WEB-APP-04 / CHAIN-ADAPTERS-03: checkpoints', () => {
     const second = await runScan({ ...base, client: chainWith(2700, [near.log]), cursor: cp, viewingKey: unsafeRevealSecret(s.keys.viewingSecret) });
     expect(second.matches.map((m) => m.stealthAddress)).toEqual([near.stealthAddress]);
     expect(second.matches[0]?.receipt).toBe('verified');
+  });
+
+  it('does not save the checkpoint past a pending payment when a reorg is reported above the page start', async () => {
+    const keys = generateKeySet();
+    const small = { ...chain, getLogsMaxRange: 10, finalityDepth: 20 };
+    const pay = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(keys), block: 585, index: 0, caller: FAKE_ROUTER });
+    const base = chainWith(600, [pay.log]);
+    let reads = 0;
+    // Block 599, the end of the last window read (not the head), changes hash between its boundary read and the re-read,
+    // so the rollback point (590) is above the page start (100).
+    const client = {
+      ...base,
+      getBlock: async (n: bigint) => {
+        const b = await base.getBlock(n);
+        return n === 599n && b !== null && ++reads > 1 ? { ...b, hash: blockHash(5_000_599) as Hex } : b;
+      },
+    };
+    const saved: ScanCursor[] = [];
+    const res = await runScan({
+      chain: small, manifest, client, cursor: { nextBlock: 100n },
+      spendingPublicKeyHex: hexOf(keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal,
+      checkpoints: { load: () => saved.at(-1), save: (_id, _k, c) => { saved.push(c); }, clear: () => undefined },
+    });
+    expect(res.matches.map((m) => m.stealthAddress)).toEqual([pay.stealthAddress]);
+    expect(res.matches[0]?.receipt).toBe('pending');
+    expect(saved.length).toBeGreaterThan(0);
+    // head 600 + 1 - finalityDepth 20 = 581, below the pending payment at block 585.
+    expect(saved.every((c) => c.nextBlock <= 581n)).toBe(true);
   });
 
   it('drop matches from orphaned blocks when a reorg is detected mid-scan', async () => {

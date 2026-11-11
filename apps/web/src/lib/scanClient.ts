@@ -265,9 +265,13 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       const pageHead = secondaryHead !== undefined && secondaryHead < res.head ? secondaryHead : res.head;
       reachableHead = pageHead;
       skipped += res.skipped;
-      const pageFrom = res.reorg?.rolledBackTo ?? cursor.nextBlock;
+      // A reorg can be reported at a block ABOVE this page's start (a later window's end changed hash after the logs
+      // below it were read). The page still starts at the cursor; only a rollback below it moves the start back.
+      const pageFrom = res.reorg !== undefined && res.reorg.rolledBackTo < cursor.nextBlock ? res.reorg.rolledBackTo : cursor.nextBlock;
       if (res.reorg !== undefined) {
-        persistenceFloor = res.reorg.rolledBackTo;
+        // The floor only ever moves back. Raising it to a rollback point above the page start would save the
+        // checkpoint past the finality tail and past pending matches, which the next session would never list.
+        if (res.reorg.rolledBackTo < persistenceFloor) persistenceFloor = res.reorg.rolledBackTo;
         // Hide uncertain results immediately, while retaining the caller's observations for a
         // confirmed invalidation. One provider's fork must never permanently poison the vault.
         const keep = all.filter((m) => m.announcement.blockNumber < res.reorg!.rolledBackTo);
@@ -312,7 +316,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       if (scanned + res.announcements.length > maxAnnouncements) {
         limitReached = true;
         if (res.reorg !== undefined) {
-          cursor = { nextBlock: res.reorg.rolledBackTo };
+          cursor = { nextBlock: pageFrom };
           p.checkpoints?.clear(p.chain.chainId, p.keyId);
         }
         p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, limitReached });
@@ -361,7 +365,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       if (all.length + uniqueClaims.items.length > maxMatches) {
         limitReached = true;
         if (res.reorg !== undefined) {
-          cursor = { nextBlock: res.reorg.rolledBackTo };
+          cursor = { nextBlock: pageFrom };
           p.checkpoints?.clear(p.chain.chainId, p.keyId);
         }
         p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, limitReached });
@@ -457,7 +461,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       // past these withheld logs and permanently skip them on resume.
       if (disagree) {
         if (res.reorg !== undefined) {
-          cursor = { nextBlock: res.reorg.rolledBackTo };
+          cursor = { nextBlock: pageFrom };
           p.checkpoints?.clear(p.chain.chainId, p.keyId);
         }
         p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length });
@@ -466,7 +470,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       if (deferred > 0) {
         backlog = deferred;
         if (res.reorg !== undefined) {
-          cursor = { nextBlock: res.reorg.rolledBackTo };
+          cursor = { nextBlock: pageFrom };
           p.checkpoints?.clear(p.chain.chainId, p.keyId);
         }
         p.onProgress?.({ nextBlock: cursor.nextBlock, scanned, matches: all.length, skipped, caughtUp: false, discrepancies: discrepancies.length, backlog });
