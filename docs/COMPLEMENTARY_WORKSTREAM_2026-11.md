@@ -32,7 +32,7 @@ guarantee. Nothing was published, tagged on the remote, or deployed.
 | 12 | Crypto implementation review | P0 | Audit 27. EXTRA05-F1 (Low) fixed: registry lookup now enforces the EIP-55 checksum on mixed-case input. Cross-checks against a separate plain-bigint secp256k1 reference, an OpenSSL scrypt/AES-GCM check and EIP-712 "Ether Mail" vectors. | core-crypto 71, invoice-schema 635, chain-adapters 341 (+18 skipped). | Re-check against live EIP pages (not reachable from this session) |
 | 13 | Privacy threat model and exposure matrix | P1 | `docs/threat-model/{PRIVACY_THREAT_MODEL,metadata-exposure-matrix}.md`, `docs/user/privacy-limits.md`. `privacyInvariants.test.ts` (TypeScript-AST based) pins no telemetry, no third-party origins and three global-`fetch` sites. | 14 tests; injected probes fail them. | 15 mitigations handed to owner teams (threat model section 9) |
 | 14 | Multi-chain qualification | P1 | `docs/chains/QUALIFICATION-2026-11.md`. Fixed SOL-1 (non-adjacent duplicate signatures produced duplicate records), TRON-1 (non-canonical protobuf accepted) and TRON-3 (unhashed node JSON trusted). | solana-stealth 108, tron-adapter 73, BTC packages 369/158/161. | See section 3 |
-| 15 | Independent adversarial review | P0 | 5 reviewers plus 2 refuting skeptics per finding over the whole diff: 20 findings, 12 upheld, 7 split, 1 refuted. All 12 upheld findings and 6 split ones fixed in `e387a52`; a re-review then checked the fixes. | Section 2. | 0% |
+| 15 | Independent adversarial review | P0 | 5 reviewers plus 2 refuting skeptics per finding over the whole diff: 20 findings, 12 upheld, 7 split, 1 refuted. All 12 upheld findings and 6 split ones fixed in `e387a52`. A re-review of that commit found 7 more (incomplete or inconsistent fixes); all fixed in `959b257`. | Section 2. | 0% |
 
 ## 2. Adversarial review outcomes
 
@@ -54,6 +54,17 @@ Upheld and fixed:
 From split votes, fixed: atomic backup rotation; 404s under `/assets` no longer cached as immutable; IPFS CID wording;
 Echidna/Mythril "no harness" wording; Tron test-count wording. Not changed: a release-build "ignored files" check.
 Release builds run on a fresh CI checkout, so that case is not reachable there.
+
+Second round (re-review of `e387a52`, all fixed in `959b257`):
+
+- The AST `fetch` check missed `(globalThis as T).fetch`, the cast idiom the codebase already uses. Detection now
+  unwraps casts, parentheses and `!`, and the detector has unit cases (15 flagged, 5 not flagged).
+- The trust-root test rejected valid OpenSSH key types (ecdsa-sk, nistp384/521).
+- The Caddy configs still marked `/assets` 404s immutable.
+- The backup swap could lose the old backup if `mv` failed.
+- `hosting.md` and `mirror-hosting.md` still said to write the CID into the attested manifest and to compare served
+  files with `SHA256SUMS`.
+- `testing.md` and the developer README still said Echidna is not in CI.
 
 ## 3. Multi-chain readiness (separate from the EVM beta)
 
