@@ -39,11 +39,13 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
 8. No network-reachable "light indexer" (Feature 5); scanning uses the user's RPC through `chain-adapters`.
 
 ## Behaviour choices the specs left open
-9. **Relayer wire format.** `apps/relayer` did not exist when this was written, so the client follows APP_AND_RELAYER_SPEC section 3 literally:
+9. **Relayer wire format.** The client speaks the format `apps/relayer` parses (`src/validate.ts`):
    `POST /v1/quote {chainId, token, owner, destination, amount}` -> `{fee, feeTo, expiresAt, quoteToken}` and
-   `POST /v1/sweep {sweep, sweepSig, permit, quoteToken}` -> `{txHash}`. All uint256 values are decimal strings. `permit` is
-   `{value, deadline, v, r, s}` (the `sweepWithPermit` tuple). If the relayer chooses other names this client needs a one-file change
-   (`src/lib/relayerClient.ts`). The client rejects a quote above the 3 % published cap before signing anything.
+   `POST /v1/sweep {chainId, sweep, sweepSig, permit, quoteToken}` -> `{txHash}`. The top-level `chainId` on the sweep is
+   required by the relayer (relayer DEVIATIONS item 1) although APP_AND_RELAYER_SPEC section 3 omits it. All uint256 values are
+   decimal strings. `permit` is `{value, deadline, v, r, s}` (the `sweepWithPermit` tuple). Errors are `{error: {code}}`.
+   `src/lib/relayerContract.test.ts` runs this client against the relayer's real parsers and HTTP server, so a change on one side
+   alone fails CI. The client rejects a quote above the 3 % published cap before signing anything.
 10. **Relayed sweeps need an ERC-2612 token** (the router sweep contract pulls with a permit). Other cases use the **direct sweep**: the
     stealth key signs a plain EIP-1559 transfer (ERC-20 `transfer` or native) that the stealth address pays gas for. The signed transaction
     is checked to carry the hash returned by the RPC.
@@ -71,7 +73,9 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     that were never in a vault have no step-up passphrase.
 12. **Gas buffer sizing** (Feature 1, spec 13): `calculateBuffer` over `max(100 000, eth_estimateGas of the token transfer + 25 %)`
     (fails closed when the simulation fails), `2 x eth_gasPrice` as max fee, `DEFAULT_BUFFER_SAFETY_BPS` (20 %), a hard cap of 0.01
-    native coin, and a 60 s quote lifetime, re-checked before the wallet is asked. It needs the user's RPC. Buffer payments go through
+    native coin, and a 60 s quote lifetime, re-checked before the wallet is asked. On OP Stack chains the quote and the re-check add the
+    L1 data and operator fee reserve the direct sweep demands (2 x the GasPriceOracle quote for an ERC-20 transfer at the buffer's gas
+    limit, `src/lib/opStackFee.ts`, shared with `directSweep`); an unreadable oracle refuses the quote. It needs the user's RPC. Buffer payments go through
     approval (permit + buffer needs a deferred router change). Invoice v2 `bufferPolicy` (ADR-0024): declined hides the buffer; accepted
     bounds it by `min(maxWei, cap)` and raises a smaller estimate to `minWei` (shown); `buildFinal` re-checks the bounds. The Create page
     has no control for the policy yet (v2 invoices can only be produced through `buildInvoiceLink({ bufferPolicy })`). The fiat

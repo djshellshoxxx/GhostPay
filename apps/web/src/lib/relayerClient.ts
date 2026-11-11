@@ -130,7 +130,10 @@ export async function requestQuote(base: string, q: QuoteRequest, fetchFn: Fetch
   return { fee: BigInt(fee), feeTo: getAddress(feeTo), expiresAt, quoteToken };
 }
 
+/** `POST /v1/sweep` body, exactly as the relayer's `parseSweepRequest` (apps/relayer/src/validate.ts) reads it. */
 export interface SweepSubmission {
+  /** Chain the order is signed for; the relayer requires it at the top level and binds the sweep to it. */
+  readonly chainId: number;
   readonly sweep: {
     readonly token: Address;
     readonly owner: Address;
