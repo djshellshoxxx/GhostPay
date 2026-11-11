@@ -57,10 +57,12 @@ tar --sort=name --owner=0 --group=0 --numeric-owner --mode='u=rwX,go=rX' \
   --transform 's,^dist,ghostpay-web,' -C apps/web -cf - dist | gzip -n -9 > "$OUT_DIR/$tarball"
 
 # SBOM: production dependency tree from the lockfile. The CycloneDX serialNumber is random per run, so it is
-# replaced with a value derived from the lockfile digest to keep the file reproducible.
+# replaced with a value derived from the lockfile digest; the root component name (npm uses the checkout directory
+# name) is replaced with the package.json name. Both keep the file reproducible across machines and paths.
 lock_sha="$(gp_sha256 package-lock.json)"
 npm sbom --sbom-format cyclonedx --omit dev --sbom-type application > "$OUT_DIR/sbom.cdx.json.tmp"
-node "$here/normalize-sbom.mjs" "$OUT_DIR/sbom.cdx.json.tmp" "$lock_sha" "$SOURCE_DATE_EPOCH" > "$OUT_DIR/sbom.cdx.json"
+root_pkg="$(node -p 'require("./package.json").name')"
+node "$here/normalize-sbom.mjs" "$OUT_DIR/sbom.cdx.json.tmp" "$lock_sha" "$SOURCE_DATE_EPOCH" "$root_pkg" > "$OUT_DIR/sbom.cdx.json"
 rm -f "$OUT_DIR/sbom.cdx.json.tmp"
 
 node "$here/gen-release-manifest.mjs" --out-dir "$OUT_DIR" --tarball "$tarball" --version "$VERSION" \
