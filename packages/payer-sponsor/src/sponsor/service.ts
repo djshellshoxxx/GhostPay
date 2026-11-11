@@ -113,6 +113,8 @@ interface StoredQuote {
   readonly bucket: string;
   /** PH-4 only: at most one paymaster authorisation per quote. */
   sponsored: boolean;
+  /** PH-4 only: a sponsorUserOp request holds this quote (claimed synchronously, R10-2). */
+  sponsoring?: boolean;
 }
 
 const TRANSFER_TOPIC = toEventSelector('Transfer(address,address,uint256)');
@@ -295,25 +297,34 @@ export class SponsorService {
       const cfg = this.chainConfig(req.chainId);
       this.takeToken(ctx);
       const q = this.openQuote(req.quoteId, 'erc4337-paymaster', req.chainId);
-      const pm = await this.checkUserOp(cfg, q, req);
-      if (q.sponsored) throw new PayerSponsorError('QUOTE_UNKNOWN', 'quote already used for a paymaster authorisation');
-      const signer = this.o.paymasterSigner;
-      if (signer === undefined) throw new PayerSponsorError('MODE_UNAVAILABLE', 'paymaster signer not configured');
-      // Short-lived signature (CONTRACTS-POOLS-01): minutes at most, never past the quote.
-      const quoteEnd = BigInt(Math.floor(q.expiresAt / 1000));
-      const sigEnd = BigInt(Math.floor(this.now() / 1000) + (this.o.paymasterValiditySeconds ?? 120));
-      const validUntil = sigEnd < quoteEnd ? sigEnd : quoteEnd;
-      const params: PaymasterParams = {
-        paymaster: pm.paymaster,
-        verificationGasLimit: 200_000n,
-        postOpGasLimit: 50_000n,
-        validUntil,
-        validAfter: 0n,
-      };
-      const draft: PackedUserOperation = { ...req.userOp, paymasterAndData: encodePaymasterAndData(params, DUMMY_PAYMASTER_SIGNATURE) };
-      const signature = await signer(paymasterSignedHash(draft, params, req.chainId));
-      q.sponsored = true;
-      return { value: { paymasterAndData: encodePaymasterAndData(params, signature), validUntil } };
+      // R10-2: claim the quote before the first await so concurrent requests on it cannot each be
+      // signed. The claim is released only if the request fails before the signer is invoked (no
+      // signature can exist); once the signer has been called the quote stays consumed.
+      if (q.sponsored || q.sponsoring === true) throw new PayerSponsorError('QUOTE_UNKNOWN', 'quote already used for a paymaster authorisation');
+      q.sponsoring = true;
+      try {
+        const pm = await this.checkUserOp(cfg, q, req);
+        const signer = this.o.paymasterSigner;
+        if (signer === undefined) throw new PayerSponsorError('MODE_UNAVAILABLE', 'paymaster signer not configured');
+        // Short-lived signature (CONTRACTS-POOLS-01): minutes at most, never past the quote.
+        const quoteEnd = BigInt(Math.floor(q.expiresAt / 1000));
+        const sigEnd = BigInt(Math.floor(this.now() / 1000) + (this.o.paymasterValiditySeconds ?? 120));
+        const validUntil = sigEnd < quoteEnd ? sigEnd : quoteEnd;
+        const params: PaymasterParams = {
+          paymaster: pm.paymaster,
+          verificationGasLimit: 200_000n,
+          postOpGasLimit: 50_000n,
+          validUntil,
+          validAfter: 0n,
+        };
+        const draft: PackedUserOperation = { ...req.userOp, paymasterAndData: encodePaymasterAndData(params, DUMMY_PAYMASTER_SIGNATURE) };
+        const hash = paymasterSignedHash(draft, params, req.chainId);
+        q.sponsored = true; // from here on a signature may exist, whatever the signer reports
+        const signature = await signer(hash);
+        return { value: { paymasterAndData: encodePaymasterAndData(params, signature), validUntil } };
+      } finally {
+        q.sponsoring = false;
+      }
     });
   }
 

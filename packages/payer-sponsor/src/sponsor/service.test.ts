@@ -325,6 +325,41 @@ describe('PH-4 sponsorUserOp / submitUserOp', () => {
     await h.svc.sponsorUserOp(CTX, req);
     await code(h.svc.sponsorUserOp(CTX, req), 'QUOTE_UNKNOWN');
   });
+  it('R10-2: concurrent requests on one quote yield exactly one paymaster signature', async () => {
+    const h = harness();
+    const { req } = await stage(h);
+    const n = 5;
+    const r = await Promise.allSettled(Array.from({ length: n }, () => h.svc.sponsorUserOp(CTX, req)));
+    const ok = r.filter((x) => x.status === 'fulfilled');
+    const refused = r.filter((x): x is PromiseRejectedResult => x.status === 'rejected');
+    expect(ok).toHaveLength(1);
+    expect(refused).toHaveLength(n - 1);
+    for (const x of refused) expect(x.reason).toMatchObject({ code: 'QUOTE_UNKNOWN' });
+    // a later sequential call after the success is still refused
+    await code(h.svc.sponsorUserOp(CTX, req), 'QUOTE_UNKNOWN');
+  });
+  it('R10-2: a request that fails validation does not consume the quote', async () => {
+    const h = harness();
+    const { q, req } = await stage(h);
+    h.chain.tokenBalance = GROSS + q.sponsorFee - 1n;
+    await code(h.svc.sponsorUserOp(CTX, req), 'BAD_REQUEST');
+    h.chain.tokenBalance = GROSS + q.sponsorFee;
+    await expect(h.svc.sponsorUserOp(CTX, req)).resolves.toBeDefined();
+    await code(h.svc.sponsorUserOp(CTX, req), 'QUOTE_UNKNOWN');
+  });
+  it('R10-2: a signer failure burns the quote (a signature may exist)', async () => {
+    let calls = 0;
+    const h = harness({
+      paymasterSigner: async () => {
+        calls += 1;
+        throw new Error('hsm down');
+      },
+    });
+    const { req } = await stage(h);
+    await code(h.svc.sponsorUserOp(CTX, req), 'UNAVAILABLE');
+    await code(h.svc.sponsorUserOp(CTX, req), 'QUOTE_UNKNOWN');
+    expect(calls).toBe(1);
+  });
   it('step 1 refuses every deviation from the expected batch and the fresh-account rule', async () => {
     const h = harness();
     const routerCalldata = encodeRouterPay(ROUTER, payArgs());
