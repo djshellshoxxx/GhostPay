@@ -112,7 +112,9 @@ if [ -n "$filter" ]; then jq -r "$filter" "$page"; else cat "$page"; fi
 `;
 
 const REPO = 'djshellshoxxx/GhostPay';
-const GATES = ['typescript', 'contracts', 'e2e', 'secrets-and-egress'];
+// The check-run names ci.yml emits (e2e is a matrix job); runs count only when GitHub Actions created them.
+const GATES = ['typescript', 'contracts', 'e2e (full)', 'e2e (lean)', 'secrets-and-egress'];
+const ACTIONS = { slug: 'github-actions' };
 
 function pr(number, { ref = `codex/ghostpay-cloud-${number}`, draft = false, login = 'github-actions[bot]',
   headRepo = REPO } = {}) {
@@ -139,7 +141,7 @@ function runIntegrate(prs, { checks = {}, files = {}, reviews = {}, permissions 
     chmodSync(join(bin, 'gh'), 0o755);
     writeFileSync(join(dir, 'pulls.json'), JSON.stringify(prs));
     for (const p of prs) {
-      const runs = checks[p.number] ?? GATES.map((name) => ({ name, conclusion: 'success' }));
+      const runs = checks[p.number] ?? GATES.map((name) => ({ name, conclusion: 'success', app: ACTIONS }));
       writeFileSync(join(dir, `checks-${p.head.sha}.json`), JSON.stringify({ check_runs: runs }));
       const changed = files[p.number] ?? ['apps/web/src/lib/invoice.ts'];
       writeFileSync(join(dir, `files-${p.number}.json`), JSON.stringify(changed.map((filename) => ({ filename }))));
@@ -235,10 +237,11 @@ test('integrate ignores fork, deleted-fork, foreign-author, draft and off-prefix
 test('integrate requires every required check, and every run of it, to be green', () => {
   const { merges } = runIntegrate([pr(9), pr(10), pr(11)], {
     checks: {
-      9: GATES.filter((n) => n !== 'contracts').map((name) => ({ name, conclusion: 'success' })),
+      9: GATES.filter((n) => n !== 'contracts').map((name) => ({ name, conclusion: 'success', app: ACTIONS })),
       // A failing run listed before a green one of the same name (e.g. a second workflow's e2e job).
-      10: [{ name: 'e2e', conclusion: 'failure' }, ...GATES.map((name) => ({ name, conclusion: 'success' }))],
-      11: GATES.map((name) => ({ name, conclusion: name === 'e2e' ? null : 'success' })),
+      10: [{ name: 'e2e (full)', conclusion: 'failure', app: ACTIONS },
+        ...GATES.map((name) => ({ name, conclusion: 'success', app: ACTIONS }))],
+      11: GATES.map((name) => ({ name, conclusion: name === 'e2e (lean)' ? null : 'success', app: ACTIONS })),
     },
   });
   assert.deepEqual(merges, []);

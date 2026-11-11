@@ -74,9 +74,12 @@ jobs:
             [ -n "$number" ] || continue
             checks="$(gh api "repos/$GH_REPO/commits/$head/check-runs?per_page=100")"
             valid=true
-            for name in 'typescript' 'contracts' 'e2e' 'secrets-and-egress'; do
+            # The check-run names ci.yml really emits: e2e is a matrix job, so it reports one run per profile.
+            # Only runs created by GitHub Actions itself count, so another app cannot post a same-named green run.
+            # Kept in step with ci.yml by scripts/tests/ghostpay-codex-cloud-gate.test.mjs.
+            for name in 'typescript' 'contracts' 'e2e (full)' 'e2e (lean)' 'secrets-and-egress'; do
               status="$(printf '%s' "$checks" | jq -r --arg name "$name" \
-                '[.check_runs[] | select(.name == $name)]
+                '[.check_runs[] | select(.name == $name and .app.slug == "github-actions")]
                  | if length == 0 then "missing"
                    elif all(.conclusion == "success") then "success"
                    else (map(.conclusion // "pending") | join(",")) end')"
