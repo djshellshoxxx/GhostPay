@@ -1187,3 +1187,57 @@ describe('Pay: invoice expiry never hides a payment that was already handed to t
     expect(wallet.calls.filter((c) => c.method === 'eth_sendTransaction')).toHaveLength(1);
   }, 20000);
 });
+
+describe('Pay: the gas buffer opt-in belongs to one invoice (R05-3)', () => {
+  function bufferChain(wallet: MockWallet): ReturnType<typeof mockRpc> {
+    const base = chainSeeing(wallet);
+    return mockRpc(84532, (method, params) => {
+      if (method === 'eth_call') return `0x${'0'.repeat(64)}`;
+      if (method === 'eth_estimateGas') return '0xfde8';
+      return base.request(method, params);
+    });
+  }
+  async function switchTo(fragment: string): Promise<void> {
+    act(() => {
+      window.history.replaceState(null, '', `/${fragment}`);
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    });
+    await screen.findByRole('heading', { name: 'Review payment' });
+  }
+
+  it('a newly opened ERC-20 invoice starts with the gas buffer unticked and no stale estimate', async () => {
+    const first = await makeParsed();
+    const second = await makeParsed({ tokenAmount: '101' });
+    const wallet = new MockWallet();
+    const rpc = bufferChain(wallet);
+    const user = openWith(first.fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
+    await user.click(await screen.findByLabelText<HTMLInputElement>(/Add a gas buffer/));
+    await screen.findByText(/Extra 0\.00024 ETH/);
+
+    await switchTo(second.fragment);
+    await screen.findByText('Fixed: 101 USDC');
+    const box = await screen.findByLabelText<HTMLInputElement>(/Add a gas buffer/);
+    expect(box.checked).toBe(false);
+    expect(screen.queryByText(/Extra 0\.00024 ETH/)).toBeNull();
+  });
+
+  it('a seller-declined v2 invoice opened after ticking the buffer elsewhere can still be prepared', async () => {
+    const first = await makeParsed();
+    const second = await makeParsed({ bufferPolicy: { accepted: false, maxWei: '0', minWei: '0', refund: 'none' } });
+    const wallet = new MockWallet();
+    const rpc = bufferChain(wallet);
+    const user = openWith(first.fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(await screen.findByLabelText<HTMLInputElement>(/Add a gas buffer/));
+    await screen.findByText(/Extra 0\.00024 ETH/);
+
+    await switchTo(second.fragment);
+    expect(await screen.findByText('The seller does not accept a gas buffer for this invoice.')).toBeTruthy();
+    expect(screen.queryByLabelText(/Add a gas buffer/)).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' }, { timeout: 5000 });
+    expect(screen.queryAllByRole('alert').map((a) => a.textContent ?? '').join(' | ')).not.toMatch(/does not accept a gas buffer/);
+    expect(screen.queryByText('payERC20WithBuffer')).toBeNull();
+  });
+});

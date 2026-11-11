@@ -274,6 +274,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setGranted(undefined);
     setApprovalHash(undefined);
     setPermitDeclined(false);
+    // The gas buffer is an opt-in for one invoice; its quote is for that invoice's policy and clock.
+    setUseBuffer(false);
+    setBufferQuote(undefined);
     setWallet(undefined);
     setStatus('');
     setError(undefined);
@@ -714,7 +717,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         const rt = await runtime();
         guard();
         let buffer: BufferQuote | undefined;
-        if (useBuffer && isErc20) {
+        // Never carry an opt-in into an invoice whose seller policy declines a buffer (ADR-0023).
+        if (useBuffer && isErc20 && bufferOffered(invoice)) {
           const bt = ctx.review.token;
           // Spec 13: re-estimate at confirm with a token-specific transfer simulation from the payer's account.
           buffer = await refreshBuffer(bt === undefined || bt.address === 'native' ? undefined : { token: bt.address, from: wallet.account, amount: ctx.request.netAmount });
@@ -909,6 +913,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setApproval(undefined);
     setGranted(undefined);
     setApprovalHash(undefined);
+    setUseBuffer(false);
+    setBufferQuote(undefined);
     setPhase('input');
   };
 
