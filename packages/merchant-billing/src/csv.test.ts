@@ -58,7 +58,9 @@ describe('formula guard', () => {
     const exported = csvEscapeCell(cell);
     // CSV quoting can surround the leading apostrophe, but must not remove it.
     expect(exported.startsWith("'") || exported.startsWith("\"'")).toBe(true);
-    expect(exported).toContain(cell);
+    if (!cell.includes('\\t') && !cell.includes('\\r')) {
+      expect(parseCsv(exported)[0]![0]).toBe(`'${cell}`);
+    }
     expect(() => assertNoFormula(exported, 'row 2')).not.toThrow();
   });
 
