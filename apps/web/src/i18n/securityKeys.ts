@@ -4,6 +4,12 @@ import type { MessageKey } from './catalog';
  * Explicit keys, not substring/prefix heuristics. Update the exhaustive classification test with new source messages.
  */
 export const SECURITY_KEY_GROUPS = {
+  sharedNoticeLabels: [
+    'common.notice.info',
+    'common.notice.warn',
+    'common.notice.error',
+    'common.notice.ok',
+  ],
   settingsTrustAndPrivacy: [
     'settings.notice.plaintext',
     'settings.rpc.hint',

@@ -2,8 +2,10 @@ import { useId, useState, type ReactNode } from 'react';
 import { sanitizeDisplayText } from '../lib/sanitize';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 
+// i18n-use: common.notice.info common.notice.warn common.notice.error common.notice.ok
 export function Notice(props: { readonly kind: 'info' | 'warn' | 'error' | 'ok'; readonly title?: string; readonly children: ReactNode }): ReactNode {
-  const label = { info: 'Note', warn: 'Warning', error: 'Problem', ok: 'Done' }[props.kind];
+  const t = useI18nOptional()?.t ?? SOURCE_TRANSLATOR.t;
+  const label = t(`common.notice.${props.kind}`);
   return (
     <div className={`notice notice-${props.kind}`} role={props.kind === 'error' ? 'alert' : 'note'}>
       <strong className="notice-title">

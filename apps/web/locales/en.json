@@ -1181,6 +1181,10 @@
     "backup.tags.archived": "Last tag archive downloaded {time}. Tags in it: {count, number}, with scan history. Tags saved, changed or deleted after that, here or in another tab, are not in it. Download a new archive to include them.",
     "backup.tags.archivedNoHistory": "Last tag archive downloaded {time}. Tags in it: {count, number}, without scan history. Tags saved, changed or deleted after that, here or in another tab, are not in it. Download a new archive to include them.",
     "common.copy.copied": "Copied",
-    "common.copy.failed": "Copy failed: select the text manually"
+    "common.copy.failed": "Copy failed: select the text manually",
+    "common.notice.info": "Note",
+    "common.notice.warn": "Warning",
+    "common.notice.error": "Problem",
+    "common.notice.ok": "Done"
   }
 }
