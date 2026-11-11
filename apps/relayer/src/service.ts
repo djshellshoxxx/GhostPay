@@ -3,7 +3,9 @@ import {
   ChainAdapterError,
   FEE_SCHEDULE,
   buildSweepTypedData,
+  diagnoseSignedPermit,
   sponsorFee,
+  type SignedPermitDiagnosis,
   type SweepOrder,
 } from '@ghostpay/chain-adapters';
 import {
@@ -226,8 +228,20 @@ const OWNER_FAILURE_WINDOW_MS = 3_600_000;
 const OWNER_STRIKE_CODES: ReadonlySet<string> = new Set([
   'insufficient_token_balance', 'insufficient_allowance', 'permit_expired', 'permit_failed', 'simulation_reverted',
   'token_transfer_failed', 'fee_below_gas_cost', 'gas_limit_too_high', 'invalid_signature', 'expired',
-  'permit_value_too_low', 'invalid_order',
+  'permit_value_too_low', 'invalid_order', 'permit_nonce_consumed', 'permit_signature_invalid', 'permit_unsupported_token',
 ]);
+
+/**
+ * Spec 04: refusal class for a permit-path simulation revert, by what the token says about the signed permit.
+ * `valid_for_current_nonce` means the permit itself looks good, so the transfer (or a non-standard token) failed: the
+ * wide `permit_failed` class, which names both causes.
+ */
+const PERMIT_DIAGNOSIS: Readonly<Record<SignedPermitDiagnosis, readonly [number, string]>> = {
+  nonce_consumed: [422, 'permit_nonce_consumed'],
+  sig_invalid: [422, 'permit_signature_invalid'],
+  unsupported_token: [422, 'permit_unsupported_token'],
+  valid_for_current_nonce: [422, 'permit_failed'],
+};
 
 /** Maps a simulation revert to its HTTP class; only fixed class names leave this function. */
 export function revertToError(r: SimulationRevert): RelayerError {
@@ -795,18 +809,13 @@ export class RelayerService {
     }
     // With a permit still in use the allowance is short, so a generic transfer revert means the permit was not
     // accepted (bad signature, consumed nonce, non-standard token): report that class instead of a generic one.
-    const permitInUse = call.permit !== undefined;
-    const simulationError = (e: SimulationRevert): RelayerError => {
-      const mapped = revertToError(e);
-      if (permitInUse && (mapped.code === 'simulation_reverted' || mapped.code === 'token_transfer_failed')) return new RelayerError(422, 'permit_failed');
-      return mapped;
-    };
+    const simulationError = (e: SimulationRevert): Promise<RelayerError> => this.simulationError(rt, call, e);
 
     let firstSimulation: Awaited<ReturnType<ChainClient['simulateSweep']>>;
     try {
       firstSimulation = await op(() => client.simulateSweep(call));
     } catch (e) {
-      if (e instanceof SimulationRevert) throw simulationError(e);
+      if (e instanceof SimulationRevert) throw await simulationError(e);
       throw e;
     }
     if (firstSimulation.gasLimit > cfg.maxGasLimit) throw new RelayerError(422, 'gas_limit_too_high');
@@ -831,7 +840,7 @@ export class RelayerService {
     try {
       finalSimulation = await op(() => client.simulateSweep(call));
     } catch (e) {
-      if (e instanceof SimulationRevert) throw simulationError(e);
+      if (e instanceof SimulationRevert) throw await simulationError(e);
       throw e;
     }
     if (finalSimulation.gasLimit > cfg.maxGasLimit) throw new RelayerError(422, 'gas_limit_too_high');
@@ -957,6 +966,30 @@ export class RelayerService {
       this.settleReceipt(rt, sent, { status: r.status, gasUsed: r.gasUsed });
     })();
     return { value: { txHash }, settled };
+  }
+
+  /**
+   * Maps a simulation revert to its class. With a permit still in use the allowance is short, so a generic transfer
+   * revert means the permit was not accepted or the transfer failed; the token's `nonces(owner)` and
+   * `DOMAIN_SEPARATOR()` then tell a spent nonce, a bad signature and a non-ERC-2612 token apart (spec 04). These two
+   * reads run only on this failure path. If they fail, the wide `permit_failed` class stands (the simulation did revert).
+   */
+  private async simulationError(rt: ChainRuntime, call: SweepCall, e: SimulationRevert): Promise<RelayerError> {
+    const mapped = revertToError(e);
+    const p = call.permit;
+    if (p === undefined || (mapped.code !== 'simulation_reverted' && mapped.code !== 'token_transfer_failed')) return mapped;
+    let diagnosis: SignedPermitDiagnosis = 'valid_for_current_nonce';
+    try {
+      const state = await rt.client.readPermitState(call.sweep.token, call.sweep.owner);
+      diagnosis = await diagnoseSignedPermit({
+        owner: call.sweep.owner, spender: call.sweepRelayer, value: p.value, deadline: p.deadline, v: p.v, r: p.r, s: p.s, ...state,
+      });
+    } catch {
+      this.d.metrics?.inc('relayer_permit_diagnosis_failures_total', { chain_id: rt.cfg.chainId });
+    }
+    const [status, code] = PERMIT_DIAGNOSIS[diagnosis];
+    this.d.metrics?.inc('relayer_permit_failures_total', { chain_id: rt.cfg.chainId, class: code });
+    return new RelayerError(status, code);
   }
 
   /**

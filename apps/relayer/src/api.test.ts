@@ -766,13 +766,15 @@ describe('permit griefing fallback ladder (spec 04)', () => {
     expect(s.fake.sent.map((x) => x.call.permit === undefined)).toEqual([false, false, true]);
   });
 
-  it('a permit the token rejects (generic allowance revert) is reported as permit_failed, nothing sent', async () => {
+  it('a permit the token rejects (generic allowance revert) is classified from the token state, nothing sent', async () => {
     const s = await start();
     s.fake.allowance = 0n;
     s.fake.simulateError = new SimulationRevert();
+    // ERC-2612 token whose DOMAIN_SEPARATOR the (dummy) permit signature does not match: a bad signature.
+    s.fake.permitState = { nonce: 0n, domainSeparator: `0x${'cd'.repeat(32)}` };
     const r = await call(s, 'POST', '/v1/sweep', (await prepare(s, { permit: true })).body);
     expect(r.status).toBe(422);
-    expect(errCode(r)).toBe('permit_failed');
+    expect(errCode(r)).toBe('permit_signature_invalid');
     expect(s.fake.sent).toHaveLength(0);
     // A specific contract error keeps its own class.
     s.fake.simulateError = new SimulationRevert('Expired');
@@ -784,7 +786,7 @@ describe('permit griefing fallback ladder (spec 04)', () => {
     s.fake.allowance = 0n;
     s.fake.simulateError = new SimulationRevert();
     for (const n of [1n, 2n, 3n]) {
-      expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { permit: true, nonce: n })).body))).toBe('permit_failed');
+      expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { permit: true, nonce: n })).body))).toBe('permit_unsupported_token');
     }
     const sims = s.fake.simulations;
     s.fake.simulateError = undefined;

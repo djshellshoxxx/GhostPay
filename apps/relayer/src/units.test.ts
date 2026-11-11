@@ -247,6 +247,25 @@ describe('DailyBudget', () => {
     expect(b.remaining).toBe(20n);
     expect(b.reserve(21n)).toBe(false);
   });
+  it('a wall clock stepped back across midnight keeps today\'s spending (no budget reset)', () => {
+    let t = 86_400_000 * 10 + 1000;
+    const b = new DailyBudget(100n, () => t);
+    expect(b.reserve(90n)).toBe(true);
+    t -= 2000; // NTP step back into the previous UTC day
+    expect(b.used).toBe(90n);
+    expect(b.reserve(20n)).toBe(false);
+    t += 86_400_000 + 2000;
+    expect(b.used).toBe(0n);
+  });
+
+  it('restores a snapshot from today or a later day, and ignores one from an earlier day', () => {
+    const t = 86_400_000 * 10;
+    expect(new DailyBudget(100n, () => t, { day: 10, spentWei: 70n }).snapshot()).toEqual({ day: 10, spentWei: 70n });
+    const ahead = new DailyBudget(100n, () => t, { day: 11, spentWei: 70n }); // clock behind the last run
+    expect(ahead.remaining).toBe(30n);
+    expect(ahead.currentDay).toBe(11);
+    expect(new DailyBudget(100n, () => t, { day: 9, spentWei: 70n }).snapshot()).toEqual({ day: 10, spentWei: 0n });
+  });
 });
 
 describe('logging', () => {

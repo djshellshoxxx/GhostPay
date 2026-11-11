@@ -23,7 +23,7 @@ import type { Hex } from 'viem';
 export type SendStatus =
   /** Budget reserved and nonce assigned; not signed yet (a crash here provably broadcast nothing). */
   | 'reserved'
-  /** Signed (hash known) and about to be, or being, handed to the RPC; outcome not known. */
+  /** Signed and about to be, or being, handed to the RPC; outcome not known (hash absent only if the client lost it). */
   | 'signed'
   /** The RPC accepted it; waiting for, or looking up, its receipt. */
   | 'pending';
@@ -209,7 +209,8 @@ export function decodeState(text: string): Map<number, ChainState> {
       if (typeof status !== 'string' || !STATUSES.has(status)) fail(`${w}.status`);
       const txHash = r['txHash'];
       if (txHash !== undefined && (typeof txHash !== 'string' || !HASH.test(txHash))) fail(`${w}.txHash`);
-      if (status !== 'reserved' && txHash === undefined) fail(`${w}.txHash missing`);
+      // 'signed' may lack a hash when a client failed after handoff without one; only an accepted send must have it.
+      if (status === 'pending' && txHash === undefined) fail(`${w}.txHash missing`);
       return {
         id,
         nonce: int(r['nonce'], `${w}.nonce`),
@@ -264,7 +265,7 @@ export class StateJournal {
     private readonly now: () => number = Date.now,
   ) {
     const text = backend.read();
-    this.chains = text === null ? new Map() : decodeState(text);
+    this.chains = text === null ? new Map<number, ChainState>() : decodeState(text);
   }
 
   /** @returns The stored state of `chainId` (an empty default when none is stored). */

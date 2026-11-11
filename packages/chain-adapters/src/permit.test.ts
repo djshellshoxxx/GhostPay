@@ -185,7 +185,7 @@ describe('diagnoseSignedPermit (spec 04 relayer-side diagnosis)', () => {
     expect(await diagnoseSignedPermit({ ...e, s: 'nothex' as Hex })).toBe('sig_invalid');
     expect(await diagnoseSignedPermit({ ...e, r: `0x${'00'.repeat(32)}` })).toBe('sig_invalid');
     const n = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141n;
-    const high = `0x${(n - BigInt(e.s)).toString(16).padStart(64, '0')}`;
+    const high: Hex = `0x${(n - BigInt(e.s)).toString(16).padStart(64, '0')}`;
     expect(await diagnoseSignedPermit({ ...e, s: high, v: e.v === 27 ? 28 : 27 })).toBe('sig_invalid');
     expect(await diagnoseSignedPermit({ ...e, s: `0x${'ff'.repeat(32)}` })).toBe('sig_invalid');
   });

@@ -223,6 +223,22 @@ describe('parseConfig', () => {
     expect(() => parse({ ...good(), listen: { 'not a key': 1 } })).toThrow(/^config \$\.listen: unknown key \(name not shown\)$/);
   });
 
+  it('requires a state journal setting: an absolute file, or explicit ephemeral outside production', () => {
+    expect(parse(good({ state: { file: '/var/lib/ghostpay-relayer/state.json' } })).stateFile).toBe('/var/lib/ghostpay-relayer/state.json');
+    expect(parse(good()).stateFile).toBeUndefined();
+    const noState: Record<string, unknown> = { ...(good() as Record<string, unknown>) };
+    delete noState['state'];
+    expect(() => parse(noState)).toThrow(/config state: required/);
+    expect(() => parse(good({ state: {} }))).toThrow(/exactly one/);
+    expect(() => parse(good({ state: { file: '/x.json', ephemeral: true } }))).toThrow(/exactly one/);
+    expect(() => parse(good({ state: { ephemeral: false } }))).toThrow(/state.ephemeral: must be true/);
+    expect(() => parse(good(), { env: { NODE_ENV: 'production' } })).toThrow(/not allowed when NODE_ENV=production/);
+    for (const file of ['relative.json', '/dir/', '/a\0b', 5, `/${'a'.repeat(1100)}`]) {
+      expect(() => parse(good({ state: { file } }))).toThrow(/state.file: must be an absolute file path/);
+    }
+    expect(() => parse(good({ state: { path: '/x' } }))).toThrow(ConfigError);
+  });
+
   it('allows the local dev chain only with the explicit flag', () => {
     const raw = good({ allowDevChain: true, allowInsecureLocalhostRpc: true, chains: [chain({ chainId: DEV_CHAIN_ID, rpcUrl: 'http://127.0.0.1:8545', tokens: custom })] });
     const c = parse(raw);

@@ -77,3 +77,67 @@ describe('buildRelayer key separation', () => {
     await expect(buildRelayer({ ...common, quoteSecret: new Uint8Array(64).fill(0).map((x, i) => i < 32 ? 3 : x) })).rejects.toThrow(/must not equal or begin with the hot key/);
   });
 });
+
+describe('state journal wiring', () => {
+  it('opens an in-memory journal for state.ephemeral and a locked file journal for state.file', async () => {
+    const { mkdtempSync, rmSync, existsSync, writeFileSync } = await import('node:fs');
+    const { tmpdir } = await import('node:os');
+    const { join } = await import('node:path');
+    const { openJournal } = await import('./runtime.js');
+    const dir = mkdtempSync(join(tmpdir(), 'relayer-rt-'));
+    try {
+      expect(openJournal(testConfig(), Date.now).lock).toBeUndefined();
+      const stateFile = join(dir, 'state.json');
+      const relayer = await buildRelayer({
+        config: testConfig({ stateFile }),
+        hotKey: new Uint8Array(32).fill(3),
+        quoteSecret: new Uint8Array(32).fill(9),
+        logger: createLogger(() => undefined),
+        clients: new Map([[11155111, new FakeChain()]]),
+      });
+      expect(existsSync(`${stateFile}.lock`)).toBe(true);
+      // A second writer on the same state file is refused while the first holds a fresh lock.
+      writeFileSync(`${stateFile}.lock`, JSON.stringify({ pid: process.pid + 1, host: 'other', beatMs: Date.now() }));
+      expect(() => openJournal(testConfig({ stateFile }), Date.now)).toThrow(/locked by another/);
+      relayer.dispose();
+      expect(existsSync(`${stateFile}.lock`)).toBe(true); // not ours any more, so dispose leaves it
+      rmSync(`${stateFile}.lock`);
+      writeFileSync(stateFile, '{"version":9}');
+      expect(() => openJournal(testConfig({ stateFile }), Date.now)).toThrow(/state file is invalid/);
+      expect(existsSync(`${stateFile}.lock`)).toBe(false); // a failed open releases the lock it took
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('stops admitting work when the lock heartbeat finds the lock taken over', async () => {
+    const { vi } = await import('vitest');
+    const { mkdtempSync, rmSync, writeFileSync } = await import('node:fs');
+    const { tmpdir } = await import('node:os');
+    const { join } = await import('node:path');
+    const dir = mkdtempSync(join(tmpdir(), 'relayer-rt-'));
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] });
+    const lines: string[] = [];
+    try {
+      const stateFile = join(dir, 'state.json');
+      const relayer = await buildRelayer({
+        config: testConfig({ stateFile }),
+        hotKey: new Uint8Array(32).fill(3),
+        quoteSecret: new Uint8Array(32).fill(9),
+        logger: createLogger((l) => lines.push(l)),
+        clients: new Map([[11155111, new FakeChain()]]),
+      });
+      vi.advanceTimersByTime(10_000); // own heartbeat: fine
+      expect(relayer.service.health().status).toBe('ok');
+      writeFileSync(`${stateFile}.lock`, JSON.stringify({ pid: process.pid + 1, host: 'other', beatMs: Date.now() }));
+      vi.advanceTimersByTime(10_000);
+      await Promise.resolve();
+      expect(lines.join('\n')).toContain('state_lock_lost');
+      expect(relayer.service.health().status).toBe('shutting_down');
+      relayer.dispose();
+    } finally {
+      vi.useRealTimers();
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
