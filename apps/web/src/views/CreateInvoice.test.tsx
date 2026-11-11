@@ -4,7 +4,8 @@ import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeManifestJson } from '../test/fakeManifest';
-import { clearSession, generateSession } from '../lib/session';
+import { clearSession, generateSession, importSession } from '../lib/session';
+import { generateWaivedSession } from '../test/keys';
 import { makeServices, renderApp } from '../test/render';
 
 beforeEach(() => {
@@ -22,6 +23,44 @@ async function open(services = makeServices()): Promise<ReturnType<typeof userEv
   return user;
 }
 
+describe('Create invoice fiat gating (per chain and token)', () => {
+  const fiat = (): HTMLOptionElement => screen.getByRole<HTMLOptionElement>('option', { name: /Fiat price/ });
+  it('is disabled on a chain without a verified feed, even for the native token', async () => {
+    generateWaivedSession();
+    const user = await open();
+    await user.selectOptions(screen.getByLabelText('Chain'), screen.getByRole('option', { name: 'OP Sepolia' }));
+    expect(fiat().disabled).toBe(true);
+    expect(fiat().textContent).toMatch(/unavailable/);
+  });
+  it('is enabled only for pairs that have a verified feed (Sepolia and Base Sepolia ETH/USD, USDC/USD), not for other currencies', async () => {
+    generateWaivedSession();
+    const user = await open();
+    await user.selectOptions(screen.getByLabelText('Chain'), screen.getByRole('option', { name: 'Ethereum Sepolia' }));
+    expect(fiat().disabled).toBe(false);
+    await user.selectOptions(screen.getByLabelText('Token'), screen.getByRole('option', { name: 'USDC' }));
+    expect(fiat().disabled).toBe(false);
+    await user.selectOptions(screen.getByLabelText('Token'), screen.getByRole('option', { name: 'ETH' }));
+    expect(fiat().disabled).toBe(false);
+    await user.selectOptions(screen.getByLabelText('Chain'), screen.getByRole('option', { name: 'Base Sepolia' }));
+    expect(fiat().disabled).toBe(false);
+    await user.selectOptions(screen.getByLabelText('Token'), screen.getByRole('option', { name: 'USDC' }));
+    expect(fiat().disabled).toBe(false);
+    await user.clear(screen.getByLabelText('Currency (ISO code)'));
+    await user.type(screen.getByLabelText('Currency (ISO code)'), 'EUR');
+    expect(fiat().disabled).toBe(true);
+  });
+  it('falls back to a fixed token amount when the selection loses its feed', async () => {
+    generateWaivedSession();
+    const user = await open();
+    await user.selectOptions(screen.getByLabelText('Chain'), screen.getByRole('option', { name: 'Ethereum Sepolia' }));
+    await user.selectOptions(screen.getByLabelText('Pricing'), screen.getByRole('option', { name: /Fiat price/ }));
+    expect(screen.queryByLabelText('Token amount')).toBeNull();
+    await user.selectOptions(screen.getByLabelText('Chain'), screen.getByRole('option', { name: 'OP Sepolia' }));
+    expect(screen.getByLabelText('Token amount')).toBeTruthy();
+    expect(screen.getByLabelText<HTMLSelectElement>('Pricing').value).toBe('fixed_token');
+  });
+});
+
 describe('Create invoice', () => {
   it('asks for keys first', async () => {
     const user = await open();
@@ -30,8 +69,36 @@ describe('Create invoice', () => {
     expect(screen.getByRole('heading', { level: 2, name: 'Seller keys' })).toBeTruthy();
   });
 
-  it('creates a signed link, QR code and bearer-link warning, entirely locally', async () => {
+  it('L1-01: keeps the invoice form behind a backup or the typed waiver', async () => {
     generateSession();
+    const user = await open();
+    // The gate stands in for the whole view at its call site (App.tsx) and keeps the view's heading.
+    expect(screen.getByRole('heading', { level: 2, name: 'Create invoice' })).toBeTruthy();
+    expect(screen.getByText('Back up these seller keys first')).toBeTruthy();
+    expect(screen.getByText('These seller keys have no backup')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Create invoice link' })).toBeNull();
+    await user.type(screen.getByLabelText('To continue without a backup, type: continue without backup'), 'continue without');
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Continue without a backup' }).disabled).toBe(true);
+    await user.click(screen.getByRole('button', { name: 'Back up now' }));
+    expect(screen.getByRole('heading', { level: 2, name: 'Seller keys' })).toBeTruthy();
+    await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: 'Create invoice' }));
+    await user.type(screen.getByLabelText(/To continue without a backup/), ' Continue without backup ');
+    await user.click(screen.getByRole('button', { name: 'Continue without a backup' }));
+    expect(screen.getByRole('button', { name: 'Create invoice link' })).toBeTruthy();
+    // The waiver only unlocks invoicing: the keys still have no backup and the banner stays.
+    expect(screen.getByText('These seller keys have no backup')).toBeTruthy();
+  });
+
+  it('L1-01: opens the form directly for keys that have a copy elsewhere', async () => {
+    importSession({ spendingKeyHex: '11'.repeat(32), viewingKeyHex: '22'.repeat(32), signingKeyHex: '33'.repeat(32) });
+    await open();
+    expect(screen.getByRole('button', { name: 'Create invoice link' })).toBeTruthy();
+    expect(screen.queryByText('These seller keys have no backup')).toBeNull();
+    expect(screen.queryByText('Back up these seller keys first')).toBeNull();
+  });
+
+  it('creates a signed link, QR code and bearer-link warning, entirely locally', async () => {
+    generateWaivedSession();
     const fetchFn = vi.fn(() => Promise.reject(new Error('no network')));
     const user = await open(makeServices({ fetchFn }));
     await user.type(screen.getByLabelText('Token amount'), '25.5');
@@ -52,9 +119,10 @@ describe('Create invoice', () => {
     expect(fetchFn).not.toHaveBeenCalled();
   });
 
-  it('supports multiple items, encryption and token selection; fiat pricing is hard-disabled', async () => {
-    generateSession();
+  it('supports multiple items, encryption and token selection; fiat pricing is disabled without a feed', async () => {
+    generateWaivedSession();
     const user = await open();
+    await user.selectOptions(screen.getByLabelText('Chain'), screen.getByRole('option', { name: 'OP Sepolia' }));
     await user.selectOptions(screen.getByLabelText('Token'), screen.getByRole('option', { name: 'USDC' }));
     expect(screen.getByRole<HTMLOptionElement>('option', { name: /Fiat price/ }).disabled).toBe(true);
     await user.type(screen.getByLabelText('Token amount'), '3.3');
@@ -83,14 +151,21 @@ describe('Create invoice', () => {
   });
 
   it('protects the whole invoice with an out-of-band passphrase', async () => {
-    generateSession();
+    generateWaivedSession();
     const user = await open();
     const passphrase = 'cedar orbit velvet lantern meadow';
     await user.type(screen.getByLabelText('Token amount'), '25.5');
     await user.type(screen.getByLabelText('Item 1 description'), 'Private design work');
     await user.type(screen.getByLabelText('Item 1 unit price'), '25.50');
     await user.click(screen.getByLabelText('Protect the entire invoice with a passphrase'));
+    // L1-06: the field starts with a generated passphrase, shown in clear until it is replaced.
+    const field = screen.getByLabelText<HTMLInputElement>('Invoice passphrase (at least 14 characters)');
+    expect(field.value).toMatch(/^[a-z]{4,8}(?:-[a-z]{4,8}){5}$/);
+    expect(field.type).toBe('text');
+    expect(screen.getByText(/Suggested: 6 random words picked on this device/)).toBeTruthy();
+    await user.clear(field);
     await user.type(screen.getByLabelText('Invoice passphrase (at least 14 characters)'), passphrase);
+    expect(field.type).toBe('password');
     await user.type(screen.getByLabelText('Repeat invoice passphrase'), passphrase);
     await user.click(screen.getByRole('button', { name: 'Create invoice link' }));
     const link = await screen.findByLabelText<HTMLTextAreaElement>('Link', {}, { timeout: 120_000 });
@@ -104,7 +179,7 @@ describe('Create invoice', () => {
   }, 300_000);
 
   it('shows validation errors in an alert and no link', async () => {
-    generateSession();
+    generateWaivedSession();
     const user = await open();
     await user.click(screen.getByRole('button', { name: 'Create invoice link' }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/price must be a decimal/);
@@ -112,14 +187,14 @@ describe('Create invoice', () => {
   });
 
   it('warns when the chosen chain has no deployment manifest, and not when it has one', async () => {
-    generateSession();
+    generateWaivedSession();
     await open();
     expect(await screen.findByText(/Payments disabled on this chain/)).toBeTruthy();
     window.history.replaceState(null, '', '/');
   });
 
   it('does not warn when a manifest is loaded', async () => {
-    generateSession();
+    generateWaivedSession();
     await open(
       makeServices({
         loadManifest: (id) =>
@@ -132,7 +207,7 @@ describe('Create invoice', () => {
   });
 
   it('WEB-APP-01: shows the unsigned-dev banner when the manifest is unsigned', async () => {
-    generateSession();
+    generateWaivedSession();
     await open(
       makeServices({
         loadManifest: (id) =>
@@ -143,7 +218,7 @@ describe('Create invoice', () => {
   });
 
   it("switching chain resets the token and offers that chain's tokens", async () => {
-    generateSession();
+    generateWaivedSession();
     const user = await open();
     const chain = screen.getByLabelText('Chain');
     await user.selectOptions(chain, screen.getByRole('option', { name: 'Ethereum Sepolia' }));

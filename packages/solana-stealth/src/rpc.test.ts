@@ -32,7 +32,66 @@ function fakeFetch(
   };
 }
 
+const MiB = 1024 * 1024;
+
+/**
+ * A 64 MiB body served in 64 KiB chunks; `seen` records how many chunks were pulled and whether it was cancelled
+ * (`failCancel`: the cancellation itself fails).
+ */
+function bigBody(seen: { pulled: number; cancelled: boolean; failCancel?: boolean }): ReadableStream<Uint8Array> {
+  const chunk = new Uint8Array(64 * 1024).fill(0x20);
+  return new ReadableStream({
+    pull(c) {
+      seen.pulled++;
+      if (seen.pulled > 1024) c.close();
+      else c.enqueue(chunk);
+    },
+    cancel() {
+      seen.cancelled = true;
+      if (seen.failCancel === true) throw new Error('cancel failed');
+    },
+  });
+}
+
 describe('createHttpRpc', () => {
+  it('caps the response size while the body streams', async () => {
+    // A valid answer padded past the 8 MiB cap is refused, not buffered and parsed.
+    const padded = createHttpRpc({
+      url: 'https://rpc.invalid',
+      fetch: fakeFetch((b) => ({ text: `{"jsonrpc":"2.0","id":${b.id},"result":1}${' '.repeat(9 * MiB)}` })),
+    });
+    expect(await code(() => padded.request('getSlot', []))).toBe('INVALID_RESPONSE');
+    // The download is cancelled just past the cap instead of being read to the end.
+    const streamed = { pulled: 0, cancelled: false };
+    const endless = createHttpRpc({ url: 'https://rpc.invalid', fetch: () => Promise.resolve(new Response(bigBody(streamed))) });
+    expect(await code(() => endless.request('getSlot', []))).toBe('INVALID_RESPONSE');
+    expect(streamed.cancelled).toBe(true);
+    expect(streamed.pulled).toBeLessThan(8 * 16 + 8);
+    // A declared Content-Length above the cap is refused before the body is read.
+    const declared = { pulled: 0, cancelled: false };
+    const big = createHttpRpc({
+      url: 'https://rpc.invalid',
+      fetch: () => Promise.resolve(new Response(bigBody(declared), { headers: { 'content-length': String(64 * MiB) } })),
+    });
+    expect(await code(() => big.request('getSlot', []))).toBe('INVALID_RESPONSE');
+    expect(declared.cancelled).toBe(true);
+    expect(declared.pulled).toBeLessThanOrEqual(1);
+    // A cancellation that fails does not hide the refusal.
+    for (const headers of [{}, { 'content-length': String(64 * MiB) }]) {
+      const failing = { pulled: 0, cancelled: false, failCancel: true };
+      const rpc = createHttpRpc({ url: 'https://rpc.invalid', fetch: () => Promise.resolve(new Response(bigBody(failing), { headers })) });
+      expect(await code(() => rpc.request('getSlot', []))).toBe('INVALID_RESPONSE');
+      expect(failing.cancelled).toBe(true);
+    }
+    // A body that fails while streaming is a transport failure.
+    const broken = createHttpRpc({
+      url: 'https://rpc.invalid',
+      fetch: () => Promise.resolve(new Response(new ReadableStream({ pull: (c) => { c.error(new Error('reset')); } }))),
+    });
+    expect(await code(() => broken.request('getSlot', []))).toBe('TRANSPORT_FAILURE');
+    const empty = createHttpRpc({ url: 'https://rpc.invalid', fetch: () => Promise.resolve(new Response(null)) });
+    expect(await code(() => empty.request('getSlot', []))).toBe('INVALID_RESPONSE');
+  });
   it('validates the URL', async () => {
     expect(await code(() => createHttpRpc({ url: 'not a url' }))).toBe('INVALID_INPUT');
     expect(await code(() => createHttpRpc({ url: 'http://example.com' }))).toBe('INVALID_INPUT');

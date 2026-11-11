@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Post-build scan of apps/web/dist (npm run build -> postbuild). Fails the build on dynamic code, HTML injection,
-// unexpected origins/hostnames, source maps, inline script/style, or network APIs inside the scanner worker.
+// unexpected origins/hostnames, source maps, inline script/style, network APIs inside the scanner worker, or markers
+// of preserved code that the lean beta does not ship.
 // React DOM's own internals contain a few innerHTML / dangerouslySetInnerHTML strings; those are matched by explicit
 // fingerprints below (and the application source is separately forbidden from using them, enforced by ESLint and by
 // the source scan here). Anything else fails.
@@ -41,6 +42,20 @@ const FORBIDDEN_JS = [
 ];
 
 const WORKER_FORBIDDEN = ['fetch(', 'XMLHttpRequest', 'WebSocket', 'EventSource', 'sendBeacon', 'importScripts', 'navigator.serviceWorker'];
+
+/**
+ * Release boundary of the lean beta (audit L8-04): fixed strings from preserved code that is not shipped. One import of a
+ * preserved factory (ESLint also forbids those in apps/web) would pull its module, and with it the marker, into the bundle.
+ */
+const PRESERVED_CODE_MARKERS = [
+  { marker: 'PIR server request failed', reason: '@ghostpay/pir-two-server client' },
+  { marker: 'window outside the PIR shard', reason: '@ghostpay/scan-source createPir2Source / createScanSource' },
+  { marker: 'light client could not confirm a block hash', reason: '@ghostpay/scan-source createLightSource' },
+  { marker: 'sources disagree on the announcement set', reason: '@ghostpay/scan-source createQuorumSource' },
+  { marker: 'Two-server PIR scanning (research PoC', reason: '@ghostpay/scan-source SCAN_MODE_CLAIMS / describeScanMode' },
+  { marker: 'groth16', reason: 'zero-knowledge pool prover' },
+  { marker: 'privacy-pools', reason: '@ghostpay/external-pools exit route' },
+];
 
 function walk(dir) {
   const out = [];
@@ -95,6 +110,9 @@ export function scanBundle(distDir, srcDir, viteConfigPath) {
           if (n > 0) problems.push(`${r}: ${name} (${String(n)} occurrence${n === 1 ? '' : 's'})`);
         }
         scanInnerHtml(text, r, problems);
+        for (const { marker, reason } of PRESERVED_CODE_MARKERS) {
+          if (text.includes(marker)) problems.push(`${r}: preserved-code marker "${marker}" (${reason}) is not part of the lean beta`);
+        }
         if (/worker/i.test(r)) {
           for (const w of WORKER_FORBIDDEN) if (text.includes(w)) problems.push(`${r}: scanner worker contains network API "${w}"`);
         }

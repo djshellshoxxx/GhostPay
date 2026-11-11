@@ -1,7 +1,10 @@
 import { secp256k1 } from '@noble/curves/secp256k1.js';
 import { keccak_256 } from '@noble/hashes/sha3.js';
 import { bytesToHex, concatBytes, hexToBytes, utf8ToBytes } from '@noble/hashes/utils.js';
-import { canonicalize, parseStrictJson, signerPublicKeyHex } from '@ghostpay/invoice-schema';
+import { FRAGMENT_PREFIX, MAX_DECODED_BYTES, canonicalize, checkExpiry, invoiceDigest, parseStrictJson, signerPublicKeyHex, verifyInvoiceSignature, type ParsedInvoice } from '@ghostpay/invoice-schema';
+import { checkAnnouncement, encodeMetaAddress, type StealthKeySet } from '@ghostpay/core-crypto';
+import { grossForNet, routerSplit } from '@ghostpay/chain-adapters';
+import type { ScanMatch } from './scanClient';
 
 /** Domain separation keeps a payment receipt signature distinct from every other GhostPay signature. */
 export const RECEIPT_DOMAIN = 'GhostPay/receipt/v1\n';
@@ -51,8 +54,55 @@ const SIGNATURE = /^[0-9a-f]{128}$/;
 const AMOUNT = /^[1-9][0-9]{0,77}$/;
 const MAX_AMOUNT = (1n << 256n) - 1n;
 export const MAX_RECEIPT_JSON_BYTES = 65_536;
+/** Bound the encoded envelope and a reasonable URL wrapper before parsing or file allocation. */
+export const MAX_RECEIPT_INVOICE_BYTES = Math.ceil(MAX_DECODED_BYTES * 4 / 3) + 2048;
 const PAYLOAD_KEYS = ['amountMinorUnits', 'asset', 'chainId', 'invoiceDigest', 'issuedAt', 'signerPublicKey', 'stealthAddress', 'txHash', 'version'] as const;
 const RECEIPT_KEYS = [...PAYLOAD_KEYS, 'signature'] as const;
+
+/** Read a signed invoice locally. A URL is never opened or fetched. */
+export function receiptInvoiceFragment(text: string): string {
+  if (text.length > MAX_RECEIPT_INVOICE_BYTES || new TextEncoder().encode(text).byteLength > MAX_RECEIPT_INVOICE_BYTES) throw new TypeError('The invoice link is too large.');
+  const input = text.trim();
+  let fragment = input;
+  if (!input.startsWith(FRAGMENT_PREFIX)) {
+    let url: URL;
+    try { url = new URL(input); } catch { throw new TypeError('Use a signed invoice HTTP link or fragment.'); }
+    if (!['http:', 'https:'].includes(url.protocol) || url.username !== '' || url.password !== '') throw new TypeError('Use a signed invoice HTTP link or fragment.');
+    fragment = url.hash;
+  }
+  if (!fragment.startsWith(FRAGMENT_PREFIX) || /\s/.test(fragment)) throw new TypeError('Use a signed invoice HTTP link or fragment.');
+  return fragment;
+}
+
+/** Match an actual signed fixed-token invoice to verified scan facts without storing borrowed secrets. */
+export function receiptBindingForInvoice(parsed: ParsedInvoice, match: ScanMatch, signerPublicKey: string, keys: StealthKeySet, nowSeconds: number): ReceiptInvoiceBinding {
+  const invoice = parsed.invoice;
+  if (!parsed.verification.signatureValid || !verifyInvoiceSignature(parsed)) throw new TypeError('The invoice signature is invalid.');
+  if (invoice.signer !== signerPublicKey) throw new TypeError('The invoice signer does not match the current seller.');
+  if (invoice.metaAddress.toLowerCase() !== encodeMetaAddress(keys).toLowerCase()) throw new TypeError('The invoice recipient does not match the current seller keys.');
+  if (checkExpiry(invoice, nowSeconds).invoiceExpired) throw new TypeError('The invoice has expired.');
+  if (match.receipt !== 'verified' || !match.viaRouter || match.metadata === undefined || match.announcement.transactionHash === undefined) throw new TypeError('A verified router payment with complete facts is required.');
+  if (invoice.chainId !== match.chainId) throw new TypeError('The invoice chain does not match this scan.');
+  const asset = match.metadata.kind === 'native' ? 'native' : match.metadata.token.toLowerCase();
+  if (invoice.token.toLowerCase() !== asset) throw new TypeError('The invoice asset does not match this scan.');
+  if (invoice.amountPolicy.mode !== 'fixed_token') throw new TypeError('Invoice-bound receipts require a fixed-token invoice; no verified fiat quote is retained here.');
+  const wanted = BigInt(invoice.amountPolicy.tokenAmount);
+  const expected = routerSplit(invoice.feePolicy === 'payer_pays' ? grossForNet(wanted) : wanted).net;
+  if (match.metadata.netAmount !== expected) throw new TypeError('The scan amount does not match the expected seller amount.');
+  if (match.announcement.stealthAddress?.toLowerCase() !== match.stealthAddress.toLowerCase()) throw new TypeError('The scan recipient is inconsistent.');
+  const recipient = checkAnnouncement(match.announcement, keys.viewingSecret, keys.spendingPublicKey, { ignoreViewTag: !match.tagMatches });
+  if (!recipient.matches || recipient.stealthAddress.toLowerCase() !== match.stealthAddress.toLowerCase()) throw new TypeError('The scan recipient does not match the invoice seller.');
+  return {
+    invoiceDigest: `0x${bytesToHex(invoiceDigest(invoice))}`,
+    chainId: invoice.chainId,
+    asset,
+    amountMinorUnits: expected.toString(),
+    invoiceSignerPublicKey: invoice.signer,
+    invoiceSignatureValid: true,
+    txHash: match.announcement.transactionHash.toLowerCase(),
+    stealthAddress: match.stealthAddress.toLowerCase(),
+  };
+}
 
 function record(value: unknown, keys: readonly string[], name: string): Record<string, unknown> {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) throw new TypeError(`${name} must be an object.`);
