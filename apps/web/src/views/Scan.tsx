@@ -1,4 +1,4 @@
-import { findChain, tokensForChain, type RpcClient } from '@ghostpay/chain-adapters';
+import { claimPairKey, findChain, tokensForChain, type RpcClient } from '@ghostpay/chain-adapters';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Field, Mono, Notice } from '../components/Common';
 import { ReceiptPanel } from '../components/ReceiptPanel';
@@ -252,9 +252,14 @@ export function Scan(): ReactNode {
           },
           onMatch: (m) => {
             if (!scopeIsCurrent()) return;
-            const identity = `${m.stealthAddress.toLowerCase()}|${m.announcement.ephemeralPublicKey.toLowerCase()}`;
-            const prior = found.findIndex((x) => `${x.stealthAddress.toLowerCase()}|${x.announcement.ephemeralPublicKey.toLowerCase()}` === identity);
+            // The same record again is an update. A router record takes the place of an earlier public replay of its
+            // address and ephemeral key. Two router announcements for one pair are two payments and stay separate.
+            const pair = claimPairKey(m);
+            const same = found.findIndex((x) => x.announcement.id === m.announcement.id);
+            const prior = same >= 0 ? same : found.findIndex((x) => !x.viaRouter && claimPairKey(x) === pair);
             if (prior < 0) {
+              // A replay of a payment that is already listed through the router adds nothing.
+              if (!m.viaRouter && found.some((x) => claimPairKey(x) === pair)) return;
               if (found.length + quarantined.length >= 10_000) throw new UserFacingError({ key: 'scan.error.observationLimit' });
               found.push(m);
             }

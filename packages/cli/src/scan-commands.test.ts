@@ -125,7 +125,9 @@ describe('bounded privacy scanning', () => {
 
   it('finds real ECDH matches, collapses replayed claims, and writes parseable public observations', async () => {
     const { io, state, log, pay, calls } = scanWorld();
-    state.logs = [log, { ...log, logIndex: '0x5' }];
+    // A free replay: the same announcement posted again directly at the announcer by a caller that is not the router.
+    const replayTopics = [...log.topics.slice(0, 3), `0x${'99'.repeat(20).padStart(64, '0')}`] as Hex[];
+    state.logs = [log, { ...log, topics: replayTopics, logIndex: '0x5' }];
     expect(await execute('scan run', io, RUN_ARGS)).toBe(0);
     expect(stdoutJson(io)).toMatchObject({ matches: 1, duplicates: 1, paymentVerified: false });
     expect(io.out.join('')).not.toContain(pay.stealthAddress);
@@ -135,6 +137,16 @@ describe('bounded privacy scanning', () => {
     io.out.length = 0;
     expect(await execute('scan inspect', io, ['--in', 'scan.json', '--view-key-file', 'view.key'])).toBe(0);
     expect(stdoutJson(io)).toMatchObject({ authenticationVerified: true, observations: 1, paymentVerified: false });
+  });
+
+  it('keeps a second router announcement for the same address and ephemeral key as its own observation', async () => {
+    // The router moves funds in the transaction that announces, so a second router log is a second transfer. Dropping
+    // it as a replay let a cheap payment mined first hide the genuine one.
+    const { io, state, log } = scanWorld();
+    state.logs = [log, { ...log, logIndex: '0x5', transactionHash: `0x${'ab'.repeat(32)}` }];
+    expect(await execute('scan run', io, RUN_ARGS)).toBe(0);
+    expect(stdoutJson(io)).toMatchObject({ matches: 2, duplicates: 0, paymentVerified: false });
+    expect(parseScanReport(io.files.get('scan.json')!, Buffer.from(KEY_HEX, 'hex')).observations).toHaveLength(2);
   });
 
   it('requires explicit deep mode to find router announcements with a wrong view tag', async () => {

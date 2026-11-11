@@ -50,31 +50,57 @@ const pad = (a: string): Hex => `0x${'0'.repeat(24)}${a.slice(2).toLowerCase()}`
 const HASH32 = /^0x[0-9a-fA-F]{64}$/;
 
 /**
- * Collapses duplicate announcements for the same one-time address and ephemeral key (replays by third parties).
+ * The one-time address and ephemeral key of a claim, the pair every third-party replay of an announcement repeats.
  *
- * @remarks Within a group the genuine router announcement is preferred, then the earliest `(block, logIndex)`. The
- * result keeps the order of first appearance. `duplicates` counts what was dropped, so the UI can say so.
+ * @remarks This pair does NOT identify a payment. Anyone who saw it (it is public calldata) can send another payment
+ * to the same address through the router, and each such router announcement is its own transfer. Use it only to
+ * recognise free replays posted directly at the announcer.
+ *
+ * @param claim Match.
+ * @returns Lower-case `address|ephemeralPublicKey`.
+ */
+export function claimPairKey(claim: Pick<ClaimedPayment, 'stealthAddress' | 'announcement'>): string {
+  return `${claim.stealthAddress.toLowerCase()}|${claim.announcement.ephemeralPublicKey.toLowerCase()}`;
+}
+
+/**
+ * Collapses what a third party can produce for free: repeated announcements of one one-time address and ephemeral key
+ * posted directly at the announcer, and the same log seen twice.
+ *
+ * @remarks A router announcement is never dropped in favour of another one. The router moves funds in the same
+ * transaction as it announces, so two router announcements for the same pair are two transfers; keeping only the
+ * earliest let a cheap payment mined first hide the genuine one. Each kept router claim is verified on its own, and
+ * `consumedTransfers` of {@link verifyClaimedPayment} stops one transfer from being credited twice. Within a pair:
+ * with at least one router claim, every distinct router log is kept and all non-router claims are dropped; with none,
+ * the earliest `(block, logIndex)` claim is kept. Pairs keep the order of first appearance. `duplicates` counts what
+ * was dropped, so the UI can say so.
  *
  * @param items Matches.
  * @returns Unique matches plus the number of dropped duplicates.
  */
 export function dedupeClaims<T extends ClaimedPayment>(items: readonly T[]): { readonly items: readonly T[]; readonly duplicates: number } {
-  const best = new Map<string, T>();
-  const order: string[] = [];
-  const better = (a: T, b: T): boolean => {
-    if (a.viaRouter !== b.viaRouter) return a.viaRouter;
-    if (a.announcement.blockNumber !== b.announcement.blockNumber) return a.announcement.blockNumber < b.announcement.blockNumber;
-    return a.announcement.logIndex < b.announcement.logIndex;
-  };
+  const earlier = (a: T, b: T): boolean =>
+    a.announcement.blockNumber !== b.announcement.blockNumber ? a.announcement.blockNumber < b.announcement.blockNumber : a.announcement.logIndex < b.announcement.logIndex;
+  // Per pair, in order of first appearance: the distinct router logs, or else the single earliest non-router claim.
+  const groups = new Map<string, { router: Map<string, T>; direct: T | undefined }>();
   for (const it of items) {
-    const key = `${it.stealthAddress.toLowerCase()}|${it.announcement.ephemeralPublicKey.toLowerCase()}`;
-    const cur = best.get(key);
-    if (cur === undefined) {
-      best.set(key, it);
-      order.push(key);
-    } else if (better(it, cur)) best.set(key, it);
+    const pair = claimPairKey(it);
+    let group = groups.get(pair);
+    if (group === undefined) {
+      group = { router: new Map(), direct: undefined };
+      groups.set(pair, group);
+    }
+    if (it.viaRouter) {
+      const log = `${it.announcement.blockHash.toLowerCase()}:${String(it.announcement.logIndex)}`;
+      if (!group.router.has(log)) group.router.set(log, it);
+    } else if (group.direct === undefined || earlier(it, group.direct)) group.direct = it;
   }
-  return { items: order.map((k) => best.get(k) as T), duplicates: items.length - order.length };
+  const kept: T[] = [];
+  for (const group of groups.values()) {
+    if (group.router.size > 0) kept.push(...group.router.values());
+    else if (group.direct !== undefined) kept.push(group.direct);
+  }
+  return { items: kept, duplicates: items.length - kept.length };
 }
 
 async function readBalanceOf(client: RpcClient, owner: Address, asset: Address | 'native'): Promise<bigint | undefined> {
