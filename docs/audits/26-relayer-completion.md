@@ -106,7 +106,7 @@ Model: if a fraction `p` of broadcast sweeps end as mined reverts costing `L` ga
 `p / (1 - p) * L` extra gas. Since `gas.griefReserveBps` scales the gas term, break-even is
 `griefReserveBps = ceil(10000 * p / (1 - p) * L / G)`, with `G` the gas of a successful sweep.
 With `L = 63k`, the ratio `L / G` lies between about 0.39 (permit path, cold) and 0.76 (plain path, warm). Examples:
-`p = 1%` needs 30-77 bps, `p = 5%` needs 160-400 bps.
+`p = 1%` needs about 40-77 bps, `p = 5%` about 203-400 bps.
 
 No default is set (it stays 0) because `p` is not known: the per-owner strike limit, the loss budget and the two
 simulations next to the send all push it down, and the gas multiplier of 1.10 already covers `p` up to about 11 % on
