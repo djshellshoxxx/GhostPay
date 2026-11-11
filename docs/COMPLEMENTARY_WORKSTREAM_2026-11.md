@@ -14,6 +14,21 @@ multi-chain qualification and operator documentation.
 All reviews here are automated and AI-assisted. They are **not** an independent professional audit and are no security
 guarantee. Nothing was published, tagged on the remote, or deployed.
 
+## 0. Local qualification of the final tree
+
+Run at `959b257` in the authoring session, sequentially on 4 cores. The later commits change only documentation.
+
+| Gate | Result | Duration |
+|---|---|---|
+| `npm run build:libs` | pass | 21 s |
+| `npm run typecheck` (all workspaces) | pass | 121 s |
+| `npm run lint` (all workspaces) | pass | 216 s |
+| `npm test` (68 workspaces) | 8,313 vitest tests passed, 109 skipped, 0 failed. Web 1,018 passed (coverage thresholds met: 90.37% statements, 85.34% branches); relayer 246 passed | 569 s |
+| `npm test` exit status | **1**, from `@ghostpay/confidential-contracts` only. Its Hardhat run cannot download solc 0.8.28 (`ENOTFOUND binaries.soliditylang.org`, blocked in this sandbox), so a missing network host, not code, failed the run. Needs hosted CI | |
+| `scripts/repro-check.sh --head` | REPRODUCIBLE (at `cd5972f`; later changes do not touch build inputs except `pages.yml`/Dockerfile env) | 127 s |
+| `node --test scripts/tests/release-*.test.mjs` | 25 pass, 1 skipped (no `ssh-keygen` locally) | ~8 s |
+| `check-actions-pinned.sh`, `scan-secrets.sh`, `check-headers.sh`, `deploy/selftest.sh`, workflow YAML parse | pass | |
+
 ## 1. Inventory and status
 
 | # | Requirement | Pri | Result | Evidence | Remaining |
