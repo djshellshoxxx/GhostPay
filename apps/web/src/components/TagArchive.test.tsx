@@ -8,7 +8,8 @@ import { clearSession, generateSession, getSessionPublic, revealViewingKey } fro
 import { SETTINGS_KEY } from '../lib/settings';
 import * as tagArchive from '../lib/tagArchive';
 import { makeServices, renderApp } from '../test/render';
-import { storedHistoryChains } from './TagArchive';
+import { SOURCE_TRANSLATOR } from '../i18n/context';
+import { archiveGapText, storedHistoryChains, type ArchiveGap } from './TagArchive';
 
 const PASS = 'violet comet maple lantern';
 const ADDR = '0x1111111111111111111111111111111111111111';
@@ -207,4 +208,20 @@ describe('I-2: scan history kept for chains this build does not support', () => 
     await waitFor(() => { expect(blobs).toHaveLength(2); }, { timeout: 60_000 });
     expect((await screen.findAllByText(/could not be listed; any such history is NOT in this archive\./)).length).toBeGreaterThan(0);
   }, 120_000);
+});
+
+describe('archiveGapText', () => {
+  it('renders each gap kind in English from the catalog', () => {
+    expect(archiveGapText({ kind: 'skipped', count: 2 }, SOURCE_TRANSLATOR)).toBe('Scan history for 2 chain(s) could not be read and is NOT in this archive.');
+    expect(archiveGapText({ kind: 'unlisted' }, SOURCE_TRANSLATOR)).toMatch(/^The scan history kept for chains this build does not support could not be listed/);
+    expect(archiveGapText({ kind: 'unsupported', chainIds: [777777] }, SOURCE_TRANSLATOR)).toMatch(/this build does not support that chain\.$/);
+    expect(archiveGapText({ kind: 'unsupported', chainIds: [777777, 888888] }, SOURCE_TRANSLATOR)).toMatch(/this build does not support those chains\.$/);
+  });
+  it('formats with the translator it is given, so a later view renders the gap in the language then in effect', () => {
+    const keys: string[] = [];
+    const fake = { ...SOURCE_TRANSLATOR, t: (key: Parameters<typeof SOURCE_TRANSLATOR.t>[0]) => { keys.push(key); return `[${key}]`; }, list: (items: readonly string[]) => items.join(' + ') };
+    const gaps: ArchiveGap[] = [{ kind: 'skipped', count: 1 }, { kind: 'unlisted' }, { kind: 'unsupported', chainIds: [777777, 888888] }];
+    expect(gaps.map((g) => archiveGapText(g, fake))).toEqual(['[tagArchive.missing.skipped]', '[tagArchive.missing.unlisted]', '[tagArchive.missing.unsupportedMany]']);
+    expect(keys).toContain('tagArchive.missing.unsupportedMany');
+  });
 });

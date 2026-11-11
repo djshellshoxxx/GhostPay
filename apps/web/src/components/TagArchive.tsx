@@ -84,10 +84,29 @@ export type ArchiveExportResult =
     readonly history: boolean;
     /** Scan history is missing from the archive for at least one chain. */
     readonly gaps: boolean;
-    /** Plain-language notes on what is NOT in the archive (empty when nothing is missing). */
-    readonly notes: readonly string[];
+    /** What is NOT in the archive (empty when nothing is missing). Data, not text: render with {@link archiveGapText}. */
+    readonly notes: readonly ArchiveGap[];
   }
   | { readonly ok: false; readonly message: string };
+
+/**
+ * One thing a tag archive is missing. Kept as data rather than text so a view that shows it later (the combined backup
+ * panel) renders it in the language in effect then, not the one in effect at export time.
+ */
+export type ArchiveGap =
+  | { readonly kind: 'skipped'; readonly count: number }
+  | { readonly kind: 'unlisted' }
+  | { readonly kind: 'unsupported'; readonly chainIds: readonly number[] };
+
+/** @returns The plain-language note for one archive gap, in the language of `tr`. */
+export function archiveGapText(gap: ArchiveGap, tr: Translator): string {
+  switch (gap.kind) {
+    case 'skipped': return tr.t('tagArchive.missing.skipped', { count: String(gap.count) });
+    case 'unlisted': return tr.t('tagArchive.missing.unlisted');
+    case 'unsupported':
+      return tr.t(gap.chainIds.length === 1 ? 'tagArchive.missing.unsupportedOne' : 'tagArchive.missing.unsupportedMany', { chains: tr.list(gap.chainIds.map((id) => chainLabel(id, tr.t))) });
+  }
+}
 
 /**
  * Encrypted tag backup, import with preview, key rotation and wipe. Everything is local; the passphrase is never stored.
@@ -219,15 +238,13 @@ export function TagArchive(props: { readonly onExport?: (result: ArchiveExportRe
         unchanged();
         downloadBytes(out.filename, out.bytes);
         setPass(''); setPass2(''); setBusy(false);
-        const missing = [
-          skipped > 0 ? t('tagArchive.missing.skipped', { count: String(skipped) }) : '',
-          unsupported === undefined ? t('tagArchive.missing.unlisted') : '',
-          unsupported !== undefined && unsupported.length > 0
-            ? t(unsupported.length === 1 ? 'tagArchive.missing.unsupportedOne' : 'tagArchive.missing.unsupportedMany', { chains: trRef.current.list(unsupported.map((id) => chainLabel(id, trRef.current.t))) })
-            : '',
-        ].filter((note) => note !== '');
+        const missing: ArchiveGap[] = [
+          ...(skipped > 0 ? [{ kind: 'skipped', count: skipped } as const] : []),
+          ...(unsupported === undefined ? [{ kind: 'unlisted' } as const] : []),
+          ...(unsupported !== undefined && unsupported.length > 0 ? [{ kind: 'unsupported', chainIds: unsupported } as const] : []),
+        ];
         reportExport?.({ ok: true, recordCount: out.recordCount, sha256: out.sha256, history: withHistory, gaps: missing.length > 0, notes: missing });
-        done(`${t('tagArchive.msg.downloaded', { count: String(out.recordCount), sha: out.sha256 })}${missing.map((note) => ` ${note}`).join('')}`);
+        done(`${t('tagArchive.msg.downloaded', { count: String(out.recordCount), sha: out.sha256 })}${missing.map((gap) => ` ${archiveGapText(gap, trRef.current)}`).join('')}`);
       } catch (error) {
         if (!current(c)) return;
         setBusy(false); fail(error);

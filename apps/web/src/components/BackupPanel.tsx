@@ -3,7 +3,7 @@ import { getSessionBackup, subscribeSessionBackup } from '../lib/session';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import { useApp } from '../state';
 import { Notice } from './Common';
-import { TagArchive, type ArchiveExportResult } from './TagArchive';
+import { TagArchive, archiveGapText, type ArchiveExportResult } from './TagArchive';
 
 type ItemStatus = 'notStarted' | 'done' | 'downloaded' | 'downloadedGaps' | 'deleted' | 'failed';
 
@@ -21,7 +21,8 @@ let lastTagOutcome: { readonly session: unknown; readonly result: ArchiveExportR
 export function BackupPanel(): ReactNode {
   const app = useApp();
   const i18n = useI18nOptional();
-  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
+  const tr = i18n ?? SOURCE_TRANSLATOR;
+  const t = tr.t;
   const backup = useSyncExternalStore(subscribeSessionBackup, getSessionBackup);
   const [tagResult, setTagResult] = useState(lastTagOutcome);
   // Keys that replaced the ones an outcome belongs to also end it.
@@ -77,7 +78,7 @@ export function BackupPanel(): ReactNode {
         <li data-testid="backup-item-tags">
           <p><strong>{t('backup.tags.heading')}</strong></p>
           {status(tagStatus, tagNote)}
-          {result?.ok === true && result.notes.length > 0 && <ul>{result.notes.map((note) => <li key={note}>{note}</li>)}</ul>}
+          {result?.ok === true && result.notes.length > 0 && <ul>{result.notes.map((gap) => <li key={gap.kind}>{archiveGapText(gap, tr)}</li>)}</ul>}
           <TagArchive
             onExport={(next) => { lastTagOutcome = { session: app.session, result: next, at: Date.now(), deleted: false }; setTagResult(lastTagOutcome); }}
             onTagsWiped={() => {
