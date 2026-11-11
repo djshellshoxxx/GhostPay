@@ -13,7 +13,7 @@ import {IGhostPayPolicyRouter} from "../../src/interfaces/IGhostPayPolicyRouter.
 import {IPolicyAccount} from "../../src/interfaces/IPolicyAccount.sol";
 import {MockERC20} from "../mocks/MockERC20.sol";
 
-// Audit 24 (docs/audits/24-contract-security-review-2026-11.md). `test_EXPLOIT_*` assert that a
+// Audit 24 (docs/audits/26-contract-security-review-2026-11.md). `test_EXPLOIT_*` assert that a
 // residual weakness is real; they flip when the weakness is fixed.
 
 /// @dev Sender-side transfer hook (ERC-777 `tokensToSend` style).
