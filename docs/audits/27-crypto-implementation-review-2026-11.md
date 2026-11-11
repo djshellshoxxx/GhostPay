@@ -1,4 +1,4 @@
-# 25 - Cryptographic implementation review (EXTRA-05), 2026-11
+# 27 - Cryptographic implementation review (EXTRA-05), 2026-11
 
 > **This is not a professional audit.** It is an AI-assisted code review with added differential and negative tests.
 > It does not certify the reviewed code as secure. Treat every "no finding" as "nothing found by the methods below".

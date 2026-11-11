@@ -1,4 +1,4 @@
-# Audit 24: smart-contract security review (2026-11)
+# Audit 26: smart-contract security review (2026-11)
 
 **This is an AI-assisted review. It is not a professional or independent audit.** It should not be used as a
 deployment certification or to decide whether real funds are safe. It found no Critical or High issue. Absence
