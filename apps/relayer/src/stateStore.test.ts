@@ -138,6 +138,57 @@ describe('StateJournal', () => {
     expect(j.chain(1).sends).toEqual([]);
   });
 
+  it('review B1/A4: a removal whose write fails is still applied and persisted by the next write (no double release)', () => {
+    const b = new MemoryStateBackend();
+    const j = new StateJournal(b);
+    const id = j.addSend(1, { nonce: 1, reservedWei: 10n, reservedDay: 1, gasPriceWei: 1n, status: 'pending', txHash: H }, { day: 1, spentWei: 10n });
+    b.failWith = new StateError('state file cannot be written');
+    expect(() => j.removeSend(1, id, { day: 1, spentWei: 4n })).toThrow(StateError);
+    expect(j.chain(1)).toEqual({ budget: { day: 1, spentWei: 4n }, sends: [] }); // applied in memory
+    expect(j.dirty).toBe(true);
+    expect(() => j.flush()).toThrow(StateError);
+    b.failWith = undefined;
+    j.flush();
+    expect(j.dirty).toBe(false);
+    j.flush(); // clean: no write
+    expect(new StateJournal(b).chain(1)).toEqual({ budget: { day: 1, spentWei: 4n }, sends: [] });
+  });
+
+  it('review B2: failed removals never pile up against the record cap', () => {
+    const b = new MemoryStateBackend();
+    const j = new StateJournal(b);
+    for (let i = 0; i < 100; i += 1) {
+      b.failWith = undefined;
+      const id = j.addSend(1, { nonce: i, reservedWei: 1n, reservedDay: 1, gasPriceWei: 1n, status: 'reserved' }, { day: 1, spentWei: 1n });
+      b.failWith = new StateError('state file cannot be written');
+      expect(() => j.removeSend(1, id)).toThrow(StateError);
+    }
+    expect(j.chain(1).sends).toEqual([]);
+  });
+
+  it('a durable update (the pre-broadcast hash) is write-through: unchanged on failure', () => {
+    const b = new MemoryStateBackend();
+    const j = new StateJournal(b);
+    const id = j.addSend(1, { nonce: 1, reservedWei: 1n, reservedDay: 1, gasPriceWei: 1n, status: 'reserved' }, { day: 1, spentWei: 1n });
+    b.failWith = new StateError('state file cannot be written');
+    expect(() => j.updateSend(1, id, { status: 'signed', txHash: H }, true)).toThrow(StateError);
+    expect(j.chain(1).sends[0]?.status).toBe('reserved');
+    expect(j.dirty).toBe(false);
+  });
+
+  it('the write guard (lock fencing) forbids every write, and addSend then records nothing', () => {
+    let allowed = true;
+    const b = new MemoryStateBackend();
+    const j = new StateJournal(b, Date.now, () => {
+      if (!allowed) throw new StateError('state lock is not held by this process');
+    });
+    j.setBudget(1, 1, 1n);
+    allowed = false;
+    expect(() => j.addSend(1, { nonce: 1, reservedWei: 1n, reservedDay: 1, gasPriceWei: 1n, status: 'reserved' }, { day: 1, spentWei: 2n })).toThrow(/not held/);
+    expect(() => j.setBudget(1, 1, 5n)).toThrow(/not held/);
+    expect(new StateJournal(b).chain(1)).toEqual({ budget: { day: 1, spentWei: 1n }, sends: [] });
+  });
+
   it('refuses more than 64 unsettled records per chain', () => {
     const j = new StateJournal(new MemoryStateBackend());
     for (let i = 0; i < 64; i += 1) j.addSend(1, { nonce: i, reservedWei: 1n, reservedDay: 1, gasPriceWei: 1n, status: 'reserved' }, { day: 1, spentWei: 1n });
@@ -173,6 +224,32 @@ describe('acquireStateLock', () => {
     b.release();
     expect(readdirSync(d)).toEqual([]);
     expect(() => a.heartbeat()).toThrow('taken over');
+  });
+
+  it('review A2/B4: a live holder with the same pid and host (two pid-1 containers) is not taken over', () => {
+    const d = tmp();
+    const file = join(d, 'state.json');
+    let now = 1_000_000;
+    const a = acquireStateLock(file, { pid: 1, host: 'h', now: () => now });
+    now += 9_000;
+    expect(() => acquireStateLock(file, { pid: 1, host: 'h', now: () => now })).toThrow('locked by another');
+    a.heartbeat();
+    a.assertHeld();
+    now += 16_000; // no heartbeat for longer than one interval: the holder is gone (restarted container)
+    const b = acquireStateLock(file, { pid: 1, host: 'h', now: () => now });
+    expect(() => a.assertHeld()).toThrow('not held');
+    expect(() => a.heartbeat()).toThrow('taken over');
+    b.assertHeld();
+    b.release();
+  });
+
+  it('creates a missing lock exclusively and leaves no temp file', () => {
+    const d = tmp();
+    const file = join(d, 'state.json');
+    const a = acquireStateLock(file, { pid: 1, host: 'h', now: () => 0 });
+    expect(readdirSync(d)).toEqual(['state.json.lock']);
+    a.release();
+    expect(readdirSync(d)).toEqual([]);
   });
 
   it('treats an unparsable lock file as stale', () => {

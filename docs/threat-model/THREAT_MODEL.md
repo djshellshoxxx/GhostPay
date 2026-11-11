@@ -292,10 +292,14 @@ OR 1. Crash/restart to reset the daily budget                ctl: state journal 
 OR 2. Clock stepped back to re-open yesterday's budget       ctl: the budget day only moves forward
 OR 3. Crash between broadcast and acknowledgement            ctl: hash journaled before broadcast; restart blocks the lane until a receipt
                                                                  or the node's pending nonce settles it; never a new nonce on a lost answer
-OR 4. Two processes with one hot key and one state file      ctl: heartbeat lock (second process refuses to start; lock loss stops admission)
+OR 4. Two processes with one hot key and one state file      ctl: exclusive heartbeat lock with a per-process token; every journal write is
+                                                                 fenced by it (a process that lost the lock cannot write or start a send);
+                                                                 the lock is released only after the shutdown drain
 OR 5. Two processes with one hot key on separate storage     gap: unsupported, not detected (no distributed coordination)
-OR 6. Disk full / unwritable journal                         ctl: refusal before signing (state_unavailable); after broadcast a failed write is
-                                                                 alerted and the next full-snapshot write repairs it
+OR 6. Disk full / unwritable journal                         ctl: refusal before signing (state_unavailable); after broadcast the change is
+                                                                 applied in memory, alerted, /healthz degraded, and the next full-snapshot write
+                                                                 persists it (removals are never lost, so no double release on restart)
+OR 7. Wall clock far ahead once, then corrected               ctl: a saved day more than one day ahead keeps its spending on today's day
 Not persisted (bounded by the persisted daily budget): rate limits, per-key loss budget, owner failure counter, breaker window.
 Privacy: the journal holds nonces, tx hashes and wei only; records are deleted on settlement (apps/relayer/PRIVACY.md).
 ```

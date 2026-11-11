@@ -59,12 +59,29 @@ Defects fixed: (1) a restart reset the daily budget and forgot unsettled transac
 
 ## 4. Review
 
-Two AI-assisted reviewers, neither the author: A (adversarial security), B (correctness and accounting). Findings and
-their resolution: see the section appended below once complete.
+Two AI-assisted reviewers, neither the author, read the diff `364b1f1..` and reproduced findings with throwaway tests:
+A (adversarial security), B (correctness and accounting). This is not an independent professional audit.
+
+| # | Severity | Finding | Source | Resolution | Regression test |
+|---|---|---|---|---|---|
+| 1 | Medium | A failed journal removal kept the record on disk while the next write saved the released budget; after a restart the record was settled again (double release, budget understated) | A4, B1 (confirmed) | Settlement mutations apply in memory, mark the journal dirty and are persisted by the next write or `flush()`; only `addSend` and the pre-broadcast hash stay write-through | `restart.test.ts` "review B1/A4", `stateStore.test.ts` "review B1/A4" |
+| 2 | Medium (availability) | Failed removals piled up against the 64-record cap, then every sweep got `state_unavailable` | B2 (confirmed) | Same fix | `stateStore.test.ts` "review B2" |
+| 3 | Medium | SIGTERM released the lock before draining; a replacement could take over while queued jobs still wrote; lock loss still drained queued sends | A1 (confirmed) | `main.ts` releases after `server.close()`; journal writes are fenced by the lock token, so a process without the lock cannot start a send | `stateStore.test.ts` "write guard", `runtime.test.ts` lock-loss test |
+| 4 | Medium | Same pid and host took over a live lock (two pid-1 containers sharing hostname and volume); acquisition was not exclusive | A2, B4 (confirmed at unit level) | Random per-process token; same-instance takeover only after 15 s without heartbeat; missing lock created with `link()` (exclusive); takeover read back | `stateStore.test.ts` "review A2/B4", "exclusively" |
+| 5 | Medium | One far-future clock reading was persisted and pinned the budget (permanent `budget_exhausted`); `ops state` hid it | A3, B5 (confirmed) | Day more than one ahead keeps its spending on today's day (restore and in memory); `ops state` flags a day ahead of the clock and counts its spending | `units.test.ts` "review A3/B5" |
+| 6 | Low-medium | `reconcile-report` called a hashless `signed` record "never broadcast" and a free-nonce `pending` record "released" | A5, B3 (confirmed) | Branches on status, mirroring `restore()` | `ops.test.ts` reconcile-report cases |
+| 7 | Low | `/healthz` stayed `ok` while the journal could not be written | B6 | `degraded` while the journal is dirty | `restart.test.ts` "review B1/A4" |
+| 8 | Low | systemd `@resources` filter without `SystemCallErrorNumber` kills with SIGSYS; startup hid `StateError` messages | A6 (plausible) | `SystemCallErrorNumber=EPERM`; `main.ts` prints `StateError` messages | not testable in sandbox (systemd not run) |
+| 9 | Info | Decoder echoed unexpected key names from the file | A7 | Message no longer names the key | `stateStore.test.ts` decoder cases |
+| 10 | Test weakness | The post-broadcast write-failure test could pass with finding 1 present; the anvil "no duplicate nonce" check alone holds even without the journal (anvil's mempool supplies the nonce) | B7 | Added the service-level regression for 1; the anvil test's budget assertion is the part that depends on the journal (documented here) | — |
+
+Accepted, not changed: high-s permit signatures are classified `sig_invalid` although a raw-`ecrecover` token would accept
+them (message only; the simulation decides); synchronous fsyncs (about four per sweep) can stall the event loop on a slow
+disk (performance; one transaction per chain at a time); a malicious RPC can still fake receipts and nonces (inherent).
 
 ## 5. Evidence (sandbox)
 
-- `REQUIRE_ANVIL=1 npm test -w apps/relayer`: 12 files, 408 tests, coverage 97.4 / 93.8 / 96.2 / 98.6 (thresholds
+- `REQUIRE_ANVIL=1 npm test -w apps/relayer`: 12 files, 416 tests, coverage 97.3 / 93.5 / 96.3 / 98.5 (thresholds
   95/90/95/95). Baseline before this branch: 9 files, 313 tests, 97.55 / 92.95 / 97.05 / 98.75.
 - `typecheck` and `lint`: relayer, chain-adapters, web clean.
 - Container smoke (`apps/relayer/deploy/smoke-anvil.sh`, local anvil, read-only rootfs, `--cap-drop ALL`, uid 65532):

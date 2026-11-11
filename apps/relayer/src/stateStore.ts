@@ -1,4 +1,4 @@
-import { closeSync, fsyncSync, openSync, readFileSync, renameSync, statSync, unlinkSync, writeSync, constants as fsc } from 'node:fs';
+import { closeSync, fsyncSync, linkSync, openSync, readFileSync, renameSync, statSync, unlinkSync, writeSync, constants as fsc } from 'node:fs';
 import { dirname } from 'node:path';
 import { randomBytes } from 'node:crypto';
 import type { Hex } from 'viem';
@@ -156,7 +156,8 @@ function obj(x: unknown, what: string): Record<string, unknown> {
 
 function keysExactly(o: Record<string, unknown>, required: readonly string[], optional: readonly string[], what: string): void {
   for (const k of required) if (!Object.hasOwn(o, k)) fail(`${what}.${k} missing`);
-  for (const k of Object.keys(o)) if (!required.includes(k) && !optional.includes(k)) fail(`${what}.${k} unexpected`);
+  // The offending key is not echoed: it is file content.
+  for (const k of Object.keys(o)) if (!required.includes(k) && !optional.includes(k)) fail(`${what} has an unexpected key`);
 }
 
 function int(x: unknown, what: string, max = Number.MAX_SAFE_INTEGER): number {
@@ -249,23 +250,41 @@ export function encodeState(chains: ReadonlyMap<number, ChainState>): string {
 }
 
 /**
- * The relayer's journal over a {@link StateBackend}. Every mutation is written through before it returns, so callers
- * can rely on "written, then act" ordering (reserve -> write -> broadcast).
+ * The relayer's journal over a {@link StateBackend}.
+ *
+ * Two write disciplines:
+ * - {@link addSend} and the `onSigned` hash update ({@link updateSend} with `durable: true`) are write-through and fail
+ *   closed: on a failed write nothing changes in memory and the caller refuses to sign or broadcast.
+ * - Every other mutation (settlement, release, status after a broadcast) is applied in memory first. If its write fails
+ *   the journal is marked dirty and the next write of any kind (or {@link flush}) persists the whole snapshot,
+ *   including the earlier removal. A removal is therefore never lost, so a settled reservation cannot be restored and
+ *   released twice after a restart, and failed removals cannot pile up against the record cap.
+ *
+ * An optional `guard` runs before every write (the single-writer lock check): a process that no longer holds the lock
+ * cannot write, so it cannot overwrite the new holder's state, and `addSend` fails closed (no new transaction).
  */
 export class StateJournal {
   private readonly chains: Map<number, ChainState>;
+  private dirtyFlag = false;
 
   /**
    * @param backend Storage.
    * @param now Wall clock ms (record timestamps).
+   * @param guard Called before each write; throws {@link StateError} to forbid it.
    * @throws {StateError} when stored state is unreadable or invalid.
    */
   public constructor(
     private readonly backend: StateBackend,
     private readonly now: () => number = Date.now,
+    private readonly guard: () => void = () => undefined,
   ) {
     const text = backend.read();
     this.chains = text === null ? new Map<number, ChainState>() : decodeState(text);
+  }
+
+  /** True while an applied change is not yet on disk (a write failed and none succeeded since). */
+  public get dirty(): boolean {
+    return this.dirtyFlag;
   }
 
   /** @returns The stored state of `chainId` (an empty default when none is stored). */
@@ -279,43 +298,46 @@ export class StateJournal {
   }
 
   /**
-   * Records today's budget use.
+   * Records today's budget use (applied even if the write fails; see class notes).
    *
-   * @throws {StateError} when the write fails (the in-memory copy is unchanged).
+   * @throws {StateError} when the write fails.
    */
   public setBudget(chainId: number, day: number, spentWei: bigint): void {
     const c = this.chain(chainId);
-    if (c.budget.day === day && c.budget.spentWei === spentWei) return;
-    this.commit(chainId, { budget: { day, spentWei }, sends: c.sends });
+    if (c.budget.day === day && c.budget.spentWei === spentWei && !this.dirtyFlag) return;
+    this.apply(chainId, { budget: { day, spentWei }, sends: c.sends });
   }
 
   /**
-   * Adds a send record together with the budget it was reserved from, in one write.
+   * Adds a send record together with the budget it was reserved from, in one write-through write.
    *
    * @returns The record id.
-   * @throws {StateError} when the write fails (nothing is recorded).
+   * @throws {StateError} when the write fails (nothing is recorded in memory either).
    */
   public addSend(chainId: number, rec: Omit<SendRecord, 'id' | 'createdAtMs'>, budget: { day: number; spentWei: bigint }): string {
     const c = this.chain(chainId);
     if (c.sends.length >= MAX_SENDS_PER_CHAIN) throw new StateError('too many unsettled transactions');
     const id = randomBytes(8).toString('hex');
-    this.commit(chainId, { budget, sends: [...c.sends, { ...rec, id, createdAtMs: this.now() }] });
+    this.writeThrough(chainId, { budget, sends: [...c.sends, { ...rec, id, createdAtMs: this.now() }] });
     return id;
   }
 
   /**
-   * Updates a record (status and/or hash).
+   * Updates a record (status and/or hash). With `durable` (the pre-broadcast hash) it is write-through: on failure the
+   * record is unchanged and the caller must not broadcast. Otherwise it is applied even if the write fails.
    *
    * @throws {StateError} when the write fails.
    */
-  public updateSend(chainId: number, id: string, patch: { readonly status: SendStatus; readonly txHash?: Hex }): void {
+  public updateSend(chainId: number, id: string, patch: { readonly status: SendStatus; readonly txHash?: Hex }, durable = false): void {
     const c = this.chain(chainId);
     if (!c.sends.some((s) => s.id === id)) return;
-    this.commit(chainId, { budget: c.budget, sends: c.sends.map((s) => (s.id === id ? { ...s, ...patch } : s)) });
+    const next = { budget: c.budget, sends: c.sends.map((s) => (s.id === id ? { ...s, ...patch } : s)) };
+    if (durable) this.writeThrough(chainId, next);
+    else this.apply(chainId, next);
   }
 
   /**
-   * Removes a settled record, optionally recording the budget after its release.
+   * Removes a settled record, optionally recording the budget after its release. Applied even if the write fails.
    *
    * @throws {StateError} when the write fails.
    */
@@ -323,14 +345,37 @@ export class StateJournal {
     const c = this.chain(chainId);
     const sends = c.sends.filter((s) => s.id !== id);
     if (sends.length === c.sends.length && budget === undefined) return;
-    this.commit(chainId, { budget: budget ?? c.budget, sends });
+    this.apply(chainId, { budget: budget ?? c.budget, sends });
   }
 
-  private commit(chainId: number, next: ChainState): void {
+  /**
+   * Writes the current snapshot if a previous write failed.
+   *
+   * @throws {StateError} when it still cannot be written.
+   */
+  public flush(): void {
+    if (!this.dirtyFlag) return;
+    this.write(this.chains);
+  }
+
+  private writeThrough(chainId: number, next: ChainState): void {
     const all = new Map(this.chains);
     all.set(chainId, next);
-    this.backend.write(encodeState(all));
+    this.write(all);
     this.chains.set(chainId, next);
+  }
+
+  private apply(chainId: number, next: ChainState): void {
+    this.chains.set(chainId, next);
+    this.dirtyFlag = true;
+    this.write(this.chains);
+  }
+
+  private write(all: ReadonlyMap<number, ChainState>): void {
+    this.guard();
+    this.backend.write(encodeState(all));
+    // Every write is a whole snapshot that includes all applied changes, so a success clears the dirty mark.
+    this.dirtyFlag = false;
   }
 }
 
@@ -338,6 +383,8 @@ export class StateJournal {
 interface LockBody {
   readonly pid: number;
   readonly host: string;
+  /** Random per-acquisition token: the fencing identity. pid and host only help an operator read the file. */
+  readonly token: string;
   readonly beatMs: number;
 }
 
@@ -349,21 +396,40 @@ export interface LockOptions {
   readonly now: () => number;
   /** A lock whose heartbeat is older than this is stale and taken over (default 30 s). */
   readonly staleMs?: number;
+  /**
+   * A lock naming this same host and pid (a restarted container, where node is pid 1 again) is taken over once its
+   * heartbeat is older than this (default 15 s, longer than the 10 s heartbeat): a live holder keeps it fresher.
+   */
+  readonly restartStaleMs?: number;
 }
 
 /** A held single-writer lock. */
 export interface StateLock {
-  /** Refreshes the heartbeat; call well within `staleMs`. */
+  /** Throws {@link StateError} unless the lock file still carries this holder's token (the journal's write guard). */
+  assertHeld(): void;
+  /** Refreshes the heartbeat; call well within `restartStaleMs`. */
   heartbeat(): void;
   /** Removes the lock file if it is still ours. */
   release(): void;
 }
 
+function parseLock(text: string | null): LockBody | undefined {
+  if (text === null) return undefined;
+  try {
+    const v = JSON.parse(text) as Partial<LockBody>;
+    return typeof v.token === 'string' && typeof v.beatMs === 'number' ? (v as LockBody) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 /**
  * Takes the single-writer lock `<stateFile>.lock`. Two relayer processes sharing one hot key and state file would
  * hand out the same nonces and each spend the full daily budget, so a second process refuses to start while the
- * first keeps its heartbeat fresh. A lock left by a crashed process is taken over when it names this same host and
- * pid (a restarted container) or when its heartbeat is stale.
+ * first keeps its heartbeat fresh, and the journal refuses every write once the lock carries another token.
+ *
+ * A missing lock is created exclusively (`link`, fails if one appeared meanwhile). A stale one (no heartbeat for
+ * `staleMs`, or `restartStaleMs` when it names this host and pid) is replaced and read back to confirm the takeover.
  *
  * @remarks This guards one host or one shared volume; it is not distributed coordination. Running replicas with the
  * same hot key on separate storage is unsupported (README).
@@ -372,32 +438,44 @@ export interface StateLock {
 export function acquireStateLock(stateFile: string, o: LockOptions): StateLock {
   const path = `${stateFile}.lock`;
   const staleMs = o.staleMs ?? 30_000;
-  const body = (): string => `${JSON.stringify({ pid: o.pid, host: o.host, beatMs: o.now() } satisfies LockBody)}\n`;
+  const restartStaleMs = o.restartStaleMs ?? 15_000;
+  const token = randomBytes(16).toString('hex');
+  const body = (): string => `${JSON.stringify({ pid: o.pid, host: o.host, token, beatMs: o.now() } satisfies LockBody)}\n`;
   const backend = new FileStateBackend(path);
-  const current = backend.read();
-  if (current !== null) {
-    let held: LockBody | undefined;
-    try {
-      held = JSON.parse(current) as LockBody;
-    } catch {
-      held = undefined;
-    }
-    const ours = held !== undefined && held.pid === o.pid && held.host === o.host;
-    const fresh = held !== undefined && typeof held.beatMs === 'number' && o.now() - held.beatMs < staleMs;
-    if (!ours && fresh) throw new StateError('state file is locked by another relayer process');
-  }
-  backend.write(body());
-  const mine = (): boolean => {
-    try {
-      const t = backend.read();
-      if (t === null) return false;
-      const held = JSON.parse(t) as LockBody;
-      return held.pid === o.pid && held.host === o.host;
-    } catch {
-      return false;
-    }
+  const busy = (): never => {
+    throw new StateError('state file is locked by another relayer process');
   };
+  const current = backend.read();
+  if (current === null) {
+    // Exclusive create: write a private temp file, then hard-link it into place (EEXIST if another process won).
+    const tmp = `${path}.${token}.tmp`;
+    new FileStateBackend(tmp).write(body());
+    try {
+      linkSync(tmp, path);
+    } catch {
+      busy();
+    } finally {
+      try {
+        unlinkSync(tmp);
+      } catch {
+        // nothing to clean up
+      }
+    }
+  } else {
+    const held = parseLock(current);
+    if (held !== undefined) {
+      const age = o.now() - held.beatMs;
+      const sameInstance = held.pid === o.pid && held.host === o.host;
+      if (age < (sameInstance ? restartStaleMs : staleMs)) busy();
+    }
+    backend.write(body());
+  }
+  const mine = (): boolean => parseLock(backend.read())?.token === token;
+  if (!mine()) busy(); // a concurrent takeover won the race
   return {
+    assertHeld: () => {
+      if (!mine()) throw new StateError('state lock is not held by this process');
+    },
     heartbeat: () => {
       if (!mine()) throw new StateError('state lock was taken over by another process');
       backend.write(body());

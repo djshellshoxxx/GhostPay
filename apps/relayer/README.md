@@ -127,9 +127,13 @@ is a whole-file atomic replace (temp file, fsync, rename, directory fsync). On s
 | `pending` | accepted by the RPC | receipt looked up at the start of later jobs; settled from the receipt; dropped after 24 h unfound (reservation kept for its day) |
 
 A file that does not parse is a startup error, never a silent reset. The day only moves forward, so a wall clock stepped
-back does not grant a new daily budget. `<state>.lock` is a single-writer heartbeat lock (10 s beat, stale after 30 s; a
-lock left by the same host and pid, i.e. a restarted container, is taken over at once). A second process on the same state
-file refuses to start; one that loses its lock stops admitting sweeps. Running two relayers with the same hot key on
+back does not grant a new daily budget, and a saved day more than one day ahead of the clock (a wrong reading that was
+persisted) keeps its spending on today's day instead of pinning the budget. `<state>.lock` is a single-writer heartbeat
+lock with a random per-process token: created exclusively, 10 s heartbeat, taken over when stale for 30 s (15 s when it
+names this host and pid, i.e. a restarted container). Every journal write first checks the token (fencing), so a process
+that lost the lock cannot write and refuses new sweeps (`state_unavailable`); on SIGTERM the lock is released only after
+the drain. Settlement writes are applied in memory even when the write fails and are persisted by the next write
+(`/healthz` reports `degraded` meanwhile), so a failed removal can never be restored and released twice. Running two relayers with the same hot key on
 separate state files is unsupported: there is no distributed coordination. Not persisted (reset on restart, all bounded
 by the persisted daily budget): rate-limit buckets, the per-key loss budget, the per-owner failure counter, the breaker
 window. Operator commands (`node dist/ops.js check-config|state|health|reconcile-report`) are read-only; see

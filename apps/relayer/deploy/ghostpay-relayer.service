@@ -57,6 +57,8 @@ LockPersonality=true
 MemoryDenyWriteExecute=false
 SystemCallFilter=@system-service
 SystemCallFilter=~@privileged @resources
+# A filtered call fails with EPERM instead of killing the process with SIGSYS (e.g. node adjusting RLIMIT_NOFILE).
+SystemCallErrorNumber=EPERM
 ProtectClock=true
 ProtectHostname=true
 ProtectKernelLogs=true

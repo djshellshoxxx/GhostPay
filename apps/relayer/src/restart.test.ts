@@ -255,6 +255,33 @@ describe('state journal: write failures fail closed before the broadcast', () =>
   });
 });
 
+describe('review B1/A4: a failed settlement write cannot release a reservation twice after a restart', () => {
+  it('the removal is applied in memory, /healthz degrades while it is unsaved, and the next write persists it', async () => {
+    const backend = new FlakyBackend();
+    backend.failAt.add(4); // sweep 1: add, signed, pending, REMOVE (fails)
+    const a = await start({ backend });
+    expect((await call(a, 'POST', '/v1/sweep', (await prepare(a, { nonce: 1n })).body)).status).toBe(200);
+    await settle();
+    // On disk: still the pending record with its worst-case reservation; in memory: settled.
+    expect(stored(backend).sends).toHaveLength(1);
+    expect((await call(a, 'GET', '/healthz')).json).toMatchObject({ status: 'degraded' });
+    expect((await call(a, 'POST', '/v1/sweep', (await prepare(a, { nonce: 2n })).body)).status).toBe(200);
+    await settle();
+    expect(stored(backend)).toEqual({ budget: { day: DAY, spentWei: 2n * used }, sends: [] });
+    expect((await call(a, 'GET', '/healthz')).json).toMatchObject({ status: 'ok' });
+
+    // A restart now restores nothing to settle again: the budget stays exactly what was paid.
+    const disk = crashCopy(backend);
+    const fb = new FakeChain();
+    fb.pendingNonce = 9;
+    fb.lookup = { status: 'success', gasUsed: 100_000n };
+    const b = await start({ backend: disk, fake: fb });
+    expect((await call(b, 'POST', '/v1/sweep', (await prepare(b, { nonce: 3n })).body)).status).toBe(200);
+    await settle();
+    expect(stored(disk)).toEqual({ budget: { day: DAY, spentWei: 3n * used }, sends: [] });
+  });
+});
+
 describe('spec 04: a failed permit is classified from the token state (failure path only)', () => {
   const domain = { name: 'USD Coin', version: '2', chainId: CHAIN_ID, verifyingContract: USDC } as const;
   const separator = eip712DomainSeparator(domain);

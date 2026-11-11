@@ -411,7 +411,7 @@ describe('reconcile-report', () => {
     const lines = out.join('\n');
     expect(lines).toContain('nonce=3 tx=' + H1 + ': settled - mined (success)');
     expect(lines).toContain('nonce=4 tx=' + H2 + ': pending');
-    expect(lines).toContain('nonce=5 tx=' + H3 + ': unknown - no receipt and the nonce is free');
+    expect(lines).toContain('nonce=5 tx=' + H3 + ': unknown - signed, no receipt and the nonce is free');
     expect(lines).toContain('nonce=6 tx=-: not_broadcast');
     expect(lines).toContain('chain 1: stored in the state file but not in the config');
     expect(chain.seen).toContain(`nonce:${HOT_ADDR}`);
@@ -443,7 +443,8 @@ describe('reconcile-report', () => {
     expect(await runOps(['reconcile-report', '--json'], deps(env, { chain: () => fakeChain({ receipts: { [H2]: 'reverted' } }) }))).toBe(0);
     const j = JSON.parse(out[0] as string) as { receiptsOnly: boolean; items: { outcome: string }[]; unconfiguredChains: number[] };
     expect(j.receiptsOnly).toBe(false);
-    expect(j.items.map((i) => i.outcome)).toEqual(['unknown', 'settled', 'unknown', 'not_broadcast']);
+    // nonce 3 is 'pending' (accepted by the RPC): tracked as pending whether or not the hot key is loadable.
+    expect(j.items.map((i) => i.outcome)).toEqual(['pending', 'settled', 'unknown', 'not_broadcast']);
     expect(j.unconfiguredChains).toEqual([1]);
   });
 

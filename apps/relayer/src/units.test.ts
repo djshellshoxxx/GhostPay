@@ -258,6 +258,21 @@ describe('DailyBudget', () => {
     expect(b.used).toBe(0n);
   });
 
+  it('review A3/B5: a far-future day (a wrong clock reading saved once) does not pin the budget', () => {
+    let t = 86_400_000 * 10;
+    const restored = new DailyBudget(100n, () => t, { day: 375, spentWei: 70n }); // a year ahead
+    expect(restored.snapshot()).toEqual({ day: 10, spentWei: 70n }); // spending kept, on today's day
+    expect(restored.secondsToReset()).toBeLessThanOrEqual(86_400);
+    const b = new DailyBudget(100n, () => t);
+    t = 86_400_000 * 375; // NTP steps a year ahead during a sweep
+    expect(b.reserve(60n)).toBe(true);
+    t = 86_400_000 * 10; // corrected
+    expect(b.used).toBe(60n); // kept for today
+    expect(b.currentDay).toBe(10);
+    t += 86_400_000;
+    expect(b.used).toBe(0n); // and the next midnight resets as usual
+  });
+
   it('restores a snapshot from today or a later day, and ignores one from an earlier day', () => {
     const t = 86_400_000 * 10;
     expect(new DailyBudget(100n, () => t, { day: 10, spentWei: 70n }).snapshot()).toEqual({ day: 10, spentWei: 70n });

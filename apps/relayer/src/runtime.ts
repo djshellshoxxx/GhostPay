@@ -60,7 +60,8 @@ export function openJournal(config: RelayerConfig, now: () => number): { journal
   if (config.stateFile === undefined) return { journal: new StateJournal(new MemoryStateBackend(), now), lock: undefined };
   const lock = acquireStateLock(config.stateFile, { pid: process.pid, host: hostname(), now });
   try {
-    return { journal: new StateJournal(new FileStateBackend(config.stateFile), now), lock };
+    // Fencing: every journal write first checks that the lock still carries this process's token.
+    return { journal: new StateJournal(new FileStateBackend(config.stateFile), now, () => lock.assertHeld()), lock };
   } catch (e) {
     lock.release();
     throw e;

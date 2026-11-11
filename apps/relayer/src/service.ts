@@ -470,7 +470,9 @@ export class RelayerService {
     if (this.closing) status = 'shutting_down';
     else if (
       [...this.chains.values()].some((r) => r.breaker.health() !== 'ok') ||
-      chains.some((c) => c.minedReverts === 'sustained')
+      chains.some((c) => c.minedReverts === 'sustained') ||
+      // An applied change is not on disk: new sweeps may be refused (state_unavailable) and a crash now would lose it.
+      this.journal.dirty
     )
       status = 'degraded';
     return { status, chains };
@@ -745,6 +747,8 @@ export class RelayerService {
     const deadlineTooSoon = (): boolean =>
       requested.sweep.deadline <= BigInt(Math.floor(this.now() / 1000) + this.d.config.minDeadlineSeconds);
     if (deadlineTooSoon()) throw new RelayerError(422, 'deadline_too_soon');
+    // Retries a snapshot an earlier failed write left unsaved (no-op when clean).
+    this.journalWrite(rt, () => this.journal.flush());
     await this.reconcilePending(rt);
     // EVM-3: an earlier send may hold the next nonce. Refused before any simulation or reservation (neutral).
     await this.reconcileUnknownSend(rt);
@@ -903,7 +907,7 @@ export class RelayerService {
         // Runs after signing, before the broadcast; throwing here aborts the send (SendRefused).
         onSigned: (hash) => {
           try {
-            this.journal.updateSend(cfg.chainId, id, { status: 'signed', txHash: hash });
+            this.journal.updateSend(cfg.chainId, id, { status: 'signed', txHash: hash }, true);
           } catch (e) {
             journalFailed = true;
             throw e;

@@ -22,10 +22,17 @@ async function main(): Promise<void> {
     if (stopping) return;
     stopping = true;
     logger.log('info', 'shutdown_started', {});
-    relayer.dispose();
+    // Drain first (queued and in-flight sweeps still write the journal), then release the state lock: releasing it
+    // earlier would let a starting replacement take the state over while this process still writes it.
     relayer.server.close().then(
-      () => process.exit(0),
-      () => process.exit(1),
+      () => {
+        relayer.dispose();
+        process.exit(0);
+      },
+      () => {
+        relayer.dispose();
+        process.exit(1);
+      },
     );
   };
   process.on('SIGTERM', stop);
@@ -42,7 +49,7 @@ for (const event of ['uncaughtException', 'unhandledRejection'] as const) {
 
 main().catch((e: unknown) => {
   // Startup errors name variables/paths only (ConfigError); never print arbitrary objects.
-  const msg = e instanceof Error && (e.name === 'ConfigError' || e.name === 'ChainAdapterError') ? e.message : 'startup failed';
+  const msg = e instanceof Error && (e.name === 'ConfigError' || e.name === 'ChainAdapterError' || e.name === 'StateError') ? e.message : 'startup failed';
   process.stderr.write(`fatal: ${msg}\n`);
   process.exit(1);
 });

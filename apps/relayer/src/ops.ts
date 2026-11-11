@@ -178,12 +178,13 @@ function sendView(s: SendRecord, now: number): SendView {
 }
 
 function chainView(chainId: number, c: ChainState, limit: bigint | undefined, now: number): ChainView {
-  // A budget from an earlier UTC day no longer counts today: the relayer rolls it to zero on first use.
+  // Mirrors DailyBudget: an earlier UTC day no longer counts; a day at or after today (a clock behind the last run)
+  // keeps its spending, so it is flagged.
   const today = Math.floor(now / DAY_MS);
-  const effectiveSpent = c.budget.day === today ? c.budget.spentWei : 0n;
+  const effectiveSpent = c.budget.day >= today ? c.budget.spentWei : 0n;
   return {
     chainId,
-    budgetDay: isoDay(c.budget.day),
+    budgetDay: `${isoDay(c.budget.day)}${c.budget.day > today ? ' (AHEAD of this clock: check NTP; spending still counts today)' : ''}`,
     spentWei: c.budget.spentWei.toString(),
     limitWei: limit === undefined ? null : limit.toString(),
     remainingWei: limit === undefined ? null : (limit > effectiveSpent ? limit - effectiveSpent : 0n).toString(),
@@ -282,26 +283,33 @@ interface ReportItem {
 }
 
 async function judge(chain: ReadOnlyChain, s: SendRecord, hot: Address | undefined): Promise<{ outcome: Outcome; detail: string }> {
-  if (s.txHash === undefined) {
+  // Mirrors RelayerService.restore(): only a 'reserved' record is provably unbroadcast.
+  if (s.status === 'reserved') {
     return { outcome: 'not_broadcast', detail: 'reserved, never signed: nothing was broadcast; the reservation is released' };
   }
-  try {
-    const r = await chain.getReceipt(s.txHash);
-    if (r !== null) {
-      return { outcome: 'settled', detail: `mined (${r.status}); the record is settled and removed, unused budget returned` };
+  if (s.txHash !== undefined) {
+    try {
+      const r = await chain.getReceipt(s.txHash);
+      if (r !== null) {
+        return { outcome: 'settled', detail: `mined (${r.status}); the record is settled and removed, unused budget returned` };
+      }
+    } catch {
+      return { outcome: 'unknown', detail: 'RPC unavailable: receipt lookup failed; the relayer retries after start' };
     }
-  } catch {
-    return { outcome: 'unknown', detail: 'RPC unavailable: receipt lookup failed; the relayer retries after start' };
   }
+  if (s.status === 'pending') {
+    return { outcome: 'pending', detail: 'accepted by the RPC, no receipt yet: the relayer keeps looking it up for up to 24 h with its reservation held' };
+  }
+  // 'signed': outcome unknown; the relayer blocks the lane until the node's pending nonce or the grace decides.
   if (hot === undefined) {
-    return { outcome: 'unknown', detail: 'no receipt yet; hot key not loadable so the pending nonce was not checked' };
+    return { outcome: 'unknown', detail: 'signed, outcome unknown; hot key not loadable so the pending nonce was not checked; the relayer blocks new sweeps until it reconciles' };
   }
   try {
     const pending = await chain.getPendingNonce(hot);
     if (pending > s.nonce) {
-      return { outcome: 'pending', detail: 'no receipt yet but the node holds this nonce: a transaction is in flight (or replaced); the relayer keeps tracking it' };
+      return { outcome: 'pending', detail: 'signed and the node holds this nonce: it was broadcast (or replaced); the relayer keeps its reservation' };
     }
-    return { outcome: 'unknown', detail: 'no receipt and the nonce is free on the node: treated as never broadcast once the grace period passes, then the reservation is released' };
+    return { outcome: 'unknown', detail: 'signed, no receipt and the nonce is free on the node: released only after the grace period with the nonce still free; do not delete the state' };
   } catch {
     return { outcome: 'unknown', detail: 'RPC unavailable: pending nonce lookup failed; the relayer retries after start' };
   }

@@ -97,7 +97,7 @@ describe('state journal wiring', () => {
       });
       expect(existsSync(`${stateFile}.lock`)).toBe(true);
       // A second writer on the same state file is refused while the first holds a fresh lock.
-      writeFileSync(`${stateFile}.lock`, JSON.stringify({ pid: process.pid + 1, host: 'other', beatMs: Date.now() }));
+      writeFileSync(`${stateFile}.lock`, JSON.stringify({ pid: process.pid + 1, host: 'other', token: 'f'.repeat(32), beatMs: Date.now() }));
       expect(() => openJournal(testConfig({ stateFile }), Date.now)).toThrow(/locked by another/);
       relayer.dispose();
       expect(existsSync(`${stateFile}.lock`)).toBe(true); // not ours any more, so dispose leaves it
@@ -129,7 +129,7 @@ describe('state journal wiring', () => {
       });
       vi.advanceTimersByTime(10_000); // own heartbeat: fine
       expect(relayer.service.health().status).toBe('ok');
-      writeFileSync(`${stateFile}.lock`, JSON.stringify({ pid: process.pid + 1, host: 'other', beatMs: Date.now() }));
+      writeFileSync(`${stateFile}.lock`, JSON.stringify({ pid: process.pid + 1, host: 'other', token: 'f'.repeat(32), beatMs: Date.now() }));
       vi.advanceTimersByTime(10_000);
       await Promise.resolve();
       expect(lines.join('\n')).toContain('state_lock_lost');

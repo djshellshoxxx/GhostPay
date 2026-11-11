@@ -21,7 +21,9 @@ export class DailyBudget {
   ) {
     const today = this.dayOf();
     if (restored !== undefined && restored.day >= today) {
-      this.day = restored.day;
+      // More than a day ahead means a wrong clock reading was saved: keep the spending, but on today's day, so it
+      // resets at the next midnight instead of pinning the budget until that far-off day.
+      this.day = restored.day > today + 1 ? today : restored.day;
       this.spent = restored.spentWei;
     } else {
       this.day = today;
@@ -35,7 +37,10 @@ export class DailyBudget {
 
   private roll(): void {
     const d = this.dayOf();
-    if (d > this.day) {
+    if (d < this.day - 1) {
+      // The clock moved back by more than a day (a forward jump was corrected): keep the spending, adopt today.
+      this.day = d;
+    } else if (d > this.day) {
       this.day = d;
       this.spent = 0n;
     }
