@@ -1,0 +1,75 @@
+name: Beta acceptance
+# Core functional-beta lifecycle on local anvil chains with real contracts and real transactions:
+# scripts/beta/acceptance.sh runs the library lifecycle (scripts/devnet/e2e.mjs), the CLI devnet journey and the built
+# web app in Chromium against its own anvil. Dev/test chains and public anvil keys only: no secrets, no public network.
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/beta-acceptance.yml"
+      - "scripts/beta/**"
+      - "scripts/devnet/**"
+      - "scripts/testnet/make-manifest.mjs"
+      - "apps/web/src/**"
+      - "apps/web/e2e/devnet/**"
+      - "apps/web/e2e/devnet-journey.spec.ts"
+      - "apps/web/playwright.devnet.config.ts"
+      - "apps/web/package.json"
+      - "apps/web/vite.config.ts"
+      - "apps/relayer/src/**"
+      - "packages/cli/src/**"
+      - "packages/chain-adapters/src/**"
+      - "packages/core-crypto/src/**"
+      - "packages/invoice-schema/src/**"
+      - "packages/ux-vault/src/**"
+      - "packages/tx-review/src/**"
+      - "packages/contracts/src/**"
+      - "packages/contracts/script/**"
+      - "package-lock.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  acceptance:
+    name: beta acceptance (lib + cli + browser on anvil)
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+      - uses: ./.github/actions/setup-node-libs
+      # Pinned Foundry v1.8.5 + cached solc 0.8.28 + forge build cache (same composite as the contracts jobs).
+      - uses: ./.github/actions/setup-forge
+        with:
+          cache-name: beta-acceptance
+      # Compiles once and installs solc into ~/.svm; the browser stage's isolated deploy runs forge with --offline.
+      - name: forge build
+        working-directory: packages/contracts
+        run: forge build
+      - id: pw
+        run: echo "version=$(node -p "require('./apps/web/package.json').devDependencies['@playwright/test']")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
+      - run: ./node_modules/.bin/playwright install --with-deps chromium
+      # Libraries are already built (or restored) by setup-node-libs; the runner still builds the CLI and relayer.
+      - name: acceptance (lib, cli, browser)
+        run: bash scripts/beta/acceptance.sh --skip-build
+      - name: upload acceptance log
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: beta-acceptance-log
+          path: scripts/beta/.state/*.log
+          if-no-files-found: warn
+          retention-days: 7

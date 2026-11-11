@@ -7,7 +7,7 @@
 #   cli      scripts/beta/cli-devnet.e2e.mjs   the CLI against the same devnet (chain 31337)
 #   browser  scripts/beta/browser-devnet.sh    the BUILT web app in Chromium against its own anvil (chain 84532 alias)
 #
-# Usage: bash scripts/beta/acceptance.sh [--stages lib,cli,browser] [--skip-build]
+# Usage: bash scripts/beta/acceptance.sh [--stages lib,cli,browser] [--skip-build]   (--skip-build skips build:libs only)
 # Needs: node >= 22, npm ci done, foundry (anvil/forge/cast) on PATH or in ~/.foundry/bin, solc 0.8.28 available to
 # forge, and the pre-installed Chromium for the browser stage. Exit status is non-zero if any selected stage fails.
 # Writes a source-pinned summary to scripts/beta/.state/acceptance-<UTC>.log (gitignored state directory).
@@ -64,12 +64,13 @@ trap cleanup EXIT
 if [ "$build" = "1" ]; then
   echo "== build libraries and CLI" | tee -a "$LOG"
   (cd "$ROOT" && npm run build:libs >"$STATE/build-$stamp.log" 2>&1) || die "build:libs failed (see $STATE/build-$stamp.log)"
-  if [ -f "$ROOT/packages/cli/package.json" ]; then
-    (cd "$ROOT" && npm run build -w @ghostpay/cli >>"$STATE/build-$stamp.log" 2>&1) || die "CLI build failed"
-  fi
-  if has lib; then
-    (cd "$ROOT" && npm run build -w apps/relayer >>"$STATE/build-$stamp.log" 2>&1) || die "relayer build failed"
-  fi
+fi
+# The CLI and relayer are not part of build:libs; build them whenever their stage runs (cheap when up to date).
+if has cli; then
+  (cd "$ROOT" && npm run build:cli >>"$STATE/build-$stamp.log" 2>&1) || die "CLI build failed (see $STATE/build-$stamp.log)"
+fi
+if has lib; then
+  (cd "$ROOT" && npm run build -w apps/relayer >>"$STATE/build-$stamp.log" 2>&1) || die "relayer build failed (see $STATE/build-$stamp.log)"
 fi
 
 results=()
