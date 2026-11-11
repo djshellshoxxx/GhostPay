@@ -3,7 +3,13 @@
 // Anything the build cannot know (IPFS CID, onion hash, source verification, audit summaries, ...) is emitted as
 // an explicit "not-recorded" entry and listed in `unrecordedFields`; nothing is invented.
 // Usage: gen-release-manifest.mjs --out-dir D --tarball NAME --version V --commit C --source-date-epoch N
-//                                 --lockfile PATH --sbom NAME
+//                                 --lockfile PATH --sbom NAME [--tree-clean 1|0|unknown] [--tag-commit SHA|none]
+//
+// `channel` is "release" only if ALL hold: the version is a release tag name (vX.Y.Z[-pre]), --tag-commit equals
+// --commit (the git tag exists and points at the built commit), and --tree-clean is 1. Otherwise it is
+// "development" and `channelReasons` says why. scripts/verify-release.sh rejects development manifests, so a local
+// or dirty build cannot be passed off as a release. Fields only ever get ADDED here (schemaVersion stays 1):
+// .github/actions/release-verify/verify.sh and scripts/verify-release.sh read commit, checksumsFile and artifacts[].
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
@@ -15,6 +21,13 @@ for (let i = 2; i < process.argv.length; i += 2) args[process.argv[i].replace(/^
 for (const k of ['out-dir', 'tarball', 'version', 'commit', 'source-date-epoch', 'lockfile', 'sbom']) {
   if (!args[k]) { console.error(`missing --${k}`); process.exit(2); }
 }
+const RELEASE_TAG = /^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z][0-9A-Za-z.-]*)?$/;
+if (!/^[0-9a-f]{40}$/.test(args.commit)) { console.error('--commit must be a 40-hex SHA'); process.exit(2); }
+if (!/^\d+$/.test(args['source-date-epoch'])) { console.error('--source-date-epoch must be an integer'); process.exit(2); }
+const treeClean = args['tree-clean'] ?? 'unknown';
+const tagCommit = args['tag-commit'] ?? 'none';
+if (!['1', '0', 'unknown'].includes(treeClean)) { console.error('--tree-clean must be 1, 0 or unknown'); process.exit(2); }
+if (tagCommit !== 'none' && !/^[0-9a-f]{40}$/.test(tagCommit)) { console.error('--tag-commit must be a 40-hex SHA or none'); process.exit(2); }
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const sha256 = (p) => createHash('sha256').update(readFileSync(p)).digest('hex');
 const tryExec = (cmd, a) => { try { return execFileSync(cmd, a, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim().split('\n')[0]; } catch { return 'not-installed'; } };
@@ -32,16 +45,26 @@ const deployments = existsSync(deployDir)
     })
   : [];
 
-const isTag = /^v\d/.test(args.version);
+const isTag = RELEASE_TAG.test(args.version) && !args.version.includes('..');
+const channelReasons = [];
+if (!isTag) channelReasons.push(`version "${args.version}" is not a release tag name (vX.Y.Z[-pre])`);
+if (tagCommit === 'none') channelReasons.push(`no git tag refs/tags/${args.version} found at build time`);
+else if (tagCommit !== args.commit) channelReasons.push(`tag ${args.version} points at ${tagCommit}, not the built commit`);
+if (treeClean === '0') channelReasons.push('source tree was dirty (modified/untracked files, or HEAD != recorded commit)');
+if (treeClean === 'unknown') channelReasons.push('source tree state unknown (no git metadata)');
+const channel = channelReasons.length === 0 ? 'release' : 'development';
 const ciRun = process.env.GITHUB_RUN_ID && process.env.GITHUB_SERVER_URL && process.env.GITHUB_REPOSITORY
   ? `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}` : null;
 
 const manifest = {
   schemaVersion: 1,
   project: 'ghostpay-web',
+  channel,
+  ...(channel === 'development' ? { channelReasons } : {}),
   version: args.version,
-  tag: isTag ? args.version : null,
+  tag: channel === 'release' ? args.version : null,
   commit: args.commit,
+  sourceTree: { clean: treeClean === 'unknown' ? null : treeClean === '1', tagCommit: tagCommit === 'none' ? null : tagCommit },
   sourceDateEpoch: Number(args['source-date-epoch']),
   builtFromCommitTime: new Date(Number(args['source-date-epoch']) * 1000).toISOString(),
   tools: {
