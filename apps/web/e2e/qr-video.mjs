@@ -32,11 +32,7 @@ function lumaFrame(text) {
   return y;
 }
 
-/**
- * Writes a looping Y4M video that shows each text for `framesPerCode` frames (10 fps) and returns its path.
- * `texts` with several entries simulates an animated multipart QR; a blank frame between codes forces re-detection.
- */
-export function writeQrVideo(texts, { framesPerCode = 10, blankFrames = 2 } = {}) {
+function y4m(texts, { framesPerCode = 10, blankFrames = 2 } = {}) {
   if (!Array.isArray(texts) || texts.length === 0 || texts.length > 64) throw new Error('1..64 QR texts expected.');
   const chroma = new Uint8Array((W / 2) * (H / 2)).fill(128);
   const blank = new Uint8Array(W * H).fill(235);
@@ -47,8 +43,24 @@ export function writeQrVideo(texts, { framesPerCode = 10, blankFrames = 2 } = {}
     for (let i = 0; i < framesPerCode; i++) frame(luma);
     for (let i = 0; i < blankFrames; i++) frame(blank);
   }
+  return Buffer.concat(parts);
+}
+
+/**
+ * Writes a looping Y4M video that shows each text for `framesPerCode` frames (10 fps) and returns its path.
+ * `texts` with several entries simulates an animated multipart QR; a blank frame between codes forces re-detection.
+ */
+export function writeQrVideo(texts, options = {}) {
   const dir = mkdtempSync(join(tmpdir(), 'ghostpay-e2e-camera-'));
   const file = join(dir, 'qr.y4m');
-  writeFileSync(file, Buffer.concat(parts), { flag: 'wx', mode: 0o600 });
+  writeFileSync(file, y4m(texts, options), { flag: 'wx', mode: 0o600 });
   return file;
+}
+
+/**
+ * Replaces the video at `file` (created by writeQrVideo). Chromium opens the fake-capture file when a capture
+ * starts, so a test can render codes produced in the app itself before the scanning page starts its camera.
+ */
+export function rewriteQrVideo(file, texts, options = {}) {
+  writeFileSync(file, y4m(texts, options), { flag: 'w', mode: 0o600 });
 }

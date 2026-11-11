@@ -9,6 +9,7 @@ import {
   startCamera,
   stopVideo,
   type AssemblerOptions,
+  parseChunk,
 } from '@ghostpay/qr-exchange';
 import type { MessageKey } from '../i18n/catalog';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
@@ -88,6 +89,8 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
   const assemblerConfig = useRef(assemblerOptions); assemblerConfig.current = assemblerOptions;
   // One transfer at a time, bounded by the Assembler (64 parts); dropped on stop, scope change, hidden page, unmount.
   const assembler = useRef<Assembler | null>(null);
+  /** Session of a completed transfer whose payload was refused; its parts are ignored until the user scans again. */
+  const refusedSession = useRef<string | null>(null);
   const received = useRef(0);
   const devices = useRef<readonly string[]>([]);
   const device = useRef<string | undefined>(undefined);
@@ -150,7 +153,7 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
       document.removeEventListener('visibilitychange', visibilityChanged);
     };
   }, [stop, resetTransfer]);
-  useEffect(() => { stop(); resetTransfer(); setText(''); setStatus(undefined); }, [active, scopeKey, stop, resetTransfer]);
+  useEffect(() => { stop(); resetTransfer(); refusedSession.current = null; setText(''); setStatus(undefined); }, [active, scopeKey, stop, resetTransfer]);
 
   const deliver = async (candidate: string, signal: AbortSignal): Promise<boolean> => {
     try {
@@ -169,6 +172,7 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
   const feedParts = async (lines: readonly string[], signal: AbortSignal): Promise<Outcome> => {
     for (const line of lines) {
       if (signal.aborted || !visible()) return 'failed';
+      if (refusedSession.current !== null && sessionOfPart(line) === refusedSession.current) return 'failed';
       const current = (assembler.current ??= new Assembler(assemblerConfig.current ?? {}));
       let result: ReturnType<Assembler['add']>;
       try {
@@ -193,6 +197,7 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
         continue;
       }
       const payload = result.payload;
+      const session = current.session;
       // Drop the transfer before delivery so a completed payload reaches onText exactly once.
       resetTransfer();
       let decoded: string;
@@ -203,7 +208,10 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
         setAlert('camera.multipart.integrity');
         return 'failed';
       }
-      return (await deliver(decoded, signal)) ? 'accepted' : 'failed';
+      if (await deliver(decoded, signal)) return 'accepted';
+      // A looping animated code would otherwise rebuild and resubmit the refused payload, hiding the refusal.
+      refusedSession.current = session;
+      return 'failed';
     }
     return 'pending';
   };
@@ -226,6 +234,7 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
   };
 
   const begin = (deviceId?: string): void => {
+    if (deviceId === undefined) refusedSession.current = null; // a new scan (not a camera switch) is a new attempt
     const el = video.current;
     if (el === null || abort.current !== null || !visible()) return;
     pasteAbort.current?.abort();
@@ -268,6 +277,7 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
     begin(next);
   };
   const paste = (): void => {
+    refusedSession.current = null;
     if (pasteAbort.current !== null || !visible()) return;
     stop();
     const controller = new AbortController(); pasteAbort.current = controller; setBusy(true);
@@ -302,7 +312,7 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
     })();
   };
   // The button disappears with the transfer, so move focus to the status line instead of dropping it (WCAG 2.4.3).
-  const startOver = (): void => { resetTransfer(); setStatus('camera.multipart.restarted'); statusEl.current?.focus(); };
+  const startOver = (): void => { refusedSession.current = null; resetTransfer(); setStatus('camera.multipart.restarted'); statusEl.current?.focus(); };
 
   const progressText = (p: Transfer): string => t('camera.multipart.progress', { received: p.received, total: p.total });
   const statusText = (): string => {
@@ -340,4 +350,9 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
       </div>
     </section>
   );
+}
+
+/** Session id of a GPQ1 part, or null when the text is not a valid part (it is then reported by the Assembler). */
+function sessionOfPart(text: string): string | null {
+  try { return parseChunk(text).session; } catch { return null; }
 }

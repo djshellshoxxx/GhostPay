@@ -173,16 +173,20 @@ describe('CameraImporter multipart camera scanning', () => {
     expect(screen.getByRole('button', { name: 'Stop camera' })).toBeTruthy();
   });
 
-  it('resets after onText rejects so the same parts can be scanned again', async () => {
+  it('resets after onText rejects so the same parts can be scanned again on a new scan', async () => {
     const parts = chunksOf(SECRET);
     const onText = vi.fn<CameraImporterProps['onText']>().mockResolvedValueOnce(false).mockResolvedValueOnce(true);
     renderImporter({ onText });
-    const scan = await startCamera(userEvent.setup());
+    const user = userEvent.setup();
+    let scan = await startCamera(user);
     for (const p of parts.slice(0, -1)) await show(scan, p);
     expect(await show(scan, parts.at(-1) as string)).toBe(false);
     expect(status()).toBe('That QR text was not accepted. Check it and try again.');
     expect(screen.queryByRole('progressbar')).toBeNull();
-    // The same last part now starts a new transfer rather than re-delivering the old one.
+    // A new scan starts a new transfer rather than re-delivering the old one (same-scan repeats are ignored; see
+    // 'a rejected transfer does not loop').
+    await user.click(screen.getByRole('button', { name: 'Stop camera' }));
+    scan = await startCamera(user);
     await show(scan, parts[0] as string);
     expect(progressBar().value).toBe(1);
     for (const p of parts.slice(1, -1)) await show(scan, p);
@@ -356,5 +360,29 @@ describe('CameraImporter image import', () => {
     await user.click(screen.getByRole('button', { name: 'Stop camera' }));
     expect(signal?.aborted).toBe(true);
     expect(screen.getByLabelText<HTMLInputElement>('Read a QR from an image').disabled).toBe(false);
+  });
+});
+
+describe('CameraImporter multipart: a rejected transfer does not loop', () => {
+  it('ignores further parts of a transfer whose assembled payload was refused until the user scans again', async () => {
+    const parts = chunksOf(SECRET);
+    const onText = vi.fn<CameraImporterProps['onText']>(() => false);
+    render(<CameraImporter label="Import a QR" multipart onText={onText} />);
+    const user = userEvent.setup();
+    let scan = await startCamera(user);
+    for (const part of parts) await show(scan, part);
+    expect(onText).toHaveBeenCalledOnce();
+    const refused = status();
+    expect(refused).toBe('That QR text was not accepted. Check it and try again.');
+    // A looping animated code keeps showing the same parts: they must not rebuild and resubmit the refused payload.
+    for (const part of parts) expect(await show(scan, part)).toBe(false);
+    expect(onText).toHaveBeenCalledOnce();
+    expect(status()).toBe(refused);
+    expect(screen.queryByRole('progressbar')).toBeNull();
+    // An explicit new scan is a new attempt.
+    await user.click(screen.getByRole('button', { name: 'Stop camera' }));
+    scan = await startCamera(user);
+    for (const part of parts) await show(scan, part);
+    expect(onText).toHaveBeenCalledTimes(2);
   });
 });
