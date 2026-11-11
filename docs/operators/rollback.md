@@ -5,7 +5,7 @@ Rolling back the web app means serving an earlier, previously verified release a
 ## 1. Before you need it
 - Keep the last two verified release tarballs and their `SHA256SUMS` offline (not only on the host). A tarball you cannot re-verify is not a rollback target.
 - Know the target release's commit (40-hex) and, for releases built with `GP_COMMIT`, its `build-info.json` commit.
-- `deploy/selfhost.sh` keeps one generation, `deploy/web-dist.prev`, copied before each tarball deploy. Only the script syntax and the archive-safety selftest were run; the backup copy path itself is **UNTESTED** end to end.
+- `deploy/selfhost.sh` keeps one generation, `deploy/web-dist.prev`, copied before a tarball deploy when the live bundle is complete (has `index.html`) and is not already the commit being installed; otherwise the existing backup is kept. Only the script syntax and the archive-safety selftest were run; the backup copy path itself is **UNTESTED** end to end.
 
 ## 2. Self-host (`deploy/`)
 1. Prefer re-deploying a verified tarball: `deploy/selfhost.sh --tarball <old>.tar.gz --sums SHA256SUMS --commit <40hex>`. It runs `scripts/verify-release.sh` and rejects unsafe archives (archive checks **TESTED** by `deploy/selftest.sh`). Complete the signed-tag and attestation checks in [release and verify](release-and-verify.md).

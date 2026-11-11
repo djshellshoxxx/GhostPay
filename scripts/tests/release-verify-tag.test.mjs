@@ -87,7 +87,7 @@ test('the committed trust root fails closed: no keys rejects every tag; pinned k
   }
   for (const k of keys) {
     // allowed_signers format: principal, namespaces="git" restriction, key type, base64 key
-    assert.match(k, /^\S+\s+(?:\S+,)?namespaces="git"(?:,\S+)?\s+(?:ssh-ed25519|sk-ssh-ed25519@openssh\.com|ecdsa-sha2-nistp256|ssh-rsa)\s+[A-Za-z0-9+/=]{40,}/, `pinned key line must be namespaces="git"-restricted: ${k}`);
+    assert.match(k, /^\S+\s+(?:\S+,)?namespaces="git"(?:,\S+)?\s+(?:ssh-(?:ed25519|rsa)|ecdsa-sha2-nistp(?:256|384|521)|sk-(?:ssh-ed25519|ecdsa-sha2-nistp256)@openssh\.com)\s+[A-Za-z0-9+/=]{40,}/, `pinned key line must be namespaces="git"-restricted: ${k}`);
   }
   expectReject(verifyTag(['v0.9.0', c2]), /did not verify|ssh-keygen is required|not in /);
 });

@@ -196,7 +196,7 @@ echo "== Plan"
 step=1
 if [ -n "$tarball" ]; then
   echo "  $((step++)). verify $tarball with scripts/verify-release.sh (sums: $sums, commit: $commit); abort on any FAIL"
-  echo "  $((step++)). back up the current bundle to ${distdir}.prev, then extract it into $distdir (replacing old contents)"
+  echo "  $((step++)). back up the current bundle to ${distdir}.prev (skipped if it is incomplete or already $commit), then extract it into $distdir (replacing old contents)"
   echo "     then complete the signed-tag and attestation checks it prints (see docs/operators/release-and-verify.md)"
 fi
 echo "  $((step++)). docker compose build api$([ "$onion" = 1 ] && echo ' tor')   (builds locally from apps/relayer/Dockerfile$([ "$onion" = 1 ] && echo ' and deploy/tor/Dockerfile'))"
@@ -235,7 +235,14 @@ if [ -n "$tarball" ]; then
     else
       rm -rf "${prev}.tmp"
       cp -a "$distdir" "${prev}.tmp" || die "could not back up $distdir; aborting before any change"
-      rm -rf "$prev" && mv "${prev}.tmp" "$prev" || die "could not rotate the backup into $prev; aborting before any change"
+      # Move the old backup aside, put the new one in place, then drop the old one; restore it if the swap fails.
+      rm -rf "${prev}.old"
+      if [ -e "$prev" ]; then mv "$prev" "${prev}.old" || die "could not move the old backup aside; aborting before any change"; fi
+      if ! mv "${prev}.tmp" "$prev"; then
+        [ -e "${prev}.old" ] && mv "${prev}.old" "$prev"
+        die "could not rotate the backup into $prev; previous backup restored; aborting before any change"
+      fi
+      rm -rf "${prev}.old"
       echo "previous bundle saved to $prev"
     fi
   fi

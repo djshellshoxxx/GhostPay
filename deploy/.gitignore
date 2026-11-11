@@ -6,6 +6,7 @@ config/relayer.config.json
 web-dist/
 web-dist.prev/
 web-dist.prev.tmp/
+web-dist.prev.old/
 tor-data/
 *.key
 *.secret

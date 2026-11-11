@@ -14,7 +14,7 @@ GhostPay is a static single-page app (`apps/web/dist`). The host must serve exac
 | `/deployments/*` `no-store` (while manifests are fetched at runtime) | A stale manifest is a stale router address. Once manifests are compiled into the bundle (target design) this path goes away. |
 | No analytics, tag managers, CDNs for scripts/fonts, or edge scripts that rewrite HTML | The CSP forbids third-party scripts; an edge worker that injects code defeats it. |
 | No access logs of full URLs where avoidable | The fragment is not sent to the server, but the host still sees IP, user agent, timing and which files are fetched. |
-| Exact-file integrity | Serve the files from the signed release, byte for byte. Compare their SHA-256 with `SHA256SUMS` from a separate machine ([release and verify](release-and-verify.md)). |
+| Exact-file integrity | Serve the files from the signed release, byte for byte. From a separate machine, compare their SHA-256 with the files of the verified release tarball (verify it against `SHA256SUMS`, extract it to `ghostpay-web/`, hash each file; `SHA256SUMS` itself lists only the tarball, SBOM and manifest; command in [rollback](rollback.md) section 5). |
 
 The in-app "release hash" widget fetches the entry script from the same origin and hashes it. It cannot detect a compromised host (audit S3-04). Verification must happen outside the page.
 
@@ -56,7 +56,7 @@ Same `_headers` file works. Same cautions on build and account security.
 ## 3. Mirror-specific rules
 
 1. Every mirror serves the same release. A mirror that is "a bit different" is an attack until proven otherwise.
-2. Cross-mirror hash comparison (the `SHA256SUMS` over served files) is the check; cross-mirror comparison job is **not built**.
+2. Cross-mirror hash comparison (served files against the verified tarball's files) is the check; cross-mirror comparison job is **not built**.
 3. Never accept pull-request-driven deployments to a production host. Deploy from a signed tag only.
 4. Document the host, account owners, and compromise-response contact next to the published fingerprint.
 

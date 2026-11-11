@@ -45,10 +45,19 @@ function productionSources(root: string): { readonly file: string; readonly text
 }
 
 const GLOBAL_OBJECTS = new Set(['window', 'globalThis', 'self']);
+/** True for `window`, `(globalThis as T)`, `window!`, `globalThis.window`, ...: outer casts/parens are unwrapped. */
+function isGlobalObject(e: ts.Expression): boolean {
+  let x: ts.Expression = e;
+  while (ts.isParenthesizedExpression(x) || ts.isAsExpression(x) || ts.isTypeAssertionExpression(x) || ts.isNonNullExpression(x) || ts.isSatisfiesExpression(x)) x = x.expression;
+  if (ts.isIdentifier(x)) return GLOBAL_OBJECTS.has(x.text);
+  if (ts.isPropertyAccessExpression(x) && GLOBAL_OBJECTS.has(x.name.text)) return isGlobalObject(x.expression);
+  return false;
+}
 /**
  * True when the file references the global `fetch`: a bare `fetch` identifier in value position (call, alias,
- * shorthand `{ fetch }`), `window|globalThis|self.fetch`, or `globalThis['fetch']`. Property names such as
- * `{ fetch: ... }` or `rpc.fetch(...)` (an injected function) and `typeof fetch` in a type are not the global.
+ * shorthand `{ fetch }`), `.fetch` on a global object even behind casts, parentheses or `!`
+ * (`(globalThis as T).fetch`), or `globalThis['fetch']`. Property names such as `{ fetch: ... }` or `rpc.fetch(...)`
+ * on an injected client and `typeof fetch` in a type are not the global. A name built at runtime is not detected.
  */
 function referencesGlobalFetch(sf: ts.SourceFile): boolean {
   let hit = false;
@@ -61,7 +70,7 @@ function referencesGlobalFetch(sf: ts.SourceFile): boolean {
         (ts.isPropertyAccessExpression(p) && p.name === n) ||
         ((ts.isPropertyAssignment(p) || ts.isPropertySignature(p) || ts.isPropertyDeclaration(p) || ts.isMethodDeclaration(p) || ts.isMethodSignature(p)) && p.name === n);
       if (!isName) hit = true;
-      else if (ts.isPropertyAccessExpression(p) && ts.isIdentifier(p.expression) && GLOBAL_OBJECTS.has(p.expression.text)) hit = true;
+      else if (ts.isPropertyAccessExpression(p) && isGlobalObject(p.expression)) hit = true;
     }
     if (ts.isElementAccessExpression(n) && ts.isStringLiteralLike(n.argumentExpression) && n.argumentExpression.text === 'fetch') hit = true;
     ts.forEachChild(n, visit);
@@ -69,9 +78,35 @@ function referencesGlobalFetch(sf: ts.SourceFile): boolean {
   visit(sf);
   return hit;
 }
+const parseSnippet = (code: string): ts.SourceFile => ts.createSourceFile('probe.ts', code, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
 
 const TELEMETRY = /sendBeacon|sentry|posthog|gtag\s*\(|google-?analytics|googletagmanager|mixpanel|amplitude|segment\.(?:com|io)|plausible|hotjar|datadog|fullstory|logrocket|bugsnag|rollbar|newrelic|matomo|navigator\.connection/i;
 const TELEMETRY_PACKAGES = /sentry|posthog|analytics|mixpanel|amplitude|segment|plausible|hotjar|datadog|fullstory|logrocket|bugsnag|rollbar|newrelic|matomo|gtag/i;
+
+describe('privacy invariants: global fetch detector', () => {
+  it.each([
+    'fetch("x")',
+    'const f = fetch; f("x")',
+    'window.fetch("x")',
+    'self.fetch("x")',
+    'globalThis?.fetch("x")',
+    'globalThis["fetch"]("x")',
+    'window[`fetch`]("x")',
+    'const o = { fetch }',
+    'const { fetch: f } = globalThis; f("x")',
+    '(globalThis as { fetch?: typeof fetch }).fetch?.("x")',
+    '(globalThis as any).fetch("x")',
+    '(window as Window).fetch("x")',
+    '(globalThis).fetch("x")',
+    'window!.fetch("x")',
+    'globalThis.window.fetch("x")',
+  ])('flags %s', (code) => {
+    expect(referencesGlobalFetch(parseSnippet(code))).toBe(true);
+  });
+  it.each(['const o = { fetch: 1 }', 'type F = typeof fetch', 'rpc.fetch("x")', 'this.fetchFn("x")', 'const s = "fetch failed"'])('does not flag %s', (code) => {
+    expect(referencesGlobalFetch(parseSnippet(code))).toBe(false);
+  });
+});
 
 describe('privacy invariants: web app', () => {
   const web = productionSources(WEB_SRC);
