@@ -35,6 +35,8 @@ jobs:
         run: bash scripts/check-actions-pinned.sh
       - uses: ./.github/actions/setup-node-libs
       - name: Build apps/web (typecheck, vite build, postbuild bundle scan)
+        env:
+          GP_COMMIT: ${{ github.sha }}   # build-info.json / ghostpay-build meta name the deployed commit
         run: npm run build -w apps/web
       - name: Bundle scan (explicit re-run on dist)
         run: node apps/web/scripts/scan-bundle.mjs

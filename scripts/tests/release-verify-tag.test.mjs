@@ -75,11 +75,21 @@ function forgeFrom(srcTag, newName) {
   git('update-ref', `refs/tags/${newName}`, sha);
 }
 
-test('the committed trust root has no keys yet, so it rejects every tag (fail closed, human gate)', () => {
+test('the committed trust root fails closed: no keys rejects every tag; pinned keys still reject a forged signature', () => {
+  // This must keep passing after the owner pins the release key (README step 2), so it branches on the file state
+  // instead of asserting that the file is empty.
   const committed = readFileSync(join(repo, '.github', 'release-signers', 'allowed_signers'), 'utf8');
-  assert.equal(committed.split('\n').filter((l) => l.trim() && !l.trim().startsWith('#')).length, 0);
-  mktag('v0.9.0');
-  expectReject(verifyTag(['v0.9.0', c2]), /no release-signing keys are pinned .*repository owner must add/);
+  const keys = committed.split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('#'));
+  mktag('v0.9.0'); // annotated, but its SSH "signature" block is garbage
+  if (keys.length === 0) {
+    expectReject(verifyTag(['v0.9.0', c2]), /no release-signing keys are pinned .*repository owner must add/);
+    return;
+  }
+  for (const k of keys) {
+    // allowed_signers format: principal, namespaces="git" restriction, key type, base64 key
+    assert.match(k, /^\S+\s+(?:\S+,)?namespaces="git"(?:,\S+)?\s+(?:ssh-ed25519|sk-ssh-ed25519@openssh\.com|ecdsa-sha2-nistp256|ssh-rsa)\s+[A-Za-z0-9+/=]{40,}/, `pinned key line must be namespaces="git"-restricted: ${k}`);
+  }
+  expectReject(verifyTag(['v0.9.0', c2]), /did not verify|ssh-keygen is required|not in /);
 });
 
 test('empty allowed_signers is rejected before any signature check', () => {

@@ -152,6 +152,7 @@ jobs:
         working-directory: packages/contracts
         run: |
           set -euo pipefail
-          python3 -m pip install --quiet "mythril==0.24.8" "solc-select==1.2.0"
+          python3 -m pip install --quiet "mythril==0.24.8" "solc-select==1.2.0" "setuptools<81"
+          myth version
           solc-select install 0.8.28 && solc-select use 0.8.28
           bash scripts/run-mythril.sh

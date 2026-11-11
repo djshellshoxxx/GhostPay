@@ -16,7 +16,7 @@ Paths are relative to the repository root.
 
 | # | Data item | Node | Rly | Chain | Host | Net | Peer | Dev | Evidence | Mitigation status |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 1 | Client IP and user agent | L | L (hashed only for rate limits) | N | L | C (destination host, SNI) | N | N | `apps/relayer/PRIVACY.md`; `apps/relayer/src/limiter.ts:43-73`; `deploy/nginx/nginx.conf:13,65` | Relayer hashing and nginx `access_log off`: IT/IU. Tor/VPN: user action. `net-transport` profiles: LIB (R14) |
+| 1 | Client IP and user agent | L | L (hashed only for rate limits) | N | L | C (destination host, SNI) | N | N | `apps/relayer/PRIVACY.md`; `apps/relayer/src/limiter.ts:43-73`; `deploy/nginx/nginx.conf:13,69` (`access_log off`; `proxy_set_header X-Forwarded-For`) | Relayer hashing and nginx `access_log off`: IT/IU. Tor/VPN: user action. `net-transport` profiles: LIB (R14) |
 | 2 | That this device uses GhostPay (asset fetch) | N | N | N | L | L | N | C (history) | `apps/web/index.html:10`, `public/_headers`; fetch sites `lib/defaultServices.ts`, `lib/manifest.ts`, `lib/relayerClient.ts` | Self-host or onion: IU (`deploy/TOR.md` untested). Referrer policy: IT (scan-bundle) |
 | 3 | Seller keys (viewing, spending) | N | N | N | N | N | N | C (only if passphrase falls) | Worker has no network API: `apps/web/scripts/scan-bundle.mjs:43`, `apps/web/src/lib/scanClient.ts:185`; keystore `lib/keyVault.ts:14-17` | IT |
 | 4 | Scan start block, progress, scan timing | L | N | N | N | C (volume) | N | L (plaintext checkpoint) | `packages/chain-adapters/src/logs.ts:243`; `apps/web/src/lib/scanClient.ts:430-470` | Range padding: LIB (`packages/scan-source`, R15). Checkpoint encryption: REC (R8) |
@@ -29,7 +29,7 @@ Paths are relative to the repository root.
 | 11 | Link one-time address -> destination (sweep) | L | L | L | N | N | L | N | Sweep tx is public | OOS (inherent). Timing batching: guidance |
 | 12 | Amount and token | C (in rows 6, 10) | L (quote and sweep) | L | N | N | L | C | `payments.ts:257`; `relayerClient.ts:72-110` | Amount noise/rounding: LIB (`packages/metadata-hardening` AMT-1/2) |
 | 13 | Payer address | C (payer's own RPC reads: allowance, permit, estimateGas) | N | L | N | N | L | C | `apps/web/src/lib/payExec.ts:120-173`; `lib/pay.ts:206,216,321`; `lib/txGuard.ts:107` | OOS for chain; use own RPC |
-| 14 | Registrant looked up in the registry | L | N | C (eth_call not on chain) | N | N | N | N | `apps/web/src/features/registry/RegistryView.tsx:210`; `packages/chain-adapters/src/registry.ts:23-35` | REC (R2); payers who get the meta-address from an invoice make no registry call |
+| 14 | Registrant looked up in the registry | L | N | C (eth_call not on chain) | N | N | N | N | `apps/web/src/features/registry/RegistryView.tsx:210`; `packages/chain-adapters/src/registry.ts:113-160` (`buildLookupCall`, `lookupMetaAddress`) | REC (R2); payers who get the meta-address from an invoice make no registry call |
 | 15 | Meta-address published in the registry | L (anyone can read) | L | L (permanent) | N | N | L | N | `apps/web/src/lib/registry.ts:8-9`; `views/SellerKeys.tsx:318` | UI warning: IT; history permanence: OOS |
 | 16 | Seller's stable identifiers across invoices (meta-address, signer key) | N | N | N | N | N | L (any invoice or receipt holder) | C | `apps/web/src/lib/receipts.ts:11-22`; `views/CreateInvoice.tsx:32,198` | Per-invoice keys: LIB (metadata-hardening ID-1/ID-2, R10) |
 | 17 | Invoice contents | N | N | N | N (fragment not sent) | N | L (bearer link) | C (browser history) | `lib/fragment.ts`; `App.tsx:68-86` | Fragment auto-clear: IT. Encrypt by default: REC (R10) |
@@ -67,4 +67,4 @@ Paths are relative to the repository root.
 
 ## C. How to keep this current
 
-`apps/web/src/privacyInvariants.test.ts` fails if a telemetry identifier, third-party origin literal, extra `fetch(` call site, analytics package or relayer log field is added. If it fails, review rows 1, 2, 27, 28 and 29 before editing the test. A new RPC method on a scan, sweep or pay path should add or change a row here.
+`apps/web/src/privacyInvariants.test.ts` fails if a telemetry identifier, third-party origin literal, extra reference to the global `fetch` (AST check: bare, aliased, `window`/`globalThis`/`self.fetch`; an endpoint or `fetch` reached only through runtime-built property names is not detected), analytics package or relayer log field is added. If it fails, review rows 1, 2, 27, 28 and 29 before editing the test. A new RPC method on a scan, sweep or pay path should add or change a row here.

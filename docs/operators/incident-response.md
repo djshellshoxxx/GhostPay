@@ -20,7 +20,7 @@ Audience: maintainers and operators. Pre-audit software, nothing deployed. This 
 **Triggers:** hash mismatch on any mirror, unexpected file in `dist`, unexplained deploy, reports of unexpected prompts or network calls, CSP violation reports, GitHub/CDN/DNS/registrar account alert.
 
 1. **Stop serving.** Primary host: replace the site with a static notice page (no scripts) or take it offline. GitHub Pages: disable Pages in Settings or delete the `github-pages` deployment; cancel running workflows. IPFS: unpin and remove the name/ENS pointer if any; remember the old CID stays retrievable from others, so publish it as BAD. Onion: stop the service; if the onion key leaked, the address is permanently burned.
-2. **Scope.** Compare served files with the release `SHA256SUMS` from a separate machine. Find the first bad version and time. Check `git log`, branch protection history, workflow runs, Pages deployments, DNS/CDN audit logs, registrar changes, collaborator and token lists.
+2. **Scope.** From a separate machine, compare served files with the files of the verified release tarball (verify it against `SHA256SUMS`, extract, hash each file; `SHA256SUMS` alone lists only the tarball, SBOM and manifest). Find the first bad version and time. Check `git log`, branch protection history, workflow runs, Pages deployments, DNS/CDN audit logs, registrar changes, collaborator and token lists.
 3. **Credentials.** Revoke and re-issue GitHub tokens, deploy keys, host SSH keys, CDN API tokens; rotate DNS and registrar credentials and 2FA. Check for added collaborators, workflow edits, new Actions secrets.
 4. **Rebuild** from a verified commit on a clean machine with `scripts/release-build.sh`; sign the tag with a key that was not on any compromised machine (if the signing key itself is suspect, section 4).
 5. **Redeploy** only after the new hashes are published on two independent channels. Bump the version so old and new are distinguishable.
@@ -28,7 +28,7 @@ Audience: maintainers and operators. Pre-audit software, nothing deployed. This 
 7. Add the cause to the post-mortem; if a workflow or dependency was the vector, fix the control (pinning, branch protection, review).
 
 ## 2a. Playbook: release-integrity failure (served bytes do not match the release)
-**Trigger:** SHA-256 of a served file differs from `SHA256SUMS`, `/build-info.json` commit or `manifestsSha256` differs from the release, or a mirror disagrees with the primary ([monitoring](monitoring.md)).
+**Trigger:** SHA-256 of a served file differs from the same file in the verified release tarball, `/build-info.json` commit or `manifestsSha256` differs from the tarball's own `build-info.json`, or a mirror disagrees with the primary ([monitoring](monitoring.md)).
 1. Re-fetch from a second machine and network to rule out a local or CDN-edge artefact; purge CDN HTML and `/build-info.json`, then re-check. A pure stale cache is S3.
 2. If bytes still differ: S2 (S1 if a script was added or changed). Stop serving that origin (section 2 step 1); keep a copy of the served files and response headers as evidence.
 3. Diff against the verified tarball to find the changed files; check deploy history, who last wrote to the web root, and the build log. A mismatch in only `build-info.json` or `index.html` with matching `assets/` suggests an index/manifest swap.

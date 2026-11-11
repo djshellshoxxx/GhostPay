@@ -4,6 +4,8 @@ secrets/*
 !secrets/README.md
 config/relayer.config.json
 web-dist/
+web-dist.prev/
+web-dist.prev.tmp/
 tor-data/
 *.key
 *.secret

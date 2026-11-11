@@ -62,7 +62,7 @@ job rebuilds `apps/web`, runs the bundle scan, and checks the CSP meta and the a
 
 Nightly run 42806095211 failed `mythril` because `pip install mythril==0.24.8` ran on the runner's system Python 3.14
 and failed building `coincurve` ("Expected exactly one LICENSE file in cffi distribution"). Every job that pip-installs a
-tool (`slither`, `echidna`, `mythril`, and the per-push `contracts-slither`) now uses `actions/setup-python` pinned to
+tool (`slither`, `echidna`, `mythril`, and the per-push `contracts-slither`) now uses `actions/setup-python` (Mythril additionally pins `setuptools<81`, because py-evm imports `pkg_resources`, which a 3.12 interpreter from setup-python does not ship) pinned to
 Python 3.12, so a runner image upgrade cannot change the interpreter. Tool versions stay pinned.
 
 ### Dependency-integrity gate

@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
 
 /**
@@ -26,15 +27,47 @@ function walk(dir: string): string[] {
   return out;
 }
 
-/** Production sources only: no tests, fixtures or test helpers. Comments are stripped so prose cannot trip or hide a check. */
-function productionSources(root: string): { readonly file: string; readonly text: string }[] {
+/**
+ * Production sources only: no tests, fixtures or test helpers. Comments are removed with the TypeScript printer (a real
+ * tokenizer), so prose cannot trip a check and a `/*` inside a string or line comment cannot swallow code. A regex
+ * stripper did exactly that (it deleted most of i18n/message.ts), which is why the shrink guard below exists.
+ */
+const printer = ts.createPrinter({ removeComments: true });
+function productionSources(root: string): { readonly file: string; readonly text: string; readonly raw: string; readonly sf: ts.SourceFile }[] {
   return walk(root)
     .map((f) => ({ file: relative(root, f).split(sep).join('/'), abs: f }))
     .filter(({ file }) => /\.(ts|tsx)$/.test(file) && !/\.test\.|\.testutil\.|(^|\/)test\//.test(file))
-    .map(({ file, abs }) => ({
-      file,
-      text: readFileSync(abs, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1'),
-    }));
+    .map(({ file, abs }) => {
+      const raw = readFileSync(abs, 'utf8');
+      const sf = ts.createSourceFile(abs, raw, ts.ScriptTarget.Latest, true, abs.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS);
+      return { file, raw, sf, text: printer.printFile(sf) };
+    });
+}
+
+const GLOBAL_OBJECTS = new Set(['window', 'globalThis', 'self']);
+/**
+ * True when the file references the global `fetch`: a bare `fetch` identifier in value position (call, alias,
+ * shorthand `{ fetch }`), `window|globalThis|self.fetch`, or `globalThis['fetch']`. Property names such as
+ * `{ fetch: ... }` or `rpc.fetch(...)` (an injected function) and `typeof fetch` in a type are not the global.
+ */
+function referencesGlobalFetch(sf: ts.SourceFile): boolean {
+  let hit = false;
+  const visit = (n: ts.Node): void => {
+    if (hit) return;
+    if (ts.isTypeQueryNode(n) || ts.isTypeReferenceNode(n)) return;
+    if (ts.isIdentifier(n) && n.text === 'fetch') {
+      const p = n.parent;
+      const isName =
+        (ts.isPropertyAccessExpression(p) && p.name === n) ||
+        ((ts.isPropertyAssignment(p) || ts.isPropertySignature(p) || ts.isPropertyDeclaration(p) || ts.isMethodDeclaration(p) || ts.isMethodSignature(p)) && p.name === n);
+      if (!isName) hit = true;
+      else if (ts.isPropertyAccessExpression(p) && ts.isIdentifier(p.expression) && GLOBAL_OBJECTS.has(p.expression.text)) hit = true;
+    }
+    if (ts.isElementAccessExpression(n) && ts.isStringLiteralLike(n.argumentExpression) && n.argumentExpression.text === 'fetch') hit = true;
+    ts.forEachChild(n, visit);
+  };
+  visit(sf);
+  return hit;
 }
 
 const TELEMETRY = /sendBeacon|sentry|posthog|gtag\s*\(|google-?analytics|googletagmanager|mixpanel|amplitude|segment\.(?:com|io)|plausible|hotjar|datadog|fullstory|logrocket|bugsnag|rollbar|newrelic|matomo|navigator\.connection/i;
@@ -46,6 +79,15 @@ describe('privacy invariants: web app', () => {
   it('found production sources to check (guards against a path mistake making this test vacuous)', () => {
     expect(web.length).toBeGreaterThan(50);
     expect(web.some((s) => s.file === 'lib/relayerClient.ts')).toBe(true);
+  });
+
+  it('comment removal keeps the code (guards against a stripper that silently deletes what it should check)', () => {
+    // Printed output reformats code but never drops statements; a file shrinking to a fraction of its source means
+    // code went missing. Comment-heavy files stay well above this bound.
+    const shrunk = web.filter((s) => s.text.length < s.raw.length * 0.25 && s.raw.length > 2000).map((s) => s.file);
+    expect(shrunk).toEqual([]);
+    const msg = web.find((s) => s.file === 'i18n/message.ts');
+    expect(msg?.text).toMatch(/export function/);
   });
 
   it('contains no analytics, telemetry, beacon or fingerprinting-API client', () => {
@@ -68,7 +110,7 @@ describe('privacy invariants: web app', () => {
   });
 
   it('issues fetch() only from the three audited call sites (everything else uses the injected fetchFn or RPC client)', () => {
-    const files = web.filter((s) => /(?<![.\w$])fetch\s*\(|=>\s*fetch\s*\(/.test(s.text) || /\bfetch\(u, i\)/.test(s.text)).map((s) => s.file).sort();
+    const files = web.filter((s) => referencesGlobalFetch(s.sf)).map((s) => s.file).sort();
     expect(files).toEqual(['lib/defaultServices.ts', 'lib/manifest.ts', 'lib/relayerClient.ts']);
   });
 

@@ -4,8 +4,8 @@ Scope: integrity and availability of the static host and, if you run one, a rela
 
 ## 1. Build version and manifest match
 - Every build emits `/build-info.json` (`{"app","version","commit","manifestsSha256"}`) and `<meta name="ghostpay-build" content="<commit>">`. `commit` comes from the `GP_COMMIT` environment variable at build time (a release build must set it; a plain local build reports `unknown`). The output is deterministic: no timestamps.
-- Check: `curl -s https://<host>/build-info.json` and compare `commit` with the intended release. Compare across every mirror (primary, Pages, onion, IPFS gateway); a differing commit or `manifestsSha256` means a stale or tampered mirror.
-- Limit: `build-info.json` is served by the host under test, so it detects honest drift (stale CDN, partial deploy) and not a malicious host. Authority is the SHA-256 comparison against `SHA256SUMS` ([rollback](rollback.md) section 5).
+- Check: `curl -s https://<host>/build-info.json` and compare `commit` with the intended release. Compare across every mirror (primary, Pages, onion, IPFS gateway); a differing commit or `manifestsSha256` means a stale or tampered mirror. The reference `manifestsSha256` is the one in `build-info.json` inside the verified release tarball; the release manifest does not record it. The GitHub Pages mirror sets `GP_COMMIT` from the workflow commit; a container build reports `unknown` unless built with `--build-arg GP_COMMIT=<40hex>`.
+- Limit: `build-info.json` is served by the host under test, so it detects honest drift (stale CDN, partial deploy) and not a malicious host. Authority is the SHA-256 comparison of served files against the files of the verified release tarball ([rollback](rollback.md) section 5); `SHA256SUMS` itself only covers the tarball, SBOM and manifest.
 - Manifests are compiled into the hashed JS bundle, and no manifest JSON ships in `dist`. A stale `index.html` therefore pairs only with its own hashed assets. `manifestsSha256` is the digest of the bundled manifest set, so two hosts with the same commit but different digests were built from different manifest inputs.
 
 ## 2. Header and cache regression check (cron or CI, from outside)
@@ -23,7 +23,7 @@ Alert if: the CSP differs from `apps/web/public/_headers`; `unsafe-inline` or `u
 - Manifest verification failures surface in the browser to the user. The operator signal is user reports plus the version/digest check in section 1. Bundled-manifest validation and the bundle scan also run at build time (`npm run build -w @ghostpay/web`); a failing release build must block deploy.
 
 ## 4. Integrity watch
-Daily, from a separate machine: fetch the served files, hash them, and diff against the published release (`SHA256SUMS`). Any difference is an incident ([incident response](incident-response.md) section 2a). Also watch DNS (`A`/`AAAA`/`CAA`), certificate transparency for your hostname, and registrar, CDN and GitHub audit logs.
+Daily, from a separate machine: fetch the served files, hash them, and diff against the hashes of the verified release tarball's files (verify the tarball against `SHA256SUMS`, extract, `sha256sum` each file). Any difference is an incident ([incident response](incident-response.md) section 2a). Also watch DNS (`A`/`AAAA`/`CAA`), certificate transparency for your hostname, and registrar, CDN and GitHub audit logs.
 
 ## 5. Not monitored, by design
 User addresses, payments, amounts, browser-side errors, IPs, referrers, and anything else that links activity to a person. If a tool needs those, do not use it.

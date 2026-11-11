@@ -226,11 +226,18 @@ if [ -n "$tarball" ]; then
   [ -f "$top/index.html" ] || die "extracted bundle has no index.html"
   mkdir -p "$distdir"
   # Back up the live bundle before replacing it (one generation: web-dist.prev). Rollback = see docs/operators/rollback.md.
+  # Only a complete bundle (has index.html) that differs from the one being installed replaces the backup, and the
+  # old backup is removed only after the new copy succeeded, so a failed or repeated run never loses the last good copy.
   prev="${distdir}.prev"
-  if [ -n "$(find "$distdir" -mindepth 1 -print -quit)" ]; then
-    rm -rf "$prev"
-    cp -a "$distdir" "$prev" || die "could not back up $distdir to $prev; aborting before any change"
-    echo "previous bundle saved to $prev"
+  if [ -f "$distdir/index.html" ]; then
+    if [ -f "$distdir/build-info.json" ] && grep -qF "\"commit\":\"$commit\"" "$distdir/build-info.json"; then
+      echo "live bundle is already $commit; keeping the existing backup in $prev"
+    else
+      rm -rf "${prev}.tmp"
+      cp -a "$distdir" "${prev}.tmp" || die "could not back up $distdir; aborting before any change"
+      rm -rf "$prev" && mv "${prev}.tmp" "$prev" || die "could not rotate the backup into $prev; aborting before any change"
+      echo "previous bundle saved to $prev"
+    fi
   fi
   find "$distdir" -mindepth 1 -delete
   cp -a "$top"/. "$distdir"/

@@ -12,7 +12,7 @@ Related: `docs/SECURITY_QA_DEVOPS_PLAYBOOK.md` section 2 (pipeline, release mani
 | Workflow | Trigger | Purpose |
 |---|---|---|
 | `.github/workflows/ci.yml` | PR, push to `main` | typecheck, lint, tests (relayer anvil e2e required), web build, Playwright `e2e` job, forge fmt/build/test/`snapshot --check`/coverage (lcov artifact), NatSpec, Slither, secret scan, "all actions pinned" check |
-| `.github/workflows/nightly.yml` | 03:17 UTC daily, manual | forge fuzz at 100 000 runs, Slither, dependency audit, reproducibility diff |
+| `.github/workflows/nightly.yml` | 03:17 UTC daily, manual | forge fuzz at 100 000 runs, Slither, dependency audit, reproducibility diff, Echidna harnesses, Mythril (Echidna/Mythril install steps are unverified until a green nightly run; see `docs/developer/ci.md`) |
 | `.github/workflows/release.yml` | tag `v*` | tag signature verified against the pinned trust root, tests, deterministic build, SBOM, `SHA256SUMS`, manifest, provenance attestation, **draft** GitHub release |
 
 Hosting is **intentionally not enabled**: there are no IPFS, ENS, Tor or Pages steps. `release.yml` ends with a
@@ -151,8 +151,9 @@ reviewed tag, replace the SHA, update the `# vX.Y.Z` comment, run `scripts/check
 
 ## 5. Open gaps (not faked)
 
-- **Echidna, Mythril, mutation testing, mainnet-fork tests**: no harness or config exists (audit O-07, G-14). The
-  nightly workflow does not contain placeholder steps for them.
+- **Mutation testing, mainnet-fork tests**: no harness or config exists (audit O-07, G-14). The nightly workflow does
+  not contain placeholder steps for them. Echidna and Mythril jobs exist in `nightly.yml` but have not yet had a green
+  run on the hosted runner.
 - **Testnet deployment job and deployment-manifest signing** (O-08, O-13): not implemented.
 - **IPFS / ENS / Tor / Pages publication** (O-11): intentionally disabled.
 - **Release-signing key**: `.github/release-signers/allowed_signers` contains no key yet, so every release run fails
