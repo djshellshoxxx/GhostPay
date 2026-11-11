@@ -13,6 +13,7 @@ import { defineConfig } from '@playwright/test';
 const CANDIDATES = [
   process.env['GHOSTPAY_CHROMIUM'],
   '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
+  '/opt/pw-browsers/chromium',
 ].filter((p): p is string => typeof p === 'string');
 const executablePath = CANDIDATES.find((p) => existsSync(p));
 
@@ -29,6 +30,8 @@ if (state.chainId !== 84532 || !/^0[23][0-9a-f]{64}$/.test(state.publicKey)) thr
 export default defineConfig({
   testDir: './e2e',
   testMatch: /devnet-journey\.spec\.ts$/,
+  // Traces/screenshots of a failed run stay with the runner's temp directory, never in the source tree.
+  outputDir: `${dist}-results`,
   timeout: 180_000,
   expect: { timeout: 15_000 },
   fullyParallel: false,

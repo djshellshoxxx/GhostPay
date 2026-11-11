@@ -27,7 +27,7 @@ import assert from 'node:assert/strict';
 import { randomBytes } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { createPublicClient, createWalletClient, defineChain, getAddress, http, parseEther } from 'viem';
+import { createPublicClient, createWalletClient, defineChain, http, parseEther } from 'viem';
 import { mnemonicToAccount } from 'viem/accounts';
 import { deriveStealthPayment, encodeMetaAddress, generateKeySet, unsafeRevealSecret, zeroize } from '@ghostpay/core-crypto';
 import { invoiceDigest, signerPublicKeyHex, signReceipt } from '@ghostpay/invoice-schema';
@@ -112,9 +112,9 @@ async function partA() {
   const pub = createPublicClient({ chain, transport: http(RPC), pollingInterval: 25 });
   // Account 9 is not used by scripts/devnet/e2e.mjs (0-7), so concurrent lib runs do not race this payer's nonce.
   const payer = createWalletClient({ account: mnemonicToAccount(MNEMONIC, { addressIndex: 9 }), chain, transport: http(RPC) });
-  check('A preflight devnet', () => assert.ok(true), `rpc=${RPC}`);
-  assert.equal(await pub.getChainId(), 31337, 'devnet is not chain 31337');
-  assert.ok((await pub.getCode({ address: manifest.router }))?.length > 2, 'router not deployed (run scripts/devnet/up.sh)');
+  const devnetId = await pub.getChainId();
+  const routerCode = await pub.getCode({ address: manifest.router });
+  check('A preflight devnet', () => { assert.equal(devnetId, 31337, 'devnet is not chain 31337'); assert.ok(routerCode?.length > 2, 'router not deployed (run scripts/devnet/up.sh)'); }, `rpc=${RPC}`);
 
   const dir = privateDir('a');
   try {
@@ -158,7 +158,7 @@ async function partA() {
     const iv = cli('A invoice verify (pin + expectations)', ['invoice', 'verify', '--in', join(dir, 'invoice.json'), '--pin', seller.signer,
       '--expected-chain', '31337', '--expected-asset', 'native', '--expected-amount', gross.toString(), '--expected-recipient', seller.meta]).out;
     check('A invoice verify reports 31337 unsupported for payment', () => {
-      assert.equal(iv.ok, true); assert.equal(iv.signatureValid ?? iv.signature?.valid ?? true, true);
+      assert.equal(iv.ok, true); assert.equal(iv.signatureValid, true);
       assert.equal(iv.supportedForPayment, false); assert.equal(iv.chainKnown, false);
     }, 'chainKnown=false: chain-adapters has no 31337 entry');
     cli('A invoice verify 2-step signed', ['invoice', 'verify', '--in', join(dir, 'invoice-2step.json'), '--pin', seller.signer]);
@@ -352,7 +352,8 @@ async function partB() {
     const ks = ['--keystore', join(dir, 'seller.json'), '--passphrase-env', 'GP_PASS'];
     const vk = ['--viewing-key-file', seller.files.view];
     cli('B reconcile create', ['reconcile', 'create', '--chain', C, ...ks, '--out', join(dir, 'h0.json')], { env });
-    cli('B reconcile register', ['reconcile', 'register', '--in', join(dir, 'h0.json'), '--invoice', join(dir, 'invoice.json'), ...ks, '--out', join(dir, 'h1.json')], { env });
+    const reg = cli('B reconcile register', ['reconcile', 'register', '--in', join(dir, 'h0.json'), '--invoice', join(dir, 'invoice.json'), ...ks, '--out', join(dir, 'h1.json')], { env }).out;
+    check('B reconcile register digest', () => { assert.equal(reg.invoiceDigest, `0x${hex(invoiceDigest(invoice))}`); assert.equal(reg.invoiceCount, 1); });
     cli('B NEG reconcile register foreign invoice', ['reconcile', 'register', '--in', join(dir, 'h0.json'), '--invoice', join(dir, 'tampered.json'), ...ks, '--out', join(dir, 'h1x.json')], { env, expect: EXIT.fail });
     const ri = cli('B reconcile inspect', ['reconcile', 'inspect', '--in', join(dir, 'h1.json'), ...vk]).out;
     check('B reconcile inspect not chain-verified', () => assert.equal(ri.currentChainVerified, false));
@@ -365,20 +366,23 @@ async function partB() {
     cli('B reconcile propose --record --out', [...propArgs, '--record', recordId, '--out', join(dir, 'proposal.json')], { env });
     const cf = cli('B reconcile confirm', ['reconcile', 'confirm', '--in', join(dir, 'h1.json'), '--proposal', join(dir, 'proposal.json'), '--observations', join(dir, 'current.json'),
       ...ks, ...trust, ...live, '--approve', '--out', join(dir, 'h2.json')], { env }).out;
-    check('B reconcile confirm ok', () => assert.equal(cf.ok, true));
+    check('B reconcile confirm association', () => {
+      assert.equal(cf.association, 'seller-confirmed'); assert.equal(cf.recordId, recordId); assert.equal(cf.invoiceDigest, reg.invoiceDigest);
+      assert.equal(cf.currentChainVerified, true); assert.equal(cf.manifestDigest, D);
+    });
     writeFileSync(join(dir, 'current-bad.json'), JSON.stringify({ version: 1, observations: [{ ...obs, expected: { ...expected, amount: (split.net + 1n).toString() } }] }));
     cli('B NEG reconcile record wrong amount', ['reconcile', 'record', '--in', join(dir, 'h1.json'), '--observations', join(dir, 'current-bad.json'), ...ks, ...trust, ...live,
       '--approve', '--out', join(dir, 'h-bad.json')], { env, expect: EXIT.fail, code: 'AMOUNT_MISMATCH' });
     const rr = cli('B reconcile record', ['reconcile', 'record', '--in', join(dir, 'h1.json'), '--observations', join(dir, 'current.json'), ...ks, ...trust, ...live,
       '--approve', '--out', join(dir, 'h-rec.json')], { env }).out;
-    check('B reconcile record does not confirm invoice', () => assert.equal(rr.invoiceAssociationConfirmed ?? false, false));
+    check('B reconcile record', () => { assert.equal(rr.freshRecordCount, 1); assert.equal(rr.currentChainVerified, true); assert.equal(rr.invoiceAssociationConfirmed ?? false, false); });
     const hl = cli('B history list (confirmed)', ['history', 'list', '--in', join(dir, 'h2.json'), ...vk]).out;
     check('B history list contains the payment', () => {
-      assert.match(lc(JSON.stringify(hl)), new RegExp(lc(paid.hash).slice(2)));
-      assert.equal(hl.currentChainVerified, false);
+      assert.equal(hl.currentChainVerified, false); assert.equal(hl.total, 1);
+      assert.equal(lc(hl.records[0].transactionHash), lc(paid.hash)); assert.equal(hl.records[0].amountMinorUnits, split.net.toString());
     });
     const hr = cli('B history list (recorded)', ['history', 'list', '--in', join(dir, 'h-rec.json'), ...vk, '--query', paid.hash.slice(0, 12)]).out;
-    check('B history query finds the payment', () => assert.match(lc(JSON.stringify(hr)), new RegExp(lc(paid.hash).slice(2))));
+    check('B history query finds the payment', () => { assert.equal(hr.matched, 1); assert.equal(lc(hr.records[0].transactionHash), lc(paid.hash)); });
     cli('B history inspect', ['history', 'inspect', '--in', join(dir, 'h2.json'), ...vk, '--record', recordId]);
     cli('B NEG history list wrong viewing key', ['history', 'list', '--in', join(dir, 'h2.json'), '--viewing-key-file', other.files.view], { expect: EXIT.fail });
     seller.signing.fill(0);
