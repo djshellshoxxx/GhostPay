@@ -112,22 +112,27 @@ export async function rpcSession(ctx: Ctx, a: Parsed, chain: ChainConfig): Promi
       const remaining = RPC_DEADLINE_MS - (ctx.io.nowSeconds() * 1000 - started);
       if (++stats.calls > MAX_RPC_CALLS || remaining <= 0)
         throw new ChainAdapterError('RPC_FAILURE', 'command RPC budget exhausted');
+      const availableBytes = MAX_RPC_BYTES - stats.bytes - reservedBytes;
+      // A sequential final read may use the smaller *remaining* cumulative
+      // allowance. Concurrent reads must each reserve their full declared
+      // allowance before entering transport, to avoid oversubscription.
       if (!Number.isSafeInteger(init.maxBytes) || init.maxBytes <= 0 ||
-          init.maxBytes > MAX_RPC_BYTES - stats.bytes - reservedBytes)
+          availableBytes <= 0 || (reservedBytes > 0 && init.maxBytes > availableBytes))
         throw new ChainAdapterError('RPC_FAILURE', 'command RPC byte budget exhausted');
-      reservedBytes += init.maxBytes;
+      const allowance = Math.min(init.maxBytes, availableBytes);
+      reservedBytes += allowance;
       try {
-        const text = await transport.send(url, body, { timeoutMs: Math.min(init.timeoutMs, remaining), maxBytes: init.maxBytes });
+        const text = await transport.send(url, body, { timeoutMs: Math.min(init.timeoutMs, remaining), maxBytes: allowance });
         const bytes = new TextEncoder().encode(text).length;
         // Do not trust injected or nonconforming transports to enforce maxBytes.
-        if (bytes > init.maxBytes) throw new ChainAdapterError('RESPONSE_TOO_LARGE', 'RPC response exceeds its reserved byte limit');
+        if (bytes > allowance) throw new ChainAdapterError('RESPONSE_TOO_LARGE', 'RPC response exceeds its reserved byte limit');
         stats.bytes += bytes;
         return text;
       } catch {
         stats.transportFailures++;
         throw new ChainAdapterError('RPC_FAILURE', 'bounded RPC request failed');
       } finally {
-        reservedBytes -= init.maxBytes;
+        reservedBytes -= allowance;
       }
     },
   };
