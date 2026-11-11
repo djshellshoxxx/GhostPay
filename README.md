@@ -19,6 +19,14 @@ The goal is to reduce address reuse and limit routine exposure of invoice detail
 
 Open work is tracked in the audits: [completeness audit](docs/audits/01-completeness-audit.md) (gap list G-01..G-33), [contracts review](docs/audits/02-security-review-contracts.md), [client and relayer review](docs/audits/03-security-review-client-relayer.md) and [design analysis](docs/audits/04-independent-design-analysis.md). Several fixes are being applied by other contributors while this README is written; where a document describes a change that may not have landed yet it says so.
 
+## Screenshots
+
+Captured from the Vite dev server (`npm run dev --workspace @ghostpay/web`) on a clean checkout, with no deployment manifest loaded, so payment is disabled. The app currently ships with minimal, largely unstyled markup.
+
+| Seller keys (keys stay in memory by default) | About and privacy (who learns what) |
+|---|---|
+| ![Seller keys page of the GhostPay web app](docs/screenshots/seller-keys.png) | ![About and privacy page listing what GhostPay does not hide](docs/screenshots/privacy.png) |
+
 ## Package map
 
 | Path | What it is |
@@ -40,6 +48,16 @@ Open work is tracked in the audits: [completeness audit](docs/audits/01-complete
 | `test-vectors/` | Pinned scheme-1 vectors and their provenance. |
 | `scripts/`, `.github/workflows/` | Release build, verification and CI scripts (being added; see [`docs/operators/release-and-verify.md`](docs/operators/release-and-verify.md)). |
 | `docs/` | Specifications, ADRs, threat model, audits, user guides, operator runbooks, feature reviews. |
+
+**Further workspaces** (all pre-audit; most are testnet proofs of concept or pure-logic libraries; each has a README with its own limits). The list above is not exhaustive: `ls packages` is authoritative.
+
+- Product and CLI: `packages/cli` (`ghostpay` binary: invoices, webhooks, schedules, splits, batch payouts, exports, sandbox, doctor; offline by default), `sdk`, `plugin-api`, `payment-uri`, `qr-exchange`, `i18n`, `donation`, `sandbox`.
+- Merchant: `merchant-billing`, `merchant-hooks`, `merchant-ledger`, `merchant-multisig`.
+- Other chains: `btc-family`, `btc-payjoin`, `chain-evm-extra` (config-only manifests), `chain-solana` / `solana-stealth`, `chain-tron` / `tron-adapter`.
+- Privacy options (testnet PoC): `amount-blur`, `hops`, `hygiene`, `metadata-hardening`, `payer-sponsor`, `payer-hiding-contracts`, `privacy-pipeline`, `privacy-profiles`, `confidential-amounts`, `confidential-contracts`, `external-pools*`, `pool-*` (shielded pool; the circuits use an INSECURE DEV CEREMONY; `pool-prover` and `pool-circuits` are GPL-3.0 toolchain packages, licence is an open owner decision), `net-transport`, `net-harness`, `pir-two-server`, `scan-source`.
+- Usability logic (pure, no UI): the `ux-*` packages.
+
+Several of these (for example `cli`, `payment-uri`, `qr-exchange`) are built by `npm run build:libs`; `apps/web` imports only the packages named below.
 
 Workspace wiring is checked by `@ghostpay/*` imports. The web app uses `chain-adapters`, `core-crypto`, `invoice-schema`, `btc-silent-payments`, `secret-box`, `tx-review`, and `address-safety`; the relayer uses `chain-adapters` and `relayer-guard`. Other packages remain standalone unless their package-specific documentation says otherwise.
 
@@ -74,6 +92,8 @@ CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs these jobs; doc
 - Required-check gates: `typescript` (needs `ts-check`, `ts-test`, `ts-test-relayer`) and `contracts` (needs the four contracts jobs). `e2e` is not part of either gate.
 
 Not verified by me while updating this README (read from `package.json` and the workflow only, not run): every command in this section, including the `release:*` scripts and `npm audit`.
+
+Re-checked 2026-11-11 (Node 22.22.0, sandbox without Foundry or internet): `npm ci --ignore-scripts` and `npm run build:libs` succeed and the apps/web dev server serves the app. A full `npm test` was not completed: it stops at `@ghostpay/confidential-contracts` (`hardhat test` needs to download a Solidity compiler, which the sandbox could not reach) and later workspaces, including `apps/web`, did not finish within the time cap. Every workspace that ran before that point passed. The older snapshot below predates many added packages.
 
 Verified on a clean checkout of an earlier `HEAD` on 2026-10-21 (Node 22.22.0, npm 10.9.4): `npm ci --ignore-scripts`, `npm run build:libs` and `npm test` succeed. Test counts at that time: btc-silent-payments 286, chain-adapters 216, core-crypto 54, invoice-schema 174, relayer 192 passed + 1 skipped, web 320. The skipped relayer test is the anvil end-to-end test; it skips when `anvil` or `packages/contracts/out` is missing (set `ANVIL_BIN`, run `forge build` first). The newer [`docs/remote/STATUS.md`](docs/remote/STATUS.md) records per-package counts and coverage from the latest local run (2026-10-21: e.g. btc-silent-payments 299, policy-scheme 60, relayer 193, forge 377 tests in 23 suites) and its failures (one `forge coverage --ir-minimum` test fails). Counts change as work lands; treat them as a snapshot, not a guarantee. Note: CI sets `REQUIRE_ANVIL=1` for the relayer, but `apps/relayer/src/e2e.anvil.test.ts` does not read it yet (only `packages/policy-scheme` does), so that e2e can still skip silently there.
 
