@@ -30,7 +30,8 @@ const PRE_BROADCAST_CODES: ReadonlySet<string> = new Set([
   'loss_budget_exhausted', 'chain_not_supported', 'token_not_supported', 'permit_not_supported', 'permit_value_too_low',
   'fee_to_mismatch', 'quote_expired', 'fee_below_quote', 'fee_above_cap', 'deadline_too_soon', 'deadline_too_far',
   'amount_too_small', 'invalid_order', 'invalid_signature', 'policy_denied', 'insufficient_token_balance',
-  'insufficient_allowance', 'permit_expired', 'permit_failed', 'expired', 'token_transfer_failed', 'simulation_reverted',
+  'insufficient_allowance', 'permit_expired', 'permit_failed', 'permit_nonce_consumed', 'permit_signature_invalid',
+  'permit_unsupported_token', 'expired', 'token_transfer_failed', 'simulation_reverted',
   'gas_limit_too_high', 'fee_below_gas_cost',
 ]);
 export const RELAYER_PRE_BROADCAST_CODES: readonly string[] = [...PRE_BROADCAST_CODES];

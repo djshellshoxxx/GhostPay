@@ -247,6 +247,70 @@ describe('DailyBudget', () => {
     expect(b.remaining).toBe(20n);
     expect(b.reserve(21n)).toBe(false);
   });
+  it('a wall clock stepped back across midnight keeps today\'s spending (no budget reset)', () => {
+    let t = 86_400_000 * 10 + 1000;
+    const b = new DailyBudget(100n, () => t);
+    expect(b.reserve(90n)).toBe(true);
+    t -= 2000; // NTP step back into the previous UTC day
+    expect(b.used).toBe(90n);
+    expect(b.reserve(20n)).toBe(false);
+    t += 86_400_000 + 2000;
+    expect(b.used).toBe(0n);
+  });
+
+  it('review A3/B5: a far-future saved day keeps its spending on today and resets at the next real midnight', () => {
+    let t = 86_400_000 * 10;
+    const restored = new DailyBudget(100n, () => t, { day: 375, spentWei: 70n }); // a year ahead
+    expect(restored.snapshot()).toEqual({ day: 10, spentWei: 70n });
+    expect(restored.secondsToReset()).toBeLessThanOrEqual(86_400);
+    t += 86_400_000;
+    expect(restored.used).toBe(0n);
+  });
+
+  it('re-review M2: wall-clock steps or flapping grant no fresh budget while real time has not passed midnight', () => {
+    let wall = 86_400_000 * 10 + 3_600_000;
+    let mono = 0;
+    const b = new DailyBudget(10n, () => wall, undefined, () => mono);
+    for (let flap = 0; flap < 5; flap += 1) {
+      expect(b.reserve(10n)).toBe(flap === 0); // only the first full budget is ever granted
+      wall += 2 * 86_400_000; // step two days ahead
+      mono += 1000;
+      expect(b.used).toBe(10n);
+      wall -= 2 * 86_400_000; // corrected
+      mono += 1000;
+    }
+    expect(b.currentDay).toBe(10);
+    // Real time passes midnight on both clocks: the next day starts as usual.
+    wall += 86_400_000;
+    mono += 86_400_000;
+    expect(b.used).toBe(0n);
+    expect(b.currentDay).toBe(11);
+  });
+
+  it('a wall clock stepped forward is followed only once the monotonic clock catches up; slow slew re-anchors', () => {
+    let wall = 86_400_000 * 10 + 1000;
+    let mono = 5_000;
+    const b = new DailyBudget(10n, () => wall, undefined, () => mono);
+    expect(b.reserve(10n)).toBe(true);
+    wall += 3 * 86_400_000; // a three-day step forward (e.g. VM resume with a wrong RTC)
+    expect(b.used).toBe(10n);
+    mono += 86_400_000; // one real day: one reset, to the monotonic-derived day
+    expect(b.used).toBe(0n);
+    expect(b.currentDay).toBe(11);
+    // Drift within the slew tolerance re-anchors the clocks.
+    const b2 = new DailyBudget(10n, () => wall, undefined, () => mono);
+    wall += 300_000;
+    expect(b2.used).toBe(0n);
+  });
+
+  it('restores a snapshot from today or a later day, and ignores one from an earlier day', () => {
+    const t = 86_400_000 * 10;
+    expect(new DailyBudget(100n, () => t, { day: 10, spentWei: 70n }).snapshot()).toEqual({ day: 10, spentWei: 70n });
+    const ahead = new DailyBudget(100n, () => t, { day: 11, spentWei: 70n }); // clock behind the last run
+    expect(ahead.remaining).toBe(30n);
+    expect(ahead.currentDay).toBe(11);
+    expect(new DailyBudget(100n, () => t, { day: 9, spentWei: 70n }).snapshot()).toEqual({ day: 10, spentWei: 0n });
+  });
 });
 
 describe('logging', () => {

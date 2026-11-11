@@ -34,6 +34,13 @@ services:
     volumes:
       - ./config/relayer.config.json:/etc/ghostpay/relayer.config.json:ro
       - ../deployments:/etc/ghostpay/deployments:ro
+      # Durable relayer state (daily budget + unsettled transactions): the ONLY writable path besides /tmp. The config's
+      # "state.file" must be /var/lib/ghostpay-relayer/state.json. The volume inherits the image directory's owner
+      # (65532): if you override GHOSTPAY_API_UID, chown the volume to it. Run ONE api container per volume. Back it up
+      # per docs/operators/relayer-runbook.md; never delete it while transactions are unsettled.
+      - api-state:/var/lib/ghostpay-relayer
+    # Health: the image's HEALTHCHECK runs `node dist/ops.js health` (GET /healthz on 127.0.0.1:8787).
+    stop_grace_period: 30s
     tmpfs:
       - /tmp:size=16m,mode=1777,noexec,nosuid,nodev
     networks: [backend]
@@ -108,6 +115,7 @@ networks:
 
 volumes:
   tor-data: {}
+  api-state: {}
 
 secrets:
   relayer_key:

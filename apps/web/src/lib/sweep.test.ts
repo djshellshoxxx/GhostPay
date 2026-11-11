@@ -1037,6 +1037,10 @@ describe('sweep permit state messages (spec 04)', () => {
     ['permit_expired', 422, 'expired', false],
     ['permit_failed', 422, 'simulationFailed', true],
     ['permit_not_supported', 422, 'unsupported_token', true],
+    // Relayer-side diagnosis (spec 04): a spent nonce is the owner's own doing, so no direct-sweep nudge; the other two offer it.
+    ['permit_nonce_consumed', 422, 'nonceConsumed', false],
+    ['permit_signature_invalid', 422, 'failed', true],
+    ['permit_unsupported_token', 422, 'unsupported', true],
     ['permit_value_too_low', 422, 'valueTooLow', false],
     ['insufficient_allowance', 422, 'noAllowance', true],
     ['owner_failure_limit', 429, 'ownerFailureLimit', false],
@@ -1063,6 +1067,14 @@ describe('sweep permit state messages (spec 04)', () => {
     expect(text).toMatch(/not be retried automatically/);
     // sig_invalid is a client pre-flight state that does prove the permit at fault, so it keeps its own text.
     expect(key).not.toBe(sweepModule.SWEEP_PERMIT_STATE_KEYS.sig_invalid);
+  });
+
+  it('maps the diagnosed relayer classes to the existing state keys', async () => {
+    const { RelayerRefusedError } = await import('./relayerClient');
+    const key = (code: string): unknown => sweepModule.sweepPermitRefusalKey(new RelayerRefusedError('x', 422, code));
+    expect(key('permit_nonce_consumed')).toBe(sweepModule.SWEEP_PERMIT_STATE_KEYS.nonce_consumed);
+    expect(key('permit_signature_invalid')).toBe(sweepModule.SWEEP_PERMIT_STATE_KEYS.sig_invalid);
+    expect(key('permit_unsupported_token')).toBe(sweepModule.SWEEP_PERMIT_STATE_KEYS.unsupported_token);
   });
 
   it('does not map unrelated refusals, other statuses or non-relayer errors', async () => {
