@@ -13,7 +13,7 @@
 
 ## 2. GitHub Pages workflow (`.github/workflows/pages.yml`)
 
-- Runs on push to `main` and `workflow_dispatch`; every job has `if: github.ref == 'refs/heads/main'`, so a dispatch from another ref does nothing.
+- Runs on `workflow_dispatch` only (manual deployment; no push trigger); every job has `if: github.ref == 'refs/heads/main'`, so a dispatch from another ref does nothing.
 - Steps: pinned-actions check, `npm run build -w apps/web` (typecheck, vite build, `scan-bundle.mjs` postbuild), explicit re-scan, assertion that `dist/index.html` carries the CSP meta and `dist` has no source maps, SHA-256 list of every served file in the job summary, upload, deploy.
 - All action references are full commit SHAs with version comments (`scripts/check-actions-pinned.sh` passes). SHAs were resolved with `git ls-remote` against the official `actions/*` repositories on 2026-10-21; re-resolve at each bump.
 - Base path `/GhostPay/`: the bundle uses `base: './'` (relative), so it should load from that sub-path. **UNVERIFIED on a real Pages site.** Check the worker script and `deployments/` fetches after the first deploy.

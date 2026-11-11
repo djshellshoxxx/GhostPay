@@ -13,9 +13,9 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
 ## Not implemented (and why)
 3. **ERC-6538 registry publish**: the deployment manifest has no registry address, and publishing associates the meta-address with a
    wallet publicly. The Seller keys page says so and shares the meta-address directly instead.
-4. **Fiat-priced (`fiat_quote`) invoices cannot be paid yet**: `chain-adapters` ships an empty `FEEDS` table (no verified Chainlink
-   addresses, see its `TODO-VERIFY.md`). The code path exists (`createPayContext` -> `readPrice` -> `fiatToTokenAmount`, round up for the
-   payer) and is unit-tested with an injected feed; with no feed it fails closed with a plain message. The Create page warns about this.
+4. **Fiat-priced (`fiat_quote`) invoices cannot be paid yet**: `chain-adapters` ships `FEEDS` entries only for testnets (ETH/USD and
+   USDC/USD on Sepolia and Base Sepolia, `packages/chain-adapters/src/quote.ts`; see its `TODO-VERIFY.md`) and none for other chains. The code path exists (`createPayContext` -> `readPrice` -> `fiatToTokenAmount`, round up for the
+   payer) and is unit-tested with an injected feed; with no feed for the chain and pair it fails closed with a plain message. The Create page warns about this.
 5. **Manifest signatures are not verified.** `DeploymentManifest.signature` is optional and no release key exists. The UI shows
    "carries no signature" / "whose signature this app does not verify" next to the fee recipient instead of implying verification.
 6. **Embed SDK.** `public/ghostpay-embed-v1.js` is frozen and popup-only (takes a full `data-invoice` link, no `postMessage`, so pinned
@@ -75,7 +75,7 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     approval (permit + buffer needs a deferred router change). Invoice v2 `bufferPolicy` (ADR-0024): declined hides the buffer; accepted
     bounds it by `min(maxWei, cap)` and raises a smaller estimate to `minWei` (shown); `buildFinal` re-checks the bounds. The Create page
     has no control for the policy yet (v2 invoices can only be produced through `buildInvoiceLink({ bufferPolicy })`). The fiat
-    estimate stays hidden while `FEEDS` is empty.
+    estimate stays hidden while no feed exists for the chain and pair.
 13. **Permit domain version** is probed as `"2"` then `"1"`; each candidate is accepted only if the locally computed domain separator equals
     the token's on-chain `DOMAIN_SEPARATOR`. The wallet's permit signature is verified to recover to the payer before it is used.
     Spec 04 post-sign: `classifyPermit` (`chain-adapters/src/permit.ts`) re-reads allowance, nonce and domain and runs a static `permit`
@@ -228,7 +228,7 @@ Everything else under `src/` (all views, components and `lib/` logic) is measure
 ## Unverified (be explicit)
 - No real wallet, browser extension, mobile wallet, chain, RPC provider or relayer was used. Wallets and RPC are mocks; the manifest used in
   tests is a clearly fake placeholder in `src/test/fakeManifest.ts` and is never served by the app.
-- Only Chromium (the pre-installed build) was run; Firefox/Safari are untested. No axe/screen-reader audit was run: accessibility is by
+- Only Chromium (the pre-installed build) was run; Firefox/Safari are untested. No screen-reader audit was run; axe-core runs in `e2e/accessibility.spec.ts` (`e2e/accessibility-audit.ts`): accessibility is by
   construction (labels, roles, live regions, focus management, 44 px targets, contrast ratio check in e2e) plus a few Playwright checks.
 - The embed SDK was verified against a second local origin only; it was not tested inside real merchant pages.
 - No external audit. `README`-level claims of privacy are bounded by `docs/threat-model/THREAT_MODEL.md`.

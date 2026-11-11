@@ -1,5 +1,7 @@
 # 02 Scanner robustness and expected-payment verification
 
+> **Implementation status (2026-11-11, commit 364b1f18):** `apps/web/src/lib/scannerCore.ts` exports `ScanSession`/`ScanProtocol` and returns `WireMatch` objects; there is no `ScanVerdict` type anywhere in `apps/` or `packages/` source. Payment verification statuses live in `packages/chain-adapters/src/payments.ts` (`received`, `unverified-announcement`, `unverified-claim`). Invoice reconciliation (`packages/ux-vault/src/reconciliation-portable.ts`, `candidate`) matches on exact chain, asset and expected net amount; no underpay/overpay/double-pay reporting was found there.
+
 Priority P0 | Effort M (4-6 d) | Owner: web scanner + chain-adapters | Deps: 01 (for trusted announcer/router addresses)
 Sources: research DOC-1, ERC-5564 pitfalls 1.2 (1,3,5); gap-analysis s2 item 2, item 7; audit S3-02, G-04; ADR-0013 item 1.
 
