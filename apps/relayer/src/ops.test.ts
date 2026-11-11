@@ -41,6 +41,7 @@ function configJson(extra: Record<string, unknown> = {}): string {
     allowedOrigins: ['http://localhost:5173'],
     allowDevChain: true,
     allowInsecureLocalhostRpc: true,
+    state: { ephemeral: true },
     chains: [
       {
         chainId: 31337,
@@ -67,9 +68,9 @@ function secretFile(name: string, value: string): string {
   return p;
 }
 
-function envFor(extra: Record<string, string> = {}): Record<string, string> {
+function envFor(extra: Record<string, string> = {}, cfgExtra: Record<string, unknown> = {}): Record<string, string> {
   const cfg = join(dir, 'relayer.config.json');
-  writeFileSync(cfg, configJson());
+  writeFileSync(cfg, configJson(cfgExtra));
   return {
     RELAYER_CONFIG: cfg,
     DEPLOYMENTS_DIR: join(dir, 'deployments'),
@@ -126,10 +127,12 @@ describe('check-config', () => {
 
   it('reports a configured state file and a rotation window', async () => {
     const env = envFor({ QUOTE_SECRET_PREVIOUS_FILE: secretFile('prev.secret', QUOTE) });
-    writeFileSync(env['RELAYER_CONFIG'] as string, configJson());
-    // The integrator's `state` key may not exist yet; the summary reads `stateFile` when config provides it.
     expect(await runOps(['check-config'], deps(env))).toBe(0);
     expect(out.join('\n')).toContain('rotation window');
+    out.length = 0;
+    const withFile = envFor({}, { state: { file: '/var/lib/ghostpay-relayer/state.json' } });
+    expect(await runOps(['check-config'], deps(withFile))).toBe(0);
+    expect(out.join('\n')).toContain('state: file /var/lib/ghostpay-relayer/state.json');
   });
 
   it('prints only the ConfigError message on a bad config', async () => {
@@ -243,6 +246,12 @@ describe('state', () => {
     delete (env as Record<string, string | undefined>)['RELAYER_KEY_FILE'];
     expect(await runOps(['state'], deps(env))).toBe(0);
     expect(out.join('\n')).toContain('limit 100000 wei');
+  });
+
+  it('defaults to the config state file', async () => {
+    const file = writeState(chains());
+    expect(await runOps(['state'], deps(envFor({}, { state: { file } })))).toBe(0);
+    expect(out.join('\n')).toContain(`state file: ${file}`);
   });
 
   it('requires a state file', async () => {
