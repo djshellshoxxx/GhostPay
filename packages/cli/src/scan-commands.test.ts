@@ -125,7 +125,10 @@ describe('bounded privacy scanning', () => {
 
   it('finds real ECDH matches, collapses replayed claims, and writes parseable public observations', async () => {
     const { io, state, log, pay, calls } = scanWorld();
-    state.logs = [log, { ...log, logIndex: '0x5' }];
+    // A third-party (non-router) replay of the same one-time address and ephemeral key folds onto the router record.
+    const topics = log['topics'];
+    const replay = { ...log, logIndex: '0x5', topics: [topics[0]!, topics[1]!, topics[2]!, pad(`0x${'77'.repeat(20)}`)] };
+    state.logs = [log, replay];
     expect(await execute('scan run', io, RUN_ARGS)).toBe(0);
     expect(stdoutJson(io)).toMatchObject({ matches: 1, duplicates: 1, paymentVerified: false });
     expect(io.out.join('')).not.toContain(pay.stealthAddress);
@@ -135,6 +138,15 @@ describe('bounded privacy scanning', () => {
     io.out.length = 0;
     expect(await execute('scan inspect', io, ['--in', 'scan.json', '--view-key-file', 'view.key'])).toBe(0);
     expect(stdoutJson(io)).toMatchObject({ authenticationVerified: true, observations: 1, paymentVerified: false });
+  });
+
+  it('F1: keeps every router announcement for one address and ephemeral key, so a front-run cannot hide a payment', async () => {
+    const { io, state, log } = scanWorld();
+    state.logs = [log, { ...log, logIndex: '0x5' }];
+    expect(await execute('scan run', io, RUN_ARGS)).toBe(0);
+    expect(stdoutJson(io)).toMatchObject({ matches: 2, duplicates: 0, paymentVerified: false });
+    const report = parseScanReport(io.files.get('scan.json')!, Buffer.from(KEY_HEX, 'hex'));
+    expect(report.observations).toHaveLength(2);
   });
 
   it('requires explicit deep mode to find router announcements with a wrong view tag', async () => {

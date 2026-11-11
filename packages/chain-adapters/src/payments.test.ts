@@ -166,7 +166,7 @@ describe('dedupeClaims', () => {
   });
   it('F1: a front-run router dust announcement for the same (S, E) never hides the genuine router payment', () => {
     const genuine = make({ block: 101n, logIndex: 7 }).claim;
-    const dust = {
+    const dust: ClaimedPayment = {
       ...genuine,
       announcement: { ...genuine.announcement, blockNumber: 100n, logIndex: 1, id: `${BLOCK_HASH}:1`, transactionHash: `0x${'ee'.repeat(32)}` },
     };
