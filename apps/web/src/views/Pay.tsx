@@ -917,7 +917,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         <details ref={invoiceQrDisclosure} onToggle={(event) => { if (!event.currentTarget.open) invalidateInvoiceQr(); }}>
           <summary>{t('pay.scan.summary')}</summary>
           <p>{t('pay.scan.intro')}</p>
-          <CameraImporter key={invoiceQrReset} label={t('pay.scan.importLabel')} scopeKey={invoiceQrScope} onInputChange={invalidateInvoiceQr} onText={importInvoiceQr} />
+          <CameraImporter key={invoiceQrReset} multipart label={t('pay.scan.importLabel')} scopeKey={invoiceQrScope} onInputChange={invalidateInvoiceQr} onText={importInvoiceQr} />
           <button type="button" className="btn" onClick={resetInvoiceQr}>{t('pay.scan.clear')}</button>
           {invoiceQrError !== undefined && <Notice kind="error" title={t('pay.scan.rejected')}>{displayMessage(invoiceQrError, t)}</Notice>}
           {invoiceQrPreview !== undefined && (

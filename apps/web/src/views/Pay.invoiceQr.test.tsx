@@ -4,6 +4,7 @@ import { act, fireEvent, render, screen, waitFor, within } from '@testing-librar
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { buildInvoiceLink } from '../lib/invoiceCreate';
+import { toMultipart } from '../lib/qrMultipart';
 import { clearSession, generateSession, getSessionPublic } from '../lib/session';
 import { BASE_FORM, NOW, makeParsed } from '../test/invoiceFixtures';
 import { makeServices, renderApp, setHash } from '../test/render';
@@ -354,5 +355,19 @@ describe('Pay invoice QR intake: other GhostPay QR families are named, never act
     const { user } = await openInput();
     await scanText('hello world', user);
     expect(await screen.findByText(/Use an exact GhostPay v1 fragment or an HTTPS invoice link/)).toBeTruthy();
+  });
+});
+
+describe('Pay invoice QR intake: multi-part invoice codes', () => {
+  it('assembles out-of-order parts locally and previews the invoice only once complete', async () => {
+    const invoice = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const parts = toMultipart(invoice.link);
+    expect(parts.length).toBeGreaterThan(1);
+    const { user, discoverWallets } = await openInput();
+    await scanText([...parts].reverse().slice(0, -1).join('\n'), user);
+    expect(screen.queryByRole('heading', { name: 'Review scanned invoice' })).toBeNull();
+    await scanText(parts[0] as string, user);
+    expect(await screen.findByRole('heading', { name: 'Review scanned invoice' })).toBeTruthy();
+    expect(discoverWallets).not.toHaveBeenCalled();
   });
 });
