@@ -9,12 +9,14 @@ import { mockRpc } from '../test/mockRpc';
 import { clearSession, generateSession } from './session';
 import { checkDestination, describeDestination, deriveVerifiedSweepKey, directSweep, DirectSweepOutcomeUnknownError, getSweepQuote, OP_STACK_GAS_PRICE_ORACLE, readBalance, reconcileRelayedOrder, reconcileSweepLock, RELAYED_EXPIRY_MARGIN_SECONDS, relayedSweep, type RelayedOrderRef, type SweepLock, type SweepTarget } from './sweep';
 import { ChainAdapterError, createClient, findChain, erc20Abi, ghostPaySweepRelayerAbi } from '@ghostpay/chain-adapters';
+import { quoteBuffer } from './pay';
 import { userMessage } from './errors';
 import * as sweepModule from './sweep';
 import en from '../../locales/en.json';
 
 const TOKEN = '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as Address;
 const DEST = '0x6666666666666666666666666666666666666666' as Address;
+const PAYER = '0x7777777777777777777777777777777777777777' as Address;
 const FEE_TO = FAKE_FEE_RECIPIENT as Address;
 const NOW = 1_800_000_000;
 const manifest = fakeManifest(84532);
@@ -167,7 +169,7 @@ describe('relayedSweep (EIP-712 sweep + ERC-2612 permit, signed in memory)', () 
       if (data.startsWith('0x7ecebe00')) return encodeFunctionResult({ abi: erc2612PermitAbi, functionName: 'nonces', result: 4n });
       return eip712DomainSeparator({ name: 'USDC', version: '2', chainId: 84532, verifyingContract: TOKEN });
     });
-    let posted: { sweep: Record<string, string>; sweepSig: `0x${string}`; permit: Record<string, string | number>; quoteToken: string } | undefined;
+    let posted: { chainId: number; sweep: Record<string, string>; sweepSig: `0x${string}`; permit: Record<string, string | number>; quoteToken: string } | undefined;
     const fetchFn = (_u: string, init: RequestInit): Promise<Response> => {
       posted = JSON.parse(bodyText(init.body)) as never;
       return Promise.resolve(new Response(JSON.stringify({ txHash: `0x${'12'.repeat(32)}` })));
@@ -187,6 +189,7 @@ describe('relayedSweep (EIP-712 sweep + ERC-2612 permit, signed in memory)', () 
     expect(hash).toBe(`0x${'12'.repeat(32)}`);
     const p = posted!;
     expect(p.quoteToken).toBe('tok');
+    expect(p.chainId).toBe(84532);
     expect(p.sweep).toMatchObject({ token: TOKEN, owner: target.owner, destination: DEST, feeTo: FEE_TO, amount: '1000000', fee: '5000', nonce: '42' });
     const td = buildSweepTypedData(84532, manifest.sweepRelayer, {
       token: TOKEN,
@@ -681,6 +684,26 @@ describe('L2-F2: a native direct sweep keeps back every fee the chain charges', 
     const usdc = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238' as Address;
     await directSweep({ target: { ...target, chainId: 11155111, token: usdc }, manifest: fakeManifest(11155111), destination: DEST, amount: 777n, rpc: sepolia });
     expect(sepolia.calls.filter((c) => c.method === 'eth_call').map((c) => (c.params[0] as { to: string }).to)).toEqual([usdc]);
+  });
+
+  it('R04-2: a gas buffer quoted at unchanged prices pays for the ERC-20 direct sweep on OP Stack, L1 data fee included', async () => {
+    // L2 slack of the buffer (100 000 quoted gas vs 60 000 signed, +20 %) is 1.2e14 wei; this L1 fee needs more than that.
+    const l1Fee = 70_000_000_000_000n;
+    const seenQuote: Seen = {};
+    const q = await quoteBuffer(chainRpc(84532, { estimate: '0xc350', l1Fee, operatorFee: 7n }, seenQuote), NOW, { token: TOKEN, from: PAYER, amount: 777n });
+    expect(q.gasLimit).toBe(100_000n);
+    expect(q.bufferWei).toBe(100_000n * MAX_FEE * 12n / 10n + 2n * (l1Fee + 7n));
+    // The quote priced the same kind of transaction the sweep signs: an ERC-20 transfer of this token at the quoted gas.
+    const priced = parseTransaction(seenQuote.l1Tx!);
+    expect(priced).toMatchObject({ type: 'eip1559', chainId: 84532, gas: 100_000n, maxFeePerGas: MAX_FEE, maxPriorityFeePerGas: MAX_FEE / 20n });
+    expect(priced.value ?? 0n).toBe(0n);
+    expect(priced.to?.toLowerCase()).toBe(TOKEN.toLowerCase());
+    expect(decodeFunctionData({ abi: erc20Abi, data: priced.data! })).toMatchObject({ functionName: 'transfer', args: [expect.any(String), 777n] });
+    expect(seenQuote.operatorGas).toBe(100_000n);
+    // The one-time address holds exactly the buffer the payer forwarded; prices are unchanged at sweep time.
+    const rpc = chainRpc(84532, { estimate: '0xc350', balance: q.bufferWei, l1Fee, operatorFee: 7n }, {});
+    await expect(directSweep({ target, manifest, destination: DEST, amount: 777n, rpc })).resolves.toMatchObject({ sent: 777n });
+    expect(sends(rpc)).toBe(1);
   });
 
   it('B-R3: an ERC-20 sweep on OP Stack refuses when the fee oracle cannot be read, before signing', async () => {

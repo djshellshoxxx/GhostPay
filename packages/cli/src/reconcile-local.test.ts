@@ -41,6 +41,27 @@ it('records a fresh seller-owned payment without requiring or confirming an invo
   expect(w.io.files.get('history.json')).toBe(original);
 });
 
+it('does not promote a signed receipt when canonical RPC evidence is unavailable', async () => {
+  const w = await reconciliationWorld();
+  await seedReceipt(w);
+  const original = w.io.files.get('history.json');
+  w.state.fail = true;
+
+  expect(await run(recordArgs, w.io)).toBe(4);
+  expect(w.calls.length).toBeGreaterThan(0);
+  expect(w.io.files.has('recorded.json')).toBe(false);
+
+  const proposal = ['reconcile', 'propose', '--in', 'history.json', ...RECON_CREDS, ...RECON_LIVE,
+    '--record', w.recordId, '--out', 'proposal.json', '--json'];
+  expect(await run(proposal, w.io)).toBe(4);
+  expect(w.io.files.has('proposal.json')).toBe(false);
+  expect(w.io.files.get('history.json')).toBe(original);
+  const saved = await state(w, 'history.json');
+  expect(saved.records).toHaveLength(0);
+  expect(saved.receipts).toHaveLength(1);
+  expect(w.io.err.join('')).not.toContain('PRIVATE_API_TOKEN');
+});
+
 it('clears observations while retaining invoice registrations and archived receipts', async () => {
   const w = await reconciliationWorld(); await seedReceipt(w);
   expect(await run(recordArgs, w.io)).toBe(0); clear(w);

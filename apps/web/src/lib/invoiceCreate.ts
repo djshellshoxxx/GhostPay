@@ -129,7 +129,8 @@ export async function buildInvoiceLink(
   if (!Number.isInteger(form.expiryHours) || form.expiryHours < 1 || form.expiryHours > 24 * 90) throw new UserFacingError({ key: 'error.invoiceCreate.expiryMustBeBetween1HourAnd90Days' });
   if (!Number.isInteger(form.quoteTtlMinutes) || form.quoteTtlMinutes < 1 || form.quoteTtlMinutes > 1440) throw new UserFacingError({ key: 'error.invoiceCreate.quoteValidityMustBeBetween1And1440Minutes' });
   if (!Number.isInteger(form.maxSlippageBps) || form.maxSlippageBps < 0 || form.maxSlippageBps > 10_000) throw new UserFacingError({ key: 'error.invoiceCreate.slippageMustBeBetween0And10000BasisPoints' });
-  const memo = form.memo.trim();
+  // The schema accepts only NFC text. Normalize here, as for line descriptions, so pasted decomposed text is not refused.
+  const memo = form.memo.normalize('NFC').trim();
   const invoice = createInvoice(
     {
       chainId: form.chainId,

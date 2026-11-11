@@ -154,12 +154,39 @@ describe('dedupeClaims', () => {
     expect(r.items).toHaveLength(2);
     expect(r.duplicates).toBe(1);
     expect(r.items[0]?.viaRouter).toBe(true);
-    // same group, both router: earliest block wins, then lowest log index
-    const e1 = { ...router, announcement: { ...router.announcement, blockNumber: 70n, logIndex: 9 } };
-    const e2 = { ...router, announcement: { ...router.announcement, blockNumber: 70n, logIndex: 2 } };
-    expect(dedupeClaims([e1, e2]).items[0]?.announcement.logIndex).toBe(2);
-    expect(dedupeClaims([e2, e1]).items[0]?.announcement.logIndex).toBe(2);
+    // same pair, no router claim: the earliest block wins, then the lowest log index
+    const d1 = { ...replay, announcement: { ...replay.announcement, blockNumber: 70n, logIndex: 9 } };
+    const d2 = { ...replay, announcement: { ...replay.announcement, blockNumber: 70n, logIndex: 2 } };
+    expect(dedupeClaims([d1, d2]).items.map((c) => c.announcement.logIndex)).toEqual([2]);
+    expect(dedupeClaims([d2, d1]).items.map((c) => c.announcement.logIndex)).toEqual([2]);
+    expect(dedupeClaims([d1, d2]).duplicates).toBe(1);
     expect(dedupeClaims([]).items).toEqual([]);
+  });
+
+  it('never drops one router payment for another that reuses its address and ephemeral key', () => {
+    // The router moves funds in the transaction that announces, so each router log is its own transfer. Anyone can
+    // copy a pending payment's address and ephemeral key and get a 1-unit router payment mined first.
+    const genuine = make({ block: 100n, logIndex: 4, tx: `0x${'cd'.repeat(32)}` }).claim;
+    const dustMetadata = buildErc20Metadata(Number.parseInt(genuine.announcement.metadata.slice(2, 4), 16), USDC_SEPOLIA, 1n);
+    const frontRun: ClaimedPayment = {
+      ...genuine,
+      announcement: { ...genuine.announcement, metadata: hex(dustMetadata), blockNumber: 99n, blockHash: `0x${'ef'.repeat(32)}`, logIndex: 1, transactionHash: `0x${'ef'.repeat(32)}`, id: `0x${'ef'.repeat(32)}:1` },
+      metadata: parseMetadata(hex(dustMetadata)),
+    };
+    for (const order of [[frontRun, genuine], [genuine, frontRun]]) {
+      const kept = dedupeClaims(order);
+      expect(kept.duplicates).toBe(0);
+      expect(kept.items.map((c) => c.metadata?.netAmount).sort()).toEqual([1n, NET].sort());
+      expect(kept.items.map((c) => c.announcement.transactionHash)).toEqual(order.map((c) => c.announcement.transactionHash));
+    }
+    // A free replay posted directly at the announcer is still dropped when any router payment exists for the pair.
+    const freeReplay = { ...genuine, announcement: { ...genuine.announcement, caller: FAKE.announcer, blockNumber: 50n, blockHash: `0x${'12'.repeat(32)}`, logIndex: 0 }, viaRouter: false };
+    const mixed = dedupeClaims([freeReplay, frontRun, genuine]);
+    expect(mixed.duplicates).toBe(1);
+    expect(mixed.items.every((c) => c.viaRouter)).toBe(true);
+    expect(mixed.items).toHaveLength(2);
+    // The same router log seen twice (two sources, an overlapping page) is one payment.
+    expect(dedupeClaims([genuine, { ...genuine }])).toEqual({ items: [genuine], duplicates: 1 });
   });
 });
 

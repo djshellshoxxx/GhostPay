@@ -4,7 +4,6 @@ import {
   buildSweepTypedData,
   ChainAdapterError,
   erc20Abi,
-  findChain,
   ghostPaySweepRelayerAbi,
   parseQuantity,
   signDigest,
@@ -22,6 +21,7 @@ import { deriveStealthSecret, zeroize, type PublicAnnouncement, type SecretScala
 import type { TypedDataInput } from '@ghostpay/tx-review';
 import { decodeFunctionResult, encodeFunctionData, getAddress, keccak256, parseTransaction, serializeTransaction } from 'viem/utils';
 import { UserFacingError, type MessageDescriptor } from './errors';
+import { sweepFeeFields, sweepFeeReserve } from './opStackFee';
 import { TransactionOutcomeError } from './transactionOutcome';
 import { buildPermit } from './pay';
 import type { MessageKey } from '../i18n/catalog';
@@ -253,6 +253,7 @@ export async function relayedSweep(i: RelayedSweepInput): Promise<string> {
     return await submitSweep(
       i.relayerUrl,
       {
+        chainId: i.target.chainId,
         sweep: order,
         sweepSig: sweepSig.signature,
         permit: { value: i.amount, deadline, v: permit.v, r: permit.r, s: permit.s },
@@ -529,55 +530,8 @@ async function nonceFinal(rpc: Rpc, owner: Address, nonce: number): Promise<bool
 /** Gas of a plain value transfer to an account without code: the intrinsic minimum of every transaction. */
 const TRANSFER_GAS = 21_000n;
 
-/** OP Stack GasPriceOracle predeploy: prices a transaction's L1 data fee and operator fee. */
-export const OP_STACK_GAS_PRICE_ORACLE = '0x420000000000000000000000000000000000000F' as Address;
-
-/**
- * A native sweep on an OP Stack chain keeps back this multiple of the fees the oracle quotes now, because the L1 base fee
- * and blob fee can rise before inclusion. The unused part stays at the one-time address.
- */
-export const OP_STACK_FEE_RESERVE_MULTIPLIER = 2n;
-
-const gasPriceOracleAbi = [
-  { type: 'function', name: 'getL1Fee', stateMutability: 'view', inputs: [{ name: '_data', type: 'bytes' }], outputs: [{ name: '', type: 'uint256' }] },
-  { type: 'function', name: 'getOperatorFee', stateMutability: 'view', inputs: [{ name: '_gasUsed', type: 'uint256' }], outputs: [{ name: '', type: 'uint256' }] },
-] as const;
-
-async function readFeeOracle(rpc: Rpc, data: Hex): Promise<bigint> {
-  const raw = await rpc.request('eth_call', [{ to: OP_STACK_GAS_PRICE_ORACLE, data }, 'latest']);
-  if (typeof raw !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(raw)) throw new Error('invalid fee oracle answer');
-  return BigInt(raw);
-}
-
-/**
- * The operator fee for `gas`. An OP Stack chain before the Isthmus upgrade has no `getOperatorFee`, so the call
- * reverts there; such a chain charges no operator fee. Any other failure is no answer and propagates.
- */
-async function readOperatorFee(rpc: Rpc, gas: bigint): Promise<bigint> {
-  try {
-    return await readFeeOracle(rpc, encodeFunctionData({ abi: gasPriceOracleAbi, functionName: 'getOperatorFee', args: [gas] }));
-  } catch (e) {
-    if (e instanceof ChainAdapterError && e.executionReverted) return 0n;
-    throw e;
-  }
-}
-
-/**
- * What an OP Stack node charges outside `gas * gasPrice`, read from the GasPriceOracle: the L1 data fee of the unsigned
- * serialized transaction (the oracle adds the signature's size) and the operator fee for its gas limit (none where the
- * oracle has no `getOperatorFee`), times {@link OP_STACK_FEE_RESERVE_MULTIPLIER}.
- * @throws {UserFacingError} when the oracle cannot be read: the fee, and for a native sweep the amount to send, is then
- *   unknown, so nothing is signed.
- */
-async function opStackFeeReserve(rpc: Rpc, unsignedTx: Hex, gas: bigint): Promise<bigint> {
-  try {
-    const l1 = await readFeeOracle(rpc, encodeFunctionData({ abi: gasPriceOracleAbi, functionName: 'getL1Fee', args: [unsignedTx] }));
-    const operator = await readOperatorFee(rpc, gas);
-    return (l1 + operator) * OP_STACK_FEE_RESERVE_MULTIPLIER;
-  } catch {
-    throw new UserFacingError({ key: 'error.sweep.couldNotReadTheL1DataFeeFromThisChain' });
-  }
-}
+// The L1 data / operator fee reserve lives in opStackFee.ts so the gas buffer quote (pay.ts) sizes it the same way.
+export { OP_STACK_FEE_RESERVE_MULTIPLIER, OP_STACK_GAS_PRICE_ORACLE } from './opStackFee';
 
 /** `eth_estimateGas`; a call the node reports as reverting is refused here, before anything is signed. */
 async function estimateGas(rpc: Rpc, call: { readonly from: Address; readonly to: Address; readonly data?: Hex; readonly value?: bigint }): Promise<bigint> {
@@ -612,9 +566,7 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
     const { owner, chainId, token } = i.target;
     const gasPrice = parseQuantity(await i.rpc.request('eth_gasPrice', []));
     assertSessionUnchanged();
-    const maxFeePerGas = gasPrice * 2n;
-    let priority = gasPrice / 10n;
-    if (priority > maxFeePerGas) priority = maxFeePerGas;
+    const { maxFeePerGas, maxPriorityFeePerGas: priority } = sweepFeeFields(gasPrice);
     const nonce = await sweepNonce(i);
     assertSessionUnchanged();
     const nativeBalance = parseQuantity(await i.rpc.request('eth_getBalance', [owner, 'latest']));
@@ -636,9 +588,7 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
       // An OP Stack node also charges an L1 data fee (and an operator fee) outside gas * price and refuses a transaction
       // whose total cost exceeds the balance (L2-F2). They are priced on this transaction's unsigned bytes with the
       // largest value it can carry: the value only shrinks, so the encoding never grows.
-      const reserve = findChain(chainId)?.opStack === true
-        ? await opStackFeeReserve(i.rpc, serializeTransaction({ type: 'eip1559', chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value: nativeBalance - gasCost, data }), gas)
-        : 0n;
+      const reserve = await sweepFeeReserve(i.rpc, { chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value: nativeBalance - gasCost, data });
       assertSessionUnchanged();
       if (nativeBalance <= gasCost + reserve) throw new UserFacingError({ key: 'error.sweep.theBalanceDoesNotCoverTheNetworkFeeIncludingThe' });
       value = nativeBalance - gasCost - reserve;
@@ -658,9 +608,7 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
       }
       // On OP Stack the native coin must also cover the L1 data fee and operator fee of this transfer, priced on its
       // exact unsigned bytes; the node refuses a transaction it cannot pay for, and the sweep lock would jam.
-      const reserve = findChain(chainId)?.opStack === true
-        ? await opStackFeeReserve(i.rpc, serializeTransaction({ type: 'eip1559', chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value, data }), gas)
-        : 0n;
+      const reserve = await sweepFeeReserve(i.rpc, { chainId, nonce, maxFeePerGas, maxPriorityFeePerGas: priority, gas, to, value, data });
       assertSessionUnchanged();
       if (nativeBalance < gas * maxFeePerGas + reserve) {
         throw new UserFacingError({ key: 'error.sweep.theStealthAddressDoesNotHoldEnoughNativeCoinFor' });

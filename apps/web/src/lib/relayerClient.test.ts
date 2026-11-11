@@ -100,6 +100,7 @@ describe('requestQuote', () => {
 
 describe('submitSweep', () => {
   const body: SweepSubmission = {
+    chainId: 84532,
     sweep: { token: TOKEN, owner: OWNER, destination: DEST, feeTo: FEE_TO, amount: 10n, fee: 1n, deadline: 99n, nonce: 7n },
     sweepSig: '0xaa',
     permit: { value: 10n, deadline: 99n, v: 27, r: '0x01', s: '0x02' },
@@ -112,7 +113,8 @@ describe('submitSweep', () => {
       return Promise.resolve(json({ txHash: `0x${'AB'.repeat(32)}` }));
     });
     expect(hash).toBe(`0x${'ab'.repeat(32)}`);
-    const parsed = JSON.parse(sent) as { sweep: Record<string, unknown>; permit: Record<string, unknown> };
+    const parsed = JSON.parse(sent) as { chainId: unknown; sweep: Record<string, unknown>; permit: Record<string, unknown> };
+    expect(parsed.chainId).toBe(84532);
     expect(parsed.sweep['amount']).toBe('10');
     expect(parsed.sweep['nonce']).toBe('7');
     expect(parsed.permit['value']).toBe('10');

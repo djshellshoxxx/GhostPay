@@ -151,7 +151,7 @@ and runs `deploy/selfhost.sh --dry-run` on scratch copies for its `trustedProxie
 `src/chain.test.ts` drives the real viem client against a fake JSON-RPC transport;
 `src/e2e.anvil.test.ts` deploys the compiled `GhostPaySweepRelayer` and `PermitToken` from `packages/contracts/out` on a
 local anvil and sweeps through the relayer (skipped when anvil or the artifacts are missing; `ANVIL_BIN` overrides
-`/home/user/tools/foundry/anvil`; run `forge build` first). The anvil test uses throwaway keys and `anvil_setBalance`. CI sets `REQUIRE_ANVIL=1` for this workspace (`ts-test-relayer`), but `e2e.anvil.test.ts` does not read that variable yet (only `packages/policy-scheme` does), so a missing anvil still skips there.
+`/home/user/tools/foundry/anvil`; run `forge build` first). The anvil test uses throwaway keys and `anvil_setBalance`. CI sets `REQUIRE_ANVIL=1` for this workspace (`ts-test-relayer`), and `e2e.anvil.test.ts` treats a missing anvil or missing forge artifact as a hard failure when `REQUIRE_ANVIL=1` or `CI=true` (`src/e2e.anvil.test.ts`, audit G-09).
 
 ## Unverified
 

@@ -29,12 +29,14 @@ import { verifyManifestForFlow } from '../lib/manifest';
 import { PaymentProofQr } from '../components/PaymentRequestQr';
 import { PrintBillButton } from '../components/PrintableBill';
 import { PermitRejectedError, PostBroadcastError, buildReceipt, classifyPayerPermit, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, type ApprovalPlan, type Runtime, type SubmitResult } from '../lib/payExec';
-import { approvedPaymentOutcome, type TransactionOutcome } from '../lib/transactionOutcome';
+import { TransactionOutcomeError, approvedPaymentOutcome, type TransactionOutcome } from '../lib/transactionOutcome';
+import { readAttempts } from '../lib/duplicateAttemptJournal';
+import type { MessageKey } from '../i18n/catalog';
 import { useServices } from '../lib/services';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { MessageValues, Part } from '../i18n/message';
 import type { Translator } from '../i18n/translator';
-import { connectWallet, walletWarnings, type WalletInfo, type WalletSession } from '../lib/wallet';
+import { connectWallet, walletAttemptKey, walletWarnings, type WalletInfo, type WalletSession } from '../lib/wallet';
 import { useApp } from '../state';
 import { notifyEmbedDone } from '../lib/embedHost';
 import { captureSessionVersionGuard } from '../lib/session';
@@ -88,6 +90,31 @@ interface InvoiceQrPreview {
 }
 
 const SUPPORTED_INVOICE_ERROR: MessageDescriptor = { key: 'pay.error.supportedInvoice' };
+
+/** True when the tab's attempt journal holds a payment request for this invoice (outcome unknown or submitted). */
+function paymentAttemptRecorded(session: WalletSession, built: BuiltPayment, invoice: ParsedInvoice['invoice']): boolean {
+  try {
+    const key = walletAttemptKey(session, built.tx, { kind: 'payment', scope: bytesToHex(invoiceDigest(invoice)) });
+    return readAttempts().some((attempt) => attempt.key === key);
+  } catch { return false; }
+}
+
+/** Refusal reasons whose own text says "Nothing was sent"; restated without that claim after an earlier request. */
+const RETRY_REFUSAL_DETAIL: Readonly<Partial<Record<MessageKey, MessageKey>>> = {
+  'error.pay.thisInvoiceHasExpiredNothingWasSent': 'transaction.detail.invoiceExpired',
+  'error.pay.theSellerSPriceQuoteHasExpiredNothingWasSent': 'transaction.detail.quoteExpired',
+  'error.pay.theGasBufferQuoteExpiredBeforeSendingNothingWasSent': 'transaction.detail.bufferExpired',
+};
+
+/**
+ * A retry was refused before its own wallet request, but an earlier payment request for this invoice may have been
+ * broadcast. Keep the unknown-outcome warning; never pass on refusal text that says nothing was sent.
+ */
+function refusedAfterEarlierRequest(error: unknown): MessageDescriptor {
+  const key = error instanceof UserFacingError ? error.translation?.key : undefined;
+  const detail = (key === undefined ? undefined : RETRY_REFUSAL_DETAIL[key]) ?? 'transaction.detail.reviewWallet';
+  return { key: 'transaction.walletUnknown', values: { diagnostic: { key: detail } } };
+}
 
 function supportsInvoice(invoice: ParsedInvoice['invoice'], supportedOnly: boolean): boolean {
   return !supportedOnly || (invoice.v === 1 && invoice.amountPolicy.mode === 'fixed_token');
@@ -247,6 +274,9 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setGranted(undefined);
     setApprovalHash(undefined);
     setPermitDeclined(false);
+    // The gas buffer is an opt-in for one invoice; its quote is for that invoice's policy and clock.
+    setUseBuffer(false);
+    setBufferQuote(undefined);
     setWallet(undefined);
     setStatus('');
     setError(undefined);
@@ -305,8 +335,12 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
 
   // Build the payment request (amounts) as soon as the review has no blockers. The review is recomputed from the
   // latest invoice/manifest/clock every time (also when a delay ends), never from a stale closure.
-  const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly });
-  latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly };
+  // A wallet request (approval or payment) was made for this invoice, or one is in flight: expiry may stop new
+  // preparation, but must not clear the context that the submitted state, hash, receipt and proof are shown from.
+  const handedOff = result !== undefined || broadcast !== undefined || paymentMayHaveBeenSent || granted !== undefined || approvalHash !== undefined;
+  const keepContext = handedOff || phase === 'busy' || phase === 'done' || phase === 'submitted';
+  const latest = useRef({ parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext });
+  latest.current = { parsed, manifest, receiptTrustedKey, ctx, built, builtFor, builtForContext, result, resultForContext, fragment, wallet, settings: app.settings, session: app.session, receiptConsent, supportedOnly, keepContext };
   const receiptScope = useMemo(() => ({ ctx, session: app.session }), [ctx, app.session]);
   const authorityMatches = (): boolean => latest.current.wallet === wallet && latest.current.settings === app.settings && latest.current.session === app.session && latest.current.supportedOnly === supportedOnly;
   const cancelInvoiceOpening = (expectedFragment: string | undefined, revision: number): void => {
@@ -337,7 +371,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     const now = Math.floor(services.nowMs() / 1000);
     const fresh = reviewInvoice(p, now, m);
     if (fresh.blockers.length > 0) {
-      setCtx(undefined);
+      // The blocker is still shown, and every send path rechecks validity before asking the wallet.
+      if (!latest.current.keepContext) setCtx(undefined);
       setTick((n) => n + 1);
       return undefined;
     }
@@ -371,6 +406,11 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
   useEffect(() => {
     void refreshContext();
   }, [refreshContext, parsed, manifest, reviewKey]);
+  // An operation that was in flight at expiry and ended without any wallet request releases the context afterwards.
+  const blocked = review !== undefined && review.blockers.length > 0;
+  useEffect(() => {
+    if (blocked && !keepContext) setCtx(undefined);
+  }, [blocked, keepContext]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -677,7 +717,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         const rt = await runtime();
         guard();
         let buffer: BufferQuote | undefined;
-        if (useBuffer && isErc20) {
+        // Never carry an opt-in into an invoice whose seller policy declines a buffer (ADR-0023).
+        if (useBuffer && isErc20 && bufferOffered(invoice)) {
           const bt = ctx.review.token;
           // Spec 13: re-estimate at confirm with a token-specific transfer simulation from the payer's account.
           buffer = await refreshBuffer(bt === undefined || bt.address === 'native' ? undefined : { token: bt.address, from: wallet.account, amount: ctx.request.netAmount });
@@ -736,6 +777,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     let actualAllowance = granted;
     let approvalBroadcastHash = approvalHash;
     let paymentWalletRequested = paymentMayHaveBeenSent;
+    // Set only by this attempt's own wallet hand-off: its errors already describe their (unknown) outcome.
+    let requestedThisAttempt = false;
     void (async () => {
       let stage: 'approval' | 'payment' = approval?.required === true && granted === undefined ? 'approval' : 'payment';
       try {
@@ -762,6 +805,7 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
         stage = 'payment';
         const res = await sendPayment(wallet, ctx, built, rt, scopedStatus, guard, () => {
           paymentWalletRequested = true;
+          requestedThisAttempt = true;
           if (isCurrent()) setPaymentMayHaveBeenSent(true);
         });
         if (!isCurrent()) {
@@ -797,10 +841,14 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
           announce({ key: stage === 'approval' ? 'pay.announce.approvalUnverified' : 'pay.announce.paymentUnverified' });
           return;
         }
+        // The tab's attempt journal is the durable record of an earlier payment hand-off for this invoice.
+        const earlierRequest = paymentWalletRequested || paymentAttemptRecorded(wallet, built, invoice);
         if (actualAllowance !== undefined) {
-          const outcome = approvedPaymentOutcome(e, paymentWalletRequested, approvalBroadcastHash as Hex | undefined);
+          const outcome = approvedPaymentOutcome(e, earlierRequest, approvalBroadcastHash as Hex | undefined);
           setError(outcome.message);
-          announce({ key: paymentWalletRequested ? 'transaction.approved.announceUnknown' : 'transaction.approved.announceNotSent' });
+          announce({ key: earlierRequest ? 'transaction.approved.announceUnknown' : 'transaction.approved.announceNotSent' });
+        } else if (earlierRequest && !requestedThisAttempt && !(e instanceof TransactionOutcomeError)) {
+          setError(refusedAfterEarlierRequest(e));
         } else {
           setError(captureUserMessage(e));
         }
@@ -865,6 +913,8 @@ export function Pay({ supportedOnly = false }: { readonly supportedOnly?: boolea
     setApproval(undefined);
     setGranted(undefined);
     setApprovalHash(undefined);
+    setUseBuffer(false);
+    setBufferQuote(undefined);
     setPhase('input');
   };
 

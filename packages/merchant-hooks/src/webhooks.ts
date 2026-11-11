@@ -154,6 +154,12 @@ export interface WebhookEvent {
   readonly data: {
     readonly invoiceId: string;
     readonly currency: string;
+    /**
+     * Cumulative amount received so far for `invoiceId` (never a single payment), a decimal integer
+     * string in minor units of `currency`; a running total for every event type. Normative definition:
+     * `docs/remote/usability/specs/webhooks.md` R8. A webhook is a notification, never payment proof:
+     * confirm the payment with the canonical on-chain verifier before acting on it.
+     */
     readonly amountMinor: string;
     readonly paymentId?: string;
   };

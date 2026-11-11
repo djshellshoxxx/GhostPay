@@ -73,6 +73,16 @@ describe('buildInvoiceLink', () => {
     expect(c.invoice.memo).toBeUndefined();
   });
 
+  it('normalizes a decomposed memo to NFC like a line description, and signs the normalized text', async () => {
+    const decomposed = 'Cafe\u0301 order'; // "e" followed by a combining acute accent
+    expect(decomposed).not.toBe(decomposed.normalize('NFC'));
+    const c = await buildInvoiceLink({ ...FORM, memo: `  ${decomposed} ` }, 'https://a/', NOW);
+    expect(c.invoice.memo).toBe('Caf\u00e9 order');
+    const parsed = await parseFragment(c.fragment);
+    expect(parsed.verification.signatureValid).toBe(true);
+    expect(parsed.invoice.memo).toBe('Caf\u00e9 order');
+  });
+
   it('validates every input', async () => {
     const bad = (patch: Partial<InvoiceForm>): Promise<unknown> => buildInvoiceLink({ ...FORM, ...patch }, 'https://a/', NOW);
     await expect(bad({ chainId: 999 })).rejects.toThrow(/Unknown chain/);
