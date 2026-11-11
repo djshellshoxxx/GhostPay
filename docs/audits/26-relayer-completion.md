@@ -75,13 +75,24 @@ A (adversarial security), B (correctness and accounting). This is not an indepen
 | 9 | Info | Decoder echoed unexpected key names from the file | A7 | Message no longer names the key | `stateStore.test.ts` decoder cases |
 | 10 | Test weakness | The post-broadcast write-failure test could pass with finding 1 present; the anvil "no duplicate nonce" check alone holds even without the journal (anvil's mempool supplies the nonce) | B7 | Added the service-level regression for 1; the anvil test's budget assertion is the part that depends on the journal (documented here) | — |
 
+Re-review of the fix commit `b1e350d` (a third AI-assisted reviewer) confirmed items 1-4 and 6 resolved and found:
+
+| # | Severity | Finding | Resolution | Regression test |
+|---|---|---|---|---|
+| M1 | Medium | Any heartbeat error (also a transient disk error) shut admission down and left the process alive answering 503 forever (no supervisor restart) | `StateLockLost` only for another token; I/O errors retried; 25 s without a beat or a takeover -> drain and exit 1 (`main.ts`) | `runtime.test.ts` "re-review M1", `stateStore.test.ts` "re-review M1" |
+| M2 | Medium-low | The far-future clamp let a wall clock flapping by two or more days grant a fresh budget per flap | Day rollover needs both wall and monotonic clocks past midnight (slew tolerance 10 min, re-anchored); the backward-adopt branch removed | `units.test.ts` "re-review M2", step-forward test |
+| L1 | Low | `reconcile-report` treated later `signed` records like the first | Mirrors `restore()` | `ops.test.ts` "re-review L1" |
+| L2 | Low | A fresh lock without a token (older version still running) was taken over at once | Any fresh `beatMs` blocks | `stateStore.test.ts` "re-review L2" |
+| L3 | Low | The fence is check-then-write: a holder paused > 30 s can write once after a takeover | Documented (README, residual) | — |
+| L4 | Low | Any `link` failure was reported as "locked by another process" | Only `EEXIST` is busy; others name the hard-link requirement | not reproducible in sandbox |
+
 Accepted, not changed: high-s permit signatures are classified `sig_invalid` although a raw-`ecrecover` token would accept
 them (message only; the simulation decides); synchronous fsyncs (about four per sweep) can stall the event loop on a slow
 disk (performance; one transaction per chain at a time); a malicious RPC can still fake receipts and nonces (inherent).
 
 ## 5. Evidence (sandbox)
 
-- `REQUIRE_ANVIL=1 npm test -w apps/relayer`: 12 files, 416 tests, coverage 97.3 / 93.5 / 96.3 / 98.5 (thresholds
+- `REQUIRE_ANVIL=1 npm test -w apps/relayer`: 12 files, 422 tests, coverage 97.3 / 93.5 / 96.6 / 98.5 (thresholds
   95/90/95/95). Baseline before this branch: 9 files, 313 tests, 97.55 / 92.95 / 97.05 / 98.75.
 - `typecheck` and `lint`: relayer, chain-adapters, web clean.
 - Container smoke (`apps/relayer/deploy/smoke-anvil.sh`, local anvil, read-only rootfs, `--cap-drop ALL`, uid 65532):

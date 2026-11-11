@@ -7,6 +7,7 @@ import {
   MemoryStateBackend,
   StateError,
   StateJournal,
+  StateLockLost,
   acquireStateLock,
   decodeState,
   encodeState,
@@ -241,6 +242,36 @@ describe('acquireStateLock', () => {
     expect(() => a.heartbeat()).toThrow('taken over');
     b.assertHeld();
     b.release();
+  });
+
+  it('re-review L2: a fresh lock without a token (older version still running) is not taken over', () => {
+    const d = tmp();
+    const file = join(d, 'state.json');
+    writeFileSync(`${file}.lock`, JSON.stringify({ pid: 99, host: 'old', beatMs: 1000 }));
+    expect(() => acquireStateLock(file, { pid: 1, host: 'h', now: () => 2000 })).toThrow('locked by another');
+    acquireStateLock(file, { pid: 1, host: 'h', now: () => 40_000 }).release(); // stale: taken over
+  });
+
+  it('re-review M1: heartbeat tells a takeover (StateLockLost) from an I/O error (plain StateError)', () => {
+    const d = tmp();
+    const file = join(d, 'state.json');
+    let now = 0;
+    const a = acquireStateLock(file, { pid: 1, host: 'h', now: () => now });
+    rmSync(`${file}.lock`);
+    mkdirSync(`${file}.lock`); // unreadable as a lock file: transient I/O trouble, not a takeover
+    let err: unknown;
+    try {
+      a.heartbeat();
+    } catch (e) {
+      err = e;
+    }
+    expect(err).toBeInstanceOf(StateError);
+    expect(err).not.toBeInstanceOf(StateLockLost);
+    expect(() => a.assertHeld()).toThrow('not held'); // writes stay fenced meanwhile
+    rmSync(`${file}.lock`, { recursive: true });
+    now = 40_000;
+    acquireStateLock(file, { pid: 2, host: 'h2', now: () => now });
+    expect(() => a.heartbeat()).toThrow(StateLockLost);
   });
 
   it('creates a missing lock exclusively and leaves no temp file', () => {

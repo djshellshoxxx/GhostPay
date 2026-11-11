@@ -13,7 +13,7 @@ import { RelayerHttpServer } from './server.js';
 import { RelayerService, lossCleanReserve } from './service.js';
 import type { PolicyGate } from './policy.js';
 import { ConfigError } from './secrets.js';
-import { FileStateBackend, MemoryStateBackend, StateError, StateJournal, acquireStateLock, type StateLock } from './stateStore.js';
+import { FileStateBackend, MemoryStateBackend, StateError, StateJournal, StateLockLost, acquireStateLock, type StateLock } from './stateStore.js';
 import { hostname } from 'node:os';
 
 /** Version string reported by `/v1/info`. */
@@ -37,6 +37,11 @@ export interface RuntimeDeps {
   readonly alerts?: AlertSink;
   /** Replaces the config-driven state journal (tests). When given, no lock file is taken. */
   readonly journal?: StateJournal;
+  /**
+   * Called once when the state lock is lost (another process took it, or heartbeats failed for too long). The process
+   * entry point drains and exits non-zero so the supervisor restarts it. Default: stop admitting work.
+   */
+  readonly onLockLost?: () => void;
 }
 
 /** A wired relayer. */
@@ -50,6 +55,8 @@ export interface Relayer {
 
 /** How often the single-writer lock heartbeat is refreshed (the lock goes stale after 30 s). */
 const LOCK_HEARTBEAT_MS = 10_000;
+/** Without a successful heartbeat for this long another process may take the lock over: treat it as lost. */
+const LOCK_GIVE_UP_MS = 25_000;
 
 /**
  * Opens the state journal named by the config: a locked file journal, or an in-memory one for `state.ephemeral`.
@@ -156,15 +163,25 @@ export async function buildRelayer(d: RuntimeDeps): Promise<Relayer> {
   const lock = opened.lock;
   let lockTimer: NodeJS.Timeout | undefined;
   if (lock !== undefined) {
+    let lastBeat = now();
+    const lost = (): void => {
+      d.logger.log('error', 'state_lock_lost', { errorClass: 'state_lock_lost' });
+      clearInterval(lockTimer);
+      // Journal writes are fenced already (no new send can start); this ends the process or its admission.
+      if (d.onLockLost !== undefined) d.onLockLost();
+      else void service.shutdown();
+    };
     lockTimer = setInterval(() => {
       try {
         lock.heartbeat();
+        lastBeat = now();
       } catch (e) {
-        // Another process took the state over (or the disk failed): stop sending before nonces collide.
+        if (e instanceof StateLockLost) return lost();
         if (!(e instanceof StateError)) throw e;
-        d.logger.log('error', 'state_lock_lost', { errorClass: 'state_lock_lost' });
-        clearInterval(lockTimer);
-        void service.shutdown();
+        // Transient I/O trouble: retry on the next beat, but give up before the lock can go stale.
+        metrics.inc('relayer_state_lock_heartbeat_failures_total');
+        d.logger.log('warn', 'state_lock_heartbeat_failed', { errorClass: 'state_lock_heartbeat_failed' });
+        if (now() - lastBeat >= LOCK_GIVE_UP_MS) lost();
       }
     }, LOCK_HEARTBEAT_MS);
     lockTimer.unref();

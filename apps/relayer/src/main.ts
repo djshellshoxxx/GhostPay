@@ -14,11 +14,9 @@ async function main(): Promise<void> {
   const hotKeyAddress = privateKeyToAccount(`0x${Buffer.from(hotKey).toString('hex')}`).address;
   const releaseKeys = parseReleaseKeys(env['GHOSTPAY_RELEASE_PUBKEYS']);
   const config = loadConfigFile(env['RELAYER_CONFIG'] ?? './relayer.config.json', env['DEPLOYMENTS_DIR'] ?? '../../deployments', { env, hotKeyAddress, releaseKeys });
-  const relayer = await buildRelayer({ config, hotKey, quoteSecret, ...(previousQuoteSecret === undefined ? {} : { previousQuoteSecret }), logger });
-  await relayer.server.listen();
-  logger.log('info', 'listening', {});
   let stopping = false;
-  const stop = (): void => {
+  // `exitCode` 1 after a lost state lock, so `Restart=on-failure` / the container policy brings the relayer back.
+  const stop = (exitCode = 0): void => {
     if (stopping) return;
     stopping = true;
     logger.log('info', 'shutdown_started', {});
@@ -27,7 +25,7 @@ async function main(): Promise<void> {
     relayer.server.close().then(
       () => {
         relayer.dispose();
-        process.exit(0);
+        process.exit(exitCode);
       },
       () => {
         relayer.dispose();
@@ -35,8 +33,14 @@ async function main(): Promise<void> {
       },
     );
   };
-  process.on('SIGTERM', stop);
-  process.on('SIGINT', stop);
+  const relayer = await buildRelayer({
+    config, hotKey, quoteSecret, ...(previousQuoteSecret === undefined ? {} : { previousQuoteSecret }), logger,
+    onLockLost: () => stop(1),
+  });
+  await relayer.server.listen();
+  logger.log('info', 'listening', {});
+  process.on('SIGTERM', () => stop());
+  process.on('SIGINT', () => stop());
 }
 
 // Node's default process diagnostics can expose provider URLs or request details; emit only a fixed class.

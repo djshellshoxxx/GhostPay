@@ -282,7 +282,7 @@ interface ReportItem {
   readonly detail: string;
 }
 
-async function judge(chain: ReadOnlyChain, s: SendRecord, hot: Address | undefined): Promise<{ outcome: Outcome; detail: string }> {
+async function judge(chain: ReadOnlyChain, s: SendRecord, hot: Address | undefined, firstSigned: boolean): Promise<{ outcome: Outcome; detail: string }> {
   // Mirrors RelayerService.restore(): only a 'reserved' record is provably unbroadcast.
   if (s.status === 'reserved') {
     return { outcome: 'not_broadcast', detail: 'reserved, never signed: nothing was broadcast; the reservation is released' };
@@ -299,6 +299,13 @@ async function judge(chain: ReadOnlyChain, s: SendRecord, hot: Address | undefin
   }
   if (s.status === 'pending') {
     return { outcome: 'pending', detail: 'accepted by the RPC, no receipt yet: the relayer keeps looking it up for up to 24 h with its reservation held' };
+  }
+  // restore() makes only the first 'signed' record the lane-blocking unknown send; later ones are looked up by hash
+  // like pending ones, or (hashless) dropped with their spending kept.
+  if (!firstSigned) {
+    return s.txHash === undefined
+      ? { outcome: 'unknown', detail: 'later signed record without a hash: dropped on start, its reservation stays spent for its day' }
+      : { outcome: 'pending', detail: 'later signed record: looked up by hash for up to 24 h with its reservation held (no nonce check)' };
   }
   // 'signed': outcome unknown; the relayer blocks the lane until the node's pending nonce or the grace decides.
   if (hot === undefined) {
@@ -329,8 +336,11 @@ export async function reconcileReport(d: OpsDeps, args: readonly string[]): Prom
       const sends = state.get(cfg.chainId)?.sends ?? [];
       if (sends.length === 0) continue;
       const chain = d.chain(cfg);
+      let seenSigned = false;
       for (const s of sends) {
-        const j = await judge(chain, s, loaded.address);
+        const firstSigned = s.status === 'signed' && !seenSigned;
+        if (s.status === 'signed') seenSigned = true;
+        const j = await judge(chain, s, loaded.address, firstSigned);
         items.push({ chainId: cfg.chainId, nonce: s.nonce, txHash: s.txHash ?? null, ...j });
       }
     }

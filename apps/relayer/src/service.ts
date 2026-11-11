@@ -309,7 +309,7 @@ export class RelayerService {
         client,
         lane: new ChainLane(d.config.queue.maxPending),
         nonces: new NonceManager(() => client.getPendingNonce()),
-        budget: new DailyBudget(cfg.dailyBudgetWei, this.now, stored.budget),
+        budget: new DailyBudget(cfg.dailyBudgetWei, this.now, stored.budget, mono),
         breaker: new GuardedBreaker(
           {
             windowSize: b.windowSize,

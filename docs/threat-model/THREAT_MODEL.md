@@ -299,7 +299,9 @@ OR 5. Two processes with one hot key on separate storage     gap: unsupported, n
 OR 6. Disk full / unwritable journal                         ctl: refusal before signing (state_unavailable); after broadcast the change is
                                                                  applied in memory, alerted, /healthz degraded, and the next full-snapshot write
                                                                  persists it (removals are never lost, so no double release on restart)
-OR 7. Wall clock far ahead once, then corrected               ctl: a saved day more than one day ahead keeps its spending on today's day
+OR 7. Wall clock far ahead once, flapping, then corrected     ctl: a new day needs both wall and monotonic clocks past midnight; a saved day more
+                                                                 than one day ahead keeps its spending on today's day; residual: the wall clock
+                                                                 is trusted at each process start (restart + clock flap grants a budget)
 Not persisted (bounded by the persisted daily budget): rate limits, per-key loss budget, owner failure counter, breaker window.
 Privacy: the journal holds nonces, tx hashes and wei only; records are deleted on settlement (apps/relayer/PRIVACY.md).
 ```

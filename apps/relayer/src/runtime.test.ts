@@ -110,6 +110,48 @@ describe('state journal wiring', () => {
     }
   });
 
+  it('re-review M1: retries transient heartbeat failures, then reports the lock lost before it can go stale', async () => {
+    const { vi } = await import('vitest');
+    const { mkdirSync, mkdtempSync, rmSync } = await import('node:fs');
+    const { tmpdir } = await import('node:os');
+    const { join } = await import('node:path');
+    const dir = mkdtempSync(join(tmpdir(), 'relayer-rt-'));
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] });
+    let clock = 1_000_000;
+    let lostCalls = 0;
+    const lines: string[] = [];
+    try {
+      const stateFile = join(dir, 'state.json');
+      const relayer = await buildRelayer({
+        config: testConfig({ stateFile }),
+        hotKey: new Uint8Array(32).fill(3),
+        quoteSecret: new Uint8Array(32).fill(9),
+        logger: createLogger((l) => lines.push(l)),
+        clients: new Map([[11155111, new FakeChain()]]),
+        now: () => clock,
+        onLockLost: () => { lostCalls += 1; },
+      });
+      rmSync(`${stateFile}.lock`);
+      mkdirSync(`${stateFile}.lock`); // heartbeat now fails with an I/O error
+      clock += 10_000;
+      vi.advanceTimersByTime(10_000);
+      clock += 10_000;
+      vi.advanceTimersByTime(10_000);
+      expect(lostCalls).toBe(0); // 20 s without a beat: still retrying
+      expect(lines.join('\n')).toContain('state_lock_heartbeat_failed');
+      expect(relayer.metrics.render()).toContain('relayer_state_lock_heartbeat_failures_total 2');
+      clock += 10_000;
+      vi.advanceTimersByTime(10_000);
+      expect(lostCalls).toBe(1); // 30 s: given up before another process could take the stale lock
+      vi.advanceTimersByTime(30_000);
+      expect(lostCalls).toBe(1); // reported once
+      relayer.dispose();
+    } finally {
+      vi.useRealTimers();
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
   it('stops admitting work when the lock heartbeat finds the lock taken over', async () => {
     const { vi } = await import('vitest');
     const { mkdtempSync, rmSync, writeFileSync } = await import('node:fs');

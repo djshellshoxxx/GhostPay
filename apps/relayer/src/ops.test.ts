@@ -404,6 +404,19 @@ describe('reconcile-report', () => {
       ]),
     );
 
+  it('re-review L1: only the first signed record is nonce-checked; later ones are reported as restore() treats them', async () => {
+    const file = writeState(new Map([[31337, { budget: { day: DAY, spentWei: 1n }, sends: [
+      rec({ id: 'e'.repeat(16), nonce: 7, status: 'signed', txHash: H1 }),
+      rec({ id: 'f'.repeat(16), nonce: 8, status: 'signed', txHash: H2 }),
+      rec({ id: '9'.repeat(16), nonce: 9, status: 'signed' }),
+    ] }]]));
+    expect(await runOps(['reconcile-report'], deps(envFor({ RELAYER_STATE_FILE: file }), { chain: () => fakeChain({ pending: 7 }) }))).toBe(0);
+    const lines = out.join('\n');
+    expect(lines).toContain('nonce=7 tx=' + H1 + ': unknown - signed, no receipt and the nonce is free');
+    expect(lines).toContain('nonce=8 tx=' + H2 + ': pending - later signed record');
+    expect(lines).toContain('nonce=9 tx=-: unknown - later signed record without a hash');
+  });
+
   it('classifies settled, pending, unknown and never-signed records', async () => {
     const chain = fakeChain({ receipts: { [H1]: 'success' }, pending: 5 });
     const env = envFor({ RELAYER_STATE_FILE: stateWith() });

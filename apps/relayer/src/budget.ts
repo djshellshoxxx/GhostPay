@@ -1,28 +1,39 @@
+const DAY_MS = 86_400_000;
+/** Wall/monotonic disagreement tolerated as clock slew (NTP) rather than a step. */
+const SLEW_TOLERANCE_MS = 600_000;
+
 /**
  * Per-chain daily gas budget in wei (UTC day). Reservation-based so concurrent jobs cannot overshoot.
  *
- * @remarks The day only moves forward: a wall clock stepped back across midnight keeps today's spending instead of
- * granting a fresh budget (a clock rollback must not reset financial exposure). A restored snapshot from a later day
- * than the clock (clock behind the last run) is kept for the same reason.
+ * @remarks Clock steps must not grant budget (financial exposure). A new day starts only when BOTH the wall clock and
+ * the monotonic clock say a UTC midnight has passed since the wall clock was last seen consistent: a wall clock stepped
+ * back keeps today's spending, and one stepped (or flapping) forward gets no fresh budget until real time has passed.
+ * Slow drift within {@link SLEW_TOLERANCE_MS} re-anchors the two clocks. A restored snapshot from today or tomorrow is
+ * kept; one more than a day ahead (a wrong reading that was saved) keeps its spending on today's day.
+ * Residual: a host whose wall clock is wrong at process start, across repeated restarts, is trusted at each start.
  */
 export class DailyBudget {
   private spent: bigint;
   private day: number;
+  private anchorWall: number;
+  private anchorMono: number;
 
   /**
    * @param limitWei Daily limit.
    * @param now Wall clock ms.
    * @param restored Persisted `{day, spentWei}` from the state journal; ignored when from an earlier day.
+   * @param mono Monotonic ms clock (default: `now`, which disables the step check).
    */
   public constructor(
     private readonly limitWei: bigint,
     private readonly now: () => number,
     restored?: { readonly day: number; readonly spentWei: bigint },
+    private readonly mono: () => number = now,
   ) {
-    const today = this.dayOf();
+    this.anchorWall = now();
+    this.anchorMono = mono();
+    const today = Math.floor(this.anchorWall / DAY_MS);
     if (restored !== undefined && restored.day >= today) {
-      // More than a day ahead means a wrong clock reading was saved: keep the spending, but on today's day, so it
-      // resets at the next midnight instead of pinning the budget until that far-off day.
       this.day = restored.day > today + 1 ? today : restored.day;
       this.spent = restored.spentWei;
     } else {
@@ -31,16 +42,17 @@ export class DailyBudget {
     }
   }
 
-  private dayOf(): number {
-    return Math.floor(this.now() / 86_400_000);
-  }
-
   private roll(): void {
-    const d = this.dayOf();
-    if (d < this.day - 1) {
-      // The clock moved back by more than a day (a forward jump was corrected): keep the spending, adopt today.
-      this.day = d;
-    } else if (d > this.day) {
+    const wall = this.now();
+    const m = this.mono();
+    const expectedWall = this.anchorWall + (m - this.anchorMono);
+    if (Math.abs(wall - expectedWall) <= SLEW_TOLERANCE_MS) {
+      this.anchorWall = wall;
+      this.anchorMono = m;
+    }
+    // Both clocks must agree that the day changed (the monotonic one with slew tolerance).
+    const d = Math.min(Math.floor(wall / DAY_MS), Math.floor((expectedWall + SLEW_TOLERANCE_MS) / DAY_MS));
+    if (d > this.day) {
       this.day = d;
       this.spent = 0n;
     }
@@ -98,6 +110,6 @@ export class DailyBudget {
 
   /** @returns Seconds until the next UTC midnight. */
   public secondsToReset(): number {
-    return Math.max(1, Math.ceil(((this.day + 1) * 86_400_000 - this.now()) / 1000));
+    return Math.max(1, Math.ceil(((this.day + 1) * DAY_MS - this.now()) / 1000));
   }
 }

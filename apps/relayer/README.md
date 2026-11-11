@@ -127,12 +127,17 @@ is a whole-file atomic replace (temp file, fsync, rename, directory fsync). On s
 | `pending` | accepted by the RPC | receipt looked up at the start of later jobs; settled from the receipt; dropped after 24 h unfound (reservation kept for its day) |
 
 A file that does not parse is a startup error, never a silent reset. The day only moves forward, so a wall clock stepped
-back does not grant a new daily budget, and a saved day more than one day ahead of the clock (a wrong reading that was
-persisted) keeps its spending on today's day instead of pinning the budget. `<state>.lock` is a single-writer heartbeat
+back does not grant a new daily budget: a new day starts only when both the wall clock and the monotonic clock have
+passed UTC midnight, so a wall clock stepped or flapping forward gets no fresh budget either; a saved day more than one
+day ahead (a wrong reading that was persisted) keeps its spending on today's day instead of pinning the budget. The wall
+clock is still trusted at process start (run NTP). `<state>.lock` is a single-writer heartbeat
 lock with a random per-process token: created exclusively, 10 s heartbeat, taken over when stale for 30 s (15 s when it
-names this host and pid, i.e. a restarted container). Every journal write first checks the token (fencing), so a process
-that lost the lock cannot write and refuses new sweeps (`state_unavailable`); on SIGTERM the lock is released only after
-the drain. Settlement writes are applied in memory even when the write fails and are persisted by the next write
+names this host and pid, i.e. a restarted container); a fresh lock without a token (an older version) also blocks. Every
+journal write first checks the token (fencing), so a process that lost the lock cannot write or start a send
+(`state_unavailable`). A heartbeat I/O error is retried; another token on the lock, or 25 s without a successful beat,
+counts as lost: the process drains and exits 1 so the supervisor restarts it. On SIGTERM the lock is released only after
+the drain. The fence is check-then-write, so a holder paused for longer than 30 s (VM pause, SIGSTOP) can still write
+once after a takeover; do not run a second instance on the same state while one may be paused. Settlement writes are applied in memory even when the write fails and are persisted by the next write
 (`/healthz` reports `degraded` meanwhile), so a failed removal can never be restored and released twice. Running two relayers with the same hot key on
 separate state files is unsupported: there is no distributed coordination. Not persisted (reset on restart, all bounded
 by the persisted daily budget): rate-limit buckets, the per-key loss budget, the per-owner failure counter, the breaker

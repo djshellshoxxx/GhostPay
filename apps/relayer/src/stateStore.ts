@@ -52,6 +52,9 @@ export class StateError extends Error {
   public override readonly name = 'StateError';
 }
 
+/** The lock file now carries another process's token: this process must stop sending (not a transient error). */
+export class StateLockLost extends StateError {}
+
 /** Storage below the journal. {@link FileStateBackend} in production, {@link MemoryStateBackend} for tests/ephemeral. */
 export interface StateBackend {
   /** @returns The stored text, or `null` when nothing was stored yet. */
@@ -407,17 +410,22 @@ export interface LockOptions {
 export interface StateLock {
   /** Throws {@link StateError} unless the lock file still carries this holder's token (the journal's write guard). */
   assertHeld(): void;
-  /** Refreshes the heartbeat; call well within `restartStaleMs`. */
+  /**
+   * Refreshes the heartbeat; call well within `restartStaleMs`.
+   *
+   * @throws {StateLockLost} when another process holds the lock; {@link StateError} on a (possibly transient) I/O error.
+   */
   heartbeat(): void;
   /** Removes the lock file if it is still ours. */
   release(): void;
 }
 
-function parseLock(text: string | null): LockBody | undefined {
+/** Parses a lock body; fields are optional because an older relayer version wrote no token. */
+function parseLock(text: string | null): Partial<LockBody> | undefined {
   if (text === null) return undefined;
   try {
-    const v = JSON.parse(text) as Partial<LockBody>;
-    return typeof v.token === 'string' && typeof v.beatMs === 'number' ? (v as LockBody) : undefined;
+    const v = JSON.parse(text) as unknown;
+    return typeof v === 'object' && v !== null ? v : undefined;
   } catch {
     return undefined;
   }
@@ -452,8 +460,9 @@ export function acquireStateLock(stateFile: string, o: LockOptions): StateLock {
     new FileStateBackend(tmp).write(body());
     try {
       linkSync(tmp, path);
-    } catch {
-      busy();
+    } catch (e) {
+      if ((e as NodeJS.ErrnoException).code === 'EEXIST') busy();
+      throw new StateError('state lock cannot be created (the state directory must support hard links)');
     } finally {
       try {
         unlinkSync(tmp);
@@ -463,7 +472,8 @@ export function acquireStateLock(stateFile: string, o: LockOptions): StateLock {
     }
   } else {
     const held = parseLock(current);
-    if (held !== undefined) {
+    // Any fresh heartbeat blocks, with or without a token (a lock written by an older version is still live).
+    if (held !== undefined && typeof held.beatMs === 'number') {
       const age = o.now() - held.beatMs;
       const sameInstance = held.pid === o.pid && held.host === o.host;
       if (age < (sameInstance ? restartStaleMs : staleMs)) busy();
@@ -472,16 +482,24 @@ export function acquireStateLock(stateFile: string, o: LockOptions): StateLock {
   }
   const mine = (): boolean => parseLock(backend.read())?.token === token;
   if (!mine()) busy(); // a concurrent takeover won the race
+  const safeMine = (): boolean => {
+    try {
+      return mine();
+    } catch {
+      return false;
+    }
+  };
   return {
     assertHeld: () => {
-      if (!mine()) throw new StateError('state lock is not held by this process');
+      if (!safeMine()) throw new StateError('state lock is not held by this process'); // unreadable: fail closed
     },
     heartbeat: () => {
-      if (!mine()) throw new StateError('state lock was taken over by another process');
+      // A read or write failure propagates as a plain StateError (transient); only another token means lost.
+      if (!mine()) throw new StateLockLost('state lock was taken over by another process');
       backend.write(body());
     },
     release: () => {
-      if (!mine()) return;
+      if (!safeMine()) return;
       try {
         unlinkSync(path);
       } catch {
