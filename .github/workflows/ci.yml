@@ -59,6 +59,10 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-node-libs
+      # Dependency-integrity gate: an invalid lockfile or peer tree (ELSPROBLEMS) fails the PR here instead of only
+      # in the nightly/release `npm sbom` step.
+      - name: Dependency tree is valid (production)
+        run: npm ls --all --omit=dev > /dev/null
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run build
@@ -139,7 +143,7 @@ jobs:
               fi
               if [[ ${#other_args[@]} -gt 0 ]]; then npm test "${other_args[@]}" --if-present; fi
               if [ "$shard" = 0 ]; then
-                node --test scripts/testnet/*.test.mjs scripts/regtest/*.test.mjs
+                node --test scripts/testnet/*.test.mjs scripts/regtest/*.test.mjs scripts/tests/release-*.test.mjs
               fi
               ;;
           esac
@@ -183,7 +187,10 @@ jobs:
           RESULTS: ${{ join(needs.*.result, ' ') }}
         run: |
           echo "needs results: $RESULTS"
-          case " $RESULTS " in *" failure "*|*" cancelled "*) exit 1 ;; esac
+          # Only success, or skipped (docs-only run), is acceptable; failure, cancelled or anything unknown fails.
+          for r in $RESULTS; do
+            case "$r" in success|skipped) ;; *) echo "::error::a needed job ended as '$r'"; exit 1 ;; esac
+          done
 
   e2e:
     needs: changes
@@ -300,12 +307,15 @@ jobs:
       - uses: ./.github/actions/setup-forge
         with:
           cache-name: slither
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.12"
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ~/.cache/pip
             ~/.solc-select
-          key: slither-${{ runner.os }}-0.11.6-1.2.0-0.8.28
+          key: slither-${{ runner.os }}-py3.12-0.11.6-1.2.0-0.8.28
       - name: Slither
         run: |
           python3 -m pip install --quiet "slither-analyzer==0.11.6" "solc-select==1.2.0"
@@ -378,7 +388,10 @@ jobs:
           RESULTS: ${{ join(needs.*.result, ' ') }}
         run: |
           echo "needs results: $RESULTS"
-          case " $RESULTS " in *" failure "*|*" cancelled "*) exit 1 ;; esac
+          # Only success, or skipped (docs-only run), is acceptable; failure, cancelled or anything unknown fails.
+          for r in $RESULTS; do
+            case "$r" in success|skipped) ;; *) echo "::error::a needed job ended as '$r'"; exit 1 ;; esac
+          done
 
   secrets-and-egress:
     runs-on: ubuntu-latest
