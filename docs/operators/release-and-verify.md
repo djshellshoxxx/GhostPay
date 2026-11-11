@@ -83,7 +83,9 @@ Use a machine and network other than the one that serves or runs the app.
    script: `sha256sum -c SHA256SUMS`.
 5. Verify the attestation, bound to the release workflow, the tag and the commit the signed tag points at:
    `gh attestation verify ghostpay-web-v1.2.3.tar.gz --repo <owner>/<repo> --signer-workflow <owner>/<repo>/.github/workflows/release.yml --source-ref refs/tags/v1.2.3 --source-digest <40-hex-commit> --deny-self-hosted-runners`.
-   `--repo` alone accepts an attestation from any workflow or ref in the repository.
+   `--repo` alone accepts an attestation from any workflow or ref in the repository. In a workflow, the composite
+   action `.github/actions/release-verify` runs this same pinned command when given `verify-attestation: 'true'`,
+   `tag: v1.2.3` and `expected-commit: <40-hex-commit>`; it fails if `tag` is missing or not a plain release tag.
 6. Optional but strongest: rebuild at the tag with `VERSION=v1.2.3 bash scripts/release-build.sh` and compare the
    tarball sha256 with the release. Reproducibility is only claimed for the same Node/npm major and a Linux GNU
    toolchain; it has not been tested across operating systems.
