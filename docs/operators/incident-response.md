@@ -27,6 +27,22 @@ Audience: maintainers and operators. Pre-audit software, nothing deployed. This 
 6. **Notify** (section 8): any user who opened the app during the window must assume that keys and recovery material typed or generated in the browser may be exposed. Guidance: create new stealth keys/identities, sweep funds received at old stealth addresses to a fresh wallet, stop reusing the affected meta-address, and revoke approvals. We cannot tell who was affected.
 7. Add the cause to the post-mortem; if a workflow or dependency was the vector, fix the control (pinning, branch protection, review).
 
+## 2a. Playbook: release-integrity failure (served bytes do not match the release)
+**Trigger:** SHA-256 of a served file differs from `SHA256SUMS`, `/build-info.json` commit or `manifestsSha256` differs from the release, or a mirror disagrees with the primary ([monitoring](monitoring.md)).
+1. Re-fetch from a second machine and network to rule out a local or CDN-edge artefact; purge CDN HTML and `/build-info.json`, then re-check. A pure stale cache is S3.
+2. If bytes still differ: S2 (S1 if a script was added or changed). Stop serving that origin (section 2 step 1); keep a copy of the served files and response headers as evidence.
+3. Diff against the verified tarball to find the changed files; check deploy history, who last wrote to the web root, and the build log. A mismatch in only `build-info.json` or `index.html` with matching `assets/` suggests an index/manifest swap.
+4. Redeploy the verified tarball ([rollback](rollback.md)), re-verify by hash, and continue with section 2 steps 3 to 7 if tampering is confirmed. Untested: no drill has been run.
+
+## 2b. Playbook: compromised hosting account or server
+**Trigger:** unexplained login, deploy, DNS/CDN change, new API token or SSH key, provider breach notice.
+1. From a clean machine: revoke sessions, tokens and SSH keys; rotate passwords and hardware-key registrations; lock the registrar.
+2. Serve the static notice or take the origin offline (section 2 step 1). Do not trust the host's own logs or binaries; rebuild the host from scratch rather than clean it.
+3. Rotate anything the host could read: relayer hot key and quote secret (section 5) if co-located, TLS keys (reissue certificates), onion key (burned if leaked).
+4. Check DNS records, CAA, issued certificates (certificate transparency) and mirrors for planted content.
+5. Redeploy to a fresh host from a verified tarball and verify by hash from a second machine ([rollback](rollback.md) section 5). Notify per section 8: users who loaded the app during the window must treat browser-held keys as exposed.
+Untested: written from the plan, not rehearsed.
+
 ## 3. Poisoned or wrong deployment manifest
 The manifest is not yet authenticated. A poisoned manifest can point clients at attacker contracts (router, announcer, relayer contract, fee recipient).
 

@@ -196,7 +196,7 @@ echo "== Plan"
 step=1
 if [ -n "$tarball" ]; then
   echo "  $((step++)). verify $tarball with scripts/verify-release.sh (sums: $sums, commit: $commit); abort on any FAIL"
-  echo "  $((step++)). extract it into $distdir (replacing old contents)"
+  echo "  $((step++)). back up the current bundle to ${distdir}.prev, then extract it into $distdir (replacing old contents)"
   echo "     then complete the signed-tag and attestation checks it prints (see docs/operators/release-and-verify.md)"
 fi
 echo "  $((step++)). docker compose build api$([ "$onion" = 1 ] && echo ' tor')   (builds locally from apps/relayer/Dockerfile$([ "$onion" = 1 ] && echo ' and deploy/tor/Dockerfile'))"
@@ -225,8 +225,23 @@ if [ -n "$tarball" ]; then
   top="$(find "$tmp" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
   [ -f "$top/index.html" ] || die "extracted bundle has no index.html"
   mkdir -p "$distdir"
+  # Back up the live bundle before replacing it (one generation: web-dist.prev). Rollback = see docs/operators/rollback.md.
+  prev="${distdir}.prev"
+  if [ -n "$(find "$distdir" -mindepth 1 -print -quit)" ]; then
+    rm -rf "$prev"
+    cp -a "$distdir" "$prev" || die "could not back up $distdir to $prev; aborting before any change"
+    echo "previous bundle saved to $prev"
+  fi
   find "$distdir" -mindepth 1 -delete
   cp -a "$top"/. "$distdir"/
+  # Build-version check: the served build-info.json must name the commit we just verified.
+  if [ -f "$distdir/build-info.json" ]; then
+    grep -qF "\"commit\":\"$commit\"" "$distdir/build-info.json" \
+      && echo "build-info.json commit matches $commit" \
+      || echo "WARNING: build-info.json commit differs from $commit (build did not embed GP_COMMIT, or wrong tarball)" >&2
+  else
+    echo "WARNING: bundle has no build-info.json (older build); cannot confirm the deployed commit from the page" >&2
+  fi
 fi
 cd "$here"
 args=(-f docker-compose.yml); [ -f "$envfile" ] && args+=(--env-file "$envfile")
