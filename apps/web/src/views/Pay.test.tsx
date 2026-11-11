@@ -57,6 +57,8 @@ function chainSeeing(wallet: MockWallet) {
     }
     if (method === 'eth_getTransactionReceipt') return { status: '0x1', blockNumber: '0x64', to: wallet.sent?.['to'] };
     if (method === 'eth_gasPrice') return '0x3b9aca00';
+    // Base Sepolia is OP Stack: its GasPriceOracle prices no L1 data or operator fee here.
+    if (method === 'eth_call' && (params[0] as { to?: unknown }).to === '0x420000000000000000000000000000000000000F') return `0x${'0'.repeat(64)}`;
     throw new Error(`unexpected ${method}`);
   });
 }

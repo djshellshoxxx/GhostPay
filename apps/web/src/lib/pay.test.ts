@@ -1,4 +1,5 @@
 import {
+  ChainAdapterError,
   chainlinkAggregatorAbi,
   eip712DomainSeparator,
   erc20Abi,
@@ -10,12 +11,12 @@ import {
   type FeedConfig,
 } from '@ghostpay/chain-adapters';
 import { createInvoice, signInvoice, parseFragment, encodeFragment } from '@ghostpay/invoice-schema';
-import { decodeFunctionData, encodeFunctionResult } from 'viem/utils';
+import { decodeFunctionData, encodeFunctionResult, parseAbi } from 'viem/utils';
 import { privateKeyToAccount } from 'viem/accounts';
 import { afterEach, describe, expect, it } from 'vitest';
 import { FAKE_FEE_RECIPIENT, FAKE_ROUTER, fakeManifest } from '../test/fakeManifest';
 import { BASE_FORM, NOW, USDC_84532, makeParsed } from '../test/invoiceFixtures';
-import { mockRpc } from '../test/mockRpc';
+import { mockRpc, type RpcHandler } from '../test/mockRpc';
 import { buildInvoiceLink } from './invoiceCreate';
 import {
   BUFFER_QUOTE_TTL_SECONDS,
@@ -308,8 +309,12 @@ describe('buildFinal and the preview-equals-calldata gate', () => {
   });
 });
 
+/** Base Sepolia is OP Stack: answer its GasPriceOracle with no L1 data or operator fee unless a test prices one. */
+const noL1Fee = (h: RpcHandler): RpcHandler => (method, params) =>
+  method === 'eth_call' && (params[0] as { to?: unknown } | undefined)?.to === '0x420000000000000000000000000000000000000F' ? `0x${'0'.repeat(64)}` : h(method, params);
+
 describe('seller bufferPolicy (invoice v2, ADR-0024)', () => {
-  const gwei = mockRpc(84532, () => '0x3b9aca00'); // quote = 0.00024 ETH = 240_000_000_000_000 wei
+  const gwei = mockRpc(84532, noL1Fee(() => '0x3b9aca00')); // quote = 0.00024 ETH = 240_000_000_000_000 wei
   const QUOTED = 240_000_000_000_000n;
   async function v2ctx(policy: { accepted: boolean; maxWei: string; minWei: string }): Promise<PayContext> {
     const { parsed } = await makeParsed({ bufferPolicy: { ...policy, refund: 'none' } });
@@ -363,20 +368,20 @@ describe('seller bufferPolicy (invoice v2, ADR-0024)', () => {
 
 describe('quoteBuffer (Feature 1)', () => {
   it('sizes the buffer from the RPC gas price with 20 % safety', async () => {
-    const q = await quoteBuffer(mockRpc(84532, () => '0x3b9aca00'), NOW); // 1 gwei
+    const q = await quoteBuffer(mockRpc(84532, noL1Fee(() => '0x3b9aca00')), NOW); // 1 gwei
     // 100_000 gas * 2 gwei * 1.2
     expect(q.bufferWei).toBe(100_000n * 2_000_000_000n * 12n / 10n);
     expect(q.expiresAt - q.quotedAt).toBe(BUFFER_QUOTE_TTL_SECONDS);
   });
   it('fails closed when gas is absurdly high or the RPC misbehaves', async () => {
-    await expect(quoteBuffer(mockRpc(84532, () => `0x${(10n ** 12n).toString(16)}`), NOW)).rejects.toThrow(/safety cap/);
+    await expect(quoteBuffer(mockRpc(84532, noL1Fee(() => `0x${(10n ** 12n).toString(16)}`)), NOW)).rejects.toThrow(/safety cap/);
     await expect(quoteBuffer(mockRpc(84532, () => 'nope'), NOW)).rejects.toThrow();
   });
   it('rejects quotes older than 60 s (spec 13)', () => {
     expect(BUFFER_QUOTE_TTL_SECONDS).toBe(60);
   });
   const SWEEP = { token: USDC_84532 as Address, from: '0x5555555555555555555555555555555555555555' as Address, amount: 1_000_000n };
-  const gasRpc = (estimate: () => unknown) => mockRpc(84532, (method) => (method === 'eth_estimateGas' ? estimate() : '0x3b9aca00'));
+  const gasRpc = (estimate: () => unknown) => mockRpc(84532, noL1Fee((method) => (method === 'eth_estimateGas' ? estimate() : '0x3b9aca00')));
   it('uses a token-specific transfer simulation, margined, never below the default table value', async () => {
     const rpc = gasRpc(() => `0x${(200_000).toString(16)}`);
     const q = await quoteBuffer(rpc, NOW, SWEEP);
@@ -402,18 +407,87 @@ describe('quoteBuffer (Feature 1)', () => {
   });
 });
 
+describe('R04-2: the buffer quote covers the L1 data and operator fee directSweep reserves on OP Stack', () => {
+  const ORACLE = '0x420000000000000000000000000000000000000F';
+  const oracleAbi = parseAbi(['function getL1Fee(bytes _data) view returns (uint256)', 'function getOperatorFee(uint256 _gasUsed) view returns (uint256)']);
+  const word = (v: bigint): Hex => `0x${v.toString(16).padStart(64, '0')}`;
+  const PAYER = '0x5555555555555555555555555555555555555555' as Address;
+  const SEPOLIA_USDC = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238' as Address;
+  interface Fees { gasPrice: bigint; l1Fee: bigint | Error; operatorFee: bigint | Error }
+  /** Gas price, a 50 000 gas transfer estimate and (on OP Stack) the GasPriceOracle, all mutable between calls. */
+  const feeRpc = (chainId: number, f: Fees) =>
+    mockRpc(chainId, (method, params) => {
+      if (method === 'eth_gasPrice') return `0x${f.gasPrice.toString(16)}`;
+      if (method === 'eth_estimateGas') return '0xc350';
+      const call = params[0] as { to?: string; data: Hex };
+      if (method === 'eth_call' && call.to === ORACLE) {
+        const answer = decodeFunctionData({ abi: oracleAbi, data: call.data }).functionName === 'getL1Fee' ? f.l1Fee : f.operatorFee;
+        if (answer instanceof Error) throw answer;
+        return word(answer);
+      }
+      throw new Error(`unexpected ${method}`);
+    });
+
+  it('off OP Stack the quote is exactly what it was: L2 gas only, no oracle read, no extra field', async () => {
+    for (const sweep of [undefined, { token: SEPOLIA_USDC, from: PAYER, amount: 1_000_000n }]) {
+      const rpc = feeRpc(11155111, { gasPrice: 1_000_000_000n, l1Fee: 10n ** 15n, operatorFee: 10n ** 15n });
+      const q = await quoteBuffer(rpc, NOW, sweep);
+      expect(q).toStrictEqual({
+        bufferWei: 100_000n * 2_000_000_000n * 12n / 10n, maxFeePerGas: 2_000_000_000n, gasLimit: 100_000n, safetyBps: 2000n,
+        quotedAt: NOW, expiresAt: NOW + BUFFER_QUOTE_TTL_SECONDS, gasSource: sweep === undefined ? 'default' : 'simulated',
+      });
+      expect(rpc.calls.some((c) => c.method === 'eth_call')).toBe(false);
+    }
+  });
+
+  it('on OP Stack adds twice the L1 data fee plus operator fee, inside the safety cap', async () => {
+    const f: Fees = { gasPrice: 1_000_000n, l1Fee: 70_000_000_000n, operatorFee: 5n };
+    const q = await quoteBuffer(feeRpc(84532, f), NOW, { token: USDC_84532, from: PAYER, amount: 5_000_000n });
+    expect(q.bufferWei).toBe(100_000n * 2_000_000n * 12n / 10n + 2n * (70_000_000_000n + 5n));
+    expect(q.expiresAt - q.quotedAt).toBe(BUFFER_QUOTE_TTL_SECONDS);
+    // The cap applies to the total, reserve included.
+    f.l1Fee = MAX_BUFFER_WEI / 2n;
+    await expect(quoteBuffer(feeRpc(84532, f), NOW)).rejects.toThrow(/safety cap/);
+  });
+
+  it('on OP Stack refuses to quote when the fee oracle cannot be read; a pre-Isthmus chain (getOperatorFee reverts) has no operator fee', async () => {
+    await expect(quoteBuffer(feeRpc(84532, { gasPrice: 1_000_000n, l1Fee: new Error('rpc down'), operatorFee: 0n }), NOW)).rejects.toThrow(/fee oracle/);
+    await expect(quoteBuffer(feeRpc(84532, { gasPrice: 1_000_000n, l1Fee: 1n, operatorFee: new ChainAdapterError('RPC_FAILURE', 'http 429') }), NOW)).rejects.toThrow(/fee oracle/);
+    const reverted = new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32000', { reverted: true, executionReverted: true });
+    const q = await quoteBuffer(feeRpc(84532, { gasPrice: 1_000_000n, l1Fee: 9n, operatorFee: reverted }), NOW);
+    expect(q.bufferWei).toBe(100_000n * 2_000_000n * 12n / 10n + 18n);
+  });
+
+  it('the send-time recheck on OP Stack compares L2 gas plus the current reserve with the buffer that was built', async () => {
+    const { parsed } = await makeParsed();
+    const ctx = await createPayContext(reviewInvoice(parsed, NOW, LOADED(84532)), undefined, { nowSeconds: NOW });
+    const f: Fees = { gasPrice: 1_000_000n, l1Fee: 70_000_000_000n, operatorFee: 0n };
+    const rpc = feeRpc(84532, f);
+    const b = buildFinal(ctx, { nowSeconds: NOW, buffer: await quoteBuffer(rpc, NOW, { token: USDC_84532, from: PAYER, amount: 5_000_000n }) });
+    const slack = 100_000n * 2_000_000n * 2n / 10n; // the 20 % L2 safety margin
+    await expect(assertBufferStillSufficient(b, rpc)).resolves.toBeUndefined();
+    // A rise of the L1 data fee is absorbed by the margin up to its size, and refused beyond it.
+    f.l1Fee = 70_000_000_000n + slack / 2n;
+    await expect(assertBufferStillSufficient(b, rpc)).resolves.toBeUndefined();
+    f.l1Fee = 70_000_000_000n + slack / 2n + 1n;
+    await expect(assertBufferStillSufficient(b, rpc)).rejects.toThrow(/Gas prices rose/);
+    f.l1Fee = new Error('rpc down');
+    await expect(assertBufferStillSufficient(b, rpc)).rejects.toThrow(/fee oracle/);
+  });
+});
+
 describe('assertBufferStillSufficient (spec 13 re-estimate before send)', () => {
   const quoteAt = (gwei: bigint) => ({ bufferWei: 100_000n * gwei * 2_000_000_000n * 12n / 10n, maxFeePerGas: gwei * 2_000_000_000n, gasLimit: 100_000n, safetyBps: 2000n, quotedAt: NOW, expiresAt: NOW + BUFFER_QUOTE_TTL_SECONDS, gasSource: 'default' as const });
-  const priced = (gwei: bigint) => mockRpc(84532, () => `0x${(gwei * 1_000_000_000n).toString(16)}`);
+  const priced = (gwei: bigint) => mockRpc(84532, noL1Fee(() => `0x${(gwei * 1_000_000_000n).toString(16)}`));
   it('passes when gas is unchanged, lower or within the safety margin; blocks when gas rose beyond it', async () => {
     const { parsed } = await makeParsed();
     const ctx = await createPayContext(reviewInvoice(parsed, NOW, LOADED(84532)), undefined, { nowSeconds: NOW });
     const b = buildFinal(ctx, { nowSeconds: NOW, buffer: quoteAt(1n) });
     await expect(assertBufferStillSufficient(b, priced(1n))).resolves.toBeUndefined();
-    await expect(assertBufferStillSufficient(b, mockRpc(84532, () => '0x1'))).resolves.toBeUndefined();
+    await expect(assertBufferStillSufficient(b, mockRpc(84532, noL1Fee(() => '0x1')))).resolves.toBeUndefined();
     // Drift inside the 20 % safety margin is tolerated; beyond it the send is blocked.
-    await expect(assertBufferStillSufficient(b, mockRpc(84532, () => `0x${(1_200_000_000n).toString(16)}`))).resolves.toBeUndefined();
-    await expect(assertBufferStillSufficient(b, mockRpc(84532, () => `0x${(1_200_000_001n).toString(16)}`))).rejects.toThrow(/Gas prices rose/);
+    await expect(assertBufferStillSufficient(b, mockRpc(84532, noL1Fee(() => `0x${(1_200_000_000n).toString(16)}`)))).resolves.toBeUndefined();
+    await expect(assertBufferStillSufficient(b, mockRpc(84532, noL1Fee(() => `0x${(1_200_000_001n).toString(16)}`)))).rejects.toThrow(/Gas prices rose/);
     await expect(assertBufferStillSufficient(b, priced(2n))).rejects.toThrow(/Gas prices rose/);
     await expect(assertBufferStillSufficient(b, undefined)).rejects.toThrow(/needs an RPC/);
     await expect(assertBufferStillSufficient(b, mockRpc(84532, () => 'nope'))).rejects.toThrow();

@@ -73,7 +73,9 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     that were never in a vault have no step-up passphrase.
 12. **Gas buffer sizing** (Feature 1, spec 13): `calculateBuffer` over `max(100 000, eth_estimateGas of the token transfer + 25 %)`
     (fails closed when the simulation fails), `2 x eth_gasPrice` as max fee, `DEFAULT_BUFFER_SAFETY_BPS` (20 %), a hard cap of 0.01
-    native coin, and a 60 s quote lifetime, re-checked before the wallet is asked. It needs the user's RPC. Buffer payments go through
+    native coin, and a 60 s quote lifetime, re-checked before the wallet is asked. On OP Stack chains the quote and the re-check add the
+    L1 data and operator fee reserve the direct sweep demands (2 x the GasPriceOracle quote for an ERC-20 transfer at the buffer's gas
+    limit, `src/lib/opStackFee.ts`, shared with `directSweep`); an unreadable oracle refuses the quote. It needs the user's RPC. Buffer payments go through
     approval (permit + buffer needs a deferred router change). Invoice v2 `bufferPolicy` (ADR-0024): declined hides the buffer; accepted
     bounds it by `min(maxWei, cap)` and raises a smaller estimate to `minWei` (shown); `buildFinal` re-checks the bounds. The Create page
     has no control for the policy yet (v2 invoices can only be produced through `buildInvoiceLink({ bufferPolicy })`). The fiat

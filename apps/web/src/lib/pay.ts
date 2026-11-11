@@ -38,6 +38,7 @@ import type { Translator } from '../i18n/translator';
 import { fiatDecimals, formatFiat, formatUnits } from './format';
 import { computeTotals } from './invoiceCreate';
 import type { ManifestState } from './manifest';
+import { sweepFeeFields, sweepFeeReserve } from './opStackFee';
 import { reportsRevert } from './txGuard';
 
 export type TrustView = (
@@ -218,6 +219,14 @@ export const MAX_BUFFER_WEI = 10n ** 16n;
 export const BUFFER_QUOTE_TTL_SECONDS = 60;
 /** Fixed non-zero recipient for the sweep simulation, so the estimate includes a zero-to-non-zero balance write. */
 const SWEEP_SIMULATION_RECIPIENT = '0x000000000000000000000000000000000000dEaD' as Address;
+/**
+ * Stand-in for what the buffer quote cannot know about the seller's later sweep (its destination, and without a
+ * simulation the token and amount) when the L1 data fee is priced. Its bytes are high-entropy, as a real address or
+ * amount is, so a compressing L1 fee does not understate the cost.
+ */
+const L1_FEE_PLACEHOLDER = '0x9e3779b97f4a7c15f39cc0605cedc8341082276b' as Address;
+/** One-time addresses sweep with their first transaction. */
+const SWEEP_NONCE = 0;
 
 export interface BufferQuote {
   readonly bufferWei: bigint;
@@ -230,6 +239,12 @@ export interface BufferQuote {
   readonly gasSource: 'simulated' | 'default';
   /** Set when a v2 invoice's `bufferPolicy.minWei` raised the estimate (ADR-0024); shown to the payer. */
   readonly raisedToSellerMinimum?: boolean;
+  /**
+   * OP Stack chains only (R04-2): the L1 data and operator fee reserve the direct sweep will demand (opStackFee.ts
+   * `sweepFeeReserve`), included in `bufferWei`, and the transfer it was priced for, so the send-time recheck prices
+   * the same transaction again. Absent on every other chain.
+   */
+  readonly opStackReserve?: { readonly reserveWei: bigint; readonly sweep?: SweepSimulation };
 }
 
 /** Whether the invoice lets the payer add a gas buffer at all (v1: yes; v2: only when the seller accepted). */
@@ -272,11 +287,22 @@ export interface SweepSimulation {
 }
 
 /**
+ * What the seller's direct sweep of this buffer will reserve beyond `gas * maxFeePerGas` at `gasPrice` (0n off OP Stack,
+ * without an RPC call): the shared {@link sweepFeeReserve} formula, on the ERC-20 transfer the sweep signs, at the
+ * buffer's gas limit. Unknown parts of that transfer use {@link L1_FEE_PLACEHOLDER}.
+ */
+function bufferFeeReserve(rpc: Pick<RpcClient, 'request' | 'chainId'>, gasLimit: bigint, gasPrice: bigint, sweep: SweepSimulation | undefined): Promise<bigint> {
+  const data = encodeFunctionData({ abi: erc20Abi, functionName: 'transfer', args: [L1_FEE_PLACEHOLDER, sweep?.amount ?? BigInt(L1_FEE_PLACEHOLDER)] });
+  return sweepFeeReserve(rpc, { chainId: rpc.chainId, nonce: SWEEP_NONCE, ...sweepFeeFields(gasPrice), gas: gasLimit, to: sweep?.token ?? L1_FEE_PLACEHOLDER, value: 0n, data });
+}
+
+/**
  * Feature 1 / spec 13: native buffer sized from the user's RPC gas price and, when `sweep` is given, a token-specific
  * `eth_estimateGas` of the transfer. Simulation failure fails closed: a token whose transfer cannot be simulated may
- * have hooks or restrictions that a table default would underfund.
+ * have hooks or restrictions that a table default would underfund. On an OP Stack chain the buffer also holds the L1
+ * data and operator fee reserve the direct sweep demands (R04-2); an unreadable fee oracle refuses the quote.
  */
-export async function quoteBuffer(rpc: Pick<RpcClient, 'request'>, nowSeconds: number, sweep?: SweepSimulation): Promise<BufferQuote> {
+export async function quoteBuffer(rpc: Pick<RpcClient, 'request' | 'chainId'>, nowSeconds: number, sweep?: SweepSimulation): Promise<BufferQuote> {
   let gasLimit = SWEEP_GAS_ESTIMATE;
   if (sweep !== undefined) {
     let simulated: bigint;
@@ -293,12 +319,16 @@ export async function quoteBuffer(rpc: Pick<RpcClient, 'request'>, nowSeconds: n
     if (margined > gasLimit) gasLimit = margined;
   }
   const gasPrice = parseQuantity(await rpc.request('eth_gasPrice', []));
-  const maxFeePerGas = gasPrice * 2n;
-  const bufferWei = calculateBuffer({ estimatedSweepGas: gasLimit, maxFeePerGas, safetyBps: FEE_SCHEDULE.DEFAULT_BUFFER_SAFETY_BPS });
+  const { maxFeePerGas } = sweepFeeFields(gasPrice);
+  let bufferWei = calculateBuffer({ estimatedSweepGas: gasLimit, maxFeePerGas, safetyBps: FEE_SCHEDULE.DEFAULT_BUFFER_SAFETY_BPS });
+  const opStack = findChain(rpc.chainId)?.opStack === true;
+  const reserveWei = opStack ? await bufferFeeReserve(rpc, gasLimit, gasPrice, sweep) : 0n;
+  bufferWei += reserveWei;
   if (bufferWei > MAX_BUFFER_WEI) throw new UserFacingError({ key: 'error.pay.theEstimatedGasBufferExceedsTheSafetyCapGasLooks' });
   return {
     bufferWei, maxFeePerGas, gasLimit, safetyBps: FEE_SCHEDULE.DEFAULT_BUFFER_SAFETY_BPS,
     quotedAt: nowSeconds, expiresAt: nowSeconds + BUFFER_QUOTE_TTL_SECONDS, gasSource: sweep === undefined ? 'default' : 'simulated',
+    ...(opStack ? { opStackReserve: { reserveWei, ...(sweep === undefined ? {} : { sweep }) } } : {}),
   };
 }
 
@@ -307,15 +337,19 @@ export async function quoteBuffer(rpc: Pick<RpcClient, 'request'>, nowSeconds: n
  * calldata, so a fresh quote at the same gas limit must not exceed it. Guards against fee spikes between prepare and
  * send (for example while an approval confirms). Never raises the buffer silently; the user must prepare again.
  */
-export async function assertBufferStillSufficient(built: BuiltPayment, rpc: Pick<RpcClient, 'request'> | undefined): Promise<void> {
+export async function assertBufferStillSufficient(built: BuiltPayment, rpc: Pick<RpcClient, 'request' | 'chainId'> | undefined): Promise<void> {
   const quote = builtBufferQuotes.get(built);
   if (quote === undefined) return;
   if (rpc === undefined) throw new UserFacingError({ key: 'error.pay.aGasBufferNeedsAnRPCForThisChainTo' });
   const gasPrice = parseQuantity(await rpc.request('eth_gasPrice', []));
   // The quote's safety margin exists to absorb drift, so only the margin-free requirement at today's price must fit;
-  // otherwise every small fee tick would force the user to prepare again.
-  const required = calculateBuffer({ estimatedSweepGas: quote.gasLimit, maxFeePerGas: gasPrice * 2n, safetyBps: 0n });
-  if (required > built.tx.value) {
+  // otherwise every small fee tick would force the user to prepare again. Like the quote, on OP Stack that requirement
+  // includes the L1 data and operator fee reserve, re-read now for the transfer the quote priced.
+  const l2 = calculateBuffer({ estimatedSweepGas: quote.gasLimit, maxFeePerGas: sweepFeeFields(gasPrice).maxFeePerGas, safetyBps: 0n });
+  // L2 gas alone already too high: refused without reading the fee oracle.
+  if (l2 > built.tx.value) throw new UserFacingError({ key: 'error.pay.gasPricesRoseSinceTheBufferWasQuotedSoThe' });
+  const reserve = findChain(rpc.chainId)?.opStack === true ? await bufferFeeReserve(rpc, quote.gasLimit, gasPrice, quote.opStackReserve?.sweep) : 0n;
+  if (l2 + reserve > built.tx.value) {
     throw new UserFacingError({ key: 'error.pay.gasPricesRoseSinceTheBufferWasQuotedSoThe' });
   }
 }
