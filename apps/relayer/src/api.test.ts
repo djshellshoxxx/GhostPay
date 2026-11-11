@@ -365,6 +365,7 @@ describe('POST /v1/sweep success and validation', () => {
 
   it('passes the permit through for permit tokens', async () => {
     const s = await start();
+    s.fake.allowance = 0n; // the permit is needed: no allowance yet (spec 04 skips the permit when allowance covers)
     const { body } = await prepare(s, { permit: true });
     expect((await call(s, 'POST', '/v1/sweep', body)).status).toBe(200);
     expect(s.fake.sent[0]?.call.permit?.v).toBe(27);
@@ -540,6 +541,80 @@ describe('POST /v1/sweep success and validation', () => {
     expect(r.status).toBe(400);
     expect(errCode(r)).toMatch(/^invalid_/);
     expect(s.fake.simulations).toBe(0);
+  });
+});
+
+describe('permit griefing fallback ladder (spec 04)', () => {
+  it('already_allowed: drops the permit and sweeps through the allowance path (front-run permit tolerated)', async () => {
+    const s = await start();
+    s.fake.allowance = 100_000_000n; // e.g. a front-runner already submitted the owner's permit
+    const simulated: (boolean)[] = [];
+    const orig = s.fake.simulateSweep.bind(s.fake);
+    s.fake.simulateSweep = (c) => { simulated.push(c.permit !== undefined); return orig(c); };
+    const { body } = await prepare(s, { permit: true });
+    expect((await call(s, 'POST', '/v1/sweep', body)).status).toBe(200);
+    expect(s.fake.sent[0]?.call.permit).toBeUndefined();
+    expect(simulated).toEqual([false, false]);
+  });
+
+  it('expired permit with no allowance is refused before any simulation', async () => {
+    const s = await start();
+    s.fake.allowance = 0n;
+    const { body } = await prepare(s, { permit: true });
+    (body['permit'] as Record<string, string>)['deadline'] = String(NOW_SEC);
+    const r = await call(s, 'POST', '/v1/sweep', body);
+    expect(r.status).toBe(422);
+    expect(errCode(r)).toBe('permit_expired');
+    expect(s.fake.simulations).toBe(0);
+    expect(s.fake.sent).toHaveLength(0);
+  });
+
+  it('a permit the token rejects (generic allowance revert) is reported as permit_failed, nothing sent', async () => {
+    const s = await start();
+    s.fake.allowance = 0n;
+    s.fake.simulateError = new SimulationRevert();
+    const r = await call(s, 'POST', '/v1/sweep', (await prepare(s, { permit: true })).body);
+    expect(r.status).toBe(422);
+    expect(errCode(r)).toBe('permit_failed');
+    expect(s.fake.sent).toHaveLength(0);
+    // A specific contract error keeps its own class.
+    s.fake.simulateError = new SimulationRevert('Expired');
+    expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { permit: true, nonce: 2n })).body))).toBe('expired');
+  });
+
+  it('per-owner failure counter: 3 costly failures per hour, then rejected before any chain work', async () => {
+    const s = await start();
+    s.fake.allowance = 0n;
+    s.fake.simulateError = new SimulationRevert();
+    for (const n of [1n, 2n, 3n]) {
+      expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { permit: true, nonce: n })).body))).toBe('permit_failed');
+    }
+    const sims = s.fake.simulations;
+    s.fake.simulateError = undefined;
+    const blocked = await call(s, 'POST', '/v1/sweep', (await prepare(s, { permit: true, nonce: 4n })).body);
+    expect(blocked.status).toBe(429);
+    expect(errCode(blocked)).toBe('owner_failure_limit');
+    expect(blocked.headers.get('retry-after')).toBeTruthy();
+    expect(s.fake.simulations).toBe(sims);
+    s.clock.ms += 3600 * 1000;
+    expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { permit: true, nonce: 5n })).body)).status).toBe(200);
+  });
+
+  it('a mined revert counts against the owner as well', async () => {
+    const s = await start();
+    s.fake.receipt = { status: 'reverted', gasUsed: 100_000n };
+    for (const n of [1n, 2n, 3n]) {
+      expect((await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: n })).body)).status).toBe(200);
+      await settle();
+    }
+    expect(errCode(await call(s, 'POST', '/v1/sweep', (await prepare(s, { nonce: 4n })).body))).toBe('owner_failure_limit');
+  });
+
+  it('grief reserve: gas.griefReserveBps raises the gas term of the quoted fee', async () => {
+    const q = { chainId: CHAIN_ID, token: USDC, owner: OWNER, destination: DEST, amount: '20000000' };
+    const s = await start({ config: { gas: { coverPercent: 100, maxMovePercent: 25, quoteCacheSeconds: 3, griefReserveBps: 1000 } } });
+    // 130000 gas * 1 gwei * 3000 USD/ETH = 390000; +10 % grief reserve = 429000; x1.10 = 471900
+    expect(((await call(s, 'POST', '/v1/quote', q)).json as QuoteResponse).fee).toBe('471900');
   });
 });
 

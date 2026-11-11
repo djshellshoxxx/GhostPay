@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { decodeTronAddress, type TronRpc } from '@ghostpay/tron-adapter';
 import { CopyButton, Field, Mono, Notice } from '../../components/Common';
 import { CameraImporter } from '../../components/CameraImporter';
+import { PlainPaymentRequest } from '../../components/PaymentRequestQr';
 import { QrFrame } from '../../components/QrFrame';
 import { useServices } from '../../lib/services';
 import { TRON_NETWORK_LIST, tronNetwork, type TronNetworkId } from './network';
@@ -285,6 +286,7 @@ export function TronView(): ReactNode {
               <li>Wait for the block to be produced, then use "Scan" below starting a little before it. TRC-20 tokens are detected but not swept here.</li>
             </ol>
             <QrFrame kind="caution" text={wallet.metaAddress} caption={`TRON stealth payment request (${net.label})`} />
+            <PlainPaymentRequest family="tron" tronNetwork={net.id === 'local' ? undefined : net.id} testnet={net.id !== 'mainnet'} networkLabel={net.label} />
             {backupShown !== undefined && (
               <Notice kind="warn" title="Backup keys (shown once)">
                 <p><Mono>{backupShown}</Mono></p>

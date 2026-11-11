@@ -24,3 +24,7 @@
 /ghostpay-embed-v1.js
   Cross-Origin-Resource-Policy: cross-origin
   Cache-Control: public, max-age=3600
+
+/ghostpay-embed-v2.js
+  Cross-Origin-Resource-Policy: cross-origin
+  Cache-Control: public, max-age=3600

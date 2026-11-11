@@ -28,7 +28,7 @@ describe.skipIf(url === undefined || seed === undefined || dest === undefined)('
     expect(first.found[0]?.amountSats).toBe(expected);
 
     const review = reviewSweep(wallet, first.found, dest ?? '', 2);
-    const signed = signSweep(wallet, first.found, review);
+    const signed = await signSweep(wallet, first.found, review);
     const txid = await client.broadcast(signed.rawHex);
     expect(txid).toBe(signed.txid);
 

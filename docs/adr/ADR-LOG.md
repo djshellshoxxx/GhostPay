@@ -88,3 +88,50 @@ Decision: no public instance (Cloudflare Pages, GitHub Pages, IPFS/ENS, Tor, or 
 5. A host with header control as primary (Cloudflare Pages `_headers`); GitHub Pages only as a labelled degraded mirror; IPFS/Tor only with their stated limits (`docs/operators/mirror-hosting.md`).
 The release workflow therefore stops at a draft GitHub release and contains a disabled publication stub; enabling it requires a new ADR.
 Consequences: users cannot "just try it" on a project-run site. This is intended for a pre-audit financial tool.
+
+## ADR-0023 Policy-account recovery (spec 16): design choice and client-side measures
+Status: Proposed. **Design only for the contracts; nothing here enables scheme `0x47500002` (ADR-0014 still governs).**
+Context: spec 16 asks for an ADR choosing guardian design A, dead-man design B, or neither. Today a lost owner key locks the account (the owner key is scheme-1-derived from the seller spending and viewing keys, so losing the seller key backup loses it), and a stolen owner key can cancel every withdrawal and every destination change forever (griefing freeze; funds can still only reach the destination). Requirements: no admin (ADR-0006), bounded griefing, guardian privacy, cost, setup burden. The experimental web client (`apps/web/src/features/policy`, off unless `VITE_GHOSTPAY_EXPERIMENTAL_POLICY=1`, testnets only, no pinned deployment) needed a recovery story that works without a contract change.
+
+Evaluation:
+| Criterion | A: guardians in `policyHash` | B: dead-man recovery by the destination key | Neither |
+| --- | --- | --- | --- |
+| Lost owner key | guardians + threshold rotate owner after `2*delay` | destination key rotates owner after `T_rec` without owner activity | funds locked |
+| Stolen owner key | guardians can outvote; thief can still cancel | thief cancels recovery (unless rate-limited, see below) | griefing freeze |
+| No admin | kept (guardians are user-chosen) | kept | kept |
+| Griefing | guardian cancel loops; needs expiry/rate limits | owner-cancel loops; needs a rate limit | owner cancel loops |
+| Privacy | guardian set hidden behind a root until used, then linked | no new party; destination is already linked after first withdrawal (D1) | - |
+| Meta-address / vectors | **new format** (`guardiansRoot`, `threshold` in the pre-image), new scheme version | unchanged if `T_rec` is an implementation constant; new implementation address only | unchanged |
+| Cost and UX | guardian onboarding, ERC-1271 for contract guardians, collusion analysis | none at setup; recovery needs the destination wallet | none |
+
+Decision:
+1. Choose **B** as the design for the next PolicyAccount revision, not A: it adds no parties, keeps the meta-address format, and covers the dominant failure (lost seller backup while the destination wallet survives). A is rejected for now (setup burden, collusion and privacy analysis, new scheme version); revisit if users ask for social recovery with data. C (7579 module) stays out (spec 15).
+2. B as specified for that revision (CONTRACTS_SPEC section 4 must be edited first, then code, tests and an external audit before any enablement):
+   - `T_rec` is a constant of the implementation, at least 90 days (spec floor 30 d); "activity" means an owner-signed action accepted by the account (request, cancel, proposal), tracked as `lastOwnerActionAt`.
+   - `proposeRecovery(newOwner, deadline, nonce, destSig)`: EIP-712 `Recover(address newOwner,uint256 deadline,uint256 nonce)` signed by the **current destination** (ECDSA, or ERC-1271 when the destination is a contract); allowed only when `block.timestamp >= lastOwnerActionAt + T_rec`; effective after a further `2*delay`.
+   - `cancelRecovery(id, ownerSig)`: EIP-712 `CancelRecovery(bytes32 id)` by the owner; allowed **once per proposal window of `T_rec`** so a thief holding the owner key cannot block recovery forever; the second proposal after a cancel cannot be cancelled again inside `T_rec`.
+   - `executeRecovery()`: permissionless after the timer; sets `owner = newOwner`, clears pending withdrawals (they were signed by the old key) and keeps the destination unchanged. Recovery can never change the destination or move funds; only the destination ever receives funds (invariant).
+   - State machine: `Idle -> (proposeRecovery, inactivity >= T_rec) -> RecoveryPending -> (cancelRecovery, at most once per T_rec) -> Idle | (executeRecovery after 2*delay) -> Idle(newOwner)`.
+   - Fix M-03 in the same revision: pull-based factory fee or fee-token fallback, so a frozen fee token cannot block deployment.
+3. Threat model of B: a destination-key thief alone can take ownership after `T_rec` of owner silence plus `2*delay`, but withdrawals already go to that destination, so B adds no theft path beyond "destination compromised"; a thief with both keys wins (as today). An owner-key thief can delay recovery by one cancel per `T_rec` (bounded griefing). Destination-key loss plus owner-key loss leaves funds locked (stated). Collusion is not applicable (no third parties).
+4. Test plan for that revision: fuzz `proposeRecovery` timing and signer (only the destination, only after inactivity); fuzz cancel rate limit; invariant "only the destination receives funds" across recovery; invariant "recovery never changes destination"; differential EIP-712 vectors in `packages/policy-scheme`.
+5. **Client-side measures adopted now (no contract change)**, in `packages/policy-scheme` and the experimental web feature:
+   - Policy record `ghostpay-policy-record` v1 (meta-address, policy pre-image, limits; canonical JSON, strict parser that refuses unknown keys and re-checks root, hash and meta-address; vectors in `packages/policy-scheme/vectors/client-v1.json`). Without it the account cannot be deployed or withdrawn; the UI makes the download prominent.
+   - Policy re-discovery: the unblinded `policyHash` is matched locally against candidate destinations, the delay presets and known limits roots (`findPolicyFromCandidates`, bounded to 100 000 tries). Policies with limits still need their record.
+   - Owner-key re-derivation: the owner key of every account is re-derived from the seller keys and the announcement, so the seller key backup is the owner key backup; no per-account key is stored.
+   - Account guard: the client reads the account's own events, flags every pending withdrawal not signed on this device and every destination proposal, and offers an owner-signed cancel that any wallet can relay. This is the only defence today against a stolen owner key ("delayed, not prevented").
+   - Withdraw planning mirrors the two-bucket window (`windowHeadroom`) at the earliest execution time and subtracts pending requests, so requests that would revert are not signed.
+Consequences: the scheme remains experimental and unaudited; lost seller keys still lock funds until the B revision ships and is audited; users must store the policy record next to the seller key backup. Number note: ADR-0020..0022 are separate files; this entry takes 0023.
+
+## ADR-0025 Local invoice-to-payment matching and encrypted receipt archive (G-04)
+Status: Accepted (web app only).
+Context: on-chain data carries no invoice id (audit G-04). COMPLETION_PLAN 2c offered an invoice reference in announcement metadata (links every payment of a seller across invoices for any chain observer) or local matching (private, less exact).
+Decision:
+1. **No invoice reference on chain.** Announcements, metadata and payment calls are unchanged. Matching runs only in the seller's browser.
+2. **Opt-in registration.** "Create invoice" offers an unchecked box to register the invoice. Only the digest, nonce, chain, asset, expected router net amount (computed from the fee policy) and validity window are stored; line items, memo, fiat totals, meta-address and signer key are not. Fiat-quoted invoices cannot be registered (paid amount unknown in advance).
+3. **Storage.** Registrations and archived receipts live inside the existing encrypted reconciliation vault (viewing-key HKDF, AES-GCM, per seller and chain scope, CAS writes, stale-session guards). Document version 2 adds them; version 1 documents upgrade on the next write; older clients cannot read version 2. Bounds: 500 registrations and 500 receipts per scope, enforced on write, decrypt and import.
+4. **Matching.** A verified, live, unlinked router-scan observation is a candidate for an open registered invoice with the same chain, asset and exact net amount, observed no earlier than invoice creation minus 5 minutes of clock skew. Result is `exact` only when the pairing is unique in both directions and the observation is not more than 7 days after expiry (scans record observation time, not block time); otherwise `ambiguous` or `none`. Imported or reorg-invalidated observations never take part; an invoice linked to an invalidated observation reopens.
+5. **Confirmation.** Nothing is linked automatically. The seller confirms an `exact` proposal; the vault re-runs matching on the current decrypted document inside the CAS loop and refuses anything not still exact. Ambiguous cases can only be resolved by the existing manual annotation. Saturated (read-only) vaults refuse registration, confirmation and archiving; deletion stays available.
+6. **Receipts.** Seller-issued receipts can be archived (signature verified on archive), exported as plaintext JSON after a confirmation, and deleted one by one or all at once. A receipt never counts as payment evidence and never feeds matching or links.
+7. **Lifecycle.** Removing registrations or receipts never changes observations, links or reorg tombstones. Encrypted backups carry registrations and receipts; import merges by digest or signature, keeps the local entry on a nonce conflict and refuses to exceed the bounds.
+Consequences: matching can miss payments made by other clients that compute a different gross, payments of identical amounts stay ambiguous, and late scans downgrade to ambiguous. The vault size and scope identifier remain visible to anyone with access to browser storage; plaintext receipt exports leak payment details if mishandled.

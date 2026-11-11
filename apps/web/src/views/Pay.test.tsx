@@ -19,6 +19,9 @@ import type { Services } from '../lib/services';
 import { receiptJson, signReceipt } from '../lib/receipts';
 import * as payExec from '../lib/payExec';
 import { withSessionSecrets } from '../lib/session';
+import { PERMIT_TYPES, eip712DomainSeparator, erc20MetadataAbi } from '@ghostpay/chain-adapters';
+import { privateKeyToAccount } from 'viem/accounts';
+import { encodeFunctionResult } from 'viem/utils';
 
 beforeEach(() => {
   clearSession();
@@ -417,6 +420,16 @@ describe('Pay: sending', () => {
     expect(download).not.toHaveBeenCalled();
     await user.click(screen.getByRole('button', { name: 'Download local receipt' }));
     expect(download).toHaveBeenCalledTimes(1);
+    expect(screen.getByTestId('proof-disclaimer').textContent).toMatch(/not independent proof of payment/i);
+    await user.click(screen.getByRole('button', { name: 'Show proof QR' }));
+    expect(document.querySelector('[data-qr-kind="proof"], [data-qr-kind="caution"]')).not.toBeNull();
+    expect(screen.getByRole('button', { name: 'Copy proof JSON' })).toBeTruthy();
+    // The printable bill is part of the review page and carries the bearer-link warning for a non-passphrase link.
+    const printSpy = vi.fn();
+    window.print = printSpy;
+    await user.click(screen.getByRole('button', { name: 'Print bill' }));
+    expect(printSpy).toHaveBeenCalledOnce();
+    expect(screen.getByTestId('bearer-warning').textContent).toMatch(/anyone who sees this paper/i);
   });
 
   it('REFUSES (shows an error, not success) when the wallet mutates the transaction', async () => {
@@ -542,6 +555,25 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     expect((await screen.findAllByRole('alert')).map((a) => a.textContent).join(' ')).toMatch(/needs an RPC/);
   });
 
+  it('v2 invoice whose seller declines buffers offers none (ADR-0023)', async () => {
+    const { fragment } = await makeParsed({ bufferPolicy: { accepted: false, maxWei: '0', minWei: '0', refund: 'none' } });
+    openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
+    expect(await screen.findByText('The seller does not accept a gas buffer for this invoice.')).toBeTruthy();
+    expect(screen.queryByLabelText(/Add a gas buffer/)).toBeNull();
+  });
+
+  it('v2 invoice with a seller minimum raises a smaller estimate to it and says so (ADR-0023)', async () => {
+    const { fragment } = await makeParsed({ bufferPolicy: { accepted: true, maxWei: '1000000000000000', minWei: '500000000000000', refund: 'none' } });
+    const wallet = new MockWallet();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const rpc = chainSeeing(wallet);
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)) }));
+    await user.click(await screen.findByLabelText(/Add a gas buffer/));
+    const notice = await screen.findByText(/Extra 0\.0005 ETH/);
+    expect(notice.textContent).toMatch(/Raised to the seller's minimum/);
+    expect(notice.textContent).toMatch(/never refunded/);
+  });
+
   it('native invoices offer no gas buffer', async () => {
     const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
     openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: readBackRpc() }));
@@ -594,6 +626,37 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     expect(wallet.calls.some((c) => c.method === 'eth_signTypedData_v4')).toBe(false);
   });
 
+  it('a signed permit the token rejects is explained, nothing is sent, and the next Prepare uses an exact approval (spec 04)', async () => {
+    const { fragment } = await makeParsed();
+    const payer = privateKeyToAccount(`0x${'cd'.repeat(32)}`);
+    const usdc = '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as const;
+    const domain = { name: 'USDC', version: '2', chainId: 84532, verifyingContract: usdc } as const;
+    const sig = await payer.signTypedData({ domain, types: PERMIT_TYPES, primaryType: 'Permit', message: { owner: payer.address, spender: FAKE_ROUTER, value: 100_000_000n, nonce: 0n, deadline: BigInt(NOW + 20 * 60) } });
+    const wallet = new MockWallet({ account: payer.address, typedDataSignature: sig });
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const base = chainSeeing(wallet);
+    const rpc = mockRpc(84532, (method, params) => {
+      if (method !== 'eth_call') return base.request(method, params);
+      const data = (params[0] as { data: string }).data;
+      if (data.startsWith('0x06fdde03')) return encodeFunctionResult({ abi: erc20MetadataAbi, functionName: 'name', result: 'USDC' });
+      if (data.startsWith('0x3644e515')) return eip712DomainSeparator(domain);
+      if (data.startsWith('0xd505accf')) throw new Error('execution reverted'); // token refuses the permit
+      return `0x${'0'.repeat(64)}`; // allowance 0, nonces 0
+    });
+    const user = openWith(fragment, makeServices({ loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(await screen.findByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    expect((await screen.findAllByRole('alert', {}, { timeout: 5000 })).map((a) => a.textContent).join(' ')).toMatch(/token rejected this permit signature/);
+    expect(wallet.calls.filter((c) => c.method === 'eth_signTypedData_v4')).toHaveLength(1);
+    expect(wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' }, { timeout: 5000 });
+    expect(screen.getByText('payERC20')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Approve exactly, then send payment in my wallet' })).toBeTruthy();
+    expect(wallet.calls.filter((c) => c.method === 'eth_signTypedData_v4')).toHaveLength(1);
+  });
+
   it('permit token with enough allowance already skips the permit signature (spec 04 already_allowed)', async () => {
     const { fragment } = await makeParsed();
     const wallet = new MockWallet();
@@ -629,6 +692,47 @@ describe('Pay: optional delay (Feature 6) and gas buffer (Feature 1)', () => {
     await screen.findByText(/could not be simulated/);
     expect(screen.queryByRole('heading', { name: 'Final check before your wallet' })).toBeNull();
     expect(wallet.sent).toBeUndefined();
+  });
+});
+
+describe('Pay: validity is rechecked before the initial approval', () => {
+  /** ERC-20 buffer flow (approval required) prepared at `startSeconds`; returns a clock setter and the wallet. */
+  async function toPreparedBuffer(startSeconds: (expiresAt: number) => number): Promise<{ user: ReturnType<typeof userEvent.setup>; wallet: MockWallet; setNow: (s: number) => void; expiresAt: number }> {
+    const { fragment, parsed } = await makeParsed();
+    const wallet = new MockWallet();
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify({ rpcUrls: { '84532': 'https://rpc.test' } }));
+    const base = chainSeeing(wallet);
+    const rpc = mockRpc(84532, (method, params) => {
+      if (method === 'eth_call') return `0x${'0'.repeat(64)}`;
+      if (method === 'eth_estimateGas') return '0xfde8';
+      return base.request(method, params);
+    });
+    const expiresAt = parsed.invoice.expiresAt;
+    let clock = startSeconds(expiresAt) * 1000;
+    const user = openWith(fragment, makeServices({ nowMs: () => clock, loadManifest: loaded(84532), createRpc: () => Promise.resolve(withManifestChain(rpc)), discoverWallets: () => Promise.resolve([walletInfo(wallet)]) }));
+    await user.click(await screen.findByLabelText(/Add a gas buffer/));
+    await screen.findByText(/Extra 0\.00024 ETH/);
+    await user.click(screen.getByRole('button', { name: 'Continue' }));
+    await user.click(await screen.findByRole('button', { name: /Connect Mock Wallet/ }));
+    await user.click(await screen.findByRole('button', { name: 'Prepare payment' }));
+    await screen.findByRole('heading', { name: 'Final check before your wallet' }, { timeout: 5000 });
+    return { user, wallet, setNow: (sec) => { clock = sec * 1000; }, expiresAt };
+  }
+  const approveButton = (): HTMLElement => screen.getByRole('button', { name: 'Approve exactly, then send payment in my wallet' });
+
+  it('P1: an invoice that expired after prepare asks the wallet for nothing, not even the approval', async () => {
+    const t = await toPreparedBuffer((e) => e - 30);
+    t.setNow(t.expiresAt);
+    await t.user.click(approveButton());
+    await screen.findByText(/invoice has expired/);
+    expect(t.wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
+  });
+  it('P2: a buffer quote past its 60 s TTL asks the wallet for nothing, not even the approval', async () => {
+    const t = await toPreparedBuffer(() => NOW);
+    t.setNow(NOW + 61);
+    await t.user.click(approveButton());
+    await screen.findByText(/gas buffer quote expired/);
+    expect(t.wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
   });
 });
 

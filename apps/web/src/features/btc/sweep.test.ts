@@ -30,6 +30,15 @@ function code(f: () => unknown): string {
   return 'none';
 }
 
+async function codeAsync(p: () => Promise<unknown>): Promise<string> {
+  try {
+    await p();
+  } catch (e) {
+    return e instanceof SilentPaymentError ? e.code : 'other';
+  }
+  return 'none';
+}
+
 describe('reviewSweep', () => {
   it('shows exact amounts before any signing', async () => {
     const w = walletA();
@@ -70,7 +79,7 @@ describe('signSweep', () => {
     const w = walletA();
     const p = await payments();
     const review = reviewSweep(w, p, BCRT, 2);
-    const s = signSweep(w, p, review);
+    const s = await signSweep(w, p, review);
     expect(s.feeSats).toBe(review.feeSats);
     expect(s.vsize).toBe(review.vsize);
     expect(s.txid).toMatch(/^[0-9a-f]{64}$/);
@@ -83,7 +92,7 @@ describe('signSweep', () => {
     const w = walletA();
     const p = await payments();
     const review = reviewSweep(w, p, w.address, 1);
-    expect(signSweep(w, p, review).rawHex.length).toBeGreaterThan(100);
+    expect((await signSweep(w, p, review)).rawHex.length).toBeGreaterThan(100);
   });
 
   it('refuses when the selection differs from the review', async () => {
@@ -92,10 +101,10 @@ describe('signSweep', () => {
     const review = reviewSweep(w, p, BCRT, 2);
     const first = p[0];
     if (first === undefined) throw new Error('fixture');
-    expect(code(() => signSweep(w, [], review))).toBe('INVALID_INPUT');
-    expect(code(() => signSweep(w, [{ ...first, amountSats: first.amountSats + 1n }], review))).toBe('INVALID_INPUT');
-    expect(code(() => signSweep(w, [{ ...first, vout: 7 }], review))).toBe('INVALID_INPUT');
-    expect(code(() => signSweep(w, p, { ...review, feeSats: review.feeSats + 1n, feeRate: review.feeRate + 5 }))).toBe('SIGNATURE_INVALID');
+    expect(await codeAsync(() => signSweep(w, [], review))).toBe('INVALID_INPUT');
+    expect(await codeAsync(() => signSweep(w, [{ ...first, amountSats: first.amountSats + 1n }], review))).toBe('INVALID_INPUT');
+    expect(await codeAsync(() => signSweep(w, [{ ...first, vout: 7 }], review))).toBe('INVALID_INPUT');
+    expect(await codeAsync(() => signSweep(w, p, { ...review, feeSats: review.feeSats + 1n, feeRate: review.feeRate + 5 }))).toBe('SIGNATURE_INVALID');
   });
 
   it('refuses a payment the wallet cannot spend (wrong output key)', async () => {
@@ -105,7 +114,7 @@ describe('signSweep', () => {
     if (first === undefined) throw new Error('fixture');
     const bad = { ...first, xOnlyPublicKey: new Uint8Array(32).fill(1) };
     const review = reviewSweep(w, [bad], BCRT, 2);
-    expect(code(() => signSweep(w, [bad], review))).toBe('INVALID_INPUT');
+    expect(await codeAsync(() => signSweep(w, [bad], review))).toBe('INVALID_INPUT');
   });
 });
 
