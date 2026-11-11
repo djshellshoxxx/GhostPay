@@ -240,3 +240,11 @@ Round 4 was cut off by the account's weekly usage limit before it produced a com
 - B5 feed hosts (network allowlist) and TRON genesis (no primary source).
 - Native-speaker review of the es/ja/ar drafts.
 - Merging.
+
+### #70 after rounds 4-5 (2026-11-11)
+
+- **Round 4** (`0057683`): fixed the pending re-check, the typed-start carry, the persisted rescan block and the restored test pin. Reviews then found two highs. First, the reorg stop paths cleared the recheck/rescan state. Second, a window-end reorg moved the cursor above unprocessed blocks; that bug is pre-existing on the base `4a38efd` and is also in #98.
+- **Round 5** (`8d54d13`): fixed both highs. All 20 per-path mutations are killed. Web: 229 targeted tests, coverage 92.58/88.39/94.19/96.28. Both reviewers then found a regression introduced by the fix: a reorg-stop save can move the stored checkpoint forward past the finality tail without an anchor. A one-variable fix is identified and was validated by a reviewer (`docs/handoffs/pr70-wip/README.md`).
+- **Stopped** at the run's five-round limit. Nothing is pushed to #70. The work is preserved as the patch series `docs/handoffs/pr70-wip/0001-0005`.
+- **Owner decision needed**: apply that fix and run one focused review; take #98's simpler replay, whose findings H and M remain; or leave #70 at `d9fe8b4`.
+- **Pre-existing bug to carry wherever #70 lands**: the window-end reorg skip (`cursor = { nextBlock: res.reorg.rolledBackTo }` on the limit, deferred and disagree paths). It is present on the integration base and in #98.
