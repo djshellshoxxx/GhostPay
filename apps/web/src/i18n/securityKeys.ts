@@ -32,6 +32,9 @@ export const SECURITY_KEY_GROUPS = {
     'scanPrivacy.disclosure.secondWindowsExact',
     'scanPrivacy.disclosure.secondDirectIp',
     'scanPrivacy.disclosure.second',
+    'scanPrivacy.disclosure.sweepParty',
+    'scanPrivacy.disclosure.sweepAuto',
+    'scanPrivacy.disclosure.sweepOnRequest',
     'scanPrivacy.disclosure.everyoneParty',
     'scanPrivacy.disclosure.everyone',
     'scanPrivacy.disclosure.everyonePrivate',
@@ -950,6 +953,8 @@ export const SECURITY_KEY_GROUPS = {
     'sweep.dryRunUnavailable',
     'sweep.journalBroken.title',
     'sweep.journalBroken.body',
+    'sweep.balanceRead.button',
+    'sweep.balanceRead.warning',
   ],
   sellerKeyLossAndRecovery: [
     'sellerKeys.keystoreDownloaded',
