@@ -248,6 +248,12 @@ describe('Seller keys', () => {
     expect(secretQr?.querySelector('svg.qr-svg')).toBeNull();
     await user.click(within(secretQr as HTMLElement).getByRole('button', { name: 'Reveal secret QR code' }));
     expect(secretQr?.querySelector('svg.qr-svg')).toBeTruthy();
+    // Smaller multi-part codes are a new payload scope: the secret must be revealed again, then shows parts.
+    await user.click(screen.getByLabelText('Show as several smaller codes'));
+    const parts = document.querySelector('[data-qr-kind="secret"]') as HTMLElement;
+    expect(parts.querySelector('svg.qr-svg')).toBeNull();
+    await user.click(within(parts).getByRole('button', { name: 'Reveal secret QR code' }));
+    expect(within(parts).getAllByText(/Part 1 of \d+/).length).toBeGreaterThan(0);
     expect(window.localStorage.length).toBe(0);
     // L1-01: the downloaded keystore is a backup, so the banner and the sharing gate are gone.
     expect(getSessionBackup()?.backedUp).toBe(true);

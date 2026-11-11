@@ -6,6 +6,8 @@ import { prepareManifestFixture } from './e2e/prepare-manifest.mjs';
 const CANDIDATES = [
   process.env['GHOSTPAY_CHROMIUM'],
   '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
+  // Cloud sandbox symlink to the pre-installed Chromium when the pinned Playwright build is not present.
+  '/opt/pw-browsers/chromium',
 ].filter((p): p is string => typeof p === 'string');
 const executablePath = CANDIDATES.find((p) => existsSync(p));
 const fixture = prepareManifestFixture();

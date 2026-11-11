@@ -1,7 +1,13 @@
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useId, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { CameraImporter } from '../components/CameraImporter';
 import { QrFrame } from '../components/QrFrame';
-import { exportSettingsExchange, parseSettingsExchange, applySettingsExchange, type SharedSettings } from '../lib/settingsExchange';
+import {
+  applySettingsExchange, buildSettingsExport, DEFAULT_EXPORT_SECTIONS, defaultExchangeSelection, EXCHANGE_SECTIONS, exportSectionAvailable,
+  exportSettingsExchange, needsTrustConfirmation, parseSettingsExchange, previewSettingsExchange, selectionChangesSomething, weakensPreferences,
+  type ExchangeSection, type SettingsExchangePreview, type SettingsExchangeSelection, type SharedSettings,
+} from '../lib/settingsExchange';
+import { shortHex } from '../lib/format';
+import type { MessageKey } from '../i18n/sourceCatalog';
 import { Field, Notice } from '../components/Common';
 import { displayMessage, captureUserMessage, type DisplayMessage, UserFacingError } from '../lib/errors';
 import { checkDelayRange, checkRelayerUrl, checkRpcUrl, type Settings as SettingsData } from '../lib/settings';
@@ -29,8 +35,6 @@ export function Settings(): ReactNode {
   const [autoClear, setAutoClear] = useState(s.autoClearFragment);
   const [pins, setPins] = useState(s.pinnedSigners.join('\n'));
   const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: DisplayMessage } | undefined>(undefined);
-  const [transfer, setTransfer] = useState<string | undefined>();
-  const [preview, setPreview] = useState<SharedSettings | undefined>();
   const [checks, setChecks] = useState<Record<string, DisplayMessage>>({});
   const testRevision = useRef(new Map<number, number>());
   const mounted = useRef(true);
@@ -42,9 +46,8 @@ export function Settings(): ReactNode {
     setChecks((current) => { const next = { ...current }; delete next[chainId]; return next; });
   };
 
-  // A saved-settings change invalidates both an imported review and an already displayed export.
+  // A saved-settings change invalidates pending RPC tests (the exchange section resets its own review and export).
   useEffect(() => {
-    setPreview(undefined); setTransfer(undefined);
     for (const [chainId, revision] of testRevision.current) testRevision.current.set(chainId, revision + 1);
     setChecks({});
   }, [s]);
@@ -159,31 +162,227 @@ export function Settings(): ReactNode {
         <button type="submit" className="btn btn-primary">{t('settings.save')}</button>
       </form>
       <ScanPrivacySection />
-      <section className="panel" aria-labelledby="settings-transfer-h">
-        <h3 id="settings-transfer-h">{t('settings.exchange.title')}</h3>
-        <p>{t('settings.exchange.description')}</p>
-        <button type="button" className="btn" onClick={() => { setTransfer(exportSettingsExchange(s)); }}>{t('settings.exchange.export')}</button>
-        {transfer !== undefined && <><QrFrame kind="device" text={transfer} caption={t('settings.exchange.title')} /><button type="button" className="btn" onClick={() => { setTransfer(undefined); }}>{t('settings.exchange.hide')}</button></>}
-        <CameraImporter label={t('settings.exchange.import')} scopeKey={s} onInputChange={() => { setPreview(undefined); }} onText={(text, signal) => {
-          const next = parseSettingsExchange(text);
-          if (signal.aborted) return false;
-          setPreview(next); setMessage(undefined); return true;
-        }} />
-        {preview !== undefined && <div>
-          <h4>{t('settings.exchange.review')}</h4>
-          <p>{t('settings.delay.range', { min: preview.delayMinSec, max: preview.delayMaxSec })}</p>
-          <p>{t('settings.lock.summary', { minutes: preview.lockTimeoutMin })}</p>
-          <p>{t('settings.theme.label')}: {t(preview.theme === 'dark' ? 'settings.theme.dark' : preview.theme === 'light' ? 'settings.theme.light' : 'settings.theme.system')}</p>
-          <p>{t('settings.autoclear.label')}: {t(preview.autoClearFragment ? 'settings.exchange.yes' : 'settings.exchange.no')}</p>
-          <button type="button" className="btn" onClick={() => {
-            const next = applySettingsExchange(app.settings, preview);
-            const saved = app.updateSettings(next);
-            setMinSec(next.delayMinSec); setMaxSec(next.delayMaxSec); setLock(next.lockTimeoutMin); setTheme(next.theme); setAutoClear(next.autoClearFragment);
-            setPreview(undefined); setMessage(saved ? { kind: 'ok', text: { key: 'settings.saved' } } : { kind: 'warn', text: { key: 'settings.storageUnavailable' } });
-          }}>{t('settings.exchange.apply')}</button>
-          <button type="button" className="btn" onClick={() => { setPreview(undefined); }}>{t('settings.exchange.discard')}</button>
+      <SettingsExchangeSection onApplied={(next, applied) => {
+        // Only the form fields of applied sections follow the import; other unsaved edits stay as typed.
+        if (applied.preferences === true) { setMinSec(next.delayMinSec); setMaxSec(next.delayMaxSec); setLock(next.lockTimeoutMin); setTheme(next.theme); setAutoClear(next.autoClearFragment); }
+        if (applied.rpcUrls === true) setRpc({ ...next.rpcUrls });
+        if (applied.rpcUrlsSecondary === true) setRpc2({ ...next.rpcUrlsSecondary });
+        if (applied.relayerUrl === true) setRelayer(next.relayerUrl);
+        if ((applied.addSigners ?? []).length > 0 || applied.removeSigners === true) setPins(next.pinnedSigners.join('\n'));
+        setMessage(undefined);
+      }} />
+      {message !== undefined && <Notice kind={message.kind}>{displayMessage(message.text, t)}</Notice>}
+    </section>
+  );
+}
+
+// i18n-use: settings.exchange.section.preferences settings.exchange.section.rpcUrls settings.exchange.section.rpcUrlsSecondary settings.exchange.section.relayerUrl settings.exchange.section.pinnedSigners settings.exchange.yes settings.exchange.no
+const SECTION_LABEL: Readonly<Record<ExchangeSection, MessageKey>> = {
+  preferences: 'settings.exchange.section.preferences',
+  rpcUrls: 'settings.exchange.section.rpcUrls',
+  rpcUrlsSecondary: 'settings.exchange.section.rpcUrlsSecondary',
+  relayerUrl: 'settings.exchange.section.relayerUrl',
+  pinnedSigners: 'settings.exchange.section.pinnedSigners',
+};
+const THEME_LABEL: Readonly<Record<SettingsData['theme'], MessageKey>> = { system: 'settings.theme.system', light: 'settings.theme.light', dark: 'settings.theme.dark' };
+const hostOf = (url: string): string => { try { return new URL(url).host; } catch { return url; } };
+const fingerprint = (key: string): string => shortHex(key, 10, 8);
+
+/**
+ * My-devices transfer. Export: explicit section checklist (preferences preselected) with an exact listing of the
+ * payload. Import: parse, per-section current-vs-imported review with endpoint and trust sections unticked, a second
+ * confirmation for relayer and signer changes, then one validated save. Scanning alone never applies anything, and
+ * no imported endpoint is contacted while reviewing.
+ */
+function SettingsExchangeSection({ onApplied }: { readonly onApplied: (next: SettingsData, applied: SettingsExchangeSelection) => void }): ReactNode {
+  const app = useApp();
+  const services = useServices();
+  const i18n = useI18nOptional();
+  const t = i18n?.t ?? SOURCE_TRANSLATOR.t;
+  const s = app.settings;
+  const uid = useId();
+  const chainIds = useMemo(() => services.chains.map((c) => c.chainId), [services.chains]);
+  const chainLabel = (chainId: string): string => services.chains.find((c) => String(c.chainId) === chainId)?.name ?? chainId;
+  const [sections, setSections] = useState<readonly ExchangeSection[]>(DEFAULT_EXPORT_SECTIONS);
+  const [transfer, setTransfer] = useState<string | undefined>();
+  const [exportError, setExportError] = useState<DisplayMessage | undefined>();
+  const [preview, setPreview] = useState<SettingsExchangePreview | undefined>();
+  const [selection, setSelection] = useState<SettingsExchangeSelection>({});
+  const [confirming, setConfirming] = useState(false);
+  const [message, setMessage] = useState<{ kind: 'ok' | 'error' | 'warn'; text: DisplayMessage } | undefined>(undefined);
+
+  // A saved-settings change invalidates both an imported review and an already displayed export.
+  useEffect(() => { setPreview(undefined); setTransfer(undefined); setExportError(undefined); setConfirming(false); }, [s, chainIds]);
+
+  const prefsValue = (p: SharedSettings): string => t('settings.exchange.prefsValue', {
+    min: p.delayMinSec, max: p.delayMaxSec, minutes: p.lockTimeoutMin, theme: t(THEME_LABEL[p.theme]),
+    autoclear: t(p.autoClearFragment ? 'settings.exchange.yes' : 'settings.exchange.no'),
+  });
+  const relayerValue = (url: string): string => (url === '' ? t('settings.exchange.none') : url);
+  const included = buildSettingsExport(s, sections, chainIds);
+  const listing: string[] = [];
+  const item = (section: ExchangeSection, value: string): void => { listing.push(t('settings.exchange.item', { label: t(SECTION_LABEL[section]), value })); };
+  if (included.preferences !== undefined) item('preferences', prefsValue(included.preferences));
+  for (const section of ['rpcUrls', 'rpcUrlsSecondary'] as const) {
+    for (const [chainId, url] of Object.entries(included[section] ?? {})) item(section, t('settings.exchange.chainHost', { chain: chainLabel(chainId), chainId, host: hostOf(url) }));
+  }
+  if (included.relayerUrl !== undefined) item('relayerUrl', included.relayerUrl === '' ? t('settings.exchange.noRelayer') : hostOf(included.relayerUrl));
+  for (const key of included.pinnedSigners ?? []) item('pinnedSigners', fingerprint(key));
+  const endpointsIncluded = included.rpcUrls !== undefined || included.rpcUrlsSecondary !== undefined || (included.relayerUrl ?? '') !== '';
+
+  const toggleSection = (section: ExchangeSection, on: boolean): void => {
+    setSections((current) => (on ? [...current.filter((x) => x !== section), section] : current.filter((x) => x !== section)));
+    setTransfer(undefined); setExportError(undefined);
+  };
+  const onExport = (): void => {
+    try { setTransfer(exportSettingsExchange(s, sections, chainIds)); setExportError(undefined); }
+    catch (err) { setTransfer(undefined); setExportError(captureUserMessage(err)); }
+  };
+
+  const select = (patch: SettingsExchangeSelection): void => { setSelection((current) => ({ ...current, ...patch })); setConfirming(false); };
+  const discard = (): void => { setPreview(undefined); setConfirming(false); };
+  const doApply = (): void => {
+    if (preview === undefined) return;
+    let next: SettingsData;
+    let saved: boolean;
+    // Validate everything first, then one save call; any failure leaves settings and form fields untouched.
+    try {
+      next = applySettingsExchange(app.settings, preview, selection);
+      saved = app.updateSettings(next);
+    } catch (err) {
+      setConfirming(false);
+      setMessage({ kind: 'error', text: err instanceof UserFacingError ? captureUserMessage(err) : { key: 'settings.exchange.applyFailed' } });
+      return;
+    }
+    onApplied(next, selection);
+    setPreview(undefined); setConfirming(false);
+    setMessage(saved ? { kind: 'ok', text: { key: 'settings.saved' } } : { kind: 'warn', text: { key: 'settings.storageUnavailable' } });
+  };
+  const onApply = (): void => {
+    if (preview !== undefined && needsTrustConfirmation(preview, selection) && !confirming) { setConfirming(true); return; }
+    doApply();
+  };
+
+  const sectionToggle = (section: 'preferences' | 'rpcUrls' | 'rpcUrlsSecondary' | 'relayerUrl'): ReactNode => (
+    <div className="check">
+      <input id={`${uid}-apply-${section}`} type="checkbox" checked={selection[section] === true} onChange={(e) => { select({ [section]: e.target.checked }); }} />
+      <label htmlFor={`${uid}-apply-${section}`}>{t('settings.exchange.applySection', { section: t(SECTION_LABEL[section]) })}</label>
+    </div>
+  );
+  const unchanged = <p className="hint">{t('settings.exchange.unchanged')}</p>;
+  const table = (rows: readonly { readonly key: string; readonly label: string; readonly current: string; readonly incoming: string; readonly changed: boolean }[]): ReactNode => (
+    <table>
+      <thead><tr><th scope="col">{t('settings.exchange.column.setting')}</th><th scope="col">{t('settings.exchange.column.current')}</th><th scope="col">{t('settings.exchange.column.incoming')}</th></tr></thead>
+      <tbody>{rows.map((r) => (
+        <tr key={r.key}><th scope="row">{r.label}</th><td dir="ltr">{r.current}</td><td dir="ltr">{r.incoming}{!r.changed && <> ({t('settings.exchange.unchanged')})</>}</td></tr>
+      ))}</tbody>
+    </table>
+  );
+  const mapSection = (section: 'rpcUrls' | 'rpcUrlsSecondary'): ReactNode => {
+    const diff = preview?.[section];
+    if (diff === undefined) return null;
+    return (
+      <fieldset key={section}>
+        <legend>{t(SECTION_LABEL[section])}</legend>
+        {table(diff.entries.map((e) => ({ key: e.chainId, label: t('settings.exchange.chainHost', { chain: chainLabel(e.chainId), chainId: e.chainId, host: hostOf(e.incoming) }),
+          current: e.current ?? t('settings.exchange.none'), incoming: e.incoming, changed: e.changed })))}
+        <p className="hint">{t('settings.exchange.rpcMergeHint')}</p>
+        {diff.changed ? sectionToggle(section) : unchanged}
+      </fieldset>
+    );
+  };
+  const signers = preview?.pinnedSigners;
+  const adds = selection.addSigners ?? [];
+  const canApply = preview !== undefined && selectionChangesSomething(preview, selection);
+
+  return (
+    <section className="panel" aria-labelledby="settings-transfer-h">
+      <h3 id="settings-transfer-h">{t('settings.exchange.title')}</h3>
+      <p>{t('settings.exchange.description')}</p>
+      <fieldset>
+        <legend>{t('settings.exchange.exportLegend')}</legend>
+        <p className="hint">{t('settings.exchange.exportHint')}</p>
+        {EXCHANGE_SECTIONS.map((section) => {
+          const available = exportSectionAvailable(s, section, chainIds);
+          const id = `${uid}-export-${section}`;
+          return (
+            <div className="check" key={section}>
+              <input id={id} type="checkbox" disabled={!available} checked={available && sections.includes(section)} aria-describedby={available ? undefined : `${id}-empty`} onChange={(e) => { toggleSection(section, e.target.checked); }} />
+              <label htmlFor={id}>{t(SECTION_LABEL[section])}</label>
+              {!available && <span id={`${id}-empty`} className="hint"> {t('settings.exchange.nothingSaved')}</span>}
+            </div>
+          );
+        })}
+        <h4>{t('settings.exchange.includedHeading')}</h4>
+        {listing.length === 0 ? <p>{t('settings.exchange.includedNothing')}</p> : <ul aria-label={t('settings.exchange.includedHeading')}>{listing.map((line, i) => <li key={i} dir="auto">{line}</li>)}</ul>}
+        {endpointsIncluded && <Notice kind="warn">{t('settings.exchange.privacyWarning')}</Notice>}
+        <button type="button" className="btn" disabled={listing.length === 0} onClick={onExport}>{t('settings.exchange.export')}</button>
+        {exportError !== undefined && <Notice kind="error">{displayMessage(exportError, t)}</Notice>}
+      </fieldset>
+      {transfer !== undefined && <><QrFrame kind="device" text={transfer} caption={t('settings.exchange.title')} allowExport={!sections.some((x) => x === 'rpcUrls' || x === 'rpcUrlsSecondary' || x === 'relayerUrl')} /><button type="button" className="btn" onClick={() => { setTransfer(undefined); }}>{t('settings.exchange.hide')}</button></>}
+      <CameraImporter label={t('settings.exchange.import')} scopeKey={s} onInputChange={discard} onText={(text, signal) => {
+        const incoming = parseSettingsExchange(text, chainIds);
+        if (signal.aborted) return false;
+        const next = previewSettingsExchange(app.settings, incoming, chainIds);
+        setPreview(next); setSelection(defaultExchangeSelection(next)); setConfirming(false); setMessage(undefined); return true;
+      }} />
+      {preview !== undefined && <div>
+        <h4>{t('settings.exchange.review')}</h4>
+        <p className="hint">{t('settings.exchange.reviewHint')}</p>
+        {!preview.changed && <p role="status">{t('settings.exchange.noChanges')}</p>}
+        {preview.preferences !== undefined && <fieldset>
+          <legend>{t(SECTION_LABEL.preferences)}</legend>
+          {table([{ key: 'preferences', label: t(SECTION_LABEL.preferences), current: prefsValue(preview.preferences.current), incoming: prefsValue(preview.preferences.incoming), changed: preview.preferences.changed }])}
+          {preview.preferences.changed ? sectionToggle('preferences') : unchanged}
+        </fieldset>}
+        {mapSection('rpcUrls')}
+        {mapSection('rpcUrlsSecondary')}
+        {preview.relayerUrl !== undefined && <fieldset>
+          <legend>{t(SECTION_LABEL.relayerUrl)}</legend>
+          {table([{ key: 'relayer', label: t(SECTION_LABEL.relayerUrl), current: relayerValue(preview.relayerUrl.current), incoming: relayerValue(preview.relayerUrl.incoming), changed: preview.relayerUrl.changed }])}
+          <p className="hint">{t('settings.exchange.relayerTrustHint')}</p>
+          {preview.relayerUrl.changed ? sectionToggle('relayerUrl') : unchanged}
+        </fieldset>}
+        {signers !== undefined && <fieldset>
+          <legend>{t(SECTION_LABEL.pinnedSigners)}</legend>
+          <p className="hint">{t('settings.exchange.signersTrustHint')}</p>
+          <p>{t('settings.exchange.signersUnchanged', { count: signers.unchanged })}</p>
+          {signers.added.map((key) => (
+            <div className="check" key={key}>
+              <input id={`${uid}-pin-${key}`} type="checkbox" checked={adds.includes(key)} onChange={(e) => { select({ addSigners: e.target.checked ? [...adds, key] : adds.filter((k) => k !== key) }); }} />
+              <label htmlFor={`${uid}-pin-${key}`} title={key}>{t('settings.exchange.signerAdd', { fingerprint: fingerprint(key) })}</label>
+            </div>
+          ))}
+          {signers.removed.length > 0 && <>
+            <ul>{signers.removed.map((key) => <li key={key} title={key}>{t('settings.exchange.signerRemoved', { fingerprint: fingerprint(key) })}</li>)}</ul>
+            <div className="check">
+              <input id={`${uid}-unpin`} type="checkbox" checked={selection.removeSigners === true} onChange={(e) => { select({ removeSigners: e.target.checked }); }} />
+              <label htmlFor={`${uid}-unpin`}>{t('settings.exchange.signersRemove', { count: signers.removed.length })}</label>
+            </div>
+          </>}
+          {!signers.changed && unchanged}
+        </fieldset>}
+        {confirming && <div role="alertdialog" aria-labelledby={`${uid}-confirm-h`} aria-describedby={`${uid}-confirm-d`} className="panel">
+          <h4 id={`${uid}-confirm-h`}>{t('settings.exchange.confirmTitle')}</h4>
+          <p id={`${uid}-confirm-d`}>{t('settings.exchange.confirmBody')}</p>
+          <ul>
+            {(['rpcUrls', 'rpcUrlsSecondary'] as const).flatMap((section) => selection[section] === true ? (preview[section]?.entries ?? []).filter((e) => e.changed).map((e) => (
+              <li key={`${section}-${e.chainId}`} dir="auto">{t('settings.exchange.confirmRpc', { section: t(SECTION_LABEL[section]), chain: chainLabel(e.chainId), chainId: e.chainId, from: e.current === undefined ? t('settings.exchange.none') : hostOf(e.current), to: hostOf(e.incoming) })}</li>
+            )) : [])}
+            {selection.preferences === true && weakensPreferences(preview.preferences) && preview.preferences !== undefined && <li>{t('settings.exchange.confirmWeaker', { value: prefsValue(preview.preferences.incoming) })}</li>}
+            {selection.relayerUrl === true && preview.relayerUrl?.changed === true && <li dir="auto">{t('settings.exchange.confirmRelayer', { from: relayerValue(preview.relayerUrl.current), to: relayerValue(preview.relayerUrl.incoming) })}</li>}
+            {adds.map((key) => <li key={`add-${key}`} title={key}>{t('settings.exchange.confirmPin', { fingerprint: fingerprint(key) })}</li>)}
+            {selection.removeSigners === true && (signers?.removed ?? []).map((key) => <li key={`rm-${key}`} title={key}>{t('settings.exchange.confirmUnpin', { fingerprint: fingerprint(key) })}</li>)}
+          </ul>
+          <button type="button" className="btn btn-primary" onClick={doApply}>{t('settings.exchange.confirm')}</button>
+          <button type="button" className="btn" onClick={() => { setConfirming(false); }}>{t('settings.exchange.back')}</button>
         </div>}
-      </section>
+        {preview.changed && !confirming && <>
+          <button type="button" className="btn" disabled={!canApply} aria-describedby={canApply ? undefined : `${uid}-apply-hint`} onClick={onApply}>{t('settings.exchange.apply')}</button>
+          {!canApply && <p id={`${uid}-apply-hint`} className="hint">{t('settings.exchange.selectSomething')}</p>}
+        </>}
+        <button type="button" className="btn" onClick={discard}>{t('settings.exchange.discard')}</button>
+      </div>}
       {message !== undefined && <Notice kind={message.kind}>{displayMessage(message.text, t)}</Notice>}
     </section>
   );

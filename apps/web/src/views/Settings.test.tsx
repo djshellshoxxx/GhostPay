@@ -166,15 +166,17 @@ it('previews nonsecret settings before explicit application and leaves URLs and 
   fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: exportSettingsExchange({ ...DEFAULT_SETTINGS, theme: 'dark', delayMinSec: 0 }) } });
   await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
   expect(stored()['theme']).toBe('system');
-  expect(await screen.findByText(/Review imported preferences/)).toBeTruthy();
-  await user.click(screen.getByRole('button', { name: 'Apply imported preferences' }));
+  expect(await screen.findByText(/Review imported settings/)).toBeTruthy();
+  await user.click(screen.getByRole('button', { name: 'Apply selected settings' }));
+  expect(stored()['theme']).toBe('system'); // delayMinSec 0 weakens protection: nothing is saved before confirming
+  await user.click(screen.getByRole('button', { name: 'Confirm and apply' }));
   expect(stored()['theme']).toBe('dark');
   expect(stored()['rpcUrls']).toEqual({ '84532': 'https://rpc.example/' });
   fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: exportSettingsExchange(DEFAULT_SETTINGS) } });
   await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
-  expect(screen.getByRole('button', { name: 'Apply imported preferences' })).toBeTruthy();
+  expect(screen.getByRole('button', { name: 'Apply selected settings' })).toBeTruthy();
   fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: 'invalid replacement' } });
-  expect(screen.queryByRole('button', { name: 'Apply imported preferences' })).toBeNull();
+  expect(screen.queryByRole('button', { name: 'Apply selected settings' })).toBeNull();
 });
 
 
@@ -182,21 +184,21 @@ it('invalidates an imported review and old export when saved preferences change'
   const user = await open();
   const { exportSettingsExchange } = await import('../lib/settingsExchange');
   const { DEFAULT_SETTINGS } = await import('../lib/settings');
-  await user.click(screen.getByRole('button', { name: 'Show preferences QR' }));
-  expect(screen.getByRole('button', { name: 'Hide preferences QR' })).toBeTruthy();
+  await user.click(screen.getByRole('button', { name: 'Show settings QR' }));
+  expect(screen.getByRole('button', { name: 'Hide settings QR' })).toBeTruthy();
   fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: exportSettingsExchange({ ...DEFAULT_SETTINGS, theme: 'dark' }) } });
   await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
-  expect(await screen.findByText('Review imported preferences')).toBeTruthy();
+  expect(await screen.findByText('Review imported settings')).toBeTruthy();
   await user.selectOptions(screen.getByLabelText('Theme'), 'light');
   await user.click(screen.getByRole('button', { name: 'Save settings' }));
   expect(stored()['theme']).toBe('light');
-  expect(screen.queryByRole('button', { name: 'Apply imported preferences' })).toBeNull();
-  expect(screen.queryByRole('button', { name: 'Hide preferences QR' })).toBeNull();
+  expect(screen.queryByRole('button', { name: 'Apply selected settings' })).toBeNull();
+  expect(screen.queryByRole('button', { name: 'Hide settings QR' })).toBeNull();
   fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: exportSettingsExchange({ ...DEFAULT_SETTINGS, theme: 'dark' }) } });
   await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
   await user.click(screen.getByRole('button', { name: 'Discard preview' }));
   expect(stored()['theme']).toBe('light');
-  expect(screen.queryByRole('button', { name: 'Apply imported preferences' })).toBeNull();
+  expect(screen.queryByRole('button', { name: 'Apply selected settings' })).toBeNull();
 });
 
 describe('Settings: scan lanes and privacy-set options (spec 05)', () => {
