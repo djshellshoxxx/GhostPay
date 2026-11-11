@@ -450,6 +450,27 @@ describe('runScan', () => {
     ).rejects.toThrow(/worker failed/);
   });
 
+  it('fails at once when the worker posts an error while a batch is pending, without waiting for the reply timeout', async () => {
+    const s = setup();
+    const w = new InlineWorker();
+    const forward = w.postMessage.bind(w);
+    let batches = 0;
+    w.postMessage = (m): void => {
+      if (m.type === 'batch') { batches += 1; queueMicrotask(() => w.onmessage?.({ data: { type: 'error', code: 'BOOM' } } as never)); }
+      else forward(m);
+    };
+    const run = runScan({
+      chain, manifest, client: chainWith(2500, s.logs), cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+      createWorker: () => w, signal: new AbortController().signal,
+    });
+    run.catch(() => undefined);
+    // The default reply timeout is 60 s; the error must end the scan long before that.
+    await expect(Promise.race([run, new Promise((_resolve, reject) => { setTimeout(() => { reject(new Error('still waiting')); }, 2_000); })])).rejects.toThrow(/worker failed/);
+    expect(batches).toBe(1);
+    expect(w.terminated).toBe(true);
+  }, 15_000);
+
   it('propagates RPC failures and still shuts the worker down', async () => {
     const s = setup();
     const worker = new InlineWorker();

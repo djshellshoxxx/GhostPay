@@ -217,9 +217,12 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
     worker = w;
     w.onmessage = (e): void => {
       const m = e.data;
-      if (m.type === 'ready' || m.type === 'error' || m.type === 'ended') ready?.(m);
-      else if (m.type === 'matches') pending.get(m.batchId)?.(m);
+      if (m.type === 'matches') pending.get(m.batchId)?.(m);
       else if (m.type === 'progress' && pending.has(m.batchId)) progressed?.(m.scanned);
+      // An error posted while a batch is outstanding ends the scan now. Routed to the start resolver it would be
+      // ignored (that promise is already settled) and the batch would wait for the reply timeout.
+      else if (m.type === 'error' && pending.size > 0) failed?.(new UserFacingError({ key: 'error.scanClient.theScannerWorkerFailed' }));
+      else if (m.type === 'ready' || m.type === 'error' || m.type === 'ended') ready?.(m);
     };
     w.onerror = (): void => {
       failed?.(new UserFacingError({ key: 'error.scanClient.theScannerWorkerFailed' }));
