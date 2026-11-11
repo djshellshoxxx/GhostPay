@@ -7,7 +7,7 @@ import { FAKE_ROUTER, fakeManifest } from '../test/fakeManifest';
 import { NOW, USDC_84532, makeParsed } from '../test/invoiceFixtures';
 import { MOCK_ACCOUNT, MockWallet } from '../test/mockWallet';
 import { mockRpc, type MockRpc } from '../test/mockRpc';
-import { createPayContext, permitStateMessage, reviewInvoice, type BufferQuote, type PayContext } from './pay';
+import { createPayContext, permitPreflightReader, permitStateMessage, reviewInvoice, type BufferQuote, type PayContext } from './pay';
 import { PermitRejectedError, PostBroadcastError, buildReceipt, classifyPayerPermit, grantApproval, planApproval, preparePayment, revokeApproval, sendPayment, submitTx, type ApprovalPlan, type Runtime } from './payExec';
 import { clearSession } from './session';
 import { userMessage } from './errors';
@@ -499,7 +499,7 @@ describe('permit post-sign pre-flight and fallback ladder (spec 04)', () => {
   const account = privateKeyToAccount(`0x${'cd'.repeat(32)}`);
   const word = (v: bigint): string => `0x${v.toString(16).padStart(64, '0')}`;
 
-  interface TokenState { allowance: bigint; nonce: bigint; permitReverts?: boolean; onSign?: () => void }
+  interface TokenState { allowance: bigint; nonce: bigint; permitReverts?: boolean; permitTransportFails?: boolean; onSign?: () => void }
 
   async function permitSetup(state: TokenState): Promise<{ ctx: PayContext; session: WalletSession; rpc: MockRpc; signs: () => number; wallet: MockWallet }> {
     const wallet = new MockWallet({ account: account.address });
@@ -533,6 +533,7 @@ describe('permit post-sign pre-flight and fallback ladder (spec 04)', () => {
       if (data.startsWith('0x3644e515')) return eip712DomainSeparator({ name: 'USDC', version: '2', chainId: 84532, verifyingContract: USDC });
       if (data.startsWith('0xd505accf')) {
         if (state.permitReverts === true) throw new Error('execution reverted');
+        if (state.permitTransportFails === true) throw new ChainAdapterError('RPC_FAILURE', 'http 429');
         return '0x';
       }
       throw new Error('unexpected call');
@@ -578,6 +579,30 @@ describe('permit post-sign pre-flight and fallback ladder (spec 04)', () => {
     expect(userMessage(err)).toBe(permitStateMessage(stateName));
     expect(t.signs()).toBe(1);
     expect(t.wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
+  });
+
+  it('R04-3: an RPC transport failure of the static permit call is not a permit state: no sig_invalid, no fallback', async () => {
+    const t = await permitSetup({ allowance: 0n, nonce: 0n, permitTransportFails: true });
+    const err: unknown = await preparePayment(t.session, t.ctx, { usePermit: true }, { rpc: t.rpc, nowSeconds: () => NOW }, noStatus).catch((e: unknown) => e);
+    expect(err).not.toBeInstanceOf(PermitRejectedError);
+    expect(err).toBeInstanceOf(ChainAdapterError);
+    expect((err as ChainAdapterError).code).toBe('RPC_FAILURE');
+    expect(userMessage(err)).not.toBe(permitStateMessage('sig_invalid'));
+    expect(userMessage(err)).not.toBe(permitStateMessage('unsupported_token'));
+    expect(t.wallet.calls.some((c) => c.method === 'eth_sendTransaction')).toBe(false);
+  });
+
+  it('R04-3: the pre-flight reader resolves false only for a node-reported revert and rejects on anything else', async () => {
+    const args = { owner: account.address, spender: FAKE_ROUTER, value: 1n, deadline: 9_999_999_999n, v: 27, r: `0x${'1'.repeat(64)}`, s: `0x${'2'.repeat(64)}` } as const;
+    const reader = (fail: () => unknown): ReturnType<typeof permitPreflightReader> => permitPreflightReader(mockRpc(84532, fail));
+    const simulate = (r: ReturnType<typeof permitPreflightReader>): Promise<boolean> => r.simulatePermit?.(USDC, args) ?? Promise.reject(new Error('no simulatePermit'));
+    await expect(simulate(reader(() => { throw new ChainAdapterError('RPC_FAILURE', 'http 429'); }))).rejects.toMatchObject({ code: 'RPC_FAILURE' });
+    await expect(simulate(reader(() => { throw new ChainAdapterError('RPC_FAILURE', 'timeout'); }))).rejects.toBeInstanceOf(ChainAdapterError);
+    await expect(simulate(reader(() => { throw new Error('socket hang up'); }))).rejects.toThrow('socket hang up');
+    await expect(simulate(reader(() => { throw new ChainAdapterError('RPC_FAILURE', 'execution failed', { reverted: true, executionReverted: true }); }))).resolves.toBe(false);
+    await expect(simulate(reader(() => { throw new Error('execution reverted'); }))).resolves.toBe(false);
+    await expect(simulate(reader(() => '0x'))).resolves.toBe(true);
+    await expect(simulate(reader(() => 42))).resolves.toBe(false);
   });
 
   it('expired: a permit whose deadline passed while the wallet was open is refused', async () => {

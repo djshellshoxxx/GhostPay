@@ -437,5 +437,22 @@ describe('describeScanDisclosure', () => {
     expect(learns('Second RPC')).toMatch(/same fixed 1000-block windows/);
     expect(learns('Second RPC')).not.toMatch(/the same scan ranges/);
   });
+  it('lists that Sweep balance reads and sweep submission use the Settings RPC, not the scan path (R12-2)', () => {
+    const proxy: ScanPrivacySettings = { ...base(), transport: 'local-proxy', endpoints: { '84532': 'http://127.0.0.1:1/' } };
+    for (const s of [base(), { ...base(), transport: 'tor-browser' as const }, proxy, { ...proxy, requireProxy: true }]) {
+      for (const hasSecondary of [false, true]) {
+        const rows = describeScanDisclosure(s, { hasSecondary });
+        const sweep = rows.filter((r) => r.party === 'Settings RPC (Sweep)');
+        expect(sweep, JSON.stringify(s)).toHaveLength(1);
+        expect(sweep[0]!.learns).toMatch(/one-time address/);
+        expect(sweep[0]!.learns).toMatch(/not through the scan path/);
+        expect(rows.at(-1)!.party).toBe('Everyone');
+      }
+    }
+    const learns = (s: ScanPrivacySettings): string => describeScanDisclosure(s, { hasSecondary: false }).find((r) => r.party === 'Settings RPC (Sweep)')!.learns;
+    expect(learns(base())).toMatch(/^your IP address;.*reads its balance as soon as you open it/);
+    expect(learns(proxy)).toMatch(/^Your IP address \(it is contacted directly, not through the proxy\);.*as soon as you open it/);
+    expect(learns({ ...proxy, requireProxy: true })).toMatch(/^Your IP address \(it is contacted directly, not through the proxy\);.*only when you press "Read balance from the Settings RPC"/);
+  });
   function base(): ScanPrivacySettings { return { ...DEFAULT_SCAN_PRIVACY }; }
 });

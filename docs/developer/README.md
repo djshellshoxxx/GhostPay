@@ -38,7 +38,7 @@ API pages (one per package): [core-crypto](api/core-crypto.md), [invoice-schema]
 | `packages/invoice-schema` | TS library | `@ghostpay/invoice-schema` | invoice object, canonical JSON, signing, `#gpi=v1.` envelope |
 | `packages/chain-adapters` | TS library | `@ghostpay/chain-adapters` | EVM: chains, tokens, fees, manifest, RPC, logs, router/sweep builders, quotes |
 | `packages/policy-scheme` | TS library | `@ghostpay/policy-scheme` | scheme `0x47500002` client side (experimental, ADR-0014) |
-| `packages/btc-silent-payments` | TS library | `@ghostpay/btc-silent-payments` | BIP-352; standalone, not wired into the app |
+| `packages/btc-silent-payments` | TS library | `@ghostpay/btc-silent-payments` | BIP-352; used by the web Bitcoin view (`apps/web/package.json`) |
 | `packages/contracts` | Foundry project | (no `package.json`) | `GhostPayRouter`, `GhostPaySweepRelayer`, `PolicyAccount`, `PolicyAccountFactory`, `GhostPayPolicyRouter` |
 | `apps/web` | React 19 + Vite static app | `@ghostpay/web` | seller keys, invoices, pay, scan, sweep |
 | `apps/relayer` | Node service | `@ghostpay/relayer` | gas-sponsorship relay for sweeps |
@@ -46,6 +46,8 @@ API pages (one per package): [core-crypto](api/core-crypto.md), [invoice-schema]
 | `test-vectors/` | data | | pinned scheme-1 and scheme-2 vectors and their generators |
 | `scripts/`, `.github/workflows/` | tooling | | release build, verification, CI |
 | `docs/` | docs | | specs, ADRs, audits, threat model, operator runbooks, this tree |
+
+This table is not the full inventory: `packages/` holds many more workspaces (for example `cli`, `sdk`, `merchant-*` and `plugin-api`) that the pages under `docs/developer/` do not cover.
 
 ## Conventions used in these pages
 

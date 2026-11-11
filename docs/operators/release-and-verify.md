@@ -1,8 +1,10 @@
 # Releasing and verifying GhostPay
 
 Audience: maintainers who cut releases, and end users who want to check what they are running.
-Evidence level: workflows and scripts are checked by `actionlint`, `shellcheck`, and local runs. The workflows
-have **not** been observed running on GitHub (see "Unverified" at the end).
+Evidence level: historical script/actionlint/shellcheck checks are documented below. On 2026-11-10 the
+unmerged integration PR #98 at `364b1f185fcc2adaedab4ce7b4b14e676b1da3b7` had 34 successful
+GitHub-hosted checks, including CI, Integration, Hosting kit and CLI. This is **not** evidence that the
+signed-tag **release workflow** has executed or that a release is authorized (see section 6).
 
 Related: `docs/SECURITY_QA_DEVOPS_PLAYBOOK.md` section 2 (pipeline, release manifest),
 `docs/audits/03-security-review-client-relayer.md` S3-04 and S3-17.
@@ -81,7 +83,9 @@ Use a machine and network other than the one that serves or runs the app.
    script: `sha256sum -c SHA256SUMS`.
 5. Verify the attestation, bound to the release workflow, the tag and the commit the signed tag points at:
    `gh attestation verify ghostpay-web-v1.2.3.tar.gz --repo <owner>/<repo> --signer-workflow <owner>/<repo>/.github/workflows/release.yml --source-ref refs/tags/v1.2.3 --source-digest <40-hex-commit> --deny-self-hosted-runners`.
-   `--repo` alone accepts an attestation from any workflow or ref in the repository.
+   `--repo` alone accepts an attestation from any workflow or ref in the repository. In a workflow, the composite
+   action `.github/actions/release-verify` runs this same pinned command when given `verify-attestation: 'true'`,
+   `tag: v1.2.3` and `expected-commit: <40-hex-commit>`; it fails if `tag` is missing or not a plain release tag.
 6. Optional but strongest: rebuild at the tag with `VERSION=v1.2.3 bash scripts/release-build.sh` and compare the
    tarball sha256 with the release. Reproducibility is only claimed for the same Node/npm major and a Linux GNU
    toolchain; it has not been tested across operating systems.
@@ -125,13 +129,19 @@ reviewed tag, replace the SHA, update the `# vX.Y.Z` comment, run `scripts/check
 - **Testnet deployment job and deployment-manifest signing** (O-08, O-13): not implemented.
 - **IPFS / ENS / Tor / Pages publication** (O-11): intentionally disabled.
 - **Signing-key fingerprint**: not recorded anywhere yet; the maintainers must publish it out of band.
-- **Dependency review on PRs, CodeQL, CODEOWNERS**: not added (CODEOWNERS needs real owners).
+- **Dependency review on PRs and CODEOWNERS**: not qualified here (CODEOWNERS needs real owners). CodeQL **was observed passing** on #98 exact-head GitHub checks; it does not substitute for unresolved SonarCloud or independent review.
 - **Relayer Docker image** is not built, scanned, or attested by these workflows.
 - Hash-pinning of router/fee-recipient into the bundle (S3-01) is an application fix outside this pipeline.
 
 ## 6. Unverified
 
-The three workflows have never run on GitHub. Action SHAs were resolved from `git ls-remote` tag listings, not
-independently re-checked on another path. `REQUIRE_ANVIL=1` takes effect only once the relayer test reads it. The
-signed-tag presence check in `release.yml` (annotated-tag fetch with the workflow token) is untested on a real tag
-push. Reproducibility was checked on one Linux host only.
+CI and integration workflows **have run** on GitHub for the exact draft #98 source:
+[CI 42734552608](https://github.com/djshellshoxxx/GhostPay/actions/runs/42734552608),
+[Integration 42734552235](https://github.com/djshellshoxxx/GhostPay/actions/runs/42734552235),
+[Hosting kit 42734552338](https://github.com/djshellshoxxx/GhostPay/actions/runs/42734552338), and
+[CLI 42734552538](https://github.com/djshellshoxxx/GhostPay/actions/runs/42734552538).
+This does **not** mean the signed-tag `release.yml` workflow has completed a real release. Historical action
+SHAs were resolved through `git ls-remote` tag listings, not independently re-checked on another path.
+The signed-tag presence check in `release.yml` has not been qualified on a real tag push; reproducibility
+was historically checked on one Linux host only. Later changes require exact-head requalification.
+The unresolved SonarCloud D gate from parent #84 is **not** cleared by the green #98 GitHub jobs.

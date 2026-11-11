@@ -1,5 +1,7 @@
 # 06 ERC-6538 registry integration
 
+> **Implementation status (2026-11-11, commit 364b1f18):** `packages/chain-adapters/src/registry.ts` exports `buildRegisterKeysCall`, `buildRegisterKeysTx`, `buildLookupCall` and `lookupMetaAddress`, not the names in section 2. There is no on-behalf or increment-nonce builder (only ABI entries in `packages/chain-adapters/src/abi/erc6538Registry.ts`) and no ENS resolution in `registry.ts` or `apps/web/src`; lookup is by address only.
+
 Priority P1 | Effort S (ABI, 1 d) + M (UI, 3 d) | Owner: chain-adapters + web | Deps: 01 (code check), 09 (per-chain table)
 Sources: research 1.1/1.2 item 4, DOC-3, DOC-4; gap-analysis item 4; CONTRACTS_SPEC preamble; ERC-6538 (Final, canonical `0x6538E6bf4B0eBd30A8Ea093027Ac2422ce5d6538`).
 

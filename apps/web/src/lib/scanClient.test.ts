@@ -1,4 +1,4 @@
-import { CHAINS, ChainAdapterError, ghostPayRouterAbi, grossForNet, type Hex, type Address, type LogFilter, type RpcLog } from '@ghostpay/chain-adapters';
+import { CHAINS, ChainAdapterError, ghostPayRouterAbi, grossForNet, type Hex, type Address, type LogFilter, type RpcLog, type ScanCursor } from '@ghostpay/chain-adapters';
 import { encodeMetaAddress, generateKeySet, parseMetadata, unsafeRevealSecret } from '@ghostpay/core-crypto';
 import { describe, expect, it, vi } from 'vitest';
 import { decodeAbiParameters, encodeFunctionData } from 'viem/utils';
@@ -358,7 +358,10 @@ describe('runScan', () => {
 
   it('deduplicates replay announcements for one address and ephemeral key before crediting', async () => {
     const s = setup();
-    const replay: RpcLog = { ...s.mine.log, blockNumber: '0x79', blockHash: blockHash(121), logIndex: '0x5' };
+    // A free replay: the same announcement posted again directly at the announcer, by a caller that is not the router.
+    const replayTopics = [...s.mine.log.topics];
+    replayTopics[3] = `0x${'99'.repeat(20).padStart(64, '0')}`;
+    const replay: RpcLog = { ...s.mine.log, topics: replayTopics, blockNumber: '0x79', blockHash: blockHash(121), logIndex: '0x5' };
     const res = await runScan({
       chain, manifest, client: chainWith(2500, [s.mine.log, replay]), cursor: { nextBlock: 0n },
       spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
@@ -369,7 +372,9 @@ describe('runScan', () => {
   });
   it('keeps a per-scan replay ledger across log pages', async () => {
     const s = setup();
-    const replay: RpcLog = { ...s.mine.log, blockNumber: '0x458', blockHash: blockHash(1112), logIndex: '0x5', transactionHash: `0x${'ab'.repeat(32)}` };
+    const replayTopics = [...s.mine.log.topics];
+    replayTopics[3] = `0x${'99'.repeat(20).padStart(64, '0')}`;
+    const replay: RpcLog = { ...s.mine.log, topics: replayTopics, blockNumber: '0x458', blockHash: blockHash(1112), logIndex: '0x5', transactionHash: `0x${'ab'.repeat(32)}` };
     const res = await runScan({
       chain, manifest, client: chainWith(2500, [s.mine.log, replay]), cursor: { nextBlock: 0n },
       spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
@@ -377,6 +382,40 @@ describe('runScan', () => {
     });
     expect(res.matches).toHaveLength(1);
     expect(res.matches[0]?.receipt).toBe('verified');
+  });
+  it.each([
+    ['in the same log page', '0x79', 121],
+    ['on a later log page', '0x458', 1112],
+  ])('lists a second router payment to the same address and ephemeral key %s instead of dropping it', async (_where, blockNumber, block) => {
+    // The router moves funds in the transaction that announces, so this is another transfer, not a replay. Anyone
+    // can copy a pending payment's address and ephemeral key; collapsing the pair let a cheap payment mined first
+    // hide the genuine one from the seller.
+    const s = setup();
+    const second: RpcLog = { ...s.mine.log, blockNumber, blockHash: blockHash(block), logIndex: '0x5', transactionHash: `0x${'ab'.repeat(32)}` };
+    const emitted: import('./scanClient').ScanMatch[] = [];
+    const res = await runScan({
+      chain, manifest, client: chainWith(2500, [s.mine.log, second]), cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal, onMatch: (m) => emitted.push(m),
+    });
+    expect(res.matches.map((m) => m.announcement.transactionHash)).toEqual([s.mine.log.transactionHash, second.transactionHash]);
+    expect(res.matches.map((m) => m.receipt)).toEqual(['verified', 'verified']);
+    expect(res.matches.every((m) => m.viaRouter)).toBe(true);
+    expect(emitted.map((m) => m.announcement.id)).toEqual(res.matches.map((m) => m.announcement.id));
+  });
+  it('still drops a free replay once a router payment for the pair is listed, on a later page too', async () => {
+    const s = setup();
+    const second: RpcLog = { ...s.mine.log, blockNumber: '0x79', blockHash: blockHash(121), logIndex: '0x5', transactionHash: `0x${'ab'.repeat(32)}` };
+    const replayTopics = [...s.mine.log.topics];
+    replayTopics[3] = `0x${'99'.repeat(20).padStart(64, '0')}`;
+    const replay: RpcLog = { ...s.mine.log, topics: replayTopics, blockNumber: '0x458', blockHash: blockHash(1112), logIndex: '0x7', transactionHash: `0x${'cc'.repeat(32)}` };
+    const res = await runScan({
+      chain, manifest, client: chainWith(2500, [s.mine.log, second, replay]), cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal,
+    });
+    expect(res.matches).toHaveLength(2);
+    expect(res.matches.every((m) => m.viaRouter && m.receipt === 'verified')).toBe(true);
   });
   it('replaces an earlier direct replay with a later genuine router record across pages', async () => {
     const s = setup();
@@ -410,6 +449,27 @@ describe('runScan', () => {
       runScan({ chain, manifest, client: chainWith(10, []), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => crashing, signal: new AbortController().signal }),
     ).rejects.toThrow(/worker failed/);
   });
+
+  it('fails at once when the worker posts an error while a batch is pending, without waiting for the reply timeout', async () => {
+    const s = setup();
+    const w = new InlineWorker();
+    const forward = w.postMessage.bind(w);
+    let batches = 0;
+    w.postMessage = (m): void => {
+      if (m.type === 'batch') { batches += 1; queueMicrotask(() => w.onmessage?.({ data: { type: 'error', code: 'BOOM' } } as never)); }
+      else forward(m);
+    };
+    const run = runScan({
+      chain, manifest, client: chainWith(2500, s.logs), cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+      createWorker: () => w, signal: new AbortController().signal,
+    });
+    run.catch(() => undefined);
+    // The default reply timeout is 60 s; the error must end the scan long before that.
+    await expect(Promise.race([run, new Promise((_resolve, reject) => { setTimeout(() => { reject(new Error('still waiting')); }, 2_000); })])).rejects.toThrow(/worker failed/);
+    expect(batches).toBe(1);
+    expect(w.terminated).toBe(true);
+  }, 15_000);
 
   it('propagates RPC failures and still shuts the worker down', async () => {
     const s = setup();
@@ -698,6 +758,35 @@ describe('WEB-APP-04 / CHAIN-ADAPTERS-03: checkpoints', () => {
     const second = await runScan({ ...base, client: chainWith(2700, [near.log]), cursor: cp, viewingKey: unsafeRevealSecret(s.keys.viewingSecret) });
     expect(second.matches.map((m) => m.stealthAddress)).toEqual([near.stealthAddress]);
     expect(second.matches[0]?.receipt).toBe('verified');
+  });
+
+  it('does not save the checkpoint past a pending payment when a reorg is reported above the page start', async () => {
+    const keys = generateKeySet();
+    const small = { ...chain, getLogsMaxRange: 10, finalityDepth: 20 };
+    const pay = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(keys), block: 585, index: 0, caller: FAKE_ROUTER });
+    const base = chainWith(600, [pay.log]);
+    let reads = 0;
+    // Block 599, the end of the last window read (not the head), changes hash between its boundary read and the re-read,
+    // so the rollback point (590) is above the page start (100).
+    const client = {
+      ...base,
+      getBlock: async (n: bigint) => {
+        const b = await base.getBlock(n);
+        return n === 599n && b !== null && ++reads > 1 ? { ...b, hash: blockHash(5_000_599) as Hex } : b;
+      },
+    };
+    const saved: ScanCursor[] = [];
+    const res = await runScan({
+      chain: small, manifest, client, cursor: { nextBlock: 100n },
+      spendingPublicKeyHex: hexOf(keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal,
+      checkpoints: { load: () => saved.at(-1), save: (_id, _k, c) => { saved.push(c); }, clear: () => undefined },
+    });
+    expect(res.matches.map((m) => m.stealthAddress)).toEqual([pay.stealthAddress]);
+    expect(res.matches[0]?.receipt).toBe('pending');
+    expect(saved.length).toBeGreaterThan(0);
+    // head 600 + 1 - finalityDepth 20 = 581, below the pending payment at block 585.
+    expect(saved.every((c) => c.nextBlock <= 581n)).toBe(true);
   });
 
   it('drop matches from orphaned blocks when a reorg is detected mid-scan', async () => {

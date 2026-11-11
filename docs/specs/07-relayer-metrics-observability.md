@@ -1,5 +1,7 @@
 # 07 Relayer metrics and observability
 
+> **Implementation status (2026-11-11, commit 364b1f18):** the shipped relayer differs from section 1. `/metrics` is served on the main listener (`apps/relayer/src/server.ts`), returns 404 unless a metrics token is configured, and requires that bearer token; there is no `/v1/stats` route and no `METRICS_ENABLED`/`METRICS_BIND` setting. Metric names are `relayer_*` (`apps/relayer/src/metrics.ts`). Alert kinds are the eight in `apps/relayer/src/alerts.ts` (not `reject_spike`/`rpc_disagree`/`price_stale`), with a default 60 s per-kind-and-chain gap and no `X-GP-Signature`/`ALERT_WEBHOOK_SECRET` in `apps/relayer/src`. `docs/operators/relayer-monitoring.md` does not exist.
+
 Priority P1 | Effort S (2 d) | Owner: apps/relayer | Deps: none
 Sources: gap-analysis item 10 (R-08, G-26); breaker/budget/lane modules; privacy ADR stance (no tracking).
 

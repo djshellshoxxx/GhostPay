@@ -8,12 +8,18 @@ The goal is to reduce address reuse and limit routine exposure of invoice detail
 
 ## Status (read this first)
 
-The product development stack is **#84 → #88 → #89 → #90 → #93**. It is not merged into `main`.
-The [product completion ledger](docs/handoffs/PRODUCT_COMPLETION_HANDOFF.md) records the selected source,
-implemented changes, exact qualification and remaining gates. The separate merchant/CLI workstream
-has its own branches and acceptance evidence; it is not silently included in this product branch.
-Use the [current completion gates](docs/audits/08-completion-gates.md) and
-[#90 handoff](docs/handoffs/POLICY_LOCALIZATION_CONTINUATION_2026-11-09.md) for predecessor evidence.
+The latest integrated candidate is **[draft PR #98](https://github.com/djshellshoxxx/GhostPay/pull/98)**, exact head `364b1f185fcc2adaedab4ce7b4b14e676b1da3b7`,
+combining product, merchant, CLI and beta-spec work. It is **not merged into main**.
+Hosted checks on this exact head passed, but the inherited [#84 SonarCloud security-rating D](https://github.com/djshellshoxxx/GhostPay/runs/128302927200)
+has not been cleared by an exact-head SonarCloud report. Independent security review,
+test-only B0 payment-to-recovery acceptance, trusted testnet manifests, release provenance
+and authorization remain open. Draft [#100](https://github.com/djshellshoxxx/GhostPay/pull/100) is a separate workflow
+security change, not part of #98. The 18 privacy proposals merged as PR #99 are **future-only**.
+
+Review the [product handoff](docs/handoffs/PRODUCT_COMPLETION_HANDOFF.md),
+[CLI handoff](docs/handoffs/CLI_COMPLETION_HANDOFF.md),
+[completion gates](docs/audits/08-completion-gates.md), and version-controlled
+[User Guide](docs/wiki/User-Guide.md) / [Developer Guide](docs/wiki/Developer-Guide.md).
 The older test counts below are historical snapshots only.
 
 | Question | Honest answer |

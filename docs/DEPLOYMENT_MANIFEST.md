@@ -40,7 +40,7 @@ Two things the format does **not** give you today:
 | Manifest compared with chain | **Yes.** The web flow verifies runtime code hashes and router `FEE_RECIPIENT()`, `FEE_BPS()`, and `ANNOUNCER()` through the configured RPC; an optional second RPC must agree when supplied. |
 | Manifest part of hashed release bundle | **Yes.** Vite compiles validated raw manifest text and release public keys into the JS bundle. |
 | `preview == calldata` checks | Compare against a manifest that has passed release-signature validation and on-chain readback before payment is enabled. |
-| Real manifests | None exist. |
+| Real manifests | None exist. `deployments/31337.json` is an unsigned local anvil devnet record, not a deployment of record. |
 
 No real manifests or release keys exist yet. The release authenticity gate is implemented, but deployment and hosting remain gated ([ADR-0015](adr/ADR-LOG.md)).
 

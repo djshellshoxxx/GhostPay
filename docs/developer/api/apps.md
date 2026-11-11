@@ -21,7 +21,7 @@ All bodies are `application/json`, at most 16 KiB (`MAX_BODY_BYTES`). Unknown ke
 
 | Route | Purpose |
 |---|---|
-| `GET /healthz` | `{ status: 'ok' \| 'degraded' \| 'shutting_down', chains: [{ chainId, breaker: 'closed' \| 'open' \| 'half_open' }] }`; 503 when every breaker is open or during shutdown |
+| `GET /healthz` | `{ status: 'ok' \| 'degraded' \| 'shutting_down', chains: [{ chainId, breaker: 'closed' \| 'open' \| 'half_open', minedReverts: 'normal' \| 'sustained' }] }`; 503 when any breaker is not healthy, mined reverts are sustained on any chain, or during shutdown (`apps/relayer/src/service.ts`, `server.ts`) |
 | `GET /v1/info` | version, fee policy (`F-SPONSOR`, gas multiplier 110 %, min 50 bps, cap 300 bps, quote TTL, deadline window) and per chain `{ chainId, name, sweepRelayer, feeTo, tokens: [{ address, symbol, decimals, permit }] }` |
 | `POST /v1/quote` | request `{ chainId: number, token, owner, destination, amount }` (addresses 0x-hex, `amount` decimal string >= 1) -> `{ fee: string, feeTo, expiresAt: number, quoteToken: string }` |
 | `POST /v1/sweep` | request below -> `{ txHash }` |
@@ -37,13 +37,13 @@ All bodies are `application/json`, at most 16 KiB (`MAX_BODY_BYTES`). Unknown ke
   },
   "sweepSig": "0x<65 bytes r||s||v>",    // EIP-712 over domain GhostPaySweepRelayer/1/chainId/contract; exactly 65 bytes
   "permit": { "value": "1000000", "deadline": "1760000000", "v": 27, "r": "0x<32>", "s": "0x<32>" },   // optional
-  "quoteToken": "v1.<expiresAt>.<fee>.<hmac-sha256 hex>"
+  "quoteToken": "v2.<keyId>.<expiresAt>.<fee>.<hmac-sha256 hex>"
 }
 ```
 
 `permit` present -> `sweepWithPermit` (token must have `permit: true`, `permit.value >= amount`); absent -> `sweep`
 (allowance already granted). The quote token is stateless: the HMAC (secret `QUOTE_SECRET`) covers the string
-`ghostpay-quote-v1\n<chainId>\n<token>\n<owner>\n<destination>\n<amount>\n<fee>\n<feeTo>\n<expiresAt>` (addresses
+`ghostpay-quote-v2\n<keyId>\n<chainId>\n<token>\n<owner>\n<destination>\n<amount>\n<fee>\n<feeTo>\n<expiresAt>` (addresses
 lower-cased), compared in constant time. Single use is enforced by the contract nonce, not the server.
 
 Sweep checks, in order (`README`): chain and token allowlist (`chain_not_supported`, `token_not_supported`, 422) ->
