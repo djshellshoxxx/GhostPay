@@ -57,6 +57,9 @@ deleting old data.
      so a payment first seen at or after expiry cannot be inferred to have arrived on time.
    - Otherwise `exact`. The window for `exact` is `[createdAt - 5 min, expiresAt)`. An observation recorded before
      expiry can still be proposed when read later; late scans require manual review even if payment may have been on time.
+   - `recordedAt` is first-seen time. `withSaved` keeps the earlier of the stored and new times when the stored record
+     is live evidence (`verified-at-scan`, provenance absent or `'live-scan'`), so a re-save or a `confirmProposal`
+     never moves it forward. Reviving an imported or reorg-invalidated record takes the fresh time.
 5. **Amount is the router net amount.** `registrationFromInvoice` computes it as `routerNet(grossForNet(wanted))` for
    `feePolicy === 'payer_pays'` and `routerNet(wanted)` otherwise, both from `@ghostpay/chain-adapters`. Observations
    carry `metadata.netAmount` through `recordFromVerifiedMatch` (`apps/web/src/lib/reconciliationLedger.ts`).
@@ -279,3 +282,9 @@ These tests exercise the described behaviour. They are listed, not re-run for th
    or after expiry are ambiguous; only observations recorded before expiry can yield an exact local proposal.
 7. **Plaintext exports rely on a confirmation only.** Consider a warning that the file must not be stored in shared
    locations.
+8. **Observation time of unsaved and imported payments (2026-11-11).** Re-saves keep the first live saved time (above).
+   A payment that is not saved yet is timed by the current scan that shows it (the ledger rebuilds unsaved records with
+   the current time, so each rescan re-times it), and a revived imported or invalidated record takes the fresh time.
+   Either can therefore be a `candidate` for an invoice created after the payment, or `late-observation` for an
+   invoice that has since expired, whatever its block time. Fixing this needs block timestamps in the record, a
+   document schema change that is not made here.

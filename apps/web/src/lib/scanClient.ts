@@ -16,6 +16,7 @@ import {
 } from '@ghostpay/chain-adapters';
 import { parseMetadata, type ParsedMetadata } from '@ghostpay/core-crypto';
 import { UserFacingError } from './errors';
+import { paymentKeyOf } from './scanMatches';
 import { anonymitySet, splitLanes, type AnonymitySet } from './scanSpam';
 import type { FromWorker, ToWorker, WireLog } from './scannerCore';
 
@@ -200,7 +201,15 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   let reachableHead: bigint | undefined;
   // Payment identity, unlike a log id, survives a replay announcement at another block. Keep this
   // ledger per scan only: checkpoints never persist claimed payment data or RPC evidence.
-  const claimLedger = new Map<string, number>();
+  // Per (one-time address, ephemeral key): where its first entry is and whether a router record holds it. F1: every
+  // router record is kept as its own entry (a front-run dust announcement through the stateless router copies S and E
+  // and lands first); evidenceLedger, not this ledger, keeps one transfer from being credited twice.
+  const claimLedger = new Map<string, { readonly index: number; readonly router: boolean }>();
+  const recordClaim = (m: ScanMatch, index: number): void => {
+    const known = claimLedger.get(paymentKeyOf(m));
+    if (known === undefined) claimLedger.set(paymentKeyOf(m), { index, router: m.viaRouter });
+    else if (m.viaRouter && !known.router) claimLedger.set(paymentKeyOf(m), { index: known.index, router: true });
+  };
   const evidenceLedger = new Map<string, bigint>();
   const discrepancies: ProviderDiscrepancy[] = [];
   // Pending results from this run are in memory only. On a reorg the safe persistence floor
@@ -268,7 +277,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         all.length = 0;
         all.push(...keep);
         claimLedger.clear();
-        keep.forEach((match, index) => claimLedger.set(`${match.stealthAddress.toLowerCase()}|${match.announcement.ephemeralPublicKey.toLowerCase()}`, index));
+        keep.forEach((match, index) => { recordClaim(match, index); });
         for (const [id, block] of evidenceLedger) if (block >= res.reorg.rolledBackTo) evidenceLedger.delete(id);
         for (const block of routerOnlyBlocks) if (block >= res.reorg.rolledBackTo) routerOnlyBlocks.delete(block);
         // The replacement page re-reads these blocks: drop their router announcements so the privacy set counts each once.
@@ -349,8 +358,8 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         const viaRouter = announcement.caller.toLowerCase() === p.manifest.router.toLowerCase();
         claims.push({ stealthAddress: m.stealthAddress as Address, announcement, metadata, viaRouter });
       }
-      // Drop replay announcements before any payment verification. The helper prefers the verified
-      // router caller for a one-time address/ephemeral-key pair, then the earliest log.
+      // Drop public replay announcements before any payment verification. The helper keeps every router record of a
+      // one-time address/ephemeral-key pair (F1), else the earliest non-router log; each is verified on its own.
       const uniqueClaims = dedupeClaims(claims);
       if (all.length + uniqueClaims.items.length > maxMatches) {
         limitReached = true;
@@ -420,19 +429,18 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         }
         for (const match of pageMatches) {
           if (all.some((x) => x.announcement.id === match.announcement.id)) continue;
-          const paymentKey = `${match.stealthAddress.toLowerCase()}|${match.announcement.ephemeralPublicKey.toLowerCase()}`;
-          const previous = claimLedger.get(paymentKey);
-          if (previous !== undefined) {
-            const old = all[previous];
-            // A later genuine router record outranks an earlier public replay. Equal-trust records
-            // stay first/earliest. The view's onMatch handler upserts by this same payment key.
-            if (old !== undefined && match.viaRouter && !old.viaRouter) {
-              all[previous] = match;
-              p.onMatch?.(match);
-            }
+          const previous = claimLedger.get(paymentKeyOf(match));
+          if (previous !== undefined && !match.viaRouter) continue; // a public replay of a payment already listed
+          if (previous !== undefined && !previous.router) {
+            // The first router record outranks an earlier public replay and takes its place. The view's onMatch
+            // handler applies the same rule (placeScanMatch).
+            all[previous.index] = match;
+            recordClaim(match, previous.index);
+            p.onMatch?.(match);
             continue;
           }
-          claimLedger.set(paymentKey, all.length);
+          // F1: a later router record for the same address and key is its own entry, never skipped.
+          recordClaim(match, all.length);
           all.push(match);
           p.onMatch?.(match);
         }

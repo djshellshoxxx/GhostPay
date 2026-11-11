@@ -207,6 +207,73 @@ describe('encrypted invoice registration and local matching', () => {
     expect((await vault.proposals([fresh])).get(fresh.id)).toEqual({ kind: 'exact', invoice });
   });
 
+  it('keeps the first live observation time when a verified record is saved again (F2)', async () => {
+    const vault = await unlocked();
+    const first = rec(1);
+    await vault.save(first);
+    await vault.save(rec(1, { recordedAt: first.recordedAt + 3_600_000 }));
+    expect((await vault.read()).find((r) => r.id === first.id)?.recordedAt).toBe(first.recordedAt);
+    // An earlier time for the same live observation is not discarded either.
+    await vault.save(rec(1, { recordedAt: first.recordedAt - 1000 }));
+    expect((await vault.read()).find((r) => r.id === first.id)?.recordedAt).toBe(first.recordedAt - 1000);
+  });
+
+  it('confirms after expiry an observation that was first saved before expiry (F2)', async () => {
+    const vault = await unlocked();
+    const invoice = registrationFromInvoice(testInvoice(), 1);
+    await vault.registerInvoice(invoice);
+    const first = rec(1);
+    await vault.save(first);
+    // The page rebuilds current scan records with the time it renders them, here after the invoice expired.
+    const later = rec(1, { recordedAt: (invoice.expiresAt + 60) * 1000 });
+    expect((await vault.proposals([later])).get(first.id)).toEqual({ kind: 'exact', invoice });
+    await vault.confirmProposal(later, invoice.invoiceDigest, { current: [later] });
+    expect((await vault.read()).find((r) => r.id === first.id)).toMatchObject({
+      invoiceDigest: invoice.invoiceDigest,
+      recordedAt: first.recordedAt,
+      provenance: 'live-scan',
+    });
+  });
+
+  it('gives a fresh time to a revived imported or reorg-invalidated observation (F2)', async () => {
+    const source = await unlocked();
+    await source.save(rec(1));
+    const vault = await unlocked();
+    await vault.activateImport(await vault.previewImport(await source.exportEncrypted()));
+    expect((await vault.read())[0]).toMatchObject({ provenance: 'imported-history', recordedAt: rec(1).recordedAt });
+    const fresh = rec(1, { recordedAt: rec(1).recordedAt + 3_600_000 });
+    await vault.save(fresh);
+    expect((await vault.read())[0]).toMatchObject({ provenance: 'live-scan', recordedAt: fresh.recordedAt });
+
+    const store = new Store();
+    const target = await unlocked(store);
+    const template = await target.exportEncrypted();
+    const invalid = { ...rec(2), evidenceStatus: 'invalidated-after-reorg', provenance: 'live-scan' };
+    store.data.set(`${scope.sellerKeyId}:${scope.chainId}`, encryptBody(template, doc({ records: [invalid] })));
+    const revived = rec(2, { recordedAt: rec(2).recordedAt + 3_600_000 });
+    await target.save(revived);
+    expect((await target.read())[0]).toMatchObject({ evidenceStatus: 'verified-at-scan', provenance: 'live-scan', recordedAt: revived.recordedAt });
+  });
+
+  it('does not propose a stored pre-invoice observation for a newer invoice after it is saved again (F2)', async () => {
+    const vault = await unlocked();
+    const first = rec(1);
+    await vault.save(first);
+    const start = NOW + 3600;
+    const newer = registrationFromInvoice(
+      testInvoice({ quote: { source: 'seller:fixed', timestamp: start, expiresAt: start + 600, maxSlippageBps: 50 }, expiresAt: start + 3600 }),
+      1,
+    );
+    await vault.registerInvoice(newer);
+    expect((await vault.proposals()).get(first.id)).toEqual({ kind: 'none' });
+    const rescanned = rec(1, { recordedAt: (start + 60) * 1000 });
+    await vault.save(rescanned);
+    expect((await vault.proposals([rescanned])).get(first.id)).toEqual({ kind: 'none' });
+    await expect(vault.confirmProposal(rescanned, newer.invoiceDigest)).rejects.toThrow(/no longer has a single exact/);
+    expect((await vault.read())[0]).toMatchObject({ recordedAt: first.recordedAt });
+    expect((await vault.read())[0]?.invoiceDigest).toBeUndefined();
+  });
+
   it('keeps saturated vaults read-only for registration, matching and archiving while allowing deletion', async () => {
     const store = new Store();
     const vault = await unlocked(store);

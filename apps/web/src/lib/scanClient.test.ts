@@ -1,7 +1,7 @@
 import { CHAINS, ChainAdapterError, ghostPayRouterAbi, grossForNet, type Hex, type Address, type LogFilter, type RpcLog } from '@ghostpay/chain-adapters';
-import { encodeMetaAddress, generateKeySet, parseMetadata, unsafeRevealSecret } from '@ghostpay/core-crypto';
+import { buildErc20Metadata, encodeMetaAddress, generateKeySet, parseMetadata, unsafeRevealSecret } from '@ghostpay/core-crypto';
 import { describe, expect, it, vi } from 'vitest';
-import { decodeAbiParameters, encodeFunctionData } from 'viem/utils';
+import { decodeAbiParameters, encodeAbiParameters, encodeFunctionData } from 'viem/utils';
 import { FAKE_ANNOUNCER, FAKE_ROUTER, fakeManifest } from '../test/fakeManifest';
 import { InlineWorker } from '../test/inlineWorker';
 import { makeLog } from '../test/announcements';
@@ -29,7 +29,7 @@ function chainWith(head: number, logs: RpcLog[]) {
       address: '0x036cbd53842c5426634e7929541ec2318f3dcf7e',
       blockNumber: log.blockNumber,
       topics: [TRANSFER_TOPIC, `0x${payer.slice(2).padStart(64, '0')}`, recipient],
-      data: `0x${1_000_000n.toString(16).padStart(64, '0')}`,
+      data: `0x${parseMetadata(decodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], log.data as Hex)[1]).netAmount.toString(16).padStart(64, '0')}`,
       blockHash: log.blockHash,
       ...(log.transactionHash === undefined ? {} : { transactionHash: log.transactionHash }),
       logIndex: `0x${(Number(BigInt(log.logIndex)) - 1).toString(16)}`,
@@ -356,7 +356,7 @@ describe('runScan', () => {
     }
   });
 
-  it('deduplicates replay announcements for one address and ephemeral key before crediting', async () => {
+  it('lists a router replay of one address and ephemeral key separately, and does not verify a copy naming another block\'s transaction (F1)', async () => {
     const s = setup();
     const replay: RpcLog = { ...s.mine.log, blockNumber: '0x79', blockHash: blockHash(121), logIndex: '0x5' };
     const res = await runScan({
@@ -364,10 +364,10 @@ describe('runScan', () => {
       spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
       createWorker: () => new InlineWorker(), signal: new AbortController().signal,
     });
-    expect(res.matches).toHaveLength(1);
-    expect(res.matches[0]?.receipt).toBe('verified');
+    // Both router records are kept and verified on their own; the copy names a transaction from another block.
+    expect(res.matches.map((m) => m.receipt)).toEqual(['verified', 'claimed']);
   });
-  it('keeps a per-scan replay ledger across log pages', async () => {
+  it('keeps every router record of one address and ephemeral key across log pages, each with its own evidence (F1)', async () => {
     const s = setup();
     const replay: RpcLog = { ...s.mine.log, blockNumber: '0x458', blockHash: blockHash(1112), logIndex: '0x5', transactionHash: `0x${'ab'.repeat(32)}` };
     const res = await runScan({
@@ -375,8 +375,30 @@ describe('runScan', () => {
       spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
       createWorker: () => new InlineWorker(), signal: new AbortController().signal,
     });
-    expect(res.matches).toHaveLength(1);
-    expect(res.matches[0]?.receipt).toBe('verified');
+    expect(res.matches.map((m) => [m.announcement.transactionHash, m.receipt])).toEqual([[s.mine.log.transactionHash, 'verified'], [replay.transactionHash, 'verified']]);
+  });
+  it('F1: a front-run 1-unit router announcement with a copied address and ephemeral key does not hide the genuine router payment', async () => {
+    const s = setup();
+    const [ephemeral, metadata] = decodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], s.mine.log.data as Hex);
+    const dustMetadata = buildErc20Metadata(parseMetadata(metadata).viewTag, parseMetadata(metadata).token, 1n);
+    // Mined first (earlier block), from its own router transaction moving 1 unit to the copied one-time address.
+    const dust: RpcLog = {
+      ...s.mine.log,
+      data: encodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], [ephemeral, `0x${hexOf(dustMetadata)}`]),
+      blockNumber: '0x77', blockHash: blockHash(119), logIndex: '0x2', transactionHash: `0x${'ee'.repeat(32)}`,
+    };
+    const emitted: import('./scanClient').ScanMatch[] = [];
+    const res = await runScan({
+      chain, manifest, client: chainWith(2500, [dust, s.mine.log]), cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal, onMatch: (m) => emitted.push(m),
+    });
+    expect(res.matches.map((m) => [m.announcement.transactionHash, m.metadata?.netAmount, m.receipt])).toEqual([
+      [dust.transactionHash, 1n, 'verified'],
+      [s.mine.log.transactionHash, 1_000_000n, 'verified'],
+    ]);
+    expect(new Set(res.matches.map((m) => `${m.stealthAddress}|${m.announcement.ephemeralPublicKey}`)).size).toBe(1);
+    expect(emitted.map((m) => m.announcement.id)).toEqual(res.matches.map((m) => m.announcement.id));
   });
   it('replaces an earlier direct replay with a later genuine router record across pages', async () => {
     const s = setup();
@@ -395,6 +417,24 @@ describe('runScan', () => {
     expect(res.matches[0]?.receipt).toBe('verified');
     expect(emitted).toHaveLength(2); // append, then replacement; UI consumers upsert by payment identity
     expect(emitted.at(-1)?.viaRouter).toBe(true);
+  });
+
+  it('skips a later third-party (non-router) replay of an already listed router payment across pages (F1 keeps only router records separate)', async () => {
+    const s = setup();
+    const router: RpcLog = { ...s.mine.log, blockNumber: '0x78', blockHash: blockHash(120), logIndex: '0x1', transactionHash: `0x${'bb'.repeat(32)}` };
+    const directTopics = [...router.topics];
+    directTopics[3] = `0x${'99'.repeat(20).padStart(64, '0')}`;
+    const direct: RpcLog = { ...router, topics: directTopics, blockNumber: '0xc7a8', blockHash: blockHash(51_112), logIndex: '0x0', transactionHash: `0x${'aa'.repeat(32)}` };
+    const emitted: import('./scanClient').ScanMatch[] = [];
+    const res = await runScan({
+      chain, manifest, client: chainWith(52_000, [router, direct]), cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal, onMatch: (m) => emitted.push(m),
+    });
+    expect(res.matches).toHaveLength(1);
+    expect(res.matches[0]?.viaRouter).toBe(true);
+    expect(res.matches[0]?.announcement.transactionHash).toBe(router.transactionHash);
+    expect(emitted).toHaveLength(1);
   });
 
   it('reports a worker that rejects the keys, and worker crashes', async () => {

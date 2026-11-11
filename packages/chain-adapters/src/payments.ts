@@ -52,29 +52,47 @@ const HASH32 = /^0x[0-9a-fA-F]{64}$/;
 /**
  * Collapses duplicate announcements for the same one-time address and ephemeral key (replays by third parties).
  *
- * @remarks Within a group the genuine router announcement is preferred, then the earliest `(block, logIndex)`. The
- * result keeps the order of first appearance. `duplicates` counts what was dropped, so the UI can say so.
+ * @remarks Grouped by `(stealth address, ephemeral key)`. The router is stateless, so anyone can announce through it
+ * with a copied `(S, E)` and a dust transfer, and such a front-run lands BEFORE the genuine payment (F1). Therefore
+ * EVERY router record is kept as its own item (identity: the announcement id); each one must be verified on its own,
+ * and per-scan transfer evidence keeps one transfer from being credited twice. Non-router records are dropped once
+ * the group has a router record; with none, only the earliest `(block, logIndex)` non-router record is kept. The
+ * first router record of a group takes the place of an earlier non-router record; later ones keep their own
+ * position, so the result follows the order of first appearance. The exact same router log seen twice is one item.
+ * `duplicates` counts what was dropped, so the UI can say so.
  *
  * @param items Matches.
  * @returns Unique matches plus the number of dropped duplicates.
  */
 export function dedupeClaims<T extends ClaimedPayment>(items: readonly T[]): { readonly items: readonly T[]; readonly duplicates: number } {
-  const best = new Map<string, T>();
-  const order: string[] = [];
-  const better = (a: T, b: T): boolean => {
-    if (a.viaRouter !== b.viaRouter) return a.viaRouter;
-    if (a.announcement.blockNumber !== b.announcement.blockNumber) return a.announcement.blockNumber < b.announcement.blockNumber;
-    return a.announcement.logIndex < b.announcement.logIndex;
-  };
+  const out: T[] = [];
+  // Per group: the slot of its kept non-router record (until a router record replaces it), and whether it has one.
+  const groups = new Map<string, { slot: number; router: boolean }>();
+  // Router logs already kept, scoped to their group (`blockHash:logIndex` names one log): the same log seen twice is one item.
+  const routerLogs = new Set<string>();
+  const earlier = (a: T, b: T): boolean =>
+    a.announcement.blockNumber !== b.announcement.blockNumber ? a.announcement.blockNumber < b.announcement.blockNumber : a.announcement.logIndex < b.announcement.logIndex;
   for (const it of items) {
     const key = `${it.stealthAddress.toLowerCase()}|${it.announcement.ephemeralPublicKey.toLowerCase()}`;
-    const cur = best.get(key);
-    if (cur === undefined) {
-      best.set(key, it);
-      order.push(key);
-    } else if (better(it, cur)) best.set(key, it);
+    const group = groups.get(key);
+    if (it.viaRouter) {
+      const log = `${key}|${it.announcement.id}`;
+      if (routerLogs.has(log)) continue;
+      routerLogs.add(log);
+      if (group === undefined) groups.set(key, { slot: out.length, router: true });
+      else if (!group.router) {
+        // The first router record takes the place of the earlier non-router one.
+        out[group.slot] = it;
+        group.router = true;
+        continue;
+      }
+      out.push(it);
+    } else if (group === undefined) {
+      groups.set(key, { slot: out.length, router: false });
+      out.push(it);
+    } else if (!group.router && earlier(it, out[group.slot] as T)) out[group.slot] = it;
   }
-  return { items: order.map((k) => best.get(k) as T), duplicates: items.length - order.length };
+  return { items: out, duplicates: items.length - out.length };
 }
 
 async function readBalanceOf(client: RpcClient, owner: Address, asset: Address | 'native'): Promise<bigint | undefined> {
