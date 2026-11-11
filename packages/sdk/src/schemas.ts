@@ -104,7 +104,11 @@ export const webhookEventJsonSchema: JsonSchema = {
       properties: {
         invoiceId: { type: 'string', pattern: '^[0-9a-f]{32}$' },
         currency: { type: 'string', pattern: '^[A-Z]{3}$' },
-        amountMinor: dec,
+        amountMinor: {
+          ...dec,
+          description:
+            'Cumulative amount received so far for the invoice (not a single payment), as a decimal integer in minor units of data.currency; a running total for every event type (partial, paid, over, expired). Normative definition: docs/remote/usability/specs/webhooks.md R8. A webhook is a notification, never payment proof: confirm with the canonical on-chain verifier.',
+        },
         paymentId: { type: 'string', pattern: '^[A-Za-z0-9_-]{1,64}$' },
       },
     },
