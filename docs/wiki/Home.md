@@ -1,10 +1,10 @@
 # GhostPay Wiki
 
-GhostPay is a design-stage project for client-side invoices and EVM stealth-address payments.
-**There is no implementation and no user-facing app yet**, so there is no User Guide in this wiki.
+GhostPay is experimental, unaudited software for client-side invoices and stealth-address payments on EVM networks (plus testnet proofs of concept for Bitcoin, Solana and TRON). Code exists: a React + Vite static web app (`apps/web`), a sweep relayer (`apps/relayer`), Foundry contracts and many `packages/*` libraries. Nothing is deployed and it must not be used with real money.
 
-- [Developer Guide](Developer-Guide.md): the planned packages and build stages
+- [Developer Guide](Developer-Guide.md): how to build, test and run
 - [Architecture and Design Rationale](Architecture-and-Design-Rationale.md)
-- [Codebase Map](Codebase-Map.md): the document set and the planned layout
+- [Codebase Map](Codebase-Map.md)
+- User guides: `docs/user/` in the repository
 
-Authoritative content: `docs/`. This wiki only navigates it.
+Authoritative content: the repository `README.md` and `docs/`. This wiki only navigates it.
