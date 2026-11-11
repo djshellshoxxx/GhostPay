@@ -191,3 +191,52 @@ The #62 + #70 interaction is resolved in both profiles. The skipped cases are pr
 **After run 2:** Qodo found that the Arabic `pay.scan.summary` and `pay.scan.clear` labels were identical. The fix is commit `e02d04c` on #66, written test-first; the new test failed for `ar` before the fix. It was merged forward to #67 (`7f4702f`), #68 (`4fe95fc`) and #69 (`1b9edb1`). It changes only one locale and adds one test. On the new #69 tip: i18n 0 errors, 0 missing; views + i18n vitest 420/420. The full matrix was not re-run for this change.
 
 **Not run here:** Real devices or wallets, mainnet, hosted deployment, CI on the final heads (queued at 04:49).
+
+## Final status (updated 2026-11-11)
+
+"Ready" means every real `ci.yml` job is green on the current head, on an uncancelled run, with A2 review clean and no open finding at medium or above. Nothing was merged; the owner merges.
+
+| PR | Task | Final head | State | Notes |
+|---|---|---|---|---|
+| #59 | A0 | 4a38efd | ready | axe helper TS fix; #47 green |
+| #60 | C2 QR pairing | 78be173 | ready | Qodo chain-id + stale-read fixes; A2 L1/L2 fixed |
+| #61 | A6 backup panel | f5d2198 | ready | Simplified after 3 review rounds (see below) |
+| #62 | B1 core journey | e0a499b | ready | |
+| #63 | C7 embed iframe | 2b9db8a | ready | Qodo timer-leak + stale-ack fixes; reload fallback left as a documented follow-up |
+| #64 | B2' lean bound receipts | 2bcfd11 | ready | |
+| #65 | A7 policy send guard | f7b8ee9 | ready | Duplicate guard KEPT; docs fixed; Qodo high declined with verified reasoning |
+| #66 | C4a i18n Pay | e02d04c | ready | Arabic scan/clear label fix |
+| #67 | C4b i18n Scan | 7f4702f | ready | |
+| #68 | C4c i18n Create + B4 | 4fe95fc | ready | |
+| #69 | B3' sweep permit states | 9d10095 | ready | permit_failed copy split; see the trailer note |
+| #70 | A5 announcer budget | d9fe8b4 pushed; fix local | **draft** | Qodo HIGH open (see below) |
+| #71 | C1 ADR-0026 | 1e87109 | ready | docs only |
+| #72 | B5 testnet feeds | 76199cd | ready | blocked: feed hosts not allowlisted |
+| #73 | C5 device matrix | 92af349 | ready | route-specific heading check |
+| #74 | A4 BTC header sync | 27d1580 | ready | 4 A2 rounds; all mediums fixed; fund-safe |
+
+**Consolidation by other agents (2026-11-04 to 2026-11-10).** Draft PRs #84 and #98 include every head above as an ancestor. None of the heads is on `main`. #98 contains its own fix for the #70 HIGH (29a5810 and 80fd9a8): it replays a `claimed` router match once when it lies above the run floor. That is the same design as this run's rejected round 1, so it inherits two findings that this run's A2 confirmed with probes:
+- (H) The run floor often lands on a payment block for other reasons: the pending rule, the replay tail, a budget stop, or a typed start. A first transient failure there counts as already retried, and the payment is not re-verified.
+- (M) Every `claimed` router match is replayed, not only transient failures. So k always-failing spam claims cost one rewind each, a linear form of the A5 starvation.
+
+**#70 local fix (not pushed).** The work is in `/tmp/claude-0/fix70`, commit a104be8 on d9fe8b4, three rounds. It replaces rewinding with a capped, persisted re-check list (`ScanCursor.recheck`, RECHECK_MAX = 8). The cursor always advances. Each RPC-failed claim gets exactly one targeted re-verify. Overflow is disclosed and reported at save time, and the rescan block is the lowest owed block. It also includes fail-closed head-drop telemetry and head-skew retryable results.
+
+A2 round 3 left four items:
+- (H) a `pending` re-check result is not owed again;
+- (M) a typed start drops the stored list;
+- (M) the overflow notice is not persisted;
+- (M) one rewritten test lost its `< nextBlock` pin.
+
+Round 4 was cut off by the account's weekly usage limit before it produced a commit.
+
+**#61 simplification.** The live "Done" re-check needed a cross-tab guarantee that the design could not give without a cross-tab lock. Round 3 found a fingerprint race between two snapshots. The panel now never derives "Done" for tags. It shows when the last archive was downloaded and how many tags it holds, and says that later changes are not in it. `tags.ts` and `tags.test.ts` are identical to base.
+
+**Process incidents:**
+- b0f85c2 and 9d10095 (#69) carry a mistyped `Claude-Session` trailer (`session_01KtKj8jcfX6gG5RnXcqG3Xn`). History is left as is: fixing it would need a force-push.
+- The session paused for about 6.5 days on the weekly usage limit (2026-11-04 10:00 to 2026-11-11 00:40 UTC). The worker restarted and the local worktrees survived.
+
+**Not done / owner-only:**
+- Real devices and wallets, mainnet, hosted deployment, and professional audit.
+- B5 feed hosts (network allowlist) and TRON genesis (no primary source).
+- Native-speaker review of the es/ja/ar drafts.
+- Merging.
