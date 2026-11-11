@@ -36,6 +36,7 @@ More detail: [product guide](https://github.com/djshellshoxxx/GhostPay/blob/364b
 - **How do I recover lost browser keys?** Restore a separately saved encrypted keystore; clearing browser data can destroy locally held keys.
 - **Is the product anonymous?** No. Amounts, timing, senders, RPC metadata, token transfers and subsequent sweeps can reveal linkage.
 - **Is it independently audited? Can I use real money?** No to both on this unqualified candidate. See [SECURITY.md](https://github.com/djshellshoxxx/GhostPay/blob/364b1f185fcc2adaedab4ce7b4b14e676b1da3b7/SECURITY.md).
+- **Can I exchange Solana stealth addresses or memos between the browser and CLI?** No. The experimental CLI-oriented `@ghostpay/chain-solana` format uses `gpsol:` addresses and base64url `gpst1:` memos; the separate browser-oriented `@ghostpay/solana-stealth` uses `st:sol:` addresses and base58 `gpst1:` memos. They are **not interoperable**. Neither variant is an approved production deployment; do not transfer money between them. See the [source-backed chain-solana README](https://github.com/djshellshoxxx/GhostPay/blob/364b1f185fcc2adaedab4ce7b4b14e676b1da3b7/packages/chain-solana/README.md).
 - **Does the CLI automate payment?** No; it supports documents, local merchant tools and consented read-only checks.
 
 ## Privacy and safe use
