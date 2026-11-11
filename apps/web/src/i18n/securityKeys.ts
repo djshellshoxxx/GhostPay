@@ -41,6 +41,14 @@ export const SECURITY_KEY_GROUPS = {
     'scan.privacySet.medium',
     'scan.privacySet.high',
   ],
+  // Spec 05 lane and same-token estimate disclosures (what the scan RPC learns, what is never skipped).
+  scanLaneDisclosure: [
+    'scan.privacySet.transfers',
+    'scan.privacySet.transfersUnknown',
+    'scanLanes.disclosure.transfers',
+    'settings.scanLanes.floodHint',
+    'settings.scanLanes.transfersHint',
+  ],
   supportedChainOutcomes: [
     'btc.verification.check.header',
     'btc.verification.check.transactions',
@@ -2109,6 +2117,10 @@ export const NEUTRAL_KEY_LIST = [
   'tron.block.label',
   'common.copy.copied',
   'common.copy.failed',
+  'settings.scanLanes.flood',
+  'settings.scanLanes.score',
+  'settings.scanLanes.transfers',
+  'settings.scanLanes.errFlood',
 ] as const satisfies readonly MessageKey[];
 
 export const NEUTRAL_KEYS: ReadonlySet<MessageKey> = new Set<MessageKey>(NEUTRAL_KEY_LIST);

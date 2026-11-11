@@ -94,6 +94,33 @@ Frigate (Sparrow) / Electrum Silent Payments protocol:
   error paths. **Not verified:** acceptance by Bitcoin Core (`testmempoolaccept`) or any network; no signet broadcast.
 - Fee policy: `fee = ceil(feerate * vsize)`; change below the dust limit (default 546) is folded into the fee; a leftover
   larger than that without a change address is refused instead of burned.
+- **Wallet policy (2026-11-11, spec 11 sections 1 and 3).** Deliberate behaviour changes in `spend.ts`:
+  - Fee guard: `previewSweep` and `buildSpendTransaction` (both signer paths) now refuse `FEE_TOO_HIGH` whenever
+    `fee > 50%` of the inputs, unless the caller passes `forceHighFee: true`; exactly 50% is allowed. Before, a fee above
+    half was only refused once it also exceeded 10 000 sats, with no override. The spec names no absolute floor, so the
+    10 000 sat conjunct is gone; `MAX_FEE_RATE_SAT_PER_VB` (10 000 sat/vB) stays a hard cap that `forceHighFee` does not
+    lift, and a fee that leaves nothing to send is still `INSUFFICIENT_FUNDS`. The old pinned test in
+    `audit-fixes.test.ts` (B6) now asserts the spec rule and the override; the boundaries live in `spend-policy.test.ts`.
+    This guard already applies to the web sweep (`apps/web/src/features/btc/sweep.ts` calls `previewSweep` and
+    `buildSpendTransactionWithSigner` without `forceHighFee`), so an output whose sweep fee would exceed half its value
+    is refused in the UI with `btc.error.feeTooHigh` and no override until the web wires one.
+  - Dust: `DUST_LIMIT_SATS` (546, the consensus-style floor) is the default output dust limit and now the hard minimum: a
+    caller `dustLimitSats` below it is raised to it (before, `0n` was accepted and could create sub-546 outputs);
+    negative values are still `INVALID_INPUT`. The spec's wallet threshold, `DEFAULT_WALLET_DUST_SATS` (1000), applies to
+    which **detected** outputs a sweep spends (`selectOutputsForSweep` leaves them out unless `includeDust` or a lower
+    `walletDustSats`), not to what `buildSpendTransaction` creates: the spec row says the scanner reports every match and
+    the wallet hides, and the leftover boundary pinned in `audit-fixes.test.ts` B3 keeps the 546 default for outputs.
+  - `policy.ts` (pure, nothing persisted): `DestinationHistory` is a bounded (`MAX_DESTINATION_HISTORY_ENTRIES` = 1024,
+    oldest evicted), JSON-serializable list of normalized addresses and counts only; `parseDestinationHistory` rejects
+    anything else (exact key sets, non-normalized or non-ASCII strings, non-positive or unsafe counts, duplicates, over
+    the cap). `checkDestinationReuse` separates `ADDRESS_REUSED` (regular address: on-chain linkable) from
+    `SILENT_PAYMENT_REPEATED` (fresh output key each time; informational). `groupOutputsByLabel` and
+    `selectOutputsForSweep` keep unlabeled (`null`), change (`0`) and each label apart; spending several labels in one
+    transaction is refused with `SpendPolicyError` (`policy: 'LABEL_MIX'`, a `SilentPaymentError` with code
+    `INVALID_INPUT` since `errors.ts` was not extended) unless `force` is set. The caller still picks the outputs:
+    `buildSpendTransaction` spends whatever it is given, so the policy only holds when the selection goes through
+    `selectOutputsForSweep`. The web view does not yet use `policy.ts` (reuse warning, label selection, wallet dust);
+    only the fee guard and the 546 floor reach it through `spend.ts`.
 
 ## Security statements
 
@@ -170,8 +197,29 @@ Frigate (Sparrow) / Electrum Silent Payments protocol:
   commitment). Prevout scripts/amounts remain unbound (earlier blocks); a lying server can hide, not forge, payments.
 - **Scan state (2026-10-25).** `ScanState` (birth height, last height/hash, 100-block reorg window, matches with
   `confirmed`/`pending`), `reconcileScanState`, `resumeScan` (progress after every block), strict JSON. It holds no
-  secret but is private; `ScanStateStore` implementations must encrypt at rest. **Not implemented:** an encrypted
-  IndexedDB store and its use in the web view.
+  secret but is private; `ScanStateStore` implementations must encrypt at rest. **Not implemented in this package:**
+  an encrypted store (the web view provides one).
+- **Local spent tracking, source disagreement and sampled cross-check (2026-11-11, spec 12).**
+  - `TweakSource.getSpends?(height)` (optional) returns every outpoint the block's transactions consume (coinbase
+    excluded, at most `MAX_SPENDS_PER_BLOCK` = 100 000, each txid/vout/spentBy validated). `scanBlocks` asks for it only
+    when the caller passes `onSpend`, once per block after its outputs, and requires the same block hash (else
+    `REORG_DETECTED`). Spends are matched locally against `watchOutpoints` (e.g. persisted matches) and the outpoints
+    found earlier in the same call; the source receives only the height (privacy contract extended to `getSpends`).
+    `ScanStateMatch.spent` records where a match was spent; `recordScannedBlock` takes the block's spend events;
+    `reconcileScanState` clears spends above the rollback point (the output counts as unspent again until a rescan
+    finds the spend); `resumeScan` watches the unspent persisted matches. A wallet therefore learns confirmed spends
+    without asking a server per outpoint. **Limits:** mempool (unconfirmed) spends are unknown; a source that omits a
+    spend hides it (the sampled cross-check below catches omitted tweaks and outputs, not omitted spends); the Esplora
+    `/outspend` query remains available to callers that accept the disclosure.
+  - `syncHeaderChainFromSources` reports a `SourceAgreement` per successful source (`tipHeight`, `behindBy`,
+    `behind` past `maxBehind` = 6 by default, `lighter`, `conflicting` when a header it served is off the adopted
+    chain) and `sourcesDisagree`; `requireAgreement: true` fails closed with `SourceDisagreementError` (code
+    `REORG_DETECTED`, carrying the per-source results) after every source was synced. Withholding cannot be proven,
+    only disagreement: a lagging, partitioned or lying source look the same, and a single source cannot be checked.
+  - `crossCheckSample: { rate, random }` extends `crossCheck` to blocks without matches: each is checked (same hash,
+    same tweak multiset, same output multiset) with probability `rate`; the caller injects `random` (the library draws
+    no randomness). Rate 0 is the previous behaviour; rate 1 checks every block. The second source learns the sampled
+    heights too, which also hides from it which heights hold payments.
 - Voluntary tip output; hosted scanning service (mode C: absent, would need an ADR).
 - Dependencies: `@scure/base@1.2.6`, devDependency `@scure/bip32@1.7.0` and (2026-10-21) `@scure/btc-signer@2.4.1`
   (exact; its dependencies are `@noble/curves` 2.4.0 and `@noble/hashes` 2.4.0, identical to this package's pins and

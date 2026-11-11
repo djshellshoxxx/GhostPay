@@ -173,6 +173,7 @@ Pre-audit and testnet-only. Nothing is deployed. Chain-specific notes (not user 
 | [user/receive-and-scan](user/receive-and-scan.md) | How a seller scans for payments; sellers get no notification | user guide | n/a |
 | [user/sweep-and-gas-privacy](user/sweep-and-gas-privacy.md) | Sweeping one-time addresses and where privacy is easiest to lose | user guide | n/a |
 | [user/privacy-limits](user/privacy-limits.md) | What stays public and what GhostPay does not hide | user guide | n/a |
+| [user/seller-privacy](user/seller-privacy.md) | Seller privacy set, scanner lanes, spam and funding hygiene (spec 05) | user guide | n/a |
 | [user/fees](user/fees.md) | Fee types, when they apply and where they are enforced | user guide | n/a |
 | [user/troubleshooting](user/troubleshooting.md) | Symptom-to-cause table for common errors | user guide | n/a |
 
@@ -257,3 +258,7 @@ Research and handoff prompts dated 2026-10-30 to 2026-11-04, brought into the co
 
 - [Handoff](./HANDOFF.md): current state, lessons, how to resume.
 - [Completion plan](./COMPLETION_PLAN.md): what remains and how to finish it.
+
+## Future-only privacy-first feature proposals
+
+- [Future-only privacy-first catalog](future/privacy-first/README.md) — **FUTURE ONLY**, not approved, scheduled, implemented by these documents, or part of current beta/release scope. Contains 18 individually scoped enhancement specifications; existing feature code and active workstreams retain their own status.

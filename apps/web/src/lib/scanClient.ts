@@ -16,7 +16,7 @@ import {
 } from '@ghostpay/chain-adapters';
 import { parseMetadata, type ParsedMetadata } from '@ghostpay/core-crypto';
 import { UserFacingError } from './errors';
-import { anonymitySet, splitLanes, type AnonymitySet } from './scanSpam';
+import { anonymitySet, estimateSimilarTransfers, splitLanes, type AnonymitySet, type ScanLaneOptions, type TransferEstimate } from './scanSpam';
 import type { FromWorker, ToWorker, WireLog } from './scannerCore';
 
 export interface ScanWorkerLike {
@@ -124,6 +124,14 @@ export interface ScanParams {
   readonly onDiscrepancy?: (d: readonly ProviderDiscrepancy[]) => void;
   /** Spec 05: non-router announcements processed per run (default 20,000). Overflow is deferred, never skipped. */
   readonly openLaneBudget?: number;
+  /** Spec 05 lane options: flood threshold per caller and block, and the local spam score switch. */
+  readonly floodPerBlock?: number;
+  readonly spamScoring?: boolean;
+  /**
+   * Spec 05 B, opt-in: after the run, count transfers of the token of the latest payment found, at a similar amount, in a
+   * fixed recent window (no sender or recipient in the query). Costs RPC calls; `unknown` on any limit or error.
+   */
+  readonly privacySetTransfers?: boolean;
 }
 
 function toWire(a: ScannedAnnouncement, skipTag: boolean): WireLog {
@@ -192,6 +200,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   let openSeen = 0;
   let suspected = 0;
   const routerBlocks: bigint[] = [];
+  const laneOptions: ScanLaneOptions = { ...(p.floodPerBlock === undefined ? {} : { floodPerBlock: p.floodPerBlock }), ...(p.spamScoring === undefined ? {} : { spamScoring: p.spamScoring }) };
   // Blocks too large to fetch whole: only their router-posted announcements were scanned (bounded list).
   const routerOnlyBlocks = new Set<bigint>();
   const narrowed = (): { readonly routerOnlyBlocks?: readonly bigint[] } => (routerOnlyBlocks.size === 0 ? {} : { routerOnlyBlocks: [...routerOnlyBlocks] });
@@ -314,7 +323,7 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
       }
       // Spec 05: router-posted announcements (trusted lane) go first; the open lane has a per-run budget. A page whose open
       // lane does not fit is processed for the trusted lane only and the cursor is held before it, so nothing is skipped.
-      const lanes = splitLanes(res.announcements, p.manifest.router);
+      const lanes = splitLanes(res.announcements, p.manifest.router, laneOptions);
       suspected += lanes.suspected;
       // The first page of a run is never deferred: with a budget below one page's open lane the cursor would
       // otherwise stay before that page on every run. Per-run work is then at most the budget plus one page.
@@ -488,7 +497,16 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
   // blocks a lower bound. A lagging provider can lower that head below a prior page or cursor; do not retain an
   // obsolete high-water mark or count announcements beyond the current window.
   const windowHead = reachableHead ?? scanHead;
-  const anonymity = trustedSeen + openSeen === 0 && scanned === 0 ? undefined : anonymitySet({ chain: p.chain, routerBlocks, head: windowHead, scannedFrom: p.cursor.nextBlock, scannedTo: scanHead });
+  const counted = trustedSeen + openSeen > 0 || scanned > 0;
+  let transfers: TransferEstimate | undefined;
+  if (p.privacySetTransfers === true && counted && !p.signal.aborted) {
+    // The latest ERC-20 payment found sets the token and the amount band; the query itself names neither address.
+    const paid = all.filter((m) => m.metadata?.kind === 'erc20').sort((x, y) => (x.announcement.blockNumber < y.announcement.blockNumber ? 1 : x.announcement.blockNumber > y.announcement.blockNumber ? -1 : 0))[0];
+    transfers = paid?.metadata === undefined
+      ? { status: 'unknown', reason: 'noPayment' }
+      : await estimateSimilarTransfers({ client: p.client, chain: p.chain, token: paid.metadata.token, amount: paid.metadata.netAmount, head: windowHead });
+  }
+  const anonymity = counted ? anonymitySet({ chain: p.chain, routerBlocks, head: windowHead, scannedFrom: p.cursor.nextBlock, scannedTo: scanHead, ...(transfers === undefined ? {} : { transfers }) }) : undefined;
   return { matches: all, cursor, scanned, discrepancies, limitReached, backlog, routerOnlyBlocks: [...routerOnlyBlocks], ...(secondaryLag === undefined ? {} : { secondaryLag }), telemetry: { trusted: trustedSeen, open: openSeen, suspected, anonymity } };
 }
 

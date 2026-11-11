@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { decodeAbiParameters, encodeFunctionData } from 'viem/utils';
 import { FAKE_ANNOUNCER, FAKE_ROUTER, fakeManifest } from '../test/fakeManifest';
 import { InlineWorker } from '../test/inlineWorker';
-import { makeLog } from '../test/announcements';
+import { makeLog, TOKEN_84532 } from '../test/announcements';
 import { mockRpc } from '../test/mockRpc';
 import { checkpointKeyId, localCheckpointStore, runScan, type CheckpointStore, type ScanProgress } from './scanClient';
 import { ReconciliationVault } from './reconciliationVault';
@@ -1207,6 +1207,82 @@ describe('spec 05: spam lanes, backlog and local telemetry', () => {
     const saved = await resumeRuns(3, (cursor) => runScan({ chain, manifest, client, cursor, maxMatchesPerScan: 2, checkpoints: store, ...keyArgs(keys) }), store);
     expect(saved[0]).toBe(100n);
     expect(saved[1]).toBeGreaterThan(100n);
+  });
+});
+
+describe('spec 05 D3/D4: same-token transfer estimate and lane options', () => {
+  const OTHER = '0x9999999999999999999999999999999999999999' as Address;
+  const run = (keys: ReturnType<typeof generateKeySet>, client: ReturnType<typeof chainWith>, extra: Partial<Parameters<typeof runScan>[0]> = {}, worker = new InlineWorker()) => runScan({
+    chain, manifest, client, cursor: { nextBlock: 0n },
+    spendingPublicKeyHex: hexOf(keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(keys.viewingSecret),
+    createWorker: () => worker, signal: new AbortController().signal, ...extra,
+  });
+  const tokenQueries = (client: ReturnType<typeof chainWith>) => client.calls.filter((c) => {
+    const f = c.params[0] as { address?: string; topics?: readonly unknown[] } | undefined;
+    return c.method === 'eth_getLogs' && f?.address?.toLowerCase() === '0x036cbd53842c5426634e7929541ec2318f3dcf7e' && f.topics?.length === 1;
+  });
+
+  it('estimates transfers of the paid token at similar amounts only when opted in, from the latest router payment, with no address filter', async () => {
+    const keys = generateKeySet();
+    const meta = encodeMetaAddress(keys);
+    const early = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 120, index: 0, caller: FAKE_ROUTER });
+    const late = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 2100, index: 1, caller: FAKE_ROUTER });
+    const off = chainWith(2500, [early.log, late.log]);
+    const plain = await run(keys, off);
+    expect(plain.telemetry?.anonymity?.transfers).toBeUndefined();
+    expect(tokenQueries(off)).toHaveLength(0);
+    const on = chainWith(2500, [early.log, late.log]);
+    const res = await run(keys, on, { privacySetTransfers: true });
+    expect(res.matches).toHaveLength(2);
+    // The router transfer for the late payment (block 2100) is inside the 2000-block window; the early one (120) is not.
+    expect(res.telemetry?.anonymity).toMatchObject({ count7d: 2, transfers: { status: 'estimate', token: TOKEN_84532, count: 1, windowBlocks: 2000 } });
+    const queries = tokenQueries(on);
+    expect(queries.length).toBeGreaterThan(0);
+    for (const q of queries) {
+      const f = q.params[0] as { fromBlock: bigint; toBlock: bigint; topics: readonly unknown[] };
+      expect(f.fromBlock).toBeGreaterThanOrEqual(501n);
+      expect(f.toBlock).toBeLessThanOrEqual(2500n);
+    }
+  });
+
+  it('fails closed to an unknown estimate on a lookup error or limit and keeps the router count', async () => {
+    const keys = generateKeySet();
+    const paid = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(keys), block: 2100, index: 1, caller: FAKE_ROUTER });
+    const base = chainWith(2500, [paid.log]);
+    const failing = { ...base, getLogs: (f: LogFilter) => (f.topics.length === 1 ? Promise.reject(new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32005')) : base.getLogs(f)) };
+    const res = await run(keys, failing, { privacySetTransfers: true });
+    expect(res.matches).toHaveLength(1);
+    expect(res.telemetry?.anonymity).toMatchObject({ count7d: 1, level: 'low', transfers: { status: 'unknown', reason: 'limit' } });
+  });
+
+  it('reports the estimate as unknown when opted in but no token payment of mine was found', async () => {
+    const keys = generateKeySet();
+    const stranger = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(generateKeySet()), block: 2100, index: 1, caller: FAKE_ROUTER });
+    const client = chainWith(2500, [stranger.log]);
+    const res = await run(keys, client, { privacySetTransfers: true });
+    expect(res.matches).toHaveLength(0);
+    expect(res.telemetry?.anonymity).toMatchObject({ count7d: 1, transfers: { status: 'unknown', reason: 'noPayment' } });
+    expect(tokenQueries(client)).toHaveLength(0);
+  });
+
+  it('passes the flood threshold and the spam-score switch to the lanes', async () => {
+    const keys = generateKeySet();
+    const stranger = encodeMetaAddress(generateKeySet());
+    const FLOODER = '0x5555555555555555555555555555555555555555' as Address;
+    const three = Array.from({ length: 3 }, (_, i) => makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block: 500, index: i, caller: FLOODER }).log);
+    const honest = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block: 501, index: 0, caller: OTHER }).log;
+    const byDefault = await run(keys, chainWith(2500, [...three, honest]));
+    expect(byDefault.telemetry).toMatchObject({ open: 4, suspected: 0 });
+    const strict = new InlineWorker();
+    const low = await run(keys, chainWith(2500, [...three, honest]), { floodPerBlock: 2 }, strict);
+    expect(low.telemetry).toMatchObject({ open: 4, suspected: 3 });
+    const strictBatch = strict.received.find((m) => m.type === 'batch');
+    expect(strictBatch?.type === 'batch' ? strictBatch.logs[0]?.id.startsWith(honest.blockHash) : false).toBe(true);
+    const plain = new InlineWorker();
+    const unscored = await run(keys, chainWith(2500, [...three, honest]), { floodPerBlock: 2, spamScoring: false }, plain);
+    expect(unscored.telemetry).toMatchObject({ open: 4, suspected: 0 });
+    const plainBatch = plain.received.find((m) => m.type === 'batch');
+    expect(plainBatch?.type === 'batch' ? plainBatch.logs.map((l) => l.id.split(':')[0]) : []).toEqual([three[0]?.blockHash, three[0]?.blockHash, three[0]?.blockHash, honest.blockHash]);
   });
 });
 

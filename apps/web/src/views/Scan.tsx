@@ -9,7 +9,7 @@ import { formatUnits } from '../lib/format';
 import { UserFacingError, displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { checkpointKeyId, runScan, type ScanMatch, type ScanProgress } from '../lib/scanClient';
 import { browserStorage, createWindowedScanClient, describeScanDisclosureMessages, loadScanPrivacy, openScanClients, planScan } from '../lib/scanPrivacy';
-import type { AnonymitySet } from '../lib/scanSpam';
+import { PRIVACY_TRANSFER_WINDOW_BLOCKS, loadScanLanes, type AnonymitySet } from '../lib/scanSpam';
 import { useServices } from '../lib/services';
 import { captureSessionGuard, revealViewingKey, subscribeSession } from '../lib/session';
 import { recordFromVerifiedMatch } from '../lib/reconciliationLedger';
@@ -50,12 +50,18 @@ const show = (m: ScanText, t: T): string => ('error' in m ? displayMessage(m.err
 
 // i18n-use: scan.privacySet.low scan.privacySet.medium scan.privacySet.high
 function describePrivacySet(a: AnonymitySet, t: T): string {
-  return t('scan.privacySet.body', {
+  const body = t('scan.privacySet.body', {
     level: t(a.level === 'low' ? 'scan.privacySet.low' : a.level === 'medium' ? 'scan.privacySet.medium' : 'scan.privacySet.high'),
     count7d: String(a.count7d),
     count30d: String(a.count30d),
     partial: a.partial ? 'yes' : 'no',
   });
+  // Spec 05 B opt-in: a labelled same-token estimate that never changes the level.
+  if (a.transfers === undefined) return body;
+  const transfers = a.transfers.status === 'estimate'
+    ? t('scan.privacySet.transfers', { count: String(a.transfers.count), blocks: String(a.transfers.windowBlocks) })
+    : t('scan.privacySet.transfersUnknown', { reason: a.transfers.reason });
+  return `${body} ${transfers}`;
 }
 
 export function Scan(): ReactNode {
@@ -79,6 +85,7 @@ export function Scan(): ReactNode {
   const startingScope = useRef<{ readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
   const manifest = useManifest(chainId);
   const scanPrivacy = loadScanPrivacy(browserStorage());
+  const scanLanes = loadScanLanes(browserStorage());
   const keyId = app.session === undefined ? undefined : checkpointKeyId(app.session.spendingPublicKey, app.session.viewingPublicKey);
   const checkpoint = keyId === undefined ? undefined : services.checkpoints.load(chainId, keyId);
 
@@ -158,6 +165,7 @@ export function Scan(): ReactNode {
         if (chain === undefined || manifest?.status !== 'loaded') throw new Error('manifest');
         // Spec 10: the scan path is planned first; a required private path that is missing blocks the scan, never downgrades.
         const privacy = loadScanPrivacy(browserStorage());
+        const lanes = loadScanLanes(browserStorage());
         const plan = planScan(privacy, chain);
         if (plan.kind === 'blocked') throw new UserFacingError(plan.reasonMessage);
         const clients = await openScanClients({ plan, chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, appRpc: () => app.getRpc(chainId), fetchImpl: services.fetchFn, sleep: services.sleep });
@@ -206,6 +214,9 @@ export function Scan(): ReactNode {
           manifest: manifest.manifest,
           client: clients.scan,
           openLaneBudget: privacy.openLaneBudget,
+          floodPerBlock: lanes.floodPerBlock,
+          spamScoring: lanes.spamScoring,
+          privacySetTransfers: lanes.privacySetTransfers,
           cursor,
           spendingPublicKeyHex: app.session?.spendingPublicKey ?? '',
           keyId,
@@ -304,6 +315,7 @@ export function Scan(): ReactNode {
           {describeScanDisclosureMessages(scanPrivacy, { hasSecondary: (app.settings.rpcUrlsSecondary[String(chainId)] ?? '') !== '' }).map((row) => (
             <li key={row.party.key}><strong>{displayMessage(row.party, t)}:</strong> {displayMessage(row.learns, t)}</li>
           ))}
+          {scanLanes.privacySetTransfers && <li><strong>{t('scanPrivacy.disclosure.rpcParty')}:</strong> {t('scanLanes.disclosure.transfers', { blocks: String(PRIVACY_TRANSFER_WINDOW_BLOCKS) })}</li>}
         </ul>
         <p className="hint">{t('scan.disclosure.hint')}</p>
       </details>

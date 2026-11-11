@@ -272,6 +272,12 @@
     "settings.scanPrivacy.budget": "الإعلانات غير الصادرة عن الموجّه لكل مسح",
     "settings.scanPrivacy.budgetHint": "تُفحص دائمًا إعلانات موجّه GhostPay أولًا. تُؤجّل الإعلانات الأخرى التي تتجاوز هذه الميزانية إلى المسح التالي ولا تُتجاوز أبدًا.",
     "settings.scanPrivacy.learnsHeading": "ما يعرفه كل طرف",
+    "settings.scanLanes.flood": "Flood threshold (announcements per caller per block)",
+    "settings.scanLanes.floodHint": "A caller posting more than this many announcements in one block is treated as likely spam: those announcements are checked last, never skipped. Announcements posted by the GhostPay router are never treated as spam.",
+    "settings.scanLanes.score": "Check suspected spam last (local score: repeated ephemeral keys, floods, malformed metadata)",
+    "settings.scanLanes.transfers": "Estimate same-token transfers for the privacy set (costs RPC calls)",
+    "settings.scanLanes.transfersHint": "Off by default. When on, each scan ends by asking the scan RPC for the recent Transfer logs of the token you were last paid in, over the last {blocks} blocks, with no sender or recipient in the request, and counts those at a similar amount (within 25%). The provider learns which token you scan for and when; this request names none of your addresses. The result is a labelled estimate and never changes the privacy-set level; any provider limit or error shows it as unknown.",
+    "settings.scanLanes.errFlood": "The flood threshold must be from 1 to 10000.",
     "settings.scanPrivacy.paranoid": "استخدام الإعداد الأشد احتياطًا",
     "settings.scanPrivacy.save": "حفظ خصوصية المسح",
     "home.title": "ماذا تريد أن تفعل؟",
@@ -2052,6 +2058,9 @@
     "scan.privacySet.body": "Privacy set: {level} ({count7d} GhostPay router announcements in about the last 7 days, {count30d} in about 30 days{partial, select, yes {; counted over only the blocks scanned this time, so the real number may be higher} other {}}). This is a rough local heuristic, not a guarantee: payments that share your view-tag bucket, unusual amounts and timing make the real set smaller. It is computed on this device and never sent.",
     "scan.privacySet.low": "low",
     "scan.privacySet.medium": "medium",
-    "scan.privacySet.high": "high"
+    "scan.privacySet.high": "high",
+    "scan.privacySet.transfers": "Same-token estimate: {count} transfers of the token you were paid in at a similar amount (within 25%) in the last {blocks} blocks, counted from public transfer logs; it does not change the level above.",
+    "scan.privacySet.transfersUnknown": "Same-token estimate: unknown ({reason, select, limit {the provider limit was hit} error {the lookup failed} other {no token payment of yours was found to compare with}}).",
+    "scanLanes.disclosure.transfers": "With the same-token estimate on: which token you were last paid in, and that you asked for its recent transfers (the last {blocks} blocks) right after scanning. That request carries no address of yours."
   }
 }
