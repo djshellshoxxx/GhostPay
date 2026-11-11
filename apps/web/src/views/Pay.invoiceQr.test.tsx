@@ -14,11 +14,11 @@ import { Pay } from './Pay';
 
 beforeEach(() => { clearSession(); window.localStorage.clear(); window.sessionStorage.clear(); setHash(''); });
 afterEach(() => { vi.restoreAllMocks(); });
-async function openInput(baseUrl = 'https://app.test/') {
+async function openInput(baseUrl = 'https://app.test/', extra: Parameters<typeof makeServices>[0] = {}) {
   const discoverWallets = vi.fn(() => Promise.resolve([]));
   const loadManifest = vi.fn(makeServices().loadManifest);
   const createRpc = vi.fn(makeServices().createRpc);
-  const rendered = renderApp(makeServices({ discoverWallets, loadManifest, createRpc, baseUrl: () => baseUrl }));
+  const rendered = renderApp(makeServices({ ...extra, discoverWallets, loadManifest, createRpc, baseUrl: () => baseUrl }));
   const user = userEvent.setup();
   await user.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('button', { name: /^Pay$/ }));
   await user.click(screen.getByText('Scan an invoice QR'));
@@ -285,5 +285,51 @@ describe('Pay invoice QR intake', () => {
     await screen.findByRole('button', { name: 'Open scanned invoice' });
     act(() => { clearSession(); });
     await waitFor(() => { expect(screen.queryByRole('button', { name: 'Open scanned invoice', hidden: true })).toBeNull(); });
+  });
+});
+
+describe('Pay invoice QR intake: cryptographic and validity failures reach the same hard stops as pasted links', () => {
+  const body = (fragment: string): string => fragment.slice('#gpi=v1.'.length);
+
+  it('previews a forged (re-signed-less) invoice as invalid and keeps payment blocked after opening', async () => {
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const json = new TextDecoder().decode(invoices.decodeBase64Url(body(fragment)));
+    const forged = `#gpi=v1.${invoices.encodeBase64Url(new TextEncoder().encode(json.replace('Consulting', 'Consultinh')))}`;
+    const { user, discoverWallets } = await openInput();
+    await scanText(forged, user);
+    expect(await screen.findByText(/The invoice signature is invalid\. Payment will remain blocked\./)).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Open scanned invoice' }));
+    expect((await screen.findAllByText(/signature is INVALID/)).length).toBeGreaterThan(0);
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Continue' }).disabled).toBe(true);
+    expect(discoverWallets).not.toHaveBeenCalled();
+  });
+
+  it('rejects a QR whose encoding was corrupted in transit without any preview', async () => {
+    const { fragment } = await makeParsed();
+    const b = body(fragment);
+    const mid = Math.floor(b.length / 2);
+    const { user } = await openInput();
+    await scanText(`#gpi=v1.${b.slice(0, mid)}${b[mid] === 'A' ? 'B' : 'A'}${b.slice(mid + 1)}`, user);
+    expect(await screen.findByText('Invoice QR not accepted')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Open scanned invoice' })).toBeNull();
+  });
+
+  it('opens an expired scanned invoice only into the ordinary review, which blocks it', async () => {
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const { user, discoverWallets } = await openInput('https://app.test/', { nowMs: () => (NOW + 48 * 3600) * 1000 });
+    await scanText(fragment, user);
+    await user.click(await screen.findByRole('button', { name: 'Open scanned invoice' }));
+    expect(await screen.findByText('This invoice has expired.')).toBeTruthy();
+    expect(discoverWallets).not.toHaveBeenCalled();
+  });
+
+  it('never reaches a wallet merely because a valid QR was scanned and opened', async () => {
+    const { fragment } = await makeParsed({ token: 'native', tokenAmount: '0.5' });
+    const { user, discoverWallets } = await openInput();
+    await scanText(fragment, user);
+    await user.click(await screen.findByRole('button', { name: 'Open scanned invoice' }));
+    expect(await screen.findByRole('heading', { name: 'Review payment' })).toBeTruthy();
+    expect(discoverWallets).not.toHaveBeenCalled();
+    expect(window.sessionStorage.getItem('ghostpay.wallet-attempts.v1')).toBeNull();
   });
 });
