@@ -43,14 +43,32 @@ The command was `git rev-list --count a28ca06..<ref>` over all 97 remote refs. R
 | `scripts/i18n/check.mjs` / `extract.mjs` | 0 errors / 214 warnings (unchanged); 0 missing |
 | web vitest, all files | 2002 passed, 4 skipped, plus 1 stale expectation (fixed; `Scan.test.tsx` then 29/29) |
 | relayer-guard / pool-relayer / relayer | 167 / 34 (+9 skipped) / 309 (+4 anvil skipped) |
-| other workspaces, Playwright | see PR #84 comment and the section below once recorded |
+| other workspaces (67) | 66 pass; root `npm run lint` exit 0 |
+| Playwright lean / full (local Chromium 1243) | 50 passed, 1 skipped / 58 passed, 1 skipped |
+| relayer anvil e2e (local anvil 1.8.5, solc 0.8.28 static) | 4/4, including with a forced 1.5 s receipt delay |
 | `confidential-contracts` (hardhat) | **blocked here**: `binaries.soliditylang.org` is denied by the network policy. Hosted CI runs it |
+
+## Fixes made while driving #84's CI
+
+| Check | Cause | Fix |
+|---|---|---|
+| CodeQL js/path-injection (high) | test-only fixture server in `apps/web/e2e/embed-iframe.spec.ts` confined paths with a string prefix | 1c84a33: `resolve` + `relative` containment |
+| Integration (`e2e.anvil.test.ts`, owner sweeps first) | test race inherited from #78/cw-w10: the earlier sweep's unused reservation was released after `usedBefore` was snapshotted | a0e4159: `laneIdle()` on `relayer_queue_pending`; reproduced with a forced delay before the fix |
+| ts-lint (red on #78 too) | lint job builds only `build:libs`, which lacks `@ghostpay/net-harness` | 48b6bc2: `prelint` hook in `net-transport` |
+| — (review finding) | independent 4-dimension review workflow, each finding adversarially verified: 0b213bd could livelock resume on an unverifiable router claim when the next page is held by the budget or the match limit (confirmed, medium) | 80fd9a8: a claim at the run's own floor gets no second replay; 2 regression tests red before / green after |
+
+The review's other dimensions found no defects (secret loader, policy revert, i18n, e2e path fix). The low finding (BackupPanel `notes` frozen in the export-time language) is fixed: the gaps are kept as data and rendered with the current translator. One medium claim ("claims on earlier pages are never replayed") was refuted: that is the intended one-page replay.
+
+## Hosted CI on 48b6bc2 (2026-11-07 04:32–04:39 UTC)
+
+Every check passed: CI (typecheck, lint, all test shards including web and confidential-contracts, e2e lean and full, lean-candidate, contracts and coverage, slither, secrets-and-egress), Integration, Hosting kit, CodeQL. **Except SonarCloud: "D Security Rating on New Code"**, which was also failing on #78 and #47. Its issue list cannot be read from cloud sessions (sonarcloud.io returns a proxy 403), and Sonar's new code here spans all of #78 compared with main.
+
+`openai-agents.yml` (on main since 14f9b26) fails on every push: it is a single step fragment with no `on:` and no `jobs:`. Left for the owner, because it runs `codex exec --full-auto` with an API secret (#82 is the full version).
 
 ## Remaining autonomous work (next session)
 
-- Drive PR #84's hosted CI to green on its exact head.
 - The W5 residuals listed above. Any security-classified key stays English until the locale is reviewed.
-- Re-run the PR #78 open items against #84: the CodeQL alert and the Sonar gate (sonarcloud.io is not reachable from cloud sessions).
+- The Sonar gate, once someone can read the issue list: the owner opens it, or allows sonarcloud.io for the environment.
 
 ## Owner-only (unchanged)
 
