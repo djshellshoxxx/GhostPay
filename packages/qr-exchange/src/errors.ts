@@ -6,11 +6,15 @@ export type QrExchangeErrorCode =
   | 'SESSION_MISMATCH'
   | 'CHUNK_CONFLICT'
   | 'INTEGRITY_FAILED'
+  | 'SESSION_EXPIRED'
   | 'QR_TOO_LONG'
   | 'CAMERA_DENIED'
   | 'CAMERA_UNAVAILABLE'
   | 'SCAN_FAILED'
-  | 'ABORTED';
+  | 'ABORTED'
+  | 'CAMERA_NOT_FOUND'
+  | 'CAMERA_IN_USE'
+  | 'CAMERA_INSECURE';
 
 const MESSAGES: Readonly<Record<QrExchangeErrorCode, string>> = {
   BAD_INPUT: 'qr-exchange: invalid input',
@@ -20,11 +24,15 @@ const MESSAGES: Readonly<Record<QrExchangeErrorCode, string>> = {
   SESSION_MISMATCH: 'qr-exchange: chunk belongs to a different transfer',
   CHUNK_CONFLICT: 'qr-exchange: conflicting chunk',
   INTEGRITY_FAILED: 'qr-exchange: integrity check failed',
+  SESSION_EXPIRED: 'qr-exchange: multipart transfer expired; scan all parts again',
   QR_TOO_LONG: 'qr-exchange: text too long for a QR code',
   CAMERA_DENIED: 'qr-exchange: camera permission denied',
   CAMERA_UNAVAILABLE: 'qr-exchange: camera unavailable',
   SCAN_FAILED: 'qr-exchange: scanning failed',
   ABORTED: 'qr-exchange: aborted',
+  CAMERA_NOT_FOUND: 'qr-exchange: no camera found',
+  CAMERA_IN_USE: 'qr-exchange: camera in use or could not be opened',
+  CAMERA_INSECURE: 'qr-exchange: camera needs a secure context',
 };
 
 /** Typed error with a fixed message per code. Never carries input text, payload bytes or decoded QR content. */

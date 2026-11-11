@@ -198,6 +198,21 @@ Legend: S spoofing, T tampering, R repudiation, I information disclosure, D deni
 | D | Host takedown / DNS or account compromise | IPFS/Tor mirrors planned | Not built |
 | E | Maintainer account takeover | Required reviewers on the `release` environment (to be configured) | Owner action |
 
+### 4.6 Permit griefing
+
+**Attack.** The stealth key signs an ERC-2612 permit that is outside the sweep signature and the quote MAC. Anyone who sees it can submit it first (the contract tolerates this), and the owner can also revoke the allowance or sweep first. The relayer pays gas for a sweep that then reverts or earns no fee; repeating this drains the hot key's gas balance.
+
+**Mitigations in the relayer (`apps/relayer/src/service.ts`).**
+- When the owner's allowance already covers the amount, the permit is dropped and plain `sweep` is used, so a front-run permit still succeeds (counter `relayer_permit_skipped_total`).
+- A short allowance with a permit whose deadline is before the sweep deadline or already past is refused as `permit_expired` before any simulation.
+- With the permit still in use, a generic `simulation_reverted` or `token_transfer_failed` is reported as `permit_failed` and nothing is broadcast.
+- The sweep is simulated before broadcast and again immediately before sending.
+- Per-owner failure counter (`FailureBudgets`, owner key only): 3 costly user-attributable failures per hour, then sweeps are refused up front; counter `relayer_owner_failures_total`. `nonce_used` is not a strike. These are constants, not config.
+- A sweep that passes simulation but reverts when mined (owner drains first) is charged to the loss budget and counted as a strike (`relayer_mined_reverts_total`; `relayer_loss_budget_denied_total` when the budget refuses).
+- `gas.griefReserveBps` (0 to 5000) raises the gas term of the quoted fee; `quoteTtlSeconds` is capped at 60.
+
+**Residual risk** (`apps/relayer/DEVIATIONS.md`). The relayer cannot rebuild the token's EIP-712 domain, so `sig_invalid` and `nonce_consumed` are both reported as `permit_failed`. `gas.griefReserveBps` defaults to 0 (UNVERIFIED, to be tuned per chain), so by default no margin is priced in. The `PermitSkipped` event (spec 04 option C) needs a contract change and is not done, and the anvil owner-drains-first and front-run e2e was not run for this change. Losses are bounded, not eliminated.
+
 ## 5. LINDDUN privacy view
 
 | Category | Where it appears | Status |

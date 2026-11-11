@@ -46,10 +46,18 @@ export interface BuildSpendParams {
   readonly network: SilentPaymentNetwork;
   /** With `network: 'testnet'`: use `bcrt` instead of `tb` for regular addresses (bitcoind regtest). Default false. */
   readonly regtest?: boolean;
-  /** Outputs and change below this are rejected / folded into the fee. Default 546. */
+  /**
+   * Outputs and change below this are rejected / folded into the fee. Default {@link DUST_LIMIT_SATS} (546),
+   * which is also the hard minimum: a lower value is raised to it.
+   */
   readonly dustLimitSats?: bigint;
   /** Signal BIP-125 replaceability. Default true. */
   readonly rbf?: boolean;
+  /**
+   * Spec 11 fee guard: a fee above 50% of the inputs is refused (`FEE_TOO_HIGH`) unless this is `true`.
+   * {@link MAX_FEE_RATE_SAT_PER_VB} stays enforced either way. Default false.
+   */
+  readonly forceHighFee?: boolean;
 }
 
 /** Result of {@link buildSpendTransaction}. */
@@ -67,8 +75,14 @@ export interface SpendResult {
   readonly changeIndex: number | null;
 }
 
-const DEFAULT_DUST = 546n;
-/** Safety cap against fat-finger fee rates. */
+/** Consensus-style dust floor (Core's 546 sat): the hard minimum for every output this package creates. */
+export const DUST_LIMIT_SATS = 546n;
+/**
+ * Wallet-policy dust threshold (spec 11, default 1000 sat): detected outputs below it are hidden from sweeps by
+ * `selectOutputsForSweep` unless the caller overrides. The scanner still reports them.
+ */
+export const DEFAULT_WALLET_DUST_SATS = 1000n;
+/** Safety cap against fat-finger fee rates; `forceHighFee` does not lift it. */
 export const MAX_FEE_RATE_SAT_PER_VB = 10_000;
 const MAX_INPUTS = 5_000;
 const P2TR_SCRIPT_LEN = 34;
@@ -96,6 +110,18 @@ function feeFor(feeRate: number, vsize: number): bigint {
   return (milli * BigInt(vsize) + 999n) / 1000n;
 }
 
+/** Effective output dust limit: the caller's value, never below {@link DUST_LIMIT_SATS}. */
+function dustLimit(v: bigint | undefined): bigint {
+  if (v === undefined) return DUST_LIMIT_SATS;
+  if (typeof v !== 'bigint' || v < 0n) return fail('INVALID_INPUT');
+  return v > DUST_LIMIT_SATS ? v : DUST_LIMIT_SATS;
+}
+
+/** Spec 11: a fee above half of the inputs needs an explicit `forceHighFee`. Exactly half is allowed. */
+function checkFeeShare(fee: bigint, total: bigint, forceHighFee: boolean | undefined): void {
+  if (fee * 2n > total && forceHighFee !== true) return fail('FEE_TOO_HIGH');
+}
+
 function isSilentPaymentAddress(address: string): boolean {
   return /^t?sp1/i.test(address);
 }
@@ -115,10 +141,13 @@ function scriptOf(address: string, network: SilentPaymentNetwork, regtest: boole
   }
 }
 
-function amount(v: bigint | undefined): bigint {
+function amount(v: unknown): bigint {
   if (typeof v !== 'bigint' || v <= 0n || v > SATS_MAX) return fail('INVALID_AMOUNT');
   return v;
 }
+
+/** @internal Validates a satoshi amount: a `bigint` in [1, 21e6 BTC]; throws `INVALID_AMOUNT`. */
+export const checkAmountSats: (v: unknown) => bigint = amount;
 
 interface PlannedOutput {
   readonly address: string;
@@ -164,6 +193,8 @@ export interface PreviewSweepParams {
   readonly network: SilentPaymentNetwork;
   readonly regtest?: boolean;
   readonly dustLimitSats?: bigint;
+  /** As {@link BuildSpendParams.forceHighFee}. */
+  readonly forceHighFee?: boolean;
 }
 
 /** Result of {@link previewSweep}. */
@@ -189,8 +220,7 @@ export function previewSweep(p: PreviewSweepParams): SweepPreview {
   if (n === 0 || n > MAX_INPUTS) return fail('INVALID_INPUT');
   if (!Number.isFinite(p.feeRate) || p.feeRate <= 0) return fail('INVALID_INPUT');
   if (p.feeRate > MAX_FEE_RATE_SAT_PER_VB) return fail('FEE_TOO_HIGH');
-  const dust = p.dustLimitSats ?? DEFAULT_DUST;
-  if (dust < 0n) return fail('INVALID_INPUT');
+  const dust = dustLimit(p.dustLimitSats);
   let total = 0n;
   for (const a of p.inputAmountsSats) total += amount(a);
   const isSp = isSilentPaymentAddress(p.address);
@@ -200,7 +230,7 @@ export function previewSweep(p: PreviewSweepParams): SweepPreview {
   const sendSats = total - feeSats;
   if (sendSats <= 0n) return fail('INSUFFICIENT_FUNDS');
   if (sendSats < dust) return fail('DUST_OUTPUT');
-  if (feeSats * 2n > total && feeSats > 10_000n) return fail('FEE_TOO_HIGH');
+  checkFeeShare(feeSats, total, p.forceHighFee);
   return { vsize, feeSats, sendSats, destinationIsSilentPayment: isSp };
 }
 
@@ -215,7 +245,8 @@ export function previewSweep(p: PreviewSweepParams): SweepPreview {
  * of a silent payment is final. Sighash is SIGHASH_DEFAULT (64-byte signatures). Silent-payment
  * destinations and change are derived with BIP-352 over the spent inputs (all P2TR, hence eligible).
  * Fees: `ceil(feeRate * vsize)` with an exact vsize ({@link estimateKeyPathVsize}); change below the
- * dust limit is folded into the fee. After signing, every signature is verified with noble schnorr
+ * dust limit is folded into the fee; a fee above half of the inputs is refused unless `forceHighFee` is set
+ * (spec 11). After signing, every signature is verified with noble schnorr
  * and the vsize is checked against the estimate; any mismatch throws and nothing is returned.
  * Output order is destinations then change (callers wanting shuffling must build their own).
  * Hardware-wallet signing is out of scope. Regular addresses are `tb` for `testnet`, or `bcrt` when `regtest` is set.
@@ -273,12 +304,11 @@ interface SpendPlan {
 /** Validation and fee math shared by the software and the external-signer path (no secrets involved). */
 function planSpend(params: Omit<BuildSpendParams, 'spendSecret'>): SpendPlan {
   const { outputs, destinations, network } = params;
-  const dust = params.dustLimitSats ?? DEFAULT_DUST;
   if (outputs.length === 0 || outputs.length > MAX_INPUTS || destinations.length === 0)
     return fail('INVALID_INPUT');
   if (!Number.isFinite(params.feeRate) || params.feeRate <= 0) return fail('INVALID_INPUT');
   if (params.feeRate > MAX_FEE_RATE_SAT_PER_VB) return fail('FEE_TOO_HIGH');
-  if (dust < 0n) return fail('INVALID_INPUT');
+  const dust = dustLimit(params.dustLimitSats);
 
   const seen = new Set<string>();
   let total = 0n;
@@ -335,7 +365,7 @@ function planSpend(params: Omit<BuildSpendParams, 'spendSecret'>): SpendPlan {
       if (fee > feeNoChange + dust) return fail('INSUFFICIENT_FUNDS'); // refuse to burn a large leftover: need a change address
     }
   }
-  if (fee * 2n > total && fee > 10_000n) return fail('FEE_TOO_HIGH');
+  checkFeeShare(fee, total, params.forceHighFee);
 
   const order: PlannedOutput[] = [...planned];
   if (change > 0n) {

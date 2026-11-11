@@ -34,6 +34,35 @@ export interface SyncOptions {
 export interface SyncResult extends ConnectResult {
   /** Headers downloaded by this call (fork probes included). */
   readonly fetched: number;
+  /** Tip height the source claimed. */
+  readonly sourceTip: number;
+  /**
+   * Highest header the source served that this call compared with the chain: the tip reached (extension), the probe
+   * that agreed, or the lowest header of a competing branch. Whether it is still on the chain afterwards says
+   * whether the source conflicts with what was finally adopted.
+   */
+  readonly served: { readonly height: number; readonly hash: string };
+}
+
+/** How one source relates to the chain finally adopted by {@link syncHeaderChainFromSources}. */
+export interface SourceAgreement {
+  /** Tip height the source claimed. */
+  readonly tipHeight: number;
+  /** Blocks the source's tip is below the adopted tip (0 when level or ahead). */
+  readonly behindBy: number;
+  /** `behindBy` exceeds `maxBehind`. */
+  readonly behind: boolean;
+  /** The source's chain did not have more work than the adopted one: a prefix of it, or a branch that lost. */
+  readonly lighter: boolean;
+  /** A header the source served is not on the adopted chain. */
+  readonly conflicting: boolean;
+}
+
+/** `requireAgreement` failure: the chain holds the most-work tip, `results` say which sources disagree and how. */
+export class SourceDisagreementError extends SilentPaymentError {
+  public constructor(public readonly results: readonly SourceSyncResult[]) {
+    super('REORG_DETECTED');
+  }
 }
 
 /** Upper bound of `maxForkHeaders`. */
@@ -95,13 +124,16 @@ export async function syncHeaderChain(chain: HeaderChain, source: HeaderSource, 
   let step = 1;
   let forked = false;
   let miss = h;
+  let missHash = '';
   for (;;) {
     const [hex] = await fetchHeaders(source, h, 1, o.signal);
     fetched++;
-    if (parseHeader(hex as string).hash === chain.hashAt(h)) break;
+    const hash = parseHeader(hex as string).hash;
+    if (hash === chain.hashAt(h)) break;
     if (h === cp) return fail('INVALID_HEADER');
     forked = true;
     miss = h;
+    missHash = hash;
     h = Math.max(cp, h - step);
     step *= 2;
   }
@@ -112,10 +144,15 @@ export async function syncHeaderChain(chain: HeaderChain, source: HeaderSource, 
       const mid = h + Math.floor((miss - h) / 2);
       const [hex] = await fetchHeaders(source, mid, 1, o.signal);
       fetched++;
-      if (parseHeader(hex as string).hash === chain.hashAt(mid)) h = mid;
-      else miss = mid;
+      const hash = parseHeader(hex as string).hash;
+      if (hash === chain.hashAt(mid)) h = mid;
+      else {
+        miss = mid;
+        missHash = hash;
+      }
     }
   }
+  const served = { height: miss, hash: missHash };
   if (!forked) {
     // Extending the active chain: each chunk must build on the current tip (a chunk that branches off lower down is
     // refused, never connected as a silent reorg), and is validated and connected before the next is requested.
@@ -132,7 +169,8 @@ export async function syncHeaderChain(chain: HeaderChain, source: HeaderSource, 
       if (!r.adopted || r.reorg || r.tipHeight !== before + n) return fail('INVALID_HEADER');
       adopted = true;
     }
-    return { adopted, reorg: false, forkHeight: h, tipHeight: chain.tipHeight, fetched };
+    const top = adopted ? chain.tipHeight : h;
+    return { adopted, reorg: false, forkHeight: h, tipHeight: chain.tipHeight, fetched, sourceTip, served: { height: top, hash: chain.hashAt(top) as string } };
   }
   // A competing branch. What must be compared is the active chain above the fork point; more than `maxFork` of it is
   // not evaluated (`FORK_TOO_DEEP`). The branch is streamed chunk by chunk into a compact validation context and
@@ -154,14 +192,14 @@ export async function syncHeaderChain(chain: HeaderChain, source: HeaderSource, 
     }
     fetched += n;
     from += n;
-    if (branch.beatsActive) return { ...branch.adopt(), fetched };
+    if (branch.beatsActive) return { ...branch.adopt(), fetched, sourceTip, served };
   }
   if (last < sourceTip) return fail('FORK_UNRESOLVED');
-  return { adopted: false, reorg: false, forkHeight: branch.forkHeight, tipHeight: chain.tipHeight, fetched };
+  return { adopted: false, reorg: false, forkHeight: branch.forkHeight, tipHeight: chain.tipHeight, fetched, sourceTip, served };
 }
 
 export type SourceSyncResult =
-  | { readonly ok: true; readonly result: SyncResult }
+  | { readonly ok: true; readonly result: SyncResult; readonly agreement: SourceAgreement }
   | {
       readonly ok: false;
       readonly code: SilentPaymentErrorCode;
@@ -169,25 +207,61 @@ export type SourceSyncResult =
       readonly adopted?: ConnectResult;
     };
 
+export interface MultiSourceSyncOptions extends SyncOptions {
+  /** Blocks a source's tip may lag the adopted tip before it counts as `behind` (default {@link DEFAULT_MAX_BEHIND}). */
+  readonly maxBehind?: number;
+  /**
+   * `true`: a source that is `behind` or `conflicting` makes the call fail closed with {@link SourceDisagreementError}
+   * after every source was synced (the chain keeps the most-work tip). Default `false`: it is only reported.
+   */
+  readonly requireAgreement?: boolean;
+}
+
+/** Default `maxBehind`: a source one hour of blocks behind is reported as lagging. */
+export const DEFAULT_MAX_BEHIND = 6;
+
+/** True when any successfully synced source is `behind` or `conflicting` (never with a single source). */
+export function sourcesDisagree(results: readonly SourceSyncResult[]): boolean {
+  return results.some((r) => r.ok && (r.agreement.behind || r.agreement.conflicting));
+}
+
 /**
  * Syncs from several independent sources in turn. The chain ends on the most-work valid chain any of them
- * served; a failing source is reported, not fatal. A source that withholds a heavier chain cannot be
- * detected here, which is why more than one source helps.
+ * served; a failing source is reported, not fatal. Each successful source also gets a {@link SourceAgreement}
+ * against the finally adopted chain: how far its tip lags, whether its chain was lighter and whether a header it
+ * served is off the adopted chain.
+ *
+ * Withholding cannot be proven, only disagreement: a source that serves a lighter or conflicting chain may be
+ * lagging, partitioned or lying, and this call cannot tell which. A single source cannot be checked at all (its
+ * chain is by definition the adopted one), which is why more than one independent source helps. A source that is
+ * ahead of what `maxHeaders` allowed this call to adopt is not `behind`.
+ *
+ * @throws {SilentPaymentError} `INVALID_INPUT` (bad `maxBehind`), `ABORTED`; {@link SourceDisagreementError} with
+ * `requireAgreement`.
  */
 export async function syncHeaderChainFromSources(
   chain: HeaderChain,
   sources: readonly HeaderSource[],
-  o: SyncOptions = {},
+  o: MultiSourceSyncOptions = {},
 ): Promise<SourceSyncResult[]> {
-  const out: SourceSyncResult[] = [];
+  const maxBehind = o.maxBehind ?? DEFAULT_MAX_BEHIND;
+  if (!Number.isSafeInteger(maxBehind) || maxBehind < 0) return fail('INVALID_INPUT');
+  const synced: (SyncResult | Exclude<SourceSyncResult, { ok: true }>)[] = [];
   for (const s of sources) {
     try {
-      out.push({ ok: true, result: await syncHeaderChain(chain, s, o) });
+      synced.push(await syncHeaderChain(chain, s, o));
     } catch (e) {
       if (!(e instanceof SilentPaymentError) || e.code === 'ABORTED') throw e;
-      out.push({ ok: false, code: e.code, ...(e instanceof PartialAdoptError ? { adopted: e.adopted } : {}) });
+      synced.push({ ok: false, code: e.code, ...(e instanceof PartialAdoptError ? { adopted: e.adopted } : {}) });
     }
   }
+  const out: SourceSyncResult[] = synced.map((r) => {
+    if ('ok' in r) return r;
+    const conflicting = chain.hashAt(r.served.height) !== r.served.hash;
+    const behindBy = Math.max(0, chain.tipHeight - r.sourceTip);
+    return { ok: true, result: r, agreement: { tipHeight: r.sourceTip, behindBy, behind: behindBy > maxBehind, lighter: conflicting || behindBy > 0, conflicting } };
+  });
+  if (o.requireAgreement === true && sourcesDisagree(out)) throw new SourceDisagreementError(out);
   return out;
 }
 

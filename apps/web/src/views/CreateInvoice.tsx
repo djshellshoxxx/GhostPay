@@ -9,6 +9,7 @@ import { ContextHelp } from '../components/ContextHelp';
 import { displayMessage, captureUserMessage, type DisplayMessage } from '../lib/errors';
 import { formatUnits } from '../lib/format';
 import { MAX_BUFFER_WEI } from '../lib/pay';
+import { multipartIfNeeded } from '../lib/qrMultipart';
 import { buildInvoiceLink, tokenChoices, type CreatedInvoice, type InvoiceForm, type LineItemInput } from '../lib/invoiceCreate';
 import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphrase } from '../lib/keystore';
 import { registrationFromInvoice } from '../lib/reconciliationMatch';
@@ -107,6 +108,9 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
   const bufferChoicesAvailable = token !== 'native';
   const effectiveBufferMode: BufferMode = bufferChoicesAvailable ? bufferMode : 'off';
   const visibleCreated = created !== undefined && supportsInvoice(created.invoice, supportedOnly) ? created : undefined;
+  // A link too long for one QR is offered as GhostPay multi-part codes; otherwise one code that any camera app opens.
+  // (Not a hook: this follows an early return. Splitting is local and cheap.)
+  const linkParts = visibleCreated === undefined ? undefined : linkPartsFor(visibleCreated.link);
 
   const registerCreated = (invoice: Invoice): void => {
     const run = ++registrationRun.current;
@@ -371,13 +375,19 @@ export function CreateInvoice({ supportedOnly = false }: { readonly supportedOnl
           {registration?.kind === 'error' && <Notice kind="warn">{t('create.registration.error', { message: displayMessage(registration.message, t) })}</Notice>}
           <Field label={t('create.link.label')}>{(id) => <textarea id={id} readOnly rows={4} className="mono" value={visibleCreated.link} onFocus={(e) => { e.currentTarget.select(); }} />}</Field>
           <p><CopyButton text={visibleCreated.link} label={t('create.link.copy')} /></p>
+          {linkParts !== undefined && <p className="hint">{t('create.qr.multipartNote', { total: linkParts.length })}</p>}
           <QrFrame
             kind={visibleCreated.encrypted && !visibleCreated.passphraseProtected ? 'bearer' : 'shareable'}
             text={visibleCreated.link}
             caption={t('create.qr.caption')}
+            {...(linkParts === undefined ? {} : { chunks: linkParts })}
           />
         </div>
       )}
     </section>
   );
+}
+
+function linkPartsFor(link: string): readonly string[] | undefined {
+  try { return multipartIfNeeded(link); } catch { return undefined; }
 }

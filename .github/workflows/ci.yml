@@ -524,6 +524,8 @@ jobs:
         run: bash scripts/scan-secrets.sh
       - name: Every action is pinned to a full SHA with a version comment
         run: bash scripts/check-actions-pinned.sh
+      - name: No tx.origin in Solidity sources (spec 04)
+        run: bash scripts/check-tx-origin.sh
       - name: Proxy header configs match apps/web/public/_headers (static, no network)
         run: bash infra/proxy/check-headers.sh
       - name: Self-host release gate and archive checks (fake docker/gh, no network)

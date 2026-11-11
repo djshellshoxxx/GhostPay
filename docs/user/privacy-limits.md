@@ -38,6 +38,13 @@ Routed EVM payments use the configured router and a recognizable fee/announcemen
 9. **A compromised website, browser extension or device can expose unlocked data and alter requests.** GhostPay has not received an independent professional audit. Review the exact build and its release evidence rather than relying on a familiar-looking host.
 10. **Deployment authentication is implemented, but requires approved configuration.** The ordinary web path checks a bundled manifest's signature against configured release keys and compares deployed code and configuration on-chain. Missing keys, invalid signatures or inconsistent readback keep the flow unavailable. These checks do not protect against replacement of the entire app or compromise of its trusted build. See [deployment verification](../DEPLOYMENT_MANIFEST.md).
 
+**Funding hygiene.** Never send gas or anything else to a one-time address from a wallet that identifies you: that one
+transfer links the one-time address, the payment and you on-chain, and no later sweep undoes it. Use the gas buffer the
+payer can add or a relayer instead, sweep to destinations that do not already carry your name, and avoid moving many
+one-time addresses into one wallet at once. Amounts and timing are public too, so unusual amounts make a payment
+recognisable whatever address it went to. See [Seller privacy](seller-privacy.md) for the scanner's privacy-set notice,
+its lanes and budget, and what a scan reveals to your RPC provider.
+
 ## Other chains
 
 - **Bitcoin silent payments** (web app, testnet only): the Esplora server you choose sees block heights and the outputs you check. The payer sees the output they paid. No GhostPay router or relayer is involved. See [Bitcoin silent payments](bitcoin-silent-payments.md).

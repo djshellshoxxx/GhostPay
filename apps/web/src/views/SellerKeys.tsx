@@ -8,6 +8,7 @@ import { GENERATED_PASSPHRASE_BITS, GENERATED_PASSPHRASE_WORDS, generatePassphra
 import { captureSessionVersionGuard, clearSession, exportKeystore, generateSession, getSessionBackup, getSessionPublic, importKeystore, importSession, markKeystoreDownloaded, sessionHasExternalCopy, subscribeSessionBackup, waiveSessionBackup, type SessionPublic } from '../lib/session';
 import { authorizeKeyExport, deleteEncryptedVault, loadedKeysRecoverable, readEncryptedVault, saveEncryptedVault, unlockEncryptedVault, VaultChangedError, vaultMetaAddress, VaultSavedForPreviousKeysError } from '../lib/keyVault';
 import { useApp } from '../state';
+import { multipartIfNeeded } from '../lib/qrMultipart';
 import { SellerPairing, pairingChainIds } from './SellerPairing';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
 import type { Translator } from '../i18n/translator';
@@ -69,6 +70,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   const fileInput = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | undefined>(undefined);
   const [backupQr, setBackupQr] = useState<string | undefined>(undefined);
+  const [backupSmaller, setBackupSmaller] = useState(false);
   const [vaultState, setVaultState] = useState<'checking' | 'empty' | 'saved' | 'unavailable'>('checking');
   // Public meta-address named by the saved vault, if it is a readable keystore.
   const [vaultMeta, setVaultMeta] = useState<string | undefined>(undefined);
@@ -396,6 +398,10 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
   const stepUpNeeded = backup?.vaultStepUp === true || (s !== undefined && vaultState === 'saved' && vaultMeta === s.metaAddress);
   const deleteMeta = deleteExpected === undefined ? undefined : vaultMetaAddress(deleteExpected);
   const deletesLoadedKeys = s !== undefined && deleteMeta === s.metaAddress;
+  // Optional smaller codes for low-resolution cameras: same encrypted text, split into GhostPay multi-part QR.
+  let backupParts: readonly string[] | undefined;
+  try { backupParts = backupQr !== undefined && backupSmaller ? multipartIfNeeded(backupQr, { force: true }) : undefined; } catch { backupParts = undefined; }
+
   return (
     <section aria-labelledby="keys-h">
       <h2 id="keys-h">{t('sellerKeys.title')}</h2>
@@ -480,7 +486,7 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
               <button type="submit" className="btn" disabled={busy}>{t('sellerKeys.decryptLoad')}</button>
               {busy && <button type="button" className="btn" onClick={cancelImport}>{t('sellerKeys.cancelKeystore')}</button>}
             </form>
-            <CameraImporter label={t('sellerKeys.importKeystoreQr')} scopeKey={app.session} onInputChange={cancelImport} onText={(text, signal) => {
+            <CameraImporter multipart label={t('sellerKeys.importKeystoreQr')} scopeKey={app.session} onInputChange={cancelImport} onText={(text, signal) => {
               validateKeystoreEnvelope(text);
               if (signal.aborted) return false;
               cancelImport(); setImportText(text); setMessage({ kind: 'ok', text: { key: 'sellerKeys.keystoreReceived' } }); return true;
@@ -519,7 +525,9 @@ export function SellerKeys(props: { readonly archive?: ReactNode } = {}): ReactN
           <p className="hint">{t('sellerKeys.formatNote')}</p>
           {backupQr !== undefined && (
             <>
-              <QrFrame kind="secret" text={backupQr} caption={t('sellerKeys.backupCaption')} />
+              <label className="checkbox"><input type="checkbox" checked={backupSmaller} onChange={(e) => { setBackupSmaller(e.target.checked); }} /> {t('sellerKeys.backupSmaller')}</label>
+              <p className="hint">{t('sellerKeys.backupSmallerHint')}</p>
+              <QrFrame kind="secret" text={backupQr} caption={t('sellerKeys.backupCaption')} {...(backupParts === undefined ? {} : { chunks: backupParts })} />
               <button type="button" className="btn" onClick={() => { setBackupQr(undefined); }}>{t('sellerKeys.forgetQr')}</button>
             </>
           )}

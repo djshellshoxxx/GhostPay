@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { ChainAdapterError } from '@ghostpay/chain-adapters';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SETTINGS_KEY } from '../lib/settings';
+import { SCAN_LANES_KEY } from '../lib/scanSpam';
 import { mockRpc } from '../test/mockRpc';
 import { makeServices, renderApp } from '../test/render';
 
@@ -165,15 +166,17 @@ it('previews nonsecret settings before explicit application and leaves URLs and 
   fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: exportSettingsExchange({ ...DEFAULT_SETTINGS, theme: 'dark', delayMinSec: 0 }) } });
   await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
   expect(stored()['theme']).toBe('system');
-  expect(await screen.findByText(/Review imported preferences/)).toBeTruthy();
-  await user.click(screen.getByRole('button', { name: 'Apply imported preferences' }));
+  expect(await screen.findByText(/Review imported settings/)).toBeTruthy();
+  await user.click(screen.getByRole('button', { name: 'Apply selected settings' }));
+  expect(stored()['theme']).toBe('system'); // delayMinSec 0 weakens protection: nothing is saved before confirming
+  await user.click(screen.getByRole('button', { name: 'Confirm and apply' }));
   expect(stored()['theme']).toBe('dark');
   expect(stored()['rpcUrls']).toEqual({ '84532': 'https://rpc.example/' });
   fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: exportSettingsExchange(DEFAULT_SETTINGS) } });
   await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
-  expect(screen.getByRole('button', { name: 'Apply imported preferences' })).toBeTruthy();
+  expect(screen.getByRole('button', { name: 'Apply selected settings' })).toBeTruthy();
   fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: 'invalid replacement' } });
-  expect(screen.queryByRole('button', { name: 'Apply imported preferences' })).toBeNull();
+  expect(screen.queryByRole('button', { name: 'Apply selected settings' })).toBeNull();
 });
 
 
@@ -181,19 +184,54 @@ it('invalidates an imported review and old export when saved preferences change'
   const user = await open();
   const { exportSettingsExchange } = await import('../lib/settingsExchange');
   const { DEFAULT_SETTINGS } = await import('../lib/settings');
-  await user.click(screen.getByRole('button', { name: 'Show preferences QR' }));
-  expect(screen.getByRole('button', { name: 'Hide preferences QR' })).toBeTruthy();
+  await user.click(screen.getByRole('button', { name: 'Show settings QR' }));
+  expect(screen.getByRole('button', { name: 'Hide settings QR' })).toBeTruthy();
   fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: exportSettingsExchange({ ...DEFAULT_SETTINGS, theme: 'dark' }) } });
   await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
-  expect(await screen.findByText('Review imported preferences')).toBeTruthy();
+  expect(await screen.findByText('Review imported settings')).toBeTruthy();
   await user.selectOptions(screen.getByLabelText('Theme'), 'light');
   await user.click(screen.getByRole('button', { name: 'Save settings' }));
   expect(stored()['theme']).toBe('light');
-  expect(screen.queryByRole('button', { name: 'Apply imported preferences' })).toBeNull();
-  expect(screen.queryByRole('button', { name: 'Hide preferences QR' })).toBeNull();
+  expect(screen.queryByRole('button', { name: 'Apply selected settings' })).toBeNull();
+  expect(screen.queryByRole('button', { name: 'Hide settings QR' })).toBeNull();
   fireEvent.change(screen.getByLabelText('Or paste QR text'), { target: { value: exportSettingsExchange({ ...DEFAULT_SETTINGS, theme: 'dark' }) } });
   await user.click(screen.getByRole('button', { name: 'Use pasted text' }));
   await user.click(screen.getByRole('button', { name: 'Discard preview' }));
   expect(stored()['theme']).toBe('light');
-  expect(screen.queryByRole('button', { name: 'Apply imported preferences' })).toBeNull();
+  expect(screen.queryByRole('button', { name: 'Apply selected settings' })).toBeNull();
+});
+
+describe('Settings: scan lanes and privacy-set options (spec 05)', () => {
+  const lanes = (): Record<string, unknown> | null => { const text = window.localStorage.getItem(SCAN_LANES_KEY); return text === null ? null : JSON.parse(text) as Record<string, unknown>; };
+
+  it('saves the flood threshold, the spam-score switch and the same-token estimate opt-in under their own key, and discloses the estimate', async () => {
+    const user = await open();
+    const section = screen.getByRole('group', { name: 'Scan privacy' });
+    expect(within(section).getByLabelText(/Flood threshold/)).toHaveProperty('value', '32');
+    expect(within(section).getByLabelText(/Check suspected spam last/)).toHaveProperty('checked', true);
+    expect(within(section).getByLabelText(/Estimate same-token transfers/)).toHaveProperty('checked', false);
+    expect(within(section).queryByText(/recent transfers/)).toBeNull();
+    await user.clear(within(section).getByLabelText(/Flood threshold/));
+    await user.type(within(section).getByLabelText(/Flood threshold/), '5');
+    await user.click(within(section).getByLabelText(/Check suspected spam last/));
+    await user.click(within(section).getByLabelText(/Estimate same-token transfers/));
+    expect(within(section).getByText(/recent transfers/)).toBeTruthy();
+    expect(section.textContent).toMatch(/costs RPC calls/);
+    expect(section.textContent).not.toMatch(/anonym|unlinkab|untraceab/i);
+    await user.click(within(section).getByRole('button', { name: 'Save scan privacy' }));
+    expect(await within(section).findByText(/Scan privacy settings saved/)).toBeTruthy();
+    expect(lanes()).toEqual({ floodPerBlock: 5, spamScoring: false, privacySetTransfers: true });
+    expect(JSON.stringify(lanes())).not.toMatch(/secret|private|seed/i);
+  });
+
+  it('rejects an out-of-range flood threshold and stores nothing', async () => {
+    const user = await open();
+    const section = screen.getByRole('group', { name: 'Scan privacy' });
+    await user.clear(within(section).getByLabelText(/Flood threshold/));
+    await user.type(within(section).getByLabelText(/Flood threshold/), '0');
+    await user.click(within(section).getByRole('button', { name: 'Save scan privacy' }));
+    expect(await within(section).findByText(/flood threshold must be from 1 to 10000/)).toBeTruthy();
+    expect(lanes()).toBeNull();
+    expect(window.localStorage.getItem('ghostpay.scanPrivacy.v1')).toBeNull();
+  });
 });

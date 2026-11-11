@@ -84,7 +84,7 @@ CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs these jobs; doc
 - `ts-test-relayer`: `forge build` in `packages/contracts`, then `npm test -w apps/relayer` with `REQUIRE_ANVIL=1` (anvil e2e).
 - `e2e`: `npx playwright install --with-deps chromium`, then `npm run test:e2e --workspace @ghostpay/web`.
 - `contracts-test` (`forge build --sizes`, `forge test`), `contracts-coverage` (`forge coverage --ir-minimum --report summary --report lcov --report-file lcov.info`), `contracts-static` (`forge fmt --check`, `bash scripts/check-natspec.sh`, `forge snapshot --check`), `contracts-slither` (slither 0.11.6, solc 0.8.28, `--fail-medium`).
-- `secrets-and-egress`: `scripts/scan-secrets.sh`, `scripts/check-actions-pinned.sh`.
+- `secrets-and-egress`: `scripts/scan-secrets.sh`, `scripts/check-actions-pinned.sh`, `scripts/check-tx-origin.sh`.
 - Required-check gates: `typescript` (needs `ts-typecheck`, `ts-lint`, `ts-check`, `ts-test`, `ts-test-relayer`) and `contracts` (needs the four contracts jobs). `e2e` is not part of either gate.
 
 The commands above describe the available gates. Executed checks, source revisions and unavailable
