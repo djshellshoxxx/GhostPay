@@ -234,7 +234,7 @@ describe('state', () => {
   it('shows configured chains with no stored state, and an empty file', async () => {
     const env = envFor({ RELAYER_STATE_FILE: join(dir, 'absent.json') });
     expect(await runOps(['state'], deps(env))).toBe(0);
-    expect(out.join('\n')).toContain('chain 31337: budget day 1970-01-01, spent 0 wei, limit 100000 wei, remaining today 100000 wei');
+    expect(out.join('\n')).toContain(`chain 31337: budget day ${new Date(Math.floor(NOW / 86_400_000) * 86_400_000).toISOString().slice(0, 10)}, spent 0 wei, limit 100000 wei, remaining today 100000 wei`);
     expect(out.join('\n')).toContain('no unsettled transactions');
     out.length = 0;
     expect(await runOps(['state'], deps({ RELAYER_STATE_FILE: join(dir, 'absent.json') }))).toBe(0);

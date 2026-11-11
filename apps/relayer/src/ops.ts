@@ -209,8 +209,9 @@ export function showState(d: OpsDeps, args: readonly string[]): number {
     const state = readState(d, file);
     const limits = new Map((loaded?.config.chains ?? []).map((c) => [c.chainId, c.dailyBudgetWei]));
     const ids = [...new Set([...state.keys(), ...limits.keys()])].sort((a, b) => a - b);
-    const empty: ChainState = { budget: { day: 0, spentWei: 0n }, sends: [] };
     const now = d.now();
+    // A chain with nothing stored has spent nothing today (not "day 0", which would print as 1970-01-01).
+    const empty: ChainState = { budget: { day: Math.floor(now / DAY_MS), spentWei: 0n }, sends: [] };
     const views = ids.map((id) => chainView(id, state.get(id) ?? empty, limits.get(id), now));
     if (flags.has('--json')) {
       d.out(JSON.stringify({ file, chains: views }));
