@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { isAbsolute, join } from 'node:path';
 import type { Address } from 'viem';
 import { getAddress } from 'viem';
 import {
@@ -88,6 +88,11 @@ export interface RelayerConfig {
   readonly alertWebhookUrl?: string;
   readonly queue: { readonly maxPending: number; readonly receiptTimeoutSeconds: number };
   readonly shutdownGraceSeconds: number;
+  /**
+   * Absolute path of the restart-safe state journal (`state.file`); `undefined` for `state.ephemeral`, where a restart
+   * forgets the spent daily budget and unsettled transactions (development only; refused when NODE_ENV=production).
+   */
+  readonly stateFile?: string;
   readonly chains: readonly ChainRuntimeConfig[];
 }
 
@@ -377,8 +382,9 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
     raw,
     '$',
     ['allowedOrigins', 'chains'],
-    ['listen', 'allowDevChain', 'allowInsecureLocalhostRpc', 'trustedProxies', 'allowFeeToHotKey', 'gas', 'quoteTtlSeconds', 'deadline', 'rateLimit', 'breaker', 'lossBudget', 'queue', 'shutdownGraceSeconds', 'metricsTokenEnv', 'alertWebhookUrlEnv'],
+    ['listen', 'allowDevChain', 'allowInsecureLocalhostRpc', 'trustedProxies', 'allowFeeToHotKey', 'gas', 'quoteTtlSeconds', 'deadline', 'rateLimit', 'breaker', 'lossBudget', 'queue', 'shutdownGraceSeconds', 'metricsTokenEnv', 'alertWebhookUrlEnv', 'state'],
   );
+  const stateFile = parseState(o['state'], ctx);
   const listen = sub(o, 'listen', '$', ['host', 'port']);
   const host = listen['host'] ?? '127.0.0.1';
   if (typeof host !== 'string' || host === '' || host.length > 255) return bad('listen.host', 'invalid');
@@ -449,8 +455,29 @@ export function parseConfig(raw: unknown, ctx: ConfigContext): RelayerConfig {
       receiptTimeoutSeconds: numberOr(q, 'receiptTimeoutSeconds', 'queue', 120, 5, 3600),
     },
     shutdownGraceSeconds: numberOr(o, 'shutdownGraceSeconds', '$', 15, 1, 300),
+    ...(stateFile === undefined ? {} : { stateFile }),
     chains,
   };
+}
+
+/**
+ * `state`: exactly one of `{ "file": "/abs/path.json" }` (restart-safe budget and transaction journal) or
+ * `{ "ephemeral": true }`. Required, so an operator cannot lose restart safety by omission.
+ */
+function parseState(raw: unknown, ctx: ConfigContext): string | undefined {
+  if (raw === undefined) return bad('state', 'required: { "file": "/abs/path" } or { "ephemeral": true }');
+  const s = objectAt(raw, 'state', [], ['file', 'ephemeral']);
+  const file = s['file'];
+  const ephemeral = s['ephemeral'];
+  if ((file === undefined) === (ephemeral === undefined)) return bad('state', 'set exactly one of file or ephemeral');
+  if (ephemeral !== undefined) {
+    if (ephemeral !== true) return bad('state.ephemeral', 'must be true');
+    if (ctx.env['NODE_ENV'] === 'production') return bad('state.ephemeral', 'not allowed when NODE_ENV=production');
+    return undefined;
+  }
+  if (typeof file !== 'string' || !isAbsolute(file) || file.length > 1024 || file.includes('\0') || file.endsWith('/'))
+    return bad('state.file', 'must be an absolute file path');
+  return file;
 }
 
 /**

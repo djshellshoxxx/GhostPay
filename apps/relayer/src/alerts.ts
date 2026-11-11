@@ -14,7 +14,8 @@ export type AlertKind =
   | 'mined_revert'
   | 'mined_revert_rate'
   | 'receipt_timeout'
-  | 'quote_budget_exhausted';
+  | 'quote_budget_exhausted'
+  | 'state_write_failed';
 
 /** An operator alert. */
 export interface AlertEvent {

@@ -24,6 +24,7 @@ fee, and the relayer's hot-key address. That is inherent to the product.
 | Per-chain daily gas spend counter, circuit-breaker outcome window and recent mined-sweep outcomes (time and reverted or not) | process memory only | UTC day / sliding window (mined outcomes: `breaker.windowSize` entries within `lossBudget.windowSeconds`); contain no user data |
 | Loss-budget entries keyed by `HMAC-SHA256(same salt, destination)` and by the hashed client network bucket and its /24 or /48 group, with amounts | process memory only | evicted for a newer entry once their `lossBudget.windowSeconds` window is over (tables bounded by `lossBudget.maxKeys`), or process exit; hashes from earlier salt periods cannot be linked |
 | A broadcast sweep whose receipt wait timed out: its order as broadcast (public on-chain with its `txHash`) and the amounts reserved for it | process memory only | until a later receipt lookup finds it, at most 8 per chain and 24 h, or process exit |
+| State journal (`state.file`): per chain the UTC day index and wei reserved that day; per transaction that may still spend gas: hot-key nonce, transaction hash (public on-chain once broadcast), reserved wei, gas price, status, creation time. No owner, destination, token, amount, fee, signature, IP or request id | the configured file, mode 0600, plus `<file>.lock` (pid, hostname, heartbeat time) | budget: overwritten each UTC day; a transaction record is deleted when its receipt settles it, when reconciliation shows it was never broadcast, or after 24 h unfound |
 | Prometheus request, sweep and breaker counters | process memory only | process lifetime; labels are bounded and contain no user addresses or IPs |
 | Structured log lines | stdout (operator decides where it goes) | operator-controlled; see below |
 
@@ -43,7 +44,7 @@ A test in `src/api.test.ts` scans the log output for these values.
 
 ## What is NOT retained
 
-No database, no files, no cookies, no analytics, and no third-party calls other than the configured JSON-RPC endpoints
+No database, no files other than the state journal above, no cookies, no analytics, and no third-party calls other than the configured JSON-RPC endpoints
 and the optional operator-configured HTTPS alert webhook. Request bodies are discarded after the response. The quote
 token is stateless (an HMAC), so quotes are not stored.
 
