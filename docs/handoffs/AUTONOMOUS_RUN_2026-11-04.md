@@ -213,7 +213,7 @@ The #62 + #70 interaction is resolved in both profiles. The skipped cases are pr
 | #71 | C1 ADR-0026 | 1e87109 | ready | docs only |
 | #72 | B5 testnet feeds | 76199cd | ready | blocked: feed hosts not allowlisted |
 | #73 | C5 device matrix | 92af349 | ready | route-specific heading check |
-| #74 | A4 BTC header sync | 27d1580 | ready | 4 A2 rounds; all mediums fixed; fund-safe |
+| #74 | A4 BTC header sync | 27d1580 | **draft** | 4 A2 rounds; all mediums fixed; fund-safe. Briefly marked ready on 11-11 in error: CI run 41801618326 never created `ts-test (web)` or `contracts-coverage` (23 checks, not 24) and concluded failure. Re-run requested; ready only when every job is present and green. |
 
 **Consolidation by other agents (2026-11-04 to 2026-11-10).** Draft PRs #84 and #98 include every head above as an ancestor. None of the heads is on `main`. #98 contains its own fix for the #70 HIGH (29a5810 and 80fd9a8): it replays a `claimed` router match once when it lies above the run floor. That is the same design as this run's rejected round 1, so it inherits two findings that this run's A2 confirmed with probes:
 - (H) The run floor often lands on a payment block for other reasons: the pending rule, the replay tail, a budget stop, or a typed start. A first transient failure there counts as already retried, and the payment is not re-verified.
