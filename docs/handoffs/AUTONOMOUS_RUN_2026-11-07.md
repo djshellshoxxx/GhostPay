@@ -57,7 +57,7 @@ The command was `git rev-list --count a28ca06..<ref>` over all 97 remote refs. R
 | ts-lint (red on #78 too) | lint job builds only `build:libs`, which lacks `@ghostpay/net-harness` | 48b6bc2: `prelint` hook in `net-transport` |
 | — (review finding) | independent 4-dimension review workflow, each finding adversarially verified: 0b213bd could livelock resume on an unverifiable router claim when the next page is held by the budget or the match limit (confirmed, medium) | 80fd9a8: a claim at the run's own floor gets no second replay; 2 regression tests red before / green after |
 
-The review's other dimensions found no defects (secret loader, policy revert, i18n, e2e path fix). One low finding is open: BackupPanel shows `notes` frozen in the language active at export time after a language switch (cosmetic; not fixed). One medium claim ("claims on earlier pages are never replayed") was refuted: that is the intended one-page replay.
+The review's other dimensions found no defects (secret loader, policy revert, i18n, e2e path fix). The low finding (BackupPanel `notes` frozen in the export-time language) is fixed: the gaps are kept as data and rendered with the current translator. One medium claim ("claims on earlier pages are never replayed") was refuted: that is the intended one-page replay.
 
 ## Hosted CI on 48b6bc2 (2026-11-07 04:32–04:39 UTC)
 
@@ -68,7 +68,6 @@ Every check passed: CI (typecheck, lint, all test shards including web and confi
 ## Remaining autonomous work (next session)
 
 - The W5 residuals listed above. Any security-classified key stays English until the locale is reviewed.
-- The low BackupPanel finding (re-translate `notes` at render time instead of storing localized strings).
 - The Sonar gate, once someone can read the issue list: the owner opens it, or allows sonarcloud.io for the environment.
 
 ## Owner-only (unchanged)
