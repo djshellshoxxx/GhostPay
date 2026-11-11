@@ -30,6 +30,7 @@ import type { AllowedToken, GasPriceSource, TokenPriceSource } from './pricing.j
 import { makeKeyring, signQuote, verifyQuote, type QuoteKeyring } from './quoteToken.js';
 import type { QuoteRequest, SweepRequest } from './validate.js';
 import { RevertRate } from './revertRate.js';
+import { MemoryStateBackend, StateError, StateJournal } from './stateStore.js';
 
 /** Dependencies of {@link RelayerService}. */
 export interface ServiceDeps {
@@ -57,6 +58,11 @@ export interface ServiceDeps {
   readonly failureBudgets?: FailureBudgets;
   /** How long a validated quote-path gas price is reused, ms (default 3000; 0 disables). */
   readonly gasPriceCacheMs?: number;
+  /**
+   * Restart-safe state (daily budget, unsettled transactions). Default: an in-memory journal, which a restart forgets;
+   * production wires a file journal (`state.file`).
+   */
+  readonly journal?: StateJournal;
 }
 
 /** Response of `POST /v1/quote`. */
@@ -105,6 +111,8 @@ export interface HealthResponse {
     readonly breaker: BreakerState;
     /** `sustained` while mined reverts (breaker-neutral, S3-06) are frequent; see {@link RevertRate}. */
     readonly minedReverts: 'normal' | 'sustained';
+    /** `unsettled` while a send's outcome is unknown: sweeps on this chain get `send_unsettled` until it reconciles. */
+    readonly sends: 'settled' | 'unsettled';
   }[];
 }
 
@@ -120,7 +128,10 @@ export interface RequestContext {
 /** A broadcast sweep and what was reserved for it, until its receipt settles the reservations. */
 interface SentSweep {
   readonly txHash: Hex;
-  readonly call: SweepCall;
+  /** Absent for a transaction restored from the state journal (owner data is never persisted). */
+  readonly call: SweepCall | undefined;
+  /** State journal record id; settling the sweep deletes it. */
+  readonly recordId: string;
   readonly gasPrice: bigint;
   readonly reserved: bigint;
   readonly reservedDay: number;
@@ -137,7 +148,8 @@ interface UnknownSend {
   /** Hash of the signed bytes when the chain client knew it; without it no receipt can be looked up. */
   readonly txHash: Hex | undefined;
   readonly nonce: number;
-  readonly call: SweepCall;
+  readonly call: SweepCall | undefined;
+  readonly recordId: string;
   readonly gasPrice: bigint;
   readonly reserved: bigint;
   readonly reservedDay: number;
@@ -161,7 +173,19 @@ interface ChainRuntime {
   readonly reverts: RevertRate;
   /** At most one: while set, the lane refuses to send (`send_unsettled`), so no nonce is handed out twice or skipped. */
   unknownSend: UnknownSend | undefined;
+  /** Native balance of the hot key at the last in-lane read (metrics only). */
+  lastBalance: bigint | undefined;
 }
+
+/** Loss reservation of a transaction restored from the journal: its sources are unknown (salted, not persisted). */
+const RESTORED_LOSS: LossReservation = Object.freeze({
+  window: 0,
+  estimate: 0n,
+  overflow: false,
+  settled: true,
+  settle: () => false,
+  release: () => false,
+});
 
 const REVERT_MAP: Readonly<Record<string, readonly [number, string]>> = {
   NonceAlreadyUsed: [409, 'nonce_used'],
@@ -232,6 +256,7 @@ export class RelayerService {
   private readonly gasLookups = new Map<number, Promise<bigint>>();
   private readonly quoteKeys: QuoteKeyring;
   private readonly failures: FailureBudgets;
+  private readonly journal: StateJournal;
   private closing = false;
 
   public constructor(private readonly d: ServiceDeps) {
@@ -259,16 +284,18 @@ export class RelayerService {
     this.failures =
       d.failureBudgets ??
       new FailureBudgets({ ownerMax: OWNER_FAILURES_PER_WINDOW, destinationMax: 0, windowMs: OWNER_FAILURE_WINDOW_MS, maxKeys: d.config.rateLimit.maxKeys }, this.hasher, mono);
+    this.journal = d.journal ?? new StateJournal(new MemoryStateBackend(), this.now);
     const b = d.config.breaker;
     for (const cfg of d.config.chains) {
       const client = d.clients.get(cfg.chainId);
       if (client === undefined) throw new Error('missing chain client');
+      const stored = this.journal.chain(cfg.chainId);
       this.chains.set(cfg.chainId, {
         cfg,
         client,
         lane: new ChainLane(d.config.queue.maxPending),
         nonces: new NonceManager(() => client.getPendingNonce()),
-        budget: new DailyBudget(cfg.dailyBudgetWei, this.now),
+        budget: new DailyBudget(cfg.dailyBudgetWei, this.now, stored.budget),
         breaker: new GuardedBreaker(
           {
             windowSize: b.windowSize,
@@ -285,6 +312,7 @@ export class RelayerService {
         lastBreakerState: 'closed',
         pending: [],
         unknownSend: undefined,
+        lastBalance: undefined,
         // The breaker's thresholds, applied to the mined reverts the breaker ignores (S3-06, L5-02).
         reverts: new RevertRate(
           { size: b.windowSize, minReverts: b.minSamples, ratio: b.failureRatio, windowMs: lb.windowSeconds * 1000 },
@@ -316,6 +344,76 @@ export class RelayerService {
         value: r.lane.pending,
       })),
     );
+    d.metrics?.gauge('relayer_daily_budget_remaining_wei', 'Gas budget left today per chain, wei (float64).', () =>
+      [...this.chains.values()].map((r) => ({ labels: { chain_id: String(r.cfg.chainId) }, value: Number(r.budget.remaining) })),
+    );
+    d.metrics?.gauge('relayer_unsettled_transactions', 'Sent transactions awaiting a receipt (pending) or reconciliation (unknown).', () =>
+      [...this.chains.values()].flatMap((r) => [
+        { labels: { chain_id: String(r.cfg.chainId), state: 'pending' }, value: r.pending.length },
+        { labels: { chain_id: String(r.cfg.chainId), state: 'unknown' }, value: r.unknownSend === undefined ? 0 : 1 },
+      ]),
+    );
+    d.metrics?.gauge('relayer_hot_balance_wei', 'Hot-key native balance at the last pre-send read, wei (float64; absent before the first sweep).', () =>
+      [...this.chains.values()].flatMap((r) =>
+        r.lastBalance === undefined ? [] : [{ labels: { chain_id: String(r.cfg.chainId) }, value: Number(r.lastBalance) }],
+      ),
+    );
+    for (const rt of this.chains.values()) this.restore(rt);
+  }
+
+  /**
+   * Re-adopts what the journal says may still spend gas (restart recovery). A send never signed is released; a signed
+   * one with an unknown outcome blocks the lane until reconciliation (as after a lost broadcast answer, EVM-3), so no
+   * nonce is reused while it may be in a mempool; an accepted one rejoins the receipt lookups. Reservations restored
+   * with the budget stay held until a receipt or reconciliation releases them.
+   */
+  private restore(rt: ChainRuntime): void {
+    const chainId = rt.cfg.chainId;
+    const restored = this.journal.chain(chainId).sends;
+    for (const rec of restored) {
+      const base = { call: undefined, recordId: rec.id, gasPrice: rec.gasPriceWei, reserved: rec.reservedWei, reservedDay: rec.reservedDay, loss: RESTORED_LOSS };
+      if (rec.status === 'reserved') {
+        rt.budget.release(rec.reservedWei, rec.reservedDay);
+        this.journalWrite(rt, () => this.journal.removeSend(chainId, rec.id, rt.budget.snapshot()));
+        continue;
+      }
+      if (rec.status === 'signed' && rt.unknownSend === undefined) {
+        rt.unknownSend = { ...base, txHash: rec.txHash, nonce: rec.nonce, at: this.mono(), mined: false };
+      } else if (rec.txHash !== undefined) {
+        this.trackPending(rt, { ...base, txHash: rec.txHash, at: this.mono() });
+      } else {
+        // A second hashless unknown send cannot be looked up; its reservation stays spent for its day.
+        this.journalWrite(rt, () => this.journal.removeSend(chainId, rec.id));
+      }
+    }
+    if (restored.length > 0) {
+      this.logger.log('warn', 'state_restored', { chainId, errorClass: 'state_restored' });
+      this.d.metrics?.inc('relayer_state_restored_total', { chain_id: chainId });
+    }
+  }
+
+  /**
+   * Writes to the journal where a failure must not stop the flow (after a broadcast, or on settlement): the failure is
+   * logged and counted, and the next successful write carries the full state again (each write is a whole snapshot).
+   */
+  private journalWrite(rt: ChainRuntime, write: () => void): void {
+    try {
+      write();
+    } catch (e) {
+      if (!(e instanceof StateError)) throw e;
+      this.d.metrics?.inc('relayer_state_write_failures_total', { chain_id: rt.cfg.chainId });
+      this.logger.log('error', 'state_write_failed', { chainId: rt.cfg.chainId, errorClass: 'state_write_failed' });
+      this.alerts.send({ kind: 'state_write_failed', chainId: rt.cfg.chainId });
+    }
+  }
+
+  /** Adds a timed-out or restored sweep to the receipt lookups; the oldest beyond the cap is dropped (reservations kept). */
+  private trackPending(rt: ChainRuntime, sent: SentSweep): void {
+    rt.pending.push(sent);
+    if (rt.pending.length > MAX_PENDING_RECEIPTS) {
+      const dropped = rt.pending.shift();
+      if (dropped !== undefined) this.journalWrite(rt, () => this.journal.removeSend(rt.cfg.chainId, dropped.recordId));
+    }
   }
 
   /** @returns Public configuration (`GET /v1/info`). */
@@ -352,6 +450,7 @@ export class RelayerService {
       chainId: r.cfg.chainId,
       breaker: r.breaker.state,
       minedReverts: r.reverts.sustained ? ('sustained' as const) : ('normal' as const),
+      sends: r.unknownSend === undefined ? ('settled' as const) : ('unsettled' as const),
     }));
     let status: HealthResponse['status'] = 'ok';
     if (this.closing) status = 'shutting_down';
@@ -499,7 +598,8 @@ export class RelayerService {
   }
 
   /** Records one costly, user-attributable failure against the order's owner (spec 04 failure counter). */
-  private strike(call: SweepCall): void {
+  private strike(call: SweepCall | undefined): void {
+    if (call === undefined) return;
     this.failures.record(call.sweep.owner.toLowerCase(), call.sweep.destination.toLowerCase());
     this.d.metrics?.inc('relayer_owner_failures_total');
   }
@@ -656,6 +756,7 @@ export class RelayerService {
       this.capGasPrice(rt, await op(() => this.d.gasPrices.getGasPrice(cfg.chainId)));
     const gasPrice = await readGasPrice();
     const balance = await op(() => client.getBalance());
+    rt.lastBalance = balance;
     if (balance < cfg.minBalanceWei) {
       breaker.trip();
       this.alerts.send({ kind: 'low_balance', chainId: cfg.chainId });
@@ -759,6 +860,9 @@ export class RelayerService {
     let txHash: Hex;
     let preHandoffRefusal: RelayerError | undefined;
     let nonce: number | undefined;
+    let recordId: string | undefined;
+    let signedHash: Hex | undefined;
+    let journalFailed = false;
     try {
       nonce = await nonces.acquire();
       // Cold/resync nonce acquisition is another RPC await. A deadline that lapses there is still a neutral refusal,
@@ -767,29 +871,75 @@ export class RelayerService {
         preHandoffRefusal = new RelayerError(422, 'deadline_too_soon');
         throw preHandoffRefusal;
       }
-      txHash = await client.sendSweep(call, { nonce, gas: gasLimit, gasPrice: sendGasPrice });
+      // Written before anything is signed: a crash from here on restarts with the reservation held and the nonce known.
+      // An unwritable journal refuses the sweep (fail closed) instead of sending a transaction a restart would forget.
+      try {
+        recordId = this.journal.addSend(
+          cfg.chainId,
+          { nonce, reservedWei: reserved, reservedDay, gasPriceWei: sendGasPrice, status: 'reserved' },
+          budget.snapshot(),
+        );
+      } catch (e) {
+        if (!(e instanceof StateError)) throw e;
+        this.d.metrics?.inc('relayer_state_write_failures_total', { chain_id: cfg.chainId });
+        this.alerts.send({ kind: 'state_write_failed', chainId: cfg.chainId });
+        preHandoffRefusal = new RelayerError(503, 'state_unavailable', 30);
+        throw preHandoffRefusal;
+      }
+      const id = recordId;
+      txHash = await client.sendSweep(call, {
+        nonce,
+        gas: gasLimit,
+        gasPrice: sendGasPrice,
+        // Runs after signing, before the broadcast; throwing here aborts the send (SendRefused).
+        onSigned: (hash) => {
+          try {
+            this.journal.updateSend(cfg.chainId, id, { status: 'signed', txHash: hash });
+          } catch (e) {
+            journalFailed = true;
+            throw e;
+          }
+          signedHash = hash;
+        },
+      });
     } catch (e) {
       nonces.invalidate();
       // Fail closed (EVM-3): only a refusal before the handoff, or one the chain client proves, frees the reservations
       // and the nonce. Any other error may follow a broadcast, so both stay held until reconciliation.
-      if (preHandoffRefusal !== undefined || nonce === undefined || e instanceof SendRefused) {
+      if (preHandoffRefusal !== undefined || nonce === undefined || recordId === undefined || e instanceof SendRefused) {
         budget.release(reserved, reservedDay);
         loss.release();
+        const id = recordId;
+        if (id !== undefined) this.journalWrite(rt, () => this.journal.removeSend(cfg.chainId, id, budget.snapshot()));
         if (preHandoffRefusal !== undefined) throw preHandoffRefusal;
+        if (journalFailed && e instanceof SendRefused) {
+          this.d.metrics?.inc('relayer_state_write_failures_total', { chain_id: cfg.chainId });
+          this.alerts.send({ kind: 'state_write_failed', chainId: cfg.chainId });
+          throw new RelayerError(503, 'state_unavailable', 30);
+        }
       } else {
-        const hash = e instanceof SendOutcomeUnknown ? e.txHash : undefined;
+        const hash = e instanceof SendOutcomeUnknown ? e.txHash : signedHash;
+        const id = recordId;
+        // Hashless (the client failed after handoff without a hash): still 'signed' so a restart blocks the lane too.
+        if (hash === undefined) this.journalWrite(rt, () => this.journal.updateSend(cfg.chainId, id, { status: 'signed' }));
+        else if (hash !== signedHash) this.journalWrite(rt, () => this.journal.updateSend(cfg.chainId, id, { status: 'signed', txHash: hash }));
         this.sendOutcomeUnknown(rt, {
-          txHash: hash, nonce, call, gasPrice: sendGasPrice, reserved, reservedDay, loss, at: this.mono(), mined: false,
+          txHash: hash, nonce, call, recordId: id, gasPrice: sendGasPrice, reserved, reservedDay, loss, at: this.mono(), mined: false,
         });
       }
       setOutcome(classifyRelayOutcome('send_failed'));
       throw new RelayerError(503, 'send_failed');
     }
+    {
+      const id = recordId;
+      const hash = txHash;
+      this.journalWrite(rt, () => this.journal.updateSend(cfg.chainId, id, { status: 'pending', txHash: hash }));
+    }
     this.logger.log('info', 'sweep_sent', { requestId: ctx.requestId, chainId: cfg.chainId, txHash });
 
     // The breaker outcome is the receipt's, not the broadcast's (L5-06): a mined sweep is a success, a receipt
     // timeout a failure, and a mined revert neutral (S3-06; attributed to a state change, not re-simulated).
-    const sent: SentSweep = { txHash, call, gasPrice: sendGasPrice, reserved, reservedDay, loss, at: 0 };
+    const sent: SentSweep = { txHash, call, recordId, gasPrice: sendGasPrice, reserved, reservedDay, loss, at: 0 };
     const settled = (async (): Promise<void> => {
       let r: ReceiptSummary;
       try {
@@ -819,8 +969,7 @@ export class RelayerService {
     this.d.metrics?.inc('relayer_receipt_timeouts_total', { chain_id: chainId });
     this.alerts.send({ kind: 'receipt_timeout', chainId });
     sent.at = this.mono();
-    rt.pending.push(sent);
-    if (rt.pending.length > MAX_PENDING_RECEIPTS) rt.pending.shift();
+    this.trackPending(rt, sent);
   }
 
   /** In-lane: looks up the receipts of earlier timed-out sweeps and settles the ones that were mined (L5-06). */
@@ -828,6 +977,7 @@ export class RelayerService {
     for (const sent of [...rt.pending]) {
       if (this.mono() - sent.at >= PENDING_RECEIPT_MAX_AGE_MS) {
         rt.pending.splice(rt.pending.indexOf(sent), 1);
+        this.journalWrite(rt, () => this.journal.removeSend(rt.cfg.chainId, sent.recordId));
         continue;
       }
       let r: MinedReceipt | null;
@@ -887,9 +1037,13 @@ export class RelayerService {
           chainId,
           ...(u.txHash === undefined ? {} : { txHash: u.txHash }),
         });
-        if (!u.mined && u.txHash !== undefined) {
-          rt.pending.push({ ...u, txHash: u.txHash, at: this.mono() });
-          if (rt.pending.length > MAX_PENDING_RECEIPTS) rt.pending.shift();
+        const hash = u.txHash;
+        if (!u.mined && hash !== undefined) {
+          this.journalWrite(rt, () => this.journal.updateSend(chainId, u.recordId, { status: 'pending', txHash: hash }));
+          this.trackPending(rt, { ...u, txHash: hash, at: this.mono() });
+        } else if (!u.mined) {
+          // Broadcast but hashless: no receipt can be found, so its reservations stay spent for their day.
+          this.journalWrite(rt, () => this.journal.removeSend(chainId, u.recordId));
         }
         return;
       }
@@ -901,6 +1055,7 @@ export class RelayerService {
     rt.nonces.invalidate();
     rt.budget.release(u.reserved, u.reservedDay);
     u.loss.release();
+    this.journalWrite(rt, () => this.journal.removeSend(chainId, u.recordId, rt.budget.snapshot()));
     this.logger.log('info', 'send_not_broadcast', { chainId, errorClass: 'send_not_broadcast' });
     this.d.metrics?.inc('relayer_send_not_broadcast_total', { chain_id: chainId });
   }
@@ -910,6 +1065,7 @@ export class RelayerService {
     const { cfg, budget } = rt;
     const spent = r.gasUsed * sent.gasPrice;
     budget.release(sent.reserved > spent ? sent.reserved - spent : 0n, sent.reservedDay);
+    this.journalWrite(rt, () => this.journal.removeSend(cfg.chainId, sent.recordId, budget.snapshot()));
     if (r.status === 'success') {
       sent.loss.release();
       rt.reverts.record(false);

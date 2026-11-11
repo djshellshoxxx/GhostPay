@@ -13,6 +13,8 @@ import { RelayerHttpServer } from './server.js';
 import { RelayerService, lossCleanReserve } from './service.js';
 import type { PolicyGate } from './policy.js';
 import { ConfigError } from './secrets.js';
+import { FileStateBackend, MemoryStateBackend, StateError, StateJournal, acquireStateLock, type StateLock } from './stateStore.js';
+import { hostname } from 'node:os';
 
 /** Version string reported by `/v1/info`. */
 export const RELAYER_VERSION = '0.1.0';
@@ -33,6 +35,8 @@ export interface RuntimeDeps {
   readonly monotonic?: () => number;
   /** Replaces the config-driven alert sink (tests). */
   readonly alerts?: AlertSink;
+  /** Replaces the config-driven state journal (tests). When given, no lock file is taken. */
+  readonly journal?: StateJournal;
 }
 
 /** A wired relayer. */
@@ -40,8 +44,27 @@ export interface Relayer {
   readonly service: RelayerService;
   readonly server: RelayerHttpServer;
   readonly metrics: Metrics;
-  /** Stops process-lifetime maintenance timers. */
+  /** Stops process-lifetime maintenance timers and releases the state lock. */
   dispose(): void;
+}
+
+/** How often the single-writer lock heartbeat is refreshed (the lock goes stale after 30 s). */
+const LOCK_HEARTBEAT_MS = 10_000;
+
+/**
+ * Opens the state journal named by the config: a locked file journal, or an in-memory one for `state.ephemeral`.
+ *
+ * @throws {StateError} when the file is locked by another process, unreadable or invalid (startup must stop).
+ */
+export function openJournal(config: RelayerConfig, now: () => number): { journal: StateJournal; lock: StateLock | undefined } {
+  if (config.stateFile === undefined) return { journal: new StateJournal(new MemoryStateBackend(), now), lock: undefined };
+  const lock = acquireStateLock(config.stateFile, { pid: process.pid, host: hostname(), now });
+  try {
+    return { journal: new StateJournal(new FileStateBackend(config.stateFile), now), lock };
+  } catch (e) {
+    lock.release();
+    throw e;
+  }
 }
 
 function hex(b: Uint8Array): `0x${string}` {
@@ -102,6 +125,7 @@ export async function buildRelayer(d: RuntimeDeps): Promise<Relayer> {
     { windowMs: lb.windowSeconds * 1000, perKeyLimit: lb.perKeyWei, globalLimit: lb.globalWei, maxKeys: lb.maxKeys, cleanReserve: lossCleanReserve(lb.globalWei) },
     mono,
   );
+  const opened = d.journal === undefined ? openJournal(d.config, now) : { journal: d.journal, lock: undefined };
   const rl = d.config.rateLimit;
   const ipLimiter = new RateLimiter({ perMinute: rl.ipPerMinute, burst: rl.ipBurst, maxKeys: rl.maxKeys }, hasher, mono);
   const ownerLimiter = new RateLimiter({ perMinute: rl.ownerPerMinute, burst: rl.ownerBurst, maxKeys: rl.maxKeys }, hasher, mono);
@@ -123,9 +147,35 @@ export async function buildRelayer(d: RuntimeDeps): Promise<Relayer> {
     alerts,
     metrics,
     version: RELAYER_VERSION,
+    journal: opened.journal,
   });
   const server = new RelayerHttpServer({ config: d.config, service, ipLimiter, quoteGroupLimiter, alerts, logger: d.logger, metrics, monotonic: mono });
   const rotationTimer = setInterval(() => hasher.refresh(), Math.min(d.config.rateLimit.saltRotationHours * 3_600_000, 60_000));
   rotationTimer.unref();
-  return { service, server, metrics, dispose: () => clearInterval(rotationTimer) };
+  const lock = opened.lock;
+  let lockTimer: NodeJS.Timeout | undefined;
+  if (lock !== undefined) {
+    lockTimer = setInterval(() => {
+      try {
+        lock.heartbeat();
+      } catch (e) {
+        // Another process took the state over (or the disk failed): stop sending before nonces collide.
+        if (!(e instanceof StateError)) throw e;
+        d.logger.log('error', 'state_lock_lost', { errorClass: 'state_lock_lost' });
+        clearInterval(lockTimer);
+        void service.shutdown();
+      }
+    }, LOCK_HEARTBEAT_MS);
+    lockTimer.unref();
+  }
+  return {
+    service,
+    server,
+    metrics,
+    dispose: () => {
+      clearInterval(rotationTimer);
+      if (lockTimer !== undefined) clearInterval(lockTimer);
+      lock?.release();
+    },
+  };
 }

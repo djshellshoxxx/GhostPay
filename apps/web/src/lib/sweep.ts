@@ -741,10 +741,11 @@ export async function directSweep(i: DirectSweepInput): Promise<DirectSweepResul
  * `already_allowed` are not refusals (the relayer skips an already-covered permit and sweeps by allowance); they have
  * text so the table is exhaustive. None of the refusal texts retries automatically.
  */
-// The relayed flow only renders the PERMIT_REFUSAL_KEYS subset below. ok_to_permit, already_allowed, nonce_consumed and
-// sig_invalid have no relayer refusal class of their own (the relayer folds a spent nonce and a bad signature into
-// permit_failed, which has its own wider text), so these keys are reserved for those PermitStates and kept so this
-// table stays exhaustive (pinned by sweep.test.ts):
+// The relayed flow only renders the PERMIT_REFUSAL_KEYS subset below. ok_to_permit and already_allowed never arrive as
+// relayer refusals (an already-covered permit is skipped and the sweep uses the allowance). nonce_consumed, sig_invalid
+// and unsupported_token arrive as the relayer's diagnosed classes permit_nonce_consumed, permit_signature_invalid and
+// permit_unsupported_token (it re-checks the signature after a failed permit-path simulation); the table stays
+// exhaustive over PermitState (pinned by sweep.test.ts):
 export const SWEEP_PERMIT_STATE_KEYS: Readonly<Record<PermitState, MessageKey>> = {
   ok_to_permit: 'sweep.permit.ok',
   already_allowed: 'sweep.permit.alreadyAllowed',
@@ -760,13 +761,18 @@ export const SWEEP_PERMIT_STATE_KEYS: Readonly<Record<PermitState, MessageKey>> 
  * UnexpectedBalanceDelta, e.g. a fee-on-transfer token) as `permit_failed`. That class therefore proves only that the
  * pre-broadcast simulation failed with a permit in use: the permit (bad signature, spent nonce, non-standard token) or
  * the token transfer itself may be the cause. It gets its own text, which names both without claiming which, and not
- * the `sig_invalid` text, which says the token rejected the permit.
+ * the `sig_invalid` text, which says the token rejected the permit. When the relayer can diagnose the permit itself it
+ * answers with one of the specific `permit_nonce_consumed` / `permit_signature_invalid` / `permit_unsupported_token`
+ * classes instead, which reuse the matching PermitState texts.
  */
 // Rendered by Sweep.tsx through sweepPermitRefusalKey:
 const PERMIT_REFUSAL_KEYS: Readonly<Record<string, MessageKey>> = {
   permit_expired: 'sweep.permit.expired',
   permit_failed: 'sweep.permit.simulationFailed',
   permit_not_supported: 'sweep.permit.unsupported',
+  permit_nonce_consumed: 'sweep.permit.nonceConsumed',
+  permit_signature_invalid: 'sweep.permit.failed',
+  permit_unsupported_token: 'sweep.permit.unsupported',
   permit_value_too_low: 'sweep.permit.valueTooLow',
   insufficient_allowance: 'sweep.permit.noAllowance',
   owner_failure_limit: 'sweep.permit.ownerFailureLimit',
@@ -781,6 +787,9 @@ export function sweepPermitRefusalKey(e: unknown): MessageKey | undefined {
 /**
  * Spec 04 section 2 step 3: only a bad/unsupported/missing permit offers the direct-sweep (owner pays gas) fallback.
  * A relayer `permit_failed` may be a bad permit, so it offers the fallback too; it never retries on its own.
+ *
+ * `sweep.permit.nonceConsumed` deliberately does not: the nonce was spent by the owner's own key (or a front-runner)
+ * and no allowance covers the sweep, so its text is shown as is and the owner decides what to do next.
  */
 export function sweepPermitSuggestsDirect(key: MessageKey): boolean {
   return key === 'sweep.permit.failed' || key === 'sweep.permit.simulationFailed' || key === 'sweep.permit.unsupported' || key === 'sweep.permit.noAllowance';
