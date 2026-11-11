@@ -231,7 +231,7 @@ export function recommendProfile(answers: unknown): Recommendation {
   if (typeof answers !== 'object' || answers === null || Array.isArray(answers)) {
     throw new AnswerError('answers must be an object');
   }
-  const prototype = Object.getPrototypeOf(answers);
+  const prototype: unknown = Object.getPrototypeOf(answers);
   if (prototype !== Object.prototype && prototype !== null) {
     throw new AnswerError('answers must be a plain object');
   }
