@@ -210,7 +210,7 @@ jobs:
       - name: Relayer unit tests (anvil e2e must run, not skip)
         env:
           # The relayer e2e must fail instead of silently skipping when anvil or artifacts are missing
-          # (audit G-09 / O-06). Honoured once apps/relayer/src/e2e.anvil.test.ts reads it.
+          # (audit G-09 / O-06); apps/relayer/src/e2e.anvil.test.ts reads it (and CI=true).
           REQUIRE_ANVIL: '1'
         run: npm test -w apps/relayer
 
@@ -361,6 +361,9 @@ jobs:
       - uses: ./.github/actions/setup-forge
         with:
           cache-name: test
+      - name: No tx.origin in contract sources (spec 04 s3, DOC-9)
+        run: |
+          if grep -rnE '\btx\.origin\b' src; then echo "tx.origin is not allowed in packages/contracts/src"; exit 1; fi
       - run: forge build --sizes
       - run: forge test
 

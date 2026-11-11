@@ -264,6 +264,42 @@ OR 1. Drain gas funds
  4. Steal user funds                                                    blocked on-chain: destination, amount, fee, feeTo are signed
 ```
 
+### 6.3a Permit griefing (spec 04)
+
+Assets: relayer gas, owner funds, honest error reporting. The ERC-2612 permit is outside the sweep signature and the
+quote MAC; only `permit.value >= amount` couples it to the order, and the contract swallows a failed permit.
+
+```
+Waste relayer gas or mislead the owner through the permit
+OR 1. Front-run the owner's permit (ERC-2612 text)          ctl: allowance re-read in-lane; covered -> permit dropped, plain sweep (anvil e2e)
+OR 2. Submit a permit that is bad (wrong sig/nonce/domain)  ctl: simulation before send; failure classified from nonces()/DOMAIN_SEPARATOR()
+                                                                 (permit_nonce_consumed / permit_signature_invalid / permit_unsupported_token);
+                                                                 counts against the owner (3 per hour, then owner_failure_limit)
+OR 3. Permit that lapses before the sweep deadline           ctl: permit_expired unless permit.deadline >= sweep.deadline (L5-01)
+OR 4. Owner drains or revokes between simulation and mining  ctl: two simulations next to the send, deadline margin; residual: one mined
+                                                                 revert per attempt, charged to the loss budget and the owner, and bounded by
+                                                                 the persisted daily budget; griefReserveBps prices a margin (default 0, UNVERIFIED)
+OR 5. DAI-style / non-standard permit token                  ctl: token allowlist permit flag; usdStable only; unsupported -> 422 before broadcast
+OR 6. Cross-chain permit replay                              ctl: token domain includes chainId (UNVERIFIED for fork rebuild of vendored OZ)
+Residual: option C (on-chain PermitSkipped event) deferred; clients get no automatic fallback (owner chooses direct sweep or approve).
+```
+
+### 6.3b Relayer restart and state loss
+
+```
+Spend more than the daily budget or double-use a hot-key nonce through a restart
+OR 1. Crash/restart to reset the daily budget                ctl: state journal persists day + spent wei; corrupt file = startup error
+OR 2. Clock stepped back to re-open yesterday's budget       ctl: the budget day only moves forward
+OR 3. Crash between broadcast and acknowledgement            ctl: hash journaled before broadcast; restart blocks the lane until a receipt
+                                                                 or the node's pending nonce settles it; never a new nonce on a lost answer
+OR 4. Two processes with one hot key and one state file      ctl: heartbeat lock (second process refuses to start; lock loss stops admission)
+OR 5. Two processes with one hot key on separate storage     gap: unsupported, not detected (no distributed coordination)
+OR 6. Disk full / unwritable journal                         ctl: refusal before signing (state_unavailable); after broadcast a failed write is
+                                                                 alerted and the next full-snapshot write repairs it
+Not persisted (bounded by the persisted daily budget): rate limits, per-key loss budget, owner failure counter, breaker window.
+Privacy: the journal holds nonces, tx hashes and wei only; records are deleted on settlement (apps/relayer/PRIVACY.md).
+```
+
 ### 6.4 Oracle failure (goal: payer overpays/underpays, or payment blocked)
 
 ```
