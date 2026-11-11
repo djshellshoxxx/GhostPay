@@ -16,8 +16,8 @@ import { createInvoiceAt, identityOf, nav, receiptPanel, reviewToFinalCheck, sca
  * only; no real funds, keys or networks. Run through scripts/beta/browser-devnet.sh.
  */
 
-// The mocked suite (playwright.config.ts) also collects this file; there it is reported as skipped. The devnet config
-// refuses to start without the state file, so under scripts/beta/browser-devnet.sh this condition is never true.
+// The mocked suite (playwright.config.ts) excludes this file (desktop testIgnore). The devnet config refuses to start
+// without the state file, so under scripts/beta/browser-devnet.sh this guard never skips; it only stops a direct run.
 test.skip(process.env['GHOSTPAY_DEVNET_STATE'] === undefined, 'Real-chain journey: run scripts/beta/browser-devnet.sh');
 
 let dn: DevnetState;

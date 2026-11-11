@@ -4,27 +4,23 @@ name: Beta acceptance
 # web app in Chromium against its own anvil. Dev/test chains and public anvil keys only: no secrets, no public network.
 on:
   pull_request:
+    # Everything the job builds or exercises: the web app (source, locales, build scripts), relayer, every workspace
+    # package (dependency closure of web, CLI and relayer), contracts and their libs, the devnet/testnet scripts, root
+    # build inputs and the composite actions. Markdown-only changes do not run it.
     paths:
       - ".github/workflows/beta-acceptance.yml"
+      - ".github/actions/**"
+      - "apps/web/**"
+      - "apps/relayer/**"
+      - "packages/**"
       - "scripts/beta/**"
       - "scripts/devnet/**"
-      - "scripts/testnet/make-manifest.mjs"
-      - "apps/web/src/**"
-      - "apps/web/e2e/devnet/**"
-      - "apps/web/e2e/devnet-journey.spec.ts"
-      - "apps/web/playwright.devnet.config.ts"
-      - "apps/web/package.json"
-      - "apps/web/vite.config.ts"
-      - "apps/relayer/src/**"
-      - "packages/cli/src/**"
-      - "packages/chain-adapters/src/**"
-      - "packages/core-crypto/src/**"
-      - "packages/invoice-schema/src/**"
-      - "packages/ux-vault/src/**"
-      - "packages/tx-review/src/**"
-      - "packages/contracts/src/**"
-      - "packages/contracts/script/**"
+      - "scripts/testnet/**"
+      - "scripts/build-workspaces.mjs"
+      - "package.json"
       - "package-lock.json"
+      - "tsconfig.base.json"
+      - "!**/*.md"
   workflow_dispatch:
 
 permissions:

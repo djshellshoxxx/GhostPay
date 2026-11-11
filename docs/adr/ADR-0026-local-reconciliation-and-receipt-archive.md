@@ -282,7 +282,9 @@ These tests exercise the described behaviour. They are listed, not re-run for th
    or after expiry are ambiguous; only observations recorded before expiry can yield an exact local proposal.
 7. **Plaintext exports rely on a confirmation only.** Consider a warning that the file must not be stored in shared
    locations.
-8. **First-scan time of old payments (2026-11-11).** Re-saves keep the first live observation time (above). A payment
-   that was never saved before still gets the time of the scan that first sees it, even if its block is much older, so
-   it can be a `candidate` for an invoice created after the payment and is `late-observation` for an invoice that has
-   since expired. Fixing this needs block timestamps in the record, a document schema change that is not made here.
+8. **Observation time of unsaved and imported payments (2026-11-11).** Re-saves keep the first live saved time (above).
+   A payment that is not saved yet is timed by the current scan that shows it (the ledger rebuilds unsaved records with
+   the current time, so each rescan re-times it), and a revived imported or invalidated record takes the fresh time.
+   Either can therefore be a `candidate` for an invoice created after the payment, or `late-observation` for an
+   invoice that has since expired, whatever its block time. Fixing this needs block timestamps in the record, a
+   document schema change that is not made here.

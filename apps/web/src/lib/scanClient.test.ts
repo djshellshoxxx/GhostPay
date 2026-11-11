@@ -419,6 +419,24 @@ describe('runScan', () => {
     expect(emitted.at(-1)?.viaRouter).toBe(true);
   });
 
+  it('skips a later third-party (non-router) replay of an already listed router payment across pages (F1 keeps only router records separate)', async () => {
+    const s = setup();
+    const router: RpcLog = { ...s.mine.log, blockNumber: '0x78', blockHash: blockHash(120), logIndex: '0x1', transactionHash: `0x${'bb'.repeat(32)}` };
+    const directTopics = [...router.topics];
+    directTopics[3] = `0x${'99'.repeat(20).padStart(64, '0')}`;
+    const direct: RpcLog = { ...router, topics: directTopics, blockNumber: '0xc7a8', blockHash: blockHash(51_112), logIndex: '0x0', transactionHash: `0x${'aa'.repeat(32)}` };
+    const emitted: import('./scanClient').ScanMatch[] = [];
+    const res = await runScan({
+      chain, manifest, client: chainWith(52_000, [router, direct]), cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal, onMatch: (m) => emitted.push(m),
+    });
+    expect(res.matches).toHaveLength(1);
+    expect(res.matches[0]?.viaRouter).toBe(true);
+    expect(res.matches[0]?.announcement.transactionHash).toBe(router.transactionHash);
+    expect(emitted).toHaveLength(1);
+  });
+
   it('reports a worker that rejects the keys, and worker crashes', async () => {
     const s = setup();
     await expect(

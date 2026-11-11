@@ -14,11 +14,17 @@ a key; neither independently proves payment or establishes the seller's identity
    expiry is also ambiguous because the scan timestamp does not establish when the payment happened. Review those cases
    manually. A typed invoice digest is only your annotation and is not validated payment evidence.
 
-Matching uses the time GhostPay first recorded a live observation (note dated 2026-11-11). Saving or confirming the same
-payment again keeps that first time, so a payment saved before expiry can still be confirmed later. A payment GhostPay
-never saved before is timed by the scan that first finds it, not by its block, even if it is older: an old payment can
-then be suggested for an invoice created after it, or shown as ambiguous for an invoice that has since expired. Check
-the transaction date yourself before confirming a match for an old payment.
+Matching uses observation time, not block time (note dated 2026-11-11). Once you save a payment on this device, saving
+or confirming it again keeps that first saved time, so a payment saved before expiry can still be confirmed later. Two
+cases do not keep an earlier time:
+- A payment you have not saved yet is timed by the scan that is showing it now. Every rescan re-times it, so save a
+  payment before its invoice expires if you want to confirm it later.
+- A payment restored from a backup or imported from another device takes the time of the next live scan that saves it.
+  Confirm such payments before expiry on the original device, or check them manually.
+
+Because the time is not the block time, an old payment can be suggested for an invoice created after it, or shown as
+ambiguous for an invoice that has since expired. Check the transaction date yourself before confirming a match for an
+old payment.
 
 Only eligible router-verified scan observations participate. Imported history, reorg-invalidated observations, signed
 receipt files and QR contents never become payment evidence through this workflow. A scan that changes while saving or

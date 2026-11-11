@@ -30,6 +30,7 @@ while [ $# -gt 0 ]; do
   shift
 done
 IFS=',' read -r -a want <<<"$stages"
+[ "${#want[@]}" -gt 0 ] || { echo "no stages selected (use --stages lib,cli,browser)" >&2; exit 2; }
 for s in "${want[@]}"; do
   case "$s" in lib | cli | browser) ;; *) echo "unknown stage: $s" >&2; exit 2 ;; esac
 done
@@ -45,7 +46,7 @@ mkdir -p "$STATE"
 stamp="$(date -u +%Y%m%dT%H%M%SZ)"
 LOG="$STATE/acceptance-$stamp.log"
 head_sha="$(git -C "$ROOT" rev-parse HEAD)"
-dirty="$(git -C "$ROOT" status --porcelain --untracked-files=no | grep -v ' deployments/31337.json$' || true)"
+dirty="$(git -C "$ROOT" status --porcelain --untracked-files=no || true)"
 {
   echo "GhostPay core beta acceptance $stamp"
   echo "commit $head_sha${dirty:+ (tracked changes present)}"
@@ -54,10 +55,18 @@ dirty="$(git -C "$ROOT" status --porcelain --untracked-files=no | grep -v ' depl
 } | tee "$LOG"
 
 started_devnet=0
+# up.sh rewrites and down.sh deletes the tracked devnet manifest. Keep its exact pre-run bytes and put them back only
+# when this run started the devnet, so a developer's own edits or running devnet are never touched.
+MANIFEST_31337="$ROOT/deployments/31337.json"
+manifest_backup="$STATE/31337.json.pre-$stamp"
+had_manifest=0
+if [ -f "$MANIFEST_31337" ]; then cp -p "$MANIFEST_31337" "$manifest_backup"; had_manifest=1; fi
 cleanup() {
-  if [ "$started_devnet" = "1" ]; then bash "$ROOT/scripts/devnet/down.sh" >/dev/null 2>&1 || true; fi
-  # up.sh rewrites the tracked devnet manifest (date/commit); restore it so acceptance leaves the tree unchanged.
-  git -C "$ROOT" checkout -- deployments/31337.json 2>/dev/null || true
+  if [ "$started_devnet" = "1" ]; then
+    bash "$ROOT/scripts/devnet/down.sh" >/dev/null 2>&1 || true
+    if [ "$had_manifest" = "1" ]; then cp -p "$manifest_backup" "$MANIFEST_31337"; else rm -f "$MANIFEST_31337"; fi
+  fi
+  rm -f "$manifest_backup"
 }
 trap cleanup EXIT
 
