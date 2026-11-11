@@ -253,6 +253,7 @@ export async function relayedSweep(i: RelayedSweepInput): Promise<string> {
     return await submitSweep(
       i.relayerUrl,
       {
+        chainId: i.target.chainId,
         sweep: order,
         sweepSig: sweepSig.signature,
         permit: { value: i.amount, deadline, v: permit.v, r: permit.r, s: permit.s },
