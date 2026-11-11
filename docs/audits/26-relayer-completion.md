@@ -90,6 +90,31 @@ Accepted, not changed: high-s permit signatures are classified `sig_invalid` alt
 them (message only; the simulation decides); synchronous fsyncs (about four per sweep) can stall the event loop on a slow
 disk (performance; one transaction per chain at a time); a malicious RPC can still fake receipts and nonces (inherent).
 
+## 4a. Grief reserve derivation (directive phase 3.12)
+
+Measured 2026-11-11 on a local anvil (foundry 1.8.5) against the compiled `GhostPaySweepRelayer` and the OZ-based test
+`PermitToken` (6 decimals), throwaway keys:
+
+| Path | gasUsed |
+|---|---|
+| `sweepWithPermit`, first sweep (destination and `feeTo` balances go from zero to non-zero) | 163,385 |
+| `sweep` (allowance path, warm recipients) | 82,790 |
+| Mined revert, owner moved the balance away first | 62,973 |
+| Mined revert, owner revoked the allowance first | 59,373 |
+
+Model: if a fraction `p` of broadcast sweeps end as mined reverts costing `L` gas each, the successful ones must carry
+`p / (1 - p) * L` extra gas. Since `gas.griefReserveBps` scales the gas term, break-even is
+`griefReserveBps = ceil(10000 * p / (1 - p) * L / G)`, with `G` the gas of a successful sweep.
+With `L = 63k`, the ratio `L / G` lies between about 0.39 (permit path, cold) and 0.76 (plain path, warm). Examples:
+`p = 1%` needs 30-77 bps, `p = 5%` needs 160-400 bps.
+
+No default is set (it stays 0) because `p` is not known: the per-owner strike limit, the loss budget and the two
+simulations next to the send all push it down, and the gas multiplier of 1.10 already covers `p` up to about 11 % on
+the plain path when the gas price does not move. The fee floor of 50 bps of the amount dominates for all but small
+sweeps. Operators should set `griefReserveBps` from their own `relayer_mined_reverts_total / relayer_sweeps_total`
+ratio and their token's measured gas (USDC and other production tokens differ from the test token). UNVERIFIED on a
+public network.
+
 ## 5. Evidence (sandbox)
 
 - `REQUIRE_ANVIL=1 npm test -w apps/relayer`: 12 files, 422 tests, coverage 97.3 / 93.5 / 96.6 / 98.5 (thresholds
