@@ -498,6 +498,80 @@ describe('runScan', () => {
     expect(emitted).toHaveLength(1);
   });
 
+  describe('claim ledger rebuild after a reorg on a later page', () => {
+    // Page 1 is blocks 0..49999 (fifty 1000-block windows); the replacement logs below sit on page 2 / the re-read.
+    const HEAD = 52_000;
+    const NO_ROUTER = `0x${'99'.repeat(20).padStart(64, '0')}`;
+    function fixture() {
+      const s = setup();
+      const meta = encodeMetaAddress(s.keys);
+      const q = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 130, index: 1, caller: FAKE_ROUTER });
+      const asDirect = (log: RpcLog, over: Partial<RpcLog>): RpcLog => ({ ...log, topics: [log.topics[0]!, log.topics[1]!, log.topics[2]!, NO_ROUTER], ...over });
+      const at = (block: number): Partial<RpcLog> => ({ blockNumber: `0x${block.toString(16)}`, blockHash: blockHash(block) });
+      // Kept before the reorg: P (router, index 0) and Q (public direct post, index 1).
+      const qDirect = asDirect(q.log, { ...at(130), logIndex: '0x1', transactionHash: `0x${'d1'.repeat(32)}` });
+      const kept = [s.mine.log, qDirect];
+      // Seen only after the reorg point.
+      const replayP = asDirect(s.mine.log, { ...at(50_500), logIndex: '0x2', transactionHash: `0x${'aa'.repeat(32)}` });
+      const replayQ = asDirect(q.log, { ...at(50_600), logIndex: '0x3', transactionHash: `0x${'ab'.repeat(32)}` });
+      const routerQ: RpcLog = { ...q.log, ...at(50_700), logIndex: '0x4', transactionHash: `0x${'bb'.repeat(32)}` };
+      const routerP2: RpcLog = { ...s.mine.log, ...at(50_800), logIndex: '0x5', transactionHash: `0x${'cc'.repeat(32)}` };
+      return { s, kept, replayP, replayQ, routerQ, routerP2, all: [...kept, replayP, replayQ, routerQ, routerP2] };
+    }
+    /** Serves `block`'s hash differently on exactly the given (1-based) reads, as a fork would. */
+    function forking(client: ReturnType<typeof chainWith>, block: bigint, readsToFork: readonly number[]) {
+      let reads = 0;
+      return { ...client, getBlock: async (n: bigint) => {
+        const real = await client.getBlock(n);
+        if (n !== block || real === null || !readsToFork.includes(++reads)) return real;
+        return { ...real, hash: blockHash(Number(n) + 10_000) as Hex };
+      } };
+    }
+    const run = (f: ReturnType<typeof fixture>, client: ReturnType<typeof forking>, extra: { onMatch?: (m: import('./scanClient').ScanMatch) => void; onReorg?: (to: bigint) => void } = {}) => runScan({
+      chain, manifest, client, cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(f.s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(f.s.keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal, ...extra,
+    });
+    const txs = (ms: readonly import('./scanClient').ScanMatch[]): (string | undefined)[] => ms.map((m) => m.announcement.transactionHash);
+
+    it('after a rollback above genesis, drops replays of kept pairs, replaces a kept replay in place, and appends a distinct router record', async () => {
+      const f = fixture();
+      // Window 50000..50999 ends at block 50999: its hash changes between the window read and the end-of-page check,
+      // so page 2 reports a reorg at block 50000 (above genesis) with page 1's records kept.
+      const rolledBack: bigint[] = [];
+      const emitted: import('./scanClient').ScanMatch[] = [];
+      const res = await run(f, forking(chainWith(HEAD, f.all), 50_999n, [2]), { onMatch: (m) => emitted.push(m), onReorg: (to) => { rolledBack.push(to); } });
+      expect(rolledBack).toEqual([50_000n]);
+      // Emissions follow the page's processing order (P's second router record before Q's replacement).
+      // (a) both free replays are dropped, (b) Q's public post is replaced IN PLACE by its router record (index 1,
+      // not P's index 0, and not appended), (c) P's second router record is appended after it.
+      expect(txs(res.matches)).toEqual([f.s.mine.log.transactionHash, f.routerQ.transactionHash, f.routerP2.transactionHash]);
+      expect(res.matches.map((m) => m.viaRouter)).toEqual([true, true, true]);
+      expect(res.matches.map((m) => m.receipt)).toEqual(['verified', 'verified', 'verified']);
+      expect(res.matches[0]?.stealthAddress).toBe(res.matches[2]?.stealthAddress);
+      expect(res.matches[1]?.stealthAddress).not.toBe(res.matches[0]?.stealthAddress);
+      expect(txs(emitted)).toEqual([f.s.mine.log.transactionHash, f.kept[1]!.transactionHash, f.routerP2.transactionHash, f.routerQ.transactionHash]);
+      expect(res.cursor.nextBlock).toBe(BigInt(HEAD) + 1n);
+    });
+
+    it('after a rollback to genesis, every pair is new again and indexes restart from the empty list', async () => {
+      const f = fixture();
+      // Page 2 re-reads page 1's last block (the checkpoint) and finds it replaced: roll back to genesis and rescan.
+      // Block 49999 is read twice on page 1 (window end, page end), so read 3 is page 2's checkpoint check.
+      const rolledBack: bigint[] = [];
+      const emitted: import('./scanClient').ScanMatch[] = [];
+      const res = await run(f, forking(chainWith(HEAD, f.all), 49_999n, [3]), { onMatch: (m) => emitted.push(m), onReorg: (to) => { rolledBack.push(to); } });
+      expect(rolledBack).toEqual([0n]);
+      expect(txs(res.matches)).toEqual([f.s.mine.log.transactionHash, f.routerQ.transactionHash, f.routerP2.transactionHash]);
+      expect(res.matches.map((m) => m.viaRouter)).toEqual([true, true, true]);
+      // P and Q's public post were listed once before the rollback and again after it (treated as new, not as replays).
+      expect(txs(emitted)).toEqual([
+        f.s.mine.log.transactionHash, f.kept[1]!.transactionHash,
+        f.s.mine.log.transactionHash, f.kept[1]!.transactionHash, f.routerP2.transactionHash, f.routerQ.transactionHash,
+      ]);
+    });
+  });
+
   it('reports a worker that rejects the keys, and worker crashes', async () => {
     const s = setup();
     await expect(
