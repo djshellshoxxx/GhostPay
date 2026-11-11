@@ -38,6 +38,7 @@ import type { Translator } from '../i18n/translator';
 import { fiatDecimals, formatFiat, formatUnits } from './format';
 import { computeTotals } from './invoiceCreate';
 import type { ManifestState } from './manifest';
+import { reportsRevert } from './txGuard';
 
 export type TrustView = (
   | { readonly kind: 'invalid-signature'; readonly text: string }
@@ -488,8 +489,10 @@ export function permitStateMessage(state: PermitState, t?: Translator['t']): str
 
 
 /**
- * Reads for the spec 04 permit classifier over the user's RPC. `simulatePermit` is a static `permit(...)` call; any
- * rejection counts as "the token would not accept it" (fail closed: the user falls back to an approval).
+ * Reads for the spec 04 permit classifier over the user's RPC. `simulatePermit` is a static `permit(...)` call: only a
+ * node-reported execution failure ({@link reportsRevert}) or a malformed result counts as "the token would not accept
+ * it". Any other error (timeout, HTTP 429/5xx, dropped connection) rejects, so the payment stops with an RPC error and
+ * the permit is not reported as rejected (R04-3; the {@link PermitPreflightReader} contract).
  */
 export function permitPreflightReader(rpc: Pick<RpcClient, 'request'>): PermitPreflightReader {
   const base = permitReader(rpc, '1');
@@ -504,12 +507,14 @@ export function permitPreflightReader(rpc: Pick<RpcClient, 'request'>): PermitPr
     },
     async simulatePermit(token, a) {
       const data = encodeFunctionData({ abi: erc2612PermitAbi, functionName: 'permit', args: [a.owner, a.spender, a.value, a.deadline, a.v, a.r, a.s] });
+      let r: unknown;
       try {
-        const r = await rpc.request('eth_call', [{ from: a.owner, to: token, data }, 'latest']);
-        return typeof r === 'string' && /^0x(?:[0-9a-fA-F]{2})*$/.test(r);
-      } catch {
-        return false;
+        r = await rpc.request('eth_call', [{ from: a.owner, to: token, data }, 'latest']);
+      } catch (e) {
+        if (reportsRevert(e)) return false;
+        throw e;
       }
+      return typeof r === 'string' && /^0x(?:[0-9a-fA-F]{2})*$/.test(r);
     },
   };
 }
