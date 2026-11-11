@@ -1,9 +1,9 @@
-import { createPublicClient, createWalletClient, custom, defineChain, encodeErrorResult, parseTransaction, toHex, type Hex } from 'viem';
+import { createPublicClient, createWalletClient, custom, defineChain, encodeErrorResult, keccak256, parseTransaction, toHex, type Hex } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { ghostPaySweepRelayerAbi } from '@ghostpay/chain-adapters';
 import { describe, expect, it } from 'vitest';
 import { createViemChainClient, type SweepCall } from './chain.js';
-import { SimulationRevert } from './errors.js';
+import { SendOutcomeUnknown, SendRefused, SimulationRevert } from './errors.js';
 import { CHAIN_ID, DEST, FEE_TO, OWNER, OWNER_KEY, SWEEP_CONTRACT, USDC } from './harness.testutil.js';
 
 const chain = defineChain({ id: CHAIN_ID, name: 'T', nativeCurrency: { name: 'E', symbol: 'ETH', decimals: 18 }, rpcUrls: { default: { http: ['http://unused.invalid'] } } });
@@ -11,9 +11,11 @@ const account = privateKeyToAccount(OWNER_KEY);
 const HASH: Hex = `0x${'ab'.repeat(32)}`;
 
 interface Script {
-  call?: () => unknown;
+  call?: (data: string) => unknown;
   estimate?: () => unknown;
   receipt?: () => unknown;
+  /** What `eth_sendRawTransaction` answers; default is the true hash of the raw bytes. */
+  sendAnswer?: (raw: string) => unknown;
   raw: string[];
 }
 
@@ -30,9 +32,9 @@ function setup(script: Script) {
       case 'eth_getTransactionCount': return Promise.resolve('0x7');
       case 'eth_call':
         try {
-          if (script.call !== undefined) return Promise.resolve(script.call());
           const paramList = Array.isArray(params) ? params : [];
           const data = (paramList[0] as { data?: string } | undefined)?.data ?? '';
+          if (script.call !== undefined) return Promise.resolve(script.call(data));
           return Promise.resolve(data.startsWith('0x70a08231') || data.startsWith('0xdd62ed3e') ? `0x${'00'.repeat(31)}01` : `0x${'00'.repeat(32)}`);
         } catch (e) {
           return Promise.reject(e instanceof Error ? e : new Error('x'));
@@ -43,8 +45,14 @@ function setup(script: Script) {
         } catch (e) {
           return Promise.reject(e instanceof Error ? e : new Error('x'));
         }
-      case 'eth_sendRawTransaction':
-        return Promise.resolve(HASH);
+      case 'eth_sendRawTransaction': {
+        const raw = (params as string[])[0] as string;
+        try {
+          return Promise.resolve(script.sendAnswer === undefined ? keccak256(raw as Hex) : script.sendAnswer(raw));
+        } catch (e) {
+          return Promise.reject(e instanceof Error ? e : new Error('x'));
+        }
+      }
       case 'eth_getTransactionReceipt': {
         const r = script.receipt?.();
         return Promise.resolve(r === undefined ? null : r);
@@ -158,8 +166,8 @@ describe('createViemChainClient', () => {
   it('signs legacy transactions with the chosen nonce, gas and gas price', async () => {
     const raw: string[] = [];
     const c = setup({ raw });
-    expect(await c.sendSweep(call, { nonce: 9, gas: 123_456n, gasPrice: 2_000_000_000n })).toBe(HASH);
-    expect(await c.sendSweep(permitCall, { nonce: 10, gas: 223_456n, gasPrice: 2_000_000_000n })).toBe(HASH);
+    expect(await c.sendSweep(call, { nonce: 9, gas: 123_456n, gasPrice: 2_000_000_000n })).toBe(keccak256(raw[0] as Hex));
+    expect(await c.sendSweep(permitCall, { nonce: 10, gas: 223_456n, gasPrice: 2_000_000_000n })).toBe(keccak256(raw[1] as Hex));
     const tx = parseTransaction(raw[0] as Hex);
     expect(tx).toMatchObject({ nonce: 9, gas: 123_456n, gasPrice: 2_000_000_000n, chainId: CHAIN_ID, to: SWEEP_CONTRACT.toLowerCase() });
     expect(parseTransaction(raw[1] as Hex)).toMatchObject({ nonce: 10, gas: 223_456n });
@@ -179,5 +187,74 @@ describe('createViemChainClient', () => {
     expect(await setup({ raw: [] }).getReceipt(HASH)).toBeNull();
     const down = setup({ raw: [], receipt: () => { throw new Error('https://rpc.example/secret-key unreachable'); } });
     await expect(down.getReceipt(HASH)).rejects.toThrow(/^rpc_failure$/);
+  });
+  it('readPermitState: nonces(owner) and DOMAIN_SEPARATOR(), each null on its own revert', async () => {
+    const SEP: Hex = `0x${'5e'.repeat(32)}`;
+    const revert = () => rpcError(3, 'execution reverted');
+    const ok = setup({ raw: [], call: (d) => (d.startsWith('0x7ecebe00') ? toHex(3n, { size: 32 }) : SEP) });
+    expect(await ok.readPermitState(USDC, OWNER)).toEqual({ nonce: 3n, domainSeparator: SEP });
+    const noNonce = setup({ raw: [], call: (d) => { if (d.startsWith('0x7ecebe00')) throw revert(); return SEP; } });
+    expect(await noNonce.readPermitState(USDC, OWNER)).toEqual({ nonce: null, domainSeparator: SEP });
+    const noSep = setup({ raw: [], call: (d) => { if (d.startsWith('0x3644e515')) throw revert(); return toHex(0n, { size: 32 }); } });
+    expect(await noSep.readPermitState(USDC, OWNER)).toEqual({ nonce: 0n, domainSeparator: null });
+    // Non-contract / empty return data decodes to a revert-like failure as well.
+    const empty = setup({ raw: [], call: () => '0x' });
+    expect(await empty.readPermitState(USDC, OWNER)).toEqual({ nonce: null, domainSeparator: null });
+  });
+
+  it('readPermitState: transport failures reject with a generic rpc_failure and no provider text', async () => {
+    const down = setup({ raw: [], call: () => { throw new Error('https://rpc.example/secret-key unreachable'); } });
+    await expect(down.readPermitState(USDC, OWNER)).rejects.toThrow(/^rpc_failure$/);
+    const half = setup({ raw: [], call: (d) => { if (d.startsWith('0x3644e515')) throw new Error('socket hang up'); return toHex(1n, { size: 32 }); } });
+    await expect(half.readPermitState(USDC, OWNER)).rejects.toThrow(/^rpc_failure$/);
+  });
+
+  it('onSigned receives the keccak of the raw bytes before the broadcast', async () => {
+    const raw: string[] = [];
+    const order: string[] = [];
+    const c = setup({ raw, sendAnswer: (r) => { order.push('send'); return keccak256(r as Hex); } });
+    const seen: Hex[] = [];
+    const hash = await c.sendSweep(call, { nonce: 9, gas: 123_456n, gasPrice: 2_000_000_000n, onSigned: (h) => { order.push('signed'); seen.push(h); } });
+    expect(seen).toEqual([hash]);
+    expect(hash).toBe(keccak256(raw[0] as Hex));
+    expect(order).toEqual(['signed', 'send']);
+  });
+
+  it('onSigned throwing means nothing is broadcast and SendRefused is thrown', async () => {
+    const raw: string[] = [];
+    const c = setup({ raw });
+    const err = await c.sendSweep(call, { nonce: 9, gas: 1n, gasPrice: 1n, onSigned: () => { throw new Error('journal write failed: /secret/path'); } }).catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(SendRefused);
+    expect(raw).toEqual([]);
+  });
+
+  it('a hash answer that differs from the signed bytes is not trusted: SendOutcomeUnknown(localHash)', async () => {
+    const raw: string[] = [];
+    const c = setup({ raw, sendAnswer: () => HASH });
+    const err = await c.sendSweep(call, { nonce: 9, gas: 123_456n, gasPrice: 2_000_000_000n }).catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(SendOutcomeUnknown);
+    expect(err).toMatchObject({ txHash: keccak256(raw[0] as Hex) });
+    const junk = setup({ raw: [], sendAnswer: () => 'nope' });
+    await expect(junk.sendSweep(call, { nonce: 9, gas: 1n, gasPrice: 1n })).rejects.toBeInstanceOf(SendOutcomeUnknown);
+    const nul = setup({ raw: [], sendAnswer: () => null });
+    await expect(nul.sendSweep(call, { nonce: 9, gas: 1n, gasPrice: 1n })).rejects.toBeInstanceOf(SendOutcomeUnknown);
+  });
+
+  it('an upper-case hash answer equal to the local hash returns the local (lower-case) hash', async () => {
+    const raw: string[] = [];
+    const c = setup({ raw, sendAnswer: (r) => `0x${keccak256(r as Hex).slice(2).toUpperCase()}` });
+    const hash = await c.sendSweep(call, { nonce: 9, gas: 1n, gasPrice: 1n });
+    expect(hash).toBe(keccak256(raw[0] as Hex));
+  });
+
+  it('a receipt for a different transaction hash fails closed (not found / timeout)', async () => {
+    const other: Hex = `0x${'cd'.repeat(32)}`;
+    const wrong = () => ({
+      blockHash: HASH, blockNumber: '0x1', contractAddress: null, cumulativeGasUsed: '0x186a0', effectiveGasPrice: '0x1',
+      from: account.address, gasUsed: '0x186a0', logs: [], logsBloom: `0x${'00'.repeat(256)}`, status: '0x1', to: SWEEP_CONTRACT,
+      transactionHash: other, transactionIndex: '0x0', type: '0x0',
+    });
+    expect(await setup({ raw: [], receipt: wrong }).getReceipt(HASH)).toBeNull();
+    expect(await setup({ raw: [], receipt: wrong }).waitForReceipt(HASH, 60)).toEqual({ status: 'timeout', gasUsed: 0n });
   });
 });

@@ -1,6 +1,6 @@
 import { privateKeyToAccount } from 'viem/accounts';
 import { describe, expect, it } from 'vitest';
-import { PERMIT_STATES, classifyPermit, splitPermitSignature, type PermitPreflight, type PermitPreflightReader } from './permit.js';
+import { PERMIT_STATES, classifyPermit, diagnoseSignedPermit, splitPermitSignature, type PermitPreflight, type PermitPreflightReader, type SignedPermitEvidence } from './permit.js';
 import { PERMIT_TYPES, eip712DomainSeparator } from './sweep.js';
 import type { Address, Hex } from './types.js';
 
@@ -123,5 +123,75 @@ describe('splitPermitSignature', () => {
     const zero = `${sig.slice(0, 130)}00` as Hex;
     expect(splitPermitSignature(zero)?.v).toBe(27);
     expect(splitPermitSignature('0x12')).toBeUndefined();
+  });
+});
+
+describe('diagnoseSignedPermit (spec 04 relayer-side diagnosis)', () => {
+  const SEP = eip712DomainSeparator(DOMAIN);
+  const ev = async (nonceSigned: bigint, over: Partial<SignedPermitEvidence> = {}): Promise<SignedPermitEvidence> => {
+    const parts = splitPermitSignature(await sign(nonceSigned));
+    if (parts === undefined) throw new Error('bad test signature');
+    return { owner: owner.address, spender: SPENDER, value: VALUE, deadline: DEADLINE, v: parts.v, r: parts.r, s: parts.s, nonce: nonceSigned, domainSeparator: SEP, ...over };
+  };
+
+  it('valid_for_current_nonce: signature over the current nonce', async () => {
+    expect(await diagnoseSignedPermit(await ev(3n))).toBe('valid_for_current_nonce');
+    expect(await diagnoseSignedPermit(await ev(0n))).toBe('valid_for_current_nonce');
+  });
+
+  it('normalises v 0/1 to 27/28', async () => {
+    const e = await ev(2n);
+    expect(await diagnoseSignedPermit({ ...e, v: e.v - 27 })).toBe('valid_for_current_nonce');
+  });
+
+  it('nonce_consumed: signed over nonce-1 (used elsewhere)', async () => {
+    expect(await diagnoseSignedPermit(await ev(2n, { nonce: 3n }))).toBe('nonce_consumed');
+    expect(await diagnoseSignedPermit(await ev(0n, { nonce: 1n }))).toBe('nonce_consumed');
+  });
+
+  it('sig_invalid: older consumed nonces and future nonces are not reported as consumed', async () => {
+    expect(await diagnoseSignedPermit(await ev(1n, { nonce: 5n }))).toBe('sig_invalid');
+    expect(await diagnoseSignedPermit(await ev(4n, { nonce: 3n }))).toBe('sig_invalid');
+  });
+
+  it('nonce 0 edge: there is no nonce-1 to check', async () => {
+    expect(await diagnoseSignedPermit(await ev(5n, { nonce: 0n }))).toBe('sig_invalid');
+  });
+
+  it('sig_invalid: wrong spender, value, deadline or owner in the evidence', async () => {
+    expect(await diagnoseSignedPermit(await ev(1n, { spender: TOKEN }))).toBe('sig_invalid');
+    expect(await diagnoseSignedPermit(await ev(1n, { value: VALUE + 1n }))).toBe('sig_invalid');
+    expect(await diagnoseSignedPermit(await ev(1n, { deadline: DEADLINE + 1n }))).toBe('sig_invalid');
+    expect(await diagnoseSignedPermit(await ev(1n, { owner: SPENDER }))).toBe('sig_invalid');
+  });
+
+  it('sig_invalid: signed by someone else', async () => {
+    const other = privateKeyToAccount(`0x${'cd'.repeat(32)}`);
+    const parts = splitPermitSignature(await sign(1n, VALUE, DEADLINE, other));
+    if (parts === undefined) throw new Error('bad');
+    expect(await diagnoseSignedPermit({ ...(await ev(1n)), ...parts })).toBe('sig_invalid');
+  });
+
+  it('sig_invalid: domain separator mismatch', async () => {
+    expect(await diagnoseSignedPermit(await ev(1n, { domainSeparator: `0x${'11'.repeat(32)}` }))).toBe('sig_invalid');
+  });
+
+  it('sig_invalid and never throws on malformed v/r/s and high-s', async () => {
+    const e = await ev(1n);
+    expect(await diagnoseSignedPermit({ ...e, v: 5 })).toBe('sig_invalid');
+    expect(await diagnoseSignedPermit({ ...e, v: 29 })).toBe('sig_invalid');
+    expect(await diagnoseSignedPermit({ ...e, v: 1.5 })).toBe('sig_invalid');
+    expect(await diagnoseSignedPermit({ ...e, r: '0x1234' })).toBe('sig_invalid');
+    expect(await diagnoseSignedPermit({ ...e, s: 'nothex' as Hex })).toBe('sig_invalid');
+    expect(await diagnoseSignedPermit({ ...e, r: `0x${'00'.repeat(32)}` })).toBe('sig_invalid');
+    const n = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141n;
+    const high = `0x${(n - BigInt(e.s)).toString(16).padStart(64, '0')}`;
+    expect(await diagnoseSignedPermit({ ...e, s: high, v: e.v === 27 ? 28 : 27 })).toBe('sig_invalid');
+    expect(await diagnoseSignedPermit({ ...e, s: `0x${'ff'.repeat(32)}` })).toBe('sig_invalid');
+  });
+
+  it('unsupported_token: missing nonce or domain separator', async () => {
+    expect(await diagnoseSignedPermit(await ev(1n, { nonce: null }))).toBe('unsupported_token');
+    expect(await diagnoseSignedPermit(await ev(1n, { domainSeparator: null }))).toBe('unsupported_token');
   });
 });

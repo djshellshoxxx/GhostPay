@@ -1,4 +1,4 @@
-import { getAddress, recoverAddress } from 'viem/utils';
+import { concatHex, getAddress, isAddress, keccak256, numberToHex, recoverAddress, stringToBytes } from 'viem/utils';
 import { PERMIT_TYPES, eip712DomainSeparator, permitDigest, type PermitTypedData } from './sweep.js';
 import type { Address, Hex } from './types.js';
 
@@ -115,4 +115,78 @@ export async function classifyPermit(p: PermitPreflight, reader: PermitPreflight
     if (!ok) return 'sig_invalid';
   }
   return 'ok_to_permit';
+}
+
+/**
+ * Outcome of {@link diagnoseSignedPermit}: why a signed permit would (not) work, judged only from the signature and
+ * two token reads. Unlike {@link PermitState} it needs neither the token name/version nor the allowance.
+ */
+export type SignedPermitDiagnosis = 'valid_for_current_nonce' | 'nonce_consumed' | 'sig_invalid' | 'unsupported_token';
+
+/** Evidence for {@link diagnoseSignedPermit}: the permit as received plus the token's current nonce and separator. */
+export interface SignedPermitEvidence {
+  readonly owner: Address;
+  readonly spender: Address;
+  readonly value: bigint;
+  readonly deadline: bigint;
+  readonly v: number;
+  readonly r: Hex;
+  readonly s: Hex;
+  /** `token.nonces(owner)`; null when the read reverted. */
+  readonly nonce: bigint | null;
+  /** `token.DOMAIN_SEPARATOR()`; null when the call reverted (no ERC-2612 domain). */
+  readonly domainSeparator: Hex | null;
+}
+
+const PERMIT_TYPEHASH = keccak256(stringToBytes('Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)'));
+const SECP256K1_N = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141n;
+const HALF_N = SECP256K1_N >> 1n;
+const WORD = /^0x[0-9a-fA-F]{64}$/;
+
+/** EIP-712 digest of a Permit over a known domain separator (manual encoding, no domain fields needed). */
+function permitDigestForSeparator(e: SignedPermitEvidence, separator: Hex, nonce: bigint): Hex {
+  const addrWord = (a: Address): Hex => `0x${a.slice(2).toLowerCase().padStart(64, '0')}`;
+  const word = (n: bigint): Hex => numberToHex(n, { size: 32 });
+  const structHash = keccak256(concatHex([PERMIT_TYPEHASH, addrWord(e.owner), addrWord(e.spender), word(e.value), word(nonce), word(e.deadline)]));
+  return keccak256(concatHex(['0x1901', separator, structHash]));
+}
+
+/** Recovers the signer of `digest`, or undefined for any malformed, high-s or unrecoverable signature. Never throws. */
+async function recoverSigner(digest: Hex, e: SignedPermitEvidence): Promise<Address | undefined> {
+  const v = e.v === 0 || e.v === 1 ? e.v + 27 : e.v;
+  if (v !== 27 && v !== 28) return undefined;
+  if (typeof e.r !== 'string' || typeof e.s !== 'string' || !WORD.test(e.r) || !WORD.test(e.s)) return undefined;
+  const r = BigInt(e.r);
+  const s = BigInt(e.s);
+  if (r === 0n || r >= SECP256K1_N || s === 0n || s > HALF_N) return undefined;
+  try {
+    return await recoverAddress({ hash: digest, signature: concatHex([e.r, e.s, numberToHex(v, { size: 1 })]) });
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Diagnoses a signed ERC-2612 permit after the permit path failed (spec 04): was it good for the token's current
+ * nonce, already used (nonce moved by one), or not the owner's signature over these terms at all.
+ *
+ * @remarks Pure and total: malformed `v`/`r`/`s`, high-s and unrecoverable signatures are `sig_invalid`, never an
+ * exception. A missing nonce or domain separator is `unsupported_token`. `nonce_consumed` only checks `nonce - 1`
+ * (the common front-run), so older nonces and nonce 0 never report it.
+ *
+ * @param e Permit terms, signature parts and the token reads.
+ * @returns The diagnosis.
+ */
+export async function diagnoseSignedPermit(e: SignedPermitEvidence): Promise<SignedPermitDiagnosis> {
+  const { nonce, domainSeparator } = e;
+  if (nonce === null || domainSeparator === null) return 'unsupported_token';
+  if (typeof domainSeparator !== 'string' || !WORD.test(domainSeparator) || !isAddress(e.owner) || !isAddress(e.spender)) return 'sig_invalid';
+  const owner = getAddress(e.owner);
+  const isOwnerAt = async (n: bigint): Promise<boolean> => {
+    const signer = await recoverSigner(permitDigestForSeparator(e, domainSeparator, n), e);
+    return signer !== undefined && getAddress(signer) === owner;
+  };
+  if (await isOwnerAt(nonce)) return 'valid_for_current_nonce';
+  if (nonce > 0n && (await isOwnerAt(nonce - 1n))) return 'nonce_consumed';
+  return 'sig_invalid';
 }

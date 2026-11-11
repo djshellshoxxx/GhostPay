@@ -1,7 +1,7 @@
 import type { Address, Hex } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { buildSweepTypedData } from '@ghostpay/chain-adapters';
-import type { ChainClient, MinedReceipt, OrderState, ReceiptSummary, SendOptions, SimulationResult, SweepCall } from './chain.js';
+import type { ChainClient, MinedReceipt, OrderState, PermitTokenState, ReceiptSummary, SendOptions, SimulationResult, SweepCall } from './chain.js';
 import type { RelayerConfig } from './config.js';
 import { SendOutcomeUnknown, SendRefused, SimulationRevert } from './errors.js';
 import type { AlertSink } from './alerts.js';
@@ -141,6 +141,11 @@ export class FakeChain implements ChainClient {
     }
     this.inFlight -= 1;
     return this.receipt;
+  }
+  /** What `readPermitState` answers (nulls: that token call reverted); `rpcDown` rejects like a transport failure. */
+  public permitState: PermitTokenState = { nonce: 0n, domainSeparator: null };
+  public readPermitState(): Promise<PermitTokenState> {
+    return this.rpcDown ? Promise.reject(new Error('down')) : Promise.resolve(this.permitState);
   }
   public getReceipt(): Promise<MinedReceipt | null> {
     this.lookups += 1;
