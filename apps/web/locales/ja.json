@@ -1879,6 +1879,7 @@
     "wallet.warning.missingRdns": "It did not announce a reverse-DNS identifier.",
     "pay.error.supportedInvoice": "This build supports fixed-amount invoices without a seller buffer policy.",
     "pay.error.invoiceQrLink": "Use an exact GhostPay v1 fragment or an HTTPS invoice link at this app’s host and path, without credentials, port or query.",
+    "pay.error.invoiceQrOtherFamily": "{family, select, settings {これは端末設定のQRで、請求書ではありません。設定で読み込んでください。} sellerPairing {これは販売者の公開設定QRで、請求書ではありません。販売者の鍵で読み込んでください。} publicMeta {これは販売者のメタアドレスQRで、請求書ではありません。GhostPayの支払いには販売者が署名した請求書が必要です。} keystore {これは暗号化された販売者キーストアのバックアップで、請求書ではありません。共有せず、自分の端末の販売者の鍵でのみ読み込んでください。} receipt {これは販売者の領収書で、請求書ではありません。支払い後に販売者の領収書セクションで確認してください。} proof {これは支払者の支払い記録で、請求書ではありません。} chainRequest {これは通常のウォレット支払いリクエストで、GhostPayの請求書ではありません。何も開いていません。販売者にGhostPayの請求書リンクを依頼してください。} multipart {これは複数パートQRの一部で、請求書ではありません。} other {このQRは請求書ではありません。}}",
     "pay.error.sellerKeysChanged": "Seller keys changed while opening this invoice. Scan or paste it again to review.",
     "pay.error.noManifest": "Payments are disabled on this chain: no deployment manifest is loaded.",
     "pay.error.invoiceLink": "That is not a GhostPay v1 invoice link.",

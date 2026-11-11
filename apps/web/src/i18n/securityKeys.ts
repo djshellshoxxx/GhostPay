@@ -137,6 +137,7 @@ export const SECURITY_KEY_GROUPS = {
     'wallet.warning.missingRdns',
     'pay.error.supportedInvoice',
     'pay.error.invoiceQrLink',
+    'pay.error.invoiceQrOtherFamily',
     'pay.error.sellerKeysChanged',
     'pay.error.noManifest',
     'pay.error.invoiceLink',

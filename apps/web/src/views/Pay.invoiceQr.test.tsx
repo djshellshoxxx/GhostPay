@@ -333,3 +333,26 @@ describe('Pay invoice QR intake: cryptographic and validity failures reach the s
     expect(window.sessionStorage.getItem('ghostpay.wallet-attempts.v1')).toBeNull();
   });
 });
+
+describe('Pay invoice QR intake: other GhostPay QR families are named, never acted on', () => {
+  it.each([
+    ['{"format":"ghostpay-settings","v":1,"settings":{"autoClearFragment":true,"delayMaxSec":900,"delayMinSec":120,"lockTimeoutMin":15,"theme":"dark"}}', /device settings QR, not an invoice\. Import it in Settings\./],
+    ['ethereum:0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359@1?value=1', /plain wallet payment request, not a GhostPay invoice/],
+    ['bitcoin:bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq', /plain wallet payment request, not a GhostPay invoice/],
+  ])('explains a %s QR without a preview, navigation or wallet access', async (text, message) => {
+    const { user, discoverWallets, loadManifest } = await openInput();
+    const location = window.location.href;
+    await scanText(text, user);
+    expect(await screen.findByText(message)).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Open scanned invoice' })).toBeNull();
+    expect(window.location.href).toBe(location);
+    expect(discoverWallets).not.toHaveBeenCalled();
+    expect(loadManifest).not.toHaveBeenCalled();
+  });
+
+  it('keeps the generic guidance for text that is not any GhostPay QR', async () => {
+    const { user } = await openInput();
+    await scanText('hello world', user);
+    expect(await screen.findByText(/Use an exact GhostPay v1 fragment or an HTTPS invoice link/)).toBeTruthy();
+  });
+});

@@ -1879,6 +1879,7 @@
     "wallet.warning.missingRdns": "It did not announce a reverse-DNS identifier.",
     "pay.error.supportedInvoice": "This build supports fixed-amount invoices without a seller buffer policy.",
     "pay.error.invoiceQrLink": "Use an exact GhostPay v1 fragment or an HTTPS invoice link at this app’s host and path, without credentials, port or query.",
+    "pay.error.invoiceQrOtherFamily": "{family, select, settings {This is a device settings QR, not an invoice. Import it in Settings.} sellerPairing {This is a public seller config QR, not an invoice. Import it in Seller keys.} publicMeta {This is a seller meta-address QR, not an invoice. GhostPay payments need a signed invoice from the seller.} keystore {This is an encrypted seller keystore backup, not an invoice. Do not share it; import it only in Seller keys on your own device.} receipt {This is a seller receipt, not an invoice. Check it in the seller receipt section after paying.} proof {This is a payer’s payment record, not an invoice.} chainRequest {This is a plain wallet payment request, not a GhostPay invoice. Nothing was opened; ask the seller for a GhostPay invoice link.} multipart {This is one part of a multi-part QR, not an invoice.} other {This QR is not an invoice.}}",
     "pay.error.sellerKeysChanged": "Seller keys changed while opening this invoice. Scan or paste it again to review.",
     "pay.error.noManifest": "Payments are disabled on this chain: no deployment manifest is loaded.",
     "pay.error.invoiceLink": "That is not a GhostPay v1 invoice link.",
