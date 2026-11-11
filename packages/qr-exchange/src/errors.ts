@@ -11,7 +11,10 @@ export type QrExchangeErrorCode =
   | 'CAMERA_DENIED'
   | 'CAMERA_UNAVAILABLE'
   | 'SCAN_FAILED'
-  | 'ABORTED';
+  | 'ABORTED'
+  | 'CAMERA_NOT_FOUND'
+  | 'CAMERA_IN_USE'
+  | 'CAMERA_INSECURE';
 
 const MESSAGES: Readonly<Record<QrExchangeErrorCode, string>> = {
   BAD_INPUT: 'qr-exchange: invalid input',
@@ -27,6 +30,9 @@ const MESSAGES: Readonly<Record<QrExchangeErrorCode, string>> = {
   CAMERA_UNAVAILABLE: 'qr-exchange: camera unavailable',
   SCAN_FAILED: 'qr-exchange: scanning failed',
   ABORTED: 'qr-exchange: aborted',
+  CAMERA_NOT_FOUND: 'qr-exchange: no camera found',
+  CAMERA_IN_USE: 'qr-exchange: camera in use or could not be opened',
+  CAMERA_INSECURE: 'qr-exchange: camera needs a secure context',
 };
 
 /** Typed error with a fixed message per code. Never carries input text, payload bytes or decoded QR content. */

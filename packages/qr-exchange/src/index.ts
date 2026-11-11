@@ -16,7 +16,9 @@ export type { EncodeOptions, ParsedChunk } from './multipart.js';
 export { Assembler, DEFAULT_ASSEMBLY_MAX_AGE_MS } from './assembler.js';
 export type { AddResult, AssemblerOptions } from './assembler.js';
 export { startCamera, scanFromVideo, stopVideo, MAX_SCAN_TEXT_LEN } from './camera.js';
+export { listVideoInputs, activeDeviceId } from './camera.js';
 export type { MediaDevicesLike, MediaStreamLike, MediaTrackLike, VideoLike, FrameReader, ScanOptions } from './camera.js';
+export type { CameraConstraints, MediaDeviceInfoLike, StartCameraOptions } from './camera.js';
 export {
   createDefaultReader,
   createPlatformReader,
@@ -24,6 +26,8 @@ export {
   createDecoderReader,
   loadJsQrDecoder,
 } from './readers.js';
+export { decodeQrImage, MAX_IMAGE_BYTES, MAX_IMAGE_DIM, MAX_IMAGE_PIXELS } from './readers.js';
+export type { DecodeImageEnv, DecodeImageOptions, ImageBitmapLike, ImageFileLike } from './readers.js';
 export type {
   BarcodeDetectorLike,
   BarcodeDetectorCtorLike,
