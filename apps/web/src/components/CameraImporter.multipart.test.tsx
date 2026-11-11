@@ -120,6 +120,7 @@ describe('CameraImporter multipart camera scanning', () => {
     expect(screen.queryByRole('alert')).toBeNull();
     expect(screen.queryByRole('progressbar')).toBeNull();
     expect(status()).toBe('Transfer cleared. Scan or paste the parts again.');
+    expect(document.activeElement).toBe(screen.getByRole('status')); // focus is not dropped when the button goes away
     expect(screen.getByRole('button', { name: 'Stop camera' })).toBeTruthy(); // camera keeps running
 
     for (const part of b.slice(0, -1)) expect(await show(scan, part)).toBe(false);

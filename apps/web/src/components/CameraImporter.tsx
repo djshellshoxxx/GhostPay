@@ -76,6 +76,7 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
   const t = tr.t;
   const root = useRef<HTMLElement | null>(null);
   const video = useRef<HTMLVideoElement | null>(null);
+  const statusEl = useRef<HTMLParagraphElement | null>(null);
   const abort = useRef<AbortController | null>(null);
   const pasteAbort = useRef<AbortController | null>(null);
   const live = useRef(false);
@@ -300,7 +301,8 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
       }
     })();
   };
-  const startOver = (): void => { resetTransfer(); setStatus('camera.multipart.restarted'); };
+  // The button disappears with the transfer, so move focus to the status line instead of dropping it (WCAG 2.4.3).
+  const startOver = (): void => { resetTransfer(); setStatus('camera.multipart.restarted'); statusEl.current?.focus(); };
 
   const progressText = (p: Transfer): string => t('camera.multipart.progress', { received: p.received, total: p.total });
   const statusText = (): string => {
@@ -333,7 +335,7 @@ export function CameraImporter({ label, onText, scopeKey, active = true, onInput
             <button type="button" className="btn" onClick={startOver}>{t('camera.multipart.startOver')}</button>
           </>
         )}
-        <p role="status" aria-live="polite">{statusText()}</p>
+        <p ref={statusEl} tabIndex={-1} role="status" aria-live="polite">{statusText()}</p>
         {alert === undefined ? null : <p role="alert">{t(alert)}</p>}
       </div>
     </section>
