@@ -72,35 +72,42 @@ export function claimPairKey(claim: Pick<ClaimedPayment, 'stealthAddress' | 'ann
  * earliest let a cheap payment mined first hide the genuine one. Each kept router claim is verified on its own, and
  * `consumedTransfers` of {@link verifyClaimedPayment} stops one transfer from being credited twice. Within a pair:
  * with at least one router claim, every distinct router log is kept and all non-router claims are dropped; with none,
- * the earliest `(block, logIndex)` claim is kept. Pairs keep the order of first appearance. `duplicates` counts what
- * was dropped, so the UI can say so.
+ * the earliest `(block, logIndex)` claim is kept. The first router claim of a pair takes the slot of an earlier
+ * non-router claim; later router claims keep their own position, so the result follows the order of first appearance
+ * (the same rule as the web view's `placeScanMatch`). `duplicates` counts what was dropped, so the UI can say so.
  *
  * @param items Matches.
  * @returns Unique matches plus the number of dropped duplicates.
  */
 export function dedupeClaims<T extends ClaimedPayment>(items: readonly T[]): { readonly items: readonly T[]; readonly duplicates: number } {
+  const out: T[] = [];
+  // Per pair: the slot of its kept non-router claim (until the first router claim takes it), and whether it has a router claim.
+  const groups = new Map<string, { readonly slot: number; router: boolean }>();
+  // Router logs already kept (`pair|blockHash:logIndex` names one log): the same log seen twice is one item.
+  const routerLogs = new Set<string>();
   const earlier = (a: T, b: T): boolean =>
     a.announcement.blockNumber !== b.announcement.blockNumber ? a.announcement.blockNumber < b.announcement.blockNumber : a.announcement.logIndex < b.announcement.logIndex;
-  // Per pair, in order of first appearance: the distinct router logs, or else the single earliest non-router claim.
-  const groups = new Map<string, { router: Map<string, T>; direct: T | undefined }>();
   for (const it of items) {
     const pair = claimPairKey(it);
-    let group = groups.get(pair);
-    if (group === undefined) {
-      group = { router: new Map(), direct: undefined };
-      groups.set(pair, group);
-    }
+    const group = groups.get(pair);
     if (it.viaRouter) {
-      const log = `${it.announcement.blockHash.toLowerCase()}:${String(it.announcement.logIndex)}`;
-      if (!group.router.has(log)) group.router.set(log, it);
-    } else if (group.direct === undefined || earlier(it, group.direct)) group.direct = it;
+      const log = `${pair}|${it.announcement.blockHash.toLowerCase()}:${String(it.announcement.logIndex)}`;
+      if (routerLogs.has(log)) continue;
+      routerLogs.add(log);
+      if (group === undefined) groups.set(pair, { slot: out.length, router: true });
+      else if (!group.router) {
+        // The first router claim takes the place of the earlier non-router one; later router claims are appended.
+        out[group.slot] = it;
+        group.router = true;
+        continue;
+      }
+      out.push(it);
+    } else if (group === undefined) {
+      groups.set(pair, { slot: out.length, router: false });
+      out.push(it);
+    } else if (!group.router && earlier(it, out[group.slot] as T)) out[group.slot] = it;
   }
-  const kept: T[] = [];
-  for (const group of groups.values()) {
-    if (group.router.size > 0) kept.push(...group.router.values());
-    else if (group.direct !== undefined) kept.push(group.direct);
-  }
-  return { items: kept, duplicates: items.length - kept.length };
+  return { items: out, duplicates: items.length - out.length };
 }
 
 async function readBalanceOf(client: RpcClient, owner: Address, asset: Address | 'native'): Promise<bigint | undefined> {

@@ -12,6 +12,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run --coverage && vitest run --config vitest.nocov.config.ts",
     "test:e2e": "playwright test",
+    "e2e:devnet": "bash ../../scripts/beta/browser-devnet.sh",
     "lint": "eslint --config ../../eslint.config.js src e2e"
   },
   "dependencies": {

@@ -11,6 +11,8 @@ Nothing here is an independent audit. The project has no third-party audit, and 
 
 **Current product completion (2026-11-09):** [PR #93 completion ledger](handoffs/PRODUCT_COMPLETION_HANDOFF.md), [product guide](user/product-guide.md), [merchant setup](guides/getting-started-merchants.md), and [technology attribution](user/technology-attribution.md). The ledger separates implementation, exact-source checks and external acceptance for the unmerged #84 → #88 → #89 → #90 → #93 stack. The [#90 handoff](handoffs/POLICY_LOCALIZATION_CONTINUATION_2026-11-09.md), [current completion gates](audits/08-completion-gates.md), and [earlier source/PR ledger](handoffs/SOURCE_FOLLOWUP_2026-11-09.md) remain predecessor evidence; `packages/cli` is present in this tree (2026-11-11), but the separate merchant/CLI branch's acceptance evidence is not implicitly included.
 
+**Core functional beta (2026-11-11, verified):** [core beta completion tracker](beta/CORE_BETA_COMPLETION_TRACKER.md). Single local acceptance command `bash scripts/beta/acceptance.sh` (library, CLI and built-app browser stages on real anvil chains), per-step lifecycle status, the F1/F2 security fixes and the external gates. Stacked on the PR #98 integration candidate.
+
 ## Reading order
 
 1. [README](../README.md): project status, what is and is not built, package map.

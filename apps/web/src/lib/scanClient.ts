@@ -368,8 +368,8 @@ export async function runScan(p: ScanParams): Promise<{ readonly matches: readon
         const viaRouter = announcement.caller.toLowerCase() === p.manifest.router.toLowerCase();
         claims.push({ stealthAddress: m.stealthAddress as Address, announcement, metadata, viaRouter });
       }
-      // Drop replay announcements before any payment verification. The helper prefers the verified
-      // router caller for a one-time address/ephemeral-key pair, then the earliest log.
+      // Drop public replay announcements before any payment verification. The helper keeps every router record of a
+      // one-time address/ephemeral-key pair (F1), else the earliest non-router log; each is verified on its own.
       const uniqueClaims = dedupeClaims(claims);
       if (all.length + uniqueClaims.items.length > maxMatches) {
         limitReached = true;
