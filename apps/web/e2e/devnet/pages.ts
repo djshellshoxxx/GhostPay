@@ -39,14 +39,33 @@ export interface PagesNetworkOptions {
   readonly presetRpc?: boolean;
 }
 
-/** Records every request; forwards the app's https RPC to anvil; aborts and records anything else. */
+export interface SeenRequest {
+  readonly url: string;
+  readonly type: string;
+}
+
+/**
+ * KNOWN APP DEFECT (reported, not worked around): the Home view's "Release check" resolves the entry script's relative
+ * src (./assets/index-*.js) against window.location.origin instead of the document URL (apps/web/src/views/Home.tsx:23,
+ * apps/web/src/lib/release.ts:13), so under /GhostPay/ it fetches <origin>/assets/index-*.js, outside the project site.
+ * Exactly that request is recognised here so every other test still fails on any OTHER request leaving the sub-path;
+ * the dedicated expected-failure test in pages-devnet.spec.ts keeps the strict check (and turns red once it is fixed).
+ */
+export function isHomeReleaseCheckDefect(r: SeenRequest, siteOrigin: string): boolean {
+  const u = new URL(r.url);
+  return r.type === 'fetch' && u.origin === siteOrigin && /^\/assets\/index-[\w-]+\.js$/.test(u.pathname);
+}
+
+/** Records every request; forwards the app's https RPC to anvil; aborts and records anything foreign. */
 export class PagesNetwork {
-  /** Every request URL any page or worker of an installed context issued (request events). */
-  readonly requests: string[] = [];
-  /** Every URL that reached the catch-all route (also covers requests a worker made). */
-  readonly routed: string[] = [];
-  /** Requests to anything but the site's own sub-path or the RPC; the spec requires this to stay empty. */
-  readonly violations: string[] = [];
+  /** Every request any page or worker of an installed context issued (request events). */
+  readonly requests: SeenRequest[] = [];
+  /** Every request that reached a route handler (also covers requests a worker made). */
+  readonly routed: SeenRequest[] = [];
+  /** Requests to any origin but the site's and the RPC's: must stay empty (the browser never reached them). */
+  readonly foreign: string[] = [];
+  /** Same-origin requests outside /GhostPay/ (on GitHub Pages: another site of the same owner). Served, like Pages would. */
+  readonly outsideBase: SeenRequest[] = [];
   /** JSON-RPC methods the app sent, in order. */
   readonly methods: string[] = [];
   /** Raw signed transactions the app broadcast itself (sweeps). */
@@ -57,24 +76,27 @@ export class PagesNetwork {
 
   public constructor(private readonly state: DevnetState, readonly siteOrigin: string) {}
 
-  allowed(url: string): boolean {
+  private classify(url: string): 'local' | 'site' | 'outside-base' | 'rpc' | 'foreign' {
     const u = new URL(url);
-    if (u.protocol === 'data:' || u.protocol === 'blob:' || u.protocol === 'about:') return true;
-    if (u.origin === this.siteOrigin) return u.pathname.startsWith(PAGES_BASE);
-    return u.origin === RPC_ORIGIN;
+    if (u.protocol === 'data:' || u.protocol === 'blob:' || u.protocol === 'about:') return 'local';
+    if (u.origin === this.siteOrigin) return u.pathname.startsWith(PAGES_BASE) ? 'site' : 'outside-base';
+    return u.origin === RPC_ORIGIN ? 'rpc' : 'foreign';
+  }
+
+  private record(list: SeenRequest[], url: string, type: string): ReturnType<PagesNetwork['classify']> {
+    list.push({ url, type });
+    const kind = this.classify(url);
+    if (kind === 'foreign' && !this.foreign.includes(url)) this.foreign.push(url);
+    if (kind === 'outside-base' && !this.outsideBase.some((r) => r.url === url && r.type === type)) this.outsideBase.push({ url, type });
+    return kind;
   }
 
   async install(context: BrowserContext, options: PagesNetworkOptions = {}): Promise<void> {
-    context.on('request', (req) => {
-      const url = req.url();
-      this.requests.push(url);
-      if (!this.allowed(url)) this.violations.push(`request: ${url}`);
-    });
+    context.on('request', (req) => { this.record(this.requests, req.url(), req.resourceType()); });
     await context.route('**/*', (route) => {
-      const url = route.request().url();
-      this.routed.push(url);
-      if (this.allowed(url) && new URL(url).origin === this.siteOrigin) return route.continue();
-      if (!this.allowed(url)) this.violations.push(`route: ${url}`);
+      const kind = this.record(this.routed, route.request().url(), route.request().resourceType());
+      // Same-origin requests go to the Pages stand-in, which answers 404 outside /GhostPay/ like GitHub Pages would.
+      if (kind === 'local' || kind === 'site' || kind === 'outside-base') return route.continue();
       return route.abort();
     });
     // Registered last, so it takes precedence for the RPC origin.
@@ -87,7 +109,7 @@ export class PagesNetwork {
   }
 
   private async forward(route: Route): Promise<void> {
-    this.routed.push(route.request().url());
+    this.record(this.routed, route.request().url(), route.request().resourceType());
     if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: CORS });
     if (this.rpcDown) {
       this.rpcDownHits += 1;
@@ -101,7 +123,7 @@ export class PagesNetwork {
         if (call.method === 'eth_sendRawTransaction') this.sentRaw.push(call.params?.[0] as Hex);
       }
     } catch {
-      this.violations.push('unparseable RPC body');
+      this.foreign.push('unparseable RPC body');
     }
     let reply: string;
     try {
@@ -112,10 +134,16 @@ export class PagesNetwork {
     return route.fulfill({ status: 200, headers: CORS, contentType: 'application/json', body: reply });
   }
 
-  /** Every same-origin request stayed under /GhostPay/ and nothing else was contacted. */
+  /** Same-origin requests outside /GhostPay/ other than the one known, reported app defect. */
+  unexplainedOutsideBase(): SeenRequest[] {
+    return this.outsideBase.filter((r) => !isHomeReleaseCheckDefect(r, this.siteOrigin));
+  }
+
+  /** Nothing foreign was contacted and nothing (but the known defect) left the /GhostPay/ sub-path. */
   expectClean(): void {
-    expect(this.violations).toEqual([]);
-    for (const url of [...this.requests, ...this.routed]) expect(this.allowed(url), url).toBe(true);
+    expect(this.foreign).toEqual([]);
+    expect(this.unexplainedOutsideBase()).toEqual([]);
+    for (const r of [...this.requests, ...this.routed]) expect(['local', 'site', 'outside-base', 'rpc'], r.url).toContain(this.classify(r.url));
   }
 }
 
