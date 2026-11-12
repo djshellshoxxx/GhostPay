@@ -20,7 +20,7 @@ export function Home(): ReactNode {
       setHash('unavailable');
       return;
     }
-    computeReleaseHash(src, services.fetchFn, window.location.origin).then(
+    computeReleaseHash(src, services.fetchFn, document.baseURI).then(
       (h) => {
         if (live) setHash(h);
       },

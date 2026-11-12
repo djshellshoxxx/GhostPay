@@ -1,36 +1,76 @@
-name: Pages mirror
-# DEGRADED MIRROR of apps/web on GitHub Pages (project site, base path /GhostPay/). Not the primary host.
-# GitHub Pages cannot set response headers: only the <meta http-equiv="Content-Security-Policy"> in index.html
-# applies. frame-ancestors, X-Frame-Options, X-Content-Type-Options, Permissions-Policy, COOP/CORP and
-# Cache-Control cannot be set, so clickjacking protection is absent and the iframe embed mode is unavailable
-# (see docs/operators/mirror-hosting.md and docs/operators/hosting.md). Use infra/proxy for a real host.
+name: Pages
+# GitHub Pages release of the LEAN GhostPay EVM web app (static files only: no backend, no required relayer).
+# Project site, served under /GhostPay/; the build uses relative asset references so the sub-path needs no rebuild.
 #
-# Manual deployment only; merging source must not publish a site without separate deployment authorization.
-# Runs from main only. Prerequisite (OWNER): Settings > Pages > Source = "GitHub Actions", and the
-# `github-pages` environment restricted to the main branch. Until then the deploy job fails closed.
+# GitHub Pages cannot set response headers: only the <meta http-equiv="Content-Security-Policy"> in index.html applies.
+# frame-ancestors, X-Frame-Options, nosniff, Permissions-Policy, COOP/CORP and Cache-Control cannot be set, so
+# clickjacking protection is absent and the iframe embed mode is unavailable (docs/pages/README.md).
+#
+# Triggers:
+#   pull_request       validation only: Pages verifier/server tests, the Pages artifact build + independent site
+#                      verification, and the real-chain browser acceptance of that artifact under /GhostPay/ on anvil.
+#                      Typecheck, lint, unit and mocked browser tests already run in ci.yml for the same PR.
+#   workflow_dispatch  on main only, with deploy=true: the full release gate (typecheck, lint, web unit tests, mocked
+#                      lean browser suite, Pages acceptance), then publish and a post-deployment smoke test.
+# Nothing deploys automatically. Deployment needs: Settings > Pages > Source = "GitHub Actions", and the
+# `github-pages` environment restricted to main (with required reviewers if the owner wants a second approval).
+# Payments stay disabled on every chain unless reviewed, release-signed TESTNET manifests are committed under
+# apps/web/deployments/ and the repository variable GHOSTPAY_RELEASE_PUBKEYS lists the verifying public keys;
+# scripts/pages/build-pages.sh refuses any mainnet manifest.
 on:
+  pull_request:
+    paths:
+      - ".github/workflows/pages.yml"
+      - ".github/actions/**"
+      - "apps/web/**"
+      - "packages/**"
+      - "scripts/pages/**"
+      - "scripts/beta/browser-devnet.sh"
+      - "scripts/build-workspaces.mjs"
+      - "package.json"
+      - "package-lock.json"
+      - "tsconfig.base.json"
+      - "!**/*.md"
   workflow_dispatch:
+    inputs:
+      deploy:
+        description: "Publish to GitHub Pages after every gate passes (main only)"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
 
+# Superseded PR validation runs are cancelled; a dispatched (publishing) run is never cancelled.
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: pages-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  build:
-    name: Build and scan
-    # Belt and braces: workflow_dispatch can be started from any ref; only main may build a publishable bundle.
-    if: github.ref == 'refs/heads/main'
+  site:
+    name: Build and verify the Pages site
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
       contents: read
+    outputs:
+      publish: ${{ steps.mode.outputs.publish }}
     steps:
+      - id: mode
+        env:
+          EVENT: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          DEPLOY: ${{ inputs.deploy }}
+        run: |
+          if [ "$EVENT" = workflow_dispatch ] && [ "$REF" = refs/heads/main ] && [ "$DEPLOY" = true ]; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          fetch-depth: 1
       - name: Actions are pinned to full SHAs
         run: bash scripts/check-actions-pinned.sh
       # Not ./.github/actions/setup-node-libs: it restores packages/*/dist from the shared libs Actions cache and skips
@@ -41,46 +81,181 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci --ignore-scripts
+      - name: Dependency tree is valid (production)
+        run: npm ls --all --omit=dev > /dev/null
       - name: Build every workspace library from source
         run: |
           rm -rf packages/*/dist
           npm run build:libs
-      - name: Build apps/web (typecheck, vite build, postbuild bundle scan)
+      - name: Pages tooling tests
+        run: node --test scripts/pages/*.test.mjs
+      - name: Build the Pages site (lean profile, typecheck, bundle scan, site verification)
         env:
-          GP_COMMIT: ${{ github.sha }}   # build-info.json / ghostpay-build meta name the deployed commit
-        run: npm run build -w apps/web
-      - name: Bundle scan (explicit re-run on dist)
-        run: node apps/web/scripts/scan-bundle.mjs
-      - name: Dist must contain the CSP meta and no source maps
+          GP_COMMIT: ${{ github.sha }}
+          # Public keys only (a repository variable, not a secret). Empty means no manifest can verify.
+          GHOSTPAY_RELEASE_PUBKEYS: ${{ vars.GHOSTPAY_RELEASE_PUBKEYS }}
+          GHOSTPAY_PAGES_DEPLOYMENTS_DIR: apps/web/deployments
+          # The serving origin. Default: the account's github.io origin, which every Pages site of the account shares
+          # (GP-PAGES-01). Set the repository variable to a custom domain (https://host) before enabling payments.
+          GHOSTPAY_PAGES_ORIGIN: ${{ vars.GHOSTPAY_PAGES_ORIGIN || format('https://{0}.github.io', github.repository_owner) }}
+          # Only 'testnet' is meaningful: accept the shared origin for test assets. Leave unset to refuse.
+          GHOSTPAY_PAGES_ALLOW_SHARED_ORIGIN: ${{ vars.GHOSTPAY_PAGES_ALLOW_SHARED_ORIGIN }}
+        run: bash scripts/pages/build-pages.sh "$RUNNER_TEMP/pages"
+      - name: Secret and egress scan of the source tree
+        run: bash scripts/scan-secrets.sh
+      - name: Summary (served-file hashes and payment state)
         run: |
           set -euo pipefail
-          d=apps/web/dist
-          grep -q 'http-equiv="Content-Security-Policy"' "$d/index.html"
-          grep -q "script-src 'self'" "$d/index.html"
-          if find "$d" -name '*.map' | grep -q .; then echo "::error::source map in dist"; exit 1; fi
-      - name: Record file hashes (compare from a separate machine)
-        run: |
-          set -euo pipefail
-          cd apps/web/dist
-          find . -type f | LC_ALL=C sort | xargs sha256sum > "$RUNNER_TEMP/SHA256SUMS"
-          { echo '### SHA256SUMS of served files'; echo '```'; cat "$RUNNER_TEMP/SHA256SUMS"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
-      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
-      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+          {
+            echo '### GitHub Pages site'
+            echo '```json'; cat "$RUNNER_TEMP/pages/evidence/pages-evidence.json"; echo '```'
+            echo '### SHA256SUMS of served files (compare from a separate machine)'
+            echo '```'; cat "$RUNNER_TEMP/pages/evidence/SHA256SUMS"; echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Retain site and evidence
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          path: apps/web/dist
+          name: pages-site-${{ github.sha }}
+          include-hidden-files: true
+          path: ${{ runner.temp }}/pages
+          if-no-files-found: error
+          retention-days: 14
+      - if: steps.mode.outputs.publish == 'true'
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+      - if: steps.mode.outputs.publish == 'true'
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: ${{ runner.temp }}/pages/site
+
+  # The Pages artifact rebuilt with a devnet manifest signed by the public Playwright test key and driven in Chromium
+  # against real contracts on a local anvil chain (84532 alias), served under /GhostPay/ by a header-less static server
+  # like GitHub Pages. Test build only: it is never published.
+  acceptance:
+    name: Pages artifact on anvil (browser)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+      # No Actions cache anywhere in this workflow (audit L7-M4, SUPPLY-CHAIN-CI-02; pinned by
+      # scripts/tests/workflows.test.mjs): libraries, solc and the browser are built or downloaded fresh in every job.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Build every workspace library from source
+        run: |
+          rm -rf packages/*/dist
+          npm run build:libs
+      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1.9.2
+        with:
+          version: v1.8.5
+          cache: false
+      - name: forge build (installs the pinned solc 0.8.28)
+        working-directory: packages/contracts
+        run: forge build
+      - run: ./node_modules/.bin/playwright install --with-deps chromium
+      - name: Pages artifact journey on anvil
+        env:
+          BROWSER_DEVNET_MODE: pages
+        run: bash scripts/beta/browser-devnet.sh
+
+  # Release gate for a publishing run only (ci.yml runs the same checks on every PR).
+  release-gates:
+    name: Release gates (typecheck, lint, unit, mocked lean browser suite)
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+      # No Actions cache anywhere in this workflow (audit L7-M4, SUPPLY-CHAIN-CI-02; pinned by
+      # scripts/tests/workflows.test.mjs): libraries, solc and the browser are built or downloaded fresh in every job.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Build every workspace library from source
+        run: |
+          rm -rf packages/*/dist
+          npm run build:libs
+      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1.9.2
+        with:
+          version: v1.8.5
+          cache: false
+      - name: forge build (installs the pinned solc 0.8.28)
+        working-directory: packages/contracts
+        run: forge build
+      - run: npm run typecheck -w @ghostpay/web
+      - run: npm run lint -w @ghostpay/web
+      - name: Web unit tests (with anvil)
+        run: |
+          set -euo pipefail
+          ANVIL_BIN="$(command -v anvil)" SOLC_BIN="$HOME/.svm/0.8.28/solc-0.8.28" REQUIRE_ANVIL=1 npm test -w apps/web
+      - name: Build profile guard regressions
+        run: node --test apps/web/scripts/localBuildProfile.test.mjs
+      - run: ./node_modules/.bin/playwright install --with-deps chromium
+      - name: Mocked browser suite (lean profile)
+        env:
+          GHOSTPAY_LOCAL_BUILD_PROFILE: lean
+        run: npm run test:e2e --workspace @ghostpay/web
 
   deploy:
     name: Deploy to GitHub Pages
-    needs: build
-    if: github.ref == 'refs/heads/main'
+    needs: [site, acceptance, release-gates]
+    if: needs.site.outputs.publish == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # Job-level group: two publishing runs never overlap and neither is cancelled.
+    concurrency:
+      group: pages-deploy
+      cancel-in-progress: false
     permissions:
       pages: write
       id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+
+  smoke:
+    name: Post-deployment smoke test
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+      # No Actions cache anywhere in this workflow (audit L7-M4, SUPPLY-CHAIN-CI-02; pinned by
+      # scripts/tests/workflows.test.mjs): libraries, solc and the browser are built or downloaded fresh in every job.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: ./node_modules/.bin/playwright install --with-deps chromium
+      - name: Smoke test the published site
+        env:
+          PAGE_URL: ${{ needs.deploy.outputs.page_url }}
+        run: |
+          set -euo pipefail
+          case "$PAGE_URL" in */) ;; *) PAGE_URL="$PAGE_URL/" ;; esac
+          node scripts/pages/smoke.mjs "$PAGE_URL" --commit "$GITHUB_SHA" --timeout-s 600

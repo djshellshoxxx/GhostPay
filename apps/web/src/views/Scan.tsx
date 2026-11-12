@@ -15,6 +15,7 @@ import { useServices } from '../lib/services';
 import { captureSessionGuard, revealViewingKey, subscribeSession } from '../lib/session';
 import { recordFromVerifiedMatch } from '../lib/reconciliationLedger';
 import { createCurrentReconciliationVault } from '../lib/reconciliationVault';
+import { randomDelayMs } from '../lib/jitter';
 import type { TagPayload } from '../lib/tags';
 import { useApp } from '../state';
 import { SOURCE_TRANSLATOR, useI18nOptional } from '../i18n/context';
@@ -65,6 +66,15 @@ function describePrivacySet(a: AnonymitySet, t: T): string {
   return `${body} ${transfers}`;
 }
 
+/**
+ * Opt-in automatic re-check while the page is open (GitHub Pages release: no background server exists). After a scan
+ * finished cleanly, the next run resumes from the saved checkpoint after a randomized delay, only while the tab is
+ * visible and the same keys and chain are selected. Any error, a cancel, a chain or key change, or locking stops it;
+ * results are merged into the current list, never cleared, so a payment selected for sweeping stays listed.
+ */
+export const AUTO_RESCAN_MIN_MS = 60_000;
+export const AUTO_RESCAN_MAX_MS = 90_000;
+
 export function Scan(): ReactNode {
   const t = useScanT();
   const latestT = useLatestScanT(t);
@@ -82,6 +92,10 @@ export function Scan(): ReactNode {
   const [routerOnlyBlocks, setRouterOnlyBlocks] = useState<readonly bigint[] | undefined>(undefined);
   const [lagNote, setLagNote] = useState<ScanText | undefined>(undefined);
   const [scanOwner, setScanOwner] = useState<{ readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
+  const [autoRescan, setAutoRescan] = useState(false);
+  // Bumped to re-arm the timer after a tick that was skipped because the tab was hidden.
+  const [autoWake, setAutoWake] = useState(0);
+  const autoTick = useRef<() => void>(() => undefined);
   const abort = useRef<AbortController | undefined>(undefined);
   const startingScope = useRef<{ readonly chainId: number; readonly keyId: string; readonly signerPublicKey: string } | undefined>(undefined);
   const manifest = useManifest(chainId);
@@ -89,6 +103,20 @@ export function Scan(): ReactNode {
   const scanLanes = loadScanLanes(browserStorage());
   const keyId = app.session === undefined ? undefined : checkpointKeyId(app.session.spendingPublicKey, app.session.viewingPublicKey);
   const checkpoint = keyId === undefined ? undefined : services.checkpoints.load(chainId, keyId);
+  const ownsCurrentScope = scanOwner !== undefined && keyId !== undefined && scanOwner.chainId === chainId && scanOwner.keyId === keyId && scanOwner.signerPublicKey === app.session?.signerPublicKey;
+  const autoArmed = autoRescan && !running && error === undefined && done !== undefined && ownsCurrentScope && checkpoint !== undefined;
+
+  useEffect(() => {
+    if (!autoArmed) return undefined;
+    const handle = window.setTimeout(() => {
+      if (document.visibilityState !== 'visible') {
+        setAutoWake((n) => n + 1);
+        return;
+      }
+      autoTick.current();
+    }, randomDelayMs(AUTO_RESCAN_MIN_MS, AUTO_RESCAN_MAX_MS));
+    return () => { window.clearTimeout(handle); };
+  }, [autoArmed, autoWake]);
 
   useEffect(
     () => () => {
@@ -135,10 +163,14 @@ export function Scan(): ReactNode {
   const scopedMatches = scanMatchesCurrentScope ? app.matches.filter((match) => match.chainId === chainId) : [];
   const routerOnlyNote = routerOnlyBlocks === undefined ? undefined : describeRouterOnly(routerOnlyBlocks, t);
 
-  const begin = (): void => {
+  const begin = (opts?: { readonly append: true }): void => {
     if (keyId === undefined || abort.current !== undefined) return;
     const sessionAtStart = app.session;
     if (sessionAtStart === undefined) return;
+    // An automatic re-check only continues a clean scan of this exact scope from its checkpoint, and keeps its results.
+    const append = opts?.append === true;
+    if (append && (!scanMatchesCurrentScope || checkpoint === undefined)) return;
+    const seed: readonly ScanMatch[] = append ? scopedMatches : [];
     const guardSession = captureSessionGuard();
     const scope = { chainId, keyId, signerPublicKey: sessionAtStart.signerPublicKey };
     const ctl = new AbortController();
@@ -150,8 +182,10 @@ export function Scan(): ReactNode {
     setPrivacyNote(undefined);
     setRouterOnlyBlocks(undefined);
     setLagNote(undefined);
-    setScanOwner(undefined);
-    app.setMatches([]);
+    if (!append) {
+      setScanOwner(undefined);
+      app.setMatches([]);
+    }
     const scopeKeysAreCurrent = (): boolean => {
       try { guardSession(); return true; } catch { return false; }
     };
@@ -188,7 +222,7 @@ export function Scan(): ReactNode {
           return;
         }
         assertScopeCurrent();
-        let cursor = resume ? checkpoint : undefined;
+        let cursor = resume || append ? checkpoint : undefined;
         if (cursor === undefined) {
           if (!/^\d{1,15}$/.test(start.trim())) {
             setError(msg('scan.error.startBlock'));
@@ -206,7 +240,7 @@ export function Scan(): ReactNode {
         const secondary = rpc2 === undefined ? undefined : createWindowedScanClient(rpc2, { chain, announcer: manifest.manifest.announcer, router: manifest.manifest.router, policy: plan.window, sleep: services.sleep });
         assertScopeCurrent();
         setScanOwner(scope);
-        let found: ScanMatch[] = [];
+        let found: ScanMatch[] = [...seed];
         let quarantined: ScanMatch[] = [];
         // Only a copy of the viewing key leaves the session, and runScan wipes it; spending and signing keys stay boxed.
         const viewingKey = revealViewingKey();
@@ -282,9 +316,11 @@ export function Scan(): ReactNode {
         if ((res.routerOnlyBlocks ?? []).length > 0) setRouterOnlyBlocks(res.routerOnlyBlocks ?? []);
         if (res.secondaryLag !== undefined) setLagNote(msg('scan.lag', { secondary: res.secondaryLag.secondaryHead.toString(), behind: (res.secondaryLag.head - res.secondaryLag.secondaryHead).toString(), head: res.secondaryLag.head.toString() }));
         if (res.limitReached) setError(msg('scan.error.limitReached', { block: res.cursor.nextBlock.toString() }));
-        const note = msg('scan.done.note', { block: cursor.nextBlock.toString(), fromCheckpoint: resume && checkpoint !== undefined ? 'yes' : 'no', oneRpc: rpc2 === undefined ? 'yes' : 'no' });
+        const note = msg('scan.done.note', { block: cursor.nextBlock.toString(), fromCheckpoint: (resume || append) && checkpoint !== undefined ? 'yes' : 'no', oneRpc: rpc2 === undefined ? 'yes' : 'no' });
         const counts = { scanned: String(res.scanned), found: String(res.matches.length) };
         setDone([msg(ctl.signal.aborted ? 'scan.done.cancelled' : res.limitReached ? 'scan.done.limit' : 'scan.done.finished', counts), note]);
+        // A cancelled run must not re-arm the automatic re-check.
+        if (ctl.signal.aborted) setAutoRescan(false);
         app.announce(latestT.current(res.limitReached ? 'scan.announce.limit' : 'scan.announce.finished'));
       } catch (e) {
         if (!scopeKeysAreCurrent()) return;
@@ -301,6 +337,8 @@ export function Scan(): ReactNode {
       }
     })();
   };
+
+  autoTick.current = () => { begin({ append: true }); };
 
   return (
     <section aria-labelledby="scan-h">
@@ -347,9 +385,14 @@ export function Scan(): ReactNode {
           <label htmlFor="deep-scan">{t('scan.deepScan')}</label>
         </div>
         {deepScan && <Notice kind="warn">{t('scan.deepScan.warn')}</Notice>}
+        <div className="check">
+          <input id="auto-rescan" type="checkbox" checked={autoRescan} onChange={(e) => { setAutoRescan(e.target.checked); }} aria-describedby="auto-rescan-hint" />
+          <label htmlFor="auto-rescan">{t('scan.autoRescan')}</label>
+        </div>
+        <p id="auto-rescan-hint" className="hint">{t('scan.autoRescan.hint')}</p>
         <div className="actions">
-          <button type="button" className="btn btn-primary" onClick={begin} disabled={running}>{t('scan.start')}</button>
-          <button type="button" className="btn" onClick={() => { abort.current?.abort(); }} disabled={!running}>{t('scan.cancel')}</button>
+          <button type="button" className="btn btn-primary" onClick={() => { begin(); }} disabled={running}>{t('scan.start')}</button>
+          <button type="button" className="btn" onClick={() => { setAutoRescan(false); abort.current?.abort(); }} disabled={!running}>{t('scan.cancel')}</button>
           {checkpoint !== undefined && (
             <button type="button" className="btn" onClick={() => { if (keyId !== undefined) services.checkpoints.clear(chainId, keyId); setResume(false); app.announce(t('scan.checkpointCleared')); }} disabled={running}>
               {t('scan.clearCheckpoint')}
@@ -366,6 +409,7 @@ export function Scan(): ReactNode {
       {routerOnlyNote !== undefined && <Notice kind="warn">{routerOnlyNote}</Notice>}
       {lagNote !== undefined && <Notice kind="warn">{show(lagNote, t)}</Notice>}
       {error !== undefined && <Notice kind="error">{show(error, t)}</Notice>}
+      {autoRescan && error !== undefined && <Notice kind="warn">{t('scan.autoRescan.stopped')}</Notice>}
 
       <Matches
         chainId={chainId}

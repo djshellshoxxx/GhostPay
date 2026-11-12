@@ -80,6 +80,8 @@ Decision:
 Consequences: policy-account code is liability until the above is done; reviewers may reasonably propose deleting it from release builds.
 
 ## ADR-0015 Hosting gating
+**Proposal, 2026-11-12:** [ADR-0029](ADR-0029-github-pages-static-beta.md) proposes a GitHub Pages static EVM beta (lean profile, demonstration build by default, testnet manifests only) and maps each gate below to its current state. Until the owner accepts it, this entry governs.
+
 Status: Accepted. **Hosting is intentionally not configured.**
 Context: a frontend compromise is total compromise (design analysis D7): a malicious bundle can derive attacker stealth addresses, sign sweeps without wallet confirmation and swap the manifest. At the audited commit the manifest is unauthenticated (S3-01), the in-app release-hash widget is self-attested (S3-04), no release is signed, no key fingerprint is published, and no legal review of the fee model has happened.
 Decision: no public instance (Cloudflare Pages, GitHub Pages, IPFS/ENS, Tor, or any domain) and no hosted relayer is operated, advertised or linked from the README until all of these exist and are recorded:
