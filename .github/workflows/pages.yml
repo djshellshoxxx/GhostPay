@@ -83,10 +83,13 @@ jobs:
       - run: npm ci --ignore-scripts
       - name: Dependency tree is valid (production)
         run: npm ls --all --omit=dev > /dev/null
+      - name: Build every workspace library from source
+        run: |
+          rm -rf packages/*/dist
+          npm run build:libs
       - name: Pages tooling tests
         run: node --test scripts/pages/*.test.mjs
-      # build-pages.sh refuses a modified tree and rebuilds every workspace library from source itself (GP-PAGES-03).
-      - name: Build the Pages site (clean libraries, lean profile, typecheck, bundle scan, site verification)
+      - name: Build the Pages site (lean profile, typecheck, bundle scan, site verification)
         env:
           GP_COMMIT: ${{ github.sha }}
           # Public keys only (a repository variable, not a secret). Empty means no manifest can verify.
