@@ -197,8 +197,11 @@ describe('privacy invariants: relayer', () => {
     expect(relayer.filter((s) => TELEMETRY.test(s.text)).map((s) => s.file)).toEqual([]);
     const origins: string[] = [];
     for (const s of relayer) for (const m of s.text.matchAll(/\b(?:https?|wss?):\/\/[A-Za-z0-9][A-Za-z0-9.-]*/g)) origins.push(`${s.file}: ${m[0]}`);
-    // Dummy base used only to parse request paths; never contacted.
-    expect(origins).toEqual(['server.ts: http://relayer.invalid']);
+    // server.ts: dummy base used only to parse request paths; never contacted. ops.ts: the operator CLI's `health`
+    // command, whose default target is the relayer's own loopback listener (http://127.0.0.1:8787) and whose usage text
+    // shows an http://host:port placeholder; an operator-supplied --url or RELAYER_HEALTH_URL overrides it. Neither is
+    // a third-party origin.
+    expect(origins.sort()).toEqual(['ops.ts: http://127.0.0.1', 'ops.ts: http://host', 'server.ts: http://relayer.invalid']);
   });
 
   it('declares no analytics or telemetry package in package.json', () => {
