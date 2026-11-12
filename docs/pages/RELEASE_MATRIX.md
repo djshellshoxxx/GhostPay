@@ -36,7 +36,7 @@ Status values: **done** (code and tests exist and pass), **done (this branch)** 
 | GitHub Pages-like server for tests (sub-path, no headers) | `scripts/pages/serve-pages.mjs` | `serve-pages.test.mjs` | done (this branch) |
 | Real-chain acceptance of the Pages artifact under `/GhostPay/` | `web/e2e/pages-devnet.spec.ts`, `web/playwright.pages-devnet.config.ts`, `BROWSER_DEVNET_MODE=pages` in `scripts/beta/browser-devnet.sh` | local run | done (this branch) |
 | Post-deployment smoke test | `scripts/pages/smoke.mjs` | local run against the built site served under `/GhostPay/` | done (this branch) |
-| Workflow: PR validation, manual main-only deploy, release gates, smoke | `.github/workflows/pages.yml` | YAML parse, `check-actions-pinned.sh`; hosted run pending | done (this branch); hosted run pending |
+| Workflow: PR validation, manual main-only deploy, release gates, smoke | `.github/workflows/pages.yml` | Hosted on PR #137: `site` and `acceptance` passed at `72f0517` ([run 43314171059](https://github.com/djshellshoxxx/GhostPay/actions/runs/43314171059)) and `3c54085` ([run 43316117382](https://github.com/djshellshoxxx/GhostPay/actions/runs/43316117382)); `deploy`, `smoke` and `release-gates` correctly skipped (no dispatch) | done (this branch) |
 | Publishing | Settings > Pages source, `github-pages` environment | | owner |
 | Testnet manifest, release keys, testnet deployment | `apps/web/deployments/`, `vars.GHOSTPAY_RELEASE_PUBKEYS` | | owner |
 

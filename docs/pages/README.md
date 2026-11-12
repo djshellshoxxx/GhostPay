@@ -13,8 +13,8 @@ GitHub Pages (static files) -> your browser (keys, invoices, scanning, signing) 
 | State | Meaning | Current |
 |---|---|---|
 | `STATIC_BUILD_READY` | `scripts/pages/build-pages.sh` builds, verifies and hashes the static site | See the pull request that introduced this page for the exact commit |
-| `DEMO_DEPLOYED` | The site is published with payments disabled (no manifest) | Needs the owner steps in [Publishing](#publishing-owner) |
-| `TESTNET_BETA_QUALIFIED` | A signed testnet manifest is bundled, and payment and sweep pass on the real testnet through the published site | Needs an authorized testnet deployment ([External testnet qualification](#external-testnet-qualification)) |
+| `DEMO_DEPLOYED` | The site is published with payments disabled (no manifest) | Needs the owner steps in [Owner checklist](#owner-checklist) A and B |
+| `TESTNET_BETA_QUALIFIED` | A signed testnet manifest is bundled, and payment and sweep pass on the real testnet through the published site | Needs [Owner checklist](#owner-checklist) C |
 | `PRODUCTION_READY` | Real funds | Out of scope. Needs a separate owner decision, independent audit and the ADR-0015 gates |
 
 ## For users
@@ -152,26 +152,66 @@ A GitHub project site is served at `https://<owner>.github.io/<repo>/`. Browsers
 
 The workflow defaults `GHOSTPAY_PAGES_ORIGIN` to the account's `github.io` origin. On that origin the demonstration build carries a warning in its banner, and a build with testnet manifests is refused unless the repository variable `GHOSTPAY_PAGES_ALLOW_SHARED_ORIGIN` is `testnet`.
 
-### Publishing (owner)
+### Owner checklist
 
-1. Settings > Pages > Build and deployment > Source: **GitHub Actions**. (The old `gh-pages` branch from the prototype is then unused; keep it or delete it.) Choose the serving origin above and set the repository variable `GHOSTPAY_PAGES_ORIGIN` if it is not the default.
-2. Settings > Environments > `github-pages`: deployment branches **main only**; add required reviewers if you want a second approval.
-3. Merge the release pull request to `main`.
-4. Actions > Pages > Run workflow on `main` with **deploy** checked.
-5. Check the run summary: `pages-evidence.json` status and the `SHA256SUMS`. Then run the smoke command above against the live URL from another machine.
+Only the repository owner can do these. Each step names where it is done and what proves it worked.
 
-Until a testnet manifest is added, this publishes the **demonstration** build (`DEMO_DEPLOYED`).
+**A. Decide hosting (once)**
 
-### Enabling testnet payments (owner)
+1. Read and accept or reject [ADR-0029](../adr/ADR-0029-github-pages-static-beta.md). To accept: change its `Status:` line to `Accepted (<date>, <name>)` in a reviewed pull request. Until then ADR-0015 forbids publishing.
+2. Choose a serving origin that no other site shares ([Serving origin](#serving-origin-read-before-publishing)):
+   - **Custom domain (recommended):**
+     - Settings > Pages > Custom domain: enter e.g. `pay.example.org` and save.
+     - At your DNS provider, add `CNAME pay.example.org -> djshellshoxxx.github.io` (no path).
+     - Once the certificate is issued, tick **Enforce HTTPS**.
+     - Then verify the domain (profile Settings > Pages > Add a domain, TXT record), so nobody else can claim it for their Pages site.
+   - **Or a dedicated organization:** create a GitHub organization with no other Pages site and no `<org>.github.io` repository, and transfer or fork this repository there.
+3. Settings > Secrets and variables > Actions > **Variables**: set `GHOSTPAY_PAGES_ORIGIN` to the chosen origin, e.g. `https://pay.example.org` (no trailing slash, no path). Leave `GHOSTPAY_PAGES_ALLOW_SHARED_ORIGIN` unset.
 
-1. Deploy the contracts to the chosen testnet with an authorized deployer (`packages/contracts`, `deployments/README.md`) and record the transaction hashes.
-2. Write and sign the manifest (`deployments/schema.json`, `docs/operators/release-and-verify.md`). Commit `apps/web/deployments/<chainId>.json`. Only the testnet chain ids in `scripts/pages/verify-pages-site.mjs` are accepted.
-3. Set the repository variable `GHOSTPAY_RELEASE_PUBKEYS` (public keys only, comma separated). A manifest without a verifying key fails the build.
-4. Publish as above. At runtime the app also reads the contract code and immutable values through the user's RPC before enabling a flow.
+**B. Publish the demonstration build (`DEMO_DEPLOYED`)**
+
+4. Settings > Pages > Build and deployment > Source: **GitHub Actions**. The prototype's `gh-pages` branch is then unused; keep or delete it.
+5. Settings > Environments > `github-pages`:
+   - Deployment branches and tags: **Selected branches**, add `main` only.
+   - Optional: Required reviewers, for a second approval before each deployment.
+6. Get the release onto `main`, because the deploy job runs only from `main`. Pull request #137 is stacked: #137 → #135 (`nodata/jolly-rubin-u4zd45`) → #98 (`integration/ghostpay-beta-consolidated-20261109`) → `main`. Either merge the stack in that order after review, or open one pull request from `claude/ghostpay-github-pages-up6cj6` to `main` (it contains the whole stack). Wait for CI to pass on the merge commit.
+7. Actions > **Pages** > Run workflow > Branch `main`, tick **deploy**, Run. The run builds and verifies the site and runs the real-chain acceptance plus the release gates (typecheck, lint, unit tests, mocked browser suite). Then it deploys, and the `smoke` job checks the live site.
+8. In the run summary, check:
+   - `pages-evidence.json`: `release: true`, your origin, `sharedOrigin: false`, and status `DEMO: payments disabled …`;
+   - the `SHA256SUMS` list;
+   - that the `smoke` job passed.
+
+   From another machine, compare what is served (see [Verify the files you were served](#verify-the-files-you-were-served)).
+
+**C. Enable testnet payments (`TESTNET_BETA_QUALIFIED`)**
+
+9. Deploy the contracts to one testnet, Base Sepolia (84532) or Ethereum Sepolia (11155111), with an authorized deployer key, following [`deployments/README.md`](../../deployments/README.md) "Procedure":
+   - `packages/contracts/scripts/pre-deploy-check.sh router`;
+   - `forge script script/Deploy.s.sol --rpc-url <rpc> --broadcast --account <keystore>` with `FEE_RECIPIENT` set;
+   - verify the sources on the explorer and read back the immutables.
+10. Make the manifest:
+    - `node scripts/testnet/make-manifest.mjs --rpc <rpc> --broadcast packages/contracts/broadcast/Deploy.s.sol/<chainId>/run-latest.json` writes an unsigned `deployments/<chainId>.json`.
+    - Sign its `manifestDigest` with the approved **offline** release key (no in-repository signing command exists) and add the compact signature.
+    - Copy the signed file to `apps/web/deployments/<chainId>.json` and commit both in a reviewed pull request.
+11. Variables: set `GHOSTPAY_RELEASE_PUBKEYS` to the release public key(s): 33-byte compressed secp256k1 keys (66 hex digits starting with `02` or `03`), comma separated, at most 8, public keys only. A manifest without a matching key fails the build.
+12. Merge, then dispatch **Pages** with **deploy** again. `pages-evidence.json` must now list your chain id under `paymentsEnabledChainIds`, and the banner must say "Testnet beta".
+13. Run the [external testnet qualification](#external-testnet-qualification) below and commit its record.
+
+**D. Before calling the release done**
+
+14. SonarCloud: the project's new-code security rating was D, and its issue list was not reachable from the build sandbox. In SonarCloud > Issues, filter Type = Vulnerability and Security Hotspot, New code. Export or copy the list into pull request #137 so each item can be fixed or dispositioned. Do not mark items as "won't fix" to reach a rating.
+15. Arrange an independent security review of the exact release commit (the review in `RELEASE_MATRIX.md` was AI-assisted, not an audit).
 
 ### External testnet qualification
 
-`TESTNET_BETA_QUALIFIED` needs, on the published site and a real testnet: chain id, contract addresses, manifest SHA-256, wallet type and version, RPC provider, the payment, announcement and sweep transaction hashes, scan and receipt results, and at least one failure-and-recovery case (rejected wallet request, RPC outage during scan). Record them in a dated file under `docs/handoffs/`. Local anvil results do not count as external testnet acceptance.
+`TESTNET_BETA_QUALIFIED` needs these, on the published site and the real testnet:
+- chain id, contract addresses, manifest SHA-256;
+- wallet type and version, and the RPC provider;
+- the payment, announcement and sweep transaction hashes;
+- scan and receipt results;
+- at least one failure-and-recovery case (rejected wallet request, RPC outage during scan).
+
+Record them in a dated file under `docs/handoffs/`. Local anvil results do not count as external testnet acceptance.
 
 ### Limits of a GitHub Pages host
 
