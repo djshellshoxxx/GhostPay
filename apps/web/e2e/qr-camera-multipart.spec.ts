@@ -1,17 +1,13 @@
 // Animated multi-part QR through Chromium's virtual camera: device A creates a real signed invoice, the test renders
 // it as GPQ1 parts into the fake-capture file, device B scans the looping parts. Not physical-device acceptance.
-import { existsSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 import { encodeMultipart } from '@ghostpay/qr-exchange';
+import { cameraLaunchOptions } from './camera-browser';
 import { createInvoice, generateKeys } from './helpers';
 import { rewriteQrVideo, writeQrVideo } from './qr-video.mjs';
 
 const VIDEO = writeQrVideo(['placeholder: replaced before scanning']);
-const executablePath = [process.env['GHOSTPAY_CHROMIUM'], '/opt/pw-browsers/chromium-1194/chrome-linux/chrome', '/opt/pw-browsers/chromium']
-  .find((p): p is string => typeof p === 'string' && existsSync(p));
-test.use({
-  launchOptions: { ...(executablePath === undefined ? {} : { executablePath }), args: ['--no-sandbox', '--use-fake-device-for-media-stream', `--use-file-for-fake-video-capture=${VIDEO}`] },
-});
+test.use({ launchOptions: cameraLaunchOptions(VIDEO) });
 
 test('a multi-part invoice QR is assembled from looping parts, previewed locally and opens only the ordinary review', async ({ browser }) => {
   const ctxA = await browser.newContext({ serviceWorkers: 'block' });

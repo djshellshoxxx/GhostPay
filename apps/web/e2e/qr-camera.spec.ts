@@ -1,10 +1,10 @@
 // Virtual-camera QR scanning in real Chromium. Each describe launches its own browser with a fake capture file.
 // This is browser-engine automation, not physical-device acceptance (see docs/qr/PHYSICAL_DEVICE_ACCEPTANCE.md).
-import { existsSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 import { encodeMetaAddress, generateKeySet } from '@ghostpay/core-crypto';
 import { secp256k1 } from '@noble/curves/secp256k1.js';
 import { exportSellerPairing } from '@ghostpay/qr-exchange';
+import { cameraLaunchOptions } from './camera-browser';
 import { writeQrVideo } from './qr-video.mjs';
 
 const hex = (b: Uint8Array): string => Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
@@ -12,13 +12,8 @@ const keys = generateKeySet();
 const META = encodeMetaAddress({ spendingPublicKey: keys.spendingPublicKey, viewingPublicKey: keys.viewingPublicKey });
 const SIGNER = hex(secp256k1.getPublicKey(secp256k1.utils.randomSecretKey(), true));
 const PAIRING = exportSellerPairing({ metaAddress: META, signerPublicKey: SIGNER }, [], []);
-const fakeCamera = (file: string): string[] => ['--use-fake-device-for-media-stream', `--use-file-for-fake-video-capture=${file}`];
-
 // launchOptions is worker-scoped, so it must be top-level; camera permission is per context below.
-// Same executable candidates as playwright.config.ts, whose launchOptions a file-level launchOptions replaces.
-const executablePath = [process.env['GHOSTPAY_CHROMIUM'], '/opt/pw-browsers/chromium-1194/chrome-linux/chrome', '/opt/pw-browsers/chromium']
-  .find((p): p is string => typeof p === 'string' && existsSync(p));
-test.use({ launchOptions: { ...(executablePath === undefined ? {} : { executablePath }), args: ['--no-sandbox', ...fakeCamera(writeQrVideo([PAIRING]))] } });
+test.use({ launchOptions: cameraLaunchOptions(writeQrVideo([PAIRING])) });
 
 async function openPairing(page: Page) {
   await page.goto('/');
