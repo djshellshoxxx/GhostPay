@@ -194,6 +194,15 @@ function blockedPlan(reasonMessage: MessageDescriptor): Extract<ScanPlan, { kind
   return { kind: 'blocked', reason: displayMessage(reasonMessage), reasonMessage };
 }
 
+/**
+ * True when the user requires the private path through a local proxy: then nothing may contact the Settings RPCs
+ * directly on its own (the scan skips the second RPC, and Sweep reads a balance only when asked), because a direct
+ * request would link the user's IP address to what it asks about.
+ */
+export function privatePathForbidsDirect(s: ScanPrivacySettings): boolean {
+  return s.requireProxy && s.transport === 'local-proxy';
+}
+
 /** Decides how one chain is scanned. Never falls back silently: a missing private path is a blocked scan. */
 export function planScan(s: ScanPrivacySettings, chain: ChainConfig): ScanPlan {
   const id = String(chain.chainId);
@@ -223,7 +232,7 @@ export function planScan(s: ScanPrivacySettings, chain: ChainConfig): ScanPlan {
     endpoint,
     allowLoopbackHttp: s.transport === 'local-proxy',
     // The second RPC from Settings is contacted directly; behind a required local proxy that would leak the IP.
-    useSecondary: !(s.requireProxy && s.transport === 'local-proxy'),
+    useSecondary: !privatePathForbidsDirect(s),
     indexerUrl,
     window: { windowBlocks, jitterMs: [s.jitterMinMs, s.jitterMaxMs] },
   };
@@ -255,13 +264,16 @@ export function describeScanDisclosureMessages(s: ScanPrivacySettings, o: { read
   }
   if (s.transport === 'local-proxy') rows.push({ party: { key: 'scanPrivacy.disclosure.proxyParty' }, learns: { key: 'scanPrivacy.disclosure.proxy' } });
   if (s.transport === 'tor-browser') rows.push({ party: { key: 'scanPrivacy.disclosure.torExitParty' }, learns: { key: 'scanPrivacy.disclosure.torExit', values: { notice: { key: 'scanPrivacy.disclosure.torBrowserNotice' } } } });
-  if (o.hasSecondary && !(s.requireProxy && s.transport === 'local-proxy')) {
+  if (o.hasSecondary && !privatePathForbidsDirect(s)) {
     const secondWindows: MessageDescriptor = s.windowBlocks > 0
       ? { key: 'scanPrivacy.disclosure.secondWindowsFixed', values: { blocks: String(s.windowBlocks) } }
       : { key: 'scanPrivacy.disclosure.secondWindowsExact' };
     const secondIp: MessageDescriptor = s.transport === 'local-proxy' ? { key: 'scanPrivacy.disclosure.secondDirectIp' } : ip;
     rows.push({ party: { key: 'scanPrivacy.disclosure.secondParty' }, learns: { key: 'scanPrivacy.disclosure.second', values: { ip: secondIp, windows: secondWindows } } });
   }
+  // Not part of the scan: Sweep reads the found address's balance and prepares/sends the sweep via the Settings RPC.
+  const sweepIp: MessageDescriptor = s.transport === 'local-proxy' ? { key: 'scanPrivacy.disclosure.secondDirectIp' } : ip;
+  rows.push({ party: { key: 'scanPrivacy.disclosure.sweepParty' }, learns: { key: privatePathForbidsDirect(s) ? 'scanPrivacy.disclosure.sweepOnRequest' : 'scanPrivacy.disclosure.sweepAuto', values: { ip: sweepIp } } });
   rows.push({ party: { key: 'scanPrivacy.disclosure.everyoneParty' }, learns: s.transport === 'direct'
     ? { key: 'scanPrivacy.disclosure.everyone' }
     : { key: 'scanPrivacy.disclosure.everyonePrivate', values: { notice: { key: 'scanPrivacy.disclosure.firstUseNotice' } } } });
@@ -282,10 +294,12 @@ export function describeScanDisclosure(s: ScanPrivacySettings, o: { readonly has
   }
   if (s.transport === 'local-proxy') rows.push({ party: 'Your local proxy', learns: 'Everything the RPC sees, plus the destination. GhostPay cannot check that it forwards over Tor.' });
   if (s.transport === 'tor-browser') rows.push({ party: 'Tor exit', learns: `The destination host, not the TLS content. ${TOR_BROWSER_NOTICE}` });
-  if (o.hasSecondary && !(s.requireProxy && s.transport === 'local-proxy')) {
+  if (o.hasSecondary && !privatePathForbidsDirect(s)) {
     const secondWindows = s.windowBlocks > 0 ? `the same fixed ${String(s.windowBlocks)}-block windows` : 'the same exact block ranges';
     rows.push({ party: 'Second RPC', learns: `${s.transport === 'local-proxy' ? 'Your IP address (it is contacted directly, not through the proxy)' : ip}; ${secondWindows} for announcements, the same block reads (so it also learns exactly how far you have scanned) and the same verification requests.` });
   }
+  const sweepHow = privatePathForbidsDirect(s) ? 'but only when you press "Read balance from the Settings RPC" in Sweep' : 'because Sweep reads its balance as soon as you open it';
+  rows.push({ party: 'Settings RPC (Sweep)', learns: `${s.transport === 'local-proxy' ? 'Your IP address (it is contacted directly, not through the proxy)' : ip}; the one-time address of a found payment, ${sweepHow}. Signing a sweep also reads from it, and a direct sweep is sent through it. These requests go to the RPC in Settings directly, not through the scan path.` });
   rows.push({ party: 'Everyone', learns: `Nothing on-chain is hidden: payer, amount, token, timing and the announcement are public.${s.transport === 'direct' ? '' : ` ${FIRST_USE_NOTICE}`}` });
   return rows;
 }
@@ -452,6 +466,44 @@ export function createWindowedScanClient(inner: RpcClient, o: WindowedOptions): 
 // ---------------------------------------------------------------------------------------------------------------
 // Indexer
 
+/**
+ * Reads at most `max` bytes of a response body. A declared Content-Length above the cap is refused unread; otherwise the
+ * stream is counted chunk by chunk and, once it passes the cap, the reader is cancelled and the request aborted, so at most
+ * one chunk beyond the cap is ever held. A response without a body reads as empty. (The capped readers in net-transport
+ * and the Esplora client are private and throw their own error types, so this one stays local.)
+ */
+async function readBodyCapped(res: Response, max: number, ctl: AbortController): Promise<Uint8Array> {
+  const tooLarge = (): ScanSourceError => new ScanSourceError('TRANSPORT', 'response too large');
+  const declared = Number(res.headers.get('content-length'));
+  if (Number.isFinite(declared) && declared > max) {
+    await res.body?.cancel().catch(() => undefined);
+    ctl.abort();
+    throw tooLarge();
+  }
+  if (res.body === null) return new Uint8Array(0);
+  const reader = res.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > max) {
+      await reader.cancel().catch(() => undefined);
+      ctl.abort();
+      throw tooLarge();
+    }
+    chunks.push(value);
+  }
+  const all = new Uint8Array(total);
+  let off = 0;
+  for (const c of chunks) {
+    all.set(c, off);
+    off += c.byteLength;
+  }
+  return all;
+}
+
 /** Browser GET transport for the indexer: no redirects, no cookies, no referrer, streamed size cap, timeout. */
 export function fetchHttpTransport(fetchImpl: (url: string, init: RequestInit) => Promise<Response>): HttpTransport {
   return {
@@ -462,9 +514,7 @@ export function fetchHttpTransport(fetchImpl: (url: string, init: RequestInit) =
       req.signal?.addEventListener('abort', onAbort, { once: true });
       try {
         const res = await fetchImpl(req.url, { method: req.method, signal: ctl.signal, redirect: 'error', credentials: 'omit', cache: 'no-store', referrerPolicy: 'no-referrer', headers: { accept: 'application/json' } });
-        const buf = new Uint8Array(await res.arrayBuffer());
-        if (buf.length > req.maxBytes) throw new ScanSourceError('TRANSPORT', 'response too large');
-        return { status: res.status, body: buf };
+        return { status: res.status, body: await readBodyCapped(res, req.maxBytes, ctl) };
       } finally {
         clearTimeout(timer);
         req.signal?.removeEventListener('abort', onAbort);
@@ -606,4 +656,4 @@ export async function openScanClients(o: OpenScanOptions): Promise<ScanClients |
 // i18n-use: error.scanPrivacy.aLocalProxyEndpointMustBeOnThisComputerFor error.scanPrivacy.localProxyEndpointRejectedNoUsernamePasswordOrFragment error.scanPrivacy.scanEndpointRejectedUseHttpsWithNoUsernamePasswordOr error.scanPrivacy.indexerURLIsNotAValidURL error.scanPrivacy.indexerURLMustBeHttpsOrHttpOn1270 error.scanPrivacy.withALocalProxyTheIndexerMustAlsoBeReached error.scanPrivacy.scanBlockedThePrivateScanEndpointCouldNotBeUsed
 
 // i18n-use: scanPrivacy.blocked.requirePrivatePath scanPrivacy.blocked.proxyEndpoint scanPrivacy.blocked.indexerChain scanPrivacy.blocked.indexerMissing scanPrivacy.blocked.endpointRejected scanPrivacy.blocked.indexerRejected
-// i18n-use: scanPrivacy.disclosure.windowsFixed scanPrivacy.disclosure.windowsExact scanPrivacy.disclosure.ipDirect scanPrivacy.disclosure.ipTorBrowser scanPrivacy.disclosure.ipProxyExit scanPrivacy.disclosure.logsIndexer scanPrivacy.disclosure.logsRpc scanPrivacy.disclosure.rpcParty scanPrivacy.disclosure.rpc scanPrivacy.disclosure.indexerParty scanPrivacy.disclosure.indexer scanPrivacy.disclosure.proxyParty scanPrivacy.disclosure.proxy scanPrivacy.disclosure.torExitParty scanPrivacy.disclosure.torExit scanPrivacy.disclosure.torBrowserNotice scanPrivacy.disclosure.secondParty scanPrivacy.disclosure.secondWindowsFixed scanPrivacy.disclosure.secondWindowsExact scanPrivacy.disclosure.secondDirectIp scanPrivacy.disclosure.second scanPrivacy.disclosure.everyoneParty scanPrivacy.disclosure.everyone scanPrivacy.disclosure.everyonePrivate scanPrivacy.disclosure.firstUseNotice
+// i18n-use: scanPrivacy.disclosure.windowsFixed scanPrivacy.disclosure.windowsExact scanPrivacy.disclosure.ipDirect scanPrivacy.disclosure.ipTorBrowser scanPrivacy.disclosure.ipProxyExit scanPrivacy.disclosure.logsIndexer scanPrivacy.disclosure.logsRpc scanPrivacy.disclosure.rpcParty scanPrivacy.disclosure.rpc scanPrivacy.disclosure.indexerParty scanPrivacy.disclosure.indexer scanPrivacy.disclosure.proxyParty scanPrivacy.disclosure.proxy scanPrivacy.disclosure.torExitParty scanPrivacy.disclosure.torExit scanPrivacy.disclosure.torBrowserNotice scanPrivacy.disclosure.secondParty scanPrivacy.disclosure.secondWindowsFixed scanPrivacy.disclosure.secondWindowsExact scanPrivacy.disclosure.secondDirectIp scanPrivacy.disclosure.second scanPrivacy.disclosure.sweepParty scanPrivacy.disclosure.sweepAuto scanPrivacy.disclosure.sweepOnRequest scanPrivacy.disclosure.everyoneParty scanPrivacy.disclosure.everyone scanPrivacy.disclosure.everyonePrivate scanPrivacy.disclosure.firstUseNotice

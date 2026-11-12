@@ -5,9 +5,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const exchange = vi.hoisted(() => {
   class QrExchangeError extends Error {
-    constructor(readonly code: 'CAMERA_DENIED' | 'CAMERA_UNAVAILABLE' | 'SCAN_FAILED' | 'OTHER') { super(code); }
+    constructor(readonly code: 'CAMERA_DENIED' | 'CAMERA_UNAVAILABLE' | 'CAMERA_NOT_FOUND' | 'CAMERA_IN_USE' | 'CAMERA_INSECURE' | 'SCAN_FAILED' | 'OTHER') { super(code); }
   }
-  return { QrExchangeError, startCamera: vi.fn(), scanFromVideo: vi.fn(), stopVideo: vi.fn() };
+  return {
+    QrExchangeError, startCamera: vi.fn(), scanFromVideo: vi.fn(), stopVideo: vi.fn(),
+    listVideoInputs: vi.fn(() => Promise.resolve([])), activeDeviceId: vi.fn(), decodeQrImage: vi.fn(), Assembler: vi.fn(),
+  };
 });
 vi.mock('@ghostpay/qr-exchange', () => exchange);
 
@@ -23,6 +26,9 @@ describe('CameraImporter failure and acceptance paths', () => {
   it.each([
     ['CAMERA_DENIED', 'Camera access was denied.'],
     ['CAMERA_UNAVAILABLE', 'Camera scanning is unavailable here.'],
+    ['CAMERA_NOT_FOUND', 'No camera was found on this device.'],
+    ['CAMERA_IN_USE', 'The camera is in use by another app or could not be opened.'],
+    ['CAMERA_INSECURE', 'The camera only works on a secure \\(HTTPS\\) page.'],
     ['SCAN_FAILED', 'The camera could not read a QR code.'],
     ['OTHER', 'The camera could not be started.'],
   ] as const)('explains %s and keeps paste available after startup failure', async (code, message) => {

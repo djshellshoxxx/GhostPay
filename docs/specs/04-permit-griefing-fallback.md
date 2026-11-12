@@ -24,4 +24,6 @@ Front-run permit (tolerated by design); permit replay on other chain (token doma
 Mock token matrix: front-run permit, reverting permit, no-permit, DAI-style. Anvil: relayer e2e where owner sweeps first; where permit front-run -> fallback to `sweep` succeeds. Unit: classifier for each state. CI grep: no `tx.origin` in `packages/contracts/src`.
 
 ## 5. Acceptance
-- [ ] Each PermitState has a user-facing message. - [ ] Front-run scenario succeeds end-to-end. - [ ] Relayer gas loss in owner-drains-first test bounded and counted in metrics (spec 07). - [ ] Threat model gets "permit griefing" section (DOC-6).
+- [x] Each PermitState has a user-facing message (web `SWEEP_PERMIT_STATE_KEYS`; relayer classes `permit_nonce_consumed`, `permit_signature_invalid`, `permit_unsupported_token`, `permit_failed`, `permit_expired` mapped in `apps/web/src/lib/sweep.ts`). - [x] Front-run scenario succeeds end-to-end (`apps/relayer/src/e2e.anvil.test.ts`). - [x] Relayer gas loss in owner-drains-first test bounded and counted in metrics (same file; `relayer_mined_reverts_total`, daily budget gauge equals gas paid). - [x] Threat model gets "permit griefing" section (`docs/threat-model/THREAT_MODEL.md`).
+
+Status 2026-11-11: implemented off-chain (no contract change; option C remains deferred). `griefReserveBps` defaults to 0: no value is recommended until it is derived from measured testnet loss rates (UNVERIFIED). The relayed client flow has no automatic fallback; the owner chooses direct sweep or approve (spec s2 step 3).

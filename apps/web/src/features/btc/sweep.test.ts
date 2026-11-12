@@ -105,6 +105,39 @@ describe('checkDestination', () => {
   });
 });
 
+describe('destination letter case (BIP-173)', () => {
+  // Base58Check of version 0x6f (test networks, P2PKH) and twenty 0x03 bytes; base58 is case-sensitive.
+  const BASE58 = 'mfnsvtcCyP2gwYLXKPLksyiAr4MZ6ewZNw';
+
+  it('reviews an all-uppercase bech32 destination as its lowercase canonical form and signs it', async () => {
+    const w = walletA();
+    const p = await payments();
+    expect(checkDestination(w, ` ${BCRT.toUpperCase()} `)).toBe(BCRT);
+    const review = reviewSweep(w, p, BCRT.toUpperCase(), 2);
+    expect(review.destination).toBe(BCRT);
+    expect(await codeAsync(() => signSweep(w, p, review))).toBe('none');
+  });
+
+  it('still rejects a mixed-case bech32 destination', async () => {
+    const w = walletA();
+    const p = await payments();
+    const mixed = BCRT.slice(0, 6).toUpperCase() + BCRT.slice(6);
+    expect(code(() => checkDestination(w, mixed))).toBe('INVALID_ADDRESS');
+    expect(code(() => reviewSweep(w, p, mixed, 2))).toBe('INVALID_ADDRESS');
+  });
+
+  it('keeps base58 destinations exactly as typed and rejects a case-changed copy', async () => {
+    const w = walletA();
+    const p = await payments();
+    expect(checkDestination(w, BASE58)).toBe(BASE58);
+    const review = reviewSweep(w, p, BASE58, 2);
+    expect(review.destination).toBe(BASE58);
+    expect(await codeAsync(() => signSweep(w, p, review))).toBe('none');
+    expect(code(() => checkDestination(w, BASE58.toLowerCase()))).toBe('INVALID_ADDRESS');
+    expect(code(() => checkDestination(w, BASE58.toUpperCase()))).toBe('INVALID_ADDRESS');
+  });
+});
+
 describe('signSweep', () => {
   it('signs exactly what was reviewed, with valid key-path signatures', async () => {
     const w = walletA();

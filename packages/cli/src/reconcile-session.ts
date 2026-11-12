@@ -87,7 +87,6 @@ export async function currentObservations(ctx: Ctx, a: Parsed, operator: Operato
   const records: ReconciliationRecord[] = [];
   const ids = new Set<string>();
   const evidence = new Set<string>();
-  const claims = new Set<string>();
   const viewing = secretScalarFromBytes(seller.secrets.viewingKey);
   try {
     for (const item of list) {
@@ -100,10 +99,12 @@ export async function currentObservations(ctx: Ctx, a: Parsed, operator: Operato
       const match = checkAnnouncement(claim.announcement, viewing, seller.publicKeys.spendingPublicKey, { ignoreViewTag: true });
       if (!match.matches) throw failError('SELLER_RECIPIENT_MISMATCH', 'a current observation does not belong to the authenticated seller keys.');
       const recordValue = reconciliationApi.recordFromVerifiedMatch({ chainId: result.observation.chain.chainId, ...claim, tagMatches: match.tagMatches !== false, receipt: 'verified' }, seller.sellerKeyId, undefined, ctx.io.nowSeconds() * 1000);
-      const claimId = `${claim.stealthAddress.toLowerCase()}:${claim.announcement.ephemeralPublicKey.toLowerCase()}`;
-      if (ids.has(recordValue.id) || evidence.has(result.verification.evidenceId) || claims.has(claimId))
+      // Duplicates are the same log (record id) or the same payment evidence (evidence id). Two router payments that
+      // share a one-time address and ephemeral key are distinct payments (F1, 2026-11-11): a front-runner can copy
+      // (S, E) from a pending payment, so rejecting the pair would let a 1-wei copy block the genuine payment.
+      if (ids.has(recordValue.id) || evidence.has(result.verification.evidenceId))
         throw failError('DUPLICATE_OBSERVATION', 'the current context repeats an observation or consumes the same payment evidence twice.');
-      ids.add(recordValue.id); evidence.add(result.verification.evidenceId); claims.add(claimId);
+      ids.add(recordValue.id); evidence.add(result.verification.evidenceId);
       records.push(recordValue);
     }
     return { records, context, observationText, sha256: sha256Text(observationText), manifestDigest: context.manifestDigest, finalityDepth: parsed[0]!.chain.finalityDepth };

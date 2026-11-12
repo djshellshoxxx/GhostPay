@@ -13,9 +13,9 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
 ## Not implemented (and why)
 3. **ERC-6538 registry publish**: the deployment manifest has no registry address, and publishing associates the meta-address with a
    wallet publicly. The Seller keys page says so and shares the meta-address directly instead.
-4. **Fiat-priced (`fiat_quote`) invoices cannot be paid yet**: `chain-adapters` ships an empty `FEEDS` table (no verified Chainlink
-   addresses, see its `TODO-VERIFY.md`). The code path exists (`createPayContext` -> `readPrice` -> `fiatToTokenAmount`, round up for the
-   payer) and is unit-tested with an injected feed; with no feed it fails closed with a plain message. The Create page warns about this.
+4. **Fiat-priced (`fiat_quote`) invoices cannot be paid yet**: `chain-adapters` ships `FEEDS` entries only for testnets (ETH/USD and
+   USDC/USD on Sepolia and Base Sepolia, `packages/chain-adapters/src/quote.ts`; see its `TODO-VERIFY.md`) and none for other chains. The code path exists (`createPayContext` -> `readPrice` -> `fiatToTokenAmount`, round up for the
+   payer) and is unit-tested with an injected feed; with no feed for the chain and pair it fails closed with a plain message. The Create page warns about this.
 5. **Manifest signatures are not verified.** `DeploymentManifest.signature` is optional and no release key exists. The UI shows
    "carries no signature" / "whose signature this app does not verify" next to the fee recipient instead of implying verification.
 6. **Embed SDK.** `public/ghostpay-embed-v1.js` is frozen and popup-only (takes a full `data-invoice` link, no `postMessage`, so pinned
@@ -39,11 +39,13 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
 8. No network-reachable "light indexer" (Feature 5); scanning uses the user's RPC through `chain-adapters`.
 
 ## Behaviour choices the specs left open
-9. **Relayer wire format.** `apps/relayer` did not exist when this was written, so the client follows APP_AND_RELAYER_SPEC section 3 literally:
+9. **Relayer wire format.** The client speaks the format `apps/relayer` parses (`src/validate.ts`):
    `POST /v1/quote {chainId, token, owner, destination, amount}` -> `{fee, feeTo, expiresAt, quoteToken}` and
-   `POST /v1/sweep {sweep, sweepSig, permit, quoteToken}` -> `{txHash}`. All uint256 values are decimal strings. `permit` is
-   `{value, deadline, v, r, s}` (the `sweepWithPermit` tuple). If the relayer chooses other names this client needs a one-file change
-   (`src/lib/relayerClient.ts`). The client rejects a quote above the 3 % published cap before signing anything.
+   `POST /v1/sweep {chainId, sweep, sweepSig, permit, quoteToken}` -> `{txHash}`. The top-level `chainId` on the sweep is
+   required by the relayer (relayer DEVIATIONS item 1) although APP_AND_RELAYER_SPEC section 3 omits it. All uint256 values are
+   decimal strings. `permit` is `{value, deadline, v, r, s}` (the `sweepWithPermit` tuple). Errors are `{error: {code}}`.
+   `src/lib/relayerContract.test.ts` runs this client against the relayer's real parsers and HTTP server, so a change on one side
+   alone fails CI. The client rejects a quote above the 3 % published cap before signing anything.
 10. **Relayed sweeps need an ERC-2612 token** (the router sweep contract pulls with a permit). Other cases use the **direct sweep**: the
     stealth key signs a plain EIP-1559 transfer (ERC-20 `transfer` or native) that the stealth address pays gas for. The signed transaction
     is checked to carry the hash returned by the RPC.
@@ -71,11 +73,13 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     that were never in a vault have no step-up passphrase.
 12. **Gas buffer sizing** (Feature 1, spec 13): `calculateBuffer` over `max(100 000, eth_estimateGas of the token transfer + 25 %)`
     (fails closed when the simulation fails), `2 x eth_gasPrice` as max fee, `DEFAULT_BUFFER_SAFETY_BPS` (20 %), a hard cap of 0.01
-    native coin, and a 60 s quote lifetime, re-checked before the wallet is asked. It needs the user's RPC. Buffer payments go through
+    native coin, and a 60 s quote lifetime, re-checked before the wallet is asked. On OP Stack chains the quote and the re-check add the
+    L1 data and operator fee reserve the direct sweep demands (2 x the GasPriceOracle quote for an ERC-20 transfer at the buffer's gas
+    limit, `src/lib/opStackFee.ts`, shared with `directSweep`); an unreadable oracle refuses the quote. It needs the user's RPC. Buffer payments go through
     approval (permit + buffer needs a deferred router change). Invoice v2 `bufferPolicy` (ADR-0024): declined hides the buffer; accepted
     bounds it by `min(maxWei, cap)` and raises a smaller estimate to `minWei` (shown); `buildFinal` re-checks the bounds. The Create page
     has no control for the policy yet (v2 invoices can only be produced through `buildInvoiceLink({ bufferPolicy })`). The fiat
-    estimate stays hidden while `FEEDS` is empty.
+    estimate stays hidden while no feed exists for the chain and pair.
 13. **Permit domain version** is probed as `"2"` then `"1"`; each candidate is accepted only if the locally computed domain separator equals
     the token's on-chain `DOMAIN_SEPARATOR`. The wallet's permit signature is verified to recover to the payer before it is used.
     Spec 04 post-sign: `classifyPermit` (`chain-adapters/src/permit.ts`) re-reads allowance, nonce and domain and runs a static `permit`
@@ -210,6 +214,17 @@ wallet, a real chain or a real RPC provider; all of that is mocked.
     `/blocks/:height` field mapping follows the electrs/Esplora API and is exercised only against the test mock (no live
     server is contacted by tests); a mismatch fails closed (each rebuilt header must hash to the summary's `id`).
 
+24. **Spec 05 (announcer spam, privacy set).** The spec's prefilter order ("view-tag compare before ECDH") cannot exist: per EIP-5564 the tag is a
+    byte of the hash of the ECDH shared secret. The spec text and CPU target are corrected with measured numbers (`docs/specs/05-announcer-spam-anonymity-set.md`
+    sections 2A, 5 and 7). Deliberate choices: (a) the scanner worker memoises exact replays per session (`REPLAY_MEMO_LIMIT` 4096, keyed on ephemeral key,
+    announced tag byte, announced address and scan mode; cleared on cancel, dispose and when full), which changes no result, only the work; (b) the same-token
+    transfer estimate is opt-in and bounded (2,000 blocks, 10,000 logs, 8 requests, no sender/recipient in the query) and fails closed to `unknown`; it never
+    changes the privacy-set level; (c) lane options live under their own key `ghostpay.scanLanes.v1` (not in `ScanPrivacySettings` or the settings exchange
+    format) and the Settings "Save scan privacy" button saves both; (d) the 1M-spam acceptance test replaces only `fetchAnnouncements` with a page generator
+    (chain-adapters validates every log with an on-curve decode, ~115 us each on the development container, which alone would take ~2 minutes) and runs in the
+    nocov pass with the 120 s deadline already used there; the real fetch is covered by the smaller "(A5)" floods. Not done: the Pay-view amount-hygiene hint
+    (another stream's file) and a published endpoint list.
+
 ## Coverage exclusions (thresholds 90/85/90/90 are NOT lowered)
 Test files named `*.nocov.test.*` run in a second pass without coverage (`vitest.nocov.config.ts`, chained in `npm test`). Only the
 150-case tag-archive fuzz (`src/lib/tagArchive.fuzz.nocov.test.ts`) does: v8 block coverage deoptimises scrypt ~10x (measured 13.9 s
@@ -228,7 +243,7 @@ Everything else under `src/` (all views, components and `lib/` logic) is measure
 ## Unverified (be explicit)
 - No real wallet, browser extension, mobile wallet, chain, RPC provider or relayer was used. Wallets and RPC are mocks; the manifest used in
   tests is a clearly fake placeholder in `src/test/fakeManifest.ts` and is never served by the app.
-- Only Chromium (the pre-installed build) was run; Firefox/Safari are untested. No axe/screen-reader audit was run: accessibility is by
+- Only Chromium (the pre-installed build) was run; Firefox/Safari are untested. No screen-reader audit was run; axe-core runs in `e2e/accessibility.spec.ts` (`e2e/accessibility-audit.ts`): accessibility is by
   construction (labels, roles, live regions, focus management, 44 px targets, contrast ratio check in e2e) plus a few Playwright checks.
 - The embed SDK was verified against a second local origin only; it was not tested inside real merchant pages.
 - No external audit. `README`-level claims of privacy are bounded by `docs/threat-model/THREAT_MODEL.md`.

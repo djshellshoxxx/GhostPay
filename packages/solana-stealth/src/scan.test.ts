@@ -278,6 +278,26 @@ describe('Solana adapter scan over mock RPC', () => {
     expect(found.map((f) => f.signature)).toEqual(['spl', 'sol']);
   });
 
+  it('reports one detection per (signature, stealth address) even when an RPC re-serves a signature non-adjacently (EXTRA-08)', async () => {
+    const { txs } = await fixtureChain();
+    const inner = chainRpc(txs);
+    const replaying = {
+      request: async (method: string, params: readonly unknown[]) => {
+        const res = await inner.request(method, params);
+        if (method !== 'getSignaturesForAddress') return res;
+        const list = res as { signature: string }[];
+        // the whole page served twice: every duplicate is separated by other signatures
+        return [...list, ...list];
+      },
+    };
+    const found = await collect(
+      scanAnnouncements(fetchAnnouncements(replaying, { fromSlot: 0n }), alice.viewSecret, alice.spendPublicKey),
+    );
+    const keys = found.map((f) => `${f.signature}:${f.stealthAddress}`);
+    expect(new Set(keys).size).toBe(keys.length);
+    expect(found.map((f) => f.signature)).toEqual(['spl', 'sol']);
+  });
+
   it('respects slot range and pagination', async () => {
     const { txs } = await fixtureChain();
     const rpc = chainRpc(txs);

@@ -12,7 +12,7 @@
 import assert from 'node:assert/strict';
 import { spawn, execFileSync } from 'node:child_process';
 import { createCipheriv, createDecipheriv, randomBytes, scryptSync } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createPublicClient, createWalletClient, defineChain, getAddress, http, parseAbi, parseEther, formatEther } from 'viem';
@@ -237,8 +237,13 @@ const asAccount = (secret) => privateKeyToAccount(`0x${Buffer.from(unsafeRevealS
 const secretHex = (b) => `0x${Buffer.from(b).toString('hex')}`;
 const cfgPath = resolve(STATE, 'relayer.config.json');
 mkdirSync(STATE, { recursive: true });
+// Restart-safe state journal (required by the relayer). Each run starts from an empty journal on a fresh devnet.
+const relayerState = resolve(STATE, 'relayer.state.json');
+rmSync(relayerState, { force: true });
+rmSync(`${relayerState}.lock`, { force: true });
 writeFileSync(cfgPath, JSON.stringify({
   allowDevChain: true, allowInsecureLocalhostRpc: true,
+  state: { file: relayerState },
   listen: { host: '127.0.0.1', port: RELAYER_PORT },
   allowedOrigins: ['http://localhost:5173'],
   chains: [{

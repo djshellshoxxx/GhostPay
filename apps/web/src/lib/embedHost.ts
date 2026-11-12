@@ -48,11 +48,15 @@ export function readProfileFromSearch(search: string, nowSec: number): MerchantP
   }
 }
 
-/** Fetches a profile from a merchant URL (https only, no credentials, no referrer, 8 KB cap). Undefined on any failure. */
+/**
+ * Fetches a profile from a merchant URL (https only, no credentials, no referrer, 8 KB cap). Undefined on any failure.
+ * `fetchFn` is required: the app has no default network path here, so any future caller must pass an audited fetch
+ * explicitly (privacyInvariants.test.ts pins the files that may reference the global fetch).
+ */
 export async function fetchMerchantProfile(
   url: string,
   nowSec: number,
-  fetchFn: (input: string, init: RequestInit) => Promise<Response> = (i, init) => fetch(i, init),
+  fetchFn: (input: string, init: RequestInit) => Promise<Response>,
 ): Promise<MerchantProfile | undefined> {
   try {
     const u = new URL(url);

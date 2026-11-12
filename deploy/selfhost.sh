@@ -292,7 +292,7 @@ if [[ -n "$tarball" ]]; then
   echo "     (sums: $sums, commit: $commit, manifest: $manifest); abort on any FAIL"
   if [[ -n "$expect_sha" ]]; then echo "  $((step++)). require its sha256 to equal --expect-sha256 $expect_sha; abort otherwise"; fi
   if [[ -n "$attest_repo" ]]; then echo "  $((step++)). gh attestation verify it (repo $attest_repo, workflow release.yml, ref refs/tags/$tag, commit $commit, GitHub-hosted runner); abort on failure"; fi
-  echo "  $((step++)). extract it into $distdir (replacing old contents)"
+  echo "  $((step++)). back up the current bundle to ${distdir}.prev (skipped if it is incomplete or already $commit), then extract it into $distdir (replacing old contents)"
   echo "  $((step++)). STOP: nothing is built or started until you finish the checklist verify-release.sh prints and type \"start\""
   echo "     (with --yes the run ends here: re-run without --tarball to build and start)"
 fi
@@ -339,8 +339,45 @@ if [[ -n "$tarball" ]]; then
   top="$(find "$tmp/x" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
   [[ -f "$top/index.html" ]] || die "extracted bundle has no index.html"
   mkdir -p "$distdir"
+  # Back up the live bundle before replacing it (one generation: web-dist.prev). Rollback = see docs/operators/rollback.md.
+  # Only a complete bundle (has index.html) that differs from the one being installed replaces the backup, and the
+  # old backup is removed only after the new copy succeeded, so a failed or repeated run never loses the last good copy.
+  prev="${distdir}.prev"
+  # A sibling marker (outside the served tree) exists from just before the live tree is emptied until the copy
+  # finishes. If it is present, an earlier install died part-way: the live tree is partial and must never replace
+  # the backup. (An atomic directory swap is not used: nginx bind-mounts this directory and would keep the old one.)
+  installing="${distdir}.installing"
+  if [[ -e "$installing" ]]; then
+    echo "an earlier install of $distdir did not finish; its partial contents are not backed up (keeping $prev)"
+  elif [[ -f "$distdir/index.html" ]]; then
+    if [[ -f "$distdir/build-info.json" ]] && grep -qF "\"commit\":\"$commit\"" "$distdir/build-info.json"; then
+      echo "live bundle is already $commit; keeping the existing backup in $prev"
+    else
+      rm -rf "${prev}.tmp"
+      cp -a "$distdir" "${prev}.tmp" || die "could not back up $distdir; aborting before any change"
+      # Move the old backup aside, put the new one in place, then drop the old one; restore it if the swap fails.
+      rm -rf "${prev}.old"
+      if [[ -e "$prev" ]]; then mv "$prev" "${prev}.old" || die "could not move the old backup aside; aborting before any change"; fi
+      if ! mv "${prev}.tmp" "$prev"; then
+        [[ -e "${prev}.old" ]] && mv "${prev}.old" "$prev"
+        die "could not rotate the backup into $prev; previous backup restored; aborting before any change"
+      fi
+      rm -rf "${prev}.old"
+      echo "previous bundle saved to $prev"
+    fi
+  fi
+  : > "$installing" || die "could not create $installing; aborting before any change"
   find "$distdir" -mindepth 1 -delete
   cp -a "$top"/. "$distdir"/
+  rm -f "$installing"
+  # Build-version check: the served build-info.json must name the commit we just verified.
+  if [[ -f "$distdir/build-info.json" ]]; then
+    grep -qF "\"commit\":\"$commit\"" "$distdir/build-info.json" \
+      && echo "build-info.json commit matches $commit" \
+      || echo "WARNING: build-info.json commit differs from $commit (build did not embed GP_COMMIT, or wrong tarball)" >&2
+  else
+    echo "WARNING: bundle has no build-info.json (older build); cannot confirm the deployed commit from the page" >&2
+  fi
   rerun="deploy/selfhost.sh"
   if [[ "$onion" = 1 ]]; then rerun="$rerun --onion"; fi
   if [[ "$envfile" != "$here/.env" ]]; then rerun="$rerun --env-file $(printf %q "$envfile")"; fi

@@ -48,6 +48,8 @@ for v in v1 v2; do
 done
 if grep -qF 'location ~ /\.(?!well-known/) {' "$here/nginx.conf"; then :; else echo "ERROR: dotfile deny (location ~ /\\.(?!well-known/) { deny all; }) missing: $here/nginx.conf"; rc=1; fi
 
+chk "$root/deploy/nginx/security-headers.conf" CSP "Content-Security-Policy \"$want_csp\""
+chk "$root/deploy/nginx/security-headers.conf" Permissions-Policy "Permissions-Policy \"$want_pp\""
 # index.html meta CSP omits frame-ancestors (ignored in meta); everything else must match.
 meta_want="${want_csp/; frame-ancestors \'none\'/}"
 chk "$root/apps/web/index.html" "meta CSP" "content=\"$meta_want\""

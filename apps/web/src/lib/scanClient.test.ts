@@ -1,10 +1,10 @@
-import { CHAINS, ChainAdapterError, ghostPayRouterAbi, grossForNet, type Hex, type Address, type LogFilter, type RpcLog } from '@ghostpay/chain-adapters';
-import { encodeMetaAddress, generateKeySet, parseMetadata, unsafeRevealSecret } from '@ghostpay/core-crypto';
+import { CHAINS, ChainAdapterError, ghostPayRouterAbi, grossForNet, type Hex, type Address, type LogFilter, type RpcLog, type ScanCursor } from '@ghostpay/chain-adapters';
+import { buildErc20Metadata, encodeMetaAddress, generateKeySet, parseMetadata, unsafeRevealSecret } from '@ghostpay/core-crypto';
 import { describe, expect, it, vi } from 'vitest';
-import { decodeAbiParameters, encodeFunctionData } from 'viem/utils';
+import { decodeAbiParameters, encodeAbiParameters, encodeFunctionData } from 'viem/utils';
 import { FAKE_ANNOUNCER, FAKE_ROUTER, fakeManifest } from '../test/fakeManifest';
 import { InlineWorker } from '../test/inlineWorker';
-import { makeLog } from '../test/announcements';
+import { makeLog, TOKEN_84532 } from '../test/announcements';
 import { mockRpc } from '../test/mockRpc';
 import { checkpointKeyId, localCheckpointStore, runScan, type CheckpointStore, type ScanProgress } from './scanClient';
 import { ReconciliationVault } from './reconciliationVault';
@@ -29,7 +29,7 @@ function chainWith(head: number, logs: RpcLog[]) {
       address: '0x036cbd53842c5426634e7929541ec2318f3dcf7e',
       blockNumber: log.blockNumber,
       topics: [TRANSFER_TOPIC, `0x${payer.slice(2).padStart(64, '0')}`, recipient],
-      data: `0x${1_000_000n.toString(16).padStart(64, '0')}`,
+      data: `0x${parseMetadata(decodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], log.data as Hex)[1]).netAmount.toString(16).padStart(64, '0')}`,
       blockHash: log.blockHash,
       ...(log.transactionHash === undefined ? {} : { transactionHash: log.transactionHash }),
       logIndex: `0x${(Number(BigInt(log.logIndex)) - 1).toString(16)}`,
@@ -358,7 +358,10 @@ describe('runScan', () => {
 
   it('deduplicates replay announcements for one address and ephemeral key before crediting', async () => {
     const s = setup();
-    const replay: RpcLog = { ...s.mine.log, blockNumber: '0x79', blockHash: blockHash(121), logIndex: '0x5' };
+    // A free replay: the same announcement posted again directly at the announcer, by a caller that is not the router.
+    const replayTopics = [...s.mine.log.topics];
+    replayTopics[3] = `0x${'99'.repeat(20).padStart(64, '0')}`;
+    const replay: RpcLog = { ...s.mine.log, topics: replayTopics, blockNumber: '0x79', blockHash: blockHash(121), logIndex: '0x5' };
     const res = await runScan({
       chain, manifest, client: chainWith(2500, [s.mine.log, replay]), cursor: { nextBlock: 0n },
       spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
@@ -369,7 +372,9 @@ describe('runScan', () => {
   });
   it('keeps a per-scan replay ledger across log pages', async () => {
     const s = setup();
-    const replay: RpcLog = { ...s.mine.log, blockNumber: '0x458', blockHash: blockHash(1112), logIndex: '0x5', transactionHash: `0x${'ab'.repeat(32)}` };
+    const replayTopics = [...s.mine.log.topics];
+    replayTopics[3] = `0x${'99'.repeat(20).padStart(64, '0')}`;
+    const replay: RpcLog = { ...s.mine.log, topics: replayTopics, blockNumber: '0x458', blockHash: blockHash(1112), logIndex: '0x5', transactionHash: `0x${'ab'.repeat(32)}` };
     const res = await runScan({
       chain, manifest, client: chainWith(2500, [s.mine.log, replay]), cursor: { nextBlock: 0n },
       spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
@@ -377,6 +382,84 @@ describe('runScan', () => {
     });
     expect(res.matches).toHaveLength(1);
     expect(res.matches[0]?.receipt).toBe('verified');
+  });
+  it('lists a router replay of one address and ephemeral key separately, and does not verify a copy naming another block\'s transaction (F1)', async () => {
+    const s = setup();
+    const replay: RpcLog = { ...s.mine.log, blockNumber: '0x79', blockHash: blockHash(121), logIndex: '0x5' };
+    const res = await runScan({
+      chain, manifest, client: chainWith(2500, [s.mine.log, replay]), cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal,
+    });
+    // Both router records are kept and verified on their own; the copy names a transaction from another block.
+    expect(res.matches.map((m) => m.receipt)).toEqual(['verified', 'claimed']);
+  });
+  it('keeps every router record of one address and ephemeral key across log pages, each with its own evidence (F1)', async () => {
+    const s = setup();
+    const replay: RpcLog = { ...s.mine.log, blockNumber: '0x458', blockHash: blockHash(1112), logIndex: '0x5', transactionHash: `0x${'ab'.repeat(32)}` };
+    const res = await runScan({
+      chain, manifest, client: chainWith(2500, [s.mine.log, replay]), cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal,
+    });
+    expect(res.matches.map((m) => [m.announcement.transactionHash, m.receipt])).toEqual([[s.mine.log.transactionHash, 'verified'], [replay.transactionHash, 'verified']]);
+  });
+  it('F1: a front-run 1-unit router announcement with a copied address and ephemeral key does not hide the genuine router payment', async () => {
+    const s = setup();
+    const [ephemeral, metadata] = decodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], s.mine.log.data as Hex);
+    const dustMetadata = buildErc20Metadata(parseMetadata(metadata).viewTag, parseMetadata(metadata).token, 1n);
+    // Mined first (earlier block), from its own router transaction moving 1 unit to the copied one-time address.
+    const dust: RpcLog = {
+      ...s.mine.log,
+      data: encodeAbiParameters([{ type: 'bytes' }, { type: 'bytes' }], [ephemeral, `0x${hexOf(dustMetadata)}`]),
+      blockNumber: '0x77', blockHash: blockHash(119), logIndex: '0x2', transactionHash: `0x${'ee'.repeat(32)}`,
+    };
+    const emitted: import('./scanClient').ScanMatch[] = [];
+    const res = await runScan({
+      chain, manifest, client: chainWith(2500, [dust, s.mine.log]), cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal, onMatch: (m) => emitted.push(m),
+    });
+    expect(res.matches.map((m) => [m.announcement.transactionHash, m.metadata?.netAmount, m.receipt])).toEqual([
+      [dust.transactionHash, 1n, 'verified'],
+      [s.mine.log.transactionHash, 1_000_000n, 'verified'],
+    ]);
+    expect(new Set(res.matches.map((m) => `${m.stealthAddress}|${m.announcement.ephemeralPublicKey}`)).size).toBe(1);
+    expect(emitted.map((m) => m.announcement.id)).toEqual(res.matches.map((m) => m.announcement.id));
+  });
+  it.each([
+    ['in the same log page', '0x79', 121],
+    ['on a later log page', '0x458', 1112],
+  ])('lists a second router payment to the same address and ephemeral key %s instead of dropping it', async (_where, blockNumber, block) => {
+    // The router moves funds in the transaction that announces, so this is another transfer, not a replay. Anyone
+    // can copy a pending payment's address and ephemeral key; collapsing the pair let a cheap payment mined first
+    // hide the genuine one from the seller.
+    const s = setup();
+    const second: RpcLog = { ...s.mine.log, blockNumber, blockHash: blockHash(block), logIndex: '0x5', transactionHash: `0x${'ab'.repeat(32)}` };
+    const emitted: import('./scanClient').ScanMatch[] = [];
+    const res = await runScan({
+      chain, manifest, client: chainWith(2500, [s.mine.log, second]), cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal, onMatch: (m) => emitted.push(m),
+    });
+    expect(res.matches.map((m) => m.announcement.transactionHash)).toEqual([s.mine.log.transactionHash, second.transactionHash]);
+    expect(res.matches.map((m) => m.receipt)).toEqual(['verified', 'verified']);
+    expect(res.matches.every((m) => m.viaRouter)).toBe(true);
+    expect(emitted.map((m) => m.announcement.id)).toEqual(res.matches.map((m) => m.announcement.id));
+  });
+  it('still drops a free replay once a router payment for the pair is listed, on a later page too', async () => {
+    const s = setup();
+    const second: RpcLog = { ...s.mine.log, blockNumber: '0x79', blockHash: blockHash(121), logIndex: '0x5', transactionHash: `0x${'ab'.repeat(32)}` };
+    const replayTopics = [...s.mine.log.topics];
+    replayTopics[3] = `0x${'99'.repeat(20).padStart(64, '0')}`;
+    const replay: RpcLog = { ...s.mine.log, topics: replayTopics, blockNumber: '0x458', blockHash: blockHash(1112), logIndex: '0x7', transactionHash: `0x${'cc'.repeat(32)}` };
+    const res = await runScan({
+      chain, manifest, client: chainWith(2500, [s.mine.log, second, replay]), cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal,
+    });
+    expect(res.matches).toHaveLength(2);
+    expect(res.matches.every((m) => m.viaRouter && m.receipt === 'verified')).toBe(true);
   });
   it('replaces an earlier direct replay with a later genuine router record across pages', async () => {
     const s = setup();
@@ -397,6 +480,98 @@ describe('runScan', () => {
     expect(emitted.at(-1)?.viaRouter).toBe(true);
   });
 
+  it('skips a later third-party (non-router) replay of an already listed router payment across pages (F1 keeps only router records separate)', async () => {
+    const s = setup();
+    const router: RpcLog = { ...s.mine.log, blockNumber: '0x78', blockHash: blockHash(120), logIndex: '0x1', transactionHash: `0x${'bb'.repeat(32)}` };
+    const directTopics = [...router.topics];
+    directTopics[3] = `0x${'99'.repeat(20).padStart(64, '0')}`;
+    const direct: RpcLog = { ...router, topics: directTopics, blockNumber: '0xc7a8', blockHash: blockHash(51_112), logIndex: '0x0', transactionHash: `0x${'aa'.repeat(32)}` };
+    const emitted: import('./scanClient').ScanMatch[] = [];
+    const res = await runScan({
+      chain, manifest, client: chainWith(52_000, [router, direct]), cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal, onMatch: (m) => emitted.push(m),
+    });
+    expect(res.matches).toHaveLength(1);
+    expect(res.matches[0]?.viaRouter).toBe(true);
+    expect(res.matches[0]?.announcement.transactionHash).toBe(router.transactionHash);
+    expect(emitted).toHaveLength(1);
+  });
+
+  describe('claim ledger rebuild after a reorg on a later page', () => {
+    // Page 1 is blocks 0..49999 (fifty 1000-block windows); the replacement logs below sit on page 2 / the re-read.
+    const HEAD = 52_000;
+    const NO_ROUTER = `0x${'99'.repeat(20).padStart(64, '0')}`;
+    function fixture() {
+      const s = setup();
+      const meta = encodeMetaAddress(s.keys);
+      const q = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 130, index: 1, caller: FAKE_ROUTER });
+      const asDirect = (log: RpcLog, over: Partial<RpcLog>): RpcLog => ({ ...log, topics: [log.topics[0]!, log.topics[1]!, log.topics[2]!, NO_ROUTER], ...over });
+      const at = (block: number): Partial<RpcLog> => ({ blockNumber: `0x${block.toString(16)}`, blockHash: blockHash(block) });
+      // Kept before the reorg: P (router, index 0) and Q (public direct post, index 1).
+      const qDirect = asDirect(q.log, { ...at(130), logIndex: '0x1', transactionHash: `0x${'d1'.repeat(32)}` });
+      const kept = [s.mine.log, qDirect];
+      // Seen only after the reorg point.
+      const replayP = asDirect(s.mine.log, { ...at(50_500), logIndex: '0x2', transactionHash: `0x${'aa'.repeat(32)}` });
+      const replayQ = asDirect(q.log, { ...at(50_600), logIndex: '0x3', transactionHash: `0x${'ab'.repeat(32)}` });
+      const routerQ: RpcLog = { ...q.log, ...at(50_700), logIndex: '0x4', transactionHash: `0x${'bb'.repeat(32)}` };
+      const routerP2: RpcLog = { ...s.mine.log, ...at(50_800), logIndex: '0x5', transactionHash: `0x${'cc'.repeat(32)}` };
+      return { s, kept, replayP, replayQ, routerQ, routerP2, all: [...kept, replayP, replayQ, routerQ, routerP2] };
+    }
+    /** Serves `block`'s hash differently on exactly the given (1-based) reads, as a fork would. */
+    function forking(client: ReturnType<typeof chainWith>, block: bigint, readsToFork: readonly number[]) {
+      let reads = 0;
+      return { ...client, getBlock: async (n: bigint) => {
+        const real = await client.getBlock(n);
+        if (n !== block || real === null || !readsToFork.includes(++reads)) return real;
+        return { ...real, hash: blockHash(Number(n) + 10_000) as Hex };
+      } };
+    }
+    const run = (f: ReturnType<typeof fixture>, client: ReturnType<typeof forking>, extra: { onMatch?: (m: import('./scanClient').ScanMatch) => void; onReorg?: (to: bigint) => void } = {}) => runScan({
+      chain, manifest, client, cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(f.s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(f.s.keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal, ...extra,
+    });
+    const txs = (ms: readonly import('./scanClient').ScanMatch[]): (string | undefined)[] => ms.map((m) => m.announcement.transactionHash);
+
+    it('after a rollback above genesis, drops replays of kept pairs, replaces a kept replay in place, and appends a distinct router record', async () => {
+      const f = fixture();
+      // Window 50000..50999 ends at block 50999: its hash changes between the window read and the end-of-page check,
+      // so page 2 reports a reorg at block 50000 (above genesis) with page 1's records kept.
+      const rolledBack: bigint[] = [];
+      const emitted: import('./scanClient').ScanMatch[] = [];
+      const res = await run(f, forking(chainWith(HEAD, f.all), 50_999n, [2]), { onMatch: (m) => emitted.push(m), onReorg: (to) => { rolledBack.push(to); } });
+      expect(rolledBack).toEqual([50_000n]);
+      // Emissions follow the page's processing order (P's second router record before Q's replacement).
+      // (a) both free replays are dropped, (b) Q's public post is replaced IN PLACE by its router record (index 1,
+      // not P's index 0, and not appended), (c) P's second router record is appended after it.
+      expect(txs(res.matches)).toEqual([f.s.mine.log.transactionHash, f.routerQ.transactionHash, f.routerP2.transactionHash]);
+      expect(res.matches.map((m) => m.viaRouter)).toEqual([true, true, true]);
+      expect(res.matches.map((m) => m.receipt)).toEqual(['verified', 'verified', 'verified']);
+      expect(res.matches[0]?.stealthAddress).toBe(res.matches[2]?.stealthAddress);
+      expect(res.matches[1]?.stealthAddress).not.toBe(res.matches[0]?.stealthAddress);
+      expect(txs(emitted)).toEqual([f.s.mine.log.transactionHash, f.kept[1]!.transactionHash, f.routerP2.transactionHash, f.routerQ.transactionHash]);
+      expect(res.cursor.nextBlock).toBe(BigInt(HEAD) + 1n);
+    });
+
+    it('after a rollback to genesis, every pair is new again and indexes restart from the empty list', async () => {
+      const f = fixture();
+      // Page 2 re-reads page 1's last block (the checkpoint) and finds it replaced: roll back to genesis and rescan.
+      // Block 49999 is read twice on page 1 (window end, page end), so read 3 is page 2's checkpoint check.
+      const rolledBack: bigint[] = [];
+      const emitted: import('./scanClient').ScanMatch[] = [];
+      const res = await run(f, forking(chainWith(HEAD, f.all), 49_999n, [3]), { onMatch: (m) => emitted.push(m), onReorg: (to) => { rolledBack.push(to); } });
+      expect(rolledBack).toEqual([0n]);
+      expect(txs(res.matches)).toEqual([f.s.mine.log.transactionHash, f.routerQ.transactionHash, f.routerP2.transactionHash]);
+      expect(res.matches.map((m) => m.viaRouter)).toEqual([true, true, true]);
+      // P and Q's public post were listed once before the rollback and again after it (treated as new, not as replays).
+      expect(txs(emitted)).toEqual([
+        f.s.mine.log.transactionHash, f.kept[1]!.transactionHash,
+        f.s.mine.log.transactionHash, f.kept[1]!.transactionHash, f.routerP2.transactionHash, f.routerQ.transactionHash,
+      ]);
+    });
+  });
+
   it('reports a worker that rejects the keys, and worker crashes', async () => {
     const s = setup();
     await expect(
@@ -410,6 +585,27 @@ describe('runScan', () => {
       runScan({ chain, manifest, client: chainWith(10, []), cursor: { nextBlock: 0n }, spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret), createWorker: () => crashing, signal: new AbortController().signal }),
     ).rejects.toThrow(/worker failed/);
   });
+
+  it('fails at once when the worker posts an error while a batch is pending, without waiting for the reply timeout', async () => {
+    const s = setup();
+    const w = new InlineWorker();
+    const forward = w.postMessage.bind(w);
+    let batches = 0;
+    w.postMessage = (m): void => {
+      if (m.type === 'batch') { batches += 1; queueMicrotask(() => w.onmessage?.({ data: { type: 'error', code: 'BOOM' } } as never)); }
+      else forward(m);
+    };
+    const run = runScan({
+      chain, manifest, client: chainWith(2500, s.logs), cursor: { nextBlock: 0n },
+      spendingPublicKeyHex: hexOf(s.keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(s.keys.viewingSecret),
+      createWorker: () => w, signal: new AbortController().signal,
+    });
+    run.catch(() => undefined);
+    // The default reply timeout is 60 s; the error must end the scan long before that.
+    await expect(Promise.race([run, new Promise((_resolve, reject) => { setTimeout(() => { reject(new Error('still waiting')); }, 2_000); })])).rejects.toThrow(/worker failed/);
+    expect(batches).toBe(1);
+    expect(w.terminated).toBe(true);
+  }, 15_000);
 
   it('propagates RPC failures and still shuts the worker down', async () => {
     const s = setup();
@@ -698,6 +894,35 @@ describe('WEB-APP-04 / CHAIN-ADAPTERS-03: checkpoints', () => {
     const second = await runScan({ ...base, client: chainWith(2700, [near.log]), cursor: cp, viewingKey: unsafeRevealSecret(s.keys.viewingSecret) });
     expect(second.matches.map((m) => m.stealthAddress)).toEqual([near.stealthAddress]);
     expect(second.matches[0]?.receipt).toBe('verified');
+  });
+
+  it('does not save the checkpoint past a pending payment when a reorg is reported above the page start', async () => {
+    const keys = generateKeySet();
+    const small = { ...chain, getLogsMaxRange: 10, finalityDepth: 20 };
+    const pay = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(keys), block: 585, index: 0, caller: FAKE_ROUTER });
+    const base = chainWith(600, [pay.log]);
+    let reads = 0;
+    // Block 599, the end of the last window read (not the head), changes hash between its boundary read and the re-read,
+    // so the rollback point (590) is above the page start (100).
+    const client = {
+      ...base,
+      getBlock: async (n: bigint) => {
+        const b = await base.getBlock(n);
+        return n === 599n && b !== null && ++reads > 1 ? { ...b, hash: blockHash(5_000_599) as Hex } : b;
+      },
+    };
+    const saved: ScanCursor[] = [];
+    const res = await runScan({
+      chain: small, manifest, client, cursor: { nextBlock: 100n },
+      spendingPublicKeyHex: hexOf(keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(keys.viewingSecret),
+      createWorker: () => new InlineWorker(), signal: new AbortController().signal,
+      checkpoints: { load: () => saved.at(-1), save: (_id, _k, c) => { saved.push(c); }, clear: () => undefined },
+    });
+    expect(res.matches.map((m) => m.stealthAddress)).toEqual([pay.stealthAddress]);
+    expect(res.matches[0]?.receipt).toBe('pending');
+    expect(saved.length).toBeGreaterThan(0);
+    // head 600 + 1 - finalityDepth 20 = 581, below the pending payment at block 585.
+    expect(saved.every((c) => c.nextBlock <= 581n)).toBe(true);
   });
 
   it('drop matches from orphaned blocks when a reorg is detected mid-scan', async () => {
@@ -1207,6 +1432,82 @@ describe('spec 05: spam lanes, backlog and local telemetry', () => {
     const saved = await resumeRuns(3, (cursor) => runScan({ chain, manifest, client, cursor, maxMatchesPerScan: 2, checkpoints: store, ...keyArgs(keys) }), store);
     expect(saved[0]).toBe(100n);
     expect(saved[1]).toBeGreaterThan(100n);
+  });
+});
+
+describe('spec 05 D3/D4: same-token transfer estimate and lane options', () => {
+  const OTHER = '0x9999999999999999999999999999999999999999' as Address;
+  const run = (keys: ReturnType<typeof generateKeySet>, client: ReturnType<typeof chainWith>, extra: Partial<Parameters<typeof runScan>[0]> = {}, worker = new InlineWorker()) => runScan({
+    chain, manifest, client, cursor: { nextBlock: 0n },
+    spendingPublicKeyHex: hexOf(keys.spendingPublicKey), keyId: KEY, viewingKey: unsafeRevealSecret(keys.viewingSecret),
+    createWorker: () => worker, signal: new AbortController().signal, ...extra,
+  });
+  const tokenQueries = (client: ReturnType<typeof chainWith>) => client.calls.filter((c) => {
+    const f = c.params[0] as { address?: string; topics?: readonly unknown[] } | undefined;
+    return c.method === 'eth_getLogs' && f?.address?.toLowerCase() === '0x036cbd53842c5426634e7929541ec2318f3dcf7e' && f.topics?.length === 1;
+  });
+
+  it('estimates transfers of the paid token at similar amounts only when opted in, from the latest router payment, with no address filter', async () => {
+    const keys = generateKeySet();
+    const meta = encodeMetaAddress(keys);
+    const early = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 120, index: 0, caller: FAKE_ROUTER });
+    const late = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: meta, block: 2100, index: 1, caller: FAKE_ROUTER });
+    const off = chainWith(2500, [early.log, late.log]);
+    const plain = await run(keys, off);
+    expect(plain.telemetry?.anonymity?.transfers).toBeUndefined();
+    expect(tokenQueries(off)).toHaveLength(0);
+    const on = chainWith(2500, [early.log, late.log]);
+    const res = await run(keys, on, { privacySetTransfers: true });
+    expect(res.matches).toHaveLength(2);
+    // The router transfer for the late payment (block 2100) is inside the 2000-block window; the early one (120) is not.
+    expect(res.telemetry?.anonymity).toMatchObject({ count7d: 2, transfers: { status: 'estimate', token: TOKEN_84532, count: 1, windowBlocks: 2000 } });
+    const queries = tokenQueries(on);
+    expect(queries.length).toBeGreaterThan(0);
+    for (const q of queries) {
+      const f = q.params[0] as { fromBlock: bigint; toBlock: bigint; topics: readonly unknown[] };
+      expect(f.fromBlock).toBeGreaterThanOrEqual(501n);
+      expect(f.toBlock).toBeLessThanOrEqual(2500n);
+    }
+  });
+
+  it('fails closed to an unknown estimate on a lookup error or limit and keeps the router count', async () => {
+    const keys = generateKeySet();
+    const paid = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(keys), block: 2100, index: 1, caller: FAKE_ROUTER });
+    const base = chainWith(2500, [paid.log]);
+    const failing = { ...base, getLogs: (f: LogFilter) => (f.topics.length === 1 ? Promise.reject(new ChainAdapterError('RPC_FAILURE', 'json-rpc error -32005')) : base.getLogs(f)) };
+    const res = await run(keys, failing, { privacySetTransfers: true });
+    expect(res.matches).toHaveLength(1);
+    expect(res.telemetry?.anonymity).toMatchObject({ count7d: 1, level: 'low', transfers: { status: 'unknown', reason: 'limit' } });
+  });
+
+  it('reports the estimate as unknown when opted in but no token payment of mine was found', async () => {
+    const keys = generateKeySet();
+    const stranger = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: encodeMetaAddress(generateKeySet()), block: 2100, index: 1, caller: FAKE_ROUTER });
+    const client = chainWith(2500, [stranger.log]);
+    const res = await run(keys, client, { privacySetTransfers: true });
+    expect(res.matches).toHaveLength(0);
+    expect(res.telemetry?.anonymity).toMatchObject({ count7d: 1, transfers: { status: 'unknown', reason: 'noPayment' } });
+    expect(tokenQueries(client)).toHaveLength(0);
+  });
+
+  it('passes the flood threshold and the spam-score switch to the lanes', async () => {
+    const keys = generateKeySet();
+    const stranger = encodeMetaAddress(generateKeySet());
+    const FLOODER = '0x5555555555555555555555555555555555555555' as Address;
+    const three = Array.from({ length: 3 }, (_, i) => makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block: 500, index: i, caller: FLOODER }).log);
+    const honest = makeLog({ announcer: FAKE_ANNOUNCER, metaAddress: stranger, block: 501, index: 0, caller: OTHER }).log;
+    const byDefault = await run(keys, chainWith(2500, [...three, honest]));
+    expect(byDefault.telemetry).toMatchObject({ open: 4, suspected: 0 });
+    const strict = new InlineWorker();
+    const low = await run(keys, chainWith(2500, [...three, honest]), { floodPerBlock: 2 }, strict);
+    expect(low.telemetry).toMatchObject({ open: 4, suspected: 3 });
+    const strictBatch = strict.received.find((m) => m.type === 'batch');
+    expect(strictBatch?.type === 'batch' ? strictBatch.logs[0]?.id.startsWith(honest.blockHash) : false).toBe(true);
+    const plain = new InlineWorker();
+    const unscored = await run(keys, chainWith(2500, [...three, honest]), { floodPerBlock: 2, spamScoring: false }, plain);
+    expect(unscored.telemetry).toMatchObject({ open: 4, suspected: 0 });
+    const plainBatch = plain.received.find((m) => m.type === 'batch');
+    expect(plainBatch?.type === 'batch' ? plainBatch.logs.map((l) => l.id.split(':')[0]) : []).toEqual([three[0]?.blockHash, three[0]?.blockHash, three[0]?.blockHash, honest.blockHash]);
   });
 });
 

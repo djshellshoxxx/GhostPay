@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { openFragment, parseFragment } from '@ghostpay/invoice-schema';
-import { screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeManifestJson } from '../test/fakeManifest';
@@ -229,3 +229,24 @@ describe('Create invoice', () => {
     ).toEqual(['ETH', 'USDC', 'EURC']);
   });
 });
+
+describe('CreateInvoice: invoices too long for one QR code', () => {
+  it('shows the link as GhostPay multi-part codes instead of no QR, keeping the copyable link', async () => {
+    generateWaivedSession();
+    const user = await open();
+    await user.type(screen.getByLabelText('Token amount'), '1');
+    for (let i = 1; i < 12; i++) await user.click(screen.getByRole('button', { name: 'Add item' }));
+    for (let i = 1; i <= 12; i++) {
+      fireEvent.change(screen.getByLabelText(`Item ${String(i)} description`), { target: { value: `Item ${String(i)} ${'d'.repeat(190)}` } });
+      fireEvent.change(screen.getByLabelText(`Item ${String(i)} unit price`), { target: { value: '1.00' } });
+    }
+    fireEvent.change(screen.getByLabelText(/Memo/), { target: { value: 'm'.repeat(500) } });
+    await user.click(screen.getByRole('button', { name: 'Create invoice link' }));
+    const link = await screen.findByLabelText<HTMLTextAreaElement>('Link');
+    expect(link.value.length).toBeGreaterThan(3000);
+    expect(screen.getByText(/Part 1 of \d+/)).toBeTruthy();
+    expect(screen.getByText(/too long for one QR code, so it is shown as \d+ parts/)).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Copy link' })).toBeTruthy();
+  });
+});
+

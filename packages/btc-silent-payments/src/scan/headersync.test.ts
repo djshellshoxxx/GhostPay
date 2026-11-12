@@ -3,7 +3,15 @@ import { SilentPaymentError } from '../errors.js';
 import { parseHeader } from '../header.js';
 import { REGTEST_GENESIS, extend, mine, regtestChain } from '../headers.testutil.js';
 import { CHAIN_PARAMS, HeaderChain, type ChainParams } from '../headerchain.js';
-import { HeaderAnchoredTweakSource, syncHeaderChain, syncHeaderChainFromSources, type HeaderSource } from './headersync.js';
+import {
+  HeaderAnchoredTweakSource,
+  SourceDisagreementError,
+  sourcesDisagree,
+  syncHeaderChain,
+  syncHeaderChainFromSources,
+  type HeaderSource,
+  type SourceSyncResult,
+} from './headersync.js';
 import type { BlockOutputs, BlockTweaks, TweakSource } from './types.js';
 
 /** Serves a fixed list of headers (index = height). Records every request. */
@@ -253,5 +261,69 @@ describe('HeaderAnchoredTweakSource', () => {
     expect(await codeOf(s.getOutputs(5))).toBe('REORG_DETECTED');
     expect(await codeOf(s.getTweaks(21))).toBe('INVALID_INPUT');
     expect(() => new HeaderAnchoredTweakSource(inner((h) => hashes[h]!), c, { minConfirmations: 0 })).toThrow(/invalid input/);
+  });
+});
+
+describe('source disagreement (lagging, lighter and conflicting sources)', () => {
+  const agreementOf = (r: SourceSyncResult | undefined): unknown => (r?.ok === true ? r.agreement : r);
+  it('reports a source that serves a prefix of the adopted chain as behind, and flags it only past maxBehind', async () => {
+    const c = regtestChain();
+    const results = await syncHeaderChainFromSources(c, [new ListHeaderSource(MAIN.slice(0, 21)), new ListHeaderSource(MAIN), new ListHeaderSource(MAIN.slice(0, 28))]);
+    expect(results.map(agreementOf)).toEqual([
+      { tipHeight: 20, behindBy: 10, behind: true, lighter: true, conflicting: false },
+      { tipHeight: 30, behindBy: 0, behind: false, lighter: false, conflicting: false },
+      { tipHeight: 27, behindBy: 3, behind: false, lighter: true, conflicting: false },
+    ]);
+    expect(sourcesDisagree(results)).toBe(true);
+    const strict = await syncHeaderChainFromSources(regtestChain(), [new ListHeaderSource(MAIN), new ListHeaderSource(MAIN.slice(0, 28))], { maxBehind: 2 });
+    expect(strict.map((r) => r.ok && r.agreement.behind)).toEqual([false, true]);
+    expect(await codeOf(syncHeaderChainFromSources(regtestChain(), [new ListHeaderSource(MAIN)], { maxBehind: -1 }))).toBe('INVALID_INPUT');
+  });
+  it('flags a source whose branch is not on the adopted chain as conflicting, whether it was synced before or after the winner', async () => {
+    const c = regtestChain();
+    const light = [...MAIN.slice(0, 6), ...extend(MAIN[5]!, 4, 601, 0x207fffff, 7)]; // fork after 5, tip 9
+    const results = await syncHeaderChainFromSources(c, [new ListHeaderSource(light), new ListHeaderSource(MAIN), new ListHeaderSource(light)]);
+    expect(c.tipHeight).toBe(30);
+    expect(results.map(agreementOf)).toEqual([
+      { tipHeight: 9, behindBy: 21, behind: true, lighter: true, conflicting: true },
+      { tipHeight: 30, behindBy: 0, behind: false, lighter: false, conflicting: false },
+      { tipHeight: 9, behindBy: 21, behind: true, lighter: true, conflicting: true },
+    ]);
+    // A longer but lighter branch is conflicting and lighter, not behind.
+    const c2 = regtestChain();
+    await syncHeaderChain(c2, new ListHeaderSource(MAIN));
+    const sameWork = [...MAIN.slice(0, 30), ...extend(MAIN[29]!, 1, 601, 0x207fffff, 6)]; // equal work, different tip: not adopted
+    const r2 = await syncHeaderChainFromSources(c2, [new ListHeaderSource(sameWork), new ListHeaderSource(MAIN)]);
+    expect(c2.tipHash).toBe(parseHeader(MAIN[30]!).hash);
+    expect(r2.map(agreementOf)).toEqual([
+      { tipHeight: 30, behindBy: 0, behind: false, lighter: true, conflicting: true },
+      { tipHeight: 30, behindBy: 0, behind: false, lighter: false, conflicting: false },
+    ]);
+    expect(sourcesDisagree(r2)).toBe(true);
+  });
+  it('a single source or agreeing sources show no disagreement; failing sources carry no agreement', async () => {
+    const one = await syncHeaderChainFromSources(regtestChain(), [new ListHeaderSource(MAIN)]);
+    expect(agreementOf(one[0])).toEqual({ tipHeight: 30, behindBy: 0, behind: false, lighter: false, conflicting: false });
+    expect(sourcesDisagree(one)).toBe(false);
+    const broken: HeaderSource = { getTipHeight: () => Promise.resolve(5), getHeaders: () => Promise.resolve(['00']) };
+    const mixed = await syncHeaderChainFromSources(regtestChain(), [new ListHeaderSource(MAIN), broken, new ListHeaderSource(MAIN)]);
+    expect(mixed[1]).toEqual({ ok: false, code: 'INVALID_RESPONSE' });
+    expect(sourcesDisagree(mixed)).toBe(false);
+  });
+  it('requireAgreement fails closed with a typed error that carries the per-source results; the chain keeps the most-work tip', async () => {
+    const c = regtestChain();
+    const p = syncHeaderChainFromSources(c, [new ListHeaderSource(MAIN), new ListHeaderSource(MAIN.slice(0, 21))], { requireAgreement: true });
+    const e = await p.catch((x: unknown) => x);
+    expect(e).toBeInstanceOf(SourceDisagreementError);
+    expect(e).toBeInstanceOf(SilentPaymentError);
+    expect((e as SourceDisagreementError).code).toBe('REORG_DETECTED');
+    expect((e as SourceDisagreementError).results.map(agreementOf)).toEqual([
+      { tipHeight: 30, behindBy: 0, behind: false, lighter: false, conflicting: false },
+      { tipHeight: 20, behindBy: 10, behind: true, lighter: true, conflicting: false },
+    ]);
+    expect(c.tipHeight).toBe(30);
+    // Within maxBehind, or with a single source, nothing to object to.
+    await expect(syncHeaderChainFromSources(regtestChain(), [new ListHeaderSource(MAIN), new ListHeaderSource(MAIN.slice(0, 28))], { requireAgreement: true })).resolves.toHaveLength(2);
+    await expect(syncHeaderChainFromSources(regtestChain(), [new ListHeaderSource(MAIN.slice(0, 21))], { requireAgreement: true })).resolves.toHaveLength(1);
   });
 });

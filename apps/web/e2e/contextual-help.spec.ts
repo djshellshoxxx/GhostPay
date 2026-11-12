@@ -50,7 +50,7 @@ test('contextual RPC help is described, keyboard operable and dismissible at a m
 test('large QR confines keyboard focus, scrolls on short screens and preserves bytes under RTL', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 480 });
   await settings(page);
-  await page.getByRole('button', { name: 'Show preferences QR', exact: true }).click();
+  await page.getByRole('button', { name: 'Show settings QR', exact: true }).click();
   const frame = page.locator('.qr-frame[data-qr-kind="device"]');
   const path = await frame.locator('path.qr-fg').getAttribute('d');
   const opener = frame.getByRole('button', { name: 'Show larger', exact: true });

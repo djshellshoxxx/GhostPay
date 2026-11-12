@@ -39,7 +39,7 @@ test('the same public config file can be previewed again after clearing and neve
   const pairing = page.locator('section[aria-labelledby="pairing-h"]');
   const file = { name: 'seller-public.json', mimeType: 'application/json', buffer: Buffer.from(text) };
   const preview = pairing.getByRole('region', { name: 'Received config (untrusted preview)', exact: true });
-  const input = pairing.locator('input[type="file"]');
+  const input = pairing.locator('input[type="file"][accept="application/json,.json"]');
   await input.setInputFiles(file);
   await expect(preview.locator('code', { hasText: meta })).toBeVisible();
   await pairing.getByRole('button', { name: 'Clear preview', exact: true }).click();

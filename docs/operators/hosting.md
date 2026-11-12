@@ -1,6 +1,6 @@
 # Hosting (operators)
 
-> **Nothing here is deployed.** Hosting is intentionally not enabled ([ADR-0015](../adr/ADR-LOG.md)). This page is the operational companion to [mirror hosting](mirror-hosting.md) (requirements) and the files in [`infra/`](../../infra/README.md). Items marked **OWNER** need a human decision. Items marked **UNVERIFIED** were written but not run (no caddy, nginx, docker daemon or kubo in the authoring sandbox).
+> **Nothing here is deployed.** Hosting is intentionally not enabled ([ADR-0015](../adr/ADR-LOG.md)). This page is the operational companion to [mirror hosting](mirror-hosting.md) (requirements) and the files in [`infra/`](../../infra/README.md). Items marked **OWNER** need a human decision. Items marked **UNVERIFIED** were written but not run. Status of the 2026-11 hosting review: the nginx configs (`deploy/nginx`, `infra/proxy/nginx.conf`) were syntax-checked and the `deploy/nginx` config was served and probed with `curl -I` using native nginx 1.24 (the docker daemon was unavailable, so the pinned container image, `infra/web/Dockerfile`, caddy and kubo remain untested).
 
 ## 1. Choose a host class
 
@@ -13,7 +13,7 @@
 
 ## 2. GitHub Pages workflow (`.github/workflows/pages.yml`)
 
-- Runs on push to `main` and `workflow_dispatch`; every job has `if: github.ref == 'refs/heads/main'`, so a dispatch from another ref does nothing.
+- Runs on `workflow_dispatch` only (manual deployment; no push trigger); every job has `if: github.ref == 'refs/heads/main'`, so a dispatch from another ref does nothing.
 - Steps: pinned-actions check, `npm run build -w apps/web` (typecheck, vite build, `scan-bundle.mjs` postbuild), explicit re-scan, assertion that `dist/index.html` carries the CSP meta and `dist` has no source maps, SHA-256 list of every served file in the job summary, upload, deploy.
 - All action references are full commit SHAs with version comments (`scripts/check-actions-pinned.sh` passes). SHAs were resolved with `git ls-remote` against the official `actions/*` repositories on 2026-10-21; re-resolve at each bump.
 - Base path `/GhostPay/`: the bundle uses `base: './'` (relative), so it should load from that sub-path. **UNVERIFIED on a real Pages site.** Check the worker script and `deployments/` fetches after the first deploy.
@@ -25,10 +25,12 @@
 
 1. Build the bundle (`scripts/release-build.sh`) or take the release tarball; verify `SHA256SUMS` ([release and verify](release-and-verify.md)). Unpack to `/srv/ghostpay`, read-only to the proxy user.
 2. Pick Caddy (`infra/proxy/Caddyfile`) or nginx (`infra/proxy/nginx.conf` + `ghostpay-headers.conf` in `/etc/nginx/`). Replace the `*.example.invalid` names, ACME email and certificate paths (**OWNER**).
-3. Validate: `caddy validate --config infra/proxy/Caddyfile --adapter caddyfile` or `nginx -t`. **UNVERIFIED**: these were never run.
-4. After deploy: `curl -sI https://<host>/` and compare with `apps/web/public/_headers`; try framing the page (must be refused); run `infra/proxy/check-headers.sh` in the repo (CI runs it too) to keep the header sources identical.
-5. COEP `require-corp` is set on documents. Same-origin assets and CORS RPC fetches are fine; if a future feature loads a cross-origin no-CORS resource it will break. That is intended.
-6. Logging is off (`log { output discard }` / `access_log off`). Enable only error logs; never full URLs with query strings.
+3. Validate: `caddy validate --config infra/proxy/Caddyfile --adapter caddyfile` (**UNVERIFIED**, never run) or `nginx -t` (run on nginx 1.24 with the `http2 on;` line removed, since that directive needs nginx 1.25.1+; the `/etc/nginx/ghostpay-headers.conf` include and certificate paths must exist).
+4. After deploy: `curl -sI https://<host>/` and compare with `apps/web/public/_headers`; try framing the page (must be refused); run `infra/proxy/check-headers.sh` in the repo (CI runs it too) to keep every header source identical.
+5. **CSP trade-off.** `connect-src 'self' https: wss:` is deliberately broad: users choose their own RPC and relayer origins at runtime, so the policy cannot enumerate them. The mitigation is in the app (RPC URLs must be https/wss without credentials, `eth_chainId` is verified) plus `script-src 'self'` with no `unsafe-inline`/`unsafe-eval`, so injected markup cannot run script or exfiltrate through forms (`form-action 'none'`). Operators who ship only fixed RPCs may tighten `connect-src` to those origins in all header sources at once (`infra/proxy/check-headers.sh` will then need its needle changed). `Permissions-Policy` allows `camera=(self)` only (QR scanning); everything else is denied.
+6. **Cache policy.** `index.html`, the SPA fallback, and `build-info.json` are `no-cache`; `/assets/*` is immutable (hashed names); `/deployments/*` is `no-store`. Manifests are compiled into the hashed JS bundle and no manifest JSON ships in `dist`, so a stale `index.html` can only reference a matching, immutable asset set. See [monitoring](monitoring.md) for the build-version check.
+7. COEP `require-corp` is set on documents. Same-origin assets and CORS RPC fetches are fine; if a future feature loads a cross-origin no-CORS resource it will break. That is intended.
+8. Logging is off (`log { output discard }` / `access_log off`). Enable only error logs; never full URLs with query strings.
 
 ### Relayer behind the proxy
 - Relayer: `listen.host` = `127.0.0.1` (default), `trustedProxies` = `["127.0.0.1","::1"]`. Run it with `apps/relayer/deploy/ghostpay-relayer.service` or `apps/relayer/Dockerfile`; secrets stay in 600 files ([relayer runbook](relayer-runbook.md)).
@@ -38,15 +40,15 @@
 - Keep the web host and the relayer on different credentials and, ideally, different machines: a compromised static host should not hold the hot key.
 
 ## 4. Docker image (`infra/web/Dockerfile`) UNVERIFIED
-Build from the repo root; serves on `:8080` as uid 65532 with the same headers, no TLS (put `infra/proxy` in front). Not built here. **OWNER:** pin `node` and `caddy` base images by digest before relying on it. `devnet/Dockerfile.web` is a dev tool, not for hosting.
+Build from the repo root; serves on `:8080` as uid 65532 with the same headers, no TLS (put `infra/proxy` in front). Not built here. **OWNER:** pin `node` and `caddy` base images by digest before relying on it (open; the same applies to `nginxinc/nginx-unprivileged:1.27-alpine` and `debian:bookworm-slim` in `deploy/docker-compose.yml`; digests could not be resolved without a docker daemon: run `docker pull <image>` then `docker inspect --format '{{index .RepoDigests 0}}' <image>` and set `GHOSTPAY_NGINX_IMAGE` / `GHOSTPAY_TOR_BASE_IMAGE`). `devnet/Dockerfile.web` is a dev tool, not for hosting.
 
 ## 5. IPFS and Tor
-- `infra/publish/ipfs-publish.sh <dist|tarball>` prints per-file hashes and the CID from `ipfs add --only-hash` (CIDv1, raw leaves, fixed 256 KiB chunker). Pinning needs `--publish` and `GP_IPFS_PUBLISH=yes`. Record the CID in the release manifest's `publication.ipfsCid` and publish it through the same independent channels as `SHA256SUMS`. A CID is checked only by a client that verifies it (local node or verifying gateway). Gateways are hosts and can lie. **UNVERIFIED** (kubo not installed here).
+- `infra/publish/ipfs-publish.sh <dist|tarball>` prints per-file hashes and the CID from `ipfs add --only-hash` (CIDv1, raw leaves, fixed 256 KiB chunker). Pinning needs `--publish` and `GP_IPFS_PUBLISH=yes`. The release manifest leaves `publication.ipfsCid` null by design (it is hashed and attested before any publication), so record the CID in the release notes or an out-of-band log and publish it through the same independent channels as `SHA256SUMS`. A CID is checked only by a client that verifies it (local node or verifying gateway). Gateways are hosts and can lie. **UNVERIFIED** (kubo not installed here).
 - ENS content hash: not built; needs key custody and a compromise-recovery plan first.
 - Onion: serve `:8080` from the Docker image or `infra/proxy` on loopback and map it with `infra/publish/torrc.example`. The onion secret key is the identity: back it up offline; a leak is impersonation (treat as in [incident response](incident-response.md) section 2). Publish the `.onion` address with the release hash from two other channels. Do not log. Not tested.
 
 ## 6. Reproducibility
-Canonical: `scripts/release-build.sh` (sorted tar, fixed mtime from `SOURCE_DATE_EPOCH`, `gzip -n`, lockfile `npm ci --ignore-scripts`) and `scripts/repro-check.sh`; nightly CI diffs two builds. Pages and Docker builds use the same lockfile and sources but are not the canonical artefact; compare their per-file SHA-256 to `SHA256SUMS`. Differences are an incident until explained.
+Canonical: `scripts/release-build.sh` (sorted tar, fixed mtime from `SOURCE_DATE_EPOCH`, `gzip -n`, lockfile `npm ci --ignore-scripts`) and `scripts/repro-check.sh`; nightly CI diffs two builds. Pages and Docker builds use the same lockfile and sources but are not the canonical artefact; compare their per-file SHA-256 with the files of the verified release tarball (verify it against `SHA256SUMS`, extract it to `ghostpay-web/`, hash each file; `SHA256SUMS` itself lists only the tarball, SBOM and manifest; command in [rollback](rollback.md) section 5). Differences are an incident until explained.
 
 ## 7. Pre-launch checklist
 - [ ] ADR-0015 gates met (authenticated manifests, signed releases, legal review). **OWNER**

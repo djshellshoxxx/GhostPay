@@ -198,6 +198,21 @@ Legend: S spoofing, T tampering, R repudiation, I information disclosure, D deni
 | D | Host takedown / DNS or account compromise | IPFS/Tor mirrors planned | Not built |
 | E | Maintainer account takeover | Required reviewers on the `release` environment (to be configured) | Owner action |
 
+### 4.6 Permit griefing
+
+**Attack.** The stealth key signs an ERC-2612 permit that is outside the sweep signature and the quote MAC. Anyone who sees it can submit it first (the contract tolerates this), and the owner can also revoke the allowance or sweep first. The relayer pays gas for a sweep that then reverts or earns no fee; repeating this drains the hot key's gas balance.
+
+**Mitigations in the relayer (`apps/relayer/src/service.ts`).**
+- When the owner's allowance already covers the amount, the permit is dropped and plain `sweep` is used, so a front-run permit still succeeds (counter `relayer_permit_skipped_total`).
+- A short allowance with a permit whose deadline is before the sweep deadline or already past is refused as `permit_expired` before any simulation.
+- With the permit still in use, a generic `simulation_reverted` or `token_transfer_failed` is reported as `permit_failed` and nothing is broadcast.
+- The sweep is simulated before broadcast and again immediately before sending.
+- Per-owner failure counter (`FailureBudgets`, owner key only): 3 costly user-attributable failures per hour, then sweeps are refused up front; counter `relayer_owner_failures_total`. `nonce_used` is not a strike. These are constants, not config.
+- A sweep that passes simulation but reverts when mined (owner drains first) is charged to the loss budget and counted as a strike (`relayer_mined_reverts_total`; `relayer_loss_budget_denied_total` when the budget refuses).
+- `gas.griefReserveBps` (0 to 5000) raises the gas term of the quoted fee; `quoteTtlSeconds` is capped at 60.
+
+**Residual risk** (`apps/relayer/DEVIATIONS.md`). The relayer cannot rebuild the token's EIP-712 domain, so `sig_invalid` and `nonce_consumed` are both reported as `permit_failed`. `gas.griefReserveBps` defaults to 0 (UNVERIFIED, to be tuned per chain), so by default no margin is priced in. The `PermitSkipped` event (spec 04 option C) needs a contract change and is not done, and the anvil owner-drains-first and front-run e2e was not run for this change. Losses are bounded, not eliminated.
+
 ## 5. LINDDUN privacy view
 
 | Category | Where it appears | Status |
@@ -262,6 +277,48 @@ OR 1. Drain gas funds
    OR 3.1 Operator logs bodies/IPs                                     ctl: logger cannot emit them; gap: operator can modify the code or proxy
    OR 3.2 RPC provider sees simulations                                inherent
  4. Steal user funds                                                    blocked on-chain: destination, amount, fee, feeTo are signed
+```
+
+### 6.3a Permit griefing (spec 04)
+
+Assets: relayer gas, owner funds, honest error reporting. The ERC-2612 permit is outside the sweep signature and the
+quote MAC; only `permit.value >= amount` couples it to the order, and the contract swallows a failed permit.
+
+```
+Waste relayer gas or mislead the owner through the permit
+OR 1. Front-run the owner's permit (ERC-2612 text)          ctl: allowance re-read in-lane; covered -> permit dropped, plain sweep (anvil e2e)
+OR 2. Submit a permit that is bad (wrong sig/nonce/domain)  ctl: simulation before send; failure classified from nonces()/DOMAIN_SEPARATOR()
+                                                                 (permit_nonce_consumed / permit_signature_invalid / permit_unsupported_token);
+                                                                 counts against the owner (3 per hour, then owner_failure_limit)
+OR 3. Permit that lapses before the sweep deadline           ctl: permit_expired unless permit.deadline >= sweep.deadline (L5-01)
+OR 4. Owner drains or revokes between simulation and mining  ctl: two simulations next to the send, deadline margin; residual: one mined
+                                                                 revert per attempt, charged to the loss budget and the owner, and bounded by
+                                                                 the persisted daily budget; griefReserveBps prices a margin (default 0, UNVERIFIED)
+OR 5. DAI-style / non-standard permit token                  ctl: token allowlist permit flag; usdStable only; unsupported -> 422 before broadcast
+OR 6. Cross-chain permit replay                              ctl: token domain includes chainId (UNVERIFIED for fork rebuild of vendored OZ)
+Residual: option C (on-chain PermitSkipped event) deferred; clients get no automatic fallback (owner chooses direct sweep or approve).
+```
+
+### 6.3b Relayer restart and state loss
+
+```
+Spend more than the daily budget or double-use a hot-key nonce through a restart
+OR 1. Crash/restart to reset the daily budget                ctl: state journal persists day + spent wei; corrupt file = startup error
+OR 2. Clock stepped back to re-open yesterday's budget       ctl: the budget day only moves forward
+OR 3. Crash between broadcast and acknowledgement            ctl: hash journaled before broadcast; restart blocks the lane until a receipt
+                                                                 or the node's pending nonce settles it; never a new nonce on a lost answer
+OR 4. Two processes with one hot key and one state file      ctl: exclusive heartbeat lock with a per-process token; every journal write is
+                                                                 fenced by it (a process that lost the lock cannot write or start a send);
+                                                                 the lock is released only after the shutdown drain
+OR 5. Two processes with one hot key on separate storage     gap: unsupported, not detected (no distributed coordination)
+OR 6. Disk full / unwritable journal                         ctl: refusal before signing (state_unavailable); after broadcast the change is
+                                                                 applied in memory, alerted, /healthz degraded, and the next full-snapshot write
+                                                                 persists it (removals are never lost, so no double release on restart)
+OR 7. Wall clock far ahead once, flapping, then corrected     ctl: a new day needs both wall and monotonic clocks past midnight; a saved day more
+                                                                 than one day ahead keeps its spending on today's day; residual: the wall clock
+                                                                 is trusted at each process start (restart + clock flap grants a budget)
+Not persisted (bounded by the persisted daily budget): rate limits, per-key loss budget, owner failure counter, breaker window.
+Privacy: the journal holds nonces, tx hashes and wei only; records are deleted on settlement (apps/relayer/PRIVACY.md).
 ```
 
 ### 6.4 Oracle failure (goal: payer overpays/underpays, or payment blocked)

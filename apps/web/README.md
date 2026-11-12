@@ -17,6 +17,9 @@ Defined in `src/App.tsx` and `src/views/`:
 | Scan (`Scan.tsx`) | Find payments with the viewing key |
 | Sweep (`Sweep.tsx`) | Move a one-time address balance to a destination |
 | Bitcoin (`src/features/btc/`) | Silent payments on testnet4, signet and regtest; mainnet disabled |
+| Solana (`src/features/solana/`) | Solana view, mounted by `src/App.tsx` in the full build profile |
+| TRON (`src/features/tron/`) | TRON view, mounted by `src/App.tsx` in the full build profile |
+| Policy (`src/features/policy/`) | Experimental; added only when `VITE_GHOSTPAY_EXPERIMENTAL_POLICY=1` |
 | Public registry (`src/features/registry/`) | ERC-6538 registry flow (testnet) |
 | Settings (`Settings.tsx`) | RPC URL per chain, relayer URL (https only), payment delay range, idle lock (locks local tags; wipes seller keys only when they can be loaded again, never keys with no backup; hex keys imported without their signing key are wiped, and the signing key generated for them is lost with a notice), theme, pinned seller signing keys |
 | About (`About.tsx`) | Project status and limits |

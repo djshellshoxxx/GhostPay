@@ -12,21 +12,61 @@ export interface AddResult {
   readonly payload?: Uint8Array;
 }
 
+/** Default idle limit for a partially received transfer (no new part for this long discards it). */
+export const DEFAULT_ASSEMBLY_MAX_AGE_MS = 10 * 60 * 1000;
+
+export interface AssemblerOptions {
+  /** Injectable clock (ms); defaults to Date.now. */
+  readonly now?: () => number;
+  /** Idle limit in ms for an incomplete transfer, a positive safe integer. Completed transfers never expire. */
+  readonly maxAgeMs?: number;
+}
+
 /**
  * Stateful, order-independent reassembly. Duplicates are ignored. A chunk of another transfer, or a different
  * chunk body for an index already held, throws and leaves the state unchanged. A failed final integrity check
  * throws INTEGRITY_FAILED and discards everything. After completion, repeated chunks of the same transfer
- * return the completed result again; call reset() to start a new transfer.
+ * return the completed result again; call reset() to start a new transfer. An incomplete transfer idle for longer
+ * than `maxAgeMs` throws SESSION_EXPIRED on the next chunk and is discarded, so stale parts cannot be mixed into a
+ * later scan. Memory is bounded by MAX_CHUNKS x MAX_CHUNK_CHARS (one transfer at a time).
  */
 export class Assembler {
+  readonly #now: () => number;
+  readonly #maxAgeMs: number;
+  #lastActivity = 0;
   #session: string | null = null;
   #total = 0;
   #parts: (string | undefined)[] = [];
   #received = 0;
   #done: Uint8Array | null = null;
 
+  constructor(options: AssemblerOptions = {}) {
+    const maxAge = options.maxAgeMs ?? DEFAULT_ASSEMBLY_MAX_AGE_MS;
+    if (!Number.isSafeInteger(maxAge) || maxAge <= 0) throw new QrExchangeError('BAD_INPUT');
+    this.#maxAgeMs = maxAge;
+    this.#now = options.now ?? Date.now;
+  }
+
+  /** Session id of the transfer in progress (or completed), null when empty. */
+  get session(): string | null {
+    return this.#session;
+  }
+
+  /** Zero-based indices not yet received; empty before the first chunk and after completion. A fresh array. */
+  missing(): readonly number[] {
+    if (this.#session === null || this.#done !== null) return [];
+    const out: number[] = [];
+    for (let i = 0; i < this.#parts.length; i++) if (this.#parts[i] === undefined) out.push(i);
+    return out;
+  }
+
   add(chunkText: string): AddResult {
     const c = parseChunk(chunkText);
+    const now = this.#now();
+    if (this.#session !== null && this.#done === null && now - this.#lastActivity > this.#maxAgeMs) {
+      this.reset();
+      throw new QrExchangeError('SESSION_EXPIRED');
+    }
     if (this.#session === null) {
       this.#session = c.session;
       this.#total = c.total;
@@ -35,6 +75,7 @@ export class Assembler {
       throw new QrExchangeError('SESSION_MISMATCH');
     }
     if (this.#done !== null) return this.#result();
+    this.#lastActivity = now;
     const held = this.#parts[c.index];
     if (held === undefined) {
       this.#parts[c.index] = c.data;

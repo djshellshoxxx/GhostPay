@@ -113,7 +113,7 @@ retrying. Clearing a local attempt cannot cancel a transaction. Follow [Sweeping
 | [WooCommerce](../../integrations/woocommerce/README.md) / [PrestaShop](../../integrations/prestashop/README.md) | Separate shop integrations with their own installation and qualification requirements |
 
 These modules do not create a complete merchant operations dashboard in this interface. CLI/merchant work on
-[PR #91](https://github.com/djshellshoxxx/GhostPay/pull/91) is a separate lane and must be reviewed on its own source
+[PR #91](https://github.com/djshellshoxxx/GhostPay/pull/91) is a separate lane (`packages/cli` is present in this tree as of 2026-11-11) and must be reviewed on its own source
 and acceptance evidence before relying on new commands or execution authority.
 
 Next: [Product guide](../user/product-guide.md), [privacy limits](../user/privacy-limits.md),

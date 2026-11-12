@@ -19,6 +19,7 @@
     "build:libs": "node scripts/build-workspaces.mjs --libraries",
     "ci:scan-secrets": "bash scripts/scan-secrets.sh",
     "ci:check-actions": "bash scripts/check-actions-pinned.sh",
+    "ci:check-tx-origin": "bash scripts/check-tx-origin.sh",
     "release:build": "bash scripts/release-build.sh",
     "release:repro": "bash scripts/repro-check.sh",
     "build:packages": "node scripts/build-workspaces.mjs --libraries",

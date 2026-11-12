@@ -12,6 +12,9 @@
 /index.html
   Cache-Control: no-cache
 
+/build-info.json
+  Cache-Control: no-cache
+
 /assets/*
   Cross-Origin-Resource-Policy: same-origin
   Cache-Control: public, max-age=31536000, immutable

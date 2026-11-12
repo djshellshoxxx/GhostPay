@@ -37,3 +37,7 @@ See `scripts/regtest/README.md`. The bitcoind image could not be downloaded in t
 - CPFP/RBF fee-bump flow, fee estimates in the UI.
 - Hardware signing (out of scope for the engine), PSBT export.
 - Verify dust/min-relay/full-RBF defaults against the Core version used for testnet4.
+
+## Qualification status (2026-11)
+
+Tested locally and integration-tested in CI on regtest only; not externally qualified; mainnet disabled. Header validation on main is per-block (no best-chain check) and spend tracking is server-reported; both are addressed in unmerged PR #74 and PR #113. PayJoin (`packages/btc-payjoin`) is library-only and not wired to the web app; its prevout-lookup finding (audit 17, BITCOIN-01) was re-verified closed. Evidence, defects and the remaining-work estimate are in [QUALIFICATION-2026-11.md](QUALIFICATION-2026-11.md).

@@ -9,7 +9,9 @@ A map of every documentation file in GhostPay: its purpose, type and status. Lin
 
 Nothing here is an independent audit. The project has no third-party audit, and nothing is deployed (see [README](../README.md)).
 
-**Current product completion (2026-11-09):** [PR #93 completion ledger](handoffs/PRODUCT_COMPLETION_HANDOFF.md), [product guide](user/product-guide.md), [merchant setup](guides/getting-started-merchants.md), and [technology attribution](user/technology-attribution.md). The ledger separates implementation, exact-source checks and external acceptance for the unmerged #84 → #88 → #89 → #90 → #93 stack. The [#90 handoff](handoffs/POLICY_LOCALIZATION_CONTINUATION_2026-11-09.md), [current completion gates](audits/08-completion-gates.md), and [earlier source/PR ledger](handoffs/SOURCE_FOLLOWUP_2026-11-09.md) remain predecessor evidence; the separate merchant/CLI branch is not implicitly included.
+**Current product completion (2026-11-09):** [PR #93 completion ledger](handoffs/PRODUCT_COMPLETION_HANDOFF.md), [product guide](user/product-guide.md), [merchant setup](guides/getting-started-merchants.md), and [technology attribution](user/technology-attribution.md). The ledger separates implementation, exact-source checks and external acceptance for the unmerged #84 → #88 → #89 → #90 → #93 stack. The [#90 handoff](handoffs/POLICY_LOCALIZATION_CONTINUATION_2026-11-09.md), [current completion gates](audits/08-completion-gates.md), and [earlier source/PR ledger](handoffs/SOURCE_FOLLOWUP_2026-11-09.md) remain predecessor evidence; `packages/cli` is present in this tree (2026-11-11), but the separate merchant/CLI branch's acceptance evidence is not implicitly included.
+
+**Core functional beta (2026-11-11, verified):** [core beta completion tracker](beta/CORE_BETA_COMPLETION_TRACKER.md). Single local acceptance command `bash scripts/beta/acceptance.sh` (library, CLI and built-app browser stages on real anvil chains), per-step lifecycle status, the F1/F2 security fixes and the external gates. Stacked on the PR #98 integration candidate.
 
 ## Reading order
 
@@ -173,6 +175,7 @@ Pre-audit and testnet-only. Nothing is deployed. Chain-specific notes (not user 
 | [user/receive-and-scan](user/receive-and-scan.md) | How a seller scans for payments; sellers get no notification | user guide | n/a |
 | [user/sweep-and-gas-privacy](user/sweep-and-gas-privacy.md) | Sweeping one-time addresses and where privacy is easiest to lose | user guide | n/a |
 | [user/privacy-limits](user/privacy-limits.md) | What stays public and what GhostPay does not hide | user guide | n/a |
+| [user/seller-privacy](user/seller-privacy.md) | Seller privacy set, scanner lanes, spam and funding hygiene (spec 05) | user guide | n/a |
 | [user/fees](user/fees.md) | Fee types, when they apply and where they are enforced | user guide | n/a |
 | [user/troubleshooting](user/troubleshooting.md) | Symptom-to-cause table for common errors | user guide | n/a |
 
@@ -257,3 +260,11 @@ Research and handoff prompts dated 2026-10-30 to 2026-11-04, brought into the co
 
 - [Handoff](./HANDOFF.md): current state, lessons, how to resume.
 - [Completion plan](./COMPLETION_PLAN.md): what remains and how to finish it.
+- [Complementary workstream report (2026-11)](./COMPLEMENTARY_WORKSTREAM_2026-11.md): release integrity, build health, hosting, contract/crypto/privacy review, CI and multi-chain qualification; source-pinned status and human gates.
+  - Audits: [26 contract review](audits/26-contract-security-review-2026-11.md), [27 crypto review](audits/27-crypto-implementation-review-2026-11.md).
+  - Threat model: [privacy threat model](threat-model/PRIVACY_THREAT_MODEL.md), [metadata exposure matrix](threat-model/metadata-exposure-matrix.md); user page [privacy limits](user/privacy-limits.md).
+  - Operators: [release-candidate qualification](operators/release-candidate-qualification.md), [rollback](operators/rollback.md), [monitoring](operators/monitoring.md); developers: [CI](developer/ci.md); chains: [qualification 2026-11](chains/QUALIFICATION-2026-11.md).
+
+## Future-only privacy-first feature proposals
+
+- [Future-only privacy-first catalog](future/privacy-first/README.md) — **FUTURE ONLY**, not approved, scheduled, implemented by these documents, or part of current beta/release scope. Contains 18 individually scoped enhancement specifications; existing feature code and active workstreams retain their own status.
