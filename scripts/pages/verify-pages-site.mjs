@@ -37,7 +37,8 @@ const ANVIL_DEV_KEYS = [
 
 /** Secret-shaped patterns. Each must be specific enough not to match curve constants or bytecode hashes. */
 const SECRET_PATTERNS = [
-  { name: 'PEM private key', re: /-----BEGIN [A-Z ]*PRIVATE KEY-----/ },
+  // `[ ]` keeps this pattern from matching scripts/scan-secrets.sh's own committed-key grep.
+  { name: 'PEM private key', re: /-----BEGIN [A-Z ]*PRIVATE[ ]KEY-----/ },
   { name: 'GitHub token', re: /\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{36}\b|\bgithub_pat_[A-Za-z0-9_]{60,}\b/ },
   { name: 'AWS access key id', re: /\bAKIA[0-9A-Z]{16}\b/ },
   { name: 'Slack token', re: /\bxox[abprs]-[A-Za-z0-9-]{10,}\b/ },
