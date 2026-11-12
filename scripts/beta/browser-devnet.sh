@@ -13,6 +13,11 @@
 #
 # Public anvil dev keys only (local, world-known, no value). Exit status is Playwright's (or the first failing step's).
 # Env: BROWSER_DEVNET_PORT (8546), BROWSER_DEVNET_WEB_PORT (4174), BROWSER_DEVNET_KEEP=1 keeps the temp dir.
+#
+# Opt-in BROWSER_DEVNET_MODE=pages: steps 1-4 are identical; step 5 instead runs apps/web/playwright.pages-devnet.config.ts,
+# which builds the actual GitHub Pages artifact (scripts/pages/build-pages.sh, lean profile, with this run's signed
+# manifest) into "$WORK/pages", serves it under /GhostPay/ with scripts/pages/serve-pages.mjs on
+# BROWSER_DEVNET_PAGES_PORT (4175; never 4173/4174) and runs e2e/pages-devnet.spec.ts against it.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 PORT="${BROWSER_DEVNET_PORT:-8546}"
@@ -30,6 +35,12 @@ ZERO_WORD_CODE="0x60206000f3"
 die() { echo "browser-devnet: $*" >&2; exit 1; }
 [ "$PORT" != "8545" ] || die "port 8545 is reserved for scripts/devnet; use another BROWSER_DEVNET_PORT"
 [ "$WEB_PORT" != "4173" ] || die "web port 4173 is used by the mocked Playwright suite; use another BROWSER_DEVNET_WEB_PORT"
+MODE="${BROWSER_DEVNET_MODE:-default}"
+case "$MODE" in default|pages) ;; *) die "unknown BROWSER_DEVNET_MODE '$MODE' (expected default or pages)" ;; esac
+PAGES_PORT="${BROWSER_DEVNET_PAGES_PORT:-4175}"
+if [ "$MODE" = "pages" ]; then
+  case "$PAGES_PORT" in 4173|4174) die "pages port $PAGES_PORT belongs to another Playwright suite; use another BROWSER_DEVNET_PAGES_PORT" ;; esac
+fi
 for tool in anvil forge node curl; do command -v "$tool" >/dev/null || die "$tool not found (PATH needs ~/.foundry/bin)"; done
 
 rpc() { # rpc <method> <json params>  -> prints the raw JSON reply; fails on transport or JSON-RPC error
@@ -89,8 +100,16 @@ echo "== sign the devnet manifest with the public Playwright test key"
 node "$ROOT/apps/web/e2e/devnet/prepare-devnet-manifest.mjs" --rpc "$RPC_URL" --broadcast "$BROADCAST" \
   --artifacts "$WORK/forge-out" --out-dir "$WORK/deployments" --state "$WORK/devnet.json"
 
+if [ "$MODE" = "pages" ]; then
+  echo "== playwright (GitHub Pages artifact on http://localhost:$PAGES_PORT/GhostPay/ against $RPC_URL)"
+  cd "$ROOT/apps/web"
+  GHOSTPAY_DEVNET_STATE="$WORK/devnet.json" GHOSTPAY_PAGES_OUT="$WORK/pages" GHOSTPAY_PAGES_WEB_PORT="$PAGES_PORT" \
+    npx playwright test -c playwright.pages-devnet.config.ts
+  echo "browser-devnet: PASS (pages)"
+else
 echo "== playwright (built app on http://localhost:$WEB_PORT against $RPC_URL)"
 cd "$ROOT/apps/web"
 GHOSTPAY_DEVNET_STATE="$WORK/devnet.json" GHOSTPAY_DEVNET_DIST="$WORK/dist" GHOSTPAY_DEVNET_WEB_PORT="$WEB_PORT" \
   npx playwright test -c playwright.devnet.config.ts
 echo "browser-devnet: PASS"
+fi
