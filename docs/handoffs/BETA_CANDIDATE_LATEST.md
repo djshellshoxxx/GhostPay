@@ -56,11 +56,36 @@ older per-agent logs (`CHATGPT_ZERO_CODEX_LATEST.md`, `AUTONOMOUS_RUN_*`) remain
   public testnet manifests, physical devices/wallets: owner actions.
 - **Deferred:** dependabot #85–#87/#49 need their own compatibility review.
 
-### Tests executed (local sandbox; node 22.23.4, Foundry 1.8.5, native solc 0.8.28)
+### Tests executed
 
-Filled in below as runs complete; hosted CI on PR #135 is authoritative for the exact SHA.
+Hosted CI on PR #135 is authoritative for an exact SHA; local runs used node 22.23.4, Foundry 1.8.5, native solc 0.8.28.
+
+| Check | Where / SHA | Result |
+|---|---|---|
+| Application CI (lint, typecheck, build, unit shards, contracts test/static/coverage/slither/extra, relayer, e2e lean+full, lean-candidate) | CI run 43298468905 @ `d725469c` | 33/34 jobs green; `ts-test (rest-2)` RED: `invoice-schema/src/independent.test.ts` A256GCM-PW mutation test timed out at 60 s (~28 scrypt N=2^15 derivations at ~2 s each on hosted runners). Fixed with an explicit 180 s budget in the next commit; awaiting CI |
+| Beta acceptance workflow (lib + cli + browser on anvil) | run 43298468900 @ `d725469c` | PASS |
+| Integration (anvil + bitcoind regtest + solana-test-validator) | run 43298468907 @ `d725469c` | PASS |
+| CLI operator (ubuntu, macOS, Windows) | run 43298468916 @ `d725469c` | PASS 3/3 |
+| Hosting kit + qualify-ghostpay-web | run 43298468922 @ `d725469c` | PASS |
+| `bash scripts/beta/acceptance.sh` (local) | `d725469c` | ACCEPTANCE OK: lib 14 steps / 14 real anvil transactions (ETH, USDC, USDT, DAI pay; fee parity; scan 4/4; receipt with inflated claim refused; direct + relayer sweeps; relayer replay refused `409 nonce_used`; backup/restore rescan); CLI 124/124; browser 3/3 real-chain journeys |
+| `npm test` (local, all workspaces) | `f36878c1` | web 2523 pass / 3 fail: 2 `privacyInvariants` (fixed in `d725469c`), 1 `ReconciliationLedger` load timeout (83 ms isolated, green in hosted CI). Other workspaces pass; `confidential-contracts` not runnable locally (Hardhat cannot download solc here; green in hosted CI) |
+| `node --test scripts/{testnet,regtest,tests}/*.test.mjs` | `f36878c1` | 104 pass, 1 skip |
+| `forge snapshot --check`, `forge fmt --check`, natspec | `65bdda2f` | PASS |
+| `deploy/selftest.sh`, `infra/proxy/check-headers.sh`, `check-actions-pinned` | `426192f4`+ | PASS |
+
+Not executed: SonarCloud (unreachable from the sandbox), physical devices/wallets, public testnet, Echidna/Mythril
+(nightly only). The planned multi-agent P0 review (9 lanes) did not run: every agent failed on the account's weekly
+usage limit (resets 2026-11-18 01:00 UTC).
 
 ### Next highest-priority action
 
-Get PR #135 hosted CI green on its exact head, then run `bash scripts/beta/acceptance.sh` (lib, cli, browser) on
-that SHA and record it here.
+Confirm PR #135 CI is 34/34 green on the head carrying the invoice-schema budget fix, then (after 2026-11-18, or by
+a human) run the independent P0 lane review that could not run here, an exact-head SonarCloud analysis, and
+the owner decisions listed under Open items.
+
+### Other open items found during integration
+
+- `.github/workflows/openai-agents.yml` on `main` is not a valid workflow (a bare step list, no `on:`/`jobs:`), so
+  every push records a failed run; it also targets a paid API. Owner decision: fix or remove.
+- `apps/web/src/lib/embedHost.ts` `fetchMerchantProfile` has no production caller (merchant embedding is
+  `later-preserved`); it now requires an injected fetch.

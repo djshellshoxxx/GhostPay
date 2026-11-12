@@ -8,13 +8,15 @@ The goal is to reduce address reuse and limit routine exposure of invoice detail
 
 ## Status (read this first)
 
-The latest integrated candidate is **[draft PR #98](https://github.com/djshellshoxxx/GhostPay/pull/98)**, exact head `364b1f185fcc2adaedab4ce7b4b14e676b1da3b7`,
-combining product, merchant, CLI and beta-spec work. It is **not merged into main**.
-Hosted checks on this exact head passed, but the inherited [#84 SonarCloud security-rating D](https://github.com/djshellshoxxx/GhostPay/runs/128302927200)
-has not been cleared by an exact-head SonarCloud report. Independent security review,
-test-only B0 payment-to-recovery acceptance, trusted testnet manifests, release provenance
-and authorization remain open. Draft [#100](https://github.com/djshellshoxxx/GhostPay/pull/100) is a separate workflow
-security change, not part of #98. The 18 privacy proposals merged as PR #99 are **future-only**.
+The latest integrated candidate is **[draft PR #135](https://github.com/djshellshoxxx/GhostPay/pull/135)**
+(branch `nodata/jolly-rubin-u4zd45`). It continues combined head #121 with the #122–#127 fix ports (#129–#134),
+the latest relayer work (#118), the release/hosting/crypto-review workstream (#115) and the docs PRs. It is
+**not merged into main**. Its exact-head status, test evidence, integration matrix and open items are in the
+[beta candidate handoff](docs/handoffs/BETA_CANDIDATE_LATEST.md). The inherited
+[#84 SonarCloud security-rating D](https://github.com/djshellshoxxx/GhostPay/runs/128302927200) has not been cleared
+by an exact-head SonarCloud report. Independent security review, trusted testnet manifests, a published
+release-signing key, release provenance and owner authorization remain open. The 18 privacy proposals merged as
+PR #99 are **future-only**.
 
 Review the [product handoff](docs/handoffs/PRODUCT_COMPLETION_HANDOFF.md),
 [CLI handoff](docs/handoffs/CLI_COMPLETION_HANDOFF.md),

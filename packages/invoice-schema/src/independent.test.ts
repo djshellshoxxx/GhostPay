@@ -219,7 +219,9 @@ describe('A256GCM and A256GCM-PW envelopes vs node:crypto (OpenSSL)', () => {
     expect(await errName(parseFragment(mk(Buffer.concat([ct, Buffer.of(0)])), { passphrase: PASS }))).toBe(
       'WrongPassphraseError',
     );
-  });
+    // ~28 scrypt(N=2^15) derivations through parseFragment: ~150 ms each locally but ~2 s each on hosted runners
+    // (CI run 43298468905 timed out at the 60 s default), so this test gets an explicit budget like envelope.test.ts.
+  }, 180_000);
 });
 
 describe('versioning and KDF bounds from untrusted links', () => {
