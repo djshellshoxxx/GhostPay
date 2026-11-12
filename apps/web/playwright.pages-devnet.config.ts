@@ -64,8 +64,10 @@ export default defineConfig({
     env: {
       GHOSTPAY_PAGES_DEPLOYMENTS_DIR: state.deploymentsDir,
       GHOSTPAY_RELEASE_PUBKEYS: state.publicKey,
-      // Playwright's webServer exports FORCE_COLOR=1; build-pages.sh's `node -p` version probe would then print ANSI
-      // escapes and fail its integer test ("node >= 22 required"). Plain output for the build script.
+      // A test build (not release evidence): the working tree may be modified, and the origin is plain-http loopback.
+      GHOSTPAY_PAGES_DEV: '1',
+      GHOSTPAY_PAGES_ORIGIN: `http://localhost:${String(port)}`,
+      // Playwright's webServer exports FORCE_COLOR=1; plain output keeps the build log readable.
       FORCE_COLOR: '0',
     },
   },

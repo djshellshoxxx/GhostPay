@@ -636,9 +636,7 @@ test.describe.serial('GitHub Pages artifact on a real devnet', () => {
     const sitePaths = new Set(all.map((r) => new URL(r.url)).filter((u) => u.origin === net.siteOrigin && u.pathname.startsWith(PAGES_BASE)).map((u) => u.pathname));
     // The scanner Worker was loaded from the sub-path too.
     expect([...sitePaths].some((p) => /^\/GhostPay\/assets\/scanner\.worker-[\w-]+\.js$/.test(p))).toBe(true);
-    // Only the reported Home release-check defect left the sub-path (see the expected-failure test below).
-    const defect = net.outsideBase.map((r) => `${r.type} ${new URL(r.url).pathname}`);
-    console.log(`pages devnet: ${String(net.requests.length)} requests across the journey (${String(sitePaths.size)} distinct /GhostPay/ paths, ${String(net.methods.length)} RPC calls); no foreign origin; outside /GhostPay/ only the known Home release-check defect: ${defect.join(', ') || 'none'}`);
+    console.log(`pages devnet: ${String(net.requests.length)} requests across the journey (${String(sitePaths.size)} distinct /GhostPay/ paths, ${String(net.methods.length)} RPC calls); no foreign origin; nothing outside /GhostPay/`);
   });
 });
 
@@ -658,8 +656,9 @@ async function checkServedSums(request: APIRequestContext, baseURL: string, sums
 // Negative cases: each in its own profiles, each asserting the user-visible refusal AND that nothing was sent.
 // ---------------------------------------------------------------------------------------------------------------------
 test.describe('GitHub Pages artifact: refusals', () => {
-  test('KNOWN APP DEFECT (expected to fail until fixed): the Home release check stays inside /GhostPay/ and shows the served entry script hash', async ({ browser, baseURL }) => {
-    test.fail(true, 'apps/web/src/views/Home.tsx:23 passes window.location.origin as the base for the entry script src (apps/web/src/lib/release.ts:13 new URL(src, origin)); under /GhostPay/ it fetches <origin>/assets/index-*.js outside the project site and shows "not available in this environment"');
+  // Regression for the Home release check that resolved ./assets/index-*.js against the origin root instead of the
+  // document URL, so under /GhostPay/ it fetched another site's path (fixed in apps/web/src/lib/release.ts).
+  test('the Home release check stays inside /GhostPay/ and shows the served entry script hash', async ({ browser, baseURL }) => {
     const out = process.env['GHOSTPAY_PAGES_OUT'] ?? '';
     const entry = readFileSync(join(out, 'evidence', 'SHA256SUMS'), 'utf8').trim().split('\n')
       .map((l) => /^([0-9a-f]{64}) {2}\.\/(assets\/index-[\w-]+\.js)$/.exec(l)).find((m) => m !== null);

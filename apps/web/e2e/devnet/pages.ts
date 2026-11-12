@@ -44,18 +44,6 @@ export interface SeenRequest {
   readonly type: string;
 }
 
-/**
- * KNOWN APP DEFECT (reported, not worked around): the Home view's "Release check" resolves the entry script's relative
- * src (./assets/index-*.js) against window.location.origin instead of the document URL (apps/web/src/views/Home.tsx:23,
- * apps/web/src/lib/release.ts:13), so under /GhostPay/ it fetches <origin>/assets/index-*.js, outside the project site.
- * Exactly that request is recognised here so every other test still fails on any OTHER request leaving the sub-path;
- * the dedicated expected-failure test in pages-devnet.spec.ts keeps the strict check (and turns red once it is fixed).
- */
-export function isHomeReleaseCheckDefect(r: SeenRequest, siteOrigin: string): boolean {
-  const u = new URL(r.url);
-  return r.type === 'fetch' && u.origin === siteOrigin && /^\/assets\/index-[\w-]+\.js$/.test(u.pathname);
-}
-
 /** Records every request; forwards the app's https RPC to anvil; aborts and records anything foreign. */
 export class PagesNetwork {
   /** Every request any page or worker of an installed context issued (request events). */
@@ -139,15 +127,10 @@ export class PagesNetwork {
     return route.fulfill({ status: 200, headers: CORS, contentType: 'application/json', body: reply });
   }
 
-  /** Same-origin requests outside /GhostPay/ other than the one known, reported app defect. */
-  unexplainedOutsideBase(): SeenRequest[] {
-    return this.outsideBase.filter((r) => !isHomeReleaseCheckDefect(r, this.siteOrigin));
-  }
-
-  /** Nothing foreign was contacted and nothing (but the known defect) left the /GhostPay/ sub-path. */
+  /** Nothing foreign was contacted and nothing left the /GhostPay/ sub-path (on GitHub Pages: another site). */
   expectClean(): void {
     expect(this.foreign).toEqual([]);
-    expect(this.unexplainedOutsideBase()).toEqual([]);
+    expect(this.outsideBase).toEqual([]);
     for (const r of [...this.requests, ...this.routed]) expect(['local', 'site', 'outside-base', 'rpc'], r.url).toContain(this.classify(r.url));
   }
 }
