@@ -133,7 +133,7 @@ jobs:
   acceptance:
     name: Pages artifact on anvil (browser)
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 45
     permissions:
       contents: read
     steps:
@@ -141,19 +141,24 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 1
-      - uses: ./.github/actions/setup-node-libs
-      - uses: ./.github/actions/setup-forge
+      # No Actions cache anywhere in this workflow (audit L7-M4, SUPPLY-CHAIN-CI-02; pinned by
+      # scripts/tests/workflows.test.mjs): libraries, solc and the browser are built or downloaded fresh in every job.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          cache-name: pages-acceptance
-      - name: forge build
+          node-version: "22"
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Build every workspace library from source
+        run: |
+          rm -rf packages/*/dist
+          npm run build:libs
+      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1.9.2
+        with:
+          version: v1.8.5
+          cache: false
+      - name: forge build (installs the pinned solc 0.8.28)
         working-directory: packages/contracts
         run: forge build
-      - id: pw
-        run: echo "version=$(node -p "require('./apps/web/package.json').devDependencies['@playwright/test']")" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
       - run: ./node_modules/.bin/playwright install --with-deps chromium
       - name: Pages artifact journey on anvil
         env:
@@ -165,7 +170,7 @@ jobs:
     name: Release gates (typecheck, lint, unit, mocked lean browser suite)
     if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.deploy
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     permissions:
       contents: read
     steps:
@@ -173,11 +178,22 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 1
-      - uses: ./.github/actions/setup-node-libs
-      - uses: ./.github/actions/setup-forge
+      # No Actions cache anywhere in this workflow (audit L7-M4, SUPPLY-CHAIN-CI-02; pinned by
+      # scripts/tests/workflows.test.mjs): libraries, solc and the browser are built or downloaded fresh in every job.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          cache-name: pages-release-gates
-      - name: forge build (solc for the web registry integration test)
+          node-version: "22"
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Build every workspace library from source
+        run: |
+          rm -rf packages/*/dist
+          npm run build:libs
+      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1.9.2
+        with:
+          version: v1.8.5
+          cache: false
+      - name: forge build (installs the pinned solc 0.8.28)
         working-directory: packages/contracts
         run: forge build
       - run: npm run typecheck -w @ghostpay/web
@@ -188,12 +204,6 @@ jobs:
           ANVIL_BIN="$(command -v anvil)" SOLC_BIN="$HOME/.svm/0.8.28/solc-0.8.28" REQUIRE_ANVIL=1 npm test -w apps/web
       - name: Build profile guard regressions
         run: node --test apps/web/scripts/localBuildProfile.test.mjs
-      - id: pw
-        run: echo "version=$(node -p "require('./apps/web/package.json').devDependencies['@playwright/test']")" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
       - run: ./node_modules/.bin/playwright install --with-deps chromium
       - name: Mocked browser suite (lean profile)
         env:
@@ -234,17 +244,13 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 1
+      # No Actions cache anywhere in this workflow (audit L7-M4, SUPPLY-CHAIN-CI-02; pinned by
+      # scripts/tests/workflows.test.mjs): libraries, solc and the browser are built or downloaded fresh in every job.
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "22"
           cache: npm
       - run: npm ci --ignore-scripts
-      - id: pw
-        run: echo "version=$(node -p "require('./apps/web/package.json').devDependencies['@playwright/test']")" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
       - run: ./node_modules/.bin/playwright install --with-deps chromium
       - name: Smoke test the published site
         env:

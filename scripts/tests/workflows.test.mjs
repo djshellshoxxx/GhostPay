@@ -115,9 +115,18 @@ test('Pages mirror builds every workspace lib from source, never from the Action
   const setupNode = /uses: actions\/setup-node@[0-9a-f]{40} # v\S+/.exec(read('.github/actions/setup-node-libs/action.yml'))?.[0];
   assert.ok(setupNode !== undefined);
   assert.ok(pages.includes(setupNode), 'same pinned actions/setup-node as the rest of CI');
-  const order = ['npm ci --ignore-scripts', 'rm -rf packages/*/dist', 'npm run build:libs', 'npm run build -w apps/web'].map((s) => pages.indexOf(s));
+  // The published site is built by scripts/pages/build-pages.sh (typecheck, vite build, bundle scan, site verification).
+  const order = ['npm ci --ignore-scripts', 'rm -rf packages/*/dist', 'npm run build:libs', 'bash scripts/pages/build-pages.sh'].map((s) => pages.indexOf(s));
   assert.ok(order.every((at) => at >= 0), `missing step: ${JSON.stringify(order)}`);
   assert.deepEqual([...order].sort((a, b) => a - b), order, 'install, clean, build libs, then build the app');
+  // Every job builds its libraries from source: as many clean builds as jobs that run npm ci.
+  const count = (needle) => pages.split(needle).length - 1;
+  assert.equal(count('rm -rf packages/*/dist'), count('npm run build:libs'));
+  assert.ok(count('npm run build:libs') >= 3, 'site, acceptance and release-gates each build libraries from source');
+  // foundry-toolchain's own RPC cache is off as well.
+  for (const m of pages.matchAll(/uses: foundry-rs\/foundry-toolchain@[0-9a-f]{40}[^\n]*\n((?: {8,}.*\n)+)/g)) {
+    assert.match(m[1], /cache: false/, 'foundry-toolchain without its Actions cache');
+  }
 });
 
 test('hosting-kit qualification runs for app-only changes and ties the package to the commit', () => {
