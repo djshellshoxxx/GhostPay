@@ -22,6 +22,9 @@ Automated agents (`.github/workflows/ghostpay-codex-cloud.yml`, `ghostpay-parall
 
 ## Remaining work
 
+A self-contained prompt for the next session is in [GITHUB_PAGES_CONTINUATION_PROMPT.md](GITHUB_PAGES_CONTINUATION_PROMPT.md).
+
+
 Owner actions:
 1. Accept or reject ADR-0029.
 2. Serving origin: a custom domain for the Pages site, or a dedicated account or organization with no other Pages sites. The account's `github.io` origin is shared with its other Pages sites (GP-PAGES-01). Set the repository variable `GHOSTPAY_PAGES_ORIGIN`.
