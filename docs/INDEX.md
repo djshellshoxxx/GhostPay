@@ -260,6 +260,10 @@ Research and handoff prompts dated 2026-10-30 to 2026-11-04, brought into the co
 
 - [Handoff](./HANDOFF.md): current state, lessons, how to resume.
 - [Completion plan](./COMPLETION_PLAN.md): what remains and how to finish it.
+- [Complementary workstream report (2026-11)](./COMPLEMENTARY_WORKSTREAM_2026-11.md): release integrity, build health, hosting, contract/crypto/privacy review, CI and multi-chain qualification; source-pinned status and human gates.
+  - Audits: [26 contract review](audits/26-contract-security-review-2026-11.md), [27 crypto review](audits/27-crypto-implementation-review-2026-11.md).
+  - Threat model: [privacy threat model](threat-model/PRIVACY_THREAT_MODEL.md), [metadata exposure matrix](threat-model/metadata-exposure-matrix.md); user page [privacy limits](user/privacy-limits.md).
+  - Operators: [release-candidate qualification](operators/release-candidate-qualification.md), [rollback](operators/rollback.md), [monitoring](operators/monitoring.md); developers: [CI](developer/ci.md); chains: [qualification 2026-11](chains/QUALIFICATION-2026-11.md).
 
 ## Future-only privacy-first feature proposals
 

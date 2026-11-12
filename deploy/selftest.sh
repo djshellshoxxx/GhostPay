@@ -35,8 +35,8 @@ def add_dir(tf, name):
     tf.addfile(info)
 
 with tarfile.open(sys.argv[1], "w:gz") as tf:
-    add_dir(tf, "web/")
-    add_file(tf, "web/index.html", b"safe")
+    add_dir(tf, "ghostpay-web/")
+    add_file(tf, "ghostpay-web/index.html", b"safe")
 
 with tarfile.open(sys.argv[2], "w:gz") as tf:
     add_dir(tf, "web/")
@@ -77,8 +77,12 @@ chmod +x "$tmp/bin/docker" "$tmp/bin/gh"
 tar_name=ghostpay-web-v0.0.1.tar.gz
 cp "$tmp/safe.tar.gz" "$tmp/rel/$tar_name"
 tar_sha="$(sha256 "$tmp/rel/$tar_name")"
-printf '%s  %s\n' "$tar_sha" "$tar_name" > "$tmp/rel/SHA256SUMS"
-printf '{"commit":"%s","artifacts":[{"kind":"web-bundle-tarball","sha256":"%s"}]}\n' "$commit" "$tar_sha" > "$tmp/rel/release-manifest.json"
+# A strict release-channel manifest and SBOM, as release-build.sh emits them, so verify-release.sh can pass.
+printf '{"bomFormat":"CycloneDX","specVersion":"1.5","components":[]}\n' > "$tmp/rel/sbom.cdx.json"
+node "$here/../scripts/gen-release-manifest.mjs" --out-dir "$tmp/rel" --tarball "$tar_name" --version v0.0.1 --commit "$commit" \
+  --source-date-epoch 0 --lockfile "$here/../package-lock.json" --sbom sbom.cdx.json --tree-clean 1 --tag-commit "$commit" \
+  > "$tmp/rel/release-manifest.json" || fail 'could not generate the release manifest fixture'
+for f in "$tar_name" sbom.cdx.json release-manifest.json; do printf '%s  %s\n' "$(sha256 "$tmp/rel/$f")" "$f"; done > "$tmp/rel/SHA256SUMS"
 dist="$fake/deploy/web-dist"
 log="$tmp/calls.log"
 

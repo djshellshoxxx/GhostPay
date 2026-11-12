@@ -86,8 +86,8 @@ Known documentation bugs found while writing (not fixed here, outside `docs/deve
 - ADR-0014 says `flatSecurity` reports `available`; `FeeStatus` has no such member (`createEvmAdapter` derives
   `not_deployed` / `enforced` / `not_enforceable` from `manifest.policy`). Its context ("router hard-codes scheme id 1",
   "no TypeScript derivation") predates `GhostPayPolicyRouter` and `@ghostpay/policy-scheme`.
-- `.github/workflows/nightly.yml` header says no Echidna harness exists; harnesses exist in `packages/contracts/test/echidna/`
-  (they are simply not wired into CI). `packages/contracts/README.md` still says Echidna was not run.
+- Echidna harnesses in `packages/contracts/test/echidna/` and Mythril are wired into `.github/workflows/nightly.yml`; their
+  install steps are unverified until a green nightly run. `packages/contracts/README.md` still says Echidna was not run.
 - The root README package map does not list `packages/policy-scheme`, and `npm run build:libs` does not build it.
 - `.env.example` omits `POLICY_FACTORY` and `EXPECTED_POLICY_FACTORY_CODEHASH` (read by `DeployPolicyRouter.s.sol`);
   `scripts/pre-deploy-check.sh` has no mode for the policy router; `scripts/check-natspec.sh` does not list

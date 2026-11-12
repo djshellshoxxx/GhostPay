@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -31,6 +32,18 @@ function readManifests(dir: string): Record<string, string> {
   return out;
 }
 
+// Build identification (deterministic: no timestamps). GP_COMMIT is supplied by the release build; a plain local
+// build reports "unknown". The manifest digest lets operators detect an app/manifest mismatch without trusting the page.
+const rawCommit = process.env['GP_COMMIT'] ?? '';
+const buildCommit = /^[0-9a-f]{7,40}$/.test(rawCommit) ? rawCommit : 'unknown';
+const manifests = readManifests(deploymentsDir);
+const buildInfo = {
+  app: 'ghostpay-web',
+  version: (JSON.parse(readFileSync(fileURLToPath(new URL('./package.json', import.meta.url)), 'utf8')) as { version: string }).version,
+  commit: buildCommit,
+  manifestsSha256: createHash('sha256').update(JSON.stringify(manifests)).digest('hex'),
+};
+
 // Static, CSP-friendly build: no inline scripts or styles, no source maps, no data: URI inlining,
 // no modulepreload polyfill (it injects inline code). Everything is emitted as same-origin files.
 export default defineConfig({
@@ -41,7 +54,7 @@ export default defineConfig({
   } },
   define: {
     __GHOSTPAY_RELEASE_KEYS__: JSON.stringify(releaseKeys),
-    __GHOSTPAY_MANIFESTS__: JSON.stringify(readManifests(deploymentsDir)),
+    __GHOSTPAY_MANIFESTS__: JSON.stringify(manifests),
     // Unit tests must not inherit the shell's e2e profile; profile-specific tests pass it explicitly.
     __GHOSTPAY_PROFILE__: JSON.stringify(process.env['VITEST'] === undefined ? buildProfile : 'full'),
   },
@@ -54,6 +67,16 @@ export default defineConfig({
       async buildStart() {
         const problems = await validateDeployments(deploymentsDir, releaseKeys);
         if (problems.length > 0) throw new Error(`deployments/ failed validation:\n - ${problems.join('\n - ')}`);
+      },
+    },
+    {
+      name: 'ghostpay-build-info',
+      apply: 'build',
+      transformIndexHtml: () => [
+        { tag: 'meta', attrs: { name: 'ghostpay-build', content: buildInfo.commit }, injectTo: 'head' },
+      ],
+      generateBundle() {
+        this.emitFile({ type: 'asset', fileName: 'build-info.json', source: `${JSON.stringify(buildInfo)}\n` });
       },
     },
     {

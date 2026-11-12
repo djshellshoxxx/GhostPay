@@ -16,7 +16,9 @@ concurrency:
 # Open gaps, deliberately NOT faked here (docs/operators/release-and-verify.md "Open gaps"):
 #   - Mutation testing (gambit) and mainnet-fork tests: no CI configuration exists yet.
 # Echidna and Mythril below were written without network access to the tool hosts, so their install steps are
-# unverified until the first nightly run; a wrong URL or checksum fails loudly rather than skipping.
+# unverified until a green nightly run; a wrong URL or checksum fails loudly rather than skipping.
+# Python is pinned to 3.12 with actions/setup-python for every pip-installed tool: the runner's system Python moved to
+# 3.14, where mythril's coincurve/cffi build fails ("Expected exactly one LICENSE file in cffi distribution").
 
 jobs:
   fuzz:
@@ -52,6 +54,9 @@ jobs:
       - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1.9.2
         with:
           version: v1.8.5
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.12"
       - name: Slither (same exclusions as ci.yml)
         run: |
           python3 -m pip install --quiet "slither-analyzer==0.11.6" "solc-select==1.2.0"
@@ -112,6 +117,9 @@ jobs:
       - uses: ./.github/actions/setup-forge
         with:
           cache-name: echidna
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.12"
       - name: Install echidna (checksum-verified) and crytic-compile
         run: |
           set -euo pipefail
@@ -139,13 +147,14 @@ jobs:
           cache-name: mythril
       # Mythril's coincurve dependency has no wheel for the runner's default Python 3.14 and its sdist build fails;
       # 3.12 has published wheels. Pinning the interpreter does not change what Mythril analyses.
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: '3.12'
       - name: Mythril symbolic analysis
         working-directory: packages/contracts
         run: |
           set -euo pipefail
-          python3 -m pip install --quiet "mythril==0.24.8" "solc-select==1.2.0"
+          python3 -m pip install --quiet "mythril==0.24.8" "solc-select==1.2.0" "setuptools<81"
+          myth version
           solc-select install 0.8.28 && solc-select use 0.8.28
           bash scripts/run-mythril.sh
